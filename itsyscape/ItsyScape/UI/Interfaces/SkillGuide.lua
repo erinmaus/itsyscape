@@ -260,6 +260,40 @@ function SkillGuide:update(...)
 	end
 end
 
+function SkillGuide:steal(action)
+	local gameDB = self:getView():getGame():getGameDB()
+	local brochure = gameDB:getBrochure()
+
+	action = gameDB:getAction(action.id)
+
+	for requirement in brochure:getRequirements(action) do
+		local requirementResource = brochure:getConstraintResource(requirement)
+		local requirementType = brochure:getResourceTypeFromResource(requirementResource)
+
+		if requirementType.name == "Item" then
+			self:sendPoke("spawn", nil, { itemID = requirementResource.name, count = requirement.count })
+		end
+	end
+
+	for input in brochure:getInputs(action) do
+		local inputResource = brochure:getConstraintResource(input)
+		local inputType = brochure:getResourceTypeFromResource(inputResource)
+
+		if inputType.name == "Item" then
+			self:sendPoke("spawn", nil, { itemID = inputResource.name, count = input.count })
+		end
+	end
+
+	for output in brochure:getOutputs(action) do
+		local outputResource = brochure:getConstraintResource(output)
+		local outputType = brochure:getResourceTypeFromResource(outputResource)
+
+		if outputType.name == "Item" then
+			self:sendPoke("spawn", nil, { itemID = outputResource.name, count = output.count })
+		end
+	end
+end
+
 function SkillGuide:selectItem(action, button, buttonIndex)
 	if buttonIndex == 2 and _DEBUG then
 		local actions = {
@@ -280,6 +314,14 @@ function SkillGuide:selectItem(action, button, buttonIndex)
 					if itemIcon and Class.isCompatibleType(itemIcon, ItemIcon) then
 						self:sendPoke("spawn", nil, { itemID = itemIcon:getItemID(), count = itemIcon:getItemCount() })
 					end
+				end
+			},
+			{
+				id = "Steal",
+				verb = "Steal-All",
+				object = button:getText(),
+				callback = function()
+					self:steal(action)
 				end
 			}
 		}

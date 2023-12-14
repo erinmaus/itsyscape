@@ -56,7 +56,7 @@ PlayerStance.ACTIVE_STYLE = function(skill, path)
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 		fontSize = 26,
 		textX = 0.3,
-		textY = 0.7,
+		textY = 0.5,
 		textAlign = 'left'
 	}
 
@@ -75,7 +75,7 @@ PlayerStance.INACTIVE_STYLE = function(skill, path)
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 		fontSize = 26,
 		textX = 0.3,
-		textY = 0.7,
+		textY = 0.5,
 		textAlign = 'left'
 	}
 
@@ -123,24 +123,6 @@ function PlayerStance:new(id, index, ui)
 		local button = Button()
 
 		button.onClick:register(function()
-			self:sendPoke("toggleSpell", nil, {})
-		end)
-		button:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(), self:getView():getResources()))
-		button:setData('active', false)
-		button:setID("PlayerStance-UseSpell")
-
-		button:setText("Use Spell")
-		button:setToolTip(
-			ToolTip.Header("Use Spell"),
-			ToolTip.Text("If using a magic weapon, and with a spell active, you will cast the spell instead of using your weapon."))
-
-		self:addChild(button)
-		self.buttons.toggleSpell = button
-	end
-	do
-		local button = Button()
-
-		button.onClick:register(function()
 			for _, interface in self:getView():getInterfaces("ProCombatStatusHUD") do
 				interface:toggleRadialMenu()
 			end
@@ -159,6 +141,26 @@ function PlayerStance:new(id, index, ui)
 		self:addChild(button)
 		self.buttons.toggleHUD = button
 	end
+	do
+		local button = Button()
+
+		button.onClick:register(function()
+			local player = self:getView():getGame():getPlayer()
+			player:flee()
+		end)
+		button:setStyle(ButtonStyle(
+			PlayerStance.INACTIVE_STYLE("Flee", "Resources/Game/UI/Icons/Concepts/%s.png"),
+			self:getView():getResources()))
+		button:setID("PlayerStance-Flee")
+
+		button:setText("Flee")
+		button:setToolTip(
+			ToolTip.Header("Flee"),
+			ToolTip.Text("Dis-engage in combat with your foe."))
+
+		self:addChild(button)
+		self.buttons.flee = button
+	end
 
 	self:performLayout()
 end
@@ -168,26 +170,30 @@ function PlayerStance:performLayout()
 
 	local panelWidth, panelHeight = self:getSize()
 	if self.buttons then
+		local numButtons = #self.buttons + 2
+
+		local buttonHeight = (panelHeight - (numButtons + 1) * PlayerStance.PADDING) / numButtons
+
 		local y = PlayerStance.PADDING
 		for _, button in ipairs(self.buttons) do
 			button:setSize(
 				panelWidth - PlayerStance.PADDING * 2,
-				PlayerStance.BUTTON_HEIGHT)
+				buttonHeight)
 			button:setPosition(PlayerStance.PADDING, y)
 
-			y = y + PlayerStance.BUTTON_HEIGHT + PlayerStance.PADDING
+			y = y + buttonHeight + PlayerStance.PADDING
 		end
 
-		self.buttons.toggleSpell:setSize(
-			panelWidth - PlayerStance.PADDING * 2,
-			PlayerStance.BUTTON_HEIGHT)
-		self.buttons.toggleSpell:setPosition(PlayerStance.PADDING, y)
-
-		y = y + PlayerStance.BUTTON_HEIGHT + PlayerStance.PADDING
 		self.buttons.toggleHUD:setSize(
 			panelWidth - PlayerStance.PADDING * 2,
-			PlayerStance.BUTTON_HEIGHT)
+			buttonHeight)
 		self.buttons.toggleHUD:setPosition(PlayerStance.PADDING, y)
+		y = y + buttonHeight + PlayerStance.PADDING
+
+		self.buttons.flee:setSize(
+			panelWidth - PlayerStance.PADDING * 2,
+			buttonHeight)
+		self.buttons.flee:setPosition(PlayerStance.PADDING, y)
 	end
 end
 
@@ -195,25 +201,7 @@ function PlayerStance:update(...)
 	PlayerTab.update(self, ...)
 
 	local state = self:getState()
-	local style
-	do
-		local toggleButton = self.buttons.toggleSpell
-		if state.useSpell then
-			style = Weapon.STYLE_MAGIC
-
-			if not toggleButton:getData('active') then
-				toggleButton:setStyle(ButtonStyle(PlayerStance.ACTIVE_STYLE(), self:getView():getResources()))
-				toggleButton:setData('active', true)
-			end
-		else
-			style = state.style
-
-			if toggleButton:getData('active') then
-				toggleButton:setStyle(ButtonStyle(PlayerStance.INACTIVE_STYLE(), self:getView():getResources()))
-				toggleButton:setData('active', false)
-			end
-		end
-	end
+	local style = state.style
 
 	for i = 1, #self.buttons do
 		local button = self.buttons[i]

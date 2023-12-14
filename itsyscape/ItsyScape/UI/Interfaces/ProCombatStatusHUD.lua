@@ -88,7 +88,7 @@ ProCombatStatusHUD.THINGIES_EQUIPMENT        = 5
 ProCombatStatusHUD.Target = Class(Drawable)
 ProCombatStatusHUD.Target.WIDTH = (ProCombatStatusHUD.EFFECT_SIZE + ProCombatStatusHUD.EFFECT_PADDING) * ProCombatStatusHUD.NUM_EFFECTS_PER_ROW
 ProCombatStatusHUD.Target.HEIGHT = 4
-ProCombatStatusHUD.Target.STAT_HEIGHT = 18
+ProCombatStatusHUD.Target.STAT_HEIGHT = 24
 ProCombatStatusHUD.Target.PSEUDO_WIDTH = 320
 ProCombatStatusHUD.Target.PSEUDO_HEIGHT = 256
 
@@ -126,7 +126,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 	self.hitPointsLabel = Label()
 	self.hitPointsLabel:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-		fontSize = 16,
+		fontSize = 22,
 		textShadow = true,
 		color = { 1, 1, 1, 1 }
 	}, self.hud:getView():getResources()))
@@ -143,7 +143,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 	self.prayerPointsLabel = Label()
 	self.prayerPointsLabel:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-		fontSize = 16,
+		fontSize = 22,
 		textShadow = true,
 		color = { 1, 1, 1, 1 }
 	}, self.hud:getView():getResources()))
@@ -825,13 +825,14 @@ function ProCombatStatusHUD:showThingies(type, buttons, target)
 		thingies:addChild(buttons[i])
 	end
 
+	local _, _, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 	local targetX, targetY = target:getAbsolutePosition()
 	local targetWidth, targetHeight = target:getSize()
 	local width, height = thingies:getSize()
 
 	thingiesParent:setPosition(
-		targetX - (width / 2 - targetWidth / 2),
-		targetY - height - ProCombatStatusHUD.BUTTON_PADDING)
+		targetX - (width / 2 - targetWidth / 2) - offsetX,
+		targetY - height - ProCombatStatusHUD.BUTTON_PADDING - offsetY)
 	thingiesParent:setSize(width, height + ProCombatStatusHUD.BUTTON_PADDING)
 	thingiesParent:setZDepth(2000)
 	thingiesParent:addChild(thingies)

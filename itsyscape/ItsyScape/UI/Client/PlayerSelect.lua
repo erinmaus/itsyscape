@@ -34,7 +34,7 @@ PlayerSelect.PADDING = 8
 
 PlayerSelect.NAME_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 32,
+	fontSize = _MOBILE and 32 or 22,
 	color = { 1, 1, 1, 1 },
 	textShadow = true,
 	width = PlayerSelect.WIDTH - PlayerSelect.BUTTON_HEIGHT - PlayerSelect.PADDING * 2
@@ -42,7 +42,7 @@ PlayerSelect.NAME_STYLE = {
 
 PlayerSelect.LOCATION_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-	fontSize = 28,
+	fontSize = _MOBILE and 28 or 18,
 	color = { 1, 1, 1, 1 },
 	textShadow = true,
 	width = PlayerSelect.WIDTH - PlayerSelect.BUTTON_HEIGHT - PlayerSelect.PADDING * 2

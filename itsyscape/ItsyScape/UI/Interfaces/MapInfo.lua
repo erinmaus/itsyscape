@@ -42,7 +42,7 @@ function MapInfo.Line:new(interface)
 	self.fontDescription = resources:load(
 		love.graphics.newFont,
 		"Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-		16)
+		24)
 
 	self.offsets = {}
 	for i = 1, self.NUM_ANCHOR_POINTS do

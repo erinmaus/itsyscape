@@ -384,7 +384,7 @@ function LocalGameManager:sendToPlayer(player)
 				else
 					local interface = self.game:getUI():get(interfaceID, interfaceIndex)
 					if not interface and not hasPlayer then
-						Log.warn(
+						Log.engine(
 							"Interface (id = '%s', index = %d) not found; cannot process send for RPC '%s'.",
 							interfaceID, interfaceIndex, e.callback)
 					else

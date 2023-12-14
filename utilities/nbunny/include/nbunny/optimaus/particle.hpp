@@ -99,8 +99,7 @@ namespace nbunny
 
 		bool is_playing = true;
 
-		float update_delta();
-		void update();
+		void update(float time_delta);
 		void emit(int count);
 
 		glm::quat get_global_rotation(float frame_delta) const;
@@ -126,7 +125,7 @@ namespace nbunny
 		void play();
 		bool get_is_playing() const;
 
-		void frame(float delta);
+		void frame(float frame_delta, float time_delta);
 		void draw(Renderer& renderer, float delta) override;
 	};
 }

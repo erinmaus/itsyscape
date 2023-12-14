@@ -12,6 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "Resources.Game.Peeps.Maps.ShipMapPeep"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -84,45 +85,17 @@ Ship.COMBAT_HINT = {
 	},
 	{
 		position = 'up',
-		id = "PlayerStance-ToggleHUD",
-		message = not _MOBILE and "Click here to toggle the combat HUD." or "Tap here to toggle the combat HUD.",
+		id = "Ribbon-PlayerPowers",
+		message = not _MOBILE and "Click here to see your powers." or "Tap here to see your powers.",
 		open = function(target)
 			return function()
-				local isOpen, index = Utility.UI.isOpen(target, "ProCombatStatusHUD")
-				if isOpen and index then
-					local interface = Utility.UI.getOpenInterface(target, "ProCombatStatusHUD", index)
-					local config = interface:pull().config
-					return config.isRadialMenuOpen
-				end
-				return true
+				return Utility.UI.isOpen(target, "PlayerPowers")
 			end
 		end
 	},
 	{
-		position = 'up',
-		id = "ProCombatStatusHUD-OffensivePowers",
-		message = not _MOBILE and "Click here to view your available Powers." or "Tap here to view your available Powers.",
-		open = function(target)
-			return function()
-				local isOpen, index = Utility.UI.isOpen(target, "ProCombatStatusHUD")
-				if isOpen and index then
-					local interface = Utility.UI.getOpenInterface(target, "ProCombatStatusHUD", index)
-					local config = interface:pull().config
-					for _, thingie in pairs(config.openThingies or {}) do
-						if thingie == interface.THINGIES_OFFENSIVE_POWERS then
-							return true
-						end
-					end
-
-					return false
-				end
-				return true
-			end
-		end
-	},
-	{
-		position = 'down',
-		id = "ProCombatStatusHUD-PowerBackstab",
+		position = 'left',
+		id = "PlayerPowers-PowerBackstab",
 		message = not _MOBILE and "Click 'Backstab' then click on a pirate to attack.\nYou will deal a special attack!" or "Tap 'Backstab' then tap on a pirate to attack.\nYou will deal a special attack!",
 		open = function(target)
 			return function()
@@ -133,7 +106,7 @@ Ship.COMBAT_HINT = {
 	},
 }
 
-function Ship.showTip(tips, target)
+function Ship:showTip(tips, target)
 	target:addBehavior(DisabledBehavior)
 
 	local index = 0
@@ -151,10 +124,53 @@ function Ship.showTip(tips, target)
 				after)
 		else
 			target:removeBehavior(DisabledBehavior)
+
+			self:listenForAttack()
 		end
 	end
 
 	after()
+end
+
+function Ship:listenForAttack()
+	self.numTimesAttacked = 0
+	self.previousTarget = nil
+
+	local SPAM_MESSAGE_THRESHOLD = 3
+
+	local notifiedPlayer = false
+
+	local function performAttackAction(_, e)
+		if e.action:is("Attack") then
+			if self.numTimesAttacked == 0 then
+				Utility.Peep.notify(self.player, "You'll automatically deal blows until the foe is slain.")
+			end
+
+			local target = self.player:getBehavior(CombatTargetBehavior)
+			target = target and target.actor
+
+			if self.previousTarget ~= target then
+				self.previousTarget = target
+				self.numTimesAttacked = 1
+			else
+				self.numTimesAttacked = self.numTimesAttacked + 1
+			end
+
+			if self.numTimesAttacked > SPAM_MESSAGE_THRESHOLD then
+				self.numTimesAttacked = 1
+
+				Utility.Peep.notify(self.player, _MOBILE and "You only need to tap once to attack!" or "You only need to click once to attack!", notifiedPlayer)
+				notifiedPlayer = true
+			end
+		end
+	end
+
+	local function travel()
+		self.player:silence("actionPerformed", performAttackAction)
+		self.player:silence("travel", travel)
+	end
+
+	self.player:listen("actionPerformed", performAttackAction)
 end
 
 function Ship:new(resource, name, ...)
@@ -388,8 +404,8 @@ function Ship:update(director, game)
 				end,
 				{ position = 'center' })
 
-			if not _DEBUG then
-				Ship.showTip(Ship.COMBAT_HINT, self.player)
+			if not _DEBUG or _MOBILE then
+				self:showTip(Ship.COMBAT_HINT, self.player)
 			end
 		end
 		

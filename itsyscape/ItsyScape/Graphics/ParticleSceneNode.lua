@@ -77,7 +77,7 @@ end
 
 function ParticleSceneNode:frame(delta)
 	SceneNode.frame(self, delta)
-	self:getHandle():frame(delta)
+	self:getHandle():frame(delta, love.timer.getDelta())
 end
 
 return ParticleSceneNode

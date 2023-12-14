@@ -180,11 +180,6 @@ function GameManager.PropertyGroup:findIndexOfKey(key)
 				end
 			elseif Class.isCompatibleType(argument, Event.OverrideKeyArgument) then
 				-- Nothing. 'Override' is only used for incoming keys, not stored keys.
-			else
-				Log.error("Unhandled key argument type: '%s'", argument:getDebugInfo().shortName)
-
-				isMatch = false
-				break
 			end
 		end
 

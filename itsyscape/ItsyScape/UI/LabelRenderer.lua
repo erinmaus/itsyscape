@@ -19,7 +19,7 @@ function LabelRenderer:new(resources)
 	self.defaultStyle = LabelStyle({
 		color = { 1, 1, 1, 1 },
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = 20,
+		fontSize = _MOBILE and 26 or 24,
 		textShadow = true
 	}, resources)
 end

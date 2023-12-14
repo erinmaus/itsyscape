@@ -123,7 +123,11 @@ function PlayerSpellsController:cast(e)
 	if spell:isCompatibleType(CombatSpell) then
 		local s, b = peep:addBehavior(ActiveSpellBehavior)
 		if s then
-			b.spell = self.spells[e.spell]
+			if b.spell and b.spell:getID() == self.spells[e.spell]:getID() then
+				peep:removeBehavior(ActiveSpellBehavior)
+			else
+				b.spell = self.spells[e.spell]
+			end
 		end
 
 		local equippedItem = Utility.Peep.getEquippedItem(self:getPeep(), Equipment.PLAYER_SLOT_RIGHT_HAND)
@@ -133,7 +137,7 @@ function PlayerSpellsController:cast(e)
 				if logic:getStyle() == Weapon.STYLE_MAGIC then
 					local s, b = peep:addBehavior(StanceBehavior)
 					if s then
-						b.useSpell = true
+						b.useSpell = peep:hasBehavior(ActiveSpellBehavior)
 					end
 				end
 			end

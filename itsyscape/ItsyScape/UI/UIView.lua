@@ -47,11 +47,17 @@ local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
 
 local UIView = Class()
 
+UIView.Root = Class(Widget)
+function UIView.Root:getOverflow()
+	return true
+end
+
 UIView.WIDTH  = 1920
 UIView.HEIGHT = 1080
-UIView.MOBILE_HEIGHT  = 720
-UIView.MOBILE_PADDING = 16
-UIView.MOBILE_SCALE   = 0.65
+UIView.MOBILE_HEIGHT    = 720
+UIView.MOBILE_X_PADDING = 48
+UIView.MOBILE_Y_PADDING = 24
+UIView.MOBILE_SCALE     = 0.65
 
 function love.graphics.getScaledMode()
 	local currentWidth, currentHeight = love.window.getMode()
@@ -61,7 +67,7 @@ function love.graphics.getScaledMode()
 	local scale
 	if currentHeight < UIView.MOBILE_HEIGHT then
 		if _MOBILE or true then
-			paddingX, paddingY = UIView.MOBILE_PADDING, UIView.MOBILE_PADDING
+			paddingX, paddingY = UIView.MOBILE_X_PADDING, UIView.MOBILE_Y_PADDING
 		end
 
 		scale = UIView.MOBILE_SCALE
@@ -608,13 +614,13 @@ itsyrealm.graphics.disabled.getPseudoScissor = itsyrealm.graphics.getPseudoSciss
 itsyrealm.graphics.disabled.drawq = love.graphics.draw
 itsyrealm.graphics.disabled.uncachedDraw = love.graphics.draw
 
-if love.system.getOS() ~= "OS X" and (not jit or jit.arch == "arm64") then
+--if love.system.getOS() ~= "OS X" and (not jit or jit.arch == "arm64") then
 	Log.info(
 		"Disabling advanced UI caching on platform '%s' (arch '%s').",
 		love.system.getOS(),
 		jit and jit.arch or "???")
 	itsyrealm.graphics.disable()
-end
+--end
 
 function UIView:new(gameView)
 	self.game = gameView:getGame()
@@ -625,7 +631,7 @@ function UIView:new(gameView)
 	ui.onClose:register(self.close, self)
 	ui.onPoke:register(self.poke, self)
 
-	self.root = Widget()
+	self.root = UIView.Root()
 	self.root:setID("root")
 	self.inputProvider = WidgetInputProvider(self.root)
 

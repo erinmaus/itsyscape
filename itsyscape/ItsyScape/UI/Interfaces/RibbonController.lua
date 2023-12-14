@@ -22,6 +22,7 @@ function RibbonController:new(peep, director)
 	self.currentInterfaceIndex = false
 
 	self.tabs = {
+		["PlayerPowers"] = true,
 		["PlayerStance"] = true,
 		["PlayerInventory"] = true,
 		["PlayerEquipment"] = true,

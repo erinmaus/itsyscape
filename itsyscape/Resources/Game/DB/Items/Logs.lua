@@ -8,13 +8,27 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+local SECONDARIES = {
+	"CommonBlackSpider",
+	"CommonTreeMoth",
+	"CommonTreeBeetle",
+	"RobinEgg",
+	"CardinalEgg",
+	"BlueJayEgg",
+	"WrenEgg",
+}
+
 local LOGS = {
 	["Common"] = {
 		tier = 0,
 		weight = 8,
 		health = 3,
 		tinderbox = "Tinderbox",
-		variants = { "Snowy" }
+		variants = { "Snowy" },
+		secondaries = {
+			"Leaf",
+			"Branch"
+		}
 	},
 
 	["Shadow"] = {
@@ -36,14 +50,22 @@ local LOGS = {
 		tier = 10,
 		weight = 6,
 		health = 7,
-		tinderbox = "Tinderbox"
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Leaf",
+			"Branch"
+		}
 	},
 
 	["Oak"] = {
 		tier = 20,
 		weight = 4,
 		health = 15,
-		tinderbox = "Tinderbox"
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Leaf",
+			"Branch"
+		}
 	},
 
 	["Maple"] = {
@@ -53,11 +75,28 @@ local LOGS = {
 		tinderbox = "Tinderbox"
 	},
 
+	["FoxFir"] = {
+		niceName = "Fox fir",
+		tier = 35,
+		weight = 16,
+		health = 30,
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Leaf",
+			"Branch",
+			"Flower"
+		}
+	},
+
 	["Yew"] = {
 		tier = 40,
 		weight = 6,
 		health = 100,
-		tinderbox = "Tinderbox"
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Leaf",
+			"Branch"
+		}
 	},
 
 	["PetrifiedSpider"] = {
@@ -86,10 +125,13 @@ local LOGS = {
 
 	["FossilizedOak"] = {
 		niceName = "Fossilized oak",
-		tier = 20,
+		tier = 25,
 		weight = 15,
 		health = 150,
-		tinderbox = "Tinderbox"
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Branch"
+		}
 	}
 }
 
@@ -202,6 +244,61 @@ for name, log in spairs(LOGS) do
 	}
 
 	Tree { ChopAction }
+
+	for _, secondary in ipairs(log.secondaries or {}) do
+		local SecondaryItemName = string.format("%s%s", name, secondary)
+		local SecondaryItem = ItsyScape.Resource.Item(SecondaryItemName)
+
+		SecondaryItem {
+			ItsyScape.Action.ObtainSecondary() {
+				Requirement {
+					Resource = ItsyScape.Resource.Skill "Woodcutting",
+					Count = ItsyScape.Utility.xpForLevel(math.max(log.tier, 0))
+				},
+
+				Output {
+					Resource = ItsyScape.Resource.Skill "Woodcutting",
+					Count = ItsyScape.Utility.xpForResource(math.max(log.tier, 1))
+				},
+
+				Output {
+					Resource = SecondaryItem,
+					Count = 1
+				}
+			}
+		}
+
+		ItsyScape.Meta.SecondaryWeight {
+			Weight = 500,
+			Resource = SecondaryItem
+		}
+
+		ItsyScape.Meta.Item {
+			Stackable = 1,
+			Value = ItsyScape.Utility.valueForItem(math.max(log.tier, 1)),
+			Resource = SecondaryItem
+		}
+
+		Tree {
+			ItsyScape.Action.ObtainSecondary() {
+				Output {
+					Resource = SecondaryItem,
+					Count = 1
+				}
+			}
+		}
+	end
+
+	for _, secondary in ipairs(SECONDARIES or {}) do
+		Tree {
+			ItsyScape.Action.ObtainSecondary() {
+				Output {
+					Resource = ItsyScape.Resource.Item(secondary),
+					Count = 1
+				}
+			}
+		}
+	end
 
 	if log.variants then
 		for i = 1, #log.variants do
@@ -334,6 +431,54 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "CommonFire"
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Common leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CommonLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A leaf from the most common tree in the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CommonLeaf"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Common branch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CommonBranch"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A branch from the most common tree in the Realm. Good for kindling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "CommonBranch"
+}
+
+ItsyScape.Resource.Item "CommonBranch" {
+	ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "CommonBranch",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(1)
+		}
+	}
+}
+
 ItsyScape.Meta.ResourceDescription {
 	Value = "Logs found from a common willow.",
 	Language = "en-US",
@@ -352,6 +497,54 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "WillowFire"
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Willow leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WillowLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A single leaf from a willow tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WillowLeaf"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Willow branch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WillowBranch"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A branch from a willow tree. Good for kindling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WillowBranch"
+}
+
+ItsyScape.Resource.Item "WillowBranch" {
+	ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "WillowBranch",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(10)
+		}
+	}
+}
+
 ItsyScape.Meta.ResourceDescription {
 	Value = "Some solid oak logs, good for weapon making and other things.",
 	Language = "en-US",
@@ -368,6 +561,54 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A fire burning from some oak logs.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "OakFire"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Oak leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "OakLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A single leaf from an oak tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "OakLeaf"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Oak branch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "OakBranch"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A branch from an oak tree. Good for kindling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "OakBranch"
+}
+
+ItsyScape.Resource.Item "OakBranch" {
+	ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "OakBranch",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceDescription {
@@ -404,6 +645,54 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Probably can smoke some meat over that aromatic fire.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "YewFire"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Yew leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "YewLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A single leaf from a yew tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "YewLeaf"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Yew branch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "YewBranch"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A branch from a yew tree. Good for kindling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "YewBranch"
+}
+
+ItsyScape.Resource.Item "YewBranch" {
+	ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "YewBranch",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(40)
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceDescription {
@@ -502,6 +791,96 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "RottenTree_Default"
 }
 
+ItsyScape.Meta.ResourceName {
+	Value = "Fox fir leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A single leaf from an oak tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirLeaf"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fox fir flower",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirFlower"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A sharp, black flower. Used to mourn the dead, it never withers or wilts.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirFlower"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fox fir branch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirBranch"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A branch from an oak tree. Good for kindling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirBranch"
+}
+
+ItsyScape.Resource.Item "FoxFirBranch" {
+	ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(35)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FoxFirBranch",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(39.5)
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A fire made from fox fir logs. Gets really hot!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FoxFirFire"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Heavy logs from a fox fir.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FoxFirLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "According to Bastiel's Book of Feathers, the fox fir was a gift from Bastiel to His people, representing that He would always keep the sun burning and provide a joyous afterlife for His followers.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "FoxFirTree_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Fossilized oak branch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FossilizedOakBranch"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A branch from a fossilized oak tree. Good for kindling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "FossilizedOakBranch"
+}
+
 ItsyScape.Meta.ResourceDescription {
 	Value = "That's a regal fire, fit for Yendor's most favored tree.",
 	Language = "en-US",
@@ -524,6 +903,30 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "The tree needs no leaves, for it draws its health from Yendor...",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "FossilizedOakTree_Default"
+}
+
+ItsyScape.Resource.Item "FossilizedOakBranch" {
+	ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(25)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "FossilizedOakBranch",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(25)
+		}
+	}
 }
 
 ItsyScape.Resource.Prop "Charcoal" {

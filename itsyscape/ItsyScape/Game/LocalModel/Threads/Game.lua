@@ -381,7 +381,7 @@ while isRunning do
 				})
 			elseif e.type == 'save' then
 				for _, player in game:iteratePlayers() do
-					if player:getActor():getPeep():getIsReady() then
+					if player:getActor() and player:getActor():getPeep() and player:getActor():getPeep():getIsReady() then
 						player:save()
 					end
 				end

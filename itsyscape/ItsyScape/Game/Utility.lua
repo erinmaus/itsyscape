@@ -1608,14 +1608,23 @@ function Utility.Peep.notify(peep, message, suppressGenericNotification)
 		local ui = peep:getDirector():getGameInstance():getUI()
 
 		local didUpdate = false
-		for _, interface in ui:getInterfacesForPeep(peep, "GenericNotification") do
-			interface:updateMessage(message)
-			didUpdate = true
-			break
+		if not suppressGenericNotification then
+			for _, interface in ui:getInterfacesForPeep(peep, "GenericNotification") do
+				interface:updateMessage(message)
+				didUpdate = true
+				break
+			end
 		end
 
 		if not didUpdate then
-			Utility.UI.openInterface(peep, "GenericNotification", false, message)
+			if not suppressGenericNotification then
+				Utility.UI.openInterface(peep, "GenericNotification", false, message)
+			else
+				local player = Utility.Peep.getPlayerModel(peep)
+				if player then
+					player:addExclusiveChatMessage(message)
+				end
+			end
 		end
 	end
 end
@@ -4029,6 +4038,18 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
 	peep:addResource("animation-action-milk", actionMilk)
+	local actionLightProp = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionBurn_1/Script.lua")
+	peep:addResource("animation-action-light_prop", actionLightProp)
+	local actionLight = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionBurn_1/Script.lua")
+	peep:addResource("animation-action-light", actionLight)
+	local actionBurn = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionBurn_1/Script.lua")
+	peep:addResource("animation-action-burn", actionBurn)
 	local actionChurn = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCook_1/Script.lua")
@@ -4799,7 +4820,7 @@ function Utility.Quest.wakeUp(peep)
 	local stage = director:getGameInstance():getStage()
 
 	local storage = director:getPlayerStorage(peep):getRoot()
-	local location = storage:getSection("Location")
+	local location = storage:getSection("Spawn")
 
 	stage:movePeep(
 		peep,
