@@ -160,11 +160,6 @@ function Action:canTransfer(state, flags)
 		local resourceType = brochure:getResourceTypeFromResource(resource)
 
 		if not state:has(resourceType.name, resource.name, input.count, flags) then
-			Log.info(
-				"Input not met; need %d of %s %s",
-				input.count,
-				resourceType.name,
-				resource.name)
 			return false
 		end
 	end

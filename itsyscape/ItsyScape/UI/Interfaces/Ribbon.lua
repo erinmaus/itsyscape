@@ -23,6 +23,10 @@ local Ribbon = Class(Interface)
 Ribbon.BUTTON_SIZE = 64
 Ribbon.PADDING = 8
 Ribbon.TOOL_TIPS = {
+	["PlayerPowers"] = {
+		ToolTip.Header("Powers"),
+		ToolTip.Text("Use offensive and defensive powers.")
+	},
 	["PlayerStance"] = {
 		ToolTip.Header("Stance"),
 		ToolTip.Text("View or change your combat stance.")
@@ -71,13 +75,14 @@ function Ribbon:new(id, index, ui)
 	self.buttons = {}
 	self.activeButton = false
 
+	self:addButton("PlayerPowers", "Resources/Game/UI/Icons/Concepts/Powers.png")
 	self:addButton("PlayerStance", "Resources/Game/UI/Icons/Common/Stance.png")
 	self:addButton("PlayerInventory", "Resources/Game/UI/Icons/Common/Inventory.png")
 	self:addButton("PlayerEquipment", "Resources/Game/UI/Icons/Common/Equipment.png")
 	self:addButton("PlayerStats", "Resources/Game/UI/Icons/Common/Skills.png")
 	self:addButton("PlayerSpells", "Resources/Game/UI/Icons/Skills/Magic.png")
 	self:addButton("PlayerPrayers", "Resources/Game/UI/Icons/Skills/Faith.png")
-	self:addButton("Nominomicon", "Resources/Game/UI/Icons/Common/Nominomicon.png")
+	self:addButton("Nominomicon", "Resources/Game/UI/Icons/Things/Compass.png")
 	self:addButton("ConfigWindow", "Resources/Game/UI/Icons/Concepts/Settings.png")
 end
 

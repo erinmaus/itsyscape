@@ -16,6 +16,7 @@ local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
+local _MOBILE = true
 local Ship = Class(Map)
 Ship.STATE_SQUID   = 0
 Ship.STATE_PIRATES = 1
@@ -84,45 +85,17 @@ Ship.COMBAT_HINT = {
 	},
 	{
 		position = 'up',
-		id = "PlayerStance-ToggleHUD",
-		message = not _MOBILE and "Click here to toggle the combat HUD." or "Tap here to toggle the combat HUD.",
+		id = "Ribbon-PlayerPowers",
+		message = not _MOBILE and "Click here to see your powers." or "Tap here to see your powers.",
 		open = function(target)
 			return function()
-				local isOpen, index = Utility.UI.isOpen(target, "ProCombatStatusHUD")
-				if isOpen and index then
-					local interface = Utility.UI.getOpenInterface(target, "ProCombatStatusHUD", index)
-					local config = interface:pull().config
-					return config.isRadialMenuOpen
-				end
-				return true
+				return Utility.UI.isOpen(target, "PlayerPowers")
 			end
 		end
 	},
 	{
-		position = 'up',
-		id = "ProCombatStatusHUD-OffensivePowers",
-		message = not _MOBILE and "Click here to view your available Powers." or "Tap here to view your available Powers.",
-		open = function(target)
-			return function()
-				local isOpen, index = Utility.UI.isOpen(target, "ProCombatStatusHUD")
-				if isOpen and index then
-					local interface = Utility.UI.getOpenInterface(target, "ProCombatStatusHUD", index)
-					local config = interface:pull().config
-					for _, thingie in pairs(config.openThingies or {}) do
-						if thingie == interface.THINGIES_OFFENSIVE_POWERS then
-							return true
-						end
-					end
-
-					return false
-				end
-				return true
-			end
-		end
-	},
-	{
-		position = 'down',
-		id = "ProCombatStatusHUD-PowerBackstab",
+		position = 'left',
+		id = "PlayerPowers-PowerBackstab",
 		message = not _MOBILE and "Click 'Backstab' then click on a pirate to attack.\nYou will deal a special attack!" or "Tap 'Backstab' then tap on a pirate to attack.\nYou will deal a special attack!",
 		open = function(target)
 			return function()
