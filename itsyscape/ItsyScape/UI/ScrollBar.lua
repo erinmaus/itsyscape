@@ -190,10 +190,8 @@ function ScrollBar:performLayout()
 		local buttonHeight = math.min(math.floor(height / 2), width)
 		self.upButton:setSize(width, buttonHeight)
 		self.upButton:setPosition(0, 0)
-		self.upButton:setText("^")
 		self.downButton:setSize(width, buttonHeight)
 		self.downButton:setPosition(0, height - buttonHeight)
-		self.downButton:setText("v")
 
 		if buttonHeight < height then
 			local p  = self:getParent()
@@ -227,10 +225,8 @@ function ScrollBar:performLayout()
 		local buttonWidth = math.min(math.floor(width / 2), height)
 		self.upButton:setSize(buttonWidth, height)
 		self.upButton:setPosition(0, 0)
-		self.upButton:setText("<")
 		self.downButton:setSize(buttonWidth, height)
 		self.downButton:setPosition(width - buttonWidth, 0)
-		self.downButton:setText(">")
 
 		if buttonWidth < width then
 			local p = self:getParent()
