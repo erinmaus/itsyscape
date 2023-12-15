@@ -43,7 +43,6 @@ Nominomicon.INACTIVE_BUTTON_STYLE = function(icon, color)
 		color = color or { 1, 1, 1, 1 },
 		fontSize = _MOBILE and 22 or 16,
 		textShadow = true,
-		textOutline = true,
 		textShadowOffset = 2
 	}
 end
@@ -62,7 +61,6 @@ Nominomicon.ACTIVE_BUTTON_STYLE = function(icon, color)
 		color = color or { 1, 1, 1, 1 },
 		fontSize = _MOBILE and 22 or 16,
 		textShadow = true,
-		textOutline = true,
 		textShadowOffset = 2
 	}
 end
