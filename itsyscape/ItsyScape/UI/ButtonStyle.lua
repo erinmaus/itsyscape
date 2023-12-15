@@ -24,7 +24,7 @@ function ButtonStyle:new(t, resources)
 				self.colors[state] = Color(t[state]:get())
 				self.states[state] = function(width, height)
 					love.graphics.setColor(self.colors[state]:get())
-					itsyrealm.graphics.rectangle('fill', 0, 0, width, height)
+					itsyrealm.graphics.rectangle('fill', 0, 0, width, height, self.radius)
 					love.graphics.setColor(1, 1, 1, 1)
 				end
 			elseif type(t[state]) == 'string' then
@@ -41,6 +41,8 @@ function ButtonStyle:new(t, resources)
 	loadStateStyle('inactive')
 	loadStateStyle('hover')
 	loadStateStyle('pressed')
+
+	self.radius = t.radius or 4
 
 	if t.color then
 		self.color = Color(unpack(t.color))

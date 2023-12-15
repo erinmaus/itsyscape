@@ -32,6 +32,8 @@ local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local RichTextLabelRenderer = require "ItsyScape.UI.RichTextLabelRenderer"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local SceneSnippetRenderer = require "ItsyScape.UI.SceneSnippetRenderer"
+local ScrollBar = require "ItsyScape.UI.ScrollBar"
+local ScrollButtonRenderer = require "ItsyScape.UI.ScrollButtonRenderer"
 local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local SpellIconRenderer = require "ItsyScape.UI.SpellIconRenderer"
 local TextInput = require "ItsyScape.UI.TextInput"
@@ -652,7 +654,8 @@ function UIView:new(gameView)
 	self.renderManager:addRenderer(SpellIcon, SpellIconRenderer(self.resources))
 	self.renderManager:addRenderer(TextInput, TextInputRenderer(self.resources))
 	self.renderManager:addRenderer(Texture, TextureRenderer(self.resources))
-	self.renderManager:addRenderer(ToolTip, ToolTipRenderer(self.resources))
+	self.renderManager:addRenderer(ScrollBar.Button, ScrollButtonRenderer(self.resources))
+	self.renderManager:addRenderer(ScrollBar.DragButton, ScrollButtonRenderer(self.resources))
 
 	self.interfaces = {}
 

@@ -614,19 +614,20 @@ end
 DemoApplication.TOUCH_STILL_MAX = 12
 DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS = 0.35
 
-DemoApplication.TOUCH_MODE_NONE             = 0
-DemoApplication.TOUCH_MODE_LEFT_CLICK_UI    = 1
-DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI   = 2
-DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME  = 3
-DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME = 4
-DemoApplication.TOUCH_MODE_DRAG_CAMERA      = 5
-DemoApplication.TOUCH_MODE_ZOOM_CAMERA      = 6
+DemoApplication.TOUCH_MODE_NONE             = "NONE"
+DemoApplication.TOUCH_MODE_LEFT_CLICK_UI    = "LEFT_CLICK_UI"
+DemoApplication.TOUCH_MODE_RIGHT_CLICK_UI   = "RIGHT_CLICK_UI"
+DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME  = "LEFT_CLICK_GAME"
+DemoApplication.TOUCH_MODE_RIGHT_CLICK_GAME = "RIGHT_CLICK_GAME"
+DemoApplication.TOUCH_MODE_DRAG_CAMERA      = "DRAG_CAMERA"
+DemoApplication.TOUCH_MODE_ZOOM_CAMERA      = "ZOOM_CAMERA"
 
 DemoApplication.TOUCH_LEFT_MOUSE_BUTTON    = 1
 DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON   = 2
 DemoApplication.TOUCH_MIDDLE_MOUSE_BUTTON  = 3
 
-DemoApplication.TOUCH_CAMERA_DENOMINATOR = 24
+DemoApplication.TOUCH_SCROLL_DENOMINATOR_UI   = 64
+DemoApplication.TOUCH_SCROLL_DENOMINATOR_GAME = 24
 
 function DemoApplication:updateMobileMouse()
 	local touches = self:getTouches()
@@ -637,29 +638,46 @@ function DemoApplication:updateMobileMouse()
 		local touch = touches[1]
 		local currentTime = love.timer.getTime() - touch.startTime
 
-		local isMoving
+		local isMoving, isScrolling, isDragging
 		do
 			local totalMovement = math.sqrt(touch.differenceX ^ 2 + touch.differenceY ^ 2)
-			isMoving = totalMovement > DemoApplication.TOUCH_STILL_MAX
+			isMoving = touch.isMoving or totalMovement > DemoApplication.TOUCH_STILL_MAX
+			touch.isMoving = isMoving
+
+			local sx, sy = love.graphics.getScaledPoint(touch.startX, touch.startY)
+			local cx, cy = love.graphics.getScaledPoint(touch.currentX, touch.currentY)
 
 			local startingWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
-				touch.startX,
-				touch.startY,
+				sx,
+				sy,
 				nil, nil, nil,
 				function(w)
 					return w:getIsFocusable()
 				end,
 				true)
 			local currentWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
-				touch.currentX,
-				touch.currentY,
+				cx,
+				cy,
 				nil, nil, nil,
 				function(w)
 					return w:getIsFocusable()
 				end,
 				true)
+			local scrollingWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
+					sx,
+					sy,
+					nil, nil, nil,
+					function(w)
+						local width, height = w:getSize()
+						local scrollWidth, scrollHeight = w:getScrollSize()
+
+						return scrollWidth > width or scrollHeight > height
+					end,
+					true)
 
 			isMoving = isMoving or (startingWidget and startingWidget ~= currentWidget)
+			isDragging = startingWidget and startingWidget:getIsDraggable()
+			isScrolling = scrollingWidget ~= nil
 		end
 
 		local isUIActive = self:getUIView():getInputProvider():isBlocking(touch.currentX, touch.currentY)
@@ -696,7 +714,9 @@ function DemoApplication:updateMobileMouse()
 				if not touch.pressed then
 					if currentTime < DemoApplication.TOUCH_RIGHT_CLICK_TIME_SECONDS or isMoving then
 						if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
-							Application.mousePress(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+							if not (isScrolling and isMoving) or isDragging then
+								Application.mousePress(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+							end
 						elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
 							self:getUIView():closePokeMenu()
 							self:mouseProbePress(touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON, false)
@@ -705,7 +725,9 @@ function DemoApplication:updateMobileMouse()
 				end
 
 				if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
-					Application.mouseRelease(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+					if not (isScrolling and isMoving) or isDragging then
+						Application.mouseRelease(self, touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+					end
 				elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
 					self:mouseProbeRelease(touch.currentX, touch.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON, false)
 				end
@@ -742,8 +764,10 @@ function DemoApplication:updateMobileMouse()
 
 			if currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
 				if isMoving then
-					Application.mousePress(self, touch.startX, touch.startY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
-					touch.pressed = true
+					if not (isScrolling and isMoving) or isDragging then
+						Application.mousePress(self, touch.startX, touch.startY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+						touch.pressed = true
+					end
 				end
 			elseif currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_GAME then
 				if isMoving then
@@ -776,7 +800,20 @@ function DemoApplication:updateMobileMouse()
 					DemoApplication.TOUCH_MIDDLE_MOUSE_BUTTON)
 				touch.pressed = true
 			end
-		elseif touch.moved then
+		end
+
+		if touch.moved then
+			if isMoving and currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
+				if isScrolling and not isDragging then
+					Application.mouseScroll(
+						self,
+						-(touch.currentX - touch.previousX),
+						(touch.currentY - touch.previousY))
+
+					touch.moved = false
+				end
+			end
+
 			if isMoving and currentTouchMode == DemoApplication.TOUCH_MODE_LEFT_CLICK_UI then
 				Application.mouseMove(
 					self,
@@ -806,7 +843,7 @@ function DemoApplication:updateMobileMouse()
 			local distanceCurrent = math.sqrt((touch1.currentX - touch2.currentX) ^ 2 + (touch1.currentY - touch2.currentY) ^ 2)
 			local distancePrevious = math.sqrt((touch1.previousX - touch2.previousX) ^ 2 + (touch1.previousY - touch2.previousY) ^ 2)
 
-			self.cameraController:mouseScroll(false, 0, (distanceCurrent - distancePrevious) / DemoApplication.TOUCH_CAMERA_DENOMINATOR)
+			self.cameraController:mouseScroll(false, 0, (distanceCurrent - distancePrevious) / DemoApplication.TOUCH_SCROLL_DENOMINATOR_GAME)
 		end
 	end
 

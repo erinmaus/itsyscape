@@ -27,6 +27,7 @@ function GridLayout:new()
 	self.currentY = false
 	self.maxRowHeight = false
 	self.wrapContents = false
+	self.currentHeight = 0
 end
 
 function GridLayout:getPadding()
@@ -85,11 +86,45 @@ function GridLayout:addChild(child)
 	Layout.addChild(self, child)
 
 	self:layoutChild(child)
+
+	if self.wrapContents then
+		self.height = self.currentHeight
+		self.scrollHeight = self.height
+	end
 end
 
 function GridLayout:layoutChild(child)
 	if self.uniformSize then
-		child:setSize(self.uniformSizeX, self.uniformSizeY)
+		local selfWidth, selfHeight = self:getSize()
+		local targetWidth, targetHeight = child:getSize()
+
+		if self.uniformSizeX > 0 then
+			if self.uniformSizeX <= 1 then
+				targetWidth = math.floor(self.uniformSizeX * selfWidth)
+
+				local padding = (math.max(math.floor(selfWidth / targetWidth), 1) + 1) * self.paddingX
+				targetWidth = math.floor((selfWidth - padding) * self.uniformSizeX)
+			else
+				targetWidth = self.uniformSizeX
+				if self:getID() == "sut" then
+					print("tw", targetWidth)
+				end
+			end
+		end
+
+		if self.uniformSizeY > 0 then
+			if self.uniformSizeY <= 1 then
+				targetHeight = self.uniformSizeY * selfHeight - self.paddingY * 2
+
+				local padding = (math.max(math.floor(selfHeight / targetHeight), 1) + 1) * self.paddingY
+				targetHeight = math.floor((selfHeight - padding) * self.uniformSizeY)
+			else
+				targetHeight = self.uniformSizeY
+			end
+		end
+
+		child:setSize(targetWidth, targetHeight)
+		child:performLayout()
 	end
 
 	local width, height = self:getSize()
@@ -103,12 +138,7 @@ function GridLayout:layoutChild(child)
 			x = self.paddingX
 
 			y = (self.currentY or self.paddingY) + self.paddingY
-			if self.uniformSize then
-				y = y + self.uniformSizeY
-				self.currentY = y + self.uniformSizeY
-			else
-				y = y + (self.maxRowHeight or 0)
-			end
+			y = y + (self.maxRowHeight or 0)
 
 			self.currentY = y
 			self.maxRowHeight = childHeight
@@ -124,8 +154,7 @@ function GridLayout:layoutChild(child)
 	child:setPosition(x, y)
 
 	if self.wrapContents then
-		self.height = math.max(y + childHeight, self.height)
-		self.scrollHeight = self.height
+		self.currentHeight = math.max(y + childHeight, self.currentHeight)
 	end
 end
 
@@ -135,7 +164,7 @@ function GridLayout:performLayout()
 	self.maxRowHeight = false
 
 	if self.wrapContents then
-		self.height = 0
+		self.currentHeight = 0
 	end
 
 	for _, child in self:iterate() do
@@ -143,7 +172,7 @@ function GridLayout:performLayout()
 	end
 
 	if self.wrapContents then
-		self.height = self.height + self.paddingY + self.paddingY
+		self.height = self.currentHeight + self.paddingY
 		self.scrollHeight = self.height
 	end
 end

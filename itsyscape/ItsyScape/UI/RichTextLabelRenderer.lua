@@ -103,7 +103,6 @@ function RichTextLabelRenderer.Draw:drawText(text, parent)
 	self:doDrawText(text, parent, font)
 
 	self.y = self.y + self.height
-	self.height = 0
 end
 
 function RichTextLabelRenderer.Draw:drawHeader(text, parent)
@@ -303,6 +302,8 @@ function RichTextLabelRenderer:drop(widget)
 end
 
 function RichTextLabelRenderer:draw(widget, state)
+	self:visit(widget)
+
 	local text = self.texts[widget]
 	if not text or text.t ~= widget:getText() then
 		local t = widget:getText()
@@ -323,18 +324,18 @@ function RichTextLabelRenderer:draw(widget, state)
 	local renderer = RichTextLabelRenderer.Draw(self, text.t, text.resources, w)
 	renderer:draw()
 
-	if widget:getWrapContents() and text.y ~= renderer.y then
-		widget:setSize(w, renderer.y)
-		widget:onSize()
-
-		text.y = renderer.y
-	end
-
 	if widget:getWrapParentContents() then
 		local p = widget:getParent()
 		if p then
 			p:setSize(w, renderer.y + renderer.height)
 		end
+	end
+
+	if widget:getWrapContents() and text.y ~= renderer.y then
+		widget:setSize(w, renderer.y)
+		widget:onSize()
+
+		text.y = renderer.y
 	end
 end
 

@@ -86,7 +86,7 @@ function Nominomicon:new(id, index, ui)
 	self.grid = ScrollablePanel(GridLayout)
 	self.grid:getInnerPanel():setUniformSize(
 		true,
-		WIDTH * (1 / 2) - ScrollablePanel.DEFAULT_SCROLL_SIZE - Nominomicon.PADDING * 2,
+		1,
 		Nominomicon.BUTTON_SIZE + Nominomicon.BUTTON_PADDING * 2)
 	self.grid:getInnerPanel():setWrapContents(true)
 	self.grid:getInnerPanel():setPadding(Nominomicon.BUTTON_PADDING)
@@ -95,7 +95,7 @@ function Nominomicon:new(id, index, ui)
 
 	self.toggleButton = Button()
 	self.toggleButton:setSize(
-		WIDTH * (1 / 2) - ScrollablePanel.DEFAULT_SCROLL_SIZE - Nominomicon.PADDING * 2,
+		WIDTH * (1 / 2) - Nominomicon.PADDING * 2,
 		Nominomicon.BUTTON_SIZE)
 	self.toggleButton:setPosition(Nominomicon.PADDING, HEIGHT - Nominomicon.BUTTON_SIZE - Nominomicon.PADDING)
 	self.toggleButton.onClick:register(function()
@@ -105,21 +105,29 @@ function Nominomicon:new(id, index, ui)
 	self:addChild(self.toggleButton)
 
 	self.infoPanel = ScrollablePanel(GridLayout)
+	self.infoPanel:setScrollBarOffset(Nominomicon.BUTTON_SIZE)
 	self.infoPanel:getInnerPanel():setWrapContents(true)
 	self.infoPanel:getInnerPanel():setPadding(0, 0)
+	self.infoPanel:getInnerPanel():setUniformSize(true, 1, 0)
 	self.infoPanel:getInnerPanel():setSize(WIDTH * (1 / 2), 0)
 	self.infoPanel:setPosition(WIDTH * (1 / 2), 0)
 	self.infoPanel:setSize(WIDTH * (1 / 2), HEIGHT)
-	self:addChild(self.infoPanel)
+
+	self.bossPanel = ScrollablePanel(GridLayout)
+	self.bossPanel:setScrollBarOffset(Nominomicon.BUTTON_SIZE)
+	self.bossPanel:getInnerPanel():setWrapContents(true)
+	self.bossPanel:getInnerPanel():setPadding(0, 0)
+	self.bossPanel:getInnerPanel():setUniformSize(true, 1, 0)
+	self.bossPanel:getInnerPanel():setSize(WIDTH * (1 / 2), 0)
+	self.bossPanel:setPosition(WIDTH * (1 / 2), 0)
+	self.bossPanel:setSize(WIDTH * (1 / 2), HEIGHT)
 
 	self.guideLabel = RichTextLabel()
-	self.guideLabel:setSize(WIDTH * (1 / 2) - Nominomicon.BUTTON_SIZE - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
+	self.guideLabel:setSize(WIDTH * (1 / 2), 0)
 	self.guideLabel:setWrapContents(true)
 	self.guideLabel:setWrapParentContents(true)
 	self.guideLabel.onSize:register(function()
-		local _, scrollHeight = self.guideLabel:getSize()
-		self.infoPanel:getInnerPanel():setSize(self.guideLabel:getSize())
-		self.infoPanel:setScrollSize(self.infoPanel:getSize(), scrollHeight)
+		self.infoPanel:performLayout()
 	end)
 	self.infoPanel:addChild(self.guideLabel)
 
@@ -131,6 +139,7 @@ function Nominomicon:new(id, index, ui)
 		self:sendPoke("close", nil, {})
 	end)
 	self:addChild(self.closeButton)
+	self.closeButton:setZDepth(2)
 
 	self.ready = false
 	self.activeItem = false
@@ -213,13 +222,7 @@ function Nominomicon:update(...)
 	if self.doFlagResizeLayout then
 		if self.bossPanel then
 			self.bossPanel:performLayout()
-
-			if self.bossPanel:getParent() then
-				self.bossPanel:getParent():performLayout()
-			end
-
-			self.infoPanel:setScrollSize(self.bossPanel:getSize())
-			self.infoPanel:setScroll(0, 0)
+			self.bossPanel:setScroll(0, 0)
 		end
 
 		self.doFlagResizeLayout = false
@@ -287,13 +290,19 @@ function Nominomicon:updateGuide()
 	local currentQuest = state.currentQuest
 
 	self.infoPanel:getInnerPanel():clearChildren()
+	self.bossPanel:getInnerPanel():clearChildren()
 
 	if currentQuest.bosses then
+		self:removeChild(self.infoPanel)
 		self:showBossDrops(currentQuest.bosses)
 	else
+		self:removeChild(self.bossPanel)
+
 		self.infoPanel:addChild(self.guideLabel)
 		self.guideLabel:setText(currentQuest)
 		self.infoPanel:getInnerPanel():setScroll(0, 0)
+
+		self:addChild(self.infoPanel)
 	end
 end
 
@@ -302,12 +311,13 @@ function Nominomicon:flagResizeLayout()
 end
 
 function Nominomicon:showBossDrops(bosses)
-	local w, h = self.infoPanel:getInnerPanel():getSize()
+	local w, h = self.bossPanel:getInnerPanel():getSize()
 
-	local root = GridLayout()
-	root:setWrapContents(true)
-	root:setPadding(Nominomicon.PADDING, Nominomicon.PADDING)
-	root:setSize(w, 0)
+	if not _MOBILE then
+		w = w - ScrollablePanel.DEFAULT_SCROLL_SIZE
+	end
+
+	local root = self.bossPanel:getInnerPanel()
 
 	for _, area in ipairs(bosses) do
 		local areaLabel = RichTextLabel()
@@ -372,8 +382,7 @@ function Nominomicon:showBossDrops(bosses)
 		end
 	end
 
-	self.bossPanel = root
-	self.infoPanel:addChild(root)
+	self:addChild(self.bossPanel)
 end
 
 return Nominomicon
