@@ -651,11 +651,12 @@ function UIView:new(gameView)
 	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(RichTextLabel, RichTextLabelRenderer(self.resources))
 	self.renderManager:addRenderer(SceneSnippet, SceneSnippetRenderer(self.resources))
+	self.renderManager:addRenderer(ScrollBar.Button, ScrollButtonRenderer(self.resources))
+	self.renderManager:addRenderer(ScrollBar.DragButton, ScrollButtonRenderer(self.resources))
 	self.renderManager:addRenderer(SpellIcon, SpellIconRenderer(self.resources))
 	self.renderManager:addRenderer(TextInput, TextInputRenderer(self.resources))
 	self.renderManager:addRenderer(Texture, TextureRenderer(self.resources))
-	self.renderManager:addRenderer(ScrollBar.Button, ScrollButtonRenderer(self.resources))
-	self.renderManager:addRenderer(ScrollBar.DragButton, ScrollButtonRenderer(self.resources))
+	self.renderManager:addRenderer(ToolTip, ToolTipRenderer(self.resources))
 
 	self.interfaces = {}
 
