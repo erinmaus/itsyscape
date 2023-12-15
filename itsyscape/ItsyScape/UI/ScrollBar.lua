@@ -37,6 +37,7 @@ function ScrollBar:new()
 		self.upButton:setIsClickThrough(true)
 		self.downButton:setIsClickThrough(true)
 		self.scrollButton:setIsClickThrough(true)
+		self:setIsClickThrough(true)
 	end
 
 	self.scrollArea = 0
