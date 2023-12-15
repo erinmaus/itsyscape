@@ -23,8 +23,10 @@ function ScrollablePanel:new(InnerPanelType)
 
 	self.verticalScroll = ScrollBar()
 	self.verticalScroll:setZDepth(2)
+	self.verticalScrollOffset = 0
 	self.horizontalScroll = ScrollBar()
 	self.horizontalScroll:setZDepth(2)
+	self.horizontalScrollOffset = 0
 	self.panel = (InnerPanelType or Panel)()
 
 	self.verticalScroll:setTarget(self.panel)
@@ -32,7 +34,7 @@ function ScrollablePanel:new(InnerPanelType)
 	self.isVerticalScroll = false
 	self.isHorizontalScroll = false
 
-	self.floatyScrollBars = false
+	self.floatyScrollBars = _MOBILE
 	self.alwaysShowVerticalScrollBar = false
 	self.alwaysShowHorizontalScrollBar = false
 
@@ -41,6 +43,23 @@ end
 
 function ScrollablePanel:getInnerPanel()
 	return self.panel
+end
+
+function ScrollablePanel:setSize(w, h)
+	Widget.setSize(self, w, h)
+
+	local panelWidth, panelHeight = self.panel:getSize()
+	do
+		if panelWidth == 0 then
+			panelWidth = w
+		end
+
+		if panelHeight == 0 then
+			panelHeight = h
+		end
+	end
+
+	self.panel:setSize(panelWidth, panelHeight)
 end
 
 function ScrollablePanel:setScrollSize(...)
@@ -69,6 +88,11 @@ function ScrollablePanel:setScrollBarVisible(vertical, horizontal)
 	self:performLayout()
 end
 
+function ScrollablePanel:setScrollBarOffset(vertical, horizontal)
+	self.verticalScrollOffset = vertical or self.verticalScrollOffset
+	self.horizontalScrollOffset = horizontal or self.horizontalScrollOffset
+end
+
 function ScrollablePanel:getScrollBarVisible()
 	return self.alwaysShowVerticalScrollBar, self.alwaysShowHorizontalScrollBar
 end
@@ -90,15 +114,16 @@ function ScrollablePanel:performLayout()
 	if scrollSizeX > width or self.alwaysShowHorizontalScrollBar then
 		if scrollSizeY > height then
 			self.horizontalScroll:setSize(
-				width - self.scrollBarSize,
+				width - self.scrollBarSize - self.horizontalScrollOffset,
 				self.scrollBarSize)
 			self.horizontalScroll:setPosition(0, height - self.scrollBarSize)
 		else
 			self.horizontalScroll:setSize(
-				width,
+				width - self.horizontalScrollOffset,
 				self.scrollBarSize)
 			self.horizontalScroll:setPosition(0, height - self.scrollBarSize)
 		end
+		self.horizontalScroll:setPosition(self.horizontalScrollOffset, height - self.scrollBarSize)
 
 		Widget.removeChild(self, self.horizontalScroll)
 		Widget.addChild(self, self.horizontalScroll)
@@ -117,14 +142,13 @@ function ScrollablePanel:performLayout()
 		if scrollSizeX > width then
 			self.verticalScroll:setSize(
 				self.scrollBarSize,
-				height - self.scrollBarSize)
-			self.verticalScroll:setPosition(width - self.scrollBarSize - 4, 0)
+				height - self.scrollBarSize - self.verticalScrollOffset)
 		else
 			self.verticalScroll:setSize(
 				self.scrollBarSize,
-				height)
-			self.verticalScroll:setPosition(width - self.scrollBarSize - 4, 0)
+				height - self.verticalScrollOffset)
 		end
+		self.verticalScroll:setPosition(width - self.scrollBarSize - 4, self.verticalScrollOffset)
 
 		Widget.removeChild(self, self.verticalScroll)
 		Widget.addChild(self, self.verticalScroll)
@@ -141,6 +165,8 @@ function ScrollablePanel:performLayout()
 
 	self.panel:setSize(panelWidth, panelHeight)
 	self.panel:performLayout()
+
+	self:setScrollSize(self.panel:getSize())
 end
 
 function ScrollablePanel:addChild(...)

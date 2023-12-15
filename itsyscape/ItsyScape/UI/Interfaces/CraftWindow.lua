@@ -60,10 +60,11 @@ function CraftWindow:new(id, index, ui)
 	self.grid = ScrollablePanel(GridLayout)
 	self.grid:getInnerPanel():setWrapContents(true)
 	self.grid:getInnerPanel():setPadding(CraftWindow.BUTTON_PADDING)
-	self.grid:setSize(CraftWindow.WIDTH * (1 / 2) - ScrollablePanel.DEFAULT_SCROLL_SIZE, CraftWindow.HEIGHT - CraftWindow.CONTROL_SIZE)
+	self.grid:setSize(CraftWindow.WIDTH * (1 / 2), CraftWindow.HEIGHT - CraftWindow.CONTROL_SIZE)
 	self:addChild(self.grid)
 
 	self.requirementsPanel = ScrollablePanel(GridLayout)
+	self.requirementsPanel:setScrollBarOffset(CraftWindow.BUTTON_SIZE)
 	self.requirementsPanel:getInnerPanel():setPadding(0, 0)
 	self.requirementsPanel:getInnerPanel():setWrapContents(true)
 	self.requirementsPanel:setSize(CraftWindow.WIDTH * (1 / 2), CraftWindow.HEIGHT - CraftWindow.CONTROL_SIZE)
@@ -199,7 +200,7 @@ function CraftWindow:update(...)
 
 			self.grid:addChild(grid)
 		end
-		self.grid:setScrollSize(self.grid:getInnerPanel():getSize())
+		self.grid:performLayout()
 
 		self.ready = true
 	end
@@ -255,8 +256,6 @@ function CraftWindow:populateRequirements(e)
 	emitSection(e.inputs, "Inputs")
 	emitSection(e.outputs, "Outputs")
 
-	local _, innerPanelHeight = self.requirementsPanel:getInnerPanel():getSize()
-	self.requirementsPanel:setScrollSize(width, innerPanelHeight)
 	self.requirementsPanel:getInnerPanel():setScroll(0, 0)
 	self.requirementsPanel:performLayout()
 end

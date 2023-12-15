@@ -61,20 +61,9 @@ function WidgetRenderManager:setCursor(widget)
 	self.cursor = { widget = widget or false, state = {}, x = 0, y = 0 }
 
 	if widget then
-		local x, y = widget:getPosition()
-		local p = widget:getParent()
-		while p do
-			local px, py = p:getPosition()
-			local sx, sy = p:getScroll()
-			x = x - sx + px
-			y = y - sy + py
-
-			p = p:getParent()
-		end
-
-		local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
-		self.cursor.x = x - mouseX
-		self.cursor.y = y - mouseY
+		local w, h = widget:getSize()
+		self.cursor.x = -w
+		self.cursor.y = -h
 	end
 end
 
@@ -307,6 +296,7 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	itsyrealm.graphics.translate(widgetX, widgetY)
 
 	local pushedScissor = false
+	local appliedScissor = false
 
 	local cornerX, cornerY = itsyrealm.graphics.transformPoint(0, 0)
 	if not widget:getOverflow() then
@@ -321,6 +311,7 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		local sw, sh = widget:getScrollSize()
 		local sx, sy = widget:getScroll()
 		if sw > w or sh > h or sx > 0 or sy > 0 then
+			appliedScissor = true
 			itsyrealm.graphics.applyPseudoScissor()
 		end
 	end
@@ -344,12 +335,10 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		if w > 0 and h > 0 then
 			itsyrealm.graphics.popPseudoScissor()
 		end
+	end
 
-		local sw, sh = widget:getScrollSize()
-		local sx, sy = widget:getScroll()
-		if sw > w or sh > h or sx > 0 or sy > 0 then
-			itsyrealm.graphics.resetPseudoScissor()
-		end
+	if appliedScissor then
+		itsyrealm.graphics.resetPseudoScissor()
 	end
 
 	itsyrealm.graphics.translate(scrollX, scrollY)

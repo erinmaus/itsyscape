@@ -211,13 +211,11 @@ function QuestProgressNotification:new(id, index, ui)
 
 	self.guideLabel = RichTextLabel()
 	self.guideLabel:setSize(
-		QuestProgressNotification.WIDTH - QuestProgressNotification.PADDING * 3 - ScrollablePanel.DEFAULT_SCROLL_SIZE,
+		QuestProgressNotification.WIDTH - QuestProgressNotification.PADDING * 3,
 		0)
 	self.guideLabel:setWrapContents(true)
 	self.guideLabel.onSize:register(function()
-		local _, scrollHeight = self.guideLabel:getSize()
-		self.infoPanel:getInnerPanel():setSize(self.guideLabel:getSize())
-		self.infoPanel:setScrollSize(self.infoPanel:getSize(), scrollHeight)
+		self.infoPanel:performLayout()
 	end)
 	self.infoPanel:addChild(self.guideLabel)
 
