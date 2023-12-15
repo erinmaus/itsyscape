@@ -192,6 +192,17 @@ function Chat:update(delta)
 
 	self.hadFocusedWidget = self:getView():getInputProvider():getFocusedWidget()
 	self.isKeybindDown = isKeybindDown
+
+	if _MOBILE then
+		local _, scrollHeight = self.chatPanel:getScrollSize()
+		local _, height = self.chatPanel:getSize()
+
+		local isClickThrough = scrollHeight <= height
+
+		self.chatPanel:setIsClickThrough(isClickThrough)
+		self.chatPanel:getInnerPanel():setIsClickThrough(isClickThrough)
+		self:setIsClickThrough(isClickThrough)
+	end
 end
 
 return Chat
