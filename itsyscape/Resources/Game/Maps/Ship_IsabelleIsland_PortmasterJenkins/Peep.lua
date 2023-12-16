@@ -8,13 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "Resources.Game.Peeps.Maps.ShipMapPeep"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local Ship = Class(Map)
@@ -94,7 +97,7 @@ Ship.COMBAT_HINT = {
 		end
 	},
 	{
-		position = 'left',
+		position = 'up',
 		id = "PlayerPowers-PowerBackstab",
 		message = not _MOBILE and "Click 'Backstab' then click on a pirate to attack.\nYou will deal a special attack!" or "Tap 'Backstab' then tap on a pirate to attack.\nYou will deal a special attack!",
 		open = function(target)
@@ -132,8 +135,8 @@ function Ship:showTip(tips, target)
 	after()
 end
 
-function Ship:listenForAttack()
-	self.numTimesAttacked = 0
+function Ship:listenForAttack(numTimesAttacked)
+	self.numTimesAttacked = numTimesAttacked or 0
 	self.previousTarget = nil
 
 	local SPAM_MESSAGE_THRESHOLD = 3
@@ -165,12 +168,36 @@ function Ship:listenForAttack()
 		end
 	end
 
+	local function performInitiateAttack()
+		if self.target then
+			Utility.Peep.poof(self.target)
+		end
+	end
+
 	local function travel()
 		self.player:silence("actionPerformed", performAttackAction)
+		self.player:silence("initiateAttack", performInitiateAttack)
 		self.player:silence("travel", travel)
 	end
 
 	self.player:listen("actionPerformed", performAttackAction)
+	self.player:listen("initiateAttack", performInitiateAttack)
+
+	self:targetPirate(self.pirates[1]:getPeep())
+end
+
+function Ship:targetPirate(piratePeep)
+	if piratePeep then
+		local position = Utility.Peep.getPosition(piratePeep)
+		local targetProp = Utility.spawnPropAtPosition(self, "Target_Default", position.x, position.y, position.z, 0)
+		if targetProp then
+			self.target = targetProp:getPeep()
+			self.target:setTarget(piratePeep, _MOBILE and "Tap the pirate to fight!" or "Click the pirate to fight!")
+
+			local _, position = self.target:addBehavior(PositionBehavior)
+			position.offset = Vector.UNIT_Y * 2
+		end
+	end
 end
 
 function Ship:new(resource, name, ...)
@@ -317,6 +344,7 @@ end
 function Ship:onPirateDeath(pirate)
 	local deadCount = 0
 
+	local other
 	for i = 1, #self.pirates do
 		local p = self.pirates[i]
 
@@ -324,16 +352,19 @@ function Ship:onPirateDeath(pirate)
 		if not success or p:getPeep() == pirate then
 			deadCount = deadCount + 1
 		else
+			other = p
 			p:flash("Message", 1, "Arrr, ye'll pay, landlubber!")
 		end
 	end
 
 	if deadCount >= #self.pirates then
-		self:makePlayerListen()
+		self:pushPoke("makePlayerListen")
+	elseif other then
+		self:targetPirate(other:getPeep())
 	end
 end
 
-function Ship:makePlayerListen()
+function Ship:onMakePlayerListen()
 	local director = self:getDirector()
 	local game = director:getGameInstance()
 
@@ -376,7 +407,7 @@ function Ship:update(director, game)
 			self.player:removeBehavior(DisabledBehavior)
 
 			if self.blockingInterfaceID == "CharacterCustomization" then
-				local s, index = self:makePlayerListen()
+				local s, index = self:onMakePlayerListen()
 
 				if s then
 					self.blockingInterfaceID = "DialogBox"
@@ -393,20 +424,20 @@ function Ship:update(director, game)
 		if self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1)
 		   and not self.player:getState():has("Quest", "PreTutorial")
 		then
-			Utility.UI.openInterface(
-				self.player,
-				"TutorialHint",
-				false,
-				"root",
-				not _MOBILE and "Look at the bottom right corner.\nClick on the flashing icon to continue." or "Look at the bottom right corner.\nTap on the flashing icon to continue.",
-				function()
-					return Utility.UI.isOpen(self.player, "PlayerInventory")
-				end,
-				{ position = 'center' })
-
-			if not _DEBUG or _MOBILE then
+			--if not _DEBUG or _MOBILE then
 				self:showTip(Ship.COMBAT_HINT, self.player)
-			end
+
+				Utility.UI.openInterface(
+					self.player,
+					"TutorialHint",
+					false,
+					"root",
+					not _MOBILE and "Look at the bottom right corner.\nClick on the flashing icon to continue." or "Look at the bottom right corner.\nTap on the flashing icon to continue.",
+					function()
+						return not self.player:hasBehavior(DisabledBehavior)
+					end,
+					{ position = 'center' })
+			--end
 		end
 		
 		self.showedCombatHints = true
