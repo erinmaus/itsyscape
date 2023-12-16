@@ -203,8 +203,8 @@ M["Portal_DownStairs"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 35,
-		PositionY = -0.5,
-		PositionZ = 43,
+		PositionY = 4,
+		PositionZ = 45,
 		Name = "Portal_DownStairs",
 		Map = M._MAP,
 		Resource = M["Portal_DownStairs"]
@@ -212,8 +212,8 @@ do
 
 	ItsyScape.Meta.MapObjectSize {
 		SizeX = 5.5,
-		SizeY = 1,
-		SizeZ = 9.5,
+		SizeY = 2,
+		SizeZ = 2.5,
 		MapObject = M["Portal_DownStairs"]
 	}
 
@@ -444,6 +444,57 @@ do
 	}
 end
 
+M["ShadowTree"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 4,
+		PositionZ = 35,
+		Name = "ShadowTree",
+		Map = M._MAP,
+		Resource = M["ShadowTree"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ShadowTree_Default",
+		MapObject = M["ShadowTree"]
+	}
+end
+
+M["CookingRange"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 4,
+		PositionZ = 7,
+		Name = "CookingRange",
+		Map = M._MAP,
+		Resource = M["CookingRange"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CookingRange_Default",
+		MapObject = M["CookingRange"]
+	}
+end
+
+M["Larry"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 3.5,
+		PositionZ = 30,
+		Name = "Larry",
+		Map = M._MAP,
+		Resource = M["Larry"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Larry_Default",
+		MapObject = M["Larry"]
+	}
+end
+
 do
 	ItsyScape.Meta.KeyItemLocationHint {
 		Map = M._MAP,
@@ -455,5 +506,23 @@ do
 		Map = M._MAP,
 		MapObject = M["Furnace"],
 		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_SmeltCopperBar"
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["ShadowTree"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_CraftedToyWeapon"
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Larry"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_FishedLarry"
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["CookingRange"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_CookedLarry"
 	}
 end

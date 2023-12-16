@@ -96,11 +96,8 @@ end
 function JesterRat:performAttack(peeps)
 	local weapon = Utility.Peep.getEquippedWeapon(self, true)
 	if not weapon then
-		print(">>> no weapon")
 		return
 	end
-
-	print(">>> #", #peeps)
 
 	for i = 1, #peeps do
 		weapon:perform(self, peeps[i])

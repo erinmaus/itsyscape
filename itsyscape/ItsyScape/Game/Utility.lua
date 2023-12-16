@@ -3507,7 +3507,6 @@ function Utility.Peep.Attackable:onDie(p)
 						local status = hit:getBehavior(CombatStatusBehavior)
 
 						if not status or not status.dead then
-							print(">>>", hit:getName(), "still alive")
 							isDead = false
 							break
 						end
@@ -4575,13 +4574,15 @@ function Utility.Quest.buildWorkingQuestLog(steps, gameDB, questInfo)
 	return questInfo
 end
 
-function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep)
+function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep, scroll)
 	local result = {}
 
 	local steps = { Utility.Quest.getNextStep(questLog.quest, peep) }
 	if #steps == 0 then
 		steps = {}
 	end
+
+	local hasScrolled = false
 
 	for i = 1, #steps do
 		local step = steps[i]
@@ -4617,9 +4618,21 @@ function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep)
 
 			for j = 1, #step do
 				if peep:getState():has("KeyItem", step[j].name) then
-					table.insert(block, questLogForStep.block[j][2])
+					table.insert(block, {
+						t = "text",
+						color = scroll and { 0.75, 0.75, 0.75, 1 },
+						questLogForStep.block[j][2]
+					})
 				else
-					table.insert(block, questLogForStep.block[j][1])
+					table.insert(block, {
+						t = "text",
+						questLogForStep.block[j][1],
+						scroll = not hasScrolled
+					})
+
+					if scroll and not hasScrolled then
+						hasScrolled = true
+					end
 				end
 			end
 

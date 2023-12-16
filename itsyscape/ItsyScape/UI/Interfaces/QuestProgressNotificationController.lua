@@ -65,7 +65,7 @@ function QuestProgressNotificationController:new(peep, director, keyItem)
 			local quest = gameDB:getResource(lastQuest, "Quest")
 
 			if quest then
-				self:updateQuest(quest)
+				self:updateQuest({ resource = quest })
 			end
 		end
 	end
@@ -86,7 +86,7 @@ function QuestProgressNotificationController:updateQuest(quest)
 	if self.questID then
 		local quest = QuestProgressNotificationController.QUEST_CACHE[self.questID]
 		if quest then
-			self.log = Utility.Quest.buildRichTextLabelFromQuestLog(quest.info, self:getPeep())
+			self.log = Utility.Quest.buildRichTextLabelFromQuestLog(quest.info, self:getPeep(), true)
 		end
 	end
 
@@ -208,12 +208,14 @@ end
 function QuestProgressNotificationController:pull()
 	if self.questID and self.log then
 		return {
+			id = self.questID,
 			questName = QuestProgressNotificationController.QUEST_CACHE[self.questID].name,
 			steps = self.log,
 			hints = self.hints or {}
 		}
 	else
 		return {
+			id = false,
 			questName = "",
 			steps = {},
 			hints = {}

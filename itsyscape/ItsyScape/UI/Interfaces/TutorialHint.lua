@@ -111,7 +111,7 @@ function TutorialHint:place(widget)
 	local textWidth, textHeight
 	do
 		local font = self.label:getStyle().font
-		textWidth = font:getWidth(state.message)
+		textWidth = font:getWidth(state.message or "")
 
 		local numLines = select(2, state.message:gsub("\n", ""))
 		textHeight = (numLines + 1) * font:getHeight() * font:getLineHeight()

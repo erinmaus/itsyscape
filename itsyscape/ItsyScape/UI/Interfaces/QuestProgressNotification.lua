@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Drawable = require "ItsyScape.UI.Drawable"
@@ -31,6 +32,7 @@ QuestProgressNotification.ICON_SIZE = 48
 QuestProgressNotification.BUTTON_SIZE = 48
 QuestProgressNotification.HINT_WIDTH = 240
 QuestProgressNotification.HINT_HEIGHT = 128
+QuestProgressNotification.SCROLL_TIME = 0.75
 
 QuestProgressNotification.LocationHint = Class(Drawable)
 
@@ -204,6 +206,7 @@ function QuestProgressNotification:new(id, index, ui)
 		QuestProgressNotification.HEIGHT - QuestProgressNotification.PADDING * 3 - QuestProgressNotification.ICON_SIZE - 24)
 	self.infoPanel:getInnerPanel():setWrapContents(true)
 	self.infoPanel:getInnerPanel():setPadding(0, 0)
+	self.infoPanel:getInnerPanel():setUniformSize(true, 1, 0)
 	self.infoPanel:setPosition(
 		QuestProgressNotification.PADDING,
 		QuestProgressNotification.PADDING * 3 + QuestProgressNotification.ICON_SIZE + 24)
@@ -211,9 +214,20 @@ function QuestProgressNotification:new(id, index, ui)
 
 	self.guideLabel = RichTextLabel()
 	self.guideLabel:setSize(
-		QuestProgressNotification.WIDTH - QuestProgressNotification.PADDING * 3,
+		QuestProgressNotification.WIDTH,
 		0)
 	self.guideLabel:setWrapContents(true)
+	self.guideLabel.onScroll:register(function(_, targetScroll)
+		if self.targetScroll == targetScroll then
+			return
+		end
+
+		local _
+
+		_, self.currentScroll = self.infoPanel:getInnerPanel():getScroll()
+		self.targetScroll = targetScroll
+		self.scrollTime = 0
+	end)
 	self.guideLabel.onSize:register(function()
 		self.infoPanel:performLayout()
 	end)
@@ -268,6 +282,27 @@ function QuestProgressNotification:update(delta)
 	Interface.update(self, delta)
 
 	self:updatePosition()
+
+	if self:getState().id == "PreTutorial" then
+		self:removeChild(self.closeButton)
+	elseif not self.closeButton:getParent() then
+		self:addChild(self.closeButton)
+	end
+
+	if self.scrollTime then
+		self.scrollTime = math.min(self.scrollTime + delta, QuestProgressNotification.SCROLL_TIME)
+		local mu = Tween.sineEaseIn(self.scrollTime / QuestProgressNotification.SCROLL_TIME)
+
+		local _, scrollSizeY = self.infoPanel:getScrollSize()
+		local _, height = self.infoPanel:getSize()
+
+		local scrollY = self.targetScroll * mu + self.currentScroll * (1 - mu)
+		self.infoPanel:getInnerPanel():setScroll(0, math.min(scrollY, scrollSizeY - height))
+
+		if mu >= 1 then
+			self.scrollTime = nil
+		end
+	end
 end
 
 return QuestProgressNotification

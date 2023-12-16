@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.Common"
 
 local Mansion = Class(Map)
 Mansion.MIN_LIGHTNING_PERIOD = 3
@@ -95,6 +96,34 @@ function Mansion:onPlayerEnter(player)
 		player:getState():give("KeyItem", "PreTutorial_SmithCopperAmulet")
 		player:getState():give("KeyItem", "PreTutorial_EnchantedCopperAmulet")
 		player:getState():give("KeyItem", "PreTutorial_MadeGhostspeakAmulet")
+	end)
+
+	Utility.Quest.listenForItem(player, "ToyLongsword", function()
+		player:getState():give("KeyItem", "PreTutorial_CraftedToyWeapon")
+	end)
+
+	Utility.Quest.listenForItem(player, "ToyBoomerang", function()
+		player:getState():give("KeyItem", "PreTutorial_CraftedToyWeapon")
+	end)
+
+	Utility.Quest.listenForItem(player, "ToyWand", function()
+		player:getState():give("KeyItem", "PreTutorial_CraftedToyWeapon")
+	end)
+
+	Utility.Quest.listenForItem(player, "Larry", function()
+		player:getState():give("KeyItem", "PreTutorial_FishedLarry")
+	end)
+
+	Utility.Quest.listenForItem(player, "CookedLarry", function()
+		player:getState():give("KeyItem", "PreTutorial_CookedLarry")
+	end)
+
+	Utility.Quest.listenForItem(player, "ShadowLogs", function()
+		if not player:getState():has("KeyItem", "PreTutorial_CraftedToyWeapon") and
+		   player:getState():has("KeyItem", "PreTutorial_TalkedToGhostBoy")
+		then
+			PreTutorialCommon.showCraftTip(player)
+		end
 	end)
 end
 
