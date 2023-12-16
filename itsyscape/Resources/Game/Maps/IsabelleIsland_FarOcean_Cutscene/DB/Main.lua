@@ -317,7 +317,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Portal_Chasm",
+		Prop = ItsyScape.Resource.Prop "Portal_Default",
 		MapObject = M["AzathothPortal"]
 	}
 

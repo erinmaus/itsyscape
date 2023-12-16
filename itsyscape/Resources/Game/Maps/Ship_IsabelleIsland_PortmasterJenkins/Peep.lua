@@ -411,7 +411,7 @@ function Ship:showCameraZoomTutorial()
 		"TutorialHint",
 		false,
 		"root",
-		not _MOBILE and "Use a pinching gesture to zoom in and out." or "Click the left mouse button and drag up or down to zoom in and out.\nYou can also use the middle scroll wheel.",
+		_MOBILE and "Use a pinching gesture to zoom in and out." or "Click the left mouse button and drag up or down to zoom in and out.\nYou can also use the middle scroll wheel.",
 		function()
 			return love.timer.getTime() > targetTime
 		end,
@@ -441,7 +441,7 @@ function Ship:showCameraMoveTutorial()
 		"TutorialHint",
 		false,
 		"root",
-		not _MOBILE and "Tap and drag on the screne to move the camera." or "Click the left mouse button and drag around the mouse to move the camera.\nYou can also use the middle mouse button to click and drag.",
+		_MOBILE and "Tap and drag on the screen to move the camera." or "Click the left mouse button and drag around the mouse to move the camera.\nYou can also use the middle mouse button to click and drag.",
 		function()
 			return love.timer.getTime() > targetTime
 		end,
