@@ -86,6 +86,7 @@ function ConfirmWindow:open(message, title, width, height)
 	self.messageLabel:setText(message or "Are you sure you want to do that?")
 
 	self:setSize(width, height)
+	self:performLayout()
 
 	local windowWidth, windowHeight = love.window.getMode()
 	local x, y = windowWidth / 2 - width / 2, windowHeight / 2 - height / 2
