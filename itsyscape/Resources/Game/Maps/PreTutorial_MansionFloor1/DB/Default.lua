@@ -482,30 +482,6 @@ do
 	}
 end
 
-M["Larry_Default1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 47.000000,
-		PositionY = 3.500000,
-		PositionZ = 30.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Larry_Default1",
-		Map = M._MAP,
-		Resource = M["Larry_Default1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Larry_Default",
-		MapObject = M["Larry_Default1"]
-	}
-end
-
 M["ShadowTree_Default7"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1226,30 +1202,6 @@ do
 	}
 end
 
-M["ShadowTree_Default14"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 49.000000,
-		PositionY = 4.000000,
-		PositionZ = 57.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "ShadowTree_Default14",
-		Map = M._MAP,
-		Resource = M["ShadowTree_Default14"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "ShadowTree_Default",
-		MapObject = M["ShadowTree_Default14"]
-	}
-end
-
 M["Azathothian_Mushroom_Variant16"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1319,30 +1271,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "ShadowTree_Default",
 		MapObject = M["ShadowTree_Default21"]
-	}
-end
-
-M["CookingRange_Default1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.000000,
-		PositionY = 4.000000,
-		PositionZ = 7.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CookingRange_Default1",
-		Map = M._MAP,
-		Resource = M["CookingRange_Default1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CookingRange_Default",
-		MapObject = M["CookingRange_Default1"]
 	}
 end
 

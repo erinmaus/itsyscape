@@ -14,14 +14,21 @@ if not hasGhostSpeakEquipped then
 	speaker "_TARGET"
 	message "It's useless, I can't speak to him right now."
 
-	hasGhostSpeakInInventory = state:has('Item', "GhostspeakAmulet", 1, { ['item-inventory'] = true })
+	local hasCopperAmulet = state:has('Item', "CopperAmulet", 1, { ['item-equipment'] = true, ['item-inventory'] = true })
+	local hasGhostSpeakInInventory = state:has('Item', "GhostspeakAmulet", 1, { ['item-inventory'] = true })
 	if hasGhostSpeakInInventory then
 		message "Maybe if I equip that Ghostspeak amulet..."
+	elseif hasCopperAmulet then
+		message {
+			"%hint{I think should enchant the copper amulet}...",
+			"Maybe %person{Hans} knows how to do that?"
+		}
 	end
 else
 	state:give('KeyItem', "PreTutorial_TalkedToGhostBoy")
 
-	local saved = state:has('KeyItem', "PreTutorial_SavedGhostBoy")
+	local savedEdward = state:has('KeyItem', "PreTutorial_SavedGhostBoy")
+	local savedElizabeth = state:has('KeyItem', "PreTutorial_SavedGhostGirl")
 	local maggotHits = _DIRECTOR:probe(
 		_TARGET:getLayerName(),
 		require("ItsyScape.Peep.Probe").resource("Peep", "PreTutorial_Maggot"))
@@ -42,7 +49,7 @@ else
 		state:has('Item', "ToyLongsword", 1, { ['item-inventory'] = true }) or
 		state:has('Item', "ToyWand", 1, { ['item-inventory'] = true }) or
 		state:has('Item', "ToyBoomerang", 1, { ['item-inventory'] = true })
-	if not saved then
+	if not savedEdward then
 		speaker "Edward"
 		message {
 			"H-h-hello, %person{${PLAYER_NAME}}.",
@@ -109,9 +116,24 @@ else
 
 			speaker "Edward"
 			message "Thank you!"
+
+			speaker "_TARGET"
+			message {
+				"(Maybe I should cut some logs from a tree",
+				"to craft a wooden weapon.",
+				"I saw some trees in the %location{courtyard}...)"
+			}
 		end
 	else
 		speaker "Edward"
 		message "T-thank you for saving me! I'll stick around for a little while longer before I enter the light."
+
+		if savedElizabeth then
+			message {
+				"L-looks like you save my s-sister and me...",
+				"M-maybe you s-should s-s-speak to %person{Hans}...",
+				"H-h-he's always s-so helpful..."
+			}
+		end
 	end
 end

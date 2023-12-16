@@ -22,6 +22,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon"
 ItsyScape.Resource.KeyItem "PreTutorial_SearchedCrate"
+ItsyScape.Resource.KeyItem "PreTutorial_CraftedToyWeapon"
 
 local Quest = ItsyScape.Utility.Quest
 local Step = ItsyScape.Utility.QuestStep
@@ -34,19 +35,20 @@ Quest "PreTutorial" {
 		"PreTutorial_SearchedCrate"
 	},
 	Step "PreTutorial_LearnedToMakeGhostspeakAmulet",
-	Step {
-		"PreTutorial_MineCopper",
-		"PreTutorial_SmeltCopperBar",
-		"PreTutorial_SmithCopperAmulet",
-		"PreTutorial_EnchantedCopperAmulet"
-	},
+	Step "PreTutorial_MineCopper",
+	Step "PreTutorial_SmeltCopperBar",
+	Step "PreTutorial_SmithCopperAmulet",
+	Step "PreTutorial_EnchantedCopperAmulet",
 	Step "PreTutorial_MadeGhostspeakAmulet",
 	Step {
 		"PreTutorial_TalkedToGhostBoy",
 		"PreTutorial_TalkedToGhostGirl",
 	},
 	Step {
+		"PreTutorial_CraftedToyWeapon",
 		"PreTutorial_SavedGhostBoy",
+		"PreTutorial_FishedLarry",
+		"PreTutorial_CookedLarry",
 		"PreTutorial_SavedGhostGirl",
 	},
 	Step "PreTutorial_TalkedToButler2",
@@ -243,4 +245,21 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "Hans teleported you to Isabelle Island. Quest complete!",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_WokeUp"
+}
+
+local Description = ItsyScape.Utility.QuestStepDescription
+
+Description "PreTutorial_CraftedToyWeapon" {
+	before = "Cut down a tree for some logs so you can craft a toy weapon.",
+	after = "Using some shadow logs and a knife, you crafted a toy weapon."
+}
+
+Description "PreTutorial_FishedLarry" {
+	before = "Fish Larry, the pet goldfish, from the courtyard pond.",
+	after = "Larry was fished from the pond. And remember, fish can't breathe outside of water..."
+}
+
+Description "PreTutorial_CookedLarry" {
+	before = "Cook Larry on the cooking range.",
+	after = "Poor Larry was cooked. Hope this is macabre enough for Elizabeth..."
 }

@@ -17,6 +17,7 @@ function RichTextLabel:new()
 	Widget.new(self)
 
 	self.onSize = Callback()
+	self.onScroll = Callback()
 
 	self:setIsClickThrough(true)
 end

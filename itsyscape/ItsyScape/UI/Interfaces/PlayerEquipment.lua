@@ -185,6 +185,7 @@ function PlayerEquipment:addSlots(slots)
 			pressed = "Resources/Renderers/Widget/Button/InventoryItem.9.png"
 		}, self:getView():getResources()))
 
+		button:setID("Equipment-" .. Equipment.PLAYER_SLOT_NAMES[slots[i]])
 		button:addChild(icon)
 		button:setData('icon', icon)
 		button.onLeftClick:register(self.activate, self)

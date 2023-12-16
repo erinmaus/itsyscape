@@ -83,6 +83,8 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 			self.x = self.left
 			self.y = self.y + self.height
 			self.height = lineHeight
+
+			love.graphics.setColor(1, 1, 1, 1)
 		else
 			self:drawBlock(snippet, text)
 		end
@@ -254,6 +256,10 @@ function RichTextLabelRenderer.Draw:drawImage(block, parent)
 end
 
 function RichTextLabelRenderer.Draw:drawBlock(block, parent)
+	if block.scroll then
+		self.scrollY = self.y
+	end
+
 	if type(block) == 'string' or block.t == 'text' then
 		self:drawText(block, parent)
 	elseif block.t == 'header' then
@@ -281,8 +287,8 @@ function RichTextLabelRenderer:new(t, resources)
 	WidgetRenderer.new(self, resources)
 
 	self.fonts = {
-		text = love.graphics.newFont("Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", 22),
-		header = love.graphics.newFont("Resources/Renderers/Widget/Common/Serif/Bold.ttf", 26)
+		text = love.graphics.newFont("Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", _MOBILE and 22 or 16),
+		header = love.graphics.newFont("Resources/Renderers/Widget/Common/Serif/Bold.ttf", _MOBILE and 26 or 22)
 	}
 	self.texts = {}
 end
@@ -336,6 +342,11 @@ function RichTextLabelRenderer:draw(widget, state)
 		widget:onSize()
 
 		text.y = renderer.y
+	end
+
+	if text.scrollY ~= renderer.scrollY then
+		widget:onScroll(renderer.scrollY)
+		text.scrollY = renderer.scrollY
 	end
 end
 
