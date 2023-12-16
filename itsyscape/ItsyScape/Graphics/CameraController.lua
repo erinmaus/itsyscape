@@ -54,6 +54,18 @@ function CameraController:update(delta)
 	-- Nothing.
 end
 
+function CameraController:draw()
+	-- Nothing.
+end
+
+function CameraController:getIsDemoing()
+	return false
+end
+
+function CameraController:demo()
+	-- Nothing.
+end
+
 function CameraController:getIsMouseCaptured()
 	return false
 end

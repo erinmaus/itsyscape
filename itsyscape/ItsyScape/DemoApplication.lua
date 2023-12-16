@@ -1271,6 +1271,10 @@ function DemoApplication:draw(delta)
 		end
 	end
 
+	if self.cameraController:getIsDemoing() then
+		self.cameraController:demo()
+	end
+
 	if self.titleScreen then
 		self.titleScreen:draw()
 	end

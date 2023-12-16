@@ -397,6 +397,68 @@ function Ship:onMakePlayerListen()
 	return false, nil
 end
 
+function Ship:showCameraZoomTutorial()
+	self.isZoomPending = true
+
+	local duration = 4
+	local targetTime = love.timer.getTime() + duration
+
+	self.blockingInterfaceID = "TutorialHint"
+
+	local _
+	_, self.blockingInterfaceIndex = Utility.UI.openInterface(
+		self.player,
+		"TutorialHint",
+		false,
+		"root",
+		not _MOBILE and "Use a pinching gesture to zoom in and out." or "Click the left mouse button and drag up or down to zoom in and out.\nYou can also use the middle scroll wheel.",
+		function()
+			return love.timer.getTime() > targetTime
+		end,
+		{ position = 'up' })
+
+	local playerModel = Utility.Peep.getPlayerModel(self.player)
+	if playerModel then
+		playerModel:pokeCamera("showScroll", {
+			0.0, 0.5,
+			0.0, 1.0,
+			0.0, 0.5
+		}, duration)
+	end
+end
+
+function Ship:showCameraMoveTutorial()
+	self.isMovePending = true
+
+	local duration = 4
+	local targetTime = love.timer.getTime() + duration + 1
+
+	self.blockingInterfaceID = "TutorialHint"
+
+	local _
+	_, self.blockingInterfaceIndex = Utility.UI.openInterface(
+		self.player,
+		"TutorialHint",
+		false,
+		"root",
+		not _MOBILE and "Tap and drag on the screne to move the camera." or "Click the left mouse button and drag around the mouse to move the camera.\nYou can also use the middle mouse button to click and drag.",
+		function()
+			return love.timer.getTime() > targetTime
+		end,
+		{ position = 'up' })
+
+	local playerModel = Utility.Peep.getPlayerModel(self.player)
+	if playerModel then
+		playerModel:pokeCamera("showMove", {
+			0.5,         0.5 - 1 / 16,
+			0.5 - 1 / 16, 0.5,
+			0.5 - 2 / 16, 0.5 - 1 / 16,
+			0.5 - 1 / 16, 0.5,
+			0.5,         0.5 - 1 / 16
+		}, duration)
+	end
+end
+
 function Ship:update(director, game)
 	Map.update(self, director, game)
 
@@ -413,8 +475,18 @@ function Ship:update(director, game)
 					self.blockingInterfaceID = "DialogBox"
 					self.blockingInterfaceIndex = index
 				end
-
-				self.player:addBehavior(DisabledBehavior)
+			elseif self.blockingInterfaceID == "DialogBox" then
+				self:showCameraMoveTutorial()
+			elseif self.blockingInterfaceID == "TutorialHint" then
+				if self.isMovePending then
+					self.isMovePending = false
+					self:showCameraZoomTutorial()
+				elseif self.isZoomPending then
+					self.isZoomPending = false
+				else
+					self.blockingInterfaceID = nil
+					self.blockingInterfaceIndex = nil
+				end
 			else
 				self.blockingInterfaceID = nil
 				self.blockingInterfaceIndex = nil
@@ -424,7 +496,7 @@ function Ship:update(director, game)
 		if self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1)
 		   and not self.player:getState():has("Quest", "PreTutorial")
 		then
-			--if not _DEBUG or _MOBILE then
+			if not _DEBUG or _MOBILE then
 				self:showTip(Ship.COMBAT_HINT, self.player)
 
 				Utility.UI.openInterface(
@@ -437,7 +509,7 @@ function Ship:update(director, game)
 						return not self.player:hasBehavior(DisabledBehavior)
 					end,
 					{ position = 'center' })
-			--end
+			end
 		end
 		
 		self.showedCombatHints = true
