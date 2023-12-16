@@ -52,7 +52,7 @@ function ScrollBar:new()
 		self.dragStart = false
 	end)
 
-	self._onScroll = function(x, y)
+	self._onScroll = function(_, x, y)
 		self.scrollTime = love.timer.getTime()
 
 		self:mouseScroll(x, y)
