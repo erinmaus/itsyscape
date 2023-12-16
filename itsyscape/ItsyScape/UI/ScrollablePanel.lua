@@ -60,6 +60,7 @@ function ScrollablePanel:setSize(w, h)
 	end
 
 	self.panel:setSize(panelWidth, panelHeight)
+	self:performLayout()
 end
 
 function ScrollablePanel:setScrollSize(...)
@@ -95,6 +96,10 @@ end
 
 function ScrollablePanel:getScrollBarVisible()
 	return self.alwaysShowVerticalScrollBar, self.alwaysShowHorizontalScrollBar
+end
+
+function ScrollablePanel:getScrollBar()
+	return self.verticalScroll, self.horizontalScroll
 end
 
 function ScrollablePanel:getScrollBarActive()

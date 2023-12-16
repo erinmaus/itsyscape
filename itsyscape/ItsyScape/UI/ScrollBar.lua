@@ -34,9 +34,6 @@ function ScrollBar:new()
 	self.scrollButton = ScrollBar.DragButton()
 
 	if _MOBILE then
-		self.upButton:setIsClickThrough(true)
-		self.downButton:setIsClickThrough(true)
-		self.scrollButton:setIsClickThrough(true)
 		self:setIsClickThrough(true)
 	end
 
@@ -67,6 +64,13 @@ function ScrollBar:new()
 
 	self:addChild(self.upButton)
 	self:addChild(self.downButton)
+end
+
+function ScrollBar:setIsClickThrough(value)
+	self.upButton:setIsClickThrough(value)
+	self.downButton:setIsClickThrough(value)
+	self.scrollButton:setIsClickThrough(value)
+	Widget.setIsClickThrough(self, value)
 end
 
 function ScrollBar:mouseScroll(x, y)
