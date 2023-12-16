@@ -26,11 +26,18 @@ DefaultCameraController.ACTION_BUTTON = 1
 DefaultCameraController.PROBE_BUTTON  = 2
 DefaultCameraController.CAMERA_BUTTON = 3
 
+DefaultCameraController.CLICK_STILL_MAX        = 24
+DefaultCameraController.CLICK_DRAG_DENOMINATOR = 4
+
 DefaultCameraController.SPEED = math.pi / 2
 
 function DefaultCameraController:new(...)
 	CameraController.new(self, ...)
 
+	self.distanceX = 0
+	self.distanceY = 0
+	self.isActionMoving = false
+	self.isActionButtonDown = false
 	self.isCameraDragging = false
 
 	self.cameraVerticalRotationOffset = 0
@@ -100,19 +107,38 @@ end
 
 function DefaultCameraController:mousePress(uiActive, x, y, button)
 	if not uiActive then
-		if button == DefaultCameraController.CAMERA_BUTTON then
+		if button == DefaultCameraController.ACTION_BUTTON then
+			self.isActionMoving = false
+			self.isActionButtonDown = true
+			self.distanceX = 0
+			self.distanceY = 0
+		elseif button == DefaultCameraController.CAMERA_BUTTON then
 			self.isCameraDragging = true
 		end
 	end
 end
 
 function DefaultCameraController:mouseRelease(uiActive, x, y, button)
-	if button == DefaultCameraController.CAMERA_BUTTON then
+	if button == DefaultCameraController.CAMERA_BUTTON or
+	   (button == DefaultCameraController.ACTION_BUTTON and self.isActionMoving)
+    then
 		self.isCameraDragging = false
+	end
+
+	if button == DefaultCameraController.ACTION_BUTTON then
+		local suppress = self.isActionMoving
+
+		self.isActionMoving = false
+		self.isActionButtonDown = false
+
+		if suppress then
+			return CameraController.PROBE_SUPPRESS
+		end
 	end
 
 	if not uiActive then
 		if button == DefaultCameraController.ACTION_BUTTON then
+			self.isActionButtonDown = false
 			return CameraController.PROBE_SELECT_DEFAULT
 		elseif button == DefaultCameraController.PROBE_BUTTON then
 			return CameraController.PROBE_CHOOSE_OPTION
@@ -160,7 +186,24 @@ function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
 
 		self.cameraVerticalRotationOffset = angle1
 		self.cameraHorizontalRotationOffset = angle2
+
+		if self.isActionButtonDown and math.abs(angle2) == DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET then
+			self:mouseScroll(uiActive, 0, -dy / DefaultCameraController.CLICK_DRAG_DENOMINATOR)
+		end
+	elseif self.isActionButtonDown then
+		self.distanceX = (self.distanceX or 0) + dx
+		self.distanceY = (self.distanceY or 0) + dy
+
+		local difference = math.sqrt(self.distanceX ^ 2 + self.distanceY ^ 2)
+		if difference > DefaultCameraController.CLICK_STILL_MAX then
+			self.isCameraDragging = true
+			self.isActionMoving = true
+		end
 	end
+end
+
+function DefaultCameraController:getIsMouseCaptured()
+	return self.isActionButtonDown and self.isActionMoving and self.isCameraDragging
 end
 
 function DefaultCameraController:updateControls(delta)

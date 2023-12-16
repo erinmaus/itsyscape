@@ -557,8 +557,12 @@ function DemoApplication:openOptionsScreen(Type, callback)
 end
 
 function DemoApplication:mousePress(x, y, button)
-	local isUIActive = Application.mousePress(self, x, y, button)
-	self:mouseProbePress(x, y, button, isUIActive)
+	if self.cameraController:getIsMouseCaptured() then
+		self:mouseProbePress(x, y, button, false)
+	else
+		local isUIActive = Application.mousePress(self, x, y, button)
+		self:mouseProbePress(x, y, button, isUIActive)
+	end
 end
 
 function DemoApplication:mouseProbePress(x, y, button, isUIActive)
@@ -571,8 +575,12 @@ function DemoApplication:mouseProbePress(x, y, button, isUIActive)
 end
 
 function DemoApplication:mouseRelease(x, y, button)
-	local isUIActive = Application.mouseRelease(self, x, y, button)
-	self:mouseProbeRelease(x, y, button, isUIActive)
+	if self.cameraController:getIsMouseCaptured() then
+		return self:mouseProbeRelease(x, y, button, false)
+	else
+		local isUIActive = Application.mouseRelease(self, x, y, button)
+		self:mouseProbeRelease(x, y, button, isUIActive)
+	end
 end
 
 function DemoApplication:mouseProbeRelease(x, y, button, isUIActive)
@@ -594,8 +602,12 @@ function DemoApplication:mouseMove(x, y, dx, dy)
 	self.mouseX = x
 	self.mouseY = y
 
-	local isUIActive = Application.mouseMove(self, x, y, dx, dy)
-	self.cameraController:mouseMove(isUIActive, x, y, dx, dy)
+	if self.cameraController:getIsMouseCaptured() then
+		self.cameraController:mouseMove(false, x, y, dx, dy)
+	else
+		local isUIActive = Application.mouseMove(self, x, y, dx, dy)
+		self.cameraController:mouseMove(isUIActive, x, y, dx, dy)
+	end
 end
 
 function DemoApplication:getTouches()
