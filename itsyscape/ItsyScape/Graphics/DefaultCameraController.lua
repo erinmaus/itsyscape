@@ -474,7 +474,7 @@ end
 
 function DefaultCameraController:demoMobile()
 	if self.curveMode == DefaultCameraController.SHOW_MODE_MOVE then
-		love.graphics.draw(self.cursor, self.previousCurveX, self.previousCurveY, 0, 2, 2)
+		love.graphics.draw(self.cursor, self.previousCurveX, self.previousCurveY)
 	elseif self.curveMode == DefaultCameraController.SHOW_MODE_SCROLL then
 		local x = love.graphics.getWidth() / 2
 		local y = love.graphics.getHeight() / 2
@@ -485,8 +485,8 @@ function DefaultCameraController:demoMobile()
 		love.graphics.push()
 		love.graphics.translate(x, y)
 		love.graphics.rotate(0, 0, 1, math.pi / 4)
-		love.graphics.draw(self.cursor, 0, scroll * range, 0, 2, 2)
-		love.graphics.draw(self.cursor, 0, -scroll * range, 0, 2, 2)
+		love.graphics.draw(self.cursor, 0, scroll * range)
+		love.graphics.draw(self.cursor, 0, -scroll * range)
 		love.graphics.pop()
 	end
 end
@@ -498,7 +498,7 @@ function DefaultCameraController:demo()
 	end
 
 	if self.curveMode == DefaultCameraController.SHOW_MODE_MOVE then
-		love.graphics.draw(self.cursor, self.previousCurveX, self.previousCurveY, 0, 2, 2)
+		love.graphics.draw(self.cursor, self.previousCurveX, self.previousCurveY)
 	elseif self.curveMode == DefaultCameraController.SHOW_MODE_SCROLL then
 		local x = love.graphics.getWidth() / 2
 		local y = love.graphics.getHeight() / 2
@@ -507,7 +507,7 @@ function DefaultCameraController:demo()
 		local scroll = self.previousCurveY / love.graphics.getHeight()
 
 
-		love.graphics.draw(self.cursor, x, y - range / 2 + scroll * range, 0, 2, 2)
+		love.graphics.draw(self.cursor, x, y - range / 2 + scroll * range)
 	end
 end
 
