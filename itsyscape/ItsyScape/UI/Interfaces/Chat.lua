@@ -199,9 +199,8 @@ function Chat:update(delta)
 
 		local isClickThrough = scrollHeight <= height
 
-		self.chatPanel:setIsClickThrough(isClickThrough)
-		self.chatPanel:getInnerPanel():setIsClickThrough(isClickThrough)
-		self:setIsClickThrough(isClickThrough)
+		local scrollBar = self.chatPanel:getScrollBar()
+		scrollBar:setIsClickThrough(isClickThrough)
 	end
 end
 
