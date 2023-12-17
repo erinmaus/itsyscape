@@ -219,9 +219,7 @@ end
 function Common.showCraftTip(target)
 	Common.showTip(Common.CRAFT_HINT, target, function()
 		Utility.Quest.listenForItem(target, "ShadowLogs", function()
-			if not target:getState():has("KeyItem", "PreTutorial_CraftedToyWeapon") and
-			   target:getState():has("KeyItem", "PreTutorial_TalkedToGhostBoy")
-			then
+			if not target:getState():has("KeyItem", "PreTutorial_CraftedToyWeapon") then
 				Common.showCraftTip(target)
 			end
 		end)

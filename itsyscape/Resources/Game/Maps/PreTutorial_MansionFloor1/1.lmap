@@ -13,8 +13,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -26,8 +24,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -39,8 +35,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -52,8 +46,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -65,8 +57,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -78,8 +68,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -91,8 +79,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -104,8 +90,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -117,8 +101,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -130,8 +112,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -143,8 +123,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -156,8 +134,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -169,8 +145,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -182,8 +156,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -195,8 +167,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -208,8 +178,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -221,8 +189,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -234,8 +200,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -247,8 +211,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -260,8 +222,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -273,8 +233,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -286,8 +244,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -299,8 +255,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -312,8 +266,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -325,8 +277,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -338,8 +288,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -351,8 +299,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -364,8 +310,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -377,8 +321,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -390,8 +332,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -403,8 +343,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -416,8 +354,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -429,8 +365,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -442,8 +376,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -455,8 +387,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -468,8 +398,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -481,8 +409,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -494,8 +420,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -507,8 +431,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -520,8 +442,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -533,8 +453,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -546,8 +464,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -559,8 +475,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -572,8 +486,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -585,8 +497,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -598,8 +508,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -611,8 +519,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -624,8 +530,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -637,8 +541,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -650,8 +552,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -663,8 +563,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -676,8 +574,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -689,8 +585,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -702,8 +596,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -715,8 +607,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -728,8 +618,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -741,8 +629,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -754,8 +640,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -767,8 +651,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -780,8 +662,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -793,8 +673,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -806,8 +684,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -819,8 +695,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -832,8 +706,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -845,8 +717,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -858,8 +728,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -871,8 +739,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -884,8 +750,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -897,8 +761,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -910,8 +772,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -924,8 +784,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -938,8 +796,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -952,8 +808,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -966,8 +820,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -980,8 +832,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -994,8 +844,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -1008,8 +856,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -1022,8 +868,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -1036,8 +880,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -1050,8 +892,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -1064,8 +904,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -1078,8 +916,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -1092,8 +928,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -1106,8 +940,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -1120,8 +952,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1135,8 +965,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1150,8 +978,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1165,8 +991,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1180,8 +1004,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1195,8 +1017,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1210,8 +1030,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1225,8 +1043,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1238,8 +1054,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1251,8 +1065,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1264,8 +1076,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1277,8 +1087,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1290,8 +1098,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1303,8 +1109,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1316,8 +1120,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1329,8 +1131,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1342,8 +1142,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1355,8 +1153,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1370,8 +1166,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1384,8 +1178,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1398,8 +1190,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1412,8 +1202,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1426,8 +1214,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1440,8 +1226,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1454,8 +1238,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1468,8 +1250,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1483,8 +1263,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1497,8 +1275,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1511,8 +1287,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1525,8 +1299,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1539,8 +1311,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1553,8 +1323,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1567,8 +1335,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1581,8 +1347,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1596,8 +1360,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1610,8 +1372,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1624,8 +1384,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1638,8 +1396,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1652,8 +1408,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1667,8 +1421,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1680,8 +1432,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1693,8 +1443,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1706,8 +1454,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1719,8 +1465,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1732,8 +1476,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1745,8 +1487,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1758,8 +1498,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1771,8 +1509,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1784,8 +1520,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -1797,8 +1531,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -1812,8 +1544,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1826,8 +1556,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1840,8 +1568,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1854,8 +1580,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1868,8 +1592,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1882,8 +1604,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1896,8 +1616,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1910,8 +1628,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1924,8 +1640,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1938,8 +1652,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1952,8 +1664,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1966,8 +1676,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1980,8 +1688,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -1994,8 +1700,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2008,8 +1712,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2022,8 +1724,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2037,8 +1737,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2051,8 +1749,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2065,8 +1761,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2079,8 +1773,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2093,8 +1785,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2108,8 +1798,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2121,8 +1809,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2134,8 +1820,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2147,8 +1831,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2160,8 +1842,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2173,8 +1853,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2186,8 +1864,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2199,8 +1875,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2212,8 +1886,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2225,8 +1897,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2238,8 +1908,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2253,8 +1921,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2267,8 +1933,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2281,8 +1945,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2295,8 +1957,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2309,8 +1969,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2323,8 +1981,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2337,8 +1993,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2351,8 +2005,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2366,8 +2018,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2380,8 +2030,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2394,8 +2042,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2408,8 +2054,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2422,8 +2066,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2436,8 +2078,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2450,8 +2090,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2464,8 +2102,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2479,8 +2115,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2493,8 +2127,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2507,8 +2139,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2521,8 +2151,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2535,8 +2163,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2550,8 +2176,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2563,8 +2187,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2576,8 +2198,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2589,8 +2209,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2602,8 +2220,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2615,8 +2231,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2628,8 +2242,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2641,8 +2253,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2654,8 +2264,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2667,8 +2275,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -2680,8 +2286,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2695,8 +2299,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2709,8 +2311,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2723,8 +2323,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2737,8 +2335,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2751,8 +2347,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2765,8 +2359,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2779,8 +2371,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2793,8 +2383,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2808,8 +2396,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2822,8 +2408,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2836,8 +2420,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2850,8 +2432,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2864,8 +2444,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2878,8 +2456,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2892,8 +2468,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2906,8 +2480,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2921,8 +2493,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2935,8 +2505,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2949,8 +2517,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2963,8 +2529,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -2977,8 +2541,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -2992,8 +2554,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3005,8 +2565,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3018,8 +2576,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3031,8 +2587,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3044,8 +2598,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3057,8 +2609,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3070,8 +2620,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3083,8 +2631,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3096,8 +2642,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3109,8 +2653,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3122,8 +2664,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3137,8 +2677,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3151,8 +2689,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3165,8 +2701,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3179,8 +2713,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3193,8 +2725,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3207,8 +2737,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3221,8 +2749,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3235,8 +2761,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3250,8 +2774,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3264,8 +2786,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3278,8 +2798,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3292,8 +2810,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3306,8 +2822,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3320,8 +2834,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3334,8 +2846,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3348,8 +2858,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3363,8 +2871,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3377,8 +2883,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3391,8 +2895,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3405,8 +2907,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3419,8 +2919,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3434,8 +2932,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -3448,8 +2944,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -3462,8 +2956,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -3476,8 +2968,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -3490,8 +2980,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -3504,8 +2992,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3517,8 +3003,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3530,8 +3014,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3543,8 +3025,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3556,8 +3036,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3569,8 +3047,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3584,8 +3060,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3598,8 +3072,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3612,8 +3084,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3626,8 +3096,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3640,8 +3108,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3654,8 +3120,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3668,8 +3132,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3682,8 +3144,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3697,8 +3157,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3712,8 +3170,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3727,8 +3183,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3742,8 +3196,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3757,8 +3209,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3772,8 +3222,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3787,8 +3235,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3802,8 +3248,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3817,8 +3261,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3832,8 +3274,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -3846,23 +3286,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-				["impassable"] = true,
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 19, decals = { 21 },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3876,8 +3299,19 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 19, decals = { 21 },
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -3891,8 +3325,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3904,8 +3336,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3917,8 +3347,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3930,8 +3358,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3943,8 +3369,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3956,8 +3380,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3969,8 +3391,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3982,8 +3402,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -3995,8 +3413,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4008,8 +3424,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4021,8 +3435,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4036,8 +3448,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4050,8 +3460,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4064,8 +3472,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4078,8 +3484,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4092,8 +3496,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4106,8 +3508,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4120,8 +3520,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4134,8 +3532,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4149,8 +3545,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4163,8 +3557,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4177,8 +3569,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4191,8 +3581,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4205,8 +3593,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4219,8 +3605,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4233,8 +3617,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4247,8 +3629,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4261,8 +3641,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4275,8 +3653,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4289,8 +3665,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4303,8 +3677,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4317,8 +3689,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4332,8 +3702,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4345,8 +3713,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4358,8 +3724,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4371,8 +3735,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4384,8 +3746,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4397,8 +3757,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4410,8 +3768,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4423,8 +3779,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4436,8 +3790,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4449,8 +3801,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4462,8 +3812,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4477,8 +3825,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4491,8 +3837,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4505,8 +3849,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4519,8 +3861,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4533,8 +3873,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4547,8 +3885,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4561,8 +3897,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4575,8 +3909,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4589,8 +3921,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4603,8 +3933,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4617,8 +3945,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4631,8 +3957,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4646,8 +3970,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -4660,8 +3982,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -4674,8 +3994,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4689,8 +4007,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4704,8 +4020,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -4718,8 +4032,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4733,8 +4045,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4748,8 +4058,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4763,8 +4071,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4778,8 +4084,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4791,8 +4095,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -4805,8 +4107,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -4819,8 +4119,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -4833,8 +4131,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -4847,8 +4143,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4860,8 +4154,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4873,8 +4165,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4886,8 +4176,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4899,8 +4187,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -4912,8 +4198,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4927,8 +4211,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4942,8 +4224,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4957,8 +4237,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4972,8 +4250,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -4987,8 +4263,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5002,8 +4276,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5017,8 +4289,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5032,8 +4302,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5047,8 +4315,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5062,8 +4328,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5077,8 +4341,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5091,8 +4353,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5106,8 +4366,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5119,8 +4377,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5132,8 +4388,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5145,8 +4399,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5158,8 +4410,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5171,8 +4421,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5184,8 +4432,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5197,8 +4443,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5210,8 +4454,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -5224,8 +4466,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5237,8 +4477,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5250,8 +4488,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5263,8 +4499,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5276,8 +4510,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -5290,8 +4522,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5303,8 +4533,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5316,8 +4544,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5329,8 +4555,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5342,8 +4566,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5355,8 +4577,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5370,8 +4590,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5384,8 +4602,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5398,8 +4614,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5412,8 +4626,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5426,8 +4638,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5440,8 +4650,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5454,8 +4662,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5468,8 +4674,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5482,8 +4686,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5496,8 +4698,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5511,8 +4711,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5525,8 +4723,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5540,8 +4736,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5553,8 +4747,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5566,8 +4758,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5579,8 +4769,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5592,8 +4780,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -5606,8 +4792,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -5620,8 +4804,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5633,8 +4815,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5646,8 +4826,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -5660,8 +4838,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5673,8 +4849,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -5687,8 +4861,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5700,8 +4872,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5713,8 +4883,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -5727,8 +4895,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5740,8 +4906,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5753,8 +4917,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5766,8 +4928,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5779,8 +4939,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5792,8 +4950,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5807,8 +4963,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5821,8 +4975,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5835,8 +4987,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5849,8 +4999,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5863,8 +5011,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5877,8 +5023,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5891,8 +5035,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5905,8 +5047,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5919,8 +5059,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5933,8 +5071,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5948,8 +5084,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -5962,8 +5096,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -5977,8 +5109,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -5990,8 +5120,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6003,8 +5131,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6016,8 +5142,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6029,8 +5153,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6043,8 +5165,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6057,8 +5177,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6071,8 +5189,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6084,8 +5200,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6098,8 +5212,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6111,8 +5223,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6125,8 +5235,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6138,8 +5246,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6151,8 +5257,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6165,8 +5269,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6178,8 +5280,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6191,8 +5291,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6204,8 +5302,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6217,8 +5313,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6230,8 +5324,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -6245,8 +5337,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6259,8 +5349,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6273,8 +5361,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6287,8 +5373,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6301,8 +5385,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6315,8 +5397,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6329,8 +5409,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6343,8 +5421,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6357,8 +5433,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6371,8 +5445,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -6386,8 +5458,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6400,8 +5470,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -6415,8 +5483,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6428,8 +5494,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6441,8 +5505,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6454,8 +5516,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6468,8 +5528,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6482,8 +5540,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6496,8 +5552,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6510,8 +5564,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6523,8 +5575,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6536,8 +5586,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6549,8 +5597,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6562,8 +5608,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6575,8 +5619,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6588,8 +5630,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6602,8 +5642,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6615,8 +5653,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6628,8 +5664,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6641,8 +5675,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6654,8 +5686,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6667,8 +5697,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -6682,8 +5710,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6696,8 +5722,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6710,8 +5734,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6724,8 +5746,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6738,8 +5758,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6752,8 +5770,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6766,8 +5782,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6780,8 +5794,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6794,8 +5806,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6808,8 +5818,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -6823,8 +5831,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -6837,8 +5843,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -6852,8 +5856,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6865,8 +5867,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6878,8 +5878,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6891,22 +5889,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6919,8 +5901,18 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
 			},
 		},
@@ -6933,8 +5925,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6946,8 +5936,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6959,8 +5947,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -6973,8 +5959,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -6986,22 +5970,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 11, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -7014,8 +5982,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -7028,8 +5994,18 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 11, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
 			},
 		},
@@ -7042,8 +6018,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7055,8 +6029,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7068,8 +6040,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7081,8 +6051,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7094,8 +6062,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7107,8 +6073,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7122,8 +6086,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7136,8 +6098,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7150,8 +6110,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7164,8 +6122,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7178,8 +6134,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7192,8 +6146,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7206,8 +6158,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7220,8 +6170,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7234,8 +6182,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7248,8 +6194,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7263,8 +6207,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7277,8 +6219,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7292,8 +6232,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7305,8 +6243,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7318,8 +6254,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7331,8 +6265,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7344,8 +6276,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7357,8 +6287,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7370,8 +6298,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7383,8 +6309,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7396,8 +6320,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -7410,8 +6332,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7423,8 +6343,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7436,8 +6354,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7449,8 +6365,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7462,8 +6376,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7475,8 +6387,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7488,8 +6398,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7501,8 +6409,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7514,8 +6420,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7527,8 +6431,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7540,8 +6442,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7555,8 +6455,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7570,8 +6468,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7584,8 +6480,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7599,8 +6493,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7614,8 +6506,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7629,8 +6519,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7644,8 +6532,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7659,8 +6545,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7674,8 +6558,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7689,8 +6571,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7704,8 +6584,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -7718,8 +6596,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7733,8 +6609,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7746,8 +6620,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7759,8 +6631,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7772,8 +6642,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7785,8 +6653,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7798,8 +6664,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7811,8 +6675,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7824,8 +6686,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7837,8 +6697,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -7851,8 +6709,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7864,8 +6720,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7877,8 +6731,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7890,8 +6742,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7903,8 +6753,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7916,8 +6764,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7929,8 +6775,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7942,8 +6786,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7955,8 +6797,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7968,8 +6808,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -7981,8 +6819,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -7996,8 +6832,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8010,8 +6844,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8024,8 +6856,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8038,8 +6868,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8052,8 +6880,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8066,8 +6892,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8080,8 +6904,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8094,8 +6916,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8108,8 +6928,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8122,8 +6940,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8136,8 +6952,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8150,8 +6964,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8165,8 +6977,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8178,8 +6988,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8191,8 +6999,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8204,8 +7010,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8217,8 +7021,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8230,8 +7032,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8243,8 +7043,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8256,8 +7054,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8269,8 +7065,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -8283,8 +7077,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8296,8 +7088,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8309,8 +7099,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8322,8 +7110,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8335,8 +7121,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8348,8 +7132,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8361,8 +7143,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8374,8 +7154,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8387,8 +7165,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8400,8 +7176,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8413,8 +7187,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8428,8 +7200,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8442,8 +7212,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8456,8 +7224,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8470,8 +7236,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8484,8 +7248,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8498,8 +7260,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8512,8 +7272,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8526,8 +7284,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8540,8 +7296,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8554,8 +7308,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8568,8 +7320,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8582,8 +7332,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8597,8 +7345,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8612,8 +7358,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8627,8 +7371,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8642,8 +7384,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8657,8 +7397,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8671,8 +7409,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8686,8 +7422,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8701,8 +7435,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8716,8 +7448,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8731,8 +7461,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -8745,8 +7473,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -8759,8 +7485,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -8773,8 +7497,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -8787,8 +7509,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -8801,8 +7521,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8814,8 +7532,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8827,8 +7543,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8840,8 +7554,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8853,8 +7565,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -8866,8 +7576,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8881,8 +7589,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8896,8 +7602,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -8910,8 +7614,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8925,8 +7627,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8940,8 +7640,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8955,8 +7653,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8970,8 +7666,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -8985,8 +7679,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -9000,8 +7692,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -9015,8 +7705,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -9030,8 +7718,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9044,8 +7730,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9058,8 +7742,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9072,8 +7754,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9086,8 +7766,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9100,8 +7778,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9114,8 +7790,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9128,8 +7802,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9142,8 +7814,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9156,8 +7826,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9170,8 +7838,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -9185,8 +7851,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9198,8 +7862,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9211,8 +7873,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9224,8 +7884,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9237,8 +7895,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9250,8 +7906,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9263,8 +7917,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9276,8 +7928,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9289,8 +7939,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9302,8 +7950,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9315,8 +7961,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -9330,8 +7974,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9344,8 +7986,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9358,8 +7998,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9372,8 +8010,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9386,8 +8022,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9400,8 +8034,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9414,8 +8046,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9428,8 +8058,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9442,8 +8070,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9456,8 +8082,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -9471,8 +8095,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9485,8 +8107,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9499,8 +8119,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9513,8 +8131,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9527,8 +8143,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9541,8 +8155,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9555,8 +8167,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9569,8 +8179,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9583,8 +8191,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9597,8 +8203,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9611,8 +8215,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -9626,8 +8228,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9639,8 +8239,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9652,8 +8250,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9665,8 +8261,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9678,8 +8272,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9691,8 +8283,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9704,8 +8294,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9717,8 +8305,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9730,8 +8316,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9743,8 +8327,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -9756,8 +8338,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -9771,8 +8351,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9785,8 +8363,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9799,8 +8375,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9813,8 +8387,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9827,8 +8399,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9841,8 +8411,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9855,8 +8423,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9869,8 +8435,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9883,8 +8447,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9897,8 +8459,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -9912,8 +8472,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9926,8 +8484,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9940,8 +8496,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9954,8 +8508,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9968,8 +8520,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9982,8 +8532,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -9996,8 +8544,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10010,8 +8556,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10024,8 +8568,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10038,8 +8580,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10052,8 +8592,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -10067,8 +8605,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10080,8 +8616,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10093,8 +8627,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10106,8 +8638,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10119,8 +8649,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10132,8 +8660,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10145,8 +8671,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10158,8 +8682,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10171,8 +8693,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10184,8 +8704,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10197,8 +8715,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -10212,8 +8728,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10226,8 +8740,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10240,8 +8752,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10254,8 +8764,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10268,8 +8776,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10282,8 +8788,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10296,8 +8800,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10310,8 +8812,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10324,8 +8824,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10338,8 +8836,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -10353,8 +8849,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10367,8 +8861,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10381,8 +8873,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10395,8 +8885,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10409,8 +8897,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10423,8 +8909,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10437,8 +8921,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10451,8 +8933,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10465,8 +8945,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10479,8 +8957,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10493,8 +8969,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -10508,8 +8982,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10521,8 +8993,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10534,8 +9004,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10547,8 +9015,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10560,8 +9026,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10573,8 +9037,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10586,8 +9048,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10599,8 +9059,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10612,8 +9070,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10625,8 +9081,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10638,8 +9092,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -10653,8 +9105,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10667,8 +9117,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10681,8 +9129,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10695,8 +9141,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10709,8 +9153,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10723,8 +9165,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10737,8 +9177,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10751,8 +9189,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10765,8 +9201,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10779,8 +9213,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -10794,8 +9226,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10808,8 +9238,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10822,8 +9250,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10836,8 +9262,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10850,8 +9274,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10864,8 +9286,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10878,8 +9298,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10892,8 +9310,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10906,8 +9322,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10920,8 +9334,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -10934,8 +9346,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -10949,8 +9359,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10962,8 +9370,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10975,8 +9381,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -10988,8 +9392,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11001,8 +9403,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11014,8 +9414,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11027,8 +9425,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11040,8 +9436,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11053,8 +9447,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11066,8 +9458,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11079,8 +9469,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11094,8 +9482,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11108,8 +9494,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11122,8 +9506,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11136,8 +9518,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11150,8 +9530,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11164,8 +9542,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11178,8 +9554,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11192,8 +9566,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11206,8 +9578,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11220,8 +9590,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11235,8 +9603,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11249,8 +9615,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11263,8 +9627,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11277,8 +9639,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11291,8 +9651,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11305,8 +9663,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11319,8 +9675,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11333,8 +9687,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11347,8 +9699,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11361,8 +9711,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11375,8 +9723,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11390,8 +9736,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11403,8 +9747,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11416,8 +9758,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11429,8 +9769,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11442,8 +9780,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11455,8 +9791,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11468,8 +9802,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11481,8 +9813,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11494,8 +9824,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11507,8 +9835,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11520,8 +9846,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11535,8 +9859,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11550,8 +9872,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11565,8 +9885,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11580,8 +9898,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11595,8 +9911,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11610,8 +9924,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11625,8 +9937,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11640,8 +9950,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11655,8 +9963,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11670,8 +9976,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11685,8 +9989,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11700,8 +10002,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11715,8 +10015,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11730,8 +10028,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11745,8 +10041,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11759,8 +10053,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["building"] = true,
 			},
 		},
@@ -11773,23 +10065,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
-				["impassable"] = true,
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 11, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11803,8 +10078,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11818,8 +10091,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11833,8 +10104,19 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
+				["impassable"] = true,
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 11, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
 				["building"] = true,
 			},
@@ -11848,8 +10130,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11861,8 +10141,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11874,8 +10152,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11887,8 +10163,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11900,8 +10174,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11913,8 +10185,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11926,8 +10196,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11939,8 +10207,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11952,8 +10218,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11965,8 +10229,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11978,8 +10240,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -11991,8 +10251,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12004,8 +10262,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12017,8 +10273,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12030,8 +10284,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12043,8 +10295,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12056,8 +10306,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12069,8 +10317,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12082,8 +10328,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12095,8 +10339,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12108,8 +10350,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12121,8 +10361,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12134,8 +10372,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12147,8 +10383,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12160,8 +10394,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -12174,8 +10406,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12187,8 +10417,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12200,8 +10428,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -12214,8 +10440,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12227,8 +10451,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12240,8 +10462,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12253,8 +10473,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12266,8 +10484,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12279,8 +10495,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12292,8 +10506,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12305,8 +10517,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12318,8 +10528,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12331,8 +10539,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12344,8 +10550,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12357,8 +10561,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12370,8 +10572,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12383,8 +10583,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12396,8 +10594,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12409,8 +10605,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12422,8 +10616,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12435,8 +10627,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12448,8 +10638,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12461,8 +10649,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12474,8 +10660,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12487,8 +10671,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12500,8 +10682,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12513,8 +10693,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12526,8 +10704,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12539,8 +10715,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12552,8 +10726,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12565,8 +10737,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12578,8 +10748,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -12592,8 +10760,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12605,8 +10771,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12618,8 +10782,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -12632,8 +10794,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12645,8 +10805,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12658,8 +10816,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12671,8 +10827,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12684,8 +10838,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12697,8 +10849,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12710,8 +10860,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12723,8 +10871,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12736,8 +10882,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12749,8 +10893,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12762,8 +10904,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12775,8 +10915,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12788,8 +10926,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12801,8 +10937,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12814,8 +10948,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12827,8 +10959,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12840,8 +10970,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12853,8 +10981,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12866,8 +10992,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12879,8 +11003,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12892,8 +11014,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12905,8 +11025,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12918,8 +11036,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12931,8 +11047,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12944,8 +11058,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12957,8 +11069,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12970,8 +11080,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12983,8 +11091,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -12996,8 +11102,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -13010,8 +11114,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13023,8 +11125,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13036,8 +11136,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -13050,8 +11148,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13063,8 +11159,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13076,8 +11170,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13089,8 +11181,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13102,8 +11192,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13115,8 +11203,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13128,8 +11214,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13141,8 +11225,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13154,8 +11236,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13167,8 +11247,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13180,8 +11258,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13193,8 +11269,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13206,8 +11280,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13219,8 +11291,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13232,8 +11302,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13245,8 +11313,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13258,8 +11324,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13271,8 +11335,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13284,8 +11346,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13297,8 +11357,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13310,8 +11368,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13323,8 +11379,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13336,8 +11390,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13349,8 +11401,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13362,8 +11412,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13375,8 +11423,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13388,8 +11434,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13401,8 +11445,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13414,8 +11456,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -13428,8 +11468,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13441,8 +11479,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13454,8 +11490,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -13468,8 +11502,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13481,8 +11513,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13494,8 +11524,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13507,8 +11535,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13520,8 +11546,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13533,8 +11557,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13546,8 +11568,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13559,8 +11579,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13572,8 +11590,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13585,8 +11601,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13598,8 +11612,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13611,8 +11623,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13624,8 +11634,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13637,8 +11645,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13650,8 +11656,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13663,8 +11667,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13676,8 +11678,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13689,8 +11689,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13702,8 +11700,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13715,8 +11711,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13728,8 +11722,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13741,8 +11733,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13754,8 +11744,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13767,8 +11755,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13780,8 +11766,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13793,8 +11777,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13806,8 +11788,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13819,8 +11799,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13832,8 +11810,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -13846,8 +11822,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13859,8 +11833,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13872,8 +11844,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 				["impassable"] = true,
 			},
 		},
@@ -13886,8 +11856,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13899,8 +11867,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13912,8 +11878,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13925,8 +11889,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13938,8 +11900,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13951,8 +11911,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13964,8 +11922,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13977,8 +11933,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 		{
@@ -13990,8 +11944,6 @@
 			},
 			flags =
 			{
-				["x-map-i"] = true,
-				["x-map-j"] = true,
 			},
 		},
 	}

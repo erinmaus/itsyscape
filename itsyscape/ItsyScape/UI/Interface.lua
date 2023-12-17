@@ -86,19 +86,7 @@ function Interface:getState()
 	return self:getUI():pull(self:getID(), self:getIndex()) or {}
 end
 
-function Interface:examineItem(widget, inventory, index)
-	if not inventory then
-		widget:setToolTip()
-		return
-	end
-
-	local item = inventory[index]
-
-	if not item then
-		widget:setToolTip()
-		return
-	end
-
+function Interface:getItemExamine(item, includeAction)
 	local object, description, stats = Utility.Item.getInfo(
 		item.id,
 		self:getView():getGame():getGameDB())
@@ -107,7 +95,7 @@ function Interface:examineItem(widget, inventory, index)
 	stats = item.stats or stats
 
 	local action = item.actions and item.actions[1]
-	if action then
+	if action and includeAction then
 		object = action.verb .. " " .. object
 	end
 
@@ -115,10 +103,7 @@ function Interface:examineItem(widget, inventory, index)
 		object = string.format("%s (%s)", object, Utility.Text.prettyNumber(item.count))
 	end
 
-	local toolTip = {
-		ToolTip.Header(object),
-		ToolTip.Text(description)
-	}
+	local toolTip = { ToolTip.Text(description) }
 
 	if stats then
 		stats = Utility.Item.groupStats(stats)
@@ -151,7 +136,27 @@ function Interface:examineItem(widget, inventory, index)
 		end
 	end
 
-	widget:setToolTip(unpack(toolTip))
+	return ToolTip.Header(object), toolTip
+end
+
+function Interface:examineItem(widget, inventory, index)
+	if not inventory then
+		widget:setToolTip()
+		return
+	end
+
+	local item = inventory[index]
+
+	if not item then
+		widget:setToolTip()
+		return
+	end
+
+	local object, description = self:getItemExamine(item, true)
+
+	widget:setToolTip(
+		object,
+		unpack(description))
 end
 
 function Interface:getIsFullscreen()

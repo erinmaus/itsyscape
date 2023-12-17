@@ -34,7 +34,7 @@ function WidgetRenderManager:new(inputProvider)
 	self.input = inputProvider
 	self.toolTips = {}
 	self.debugStats = WidgetRenderManager.DebugStats()
-	self.toolTipsEnabled = true
+	self.toolTipsEnabled = not _MOBILE
 end
 
 function WidgetRenderManager:disableHoverToolTips()
@@ -225,18 +225,18 @@ function WidgetRenderManager:stop()
 		itsyrealm.graphics.translate(-mouseX, -mouseY)
 	end
 
-	if self.toolTipsEnabled then
-		local toolTips = self:getToolTips()
-		for i = 1, #toolTips do
-			local toolTip = toolTips[i]
+	local toolTips = self:getToolTips()
+	for i = 1, #toolTips do
+		local toolTip = toolTips[i]
 
-			if toolTip:getDuration() < 0.5 then
-				self.toolTips[toolTip] = nil
-			else
-				self:draw(toolTip, {}, true)
-			end
+		if toolTip:getDuration() < 0.5 then
+			self.toolTips[toolTip] = nil
+		else
+			self:draw(toolTip, {}, true)
 		end
+	end
 
+	if self.toolTipsEnabled then
 		local _, _, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		local difference = love.timer.getTime() - (self.topHoveredTime or 0)
 		if difference <= WidgetRenderManager.HOVER_TIME or not _MOBILE then

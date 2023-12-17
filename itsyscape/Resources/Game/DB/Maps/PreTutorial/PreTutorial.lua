@@ -305,7 +305,27 @@ do
 	}
 
 	ItsyScape.Resource.Item "BurntLarry" {
-		-- Nothing.
+		ItsyScape.Action.Cook() {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = ItsyScape.Utility.xpForLevel(1)
+			},
+
+			Input {
+				Resource = ItsyScape.Resource.Item "CookedLarry",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Cooking",
+				Count = 1
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "BurntLarry",
+				Count = 1
+			}
+		}
 	}
 
 	ItsyScape.Meta.ResourceName {
@@ -315,8 +335,20 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Should've just flushed him.",
+		Value = "Should've just flushed him. Why'd you cook him AGAIN?",
 		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntLarry"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Fire",
+		Resource = ItsyScape.Resource.Item "BurntLarry"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethod",
+		Value = "Range",
 		Resource = ItsyScape.Resource.Item "BurntLarry"
 	}
 

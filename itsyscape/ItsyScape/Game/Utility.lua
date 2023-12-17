@@ -1383,6 +1383,7 @@ function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
 
 	local map = stage:getMap(layer)
 	local center = (map and map:getTileCenter(i, j)) or Vector.ZERO
+	center = center + (Vector(map and map:getCellSize() or 0) * Vector(i - math.floor(i), j - math.floor(j)))
 
 	if not mapScript then
 		return center

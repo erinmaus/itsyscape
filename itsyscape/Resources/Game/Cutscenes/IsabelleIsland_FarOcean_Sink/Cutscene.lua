@@ -31,7 +31,7 @@ return Parallel {
 	},
 
 	Sequence {
-		Player:wait(DURATION - 5),
+		Player:wait(DURATION - 2),
 		Map:poke('prepAzathoth')
 	},
 
@@ -39,6 +39,7 @@ return Parallel {
 		Player:addBehavior("Disabled"),
 		Player:playAnimation("Human_Idle_SleepingInVat", "main", 1, math.random()),
 		Player:lerpPosition("Anchor_Player_Target", DURATION),
+		Player:playAnimation("Human_Idle_1", "main", 1, math.random()),
 		Player:removeBehavior("Disabled")
 	}
 }

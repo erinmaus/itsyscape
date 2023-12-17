@@ -197,7 +197,10 @@ function TutorialHint:update(...)
 
 	if widget then
 		self:place(widget)
-		self:highlight(widget)
+
+		if widget ~= self:getView():getRoot() then
+			self:highlight(widget)
+		end
 	end
 end
 

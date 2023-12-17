@@ -9,10 +9,13 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
+local Button = require "ItsyScape.UI.Button"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Keybinds = require "ItsyScape.UI.Keybinds"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
+local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local TextInput = require "ItsyScape.UI.TextInput"
 local TextInputStyle = require "ItsyScape.UI.TextInputStyle"
@@ -20,12 +23,13 @@ local Interface = require "ItsyScape.UI.Interface"
 
 local Chat = Class(Interface)
 Chat.WIDTH   = 480
-Chat.HEIGHT  = 240
+Chat.HEIGHT  = _MOBILE and 120 or 240
 Chat.INPUT   = 48
 Chat.PADDING = 8
 Chat.Z_DEPTH = -1000
 
-Chat.LINE_HEIGHT = 24
+Chat.BUTTON_WIDTH = 96
+Chat.LINE_HEIGHT  = 24
 
 function Chat:new(id, index, ui)
 	Interface.new(self, id, index, ui)
@@ -36,6 +40,11 @@ function Chat:new(id, index, ui)
 
 	self:setSize(Chat.WIDTH, Chat.HEIGHT + Chat.INPUT)
 	self:setIsClickThrough(true)
+
+	self.mainPanel = Panel()
+	self.mainPanel:setStyle(PanelStyle({ image = false }, ui:getResources()))
+	self.mainPanel:setSize(self:getSize())
+	self.mainPanel:setIsClickThrough(true)
 
 	self.messages = {}
 
@@ -57,9 +66,24 @@ function Chat:new(id, index, ui)
 	self.textInput.onValueChanged:register(self.onTextInputValueChanged, self)
 	self.textInput.onSubmit:register(self.send, self)
 	self.textInput:setText("Click here to chat...")
-	self.textInput:setSize(Chat.WIDTH, Chat.INPUT)
+	self.textInput:setSize(Chat.WIDTH - Chat.BUTTON_WIDTH, Chat.INPUT)
 	self.textInput:setPosition(0, Chat.HEIGHT)
-	self:addChild(self.textInput)
+	self.mainPanel:addChild(self.textInput)
+
+	self.hideButton = Button()
+	self.hideButton:setText("Hide")
+	self.hideButton:setToolTip("Hide chat")
+	self.hideButton:setSize(Chat.BUTTON_WIDTH, Chat.INPUT)
+	self.hideButton:setPosition(Chat.WIDTH - Chat.BUTTON_WIDTH, Chat.HEIGHT)
+	self.hideButton.onClick:register(self.hide, self)
+	self.mainPanel:addChild(self.hideButton)
+
+	self.showButton = Button()
+	self.showButton:setText("Chat")
+	self.showButton:setToolTip("Show chat")
+	self.showButton:setSize(Chat.BUTTON_WIDTH, Chat.INPUT)
+	self.showButton:setPosition(0, Chat.HEIGHT)
+	self.showButton.onClick:register(self.show, self)
 
 	self.chatPanel = ScrollablePanel(GridLayout)
 	self.chatPanel:setSize(Chat.WIDTH, Chat.HEIGHT)
@@ -68,7 +92,7 @@ function Chat:new(id, index, ui)
 	self.chatPanel:getInnerPanel():setIsClickThrough(true)
 	self.chatPanel:setIsClickThrough(true)
 	self.chatPanel:getInnerPanel():setIsClickThrough(true)
-	self:addChild(self.chatPanel)
+	self.mainPanel:addChild(self.chatPanel)
 
 	self.chatLabelStyle = LabelStyle({
 		color = { 1, 1, 1, 1 },
@@ -87,6 +111,12 @@ function Chat:new(id, index, ui)
 	self.hadFocusedWidget = self:getView():getInputProvider():getFocusedWidget() ~= nil
 
 	self:setZDepth(Chat.Z_DEPTH)
+
+	if _MOBILE then
+		self:hide()
+	else
+		self:show()
+	end
 end
 
 function Chat:onTextInputValueChanged()
@@ -113,6 +143,16 @@ function Chat:send()
 	self.isMessageEmpty = true
 	self.textInput:setText("Click here to chat...")
 	self.textInput:blur()
+end
+
+function Chat:show()
+	self:addChild(self.mainPanel)
+	self:removeChild(self.showButton)
+end
+
+function Chat:hide()
+	self:removeChild(self.mainPanel)
+	self:addChild(self.showButton)
 end
 
 function Chat:updateChat(messages)
