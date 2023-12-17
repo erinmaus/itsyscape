@@ -119,9 +119,9 @@ function Mansion:onPlayerEnter(player)
 	end)
 
 	Utility.Quest.listenForItem(player, "ShadowLogs", function()
-		if not player:getState():has("KeyItem", "PreTutorial_CraftedToyWeapon") and
-		   player:getState():has("KeyItem", "PreTutorial_TalkedToGhostBoy")
-		then
+		player:getState():give("KeyItem", "PreTutorial_GotShadowLogs")
+
+		if not target:getState():has("KeyItem", "PreTutorial_CraftedToyWeapon") then
 			PreTutorialCommon.showCraftTip(player)
 		end
 	end)

@@ -25,8 +25,8 @@ local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local Widget = require "ItsyScape.UI.Widget"
 
 local QuestProgressNotification = Class(Interface)
-QuestProgressNotification.WIDTH = 384
-QuestProgressNotification.HEIGHT = 320
+QuestProgressNotification.WIDTH = _MOBILE and 320 or 384
+QuestProgressNotification.HEIGHT = _MOBILE and 240 or 320
 QuestProgressNotification.PADDING = 8
 QuestProgressNotification.ICON_SIZE = 48
 QuestProgressNotification.BUTTON_SIZE = 48
@@ -91,7 +91,7 @@ function QuestProgressNotification.LocationHint:getActorPosition(actorID)
 	local actorPosition
 	do
 		local worldTransform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
-		actorPosition = self:getWorldPosition(worldTransform, Vector.ZERO)
+		actorPosition = self:getWorldPosition(worldTransform, -Vector.UNIT_Y)
 	end
 
 	return actorPosition
@@ -108,7 +108,7 @@ function QuestProgressNotification.LocationHint:getPropPosition(propID)
 	local propPosition
 	do
 		local worldTransform = propView:getRoot():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
-		propPosition = self:getWorldPosition(worldTransform, Vector.ZERO)
+		propPosition = self:getWorldPosition(worldTransform, -Vector.UNIT_Y)
 	end
 
 	return propPosition
@@ -207,6 +207,7 @@ function QuestProgressNotification:new(id, index, ui)
 	self.infoPanel:getInnerPanel():setWrapContents(true)
 	self.infoPanel:getInnerPanel():setPadding(0, 0)
 	self.infoPanel:getInnerPanel():setUniformSize(true, 1, 0)
+	self.infoPanel:setFloatyScrollBars(false)
 	self.infoPanel:setPosition(
 		QuestProgressNotification.PADDING,
 		QuestProgressNotification.PADDING * 3 + QuestProgressNotification.ICON_SIZE + 24)

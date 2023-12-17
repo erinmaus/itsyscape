@@ -45,6 +45,7 @@ Quest "PreTutorial" {
 		"PreTutorial_TalkedToGhostGirl",
 	},
 	Step {
+		"PreTutorial_GotShadowLogs",
 		"PreTutorial_CraftedToyWeapon",
 		"PreTutorial_SavedGhostBoy",
 		"PreTutorial_FishedLarry",
@@ -129,7 +130,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "Smith a copper amulet on the anvil in the shed using the hammer you obtained.",
+	Value = "Smith a copper bar on the anvil in the shed using the hammer you obtained to make a copper amulet.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SmithCopperAmulet"
 }
 
@@ -141,7 +142,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "Enchant the copper amulet using the Enchant spell. Runes for this spell can be obtained from the Powernomicon.",
+	Value = "Enchant the copper amulet using the Enchant spell. Maybe Hans knows more?",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_EnchantedCopperAmulet"
 }
 
@@ -249,8 +250,13 @@ ItsyScape.Meta.ResourceDescription {
 
 local Description = ItsyScape.Utility.QuestStepDescription
 
-Description "PreTutorial_CraftedToyWeapon" {
+Description "PreTutorial_GotShadowLogs" {
 	before = "Cut down a tree for some logs so you can craft a toy weapon.",
+	after = "You obtained some shadow logs from a tree."
+}
+
+Description "PreTutorial_CraftedToyWeapon" {
+	before = "Craft some shadow logs into a toy weapon using your knife.",
 	after = "Using some shadow logs and a knife, you crafted a toy weapon."
 }
 
@@ -260,6 +266,6 @@ Description "PreTutorial_FishedLarry" {
 }
 
 Description "PreTutorial_CookedLarry" {
-	before = "Cook Larry on the cooking range.",
+	before = "Cook Larry on the cooking range in the kitchen.",
 	after = "Poor Larry was cooked. Hope this is macabre enough for Elizabeth..."
 }

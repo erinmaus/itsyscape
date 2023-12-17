@@ -769,6 +769,8 @@ function UIView:examine(a, b)
 				description = string.format("It's a %s.", object)
 			end
 		end
+
+		description = { description }
 	end
 
 	local player = self:getGame():getPlayer()
@@ -776,13 +778,24 @@ function UIView:examine(a, b)
 		player:addExclusiveChatMessage(description)
 	end
 
+	if not Class.isCompatibleType(object, ToolTip.Component) then
+		object = ToolTip.Header(object)
+	end
+
+	if type(description) == "string" then
+		description = { ToolTip.Text(description) }
+	end
+
 	local toolTip = self.renderManager:setToolTip(
-		4, 
-		ToolTip.Header(object),
-		ToolTip.Text(description))
-	toolTip:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/Examine.9.png"
-	}, self.resources))
+		math.max(#description + 3, 4), 
+		object,
+		unpack(description))
+
+	if not _MOBILE then
+		toolTip:setStyle(PanelStyle({
+			image = "Resources/Renderers/Widget/Panel/Examine.9.png"
+		}, self.resources))
+	end
 end
 
 function UIView:probe(actions)

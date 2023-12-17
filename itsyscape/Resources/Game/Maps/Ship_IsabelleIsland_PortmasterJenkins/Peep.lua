@@ -46,28 +46,6 @@ Ship.COMBAT_HINT = {
 	},
 	{
 		position = 'up',
-		id = "Ribbon-PlayerEquipment",
-		message = not _MOBILE and "Click here to see your equipment." or "Tap here to see your equipment.",
-		open = function(target)
-			return function()
-				return Utility.UI.isOpen(target, "PlayerEquipment")
-			end
-		end
-	},
-	{
-		position = 'up',
-		id = "PlayerEquipment",
-		message = not _MOBILE and "View your bonuses and dequip items from here.\nYou can right-click on your equipment for additional options.\nClose this tab when you're done by clicking the icon again." or
-	              "View your bonuses and dequip items from here.\nYou can hold your tap on your equipment for additional options.\nClose this tab when you're done by tapping the icon again.",
-		open = function(target)
-			local time = love.timer.getTime()
-			return function()
-				return love.timer.getTime() > time + 10 or not Utility.UI.isOpen(target, "PlayerEquipment")
-			end
-		end
-	},
-	{
-		position = 'up',
 		id = "Ribbon-PlayerStance",
 		message = not _MOBILE and "Click here to see your stance." or "Tap here to see your stance.",
 		open = function(target)

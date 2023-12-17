@@ -321,6 +321,18 @@ do
 		Peep = ItsyScape.Resource.Peep "PreTutorial_ZombiButler",
 		MapObject = M["Hans"]
 	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Hans"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_EnchantedCopperAmulet"
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Hans"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToButler2"
+	}
 end
 
 M["Edward"] = ItsyScape.Resource.MapObject.Unique()
@@ -447,9 +459,9 @@ end
 M["ShadowTree"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 37,
+		PositionX = 51,
 		PositionY = 4,
-		PositionZ = 35,
+		PositionZ = 23,
 		Name = "ShadowTree",
 		Map = M._MAP,
 		Resource = M["ShadowTree"]
@@ -511,7 +523,7 @@ do
 	ItsyScape.Meta.KeyItemLocationHint {
 		Map = M._MAP,
 		MapObject = M["ShadowTree"],
-		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_CraftedToyWeapon"
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_GotShadowLogs"
 	}
 
 	ItsyScape.Meta.KeyItemLocationHint {
