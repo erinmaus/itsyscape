@@ -409,7 +409,7 @@ function Ship:showCameraMoveTutorial()
 	self.isMovePending = true
 
 	local duration = 4
-	local targetTime = love.timer.getTime() + duration + 1
+	local targetTime = love.timer.getTime() + duration
 
 	self.blockingInterfaceID = "TutorialHint"
 

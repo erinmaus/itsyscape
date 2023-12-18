@@ -775,7 +775,11 @@ function UIView:examine(a, b)
 
 	local player = self:getGame():getPlayer()
 	if player then
-		player:addExclusiveChatMessage(description)
+		if type(description) == "string" then
+			player:addExclusiveChatMessage(description)
+		elseif description[1] and description[1].text then
+			player:addExclusiveChatMessage(description[1].text)
+		end
 	end
 
 	if not Class.isCompatibleType(object, ToolTip.Component) then

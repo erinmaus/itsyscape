@@ -82,7 +82,7 @@ M["Hans"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 43,
-		PositionY = 4,
+		PositionY = 0,
 		PositionZ = 47,
 		Name = "Hans",
 		Map = M._MAP,

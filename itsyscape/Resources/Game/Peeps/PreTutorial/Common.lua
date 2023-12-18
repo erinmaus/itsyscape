@@ -95,8 +95,7 @@ Common.CRAFT_HINT = {
 		message = _MOBILE and "Tap on the wooden sword and then enter a quantity.\nAfter you're happy, click 'Make it!'" or "Click on the wooden sword and then enter a quantity.\nAfter you're happy, click 'Make it!'",
 		open = function(target)
 			return function()
-				return target:getState():has("Item", "ToyLongsword", 1, { ['item-inventory'] = true }) or
-				       not Utility.UI.isOpen(target, "CraftWindow")
+				return not Utility.UI.isOpen(target, "CraftWindow")
 			end
 		end
 	}

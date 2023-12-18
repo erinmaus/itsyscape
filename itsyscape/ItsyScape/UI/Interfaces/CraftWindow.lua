@@ -34,7 +34,7 @@ local CraftWindow = Class(Interface)
 CraftWindow.WIDTH = 800
 
 if _MOBILE then
-	CraftWindow.HEIGHT = 560
+	CraftWindow.HEIGHT = 500
 else
 	CraftWindow.HEIGHT = 640
 end
