@@ -343,7 +343,7 @@ function NominomiconController:select(e)
 	if not self.quests[e.index].isQuest then
 		result = currentQuest
 	else
-		result = Utility.Quest.buildRichTextLabelFromQuestLog(currentQuest, self:getPeep(), _DEBUG)
+		result = Utility.Quest.buildRichTextLabelFromQuestLog(currentQuest, self:getPeep())
 
 		table.insert(result, 1, {
 			t = 'header',

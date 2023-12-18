@@ -12,7 +12,9 @@ if _MOBILE then
 		end
 
 		if _APP then
-			_APP:getGame():getPlayer():addExclusiveChatMessage(table.concat(t, " "))
+			if _APP:getGame():getPlayer() then
+				_APP:getGame():getPlayer():addExclusiveChatMessage(table.concat(t, " "))
+			end
 		end
 
 		p(...)

@@ -1342,6 +1342,7 @@ include "Resources/Game/DB/Props/CSGBuilding.lua"
 include "Resources/Game/DB/Props/Farm.lua"
 include "Resources/Game/DB/Props/Altars.lua"
 include "Resources/Game/DB/Props/MilkOMatic.lua"
+include "Resources/Game/DB/Props/Target.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"

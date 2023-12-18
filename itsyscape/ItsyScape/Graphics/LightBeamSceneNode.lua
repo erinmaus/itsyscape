@@ -287,7 +287,6 @@ end
 function LightBeamSceneNode:draw(renderer, delta)
 	local shader = renderer:getCurrentShader()
 	if shader:hasUniform("scape_Color") then
-		print(">>> has uniform", "scape_Color", self:getMaterial():getColor():get())
 		shader:send("scape_Color", { self:getMaterial():getColor():get() })
 	end
 

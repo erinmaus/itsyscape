@@ -66,7 +66,6 @@ function ItemIconRenderer:draw(widget, state)
 
 		local icon = self.icons[itemID]
 		local scaleX, scaleY
-		local itemScaleX, itemScaleY
 		local x, y
 		local originX, originY
 		do
@@ -78,6 +77,7 @@ function ItemIconRenderer:draw(widget, state)
 			originY = height / 2
 		end
 
+		local itemScaleX, itemScaleY = scaleX, scaleY
 		if widget:get("itemIsNoted", state) then
 			itemScaleX = scaleX * 0.8
 			itemScaleY = scaleY * 0.8
@@ -88,9 +88,6 @@ function ItemIconRenderer:draw(widget, state)
 				0,
 				scaleX, scaleY,
 				originX, originY)
-		else
-			itemScaleX = scaleX
-			itemScaleY = scaleY
 		end
 
 		local isDisabled = widget:get("isDisabled", state)
@@ -116,10 +113,10 @@ function ItemIconRenderer:draw(widget, state)
 		local textWidth = self.font:getWidth(text)
 
 		love.graphics.setColor(0, 0, 0, 1)
-		itsyrealm.graphics.print(text, width - textWidth, 2)
+		itsyrealm.graphics.print(text, width - textWidth, 2, 0, scaleX, scaleY)
 
 		love.graphics.setColor(unpack(color))
-		itsyrealm.graphics.print(text, width - textWidth - 2)
+		itsyrealm.graphics.print(text, width - textWidth - 2, 0, scaleX, scaleY)
 
 		love.graphics.setFont(oldFont)
 		love.graphics.setColor(1, 1, 1, 1)

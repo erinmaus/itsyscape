@@ -22,6 +22,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Resource.KeyItem "PreTutorial_ReadPowernomicon"
 ItsyScape.Resource.KeyItem "PreTutorial_SearchedCrate"
+ItsyScape.Resource.KeyItem "PreTutorial_CraftedToyWeapon"
 
 local Quest = ItsyScape.Utility.Quest
 local Step = ItsyScape.Utility.QuestStep
@@ -34,19 +35,21 @@ Quest "PreTutorial" {
 		"PreTutorial_SearchedCrate"
 	},
 	Step "PreTutorial_LearnedToMakeGhostspeakAmulet",
-	Step {
-		"PreTutorial_MineCopper",
-		"PreTutorial_SmeltCopperBar",
-		"PreTutorial_SmithCopperAmulet",
-		"PreTutorial_EnchantedCopperAmulet"
-	},
+	Step "PreTutorial_MineCopper",
+	Step "PreTutorial_SmeltCopperBar",
+	Step "PreTutorial_SmithCopperAmulet",
+	Step "PreTutorial_EnchantedCopperAmulet",
 	Step "PreTutorial_MadeGhostspeakAmulet",
 	Step {
 		"PreTutorial_TalkedToGhostBoy",
 		"PreTutorial_TalkedToGhostGirl",
 	},
 	Step {
+		"PreTutorial_GotShadowLogs",
+		"PreTutorial_CraftedToyWeapon",
 		"PreTutorial_SavedGhostBoy",
+		"PreTutorial_FishedLarry",
+		"PreTutorial_CookedLarry",
 		"PreTutorial_SavedGhostGirl",
 	},
 	Step "PreTutorial_TalkedToButler2",
@@ -127,7 +130,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "Smith a copper amulet on the anvil in the shed using the hammer you obtained.",
+	Value = "Smith a copper bar on the anvil in the shed using the hammer you obtained to make a copper amulet.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SmithCopperAmulet"
 }
 
@@ -139,7 +142,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "Enchant the copper amulet using the Enchant spell. Runes for this spell can be obtained from the Powernomicon.",
+	Value = "Enchant the copper amulet using the Enchant spell. Maybe Hans knows more?",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_EnchantedCopperAmulet"
 }
 
@@ -169,7 +172,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You spoke to Elizabeth, the ghost girl, using the ghostspeak amulet and found out she needs something dramatic to eat. What about cooking a goldfish?",
+	Value = "You spoke to Elizabeth, the ghost girl, using the ghostspeak amulet and found out she needs something macabre to eat. What about cooking a goldfish?",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToGhostGirl"
 }
 
@@ -187,7 +190,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "Save Elizabeth by feeding her something dramatic.",
+	Value = "Save Elizabeth by feeding her something macabre.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SavedGhostGirl"
 }
 
@@ -243,4 +246,26 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Value = "Hans teleported you to Isabelle Island. Quest complete!",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_WokeUp"
+}
+
+local Description = ItsyScape.Utility.QuestStepDescription
+
+Description "PreTutorial_GotShadowLogs" {
+	before = "Cut down a tree for some logs so you can craft a toy weapon.",
+	after = "You obtained some shadow logs from a tree."
+}
+
+Description "PreTutorial_CraftedToyWeapon" {
+	before = "Craft some shadow logs into a toy weapon using your knife.",
+	after = "Using some shadow logs and a knife, you crafted a toy weapon."
+}
+
+Description "PreTutorial_FishedLarry" {
+	before = "Fish Larry, the pet goldfish, from the courtyard pond.",
+	after = "Larry was fished from the pond. And remember, fish can't breathe outside of water..."
+}
+
+Description "PreTutorial_CookedLarry" {
+	before = "Cook Larry on the cooking range in the kitchen.",
+	after = "Poor Larry was cooked. Hope this is macabre enough for Elizabeth..."
 }

@@ -26,12 +26,25 @@ DefaultCameraController.ACTION_BUTTON = 1
 DefaultCameraController.PROBE_BUTTON  = 2
 DefaultCameraController.CAMERA_BUTTON = 3
 
+DefaultCameraController.SHOW_MODE_NONE   = "none"
+DefaultCameraController.SHOW_MODE_SCROLL = "scroll"
+DefaultCameraController.SHOW_MODE_MOVE   = "move"
+
+DefaultCameraController.CLICK_STILL_MAX        = 24
+DefaultCameraController.CLICK_DRAG_DENOMINATOR = 4
+
 DefaultCameraController.SPEED = math.pi / 2
 
 function DefaultCameraController:new(...)
 	CameraController.new(self, ...)
 
+	self.distanceX = 0
+	self.distanceY = 0
+	self.isActionMoving = false
+	self.isActionButtonDown = false
 	self.isCameraDragging = false
+
+	self.curveMode = DefaultCameraController.SHOW_MODE_NONE
 
 	self.cameraVerticalRotationOffset = 0
 	self.cameraHorizontalRotationOffset = 0
@@ -48,6 +61,8 @@ function DefaultCameraController:new(...)
 	self.isTargetting = _CONF.targetCameraMode or false
 	self.isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	self.targetOpponentDistance = 0
+
+	self.cursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
 end
 
 function DefaultCameraController:getPlayerPosition()
@@ -99,20 +114,47 @@ function DefaultCameraController:getTargetPosition()
 end
 
 function DefaultCameraController:mousePress(uiActive, x, y, button)
+	if self:getIsDemoing() then
+		return
+	end
+
 	if not uiActive then
-		if button == DefaultCameraController.CAMERA_BUTTON then
+		if button == DefaultCameraController.ACTION_BUTTON then
+			self.isActionMoving = false
+			self.isActionButtonDown = true
+			self.distanceX = 0
+			self.distanceY = 0
+		elseif button == DefaultCameraController.CAMERA_BUTTON then
 			self.isCameraDragging = true
 		end
 	end
 end
 
 function DefaultCameraController:mouseRelease(uiActive, x, y, button)
-	if button == DefaultCameraController.CAMERA_BUTTON then
+	if self:getIsDemoing() then
+		return CameraController.PROBE_SUPPRESS
+	end
+
+	if button == DefaultCameraController.CAMERA_BUTTON or
+	   (button == DefaultCameraController.ACTION_BUTTON and self.isActionMoving)
+    then
 		self.isCameraDragging = false
+	end
+
+	if button == DefaultCameraController.ACTION_BUTTON then
+		local suppress = self.isActionMoving
+
+		self.isActionMoving = false
+		self.isActionButtonDown = false
+
+		if suppress then
+			return CameraController.PROBE_SUPPRESS
+		end
 	end
 
 	if not uiActive then
 		if button == DefaultCameraController.ACTION_BUTTON then
+			self.isActionButtonDown = false
 			return CameraController.PROBE_SELECT_DEFAULT
 		elseif button == DefaultCameraController.PROBE_BUTTON then
 			return CameraController.PROBE_CHOOSE_OPTION
@@ -122,45 +164,78 @@ function DefaultCameraController:mouseRelease(uiActive, x, y, button)
 	return CameraController.PROBE_SUPPRESS
 end
 
+function DefaultCameraController:_scroll(y)
+	local distance = self.targetDistance - y * 0.5
+	if not _DEBUG then
+		self.targetDistance = math.min(math.max(distance, DefaultCameraController.MIN_DISTANCE), DefaultCameraController.MAX_DISTANCE)
+	else
+		self.targetDistance = distance
+	end
+end
+
 function DefaultCameraController:mouseScroll(uiActive, x, y)
+	if self:getIsDemoing() then
+		return
+	end
+
 	if not uiActive then
-		local distance = self.targetDistance - y * 0.5
-		if not _DEBUG then
-			self.targetDistance = math.min(math.max(distance, DefaultCameraController.MIN_DISTANCE), DefaultCameraController.MAX_DISTANCE)
-		else
-			self.targetDistance = distance
+		self:_scroll(y)
+	end
+end
+
+function DefaultCameraController:_rotate(dx, dy)
+	local angle1 = self.cameraVerticalRotationOffset + dx / 128
+	local angle2 = self.cameraHorizontalRotationOffset + -dy / 128
+
+	if not _DEBUG then
+		angle1 = math.max(
+			angle1,
+			-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+		angle1 = math.min(
+			angle1,
+			DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+		angle2 = math.max(
+			angle2,
+			-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+		angle2 = math.min(
+			angle2,
+			DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+	end
+
+	self:getCamera():setVerticalRotation(
+		DefaultCameraController.CAMERA_VERTICAL_ROTATION + angle1)
+	self:getCamera():setHorizontalRotation(
+		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + angle2)
+
+	self.cameraVerticalRotationOffset = angle1
+	self.cameraHorizontalRotationOffset = angle2
+end
+
+function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
+	if self:getIsDemoing() then
+		return
+	end
+
+	if self.isCameraDragging then
+		self:_rotate(dx, dy)
+
+		if self.isActionButtonDown and math.abs(self.cameraHorizontalRotationOffset) == DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET then
+			self:_scroll(-dy / DefaultCameraController.CLICK_DRAG_DENOMINATOR)
+		end
+	elseif self.isActionButtonDown then
+		self.distanceX = (self.distanceX or 0) + dx
+		self.distanceY = (self.distanceY or 0) + dy
+
+		local difference = math.sqrt(self.distanceX ^ 2 + self.distanceY ^ 2)
+		if difference > DefaultCameraController.CLICK_STILL_MAX then
+			self.isCameraDragging = true
+			self.isActionMoving = true
 		end
 	end
 end
 
-function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
-	if self.isCameraDragging then
-		local angle1 = self.cameraVerticalRotationOffset + dx / 128
-		local angle2 = self.cameraHorizontalRotationOffset + -dy / 128
-
-		if not _DEBUG then
-			angle1 = math.max(
-				angle1,
-				-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-			angle1 = math.min(
-				angle1,
-				DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-			angle2 = math.max(
-				angle2,
-				-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
-			angle2 = math.min(
-				angle2,
-				DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
-		end
-
-		self:getCamera():setVerticalRotation(
-			DefaultCameraController.CAMERA_VERTICAL_ROTATION + angle1)
-		self:getCamera():setHorizontalRotation(
-			DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + angle2)
-
-		self.cameraVerticalRotationOffset = angle1
-		self.cameraHorizontalRotationOffset = angle2
-	end
+function DefaultCameraController:getIsMouseCaptured()
+	return self.isActionButtonDown and self.isActionMoving and self.isCameraDragging
 end
 
 function DefaultCameraController:updateControls(delta)
@@ -284,11 +359,39 @@ function DefaultCameraController:updateTargetDistance()
 	self.targetOpponentDistance = (distance + targetSize)
 end
 
+function DefaultCameraController:updateShow(delta)
+	if not self.curve then
+		return
+	end
+
+	if not self:getIsDemoing() then
+		return
+	end
+
+	self.currentCurveTime = math.min((self.currentCurveTime or 0) + delta, self.curveDuration or 0)
+
+	local cx, cy = self.curve:evaluate(self.currentCurveTime / self.curveDuration)
+	cx = cx * love.graphics.getWidth()
+	cy = cy * love.graphics.getHeight()
+
+	local px, py = self.previousCurveX, self.previousCurveY
+
+	if self.curveMode == DefaultCameraController.SHOW_MODE_MOVE then
+		self:_rotate(cx - px, cy - py)
+	elseif self.curveMode == DefaultCameraController.SHOW_MODE_SCROLL then
+		self:_scroll(-(cy - py) / DefaultCameraController.CLICK_DRAG_DENOMINATOR)
+	end
+
+	self.previousCurveX = cx
+	self.previousCurveY = cy
+end
+
 function DefaultCameraController:update(delta)
 	if _DEBUG then
 		self:debugUpdate(delta)
 	end
 
+	self:updateShow(delta)
 	self:updateControls(delta)
 
 	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
@@ -341,6 +444,71 @@ function DefaultCameraController:onShake(duration, interval, min, max)
 	self.maxShakingOffset = max or 1
 	self.previousShakingOffset = Vector(0)
 	self.currentShakingOffset = Vector(0)
+end
+
+function DefaultCameraController:onShowMove(points, duration)
+	self.curveMode = DefaultCameraController.SHOW_MODE_MOVE
+	self.curve = love.math.newBezierCurve(unpack(points))
+	self.curveDuration = duration
+	self.currentCurveTime = 0
+	self.previousCurveX = points[1] * love.graphics.getWidth()
+	self.previousCurveY = points[2] * love.graphics.getHeight()
+end
+
+function DefaultCameraController:onShowScroll(points, duration)
+	self.curveMode = DefaultCameraController.SHOW_MODE_SCROLL
+	self.curve = love.math.newBezierCurve(unpack(points))
+	self.curveDuration = duration
+	self.currentCurveTime = 0
+	self.previousCurveX = points[1] * love.graphics.getWidth()
+	self.previousCurveY = points[2] * love.graphics.getHeight()
+end
+
+function DefaultCameraController:getIsDemoing()
+	if self.currentCurveTime then
+		return self.currentCurveTime < self.curveDuration
+	end
+
+	return false
+end
+
+function DefaultCameraController:demoMobile()
+	if self.curveMode == DefaultCameraController.SHOW_MODE_MOVE then
+		love.graphics.draw(self.cursor, self.previousCurveX, self.previousCurveY)
+	elseif self.curveMode == DefaultCameraController.SHOW_MODE_SCROLL then
+		local x = love.graphics.getWidth() / 2
+		local y = love.graphics.getHeight() / 2
+
+		local range = love.graphics.getHeight() / 2
+		local scroll = self.previousCurveY / love.graphics.getHeight()
+
+		love.graphics.push()
+		love.graphics.translate(x, y)
+		love.graphics.rotate(0, 0, 1, math.pi / 4)
+		love.graphics.draw(self.cursor, 0, scroll * range)
+		love.graphics.draw(self.cursor, 0, -scroll * range)
+		love.graphics.pop()
+	end
+end
+
+function DefaultCameraController:demo()
+	if _MOBILE then
+		self:demoMobile()
+		return
+	end
+
+	if self.curveMode == DefaultCameraController.SHOW_MODE_MOVE then
+		love.graphics.draw(self.cursor, self.previousCurveX, self.previousCurveY)
+	elseif self.curveMode == DefaultCameraController.SHOW_MODE_SCROLL then
+		local x = love.graphics.getWidth() / 2
+		local y = love.graphics.getHeight() / 2
+
+		local range = love.graphics.getHeight() / 4
+		local scroll = self.previousCurveY / love.graphics.getHeight()
+
+
+		love.graphics.draw(self.cursor, x, y - range / 2 + scroll * range)
+	end
 end
 
 function DefaultCameraController:draw()

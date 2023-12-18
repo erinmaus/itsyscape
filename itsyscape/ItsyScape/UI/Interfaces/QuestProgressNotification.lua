@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Drawable = require "ItsyScape.UI.Drawable"
@@ -24,13 +25,14 @@ local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local Widget = require "ItsyScape.UI.Widget"
 
 local QuestProgressNotification = Class(Interface)
-QuestProgressNotification.WIDTH = 384
-QuestProgressNotification.HEIGHT = 320
+QuestProgressNotification.WIDTH = 320
+QuestProgressNotification.HEIGHT = 240
 QuestProgressNotification.PADDING = 8
 QuestProgressNotification.ICON_SIZE = 48
 QuestProgressNotification.BUTTON_SIZE = 48
 QuestProgressNotification.HINT_WIDTH = 240
 QuestProgressNotification.HINT_HEIGHT = 128
+QuestProgressNotification.SCROLL_TIME = 0.75
 
 QuestProgressNotification.LocationHint = Class(Drawable)
 
@@ -89,7 +91,7 @@ function QuestProgressNotification.LocationHint:getActorPosition(actorID)
 	local actorPosition
 	do
 		local worldTransform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
-		actorPosition = self:getWorldPosition(worldTransform, Vector.ZERO)
+		actorPosition = self:getWorldPosition(worldTransform, -Vector.UNIT_Y)
 	end
 
 	return actorPosition
@@ -106,7 +108,7 @@ function QuestProgressNotification.LocationHint:getPropPosition(propID)
 	local propPosition
 	do
 		local worldTransform = propView:getRoot():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
-		propPosition = self:getWorldPosition(worldTransform, Vector.ZERO)
+		propPosition = self:getWorldPosition(worldTransform, -Vector.UNIT_Y)
 	end
 
 	return propPosition
@@ -204,6 +206,8 @@ function QuestProgressNotification:new(id, index, ui)
 		QuestProgressNotification.HEIGHT - QuestProgressNotification.PADDING * 3 - QuestProgressNotification.ICON_SIZE - 24)
 	self.infoPanel:getInnerPanel():setWrapContents(true)
 	self.infoPanel:getInnerPanel():setPadding(0, 0)
+	self.infoPanel:getInnerPanel():setUniformSize(true, 1, 0)
+	self.infoPanel:setFloatyScrollBars(false)
 	self.infoPanel:setPosition(
 		QuestProgressNotification.PADDING,
 		QuestProgressNotification.PADDING * 3 + QuestProgressNotification.ICON_SIZE + 24)
@@ -211,13 +215,22 @@ function QuestProgressNotification:new(id, index, ui)
 
 	self.guideLabel = RichTextLabel()
 	self.guideLabel:setSize(
-		QuestProgressNotification.WIDTH - QuestProgressNotification.PADDING * 3 - ScrollablePanel.DEFAULT_SCROLL_SIZE,
+		QuestProgressNotification.WIDTH,
 		0)
 	self.guideLabel:setWrapContents(true)
+	self.guideLabel.onScroll:register(function(_, targetScroll)
+		if self.targetScroll == targetScroll then
+			return
+		end
+
+		local _
+
+		_, self.currentScroll = self.infoPanel:getInnerPanel():getScroll()
+		self.targetScroll = targetScroll
+		self.scrollTime = 0
+	end)
 	self.guideLabel.onSize:register(function()
-		local _, scrollHeight = self.guideLabel:getSize()
-		self.infoPanel:getInnerPanel():setSize(self.guideLabel:getSize())
-		self.infoPanel:setScrollSize(self.infoPanel:getSize(), scrollHeight)
+		self.infoPanel:performLayout()
 	end)
 	self.infoPanel:addChild(self.guideLabel)
 
@@ -270,6 +283,27 @@ function QuestProgressNotification:update(delta)
 	Interface.update(self, delta)
 
 	self:updatePosition()
+
+	if self:getState().id == "PreTutorial" then
+		self:removeChild(self.closeButton)
+	elseif not self.closeButton:getParent() then
+		self:addChild(self.closeButton)
+	end
+
+	if self.scrollTime then
+		self.scrollTime = math.min(self.scrollTime + delta, QuestProgressNotification.SCROLL_TIME)
+		local mu = Tween.sineEaseIn(self.scrollTime / QuestProgressNotification.SCROLL_TIME)
+
+		local _, scrollSizeY = self.infoPanel:getScrollSize()
+		local _, height = self.infoPanel:getSize()
+
+		local scrollY = self.targetScroll * mu + self.currentScroll * (1 - mu)
+		self.infoPanel:getInnerPanel():setScroll(0, math.min(scrollY, scrollSizeY - height))
+
+		if mu >= 1 then
+			self.scrollTime = nil
+		end
+	end
 end
 
 return QuestProgressNotification

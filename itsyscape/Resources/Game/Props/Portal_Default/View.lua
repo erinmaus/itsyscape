@@ -52,11 +52,13 @@ function PortalView:load()
 		self.smoke = DecorationSceneNode()
 		self.smoke:fromGroup(self.mesh:getResource(), "PortalSmoke")
 		self.smoke:getMaterial():setTextures(self.texture)
+		self.smoke:getMaterial():setIsFullLit(true)
 		self.smoke:setParent(root)
 
 		self.portal = DecorationSceneNode()
 		self.portal:fromGroup(self.mesh:getResource(), "PortalScry")
 		self.portal:getMaterial():setTextures(self.texture)
+		self.portal:getMaterial():setIsFullLit(true)
 		self.portal:setParent(root)
 
 		self.portal:onWillRender(function(renderer)
@@ -115,14 +117,22 @@ function PortalView:update(delta)
 	selfCamera:setDistance(parentCamera:getDistance())
 
 	local state = self:getProp():getState()
-	selfCamera:setPosition(Vector(unpack(state.position or { parentCamera:getPosition():get() })))
+	selfCamera:setPosition(Vector(unpack(state.absolutePosition or { parentCamera:getPosition():get() })))
 
 	do
-		love.graphics.push('all')
-		love.graphics.setScissor()
-		selfRenderer:setCamera(selfCamera)
-		selfRenderer:draw(gameView:getScene(), 0, PortalView.WIDTH, PortalView.HEIGHT)
-		love.graphics.pop()
+		local mapSceneNode = gameView:getMapSceneNode(state.layer)
+		if mapSceneNode then
+			local mapSceneNodeParent = mapSceneNode:getParent()
+			mapSceneNode:setParent(nil)
+
+			love.graphics.push('all')
+			love.graphics.setScissor()
+			selfRenderer:setCamera(selfCamera)
+			selfRenderer:draw(mapSceneNode, 0, PortalView.WIDTH, PortalView.HEIGHT)
+			love.graphics.pop()
+
+			mapSceneNode:setParent(mapSceneNodeParent)
+		end
 	end
 end
 

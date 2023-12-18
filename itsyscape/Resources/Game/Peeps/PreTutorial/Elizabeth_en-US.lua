@@ -16,15 +16,22 @@ if not hasGhostSpeakEquipped then
 	speaker "_TARGET"
 	message "It's useless, I can't speak to her right now."
 
-	hasGhostSpeakInInventory = state:has('Item', "GhostspeakAmulet", 1, { ['item-inventory'] = true })
+	local hasCopperAmulet = state:has('Item', "CopperAmulet", 1, { ['item-equipment'] = true, ['item-inventory'] = true })
+	local hasGhostSpeakInInventory = state:has('Item', "GhostspeakAmulet", 1, { ['item-inventory'] = true })
 	if hasGhostSpeakInInventory then
 		message "Maybe if I equip that Ghostspeak amulet..."
+	elseif hasCopperAmulet then
+		message {
+			"%hint{I think should enchant the copper amulet}...",
+			"Maybe %person{Hans} knows how to do that?"
+		}
 	end
 else
 	state:give('KeyItem', "PreTutorial_TalkedToGhostGirl")
 
-	local saved = state:has('KeyItem', "PreTutorial_SavedGhostGirl")
-	if not saved then
+	local savedElizabeth = state:has('KeyItem', "PreTutorial_SavedGhostGirl")
+	local savedEdward = state:has('KeyItem', "PreTutorial_SavedGhostBoy")
+	if not savedElizabeth then
 		local hasCookedLarry = state:has('Item', "CookedLarry", 1, { ['item-inventory'] = true })
 		local hasBurntLarry = state:has('Item', "BurntLarry", 1, { ['item-inventory'] = true })
 
@@ -46,7 +53,7 @@ else
 				message {
 					"I'm starving!",
 					"The food in the dining room makes me sick.",
-					"I need something more dramatic and horrifying."
+					"I need something more macabre and horrifying."
 				}
 
 				speaker "_TARGET"
@@ -82,5 +89,13 @@ else
 	else
 		speaker "Elizabeth"
 		message "Larry was delicious! I'll be ready to pass on soon."
+
+		if savedEdward then
+			message {
+				"By the way, thanks for saving my brother.",
+				"I think %person{Hans} might know what to do next.",
+				"Maybe speak to him?"
+			}
+		end
 	end
 end

@@ -73,7 +73,7 @@ function FarOcean:onOpenPortal(layer)
 	portal:setColor(Color(1, 0.4, 0.4, 1))
 
 	local tele = portal:getBehavior(TeleportalBehavior)
-	tele.i = 21
+	tele.i = 22.75
 	tele.j = 28
 	tele.layer = layer
 

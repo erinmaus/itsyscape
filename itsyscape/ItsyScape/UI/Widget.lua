@@ -326,10 +326,6 @@ end
 function Widget:setSize(w, h)
 	self.width = w or self.width
 	self.height = h or self.height
-
-	self:setScrollSize(
-		math.max(self.scrollWidth, self.width),
-		math.max(self.scrollHeight, self.height))
 end
 
 function Widget:getScroll()
@@ -393,6 +389,10 @@ function Widget:setToolTip(...)
 	else
 		self.toolTip = { n = select('#', ...), ... }
 	end
+end
+
+function Widget:getIsDraggable()
+	return false
 end
 
 function Widget:getIsClickThrough()

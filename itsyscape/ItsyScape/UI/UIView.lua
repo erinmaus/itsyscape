@@ -32,6 +32,8 @@ local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local RichTextLabelRenderer = require "ItsyScape.UI.RichTextLabelRenderer"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local SceneSnippetRenderer = require "ItsyScape.UI.SceneSnippetRenderer"
+local ScrollBar = require "ItsyScape.UI.ScrollBar"
+local ScrollButtonRenderer = require "ItsyScape.UI.ScrollButtonRenderer"
 local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local SpellIconRenderer = require "ItsyScape.UI.SpellIconRenderer"
 local TextInput = require "ItsyScape.UI.TextInput"
@@ -649,6 +651,8 @@ function UIView:new(gameView)
 	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(RichTextLabel, RichTextLabelRenderer(self.resources))
 	self.renderManager:addRenderer(SceneSnippet, SceneSnippetRenderer(self.resources))
+	self.renderManager:addRenderer(ScrollBar.Button, ScrollButtonRenderer(self.resources))
+	self.renderManager:addRenderer(ScrollBar.DragButton, ScrollButtonRenderer(self.resources))
 	self.renderManager:addRenderer(SpellIcon, SpellIconRenderer(self.resources))
 	self.renderManager:addRenderer(TextInput, TextInputRenderer(self.resources))
 	self.renderManager:addRenderer(Texture, TextureRenderer(self.resources))
@@ -765,20 +769,37 @@ function UIView:examine(a, b)
 				description = string.format("It's a %s.", object)
 			end
 		end
+
+		description = { description }
 	end
 
 	local player = self:getGame():getPlayer()
 	if player then
-		player:addExclusiveChatMessage(description)
+		if type(description) == "string" then
+			player:addExclusiveChatMessage(description)
+		elseif description[1] and description[1].text then
+			player:addExclusiveChatMessage(description[1].text)
+		end
+	end
+
+	if not Class.isCompatibleType(object, ToolTip.Component) then
+		object = ToolTip.Header(object)
+	end
+
+	if type(description) == "string" then
+		description = { ToolTip.Text(description) }
 	end
 
 	local toolTip = self.renderManager:setToolTip(
-		4, 
-		ToolTip.Header(object),
-		ToolTip.Text(description))
-	toolTip:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/Examine.9.png"
-	}, self.resources))
+		math.max(#description + 3, 4), 
+		object,
+		unpack(description))
+
+	if not _MOBILE then
+		toolTip:setStyle(PanelStyle({
+			image = "Resources/Renderers/Widget/Panel/Examine.9.png"
+		}, self.resources))
+	end
 end
 
 function UIView:probe(actions)
@@ -880,7 +901,7 @@ function UIView:update(delta)
 					hintLabel = Label()
 					hintLabel:setStyle(LabelStyle({
 						font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-						fontSize = 24,
+						fontSize = 30,
 						color = { 1, 1, 1, 1 },
 						align = "center",
 						textShadow = true

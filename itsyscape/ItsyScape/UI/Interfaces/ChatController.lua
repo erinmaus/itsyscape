@@ -24,6 +24,10 @@ end
 function ChatController:poke(actionID, actionIndex, e)
 	if actionID == "chat" then
 		self:chat(e)
+	elseif actionID == "show" then
+		self:hide(false)
+	elseif actionID == "hide" then
+		self:hide(true)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -32,6 +36,11 @@ end
 function ChatController:chat(e)
 	local playerModel = Utility.Peep.getPlayerModel(self:getPeep())
 	playerModel:talk(e.message)
+end
+
+function ChatController:hide(hidden)
+	local playerStorage = Utility.Peep.getStorage(self:getPeep()):getSection("Chat")
+	playerStorage:set("hidden", hidden)
 end
 
 function ChatController:pull()
@@ -83,7 +92,8 @@ function ChatController:pull()
 
 	return {
 		messages = result,
-		received = messages.received
+		received = messages.received,
+		hidden = Utility.Peep.getStorage(self:getPeep()):getSection("Chat"):get("hidden")
 	}
 end
 

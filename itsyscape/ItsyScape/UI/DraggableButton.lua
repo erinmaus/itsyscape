@@ -43,6 +43,10 @@ function DraggableButton:setDragDistance(value)
 	self.dragDistance = value or self.dragDistance
 end
 
+function DraggableButton:getIsDraggable()
+	return true
+end
+
 function DraggableButton:getIsFocusable()
 	return true
 end

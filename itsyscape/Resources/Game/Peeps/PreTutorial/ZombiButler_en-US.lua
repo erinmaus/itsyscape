@@ -272,16 +272,35 @@ else
 					"then you can cast the Enchant spell."
 				}
 
-				if P:getState():has('Item', "CopperAmulet", 1, { ['item-inventory'] = true }) then
+				local hasCopperAmuletInInventory = P:getState():has('Item', "CopperAmulet", 1, { ['item-inventory'] = true })
+				local hasCopperAmuletEquipped = P:getState():has('Item', "CopperAmulet", 1, { ['item-equipment'] = true })
+
+				if hasCopperAmuletEquipped or hasCopperAmuletInInventory then
 					local YES = option "Yes, please!"
 					local NO  = option "No, I can figure it out myself."
 
-					message "I see you have a %item{copper amulet}. I can show you how to enchant it, if you want."
+					if hasCopperAmuletEquipped then
+						message {
+							"I see you have a %item{copper amulet} equipped.",
+							"Do you need help taking it off and enchanting it?"
+						}
 
-					local result = select { YES, NO }
-					if result == YES then
-						Common.showEnchantTip(P)
-						return
+						local result = select { YES, NO }
+						if result == YES then
+							Common.showDequipTip(P)
+							return
+						end
+					else
+						message {
+							"I see you have a %item{copper amulet}.",
+							"I can show you how to enchant it, if you want."
+						}
+
+						local result = select { YES, NO }
+						if result == YES then
+							Common.showEnchantTip(P)
+							return
+						end
 					end
 				end
 			end

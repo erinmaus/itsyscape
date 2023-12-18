@@ -23,7 +23,7 @@ function BasicPortal:new(resource, name, ...)
 	self:addBehavior(TeleportalBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(1.5, 3, 1.5)
+	size.size = Vector(1.5, 4.5, 1.5)
 
 	local components = {
 		math.random(200, 255) / 255,

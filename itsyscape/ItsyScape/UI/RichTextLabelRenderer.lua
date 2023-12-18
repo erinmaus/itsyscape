@@ -83,6 +83,8 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 			self.x = self.left
 			self.y = self.y + self.height
 			self.height = lineHeight
+
+			love.graphics.setColor(1, 1, 1, 1)
 		else
 			self:drawBlock(snippet, text)
 		end
@@ -103,7 +105,6 @@ function RichTextLabelRenderer.Draw:drawText(text, parent)
 	self:doDrawText(text, parent, font)
 
 	self.y = self.y + self.height
-	self.height = 0
 end
 
 function RichTextLabelRenderer.Draw:drawHeader(text, parent)
@@ -255,6 +256,10 @@ function RichTextLabelRenderer.Draw:drawImage(block, parent)
 end
 
 function RichTextLabelRenderer.Draw:drawBlock(block, parent)
+	if block.scroll then
+		self.scrollY = self.y
+	end
+
 	if type(block) == 'string' or block.t == 'text' then
 		self:drawText(block, parent)
 	elseif block.t == 'header' then
@@ -282,8 +287,8 @@ function RichTextLabelRenderer:new(t, resources)
 	WidgetRenderer.new(self, resources)
 
 	self.fonts = {
-		text = love.graphics.newFont("Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", 22),
-		header = love.graphics.newFont("Resources/Renderers/Widget/Common/Serif/Bold.ttf", 26)
+		text = love.graphics.newFont("Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", _MOBILE and 22 or 16),
+		header = love.graphics.newFont("Resources/Renderers/Widget/Common/Serif/Bold.ttf", _MOBILE and 26 or 22)
 	}
 	self.texts = {}
 end
@@ -303,6 +308,8 @@ function RichTextLabelRenderer:drop(widget)
 end
 
 function RichTextLabelRenderer:draw(widget, state)
+	self:visit(widget)
+
 	local text = self.texts[widget]
 	if not text or text.t ~= widget:getText() then
 		local t = widget:getText()
@@ -323,6 +330,13 @@ function RichTextLabelRenderer:draw(widget, state)
 	local renderer = RichTextLabelRenderer.Draw(self, text.t, text.resources, w)
 	renderer:draw()
 
+	if widget:getWrapParentContents() then
+		local p = widget:getParent()
+		if p then
+			p:setSize(w, renderer.y + renderer.height)
+		end
+	end
+
 	if widget:getWrapContents() and text.y ~= renderer.y then
 		widget:setSize(w, renderer.y)
 		widget:onSize()
@@ -330,11 +344,9 @@ function RichTextLabelRenderer:draw(widget, state)
 		text.y = renderer.y
 	end
 
-	if widget:getWrapParentContents() then
-		local p = widget:getParent()
-		if p then
-			p:setSize(w, renderer.y + renderer.height)
-		end
+	if text.scrollY ~= renderer.scrollY then
+		widget:onScroll(renderer.scrollY)
+		text.scrollY = renderer.scrollY
 	end
 end
 

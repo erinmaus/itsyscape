@@ -12,23 +12,35 @@ local Color = require "ItsyScape.Graphics.Color"
 local Widget = require "ItsyScape.UI.Widget"
 
 local ToolTip = Class(Widget)
-ToolTip.Header = Class()
+ToolTip.Component = Class()
+
+function ToolTip.Component:new()
+	-- Nothing.
+end
+
+ToolTip.Header = Class(ToolTip.Component)
 function ToolTip.Header:new(text, k)
+	ToolTip.Component.new(self)
+
 	k = k or {}
 	self.text = text or "Lorem Ipsum"
 	self.color = k.color or Color(0, 0, 0, 1)
 end
 
-ToolTip.Text = Class()
+ToolTip.Text = Class(ToolTip.Component)
 function ToolTip.Text:new(text, k)
+	ToolTip.Component.new(self)
+
 	k = k or {}
 	self.text = text or "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 	self.color = k.color or Color(0, 0, 0, 1)
 	self.shadow = k.shadow or false
 end
 
-ToolTip.Image = Class()
+ToolTip.Image = Class(ToolTip.Component)
 function ToolTip.Image:new(text, k)
+	ToolTip.Component.new(self)
+
 	self.image = love.graphics.newImage(image)
 	self.sizeX = k.sizeX or false
 	self.sizeY = k.sizeY or false
