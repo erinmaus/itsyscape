@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local Keybinds = require "ItsyScape.UI.Keybinds"
@@ -63,6 +64,25 @@ function DefaultCameraController:new(...)
 	self.targetOpponentDistance = 0
 
 	self.cursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
+end
+
+function DefaultCameraController:getPlayerMapRotation()
+	local player = self:getGame():getPlayer()
+	if not player then
+		return Quaternion.IDENTITY
+	end
+
+	local _, _, layer = player:getActor():getTile()
+	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
+
+	if not mapSceneNode then
+		return Quaternion.IDENTITY
+	end
+
+	local _, previousRotation = mapSceneNode:getTransform():getPreviousTransform()
+	local currentRotation = mapSceneNode:getTransform():getLocalRotation()
+
+	return previousRotation:slerp(currentRotation, self:getApp():getFrameDelta())
 end
 
 function DefaultCameraController:getPlayerPosition()
@@ -434,6 +454,14 @@ function DefaultCameraController:update(delta)
 	end
 end
 
+function DefaultCameraController:onMapRotationStick()
+	self.mapRotationSticky = (self.mapRotationSticky or 0) + 1
+end
+
+function DefaultCameraController:onMapRotationUnstick()
+	self.mapRotationSticky = (self.mapRotationSticky or 1) - 1
+end
+
 function DefaultCameraController:onShake(duration, interval, min, max)
 	self.isShaking = true
 	self.shakingDuration = duration or 1.5
@@ -533,6 +561,12 @@ function DefaultCameraController:draw()
 	end
 
 	self:getCamera():setPosition(center + self.cameraOffset + shake)
+
+	if self.mapRotationSticky and self.mapRotationSticky > 0 then
+		self:getCamera():setRotation(-self:getPlayerMapRotation())
+	else
+		self:getCamera():setRotation()
+	end
 end
 
 return DefaultCameraController

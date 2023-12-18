@@ -23,6 +23,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local Face3DBehavior = require "ItsyScape.Peep.Behaviors.Face3DBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
@@ -2665,10 +2666,14 @@ function Utility.Peep.lookAt(self, target, delta)
 		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
-		rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+		local rotation = Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal()
 
 		if delta then
-			rotation.rotation = Quaternion.IDENTITY:slerp(rotation.rotation, delta):getNormal()
+			print(">>> slerpin", delta)
+			rotation.rotation = rotation.rotation:slerp(rotation, delta):getNormal()
+		else
+			print(">>> not slerpin")
+			rotation.rotation = rotation
 		end
 
 		return true
@@ -2678,6 +2683,13 @@ function Utility.Peep.lookAt(self, target, delta)
 end
 
 function Utility.Peep.face3D(self)
+	if not self:hasBehavior(Face3DBehavior) then
+		local _, face3D = self:addBehavior(Face3DBehavior)
+		face3D.rotation = self:hasBehavior(RotationBehavior) and self:getBehavior(RotationBehavior).rotation or face3D.rotation
+	end
+
+	local face3D = self:getBehavior(Face3DBehavior)
+
 	local combatTarget = self:getBehavior(CombatTargetBehavior)
 	if combatTarget and combatTarget.actor then
 		local actor = combatTarget.actor
@@ -2698,8 +2710,19 @@ function Utility.Peep.face3D(self)
 				local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
 				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 				local xzTilePosition = tilePosition * Vector.PLANE_XZ
+				local direction = (xzSelfPosition - xzTilePosition):getNormal()
 
-				rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
+				if (direction - face3D.direction):getLength() > 0.01 then
+					face3D.rotation = rotation.rotation
+					face3D.time = love.timer.getTime()
+					face3D.direction = direction
+				end
+
+				local delta = math.min((love.timer.getTime() - face3D.time) / face3D.duration, 1)
+
+				local targetRotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition)
+				rotation.rotation = face3D.rotation:slerp(targetRotation, delta):getNormal()
+
 				return true
 			end
 		end
