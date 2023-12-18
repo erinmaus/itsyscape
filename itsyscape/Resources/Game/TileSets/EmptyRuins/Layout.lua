@@ -315,5 +315,13 @@
 		width = 128,
 		height = 128,
 		name = "grass.edge.br"
-	}
+	},
+
+	{
+		x = 128,
+		y = 0,
+		width = 128,
+		height = 128,
+		name = "invisible"
+	},
 }

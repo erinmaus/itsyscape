@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Camera = require "ItsyScape.Graphics.Camera"
 
@@ -26,6 +27,7 @@ function ThirdPersonCamera:new()
 	self.distance = 1
 	self.up = Vector(0, 1, 0)
 	self.position = Vector(0, 0, 0)
+	self.rotation = Quaternion.IDENTITY
 end
 
 function ThirdPersonCamera:getTransforms(projection, view)
@@ -41,11 +43,18 @@ function ThirdPersonCamera:getTransforms(projection, view)
 	view = view or love.math.newTransform()
 	do
 		view:reset()
+
 		local eye = self:getEye()
-		view:lookAt(
-			eye.x, eye.y, eye.z,
-			self.position.x, self.position.y, self.position.z,
-			self.up.x, self.up.y, self.up.z)
+
+		local y = Quaternion.fromAxisAngle(self.up, -(self.verticalRotation - math.pi / 2)):getNormal()
+		local x = Quaternion.fromAxisAngle(Vector.UNIT_X, self.horizontalRotation):getNormal()
+		local lookAt = (x * y):getNormal()
+
+		view:translate(0, 0, -self.distance)
+		view:applyQuaternion(lookAt:get())
+		view:applyQuaternion(self.rotation:get())
+		view:translate(self.position:get())
+		view:scale(-1, -1, -1)
 	end
 
 	return projection, view
@@ -94,6 +103,14 @@ end
 
 function ThirdPersonCamera:getHorizontalRotation()
 	return self.horizontalRotation
+end
+
+function ThirdPersonCamera:getRotation()
+	return self.rotation
+end
+
+function ThirdPersonCamera:setRotation(value)
+	self.rotation = value or Quaternion.IDENTITY
 end
 
 local TWO_PI = math.pi * 2

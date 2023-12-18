@@ -499,6 +499,14 @@ function ActorView:transmogrify(body)
 	end
 end
 
+function ActorView:getSkeleton()
+	return self.body and self.body:getSkeleton()
+end
+
+function ActorView:getSkins(slot)
+	return self.skins[slot]
+end
+
 function ActorView:changeSkin(slot, priority, skin)
 	if not skin then
 		return

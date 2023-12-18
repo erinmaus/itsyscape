@@ -26,10 +26,12 @@ function Quaternion.fromAxisAngle(axis, angle)
 end
 
 local E = 0.00001
-function Quaternion.lookAt(source, target)
+function Quaternion.lookAt(source, target, up)
+	up = up or -Vector.UNIT_Z
+
 	local forward = (target - source):getNormal()
 
-	local dot = forward:dot(-Vector.UNIT_Z)
+	local dot = forward:dot(up)
 	if math.abs(dot + 1.0) < E then
 		return Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
 	elseif math.abs(dot - 1.0) < E then
@@ -37,7 +39,7 @@ function Quaternion.lookAt(source, target)
 	end
 
 	local angle = math.acos(dot)
-	local axis = (-Vector.UNIT_Z):cross(forward):getNormal()
+	local axis = up:cross(forward):getNormal()
 	return Quaternion.fromAxisAngle(axis, angle):getNormal()
 end
 
