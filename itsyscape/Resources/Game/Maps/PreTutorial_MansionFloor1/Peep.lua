@@ -72,6 +72,8 @@ function Mansion:onPlayerEnter(player)
 		self.zombiButler:poke('followPlayer', player)
 	end
 
+	PreTutorialCommon.listenForKeyItemHint(player)
+
 	Utility.Quest.listenForAction(player, "Item", "CopperBar", "Smelt", function()
 		player:getState():give("KeyItem", "PreTutorial_MineCopper")
 		player:getState():give("KeyItem", "PreTutorial_SmeltCopperBar")
