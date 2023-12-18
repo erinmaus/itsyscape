@@ -194,11 +194,11 @@ ItsyScape.Meta.Item {
 }
 
 ItsyScape.Meta.Equipment {
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(1, 0.5),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(1, 0.3),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(1, 0.2),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(1, 1),
-	DefenseMagic = -ItsyScape.Utility.styleBonusForItem(1, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForHands(1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForHands(1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForHands(1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForHands(1),
+	DefenseMagic = -ItsyScape.Utility.styleBonusForHands(1),
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
 	Resource = ItsyScape.Resource.Item "RustyGloves"
 }
@@ -210,12 +210,12 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Equipment {
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(1, 0.3),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(1, 0.5),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(1, 0.2),
+	DefenseStab = ItsyScape.Utility.styleBonusForFeet(1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForFeet(1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForFeet(1),
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(1, 1),
-	DefenseMagic = -ItsyScape.Utility.styleBonusForItem(1, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForFeet(1),
+	DefenseMagic = -ItsyScape.Utility.styleBonusForFeet(1),
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
 	Resource = ItsyScape.Resource.Item "RustyBoots"
 }
@@ -227,11 +227,11 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Equipment {
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(3, 0.4),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(3, 0.3),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(3, 0.3),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(3, 1),
-	DefenseMagic = -ItsyScape.Utility.styleBonusForItem(3, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForHead(1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForHead(1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForHead(1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForHead(1),
+	DefenseMagic = -ItsyScape.Utility.styleBonusForHead(1),
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
 	Resource = ItsyScape.Resource.Item "RustyHelmet"
 }
@@ -243,11 +243,11 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Equipment {
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(4, 0.3),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(4, 0.3),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(4, 0.4),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(4, 1),
-	DefenseMagic = -ItsyScape.Utility.styleBonusForItem(4, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForBody(1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForBody(1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForBody(1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForBody(1),
+	DefenseMagic = -ItsyScape.Utility.styleBonusForBody(1),
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
 	Resource = ItsyScape.Resource.Item "RustyPlatebody"
 }
@@ -259,8 +259,8 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyStab = ItsyScape.Utility.styleBonusForItem(4, 1.0),
-	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(2),
+	AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(1),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(3),
 	EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 	Resource = ItsyScape.Resource.Item "RustyDagger"
 }

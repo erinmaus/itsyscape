@@ -38,7 +38,7 @@ SkillGuide.INACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
 	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 22,
+	fontSize = _MOBILE and 22 or 16,
 	textShadow = true
 }
 
@@ -47,7 +47,7 @@ SkillGuide.ACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
 	hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-	fontSize = 22,
+	fontSize = _MOBILE and 22 or 16,
 	textShadow = true
 }
 
@@ -70,7 +70,7 @@ function SkillGuide:new(id, index, ui)
 	self.grid = ScrollablePanel(GridLayout)
 	self.grid:getInnerPanel():setUniformSize(
 		true,
-		WIDTH * (1 / 2) - ScrollablePanel.DEFAULT_SCROLL_SIZE - SkillGuide.PADDING * 2,
+		1,
 		SkillGuide.BUTTON_SIZE + SkillGuide.BUTTON_PADDING * 2)
 	self.grid:getInnerPanel():setWrapContents(true)
 	self.grid:getInnerPanel():setPadding(SkillGuide.BUTTON_PADDING)
@@ -78,9 +78,11 @@ function SkillGuide:new(id, index, ui)
 	self:addChild(self.grid)
 
 	self.infoPanel = ScrollablePanel(GridLayout)
+	self.infoPanel:setScrollBarOffset(SkillGuide.BUTTON_SIZE)
 	self.infoPanel:getInnerPanel():setWrapContents(true)
 	self.infoPanel:getInnerPanel():setPadding(0, 0)
 	self.infoPanel:getInnerPanel():setSize(WIDTH * (1 / 2), 0)
+	self.infoPanel:getInnerPanel():setUniformSize(true, 1, 0)
 	self.infoPanel:setPosition(WIDTH * (1 / 2), 0)
 	self.infoPanel:setSize(WIDTH * (1 / 2), HEIGHT)
 	self:addChild(self.infoPanel)
@@ -89,19 +91,16 @@ function SkillGuide:new(id, index, ui)
 	self.requirementsPanel:setData('skillAsLevel', true)
 	self.requirementsPanel:setText("Requirements")
 	self.requirementsPanel:setSize(WIDTH * (1 / 2), 0)
-	self.requirementsPanel:setPosition(WIDTH * (1 / 2), 0)
 	self.infoPanel:addChild(self.requirementsPanel)
 
 	self.inputsPanel = ConstraintsPanel(self:getView())
 	self.inputsPanel:setText("Inputs")
 	self.inputsPanel:setSize(WIDTH * (1 / 2), HEIGHT / 3)
-	self.inputsPanel:setPosition(WIDTH * (1 / 2), HEIGHT / 3)
 	self.infoPanel:addChild(self.inputsPanel)
 
 	self.outputsPanel = ConstraintsPanel(self:getView())
 	self.outputsPanel:setText("Outputs")
 	self.outputsPanel:setSize(WIDTH * (1 / 2), HEIGHT / 3)
-	self.outputsPanel:setPosition(WIDTH * (1 / 2), HEIGHT / 3)
 	self.infoPanel:addChild(self.outputsPanel)
 
 	self.closeButton = Button()
@@ -254,8 +253,7 @@ function SkillGuide:update(...)
 			end
 		end
 
-		self.grid:setScrollSize(self.grid:getInnerPanel():getSize())
-
+		self.grid:performLayout()
 		self.ready = true
 	end
 end
@@ -364,10 +362,9 @@ function SkillGuide:populateRequirements(e)
 	self.inputsPanel:setConstraints(e.inputs)
 	self.outputsPanel:setConstraints(e.outputs)
 
-	self.infoPanel:getInnerPanel():performLayout()
-	self.infoPanel:getInnerPanel():setScroll(0, 0)
-	self.infoPanel:setScrollSize(self.infoPanel:getInnerPanel():getSize())
 	self.infoPanel:performLayout()
+	self.infoPanel:getInnerPanel():setScroll(0, 0)
+	self.infoPanel:getInnerPanel():setText("bla bla bla")
 end
 
 return SkillGuide

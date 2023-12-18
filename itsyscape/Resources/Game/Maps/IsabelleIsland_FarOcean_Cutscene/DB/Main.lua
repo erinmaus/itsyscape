@@ -302,6 +302,9 @@ do
 		PositionX = 30,
 		PositionY = 0,
 		PositionZ = 32,
+		ScaleX = 2,
+		ScaleY = 2,
+		ScaleZ = 2,
 		Name = "Anchor_Portal",
 		Map = M._MAP,
 		Resource = M["Anchor_Portal"]
@@ -317,7 +320,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Portal_Chasm",
+		Prop = ItsyScape.Resource.Prop "Portal_Default",
 		MapObject = M["AzathothPortal"]
 	}
 

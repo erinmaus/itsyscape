@@ -76,6 +76,8 @@ function KeyItemStateProvider:give(name, count, flags)
 	self.storage:set(name, true)
 
 	if not hadKeyItem and self.peep:hasBehavior(PlayerBehavior) then
+		self.peep:poke("gotKeyItem", name)
+
 		Log.info(
 			"Player '%s' (%d) obtained key item %s.",
 			self.peep:getName(),

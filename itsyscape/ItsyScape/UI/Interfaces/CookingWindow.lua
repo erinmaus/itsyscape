@@ -103,13 +103,12 @@ function CookingWindow:new(id, index, ui)
 
 	self.grid = ScrollablePanel(GridLayout)
 	self.grid:getInnerPanel():setWrapContents(true)
-	self.grid:getInnerPanel():setSize(CookingWindow.WIDTH * (1 / 3), 0)
 	self.grid:getInnerPanel():setPadding(CookingWindow.BUTTON_PADDING, CookingWindow.BUTTON_PADDING)
 	self.grid:getInnerPanel():setUniformSize(
 		true,
-		CookingWindow.WIDTH * (1 / 3) - CookingWindow.BUTTON_PADDING * 2,
+		1,
 		CookingWindow.BUTTON_SIZE)
-	self.grid:setSize(CookingWindow.WIDTH * (1 / 3) + ScrollablePanel.DEFAULT_SCROLL_SIZE, CookingWindow.HEIGHT)
+	self.grid:setSize(CookingWindow.WIDTH * (1 / 3), CookingWindow.HEIGHT)
 	self:addChild(self.grid)
 
 	self.recipeInstructionsPanel = Panel()

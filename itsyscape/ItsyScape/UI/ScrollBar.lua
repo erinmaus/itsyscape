@@ -16,20 +16,34 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local ScrollBar = Class(Widget)
 ScrollBar.MIN_HEIGHT = 16
+ScrollBar.DISPLAY_PROGRESS_TIME = 0.5
+
+ScrollBar.Button = Class(Button)
+ScrollBar.UpButton = Class(ScrollBar.Button)
+ScrollBar.DownButton = Class(ScrollBar.Button)
+
+ScrollBar.DragButton = Class(DraggableButton)
 
 function ScrollBar:new()
 	Widget.new(self)
 
 	self.onScroll = Callback()
 
-	self.upButton = Button()
-	self.downButton = Button()
-	self.scrollButton = DraggableButton()
+	self.upButton = ScrollBar.UpButton()
+	self.downButton = ScrollBar.DownButton()
+	self.scrollButton = ScrollBar.DragButton()
+
+	if _MOBILE then
+		self:setIsClickThrough(true)
+	end
+
 	self.scrollArea = 0
 	self.scrollAreaStart = 0
 	self.scrollAreaEnd = 0
-	self.scrollTick = 32
+	self.scrollTick = _MOBILE and 1 or 32
 	self.target = false
+
+	self.scrollTime = -math.huge
 
 	self.upButton.onMousePress:register(self.scroll, self, -1)
 	self.downButton.onMousePress:register(self.scroll, self, 1)
@@ -38,12 +52,25 @@ function ScrollBar:new()
 		self.dragStart = false
 	end)
 
+	self._onScroll = function(_, x, y)
+		self.scrollTime = love.timer.getTime()
+
+		self:mouseScroll(x, y)
+	end
+
 	self.dragStart = false
 
 	self.scrollButton:setDragDistance(0)
 
 	self:addChild(self.upButton)
 	self:addChild(self.downButton)
+end
+
+function ScrollBar:setIsClickThrough(value)
+	self.upButton:setIsClickThrough(value)
+	self.downButton:setIsClickThrough(value)
+	self.scrollButton:setIsClickThrough(value)
+	Widget.setIsClickThrough(self, value)
 end
 
 function ScrollBar:mouseScroll(x, y)
@@ -61,20 +88,32 @@ function ScrollBar:getTarget()
 end
 
 function ScrollBar:setTarget(value)
+	if self.target then
+		self.target.onMouseScroll:unregister(self._onScroll)
+	end
+
+	if value then
+		value.onMouseScroll:register(self._onScroll)
+	end
+
 	self.target = value or false
 end
 
 function ScrollBar:scroll(direction)
+	self.scrollTime = love.timer.getTime()
+
 	-- Clamp to -1, 0, or 1.
-	if direction < 0 then
-		direction = -1
-	elseif direction > 0 then
-		direction = 1
+	if not _MOBILE then
+		if direction < 0 then
+			direction = -1
+		elseif direction > 0 then
+			direction = 1
+		end
 	end
 
 	local p = self:getTarget()
-	if p then
-		local parentWidth, parentHeight = self:getParent():getSize()
+	if p and p:getParent() then
+		local parentWidth, parentHeight = p:getParent():getSize()
 		local parentScrollSizeX, parentScrollSizeY = p:getScrollSize()
 		parentScrollSizeX = parentScrollSizeX - parentWidth
 		parentScrollSizeY = parentScrollSizeY - parentHeight
@@ -150,15 +189,14 @@ end
 
 function ScrollBar:performLayout()
 	local width, height = self:getSize()
+	local currentTime = love.timer.getTime()
 
 	if self:getIsVertical() then
 		local buttonHeight = math.min(math.floor(height / 2), width)
 		self.upButton:setSize(width, buttonHeight)
 		self.upButton:setPosition(0, 0)
-		self.upButton:setText("^")
 		self.downButton:setSize(width, buttonHeight)
 		self.downButton:setPosition(0, height - buttonHeight)
-		self.downButton:setText("v")
 
 		if buttonHeight < height then
 			local p  = self:getParent()
@@ -174,7 +212,10 @@ function ScrollBar:performLayout()
 						remainingHeight / 16,
 						ScrollBar.MIN_HEIGHT)
 
-					self:addChild(self.scrollButton)
+					if not _MOBILE then
+						self:addChild(self.scrollButton)
+					end
+
 					self.scrollButton:setSize(width, scrollButtonHeight)
 
 					self.scrollAreaStart = buttonHeight
@@ -189,10 +230,8 @@ function ScrollBar:performLayout()
 		local buttonWidth = math.min(math.floor(width / 2), height)
 		self.upButton:setSize(buttonWidth, height)
 		self.upButton:setPosition(0, 0)
-		self.upButton:setText("<")
 		self.downButton:setSize(buttonWidth, height)
 		self.downButton:setPosition(width - buttonWidth, 0)
-		self.downButton:setText(">")
 
 		if buttonWidth < width then
 			local p = self:getParent()
@@ -208,7 +247,10 @@ function ScrollBar:performLayout()
 						remainingWidth / 16,
 						1)
 
-					self:addChild(self.scrollButton)
+					if not _MOBILE then
+						self:addChild(self.scrollButton)
+					end
+
 					self.scrollButton:setSize(scrollButtonWidth, height)
 
 					self.scrollAreaStart = buttonWidth
@@ -245,6 +287,46 @@ function ScrollBar:update(...)
 				self.scrollButton:setPosition(math.floor(x), y)
 			elseif parentScrollX == 0 then
 				self.scrollButton:setPosition(math.floor(self.scrollAreaStart), x)
+			end
+		end
+
+		if _MOBILE then
+			local currentTime = love.timer.getTime()
+			local displayScroll = self.scrollTime + ScrollBar.DISPLAY_PROGRESS_TIME > currentTime
+
+			if self:getIsVertical() then
+				local y = parentScrollY / parentScrollSizeY
+				if y == 0 and not displayScroll then
+					self:removeChild(self.upButton)
+				else
+					self:addChild(self.upButton)
+				end
+
+				if y >= 1 and not displayScroll then
+					self:removeChild(self.downButton)
+				else
+					self:addChild(self.downButton)
+				end
+			else
+				local x = parentScrollX / parentScrollSizeX
+				if x == 0 and not displayScroll then
+					self:removeChild(self.upButton)
+				else
+					self:addChild(self.upButton)
+				end
+
+				if x >= 1 and not displayScroll then
+					self:removeChild(self.downButton)
+				else
+					self:addChild(self.downButton)
+				end
+			end
+
+			local currentTime = love.timer.getTime()
+			if self.scrollTime + ScrollBar.DISPLAY_PROGRESS_TIME > currentTime then
+				self:addChild(self.scrollButton)
+			else
+				self:removeChild(self.scrollButton)
 			end
 		end
 	end

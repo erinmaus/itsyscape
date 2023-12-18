@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.Common"
 
 local Mansion = Class(Map)
 Mansion.MIN_LIGHTNING_PERIOD = 3
@@ -25,6 +26,8 @@ end
 
 function Mansion:onPlayerEnter(player)
 	player = player:getActor():getPeep()
+
+	PreTutorialCommon.listenForKeyItemHint(player)
 
 	Utility.Quest.listenForAction(player, "Prop", "CopperRock_Default", "Mine", function()
 		player:getState():give("KeyItem", "PreTutorial_MineCopper")

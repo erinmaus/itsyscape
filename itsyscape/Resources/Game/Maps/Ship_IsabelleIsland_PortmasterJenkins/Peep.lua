@@ -8,13 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "Resources.Game.Peeps.Maps.ShipMapPeep"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local Ship = Class(Map)
@@ -40,28 +43,6 @@ Ship.COMBAT_HINT = {
 				return not target:getState():has('Item', "RustyDagger", 1, { ['item-inventory'] = true })
 			end
 		end,
-	},
-	{
-		position = 'up',
-		id = "Ribbon-PlayerEquipment",
-		message = not _MOBILE and "Click here to see your equipment." or "Tap here to see your equipment.",
-		open = function(target)
-			return function()
-				return Utility.UI.isOpen(target, "PlayerEquipment")
-			end
-		end
-	},
-	{
-		position = 'up',
-		id = "PlayerEquipment",
-		message = not _MOBILE and "View your bonuses and dequip items from here.\nYou can right-click on your equipment for additional options.\nClose this tab when you're done by clicking the icon again." or
-	              "View your bonuses and dequip items from here.\nYou can hold your tap on your equipment for additional options.\nClose this tab when you're done by tapping the icon again.",
-		open = function(target)
-			local time = love.timer.getTime()
-			return function()
-				return love.timer.getTime() > time + 10 or not Utility.UI.isOpen(target, "PlayerEquipment")
-			end
-		end
 	},
 	{
 		position = 'up',
@@ -94,7 +75,7 @@ Ship.COMBAT_HINT = {
 		end
 	},
 	{
-		position = 'left',
+		position = 'up',
 		id = "PlayerPowers-PowerBackstab",
 		message = not _MOBILE and "Click 'Backstab' then click on a pirate to attack.\nYou will deal a special attack!" or "Tap 'Backstab' then tap on a pirate to attack.\nYou will deal a special attack!",
 		open = function(target)
@@ -132,8 +113,8 @@ function Ship:showTip(tips, target)
 	after()
 end
 
-function Ship:listenForAttack()
-	self.numTimesAttacked = 0
+function Ship:listenForAttack(numTimesAttacked)
+	self.numTimesAttacked = numTimesAttacked or 0
 	self.previousTarget = nil
 
 	local SPAM_MESSAGE_THRESHOLD = 3
@@ -165,12 +146,36 @@ function Ship:listenForAttack()
 		end
 	end
 
+	local function performInitiateAttack()
+		if self.target then
+			Utility.Peep.poof(self.target)
+		end
+	end
+
 	local function travel()
 		self.player:silence("actionPerformed", performAttackAction)
+		self.player:silence("initiateAttack", performInitiateAttack)
 		self.player:silence("travel", travel)
 	end
 
 	self.player:listen("actionPerformed", performAttackAction)
+	self.player:listen("initiateAttack", performInitiateAttack)
+
+	self:targetPirate(self.pirates[1]:getPeep())
+end
+
+function Ship:targetPirate(piratePeep)
+	if piratePeep then
+		local position = Utility.Peep.getPosition(piratePeep)
+		local targetProp = Utility.spawnPropAtPosition(self, "Target_Default", position.x, position.y, position.z, 0)
+		if targetProp then
+			self.target = targetProp:getPeep()
+			self.target:setTarget(piratePeep, _MOBILE and "Tap the pirate to fight!" or "Click the pirate to fight!")
+
+			local _, position = self.target:addBehavior(PositionBehavior)
+			position.offset = Vector.UNIT_Y * 2
+		end
+	end
 end
 
 function Ship:new(resource, name, ...)
@@ -317,6 +322,7 @@ end
 function Ship:onPirateDeath(pirate)
 	local deadCount = 0
 
+	local other
 	for i = 1, #self.pirates do
 		local p = self.pirates[i]
 
@@ -324,16 +330,19 @@ function Ship:onPirateDeath(pirate)
 		if not success or p:getPeep() == pirate then
 			deadCount = deadCount + 1
 		else
+			other = p
 			p:flash("Message", 1, "Arrr, ye'll pay, landlubber!")
 		end
 	end
 
 	if deadCount >= #self.pirates then
-		self:makePlayerListen()
+		self:pushPoke("makePlayerListen")
+	elseif other then
+		self:targetPirate(other:getPeep())
 	end
 end
 
-function Ship:makePlayerListen()
+function Ship:onMakePlayerListen()
 	local director = self:getDirector()
 	local game = director:getGameInstance()
 
@@ -366,6 +375,68 @@ function Ship:makePlayerListen()
 	return false, nil
 end
 
+function Ship:showCameraZoomTutorial()
+	self.isZoomPending = true
+
+	local duration = 4
+	local targetTime = love.timer.getTime() + duration
+
+	self.blockingInterfaceID = "TutorialHint"
+
+	local _
+	_, self.blockingInterfaceIndex = Utility.UI.openInterface(
+		self.player,
+		"TutorialHint",
+		false,
+		"root",
+		_MOBILE and "Use a pinching gesture to zoom in and out." or "Click the left mouse button and drag up or down to zoom in and out.\nYou can also use the middle scroll wheel.",
+		function()
+			return love.timer.getTime() > targetTime
+		end,
+		{ position = 'up' })
+
+	local playerModel = Utility.Peep.getPlayerModel(self.player)
+	if playerModel then
+		playerModel:pokeCamera("showScroll", {
+			0.0, 0.5,
+			0.0, 1.0,
+			0.0, 0.5
+		}, duration)
+	end
+end
+
+function Ship:showCameraMoveTutorial()
+	self.isMovePending = true
+
+	local duration = 4
+	local targetTime = love.timer.getTime() + duration
+
+	self.blockingInterfaceID = "TutorialHint"
+
+	local _
+	_, self.blockingInterfaceIndex = Utility.UI.openInterface(
+		self.player,
+		"TutorialHint",
+		false,
+		"root",
+		_MOBILE and "Tap and drag on the screen to move the camera." or "Click the left mouse button and drag around the mouse to move the camera.\nYou can also use the middle mouse button to click and drag.",
+		function()
+			return love.timer.getTime() > targetTime
+		end,
+		{ position = 'up' })
+
+	local playerModel = Utility.Peep.getPlayerModel(self.player)
+	if playerModel then
+		playerModel:pokeCamera("showMove", {
+			0.5,         0.5 - 1 / 16,
+			0.5 - 1 / 16, 0.5,
+			0.5 - 2 / 16, 0.5 - 1 / 16,
+			0.5 - 1 / 16, 0.5,
+			0.5,         0.5 - 1 / 16
+		}, duration)
+	end
+end
+
 function Ship:update(director, game)
 	Map.update(self, director, game)
 
@@ -376,14 +447,24 @@ function Ship:update(director, game)
 			self.player:removeBehavior(DisabledBehavior)
 
 			if self.blockingInterfaceID == "CharacterCustomization" then
-				local s, index = self:makePlayerListen()
+				local s, index = self:onMakePlayerListen()
 
 				if s then
 					self.blockingInterfaceID = "DialogBox"
 					self.blockingInterfaceIndex = index
 				end
-
-				self.player:addBehavior(DisabledBehavior)
+			elseif self.blockingInterfaceID == "DialogBox" then
+				self:showCameraMoveTutorial()
+			elseif self.blockingInterfaceID == "TutorialHint" then
+				if self.isMovePending then
+					self.isMovePending = false
+					self:showCameraZoomTutorial()
+				elseif self.isZoomPending then
+					self.isZoomPending = false
+				else
+					self.blockingInterfaceID = nil
+					self.blockingInterfaceIndex = nil
+				end
 			else
 				self.blockingInterfaceID = nil
 				self.blockingInterfaceIndex = nil
@@ -393,19 +474,19 @@ function Ship:update(director, game)
 		if self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1)
 		   and not self.player:getState():has("Quest", "PreTutorial")
 		then
-			Utility.UI.openInterface(
-				self.player,
-				"TutorialHint",
-				false,
-				"root",
-				not _MOBILE and "Look at the bottom right corner.\nClick on the flashing icon to continue." or "Look at the bottom right corner.\nTap on the flashing icon to continue.",
-				function()
-					return Utility.UI.isOpen(self.player, "PlayerInventory")
-				end,
-				{ position = 'center' })
-
 			if not _DEBUG or _MOBILE then
 				self:showTip(Ship.COMBAT_HINT, self.player)
+
+				Utility.UI.openInterface(
+					self.player,
+					"TutorialHint",
+					false,
+					"root",
+					not _MOBILE and "Look at the bottom right corner.\nClick on the flashing icon to continue." or "Look at the bottom right corner.\nTap on the flashing icon to continue.",
+					function()
+						return not self.player:hasBehavior(DisabledBehavior)
+					end,
+					{ position = 'center' })
 			end
 		end
 		

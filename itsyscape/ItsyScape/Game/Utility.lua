@@ -1383,6 +1383,7 @@ function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
 
 	local map = stage:getMap(layer)
 	local center = (map and map:getTileCenter(i, j)) or Vector.ZERO
+	center = center + (Vector(map and map:getCellSize() or 0) * Vector(i - math.floor(i), j - math.floor(j)))
 
 	if not mapScript then
 		return center
@@ -2714,7 +2715,7 @@ function Utility.Peep.attack(peep, other, distance)
 			return false
 		end
 
-		if status and status.dead then
+		if status and (status.dead or status.currentHitpoints == 0) then
 			return false
 		end
 	end
@@ -3507,7 +3508,6 @@ function Utility.Peep.Attackable:onDie(p)
 						local status = hit:getBehavior(CombatStatusBehavior)
 
 						if not status or not status.dead then
-							print(">>>", hit:getName(), "still alive")
 							isDead = false
 							break
 						end
@@ -4575,13 +4575,15 @@ function Utility.Quest.buildWorkingQuestLog(steps, gameDB, questInfo)
 	return questInfo
 end
 
-function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep)
+function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep, scroll)
 	local result = {}
 
 	local steps = { Utility.Quest.getNextStep(questLog.quest, peep) }
 	if #steps == 0 then
 		steps = {}
 	end
+
+	local hasScrolled = false
 
 	for i = 1, #steps do
 		local step = steps[i]
@@ -4617,9 +4619,21 @@ function Utility.Quest.buildRichTextLabelFromQuestLog(questLog, peep)
 
 			for j = 1, #step do
 				if peep:getState():has("KeyItem", step[j].name) then
-					table.insert(block, questLogForStep.block[j][2])
+					table.insert(block, {
+						t = "text",
+						color = scroll and { 0.75, 0.75, 0.75, 1 },
+						questLogForStep.block[j][2]
+					})
 				else
-					table.insert(block, questLogForStep.block[j][1])
+					table.insert(block, {
+						t = "text",
+						questLogForStep.block[j][1],
+						scroll = not hasScrolled
+					})
+
+					if scroll and not hasScrolled then
+						hasScrolled = true
+					end
 				end
 			end
 
@@ -4891,6 +4905,26 @@ function Utility.Quest.listenForItem(peep, itemID, callback)
 
 	peep:listen('transferItemTo', listen)
 	peep:listen('spawnItem', listen)
+	peep:listen('move', silence)
+end
+
+function Utility.Quest.listenForKeyItem(peep, keyItemID, callback)
+	local listen, silence
+
+	silence = function()
+		peep:silence('gotKeyItem', listen)
+		peep:silence('move', silence)
+	end
+
+	listen = function(_, k)
+		if k and k:match(keyItemID) then
+			if callback() then
+				silence()
+			end
+		end
+	end
+
+	peep:listen('gotKeyItem', listen)
 	peep:listen('move', silence)
 end
 

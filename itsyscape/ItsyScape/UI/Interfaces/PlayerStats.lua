@@ -28,7 +28,7 @@ PlayerStats.PADDING = 8
 
 if _MOBILE then
 	PlayerStats.BUTTON_WIDTH = (PlayerTab.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE - PlayerStats.PADDING * 3) / 2
-	PlayerStats.BUTTON_HEIGHT = 48
+	PlayerStats.BUTTON_HEIGHT = 32
 else
 	PlayerStats.BUTTON_WIDTH = 72
 	PlayerStats.BUTTON_HEIGHT = 32
@@ -73,7 +73,7 @@ function PlayerStats:new(id, index, ui)
 	self.layout:getInnerPanel():setWrapContents(true)
 	self.layout:getInnerPanel():setUniformSize(
 		true,
-		PlayerStats.BUTTON_WIDTH,
+		_MOBILE and (1 / 2) or (1 / 3),
 		PlayerStats.BUTTON_HEIGHT)
 	self.layout:getInnerPanel():setPadding(PlayerStats.PADDING, PlayerStats.PADDING)
 	panel:addChild(self.layout)
@@ -127,10 +127,6 @@ function PlayerStats:populate(skills)
 		self.layout:addChild(button)
 	end
 
-	if _MOBILE then
-		self.layout:addChild(Widget())
-	end
-
 	self.overallStatsButton = Button()
 	self.overallStatsButton:setStyle(ButtonStyle({
 		inactive = "Resources/Renderers/Widget/Button/Skill-Base.9.png",
@@ -171,7 +167,7 @@ function PlayerStats:populate(skills)
 		ToolTip.Text("An effective power rating based on your combat stats."))
 	self.layout:addChild(self.combatLevelButton)
 
-	self.layout:setScrollSize(self.layout:getInnerPanel():getSize())
+	self.layout:performLayout()
 end
 
 function PlayerStats:updateStats(skills)

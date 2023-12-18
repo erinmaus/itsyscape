@@ -54,6 +54,22 @@ function CameraController:update(delta)
 	-- Nothing.
 end
 
+function CameraController:draw()
+	-- Nothing.
+end
+
+function CameraController:getIsDemoing()
+	return false
+end
+
+function CameraController:demo()
+	-- Nothing.
+end
+
+function CameraController:getIsMouseCaptured()
+	return false
+end
+
 function CameraController:poke(event, ...)
 	local name = "on" .. event:sub(1, 1):upper() .. event:sub(2)
 	local func = self[name]

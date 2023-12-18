@@ -23,33 +23,45 @@ local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local Nominomicon = Class(Interface)
-Nominomicon.WIDTH = 640
+Nominomicon.WIDTH = 800
 Nominomicon.HEIGHT = 480
 Nominomicon.BUTTON_SIZE = 48
 Nominomicon.BUTTON_PADDING = 4
 Nominomicon.PADDING = 4
 
-Nominomicon.INACTIVE_BUTTON_STYLE = function(color)
+Nominomicon.INACTIVE_BUTTON_STYLE = function(icon, color)
 	return {
 		pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
 		inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
 		hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		icon = {
+			filename = icon,
+			x = 0.1,
+			color = color or { 1, 1, 1, 1 }
+		},
 		color = color or { 1, 1, 1, 1 },
 		fontSize = _MOBILE and 22 or 16,
-		textShadow = true
+		textShadow = true,
+		textShadowOffset = 2
 	}
 end
 
-Nominomicon.ACTIVE_BUTTON_STYLE = function(color)
+Nominomicon.ACTIVE_BUTTON_STYLE = function(icon, color)
 	return {
 		pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
 		inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
 		hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+		icon = {
+			filename = icon,
+			x = 0.1,
+			color = color or { 1, 1, 1, 1 }
+		},
 		color = color or { 1, 1, 1, 1 },
 		fontSize = _MOBILE and 22 or 16,
-		textShadow = true
+		textShadow = true,
+		textShadowOffset = 2
 	}
 end
 
@@ -72,7 +84,7 @@ function Nominomicon:new(id, index, ui)
 	self.grid = ScrollablePanel(GridLayout)
 	self.grid:getInnerPanel():setUniformSize(
 		true,
-		WIDTH * (1 / 2) - ScrollablePanel.DEFAULT_SCROLL_SIZE - Nominomicon.PADDING * 2,
+		1,
 		Nominomicon.BUTTON_SIZE + Nominomicon.BUTTON_PADDING * 2)
 	self.grid:getInnerPanel():setWrapContents(true)
 	self.grid:getInnerPanel():setPadding(Nominomicon.BUTTON_PADDING)
@@ -81,7 +93,7 @@ function Nominomicon:new(id, index, ui)
 
 	self.toggleButton = Button()
 	self.toggleButton:setSize(
-		WIDTH * (1 / 2) - ScrollablePanel.DEFAULT_SCROLL_SIZE - Nominomicon.PADDING * 2,
+		WIDTH * (1 / 2) - Nominomicon.PADDING * 2,
 		Nominomicon.BUTTON_SIZE)
 	self.toggleButton:setPosition(Nominomicon.PADDING, HEIGHT - Nominomicon.BUTTON_SIZE - Nominomicon.PADDING)
 	self.toggleButton.onClick:register(function()
@@ -91,21 +103,29 @@ function Nominomicon:new(id, index, ui)
 	self:addChild(self.toggleButton)
 
 	self.infoPanel = ScrollablePanel(GridLayout)
+	self.infoPanel:setScrollBarOffset(Nominomicon.BUTTON_SIZE)
 	self.infoPanel:getInnerPanel():setWrapContents(true)
 	self.infoPanel:getInnerPanel():setPadding(0, 0)
+	self.infoPanel:getInnerPanel():setUniformSize(true, 1, 0)
 	self.infoPanel:getInnerPanel():setSize(WIDTH * (1 / 2), 0)
 	self.infoPanel:setPosition(WIDTH * (1 / 2), 0)
 	self.infoPanel:setSize(WIDTH * (1 / 2), HEIGHT)
-	self:addChild(self.infoPanel)
+
+	self.bossPanel = ScrollablePanel(GridLayout)
+	self.bossPanel:setScrollBarOffset(Nominomicon.BUTTON_SIZE)
+	self.bossPanel:getInnerPanel():setWrapContents(true)
+	self.bossPanel:getInnerPanel():setPadding(0, 0)
+	self.bossPanel:getInnerPanel():setUniformSize(true, 1, 0)
+	self.bossPanel:getInnerPanel():setSize(WIDTH * (1 / 2), 0)
+	self.bossPanel:setPosition(WIDTH * (1 / 2), 0)
+	self.bossPanel:setSize(WIDTH * (1 / 2), HEIGHT)
 
 	self.guideLabel = RichTextLabel()
-	self.guideLabel:setSize(WIDTH * (1 / 2) - Nominomicon.BUTTON_SIZE - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
+	self.guideLabel:setSize(WIDTH * (1 / 2), 0)
 	self.guideLabel:setWrapContents(true)
 	self.guideLabel:setWrapParentContents(true)
 	self.guideLabel.onSize:register(function()
-		local _, scrollHeight = self.guideLabel:getSize()
-		self.infoPanel:getInnerPanel():setSize(self.guideLabel:getSize())
-		self.infoPanel:setScrollSize(self.infoPanel:getSize(), scrollHeight)
+		self.infoPanel:performLayout()
 	end)
 	self.infoPanel:addChild(self.guideLabel)
 
@@ -117,6 +137,7 @@ function Nominomicon:new(id, index, ui)
 		self:sendPoke("close", nil, {})
 	end)
 	self:addChild(self.closeButton)
+	self.closeButton:setZDepth(2)
 
 	self.ready = false
 	self.activeItem = false
@@ -151,17 +172,17 @@ function Nominomicon:updateToggleButton()
 	end
 end
 
-function Nominomicon:getQuestStatusColor(quest)
+function Nominomicon:getQuestStatusIcon(quest)
 	if not quest.isQuest then
-		return { 1, 1, 1, 1 }
+		return nil
 	elseif quest.didComplete then
-		return { 0, 1, 0, 1}
+		return "Resources/Game/UI/Icons/Concepts/Complete.png"
 	elseif quest.inProgress then
-		return { 1, 1, 0, 1 }
+		return "Resources/Game/UI/Icons/Things/Compass.png"
 	elseif not quest.canStart then
-		return { 1, 0, 0, 1 }
+		return "Resources/Game/UI/Icons/Concepts/Lock.png", { 0.5, 0.5, 0.5, 1.0 }
 	else
-		return { 1, 1, 1, 1 }
+		return nil
 	end
 end
 
@@ -183,7 +204,7 @@ function Nominomicon:update(...)
 
 			button:setStyle(
 				ButtonStyle(
-					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusColor(quest)),
+					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusIcon(quest)),
 					self:getView():getResources()))
 			button:setData("quest", quest)
 			button:setID("Quest-" .. quest.id)
@@ -199,13 +220,7 @@ function Nominomicon:update(...)
 	if self.doFlagResizeLayout then
 		if self.bossPanel then
 			self.bossPanel:performLayout()
-
-			if self.bossPanel:getParent() then
-				self.bossPanel:getParent():performLayout()
-			end
-
-			self.infoPanel:setScrollSize(self.bossPanel:getSize())
-			self.infoPanel:setScroll(0, 0)
+			self.bossPanel:setScroll(0, 0)
 		end
 
 		self.doFlagResizeLayout = false
@@ -222,14 +237,14 @@ function Nominomicon:selectItem(index, button, mouseButton)
 		if self.previousSelection then
 			self.previousSelection:setStyle(
 				ButtonStyle(
-					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusColor(self.previousSelection:getData("quest"))),
+					Nominomicon.INACTIVE_BUTTON_STYLE(self:getQuestStatusIcon(self.previousSelection:getData("quest"))),
 					self:getView():getResources()))
 		end
 
 		if self.previousSelection ~= button then
 			button:setStyle(
 				ButtonStyle(
-					Nominomicon.ACTIVE_BUTTON_STYLE(self:getQuestStatusColor(quest)),
+					Nominomicon.ACTIVE_BUTTON_STYLE(self:getQuestStatusIcon(quest)),
 					self:getView():getResources()))
 
 			self.activeItem = index
@@ -273,13 +288,19 @@ function Nominomicon:updateGuide()
 	local currentQuest = state.currentQuest
 
 	self.infoPanel:getInnerPanel():clearChildren()
+	self.bossPanel:getInnerPanel():clearChildren()
 
 	if currentQuest.bosses then
+		self:removeChild(self.infoPanel)
 		self:showBossDrops(currentQuest.bosses)
 	else
+		self:removeChild(self.bossPanel)
+
 		self.infoPanel:addChild(self.guideLabel)
 		self.guideLabel:setText(currentQuest)
 		self.infoPanel:getInnerPanel():setScroll(0, 0)
+
+		self:addChild(self.infoPanel)
 	end
 end
 
@@ -288,12 +309,13 @@ function Nominomicon:flagResizeLayout()
 end
 
 function Nominomicon:showBossDrops(bosses)
-	local w, h = self.infoPanel:getInnerPanel():getSize()
+	local w, h = self.bossPanel:getInnerPanel():getSize()
 
-	local root = GridLayout()
-	root:setWrapContents(true)
-	root:setPadding(Nominomicon.PADDING, Nominomicon.PADDING)
-	root:setSize(w, 0)
+	if not _MOBILE then
+		w = w - ScrollablePanel.DEFAULT_SCROLL_SIZE
+	end
+
+	local root = self.bossPanel:getInnerPanel()
 
 	for _, area in ipairs(bosses) do
 		local areaLabel = RichTextLabel()
@@ -358,8 +380,7 @@ function Nominomicon:showBossDrops(bosses)
 		end
 	end
 
-	self.bossPanel = root
-	self.infoPanel:addChild(root)
+	self:addChild(self.bossPanel)
 end
 
 return Nominomicon

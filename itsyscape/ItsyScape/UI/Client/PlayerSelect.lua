@@ -109,7 +109,7 @@ function PlayerSelect:new(application)
 	self.layout:getInnerPanel():setPadding(PlayerSelect.PADDING, PlayerSelect.PADDING)
 	self.layout:getInnerPanel():setUniformSize(
 		true,
-		PlayerSelect.WIDTH - ScrollablePanel.DEFAULT_SCROLL_SIZE * 1.25,
+		1,
 		PlayerSelect.BUTTON_HEIGHT)
 	self:addChild(self.layout)
 

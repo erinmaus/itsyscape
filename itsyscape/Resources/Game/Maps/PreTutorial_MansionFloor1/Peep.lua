@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- Resources/Game/Maps/PreTutorial_MansionFloor1/Peep.lua
 --
@@ -14,6 +15,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.Common"
 
 local Mansion = Class(Map)
 Mansion.MIN_LIGHTNING_PERIOD = 3
@@ -70,6 +72,8 @@ function Mansion:onPlayerEnter(player)
 		self.zombiButler:poke('followPlayer', player)
 	end
 
+	PreTutorialCommon.listenForKeyItemHint(player)
+
 	Utility.Quest.listenForAction(player, "Item", "CopperBar", "Smelt", function()
 		player:getState():give("KeyItem", "PreTutorial_MineCopper")
 		player:getState():give("KeyItem", "PreTutorial_SmeltCopperBar")
@@ -95,6 +99,34 @@ function Mansion:onPlayerEnter(player)
 		player:getState():give("KeyItem", "PreTutorial_SmithCopperAmulet")
 		player:getState():give("KeyItem", "PreTutorial_EnchantedCopperAmulet")
 		player:getState():give("KeyItem", "PreTutorial_MadeGhostspeakAmulet")
+	end)
+
+	Utility.Quest.listenForItem(player, "ToyLongsword", function()
+		player:getState():give("KeyItem", "PreTutorial_CraftedToyWeapon")
+	end)
+
+	Utility.Quest.listenForItem(player, "ToyBoomerang", function()
+		player:getState():give("KeyItem", "PreTutorial_CraftedToyWeapon")
+	end)
+
+	Utility.Quest.listenForItem(player, "ToyWand", function()
+		player:getState():give("KeyItem", "PreTutorial_CraftedToyWeapon")
+	end)
+
+	Utility.Quest.listenForItem(player, "Larry", function()
+		player:getState():give("KeyItem", "PreTutorial_FishedLarry")
+	end)
+
+	Utility.Quest.listenForItem(player, "CookedLarry", function()
+		player:getState():give("KeyItem", "PreTutorial_CookedLarry")
+	end)
+
+	Utility.Quest.listenForItem(player, "ShadowLogs", function()
+		player:getState():give("KeyItem", "PreTutorial_GotShadowLogs")
+
+		if not player:getState():has("KeyItem", "PreTutorial_CraftedToyWeapon") then
+			PreTutorialCommon.showCraftTip(player)
+		end
 	end)
 end
 

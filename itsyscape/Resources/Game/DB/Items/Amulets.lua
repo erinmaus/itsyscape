@@ -124,19 +124,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = -1,
-		AccuracySlash = -1,
-		AccuracyCrush = -1,
-		AccuracyMagic = -1,
-		AccuracyRanged = -1,
-		DefenseStab = -1,
-		DefenseSlash = -1,
-		DefenseCrush = -1,
-		DefenseMagic = -1,
-		DefenseRanged = -1,
-		StrengthMelee = -1,
-		StrengthRanged = -1,
-		StrengthMagic = -1,
+		AccuracyMagic = 1,
 		Prayer = 4,
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_NECK,
 		Resource = ItsyScape.Resource.Item "GhostspeakAmulet"
