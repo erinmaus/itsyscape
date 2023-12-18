@@ -25,8 +25,8 @@ local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local Widget = require "ItsyScape.UI.Widget"
 
 local QuestProgressNotification = Class(Interface)
-QuestProgressNotification.WIDTH = _MOBILE and 320 or 384
-QuestProgressNotification.HEIGHT = _MOBILE and 240 or 320
+QuestProgressNotification.WIDTH = 320
+QuestProgressNotification.HEIGHT = 240
 QuestProgressNotification.PADDING = 8
 QuestProgressNotification.ICON_SIZE = 48
 QuestProgressNotification.BUTTON_SIZE = 48

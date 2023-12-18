@@ -2715,7 +2715,7 @@ function Utility.Peep.attack(peep, other, distance)
 			return false
 		end
 
-		if status and status.dead then
+		if status and (status.dead or status.currentHitpoints == 0) then
 			return false
 		end
 	end
