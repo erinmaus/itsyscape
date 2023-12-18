@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- Resources/Game/Maps/PreTutorial_MansionFloor1/Peep.lua
 --
@@ -121,7 +122,7 @@ function Mansion:onPlayerEnter(player)
 	Utility.Quest.listenForItem(player, "ShadowLogs", function()
 		player:getState():give("KeyItem", "PreTutorial_GotShadowLogs")
 
-		if not target:getState():has("KeyItem", "PreTutorial_CraftedToyWeapon") then
+		if not player:getState():has("KeyItem", "PreTutorial_CraftedToyWeapon") then
 			PreTutorialCommon.showCraftTip(player)
 		end
 	end)
