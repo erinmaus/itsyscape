@@ -27,7 +27,7 @@ Common.DEQUIP_HINT = {
 	},
 	{
 		position = 'up',
-		id = "Equipment-PLAYER_SLOT_RIGHT_HAND",
+		id = "Equipment-PLAYER_SLOT_NECK",
 		message = _MOBILE and "Tap the copper amulet spell to dequip it.\nIt will return to your inventory." or "Click the copper amulet spell to dequip it.\nIt will return to your inventory.",
 		open = function(target)
 			return function()

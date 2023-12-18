@@ -172,7 +172,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "You spoke to Elizabeth, the ghost girl, using the ghostspeak amulet and found out she needs something dramatic to eat. What about cooking a goldfish?",
+	Value = "You spoke to Elizabeth, the ghost girl, using the ghostspeak amulet and found out she needs something macabre to eat. What about cooking a goldfish?",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedToGhostGirl"
 }
 
@@ -190,7 +190,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
-	Value = "Save Elizabeth by feeding her something dramatic.",
+	Value = "Save Elizabeth by feeding her something macabre.",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SavedGhostGirl"
 }
 
