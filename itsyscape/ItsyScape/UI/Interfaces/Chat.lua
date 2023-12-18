@@ -23,7 +23,7 @@ local Interface = require "ItsyScape.UI.Interface"
 
 local Chat = Class(Interface)
 Chat.WIDTH   = 480
-Chat.HEIGHT  = _MOBILE and 120 or 240
+Chat.HEIGHT  = _MOBILE and 136 or 240
 Chat.INPUT   = 48
 Chat.PADDING = 8
 Chat.Z_DEPTH = -1000
@@ -112,7 +112,7 @@ function Chat:new(id, index, ui)
 
 	self:setZDepth(Chat.Z_DEPTH)
 
-	if _MOBILE then
+	if self:getState().hidden then
 		self:hide()
 	else
 		self:show()
@@ -146,11 +146,13 @@ function Chat:send()
 end
 
 function Chat:show()
+	self:sendPoke("show", nil, {})
 	self:addChild(self.mainPanel)
 	self:removeChild(self.showButton)
 end
 
 function Chat:hide()
+	self:sendPoke("hide", nil, {})
 	self:removeChild(self.mainPanel)
 	self:addChild(self.showButton)
 end
