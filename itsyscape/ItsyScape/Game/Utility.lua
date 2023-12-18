@@ -4908,4 +4908,23 @@ function Utility.Quest.listenForItem(peep, itemID, callback)
 	peep:listen('move', silence)
 end
 
+function Utility.Quest.listenForKeyItem(peep, keyItemID, callback)
+	local listen, silence
+
+	silence = function()
+		peep:silence('gotKeyItem', listen)
+		peep:silence('move', silence)
+	end
+
+	listen = function(_, k)
+		if k and k:match(keyItemID) then
+			callback()
+			silence()
+		end
+	end
+
+	peep:listen('gotKeyItem', listen)
+	peep:listen('move', silence)
+end
+
 return Utility

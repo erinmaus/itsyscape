@@ -225,4 +225,24 @@ function Common.showCraftTip(target)
 	end)
 end
 
+function Common.showKeyItemHint(target)
+	local targetTime = love.timer.getTime() + 2.5
+
+	Utility.UI.openInterface(
+		target,
+		"TutorialHint",
+		false,
+		"QuestProgressNotification",
+		nil,
+		function()
+			return love.timer.getTime() > targetTime
+		end)
+end
+
+function Common.listenForKeyItemHint(target)
+	Utility.Quest.listenForKeyItem(target, "PreTutorial_(.+)", function()
+		Common.showKeyItemHint(target)
+	end)
+end
+
 return Common
