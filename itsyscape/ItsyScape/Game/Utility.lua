@@ -4918,8 +4918,9 @@ function Utility.Quest.listenForKeyItem(peep, keyItemID, callback)
 
 	listen = function(_, k)
 		if k and k:match(keyItemID) then
-			callback()
-			silence()
+			if callback() then
+				silence()
+			end
 		end
 	end
 
