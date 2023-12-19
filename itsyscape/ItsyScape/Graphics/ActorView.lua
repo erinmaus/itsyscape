@@ -636,9 +636,11 @@ function ActorView:update(delta)
 	self.animatable:update()
 end
 
-function ActorView:getLocalBoneTransform(boneName)
+function ActorView:getLocalBoneTransform(boneName, rotation)
+	rotation = rotation or -Quaternion.X_90
+
 	local transform = love.math.newTransform()
-	transform:applyQuaternion((-Quaternion.X_90):get())
+	transform:applyQuaternion(rotation:get())
 
 	if not self.localTransforms then
 		return transform

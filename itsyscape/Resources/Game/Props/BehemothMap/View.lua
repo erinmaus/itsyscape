@@ -54,11 +54,6 @@ function BehemothMap:getMapSceneNode()
 end
 
 function BehemothMap:decomposeTransform(transform)
-	-- local m11, m12, m13, m14,
-	--       m21, m22, m23, m24,
-	--       m31, m32, m33, m34,
-	--       m41, m42, m43, m44 = transform:getMatrix()
-
 	local m11, m21, m31, m41,
 	      m12, m22, m32, m42,
 	      m13, m23, m33, m43,
@@ -91,8 +86,8 @@ function BehemothMap:decomposeTransform(transform)
 	return Vector(m41, m42, m43), q
 end
 
-function BehemothMap:tick()
-	PropView.tick(self)
+function BehemothMap:update(delta)
+	PropView.update(self, delta)
 
 	local actorView = self:getActorView()
 	if not actorView then
@@ -103,22 +98,25 @@ function BehemothMap:tick()
 
 	local boneTransform = actorView:getLocalBoneTransform(bone)
 	local actorTransform = actorView:getSceneNode():getTransform():getGlobalTransform()
-	local bindPose = actorView:getSkeleton():getBoneByName(bone):getInverseBindPose()
 
 	local composedTransform = love.math.newTransform()
 	composedTransform:apply(actorTransform)
 	composedTransform:translate((mapOffset):get())
 	composedTransform:translate(mapTranslation:get())
-	composedTransform:apply(bindPose)
 	composedTransform:apply(boneTransform)
 	composedTransform:translate((-mapOffset):get())
 	composedTransform:rotate(1, 0, 0, math.pi / 2)
+
+	local x, y, z = boneTransform:transformPoint(0, 0, 0)
+	print("b", math.floor(x * 10) / 10, math.floor(y * 10) / 10, math.floor(z * 10) / 10)
+
+	local x, y, z = (Vector(composedTransform:transformPoint(0, 0, 0)) - Vector(actorTransform:transformPoint(0, 0, 0))):get()
+	print("t", math.floor(x * 10) / 10, math.floor(y * 10) / 10, math.floor(z * 10) / 10)
 
 	local decomposedTranslation, decomposedRotation = self:decomposeTransform(composedTransform)
 
 	mapSceneNode:getTransform():setLocalTranslation(decomposedTranslation)
 	mapSceneNode:getTransform():setLocalRotation(decomposedRotation)
-	mapSceneNode:getTransform():setLocalScale(Vector.ONE)
 end
 
 return BehemothMap

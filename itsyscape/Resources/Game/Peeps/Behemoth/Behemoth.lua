@@ -70,6 +70,13 @@ function Behemoth:ready(director, game)
 		"Resources/Game/Animations/Behemoth_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
+	actor:playAnimation("idle", 0, idleAnimation)
+
+	local walkAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Behemoth_Walk/Script.lua")
+	self:addResource("animation-walk", walkAnimation)
+
 	Utility.spawnPropAtPosition(
 		self,
 		"BehemothSkin",
@@ -84,7 +91,7 @@ function Behemoth:ready(director, game)
 		portal.j = 8
 		portal.k = 12
 		portal.x = -4
-		portal.z = -20
+		portal.z = -24
 		portal.bone = "body"
 	end
 
