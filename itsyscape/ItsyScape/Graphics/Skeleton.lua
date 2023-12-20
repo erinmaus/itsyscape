@@ -281,7 +281,7 @@ function Skeleton:loadFromTable(t)
 	end
 end
 
-function Skeleton:getLocalBoneTransform(boneName, transforms, transform)
+function Skeleton:getLocalBoneTransform(boneName, transforms, transform, a)
 	transform = transform or love.math.newTransform()
 
 	local boneIndex = self:getBoneIndex(boneName)
@@ -301,12 +301,8 @@ function Skeleton:getLocalBoneTransform(boneName, transforms, transform)
 		local t = transforms:getTransform(parents[i])
 		if t then
 			transform:apply(t)
-			--transform:apply(self:getBoneByIndex(parents[i]):getInverseBindPose())
 		end
 	end
-
-	local x, y, z = transform:transformPoint(0, 0, 0)
-	print("s", math.floor(x * 10) / 10, math.floor(y * 10) / 10, math.floor(z * 10) / 10)
 
 	return transform
 end

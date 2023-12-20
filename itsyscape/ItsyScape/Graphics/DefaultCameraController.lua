@@ -23,6 +23,8 @@ DefaultCameraController.MIN_DISTANCE = 1
 DefaultCameraController.MAX_DISTANCE = 60
 DefaultCameraController.DEFAULT_DISTANCE = 30
 
+DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD = 0.5
+
 DefaultCameraController.ACTION_BUTTON = 1
 DefaultCameraController.PROBE_BUTTON  = 2
 DefaultCameraController.CAMERA_BUTTON = 3
@@ -73,6 +75,7 @@ function DefaultCameraController:getPlayerMapRotation()
 	end
 
 	local _, _, layer = player:getActor():getTile()
+
 	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
 
 	if not mapSceneNode then
@@ -82,7 +85,23 @@ function DefaultCameraController:getPlayerMapRotation()
 	local _, previousRotation = mapSceneNode:getTransform():getPreviousTransform()
 	local currentRotation = mapSceneNode:getTransform():getLocalRotation()
 
-	return previousRotation:slerp(currentRotation, self:getApp():getFrameDelta())
+	local rotation = previousRotation:slerp(currentRotation, self:getApp():getFrameDelta())
+
+	if self.currentPlayerLayer ~= layer then
+		self.currentPlayerLayer = layer
+		self.previousPlayerMapRotation = self.currentPlayerMapRotation
+		self.previousPlayerMapRotationTime = 0
+	end
+
+	self.currentPlayerMapRotation = rotation
+
+	if self.previousPlayerMapRotation then
+		local delta = math.min(self.previousPlayerMapRotationTime / DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD, 1)
+		print(">>> slerpin", delta)
+		return self.previousPlayerMapRotation:slerp(self.currentPlayerMapRotation, delta)
+	else
+		return self.currentPlayerMapRotation
+	end
 end
 
 function DefaultCameraController:getPlayerPosition()
@@ -409,6 +428,15 @@ end
 function DefaultCameraController:update(delta)
 	if _DEBUG then
 		self:debugUpdate(delta)
+	end
+
+	if self.previousPlayerMapRotationTime then
+		if self.previousPlayerMapRotationTime >= DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD then
+			self.previousPlayerMapRotation = nil
+			self.previousPlayerMapRotationTime = nil
+		else
+			self.previousPlayerMapRotationTime = self.previousPlayerMapRotationTime + delta
+		end
 	end
 
 	self:updateShow(delta)

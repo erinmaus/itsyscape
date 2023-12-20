@@ -8,32 +8,44 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Skeleton = require "ItsyScape.Graphics.Skeleton"
+local SkeletonAnimation = require "ItsyScape.Graphics.SkeletonAnimation"
+local Probe = require "ItsyScape.Peep.Probe"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local Face3DBehavior = require "ItsyScape.Peep.Behaviors.Face3DBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Behemoth = Class(Creep)
+Behemoth.STATE_STUNNED = "stunned"
+Behemoth.STATE_IDLE    = "idle"
 
 function Behemoth:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Behemoth', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(1.5, 1.5, 1.5)
+	size.size = Vector(5.5, 5.5, 5.5)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 2.5
+	movement.maxSpeed = 0.5
 
 	self:addBehavior(RotationBehavior)
 	self:addBehavior(Face3DBehavior)
+	
+	self:silence("receiveAttack", Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
+
+	self:addPoke("onDropPlayer")
 end
 
 function Behemoth:ready(director, game)
@@ -43,12 +55,12 @@ function Behemoth:ready(director, game)
 	end
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.maximumHitpoints = math.huge
-	status.currentHitpoints = math.huge
+	status.maximumHitpoints = 1500
+	status.currentHitpoints = 1500
 	status.maxChaseDistance = math.huge
 
 	local face3D = self:getBehavior(Face3DBehavior)
-	face3D.duration = 1.5
+	face3D.duration = 3
 
 	local body = CacheRef(
 		"ItsyScape.Game.Body",
@@ -70,7 +82,10 @@ function Behemoth:ready(director, game)
 		"Resources/Game/Animations/Behemoth_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
-	actor:playAnimation("idle", 0, idleAnimation)
+	self.idleAnimationTime = love.timer.getTime()
+	self.skeleton = Skeleton("Resources/Game/Bodies/Behemoth.lskel")
+	self.idleAnimation = SkeletonAnimation("Resources/Game/Animations/Behemoth_Idle/Animation.lanim", self.skeleton)
+	self.stunnedAnimation = SkeletonAnimation("Resources/Game/Animations/Behemoth_Die/Animation.lanim", self.skeleton)
 
 	local walkAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
@@ -89,18 +104,213 @@ function Behemoth:ready(director, game)
 		portal.layer = backLayer
 		portal.i = 4
 		portal.j = 8
-		portal.k = 12
+		portal.k = 15.5
 		portal.x = -4
 		portal.z = -24
 		portal.bone = "body"
+
+		local size = back:getPeep():getBehavior(SizeBehavior)
+		size.size = Vector(7.5, 2, 15.5)
+	end
+
+	local sideLayer = Utility.Map.spawnMap(self, "Behemoth_Side", Vector(-1000, -1000, 0))
+	local side = Utility.spawnPropAtPosition(self, "BehemothMap", 0, 0, 0, 0)
+	do
+		local _, portal = side:getPeep():addBehavior(TeleportalBehavior)
+		portal.layer = sideLayer
+		portal.i = 1.5
+		portal.j = 4
+		portal.k = 6
+		portal.x = 7
+		portal.z = -16
+		portal.rotation = Quaternion.Y_90
+		portal.bone = "body"
+
+		local size = side:getPeep():getBehavior(SizeBehavior)
+		size.size = Vector(5.5, 2, 8.5)
+	end
+
+	local neckLayer, neckScript = Utility.Map.spawnMap(self, "Behemoth_Neck", Vector(-1000, -1000, 0))
+	local neck = Utility.spawnPropAtPosition(self, "BehemothMap", 0, 0, 0, 0)
+	do
+		local _, portal = neck:getPeep():addBehavior(TeleportalBehavior)
+		portal.layer = neckLayer
+		portal.i = 1.5
+		portal.j = 2.5
+		portal.k = 8.5
+		portal.x = -2.5
+		portal.z = -7
+		portal.bone = "neck2"
+
+		local size = neck:getPeep():getBehavior(SizeBehavior)
+		size.size = Vector(5.5, 2, 6.5)
 	end
 
 	Creep.ready(self, director, game)
+
+	self:poke("rise")
+end
+
+function Behemoth:getMapTransform(side)
+	local portal = side:getBehavior(TeleportalBehavior)
+
+	local transforms = self.skeleton:createTransforms()
+	do
+		local time
+		if self.currentState == Behemoth.STATE_STUNNED then
+			time = math.min(love.timer.getTime() - self.idleAnimationTime, self.stunnedAnimation:getDuration())
+			self.stunnedAnimation:computeFilteredTransforms(time, transforms)
+		elseif self.currentState == Behemoth.STATE_IDLE then
+			time = (love.timer.getTime() - self.idleAnimationTime) % self.idleAnimation:getDuration()
+			self.idleAnimation:computeFilteredTransforms(time, transforms)
+		else
+			return love.math.newTransform()
+		end
+	end
+
+	local mapOffset = Vector(portal.i, 0, portal.j)
+	local mapTranslation = Vector(portal.x, portal.k, portal.z)
+	local mapRotation = portal.rotation or Quaternion.IDENTITY
+
+	local baseTransform = love.math.newTransform()
+	baseTransform:applyQuaternion((-Quaternion.X_90):get())
+
+	local boneTransform = self.skeleton:getLocalBoneTransform(portal.bone, transforms, baseTransform)
+
+	local peepTransform = Utility.Peep.getTransform(self)
+	local inverseBindPose = self.skeleton:getBoneByName(portal.bone):getInverseBindPose()
+
+	local composedTransform = love.math.newTransform()
+	composedTransform:apply(peepTransform)
+	composedTransform:translate(mapOffset:get())
+	composedTransform:translate(mapTranslation:get())
+	composedTransform:apply(boneTransform)
+	composedTransform:apply(inverseBindPose)
+	composedTransform:applyQuaternion(mapRotation:get())
+	composedTransform:translate((-mapOffset):get())
+	composedTransform:rotate(1, 0, 0, math.pi / 2)
+
+	return composedTransform
+end
+
+function Behemoth:onDropPlayer(side, player)
+	player:getCommandQueue():clear()
+
+	local composedTransform = self:getMapTransform(side)
+
+	local playerPosition = Utility.Peep.getPosition(player)
+	local absolutePlayerPosition = Vector(composedTransform:transformPoint(playerPosition:get()))
+
+	local parentTransform = Utility.Peep.getParentTransform(self)
+	local localPlayerPosition = Vector(parentTransform:inverseTransformPoint(absolutePlayerPosition:get()))
+
+	Utility.Peep.setLayer(player, Utility.Peep.getLayer(self))
+	Utility.Peep.setPosition(player, localPlayerPosition)
+end
+
+function Behemoth:onReceiveAttack()
+	self:pushPoke("stun")
+end
+
+function Behemoth:onRise()
+	if self.currentState == Behemoth.STATE_IDLE then
+		return
+	end
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return
+	end
+
+	self.currentState = Behemoth.STATE_IDLE
+
+	local idleAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Behemoth_Idle/Script.lua")
+
+	actor:playAnimation("idle", 0, idleAnimation)
+
+	Utility.Peep.setResource(
+		self,
+		self:getDirector():getGameDB():getResource("Behemoth", "Peep"))
+
+	local mashina = self:getBehavior(MashinaBehavior)
+	if mashina then
+		mashina.currentState = "idle"
+	end
+end
+
+function Behemoth:onStun()
+	if self.currentState == Behemoth.STATE_STUNNED then
+		return
+	end
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return
+	end
+
+	self.currentState = Behemoth.STATE_STUNNED
+
+	local stunAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Behemoth_Die/Script.lua")
+
+	actor:playAnimation("idle", 10, stunAnimation)
+
+	Utility.Peep.setResource(
+		self,
+		self:getDirector():getGameDB():getResource("Behemoth_Stunned", "Peep"))
+
+	local mashina = self:getBehavior(MashinaBehavior)
+	if mashina then
+		mashina.currentState = false
+
+		self:getCommandQueue():clear()
+	end
+end
+
+function Behemoth:_doUpdateVines(vines, resource)
+	for _, vine in ipairs(vines) do
+		local composedTransform = self:getMapTransform(vine)
+
+		local offset = vine:getBehavior(SizeBehavior).size / 2
+		local position = Vector(composedTransform:transformPoint(offset:get()))
+
+		Utility.Peep.setPosition(vine, position)
+		Utility.Peep.setRotation(vine, Utility.Peep.getRotation(self))
+
+		Utility.Peep.setResource(vine, resource)
+
+		local actions = Utility.getActions(
+			self:getDirector():getGameInstance(),
+			resource,
+			"world")
+	end
+end
+
+function Behemoth:updateVines()
+	local resource
+	if self.currentState == Behemoth.STATE_STUNNED then
+		resource = self:getDirector():getGameDB():getResource("BehemothMap_Climbable", "Prop")
+	else
+		resource = self:getDirector():getGameDB():getResource("BehemothMap", "Prop")
+	end
+
+	local sides1 = self:getDirector():probe(self:getLayerName(), Probe.resource("Prop", "BehemothMap"))
+	local sides2 = self:getDirector():probe(self:getLayerName(), Probe.resource("Prop", "BehemothMap_Climbable"))
+
+	self:_doUpdateVines(sides1, resource)
+	self:_doUpdateVines(sides2, resource)
 end
 
 function Behemoth:update(...)
 	Creep.update(self, ...)
 	Utility.Peep.face3D(self)
+
+	self:updateVines()
 end
 
 return Behemoth
