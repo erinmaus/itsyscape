@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
@@ -50,40 +51,11 @@ function BehemothMap:getMapSceneNode()
 		return nil
 	end
 
-	return mapSceneNode, Vector(state.i, 0, state.j), Vector(state.x, state.k, state.z), state.bone
-end
+	local mapOffset = Vector(state.i, 0, state.j)
+	local mapTranslation = Vector(state.x, state.k, state.z)
+	local mapRotation = Quaternion(unpack(state.rotation or {}))
 
-function BehemothMap:decomposeTransform(transform)
-	local m11, m21, m31, m41,
-	      m12, m22, m32, m42,
-	      m13, m23, m33, m43,
-	      m14, m24, m34, m44 = transform:getMatrix()
-
-	local t, q
-	if m33 < 0 then
-		if m11 > m22 then
-			t = 1 + m11 - m22 - m33;
-			q = Quaternion(t, m12 + m21, m31 + m13, m23 - m32);
-		else
-			t = 1 - m11 + m22 - m33;
-			q = Quaternion(m12 + m21, t, m23 + m32, m31 - m13);
-		end
-	else
-		if m11 < -m22 then
-			t = 1 - m11 - m22 + m33;
-			q = Quaternion(m31 + m13, m23 + m32, t, m12 - m21);
-		else
-			t = 1 + m11 + m22 + m33;
-			q = Quaternion(m23 - m32, m31 - m13, m12 - m21, t);
-		end
-	end
-
-	q.x = q.x * (0.5 / math.sqrt(t))
-	q.y = q.y * (0.5 / math.sqrt(t))
-	q.z = q.z * (0.5 / math.sqrt(t))
-	q.w = q.w * (0.5 / math.sqrt(t))
-
-	return Vector(m41, m42, m43), q
+	return mapSceneNode, mapOffset, mapTranslation, mapRotation, state.bone
 end
 
 function BehemothMap:update(delta)
@@ -94,26 +66,23 @@ function BehemothMap:update(delta)
 		return
 	end
 
-	local mapSceneNode, mapOffset, mapTranslation, bone = self:getMapSceneNode()
+	local mapSceneNode, mapOffset, mapTranslation, mapRotation, bone = self:getMapSceneNode()
 
 	local boneTransform = actorView:getLocalBoneTransform(bone)
 	local actorTransform = actorView:getSceneNode():getTransform():getGlobalTransform()
+	local inverseBindPose = actorView:getSkeleton():getBoneByName(bone):getInverseBindPose()
 
 	local composedTransform = love.math.newTransform()
 	composedTransform:apply(actorTransform)
-	composedTransform:translate((mapOffset):get())
+	composedTransform:translate(mapOffset:get())
 	composedTransform:translate(mapTranslation:get())
 	composedTransform:apply(boneTransform)
+	composedTransform:apply(inverseBindPose)
+	composedTransform:applyQuaternion(mapRotation:get())
 	composedTransform:translate((-mapOffset):get())
 	composedTransform:rotate(1, 0, 0, math.pi / 2)
 
-	local x, y, z = boneTransform:transformPoint(0, 0, 0)
-	print("b", math.floor(x * 10) / 10, math.floor(y * 10) / 10, math.floor(z * 10) / 10)
-
-	local x, y, z = (Vector(composedTransform:transformPoint(0, 0, 0)) - Vector(actorTransform:transformPoint(0, 0, 0))):get()
-	print("t", math.floor(x * 10) / 10, math.floor(y * 10) / 10, math.floor(z * 10) / 10)
-
-	local decomposedTranslation, decomposedRotation = self:decomposeTransform(composedTransform)
+	local decomposedTranslation, decomposedRotation = MathCommon.decomposeTransform(composedTransform)
 
 	mapSceneNode:getTransform():setLocalTranslation(decomposedTranslation)
 	mapSceneNode:getTransform():setLocalRotation(decomposedRotation)

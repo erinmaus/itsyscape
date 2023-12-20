@@ -26,6 +26,7 @@ function BasicRock:new(...)
 
 	self:addPoke('mined')
 	self:addPoke('resourceObtained')
+	self:addPoke('resourceHit')
 end
 
 function BasicRock:ready(director, game)

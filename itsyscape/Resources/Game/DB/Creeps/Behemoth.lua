@@ -39,6 +39,29 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Peep "Behemoth"
 }
 
+ItsyScape.Resource.Peep "Behemoth_Stunned" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Behemoth, Lord of the Mimics",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Behemoth_Stunned"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The Behemoth is stunned! Now climb on to it and mine away at its skin!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "Behemoth_Stunned"
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Behemoth/Behemoth_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ItsyScape.Resource.Peep "Behemoth"
+}
+
 ItsyScape.Resource.Prop "BehemothSkin" {
 	-- Nothing.
 }
@@ -71,33 +94,44 @@ ItsyScape.Resource.Prop "BehemothMap" {
 	-- Nothing.
 }
 
-ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Behemoth.BehemothMap",
-	Resource = ItsyScape.Resource.Prop "BehemothMap"
-}
-
-ItsyScape.Meta.MapObjectSize {
-	SizeX = 0,
-	SizeY = 0,
-	SizeZ = 0,
-	MapObject = ItsyScape.Resource.Prop "BehemothMap"
-}
-
 ItsyScape.Meta.ResourceName {
-	Value = "Behemoth's back",
+	Value = "Behemoth",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "BehemothMap"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "This prop is a proxy for the Behemoth's backside (topside?).",
+	Value = "Climb on to the Behemoth!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "BehemothMap"
 }
 
-ItsyScape.Meta.PeepMashinaState {
-	State = "idle",
-	Tree = "Resources/Game/Peeps/Behemoth/Behemoth_IdleLogic.lua",
-	IsDefault = 1,
-	Resource = ItsyScape.Resource.Peep "Behemoth"
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Behemoth.BehemothMap",
+	Resource = ItsyScape.Resource.Prop "BehemothMap"
+}
+
+local ClimbAction = ItsyScape.Action.Travel()
+
+ItsyScape.Meta.ActionVerb {
+	Value = "Climb",
+	Language = "en-US",
+	XProgressive = "Climbing",
+	Action = ClimbAction
+}
+
+ItsyScape.Resource.Prop "BehemothMap_Climbable" {
+	ClimbAction	
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Behemoth",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "BehemothMap_Climbable"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Climb on to the Behemoth!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "BehemothMap_Climbable"
 }

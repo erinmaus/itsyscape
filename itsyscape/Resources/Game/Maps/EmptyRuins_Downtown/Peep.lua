@@ -50,7 +50,6 @@ function Downtown:onLoad(filename, args, layer)
 end
 
 function Downtown:onPlayerEnter(player)
-	--self:pushPoke("attachPlayer", player)
 	self:onAttachPlayer(player)
 	player:pokeCamera("mapRotationStick")
 end
@@ -60,6 +59,18 @@ function Downtown:onPlayerLeave(player)
 end
 
 function Downtown:onAttachPlayer(player)
+	local behemoth = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", "Behemoth"))[1]
+	if behemoth then
+		Utility.UI.openInterface(
+			player:getActor():getPeep(),
+			"BossHUD",
+			false,
+			behemoth)
+
+		local stage = self:getDirector():getGameInstance():getStage()
+		stage:playMusic(self:getLayer(), "main", "BossFight1")
+	end
+
 	local maps = self:getDirector():probe(self:getLayerName(), Probe.resource("Prop", "BehemothMap"))
 
 	for i = 1, #maps do

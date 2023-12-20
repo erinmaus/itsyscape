@@ -39,6 +39,8 @@ function BasicPortal:new(resource, name, ...)
 	end
 
 	self.color = Color(color[0], color[1], color[2], 1)
+
+	self:addPoke("teleport")
 end
 
 function BasicPortal:getColor()

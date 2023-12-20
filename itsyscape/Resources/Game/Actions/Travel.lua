@@ -14,6 +14,7 @@ local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Action = require "ItsyScape.Peep.Action"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
 local Travel = Class(Action)
@@ -44,7 +45,29 @@ function Travel:perform(state, player, target)
 	return false
 end
 
+function Travel:teleport(state, peep, target)
+	local p = target:getBehavior(TeleportalBehavior)
+
+	local director = self:getGame():getDirector()
+	local map = director:getMap(p.layer)
+	if not map then
+		return
+	end
+
+	local position = map:getTileCenter(p.i, p.j)
+
+	Utility.Peep.setPosition(peep, position)
+	Utility.Peep.setLayer(peep, p.layer)
+
+	target:poke("teleport", peep)
+end
+
 function Travel:travel(state, peep, target)
+	if target:hasBehavior(TeleportalBehavior) then
+		self:teleport(state, peep, target)
+		return
+	end
+
 	local gameDB = self:getGameDB()
 	local record = gameDB:getRecord("TravelDestination", { Action = self:getAction() })
 	if not record then
