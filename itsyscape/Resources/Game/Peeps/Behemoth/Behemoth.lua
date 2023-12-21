@@ -37,7 +37,7 @@ function Behemoth:new(resource, name, ...)
 	size.size = Vector(5.5, 5.5, 5.5)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 0.5
+	movement.maxSpeed = 2
 
 	self:addBehavior(RotationBehavior)
 	self:addBehavior(Face3DBehavior)
@@ -67,15 +67,30 @@ function Behemoth:ready(director, game)
 		"Resources/Game/Bodies/Behemoth.lskel")
 	actor:setBody(body)
 
-	local bodySkin = CacheRef(
+	local stoneSkin = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Behemoth/Behemoth.lua")
-	actor:setSkin("skin", Equipment.SKIN_PRIORITY_BASE, bodySkin)
+		"Resources/Game/Skins/Behemoth/BehemothSkinStone.lua")
+	actor:setSkin("stone", Equipment.SKIN_PRIORITY_BASE, stoneSkin)
+
+	local grassSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Behemoth/BehemothSkinGrass.lua")
+	actor:setSkin("grass", Equipment.SKIN_PRIORITY_BASE, grassSkin)
+
+	local dirtSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Behemoth/BehemothSkinDirt.lua")
+	actor:setSkin("dirt", Equipment.SKIN_PRIORITY_BASE, dirtSkin)
 
 	local vinesSkin = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Behemoth/Vines.lua")
 	actor:setSkin("vines", Equipment.SKIN_PRIORITY_BASE, vinesSkin)
+
+	local eyesSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Behemoth/Eyes.lua")
+	actor:setSkin("eyes", Equipment.SKIN_PRIORITY_BASE, eyesSkin)
 
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
@@ -85,7 +100,7 @@ function Behemoth:ready(director, game)
 	self.idleAnimationTime = love.timer.getTime()
 	self.skeleton = Skeleton("Resources/Game/Bodies/Behemoth.lskel")
 	self.idleAnimation = SkeletonAnimation("Resources/Game/Animations/Behemoth_Idle/Animation.lanim", self.skeleton)
-	self.stunnedAnimation = SkeletonAnimation("Resources/Game/Animations/Behemoth_Die/Animation.lanim", self.skeleton)
+	self.stunnedAnimation = SkeletonAnimation("Resources/Game/Animations/Behemoth_Stun/Animation.lanim", self.skeleton)
 
 	local walkAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
@@ -106,8 +121,9 @@ function Behemoth:ready(director, game)
 		portal.j = 8
 		portal.k = 15.5
 		portal.x = -4
-		portal.z = -24
+		portal.z = -8
 		portal.bone = "body"
+		portal.rotation = Quaternion.Z_180
 
 		local size = back:getPeep():getBehavior(SizeBehavior)
 		size.size = Vector(7.5, 2, 15.5)
@@ -256,7 +272,7 @@ function Behemoth:onStun()
 
 	local stunAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Behemoth_Die/Script.lua")
+		"Resources/Game/Animations/Behemoth_Stun/Script.lua")
 
 	actor:playAnimation("idle", 10, stunAnimation)
 

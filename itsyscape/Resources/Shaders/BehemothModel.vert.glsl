@@ -5,6 +5,7 @@ attribute vec4 VertexBoneIndex;
 attribute vec4 VertexBoneWeight;
 
 varying vec3 frag_ModelPosition;
+varying vec3 frag_ModelNormal;
 
 void performTransform(
 	mat4 modelViewProjectionMatrix,
@@ -25,5 +26,6 @@ void performTransform(
 	localPosition = weightedBonePosition.xyz;
 	projectedPosition = modelViewProjectionMatrix * weightedBonePosition;
 
-	frag_ModelPosition = position.xyz;
+	frag_ModelPosition = VertexPosition.xyz;
+	frag_ModelNormal = VertexNormal;
 }

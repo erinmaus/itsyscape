@@ -97,7 +97,6 @@ function DefaultCameraController:getPlayerMapRotation()
 
 	if self.previousPlayerMapRotation then
 		local delta = math.min(self.previousPlayerMapRotationTime / DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD, 1)
-		print(">>> slerpin", delta)
 		return self.previousPlayerMapRotation:slerp(self.currentPlayerMapRotation, delta)
 	else
 		return self.currentPlayerMapRotation

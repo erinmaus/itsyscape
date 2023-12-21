@@ -2669,10 +2669,8 @@ function Utility.Peep.lookAt(self, target, delta)
 		local rotation = Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal()
 
 		if delta then
-			print(">>> slerpin", delta)
 			rotation.rotation = rotation.rotation:slerp(rotation, delta):getNormal()
 		else
-			print(">>> not slerpin")
 			rotation.rotation = rotation
 		end
 
