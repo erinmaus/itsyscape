@@ -74,6 +74,7 @@ function BehemothMap:getPropState()
 
 	state.k = (portal and portal.k) or 0
 	state.x = (portal and portal.x) or 0
+	state.y = (portal and portal.y) or 0
 	state.z = (portal and portal.z) or 0 
 	state.bone = (portal and portal.bone) or "back"
 	state.rotation = portal and portal.rotation and { portal.rotation:get() }

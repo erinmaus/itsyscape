@@ -55,12 +55,12 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Peep "Behemoth_Stunned"
 }
 
-ItsyScape.Meta.PeepMashinaState {
-	State = "idle",
-	Tree = "Resources/Game/Peeps/Behemoth/Behemoth_IdleLogic.lua",
-	IsDefault = 1,
-	Resource = ItsyScape.Resource.Peep "Behemoth"
-}
+-- ItsyScape.Meta.PeepMashinaState {
+-- 	State = "idle",
+-- 	Tree = "Resources/Game/Peeps/Behemoth/Behemoth_IdleLogic.lua",
+-- 	IsDefault = 1,
+-- 	Resource = ItsyScape.Resource.Peep "Behemoth"
+-- }
 
 ItsyScape.Resource.Prop "BehemothSkin" {
 	-- Nothing.
