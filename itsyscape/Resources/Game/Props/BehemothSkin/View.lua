@@ -30,10 +30,31 @@ function BehemothSkin:load()
 
 	resources:queue(
 		LayerTextureResource,
-		"Resources/Game/Skins/Behemoth/BehemothSkin.lua",
+		"Resources/Game/Skins/Behemoth/BehemothSkinStoneTexture.lua",
 		function(texture)
-			self.diffuseTexture = texture
-			self.diffuseTexture:getResource():setWrap("repeat")
+			self.diffuseStoneTexture = texture
+			self.diffuseStoneTexture:getResource():setWrap("repeat")
+		end)
+
+	resources:queue(
+		LayerTextureResource,
+		"Resources/Game/Skins/Behemoth/BehemothSkinGrassTexture.lua",
+		function(texture)
+			self.diffuseGrassTexture = texture
+			self.diffuseGrassTexture:getResource():setWrap("repeat")
+		end)
+
+	resources:queue(
+		LayerTextureResource,
+		"Resources/Game/Skins/Behemoth/BehemothSkinDirtTexture.lua",
+		function(texture)
+			self.diffuseDirtTexture = texture
+			self.diffuseDirtTexture:getResource():setWrap("repeat")
+		end)
+
+	resources:queueEvent(
+		function()
+			self.areTexturesLoaded = true
 		end)
 end
 
@@ -81,31 +102,11 @@ function BehemothSkin:getBlendTexture(delta)
 	return self.internalBlendTexture
 end
 
-function BehemothSkin:tick()
-	PropView.tick(self)
-
-	if not self.diffuseTexture or not self.diffuseTexture:getIsReady() then
-		return
-	end
-
-	if self.appliedShader then
-		return
-	end
-
-	local behemoth = self:getActorView()
-	if not behemoth then
-		return
-	end
-
-	local skins = behemoth:getSkins("skin")
-	if not skins then
-		return
-	end
-
-	for _, skin in ipairs(skins) do
+function BehemothSkin:apply(texture, skins)
+	for _, skin in ipairs(skins or {}) do
 		if skin.sceneNode then
 			skin.sceneNode:getMaterial():setShader(BehemothSkin.SHADER)
-			skin.sceneNode:getMaterial():setTextures(self.diffuseTexture)
+			skin.sceneNode:getMaterial():setTextures(texture)
 
 			skin.sceneNode:onWillRender(function(renderer, delta)
 				local blend = self:getBlendTexture(delta)
@@ -119,15 +120,40 @@ function BehemothSkin:tick()
 				end
 
 				if shader:hasUniform("scape_NumLayers") and
-					self.diffuseTexture and self.diffuseTexture:getIsReady()
+					texture and texture:getIsReady()
 				then
-					shader:send("scape_NumLayers", self.diffuseTexture:getLayerCount())
+					shader:send("scape_NumLayers", texture:getLayerCount())
 				end
 			end)
 
-			self.appliedShader = true
+			return true
 		end
 	end
+
+	return false
+end
+
+function BehemothSkin:tick()
+	PropView.tick(self)
+
+	if not self.areTexturesLoaded then
+		return
+	end
+
+	if self.appliedShader then
+		return
+	end
+
+	local behemoth = self:getActorView()
+	if not behemoth then
+		return
+	end
+
+	self:apply(self.diffuseStoneTexture, behemoth:getSkins("stone"))
+	self:apply(self.diffuseGrassTexture, behemoth:getSkins("grass"))
+	self:apply(self.diffuseDirtTexture, behemoth:getSkins("dirt"))
+
+	self.appliedShader = true
 end
 
 function BehemothSkin:update(delta)

@@ -14,17 +14,17 @@ TriPlanarTextureCoordinates triplanarMap()
 	result.y = frag_Position.xz * scape_Scale;
 	result.z = frag_Position.xy * scape_Scale;
 
-	if (frag_Normal.x < 0)
+	if (frag_Normal.x < 0.0)
 	{
 		result.x.x = -result.x.x;
 	}
 
-	if (frag_Normal.y < 0)
+	if (frag_Normal.y < 0.0)
 	{
 		result.y.x = -result.y.x;
 	}
 
-	if (frag_Normal.z < 0)
+	if (frag_Normal.z < 0.0)
 	{
 		result.z.x = -result.z.x;
 	}
