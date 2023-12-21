@@ -652,6 +652,22 @@ function ActorView:getLocalBoneTransform(boneName, rotation)
 	return skeleton:getLocalBoneTransform(boneName, transforms, transform)
 end
 
+function ActorView:nextAnimation(animation)
+	local oldID = animation.id
+
+	animation.cacheRef = animation.next.cacheRef
+	animation.definition = animation.next.definition
+	animation.instance = animation.definition:play(self.animatable)
+	animation.time = animation.next.time or 0
+	animation.priority = animation.next.priority or -math.huge
+	animation.next = nil
+	animation.id = self.animatable:addPlayingAnimation(animation.instance, animation.time)
+
+	self.animatable:removePlayingAnimation(oldID)
+
+	animation.done = animation.instance:play(animation.time)
+end
+
 function ActorView:updateAnimations(delta)
 	local transforms = self.animatable:getTransforms()
 	transforms:reset()
@@ -664,27 +680,17 @@ function ActorView:updateAnimations(delta)
 		animation.time = animation.time + delta
 		if animation.done then
 			if animation.next then
-				local oldID = animation.id
-
-				animation.cacheRef = animation.next.cacheRef
-				animation.definition = animation.next.definition
-				animation.instance = animation.definition:play(self.animatable)
-				animation.time = animation.next.time or 0
-				animation.priority = animation.next.priority or -math.huge
-				animation.next = nil
-				animation.id = self.animatable:addPlayingAnimation(animation.instance, animation.time)
-
-				self.animatable:removePlayingAnimation(oldID)
+				self:nextAnimation(animation)
 			else
 				self.animatable:removePlayingAnimation(animation.id)
-
 				self.animations[slot] = nil
 				self.actor:onAnimationPlayed(slot, false)
 			end
-
-			animation.done = false
 		else
 			animation.done = animation.instance:play(animation.time, animation.next ~= nil)
+			if animation.done and animation.next then
+				self:nextAnimation(animation)
+			end
 		end
 	end
 

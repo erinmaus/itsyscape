@@ -64,7 +64,12 @@ end
 function PlayAnimationInstance:_buildBlendAnimation(blendDuration, currentInstance, currentInstanceTime)
 	currentInstanceTime = math.min(currentInstance.animation:getDuration(), currentInstanceTime or 0)
 
+	if currentInstance.command:getReverse() then
+		currentInstanceTime = currentInstance.animation:getDuration() - currentInstanceTime
+	end
+
 	local definition = { _version = 2 }
+
 
 	for i = 1, self.skeleton:getNumBones() do
 		local bone = self.skeleton:getBoneByIndex(i)
@@ -134,7 +139,7 @@ function PlayAnimationInstance:play(animatable, time)
 	end
 
 	local animation, relativeTime
-	if time > self.blendDuration then
+	if time >= self.blendDuration then
 		animation = self.animation
 		relativeTime = time - self.blendDuration
 	else
