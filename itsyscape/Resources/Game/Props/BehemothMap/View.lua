@@ -51,11 +51,21 @@ function BehemothMap:getMapSceneNode()
 		return nil
 	end
 
-	local mapOffset = Vector(state.i, 0, state.j)
-	local mapTranslation = Vector(state.x, state.k, state.z)
+	local mapOffset = Vector(state.i + (self.i or 0), state.k + (self.k or 0), state.j + (self.j or 0))
+	local mapTranslation = Vector(state.x + (self.x or 0), state.y + (self.y or 0), state.z + (self.z or 0))
 	local mapRotation = Quaternion(unpack(state.rotation or {}))
 
 	return mapSceneNode, mapOffset, mapTranslation, mapRotation, state.bone
+end
+
+function BehemothMap:_debug(axis, delta)
+	if love.keyboard.isDown(axis) and (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
+		self[axis] = (self[axis] or 0) + 2 * delta
+		print(">>> +", axis, self[axis])
+	elseif love.keyboard.isDown(axis) then
+		self[axis] = (self[axis] or 0) - 2 * delta
+		print(">>> -", axis, self[axis])
+	end
 end
 
 function BehemothMap:update(delta)
@@ -66,6 +76,15 @@ function BehemothMap:update(delta)
 		return
 	end
 
+	if _DEBUG then
+		self:_debug("i", delta)
+		self:_debug("j", delta)
+		self:_debug("k", delta)
+		self:_debug("x", delta)
+		self:_debug("y", delta)
+		self:_debug("z", delta)
+	end
+
 	local mapSceneNode, mapOffset, mapTranslation, mapRotation, bone = self:getMapSceneNode()
 
 	local boneTransform = actorView:getLocalBoneTransform(bone)
@@ -74,10 +93,10 @@ function BehemothMap:update(delta)
 
 	local composedTransform = love.math.newTransform()
 	composedTransform:apply(actorTransform)
-	composedTransform:translate(mapOffset:get())
-	composedTransform:translate(mapTranslation:get())
 	composedTransform:apply(boneTransform)
 	composedTransform:apply(inverseBindPose)
+	composedTransform:translate(mapOffset:get())
+	composedTransform:translate(mapTranslation:get())
 	composedTransform:applyQuaternion(mapRotation:get())
 	composedTransform:translate((-mapOffset):get())
 	composedTransform:rotate(1, 0, 0, math.pi / 2)

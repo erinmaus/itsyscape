@@ -119,9 +119,10 @@ function Behemoth:ready(director, game)
 		portal.layer = backLayer
 		portal.i = 4
 		portal.j = 8
-		portal.k = 15.5
-		portal.x = -4
-		portal.z = -8
+		portal.k = 0
+		portal.x = -3
+		portal.y = 1
+		portal.z = 7.5
 		portal.bone = "body"
 		portal.rotation = Quaternion.Z_180
 
@@ -136,9 +137,10 @@ function Behemoth:ready(director, game)
 		portal.layer = sideLayer
 		portal.i = 1.5
 		portal.j = 4
-		portal.k = 6
-		portal.x = 7
-		portal.z = -16
+		portal.k = 0
+		portal.x = 7.5
+		portal.y = 12
+		portal.z = 1.5
 		portal.rotation = Quaternion.Y_90
 		portal.bone = "body"
 
@@ -153,10 +155,12 @@ function Behemoth:ready(director, game)
 		portal.layer = neckLayer
 		portal.i = 1.5
 		portal.j = 2.5
-		portal.k = 8.5
-		portal.x = -2.5
-		portal.z = -7
+		portal.k = 0
+		portal.x = 0
+		portal.y = -14
+		portal.z = 6.5
 		portal.bone = "neck2"
+		portal.rotation = Quaternion.Z_180
 
 		local size = neck:getPeep():getBehavior(SizeBehavior)
 		size.size = Vector(5.5, 2, 6.5)
@@ -164,7 +168,7 @@ function Behemoth:ready(director, game)
 
 	Creep.ready(self, director, game)
 
-	self:poke("rise")
+	self:poke("stun")
 end
 
 function Behemoth:getMapTransform(side)
@@ -184,8 +188,8 @@ function Behemoth:getMapTransform(side)
 		end
 	end
 
-	local mapOffset = Vector(portal.i, 0, portal.j)
-	local mapTranslation = Vector(portal.x, portal.k, portal.z)
+	local mapOffset = Vector(portal.i, portal.k, portal.j)
+	local mapTranslation = Vector(portal.x, portal.y, portal.z)
 	local mapRotation = portal.rotation or Quaternion.IDENTITY
 
 	local baseTransform = love.math.newTransform()
@@ -198,10 +202,10 @@ function Behemoth:getMapTransform(side)
 
 	local composedTransform = love.math.newTransform()
 	composedTransform:apply(peepTransform)
-	composedTransform:translate(mapOffset:get())
-	composedTransform:translate(mapTranslation:get())
 	composedTransform:apply(boneTransform)
 	composedTransform:apply(inverseBindPose)
+	composedTransform:translate(mapOffset:get())
+	composedTransform:translate(mapTranslation:get())
 	composedTransform:applyQuaternion(mapRotation:get())
 	composedTransform:translate((-mapOffset):get())
 	composedTransform:rotate(1, 0, 0, math.pi / 2)
