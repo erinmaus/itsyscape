@@ -110,14 +110,14 @@ function AnimationInstance:play(time, windingDown)
 		for j = channel.current, #channel do
 			local command = channel[j]
 
-			if windingDown and not self.stopping[command] then
-				local duration = command:getDuration(true)
-				if duration > 0 and relativeTime > duration then
-					relativeTime = 0
-					self.times[channel] = time
-					self.stopping[command] = true
-				end
-			end
+			-- if windingDown and not self.stopping[command] then
+			-- 	local duration = command:getDuration(true)
+			-- 	if duration > 0 and relativeTime > duration then
+			-- 		relativeTime = 0
+			-- 		self.times[channel] = time
+			-- 		self.stopping[command] = true
+			-- 	end
+			-- end
 
 			if command:pending(relativeTime, windingDown) then
 				if channel.previous ~= j then
