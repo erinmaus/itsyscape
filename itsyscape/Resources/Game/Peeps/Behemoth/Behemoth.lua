@@ -167,6 +167,8 @@ function Behemoth:ready(director, game)
 	end
 
 	Creep.ready(self, director, game)
+
+	self:poke("rise")
 end
 
 function Behemoth:getMapTransform(side)
@@ -248,6 +250,8 @@ function Behemoth:onRise()
 		"Resources/Game/Animations/Behemoth_Idle/Script.lua")
 
 	actor:playAnimation("idle", 0, idleAnimation)
+
+	print(">>> play idle animation")
 
 	Utility.Peep.setResource(
 		self,

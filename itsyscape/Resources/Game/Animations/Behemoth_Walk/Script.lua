@@ -1,4 +1,9 @@
 Animation "Behemoth Walk" {
+	Blend {
+		from = "Behemoth Idle",
+		duration = 0.25
+	},
+
 	Target {
 		PlayAnimation "Resources/Game/Animations/Behemoth_Walk/Animation.lanim" {
 			repeatAnimation = true,
