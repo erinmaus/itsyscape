@@ -14,12 +14,16 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local ActorView = require "ItsyScape.Graphics.ActorView"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
 local DefaultCameraController = require "ItsyScape.Graphics.DefaultCameraController"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
+local MapScript = require "ItsyScape.Peep.Peeps.Map"
+local MapMeshMask = require "ItsyScape.World.MapMeshMask"
 
 local TalkingTinkererApplication = Class(Application)
 
@@ -27,8 +31,8 @@ TalkingTinkererApplication.FPS = 60
 TalkingTinkererApplication.END_DELAY_SECONDS = 1
 TalkingTinkererApplication.HEIGHT = 1920
 TalkingTinkererApplication.WIDTH = 1080
-TalkingTinkererApplication.STICKER_WIDTH  = 320
-TalkingTinkererApplication.STICKER_HEIGHT = 320
+TalkingTinkererApplication.STICKER_WIDTH  = 512
+TalkingTinkererApplication.STICKER_HEIGHT = 512
 
 TalkingTinkererApplication.VOWEL_TO_SHAPE = {
 	a = "d",
@@ -49,7 +53,6 @@ function TalkingTinkererApplication:new()
 
 	self.targetRenderer = Renderer()
 
-	self:initTinkerer()
 	self:loadTranscript()
 
 	self.cameraController.cameraOffset = Vector(0, 5, 0)
@@ -74,11 +77,36 @@ function TalkingTinkererApplication:new()
 	self.lipSync.onResult:register(self.onLipSyncAnimation, self)
 end
 
+function TalkingTinkererApplication:initialize()
+	Application.initialize(self)
+
+	self:initTinkerer()
+end
+
 function TalkingTinkererApplication:initTinkerer()
 	local resource = _ARGS[#_ARGS - 1]
 
 	local stage = self:getGame():getStage()
-	local success, actor = stage:spawnActor("resource://" .. resource, 1, "::orphan")
+
+	-- Make map invisible
+	do
+		local map = stage:newMap(1, 1, "Draft", true, 1)
+		map:getTile(1, 1).mask[MapMeshMask.TYPE_INVISIBLE] = 1
+		stage:updateMap(1, map)
+
+		local instance = stage:newGlobalInstance("dummy")
+		instance:addLayer(1)
+		instance:setBaseLayer(1)
+
+		local mapScript = self:getGame():getDirector():addPeep("0@dummy", MapScript)
+		mapScript:listen("ready", function(self)
+			self:poke("load", "dummy", {}, 1)
+		end)
+
+		instance:addMapScript(1, mapScript, "dummy")
+	end
+
+	local success, actor = stage:spawnActor("resource://" .. resource, 1, "0@dummy")
 
 	if not success then
 		Log.error("Couldn't spawn Tinkerer.")
@@ -89,10 +117,18 @@ function TalkingTinkererApplication:initTinkerer()
 	self.target = resource
 	self.targetActor = actor
 	self.targetPeep = actor:getPeep()
-	self.targetView = ActorView(self.targetActor)
-	self.targetView:attach(self:getGameView())
+	self.targetSceneNode = self:getGameView():getScene()
+
+	local direction = DirectionalLightSceneNode()
+	direction:setDirection(Vector(1, 2, 1):getNormal())
+	direction:setParent(self.targetSceneNode)
+
+	local ambient = AmbientLightSceneNode()
+	ambient:setAmbience(0.5)
+	ambient:setParent(self.targetSceneNode)
 
 	self.targetPeep:listen("finalize", function()
+		self.targetView = self:getGameView():getActor(self:getGameView():getActorByID(self.targetActor:getID()))
 		self:playAnimation({ animation = "Idle" }, "idle", 0)
 	end)
 end
@@ -279,8 +315,8 @@ function TalkingTinkererApplication:renderTick()
 
 	love.graphics.push('all')
 	self.targetRenderer:draw(
-		self.targetView:getSceneNode(),
-		0,
+		self.targetSceneNode,
+		1,
 		width,
 		height)
 	love.graphics.pop()
@@ -323,7 +359,6 @@ function TalkingTinkererApplication:drawTinkerer()
 		end
 
 		self:getGameView():update(deltaPerTick)
-		self.targetView:update(deltaPerTick)
 
 		local image = self:renderTick()
 		image:encode('png', string.format("%s/%05d.png", directory, index))
@@ -370,8 +405,8 @@ end
 
 function TalkingTinkererApplication:update(delta)
 	Application.update(self, delta)
+
 	self.cameraController:update(delta)
-	self.targetView:update(delta)
 
 	self.lipSync:update(self.recordingDevice:getData())
 end
@@ -390,7 +425,7 @@ function TalkingTinkererApplication:draw()
 
 	love.graphics.push('all')
 	self.targetRenderer:draw(
-		self.targetView:getSceneNode(),
+		self.targetSceneNode,
 		self:getFrameDelta(),
 		w, h)
 	love.graphics.pop()

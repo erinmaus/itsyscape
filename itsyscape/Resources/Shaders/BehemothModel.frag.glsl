@@ -1,8 +1,6 @@
 #line 1
 
 uniform ArrayImage scape_DiffuseTexture;
-uniform Image scape_BlendTexture;
-uniform float scape_NumLayers;
 
 struct TriPlanarTextureCoordinates
 {
@@ -16,11 +14,11 @@ TriPlanarTextureCoordinates triplanarMap()
 {
 	TriPlanarTextureCoordinates result;
 
-	result.x = frag_ModelPosition.zy;
+	result.x = frag_ModelPosition.yz;
 	result.y = frag_ModelPosition.xz;
 	result.z = frag_ModelPosition.xy;
 
-	if (frag_ModelNormal.x > 0.0)
+	if (frag_ModelNormal.x < 0.0)
 	{
 		result.x.x = -result.x.x;
 	}
@@ -30,10 +28,13 @@ TriPlanarTextureCoordinates triplanarMap()
 		result.y.x = -result.y.x;
 	}
 
-	if (frag_ModelNormal.z < 0.0)
+	if (frag_ModelNormal.z >= 0.0)
 	{
 		result.z.x = -result.z.x;
 	}
+
+	result.x.y += 0.5;
+	result.z.x += 0.5;
 
 	return result;
 }
@@ -57,15 +58,9 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
 
-	float blend = smoothstep(0.45, 0.50, 1.0 - Texel(scape_BlendTexture, textureCoordinate).r);
-
-	float textureLayer = blend * scape_NumLayers;
-	float textureDelta = textureLayer - floor(textureLayer);
-
 	TriPlanarTextureCoordinates triPlanarTextureCoordinates = triplanarMap();
 	vec3 weight = triplanarWeights();
 
-	vec4 textureFrom = sampleDiffuse(weight, triPlanarTextureCoordinates, 0);
-
-	return textureFrom * color;
+	vec4 texture = sampleDiffuse(weight, triPlanarTextureCoordinates, 0.0);
+	return texture * color;
 }
