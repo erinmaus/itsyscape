@@ -50,7 +50,7 @@ function Downtown:onLoad(filename, args, layer)
 end
 
 function Downtown:onPlayerEnter(player)
-	self:onAttachPlayer(player)
+	self:pushPoke("attachPlayer", player)
 	player:pokeCamera("mapRotationStick")
 end
 

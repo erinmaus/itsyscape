@@ -167,8 +167,6 @@ function Behemoth:ready(director, game)
 	end
 
 	Creep.ready(self, director, game)
-
-	self:poke("stun")
 end
 
 function Behemoth:getMapTransform(side)

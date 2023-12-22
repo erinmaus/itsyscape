@@ -45,7 +45,10 @@ MapMeshMask.TYPE_CORNER_BR         = 8
 -- A fully visible tile
 MapMeshMask.TYPE_UNMASKED          = 9
 
-MapMeshMask.MAX_TYPE_COMBINATIONS  = 9
+-- A fully invisible tile.
+MapMeshMask.TYPE_INVISIBLE         = 10
+
+MapMeshMask.MAX_TYPE_COMBINATIONS  = 10
 
 MapMeshMask.SEGMENT_OFFSETS = {
 	[MapMeshMask.TYPE_HORIZONTAL_TOP]    = {    0, -128, 0,  1,  1,   0,   0 },
@@ -56,7 +59,8 @@ MapMeshMask.SEGMENT_OFFSETS = {
 	[MapMeshMask.TYPE_CORNER_TR]         = {    0, -128, 0, -1,  1, 256,   0 },
 	[MapMeshMask.TYPE_CORNER_BL]         = { -128,    0, 0,  1, -1,   0, 256 },
 	[MapMeshMask.TYPE_CORNER_BR]         = {    0,    0, 0, -1, -1, 256, 256 },
-	[MapMeshMask.TYPE_UNMASKED]          = {    0,    0, 0,  1,  1,   0,   0 }
+	[MapMeshMask.TYPE_UNMASKED]          = {    0,    0, 0,  1,  1,   0,   0 },
+	[MapMeshMask.TYPE_INVISIBLE]         = false
 }
 
 MapMeshMask.TYPE_NAMES = {
@@ -70,6 +74,7 @@ MapMeshMask.TYPE_NAMES = {
 	[MapMeshMask.TYPE_CORNER_BL]         = "TYPE_CORNER_BL",
 	[MapMeshMask.TYPE_CORNER_BR]         = "TYPE_CORNER_BR",
 	[MapMeshMask.TYPE_UNMASKED]          = "TYPE_UNMASKED",
+	[MapMeshMask.TYPE_INVISIBLE]         = "TYPE_INVISIBLE",
 }
 
 function MapMeshMask:new(n)
@@ -90,7 +95,10 @@ function MapMeshMask:initializeCanvas()
 	for i = 1, MapMeshMask.MAX_TYPE_COMBINATIONS do
 		love.graphics.setCanvas(self.canvas, i)
 		love.graphics.clear(0, 0, 0, 0)
-		love.graphics.draw(texture, unpack(self.SEGMENT_OFFSETS[i]))
+
+		if self.SEGMENT_OFFSETS[i] then
+			love.graphics.draw(texture, unpack(self.SEGMENT_OFFSETS[i]))
+		end
 	end
 	love.graphics.pop()
 end
