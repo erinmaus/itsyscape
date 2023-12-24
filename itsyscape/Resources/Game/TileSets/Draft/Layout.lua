@@ -27,5 +27,13 @@
 		colorGreen = 100,
 		colorBlue = 0,
 		name = "wall"
+	},
+
+	{
+		x = 256,
+		y = 896,
+		width = 128,
+		height = 128,
+		name = "invisible"
 	}
 }

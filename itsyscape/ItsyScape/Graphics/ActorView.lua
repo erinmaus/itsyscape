@@ -504,6 +504,10 @@ function ActorView:getSkeleton()
 end
 
 function ActorView:getSkins(slot)
+	if not slot then
+		return self.skins
+	end
+
 	return self.skins[slot]
 end
 

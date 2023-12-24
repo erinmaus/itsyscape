@@ -1284,6 +1284,7 @@ include "Resources/Game/DB/Peeps/Svalbard.lua"
 include "Resources/Game/DB/Peeps/Veggies.lua"
 include "Resources/Game/DB/Peeps/BlackTentacle.lua"
 include "Resources/Game/DB/Peeps/Humans.lua"
+include "Resources/Game/DB/Peeps/Disemboweled.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
@@ -1372,6 +1373,7 @@ include "Resources/Game/DB/Maps/ViziersRock.lua"
 include "Resources/Game/DB/Maps/PreTutorial/PreTutorial.lua"
 include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 include "Resources/Game/DB/Maps/Sailing.lua"
+include "Resources/Game/DB/Maps/EmptyRuins.lua"
 
 -- Quests
 include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"

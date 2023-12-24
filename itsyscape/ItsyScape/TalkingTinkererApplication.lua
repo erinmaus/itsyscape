@@ -10,6 +10,7 @@
 local Application = require "ItsyScape.Application"
 local LipSync = require "ItsyScape.Audio.LipSync"
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
@@ -91,7 +92,7 @@ function TalkingTinkererApplication:initTinkerer()
 	-- Make map invisible
 	do
 		local map = stage:newMap(1, 1, "Draft", true, 1)
-		map:getTile(1, 1).mask[MapMeshMask.TYPE_INVISIBLE] = 1
+		map:getTile(1, 1).flat = 3
 		stage:updateMap(1, map)
 
 		local instance = stage:newGlobalInstance("dummy")
@@ -375,9 +376,31 @@ function TalkingTinkererApplication:drawTinkerer()
 	love.filesystem.write("tinkerer.txt", url)
 end
 
+function TalkingTinkererApplication:rotate(rotation, flip)
+	rotation = Quaternion[rotation]
+	if flip then
+		rotation = -rotation
+	end
+
+	for _, skins in pairs(self.targetView:getSkins()) do
+		for _, skin in ipairs(skins) do
+			if skin.sceneNode then
+				local transform = skin.sceneNode:getTransform()
+				transform:setLocalRotation(transform:getLocalRotation() * rotation)
+			end
+		end
+	end
+end
+
 function TalkingTinkererApplication:keyDown(key, ...)
 	if key == "r" then
 		self:drawTinkerer()
+	elseif key == "y" then
+		self:rotate("Y_90", love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift"))
+	elseif key == "x" then
+		self:rotate("X_90", love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift"))
+	elseif key == "z" then
+		self:rotate("Z_90", love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift"))
 	end
 
 	return Application.keyDown(self, key, ...)
