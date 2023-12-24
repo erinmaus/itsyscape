@@ -18,9 +18,17 @@ while true do
 		local request = input:pop()
 		if request then
 			if request.type == 'file' then
+				if not love.filesystem.getInfo(request.filename) then
+					Log.warn("Filename '%s' not found!", request.filename)
+				end
+
 				local s = love.filesystem.read(request.filename)
 				output:push(s)
 			elseif request.type == 'lua' then
+				if not love.filesystem.getInfo(request.filename) then
+					Log.warn("Filename '%s' not found!", request.filename)
+				end
+
 				local s
 				do
 					local cacheFilename = request.filename .. ".cache"
