@@ -2666,12 +2666,12 @@ function Utility.Peep.lookAt(self, target, delta)
 		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
-		local rotation = Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal()
+		local r = Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal()
 
 		if delta then
-			rotation.rotation = rotation.rotation:slerp(rotation, delta):getNormal()
+			rotation.rotation = rotation.rotation:slerp(r, delta):getNormal()
 		else
-			rotation.rotation = rotation
+			rotation.rotation = r
 		end
 
 		return true
