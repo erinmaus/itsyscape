@@ -1285,6 +1285,7 @@ include "Resources/Game/DB/Peeps/Veggies.lua"
 include "Resources/Game/DB/Peeps/BlackTentacle.lua"
 include "Resources/Game/DB/Peeps/Humans.lua"
 include "Resources/Game/DB/Peeps/Disemboweled.lua"
+include "Resources/Game/DB/Peeps/ExperimentX.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
