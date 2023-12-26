@@ -23,6 +23,8 @@ local Tree = BTreeBuilder.Node() {
 					[TARGET] = B.Output.RESULT
 				},
 
+				Mashina.Peep.Interrupt,
+
 				Mashina.Peep.EngageCombatTarget {
 					peep = TARGET,
 				}

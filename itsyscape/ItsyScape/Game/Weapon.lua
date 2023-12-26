@@ -559,8 +559,10 @@ function Weapon:applyCooldown(peep, target)
 			cooldown.cooldown = effect:applyToSelfWeaponCooldown(peep, cooldown.cooldown)
 		end
 
-		for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-			cooldown.cooldown = effect:applyToTargetWeaponCooldown(target, cooldown.cooldown)
+		if target then
+			for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				cooldown.cooldown = effect:applyToTargetWeaponCooldown(target, cooldown.cooldown)
+			end
 		end
 	end
 end
