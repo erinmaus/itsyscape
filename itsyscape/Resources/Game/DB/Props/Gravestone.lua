@@ -75,7 +75,7 @@ ItsyScape.Meta.MapObjectSize {
 ItsyScape.Resource.Prop "Coffin_Plain1"
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
 	Resource = ItsyScape.Resource.Prop "Coffin_Plain1"
 }
 
@@ -94,6 +94,6 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.MapObjectSize {
 	SizeX = 1,
 	SizeY = 1,
-	SizeZ = 4,
+	SizeZ = 3.5,
 	MapObject = ItsyScape.Resource.Prop "Coffin_Plain1"
 }
