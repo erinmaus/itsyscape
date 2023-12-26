@@ -61,7 +61,7 @@ function LocalActor:spawn(id, group, resource, ...)
 		self.onDamage(self, 'block', 0)
 	end)
 	self.peep:listen("heal", function(_, p)
-		self.onDamage(self, 'heal', p.hitPoints)
+		self.onDamage(self, 'heal', p.hitPoints or p.hitpoints or 0)
 	end)
 	self.peep:listen("travel", function()
 		for animationSlot, animation in self:iterateAnimationSlots() do

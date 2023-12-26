@@ -63,3 +63,10 @@ ItsyScape.Meta.Equipment {
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Resource = ExperimentX
 }
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Zombi/ExperimentX_IdleLogic.lua",
+	IsDefault = 1,
+	Resource = ExperimentX
+}
