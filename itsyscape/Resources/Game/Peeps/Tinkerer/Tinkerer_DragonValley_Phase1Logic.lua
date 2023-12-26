@@ -22,7 +22,7 @@ local CURRENT_TINKERER_HEALTH = B.Reference("Tinkerer", "CURRENT_TINKERER_HEALTH
 local PREVIOUS_TINKERER_HEALTH = B.Reference("Tinkerer", "PREVIOUS_TINKERER_HEALTH")
 local TARGET = B.Reference("Tinkerer", "TARGET")
 
-local HEALTH_THRESHOLD = 400
+local HEALTH_THRESHOLD = 100
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
@@ -147,6 +147,27 @@ local Tree = BTreeBuilder.Node() {
 
 					Mashina.Peep.SetState {
 						state = "attack"
+					}
+				}
+			},
+
+			Mashina.Success {
+				Mashina.Sequence {
+					Mashina.Invert {
+						Mashina.Peep.FindNearbyPeep {
+							filters = { Probe.resource("Peep", "GoryMass") }
+						}
+					},
+
+					Mashina.Step {
+						Mashina.Peep.PokeSelf {
+							event = "dropGoryMass",
+							poke = function(_, state)
+								return {
+									experiment = state[EXPERIMENT_X]
+								}
+							end
+						}
 					}
 				}
 			}

@@ -2626,9 +2626,9 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 		end
 
 		if t.asCloseAsPossible then
-			return ExecutePathCommand(path, 0)
+			return ExecutePathCommand(path, 0), path
 		else
-			return ExecutePathCommand(path, distance)
+			return ExecutePathCommand(path, distance), path
 		end
 	end
 

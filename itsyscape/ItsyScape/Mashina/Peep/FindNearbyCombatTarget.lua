@@ -55,7 +55,9 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 			local targetI, targetJ = Utility.Peep.getTile(p)
 
 			local map = director:getMap(Utility.Peep.getLayer(mashina))
-			return map and map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)
+			local passable = map and map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)
+
+			return passable
 		end,
 		function(p)
 			if state[self.FILTER] then

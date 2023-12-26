@@ -13,10 +13,12 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local BaseTinkerer = require "Resources.Game.Peeps.Tinkerer.BaseTinkerer"
 
 local BossTinkerer = Class(BaseTinkerer)
+BossTinkerer.GORY_MASS_DROP = 20
 
 function BossTinkerer:new(resource, name, ...)
 	BaseTinkerer.new(self, resource, name or 'Tinkerer_DragonValleyBoss', ...)
@@ -34,6 +36,32 @@ end
 function BossTinkerer:onHealTarget(e)
 	self:poke("hit", AttackPoke({ damage = e.hitpoints }))
 	e.target:poke("heal", { hitpoints = e.hitpoints })
+end
+
+function BossTinkerer:onDropGoryMass(e)
+	local target = e.experiment:getBehavior(CombatTargetBehavior)
+	if not target then
+		return
+	end
+
+	local targetPeep = target and target.actor and target.actor:getPeep()
+	if not targetPeep then
+		return
+	end
+
+	local position = Utility.Peep.getPosition(targetPeep)
+	position = position + Vector.UNIT_Y * self.GORY_MASS_DROP
+
+	local goryMass = Utility.spawnActorAtPosition(
+		self,
+		"GoryMass",
+		position:get())
+	if goryMass then
+		goryMass:playAnimation(
+			"x-tinkerer",
+			1,
+			CacheRef("ItsyScape.Graphics.AnimationResource", "Resources/Game/Animations/FX_Spawn/Script.lua"))
+	end
 end
 
 function BossTinkerer:onBoss(e)

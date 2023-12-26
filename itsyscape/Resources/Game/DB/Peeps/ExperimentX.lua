@@ -53,14 +53,42 @@ ItsyScape.Meta.PeepStat {
 	Resource = ExperimentX
 }
 
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Value = ItsyScape.Utility.xpForLevel(50),
+	Resource = ExperimentX
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Wisdom",
+	Value = ItsyScape.Utility.xpForLevel(50),
+	Resource = ExperimentX
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Value = ItsyScape.Utility.xpForLevel(50),
+	Resource = ExperimentX
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Dexterity",
+	Value = ItsyScape.Utility.xpForLevel(50),
+	Resource = ExperimentX
+}
+
 ItsyScape.Meta.Equipment {
-	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(55),
+	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(50),
+	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(50),
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(50),
 	DefenseStab = ItsyScape.Utility.styleBonusForItem(40),
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(40),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(40),
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(50),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(35),
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
+	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(60),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Resource = ExperimentX
 }
 
