@@ -111,6 +111,23 @@ do
 	}
 end
 
+M["Tinkerer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 4,
+		PositionZ = 55,
+		Name = "Tinkerer",
+		Map = M._MAP,
+		Resource = M["Tinkerer"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Tinkerer_DragonValley_Unattackable",
+		MapObject = M["Tinkerer"]
+	}
+end
+
 M["ExperimentX"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

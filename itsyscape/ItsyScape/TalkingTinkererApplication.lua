@@ -120,6 +120,15 @@ function TalkingTinkererApplication:initTinkerer()
 	self.targetPeep = actor:getPeep()
 	self.targetSceneNode = self:getGameView():getScene()
 
+	local direction = DirectionalLightSceneNode()
+	direction:setDirection(Vector(0, 0, 1):getNormal())
+	direction:setParent(self.targetSceneNode)
+
+	local ambient = AmbientLightSceneNode()
+	ambient:setAmbience(0.75)
+	ambient:setParent(self.targetSceneNode)
+
+
 	self.targetPeep:listen("finalize", function()
 		self.targetView = self:getGameView():getActor(self:getGameView():getActorByID(self.targetActor:getID()))
 		self:playAnimation({ animation = "Idle" }, "idle", 0)

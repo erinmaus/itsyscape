@@ -68,20 +68,10 @@ function ExperimentX:ready(director, game)
 		"Resources/Game/Animations/ExperimentX_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
-	-- local walkAnimation = CacheRef(
-	-- 	"ItsyScape.Graphics.AnimationResource",
-	-- 	"Resources/Game/Animations/ExperimentX_Walk/Script.lua")
-	-- self:addResource("animation-walk", walkAnimation)
-
-	-- local dieAnimation = CacheRef(
-	-- 	"ItsyScape.Graphics.AnimationResource",
-	-- 	"Resources/Game/Animations/ExperimentX_Die/Script.lua")
-	-- self:addResource("animation-die", dieAnimation)
-
-	-- local attackAnimation = CacheRef(
-	-- 	"ItsyScape.Graphics.AnimationResource",
-	-- 	"Resources/Game/Animations/ExperimentX_Attack/Script.lua")
-	-- self:addResource("animation-attack", attackAnimation)
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/ExperimentX_Die/Script.lua")
+	self:addResource("animation-die", dieAnimation)
 
 	self:poke("rotateStyle")
 end
@@ -96,13 +86,10 @@ function ExperimentX:onRotateStyle()
 		local style = weapon and Class.isCompatibleType(weapon, Weapon) and weapon:getStyle()
 
 		if style == Weapon.STYLE_MAGIC then
-			print(">>> switching to melee")
 			Utility.Peep.equipXWeapon(self, "ExperimentX_Attack_Melee")
 		elseif style == Weapon.STYLE_MELEE then
-			print(">>> switching to archery")
 			Utility.Peep.equipXWeapon(self, "ExperimentX_Attack_Archery")
 		else
-			print(">>> switching to magic")
 			Utility.Peep.equipXWeapon(self, "ExperimentX_Attack_Magic")
 		end
 	end

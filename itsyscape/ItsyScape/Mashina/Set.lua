@@ -14,7 +14,13 @@ Set.VALUE = B.Reference()
 Set.RESULT = B.Reference()
 
 function Set:update(mashina, state, executor)
-	state[self.RESULT] = state[self.VALUE]
+	local a = state[self.VALUE]
+
+	if type(a) == 'function' then
+		a = a(mashina, state, executor)
+	end
+
+	state[self.RESULT] = a
 
 	return B.Status.Success
 end

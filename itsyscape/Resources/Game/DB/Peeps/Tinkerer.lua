@@ -36,6 +36,12 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Faith",
+	Value = ItsyScape.Utility.xpForLevel(50),
+	Resource = ItsyScape.Resource.Peep "Tinkerer"
+}
+
+ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
 	Value = ItsyScape.Utility.xpForLevel(40),
 	Resource = ItsyScape.Resource.Peep "Tinkerer"
@@ -43,13 +49,13 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(50),
+	Value = ItsyScape.Utility.xpForLevel(60),
 	Resource = ItsyScape.Resource.Peep "Tinkerer"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(50),
+	Value = ItsyScape.Utility.xpForLevel(60),
 	Resource = ItsyScape.Resource.Peep "Tinkerer"
 }
 
@@ -58,11 +64,86 @@ ItsyScape.Meta.Equipment {
 	DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 0.4),
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 1.1),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(65, 1.3),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(65, 1.2),
-	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(35),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1.3),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1.2),
+	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(65),
 	Resource = ItsyScape.Resource.Peep "Tinkerer"
 }
+
+do
+	local Tinkerer = ItsyScape.Resource.Peep "Tinkerer_DragonValley_Unattackable" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Tinkerer.DragonValleyTinkerer",
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Tinkerer",
+		Language = "en-US",
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The best kind of medic... when you're dead.",
+		Language = "en-US",
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(500),
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(50),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 1.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1.2),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(65),
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Resource.Peep "Tinkerer_DragonValley_Attackable" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Tinkerer/Tinkerer_DragonValley_Phase1Logic.lua",
+		IsDefault = 1,
+		Resource = Tinkerer
+	}
+end
 
 do
 	ItsyScape.Resource.Item "PlagueDoctorHat" {
@@ -71,7 +152,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(91),
+		Value = ItsyScape.Utility.valueForItem(60),
 		Resource = ItsyScape.Resource.Item "PlagueDoctorHat"
 	}
 
@@ -106,7 +187,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(90),
+		Value = ItsyScape.Utility.valueForItem(60),
 		Resource = ItsyScape.Resource.Item "PlagueDoctor"
 	}
 
@@ -141,7 +222,7 @@ do
 	}
 
 	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(91) * 2.5,
+		Value = ItsyScape.Utility.valueForItem(60) * 2.5,
 		Resource = ItsyScape.Resource.Item "PlagueDoctorHatAndMask"
 	}
 

@@ -17,6 +17,7 @@ local FindNearbyCombatTarget = B.Node("FindNearbyCombatTarget")
 FindNearbyCombatTarget.FILTER = B.Reference()
 FindNearbyCombatTarget.FILTERS = B.Reference()
 FindNearbyCombatTarget.DISTANCE = B.Reference()
+FindNearbyCombatTarget.LINE_OF_SIGHT = B.Reference()
 FindNearbyCombatTarget.INCLUDE_NPCS = B.Reference()
 FindNearbyCombatTarget.RESULT = B.Reference()
 
@@ -40,6 +41,21 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 			else
 				return p ~= mashina
 			end
+		end,
+		function(p)
+			if not state[self.LINE_OF_SIGHT] then
+				return true
+			end
+
+			if Utility.Peep.getLayer(mashina) ~= Utility.Peep.getLayer(p) then
+				return false
+			end
+
+			local selfI, selfJ = Utility.Peep.getTile(mashina)
+			local targetI, targetJ = Utility.Peep.getTile(p)
+
+			local map = director:getMap(Utility.Peep.getLayer(mashina))
+			return map and map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)
 		end,
 		function(p)
 			if state[self.FILTER] then
