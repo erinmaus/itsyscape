@@ -10,20 +10,35 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
 local ExperimentX = Class(Creep)
 
+ExperimentX.ANIMATION_NAMES = {
+	[Weapon.STYLE_MAGIC] = "Wizard",
+	[Weapon.STYLE_ARCHERY] = "Archer",
+	[Weapon.STYLE_MELEE] = "Warrior"
+}
+
 function ExperimentX:new(resource, name, ...)
 	Creep.new(self, resource, name or 'ExperimentX', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(3.5, 5.5, 3.5)
+	size.size = Vector(5.5, 6.5, 5.5)
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.maxSpeed = 16
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
 
 	self:addBehavior(RotationBehavior)
 end
@@ -68,7 +83,52 @@ function ExperimentX:ready(director, game)
 	-- 	"Resources/Game/Animations/ExperimentX_Attack/Script.lua")
 	-- self:addResource("animation-attack", attackAnimation)
 
-	Utility.Peep.equipXWeapon(self, "DisemboweledSmash")
+	self:poke("rotateStyle")
+end
+
+function ExperimentX:onInitiateAttack()
+	self:pushPoke(1, "rotateStyle")
+end
+
+function ExperimentX:onRotateStyle()
+	local weapon = Utility.Peep.getEquippedWeapon(self, true)
+	do
+		local style = weapon and Class.isCompatibleType(weapon, Weapon) and weapon:getStyle()
+
+		if style == Weapon.STYLE_MAGIC then
+			print(">>> switching to melee")
+			Utility.Peep.equipXWeapon(self, "ExperimentX_Attack_Melee")
+		elseif style == Weapon.STYLE_MELEE then
+			print(">>> switching to archery")
+			Utility.Peep.equipXWeapon(self, "ExperimentX_Attack_Archery")
+		else
+			print(">>> switching to magic")
+			Utility.Peep.equipXWeapon(self, "ExperimentX_Attack_Magic")
+		end
+	end
+
+	weapon = Utility.Peep.getEquippedWeapon(self, true)
+	if weapon and Class.isCompatibleType(weapon, Weapon) then
+		local style = weapon:getStyle()
+
+		local animationName = ExperimentX.ANIMATION_NAMES[style]
+		local idleAnimation = string.format("Resources/Game/Animations/ExperimentX_Idle_%s/Script.lua", animationName)
+		local attackAnimation = string.format("Resources/Game/Animations/ExperimentX_Attack_%s/Script.lua", animationName)
+
+		local actor = self:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		if actor then
+			actor:playAnimation(
+				"idle",
+				10,
+				CacheRef("ItsyScape.Graphics.AnimationResource", idleAnimation))
+		end
+
+		self:addResource(
+			"animation-attack",
+			CacheRef("ItsyScape.Graphics.AnimationResource", attackAnimation))
+	end
 end
 
 function ExperimentX:update(...)

@@ -6,7 +6,11 @@
 			type = 'point',
 			color = { 1, 1, 1 },
 			position = { 0, 1, 0 },
-			attenuation = 4
+			attenuation = 8
+		},
+		{
+			type = 'ambient',
+			ambience = 0.1
 		}
 	}
 }

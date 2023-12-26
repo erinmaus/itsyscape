@@ -32,8 +32,8 @@ TalkingTinkererApplication.FPS = 60
 TalkingTinkererApplication.END_DELAY_SECONDS = 1
 TalkingTinkererApplication.HEIGHT = 1920
 TalkingTinkererApplication.WIDTH = 1080
-TalkingTinkererApplication.STICKER_WIDTH  = 512
-TalkingTinkererApplication.STICKER_HEIGHT = 512
+TalkingTinkererApplication.STICKER_WIDTH  = 1024
+TalkingTinkererApplication.STICKER_HEIGHT = 1024
 
 TalkingTinkererApplication.VOWEL_TO_SHAPE = {
 	a = "d",
@@ -119,14 +119,6 @@ function TalkingTinkererApplication:initTinkerer()
 	self.targetActor = actor
 	self.targetPeep = actor:getPeep()
 	self.targetSceneNode = self:getGameView():getScene()
-
-	local direction = DirectionalLightSceneNode()
-	direction:setDirection(Vector(1, 2, 1):getNormal())
-	direction:setParent(self.targetSceneNode)
-
-	local ambient = AmbientLightSceneNode()
-	ambient:setAmbience(0.5)
-	ambient:setParent(self.targetSceneNode)
 
 	self.targetPeep:listen("finalize", function()
 		self.targetView = self:getGameView():getActor(self:getGameView():getActorByID(self.targetActor:getID()))
