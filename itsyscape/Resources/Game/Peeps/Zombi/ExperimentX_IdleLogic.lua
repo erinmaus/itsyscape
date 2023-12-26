@@ -32,6 +32,12 @@ local Tree = BTreeBuilder.Node() {
 		},
 
 		Mashina.Repeat {
+			Mashina.Check {
+				condition = function(_, state)
+					return state[TARGET] == nil
+				end
+			},
+
 			Mashina.Step {
 				Mashina.Navigation.Wander {
 					radial_distance = 4

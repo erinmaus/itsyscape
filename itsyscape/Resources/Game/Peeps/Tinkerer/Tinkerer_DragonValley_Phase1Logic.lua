@@ -22,14 +22,123 @@ local CURRENT_TINKERER_HEALTH = B.Reference("Tinkerer", "CURRENT_TINKERER_HEALTH
 local PREVIOUS_TINKERER_HEALTH = B.Reference("Tinkerer", "PREVIOUS_TINKERER_HEALTH")
 local TARGET = B.Reference("Tinkerer", "TARGET")
 
-local HEALTH_THRESHOLD = 100
+local HEALTH_THRESHOLD = 450
+
+local Attack = Mashina.Sequence {
+	Mashina.Peep.FindNearbyCombatTarget {
+		[TARGET] = B.Output.result
+	},
+
+	Mashina.Peep.PokeSelf {
+		event = "boss",
+		poke = function(_, state)
+			return {
+				target = state[TARGET],
+				experiment = state[EXPERIMENT_X]
+			}
+		end
+	},
+
+	Mashina.Peep.EngageCombatTarget {
+		peep = TARGET,
+	},
+
+	Mashina.Peep.SetState {
+		state = "attack"
+	}
+}
+
+local Setup = Mashina.Sequence {
+	Mashina.Peep.FindNearbyMapObject {
+		name = "ExperimentX",
+		[EXPERIMENT_X] = B.Output.result
+	},
+
+	Mashina.Success {
+		Mashina.Sequence {
+			Mashina.Peep.IsDead {
+				peep = EXPERIMENT_X
+			},
+
+			Attack
+		}
+	}
+}
+
+local Transfer = Mashina.Success {
+	Mashina.Sequence {
+		Mashina.Compare.LessThan {
+			left = CURRENT_X_HEALTH,
+			right = PREVIOUS_X_HEALTH
+		},
+
+		Mashina.Peep.PokeSelf {
+			event = "transferHitpoints",
+
+			poke = function(_, state)
+				return {
+					target = state[EXPERIMENT_X],
+					hitpoints = state[PREVIOUS_X_HEALTH] - state[CURRENT_X_HEALTH]
+				}
+			end,
+		},
+
+		Mashina.Set {
+			value = CURRENT_X_HEALTH,
+			[PREVIOUS_X_HEALTH] = B.Output.result
+		},
+
+		Mashina.Success {
+			Mashina.Sequence {
+				Mashina.RandomCheck {
+					chance = 0.25
+				},
+
+				Mashina.Peep.Talk {
+					message = "Caw! Caw! Caw!",
+					log = false
+				}
+			}
+		}
+	}
+}
+
+local DropGoryMass = Mashina.Success {
+	Mashina.Sequence {
+		Mashina.Invert {
+			Mashina.Peep.FindNearbyPeep {
+				filters = { Probe.resource("Peep", "GoryMass") }
+			}
+		},
+
+		Mashina.Step {
+			Mashina.Peep.PokeSelf {
+				event = "dropGoryMass",
+				poke = function(_, state)
+					return {
+						experiment = state[EXPERIMENT_X]
+					}
+				end
+			},
+
+			Mashina.Peep.TimeOut {
+				duration = 0.5
+			},
+
+			Mashina.Peep.FindNearbyPeep {
+				filters = { Probe.resource("Peep", "GoryMass") }
+			},
+
+			Mashina.Peep.Talk {
+				message = "Caw! Try and avoid THIS!"
+			}
+		}
+	}
+}
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
-		Mashina.Peep.FindNearbyMapObject {
-			name = "ExperimentX",
-			[EXPERIMENT_X] = B.Output.result
-		},
+		Setup,
 
 		Mashina.Set {
 			value = function(_, state)
@@ -82,43 +191,7 @@ local Tree = BTreeBuilder.Node() {
 				[CURRENT_TINKERER_HEALTH] = B.Output.result
 			},
 
-			Mashina.Success {
-				Mashina.Sequence {
-					Mashina.Compare.LessThan {
-						left = CURRENT_X_HEALTH,
-						right = PREVIOUS_X_HEALTH
-					},
-
-					Mashina.Peep.PokeSelf {
-						event = "transferHitpoints",
-
-						poke = function(_, state)
-							return {
-								target = state[EXPERIMENT_X],
-								hitpoints = state[PREVIOUS_X_HEALTH] - state[CURRENT_X_HEALTH]
-							}
-						end,
-					},
-
-					Mashina.Set {
-						value = CURRENT_X_HEALTH,
-						[PREVIOUS_X_HEALTH] = B.Output.result
-					},
-
-					Mashina.Success {
-						Mashina.Sequence {
-							Mashina.RandomCheck {
-								chance = 0.25
-							},
-
-							Mashina.Peep.Talk {
-								message = "Caw! Caw! Caw!",
-								log = false
-							}
-						}
-					}
-				}
-			},
+			Transfer,
 
 			Mashina.Success {
 				Mashina.Sequence {
@@ -127,50 +200,11 @@ local Tree = BTreeBuilder.Node() {
 						right = HEALTH_THRESHOLD
 					},
 
-					Mashina.Peep.FindNearbyCombatTarget {
-						[TARGET] = B.Output.result
-					},
-
-					Mashina.Peep.PokeSelf {
-						event = "boss",
-						poke = function(_, state)
-							return {
-								target = state[TARGET],
-								experiment = state[EXPERIMENT_X]
-							}
-						end
-					},
-
-					Mashina.Peep.EngageCombatTarget {
-						peep = TARGET,
-					},
-
-					Mashina.Peep.SetState {
-						state = "attack"
-					}
+					Attack
 				}
 			},
 
-			Mashina.Success {
-				Mashina.Sequence {
-					Mashina.Invert {
-						Mashina.Peep.FindNearbyPeep {
-							filters = { Probe.resource("Peep", "GoryMass") }
-						}
-					},
-
-					Mashina.Step {
-						Mashina.Peep.PokeSelf {
-							event = "dropGoryMass",
-							poke = function(_, state)
-								return {
-									experiment = state[EXPERIMENT_X]
-								}
-							end
-						}
-					}
-				}
-			}
+			DropGoryMass
 		}
 	}
 }

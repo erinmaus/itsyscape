@@ -8,256 +8,185 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
+local BTreeBuilder = require "B.TreeBuilder"
+local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
-local Probe = require "ItsyScape.Peep.Probe"
-local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
-local Isabelle = require "Resources.Game.Peeps.Isabelle.IsabelleMean"
+local Probe = require "ItsyScape.Peep.Probe"
 
-local HITS = B.Reference("Isabelle_AttackLogic", "HITS")
-local STYLE = B.Reference("Isabelle_AttackLogic", "STYLE")
-local TARGET = B.Reference("Isabelle_AttackLogic", "TARGET")
-local ENGAGED = B.Reference("Isabelle_AttackLogic", "ENGAGED")
+local AGGRESSOR = B.Reference("Tinkerer", "AGGRESSOR")
+local PRAYER = B.Reference("Tinkerer", "PRAYER")
+local NUM_HITS = B.Reference("Tinkerer", "NUM_HITS")
 
-local THRESHOLD_SPECIAL_1 = 4
-local THRESHOLD_SPECIAL_2 = 5
-local THRESHOLD_SWITCH    = 7
+local POWER_THRESHOLD = 4
 
-local Tree = BTreeBuilder.Node() {
-	Mashina.Step {
-		Mashina.Set {
-			value = true,
-			[ENGAGED] = B.Output.value
+local DamageSequence = Mashina.Success {
+	Mashina.Sequence {
+		Mashina.Try {
+			Mashina.Check {
+				condition = function(_, state)
+					return state[AGGRESSOR]
+				end
+			},
+
+			Mashina.Peep.WasAttacked {
+				took_damage = true,
+				[AGGRESSOR] = B.Output.aggressor
+			},
 		},
 
-		Mashina.Get {
-			value = function(mashina)
-				local weapon = Utility.Peep.getEquippedWeapon(mashina, true)
-				local weaponStyle = weapon and weapon:getStyle()
+		Mashina.Peep.DidAttack,
 
-				if weaponStyle == Weapon.STYLE_MAGIC then
-					return Isabelle.STYLE_MAGIC
-				elseif weaponStyle == Weapon.STYLE_ARCHERY then
-					return Isabelle.STYLE_ARCHERY
-				else
-					return Isabelle.STYLE_MELEE
+		Mashina.Set {
+			value = function(_, state)
+				local aggressor = state[AGGRESSOR]
+				local weapon = Utility.Peep.getEquippedWeapon(aggressor, true)
+				if weapon and Class.isCompatibleType(weapon, Weapon) then
+					local style = weapon:getStyle()
+
+					if style == Weapon.STYLE_MAGIC then
+						return "PrisiumsProtection"
+					elseif style == Weapon.STYLE_ARCHERY then
+						return "BastielsBarricade"
+					elseif style == Weapon.STYLE_MELEE then
+						return "GammonsGrace"
+					else
+						return "MetalSkin"
+					end
 				end
 			end,
-			[STYLE] = B.Output.result
+
+			[PRAYER] = B.Output.result
 		},
 
-		Mashina.Peep.Talk {
-			message = "Time to die!"
+		Mashina.Set {
+			value = false,
+			[AGGRESSOR] = B.Output.result
+		},
+
+		Mashina.Invert {
+			Mashina.Peep.HasEffect {
+				effect_type = PRAYER
+			}
 		},
 
 		Mashina.Peep.ActivatePrayer {
-			prayer = "IronWill"
+			prayer = PRAYER,
+			toggle
+		}
+	}
+}
+
+local AttackWaitSequence = Mashina.Success {
+	Mashina.Sequence {
+		Mashina.Repeat {
+			Mashina.Peep.DidAttack,
+
+			Mashina.Add {
+				left = NUM_HITS,
+				right = 1,
+
+				[NUM_HITS] = B.Output.result
+			},
+
+			Mashina.Invert {
+				Mashina.Compare.GreaterThanEqual {
+					left = NUM_HITS,
+					right = POWER_THRESHOLD
+				}
+			}
 		},
 
-		Mashina.Peep.PokeSelf {
-			event = "boss"
+		Mashina.Try {
+			Mashina.Peep.CanQueuePower {
+				power = "Shockwave"
+			},
+
+			Mashina.Peep.CanQueuePower {
+				power = "Headshot"
+			},
+
+			Mashina.Peep.CanQueuePower {
+				power = "SoulStrike"
+			},
+
+			Mashina.Peep.CanQueuePower {
+				power = "Snipe"
+			},
+
+			Mashina.Peep.CanQueuePower {
+				power = "Hesitate"	
+			}
 		},
 
-		Mashina.Peep.TimeOut {
-			min_duration = 2,
-			max_duration = 3
+		Mashina.Peep.PlayAnimation {
+			slot = "x-attack",
+			filename = "Resources/Game/Animations/Tinkerer_Special_Attack/Script.lua",
+			priority = 1500
+		},
+
+		Mashina.Peep.Talk {
+			message = "Caw! Let's see how you like this!"
+		}
+	}
+}
+
+local AttackSequence = Mashina.Success {
+	Mashina.Step {
+		AttackWaitSequence,
+
+		Mashina.RandomTry {
+			Mashina.Peep.QueuePower {
+				require_no_cooldown = true,
+				power = "Shockwave"
+			},
+
+
+			Mashina.Peep.QueuePower {
+				require_no_cooldown = true,
+				power = "Headshot"
+			},
+
+			Mashina.Peep.QueuePower {
+				require_no_cooldown = true,
+				power = "SoulStrike"
+			},
+
+			Mashina.Peep.QueuePower {
+				require_no_cooldown = true,
+				power = "Snipe"
+			},
+
+			Mashina.Peep.QueuePower {
+				require_no_cooldown = true,
+				power = "Hesitate"
+			}
+		},
+
+		Mashina.Peep.DidAttack,
+
+		Mashina.Set {
+			value = 0,
+			[NUM_HITS] = B.Output.result
+		}
+	}
+}
+
+local Tree = BTreeBuilder.Node() {
+	Mashina.Step {
+		Mashina.Peep.ActivatePrayer {
+			prayer = "PathOfLight"
+		},
+
+		Mashina.Peep.ActivatePrayer {
+			prayer = "GammonsReckoning"
 		},
 
 		Mashina.Repeat {
-			Mashina.Success {
-				Mashina.Sequence {
-					Mashina.Invert {
-						Mashina.Peep.HasCombatTarget
-					},
-
-					Mashina.Peep.FindNearbyCombatTarget {
-						distance = math.huge,
-						[TARGET] = B.Output.RESULT
-					},
-
-					Mashina.Peep.EngageCombatTarget {
-						peep = TARGET,
-					},
-
-					Mashina.Peep.PokeSelf {
-						event = "rezzMinions",
-						poke = true
-					},
-
-					Mashina.Peep.PokeSelf {
-						event = "boss"
-					}
-				}
-			},
-
-			Mashina.Step {
-				Mashina.Set {
-					value = 0,
-					[HITS] = B.Output.result
-				},
-
-				Mashina.Try {
-					Mashina.Sequence {
-						Mashina.Check {
-							condition = ENGAGED
-						},
-
-						Mashina.Peep.Talk {
-							message = "Protect me, minions!"
-						}
-					},					
-
-					Mashina.Peep.Talk {
-						message = "Protect me, minion!"
-					}
-				},
-
-				Mashina.Peep.PokeSelf {
-					event = "rezzMinions",
-					poke = ENGAGED
-				},
-
-				Mashina.Set {
-					value = false,
-					[ENGAGED] = B.Output.value
-				},
-
-				Mashina.Repeat {
-					Mashina.Invert {
-						Mashina.Compare.GreaterThanEqual {
-							left = HITS,
-							right = THRESHOLD_SWITCH
-						}
-					},
-
-					Mashina.Success {
-						Mashina.Sequence {
-							Mashina.Peep.DidAttack,
-
-							Mashina.Add {
-								left = HITS,
-								right = 1,
-								[HITS] = B.Output.result
-							}
-						}
-					},
-
-					Mashina.Success {
-						Mashina.Step {
-							Mashina.Compare.Equal {
-								left = HITS,
-								right = THRESHOLD_SPECIAL_1
-							},
-
-							Mashina.Peep.Talk {
-								message = "Prepare yourself for my next attack!"
-							},
-
-							Mashina.Try {
-								Mashina.Sequence {
-									Mashina.Compare.Equal {
-										left = STYLE,
-										right = Isabelle.STYLE_MELEE
-									},
-
-									Mashina.Peep.QueuePower {
-										power = "Tornado",
-										clear_cool_down = true
-									}
-								},
-
-								Mashina.Sequence {
-									Mashina.Compare.Equal {
-										left = STYLE,
-										right = Isabelle.STYLE_MAGIC
-									},
-
-									Mashina.Peep.QueuePower {
-										power = "Corrupt",
-										clear_cool_down = true
-									}
-								},
-
-								Mashina.Sequence {
-									Mashina.Compare.Equal {
-										left = STYLE,
-										right = Isabelle.STYLE_ARCHERY
-									},
-
-									Mashina.Peep.QueuePower {
-										power = "Boom",
-										clear_cool_down = true
-									}
-								}
-							}
-						},
-					},
-
-					Mashina.Success {
-						Mashina.Step {
-							Mashina.Compare.Equal {
-								left = HITS,
-								right = THRESHOLD_SPECIAL_2
-							},
-
-							Mashina.Try {
-								Mashina.Sequence {
-									Mashina.Compare.Equal {
-										left = STYLE,
-										right = Isabelle.STYLE_MELEE
-									},
-
-									Mashina.Peep.Talk {
-										message = "Tornado!"
-									}
-								},
-
-								Mashina.Sequence {
-									Mashina.Compare.Equal {
-										left = STYLE,
-										right = Isabelle.STYLE_MAGIC
-									},
-
-									Mashina.Peep.Talk {
-										message = "Feel the corruption!"
-									}
-								},
-
-								Mashina.Sequence {
-									Mashina.Compare.Equal {
-										left = STYLE,
-										right = Isabelle.STYLE_ARCHERY
-									},
-
-									Mashina.Peep.Talk {
-										message = "BOOM!"
-									}
-								}
-							}
-						},
-					}
-				},
-
-				Mashina.Compute {
-					input = STYLE,
-					func = function(s) return (s + 1) % 3 + 1 end,
-					[STYLE] = B.Output.output
-				},
-
-				Mashina.Peep.PokeSelf {
-					event = "switchStyle",
-					poke = STYLE
-				},
-
-				Mashina.Peep.Talk {
-					message = "Time to switch things up!",
-				},
-
-				Mashina.Peep.TimeOut {
-					min_duration = 1,
-					max_duration = 2
-				}
+			Mashina.ParallelSequence {
+				DamageSequence,
+				AttackSequence
 			}
 		}
 	}

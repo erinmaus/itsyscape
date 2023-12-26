@@ -16,6 +16,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
@@ -42,6 +43,9 @@ function GoryMass:new(resource, name, ...)
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(3, 3, 3)
 	size.offset = Vector.UNIT_Y * -1.5
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
 
 	self:addPoke('startRoll')
 	self:addPoke('stopRoll')
@@ -133,7 +137,7 @@ function GoryMass:onStartRoll(target)
 					return
 				end
 
-				targetPosition = map:getTileCenter(node.i, node.j)
+				targetPosition = map:getTileCenter(node.i, node.j) * Vector.PLANE_XZ
 			else
 				targetPosition = Utility.Peep.getAbsolutePosition(target) * Vector.PLANE_XZ
 			end

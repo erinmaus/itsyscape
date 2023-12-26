@@ -40,13 +40,13 @@ local Tree = BTreeBuilder.Node() {
 						distance = math.huge,
 						filter = function(peep)
 							local isTarget = peep:hasBehavior(PlayerBehavior) or peep:hasBehavior(FollowerBehavior)
-							local isAggressive = peep:hasBehavior(CombatTargetBehavior)
-							return isTarget and isAggressive
+							return isTarget
 						end,
 						[TARGET] = B.Output.result
 					},
 
 					Mashina.Peep.PokeSelf {
+						time = 2.4,
 						event = "startRoll",
 						poke = TARGET
 					}

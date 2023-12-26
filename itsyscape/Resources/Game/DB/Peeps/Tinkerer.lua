@@ -48,6 +48,18 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Value = ItsyScape.Utility.xpForLevel(60),
+	Resource = ItsyScape.Resource.Peep "Tinkerer"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Dexterity",
+	Value = ItsyScape.Utility.xpForLevel(60),
+	Resource = ItsyScape.Resource.Peep "Tinkerer"
+}
+
+ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
 	Value = ItsyScape.Utility.xpForLevel(60),
 	Resource = ItsyScape.Resource.Peep "Tinkerer"
@@ -67,6 +79,7 @@ ItsyScape.Meta.Equipment {
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1.3),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1.2),
 	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(65),
+	Prayer = 30,
 	Resource = ItsyScape.Resource.Peep "Tinkerer"
 }
 
@@ -111,6 +124,18 @@ do
 	}
 
 	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Magic",
 		Value = ItsyScape.Utility.xpForLevel(60),
 		Resource = Tinkerer
@@ -130,6 +155,7 @@ do
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1.3),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1.2),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(65),
+		Prayer = 30,
 		Resource = Tinkerer
 	}
 
@@ -141,6 +167,12 @@ do
 		State = "idle",
 		Tree = "Resources/Game/Peeps/Tinkerer/Tinkerer_DragonValley_Phase1Logic.lua",
 		IsDefault = 1,
+		Resource = Tinkerer
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Peeps/Tinkerer/Tinkerer_DragonValley_AttackLogic.lua",
 		Resource = Tinkerer
 	}
 end
