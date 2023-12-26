@@ -114,9 +114,9 @@ end
 M["ExperimentX"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 30,
+		PositionX = 37,
 		PositionY = 4,
-		PositionZ = 91,
+		PositionZ = 55,
 		Name = "ExperimentX",
 		Map = M._MAP,
 		Resource = M["ExperimentX"]
