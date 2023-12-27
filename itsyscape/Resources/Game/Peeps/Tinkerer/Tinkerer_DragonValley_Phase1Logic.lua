@@ -22,7 +22,7 @@ local CURRENT_TINKERER_HEALTH = B.Reference("Tinkerer", "CURRENT_TINKERER_HEALTH
 local PREVIOUS_TINKERER_HEALTH = B.Reference("Tinkerer", "PREVIOUS_TINKERER_HEALTH")
 local TARGET = B.Reference("Tinkerer", "TARGET")
 
-local HEALTH_THRESHOLD = 450
+local HEALTH_THRESHOLD = 100
 
 local Attack = Mashina.Sequence {
 	Mashina.Peep.FindNearbyCombatTarget {
@@ -37,6 +37,10 @@ local Attack = Mashina.Sequence {
 				experiment = state[EXPERIMENT_X]
 			}
 		end
+	},
+
+	Mashina.Peep.Talk {
+		message = "Caw! I'll take care of you MYSELF!"
 	},
 
 	Mashina.Peep.EngageCombatTarget {
@@ -121,16 +125,16 @@ local DropGoryMass = Mashina.Success {
 				end
 			},
 
+			Mashina.Peep.Talk {
+				message = "Caw! Try and avoid THIS!"
+			},
+
 			Mashina.Peep.TimeOut {
 				duration = 0.5
 			},
 
 			Mashina.Peep.FindNearbyPeep {
 				filters = { Probe.resource("Peep", "GoryMass") }
-			},
-
-			Mashina.Peep.Talk {
-				message = "Caw! Try and avoid THIS!"
 			}
 		}
 	}

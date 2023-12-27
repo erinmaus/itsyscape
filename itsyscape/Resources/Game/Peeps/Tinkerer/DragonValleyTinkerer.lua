@@ -23,7 +23,11 @@ BossTinkerer.GORY_MASS_DROP = 20
 function BossTinkerer:new(resource, name, ...)
 	BaseTinkerer.new(self, resource, name or 'Tinkerer_DragonValleyBoss', ...)
 
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
+
 	self:listen('receiveAttack', Utility.Peep.Attackable.bossReceiveAttack)
+	self:addPoke("boss")
 end
 
 function BossTinkerer:onTransferHitpoints(e)
@@ -87,6 +91,9 @@ function BossTinkerer:onBoss(e)
 		"BossHUD",
 		false,
 		self)
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("ExperimentX_Siphon", e.experiment, self)
 end
 
 return BossTinkerer

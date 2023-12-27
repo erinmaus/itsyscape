@@ -31,7 +31,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(1000),
+	Value = ItsyScape.Utility.xpForLevel(750),
 	Resource = ExperimentX
 }
 

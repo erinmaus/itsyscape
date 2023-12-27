@@ -41,6 +41,9 @@ function ExperimentX:new(resource, name, ...)
 	status.maxChaseDistance = math.huge
 
 	self:addBehavior(RotationBehavior)
+
+	self:listen('receiveAttack', Utility.Peep.Attackable.bossReceiveAttack)
+	self:addPoke("boss")
 end
 
 function ExperimentX:ready(director, game)

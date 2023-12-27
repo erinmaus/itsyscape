@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/EmptyRuins_DragonValley_Ginsville/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.EmptyRuins_DragonValley_Ginsville.Peep",
+	Resource = M._MAP
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Ginsville Ruins",
 	Language = "en-US",
@@ -89,7 +94,7 @@ do
 	}
 
 	ItsyScape.Meta.Fog {
-		ColorRed = 33,
+		ColorRed = 55,
 		ColorGreen = 55,
 		ColorBlue = 55,
 		NearDistance = 10,
@@ -114,9 +119,9 @@ end
 M["Tinkerer"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 37,
+		PositionX = 29,
 		PositionY = 4,
-		PositionZ = 55,
+		PositionZ = 47,
 		Name = "Tinkerer",
 		Map = M._MAP,
 		Resource = M["Tinkerer"]
@@ -125,6 +130,142 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Tinkerer_DragonValley_Unattackable",
 		MapObject = M["Tinkerer"]
+	}
+end
+
+M["Fire1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 4,
+		PositionZ = 69,
+		ScaleX = 2.5,
+		ScaleY = 4,
+		ScaleZ = 2.5,
+		Name = "Fire1",
+		Map = M._MAP,
+		Resource = M["Fire1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "RagingFire",
+		MapObject = M["Fire1"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["Fire1"]
+	}
+
+	ItsyScape.Meta.DirectionalLight {
+		DirectionX = 2,
+		DirectionY = 4,
+		DirectionZ = 2,
+		Resource = M["Fire1"]
+	}
+end
+
+M["Fire2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 4,
+		PositionZ = 45,
+		ScaleX = 3,
+		ScaleY = 4,
+		ScaleZ = 3,
+		Name = "Fire2",
+		Map = M._MAP,
+		Resource = M["Fire2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "RagingFire",
+		MapObject = M["Fire2"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["Fire2"]
+	}
+
+	ItsyScape.Meta.DirectionalLight {
+		DirectionX = 2,
+		DirectionY = 4,
+		DirectionZ = 2,
+		Resource = M["Fire2"]
+	}
+end
+
+M["Fire3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49,
+		PositionY = 4,
+		PositionZ = 29,
+		ScaleX = 1.5,
+		ScaleY = 4,
+		ScaleZ = 1.5,
+		Name = "Fire3",
+		Map = M._MAP,
+		Resource = M["Fire3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "RagingFire",
+		MapObject = M["Fire3"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["Fire3"]
+	}
+
+	ItsyScape.Meta.DirectionalLight {
+		DirectionX = 2,
+		DirectionY = 4,
+		DirectionZ = 2,
+		Resource = M["Fire3"]
+	}
+end
+
+M["Fire4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7,
+		PositionY = 4,
+		PositionZ = 87,
+		ScaleX = 3,5,
+		ScaleY = 5,
+		ScaleZ = 3.5,
+		Name = "Fire4",
+		Map = M._MAP,
+		Resource = M["Fire4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "RagingFire",
+		MapObject = M["Fire4"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["Fire4"]
+	}
+
+	ItsyScape.Meta.DirectionalLight {
+		DirectionX = 2,
+		DirectionY = 4,
+		DirectionZ = 2,
+		Resource = M["Fire4"]
 	}
 end
 
@@ -141,6 +282,93 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "ExperimentX",
-		MapObject = M["ExperimentX"]
+		MapObject = M["ExperimentX"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+end
+
+M["Adventurer1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 83,
+		Name = "Adventurer1",
+		Map = M._MAP,
+		Resource = M["Adventurer1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "DisemboweledAdventurer",
+		MapObject = M["Adventurer1"]
+	}
+end
+
+M["Adventurer2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 4,
+		PositionZ = 77,
+		Name = "Adventurer2",
+		Map = M._MAP,
+		Resource = M["Adventurer2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "DisemboweledAdventurer",
+		MapObject = M["Adventurer2"]
+	}
+end
+
+M["Adventurer3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 4,
+		PositionZ = 87,
+		Name = "Adventurer3",
+		Map = M._MAP,
+		Resource = M["Adventurer3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "DisemboweledAdventurer",
+		MapObject = M["Adventurer3"]
+	}
+end
+
+M["Adventurer4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 4,
+		PositionZ = 69,
+		Name = "Adventurer4",
+		Map = M._MAP,
+		Resource = M["Adventurer4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "DisemboweledAdventurer",
+		MapObject = M["Adventurer4"]
+	}
+end
+
+M["Adventurer5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57,
+		PositionY = 4,
+		PositionZ = 71,
+		Name = "Adventurer5",
+		Map = M._MAP,
+		Resource = M["Adventurer5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "DisemboweledAdventurer",
+		MapObject = M["Adventurer5"]
 	}
 end

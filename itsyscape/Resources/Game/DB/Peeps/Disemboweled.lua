@@ -24,7 +24,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "An adventurer that's been ressurrected and experimented on by Tinkerers. They yearn for death.",
+	Value = "An adventurer that's been resurrected and experimented on by Tinkerers. They yearn for death.",
 	Language = "en-US",
 	Resource = Adventurer
 }
@@ -61,5 +61,12 @@ ItsyScape.Meta.Equipment {
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(50),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(35),
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
+	Resource = Adventurer
+}
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "idle",
+	Tree = "Resources/Game/Peeps/Zombi/DisemboweledZombi_IdleLogic.lua",
+	IsDefault = 1,
 	Resource = Adventurer
 }

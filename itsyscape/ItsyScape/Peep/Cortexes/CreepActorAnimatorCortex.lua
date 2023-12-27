@@ -20,6 +20,7 @@ local CreepActorAnimatorCortex = Class(Cortex)
 CreepActorAnimatorCortex.WALK_PRIORITY = 1
 CreepActorAnimatorCortex.SKILL_PRIORITY = 5
 CreepActorAnimatorCortex.ATTACK_PRIORITY = 1000
+CreepActorAnimatorCortex.DEATH_PRIORITY  = 2000
 CreepActorAnimatorCortex.DEFEND_PRIORITY = 10
 
 function CreepActorAnimatorCortex:new()
@@ -103,7 +104,7 @@ function CreepActorAnimatorCortex:onDie(peep, p)
 	if resource then
 		self:playAnimation(
 			peep,
-			CreepActorAnimatorCortex.ATTACK_PRIORITY,
+			CreepActorAnimatorCortex.DEATH_PRIORITY,
 			resource)
 	end
 end
