@@ -131,3 +131,19 @@ ItsyScape.Meta.PropAlias {
 	Alias = ItsyScape.Resource.Prop "Door_EmptyRuins",
 	Resource = ItsyScape.Resource.Prop "Door_EmptyRuins_Single_Locked"
 }
+
+do
+	local RagingFire = ItsyScape.Resource.Prop "RagingFire"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.EmptyRuins.RagingFire",
+		Resource = RagingFire
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 0,
+		SizeY = 0,
+		SizeZ = 0,
+		MapObject = RagingFire
+	}
+end

@@ -23,9 +23,7 @@ function FireBlastX:tick()
 		local sourceView = gameView:getActor(source)
 
 		if sourceView then
-			print(">>> old", self.spawnPosition:get())
 			self.spawnPosition = sourceView:getBoneWorldPosition("wizard.body", Vector.ZERO, Quaternion.Y_180)
-			print(">>> new", self.spawnPosition:get())
 		end
 	end
 end
