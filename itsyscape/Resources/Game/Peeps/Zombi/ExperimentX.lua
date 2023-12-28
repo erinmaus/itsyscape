@@ -66,6 +66,11 @@ function ExperimentX:ready(director, game)
 		"Resources/Game/Skins/ExperimentX/ExperimentX.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, bodySkin)
 
+	local gutsSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/ExperimentX/ExperimentX_Guts.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_LEGS, Equipment.SKIN_PRIORITY_BASE, gutsSkin)
+
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/ExperimentX_Idle/Script.lua")

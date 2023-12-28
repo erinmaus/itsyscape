@@ -394,6 +394,16 @@ function ActorView:_doApplySkin(slotNodes)
 					slot.sceneNode:getMaterial():setTextures(translucentTexture)
 				end
 
+				local shaderCacheRef = slot.instance:getShader()
+				if shaderCacheRef then
+					local shaderResource = resourceManager:loadCacheRef(shaderCacheRef)
+					slot.sceneNode:getMaterial():setShader(shaderResource)
+
+					if coroutine.running() then
+						coroutine.yield()
+					end
+				end
+
 				if slot.instance:getIsTranslucent() then
 					slot.sceneNode:getMaterial():setIsTranslucent(true)
 					slot.sceneNode:getMaterial():setIsZWriteDisabled(true)
