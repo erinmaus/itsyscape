@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Tile = require "ItsyScape.World.Tile"
 
@@ -264,6 +265,54 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 	return true
 end
 
+-- stepCallback is (map: Map, i: integer, j: integer, x: float, z: float, t: float) -> Boolean
+-- where it returns something truthy to cancel or something falsey to cancel the ray cast
+--
+-- castRay returns the result from stepCallback, or false if there was no result
+function Map:castRay(ray, stepCallback)
+	local directionSignX = ray.direction.x > 0 and 1 or -1
+	local directionSignZ = ray.direction.z > 0 and 1 or -1
+	local tileOffsetI = (ray.direction.x > 0 and 1 or 0) - 1
+	local tileOffsetJ = (ray.direction.z > 0 and 1 or 0) - 1
+
+	local currentX, currentZ = ray.origin.x, ray.origin.z
+	local _, tileI, tileJ = self:getTileAt(currentX, currentZ)
+	local t = 0
+
+	local result
+
+	result = stepCallback(self, tileI, tileJ, currentX, currentZ, t)
+	if result then
+		return result
+	end
+
+	if ray.direction.x ^ 2 + ray.direction.z ^ 2 > 0 then
+		while tileI >= 1 and tileI <= self.width and tileJ >= 1 and tileJ <= self.height do
+			local deltaX = ((tileI + tileOffsetI) * self.cellSize - currentX) / ray.direction.x
+			local deltaZ = ((tileJ + tileOffsetJ) * self.cellSize - currentZ) / ray.direction.z
+
+			local pt = t
+			if deltaX < deltaZ then
+				t = t + deltaX
+				tileI = tileI + directionSignX
+			else
+				t = t + deltaZ
+				tileJ = tileJ + directionSignZ
+			end
+
+			currentX = ray.origin.x + ray.direction.x * t
+			currentZ = ray.origin.z + ray.direction.z * t
+
+			result = stepCallback(self, tileI, tileJ, currentX, currentZ, t)
+			if result then
+				return result
+			end
+		end
+	end
+
+	return false
+end
+
 function Map:canMove(i, j, di, dj, shoot, isDebug)
 	if math.abs(di) > 1 or math.abs(dj) > 1 then
 		return false
@@ -291,6 +340,8 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 					Log.boolean(left:getIsPassable()), Log.boolean(left:hasFlag("shoot") and shoot),
 					left.topRight - tile.topLeft, left.bottomRight - tile.bottomLeft)
 			end
+
+			isLeftPassable = false
 		end
 	end
 
@@ -308,6 +359,8 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 					Log.boolean(right:getIsPassable()), Log.boolean(right:hasFlag("shoot") and shoot),
 					right.topLeft - tile.topRight, right.bottomLeft - tile.bottomRight)
 			end
+
+			isRightPassable = false
 		end
 	end
 
@@ -325,6 +378,8 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 					Log.boolean(top:getIsPassable()), Log.boolean(top:hasFlag("shoot") and shoot),
 					top.bottomLeft - tile.topLeft, top.bottomRight - tile.topRight)
 			end
+
+			isBottomPassable = false
 		end
 	end
 
@@ -342,6 +397,8 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 					Log.boolean(bottom:getIsPassable()), Log.boolean(bottom:hasFlag("shoot") and shoot),
 					bottom.topLeft - tile.bottomLeft, bottom.topRight - tile.bottomRight)
 			end
+
+			isBottomPassable = false
 		end
 	end
 
@@ -349,7 +406,7 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 		Log.info(
 			"Passable (%d, %d -> %d, %d): left = %s, right = %s, top = %s, bottom = %s",
 			i, j, i + di, j + dj,
-			Log.boolean(isLeftPassable), Log.boolean(isRightPassable), Log.boolean(isTopPassable), Log.boolean(isBottomPassable))
+			tostring(isLeftPassable), tostring(isRightPassable), tostring(isTopPassable), tostring(isBottomPassable))
 	end
 
 	if math.abs(di) + math.abs(dj) > 1 then
@@ -454,7 +511,10 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 		end
 	end
 
-	return isLeftPassable or isRightPassable or isTopPassable or isBottomPassable
+	return (isLeftPassable or isLeftPassable == nil) and
+	       (isRightPassable or isRightPassable == nil) and
+	       (isTopPassable or isTopPassable == nil) and
+	       (isBottomPassable or isBottomPassable == nil)
 end
 
 function Map.loadFromTable(t)
