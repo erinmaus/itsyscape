@@ -26,6 +26,7 @@ function ModelSkin:new()
 	self.isOccluding = false
 	self.isTranslucent = false
 	self.isGhosty = false
+	self.shader = false
 	self.position = Vector(0)
 	self.scale = Vector(1)
 	self.rotation = Quaternion(0, 0, 0, 1)
@@ -105,6 +106,12 @@ function ModelSkin:loadFromFile(filename)
 		self.isGhosty = true
 	else
 		self.isGhosty = false
+	end
+
+	if result.shader and type(result.shader) == "string" then
+		self.shader = CacheRef("ItsyScape.Graphics.ShaderResource", result.shader)
+	else
+		self.shader = false
 	end
 
 	if result.position and
@@ -224,6 +231,10 @@ end
 
 function ModelSkin:getParticles()
 	return self.particles
+end
+
+function ModelSkin:getShader()
+	return self.shader
 end
 
 return ModelSkin
