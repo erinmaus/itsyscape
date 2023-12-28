@@ -121,6 +121,14 @@ function ExperimentX:onRotateStyle()
 	end
 end
 
+function ExperimentX:onBoss()
+	Utility.UI.openInterface(
+		Utility.Peep.getInstance(self),
+		"BossHUD",
+		false,
+		self)
+end
+
 function ExperimentX:update(...)
 	Creep.update(self, ...)
 	Utility.Peep.face3D(self)

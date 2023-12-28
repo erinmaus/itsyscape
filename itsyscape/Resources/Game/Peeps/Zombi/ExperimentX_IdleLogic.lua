@@ -25,6 +25,10 @@ local Tree = BTreeBuilder.Node() {
 
 				Mashina.Peep.Interrupt,
 
+				Mashina.Peep.PokeSelf {
+					event = "boss"
+				},
+
 				Mashina.Peep.EngageCombatTarget {
 					peep = TARGET,
 				}
