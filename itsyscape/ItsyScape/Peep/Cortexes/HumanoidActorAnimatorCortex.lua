@@ -26,6 +26,7 @@ local HumanoidActorAnimatorCortex = Class(Cortex)
 HumanoidActorAnimatorCortex.WALK_PRIORITY = 1
 HumanoidActorAnimatorCortex.SKILL_PRIORITY = 5
 HumanoidActorAnimatorCortex.ATTACK_PRIORITY = 1000
+HumanoidActorAnimatorCortex.DEATH_PRIORITY = 2000
 HumanoidActorAnimatorCortex.DEFEND_PRIORITY = 10
 
 function HumanoidActorAnimatorCortex:new()
@@ -91,6 +92,14 @@ function HumanoidActorAnimatorCortex:playCombatAnimation(peep, priority, resourc
 	if actor then
 		actor = actor.actor
 		actor:playAnimation('combat-attack', priority, resource)
+	end
+end
+
+function HumanoidActorAnimatorCortex:playDeathAnimation(peep, priority, resource)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	if actor then
+		actor = actor.actor
+		actor:playAnimation('combat-die', priority, resource)
 	end
 end
 
@@ -174,9 +183,9 @@ function HumanoidActorAnimatorCortex:onDie(peep, p)
 		"animation-die",
 		"ItsyScape.Graphics.AnimationResource")
 	if resource then
-		self:playCombatAnimation(
+		self:playDeathAnimation(
 			peep,
-			HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
+			HumanoidActorAnimatorCortex.DEATH_PRIORITY,
 			resource)
 	end
 end

@@ -23,7 +23,7 @@ local CURRENT_TINKERER_HEALTH = B.Reference("Tinkerer", "CURRENT_TINKERER_HEALTH
 local PREVIOUS_TINKERER_HEALTH = B.Reference("Tinkerer", "PREVIOUS_TINKERER_HEALTH")
 local TARGET = B.Reference("Tinkerer", "TARGET")
 
-local HEALTH_THRESHOLD = 499
+local HEALTH_THRESHOLD = 800
 
 local Attack = Mashina.Sequence {
 	Mashina.Peep.FindNearbyCombatTarget {

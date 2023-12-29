@@ -347,6 +347,12 @@ do
 		Resource = Zombi
 	}
 
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "SurgeonsScalpel",
+		Count = 1,
+		Resource = Zombi
+	}
+
 	ItsyScape.Resource.Peep "SurgeonZombi_Attackable" {
 		ItsyScape.Action.Attack(),
 
@@ -413,6 +419,11 @@ end
 do
 	local FleshyPillar = ItsyScape.Resource.Peep "EmptyRuins_DragonValley_FleshyPillar" {
 		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Zombi.FleshyPillar",
+		Resource = FleshyPillar
 	}
 
 	ItsyScape.Meta.ResourceName {

@@ -33,14 +33,11 @@ function FleshyPillar:new(resource, name, ...)
 	movement.maxSpeed = 0
 	movement.maxAcceleration = 0
 
-	local status = self:getBehavior(CombatStatusBehavior)
-	status.maxChaseDistance = 0
-
-	self:addBehavior(RotationBehavior)
+	local _, rotation = self:addBehavior(RotationBehavior)
 	rotation.rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, love.math.random() * math.pi * 2)
 
 	self:silence("receiveAttack", Utility.Peep.Attackable.aggressiveOnReceiveAttack)
-	self:silence("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
+	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
 end
 
 function FleshyPillar:ready(director, game)
@@ -52,6 +49,11 @@ function FleshyPillar:ready(director, game)
 	if not actor then
 		return
 	end
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = 0
+	status.currentHitpoints = 300
+	status.maximumHitpoints = 300
 
 	actor:setBody(
 		CacheRef(
