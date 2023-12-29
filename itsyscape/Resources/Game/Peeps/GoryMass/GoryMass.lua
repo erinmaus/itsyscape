@@ -258,8 +258,13 @@ function GoryMass:splode(peep)
 
 	local weapon = Utility.Peep.getEquippedWeapon(self, true)
 	if weapon then
+		local resource = Utility.Peep.getResource(peep)
+
 		weapon:perform(self, peep)
-		weapon:perform(self, self)
+
+		if not resource or resource.name ~= "GoryMass" then
+			weapon:perform(self, self)
+		end
 	end
 end
 

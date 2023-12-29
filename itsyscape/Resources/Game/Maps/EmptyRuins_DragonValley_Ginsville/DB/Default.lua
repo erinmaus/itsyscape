@@ -866,30 +866,6 @@ do
 	}
 end
 
-M["Door_EmptyRuins9"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 28.000000,
-		PositionY = 4.000000,
-		PositionZ = 43.500000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Door_EmptyRuins9",
-		Map = M._MAP,
-		Resource = M["Door_EmptyRuins9"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Door_EmptyRuins",
-		MapObject = M["Door_EmptyRuins9"]
-	}
-end
-
 M["Gravestone_Sharp11"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -959,30 +935,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_EmptyRuins_Single",
 		MapObject = M["Door_EmptyRuins_Single1"]
-	}
-end
-
-M["Door_EmptyRuins_Single11"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 44.500000,
-		PositionY = 4.000000,
-		PositionZ = 57.000000,
-		RotationX = 0.000000,
-		RotationY = 0.707107,
-		RotationZ = 0.000000,
-		RotationW = -0.707107,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Door_EmptyRuins_Single11",
-		Map = M._MAP,
-		Resource = M["Door_EmptyRuins_Single11"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Door_EmptyRuins_Single",
-		MapObject = M["Door_EmptyRuins_Single11"]
 	}
 end
 
@@ -1487,30 +1439,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_EmptyRuins_Single",
 		MapObject = M["Door_EmptyRuins_Single2"]
-	}
-end
-
-M["Door_EmptyRuins7"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 19.500000,
-		PositionY = 4.000000,
-		PositionZ = 58.000000,
-		RotationX = 0.000000,
-		RotationY = 0.707107,
-		RotationZ = 0.000000,
-		RotationW = 0.707107,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "Door_EmptyRuins7",
-		Map = M._MAP,
-		Resource = M["Door_EmptyRuins7"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Door_EmptyRuins",
-		MapObject = M["Door_EmptyRuins7"]
 	}
 end
 

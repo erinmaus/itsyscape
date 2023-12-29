@@ -10,6 +10,8 @@
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local BaseZombi = require "Resources.Game.Peeps.Zombi.BaseZombi"
 
 local SurgeonZombi = Class(BaseZombi)
@@ -23,6 +25,9 @@ function SurgeonZombi:ready(director, game)
 	if not actor then
 		return
 	end
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
 
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",

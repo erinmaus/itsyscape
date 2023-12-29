@@ -16,12 +16,12 @@ local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
-local EXPERIMENT_X = B.Reference("Tinkerer", "EXPERIMENT_X")
-local CURRENT_X_HEALTH = B.Reference("Tinkerer", "CURRENT_X_HEALTH")
-local PREVIOUS_X_HEALTH = B.Reference("Tinkerer", "PREVIOUS_X_HEALTH")
-local CURRENT_TINKERER_HEALTH = B.Reference("Tinkerer", "CURRENT_TINKERER_HEALTH")
-local PREVIOUS_TINKERER_HEALTH = B.Reference("Tinkerer", "PREVIOUS_TINKERER_HEALTH")
-local TARGET = B.Reference("Tinkerer", "TARGET")
+local EXPERIMENT_X = B.Reference("Tinkerer_DragonValley_IdleLogic", "EXPERIMENT_X")
+local CURRENT_X_HEALTH = B.Reference("Tinkerer_DragonValley_IdleLogic", "CURRENT_X_HEALTH")
+local PREVIOUS_X_HEALTH = B.Reference("Tinkerer_DragonValley_IdleLogic", "PREVIOUS_X_HEALTH")
+local CURRENT_TINKERER_HEALTH = B.Reference("Tinkerer_DragonValley_IdleLogic", "CURRENT_TINKERER_HEALTH")
+local PREVIOUS_TINKERER_HEALTH = B.Reference("Tinkerer_DragonValley_IdleLogic", "PREVIOUS_TINKERER_HEALTH")
+local TARGET = B.Reference("Tinkerer_DragonValley_IdleLogic", "TARGET")
 
 local HEALTH_THRESHOLD = 800
 

@@ -16,7 +16,7 @@ local GoryMassAttack = Class(MeleeWeapon)
 function GoryMassAttack:rollDamage(peep, purpose, target)
 	local roll = MeleeWeapon.rollDamage(self, peep, purpose, target)
 	local maxHit = roll:getMaxHit()
-	local minHit = math.floor(maxHit / 2)
+	local minHit = math.floor(maxHit / 3)
 	roll:setMinHit(minHit)
 
 	return roll
@@ -32,6 +32,10 @@ end
 
 function GoryMassAttack:getWeaponType()
 	return 'unarmed'
+end
+
+function GoryMassAttack:getCooldown()
+	return 4
 end
 
 return GoryMassAttack

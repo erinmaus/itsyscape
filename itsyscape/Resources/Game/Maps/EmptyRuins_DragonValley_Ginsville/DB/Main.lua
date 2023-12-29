@@ -12,7 +12,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Recently attacked by the enraged, undead dragon Svalbard.",
+	Value = "Recently ravaged by the enraged, undead dragon Svalbard.",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -129,6 +129,14 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Tinkerer_DragonValley_Unattackable",
+		MapObject = M["Tinkerer"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_Tinkerer",
+		Map = M._MAP,
 		MapObject = M["Tinkerer"]
 	}
 end
@@ -285,6 +293,98 @@ do
 		MapObject = M["ExperimentX"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
+	}
+end
+
+M["Door_Tinkerer1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 28,
+		PositionY = 4,
+		PositionZ = 43.5,
+		Name = "Door_Tinkerer1",
+		Map = M._MAP,
+		Resource = M["Door_Tinkerer1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_EmptyRuins_Locked",
+		MapObject = M["Door_Tinkerer1"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_Tinkerer",
+		Map = M._MAP,
+		MapObject = M["Door_Tinkerer1"]
+	}
+
+	M["Door_Tinkerer1"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
+	}
+end
+
+M["Door_Tinkerer2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 19.5,
+		PositionY = 4,
+		PositionZ = 58,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		Name = "Door_Tinkerer2",
+		Map = M._MAP,
+		Resource = M["Door_Tinkerer2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_EmptyRuins_Locked",
+		MapObject = M["Door_Tinkerer2"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_Tinkerer",
+		Map = M._MAP,
+		MapObject = M["Door_Tinkerer2"]
+	}
+
+	M["Door_Tinkerer2"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
+	}
+end
+
+M["Door_Tinkerer3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 44.5,
+		PositionY = 4,
+		PositionZ = 57,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
+		Name = "Door_Tinkerer3",
+		Map = M._MAP,
+		Resource = M["Door_Tinkerer3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Door_EmptyRuins_Single_Locked",
+		MapObject = M["Door_Tinkerer3"]
+	}
+
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Door_Tinkerer",
+		Map = M._MAP,
+		MapObject = M["Door_Tinkerer3"]
+	}
+
+	M["Door_Tinkerer3"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
 	}
 end
 

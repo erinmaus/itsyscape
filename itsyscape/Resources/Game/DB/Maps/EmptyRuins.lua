@@ -71,7 +71,7 @@ ItsyScape.Resource.Prop "Door_EmptyRuins_Locked" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.BasicDoor",
+	Value = "Resources.Game.Peeps.Props.BasicGuardianDoor",
 	Resource = ItsyScape.Resource.Prop "Door_EmptyRuins_Locked"
 }
 
@@ -104,7 +104,7 @@ ItsyScape.Resource.Prop "Door_EmptyRuins_Single_Locked" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.BasicDoor",
+	Value = "Resources.Game.Peeps.Props.BasicGuardianDoor",
 	Resource = ItsyScape.Resource.Prop "Door_EmptyRuins_Single_Locked"
 }
 
@@ -128,7 +128,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.PropAlias {
-	Alias = ItsyScape.Resource.Prop "Door_EmptyRuins",
+	Alias = ItsyScape.Resource.Prop "Door_EmptyRuins_Single",
 	Resource = ItsyScape.Resource.Prop "Door_EmptyRuins_Single_Locked"
 }
 

@@ -573,6 +573,31 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			self.currentToolNode = false
 		end
 	end
+
+	if self.localGameDB then
+		local hit
+		do
+			local hits = {}
+			for prop in self:getGame():getStage():iterateProps() do
+				local ray = self:shoot(x, y)
+				local s, p = ray:hitBounds(prop:getBounds())
+				if s then
+					table.insert(hits, { position = p, prop = prop })
+				end
+			end
+
+			local eye = self:getCamera():getEye()
+			table.sort(hits, function(a, b)
+				return (a.position - eye):getLength() < (b.position - eye):getLength()
+			end)
+
+			hit = hits[1]
+		end
+
+		if hit then
+			self.currentMapObject = self.propNames[hit.prop]
+		end
+	end
 end
 
 function MapEditorApplication:mouseRelease(x, y, button)
@@ -1051,12 +1076,13 @@ function MapEditorApplication:draw(...)
 		local tile = map:getTile(self.currentI, self.currentJ)
 
 		local m = string.format(
-			"(%d, %d [IJ]; %.02f, %.02f, %.02f [XYZ])",
+			"(%d, %d [IJ]; %.02f, %.02f, %.02f [XYZ])\n%s",
 			self.currentI,
 			self.currentJ,
 			(self.currentI - 0.5) * 2,
 			tile:getInterpolatedHeight(0.5, 0.5),
-			(self.currentJ - 0.5) * 2)
+			(self.currentJ - 0.5) * 2,
+			self.currentMapObject or "")
 
 		love.graphics.setColor(0, 0, 0, 1)
 		love.graphics.printf(m, 1, 1, w, "center")

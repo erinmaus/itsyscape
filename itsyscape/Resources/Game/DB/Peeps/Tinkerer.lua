@@ -307,7 +307,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Zombi.BaseZombi",
+		Value = "Resources.Game.Peeps.Zombi.SurgeonZombi",
 		Resource = Zombi
 	}
 

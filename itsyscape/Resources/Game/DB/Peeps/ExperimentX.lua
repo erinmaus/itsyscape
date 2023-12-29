@@ -98,3 +98,9 @@ ItsyScape.Meta.PeepMashinaState {
 	IsDefault = 1,
 	Resource = ExperimentX
 }
+
+ItsyScape.Meta.PeepMashinaState {
+	State = "attack",
+	Tree = "Resources/Game/Peeps/Zombi/ExperimentX_AttackLogic.lua",
+	Resource = ExperimentX
+}

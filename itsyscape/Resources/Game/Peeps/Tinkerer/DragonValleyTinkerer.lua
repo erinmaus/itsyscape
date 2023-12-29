@@ -99,7 +99,12 @@ function BossTinkerer:onDropGoryMass(e)
 		return
 	end
 
-	local position = Utility.Peep.getPosition(targetPeep)
+	local map = Utility.Peep.getMap(targetPeep)
+	if not map then
+		return
+	end
+
+	local position = Utility.Map.getRandomPosition(map, Utility.Peep.getPosition(targetPeep), math.sqrt(2))
 	position = position + Vector.UNIT_Y * self.GORY_MASS_DROP
 
 	local goryMass = Utility.spawnActorAtPosition(
@@ -125,7 +130,12 @@ function BossTinkerer:onSummonSurgeonZombi()
 		return
 	end
 
-	local position = Utility.Peep.getPosition(targetPeep)
+	local map = Utility.Peep.getMap(targetPeep)
+	if not map then
+		return
+	end
+
+	local position = Utility.Map.getRandomPosition(map, Utility.Peep.getPosition(targetPeep), math.sqrt(2))
 	local zombi = Utility.spawnActorAtPosition(
 		self,
 		"SurgeonZombi",
@@ -133,6 +143,7 @@ function BossTinkerer:onSummonSurgeonZombi()
 	if zombi then
 		zombi:getPeep():listen("finalize", function()
 			Utility.Peep.attack(zombi:getPeep(), targetPeep)
+			Utility.Peep.talk(zombi:getPeep(), "Brains....")
 		end)
 
 		zombi:playAnimation(
@@ -153,7 +164,12 @@ function BossTinkerer:onSummonFleshyPillar()
 		return
 	end
 
-	local position = Utility.Peep.getPosition(targetPeep)
+	local map = Utility.Peep.getMap(targetPeep)
+	if not map then
+		return
+	end
+
+	local position = Utility.Map.getRandomPosition(map, Utility.Peep.getPosition(targetPeep), 4)
 	Utility.spawnActorAtPosition(
 		self,
 		"EmptyRuins_DragonValley_FleshyPillar",
