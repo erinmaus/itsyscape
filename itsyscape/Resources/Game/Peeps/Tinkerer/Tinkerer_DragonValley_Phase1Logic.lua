@@ -14,6 +14,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
 local EXPERIMENT_X = B.Reference("Tinkerer", "EXPERIMENT_X")
 local CURRENT_X_HEALTH = B.Reference("Tinkerer", "CURRENT_X_HEALTH")
@@ -22,7 +23,7 @@ local CURRENT_TINKERER_HEALTH = B.Reference("Tinkerer", "CURRENT_TINKERER_HEALTH
 local PREVIOUS_TINKERER_HEALTH = B.Reference("Tinkerer", "PREVIOUS_TINKERER_HEALTH")
 local TARGET = B.Reference("Tinkerer", "TARGET")
 
-local HEALTH_THRESHOLD = 100
+local HEALTH_THRESHOLD = 499
 
 local Attack = Mashina.Sequence {
 	Mashina.Peep.FindNearbyCombatTarget {
@@ -116,6 +117,16 @@ local DropGoryMass = Mashina.Success {
 		},
 
 		Mashina.Step {
+			Mashina.Check {
+				condition = function(_, state)
+					local experimentX = state[EXPERIMENT_X]
+					local hasTarget = experimentX and experimentX:hasBehavior(CombatTargetBehavior)
+					local hasValidTarget = hasTarget and experimentX:getBehavior(CombatTargetBehavior).actor
+
+					return hasValidTarget
+				end
+			},
+
 			Mashina.Peep.PokeSelf {
 				event = "dropGoryMass",
 				poke = function(_, state)

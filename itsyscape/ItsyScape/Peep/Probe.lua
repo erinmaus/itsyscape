@@ -7,6 +7,8 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
@@ -18,6 +20,21 @@ local Probe = {}
 function Probe.none()
 	return function(peep)
 		return false
+	end
+end
+
+function Probe.distance(p, distance)
+	local position
+	if Class.isCompatibleType(p, Vector) then
+		position = p
+	else
+		position = Utility.Peep.getPosition(p)
+	end
+
+	return function(other)
+		local otherPosition = Utility.Peep.getPosition(other)
+		local otherDistance = (position - otherPosition):getLength()
+		return otherDistance <= distance
 	end
 end
 
