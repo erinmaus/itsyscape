@@ -281,3 +281,155 @@ do
 		Resource = ItsyScape.Resource.Item "PlagueDoctorHatAndMask"
 	}
 end
+
+do
+	local Zombi = ItsyScape.Resource.Peep "SurgeonZombi" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "SurgeonZombi_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Zombi_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Undead",
+		Resource = Zombi
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Zombi.BaseZombi",
+		Resource = Zombi
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Surgeon zombi",
+		Language = "en-US",
+		Resource = Zombi
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Either very good or very bad at brain surgery...",
+		Language = "en-US",
+		Resource = Zombi
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(55),
+		Resource = Zombi
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(55),
+		Resource = Zombi
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = Zombi
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(100),
+		Resource = Zombi
+	}
+
+	ItsyScape.Resource.Peep "SurgeonZombi_Attackable" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "SurgeonZombi_Primary",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "SurgeonZombi_Secondary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "SurgeonsScalpel",
+		Weight = 1,
+		Count = 1,
+		Resource = ItsyScape.Resource.DropTable "SurgeonZombi_Primary"	
+	}
+end
+
+do
+	local Scalpel = ItsyScape.Resource.Item "SurgeonsScalpel" {
+		ItsyScape.Action.Equip(),
+		ItsyScape.Action.Dequip()
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(30),
+		Resource = Scalpel
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Surgeon's scalpel",
+		Language = "en-US",
+		Resource = Scalpel
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Use it to cut through tissue like it's, well, tissue paper!",
+		Language = "en-US",
+		Resource = Scalpel
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(35),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(35),
+		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Resource = Scalpel
+	}
+
+	ItsyScape.Meta.EquipmentModel {
+		Type = "ItsyScape.Game.Skin.ModelSkin",
+		Filename = "Resources/Game/Skins/Tools/Scalpel.lua",
+		Resource = Scalpel
+	}
+end
+
+do
+	local FleshyPillar = ItsyScape.Resource.Peep "EmptyRuins_DragonValley_FleshyPillar" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Fleshy pillar",
+		Language = "en-US",
+		Resource = FleshyPillar
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Better kill that before something bad happens!",
+		Language = "en-US",
+		Resource = FleshyPillar
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(250),
+		Resource = FleshyPillar
+	}
+end

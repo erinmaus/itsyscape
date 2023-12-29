@@ -19,6 +19,7 @@ FindNearbyCombatTarget.FILTERS = B.Reference()
 FindNearbyCombatTarget.DISTANCE = B.Reference()
 FindNearbyCombatTarget.LINE_OF_SIGHT = B.Reference()
 FindNearbyCombatTarget.INCLUDE_NPCS = B.Reference()
+FindNearbyCombatTarget.COUNT = B.Reference()
 FindNearbyCombatTarget.RESULT = B.Reference()
 
 function FindNearbyCombatTarget:update(mashina, state, executor)
@@ -83,12 +84,15 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 		for i = 1, #p do
 			if p[i] ~= mashina then
 				state[self.RESULT] = p[i]
+				state[self.COUNT] = #p
 				return B.Status.Success
 			end
 		end
 	end
 
 	state[self.RESULT] = nil
+	state[self.COUNT] = 0
+
 	return B.Status.Failure
 end
 
