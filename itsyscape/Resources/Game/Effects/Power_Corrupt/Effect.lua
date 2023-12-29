@@ -19,21 +19,35 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 -- Deals 100%-300% damage over 10 seconds scaling with wisdom level, capping at
 -- level 55.
 local Corrupt = Class(Effect)
-Corrupt.DURATION = 10
+Corrupt.DURATION = 12
 Corrupt.INTERVAL = 2
 
 function Corrupt:new(activator)
 	Effect.new(self)
 
-	local level = activator:getState():count(
+	self.tick = Corrupt.INTERVAL
+	self.aggressor = activator
+end
+
+function Corrupt:getBuffType()
+	return Effect.BUFF_TYPE_NEGATIVE
+end
+
+function Corrupt:enchant(peep)
+	Effect.enchant(self, peep)
+
+	local level = self.aggressor:getState():count(
 		"Skill",
 		"Wisdom",
 		{ ['skill-as-level'] = true })
 
-	local weapon = Utility.Peep.getEquippedWeapon(activator, true)
+	local weapon = Utility.Peep.getEquippedWeapon(self.aggressor, true)
 	if weapon then
-		local damageRoll = weapon:rollDamage(activator, Weapon.PURPOSE_KILL)
-		local maxHit = damageRoll:getMaxHit() + 1
+		local damageRoll = weapon:rollDamage(self.aggressor, Weapon.PURPOSE_KILL, peep)
+		damageRoll:setMinHit(damageRoll:getMaxHit() + 1)
+		damageRoll:setMaxHit(damageRoll:getMaxHit() + 1)
+
+		local maxHit = damageRoll:roll()
 		local multiplier = math.min(math.max(level - 5, 0) / 50, 2) + 1
 
 		self.damage = math.floor(maxHit * multiplier * damageRoll:getDamageMultiplier())
@@ -42,17 +56,6 @@ function Corrupt:new(activator)
 	end
 
 	self.damageRemaining = math.floor(self.damage / (Corrupt.DURATION / Corrupt.INTERVAL) + 0.5) * (Corrupt.DURATION / Corrupt.INTERVAL)
-
-	self.tick = 0
-	self.aggressor = activator
-end
-
-function Corrupt:getBuffType()
-	return Effect.BUFF_TYPE_NEGATIVE
-end
-
-function Corrupt:getDescription()
-	string.format("%d dmg", self.damageRemaining)
 end
 
 function Corrupt:update(delta)

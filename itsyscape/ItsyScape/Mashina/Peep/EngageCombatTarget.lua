@@ -15,6 +15,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
 local EngageCombatTarget = B.Node("EngageCombatTarget")
+EngageCombatTarget.AGGRESSOR = B.Reference()
 EngageCombatTarget.PEEP = B.Reference()
 EngageCombatTarget.INCLUDE_NPCS = B.Reference()
 
@@ -28,7 +29,9 @@ function EngageCombatTarget:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	Utility.Peep.attack(mashina, peep)
+	local aggressor = state[self.AGGRESSOR] or mashina
+
+	Utility.Peep.attack(aggressor, peep)
 
 	return B.Status.Success
 end

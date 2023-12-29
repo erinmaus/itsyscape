@@ -17,29 +17,33 @@ local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
-local EXPERIMENT_X = B.Reference("Tinkerer", "EXPERIMENT_X")
-local FLESHY_PILLAR = B.Reference("Tinkerer", "FLESHY_PILLAR")
-local FLESHY_PILLAR_HITPOINT_TRANSFER = B.Reference("Tinkerer", "FLESHY_PILLAR_HITPOINT_TRANSFER")
-local AGGRESSOR = B.Reference("Tinkerer", "AGGRESSOR")
-local PRAYER = B.Reference("Tinkerer", "PRAYER")
-local NUM_HITS = B.Reference("Tinkerer", "NUM_HITS")
-local NUM_GORY_MASSES = B.Reference("Tinkerer", "NUM_GORY_MASSES")
-local PREVIOUS_PHASE = B.Reference("Tinkerer", "PREVIOUS_PHASE")
-local CURRENT_PHASE = B.Reference("Tinkerer", "CURRENT_PHASE")
-local MAXIMUM_HEALTH = B.Reference("Tinkerer", "MAXIMUM_HEALTH")
-local CURRENT_HEALTH = B.Reference("Tinkerer", "CURRENT_HEALTH")
-local PREVIOUS_HEALTH = B.Reference("Tinkerer", "PREVIOUS_HEALTH")
+local EXPERIMENT_X = B.Reference("Tinkerer_DragonValley_AttackLogic", "EXPERIMENT_X")
+local EXPERIMENT_X_TARGET = B.Reference("Tinkerer_DragonValley_AttackLogic", "EXPERIMENT_X_TARGET")
+local FLESHY_PILLAR = B.Reference("Tinkerer_DragonValley_AttackLogic", "FLESHY_PILLAR")
+local FLESHY_PILLAR_HITPOINT_TRANSFER = B.Reference("Tinkerer_DragonValley_AttackLogic", "FLESHY_PILLAR_HITPOINT_TRANSFER")
+local AGGRESSOR = B.Reference("Tinkerer_DragonValley_AttackLogic", "AGGRESSOR")
+local PRAYER = B.Reference("Tinkerer_DragonValley_AttackLogic", "PRAYER")
+local NUM_HITS = B.Reference("Tinkerer_DragonValley_AttackLogic", "NUM_HITS")
+local NUM_GORY_MASSES = B.Reference("Tinkerer_DragonValley_AttackLogic", "NUM_GORY_MASSES")
+local PREVIOUS_PHASE = B.Reference("Tinkerer_DragonValley_AttackLogic", "PREVIOUS_PHASE")
+local CURRENT_PHASE = B.Reference("Tinkerer_DragonValley_AttackLogic", "CURRENT_PHASE")
+local MAXIMUM_HEALTH = B.Reference("Tinkerer_DragonValley_AttackLogic", "MAXIMUM_HEALTH")
+local CURRENT_HEALTH = B.Reference("Tinkerer_DragonValley_AttackLogic", "CURRENT_HEALTH")
+local PREVIOUS_HEALTH = B.Reference("Tinkerer_DragonValley_AttackLogic", "PREVIOUS_HEALTH")
 
-local SPECIAL_THRESHOLD = 4
+local SPECIAL_THRESHOLD = 5
 
 local PHASE_1 = 1
 local PHASE_2 = 2
 local PHASE_3 = 3
 local MAX_PHASES = 3
 
-local MIN_HEAL = 50
-local MAX_HEAL = 100
-local HEAL_TIMEOUT = 10
+local MIN_HEAL = 25
+local MAX_HEAL = 50
+local HEAL_TIMEOUT_SECONDS = 5
+
+local FLESHY_PILLAR_THROTTLE_SECONDS = 60
+local GORY_MASS_THROTTLE_SECONDS     = 60
 
 local DamageSequence = Mashina.Success {
 	Mashina.Sequence {
@@ -136,6 +140,7 @@ local DropGoryMass = Mashina.Success {
 			Mashina.Peep.FindNearbyCombatTarget {
 				distance = 16,
 				include_npcs = true,
+				include_dead = true,
 				filters = { Probe.resource("Peep", "GoryMass") },
 				[NUM_GORY_MASSES] = B.Output.count
 			}
@@ -146,12 +151,16 @@ local DropGoryMass = Mashina.Success {
 				condition = function(_, state)
 					local phase = state[CURRENT_PHASE]
 
-					if phase >= PHASE_2 then
+					if phase >= PHASE_3 then
 						return (state[NUM_GORY_MASSES] or 0) < 2
 					else
 						return (state[NUM_GORY_MASSES] or 0) < 1
 					end
 				end
+			},
+
+			Mashina.Peep.Throttle {
+				duration = GORY_MASS_THROTTLE_SECONDS
 			},
 
 			Mashina.Peep.PokeSelf {
@@ -214,6 +223,10 @@ local SummonFleshyPillar = Mashina.Sequence {
 		}
 	},
 
+	Mashina.Peep.Throttle {
+		duration = FLESHY_PILLAR_THROTTLE_SECONDS
+	},
+
 	Mashina.Peep.PokeSelf {
 		event = "summonFleshyPillar"
 	}
@@ -222,6 +235,8 @@ local SummonFleshyPillar = Mashina.Sequence {
 local AttackSequence = Mashina.Success {
 	Mashina.Step {
 		AttackWaitSequence,
+
+		Mashina.Peep.DidAttack,
 
 		Mashina.RandomTry {
 			SummonBoneBlast,
@@ -263,6 +278,12 @@ local PhaseTransition = Mashina.Success {
 
 				SummonFleshyPillar
 			}
+		},
+
+		-- Let's not have back-to-back specials, please.
+		Mashina.Set {
+			value = 0,
+			[NUM_HITS] = B.Output.result
 		},
 
 		Mashina.Set {
@@ -384,7 +405,14 @@ local RezzExperimentX = Mashina.Success {
 				},
 
 				Mashina.Peep.Timeout {
-					duration = HEAL_TIMEOUT,
+					duration = HEAL_TIMEOUT_SECONDS,
+				},
+
+				Mashina.Peep.FindNearbyCombatTarget {
+					distance = math.huge,
+					include_npcs = true,
+					filters = { Probe.resource("Peep", "EmptyRuins_DragonValley_FleshyPillar") },
+					[FLESHY_PILLAR] = B.Output.result
 				},
 
 				Mashina.Peep.Talk {
@@ -435,6 +463,21 @@ local RezzExperimentX = Mashina.Success {
 
 		Mashina.Peep.Rezz {
 			peep = EXPERIMENT_X
+		},
+
+		Mashina.Success {
+			Mashina.Sequence {
+				Mashina.Peep.FindNearbyCombatTarget {
+					distance = math.huge,
+					line_of_sight = true,
+					[EXPERIMENT_X_TARGET] = B.Output.RESULT
+				},
+
+				Mashina.Peep.EngageCombatTarget {
+					aggressor = EXPERIMENT_X,
+					peep = EXPERIMENT_X_TARGET,
+				}
+			}
 		}
 	}
 }
