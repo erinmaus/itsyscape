@@ -17,6 +17,9 @@ local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
+local EXPERIMENT_X = B.Reference("Tinkerer", "EXPERIMENT_X")
+local FLESHY_PILLAR = B.Reference("Tinkerer", "FLESHY_PILLAR")
+local FLESHY_PILLAR_HITPOINT_TRANSFER = B.Reference("Tinkerer", "FLESHY_PILLAR_HITPOINT_TRANSFER")
 local AGGRESSOR = B.Reference("Tinkerer", "AGGRESSOR")
 local PRAYER = B.Reference("Tinkerer", "PRAYER")
 local NUM_HITS = B.Reference("Tinkerer", "NUM_HITS")
@@ -32,8 +35,11 @@ local SPECIAL_THRESHOLD = 4
 local PHASE_1 = 1
 local PHASE_2 = 2
 local PHASE_3 = 3
-local PHASE_4 = 4
-local MAX_PHASES = 4
+local MAX_PHASES = 3
+
+local MIN_HEAL = 50
+local MAX_HEAL = 100
+local HEAL_TIMEOUT = 10
 
 local DamageSequence = Mashina.Success {
 	Mashina.Sequence {
@@ -165,17 +171,9 @@ local DropGoryMass = Mashina.Success {
 }
 
 local SummonBoneBlast = Mashina.Sequence {
-	Mashina.Peep.Talk {
-		message = CURRENT_PHASE,
-	},
-
 	Mashina.Compare.GreaterThanEqual {
 		left = CURRENT_PHASE,
 		right = PHASE_1
-	},
-
-	Mashina.Peep.Talk {
-		message = "bone blast success"
 	},
 
 	Mashina.Peep.PokeSelf {
@@ -183,21 +181,18 @@ local SummonBoneBlast = Mashina.Sequence {
 	}
 }
 
-local SummonIntestines = Mashina.Sequence {
+local SummonSurgeonZombi = Mashina.Sequence {
 	Mashina.Compare.GreaterThanEqual {
 		left = CURRENT_PHASE,
 		right = PHASE_2
 	},
 
-	Mashina.Peep.PokeSelf {
-		event = "summonIntestines"
-	}
-}
-
-local SummonSurgeonZombi = Mashina.Sequence {
-	Mashina.Compare.GreaterThanEqual {
-		left = CURRENT_PHASE,
-		right = PHASE_3
+	Mashina.Invert {
+		Mashina.Peep.FindNearbyCombatTarget {
+			distance = math.huge,
+			include_npcs = true,
+			filters = { Probe.resource("Peep", "SurgeonZombi") }
+		}
 	},
 
 	Mashina.Peep.PokeSelf {
@@ -205,14 +200,22 @@ local SummonSurgeonZombi = Mashina.Sequence {
 	}
 }
 
-local SummonFleshyPillars = Mashina.Sequence {
+local SummonFleshyPillar = Mashina.Sequence {
 	Mashina.Compare.GreaterThanEqual {
 		left = CURRENT_PHASE,
-		right = PHASE_4
+		right = PHASE_3
+	},
+
+	Mashina.Invert {
+		Mashina.Peep.FindNearbyCombatTarget {
+			distance = math.huge,
+			include_npcs = true,
+			filters = { Probe.resource("Peep", "EmptyRuins_DragonValley_FleshyPillar") }
+		}
 	},
 
 	Mashina.Peep.PokeSelf {
-		event = "summonFleshyPillars"
+		event = "summonFleshyPillar"
 	}
 }
 
@@ -222,9 +225,8 @@ local AttackSequence = Mashina.Success {
 
 		Mashina.RandomTry {
 			SummonBoneBlast,
-			SummonIntestines,
 			SummonSurgeonZombi,
-			SummonFleshyPillars
+			SummonFleshyPillar
 		},
 
 		Mashina.Peep.DidAttack,
@@ -250,15 +252,6 @@ local PhaseTransition = Mashina.Success {
 					right = PHASE_2
 				},
 
-				SummonIntestines
-			},
-
-			Mashina.Step {
-				Mashina.Compare.Equal {
-					left = CURRENT_PHASE,
-					right = PHASE_3
-				},
-
 				SummonSurgeonZombi
 			},
 
@@ -268,8 +261,13 @@ local PhaseTransition = Mashina.Success {
 					right = PHASE_3
 				},
 
-				SummonFleshyPillars
+				SummonFleshyPillar
 			}
+		},
+
+		Mashina.Set {
+			value = CURRENT_PHASE,
+			[PREVIOUS_PHASE] = B.Output.result
 		}
 	}
 }
@@ -357,6 +355,90 @@ local PhaseManager = Mashina.Success {
 	}
 }
 
+local RezzExperimentX = Mashina.Success {
+	Mashina.Sequence {
+		Mashina.Peep.FindNearbyCombatTarget {
+			distance = math.huge,
+			include_npcs = true,
+			include_dead = true,
+			filters = { Probe.resource("Peep", "ExperimentX") },
+			[EXPERIMENT_X] = B.Output.result
+		},
+
+		Mashina.Repeat {
+			Mashina.Step {
+				Mashina.Peep.FindNearbyCombatTarget {
+					distance = math.huge,
+					include_npcs = true,
+					filters = { Probe.resource("Peep", "EmptyRuins_DragonValley_FleshyPillar") },
+					[FLESHY_PILLAR] = B.Output.result
+				},
+
+				Mashina.Check {
+					condition = function(_, state)
+						local experimentX = state[EXPERIMENT_X]
+						local status = experimentX:getBehavior(CombatStatusBehavior)
+
+						return status.currentHitpoints < status.maximumHitpoints
+					end
+				},
+
+				Mashina.Peep.Timeout {
+					duration = HEAL_TIMEOUT,
+				},
+
+				Mashina.Peep.Talk {
+					peep = FLESHY_PILLAR,
+					message = "Slurp... Slurp... Slurp... *gag*",
+					log = false
+				},
+
+				Mashina.Random {
+					min = MIN_HEAL,
+					max = MAX_HEAL,
+					[FLESHY_PILLAR_HITPOINT_TRANSFER] = B.Output.result
+				},
+
+				Mashina.Peep.Hit {
+					peep = FLESHY_PILLAR,
+					damage = FLESHY_PILLAR_HITPOINT_TRANSFER
+				},
+
+				Mashina.Multiply {
+					left = FLESHY_PILLAR_HITPOINT_TRANSFER,
+					right = 3,
+					[FLESHY_PILLAR_HITPOINT_TRANSFER]= B.Output.result
+				},
+
+				Mashina.Peep.Heal {
+					peep = EXPERIMENT_X,
+					hitpoints = FLESHY_PILLAR_HITPOINT_TRANSFER,
+					zealous = true
+				},
+
+				Mashina.Peep.FireProjectile {
+					projectile = "SoulStrike",
+					source = FLESHY_PILLAR,
+					destination = EXPERIMENT_X
+				}
+			}
+		},
+		
+		Mashina.Check {
+			condition = function(_, state)
+				local experimentX = state[EXPERIMENT_X]
+				local status = experimentX:getBehavior(CombatStatusBehavior)
+
+				return status.currentHitpoints >= status.maximumHitpoints
+			end
+		},
+
+		Mashina.Peep.Rezz {
+			peep = EXPERIMENT_X
+		}
+	}
+}
+
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		Mashina.Peep.ActivatePrayer {
@@ -369,10 +451,12 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Repeat {
 			Mashina.ParallelSequence {
+				DamageSequence,
 				PhaseManager,
 				PhaseTransition,
 				DropGoryMass,
-				AttackSequence
+				AttackSequence,
+				RezzExperimentX
 			}
 		}
 	}

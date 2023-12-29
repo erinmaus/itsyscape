@@ -3556,6 +3556,11 @@ function Utility.Peep.Attackable:onResurrect()
 		status.damage = {}
 		status.dead = false
 	end
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor.actor:stopAnimation("combat-die")
+	end
 end
 
 function Utility.Peep.Attackable:onReady(director)

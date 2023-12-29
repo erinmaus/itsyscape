@@ -19,6 +19,7 @@ FindNearbyCombatTarget.FILTERS = B.Reference()
 FindNearbyCombatTarget.DISTANCE = B.Reference()
 FindNearbyCombatTarget.LINE_OF_SIGHT = B.Reference()
 FindNearbyCombatTarget.INCLUDE_NPCS = B.Reference()
+FindNearbyCombatTarget.INCLUDE_DEAD = B.Reference()
 FindNearbyCombatTarget.COUNT = B.Reference()
 FindNearbyCombatTarget.RESULT = B.Reference()
 
@@ -34,6 +35,13 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 		mashina:getLayerName(),
 		Probe.attackable(),
 		Probe.near(mashina, distance),
+		function(p)
+			if state[self.INCLUDE_DEAD] then
+				return true
+			end
+
+			return p:hasBehavior(CombatStatusBehavior) and not p:getBehavior(CombatStatusBehavior).dead
+		end,
 		function(p)
 			if not includeNPCs then
 				if p:hasBehavior(PlayerBehavior) and p ~= mashina then

@@ -29,11 +29,51 @@ BossTinkerer.TIME_BETWEEN_BONE_BLAST = 0.5
 function BossTinkerer:new(resource, name, ...)
 	BaseTinkerer.new(self, resource, name or 'Tinkerer_DragonValleyBoss', ...)
 
-	local status = self:getBehavior(CombatStatusBehavior)
-	status.maxChaseDistance = math.huge
-
 	self:listen("receiveAttack", Utility.Peep.Attackable.bossReceiveAttack)
 	self:addPoke("boss")
+end
+
+function BossTinkerer:ready(...)
+	BaseTinkerer.ready(self, ...)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.currentHitpoints = 1200
+	status.maximumHitpoints = 1200
+	status.maxChaseDistance = math.huge
+end
+
+function BossTinkerer:onDie()
+	local goryMasses = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Peep", "GoryMass"))
+
+	for _, g in ipairs(goryMasses) do
+		g:poke("die")
+	end
+
+	local experimentX = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Peep", "ExperimentX"))
+
+	for _, e in ipairs(experimentX) do
+		e:poke("die")
+	end
+
+	local zombi = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Peep", "SurgeonZombi"))
+
+	for _, z in ipairs(zombi) do
+		z:poke("die")
+	end
+
+	local fleshyPillars = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Peep", "EmptyRuins_DragonValley_FleshyPillar"))
+
+	for _, f in ipairs(fleshyPillars) do
+		f:poke("die")
+	end
 end
 
 function BossTinkerer:onTransferHitpoints(e)
@@ -72,6 +112,53 @@ function BossTinkerer:onDropGoryMass(e)
 			1,
 			CacheRef("ItsyScape.Graphics.AnimationResource", "Resources/Game/Animations/FX_Spawn/Script.lua"))
 	end
+end
+
+function BossTinkerer:onSummonSurgeonZombi()
+	local target = self:getBehavior(CombatTargetBehavior)
+	if not target then
+		return
+	end
+
+	local targetPeep = target and target.actor and target.actor:getPeep()
+	if not targetPeep then
+		return
+	end
+
+	local position = Utility.Peep.getPosition(targetPeep)
+	local zombi = Utility.spawnActorAtPosition(
+		self,
+		"SurgeonZombi",
+		position:get())
+	if zombi then
+		zombi:getPeep():listen("finalize", function()
+			Utility.Peep.attack(zombi:getPeep(), targetPeep)
+		end)
+
+		zombi:playAnimation(
+			"x-tinkerer",
+			1,
+			CacheRef("ItsyScape.Graphics.AnimationResource", "Resources/Game/Animations/FX_Spawn/Script.lua"))
+	end
+end
+
+function BossTinkerer:onSummonFleshyPillar()
+	local target = self:getBehavior(CombatTargetBehavior)
+	if not target then
+		return
+	end
+
+	local targetPeep = target and target.actor and target.actor:getPeep()
+	if not targetPeep then
+		return
+	end
+
+	local position = Utility.Peep.getPosition(targetPeep)
+	Utility.spawnActorAtPosition(
+		self,
+		"EmptyRuins_DragonValley_FleshyPillar",
+		position.x, position.y, position.z,
+		2)
 end
 
 function BossTinkerer:onSummonBoneBlast(targetPeep, count, maxCount, previousI, previousJ)
@@ -183,11 +270,11 @@ end
 function BossTinkerer:onBoss(e)
 	local gameDB = self:getDirector():getGameDB()
 
+	local selfStatus = self:getBehavior(CombatStatusBehavior)
 	local targetStatus = e.experiment:getBehavior(CombatStatusBehavior)
-	if targetStatus then
+	if targetStatus and selfStatus then
 		self:poke("heal", {
-			hitpoints = targetStatus.currentHitpoints,
-			zealous = true
+			hitpoints = selfStatus.maximumHitpoints - selfStatus.currentHitpoints
 		})
 
 		e.experiment:poke("hit", AttackPoke({ damage = targetStatus.currentHitpoints }))
