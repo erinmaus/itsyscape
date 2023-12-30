@@ -19,6 +19,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 
 local ExperimentX = Class(Creep)
 
@@ -41,6 +42,7 @@ function ExperimentX:new(resource, name, ...)
 	status.maxChaseDistance = math.huge
 
 	self:addBehavior(RotationBehavior)
+	self:addBehavior(ScaleBehavior)
 
 	self:listen('receiveAttack', Utility.Peep.Attackable.bossReceiveAttack)
 	self:addPoke("boss")

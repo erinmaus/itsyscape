@@ -24,6 +24,9 @@ function CameraDolly:new(resource, ...)
 	self:addBehavior(MovementBehavior)
 	self:addBehavior(SizeBehavior)
 	self:addBehavior(ActorReferenceBehavior)
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.noClip = true
 end
 
 return CameraDolly

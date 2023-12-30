@@ -111,7 +111,9 @@ function GoryMass:onStartRoll(target)
 		local selfPosition = Utility.Peep.getAbsolutePosition(self) * Vector.PLANE_XZ
 
 		local targetPosition
-		do
+		if Class.isCompatibleType(target, Vector) then
+			targetPosition = target
+		else
 			if Utility.Peep.getLayer(self) ~= Utility.Peep.getLayer(target) then
 				return
 			end
