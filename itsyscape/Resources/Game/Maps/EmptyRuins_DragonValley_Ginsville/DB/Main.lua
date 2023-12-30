@@ -472,3 +472,267 @@ do
 		MapObject = M["Adventurer5"]
 	}
 end
+
+M["Trailer_SurgeonZombi"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		Name = "Trailer_SurgeonZombi",
+		Map = M._MAP,
+		Resource = M["Trailer_SurgeonZombi"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "SurgeonZombi",
+		MapObject = M["Trailer_SurgeonZombi"]
+	}
+end
+
+M["Trailer_FleshyPillar"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		Name = "Trailer_FleshyPillar",
+		Map = M._MAP,
+		Resource = M["Trailer_FleshyPillar"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "EmptyRuins_DragonValley_FleshyPillar",
+		MapObject = M["Trailer_FleshyPillar"]
+	}
+end
+
+M["Trailer_GoryMass"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		Name = "Trailer_GoryMass",
+		Map = M._MAP,
+		Resource = M["Trailer_GoryMass"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "GoryMass",
+		MapObject = M["Trailer_GoryMass"]
+	}
+end
+
+M["Trailer_CameraDolly"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		Name = "Trailer_CameraDolly",
+		Map = M._MAP,
+		Resource = M["Trailer_CameraDolly"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CameraDolly",
+		MapObject = M["Trailer_CameraDolly"]
+	}
+end
+
+M["Trailer_Sweep_Tinkerer_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 4,
+		PositionZ = 55,
+		Name = "Trailer_Sweep_Tinkerer_1",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_Tinkerer_1"]
+	}
+end
+
+M["Trailer_Sweep_Tinkerer_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 4,
+		PositionZ = 47,
+		Name = "Trailer_Sweep_Tinkerer_2",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_Tinkerer_2"]
+	}
+end
+
+M["Trailer_Sweep_SurgeonZombi_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49,
+		PositionY = 4,
+		PositionZ = 63,
+		Name = "Trailer_Sweep_SurgeonZombi_1",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_SurgeonZombi_1"]
+	}
+end
+
+M["Trailer_Sweep_SurgeonZombi_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 4,
+		PositionZ = 57,
+		Name = "Trailer_Sweep_SurgeonZombi_2",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_SurgeonZombi_2"]
+	}
+end
+
+M["Trailer_Sweep_GoryMass_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 4,
+		PositionZ = 61,
+		Name = "Trailer_Sweep_GoryMass_1",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_GoryMass_1"]
+	}
+end
+
+M["Trailer_Sweep_GoryMass_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 4,
+		PositionZ = 53,
+		Name = "Trailer_Sweep_GoryMass_2",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_GoryMass_2"]
+	}
+end
+
+M["Trailer_Sweep_Dolly_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 10,
+		PositionZ = 81,
+		Name = "Trailer_Sweep_Dolly_1",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_Dolly_1"]
+	}
+end
+
+M["Trailer_Sweep_Dolly_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 10,
+		PositionZ = 29,
+		Name = "Trailer_Sweep_Dolly_2",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_Dolly_2"]
+	}
+end
+
+M["Trailer_Sweep_ExperimentX_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 47,
+		Name = "Trailer_Sweep_ExperimentX_1",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_ExperimentX_1"]
+	}
+end
+
+M["Trailer_Sweep_ExperimentX_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 4,
+		PositionZ = 57,
+		Name = "Trailer_Sweep_ExperimentX_2",
+		Map = M._MAP,
+		Resource = M["Trailer_Sweep_ExperimentX_2"]
+	}
+end
+
+M["Trailer_ZoomInView"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 10,
+		PositionZ = 57,
+		Name = "Trailer_ZoomInView",
+		Map = M._MAP,
+		Resource = M["Trailer_ZoomInView"]
+	}
+end
+
+M["Trailer_ExperimentX_Fight_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 47,
+		Name = "Trailer_ExperimentX_Fight_1",
+		Map = M._MAP,
+		Resource = M["Trailer_ExperimentX_Fight_1"]
+	}
+end
+
+M["Trailer_ExperimentX_Fight_2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 4,
+		PositionZ = 53,
+		Name = "Trailer_ExperimentX_Fight_2",
+		Map = M._MAP,
+		Resource = M["Trailer_ExperimentX_Fight_2"]
+	}
+end
+
+M["Trailer_Tinkerer_BoneBlast"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 63,
+		Name = "Trailer_Tinkerer_BoneBlast",
+		Map = M._MAP,
+		Resource = M["Trailer_Tinkerer_BoneBlast"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "EmptyRuins_DragonValley_Ginsville_Trailer"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "ExperimentX",
+		Cutscene = Cutscene,
+		Resource = M["ExperimentX"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Tinkerer",
+		Cutscene = Cutscene,
+		Resource = M["Tinkerer"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "GoryMass",
+		Cutscene = Cutscene,
+		Resource = M["Trailer_GoryMass"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "SurgeonZombi",
+		Cutscene = Cutscene,
+		Resource = M["Trailer_SurgeonZombi"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "FleshyPillar",
+		Cutscene = Cutscene,
+		Resource = M["Trailer_FleshyPillar"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CameraDolly",
+		Cutscene = Cutscene,
+		Resource = M["Trailer_CameraDolly"]
+	}
+end
