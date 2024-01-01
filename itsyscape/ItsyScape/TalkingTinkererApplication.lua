@@ -209,7 +209,18 @@ function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
 	local animation = nextFrame.animation or "<BAD>"
 
 	local skinFilename = string.format("Resources/Game/Skins/%s/%s_%s.lua", self.target, self.target, animation)
-	local animationFilename = string.format("Resources/Game/Animations/%s_%s/Script.lua", self.target, animation)
+	local animationFilename = ""
+	do
+		local animationFilename1 = string.format("Resources/Game/Animations/%s_%s/Script.lua", self.target, animation)
+		if love.filesystem.getInfo(animationFilename1) then
+			animationFilename = animationFilename1
+		else
+			local animationFilename2 = string.format("Resources/Game/Animations/%s/Script.lua", animation)
+			if love.filesystem.getInfo(animationFilename2) then
+				animationFilename = animationFilename2
+			end
+		end
+	end
 
 	if love.filesystem.getInfo(skinFilename) then
 		local body = CacheRef("ItsyScape.Game.Skin.ModelSkin", skinFilename)
