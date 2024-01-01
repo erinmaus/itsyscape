@@ -13,7 +13,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
 
-	textureCoordinate.s += mix(-(1.0 / 16.0), (1.0 / 16.0), sin(scape_Time * 2) * cos(textureCoordinate.t * 3.14 * 2.0));
+	textureCoordinate.s += mix(-(1.0 / 16.0), (1.0 / 16.0), sin(scape_Time * 3.14 / 2) * cos(textureCoordinate.t * 3.14 * 2.0));
     textureCoordinate.s = mod(textureCoordinate.s, 1.0);
 
 	return Texel(scape_DiffuseTexture, textureCoordinate) * color;
