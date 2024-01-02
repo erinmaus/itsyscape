@@ -362,10 +362,10 @@ function DefaultCameraController:debugUpdate(delta)
 	end
 
 	do
-		if love.keyboard.isDown('pageup') then
+		if love.keyboard.isDown('=') then
 			self.cameraOffset = self.cameraOffset + -Vector.UNIT_Y * speed * delta
 		end
-		if love.keyboard.isDown('pagedown') then
+		if love.keyboard.isDown('-') then
 			self.cameraOffset = self.cameraOffset + Vector.UNIT_Y * speed * delta
 		end
 	end
