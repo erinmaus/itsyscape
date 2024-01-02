@@ -131,7 +131,7 @@ function TalkingTinkererApplication:initTinkerer()
 
 	self.targetPeep:listen("finalize", function()
 		self.targetView = self:getGameView():getActor(self:getGameView():getActorByID(self.targetActor:getID()))
-		self:playAnimation({ animation = "Idle" }, "idle", 0)
+		self:playAnimation({ animation = "Idle" }, "main", 0)
 	end)
 end
 
@@ -209,7 +209,7 @@ function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
 	local animation = nextFrame.animation or "<BAD>"
 
 	local skinFilename = string.format("Resources/Game/Skins/%s/%s_%s.lua", self.target, self.target, animation)
-	local animationFilename = ""
+	local animationFilename
 	do
 		local animationFilename1 = string.format("Resources/Game/Animations/%s_%s/Script.lua", self.target, animation)
 		if love.filesystem.getInfo(animationFilename1) then
@@ -226,15 +226,15 @@ function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
 		local body = CacheRef("ItsyScape.Game.Skin.ModelSkin", skinFilename)
 		self.targetView:changeSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 		Log.info("Changed skin to '%s'", skinFilename)
-	elseif love.filesystem.getInfo(animationFilename) then
+	elseif animationFilename and love.filesystem.getInfo(animationFilename) then
 		local animation = CacheRef("ItsyScape.Graphics.AnimationResource", animationFilename)
 
 		if animationFilename:match(".*Idle.*") then
 			Log.info("Changed idle animation to '%s'", animationFilename)
-			self.targetView:playAnimation(channel or 'idle', animation, priority or 0, 0)
+			self.targetView:playAnimation(channel or 'idle', animation, priority or 10, 0)
 		else
 			Log.info("Changed animation to '%s'", animationFilename)
-			self.targetView:playAnimation(channel or 'main', animation, priority or 2, 0)
+			self.targetView:playAnimation(channel or 'talk', animation, priority or 100, 0)
 		end
 	else
 		Log.warn("No animation for '%s'.", animation)
@@ -371,6 +371,7 @@ function TalkingTinkererApplication:drawTinkerer()
 			currentFrame = nextFrame
 		end
 
+		self:getGameView():tick()
 		self:getGameView():update(deltaPerTick)
 
 		local image = self:renderTick()
