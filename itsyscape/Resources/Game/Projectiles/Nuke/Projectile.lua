@@ -145,6 +145,8 @@ function Nuke:load()
 	self.particleSystemTop = ParticleSceneNode()
 	self.particleSystemTop:initParticleSystemFromDef(Nuke.PARTICLE_SYSTEM_TOP, resources)
 	self.particleSystemTop:getTransform():setLocalTranslation(Vector.UNIT_Y * 8)
+	self.particleSystemTop:setParent(root)
+	self.particleSystemTop:pause()
 
 	self.particleSystemBottom = ParticleSceneNode()
 	self.particleSystemBottom:setParent(root)
@@ -168,10 +170,8 @@ function Nuke:update(elapsed)
 		local root = self:getRoot()
 		root:getTransform():setLocalTranslation(self.spawnPosition)
 
-		if self:getTime() > Nuke.SPAWN_MUSHROOM_TOP_TIME and
-		   not self.particleSystemTop:getParent()
-		then
-			self.particleSystemTop:setParent(root)
+		if self:getTime() > Nuke.SPAWN_MUSHROOM_TOP_TIME then
+			self.particleSystemTop:play()
 		end
 	end
 end
