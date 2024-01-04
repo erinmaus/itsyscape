@@ -147,10 +147,6 @@ function ResourceManager:queue(resourceType, filename, callback, ...)
 		error("expected Resource-derived type")
 	end
 
-	if not love.filesystem.getInfo(filename) then
-		Log.warn("Filename '%s' not found; might be bad filename!", filename)
-	end
-
 	local load = Callback.bind(self._load, self, resourceType, filename, ...)
 	local c = function()
 		function wrappedCallback()
