@@ -344,12 +344,16 @@ function ActorView:playAnimation(slot, animation, priority, time)
 
 			self.animations[slot] = a
 			self:sortAnimations()
+			self:updateAnimations(0)
 		end)
 
 		self.animations[slot] = a
 	else
-		self.animations[slot] = nil
-		self:sortAnimations()
+		self.game:getResourceManager():queueEvent(function()
+			self.animations[slot] = nil
+			self:sortAnimations()
+			self:updateAnimations(0)
+		end)
 	end
 end
 

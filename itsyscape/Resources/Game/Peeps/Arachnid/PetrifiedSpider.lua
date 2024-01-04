@@ -40,6 +40,8 @@ function PetrifiedSpider:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/PetrifiedSpider/PetrifiedSpider.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+
+	Utility.Peep.equipXWeapon(self, "SewerSpiderWebVomit")
 end
 
 function PetrifiedSpider:onAttack(peep)

@@ -16,7 +16,7 @@ local BasicTree = require "Resources.Game.Peeps.Props.BasicTree"
 
 local PetrifiedSpiderTree = Class(BasicTree)
 
-PetrifiedSpiderTree.IDLE_PRIORITY   = 100000
+PetrifiedSpiderTree.IDLE_PRIORITY   = 50
 PetrifiedSpiderTree.CHOP_PRIORITY   = 100
 PetrifiedSpiderTree.FELLED_PRIORITY = 2000
 
@@ -31,13 +31,25 @@ function PetrifiedSpiderTree:onReplenished()
 		0)
 
 	if self.spider then
-		self.spider:playAnimation(
-			"tree",
-			PetrifiedSpiderTree.IDLE_PRIORITY,
-			CacheRef(
-				"ItsyScape.Graphics.AnimationResource",
-				"Resources/Game/Animations/Spider_Tree_Spawn/Script.lua"))
+		self.spider:getPeep():listen("finalize", function()
+			self.spider:playAnimation(
+				"tree",
+				PetrifiedSpiderTree.IDLE_PRIORITY,
+				CacheRef(
+					"ItsyScape.Graphics.AnimationResource",
+					"Resources/Game/Animations/Spider_Tree_Spawn/Script.lua"),
+				nil,
+				self.hadSpider and 0 or math.huge)
+		end)
 	end
+
+	if self.hadSpider then
+		self:spawnOrPoof("spawn")
+	end
+
+	local size = self:getBehavior(SizeBehavior)
+	size.size = size.oldSize or size.size
+	size.oldSize = nil
 end
 
 function PetrifiedSpiderTree:onResourceHit(...)
@@ -55,8 +67,6 @@ end
 
 function PetrifiedSpiderTree:onResourceObtained(e)
 	if self.spider then
-		self.spider:stopAnimation("tree")
-
 		self.spider:playAnimation(
 			"chop",
 			PetrifiedSpiderTree.FELLED_PRIORITY,
@@ -64,12 +74,21 @@ function PetrifiedSpiderTree:onResourceObtained(e)
 				"ItsyScape.Graphics.AnimationResource",
 				"Resources/Game/Animations/Spider_Tree_Felled/Script.lua"))
 
+		self.spider:stopAnimation("tree")
+
 		self.spider:getPeep():pushPoke(
 			PetrifiedSpiderTree.ATTACK_TIME_SECONDS,
 			"attack",
 			e.peep)
 
+		self.hadSpider = self.spider ~= nil
 		self.spider = nil
+
+		self:spawnOrPoof("poof")
+
+		local size = self:getBehavior(SizeBehavior)
+		size.oldSize = size.size
+		size.size = Vector.ZERO
 	end
 end
 
