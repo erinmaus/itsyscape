@@ -17,6 +17,18 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+M["Anchor_Trees"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 11,
+		PositionY = 4,
+		PositionZ = 67,
+		Name = "Anchor_Trees",
+		Map = M._MAP,
+		Resource = M["Anchor_Trees"]
+	}
+end
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

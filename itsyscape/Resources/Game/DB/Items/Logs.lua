@@ -103,8 +103,12 @@ local LOGS = {
 		niceName = "Petrified spider",
 		tier = 50,
 		weight = 2,
-		health = 250,
-		tinderbox = "Tinderbox"
+		health = 20,
+		peepID = "Resources.Game.Peeps.Arachnid.PetrifiedSpiderTree",
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Branch"
+		}
 	},
 
 	["Coconut"] = {
