@@ -44,8 +44,8 @@ void nbunny::WeatherMap::get_tile(const glm::vec3& position, int& result_i, int&
 	int i = std::floor(position.x / cell_size);
 	int j = std::floor(position.z / cell_size);
 
-	result_i = std::min(std::max(i - real_i, 0), width);
-	result_j = std::min(std::max(j - real_j, 0), height);
+	result_i = std::min(std::max(i - real_i, 0), width - 1);
+	result_j = std::min(std::max(j - real_j, 0), height - 1);
 }
 
 int nbunny::WeatherMap::get_position_i() const
@@ -70,12 +70,25 @@ float nbunny::WeatherMap::get_cell_size() const
 
 void nbunny::WeatherMap::set_height_at_tile(int i, int j, float height)
 {
-	tiles.at(j * width + i) = height;
+	auto index = j * width + i;
+	if (index < tiles.size())
+	{
+		tiles.at(index) = height;
+	}
+
 }
 
 float nbunny::WeatherMap::get_height_at_tile(int i, int j) const
 {
-	return tiles.at(j * width + i);
+	auto index = j * width + i;
+	if (index < tiles.size())
+	{
+		return tiles.at(index);
+	}
+	else
+	{
+		return 0.0f;
+	}
 }
 
 extern "C"
