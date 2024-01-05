@@ -26,7 +26,7 @@ function Ginsville:onLoad(filename, args, layer)
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:forecast(layer, 'EmptyRuins_DragonValley_Ginsville_Ash', 'Fungal', {
 		gravity = { 0, -0.5, 0 },
-		wind = { 1, -2, 0 },
+		wind = { 1, -2, -1 },
 		colors = {
 			{ 0.1, 0.1, 0.1, 1.0 },
 			{ 0.1, 0.1, 0.1, 1.0 },
