@@ -322,7 +322,7 @@ void nbunny::RainWeather::update(const WeatherMap& weather_map, float delta)
 	{
 		auto p = mesh->mapVertexData();
 		std::memcpy(p, &vertices[0], mesh->getVertexCount() * mesh->getVertexStride());
-		mesh->unmapVertexData();
+		mesh->unmapVertexData(0, mesh->getVertexCount() * mesh->getVertexStride());
 		mesh->flush();
 	}
 }
@@ -671,7 +671,7 @@ void nbunny::FungalWeather::update(const WeatherMap& weather_map, float delta)
 	{
 		auto p = mesh->mapVertexData();
 		std::memcpy(p, &vertices[0], mesh->getVertexCount() * mesh->getVertexStride());
-		mesh->unmapVertexData();
+		mesh->unmapVertexData(0, mesh->getVertexCount() * mesh->getVertexStride());
 		mesh->flush();
 	}
 }
