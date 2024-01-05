@@ -342,20 +342,23 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 		mesh->release();
 	}
 
-	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-	mesh = graphics->newMesh(
-		mesh_attribs,
-		&buffer[0],
-		sizeof(Vertex) * buffer.size(),
-		love::graphics::PRIMITIVE_TRIANGLES,
-		love::graphics::vertex::USAGE_STATIC);
-
-	for (auto& mesh_attrib: mesh_attribs)
+	if (buffer.size() > 0)
 	{
-		mesh->setAttributeEnabled(mesh_attrib.name, true);
-	}
+		auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+		mesh = graphics->newMesh(
+			mesh_attribs,
+			&buffer[0],
+			sizeof(Vertex) * buffer.size(),
+			love::graphics::PRIMITIVE_TRIANGLES,
+			love::graphics::vertex::USAGE_STATIC);
 
-	mesh->flush();
+		for (auto& mesh_attrib: mesh_attribs)
+		{
+			mesh->setAttributeEnabled(mesh_attrib.name, true);
+		}
+
+		mesh->flush();
+	}
 }
 
 void nbunny::DecorationSceneNode::from_group(const std::string& group, StaticMeshInstance& static_mesh)
@@ -393,12 +396,20 @@ void nbunny::DecorationSceneNode::lerp(
 	DecorationSceneNode& result,
 	DecorationSceneNode& from,
 	DecorationSceneNode& to,
-	float delta) {
-	if (!from.can_lerp() || !to.can_lerp()) {
+	float delta)
+{
+	if (!from.can_lerp() || !to.can_lerp())
+	{
 		return;
 	}
 
-	if (from.mesh->getVertexCount() != to.mesh->getVertexCount()) {
+	if (from.mesh->getVertexCount() != to.mesh->getVertexCount())
+	{
+		return;
+	}
+
+	if (from.mesh->getVertexCount() == 0 || to.mesh->getVertexCount() == 0)
+	{
 		return;
 	}
 
