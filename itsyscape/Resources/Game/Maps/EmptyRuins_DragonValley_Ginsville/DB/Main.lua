@@ -487,7 +487,7 @@ end
 
 M["Trailer_SurgeonZombi"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Trailer_SurgeonZombi",
 		Map = M._MAP,
 		Resource = M["Trailer_SurgeonZombi"]
@@ -501,7 +501,7 @@ end
 
 M["Trailer_FleshyPillar"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Trailer_FleshyPillar",
 		Map = M._MAP,
 		Resource = M["Trailer_FleshyPillar"]
@@ -515,7 +515,7 @@ end
 
 M["Trailer_GoryMass"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Trailer_GoryMass",
 		Map = M._MAP,
 		Resource = M["Trailer_GoryMass"]
@@ -529,7 +529,7 @@ end
 
 M["Trailer_CameraDolly"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Trailer_CameraDolly",
 		Map = M._MAP,
 		Resource = M["Trailer_CameraDolly"]
