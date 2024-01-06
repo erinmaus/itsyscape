@@ -19,32 +19,35 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Musket = Class(RangedWeapon)
 Musket.AMMO = Equipment.AMMO_BULLET
-Musket.NUM_RAYS = 5
-Musket.RAY_WIDTH = math.pi / 4
+Musket.RADIUS = 8
+Musket.HIT_SIZE = 2
 
 function Musket:getAttackRange()
 	return 10
 end
 
 function Musket:perform(peep, target)
-	RangedWeapon.perform(self, peep, target)
-
 	local peepPosition = Utility.Peep.getAbsolutePosition(peep)
 	local targetPosition = Utility.Peep.getAbsolutePosition(target)
 	local direction = (targetPosition - peepPosition):getNormal()
 
-	for i = 1, self.NUM_RAYS do
-		local delta = (i - 1) / (self.NUM_RAYS - 1) * 2 - 1
-		local angle = self.RAY_WIDTH * delta
+	local ray = Ray(peepPosition, direction)
+	local hits = peep:getDirector():probe(
+		peep:getLayerName(),
+		self:probe(ray, peep, target))
 
-		local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, angle)
-		local transformedDirection = rotation:transformVector(direction)
+	if self:shoot(peep, target, true) then
+		for _, hit in ipairs(hits) do
+			self:shoot(peep, hit, false)
+		end
 
-		self:shootPellet(transformedDirection, peep)
+		return true
 	end
+
+	return false
 end
 
-function Musket:probe(ray)
+function Musket:probe(ray, peep, target)
 	return function(p)
 		if p == peep or p == target then
 			return false
@@ -54,44 +57,60 @@ function Musket:probe(ray)
 			return false
 		end
 
-		local position = Utility.Peep.getAbsolutePosition(p)
-		local size = p:getBehavior(SizeBehavior)
-		if not size then
-			return false
-		else
-			size = size.size
+		local peepRadius
+		do
+			local size = Utility.Peep.getSize(p)
+			peepRadius = math.max(size.x, size.z) / 2
 		end
-	
-		local min = position - Vector(size.x / 2, 0, size.z / 2)
-		local max = position + Vector(size.x / 2, size.y, size.z / 2)
 
-		local s, p = ray:hitBounds(min, max)
-		return s and (p - ray.origin):getLength() <= self:getAttackRange(peep) * 2
+		local length = self:getAttackRange(peep) * 2
+		local position = Utility.Peep.getAbsolutePosition(p)
+		local distance = Vector.dot(position - ray.origin, ray.direction)
+		do
+			local isBehind = distance <= -peepRadius
+			local isTooFar = distance >= length + peepRadius
+
+			if isBehind or isTooFar then
+				return false
+			end
+		end
+
+		local radiusAtPosition = distance / length * self.RADIUS
+		local orthogonalDistance = ((position - ray.origin) - (distance * ray.direction)):getLength()
+		do
+			local isOutside = orthogonalDistance > (radiusAtPosition + peepRadius)
+			if isOutside then
+				return false
+			end
+		end
+
+		return true
 	end
 end
 
-function Musket:shootPellet(direction, peep, target)
-	local ray = Ray(
-		Utility.Peep.getAbsolutePosition(peep) + Vector.UNIT_Y + direction,
-		direction)
+function Musket:shoot(peep, target, consumeAmmo)
+	local numHits
+	do
+		local size = Utility.Peep.getSize(target)
+		local length = math.sqrt(size.x ^ 2 + size.z ^ 2)
 
-	local hits = peep:getDirector():probe(peep:getLayerName(), self:probe(ray))
-
-	table.sort(hits, function(a, b)
-		local aPosition = Utility.Peep.getPosition(a)
-		local aDistance = (aPosition - ray.origin):getLength()
-		local bPosition = Utility.Peep.getPosition(b)
-		local bDistance = (bPosition - ray.origin):getLength()
-
-		return aDistance < bDistance
-	end)
-
-	local hit = hits[1]
-
-	if hit then
-		-- We don't want to consume ammo for these extra hits.
-		Weapon.perform(self, peep, hit)
+		numHits = math.floor(math.min(math.max(self.RADIUS / self.HIT_SIZE, 1), math.max(length / self.HIT_SIZE, 1)) + 0.5)
 	end
+
+	if consumeAmmo then
+		if not RangedWeapon.perform(self, peep, target) then
+			return false
+		end
+
+		numHits = numHits - 1
+	end
+
+	for i = 1, numHits do
+		-- We don't want to consume ammo for these extra hits.
+		Weapon.perform(self, peep, target)
+	end
+
+	return true
 end
 
 function Musket:getWeaponType()
@@ -99,7 +118,7 @@ function Musket:getWeaponType()
 end
 
 function Musket:getCooldown(peep)
-	return 2
+	return 2.5
 end
 
 function Musket:getProjectile(peep)
