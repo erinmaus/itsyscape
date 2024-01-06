@@ -213,7 +213,7 @@ function RichTextLabelRenderer.Draw:drawImage(block, parent)
 
 			self.resources[resource] = image
 		end
-	else
+	elseif block.resource then
 		local resource = block.resource
 		image = self.resources[resource]
 		if not image then
@@ -227,6 +227,10 @@ function RichTextLabelRenderer.Draw:drawImage(block, parent)
 
 			self.resources[resource] = image
 		end
+	end
+
+	if not image then
+		return
 	end
 
 	if type(image) == "table" then
