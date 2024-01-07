@@ -70,7 +70,7 @@ do
 		Key = "Metal",
 		Value = "Uranium",
 		Language = "en-US",
-		Name = "Itsy",
+		Name = "Uranium",
 		Tier = 45
 	}
 
