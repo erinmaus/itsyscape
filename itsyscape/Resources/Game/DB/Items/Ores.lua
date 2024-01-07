@@ -369,6 +369,12 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "Contains uranium ore.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "UraniumRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "Contains itsy ore.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ItsyRock_Default"
