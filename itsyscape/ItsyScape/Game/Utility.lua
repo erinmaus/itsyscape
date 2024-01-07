@@ -1355,6 +1355,35 @@ end
 
 Utility.Map = {}
 
+function Utility.Map.getTileRotation(map, i, j)
+	local tile = map:getTile(i, j)
+	local crease = tile:getCrease()
+
+	local E = map:getCellSize() / 2
+	local topLeft = Vector(-E, tile.topLeft, -E)
+	local topRight = Vector(E, tile.topRight, -E)
+	local bottomLeft = Vector(-E, tile.bottomLeft, E)
+	local bottomRight = Vector(E, tile.bottomRight, E)
+
+	if tile.topLeft == tile.bottomLeft and
+	   tile.topLeft > tile.topRight and
+	   tile.bottomLeft > tile.bottomRight
+	then
+		return Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi / 8)
+	elseif tile.topLeft == tile.bottomLeft and
+	   tile.topLeft < tile.topRight and
+	   tile.bottomLeft < tile.bottomRight
+	then
+		return Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 8)
+	elseif tile.topRight ~= tile.bottomLeft then
+		return Quaternion.lookAt(bottomLeft, topRight)
+	elseif tile.topLeft ~= tile.bottomRight then
+		return Quaternion.lookAt(bottomRight, topLeft)
+	else
+		return Quaternion.IDENTITY
+	end
+end
+
 function Utility.Map.playCutscene(peep, resource, cameraName, player, entities)
 	local director = peep:getDirector()
 
@@ -2582,32 +2611,8 @@ end
 function Utility.Peep.getTileRotation(peep)
 	local i, j = Utility.Peep.getTile(peep)
 	local map = Utility.Peep.getMap(peep)
-	local tile = map:getTile(i, j)
-	local crease = tile:getCrease()
 
-	local E = map:getCellSize() / 2
-	local topLeft = Vector(-E, tile.topLeft, -E)
-	local topRight = Vector(E, tile.topRight, -E)
-	local bottomLeft = Vector(-E, tile.bottomLeft, E)
-	local bottomRight = Vector(E, tile.bottomRight, E)
-
-	if tile.topLeft == tile.bottomLeft and
-	   tile.topLeft > tile.topRight and
-	   tile.bottomLeft > tile.bottomRight
-	then
-		return Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi / 8)
-	elseif tile.topLeft == tile.bottomLeft and
-	   tile.topLeft < tile.topRight and
-	   tile.bottomLeft < tile.bottomRight
-	then
-		return Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 8)
-	elseif tile.topRight ~= tile.bottomLeft then
-		return Quaternion.lookAt(bottomLeft, topRight)
-	elseif tile.topLeft ~= tile.bottomRight then
-		return Quaternion.lookAt(bottomRight, topLeft)
-	else
-		return Quaternion.IDENTITY
-	end
+	return Utility.Map.getTileRotation(map, i, j)
 end
 
 function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
