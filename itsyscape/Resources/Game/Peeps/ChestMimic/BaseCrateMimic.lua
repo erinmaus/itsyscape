@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/ChestMimic/BaseChestMimic.lua
+-- Resources/Peeps/ChestMimic/BaseCrateMimic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,9 +13,9 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local Mimic = require "Resources.Game.Peeps.ChestMimic.Mimic"
 
-local BaseChestMimic = Class(Mimic)
+local BaseCrateMimic = Class(Mimic)
 
-function BaseChestMimic:ready(director, game)
+function BaseCrateMimic:ready(director, game)
 	Mimic.ready(self, director, game)
 
 	local actor = self:getBehavior(ActorReferenceBehavior)
@@ -25,8 +25,8 @@ function BaseChestMimic:ready(director, game)
 
 	local body = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/ChestMimic/ChestMimic.lua")
+		"Resources/Game/Skins/CrateMimic/CrateMimic.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 end
 
-return BaseChestMimic
+return BaseCrateMimic
