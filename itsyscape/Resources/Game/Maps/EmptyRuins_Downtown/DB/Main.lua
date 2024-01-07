@@ -28,26 +28,3 @@ do
 		Resource = M["Anchor_Spawn"]
 	}
 end
-
-M["Behemoth"] = ItsyScape.Resource.MapObject.Unique()
-do
-	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
-
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 45,
-		PositionY = 5,
-		PositionZ = 32,
-		RotationX = rotation.x,
-		RotationY = rotation.y,
-		RotationZ = rotation.z,
-		RotationW = rotation.w,
-		Name = "Behemoth",
-		Map = M._MAP,
-		Resource = M["Behemoth"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Behemoth",
-		MapObject = M["Behemoth"]
-	}
-end

@@ -1270,6 +1270,8 @@ include "Resources/Game/DB/Creeps/Cthulhu.lua"
 include "Resources/Game/DB/Creeps/Whale.lua"
 include "Resources/Game/DB/Creeps/Behemoth.lua"
 include "Resources/Game/DB/Creeps/PetrifiedSpider.lua"
+include "Resources/Game/DB/Creeps/BarrelMimic.lua"
+include "Resources/Game/DB/Creeps/CrateMimic.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
