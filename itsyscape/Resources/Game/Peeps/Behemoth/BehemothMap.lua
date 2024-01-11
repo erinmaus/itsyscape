@@ -45,10 +45,6 @@ function BehemothMap:ready(director, game)
 	for _, ore in ipairs(ores) do
 		ore:listen("resourceHit", function(_, e)
 			if self.behemoth then
-				if e.damage > 0 then
-					self.behemoth:pushPoke("dropPlayer", self, e.peep)
-				end
-
 				self.behemoth:poke("hit", AttackPoke({
 					aggressor = e.peep,
 					damage = e.damage
