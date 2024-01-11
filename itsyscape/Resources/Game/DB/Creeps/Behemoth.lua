@@ -39,6 +39,49 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Peep "Behemoth"
 }
 
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Value = ItsyScape.Utility.xpForLevel(100),
+	Resource = ItsyScape.Resource.Peep "Behemoth"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Value = ItsyScape.Utility.xpForLevel(80),
+	Resource = ItsyScape.Resource.Peep "Behemoth"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Strength",
+	Value = ItsyScape.Utility.xpForLevel(80),
+	Resource = ItsyScape.Resource.Peep "Behemoth"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Value = ItsyScape.Utility.xpForLevel(80),
+	Resource = ItsyScape.Resource.Peep "Behemoth"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Dexterity",
+	Value = ItsyScape.Utility.xpForLevel(80),
+	Resource = ItsyScape.Resource.Peep "Behemoth"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(80),
+	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(80),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(80),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(80),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(80),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(45),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(85),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(60),
+	Resource = ItsyScape.Resource.Peep "Behemoth"
+}
+
 ItsyScape.Resource.Peep "Behemoth_Stunned" {
 	-- Nothing.
 }

@@ -46,6 +46,7 @@ function Behemoth:new(resource, name, ...)
 	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
 
 	self:addPoke("onDropPlayer")
+	self:addPoke("splodeBarrel")
 end
 
 function Behemoth:ready(director, game)
@@ -169,6 +170,8 @@ function Behemoth:ready(director, game)
 	Creep.ready(self, director, game)
 
 	self:poke("rise")
+
+	Utility.Peep.equipXWeapon(self, "Behemoth_Smash")
 end
 
 function Behemoth:getMapTransform(side)
@@ -228,8 +231,33 @@ function Behemoth:onDropPlayer(side, player)
 	Utility.Peep.setPosition(player, localPlayerPosition)
 end
 
-function Behemoth:onReceiveAttack()
+function Behemoth:onSplodeBarrel(barrel)
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("Nuke", Vector.ZERO, self)
+
+	local hits = self:getDirector():probe(
+			self:getLayerName(),
+			Probe.attackable(),
+			Probe.distance(barrel, 8))
+
+	local weapon = Utility.Peep.getXWeapon(self:getDirector():getGameInstance(), "Behemoth_Splode")
+	if weapon then
+		for _, hit in ipairs(hits) do
+			weapon:perform(self, hit)
+
+			if hit ~= self then
+				stage:fireProjectile("BoomBombSplosion", self, hit)
+			end
+		end
+	end
+
 	self:pushPoke("stun")
+
+	Utility.Peep.poof(barrel)
+end
+
+function Behemoth:onReceiveAttack()
+	--self:pushPoke("stun")
 end
 
 function Behemoth:onRise()
@@ -250,8 +278,6 @@ function Behemoth:onRise()
 		"Resources/Game/Animations/Behemoth_Idle/Script.lua")
 
 	actor:playAnimation("idle", 0, idleAnimation)
-
-	print(">>> play idle animation")
 
 	Utility.Peep.setResource(
 		self,

@@ -28,11 +28,11 @@ function Probe.distance(p, distance)
 	if Class.isCompatibleType(p, Vector) then
 		position = p
 	else
-		position = Utility.Peep.getPosition(p)
+		position = Utility.Peep.getAbsolutePosition(p)
 	end
 
 	return function(other)
-		local otherPosition = Utility.Peep.getPosition(other)
+		local otherPosition = Utility.Peep.getAbsolutePosition(other)
 		local otherDistance = (position - otherPosition):getLength()
 		return otherDistance <= distance
 	end
