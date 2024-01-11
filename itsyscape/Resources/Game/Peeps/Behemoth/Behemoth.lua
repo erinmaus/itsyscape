@@ -37,7 +37,7 @@ function Behemoth:new(resource, name, ...)
 	size.size = Vector(5.5, 5.5, 5.5)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 2
+	movement.maxSpeed = 4
 
 	self:addBehavior(RotationBehavior)
 	self:addBehavior(Face3DBehavior)
