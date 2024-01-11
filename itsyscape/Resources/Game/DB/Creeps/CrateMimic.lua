@@ -54,7 +54,7 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyStab = ItsyScape.Utility.styleBonusForItem(45),
+	AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(45),
 	DefenseStab = ItsyScape.Utility.styleBonusForItem(20),
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(45),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(45),

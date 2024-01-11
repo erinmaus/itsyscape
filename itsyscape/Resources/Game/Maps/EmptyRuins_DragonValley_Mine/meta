@@ -1,7 +1,10 @@
 {
 	{
 		autoMask = true,
-		maskID = { default = true },
 		tileSetID = "EmptyRuins",
+		maskID =
+		{
+			default = true,
+		},
 	},
 }

@@ -122,7 +122,7 @@ ItsyScape.Meta.MapObjectSize {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = 7,
+	Value = "Might be better to ignore what's behind that door...",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Door_EmptyRuins_Single_Locked"
 }
@@ -145,5 +145,95 @@ do
 		SizeY = 0,
 		SizeZ = 0,
 		MapObject = RagingFire
+	}
+end
+
+do
+	local Barrel = ItsyScape.Resource.Item "EmptyRuins_DragonValley_Barrel"
+
+	local LightAction = ItsyScape.Action.Light() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(45)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Engineering",
+			Count = ItsyScape.Utility.xpForLevel(45)
+		},
+
+		Input {
+			Resource = Barrel,
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "HighYieldExplosiveOre",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(45)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Engineering",
+			Count = ItsyScape.Utility.xpForResource(45)
+		}
+	}
+
+	Barrel {
+		LightAction
+	}
+
+	ItsyScape.Meta.ActionSpawnProp {
+		Prop = ItsyScape.Resource.Prop "EmptyRuins_DragonValley_Barrel",
+		Action = LightAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Fill",
+		XProgressive = "Filling",
+		Language = "en-US",
+		Action = LightAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Barrel mimic carcass",
+		Language = "en-US",
+		Resource = Barrel
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "The carcass of a barrel mimic. Bet you can fill it with explosives... BOOM!",
+		Language = "en-US",
+		Resource = Barrel
+	}
+end
+
+do
+	local Barrel = ItsyScape.Resource.Prop "EmptyRuins_DragonValley_Barrel"
+
+	ItsyScape.Meta.PropAlias {
+		Alias = ItsyScape.Resource.Prop "Barrel_Default",
+		Resource = Barrel
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.EmptyRuins.ExplosiveBarrel",
+		Resource = Barrel
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Primed barrel",
+		Language = "en-US",
+		Resource = Barrel
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "This barrel is primed with high yield explosives and ready to blow! Watch out!",
+		Language = "en-US",
+		Resource = Barrel
 	}
 end
