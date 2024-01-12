@@ -33,6 +33,7 @@ end
 function BehemothMap:onTeleport(peep)
 	if self.behemoth then
 		self.behemoth:poke("rise")
+		self.behemoth:poke("shedMimics", self, peep)
 	end
 end
 

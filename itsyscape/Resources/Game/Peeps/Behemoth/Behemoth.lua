@@ -30,6 +30,12 @@ local Behemoth = Class(Creep)
 Behemoth.STATE_STUNNED = "stunned"
 Behemoth.STATE_IDLE    = "idle"
 
+Behemoth.MIMICS = {
+	"ChestMimic",
+	"CrateMimic",
+	"BarrelMimic"
+}
+
 function Behemoth:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Behemoth', ...)
 
@@ -45,8 +51,11 @@ function Behemoth:new(resource, name, ...)
 	self:silence("receiveAttack", Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
 
-	self:addPoke("onDropPlayer")
+	self:addPoke("dropPlayer")
 	self:addPoke("splodeBarrel")
+	self:addPoke("shedMimics")
+	self:addPoke("prepareMimic")
+	self:addPoke("stun")
 end
 
 function Behemoth:ready(director, game)
@@ -182,11 +191,15 @@ function Behemoth:ready(director, game)
 
 		local size = head:getPeep():getBehavior(SizeBehavior)
 		size.size = Vector(2, 2, 5.5)
+
+		head:getPeep():listen("finalize", function()
+			self:poke("shedMimics", head:getPeep())
+		end)
 	end
 
 	Creep.ready(self, director, game)
 
-	self:poke("rise")
+	self:poke("stun")
 
 	Utility.Peep.equipXWeapon(self, "Behemoth_Smash")
 end
@@ -335,8 +348,46 @@ function Behemoth:onStun()
 
 		self:getCommandQueue():clear()
 	end
+end
 
-	self:poke("spawnMimics")
+function Behemoth:onShedMimics(side, playerPeep)
+	local portal = side and side:getBehavior(TeleportalBehavior)
+	if not portal then
+		return
+	end
+
+	local mimicActor = Utility.spawnMapObjectAtPosition(
+		self,
+		Behemoth.MIMICS[love.math.random(#Behemoth.MIMICS)],
+		-1000, 0, -1000,
+		0)
+
+	if not mimicActor then
+		return
+	end
+
+	mimicActor:getPeep():listen("finalize", function()
+		self:pushPoke("prepareMimic", mimicActor:getPeep(), playerPeep, portal)
+	end)
+end
+
+function Behemoth:onPrepareMimic(mimicPeep, playerPeep, portal)
+	Utility.Peep.equipXWeapon(mimicPeep, "Mimic_Vomit")
+
+	local layer = portal.layer
+	local map = self:getDirector():getMap(layer)
+
+	if map then
+		local position = Utility.Map.getRandomPosition(map, Vector.ZERO, math.huge, false)
+		if position then
+			Utility.Peep.setLayer(mimicPeep, layer)
+			Utility.Peep.setPosition(mimicPeep, position)
+		end
+	end
+
+	if playerPeep then
+		Utility.Peep.attack(mimicPeep, playerPeep)
+	end
 end
 
 function Behemoth:_doUpdateVines(vines, resource)
