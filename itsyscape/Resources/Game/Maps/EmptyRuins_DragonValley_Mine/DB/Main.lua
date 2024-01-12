@@ -119,6 +119,13 @@ do
 		Peep = ItsyScape.Resource.Peep "ChestMimic",
 		MapObject = M["ChestMimic"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/EmptyRuins_DragonValley_Mine/Scripts/Mimic_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["ChestMimic"]
+	}
 end
 
 M["BarrelMimic"] = ItsyScape.Resource.MapObject.Unique()
@@ -133,6 +140,13 @@ do
 		Peep = ItsyScape.Resource.Peep "BarrelMimic",
 		MapObject = M["BarrelMimic"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/EmptyRuins_DragonValley_Mine/Scripts/Mimic_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["BarrelMimic"]
+	}
 end
 
 M["CrateMimic"] = ItsyScape.Resource.MapObject.Unique()
@@ -146,5 +160,12 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "CrateMimic",
 		MapObject = M["CrateMimic"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/EmptyRuins_DragonValley_Mine/Scripts/Mimic_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["CrateMimic"]
 	}
 end
