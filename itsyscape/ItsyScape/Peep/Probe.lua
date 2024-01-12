@@ -31,8 +31,10 @@ function Probe.distance(p, distance)
 		position = Utility.Peep.getAbsolutePosition(p)
 	end
 
+	position = position * Vector.PLANE_XZ
+
 	return function(other)
-		local otherPosition = Utility.Peep.getAbsolutePosition(other)
+		local otherPosition = Utility.Peep.getAbsolutePosition(other) * Vector.PLANE_XZ
 		local otherDistance = (position - otherPosition):getLength()
 		return otherDistance <= distance
 	end

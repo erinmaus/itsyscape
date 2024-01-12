@@ -21,12 +21,15 @@ FindNearbyCombatTarget.LINE_OF_SIGHT = B.Reference()
 FindNearbyCombatTarget.INCLUDE_NPCS = B.Reference()
 FindNearbyCombatTarget.INCLUDE_DEAD = B.Reference()
 FindNearbyCombatTarget.COUNT = B.Reference()
+FindNearbyCombatTarget.SAME_LAYER = B.Reference()
 FindNearbyCombatTarget.RESULT = B.Reference()
 
 function FindNearbyCombatTarget:update(mashina, state, executor)
 	local director = mashina:getDirector()
 
 	local includeNPCs = state[self.INCLUDE_NPCS]
+	local sameLayer = state[self.SAME_LAYER]
+	sameLayer = sameLayer == nil and true or sameLayer
 
 	local status = mashina:getBehavior(CombatStatusBehavior)
 	local distance = math.min(state[self.DISTANCE] or math.huge, status and status.maxChaseDistance or math.huge)
@@ -34,7 +37,7 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 	local p = director:probe(
 		mashina:getLayerName(),
 		Probe.attackable(),
-		Probe.near(mashina, distance),
+		Probe.distance(mashina, distance / 2),
 		function(p)
 			if state[self.INCLUDE_DEAD] then
 				return true
@@ -56,7 +59,7 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 				return true
 			end
 
-			if Utility.Peep.getLayer(mashina) ~= Utility.Peep.getLayer(p) then
+			if sameLayer and Utility.Peep.getLayer(mashina) ~= Utility.Peep.getLayer(p) then
 				return false
 			end
 

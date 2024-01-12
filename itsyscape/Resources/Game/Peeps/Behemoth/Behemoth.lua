@@ -200,7 +200,7 @@ function Behemoth:ready(director, game)
 
 	Creep.ready(self, director, game)
 
-	self:poke("stun")
+	self:poke("rise")
 
 	Utility.Peep.equipXWeapon(self, "Behemoth_Smash")
 end

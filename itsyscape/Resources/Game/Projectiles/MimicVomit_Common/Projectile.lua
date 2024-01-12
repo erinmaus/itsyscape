@@ -50,8 +50,8 @@ function MimicVomitCommon:tick()
 	if not self.spawnPosition then
 		self.spawnPosition = self:getTargetPosition(self:getSource()) + Vector(0, 2, 0)
 
-		self.hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 2, 0)
-		self.duration = math.max((self.spawnPosition - self.hitPosition):getLength() / self.SPEED, 0.5)
+		local hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 2, 0)
+		self.duration = math.max((self.spawnPosition - hitPosition):getLength() / self.SPEED, 0.5)
 	end
 end
 
@@ -59,10 +59,11 @@ function MimicVomitCommon:update(elapsed)
 	Projectile.update(self, elapsed)
 
 	if self.spawnPosition then
+		local hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 2, 0)
 		local root = self:getRoot()
 		local delta = self:getDelta()
 		local mu = Tween.sineEaseOut(delta)
-		local position = self.spawnPosition:lerp(self.hitPosition, mu)
+		local position = self.spawnPosition:lerp(hitPosition, mu)
 
 		local alpha = 1
 		if delta > 0.5 then
