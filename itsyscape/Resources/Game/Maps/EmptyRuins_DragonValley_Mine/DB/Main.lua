@@ -107,6 +107,29 @@ do
 	}
 end
 
+M["ChestMimic"] = ItsyScape.Resource.MapObject.Unique()
+do
+	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 0,
+		PositionZ = 33,
+		RotationX = rotation.x,
+		RotationY = rotation.y,
+		RotationZ = rotation.z,
+		RotationW = rotation.w,
+		Name = "ChestMimic",
+		Map = M._MAP,
+		Resource = M["ChestMimic"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "ChestMimic",
+		MapObject = M["ChestMimic"]
+	}
+end
+
 M["BarrelMimic"] = ItsyScape.Resource.MapObject.Unique()
 do
 	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
@@ -137,7 +160,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 33,
 		PositionY = 0,
-		PositionZ = 33,
+		PositionZ = 31,
 		RotationX = rotation.x,
 		RotationY = rotation.y,
 		RotationZ = rotation.z,

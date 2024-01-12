@@ -167,6 +167,23 @@ function Behemoth:ready(director, game)
 		size.size = Vector(5.5, 2, 6.5)
 	end
 
+	local headLayer, headScript = Utility.Map.spawnMap(self, "Behemoth_Head", Vector(-1000, -1000, 0))
+	local head = Utility.spawnPropAtPosition(self, "BehemothMap", 0, 0, 0, 0)
+	do
+		local _, portal = head:getPeep():addBehavior(TeleportalBehavior)
+		portal.layer = headLayer
+		portal.i = 1
+		portal.j = 1.5
+		portal.k = 0
+		portal.x = -2.5
+		portal.y = -32
+		portal.z = 6
+		portal.bone = "jaw.top"
+
+		local size = head:getPeep():getBehavior(SizeBehavior)
+		size.size = Vector(2, 2, 5.5)
+	end
+
 	Creep.ready(self, director, game)
 
 	self:poke("rise")
@@ -318,6 +335,8 @@ function Behemoth:onStun()
 
 		self:getCommandQueue():clear()
 	end
+
+	self:poke("spawnMimics")
 end
 
 function Behemoth:_doUpdateVines(vines, resource)
