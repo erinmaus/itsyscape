@@ -74,7 +74,7 @@ function BaseMimic:ready(director, game)
 		"Resources/Game/Animations/ChestMimic_Attack/Script.lua")
 	self:addResource("animation-attack", attackAnimation)
 
-	Utility.Peep.equipXWeapon(self, "MimicBite")
+	Utility.Peep.equipXWeapon(self, "Mimic_Vomit")
 end
 
 function BaseMimic:update(...)
