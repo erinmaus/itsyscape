@@ -69,14 +69,7 @@ function MimicVomitCommon:update(elapsed)
 			alpha = 1 - (delta - 0.5) / 0.5
 		end
 
-		local rotation = Quaternion.lookAt(self.spawnPosition, self.hitPosition)
-
-		local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 2)
-		local lookRotation = Quaternion.lookAt(self.spawnPosition, self.hitPosition)
-		local rotation = lookRotation * xRotation
-
 		self.particleSystem:getTransform():setLocalOffset(position)
-		self.particleSystem:getTransform():setLocalRotation(rotation)
 		self.particleSystem:updateLocalPosition(position)
 
 		self.particleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))

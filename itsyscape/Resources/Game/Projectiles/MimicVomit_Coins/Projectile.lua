@@ -15,6 +15,7 @@ local Coins = Class(MimicVomit)
 
 Coins.PARTICLE_SYSTEM = {
 	texture = "Resources/Game/Projectiles/MimicVomit_Coins/Particle.png",
+	rows = 2,
 	columns = 4,
 
 	emitters = {
@@ -55,12 +56,8 @@ Coins.PARTICLE_SYSTEM = {
 			tween = { 'sineEaseOut' }
 		},
 		{
-			type = "GravityPath",
-			gravity = { 0, -10, 0 }
-		},
-		{
 			type = "TextureIndexPath",
-			textures = { 1, 4 }
+			textures = { 1, 8 }
 		}
 	},
 
