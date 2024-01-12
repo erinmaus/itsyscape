@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local CommonMath = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
@@ -45,6 +46,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 
 -- Contains utility methods for a variety of purposes.
@@ -1831,6 +1833,15 @@ end
 
 function Utility.Peep.getMapTransform(peep)
 	local transform = love.math.newTransform()
+
+	do
+		local transformOverride = peep:getBehavior(TransformBehavior)
+		if transformOverride then
+			transform:apply(transformOverride.transform)
+			return transform
+		end
+	end
+
 	do
 		local position = peep:getBehavior(PositionBehavior)
 		if position then
@@ -2716,10 +2727,14 @@ function Utility.Peep.lookAt(self, target, delta)
 			peepPosition = Utility.Peep.getAbsolutePosition(target)
 		end
 
+		local selfMapTransform = Utility.Peep.getParentTransform(self)
+		local _, mapRotation = CommonMath.decomposeTransform(selfMapTransform)
+
 		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
 		local r = Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal()
+		r = (r * -mapRotation):getNormal()
 
 		if delta then
 			rotation.rotation = rotation.rotation:slerp(r, delta):getNormal()

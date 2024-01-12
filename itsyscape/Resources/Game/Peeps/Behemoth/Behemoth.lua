@@ -25,6 +25,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
 
 local Behemoth = Class(Creep)
 Behemoth.STATE_STUNNED = "stunned"
@@ -392,7 +393,18 @@ end
 
 function Behemoth:_doUpdateVines(vines, resource)
 	for _, vine in ipairs(vines) do
+		local portal = vine:getBehavior(TeleportalBehavior)
+
 		local composedTransform = self:getMapTransform(vine)
+
+		local instance = portal and Utility.Peep.getInstance(self)
+		local mapScript = instance and instance:getMapScriptByLayer(portal.layer)
+		if mapScript then
+			local _,  transformOverride = mapScript:addBehavior(TransformBehavior)
+			if transformOverride then
+				transformOverride.transform = composedTransform
+			end
+		end
 
 		local offset = vine:getBehavior(SizeBehavior).size / 2
 		local position = Vector(composedTransform:transformPoint(offset:get()))
