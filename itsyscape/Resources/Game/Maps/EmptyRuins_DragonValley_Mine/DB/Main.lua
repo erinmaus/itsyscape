@@ -109,16 +109,7 @@ end
 
 M["ChestMimic"] = ItsyScape.Resource.MapObject.Unique()
 do
-	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
-
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 35,
-		PositionY = 0,
-		PositionZ = 33,
-		RotationX = rotation.x,
-		RotationY = rotation.y,
-		RotationZ = rotation.z,
-		RotationW = rotation.w,
+	ItsyScape.Meta.MapObjectReference {
 		Name = "ChestMimic",
 		Map = M._MAP,
 		Resource = M["ChestMimic"]
@@ -132,16 +123,7 @@ end
 
 M["BarrelMimic"] = ItsyScape.Resource.MapObject.Unique()
 do
-	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
-
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33,
-		PositionY = 0,
-		PositionZ = 33,
-		RotationX = rotation.x,
-		RotationY = rotation.y,
-		RotationZ = rotation.z,
-		RotationW = rotation.w,
+	ItsyScape.Meta.MapObjectReference {
 		Name = "BarrelMimic",
 		Map = M._MAP,
 		Resource = M["BarrelMimic"]
@@ -155,16 +137,7 @@ end
 
 M["CrateMimic"] = ItsyScape.Resource.MapObject.Unique()
 do
-	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
-
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33,
-		PositionY = 0,
-		PositionZ = 31,
-		RotationX = rotation.x,
-		RotationY = rotation.y,
-		RotationZ = rotation.z,
-		RotationW = rotation.w,
+	ItsyScape.Meta.MapObjectReference {
 		Name = "CrateMimic",
 		Map = M._MAP,
 		Resource = M["CrateMimic"]
