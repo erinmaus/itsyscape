@@ -29,6 +29,16 @@ function BasicRock:new(...)
 	self:addPoke('resourceHit')
 end
 
+function BasicRock:spawnOrPoofTile(tile, i, j, mode)
+	if mode == 'spawn' then
+		tile:pushFlag('impassable')
+		tile:pushFlag('shoot')
+	elseif mode == 'poof' then
+		tile:popFlag('impassable')
+		tile:popFlag('shoot')
+	end
+end
+
 function BasicRock:ready(director, game)
 	Prop.ready(self, director, game)
 
