@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
+local Utility = require "ItsyScape.Game.Utility"
 local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
 
 local BehemothSplode = Class(RangedWeapon)
@@ -17,6 +18,18 @@ BehemothSplode.AMMO = Weapon.AMMO_NONE
 
 function BehemothSplode:previewAttackRoll(roll)
 	roll:setAlwaysHits(true)
+end
+
+function BehemothSplode:previewDamageRoll(roll)
+	local target = roll:getTarget()
+	local targetResource, targetResourceType = Utility.Peep.getResource(target)
+	local isBehemoth = targetResource and (targetResource.name == "Behemoth" or targetResource.name == "Behemoth_Stunned")
+	local isPeep = targetResourceType and targetResourceType.name == "Peep"
+
+	if isBehemoth and isPeep then
+		roll:setMinHit(roll:getMaxHit())
+		roll:setMaxHit(roll:getMaxHit() * 3)
+	end
 end
 
 function BehemothSplode:getAttackRange(peep)

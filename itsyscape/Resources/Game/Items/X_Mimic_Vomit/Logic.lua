@@ -12,6 +12,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
 local MimicVomit = Class(RangedWeapon)
 MimicVomit.AMMO = Weapon.AMMO_NONE
@@ -22,6 +23,25 @@ end
 
 function MimicVomit:getCooldown()
 	return 2.5
+end
+
+function MimicVomit:perform(peep, target)
+	local resource = Utility.Peep.getResource(target)
+
+	if resource then
+		local gameDB = peep:getDirector():getGameDB()
+		local isMimic = gameDB:getRecord("ResourceTag", {
+			Value = "Mimic",
+			Resource = resource
+		})
+
+		if isMimic then
+			peep:removeBehavior(CombatTargetBehavior)
+			return false
+		end
+	end
+
+	return RangedWeapon.perform(self, peep, target)
 end
 
 function MimicVomit:getProjectile(peep)

@@ -17,6 +17,11 @@ ItsyScape.Meta.PeepID {
 	Resource = ItsyScape.Resource.Peep "ChestMimic"
 }
 
+ItsyScape.Meta.ResourceTag {
+	Value = "Mimic",
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Chest mimic",
 	Language = "en-US",

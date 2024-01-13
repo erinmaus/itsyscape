@@ -57,6 +57,7 @@ function Behemoth:new(resource, name, ...)
 	
 	self:silence("receiveAttack", Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
+	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
 
 	self:addPoke("drop")
 	self:addPoke("dropAll")
@@ -262,6 +263,10 @@ function Behemoth:getMapTransform(side)
 end
 
 function Behemoth:onDropAll()
+	if self.currentState ~= Behemoth.STATE_IDLE then
+		return
+	end
+
 	local sides = self:getSides()
 
 	for _, side in ipairs(sides) do
@@ -337,7 +342,7 @@ function Behemoth:onIdle()
 end
 
 function Behemoth:onKick()
-	if self.currentState == Behemoth.STATE_KICK then
+	if self.currentState ~= Behemoth.STATE_IDLE then
 		return
 	end
 

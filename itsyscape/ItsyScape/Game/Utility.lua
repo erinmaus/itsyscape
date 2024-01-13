@@ -2506,7 +2506,7 @@ function Utility.Peep.isAttackable(peep)
 
 	local function isAttackable(r)
 		if r then
-			local actions = Utility.getActions(peep:getDirector():getGameInstance(), r, 'world')
+			local actions = Utility.getActions(peep:getDirector():getGameInstance(), r)
 			for i = 1, #actions do
 				if actions[i].instance:is("Attack") or actions[i].instance:is("InvisibleAttack") then
 					return true
@@ -2841,7 +2841,14 @@ end
 function Utility.Peep.getResource(peep)
 	local resource = peep:getBehavior(MappResourceBehavior)
 	if resource then
-		return resource.resource
+		if resource.resource and peep:getIsReady() then
+			local brochure = peep:getDirector():getGameDB():getBrochure()
+			local resourceType = brochure:getResourceTypeFromResource(resource.resource)
+
+			return resource.resource, resourceType
+		end
+
+		return resource.resource, nil
 	else
 		return false
 	end
