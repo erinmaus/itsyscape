@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 
 local Probe = {}
@@ -119,6 +120,12 @@ function Probe.instance(player, any)
 		end
 
 		return instance and instance.playerID == player:getID()
+	end
+end
+
+function Probe.player()
+	return function(peep)
+		return peep:hasBehavior(PlayerBehavior)
 	end
 end
 
