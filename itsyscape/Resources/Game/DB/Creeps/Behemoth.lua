@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Peep "Behemoth" {
-	ItsyScape.Action.Attack()
+	ItsyScape.Action.InvisibleAttack()
 }
 
 ItsyScape.Meta.ResourceTag {

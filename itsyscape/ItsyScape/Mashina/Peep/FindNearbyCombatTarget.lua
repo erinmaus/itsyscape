@@ -7,8 +7,10 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
@@ -33,6 +35,11 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 
 	local status = mashina:getBehavior(CombatStatusBehavior)
 	local distance = math.min(state[self.DISTANCE] or math.huge, status and status.maxChaseDistance or math.huge)
+
+	local weapon = Utility.Peep.getEquippedWeapon(mashina, true)
+	if weapon and Class.isCompatibleType(weapon, Weapon) then
+		distance = distance + weapon:getAttackRange(mashina)
+	end
 
 	local p = director:probe(
 		mashina:getLayerName(),
