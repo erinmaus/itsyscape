@@ -30,6 +30,10 @@ local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
 local Behemoth = Class(Creep)
 Behemoth.STATE_STUNNED = "stunned"
 Behemoth.STATE_IDLE    = "idle"
+Behemoth.STATE_KICK    = "kick"
+
+Behemoth.MIN_KICK_TIME = 20
+Behemoth.MAX_KICK_TIME = 30
 
 Behemoth.MIMICS = {
 	"ChestMimic",
@@ -53,6 +57,10 @@ function Behemoth:new(resource, name, ...)
 	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
 
 	self:addPoke("drop")
+	self:addPoke("dropAll")
+	self:addPoke("kick")
+	self:addPoke("idle")
+	self:addPoke("climb")
 	self:addPoke("splodeBarrel")
 	self:addPoke("shedMimic")
 	self:addPoke("prepareMimic")
@@ -112,6 +120,7 @@ function Behemoth:ready(director, game)
 	self.skeleton = Skeleton("Resources/Game/Bodies/Behemoth.lskel")
 	self.idleAnimation = SkeletonAnimation("Resources/Game/Animations/Behemoth_Idle/Animation.lanim", self.skeleton)
 	self.stunnedAnimation = SkeletonAnimation("Resources/Game/Animations/Behemoth_Stun/Animation.lanim", self.skeleton)
+	self.kickAnimation = SkeletonAnimation("Resources/Game/Animations/Behemoth_Kick/Animation.lanim", self.skeleton)
 
 	local walkAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
@@ -217,6 +226,9 @@ function Behemoth:getMapTransform(side)
 		elseif self.currentState == Behemoth.STATE_IDLE then
 			time = (love.timer.getTime() - self.idleAnimationTime) % self.idleAnimation:getDuration()
 			self.idleAnimation:computeFilteredTransforms(time, transforms)
+		elseif self.currentState == Behemoth.STATE_KICK then
+			time = math.min(love.timer.getTime() - self.idleAnimationTime, self.kickAnimation:getDuration())
+			self.kickAnimation:computeFilteredTransforms(time, transforms)
 		else
 			return love.math.newTransform()
 		end
@@ -247,6 +259,26 @@ function Behemoth:getMapTransform(side)
 	return composedTransform
 end
 
+function Behemoth:onDropAll()
+	local sides = self:getSides()
+
+	for _, side in ipairs(sides) do
+		local portal = side:getBehavior(TeleportalBehavior)
+		local layer = portal and portal.layer
+
+		if layer then
+			local players = self:getDirector():probe(
+				self:getLayerName(),
+				Probe.player(),
+				Probe.layer(layer))
+
+			for _, player in ipairs(players) do
+				self:pushPoke("drop", side, player)
+			end
+		end
+	end
+end
+
 function Behemoth:onDrop(side, player)
 	player:getCommandQueue():clear()
 
@@ -259,6 +291,10 @@ function Behemoth:onDrop(side, player)
 	local localPlayerPosition = Vector(parentTransform:inverseTransformPoint(absolutePlayerPosition:get()))
 
 	local layer = Utility.Peep.getLayer(self)
+	if layer == Utility.Peep.getLayer(player) then
+		return
+	end
+
 	local map = self:getDirector():getMap(layer)
 	local tile = map and map:getTileAt(localPlayerPosition.x, localPlayerPosition.z)
 	if tile and not tile:getIsPassable() then
@@ -294,8 +330,30 @@ function Behemoth:onSplodeBarrel(barrel)
 	Utility.Peep.poof(barrel)
 end
 
-function Behemoth:onReceiveAttack()
-	--self:pushPoke("stun")
+function Behemoth:onIdle()
+	self.currentState = Behemoth.STATE_IDLE
+end
+
+function Behemoth:onKick()
+	if self.currentState == Behemoth.STATE_KICK then
+		return
+	end
+
+	self.currentState = Behemoth.STATE_KICK
+
+	self:pushPoke(self.kickAnimation:getDuration(), "dropAll")
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return
+	end
+
+	local kickAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Behemoth_Kick/Script.lua")
+
+	actor:playAnimation("kick", 10, kickAnimation)
 end
 
 function Behemoth:onRise()
@@ -356,6 +414,10 @@ function Behemoth:onStun()
 
 		self:getCommandQueue():clear()
 	end
+end
+
+function Behemoth:onClimb()
+	self.pendingKickTime = love.math.random() * (Behemoth.MAX_KICK_TIME - Behemoth.MIN_KICK_TIME) + Behemoth.MIN_KICK_TIME
 end
 
 function Behemoth:onShedMimic(side, playerPeep, mimicPeepType)
@@ -430,6 +492,24 @@ function Behemoth:_doUpdateVines(vines, resource)
 	end
 end
 
+function Behemoth:getSides()
+	local sides1 = self:getDirector():probe(self:getLayerName(), Probe.resource("Prop", "BehemothMap"))
+	local sides2 = self:getDirector():probe(self:getLayerName(), Probe.resource("Prop", "BehemothMap_Climbable"))
+
+	local result = {}
+	do
+		for _, side in ipairs(sides1) do
+			table.insert(result, side)
+		end
+
+		for _, side in ipairs(sides2) do
+			table.insert(result, side)
+		end
+	end
+
+	return result
+end
+
 function Behemoth:updateVines()
 	local resource
 	if self.currentState == Behemoth.STATE_STUNNED then
@@ -438,11 +518,28 @@ function Behemoth:updateVines()
 		resource = self:getDirector():getGameDB():getResource("BehemothMap", "Prop")
 	end
 
-	local sides1 = self:getDirector():probe(self:getLayerName(), Probe.resource("Prop", "BehemothMap"))
-	local sides2 = self:getDirector():probe(self:getLayerName(), Probe.resource("Prop", "BehemothMap_Climbable"))
+	self:_doUpdateVines(self:getSides(), resource)
+end
 
-	self:_doUpdateVines(sides1, resource)
-	self:_doUpdateVines(sides2, resource)
+function Behemoth:updateState()
+	if self.currentState == Behemoth.STATE_KICK then
+		local time = love.timer.getTime() - self.idleAnimationTime
+		if time >= self.kickAnimation:getDuration() then
+			self:poke("idle")
+		end
+	end
+end
+
+function Behemoth:updateKick()
+	if not self.pendingKickTime then
+		return
+	end
+
+	self.pendingKickTime = self.pendingKickTime - self:getDirector():getGameInstance():getDelta()
+	if self.pendingKickTime <= 0 then
+		self.pendingKickTime = nil
+		self:pushPoke("kick")
+	end
 end
 
 function Behemoth:update(...)
@@ -450,6 +547,8 @@ function Behemoth:update(...)
 	Utility.Peep.face3D(self)
 
 	self:updateVines()
+	self:updateState()
+	self:updateKick()
 end
 
 return Behemoth
