@@ -12,11 +12,13 @@ local B = require "B"
 local PokeSelf = B.Node("PokeSelf")
 PokeSelf.EVENT = B.Reference()
 PokeSelf.POKE = B.Reference()
+PokeSelf.ARGS = B.Reference()
 PokeSelf.TIME = B.Reference()
 
 function PokeSelf:update(mashina, state, executor)
 	local event = state[self.EVENT]
 	local poke = state[self.POKE]
+	local args = state[self.ARGS]
 	local time = state[self.TIME]
 
 	if event then
@@ -24,10 +26,25 @@ function PokeSelf:update(mashina, state, executor)
 			poke = poke(mashina, state, executor)
 		end
 
-		if time then
-			mashina:pushPoke(time, event, poke)
+		if type(args) == 'function' then
+			args = { args(mashina, state, executor) }
+		end
+
+		local a
+		if args then
+			if poke then
+				a = { poke, unpack(args, 1, table.maxn(args)) }
+			else
+				a = args
+			end
 		else
-			mashina:poke(event, poke)
+			a = { poke }
+		end
+
+		if time then
+			mashina:pushPoke(time, event, unpack(args, 1, table.maxn(a)))
+		else
+			mashina:poke(event, unpack(a, 1, table.maxn(a)))
 		end
 
 		return B.Status.Success

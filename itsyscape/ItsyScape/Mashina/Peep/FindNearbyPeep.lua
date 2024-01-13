@@ -18,6 +18,7 @@ FindNearbyPeep.FILTER = B.Reference()
 FindNearbyPeep.FILTERS = B.Reference()
 FindNearbyPeep.DISTANCE = B.Reference()
 FindNearbyPeep.RESULT = B.Reference()
+FindNearbyPeep.RANDOM = B.Reference()
 
 function FindNearbyPeep:update(mashina, state, executor)
 	local director = mashina:getDirector()
@@ -26,9 +27,20 @@ function FindNearbyPeep:update(mashina, state, executor)
 	local p = director:probe(
 		mashina:getLayerName(),
 		Probe.near(mashina, distance),
-		state[self.FILTER],
+		function(p)
+			if state[self.FILTER] then
+				return state[self.FILTER](p, mashina, state, executor)
+			end
+
+			return true
+		end,
 		unpack(state[self.FILTERS] or {}))
 	if p and #p > 0 then
+		if state[self.RANDOM] then
+			state[self.RESULT] = p[love.math.random(#p)]
+			return B.Status.Success
+		end
+
 		table.sort(
 			p,
 			function(a, b)

@@ -52,9 +52,9 @@ function Behemoth:new(resource, name, ...)
 	self:silence("receiveAttack", Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
 
-	self:addPoke("dropPlayer")
+	self:addPoke("drop")
 	self:addPoke("splodeBarrel")
-	self:addPoke("shedMimics")
+	self:addPoke("shedMimic")
 	self:addPoke("prepareMimic")
 	self:addPoke("stun")
 end
@@ -194,7 +194,7 @@ function Behemoth:ready(director, game)
 		size.size = Vector(2, 2, 5.5)
 
 		head:getPeep():listen("finalize", function()
-			self:poke("shedMimics", head:getPeep())
+			self:poke("shedMimic", head:getPeep())
 		end)
 	end
 
@@ -247,7 +247,7 @@ function Behemoth:getMapTransform(side)
 	return composedTransform
 end
 
-function Behemoth:onDropPlayer(side, player)
+function Behemoth:onDrop(side, player)
 	player:getCommandQueue():clear()
 
 	local composedTransform = self:getMapTransform(side)
@@ -258,8 +258,15 @@ function Behemoth:onDropPlayer(side, player)
 	local parentTransform = Utility.Peep.getParentTransform(self)
 	local localPlayerPosition = Vector(parentTransform:inverseTransformPoint(absolutePlayerPosition:get()))
 
-	Utility.Peep.setLayer(player, Utility.Peep.getLayer(self))
-	Utility.Peep.setPosition(player, localPlayerPosition)
+	local layer = Utility.Peep.getLayer(self)
+	local map = self:getDirector():getMap(layer)
+	local tile = map and map:getTileAt(localPlayerPosition.x, localPlayerPosition.z)
+	if tile and not tile:getIsPassable() then
+		self:pushPoke(0.5, "drop", side, player)
+	else
+		Utility.Peep.setLayer(player, layer)
+		Utility.Peep.setPosition(player, localPlayerPosition)
+	end
 end
 
 function Behemoth:onSplodeBarrel(barrel)
@@ -351,15 +358,17 @@ function Behemoth:onStun()
 	end
 end
 
-function Behemoth:onShedMimics(side, playerPeep)
+function Behemoth:onShedMimic(side, playerPeep, mimicPeepType)
 	local portal = side and side:getBehavior(TeleportalBehavior)
 	if not portal then
 		return
 	end
 
+	mimicPeepType = mimicPeepType or Behemoth.MIMICS[love.math.random(#Behemoth.MIMICS)]
+
 	local mimicActor = Utility.spawnMapObjectAtPosition(
 		self,
-		Behemoth.MIMICS[love.math.random(#Behemoth.MIMICS)],
+		mimicPeepType,
 		-1000, 0, -1000,
 		0)
 

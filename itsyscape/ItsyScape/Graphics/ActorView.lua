@@ -592,7 +592,6 @@ function ActorView:move(position, layer, instant)
 
 	local parent = self.game:getMapSceneNode(layer)
 	if parent ~= self.sceneNode:getParent() then
-		print(">>> moved layer", layer)
 		self.sceneNode:setParent(parent)
 	end
 
