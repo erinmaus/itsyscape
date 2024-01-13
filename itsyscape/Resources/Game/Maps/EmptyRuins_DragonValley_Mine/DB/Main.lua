@@ -147,6 +147,26 @@ do
 		IsDefault = 1,
 		Resource = M["BarrelMimic"]
 	}
+
+	local BarrelMimicDropTable = ItsyScape.Resource.DropTable.Unique()
+
+	local LootAction = ItsyScape.Action.Loot() {
+		Output {
+			Resource = BarrelMimicDropTable,
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "EmptyRuins_DragonValley_Barrel",
+		Weight = 1,
+		Count = 1,
+		Resource = BarrelMimicDropTable
+	}
+
+	M["BarrelMimic"] {
+		LootAction
+	}
 end
 
 M["CrateMimic"] = ItsyScape.Resource.MapObject.Unique()

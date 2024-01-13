@@ -9,34 +9,104 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
+local Utility = require "ItsyScape.Game.Utility"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 
-local BARREL = B.Reference("Behemoth_IdleLogic", "BARREL")
+local BARREL_PROP = B.Reference("Behemoth_IdleLogic", "BARREL_PROP")
+local BARREL_MIMIC = B.Reference("Behemoth_IdleLogic", "BARREL_MIMIC")
+local MAP = B.Reference("Behemoth_IdleLogic", "MAP")
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
-		Mashina.Sequence {
-			Mashina.Peep.FindNearbyPeep {
-				filters = {
-					Probe.resource("Prop", "EmptyRuins_DragonValley_Barrel")
-				},
+		Mashina.ParallelSequence {
+			Mashina.Success {
+				Mashina.Sequence {
+					Mashina.Peep.FindNearbyPeep {
+						filters = {
+							Probe.resource("Prop", "EmptyRuins_DragonValley_Barrel")
+						},
 
-				[BARREL] = B.Output.result
+						[BARREL_PROP] = B.Output.result
+					},
+
+					Mashina.Step {
+						Mashina.Navigation.WalkToPeep {
+							peep = BARREL_PROP,
+							distance = 0,
+							as_close_as_possible = true
+						},
+
+						Mashina.Peep.Wait,
+
+						Mashina.Peep.PokeSelf {
+							event = "splodeBarrel",
+							poke = BARREL_PROP
+						}
+					}
+				}
 			},
 
-			Mashina.Step {
-				Mashina.Navigation.WalkToPeep {
-					peep = BARREL,
-					distance = 0,
-					as_close_as_possible = true
-				},
+			Mashina.Success {
+				Mashina.Try {
+					Mashina.Sequence {
+						Mashina.Peep.FindNearbyPeep {
+							filters = {
+								Probe.namedMapObject("BarrelMimic")
+							},
 
-				Mashina.Peep.Wait,
+							[BARREL_MIMIC] = B.Output.result
+						},
 
-				Mashina.Peep.PokeSelf {
-					event = "splodeBarrel",
-					poke = BARREL
+						Mashina.Success {
+							Mashina.Sequence {
+								Mashina.Check {
+									condition = function(mashina, state)
+										local selfLayer = Utility.Peep.getLayer(mashina)
+										local barrelLayer = Utility.Peep.getLayer(state[BARREL_MIMIC])
+
+										return selfLayer ~= barrelLayer
+									end
+								},
+
+								Mashina.Peep.FindNearbyPeep {
+									random = true,
+									filter = function(p)
+										local resource = Utility.Peep.getResource(p)
+										return resource and (resource.name == "BehemothMap" or resource.name == "BehemothMap_Climbable")
+									end,
+
+									[MAP] = B.Output.result
+								},
+
+								Mashina.Peep.PokeSelf {
+									event = "drop",
+									args = function(mashina, state)
+										return state[MAP], state[BARREL_MIMIC]
+									end
+								}
+							}
+						}
+					},
+
+					Mashina.Sequence {
+						Mashina.Peep.FindNearbyPeep {
+							random = true,
+							filter = function(p)
+								local resource = Utility.Peep.getResource(p)
+								return resource and (resource.name == "BehemothMap" or resource.name == "BehemothMap_Climbable")
+							end,
+
+							[MAP] = B.Output.result
+						},
+
+						Mashina.Peep.PokeSelf {
+							event = "shedMimic",
+							args = function(mashina, state)
+								return state[MAP], false, "BarrelMimic"
+							end
+						}
+					}
 				}
 			}
 		},

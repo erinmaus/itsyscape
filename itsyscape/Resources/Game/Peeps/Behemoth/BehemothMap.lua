@@ -55,7 +55,7 @@ function BehemothMap:ready(director, game)
 
 		ore:listen("resourceObtained", function(_, e)
 			if self.behemoth then
-				self.behemoth:poke("dropPlayer", self, e.peep)
+				self.behemoth:poke("drop", self, e.peep)
 			end
 		end)
 	end
