@@ -35,6 +35,8 @@ Behemoth.STATE_KICK    = "kick"
 Behemoth.MIN_KICK_TIME = 20
 Behemoth.MAX_KICK_TIME = 30
 
+Behemoth.BARREL_MIMICS = 5
+
 Behemoth.MIMICS = {
 	"ChestMimic",
 	"CrateMimic",
@@ -203,7 +205,7 @@ function Behemoth:ready(director, game)
 		size.size = Vector(2, 2, 5.5)
 
 		head:getPeep():listen("finalize", function()
-			self:poke("shedMimic", head:getPeep())
+			self:poke("shedMimic", head:getPeep(), false, "ChestMimic")
 		end)
 	end
 

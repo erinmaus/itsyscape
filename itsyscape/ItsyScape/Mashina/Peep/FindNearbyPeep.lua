@@ -19,6 +19,7 @@ FindNearbyPeep.FILTERS = B.Reference()
 FindNearbyPeep.DISTANCE = B.Reference()
 FindNearbyPeep.RESULT = B.Reference()
 FindNearbyPeep.RANDOM = B.Reference()
+FindNearbyPeep.COUNT = B.Reference()
 
 function FindNearbyPeep:update(mashina, state, executor)
 	local director = mashina:getDirector()
@@ -36,6 +37,8 @@ function FindNearbyPeep:update(mashina, state, executor)
 		end,
 		unpack(state[self.FILTERS] or {}))
 	if p and #p > 0 then
+		state[self.COUNT] = #p
+
 		if state[self.RANDOM] then
 			state[self.RESULT] = p[love.math.random(#p)]
 			return B.Status.Success
@@ -61,6 +64,7 @@ function FindNearbyPeep:update(mashina, state, executor)
 		end
 	end
 
+	state[self.COUNT] = 0
 	state[self.RESULT] = nil
 	return B.Status.Failure
 end
