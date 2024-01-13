@@ -35,6 +35,9 @@ Behemoth.STATE_KICK    = "kick"
 Behemoth.MIN_KICK_TIME = 20
 Behemoth.MAX_KICK_TIME = 30
 
+Behemoth.MIN_RISE_TIME = 10
+Behemoth.MAX_RISE_TIME = 15
+
 Behemoth.BARREL_MIMICS = 5
 
 Behemoth.MIMICS = {
@@ -118,6 +121,11 @@ function Behemoth:ready(director, game)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Behemoth_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
+
+	local dieAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Behemoth_Stun/Script.lua")
+	self:addResource("animation-die", idleAnimation)
 
 	self.idleAnimationTime = love.timer.getTime()
 	self.skeleton = Skeleton("Resources/Game/Bodies/Behemoth.lskel")
@@ -421,6 +429,9 @@ function Behemoth:onStun()
 
 		self:getCommandQueue():clear()
 	end
+
+	local riseTime = love.math.random() * (Behemoth.MAX_RISE_TIME - Behemoth.MIN_RISE_TIME) + Behemoth.MIN_RISE_TIME
+	self:pushPoke(riseTime, "rise")
 end
 
 function Behemoth:onClimb()
