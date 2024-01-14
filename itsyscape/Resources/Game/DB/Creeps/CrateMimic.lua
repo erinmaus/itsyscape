@@ -53,6 +53,18 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Value = ItsyScape.Utility.xpForLevel(45),
+	Resource = ItsyScape.Resource.Peep "CrateMimic"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Dexterity",
+	Value = ItsyScape.Utility.xpForLevel(45),
+	Resource = ItsyScape.Resource.Peep "CrateMimic"
+}
+
+ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
 	Value = ItsyScape.Utility.xpForLevel(175),
 	Resource = ItsyScape.Resource.Peep "CrateMimic"
@@ -60,12 +72,14 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.Equipment {
 	AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(45),
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(45),
 	DefenseStab = ItsyScape.Utility.styleBonusForItem(20),
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(45),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(45),
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(20),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(20),
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(50),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(50),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "CrateMimic"
 }
