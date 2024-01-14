@@ -123,8 +123,7 @@ local ORES = {
 			"Sapphire",
 			"Emerald",
 			"Ruby",
-			"Diamond",
-			"BlueTableSalt"
+			"Diamond"
 		}
 	},
 
@@ -143,7 +142,20 @@ local ORES = {
 	["Itsy"] = {
 		tier = 50,
 		weight = 25,
-		health = 200
+		health = 200,
+		secondaries = {
+			"TableSalt",
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrumblySulfur",
+			"VegetableOil",
+			"PeanutOil",
+			"BlackGold",
+			"Sapphire",
+			"Emerald",
+			"Ruby",
+			"Diamond"
+		}
 	},
 
 	["Gold"] = {
