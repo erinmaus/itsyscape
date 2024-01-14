@@ -53,6 +53,18 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Value = ItsyScape.Utility.xpForLevel(55),
+	Resource = ItsyScape.Resource.Peep "BarrelMimic"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Dexterity",
+	Value = ItsyScape.Utility.xpForLevel(55),
+	Resource = ItsyScape.Resource.Peep "BarrelMimic"
+}
+
+ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
 	Value = ItsyScape.Utility.xpForLevel(150),
 	Resource = ItsyScape.Resource.Peep "BarrelMimic"
@@ -60,12 +72,14 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.Equipment {
 	AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(60),
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(60),
 	DefenseStab = ItsyScape.Utility.styleBonusForItem(20),
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(60),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(60),
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(20),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(20),
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "BarrelMimic"
 }
