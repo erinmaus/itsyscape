@@ -558,8 +558,8 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(60, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60, ItsyScape.Utility.ARMOR_HELMET_WEIGHT),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(60),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = RustyNeedle
 	}
