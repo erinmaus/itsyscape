@@ -79,8 +79,8 @@ function Behemoth:ready(director, game)
 	end
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.maximumHitpoints = 10
-	status.currentHitpoints = 10
+	status.maximumHitpoints = 1500
+	status.currentHitpoints = 1500
 	status.maxChaseDistance = math.huge
 
 	local face3D = self:getBehavior(Face3DBehavior)

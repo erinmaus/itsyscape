@@ -99,7 +99,7 @@ function Mine:onBossDie(boss)
 			})
 
 			chest:poke('materialize', {
-				count = love.math.random(1000, 1000),
+				count = love.math.random(3, 5),
 				dropTable = gameDB:getResource("Behemoth_Tertiary", "DropTable"),
 				peep = playerPeep,
 				boss = boss,
