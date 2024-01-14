@@ -42,9 +42,9 @@ function ItemPrayerRestorationUserdata:getDescription()
 	end
 
 	if self:getZealous() then
-		return self:buildDescription("Message_ItemHealingUserdata_ZealousDescription", self.prayerPoints)
+		return self:buildDescription("Message_ItemPrayerRestorationUserdata_ZealousDescription", self.prayerPoints)
 	else
-		return self:buildDescription("Message_ItemHealingUserdata_Description", self.prayerPoints)
+		return self:buildDescription("Message_ItemPrayerRestorationUserdata_Description", self.prayerPoints)
 	end
 end
 

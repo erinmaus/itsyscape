@@ -520,7 +520,7 @@ do
 
 	ItsyScape.Meta.ItemStatBoostUserdata {
 		Skill = ItsyScape.Resource.Skill "Mining",
-		Boost = 1,
+		Boost = 3,
 		Resource = Item
 	}
 end
@@ -585,7 +585,7 @@ do
 
 	ItsyScape.Meta.ItemStatBoostUserdata {
 		Skill = ItsyScape.Resource.Skill "Mining",
-		Boost = 5,
+		Boost = 10,
 		Resource = Item
 	}
 end

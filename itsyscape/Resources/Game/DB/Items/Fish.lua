@@ -2818,7 +2818,15 @@ local SECONDARIES = {
 	"BronzeDubloon",
 	"SilverDubloon",
 	"GoldDubloon",
-	"Key_BlackmeltLagoon1"
+	"Key_BlackmeltLagoon1",
+	"SageSeaSalt",
+	"DexterousSeaSalt",
+	"KosherSeaSalt",
+	"WarriorSeaSalt",
+	"ToughSeaSalt",
+	"ArtisanSeaSalt",
+	"GathererSeaSalt",
+	"AdventurerSeaSalt"
 }
 
 local FISH = {

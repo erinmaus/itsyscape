@@ -600,8 +600,21 @@ do
 		Action = TalkAction
 	}
 
+	local ShopAction = ItsyScape.Action.Shop() {
+		Requirement {
+			Resource = ItsyScape.Resource.Quest "SuperSupperSaboteur",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.ShopTarget {
+		Resource = ItsyScape.Resource.Shop "Special_CookingStore_Allon",
+		Action = ShopAction
+	}
+
 	M["ChefAllon"] {
-		TalkAction
+		TalkAction,
+		ShopAction
 	}
 end
 
