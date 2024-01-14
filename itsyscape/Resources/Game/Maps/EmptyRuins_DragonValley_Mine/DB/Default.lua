@@ -1898,30 +1898,6 @@ do
 	}
 end
 
-M["HighChambersYendor_RatKingRewardChest1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 87.000000,
-		PositionY = 0.000000,
-		PositionZ = 7.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "HighChambersYendor_RatKingRewardChest1",
-		Map = M._MAP,
-		Resource = M["HighChambersYendor_RatKingRewardChest1"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_RatKingRewardChest",
-		MapObject = M["HighChambersYendor_RatKingRewardChest1"]
-	}
-end
-
 M["IronRock_Default3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

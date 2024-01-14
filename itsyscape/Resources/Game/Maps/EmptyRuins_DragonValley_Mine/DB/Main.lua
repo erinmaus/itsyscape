@@ -191,3 +191,25 @@ do
 		Resource = M["CrateMimic"]
 	}
 end
+
+M["DustyChest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 87,
+		PositionY = 0,
+		PositionZ = 7,
+		Name = "DustyChest",
+		Map = M._MAP,
+		Resource = M["DustyChest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Behemoth_Chest",
+		MapObject = M["DustyChest"]
+	}
+
+	M["DustyChest"] {
+		ItsyScape.Action.Collect(),
+		ItsyScape.Action.Bank()
+	}
+end

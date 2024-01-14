@@ -194,7 +194,7 @@ do
 
 	local MimicPickaxeReward = ItsyScape.Action.Reward() {
 		Output {
-			Resource = ItsyScape.Resource.Item "BehemothMimicTooth",
+			Resource = ItsyScape.Resource.Item "MimicPickaxe",
 			Count = 1
 		}
 	}
@@ -551,7 +551,7 @@ do
 end
 
 do
-	local BehemothTooth = ItsyScape.Resource.Item "BehemothTooth"
+	local BehemothTooth = ItsyScape.Resource.Item "BehemothMimicTooth"
 
 	ItsyScape.Meta.ResourceName {
 		Value = "Behemoth mimic tooth",

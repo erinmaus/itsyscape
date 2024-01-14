@@ -313,4 +313,47 @@ do
 			Category = "EmptyRuins"
 		}
 	end
+
+	do
+		local Behemoth = ItsyScape.Resource.Boss "Behemoth"
+
+		ItsyScape.Meta.ResourceName {
+			Value = "Behemoth, Lord of the Mimics",
+			Language = "en-US",
+			Resource = Behemoth
+		}
+
+		ItsyScape.Meta.ResourceDescription {
+			Value = "The Behemoth was shed from the Old One Gammon's skin. It is not aggressive, but the mimics it creates definitely are...",
+			Language = "en-US",
+			Resource = Behemoth
+		}
+
+		ItsyScape.Meta.Boss {
+			Boss = Behemoth,
+			Target = ItsyScape.Resource.Peep "Behemoth",
+			Category = "EmptyRuins"
+		}
+
+		ItsyScape.Meta.Boss {
+			Boss = Behemoth,
+			Target = ItsyScape.Resource.Peep "Behemoth_Stunned",
+			Category = "EmptyRuins"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = Behemoth,
+			DropTable = ItsyScape.Resource.DropTable "Behemoth_Primary"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = Behemoth,
+			DropTable = ItsyScape.Resource.DropTable "Behemoth_Secondary"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = Behemoth,
+			DropTable = ItsyScape.Resource.DropTable "Behemoth_Tertiary"
+		}
+	end
 end
