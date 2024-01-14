@@ -110,7 +110,7 @@ function Make:gatherSecondaries(state, player, prop)
 	log(
 		"Player '%s', has %d rolls (max = %d) in obtaining secondaries from prop '%s'.",
 		player:getName(), numRolls, maxNumRolls, prop:getName())
-	for i = 1, maxNumRolls do
+	for i = 1, numRolls do
 		local item = actions[1]
 		local currentWeight = 0
 		if item then
