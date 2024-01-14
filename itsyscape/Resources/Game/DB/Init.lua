@@ -1300,6 +1300,7 @@ include "Resources/Game/DB/Shops/FishingStore.lua"
 include "Resources/Game/DB/Shops/Alchemist.lua"
 include "Resources/Game/DB/Shops/Butcher.lua"
 include "Resources/Game/DB/Shops/Crafter.lua"
+include "Resources/Game/DB/Shops/CookingStore.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernMisc.lua"
