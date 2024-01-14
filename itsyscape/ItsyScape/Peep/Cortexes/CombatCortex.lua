@@ -197,7 +197,7 @@ function CombatCortex:update(delta)
 			end
 		else
 			logic = itemManager:getLogic(equippedWeapon:getID())
-			if logic:isCompatibleType(Weapon) then
+			if logic and logic:isCompatibleType(Weapon) then
 				weaponRange = logic:getAttackRange(peep)
 			else
 				weaponRange = 1
