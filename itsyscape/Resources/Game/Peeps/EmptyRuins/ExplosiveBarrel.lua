@@ -22,6 +22,10 @@ function ExplosiveBarrel:ready(...)
 	self:roll()
 end
 
+function ExplosiveBarrel:onSpawnedByAction(player)
+	self.aggressor = player
+end
+
 function ExplosiveBarrel:rock(delta)
 	local start = self.startRotation or Quaternion.IDENTITY
 	local target = self.targetRotation or Quaternion.IDENTITY
@@ -39,6 +43,10 @@ function ExplosiveBarrel:roll()
 
 	self.targetRotation = zRotation * xRotation
 	self.currentRockTime = self.ROCK_INTERVAL
+end
+
+function ExplosiveBarrel:getAggressor()
+	return self.aggressor
 end
 
 function ExplosiveBarrel:update(director, game)

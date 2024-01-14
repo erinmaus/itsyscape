@@ -30,6 +30,8 @@ function Mine:initBoss()
 		return
 	end
 
+	behemoth:listen("die", self.onBossDie, self)
+
 	local function onReceiveAttack()
 		Utility.UI.openInterface(
 			Utility.Peep.getInstance(self),
@@ -59,6 +61,50 @@ function Mine:onPlayerEnter(player)
 				"BossHUD",
 				false,
 				behemoth)
+		end
+	end
+end
+
+function Mine:onBossDie(boss)
+	local instance = Utility.Peep.getInstance(self)
+	Utility.Peep.notify(instance, "The chest to the north-east has items in it for you!")
+
+	local chest = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("DustyChest"))[1]
+	if not chest then
+		Log.warn("Reward chest not found; cannot reward players!")
+	end
+
+	for _, player in instance:iteratePlayers() do
+		local playerPeep = player:getActor():getPeep()
+
+		if chest then
+			local gameDB = self:getDirector():getGameDB()
+
+			chest:poke('materialize', {
+				count = love.math.random(10, 20),
+				dropTable = gameDB:getResource("Behemoth_Primary", "DropTable"),
+				peep = playerPeep,
+				boss = boss,
+				chest = chest
+			})
+
+			chest:poke('materialize', {
+				count = love.math.random(4, 8),
+				dropTable = gameDB:getResource("Behemoth_Secondary", "DropTable"),
+				peep = playerPeep,
+				boss = boss,
+				chest = chest
+			})
+
+			chest:poke('materialize', {
+				count = love.math.random(1000, 1000),
+				dropTable = gameDB:getResource("Behemoth_Tertiary", "DropTable"),
+				peep = playerPeep,
+				boss = boss,
+				chest = chest
+			})
 		end
 	end
 end

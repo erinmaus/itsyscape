@@ -60,7 +60,6 @@ function Behemoth:new(resource, name, ...)
 	
 	self:silence("receiveAttack", Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
-	self:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
 
 	self:addPoke("drop")
 	self:addPoke("dropAll")
@@ -80,8 +79,8 @@ function Behemoth:ready(director, game)
 	end
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.maximumHitpoints = 1500
-	status.currentHitpoints = 1500
+	status.maximumHitpoints = 10
+	status.currentHitpoints = 10
 	status.maxChaseDistance = math.huge
 
 	local face3D = self:getBehavior(Face3DBehavior)
@@ -125,7 +124,7 @@ function Behemoth:ready(director, game)
 	local dieAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Behemoth_Stun/Script.lua")
-	self:addResource("animation-die", idleAnimation)
+	self:addResource("animation-die", dieAnimation)
 
 	self.idleAnimationTime = love.timer.getTime()
 	self.skeleton = Skeleton("Resources/Game/Bodies/Behemoth.lskel")
@@ -332,7 +331,7 @@ function Behemoth:onSplodeBarrel(barrel)
 	local weapon = Utility.Peep.getXWeapon(self:getDirector():getGameInstance(), "Behemoth_Splode")
 	if weapon then
 		for _, hit in ipairs(hits) do
-			weapon:perform(self, hit)
+			weapon:perform(self, hit, barrel:getAggressor())
 
 			if hit ~= self then
 				stage:fireProjectile("BoomBombSplosion", self, hit)
@@ -373,6 +372,10 @@ end
 
 function Behemoth:onRise()
 	if self.currentState == Behemoth.STATE_IDLE then
+		return
+	end
+
+	if self:isDead() then
 		return
 	end
 
@@ -419,9 +422,11 @@ function Behemoth:onStun()
 
 	actor:playAnimation("idle", 10, stunAnimation)
 
-	Utility.Peep.setResource(
-		self,
-		self:getDirector():getGameDB():getResource("Behemoth_Stunned", "Peep"))
+	if not self:isDead() then
+		Utility.Peep.setResource(
+			self,
+			self:getDirector():getGameDB():getResource("Behemoth_Stunned", "Peep"))
+	end
 
 	local mashina = self:getBehavior(MashinaBehavior)
 	if mashina then
@@ -530,7 +535,7 @@ end
 
 function Behemoth:updateVines()
 	local resource
-	if self.currentState == Behemoth.STATE_STUNNED then
+	if self.currentState == Behemoth.STATE_STUNNED and not self:isDead() then
 		resource = self:getDirector():getGameDB():getResource("BehemothMap_Climbable", "Prop")
 	else
 		resource = self:getDirector():getGameDB():getResource("BehemothMap", "Prop")
@@ -539,12 +544,26 @@ function Behemoth:updateVines()
 	self:_doUpdateVines(self:getSides(), resource)
 end
 
+function Behemoth:isDead()
+	local isDead = false
+	do
+		local status = self:getBehavior(CombatStatusBehavior)
+		isDead = not status or (status.dead or status.currentHitpoints == 0)
+	end
+
+	return isDead
+end
+
 function Behemoth:updateState()
 	if self.currentState == Behemoth.STATE_KICK then
 		local time = love.timer.getTime() - self.idleAnimationTime
 		if time >= self.kickAnimation:getDuration() then
 			self:poke("idle")
 		end
+	end
+
+	if self:isDead() then
+		self.currentState = Behemoth.STATE_STUNNED
 	end
 end
 

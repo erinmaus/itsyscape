@@ -12,6 +12,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local BehemothSplode = Class(RangedWeapon)
 BehemothSplode.AMMO = Weapon.AMMO_NONE
@@ -29,6 +30,27 @@ function BehemothSplode:previewDamageRoll(roll)
 	if isBehemoth and isPeep then
 		roll:setMinHit(roll:getMaxHit())
 		roll:setMaxHit(roll:getMaxHit() * 3)
+	end
+end
+
+function BehemothSplode:perform(peep, target, aggressor)
+	local damage = 0
+	local function _damage(_, attack)
+		if attack:getAggressor() == peep then
+			damage = damage + attack:getDamage()
+		end
+	end
+
+	target:listen("receiveAttack", _damage)
+	RangedWeapon.perform(self, peep, target)
+	target:silence("receiveAttack", _damage)
+
+	if aggressor then
+		local status = target:getBehavior(CombatStatusBehavior)
+
+		if status then
+			status.damage[aggressor] = (status.damage[aggressor] or 0) + damage
+		end
 	end
 end
 
