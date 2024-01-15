@@ -13,6 +13,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
+local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
@@ -84,6 +85,9 @@ function ExperimentX:ready(director, game)
 	self:addResource("animation-die", dieAnimation)
 
 	self:poke("rotateStyle")
+
+	local infiniteInventory = InfiniteInventoryStateProvider(self)
+	infiniteInventory:add("Dynamite")
 end
 
 function ExperimentX:onInitiateAttack()
