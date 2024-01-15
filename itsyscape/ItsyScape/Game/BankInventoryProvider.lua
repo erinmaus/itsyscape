@@ -96,7 +96,7 @@ function BankInventoryProvider:deposit(item, count, clamp)
 	return true
 end
 
-function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
+function BankInventoryProvider:withdraw(destination, item, count, noted, clamp)
 	if clamp == nil then
 		clamp = true
 	end
@@ -113,8 +113,8 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 
 	local hasNotedItem
 	if manager:isNoteable(id) then
-		for item in broker:iterateItems(destination) do
-			if item:getID() == id and item:isNoted() then
+		for otherItem in broker:iterateItems(destination) do
+			if otherItem:getID() == item:getID() and otherItem:isNoted() then
 				hasNotedItem = true
 				break
 			end
@@ -124,9 +124,9 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 	end
 
 	local hasStackableItem
-	if manager:isStackable(id) then
-		for item in broker:iterateItems(destination) do
-			if item:getID() == id  then
+	if manager:isStackable(item:getID()) then
+		for otherItem in broker:iterateItems(destination) do
+			if otherItem:getID() == id  then
 				hasStackableItem = true
 				break
 			end
@@ -145,7 +145,7 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 	else
 		if noted then
 			requiredSpace = 1
-		elseif manager:isStackable(id) then
+		elseif manager:isStackable(item:getID()) then
 			if hasStackableItem then
 				requiredSpace = 0
 			else
@@ -172,19 +172,10 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 
 	local withdrawnCount = 0
 	local remainingCount = count
-	for item in broker:iterateItems(self) do
-		if item:getID() == id then
-			local transferCount = math.min(remainingCount, item:getCount())
-			transaction:transfer(destination, item, transferCount, 'bank-withdraw')
-
-			remainingCount = remainingCount - transferCount
-			withdrawnCount = withdrawnCount + transferCount
-		end
-
-		if remainingCount <= 0 then
-			break
-		end
-	end
+	local transferCount = math.min(remainingCount, item:getCount())
+	transaction:transfer(destination, item, transferCount, 'bank-withdraw')
+	remainingCount = remainingCount - transferCount
+	withdrawnCount = withdrawnCount + transferCount
 
 	if remainingCount > 0 then
 		if not clamp then
@@ -197,15 +188,17 @@ function BankInventoryProvider:withdraw(destination, id, count, noted, clamp)
 	end
 
 	if not noted then
-		if manager:isNoteable(id) then
-			for item in broker:iterateItems(destination) do
-				if item:getID() == id and item:isNoted() then
+		if manager:isNoteable(item:getID()) then
+			for _, otherItem in transaction:iterateItems() do
+				if broker:hasItem(otherItem) and broker:getItemProvider(otherItem) == destination and otherItem:isNoted() then
 					local unnoteTransaction = broker:createTransaction()
 					unnoteTransaction:addParty(destination)
-					unnoteTransaction:unnote(item, withdrawnCount)
+					unnoteTransaction:unnote(otherItem, withdrawnCount)
 					if not unnoteTransaction:commit() then
 						Log.warn("Couldn't unnote items.")
 					end
+
+					break
 				end
 			end
 		end
