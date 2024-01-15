@@ -286,14 +286,19 @@ end
 function BossTinkerer:onBoss(e)
 	local gameDB = self:getDirector():getGameDB()
 
-	local selfStatus = self:getBehavior(CombatStatusBehavior)
-	local targetStatus = e.experiment:getBehavior(CombatStatusBehavior)
-	if targetStatus and selfStatus then
-		self:poke("heal", {
-			hitpoints = selfStatus.maximumHitpoints - selfStatus.currentHitpoints
-		})
+	if e then
+		local selfStatus = self:getBehavior(CombatStatusBehavior)
+		local targetStatus = e.experiment:getBehavior(CombatStatusBehavior)
+		if targetStatus and selfStatus then
+			self:poke("heal", {
+				hitpoints = selfStatus.maximumHitpoints - selfStatus.currentHitpoints
+			})
 
-		e.experiment:poke("hit", AttackPoke({ damage = targetStatus.currentHitpoints }))
+			e.experiment:poke("hit", AttackPoke({ damage = targetStatus.currentHitpoints }))
+		end
+
+		local stage = self:getDirector():getGameInstance():getStage()
+		stage:fireProjectile("ExperimentX_Siphon", e.experiment, self)
 	end
 
 	local resource = gameDB:getResource("Tinkerer_DragonValley_Attackable", "Peep")
@@ -306,9 +311,6 @@ function BossTinkerer:onBoss(e)
 		"BossHUD",
 		false,
 		self)
-
-	local stage = self:getDirector():getGameInstance():getStage()
-	stage:fireProjectile("ExperimentX_Siphon", e.experiment, self)
 end
 
 return BossTinkerer

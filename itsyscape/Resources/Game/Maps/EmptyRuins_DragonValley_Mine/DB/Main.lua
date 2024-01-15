@@ -17,6 +17,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.RaidGroup {
+	Raid = ItsyScape.Resource.Raid "EmptyRuinsDragonValley",
+	Map = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -72,15 +77,57 @@ do
 	}
 end
 
-M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_FromGinsville"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33,
+		PositionX = 43,
 		PositionY = 0,
-		PositionZ = 33,
-		Name = "Anchor_Spawn",
+		PositionZ = 91,
+		Name = "Anchor_FromGinsville",
 		Map = M._MAP,
-		Resource = M["Anchor_Spawn"]
+		Resource = M["Anchor_FromGinsville"]
+	}
+end
+
+M["Portal_ToGinsville"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 0,
+		PositionZ = 89,
+		Name = "Portal_ToGinsville",
+		Map = M._MAP,
+		Resource = M["Portal_ToGinsville"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 2,
+		SizeZ = 3.5,
+		MapObject = M["Portal_ToGinsville"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToGinsville"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Old Ginsville",
+		Language = "en-US",
+		Resource = M["Portal_ToGinsville"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromMine",
+		Map = ItsyScape.Resource.Map "EmptyRuins_DragonValley_Ginsville",
+		Action = TravelAction
+	}
+
+	M["Portal_ToGinsville"] {
+		TravelAction
 	}
 end
 

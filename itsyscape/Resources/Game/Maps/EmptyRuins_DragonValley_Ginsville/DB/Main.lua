@@ -17,6 +17,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.RaidGroup {
+	Raid = ItsyScape.Resource.Raid "EmptyRuinsDragonValley",
+	Map = M._MAP
+}
+
 M["Anchor_Trees"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -113,6 +118,59 @@ do
 		FarDistance = 25,
 		FollowTarget = 1,
 		Resource = M["Light_Fog"]
+	}
+end
+
+M["Entrance_ToMines"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7,
+		PositionY = 4,
+		PositionZ = 19.875000,
+		Name = "Entrance_ToMines",
+		Map = M._MAP,
+		Resource = M["Entrance_ToMines"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Entrance",
+		MapObject = M["Entrance_ToMines"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mt. Vazikerl mines entrance",
+		Language = "en-US",
+		Resource = M["Entrance_ToMines"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "There's tremors coming from in those mines...",
+		Language = "en-US",
+		Resource = M["Entrance_ToMines"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromGinsville",
+		Map = ItsyScape.Resource.Map "EmptyRuins_DragonValley_Mine",
+		Action = TravelAction
+	}
+
+	M["Entrance_ToMines"] {
+		TravelAction
+	}
+end
+
+M["Anchor_FromMine"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 7,
+		PositionY = 4,
+		PositionZ = 21,
+		Name = "Anchor_FromMine",
+		Map = M._MAP,
+		Resource = M["Anchor_FromMine"]
 	}
 end
 

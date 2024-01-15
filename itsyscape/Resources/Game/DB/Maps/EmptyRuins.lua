@@ -8,6 +8,28 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+do
+	local Raid = ItsyScape.Resource.Raid "EmptyRuinsDragonValley"
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Dragon Valley",
+		Resource = ItsyScape.Resource.Raid "EmptyRuinsDragonValley"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "Ascend Mt. Vazikerl and slay the undead dragon, Svalbard! On your way, you'll have to pass through the ruins of Old Ginsville and the mines, where horrifying monsters lurk...",
+		Resource = ItsyScape.Resource.Raid "EmptyRuinsDragonValley"
+	}
+
+	ItsyScape.Meta.RaidDestination {
+		Raid = Raid,
+		Map = ItsyScape.Resource.Map "EmptyRuins_DragonValley_Ginsville",
+		Anchor = "Anchor_Spawn"
+	}
+end
+
 ItsyScape.Resource.Prop "Door_EmptyRuins" {
 	ItsyScape.Action.Open(),
 	ItsyScape.Action.Close()
