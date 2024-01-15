@@ -39,6 +39,9 @@ function Mine:initBoss()
 			false,
 			behemoth)
 
+		local stage = self:getDirector():getGameInstance():getStage()
+		stage:playMusic(self:getLayer(), "main", "BossFight1")
+
 		behemoth:silence("receiveAttack", onReceiveAttack)
 	end
 
@@ -107,6 +110,9 @@ function Mine:onBossDie(boss)
 			})
 		end
 	end
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:playMusic(self:getLayer(), "main", "PreTutorial")
 end
 
 function Mine:onPlayerLeave(player)

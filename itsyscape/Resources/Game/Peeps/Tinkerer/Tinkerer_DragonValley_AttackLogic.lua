@@ -22,6 +22,7 @@ local EXPERIMENT_X_TARGET = B.Reference("Tinkerer_DragonValley_AttackLogic", "EX
 local FLESHY_PILLAR = B.Reference("Tinkerer_DragonValley_AttackLogic", "FLESHY_PILLAR")
 local FLESHY_PILLAR_HITPOINT_TRANSFER = B.Reference("Tinkerer_DragonValley_AttackLogic", "FLESHY_PILLAR_HITPOINT_TRANSFER")
 local AGGRESSOR = B.Reference("Tinkerer_DragonValley_AttackLogic", "AGGRESSOR")
+local TARGET = B.Reference("Tinkerer_DragonValley_AttackLogic", "TARGET")
 local PRAYER = B.Reference("Tinkerer_DragonValley_AttackLogic", "PRAYER")
 local NUM_HITS = B.Reference("Tinkerer_DragonValley_AttackLogic", "NUM_HITS")
 local NUM_GORY_MASSES = B.Reference("Tinkerer_DragonValley_AttackLogic", "NUM_GORY_MASSES")
@@ -51,7 +52,7 @@ local ReengageSequence = Mashina.Sequence {
 	},
 
 	Mashina.Peep.FindNearbyCombatTarget {
-		distance = math.huge,
+		distance = 16,
 		[TARGET] = B.Output.RESULT
 	},
 
@@ -513,6 +514,7 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Repeat {
 			Mashina.ParallelSequence {
+				ReengageSequence,
 				DamageSequence,
 				PhaseManager,
 				PhaseTransition,

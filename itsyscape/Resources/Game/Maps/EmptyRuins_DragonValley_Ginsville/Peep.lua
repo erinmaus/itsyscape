@@ -40,6 +40,37 @@ function Ginsville:onLoad(filename, args, layer)
 		heaviness = 0.5,
 		init = true
 	})
+
+	self:initBoss()
+end
+
+function Ginsville:initBoss()
+	local experimentX = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("ExperimentX"))[1]
+	local tinkerer = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("Tinkerer"))[1]
+
+	if not experimentX or not tinkerer then
+		return
+	end
+
+	local function onDie()
+		local stage = self:getDirector():getGameInstance():getStage()
+		stage:playMusic(self:getLayer(), "main", "PreTutorial")
+
+		tinkerer:silence("die", onDie)
+	end
+	tinkerer:listen("die", onDie)
+
+	local function onBoss()
+		local stage = self:getDirector():getGameInstance():getStage()
+		stage:playMusic(self:getLayer(), "main", "BossFight1")
+
+		behemoth:silence("boss", onBoss)
+	end
+	experimentX:listen("boss", onBoss)
 end
 
 function Ginsville:onPlayerEnter(player)

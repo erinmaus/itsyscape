@@ -35,7 +35,7 @@ function PokeSelf:update(mashina, state, executor)
 			if poke then
 				a = { poke, unpack(args, 1, table.maxn(args)) }
 			else
-				a = args
+				a = args or {}
 			end
 		else
 			a = { poke }
