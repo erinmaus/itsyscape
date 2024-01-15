@@ -42,7 +42,7 @@ function PokeSelf:update(mashina, state, executor)
 		end
 
 		if time then
-			mashina:pushPoke(time, event, unpack(args, 1, table.maxn(a)))
+			mashina:pushPoke(time, event, unpack(a, 1, table.maxn(a)))
 		else
 			mashina:poke(event, unpack(a, 1, table.maxn(a)))
 		end
