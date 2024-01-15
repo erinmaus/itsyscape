@@ -255,12 +255,12 @@ end
 
 function LocalStage:notifyDropItem(layer, item, key, source)
 	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
-	local position = source:getPeep():getBehavior(PositionBehavior)
-	if position then
-		local p = position.position
-		position = Vector(p.x, p.y, p.z)
+
+	local position
+	if Class.isCompatibleType(source, Vector) then
+		position = source
 	else
-		position = Vector(0)
+		position = Utility.Peep.getPosition(source:getPeep())
 	end
 
 	Log.engine(
@@ -1156,6 +1156,10 @@ function LocalStage:getMap(layer)
 	return self.game:getDirector():getMap(layer)
 end
 
+function LocalStage:getGround(layer)
+	return self.grounds[layer]
+end
+
 function LocalStage:getLayers()
 	local layers = {}
 	for index in pairs(self.instancesByLayer) do
@@ -1210,7 +1214,22 @@ end
 function LocalStage:dropItem(item, count, owner)
 	local broker = self.game:getDirector():getItemBroker()
 	local provider = broker:getItemProvider(item)
-	local layer = Utility.Peep.getLayer(provider:getPeep())
+
+	local layer
+	if Class.isCompatibleType(owner, GroundInventoryProvider.Key) then
+		layer = owner.layer
+	else
+		layer = Utility.Peep.getLayer(provider:getPeep())
+	end
+
+	local ground = self.grounds[layer]
+	if not ground then
+		Log.warn(
+			"Cannot drop item '%s' (ref = %d) on layer '%d'; layer not found.",
+			item:getID(), broker:getItemRef(item), layer)
+		return
+	end
+
 	local destination = self.grounds[layer]:getBehavior(InventoryBehavior).inventory
 	local transaction = broker:createTransaction()
 	provider:getPeep():poke('dropItem', {
@@ -1225,7 +1244,10 @@ function LocalStage:dropItem(item, count, owner)
 end
 
 function LocalStage:takeItem(i, j, layer, ref, player)
+	Log.info("Player '%s' is trying to take an item...", player:getActor():getName())
+
 	if not self.grounds[layer] then
+		Log.info("No ground for layer '%d'; player '%s' cannot take item.", layer, player:getActor():getName())
 		return
 	end
 
@@ -1240,6 +1262,10 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 			if broker:getItemRef(item) == ref then
 				targetItem = item
 				break
+			else
+				Log.info(
+					"Item '%s' (ref = %d) not a match for target ref %d.",
+					item:getID(), broker:getItemRef(item), ref)
 			end
 		end
 
@@ -1262,6 +1288,12 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 				local playerInventory = player:getActor():getPeep():getBehavior(
 					InventoryBehavior).inventory
 				if playerInventory then
+					Log.info(
+						"Player '%s' taking item '%s' (%d) at (%d, %d; %d)",
+						player:getActor():getName(),
+						targetItem:getID(), ref,
+						i, j, layer)
+
 					local walkStep = ExecutePathCommand(path)
 					local takeStep = TransferItemCommand(
 						broker,
@@ -1272,8 +1304,20 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 						true)
 
 					queue:interrupt(CompositeCommand(condition, walkStep, takeStep))
+				else
+					Log.info("Player '%s' does not have inventory.", player:getActor():getName())
 				end
+			else
+				Log.info(
+					"Player '%s' cannot reach (%d, %d; %d).", 
+					player:getActor():getName(),
+					i, j, layer)
 			end
+		else
+			Log.info(
+				"No item at (%d, %d; %d); player '%s' cannot take item.",
+				i, j, layer,
+				player:getActor():getName())
 		end
 	end
 end
