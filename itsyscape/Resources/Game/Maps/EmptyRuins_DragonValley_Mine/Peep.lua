@@ -86,7 +86,7 @@ function Mine:onBossDie(boss)
 			local gameDB = self:getDirector():getGameDB()
 
 			chest:poke('materialize', {
-				count = love.math.random(10, 20),
+				count = love.math.random(40, 80),
 				dropTable = gameDB:getResource("Behemoth_Primary", "DropTable"),
 				peep = playerPeep,
 				boss = boss,
@@ -94,7 +94,7 @@ function Mine:onBossDie(boss)
 			})
 
 			chest:poke('materialize', {
-				count = love.math.random(4, 8),
+				count = love.math.random(5, 10),
 				dropTable = gameDB:getResource("Behemoth_Secondary", "DropTable"),
 				peep = playerPeep,
 				boss = boss,
