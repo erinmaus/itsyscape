@@ -574,29 +574,27 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		end
 	end
 
-	if self.localGameDB then
-		local hit
-		do
-			local hits = {}
-			for prop in self:getGame():getStage():iterateProps() do
-				local ray = self:shoot(x, y)
-				local s, p = ray:hitBounds(prop:getBounds())
-				if s then
-					table.insert(hits, { position = p, prop = prop })
-				end
+	local hit
+	do
+		local hits = {}
+		for prop in self:getGame():getStage():iterateProps() do
+			local ray = self:shoot(x, y)
+			local s, p = ray:hitBounds(prop:getBounds())
+			if s then
+				table.insert(hits, { position = p, prop = prop })
 			end
-
-			local eye = self:getCamera():getEye()
-			table.sort(hits, function(a, b)
-				return (a.position - eye):getLength() < (b.position - eye):getLength()
-			end)
-
-			hit = hits[1]
 		end
 
-		if hit then
-			self.currentMapObject = self.propNames[hit.prop]
-		end
+		local eye = self:getCamera():getEye()
+		table.sort(hits, function(a, b)
+			return (a.position - eye):getLength() < (b.position - eye):getLength()
+		end)
+
+		hit = hits[1]
+	end
+
+	if hit then
+		self.currentMapObject = self.propNames[hit.prop]
 	end
 end
 
