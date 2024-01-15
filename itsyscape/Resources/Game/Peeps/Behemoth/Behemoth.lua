@@ -403,6 +403,17 @@ function Behemoth:onRise()
 	end
 end
 
+function Behemoth:onShake()
+	local instance = Utility.Peep.getInstance(self)
+	if not instance then
+		return
+	end
+
+	for _, player in instance:iteratePlayers() do
+		player:pokeCamera("shake", 0.25)
+	end
+end
+
 function Behemoth:onStun()
 	if self.currentState == Behemoth.STATE_STUNNED then
 		return
@@ -437,6 +448,8 @@ function Behemoth:onStun()
 
 	local riseTime = love.math.random() * (Behemoth.MAX_RISE_TIME - Behemoth.MIN_RISE_TIME) + Behemoth.MIN_RISE_TIME
 	self:pushPoke(riseTime, "rise")
+
+	self:pushPoke(self.stunnedAnimation:getDuration(), "shake")
 end
 
 function Behemoth:onClimb()

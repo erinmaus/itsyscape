@@ -5,4 +5,4 @@ message {
 }
 
 speaker "Yohn"
-message "(The Vizer-King ignores you.)"
+message "(The Vizier-King ignores you.)"

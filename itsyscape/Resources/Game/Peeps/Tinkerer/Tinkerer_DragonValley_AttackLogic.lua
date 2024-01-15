@@ -45,6 +45,25 @@ local HEAL_TIMEOUT_SECONDS = 5
 local FLESHY_PILLAR_THROTTLE_SECONDS = 60
 local GORY_MASS_THROTTLE_SECONDS     = 60
 
+local ReengageSequence = Mashina.Sequence {
+	Mashina.Invert {
+		Mashina.Peep.HasCombatTarget
+	},
+
+	Mashina.Peep.FindNearbyCombatTarget {
+		distance = math.huge,
+		[TARGET] = B.Output.RESULT
+	},
+
+	Mashina.Peep.EngageCombatTarget {
+		peep = TARGET,
+	},
+
+	Mashina.Peep.PokeSelf {
+		event = "boss"
+	}
+}
+
 local DamageSequence = Mashina.Success {
 	Mashina.Sequence {
 		Mashina.Try {

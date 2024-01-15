@@ -125,3 +125,52 @@ do
 		TravelAction
 	}
 end
+
+M["SneakyGuy"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 0,
+		PositionZ = 49,
+		Direction = -1,
+		Name = "SneakyGuy",
+		Map = M._MAP,
+		Resource = M["SneakyGuy"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "RandomHuman",
+		MapObject = M["SneakyGuy"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["SneakyGuy"],
+		Name = "SneakyGuy",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/ViziersRock_Town_Center_Floor2/Dialog/SneakyGuy_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["SneakyGuy"] {
+		TalkAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Sneaky guy from Ginsville",
+		Language = "en-US",
+		Resource = M["SneakyGuy"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's one sneaky guy!",
+		Language = "en-US",
+		Resource = M["SneakyGuy"]
+	}
+end
+
