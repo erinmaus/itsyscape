@@ -62,7 +62,7 @@ local CanQueuePower = Mashina.Try {
 			},
 
 			Mashina.Peep.CanQueuePower {
-				power = "Decapitate"
+				power = "Backstab"
 			}
 		}
 	},
@@ -79,7 +79,7 @@ local CanQueuePower = Mashina.Try {
 			},
 
 			Mashina.Peep.CanQueuePower {
-				power = "SoulStrike"
+				power = "Boom"
 			}
 		}
 	}
@@ -119,7 +119,7 @@ local QueuePower = Mashina.Success {
 				},
 
 				Mashina.Peep.QueuePower {
-					power = "Decapitate",
+					power = "Backstab",
 					require_no_cooldown = true
 				}
 			}
@@ -138,7 +138,7 @@ local QueuePower = Mashina.Success {
 				},
 
 				Mashina.Peep.QueuePower {
-					power = "SoulStrike",
+					power = "Boom",
 					require_no_cooldown = true
 				}
 			}
