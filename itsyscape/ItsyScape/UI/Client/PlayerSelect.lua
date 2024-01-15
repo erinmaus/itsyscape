@@ -70,6 +70,16 @@ function PlayerSelect.getPlayers()
 			result:deserialize(love.filesystem.read(filename) or "{}")
 			result:getRoot():set({ filename = filename })
 
+			local version = result:getRoot():get("version")
+			if version ~= _ITSYREALM_VERSION then
+				local backupFilename = string.format("%s.%s.bak", filename, version or "default")
+				love.filesystem.write(backupFilename, love.filesystem.read(filename))
+
+				Log.info("Backed up save '%s' to '%s' because new version.", filename, backupFilename)
+			end
+
+			result:getRoot():set({ version = _ITSYREALM_VERSION })
+
 			table.insert(results, result)
 		end
 	end
