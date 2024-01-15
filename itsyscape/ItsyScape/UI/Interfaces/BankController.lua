@@ -1030,7 +1030,7 @@ function BankController:withdraw(e)
 	if inventory and inventory.bank and inventory.inventory then
 		local item = self.items.bank[physicalIndex]
 		if item then
-			inventory.bank:withdraw(inventory.inventory, item:getID(), e.count, e.noted, true)
+			inventory.bank:withdraw(inventory.inventory, item, e.count, e.noted, true)
 		end
 	end
 end
