@@ -126,6 +126,27 @@ do
 	}
 end
 
+M["TemporaryBankChest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 47,
+		PositionY = 0,
+		PositionZ = 47,
+		Name = "TemporaryBankChest",
+		Map = M._MAP,
+		Resource = M["TemporaryBankChest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Default",
+		MapObject = M["TemporaryBankChest"]
+	}
+
+	M["TemporaryBankChest"] {
+		ItsyScape.Action.Bank()
+	}
+end
+
 M["SneakyGuy"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
