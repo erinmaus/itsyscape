@@ -132,7 +132,7 @@ function BankInventoryProvider:withdraw(destination, item, count, noted, clamp)
 			end
 		end
 	else
-		hasStackableItem = true
+		hasStackableItem = false
 	end
 
 	local requiredSpace
@@ -140,7 +140,7 @@ function BankInventoryProvider:withdraw(destination, item, count, noted, clamp)
 		if noted then
 			requiredSpace = 0
 		else
-			requiredSpace = count - 1
+			requiredSpace = count
 		end
 	else
 		if noted then
