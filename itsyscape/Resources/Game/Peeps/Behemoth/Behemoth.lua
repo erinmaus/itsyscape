@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local GroundInventoryProvider = require "ItsyScape.Game.GroundInventoryProvider"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
@@ -20,6 +21,7 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local Face3DBehavior = require "ItsyScape.Peep.Behaviors.Face3DBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
@@ -32,8 +34,8 @@ Behemoth.STATE_STUNNED = "stunned"
 Behemoth.STATE_IDLE    = "idle"
 Behemoth.STATE_KICK    = "kick"
 
-Behemoth.MIN_KICK_TIME = 20
-Behemoth.MAX_KICK_TIME = 30
+Behemoth.MIN_KICK_TIME = 5
+Behemoth.MAX_KICK_TIME = 10
 
 Behemoth.MIN_RISE_TIME = 10
 Behemoth.MAX_RISE_TIME = 15
@@ -269,11 +271,16 @@ function Behemoth:getMapTransform(side)
 	return composedTransform
 end
 
+function Behemoth:onDie()
+	self:pushPoke("dropAll")
+end
+
 function Behemoth:onDropAll()
 	if self.currentState ~= Behemoth.STATE_IDLE then
 		return
 	end
 
+	local stage = self:getDirector():getGameInstance():getStage()
 	local sides = self:getSides()
 
 	for _, side in ipairs(sides) do
@@ -288,6 +295,48 @@ function Behemoth:onDropAll()
 
 			for _, player in ipairs(players) do
 				self:pushPoke("drop", side, player)
+			end
+
+			local ground = stage:getGround(layer)
+			local map = stage:getMap(layer)
+			if ground and map then
+				local inventory = ground:getBehavior(InventoryBehavior)
+				inventory = inventory and inventory.inventory
+
+				if inventory then
+					local broker = inventory:getBroker()
+
+					local items = {}
+					for item in broker:iterateItems(inventory) do
+						table.insert(items, item)
+					end
+
+					for _, item in ipairs(items) do
+						local itemKey = broker:getItemKey(item)
+						local position = map:getTileCenter(itemKey.i, itemKey.j)
+
+						local composedTransform = self:getMapTransform(side)
+						local absolutePosition = Vector(composedTransform:transformPoint(position:get()))
+
+						local parentTransform = Utility.Peep.getParentTransform(self)
+						local localPosition = Vector(parentTransform:inverseTransformPoint(absolutePosition:get()))
+
+						local mineMap = Utility.Peep.getMap(self)
+						local selfLayer = Utility.Peep.getLayer(self)
+						local mineTile = mineMap and mineMap:getTileAt(localPosition.x, localPosition.z)
+
+						local newItemKey
+						if mineTile and mineTile:getIsPassable() then
+							local _, i, j = mineMap:getTileAt(localPosition.x, localPosition.z)
+							newItemKey = GroundInventoryProvider.Key(i, j, selfLayer)
+						else
+							local i, j = Utility.Peep.getTile(self)
+							newItemKey = GroundInventoryProvider.Key(i, j, selfLayer)
+						end
+
+						stage:dropItem(item, item:getCount(), newItemKey)
+					end
+				end
 			end
 		end
 	end
@@ -410,7 +459,7 @@ function Behemoth:onShake()
 	end
 
 	for _, player in instance:iteratePlayers() do
-		player:pokeCamera("shake", 0.25)
+		player:pokeCamera("shake")
 	end
 end
 

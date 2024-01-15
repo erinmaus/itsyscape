@@ -47,7 +47,7 @@ function BehemothMap:ready(director, game)
 	for _, ore in ipairs(ores) do
 		ore:listen("resourceHit", function(_, e)
 			if self.behemoth then
-				self.behemoth:poke("hit", AttackPoke({
+				self.behemoth:pushPoke("hit", AttackPoke({
 					aggressor = e.peep,
 					damage = e.damage
 				}))
@@ -56,7 +56,7 @@ function BehemothMap:ready(director, game)
 
 		ore:listen("resourceObtained", function(_, e)
 			if self.behemoth then
-				self.behemoth:poke("drop", self, e.peep)
+				self.behemoth:pushPoke(0.5, "drop", self, e.peep)
 			end
 		end)
 	end
