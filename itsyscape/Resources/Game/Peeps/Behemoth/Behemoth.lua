@@ -34,8 +34,8 @@ Behemoth.STATE_STUNNED = "stunned"
 Behemoth.STATE_IDLE    = "idle"
 Behemoth.STATE_KICK    = "kick"
 
-Behemoth.MIN_KICK_TIME = 5
-Behemoth.MAX_KICK_TIME = 10
+Behemoth.MIN_KICK_TIME = 20
+Behemoth.MAX_KICK_TIME = 30
 
 Behemoth.MIN_RISE_TIME = 10
 Behemoth.MAX_RISE_TIME = 15
@@ -81,8 +81,8 @@ function Behemoth:ready(director, game)
 	end
 
 	local status = self:getBehavior(CombatStatusBehavior)
-	status.maximumHitpoints = 1500
 	status.currentHitpoints = 1500
+	status.maximumHitpoints = 1500
 	status.maxChaseDistance = math.huge
 
 	local face3D = self:getBehavior(Face3DBehavior)
@@ -276,7 +276,7 @@ function Behemoth:onDie()
 end
 
 function Behemoth:onDropAll()
-	if self.currentState ~= Behemoth.STATE_IDLE then
+	if not (self.currentState == Behemoth.STATE_IDLE or self.currentState == Behemoth.STATE_STUNNED) then
 		return
 	end
 
