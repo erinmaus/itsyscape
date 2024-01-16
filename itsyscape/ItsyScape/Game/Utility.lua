@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local CommonMath = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
@@ -23,6 +24,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local Face3DBehavior = require "ItsyScape.Peep.Behaviors.Face3DBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
@@ -44,6 +46,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 
 -- Contains utility methods for a variety of purposes.
@@ -1354,6 +1357,35 @@ end
 
 Utility.Map = {}
 
+function Utility.Map.getTileRotation(map, i, j)
+	local tile = map:getTile(i, j)
+	local crease = tile:getCrease()
+
+	local E = map:getCellSize() / 2
+	local topLeft = Vector(-E, tile.topLeft, -E)
+	local topRight = Vector(E, tile.topRight, -E)
+	local bottomLeft = Vector(-E, tile.bottomLeft, E)
+	local bottomRight = Vector(E, tile.bottomRight, E)
+
+	if tile.topLeft == tile.bottomLeft and
+	   tile.topLeft > tile.topRight and
+	   tile.bottomLeft > tile.bottomRight
+	then
+		return Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi / 8)
+	elseif tile.topLeft == tile.bottomLeft and
+	   tile.topLeft < tile.topRight and
+	   tile.bottomLeft < tile.bottomRight
+	then
+		return Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 8)
+	elseif tile.topRight ~= tile.bottomLeft then
+		return Quaternion.lookAt(bottomLeft, topRight)
+	elseif tile.topLeft ~= tile.bottomRight then
+		return Quaternion.lookAt(bottomRight, topLeft)
+	else
+		return Quaternion.IDENTITY
+	end
+end
+
 function Utility.Map.playCutscene(peep, resource, cameraName, player, entities)
 	local director = peep:getDirector()
 
@@ -1570,6 +1602,54 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 	return shipLayer, shipScript
 end
 
+-- Gets a random tile within the line of sight of (i, j) no more than 'distance' tiles away (Euclidean)
+-- Returns nil, nil if nothing was found
+function Utility.Map.getRandomTile(map, i, j, distance, checkLineOfSight, ...)
+	if checkLineOfSight == nil then
+		checkLineOfSight = true
+	end
+
+	local m = {}
+
+	for mapJ = 1, map:getHeight() do
+		for mapI = 1, map:getWidth() do
+			local d = math.sqrt((mapI - i) ^ 2 + (mapJ - j) ^ 2)
+			local tile = map:getTile(mapI, mapJ)
+			if (i ~= mapI or j ~= mapJ) and d <= distance and tile:getIsPassable() then
+				table.insert(m, { mapI, mapJ })
+			end
+		end
+	end
+
+	repeat
+		local index = love.math.random(1, #m)
+		local tile = table.remove(m, index)
+
+		local currentI, currentJ = unpack(tile)
+		local isLineOfSightClear = not checkLineOfSight or map:lineOfSightPassable(i, j, currentI, currentJ, ...)
+
+		if isLineOfSightClear then
+			return currentI, currentJ
+		end
+	until #m == 0 
+
+	return nil, nil
+end
+
+-- Gets a random position within the line of sight of position no more than 'distance' units away (Euclidean)
+-- Returns nil if nothing was found
+-- May round 'distance' to the nearest tile size
+function Utility.Map.getRandomPosition(map, position, distance, checkLineOfSight, ...)
+	local _, tileI, tileJ = map:getTileAt(position.x, position.z)
+	local i, j = Utility.Map.getRandomTile(map, tileI, tileJ, math.max(distance / map:getCellSize(), math.sqrt(2)), checkLineOfSight, ...)
+
+	if i and j then
+		return map:getTileCenter(i, j)
+	end
+
+	return nil
+end
+
 Utility.Peep = {}
 
 function Utility.Peep.talk(peep, message, ...)
@@ -1753,6 +1833,15 @@ end
 
 function Utility.Peep.getMapTransform(peep)
 	local transform = love.math.newTransform()
+
+	do
+		local transformOverride = peep:getBehavior(TransformBehavior)
+		if transformOverride then
+			transform:apply(transformOverride.transform)
+			return transform
+		end
+	end
+
 	do
 		local position = peep:getBehavior(PositionBehavior)
 		if position then
@@ -2417,7 +2506,7 @@ function Utility.Peep.isAttackable(peep)
 
 	local function isAttackable(r)
 		if r then
-			local actions = Utility.getActions(peep:getDirector():getGameInstance(), r, 'world')
+			local actions = Utility.getActions(peep:getDirector():getGameInstance(), r)
 			for i = 1, #actions do
 				if actions[i].instance:is("Attack") or actions[i].instance:is("InvisibleAttack") then
 					return true
@@ -2537,32 +2626,8 @@ end
 function Utility.Peep.getTileRotation(peep)
 	local i, j = Utility.Peep.getTile(peep)
 	local map = Utility.Peep.getMap(peep)
-	local tile = map:getTile(i, j)
-	local crease = tile:getCrease()
 
-	local E = map:getCellSize() / 2
-	local topLeft = Vector(-E, tile.topLeft, -E)
-	local topRight = Vector(E, tile.topRight, -E)
-	local bottomLeft = Vector(-E, tile.bottomLeft, E)
-	local bottomRight = Vector(E, tile.bottomRight, E)
-
-	if tile.topLeft == tile.bottomLeft and
-	   tile.topLeft > tile.topRight and
-	   tile.bottomLeft > tile.bottomRight
-	then
-		return Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi / 8)
-	elseif tile.topLeft == tile.bottomLeft and
-	   tile.topLeft < tile.topRight and
-	   tile.bottomLeft < tile.bottomRight
-	then
-		return Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 8)
-	elseif tile.topRight ~= tile.bottomLeft then
-		return Quaternion.lookAt(bottomLeft, topRight)
-	elseif tile.topLeft ~= tile.bottomRight then
-		return Quaternion.lookAt(bottomRight, topLeft)
-	else
-		return Quaternion.IDENTITY
-	end
+	return Utility.Map.getTileRotation(map, i, j)
 end
 
 function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
@@ -2625,9 +2690,9 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 		end
 
 		if t.asCloseAsPossible then
-			return ExecutePathCommand(path, 0)
+			return ExecutePathCommand(path, 0), path
 		else
-			return ExecutePathCommand(path, distance)
+			return ExecutePathCommand(path, distance), path
 		end
 	end
 
@@ -2662,13 +2727,19 @@ function Utility.Peep.lookAt(self, target, delta)
 			peepPosition = Utility.Peep.getAbsolutePosition(target)
 		end
 
+		local selfMapTransform = Utility.Peep.getParentTransform(self)
+		local _, mapRotation = CommonMath.decomposeTransform(selfMapTransform)
+
 		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
-		rotation.rotation = (Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal())
+		local r = Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal()
+		r = (r * -mapRotation):getNormal()
 
 		if delta then
-			rotation.rotation = Quaternion.IDENTITY:slerp(rotation.rotation, delta):getNormal()
+			rotation.rotation = rotation.rotation:slerp(r, delta):getNormal()
+		else
+			rotation.rotation = r
 		end
 
 		return true
@@ -2678,6 +2749,13 @@ function Utility.Peep.lookAt(self, target, delta)
 end
 
 function Utility.Peep.face3D(self)
+	if not self:hasBehavior(Face3DBehavior) then
+		local _, face3D = self:addBehavior(Face3DBehavior)
+		face3D.rotation = self:hasBehavior(RotationBehavior) and self:getBehavior(RotationBehavior).rotation or face3D.rotation
+	end
+
+	local face3D = self:getBehavior(Face3DBehavior)
+
 	local combatTarget = self:getBehavior(CombatTargetBehavior)
 	if combatTarget and combatTarget.actor then
 		local actor = combatTarget.actor
@@ -2698,8 +2776,19 @@ function Utility.Peep.face3D(self)
 				local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
 				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 				local xzTilePosition = tilePosition * Vector.PLANE_XZ
+				local direction = (xzSelfPosition - xzTilePosition):getNormal()
 
-				rotation.rotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition):getNormal()
+				if (direction - face3D.direction):getLength() > 0.01 then
+					face3D.rotation = rotation.rotation
+					face3D.time = love.timer.getTime()
+					face3D.direction = direction
+				end
+
+				local delta = math.min((love.timer.getTime() - face3D.time) / face3D.duration, 1)
+
+				local targetRotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition)
+				rotation.rotation = face3D.rotation:slerp(targetRotation, delta):getNormal()
+
 				return true
 			end
 		end
@@ -2752,7 +2841,14 @@ end
 function Utility.Peep.getResource(peep)
 	local resource = peep:getBehavior(MappResourceBehavior)
 	if resource then
-		return resource.resource
+		if resource.resource and peep:getIsReady() then
+			local brochure = peep:getDirector():getGameDB():getBrochure()
+			local resourceType = brochure:getResourceTypeFromResource(resource.resource)
+
+			return resource.resource, resourceType
+		end
+
+		return resource.resource, nil
 	else
 		return false
 	end
@@ -3388,11 +3484,11 @@ end
 function Utility.Peep.Attackable:onHeal(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if combat and combat.currentHitpoints >= 0 then
-		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints, 0)
+		local newHitPoints = combat.currentHitpoints + math.max(p.hitPoints or p.hitpoints or 0, 0)
 		if not p.zealous then
 			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints)
 		else
-			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints + p.hitPoints)
+			newHitPoints = math.min(newHitPoints, combat.maximumHitpoints + (p.hitPoints or p.hitpoints or 0))
 		end
 
 		combat.currentHitpoints = newHitPoints
@@ -3479,7 +3575,7 @@ function Utility.Peep.Attackable:onDie(p)
 	if Utility.Boss.isBoss(self) then
 		local gameDB = self:getDirector():getGameDB()
 
-		local isDead = false
+		local isDead = true
 		do
 			local mapObject = Utility.Peep.getMapObject(self)
 			if mapObject then
@@ -3534,6 +3630,11 @@ function Utility.Peep.Attackable:onResurrect()
 	if status then
 		status.damage = {}
 		status.dead = false
+	end
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor.actor:stopAnimation("combat-die")
 	end
 end
 

@@ -344,12 +344,16 @@ function ActorView:playAnimation(slot, animation, priority, time)
 
 			self.animations[slot] = a
 			self:sortAnimations()
+			self:updateAnimations(0)
 		end)
 
 		self.animations[slot] = a
 	else
-		self.animations[slot] = nil
-		self:sortAnimations()
+		self.game:getResourceManager():queueEvent(function()
+			self.animations[slot] = nil
+			self:sortAnimations()
+			self:updateAnimations(0)
+		end)
 	end
 end
 
@@ -392,6 +396,16 @@ function ActorView:_doApplySkin(slotNodes)
 				else
 					local translucentTexture = self.game:getTranslucentTexture()
 					slot.sceneNode:getMaterial():setTextures(translucentTexture)
+				end
+
+				local shaderCacheRef = slot.instance:getShader()
+				if shaderCacheRef then
+					local shaderResource = resourceManager:loadCacheRef(shaderCacheRef)
+					slot.sceneNode:getMaterial():setShader(shaderResource)
+
+					if coroutine.running() then
+						coroutine.yield()
+					end
 				end
 
 				if slot.instance:getIsTranslucent() then
@@ -497,6 +511,18 @@ function ActorView:transmogrify(body)
 	for _, slotNodes in pairs(self.skins) do
 		self:applySkin(slotNodes)
 	end
+end
+
+function ActorView:getSkeleton()
+	return self.body and self.body:getSkeleton()
+end
+
+function ActorView:getSkins(slot)
+	if not slot then
+		return self.skins
+	end
+
+	return self.skins[slot]
 end
 
 function ActorView:changeSkin(slot, priority, skin)
@@ -628,9 +654,11 @@ function ActorView:update(delta)
 	self.animatable:update()
 end
 
-function ActorView:getLocalBoneTransform(boneName)
+function ActorView:getLocalBoneTransform(boneName, rotation)
+	rotation = rotation or -Quaternion.X_90
+
 	local transform = love.math.newTransform()
-	transform:applyQuaternion((-Quaternion.X_90):get())
+	transform:applyQuaternion(rotation:get())
 
 	if not self.localTransforms then
 		return transform
@@ -640,6 +668,40 @@ function ActorView:getLocalBoneTransform(boneName)
 	local skeleton = self.animatable:getSkeleton()
 
 	return skeleton:getLocalBoneTransform(boneName, transforms, transform)
+end
+
+function ActorView:getBoneWorldPosition(boneName, position, rotation)
+	position = position or Vector.ZERO
+	rotation = rotation or Quaternion.IDENTITY
+
+	local nodeTransform = self.sceneNode:getTransform():getGlobalTransform()
+	local boneTransform = self:getLocalBoneTransform(boneName)
+	local inverseBindPoseTransform = self:getSkeleton():getBoneByName(boneName):getInverseBindPose()
+
+	local composedTransform = love.math.newTransform()
+	composedTransform:apply(nodeTransform)
+	composedTransform:applyQuaternion(rotation:get())
+	composedTransform:apply(boneTransform)
+	composedTransform:apply(inverseBindPoseTransform)
+	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
+
+	return Vector(composedTransform:transformPoint(position:get()))
+end
+
+function ActorView:nextAnimation(animation)
+	local oldID = animation.id
+
+	animation.cacheRef = animation.next.cacheRef
+	animation.definition = animation.next.definition
+	animation.instance = animation.definition:play(self.animatable)
+	animation.time = animation.next.time or 0
+	animation.priority = animation.next.priority or -math.huge
+	animation.next = nil
+	animation.id = self.animatable:addPlayingAnimation(animation.instance, animation.time)
+
+	self.animatable:removePlayingAnimation(oldID)
+
+	animation.done = animation.instance:play(animation.time)
 end
 
 function ActorView:updateAnimations(delta)
@@ -654,27 +716,17 @@ function ActorView:updateAnimations(delta)
 		animation.time = animation.time + delta
 		if animation.done then
 			if animation.next then
-				local oldID = animation.id
-
-				animation.cacheRef = animation.next.cacheRef
-				animation.definition = animation.next.definition
-				animation.instance = animation.definition:play(self.animatable)
-				animation.time = animation.next.time or 0
-				animation.priority = animation.next.priority or -math.huge
-				animation.next = nil
-				animation.id = self.animatable:addPlayingAnimation(animation.instance, animation.time)
-
-				self.animatable:removePlayingAnimation(oldID)
+				self:nextAnimation(animation)
 			else
 				self.animatable:removePlayingAnimation(animation.id)
-
 				self.animations[slot] = nil
 				self.actor:onAnimationPlayed(slot, false)
 			end
-
-			animation.done = false
 		else
 			animation.done = animation.instance:play(animation.time, animation.next ~= nil)
+			if animation.done and animation.next then
+				self:nextAnimation(animation)
+			end
 		end
 	end
 

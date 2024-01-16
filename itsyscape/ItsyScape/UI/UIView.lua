@@ -615,6 +615,7 @@ itsyrealm.graphics.disabled.getPseudoScissor = itsyrealm.graphics.getPseudoSciss
 
 itsyrealm.graphics.disabled.drawq = love.graphics.draw
 itsyrealm.graphics.disabled.uncachedDraw = love.graphics.draw
+itsyrealm.graphics.disabled.uncachedDrawLayer = love.graphics.drawLayer
 
 --if love.system.getOS() ~= "OS X" and (not jit or jit.arch == "arm64") then
 	Log.info(

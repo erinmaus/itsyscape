@@ -36,7 +36,7 @@ function GatherResourceCommand:new(prop, tool, callback, t)
 end
 
 function GatherResourceCommand:getIsFinished()
-	return self.isFinished and self.time > self.cooldown
+	return self.isFinished
 end
 
 function GatherResourceCommand:onResourceObtained(peep, e)

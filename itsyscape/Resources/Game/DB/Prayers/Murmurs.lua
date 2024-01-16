@@ -290,7 +290,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Prayer {
-	Drain = 50,
+	Drain = 25,
 	Style = "All",
 	Resource = ItsyScape.Resource.Effect "GammonsGrace"
 }
@@ -317,7 +317,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Prayer {
-	Drain = 50,
+	Drain = 25,
 	Style = "All",
 	Resource = ItsyScape.Resource.Effect "PrisiumsProtection"
 }
@@ -344,7 +344,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.Prayer {
-	Drain = 50,
+	Drain = 25,
 	Style = "All",
 	Resource = ItsyScape.Resource.Effect "BastielsBarricade"
 }

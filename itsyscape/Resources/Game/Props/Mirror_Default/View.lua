@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
 local PropView = require "ItsyScape.Graphics.PropView"
@@ -25,16 +26,6 @@ MirrorView.HEIGHT = 256
 MirrorView.Camera = Class(ThirdPersonCamera)
 function MirrorView.Camera:new()
 	ThirdPersonCamera.new(self)
-
-	self.forward = -Vector.UNIT_Z
-end
-
-function MirrorView.Camera:getForward()
-	return self.forward
-end
-
-function MirrorView.Camera:setForward(value)
-	self.forward = value
 end
 
 function MirrorView:new(prop, gameView)
@@ -115,14 +106,18 @@ function MirrorView:tick()
 	local rootTransform = self:getRoot():getTransform()
 	local rootPosition = Vector(rootTransform:getGlobalTransform():transformPoint(0, 0, 0))
 	local rootRotation = rootTransform:getLocalRotation()
-	local forwardVector = rootRotation:transformVector(Vector.UNIT_Z)
-	selfCamera:setForward(forwardVector)
-	selfCamera:setPosition(rootPosition - forwardVector + Vector.UNIT_Y)
+	local forwardVector = rootRotation:transformVector(Vector.UNIT_Z * 2)
+	selfCamera:setPosition(rootPosition + forwardVector + Vector.UNIT_Y)
 
 	selfCamera:setFieldOfView(parentCamera:getFieldOfView())
 	selfCamera:setNear(parentCamera:getNear())
 	selfCamera:setFar(parentCamera:getFar())
-	selfCamera:setDistance(0.1)
+	selfCamera:setHorizontalRotation(0)
+	selfCamera:setVerticalRotation(math.pi / 2)
+	selfCamera:setDistance(5)
+	selfCamera:setRotation((rootRotation * Quaternion.X_180 * Quaternion.Y_180):getNormal())
+	selfCamera:setWidth(MirrorView.WIDTH)
+	selfCamera:setHeight(MirrorView.HEIGHT)
 
 	do
 		if self.mirrorNode then self.mirrorNode:setParent(nil) end

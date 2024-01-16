@@ -101,13 +101,15 @@ end
 function NoiseBuilder:sampleTestImage(width, height, z, w)
 	local data = love.image.newImageData(width, height)
 
-	for i = 1, width do
-		for j = 1, height do
-			local value = self:sample4D(i / width, z or 0, j / height, w or 0)
-			value = ((value / self.amplitude) + 1) / 2
-			data:setPixel(i - 1, j - 1, value, value, value, 1)
-		end
-	end
+	data:mapPixel(function(i, j)
+		i = i + 1
+		j = j + 1
+
+		local value = self:sample4D(i / width, z or 0, j / height, w or 0)
+		value = ((value / self.amplitude) + 1) / 2
+
+		return value, value, value, 1
+	end)
 
 	return data
 end

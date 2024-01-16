@@ -398,6 +398,8 @@ function ItemBroker.Transaction:unnote(item, count)
 		local destination = self.broker:getItemProvider(item)
 		local inventory = self.broker.inventories[destination]
 
+		local serializedUserdata = item:getSerializedUserdata()
+
 		if count >= item:getCount() then
 			self.items[item:getRef()] = item
 			self.broker:removeItem(item)
@@ -423,6 +425,7 @@ function ItemBroker.Transaction:unnote(item, count)
 
 		for i = 1, #items do
 			self.items[items[i]:getRef()] = items[i]
+			items[i]:setUserdata(serializedUserdata)
 		end
 
 		local s, r = pcall(destination.onUnnote, destination, item, items)

@@ -9,11 +9,16 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.Peep "ChestMimic" {
-	-- Nothing.
+	ItsyScape.Action.Attack()
 }
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.ChestMimic.BaseChestMimic",
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.ResourceTag {
+	Value = "Mimic",
 	Resource = ItsyScape.Resource.Peep "ChestMimic"
 }
 
@@ -26,6 +31,56 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.ResourceDescription {
 	Value = "Well it's very obvious, isn't it?",
 	Language = "en-US",
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Value = ItsyScape.Utility.xpForLevel(55),
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Strength",
+	Value = ItsyScape.Utility.xpForLevel(65),
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Archery",
+	Value = ItsyScape.Utility.xpForLevel(55),
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Dexterity",
+	Value = ItsyScape.Utility.xpForLevel(65),
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Value = ItsyScape.Utility.xpForLevel(50),
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.PeepStat {
+	Skill = ItsyScape.Resource.Skill "Constitution",
+	Value = ItsyScape.Utility.xpForLevel(200),
+	Resource = ItsyScape.Resource.Peep "ChestMimic"
+}
+
+ItsyScape.Meta.Equipment {
+	AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(60),
+	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(60),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(25),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(65),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(65),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(25),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(25),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(45),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(45),
+	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "ChestMimic"
 }
 
@@ -75,7 +130,7 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyStab = ItsyScape.Utility.styleBonusForItem(60),
+	AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(60),
 	DefenseStab = ItsyScape.Utility.styleBonusForItem(20),
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(30),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(30),
@@ -85,8 +140,6 @@ ItsyScape.Meta.Equipment {
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 	Resource = ItsyScape.Resource.Peep "ChestMimic_Weak_Base"
 }
-
-
 
 -- Memes.
 do

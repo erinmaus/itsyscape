@@ -26,6 +26,16 @@ function BasicTorch:new(...)
 	self.isLit = true
 end
 
+function BasicTorch:spawnOrPoofTile(tile, i, j, mode)
+	if mode == 'spawn' then
+		tile:pushFlag('impassable')
+		tile:pushFlag('shoot')
+	elseif mode == 'poof' then
+		tile:popFlag('impassable')
+		tile:popFlag('shoot')
+	end
+end
+
 function BasicTorch:getIsLit()
 	return self.isLit
 end

@@ -488,7 +488,7 @@ public:
 
 		auto t = table.get_or("textures", sol::table(L, sol::create));
 		min_texture_index = t.get_or(1, 1);
-		max_texture_index = t.get_or(1, min_texture_index);
+		max_texture_index = t.get_or(2, min_texture_index);
 	}
 
 	void update(nbunny::Particle& p, float delta)

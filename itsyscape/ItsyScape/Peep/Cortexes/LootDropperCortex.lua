@@ -41,7 +41,7 @@ function LootDropperCortex:onDie(peep, p)
 
 	if not mapObject or
 	   not mapObject.mapObject or
-	   not self:tryDrop(mapObject.mapObject)
+	   not self:tryDrop(peep, mapObject.mapObject)
 	then
 		if resource and resource.resource then
 			self:tryDrop(peep, resource.resource)

@@ -22,7 +22,7 @@ local Tree = BTreeBuilder.Node() {
 			-- Do nothing when moving
 			Mashina.Check {
 				condition = function(peep)
-					return peep:isMoving()
+					return peep:hasTarget()
 				end
 			},
 
@@ -31,22 +31,22 @@ local Tree = BTreeBuilder.Node() {
 					-- Find target if and only if NOT moving
 					Mashina.Check {
 						condition = function(peep)
-							return not peep:isMoving()
+							return not peep:hasTarget()
 						end
 					},
 
 					Mashina.Peep.FindNearbyCombatTarget {
 						include_npcs = true,
-						distance = 12,
+						distance = math.huge,
 						filter = function(peep)
 							local isTarget = peep:hasBehavior(PlayerBehavior) or peep:hasBehavior(FollowerBehavior)
-							local isAggressive = peep:hasBehavior(CombatTargetBehavior)
-							return isTarget and isAggressive
+							return isTarget
 						end,
 						[TARGET] = B.Output.result
 					},
 
 					Mashina.Peep.PokeSelf {
+						time = 2.4,
 						event = "startRoll",
 						poke = TARGET
 					}

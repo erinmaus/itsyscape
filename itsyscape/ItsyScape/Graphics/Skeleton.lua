@@ -281,7 +281,7 @@ function Skeleton:loadFromTable(t)
 	end
 end
 
-function Skeleton:getLocalBoneTransform(boneName, transforms, transform)
+function Skeleton:getLocalBoneTransform(boneName, transforms, transform, a)
 	transform = transform or love.math.newTransform()
 
 	local boneIndex = self:getBoneIndex(boneName)
@@ -294,7 +294,6 @@ function Skeleton:getLocalBoneTransform(boneName, transforms, transform)
 			table.insert(parents, 1, boneIndex)
 
 			boneIndex = bone:getParentIndex()
-			bone = self:getBoneByIndex(boneIndex)
 		end
 	until not bone
 

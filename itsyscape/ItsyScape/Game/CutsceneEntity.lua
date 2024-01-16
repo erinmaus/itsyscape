@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Tween = require "ItsyScape.Common.Math.Tween"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
@@ -16,6 +17,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
 local CutsceneEntity = Class()
 
@@ -36,9 +38,6 @@ function CutsceneEntity:fireProjectile(target, projectile)
 			target = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, target))
 		elseif Class.isCompatibleType(target, CutsceneEntity) then
 			target = target:getPeep()
-		else
-			-- Bail out early and don't do anything.
-			return
 		end
 
 		local stage = self.peep:getDirector():getGameInstance():getStage()
@@ -207,10 +206,18 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 		tween = Tween[tween or 'linear'] or Tween.linear
 
 		local mapResource = Utility.Peep.getMapResource(self.peep)
-		local anchorPosition = Vector(
-			Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+		local anchorPosition
+		if Class.isCompatibleType(anchor, Vector) then
+			anchorPosition = anchor
+		else
+			anchorPosition = Vector(
+				Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+		end
 
 		local movement = self.peep:getBehavior(MovementBehavior)
+		local previousNoClipValue = movement.noClip
+		movement.noClip = true
+
 		local peepPosition = Utility.Peep.getPosition(self.peep)
 
 		if anchorPosition.x < peepPosition.x then
@@ -238,6 +245,8 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 				distance = (anchorPosition - newPosition):getLength()
 				coroutine.yield()
 			until distance <= E
+
+			movement.noClip = previousNoClipValue
 		end
 	end
 end
@@ -248,8 +257,14 @@ function CutsceneEntity:lerpScale(anchor, duration, tween)
 		tween = Tween[tween or 'linear'] or Tween.linear
 
 		local mapResource = Utility.Peep.getMapResource(self.peep)
-		local anchorScale = Vector(
-			Utility.Map.getAnchorScale(self.game, mapResource, anchor))
+		local anchorScale
+		if Class.isCompatibleType(anchor, Vector) then
+			anchorScale = anchor
+		else
+			anchorScale = Vector(
+				Utility.Map.getAnchorScale(self.game, mapResource, anchor))
+		end
+
 		local peepScale = Utility.Peep.getScale(self.peep)
 
 		local currentTime
@@ -269,6 +284,46 @@ function CutsceneEntity:lerpScale(anchor, duration, tween)
 				local newScale = Utility.Peep.getScale(self.peep):lerp(anchorScale, self.game:getDelta())
 				Utility.Peep.setScale(self.peep, newScale)
 				distance = (anchorScale - newScale):getLength()
+				coroutine.yield()
+			until distance <= E
+		end
+	end
+end
+
+function CutsceneEntity:slerpRotation(anchor, duration, tween)
+	return function()
+		local E = 0.01
+		tween = Tween[tween or 'linear'] or Tween.linear
+
+		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+		local anchorRotation
+		if type(anchor) == "table" and Class.isCompatibleType(anchor, Quaternion) then
+			anchorRotation = anchor
+		else
+			anchorRotation = Quaternion(
+				Utility.Map.getAnchorRotation(self.game, mapResource, anchor))
+		end
+
+		local peepRotation = Utility.Peep.getRotation(self.peep)
+
+		local currentTime
+		if duration then
+			repeat
+				currentTime = (currentTime or 0) + self.game:getDelta()
+
+				local delta = currentTime / duration
+				local newRotation = peepRotation:slerp(anchorRotation, tween(delta)):getNormal()
+				Utility.Peep.setRotation(self.peep, newRotation)
+
+				coroutine.yield()
+			until currentTime > duration
+		else
+			local distance
+			repeat
+				local newRotation = Utility.Peep.getRotation(self.peep):slerp(anchorRotation, self.game:getDelta())
+				Utility.Peep.setRotation(self.peep, newRotation)
+				distance = (anchorRotation - newRotation):getLength()
+
 				coroutine.yield()
 			until distance <= E
 		end

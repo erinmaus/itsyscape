@@ -25,6 +25,21 @@ function CutsceneMap:new(peep)
 	self.game = peep:getDirector():getGameInstance()
 end
 
+function CutsceneMap:getPosition(anchor)
+	local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+	return Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchors))
+end
+
+function CutsceneMap:getScale(anchor)
+	local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+	return Quaternion(Utility.Map.getAnchorScale(self.game, mapResource, anchors))
+end
+
+function CutsceneMap:getRotation(anchor)
+	local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+	return Vector(Utility.Map.getAnchorRotation(self.game, mapResource, anchors))
+end
+
 function CutsceneMap:sail(anchors, duration, tween)
 	return function()
 		tween = Tween[tween or 'linear'] or Tween.linear

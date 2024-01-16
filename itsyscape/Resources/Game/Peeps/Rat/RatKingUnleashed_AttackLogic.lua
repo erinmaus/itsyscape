@@ -20,7 +20,9 @@ local Tree = BTreeBuilder.Node() {
 			Mashina.Step {
 				Mashina.Invert {
 					Mashina.Peep.FindNearbyPeep {
-						filter = Probe.resource("Peep", "RatKingsJester"),
+						filters = {
+							Probe.resource("Peep", "RatKingsJester"),
+						},
 						distance = math.huge,
 						[JESTER] = B.Output.result
 					}

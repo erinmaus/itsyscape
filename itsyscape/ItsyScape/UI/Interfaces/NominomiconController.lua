@@ -200,18 +200,25 @@ function NominomiconController:buildBosses()
 			Category = area:get("Category")
 		})
 
+
+		local hit = {}
+
 		for _, boss in ipairs(bossRecords) do
 			local bossResource = boss:get("Boss")
-			local killCount = Utility.Boss.getKillCount(self:getPeep(), bossResource)
-			local b = {
-				name = Utility.getName(bossResource, gameDB),
-				description = Utility.getDescription(bossResource, gameDB),
-				count = killCount,
-				isSpecial = boss:get("RequireKill") ~= 0,
-				items = self:buildBossDrops(bossResource)
-			}
+			if not hit[bossResource.id.value] then
+				local killCount = Utility.Boss.getKillCount(self:getPeep(), bossResource)
+				local b = {
+					name = Utility.getName(bossResource, gameDB),
+					description = Utility.getDescription(bossResource, gameDB),
+					count = killCount,
+					isSpecial = boss:get("RequireKill") ~= 0,
+					items = self:buildBossDrops(bossResource)
+				}
 
-			table.insert(a.bosses, b)
+				table.insert(a.bosses, b)
+
+				hit[bossResource.id.value] = true
+			end
 		end
 
 

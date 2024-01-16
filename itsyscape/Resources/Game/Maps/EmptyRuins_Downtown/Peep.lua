@@ -11,8 +11,10 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 
 local Downtown = Class(Map)
 Downtown.SISTINE_LOCATION = Vector(0, 0, -128)
@@ -45,6 +47,39 @@ function Downtown:onLoad(filename, args, layer)
 	self.sistineLayer = sistineLayer
 
 	self:initTrailerBattlefield()
+end
+
+function Downtown:onPlayerEnter(player)
+	self:pushPoke("attachPlayer", player)
+	player:pokeCamera("mapRotationStick")
+end
+
+function Downtown:onPlayerLeave(player)
+	player:pokeCamera("mapRotationUnstick")
+end
+
+function Downtown:onAttachPlayer(player)
+	local behemoth = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", "Behemoth"))[1]
+	if behemoth then
+		Utility.UI.openInterface(
+			player:getActor():getPeep(),
+			"BossHUD",
+			false,
+			behemoth)
+
+		local stage = self:getDirector():getGameInstance():getStage()
+		stage:playMusic(self:getLayer(), "main", "BossFight1")
+	end
+
+	local maps = self:getDirector():probe(self:getLayerName(), Probe.resource("Prop", "BehemothMap"))
+
+	for i = 1, #maps do
+		local map = maps[i]
+		local portal = map:getBehavior(TeleportalBehavior)
+
+		Utility.Peep.setLayer(player:getActor():getPeep(), portal.layer)
+		Utility.Peep.setPosition(player:getActor():getPeep(), Vector(0, 0, 0))
+	end
 end
 
 Downtown.TRAILER_ENEMIES = {

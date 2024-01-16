@@ -29,6 +29,7 @@ function BasicTree:new(...)
 	self:addPoke('chopped')
 	self:addPoke('shake')
 	self:addPoke('resourceObtained')
+	self:addPoke('replenished')
 end
 
 function BasicTree:spawnOrPoofTile(tile, i, j, mode)
@@ -58,6 +59,8 @@ function BasicTree:ready(director, game)
 			end
 		end
 	end
+
+	self:poke("replenished")
 end
 
 function BasicTree:onResourceHit(e)
@@ -139,6 +142,8 @@ function BasicTree:update(director, game)
 			self.spawnCooldown = nil
 			
 			self:removeBehavior(GatheredResourceBehavior)
+
+			self:poke("replenished")
 		else
 			self.spawnCooldown = self.spawnCooldown - game:getDelta()
 		end
