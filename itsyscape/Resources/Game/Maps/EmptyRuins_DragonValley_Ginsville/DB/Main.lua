@@ -6,7 +6,7 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Ginsville Ruins",
+	Value = "Old Ginsville Ruins",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -804,5 +804,47 @@ do
 		Name = "CameraDolly",
 		Cutscene = Cutscene,
 		Resource = M["Trailer_CameraDolly"]
+	}
+end
+
+M["Portal_Temp_ToViziersRock"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 30,
+		PositionY = 4,
+		PositionZ = 93,
+		Name = "Portal_Temp_ToViziersRock",
+		Map = M._MAP,
+		Resource = M["Portal_Temp_ToViziersRock"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 2,
+		SizeZ = 3.5,
+		MapObject = M["Portal_Temp_ToViziersRock"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_Temp_ToViziersRock"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier's Rock (temporary)",
+		Language = "en-US",
+		Resource = M["Portal_Temp_ToViziersRock"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "SneakyGuy",
+		Map = ItsyScape.Resource.Map "ViziersRock_Town_Center_Floor2",
+		Action = TravelAction
+	}
+
+	M["Portal_Temp_ToViziersRock"] {
+		TravelAction
 	}
 end

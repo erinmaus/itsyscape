@@ -131,6 +131,48 @@ do
 	}
 end
 
+M["Portal_Temp_ToViziersRock"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 0,
+		PositionZ = 5,
+		Name = "Portal_Temp_ToViziersRock",
+		Map = M._MAP,
+		Resource = M["Portal_Temp_ToViziersRock"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 2,
+		SizeZ = 3.5,
+		MapObject = M["Portal_Temp_ToViziersRock"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_Temp_ToViziersRock"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier's Rock (temporary)",
+		Language = "en-US",
+		Resource = M["Portal_Temp_ToViziersRock"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "SneakyGuy",
+		Map = ItsyScape.Resource.Map "ViziersRock_Town_Center_Floor2",
+		Action = TravelAction
+	}
+
+	M["Portal_Temp_ToViziersRock"] {
+		TravelAction
+	}
+end
+
 M["Behemoth"] = ItsyScape.Resource.MapObject.Unique()
 do
 	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
@@ -236,6 +278,64 @@ do
 		Tree = "Resources/Game/Maps/EmptyRuins_DragonValley_Mine/Scripts/Mimic_IdleLogic.lua",
 		IsDefault = 1,
 		Resource = M["CrateMimic"]
+	}
+end
+
+M["Entrance1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 0,
+		PositionZ = 92.125,
+		Name = "Entrance1",
+		Map = M._MAP,
+		Resource = M["Entrance1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Entrance",
+		MapObject = M["Entrance1"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mt. Vazikerl mines exit",
+		Language = "en-US",
+		Resource = M["Entrance1"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Takes you back to Old Ginsville.",
+		Language = "en-US",
+		Resource = M["Entrance1"]
+	}
+end
+
+M["Entrance2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55,
+		PositionY = 0,
+		PositionZ = 4,
+		Name = "Entrance2",
+		Map = M._MAP,
+		Resource = M["Entrance2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Entrance",
+		MapObject = M["Entrance2"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mt. Vazikerl",
+		Language = "en-US",
+		Resource = M["Entrance2"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Takes you back to the base of Mt. Vazikerl... There be dragons!",
+		Language = "en-US",
+		Resource = M["Entrance2"]
 	}
 end
 
