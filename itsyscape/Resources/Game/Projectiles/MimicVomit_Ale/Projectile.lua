@@ -70,4 +70,6 @@ Ale.PARTICLE_SYSTEM = {
 
 Ale.LIGHT_COLOR = Color.fromHexString("e3dedb")
 
+Ale.ANIMATION = "SFX_Mimic_Ale"
+
 return Ale

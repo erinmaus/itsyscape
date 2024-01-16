@@ -3573,7 +3573,6 @@ function Utility.Peep.Attackable:onDie(p)
 	end
 
 	if Utility.Boss.isBoss(self) then
-		print(">>>> is boss!")
 		local gameDB = self:getDirector():getGameDB()
 
 		local isDead = true
