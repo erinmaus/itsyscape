@@ -66,4 +66,6 @@ Planks.PARTICLE_SYSTEM = {
 
 Planks.LIGHT_COLOR = Color.fromHexString("000000")
 
+Planks.ANIMATION = "SFX_Mimic_Planks"
+
 return Planks

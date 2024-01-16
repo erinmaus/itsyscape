@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Actor = require "ItsyScape.Game.Model.Actor"
 local Projectile = require "ItsyScape.Graphics.Projectile"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 
@@ -160,6 +161,7 @@ end
 function Nuke:tick()
 	if not self.spawnPosition then
 		self.spawnPosition = self:getTargetPosition(self:getDestination())
+		self:playAnimation(self:getDestination(), "SFX_Nuke")
 	end
 end
 

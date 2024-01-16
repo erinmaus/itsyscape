@@ -68,6 +68,14 @@ function MimicVomitCommon:update(elapsed)
 		local alpha = 1
 		if delta > 0.5 then
 			alpha = 1 - (delta - 0.5) / 0.5
+
+			if not self.playedSoundEffect then
+				if self.ANIMATION then
+					self:playAnimation(self:getDestination(), self.ANIMATION)
+				end
+
+				self.playedSoundEffect = true
+			end
 		end
 
 		self.particleSystem:getTransform():setLocalOffset(position)

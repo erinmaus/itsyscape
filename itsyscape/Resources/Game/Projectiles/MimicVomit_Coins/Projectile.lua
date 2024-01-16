@@ -71,4 +71,6 @@ Coins.PARTICLE_SYSTEM = {
 
 Coins.LIGHT_COLOR = Color.fromHexString("ffaa00")
 
+Coins.ANIMATION = "SFX_Mimic_Coins"
+
 return Coins

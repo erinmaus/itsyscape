@@ -28,4 +28,8 @@ function MimicPickaxe:onDequip(peep)
 	Pickaxe.onDequip(self, peep)
 end
 
+function MimicPickaxe:getCooldown()
+	return 1
+end
+
 return MimicPickaxe

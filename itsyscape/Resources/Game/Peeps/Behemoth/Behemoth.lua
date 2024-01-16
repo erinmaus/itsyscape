@@ -461,6 +461,17 @@ function Behemoth:onShake()
 	for _, player in instance:iteratePlayers() do
 		player:pokeCamera("shake")
 	end
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return
+	end
+
+	local soundEffectAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Behemoth_Earthquake/Script.lua")
+	actor:playAnimation("x-behemoth-sfx", 0, soundEffectAnimation)
 end
 
 function Behemoth:onStun()

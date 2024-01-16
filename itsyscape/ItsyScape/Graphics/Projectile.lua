@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local CacheRef = require "ItsyScape.Game.CacheRef"
 local Prop = require "ItsyScape.Game.Model.Prop"
 local Actor = require "ItsyScape.Game.Model.Actor"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
@@ -72,6 +73,15 @@ end
 
 function Projectile:getDestination()
 	return self.destination
+end
+
+function Projectile:playAnimation(target, animation)
+	if Class.isCompatibleType(target, Actor) then
+		local filename = string.format("Resources/Game/Animations/%s/Script.lua", animation)
+		local cacheRef = CacheRef("ItsyScape.Graphics.AnimationResource", filename)
+
+		target:onAnimationPlayed("x-projectile-sfx", 0, cacheRef)
+	end
 end
 
 function Projectile:getTargetPosition(target, offset)
