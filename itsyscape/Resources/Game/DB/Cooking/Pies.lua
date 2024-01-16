@@ -225,7 +225,7 @@ ItsyScape.Resource.Recipe "RichPieCrust" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(25)
 		},
 
 		Input {
@@ -245,7 +245,7 @@ ItsyScape.Resource.Recipe "RichPieCrust" {
 
 		Input {
 			Resource = ItsyScape.Resource.Ingredient "Salt",
-			Count = 1
+			Count = 2
 		},
 
 		Output {
@@ -255,7 +255,7 @@ ItsyScape.Resource.Recipe "RichPieCrust" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForResource(11)
+			Count = ItsyScape.Utility.xpForResource(26)
 		}
 	}
 }
@@ -264,7 +264,7 @@ do
 	local CookAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(10)
+			Count = ItsyScape.Utility.xpForLevel(25)
 		},
 
 		Input {
@@ -274,7 +274,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForResource(11)
+			Count = ItsyScape.Utility.xpForResource(26)
 		}
 	}
 
@@ -750,7 +750,7 @@ ItsyScape.Resource.Recipe "PieFlavoredPie" {
 	ItsyScape.Action.CookRecipe() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(60)
+			Count = ItsyScape.Utility.xpForLevel(99)
 		},
 
 		Input {
@@ -770,7 +770,7 @@ ItsyScape.Resource.Recipe "PieFlavoredPie" {
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForResource(61)
+			Count = ItsyScape.Utility.xpForResource(100)
 		}
 	}
 }
@@ -779,7 +779,7 @@ do
 	local CookAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForLevel(60)
+			Count = ItsyScape.Utility.xpForLevel(99)
 		},
 
 		Input {
@@ -789,7 +789,7 @@ do
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Cooking",
-			Count = ItsyScape.Utility.xpForResource(61)
+			Count = ItsyScape.Utility.xpForResource(100)
 		}
 	}
 

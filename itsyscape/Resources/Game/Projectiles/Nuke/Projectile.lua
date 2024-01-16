@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Actor = require "ItsyScape.Game.Model.Actor"
 local Projectile = require "ItsyScape.Graphics.Projectile"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 
@@ -145,6 +146,8 @@ function Nuke:load()
 	self.particleSystemTop = ParticleSceneNode()
 	self.particleSystemTop:initParticleSystemFromDef(Nuke.PARTICLE_SYSTEM_TOP, resources)
 	self.particleSystemTop:getTransform():setLocalTranslation(Vector.UNIT_Y * 8)
+	self.particleSystemTop:setParent(root)
+	self.particleSystemTop:pause()
 
 	self.particleSystemBottom = ParticleSceneNode()
 	self.particleSystemBottom:setParent(root)
@@ -158,6 +161,7 @@ end
 function Nuke:tick()
 	if not self.spawnPosition then
 		self.spawnPosition = self:getTargetPosition(self:getDestination())
+		self:playAnimation(self:getDestination(), "SFX_Nuke")
 	end
 end
 
@@ -168,10 +172,8 @@ function Nuke:update(elapsed)
 		local root = self:getRoot()
 		root:getTransform():setLocalTranslation(self.spawnPosition)
 
-		if self:getTime() > Nuke.SPAWN_MUSHROOM_TOP_TIME and
-		   not self.particleSystemTop:getParent()
-		then
-			self.particleSystemTop:setParent(root)
+		if self:getTime() > Nuke.SPAWN_MUSHROOM_TOP_TIME then
+			self.particleSystemTop:play()
 		end
 	end
 end

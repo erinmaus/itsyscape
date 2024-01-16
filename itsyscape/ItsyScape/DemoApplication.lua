@@ -1143,7 +1143,7 @@ function DemoApplication:hideToolTip()
 end
 
 function DemoApplication:updateToolTip(delta)
-	if _MOBILE then
+	if _MOBILE or (self.cameraController and not self.cameraController:isCompatibleType(DefaultCameraController)) then
 		self:hideToolTip()
 		return
 	end

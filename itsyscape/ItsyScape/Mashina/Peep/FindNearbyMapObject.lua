@@ -13,6 +13,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 
 local FindNearbyMapObject = B.Node("FindNearbyMapObject")
 FindNearbyMapObject.PROP = B.Reference()
+FindNearbyMapObject.NAME = B.Reference()
 FindNearbyMapObject.RESULT = B.Reference()
 FindNearbyMapObject.SUCCESS = B.Local()
 
@@ -26,10 +27,9 @@ function FindNearbyMapObject:update(mashina, state, executor)
 end
 
 function FindNearbyMapObject:activated(mashina, state)
-	local ore = state[self.RESOURCE]
 	local director = mashina:getDirector()
 
-	local p = director:probe(mashina:getLayerName(), Probe.namedMapObject(state[self.PROP]))[1]
+	local p = director:probe(mashina:getLayerName(), Probe.namedMapObject(state[self.PROP] or state[self.NAME]))[1]
 	if p then
 		state[self.SUCCESS] = true
 		state[self.RESULT] = p

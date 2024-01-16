@@ -38,6 +38,10 @@ function LocalProp:getPeepID()
 	return self.peepID
 end
 
+function LocalProp:getResource()
+	return Utility.Peep.getResource(self.peep)
+end
+
 function LocalProp:place(id, group, resource, ...)
 	assert(self.id == Prop.NIL_ID, "Prop already spawned")
 
@@ -46,7 +50,6 @@ function LocalProp:place(id, group, resource, ...)
 	propReference.prop = self
 
 	self.id = id
-	self.resource = resource or false
 end
 
 function LocalProp:remove()
@@ -196,19 +199,19 @@ function LocalProp:getActions(scope)
 		end
 	end
 
-	if self.resource then
-		return Utility.getActions(self.game, self.resource, scope or 'world')
+	if self:getResource() then
+		return Utility.getActions(self.game, self:getResource(), scope or 'world')
 	end
 
 	return {}
 end
 
 function LocalProp:poke(action, scope, player)
-	if self.resource then
+	if self:getResource() then
 		local peep = self:getPeep()
 		local s = Utility.performAction(
 			self.game,
-			self.resource,
+			self:getResource(),
 			action,
 			scope,
 			player:getState(), player, peep)

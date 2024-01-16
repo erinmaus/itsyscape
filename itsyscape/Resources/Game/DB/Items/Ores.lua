@@ -123,8 +123,7 @@ local ORES = {
 			"Sapphire",
 			"Emerald",
 			"Ruby",
-			"Diamond",
-			"BlueTableSalt"
+			"Diamond"
 		}
 	},
 
@@ -134,10 +133,29 @@ local ORES = {
 		health = 100
 	},
 
+	["HighYieldExplosive"] = {
+		tier = 45,
+		health = 50,
+		niceName = "High yield explosive"
+	},
+
 	["Itsy"] = {
 		tier = 50,
 		weight = 25,
-		health = 200
+		health = 200,
+		secondaries = {
+			"TableSalt",
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrumblySulfur",
+			"VegetableOil",
+			"PeanutOil",
+			"BlackGold",
+			"Sapphire",
+			"Emerald",
+			"Ruby",
+			"Diamond"
+		}
 	},
 
 	["Gold"] = {
@@ -164,7 +182,7 @@ for name, ore in spairs(ORES) do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format(ore.format or "%s ore", name),
+		Value = string.format(ore.format or "%s ore", ore.niceName or name),
 		Language = "en-US",
 		Resource = Ore
 	}
@@ -236,7 +254,7 @@ for name, ore in spairs(ORES) do
 	Rock(SecondaryActions)
 
 	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s rock", name),
+		Value = string.format("%s rock", ore.niceName or name),
 		Language = "en-US",
 		Resource = Rock
 	}
@@ -253,7 +271,7 @@ for name, ore in spairs(ORES) do
 			VariantRock(SecondaryActions)
 
 			ItsyScape.Meta.ResourceName {
-				Value = string.format("%s rock", name),
+				Value = string.format("%s rock", ore.niceName or name),
 				Language = "en-US",
 				Resource = VariantRock
 			}
@@ -315,6 +333,12 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "Put it in a barrel and light it up!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "HighYieldExplosiveOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "Needs smelting.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "UraniumOre"
@@ -366,6 +390,18 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Contains adamant ore.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "AdamantRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains a high yield explosive.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "HighYieldExplosiveRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Contains uranium ore.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "UraniumRock_Default"
 }
 
 ItsyScape.Meta.ResourceDescription {

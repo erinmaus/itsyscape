@@ -15,6 +15,8 @@ local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
@@ -30,6 +32,7 @@ GoryMass.DELTA_MULTIPLIER_MOVING = 2
 GoryMass.DELTA_MULTIPLIER_STATIONARY = 4
 GoryMass.STOP_ROLLING_THRESHOLD_SQUARED = 3 ^ 2
 GoryMass.ROTATION_MULTIPLIER = math.pi
+GoryMass.GIVE_UP_TIME = 0.5
 
 function GoryMass:new(resource, name, ...)
 	Creep.new(self, resource, name or 'GoryMass_Base', ...)
@@ -40,6 +43,9 @@ function GoryMass:new(resource, name, ...)
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(3, 3, 3)
 	size.offset = Vector.UNIT_Y * -1.5
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
 
 	self:addPoke('startRoll')
 	self:addPoke('stopRoll')
@@ -79,7 +85,7 @@ function GoryMass:ready(director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxAcceleration = 16
-	movement.maxSpeed = 16
+	movement.maxSpeed = 10
 	movement.float = 1.5
 
 	Utility.Peep.equipXWeapon(self, "GoryMass_Attack")
@@ -88,6 +94,10 @@ function GoryMass:ready(director, game)
 end
 
 function GoryMass:isMoving()
+	return self:hasTarget() and not self.isPendingMove
+end
+
+function GoryMass:hasTarget()
 	return self.targetPosition ~= nil
 end
 
@@ -99,17 +109,68 @@ function GoryMass:onStartRoll(target)
 
 	if Utility.Peep.canAttack(self) and not self.targetPosition then
 		local selfPosition = Utility.Peep.getAbsolutePosition(self) * Vector.PLANE_XZ
-		local targetPosition = Utility.Peep.getAbsolutePosition(target) * Vector.PLANE_XZ
+
+		local targetPosition
+		if Class.isCompatibleType(target, Vector) then
+			targetPosition = target
+		else
+			if Utility.Peep.getLayer(self) ~= Utility.Peep.getLayer(target) then
+				return
+			end
+
+			local selfI, selfJ = Utility.Peep.getTile(self)
+			local targetI, targetJ = Utility.Peep.getTile(target)
+
+			local map = self:getDirector():getMap(Utility.Peep.getLayer(self))
+			local lineOfSightClear = map and map:lineOfSightPassable(selfI, selfJ, targetI, targetJ)
+
+			if not lineOfSightClear then
+				local success, path = Utility.Peep.getWalk(
+					self,
+					targetI, targetJ, Utility.Peep.getLayer(self),
+					1.5)
+
+				if not success then
+					return
+				end
+
+				local node = path:getNodeAtIndex(2)
+				if not node then
+					return
+				end
+
+				targetPosition = map:getTileCenter(node.i, node.j) * Vector.PLANE_XZ
+			else
+				targetPosition = Utility.Peep.getAbsolutePosition(target) * Vector.PLANE_XZ
+			end
+		end
+
 		local direction = (targetPosition - selfPosition):getNormal()
-		local overshoot = math.random() * (GoryMass.MAX_OVERSHOOT - GoryMass.MIN_OVERSHOOT) + GoryMass.MIN_OVERSHOOT
+		local overshoot = love.math.random() * (GoryMass.MAX_OVERSHOOT - GoryMass.MIN_OVERSHOOT) + GoryMass.MIN_OVERSHOOT
 
 		self.targetPosition = targetPosition + direction * overshoot
 		self.hits = {}
+
+		local cooldown = self:getBehavior(AttackCooldownBehavior)
+		if cooldown and cooldown.cooldown > 0 then
+			self.isPendingMove = true
+		else
+			self.isPendingMove = false
+		end
 	end
 end
 
 function GoryMass:onStopRoll()
 	self.targetPosition = nil
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.acceleration = Vector.ZERO
+	movement.velocity = Vector.ZERO
+
+	local weapon = Utility.Peep.getEquippedWeapon(self, true)
+	if weapon then
+		weapon:applyCooldown(self)
+	end
 
 	local mashina = self:getBehavior(MashinaBehavior)
 	if mashina then
@@ -122,7 +183,7 @@ function GoryMass:onStopRoll()
 end
 
 function GoryMass:onMovedOutOfBounds()
-	self:poke('stopRoll')
+	self.isOutOfBounds = true
 end
 
 function GoryMass:onReceiveAttack(attackPoke)
@@ -199,7 +260,13 @@ function GoryMass:splode(peep)
 
 	local weapon = Utility.Peep.getEquippedWeapon(self, true)
 	if weapon then
+		local resource = Utility.Peep.getResource(peep)
+
 		weapon:perform(self, peep)
+
+		if not resource or resource.name ~= "GoryMass" then
+			weapon:perform(self, self)
+		end
 	end
 end
 
@@ -212,7 +279,19 @@ function GoryMass:update(...)
 	local delta = game:getDelta()
 	local multiplier
 
-	if self.targetPosition then
+	if self.isOutOfBounds then
+		self.isOutOfBoundsTime = (self.isOutOfBoundsTime or 0) + delta
+
+		if self.isOutOfBoundsTime > GoryMass.GIVE_UP_TIME then
+			self:poke("stopRoll")
+
+			self.isOutOfBoundsTime = nil
+		end
+
+		self.isOutOfBounds = false
+	end
+
+	if self:isMoving() then
 		multiplier = GoryMass.DELTA_MULTIPLIER_MOVING
 		self.targetTime = self.time + delta
 
@@ -221,6 +300,13 @@ function GoryMass:update(...)
 		multiplier = GoryMass.DELTA_MULTIPLIER_STATIONARY
 	end
 	self.time = self.time + delta * multiplier
+
+	if self.isPendingMove then
+		local cooldown = self:getBehavior(AttackCooldownBehavior)
+		if cooldown and cooldown.cooldown <= 0 then
+			self.isPendingMove = false
+		end
+	end
 
 	self:wobble()
 end

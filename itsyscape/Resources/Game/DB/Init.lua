@@ -1268,6 +1268,10 @@ include "Resources/Game/DB/Creeps/Pig.lua"
 include "Resources/Game/DB/Creeps/Cheep.lua"
 include "Resources/Game/DB/Creeps/Cthulhu.lua"
 include "Resources/Game/DB/Creeps/Whale.lua"
+include "Resources/Game/DB/Creeps/Behemoth.lua"
+include "Resources/Game/DB/Creeps/PetrifiedSpider.lua"
+include "Resources/Game/DB/Creeps/BarrelMimic.lua"
+include "Resources/Game/DB/Creeps/CrateMimic.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
@@ -1283,6 +1287,8 @@ include "Resources/Game/DB/Peeps/Svalbard.lua"
 include "Resources/Game/DB/Peeps/Veggies.lua"
 include "Resources/Game/DB/Peeps/BlackTentacle.lua"
 include "Resources/Game/DB/Peeps/Humans.lua"
+include "Resources/Game/DB/Peeps/Disemboweled.lua"
+include "Resources/Game/DB/Peeps/ExperimentX.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
@@ -1294,6 +1300,7 @@ include "Resources/Game/DB/Shops/FishingStore.lua"
 include "Resources/Game/DB/Shops/Alchemist.lua"
 include "Resources/Game/DB/Shops/Butcher.lua"
 include "Resources/Game/DB/Shops/Crafter.lua"
+include "Resources/Game/DB/Shops/CookingStore.lua"
 
 -- Spells
 include "Resources/Game/DB/Spells/ModernMisc.lua"
@@ -1371,6 +1378,7 @@ include "Resources/Game/DB/Maps/ViziersRock.lua"
 include "Resources/Game/DB/Maps/PreTutorial/PreTutorial.lua"
 include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 include "Resources/Game/DB/Maps/Sailing.lua"
+include "Resources/Game/DB/Maps/EmptyRuins.lua"
 
 -- Quests
 include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"

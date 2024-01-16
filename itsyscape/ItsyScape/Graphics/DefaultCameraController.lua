@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local Keybinds = require "ItsyScape.UI.Keybinds"
@@ -21,6 +22,8 @@ DefaultCameraController.SCROLL_MULTIPLIER = 4
 DefaultCameraController.MIN_DISTANCE = 1
 DefaultCameraController.MAX_DISTANCE = 60
 DefaultCameraController.DEFAULT_DISTANCE = 30
+
+DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD = 0.5
 
 DefaultCameraController.ACTION_BUTTON = 1
 DefaultCameraController.PROBE_BUTTON  = 2
@@ -63,6 +66,41 @@ function DefaultCameraController:new(...)
 	self.targetOpponentDistance = 0
 
 	self.cursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
+end
+
+function DefaultCameraController:getPlayerMapRotation()
+	local player = self:getGame():getPlayer()
+	if not player then
+		return Quaternion.IDENTITY
+	end
+
+	local _, _, layer = player:getActor():getTile()
+
+	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
+
+	if not mapSceneNode then
+		return Quaternion.IDENTITY
+	end
+
+	local _, previousRotation = mapSceneNode:getTransform():getPreviousTransform()
+	local currentRotation = mapSceneNode:getTransform():getLocalRotation()
+
+	local rotation = previousRotation:slerp(currentRotation, self:getApp():getFrameDelta())
+
+	if self.currentPlayerLayer ~= layer then
+		self.currentPlayerLayer = layer
+		self.previousPlayerMapRotation = self.currentPlayerMapRotation
+		self.previousPlayerMapRotationTime = 0
+	end
+
+	self.currentPlayerMapRotation = rotation
+
+	if self.previousPlayerMapRotation then
+		local delta = math.min(self.previousPlayerMapRotationTime / DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD, 1)
+		return self.previousPlayerMapRotation:slerp(self.currentPlayerMapRotation, delta)
+	else
+		return self.currentPlayerMapRotation
+	end
 end
 
 function DefaultCameraController:getPlayerPosition()
@@ -324,10 +362,10 @@ function DefaultCameraController:debugUpdate(delta)
 	end
 
 	do
-		if love.keyboard.isDown('pageup') then
+		if love.keyboard.isDown('=') then
 			self.cameraOffset = self.cameraOffset + -Vector.UNIT_Y * speed * delta
 		end
-		if love.keyboard.isDown('pagedown') then
+		if love.keyboard.isDown('-') then
 			self.cameraOffset = self.cameraOffset + Vector.UNIT_Y * speed * delta
 		end
 	end
@@ -391,6 +429,15 @@ function DefaultCameraController:update(delta)
 		self:debugUpdate(delta)
 	end
 
+	if self.previousPlayerMapRotationTime then
+		if self.previousPlayerMapRotationTime >= DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD then
+			self.previousPlayerMapRotation = nil
+			self.previousPlayerMapRotationTime = nil
+		else
+			self.previousPlayerMapRotationTime = self.previousPlayerMapRotationTime + delta
+		end
+	end
+
 	self:updateShow(delta)
 	self:updateControls(delta)
 
@@ -432,6 +479,14 @@ function DefaultCameraController:update(delta)
 			self.currentShakingOffset = Vector(0)
 		end
 	end
+end
+
+function DefaultCameraController:onMapRotationStick()
+	self.mapRotationSticky = (self.mapRotationSticky or 0) + 1
+end
+
+function DefaultCameraController:onMapRotationUnstick()
+	self.mapRotationSticky = (self.mapRotationSticky or 1) - 1
 end
 
 function DefaultCameraController:onShake(duration, interval, min, max)
@@ -533,6 +588,12 @@ function DefaultCameraController:draw()
 	end
 
 	self:getCamera():setPosition(center + self.cameraOffset + shake)
+
+	if self.mapRotationSticky and self.mapRotationSticky > 0 then
+		self:getCamera():setRotation(-self:getPlayerMapRotation())
+	else
+		self:getCamera():setRotation()
+	end
 end
 
 return DefaultCameraController

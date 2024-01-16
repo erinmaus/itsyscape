@@ -283,3 +283,77 @@ do
 		}
 	end
 end
+
+do
+	ItsyScape.Meta.BossCategory {
+		Category = "EmptyRuins",
+		Name = "Empty Ruins",
+		Description = "The royal seat of The Empty King and the Fate Mashina. A thousand years ago, a cataclysmic event destroyed this thriving seaside city and banished the gods from the Realm. Now the undead lurk everywhere...",
+		Language = "en-US"
+	}
+
+	do
+		local Tinkerer = ItsyScape.Resource.Boss "Tinkerer"
+
+		ItsyScape.Meta.ResourceName {
+			Value = "Tinkerer of Dragon Valley",
+			Language = "en-US",
+			Resource = Tinkerer
+		}
+
+		ItsyScape.Meta.ResourceDescription {
+			Value = "An artifical bird-like creature capable of powerful necromancy magics, it performs experiments on the dead it comes across.",
+			Language = "en-US",
+			Resource = Tinkerer
+		}
+
+		ItsyScape.Meta.Boss {
+			Boss = Tinkerer,
+			Target = ItsyScape.Resource.Peep "Tinkerer_DragonValley_Attackable",
+			Category = "EmptyRuins"
+		}
+	end
+
+	do
+		local Behemoth = ItsyScape.Resource.Boss "Behemoth"
+
+		ItsyScape.Meta.ResourceName {
+			Value = "Behemoth, Lord of the Mimics",
+			Language = "en-US",
+			Resource = Behemoth
+		}
+
+		ItsyScape.Meta.ResourceDescription {
+			Value = "The Behemoth was shed from the Old One Gammon's skin. It is not aggressive, but the mimics it creates definitely are...",
+			Language = "en-US",
+			Resource = Behemoth
+		}
+
+		ItsyScape.Meta.Boss {
+			Boss = Behemoth,
+			Target = ItsyScape.Resource.Peep "Behemoth",
+			Category = "EmptyRuins"
+		}
+
+		ItsyScape.Meta.Boss {
+			Boss = Behemoth,
+			Target = ItsyScape.Resource.Peep "Behemoth_Stunned",
+			Category = "EmptyRuins"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = Behemoth,
+			DropTable = ItsyScape.Resource.DropTable "Behemoth_Primary"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = Behemoth,
+			DropTable = ItsyScape.Resource.DropTable "Behemoth_Secondary"
+		}
+
+		ItsyScape.Meta.BossDropTable {
+			Boss = Behemoth,
+			DropTable = ItsyScape.Resource.DropTable "Behemoth_Tertiary"
+		}
+	end
+end

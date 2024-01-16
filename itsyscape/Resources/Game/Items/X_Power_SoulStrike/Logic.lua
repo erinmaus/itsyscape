@@ -45,13 +45,12 @@ function SoulStrike:perform(peep, target)
 					local skill = stats:getSkill(SoulStrike.STATS[i])
 					local workingLevel = skill:getWorkingLevel()
 					local debuff = math.floor(workingLevel * 0.1 + 0.5)
-					local difference = workingLevel - debuff
 
-					skill:setLevelBoost(skill:getLevelBoost() - difference)
+					skill:setLevelBoost(skill:getLevelBoost() - debuff)
 
 					Log.info("Debuffed skill '%s' by %d levels.", skill:getName(), debuff)
 
-					statDebuffSum = statDebuffSum + difference
+					statDebuffSum = statDebuffSum + debuff
 				end
 			end
 		end

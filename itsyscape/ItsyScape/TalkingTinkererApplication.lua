@@ -10,16 +10,21 @@
 local Application = require "ItsyScape.Application"
 local LipSync = require "ItsyScape.Audio.LipSync"
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local ActorView = require "ItsyScape.Graphics.ActorView"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
 local DefaultCameraController = require "ItsyScape.Graphics.DefaultCameraController"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
+local MapScript = require "ItsyScape.Peep.Peeps.Map"
+local MapMeshMask = require "ItsyScape.World.MapMeshMask"
 
 local TalkingTinkererApplication = Class(Application)
 
@@ -27,8 +32,8 @@ TalkingTinkererApplication.FPS = 60
 TalkingTinkererApplication.END_DELAY_SECONDS = 1
 TalkingTinkererApplication.HEIGHT = 1920
 TalkingTinkererApplication.WIDTH = 1080
-TalkingTinkererApplication.STICKER_WIDTH  = 320
-TalkingTinkererApplication.STICKER_HEIGHT = 320
+TalkingTinkererApplication.STICKER_WIDTH  = 1024
+TalkingTinkererApplication.STICKER_HEIGHT = 1024
 
 TalkingTinkererApplication.VOWEL_TO_SHAPE = {
 	a = "d",
@@ -49,7 +54,6 @@ function TalkingTinkererApplication:new()
 
 	self.targetRenderer = Renderer()
 
-	self:initTinkerer()
 	self:loadTranscript()
 
 	self.cameraController.cameraOffset = Vector(0, 5, 0)
@@ -74,11 +78,36 @@ function TalkingTinkererApplication:new()
 	self.lipSync.onResult:register(self.onLipSyncAnimation, self)
 end
 
+function TalkingTinkererApplication:initialize()
+	Application.initialize(self)
+
+	self:initTinkerer()
+end
+
 function TalkingTinkererApplication:initTinkerer()
 	local resource = _ARGS[#_ARGS - 1]
 
 	local stage = self:getGame():getStage()
-	local success, actor = stage:spawnActor("resource://" .. resource, 1, "::orphan")
+
+	-- Make map invisible
+	do
+		local map = stage:newMap(1, 1, "Draft", true, 1)
+		map:getTile(1, 1).flat = 3
+		stage:updateMap(1, map)
+
+		local instance = stage:newGlobalInstance("dummy")
+		instance:addLayer(1)
+		instance:setBaseLayer(1)
+
+		local mapScript = self:getGame():getDirector():addPeep("0@dummy", MapScript)
+		mapScript:listen("ready", function(self)
+			self:poke("load", "dummy", {}, 1)
+		end)
+
+		instance:addMapScript(1, mapScript, "dummy")
+	end
+
+	local success, actor = stage:spawnActor("resource://" .. resource, 1, "0@dummy")
 
 	if not success then
 		Log.error("Couldn't spawn Tinkerer.")
@@ -89,11 +118,20 @@ function TalkingTinkererApplication:initTinkerer()
 	self.target = resource
 	self.targetActor = actor
 	self.targetPeep = actor:getPeep()
-	self.targetView = ActorView(self.targetActor)
-	self.targetView:attach(self:getGameView())
+	self.targetSceneNode = self:getGameView():getScene()
+
+	local direction = DirectionalLightSceneNode()
+	direction:setDirection(Vector(0, 0, 1):getNormal())
+	direction:setParent(self.targetSceneNode)
+
+	local ambient = AmbientLightSceneNode()
+	ambient:setAmbience(0.75)
+	ambient:setParent(self.targetSceneNode)
+
 
 	self.targetPeep:listen("finalize", function()
-		self:playAnimation({ animation = "Idle" }, "idle", 0)
+		self.targetView = self:getGameView():getActor(self:getGameView():getActorByID(self.targetActor:getID()))
+		self:playAnimation({ animation = "Idle" }, "main", 0)
 	end)
 end
 
@@ -171,21 +209,32 @@ function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
 	local animation = nextFrame.animation or "<BAD>"
 
 	local skinFilename = string.format("Resources/Game/Skins/%s/%s_%s.lua", self.target, self.target, animation)
-	local animationFilename = string.format("Resources/Game/Animations/%s_%s/Script.lua", self.target, animation)
+	local animationFilename
+	do
+		local animationFilename1 = string.format("Resources/Game/Animations/%s_%s/Script.lua", self.target, animation)
+		if love.filesystem.getInfo(animationFilename1) then
+			animationFilename = animationFilename1
+		else
+			local animationFilename2 = string.format("Resources/Game/Animations/%s/Script.lua", animation)
+			if love.filesystem.getInfo(animationFilename2) then
+				animationFilename = animationFilename2
+			end
+		end
+	end
 
 	if love.filesystem.getInfo(skinFilename) then
 		local body = CacheRef("ItsyScape.Game.Skin.ModelSkin", skinFilename)
 		self.targetView:changeSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
 		Log.info("Changed skin to '%s'", skinFilename)
-	elseif love.filesystem.getInfo(animationFilename) then
+	elseif animationFilename and love.filesystem.getInfo(animationFilename) then
 		local animation = CacheRef("ItsyScape.Graphics.AnimationResource", animationFilename)
 
 		if animationFilename:match(".*Idle.*") then
 			Log.info("Changed idle animation to '%s'", animationFilename)
-			self.targetView:playAnimation(channel or 'idle', animation, priority or 0, 0)
+			self.targetView:playAnimation(channel or 'idle', animation, priority or 10, 0)
 		else
 			Log.info("Changed animation to '%s'", animationFilename)
-			self.targetView:playAnimation(channel or 'main', animation, priority or 2, 0)
+			self.targetView:playAnimation(channel or 'talk', animation, priority or 100, 0)
 		end
 	else
 		Log.warn("No animation for '%s'.", animation)
@@ -279,8 +328,8 @@ function TalkingTinkererApplication:renderTick()
 
 	love.graphics.push('all')
 	self.targetRenderer:draw(
-		self.targetView:getSceneNode(),
-		0,
+		self.targetSceneNode,
+		1,
 		width,
 		height)
 	love.graphics.pop()
@@ -322,8 +371,8 @@ function TalkingTinkererApplication:drawTinkerer()
 			currentFrame = nextFrame
 		end
 
+		self:getGameView():tick()
 		self:getGameView():update(deltaPerTick)
-		self.targetView:update(deltaPerTick)
 
 		local image = self:renderTick()
 		image:encode('png', string.format("%s/%05d.png", directory, index))
@@ -340,9 +389,31 @@ function TalkingTinkererApplication:drawTinkerer()
 	love.filesystem.write("tinkerer.txt", url)
 end
 
+function TalkingTinkererApplication:rotate(rotation, flip)
+	rotation = Quaternion[rotation]
+	if flip then
+		rotation = -rotation
+	end
+
+	for _, skins in pairs(self.targetView:getSkins()) do
+		for _, skin in ipairs(skins) do
+			if skin.sceneNode then
+				local transform = skin.sceneNode:getTransform()
+				transform:setLocalRotation(transform:getLocalRotation() * rotation)
+			end
+		end
+	end
+end
+
 function TalkingTinkererApplication:keyDown(key, ...)
 	if key == "r" then
 		self:drawTinkerer()
+	elseif key == "y" then
+		self:rotate("Y_90", love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift"))
+	elseif key == "x" then
+		self:rotate("X_90", love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift"))
+	elseif key == "z" then
+		self:rotate("Z_90", love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift"))
 	end
 
 	return Application.keyDown(self, key, ...)
@@ -370,8 +441,8 @@ end
 
 function TalkingTinkererApplication:update(delta)
 	Application.update(self, delta)
+
 	self.cameraController:update(delta)
-	self.targetView:update(delta)
 
 	self.lipSync:update(self.recordingDevice:getData())
 end
@@ -390,7 +461,7 @@ function TalkingTinkererApplication:draw()
 
 	love.graphics.push('all')
 	self.targetRenderer:draw(
-		self.targetView:getSceneNode(),
+		self.targetSceneNode,
 		self:getFrameDelta(),
 		w, h)
 	love.graphics.pop()

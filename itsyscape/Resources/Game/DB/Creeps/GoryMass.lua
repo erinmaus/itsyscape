@@ -36,7 +36,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(80),
+	Value = ItsyScape.Utility.xpForLevel(30),
 	Resource = ItsyScape.Resource.Peep "GoryMass"
 }
 
@@ -48,18 +48,18 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(20),
+	Value = ItsyScape.Utility.xpForLevel(1),
 	Resource = ItsyScape.Resource.Peep "GoryMass"
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(500),
+	Value = ItsyScape.Utility.xpForLevel(200),
 	Resource = ItsyScape.Resource.Peep "GoryMass"
 }
 
 ItsyScape.Meta.Equipment {
-	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(60, 1),
+	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(60),
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Resource = ItsyScape.Resource.Peep "GoryMass"
 }

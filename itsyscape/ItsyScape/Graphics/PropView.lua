@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local DebugCubeSceneNode = require "ItsyScape.Graphics.DebugCubeSceneNode"
 
 local PropView = Class()
 
@@ -47,6 +48,19 @@ end
 function PropView:attach()
 	self.sceneNode:setParent(self.gameView:getScene())
 	self:updateTransform()
+
+	if _DEBUG == "plus" then
+		local _cube = DebugCubeSceneNode()
+		_cube:onWillRender(function()
+			local min, max = self:getProp():getBounds()
+			local size = max - min
+			size = size / 2
+
+			_cube:getTransform():setLocalScale(size)
+		end)
+
+		_cube:setParent(self.sceneNode)
+	end
 end
 
 function PropView:updateTransform()

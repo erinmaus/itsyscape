@@ -22,7 +22,7 @@ Light.DURATION = 1.0
 
 function Light:perform(state, peep, item)
 	local gameDB = self:getGame():getGameDB()
-	if self:canPerform(state) then
+	if self:canPerform(state) and self:canTransfer(state) then
 		local light = CallbackCommand(self.transfer, self, peep:getState(), peep, { ['item-inventory'] = true })
 		local wait = WaitCommand(Light.DURATION, false)
 

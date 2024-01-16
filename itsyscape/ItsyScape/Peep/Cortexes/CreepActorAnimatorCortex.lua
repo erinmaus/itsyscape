@@ -20,6 +20,7 @@ local CreepActorAnimatorCortex = Class(Cortex)
 CreepActorAnimatorCortex.WALK_PRIORITY = 1
 CreepActorAnimatorCortex.SKILL_PRIORITY = 5
 CreepActorAnimatorCortex.ATTACK_PRIORITY = 1000
+CreepActorAnimatorCortex.DEATH_PRIORITY  = 2000
 CreepActorAnimatorCortex.DEFEND_PRIORITY = 10
 
 function CreepActorAnimatorCortex:new()
@@ -54,11 +55,11 @@ function CreepActorAnimatorCortex:removePeep(peep)
 	self.idling[peep] = nil
 end
 
-function CreepActorAnimatorCortex:playAnimation(peep, priority, resource)
+function CreepActorAnimatorCortex:playAnimation(peep, priority, resource, slot)
 	local actor = peep:getBehavior(ActorReferenceBehavior)
 	if actor then
 		actor = actor.actor
-		actor:playAnimation('combat', priority, resource)
+		actor:playAnimation(slot or 'combat', priority, resource)
 	end
 end
 
@@ -103,8 +104,9 @@ function CreepActorAnimatorCortex:onDie(peep, p)
 	if resource then
 		self:playAnimation(
 			peep,
-			CreepActorAnimatorCortex.ATTACK_PRIORITY,
-			resource)
+			CreepActorAnimatorCortex.DEATH_PRIORITY,
+			resource,
+			"combat-die")
 	end
 end
 

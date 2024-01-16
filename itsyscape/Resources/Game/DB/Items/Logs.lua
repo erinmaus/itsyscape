@@ -103,8 +103,12 @@ local LOGS = {
 		niceName = "Petrified spider",
 		tier = 50,
 		weight = 2,
-		health = 250,
-		tinderbox = "Tinderbox"
+		health = 50,
+		peepID = "Resources.Game.Peeps.Arachnid.PetrifiedSpiderTree",
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Branch"
+		}
 	},
 
 	["Coconut"] = {
@@ -705,6 +709,42 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "An ancient species of spider, now extinct, petrified as a part of the horrible ritual that banished the gods.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "PetrifiedSpiderTree_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Petrified spider branch thing",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PetrifiedSpiderBranch"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A... branch... thing? of sorts from a petrified spider. Good for kindling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "PetrifiedSpiderBranch"
+}
+
+ItsyScape.Resource.Item "PetrifiedSpiderBranch" {
+	ItsyScape.Action.Burn() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForLevel(50)
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.Item "Tinderbox",
+			Count = 1
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "PetrifiedSpiderBranch",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Count = ItsyScape.Utility.xpForResource(50)
+		}
+	}
 }
 
 ItsyScape.Meta.ResourceDescription {

@@ -338,7 +338,7 @@ do
 	}
 
 	ItsyScape.Meta.ItemPrayerRestorationUserdata {
-		PrayerPoints = 1,
+		PrayerPoints = 3,
 		Resource = ItsyScape.Resource.Item "Pecan"
 	}
 
@@ -373,7 +373,7 @@ do
 	}
 
 	ItsyScape.Meta.ItemPrayerRestorationUserdata {
-		PrayerPoints = 4,
+		PrayerPoints = 5,
 		Resource = ItsyScape.Resource.Item "RegalPecan"
 	}
 
@@ -420,7 +420,7 @@ do
 	}
 
 	ItsyScape.Meta.ItemPrayerRestorationUserdata {
-		PrayerPoints = 10,
+		PrayerPoints = 12,
 		Resource = ItsyScape.Resource.Item "GoldenPecan"
 	}
 end

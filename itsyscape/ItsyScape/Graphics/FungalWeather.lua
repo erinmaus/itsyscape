@@ -194,7 +194,7 @@ end
 function FungalWeather:update(delta)
 	Weather.update(self, delta)
 
-	self._handle:update(self:getMap():getHandle(), delta)
+	pcall(self._handle.update, self._handle, self:getMap():getHandle(), delta)
 
 	local map = self:getMap()
 	local startI, startJ = map:getPosition()

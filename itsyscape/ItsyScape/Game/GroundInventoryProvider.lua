@@ -58,7 +58,16 @@ end
 
 function GroundInventoryProvider:onTransferTo(item, source, count, purpose)
 	local sourcePeep = source:getPeep()
+
 	local i, j, layer = Utility.Peep.getTile(sourcePeep)
+	local position = source
+	if Class.isCompatibleType(purpose, GroundInventoryProvider.Key) then
+		local map = sourcePeep:getDirector():getMap(purpose.layer)
+		if map then
+			position = map:getTileCenter(purpose.i, purpose.j)
+			i, j, layer = purpose.i, purpose.j, purpose.layer
+		end
+	end
 
 	Log.engine(
 		"Dropping item '%s' (count = %d) from peep '%s' on layer %d at (%d, %d).",
@@ -69,11 +78,11 @@ function GroundInventoryProvider:onTransferTo(item, source, count, purpose)
 
 	if type(purpose) == 'string' then
 		self:getBroker():tagItem(item, "owner", sourcePeep)
-	else
+	elseif not Class.isCompatibleType(purpose, GroundInventoryProvider.Key) then
 		self:getBroker():tagItem(item, "owner", purpose)
 	end
 
-	self.onDropItem(item, key, source, count)
+	self.onDropItem(item, key, position, count)
 end
 
 function GroundInventoryProvider:onTransferFrom(source, item, count, purpose)

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 
 include "Resources/Game/DB/Cooking/Essentials.lua"
+include "Resources/Game/DB/Cooking/Salts.lua"
 
 do
 	local Fruit = ItsyScape.Resource.Ingredient "Fruit"

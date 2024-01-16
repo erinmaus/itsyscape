@@ -16,6 +16,7 @@ local ProxyXWeapon = require "ItsyScape.Game.ProxyXWeapon"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local Probe = require "ItsyScape.Peep.Probe"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local HumanoidActorAnimatorCortex = require "ItsyScape.Peep.Cortexes.HumanoidActorAnimatorCortex"
@@ -36,14 +37,17 @@ function Tornado:hitSurroundingPeeps(peep, target)
 	local range = self:getAttackRange(peep) * 2
 	local sourcePosition = Utility.Peep.getAbsolutePosition(peep)
 
-	local hits = peep:getDirector():probe(peep:getLayerName(), function(p)
-		if peep == p or target == p then
-			return false
-		end
+	local hits = peep:getDirector():probe(
+		peep:getLayerName(),
+		Probe.attackable(),
+		function(p)
+			if peep == p or target == p then
+				return false
+			end
 
-		local targetPosition = Utility.Peep.getAbsolutePosition(p)
-		return (targetPosition - sourcePosition):getLength() <= range
-	end)
+			local targetPosition = Utility.Peep.getAbsolutePosition(p)
+			return (targetPosition - sourcePosition):getLength() <= range
+		end)
 
 	for i = 1, #hits do
 		ProxyXWeapon.perform(self, peep, hits[i])
