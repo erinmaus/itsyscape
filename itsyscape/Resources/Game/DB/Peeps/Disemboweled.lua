@@ -17,6 +17,11 @@ ItsyScape.Meta.PeepID {
 	Resource = Adventurer
 }
 
+ItsyScape.Meta.ResourceTag {
+	Value = "Undead",
+	Resource = Adventurer
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Disemboweled adventurer",
 	Language = "en-US",

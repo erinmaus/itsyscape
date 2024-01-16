@@ -17,6 +17,11 @@ ItsyScape.Meta.PeepID {
 	Resource = ExperimentX
 }
 
+ItsyScape.Meta.ResourceTag {
+	Value = "Undead",
+	Resource = ExperimentX
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Experiment X",
 	Language = "en-US",
