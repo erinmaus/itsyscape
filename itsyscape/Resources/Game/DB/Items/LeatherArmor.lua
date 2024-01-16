@@ -357,11 +357,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(5),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(5),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(5),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(5),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(5),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(2),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(10),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "MooishLeatherBuckler"
 	}
@@ -440,11 +440,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(14),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(14),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(13),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(14),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(12),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(14),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(14),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(13),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(14),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(12),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "BugGutsBuckler"
 	}
@@ -523,11 +523,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(24),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(27.5),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(28),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(25),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(24),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(27.5),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(25),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(28),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "RobinFeatherBuckler"
 	}
@@ -606,11 +606,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(36),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(40),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(32),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(36),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(34),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(36),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(40),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(32),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(36),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(34),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "WhiteWolfHideBuckler"
 	}
@@ -689,11 +689,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(46),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(43),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(44),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(44.5),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(50),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(46),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(43),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(44),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(44.5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(50),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "AncientKaradonBuckler"
 	}
@@ -772,11 +772,11 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(56),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(56),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(50),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(53),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(62),
+		DefenseStab = ItsyScape.Utility.styleBonusForShield(56),
+		DefenseCrush = ItsyScape.Utility.styleBonusForShield(56),
+		DefenseSlash = ItsyScape.Utility.styleBonusForShield(50),
+		DefenseRanged = ItsyScape.Utility.styleBonusForShield(53),
+		DefenseMagic = ItsyScape.Utility.styleBonusForShield(62),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_LEFT_HAND,
 		Resource = ItsyScape.Resource.Item "GreenDragonhideBuckler"
 	}
