@@ -46,7 +46,7 @@ do
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 0.4,
+		Ambience = 0.2,
 		Resource = M["Light_Ambient"]
 	}
 end
@@ -74,6 +74,37 @@ do
 		NearDistance = 40,
 		FarDistance = 80,
 		Resource = M["Light_Fog"]
+	}
+end
+
+M["Light_Sun"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Sun",
+		Map = M._MAP,
+		Resource = M["Light_Sun"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "DirectionalLight_Default",
+		MapObject = M["Light_Sun"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 20,
+		ColorGreen = 20,
+		ColorBlue = 20,
+		Resource = M["Light_Sun"]
+	}
+
+	ItsyScape.Meta.DirectionalLight {
+		DirectionX = 4,
+		DirectionY = 3,
+		DirectionZ = 4,
+		Resource = M["Light_Sun"]
 	}
 end
 
