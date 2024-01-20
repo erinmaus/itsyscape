@@ -16,9 +16,11 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local TheEmptyKing = Class(Creep)
+TheEmptyKing.NUM_ATTACK_ANIMATIONS = 3
 
 function TheEmptyKing:new(resource, name, ...)
 	Creep.new(self, resource, name or 'TheEmptyKing_FullyRealized', ...)
@@ -36,6 +38,8 @@ function TheEmptyKing:new(resource, name, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxAcceleration = 8
 	movement.maxSpeed = 16
+
+	self:addBehavior(RotationBehavior)
 end
 
 function TheEmptyKing:ready(director, game)
@@ -53,7 +57,7 @@ function TheEmptyKing:ready(director, game)
 
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/TheEmptyKing_FullyRealized_Idle/Script.lua")
+		"Resources/Game/Animations/TheEmptyKing_FullyRealized_Idle_NoWeapon/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
 	local walkAnimation = CacheRef(
@@ -61,38 +65,111 @@ function TheEmptyKing:ready(director, game)
 		"Resources/Game/Animations/TheEmptyKing_FullyRealized_Walk/Script.lua")
 	self:addResource("animation-walk", walkAnimation)
 
-	local skin = CacheRef(
+	local bonesSkin = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/TheEmptyKing_FullyRealized/TheEmptyKing_FullyRealized.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_SELF, Equipment.SKIN_PRIORITY_BASE, skin)
+		"Resources/Game/Skins/TheEmptyKing_FullyRealized/Bones.lua")
+	actor:setSkin("bones", Equipment.SKIN_PRIORITY_BASE, bonesSkin)
+
+	local handsSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/TheEmptyKing_FullyRealized/Hands.lua")
+	actor:setSkin("hands", Equipment.SKIN_PRIORITY_BASE, handsSkin)
+
+	local robesInsideSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/TheEmptyKing_FullyRealized/RobesInside.lua")
+	actor:setSkin("robes-inside", Equipment.SKIN_PRIORITY_BASE, robesInsideSkin)
+
+	local robesOutsideSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/TheEmptyKing_FullyRealized/RobesOutside.lua")
+	actor:setSkin("robes-outside", Equipment.SKIN_PRIORITY_BASE, robesOutsideSkin)
 end
 
-function TheEmptyKing:onSummonAxe(axe)
+function TheEmptyKing:onSummonZweihander(zweihander)
 	local stage = self:getDirector():getGameInstance():getStage()
-	stage:fireProjectile("TheEmptyKingsExecutionerAxe", Utility.Peep.getAbsolutePosition(axe), self)
-
-	Utility.Peep.poof(axe)
+	stage:fireProjectile("TheEmptyKingFullyRealized_SummonZweihander", zweihander, self)
 end
 
-function TheEmptyKing:onEquipAxe(axe)
+function TheEmptyKing:onInitiateAttack()
+	if not self.numAttacks then
+		return
+	end
+
+	self.numAttacks = self.numAttacks + 1
+
+	if self.numAttacks > self.NUM_ATTACK_ANIMATIONS then
+		self.numAttacks = 1
+	end
+
+	local isSpecial = self.numAttacks == self.NUM_ATTACK_ANIMATIONS
+
+	local Zweihander = Utility.Peep.getXWeaponType("TheEmptyKing_FullyRealized_Zweihander")
+	local weapon = Utility.Peep.getEquippedWeapon(self, true)
+
+	local attackAnimation
+	if Class.isCompatibleType(weapon, Zweihander) then
+		if isSpecial then
+			attackAnimation = CacheRef(
+				"ItsyScape.Graphics.AnimationResource",
+				"Resources/Game/Animations/TheEmptyKing_FullyRealized_Attack_Melee_Special/Script.lua")
+		else
+			attackAnimation = CacheRef(
+				"ItsyScape.Graphics.AnimationResource",
+				string.format("Resources/Game/Animations/TheEmptyKing_FullyRealized_Attack_Melee%d/Script.lua", self.numAttacks))
+		end
+	end
+
+	if attackAnimation then
+		self:addResource("animation-attack", attackAnimation)
+	end
+
 	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
+	actor = actor and actor.actor
+
+	if actor then
+		local idleAnimation = self:getResource(
+			"animation-idle",
+			"ItsyScape.Graphics.AnimationResource")
+		if idleAnimation then
+			actor:playAnimation("combat", 100, idleAnimation)
+		end
+	end
+end
+
+function TheEmptyKing:onEquipZweihander(zweihander)
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return
 	end
 
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/TheEmptyKing_FullyRealized_Idle_Axe/Script.lua")
+		"Resources/Game/Animations/TheEmptyKing_FullyRealized_Idle_Melee/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
+	actor:playAnimation("main", 1, idleAnimation)
+
 	local attackAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/TheEmptyKing_FullyRealized_Attack_Axe/Script.lua")
+		"Resources/Game/Animations/TheEmptyKing_FullyRealized_Attack_Melee1/Script.lua")
 	self:addResource("animation-attack", attackAnimation)
 
-	local skin = CacheRef(
+	self.numAttacks = 1
+
+	local zweihanderSkin = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/TheEmptyKing_FullyRealized/TheEmptyKing_FullyRealized_Axe.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_RIGHT_HAND, Equipment.SKIN_PRIORITY_BASE, skin)
+		"Resources/Game/Skins/TheEmptyKing_FullyRealized/Zweihander.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_TWO_HANDED, Equipment.SKIN_PRIORITY_BASE, zweihanderSkin)
+
+	Utility.Peep.equipXWeapon(self, "TheEmptyKing_FullyRealized_Zweihander")
+end
+
+function TheEmptyKing:update(...)
+	Creep.update(self, ...)
+
+	Utility.Peep.face3D(self)
 end
 
 return TheEmptyKing

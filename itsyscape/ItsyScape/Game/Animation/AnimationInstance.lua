@@ -131,6 +131,8 @@ function AnimationInstance:play(time, windingDown)
 				channel.current = j
 				break
 			else
+				self.times[channel] = relativeTime
+
 				-- We only want to stop the previous animation if it actually
 				-- played.
 				if channel.previous == j and not channel.stopped then
