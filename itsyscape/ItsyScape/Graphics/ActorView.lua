@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
@@ -350,6 +351,11 @@ function ActorView:playAnimation(slot, animation, priority, time)
 		self.animations[slot] = a
 	else
 		self.game:getResourceManager():queueEvent(function()
+			local animation = self.animations[slot]
+			if animation then
+				self.animatable:removePlayingAnimation(animation.id)
+			end
+
 			self.animations[slot] = nil
 			self:sortAnimations()
 			self:updateAnimations(0)
@@ -654,6 +660,19 @@ function ActorView:update(delta)
 	self.animatable:update()
 end
 
+function ActorView:getBoneTransform(boneName)
+	local transform = love.math.newTransform()
+	if not self.localTransforms then
+		return transform
+	end
+
+	local transforms = self.localTransforms
+	local skeleton = self.animatable:getSkeleton()
+
+	transform:apply(transforms:getTransform(skeleton:getBoneIndex(boneName)))
+	return transform, MathCommon.decomposeTransform(transform)
+end
+
 function ActorView:getLocalBoneTransform(boneName, rotation)
 	rotation = rotation or -Quaternion.X_90
 
@@ -668,6 +687,26 @@ function ActorView:getLocalBoneTransform(boneName, rotation)
 	local skeleton = self.animatable:getSkeleton()
 
 	return skeleton:getLocalBoneTransform(boneName, transforms, transform)
+end
+
+function ActorView:getBoneLocalPosition(boneName, position, rotation)
+	position = position or Vector.ZERO
+	rotation = rotation or Quaternion.IDENTITY
+
+	local boneTransform = self:getLocalBoneTransform(boneName)
+	local inverseBindPoseTransform = self:getSkeleton():getBoneByName(boneName):getInverseBindPose()
+
+	local composedTransform = love.math.newTransform()
+	composedTransform:applyQuaternion(rotation:get())
+	composedTransform:apply(boneTransform)
+	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
+
+	return Vector(composedTransform:transformPoint(position:get()))
+end
+
+function ActorView:decomposeBoneLocalTransform(boneName)
+	local boneTransform = self:getLocalBoneTransform(boneName)
+	return MathCommon.decomposeTransform(boneTransform)
 end
 
 function ActorView:getBoneWorldPosition(boneName, position, rotation)
@@ -736,8 +775,7 @@ function ActorView:updateAnimations(delta)
 				for j = 1, #slotNodes[i].particles do
 					local p = slotNodes[i].particles[j]
 					if p.attach then
-						local transform = self.animatable:getComposedTransform(p.attach)
-						local localPosition = Vector(transform:transformPoint(0, 0, 0))
+						local localPosition = self:getBoneLocalPosition(p.attach)
 						p.sceneNode:updateLocalPosition(localPosition)
 					end
 				end

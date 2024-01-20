@@ -19,7 +19,7 @@ function Dream:new(resource, name, ...)
 	Map.new(self, resource, name or 'Dream_Teaser', ...)
 end
 
-function Dream:initGammon()
+function Dream:initGammon(player)
 	local function actionCallback(action)
 		if action == "pressed" then
 			self:pushPoke('rezzGammon')
@@ -31,7 +31,7 @@ function Dream:initGammon()
 	end
 
 	Utility.UI.openInterface(
-		Utility.Peep.getPlayer(self),
+		player,
 		"KeyboardAction",
 		false,
 		"DEBUG_TRIGGER_2", actionCallback, openCallback)
@@ -68,7 +68,9 @@ function Dream:onLoad(filename, args, layer)
 		ceiling = 20,
 		heaviness = 0.5
 	})
+end
 
+function Dream:onPlayerEnter(player)
 	local function actionCallback(action)
 		if action == "pressed" then
 			self:pushPoke('playCutscene')
@@ -80,12 +82,12 @@ function Dream:onLoad(filename, args, layer)
 	end
 
 	Utility.UI.openInterface(
-		Utility.Peep.getPlayer(self),
+		player:getActor():getPeep(),
 		"KeyboardAction",
 		false,
 		"DEBUG_TRIGGER_1", actionCallback, openCallback)
 
-	self:initGammon()
+	self:initGammon(player:getActor():getPeep())
 end
 
 function Dream:onPlayCutscene()

@@ -50,25 +50,25 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene"
 }
 
-ItsyScape.Resource.Prop "TheEmptyKingsExecutionerAxe" {
+ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Zweihander" {
 	-- Nothing
 }
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.PassableProp",
-	Resource = ItsyScape.Resource.Prop "TheEmptyKingsExecutionerAxe"
+	Resource = ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Zweihander"
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "The Empty King's executioner axe",
+	Value = "The Empty King's ancient zweihander",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "TheEmptyKingsExecutionerAxe"
+	Resource = ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Zweihander"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "How many lives were lost during the ritual that banished the Old Ones from the Realm?",
+	Value = "This zweihander was tossed aside by The Empty King when They banished the gods from the Realm and went into hiding. It yearns for blood and bone.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "TheEmptyKingsExecutionerAxe"
+	Resource = ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Zweihander"
 }
 
 ItsyScape.Resource.Peep "EmptyZealot_Cutscene" {

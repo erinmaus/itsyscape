@@ -2374,6 +2374,13 @@ function Utility.Peep.getEquipmentBonuses(peep)
 	return result
 end
 
+function Utility.Peep.getXWeaponType(id)
+	local XName = string.format("Resources.Game.Items.X_%s.Logic", id)
+	local XType = require(XName)
+
+	return XType
+end
+
 function Utility.Peep.getXWeapon(game, id, proxyID, ...)
 	local XName = string.format("Resources.Game.Items.X_%s.Logic", id)
 	local XType = require(XName)
