@@ -45,7 +45,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "The Empty King in their fully realized glory. Praise Them!",
+	Value = "The Empty King in Their fully realized glory. Praise Them!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene"
 }
