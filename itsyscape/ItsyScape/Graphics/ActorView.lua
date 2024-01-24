@@ -29,6 +29,7 @@ function ActorView.Animatable:new(actor)
 	self.animations = { id = 1 }
 	self.sceneNodes = {}
 	self.sounds = {}
+	self.pendingTransforms = {}
 	self:_newTransforms()
 end
 
@@ -101,6 +102,20 @@ end
 
 function ActorView.Animatable:getTransforms()
 	return self.transforms
+end
+
+function ActorView.Animatable:getPostComposedTransform(attach, func)
+	table.insert(self.pendingTransforms, function()
+		local transform = self.transforms:getTransform(self:getSkeleton():getBoneIndex(attach))
+		func(transform)
+	end)
+end
+
+function ActorView.Animatable:flushPendingComposedTransforms()
+	for _, func in ipairs(self.pendingTransforms) do
+		func()
+	end
+	table.clear(self.pendingTransforms)
 end
 
 function ActorView.Animatable:setTransforms(transforms, animation, time)
@@ -689,7 +704,7 @@ function ActorView:getLocalBoneTransform(boneName, rotation)
 	return skeleton:getLocalBoneTransform(boneName, transforms, transform)
 end
 
-function ActorView:getBoneLocalPosition(boneName, position, rotation)
+function ActorView:getLocalBonePosition(boneName, position, rotation)
 	position = position or Vector.ZERO
 	rotation = rotation or Quaternion.IDENTITY
 
@@ -775,7 +790,7 @@ function ActorView:updateAnimations(delta)
 				for j = 1, #slotNodes[i].particles do
 					local p = slotNodes[i].particles[j]
 					if p.attach then
-						local localPosition = self:getBoneLocalPosition(p.attach)
+						local localPosition = self:getLocalBonePosition(p.attach)
 						p.sceneNode:updateLocalPosition(localPosition)
 					end
 				end
@@ -788,8 +803,13 @@ function ActorView:updateAnimations(delta)
 	end
 
 	local skeleton = self.animatable:getSkeleton()
-	skeleton:applyTransforms(transforms)
-	skeleton:applyBindPose(transforms)
+	do
+		skeleton:applyTransforms(transforms)
+		self.animatable:flushPendingComposedTransforms()
+
+		skeleton:applyBindPose(transforms)
+	end
+
 end
 
 return ActorView
