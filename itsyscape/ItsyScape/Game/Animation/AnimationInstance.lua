@@ -107,49 +107,45 @@ function AnimationInstance:play(time, windingDown)
 			relativeTime = time - relativeTime
 		end
 
-		for j = channel.current, #channel do
-			local command = channel[j]
+		if not channel.done then
+			for j = channel.current, #channel do
+				local command = channel[j]
 
-			-- if windingDown and not self.stopping[command] then
-			-- 	local duration = command:getDuration(true)
-			-- 	if duration > 0 and relativeTime > duration then
-			-- 		relativeTime = 0
-			-- 		self.times[channel] = time
-			-- 		self.stopping[command] = true
-			-- 	end
-			-- end
+				if command:pending(relativeTime, windingDown) then
+					if channel.previous ~= j then
+						command:start(self.animatable)
+						channel.previous = j
+						channel.stopped = false
+					end
 
-			if command:pending(relativeTime, windingDown) then
-				if channel.previous ~= j then
-					command:start(self.animatable)
-					channel.previous = j
-					channel.stopped = false
-				end
+					command:play(self.animatable, relativeTime, windingDown)
 
-				command:play(self.animatable, relativeTime, windingDown)
-
-				channel.current = j
-				break
-			else
-				self.times[channel] = relativeTime
-
-				-- We only want to stop the previous animation if it actually
-				-- played.
-				if channel.previous == j and not channel.stopped then
-					command:stop(self.animatable)
-					channel.stopped = true
-				end
-
-				if channel.current ~= #channel then
+					channel.current = j
+					break
+				else
 					self.times[channel] = relativeTime
-					relativeTime = 0
+
+					-- We only want to stop the previous animation if it actually
+					-- played.
+					if channel.previous == j and not channel.stopped then
+						command:stop(self.animatable)
+						channel.stopped = true
+					end
+
+					if channel.current ~= #channel then
+						self.times[channel] = relativeTime
+						relativeTime = 0
+					else
+						channel.done = true
+					end
 				end
 			end
 		end
 
-		if channel.current < #channel or
-		   channel[channel.current]:pending(relativeTime, windingDown)
-		then
+		if not channel.done and (
+			channel.current < #channel or
+			channel[channel.current]:pending(relativeTime, windingDown)
+		) then
 			isDone = false
 		end
 	end
