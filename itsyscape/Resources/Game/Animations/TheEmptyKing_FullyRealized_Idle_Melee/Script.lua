@@ -6,12 +6,12 @@ Animation "The Empty King (Fully Realized) Idle (Melee)" {
 
 	Blend {
 		from = "The Empty King (Fully Realized) Attack (Melee, 1)",
-		duration = 0.5
+		duration = 0.125
 	},
 
 	Blend {
 		from = "The Empty King (Fully Realized) Attack (Melee, 2)",
-		duration = 0.125
+		duration = 0.5
 	},
 
 	Blend {
