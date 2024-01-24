@@ -46,19 +46,20 @@ function ParticlesInstance:play(animatable, time)
 		if attach then
 			local transform = love.math.newTransform()
 
+			--transform:applyQuaternion((Quaternion.X_90):get())
+
 			if rotation and Class.isCompatibleType(rotation, Quaternion) then
 				transform:applyQuaternion(rotation:get())
 			end
 
 			transform:scale(scale:get())
 
-			do
-				local otherTransform = animatable:getComposedTransform(attach)
+			animatable:getPostComposedTransform(attach, function(otherTransform)
 				transform:apply(otherTransform)
-			end
 
-			local localPosition = Vector(transform:transformPoint(0, 0, 0))
-			self.sceneNode:updateLocalPosition(localPosition)
+				local localPosition = Vector(transform:transformPoint(0, 0, 0))
+				self.sceneNode:updateLocalPosition(localPosition)
+			end)
 		end
 	end
 end
