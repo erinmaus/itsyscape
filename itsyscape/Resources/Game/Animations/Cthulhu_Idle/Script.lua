@@ -1,6 +1,4 @@
 Animation "Cthulhu Risen" {
-	fadesIn = true,
-
 	Target {
 		PlaySound "Resources/Game/Animations/Cthulhu_Idle/Sound.wav",
 		PlayAnimation "Resources/Game/Animations/Cthulhu_Idle/Rise.lanim",
