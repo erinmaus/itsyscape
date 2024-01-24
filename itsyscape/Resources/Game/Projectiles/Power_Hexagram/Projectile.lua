@@ -29,6 +29,7 @@ Hexagram.OUT_TIME      = 59
 Hexagram.FADE_DURATION = 1
 
 Hexagram.COLOR = Color(1, 0, 0, 0.5)
+Hexagram.SCALE = Vector(4.5, 1, 4.5)
 
 function Hexagram:attach()
 	Projectile.attach(self)
@@ -48,7 +49,7 @@ function Hexagram:load()
 
 	self.hexagram = LightBeamSceneNode()
 	self.hexagram:setParent(root)
-	self.hexagram:setBeamSize(0.5)
+	self.hexagram:setBeamSize(1.5)
 	self.hexagram:getMaterial():setIsFullLit(true)
 	self.hexagram:getMaterial():setColor(Hexagram.COLOR)
 	self.hexagram:getTransform():setLocalTranslation(Vector.UNIT_Y)
@@ -135,17 +136,9 @@ function Hexagram:update(elapsed)
 
 		local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, delta * math.pi * 4)
 
-		local scale
-		do
-			local min, max = self:getDestination():getBounds()
-			local size = max - min
-			scale = Vector(math.max(size.x, size.z)) * 2
-			position = position - Vector(0, size.y / 2 - 0.25, 0)
-		end
-
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
-		root:getTransform():setLocalScale(scale)
+		root:getTransform():setLocalScale(Hexagram.SCALE)
 
 		self.light:setColor(Color(1, 0, 0, 1))
 		self.light:setAttenuation(alpha * 4 + 12)
