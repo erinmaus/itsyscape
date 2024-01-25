@@ -11,7 +11,7 @@
 **Narrator**:
 * In a time immemorial, the Old Ones were banished from the Realm in a horrific ritual that claimed innumerable lives by The Empty King.
 * The Old Ones gnaw at the edges of The Empty King's enchantment, yearning to wake up from their horrible nightmare.
-* Yet... The actions of an up-and-coming hero may change the balance of the world.
+* Yet... The actions of an up-and-coming hero may change the fate of the world.
 
 # Scene 2
 
@@ -41,6 +41,7 @@
 **Narrator:**
 * Gather resources on your quest to make better gear, but be warned...
 * ...the rarer the materials, the more difficult they will be to obtain.
+* Sometimes nature might fight back!
 * Then craft some awesome gear!
 * You'll definitely need it if you ever hope to face The Empty King and survive...
 
