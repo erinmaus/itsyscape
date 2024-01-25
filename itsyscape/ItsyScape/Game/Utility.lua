@@ -4070,7 +4070,6 @@ function Utility.Peep.makeHuman(peep)
 	if movement then
 		movement.maxSpeed = 6
 		movement.maxAcceleration = 8
-		movement.decay = 0.6
 		movement.velocityMultiplier = 1
 		movement.accelerationMultiplier = 1
 		movement.stoppingForce = 3

@@ -357,6 +357,7 @@ function MovementCortex:update(delta)
 			local oldTile, oldI, oldJ = map:getTileAt(oldPosition.x, oldPosition.z)
 
 			local velocity = (movement.velocity + movement.additionalVelocity) * delta * movement.velocityMultiplier
+			velocity = velocity + movement.push * delta
 			velocity = self:accumulate(peep, self.accumulateVelocity, velocity)
 
 			local newPosition = position.position + velocity
@@ -388,6 +389,7 @@ function MovementCortex:update(delta)
 				position.position = newPosition
 			end
 
+			local isOnGround = movement.isOnGround
 			local y = map:getInterpolatedHeight(
 				position.position.x,
 				position.position.z) + movement.float
@@ -417,20 +419,27 @@ function MovementCortex:update(delta)
 				movement.isOnGround = false
 			end
 
+			if not isOnGround and movement.isOnGround then
+				peep:poke("fall")
+			end
+
 			if movement.isOnGround then
 				position.position.y = y
 				movement.acceleration.y = 0
 				movement.velocity.y = 0
 
 				if movement.isStopping then
-					movement.acceleration = movement.acceleration * movement.decay * delta
-					movement.velocity = movement.velocity * movement.decay * delta
+					movement.acceleration = movement.acceleration * (movement.accelerationDecay ^ delta)
+					movement.velocity = movement.velocity * (movement.velocityDecay ^ delta)
 				end
 			else
 				if not movement.noClip then
 					position.position.y = math.max(position.position.y, y)
 				end
 			end
+
+			movement.push = movement.push * (movement.pushDecay ^ delta)
+			clampVector(movement.push)
 
 			position.position = self:accumulate(peep, self.accumulatePosition, position.position, y)
 
