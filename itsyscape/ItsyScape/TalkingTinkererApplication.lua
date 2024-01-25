@@ -121,7 +121,8 @@ function TalkingTinkererApplication:initTinkerer()
 	self.targetSceneNode = self:getGameView():getScene()
 
 	local direction = DirectionalLightSceneNode()
-	direction:setDirection(Vector(0, 0, 1):getNormal())
+	direction:setColor(Color(0.5, 0.5, 0.5, 1.0))
+	direction:setDirection(Vector(1, 0, 1):getNormal())
 	direction:setParent(self.targetSceneNode)
 
 	local ambient = AmbientLightSceneNode()
