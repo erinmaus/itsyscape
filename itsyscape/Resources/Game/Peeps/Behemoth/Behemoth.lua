@@ -47,8 +47,7 @@ Behemoth.KICK_VELOCITY_Y = 50
 
 Behemoth.MIMICS = {
 	"ChestMimic",
-	"CrateMimic",
-	"BarrelMimic"
+	"CrateMimic"
 }
 
 function Behemoth:new(resource, name, ...)
