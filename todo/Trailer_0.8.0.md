@@ -3,14 +3,18 @@
 "Learn the secrets of the The Empty King."
 
 **Clips**:
-* Show cutscene of The Empty King slaying Yendor with Gottskrieg in The Empty Ruins. Skulls form on the walls, screaming, as The Empty King's army is slain away when The Empty King deals the final blow against Yendor.
+* Show cutscene of The Empty King slaying Yendor with Gottskrieg. The Empty King's zealot army vs Yendorians (with ballistas, etc).
+  1. The Empty King summons Gottskrieg and dashes at Yendor.
+  2. Deals multiple blows against Yendor while dodging Yendor's attacks with various spells (Fire Blast, Miasma, Infest).
+  3. Deals a final blow, casting Astral Maelstrom against Yendor.
+  4. Yendor dies, causing a shockwave that kills the Yendorians and Zealots.
 * Show cutscene w/ silhouette of Gammon being thrown from the Realm.
 * Show cutscene w/ silhouette of Prisium grasping at a closing portal.
 * Show cutscene w/ zoomed-in Eye of Bastiel closing.
 
 **Narrator**:
-* In a time immemorial, the Old Ones were banished from the Realm in a horrific ritual that claimed innumerable lives by The Empty King.
-* The Old Ones gnaw at the edges of The Empty King's enchantment, yearning to wake up from their horrible nightmare.
+* In a time immemorial, The Empty King performed a horrific ritual that claimed innumerable lives in order to banish the Old Ones from the Realm.
+* But the Old Ones gnaw at the edges of The Empty King's enchantment, yearning to wake up from their horrible nightmares.
 * Yet... The actions of an up-and-coming hero may change the fate of the world.
 
 # Scene 2
@@ -60,7 +64,7 @@
 # Scene 5
 
 **Clips:**
-* Show The Empty King in the Sistine of the Simulacrum engaging the player with Gottskrieg, fade out as The Empty King does an "AGS special" (the spinny jumpy spinny attack)
+* Show The Empty King in the Sistine of the Simulacrum engaging the player with the ancient zweihander, fade out as The Empty King does an "AGS special" (the spinny jumpy spinny attack).
 
 **Narrator:**
 * Will you face The Empty King with your comrades or alone?
