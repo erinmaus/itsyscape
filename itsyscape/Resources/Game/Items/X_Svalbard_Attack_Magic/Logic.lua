@@ -30,7 +30,7 @@ function SvalbardMagicAttack:getWeaponType()
 end
 
 function SvalbardMagicAttack:getCooldown(peep)
-	return 3
+	return 4
 end
 
 function SvalbardMagicAttack:getProjectile()
