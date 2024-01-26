@@ -736,7 +736,6 @@ function ActorView:getBoneWorldPosition(boneName, position, rotation)
 	composedTransform:apply(nodeTransform)
 	composedTransform:applyQuaternion(rotation:get())
 	composedTransform:apply(boneTransform)
-	composedTransform:apply(inverseBindPoseTransform)
 	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
 
 	return Vector(composedTransform:transformPoint(position:get()))
