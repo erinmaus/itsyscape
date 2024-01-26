@@ -127,7 +127,7 @@ function Siphon:tick()
 
 	for _, adventurer in pairs(self.adventurers) do
 		if not adventurer.spawnPosition then
-			adventurer.spawnPosition = sourceView:getBoneWorldPosition(adventurer.boneName, Vector.ZERO, Quaternion.Y_180)
+			adventurer.spawnPosition = sourceView:getBoneWorldPosition(adventurer.boneName)
 			isPending = true
 		end
 	end
