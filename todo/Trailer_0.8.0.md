@@ -39,9 +39,9 @@
 * Show clip of player making ancient ceremonial and then engaging a Tinkerer w/ gear and Miasma spell
 
 **Narrator:**
-* Gather resources on your quest to make better gear, but be warned...
-* ...the rarer the materials, the more difficult they will be to obtain.
-* Sometimes nature might fight back!
+* Gather resources on your quest to make better gear, but be careful...
+* ...the rarer the materials, the more dangerous they will be to find.
+* Sometimes nature might just fight back!
 * Then craft some awesome gear!
 * You'll definitely need it if you ever hope to face The Empty King and survive...
 
