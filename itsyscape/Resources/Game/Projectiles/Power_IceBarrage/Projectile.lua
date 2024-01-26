@@ -17,7 +17,7 @@ local Projectile = require "ItsyScape.Graphics.Projectile"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
 local IceBarrage = Class(Projectile)
-IceBarrage.DURATION = 3
+IceBarrage.DURATION = 1.5
 IceBarrage.ALPHA_MULTIPLIER = 1.75
 IceBarrage.COLOR = Color(0.8, 0.7, 1.0)
 
@@ -56,7 +56,7 @@ function IceBarrage:tick()
 		local x = max.x - min.x
 		local z = max.z - min.z
 
-		self.size = Vector(math.max(x, z))
+		self.size = Vector(math.max(x, z)) / 2
 
 		self.position.y = self.position.y - (max.y - min.y) / 2
 	end
@@ -72,7 +72,7 @@ function IceBarrage:update(elapsed)
 		alpha = math.min(alpha, 1)
 
 		root:getTransform():setLocalTranslation(self.position)
-		root:getTransform():setLocalScale(self.scale)
+		root:getTransform():setLocalScale(self.size)
 
 		self.decoration:getMaterial():setColor(Color(
 			IceBarrage.COLOR.r,
