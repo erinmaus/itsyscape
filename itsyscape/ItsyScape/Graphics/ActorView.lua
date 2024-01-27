@@ -456,6 +456,11 @@ function ActorView:_doApplySkin(slotNodes)
 						elseif inputLight:getAmbience() > 0 then
 							outputLight = AmbientLightSceneNode()
 						end
+
+						-- Only the client's player's lights should be global.
+						if self.actor == self.game:getGame():getPlayer():getActor() then
+							outputLight:setIsGlobal(true)
+						end
 						
 						if outputLight then
 							outputLight:fromLight(inputLight)

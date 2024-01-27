@@ -38,6 +38,8 @@ function BasicDirectionalLight:ready(director, game)
 			self.direction = Vector(x or 0, y or 0, z or 0)
 		end
 	end
+
+	self:makeGlobal()
 end
 
 function BasicDirectionalLight:getPropState()

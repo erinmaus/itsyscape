@@ -202,6 +202,16 @@ bool nbunny::SceneNodeMaterial::get_is_full_lit() const
 	return is_full_lit;
 }
 
+void nbunny::SceneNodeMaterial::set_is_light_target_position_enabled(bool value)
+{
+	is_light_target_position_enabled = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_light_target_position_enabled() const
+{
+	return is_light_target_position_enabled;
+}
+
 void nbunny::SceneNodeMaterial::set_is_z_write_disabled(bool value)
 {
 	is_z_write_disabled = value;	
@@ -1035,6 +1045,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getIsTranslucent", &nbunny::SceneNodeMaterial::get_is_translucent,
 		"setIsFullLit", &nbunny::SceneNodeMaterial::set_is_full_lit,
 		"getIsFullLit", &nbunny::SceneNodeMaterial::get_is_full_lit,
+		"setIsLightTargetPositionEnabled", &nbunny::SceneNodeMaterial::set_is_light_target_position_enabled,
+		"getIsLightTargetPositionEnabled", &nbunny::SceneNodeMaterial::get_is_light_target_position_enabled,
 		"setIsZWriteDisabled", &nbunny::SceneNodeMaterial::set_is_z_write_disabled,
 		"getIsZWriteDisabled", &nbunny::SceneNodeMaterial::get_is_z_write_disabled,
 		"setIsCullDisabled", &nbunny::SceneNodeMaterial::set_is_cull_disabled,
