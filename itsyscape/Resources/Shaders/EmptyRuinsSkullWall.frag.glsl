@@ -12,13 +12,12 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 
 	float time = frag_TextureTime.s;
 
-	textureCoordinate.s += mix(-(1.0 / 32.0), (1.0 / 32.0), sin(scape_Time * PI / 2.0 * time) * cos(textureCoordinate.t * PI * 2.0));
+	textureCoordinate.s += mix(-(1.0 / 64.0), (1.0 / 64.0), sin(scape_Time * PI / 2.0 * time));
     textureCoordinate.s = mod(textureCoordinate.s, 1.0);
 
     vec4 texelBefore = Texel(scape_DiffuseTexture, vec3(textureCoordinate, frag_TextureLayer.s));
     vec4 texelAfter = Texel(scape_DiffuseTexture, vec3(textureCoordinate, frag_TextureLayer.t));
 
     float delta = frag_TextureTime.t;
-
 	return mix(texelBefore, texelAfter, delta) * color;
 }
