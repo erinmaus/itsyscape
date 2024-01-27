@@ -39,6 +39,8 @@ function BasicAmbientLight:ready(director, game)
 
 		self.ambience = light:get("Ambience") or 0.5
 	end
+
+	self:makeGlobal()
 end
 
 function BasicAmbientLight:getPropState()

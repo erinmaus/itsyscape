@@ -87,6 +87,17 @@ function Material:setIsFullLit(value)
 	self._handle:setIsFullLit(value or false)
 end
 
+-- If true, the node this material belongs to will use the camera's target position
+-- for forward rendering light locality checks (sometimes good for massive objects)! If false,
+-- will use the node's current position instead. Defaults to false.
+function Material:getIsLightTargetPositionEnabled()
+	return self._handle:getIsLightTargetPositionEnabled()
+end
+
+function Material:setIsLightTargetPositionEnabled(value)
+	self._handle:setIsLightTargetPositionEnabled(value or false)
+end
+
 -- Returns true if the Material should not write to the depth buffer, false otherwise.
 function Material:getIsZWriteDisabled()
 	return self._handle:getIsZWriteDisabled()

@@ -28,6 +28,8 @@ function EmptyRuinsSkeletonWall.SceneNode:new()
 	SceneNode.new(self)
 
 	self:getMaterial():setShader(EmptyRuinsSkeletonWall.SHADER)
+	self:getMaterial():setIsLightTargetPositionEnabled(true)
+	self:getMaterial():setIsTranslucent(true)
 
 	self.mesh = false
 end

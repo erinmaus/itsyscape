@@ -30,6 +30,22 @@ function BasicLight:setColor(value)
 	self.color = value or self.color
 end
 
+function BasicLight:setIsGlobal(value)
+	self.global = value or false
+end
+
+function BasicLight:makeLocal()
+	self.global = false
+end
+
+function BasicLight:makeGlobal()
+	self.global = true
+end
+
+function BasicLight:getIsGlobal()
+	return self.global
+end
+
 function BasicLight:spawnOrPoofTile(tile, i, j, mode)
 	-- Nothing.
 end
@@ -57,8 +73,8 @@ function BasicLight:ready(director, game)
 
 			self.color = Color(red, green, blue)
 
-			local isLocal = light:get("Local")
-			self.global = not isLocal or isLocal == 0
+			local isGlobal = light:get("Global")
+			self.global = isGlobal ~= 0
 		end
 	end
 end
