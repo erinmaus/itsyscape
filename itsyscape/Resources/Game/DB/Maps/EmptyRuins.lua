@@ -259,3 +259,12 @@ do
 		Resource = Barrel
 	}
 end
+
+do
+	local EmptyRuinsSkeletonWall = ItsyScape.Resource.Prop "EmptyRuinsSkeletonWall"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = EmptyRuinsSkeletonWall
+	}
+end

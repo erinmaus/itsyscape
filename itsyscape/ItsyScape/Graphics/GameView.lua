@@ -813,6 +813,7 @@ function GameView:decorate(group, decoration, layer)
 			sceneNode:setParent(map)
 
 			d.sceneNode = sceneNode
+			d.staticMesh = staticMesh
 		end)
 
 		d.decoration = decoration
@@ -1045,6 +1046,17 @@ function GameView:getDecorations()
 	local count = 0
 	for k, v in pairs(self.decorations) do
 		result[v.name] = v.decoration
+		count = count + 1
+	end
+
+	return result, count
+end
+
+function GameView:getDecorationMeshes()
+	local result = {}
+	local count = 0
+	for k, v in pairs(self.decorations) do
+		result[v.name] = v.staticMesh
 		count = count + 1
 	end
 
