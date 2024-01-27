@@ -49,8 +49,8 @@ end
 EmptyRuinsSkeletonWall.MIN_NUM_ATTEMPTS = 4
 EmptyRuinsSkeletonWall.MAX_NUM_ATTEMPTS = 10
 
-EmptyRuinsSkeletonWall.MIN_SKULL_SIZE = 1.25
-EmptyRuinsSkeletonWall.MAX_SKULL_SIZE = 1.75
+EmptyRuinsSkeletonWall.MIN_SKULL_SIZE = 2
+EmptyRuinsSkeletonWall.MAX_SKULL_SIZE = 3
 
 EmptyRuinsSkeletonWall.MIN_TIME = 0.25
 EmptyRuinsSkeletonWall.MAX_TIME = 1
