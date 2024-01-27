@@ -84,7 +84,7 @@ EmptyRuinsSkeletonWall.MESH_DATA = {
 EmptyRuinsSkeletonWall.MESH_DATA_LAYER_INDEX = 13
 EmptyRuinsSkeletonWall.MESH_DATA_TIME_INDEX  = 15
 
-EmptyRuinsSkeletonWall.FADE_IN_DURATION = 1.25
+EmptyRuinsSkeletonWall.FADE_IN_DURATION = 3
 
 function EmptyRuinsSkeletonWall:new(...)
 	PropView.new(self, ...)
