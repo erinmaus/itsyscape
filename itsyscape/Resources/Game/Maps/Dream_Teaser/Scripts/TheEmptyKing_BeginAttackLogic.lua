@@ -12,7 +12,7 @@ local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
 
-local ZWEIHANDER = B.Reference("TheEmptyKing_BeginAttackLogic", "ZWEIHANDER")
+local STAFF = B.Reference("TheEmptyKing_BeginAttackLogic", "STAFF")
 local AGGRESSOR = B.Reference("TheEmptyKing_BeginAttackLogic", "AGGRESSOR")
 local PRE_SUMMON_WAIT = 2
 local POST_SUMMON_WAIT = 1.25
@@ -36,24 +36,24 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Step {
 			Mashina.Peep.PlayAnimation {
-				filename = "Resources/Game/Animations/TheEmptyKing_FullyRealized_SummonWeapon_Melee/Script.lua",
+				filename = "Resources/Game/Animations/TheEmptyKing_FullyRealized_SummonWeapon_Magic/Script.lua",
 				priority = math.huge
 			},
 
 			Mashina.Peep.PlayAnimation {
-				filename = "Resources/Game/Animations/TheEmptyKing_FullyRealized_Idle_Melee/Script.lua",
+				filename = "Resources/Game/Animations/TheEmptyKing_FullyRealized_Idle_Magic/Script.lua",
 				priority = 100
 			},
 
 			Mashina.Peep.GetResource {
 				type = "Prop",
-				name = "TheEmptyKing_FullyRealized_Zweihander",
-				[ZWEIHANDER] = B.Output.peep
+				name = "TheEmptyKing_FullyRealized_Staff",
+				[STAFF] = B.Output.peep
 			},
 
 			Mashina.Peep.PokeSelf {
-				event = "summonZweihander",
-				poke = ZWEIHANDER
+				event = "summonStaff",
+				poke = STAFF
 			},
 
 			Mashina.Peep.TimeOut {
@@ -61,7 +61,7 @@ local Tree = BTreeBuilder.Node() {
 			},
 
 			Mashina.Peep.PokeSelf {
-				event = "equipZweihander"
+				event = "equipStaff"
 			},
 
 			Mashina.Peep.Talk {

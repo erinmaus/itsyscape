@@ -88,7 +88,12 @@ end
 
 function TheEmptyKing:onSummonZweihander(zweihander)
 	local stage = self:getDirector():getGameInstance():getStage()
-	stage:fireProjectile("TheEmptyKingFullyRealized_SummonZweihander", zweihander, self)
+	stage:fireProjectile("TheEmptyKing_FullyRealized_SummonZweihander", zweihander, self)
+end
+
+function TheEmptyKing:onSummonStaff(zweihander)
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("TheEmptyKing_FullyRealized_SummonStaff", zweihander, self)
 end
 
 function TheEmptyKing:onInitiateAttack()
@@ -105,6 +110,7 @@ function TheEmptyKing:onInitiateAttack()
 	local isSpecial = self.numAttacks == self.NUM_ATTACK_ANIMATIONS
 
 	local Zweihander = Utility.Peep.getXWeaponType("TheEmptyKing_FullyRealized_Zweihander")
+	local Staff = Utility.Peep.getXWeaponType("TheEmptyKing_FullyRealized_Staff")
 	local weapon = Utility.Peep.getEquippedWeapon(self, true)
 
 	local attackAnimation
@@ -117,6 +123,16 @@ function TheEmptyKing:onInitiateAttack()
 			attackAnimation = CacheRef(
 				"ItsyScape.Graphics.AnimationResource",
 				string.format("Resources/Game/Animations/TheEmptyKing_FullyRealized_Attack_Melee%d/Script.lua", self.numAttacks))
+		end
+	elseif Class.isCompatibleType(weapon, Staff) then
+		if isSpecial then
+			attackAnimation = CacheRef(
+				"ItsyScape.Graphics.AnimationResource",
+				"Resources/Game/Animations/TheEmptyKing_FullyRealized_Attack_Magic_Special/Script.lua")
+		else
+			attackAnimation = CacheRef(
+				"ItsyScape.Graphics.AnimationResource",
+				string.format("Resources/Game/Animations/TheEmptyKing_FullyRealized_Attack_Magic%d/Script.lua", self.numAttacks))
 		end
 	end
 
@@ -164,6 +180,35 @@ function TheEmptyKing:onEquipZweihander(zweihander)
 	actor:setSkin(Equipment.PLAYER_SLOT_TWO_HANDED, Equipment.SKIN_PRIORITY_BASE, zweihanderSkin)
 
 	Utility.Peep.equipXWeapon(self, "TheEmptyKing_FullyRealized_Zweihander")
+end
+
+function TheEmptyKing:onEquipStaff(zweihander)
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return
+	end
+
+	local idleAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/TheEmptyKing_FullyRealized_Idle_Magic/Script.lua")
+	self:addResource("animation-idle", idleAnimation)
+	actor:playAnimation("main", 1, idleAnimation)
+
+	local attackAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/TheEmptyKing_FullyRealized_Attack_Magic1/Script.lua")
+	self:addResource("animation-attack", attackAnimation)
+
+	self.numAttacks = 1
+
+	local zweihanderSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/TheEmptyKing_FullyRealized/Staff.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_TWO_HANDED, Equipment.SKIN_PRIORITY_BASE, zweihanderSkin)
+
+	Utility.Peep.equipXWeapon(self, "TheEmptyKing_FullyRealized_Staff")
 end
 
 function TheEmptyKing:update(...)
