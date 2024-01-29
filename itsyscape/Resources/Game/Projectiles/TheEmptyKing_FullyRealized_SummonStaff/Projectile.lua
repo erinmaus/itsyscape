@@ -22,8 +22,8 @@ local StaffPropView = require "Resources.Game.Props.TheEmptyKing_FullyRealized_S
 
 local Staff = Class(Projectile)
 Staff.DURATION = 1.5
-Staff.OFFSET_POSITION = Vector(-4.15, -9, 0.1)
-Staff.OFFSET_ANGLE = math.pi / 4 + math.pi / 2
+Staff.OFFSET_POSITION = Vector(0, 0, 0)
+Staff.OFFSET_ANGLE = -math.pi / 4
 Staff.TARGET_ANGLE = math.pi * 4
 Staff.CLAMP_BOTTOM = true
 

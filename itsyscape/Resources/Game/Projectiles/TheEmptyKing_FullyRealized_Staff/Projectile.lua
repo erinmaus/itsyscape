@@ -19,7 +19,7 @@ local Projectile = require "ItsyScape.Graphics.Projectile"
 
 local Staff = Class(Projectile)
 Staff.DURATION = 1.0
-Staff.OFFSET_POSITION = Vector(0)
+Staff.OFFSET_POSITION = Vector(6, 0, 0)
 Staff.COLOR = Color.fromHexString("ff0000")
 Staff.ALPHA_MULTIPLIER = 1.75
 Staff.NUM_BEAMS = 10
@@ -41,7 +41,7 @@ function Staff:load()
 	for i = 1, Staff.NUM_BEAMS do
 		local beam = LightBeamSceneNode()
 		beam:setParent(root)
-		beam:setBeamSize(0.5)
+		beam:setBeamSize(1)
 		beam:getMaterial():setIsFullLit(true)
 		beam:getMaterial():setIsZWriteDisabled(true)
 		beam:getMaterial():setColor(self.COLOR)
