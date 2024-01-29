@@ -18,7 +18,7 @@ function Staff:getAttackRange()
 end
 
 function Staff:getCooldown(peep)
-	return 1.8
+	return 2.4
 end
 
 function Staff:perform(peep, target)

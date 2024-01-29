@@ -16,7 +16,7 @@ Animation "The Empty King (Fully Realized) Idle (Magic)" {
 
 	Blend {
 		from = "The Empty King (Fully Realized) Attack (Magic, Special)",
-		duration = 0.125
+		duration = 0.25
 	},
 
 	Target {

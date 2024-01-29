@@ -18,7 +18,7 @@ function AncientZweihander:getAttackRange()
 end
 
 function AncientZweihander:getCooldown(peep)
-	return 1.8
+	return 2.4
 end
 
 function AncientZweihander:getProjectile()
