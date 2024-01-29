@@ -39,13 +39,13 @@ function AncientZweihander:load()
 
 	resources:queue(
 		TextureResource,
-		"Resources/Game/Projectiles/TheEmptyKingFullyRealized_SummonZweihander/Texture.png",
+		"Resources/Game/Projectiles/TheEmptyKing_FullyRealized_SummonZweihander/Texture.png",
 		function(texture)
 			self.texture = texture
 		end)
 	resources:queue(
 		StaticMeshResource,
-		"Resources/Game/Projectiles/TheEmptyKingFullyRealized_SummonZweihander/Model.lstatic",
+		"Resources/Game/Projectiles/TheEmptyKing_FullyRealized_SummonZweihander/Model.lstatic",
 		function(mesh)
 			self.zweihander = DecorationSceneNode()
 			self.zweihander:fromGroup(mesh:getResource(), "Zweihander")

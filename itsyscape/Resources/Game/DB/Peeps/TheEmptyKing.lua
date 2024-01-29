@@ -71,6 +71,27 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Zweihander"
 }
 
+ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Staff" {
+	-- Nothing
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Staff"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Gottskrieg",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Staff"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A weapon capable of siphoning the life force of a god. The Empty King turned Yendor into the energy source for their enchantment to banish the Old Ones from the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Staff"
+}
+
 ItsyScape.Resource.Peep "EmptyZealot_Cutscene" {
 	-- Nothing
 }

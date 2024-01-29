@@ -2,7 +2,7 @@ local M = {}
 
 M._MAP = ItsyScape.Resource.Map "Dream_Teaser"
 
-M["TheEmptyKing_FullyRealized_Zweihander1"] = ItsyScape.Resource.MapObject.Unique()
+M["TheEmptyKing_FullyRealized_Staff1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 27.000000,
@@ -15,14 +15,14 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "TheEmptyKing_FullyRealized_Zweihander1",
+		Name = "TheEmptyKing_FullyRealized_Staff1",
 		Map = M._MAP,
-		Resource = M["TheEmptyKing_FullyRealized_Zweihander1"]
+		Resource = M["TheEmptyKing_FullyRealized_Staff1"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Zweihander",
-		MapObject = M["TheEmptyKing_FullyRealized_Zweihander1"]
+		Prop = ItsyScape.Resource.Prop "TheEmptyKing_FullyRealized_Staff",
+		MapObject = M["TheEmptyKing_FullyRealized_Staff1"]
 	}
 end
 
