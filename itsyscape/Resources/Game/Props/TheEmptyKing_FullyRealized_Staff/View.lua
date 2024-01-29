@@ -14,7 +14,7 @@ local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView"
 
 local Staff = Class(SimpleStaticView)
 Staff.OFFSET   = Vector(0, 2, 0)
-Staff.ROTATION = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 4 + math.pi / 2)
+Staff.ROTATION = Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi / 4)
 
 function Staff:getTextureFilename()
 	return "Resources/Game/Props/TheEmptyKing_FullyRealized_Staff/Texture.png"
