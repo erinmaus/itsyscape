@@ -27,6 +27,7 @@ function Particles:new(t)
 	self.particleSystem = t.system or {}
 	self.attach = t.attach or false
 	self.rotation = t.rotation or 'IDENTITY'
+	self.reverseRotation = t.reverseRotation or 'IDENTITY'
 	self.scale = Vector(unpack(t.scale or { 1, 1, 1 }))
 end
 
@@ -60,6 +61,14 @@ end
 
 function Particles:setRotation(value)
 	self.rotation = value
+end
+
+function Particles:getReverseRotation()
+	return self.reverseRotation
+end
+
+function Particles:setReverseRotation(value)
+	self.reverseRotation = value
 end
 
 function Particles:getScale()
