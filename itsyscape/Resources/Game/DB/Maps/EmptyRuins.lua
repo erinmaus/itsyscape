@@ -268,3 +268,12 @@ do
 		Resource = EmptyRuinsSkeletonWall
 	}
 end
+
+do
+	local EmptyRuinsWallDecoration = ItsyScape.Resource.Prop "EmptyRuinsWallDecoration"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = EmptyRuinsWallDecoration
+	}
+end

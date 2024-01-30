@@ -55,7 +55,7 @@ EmptyRuinsSkeletonWall.MAX_SKULL_SIZE = 3
 EmptyRuinsSkeletonWall.MIN_TIME = 0.25
 EmptyRuinsSkeletonWall.MAX_TIME = 1
 
-EmptyRuinsSkeletonWall.OFFSET = 1 / 8
+EmptyRuinsSkeletonWall.OFFSET = 3 / 8
 
 EmptyRuinsSkeletonWall.SKULL_DIRECTION_FRONT = 0
 EmptyRuinsSkeletonWall.SKULL_DIRECTION_LEFT  = 1
@@ -178,8 +178,8 @@ function EmptyRuinsSkeletonWall:_initSkulls()
 		local walls = {}
 
 		for name, decoration in pairs(decorations) do
-			if decoration:getTileSetID():match("EmptyRuinsSkull") and staticMeshes[name] then
-				Log.info("Found '%s' to skull-ify.", name)	
+			if name:match("/EmptyRuins_Downtown/") and decoration:getTileSetID():match("EmptyRuinsSkull") and staticMeshes[name] then
+				Log.info("Found '%s' to skull-ify.", name)
 
 				table.insert(walls, { decoration = decoration, name = name })
 			end

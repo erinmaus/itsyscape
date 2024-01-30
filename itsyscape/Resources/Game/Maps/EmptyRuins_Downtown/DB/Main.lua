@@ -110,25 +110,42 @@ do
 		ColorGreen = 55,
 		ColorBlue = 200,
 		NearDistance = 40,
-		FarDistance = 100,
+		FarDistance = 150,
 		FollowTarget = 1,
 		Resource = M["Light_Fog"]
 	}
 end
 
-M["Test"] = ItsyScape.Resource.MapObject.Unique()
+M["EmptyRuinsSkeletonWall"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 0,
 		PositionY = 0,
 		PositionZ = 0,
-		Name = "Test",
+		Name = "EmptyRuinsSkeletonWall",
 		Map = M._MAP,
-		Resource = M["Test"]
+		Resource = M["EmptyRuinsSkeletonWall"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "EmptyRuinsSkeletonWall",
-		MapObject = M["Test"]
+		MapObject = M["EmptyRuinsSkeletonWall"]
+	}
+end
+
+M["EmptyRuinsWallDecoration"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "EmptyRuinsWallDecoration",
+		Map = M._MAP,
+		Resource = M["EmptyRuinsWallDecoration"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "EmptyRuinsWallDecoration",
+		MapObject = M["EmptyRuinsWallDecoration"]
 	}
 end
