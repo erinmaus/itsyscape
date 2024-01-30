@@ -814,6 +814,7 @@ function GameView:decorate(group, decoration, layer)
 
 			d.sceneNode = sceneNode
 			d.staticMesh = staticMesh
+			d.layer = layer
 		end)
 
 		d.decoration = decoration
@@ -1050,6 +1051,16 @@ function GameView:getDecorations()
 	end
 
 	return result, count
+end
+
+function GameView:getDecorationLayer(decoration)
+	for k, v in pairs(self.decorations) do
+		if v.decoration == decoration then
+			return v.layer
+		end
+	end
+
+	return nil
 end
 
 function GameView:getDecorationMeshes()
