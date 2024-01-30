@@ -1604,7 +1604,7 @@ end
 
 -- Gets a random tile within the line of sight of (i, j) no more than 'distance' tiles away (Euclidean)
 -- Returns nil, nil if nothing was found
-function Utility.Map.getRandomTile(map, i, j, distance, checkLineOfSight, ...)
+function Utility.Map.getRandomTile(map, i, j, distance, checkLineOfSight, rng, flags, ...)
 	if checkLineOfSight == nil then
 		checkLineOfSight = true
 	end
@@ -1615,14 +1615,20 @@ function Utility.Map.getRandomTile(map, i, j, distance, checkLineOfSight, ...)
 		for mapI = 1, map:getWidth() do
 			local d = math.sqrt((mapI - i) ^ 2 + (mapJ - j) ^ 2)
 			local tile = map:getTile(mapI, mapJ)
-			if (i ~= mapI or j ~= mapJ) and d <= distance and tile:getIsPassable() then
+			if (i ~= mapI or j ~= mapJ) and d <= distance and tile:getIsPassable(flags) then
 				table.insert(m, { mapI, mapJ })
 			end
 		end
 	end
 
 	repeat
-		local index = love.math.random(1, #m)
+		local index
+		if rng then
+			index = rng:random(1, #m)
+		else
+			index = love.math.random(1, #m)
+		end
+
 		local tile = table.remove(m, index)
 
 		local currentI, currentJ = unpack(tile)
@@ -1639,9 +1645,9 @@ end
 -- Gets a random position within the line of sight of position no more than 'distance' units away (Euclidean)
 -- Returns nil if nothing was found
 -- May round 'distance' to the nearest tile size
-function Utility.Map.getRandomPosition(map, position, distance, checkLineOfSight, ...)
+function Utility.Map.getRandomPosition(map, position, distance, checkLineOfSight, rng, ...)
 	local _, tileI, tileJ = map:getTileAt(position.x, position.z)
-	local i, j = Utility.Map.getRandomTile(map, tileI, tileJ, math.max(distance / map:getCellSize(), math.sqrt(2)), checkLineOfSight, ...)
+	local i, j = Utility.Map.getRandomTile(map, tileI, tileJ, math.max(distance / map:getCellSize(), math.sqrt(2)), checkLineOfSight, rng, ...)
 
 	if i and j then
 		return map:getTileCenter(i, j)

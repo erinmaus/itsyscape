@@ -79,7 +79,7 @@ function NetworkRPCService:sendBatchNetworkEvent(clientID, batch)
 	self.outputChannel:push({
 		type = "batch",
 		client = clientID,
-		batch = buffer.encode(batch)
+		batch = batch
 	})
 end
 

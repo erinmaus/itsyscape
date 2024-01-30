@@ -17,19 +17,14 @@ local Prop = require "ItsyScape.Game.Model.Prop"
 local Stage = require "ItsyScape.Game.Model.Stage"
 local UI = require "ItsyScape.Game.Model.UI"
 local Event = require "ItsyScape.Game.RPC.Event"
+local EventQueue = require "ItsyScape.Game.RPC.EventQueue"
 local State = require "ItsyScape.Game.RPC.State"
+local OutgoingEventQueue = require "ItsyScape.Game.RPC.OutgoingEventQueue"
 local Property = require "ItsyScape.Game.RPC.Property"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 local NProperty = require "nbunny.gamemanager.property"
 
 local GameManager = Class()
-
-GameManager.QUEUE_EVENT_TYPE_CREATE   = "create"
-GameManager.QUEUE_EVENT_TYPE_DESTROY  = "destroy"
-GameManager.QUEUE_EVENT_TYPE_CALLBACK = "callback"
-GameManager.QUEUE_EVENT_TYPE_PROPERTY = "property"
-GameManager.QUEUE_EVENT_TYPE_TICK     = "tick"
-GameManager.QUEUE_EVENT_TYPE_PROTOCOL = "protocol"
 
 GameManager.Instance = Class()
 function GameManager.Instance:new(interface, id, instance, gameManager)
@@ -230,7 +225,7 @@ end
 function GameManager:new()
 	self.state = State()
 
-	self.queue = {}
+	self.queue = OutgoingEventQueue()
 
 	self.interfaces = {}
 	self.instances = {}
@@ -246,6 +241,10 @@ function GameManager:new()
 	self.state:registerTypeProvider("ItsyScape.Graphics.Decoration", TypeProvider.Decoration())
 	self.state:registerTypeProvider("ItsyScape.World.Map", TypeProvider.Map())
 	self.state:registerTypeProvider("ItsyScape.World.Tile", TypeProvider.Tile())
+end
+
+function GameManager:getQueue()
+	return self.queue
 end
 
 function GameManager:getState()
@@ -272,29 +271,21 @@ function GameManager:push(e, key)
 end
 
 function GameManager:process(e)
-	if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE then
+	if e.type == EventQueue.EVENT_TYPE_CREATE then
 		self:processCreate(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY then
+	elseif e.type == EventQueue.EVENT_TYPE_DESTROY then
 		self:processDestroy(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
+	elseif e.type == EventQueue.EVENT_TYPE_CALLBACK then
 		self:processCallback(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY then
+	elseif e.type == EventQueue.EVENT_TYPE_PROPERTY then
 		self:processProperty(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
+	elseif e.type == EventQueue.EVENT_TYPE_TICK then
 		self:processTick(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_PROTOCOL then
-		self:processProtocol(e)
 	end
 end
 
 function GameManager:pushCreate(interface, id)
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_CREATE,
-		interface = interface,
-		id = id
-	}
-
-	self:push(event)
+	self.queue:pushCreate(interface, id)
 end
 
 function GameManager:processCreate(e)
@@ -302,29 +293,15 @@ function GameManager:processCreate(e)
 end
 
 function GameManager:pushDestroy(interface, id)
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_DESTROY,
-		interface = interface,
-		id = id
-	}
-
-	self:push(event)
+	self.queue:pushDestroy(interface, id)
 end
 
 function GameManager:processDestroy(e)
 	-- Nothing.
 end
 
-function GameManager:pushCallback(interface, id, callback, args, key)
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_CALLBACK,
-		interface = interface,
-		id = id,
-		callback = callback,
-		value = args
-	}
-
-	self:push(event, key)
+function GameManager:pushCallback(interface, id, callback, ...)
+	self.queue:pushCallback(interface, id, callback, ...)
 end
 
 -- This process should be the same client/server.
@@ -341,17 +318,8 @@ function GameManager:processCallback(e)
 	end
 end
 
-function GameManager:pushProperty(interface, id, property, args, reliable)
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_PROPERTY,
-		interface = interface,
-		id = id,
-		property = property,
-		value = args,
-		__reliable = reliable
-	}
-
-	self:push(event)
+function GameManager:pushProperty(interface, id, property, ...)
+	self.queue:pushProperty(interface, id, property, ...)
 end
 
 function GameManager:processProperty(e)
@@ -365,13 +333,7 @@ end
 
 function GameManager:pushTick()
 	self.ticks = self.ticks + 1
-
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_TICK,
-		timestamp = self.ticks
-	}
-
-	self:push(event)
+	self.queue:pushTick(self.ticks)
 end
 
 function GameManager:processTick(e)

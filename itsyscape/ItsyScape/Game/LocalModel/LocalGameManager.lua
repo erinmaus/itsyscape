@@ -16,7 +16,9 @@ local GameProxy = require "ItsyScape.Game.Model.GameProxy"
 local PlayerProxy = require "ItsyScape.Game.Model.PlayerProxy"
 local StageProxy = require "ItsyScape.Game.Model.StageProxy"
 local UIProxy = require "ItsyScape.Game.Model.UIProxy"
+local EventQueue = require "ItsyScape.Game.RPC.EventQueue"
 local GameManager = require "ItsyScape.Game.RPC.GameManager"
+local OutgoingEventQueue = require "ItsyScape.Game.RPC.OutgoingEventQueue"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
@@ -30,8 +32,7 @@ function LocalGameManager:new(rpcService, game)
 	self.rpcService = rpcService
 	self.game = game
 
-	self.pending = {}
-	self.outgoing = {}
+	self.pending = OutgoingEventQueue()
 	self.outgoingTargets = {}
 	self.outgoingKeys = {}
 	self.pendingDeletion = {}
@@ -241,16 +242,13 @@ function LocalGameManager:destroyInstance(interface, id)
 	GameManager.destroyInstance(self, interface, id)
 end
 
-function LocalGameManager:_doSend(player, e, reliable, channel)
-	e.__channel = channel or LocalGameManager.GAME_CHANNEL
-	e.__reliable = (reliable == nil and true) or reliable
-
-	table.insert(self.pending, e)
+function LocalGameManager:_doSend(player, index)
+	self.pending:pull(self.outgoing:get(index))
 end
 
 function LocalGameManager:_doFlush(player)
-	self.rpcService:sendBatch(player:getClientID(), self.pending)
-	table.clear(self.pending)
+	self.rpcService:sendBatch(player:getClientID(), self.pending:getCurrentHandle())
+	self.pending:tick()
 end
 
 function LocalGameManager:getInstance(interface, id)
@@ -276,8 +274,10 @@ function LocalGameManager:sendToPlayer(player)
 		return
 	end
 
-	for i = 1, #self.outgoing do
-		local e = self.outgoing[i]
+	local queue = self:getQueue()
+
+	for i = 1, queue:length() do
+		local e = queue:get(i)
 
 		local target = self.outgoingTargets[i]
 		local isTargetMatch = target and target:getID() == player:getID()
@@ -288,9 +288,9 @@ function LocalGameManager:sendToPlayer(player)
 			instance = self:getInstance(e.interface, e.id)
 		end
 
-		if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
-		   e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY or
-		   e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY
+		if e.type == EventQueue.EVENT_TYPE_CREATE or
+		   e.type == EventQueue.EVENT_TYPE_DESTROY or
+		   e.type == EventQueue.EVENT_TYPE_PROPERTY
 		then
 			if e.interface == "ItsyScape.Game.Model.Actor" or
 			   e.interface == "ItsyScape.Game.Model.Prop"
@@ -301,8 +301,8 @@ function LocalGameManager:sendToPlayer(player)
 				local isPropMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance(), player)
 
 				if isActorMatch or isPropMatch or isTargetMatch or isLayerMatch then
-					if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE or
-					   e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY
+					if e.type == EventQueue.EVENT_TYPE_CREATE or
+					   e.type == EventQueue.EVENT_TYPE_DESTROY
 					then
 						Log.engine(
 							"Sending event to %s '%s' (%d) to player '%s' (%d).",
@@ -313,7 +313,7 @@ function LocalGameManager:sendToPlayer(player)
 					end
 
 					local reliable
-					if e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY then
+					if e.type == EventQueue.EVENT_TYPE_PROPERTY then
 						reliable = e.__reliable or false
 					else
 						reliable = true
@@ -326,14 +326,14 @@ function LocalGameManager:sendToPlayer(player)
 				if isSamePlayer then
 					self:_doSend(player, e)
 
-					if e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY then
+					if e.type == EventQueue.EVENT_TYPE_DESTROY then
 						self.game:acknowledgePlayerDestroyed(player)
 					end
 				end
 			elseif e.interface == "ItsyScape.Game.Model.Game" then
 				self:_doSend(player, e)
 			end
-		elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
+		elseif e.type == EventQueue.EVENT_TYPE_CALLBACK then
 			if e.interface == "ItsyScape.Game.Model.Stage" then
 				local key = self.outgoingKeys[i]
 

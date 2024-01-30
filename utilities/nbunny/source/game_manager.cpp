@@ -91,6 +91,120 @@ void nbunny::InstanceTypeProvider::serialize(lua_State* L)
 	lua_setfield(L, -2, "id");
 }
 
+nbunny::GameManagerVariant::GameManagerVariant()
+{
+	// Nothing.
+}
+
+nbunny::GameManagerVariant::GameManagerVariant(const GameManagerVariant& other)
+	: type(other.type)
+{
+	switch (other.type)
+	{
+		case TYPE_NIL:
+		default:
+			// Nothing.
+			break;
+
+		case TYPE_NUMBER:
+			value.number = other.value.number;
+			break;
+
+		case TYPE_BOOLEAN:
+			value.booleam = other.value.boolean;
+			break;
+
+		case TYPE_STRING:
+			value.string = new std::string(other.value.string);
+			break;
+
+		case TYPE_TABLE:
+			value.table = new Table();
+			value.table->array_values = other.value.table->array_values;
+			value.table->key_values = other.value.table->key_values;
+			break;
+
+		case TYPE_ARGS:
+			value.args = new Args();
+			args->parameter_values = other.value.args->parameter_values;
+			break;
+	}
+}
+
+nbunny::GameManagerVariant::GameManagerVariant(GameManagerVariant&& other)
+	: type(other.type)
+{
+	switch (other.type)
+	{
+		case TYPE_NIL:
+		default:
+			// Nothing.
+			break;
+
+		case TYPE_NUMBER:
+			value.number = other.value.number;
+			break;
+
+		case TYPE_BOOLEAN:
+			value.booleam = other.value.boolean;
+			break;
+
+		case TYPE_STRING:
+			value.string = other.value.string;
+			other.value.string = nullptr;
+			break;
+
+		case TYPE_TABLE:
+			value.table = other.value.table;
+			other.value.table = nullptr;
+			break;
+
+		case TYPE_ARGS:
+			value.args = other.value.arg;
+			other.args = nullptr;
+			break;
+	}
+
+	other.type = TYPE_NIL;
+}
+
+nbunny::GameManagerVariant::~GameManagerVariant()
+{
+	switch (type)
+	{
+		case TYPE_NIL:
+		case TYPE_NUMBER:
+		case TYPE_BOOLEAN:
+		default:
+			// Nothing.
+			break;
+
+		case TYPE_STRING:
+			if (value.string)
+			{
+				delete value.string;
+				value.string = nullptr;
+			}
+			break;
+
+		case TYPE_TABLE:
+			if (value.table)
+			{
+				delete value.table;
+				value.table = nullptr;
+			}
+			break;
+
+		case TYPE_ARGS:
+			if (value.args)
+			{
+				delete value.args;
+				value.args = nullptr;
+			}
+			break;
+	}
+}
+
 int nbunny::GameManagerState::REF = 0;
 
 bool nbunny::GameManagerState::serialize_type(lua_State* L, int index)
@@ -334,14 +448,7 @@ bool nbunny::GameManagerProperty::update(lua_State* L, GameManagerState& state)
 	bool was_empty = is_empty;
 	is_empty = false;
 	
-	if (field == "getState" && !was_empty)
-	{
-		bool result = state.deep_equals(L, previous_value, current_value);
-		return was_empty || !result;
-	}
-	
 	bool is_dirty = was_empty || !state.deep_equals(L, previous_value, current_value);
-
 	return is_dirty;
 }
 

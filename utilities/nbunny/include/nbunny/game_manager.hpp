@@ -56,6 +56,57 @@ namespace nbunny
 		void serialize(lua_State* L) override;
 	};
 
+	class GameManagerVariant
+	{
+	public:
+		enum Type
+		{
+			TYPE_NIL = 0,
+			TYPE_NUMBER,
+			TYPE_BOOLEAN,
+			TYPE_STRING,
+			TYPE_TABLE,
+			TYPE_ARGS
+		};
+
+		GameManagerVariant();
+		GameManagerVariant(const GameManagerVariant& other);
+		GameManagerVariant(GameManagerVariant&& other);
+		~GameManagerVariant();
+
+		void from_lua(lua_State* L, int index, int count = -1);
+
+		void get(lua_State* L);
+		void get(lua_State* L, const GameManagerVariant& key);
+
+		int length();
+
+	private:
+		int type = TYPE_NIL;
+
+		struct Table
+		{
+			std::vector<GameManagerVariant> array_values;
+			std::vector<std::pair<GameManagerVariant, GameManagerVariant>> key_values;
+		};
+
+		struct Args
+		{
+			std::vector<GameManagerVariant> parameter_values;
+		};
+
+		union
+		{
+			double number;
+			bool boolean;
+			std::string* string;
+			Table* table;
+			Args* args;
+		} value;
+	};
+
+	class 
+
 	class GameManagerState
 	{
 	private:
