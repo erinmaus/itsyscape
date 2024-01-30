@@ -20,6 +20,7 @@ local RemotePlayer = require "ItsyScape.Game.RemoteModel.Player"
 local RemoteProp = require "ItsyScape.Game.RemoteModel.Prop"
 local RemoteStage = require "ItsyScape.Game.RemoteModel.Stage"
 local RemoteUI = require "ItsyScape.Game.RemoteModel.UI"
+local OutgoingEventQueue = require "ItsyScape.Game.RPC.OutgoingEventQueue"
 local GameManager = require "ItsyScape.Game.RPC.GameManager"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 

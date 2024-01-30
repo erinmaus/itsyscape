@@ -470,7 +470,10 @@ function Application:update(delta)
 		self:measure('game:update()', function() self.localGame:update(delta) end)
 	else
 		self:processAdminEvents()
+
+		collectgarbage("stop")
 		self:measure('remoteGameManager:receive()', function() self.remoteGameManager:receive() end)
+		collectgarbage("restart")
 	end
 
 	if not _CONF.server then

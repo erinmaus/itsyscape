@@ -57,16 +57,7 @@ while isRunning do
 					for i = 1, #batch do
 						local b = batch[i]
 
-						local flag
-						if b.__reliable then
-							flag = 'reliable'
-						else
-							flag = 'unsequenced'
-						end
-
-						local channel = b.__channel
-
-						client:send(love.data.compress('string', 'lz4', buffer.encode(b), -1), channel, flag)
+						client:send(love.data.compress('string', 'lz4', buffer.encode(b), -1))
 					end
 				else
 					Log.warnOnce("Client %d does not exist; cannot batch send.", e.client)
