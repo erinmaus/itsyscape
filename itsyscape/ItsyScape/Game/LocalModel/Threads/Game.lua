@@ -77,7 +77,6 @@ local function tick()
 		end
 
 		game:cleanup()
-		collectgarbage("step")
 
 		Analytics:update()
 	end
@@ -210,7 +209,7 @@ while isRunning do
 	end)
 
 	if not success then
-		local s, r 
+		local s, r
 		if serverRPCService then
 			s, r = xpcall(saveOnErrorForMultiPlayer, debug.traceback)
 		else

@@ -20,9 +20,13 @@ local RemotePlayer = require "ItsyScape.Game.RemoteModel.Player"
 local RemoteProp = require "ItsyScape.Game.RemoteModel.Prop"
 local RemoteStage = require "ItsyScape.Game.RemoteModel.Stage"
 local RemoteUI = require "ItsyScape.Game.RemoteModel.UI"
+local EventQueue = require "ItsyScape.Game.RPC.EventQueue"
 local OutgoingEventQueue = require "ItsyScape.Game.RPC.OutgoingEventQueue"
 local GameManager = require "ItsyScape.Game.RPC.GameManager"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
+local NGameManager = require "nbunny.gamemanager"
+local NEventQueue = require "nbunny.gamemanager.eventqueue"
+local NVariant = require "nbunny.gamemanager.variant"
 
 local RemoteGameManager = Class(GameManager)
 
@@ -31,8 +35,8 @@ function RemoteGameManager:new(rpcService, ...)
 
 	self.rpcService = rpcService
 
-	self.pending = {}
-	self.outgoing = {}
+	self.pending = NEventQueue()
+	self.event = NVariant()
 
 	self:registerInterface("ItsyScape.Game.Model.Actor", RemoteActor)
 	self:registerInterface("ItsyScape.Game.Model.Game", RemoteGame)
@@ -60,13 +64,6 @@ function RemoteGameManager:new(rpcService, ...)
 		0,
 		self:getInstance("ItsyScape.Game.Model.UI", 0):getInstance(),
 		self)
-
-	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.Actor", TypeProvider.Instance(self), "ItsyScape.Game.Model.Actor")
-	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.Game", TypeProvider.Instance(self), "ItsyScape.Game.Model.Game")
-	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.Player", TypeProvider.Instance(self), "ItsyScape.Game.Model.Player")
-	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.Prop", TypeProvider.Instance(self), "ItsyScape.Game.Model.Prop")
-	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.Stage", TypeProvider.Instance(self), "ItsyScape.Game.Model.Stage")
-	self.state:registerTypeProvider("ItsyScape.Game.RemoteModel.UI", TypeProvider.Instance(self), "ItsyScape.Game.Model.UI")
 
 	self.onTick = Callback()
 
@@ -96,20 +93,9 @@ function RemoteGameManager:removeAllInstances(type)
 	end
 end
 
-function RemoteGameManager:push(e)
-	table.insert(self.outgoing, e)
-
-	if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
-		self:send()
-	end
-end
-
 function RemoteGameManager:send()
-	for i = 1, #self.outgoing do
-		self.rpcService:send(0, self.outgoing[i])
-	end
-
-	table.clear(self.outgoing)
+	self.rpcService:sendBatch(0, self:getQueue():toBuffer())
+	self:getQueue():tick()
 end
 
 function RemoteGameManager:receive()
@@ -117,8 +103,8 @@ function RemoteGameManager:receive()
 	repeat
 		e = self.rpcService:receive()
 		if e then
-			table.insert(self.pending, e)
-			if e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
+			self.pending:pull(e)
+			if e.type == EventQueue.EVENT_TYPE_TICK then
 				self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
 				self:flush()
 			end
@@ -129,11 +115,18 @@ function RemoteGameManager:receive()
 end
 
 function RemoteGameManager:flush()
-	for i = 1, #self.pending do
-		self:process(self.pending[i])
+	for i = 1, self.pending:length() do
+		self.pending:get(i - 1, self.event)
+		self:process(self.event)
 	end
 
-	table.clear(self.pending)
+	self.pending:clear()
+end
+
+function RemoteGameManager:pushTick()
+	GameManager.pushTick(self)
+
+	self:send()
 end
 
 function RemoteGameManager:processCreate(e)
@@ -150,13 +143,10 @@ function RemoteGameManager:processCreate(e)
 
 	local Type = self:getInterfaceType(e.interface)
 	local instance = Type(self, e.id)
+	instance.id = e.id
 
 	self:newInstance(e.interface, e.id, instance)
 	proxy:wrapClient(e.interface, e.id, instance, self)
-end
-
-function RemoteGameManager:processCallback(e)
-	GameManager.processCallback(self, e)
 end
 
 function RemoteGameManager:processDestroy(e)

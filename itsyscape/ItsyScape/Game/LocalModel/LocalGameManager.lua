@@ -63,13 +63,6 @@ function LocalGameManager:new(rpcService, game)
 	self:newInstance("ItsyScape.Game.Model.UI", 0, game:getUI())
 	UIProxy:wrapServer("ItsyScape.Game.Model.UI", 0, game:getUI(), self)
 
-	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.Actor", TypeProvider.Instance(self), "ItsyScape.Game.Model.Actor")
-	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.Game", TypeProvider.Instance(self), "ItsyScape.Game.Model.Game")
-	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.Player", TypeProvider.Instance(self), "ItsyScape.Game.Model.Player")
-	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.Prop", TypeProvider.Instance(self), "ItsyScape.Game.Model.Prop")
-	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.Stage", TypeProvider.Instance(self), "ItsyScape.Game.Model.Stage")
-	self.state:registerTypeProvider("ItsyScape.Game.LocalModel.UI", TypeProvider.Instance(self), "ItsyScape.Game.Model.UI")
-
 	game:tick()
 
 	game.onPlayerSpawned:register(self.onPlayerSpawned, self)
@@ -173,7 +166,7 @@ function LocalGameManager:onActorMoved(_, actor, previousLayerName, currentLayer
 					"ItsyScape.Game.Model.Stage",
 					0,
 					"onActorSpawned",
-					self:getArgs(actor:getPeepID(), actor))
+					actor:getPeepID(), actor)
 				self:assignTargetToLastPush(player)
 
 				currentInstance:loadActor(self, player, actor)
@@ -211,7 +204,7 @@ function LocalGameManager:onPropMoved(_, prop, previousLayerName, currentLayerNa
 					"ItsyScape.Game.Model.Stage",
 					0,
 					"onPropPlaced",
-					self:getArgs(self:getGame().stage:lookupPropAlias(prop:getPeepID()), prop))
+					self:getGame().stage:lookupPropAlias(prop:getPeepID()), prop)
 				self:assignTargetToLastPush(player)
 
 				currentInstance:loadProp(self, player, prop)
@@ -228,26 +221,27 @@ function LocalGameManager:onPropMoved(_, prop, previousLayerName, currentLayerNa
 	end
 end
 
-function LocalGameManager:push(e, key)
-	table.insert(self.outgoing, e)
-	self.outgoingKeys[#self.outgoing] = key
+function LocalGameManager:assignTargetToLastPush(target)
+	self.outgoingTargets[self.queue:length()] = target
 end
 
-function LocalGameManager:assignTargetToLastPush(target)
-	self.outgoingTargets[#self.outgoing] = target
+function LocalGameManager:newInstance(interface, id, obj)
+	self:pushCreate(interface, id)
+	return GameManager.newInstance(self, interface, id, obj)
 end
 
 function LocalGameManager:destroyInstance(interface, id)
 	table.insert(self.pendingDeletion, self:getInstance(interface, id))
+	self:pushDestroy(interface, id)
 	GameManager.destroyInstance(self, interface, id)
 end
 
-function LocalGameManager:_doSend(player, index)
-	self.pending:pull(self.outgoing:get(index))
+function LocalGameManager:_doSend(player, e)
+	self.pending:pull(e)
 end
 
 function LocalGameManager:_doFlush(player)
-	self.rpcService:sendBatch(player:getClientID(), self.pending:getCurrentHandle())
+	self.rpcService:sendBatch(player:getClientID(), self.pending:toBuffer())
 	self.pending:tick()
 end
 
@@ -283,6 +277,8 @@ function LocalGameManager:sendToPlayer(player)
 		local isTargetMatch = target and target:getID() == player:getID()
 		local hasTarget = target ~= nil
 
+		local key = e.key
+
 		local instance
 		if e.interface and e.id then
 			instance = self:getInstance(e.interface, e.id)
@@ -295,7 +291,6 @@ function LocalGameManager:sendToPlayer(player)
 			if e.interface == "ItsyScape.Game.Model.Actor" or
 			   e.interface == "ItsyScape.Game.Model.Prop"
 			then
-				local key = self.outgoingKeys[i]
 				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and playerInstance:hasLayer(key.layer.value, player)
 				local isActorMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Actor" and playerInstance:hasActor(instance:getInstance(), player)
 				local isPropMatch = not hasTarget and e.interface == "ItsyScape.Game.Model.Prop" and playerInstance:hasProp(instance:getInstance(), player)
@@ -312,14 +307,7 @@ function LocalGameManager:sendToPlayer(player)
 							Log.boolean(isActorMatch), Log.boolean(isPropMatch), Log.boolean(isTargetMatch), Log.boolean(hasTarget), Log.boolean(isLayerMatch))
 					end
 
-					local reliable
-					if e.type == EventQueue.EVENT_TYPE_PROPERTY then
-						reliable = e.__reliable or false
-					else
-						reliable = true
-					end
-
-					self:_doSend(player, e, reliable)
+					self:_doSend(player, e)
 				end
 			elseif e.interface == "ItsyScape.Game.Model.Player" then
 				local isSamePlayer = e.id == player:getID()
@@ -335,8 +323,6 @@ function LocalGameManager:sendToPlayer(player)
 			end
 		elseif e.type == EventQueue.EVENT_TYPE_CALLBACK then
 			if e.interface == "ItsyScape.Game.Model.Stage" then
-				local key = self.outgoingKeys[i]
-
 				local isInstanceMatch = not hasTarget and key and key.layer and key.layer.value and self.game:getStage():getInstanceByLayer(key.layer.value) and self.game:getStage():getInstanceByLayer(key.layer.value):hasLayer(key.layer.value, player)
 				local isLayerMatch = not hasTarget and key and key.layer and key.layer.value and (playerInstance:hasLayer(key.layer.value, player) or isInstanceMatch)
 				local isActorMatch = not hasTarget and key and key.actor and key.actor.value and playerInstance:hasActor(key.actor.value, player)
@@ -373,7 +359,6 @@ function LocalGameManager:sendToPlayer(player)
 						e.interface, e.id, e.callback)
 				end
 			elseif e.interface == "ItsyScape.Game.Model.UI" then
-				local key = self.outgoingKeys[i]
 				local interfaceID = key and key.interfaceID and key.interfaceID.value
 				local interfaceIndex = key and key.index and key.index.value
 				local hasPlayer = key and key.player and key.player.value
@@ -404,7 +389,6 @@ function LocalGameManager:sendToPlayer(player)
 					self:_doSend(player, e)
 				end
 			elseif e.interface == "ItsyScape.Game.Model.Game" then
-				local key = self.outgoingKeys[i]
 				local isPlayerMatch = key and key.player and key.player.value:getID() == player:getID()
 				if isPlayerMatch then
 					self:_doSend(player, e)
@@ -423,7 +407,8 @@ function LocalGameManager:send()
 		self:sendToPlayer(player)
 	end
 
-	table.clear(self.outgoing)
+	self:getQueue():tick()
+
 	table.clear(self.outgoingKeys)
 	table.clear(self.pendingDeletion)
 	table.clear(self.outgoingTargets)
@@ -453,9 +438,7 @@ function LocalGameManager:processCallback(e)
 		if not ui then
 			Log.info("UI not found trying to call RPC '%s' for player ID %d.", e.callback, e.id)
 		else
-			local args = self.state:deserialize(e.value)
-			local interfaceID, interfaceIndex = unpack(args, 1, table.maxn(args))
-
+			local interfaceID, interfaceIndex = e:get("value")
 			local interface = ui:get(interfaceID, interfaceIndex)
 			if not interface then
 				Log.warn("Interface (id = '%s', index = %d) not found.", interfaceID, interfaceIndex)

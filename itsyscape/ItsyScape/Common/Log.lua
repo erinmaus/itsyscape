@@ -175,6 +175,11 @@ function Log.stringify(value)
 	end
 end
 
+function Log.dump(value)
+	local serpent = require "serpent"
+	return serpent.block(value, { comment = false })
+end
+
 function Log.profile(...)
 	local DebugStats = require "ItsyScape.Graphics.DebugStats"
 	DebugStats.GLOBAL:measure(...)
