@@ -23,6 +23,7 @@ local OutgoingEventQueue = require "ItsyScape.Game.RPC.OutgoingEventQueue"
 local Property = require "ItsyScape.Game.RPC.Property"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 local NProperty = require "nbunny.gamemanager.property"
+local NGameManager = require "nbunny.gamemanager"
 
 local GameManager = Class()
 
@@ -223,6 +224,12 @@ function GameManager.PropertyGroup:get(key)
 end
 
 function GameManager:new()
+	if NGameManager.fetch() then
+		error("can only be one game manager on thread")
+	end
+
+	NGameManager.assign(self)
+
 	self.state = State()
 
 	self.queue = OutgoingEventQueue()
