@@ -16,6 +16,7 @@ require "bootstrap"
 local enet = require "enet"
 local buffer = require "string.buffer"
 local cerror = require "nbunny.cerror"
+local NEvent = require "nbunny.gamemanager.event"
 
 Log.info("Network client with scope '%s' started.", logSuffix)
 
@@ -51,7 +52,8 @@ while isRunning do
 					Log.warnOnce("Client %d does not exist; cannot send.", e.client)
 				end
 			elseif e.type == "batch" then
-				local batch = buffer.decode(e.batch)
+				local batch = NIncomingEventQueue(e.batch)
+
 				local client = clientsByID[e.client]
 				if client then
 					for i = 1, #batch do
