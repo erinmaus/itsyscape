@@ -19,6 +19,27 @@ local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 local Downtown = Class(Map)
 Downtown.SISTINE_LOCATION = Vector(0, 0, -128)
 
+Downtown.NUM_SKIRMISHES = 10
+
+Downtown.MIN_EMPTY_KING_SOLDIERS = 1
+Downtown.MAX_EMPTY_KING_SOLDIERS = 4
+
+Downtown.EMPTY_KING_SOLDIERS = {
+	"Tinkerer",
+	"Tinkerer",
+	"GoryMass",
+	"PrestigiousAncientSkeleton",
+	"PrestigiousAncientSkeleton",
+	"PrestigiousMummy",
+	"PrestigiousMummy"
+}
+
+Downtown.YENDORIAN_SOLDIERS = {
+	"Yendorian_Ballista",
+	"Yendorian_Mast",
+	"Yendorian_Swordfish"
+}
+
 function Downtown:new(resource, name, ...)
 	Map.new(self, resource, name or 'EmptyRuins_Downtown', ...)
 end
@@ -48,6 +69,74 @@ function Downtown:onLoad(filename, args, layer)
 
 	Utility.Map.spawnMap(self, "EmptyRuins_Downtown_Floor2", Vector(0, 4, 0), { isLayer = true })
 	Utility.Map.spawnMap(self, "EmptyRuins_Downtown_Floor3", Vector(0, 7, 0), { isLayer = true })
+end
+
+function Downtown:onPlayerEnter(player)
+	self:prepareDebugCutscene(player:getActor():getPeep())
+end
+
+function Downtown:prepareDebugCutscene(player)
+	local function actionCallback(action)
+		if action == "pressed" then
+			self:pushPoke('startWar', player)
+		end
+	end
+
+	local function openCallback()
+		return not self:wasPoofed()
+	end
+
+	Utility.UI.openInterface(
+		player,
+		"KeyboardAction",
+		false,
+		"DEBUG_TRIGGER_1", actionCallback, openCallback)
+end
+
+function Downtown:onStartWar(player)
+	local map = self:getDirector():getMap(self:getLayer())
+	if not map then
+		return
+	end
+
+	local rng = love.math.newRandomGenerator()
+
+	for _ = 1, self.NUM_SKIRMISHES do
+		local i, j = Utility.Map.getRandomTile(map, 1, 1, math.huge, false, rng, { 'impassable', 'blocking', 'door', 'building' })
+		if not (i and j) then
+			break
+		end
+
+		local position = map:getTileCenter(i, j)
+		local yendorianActor = Utility.spawnActorAtPosition(
+			self,
+			self.YENDORIAN_SOLDIERS[rng:random(#self.YENDORIAN_SOLDIERS)],
+			position:get())
+
+		map:getTile(i, j):setRuntimeFlag("blocking")
+
+		for k = 1, love.math.random(self.MIN_EMPTY_KING_SOLDIERS, self.MAX_EMPTY_KING_SOLDIERS) do
+			local soldierI, soldierJ = Utility.Map.getRandomTile(map, i, j, 3, true, rng)
+			if not soldierI and soldierJ then
+				break
+			end
+
+			local soldierActor = Utility.spawnActorAtPosition(
+				self,
+				self.EMPTY_KING_SOLDIERS[rng:random(#self.EMPTY_KING_SOLDIERS)],
+				position:get())
+
+			self:pushPoke(love.math.random() * 5, "engageSoldiers", soldierActor:getPeep(), yendorianActor:getPeep())
+		end
+	end
+end
+
+function Downtown:onEngageSoldiers(a, b)
+	if a:getIsReady() and b:getIsReady() then
+		Utility.Peep.attack(a, b)
+	else
+		self:pushPoke(love.math.random() * 5, "engageSoldiers", a, b)
+	end
 end
 
 return Downtown

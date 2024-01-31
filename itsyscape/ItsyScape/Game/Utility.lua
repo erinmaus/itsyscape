@@ -57,6 +57,10 @@ local Utility = {}
 
 function Utility.save(player, saveLocation, talk, ...)
 	local director = player:getDirector()
+	if not director then
+		return
+	end
+
 	director:getItemBroker():toStorage()
 
 	local storage = director:getPlayerStorage(player)

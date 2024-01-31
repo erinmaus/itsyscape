@@ -16,7 +16,9 @@ require "bootstrap"
 local enet = require "enet"
 local buffer = require "string.buffer"
 local cerror = require "nbunny.cerror"
-local NEvent = require "nbunny.gamemanager.event"
+local NBuffer = require "nbunny.gamemanager.buffer"
+local NEventQueue = require "nbunny.gamemanager.eventqueue"
+local NVariant = require "nbunny.gamemanager.variant"
 
 Log.info("Network client with scope '%s' started.", logSuffix)
 
@@ -47,19 +49,26 @@ while isRunning do
 			if e.type == "send" then
 				local client = clientsByID[e.client]
 				if client then
-					client:send(love.data.compress('string', 'lz4', e.data, -1))
+					client:send(NBuffer.pointer(e.data), NBuffer.length(e.data))
 				else
 					Log.warnOnce("Client %d does not exist; cannot send.", e.client)
 				end
+
+				NBuffer.free(e.data)
 			elseif e.type == "batch" then
-				local batch = NIncomingEventQueue(e.batch)
+				local batch = NEventQueue()
+				batch:fromBuffer(e.batch)
+				NBuffer.free(e.batch)
 
 				local client = clientsByID[e.client]
 				if client then
-					for i = 1, #batch do
-						local b = batch[i]
+					local v = NVariant()
+					while batch:length() > 0 do
+						batch:pop(v)
+						local buffer = NBuffer.create(v)
 
-						client:send(love.data.compress('string', 'lz4', buffer.encode(b), -1))
+						client:send(NBuffer.pointer(buffer), NBuffer.length(buffer))
+						NBuffer.free(buffer)
 					end
 				else
 					Log.warnOnce("Client %d does not exist; cannot batch send.", e.client)
@@ -133,7 +142,7 @@ while isRunning do
 				outputChannel:push({
 					type = "receive",
 					client = e.peer:connect_id(),
-					data = love.data.decompress('string', 'lz4', e.data)
+					data = NBuffer.create(e.data)
 				})
 			elseif e.type == "connect" then
 				local address = getClientAddress(e)

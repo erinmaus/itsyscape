@@ -110,7 +110,6 @@ end
 -- Probes all actions that can be performed.
 function Probe:all(callback)
 	if not self.game:getPlayer() or not self.game:getPlayer():getActor() then
-		Log.warn("Player not ready.")
 		callback()
 		return
 	end
