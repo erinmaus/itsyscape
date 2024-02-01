@@ -2713,7 +2713,7 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 		end
 	end
 
-	return nil, "path not found"
+	return false, "path not found"
 end
 
 function Utility.Peep.face(peep, target)

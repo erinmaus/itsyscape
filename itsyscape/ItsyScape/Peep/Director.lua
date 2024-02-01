@@ -16,6 +16,11 @@ function CortexDebugStats:process(cortex, ...)
 	cortex:update(...)
 end
 
+local PeepDebugStats = Class(DebugStats)
+function PeepDebugStats:process(peep, ...)
+	peep:update(...)
+end
+
 -- Director type.
 --
 -- A director is a collection of Peeps and Cortexes. Whenever a Peep is added or
@@ -40,6 +45,7 @@ function Director:new(gameDB)
 	self.pendingAssignment = {}
 
 	self.cortexDebugStats = CortexDebugStats()
+	self.peepDebugStats = PeepDebugStats()
 end
 
 -- Gets the GameDB.
@@ -287,7 +293,7 @@ function Director:update(delta)
 
 	local beforePeepUpdate = love.timer.getTime()
 	for peep in pairs(self.peeps) do
-		peep:update(self, self:getGameInstance())
+		self.peepDebugStats:measure(peep, self, self:getGameInstance())
 	end
 	local afterPeepUpdate = love.timer.getTime()
 end
@@ -295,6 +301,7 @@ end
 function Director:quit()
 	if _DEBUG then
 		self.cortexDebugStats:dumpStatsToCSV("Cortex")
+		self.peepDebugStats:dumpStatsToCSV("Peep")
 	end
 end
 

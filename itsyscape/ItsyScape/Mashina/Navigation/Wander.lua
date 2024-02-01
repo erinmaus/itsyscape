@@ -98,22 +98,37 @@ function Wander:update(mashina, state, executor)
 	local targetI = i + s
 	local targetJ = j + t
 
-	local command, path = Utility.Peep.getWalk(
-		mashina,
-		targetI,
-		targetJ,
-		k,
-		0,
-		{ asCloseAsPossible = true, maxDistanceFromGoal = radialDistance })
-	if command then
-		if mashina:getCommandQueue():interrupt(command) then
-			return B.Status.Success
-		else
-			return B.Status.Failure
-		end
+	local command, path
+	if not self.getWalk then
+		self.getWalk = coroutine.wrap(Utility.Peep.getWalk)
+		command, path = self.getWalk(
+			mashina,
+			targetI,
+			targetJ,
+			k,
+			0,
+			{
+				asCloseAsPossible = true,
+				maxDistanceFromGoal = radialDistance,
+				yield = true
+			})
 	else
-		return B.Status.Working
+		command, path = self.getWalk()
 	end
+
+	if command ~= nil then
+		self.getWalk = nil
+
+		if command then
+			if mashina:getCommandQueue():interrupt(command) then
+				return B.Status.Success
+			else
+				return B.Status.Failure
+			end
+		end
+	end
+
+	return B.Status.Working
 end
 
 return Wander
