@@ -130,6 +130,7 @@ function GameView:attach(game)
 		Log.info("Adding map to layer %d (has mask = %s).", layer, Log.boolean(mask))
 		self:addMap(map, layer, tileSetID, mask, meta)
 	end
+	stage.onLoadMap.debug = true
 	stage.onLoadMap:register(self._onLoadMap)
 
 	self._onUnloadMap = function(_, map, layer)

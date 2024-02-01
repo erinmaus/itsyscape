@@ -48,43 +48,52 @@ game.onQuit:register(function()
 	end
 end)
 
+local times = {}
+local startTime = love.timer.getTime()
+
 local function getPeriodInMS(a, b)
-	return ((b or love.timer.getTime()) - (a or love.timer.getTime())) * 1000
+	return ((times[b] and times[b].time or startTime) - (times[a] and times[a].time or startTime)) * 1000
 end
 
-local timeStart
-local timeGameTick, timeGameUpdate
-local timeGameManagerUpdate, timeGameManagerTick, timeGameManagerSend, timeGameCleanup, timeGameManagerReceive
-local timeEnd
+local function getMemoryInKB(a, b)
+	return (times[b].memory or 0) - (times[a].memory or 0) * 1000
+end
+
+local function measure(name)
+	times[name] = {
+		time = love.timer.getTime() - startTime,
+		memory = _DEBUG == "plus" and collectgarbage("count") or 0
+	}
+end
 
 local function tick()
-	timeStart = love.timer.getTime()
+	measure("Start")
 	do
 		game:tick()
-		timeGameTick = love.timer.getTime()
+		measure("GameTick")
 		game:update(game:getDelta())
-		timeGameUpdate = love.timer.getTime()
+		measure("GameUpdate")
 
 		gameManager:update()
-		timeGameManagerUpdate = love.timer.getTime()
+		measure("GameManagerUpdate")
 		gameManager:pushTick()
-		timeGameManagerTick = love.timer.getTime()
+		measure("GameManagerTick")
 		gameManager:send()
-		timeGameManagerSend = love.timer.getTime()
+		measure("GameManagerSend")
 
 		while not gameManager:receive() do
 			love.timer.sleep(0)
 		end
-		timeGameManagerReceive = love.timer.getTime()
+		measure("GameManagerReceive")
 
 		game:cleanup()
 		collectgarbage("step")
 
-		timeGameCleanup = love.timer.getTime()
+		measure("GameCleanup")
 
 		Analytics:update()
 	end
-	timeEnd = love.timer.getTime()
+	measure("End")
 end
 
 local function saveOnErrorForMultiPlayer()
@@ -227,7 +236,7 @@ while isRunning do
 		error(result, 0)
 	end
 
-	local duration = timeEnd - timeStart
+	local duration = getPeriodInMS("Start", "End") / 1000
 	if duration < game:getTargetDelta() then
 		local sleepDuration = game:getTargetDelta() - duration
 
@@ -243,15 +252,30 @@ while isRunning do
 	if duration > game:getTargetDelta() or _DEBUG then
 		Log.engine("Tick was %0.2f ms (expected %0.2f or less).", duration * 1000, game:getTargetDelta() * 1000)
 		Log.engine(
-			"Stats: iteration = %.2f ms, game tick = %.2f ms, game update = %.2f ms, game manager update = %.2f ms, game manager tick = %.2f ms, game manager send = %.2f ms, game manager receive = %.2f ms, cleanup = %.2f ms",
-			getPeriodInMS(timeStart, timeEnd),
-			getPeriodInMS(timeStart, timeGameTick),
-			getPeriodInMS(timeGameTick, timeGameUpdate),
-			getPeriodInMS(timeGameUpdate, timeGameManagerUpdate),
-			getPeriodInMS(timeGameManagerUpdate, timeGameManagerTick),
-			getPeriodInMS(timeGameManagerTick, timeGameManagerSend),
-			getPeriodInMS(timeGameManagerSend, timeGameManagerReceive),
-			getPeriodInMS(timeGameManagerReceive, timeEnd))
+			"Timing stats @ %.2f ms: iteration = %.2f ms, game tick = %.2f ms, game update = %.2f ms, game manager update = %.2f ms, game manager tick = %.2f ms, game manager send = %.2f ms, game manager receive = %.2f ms, cleanup = %.2f ms",
+			getPeriodInMS("Start"),
+			getPeriodInMS("Start", "End"),
+			getPeriodInMS("Start", "GameTick"),
+			getPeriodInMS("GameTick", "GameUpdate"),
+			getPeriodInMS("GameUpdate", "GameManagerUpdate"),
+			getPeriodInMS("GameManagerUpdate", "GameManagerTick"),
+			getPeriodInMS("GameManagerTick", "GameManagerSend"),
+			getPeriodInMS("GameManagerSend", "GameManagerReceive"),
+			getPeriodInMS("GameManagerReceive", "End"))
+
+		if _DEBUG == "plus" then
+			Log.engine(
+				"Memory stats @ %.2f ms: iteration = %.2f kb, game tick = %.2f kb, game update = %.2f kb, game manager update = %.2f kb, game manager tick = %.2f kb, game manager send = %.2f kb, game manager receive = %.2f kb, cleanup = %.2f kb",
+				getPeriodInMS("Start"),
+				getMemoryInKB("Start", "End"),
+				getMemoryInKB("Start", "GameTick"),
+				getMemoryInKB("GameTick", "GameUpdate"),
+				getMemoryInKB("GameUpdate", "GameManagerUpdate"),
+				getMemoryInKB("GameManagerUpdate", "GameManagerTick"),
+				getMemoryInKB("GameManagerTick", "GameManagerSend"),
+				getMemoryInKB("GameManagerSend", "GameManagerReceive"),
+				getMemoryInKB("GameManagerReceive", "End"))
+		end
 	end
 
 	local e

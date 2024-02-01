@@ -498,19 +498,30 @@ function Application:doCommonTick()
 	end
 
 	local average
+	self.maxTick = 0
 	do
 		local sum = 0
 		for i = 1, #self.ticks do
+			self.maxTick = math.max(self.maxTick, self.ticks[i])
 			sum = sum + self.ticks[i]
 		end
 		average = sum / math.max(#self.ticks, 1)
+
 	end
 
 	self.averageTick = average
 end
 
+function Application:getTargetTickDelta()
+	return 1 / 10
+end
+
 function Application:getAverageTickDelta()
 	return self.averageTick or self:getGame():getDelta() or 0
+end
+
+function Application:getMaxTickDelta()
+	return self.maxTick or self:getGame():getDelta() or 0
 end
 
 function Application:tickSingleThread()
@@ -841,7 +852,7 @@ function Application:getFrameDelta()
 
 	-- Generate a delta (0 .. 1 inclusive) between the current and previous
 	-- frames
-	return math.min(math.max((currentTime - previousTime) / self.game:getDelta(), 0), 1)
+	return math.min(math.max((currentTime - previousTime) / self:getTargetTickDelta(), 0), 1)
 end
 
 function Application:getPreviousFrameDelta()
@@ -883,8 +894,9 @@ function Application:drawDebug()
 	end
 
 	r = r .. string.format(
-			"tick delta: average = %.04f ms, target = %.04f ms, last = %.04f ms\n",
+			"tick delta: average = %.04f ms, max = %0.4f ms, target = %.04f ms, last = %.04f ms\n",
 			self:getAverageTickDelta() * 1000,
+			self:getMaxTickDelta() * 1000,
 			self.game:getTargetDelta() * 1000,
 			self.game:getDelta() * 1000)
 

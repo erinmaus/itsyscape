@@ -7,29 +7,40 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
 local Class = require "ItsyScape.Common.Class"
 
 -- Callback type. A callback contains a list of methods to invoke. It offers
 -- some extra functionality to smooth things over.
 local Callback, Metatable = Class()
 
-Callback.DEFAULT_ERROR_HANDLER = error
-
 -- Binds arguments to a function via the callback mechanism and returns it.
 function Callback.bind(func, ...)
-	local result = Callback()
+	local result = Callback(true)
 	result:register(func, ...)
 
 	return result
 end
 
 -- Creates a new, empty Callback.
-function Callback:new()
+function Callback:new(doesReturn)
 	self.handlers = {}
-	self.errorHandler = nil
-	self.yield = false
-	self.index = 1
+	self.doesReturn = doesReturn == nil and true or doesReturn
+end
+
+local function concatArgs(prefixArgs, postfixArgs)
+	local concatArgs = {}
+
+	for i = 1, prefixArgs.n do
+		concatArgs[i] = prefixArgs[i]
+	end
+
+	for i = 1, postfixArgs.n do
+		concatArgs[prefixArgs.n + i] = postfixArgs[i]
+	end
+
+	concatArgs.n = prefixArgs.n + postfixArgs.n
+
+	return concatArgs
 end
 
 -- Invokes the handler.
@@ -38,57 +49,28 @@ end
 -- to the handlers.
 --
 -- There is no guarantee to the order the handlers are called.
---
--- If the yield flag is set, then this method yields the return value of each
--- handler before calling the next. See Callback.setYeld for more.
---
--- If an error occurs when calling a handler, the error handler is invoked. The
--- default error handler simply propagates the error.
 function Callback:invoke(...)
-	local args = { n = select('#', ...), ... }
+	local postfixArgs = { n = select('#', ...), ... }
 	local results = { n = 0 }
 
 	for handler, h in pairs(self.handlers) do
-		local function callHandler()
-			local prefixArgs = h[1]
-			local concatArgs = { n = args.n + prefixArgs.n }
-			for i = 1, prefixArgs.n do
-				concatArgs[i] = prefixArgs[i]
+		local args = concatArgs(h, postfixArgs)
+
+		if self.doesReturn then
+			local r = { handler(unpack(args, 1, args.n)) }
+			local n = table.maxn(r)
+
+			for i = 1, n do
+				table.insert(results, r[i])
 			end
-			for i = 1, args.n do
-				concatArgs[i + prefixArgs.n] = args[i]
-			end
-			return handler(unpack(concatArgs, 1, concatArgs.n))
-		end
 
-		local continue = true
-		local function process(...)
-			local a = { n = select('#', ...), ... }
-			local success = a[1]
-
-			if not success then
-				local result = a[2]
-				continue = self.errorHandler(result)
-			else
-				for i = 2, a.n do
-					results.n = results.n + 1
-					results[results.n] = a[i]
-				end
-
-				if self.yield then
-					coroutine.yield(result)
-				end
-			end
-		end
-
-		if self.errorHandler then
-			process(xpcall(callHandler, debug.traceback))
+			results.n = results.n + n
 		else
-			process(true, callHandler())
-		end
+			if self.debug then
+				print(">>> debugging", "#n", h.n, "#p", postfixArgs.n, unpack(args, 1, args.n))
+			end
 
-		if not continue then
-			break
+			handler(unpack(args, 1, args.n))
 		end
 	end
 
@@ -105,7 +87,7 @@ end
 -- arguments to invoke as 'suffix', thus handler(unpack(prefix), unpack(suffix)).
 function Callback:register(handler, ...)
 	if handler then
-		self.handlers[handler] = { { n = select('#', ...), ... } }
+		self.handlers[handler] = { n = select('#', ...), ... }
 	end
 end
 
@@ -114,48 +96,6 @@ function Callback:unregister(handler)
 	if handler then
 		self.handlers[handler] = nil
 	end
-end
-
--- Sets if the callback should yield after invoking a handler.
---
--- The callback will yield after invoking a handler.
---
--- By default, this value is false.
-function Callback:setYield(value)
-	if value then
-		self.yield = true
-	else
-		self.yield = false
-	end
-end
-
--- Gets the yield value. See Callback.setYield.
-function Callback:getYield()
-	return self.yield
-end
-
--- Gets the error handler.
---
--- The default handler is Callback.DEFAULT_ERROR_HANDLER.
-function Callback:getErrorHandler()
-	return self.errorHandler or Callback.DEFAULT_ERROR_HANDLER
-end
-
--- Sets the error handler.
---
--- If an error occurs in a handler, func is called with the error message.
---
--- Returns the old error handler.
-function Callback:setErrorHandler(func)
-	local oldErrorHandler = self.errorHandler or Callback.DEFAULT_ERROR_HANDLER
-
-	if func then
-		self.errorHandler = func
-	else
-		self.errorHandler = Callback.DEFAULT_ERROR_HANDLER
-	end
-
-	return oldErrorHandler
 end
 
 -- Syntactic sugar for Callback:invoke(...).
