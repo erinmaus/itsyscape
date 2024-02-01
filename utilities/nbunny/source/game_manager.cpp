@@ -930,6 +930,18 @@ static std::shared_ptr<nbunny::GameManagerVariant> nbunny_game_manager_variant_c
 	return std::make_shared<nbunny::GameManagerVariant>();
 }
 
+static int nbunny_game_manager_variant_rawget(lua_State* L)
+{
+	nbunny::GameManagerVariant* variant = sol::stack::get<nbunny::GameManagerVariant*>(L, 1);
+
+	nbunny::GameManagerVariant key;
+	key.from_lua(L, 2);
+
+	sol::stack::push(L, variant->get(key));
+
+	return 1;
+}
+
 static int nbunny_game_manager_variant_index(lua_State* L)
 {
 	nbunny::GameManagerVariant* variant = sol::stack::get<nbunny::GameManagerVariant*>(L, 1);
@@ -980,6 +992,7 @@ NBUNNY_EXPORT int luaopen_nbunny_gamemanager_variant(lua_State* L)
 		sol::meta_function::new_index, &nbunny_game_manager_variant_newindex,
 		sol::meta_function::length, &nbunny::GameManagerVariant::length,
 		"get", &nbunny_game_manager_variant_index,
+		"rawget", &nbunny_game_manager_variant_rawget,
 		"fromArguments", &nbunny_game_manager_variant_from_args);
 
 	sol::stack::push(L, T);

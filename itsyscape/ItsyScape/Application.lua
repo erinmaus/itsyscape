@@ -506,17 +506,17 @@ function Application:doCommonTick()
 		average = sum / math.max(#self.ticks, 1)
 	end
 
-	self.adaptiveTick = average
+	self.averageTick = average
 end
 
-function Application:getAdaptiveTickDelta()
-	return self.adaptiveTick or self:getGame():getDelta() or 0
+function Application:getAverageTickDelta()
+	return self.averageTick or self:getGame():getDelta() or 0
 end
 
 function Application:tickSingleThread()
 	self:doCommonTick()
 
-	self:measure('gameView:tick()', function() self.gameView:tick() end)
+	self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
 end
 
@@ -524,7 +524,7 @@ function Application:tickMultiThread()
 	self:doCommonTick()
 
 	if self.show3D then
-		self:measure('gameView:tick()', function() self.gameView:tick() end)
+		self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
 	end
 
 	self.remoteGameManager:pushTick()
@@ -758,6 +758,10 @@ function Application:quit(isError)
 				end
 			end
 		end
+
+		if _DEBUG then
+			self.remoteGameManager:getDebugStats():dumpStatsToCSV("RemoteGameManager")
+		end
 	end
 
 	return false
@@ -837,7 +841,11 @@ function Application:getFrameDelta()
 
 	-- Generate a delta (0 .. 1 inclusive) between the current and previous
 	-- frames
-	return math.min(math.max((currentTime - previousTime) / self:getAdaptiveTickDelta(), 0), 1)
+	return math.min(math.max((currentTime - previousTime) / self.game:getDelta(), 0), 1)
+end
+
+function Application:getPreviousFrameDelta()
+	return self.previousFrameDelta or self:getFrameDelta()
 end
 
 function Application:drawDebug()
@@ -875,8 +883,10 @@ function Application:drawDebug()
 	end
 
 	r = r .. string.format(
-			"tick delta: %.04f ms\n",
-			self:getAdaptiveTickDelta() * 1000)
+			"tick delta: average = %.04f ms, target = %.04f ms, last = %.04f ms\n",
+			self:getAverageTickDelta() * 1000,
+			self.game:getTargetDelta() * 1000,
+			self.game:getDelta() * 1000)
 
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.printf(
@@ -944,6 +954,8 @@ function Application:_draw()
 			mu * Application.CLICK_RADIUS)
 		love.graphics.setColor(unpack(oldColor))
 	end
+
+	self.previousFrameDelta = self:getFrameDelta()
 end
 
 local function draw()

@@ -176,12 +176,13 @@ function SceneNode:iterate()
 	return pairs(self.children)
 end
 
-function SceneNode:tick()
-	self.transform:tick()
-	self._handle:tick()
+function SceneNode:tick(frameDelta)
+	frameDelta = frameDelta or 1
+
+	self._handle:tick(frameDelta)
 
 	for child in self:iterate() do
-		child:tick()
+		child:tick(frameDelta)
 	end
 end
 

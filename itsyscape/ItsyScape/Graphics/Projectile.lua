@@ -27,6 +27,10 @@ function Projectile:new(id, gameView, source, destination, layer)
 	self.sceneNode = SceneNode()
 end
 
+function Projectile:getID()
+	return self.id
+end
+
 function Projectile:attach()
 	self.sceneNode:setParent(self.gameView:getScene())
 end

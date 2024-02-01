@@ -62,8 +62,10 @@ function Color:lerp(other, delta)
 end
 
 -- Gets the components of the color in the order red, green, blue, and alpha.
-function Color:get()
-	return self.r, self.g, self.b, self.a
+function Color:get(multiplier)
+	multiplier = multiplier or 1
+
+	return self.r * multiplier, self.g * multiplier, self.b * multiplier, self.a * multiplier
 end
 
 -- Adds two colors, or a color and a scalar, clamping the result to 0 .. 1

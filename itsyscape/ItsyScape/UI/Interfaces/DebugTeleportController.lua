@@ -44,10 +44,35 @@ function DebugTeleportController:teleport(e)
 			e.anchor))
 		Utility.Peep.setPosition(peep, anchorPosition)
 	else
-		self:getGame():getStage():movePeep(
-			peep,
-			e.map,
-			e.anchor)
+		local gameDB = self:getDirector():getGameDB()
+		local stage = self:getGame():getStage()
+		local map = gameDB:getResource(e.map, "Map")
+		if map then
+			if instance:getRaid() then
+				local raid = instance:getRaid()
+				local isInGroup = gameDB:getRecord("RaidGroup", {
+					Map = map,
+					Raid = raid:getResource()
+				})
+
+				if isInGroup then
+					local existingInstance = raid:getInstances(map.name)[1]
+					if existingInstance then
+						Log.info("Teleporting to existing instance.")
+						stage:movePeep(peep, existingInstance, e.anchor)
+					else
+						Log.info("Teleporting to new instance.")
+						local newInstance = stage:movePeep(peep, "@" .. map.name, e.anchor)
+						raid:addInstance(newInstance)
+					end
+				end
+			else
+				stage:movePeep(
+					peep,
+					e.map,
+					e.anchor)
+			end
+		end
 	end
 end
 

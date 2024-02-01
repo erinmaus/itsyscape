@@ -48,6 +48,7 @@ function GameView:new(game)
 	self.props = {}
 	self.views = {}
 	self.propViewDebugStats = GameView.PropViewDebugStats()
+	self.generalDebugStats = DebugStats.GlobalDebugStats()
 
 	self.scene = SceneNode()
 	self.mapMeshes = {}
@@ -1255,19 +1256,28 @@ function GameView:update(delta)
 	end
 end
 
-function GameView:tick()
-	self.scene:tick()
+function GameView:tick(frameDelta)
+	self.generalDebugStats:measure("GameView::tickScene", self.scene.tick, self.scene, frameDelta)
 
 	for _, actor in pairs(self.actors) do
-		actor:tick()
+		self.generalDebugStats:measure(
+			string.format("actor::%s::tick", actor:getActor():getPeepID()),
+			actor.tick,
+			actor)
 	end
 
 	for _, prop in pairs(self.props) do
-		prop:tick()
+		self.generalDebugStats:measure(
+			string.format("prop::%s::tick", prop:getProp():getPeepID()),
+			prop.tick,
+			prop)
 	end
 
 	for projectile in pairs(self.projectiles) do
-		projectile:tick()
+		self.generalDebugStats:measure(
+			string.format("projectile::%s::tick", projectile:getID()),
+			projectile.tick,
+			projectile)
 	end
 end
 
@@ -1300,6 +1310,7 @@ end
 
 function GameView:dumpStatsToCSV()
 	self.propViewDebugStats:dumpStatsToCSV("GameView_PropView_Update")
+	self.generalDebugStats:dumpStatsToCSV("GameView_Tick")
 end
 
 return GameView

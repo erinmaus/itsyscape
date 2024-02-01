@@ -114,13 +114,20 @@ function RemoteGameManager:receive()
 	return false
 end
 
-function RemoteGameManager:flush()
+function RemoteGameManager:_flush()
 	for i = 1, self.pending:length() do
 		self.pending:get(i - 1, self.event)
 		self:process(self.event)
 	end
 
 	self.pending:clear()
+end
+
+function RemoteGameManager:flush()
+	self:getDebugStats():measure(
+		"RemoteGameManager::flush",
+		self._flush,
+		self)
 end
 
 function RemoteGameManager:pushTick()
@@ -151,6 +158,22 @@ end
 
 function RemoteGameManager:processDestroy(e)
 	self:destroyInstance(e.interface, e.id)
+end
+
+function RemoteGameManager:processCallback(e)
+	self:getDebugStats():measure(
+		string.format("%s::%s::%s", EventQueue.EVENT_TYPE_CALLBACK, e.interface, e.callback),
+		GameManager.processCallback,
+		self,
+		e)
+end
+
+function RemoteGameManager:processProperty(e)
+	self:getDebugStats():measure(
+		string.format("%s::%s::%s", EventQueue.EVENT_TYPE_PROPERTY, e.interface, e.property),
+		GameManager.processProperty,
+		self,
+		e)
 end
 
 function RemoteGameManager:processTick()
