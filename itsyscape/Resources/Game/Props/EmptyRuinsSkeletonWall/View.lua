@@ -359,12 +359,9 @@ function EmptyRuinsSkeletonWall:tick()
 	end
 
 	local gameView = self:getGameView()
-	local stage = gameView:getGame():getStage()
-
-	local actors = {}
-	for actor in stage:iterateActors() do
-		table.insert(actors, actor)
-	end
+	local actors = { 
+		gameView:getGame():getPlayer():getActor()
+	}
 
 	if self.isLoaded then
 		self:_updateSkulls(actors)

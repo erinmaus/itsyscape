@@ -22,7 +22,7 @@ local ItsyScapeDirector = require "ItsyScape.Game.ItsyScapeDirector"
 local PartyBehavior = require "ItsyScape.Peep.Behaviors.PartyBehavior"
 
 local LocalGame = Class(Game)
-LocalGame.TICKS_PER_SECOND = 10
+LocalGame.TICKS_PER_SECOND = 1
 
 function LocalGame:new(gameDB, playerSlot)
 	Game.new(self)

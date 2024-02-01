@@ -22,6 +22,7 @@ GameProxy.onLeave = Event.ServerToClientRPC()
 GameProxy.onLeave:link("onLeave")
 
 GameProxy.getTicks = Property(0)
+GameProxy.getDelta = Property(0)
 GameProxy.getCurrentTick = Property(0)
 
 GameProxy.spawnPlayer = Event.Create(PlayerProxy, function(event, gameManager, game, player)

@@ -227,8 +227,8 @@ function SceneNodeTransform:getGlobalDeltaTransform(delta)
 	return self.globalDeltaTransform
 end
 
-function SceneNodeTransform:tick()
-	self._handle:tick()
+function SceneNodeTransform:tick(frameDelta)
+	self._handle:tick(frameDelta)
 
 	self.previousRotation = self.rotation
 	self.previousScale = self.scale

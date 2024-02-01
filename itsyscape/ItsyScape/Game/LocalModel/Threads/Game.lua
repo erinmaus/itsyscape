@@ -49,12 +49,12 @@ game.onQuit:register(function()
 end)
 
 local function getPeriodInMS(a, b)
-	return math.floor(((b or love.timer.getTime()) - (a or love.timer.getTime())) * 1000)
+	return ((b or love.timer.getTime()) - (a or love.timer.getTime())) * 1000
 end
 
 local timeStart
 local timeGameTick, timeGameUpdate
-local timeGameManagerUpdate, timeGameManagerTick, timeGameManagerSend
+local timeGameManagerUpdate, timeGameManagerTick, timeGameManagerSend, timeGameCleanup, timeGameManagerReceive
 local timeEnd
 
 local function tick()
@@ -75,8 +75,12 @@ local function tick()
 		while not gameManager:receive() do
 			love.timer.sleep(0)
 		end
+		timeGameManagerReceive = love.timer.getTime()
 
 		game:cleanup()
+		collectgarbage("step")
+
+		timeGameCleanup = love.timer.getTime()
 
 		Analytics:update()
 	end
@@ -224,19 +228,30 @@ while isRunning do
 	end
 
 	local duration = timeEnd - timeStart
-	if duration < game:getDelta() then
-		love.timer.sleep(game:getTargetDelta() - duration)
-	else
-		Log.engine("Tick ran over by %0.2f ms.", (duration - game:getDelta()) * 1000)
+	if duration < game:getTargetDelta() then
+		local sleepDuration = game:getTargetDelta() - duration
+
+		local beforeSleep = love.timer.getTime()
+		love.timer.sleep(sleepDuration)
+		local afterSleep = love.timer.getTime()
+
+		if _DEBUG then
+			Log.engine("Slept for %0.2f ms, target was %0.2f.", sleepDuration * 1000, (afterSleep - beforeSleep) * 1000)
+		end
+	end
+
+	if duration > game:getTargetDelta() or _DEBUG then
+		Log.engine("Tick was %0.2f ms (expected %0.2f or less).", duration * 1000, game:getTargetDelta() * 1000)
 		Log.engine(
-			"Stats: iteration = %d ms, game tick = %d ms, game update = %d ms, game manager update = %d ms, game manager tick = %d ms, game manager send = %d ms, game manager receive = %d ms",
+			"Stats: iteration = %.2f ms, game tick = %.2f ms, game update = %.2f ms, game manager update = %.2f ms, game manager tick = %.2f ms, game manager send = %.2f ms, game manager receive = %.2f ms, cleanup = %.2f ms",
 			getPeriodInMS(timeStart, timeEnd),
 			getPeriodInMS(timeStart, timeGameTick),
 			getPeriodInMS(timeGameTick, timeGameUpdate),
 			getPeriodInMS(timeGameUpdate, timeGameManagerUpdate),
 			getPeriodInMS(timeGameManagerUpdate, timeGameManagerTick),
 			getPeriodInMS(timeGameManagerTick, timeGameManagerSend),
-			getPeriodInMS(timeGameManagerSend, timeEnd))
+			getPeriodInMS(timeGameManagerSend, timeGameManagerReceive),
+			getPeriodInMS(timeGameManagerReceive, timeEnd))
 	end
 
 	local e
@@ -391,6 +406,10 @@ end
 
 if serverRPCService then
 	serverRPCService:close()
+end
+
+if _DEBUG then
+	gameManager:getDebugStats():dumpStatsToCSV("LocalGameManager")
 end
 
 Analytics:quit()

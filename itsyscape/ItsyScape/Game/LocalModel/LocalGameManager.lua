@@ -402,7 +402,7 @@ function LocalGameManager:sendToPlayer(player)
 	self:_doFlush(player)
 end
 
-function LocalGameManager:send()
+function LocalGameManager:_send()
 	for _, player in self.game:iteratePlayers() do
 		self:sendToPlayer(player)
 	end
@@ -412,6 +412,10 @@ function LocalGameManager:send()
 	table.clear(self.outgoingKeys)
 	table.clear(self.pendingDeletion)
 	table.clear(self.outgoingTargets)
+end
+
+function LocalGameManager:send()
+	self:getDebugStats():measure("LocalGameManager::send", self._send, self)
 end
 
 function LocalGameManager:processCallback(e)
