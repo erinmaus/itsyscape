@@ -104,6 +104,8 @@ function Power_Corrupt:update(elapsed)
 		end
 
 		self.light:setAttenuation(alpha * 4 + 2)
+
+		self:ready()
 	end
 end
 

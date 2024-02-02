@@ -172,6 +172,8 @@ function Siphon:update(elapsed)
 				adventurer.particleSystem:updateLocalPosition(position)
 			end
 		end
+
+		self:ready()
 	end
 end
 

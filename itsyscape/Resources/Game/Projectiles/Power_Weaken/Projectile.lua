@@ -88,6 +88,8 @@ function Weaken:update(elapsed)
 
 		self.light:setColor(Color(1, 0, 0, 1))
 		self.light:setAttenuation(alpha * 4 + 4)
+
+		self:ready()
 	end
 end
 

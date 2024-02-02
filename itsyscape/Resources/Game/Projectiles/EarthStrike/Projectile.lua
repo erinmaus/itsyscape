@@ -155,6 +155,8 @@ function EarthStrike:update(elapsed)
 		end
 
 		self.light:setAttenuation((1 - alpha) * 3 + 2)
+
+		self:ready()
 	end
 end
 

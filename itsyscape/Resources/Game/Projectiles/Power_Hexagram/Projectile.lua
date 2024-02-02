@@ -145,6 +145,8 @@ function Hexagram:update(elapsed)
 		self.light:getTransform():setLocalTranslation(Vector.UNIT_Y * 6)
 
 		self:updatePath()
+
+		self:ready()
 	end
 end
 

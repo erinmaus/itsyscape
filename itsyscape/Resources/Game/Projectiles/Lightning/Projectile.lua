@@ -143,6 +143,8 @@ function Lightning:update(elapsed)
 		self.lightning:setAmbience(Lightning.MAX_AMBIENCE * self:getDelta())
 		self:updatePath()
 		self:zapTarget()
+
+		self:ready()
 	end
 end
 

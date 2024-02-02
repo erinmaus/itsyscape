@@ -127,6 +127,8 @@ function AncientZweihander:update(elapsed)
 		local root = self:getRoot()
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation:getNormal())
+
+		self:ready()
 	end
 end
 

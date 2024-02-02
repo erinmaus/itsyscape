@@ -177,6 +177,8 @@ function Nuke:update(elapsed)
 		if self:getTime() > Nuke.SPAWN_MUSHROOM_TOP_TIME then
 			self.particleSystemTop:play()
 		end
+
+		self:ready()
 	end
 end
 
