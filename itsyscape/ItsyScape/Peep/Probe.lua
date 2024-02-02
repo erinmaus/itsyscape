@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -18,10 +19,30 @@ local Mapp = require "ItsyScape.GameDB.Mapp"
 
 local Probe = {}
 
+function Probe.bind(...)
+	return Callback.bind(...)
+end
+
+local _none = function()
+	return false
+end
+
 function Probe.none()
-	return function(peep)
-		return false
-	end
+	return _none
+end
+
+local _any = function()
+	return true
+end
+
+function Probe.any()
+	return _any
+end
+
+local _distance = function(position, distance, other)
+	local otherPosition = Utility.Peep.getAbsolutePosition(other) * Vector.PLANE_XZ
+	local otherDistance = (position - otherPosition):getLength()
+	return otherDistance <= distance
 end
 
 function Probe.distance(p, distance)
@@ -34,165 +55,173 @@ function Probe.distance(p, distance)
 
 	position = position * Vector.PLANE_XZ
 
-	return function(other)
-		local otherPosition = Utility.Peep.getAbsolutePosition(other) * Vector.PLANE_XZ
-		local otherDistance = (position - otherPosition):getLength()
-		return otherDistance <= distance
-	end
+	return Callback.bind(_distance, position, distance)
+end
+
+
+local _near = function(peep, distance, other)
+	local s, t = Utility.Peep.getTile(peep)
+	local i, j = Utility.Peep.getTile(other)
+	local u = math.abs(s - i)
+	local v = math.abs(t - j)
+	local difference = u + v
+	return difference <= distance
 end
 
 function Probe.near(peep, distance)
-	local position = peep:getBehavior(PositionBehavior)
-	if not position then
-		return Probe.none()
-	else
-		return function(other)
-			local p = other:getBehavior(PositionBehavior)
-			if p then
-				local s, t = Utility.Peep.getTile(peep)
-				local i, j = Utility.Peep.getTile(other)
-				local u = math.abs(s - i)
-				local v = math.abs(t - j)
-				local difference = u + v
-				if difference <= distance then
-					return true
-				end
-			end
+	return Callback.bind(_near, peep, distance)
+end
 
-			return false
+local _resource = function(resourceType, resourceName, peep)
+	local resource = Utility.Peep.getResource(peep)
+	if resource then
+		if type(resourceType) == 'string' then
+			local gameDB = peep:getDirector():getGameDB()
+			
+			local t = gameDB:getBrochure():getResourceTypeFromResource(resource)
+			return t.name:lower() == resourceType:lower() and
+			       resourceName:lower() == resource.name:lower()
+		else
+			return resource.id.value == resourceType.id.value
 		end
 	end
+
+	return false
 end
 
 function Probe.resource(resourceType, resourceName)
-	return function(peep)
-		local resource = Utility.Peep.getResource(peep)
-		if resource then
-			if type(resourceType) == 'string' then
-				local gameDB = peep:getDirector():getGameDB()
-				
-				local t = gameDB:getBrochure():getResourceTypeFromResource(resource)
-				return t.name:lower() == resourceType:lower() and
-				       resourceName:lower() == resource.name:lower()
-			else
-				return resource.id.value == resourceType.id.value
-			end
-		end
+	return Callback.bind(_resource, resourceType, resourceName)
+end
 
-		return false
+local _mapObject = function(obj, peep)
+	local mapObject = Utility.Peep.getMapObject(peep)
+	if mapObject then
+		return mapObject.id.value == obj.id.value
 	end
+
+	return false
 end
 
 function Probe.mapObject(obj)
-	return function(peep)
-		local mapObject = Utility.Peep.getMapObject(peep)
-		if mapObject then
-			return mapObject.id.value == obj.id.value
-		end
+	return Callback.bind(_mapObject, obj)
+end
 
-		return false
+local _namedMapObject = function(name, peep)
+	local gameDB = peep:getDirector():getGameDB()
+	local resource = Utility.Peep.getMapObject(peep)
+	if resource then
+		local location = gameDB:getRecord("MapObjectLocation", { Resource = resource })
+		local reference = gameDB:getRecord("MapObjectReference", { Resource = resource })
+
+		if (location and location:get("Name") == name) or
+		   (reference and reference:get("Name") == name)
+		then
+			return true
+		end
 	end
+
+	return false
 end
 
 function Probe.namedMapObject(name)
-	return function(peep)
-		local gameDB = peep:getDirector():getGameDB()
-		local resource = Utility.Peep.getMapObject(peep)
-		if resource then
-			local location = gameDB:getRecord("MapObjectLocation", { Resource = resource })
-			local reference = gameDB:getRecord("MapObjectReference", { Resource = resource })
-			if (location and location:get("Name") == name) or
-			   (reference and reference:get("Name") == name)
-			then
-				return true
-			end
-		end
+	return Callback.bind(_namedMapObject, name)
+end
 
-		return false
+local _instance = function(player, any, peep)
+	local instance = peep:getBehavior(InstancedBehavior)
+	if not instance and any then
+		return true
 	end
+
+	return instance and instance.playerID == player:getID()
 end
 
 function Probe.instance(player, any)
-	return function(peep)
-		local instance = peep:getBehavior(InstancedBehavior)
-		if not instance and any then
-			return true
-		end
+	return Callback.bind(_instance, player, any)
+end
 
-		return instance and instance.playerID == player:getID()
-	end
+local _player = function(peep)
+	return peep:hasBehavior(PlayerBehavior)
 end
 
 function Probe.player()
-	return function(peep)
-		return peep:hasBehavior(PlayerBehavior)
-	end
+	return _player
+end
+
+local _follower = function(player, peep)
+	local follower = peep:getBehavior(FollowerBehavior)
+	return follower and follower.playerID == player:getID()
 end
 
 function Probe.follower(player)
-	return function(peep)
-		local follower = peep:getBehavior(FollowerBehavior)
-		return follower and follower.playerID == player:getID()
+	return Callback.bind(_follower, player, peep)
+end
+
+local _mapObjectGroup = function(name, peep)
+	local gameDB = peep:getDirector():getGameDB()
+	local mapObject = Utility.Peep.getMapObject(peep)
+	if mapObject then
+		local record = gameDB:getRecord("MapObjectGroup", {
+			MapObject = mapObject,
+			MapObjectGroup = name,
+			Map = Utility.Peep.getMapResource(peep)
+		})
+
+		if record then
+			return true
+		end
 	end
+
+	return false
 end
 
 function Probe.mapObjectGroup(name)
-	return function(peep)
-		local gameDB = peep:getDirector():getGameDB()
-		local mapObject = Utility.Peep.getMapObject(peep)
-		if mapObject then
-			local record = gameDB:getRecord("MapObjectGroup", {
-				MapObject = mapObject,
-				MapObjectGroup = name,
-				Map = Utility.Peep.getMapResource(peep)
-			})
+	return Callback.bind(_mapObjectGroup, name)
+end
 
-			if record then
-				return true
-			end
-		end
-
-		return false
-	end
+local _attackable = function(peep)
+	return Utility.Peep.isAttackable(peep)
 end
 
 function Probe.attackable()
-	return function(peep)
-		return Utility.Peep.isAttackable(peep)
-	end
+	return _attackable
 end
 
-function Probe.actionOutput(actionType, outputName, outputType)
-	return function(peep)
-		local resource = Utility.Peep.getResource(peep)
-		if resource then
-			local gameDB = peep:getDirector():getGameDB()
-			local brochure = gameDB:getBrochure()
-			
-			for action in brochure:findActionsByResource(resource) do
-				local a = brochure:getActionDefinitionFromAction(action)
-				if a.name:lower() == actionType:lower() then
-					for output in brochure:getOutputs(action) do
-						local outputResource = brochure:getConstraintResource(output)
-						local outputResourceType = brochure:getResourceTypeFromResource(outputResource)
-						if outputResourceType.name:lower() == outputType:lower() and
-						   outputResource.name:lower() == outputName:lower()
-						then
-							return true
-						end
+local _actionOutput = function(actionType, outputName, outputType, peep)
+	local resource = Utility.Peep.getResource(peep)
+	if resource then
+		local gameDB = peep:getDirector():getGameDB()
+		local brochure = gameDB:getBrochure()
+		
+		for action in brochure:findActionsByResource(resource) do
+			local a = brochure:getActionDefinitionFromAction(action)
+			if a.name:lower() == actionType:lower() then
+				for output in brochure:getOutputs(action) do
+					local outputResource = brochure:getConstraintResource(output)
+					local outputResourceType = brochure:getResourceTypeFromResource(outputResource)
+					if outputResourceType.name:lower() == outputType:lower() and
+					   outputResource.name:lower() == outputName:lower()
+					then
+						return true
 					end
 				end
 			end
 		end
-
-		return false
 	end
+
+	return false
+end
+
+function Probe.actionOutput(actionType, outputName, outputType)
+	return Callback.bind(_actionOutput, actionType, outputName, outputType)
+end
+
+local _layer = function(layer, peep)
+	return Utility.Peep.getLayer(peep) == layer
 end
 
 function Probe.layer(layer)
-	return function(peep)
-		return Utility.Peep.getLayer(peep) == layer
-	end
+	Callback.bind(_layer, layer)
 end
 
 return Probe

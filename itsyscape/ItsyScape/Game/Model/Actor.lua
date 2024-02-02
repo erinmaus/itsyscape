@@ -49,6 +49,10 @@ function Actor:getID()
 	return Class.ABSTRACT()
 end
 
+function Actor:getPeepID()
+	return Class.ABSTRACT()
+end
+
 -- Gets the name of the Actor.
 function Actor:getName()
 	return Class.ABSTRACT()

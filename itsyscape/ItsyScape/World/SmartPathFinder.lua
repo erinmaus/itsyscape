@@ -35,6 +35,10 @@ function SmartPathFinder:new(map, peep, t)
 		self.canUseObjects = peep:hasBehavior(HumanoidBehavior)
 	end
 
+	if t.yield then
+		self.yield = true
+	end
+
 	self.maxDistanceFromGoal = t.maxDistanceFromGoal or math.huge
 end
 
@@ -271,6 +275,10 @@ function SmartPathFinder:getNeighbors(edge, goal)
 				table.insert(neighbors, self:makeEdge(i + 1, j + 1, edge, goal))
 			end
 		end
+	end
+
+	if self.yield then
+		coroutine.yield()
 	end
 
 	return neighbors

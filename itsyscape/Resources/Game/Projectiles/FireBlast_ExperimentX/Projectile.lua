@@ -23,7 +23,7 @@ function FireBlastX:tick()
 		local sourceView = gameView:getActor(source)
 
 		if sourceView then
-			self.spawnPosition = sourceView:getBoneWorldPosition("wizard.body", Vector.ZERO, Quaternion.Y_180)
+			self.spawnPosition = sourceView:getBoneWorldPosition("wizard.body")
 		end
 	end
 end

@@ -22,7 +22,7 @@ function PlaySoundInstance:bind(animatable)
 end
 
 function PlaySoundInstance:pending(time, windingDown)
-	return windingDown or not self.played
+	return not windingDown and not self.played
 end
 
 function PlaySoundInstance:play(animatable, time)

@@ -95,6 +95,8 @@ function UndeadSquidInk:update(elapsed)
 		root:getTransform():setLocalScale(scale)
 
 		self.quad:getMaterial():setColor(Color(1, 1, 1, alpha))
+
+		self:ready()
 	end
 end
 

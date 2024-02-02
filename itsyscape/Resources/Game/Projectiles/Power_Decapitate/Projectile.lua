@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Projectile = require "ItsyScape.Graphics.Projectile"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 
@@ -89,25 +90,19 @@ end
 function Decapitate:update(elapsed)
 	Projectile.update(self, elapsed)
 
-	local headPosition, bodyPosition
+	local headPosition
 	do
 		local gameView = self:getGameView()
 		local actorView = gameView:getActor(self:getDestination())
 		if actorView then
-			local headTransform = actorView:getLocalBoneTransform("head")
-			headPosition = Vector(headTransform:transformPoint(0, 0, 0))
-
-			local bodyTransform = actorView:getSceneNode():getTransform():getGlobalTransform()
-			bodyPosition = Vector(bodyTransform:transformPoint(0, 0, 0))
+			headPosition = actorView:getBoneWorldPosition("head", Vector.UNIT_Y, Quaternion.Y_180)
 		else
 			headPosition = Vector.ZERO
-			bodyPosition = Vector.ZERO
 		end
 	end
 
-	local root = self:getRoot()
-	root:getTransform():setLocalTranslation(headPosition + bodyPosition)
+	self.particleSystem:updateLocalPosition(headPosition)
+	self:ready()
 end
 
 return Decapitate
-

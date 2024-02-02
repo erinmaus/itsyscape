@@ -58,6 +58,7 @@ function MovementBehavior:new()
 	self.targetFacing = false
 	self.acceleration = Vector(0, 0, 0)
 	self.velocity = Vector(0, 0, 0)
+	self.push = Vector(0, 0, 0)
 	self.additionalAcceleration = Vector(0, 0, 0)
 	self.additionalVelocity = Vector(0, 0, 0)
 	self.maxSpeed = 0
@@ -66,7 +67,9 @@ function MovementBehavior:new()
 	self.accelerationMultiplier = 1
 	self.bounce = 0
 	self.bounceThreshold = 0
-	self.decay = 1
+	self.velocityDecay = 0
+	self.accelerationDecay = 0
+	self.pushDecay = 0.1
 	self.isOnGround = false
 	self.isStopping = false
 	self.stoppingForce = 2

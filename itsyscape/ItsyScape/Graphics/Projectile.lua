@@ -23,8 +23,13 @@ function Projectile:new(id, gameView, source, destination, layer)
 	self.destination = destination
 	self.layer = layer
 	self.time = 0
+	self._didTick = false
 
 	self.sceneNode = SceneNode()
+end
+
+function Projectile:getID()
+	return self.id
 end
 
 function Projectile:attach()
@@ -127,6 +132,13 @@ end
 
 function Projectile:getRoot()
 	return self.sceneNode
+end
+
+function Projectile:ready()
+	if not self._isReady then
+		self.sceneNode:tick(1)
+		self._isReady = true
+	end
 end
 
 function Projectile:tick()

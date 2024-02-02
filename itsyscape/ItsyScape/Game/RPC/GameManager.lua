@@ -7,7 +7,6 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Game = require "ItsyScape.Game.Model.Game"
@@ -17,19 +16,17 @@ local Prop = require "ItsyScape.Game.Model.Prop"
 local Stage = require "ItsyScape.Game.Model.Stage"
 local UI = require "ItsyScape.Game.Model.UI"
 local Event = require "ItsyScape.Game.RPC.Event"
+local EventQueue = require "ItsyScape.Game.RPC.EventQueue"
 local State = require "ItsyScape.Game.RPC.State"
+local OutgoingEventQueue = require "ItsyScape.Game.RPC.OutgoingEventQueue"
 local Property = require "ItsyScape.Game.RPC.Property"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
+local DebugStats = require "ItsyScape.Graphics.DebugStats"
+local NGameManager = require "nbunny.gamemanager"
 local NProperty = require "nbunny.gamemanager.property"
+local NVariant = require "nbunny.gamemanager.variant"
 
 local GameManager = Class()
-
-GameManager.QUEUE_EVENT_TYPE_CREATE   = "create"
-GameManager.QUEUE_EVENT_TYPE_DESTROY  = "destroy"
-GameManager.QUEUE_EVENT_TYPE_CALLBACK = "callback"
-GameManager.QUEUE_EVENT_TYPE_PROPERTY = "property"
-GameManager.QUEUE_EVENT_TYPE_TICK     = "tick"
-GameManager.QUEUE_EVENT_TYPE_PROTOCOL = "protocol"
 
 GameManager.Instance = Class()
 function GameManager.Instance:new(interface, id, instance, gameManager)
@@ -91,23 +88,30 @@ function GameManager.Instance:registerProperty(propertyName, property)
 	self.properties[propertyName] = p
 end
 
-function GameManager.Instance:setProperty(propertyName, value)
+function GameManager.Instance:setProperty(propertyName, ...)
 	local property = self.properties[propertyName]
-	property:set(propertyName, value)
+	property:set(propertyName, ...)
+end
+
+function GameManager.Instance:_updateProperty(property, force)
+	local isDirty = property:update(self.instance)
+	if isDirty or force then
+		self.gameManager:pushProperty(
+			self.interface,
+			self.id,
+			property:getField(),
+			property:getValue())
+	end
 end
 
 function GameManager.Instance:update(force)
-	for i = 1, #self.properties do
-		local property = self.properties[i]
-		local isDirty = property:update(self.instance, self.gameManager)
-		if isDirty or force then
-			self.gameManager:pushProperty(
-				self.interface,
-				self.id,
-				property:getField(),
-				buffer.encode(property:getValue()),
-				true)
-		end
+	for _, property in ipairs(self.properties) do
+		self.gameManager:getDebugStats():measure(
+			string.format("%s::%s::%s", EventQueue.EVENT_TYPE_PROPERTY, self.interface, property:getField()),
+			self._updateProperty,
+			self,
+			property,
+			force)
 	end
 end
 
@@ -131,12 +135,12 @@ function GameManager.Property:getValue()
 	return self._handle:getValue()
 end
 
-function GameManager.Property:update(instance, gameManager)
-	return self._handle:update(instance)
+function GameManager.Property:update(instance)
+	return self._handle:update(instance[self._handle:getField()](instance))
 end
 
-function GameManager.Property:set(instance, newValue)
-	self._handle:setValue(newValue)
+function GameManager.Property:set(instance, ...)
+	self._handle:setValue(...)
 end
 
 GameManager.PropertyGroup = Class()
@@ -191,7 +195,8 @@ function GameManager.PropertyGroup:findIndexOfKey(key)
 	return nil, nil
 end
 
-function GameManager.PropertyGroup:set(key, values)
+function GameManager.PropertyGroup:set(key, ...)
+	local values = NVariant.fromArguments(...)
 	local index, outPrioritized = self:findIndexOfKey(key)
 	if not outPrioritized then
 		if index then
@@ -210,7 +215,7 @@ function GameManager.PropertyGroup:set(key, values)
 	return false
 end
 
-function GameManager.PropertyGroup:unset(key, values)
+function GameManager.PropertyGroup:unset(key)
 	local index = self:findIndexOfKey(key)
 	if index then
 		table.remove(self.values, index)
@@ -220,36 +225,40 @@ function GameManager.PropertyGroup:unset(key, values)
 	return false
 end
 
+function GameManager.PropertyGroup:has(key)
+	return self:findIndexOfKey(key) ~= nil
+end
+
 function GameManager.PropertyGroup:get(key)
 	local index, outPrioritized = self:findIndexOfKey(key)
 	if index then
-		return self.values[index].value
+		return self.values[index].value:get()
 	end
 end
 
 function GameManager:new()
-	self.state = State()
+	if NGameManager.fetch() then
+		error("can only be one game manager on thread")
+	end
 
-	self.queue = {}
+	NGameManager.assign(self)
+
+	self.queue = OutgoingEventQueue()
 
 	self.interfaces = {}
 	self.instances = {}
 
 	self.ticks = 0
 
-	self.state:registerTypeProvider("ItsyScape.Common.Math.Quaternion", TypeProvider.Quaternion())
-	self.state:registerTypeProvider("ItsyScape.Common.Math.Ray", TypeProvider.Ray())
-	self.state:registerTypeProvider("ItsyScape.Common.Math.Vector", TypeProvider.Vector())
-	self.state:registerTypeProvider("ItsyScape.Game.CacheRef", TypeProvider.CacheRef())
-	self.state:registerTypeProvider("ItsyScape.Game.PlayerStorage", TypeProvider.PlayerStorage())
-	self.state:registerTypeProvider("ItsyScape.Graphics.Color", TypeProvider.Color())
-	self.state:registerTypeProvider("ItsyScape.Graphics.Decoration", TypeProvider.Decoration())
-	self.state:registerTypeProvider("ItsyScape.World.Map", TypeProvider.Map())
-	self.state:registerTypeProvider("ItsyScape.World.Tile", TypeProvider.Tile())
+	self.debugStats = DebugStats.GlobalDebugStats()
 end
 
-function GameManager:getState()
-	return self.state
+function GameManager:getQueue()
+	return self.queue
+end
+
+function GameManager:getDebugStats()
+	return self.debugStats
 end
 
 function GameManager:registerInterface(interface, Type)
@@ -267,34 +276,22 @@ function GameManager:getInterfaceType(interface)
 	return self.interfaces[interface].type
 end
 
-function GameManager:push(e, key)
-	Class.ABSTRACT()
-end
-
 function GameManager:process(e)
-	if e.type == GameManager.QUEUE_EVENT_TYPE_CREATE then
+	if e.type == EventQueue.EVENT_TYPE_CREATE then
 		self:processCreate(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_DESTROY then
+	elseif e.type == EventQueue.EVENT_TYPE_DESTROY then
 		self:processDestroy(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_CALLBACK then
+	elseif e.type == EventQueue.EVENT_TYPE_CALLBACK then
 		self:processCallback(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_PROPERTY then
+	elseif e.type == EventQueue.EVENT_TYPE_PROPERTY then
 		self:processProperty(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_TICK then
+	elseif e.type == EventQueue.EVENT_TYPE_TICK then
 		self:processTick(e)
-	elseif e.type == GameManager.QUEUE_EVENT_TYPE_PROTOCOL then
-		self:processProtocol(e)
 	end
 end
 
 function GameManager:pushCreate(interface, id)
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_CREATE,
-		interface = interface,
-		id = id
-	}
-
-	self:push(event)
+	self.queue:pushCreate(interface, id)
 end
 
 function GameManager:processCreate(e)
@@ -302,29 +299,15 @@ function GameManager:processCreate(e)
 end
 
 function GameManager:pushDestroy(interface, id)
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_DESTROY,
-		interface = interface,
-		id = id
-	}
-
-	self:push(event)
+	self.queue:pushDestroy(interface, id)
 end
 
 function GameManager:processDestroy(e)
 	-- Nothing.
 end
 
-function GameManager:pushCallback(interface, id, callback, args, key)
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_CALLBACK,
-		interface = interface,
-		id = id,
-		callback = callback,
-		value = args
-	}
-
-	self:push(event, key)
+function GameManager:pushCallback(interface, id, callback, key, ...)
+	self.queue:pushCallback(interface, id, callback, key, ...)
 end
 
 -- This process should be the same client/server.
@@ -335,23 +318,13 @@ function GameManager:processCallback(e)
 		local event = obj[e.callback]
 
 		if Class.isCompatibleType(event, Callback) or type(event) == "function" then
-			local args = self.state:deserialize(e.value)
-			event(obj, unpack(args, 1, table.maxn(args)))
+			event(obj, e:get("value"))
 		end
 	end
 end
 
-function GameManager:pushProperty(interface, id, property, args, reliable)
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_PROPERTY,
-		interface = interface,
-		id = id,
-		property = property,
-		value = args,
-		__reliable = reliable
-	}
-
-	self:push(event)
+function GameManager:pushProperty(interface, id, property, ...)
+	self.queue:pushProperty(interface, id, property, ...)
 end
 
 function GameManager:processProperty(e)
@@ -359,19 +332,13 @@ function GameManager:processProperty(e)
 	if not instance then
 		Log.engine("'%s' (ID %d) not found; cannot update property '%s'.", e.interface, e.id, e.property)
 	else
-		instance:setProperty(e.property, buffer.decode(e.value))
+		instance:setProperty(e.property, e:rawget("value"))
 	end
 end
 
 function GameManager:pushTick()
 	self.ticks = self.ticks + 1
-
-	local event = {
-		type = GameManager.QUEUE_EVENT_TYPE_TICK,
-		timestamp = self.ticks
-	}
-
-	self:push(event)
+	self.queue:pushTick(self.ticks)
 end
 
 function GameManager:processTick(e)
@@ -390,11 +357,6 @@ function GameManager:update()
 	for i = 1, #self.instances do
 		self.instances[i]:update()
 	end
-end
-
-function GameManager:getArgs(...)
-	local args = { ... }
-	return self.state:serialize(args)
 end
 
 function GameManager:getInstance(interface, id)
@@ -425,13 +387,10 @@ function GameManager:newInstance(interface, id, obj)
 	instances[id] = instance
 	table.insert(self.instances, instance)
 
-	self:pushCreate(interface, id)
 	return instance
 end
 
 function GameManager:destroyInstance(interface, id)
-	self:pushDestroy(interface, id)
-
 	local instances = self.interfaces[interface]
 	local instance = instances[id]
 
@@ -448,17 +407,28 @@ end
 -- In setStateForPropertyGroup and unsetStateForPropertyGroup, the first argument
 -- from the callback is ignored. The first argument is always the genuine Model-derived
 -- instance of the entity, which we don't care about.
-function GameManager:setStateForPropertyGroup(interface, id, event, _, ...)
+function GameManager:_setStateForPropertyGroup(interface, id, event, _, ...)
 	local instance = self:getInstance(interface, id)
 	if instance then
 		local group = instance:getPropertyGroup(event:getGroup())
 
 		local key = event:getKeyFromArguments(...)
-		local args = self:getArgs(...)
-		if group:set(key, args) then
-			self:pushCallback(interface, id, event:getCallbackName(), args, key)
+		if group:set(key, ...) then
+			self:pushCallback(interface, id, event:getCallbackName(), key, ...)
 		end
 	end
+end
+
+function GameManager:setStateForPropertyGroup(interface, id, event, _, ...)
+	self.debugStats:measure(
+		string.format("%s::%s::%s::set", EventQueue.EVENT_TYPE_CALLBACK, interface, event:getCallbackName()),
+		self._setStateForPropertyGroup,
+		self,
+		interface,
+		id,
+		event,
+		_,
+		...)
 end
 
 function GameManager:unsetStateForPropertyGroup(interface, id, event, _, ...)
@@ -467,9 +437,8 @@ function GameManager:unsetStateForPropertyGroup(interface, id, event, _, ...)
 		local group = instance:getPropertyGroup(event:getGroup())
 
 		local key = event:getKeyFromArguments(...)
-		local args = self:getArgs(...)
-		if group:unset(key, args) then
-			self:pushCallback(interface, id, event:getCallbackName(), args, key)
+		if group:unset(key) then
+			self:pushCallback(interface, id, event:getCallbackName(), key, ...)
 		end
 	end
 end
@@ -480,20 +449,30 @@ function GameManager:setLocalStateForPropertyGroup(interface, id, event, _, ...)
 		local group = instance:getPropertyGroup(event:getGroup())
 
 		local key = event:getKeyFromArguments(...)
-		local args = self:getArgs(...)
-		group:set(key, args)
+		group:set(key, ...)
 	end
 end
 
-function GameManager:unsetLocalStateForPropertyGroup(interface, id, event, _, ...)
+function GameManager:_unsetLocalStateForPropertyGroup(interface, id, event, _, ...)
 	local instance = self:getInstance(interface, id)
 	if instance then
 		local group = instance:getPropertyGroup(event:getGroup())
 
 		local key = event:getKeyFromArguments(...)
-		local args = self:getArgs(...)
-		group:unset(key, args)
+		group:unset(key)
 	end
+end
+
+function GameManager:_unsetStateForPropertyGroup(interface, id, event, _, ...)
+	self.debugStats:measure(
+		string.format("%s::%s::%s::unset", EventQueue.EVENT_TYPE_CALLBACK, interface, event:getCallbackName()),
+		self._unsetStateForPropertyGroup,
+		self,
+		interface,
+		id,
+		event,
+		_,
+		...)
 end
 
 function GameManager:getStateForPropertyGroup(interface, id, event, _, ...)
@@ -502,20 +481,29 @@ function GameManager:getStateForPropertyGroup(interface, id, event, _, ...)
 		local group = instance:getPropertyGroup(event:getGroup())
 
 		local key = event:getKeyFromArguments(...)
-		local args = group:get(key)
-		if args then
-			local args = self.state:deserialize(args)
-			return event:getReturnValue(unpack(args, 1, table.maxn(args)))
-		else
-			return
+		if group:has(key) then
+			return event:getReturnValue(group:get(key))
 		end
 	end
+
+	return
+end
+
+function GameManager:_invokeCallback(interface, id, event, _, ...)
+	local key = event:getKeyFromArguments(...)
+	self:pushCallback(interface, id, event:getCallbackName(), key, ...)
 end
 
 function GameManager:invokeCallback(interface, id, event, _, ...)
-	local key = event:getKeyFromArguments(...)
-	local args = self:getArgs(...)
-	self:pushCallback(interface, id, event:getCallbackName(), args, key)
+	self.debugStats:measure(
+		string.format("%s::%s::%s::invoke", EventQueue.EVENT_TYPE_CALLBACK, interface, event:getCallbackName()),
+		self._invokeCallback,
+		self,
+		interface,
+		id,
+		event,
+		_,
+		...)
 end
 
 function GameManager:hasProperty(interface, id, property)
@@ -525,12 +513,7 @@ end
 
 function GameManager:getProperty(interface, id, property)
 	local instance = self:getInstance(interface, id)
-	local args = instance:getProperty(property)
-	if args then
-		return self.state:deserialize(args)
-	else
-		return {}
-	end
+	return instance:getProperty(property)
 end
 
 function GameManager:registerProperty(interface, id, propertyName, property)

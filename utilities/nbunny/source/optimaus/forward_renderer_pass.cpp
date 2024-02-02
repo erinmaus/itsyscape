@@ -104,8 +104,16 @@ void nbunny::ForwardRendererPass::prepare_fog(float delta)
 
 void nbunny::ForwardRendererPass::get_nearby_lights(SceneNode& node, float delta)
 {
-	auto transform = node.get_transform().get_global(delta);
-	auto position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	glm::vec4 position;
+	if (node.get_material().get_is_light_target_position_enabled())
+	{
+		auto transform = node.get_transform().get_global(delta);
+		position = transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	}
+	else
+	{
+		position = glm::vec4(get_renderer()->get_camera().get_target_position(), 1.0f);
+	}
 
 	lights.clear();
 	if (node.get_material().get_is_full_lit() || (global_light_scene_nodes.empty() && local_light_scene_nodes.empty()))

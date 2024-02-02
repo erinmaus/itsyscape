@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
@@ -28,6 +29,7 @@ function ActorView.Animatable:new(actor)
 	self.animations = { id = 1 }
 	self.sceneNodes = {}
 	self.sounds = {}
+	self.pendingTransforms = {}
 	self:_newTransforms()
 end
 
@@ -100,6 +102,20 @@ end
 
 function ActorView.Animatable:getTransforms()
 	return self.transforms
+end
+
+function ActorView.Animatable:getPostComposedTransform(attach, func)
+	table.insert(self.pendingTransforms, function()
+		local transform = self.transforms:getTransform(self:getSkeleton():getBoneIndex(attach))
+		func(transform)
+	end)
+end
+
+function ActorView.Animatable:flushPendingComposedTransforms()
+	for _, func in ipairs(self.pendingTransforms) do
+		func()
+	end
+	table.clear(self.pendingTransforms)
 end
 
 function ActorView.Animatable:setTransforms(transforms, animation, time)
@@ -350,6 +366,11 @@ function ActorView:playAnimation(slot, animation, priority, time)
 		self.animations[slot] = a
 	else
 		self.game:getResourceManager():queueEvent(function()
+			local animation = self.animations[slot]
+			if animation then
+				self.animatable:removePlayingAnimation(animation.id)
+			end
+
 			self.animations[slot] = nil
 			self:sortAnimations()
 			self:updateAnimations(0)
@@ -434,6 +455,11 @@ function ActorView:_doApplySkin(slotNodes)
 							outputLight = PointLightSceneNode()
 						elseif inputLight:getAmbience() > 0 then
 							outputLight = AmbientLightSceneNode()
+						end
+
+						-- Only the client's player's lights should be global.
+						if self.actor == self.game:getGame():getPlayer():getActor() then
+							outputLight:setIsGlobal(true)
 						end
 						
 						if outputLight then
@@ -654,6 +680,19 @@ function ActorView:update(delta)
 	self.animatable:update()
 end
 
+function ActorView:getBoneTransform(boneName)
+	local transform = love.math.newTransform()
+	if not self.localTransforms then
+		return transform
+	end
+
+	local transforms = self.localTransforms
+	local skeleton = self.animatable:getSkeleton()
+
+	transform:apply(transforms:getTransform(skeleton:getBoneIndex(boneName)))
+	return transform, MathCommon.decomposeTransform(transform)
+end
+
 function ActorView:getLocalBoneTransform(boneName, rotation)
 	rotation = rotation or -Quaternion.X_90
 
@@ -670,6 +709,26 @@ function ActorView:getLocalBoneTransform(boneName, rotation)
 	return skeleton:getLocalBoneTransform(boneName, transforms, transform)
 end
 
+function ActorView:getLocalBonePosition(boneName, position, rotation)
+	position = position or Vector.ZERO
+	rotation = rotation or Quaternion.IDENTITY
+
+	local boneTransform = self:getLocalBoneTransform(boneName)
+	local inverseBindPoseTransform = self:getSkeleton():getBoneByName(boneName):getInverseBindPose()
+
+	local composedTransform = love.math.newTransform()
+	composedTransform:applyQuaternion(rotation:get())
+	composedTransform:apply(boneTransform)
+	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
+
+	return Vector(composedTransform:transformPoint(position:get()))
+end
+
+function ActorView:decomposeBoneLocalTransform(boneName)
+	local boneTransform = self:getLocalBoneTransform(boneName)
+	return MathCommon.decomposeTransform(boneTransform)
+end
+
 function ActorView:getBoneWorldPosition(boneName, position, rotation)
 	position = position or Vector.ZERO
 	rotation = rotation or Quaternion.IDENTITY
@@ -682,7 +741,6 @@ function ActorView:getBoneWorldPosition(boneName, position, rotation)
 	composedTransform:apply(nodeTransform)
 	composedTransform:applyQuaternion(rotation:get())
 	composedTransform:apply(boneTransform)
-	composedTransform:apply(inverseBindPoseTransform)
 	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
 
 	return Vector(composedTransform:transformPoint(position:get()))
@@ -736,8 +794,7 @@ function ActorView:updateAnimations(delta)
 				for j = 1, #slotNodes[i].particles do
 					local p = slotNodes[i].particles[j]
 					if p.attach then
-						local transform = self.animatable:getComposedTransform(p.attach)
-						local localPosition = Vector(transform:transformPoint(0, 0, 0))
+						local localPosition = self:getLocalBonePosition(p.attach)
 						p.sceneNode:updateLocalPosition(localPosition)
 					end
 				end
@@ -750,8 +807,13 @@ function ActorView:updateAnimations(delta)
 	end
 
 	local skeleton = self.animatable:getSkeleton()
-	skeleton:applyTransforms(transforms)
-	skeleton:applyBindPose(transforms)
+	do
+		skeleton:applyTransforms(transforms)
+		self.animatable:flushPendingComposedTransforms()
+
+		skeleton:applyBindPose(transforms)
+	end
+
 end
 
 return ActorView

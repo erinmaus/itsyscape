@@ -111,6 +111,8 @@ function Bubbles:update(elapsed)
 		end
 
 		self:getRoot():getTransform():setLocalTranslation(self.spawnPosition)
+
+		self:ready()
 	end
 end
 

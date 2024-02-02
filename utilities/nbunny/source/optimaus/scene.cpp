@@ -112,12 +112,10 @@ const glm::vec3& nbunny::SceneNodeTransform::get_previous_offset() const
 	return previous_offset;
 }
 
-void nbunny::SceneNodeTransform::tick()
+void nbunny::SceneNodeTransform::tick(float delta)
 {
-	previous_scale = current_scale;
-	previous_rotation = current_rotation;
-	previous_translation = current_translation;
-	previous_offset = current_offset;
+	get_delta(delta, previous_rotation, previous_scale, previous_translation, previous_offset);
+
 	ticked = true;
 }
 
@@ -126,7 +124,7 @@ bool nbunny::SceneNodeTransform::get_ticked() const
 	return ticked;
 }
 
-glm::mat4 nbunny::SceneNodeTransform::get_local(float delta) const
+void nbunny::SceneNodeTransform::get_delta(float delta, glm::quat& rotation, glm::vec3& scale, glm::vec3& translation, glm::vec3& offset) const
 {
 	auto pS = ticked ? previous_scale : current_scale;
 	auto pR = ticked ? previous_rotation : current_rotation;
@@ -137,10 +135,20 @@ glm::mat4 nbunny::SceneNodeTransform::get_local(float delta) const
 	auto cT = current_translation;
 	auto cO = current_offset;
 
-	auto rotation = glm::slerp(pR, cR, delta);
-	auto scale = glm::mix(pS, cS, delta);
-	auto translation = glm::mix(pT, cT, delta);
-	auto offset = glm::mix(pO, cO, delta);
+	rotation = glm::slerp(pR, cR, delta);
+	scale = glm::mix(pS, cS, delta);
+	translation = glm::mix(pT, cT, delta);
+	offset = glm::mix(pO, cO, delta);
+}
+
+glm::mat4 nbunny::SceneNodeTransform::get_local(float delta) const
+{
+	glm::quat rotation;
+	glm::vec3 scale;
+	glm::vec3 translation;
+	glm::vec3 offset;
+
+	get_delta(delta, rotation, scale, translation, offset);
 
 	auto r = glm::toMat4(rotation);
 	auto s = glm::scale(glm::mat4(1), scale);
@@ -200,6 +208,16 @@ void nbunny::SceneNodeMaterial::set_is_full_lit(bool value)
 bool nbunny::SceneNodeMaterial::get_is_full_lit() const
 {
 	return is_full_lit;
+}
+
+void nbunny::SceneNodeMaterial::set_is_light_target_position_enabled(bool value)
+{
+	is_light_target_position_enabled = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_light_target_position_enabled() const
+{
+	return is_light_target_position_enabled;
 }
 
 void nbunny::SceneNodeMaterial::set_is_z_write_disabled(bool value)
@@ -334,14 +352,9 @@ nbunny::SceneNode::~SceneNode()
 	}
 }
 
-void nbunny::SceneNode::tick()
+void nbunny::SceneNode::tick(float delta)
 {
-	transform.tick();
-
-	for (auto& child: children)
-	{
-		child->tick();
-	}
+	transform.tick(delta);
 }
 
 bool nbunny::SceneNode::get_ticked() const
@@ -1035,6 +1048,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getIsTranslucent", &nbunny::SceneNodeMaterial::get_is_translucent,
 		"setIsFullLit", &nbunny::SceneNodeMaterial::set_is_full_lit,
 		"getIsFullLit", &nbunny::SceneNodeMaterial::get_is_full_lit,
+		"setIsLightTargetPositionEnabled", &nbunny::SceneNodeMaterial::set_is_light_target_position_enabled,
+		"getIsLightTargetPositionEnabled", &nbunny::SceneNodeMaterial::get_is_light_target_position_enabled,
 		"setIsZWriteDisabled", &nbunny::SceneNodeMaterial::set_is_z_write_disabled,
 		"getIsZWriteDisabled", &nbunny::SceneNodeMaterial::get_is_z_write_disabled,
 		"setIsCullDisabled", &nbunny::SceneNodeMaterial::set_is_cull_disabled,

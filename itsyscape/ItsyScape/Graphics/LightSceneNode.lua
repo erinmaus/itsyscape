@@ -18,10 +18,6 @@ local LightSceneNode = Class(SceneNode)
 
 function LightSceneNode:new(NType)
 	SceneNode.new(self, NType or NLightSceneNode)
-
-	self.previousColor = false
-	self.color = Color(1, 1, 1)
-	self.isGlobal = false
 end
 
 -- Gets if the light is global.
@@ -77,12 +73,6 @@ function LightSceneNode:fromLight(light)
 
 	local transform = self:getTransform()
 	transform:setLocalTranslation(light:getPosition())
-end
-
-function LightSceneNode:tick()
-	SceneNode.tick(self)
-
-	self.previousColor = self.color
 end
 
 return LightSceneNode

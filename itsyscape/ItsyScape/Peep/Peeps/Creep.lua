@@ -57,10 +57,11 @@ function Creep:new(resource, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 5
 	movement.maxAcceleration = 5
-	movement.decay = 0.7
 	movement.velocityMultiplier = 1
 	movement.accelerationMultiplier = 1
 	movement.stoppingForce = 4
+
+	self:addPoke("fall")
 
 	Utility.Peep.setResource(self, resource)
 

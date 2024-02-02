@@ -137,6 +137,8 @@ Nuke.PARTICLE_SYSTEM_BOTTOM = {
 Nuke.DURATION = 2.5
 Nuke.SPAWN_MUSHROOM_TOP_TIME = 0.4
 
+Nuke.CLAMP_TO_BOTTOM = true
+
 function Nuke:load()
 	Projectile.load(self)
 
@@ -175,6 +177,8 @@ function Nuke:update(elapsed)
 		if self:getTime() > Nuke.SPAWN_MUSHROOM_TOP_TIME then
 			self.particleSystemTop:play()
 		end
+
+		self:ready()
 	end
 end
 

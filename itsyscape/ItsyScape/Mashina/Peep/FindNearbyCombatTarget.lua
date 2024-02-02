@@ -26,6 +26,48 @@ FindNearbyCombatTarget.COUNT = B.Reference()
 FindNearbyCombatTarget.SAME_LAYER = B.Reference()
 FindNearbyCombatTarget.RESULT = B.Reference()
 
+local function probeIsAlive(includeDead, p)
+	if includeDead then
+		return true
+	end
+
+	return p:hasBehavior(CombatStatusBehavior) and not p:getBehavior(CombatStatusBehavior).dead
+end
+
+local function probeFilterNPCs(mashina, includeNPCs, p)
+	if not includeNPCs then
+		if p:hasBehavior(PlayerBehavior) and p ~= mashina then
+			return true
+		end
+	else
+		return p ~= mashina
+	end
+end
+
+local function probeFilterLineOfSight(mashina, sameLayer, checkLineOfSight, p)
+	if checkLineOfSight then
+		return true
+	end
+
+	if sameLayer and Utility.Peep.getLayer(mashina) ~= Utility.Peep.getLayer(p) then
+		return false
+	end
+
+	local director = mashina:getDirector()
+
+	local selfI, selfJ = Utility.Peep.getTile(mashina)
+	local targetI, targetJ = Utility.Peep.getTile(p)
+
+	local map = director:getMap(Utility.Peep.getLayer(mashina))
+	local passable = map and map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)
+
+	return passable
+end
+
+local function probeCustomFilter(f, mashina, state, executor, p)
+	return f(p, mashina, state, executor)
+end
+
 function FindNearbyCombatTarget:update(mashina, state, executor)
 	local director = mashina:getDirector()
 
@@ -45,47 +87,12 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 		mashina:getLayerName(),
 		Probe.attackable(),
 		Probe.distance(mashina, distance / 2),
-		function(p)
-			if state[self.INCLUDE_DEAD] then
-				return true
-			end
-
-			return p:hasBehavior(CombatStatusBehavior) and not p:getBehavior(CombatStatusBehavior).dead
-		end,
-		function(p)
-			if not includeNPCs then
-				if p:hasBehavior(PlayerBehavior) and p ~= mashina then
-					return true
-				end
-			else
-				return p ~= mashina
-			end
-		end,
-		function(p)
-			if not state[self.LINE_OF_SIGHT] then
-				return true
-			end
-
-			if sameLayer and Utility.Peep.getLayer(mashina) ~= Utility.Peep.getLayer(p) then
-				return false
-			end
-
-			local selfI, selfJ = Utility.Peep.getTile(mashina)
-			local targetI, targetJ = Utility.Peep.getTile(p)
-
-			local map = director:getMap(Utility.Peep.getLayer(mashina))
-			local passable = map and map:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)
-
-			return passable
-		end,
-		function(p)
-			if state[self.FILTER] then
-				return state[self.FILTER](p, mashina, state, executor)
-			end
-
-			return true
-		end,
+		Probe.bind(probeIsAlive, state[self.INCLUDE_DEAD]),
+		Probe.bind(probeFilterNPCs, mashina, includeNPCs),
+		Probe.bind(probeFilterLineOfSight, mashina, sameLayer, state[self.LINE_OF_SIGHT]),
+		Probe.bind(probeCustomFilter, state[self.FILTER] or Probe.any(), mashina, state, executor),
 		unpack(state[self.FILTERS] or {}))
+
 	if p and #p > 0 then
 		table.sort(
 			p,

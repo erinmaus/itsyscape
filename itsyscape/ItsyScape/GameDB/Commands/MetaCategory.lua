@@ -22,6 +22,7 @@ local MetaCategory = Class()
 
 function MetaCategory:new(game)
 	self._game = game
+	self._metaLookup = {}
 	self._metas = {}
 end
 
@@ -41,14 +42,21 @@ function MetaCategory:add(meta)
 		return instance(t)
 	end
 
-	self._metas[name] = records
+	self._metaLookup[name] = records
+	self._metaLookup[#self._metas + 1] = name
+
+	table.insert(self._metas, records)
+end
+
+function MetaCategory:getNameByIndex(index)
+	return self._metaLookup[index]
 end
 
 -- Iterates over the fields, return (index, metaInstances).
 --
 -- 'metaInstances' is an array of MetaInstance.
 function MetaCategory:iterate()
-	return pairs(self._metas)
+	return ipairs(self._metas)
 end
 
 return MetaCategory

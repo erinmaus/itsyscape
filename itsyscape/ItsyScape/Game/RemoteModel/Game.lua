@@ -28,8 +28,6 @@ function RemoteGame:_onPlayerSpawned(_, player, actor)
 		return
 	end
 
-	--player:setActor(actor)
-
 	if self.player then
 		Log.warn(
 			"New player '%s' (%d) spawned, but player '%s' (%d) already exists; replacing, but there might be problems.",

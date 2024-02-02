@@ -94,6 +94,10 @@ function Arrow:update(elapsed)
 
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
+
+		if self.update == Arrow.update then
+			self:ready()
+		end
 	end
 end
 

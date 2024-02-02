@@ -22,7 +22,7 @@ function MimicVomit:getAttackRange(peep)
 end
 
 function MimicVomit:getCooldown()
-	return 2.5
+	return 5
 end
 
 function MimicVomit:perform(peep, target)

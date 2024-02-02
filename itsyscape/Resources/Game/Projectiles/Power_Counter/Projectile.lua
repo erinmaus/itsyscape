@@ -69,6 +69,8 @@ function Counter:update(elapsed)
 		root:getTransform():setLocalTranslation(position)
 
 		self.quad:getMaterial():setColor(Color(1, 1, 1, 1 - alpha))
+
+		self:ready()
 	end
 end
 

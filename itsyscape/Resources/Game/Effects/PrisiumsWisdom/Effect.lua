@@ -30,7 +30,7 @@ function PrisiumsWisdom:enchant(peep)
 		local damage = attack:getDamage()
 		local prayerPointsDamage = math.floor(damage * self:getBoost() + 0.5)
 
-		local status = target:getBehavior(CombatStatusBehavior)
+		local status = target and target:getBehavior(CombatStatusBehavior)
 		if status then
 			status.currentPrayer = math.max(status.currentPrayer - prayerPointsDamage, 0)
 		end

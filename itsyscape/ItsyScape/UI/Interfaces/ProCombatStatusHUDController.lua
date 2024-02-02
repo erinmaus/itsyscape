@@ -422,7 +422,7 @@ function ProCombatStatusHUDController:pullStateForPeep(peep)
 			},
 
 			weapon = {
-				id = item and Utility.Item.getInstanceName(item, gameDB) or weapon:getWeaponType(),
+				id = item and Utility.Item.getInstanceName(item) or weapon:getWeaponType(),
 			},
 
 			bonuses = Utility.Peep.getEquipmentBonuses(peep),

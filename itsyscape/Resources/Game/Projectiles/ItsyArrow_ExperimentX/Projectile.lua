@@ -23,7 +23,7 @@ function ItsyArrowX:tick()
 		local sourceView = gameView:getActor(source)
 
 		if sourceView then
-			self.spawnPosition = sourceView:getBoneWorldPosition("archer.body", Vector.ZERO, Quaternion.Y_180)
+			self.spawnPosition = sourceView:getBoneWorldPosition("archer.body")
 		end
 	end
 end

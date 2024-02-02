@@ -43,7 +43,7 @@ function EmptyRuinsGround:new()
 		COLOR = Color(0.3, 0.2, 0.3, 1.0),
 		FEATURE = "brick",
 		SCALE = Vector(2, 1, 1),
-		NUM_FEATURES = 2
+		NUM_FEATURES = 3
 	})
 end
 

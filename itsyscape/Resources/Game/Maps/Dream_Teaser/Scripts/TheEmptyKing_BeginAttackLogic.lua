@@ -10,10 +10,11 @@
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
+local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
 
-local AXE = B.Reference("TheEmptyKing_BeginAttackLogic", "AXE")
+local STAFF = B.Reference("TheEmptyKing_BeginAttackLogic", "STAFF")
 local AGGRESSOR = B.Reference("TheEmptyKing_BeginAttackLogic", "AGGRESSOR")
-local PRE_SUMMON_WAIT = 12 / 24
+local PRE_SUMMON_WAIT = 2
 local POST_SUMMON_WAIT = 1.25
 
 local Tree = BTreeBuilder.Node() {
@@ -24,26 +25,35 @@ local Tree = BTreeBuilder.Node() {
 					[AGGRESSOR] = B.Output.current_target
 				},
 
-				Mashina.Navigation.Stop
+				Mashina.Navigation.Stop,
+
+				Mashina.Peep.Interrupt,
+				Mashina.Peep.Interrupt {
+					queue = CombatCortex.QUEUE
+				}
 			}
 		},
 
 		Mashina.Step {
 			Mashina.Peep.PlayAnimation {
-				filename = "Resources/Game/Animations/TheEmptyKing_FullyRealized_SummonWeapon/Script.lua",
-				priority = math.huge,
-				force = true
+				filename = "Resources/Game/Animations/TheEmptyKing_FullyRealized_SummonWeapon_Magic/Script.lua",
+				priority = math.huge
+			},
+
+			Mashina.Peep.PlayAnimation {
+				filename = "Resources/Game/Animations/TheEmptyKing_FullyRealized_Idle_Magic/Script.lua",
+				priority = 100
 			},
 
 			Mashina.Peep.GetResource {
 				type = "Prop",
-				name = "TheEmptyKingsExecutionerAxe",
-				[AXE] = B.Output.peep
+				name = "TheEmptyKing_FullyRealized_Staff",
+				[STAFF] = B.Output.peep
 			},
 
 			Mashina.Peep.PokeSelf {
-				event = "summonAxe",
-				poke = AXE
+				event = "summonStaff",
+				poke = STAFF
 			},
 
 			Mashina.Peep.TimeOut {
@@ -51,7 +61,7 @@ local Tree = BTreeBuilder.Node() {
 			},
 
 			Mashina.Peep.PokeSelf {
-				event = "equipAxe"
+				event = "equipStaff"
 			},
 
 			Mashina.Peep.Talk {
@@ -62,6 +72,8 @@ local Tree = BTreeBuilder.Node() {
 			Mashina.Peep.TimeOut {
 				duration = POST_SUMMON_WAIT
 			},
+
+			Mashina.Peep.StopAnimation,
 
 			Mashina.Peep.EngageCombatTarget {
 				peep = AGGRESSOR

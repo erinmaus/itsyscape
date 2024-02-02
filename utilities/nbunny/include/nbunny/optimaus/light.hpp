@@ -59,7 +59,7 @@ namespace nbunny
 
 		virtual void to_light(Light& light, float delta) const;
 
-		void tick() override;
+		void tick(float delta) override;
 	};
 
 	class AmbientLightSceneNode : public LightSceneNode
@@ -82,7 +82,7 @@ namespace nbunny
 
 		void to_light(Light& light, float delta) const override;
 
-		void tick() override;
+		void tick(float delta) override;
 	};
 
 	class DirectionalLightSceneNode : public LightSceneNode
@@ -105,7 +105,7 @@ namespace nbunny
 
 		void to_light(Light& light, float delta) const override;
 
-		void tick() override;
+		void tick(float delta) override;
 	};
 
 	class PointLightSceneNode : public LightSceneNode
@@ -128,7 +128,7 @@ namespace nbunny
 
 		void to_light(Light& light, float delta) const override;
 
-		void tick() override;
+		void tick(float delta) override;
 	};
 
 	class FogSceneNode : public LightSceneNode
@@ -170,7 +170,7 @@ namespace nbunny
 
 		void to_light(Light& light, float delta) const override;
 
-		void tick() override;
+		void tick(float delta) override;
 	};
 }
 

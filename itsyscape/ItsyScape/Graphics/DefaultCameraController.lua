@@ -23,7 +23,7 @@ DefaultCameraController.MIN_DISTANCE = 1
 DefaultCameraController.MAX_DISTANCE = 60
 DefaultCameraController.DEFAULT_DISTANCE = 30
 
-DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD = 0.5
+DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD = 1.0
 
 DefaultCameraController.ACTION_BUTTON = 1
 DefaultCameraController.PROBE_BUTTON  = 2

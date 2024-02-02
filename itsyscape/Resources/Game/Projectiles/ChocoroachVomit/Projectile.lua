@@ -96,6 +96,8 @@ function ChocoroachVomit:update(delta)
 
 	local scale = math.sin(angle) * ChocoroachVomit.SCALE_RANGE
 	root:getTransform():setLocalScale(Vector(scale + ChocoroachVomit.SCALE))
+
+	self:ready()
 end
 
 return ChocoroachVomit

@@ -25,6 +25,10 @@ function NullActor:getID()
 	return self.id
 end
 
+function NullActor:getPeepID()
+	return "Null"
+end
+
 function NullActor:getName()
 	return "Null"
 end

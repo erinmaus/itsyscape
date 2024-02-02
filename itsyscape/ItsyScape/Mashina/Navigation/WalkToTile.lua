@@ -18,25 +18,30 @@ WalkToTile.J = B.Reference()
 WalkToTile.K = B.Reference()
 
 function WalkToTile:update(mashina, state, executor)
-	local k
-	do
-		local position = mashina:getBehavior(PositionBehavior)
-		if position then
-			k = position.layer or 1
-		else
-			k = 1
-		end
+	local k = Utility.Peep.getLayer(mashina)
+
+	local s
+	if not self.walk then
+		self.walk = coroutine.wrap(Utility.Peep.walk)
+		s = self.walk(
+			mashina,
+			state[self.I] or 0,
+			state[self.J] or 0,
+			state[self.K] or k)
+	else
+		s = self.walk()
 	end
 
-	local s = Utility.Peep.walk(
-		mashina,
-		state[self.I] or 0,
-		state[self.J] or 0,
-		state[self.K] or k)
-	if s then
-		return B.Status.Success
+	if coroutine.status(self.walk) == "dead" then
+		self.walk = nil
+
+		if s then
+			return B.Status.Success
+		else
+			return B.Status.Failure
+		end
 	else
-		return B.Status.Failure
+		return B.Status.Working
 	end
 end
 
