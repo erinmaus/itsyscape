@@ -48,7 +48,7 @@ function DebugStats:measure(node, ...)
 		local beforeMemory, afterMemory
 		local beforeTime = love.timer.getTime()
 
-		if _DEBUG == 'plus' then
+		if _DEBUG == "plus" then
 			collectgarbage("stop")
 			beforeMemory = collectgarbage("count")
 		end
@@ -56,7 +56,7 @@ function DebugStats:measure(node, ...)
 		result = self:process(node, ...)
 		local afterTime = love.timer.getTime()
 
-		if _DEBUG == 'plus' then
+		if _DEBUG == "plus" then
 			afterMemory = collectgarbage("count")
 			collectgarbage("restart")
 		end

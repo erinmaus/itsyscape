@@ -66,6 +66,7 @@ function Player:new(resource, ...)
 	self:addPoke('spawnItem')
 	self:addPoke('spawnEquipment')
 	self:addPoke('walk')
+	self:addPoke('fall')
 
 	Utility.Peep.setResource(self, resource)
 

@@ -20,6 +20,13 @@ Meta.TYPE_BLOB = 3
 Meta.TYPE_ACTION = 4
 Meta.TYPE_RESOURCE = 5
 
+Meta.DEFAULTS = {
+	[Meta.TYPE_INTEGER] = 0,
+	[Meta.TYPE_TEXT] = "",
+	[Meta.TYPE_REAL] = 0,
+	[Meta.TYPE_BLOB] = ""
+}
+
 -- Constructs a new Meta with the specified name.
 --
 -- The expected syntax is as follows:
@@ -36,6 +43,8 @@ function Meta:new(name)
 
 	local game = Game.getGame()
 	game:addMeta(self)
+
+	self.columns = {}
 end
 
 -- Gets the name of the Meta.
@@ -77,6 +86,18 @@ function Meta:instantiate(brochure)
 	return true
 end
 
+function Meta:getColumnType(columnName, columnType)
+	return self.columns[columnName]
+end
+
+function Meta:define(columnName, columnType)
+	self.columns[columnName] = columnType
+end
+
+function Meta:iterate()
+	return pairs(self.columns)
+end
+
 -- Maps columns (keys in 't') to types (values in 't').
 --
 -- For example, { Resource = Meta.TYPE_RESOURCE } would create a
@@ -92,6 +113,7 @@ function Meta:poke(t)
 	--
 	-- Thus, also add: TODO HACK
 	for column, columnType in pairs(t) do
+		self:define(column, columnType)
 		self.definition:define(column, columnType)
 	end
 end

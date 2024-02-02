@@ -283,20 +283,19 @@ function PathFinder.AStar:find(start, stop, nearest)
 			local distanceI = self:getPathFinder():getDistance(stop, closed)
 			local distanceJ = self:getPathFinder():getDistance(start, closed)
 
-			local function choosePath()
-				bestEdge = closed
-				bestDistanceJ = distanceJ
-				bestDistanceI = distanceI
-			end
 			if nearest == math.huge then
 				if distanceI < bestDistanceI or
 				   distanceI == bestDistanceI and distanceJ < bestDistanceJ
 				then
-					choosePath()
+					bestEdge = closed
+					bestDistanceJ = distanceJ
+					bestDistanceI = distanceI
 				end
 			else
 				if distanceI < nearest and distanceJ < bestDistanceJ then
-					choosePath()
+					bestEdge = closed
+					bestDistanceJ = distanceJ
+					bestDistanceI = distanceI
 				end
 			end
 		end

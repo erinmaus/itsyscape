@@ -167,6 +167,8 @@ function Grenade:update(elapsed)
 			self.grenade:getMaterial():setColor(Color(1, 1, 1, delta))
 			self.light:setAttenuation(math.abs(math.sin(delta * math.pi)) * Grenade.SPLOSION_ATTENUTATION)
 		end
+
+		self:ready()
 	end
 end
 

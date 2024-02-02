@@ -61,16 +61,19 @@ bool nbunny::LightSceneNode::get_is_global() const
 void nbunny::LightSceneNode::to_light(Light& light, float delta) const
 {
 	light.color = glm::mix(
-		current_color,
 		get_ticked() ? previous_color : current_color,
+		current_color,
 		delta);
 }
 
-void nbunny::LightSceneNode::tick()
+void nbunny::LightSceneNode::tick(float delta)
 {
-	SceneNode::tick();
+	SceneNode::tick(delta);
 
-	previous_color = current_color;
+	previous_color = glm::mix(
+		get_ticked() ? previous_color : current_color,
+		current_color,
+		delta);
 }
 
 static int nbunny_light_scene_node_set_current_color(lua_State* L)
@@ -169,16 +172,19 @@ void nbunny::AmbientLightSceneNode::to_light(Light& light, float delta) const
 {
 	LightSceneNode::to_light(light, delta);
 	light.ambient_coefficient = glm::mix(
-		current_ambience,
 		get_ticked() ? previous_ambience : current_ambience,
+		current_ambience,
 		delta);
 	light.diffuse_coefficient = 0.0f;
 }
 
-void nbunny::AmbientLightSceneNode::tick()
+void nbunny::AmbientLightSceneNode::tick(float delta)
 {
-	LightSceneNode::tick();
-	previous_ambience = current_ambience;
+	LightSceneNode::tick(delta);
+	previous_ambience = glm::mix(
+		get_ticked() ? previous_ambience : current_ambience,
+		current_ambience,
+		delta);;
 }
 
 extern "C"
@@ -236,16 +242,19 @@ void nbunny::DirectionalLightSceneNode::to_light(Light& light, float delta) cons
 	LightSceneNode::to_light(light, delta);
 	light.position = glm::vec4(
 		glm::mix(
-			current_direction,
 			get_ticked() ? previous_direction : current_direction,
+			current_direction,
 			delta),
 		1.0f);
 }
 
-void nbunny::DirectionalLightSceneNode::tick()
+void nbunny::DirectionalLightSceneNode::tick(float delta)
 {
-	LightSceneNode::tick();
-	previous_direction = current_direction;
+	LightSceneNode::tick(delta);
+	previous_direction = glm::mix(
+		get_ticked() ? previous_direction : current_direction,
+		current_direction,
+		delta);
 }
 
 static int nbunny_directional_light_scene_node_set_current_direction(lua_State* L)
@@ -346,15 +355,18 @@ void nbunny::PointLightSceneNode::to_light(Light& light, float delta) const
 	LightSceneNode::to_light(light, delta);
 	light.position = glm::vec4(glm::vec3(position), 0.0f);
 	light.attenuation = glm::mix(
-		current_attenuation,
 		get_ticked() ? previous_attenuation : current_attenuation,
+		current_attenuation,
 		delta);
 }
 
-void nbunny::PointLightSceneNode::tick()
+void nbunny::PointLightSceneNode::tick(float delta)
 {
-	LightSceneNode::tick();
-	previous_attenuation = current_attenuation;
+	LightSceneNode::tick(delta);
+	previous_attenuation = glm::mix(
+		get_ticked() ? previous_attenuation : current_attenuation,
+		current_attenuation,
+		delta);;
 }
 
 extern "C"
@@ -457,12 +469,18 @@ void nbunny::FogSceneNode::to_light(Light& light, float delta) const
 		delta);
 }
 
-void nbunny::FogSceneNode::tick()
+void nbunny::FogSceneNode::tick(float delta)
 {
-	LightSceneNode::tick();
+	LightSceneNode::tick(delta);
 
-	previous_near_distance = current_near_distance;
-	previous_far_distance = current_far_distance;
+	previous_near_distance = glm::mix(
+		get_ticked() ? previous_near_distance : current_near_distance,
+		current_near_distance,
+		delta);;
+	previous_far_distance = glm::mix(
+		get_ticked() ? previous_far_distance : current_far_distance,
+		current_far_distance,
+		delta);;
 }
 
 extern "C"

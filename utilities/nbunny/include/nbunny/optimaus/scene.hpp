@@ -42,6 +42,8 @@ namespace nbunny
 		glm::vec3 previous_translation;
 		glm::vec3 previous_offset;
 
+		void get_delta(float delta, glm::quat& rotation, glm::vec3& scale, glm::vec3& translation, glm::vec3& offset) const;
+
 		bool ticked = false;
 
 	public:
@@ -71,7 +73,7 @@ namespace nbunny
 		const glm::vec3& get_current_offset() const;
 		const glm::vec3& get_previous_offset() const;
 
-		void tick();
+		void tick(float delta);
 		bool get_ticked() const;
 
 		glm::mat4 get_local(float delta) const;
@@ -92,6 +94,8 @@ namespace nbunny
 		bool is_cull_disabled = false;
 		glm::vec4 color = glm::vec4(1.0f);
 
+		bool is_light_target_position_enabled = false;
+
 	public:
 		SceneNodeMaterial(SceneNode& scene_node);
 		~SceneNodeMaterial() = default;
@@ -104,6 +108,9 @@ namespace nbunny
 
 		void set_is_full_lit(bool value);
 		bool get_is_full_lit() const;
+
+		void set_is_light_target_position_enabled(bool value);
+		bool get_is_light_target_position_enabled() const;
 
 		void set_is_z_write_disabled(bool value);
 		bool get_is_z_write_disabled() const;
@@ -148,7 +155,7 @@ namespace nbunny
 
 		bool get_reference(lua_State* L) const;
 
-		virtual void tick();
+		virtual void tick(float delta);
 		bool get_ticked() const;
 
 		void unset_parent();

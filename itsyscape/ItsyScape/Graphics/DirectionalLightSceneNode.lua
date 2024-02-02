@@ -44,10 +44,4 @@ function DirectionalLightSceneNode:toLight(delta)
 	return result
 end
 
-function DirectionalLightSceneNode:tick()
-	LightSceneNode.tick(self)
-
-	self.previousDirection = self.direction
-end
-
 return DirectionalLightSceneNode

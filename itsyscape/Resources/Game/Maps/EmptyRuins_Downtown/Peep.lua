@@ -19,6 +19,27 @@ local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 local Downtown = Class(Map)
 Downtown.SISTINE_LOCATION = Vector(0, 0, -128)
 
+Downtown.NUM_SKIRMISHES = 10
+
+Downtown.MIN_EMPTY_KING_SOLDIERS = 1
+Downtown.MAX_EMPTY_KING_SOLDIERS = 4
+
+Downtown.EMPTY_KING_SOLDIERS = {
+	"Tinkerer",
+	"Tinkerer",
+	"GoryMass",
+	"PrestigiousAncientSkeleton",
+	"PrestigiousAncientSkeleton",
+	"PrestigiousMummy",
+	"PrestigiousMummy"
+}
+
+Downtown.YENDORIAN_SOLDIERS = {
+	"Yendorian_Ballista",
+	"Yendorian_Mast",
+	"Yendorian_Swordfish"
+}
+
 function Downtown:new(resource, name, ...)
 	Map.new(self, resource, name or 'EmptyRuins_Downtown', ...)
 end
@@ -46,74 +67,18 @@ function Downtown:onLoad(filename, args, layer)
 		self, "EmptyRuins_SistineOfTheSimulacrum_Outside", Downtown.SISTINE_LOCATION, { isLayer = true })
 	self.sistineLayer = sistineLayer
 
-	self:initTrailerBattlefield()
+	Utility.Map.spawnMap(self, "EmptyRuins_Downtown_Floor2", Vector(0, 4, 0), { isLayer = true })
+	Utility.Map.spawnMap(self, "EmptyRuins_Downtown_Floor3", Vector(0, 7, 0), { isLayer = true })
 end
 
 function Downtown:onPlayerEnter(player)
-	self:pushPoke("attachPlayer", player)
-	player:pokeCamera("mapRotationStick")
+	self:prepareDebugCutscene(player:getActor():getPeep())
 end
 
-function Downtown:onPlayerLeave(player)
-	player:pokeCamera("mapRotationUnstick")
-end
-
-function Downtown:onAttachPlayer(player)
-	local behemoth = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", "Behemoth"))[1]
-	if behemoth then
-		Utility.UI.openInterface(
-			player:getActor():getPeep(),
-			"BossHUD",
-			false,
-			behemoth)
-
-		local stage = self:getDirector():getGameInstance():getStage()
-		stage:playMusic(self:getLayer(), "main", "BossFight1")
-	end
-
-	local maps = self:getDirector():probe(self:getLayerName(), Probe.resource("Prop", "BehemothMap"))
-
-	for i = 1, #maps do
-		local map = maps[i]
-		local portal = map:getBehavior(TeleportalBehavior)
-
-		Utility.Peep.setLayer(player:getActor():getPeep(), portal.layer)
-		Utility.Peep.setPosition(player:getActor():getPeep(), Vector(0, 0, 0))
-	end
-end
-
-Downtown.TRAILER_ENEMIES = {
-	"Tinkerer",
-	"Tinkerer",
-	"GoryMass",
-	"PrestigiousAncientSkeleton",
-	"PrestigiousAncientSkeleton",
-	"PrestigiousMummy",
-	"PrestigiousMummy"
-}
-
-Downtown.TRAILER_HEROES = {
-	"CinematicTrailer1_Warrior",
-	"CinematicTrailer1_Wizard",
-	"CinematicTrailer1_Archer"
-}
-
-Downtown.TRAILER_HERO_OFFSET = Vector(4196, 5599, 3923)
-Downtown.TRAILER_ENEMY_OFFSET = Vector(6099, 2056, 2547)
-Downtown.TRAILER_FUDGE = 34.44931573
-Downtown.ENEMY_SPAWN_CHANCE = 0.25
-Downtown.HERO_SPAWN_CHANCE = 0.5
-
-function Downtown:initTrailerBattlefield()
+function Downtown:prepareDebugCutscene(player)
 	local function actionCallback(action)
-		if action == "released" then
-			local player = Utility.Peep.getPlayer(self)
-			local i, j = Utility.Peep.getTile(player)
-
-			local position = player:getBehavior(PositionBehavior)
-			if position.layer == self:getLayer() then
-				self:spawnEnemy(i, j)
-			end
+		if action == "pressed" then
+			self:pushPoke('startWar', player)
 		end
 	end
 
@@ -122,98 +87,56 @@ function Downtown:initTrailerBattlefield()
 	end
 
 	Utility.UI.openInterface(
-		Utility.Peep.getPlayer(self),
+		player,
 		"KeyboardAction",
 		false,
 		"DEBUG_TRIGGER_1", actionCallback, openCallback)
-
-	local function actionCallback(action)
-		if action == "released" then
-			local player = Utility.Peep.getPlayer(self)
-			local position = player:getBehavior(PositionBehavior)
-
-			if position.layer == self.sistineLayer then
-				position.layer = self:getLayer()
-			else
-				position.layer = self.sistineLayer
-			end
-
-			position.position.y = 10
-		end
-	end
-
-	local function openCallback()
-		return not self:wasPoofed()
-	end
-
-	Utility.UI.openInterface(
-		Utility.Peep.getPlayer(self),
-		"KeyboardAction",
-		false,
-		"DEBUG_TRIGGER_2", actionCallback, openCallback)
 end
 
-function Downtown:spawnEnemy(i, j)
-	local map = Utility.Peep.getMap(Utility.Peep.getPlayer(self))
-	local center = map:getTileCenter(i, j) + Vector.UNIT_Y
-
-	local enemyIndex
-	do
-		local fudgedCenter = center * Downtown.TRAILER_FUDGE + Downtown.TRAILER_ENEMY_OFFSET
-		local enemyNoise = love.math.random()
-		enemyIndex = math.ceil(enemyNoise * #Downtown.TRAILER_ENEMIES)
-	end
-
-	local enemy = Downtown.TRAILER_ENEMIES[enemyIndex]
-	local actor = Utility.spawnActorAtPosition(self, enemy, center:get())
-	actor:getPeep():listen('finalize', function(peep)
-		local status = peep:getBehavior(CombatStatusBehavior)
-		status.currentHitpoints = math.huge
-		status.maxHitpoints = math.huge
-		status.maxChaseDistance = math.huge
-	end)
-
-	local enemyPeep = actor:getPeep()
-	self:trySpawnHero(enemyPeep, i - 1, j)
-	self:trySpawnHero(enemyPeep, i + 1, j)
-	self:trySpawnHero(enemyPeep, i, j - 1)
-	self:trySpawnHero(enemyPeep, i, j + 1)
-end
-
-function Downtown:trySpawnHero(enemy, i, j)
-	local map = Utility.Peep.getMap(Utility.Peep.getPlayer(self))
-	if i < 1 or j < 1 or i > map:getWidth() or j > map:getHeight() then
+function Downtown:onStartWar(player)
+	local map = self:getDirector():getMap(self:getLayer())
+	if not map then
 		return
 	end
 
-	local center = map:getTileCenter(i, j)
-	local noise
-	do
-		local fudgedCenter = center * Downtown.TRAILER_FUDGE
-		noise = love.math.random()
-	end
+	local rng = love.math.newRandomGenerator()
 
-	if noise < Downtown.HERO_SPAWN_CHANCE then
-		self:spawnHero(enemy, i, j)
+	for _ = 1, self.NUM_SKIRMISHES do
+		local i, j = Utility.Map.getRandomTile(map, 1, 1, math.huge, false, rng, { 'impassable', 'blocking', 'door', 'building' })
+		if not (i and j) then
+			break
+		end
+
+		local position = map:getTileCenter(i, j)
+		local yendorianActor = Utility.spawnActorAtPosition(
+			self,
+			self.YENDORIAN_SOLDIERS[rng:random(#self.YENDORIAN_SOLDIERS)],
+			position:get())
+
+		map:getTile(i, j):setRuntimeFlag("blocking")
+
+		for k = 1, love.math.random(self.MIN_EMPTY_KING_SOLDIERS, self.MAX_EMPTY_KING_SOLDIERS) do
+			local soldierI, soldierJ = Utility.Map.getRandomTile(map, i, j, 3, true, rng)
+			if not soldierI and soldierJ then
+				break
+			end
+
+			local soldierActor = Utility.spawnActorAtPosition(
+				self,
+				self.EMPTY_KING_SOLDIERS[rng:random(#self.EMPTY_KING_SOLDIERS)],
+				position:get())
+
+			self:pushPoke(love.math.random() * 5, "engageSoldiers", soldierActor:getPeep(), yendorianActor:getPeep())
+		end
 	end
 end
 
-function Downtown:spawnHero(enemy, i, j)
-	local map = Utility.Peep.getMap(Utility.Peep.getPlayer(self))
-	local center = map:getTileCenter(i, j)
-
-	local heroIndex
-	do
-		local fudgedCenter = center * Downtown.TRAILER_FUDGE + Downtown.TRAILER_HERO_OFFSET
-		local heroNoise = love.math.random()
-		heroIndex = math.ceil(heroNoise * #Downtown.TRAILER_HEROES)
+function Downtown:onEngageSoldiers(a, b)
+	if a:getIsReady() and b:getIsReady() then
+		Utility.Peep.attack(a, b)
+	else
+		self:pushPoke(love.math.random() * 5, "engageSoldiers", a, b)
 	end
-
-	local hero = Downtown.TRAILER_HEROES[heroIndex]
-	local actor = Utility.spawnActorAtPosition(self, hero, center:get())
-	actor:getPeep():listen('finalize', function(peep)
-		Utility.Peep.attack(peep, enemy)
-	end)
 end
 
 return Downtown

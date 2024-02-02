@@ -40,6 +40,7 @@ function Game:new(name)
 	self.actionTypes = {}
 	self.resourceTypes = {}
 	self.metaDefinitions = {}
+	self.metaInstances = {}
 	self.errors = {}
 
 	self.Meta = MetaCategory(self)
@@ -69,6 +70,10 @@ function Game:getRecordDefinitions()
 	return definitions
 end
 
+function Game:getMeta()
+	return self.metaInstances
+end
+
 -- Instantiates the GameDB.
 function Game:instantiate(brochure)
 	for _, resources in self.Resource:iterate() do
@@ -77,18 +82,17 @@ function Game:instantiate(brochure)
 		end
 	end
 
-	for _, metas in self.Meta:iterate() do
+	for index, metas in self.Meta:iterate() do
 		metas.definition:instantiate(brochure)
 
-		for _, meta in ipairs(metas) do
-			meta:instantiate(brochure)
-		end 
-	end
+		local name = self.Meta:getNameByIndex(index)
 
-	for _, meta in self.Meta:iterate() do
-		for _, m in ipairs(meta) do
-			m:instantiate(brochure)
+		local instances = { definition = metas.definition }
+		for _, meta in ipairs(metas) do
+			table.insert(instances, meta:instantiate(brochure))
 		end
+
+		self.metaInstances[name] = instances
 	end
 
 	return true

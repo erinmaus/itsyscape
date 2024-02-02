@@ -19,6 +19,10 @@ function ParticlesInstance:new(command)
 	self.command = command or false
 end
 
+function ParticlesInstance:bind(animatable, animationInstance)
+	self.doesFadeOut = animationInstance:getAnimationDefinition():getFadesOut()
+end
+
 function ParticlesInstance:start(animatable)
 	if self.command then
 		local resources = animatable:getResourceManager()
@@ -30,7 +34,7 @@ end
 
 function ParticlesInstance:pending(time, windingDown)
 	if self.command then
-		return time <= self.command:getDuration() and not windingDown
+		return time <= self.command:getDuration() and (self.doesFadeOut or not windingDown)
 	end
 end
 
@@ -42,9 +46,14 @@ function ParticlesInstance:play(animatable, time)
 	if self.command then
 		local attach = self.command:getAttach()
 		local rotation = Quaternion[self.command:getRotation()]
+		local reverseRotation = Quaternion[self.command:getReverseRotation()]
 		local scale = self.command:getScale()
 		if attach then
 			local transform = love.math.newTransform()
+
+			if reverseRotation and Class.isCompatibleType(reverseRotation, Quaternion) then
+				transform:applyQuaternion((-reverseRotation):get())
+			end
 
 			if rotation and Class.isCompatibleType(rotation, Quaternion) then
 				transform:applyQuaternion(rotation:get())
@@ -52,13 +61,12 @@ function ParticlesInstance:play(animatable, time)
 
 			transform:scale(scale:get())
 
-			do
-				local otherTransform = animatable:getComposedTransform(attach)
+			animatable:getPostComposedTransform(attach, function(otherTransform)
 				transform:apply(otherTransform)
-			end
 
-			local localPosition = Vector(transform:transformPoint(0, 0, 0))
-			self.sceneNode:updateLocalPosition(localPosition)
+				local localPosition = Vector(transform:transformPoint(0, 0, 0))
+				self.sceneNode:updateLocalPosition(localPosition)
+			end)
 		end
 	end
 end

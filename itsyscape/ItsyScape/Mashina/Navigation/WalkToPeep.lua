@@ -23,15 +23,27 @@ function WalkToPeep:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local i, j, k = Utility.Peep.getTileAnchor(peep)
-	local s = Utility.Peep.walk(mashina, i, j, k, state[self.DISTANCE], {
-		asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE]
-	})
-
-	if s then
-		return B.Status.Success
+	local s
+	if not self.walk then
+		self.walk = coroutine.wrap(Utility.Peep.walk)
+		s = self.walk(mashina, i, j, k, state[self.DISTANCE], {
+			asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE],
+			yield = true
+		})
 	else
-		return B.Status.Failure
+		s = self.walk()
+	end
+
+	if coroutine.status(self.walk) == "dead" then
+		self.walk = nil
+
+		if s then
+			return B.Status.Success
+		else
+			return B.Status.Failure
+		end
+	else
+		return B.Status.Working
 	end
 end
 

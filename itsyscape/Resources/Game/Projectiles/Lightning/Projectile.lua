@@ -39,7 +39,7 @@ function Lightning:load()
 	local root = self:getRoot()
 
 	self.lightning = AmbientLightSceneNode()
-	self.lightning:setParent(root)
+	--self.lightning:setParent(root)
 
 	self.lightningBeam = LightBeamSceneNode()
 	self.lightningBeam:setParent(root)
@@ -116,7 +116,7 @@ function Lightning:zapTarget()
 					"ItsyScape.Graphics.AnimationResource",
 					"Resources/Game/Animations/Spell_Lightning_Zap/Script.lua")
 
-				target:onAnimationPlayed('x-spell-lightning', 1, animation)
+				--target:onAnimationPlayed('x-spell-lightning', 1, animation)
 				self.zapped = true
 			end
 		end
@@ -143,6 +143,8 @@ function Lightning:update(elapsed)
 		self.lightning:setAmbience(Lightning.MAX_AMBIENCE * self:getDelta())
 		self:updatePath()
 		self:zapTarget()
+
+		self:ready()
 	end
 end
 

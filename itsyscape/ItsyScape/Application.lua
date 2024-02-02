@@ -470,7 +470,10 @@ function Application:update(delta)
 		self:measure('game:update()', function() self.localGame:update(delta) end)
 	else
 		self:processAdminEvents()
+
+		collectgarbage("stop")
 		self:measure('remoteGameManager:receive()', function() self.remoteGameManager:receive() end)
+		collectgarbage("restart")
 	end
 
 	if not _CONF.server then
@@ -495,25 +498,36 @@ function Application:doCommonTick()
 	end
 
 	local average
+	self.maxTick = 0
 	do
 		local sum = 0
 		for i = 1, #self.ticks do
+			self.maxTick = math.max(self.maxTick, self.ticks[i])
 			sum = sum + self.ticks[i]
 		end
 		average = sum / math.max(#self.ticks, 1)
+
 	end
 
-	self.adaptiveTick = average
+	self.averageTick = average
 end
 
-function Application:getAdaptiveTickDelta()
-	return self.adaptiveTick or self:getGame():getDelta() or 0
+function Application:getTargetTickDelta()
+	return 1 / 10
+end
+
+function Application:getAverageTickDelta()
+	return self.averageTick or self:getGame():getDelta() or 0
+end
+
+function Application:getMaxTickDelta()
+	return self.maxTick or self:getGame():getDelta() or 0
 end
 
 function Application:tickSingleThread()
 	self:doCommonTick()
 
-	self:measure('gameView:tick()', function() self.gameView:tick() end)
+	self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
 end
 
@@ -521,7 +535,7 @@ function Application:tickMultiThread()
 	self:doCommonTick()
 
 	if self.show3D then
-		self:measure('gameView:tick()', function() self.gameView:tick() end)
+		self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
 	end
 
 	self.remoteGameManager:pushTick()
@@ -755,6 +769,10 @@ function Application:quit(isError)
 				end
 			end
 		end
+
+		if _DEBUG then
+			self.remoteGameManager:getDebugStats():dumpStatsToCSV("RemoteGameManager")
+		end
 	end
 
 	return false
@@ -834,7 +852,11 @@ function Application:getFrameDelta()
 
 	-- Generate a delta (0 .. 1 inclusive) between the current and previous
 	-- frames
-	return math.min(math.max((currentTime - previousTime) / self:getAdaptiveTickDelta(), 0), 1)
+	return math.min(math.max((currentTime - previousTime) / self:getTargetTickDelta(), 0), 1)
+end
+
+function Application:getPreviousFrameDelta()
+	return self.previousFrameDelta or self:getFrameDelta()
 end
 
 function Application:drawDebug()
@@ -872,8 +894,11 @@ function Application:drawDebug()
 	end
 
 	r = r .. string.format(
-			"tick delta: %.04f ms\n",
-			self:getAdaptiveTickDelta() * 1000)
+			"tick delta: average = %.04f ms, max = %0.4f ms, target = %.04f ms, last = %.04f ms\n",
+			self:getAverageTickDelta() * 1000,
+			self:getMaxTickDelta() * 1000,
+			self.game:getTargetDelta() * 1000,
+			self.game:getDelta() * 1000)
 
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.printf(
@@ -941,6 +966,8 @@ function Application:_draw()
 			mu * Application.CLICK_RADIUS)
 		love.graphics.setColor(unpack(oldColor))
 	end
+
+	self.previousFrameDelta = self:getFrameDelta()
 end
 
 local function draw()

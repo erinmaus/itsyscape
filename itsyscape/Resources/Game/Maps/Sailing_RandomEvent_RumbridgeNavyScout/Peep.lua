@@ -564,7 +564,7 @@ function RandomEvent:preparePlayerShip(player, ship, i, j)
 	local movement = ship:getBehavior(MovementBehavior)
 	movement.maxSpeed = maxSpeed
 	movement.maxAcceleration = maxAcceleration
-	movement.decay = 0.05
+	movement.velocityDecay = 0.05
 
 	self.isPlayerShipReady = true
 end
@@ -580,7 +580,7 @@ function RandomEvent:prepareNPCShip(player, ship, i, j)
 	local movement = ship:getBehavior(MovementBehavior)
 	movement.maxSpeed = maxSpeed
 	movement.maxAcceleration = maxAcceleration
-	movement.decay = 0.05
+	movement.velocityDecay = 0.05
 
 	self.isNPCShipReady = true
 end

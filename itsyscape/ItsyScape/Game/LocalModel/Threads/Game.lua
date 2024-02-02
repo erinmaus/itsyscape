@@ -48,40 +48,60 @@ game.onQuit:register(function()
 	end
 end)
 
+local times = {}
+local startTime = love.timer.getTime()
+
 local function getPeriodInMS(a, b)
-	return math.floor(((b or love.timer.getTime()) - (a or love.timer.getTime())) * 1000)
+	return ((times[b] and times[b].time or 0) - (times[a] and times[a].time or 0)) * 1000
 end
 
-local timeStart
-local timeGameTick, timeGameUpdate
-local timeGameManagerUpdate, timeGameManagerTick, timeGameManagerSend
-local timeEnd
+local function getMemoryInKB(a, b)
+	return (times[b] and times[b].memory or 0) - (times[a] and times[a].memory or 0)
+end
+
+local function measure(name)
+	times[name] = {
+		time = love.timer.getTime() - startTime,
+		memory = _DEBUG == "plus" and collectgarbage("count") or 0
+	}
+end
 
 local function tick()
-	timeStart = love.timer.getTime()
+	measure("Start")
 	do
 		game:tick()
-		timeGameTick = love.timer.getTime()
+		measure("GameTick")
 		game:update(game:getDelta())
-		timeGameUpdate = love.timer.getTime()
+		measure("GameUpdate")
 
 		gameManager:update()
-		timeGameManagerUpdate = love.timer.getTime()
+		measure("GameManagerUpdate")
 		gameManager:pushTick()
-		timeGameManagerTick = love.timer.getTime()
+		measure("GameManagerTick")
 		gameManager:send()
-		timeGameManagerSend = love.timer.getTime()
+		measure("GameManagerSend")
 
 		while not gameManager:receive() do
 			love.timer.sleep(0)
 		end
+		measure("GameManagerReceive")
 
 		game:cleanup()
-		collectgarbage("step")
+
+		if _DEBUG ~= "plus" then
+			local step = (_CONF.gcStepMs or 10) / 1000
+
+			local startTime = love.timer.getTime()
+			while love.timer.getTime() < startTime + step do
+				collectgarbage("step", 1)
+			end
+		end
+
+		measure("GameCleanup")
 
 		Analytics:update()
 	end
-	timeEnd = love.timer.getTime()
+	measure("End")
 end
 
 local function saveOnErrorForMultiPlayer()
@@ -210,7 +230,7 @@ while isRunning do
 	end)
 
 	if not success then
-		local s, r 
+		local s, r
 		if serverRPCService then
 			s, r = xpcall(saveOnErrorForMultiPlayer, debug.traceback)
 		else
@@ -224,20 +244,46 @@ while isRunning do
 		error(result, 0)
 	end
 
-	local duration = timeEnd - timeStart
-	if duration < game:getDelta() then
-		love.timer.sleep(game:getTargetDelta() - duration)
-	else
-		Log.engine("Tick ran over by %0.2f ms.", (duration - game:getDelta()) * 1000)
+	local duration = getPeriodInMS("Start", "End") / 1000
+	if duration < game:getTargetDelta() then
+		local sleepDuration = game:getTargetDelta() - duration
+
+		local beforeSleep = love.timer.getTime()
+		love.timer.sleep(sleepDuration)
+		local afterSleep = love.timer.getTime()
+
+		if _DEBUG then
+			Log.engine("Slept for %0.2f ms, target was %0.2f.", sleepDuration * 1000, (afterSleep - beforeSleep) * 1000)
+		end
+	end
+
+	if duration > game:getTargetDelta() or _DEBUG then
+		Log.engine("Tick was %0.2f ms (expected %0.2f or less).", duration * 1000, game:getTargetDelta() * 1000)
 		Log.engine(
-			"Stats: iteration = %d ms, game tick = %d ms, game update = %d ms, game manager update = %d ms, game manager tick = %d ms, game manager send = %d ms, game manager receive = %d ms",
-			getPeriodInMS(timeStart, timeEnd),
-			getPeriodInMS(timeStart, timeGameTick),
-			getPeriodInMS(timeGameTick, timeGameUpdate),
-			getPeriodInMS(timeGameUpdate, timeGameManagerUpdate),
-			getPeriodInMS(timeGameManagerUpdate, timeGameManagerTick),
-			getPeriodInMS(timeGameManagerTick, timeGameManagerSend),
-			getPeriodInMS(timeGameManagerSend, timeEnd))
+			"Timing stats @ %.2f ms: iteration = %.2f ms, game tick = %.2f ms, game update = %.2f ms, game manager update = %.2f ms, game manager tick = %.2f ms, game manager send = %.2f ms, game manager receive = %.2f ms, cleanup = %.2f ms",
+			getPeriodInMS(nil, "Start"),
+			getPeriodInMS("Start", "End"),
+			getPeriodInMS("Start", "GameTick"),
+			getPeriodInMS("GameTick", "GameUpdate"),
+			getPeriodInMS("GameUpdate", "GameManagerUpdate"),
+			getPeriodInMS("GameManagerUpdate", "GameManagerTick"),
+			getPeriodInMS("GameManagerTick", "GameManagerSend"),
+			getPeriodInMS("GameManagerSend", "GameManagerReceive"),
+			getPeriodInMS("GameManagerReceive", "End"))
+
+		if _DEBUG == "plus" then
+			Log.engine(
+				"Memory stats @ %.2f ms: iteration = %.2f kb, game tick = %.2f kb, game update = %.2f kb, game manager update = %.2f kb, game manager tick = %.2f kb, game manager send = %.2f kb, game manager receive = %.2f kb, cleanup = %.2f kb",
+				getPeriodInMS(nil, "Start"),
+				getMemoryInKB("Start", "End"),
+				getMemoryInKB("Start", "GameTick"),
+				getMemoryInKB("GameTick", "GameUpdate"),
+				getMemoryInKB("GameUpdate", "GameManagerUpdate"),
+				getMemoryInKB("GameManagerUpdate", "GameManagerTick"),
+				getMemoryInKB("GameManagerTick", "GameManagerSend"),
+				getMemoryInKB("GameManagerSend", "GameManagerReceive"),
+				getMemoryInKB("GameManagerReceive", "End"))
+		end
 	end
 
 	local e
@@ -392,6 +438,10 @@ end
 
 if serverRPCService then
 	serverRPCService:close()
+end
+
+if _DEBUG then
+	gameManager:getDebugStats():dumpStatsToCSV("LocalGameManager")
 end
 
 Analytics:quit()

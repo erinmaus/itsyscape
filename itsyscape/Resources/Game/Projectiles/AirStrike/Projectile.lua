@@ -111,6 +111,8 @@ function AirStrike:update(elapsed)
 			self.COLOR.g,
 			self.COLOR.b,
 			alpha))
+
+		self:ready()
 	end
 end
 

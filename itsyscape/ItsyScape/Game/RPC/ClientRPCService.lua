@@ -11,6 +11,9 @@ local buffer = require "string.buffer"
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local NetworkRPCService = require "ItsyScape.Game.RPC.NetworkRPCService"
+local NEventQueue = require "nbunny.gamemanager.eventqueue"
+local NVariant = require "nbunny.gamemanager.variant"
+local NBuffer = require "nbunny.gamemanager.buffer"
 
 local ClientRPCService = Class(NetworkRPCService)
 
@@ -21,10 +24,17 @@ function ClientRPCService:new(listenAddress, port)
 	self.pending = {}
 
 	self.onDisconnect = Callback()
+
+	self._queue = NEventQueue()
+	self._event = NVariant()
 end
 
 function ClientRPCService:connectToServer(listenAddress, port)
 	self:sendConnectEvent(string.format("%s:%s", listenAddress, port))
+end
+
+function ClientRPCService:sendBatch(channel, e)
+	self:sendBatchNetworkEvent(self.clientID, e)
 end
 
 function ClientRPCService:send(channel, e)
@@ -66,7 +76,13 @@ end
 
 function ClientRPCService:handleNetworkEvent(e)
 	if e.type == "receive" then
-		return buffer.decode(e.data)
+		self._queue:fromBuffer(e.data)
+		NBuffer.free(e.data)
+
+		self._queue:pop(self._event)
+		self._event.clientID = e.client
+
+		return self._event
 	elseif e.type == "connect" then
 		self:_doConnect(e.client)
 	elseif e.type == "disconnect" then

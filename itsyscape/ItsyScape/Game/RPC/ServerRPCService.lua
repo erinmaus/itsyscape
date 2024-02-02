@@ -10,6 +10,9 @@
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local NetworkRPCService = require "ItsyScape.Game.RPC.NetworkRPCService"
+local NEventQueue = require "nbunny.gamemanager.eventqueue"
+local NVariant = require "nbunny.gamemanager.variant"
+local NBuffer = require "nbunny.gamemanager.buffer"
 
 local ServerRPCService = Class(NetworkRPCService)
 
@@ -92,7 +95,8 @@ function ServerRPCService:new(listenAddress, port)
 	self.clients = {}
 	self.clientsByID = {}
 
-	self.pending = {}
+	self._queue = NEventQueue()
+	self._event = NVariant()
 end
 
 function ServerRPCService:host(listenAddress, port)
@@ -154,10 +158,13 @@ end
 
 function ServerRPCService:handleNetworkEvent(e)
 	if e.type == "receive" then
-		local event = buffer.decode(e.data)
-		event.clientID = e.client
+		self._queue:fromBuffer(e.data)
+		NBuffer.free(e.data)
 
-		return event
+		self._queue:pop(self._event)
+		self._event.clientID = e.client
+
+		return self._event
 	elseif e.type == "connect" then
 		self:_doConnect(e.client)
 	elseif e.type == "disconnect" then

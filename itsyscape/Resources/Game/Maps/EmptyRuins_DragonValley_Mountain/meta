@@ -1,0 +1,10 @@
+{
+	{
+		autoMask = true,
+		tileSetID = "IcyMountain",
+		maskID =
+		{
+			default = true,
+		},
+	},
+}

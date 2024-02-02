@@ -591,7 +591,7 @@ void nbunny::ParticleSceneNode::emit(int count)
 	}
 }
 
-glm::quat nbunny::ParticleSceneNode::get_global_rotation(float frame_delta) const
+glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 {
 	const SceneNode* parent = this;
 	glm::quat current_rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
@@ -609,12 +609,12 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float frame_delta) cons
 		parent = parent->get_parent();
 	}
 
-	return glm::slerp(previous_rotation, current_rotation, frame_delta);
+	return glm::slerp(previous_rotation, current_rotation, delta);
 }
 
-void nbunny::ParticleSceneNode::build(float frame_delta)
+void nbunny::ParticleSceneNode::build(float delta)
 {
-	auto inverse_rotation = glm::conjugate(get_global_rotation(frame_delta));
+	auto inverse_rotation = glm::conjugate(get_global_rotation(delta));
 	auto min = glm::vec3(std::numeric_limits<float>::infinity());
 	auto max = glm::vec3(-std::numeric_limits<float>::infinity());
 
@@ -866,7 +866,7 @@ bool nbunny::ParticleSceneNode::get_is_playing() const
 	return is_playing;
 }
 
-void nbunny::ParticleSceneNode::frame(float frame_delta, float time_delta)
+void nbunny::ParticleSceneNode::frame(float delta, float time_delta)
 {
 	if (!is_playing)
 	{
@@ -874,7 +874,7 @@ void nbunny::ParticleSceneNode::frame(float frame_delta, float time_delta)
 	}
 
 	update(time_delta);
-	build(frame_delta);
+	build(delta);
 }
 
 void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)

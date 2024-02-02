@@ -102,8 +102,8 @@ namespace nbunny
 		void update(float time_delta);
 		void emit(int count);
 
-		glm::quat get_global_rotation(float frame_delta) const;
-		void build(float frame_delta);
+		glm::quat get_global_rotation(float delta) const;
+		void build(float delta);
 		void push_particle_quad(const Particle& p, glm::quat rotation);
 
 	public:
@@ -125,7 +125,7 @@ namespace nbunny
 		void play();
 		bool get_is_playing() const;
 
-		void frame(float frame_delta, float time_delta);
+		void frame(float delta, float time_delta);
 		void draw(Renderer& renderer, float delta) override;
 	};
 }

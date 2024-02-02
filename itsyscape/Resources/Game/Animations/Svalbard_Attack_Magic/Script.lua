@@ -17,6 +17,7 @@ Animation "Svalbard Attack (Magic)" {
 						xRange = { 0, 0.125 },
 						yRange = { -0.5, 0 },
 						zRange = { 1, 0.125 },
+						position = { 0, 0, 2 },
 						acceleration = { 0, 0 }
 					},
 					{
@@ -44,7 +45,7 @@ Animation "Svalbard Attack (Magic)" {
 				paths = {
 					{
 						type = "FadeInOutPath",
-						fadeInPercent = { 0.3 },
+						fadeInPercent = { 0.2 },
 						fadeOutPercent = { 0.7 },
 						tween = { 'sineEaseOut' }
 					},
@@ -56,13 +57,19 @@ Animation "Svalbard Attack (Magic)" {
 
 				emissionStrategy = {
 					type = "RandomDelayEmissionStrategy",
-					count = { 20, 40 },
-					delay = { 0.125 },
-					duration = { 2 }
+					count = { 15, 25 },
+					delay = { 1 / 30 },
+					duration = { 1.5 }
 				}
 			}
 
 		}
+	},
+
+	Channel {
+		PlaySound "Resources/Game/Animations/Svalbard_Attack_Magic/Roar.wav",
+		Wait(0.5),
+		PlaySound "Resources/Game/Animations/Svalbard_Attack_Magic/Fire.wav"
 	},
 
 	Target {

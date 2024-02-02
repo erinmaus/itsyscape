@@ -101,6 +101,10 @@ function Animatable:getComposedTransform(attach)
 	return transform
 end
 
+function Animatable:getPostComposedTransform(attach, func)
+	Class.ABSTRACT()
+end
+
 -- Sets the array of transforms.
 --
 -- 'transforms' can be a sparse array.

@@ -43,6 +43,8 @@ function YendorianBoltStrike:update(elapsed)
 		end
 
 		Arrow.update(self, elapsed)
+
+		self:ready()
 	else
 		Projectile.update(self, elapsed)
 	end

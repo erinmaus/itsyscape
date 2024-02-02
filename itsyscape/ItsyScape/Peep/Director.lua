@@ -16,6 +16,11 @@ function CortexDebugStats:process(cortex, ...)
 	cortex:update(...)
 end
 
+local PeepDebugStats = Class(DebugStats)
+function PeepDebugStats:process(peep, ...)
+	peep:update(...)
+end
+
 -- Director type.
 --
 -- A director is a collection of Peeps and Cortexes. Whenever a Peep is added or
@@ -26,6 +31,7 @@ local Director = Class()
 function Director:new(gameDB)
 	self.gameDB = gameDB
 	self.peeps = {}
+	self.keys = {}
 	self.cortexes = {}
 	self.pendingPeeps = {}
 	self.newPeeps = {}
@@ -37,9 +43,8 @@ function Director:new(gameDB)
 	self.maps = {}
 	self.peepsByLayer = {}
 
-	self.pendingAssignment = {}
-
 	self.cortexDebugStats = CortexDebugStats()
+	self.peepDebugStats = PeepDebugStats()
 end
 
 -- Gets the GameDB.
@@ -99,28 +104,33 @@ function Director:getCortex(cortexType)
 end
 
 -- Moves a Peep.
-function Director:movePeep(peep, key)
-	local p = self.peeps[peep]
-	if p then
-		self.peepsByLayer[p.key][peep] = nil
-		p.key = key
-	end
+function Director:movePeep(peep, newKey)
+	local currentKey = self.keys[peep]
+	local oldLayer = self.peepsByLayer[currentKey]
 
-	if key then
-		local layer = self.peepsByLayer[key]
-		if not layer then
-			layer = {}
-			self.peepsByLayer[key] = layer
+	if oldLayer then
+		for i, p in ipairs(oldLayer) do
+			if peep == p then
+				table.remove(oldLayer, i)
+				break
+			end
 		end
-
-		layer[peep] = true
 	end
+
+	self.keys[peep] = newKey
+	local newLayer = self.peepsByLayer[newKey]
+	if not newLayer then
+		newLayer = {}
+		self.peepsByLayer[newKey] = newLayer
+	end
+
+	table.insert(newLayer, peep)
 
 	for _, cortex in ipairs(self.cortexes) do
 		cortex:previewPeep(peep)
 	end
 
-	peep:move(self, key)
+	peep:move(self, newKey)
 end
 
 
@@ -134,30 +144,14 @@ function Director:addPeep(key, peepType, ...)
 	peep.onBehaviorAdded:register(self._previewPeep)
 	peep.onBehaviorRemoved:register(self._previewPeep)
 
-	self.newPeeps[peep] = { key = key }
+	table.insert(self.newPeeps, { peep = peep, key = key })
 	self.pendingPeeps[peep] = true
-
-
-	local layer = self.peepsByLayer[key]
-	if not layer then
-		layer = {}
-		self.peepsByLayer[key] = layer
-	end
-
-	layer[peep] = true
-
-	self.pendingAssignment[peep] = key
 
 	return peep
 end
 
-function Director:assignPeep(peep)
-	if not self.pendingAssignment[peep] then
-		Log.error("Peep not pending assignment.")
-	end
-
-	peep:assign(self, self.pendingAssignment[peep])
-	self.pendingAssignment[peep] = nil
+function Director:assignPeep(peep, key)
+	peep:assign(self, key)
 end
 
 -- Removes a Peep instance from the Director.
@@ -165,7 +159,7 @@ end
 -- Returns true if the Peep was removed, false otherwise. If the Peep does not
 -- belong to the Director, for example, it cannot be removed.
 function Director:removePeep(peep)
-	if self.peeps[peep] then
+	if self.keys[peep] then
 		peep.onBehaviorAdded:unregister(self._previewPeep)
 		peep.onBehaviorRemoved:unregister(self._previewPeep)
 
@@ -179,7 +173,7 @@ end
 function Director:removeLayer(key)
 	local layer = self.peepsByLayer[key]
 	if layer then
-		for peep in pairs(layer) do
+		for _, peep in ipairs(layer) do
 			self:removePeep(peep)
 		end
 	end
@@ -196,26 +190,33 @@ function Director:probe(...)
 		end
 	end
 
-
 	local args = { n = select('#', ...), ... }
 
 	local result = {}
-	for peep in pairs(peeps) do
-		if self.peeps[peep] then
-			local match = true
-			for i = 1, args.n do
-				local func = args[i]
-				if func and type(func) ~= 'string' and not func(peep) then
-					match = false
-					break
-				end
-			end
 
-			if match then
-				table.insert(result, peep)
+	local before = love.timer.getTime()
+	for _, peep in ipairs(peeps) do
+		local match = true
+		for i = 1, args.n do
+			local func = args[i]
+			if func and type(func) ~= 'string' and not func(peep) then
+				match = false
+				break
 			end
 		end
+
+		if match then
+			table.insert(result, peep)
+		end
 	end
+	local after = love.timer.getTime()
+
+	-- Log.info(
+	-- 	"Took %.02f ms to probe %d peeps on layer %s with %d filters.",
+	-- 	(after - before) * 1000,
+	-- 	#peeps,
+	-- 	select(1, ...),
+	-- 	args.n)
 
 	return result
 end
@@ -227,8 +228,8 @@ function Director:broadcast(t, event, ...)
 		t = t or self.peeps
 	end
 
-	for i = 1, #t do
-		t[i]:poke(event, ...)
+	for _, peep in ipairs(t) do
+		peep:poke(event, ...)
 	end
 end
 
@@ -238,33 +239,57 @@ end
 --
 -- Then each Cortex, in the order they were added, is updated.
 function Director:update(delta)
-	for peep, info in pairs(self.newPeeps) do
-		self:assignPeep(peep)
+	for _, p in ipairs(self.newPeeps) do
+		local peep = p.peep
+		local key = p.key
 
-		self.peeps[peep] = info
+		self:assignPeep(peep, key)
+
+		table.insert(self.peeps, peep)
+		self.keys[peep] = key
+
+		local layer = self.peepsByLayer[key]
+		if not layer then
+			layer = {}
+			self.peepsByLayer[key] = layer
+		end
+
+		table.insert(layer, peep)
 	end
-	self.newPeeps = {}
+	table.clear(self.newPeeps)
 
 	for peep in pairs(self.oldPeeps) do
 		for _, cortex in ipairs(self.cortexes) do
 			cortex:removePeep(peep)
 		end
 
-		local key = self.peeps[peep].key
+		local key = self.keys[peep]
 		local layer = self.peepsByLayer[key]
 		if layer then
-			layer[peep] = nil
+			for i, p in ipairs(layer) do
+				if peep == p then
+					table.remove(layer, i)
+					break
+				end
+			end
 
-			if not next(layer)  then
+			if #layer == 0 then
 				self.peepsByLayer[key] = nil
 			end
 		end
 
-		peep:poof()
+		self.keys[peep] = nil
 
-		self.peeps[peep] = nil
+		peep:poof()
 	end
-	self.oldPeeps = {}
+
+	for i = #self.peeps, 1, -1 do
+		if self.oldPeeps[self.peeps[i]] then
+			table.remove(self.peeps, i)
+		end
+	end
+
+	table.clear(self.oldPeeps)
 
 	local beforeCortexPreview = love.timer.getTime()
 	for _, cortex in ipairs(self.cortexes) do
@@ -272,10 +297,10 @@ function Director:update(delta)
 			cortex:previewPeep(peep)
 		end
 	end
-	self.pendingPeeps = {}
+	table.clear(self.pendingPeeps)
 	local afterCortexPreview = love.timer.getTime()
 
-	for peep in pairs(self.peeps) do
+	for _, peep in ipairs(self.peeps) do
 		peep:preUpdate(self, self:getGameInstance())
 	end
 
@@ -286,8 +311,8 @@ function Director:update(delta)
 	local afterCortexUpdate = love.timer.getTime()
 
 	local beforePeepUpdate = love.timer.getTime()
-	for peep in pairs(self.peeps) do
-		peep:update(self, self:getGameInstance())
+	for _, peep in ipairs(self.peeps) do
+		self.peepDebugStats:measure(peep, self, self:getGameInstance())
 	end
 	local afterPeepUpdate = love.timer.getTime()
 end
@@ -295,6 +320,7 @@ end
 function Director:quit()
 	if _DEBUG then
 		self.cortexDebugStats:dumpStatsToCSV("Cortex")
+		self.peepDebugStats:dumpStatsToCSV("Peep")
 	end
 end
 

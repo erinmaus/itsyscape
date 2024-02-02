@@ -24,6 +24,7 @@ local Face3DBehavior = require "ItsyScape.Peep.Behaviors.Face3DBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
@@ -42,10 +43,11 @@ Behemoth.MAX_RISE_TIME = 15
 
 Behemoth.BARREL_MIMICS = 5
 
+Behemoth.KICK_VELOCITY_Y = 50
+
 Behemoth.MIMICS = {
 	"ChestMimic",
-	"CrateMimic",
-	"BarrelMimic"
+	"CrateMimic"
 }
 
 function Behemoth:new(resource, name, ...)
@@ -365,6 +367,31 @@ function Behemoth:onDrop(side, player)
 	else
 		Utility.Peep.setLayer(player, layer)
 		Utility.Peep.setPosition(player, localPlayerPosition)
+
+		local movement = player:getBehavior(MovementBehavior)
+		if movement then
+			movement.push = movement.push + Vector(0, Behemoth.KICK_VELOCITY_Y, 0)
+		end
+
+		if player:hasBehavior(PlayerBehavior) then
+			local fallAnimation = CacheRef(
+				"ItsyScape.Graphics.AnimationResource",
+				"Resources/Game/Animations/Human_Run_Crazy_1/Script.lua")
+
+			local actor = player:getBehavior(ActorReferenceBehavior)
+			actor = actor and actor.actor
+
+			if actor then
+				actor:playAnimation("x-behemoth-fall", 15, fallAnimation)
+
+				local function _onFall()
+					actor:stopAnimation("x-behemoth-fall")
+					player:silence("fall", _onFall)
+				end
+
+				player:listen("fall", _onFall)
+			end
+		end
 	end
 end
 

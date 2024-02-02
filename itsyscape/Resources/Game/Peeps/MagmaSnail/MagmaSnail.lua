@@ -72,7 +72,8 @@ function MagmaSnail:new(resource, name, ...)
 end
 
 function MagmaSnail:onDie()
-	self:poke('resurrect')
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.dead = false
 
 	local gameDB = self:getDirector():getGameDB()
 	local resource = gameDB:getResource("MagmaSnail_Dead", "Peep")

@@ -72,7 +72,6 @@ function One:new(...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 12
 	movement.maxAcceleration = 12
-	movement.decay = 0.5
 	movement.velocityMultiplier = 1
 	movement.accelerationMultiplier = 1
 	movement.stoppingForce = 3
@@ -105,6 +104,7 @@ function One:new(...)
 	self:addPoke('bootstrapComplete')
 	self:addPoke('endGame')
 	self:addPoke('moveInstance')
+	self:addPoke('fall')
 end
 
 function One:onChangeWardrobe(e)

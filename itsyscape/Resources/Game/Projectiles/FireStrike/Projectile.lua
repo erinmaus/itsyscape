@@ -198,6 +198,8 @@ function FireStrike:update(elapsed)
 		self.fireParticleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))
 		self.smokeParticleSystem:getMaterial():setColor(Color(1, 1, 1, alpha))
 		self.light:setAttenuation((1 - alpha) * 3 + 2)
+
+		self:ready()
 	end
 end
 

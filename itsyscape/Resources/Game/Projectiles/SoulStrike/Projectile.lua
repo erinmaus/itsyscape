@@ -104,6 +104,8 @@ function SoulStrike:update(elapsed)
 			alpha))
 
 		self.light:setAttenuation(alpha * 2 + 2)
+
+		self:ready()
 	end
 end
 

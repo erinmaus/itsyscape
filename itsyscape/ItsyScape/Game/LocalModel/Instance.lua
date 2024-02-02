@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- ItsyScape/Game/LocalModel/Instance.lua
 --
@@ -8,7 +7,6 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -1154,7 +1152,8 @@ function Instance:unloadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onUnloadMap",
-			localGameManager:getArgs(map, layer))
+			nil,
+			map, layer)
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Unloaded layer %d.", layer)
@@ -1167,7 +1166,8 @@ function Instance:unloadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onActorKilled",
-			localGameManager:getArgs(actor))
+			nil,
+			actor)
 		localGameManager:assignTargetToLastPush(player)
 
 		localGameManager:pushDestroy(
@@ -1185,7 +1185,8 @@ function Instance:unloadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onPropRemoved",
-			localGameManager:getArgs(prop))
+			nil,
+			prop)
 		localGameManager:assignTargetToLastPush(player)
 
 		localGameManager:pushDestroy(
@@ -1201,7 +1202,8 @@ function Instance:unloadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onWaterDrain",
-			localGameManager:getArgs(water:getKey(), water:getLayer()))
+			nil,
+			water:getKey(), water:getLayer())
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Unloaded water '%s' for layer %d.", water:getKey(), water:getLayer())
@@ -1212,7 +1214,8 @@ function Instance:unloadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onStopForecast",
-			localGameManager:getArgs(weather:getLayer(), weather:getKey()))
+			nil,
+			weather:getLayer(), weather:getKey())
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Unloaded weather '%s' for layer %d.", weather:getKey(), weather:getLayer())
@@ -1223,7 +1226,8 @@ function Instance:unloadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onUndecorate",
-			localGameManager:getArgs(decoration:getGroup(), decoration:getLayer()))
+			nil,
+			decoration:getGroup(), decoration:getLayer())
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Unloaded decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
@@ -1234,7 +1238,8 @@ function Instance:unloadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onTakeItem",
-			localGameManager:getArgs(item:getRef(), item:getItem()))
+			nil,
+			item:getRef(), item:getItem())
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine(
@@ -1254,7 +1259,8 @@ function Instance:unloadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onActorKilled",
-				localGameManager:getArgs(player:getActor()), Utility.Peep.getLayer(player:getActor():getPeep()))
+				nil,
+				player:getActor(), Utility.Peep.getLayer(player:getActor():getPeep()))
 			localGameManager:assignTargetToLastPush(otherPlayer)
 
 			localGameManager:pushDestroy(
@@ -1286,19 +1292,22 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onLoadMap",
-				localGameManager:getArgs(map, layer, self.maps[layer]:getTileSetID(), self.maps[layer]:getMaskID(), self.maps[layer]:getMeta()))
+				nil,
+				map, layer, self.maps[layer]:getTileSetID(), self.maps[layer]:getMaskID(), self.maps[layer]:getMeta())
 			localGameManager:assignTargetToLastPush(player)
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onMapModified",
-				localGameManager:getArgs(map, layer))
+				nil,
+				map, layer)
 			localGameManager:assignTargetToLastPush(player)
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onMapMoved",
-				localGameManager:getArgs(layer, self.maps[layer]:getTransform()))
+				nil,
+				layer, self.maps[layer]:getTransform())
 			localGameManager:assignTargetToLastPush(player)
 
 			Log.engine("Loaded layer %d.", layer)
@@ -1325,7 +1334,8 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onActorSpawned",
-				localGameManager:getArgs(actor:getPeepID(), actor))
+				nil,
+				actor:getPeepID(), actor)
 			localGameManager:assignTargetToLastPush(player)
 
 			self:loadActor(localGameManager, player, actor)
@@ -1349,7 +1359,8 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onPropPlaced",
-				localGameManager:getArgs(self.stage:lookupPropAlias(prop:getPeepID()), prop))
+				nil,
+				self.stage:lookupPropAlias(prop:getPeepID()), prop)
 			localGameManager:assignTargetToLastPush(player)
 
 			self:loadProp(localGameManager, player, prop)
@@ -1368,7 +1379,8 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onWaterFlood",
-				localGameManager:getArgs(water:getKey(), water:getWaterDefinition(), water:getLayer()))
+				nil,
+				water:getKey(), water:getWaterDefinition(), water:getLayer())
 			localGameManager:assignTargetToLastPush(player)
 
 			Log.engine("Restored water '%s' for layer %d.", water:getKey(), water:getLayer())
@@ -1385,7 +1397,8 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onForecast",
-				localGameManager:getArgs(weather:getLayer(), weather:getKey(), weather:getWeatherID(), weather:getProps()))
+				nil,
+				weather:getLayer(), weather:getKey(), weather:getWeatherID(), weather:getProps())
 			localGameManager:assignTargetToLastPush(player)
 
 			Log.engine("Restored weather '%s' for layer %d.", weather:getKey(), weather:getLayer())
@@ -1402,7 +1415,8 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onDecorate",
-				localGameManager:getArgs(decoration:getGroup(), decoration:getDecoration(), decoration:getLayer()))
+				nil,
+				decoration:getGroup(), decoration:getDecoration(), decoration:getLayer())
 			localGameManager:assignTargetToLastPush(player)
 
 			Log.engine("Restored decoration '%s' for layer %d.", decoration:getGroup(), decoration:getLayer())
@@ -1419,7 +1433,8 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				(music:getIsStopped() and "onStopMusic") or "onPlayMusic",
-				localGameManager:getArgs(music:getTrack(), music:getSong(), music:getLayer()))
+				nil,
+				music:getTrack(), music:getSong(), music:getLayer())
 			localGameManager:assignTargetToLastPush(player)
 
 			Log.engine("Restored song '%s' on track '%s' for layer %d.", Log.stringify(music:getSong()), music:getTrack(), music:getLayer())
@@ -1431,7 +1446,8 @@ function Instance:loadPlayer(localGameManager, player)
 			"ItsyScape.Game.Model.Stage",
 			0,
 			"onDropItem",
-			localGameManager:getArgs(item:getRef(), item:getItem(), item:getTile(), item:getPosition(), item:getLayer()))
+			nil,
+			item:getRef(), item:getItem(), item:getTile(), item:getPosition(), item:getLayer())
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine(
@@ -1456,7 +1472,8 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onActorSpawned",
-				localGameManager:getArgs(player:getActor():getPeepID(), player:getActor()))
+				nil,
+				player:getActor():getPeepID(), player:getActor())
 			localGameManager:assignTargetToLastPush(otherPlayer)
 
 			self:loadActor(localGameManager, otherPlayer, player:getActor())
@@ -1491,7 +1508,8 @@ function Instance:loadActor(localGameManager, player, actor)
 					"ItsyScape.Game.Model.Actor",
 					actor:getID(),
 					event:getCallbackName(),
-					v.value)
+					nil,
+					v.value:get())
 				localGameManager:assignTargetToLastPush(player)
 
 				Log.engine("Restoring property %s via callback %s.", field:getKey(), event:getCallbackName())
@@ -1504,8 +1522,7 @@ function Instance:loadActor(localGameManager, player, actor)
 			actorInstance:getInterface(),
 			actorInstance:getID(),
 			property:getField(),
-			buffer.encode(property:getValue()),
-			true)
+			property:getValue())
 		localGameManager:assignTargetToLastPush(player)
 	end
 
@@ -1529,8 +1546,7 @@ function Instance:loadProp(localGameManager, player, prop)
 			propInstance:getInterface(),
 			propInstance:getID(),
 			property:getField(),
-			buffer.encode(property:getValue()),
-			true)
+			property:getValue())
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Restored property '%s'.", property:getField())

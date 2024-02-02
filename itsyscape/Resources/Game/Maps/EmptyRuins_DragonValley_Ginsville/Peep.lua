@@ -68,7 +68,7 @@ function Ginsville:initBoss()
 		local stage = self:getDirector():getGameInstance():getStage()
 		stage:playMusic(self:getLayer(), "main", "BossFight1")
 
-		behemoth:silence("boss", onBoss)
+		experimentX:silence("boss", onBoss)
 	end
 	experimentX:listen("boss", onBoss)
 end

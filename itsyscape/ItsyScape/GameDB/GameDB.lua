@@ -136,11 +136,11 @@ function GameDB.create(inputFilename, outputFilename)
 		Log.error("Error instantiating GameDB: %s", r)
 	end
 
-	return GameDB(brochure, game:getRecordDefinitions()), game:getErrors()
+	return GameDB(brochure, game:getRecordDefinitions(), game:getMeta()), game:getErrors()
 end
 
-function GameDB:new(brochure, definitions)
-	self.brochure = BrochureWrapper(brochure)
+function GameDB:new(brochure, definitions, meta)
+	self.brochure = BrochureWrapper(brochure, meta)
 	self.definitions = {}
 
 	for key, value in pairs(definitions) do
@@ -159,17 +159,26 @@ function GameDB:getRecordDefinition(name)
 end
 
 function GameDB:getRecords(name, t, limit)
-	local definition = self:getRecordDefinition(name)
-	if not definition then
-		return {}
-	end
+	-- local before = love.timer.getTime()
+	-- local definition = self:getRecordDefinition(name)
+	-- if not definition then
+	-- 	return {}
+	-- end
 
-	local query = Mapp.Query(definition)
-	for k, v in pairs(t) do
-		query:set(k, v)
-	end
+	-- local query = Mapp.Query(definition)
+	-- for k, v in pairs(t) do
+	-- 	query:set(k, v)
+	-- end
+	-- local after = love.timer.getTime()
 
-	return self.brochure:select(definition, query, limit, t)
+	-- --Log.info(">>> getRecords query %f", (after - before) * 1000)
+
+	-- before = love.timer.getTime()
+	-- local r = self.brochure:select(definition, query, limit, t)
+	-- after = love.timer.getTime()
+	-- --Log.info(">>> getRecords select %f", (after - before) * 1000)
+
+	return self.brochure:selectMeta(name, t, limit)
 end
 
 function GameDB:getRecord(name, t)

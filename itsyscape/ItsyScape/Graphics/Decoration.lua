@@ -76,6 +76,47 @@ function Decoration.Feature:serialize()
 	}
 end
 
+function Decoration.Feature:map(func, staticMesh)
+	local transform = love.math.newTransform()
+
+	local position = self:getPosition()
+	transform:translate(position.x, position.y, position.z)
+
+	local rotation = self:getRotation()
+	transform:applyQuaternion(
+		rotation.x,
+		rotation.y,
+		rotation.z,
+		rotation.w)
+
+	local scale = self:getScale()
+	transform:scale(
+		scale.x,
+		scale.y,
+		scale.z)
+
+	local group = self:getID()
+
+	-- Assumes indices 1-3 are vertex positions and 4-6 are normal. Bad.
+	if staticMesh:hasGroup(group) then
+		local vertices = staticMesh:getVertices(group)
+		for i = 1, #vertices, 3 do
+			local v1 = vertices[i]
+			local v2 = vertices[i + 1]
+			local v3 = vertices[i + 2]
+
+			v1 = Vector(transform:transformPoint(unpack(v1)))
+			v2 = Vector(transform:transformPoint(unpack(v2)))
+			v3 = Vector(transform:transformPoint(unpack(v3)))
+
+			local s = v2 - v3
+			local t = v1 - v3
+
+			func(v1, v2, v3, s:cross(t):getNormal(), self)
+		end
+	end
+end
+
 function Decoration:new(d)
 	self.tileSetID = false
 	self.features = {}
@@ -201,55 +242,26 @@ end
 Decoration.RAY_TEST_RESULT_FEATURE = 1
 Decoration.RAY_TEST_RESULT_POSITION = 2
 
+function Decoration:map(func, staticMesh)
+	local result = {}
+
+	for feature in self:iterate() do
+		feature:map(func, staticMesh)
+	end
+end
+
 function Decoration:testRay(ray, staticMesh)
 	local result = {}
 
-	local transform = love.math.newTransform()
-	for feature in self:iterate() do
-		do
-			transform:reset()
-
-			local position = feature:getPosition()
-			transform:translate(position.x, position.y, position.z)
-
-			local rotation = feature:getRotation()
-			transform:applyQuaternion(
-				rotation.x,
-				rotation.y,
-				rotation.z,
-				rotation.w)
-
-			local scale = feature:getScale()
-			transform:scale(
-				scale.x,
-				scale.y,
-				scale.z)
+	self:map(function(v1, v2, v3, _, feature)
+		local s, p = ray:hitTriangle(v2, v1, v3)
+		if s then
+			table.insert(result, {
+				feature,
+				p
+			})
 		end
-
-		local group = feature:getID()
-
-		-- Assumes indices 1-3 are vertex positions. Bad.
-		if staticMesh:hasGroup(group) then
-			local vertices = staticMesh:getVertices(group)
-			for i = 1, #vertices, 3 do
-				local v1 = vertices[i]
-				local v2 = vertices[i + 1]
-				local v3 = vertices[i + 2]
-
-				v1 = Vector(transform:transformPoint(unpack(v1)))
-				v2 = Vector(transform:transformPoint(unpack(v2)))
-				v3 = Vector(transform:transformPoint(unpack(v3)))
-
-				local s, p = ray:hitTriangle(v2, v1, v3)
-				if s then
-					table.insert(result, {
-						feature,
-						p
-					})
-				end
-			end
-		end
-	end
+	end, staticMesh)
 
 	return result
 end

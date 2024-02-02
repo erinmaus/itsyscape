@@ -100,6 +100,8 @@ function Earthquake:update(elapsed)
 			Earthquake.COLOR.b,
 			alpha))
 	end
+
+	self:ready()
 end
 
 return Earthquake

@@ -36,6 +36,10 @@ function Prop:getID()
 	return Class.ABSTRACT()
 end
 
+function Prop:getPeepID()
+	return Class.ABSTRACT()
+end
+
 -- Gets the name of the Prop.
 function Prop:getName()
 	return Class.ABSTRACT()
