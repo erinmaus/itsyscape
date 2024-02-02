@@ -33,6 +33,10 @@ function ClientRPCService:connectToServer(listenAddress, port)
 	self:sendConnectEvent(string.format("%s:%s", listenAddress, port))
 end
 
+function ClientRPCService:sendBatch(channel, e)
+	self:sendBatchNetworkEvent(self.clientID, e)
+end
+
 function ClientRPCService:send(channel, e)
 	local packet = buffer.encode(e)
 	if not self.clientID then
