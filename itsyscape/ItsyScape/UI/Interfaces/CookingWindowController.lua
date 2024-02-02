@@ -128,8 +128,8 @@ function CookingWindowController:tryPopulateInventoryWithItem(broker, item)
 		ref = broker:getItemRef(item),
 		count = item:getCount(),
 		resource = item:getID(),
-		name = Utility.Item.getInstanceName(item, gameDB),
-		description = Utility.Item.getInstanceDescription(item, gameDB),
+		name = Utility.Item.getInstanceName(item),
+		description = Utility.Item.getInstanceDescription(item),
 		hints = Utility.Item.getUserdataHints(item:getID(), gameDB),
 		usable = usable,
 		xp = xp
@@ -461,8 +461,8 @@ function CookingWindowController:cook()
 				ref = broker:getItemRef(result),
 				count = result:getCount(),
 				resource = result:getID(),
-				name = Utility.Item.getInstanceName(result, gameDB),
-				description = Utility.Item.getInstanceDescription(result, gameDB),
+				name = Utility.Item.getInstanceName(result),
+				description = Utility.Item.getInstanceDescription(result),
 				totalXP = xpAfter - xpBefore
 			}
 		end
