@@ -23,9 +23,6 @@ function ServerRPCService.Client:new(clientID, serverRPCService)
 
 	self.isPendingConnect = true
 	self.isDisconnected = false
-
-	self._queue = NEventQueue()
-	self._event = NVariant()
 end
 
 function ServerRPCService.Client:getID()
@@ -98,7 +95,8 @@ function ServerRPCService:new(listenAddress, port)
 	self.clients = {}
 	self.clientsByID = {}
 
-	self.pending = {}
+	self._queue = NEventQueue()
+	self._event = NVariant()
 end
 
 function ServerRPCService:host(listenAddress, port)
