@@ -28,30 +28,48 @@ function MetaInstance:new(meta, t)
 	end
 end
 
+local function get(self, column)
+	return self[column]
+end
+
 function MetaInstance:instantiate(brochure)
+	local instance = { get = get, __prompt = {} }
+
 	if not self.instance then
 		self.instance = Mapp.Record(self.definition)
 		for key, value in pairs(self.values) do
-			local v
+			local v, l
 			if Class.isType(value, Action) then
 				v = value:instantiate(brochure)
+				l = v.id.value
 			elseif Class.isType(value, Resource) then
 				v = value:instantiate(brochure)
+				l = v.id.value
 			else
 				v = value
+				l = value
 			end
 
 			self.instance:set(key, v)
+
+			instance[key] = v
+			instance.__prompt[key] = l
 		end
 
 		local s, e = pcall(function() brochure:insert(self.definition, self.instance) end)
 		if not s then
 			local message = string.format("%s:%d: Could not insert Meta ('%s') from: %s", self.debugInfo.source, self.debugInfo.currentline, self.meta:getName(), Log.stringify(self.values))
 			ItsyScape.Error(message)
+		else
+			for columnName, columnType in self.meta:iterate() do
+				if instance[columnName] == nil then
+					instance[columnName] = self.meta.DEFAULTS[columnType]
+				end
+			end
 		end
 	end
 
-	return self.instance
+	return instance
 end
 
 -- Assigns values from 't' to columns in the underlying record.

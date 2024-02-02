@@ -52,11 +52,11 @@ local times = {}
 local startTime = love.timer.getTime()
 
 local function getPeriodInMS(a, b)
-	return ((times[b] and times[b].time or startTime) - (times[a] and times[a].time or startTime)) * 1000
+	return ((times[b] and times[b].time or 0) - (times[a] and times[a].time or 0)) * 1000
 end
 
 local function getMemoryInKB(a, b)
-	return (times[b].memory or 0) - (times[a].memory or 0) * 1000
+	return (times[b] and times[b].memory or 0) - (times[a] and times[a].memory or 0)
 end
 
 local function measure(name)
@@ -87,7 +87,15 @@ local function tick()
 		measure("GameManagerReceive")
 
 		game:cleanup()
-		collectgarbage("step")
+
+		if _DEBUG ~= "plus" then
+			local step = (_CONF.gcStepMs or 10) / 1000
+
+			local startTime = love.timer.getTime()
+			while love.timer.getTime() < startTime + step do
+				collectgarbage("step", 1)
+			end
+		end
 
 		measure("GameCleanup")
 
@@ -253,7 +261,7 @@ while isRunning do
 		Log.engine("Tick was %0.2f ms (expected %0.2f or less).", duration * 1000, game:getTargetDelta() * 1000)
 		Log.engine(
 			"Timing stats @ %.2f ms: iteration = %.2f ms, game tick = %.2f ms, game update = %.2f ms, game manager update = %.2f ms, game manager tick = %.2f ms, game manager send = %.2f ms, game manager receive = %.2f ms, cleanup = %.2f ms",
-			getPeriodInMS("Start"),
+			getPeriodInMS(nil, "Start"),
 			getPeriodInMS("Start", "End"),
 			getPeriodInMS("Start", "GameTick"),
 			getPeriodInMS("GameTick", "GameUpdate"),
@@ -266,7 +274,7 @@ while isRunning do
 		if _DEBUG == "plus" then
 			Log.engine(
 				"Memory stats @ %.2f ms: iteration = %.2f kb, game tick = %.2f kb, game update = %.2f kb, game manager update = %.2f kb, game manager tick = %.2f kb, game manager send = %.2f kb, game manager receive = %.2f kb, cleanup = %.2f kb",
-				getPeriodInMS("Start"),
+				getPeriodInMS(nil, "Start"),
 				getMemoryInKB("Start", "End"),
 				getMemoryInKB("Start", "GameTick"),
 				getMemoryInKB("GameTick", "GameUpdate"),

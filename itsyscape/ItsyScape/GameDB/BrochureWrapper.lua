@@ -13,7 +13,7 @@ local Meta = require "ItsyScape.GameDB.Commands.Meta"
 
 local BrochureWrapper = Class()
 
-function BrochureWrapper:new(brochure)
+function BrochureWrapper:new(brochure, metaRecords)
 	self.brochure = brochure
 
 	self.actionDefinitions = {}
@@ -22,6 +22,8 @@ function BrochureWrapper:new(brochure)
 	self.resources = {}
 	self.constraints = {}
 	self.queries = {}
+	self.metaRecords = metaRecords
+	self.metaQueries = {}
 
 	self:_pullActionDefinitions()
 	self:_pullActions()
@@ -444,6 +446,73 @@ function BrochureWrapper:getConstraintAction(constraint)
 	end
 
 	return action
+end
+
+local function sortFastPrompt(a, b)
+	return a[1] < b[1]
+end
+
+function BrochureWrapper:selectMeta(name, prompt, limit)
+	limit = limit or math.huge
+
+	local meta = self.metaRecords[name]
+
+	local fastPrompt = {}
+	for key, value in pairs(prompt) do
+		local columnType = meta.definition:getColumnType(key)
+		if columnType == meta.definition.TYPE_ACTION or columnType == meta.definition.TYPE_RESOURCE then
+			table.insert(fastPrompt, { key, value.id.value })
+		else
+			table.insert(fastPrompt, { key, value })
+		end
+	end
+	table.sort(fastPrompt, sortFastPrompt)
+
+	local v = {}
+	table.insert(v, name)
+	table.insert(v, "\0")
+	for i = 1, #fastPrompt do
+		local p = fastPrompt[i]
+		table.insert(v, p[1])
+		table.insert(v, p[2])
+		table.insert(v, "\0")
+	end
+	v = table.concat(v)
+
+	if self.metaQueries[v] == nil then
+		local r = {}
+		for i = 1, #meta do
+			local m = meta[i]
+			local q = m.__prompt
+
+			local isMatch = true
+			for i = 1, #fastPrompt do
+				local p = fastPrompt[i]
+				if q[p[1]] ~= p[2] then
+					isMatch = false
+					break
+				end
+			end
+
+			if isMatch then
+				table.insert(r, m)
+			end
+		end
+
+		self.metaQueries[v] = r
+	end
+
+	local cachedResult = self.metaQueries[v]
+	if limit == 1 then
+		return { cachedResult[1] }
+	else
+		local result = {}
+		for i = 1, math.min(limit, #cachedResult) do
+			result[i] = cachedResult[i]
+		end
+
+		return result
+	end
 end
 
 function BrochureWrapper:select(definition, query, limit, prompt)

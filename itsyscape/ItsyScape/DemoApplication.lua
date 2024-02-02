@@ -453,7 +453,7 @@ function DemoApplication:openMainMenu()
 	end
 
 	self:setConf({
-		_DEBUG = _CONF.debug or _DEBUG,
+		_DEBUG = _DEBUG or conf.debug,
 		_CONF = _CONF
 	})
 end
