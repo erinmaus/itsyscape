@@ -102,6 +102,7 @@ function Decapitate:update(elapsed)
 	end
 
 	self.particleSystem:updateLocalPosition(headPosition)
+	self:ready()
 end
 
 return Decapitate

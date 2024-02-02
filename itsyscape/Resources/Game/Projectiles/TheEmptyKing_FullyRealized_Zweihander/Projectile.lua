@@ -89,6 +89,8 @@ function AncientZweihander:update(elapsed)
 	end
 
 	self.trail:getMaterial():setColor(Color(self.COLOR.r, self.COLOR.g, self.COLOR.b, alpha))
+
+	self:ready()
 end
 
 return AncientZweihander

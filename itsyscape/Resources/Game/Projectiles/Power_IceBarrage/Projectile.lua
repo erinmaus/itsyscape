@@ -79,6 +79,8 @@ function IceBarrage:update(elapsed)
 			IceBarrage.COLOR.g,
 			IceBarrage.COLOR.b,
 			alpha))
+
+		self:ready()
 	end
 end
 

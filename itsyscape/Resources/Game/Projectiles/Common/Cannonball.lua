@@ -140,6 +140,8 @@ function Cannonball:update(elapsed)
 
 		self.particleSystem:getTransform():setLocalTranslation(self.spawnPosition)
 		self.quad:getTransform():setLocalTranslation(position)
+
+		self:ready()
 	end
 end
 

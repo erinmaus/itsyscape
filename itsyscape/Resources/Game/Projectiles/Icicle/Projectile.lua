@@ -108,6 +108,8 @@ function Icicle:update(elapsed)
 			Icicle.OUTLINE_COLOR.g,
 			Icicle.OUTLINE_COLOR.b,
 			alpha))
+
+		self:ready()
 	end
 end
 

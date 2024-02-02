@@ -162,6 +162,8 @@ function Smoke:update(elapsed)
 	if self.particleSystemNode:getIsReady() then
 		self.particleSystemNode:updateLocalPosition(headPosition)
 	end
+
+	self:ready()
 end
 
 function Smoke:tick()

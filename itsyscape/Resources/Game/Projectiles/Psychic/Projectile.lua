@@ -105,6 +105,8 @@ function Psychic:update(elapsed)
 		end
 
 		self.light:setAttenuation(alpha * 8 + 4)
+
+		self:ready()
 	end
 end
 

@@ -171,6 +171,8 @@ function AirBlast:update(elapsed)
 				self.particleSystem:updateLocalPosition(position)
 			end
 		end
+
+		self:ready()
 	end
 end
 

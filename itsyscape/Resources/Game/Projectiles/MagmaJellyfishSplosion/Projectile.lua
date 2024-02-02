@@ -163,6 +163,8 @@ function Splosion:update(elapsed)
 		local root = self:getRoot()
 		root:getTransform():setLocalTranslation(self.spawnPosition)
 		root:getTransform():setPreviousTransform(self.spawnPosition)
+
+		self:ready()
 	end
 end
 

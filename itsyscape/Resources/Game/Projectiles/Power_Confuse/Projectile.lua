@@ -86,6 +86,8 @@ function Confuse:update(elapsed)
 
 		self.light:setColor(Color(1, 1, 0, 1))
 		self.light:setAttenuation(alpha * 2 + 2)
+
+		self:ready()
 	end
 end
 

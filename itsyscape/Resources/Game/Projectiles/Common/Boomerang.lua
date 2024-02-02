@@ -79,6 +79,8 @@ function Boomerang:update(elapsed)
 
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
+
+		self:ready()
 	end
 end
 

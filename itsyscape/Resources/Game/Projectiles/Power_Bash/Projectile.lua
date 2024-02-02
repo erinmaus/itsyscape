@@ -97,6 +97,8 @@ function Bash:update(elapsed)
 	if self.spawnPosition then
 		local root = self:getRoot()
 		root:getTransform():setLocalTranslation(self.spawnPosition)
+
+		self:ready()
 	end
 end
 

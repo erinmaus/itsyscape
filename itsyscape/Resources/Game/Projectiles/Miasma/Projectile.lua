@@ -97,6 +97,7 @@ function Miasma:update(elapsed)
 
 	if self.particleSystemNode:getIsReady() then
 		self.particleSystemNode:updateLocalPosition(spawnPosition)
+		self:ready()
 	end
 end
 

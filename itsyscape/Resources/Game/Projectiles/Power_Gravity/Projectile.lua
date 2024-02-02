@@ -173,6 +173,8 @@ function Gravity:update(elapsed)
 			Gravity.EVENT_HORIZON_COLOR.b,
 			alpha))
 	end
+
+	self:ready()
 end
 
 return Gravity

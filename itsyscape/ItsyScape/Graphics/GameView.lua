@@ -933,6 +933,7 @@ function GameView:fireProjectile(projectileID, source, destination, layer)
 		local projectile = ProjectileType(projectileID, self, source, destination, layer)
 		projectile:attach()
 		projectile:load()
+		projectile:tick()
 		self.projectiles[projectile] = true
 	end
 end

@@ -105,6 +105,8 @@ function Staff:update(elapsed)
 		local color = beam:getMaterial():getColor()
 		beam:getMaterial():setColor(Color(color.r, color.g, color.b, alpha))
 	end
+
+	self:ready()
 end
 
 return Staff

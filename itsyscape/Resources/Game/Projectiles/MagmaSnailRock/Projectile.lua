@@ -97,7 +97,8 @@ function MagmaSnailRock:update(delta)
 
 	local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Z, angle)
 	root:getTransform():setLocalRotation(rotation)
-	root:getTransform():setPreviousTransform(nil, rotation)
+
+	self:ready()
 end
 
 return MagmaSnailRock
