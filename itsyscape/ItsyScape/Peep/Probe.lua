@@ -69,7 +69,7 @@ local _near = function(peep, distance, other)
 end
 
 function Probe.near(peep, distance)
-	return Callback.bind(_near, position, distance)
+	return Callback.bind(_near, peep, distance)
 end
 
 local _resource = function(resourceType, resourceName, peep)
