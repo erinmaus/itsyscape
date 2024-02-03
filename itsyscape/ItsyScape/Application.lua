@@ -492,18 +492,23 @@ function Application:update(delta)
 end
 
 function Application:doCommonTick()
-	table.insert(self.ticks, 1, love.timer.getTime() - self.previousTickTime)
+	table.insert(self.ticks, 1, {
+		client = love.timer.getTime() - self.previousTickTime,
+		server = self.game:getDelta(),
+	})
 	while #self.ticks > self.MAX_TICKS do
 		table.remove(self.ticks)
 	end
 
 	local average
-	self.maxTick = 0
+	self.maxClientTick = 0
+	self.maxServerTick = 0
 	do
 		local sum = 0
 		for i = 1, #self.ticks do
-			self.maxTick = math.max(self.maxTick, self.ticks[i])
-			sum = sum + self.ticks[i]
+			self.maxClientTick = math.max(self.maxClientTick, self.ticks[i].client)
+			self.maxServerTick = math.max(self.maxServerTick, self.ticks[i].server)
+			sum = sum + self.ticks[i].client
 		end
 		average = sum / math.max(#self.ticks, 1)
 
@@ -520,8 +525,12 @@ function Application:getAverageTickDelta()
 	return self.averageTick or self:getGame():getDelta() or 0
 end
 
-function Application:getMaxTickDelta()
-	return self.maxTick or self:getGame():getDelta() or 0
+function Application:getMaxClientTickDelta()
+	return self.maxClientTick or self:getGame():getDelta() or 0
+end
+
+function Application:getMaxServerTickDelta()
+	return self.maxServerTick or self:getGame():getDelta() or 0
 end
 
 function Application:tickSingleThread()
@@ -894,26 +903,27 @@ function Application:drawDebug()
 	end
 
 	r = r .. string.format(
-			"tick delta: average = %.04f ms, max = %0.4f ms, target = %.04f ms, last = %.04f ms\n",
+			"average tick = %.04f ms\nmax (client) tick = %0.4f ms\nmax (server) tick = %0.4f ms\ntarget tick = %.04f ms\nlast tick = %.04f ms\n",
 			self:getAverageTickDelta() * 1000,
-			self:getMaxTickDelta() * 1000,
+			self:getMaxClientTickDelta() * 1000,
+			self:getMaxServerTickDelta() * 1000,
 			self.game:getTargetDelta() * 1000,
 			self.game:getDelta() * 1000)
 
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.printf(
 		r,
-		width - 600 + 1,
+		0,
 		1,
-		600,
+		width,
 		'right')
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(
 		r,
-		width - 600,
 		0,
-		600,
+		0,
+		width,
 		'right')
 end
 
