@@ -35,11 +35,9 @@ StageProxy.getMap = Event.Get(
 	Event.KeyArgument("layer", true))
 StageProxy.unloadMap = Event.Unset(
 	StageProxy.MAP,
-	Event.Argument("map"),
 	Event.KeyArgument("layer", true))
 StageProxy.unloadMap:link(
 	"onUnloadMap",
-	Event.Argument("map"),
 	Event.Argument("layer"))
 StageProxy.modifyMap = Event.Set(
 	StageProxy.MAP,

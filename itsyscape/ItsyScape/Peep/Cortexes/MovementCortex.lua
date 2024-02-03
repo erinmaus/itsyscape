@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- ItsyScape/Peep/Cortexes/MovementCortex.lua
 --
@@ -67,25 +68,26 @@ function MovementCortex:listen()
 
 	self.worlds = {}
 	self.peepsByLayer = {}
-	self._onLoadMap = function(_, map, layer)
-		self:addWorld(layer, map)
+	self._onLoadMap = function(_, _, layer)
+		self:addWorld(layer)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
 
-	self._onMapModified = function(_, map, layer)
-		self:updateWorld(layer, map)
+	self._onMapModified = function(_, _, layer)
+		self:updateWorld(layer)
 	end
 	stage.onMapModified:register(self._onMapModified)
 
-	self._onUnloadMap = function(_, map, layer)
-		self:unloadWorld(map, layer)
+	self._onUnloadMap = function(_, layer)
+		self:unloadWorld(layer)
 	end
 	stage.onUnloadMap:register(self._onUnloadMap)
 
 	self._filter = Callback.bind(self.filter, self)
 end
 
-function MovementCortex:addWorld(layer, map)
+function MovementCortex:addWorld(layer)
+	local map = self:getDirector():getMap(layer)
 	local world = bump.newWorld(map:getCellSize())
 	self.worlds[layer] = {
 		world = world,
@@ -141,7 +143,9 @@ function MovementCortex:_addProxyTileToWorld(world, flags, x, y, w, h)
 	table.insert(world.tiles, tile)
 end
 
-function MovementCortex:updateWorld(layer, map)
+function MovementCortex:updateWorld(layer)
+	local map = self:getDirector():getMap(layer)
+
 	local w = self.worlds[layer]
 	if not w then
 		return
