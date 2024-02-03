@@ -254,7 +254,7 @@ function Instance:new(id, filename, stage)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
 
-	self._onUnloadMap = function(_, map, layer)
+	self._onUnloadMap = function(_, layer)
 		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Unloaded map from instance %s (%d) on layer %d.",
@@ -1153,7 +1153,7 @@ function Instance:unloadPlayer(localGameManager, player)
 			0,
 			"onUnloadMap",
 			nil,
-			map, layer)
+			layer)
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Unloaded layer %d.", layer)

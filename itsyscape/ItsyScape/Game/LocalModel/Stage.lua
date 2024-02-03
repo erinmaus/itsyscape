@@ -39,6 +39,7 @@ local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 local LocalStage = Class(Stage)
 
 LocalStage.UNLOAD_TICK_DELAY = 2
+LocalStage.PRELOAD_DURATION_MS = 100
 
 function LocalStage:new(game)
 	Stage.new(self)
@@ -67,6 +68,59 @@ function LocalStage:new(game)
 	self.mapTransformsByLayer = {}
 
 	self.dummyInstance = Instance(0, "<dummy>", self)
+
+	self._preloadMapObjects = coroutine.wrap(self.preloadMapObjects)
+	if self:_preloadMapObjects() then
+		self._preloadMapObjects = nil
+	end
+end
+
+function LocalStage:preloadMapObjects()
+	local gameDB = self.game:getGameDB()
+	local startTime = love.timer.getTime()
+
+	local beforeTime = startTime
+	local function _tryYield()
+		local currentTime = love.timer.getTime()
+		if (currentTime - beforeTime) * 1000 > LocalStage.PRELOAD_DURATION_MS then
+			Log.engine("Yielding map object preload (%.2f ms passed).", (currentTime - beforeTime) * 1000)
+
+			coroutine.yield()
+			beforeTime = love.timer.getTime()
+		end
+	end
+
+	Log.info("Preloading map objects...")
+	for resource in gameDB:getResources("MapObject") do
+		gameDB:getRecord("MapObjectLocation", {
+			Resource = resource
+		})
+
+		_tryYield()
+
+		gameDB:getRecord("PropMapObject", {
+			MapObject = resource
+		})
+
+		_tryYield()
+
+		gameDB:getRecord("PeepMapObject", {
+			MapObject = resource
+		})
+
+		_tryYield()
+	end
+
+	for resource in gameDB:getResources("Map") do
+		gameDB:getRecords("MapObjectLocation", {
+			Map = resource
+		})
+
+		_tryYield()
+	end
+
+	Log.info("Done preloading map objects in %.2f ms!", (love.timer.getTime() - startTime) * 1000)
+	return true
 end
 
 function LocalStage:newLayer(instance)
@@ -605,10 +659,10 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID, meta)
 	end
 
 	if map then
-		self.onLoadMap(self, map, layer, tileSetID, maskID, meta)
 		self.game:getDirector():setMap(layer, map)
+		self.onLoadMap(self, filename, layer, tileSetID, maskID, meta)
 
-		self:updateMap(layer, map)
+		self:updateMap(layer, filename)
 	end
 
 	if tileSetID and type(tileSetID) == 'string' then
@@ -639,8 +693,8 @@ function LocalStage:newMap(width, height, tileSetID, maskID, layer)
 		end
 	end
 
-	self.onLoadMap(self, map, layer, tileSetID, maskID)
 	self.game:getDirector():setMap(layer, map)
+	self.onLoadMap(self, map, layer, tileSetID, maskID)
 
 	self:updateMap(layer, map)
 
@@ -651,7 +705,10 @@ function LocalStage:updateMap(layer, map)
 	map = map or self.game:getDirector():getMap(layer)
 
 	if map then
-		self.game:getDirector():setMap(layer, map)
+		if type(map) ~= "string" then
+			self.game:getDirector():setMap(layer, map)
+		end
+
 		self.onMapModified(self, map, layer)
 	end
 end
@@ -659,7 +716,7 @@ end
 function LocalStage:unloadMap(layer)
 	local map = self.game:getDirector():getMap(layer)
 	if map then
-		self.onUnloadMap(self, map, layer)
+		self.onUnloadMap(self, layer)
 		self.game:getDirector():setMap(layer, nil)
 	end
 end
@@ -1077,6 +1134,14 @@ function LocalStage:loadMapResource(instance, filename, args)
 	local gameDB = self.game:getGameDB()
 	local resource = gameDB:getResource(filename, "Map")
 	if resource then
+		local objects = gameDB:getRecords("MapObjectLocation", {
+			Map = resource
+		})
+
+		for i = 1, #objects do
+			self:instantiateMapObject(objects[i]:get("Resource"), baseLayer, layerName, args.isLayer)
+		end
+
 		do
 			local Peep = self:lookupResource("resource://" .. resource.name, "Map")
 			if not Peep then
@@ -1101,14 +1166,6 @@ function LocalStage:loadMapResource(instance, filename, args)
 			end
 
 			mapScript = peep
-		end
-
-		local objects = gameDB:getRecords("MapObjectLocation", {
-			Map = resource
-		})
-
-		for i = 1, #objects do
-			self:instantiateMapObject(objects[i]:get("Resource"), baseLayer, layerName, args.isLayer)
 		end
 	end
 
@@ -1602,6 +1659,10 @@ end
 
 function LocalStage:tick()
 	self:updateMapPositions()
+
+	if self._preloadMapObjects and self:_preloadMapObjects() then
+		self._preloadMapObjects = nil
+	end
 end
 
 function LocalStage:cleanup()

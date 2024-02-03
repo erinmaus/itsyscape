@@ -133,7 +133,7 @@ function GameView:attach(game)
 	stage.onLoadMap.debug = true
 	stage.onLoadMap:register(self._onLoadMap)
 
-	self._onUnloadMap = function(_, map, layer)
+	self._onUnloadMap = function(_, layer)
 		Log.info("Unloading map from layer %d.", layer)
 		self:removeMap(layer)
 	end
@@ -342,6 +342,12 @@ end
 function GameView:addMap(map, layer, tileSetID, mask, meta)
 	meta = meta or {}
 
+	local filename = false
+	if type(map) == 'string' then
+		filename = map
+		map = Map.loadFromFile(map)
+	end
+
 	local tileSet, texture
 	if type(tileSetID) == 'table' then
 		tileSet = MultiTileSet(tileSetID)
@@ -394,6 +400,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		tileSet = tileSet,
 		texture = texture,
 		tileSetID = tileSetID or "GrassyPlain",
+		filename = filename,
 		map = map,
 		node = SceneNode(),
 		parts = {},
@@ -446,6 +453,14 @@ function GameView:updateGroundDecorations(m)
 
 	local tileSetIDs
 	if type(m.tileSetID) == 'string' then
+		if m.filename then
+			for i = 1, m.map:getWidth() do
+				for j = 1, m.map:getHeight() do
+					m.map:getTile(i, j).tileSetID = m.tileSetID
+				end
+			end
+		end
+
 		tileSetIDs = { m.tileSetID }
 	else
 		tileSetIDs = m.tileSetID
@@ -496,24 +511,32 @@ end
 function GameView:updateMap(map, layer)
 	local m = self.mapMeshes[layer]
 	if m then
+		if m.map then
+			m.weatherMap:removeMap(m.map)
+		end
+
+		if map then
+			if type(map) == 'string' and m.filename ~= map then
+				m.filename = map
+				map = Map.loadFromFile(map)
+
+				m.map = map
+				if m.islandProcessor then
+					m.islandProcessor = MapMeshIslandProcessor(m.map, m.tileSet)
+				end
+			end
+		end
+
 		do
 			local before = love.timer.getTime()
 			love.thread.getChannel('ItsyScape.Map::input'):push({
 				type = 'load',
 				key = layer,
-				data = buffer.encode(map:serialize())
+				data = buffer.encode(m.map:serialize())
 			})
 			local after = love.timer.getTime()
 
 			Log.debug("Updated layer '%d' in %d ms.", layer, (after - before) * 1000)
-		end
-
-		if map then
-			m.map = map
-
-			if m.islandProcessor then
-				m.islandProcessor = MapMeshIslandProcessor(map, m.tileSet)
-			end
 		end
 
 		for i = 1, #m.parts do
@@ -525,8 +548,8 @@ function GameView:updateMap(map, layer)
 		local w, h
 		do
 			local E = 1 / GameView.MAP_MESH_DIVISIONS
-			local partialX = map:getWidth() / GameView.MAP_MESH_DIVISIONS
-			local partialY = map:getHeight() / GameView.MAP_MESH_DIVISIONS
+			local partialX = m.map:getWidth() / GameView.MAP_MESH_DIVISIONS
+			local partialY = m.map:getHeight() / GameView.MAP_MESH_DIVISIONS
 
 			w = math.floor(partialX)
 			h = math.floor(partialY)
