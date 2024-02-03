@@ -162,11 +162,14 @@ function LocalActor:getDirection()
 		return Vector.ZERO
 	end
 
+	local rotation = self.peep:getBehavior(RotationBehavior)
+	rotation = rotation and rotation.rotation
+
 	local movement = self.peep:getBehavior(MovementBehavior)
 	if movement then
-		return Vector(movement.facing, 0, 0)
+		return Vector(movement.facing, 0, 0), rotation or nil
 	else
-		return Vector(MovementBehavior.FACING_RIGHT)
+		return Vector(MovementBehavior.FACING_RIGHT), rotation or nil
 	end
 end
 
