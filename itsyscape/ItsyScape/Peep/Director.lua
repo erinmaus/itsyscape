@@ -28,6 +28,8 @@ end
 -- Peep.
 local Director = Class()
 
+Director.READY_TIME_MS = 100
+
 function Director:new(gameDB)
 	self.gameDB = gameDB
 	self.peeps = {}
@@ -39,6 +41,7 @@ function Director:new(gameDB)
 	self._previewPeep = function(peep, behavior)
 		self.pendingPeeps[peep] = true
 	end
+	self.pendingReady = {}
 
 	self.maps = {}
 	self.peepsByLayer = {}
@@ -239,24 +242,76 @@ end
 --
 -- Then each Cortex, in the order they were added, is updated.
 function Director:update(delta)
+	for peep in pairs(self.oldPeeps) do
+		for _, cortex in ipairs(self.cortexes) do
+			cortex:removePeep(peep)
+		end
+	end
+
 	for _, p in ipairs(self.newPeeps) do
 		local peep = p.peep
 		local key = p.key
 
-		self:assignPeep(peep, key)
-
 		table.insert(self.peeps, peep)
 		self.keys[peep] = key
-
-		local layer = self.peepsByLayer[key]
-		if not layer then
-			layer = {}
-			self.peepsByLayer[key] = layer
-		end
-
-		table.insert(layer, peep)
+		self.pendingReady[peep] = true
 	end
 	table.clear(self.newPeeps)
+
+	local beforeCortexPreview = love.timer.getTime()
+	for peep in pairs(self.pendingPeeps) do
+		if not self.pendingReady[peep] then
+			for _, cortex in ipairs(self.cortexes) do
+				cortex:previewPeep(peep)
+			end
+
+			self.pendingPeeps[peep] = nil
+		end
+	end
+	local afterCortexPreview = love.timer.getTime()
+
+	local totalReadyTime = 0
+	for _, peep in ipairs(self.peeps) do
+		if self.pendingReady[peep] then
+			if totalReadyTime < self.READY_TIME_MS then
+				local beforeTime = love.timer.getTime()
+				do
+					local key = self.keys[peep]
+
+					self:assignPeep(peep, key)
+					peep:preUpdate(self, self:getGameInstance())
+
+					local layer = self.peepsByLayer[key]
+					if not layer then
+						layer = {}
+						self.peepsByLayer[key] = layer
+					end
+
+					table.insert(layer, peep)
+				end
+				local afterTime = love.timer.getTime()
+
+				totalReadyTime = totalReadyTime + (afterTime - beforeTime) * 1000
+				self.pendingReady[peep] = nil
+			end
+		elseif not self.oldPeeps[peep] then
+			peep:preUpdate(self, self:getGameInstance())
+		end
+	end
+
+	local beforeCortexUpdate = love.timer.getTime()
+	for _, cortex in pairs(self.cortexes) do
+		self.cortexDebugStats:measure(cortex, delta)
+	end
+	local afterCortexUpdate = love.timer.getTime()
+
+	local beforePeepUpdate = love.timer.getTime()
+	for _, peep in ipairs(self.peeps) do
+		if not self.pendingReady[peep] and not self.oldPeeps[peep] then
+			self.peepDebugStats:measure(peep, self, self:getGameInstance())
+		end
+	end
+	local afterPeepUpdate = love.timer.getTime()
 
 	for peep in pairs(self.oldPeeps) do
 		for _, cortex in ipairs(self.cortexes) do
@@ -290,31 +345,6 @@ function Director:update(delta)
 	end
 
 	table.clear(self.oldPeeps)
-
-	local beforeCortexPreview = love.timer.getTime()
-	for _, cortex in ipairs(self.cortexes) do
-		for peep in pairs(self.pendingPeeps) do
-			cortex:previewPeep(peep)
-		end
-	end
-	table.clear(self.pendingPeeps)
-	local afterCortexPreview = love.timer.getTime()
-
-	for _, peep in ipairs(self.peeps) do
-		peep:preUpdate(self, self:getGameInstance())
-	end
-
-	local beforeCortexUpdate = love.timer.getTime()
-	for _, cortex in pairs(self.cortexes) do
-		self.cortexDebugStats:measure(cortex, delta)
-	end
-	local afterCortexUpdate = love.timer.getTime()
-
-	local beforePeepUpdate = love.timer.getTime()
-	for _, peep in ipairs(self.peeps) do
-		self.peepDebugStats:measure(peep, self, self:getGameInstance())
-	end
-	local afterPeepUpdate = love.timer.getTime()
 end
 
 function Director:quit()
