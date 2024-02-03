@@ -40,6 +40,9 @@ local function disconnectAllClients()
 	end
 end
 
+local count = 0
+local start = love.timer.getTime()
+
 while isRunning do
 	local e
 
@@ -139,6 +142,8 @@ while isRunning do
 
 		if e then
 			if e.type == "receive" then
+				count = count + #e.data
+
 				outputChannel:push({
 					type = "receive",
 					client = e.peer:connect_id(),
@@ -201,5 +206,7 @@ end
 if host then
 	host:destroy()
 end
+
+Log.info("Received %d bytes in %f seconds.", count, love.timer.getTime() - start)
 
 Log.quit()

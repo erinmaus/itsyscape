@@ -7,7 +7,6 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local NetworkRPCService = require "ItsyScape.Game.RPC.NetworkRPCService"
 local NEventQueue = require "nbunny.gamemanager.eventqueue"
@@ -111,10 +110,9 @@ function ServerRPCService:disconnect(channel)
 end
 
 function ServerRPCService:send(channel, e)
-	local packet = buffer.encode(e)
 	local client = self.clientsByID[channel]
 	if client then
-		client:send(packet)
+		client:send(e)
 	end
 end
 
