@@ -878,7 +878,7 @@ function Application:getPreviousFrameDelta()
 end
 
 function Application:drawDebug()
-	if not _DEBUG or not self.showDebug then
+	if not _DEBUG or (not self.showDebug and not _MOBILE) then
 		return
 	end
 

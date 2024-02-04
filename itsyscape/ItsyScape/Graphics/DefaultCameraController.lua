@@ -74,7 +74,12 @@ function DefaultCameraController:getPlayerMapRotation()
 		return Quaternion.IDENTITY
 	end
 
-	local _, _, layer = player:getActor():getTile()
+	local actor = player:getActor()
+	if not actor then
+		return Quaternion.IDENTITY
+	end
+
+	local _, _, layer = actor:getTile()
 
 	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
 
