@@ -489,6 +489,15 @@ function Application:update(delta)
 	self.clickActionTime = self.clickActionTime - delta
 
 	self:updateMemoryUsage()
+
+	if _DEBUG ~= "plus" then
+		local step = (_CONF.clientGCStepMS or 1) / 1000
+
+		local startTime = love.timer.getTime()
+		while love.timer.getTime() < startTime + step do
+			collectgarbage("step", 1)
+		end
+	end
 end
 
 function Application:doCommonTick()
