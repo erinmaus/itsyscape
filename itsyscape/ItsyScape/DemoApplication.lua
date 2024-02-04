@@ -242,12 +242,6 @@ function DemoApplication:quit(isError)
 	Resource.quit()
 
 	self.patchNotesServiceInputChannel:push({ type = "quit" })
-	self.patchNotesServiceThread:wait()
-
-	local e = self.patchNotesServiceThread:getError()
-	if e then
-		Log.warn("Error quitting patch notes thread: %s", e)
-	end
 
 	Application.quit(self, isError)
 
