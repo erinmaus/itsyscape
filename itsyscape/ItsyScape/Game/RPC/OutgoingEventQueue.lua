@@ -18,14 +18,21 @@ function OutgoingEventQueue:new()
 	self._handle = NEventQueue()
 	self._popEvent = NVariant()
 	self._getEvent = NVariant()
+	self.timestamp = 0
 end
 
 function OutgoingEventQueue:tick()
 	self._handle:clear()
 end
 
+function OutgoingEventQueue:_getTimestamp()
+	self.timestamp = self.timestamp + 1
+	return self.timestamp
+end
+
 function OutgoingEventQueue:pushCreate(interface, id)
 	self._handle:push(
+		"__timestamp", self:_getTimestamp(),
 		"type", EventQueue.EVENT_TYPE_CREATE,
 		"interface", interface,
 		"id", id)
@@ -33,6 +40,7 @@ end
 
 function OutgoingEventQueue:pushDestroy(interface, id)
 	self._handle:push(
+		"__timestamp", self:_getTimestamp(),
 		"type", EventQueue.EVENT_TYPE_DESTROY,
 		"interface", interface,
 		"id", id)
@@ -40,6 +48,7 @@ end
 
 function OutgoingEventQueue:pushCallback(interface, id, callback, key, ...)
 	self._handle:push(
+		"__timestamp", self:_getTimestamp(),
 		"type", EventQueue.EVENT_TYPE_CALLBACK,
 		"interface", interface,
 		"id", id,
@@ -50,6 +59,7 @@ end
 
 function OutgoingEventQueue:pushProperty(interface, id, property, ...)
 	self._handle:push(
+		"__timestamp", self:_getTimestamp(),
 		"type", EventQueue.EVENT_TYPE_PROPERTY,
 		"interface", interface,
 		"id", id,
@@ -59,8 +69,9 @@ end
 
 function OutgoingEventQueue:pushTick(ticks)
 	self._handle:push(
+		"__timestamp", self:_getTimestamp(),
 		"type", EventQueue.EVENT_TYPE_TICK,
-		"timestamp", ticks)
+		"ticks", ticks)
 end
 
 function OutgoingEventQueue:pop()
