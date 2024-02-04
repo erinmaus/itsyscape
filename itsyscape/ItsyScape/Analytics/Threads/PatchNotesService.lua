@@ -15,6 +15,23 @@ local https = require "https"
 local json = require "json"
 
 local inputChannel, outputChannel = ...
+local events = {}
+
+local isRunning = true
+
+local function shouldQuit()
+	event = inputChannel:pop()
+	if type(event) == "table" then
+		if event.type == "quit" then
+			isRunning = false
+			return true
+		else
+			table.insert(events, event)
+		end
+	end
+
+	return false
+end
 
 local function tryGetPatchNotes()
 	local code, result = https.request("https://itsyrealm.com/api/download/build/version")
@@ -85,6 +102,10 @@ local function tryFormatPatchNotes(patchNotes, mode)
 
 	local currentBlock
 	for line in lines(patchNotes) do
+		if shouldQuit() then
+			break
+		end
+
 		if line:match("^#") then
 			currentBlock = {
 				t = "header",
@@ -136,9 +157,13 @@ end
 
 Log.info("Starting patch notes service...")
 
-local isRunning = true
 while isRunning do
-	local event = inputChannel:demand()
+	local event
+	if #events > 0 then
+		event = table.remove(events, 1)
+	else
+		event = inputChannel:demand()
+	end
 
 	if type(event) == "table" then
 		if event.type == "quit" then
@@ -155,6 +180,10 @@ while isRunning do
 						version = version,
 						patchNotes = formattedPatchNotes
 					})
+
+					if not isRunning then
+						break
+					end
 				end
 			else
 				outputChannel:push({
