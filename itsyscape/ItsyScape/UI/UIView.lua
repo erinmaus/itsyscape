@@ -95,8 +95,10 @@ end
 
 local graphicsState = {
 	transform = love.math.newTransform(),
+	transforms = {},
+	renderStates = {},
 	pseudoScissor = {},
-	drawQueue = {}
+	drawQueue = { n = 0 }
 }
 
 do
@@ -118,16 +120,29 @@ do
 end
 
 function itsyrealm.graphics.impl.captureRenderState()
-	local transform = love.math.newTransform()
+	local index = graphicsState.drawQueue.n + 1
+	local transform = graphicsState.transforms[index]
+	if not transform then
+		transform = love.math.newTransform()
+		graphicsState.transforms[index] = transform
+	end
+
+	transform:reset()
 	transform:apply(graphicsState.transform)
 
-	return {
-		color = { love.graphics.getColor() },
-		font = love.graphics.getFont(),
-		lineHeight = love.graphics.getFont():getLineHeight(),
-		lineWidth = love.graphics.getLineWidth(),
-		transform = transform
-	}
+	local renderState = graphicsState.renderStates[index]
+	if not renderState then
+		renderState = { color = {} }
+		graphicsState.renderStates[index] = renderState
+	end
+
+	renderState.color[1], renderState.color[2], renderState.color[3], renderState.color[4] = love.graphics.getColor()
+	renderState.font = love.graphics.getFont()
+	renderState.lineHeight = love.graphics.getFont():getLineHeight()
+	renderState.lineWidth = love.graphics.getLineWidth()
+	renderState.transform = transform
+
+	return renderState
 end
 
 function itsyrealm.graphics.impl.setRenderState(renderState)
@@ -368,12 +383,12 @@ function itsyrealm.graphics.stop()
 	graphicsState.atlas:update()
 
 	love.graphics.push('all')
-	for i = 1, #graphicsState.drawQueue do
+	for i = 1, graphicsState.drawQueue.n do
 		local draw = graphicsState.drawQueue[i]
 		love.graphics.setBlendMode('alpha', 'premultiplied')
 		draw.command(unpack(draw, 1, draw.n))
 	end
-	table.clear(graphicsState.drawQueue)
+	graphicsState.drawQueue.n = 0
 	love.graphics.pop()
 
 	local cellSize = 32
@@ -452,13 +467,28 @@ function itsyrealm.graphics.clearPseudoScissor()
 end
 
 function itsyrealm.graphics.impl.push(command, ...)
-	table.insert(
-		graphicsState.drawQueue,
-		{
-			command = command,
-			n = select('#', ...),
-			...
-		})
+	if graphicsState.drawQueue.n < #graphicsState.drawQueue then
+		local n = graphicsState.drawQueue.n + 1
+		local q = graphicsState.drawQueue[n]
+
+		table.clear(q)
+
+		q.command = command
+		q.n = select('#', ...)
+		for i = 1, q.n do
+			q[i] = select(i, ...)
+		end
+
+		graphicsState.drawQueue.n = n
+	else
+		table.insert(
+			graphicsState.drawQueue,
+			{
+				command = command,
+				n = select('#', ...),
+				...
+			})
+	end
 end
 
 function itsyrealm.graphics.resetPseudoScissor()
