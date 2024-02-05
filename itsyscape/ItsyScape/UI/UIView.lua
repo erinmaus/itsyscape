@@ -96,7 +96,7 @@ end
 local graphicsState = {
 	transform = love.math.newTransform(),
 	pseudoScissor = {},
-	drawQueue = { n = 0 }
+	drawQueue = {}
 }
 
 do
@@ -108,6 +108,7 @@ do
 		textureSize = 4096
 	end
 
+	textureSize = 512
 	textureSize = math.min(limits.texturesize, textureSize)
 
 	graphicsState.atlas = Atlas(textureSize, textureSize, 32)
@@ -117,11 +118,15 @@ do
 end
 
 function itsyrealm.graphics.impl.captureRenderState()
+	local transform = love.math.newTransform()
+	transform:apply(graphicsState.transform)
+
 	return {
 		color = { love.graphics.getColor() },
 		font = love.graphics.getFont(),
 		lineHeight = love.graphics.getFont():getLineHeight(),
-		lineWidth = love.graphics.getLineWidth()
+		lineWidth = love.graphics.getLineWidth(),
+		transform = transform
 	}
 end
 
@@ -155,6 +160,89 @@ function itsyrealm.graphics.impl.polygon(...)
 	love.graphics.polygon(...)
 end
 
+function itsyrealm.graphics.impl.newItemIcon(width, height, icon, count, color, note, disabled, active)
+	local canvas = love.graphics.newCanvas(width, height)
+
+	love.graphics.push("all")
+	love.graphics.origin()
+	love.graphics.setCanvas(canvas)
+	love.graphics.origin()
+	love.graphics.setScissor()
+	love.graphics.setColor(1, 1, 1, 1)
+
+	local alpha
+	if active then
+		alpha = math.sin(love.timer.getTime() * math.pi)
+	else
+		alpha = 1
+	end
+
+	local scaleX, scaleY
+	local x, y
+	local originX, originY
+	do
+		scaleX = width / icon:getWidth()
+		scaleY = height / icon:getHeight()
+		x, y = width / 2 * scaleX, height / 2 * scaleY
+		originX = width / 2
+		originY = height / 2
+	end
+
+	local itemScaleX, itemScaleY = scaleX, scaleY
+	if note then
+		itemScaleX = scaleX * 0.8
+		itemScaleY = scaleY * 0.8
+
+		love.graphics.draw(
+			note,
+			originX, originY,
+			0,
+			scaleX, scaleY,
+			originX, originY)
+	end
+
+	if disabled then
+		love.graphics.setColor(0.3, 0.3, 0.3, alpha)
+	else
+		love.graphics.setColor(1, 1, 1, alpha)
+	end
+
+	love.graphics.draw(icon, x, y, 0, itemScaleX, itemScaleY, originX, originY)
+
+	if isDisabled then
+		love.graphics.setColor(1, 1, 1, 1)
+	end
+
+	if count ~= "1" then
+		love.graphics.setColor(unpack(color))
+
+		local textWidth = love.graphics.getFont():getWidth(count)
+
+		love.graphics.setColor(0, 0, 0, 1)
+		love.graphics.print(count, width - textWidth, 2, 0, 0, scaleX, scaleY)
+
+		love.graphics.setColor(unpack(color))
+		love.graphics.print(count, width - textWidth - 2, 0, 0, scaleX, scaleY)
+	end
+
+	love.graphics.pop()
+
+	local image = love.graphics.newImage(canvas:newImageData())
+	canvas:release()
+
+	return image
+end
+
+function itsyrealm.graphics.impl.drawItem(renderState, handle)
+	local atlas = graphicsState.atlas:getTexture()
+	local layer = graphicsState.atlas:layer(handle)
+	local atlasQuad = graphicsState.atlas:quad(handle)
+
+	love.graphics.origin()
+	love.graphics.applyTransform(renderState.transform)
+	love.graphics.drawLayer(atlas, layer, atlasQuad)
+end
+
 function itsyrealm.graphics.impl.drawq(renderState, image, quad, ...)
 	local atlas = graphicsState.atlas:getTexture()
 	local layer = graphicsState.atlas:layer(image)
@@ -171,6 +259,8 @@ function itsyrealm.graphics.impl.drawq(renderState, image, quad, ...)
 			ax + qx, ay + qy, qw, qh, tw, th)
 	end
 
+	love.graphics.origin()
+	love.graphics.applyTransform(renderState.transform)
 	love.graphics.setColor(renderState.color)
 	love.graphics.drawLayer(atlas, layer, graphicsState.quad, ...)
 end
@@ -180,6 +270,8 @@ function itsyrealm.graphics.impl.draw(renderState, image, ...)
 	local layer = graphicsState.atlas:layer(image)
 	local atlasQuad = graphicsState.atlas:quad(image)
 
+	love.graphics.origin()
+	love.graphics.applyTransform(renderState.transform)
 	love.graphics.setColor(renderState.color)
 	love.graphics.drawLayer(atlas, layer, atlasQuad, ...)
 end
@@ -187,16 +279,22 @@ end
 function itsyrealm.graphics.impl.uncachedDraw(renderState, image, ...)
 	love.graphics.setColor(renderState.color)
 	love.graphics.setBlendMode("alpha")
+	love.graphics.origin()
+	love.graphics.applyTransform(renderState.transform)
 	love.graphics.draw(image, ...)
 end
 
 function itsyrealm.graphics.impl.uncachedDrawLayer(renderState, image, ...)
 	love.graphics.setColor(renderState.color)
 	love.graphics.setBlendMode("alpha")
+	love.graphics.origin()
+	love.graphics.applyTransform(renderState.transform)
 	love.graphics.drawLayer(image, ...)
 end
 
 function itsyrealm.graphics.impl.print(renderState, text, ...)
+	love.graphics.origin()
+	love.graphics.applyTransform(renderState.transform)
 	love.graphics.setFont(renderState.font)
 	love.graphics.setColor(renderState.color)
 	local oldLineHeight = renderState.font:getLineHeight()
@@ -207,6 +305,8 @@ function itsyrealm.graphics.impl.print(renderState, text, ...)
 end
 
 function itsyrealm.graphics.impl.printf(renderState, text, ...)
+	love.graphics.origin()
+	love.graphics.applyTransform(renderState.transform)
 	love.graphics.setFont(renderState.font)
 	love.graphics.setColor(renderState.color)
 	local oldLineHeight = renderState.font:getLineHeight()
@@ -263,17 +363,87 @@ function itsyrealm.graphics.start()
 	graphicsState.transform:reset()
 end
 
+local last = 0
 function itsyrealm.graphics.stop()
 	graphicsState.atlas:update()
 
 	love.graphics.push('all')
-	for i = 1, graphicsState.drawQueue.n do
+	for i = 1, #graphicsState.drawQueue do
 		local draw = graphicsState.drawQueue[i]
 		love.graphics.setBlendMode('alpha', 'premultiplied')
 		draw.command(unpack(draw, 1, draw.n))
 	end
-	graphicsState.drawQueue.n = 0
+	table.clear(graphicsState.drawQueue)
 	love.graphics.pop()
+
+	local cellSize = 32
+	love.graphics.setColor(1, 1, 1, 1)
+
+	local newLast = nil
+	for i = 1, #graphicsState.atlas.layers do
+		if i <= 10 and love.keyboard.isDown(tostring(i - 1)) then
+			love.graphics.rectangle("fill", 0, 0, 512, 512)
+
+			for j = 1, #graphicsState.atlas.layers[i].rectangles do
+
+				if graphicsState.atlas.layers[i].rectangles[j].image then
+					love.graphics.draw(
+						graphicsState.atlas.layers[i].rectangles[j].image:getTexture(),
+						graphicsState.atlas.layers[i].rectangles[j].i * cellSize,
+						graphicsState.atlas.layers[i].rectangles[j].j * cellSize)
+				end
+			end
+
+			for j = 1, #graphicsState.atlas.layers[i].rectangles do
+				local isCollision = false
+
+				for k = 1, #graphicsState.atlas.layers[i].rectangles do
+					local a = graphicsState.atlas.layers[i].rectangles[j]
+					local b = graphicsState.atlas.layers[i].rectangles[k]
+
+					if a ~= b and a.i + a.width > b.i and a.i < b.i + b.width and a.j + a.height > b.j and a.j < b.j + b.height then
+						isCollision = true
+						
+						if last ~= i then
+							print("isCollision!!!!")
+							print(">>> a", j, "ij", a.i, a.j, "wh", a.width, a.height, "img", a.image ~= nil, a.image and a.image:getWidth(), a.image and a.image:getHeight(), "type", a.type)
+							print(">>> b", k, "ij", b.i, b.j, "wh", b.width, b.height, "img", b.image ~= nil, b.image and b.image:getWidth(), b.image and b.image:getHeight(), "type", b.type)
+						end
+					end
+				end
+
+				if graphicsState.atlas.layers[i].rectangles[j].image then
+					love.graphics.draw(
+						graphicsState.atlas.layers[i].rectangles[j].image:getTexture(),
+						graphicsState.atlas.layers[i].rectangles[j].i * cellSize,
+						graphicsState.atlas.layers[i].rectangles[j].j * cellSize)
+				end
+
+				if isCollision then
+					love.graphics.setColor(1, 0, 0, 1)
+				else
+					love.graphics.setColor(0, 1, 0, 0)
+				end
+
+				love.graphics.setLineWidth(4)
+				love.graphics.rectangle(
+					"line",
+					graphicsState.atlas.layers[i].rectangles[j].i * cellSize,
+					graphicsState.atlas.layers[i].rectangles[j].j * cellSize,
+					graphicsState.atlas.layers[i].rectangles[j].width * cellSize,
+					graphicsState.atlas.layers[i].rectangles[j].height * cellSize)
+				love.graphics.setLineWidth(1)
+
+				love.graphics.setColor(1, 1, 1, 1)
+
+				isCollision = false
+			end
+
+			newLast = i
+		end
+	end
+
+	last = newLast
 end
 
 function itsyrealm.graphics.clearPseudoScissor()
@@ -282,28 +452,13 @@ function itsyrealm.graphics.clearPseudoScissor()
 end
 
 function itsyrealm.graphics.impl.push(command, ...)
-	if graphicsState.drawQueue.n < #graphicsState.drawQueue then
-		local n = graphicsState.drawQueue.n + 1
-		local q = graphicsState.drawQueue[n]
-
-		table.clear(q)
-
-		q.command = command
-		q.n = select('#', ...)
-		for i = 1, q.n do
-			q[i] = select(i, ...)
-		end
-
-		graphicsState.drawQueue.n = n
-	else
-		table.insert(
-			graphicsState.drawQueue,
-			{
-				command = command,
-				n = select('#', ...),
-				...
-			})
-	end
+	table.insert(
+		graphicsState.drawQueue,
+		{
+			command = command,
+			n = select('#', ...),
+			...
+		})
 end
 
 function itsyrealm.graphics.resetPseudoScissor()
@@ -346,6 +501,30 @@ end
 
 function itsyrealm.graphics.getPseudoScissor()
 	return unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+end
+
+function itsyrealm.graphics.drawItem(handle, width, height, icon, count, color, note, disabled, active)
+	local key = string.format(
+		"%dx%d_%s_%s_%s_%s",
+		width,
+		height,
+		count,
+		Log.boolean(note),
+		Log.boolean(disabled),
+		Log.boolean(active))
+
+	if not graphicsState.atlas:has(handle) then
+		graphicsState.atlas:add(handle, itsyrealm.graphics.impl.newItemIcon(width, height, icon, count, color, note, disabled, active), key)
+	elseif graphicsState.atlas:reset(handle, key) then
+		graphicsState.atlas:replace(handle, itsyrealm.graphics.impl.newItemIcon(width, height, icon, count, color, note, disabled, active))
+	else
+		graphicsState.atlas:visit(handle)
+	end
+
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.drawItem,
+		itsyrealm.graphics.impl.captureRenderState(),
+		handle)
 end
 
 function itsyrealm.graphics.drawq(image, quad, ...)
