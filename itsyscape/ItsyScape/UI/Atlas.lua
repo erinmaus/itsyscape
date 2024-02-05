@@ -265,6 +265,26 @@ function Atlas:new(width, height, cellSize)
 	self.layers = {}
 end
 
+function Atlas:getWidth()
+	return self.width
+end
+
+function Atlas:getHeight()
+	return self.height
+end
+
+function Atlas:getCellWidth()
+	return self.cellWidth
+end
+
+function Atlas:getCellHeight()
+	return self.cellHeight
+end
+
+function Atlas:getCellSize()
+	return self.cellSize
+end
+
 function Atlas:has(handle)
 	return self.handles[handle] ~= nil
 end

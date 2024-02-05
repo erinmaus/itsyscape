@@ -110,7 +110,6 @@ do
 		textureSize = 4096
 	end
 
-	textureSize = 512
 	textureSize = math.min(limits.texturesize, textureSize)
 
 	graphicsState.atlas = Atlas(textureSize, textureSize, 32)
@@ -175,16 +174,7 @@ function itsyrealm.graphics.impl.polygon(...)
 	love.graphics.polygon(...)
 end
 
-function itsyrealm.graphics.impl.newItemIcon(width, height, icon, count, color, note, disabled, active)
-	local canvas = love.graphics.newCanvas(width, height)
-
-	love.graphics.push("all")
-	love.graphics.origin()
-	love.graphics.setCanvas(canvas)
-	love.graphics.origin()
-	love.graphics.setScissor()
-	love.graphics.setColor(1, 1, 1, 1)
-
+function itsyrealm.graphics.impl.drawItemIcon(width, height, icon, count, color, note, disabled, active)
 	local alpha
 	if active then
 		alpha = math.sin(love.timer.getTime() * math.pi)
@@ -239,6 +229,19 @@ function itsyrealm.graphics.impl.newItemIcon(width, height, icon, count, color, 
 		love.graphics.setColor(unpack(color))
 		love.graphics.print(count, width - textWidth - 2, 0, 0, scaleX, scaleY)
 	end
+end
+
+function itsyrealm.graphics.impl.newItemIcon(width, height, ...)
+	local canvas = love.graphics.newCanvas(width, height)
+
+	love.graphics.push("all")
+	love.graphics.origin()
+	love.graphics.setCanvas(canvas)
+	love.graphics.origin()
+	love.graphics.setScissor()
+	love.graphics.setColor(1, 1, 1, 1)
+
+	itsyrealm.graphics.impl.drawItemIcon(width, height, ...)
 
 	love.graphics.pop()
 
@@ -378,29 +381,18 @@ function itsyrealm.graphics.start()
 	graphicsState.transform:reset()
 end
 
-local last = 0
-function itsyrealm.graphics.stop()
-	graphicsState.atlas:update()
+function itsyrealm.graphics.debug()
+	love.graphics.push("all")
+	love.graphics.scale(0.5, 0.5)
 
-	love.graphics.push('all')
-	for i = 1, graphicsState.drawQueue.n do
-		local draw = graphicsState.drawQueue[i]
-		love.graphics.setBlendMode('alpha', 'premultiplied')
-		draw.command(unpack(draw, 1, draw.n))
-	end
-	graphicsState.drawQueue.n = 0
-	love.graphics.pop()
+	local cellSize = graphicsState.atlas:getCellSize()
 
-	local cellSize = 32
 	love.graphics.setColor(1, 1, 1, 1)
-
-	local newLast = nil
 	for i = 1, #graphicsState.atlas.layers do
 		if i <= 10 and love.keyboard.isDown(tostring(i - 1)) then
-			love.graphics.rectangle("fill", 0, 0, 512, 512)
+			love.graphics.rectangle("fill", 0, 0, graphicsState.atlas:getWidth(), graphicsState.atlas:getWidth())
 
 			for j = 1, #graphicsState.atlas.layers[i].rectangles do
-
 				if graphicsState.atlas.layers[i].rectangles[j].image then
 					love.graphics.draw(
 						graphicsState.atlas.layers[i].rectangles[j].image:getTexture(),
@@ -418,12 +410,6 @@ function itsyrealm.graphics.stop()
 
 					if a ~= b and a.i + a.width > b.i and a.i < b.i + b.width and a.j + a.height > b.j and a.j < b.j + b.height then
 						isCollision = true
-						
-						if last ~= i then
-							print("isCollision!!!!")
-							print(">>> a", j, "ij", a.i, a.j, "wh", a.width, a.height, "img", a.image ~= nil, a.image and a.image:getWidth(), a.image and a.image:getHeight(), "type", a.type)
-							print(">>> b", k, "ij", b.i, b.j, "wh", b.width, b.height, "img", b.image ~= nil, b.image and b.image:getWidth(), b.image and b.image:getHeight(), "type", b.type)
-						end
 					end
 				end
 
@@ -436,29 +422,42 @@ function itsyrealm.graphics.stop()
 
 				if isCollision then
 					love.graphics.setColor(1, 0, 0, 1)
+					love.graphics.setLineWidth(4)
 				else
-					love.graphics.setColor(0, 1, 0, 0)
+					love.graphics.setColor(0, 1, 0, 0.25)
+					love.graphics.setLineWidth(1)
 				end
 
-				love.graphics.setLineWidth(4)
 				love.graphics.rectangle(
 					"line",
 					graphicsState.atlas.layers[i].rectangles[j].i * cellSize,
 					graphicsState.atlas.layers[i].rectangles[j].j * cellSize,
 					graphicsState.atlas.layers[i].rectangles[j].width * cellSize,
 					graphicsState.atlas.layers[i].rectangles[j].height * cellSize)
-				love.graphics.setLineWidth(1)
-
-				love.graphics.setColor(1, 1, 1, 1)
 
 				isCollision = false
 			end
-
-			newLast = i
 		end
 	end
 
-	last = newLast
+	love.graphics.pop()
+end
+
+function itsyrealm.graphics.stop()
+	graphicsState.atlas:update()
+
+	love.graphics.push('all')
+	for i = 1, graphicsState.drawQueue.n do
+		local draw = graphicsState.drawQueue[i]
+		love.graphics.setBlendMode('alpha', 'premultiplied')
+		draw.command(unpack(draw, 1, draw.n))
+	end
+	graphicsState.drawQueue.n = 0
+	love.graphics.pop()
+
+	if _DEBUG then
+		itsyrealm.graphics.debug()
+	end
 end
 
 function itsyrealm.graphics.clearPseudoScissor()
@@ -683,6 +682,10 @@ function itsyrealm.graphics.inverseTransformPoint(...)
 end
 
 itsyrealm.graphics.disabled.clearPseudoScissor = itsyrealm.graphics.clearPseudoScissor
+
+function itsyrealm.graphics.disabled.drawItem(_, ...)
+	itsyrealm.graphics.impl.drawItemIcon(...)
+end
 
 function itsyrealm.graphics.disabled.resetPseudoScissor()
 	local w, h = love.window.getMode()
