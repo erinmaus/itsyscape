@@ -86,6 +86,7 @@ Application.CLICK_RADIUS = 32
 Application.DEBUG_DRAW_THRESHOLD = 160
 Application.DEBUG_MEMORY_POLLS_SECONDS = 5
 Application.MAX_TICKS = 100
+Application.MAX_DRAW_CALLS = 120
 
 Application.SINGLE_PLAYER_TICKS_PER_SECOND = 30
 Application.MULTIPLAYER_PLAYER_TICKS_PER_SECOND = 10
@@ -151,6 +152,7 @@ function Application:new(multiThreaded)
 
 	self.times = {}
 	self.ticks = {}
+	self.drawCalls = {}
 
 	if _CONF.server then
 		Log.info("Server only.")
@@ -885,9 +887,15 @@ function Application:drawDebug()
 	love.graphics.setFont(self.defaultFont)
 
 	local drawCalls = love.graphics.getStats().drawcalls
+	table.insert(self.drawCalls, drawCalls)
+	while #self.drawCalls > self.MAX_DRAW_CALLS do
+		table.remove(self.drawCalls, 1)
+	end
+	local maxDrawCalls = math.max(unpack(self.drawCalls))
+
 	local width = love.window.getMode()
 	r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
-	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d MB)\n", love.timer.getFPS(), drawCalls, collectgarbage("count") / 1024)
+	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, %03d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024)
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
@@ -919,11 +927,23 @@ function Application:drawDebug()
 			self.game:getTargetDelta() * 1000,
 			self.game:getDelta() * 1000)
 
+	if not _MOBILE then
+		local w, lines = love.graphics.getFont():getWrap(r, width)
+
+		love.graphics.setColor(0, 0, 0, 0.25)
+		love.graphics.rectangle(
+			"fill",
+			width - w,
+			0,
+			w,
+			#lines * love.graphics.getFont():getHeight())
+	end
+
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.printf(
 		r,
-		0,
-		1,
+		2,
+		2,
 		width,
 		'right')
 
