@@ -705,14 +705,6 @@ itsyrealm.graphics.disabled.drawq = love.graphics.draw
 itsyrealm.graphics.disabled.uncachedDraw = love.graphics.draw
 itsyrealm.graphics.disabled.uncachedDrawLayer = love.graphics.drawLayer
 
-if love.system.getOS() ~= "OS X" and (not jit or jit.arch == "arm64") then
-	Log.info(
-		"Disabling advanced UI caching on platform '%s' (arch '%s').",
-		love.system.getOS(),
-		jit and jit.arch or "???")
-	itsyrealm.graphics.disable()
-end
-
 function UIView:new(gameView)
 	self.game = gameView:getGame()
 	self.gameView = gameView
