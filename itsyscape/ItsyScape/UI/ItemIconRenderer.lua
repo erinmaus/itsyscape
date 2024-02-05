@@ -42,87 +42,39 @@ end
 function ItemIconRenderer:draw(widget, state)
 	self:visit(widget)
 
-	local isActive = widget:get("isActive", state)
-	if isActive then
-		love.graphics.setColor(1, 1, 1, math.sin(love.timer.getTime() * math.pi))
-	else
-		love.graphics.setColor(1, 1, 1, 1)
-	end
-
 	local itemID = widget:get("itemID", state)
-	if itemID then
-		if not self.icons[itemID] then
-			local filename = string.format("Resources/Game/Items/%s/Icon.png", itemID)
-
-			local s, r = pcall(love.graphics.newImage, filename)
-			if not s then
-				Log.warn("Couldn't load item icon for '%s'; using Null.", filename)
-				r = love.graphics.newImage("Resources/Game/Items/Null/Icon.png")
-			end
-
-			self.icons[itemID] = r
-		end
-		self.unvisitedIcons[itemID] = nil
-
-		local icon = self.icons[itemID]
-		local scaleX, scaleY
-		local x, y
-		local originX, originY
-		do
-			local width, height = widget:getSize()
-			scaleX = width / icon:getWidth()
-			scaleY = height / icon:getHeight()
-			x, y = width / 2 * scaleX, height / 2 * scaleY
-			originX = width / 2
-			originY = height / 2
-		end
-
-		local itemScaleX, itemScaleY = scaleX, scaleY
-		if widget:get("itemIsNoted", state) then
-			itemScaleX = scaleX * 0.8
-			itemScaleY = scaleY * 0.8
-
-			itsyrealm.graphics.draw(
-				self.note,
-				originX, originY,
-				0,
-				scaleX, scaleY,
-				originX, originY)
-		end
-
-		local isDisabled = widget:get("isDisabled", state)
-		if isDisabled then
-			love.graphics.setColor(0.3, 0.3, 0.3, 1)
-		end
-
-		itsyrealm.graphics.draw(self.icons[itemID], x, y, 0, itemScaleX, itemScaleY, originX, originY)
-
-		if isDisabled then
-			love.graphics.setColor(1, 1, 1, 1)
-		end
+	if not itemID then
+		return
 	end
 
+	if not self.icons[itemID] then
+		local filename = string.format("Resources/Game/Items/%s/Icon.png", itemID)
+
+		local s, r = pcall(love.graphics.newImage, filename)
+		if not s then
+			Log.warn("Couldn't load item icon for '%s'; using Null.", filename)
+			r = love.graphics.newImage("Resources/Game/Items/Null/Icon.png")
+		end
+
+		self.icons[itemID] = r
+	end
+	self.unvisitedIcons[itemID] = nil
+
+	local width, height = widget:getSize()
+	local icon = self.icons[itemID]
 	local count = math.max(widget:get("itemCount", state), 0)
-	if itemID and count ~= 1 then
-		local oldFont = love.graphics.getFont()
-		love.graphics.setFont(self.font)
+	local color
+	count, color = Utility.Item.getItemCountShorthand(count)
+	local note = widget:get("itemIsNoted", state) and self.note
+	local disabled = widget:get("isDisabled", state)
+	local active = widget:get("isActive", state)
 
-		local text, color = Utility.Item.getItemCountShorthand(count)
-		local icon = self.icons[itemID]
-		local width = widget:getSize()
-		local textWidth = self.font:getWidth(text)
+	local oldFont = love.graphics.getFont()
 
-		love.graphics.setColor(0, 0, 0, 1)
-		itsyrealm.graphics.print(text, width - textWidth, 2, 0, scaleX, scaleY)
+	love.graphics.setFont(self.font)
+	itsyrealm.graphics.drawItem(widget, width, height, icon, count, color, note, disabled, active)
 
-		love.graphics.setColor(unpack(color))
-		itsyrealm.graphics.print(text, width - textWidth - 2, 0, scaleX, scaleY)
-
-		love.graphics.setFont(oldFont)
-		love.graphics.setColor(1, 1, 1, 1)
-	end
-
-	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setFont(oldFont)
 end
 
 return ItemIconRenderer
