@@ -346,8 +346,7 @@ function itsyrealm.graphics.impl.noOp()
 end
 
 function itsyrealm.graphics.dirty()
-	graphicsState.atlas:markDirty()
-	table.clear(graphicsState.text)
+	graphicsState.atlas:dirty()
 end
 
 itsyrealm.graphics.disabled = {}
