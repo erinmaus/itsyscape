@@ -83,7 +83,7 @@ end
 --
 -- By default, it requests the state from the UI model.
 function Interface:getState()
-	return self:getUI():pull(self:getID(), self:getIndex()) or {}
+	return self:getView():pull(self:getID(), self:getIndex()) or {}
 end
 
 function Interface:getItemExamine(item, includeAction)
