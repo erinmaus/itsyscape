@@ -596,6 +596,8 @@ function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer)
 							position.layer = layer
 						end
 
+						a:onTeleport(position.position)
+
 						local scale = peep:getBehavior(ScaleBehavior)
 						if scale then
 							local sx = object:get("ScaleX")

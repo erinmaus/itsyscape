@@ -1961,6 +1961,12 @@ function Utility.Peep.setPosition(peep, position)
 	else
 		Log.warn("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
 	end
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if actor then
+		actor:onTeleport(position)
+	end
 end
 
 function Utility.Peep.getScale(peep)
