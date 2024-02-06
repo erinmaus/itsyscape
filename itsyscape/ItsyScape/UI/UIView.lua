@@ -452,6 +452,10 @@ function itsyrealm.graphics.debug()
 end
 
 local function isSizeBlocking(currentSize, otherSize)
+	if currentSize.handle == otherSize.handle then
+		return false
+	end
+
 	if currentSize.force or otherSize.force then
 		return true
 	end
@@ -468,8 +472,8 @@ local function isSizeBlocking(currentSize, otherSize)
 end
 
 function itsyrealm.graphics.shouldFlush(pendingSize)
-	for _a, currentSizes in pairs(graphicsState.currentSizes) do
-		for _b, otherSizes in pairs(graphicsState.currentSizes) do
+	for _, currentSizes in pairs(graphicsState.currentSizes) do
+		for _, otherSizes in pairs(graphicsState.currentSizes) do
 			if currentSizes ~= otherSizes then
 				for i, currentSize in ipairs(currentSizes) do
 					for j, otherSize in ipairs(otherSizes) do
@@ -687,7 +691,9 @@ function itsyrealm.graphics.pushInterface(width, height)
 	end
 end
 
-function itsyrealm.graphics.impl.pushSize(handle, x, y, width, height, scaleX, scaleY)
+function itsyrealm.graphics.impl.pushSize(handle, x, y, width, height, scaleX, scaleY, transform)
+	transform = transform == nil and true or false
+
 	scaleX = scaleX or 1
 	scaleY = scaleY or 1
 
@@ -700,7 +706,9 @@ function itsyrealm.graphics.impl.pushSize(handle, x, y, width, height, scaleX, s
 	end
 
 	graphicsState.sizeTransform:reset()
-	graphicsState.sizeTransform:apply(graphicsState.transform)
+	if transform then
+		graphicsState.sizeTransform:apply(graphicsState.transform)
+	end
 
 	size.handle = handle or false
 	if x and y and width and height then
@@ -782,7 +790,8 @@ function itsyrealm.graphics.popPseudoScissor()
 end
 
 function itsyrealm.graphics.applyPseudoScissor()
-	itsyrealm.graphics.impl.pushSize()
+	local x, y, w, h = unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+	itsyrealm.graphics.impl.pushSize(nil, x, y, w, h, 1, 1, false)
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.setScissor,
 		unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor]))
