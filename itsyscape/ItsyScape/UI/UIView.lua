@@ -351,6 +351,7 @@ function itsyrealm.graphics.impl.clearScissor()
 end
 
 function itsyrealm.graphics.impl.noOp()
+	-- Nothing; it's a no-op.
 end
 
 function itsyrealm.graphics.dirty()
@@ -545,7 +546,6 @@ function itsyrealm.graphics.flushes.Font.queuePrint(size, renderState, text, x, 
 	local batch = itsyrealm.graphics.flushes.Font.getBatch(size.handle)
 	if batch then
 		if type(text) == "string" then
-			print(">>> queued", text)
 			batch:add({ renderState.color, text }, size.x, size.y, ...)
 		else
 			batch:add(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), size.x, size.y, ...)
@@ -557,7 +557,6 @@ function itsyrealm.graphics.flushes.Font.queuePrintF(size, renderState, text, x,
 	local batch = itsyrealm.graphics.flushes.Font.getBatch(size.handle)
 	if batch then
 		if type(text) == "string" then
-			print(">>> queued", text)
 			batch:addf({ renderState.color, text }, limit, align or "left", size.x, size.y, ...)
 		else
 			batch:addf(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), limit, align or "left", size.x, size.y, ...)
@@ -609,22 +608,6 @@ function itsyrealm.graphics.stop()
 
 			if currentNumSizes > 1 then
 				if previousHandle ~= currentHandle and itsyrealm.graphics.shouldFlush() then
-					print(">>> flushing", handle)
-
-					for k, v in pairs(itsyrealm.graphics.impl) do
-						if v == draw.command then
-							print(">>> itsyrealm.graphics.impl", k)
-							break
-						end
-					end
-
-					for k, v in pairs(love.graphics) do
-						if v == draw.command then
-							print(">>> love.graphics", k)
-							break
-						end
-					end
-
 					itsyrealm.graphics.flush()
 					currentNumSizes = 0
 				end
@@ -669,6 +652,13 @@ end
 function itsyrealm.graphics.clearPseudoScissor()
 	local w, h = love.window.getMode()
 	graphicsState.pseudoScissor = { { 0, 0, w, h } }
+end
+
+function itsyrealm.graphics.pushInterface(width, height)
+	if width > 0 and height > 0 then
+		itsyrealm.graphics.impl.pushSize(nil ,0, 0, width, height)
+		itsyrealm.graphics.impl.push(itsyrealm.graphics.impl.noOp)
+	end
 end
 
 function itsyrealm.graphics.impl.pushSize(handle, x, y, width, height, scaleX, scaleY)
