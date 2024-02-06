@@ -59,6 +59,7 @@ function ProCombatStatusHUDController:new(peep, director)
 
 	self:bindToPlayer(peep)
 	self.isDirty = true
+	self.needsRefresh = false
 
 	self.spells = {}
 	self.castableSpells = {}
@@ -1033,7 +1034,9 @@ function ProCombatStatusHUDController:update(delta)
 		self.updateDebugStats:measure("updateSpells", self)
 		self.updateDebugStats:measure("updatePrayers", self)
 		self.isDirty = false
-
+		self.needsRefresh = true
+	elseif self.needsRefresh then
+		self.needsRefresh = false
 		self.updateDebugStats:measure("sendRefresh", self)
 	end
 

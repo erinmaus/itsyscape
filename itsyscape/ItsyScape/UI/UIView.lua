@@ -1021,11 +1021,11 @@ function UIView:pull(interfaceID, interfaceIndex)
 
 	local state = interfaces[interfaceIndex]
 	if not state then
-		state = self.game:getUI():pull(interfaceID, interfaceIndex) or {}
+		state = self.game:getUI():pull(interfaceID, interfaceIndex)
 		interfaces[interfaceIndex] = state
 	end
 
-	return state
+	return state or {}
 end
 
 function UIView:release()
