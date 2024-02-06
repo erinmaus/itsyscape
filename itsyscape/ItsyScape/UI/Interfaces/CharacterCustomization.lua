@@ -400,7 +400,6 @@ function CharacterCustomization:new(id, index, ui)
 			local label = Label()
 			label:setText(name)
 			label:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, ui:getResources()))
-			label:setText(name)
 			grid:addChild(label)
 
 			local input = TextInput()
