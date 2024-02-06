@@ -506,7 +506,7 @@ end
 function Application:doCommonTick()
 	table.insert(self.ticks, 1, {
 		client = love.timer.getTime() - self.previousTickTime,
-		server = self.game:getDelta(),
+		server = self:getGame():getDelta(),
 	})
 	while #self.ticks > self.MAX_TICKS do
 		table.remove(self.ticks)
@@ -752,7 +752,7 @@ function Application:background()
 				local storage = PlayerStorage()
 				storage:deserialize(serializedStorage)
 
-				self:savePlayer(self.game:getPlayer(), storage, false)
+				self:savePlayer(self:getGame():getPlayer(), storage, false)
 			end
 		end
 	end
@@ -760,7 +760,7 @@ end
 
 function Application:quit(isError)
 	if self.multiThreaded then
-		self.game:quit()
+		self:getGame():quit()
 		self.remoteGameManager:pushTick()
 		self.gameView:quit()
 
@@ -786,7 +786,7 @@ function Application:quit(isError)
 						local storage = PlayerStorage()
 						storage:deserialize(serializedStorage)
 
-						self:savePlayer(self.game:getPlayer(), storage, isError)
+						self:savePlayer(self:getGame():getPlayer(), storage, isError)
 					end
 				else
 					Log.warn("Didn't receive save command from logic thread before timeout.")
@@ -928,8 +928,8 @@ function Application:drawDebug()
 			self:getAverageTickDelta() * 1000,
 			self:getMaxClientTickDelta() * 1000,
 			self:getMaxServerTickDelta() * 1000,
-			self.game:getTargetDelta() * 1000,
-			self.game:getDelta() * 1000)
+			self:getGame():getTargetDelta() * 1000,
+			self:getGame():getDelta() * 1000)
 
 	if not _MOBILE then
 		local w, lines = love.graphics.getFont():getWrap(r, width)
