@@ -451,20 +451,29 @@ function itsyrealm.graphics.debug()
 	love.graphics.pop()
 end
 
-function itsyrealm.graphics.shouldFlush()
+local function isSizeBlocking(currentSize, otherSize)
+	if currentSize.force or otherSize.force then
+		return true
+	end
+
+	if currentSize.x + currentSize.width > otherSize.x and
+	   currentSize.x < otherSize.x + otherSize.width and
+	   currentSize.y + currentSize.height > otherSize.y and
+	   currentSize.y < otherSize.y + otherSize.height
+	then
+		return true
+	end
+
+	return false
+end
+
+function itsyrealm.graphics.shouldFlush(pendingSize)
 	for _a, currentSizes in pairs(graphicsState.currentSizes) do
 		for _b, otherSizes in pairs(graphicsState.currentSizes) do
 			if currentSizes ~= otherSizes then
 				for i, currentSize in ipairs(currentSizes) do
 					for j, otherSize in ipairs(otherSizes) do
-						if (currentSize.force or otherSize.force) or
-							(
-								currentSize.x + currentSize.width > otherSize.x and
-								currentSize.x < otherSize.x + otherSize.width and
-								currentSize.y + currentSize.height > otherSize.y and
-								currentSize.y < otherSize.y + otherSize.height
-							)
-						then
+						if isSizeBlocking(currentSize, otherSize) then
 							return true
 						end
 					end
@@ -493,6 +502,17 @@ function itsyrealm.graphics.flush()
 
 	table.clear(graphicsState.currentSizes)
 	table.clear(graphicsState.pendingSizes)
+end
+
+function itsyrealm.graphics.impl.addSizeToQueue(handle)
+	if not graphicsState.currentSizes[handle] then
+		graphicsState.currentSizes[handle] = table.remove(graphicsState.oldSizes, #graphicsState.oldSizes) or {}
+		table.insert(graphicsState.pendingSizes, handle)
+
+		return 1
+	end
+
+	return 0
 end
 
 function itsyrealm.graphics.queue(size, ...)
@@ -545,22 +565,28 @@ end
 function itsyrealm.graphics.flushes.Font.queuePrint(size, renderState, text, x, y, ...)
 	local batch = itsyrealm.graphics.flushes.Font.getBatch(size.handle)
 	if batch then
+		local oldLineHeight = batch:getFont():getLineHeight()
+		batch:getFont():setLineHeight(renderState.lineHeight)
 		if type(text) == "string" then
 			batch:add({ renderState.color, text }, size.x, size.y, ...)
 		else
 			batch:add(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), size.x, size.y, ...)
 		end
+		batch:getFont():setLineHeight(oldLineHeight)
 	end
 end
 
 function itsyrealm.graphics.flushes.Font.queuePrintF(size, renderState, text, x, y, limit, align, ...)
 	local batch = itsyrealm.graphics.flushes.Font.getBatch(size.handle)
 	if batch then
+		local oldLineHeight = batch:getFont():getLineHeight()
+		batch:getFont():setLineHeight(renderState.lineHeight)
 		if type(text) == "string" then
 			batch:addf({ renderState.color, text }, limit, align or "left", size.x, size.y, ...)
 		else
 			batch:addf(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), limit, align or "left", size.x, size.y, ...)
 		end
+		batch:getFont():setLineHeight(oldLineHeight)
 	else
 	end
 end
@@ -599,7 +625,7 @@ function itsyrealm.graphics.stop()
 	for i = 1, graphicsState.drawQueue.n do
 		local draw = graphicsState.drawQueue[i]
 		local size = graphicsState.sizes[i]
-
+ 
 		if size and size.handle ~= nil then
 			local handle = size.handle or defaultHandle
 
@@ -607,7 +633,7 @@ function itsyrealm.graphics.stop()
 			currentHandle = handle
 
 			if currentNumSizes > 1 then
-				if previousHandle ~= currentHandle and itsyrealm.graphics.shouldFlush() then
+				if previousHandle ~= currentHandle and (size.force or itsyrealm.graphics.shouldFlush(size)) then
 					itsyrealm.graphics.flush()
 					currentNumSizes = 0
 				end
