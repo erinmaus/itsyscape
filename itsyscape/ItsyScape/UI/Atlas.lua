@@ -198,26 +198,27 @@ function Atlas.Layer:clean()
 		return
 	end
 
+	local c = 0
+
 	local didMerge = true
 	while didMerge do
 		didMerge = false
 
-		for _, a in ipairs(self.rectangles) do
-			for index, b in ipairs(self.rectangles) do
-				if a ~= b and _tryMerge(a, b) then
+		for i = #self.rectangles, 1, -1 do
+			for j = 1, #self.rectangles - 1 do
+				c = c + 1
+				if _tryMerge(self.rectangles[i], self.rectangles[j]) then
 					didMerge = true
-					table.remove(self.rectangles, index)
+					table.remove(self.rectangles, j)
 					break
 				end
-			end
-
-			if didMerge then
-				break
 			end
 		end
 	end
 
 	self.pendingClean = false
+
+	return c
 end
 
 function Atlas.Layer:remove(image)
@@ -403,15 +404,23 @@ function Atlas:update()
 	love.graphics.setColor(1, 1, 1, 1)
 
 	if (not self.canvas or #self.layers > self.canvas:getLayerCount()) and #self.layers >= 1 then
-		self.canvas = love.graphics.newCanvas(self.width, self.height, #self.layers)
+		local newCanvas = love.graphics.newCanvas(self.width, self.height, #self.layers)
 
 		for index, layer in ipairs(self.layers) do
-			love.graphics.setCanvas(self.canvas, index)
+			love.graphics.setCanvas(newCanvas, index)
 
-			layer:dirty()
+			if self.canvas then
+				love.graphics.draw(self.canvas, index)
+			end
+
+			if layer:getIsDirty() then
+				layer:update()
+			end
+
 			layer:update()
 		end
 
+		self.canvas = newCanvas
 	else
 		for index, layer in ipairs(self.layers) do
 			if layer:getIsDirty() then
