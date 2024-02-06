@@ -472,7 +472,7 @@ local function isSizeBlocking(currentSize, otherSize)
 	return false
 end
 
-function itsyrealm.graphics.shouldFlush(pendingSize)
+function itsyrealm.graphics.shouldFlush()
 	for _, currentSizes in pairs(graphicsState.currentSizes) do
 		for _, otherSizes in pairs(graphicsState.currentSizes) do
 			if currentSizes ~= otherSizes then
@@ -605,7 +605,7 @@ function itsyrealm.graphics.flushes.Font.queue(size, command, ...)
 end
 
 function itsyrealm.graphics.flushes.Font.flush(handle)
-	local batch = itsyrealm.graphics.flushes.Font.getBatch(handle)
+	local batch, v = itsyrealm.graphics.flushes.Font.getBatch(handle)
 
 	if batch then
 		love.graphics.push("all")
@@ -638,7 +638,7 @@ function itsyrealm.graphics.stop()
 			currentHandle = handle
 
 			if currentNumSizes > 1 then
-				if previousHandle ~= currentHandle and (size.force or itsyrealm.graphics.shouldFlush(size)) then
+				if size.force or (previousHandle ~= currentHandle and itsyrealm.graphics.shouldFlush()) then
 					itsyrealm.graphics.flush()
 					currentNumSizes = 0
 				end
@@ -792,7 +792,7 @@ end
 
 function itsyrealm.graphics.applyPseudoScissor()
 	local x, y, w, h = unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
-	itsyrealm.graphics.impl.pushSize(nil, x, y, w, h, 1, 1, false)
+	itsyrealm.graphics.impl.pushSize()
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.setScissor,
 		unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor]))
