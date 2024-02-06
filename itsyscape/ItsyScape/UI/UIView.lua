@@ -422,6 +422,7 @@ function itsyrealm.graphics.debug()
 				end
 
 				if graphicsState.atlas.layers[i].rectangles[j].image then
+					love.graphics.setColor(1, 1, 1, 1)
 					love.graphics.draw(
 						graphicsState.atlas.layers[i].rectangles[j].image:getTexture(),
 						graphicsState.atlas.layers[i].rectangles[j].i * cellSize,
