@@ -560,6 +560,8 @@ function Application:tickMultiThread()
 		self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
 	end
 
+	--self:measure('uiView:tick()', function() self.uiView:tick() end)
+
 	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
 end
