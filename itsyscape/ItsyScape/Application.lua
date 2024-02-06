@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- ItsyScape/Application.lua
 --
@@ -548,6 +549,7 @@ function Application:tickSingleThread()
 	self:doCommonTick()
 
 	self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
+	self:measure('uiView:tick()', function() self.uiView:tick() end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
 end
 

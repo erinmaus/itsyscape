@@ -85,15 +85,15 @@ function MapInfo.Line:draw()
 
 	love.graphics.setFont(self.fontTitle)
 	love.graphics.setColor(0, 0, 0, a)
-	itsyrealm.graphics.print({ title }, MapInfo.WIDTH / 2 - self.fontTitle:getWidth(title) / 2 + 2, -(self.fontTitle:getHeight() + self.fontDescription:getHeight() + self.PADDING) + 2)
+	itsyrealm.graphics.print(title, MapInfo.WIDTH / 2 - self.fontTitle:getWidth(title) / 2 + 2, -(self.fontTitle:getHeight() + self.fontDescription:getHeight() + self.PADDING) + 2)
 	love.graphics.setColor(1, 1, 1, a)
-	itsyrealm.graphics.print({ title }, MapInfo.WIDTH / 2 - self.fontTitle:getWidth(title) / 2 + 0, -(self.fontTitle:getHeight() + self.fontDescription:getHeight() + self.PADDING))
+	itsyrealm.graphics.print(title, MapInfo.WIDTH / 2 - self.fontTitle:getWidth(title) / 2 + 0, -(self.fontTitle:getHeight() + self.fontDescription:getHeight() + self.PADDING))
 
 	love.graphics.setFont(self.fontDescription)
 	love.graphics.setColor(0, 0, 0, a)
-	itsyrealm.graphics.print({ description }, MapInfo.WIDTH / 2 - self.fontDescription:getWidth(description) / 2 + 2, -self.fontDescription:getHeight() + 2)
+	itsyrealm.graphics.print(description, MapInfo.WIDTH / 2 - self.fontDescription:getWidth(description) / 2 + 2, -self.fontDescription:getHeight() + 2)
 	love.graphics.setColor(1, 1, 1, a)
-	itsyrealm.graphics.print({ description }, MapInfo.WIDTH / 2 - self.fontDescription:getWidth(description) / 2 + 0, -self.fontDescription:getHeight())
+	itsyrealm.graphics.print(description, MapInfo.WIDTH / 2 - self.fontDescription:getWidth(description) / 2 + 0, -self.fontDescription:getHeight())
 
 	love.graphics.setFont(oldFont)
 
