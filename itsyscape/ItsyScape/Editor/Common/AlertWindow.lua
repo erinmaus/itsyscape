@@ -81,6 +81,7 @@ function AlertWindow:open(message, title, width, height)
 	}, self.application:getUIView():getResources()))
 
 	self:setSize(width, height)
+	self:performLayout()
 
 	local windowWidth, windowHeight = love.window.getMode()
 	local x, y = windowWidth / 2 - width / 2, windowHeight / 2 - height / 2
