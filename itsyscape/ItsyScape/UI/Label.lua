@@ -22,4 +22,8 @@ function Label:getOverflow()
 	end
 end
 
+function Label:getIsBlocking()
+	return false
+end
+
 return Label

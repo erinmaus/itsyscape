@@ -316,6 +316,10 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		end
 	end
 
+	if widget:getIsBlocking() then
+		itsyrealm.graphics.pushInterface(widget:getSize())
+	end
+
 	local renderer = self:getRenderer(widget:getType()) or self.defaultRenderer
 	if renderer then
 		local _, _, w, h = itsyrealm.graphics.getPseudoScissor()
