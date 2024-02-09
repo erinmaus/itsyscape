@@ -67,11 +67,9 @@ StageProxy.moveMap:link(
 	Event.Argument("disabled"))
 StageProxy.stopMoveMap = Event.Unset(
 	StageProxy.MAP_MOVE,
-	Event.Argument("map"),
 	Event.KeyArgument("layer", true))
 StageProxy.stopMoveMap:link(
 	"onUnloadMap",
-	Event.Argument("map"),
 	Event.Argument("layer"))
 
 StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor, isMoving)
