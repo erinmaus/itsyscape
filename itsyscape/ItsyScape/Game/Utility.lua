@@ -350,7 +350,7 @@ end
 function Utility.spawnMapAtAnchor(peep, resource, anchor, args)
 	local resourceName
 	if type(resource) == 'string' then
-	resourceName = resource
+		resourceName = resource
 	else
 		resourceName = resource.name
 	end
@@ -362,19 +362,27 @@ function Utility.spawnMapAtAnchor(peep, resource, anchor, args)
 		anchor)
 
 	if x and y and z then
-		local _, ship = Utility.Map.spawnMap(peep, resourceName, Vector(x, y, z), args)
+		local layer, mapScript = Utility.Map.spawnMap(peep, resourceName, Vector(x, y, z), args)
 
-		ship:listen('finalize', function()
-			Utility.orientateToAnchor(ship, map, anchor)
-			local position = ship:getBehavior(PositionBehavior)
-			position.offset = Vector(0, position.position.y, 0)
-			position.position = Vector(position.position.x, 0, position.position.z)
-		end)
-		
-		return ship
+		if mapScript then
+			mapScript:listen('finalize', function()
+				Utility.orientateToAnchor(mapScript, map, anchor)
+
+				local position = mapScript:getBehavior(PositionBehavior)
+				if Class.isCompatibleType(mapScript, require "Resources.Game.Peeps.Maps.ShipMapPeep") then
+					position.offset = Vector(0, position.position.y, 0)
+					position.position = Vector(position.position.x, 0, position.position.z)
+				end
+			end)
+
+			return mapScript, layer
+		end
+
+		Log.error("Couldn't spawn map '%s'.", resourceName)
+		return nil, nil
 	else
 		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
-		return nil
+		return nil, nil
 	end
 end
 
