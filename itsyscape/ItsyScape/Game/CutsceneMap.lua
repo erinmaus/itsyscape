@@ -209,6 +209,14 @@ function CutsceneMap:poke(...)
 	end
 end
 
+function CutsceneMap:pushPoke(...)
+	local args = { n = select('#', ...), ... }
+
+	return function()
+		self.peep:pushPoke(unpack(args, 1, args.n))
+	end
+end
+
 function CutsceneMap:performNamedAction(name, target)
 	return function()
 		local game = self.peep:getDirector():getGameInstance()
