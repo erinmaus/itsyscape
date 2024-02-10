@@ -1,11 +1,11 @@
 {
 	{
 		tileSetID = "EmptyRuins",
-		autoMask = false,
 		maskID =
 		{
 			building = "Building",
 			default = true,
 		},
+		autoMask = false,
 	},
 }

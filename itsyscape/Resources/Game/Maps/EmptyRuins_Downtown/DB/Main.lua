@@ -149,3 +149,159 @@ do
 		MapObject = M["EmptyRuinsWallDecoration"]
 	}
 end
+
+M["Yendorian_Ballista"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Yendorian_Ballista",
+		Map = M._MAP,
+		Resource = M["Yendorian_Ballista"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
+		MapObject = M["Yendorian_Ballista"]
+	}
+end
+
+M["Anchor_SkirmishBallista"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 2,
+		PositionZ = 41,
+		Name = "Anchor_SkirmishBallista",
+		Map = M._MAP,
+		Resource = M["Anchor_SkirmishBallista"]
+	}
+end
+
+M["Yendorian_Mast"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Yendorian_Mast",
+		Map = M._MAP,
+		Resource = M["Yendorian_Mast"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Mast",
+		MapObject = M["Yendorian_Mast"]
+	}
+end
+
+M["Anchor_SkirmishMast"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 77,
+		PositionY = 2,
+		PositionZ = 61,
+		Name = "Anchor_SkirmishMast",
+		Map = M._MAP,
+		Resource = M["Anchor_SkirmishMast"]
+	}
+end
+
+M["Yendorian_Swordfish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Yendorian_Swordfish",
+		Map = M._MAP,
+		Resource = M["Yendorian_Swordfish"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
+		MapObject = M["Yendorian_Swordfish"]
+	}
+end
+
+M["Anchor_SkirmishSwordfish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21,
+		PositionY = 4,
+		PositionZ = 43,
+		Name = "Anchor_SkirmishSwordfish",
+		Map = M._MAP,
+		Resource = M["Anchor_SkirmishSwordfish"]
+	}
+end
+
+M["Tinkerer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Tinkerer",
+		Map = M._MAP,
+		Resource = M["Tinkerer"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Tinkerer",
+		MapObject = M["Tinkerer"]
+	}
+end
+
+M["PrestigiousAncientSkeleton"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "PrestigiousAncientSkeleton",
+		Map = M._MAP,
+		Resource = M["PrestigiousAncientSkeleton"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PrestigiousAncientSkeleton",
+		MapObject = M["PrestigiousAncientSkeleton"]
+	}
+end
+
+M["PrestigiousMummy"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "PrestigiousMummy",
+		Map = M._MAP,
+		Resource = M["PrestigiousMummy"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PrestigiousMummy",
+		MapObject = M["PrestigiousMummy"]
+	}
+end
+
+M["GoryMass"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "GoryMass",
+		Map = M._MAP,
+		Resource = M["GoryMass"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "GoryMass",
+		MapObject = M["GoryMass"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "EmptyRuins_Downtown_Intro"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "YendorianBallista",
+		Cutscene = Cutscene,
+		Resource = M["Yendorian_Ballista"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "YendorianSwordfish",
+		Cutscene = Cutscene,
+		Resource = M["Yendorian_Swordfish"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "YendorianMast",
+		Cutscene = Cutscene,
+		Resource = M["Yendorian_Mast"]
+	}
+end
