@@ -12,6 +12,8 @@ local Tween = require "ItsyScape.Common.Math.Tween"
 local Color = require "ItsyScape.Graphics.Color"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
+local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local Drawable = require "ItsyScape.UI.Drawable"
 
@@ -25,7 +27,8 @@ function DramaticText:new(id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
 
-	self.styles = {}
+	self.labelStyles = {}
+	self.panelStyles = {}
 	local state = self:getState()
 	for i = 1, #state.lines do
 		local line = state.lines[i]
@@ -45,11 +48,29 @@ function DramaticText:new(id, index, ui)
 		label:setPosition(
 			line.x and (line.x / DramaticText.CANVAS_WIDTH * w) or 0,
 			line.y and (line.y / DramaticText.CANVAS_HEIGHT * h) or (h / 2))
-
 		label:setText(line.text)
 
+		local panel = Panel()
+		local panelStyle = PanelStyle({
+			color = line.backgroundColor or { 0, 0, 0, 0.5 },
+			radius = line.backgroundRadius
+		}, ui:getResources())
+		panel:setStyle(panelStyle)
+
+		local width, lines = labelStyle.font:getWrap(line.text, labelStyle.width)
+		panel:setSize(
+			width + panelStyle.radius * 2,
+			#lines * labelStyle.font:getHeight() * labelStyle.font:getLineHeight() + panelStyle.radius * 2)
+		local labelX, labelY = label:getPosition()
+		if labelStyle.align == "center" then
+			local labelWidth = label:getSize()
+			labelX = labelX + (labelWidth / 2 - width / 2)
+		end
+		panel:setPosition(labelX - panelStyle.radius, labelY - panelStyle.radius)
+
+		self:addChild(panel)
 		self:addChild(label)
-		table.insert(self.styles, labelStyle)
+		table.insert(self.labelStyles, labelStyle)
 	end
 end
 
@@ -76,10 +97,18 @@ function DramaticText:update(delta)
 		end
 
 		local alpha = Tween.sineEaseOut(mu)
-		for i = 1, #self.styles do
-			local style = self.styles[i]
-			local color = style.color
-			style.color = Color(color.r, color.g, color.b, alpha)
+		do
+			for i = 1, #self.labelStyles do
+				local style = self.labelStyles[i]
+				local color = style.color
+				style.color = Color(color.r, color.g, color.b, alpha)
+			end
+
+			for i = 1, #self.panelStyles do
+				local style = self.panelStyles[i]
+				local line = state.lines[i]
+				style.color[4] = (line.backgroundColor and line.backgroundColor[4] or 0.5) * alpha
+			end
 		end
 	end
 end
