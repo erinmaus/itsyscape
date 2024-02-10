@@ -17,6 +17,7 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
@@ -262,10 +263,10 @@ function GoryMass:splode(peep)
 	if weapon then
 		local resource = Utility.Peep.getResource(peep)
 
-		weapon:perform(self, peep)
+		weapon:onAttackHit(self, peep)
 
 		if not resource or resource.name ~= "GoryMass" then
-			weapon:perform(self, self)
+			weapon:onAttackHit(self, self)
 		end
 	end
 end
@@ -298,6 +299,13 @@ function GoryMass:update(...)
 		self:followTarget()
 	else
 		multiplier = GoryMass.DELTA_MULTIPLIER_STATIONARY
+
+		local target = self:getBehavior(CombatTargetBehavior)
+		target = target and target.actor
+		if target and not self:isMoving() then
+			print(">>> ROLLING!")
+			self:poke("startRoll", target:getPeep())
+		end
 	end
 	self.time = self.time + delta * multiplier
 
