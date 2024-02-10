@@ -40,6 +40,11 @@ public:
 	glm::vec3 direction;
 	float min_speed, max_speed;
 
+	void update_local_direction(const glm::vec3& value)
+	{
+		direction = glm::normalize(value);
+	}
+
 	void from_definition(lua_State* L)
 	{
 		auto table = sol::stack::get<sol::table>(L, -1);
@@ -851,6 +856,14 @@ void nbunny::ParticleSceneNode::update_local_position(const glm::vec3& position)
 	}
 }
 
+void nbunny::ParticleSceneNode::update_local_direction(const glm::vec3& direction)
+{
+	for (auto& emitter: emitters)
+	{
+		emitter->update_local_direction(direction);
+	}
+}
+
 void nbunny::ParticleSceneNode::pause()
 {
 	is_playing = false;
@@ -922,6 +935,18 @@ int nbunny_particle_scene_node_update_local_position(lua_State* L)
 	return 0;
 }
 
+int nbunny_particle_scene_node_update_local_direction(lua_State* L)
+{
+	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
+	auto x = luaL_checknumber(L, 2);
+	auto y = luaL_checknumber(L, 3);
+	auto z = luaL_checknumber(L, 4);
+
+	node.update_local_direction(glm::vec3(x, y, z));
+
+	return 0;
+}
+
 int nbunny_particle_scene_node_init_emitters_from_def(lua_State* L)
 {
 	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
@@ -965,6 +990,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_particlescenenode(lua_State*
 		"initPathsFromDef", &nbunny_particle_scene_node_init_paths_from_def,
 		"initEmissionStrategyFromDef", &nbunny_particle_scene_node_init_emission_strategy_from_def,
 		"updateLocalPosition", &nbunny_particle_scene_node_update_local_position,
+		"updateLocalDirection", &nbunny_particle_scene_node_update_local_direction,
 		"pause", &nbunny::ParticleSceneNode::pause,
 		"play", &nbunny::ParticleSceneNode::play,
 		"getIsPlaying", &nbunny::ParticleSceneNode::get_is_playing);
