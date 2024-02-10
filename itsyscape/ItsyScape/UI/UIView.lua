@@ -754,6 +754,8 @@ function itsyrealm.graphics.impl.push(command, ...)
 				n = select('#', ...),
 				...
 			})
+
+		graphicsState.drawQueue.n = graphicsState.drawQueue.n + 1
 	end
 end
 
