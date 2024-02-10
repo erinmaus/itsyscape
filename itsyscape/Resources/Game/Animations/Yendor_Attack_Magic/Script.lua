@@ -4,6 +4,8 @@ Animation "Yendor Attack (Magic)" {
 			duration = 3,
 			attach = "jaw.t",
 			scale = { 4, 4, 4 },
+			reverseRotation = "X_90",
+			direction = { 0, 0, 1 },
 
 			system = {
 				numParticles = 200,
@@ -13,12 +15,11 @@ Animation "Yendor Attack (Magic)" {
 				emitters = {
 					{
 						type = "RadialEmitter",
-						radius = { 0 },
-						speed = { 20, 25 },
-						xRange = { 0, 0.125 },
-						yRange = { 0.25, 0 },
-						zRange = { 1, 0.125 },
-						acceleration = { 0, 0 }
+						radius = { 0 }
+					},
+					{
+						type = "DirectionalEmitter",
+						speed = { 10, 15 }
 					},
 					{
 						type = "RandomColorEmitter",
@@ -52,13 +53,17 @@ Animation "Yendor Attack (Magic)" {
 					{
 						type = "TextureIndexPath",
 						textures = { 1, 4 }
+					},
+					{
+						type = "GravityPath",
+						gravity = { 0, -10, 0 }
 					}
 				},
 
 				emissionStrategy = {
 					type = "RandomDelayEmissionStrategy",
 					count = { 20, 40 },
-					delay = { 0.125 },
+					delay = { 1 / 30 },
 					duration = { 2 }
 				}
 			}

@@ -43,6 +43,7 @@ namespace nbunny
 		virtual ~ParticleEmitter() = default;
 
 		virtual void update_local_position(const glm::vec3& position) {};
+		virtual void update_local_direction(const glm::vec3& direction) {};
 
 		virtual void from_definition(lua_State* L) = 0;
 		virtual void emit(Particle& p) = 0;
@@ -120,6 +121,7 @@ namespace nbunny
 
 		void from_definition(lua_State* L);
 		void update_local_position(const glm::vec3& position);
+		void update_local_direction(const glm::vec3& direction);
 
 		void pause();
 		void play();
