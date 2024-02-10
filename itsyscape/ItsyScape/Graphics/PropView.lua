@@ -71,7 +71,7 @@ function PropView:updateTransform()
 	transform:setLocalScale(self.prop:getScale())
 
 	if self:getIsStatic() then
-		transform:tick()
+		self:getRoot():tick()
 	end
 
 	local mapSceneNode = self.gameView:getMapSceneNode(layer)
