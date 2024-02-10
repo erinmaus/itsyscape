@@ -63,6 +63,10 @@ end
 function Downtown:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
+	if args.cutscene then
+		self:silence('playerEnter', Map.showPlayerMapInfo)
+	end
+
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:forecast(layer, "EmptyRuins_Downtown_Bubbles", "Fungal", {
 		gravity = { 0, 3, 0 },

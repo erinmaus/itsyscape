@@ -1,4 +1,19 @@
+local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
+
+local OR_SO = {
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 48,
+	textShadow = true,
+	align = 'center',
+	width = DramaticTextController.CANVAS_WIDTH - 64,
+	x = 32,
+	y = DramaticTextController.CANVAS_HEIGHT - 128,
+	text = "Or so the many faithful to the Old Ones believe."
+}
+
 return Sequence {
+	Player:narrate("", OR_SO, 6),
 
 	Sequence {
 		Camera:zoom(20),

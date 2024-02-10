@@ -1,4 +1,68 @@
-return Sequence {
+local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
+
+local RITUAL1 = {
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 32,
+	textShadow = true,
+	align = 'center',
+	width = DramaticTextController.CANVAS_WIDTH - 64,
+	x = 32,
+	y = DramaticTextController.CANVAS_HEIGHT - 256,
+	text = "In a time immemorial, a necromancer-turned-god, The Empty King, performed a horrific ritual"
+}
+
+local RITUAL2 = {
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 32,
+	textShadow = true,
+	align = 'center',
+	width = DramaticTextController.CANVAS_WIDTH - 64,
+	x = 32,
+	y = DramaticTextController.CANVAS_HEIGHT - 128,
+	text = "that claimed innumerable lives in order to banish the Old Ones from the Realm."
+}
+
+local WAKE1 = {
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 32,
+	textShadow = true,
+	align = 'center',
+	width =DramaticTextController.CANVAS_WIDTH - 64,
+	x = 32,
+	y = DramaticTextController.CANVAS_HEIGHT - 256,
+	text = "The Old Ones gnaw at the edges of The Empty King's enchantment on the Realm yearning"
+}
+
+local WAKE2 = {
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 32,
+	textShadow = true,
+	align = 'center',
+	width =DramaticTextController.CANVAS_WIDTH - 64,
+	x = 32,
+	y = DramaticTextController.CANVAS_HEIGHT - 128,
+	text = "to wake from their horrible nightmare and exact a cosmic revenge on the The Empty King and Their zealots."
+}
+
+local NarrationSequence = Sequence {
+	Player:narrate("", RITUAL1, 7),
+	Player:wait(3),
+
+	Player:narrate("", RITUAL2, 4),
+	Player:wait(4),
+
+	Player:narrate("", WAKE1, 7),
+	Player:wait(3),
+
+	Player:narrate("", WAKE2, 4),
+	Player:wait(4)
+}
+
+local FightSequence = Sequence {
 	Camera:zoom(15),
 	Camera:translate(Vector(0, 2, 0)),
 	Camera:horizontalRotate(0),
@@ -73,6 +137,13 @@ return Sequence {
 		Camera:shake(1.5),
 		Yendor:playAnimation("Yendor_Die"),
 		Yendor:wait(2),
+	}
+}
+
+return Sequence {
+	Parallel {
+		NarrationSequence,
+		FightSequence
 	},
 
 	Map:pushPoke("playDowntownCutscene", Player:getPeep(), "EmptyRuins_Downtown_Intro")
