@@ -186,7 +186,7 @@ function Downtown:prepareSistineCutscene()
 end
 
 function Downtown:onPlayDowntownCutscene(peep, cutscene)
-	Utility.UI.closeAll(peep, nil, { "CutsceneTransition" })
+	Utility.UI.closeAll(peep, nil, { "CutsceneTransition", "DramaticText" })
 
 	local cutscene = Utility.Map.playCutscene(self, cutscene, "StandardCutscene")
 	cutscene:listen("done", self.onFinishCutscene, self, peep)
@@ -200,7 +200,7 @@ function Downtown:onPlaySistineCutscene(peep, cutscene)
 		return
 	end
 
-	Utility.UI.closeAll(peep, nil, { "CutsceneTransition" })
+	Utility.UI.closeAll(peep, nil, { "CutsceneTransition", "DramaticText" })
 
 	Utility.Map.playCutscene(sistineMapScript, cutscene, "StandardCutscene", peep)
 end

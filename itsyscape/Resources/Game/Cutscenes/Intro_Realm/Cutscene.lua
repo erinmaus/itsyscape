@@ -101,10 +101,10 @@ return Sequence {
 			Sequence {
 				Map:poke("show", "ViziersRock_Town_Center"),
 
-				Map:wait(3),
-
-				Map:poke("hide", "ViziersRock_Town_Center"),
+				Map:wait(3)
 			}
 		}
-	}
+	},
+
+	Player:move("Rumbridge_Castle_Floor1?cutscene=intro,mute=1", "Anchor_FromStairs")
 }

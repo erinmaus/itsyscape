@@ -141,6 +141,8 @@ local FightSequence = Sequence {
 }
 
 return Sequence {
+	Map:playMusic("TutorialIntro"),
+
 	Parallel {
 		NarrationSequence,
 		FightSequence

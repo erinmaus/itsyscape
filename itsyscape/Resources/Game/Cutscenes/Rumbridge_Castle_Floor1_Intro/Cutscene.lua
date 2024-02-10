@@ -40,5 +40,14 @@ return Sequence {
 
 	Player:wait(4),
 	Player:narrate("", WHISPERS, 4),
-	Player:wait(4)
+	Player:wait(4),
+
+	Player:move(
+		"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_FarOcean," ..
+		"jenkins_state=1," ..
+		"i=16," ..
+		"j=16," ..
+		"shore=@IsabelleIsland_FarOcean_Cutscene," ..
+		"shoreAnchor=Anchor_Spawn",
+		"Anchor_Spawn")
 }

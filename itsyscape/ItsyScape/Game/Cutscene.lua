@@ -231,11 +231,24 @@ function Cutscene:loadCutscene()
 		r = Cutscene.empty
 	end
 
-	self.script = coroutine.create(r)	
+	self.script = coroutine.create(r)
+	self.didStart = false
 end
 
 function Cutscene:update()
+	if not self.didStart then
+		local isOpen, index = Utility.UI.isOpen(self.player:getActor():getPeep(), "CutsceneTransition")
+
+		if isOpen then
+			local interface = Utility.UI.getOpenInterface(self.player:getActor():getPeep(), "CutsceneTransition", index)
+			if not interface:getIsClosing() then
+				return true
+			end
+		end
+	end
+
 	if not self.isDone and coroutine.status(self.script) ~= "dead" then
+		self.didStart = true
 		local s, e = coroutine.resume(self.script)
 		if not s then
 			Log.warn("Error running cutscene '%s': %s %s", self.resource.name, e, debug.traceback(self.script))

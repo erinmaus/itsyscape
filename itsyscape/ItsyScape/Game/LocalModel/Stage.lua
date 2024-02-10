@@ -1208,7 +1208,10 @@ end
 
 function LocalStage:loadStage(instance, filename, args)
 	local baseLayer = self:loadMapResource(instance, filename, args)
-	self:loadMusic(baseLayer, filename)
+
+	if args and not args.mute then
+		self:loadMusic(baseLayer, filename)
+	end
 end
 
 function LocalStage:getMap(layer)

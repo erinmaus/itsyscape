@@ -25,6 +25,13 @@ function CutsceneMap:new(peep)
 	self.game = peep:getDirector():getGameInstance()
 end
 
+function CutsceneMap:playMusic(music, slot)
+	return function()
+		local stage = self.game:getStage()
+		stage:playMusic(self.peep:getLayer(), slot or "main", music)
+	end
+end
+
 function CutsceneMap:getPosition(anchor)
 	local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
 	return Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchors))
