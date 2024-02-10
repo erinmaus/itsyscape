@@ -71,7 +71,10 @@ function DramaticText:new(id, index, ui)
 		self:addChild(panel)
 		self:addChild(label)
 		table.insert(self.labelStyles, labelStyle)
+		table.insert(self.panelStyles, panelStyle)
 	end
+
+	self:setZDepth(10000)
 end
 
 function DramaticText:getOverflow()
@@ -88,10 +91,13 @@ function DramaticText:update(delta)
 		self.time = (self.time or 0) + delta
 
 		local mu
-		if self.time <= fadeInDuration then
+		if self.time >= state.maxDuration then
+			mu = 0
+			self:sendPoke("close", nil, {})
+		elseif self.time <= fadeInDuration then
 			mu = math.min(self.time / fadeInDuration, 1)
 		elseif self.time >= state.maxDuration - fadeInDuration then
-			mu = math.min(self.time - (state.maxDuration - fadeInDuration) / fadeInDuration, 1)
+			mu = 1 - math.min(self.time - (state.maxDuration - fadeInDuration) / fadeInDuration, 1)
 		else
 			mu = 1
 		end

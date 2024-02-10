@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/Interfaces/DramaticTextController.lua
+-- ItsyScape/UI/Interfaces/CutsceneTransitionController.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,27 +10,28 @@
 local Class = require "ItsyScape.Common.Class"
 local Controller = require "ItsyScape.UI.Controller"
 
-local DramaticTextController = Class(Controller)
-DramaticTextController.CANVAS_WIDTH = 1920
-DramaticTextController.CANVAS_HEIGHT = 1080
+local CutsceneTransitionController = Class(Controller)
 
-function DramaticTextController:new(peep, director, lines, duration)
+function CutsceneTransitionController:new(peep, director, lines, duration)
 	Controller.new(self, peep, director)
 
-	duration = duration or math.huge
-	self.state = { lines = lines, maxDuration = duration }
+	self.isClosing = false
 end
 
-function DramaticTextController:poke(actionID, actionIndex, e)
+function CutsceneTransitionController:getIsClosing()
+	return self.isClosing
+end
+
+function CutsceneTransitionController:poke(actionID, actionIndex, e)
 	if actionID == "close" then
-		self:getGame():getUI():closeInstance(self)
+		if self.isClosing then
+			self:getGame():getUI():closeInstance(self)
+		else
+			self.isClosing = true
+		end
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
 end
 
-function DramaticTextController:pull()
-	return self.state
-end
-
-return DramaticTextController
+return CutsceneTransitionController

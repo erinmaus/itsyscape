@@ -28,8 +28,16 @@ function CutsceneEntity:new(peep)
 end
 
 function CutsceneEntity:move(map, anchor)
+	local DELAY_SECONDS = 0.5
 	if self.peep:hasBehavior(PlayerBehavior) then
 		return function()
+			Utility.UI.openInterface(self.peep, "CutsceneTransition", false)
+
+			local time = love.timer.getTime()
+			while love.timer.getTime() < time + DELAY_SECONDS do
+				coroutine.yield()
+			end
+
 			local stage = self.game:getStage()
 			stage:movePeep(self.peep, map, anchor)
 		end

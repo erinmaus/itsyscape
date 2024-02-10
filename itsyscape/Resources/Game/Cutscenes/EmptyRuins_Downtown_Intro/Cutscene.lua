@@ -51,5 +51,7 @@ return Sequence {
 		Camera:shake(1.5),
 		Map:poke("cutsceneKill", YendorianMast:getPeep()),
 		YendorianMast:wait(1.5)
-	}
+	},
+
+	Player:move("@Intro_Realm?mute=1", "Anchor_Spawn")
 }
