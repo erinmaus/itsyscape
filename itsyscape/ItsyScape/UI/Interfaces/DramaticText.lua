@@ -36,15 +36,16 @@ function DramaticText:new(id, index, ui)
 			fontSize = line.fontSize / DramaticText.CANVAS_HEIGHT * h,
 			textShadow = line.textShadow,
 			align = line.align,
-			width = (line.width or 0) / DramaticText.CANVAS_WIDTH * w
+			width = line.width and (line.width / DramaticText.CANVAS_WIDTH * w) or w
 		}, ui:getResources())
 		label:setStyle(labelStyle)
 		label:setSize(
-			(line.width or 0) / DramaticText.CANVAS_WIDTH * w,
-			(line.height or 0) / DramaticText.CANVAS_HEIGHT * h)
+			line.width and (line.width / DramaticText.CANVAS_WIDTH * w) or w,
+			line.height and (line.height / DramaticText.CANVAS_HEIGHT * h) or h)
 		label:setPosition(
-			(line.x or 0) / DramaticText.CANVAS_WIDTH * w,
-			(line.y or 0) / DramaticText.CANVAS_HEIGHT * h)
+			line.x and (line.x / DramaticText.CANVAS_WIDTH * w) or 0,
+			line.y and (line.y / DramaticText.CANVAS_HEIGHT * h) or (h / 2))
+
 		label:setText(line.text)
 
 		self:addChild(label)
@@ -59,13 +60,27 @@ end
 function DramaticText:update(delta)
 	Interface.update(self, delta)
 
-	self.time = (self.time or 0) + delta
-	local mu = math.min(self.time / DramaticText.FADE_IN_DURATION, 1)
-	local alpha = Tween.sineEaseOut(mu)
-	for i = 1, #self.styles do
-		local style = self.styles[i]
-		local color = style.color
-		style.color = Color(color.r, color.g, color.b, alpha)
+	local state = self:getState()
+	if state.maxDuration ~= math.huge then
+		local fadeInDuration = math.min(state.maxDuration / 2, DramaticText.FADE_IN_DURATION)
+
+		self.time = (self.time or 0) + delta
+
+		local mu
+		if self.time <= fadeInDuration then
+			mu = math.min(self.time / fadeInDuration, 1)
+		elseif self.time >= state.maxDuration - fadeInDuration then
+			mu = math.min(self.time - (state.maxDuration - fadeInDuration) / fadeInDuration, 1)
+		else
+			mu = 1
+		end
+
+		local alpha = Tween.sineEaseOut(mu)
+		for i = 1, #self.styles do
+			local style = self.styles[i]
+			local color = style.color
+			style.color = Color(color.r, color.g, color.b, alpha)
+		end
 	end
 end
 

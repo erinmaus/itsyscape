@@ -39,6 +39,21 @@ function CutsceneEntity:move(map, anchor)
 	end
 end
 
+function CutsceneEntity:narrate(narration, caption, duration)
+	if self.peep:hasBehavior(PlayerBehavior) then
+		return function()
+			Utility.UI.openInterface(
+				self.peep,
+				"DramaticText",
+				false,
+				{ caption }, duration)
+		end
+	else
+		Log.warn("Cannot narrate for peep '%s'; not a player!", self.peep:getName())
+		return function() end
+	end
+end
+
 function CutsceneEntity:getPeep()
 	return self.peep
 end
