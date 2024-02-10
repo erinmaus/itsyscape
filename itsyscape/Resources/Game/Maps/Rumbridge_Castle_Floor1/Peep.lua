@@ -17,6 +17,8 @@ local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 
 local Castle = Class(Map)
 
+Castle.CUTSCENE_INTRO = "intro"
+
 function Castle:new(resource, name, ...)
 	Map.new(self, resource, name or 'Rumbridge_Castle_Floor1', ...)
 
@@ -30,6 +32,10 @@ function Castle:onLoad(filename, args, layer)
 
 	local offset = self:getBehavior(MapOffsetBehavior)
 	offset.offset = Vector(0, 8.1, 0)
+
+	if args.cutscene then
+		self:silence('playerEnter', Map.showPlayerMapInfo)
+	end
 
 	self:initGuards()
 end
@@ -60,7 +66,15 @@ function Castle:incrementSuperSupperSaboteurDialogTick()
 end
 
 function Castle:onPlayerEnter(player)
-	self:initSuperSupperSaboteurInstance(player)
+	local args = self:getArguments()
+
+	if args.cutscene then
+		if args.cutscene == Castle.CUTSCENE_INTRO then
+			self:initIntroCutscene(player)
+		end
+	else
+		self:initSuperSupperSaboteurInstance(player)
+	end
 end
 
 function Castle:initSuperSupperSaboteurInstance(player)
@@ -145,6 +159,21 @@ function Castle:playSuperSupperSaboteurCutscene(player)
 		local stage = playerPeep:getDirector():getGameInstance():getStage()
 		stage:movePeep(playerPeep, "Rumbridge_Castle_Floor1", Utility.Peep.getPosition(playerPeep))
 	end)
+end
+
+function Castle:initIntroCutscene(player)
+	local peep = player:getActor():getPeep()
+
+	Utility.spawnMapObjectAtAnchor(self, "EarlReddick", "Anchor_EarlReddick")
+	Utility.spawnMapObjectAtAnchor(self, "Kvre", "Anchor_EarlReddick_Left")
+	Utility.spawnMapObjectAtAnchor(self, "Isabelle", "Anchor_EarlReddick_Right")
+
+	self:pushPoke("playIntroCutscene", peep)
+end
+
+function Castle:onPlayIntroCutscene(peep)
+	Utility.UI.closeAll(peep, nil, { "CutsceneTransition" })
+	Utility.Map.playCutscene(self, "Rumbridge_Castle_Floor1_Intro", "StandardCutscene", peep)
 end
 
 return Castle
