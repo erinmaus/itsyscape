@@ -202,7 +202,7 @@ function Utility.spawnActorAtAnchor(peep, resource, anchor, radius)
 end
 
 function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
-	radius = radius or 1
+	radius = radius or 0
 
 	if type(mapObject) == 'string' then
 		local m = mapObject
@@ -234,9 +234,9 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 		local position = actorPeep:getBehavior(PositionBehavior)
 		if position then
 			position.position = Vector(
-				x + ((math.random() * 2) - 1) * radius,
+				x + ((love.math.random() * 2) - 1) * radius,
 				y, 
-				z + ((math.random() * 2) - 1) * radius)
+				z + ((love.math.random() * 2) - 1) * radius)
 		end
 
 		actorPeep:poke('spawnedByPeep', { peep = peep })
@@ -902,7 +902,14 @@ function Utility.UI.openGroup(peep, group)
 	end
 end
 
-function Utility.UI.closeAll(peep, id)
+function Utility.UI.closeAll(peep, id, exceptions)
+	local e = {}
+	if exceptions then
+		for _, exception in ipairs(exceptions) do
+			e[exception] = true
+		end
+	end
+
 	local ui = peep:getDirector():getGameInstance():getUI()
 
 	local interfaces = {}
@@ -913,7 +920,9 @@ function Utility.UI.closeAll(peep, id)
 	end
 
 	for i = 1, #interfaces do
-		ui:close(interfaces[i].id, interfaces[i].index)
+		if not e[interfaces[i].id] then
+			ui:close(interfaces[i].id, interfaces[i].index)
+		end
 	end
 end
 
@@ -1954,7 +1963,7 @@ function Utility.Peep.getPosition(peep)
 	end
 end
 
-function Utility.Peep.setPosition(peep, position)
+function Utility.Peep.setPosition(peep, position, lerp)
 	local p = peep:getBehavior(PositionBehavior)
 	if p then
 		p.position = position
@@ -1962,10 +1971,12 @@ function Utility.Peep.setPosition(peep, position)
 		Log.warn("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
 	end
 
-	local actor = peep:getBehavior(ActorReferenceBehavior)
-	actor = actor and actor.actor
-	if actor then
-		actor:onTeleport(position)
+	if not lerp then
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+		if actor then
+			actor:onTeleport(position)
+		end
 	end
 end
 
@@ -3146,8 +3157,8 @@ Utility.Peep.Mashina = {}
 function Utility.Peep.Mashina:onReady(director)
 	local function setMashinaStates(records)
 		if #records > 0 then
-			local s, m = self:addBehavior(MashinaBehavior)
-			if s then
+			local m = self:getBehavior(MashinaBehavior)
+			if m then
 				for i = 1, #records do
 					local record = records[i]
 					local state = record:get("State")

@@ -11,44 +11,60 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Probe = require "ItsyScape.Peep.Probe"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 
 local Downtown = Class(Map)
-Downtown.SISTINE_LOCATION = Vector(0, 0, -128)
+Downtown.SISTINE_LOCATION = Vector(0, 4, -97)
 
-Downtown.NUM_SKIRMISHES = 10
+Downtown.SKIRMISHES = {
+	["Anchor_SkirmishBallista"] = {
+		yendorian = "Yendorian_Ballista",
+		soldiers = {
+			"PrestigiousAncientSkeleton",
+			"PrestigiousAncientSkeleton",
+			"Tinkerer"
+		}
+	},
 
-Downtown.MIN_EMPTY_KING_SOLDIERS = 1
-Downtown.MAX_EMPTY_KING_SOLDIERS = 4
+	["Anchor_SkirmishSwordfish"] = {
+		yendorian = "Yendorian_Swordfish",
+		soldiers = {
+			"PrestigiousMummy",
+			"GoryMass",
+			"Tinkerer"
+		}
+	},
 
-Downtown.EMPTY_KING_SOLDIERS = {
-	"Tinkerer",
-	"Tinkerer",
-	"GoryMass",
-	"PrestigiousAncientSkeleton",
-	"PrestigiousAncientSkeleton",
-	"PrestigiousMummy",
-	"PrestigiousMummy"
+	["Anchor_SkirmishMast"] = {
+		yendorian = "Yendorian_Mast",
+		soldiers = {
+			"GoryMass",
+			"Tinkerer",
+			"Tinkerer"
+		}
+	}
 }
 
-Downtown.YENDORIAN_SOLDIERS = {
-	"Yendorian_Ballista",
-	"Yendorian_Mast",
-	"Yendorian_Swordfish"
-}
+Downtown.SKIRMISH_DISTANCE = 2.5
 
 function Downtown:new(resource, name, ...)
-	Map.new(self, resource, name or 'EmptyRuins_Downtown', ...)
+	Map.new(self, resource, name or "EmptyRuins_Downtown", ...)
+
+	self.cutsceneState = {}
 end
 
 function Downtown:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
 	local stage = self:getDirector():getGameInstance():getStage()
-	stage:forecast(layer, 'EmptyRuins_Downtown_Bubbles', 'Fungal', {
+	stage:forecast(layer, "EmptyRuins_Downtown_Bubbles", "Fungal", {
 		gravity = { 0, 3, 0 },
 		wind = { 0, 0, 0 },
 		colors = {
@@ -72,13 +88,23 @@ function Downtown:onLoad(filename, args, layer)
 end
 
 function Downtown:onPlayerEnter(player)
-	self:prepareDebugCutscene(player:getActor():getPeep())
+	local playerPeep = player:getActor():getPeep()
+	self:prepareDebugCutscene(playerPeep)
+
+	local args = self:getArguments() or {}
+	if args.cutscene then
+		self:pushPoke("prepareCutscene", playerPeep)
+	end
+end
+
+function Downtown:onPlayerLeave(player)
+	self.cutsceneState[player:getActor():getPeep()] = nil
 end
 
 function Downtown:prepareDebugCutscene(player)
 	local function actionCallback(action)
 		if action == "pressed" then
-			self:pushPoke('startWar', player)
+			self:pushPoke("prepareCutscene", player)
 		end
 	end
 
@@ -93,50 +119,128 @@ function Downtown:prepareDebugCutscene(player)
 		"DEBUG_TRIGGER_1", actionCallback, openCallback)
 end
 
-function Downtown:onStartWar(player)
-	local map = self:getDirector():getMap(self:getLayer())
-	if not map then
+function Downtown:onPrepareCutscene(player)
+	if not self.cutsceneState[player] then
+		self:prepareDowntownCutscene(player)
+		self:prepareSistineCutscene(player)
+	end
+
+	self:pushPoke("playSistineCutscene", player, "EmptyRuins_SistineOfTheSimulacrum_Outside_Intro")
+end
+
+function Downtown:prepareDowntownCutscene(player)
+	local state = {}
+
+	local map = Utility.Peep.getMap(self)
+	local mapResource = Utility.Peep.getMapResource(self)
+
+	for anchor, info in pairs(self.SKIRMISHES) do
+		local skirmish = { soldiers = {} }
+
+		local yendorian = Utility.spawnMapObjectAtAnchor(self, info.yendorian, anchor)
+		yendorian = yendorian and yendorian:getPeep()
+		skirmish.yendorian = yendorian
+		if yendorian then
+			yendorian:removeBehavior(MashinaBehavior)
+		end
+
+		local position = Vector(Utility.Map.getAnchorPosition(self:getDirector():getGameInstance(), mapResource, anchor))
+		for index, soldierMapObjectName in ipairs(info.soldiers) do
+			local angle = index / #info.soldiers * math.pi * 2
+
+			local x = math.cos(angle) * self.SKIRMISH_DISTANCE + position.x
+			local z = math.sin(angle) * self.SKIRMISH_DISTANCE + position.z
+			local y = map:getInterpolatedHeight(x, z)
+
+			local soldier = Utility.spawnMapObjectAtPosition(self, soldierMapObjectName, x, y, z)
+			soldier = soldier and soldier:getPeep()
+
+			if soldier then
+				soldier:removeBehavior(MashinaBehavior)
+				table.insert(skirmish.soldiers, soldier)
+			end
+		end
+
+		table.insert(state, skirmish)
+	end
+
+	self.cutsceneState[player] = state
+end
+
+function Downtown:prepareSistineCutscene()
+	local instance = Utility.Peep.getInstance(self)
+	local sistineMapScript = instance:getMapScriptByMapFilename("EmptyRuins_SistineOfTheSimulacrum_Outside")
+
+	if not sistineMapScript then
 		return
 	end
 
-	local rng = love.math.newRandomGenerator()
+	Utility.spawnMapObjectAtPosition(sistineMapScript, "CameraDolly", 0, 0, 0)
+	Utility.spawnMapObjectAtAnchor(sistineMapScript, "TheEmptyKing", "Anchor_TheEmptyKing")
+	Utility.spawnMapObjectAtAnchor(sistineMapScript, "Gottskrieg", "Anchor_Gottskrieg")
+	Utility.spawnMapObjectAtAnchor(sistineMapScript, "Yendor", "Anchor_Yendor")
+end
 
-	for _ = 1, self.NUM_SKIRMISHES do
-		local i, j = Utility.Map.getRandomTile(map, 1, 1, math.huge, false, rng, { 'impassable', 'blocking', 'door', 'building' })
-		if not (i and j) then
-			break
-		end
+function Downtown:onPlayDowntownCutscene(peep, cutscene)
+	Utility.UI.closeAll(peep, nil, { "CutsceneTransition" })
 
-		local position = map:getTileCenter(i, j)
-		local yendorianActor = Utility.spawnActorAtPosition(
-			self,
-			self.YENDORIAN_SOLDIERS[rng:random(#self.YENDORIAN_SOLDIERS)],
-			position:get())
+	local cutscene = Utility.Map.playCutscene(self, cutscene, "StandardCutscene")
+	cutscene:listen("done", self.onFinishCutscene, self, peep)
+end
 
-		map:getTile(i, j):setRuntimeFlag("blocking")
+function Downtown:onPlaySistineCutscene(peep, cutscene)
+	local instance = Utility.Peep.getInstance(self)
+	local sistineMapScript = instance:getMapScriptByMapFilename("EmptyRuins_SistineOfTheSimulacrum_Outside")
 
-		for k = 1, love.math.random(self.MIN_EMPTY_KING_SOLDIERS, self.MAX_EMPTY_KING_SOLDIERS) do
-			local soldierI, soldierJ = Utility.Map.getRandomTile(map, i, j, 3, true, rng)
-			if not soldierI and soldierJ then
-				break
+	if not sistineMapScript then
+		return
+	end
+
+	Utility.UI.closeAll(peep, nil, { "CutsceneTransition" })
+
+	Utility.Map.playCutscene(sistineMapScript, cutscene, "StandardCutscene")
+end
+
+function Downtown:onCutsceneAttack(peep)
+	for _, state in pairs(self.cutsceneState) do
+		for _, skirmish in ipairs(state) do
+			if skirmish.yendorian == peep then
+				for _, soldier in ipairs(skirmish.soldiers) do
+					Utility.Peep.attack(soldier, skirmish.yendorian)
+				end
+
+				Utility.Peep.attack(skirmish.yendorian, skirmish.soldiers[#skirmish.soldiers])
 			end
-
-			local soldierActor = Utility.spawnActorAtPosition(
-				self,
-				self.EMPTY_KING_SOLDIERS[rng:random(#self.EMPTY_KING_SOLDIERS)],
-				position:get())
-
-			self:pushPoke(love.math.random() * 5, "engageSoldiers", soldierActor:getPeep(), yendorianActor:getPeep())
 		end
 	end
 end
 
-function Downtown:onEngageSoldiers(a, b)
-	if a:getIsReady() and b:getIsReady() then
-		Utility.Peep.attack(a, b)
-	else
-		self:pushPoke(love.math.random() * 5, "engageSoldiers", a, b)
+function Downtown:onCutsceneKill(peep)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	local hits = self:getDirector():probe(
+		self:getLayerName(),
+		function(p)
+			local target = p:getBehavior(CombatTargetBehavior)
+			return target and target.actor == actor
+		end)
+
+	table.insert(hits, peep)
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	for _, hit in ipairs(hits) do
+		hit:poke("hit", AttackPoke({ damage = love.math.random(5000, 10000) }))
+		stage:fireProjectile("SnipeSplosion", Vector.ZERO, hit)
 	end
+end
+
+function Downtown:onFinishCutscene(player)
+	Utility.UI.openGroup(
+		player,
+		Utility.UI.Groups.WORLD)
+
+	self:prepareDebugCutscene(player)
 end
 
 return Downtown
