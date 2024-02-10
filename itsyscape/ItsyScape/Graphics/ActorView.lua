@@ -448,7 +448,7 @@ function ActorView:_doApplySkin(slotNodes)
 					slot.lights = {}
 
 					for i = 1, #lights do
-						local inputLight = lights[i]
+						local inputLight = lights[i].light
 						local outputLight
 
 						if inputLight:isPoint() then
@@ -465,7 +465,10 @@ function ActorView:_doApplySkin(slotNodes)
 						if outputLight then
 							outputLight:fromLight(inputLight)
 							outputLight:setParent(slot.sceneNode)
-							table.insert(slot.lights, outputLight)
+							table.insert(slot.lights, {
+								sceneNode = outputLight,
+								info = lights[i].info
+							})
 						end
 					end
 				end
@@ -796,6 +799,16 @@ function ActorView:updateAnimations(delta)
 					if p.attach then
 						local localPosition = self:getLocalBonePosition(p.attach)
 						p.sceneNode:updateLocalPosition(localPosition)
+					end
+				end
+			end
+
+			if slotNodes[i].lights then
+				for j = 1, #slotNodes[i].lights do
+					local l = slotNodes[i].lights[j]
+					if l.info.attach then
+						local localPosition = self:getLocalBonePosition(l.info.attach, Vector(unpack(l.info.position or {})))
+						l.sceneNode:getTransform():setLocalTranslation(localPosition)
 					end
 				end
 			end

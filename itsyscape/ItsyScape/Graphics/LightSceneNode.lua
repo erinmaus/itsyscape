@@ -69,7 +69,7 @@ function LightSceneNode:toLight(delta)
 end
 
 function LightSceneNode:fromLight(light)
-	self.color = light:getColor()
+	self:setColor(light:getColor())
 
 	local transform = self:getTransform()
 	transform:setLocalTranslation(light:getPosition())

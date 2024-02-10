@@ -169,7 +169,10 @@ function ModelSkin:loadFromFile(filename)
 			end
 
 			if isLight then
-				table.insert(self.lights, outputLight)
+				table.insert(self.lights, {
+					info = inputLight,
+					light = outputLight
+				})
 			end
 		end
 	end
