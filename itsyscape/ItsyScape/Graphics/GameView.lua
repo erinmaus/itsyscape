@@ -516,10 +516,18 @@ function GameView:updateMap(map, layer)
 		end
 
 		if map then
-			if type(map) == 'string' and m.filename ~= map then
-				m.filename = map
-				map = Map.loadFromFile(map)
+			if type(map) == 'string' then
+				if m.filename ~= map then
+					m.filename = map
+					map = Map.loadFromFile(map)
+				else
+					map = m.map
+				end
+			else
+				m.filename = nil
+			end
 
+			if m.map ~= map then
 				m.map = map
 				if m.islandProcessor then
 					m.islandProcessor = MapMeshIslandProcessor(m.map, m.tileSet)
