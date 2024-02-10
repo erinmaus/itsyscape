@@ -38,6 +38,18 @@ function CutsceneCamera:zoom(distance, duration)
 	end
 end
 
+function CutsceneCamera:relativeVerticalRotate(angle, duration)
+	return function()
+		self.player:pokeCamera("verticalRotate", -math.pi / 2 + angle, duration or 0)
+	end
+end
+
+function CutsceneCamera:relativeHorizontalRotate(angle, duration)
+	return function()
+		self.player:pokeCamera("horizontalRotate", -math.pi / 6 + angle, duration or 0)
+	end
+end
+
 function CutsceneCamera:verticalRotate(angle, duration)
 	return function()
 		self.player:pokeCamera("verticalRotate", angle, duration or 0)

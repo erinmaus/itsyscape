@@ -14,8 +14,8 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
-local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
@@ -27,8 +27,27 @@ function CutsceneEntity:new(peep)
 	self.game = peep:getDirector():getGameInstance()
 end
 
+function CutsceneEntity:move(map, anchor)
+	if self.peep:hasBehavior(PlayerBehavior) then
+		return function()
+			local stage = self.game:getStage()
+			stage:movePeep(self.peep, map, anchor)
+		end
+	else
+		Log.warn("Cannot move peep '%s'; not a player!", self.peep:getName())
+		return function() end
+	end
+end
+
 function CutsceneEntity:getPeep()
 	return self.peep
+end
+
+function CutsceneEntity:castSpell(target, spell)
+	return function()
+		local spell = Utility.Magic.newSpell(spell, self.peep:getDirector():getGameInstance())
+		spell:cast(self.peep, target:getPeep())
+	end
 end
 
 function CutsceneEntity:fireProjectile(target, projectile)
@@ -179,13 +198,6 @@ function CutsceneEntity:teleport(anchor)
 		local mapResource = Utility.Peep.getMapResource(self.peep)
 		local anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 		Utility.Peep.setPosition(self.peep, anchorPosition)
-
-		local actor = self.peep:getBehavior(ActorReferenceBehavior)
-		actor = actor and actor.actor
-
-		if actor then
-			actor:onTeleport(anchorPosition)
-		end
 	end
 end
 
@@ -233,7 +245,7 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 
 				local delta = currentTime / duration
 				local newPosition = peepPosition:lerp(anchorPosition, tween(delta))
-				Utility.Peep.setPosition(self.peep, newPosition)
+				Utility.Peep.setPosition(self.peep, newPosition, true)
 
 				coroutine.yield()
 			until currentTime > duration
@@ -241,7 +253,7 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 			local distance
 			repeat
 				local newPosition = Utility.Peep.getPosition(self.peep):lerp(anchorPosition, self.game:getDelta())
-				Utility.Peep.setPosition(self.peep, newPosition)
+				Utility.Peep.setPosition(self.peep, newPosition, true)
 				distance = (anchorPosition - newPosition):getLength()
 				coroutine.yield()
 			until distance <= E
@@ -345,6 +357,16 @@ function CutsceneEntity:playAnimation(animation, slot, priority, force, time, re
 	end
 end
 
+function CutsceneEntity:stopAnimation(slot)
+	return function()
+		local actor = self.peep:getBehavior(ActorReferenceBehavior)
+		if actor and actor.actor then
+			actor.actor:playAnimation(slot)
+		end
+	end
+end
+
+
 function CutsceneEntity:talk(message, duration)
 	duration = duration or #message / 8
 	return function()
@@ -368,7 +390,13 @@ function CutsceneEntity:damage(min, max, damageType)
 	end
 
 	return function()
-		local damage = love.math.random(min, max)
+		local damage
+		if min == math.huge or max == math.huge then
+			damage = math.huge
+		else
+			damage = love.math.random(min, max)
+		end
+
 		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
 			if not damageType then
