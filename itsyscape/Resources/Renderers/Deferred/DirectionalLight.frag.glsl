@@ -11,6 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 uniform Image scape_NormalSpecularTexture;
+uniform Image scape_ColorTexture;
 
 uniform vec3 scape_LightDirection;
 uniform vec3 scape_LightColor;
@@ -25,6 +26,6 @@ vec4 effect(
 	float lightDotSurface = max(dot(scape_LightDirection, normal), 0.0);
 
 	vec3 result = lightDotSurface * scape_LightColor;
-
-	return vec4(result, 1.0);
+	float alpha = Texel(scape_ColorTexture, textureCoordinate).a;
+	return vec4(result, alpha);
 }
