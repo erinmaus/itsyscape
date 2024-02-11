@@ -18,7 +18,7 @@ function DramaticTextController:new(peep, director, lines, duration)
 	Controller.new(self, peep, director)
 
 	duration = duration or math.huge
-	self.state = { lines = lines, maxDuration = duration }
+	self.state = { lines = lines, maxDuration = duration, time = love.timer.getTime() }
 end
 
 function DramaticTextController:poke(actionID, actionIndex, e)

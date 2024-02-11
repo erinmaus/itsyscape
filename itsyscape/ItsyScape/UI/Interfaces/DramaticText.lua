@@ -74,6 +74,8 @@ function DramaticText:new(id, index, ui)
 		table.insert(self.panelStyles, panelStyle)
 	end
 
+	self.time = -(state.time - math.floor(state.time))
+
 	self:setZDepth(10000)
 end
 
@@ -88,16 +90,18 @@ function DramaticText:update(delta)
 	if state.maxDuration ~= math.huge then
 		local fadeInDuration = math.min(state.maxDuration / 2, DramaticText.FADE_IN_DURATION)
 
-		self.time = (self.time or 0) + delta
+		self.time = self.time + delta
 
 		local mu
-		if self.time >= state.maxDuration then
+		if self.time < 0 then
+			mu = 0
+		elseif self.time >= state.maxDuration then
 			mu = 0
 			self:sendPoke("close", nil, {})
 		elseif self.time <= fadeInDuration then
 			mu = math.min(self.time / fadeInDuration, 1)
 		elseif self.time >= state.maxDuration - fadeInDuration then
-			mu = 1 - math.min(self.time - (state.maxDuration - fadeInDuration) / fadeInDuration, 1)
+			mu = 1 - math.min((self.time - (state.maxDuration - fadeInDuration)) / fadeInDuration, 1)
 		else
 			mu = 1
 		end
