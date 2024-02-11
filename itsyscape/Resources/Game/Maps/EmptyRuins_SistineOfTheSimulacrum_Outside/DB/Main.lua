@@ -17,6 +17,35 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+M["Light_SistineDoor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 8,
+		PositionZ = 83,
+		Name = "Light_SistineDoor",
+		Map = M._MAP,
+		Resource = M["Light_SistineDoor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PointLight_Default",
+		MapObject = M["Light_SistineDoor"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["Light_SistineDoor"]
+	}
+
+	ItsyScape.Meta.PointLight {
+		Attenuation = 32,
+		Resource = M["Light_SistineDoor"]
+	}
+end
+
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

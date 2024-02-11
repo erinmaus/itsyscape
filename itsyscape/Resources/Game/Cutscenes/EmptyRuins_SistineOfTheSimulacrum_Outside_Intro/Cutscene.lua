@@ -49,22 +49,22 @@ local WAKE2 = {
 }
 
 local NarrationSequence = Sequence {
-	Player:narrate("", RITUAL1, 7),
+	Player:narrate("", RITUAL1, 10),
 	Player:wait(3),
 
-	Player:narrate("", RITUAL2, 4),
-	Player:wait(4),
+	Player:narrate("", RITUAL2, 7),
+	Player:wait(7),
 
-	Player:narrate("", WAKE1, 7),
+	Player:narrate("", WAKE1, 10),
 	Player:wait(3),
 
-	Player:narrate("", WAKE2, 4),
-	Player:wait(4)
+	Player:narrate("", WAKE2, 7),
+	Player:wait(7),
 }
 
 local FightSequence = Sequence {
-	Camera:zoom(15),
-	Camera:translate(Vector(0, 2, 0)),
+	Camera:zoom(20),
+	Camera:translate(Vector(0, 4, 0)),
 	Camera:horizontalRotate(0),
 
 	TheEmptyKing:playAnimation("TheEmptyKing_FullyRealized_SummonWeapon_Magic", "idle", 500),
@@ -77,7 +77,7 @@ local FightSequence = Sequence {
 	Sequence {
 		Camera:target(CameraDolly),
 		CameraDolly:teleport("Anchor_Gottskrieg"),
-		CameraDolly:wait(1),
+		CameraDolly:wait(2),
 
 		Gottskrieg:fireProjectile(TheEmptyKing, "TheEmptyKing_FullyRealized_SummonStaff"),
 		CameraDolly:lerpPosition("Anchor_TheEmptyKing", 1.5),
@@ -85,11 +85,16 @@ local FightSequence = Sequence {
 		Camera:translate(Vector(0, 6, 0), 1.5),
 		Camera:zoom(30, 1.5),
 		Camera:relativeVerticalRotate(0, 1.5),
-		Camera:relativeHorizontalRotate(-math.pi / 16, 1.5),
-		CameraDolly:wait(1.5)
-	},
+		Camera:relativeHorizontalRotate(0, 1.5),
+		CameraDolly:wait(1.5),
 
-	TheEmptyKing:playAnimation("TheEmptyKing_FullyRealized_Idle_Magic", "idle", 500),
+		TheEmptyKing:playAnimation("TheEmptyKing_FullyRealized_Idle_Magic", "idle", 500),
+
+		TheEmptyKing:playAnimation("TheEmptyKing_FullyRealized_Attack_Magic2", "x-attack"),
+		TheEmptyKing:fireProjectile(Vector.ZERO, "TheEmptyKing_FullyRealized_Staff"),
+		TheEmptyKing:fireProjectile(Yendor, "FireBlast"),
+		TheEmptyKing:wait(1.5)
+	},
 
 	Sequence {
 		TheEmptyKing:lookAt(Yendor),
@@ -101,16 +106,16 @@ local FightSequence = Sequence {
 		Yendor:playAnimation("Yendor_Attack_Magic", "x-attack"),
 
 		Camera:zoom(50, 1.5),
-		Camera:relativeVerticalRotate(math.pi / 4, 1.5),
-		TheEmptyKing:wait(2.5),
+		Camera:translate(Vector(0, 6, 16), 1.5),
+		Camera:relativeVerticalRotate(math.pi / 16, 1.5),
+		TheEmptyKing:wait(3.5),
 
 		TheEmptyKing:playAnimation("TheEmptyKing_FullyRealized_Attack_Magic2", "x-attack"),
 		TheEmptyKing:fireProjectile(Vector.ZERO, "TheEmptyKing_FullyRealized_Staff"),
 		TheEmptyKing:fireProjectile(Yendor, "FireBlast"),
 
 		Yendor:playAnimation("Yendor_Attack_Magic", "x-attack"),
-
-		TheEmptyKing:wait(2.5),
+		TheEmptyKing:wait(3.5),
 
 		Camera:zoom(20),
 		Camera:translate(Vector(0, 8, 0)),
@@ -126,7 +131,7 @@ local FightSequence = Sequence {
 
 		Camera:target(Yendor),
 		Camera:zoom(75),
-		Camera:relativeVerticalRotate(math.pi / 4),
+		Camera:relativeVerticalRotate(math.pi / 16),
 		Camera:relativeHorizontalRotate(0),
 
 		TheEmptyKing:playAnimation("TheEmptyKing_FullyRealized_Attack_Magic1", "x-attack"),
@@ -134,9 +139,9 @@ local FightSequence = Sequence {
 		TheEmptyKing:fireProjectile(Yendor, "FireBlast"),
 
 		Yendor:wait(2),
-		Camera:shake(1.5),
+		Camera:shake(3.5),
 		Yendor:playAnimation("Yendor_Die"),
-		Yendor:wait(2),
+		Yendor:wait(3.5),
 	}
 }
 

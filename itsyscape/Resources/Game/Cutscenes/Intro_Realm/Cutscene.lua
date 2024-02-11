@@ -48,60 +48,57 @@ local PEACE4 = {
 	text = "with the all-knowing, all-powerful Empty King at the throne."
 }
 
+local NarrationSequence = Sequence {
+	Player:narrate("", PEACE1, 10),
+	Player:wait(5),
+
+	Player:narrate("", PEACE2, 5),
+	Player:wait(5),
+
+	Player:narrate("", PEACE3, 10),
+	Player:wait(5),
+
+	Player:narrate("", PEACE4, 5),
+	Player:wait(5),
+}
+
+local MapSequence = Sequence {
+	Sequence {
+		Map:poke("show", "Rumbridge_Town_Center"),
+
+		Map:wait(8),
+
+		Map:poke("hide", "Rumbridge_Town_Center"),
+	},
+
+	Sequence {
+		Map:poke("show", "EmptyRuins_DragonValley_Ginsville"),
+
+		Map:wait(8),
+
+		Map:poke("hide", "EmptyRuins_DragonValley_Ginsville"),
+	},
+
+	Sequence {
+		Map:poke("show", "ViziersRock_Town_Center"),
+
+		Map:wait(8)
+	}
+}
+
 return Sequence {
-	Camera:zoom(50),
-	Camera:target(CameraDolly),
-
-	CameraDolly:teleport("Anchor_Pan1"),
-
 	Parallel {
-		CameraDolly:lerpPosition("Anchor_Pan2", 12),
-		
 		Sequence {
-			Player:narrate("", PEACE1, 6),
+			Camera:zoom(50),
+			Camera:target(CameraDolly),
 
-			Sequence {
-				Map:poke("show", "IsabelleIsland_Tower_Floor5"),
-				Map:poke("show", "IsabelleIsland_Tower_Floor4"),
-				Map:poke("show", "IsabelleIsland_Tower_Floor3"),
-				Map:poke("show", "IsabelleIsland_Tower_Floor2"),
-				Map:poke("show", "IsabelleIsland_Tower"),
+			CameraDolly:teleport("Anchor_Pan1"),
 
-				Map:wait(3),
+			Parallel {
+				Camera:translate(Vector(32, 0, -32), 32),
 
-				Map:poke("hide", "IsabelleIsland_Tower_Floor5"),
-				Map:poke("hide", "IsabelleIsland_Tower_Floor4"),
-				Map:poke("hide", "IsabelleIsland_Tower_Floor3"),
-				Map:poke("hide", "IsabelleIsland_Tower_Floor2"),
-				Map:poke("hide", "IsabelleIsland_Tower"),
-			},
-
-			Player:narrate("", PEACE2, 3),
-
-			Sequence {
-				Map:poke("show", "Rumbridge_Town_Center"),
-
-				Map:wait(3),
-
-				Map:poke("hide", "Rumbridge_Town_Center"),
-			},
-
-			Player:narrate("", PEACE3, 6),
-
-			Sequence {
-				Map:poke("show", "EmptyRuins_DragonValley_Ginsville"),
-
-				Map:wait(3),
-
-				Map:poke("hide", "EmptyRuins_DragonValley_Ginsville"),
-			},
-
-			Player:narrate("", PEACE4, 3),
-
-			Sequence {
-				Map:poke("show", "ViziersRock_Town_Center"),
-
-				Map:wait(3)
+				NarrationSequence,
+				MapSequence
 			}
 		}
 	},

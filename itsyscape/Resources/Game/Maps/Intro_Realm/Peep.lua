@@ -15,7 +15,6 @@ local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local Intro = Class(Map)
 Intro.MAPS = {
-	"IsabelleIsland_Tower_Floor5",
 	"Rumbridge_Town_Center",
 	"ViziersRock_Town_Center",
 	"EmptyRuins_DragonValley_Ginsville"

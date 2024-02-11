@@ -26,28 +26,28 @@ function StandardCutsceneCameraController:new(...)
 	self.targetVerticalRotation = StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION
 	self.currentVerticalRotationTime = 1
 	self.targetVerticalRotationTime = 1
-	self.verticalRotationTween = 'expEaseOut'
+	self.verticalRotationTween = 'linear'
 
 	self.currentHorizontalRotation = StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION
 	self.previousHorizontalRotation = StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION
 	self.targetHorizontalRotation = StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION
 	self.currentHorizontalRotationTime = 1
 	self.targetHorizontalRotationTime = 1
-	self.horizontalRotationTween = 'expEaseOut'
+	self.horizontalRotationTween = 'linear'
 
 	self.currentZoom = StandardCutsceneCameraController.ZOOM
 	self.previousZoom = StandardCutsceneCameraController.ZOOM
 	self.targetZoom = StandardCutsceneCameraController.ZOOM
 	self.currentZoomTime = 1
 	self.targetZoomTime = 1
-	self.zoomTween = 'sineEaseOut'
+	self.zoomTween = 'linear'
 
 	self.currentTranslation = StandardCutsceneCameraController.TRANSLATION
 	self.previousTranslation = StandardCutsceneCameraController.TRANSLATION
 	self.targetTranslation = StandardCutsceneCameraController.TRANSLATION
 	self.currentTranslationTime = 1
 	self.targetTranslationTime = 1
-	self.translationTween = 'expEaseOut'
+	self.translationTween = 'linear'
 
 	self:trySetTargetActor()
 end
