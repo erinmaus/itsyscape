@@ -23,6 +23,7 @@ Sail.DIRECTION = B.Reference()
 Sail.TARGET = B.Reference()
 Sail.OFFSET = B.Reference()
 Sail.DISTANCE = B.Reference()
+Sail.FLANK = B.Reference()
 
 function Sail:update(mashina, state, executor)
 	local director = mashina:getDirector()
@@ -31,6 +32,7 @@ function Sail:update(mashina, state, executor)
 	local target = state[self.TARGET]
 	local relativeOffset = state[self.OFFSET]
 	local direction = state[self.DIRECTION]
+	local flank = state[self.FLANK]
 
 	local ship = mashina:getBehavior(ShipCaptainBehavior)
 	ship = ship and ship.peep
@@ -57,23 +59,31 @@ function Sail:update(mashina, state, executor)
 	local currentPosition = Utility.Peep.getPosition(ship)
 	local distanceFromTarget = (currentPosition - targetPosition):getLengthSquared()
 
-	-- if mashina:getName():match("Raven") then
-	-- 	print(">>> relative offset", offset:get())
-	-- 	print(">>> offset", offset:get())
-	-- 	print(">>> position", position:get())
-	-- 	print(">>> targetPosition", targetPosition:get())
-	-- 	print(">>> distance", math.sqrt(distanceFromTarget))
-	-- 	print(">>> direction", -Sailing.getDirection(ship, targetPosition, 1))
-	-- end
+	local isFlanking
+	do
+		if flank then
+			if Class.isCompatibleType(target, Peep) and target:hasBehavior(ShipMovementBehavior) then
+				local selfNormal = Sailing.getShipDirectionNormal(ship)
+				local otherNormal = Sailing.getShipDirectionNormal(target)
 
-	if distanceFromTarget < distance * distance then
-		--print(">>> SUCCESS!", mashina:getName())
+				local angle = math.deg(math.acos(selfNormal:dot(otherNormal)))
+				if angle < 20 or angle > 160 then
+					isFlanking = true
+				else
+					isFlanking = false
+				end
+			end
+		else
+			isFlanking = true
+		end
+	end
+
+	if isFlanking and distanceFromTarget < distance * distance then
 		movement.isMoving = false
 		movement.steerDirection = 0
 
 		return B.Status.Success
 	else
-		--print(">>> NOT SUCCESS!", mashina:getName(), math.sqrt(distanceFromTarget), distance)
 		movement.isMoving = true
 		movement.steerDirection = -Sailing.getDirection(ship, targetPosition, 1)
 
