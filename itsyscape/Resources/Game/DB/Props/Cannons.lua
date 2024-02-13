@@ -49,6 +49,17 @@ ItsyScape.Meta.CannonAmmo {
 	Resource = ItsyScape.Resource.Item "IronCannonball"
 }
 
+ItsyScape.Meta.Item {
+	Weight = 0,
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "IronCannonball"
+}
+
+ItsyScape.Meta.Equipment {
+	StrengthSailing = ItsyScape.Utility.strengthBonusForWeapon(10),
+	Resource = ItsyScape.Resource.Item "IronCannonball"
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Iron cannonball",
 	Language = "en-US",
