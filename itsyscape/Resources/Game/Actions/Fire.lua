@@ -62,8 +62,6 @@ function Fire:perform(state, player, target, item)
 						Resource = itemResource
 					}
 
-					print(">>> ammo type", q.AmmoType)
-
 					local cannonballAmmo = gameDB:getRecord("CannonAmmo", q)
 
 					if cannonballAmmo then
@@ -198,6 +196,7 @@ function Fire:getFailureReason(state, player, target)
 
 	local cannonResource = Utility.Peep.getResource(target)
 	if cannonResource then
+		local gameDB = self:getGameDB()
 		local cannonMeta = gameDB:getRecord("Cannon", {
 			Resource = cannonResource
 		})

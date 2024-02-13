@@ -80,7 +80,7 @@ local Tree = BTreeBuilder.Node() {
 				Mashina.Sailing.Sail {
 					target = TARGET,
 					distance = DISTANCE,
-					offset = Vector(-24, 0, 0)
+					offset = Vector(24, 0, 0)
 				}
 			}
 		}

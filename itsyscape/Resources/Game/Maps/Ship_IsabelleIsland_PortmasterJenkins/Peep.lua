@@ -252,16 +252,6 @@ function Ship:initPirateEncounter()
 	Utility.spawnMapObjectAtAnchor(self, "Rosalind", "Anchor_Rosalind_Spawn")
 	Utility.spawnMapObjectAtAnchor(self, "Orlando", "Anchor_Orlando_Spawn")
 
-	do
-		local state = self.player:getState()
-		local FLAGS = { ["item-inventory"] = true }
-		state:give("Item", "RustyHelmet", 1, FLAGS)
-		state:give("Item", "RustyPlatebody",  1,FLAGS)
-		state:give("Item", "RustyGloves",  1,FLAGS)
-		state:give("Item", "RustyBoots",  1,FLAGS)
-		state:give("Item", "RustyDagger",  1,FLAGS)
-	end
-
 	-- self:pushPoke("openCharacterCustomization")
 	-- self.player:addBehavior(DisabledBehavior)
 	-- self.openedCharacterCustomization = false

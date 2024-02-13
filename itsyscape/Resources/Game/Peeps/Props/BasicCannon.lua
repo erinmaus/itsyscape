@@ -226,7 +226,10 @@ function BasicCannon:onFire(peep, item)
 				local layer = (ship:hasBehavior(PositionBehavior) and ship:getBehavior(PositionBehavior).layer) or Utility.Peep.getLayer(ship)
 				local y = Utility.Peep.getAbsolutePosition(self).y
 
-				stage:fireProjectile("CannonSplosion", self, closePoint + Vector.UNIT_Y * y, layer)
+				local hitPosition = closePoint + Vector.UNIT_Y * y
+				stage:fireProjectile("CannonSplosion", self, hitPosition, layer)
+
+				print(">>> hit", hitPosition:get())
 
 				local damageRoll = logic:rollDamage(peep, Weapon.PURPOSE_TOOL)
 				local damage = damageRoll:roll()

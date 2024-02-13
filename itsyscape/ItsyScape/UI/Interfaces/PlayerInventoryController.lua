@@ -198,6 +198,13 @@ function PlayerInventoryController:_tryUseItem(item, actions)
 			if itemResource and isIngredient then
 				performAction = true
 			end
+		elseif actions[i].instance:is("Fire") then
+			local itemResource = gameDB:getResource(item:getID(), "Item")
+			local isCannonAmmo = gameDB:getRecord("CannonAmmo", { Resource = itemResource })
+
+			if itemResource and isCannonAmmo then
+				performAction = true
+			end
 		else
 			local constraints = Utility.getActionConstraints(game, actions[i].instance:getAction())
 

@@ -65,6 +65,12 @@ function Ocean:onPlayerEnter(player)
 end
 
 function Ocean:onPlacePlayer(playerPeep, anchor, ship)
+	do
+		local state = playerPeep:getState()
+		local FLAGS = { ["item-inventory"] = true }
+		state:give("Item", "IronCannonball", 100, FLAGS)
+	end
+
 	local layer = ship:getLayer()
 	Utility.Peep.setLayer(playerPeep, layer)
 
