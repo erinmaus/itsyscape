@@ -344,7 +344,7 @@ function PlayerInventoryController:useItemOnProp(e)
 				Utility.Peep.getResource(prop:getPeep()),
 				actionID,
 				'world',
-				self:getPeep():getState(), self:getPeep(), prop:getPeep())
+				self:getPeep():getState(), self:getPeep(), prop:getPeep(), item)
 			or (
 				Utility.Peep.getMapObject(prop:getPeep()) and
 				Utility.performAction(
@@ -352,7 +352,7 @@ function PlayerInventoryController:useItemOnProp(e)
 					Utility.Peep.getMapObject(prop:getPeep()),
 					actionID,
 					'world',
-					self:getPeep():getState(), self:getPeep(), prop:getPeep())
+					self:getPeep():getState(), self:getPeep(), prop:getPeep(), item)
 				)
 		)
 
@@ -409,7 +409,7 @@ function PlayerInventoryController:useItemOnActor(e)
 				Utility.Peep.getResource(actor:getPeep()),
 				actionID,
 				'world',
-				self:getPeep():getState(), self:getPeep(), actor:getPeep())
+				self:getPeep():getState(), self:getPeep(), actor:getPeep(), item)
 			or (
 				Utility.Peep.getMapObject(actor:getPeep()) and
 				Utility.performAction(
@@ -417,7 +417,7 @@ function PlayerInventoryController:useItemOnActor(e)
 					Utility.Peep.getMapObject(actor:getPeep()),
 					actionID,
 					'world',
-					self:getPeep():getState(), self:getPeep(), actor:getPeep())
+					self:getPeep():getState(), self:getPeep(), actor:getPeep(), item)
 				)
 		)
 
