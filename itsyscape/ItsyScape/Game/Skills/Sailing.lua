@@ -36,17 +36,17 @@ function Sailing.setCrewMember(ship, peep)
 	crewMember.ship = ship
 end
 
-local function getDirection(a, b, c, bias)
+function Sailing.getDirectionFromPoints(a, b, c, bias)
 	local result = ((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x))
 
 	-- This bias prevents 'jittering' when result is close to zero.
 	-- Otherwise, the ship will jitter between +/-.
 	if result > 0 + (bias or 0) then
-		return 1
+		return 1, result
 	elseif result < 0 then
-		return -1
+		return -1, result
 	else
-		return 0
+		return 0, result
 	end
 end
 
@@ -60,37 +60,10 @@ function Sailing.getDirection(ship, targetPosition, bias)
 	end
 
 	local shipForward = rotation:transformVector(normal)
-	return getDirection(shipPosition, shipPosition + shipForward, targetPosition, bias)
+	return Sailing.getDirectionFromPoints(shipPosition, shipPosition + shipForward, targetPosition, bias)
 end
 
-function Sailing.getShipTarget(ship, target)
-	local position
-	if type(target) == "string" then
-		local p = ship:getBehavior(PositionBehavior)
-		layer = p and p.layer
-		layer = layer or Utility.Peep.getLayer(ship)
-
-		local instance = Utility.Peep.getInstance(mashina)
-		local mapScript = instance:getMapScriptByLayer(layer)
-		local mapResouce = mapScript and Utility.Peep.getResource(mapScript)
-
-		if not mapResouce then
-			return B.Status.Failure
-		end
-
-		position = Vector(Utility.Map.getAnchorPosition(mashina:getDirector():getGameInstance(), mapResource, target))
-	elseif Class.isCompatibleType(target, Vector) then
-		position = target
-	elseif Class.isCompatibleType(target, Peep) then
-		position = Utility.Peep.getPosition(target)
-	else
-		position = nil
-	end
-
-	return position
-end
-
-function Sailing.getShipTarget(ship, target)
+function Sailing.getShipTarget(ship, target, offset)
 	local position
 	if type(target) == "string" then
 		local p = ship:getBehavior(PositionBehavior)
@@ -110,17 +83,24 @@ function Sailing.getShipTarget(ship, target)
 		position = target
 	elseif Class.isCompatibleType(target, Peep) then
 		position = Utility.Peep.getPosition(target)
+
+		if offset then
+			local movement = target:getBehavior(ShipMovementBehavior)
+			if movement then
+				offset = (movement.rotation * Quaternion.Y_90):transformVector(offset)
+			end
+		end
 	else
 		position = nil
 	end
 
-	return position
+	return position, offset
 end
 
 -- This is the normal the ship is heading in, NOT the steer direction normal.
 -- The steer direction normal is the axis on which 1 or -1 is projected to steer the ship.
 function Sailing.getShipDirectionNormal(ship)
-	if Class.isCompatibleType(target, Peep) then
+	if Class.isCompatibleType(ship, Peep) then
 		local movement = ship:getBehavior(ShipMovementBehavior)
 		if movement then
 			return (movement.rotation * Quaternion.Y_90):transformVector(movement.steerDirectionNormal):getNormal()

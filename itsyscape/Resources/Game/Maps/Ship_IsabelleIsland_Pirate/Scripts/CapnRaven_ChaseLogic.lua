@@ -16,6 +16,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local DISTANCE = 8
 
 local TARGET = B.Reference("CapnRaven_ChaseLogic", "TARGET")
+local OFFSET = B.Reference("CapnRaven_ChaseLogic", "OFFSET")
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Sequence {
@@ -33,18 +34,23 @@ local Tree = BTreeBuilder.Node() {
 					message = "side"
 				},
 
-				Mashina.RandomTry {
-					Mashina.Sailing.Sail {
+				Mashina.Sequence {
+					Mashina.Sailing.GetNearestOffset {
 						target = TARGET,
-						distance = DISTANCE,
-						offset = Vector(24, 0, 0)
+						offsets = {
+							Vector(24, 0, 0),
+							Vector(-24, 0, 0),
+						},
+
+						[OFFSET] = B.Output.result
 					},
 
 					Mashina.Sailing.Sail {
 						target = TARGET,
 						distance = DISTANCE,
-						offset = Vector(-24, 0, 0)
-					},
+						offset = OFFSET,
+						flank = true
+					}
 				},
 
 				Mashina.Peep.Talk {
@@ -64,7 +70,7 @@ local Tree = BTreeBuilder.Node() {
 				Mashina.Success {
 					Mashina.ParallelSequence {
 						Mashina.Peep.TimeOut {
-							duration = 5
+							duration = 2
 						},
 
 						Mashina.Sailing.Sail {
