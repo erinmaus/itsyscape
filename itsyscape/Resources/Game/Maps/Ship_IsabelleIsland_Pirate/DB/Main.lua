@@ -203,39 +203,69 @@ do
 	}
 end
 
-M["Cannon_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+M["Pirate"] = ItsyScape.Resource.MapObject.Unique()
 do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 15,
-		PositionY = 4.0,
-		PositionZ = 13,
-		Direction = -1,
-		Name = "Cannon_Pirate1",
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Pirate",
 		Map = M._MAP,
-		Resource = M["Cannon_Pirate1"]
+		Resource = M["Pirate"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
-		MapObject = M["Cannon_Pirate1"]
+		MapObject = M["Pirate"]
 	}
 end
 
-M["Cannon_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 4,
+		PositionZ = 13,
+		Direction = -1,
+		Name = "Anchor_Pirate1",
+		Map = M._MAP,
+		Resource = M["Anchor_Pirate1"]
+	}
+end
+
+M["Anchor_Pirate2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 25,
-		PositionY = 4.0,
+		PositionY = 4,
 		PositionZ = 13,
 		Direction = -1,
-		Name = "Cannon_Pirate1",
+		Name = "Anchor_Pirate2",
 		Map = M._MAP,
-		Resource = M["Cannon_Pirate1"]
+		Resource = M["Anchor_Pirate2"]
 	}
+end
 
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
-		MapObject = M["Cannon_Pirate1"]
+M["Anchor_Pirate3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 4,
+		PositionZ = 13,
+		Direction = 1,
+		Name = "Anchor_Pirate3",
+		Map = M._MAP,
+		Resource = M["Anchor_Pirate3"]
+	}
+end
+
+M["Anchor_Pirate4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 4,
+		PositionZ = 13,
+		Direction = 1,
+		Name = "Anchor_Pirate4",
+		Map = M._MAP,
+		Resource = M["Anchor_Pirate4"]
 	}
 end
 
@@ -251,13 +281,20 @@ do
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain",
 		MapObject = M["CapnRaven"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "engage",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_Pirate/Scripts/CapnRaven_ChaseLogic.lua",
+		IsDefault = 1,
+		Resource = M["CapnRaven"]
+	}
 end
 
 M["Anchor_CapnRaven_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17.0,
-		PositionY = 4.0,
+		PositionX = 29.0,
+		PositionY = 5.0,
 		PositionZ = 11.0,
 		Direction = -1,
 		Name = "Anchor_CapnRaven_Spawn",

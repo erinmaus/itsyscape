@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Peep = require "ItsyScape.Peep.Peep"
@@ -46,6 +47,9 @@ function BasePirate:ready(director, game)
 		"ItsyScape.Game.Body",
 		"Resources/Game/Bodies/Human.lskel")
 	actor:setBody(body)
+
+	local booty = InfiniteInventoryStateProvider(self)
+	booty:add("IronCannonball")
 
 	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",

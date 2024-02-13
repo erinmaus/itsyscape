@@ -25,6 +25,10 @@ function CutsceneMap:new(peep)
 	self.game = peep:getDirector():getGameInstance()
 end
 
+function CutsceneMap:getPeep()
+	return self.peep
+end
+
 function CutsceneMap:playMusic(music, slot)
 	return function()
 		local stage = self.game:getStage()
@@ -61,6 +65,12 @@ function CutsceneMap:sail(anchors, duration, tween)
 		local curve
 		do
 			local c = {}
+			if anchors.current then
+				local currentPosition = Utility.Peep.getPosition(self.peep)
+				table.insert(c, currentPosition.x)
+				table.insert(c, currentPosition.z)
+			end
+
 			for i = 1, #anchorPositions do
 				table.insert(c, anchorPositions[i].x)
 				table.insert(c, anchorPositions[i].z)
@@ -71,21 +81,20 @@ function CutsceneMap:sail(anchors, duration, tween)
 
 		self.peep:addBehavior(MapOffsetBehavior)
 		self.peep:addBehavior(RotationBehavior)
-		local peepPosition = self.peep:getBehavior(MapOffsetBehavior).offset
 
 		local currentTime = 0
 		repeat
 			currentTime = currentTime + self.game:getDelta()
 			local mu = math.min(math.max(currentTime / duration, 0), duration)
 			local delta = math.min(math.max(tween(mu), 0), 1)
-			local currentPosition = self.peep:getBehavior(MapOffsetBehavior).offset
+			local currentPosition = Utility.Peep.getPosition(self.peep) * Vector.PLANE_XZ
 
 			local x, z = curve:evaluate(delta)
 			local position = Vector(x, 0, z)
 			local rotation = Quaternion.lookAt(position, currentPosition)
 
-			self.peep:getBehavior(MapOffsetBehavior).offset = position
-			self.peep:getBehavior(RotationBehavior).rotation = rotation * Quaternion.Y_90
+			Utility.Peep.setPosition(self.peep, position)
+			Utility.Peep.setRotation(self.peep, rotation * Quaternion.Y_90)
 
 			coroutine.yield()
 		until currentTime > duration
@@ -221,6 +230,31 @@ function CutsceneMap:pushPoke(...)
 
 	return function()
 		self.peep:pushPoke(unpack(args, 1, args.n))
+	end
+end
+
+function CutsceneMap:fireProjectile(source, destination, projectile)
+	return function()
+		if type(destination) == 'string' then
+			local mapResource = Utility.Peep.getMapResource(self.peep)
+			destination = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, destination))
+		elseif Class.isCompatibleType(destination, CutsceneMap) then
+			destination = Utility.Peep.getAbsolutePosition(destination.peep)
+		elseif Class.isCompatibleType(destination, CutsceneEntity) then
+			destination = destination:getPeep()
+		end
+
+		if type(source) == 'string' then
+			local mapResource = Utility.Peep.getMapResource(self.peep)
+			source = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, source))
+		elseif Class.isCompatibleType(source, CutsceneMap) then
+			source = Utility.Peep.getAbsolutePosition(source.peep)
+		elseif Class.isCompatibleType(source, CutsceneEntity) then
+			source = source:getPeep()
+		end
+
+		local stage = self.peep:getDirector():getGameInstance():getStage()
+		stage:fireProjectile(projectile, source, destination, self.peep:getLayer())
 	end
 end
 

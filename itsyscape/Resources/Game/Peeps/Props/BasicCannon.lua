@@ -16,9 +16,11 @@ local Probe = require "ItsyScape.Peep.Probe"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
+local ShipMovementCortex = require "ItsyScape.Peep.Cortexes.ShipMovementCortex"
 
 local BasicCannon = Class(Prop)
 
@@ -155,6 +157,8 @@ function BasicCannon:onFire(peep)
 				return s and (p - ray.origin):getLength() <= range
 			end)
 
+			local ships = director:getCortex(ShipMovementCortex):projectRay(ray, self:getLayerName())
+
 			local damage = math.random(cannon:get("MinDamage"), cannon:get("MaxDamage"))
 			local poke = AttackPoke({
 				weaponType = 'cannon',
@@ -182,6 +186,17 @@ function BasicCannon:onFire(peep)
 				if s then
 					stage:fireProjectile("CannonSplosion", self, p, Utility.Peep.getLayer(hits[i]))
 				end
+			end
+
+			for i = 1, #ships do
+				local ship = ships[i].peep
+				local closePoint = ships[i].closePoint
+
+				local layer = (ship:hasBehavior(PositionBehavior) and ship:getBehavior(PositionBehavior).layer) or Utility.Peep.getLayer(ship)
+				local y = Utility.Peep.getAbsolutePosition(self).y
+
+				stage:fireProjectile("CannonSplosion", self, closePoint + Vector.UNIT_Y * y, layer)
+				ship:poke("hit", poke)
 			end
 		end
 	end

@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- Resources/Game/Peeps/Maps/ShipMapPeep.lua
 --
@@ -17,7 +18,10 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
+local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
 
 local ShipMapPeep = Class(Map)
@@ -34,6 +38,11 @@ function ShipMapPeep:new(resource, name, ...)
 
 	self:addBehavior(BossStatsBehavior)
 	self:addBehavior(CombatStatusBehavior)
+	self:addBehavior(ShipMovementBehavior)
+	self:addBehavior(ShipStatsBehavior)
+
+	local _, movement = self:addBehavior(MovementBehavior)
+	movement.noClip = true
 
 	self:addPoke('hit')
 	self:addPoke('sink')

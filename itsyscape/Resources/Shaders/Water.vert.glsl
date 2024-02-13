@@ -10,8 +10,8 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	float offset1 = sin(scape_Time * scape_TimeScale.z + position.x) * scape_YOffset;
-	float offset2 = sin(scape_Time * scape_TimeScale.z + position.z) * scape_YOffset;
+	float offset1 = sin(scape_Time * scape_TimeScale.z + position.x * radians(180.0)) * scape_YOffset;
+	float offset2 = sin(scape_Time * scape_TimeScale.z + position.z * radians(180.0)) * scape_YOffset;
 
 	localPosition = position.xyz;
 	localPosition.y += offset1 + offset2;

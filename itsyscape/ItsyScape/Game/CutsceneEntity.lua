@@ -500,12 +500,14 @@ function CutsceneEntity:dialog(name)
 	return function()
 		local gameDB = self.peep:getDirector():getGameDB()
 		local map = Utility.Peep.getMapResource(self.peep)
+
+		print(">>> map", map.name)
 		local namedAction = gameDB:getRecord("NamedMapAction", {
 			Name = name,
 			Map = map
 		})
 
-		local action = Utility.getAction(self.game, namedAction:get("Action", false, false))
+		local action = Utility.getAction(self.game, namedAction:get("Action"), false, false)
 		if not action then
 			Log.warn("Couldn't get named map action '%s' for map '%s'!", name, map and map.name or "???")
 		end

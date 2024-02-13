@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Game/Skills/Sailinglua
+-- ItsyScape/Game/Skills/Sailing.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,9 +8,58 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Utility = require "ItsyScape.Game.Utility"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
+local ShipCrewMemberBehavior = require "ItsyScape.Peep.Behaviors.ShipCrewMemberBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
 
 local Sailing = {}
+
+-- New sailing stuff
+function Sailing.setCaptain(ship, peep)
+	local _, shipToPeepCaptain = ship:addBehavior(ShipCaptainBehavior)
+	shipToPeepCaptain.peep = peep
+
+	local _, peepToShipCaptain = peep:addBehavior(ShipCaptainBehavior)
+	peepToShipCaptain.peep = ship
+end
+
+-- New sailing stuff
+function Sailing.setCrewMember(ship, peep)
+	local _, crewMember = peep:addBehavior(ShipCrewMemberBehavior)
+	crewMember.ship = ship
+end
+
+local function getDirection(a, b, c, bias)
+	local result = ((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x))
+
+	-- This bias prevents 'jittering' when result is close to zero.
+	-- Otherwise, the ship will jitter between +/-.
+	if result > 0 + (bias or 0) then
+		return 1
+	elseif result < 0 then
+		return -1
+	else
+		return 0
+	end
+end
+
+function Sailing.getDirection(ship, targetPosition, bias)
+	local shipPosition = Utility.Peep.getPosition(ship)
+	local rotation, normal
+	do
+		local movement = ship:getBehavior(ShipMovementBehavior)
+		rotation = movement and movement.rotation or Quaternion.IDENTITY
+		normal = movement and movement.steerDirectionNormal or -Vector.UNIT_X
+	end
+
+	local shipForward = rotation:transformVector(normal)
+	return getDirection(shipPosition, shipPosition + shipForward, targetPosition, bias)
+end
+
+-- Old sailing stuff
 
 -- This scales a distance from map units to "pseudo-kilometers".
 Sailing.DISTANCE_SCALE = 70
