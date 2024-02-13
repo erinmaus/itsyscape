@@ -1368,7 +1368,9 @@ function Utility.Item.getItemsInPeepInventory(peep, itemID)
 
 	local result = {}
 	for item in inventory:getBroker():iterateItems(inventory) do
-		if item:getID() == itemID then
+		if type(itemID) == "string" and item:getID() == itemID then
+			table.insert(result, item)
+		elseif type(itemID) == "table" or type(itemID) == "function" and itemID(item) then
 			table.insert(result, item)
 		end
 	end
