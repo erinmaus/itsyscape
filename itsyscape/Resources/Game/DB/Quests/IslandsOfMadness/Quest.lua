@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Effects/Sailing.lua
+-- Resources/Game/DB/Quest/IslandsOfMadness/Quest.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,27 +8,25 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.Effect "X_ShipRock" {
-	-- Nothing.
-}
-
 ItsyScape.Meta.ResourceName {
-	Value = "Ship Rocking Motion",
+	Value = "Islands of Madness",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "X_ShipRock"
+	Resource = ItsyScape.Resource.Quest "PreTutorial"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Don't rock the boat!",
+	Value = "Can you survive a chance encounter with Cthulhu?",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "X_ShipRock"
+	Resource = ItsyScape.Resource.Quest "PreTutorial"
 }
 
-do
-	local Water = ItsyScape.Resource.Prop "EndlessWater"
+local Quest = ItsyScape.Utility.Quest
+local Step = ItsyScape.Utility.QuestStep
 
-	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.PassableProp",
-		Resource = Water
-	}
-end
+Quest "PreTutorial" {
+	Step "PreTutorial_Start",
+	Step "PreTutorial_CapnRavenHitJenkins",
+	Step "PreTutorial_Teleported"
+}
+
+local Description = ItsyScape.Utility.QuestStepDescription

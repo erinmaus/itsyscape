@@ -11,16 +11,18 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
+local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Probe = require "ItsyScape.Peep.Probe"
-local Map = require "Resources.Game.Peeps.Maps.ShipMapPeep"
+local ShipMapPeep = require "Resources.Game.Peeps.Maps.ShipMapPeep"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
 
-local Ship = Class(Map)
+local Ship = Class(ShipMapPeep)
 Ship.STATE_SQUID   = 0
 Ship.STATE_PIRATES = 1
 Ship.COMBAT_HINT = {
@@ -179,7 +181,7 @@ function Ship:targetPirate(piratePeep)
 end
 
 function Ship:new(resource, name, ...)
-	Map.new(self, resource, name or 'Ship_IsabelleIsland_PortmasterJenkins', ...)
+	ShipMapPeep.new(self, resource, name or 'Ship_IsabelleIsland_PortmasterJenkins', ...)
 end
 
 function Ship:getMaxHealth()
@@ -187,7 +189,11 @@ function Ship:getMaxHealth()
 end
 
 function Ship:onLoad(filename, arguments, layer)
-	Map.onLoad(self, filename, arguments, layer)
+	ShipMapPeep.onLoad(self, filename, arguments, layer)
+
+	local behavior = self:getBehavior(ShipStatsBehavior)
+	behavior.bonuses[ShipStatsBehavior.STAT_SPEED] = 300
+	behavior.bonuses[ShipStatsBehavior.STAT_TURN]  = 20
 
 	self.player = Utility.Peep.getPlayer(self)
 
@@ -200,21 +206,14 @@ function Ship:onLoad(filename, arguments, layer)
 end
 
 function Ship:initSquidEncounter()
-	Utility.spawnMapObjectAtAnchor(
-		self,
-		"Jenkins_Squid",
-		"Anchor_Jenkins_Spawn",
-		0)
-	Utility.spawnMapObjectAtAnchor(
-		self,
-		"Sailor1",
-		"Anchor_Sailor1_Spawn",
-		0)
-	Utility.spawnMapObjectAtAnchor(
-		self,
-		"Sailor2",
-		"Anchor_Sailor2_Spawn",
-		0)
+	local jenkins = Utility.spawnMapObjectAtAnchor(self, "Jenkins_Squid", "Anchor_Jenkins_Spawn")
+	Sailing.setCaptain(self, jenkins:getPeep())
+
+	local sailor1 = Utility.spawnMapObjectAtAnchor(self, "Sailor1", "Anchor_Sailor1_Spawn")
+	Sailing.setCrewMember(self, sailor1:getPeep())
+
+	local sailor2 = Utility.spawnMapObjectAtAnchor(self, "Sailor2", "Anchor_Sailor2_Spawn")
+	Sailing.setCrewMember(self, sailor2:getPeep())
 end
 
 function Ship:onRaiseCthulhu()
@@ -245,51 +244,13 @@ function Ship:onRaiseCthulhu()
 end
 
 function Ship:initPirateEncounter()
-	Utility.spawnMapObjectAtAnchor(
-		self,
-		"Jenkins_Pirate",
-		"Anchor_Jenkins_Spawn",
-		0)
-	Utility.spawnMapObjectAtAnchor(
-		self,
-		"Wizard",
-		"Anchor_Sailor1_Spawn",
-		0)
-	Utility.spawnMapObjectAtAnchor(
-		self,
-		"Archer",
-		"Anchor_Sailor2_Spawn",
-		0)
+	local jenkins = Utility.spawnMapObjectAtAnchor(self, "Jenkins_Pirate", "Anchor_Jenkins_Spawn")
+	Sailing.setCaptain(self, jenkins:getPeep())
 
-	self.pirates = {}
-	do
-		local actor = Utility.spawnMapObjectAtAnchor(
-			self,
-			"Pirate1",
-			"Anchor_Pirate1_Spawn",
-			0)
-		if actor then
-			actor:getPeep():listen('die', self.onPirateDeath, self, "Pirate1")
-			table.insert(self.pirates, actor)
-		end
-	end
-	do
-		local actor = Utility.spawnMapObjectAtAnchor(
-			self,
-			"Pirate2",
-			"Anchor_Pirate2_Spawn",
-			0)
-		if actor then
-			actor:getPeep():listen('die', self.onPirateDeath, self, "Pirate2")
-			table.insert(self.pirates, actor)
-		end
-	end
-
-	Utility.spawnMapObjectAtAnchor(
-		self,
-		"CapnRaven",
-		"Anchor_CapnRaven_Spawn",
-		0)
+	Utility.spawnMapObjectAtAnchor(self, "Sailor1", "Anchor_Sailor1_Spawn")
+	Utility.spawnMapObjectAtAnchor(self, "Sailor2", "Anchor_Sailor2_Spawn")
+	Utility.spawnMapObjectAtAnchor(self, "Rosalind", "Anchor_Rosalind_Spawn")
+	Utility.spawnMapObjectAtAnchor(self, "Orlando", "Anchor_Orlando_Spawn")
 
 	do
 		local state = self.player:getState()
@@ -301,9 +262,9 @@ function Ship:initPirateEncounter()
 		state:give("Item", "RustyDagger",  1,FLAGS)
 	end
 
-	self:pushPoke("openCharacterCustomization")
-	self.player:addBehavior(DisabledBehavior)
-	self.openedCharacterCustomization = false
+	-- self:pushPoke("openCharacterCustomization")
+	-- self.player:addBehavior(DisabledBehavior)
+	-- self.openedCharacterCustomization = false
 end
 
 function Ship:onOpenCharacterCustomization()
@@ -438,60 +399,60 @@ function Ship:showCameraMoveTutorial()
 end
 
 function Ship:update(director, game)
-	Map.update(self, director, game)
+	ShipMapPeep.update(self, director, game)
 
-	if self.blockingInterfaceID and self.blockingInterfaceIndex then
-		local ui = game:getUI()
-		local isOpen = ui:isOpen(self.blockingInterfaceID, self.blockingInterfaceIndex)
-		if not isOpen then
-			self.player:removeBehavior(DisabledBehavior)
+	-- if self.blockingInterfaceID and self.blockingInterfaceIndex then
+	-- 	local ui = game:getUI()
+	-- 	local isOpen = ui:isOpen(self.blockingInterfaceID, self.blockingInterfaceIndex)
+	-- 	if not isOpen then
+	-- 		self.player:removeBehavior(DisabledBehavior)
 
-			if self.blockingInterfaceID == "CharacterCustomization" then
-				local s, index = self:onMakePlayerListen()
+	-- 		if self.blockingInterfaceID == "CharacterCustomization" then
+	-- 			local s, index = self:onMakePlayerListen()
 
-				if s then
-					self.blockingInterfaceID = "DialogBox"
-					self.blockingInterfaceIndex = index
-				end
-			elseif self.blockingInterfaceID == "DialogBox" then
-				self:showCameraMoveTutorial()
-			elseif self.blockingInterfaceID == "TutorialHint" then
-				if self.isMovePending then
-					self.isMovePending = false
-					self:showCameraZoomTutorial()
-				elseif self.isZoomPending then
-					self.isZoomPending = false
-				else
-					self.blockingInterfaceID = nil
-					self.blockingInterfaceIndex = nil
-				end
-			else
-				self.blockingInterfaceID = nil
-				self.blockingInterfaceIndex = nil
-			end
-		end
-	elseif not self.showedCombatHints and self.openedCharacterCustomization then
-		if self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1)
-		   and not self.player:getState():has("Quest", "PreTutorial")
-		then
-			if not _DEBUG or _MOBILE then
-				self:showTip(Ship.COMBAT_HINT, self.player)
+	-- 			if s then
+	-- 				self.blockingInterfaceID = "DialogBox"
+	-- 				self.blockingInterfaceIndex = index
+	-- 			end
+	-- 		elseif self.blockingInterfaceID == "DialogBox" then
+	-- 			self:showCameraMoveTutorial()
+	-- 		elseif self.blockingInterfaceID == "TutorialHint" then
+	-- 			if self.isMovePending then
+	-- 				self.isMovePending = false
+	-- 				self:showCameraZoomTutorial()
+	-- 			elseif self.isZoomPending then
+	-- 				self.isZoomPending = false
+	-- 			else
+	-- 				self.blockingInterfaceID = nil
+	-- 				self.blockingInterfaceIndex = nil
+	-- 			end
+	-- 		else
+	-- 			self.blockingInterfaceID = nil
+	-- 			self.blockingInterfaceIndex = nil
+	-- 		end
+	-- 	end
+	-- elseif not self.showedCombatHints and self.openedCharacterCustomization then
+	-- 	if self.player:getState():has("KeyItem", "CalmBeforeTheStorm_PirateEncounterInitiated", 1)
+	-- 	   and not self.player:getState():has("Quest", "PreTutorial")
+	-- 	then
+	-- 		if not _DEBUG or _MOBILE then
+	-- 			self:showTip(Ship.COMBAT_HINT, self.player)
 
-				Utility.UI.openInterface(
-					self.player,
-					"TutorialHint",
-					false,
-					"root",
-					not _MOBILE and "Look at the bottom right corner.\nClick on the flashing icon to continue." or "Look at the bottom right corner.\nTap on the flashing icon to continue.",
-					function()
-						return not self.player:hasBehavior(DisabledBehavior)
-					end,
-					{ position = 'center' })
-			end
-		end
+	-- 			Utility.UI.openInterface(
+	-- 				self.player,
+	-- 				"TutorialHint",
+	-- 				false,
+	-- 				"root",
+	-- 				not _MOBILE and "Look at the bottom right corner.\nClick on the flashing icon to continue." or "Look at the bottom right corner.\nTap on the flashing icon to continue.",
+	-- 				function()
+	-- 					return not self.player:hasBehavior(DisabledBehavior)
+	-- 				end,
+	-- 				{ position = 'center' })
+	-- 		end
+	-- 	end
 		
-		self.showedCombatHints = true
-	end
+	-- 	self.showedCombatHints = true
+	-- end
 end
 
 return Ship

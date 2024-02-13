@@ -155,22 +155,26 @@ function LocalPlayer:spawn(storage, newGame, password)
 			self.isPlayable = not root:hasSection("Location") or not root:getSection("Location"):get("isTitleScreen")
 
 			if newGame then
-				Utility.UI.openInterface(actor:getPeep(), "CutsceneTransition", false)
-				Utility.UI.openInterface(actor:getPeep(), "DramaticText", false, { {
-					color = { 1, 1, 1, 1 },
-					font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-					fontSize = 128,
-					textShadow = true,
-					align = 'center',
-					width = DramaticTextController.CANVAS_WIDTH - 64,
-					x = 32,
-					y = DramaticTextController.CANVAS_HEIGHT / 2 - 64,
-					text = "Welcome to the Realm."
-				} }, 4)
+				-- Utility.UI.openInterface(actor:getPeep(), "CutsceneTransition", false)
+				-- Utility.UI.openInterface(actor:getPeep(), "DramaticText", false, { {
+				-- 	color = { 1, 1, 1, 1 },
+				-- 	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+				-- 	fontSize = 128,
+				-- 	textShadow = true,
+				-- 	align = 'center',
+				-- 	width = DramaticTextController.CANVAS_WIDTH - 64,
+				-- 	x = 32,
+				-- 	y = DramaticTextController.CANVAS_HEIGHT / 2 - 64,
+				-- 	text = "Welcome to the Realm."
+				-- } }, 4)
 
+				-- self.stage:movePeep(
+				-- 	actor:getPeep(),
+				-- 	"@EmptyRuins_Downtown?cutscene=1,mute=1",
+				-- 	"Anchor_Spawn")
 				self.stage:movePeep(
 					actor:getPeep(),
-					"@EmptyRuins_Downtown?cutscene=1,mute=1",
+					"@IsabelleIsland_FarOcean2",
 					"Anchor_Spawn")
 				actor:getPeep():pushPoke('bootstrapComplete')
 				Analytics:startGame(actor:getPeep())

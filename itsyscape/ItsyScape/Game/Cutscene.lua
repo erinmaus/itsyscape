@@ -163,6 +163,7 @@ end
 function Cutscene.While(t)
 	local condition = coroutine.create(t[1])
 	local current = coroutine.create(t[2])
+	local quick = t.quick
 	local isError = false
 	local index = 2
 
@@ -194,7 +195,7 @@ function Cutscene.While(t)
 			end
 
 			coroutine.yield()
-		until (coroutine.status(condition) == "dead" and coroutine.status(current) == "dead" and index > #t) or isError
+		until (coroutine.status(condition) == "dead" and (t.quick or (coroutine.status(current) == "dead" and index > #t))) or isError
 	end
 end
 

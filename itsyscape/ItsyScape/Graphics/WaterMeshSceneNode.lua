@@ -62,9 +62,9 @@ function WaterMeshSceneNode:setTextureTimeScale(x, y)
 	self.textureTimeScale.y = y or self.textureTimeScale.y
 end
 
-function WaterMeshSceneNode:generate(map, i, j, w, h, y, scale, fine)
+function WaterMeshSceneNode:generate(map, i, j, w, h, y, scale, fine, cellSize)
 	fine = fine or 2
-	y = y or map:getTileCenter(i + math.floor(w / 2), j + math.floor(h / 2)).y + 0.5
+	y = y or (map and map:getTileCenter(i + math.floor(w / 2), j + math.floor(h / 2)).y + 0.5) or 1
 
 	if self.isOwner and self.waterMesh then
 		self.waterMesh:release()
@@ -75,13 +75,12 @@ function WaterMeshSceneNode:generate(map, i, j, w, h, y, scale, fine)
 	self.waterMesh = WaterMesh(width, height, scale)
 	self.isOwner = true
 
-	local cellSize = map:getCellSize()
+	local cellSize = cellSize or (map and map:getCellSize()) or 2
 	local x, z = (i - 1) * cellSize, (j - 1) * cellSize
 
 	local transform = self:getTransform()
 	transform:setLocalScale(Vector(1 / fine * cellSize, 1, 1 / fine * cellSize))
 	transform:setLocalTranslation(Vector(x, y, z))
-	transform:tick()
 
 	self.width = width
 	self.depth = height

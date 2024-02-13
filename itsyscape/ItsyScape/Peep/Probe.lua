@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local ShipCrewMemberBehavior = require "ItsyScape.Peep.Behaviors.ShipCrewMemberBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 
@@ -155,6 +156,15 @@ end
 
 function Probe.follower(player)
 	return Callback.bind(_follower, player, peep)
+end
+
+local _crew = function(ship)
+	local crew = peep:getBehavior(ShipCrewMemberBehavior)
+	return crew and crew.ship == ship
+end
+
+function Probe.crew(ship)
+	return Callback.bind(_crew, ship)
 end
 
 local _mapObjectGroup = function(name, peep)
