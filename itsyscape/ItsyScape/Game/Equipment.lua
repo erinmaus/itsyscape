@@ -25,12 +25,13 @@ Equipment.PLAYER_SLOT_QUIVER = 10
 Equipment.PLAYER_SLOT_EFFECT = 11
 Equipment.PLAYER_SLOTS_MAX   = 11
 
-Equipment.AMMO_NONE   = 0
-Equipment.AMMO_ARROW  = 1
-Equipment.AMMO_BOLT   = 2
-Equipment.AMMO_BULLET = 3
-Equipment.AMMO_THROWN = 4
-Equipment.AMMO_ANY    = 100
+Equipment.AMMO_NONE       = 0
+Equipment.AMMO_ARROW      = 1
+Equipment.AMMO_BOLT       = 2
+Equipment.AMMO_BULLET     = 3
+Equipment.AMMO_THROWN     = 4
+Equipment.AMMO_CANNONBALL = 5
+Equipment.AMMO_ANY        = math.huge
 
 Equipment.PLAYER_SLOT_RIGHT_HAND = 20
 Equipment.PLAYER_SLOT_LEFT_HAND  = 21
@@ -74,6 +75,7 @@ Equipment.STATS = {
 	"StrengthMelee",
 	"StrengthRanged",
 	"StrengthMagic",
+	"StrengthSailing",
 	"Prayer"
 }
 
@@ -85,7 +87,8 @@ Equipment.OFFENSIVE_STATS = {
 	["AccuracyRanged"] = "Ranged",
 	["StrengthMelee"] = "Melee strength",
 	["StrengthRanged"] = "Ranged strength",
-	["StrengthMagic"] = "Magic strength"
+	["StrengthMagic"] = "Magic strength",
+	["StrengthSailing"] = "Sailing firepower"
 }
 
 Equipment.ACCURACY_STATS = {
@@ -99,7 +102,8 @@ Equipment.ACCURACY_STATS = {
 Equipment.STRENGTH_STATS = {
 	["StrengthMelee"] = "Melee strength",
 	["StrengthRanged"] = "Ranged strength",
-	["StrengthMagic"] = "Magic strength"
+	["StrengthMagic"] = "Magic strength",
+	["StrengthSailing"] = "Sailing firepower"
 }
 
 Equipment.DEFENSIVE_STATS = {

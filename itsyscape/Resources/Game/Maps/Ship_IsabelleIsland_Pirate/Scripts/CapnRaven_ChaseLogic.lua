@@ -13,7 +13,7 @@ local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 
-local DISTANCE = 16
+local DISTANCE = 8
 
 local TARGET = B.Reference("CapnRaven_ChaseLogic", "TARGET")
 
@@ -29,28 +29,58 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Repeat {
 			Mashina.Step {
+				Mashina.Peep.Talk {
+					message = "side"
+				},
+
 				Mashina.RandomTry {
 					Mashina.Sailing.Sail {
 						target = TARGET,
 						distance = DISTANCE,
-						offset = Vector(0, 0, 32)
+						offset = Vector(24, 0, 0)
 					},
 
 					Mashina.Sailing.Sail {
 						target = TARGET,
 						distance = DISTANCE,
-						offset = Vector(0, 0, -32)
+						offset = Vector(-24, 0, 0)
 					},
 				},
 
+				Mashina.Peep.Talk {
+					message = "fire_cannons"
+				},
+
 				Mashina.Success {
-					Mashina.Sailing.FireCannons
+					Mashina.Sailing.FireCannons {
+						target = TARGET
+					}
+				},
+
+				Mashina.Peep.Talk {
+					message = "forward"
+				},
+
+				Mashina.Success {
+					Mashina.ParallelSequence {
+						Mashina.Peep.TimeOut {
+							duration = 5
+						},
+
+						Mashina.Sailing.Sail {
+							direction = 0
+						}
+					}
+				},
+
+				Mashina.Peep.Talk {
+					message = "behind"
 				},
 
 				Mashina.Sailing.Sail {
 					target = TARGET,
 					distance = DISTANCE,
-					offset = Vector(0, 0, 64)
+					offset = Vector(-24, 0, 0)
 				}
 			}
 		}

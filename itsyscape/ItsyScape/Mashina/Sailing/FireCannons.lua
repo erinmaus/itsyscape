@@ -11,26 +11,25 @@ local B = require "B"
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local Peep = require "ItsyScape.Peep.Peep"
 local Probe = require "ItsyScape.Peep.Probe"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
-local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
 local ShipCrewMemberBehavior = require "ItsyScape.Peep.Behaviors.ShipCrewMemberBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 
 local FireCannons = B.Node("FireCannons")
 FireCannons.TARGET = B.Reference()
+FireCannons.DIRECTION = B.Reference()
 FireCannons.ALWAYS = B.Reference()
 FireCannons.HITS = B.Reference()
 
-local function probeCannons(ship, targetPosition, always)
+local function probeCannons(ship, targetPosition, targetNormal, direction, always)
 	local director = ship:getDirector()
 	local gameDB = director:getGameDB()
 
 	local _, movement = ship:addBehavior(ShipMovementBehavior)
-	local selfPosition = Utility.Peep.getPosition(self.ship)
+	local selfPosition = Utility.Peep.getPosition(ship)
 	local selfForward = movement.rotation:transformVector(movement.steerDirectionNormal) + selfPosition
 
 	local hits = director:probe(
@@ -69,18 +68,33 @@ local function probeCannons(ship, targetPosition, always)
 	for i = 1, #hits do
 		local map = Utility.Peep.getMapScript(hits[i])
 		local mapTransform = Utility.Peep.getMapTransform(map)
-		local position = hits[i]:getBehavior(PositionBehavior).position
+		local position = Utility.Peep.getPosition(hits[i])
 		positions[i] = Vector(mapTransform:transformPoint(position:get()))
 	end
 
 	local canFire = {}
 	local distances = {}
 	for i = 1, #hits do
-		local distance = (positions[i] * Vector.PLANE_XZ - targetPosition * Vector.PLANE_XZ):getLength()
-		local isCloseEnough = distance <= cannons[i]:get("Range")
+		local isCloseEnough, shipSide
+		if targetPosition and targetNormal then
+			local origin = targetPosition * Vector.PLANE_XZ
+			local v = (positions[i] * Vector.PLANE_XZ) - origin
+			local d = v:dot(targetNormal)
+			local p = targetPosition + d * targetNormal
 
-		local cannonSide = Sailing.getDirection(selfPosition, positions[i])
-		local shipSide = Sailing.getDirection(selfPosition, targetPosition)
+			local distance = (positions[i] * Vector.PLANE_XZ - p):getLength()
+			isCloseEnough = distance <= cannons[i]:get("Range")
+			shipSide = Sailing.getDirection(selfPosition, targetPosition)
+		elseif targetPosition then
+			local distance = ((positions[i] - targetPosition) * Vector.PLANE_XZ):getLength()
+			isCloseEnough = distance <= cannons[i]:get("Range")
+			shipSide = Sailing.getDirection(ship, targetPosition)
+		elseif direction then
+			isCloseEnough = true
+			shipSide = targetPosition
+		end
+
+		local cannonSide = Sailing.getDirection(ship, positions[i])
 		local isSameSide = cannonSide == shipSide
 
 		canFire[i] = (isCloseEnough or always) and isSameSide
@@ -92,8 +106,7 @@ local function probeCannons(ship, targetPosition, always)
 		actions[i] = false
 
 		local resource = Utility.Peep.getResource(hits[i])
-		local peepActions = Utility.getActions(
-			self.ship:getDirector():getGameInstance(), resource, 'world')
+		local peepActions = Utility.getActions(ship:getDirector():getGameInstance(), resource, 'world')
 		for j = 1, #peepActions do
 			if peepActions[j].instance:is('fire') then
 				actions[i] = peepActions[j].instance
@@ -104,8 +117,6 @@ local function probeCannons(ship, targetPosition, always)
 
 	local result = {}
 	for i = 1, #hits do
-		print(">>> i", i, "canFire", canFire[i], "distance", distances[i])
-
 		result[i] = {
 			peep = hits[i],
 			cannon = cannons[i],
@@ -123,14 +134,11 @@ local function fireCannons(ship, fireProbe)
 	local director = ship:getDirector()
 	local crew = director:probe(ship:getLayerName(), Probe.layer(ship:getLayer()), Probe.crew(ship))
 
-	print(">>> crew", #crew)
-
 	local hits = 0
 	for i = 1, #fireProbe do
 		local details = fireProbe[i]
 
 		if details.canFire then
-			print(">>> trying to fire...", i)
 			table.sort(crew, function(a, b)
 				local aPosition = Utility.Peep.getAbsolutePosition(a)
 				local bPosition = Utility.Peep.getAbsolutePosition(b)
@@ -143,14 +151,11 @@ local function fireCannons(ship, fireProbe)
 
 				local canFire = cannonReady
 				if canFire then
-					canFire = details.action:canPerform(crewMember:getState(), crewMember) and
-					          details.action:transfer(crewMember:getState(), crewMember)
+					canFire = details.action:canPerform(crewMember:getState()) and
+					          details.action:canTransfer(crewMember:getState())
 				end
 
-				print(">>> canFire", canFire, "cannonReady", cannonReady)
-
 				if canFire and cannonReady then
-					print(">>> trying...")
 					if details.action:perform(crewMember:getState(), crewMember, details.peep) then
 						hits = hits + 1
 						Log.info("BOOM! '%s' is gonna fire a cannon!", crewMember:getName())
@@ -167,9 +172,10 @@ end
 function FireCannons:update(mashina, state, executor)
 	local director = mashina:getDirector()
 
-	local distance = state[self.DISTANCE] or 0
+	local distance = state[self.DISTANCE] or math.huge
 	local target = state[self.TARGET]
-	local always = state[self.ALWAYS]
+	local direction = state[self.DIRECTION]
+	local always = state[self.ALWAYS] or false
 
 	local ship = mashina:getBehavior(ShipCaptainBehavior)
 	ship = ship and ship.peep
@@ -178,31 +184,15 @@ function FireCannons:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local position
-	if type(target) == "string" then
-		local p = ship:getBehavior(PositionBehavior)
-		layer = p and p.layer
-		layer = layer or Utility.Peep.getLayer(ship)
-
-		local instance = Utility.Peep.getInstance(mashina)
-		local mapScript = instance:getMapScriptByLayer(layer)
-		local mapResouce = mapScript and Utility.Peep.getResource(mapScript)
-
-		if not mapResouce then
-			return B.Status.Failure
-		end
-
-		position = Vector(Utility.Map.getAnchorPosition(mashina:getDirector():getGameInstance(), mapResource, target))
-	elseif Class.isCompatibleType(target, Vector) then
-		position = target
-	elseif Class.isCompatibleType(target, Peep) then
-		position = Utility.Peep.getPosition(target)
-	else
+	local position = Sailing.getShipTarget(ship, target)
+	if not position and not direction then
 		return B.Status.Failure
 	end
 
-	local cannonProbe = probeCannons(ship, position, always)
-	local count = fireCannons(cannonProbe)
+	local normal = Sailing.getShipDirectionNormal(target)
+
+	local cannonProbe = probeCannons(ship, position, normal, direction, always)
+	local count = fireCannons(ship, cannonProbe)
 
 	state[self.HITS] = count
 

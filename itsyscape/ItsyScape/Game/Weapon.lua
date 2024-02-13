@@ -27,6 +27,7 @@ Weapon.STYLE_NONE    = 0
 Weapon.STYLE_MAGIC   = 1
 Weapon.STYLE_ARCHERY = 2
 Weapon.STYLE_MELEE   = 3
+Weapon.STYLE_SAILING = 4
 
 Weapon.PURPOSE_KILL = 'kill'
 Weapon.PURPOSE_TOOL = 'tool'
@@ -71,6 +72,8 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 			bonusType = 'StrengthRanged'
 		elseif self.style == Weapon.STYLE_MELEE then
 			bonusType = 'StrengthMelee'
+		elseif self.style == Weapon.STYLE_SAILING then
+			bonusType = 'StrengthSailing'
 		end
 
 		local success
@@ -79,6 +82,8 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 			level = stats:getSkill(skill):getWorkingLevel()
 		end
 	end
+
+	bonuses = Utility.Peep.getEquipmentBonuses(peep)
 
 	if purpose == Weapon.PURPOSE_KILL then
 		local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -91,8 +96,6 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		end
 
 		self.stat = skill
-
-		bonuses = Utility.Peep.getEquipmentBonuses(peep)
 		self.bonus = (bonuses[bonusType] or 0)
 	elseif purpose == Weapon.PURPOSE_TOOL then
 		self.bonus = 0
@@ -141,11 +144,11 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		local styleBonus = weapon:getBonusForStance(peep)
 
 		local accuracyBonusName = "Accuracy" .. styleBonus
-		local accuracyBonus = bonuses[accuracyBonusName]
+		local accuracyBonus = bonuses[accuracyBonusName] or 0
 		local accuracyTier = math.max(CurveConfig.StyleBonus:solvePlus(accuracyBonus * 3) - 10, 0)
 
 		local defenseBonusName = "Defense" .. styleBonus
-		local defenseBonus = targetBonuses[defenseBonusName]
+		local defenseBonus = targetBonuses[defenseBonusName] or 0
 		local defenseTier = math.max(CurveConfig.StyleBonus:solvePlus(defenseBonus), 0)
 
 		local armorDamageReduction = math.max(math.min(CurveConfig.ArmorDamageReduction:evaluate(defenseTier - accuracyTier), 100), 0)
@@ -548,23 +551,26 @@ function Weapon:onAttackMiss(peep, target)
 end
 
 function Weapon:applyCooldown(peep, target)
-	peep:addBehavior(AttackCooldownBehavior)
+	if self:getCooldown(peep) == 0 then
+		return
+	end
 
-	local cooldown = peep:getBehavior(AttackCooldownBehavior)
-	cooldown.cooldown = math.max(cooldown.cooldown, self:getCooldown(peep))
-	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTime()
-
+	local cooldown = self:getCooldown(peep)
 	do
 		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-			cooldown.cooldown = effect:applyToSelfWeaponCooldown(peep, cooldown.cooldown)
+			cooldown = effect:applyToSelfWeaponCooldown(peep, cooldown)
 		end
 
 		if target then
 			for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-				cooldown.cooldown = effect:applyToTargetWeaponCooldown(target, cooldown.cooldown)
+				cooldown = effect:applyToTargetWeaponCooldown(target, cooldown)
 			end
 		end
 	end
+
+	local _, c = peep:addBehavior(AttackCooldownBehavior)
+	c.cooldown = math.max(c.cooldown, coo)
+	c.ticks = peep:getDirector():getGameInstance():getCurrentTime()
 end
 
 function Weapon:perform(peep, target)

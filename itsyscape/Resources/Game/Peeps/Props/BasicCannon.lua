@@ -8,16 +8,20 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local ShipWeapon = require "ItsyScape.Game.ShipWeapon"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local ShipMovementCortex = require "ItsyScape.Peep.Cortexes.ShipMovementCortex"
@@ -91,7 +95,7 @@ function BasicCannon:canFire()
 	return (self.currentSpawnCooldown or 0) == 0
 end
 
-function BasicCannon:onFire(peep)
+function BasicCannon:onFire(peep, item)
 	local resource = Utility.Peep.getResource(self)
 	local mapObject = Utility.Peep.getMapObject(self)
 	if resource then
@@ -122,17 +126,18 @@ function BasicCannon:onFire(peep)
 
 			local director = self:getDirector()
 
-			local direction
+			local direction = -Vector.UNIT_Z
 			do
-				local rotation = self:getBehavior(RotationBehavior)
-				if rotation then
-					rotation = rotation.rotation
-					local transform = love.math.newTransform()
+				local selfRotation = Utility.Peep.getRotation(self)
+				direction = selfRotation:transformVector(direction):getNormal()
 
-					transform:applyQuaternion(rotation.x, rotation.y, rotation.z, rotation.w)
-					direction = Vector(transform:transformPoint((-Vector.UNIT_Z):get()))
-				else
-					direction = -Vector.UNIT_Z
+				local ship = Utility.Peep.getMapScript(self)
+				local shipMovement = ship and ship:getBehavior(ShipMovementBehavior)
+				local shipRotation = ship and Utility.Peep.getRotation(ship)
+				if shipMovement then
+					direction = (shipMovement.rotation):transformVector(direction):getNormal()
+				elseif shipRotation then
+					direction = shipRotation:transformVector(direction):getNormal()
 				end
 			end
 
@@ -141,41 +146,67 @@ function BasicCannon:onFire(peep)
 				Utility.Peep.getAbsolutePosition(self) + Vector.UNIT_Y + direction,
 				direction)
 
-			local hits = director:probe(self:getLayerName(), function(peep)
-				local position = Utility.Peep.getAbsolutePosition(peep)
-				local size = peep:getBehavior(SizeBehavior)
-				if not size then
-					return false
-				else
-					size = size.size
-				end
-			
-				local min = position - Vector(size.x / 2, 0, size.z / 2)
-				local max = position + Vector(size.x / 2, size.y, size.z / 2)
+			local hits = director:probe(self:getLayerName(),
+				Probe.attackable(),
+				function(peep)
+					if Utility.Peep.getLayer(peep) == Utility.Peep.getLayer(self) then
+						return false
+					end
 
-				local s, p = ray:hitBounds(min, max)
+					local position = Utility.Peep.getAbsolutePosition(peep)
+					local size = peep:getBehavior(SizeBehavior)
+					if not size then
+						return false
+					else
+						size = size.size
+					end
+				
+					local min = position - Vector(size.x / 2, 0, size.z / 2)
+					local max = position + Vector(size.x / 2, size.y, size.z / 2)
+
+					local s, p = ray:hitBounds(min, max)
 				return s and (p - ray.origin):getLength() <= range
 			end)
 
 			local ships = director:getCortex(ShipMovementCortex):projectRay(ray, self:getLayerName())
+			for i = 1, #ships do
+				if ships[i].peep == Utility.Peep.getMapScript(self) then
+					table.remove(ships, i)
+					break
+				end
+			end
 
-			local damage = math.random(cannon:get("MinDamage"), cannon:get("MaxDamage"))
-			local poke = AttackPoke({
-				weaponType = 'cannon',
-				damage = damage,
-				aggressor = Utility.Peep.getMapScript(self)
-			})
+			local logic
+			do
+				if item then
+					logic = self:getDirector():getItemManager():getLogic(item)
+				end
 
-			director:broadcast(hits, 'receiveAttack', poke)
+				if not Class.isCompatibleType(logic, ShipWeapon) then
+					logic = ShipWeapon(item:getID(), self:getDirector():getItemManager())
+				end
+			end
 
 			local stage = director:getGameInstance():getStage()
 			stage:fireProjectile(
-				cannon:get("Cannonball").name,
+				item:getID(),
 				self,
 				ray:project(range),
 				Utility.Peep.getLayer(self))
 
 			for i = 1, #hits do
+				local damageRoll = logic:rollDamage(peep, Weapon.PURPOSE_TOOL, hits[i])
+				local damage = damageRoll:roll()
+
+				local poke = AttackPoke({
+					weaponType = 'cannon',
+					damage = damage,
+					aggressor = Utility.Peep.getMapScript(self)
+				})
+
+				hits[i]:poke("receiveAttack", poke, player)
+				Log.info("Dealt %d damage against peep '%s'!", damage, hits[i]:getName())
+
 				local hitCenter = Utility.Peep.getAbsolutePosition(hits[i])
 				local hitSize = Utility.Peep.getSize(hits[i])
 
@@ -196,7 +227,18 @@ function BasicCannon:onFire(peep)
 				local y = Utility.Peep.getAbsolutePosition(self).y
 
 				stage:fireProjectile("CannonSplosion", self, closePoint + Vector.UNIT_Y * y, layer)
+
+				local damageRoll = logic:rollDamage(peep, Weapon.PURPOSE_TOOL)
+				local damage = damageRoll:roll()
+
+				local poke = AttackPoke({
+					weaponType = 'cannon',
+					damage = damage,
+					aggressor = Utility.Peep.getMapScript(self)
+				})
+
 				ship:poke("hit", poke)
+				Log.info("Dealt %d damage against ship '%s'!", damage, ship:getName())
 			end
 		end
 	end
