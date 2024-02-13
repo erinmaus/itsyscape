@@ -24,8 +24,8 @@ function Ship:onLoad(...)
 	ShipMapPeep.onLoad(self, ...)
 
 	local behavior = self:getBehavior(ShipStatsBehavior)
-	behavior.bonuses[ShipStatsBehavior.STAT_SPEED] = 500
-	behavior.bonuses[ShipStatsBehavior.STAT_TURN]  = 90
+	behavior.bonuses[ShipStatsBehavior.STAT_SPEED] = 700
+	behavior.bonuses[ShipStatsBehavior.STAT_TURN]  = 30
 
 	if self:getArguments().spawnRaven then
 		local raven = Utility.spawnMapObjectAtAnchor(self, "CapnRaven", "Anchor_CapnRaven_Spawn")

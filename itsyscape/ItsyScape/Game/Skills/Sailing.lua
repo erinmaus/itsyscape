@@ -7,9 +7,13 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Peep = require "ItsyScape.Peep.Peep"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
 local ShipCrewMemberBehavior = require "ItsyScape.Peep.Behaviors.ShipCrewMemberBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
@@ -57,6 +61,81 @@ function Sailing.getDirection(ship, targetPosition, bias)
 
 	local shipForward = rotation:transformVector(normal)
 	return getDirection(shipPosition, shipPosition + shipForward, targetPosition, bias)
+end
+
+function Sailing.getShipTarget(ship, target)
+	local position
+	if type(target) == "string" then
+		local p = ship:getBehavior(PositionBehavior)
+		layer = p and p.layer
+		layer = layer or Utility.Peep.getLayer(ship)
+
+		local instance = Utility.Peep.getInstance(mashina)
+		local mapScript = instance:getMapScriptByLayer(layer)
+		local mapResouce = mapScript and Utility.Peep.getResource(mapScript)
+
+		if not mapResouce then
+			return B.Status.Failure
+		end
+
+		position = Vector(Utility.Map.getAnchorPosition(mashina:getDirector():getGameInstance(), mapResource, target))
+	elseif Class.isCompatibleType(target, Vector) then
+		position = target
+	elseif Class.isCompatibleType(target, Peep) then
+		position = Utility.Peep.getPosition(target)
+	else
+		position = nil
+	end
+
+	return position
+end
+
+function Sailing.getShipTarget(ship, target)
+	local position
+	if type(target) == "string" then
+		local p = ship:getBehavior(PositionBehavior)
+		layer = p and p.layer
+		layer = layer or Utility.Peep.getLayer(ship)
+
+		local instance = Utility.Peep.getInstance(ship)
+		local mapScript = instance:getMapScriptByLayer(layer)
+		local mapResouce = mapScript and Utility.Peep.getResource(mapScript)
+
+		if not mapResouce then
+			return B.Status.Failure
+		end
+
+		position = Vector(Utility.Map.getAnchorPosition(ship:getDirector():getGameInstance(), mapResource, target))
+	elseif Class.isCompatibleType(target, Vector) then
+		position = target
+	elseif Class.isCompatibleType(target, Peep) then
+		position = Utility.Peep.getPosition(target)
+	else
+		position = nil
+	end
+
+	return position
+end
+
+-- This is the normal the ship is heading in, NOT the steer direction normal.
+-- The steer direction normal is the axis on which 1 or -1 is projected to steer the ship.
+function Sailing.getShipDirectionNormal(ship)
+	if Class.isCompatibleType(target, Peep) then
+		local movement = ship:getBehavior(ShipMovementBehavior)
+		if movement then
+			return (movement.rotation * Quaternion.Y_90):transformVector(movement.steerDirectionNormal):getNormal()
+		end
+	end
+
+	return nil
+end
+
+function Sailing.calcCannonMinHit(level, bonus)
+	return math.max(math.ceil((level + 50) * (bonus + 64) / 640), 1)
+end
+
+function Sailing.calcCannonMaxHit(level, bonus)
+	return math.max(math.ceil((level + 50) * ((bonus + 64) ^ 1.2) / 640), 1)
 end
 
 -- Old sailing stuff

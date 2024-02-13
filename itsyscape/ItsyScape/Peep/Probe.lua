@@ -158,7 +158,7 @@ function Probe.follower(player)
 	return Callback.bind(_follower, player, peep)
 end
 
-local _crew = function(ship)
+local _crew = function(ship, peep)
 	local crew = peep:getBehavior(ShipCrewMemberBehavior)
 	return crew and crew.ship == ship
 end
@@ -231,7 +231,7 @@ local _layer = function(layer, peep)
 end
 
 function Probe.layer(layer)
-	Callback.bind(_layer, layer)
+	return Callback.bind(_layer, layer)
 end
 
 return Probe

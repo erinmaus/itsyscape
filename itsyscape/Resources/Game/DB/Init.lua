@@ -70,7 +70,7 @@ Game "ItsyScape"
 
 	Meta "PeepInventoryItem" {
 		Item = Meta.TYPE_RESOURCE,
-		Count = Meta.TYPE_INTEGER,
+		Count = Meta.TYPE_REAL,
 		Noted = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
@@ -297,6 +297,7 @@ Game "ItsyScape"
 		StrengthMelee = Meta.TYPE_INTEGER,
 		StrengthRanged = Meta.TYPE_INTEGER,
 		StrengthMagic = Meta.TYPE_INTEGER,
+		StrengthSailing = Meta.TYPE_INTEGER,
 		Prayer = Meta.TYPE_INTEGER,
 
 		-- The equip slot.
@@ -607,9 +608,12 @@ Game "ItsyScape"
 
 	Meta "Cannon" {
 		Range = Meta.TYPE_INTEGER,
-		MinDamage = Meta.TYPE_INTEGER,
-		MaxDamage = Meta.TYPE_INTEGER,
-		Cannonball = Meta.TYPE_RESOURCE,
+		AmmoType = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CannonAmmo" {
+		AmmoType = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
 

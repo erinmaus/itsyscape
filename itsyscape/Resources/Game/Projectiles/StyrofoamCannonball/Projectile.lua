@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Resources/Game/Projectiles/IronCannonball_Small/Projectile.lua
+-- ItsyScape/Resources/Game/Projectiles/StyrofoamCannonball/Projectile.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,19 +8,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Vector = require "ItsyScape.Common.Math.Vector"
 local Cannonball = require "Resources.Game.Projectiles.Common.Cannonball"
 
-local IronCannonball = Class(Cannonball)
+local StyrofoamCannonball = Class(Cannonball)
 
-function IronCannonball:getTextureFilename()
-	return "Resources/Game/Projectiles/IronCannonball/Texture.png"
+function StyrofoamCannonball:getTextureFilename()
+	return "Resources/Game/Projectiles/StyrofoamCannonball/Texture.png"
 end
 
-function IronCannonball:load()
-	Cannonball.load(self)
-
-	self.quad:getTransform():setLocalScale(Vector.ONE / 3)
-end
-
-return IronCannonball
+return StyrofoamCannonball

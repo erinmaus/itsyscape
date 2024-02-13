@@ -14,7 +14,6 @@ local BossStat = require "ItsyScape.Game.BossStat"
 local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Map = require "ItsyScape.Peep.Peeps.Map"
-local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
@@ -37,7 +36,6 @@ function ShipMapPeep:new(resource, name, ...)
 	self.time = 0
 
 	self:addBehavior(BossStatsBehavior)
-	self:addBehavior(CombatStatusBehavior)
 	self:addBehavior(ShipMovementBehavior)
 	self:addBehavior(ShipStatsBehavior)
 

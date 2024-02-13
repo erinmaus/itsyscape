@@ -34,7 +34,19 @@ ItsyScape.Resource.Item "IronCannonball" {
 			Resource = ItsyScape.Resource.Skill "Smithing",
 			Count = ItsyScape.Utility.xpForResource(15)
 		}
+	},
+
+	ItsyScape.Action.SailingUnlock() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Sailing",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
 	}
+}
+
+ItsyScape.Meta.CannonAmmo {
+	AmmoType = ItsyScape.Utility.Equipment.AMMO_CANNONBALL,
+	Resource = ItsyScape.Resource.Item "IronCannonball"
 }
 
 ItsyScape.Meta.ResourceName {
@@ -49,43 +61,52 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Item "IronCannonball"
 }
 
-ItsyScape.Meta.Item {
-	Value = ItsyScape.Utility.valueForItem(11),
-	Weight = 0,
-	Stackable = 1,
-	Resource = ItsyScape.Resource.Item "IronCannonball"
+ItsyScape.Resource.Item "StyrofoamCannonball" {
+	ItsyScape.Action.SailingUnlock() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Sailing",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		}
+	}
 }
 
-ItsyScape.Meta.ResourceCategory {
-	Key = "Metal",
-	Value = "Iron",
-	Resource = ItsyScape.Resource.Item "IronCannonball"
+ItsyScape.Meta.CannonAmmo {
+	AmmoType = ItsyScape.Utility.Equipment.AMMO_CANNONBALL,
+	Resource = ItsyScape.Resource.Item "StyrofoamCannonball"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Styrofoam cannonball",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "StyrofoamCannonball"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "This will literally do no damage!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "StyrofoamCannonball"
+}
+
+ItsyScape.Meta.Item {
+	Weight = 0,
+	Stackable = 1,
+	Resource = ItsyScape.Resource.Item "StyrofoamCannonball"
+}
+
+ItsyScape.Meta.Equipment {
+	StrengthSailing = -1000,
+	Resource = ItsyScape.Resource.Item "StyrofoamCannonball"
 }
 
 ItsyScape.Resource.Prop "Sailing_IronCannon_Default" {
 	ItsyScape.Action.Fire() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Dexterity",
+			Resource = ItsyScape.Resource.Skill "Sailing",
 			Count = ItsyScape.Utility.xpForLevel(1)
 		},
 
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Strength",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		},
-
-		Input {
-			Resource = ItsyScape.Resource.Item "IronCannonball",
-			Count = 1
-		},
-
 		Output {
-			Resource = ItsyScape.Resource.Skill "Dexterity",
-			Count = ItsyScape.Utility.xpForResource(2)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Strength",
+			Resource = ItsyScape.Resource.Skill "Sailing",
 			Count = ItsyScape.Utility.xpForResource(2)
 		}
 	}
@@ -123,38 +144,16 @@ ItsyScape.Meta.GatherableProp {
 }
 
 ItsyScape.Meta.Cannon {
-	Range = 10,
-	MinDamage = 8,
-	MaxDamage = 12,
-	Cannonball = ItsyScape.Resource.Item "IronCannonball",
+	Range = 24,
+	AmmoType = ItsyScape.Utility.Equipment.AMMO_CANNONBALL,
 	Resource = ItsyScape.Resource.Prop "Sailing_IronCannon_Default"
 }
 
 ItsyScape.Resource.Prop "Sailing_Player_IronCannon" {
 	ItsyScape.Action.Fire() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Dexterity",
-			Count = ItsyScape.Utility.xpForLevel(5)
-		},
-
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Strength",
-			Count = ItsyScape.Utility.xpForLevel(5)
-		},
-
-		Input {
-			Resource = ItsyScape.Resource.Item "IronCannonball",
-			Count = 1
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Dexterity",
-			Count = ItsyScape.Utility.xpForResource(2)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Strength",
-			Count = ItsyScape.Utility.xpForResource(2)
+			Resource = ItsyScape.Resource.Skill "Sailing",
+			Count = ItsyScape.Utility.xpForLevel(1)
 		}
 	}
 }
@@ -191,9 +190,7 @@ ItsyScape.Meta.GatherableProp {
 }
 
 ItsyScape.Meta.Cannon {
-	Range = 10,
-	MinDamage = 10,
-	MaxDamage = 15,
+	Range = 24,
 	Cannonball = ItsyScape.Resource.Item "IronCannonball",
 	Resource = ItsyScape.Resource.Prop "Sailing_Player_IronCannon"
 }

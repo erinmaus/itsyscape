@@ -19,6 +19,7 @@ local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavio
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 
 local Sail = B.Node("Sail")
+Sail.DIRECTION = B.Reference()
 Sail.TARGET = B.Reference()
 Sail.OFFSET = B.Reference()
 Sail.DISTANCE = B.Reference()
@@ -29,6 +30,7 @@ function Sail:update(mashina, state, executor)
 	local distance = state[self.DISTANCE] or 0
 	local target = state[self.TARGET]
 	local relativeOffset = state[self.OFFSET]
+	local direction = state[self.DIRECTION]
 
 	local ship = mashina:getBehavior(ShipCaptainBehavior)
 	ship = ship and ship.peep
@@ -37,44 +39,41 @@ function Sail:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local position
-	if type(target) == "string" then
-		local p = ship:getBehavior(PositionBehavior)
-		layer = p and p.layer
-		layer = layer or Utility.Peep.getLayer(ship)
+	local _, movement = ship:addBehavior(ShipMovementBehavior)
+	if direction then
+		movement.isMoving = true
+		movement.steerDirection = direction
 
-		local instance = Utility.Peep.getInstance(mashina)
-		local mapScript = instance:getMapScriptByLayer(layer)
-		local mapResouce = mapScript and Utility.Peep.getResource(mapScript)
+		return B.Status.Success
+	end
 
-		if not mapResouce then
-			return B.Status.Failure
-		end
-
-		position = Vector(Utility.Map.getAnchorPosition(mashina:getDirector():getGameInstance(), mapResource, target))
-	elseif Class.isCompatibleType(target, Vector) then
-		position = target
-	elseif Class.isCompatibleType(target, Peep) then
-		position = Utility.Peep.getPosition(target)
-	else
+	local position = Sailing.getShipTarget(ship, target)
+	if not position then
 		return B.Status.Failure
 	end
 
-	local _, movement = ship:addBehavior(ShipMovementBehavior)
-
-	local offset = relativeOffset and movement.rotation:transformVector(relativeOffset) or Vector.ZERO
+	local offset = relativeOffset and (movement.rotation * Quaternion.Y_90):transformVector(relativeOffset) or Vector.ZERO
 	local targetPosition = position + offset
 	local currentPosition = Utility.Peep.getPosition(ship)
 	local distanceFromTarget = (currentPosition - targetPosition):getLengthSquared()
 
+	-- if mashina:getName():match("Raven") then
+	-- 	print(">>> relative offset", offset:get())
+	-- 	print(">>> offset", offset:get())
+	-- 	print(">>> position", position:get())
+	-- 	print(">>> targetPosition", targetPosition:get())
+	-- 	print(">>> distance", math.sqrt(distanceFromTarget))
+	-- 	print(">>> direction", -Sailing.getDirection(ship, targetPosition, 1))
+	-- end
+
 	if distanceFromTarget < distance * distance then
-		print(">>> SUCCESS!", mashina:getName())
+		--print(">>> SUCCESS!", mashina:getName())
 		movement.isMoving = false
 		movement.steerDirection = 0
 
 		return B.Status.Success
 	else
-		print(">>> NOT SUCCESS!", mashina:getName(), math.sqrt(distanceFromTarget), distance)
+		--print(">>> NOT SUCCESS!", mashina:getName(), math.sqrt(distanceFromTarget), distance)
 		movement.isMoving = true
 		movement.steerDirection = -Sailing.getDirection(ship, targetPosition, 1)
 

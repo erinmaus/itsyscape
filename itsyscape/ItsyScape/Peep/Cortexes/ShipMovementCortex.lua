@@ -102,6 +102,8 @@ function ShipMovementCortex.Ship:move(delta)
 end
 
 function ShipMovementCortex.Ship:projectRay(ray)
+	local selfTransform = Utility.Peep.getTransform(self.ship)
+
 	-- Make the ray planar (XZ).
 	ray = Ray(ray.origin * Vector.PLANE_XZ, (ray.direction * Vector.PLANE_XZ):getNormal())
 
