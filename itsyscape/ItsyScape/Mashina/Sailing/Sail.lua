@@ -9,14 +9,16 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local Class = require "ItsyScape.Common.Class"
-local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Peep = require "ItsyScape.Peep.Peep"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
+local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
 
 local Sail = B.Node("Sail")
 Sail.DIRECTION = B.Reference()
@@ -30,9 +32,8 @@ function Sail:update(mashina, state, executor)
 
 	local distance = state[self.DISTANCE] or 0
 	local target = state[self.TARGET]
-	local relativeOffset = state[self.OFFSET]
+	local offset = state[self.OFFSET] or Vector.ZERO
 	local direction = state[self.DIRECTION]
-	local flank = state[self.FLANK]
 
 	local ship = mashina:getBehavior(ShipCaptainBehavior)
 	ship = ship and ship.peep
@@ -41,51 +42,65 @@ function Sail:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local _, movement = ship:addBehavior(ShipMovementBehavior)
+	local _, shipMovement = ship:addBehavior(ShipMovementBehavior)
 	if direction then
-		movement.isMoving = true
-		movement.steerDirection = direction
+		shipMovement.isMoving = true
+		shipMovement.steerDirection = direction
 
 		return B.Status.Success
 	end
 
-	local position = Sailing.getShipTarget(ship, target)
-	if not position then
+	local _, movement = ship:addBehavior(MovementBehavior)
+
+	local otherPosition, offset = Sailing.getShipTarget(ship, target, offset)
+	if not otherPosition then
 		return B.Status.Failure
 	end
 
-	local offset = relativeOffset and (movement.rotation * Quaternion.Y_90):transformVector(relativeOffset) or Vector.ZERO
-	local targetPosition = position + offset
+	local targetPosition = otherPosition + offset
 	local currentPosition = Utility.Peep.getPosition(ship)
-	local distanceFromTarget = (currentPosition - targetPosition):getLengthSquared()
+	local distanceFromTarget = (currentPosition - targetPosition):getLength()
+	local projectedDistanceFromTarget = distanceFromTarget - movement.velocity:getLength()
 
-	local isFlanking
-	do
+	local rudder = 1
+	if projectedDistanceFromTarget < distance then
+		local distanceDelta = 1 - (projectedDistanceFromTarget / distance)
+
+		local shipStats = ship:getBehavior(ShipStatsBehavior)
+		local turnRadius = shipStats and shipStats.bonuses[ShipStatsBehavior.STAT_TURN] or math.deg(math.pi / 16)
+		rudder = distanceDelta ^ (distanceDelta / 2)
+	end
+
+	local isFlanking = true
+	if Class.isCompatibleType(target, Peep) and target:hasBehavior(ShipMovementBehavior) then
+		local flank = state[self.FLANK]
 		if flank then
-			if Class.isCompatibleType(target, Peep) and target:hasBehavior(ShipMovementBehavior) then
-				local selfNormal = Sailing.getShipDirectionNormal(ship)
-				local otherNormal = Sailing.getShipDirectionNormal(target)
+			local selfNormal = Sailing.getShipDirectionNormal(ship)
+			local otherNormal = Sailing.getShipDirectionNormal(target)
+			local dot = math.abs(selfNormal:dot(otherNormal))
 
-				local angle = math.deg(math.acos(selfNormal:dot(otherNormal)))
-				if angle < 20 or angle > 160 then
-					isFlanking = true
-				else
-					isFlanking = false
-				end
-			end
-		else
-			isFlanking = true
+			local angle = math.acos(dot)
+			isFlanking = angle < math.pi / 8
+
+			-- print(">>> angle", math.floor(math.deg(angle)), math.deg(math.pi / 8))
+			print(">>> is flanking", isFlanking, "is close", distanceFromTarget < distance)
+			-- print(">>> rudder", rudder)
+			-- print(">>> cur distance", distanceFromTarget, "tar distance", distance)
 		end
 	end
 
-	if isFlanking and distanceFromTarget < distance * distance then
-		movement.isMoving = false
-		movement.steerDirection = 0
+	if isFlanking and distanceFromTarget < distance then
+		if mashina:getName():match("Raven") then print("SUCCESS!") end
+		shipMovement.isMoving = false
+		shipMovement.steerDirection = 0
 
 		return B.Status.Success
 	else
-		movement.isMoving = true
-		movement.steerDirection = -Sailing.getDirection(ship, targetPosition, 1)
+		shipMovement.isMoving = true
+
+		local direction = Sailing.getDirection(ship, targetPosition, 1)
+		shipMovement.steerDirection = -direction
+		shipMovement.rudder = rudder
 
 		return B.Status.Working
 	end

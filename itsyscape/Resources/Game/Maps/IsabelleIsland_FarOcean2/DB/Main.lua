@@ -77,32 +77,32 @@ do
 	}
 end
 
-M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0,
-		PositionY = 0,
-		PositionZ = 0,
-		Name = "Light_Fog",
-		Map = M._MAP,
-		Resource = M["Light_Fog"]
-	}
+-- M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
+-- do
+-- 	ItsyScape.Meta.MapObjectLocation {
+-- 		PositionX = 0,
+-- 		PositionY = 0,
+-- 		PositionZ = 0,
+-- 		Name = "Light_Fog",
+-- 		Map = M._MAP,
+-- 		Resource = M["Light_Fog"]
+-- 	}
 
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Fog_Default",
-		MapObject = M["Light_Fog"]
-	}
+-- 	ItsyScape.Meta.PropMapObject {
+-- 		Prop = ItsyScape.Resource.Prop "Fog_Default",
+-- 		MapObject = M["Light_Fog"]
+-- 	}
 
-	ItsyScape.Meta.Fog {
-		ColorRed = 33,
-		ColorGreen = 33,
-		ColorBlue = 33,
-		NearDistance = 30,
-		FarDistance = 60,
-		FollowTarget = 1,
-		Resource = M["Light_Fog"]
-	}
-end
+-- 	ItsyScape.Meta.Fog {
+-- 		ColorRed = 33,
+-- 		ColorGreen = 33,
+-- 		ColorBlue = 33,
+-- 		NearDistance = 30,
+-- 		FarDistance = 60,
+-- 		FollowTarget = 1,
+-- 		Resource = M["Light_Fog"]
+-- 	}
+-- end
 
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do

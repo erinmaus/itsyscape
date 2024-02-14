@@ -12,12 +12,11 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 
 local GetNearestOffset = B.Node("GetNearestOffset")
 GetNearestOffset.TARGET = B.Reference()
-GetNearestOffset.OFFSETS = B.Reference()
 GetNearestOffset.RESULT = B.Reference()
-GetNearestOffset.RESULTS = B.Reference()
 
 function GetNearestOffset:update(mashina, state, executor)
 	local ship = mashina:getBehavior(ShipCaptainBehavior)
@@ -27,37 +26,12 @@ function GetNearestOffset:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local target = state[self.TARGET]
-	local offsets = state[self.OFFSETS] or {}
+	local target = state[self.TARGET] or ship
+	local shipMovement = target:getBehavior(ShipMovementBehavior)
+	local direction = shipMovement and shipMovement.steerDirection
 
-	local results = {}
-	for _, offset in ipairs(offsets) do
-		local p, o = Sailing.getShipTarget(ship, target, offset)
-
-		if p and o then
-			table.insert(results, {
-				offset = offset,
-				position = p + o
-			})
-		end
-	end
-
-	local selfPosition = Utility.Peep.getPosition(ship)
-	table.sort(results, function(a, b)
-		local aDistance = (selfPosition - a.position):getLengthSquared()
-		local bDistance = (selfPosition - b.position):getLengthSquared()
-
-		return aDistance < bDistance
-	end)
-
-	for i, offset in ipairs(results) do
-		results[i] = offset.offset
-	end
-
-	state[self.RESULT] = results[1]
-	state[self.RESULTS] = results
-
-	if #results > 0 then
+	if direction then
+		state[self.RESULT] = direction
 		return B.Status.Success
 	else
 		return B.Status.Failure

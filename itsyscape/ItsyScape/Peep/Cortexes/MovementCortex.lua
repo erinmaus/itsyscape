@@ -431,15 +431,15 @@ function MovementCortex:update(delta)
 				position.position.y = y
 				movement.acceleration.y = 0
 				movement.velocity.y = 0
-
-				if movement.isStopping then
-					movement.acceleration = movement.acceleration * (movement.accelerationDecay ^ delta)
-					movement.velocity = movement.velocity * (movement.velocityDecay ^ delta)
-				end
 			else
 				if not movement.noClip then
 					position.position.y = math.max(position.position.y, y)
 				end
+			end
+
+			if movement.isStopping then
+				movement.acceleration = movement.acceleration * (movement.accelerationDecay ^ delta)
+				movement.velocity = movement.velocity * (movement.velocityDecay ^ delta)
 			end
 
 			movement.push = movement.push * (movement.pushDecay ^ delta)

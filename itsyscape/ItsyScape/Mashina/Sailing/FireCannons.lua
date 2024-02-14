@@ -84,7 +84,7 @@ local function probeCannons(ship, targetPosition, targetNormal, direction, alway
 
 			local distance = (positions[i] * Vector.PLANE_XZ - p):getLength()
 			isCloseEnough = distance <= cannons[i]:get("Range")
-			shipSide = Sailing.getDirection(selfPosition, targetPosition)
+			shipSide = Sailing.getDirection(ship, targetPosition)
 		elseif targetPosition then
 			local distance = ((positions[i] - targetPosition) * Vector.PLANE_XZ):getLength()
 			isCloseEnough = distance <= cannons[i]:get("Range")
@@ -167,12 +167,13 @@ local function fireCannons(ship, fireProbe)
 			end
 		end
 	end
+
+	return hits
 end
 
 function FireCannons:update(mashina, state, executor)
 	local director = mashina:getDirector()
 
-	local distance = state[self.DISTANCE] or math.huge
 	local target = state[self.TARGET]
 	local direction = state[self.DIRECTION]
 	local always = state[self.ALWAYS] or false
@@ -197,8 +198,10 @@ function FireCannons:update(mashina, state, executor)
 	state[self.HITS] = count
 
 	if count == 0 then
+		print("NO SHOTS!")
 		return B.Status.Failure
 	else
+		print("SHOTS", count)
 		return B.Status.Success
 	end
 end

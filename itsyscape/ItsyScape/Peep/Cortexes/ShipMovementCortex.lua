@@ -12,6 +12,7 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
@@ -51,20 +52,36 @@ function ShipMovementCortex.Ship:prepare()
 	local width = (map:getWidth() - 5.5) * map:getCellSize()
 	local height = (map:getHeight() - 4) * map:getCellSize()
 	local radius = height / 2
-	local numCircles = width / height * 2
+	local numCircles = width / height * 2 + 1
 	for i = 1, numCircles do
 		local cellSize = width / numCircles
 		local circle = {
 			x =  i / numCircles * width - radius - width / 2,
 			y = 0,
-			radius = math.sqrt(radius)
+			radius = math.sqrt(radius * 1.25)
 		}
 
 		table.insert(self.shape, circle)
 	end
+
+	local _, shipMovement = self.ship:addBehavior(ShipMovementBehavior)
+	shipMovement.length = map:getWidth() * map:getCellSize()
 end
 
-function ShipMovementCortex.Ship:steer(delta)
+function ShipMovementCortex.Ship:getRadius()
+	local director = self.ship:getDirector()
+	local map = director:getMap(self.ship:getLayer())
+	if not map then
+		return 0
+	end
+
+	local width = map:getWidth() * map:getCellSize()
+	local height = map:getHeight() * map:getCellSize()
+
+	return math.sqrt(math.max(width, height))
+end
+
+function ShipMovementCortex.Ship:steer(delta, steerDirection, rudder)
 	local _, shipMovement = self.ship:addBehavior(ShipMovementBehavior)
 
 	-- Can only steer while moving.
@@ -74,7 +91,7 @@ function ShipMovementCortex.Ship:steer(delta)
 	local turnRadius = math.rad(shipStats.bonuses[ShipStatsBehavior.STAT_TURN])
 	turnRadius = math.max(turnRadius, math.pi / 16) -- clamp the minimum to something sensible
 
-	local angle = turnRadius * delta * shipMovement.steerDirection * movementMultiplier
+	local angle = turnRadius * delta * (steerDirection or shipMovement.steerDirection) * movementMultiplier * (rudder or shipMovement.rudder)
 	local rotationStep = Quaternion.fromAxisAngle(Vector.UNIT_Y, angle)
 	shipMovement.rotation = (shipMovement.rotation * rotationStep):getNormal()
 end
@@ -85,6 +102,7 @@ function ShipMovementCortex.Ship:move(delta)
 	local _, movement = self.ship:addBehavior(MovementBehavior)
 
 	local movementMultiplier = shipMovement.isMoving and 1 or 0
+	movement.isStopping = not shipMovement.isMoving
 
 	local steerDirectionNormal = shipMovement.steerDirectionNormal
 	local currentDirectionNormal = Quaternion.transformVector(shipMovement.rotation, steerDirectionNormal)
@@ -93,6 +111,8 @@ function ShipMovementCortex.Ship:move(delta)
 	local maxSpeed = math.max(shipStats.bonuses[ShipStatsBehavior.STAT_SPEED] / self.MAX_SPEED_DENOMINATOR, 1)
 	movement.maxAcceleration = maxAcceleration
 	movement.maxSpeed = maxSpeed
+	movement.accelerationDecay = shipMovement.baseAccelerationDecay
+	movement.velocityDecay = shipMovement.baseVelocityDecay
 
 	local accelerationStep = currentDirectionNormal * movement.maxAcceleration * movementMultiplier
 	movement.acceleration = movement.acceleration + accelerationStep * delta
@@ -128,6 +148,34 @@ function ShipMovementCortex.Ship:projectRay(ray)
 	end
 
 	return nil
+end
+
+function ShipMovementCortex.Ship:avoid(otherShip, bowPosition)
+	if otherShip == self then
+		return
+	end
+
+	local selfPosition = Utility.Peep.getPosition(self.ship)
+	local distance = (selfPosition - bowPosition):getLength()
+	if distance < self:getRadius() then
+		local direction = -Sailing.getDirection(self.ship, Utility.Peep.getPosition(otherShip.ship))
+		otherShip:steer(otherShip.ship:getDirector():getGameInstance():getDelta(), direction, 1)
+	end
+
+	-- local selfTransform = Utility.Peep.getTransform(self.ship)
+	-- for i = 1, #self.shape do
+	-- 	local selfCircle = self.shape[i]
+	-- 	local selfCircleX, _, selfCircleY = selfTransform:transformPoint(selfCircle.x, 0, selfCircle.y)
+	-- 	local selfCircleRadius = selfCircle.radius * 2 -- Increase the radius a little to help prevent side swiping
+	-- 	local selfCirclePosition = Vector(selfCircleX, 0, selfCircleY)
+
+	-- 	local distance = (bowPosition * Vector.PLANE_XZ - selfCirclePosition):getLength()
+	-- 	if distance < selfCircleRadius then
+	-- 		local direction = -Sailing.getDirection(self.ship, Utility.Peep.getPosition(otherShip.ship))
+	-- 		otherShip:steer(otherShip.ship:getDirector():getGameInstance():getDelta(), direction, 1)
+	-- 		return
+	-- 	end
+	-- end
 end
 
 function ShipMovementCortex.Ship:isColliding(other)
@@ -236,6 +284,30 @@ function ShipMovementCortex:projectRay(ray, key)
 	return results
 end
 
+function ShipMovementCortex:avoid(otherShipPeep)
+	if self.pendingShips[otherShipPeep] then
+		return
+	end
+
+	local otherShip = self.ships[otherShipPeep]
+	for peep in self:iterate() do
+		if not self.pendingShips[peep] and peep:getLayerName() == otherShipPeep:getLayerName() then
+			local ship = self.ships[peep]
+
+			local bowPosition
+			do
+				local bow = Sailing.getShipBow(otherShipPeep)
+				local position = Utility.Peep.getPosition(otherShipPeep)
+				bowPosition = position + bow
+			end
+
+			if bowPosition then
+				ship:avoid(otherShip, bowPosition)
+			end
+		end
+	end
+end
+
 function ShipMovementCortex:update(delta)
 	for peep in pairs(self.pendingShips) do
 		if peep:getIsReady() then
@@ -254,8 +326,10 @@ function ShipMovementCortex:update(delta)
 	end
 
 	for currentPeep in self:iterate() do
+		self:avoid(currentPeep)
+
 		for otherPeep in self:iterate() do
-			if currentPeep ~= otherPeep then
+			if currentPeep ~= otherPeep and currentPeep:getLayerName() == otherPeep:getLayerName() then
 				local currentShip = self.ships[currentPeep]
 				local otherShip = self.ships[otherPeep]
 
