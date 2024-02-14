@@ -25,8 +25,8 @@ function Ocean:onLoad(...)
 		self,
 		"Ship_IsabelleIsland_Pirate",
 		self:getLayer(),
-		48,
-		48,
+		16,
+		16,
 		2.25,
 		{ spawnRaven = true })
 	self.deadPrincess = deadPrincess

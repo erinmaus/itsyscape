@@ -28,6 +28,15 @@ function Ray:project(distance)
 	return self.origin + self.direction * distance
 end
 
+function Ray:closest(point)
+	local dot = self.direction:dot(point)
+	if dot < 0 then
+		return false, self.origin
+	end
+
+	return true, self:project(dot / point:getLength())
+end
+
 -- Checks if the ray intersects the triangle (v1, v2, v3).
 --
 -- Returns true and the point (Vector) of collision, false otherwise.

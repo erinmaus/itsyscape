@@ -42,11 +42,11 @@ function Sailing.getDirectionFromPoints(a, b, c, bias)
 	-- This bias prevents 'jittering' when result is close to zero.
 	-- Otherwise, the ship will jitter between +/-.
 	if result > 0 + (bias or 0) then
-		return 1, result
-	elseif result < 0 then
-		return -1, result
+		return 1
+	elseif result < 0 - (bias or 0) then
+		return -1
 	else
-		return 0, result
+		return 0
 	end
 end
 
@@ -54,9 +54,9 @@ function Sailing.getDirection(ship, targetPosition, bias)
 	local shipPosition = Utility.Peep.getPosition(ship)
 	local rotation, normal
 	do
-		local movement = ship:getBehavior(ShipMovementBehavior)
-		rotation = movement and movement.rotation or Quaternion.IDENTITY
-		normal = movement and movement.steerDirectionNormal or -Vector.UNIT_X
+		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+		rotation = shipMovement and shipMovement.rotation or Quaternion.IDENTITY
+		normal = shipMovement and shipMovement.steerDirectionNormal or -Vector.UNIT_X
 	end
 
 	local shipForward = rotation:transformVector(normal)
@@ -85,9 +85,13 @@ function Sailing.getShipTarget(ship, target, offset)
 		position = Utility.Peep.getPosition(target)
 
 		if offset then
-			local movement = target:getBehavior(ShipMovementBehavior)
-			if movement then
-				offset = (movement.rotation * Quaternion.Y_90):transformVector(offset)
+			local shipMovement = target:getBehavior(ShipMovementBehavior)
+			local rotation = Utility.Peep.getRotation(target)
+
+			if shipMovement then
+				offset = (shipMovement.rotation * Quaternion.Y_90):transformVector(offset)
+			else
+				offset = rotation:transformVector(offset)
 			end
 		end
 	else
@@ -101,15 +105,43 @@ end
 -- The steer direction normal is the axis on which 1 or -1 is projected to steer the ship.
 function Sailing.getShipDirectionNormal(ship)
 	if Class.isCompatibleType(ship, Peep) then
-		local movement = ship:getBehavior(ShipMovementBehavior)
-		if movement then
-			return (movement.rotation * Quaternion.Y_90):transformVector(movement.steerDirectionNormal):getNormal()
+		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+		if shipMovement then
+			return (shipMovement.rotation * Quaternion.Y_90):transformVector(shipMovement.steerDirectionNormal):getNormal()
 		end
 	end
 
 	return nil
 end
 
+function Sailing.getShipBow(ship)
+	if Class.isCompatibleType(ship, Peep) then
+		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+		if shipMovement then
+			local direction = shipMovement.rotation:transformVector(shipMovement.steerDirectionNormal):getNormal()
+			local length = shipMovement.length / 2
+
+			return direction * length
+		end
+	end
+
+	return nil
+end
+
+
+function Sailing.getShipStern(ship)
+	if Class.isCompatibleType(ship, Peep) then
+		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+		if shipMovement then
+			local direction = shipMovement.rotation:transformVector(shipMovement.steerDirectionNormal):getNormal()
+			local length = shipMovement.length / 2
+
+			return direction * -length
+		end
+	end
+
+	return nil
+end
 function Sailing.calcCannonMinHit(level, bonus)
 	return math.max(math.ceil((level + 50) * (bonus + 64) / 640), 1)
 end

@@ -21,6 +21,10 @@ function ShipMovementBehavior:new()
 	self.steerDirectionNormal = Vector(-1, 0, 0)
 	self.rotation = Quaternion.IDENTITY
 	self.isMoving = false
+	self.rudder = 1 -- multiplier for turn stat, positive, multiplied by steerDirection
+	self.baseAccelerationDecay = 0.05
+	self.baseVelocityDecay = 0.2
+	self.length = 0
 end
 
 return ShipMovementBehavior
