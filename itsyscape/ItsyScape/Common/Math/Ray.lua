@@ -29,12 +29,51 @@ function Ray:project(distance)
 end
 
 function Ray:closest(point)
-	local dot = self.direction:dot(point)
-	if dot < 0 then
-		return false, self.origin
+	local v = point - self.origin
+	local dot = v:dot(self.direction)
+	if dot == 0 then
+		return nil, self.origin
 	end
 
-	return true, self:project(dot / point:getLength())
+	return dot > 0, self:project(dot)
+end
+
+function Ray:side(point)
+	local v = point - self.origin
+	local dot = v:dot(self.direction)
+
+	if dot < 0 then
+		return -1
+	elseif dot > 0 then
+		return 1
+	else
+		return 0
+	end
+end
+
+function Ray:intersect(other)
+	local da = self.origin
+	local db = other.origin
+	local dc = other.origin - self.origin
+
+	if Vector.dot(dc, Vector.cross(da, db)) ~= 0 then
+		return false
+	end
+
+	local lengthSquared = Vector.cross(da, db):getLengthSquared()
+	if lengthSquared == 0 then
+		return false
+	end
+
+	local s = Vector.dot(Vector.cross(dc, db), Vector.cross(da, db)) / lengthSquared
+	local t = Vector.dot(Vector.cross(dc, da), Vector.cross(da, db)) / lengthSquared
+
+	if s >= 0 and s <= 1 and t >= 0 and t <= 1 then
+		local point = self.origin + da * s
+		local success = self:closest(point) and other:closest(point)
+
+		return success, point
+	end
 end
 
 -- Checks if the ray intersects the triangle (v1, v2, v3).
