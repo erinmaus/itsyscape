@@ -192,7 +192,7 @@ function Ship:onLoad(filename, arguments, layer)
 	ShipMapPeep.onLoad(self, filename, arguments, layer)
 
 	local behavior = self:getBehavior(ShipStatsBehavior)
-	behavior.bonuses[ShipStatsBehavior.STAT_SPEED] = 100
+	behavior.bonuses[ShipStatsBehavior.STAT_SPEED] = 300
 	behavior.bonuses[ShipStatsBehavior.STAT_TURN]  = 20
 
 	self.player = Utility.Peep.getPlayer(self)

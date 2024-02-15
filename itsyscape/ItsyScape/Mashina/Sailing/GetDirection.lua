@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Sailing/GetNearestOffset.lua
+-- ItsyScape/Mashina/Sailing/GetDirection.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -14,11 +14,11 @@ local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 
-local GetNearestOffset = B.Node("GetNearestOffset")
-GetNearestOffset.TARGET = B.Reference()
-GetNearestOffset.RESULT = B.Reference()
+local GetDirection = B.Node("GetDirection")
+GetDirection.TARGET = B.Reference()
+GetDirection.RESULT = B.Reference()
 
-function GetNearestOffset:update(mashina, state, executor)
+function GetDirection:update(mashina, state, executor)
 	local ship = mashina:getBehavior(ShipCaptainBehavior)
 	ship = ship and ship.peep
 	if not ship then
@@ -38,4 +38,4 @@ function GetNearestOffset:update(mashina, state, executor)
 	end
 end
 
-return GetNearestOffset
+return GetDirection

@@ -66,6 +66,7 @@ function ShipMovementCortex.Ship:prepare()
 
 	local _, shipMovement = self.ship:addBehavior(ShipMovementBehavior)
 	shipMovement.length = map:getWidth() * map:getCellSize()
+	shipMovement.beam = map:getHeight() * map:getCellSize()
 end
 
 function ShipMovementCortex.Ship:getRadius()
@@ -78,47 +79,64 @@ function ShipMovementCortex.Ship:getRadius()
 	local width = map:getWidth() * map:getCellSize()
 	local height = map:getHeight() * map:getCellSize()
 
-	return math.sqrt(math.max(width, height))
+	return math.max(width, height)
 end
 
-function ShipMovementCortex.Ship:steer(delta, steerDirection, rudder)
-	local _, shipMovement = self.ship:addBehavior(ShipMovementBehavior)
-
-	-- Can only steer while moving.
-	local movementMultiplier = shipMovement.isMoving and 1 or 0
+function ShipMovementCortex.Ship:steer(steerDirection, rudder)
+	steerDirection = steerDirection or 0
+	rudder = math.clamp(rudder or 1)
 
 	local _, shipStats = self.ship:addBehavior(ShipStatsBehavior)
 	local turnRadius = math.rad(shipStats.bonuses[ShipStatsBehavior.STAT_TURN])
 	turnRadius = math.max(turnRadius, math.pi / 16) -- clamp the minimum to something sensible
 
-	local angle = turnRadius * delta * (steerDirection or shipMovement.steerDirection) * movementMultiplier * (rudder or shipMovement.rudder)
-	local rotationStep = Quaternion.fromAxisAngle(Vector.UNIT_Y, angle)
-	shipMovement.rotation = (shipMovement.rotation * rotationStep):getNormal()
+	local shipMovement = self.ship:getBehavior(ShipMovementBehavior)
+	local angle = turnRadius * steerDirection * rudder
+	shipMovement.angularAcceleration = shipMovement.angularAcceleration + angle
 end
 
 function ShipMovementCortex.Ship:move(delta)
+	local _, movement = self.ship:addBehavior(MovementBehavior)
 	local _, shipMovement = self.ship:addBehavior(ShipMovementBehavior)
 	local _, shipStats = self.ship:addBehavior(ShipStatsBehavior)
-	local _, movement = self.ship:addBehavior(MovementBehavior)
 
-	local movementMultiplier = shipMovement.isMoving and 1 or 0
-	movement.isStopping = not shipMovement.isMoving
-
-	local steerDirectionNormal = shipMovement.steerDirectionNormal
-	local currentDirectionNormal = Quaternion.transformVector(shipMovement.rotation, steerDirectionNormal)
+	if shipMovement.steerDirection ~= 0 and shipMovement.isMoving then
+		self:steer(shipMovement.steerDirection, shipMovement.rudder)
+		shipMovement.steerDirection = 0
+	end
 
 	local maxAcceleration = math.max(shipStats.bonuses[ShipStatsBehavior.STAT_SPEED] / self.MAX_ACCELERATION_DENOMINATOR, 1)
 	local maxSpeed = math.max(shipStats.bonuses[ShipStatsBehavior.STAT_SPEED] / self.MAX_SPEED_DENOMINATOR, 1)
+	movement.isStopping = not shipMovement.isMoving
 	movement.maxAcceleration = maxAcceleration
 	movement.maxSpeed = maxSpeed
 	movement.accelerationDecay = shipMovement.baseAccelerationDecay
 	movement.velocityDecay = shipMovement.baseVelocityDecay
 
-	local accelerationStep = currentDirectionNormal * movement.maxAcceleration * movementMultiplier
-	movement.acceleration = movement.acceleration + accelerationStep * delta
+	if movement.acceleration:getLength() > 0 then
+		local velocityDirection = movement.velocity:getNormal()
+		local accelerationDirection = movement.acceleration:getNormal()
+
+		local dot = math.min(math.max(velocityDirection:dot(accelerationDirection), 0), 1)
+		local angle = math.acos(dot)
+
+		shipMovement.angularAcceleration = shipMovement.angularAcceleration + angle
+	end
+
+	local rotationStep = Quaternion.fromAxisAngle(Vector.UNIT_Y, shipMovement.angularAcceleration * delta)
+	shipMovement.rotation = (shipMovement.rotation * rotationStep):getNormal()
+	shipMovement.angularAcceleration = 0
+
+	local steerDirectionNormal = shipMovement.steerDirectionNormal
+	local currentDirectionNormal = Quaternion.transformVector(shipMovement.rotation, steerDirectionNormal)
 
 	local rotation = Quaternion.lookAt(currentDirectionNormal, Vector.ZERO)
 	Utility.Peep.setRotation(self.ship, (rotation * Quaternion.Y_90):getNormal())
+
+	if shipMovement.isMoving then
+		local acceleration = currentDirectionNormal * movement.maxAcceleration
+		movement.acceleration = movement.acceleration + acceleration
+	end
 end
 
 function ShipMovementCortex.Ship:projectRay(ray)
@@ -159,23 +177,8 @@ function ShipMovementCortex.Ship:avoid(otherShip, bowPosition)
 	local distance = (selfPosition - bowPosition):getLength()
 	if distance < self:getRadius() then
 		local direction = -Sailing.getDirection(self.ship, Utility.Peep.getPosition(otherShip.ship))
-		otherShip:steer(otherShip.ship:getDirector():getGameInstance():getDelta(), direction, 1)
+		otherShip:steer(direction)
 	end
-
-	-- local selfTransform = Utility.Peep.getTransform(self.ship)
-	-- for i = 1, #self.shape do
-	-- 	local selfCircle = self.shape[i]
-	-- 	local selfCircleX, _, selfCircleY = selfTransform:transformPoint(selfCircle.x, 0, selfCircle.y)
-	-- 	local selfCircleRadius = selfCircle.radius * 2 -- Increase the radius a little to help prevent side swiping
-	-- 	local selfCirclePosition = Vector(selfCircleX, 0, selfCircleY)
-
-	-- 	local distance = (bowPosition * Vector.PLANE_XZ - selfCirclePosition):getLength()
-	-- 	if distance < selfCircleRadius then
-	-- 		local direction = -Sailing.getDirection(self.ship, Utility.Peep.getPosition(otherShip.ship))
-	-- 		otherShip:steer(otherShip.ship:getDirector():getGameInstance():getDelta(), direction, 1)
-	-- 		return
-	-- 	end
-	-- end
 end
 
 function ShipMovementCortex.Ship:isColliding(other)
@@ -326,8 +329,6 @@ function ShipMovementCortex:update(delta)
 	end
 
 	for currentPeep in self:iterate() do
-		self:avoid(currentPeep)
-
 		for otherPeep in self:iterate() do
 			if currentPeep ~= otherPeep and currentPeep:getLayerName() == otherPeep:getLayerName() then
 				local currentShip = self.ships[currentPeep]

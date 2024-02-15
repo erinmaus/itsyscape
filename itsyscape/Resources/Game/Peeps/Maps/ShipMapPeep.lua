@@ -230,7 +230,7 @@ end
 function ShipMapPeep:_rock()
 	local gameDB = self:getDirector():getGameDB()
 	local effect = gameDB:getResource("X_ShipRock", "Effect")
-	if effect then
+	if effect and not self:getEffect(Utility.Peep.getEffectType(effect, gameDB)) then
 		Utility.Peep.applyEffect(self, effect, true)
 	end
 end

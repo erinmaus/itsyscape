@@ -9,11 +9,12 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 
-local DISTANCE = 12
+local DISTANCE = 8
 
 local TARGET = B.Reference("CapnRaven_ChaseLogic", "TARGET")
 local OFFSET = B.Reference("CapnRaven_ChaseLogic", "OFFSET")
@@ -35,8 +36,8 @@ local Tree = BTreeBuilder.Node() {
 					Mashina.Sailing.GetNearestOffset {
 						target = TARGET,
 						offsets = {
-							Vector(24, 0, 0),
-							Vector(-24, 0, 0),
+							Ray(Vector(24, 0, 0), -Vector.UNIT_Z),
+							Ray(Vector(-24, 0, 0), -Vector.UNIT_Z)
 						},
 
 						[OFFSET] = B.Output.result
@@ -57,14 +58,20 @@ local Tree = BTreeBuilder.Node() {
 					}
 				},
 
-				Mashina.Success {
-					Mashina.ParallelSequence {
-						Mashina.Peep.Timeout {
-							duration = 2
+				Mashina.ParallelSequence {
+					Mashina.Peep.TimeOut {
+						duration = 2.5
+					},
+
+					Mashina.Sequence {
+						Mashina.Sailing.GetDirection {
+							target = target,
+							[DIRECTION] = B.Output.result
 						},
 
 						Mashina.Sailing.Sail {
-							direction = 0
+							target = TARGET,
+							direction = DIRECTION
 						}
 					}
 				}
