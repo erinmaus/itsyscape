@@ -438,9 +438,9 @@ function MovementCortex:update(delta)
 			end
 
 			if movement.isStopping then
-				movement.acceleration = movement.acceleration * (movement.accelerationDecay ^ delta)
 				movement.velocity = movement.velocity * (movement.velocityDecay ^ delta)
 			end
+			movement.acceleration = movement.acceleration * (movement.accelerationDecay ^ delta)
 
 			movement.push = movement.push * (movement.pushDecay ^ delta)
 			clampVector(movement.push)

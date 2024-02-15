@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local Class = require "ItsyScape.Common.Class"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
@@ -35,14 +36,22 @@ function GetNearestOffset:update(mashina, state, executor)
 		local p, o = Sailing.getShipTarget(ship, target, offset)
 
 		if p and o then
+			local po
+			if Class.isCompatibleType(o, Ray) then
+				po = p + o.origin
+			else
+				po = p + o
+			end
+
 			table.insert(results, {
 				offset = offset,
-				position = p + o
+				position = po,
+
 			})
 		end
 	end
 
-	local selfPosition = Utility.Peep.getPosition(ship)
+	local selfPosition = Utility.Peep.getPosition(ship) + (Sailing.getShipBow(ship) or Vector.ZERO)
 	table.sort(results, function(a, b)
 		local aDistance = (selfPosition - a.position):getLengthSquared()
 		local bDistance = (selfPosition - b.position):getLengthSquared()

@@ -10,7 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
-local Vector = require "ItsyScape.Common.Math.Vector"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Peep = require "ItsyScape.Peep.Peep"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -41,13 +41,16 @@ function Sailing.getDirectionFromPoints(a, b, c, bias)
 
 	-- This bias prevents 'jittering' when result is close to zero.
 	-- Otherwise, the ship will jitter between +/-.
+	local sign
 	if result > 0 + (bias or 0) then
-		return 1
+		sign = 1
 	elseif result < 0 - (bias or 0) then
-		return -1
+		sign = -1
 	else
-		return 0
+		sign = 0
 	end
+
+	return sign, result
 end
 
 function Sailing.getDirection(ship, targetPosition, bias)
@@ -88,14 +91,32 @@ function Sailing.getShipTarget(ship, target, offset)
 			local shipMovement = target:getBehavior(ShipMovementBehavior)
 			local rotation = Utility.Peep.getRotation(target)
 
-			if shipMovement then
-				offset = (shipMovement.rotation * Quaternion.Y_90):transformVector(offset)
-			else
-				offset = rotation:transformVector(offset)
+			if Class.isCompatibleType(offset, Ray) then
+				if shipMovement then
+					local r = shipMovement.rotation * Quaternion.Y_90
+					offset = Ray(
+						r:transformVector(offset.origin),
+						r:transformVector(offset.direction):getNormal())
+				else
+					offset = Ray(
+						rotation:transformVector(offset.origin),
+						rotation:transformVector(offset.direction):getNormal())
+					offset = rotation:transformVector(offset)
+				end
+			elseif Class.isCompatibleType(offset, Vector) then
+				if shipMovement then
+					offset = (shipMovement.rotation * Quaternion.Y_90):transformVector(offset)
+				else
+					offset = rotation:transformVector(offset)
+				end
 			end
 		end
 	else
 		position = nil
+	end
+
+	if position then
+		position = position * Vector.PLANE_XZ
 	end
 
 	return position, offset
