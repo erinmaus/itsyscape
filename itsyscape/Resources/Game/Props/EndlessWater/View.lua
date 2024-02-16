@@ -17,7 +17,7 @@ local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 
 local EndlessWater = Class(PropView)
 
-EndlessWater.SIZE = 32
+EndlessWater.SIZE = 64
 
 EndlessWater.WIDTH  = 1
 EndlessWater.HEIGHT = 1
@@ -52,13 +52,14 @@ function EndlessWater:load()
 					EndlessWater.SIZE,
 					EndlessWater.SIZE,
 					1.5,
-					4)
+					8)
 
 				water:getMaterial():setTextures(self.texture)
 				water:setParent(self.waterParent)
+				water:setYOffset(1)
 
-				water:setPositionTimeScale(math.pi / 4)
-				water:setTextureTimeScale(1 / 2, 1 / 2)
+				water:setPositionTimeScale(4)
+				water:setTextureTimeScale(math.pi / 4, 1 / 2)
 			end)
 		end
 	end

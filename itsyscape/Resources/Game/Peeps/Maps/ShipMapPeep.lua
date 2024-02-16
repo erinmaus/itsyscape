@@ -15,6 +15,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
+local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
@@ -27,6 +28,9 @@ local ShipMapPeep = Class(Map)
 ShipMapPeep.SINK_TIME = 2.0
 ShipMapPeep.SINK_DEPTH = 1
 ShipMapPeep.BOB_MULTIPLIER = math.pi / 2
+
+-- TODO: get this from the map
+local WATER_ELEVATION = 1.75
 
 function ShipMapPeep:new(resource, name, ...)
 	Map.new(self, resource, name or 'ShipMapPeep', ...)
@@ -141,9 +145,6 @@ function ShipMapPeep:onLoad(filename, args, layer)
 		})
 
 		stage:loadMusic(layer, map)
-
-		-- TODO: get this from the map
-		local WATER_ELEVATION = 1.75
 
 		if script then
 			local baseMap = stage:getMap(scriptLayer)
@@ -293,12 +294,17 @@ function ShipMapPeep:updateFoam()
 		z = z + map:getHeight() / 2 * map:getCellSize()
 	end
 
+	local position = self:getBehavior(PositionBehavior)
+	local instance = Utility.Peep.getInstance(self)
+	local mapScript = instance:getMapScriptByLayer(position.layer or instance:getBaseLayer())
+	local ocean = mapScript and mapScript:getBehavior(OceanBehavior)
+
 	do
 		local _, boatFoamPropPosition = self.boatFoamProp:addBehavior(PositionBehavior)
 		local _, boatFoamTrailPropPosition = self.boatFoamTrailProp:addBehavior(PositionBehavior)
 
-		boatFoamPropPosition.position = Vector(x, boatFoamPropPosition.position.y, z)
-		boatFoamTrailPropPosition.position = Vector(x, boatFoamTrailPropPosition.position.y, z)
+		boatFoamPropPosition.position = Vector(x, (ocean and ocean.depth or 0) + WATER_ELEVATION, z)
+		boatFoamTrailPropPosition.position = Vector(x, (ocean and ocean.depth or 0) + WATER_ELEVATION, z)
 	end
 
 	local scale = self:getBehavior(ScaleBehavior)
@@ -330,11 +336,15 @@ function ShipMapPeep:update(director, game)
 	local position = self:getBehavior(PositionBehavior)
 	local scale = self:getBehavior(ScaleBehavior)
 	if position then
+		local instance = Utility.Peep.getInstance(self)
+		local mapScript = instance:getMapScriptByLayer(position.layer or instance:getBaseLayer())
+		local ocean = mapScript and mapScript:getBehavior(OceanBehavior)
+
 		local yScale
 		if scale then
-			yScale = scale.scale.y
+			yScale = scale.scale.y * (ocean and ocean.weatherBobScale or 1)
 		else
-			yScale = 1
+			yScale = (ocean and ocean.weatherBobScale or 1)
 		end
 
 		if self.beached then
@@ -345,7 +355,7 @@ function ShipMapPeep:update(director, game)
 		else
 			position.position = Vector(
 				position.position.x,
-				(math.sin(self.time * self.BOB_MULTIPLIER) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth())) * yScale,
+				(ocean and ocean.depth or 0) + (math.sin(self.time * self.BOB_MULTIPLIER) * 0.5 - 1.5 * (1 - self:getCurrentHealth() / self:getMaxHealth())) * yScale,
 				position.position.z) + (position.offset or Vector.ZERO)
 			if self.isSinking then
 				position.position.y = position.position.y - (self.sinkTime / self.SINK_TIME) * self.SINK_DEPTH

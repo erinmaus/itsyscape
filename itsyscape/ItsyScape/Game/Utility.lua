@@ -1954,13 +1954,9 @@ function Utility.Peep.getLayer(peep)
 end
 
 function Utility.Peep.setLayer(peep, layer)
-	if peep:isCompatibleType(require "ItsyScape.Peep.Peeps.Map") then
-		Log.error("Can't change layer of map '%s' with this method.", peep:getName())
-	else
-		local position = peep:getBehavior(PositionBehavior)
-		if position then
-			position.layer = layer
-		end
+	local position = peep:getBehavior(PositionBehavior)
+	if position then
+		position.layer = layer
 	end
 end
 

@@ -859,7 +859,6 @@ function Instance:getMapScriptByLayer(layer)
 		return mapScript:getPeep()
 	end
 
-	Log.warn("No map script for layer %d in instance %s (%d).", layer, self:getFilename(), self:getID())
 	return nil
 end
 

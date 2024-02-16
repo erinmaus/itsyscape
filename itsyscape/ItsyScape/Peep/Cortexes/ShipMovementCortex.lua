@@ -18,6 +18,7 @@ local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehav
 local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
+local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
@@ -96,6 +97,15 @@ function ShipMovementCortex.Ship:steer(steerDirection, rudder)
 end
 
 function ShipMovementCortex.Ship:move(delta)
+	local ocean
+	do
+		local instance = Utility.Peep.getInstance(self.ship)
+		local position = self.ship:getBehavior(PositionBehavior)
+		local layer = position and position.layer or instance:getBaseLayer()
+		local oceanMapScript = instance:getMapScriptByLayer(layer)
+		ocean = oceanMapScript and oceanMapScript:getBehavior(OceanBehavior)
+	end
+
 	local _, movement = self.ship:addBehavior(MovementBehavior)
 	local _, shipMovement = self.ship:addBehavior(ShipMovementBehavior)
 	local _, shipStats = self.ship:addBehavior(ShipStatsBehavior)
@@ -131,6 +141,13 @@ function ShipMovementCortex.Ship:move(delta)
 	local currentDirectionNormal = Quaternion.transformVector(shipMovement.rotation, steerDirectionNormal)
 
 	local rotation = Quaternion.lookAt(currentDirectionNormal, Vector.ZERO)
+	if ocean then
+		local delta = love.timer.getTime() * ocean.weatherRockMultiplier
+		local mu = math.sin(delta)
+		local angle = mu * ocean.weatherRockRange
+
+		rotation = rotation * Quaternion.fromAxisAngle(shipMovement.rockDirectionNormal, angle)
+	end
 	Utility.Peep.setRotation(self.ship, (rotation * Quaternion.Y_90):getNormal())
 
 	if shipMovement.isMoving then
