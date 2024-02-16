@@ -10,6 +10,8 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local Ocean = Class(Map)
@@ -43,18 +45,24 @@ function Ocean:onLoad(...)
 	self.soakedLog = soakedLog
 	Utility.Peep.setLayer(self.soakedLog, self:getLayer())
 
-	local stage = self:getDirector():getGameInstance():getStage()
+	local _, ocean = self:addBehavior(OceanBehavior)
+	ocean.weatherBobScale = 1.5
+	ocean.weatherRockRange = math.pi / 16
+	ocean.weatherRockMultiplier = math.pi / 2
 
+	local stage = self:getDirector():getGameInstance():getStage()
 	local index = 0
 	for i = -1, 1 do
 		for j = -1, 1 do
 			local layer, mapScript = stage:loadMapResource(Utility.Peep.getInstance(self), "Sailing_Sector")
+			mapScript:addBehavior(PositionBehavior)
+
 			Utility.Peep.setPosition(mapScript, Vector(i * 64 * 2, 0, j * 64 * 2))
 
 			index = index + 1
 			stage:forecast(layer, string.format('IsabelleIsland_FarOcean2_HeavyRain%d', index), 'Rain', {
 				wind = { -15, 0, 0 },
-				heaviness = 1 / 32
+				heaviness = 1 / 8
 			})
 		end
 	end

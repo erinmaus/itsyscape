@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- ItsyScape/Graphics/SceneNode.lua
 --
@@ -122,7 +123,7 @@ function WaterMeshSceneNode:draw(renderer, delta)
 	end
 
 	if shader:hasUniform("scape_TimeScale") then
-		shader:send("scape_TimeScale", { self.textureTimeScale.x, self.textureTimeScale.y, self.positionTimeScale })
+		shader:send("scape_TimeScale", { self.textureTimeScale.x, self.textureTimeScale.y, self.positionTimeScale, self.width })
 	end
 
 	if shader:hasUniform("scape_YOffset") then

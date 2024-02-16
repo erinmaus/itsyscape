@@ -1,7 +1,7 @@
 #line 1
 
 uniform float scape_Time;
-uniform vec3 scape_TimeScale;
+uniform vec4 scape_TimeScale;
 uniform float scape_YOffset;
 
 void performTransform(
@@ -10,8 +10,8 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	float offset1 = sin(scape_Time * scape_TimeScale.z + position.x * radians(180.0)) * scape_YOffset;
-	float offset2 = sin(scape_Time * scape_TimeScale.z + position.z * radians(180.0)) * scape_YOffset;
+	float offset1 = sin(scape_Time * radians(180) + position.x / scape_TimeScale.w * radians(180) * scape_TimeScale.z) * scape_YOffset;
+	float offset2 = sin(scape_Time * radians(180) + position.z / scape_TimeScale.w * radians(180) * scape_TimeScale.z) * scape_YOffset;
 
 	localPosition = position.xyz;
 	localPosition.y += offset1 + offset2;

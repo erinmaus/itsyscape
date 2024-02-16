@@ -29,6 +29,9 @@ function ShipMovementBehavior:new()
 	-- This should point towards the bow (front) from the stern (back)
 	self.steerDirectionNormal = Vector(-1, 0, 0)
 
+	-- The direction normal the ship rocks along.
+	self.rockDirectionNormal = Vector(0, 0, 1)
+
 	-- The current angular acceleration.
 	-- This is reset to 0 after being applied to ship.
 	self.angularAcceleration = 0
