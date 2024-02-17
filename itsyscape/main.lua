@@ -424,6 +424,8 @@ function itsyrealm.errorhandler()
 end
 
 function love.errorhandler(message)
+	Log.error("Encountered an error: %s", message)
+
 	if not _GAME_THREAD_ERROR then
 		Log.sendError(message, 3)
 
