@@ -194,9 +194,14 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
+		State = "cutscene",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_CutsceneLogic.lua",
+		Resource = M["Jenkins_Pirate"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
 		State = "engage",
 		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_EngageLogic.lua",
-		IsDefault = 1,
 		Resource = M["Jenkins_Pirate"]
 	}
 
@@ -350,10 +355,10 @@ end
 M["Anchor_Rosalind_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27.0,
+		PositionX = 29.0,
 		PositionY = 5.0,
 		PositionZ = 13.0,
-		Direction = 1,
+		Direction = -1,
 		Name = "Anchor_Rosalind_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Rosalind_Spawn"]
@@ -398,8 +403,13 @@ do
 
 	for _, speaker in ipairs(SPEAKERS) do
 		local filename = string.format("Resources/Game/Maps/IsabelleIsland_FarOcean2/Dialog/%s_en-US.lua", speaker)
-
 		local TalkAction = ItsyScape.Action.Talk()
+
+		ItsyScape.Meta.TalkDialog {
+			Script = filename,
+			Language = "en-US",
+			Action = TalkAction
+		}
 
 		ItsyScape.Meta.TalkSpeaker {
 			Resource = M["Jenkins_Pirate"],
