@@ -19,11 +19,13 @@ local LightBeamSceneNode = require "ItsyScape.Graphics.LightBeamSceneNode"
 local Lightning = Class(Projectile)
 
 Lightning.DURATION = 0.5
-Lightning.MAX_AMBIENCE = 3
-Lightning.SPAWN_OFFSET = Vector.UNIT_Y * 10
-Lightning.MAX_SEGMENT_LENGTH = 20 / 1000
-Lightning.MIN_SEGMENT_LENGTH = 5 / 1000
-Lightning.MAX_JITTER_DISTANCE = 1.5
+Lightning.MAX_AMBIENCE = 0.5
+Lightning.SPAWN_OFFSET = Vector.UNIT_Y * 20
+Lightning.MIN_SPAWN_RADIUS = 10
+Lightning.MAX_SPAWN_RADIUS = 40
+Lightning.MAX_SEGMENT_LENGTH = 70 / 1000
+Lightning.MIN_SEGMENT_LENGTH = 40 / 1000
+Lightning.MAX_JITTER_DISTANCE = 2.5
 Lightning.COLOR = Color.fromHexString("ffffff", 1)
 
 function Lightning:load()
@@ -33,6 +35,7 @@ function Lightning:load()
 	local root = self:getRoot()
 
 	self.lightning = AmbientLightSceneNode()
+	self.lightning:setParent(root)
 
 	self.lightningBeam = LightBeamSceneNode()
 	self.lightningBeam:setParent(root)
@@ -101,18 +104,9 @@ end
 
 function Lightning:zapTarget()
 	local delta = self:getDelta()
-	if delta > 0.5 then
-		if not self.zapped then
-			local target = self:getDestination()
-			if target:isCompatibleType(Actor) then
-				local animation = CacheRef(
-					"ItsyScape.Graphics.AnimationResource",
-					"Resources/Game/Animations/Spell_Lightning_Zap/Script.lua")
-
-				target:onAnimationPlayed('x-spell-lightning', 1, animation)
-				self.zapped = true
-			end
-		end
+	if delta > 0.5 and not self.zapped then
+		self.zapped = true
+		self:playAnimation(nil, "SFX_LightningStrike")
 	end
 end
 
@@ -123,7 +117,15 @@ end
 function Lightning:tick()
 	if not self.spawnPosition then
 		self.hitPosition = self:getTargetPosition(self:getDestination())
-		self.spawnPosition = self:getTargetPosition(self:getSource()) + Lightning.SPAWN_OFFSET
+
+		local radius = love.math.random() * (Lightning.MAX_SPAWN_RADIUS - Lightning.MIN_SPAWN_RADIUS) + Lightning.MIN_SPAWN_RADIUS
+		local angle = love.math.random() * math.pi * 2
+		local spawnOffset = Vector(
+			math.cos(angle) * radius,
+			0,
+			math.sin(angle) * radius)
+
+		self.spawnPosition = self:getTargetPosition(self:getDestination()) + Lightning.SPAWN_OFFSET + spawnOffset
 
 		self:generatePath(self.spawnPosition, self.hitPosition)
 	end
@@ -133,7 +135,7 @@ function Lightning:update(elapsed)
 	Projectile.update(self, elapsed)
 
 	if self.spawnPosition then
-		self.lightning:setAmbience(Lightning.MAX_AMBIENCE * self:getDelta())
+		self.lightning:setAmbience(math.sin(self:getDelta() * math.pi) * 0.25)
 		self:updatePath()
 		self:zapTarget()
 
