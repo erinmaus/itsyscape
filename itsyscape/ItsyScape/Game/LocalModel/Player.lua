@@ -30,7 +30,6 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
-local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
 local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
 local PathNode = require "ItsyScape.World.PathNode"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
@@ -155,26 +154,9 @@ function LocalPlayer:spawn(storage, newGame, password)
 			self.isPlayable = not root:hasSection("Location") or not root:getSection("Location"):get("isTitleScreen")
 
 			if newGame then
-				-- Utility.UI.openInterface(actor:getPeep(), "CutsceneTransition", false)
-				-- Utility.UI.openInterface(actor:getPeep(), "DramaticText", false, { {
-				-- 	color = { 1, 1, 1, 1 },
-				-- 	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-				-- 	fontSize = 128,
-				-- 	textShadow = true,
-				-- 	align = 'center',
-				-- 	width = DramaticTextController.CANVAS_WIDTH - 64,
-				-- 	x = 32,
-				-- 	y = DramaticTextController.CANVAS_HEIGHT / 2 - 64,
-				-- 	text = "Welcome to the Realm."
-				-- } }, 4)
-
-				-- self.stage:movePeep(
-				-- 	actor:getPeep(),
-				-- 	"@EmptyRuins_Downtown?cutscene=1,mute=1",
-				-- 	"Anchor_Spawn")
 				self.stage:movePeep(
 					actor:getPeep(),
-					"@IsabelleIsland_FarOcean2",
+					"NewGame",
 					"Anchor_Spawn")
 				actor:getPeep():pushPoke('bootstrapComplete')
 				Analytics:startGame(actor:getPeep())
