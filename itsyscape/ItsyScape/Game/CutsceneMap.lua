@@ -239,7 +239,7 @@ function CutsceneMap:fireProjectile(source, destination, projectile)
 			local mapResource = Utility.Peep.getMapResource(self.peep)
 			destination = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, destination))
 		elseif Class.isCompatibleType(destination, CutsceneMap) then
-			destination = Utility.Peep.getAbsolutePosition(destination.peep)
+			destination = Utility.Peep.getPosition(destination.peep)
 		elseif Class.isCompatibleType(destination, CutsceneEntity) then
 			destination = destination:getPeep()
 		end
@@ -248,7 +248,7 @@ function CutsceneMap:fireProjectile(source, destination, projectile)
 			local mapResource = Utility.Peep.getMapResource(self.peep)
 			source = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, source))
 		elseif Class.isCompatibleType(source, CutsceneMap) then
-			source = Utility.Peep.getAbsolutePosition(source.peep)
+			source = Utility.Peep.getPosition(source.peep)
 		elseif Class.isCompatibleType(source, CutsceneEntity) then
 			source = source:getPeep()
 		end

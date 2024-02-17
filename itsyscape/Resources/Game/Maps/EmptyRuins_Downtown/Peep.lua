@@ -202,7 +202,7 @@ function Downtown:onPlaySistineCutscene(peep, cutscene)
 
 	Utility.UI.closeAll(peep, nil, { "CutsceneTransition", "DramaticText" })
 
-	Utility.Map.playCutscene(sistineMapScript, cutscene, "StandardCutscene", peep)
+	Utility.Map.playCutscene(self, cutscene, "StandardCutscene", peep)
 end
 
 function Downtown:onCutsceneAttack(peep)

@@ -501,7 +501,6 @@ function CutsceneEntity:dialog(name)
 		local gameDB = self.peep:getDirector():getGameDB()
 		local map = Utility.Peep.getMapResource(self.peep)
 
-		print(">>> map", map.name)
 		local namedAction = gameDB:getRecord("NamedMapAction", {
 			Name = name,
 			Map = map

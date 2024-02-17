@@ -17,7 +17,7 @@ local MapScript = require "ItsyScape.Peep.Peeps.Map"
 
 local Cutscene = Class()
 
-function Cutscene:new(resource, player, director, layerName, entities)
+function Cutscene:new(resource, player, director, layerName, map, entities)
 	self.director = director
 	self.game = director:getGameInstance()
 	self.gameDB = director:getGameDB()
@@ -26,7 +26,7 @@ function Cutscene:new(resource, player, director, layerName, entities)
 
 	self.entities = {
 		Player = CutsceneEntity(player),
-		Map = CutsceneMap(Utility.Peep.getMapScript(player)),
+		Map = CutsceneMap(Class.isCompatibleType(map, MapScript) and map or Utility.Peep.getMapScript(player)),
 		Camera = CutsceneCamera(self.game, Utility.Peep.getPlayerModel(player))
 	}
 
