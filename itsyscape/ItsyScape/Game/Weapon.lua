@@ -569,7 +569,7 @@ function Weapon:applyCooldown(peep, target)
 	end
 
 	local _, c = peep:addBehavior(AttackCooldownBehavior)
-	c.cooldown = math.max(c.cooldown, coo)
+	c.cooldown = math.max(c.cooldown, cooldown)
 	c.ticks = peep:getDirector():getGameInstance():getCurrentTime()
 end
 
