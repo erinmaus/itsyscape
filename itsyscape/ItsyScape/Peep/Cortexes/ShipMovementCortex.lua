@@ -255,7 +255,6 @@ function ShipMovementCortex.Ship:handleShipCollision(other)
 end
 
 function ShipMovementCortex.Ship:update(delta)
-	self:steer(delta)
 	self:move(delta)
 end
 
