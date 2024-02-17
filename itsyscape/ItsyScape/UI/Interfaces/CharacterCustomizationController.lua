@@ -209,8 +209,10 @@ CharacterCustomizationController.DIALOG = {
 	}
 }
 
-function CharacterCustomizationController:new(peep, director)
+function CharacterCustomizationController:new(peep, director, closeCallback)
 	Controller.new(self, peep, director)
+
+	self.closeCallback = closeCallback
 end
 
 function CharacterCustomizationController:poke(actionID, actionIndex, e)
@@ -229,7 +231,11 @@ function CharacterCustomizationController:poke(actionID, actionIndex, e)
 	elseif actionID == "changeName" then
 		self:changeName(e)
 	elseif actionID == "close" then
-		self:getGame():getUI():closeInstance(self)
+		if self.closeCallback then
+			self.closeCallback()
+		else
+			self:getGame():getUI():closeInstance(self)
+		end
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
