@@ -458,7 +458,8 @@ function MapEditorApplication:mousePress(x, y, button)
 					local hits = {}
 					for prop in self:getGame():getStage():iterateProps() do
 						local ray = self:shoot(x, y)
-						local s, p = ray:hitBounds(prop:getBounds())
+						local min, max = prop:getBounds()
+						local s, p = ray:hitBounds(min, max)
 						if s then
 							table.insert(hits, { position = p, prop = prop })
 						end
@@ -579,7 +580,8 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		local hits = {}
 		for prop in self:getGame():getStage():iterateProps() do
 			local ray = self:shoot(x, y)
-			local s, p = ray:hitBounds(prop:getBounds())
+			local min, max = prop:getBounds()
+			local s, p = ray:hitBounds(min, max)
 			if s then
 				table.insert(hits, { position = p, prop = prop })
 			end
