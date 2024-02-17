@@ -23,7 +23,7 @@ function WaterMesh:new(width, height, scale)
 	self.vertices = {}
 	self.width = width
 	self.height = height
-	self.scale = scale or 3
+	self.scale = scale or 4
 
 	self:_buildMesh()
 end
