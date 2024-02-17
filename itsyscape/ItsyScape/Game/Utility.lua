@@ -42,6 +42,7 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
@@ -124,8 +125,13 @@ function Utility.orientateToAnchor(peep, map, anchor)
 		local direction = Utility.Map.getAnchorDirection(game, map, anchor)
 
 		if rotation ~= Quaternion.IDENTITY then
-			local _, r = peep:addBehavior(RotationBehavior)
-			r.rotation = rotation
+			local shipMovement = peep:getBehavior(ShipMovementBehavior)
+			if shipMovement then
+				shipMovement.rotation = rotation
+			else
+				local _, r = peep:addBehavior(RotationBehavior)
+				r.rotation = rotation
+			end
 		end
 
 		if scale ~= Vector.ONE then
