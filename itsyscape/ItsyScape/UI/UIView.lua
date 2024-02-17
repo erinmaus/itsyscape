@@ -567,29 +567,31 @@ function itsyrealm.graphics.flushes.Font.getBatch(handle)
 	return nil
 end
 
-function itsyrealm.graphics.flushes.Font.queuePrint(size, renderState, text, x, y, ...)
+function itsyrealm.graphics.flushes.Font.queuePrint(size, renderState, text, x, y, angle, sx, sy, ...)
+	local _, _, scaleX, scaleY, paddingX, paddingY = love.graphics.getScaledMode()
 	local batch = itsyrealm.graphics.flushes.Font.getBatch(size.handle)
 	if batch then
 		local oldLineHeight = batch:getFont():getLineHeight()
 		batch:getFont():setLineHeight(renderState.lineHeight)
 		if type(text) == "string" then
-			batch:add({ renderState.color, text }, size.x, size.y, ...)
+			batch:add({ renderState.color, text }, size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
 		else
-			batch:add(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), size.x, size.y, ...)
+			batch:add(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
 		end
 		batch:getFont():setLineHeight(oldLineHeight)
 	end
 end
 
-function itsyrealm.graphics.flushes.Font.queuePrintF(size, renderState, text, x, y, limit, align, ...)
+function itsyrealm.graphics.flushes.Font.queuePrintF(size, renderState, text, x, y, limit, align, angle, sx, sy, ...)
+	local _, _, scaleX, scaleY, paddingX, paddingY = love.graphics.getScaledMode()
 	local batch = itsyrealm.graphics.flushes.Font.getBatch(size.handle)
 	if batch then
 		local oldLineHeight = batch:getFont():getLineHeight()
 		batch:getFont():setLineHeight(renderState.lineHeight)
 		if type(text) == "string" then
-			batch:addf({ renderState.color, text }, limit, align or "left", size.x, size.y, ...)
+			batch:addf({ renderState.color, text }, limit, align or "left", size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
 		else
-			batch:addf(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), limit, align or "left", size.x, size.y, ...)
+			batch:addf(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), limit, align or "left", size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
 		end
 		batch:getFont():setLineHeight(oldLineHeight)
 	else
