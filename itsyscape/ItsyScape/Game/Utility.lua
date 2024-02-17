@@ -1444,7 +1444,7 @@ function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
 	if not mapScript then
 		return center
 	else
-		local transform = Utility.Peep.getTransform(mapScript)
+		local transform = Utility.Peep.getMapTransform(mapScript)
 		return Vector(transform:transformPoint(center.x, center.y, center.z))
 	end
 end
@@ -1827,6 +1827,55 @@ function Utility.Peep.dismiss(peep)
 	else
 		Log.warn("Can't dismiss '%s': not a follower.")
 	end
+end
+
+function Utility.Peep.getMapTransform(peep)
+	local position = mapScript:getBehavior(PositionBehavior)
+	if position then
+		position = position.position
+	else
+		position = Vector.ZERO
+	end
+
+	local rotation = mapScript:getBehavior(RotationBehavior)
+	if rotation then
+		rotation = rotation.rotation
+	else
+		rotation = Quaternion.IDENTITY
+	end
+
+	local scale = mapScript:getBehavior(ScaleBehavior)
+	if scale then
+		scale = scale.scale
+	else
+		scale = Vector.ONE
+	end
+
+	local origin = mapScript:getBehavior(OriginBehavior)
+	if origin then
+		origin = origin.origin
+	else
+		origin = Vector.ZERO
+	end
+
+	local offset = mapScript:getBehavior(MapOffsetBehavior)
+	if offset then
+		rotation = rotation * offset.rotation
+		scale = scale * offset.scale
+
+		offset = offset.offset
+	else
+		offset = Vector.ZERO
+	end
+
+	local transform = love.math.newTransform()
+	transform:translate(offset:get())
+	transform:translate(position:get())
+	transform:scale(scale:get())
+	transform:applyQuaternion(rotation:get())
+	transform:translate((-offset):get())
+
+	return transform
 end
 
 function Utility.Peep.getTransform(peep)
