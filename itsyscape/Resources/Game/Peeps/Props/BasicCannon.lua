@@ -19,6 +19,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
@@ -150,6 +151,10 @@ function BasicCannon:onFire(peep, item)
 				Probe.attackable(),
 				function(peep)
 					if Utility.Peep.getLayer(peep) == Utility.Peep.getLayer(self) then
+						return false
+					end
+
+					if peep:hasBehavior(DisabledBehavior) then
 						return false
 					end
 
