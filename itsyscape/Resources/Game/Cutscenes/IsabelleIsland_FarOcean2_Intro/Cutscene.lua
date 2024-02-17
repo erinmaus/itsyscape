@@ -13,12 +13,17 @@ local HERO = {
 }
 
 return Sequence {
+	Map:poke("engage"),
+
 	Camera:target(Player),
+	Camera:zoom(150),
 
-	-- Camera:translate(Vector(64, 0, 64)),
-	-- Camera:zoom(100),
+	Player:narrate("", HERO, 10),
+	Camera:zoom(75, 4),
+	Player:wait(4),
 
-	-- Player:narrate("", HERO, 10),
-	-- Player:wait(10),
-	-- Player:dialog("IntroDialog"),
+	Map:poke("boom", SoakedLog:getPeep()),
+	Player:wait(6),
+
+	Player:dialog("IntroDialog")
 }

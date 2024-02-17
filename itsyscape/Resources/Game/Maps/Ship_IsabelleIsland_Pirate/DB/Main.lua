@@ -285,7 +285,6 @@ do
 	ItsyScape.Meta.PeepMashinaState {
 		State = "engage",
 		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_Pirate/Scripts/CapnRaven_ChaseLogic.lua",
-		IsDefault = 1,
 		Resource = M["CapnRaven"]
 	}
 end
