@@ -46,7 +46,7 @@ function BasicCannon:spawnOrPoof(mode)
 	local map = self:getDirector():getMap(layer)
 	if map then
 		local tile = map:getTile(i, j)
-		self:spawnOrPoofTile(tile, i, j)
+		self:spawnOrPoofTile(tile, i, j, mode)
 	end
 end
 
