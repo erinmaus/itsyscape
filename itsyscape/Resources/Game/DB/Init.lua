@@ -716,6 +716,7 @@ Game "ItsyScape"
 		Distance = Meta.TYPE_INTEGER,
 		Defense = Meta.TYPE_INTEGER,
 		Speed = Meta.TYPE_INTEGER,
+		Turn = Meta.TYPE_INTEGER,
 		Storage = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
