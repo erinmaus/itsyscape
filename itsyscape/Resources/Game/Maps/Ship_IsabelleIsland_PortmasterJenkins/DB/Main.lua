@@ -210,10 +210,6 @@ do
 	-- 	Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_FleeLogic.lua",
 	-- 	Resource = M["Jenkins_Pirate"]
 	-- }
-
-	M["Jenkins_Pirate"] {
-		PirateEncounterTalkAction
-	}
 end
 
 M["Anchor_Jenkins_Spawn"] = ItsyScape.Resource.MapObject.Unique()
@@ -392,51 +388,6 @@ do
 		Prop = ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest",
 		MapObject = M["SunkenChest"]
 	}
-end
-
-do
-	local SPEAKERS = {
-		"Orlando",
-		"Jenkins_Pirate",
-		"Rosalind"
-	}
-
-	for _, speaker in ipairs(SPEAKERS) do
-		local filename = string.format("Resources/Game/Maps/IsabelleIsland_FarOcean2/Dialog/%s_en-US.lua", speaker)
-		local TalkAction = ItsyScape.Action.Talk()
-
-		ItsyScape.Meta.TalkDialog {
-			Script = filename,
-			Language = "en-US",
-			Action = TalkAction
-		}
-
-		ItsyScape.Meta.TalkSpeaker {
-			Resource = M["Jenkins_Pirate"],
-			Name = "Jenkins",
-			Action = TalkAction
-		}
-
-		ItsyScape.Meta.TalkSpeaker {
-			Resource = M["Orlando"],
-			Name = "Orlando",
-			Action = TalkAction
-		}
-
-		ItsyScape.Meta.TalkSpeaker {
-			Resource = M["Rosalind"],
-			Name = "Rosalind",
-			Action = TalkAction
-		}
-
-		ItsyScape.Meta.TalkSpeaker {
-			Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain",
-			Name = "CapnRaven",
-			Action = TalkAction
-		}
-
-		M[speaker] { TalkAction }
-	end
 end
 
 do
