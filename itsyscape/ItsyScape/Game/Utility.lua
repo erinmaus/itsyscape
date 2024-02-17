@@ -1409,19 +1409,20 @@ function Utility.Map.getTileRotation(map, i, j)
 	end
 end
 
-function Utility.Map.playCutscene(peep, resource, cameraName, player, entities)
-	local director = peep:getDirector()
+function Utility.Map.playCutscene(map, resource, cameraName, player, entities)
+	local director = map:getDirector()
 
 	if type(resource) == 'string' then
 		resource = director:getGameDB():getResource(resource, "Cutscene")
 	end
 
 	return director:addPeep(
-		peep:getLayerName(),
+		map:getLayerName(),
 		require "ItsyScape.Peep.Peeps.Cutscene",
 		resource,
 		cameraName,
 		player,
+		map,
 		entities)
 end
 

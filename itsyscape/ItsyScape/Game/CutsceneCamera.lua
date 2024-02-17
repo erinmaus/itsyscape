@@ -68,4 +68,16 @@ function CutsceneCamera:shake(duration, interval, min, max)
 	end
 end
 
+function CutsceneCamera:stick()
+	return function()
+		self.player:pokeCamera("mapRotationStick")
+	end
+end
+
+function CutsceneCamera:unstick()
+	return function()
+		self.player:pokeCamera("mapRotationUnstick")
+	end
+end
+
 return CutsceneCamera
