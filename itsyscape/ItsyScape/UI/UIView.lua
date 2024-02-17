@@ -472,11 +472,15 @@ local function isSizeBlocking(currentSize, otherSize)
 	return false
 end
 
-function itsyrealm.graphics.shouldFlush()
+function itsyrealm.graphics.shouldFlush(nextSize)
 	for _, currentSizes in pairs(graphicsState.currentSizes) do
 		for _, otherSizes in pairs(graphicsState.currentSizes) do
 			if currentSizes ~= otherSizes then
 				for i, currentSize in ipairs(currentSizes) do
+					if type(nextSize.handle) ~= "userdata" and isSizeBlocking(currentSize, nextSize) then
+						return true
+					end
+
 					for j, otherSize in ipairs(otherSizes) do
 						if isSizeBlocking(currentSize, otherSize) then
 							return true
@@ -561,7 +565,7 @@ function itsyrealm.graphics.flushes.Font.getBatch(handle)
 			pending.batch = love.graphics.newText(handle)
 		end
 
-		return pending.batch
+		return pending.batch, pending.v
 	end
 
 	return nil
@@ -607,7 +611,7 @@ function itsyrealm.graphics.flushes.Font.queue(size, command, ...)
 end
 
 function itsyrealm.graphics.flushes.Font.flush(handle)
-	local batch, v = itsyrealm.graphics.flushes.Font.getBatch(handle)
+	local batch = itsyrealm.graphics.flushes.Font.getBatch(handle)
 
 	if batch then
 		love.graphics.push("all")
@@ -639,8 +643,15 @@ function itsyrealm.graphics.stop()
 			previousHandle = currentHandle
 			currentHandle = handle
 
+			if not graphicsState.currentSizes[handle] then
+				currentNumSizes = currentNumSizes + 1
+				graphicsState.currentSizes[handle] = table.remove(graphicsState.oldSizes, #graphicsState.oldSizes) or {}
+
+				table.insert(graphicsState.pendingSizes, handle)
+			end
+
 			if currentNumSizes > 1 then
-				if size.force or (previousHandle ~= currentHandle and itsyrealm.graphics.shouldFlush()) then
+				if size.force or (previousHandle ~= currentHandle and itsyrealm.graphics.shouldFlush(size)) then
 					itsyrealm.graphics.flush()
 					currentNumSizes = 0
 				end
@@ -689,7 +700,7 @@ end
 
 function itsyrealm.graphics.pushInterface(width, height)
 	if width > 0 and height > 0 then
-		itsyrealm.graphics.impl.pushSize(nil ,0, 0, width, height)
+		itsyrealm.graphics.impl.pushSize(nil, 0, 0, width, height)
 		itsyrealm.graphics.impl.push(itsyrealm.graphics.impl.noOp)
 	end
 end
