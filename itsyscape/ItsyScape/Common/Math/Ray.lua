@@ -7,7 +7,6 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 
@@ -123,31 +122,45 @@ end
 -- Checks if the ray intersects the AABB (min, max).
 --
 -- Returns true and the point (Vector) of collision, false otherwise.
-function Ray:hitBounds(min, max)
+function Ray:hitBounds(min, max, transform)
+	local r
+	if transform then
+		local MathCommon = require "ItsyScape.Common.Math.Common"
+		local inverse = transform:inverse()
+
+		local _, rotation = MathCommon.decomposeTransform(inverse)
+		local p = Vector(inverse:transformPoint(self.origin:get()))
+		local d = rotation:transformVector(self.direction):getNormal()
+
+		r = Ray(p, d)
+	else
+		r = self
+	end
+
 	-- https://tavianator.com/fast-branchless-raybounding-box-intersections/
-	local inverseDirection = 1 / self.direction
+	local inverseDirection = 1 / r.direction
 	local tMin, tMax
 
-	local tx1 = (min.x - self.origin.x) * inverseDirection.x
-	local tx2 = (max.x - self.origin.x) * inverseDirection.x
+	local tx1 = (min.x - r.origin.x) * inverseDirection.x
+	local tx2 = (max.x - r.origin.x) * inverseDirection.x
  
 	local tMin = math.min(tx1, tx2)
 	local tMax = math.max(tx1, tx2)
  
-	local ty1 = (min.y - self.origin.y) * inverseDirection.y
-	local ty2 = (max.y - self.origin.y) * inverseDirection.y
+	local ty1 = (min.y - r.origin.y) * inverseDirection.y
+	local ty2 = (max.y - r.origin.y) * inverseDirection.y
  
 	tMin = math.max(tMin, math.min(ty1, ty2))
 	tMax = math.min(tMax, math.max(ty1, ty2))
  
-	local tz1 = (min.z - self.origin.z) * inverseDirection.z
-	local tz2 = (max.z - self.origin.z) * inverseDirection.z
+	local tz1 = (min.z - r.origin.z) * inverseDirection.z
+	local tz2 = (max.z - r.origin.z) * inverseDirection.z
  
 	tMin = math.max(tMin, math.min(tz1, tz2))
 	tMax = math.min(tMax, math.max(tz1, tz2))
  
 	if tMax >= tMin and tMin >= 0 then
-		return true, self.origin + self.direction * tMin
+		return true, r.origin + r.direction * tMin
 	else
 		return false
 	end
