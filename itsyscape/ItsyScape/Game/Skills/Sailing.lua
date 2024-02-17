@@ -215,9 +215,9 @@ function Sailing.probeShipCannons(ship, targetPosition, targetNormal, direction,
 	local positions = {}
 	for i = 1, #hits do
 		local map = Utility.Peep.getMapScript(hits[i])
-		local mapTransform = Utility.Peep.getMapTransform(map)
+		local mapTransform = map and Utility.Peep.getMapTransform(map)
 		local position = Utility.Peep.getPosition(hits[i])
-		positions[i] = Vector(mapTransform:transformPoint(position:get()))
+		positions[i] = mapTransform and Vector(mapTransform:transformPoint(position:get())) or position
 	end
 
 	local canFire = {}

@@ -227,11 +227,16 @@ function Ocean:showCameraMoveTutorial(playerPeep, duration)
 end
 
 function Ocean:updateCannonTutorial()
+	local playerPeep = Utility.Peep.getPlayer(self)
+	if not playerPeep then
+		return
+	end
+
 	local position = Sailing.getShipTarget(self.soakedLog, self.deadPrincess)
 	local normal = Sailing.getShipDirectionNormal(self.deadPrincess)
 	local cannonProbe = Sailing.probeShipCannons(self.soakedLog, position, normal)
 
-	local playerPosition = Utility.Peep.getPosition(Utility.Peep.getPlayer(self))
+	local playerPosition = Utility.Peep.getPosition(playerPeep)
 	table.sort(cannonProbe, function(a, b)
 		local positionA = Utility.Peep.getPosition(a.peep)
 		local positionB = Utility.Peep.getPosition(b.peep)
