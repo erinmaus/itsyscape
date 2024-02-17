@@ -183,9 +183,9 @@ do
 	local Rotation3 = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Z, math.pi / 32)
 	local Rotation = Rotation1 * Rotation2 * Rotation3
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0,
-		PositionY = 7.5,
-		PositionZ = 45,
+		PositionX = 20,
+		PositionY = 1.5,
+		PositionZ = 35,
 		RotationX = Rotation.x,
 		RotationY = Rotation.y,
 		RotationZ = Rotation.z,
@@ -199,9 +199,9 @@ end
 M["Anchor_Ship"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 57,
+		PositionX = 83,
 		PositionY = 0,
-		PositionZ = 107,
+		PositionZ = 111,
 		Name = "Anchor_Ship",
 		Map = M._MAP,
 		Resource = M["Anchor_Ship"]
