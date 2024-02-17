@@ -77,32 +77,32 @@ do
 	}
 end
 
--- M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
--- do
--- 	ItsyScape.Meta.MapObjectLocation {
--- 		PositionX = 0,
--- 		PositionY = 0,
--- 		PositionZ = 0,
--- 		Name = "Light_Fog",
--- 		Map = M._MAP,
--- 		Resource = M["Light_Fog"]
--- 	}
+M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Fog",
+		Map = M._MAP,
+		Resource = M["Light_Fog"]
+	}
 
--- 	ItsyScape.Meta.PropMapObject {
--- 		Prop = ItsyScape.Resource.Prop "Fog_Default",
--- 		MapObject = M["Light_Fog"]
--- 	}
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Fog_Default",
+		MapObject = M["Light_Fog"]
+	}
 
--- 	ItsyScape.Meta.Fog {
--- 		ColorRed = 33,
--- 		ColorGreen = 33,
--- 		ColorBlue = 33,
--- 		NearDistance = 30,
--- 		FarDistance = 60,
--- 		FollowTarget = 1,
--- 		Resource = M["Light_Fog"]
--- 	}
--- end
+	ItsyScape.Meta.Fog {
+		ColorRed = 33,
+		ColorGreen = 33,
+		ColorBlue = 33,
+		NearDistance = 55,
+		FarDistance = 100,
+		--FollowTarget = 1,
+		Resource = M["Light_Fog"]
+	}
+end
 
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
@@ -161,42 +161,6 @@ do
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_3",
 		Resource = M["Anchor_JenkinsShip_3"]
-	}
-end
-
-M["Anchor_PirateShip_1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 64 + 32,
-		PositionY = 0,
-		PositionZ = 64 + 32,
-		Map = M._MAP,
-		Name = "Anchor_PirateShip_1",
-		Resource = M["Anchor_PirateShip_1"]
-	}
-end
-
-M["Anchor_PirateShip_2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0 + 64 + 16,
-		PositionY = 0,
-		PositionZ = -48,
-		Map = M._MAP,
-		Name = "Anchor_PirateShip_2",
-		Resource = M["Anchor_PirateShip_2"]
-	}
-end
-
-M["Anchor_PirateShip_3"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = -16,
-		PositionY = 0,
-		PositionZ = 0 + 64,
-		Map = M._MAP,
-		Name = "Anchor_PirateShip_3",
-		Resource = M["Anchor_PirateShip_3"]
 	}
 end
 

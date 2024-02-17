@@ -10,14 +10,22 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local Ocean = Class(Map)
+Ocean.MIN_LIGHTNING_PERIOD = 4
+Ocean.MAX_LIGHTNING_PERIOD = 5
 
 function Ocean:new(resource, name, ...)
 	Map.new(self, resource, name or 'IsabelleIsland_FarOcean2', ...)
+
+	self:onZap()
+	self:silence("playerEnter", Map.showPlayerMapInfo)
 end
 
 function Ocean:onLoad(...)
@@ -27,8 +35,8 @@ function Ocean:onLoad(...)
 		self,
 		"Ship_IsabelleIsland_Pirate",
 		self:getLayer(),
-		16,
-		16,
+		32,
+		48,
 		2.25,
 		{ spawnRaven = true })
 	self.deadPrincess = deadPrincess
@@ -99,35 +107,59 @@ function Ocean:onPlayCutscene(playerPeep, cutscene)
 end
 
 function Ocean:onFinishCutscene(playerPeep)
+	playerPeep:removeBehavior(DisabledBehavior)
 	Utility.UI.openGroup(
 		playerPeep,
 		Utility.UI.Groups.WORLD)
 end
 
-function Ocean:onFireCannons(ship)
-	local shipLayer = ship:getLayer()
+function Ocean:onEngage()
+	print(">>> engage")
 
-	local hits = self:getDirector():probe(self:getLayerName(), function(peep)
-		local peepLayer = Utility.Peep.getLayer(peep)
-		if peepLayer ~= shipLayer then
-			return false
-		end
+	local capnRaven = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", "IsabelleIsland_FarOcean_PirateCaptain"))[1]
+	local capnRavenMashina = capnRaven and capnRaven:getBehavior(MashinaBehavior)
+	if capnRavenMashina then
+		capnRavenMashina.currentState = "engage"
+	end
 
-		local resource = Utility.Peep.getResource(peep)
-		if not resource or resource.name ~= "Sailing_IronCannon_Default" then
-			return false
-		end
+	local jenkins = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", "IsabelleIsland_Port_PortmasterJenkins"))[1]
+	local jenkinsMashina = jenkins and jenkins:getBehavior(MashinaBehavior)
+	if jenkinsMashina then
+		jenkinsMashina.currentState = "cutscene"
+	end
+end
 
-		local rotation = Utility.Peep.getRotation(peep)
-		if rotation == Quaternion.IDENTITY then
-			return false
-		end
+function Ocean:onZap()
+	self.lightningTime = love.math.random() * (self.MAX_LIGHTNING_PERIOD - self.MIN_LIGHTNING_PERIOD) + self.MIN_LIGHTNING_PERIOD
+end
 
-		return true
-	end)
+function Ocean:onBoom(ship)
+	ship = ship or ({ self.soakedLog, self.deadPrincess })[love.math.random(2)]
 
-	for _, cannon in ipairs(hits) do
-		cannon:poke('fire', Utility.Peep.getPlayer(self))
+	local director = self:getDirector()
+	local map = director:getMap(ship:getLayer())
+	local i = love.math.random(1, map:getWidth())
+	local j = love.math.random(1, map:getHeight())
+	local position = Utility.Map.getAbsoluteTilePosition(director, i, j, ship:getLayer())
+
+	local stage = director:getGameInstance():getStage()
+	stage:fireProjectile("StormLightning", Vector.ZERO, position, ship:getLayer())
+	stage:fireProjectile("CannonSplosion", Vector.ZERO, position, ship:getLayer())
+	ship:poke("rock")
+
+	if ship == self.soakedLog then
+		local player = Utility.Peep.getPlayerModel(self)
+		player:pokeCamera("shake", 0.5)
+	end
+end
+
+function Ocean:update(...)
+	Map.update(self, ...)
+
+	self.lightningTime = self.lightningTime - self:getDirector():getGameInstance():getDelta()
+	if self.lightningTime < 0 then
+		self:onZap()
+		self:onBoom()
 	end
 end
 
