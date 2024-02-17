@@ -717,7 +717,12 @@ function ActorView:getLocalBonePosition(boneName, position, rotation)
 	rotation = rotation or Quaternion.IDENTITY
 
 	local boneTransform = self:getLocalBoneTransform(boneName)
-	local inverseBindPoseTransform = self:getSkeleton():getBoneByName(boneName):getInverseBindPose()
+	local bone = self:getSkeleton():getBoneByName(boneName)
+	if not bone then
+		return Vector.ZERO
+	end
+
+	local inverseBindPoseTransform = bone:getInverseBindPose()
 
 	local composedTransform = love.math.newTransform()
 	composedTransform:applyQuaternion(rotation:get())
@@ -738,7 +743,12 @@ function ActorView:getBoneWorldPosition(boneName, position, rotation)
 
 	local nodeTransform = self.sceneNode:getTransform():getGlobalTransform()
 	local boneTransform = self:getLocalBoneTransform(boneName)
-	local inverseBindPoseTransform = self:getSkeleton():getBoneByName(boneName):getInverseBindPose()
+	local bone = self:getSkeleton():getBoneByName(boneName)
+	if not bone then
+		return Vector.ZERO
+	end
+
+	local inverseBindPoseTransform = bone:getInverseBindPose()
 
 	local composedTransform = love.math.newTransform()
 	composedTransform:apply(nodeTransform)
