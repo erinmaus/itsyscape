@@ -128,14 +128,6 @@ ItsyScape.Meta.PeepID {
 	Resource = ItsyScape.Resource.Prop "Sailing_IronCannon_Default"
 }
 
-ItsyScape.Meta.MapObjectSize {
-	SizeX = 1.5,
-	SizeY = 3,
-	SizeZ = 1.5,
-	OffsetZ = 1,
-	MapObject = ItsyScape.Resource.Prop "Sailing_IronCannon_Default"
-}
-
 ItsyScape.Meta.ResourceName {
 	Value = "Iron cannon",
 	Language = "en-US",
@@ -172,14 +164,6 @@ ItsyScape.Resource.Prop "Sailing_Player_IronCannon" {
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BasicCannon",
 	Resource = ItsyScape.Resource.Prop "Sailing_Player_IronCannon"
-}
-
-ItsyScape.Meta.MapObjectSize {
-	SizeX = 1.5,
-	SizeY = 3,
-	SizeZ = 1.5,
-	OffsetZ = 1,
-	MapObject = ItsyScape.Resource.Prop "Sailing_Player_IronCannon"
 }
 
 ItsyScape.Meta.ResourceName {

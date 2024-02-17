@@ -33,12 +33,21 @@ function BasicCannon:new(...)
 	Prop.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(1, 2, 1)
+	size.size = Vector(1, 2, 3.5)
 
 	self:addBehavior(PropResourceHealthBehavior)
 
 	self:addPoke('fire')
 	self:addPoke('cooldown')
+end
+
+function BasicCannon:spawnOrPoof(mode)
+	local i, j, layer = Utility.Peep.getTile(self)
+	local map = self:getDirector():getMap(layer)
+	if map then
+		local tile = map:getTile(i, j)
+		self:spawnOrPoofTile(tile, i, j)
+	end
 end
 
 function BasicCannon:ready(director, game)

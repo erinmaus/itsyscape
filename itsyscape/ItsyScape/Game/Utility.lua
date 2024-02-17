@@ -989,7 +989,7 @@ function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
 	return ui:get(interfaceID, interfaceIndex)
 end
 
-function Utility.UI.tutorial(target, tips)
+function Utility.UI.tutorial(target, tips, done)
 	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 	target:addBehavior(DisabledBehavior)
 
@@ -1008,6 +1008,10 @@ function Utility.UI.tutorial(target, tips)
 				after)
 		else
 			target:removeBehavior(DisabledBehavior)
+
+			if done then
+				done()
+			end
 		end
 	end
 

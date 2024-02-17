@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Probe = require "ItsyScape.Peep.Probe"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
@@ -21,11 +22,17 @@ local Ocean = Class(Map)
 Ocean.MIN_LIGHTNING_PERIOD = 4
 Ocean.MAX_LIGHTNING_PERIOD = 5
 
+Ocean.STATE_NONE            = 0
+Ocean.STATE_CANNON_TUTORIAL = 1
+
 function Ocean:new(resource, name, ...)
-	Map.new(self, resource, name or 'IsabelleIsland_FarOcean2', ...)
+	Map.new(self, resource, name or "IsabelleIsland_FarOcean2", ...)
 
 	self:onZap()
 	self:silence("playerEnter", Map.showPlayerMapInfo)
+
+	self.currentTutorialState = Ocean.STATE_NONE
+	self.cannonTargets = {}
 end
 
 function Ocean:onLoad(...)
@@ -68,7 +75,7 @@ function Ocean:onLoad(...)
 			Utility.Peep.setPosition(mapScript, Vector(i * 64 * 2, 0, j * 64 * 2))
 
 			index = index + 1
-			stage:forecast(layer, string.format('IsabelleIsland_FarOcean2_HeavyRain%d', index), 'Rain', {
+			stage:forecast(layer, string.format("IsabelleIsland_FarOcean2_HeavyRain%d", index), "Rain", {
 				wind = { -15, 0, 0 },
 				heaviness = 1 / 8
 			})
@@ -78,6 +85,10 @@ end
 
 function Ocean:onPlayerEnter(player)
 	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.soakedLog)
+end
+
+function Ocean:onPlayerLeave(player)
+	player:pokeCamera("lockRotation")
 end
 
 function Ocean:onPlacePlayer(playerPeep, anchor, ship)
@@ -107,25 +118,18 @@ function Ocean:onPlayCutscene(playerPeep, cutscene)
 end
 
 function Ocean:onFinishCutscene(playerPeep)
-	playerPeep:removeBehavior(DisabledBehavior)
 	Utility.UI.openGroup(
 		playerPeep,
 		Utility.UI.Groups.WORLD)
+
+	self:showCameraTutorial(playerPeep)
 end
 
-function Ocean:onEngage()
-	print(">>> engage")
-
-	local capnRaven = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", "IsabelleIsland_FarOcean_PirateCaptain"))[1]
-	local capnRavenMashina = capnRaven and capnRaven:getBehavior(MashinaBehavior)
-	if capnRavenMashina then
-		capnRavenMashina.currentState = "engage"
-	end
-
-	local jenkins = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", "IsabelleIsland_Port_PortmasterJenkins"))[1]
-	local jenkinsMashina = jenkins and jenkins:getBehavior(MashinaBehavior)
-	if jenkinsMashina then
-		jenkinsMashina.currentState = "cutscene"
+function Ocean:onEngage(peepResourceName, mashinaState)
+	local peep = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", peepResourceName))[1]
+	local peepMashina = peep and peep:getBehavior(MashinaBehavior)
+	if peepMashina then
+		peepMashina.currentState = mashinaState
 	end
 end
 
@@ -153,6 +157,138 @@ function Ocean:onBoom(ship)
 	end
 end
 
+function Ocean:showCameraTutorial(playerPeep)
+	local moveTime, zoomTime
+
+	local playerModel = Utility.Peep.getPlayerModel(playerPeep)
+	playerModel:pokeCamera("unlockRotation")
+
+	local DURATION = 4
+	local TUTORIAL = {
+		{
+			position = "up",
+			id = "root",
+			message = _MOBILE and "Use a pinching gesture to zoom in and out." or "Click the left mouse button and drag up or down to zoom in and out.\nYou can also use the middle scroll wheel.",
+			open = function(target)
+				return function()
+					if not zoomTime then
+						self:showCameraZoomTutorial(playerPeep, DURATION)
+					end
+
+					zoomTime = zoomTime or love.timer.getTime()
+					return love.timer.getTime() > zoomTime + DURATION
+				end
+			end,
+		},
+		{
+			position = "up",
+			id = "root",
+			message = _MOBILE and "Tap and drag on the screen to move the camera." or "Click the left mouse button and drag around the mouse to move the camera.\nYou can also use the middle mouse button to click and drag.",
+			open = function(target)
+				return function()
+					if not moveTime then
+						self:showCameraMoveTutorial(playerPeep, DURATION)
+					end
+
+					moveTime = moveTime or love.timer.getTime()
+					return love.timer.getTime() > moveTime + DURATION
+				end
+			end,
+		}
+	}
+
+	Utility.UI.tutorial(playerPeep, TUTORIAL, function()
+		self.currentTutorialState = Ocean.STATE_CANNON_TUTORIAL
+	end)
+end
+
+function Ocean:showCameraZoomTutorial(playerPeep, duration)
+	local playerModel = Utility.Peep.getPlayerModel(playerPeep)
+	if playerModel then
+		playerModel:pokeCamera("showScroll", {
+			0.0, 0.5,
+			0.0, 1.0,
+			0.0, 0.5
+		}, duration)
+	end
+end
+
+function Ocean:showCameraMoveTutorial(playerPeep, duration)
+	local playerModel = Utility.Peep.getPlayerModel(playerPeep)
+	if playerModel then
+		playerModel:pokeCamera("showMove", {
+			0.5,          0.5 - 1 / 16,
+			0.5 - 1 / 16, 0.5,
+			0.5 - 2 / 16, 0.5 - 1 / 16,
+			0.5 - 1 / 16, 0.5,
+			0.5,          0.5 - 1 / 16
+		}, duration)
+	end
+end
+
+function Ocean:updateCannonTutorial()
+	local position = Sailing.getShipTarget(self.soakedLog, self.deadPrincess)
+	local normal = Sailing.getShipDirectionNormal(self.deadPrincess)
+	local cannonProbe = Sailing.probeShipCannons(self.soakedLog, position, normal)
+
+	local playerPosition = Utility.Peep.getPosition(Utility.Peep.getPlayer(self))
+	table.sort(cannonProbe, function(a, b)
+		local positionA = Utility.Peep.getPosition(a.peep)
+		local positionB = Utility.Peep.getPosition(b.peep)
+		local distanceA = (positionA - playerPosition):getLengthSquared()
+		local distanceB = (positionB - playerPosition):getLengthSquared()
+
+		return distanceA < distanceB
+	end)
+
+	local foundClosest = false
+	for _, p in ipairs(cannonProbe) do
+		local t = self.cannonTargets[p.peep]
+
+		local isTarget = false
+		local message
+
+		if p.isSameSide then
+			isTarget = true
+
+			if p.canFire then
+				message = _MOBILE and "Tap the cannon to fire!" or "Click the cannon to fire!"
+			else
+				message = "Wait for Cap'n Raven's ship to approach before firing!"
+			end
+		end
+
+		if isTarget and not foundClosest then
+			foundClosest = true
+
+			if not t then
+				local position = Utility.Peep.getPosition(p.peep)
+				t = Utility.spawnPropAtPosition(p.peep, "Target_Default", position.x, position.y, position.z)
+
+				if t then
+					t = t:getPeep()
+					self.cannonTargets[p.peep] = t
+				end
+			end
+
+			if t then
+				t:setTarget(p.peep, message)
+			end
+		else
+			if t then
+				Utility.Peep.poof(t)
+				self.cannonTargets[p.peep] = nil
+			end
+		end
+	end
+end
+
+function Ocean:updateTutorial()
+	if self.currentTutorialState == Ocean.STATE_CANNON_TUTORIAL then
+		self:updateCannonTutorial()
+	end
+end
+
 function Ocean:update(...)
 	Map.update(self, ...)
 
@@ -161,6 +297,8 @@ function Ocean:update(...)
 		self:onZap()
 		self:onBoom()
 	end
+
+	self:updateTutorial()
 end
 
 return Ocean

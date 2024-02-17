@@ -52,4 +52,14 @@ if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) then
 
 	focus "CapnRaven"
 	message "We be seein' about that, landlubber!"
+
+	focus "Jenkins"
+	message {
+		"%person{${PLAYER_NAME}}, man the cannons!",
+		"Aim for %person{Cap'n Raven's} ship!",
+		"Ye hear me?"
+	}
+
+	focus "_TARGET"
+	message "Aye aye, captain!"
 end

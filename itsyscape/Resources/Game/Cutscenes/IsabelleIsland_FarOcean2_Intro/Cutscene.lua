@@ -13,7 +13,8 @@ local HERO = {
 }
 
 return Sequence {
-	Map:poke("engage"),
+	Map:poke("engage", "IsabelleIsland_FarOcean_PirateCaptain", "engage"),
+	Map:poke("engage", "IsabelleIsland_Port_PortmasterJenkins", "cutscene"),
 
 	Camera:target(Player),
 	Camera:zoom(150),
@@ -25,5 +26,7 @@ return Sequence {
 	Map:poke("boom", SoakedLog:getPeep()),
 	Player:wait(6),
 
-	Player:dialog("IntroDialog")
+	Player:dialog("IntroDialog"),
+
+	Map:poke("engage", "IsabelleIsland_Port_PortmasterJenkins", "engage")
 }
