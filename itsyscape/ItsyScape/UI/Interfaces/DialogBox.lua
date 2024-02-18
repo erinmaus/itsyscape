@@ -288,14 +288,15 @@ function DialogBox:update(...)
 
 		-- Flip if facing left.
 		local rotation = Quaternion.IDENTITY
-
-		local direction, r = node:getDirection()
 		if node == self.actor then
+			local direction, r = node:getDirection()
 			if r then
 				rotation = -r
 			elseif direction.x < 0 then
 				rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
 			end
+		elseif node == self.prop then
+			rotation = -node:getRotation()
 		end
 		self.speakerIcon:getParentNode():getTransform():setLocalRotation(rotation)
 

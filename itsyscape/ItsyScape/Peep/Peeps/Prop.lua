@@ -95,6 +95,11 @@ function Prop:onFinalize(director, game)
 				sizeRecord:get("OffsetX") or size.offset.x,
 				sizeRecord:get("OffsetY") or size.offset.y,
 				sizeRecord:get("OffsetZ") or size.offset.z)
+			size.pan = Vector(
+				sizeRecord:get("PanX") or size.pan.x,
+				sizeRecord:get("PanY") or size.pan.y,
+				sizeRecord:get("PanZ") or size.pan.z)
+			size.zoom = sizeRecord:get("Zoom") or size.zoom
 		end
 	end
 

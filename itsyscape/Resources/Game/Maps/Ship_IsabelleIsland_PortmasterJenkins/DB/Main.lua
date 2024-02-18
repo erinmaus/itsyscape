@@ -351,9 +351,9 @@ end
 M["Anchor_Rosalind_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.0,
+		PositionX = 7.0,
 		PositionY = 5.0,
-		PositionZ = 13.0,
+		PositionZ = 11.0,
 		Direction = -1,
 		Name = "Anchor_Rosalind_Spawn",
 		Map = M._MAP,
@@ -387,6 +387,58 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "IsabelleIsland_Port_RewardChest",
 		MapObject = M["SunkenChest"]
+	}
+end
+
+M["IronCannonballPile"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 10.5,
+		PositionY = 4,
+		PositionZ = 11,
+		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
+		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
+		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
+		RotationW = ItsyScape.Utility.Quaternion.Y_90.w,
+		Name = "IronCannonballPile",
+		Map = M._MAP,
+		Resource = M["IronCannonballPile"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IronCannonballPile",
+		MapObject = M["IronCannonballPile"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Dialog/Cannonballs_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Jenkins_Pirate"],
+		Name = "Jenkins",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["IronCannonballPile"],
+		Name = "IronCannonballPile",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Verb = "Take",
+		XProgressive = "Taking",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["IronCannonballPile"] {
+		TalkAction
 	}
 end
 

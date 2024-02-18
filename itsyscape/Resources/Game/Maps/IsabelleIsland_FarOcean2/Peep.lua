@@ -92,12 +92,6 @@ function Ocean:onPlayerLeave(player)
 end
 
 function Ocean:onPlacePlayer(playerPeep, anchor, ship)
-	do
-		local state = playerPeep:getState()
-		local FLAGS = { ["item-inventory"] = true }
-		state:give("Item", "IronCannonball", 100, FLAGS)
-	end
-
 	local layer = ship:getLayer()
 	Utility.Peep.setLayer(playerPeep, layer)
 
@@ -230,6 +224,47 @@ function Ocean:updateCannonTutorial()
 	local playerPeep = Utility.Peep.getPlayer(self)
 	if not playerPeep then
 		return
+	end
+
+	local ironCannonballPile = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.layer(Utility.Peep.getLayer(playerPeep)),
+		Probe.resource("Prop", "ironCannonballPile"))[1]
+
+	if playerPeep:getState():count("Item", "IronCannonball", { ['item-inventory'] = true }) == 0 then
+		if ironCannonballPile then
+			local t = self.cannonTargets[ironCannonballPile]
+			if not t then
+				local position = Utility.Peep.getPosition(ironCannonballPile)
+				t = Utility.spawnPropAtPosition(ironCannonballPile, "Target_Default", position.x, position.y, position.z)
+
+				if t then
+					t = t:getPeep()
+					self.cannonTargets[ironCannonballPile] = t
+				end
+			end
+
+			if t then
+				t:setTarget(ironCannonballPile, _MOBILE and "Tap the cannonball pile to grab some cannonballs!" or "Click the cannonball pile to grab some cannonballs!")
+			end
+
+			for k, v in pairs(self.cannonTargets) do
+				if k ~= ironCannonballPile then
+					Utility.Peep.poof(v)
+					self.cannonTargets[k] = nil
+				end
+			end
+		end
+
+		return
+	else
+		if ironCannonballPile then
+			local t = self.cannonTargets[ironCannonballPile]
+			if t then
+				Utility.Peep.poof(t)
+				self.cannonTargets[ironCannonballPile] = nil
+			end
+		end
 	end
 
 	local position = Sailing.getShipTarget(self.soakedLog, self.deadPrincess)
