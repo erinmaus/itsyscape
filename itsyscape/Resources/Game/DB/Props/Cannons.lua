@@ -189,3 +189,35 @@ ItsyScape.Meta.Cannon {
 	Cannonball = ItsyScape.Resource.Item "IronCannonball",
 	Resource = ItsyScape.Resource.Prop "Sailing_Player_IronCannon"
 }
+
+ItsyScape.Resource.Prop "IronCannonballPile" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Iron cannonball pile",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Go ahead! Grab some cannonballs!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 1.5,
+	SizeZ = 1.5,
+	PanX = 0,
+	PanY = 1,
+	PanZ = 0,
+	Zoom = 2.5,
+	MapObject = ItsyScape.Resource.Prop "IronCannonballPile"
+}

@@ -62,4 +62,6 @@ if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) then
 
 	focus "_TARGET"
 	message "Aye aye, captain!"
+
+	_TARGET:getState():give("KeyItem", "PreTutorial_Start")
 end

@@ -170,6 +170,10 @@ Game "ItsyScape"
 		OffsetX = Meta.TYPE_REAL,
 		OffsetY = Meta.TYPE_REAL,
 		OffsetZ = Meta.TYPE_REAL,
+		PanX = Meta.TYPE_REAL,
+		PanY = Meta.TYPE_REAL,
+		PanZ = Meta.TYPE_REAL,
+		ZoomZ = Meta.TYPE_REAL,
 		SingleTile = Meta.TYPE_INTEGER,
 		MapObject = Meta.TYPE_RESOURCE
 	}
@@ -1386,7 +1390,7 @@ include "Resources/Game/DB/Maps/Sailing.lua"
 include "Resources/Game/DB/Maps/EmptyRuins.lua"
 
 -- Quests
-include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"
+include "Resources/Game/DB/Quests/IslandsOfMadness/Quest.lua"
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 include "Resources/Game/DB/Quests/RavensEye/Quest.lua"
 include "Resources/Game/DB/Quests/MysteriousMachinations/Quest.lua"
