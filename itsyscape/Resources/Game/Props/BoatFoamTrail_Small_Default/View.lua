@@ -30,6 +30,15 @@ function BoatFoamTrail:load(...)
 	end)
 end
 
+function BoatFoamTrail:tick()
+	SimpleStaticView.tick(self)
+
+	local state = self:getProp():getState()
+	if not state.visible then
+		self:getRoot():setParent(nil)
+	end
+end
+
 function BoatFoamTrail:getIsStatic()
 	return false
 end

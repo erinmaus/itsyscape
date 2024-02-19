@@ -188,6 +188,15 @@ function Ship:getMaxHealth()
 	return 150
 end
 
+function Ship:onHit(...)
+	local state = self:getArguments()["jenkins_state"]
+	if state == Ship.STATE_SQUID then
+		ShipMapPeep.onHit(self, ...)
+	else
+		Log.info("Jenkin's ship is currently invulnerable.")
+	end
+end
+
 function Ship:onLoad(filename, arguments, layer)
 	ShipMapPeep.onLoad(self, filename, arguments, layer)
 

@@ -17,7 +17,7 @@ local function focus(speakerName)
 	speaker(speakerName)
 end
 
-if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) then
+if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) and false then
 	focus "CapnRaven"
 
 	message { 
@@ -67,7 +67,7 @@ if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) then
 	message "Aye aye, captain!"
 
 	_TARGET:getState():give("KeyItem", "PreTutorial_Start")
-elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARGET) then
+elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARGET) or true then
 	focus "Cthulhu"
 	do
 		local player = Utility.Peep.getPlayerModel(_TARGET)

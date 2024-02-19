@@ -1611,6 +1611,8 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation, args)
 				if position then
 					position.position = Vector(x, WATER_ELEVATION, z)
 				end
+
+				peep:poke("spawnedByPeep", { peep = shipScript })
 			end)
 
 			shipScript.boatFoamProp = peep
@@ -1625,6 +1627,8 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation, args)
 				if position then
 					position.position = Vector(x, WATER_ELEVATION, z)
 				end
+
+				peep:poke("spawnedByPeep", { peep = shipScript })
 			end)
 
 			shipScript.boatFoamTrailProp = peep

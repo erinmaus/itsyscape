@@ -63,7 +63,8 @@ function Sail:update(mashina, state, executor)
 		targetPosition = otherPosition + otherOffset
 	else
 		targetPosition = otherPosition
-	end
+	end	
+	targetPosition = targetPosition * Vector.PLANE_XZ
 
 	local currentPosition = Utility.Peep.getPosition(ship) * Vector.PLANE_XZ
 	local distanceFromTarget = (currentPosition - targetPosition):getLength()

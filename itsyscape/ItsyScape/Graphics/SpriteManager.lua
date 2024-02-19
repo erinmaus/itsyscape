@@ -110,7 +110,20 @@ function SpriteManager:update(delta)
 	end
 end
 
-function SpriteManager:draw(camera, delta)
+function SpriteManager:_isVisible(scene, node)
+	local current = node
+	while current do
+		if current == scene then
+			return true
+		end
+
+		current = current:getParent()
+	end
+
+	return false
+end
+
+function SpriteManager:draw(scene, camera, delta)
 	camera:apply()
 
 	local positions = {}
@@ -138,7 +151,9 @@ function SpriteManager:draw(camera, delta)
 		local time = self.times[sprite]
 		local position = positions[sprite]
 
-		sprite:draw(position, time)
+		if self:_isVisible(scene, sprite:getSceneNode()) then
+			sprite:draw(position, time)
+		end
 	end
 end
 

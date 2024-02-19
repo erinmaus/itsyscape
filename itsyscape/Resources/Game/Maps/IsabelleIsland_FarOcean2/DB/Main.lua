@@ -97,8 +97,8 @@ do
 		ColorRed = 33,
 		ColorGreen = 33,
 		ColorBlue = 33,
-		NearDistance = 55,
-		FarDistance = 100,
+		NearDistance = 100,
+		FarDistance = 150,
 		Resource = M["Light_Fog"]
 	}
 end
@@ -230,9 +230,9 @@ end
 M["Anchor_PirateShip_Cthulhu"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = -16,
+		PositionX = 0,
 		PositionY = 0,
-		PositionZ = 32,
+		PositionZ = 16,
 		Map = M._MAP,
 		Name = "Anchor_PirateShip_Cthulhu",
 		Resource = M["Anchor_PirateShip_Cthulhu"]
@@ -242,9 +242,9 @@ end
 M["Anchor_PirateShip_1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 16,
+		PositionX = 32,
 		PositionY = 0,
-		PositionZ = 32,
+		PositionZ = 16,
 		Map = M._MAP,
 		Name = "Anchor_PirateShip_1",
 		Resource = M["Anchor_PirateShip_1"]
@@ -254,9 +254,9 @@ end
 M["Anchor_JenkinsShip_Cthulhu"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 72,
+		PositionX = 64,
 		PositionY = 0,
-		PositionZ = 72,
+		PositionZ = 80,
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_Cthulhu",
 		Resource = M["Anchor_JenkinsShip_Cthulhu"]
@@ -296,6 +296,18 @@ do
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_3",
 		Resource = M["Anchor_JenkinsShip_3"]
+	}
+end
+
+M["Anchor_JenkinsShip_4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 32,
+		PositionY = 0,
+		PositionZ = 80,
+		Map = M._MAP,
+		Name = "Anchor_JenkinsShip_4",
+		Resource = M["Anchor_JenkinsShip_4"]
 	}
 end
 

@@ -15,7 +15,7 @@ local DISTANCE = 8
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Sailing.Sail {
-			direction = 0.25
+			direction = -0.25
 		}
 	}
 }
