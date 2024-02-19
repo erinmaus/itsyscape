@@ -30,8 +30,7 @@ Ocean.STATE_CTHULHU_RISE    = 2
 Ocean.MAX_WHIRLPOOL_RADIUS      = 32
 Ocean.WHIRLPOOL_GROW_DURATION   = 4
 
---Ocean.MIN_DAMAGE_THRESHOLD   = 20
-Ocean.MIN_DAMAGE_THRESHOLD   = 1
+Ocean.MIN_DAMAGE_THRESHOLD   = 20
 
 function Ocean:new(resource, name, ...)
 	Map.new(self, resource, name or "IsabelleIsland_FarOcean2", ...)
