@@ -978,7 +978,7 @@ function Application:_draw()
 		self.gameView:getRenderer():present()
 
 		if self.show2D then
-			self.gameView:getSpriteManager():draw(self.camera, delta)
+			self.gameView:getSpriteManager():draw(self.gameView:getScene(), self.camera, delta)
 		end
 	end
 

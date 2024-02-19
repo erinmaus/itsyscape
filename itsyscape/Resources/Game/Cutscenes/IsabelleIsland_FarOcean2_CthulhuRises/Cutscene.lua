@@ -9,7 +9,7 @@ local DARK = {
 	width = DramaticTextController.CANVAS_WIDTH - 64,
 	x = 32,
 	y = DramaticTextController.CANVAS_HEIGHT - 256,
-	text = "Something from the deep dark depths of the ocean is rising..."
+	text = "Something from the deep dark depths of the ocean is surfacing..."
 }
 
 return Sequence {
@@ -17,7 +17,7 @@ return Sequence {
 
 	Jenkins:setState(false),
 	SoakedLog:teleport("Anchor_JenkinsShip_Cthulhu"),
-	SoakedLog:lookAt("Anchor_JenkinsShip_1"),
+	SoakedLog:lookAt("Anchor_JenkinsShip_4"),
 	SoakedLog:hide(),
 
 	CapnRaven:setState(false),
@@ -27,9 +27,9 @@ return Sequence {
 
 	Camera:target(CameraDolly),
 
-	Camera:zoom(75),
+	Camera:zoom(20),
+	Camera:zoom(100, 2.5),
 	Player:narrate("", DARK, 5),
-	Player:wait(1),
 
 	SoakedLog:show(),
 	DeadPrincess:show(),

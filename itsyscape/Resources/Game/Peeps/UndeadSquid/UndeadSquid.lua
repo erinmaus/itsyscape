@@ -122,10 +122,11 @@ function UndeadSquid:onInk(p)
 end
 
 function UndeadSquid:onAttackShip(shipMapScript)
+	local stage = self:getDirector():getGameInstance():getStage()
+
 	if not shipMapScript then
 		local map = Utility.Peep.getMapResource(self)
 		if map then
-			local stage = self:getDirector():getGameInstance():getStage()
 			local mapScript = Utility.Peep.getMapScript(self)
 
 			if mapScript:isCompatibleType(MapScript) then
@@ -161,17 +162,12 @@ function UndeadSquid:onAttackShip(shipMapScript)
 	local tile = tiles[love.math.random(#tiles)]
 	if tile then
 		local center = shipMap:getTileCenter(tile.i, tile.j)
-		local s, leak = stage:placeProp("resource://IsabelleIsland_Port_WaterLeak", shipMapLayer, shipMapScript:getLayerName())
-		if s then
+		local leak = Utility.spawnPropAtPosition(shipMapScript, "IsabelleIsland_Port_WaterLeak", center:get())
+		if leak then
 			local leakPeep = leak:getPeep()
-			local position = leakPeep:getBehavior(PositionBehavior)
-			if position then
-				position.position = center
-
-				leakPeep:listen('finalize', function()
-					stage:fireProjectile('UndeadSquidRock', self, leak)
-				end)
-			end
+			leakPeep:listen('finalize', function()
+				stage:fireProjectile('UndeadSquidRock', self, leak)
+			end)
 
 			shipMapScript:pushPoke(UndeadSquid.LEAK_TIME_SECONDS, 'leak', {
 				leak = leakPeep

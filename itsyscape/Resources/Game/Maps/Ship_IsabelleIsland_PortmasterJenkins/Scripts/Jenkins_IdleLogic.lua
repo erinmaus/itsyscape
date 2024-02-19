@@ -15,7 +15,7 @@ local DISTANCE = 8
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		Mashina.Sailing.Sail {
-			target = "Anchor_JenkinsShip_1",
+			target = "Anchor_JenkinsShip_4",
 			distance = DISTANCE
 		},
 

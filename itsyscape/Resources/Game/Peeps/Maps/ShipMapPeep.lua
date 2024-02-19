@@ -183,6 +183,8 @@ function ShipMapPeep:onLoad(filename, args, layer)
 					if position then
 						position.position = Vector(x, WATER_ELEVATION, z)
 					end
+
+					peep:poke("spawnedByPeep", { peep = self })
 				end)
 				self.boatFoamProp = peep
 			end
@@ -196,6 +198,8 @@ function ShipMapPeep:onLoad(filename, args, layer)
 					if position then
 						position.position = Vector(x, WATER_ELEVATION, z)
 					end
+
+					peep:poke("spawnedByPeep", { peep = self })
 				end)
 				self.boatFoamTrailProp = peep
 			end

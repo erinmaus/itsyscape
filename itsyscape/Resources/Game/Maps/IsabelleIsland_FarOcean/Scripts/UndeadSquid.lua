@@ -31,7 +31,7 @@ local Tree = BTreeBuilder.Node() {
 							filters = {
 								function(peep)
 									local resource, resourceType = Utility.Peep.getResource(peep)
-									if resource and 
+									if resource and
 									   (resource.name == "Ship_IsabelleIsland_PortmasterJenkins" or resource.name == "Ship_IsabelleIsland_Pirate") and
 									   resourceType and resourceType.name == "Map"
 									then
