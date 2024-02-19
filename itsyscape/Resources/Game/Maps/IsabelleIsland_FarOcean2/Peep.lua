@@ -12,10 +12,11 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Probe = require "ItsyScape.Peep.Probe"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
-local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local WhirlpoolBehavior = require "ItsyScape.Peep.Behaviors.WhirlpoolBehavior"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local Ocean = Class(Map)
@@ -24,6 +25,13 @@ Ocean.MAX_LIGHTNING_PERIOD = 5
 
 Ocean.STATE_NONE            = 0
 Ocean.STATE_CANNON_TUTORIAL = 1
+Ocean.STATE_CTHULHU_RISE    = 2
+
+Ocean.MAX_WHIRLPOOL_RADIUS      = 32
+Ocean.WHIRLPOOL_GROW_DURATION   = 4
+
+--Ocean.MIN_DAMAGE_THRESHOLD   = 20
+Ocean.MIN_DAMAGE_THRESHOLD   = 1
 
 function Ocean:new(resource, name, ...)
 	Map.new(self, resource, name or "IsabelleIsland_FarOcean2", ...)
@@ -64,6 +72,9 @@ function Ocean:onLoad(...)
 	ocean.weatherBobScale = 1.5
 	ocean.weatherRockRange = math.pi / 16
 	ocean.weatherRockMultiplier = math.pi / 2
+	ocean.offset = 1
+	ocean.positionTimeScale = 4
+	ocean.textureTimeScale = Vector(math.pi / 4, 1 / 2, 0)
 
 	local stage = self:getDirector():getGameInstance():getStage()
 	local index = 0
@@ -116,14 +127,8 @@ function Ocean:onFinishCutscene(playerPeep)
 		playerPeep,
 		Utility.UI.Groups.WORLD)
 
-	self:showCameraTutorial(playerPeep)
-end
-
-function Ocean:onEngage(peepResourceName, mashinaState)
-	local peep = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", peepResourceName))[1]
-	local peepMashina = peep and peep:getBehavior(MashinaBehavior)
-	if peepMashina then
-		peepMashina.currentState = mashinaState
+	if self.currentTutorialState == Ocean.STATE_NONE then
+		self:showCameraTutorial(playerPeep)
 	end
 end
 
@@ -136,8 +141,13 @@ function Ocean:onBoom(ship)
 
 	local director = self:getDirector()
 	local map = director:getMap(ship:getLayer())
-	local i = love.math.random(1, map:getWidth())
-	local j = love.math.random(1, map:getHeight())
+
+	local i, j
+	repeat
+		i = love.math.random(1, map:getWidth())
+		j = love.math.random(1, map:getHeight())
+	until map:getTile(i, j):hasFlag("floor")
+
 	local position = Utility.Map.getAbsoluteTilePosition(director, i, j, ship:getLayer())
 
 	local stage = director:getGameInstance():getStage()
@@ -149,6 +159,45 @@ function Ocean:onBoom(ship)
 		local player = Utility.Peep.getPlayerModel(self)
 		player:pokeCamera("shake", 0.5)
 	end
+end
+
+function Ocean:onCthulhuRises()
+	local stage = self:getDirector():getGameInstance():getStage()
+	local cthulhu = Utility.spawnMapObjectAtAnchor(self, "Cthulhu", "Anchor_Cthulhu_Spawn")
+	cthulhu:getPeep():listen("ready", function()
+		stage:fireProjectile(
+			"CthulhuSplash",
+			Vector.ZERO,
+			Utility.Peep.getAbsolutePosition(cthulhu:getPeep()) + Vector(0, self:getBehavior(OceanBehavior).depth, 0),
+			self:getLayer())
+	end)
+
+	local squid1 = Utility.spawnMapObjectAtAnchor(self, "UndeadSquid", "Anchor_Squid_Spawn1")
+	squid1:getPeep():listen("ready", function()
+		stage:fireProjectile(
+			"CthulhuSplash",
+			Vector.ZERO,
+			Utility.Peep.getAbsolutePosition(squid1:getPeep()) + Vector(0, self:getBehavior(OceanBehavior).depth, 0),
+			self:getLayer())
+	end)
+
+	local squid2 = Utility.spawnMapObjectAtAnchor(self, "UndeadSquid", "Anchor_Squid_Spawn2")
+	squid2:getPeep():listen("ready", function()
+		stage:fireProjectile(
+			"CthulhuSplash",
+			Vector.ZERO,
+			Utility.Peep.getAbsolutePosition(squid2:getPeep()) + Vector(0, self:getBehavior(OceanBehavior).depth, 0),
+			self:getLayer())
+	end)
+
+	local squid3 = Utility.spawnMapObjectAtAnchor(self, "UndeadSquid", "Anchor_Squid_Spawn3")
+	squid3:getPeep():listen("ready", function()
+		stage:fireProjectile(
+			"CthulhuSplash",
+			Vector.ZERO,
+			Utility.Peep.getAbsolutePosition(squid3:getPeep()) + Vector(0, self:getBehavior(OceanBehavior).depth, 0),
+			self:getLayer())
+	end)
 end
 
 function Ocean:showCameraTutorial(playerPeep)
@@ -218,6 +267,31 @@ function Ocean:showCameraMoveTutorial(playerPeep, duration)
 			0.5,          0.5 - 1 / 16
 		}, duration)
 	end
+end
+
+function Ocean:summonCthulhu()
+	self.currentTutorialState = Ocean.STATE_CTHULHU_RISE
+
+	local player = Utility.Peep.getPlayer(self)
+	if player then
+		self:pushPoke("playCutscene", player, "IsabelleIsland_FarOcean2_CthulhuRises")
+	end
+end
+
+function Ocean:updateCthulhu()
+	self.whirlpoolTime = self.whirlpoolTime and (self.whirlpoolTime - self:getDirector():getGameInstance():getDelta()) or Ocean.WHIRLPOOL_GROW_DURATION
+
+	local _, whirlpool = self:addBehavior(WhirlpoolBehavior)
+	whirlpool.radius = (1 - math.max(self.whirlpoolTime / Ocean.WHIRLPOOL_GROW_DURATION, 0)) * Ocean.MAX_WHIRLPOOL_RADIUS
+	whirlpool.holeRadius = whirlpool.radius / 2
+	whirlpool.rings = 10
+	whirlpool.rotationSpeed = 2.5
+	whirlpool.holeSpeed = 0.5
+	whirlpool.center = Vector(
+		Utility.Map.getAnchorPosition(
+			self:getDirector():getGameInstance(),
+			Utility.Peep.getMapResource(self),
+			"Anchor_Cthulhu_Spawn"))
 end
 
 function Ocean:updateCannonTutorial()
@@ -321,11 +395,26 @@ function Ocean:updateCannonTutorial()
 			end
 		end
 	end
+
+	local currentHealth = self.deadPrincess:getCurrentHealth()
+	local maxHealth = self.deadPrincess:getMaxHealth()
+	local difference = math.max(maxHealth - currentHealth, 0)
+
+	if difference >= Ocean.MIN_DAMAGE_THRESHOLD then
+		for k, v in pairs(self.cannonTargets) do
+			Utility.Peep.poof(v)
+			self.cannonTargets[k] = nil
+		end
+
+		self:summonCthulhu()
+	end 
 end
 
 function Ocean:updateTutorial()
 	if self.currentTutorialState == Ocean.STATE_CANNON_TUTORIAL then
 		self:updateCannonTutorial()
+	elseif self.currentTutorialState == Ocean.STATE_CTHULHU_RISE then
+		self:updateCthulhu()
 	end
 end
 

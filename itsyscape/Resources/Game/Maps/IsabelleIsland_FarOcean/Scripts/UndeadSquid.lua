@@ -18,11 +18,6 @@ local Tree = BTreeBuilder.Node() {
 			log = false
 		},
 
-		Mashina.Peep.TimeOut {
-			min_duration = 2,
-			max_duration = 4
-		},
-
 		Mashina.Repeat {
 			Mashina.Step {
 				Mashina.Peep.TimeOut {
@@ -30,8 +25,31 @@ local Tree = BTreeBuilder.Node() {
 					max_duration = 4
 				},
 
-				Mashina.Peep.PokeSelf {
-					event = "attackShip"
+				Mashina.Success {
+					Mashina.Sequence {
+						Mashina.Peep.FindNearbyPeep {
+							filters = {
+								function(peep)
+									local resource, resourceType = Utility.Peep.getResource(peep)
+									if resource and 
+									   (resource.name == "Ship_IsabelleIsland_PortmasterJenkins" or resource.name == "Ship_IsabelleIsland_Pirate") and
+									   resourceType and resourceType.name == "Map"
+									then
+									   	return true
+									end
+
+									return false
+								end
+							},
+
+							[TARGET] = B.Output.result
+						},
+
+						Mashina.Peep.PokeSelf {
+							event = "attackShip",
+							poke = TARGET
+						}
+					}
 				}
 			}
 		}

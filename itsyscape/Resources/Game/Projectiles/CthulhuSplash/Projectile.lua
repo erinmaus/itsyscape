@@ -22,9 +22,9 @@ Splash.PARTICLE_SYSTEM = {
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 10 },
-			speed = { 10, 12 },
-			yRange = { 0, 0.25 }
+			radius = { 0, 5 },
+			speed = { 20, 25 },
+			yRange = { 0, 0.125 }
 		},
 		{
 			type = "RandomColorEmitter",
@@ -67,13 +67,13 @@ Splash.PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 50, 100 },
-		delay = { 0.125 },
+		count = { 75, 125 },
+		delay = { 1 / 30 },
 		duration = { 1 }
 	}
 }
 
-Splash.DURATION = 1.5
+Splash.DURATION = 3
 
 function Splash:load()
 	Projectile.load(self)

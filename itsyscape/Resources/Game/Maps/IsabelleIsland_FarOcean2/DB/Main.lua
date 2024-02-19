@@ -115,15 +115,151 @@ do
 	}
 end
 
-M["Anchor_LightningSpawn"] = ItsyScape.Resource.MapObject.Unique()
+M["CameraDolly"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 52,
-		PositionY = 30,
-		PositionZ = 60,
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "CameraDolly",
 		Map = M._MAP,
-		Name = "Anchor_LightningSpawn",
-		Resource = M["Anchor_LightningSpawn"]
+		Resource = M["CameraDolly"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CameraDolly",
+		MapObject = M["CameraDolly"]
+	}
+end
+
+M["Anchor_Cthulhu_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 32,
+		PositionY = 0,
+		PositionZ = 48,
+		Map = M._MAP,
+		Name = "Anchor_Cthulhu_Spawn",
+		Resource = M["Anchor_Cthulhu_Spawn"]
+	}
+end
+
+M["Anchor_Squid_Spawn1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 24,
+		PositionY = 0,
+		PositionZ = 56,
+		Map = M._MAP,
+		Name = "Anchor_Squid_Spawn1",
+		Resource = M["Anchor_Squid_Spawn1"]
+	}
+end
+
+M["Anchor_Squid_Spawn2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 40,
+		PositionY = 0,
+		PositionZ = 56,
+		Map = M._MAP,
+		Name = "Anchor_Squid_Spawn2",
+		Resource = M["Anchor_Squid_Spawn2"]
+	}
+end
+
+M["Anchor_Squid_Spawn3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 36,
+		PositionY = 0,
+		PositionZ = 40,
+		Map = M._MAP,
+		Name = "Anchor_Squid_Spawn3",
+		Resource = M["Anchor_Squid_Spawn3"]
+	}
+end
+
+M["Cthulhu"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Cthulhu",
+		Map = M._MAP,
+		Resource = M["Cthulhu"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Cthulhu",
+		MapObject = M["Cthulhu"]
+	}
+end
+
+M["UndeadSquid"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "UndeadSquid",
+		Map = M._MAP,
+		Resource = M["UndeadSquid"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Undead squid",
+		Language = "en-US",
+		Resource = M["UndeadSquid"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Loyal servants to Cthulhu and its master, Yendor.",
+		Language = "en-US",
+		Resource = M["UndeadSquid"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid",
+		MapObject = M["UndeadSquid"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "spawn",
+		Tree = "Resources/Game/Maps/IsabelleIsland_FarOcean2/Scripts/UndeadSquid.lua",
+		IsDefault = 1,
+		Resource = M["UndeadSquid"]
+	}
+end
+
+M["Anchor_PirateShip_Cthulhu"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = -16,
+		PositionY = 0,
+		PositionZ = 32,
+		Map = M._MAP,
+		Name = "Anchor_PirateShip_Cthulhu",
+		Resource = M["Anchor_PirateShip_Cthulhu"]
+	}
+end
+
+M["Anchor_PirateShip_1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 16,
+		PositionY = 0,
+		PositionZ = 32,
+		Map = M._MAP,
+		Name = "Anchor_PirateShip_1",
+		Resource = M["Anchor_PirateShip_1"]
+	}
+end
+
+M["Anchor_JenkinsShip_Cthulhu"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 72,
+		PositionY = 0,
+		PositionZ = 72,
+		Map = M._MAP,
+		Name = "Anchor_JenkinsShip_Cthulhu",
+		Resource = M["Anchor_JenkinsShip_Cthulhu"]
 	}
 end
 
@@ -193,5 +329,51 @@ do
 		Name = "SoakedLog",
 		Cutscene = Cutscene,
 		Resource = ItsyScape.Resource.Map "Ship_IsabelleIsland_PortmasterJenkins"
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "CapnRaven",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain"
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "Jenkins",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins"
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_FarOcean2_CthulhuRises"
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "DeadPrincess",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Ship_IsabelleIsland_Pirate"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "SoakedLog",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Ship_IsabelleIsland_PortmasterJenkins"
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "CapnRaven",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain"
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "Jenkins",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins"
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CameraDolly",
+		Cutscene = Cutscene,
+		Resource = M["CameraDolly"]
 	}
 end

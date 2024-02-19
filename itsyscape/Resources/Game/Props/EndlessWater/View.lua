@@ -12,15 +12,37 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local PropView = require "ItsyScape.Graphics.PropView"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 
 local EndlessWater = Class(PropView)
+EndlessWater.WHIRLPOOL_SHADER = ShaderResource()
+EndlessWater.WATER_SHADER = ShaderResource()
+do
+	EndlessWater.WHIRLPOOL_SHADER:loadFromFile("Resources/Shaders/WhirlpoolWater")
+	EndlessWater.WATER_SHADER:loadFromFile("Resources/Shaders/Water")
+end
 
+EndlessWater.HOLE_COLOR = Color.fromHexString("87cdde")
+EndlessWater.FOAM_COLOR = Color.fromHexString("ffffff")
+
+-- Size of map sector, in terms of unit (1 unit = cell size)
 EndlessWater.SIZE = 64
 
+-- Width and height of the water in the negative and positive dimensions.
+-- Basically goes from -W .. +W, and -H .. +H.
 EndlessWater.WIDTH  = 1
 EndlessWater.HEIGHT = 1
+
+EndlessWater.WHIRLPOOL_PROPS = {
+	["scape_WhirlpoolCenter"] = "center",
+	["scape_WhirlpoolRadius"] = "radius",
+	["scape_WhirlpoolHoleRadius"] = "holeRadius",
+	["scape_WhirlpoolRings"] = "rings",
+	["scape_WhirlpoolRotationSpeed"] = "rotationSpeed",
+	["scape_WhirlpoolHoleSpeed"] = "holeSpeed"
+}
 
 function EndlessWater:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -41,6 +63,7 @@ function EndlessWater:load()
 			self.texture = texture
 		end)
 
+	self.waters = {}
 	for i = -EndlessWater.WIDTH, EndlessWater.WIDTH do
 		for j = -EndlessWater.HEIGHT, EndlessWater.HEIGHT do
 			resources:queueEvent(function()
@@ -54,13 +77,49 @@ function EndlessWater:load()
 					1.5,
 					8)
 
-				water:getMaterial():setTextures(self.texture)
-				water:setParent(self.waterParent)
-				water:setYOffset(1)
+				local function _onWillRender(renderer, delta)
+					local shader = renderer:getCurrentShader()
+					local state = self:getProp():getState()
 
-				water:setPositionTimeScale(4)
-				water:setTextureTimeScale(math.pi / 4, 1 / 2)
+					for k, v in pairs(EndlessWater.WHIRLPOOL_PROPS) do
+						local prop = state.whirlpool[v]
+						if prop and shader:hasUniform(k) then
+							shader:send(k, prop)
+						end
+					end
+
+					if shader:hasUniform("scape_WhirlpoolHoleColor") then
+						shader:send("scape_WhirlpoolHoleColor", { EndlessWater.HOLE_COLOR:get() })
+					end
+
+					if shader:hasUniform("scape_WhirlpoolFoamColor") then
+						shader:send("scape_WhirlpoolFoamColor", { EndlessWater.FOAM_COLOR:get() })
+					end
+
+					water:setYOffset(state.ocean.offset)
+					water:setPositionTimeScale(state.ocean.positionTimeScale)
+					water:setTextureTimeScale(unpack(state.ocean.textureTimeScale))
+				end
+
+				water:setParent(self.waterParent)
+				water:getMaterial():setTextures(self.texture)
+				water:onWillRender(_onWillRender)
+
+				table.insert(self.waters, water)
 			end)
+		end
+	end
+end
+
+function EndlessWater:tick()
+	PropView.tick(self)
+
+	local state = self:getProp():getState()
+	for _, water in ipairs(self.waters) do
+		if state.whirlpool.hasWhirlpool then
+			water:getMaterial():setShader(EndlessWater.WHIRLPOOL_SHADER)
+		else
+			water:getMaterial():setShader(EndlessWater.WATER_SHADER)
 		end
 	end
 end

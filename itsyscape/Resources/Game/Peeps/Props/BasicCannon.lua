@@ -243,8 +243,6 @@ function BasicCannon:onFire(peep, item)
 				local hitPosition = closePoint + Vector.UNIT_Y * y
 				stage:fireProjectile("CannonSplosion", self, hitPosition, layer)
 
-				print(">>> hit", hitPosition:get())
-
 				local damageRoll = logic:rollDamage(peep, Weapon.PURPOSE_TOOL)
 				local damage = damageRoll:roll()
 

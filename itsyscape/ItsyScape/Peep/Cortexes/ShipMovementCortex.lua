@@ -28,6 +28,7 @@ ShipMovementCortex.Ship = Class()
 ShipMovementCortex.Ship.MAX_ACCELERATION_DENOMINATOR = 45
 ShipMovementCortex.Ship.MAX_SPEED_DENOMINATOR = 55
 ShipMovementCortex.Ship.PUSH_STEP = 1 / 2
+ShipMovementCortex.Ship.MAX_COLLISION_STEPS = 10
 
 function ShipMovementCortex.Ship:new(peep)
 	self.ship = peep
@@ -173,8 +174,10 @@ function ShipMovementCortex.Ship:projectRay(ray)
 		local U1 = U:dot(ray.direction) * ray.direction
 		local U2 = U - U1
 		local d = U2:getLength()
-		if d < selfCircleRadius then
-			local m = math.sqrt(selfCircleRadius ^ 2 - d ^ 2)
+
+		-- We add a little buffer to prevent near misses.
+		if d < selfCircleRadius * 2 then
+			local m = math.sqrt(math.max(selfCircleRadius ^ 2 - d ^ 2, 0))
 			local P1 = ray.origin + U1 + m * ray.direction
 			local P2 = ray.origin + U1 - m * ray.direction
 
@@ -232,7 +235,8 @@ function ShipMovementCortex.Ship:handleShipCollision(other)
 	local _, otherPositionBehavior = other.ship:addBehavior(PositionBehavior)
 
 	local didCollide = false
-	while self:isColliding(other) do
+	local currentStep = 1
+	while self:isColliding(other) and currentStep <= ShipMovementCortex.Ship.MAX_COLLISION_STEPS do
 		local selfPosition = selfPositionBehavior.position * Vector.PLANE_XZ
 		local otherPosition = otherPositionBehavior.position * Vector.PLANE_XZ
 
@@ -246,6 +250,7 @@ function ShipMovementCortex.Ship:handleShipCollision(other)
 		otherPositionBehavior.position = otherPositionBehavior.position + otherPush
 
 		didCollide = true
+		currentStep = currentStep + 1
 	end
 
 	if didCollide then

@@ -287,6 +287,18 @@ do
 		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_Pirate/Scripts/CapnRaven_ChaseLogic.lua",
 		Resource = M["CapnRaven"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_Pirate/Scripts/CapnRaven_IdleLogic.lua",
+		Resource = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "cthulhu",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_Pirate/Scripts/CapnRaven_CthulhuLogic.lua",
+		Resource = M["CapnRaven"]
+	}
 end
 
 M["Anchor_CapnRaven_Spawn"] = ItsyScape.Resource.MapObject.Unique()

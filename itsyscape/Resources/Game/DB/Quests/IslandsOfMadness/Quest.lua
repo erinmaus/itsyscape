@@ -25,7 +25,7 @@ local Step = ItsyScape.Utility.QuestStep
 
 Quest "PreTutorial" {
 	Step "PreTutorial_Start",
-	Step "PreTutorial_CapnRavenHitJenkins",
+	Step "PreTutorial_CthulhuRises",
 	Step "PreTutorial_ArrivedAtIsland",
 	Step "PreTutorial_Teleported"
 }
@@ -37,9 +37,9 @@ Description "PreTutorial_Start" {
 	after = "Cap'n Raven wants the loot on Jenkin's ship."
 }
 
-Description "PreTutorial_CapnRavenHitJenkins" {
+Description "PreTutorial_CthulhuRises" {
 	before = "Get some cannonballs and fire the cannons at Cap'n Raven's ship, the Dead Princess!",
-	after = "Cap'n Raven rammed her ship, the Dead Princess, into Jenkin's ship, the Soaked Log! Cthulhu appeared and caught her attention."
+	after = "After defending you and the crew for Cap'n Raven, both Cap'n Raven's ship, the Dead Princess, and Jenkin's ship, the Soaked Log, were pulled into the current of a whirlpool that Cthulhu rose out of!"
 }
 
 Description "PreTutorial_ArrivedAtIsland" {
