@@ -1,3 +1,5 @@
+local Vector = require "ItsyScape.Common.Math.Vector"
+
 PLAYER_NAME = _TARGET:getName()
 
 local function focus(speakerName)
@@ -9,6 +11,7 @@ local function focus(speakerName)
 		local player = Utility.Peep.getPlayerModel(_TARGET)
 		player:pokeCamera("targetActor", actor:getID())
 		player:pokeCamera("zoom", 35)
+		player:pokeCamera("translate", Vector(0, 0, 0))
 	end
 
 	speaker(speakerName)
@@ -64,4 +67,46 @@ if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) then
 	message "Aye aye, captain!"
 
 	_TARGET:getState():give("KeyItem", "PreTutorial_Start")
+elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARGET) then
+	focus "Cthulhu"
+	do
+		local player = Utility.Peep.getPlayerModel(_TARGET)
+		player:pokeCamera("translate", Vector(0, 10, 0))
+	end
+	message {
+		"Screeeeeeeeeeee! Screeeeee!",
+		"(MORTALS! YENDOR COMES FOR YOU!)"
+	}
+
+	focus "CapnRaven"
+	message {
+		"Ahahahaha! %person{Cthulhu}, we finally meet!",
+		"Time t'er die!"
+	}
+
+	focus "Jenkins"
+	message "Yer mad, %person{Cap'n Raven}!"
+
+	focus "CapnRaven"
+	message "So I am, ye traitor! What's it to yer?"
+
+	focus "Rosalind"
+	message "Enough with the banter! Let's get out of here!"
+
+	focus "Orlando"
+	message "YES! ARE YOU TWO CRAZY?! LET'S GO!"
+
+	focus "Jenkins"
+	message {
+		"Aye! %person{${PLAYER_NAME}}, man the cannons 'n plug any leaks!",
+		"%person{Rosalind}, blast them squid to 'ell with yer magic!"
+	}
+
+	focus "Rosalind"
+	message "Understood, captain!"
+
+	focus "_TARGET"
+	message "Aye aye, captain!"
+
+	_TARGET:getState():give("KeyItem", "PreTutorial_CthulhuRises")
 end

@@ -24,6 +24,8 @@ function Cthulhu:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(12, 24, 4)
+	size.zoom = 0.75
+	size.pan = Vector(0, 20, 0)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.velocityMultiplier = 0.25

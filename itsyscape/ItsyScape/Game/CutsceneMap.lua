@@ -15,7 +15,11 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
+local ShiptBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 
 local CutsceneMap = Class()
 
@@ -101,12 +105,66 @@ function CutsceneMap:sail(anchors, duration, tween)
 	end
 end
 
+function CutsceneMap:hide()
+	return function()
+		self.peep:addBehavior(DisabledBehavior)
+	end
+end
+
+function CutsceneMap:show()
+	return function()
+		self.peep:removeBehavior(DisabledBehavior)
+	end
+end
+
+function CutsceneMap:teleport(anchor)
+	return function()
+		local position = self.peep:getBehavior(PositionBehavior)
+		local instance = Utility.Peep.getInstance(self.peep)
+		local mapScript = instance:getMapScriptByLayer(position.layer or instance:getBaseLayer())
+		local mapResource = Utility.Peep.getResource(mapScript)
+		local anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+
+		Utility.Peep.setPosition(self.peep, anchorPosition)
+
+		local movement = self.peep:getBehavior(MovementBehavior)
+		if movement then
+			movement.velocity = Vector(0)
+			movement.acceleration = Vector(0)
+		end
+	end
+end
+
+function CutsceneMap:lookAt(anchor)
+	return function()
+		local position = self.peep:getBehavior(PositionBehavior)
+		local instance = Utility.Peep.getInstance(self.peep)
+		local mapScript = instance:getMapScriptByLayer(position.layer or instance:getBaseLayer())
+		local mapResource = Utility.Peep.getResource(mapScript)
+		local anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+
+		local currentPosition = Utility.Peep.getPosition(self.peep)
+		local rotation = Quaternion.lookAt(currentPosition * Vector.PLANE_XZ, anchorPosition * Vector.PLANE_XZ)
+
+		local shipMovement = self.peep:getBehavior(ShipMovementBehavior)
+		if shipMovement then
+			shipMovement.rotation = rotation * Quaternion.lookAt(shipMovement.steerDirectionNormal, Vector.ZERO)
+		else
+			local _, r = peep:addBehavior(RotationBehavior)
+			r.rotation = rotation
+		end
+	end
+end
+
 function CutsceneMap:lerpPosition(anchor, duration, tween)
 	return function()
 		local E = 0.1
 		tween = Tween[tween or 'linear'] or Tween.linear
 
-		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+		local position = self.peep:getBehavior(PositionBehavior)
+		local instance = Utility.Peep.getInstance(self.peep)
+		local mapScript = instance:getMapScriptByLayer(position.layer or instance:getBaseLayer())
+		local mapResource = Utility.Peep.getResource(mapScript)
 		local anchorPosition = Vector(
 			Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 
@@ -141,7 +199,10 @@ function CutsceneMap:lerpScale(anchor, duration, tween)
 		local E = 0.1
 		tween = Tween[tween or 'linear'] or Tween.linear
 
-		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+		local position = self.peep:getBehavior(PositionBehavior)
+		local instance = Utility.Peep.getInstance(self.peep)
+		local mapScript = instance:getMapScriptByLayer(position.layer or instance:getBaseLayer())
+		local mapResource = Utility.Peep.getResource(mapScript)
 		local anchorScale = Vector(
 			Utility.Map.getAnchorScale(self.game, mapResource, anchor))
 
@@ -176,7 +237,10 @@ function CutsceneMap:slerpRotation(anchor, duration, tween)
 		local E = 0.01
 		tween = Tween[tween or 'linear'] or Tween.linear
 
-		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+		local position = self.peep:getBehavior(PositionBehavior)
+		local instance = Utility.Peep.getInstance(self.peep)
+		local mapScript = instance:getMapScriptByLayer(position.layer or instance:getBaseLayer())
+		local mapResource = Utility.Peep.getResource(mapScript)
 		local anchorRotation = Quaternion(
 			Utility.Map.getAnchorRotation(self.game, mapResource, anchor))
 

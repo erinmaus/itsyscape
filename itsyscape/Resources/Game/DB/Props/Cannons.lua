@@ -221,3 +221,9 @@ ItsyScape.Meta.MapObjectSize {
 	Zoom = 2.5,
 	MapObject = ItsyScape.Resource.Prop "IronCannonballPile"
 }
+
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
+	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
+}

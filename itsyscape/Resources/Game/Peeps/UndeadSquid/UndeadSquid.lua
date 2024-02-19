@@ -121,64 +121,71 @@ function UndeadSquid:onInk(p)
 	stage:fireProjectile('UndeadSquidInk', self, p.target)
 end
 
-function UndeadSquid:onAttackShip()
-	local map = Utility.Peep.getMapResource(self)
-	if map then
-		local stage = self:getDirector():getGameInstance():getStage()
-		local mapScript = Utility.Peep.getMapScript(self)
+function UndeadSquid:onAttackShip(shipMapScript)
+	if not shipMapScript then
+		local map = Utility.Peep.getMapResource(self)
+		if map then
+			local stage = self:getDirector():getGameInstance():getStage()
+			local mapScript = Utility.Peep.getMapScript(self)
 
-		if mapScript:isCompatibleType(MapScript) then
-			local arguments = mapScript:getArguments()
-			if arguments["ship"] then
-				local shipName = arguments["ship"]
-				local instance = stage:getPeepInstance(self)
-				local shipMapScript = instance:getMapScriptByMapFilename(shipName)
-				local shipMapLayer = shipMapScript:getLayer()
-				local shipMap = stage:getMap(shipMapLayer)
-
-				Log.info("Attacking %s.", shipMapScript:getName())
-
-				local tiles = {}
-				for j = 1, shipMap:getHeight() do
-					for i = 1, shipMap:getWidth() do
-						local tile = shipMap:getTile(i, j)
-						if tile:hasFlag("floor") and not tile:hasFlag("impassable") and not tile:hasFlag("blocking") then
-							table.insert(tiles, { i = i, j = j, tile = tile })
-						end
-					end
+			if mapScript:isCompatibleType(MapScript) then
+				local arguments = mapScript:getArguments()
+				if arguments["ship"] then
+					local shipName = arguments["ship"]
+					local instance = stage:getPeepInstance(self)
+					shipMapScript = instance:getMapScriptByMapFilename(shipName)
 				end
+			end
+		end
 
-				local tile = tiles[math.random(#tiles)]
-				if tile then
-					local center = shipMap:getTileCenter(tile.i, tile.j)
-					local s, leak = stage:placeProp("resource://IsabelleIsland_Port_WaterLeak", shipMapLayer, shipMapScript:getLayerName())
-					if s then
-						local leakPeep = leak:getPeep()
-						local position = leakPeep:getBehavior(PositionBehavior)
-						if position then
-							position.position = center
+		if not shipMapScript then
+			Log.info("Undead squid couldn't find ship to attack!")
+		end
+	end
 
-							leakPeep:listen('finalize', function()
-								stage:fireProjectile('UndeadSquidRock', self, leak)
-							end)
-						end
+	Log.info("Attacking %s.", shipMapScript:getName())
 
-						shipMapScript:pushPoke(UndeadSquid.LEAK_TIME_SECONDS, 'leak', {
-							leak = leakPeep
-						})
-					end
-				end
+	local shipMapLayer = shipMapScript:getLayer()
+	local shipMap = self:getDirector():getMap(shipMapLayer)
 
-				local weapon = self:getBehavior(WeaponBehavior)
-				local damage = weapon.weapon:rollDamage(self, Weapon.PURPOSE_KILL, shipMapScript)
-
-				shipMapScript:poke('hit', AttackPoke({
-					damage = damage:roll(),
-					aggressor = self
-				}))
+	local tiles = {}
+	for j = 1, shipMap:getHeight() do
+		for i = 1, shipMap:getWidth() do
+			local tile = shipMap:getTile(i, j)
+			if tile:hasFlag("floor") and not tile:hasFlag("impassable") and not tile:hasFlag("blocking") then
+				table.insert(tiles, { i = i, j = j, tile = tile })
 			end
 		end
 	end
+
+	local tile = tiles[love.math.random(#tiles)]
+	if tile then
+		local center = shipMap:getTileCenter(tile.i, tile.j)
+		local s, leak = stage:placeProp("resource://IsabelleIsland_Port_WaterLeak", shipMapLayer, shipMapScript:getLayerName())
+		if s then
+			local leakPeep = leak:getPeep()
+			local position = leakPeep:getBehavior(PositionBehavior)
+			if position then
+				position.position = center
+
+				leakPeep:listen('finalize', function()
+					stage:fireProjectile('UndeadSquidRock', self, leak)
+				end)
+			end
+
+			shipMapScript:pushPoke(UndeadSquid.LEAK_TIME_SECONDS, 'leak', {
+				leak = leakPeep
+			})
+		end
+	end
+
+	local weapon = self:getBehavior(WeaponBehavior)
+	local damage = weapon.weapon:rollDamage(self, Weapon.PURPOSE_KILL, shipMapScript)
+
+	shipMapScript:poke('hit', AttackPoke({
+		damage = damage:roll(),
+		aggressor = self
+	}))
 
 	self:poke('initiateAttack', AttackPoke())
 end

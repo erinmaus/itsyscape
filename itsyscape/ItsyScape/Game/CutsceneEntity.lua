@@ -14,6 +14,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -221,6 +222,26 @@ function CutsceneEntity:teleport(anchor)
 		local mapResource = Utility.Peep.getMapResource(self.peep)
 		local anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 		Utility.Peep.setPosition(self.peep, anchorPosition)
+	end
+end
+
+function CutsceneEntity:setState(state)
+	return function()
+		local mashinaBehavior = self.peep:getBehavior(MashinaBehavior)
+		if mashinaBehavior then
+			mashinaBehavior.currentState = state
+		end
+	end
+end
+
+function CutsceneEntity:waitForState(state)
+	return function()
+		local currentState
+		repeat
+			local mashinaBehavior = self.peep:getBehavior(MashinaBehavior)
+			currentState = mashinaBehavior and mashinaBehavior.currentState or nil
+			coroutine.yield()
+		until currentState == nil or currentState == state
 	end
 end
 

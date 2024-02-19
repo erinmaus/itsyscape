@@ -617,6 +617,7 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 			node:setParent(nil)
 		elseif not disabled and not node:getParent() then
 			node:setParent(self.scene)
+			node:tick(1)
 		end
 	end
 

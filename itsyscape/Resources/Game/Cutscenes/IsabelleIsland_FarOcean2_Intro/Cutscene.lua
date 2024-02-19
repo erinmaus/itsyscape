@@ -13,8 +13,8 @@ local HERO = {
 }
 
 return Sequence {
-	Map:poke("engage", "IsabelleIsland_FarOcean_PirateCaptain", "engage"),
-	Map:poke("engage", "IsabelleIsland_Port_PortmasterJenkins", "cutscene"),
+	CapnRaven:setState("engage"),
+	Jenkins:setState("cutscene"),
 
 	Camera:target(Player),
 	Camera:zoom(150),

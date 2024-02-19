@@ -205,11 +205,17 @@ do
 		Resource = M["Jenkins_Pirate"]
 	}
 
-	-- ItsyScape.Meta.PeepMashinaState {
-	-- 	State = "flee",
-	-- 	Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_FleeLogic.lua",
-	-- 	Resource = M["Jenkins_Pirate"]
-	-- }
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_IdleLogic.lua",
+		Resource = M["Jenkins_Pirate"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "cthulhu",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_CthulhuLogic.lua",
+		Resource = M["Jenkins_Pirate"]
+	}
 end
 
 M["Anchor_Jenkins_Spawn"] = ItsyScape.Resource.MapObject.Unique()
@@ -472,6 +478,12 @@ do
 	ItsyScape.Meta.TalkSpeaker {
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain",
 		Name = "CapnRaven",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "Cthulhu",
+		Name = "Cthulhu",
 		Action = TalkAction
 	}
 

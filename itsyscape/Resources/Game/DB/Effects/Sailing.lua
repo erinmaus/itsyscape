@@ -28,7 +28,7 @@ do
 	local Water = ItsyScape.Resource.Prop "EndlessWater"
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Value = "Resources.Game.Peeps.Props.BasicOcean",
 		Resource = Water
 	}
 end

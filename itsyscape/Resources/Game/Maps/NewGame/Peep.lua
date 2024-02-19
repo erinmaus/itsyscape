@@ -54,9 +54,13 @@ function NewGame:onPlayerEnter(player)
 			text = string.format("Welcome to the Realm, %s.", playerPeep:getName())
 		} }, 4)
 
+		-- stage:movePeep(
+		-- 	playerPeep,
+		-- 	"@EmptyRuins_Downtown?cutscene=1,mute=1",
+		-- 	"Anchor_Spawn")
 		stage:movePeep(
 			playerPeep,
-			"@EmptyRuins_Downtown?cutscene=1,mute=1",
+			"@IsabelleIsland_FarOcean2",
 			"Anchor_Spawn")
 	end)
 end
