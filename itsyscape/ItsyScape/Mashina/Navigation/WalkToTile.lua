@@ -32,7 +32,7 @@ function WalkToTile:update(mashina, state, executor)
 		s = self.walk()
 	end
 
-	if coroutine.status(self.walk) == "dead" then
+	if s ~= nil then
 		self.walk = nil
 
 		if s then
@@ -43,6 +43,10 @@ function WalkToTile:update(mashina, state, executor)
 	else
 		return B.Status.Working
 	end
+end
+
+function WalkToTile:deactivated()
+	self.walk = nil
 end
 
 return WalkToTile

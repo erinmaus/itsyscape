@@ -42,14 +42,22 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Success {
 			Mashina.Sequence {
-				Mashina.Navigation.TargetMoved {
-					peep = PLAYER
+				Mashina.Invert {
+					Mashina.Navigation.TargetMoved {
+						peep = PLAYER
+					}
 				},
 
-				Mashina.Navigation.WalkToPeep {
-					peep = PLAYER,
-					distance = 2,
-					as_close_as_possible = false
+				Mashina.Step {
+					Mashina.Navigation.WalkToPeep {
+						peep = PLAYER,
+						distance = 2,
+						as_close_as_possible = false
+					},
+
+					Mashina.Repeat {
+						Mashina.Peep.Wait
+					}
 				}
 			}
 		}
