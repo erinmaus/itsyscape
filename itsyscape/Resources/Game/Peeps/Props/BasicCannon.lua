@@ -158,28 +158,39 @@ function BasicCannon:onFire(peep, item)
 
 			local hits = director:probe(self:getLayerName(),
 				Probe.attackable(),
-				function(peep)
-					if Utility.Peep.getLayer(peep) == Utility.Peep.getLayer(self) then
+				function(p)
+					if Utility.Peep.getLayer(p) == Utility.Peep.getLayer(self) then
 						return false
 					end
 
-					if peep:hasBehavior(DisabledBehavior) then
+					if p:hasBehavior(DisabledBehavior) then
 						return false
 					end
 
-					local position = Utility.Peep.getAbsolutePosition(peep)
-					local size = peep:getBehavior(SizeBehavior)
+					local position = Utility.Peep.getPosition(p)
+					local size = p:getBehavior(SizeBehavior)
 					if not size then
 						return false
 					else
 						size = size.size
 					end
 				
-					local min = position - Vector(size.x / 2, 0, size.z / 2)
-					local max = position + Vector(size.x / 2, size.y, size.z / 2)
+					local min = Vector(-size.x / 2, 0, -size.z / 2)
+					local max = Vector(size.x / 2, size.y, size.z / 2)
 
-					local s, p = ray:hitBounds(min, max)
-				return s and (p - ray.origin):getLength() <= range
+					local transform = Utility.Peep.getAbsoluteTransform(p)
+					local s, hit = ray:hitBounds(min, max, transform)
+					if s then
+						hit = Vector(transform:transformPoint(hit:get()))
+
+						if peep:hasBehavior("Player") then
+							print(">>> hit", p:getName(), hit:get())
+							print(">>> cannon", ray.origin:get())
+							print(">>> distance", (hit - ray.origin):getLength(), "max", range)
+						end
+					end
+
+				return s and (hit - ray.origin):getLength() <= range
 			end)
 
 			local ships = director:getCortex(ShipMovementCortex):projectRay(ray, self:getLayerName())

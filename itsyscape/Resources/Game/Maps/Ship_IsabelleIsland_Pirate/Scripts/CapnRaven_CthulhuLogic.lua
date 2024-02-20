@@ -47,10 +47,10 @@ local Tree = BTreeBuilder.Node() {
 					Mashina.Sailing.GetNearestOffset {
 						target = TARGET,
 						offsets = {
-							Vector(16, 0, 0),
-							Vector(-16, 0, 0),
-							Vector(0, 0, 16),
-							Vector(0, 0, -16)
+							Vector(24, 0, 0),
+							Vector(-24, 0, 0),
+							Vector(0, 0, 24),
+							Vector(0, 0, -24)
 						},
 
 						[OFFSET] = B.Output.result

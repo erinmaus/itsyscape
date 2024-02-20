@@ -1843,55 +1843,6 @@ function Utility.Peep.dismiss(peep)
 	end
 end
 
-function Utility.Peep.getMapTransform(peep)
-	local position = mapScript:getBehavior(PositionBehavior)
-	if position then
-		position = position.position
-	else
-		position = Vector.ZERO
-	end
-
-	local rotation = mapScript:getBehavior(RotationBehavior)
-	if rotation then
-		rotation = rotation.rotation
-	else
-		rotation = Quaternion.IDENTITY
-	end
-
-	local scale = mapScript:getBehavior(ScaleBehavior)
-	if scale then
-		scale = scale.scale
-	else
-		scale = Vector.ONE
-	end
-
-	local origin = mapScript:getBehavior(OriginBehavior)
-	if origin then
-		origin = origin.origin
-	else
-		origin = Vector.ZERO
-	end
-
-	local offset = mapScript:getBehavior(MapOffsetBehavior)
-	if offset then
-		rotation = rotation * offset.rotation
-		scale = scale * offset.scale
-
-		offset = offset.offset
-	else
-		offset = Vector.ZERO
-	end
-
-	local transform = love.math.newTransform()
-	transform:translate(offset:get())
-	transform:translate(position:get())
-	transform:scale(scale:get())
-	transform:applyQuaternion(rotation:get())
-	transform:translate((-offset):get())
-
-	return transform
-end
-
 function Utility.Peep.getTransform(peep)
 	local transform = love.math.newTransform()
 	do
@@ -1919,6 +1870,23 @@ function Utility.Peep.getTransform(peep)
 		transform:translate(position:get())
 		transform:scale(scale:get())
 		transform:applyQuaternion(rotation:get())
+	end
+
+	return transform
+end
+
+function Utility.Peep.getAbsoluteTransform(peep)
+	local transform = love.math.newTransform()
+	do
+		local mapScript = Utility.Peep.getMapScript(peep)
+		if mapScript then
+			local parentTransform = Utility.Peep.getMapTransform(mapScript)
+			transform:apply(parentTransform)
+		end
+
+
+		local peepTransform = Utility.Peep.getTransform(peep)
+		transform:apply(peepTransform)
 	end
 
 	return transform
