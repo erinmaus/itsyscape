@@ -18,6 +18,7 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
@@ -37,8 +38,11 @@ function UndeadSquid:new(resource, name, ...)
 	size.offset = Vector(0, 1, 0)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 6
-	movement.maxAcceleration = 6
+	movement.maxSpeed = 16
+	movement.maxAcceleration = 12
+	movement.noClip = true
+
+	self:addBehavior(RotationBehavior)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge
@@ -166,7 +170,11 @@ function UndeadSquid:onAttackShip(shipMapScript)
 		if leak then
 			local leakPeep = leak:getPeep()
 			leakPeep:listen('finalize', function()
-				stage:fireProjectile('UndeadSquidRock', self, leak)
+				stage:fireProjectile(
+					'UndeadSquidRock',
+					self,
+					Utility.Map.getAbsoluteTilePosition(self:getDirector(), tile.i, tile.j, shipMapScript:getLayer()),
+					shipMapScript:getLayer())
 			end)
 
 			shipMapScript:pushPoke(UndeadSquid.LEAK_TIME_SECONDS, 'leak', {

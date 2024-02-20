@@ -303,7 +303,7 @@ end
 
 do
 	ItsyScape.Resource.Peep "IsabelleIsland_Rosalind" {
-		-- Nothing.
+		ItsyScape.Action.InvisibleAttack()
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -320,6 +320,30 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
 		Value = "Helps you find yourself.",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(100),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
 	}
 end

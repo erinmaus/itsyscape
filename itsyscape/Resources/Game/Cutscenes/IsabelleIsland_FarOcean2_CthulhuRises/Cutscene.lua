@@ -46,6 +46,11 @@ return Sequence {
 	Map:poke("boom", SoakedLog:getPeep()),
 	Map:poke("boom", DeadPrincess:getPeep()),
 
+	Rosalind:setState("attack"),
+
 	Player:wait(2),
-	Player:dialog("IntroDialog")
+	Player:dialog("IntroDialog"),
+
+	Jenkins:setState("flee"),
+	Map:poke("flee")
 }

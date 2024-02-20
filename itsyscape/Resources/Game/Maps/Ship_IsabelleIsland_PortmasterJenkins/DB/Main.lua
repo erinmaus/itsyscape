@@ -216,6 +216,12 @@ do
 		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_CthulhuLogic.lua",
 		Resource = M["Jenkins_Pirate"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "flee",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_FleeLogic.lua",
+		Resource = M["Jenkins_Pirate"]
+	}
 end
 
 M["Anchor_Jenkins_Spawn"] = ItsyScape.Resource.MapObject.Unique()
@@ -286,6 +292,12 @@ do
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "IsabelliumStaff",
 		Count = 1,
+		Resource = M["Rosalind"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Rosalind.lua",
 		Resource = M["Rosalind"]
 	}
 
