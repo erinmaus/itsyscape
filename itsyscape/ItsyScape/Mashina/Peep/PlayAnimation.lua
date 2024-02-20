@@ -14,6 +14,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local PlayAnimation = B.Node("PlayAnimation")
 PlayAnimation.TYPE = B.Reference()
 PlayAnimation.FILENAME = B.Reference()
+PlayAnimation.ANIMATION = B.Reference()
 PlayAnimation.SLOT = B.Reference()
 PlayAnimation.PRIORITY = B.Reference()
 PlayAnimation.FORCE = B.Reference()
@@ -28,6 +29,13 @@ function PlayAnimation:update(mashina, state, executor)
 
 	local fileType = state[self.TYPE] or "ItsyScape.Graphics.AnimationResource"
 	local filename = state[self.FILENAME]
+	if not filename then
+		local animation = state[self.ANIMATION]
+		if animation then
+			filename = string.format("Resources/Game/Animations/%s/Script.lua", animation)
+		end
+	end
+
 	local slot = state[self.SLOT] or 'mashina'
 	local priority = state[self.PRIORITY] or 0
 	local force = state[self.FORCE] or false

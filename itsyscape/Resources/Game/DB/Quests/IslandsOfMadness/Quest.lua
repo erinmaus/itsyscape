@@ -26,7 +26,8 @@ local Step = ItsyScape.Utility.QuestStep
 Quest "PreTutorial" {
 	Step "PreTutorial_Start",
 	Step "PreTutorial_CthulhuRises",
-	Step "PreTutorial_ArrivedAtIsland",
+	Step "PreTutorial_DefendShip",
+	Step "PreTutorial_ArriveAtTheWhaleTemple",
 	Step "PreTutorial_Teleported"
 }
 
@@ -42,7 +43,12 @@ Description "PreTutorial_CthulhuRises" {
 	after = "After defending you and the crew for Cap'n Raven, both Cap'n Raven's ship, the Dead Princess, and Jenkin's ship, the Soaked Log, were pulled into the current of a whirlpool that Cthulhu rose out of!"
 }
 
-Description "PreTutorial_ArrivedAtIsland" {
+Description "PreTutorial_DefendShip" {
 	before = "Plug the leaks as they pop up and help Rosalind attack the undead squids with the cannons!",
-	after = "Thanks to you and Rosalind, the crew arrived at a mysterous Yendorian island. But the ship was still badly damaged..."
+	after = "Thanks to you and Rosalind, the crew survived the encounter with Cthulhu and the squids. But the ship was still badly damaged..."
+}
+
+Description "PreTutorial_ArriveAtTheWhaleTemple" {
+	before = "Jenkins plotted a course for the abandoned Yendorian outpost, the Whaling Temple.",
+	after = "Jenkins and the crew, including you, arrived safely at the abandoned Yendorian output, the Whaling Temple."
 }

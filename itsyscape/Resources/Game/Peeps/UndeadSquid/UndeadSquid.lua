@@ -112,12 +112,17 @@ end
 
 function UndeadSquid:onInk(p)
 	local attack = AttackPoke({
-		damage = math.random(UndeadSquid.INK_MIN, UndeadSquid.INK_MAX),
+		damage = love.math.random(p.min or UndeadSquid.INK_MIN, p.max or UndeadSquid.INK_MAX),
 		aggressor = self,
 		attackType = Weapon.BONUS_ARCHERY,
 		weaponType = 'x-squid'
 	})
-	p.target:poke('hit', attack)
+
+	if attack:getDamage() == 0 then
+		p.target:poke('miss', attack)
+	else
+		p.target:poke('hit', attack)
+	end
 
 	self:poke('initiateAttack', AttackPoke())
 

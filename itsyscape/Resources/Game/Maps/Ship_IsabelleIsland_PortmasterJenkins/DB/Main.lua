@@ -271,6 +271,12 @@ do
 		MapObject = M["Orlando"]
 	}
 
+	ItsyScape.Meta.PeepMashinaState {
+		State = "run",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Orlando.lua",
+		Resource = M["Orlando"]
+	}
+
 	M["Orlando"] {
 		ItsyScape.Action.InvisibleAttack()
 	}

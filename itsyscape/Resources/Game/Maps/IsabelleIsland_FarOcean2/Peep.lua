@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
@@ -28,6 +29,7 @@ Ocean.STATE_NONE            = 0
 Ocean.STATE_CANNON_TUTORIAL = 1
 Ocean.STATE_CTHULHU_RISE    = 2
 Ocean.STATE_CTHULHU_FLEE    = 3
+Ocean.STATE_DONE            = 4
 
 Ocean.MAX_WHIRLPOOL_RADIUS      = 32
 Ocean.WHIRLPOOL_GROW_DURATION   = 4
@@ -113,8 +115,7 @@ function Ocean:onPlacePlayer(playerPeep, anchor, ship)
 
 	Utility.Peep.setPosition(playerPeep, Vector(x, y, z))
 
-	--self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
-	self:summonCthulhu()
+	self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
 end
 
 function Ocean:onPlayCutscene(playerPeep, cutscene)
@@ -287,6 +288,21 @@ function Ocean:summonCthulhu()
 	end
 end
 
+function Ocean:updateCannonTutorial()
+	local currentHealth = self.deadPrincess:getCurrentHealth()
+	local maxHealth = self.deadPrincess:getMaxHealth()
+	local difference = math.max(maxHealth - currentHealth, 0)
+
+	if difference >= Ocean.MIN_DAMAGE_THRESHOLD then
+		for k, v in pairs(self.cannonTargets) do
+			Utility.Peep.poof(v)
+			self.cannonTargets[k] = nil
+		end
+
+		self:summonCthulhu()
+	end
+end
+
 function Ocean:updateCthulhuRise()
 	self.whirlpoolTime = self.whirlpoolTime and (self.whirlpoolTime - self:getDirector():getGameInstance():getDelta()) or Ocean.WHIRLPOOL_GROW_DURATION
 
@@ -304,6 +320,8 @@ function Ocean:updateCthulhuRise()
 end
 
 function Ocean:updateCthulhuFlee()
+	self:updateCannonTargets()
+
 	local hits = self:getDirector():probe(
 		self:getLayerName(),
 		Probe.resource("Peep", "IsabelleIsland_Port_UndeadSquid"))
@@ -318,14 +336,78 @@ function Ocean:updateCthulhuFlee()
 	end
 
 	if not isAlive then
-		print("WOOHOO!!!! YA DID IT, GIRLBOSS!!!!")
+		local playerPeep = Utility.Peep.getPlayer(self)
+		if playerPeep then
+			self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_SurvivedSquids")
+			self.currentTutorialState = Ocean.STATE_DONE
+		end
 	end
 end
 
-function Ocean:updateCannonTutorial()
+function Ocean:updateCannonTargets()
+	if self.currentTutorialState ~= Ocean.STATE_CANNON_TUTORIAL and self.currentTutorialState ~= Ocean.STATE_CTHULHU_FLEE then
+		for k, v in pairs(self.cannonTargets) do
+			Utility.Peep.poof(v)
+			self.cannonTargets[k] = nil
+		end
+
+		return
+	end
+
 	local playerPeep = Utility.Peep.getPlayer(self)
 	if not playerPeep then
 		return
+	end
+	local playerPosition = Utility.Peep.getPosition(playerPeep)
+
+	local leaks = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.layer(Utility.Peep.getLayer(playerPeep)),
+		Probe.resource("Prop", "IsabelleIsland_Port_WaterLeak"))
+
+	table.sort(leaks, function(a, b)
+		local positionA = Utility.Peep.getPosition(a)
+		local positionB = Utility.Peep.getPosition(b)
+		local distanceA = (positionA - playerPosition):getLengthSquared()
+		local distanceB = (positionB - playerPosition):getLengthSquared()
+
+		return distanceA < distanceB
+	end)
+
+	if #leaks >= 1 then
+		local leak = leaks[1]
+
+		for k, v in pairs(self.cannonTargets) do
+			if k ~= leak then
+				Utility.Peep.poof(v)
+				self.cannonTargets[k] = nil
+			end
+		end
+
+		local t = self.cannonTargets[leak]
+		if not t then
+			local position = Utility.Peep.getPosition(leak)
+			t = Utility.spawnPropAtPosition(leak, "Target_Default", position.x, position.y, position.z)
+
+			if t then
+				t = t:getPeep()
+				self.cannonTargets[leak] = t
+			end
+		end
+
+		if t then
+			t:setTarget(leak, _MOBILE and "Tap to fix the leak!" or "Click to fix the leak!")
+		end
+
+		return
+	else
+		for k, v in pairs(self.cannonTargets) do
+			local resource, resourceType = Utility.Peep.getResource(k)
+			if resource and resource.name == "IsabelleIsland_Port_WaterLeak" and resourceType.name == "Prop" then
+				Utility.Peep.poof(v)
+				self.cannonTargets[k] = nil
+			end
+		end
 	end
 
 	local ironCannonballPile = self:getDirector():probe(
@@ -369,11 +451,27 @@ function Ocean:updateCannonTutorial()
 		end
 	end
 
-	local position = Sailing.getShipTarget(self.soakedLog, self.deadPrincess)
-	local normal = Sailing.getShipDirectionNormal(self.deadPrincess)
+	local isFightingSquids = false
+	local position, normal
+	do
+		local rosalind = self:getDirector():probe(
+			self:getLayerName(),
+			Probe.layer(Utility.Peep.getLayer(playerPeep)),
+			Probe.resource("Peep", "IsabelleIsland_Rosalind"))[1]
+
+		local target = rosalind:getBehavior(CombatTargetBehavior)
+		target = target and target.actor and target.actor:getPeep()
+		if target then
+			isFightingSquids = true
+			position = Utility.Peep.getPosition(target)
+		else
+			position = Sailing.getShipTarget(self.soakedLog, self.deadPrincess)
+			normal = Sailing.getShipDirectionNormal(self.deadPrincess)
+		end
+	end
+
 	local cannonProbe = Sailing.probeShipCannons(self.soakedLog, position, normal)
 
-	local playerPosition = Utility.Peep.getPosition(playerPeep)
 	table.sort(cannonProbe, function(a, b)
 		local positionA = Utility.Peep.getPosition(a.peep)
 		local positionB = Utility.Peep.getPosition(b.peep)
@@ -396,7 +494,11 @@ function Ocean:updateCannonTutorial()
 			if p.canFire then
 				message = _MOBILE and "Tap the cannon to fire!" or "Click the cannon to fire!"
 			else
-				message = "Wait for Cap'n Raven's ship to approach before firing!"
+				if isFightingSquids then
+					message = "Wait for the squid to get closer before firing!"
+				else
+					message = "Wait for Cap'n Raven's ship to approach before firing!"
+				end
 			end
 		end
 
@@ -423,22 +525,11 @@ function Ocean:updateCannonTutorial()
 			end
 		end
 	end
-
-	local currentHealth = self.deadPrincess:getCurrentHealth()
-	local maxHealth = self.deadPrincess:getMaxHealth()
-	local difference = math.max(maxHealth - currentHealth, 0)
-
-	if difference >= Ocean.MIN_DAMAGE_THRESHOLD then
-		for k, v in pairs(self.cannonTargets) do
-			Utility.Peep.poof(v)
-			self.cannonTargets[k] = nil
-		end
-
-		self:summonCthulhu()
-	end 
 end
 
 function Ocean:updateTutorial()
+	self:updateCannonTargets()
+
 	if self.currentTutorialState == Ocean.STATE_CANNON_TUTORIAL then
 		self:updateCannonTutorial()
 	elseif self.currentTutorialState == Ocean.STATE_CTHULHU_RISE then

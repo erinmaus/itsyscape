@@ -47,6 +47,7 @@ return Sequence {
 	Map:poke("boom", DeadPrincess:getPeep()),
 
 	Rosalind:setState("attack"),
+	Orlando:setState("run"),
 
 	Player:wait(2),
 	Player:dialog("IntroDialog"),

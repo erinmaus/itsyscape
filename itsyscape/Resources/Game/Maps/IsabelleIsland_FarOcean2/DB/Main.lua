@@ -328,9 +328,9 @@ end
 M["Anchor_JenkinsShip_Flee1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = -64,
+		PositionX = -96,
 		PositionY = 0,
-		PositionZ = -64,
+		PositionZ = -96,
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_Flee1",
 		Resource = M["Anchor_JenkinsShip_Flee1"]
@@ -340,9 +340,9 @@ end
 M["Anchor_JenkinsShip_Flee2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 64,
+		PositionX = 96,
 		PositionY = 0,
-		PositionZ = -64,
+		PositionZ = -96,
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_Flee2",
 		Resource = M["Anchor_JenkinsShip_Flee2"]
@@ -352,9 +352,9 @@ end
 M["Anchor_JenkinsShip_Flee3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 64,
+		PositionX = 96,
 		PositionY = 0,
-		PositionZ = 64,
+		PositionZ = 96,
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_Flee3",
 		Resource = M["Anchor_JenkinsShip_Flee3"]
@@ -366,7 +366,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 0,
 		PositionY = 0,
-		PositionZ = 64,
+		PositionZ = 96,
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_Flee4",
 		Resource = M["Anchor_JenkinsShip_Flee4"]
@@ -461,5 +461,51 @@ do
 		Name = "CameraDolly",
 		Cutscene = Cutscene,
 		Resource = M["CameraDolly"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_FarOcean2_SurvivedSquids"
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "DeadPrincess",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Ship_IsabelleIsland_Pirate"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "SoakedLog",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Ship_IsabelleIsland_PortmasterJenkins"
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "Jenkins",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins"
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "CapnRaven",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain"
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "Rosalind",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "Orlando",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Cthulhu",
+		Cutscene = Cutscene,
+		Resource = M["Cthulhu"]
 	}
 end

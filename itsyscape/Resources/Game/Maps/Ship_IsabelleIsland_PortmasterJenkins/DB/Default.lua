@@ -98,14 +98,6 @@ do
 		Prop = ItsyScape.Resource.Prop "Sailing_IronCannon_Default",
 		MapObject = M["Sailing_IronCannon_Default1"]
 	}
-
-	ItsyScape.Meta.Cannon {
-		Range = 40,
-		MinDamage = 1000,
-		MaxDamage = 2000,
-		Cannonball = ItsyScape.Resource.Item "IronCannonball",
-		Resource = M["Sailing_IronCannon_Default1"]
-	}
 end
 
 M["Sailing_IronCannon_Default2"] = ItsyScape.Resource.MapObject.Unique()
@@ -129,14 +121,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Sailing_IronCannon_Default",
 		MapObject = M["Sailing_IronCannon_Default2"]
-	}
-
-	ItsyScape.Meta.Cannon {
-		Range = 40,
-		MinDamage = 1000,
-		MaxDamage = 2000,
-		Cannonball = ItsyScape.Resource.Item "IronCannonball",
-		Resource = M["Sailing_IronCannon_Default2"]
 	}
 end
 
@@ -162,14 +146,6 @@ do
 		Prop = ItsyScape.Resource.Prop "Sailing_IronCannon_Default",
 		MapObject = M["Sailing_IronCannon_Default3"]
 	}
-
-	ItsyScape.Meta.Cannon {
-		Range = 40,
-		MinDamage = 1000,
-		MaxDamage = 2000,
-		Cannonball = ItsyScape.Resource.Item "IronCannonball",
-		Resource = M["Sailing_IronCannon_Default3"]
-	}
 end
 
 M["Sailing_IronCannon_Default4"] = ItsyScape.Resource.MapObject.Unique()
@@ -193,14 +169,6 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Sailing_IronCannon_Default",
 		MapObject = M["Sailing_IronCannon_Default4"]
-	}
-
-	ItsyScape.Meta.Cannon {
-		Range = 40,
-		MinDamage = 1000,
-		MaxDamage = 2000,
-		Cannonball = ItsyScape.Resource.Item "IronCannonball",
-		Resource = M["Sailing_IronCannon_Default4"]
 	}
 end
 

@@ -16,6 +16,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 
 local TARGET = B.Reference("UndeadSquid", "TARGET")
+local SAILOR = B.Reference("UndeadSquid", "SAILOR")
 local OFFSET = B.Reference("UndeadSquid", "OFFSET")
 local NUM_LEAKS = B.Reference("UndeadSquid", "NUM_LEAKS")
 
@@ -49,7 +50,7 @@ local Tree = BTreeBuilder.Node() {
 						Mashina.RandomTry {
 							Mashina.Sailing.Swim {
 								target = TARGET,
-								offset = Ray(Vector(24, 0, -16), -Vector.UNIT_Z),
+								offset = Ray(Vector(16, 0, -16), -Vector.UNIT_Z),
 								distance = DISTANCE,
 								face2D = true,
 								face3D = true
@@ -57,7 +58,7 @@ local Tree = BTreeBuilder.Node() {
 
 							Mashina.Sailing.Swim {
 								target = TARGET,
-								offset = Ray(Vector(-24, 0, -16), -Vector.UNIT_Z),
+								offset = Ray(Vector(-16, 0, -16), -Vector.UNIT_Z),
 								distance = DISTANCE,
 								face2D = true,
 								face3D = true
@@ -65,7 +66,7 @@ local Tree = BTreeBuilder.Node() {
 
 							Mashina.Sailing.Swim {
 								target = TARGET,
-								offset = Ray(Vector(24, 0, -32), -Vector.UNIT_Z),
+								offset = Ray(Vector(16, 0, -32), -Vector.UNIT_Z),
 								distance = DISTANCE,
 								face2D = true,
 								face3D = true
@@ -73,7 +74,7 @@ local Tree = BTreeBuilder.Node() {
 
 							Mashina.Sailing.Swim {
 								target = TARGET,
-								offset = Ray(Vector(-24, 0, -32), -Vector.UNIT_Z),
+								offset = Ray(Vector(-16, 0, -32), -Vector.UNIT_Z),
 								distance = DISTANCE,
 								face2D = true,
 								face3D = true
@@ -86,28 +87,74 @@ local Tree = BTreeBuilder.Node() {
 						},
 
 
-						Mashina.Success {
+						Mashina.RandomTry {
 							Mashina.Sequence {
 								Mashina.Try {
-									Mashina.Invert {
-										Mashina.Peep.FindNearbyPeep {
-											filters = {
-												Probe.resource("Prop", "IsabelleIsland_Port_WaterLeak")
-											},
+								Mashina.Invert {
+									Mashina.Peep.FindNearbyPeep {
+										filters = {
+											Probe.resource("Prop", "IsabelleIsland_Port_WaterLeak")
+										},
 
-											[NUM_LEAKS] = B.Output.count
-										}
-									},
-
-									Mashina.Compare.LessThan {
-										left = NUM_LEAKS,
-										right = MAX_NUM_LEAKS
+										[NUM_LEAKS] = B.Output.count
 									}
+								},
+
+								Mashina.Compare.LessThan {
+									left = NUM_LEAKS,
+									right = MAX_NUM_LEAKS
+								}
+								},
+
+								Mashina.RandomCheck {
+									chance = 0.5,
 								},
 
 								Mashina.Peep.PokeSelf {
 									event = "attackShip",
 									poke = TARGET
+								}
+							},
+
+							Mashina.Sequence {
+								Mashina.RandomTry {
+									Mashina.Peep.FindNearbyCombatTarget {
+										filter = Probe.resource("Peep", "Sailor_Panicked"),
+										include_npcs = true,
+										same_layer = false,
+										[SAILOR] = B.Output.result
+									},
+
+									Mashina.Peep.FindNearbyCombatTarget {
+										filter = Probe.resource("Peep", "IsabelleIsland_Orlando"),
+										include_npcs = true,
+										same_layer = false,
+										[SAILOR] = B.Output.result
+									},
+
+									Mashina.Peep.FindNearbyCombatTarget {
+										filter = Probe.resource("Peep", "IsabelleIsland_Rosalind"),
+										include_npcs = true,
+										same_layer = false,
+										[SAILOR] = B.Output.result
+									},
+
+									-- Player.
+									Mashina.Peep.FindNearbyCombatTarget {
+										same_layer = false,
+										[SAILOR] = B.Output.result
+									}
+								},
+
+								Mashina.Peep.PokeSelf {
+									event = "ink",
+									poke = function(_, state)
+										return {
+											target = state[SAILOR],
+											min = 0,
+											max = 0
+										}
+									end
 								}
 							}
 						}

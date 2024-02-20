@@ -17,7 +17,7 @@ local function focus(speakerName)
 	speaker(speakerName)
 end
 
-if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) and false then
+if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) then
 	focus "CapnRaven"
 
 	message { 
@@ -67,7 +67,7 @@ if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) and fal
 	message "Aye aye, captain!"
 
 	_TARGET:getState():give("KeyItem", "PreTutorial_Start")
-elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARGET) or true then
+elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARGET) then
 	focus "Cthulhu"
 	do
 		local player = Utility.Peep.getPlayerModel(_TARGET)
@@ -109,4 +109,76 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARG
 	message "Aye aye, captain!"
 
 	_TARGET:getState():give("KeyItem", "PreTutorial_CthulhuRises")
+elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefendShip", _TARGET) then
+	focus "Rosalind"
+	message {
+		"We did it!",
+		"%person{${PLAYER_NAME}}! You're certainly a promising adventurer!"
+	}
+
+	focus "Orlando"
+	message {
+		"Definitely!",
+		"Good job %person{${PLAYER_NAME}} and ... %person{Rosalind} ... *sigh*.",
+		"(Maybe I should be more like " .. Utility.Text.getPronoun(_TARGET, Utility.Text.PRONOUN_OBJECT) .. "...)"
+	}
+
+	focus "Jenkins"
+	message {
+		"Aye, ye two did well.",
+		"But th' %person{Soaked Log} be shamblin',",
+		"we best find a port and fix 'er up!",
+	}
+	message "There be an abandoned Yendorian outpost in th' distance."
+
+	focus "Rosalind"
+	message {
+		"The old %location{Whaling Temple}...",
+		"It might not be as abandoned as we think."
+	}
+
+	focus "Orlando"
+	message "The w-whaling temple? Isn't that..."
+
+	focus "Jenkins"
+	message {
+		"Well, we ain't got much o' choice now do we?",
+		"I got ye three to keep us safe, aye?"
+	}
+
+	focus "Rosalind"
+	message "You can count on me!"
+
+	focus "Orlando"
+	message "And me!"
+
+	focus "_TARGET"
+	local AND_ME = option "Don't forget me!"
+	local UHH = option "Uh..."
+
+	local result = select {
+		AND_ME,
+		UHH
+	}
+
+	if result == AND_ME then
+		message "And me!"
+
+		focus "Jenkins"
+		message {
+			"Aye, charting a trail for the %location{Whaling Temple}.",
+			"Be ready, mates."
+		}
+	elseif result == UHH then
+		message "Uh, I don't know about this..."
+
+		focus "Jenkins"
+		message {
+			"Wet feet? Har har har!",
+			"Let's be ready for anything, mates.",
+			"To the %location{Whaling Temple}!"
+		}
+	end
+
+	_TARGET:getState():give("KeyItem", "PreTutorial_DefendShip")
 end
