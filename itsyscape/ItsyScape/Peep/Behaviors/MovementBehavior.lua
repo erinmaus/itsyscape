@@ -16,6 +16,7 @@ local MovementBehavior = Behavior("Movement")
 
 -- Direction enumeration. Assumes face right by default.
 MovementBehavior.FACING_LEFT  = -1
+MovementBehavior.FACING_NONE  = 0
 MovementBehavior.FACING_RIGHT =  1
 
 -- Constructs a MovementBehavior with some poor defaults.

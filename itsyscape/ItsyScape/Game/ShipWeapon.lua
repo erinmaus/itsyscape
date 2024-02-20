@@ -53,7 +53,7 @@ function ShipWeapon:getBonusForStance()
 	return Weapon.BONUS_NONE
 end
 
-function Weapon:getSkill()
+function ShipWeapon:getSkill()
 	return true, "Sailing", "Sailing"
 end
 

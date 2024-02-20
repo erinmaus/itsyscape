@@ -84,19 +84,19 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Defense",
-		Value = ItsyScape.Utility.xpForLevel(60),
+		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Archery",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Dexterity",
-		Value = ItsyScape.Utility.xpForLevel(50),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"
 	}
 
@@ -132,11 +132,11 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForItem(65),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(60, 0.1),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(60, 0.2),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(60, 0.3),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(75, 1.1),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(70, 1.0),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(60),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(60),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(60),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(20),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(15),
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(70),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_UndeadSquid"

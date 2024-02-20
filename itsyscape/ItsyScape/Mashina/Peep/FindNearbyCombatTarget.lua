@@ -45,7 +45,7 @@ local function probeFilterNPCs(mashina, includeNPCs, p)
 end
 
 local function probeFilterLineOfSight(mashina, sameLayer, checkLineOfSight, p)
-	if checkLineOfSight then
+	if not checkLineOfSight then
 		return true
 	end
 

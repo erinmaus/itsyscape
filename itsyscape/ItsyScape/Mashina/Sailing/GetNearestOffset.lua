@@ -10,6 +10,7 @@
 local B = require "B"
 local Class = require "ItsyScape.Common.Class"
 local Ray = require "ItsyScape.Common.Math.Ray"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
@@ -23,10 +24,6 @@ GetNearestOffset.RESULTS = B.Reference()
 function GetNearestOffset:update(mashina, state, executor)
 	local ship = mashina:getBehavior(ShipCaptainBehavior)
 	ship = ship and ship.peep
-	if not ship then
-		Log.warnOnce("Peep '%s' is not currently a captain of a ship!", mashina:getName())
-		return B.Status.Failure
-	end
 
 	local target = state[self.TARGET]
 	local offsets = state[self.OFFSETS] or {}
@@ -51,7 +48,7 @@ function GetNearestOffset:update(mashina, state, executor)
 		end
 	end
 
-	local selfPosition = Utility.Peep.getPosition(ship) + (Sailing.getShipBow(ship) or Vector.ZERO)
+	local selfPosition = Utility.Peep.getPosition(ship or mashina) + (ship and Sailing.getShipBow(ship) or Vector.ZERO)
 	table.sort(results, function(a, b)
 		local aDistance = (selfPosition - a.position):getLengthSquared()
 		local bDistance = (selfPosition - b.position):getLengthSquared()

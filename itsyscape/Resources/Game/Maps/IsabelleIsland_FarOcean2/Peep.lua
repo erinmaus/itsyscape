@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Probe = require "ItsyScape.Peep.Probe"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
@@ -26,6 +27,7 @@ Ocean.MAX_LIGHTNING_PERIOD = 5
 Ocean.STATE_NONE            = 0
 Ocean.STATE_CANNON_TUTORIAL = 1
 Ocean.STATE_CTHULHU_RISE    = 2
+Ocean.STATE_CTHULHU_FLEE    = 3
 
 Ocean.MAX_WHIRLPOOL_RADIUS      = 32
 Ocean.WHIRLPOOL_GROW_DURATION   = 4
@@ -111,12 +113,14 @@ function Ocean:onPlacePlayer(playerPeep, anchor, ship)
 
 	Utility.Peep.setPosition(playerPeep, Vector(x, y, z))
 
-	self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
+	--self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
+	self:summonCthulhu()
 end
 
 function Ocean:onPlayCutscene(playerPeep, cutscene)
 	Utility.UI.closeAll(playerPeep, nil, { "CutsceneTransition" })
 
+	playerPeep:addBehavior(DisabledBehavior)
 	local cutscene = Utility.Map.playCutscene(self, cutscene, "StandardCutscene", playerPeep)
 	cutscene:listen("done", self.onFinishCutscene, self, playerPeep)
 end
@@ -128,7 +132,12 @@ function Ocean:onFinishCutscene(playerPeep)
 
 	if self.currentTutorialState == Ocean.STATE_NONE then
 		self:showCameraTutorial(playerPeep)
+	else
+		playerPeep:removeBehavior(DisabledBehavior)
 	end
+
+	local playerModel = Utility.Peep.getPlayerModel(playerPeep)
+	playerModel:pokeCamera("unlockRotation")
 end
 
 function Ocean:onZap()
@@ -199,11 +208,12 @@ function Ocean:onCthulhuRises()
 	end)
 end
 
+function Ocean:onFlee()
+	self.currentTutorialState = Ocean.STATE_CTHULHU_FLEE
+end
+
 function Ocean:showCameraTutorial(playerPeep)
 	local moveTime, zoomTime
-
-	local playerModel = Utility.Peep.getPlayerModel(playerPeep)
-	playerModel:pokeCamera("unlockRotation")
 
 	local DURATION = 4
 	local TUTORIAL = {
@@ -277,7 +287,7 @@ function Ocean:summonCthulhu()
 	end
 end
 
-function Ocean:updateCthulhu()
+function Ocean:updateCthulhuRise()
 	self.whirlpoolTime = self.whirlpoolTime and (self.whirlpoolTime - self:getDirector():getGameInstance():getDelta()) or Ocean.WHIRLPOOL_GROW_DURATION
 
 	local _, whirlpool = self:addBehavior(WhirlpoolBehavior)
@@ -291,6 +301,25 @@ function Ocean:updateCthulhu()
 			self:getDirector():getGameInstance(),
 			Utility.Peep.getMapResource(self),
 			"Anchor_Cthulhu_Spawn"))
+end
+
+function Ocean:updateCthulhuFlee()
+	local hits = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Peep", "IsabelleIsland_Port_UndeadSquid"))
+
+	local isAlive = false
+	for _, hit in ipairs(hits) do
+		local status = hit:getBehavior(CombatStatusBehavior)
+		if not status.dead then
+			isAlive = true
+			break
+		end
+	end
+
+	if not isAlive then
+		print("WOOHOO!!!! YA DID IT, GIRLBOSS!!!!")
+	end
 end
 
 function Ocean:updateCannonTutorial()
@@ -413,7 +442,9 @@ function Ocean:updateTutorial()
 	if self.currentTutorialState == Ocean.STATE_CANNON_TUTORIAL then
 		self:updateCannonTutorial()
 	elseif self.currentTutorialState == Ocean.STATE_CTHULHU_RISE then
-		self:updateCthulhu()
+		self:updateCthulhuRise()
+	elseif self.currentTutorialState == Ocean.STATE_CTHULHU_FLEE then
+		self:updateCthulhuFlee()
 	end
 end
 

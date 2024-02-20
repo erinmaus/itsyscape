@@ -14,7 +14,7 @@ local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 local Staff = Class(MagicWeapon)
 
 function Staff:getFarAttackRange(peep)
-	return 10
+	return 12
 end
 
 function Staff:getNearAttackRange(peep)
