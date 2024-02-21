@@ -564,12 +564,12 @@ nbunny::ParticleSceneNode::ParticleSceneNode(int reference) :
 		{ "VertexColor", love::graphics::vertex::DATA_FLOAT, 4 },
 	}),
 	quad({
-		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
 		{ glm::vec3( 1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f) },
-		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) },
 		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
 		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) }
+		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
+		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) },
+		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) }
 	})
 {
 	// Nothing.
@@ -600,6 +600,9 @@ void nbunny::ParticleSceneNode::update(float time_delta)
 
 	emit(count);
 
+	auto min = glm::vec3(std::numeric_limits<float>::infinity());
+	auto max = glm::vec3(-std::numeric_limits<float>::infinity());
+
 	std::size_t i = 0;
 	while (i < particles.size())
 	{
@@ -619,6 +622,9 @@ void nbunny::ParticleSceneNode::update(float time_delta)
 				path->update(p, time_delta);
 			}
 
+			min = glm::min(min, p.position);
+			max = glm::max(max, p.position);
+
 			++i;
 		}
 		else
@@ -627,6 +633,9 @@ void nbunny::ParticleSceneNode::update(float time_delta)
 			particles.pop_back();
 		}
 	}
+
+	set_min(min);
+	set_max(max);
 }
 
 void nbunny::ParticleSceneNode::emit(int count)
@@ -670,24 +679,14 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 	return glm::slerp(previous_rotation, current_rotation, delta);
 }
 
-void nbunny::ParticleSceneNode::build(float delta)
+void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation)
 {
-	auto inverse_rotation = glm::conjugate(get_global_rotation(delta));
-	auto min = glm::vec3(std::numeric_limits<float>::infinity());
-	auto max = glm::vec3(-std::numeric_limits<float>::infinity());
-
 	vertices.clear();
 
 	for (auto& particle: particles)
 	{
 		push_particle_quad(particle, inverse_rotation);
-
-		min = glm::min(min, particle.position);
-		max = glm::max(max, particle.position);
 	}
-
-	set_min(min);
-	set_max(max);
 
 	if (mesh)
 	{
@@ -949,11 +948,12 @@ void nbunny::ParticleSceneNode::frame(float delta, float time_delta)
 	}
 
 	update(time_delta);
-	build(delta);
 }
 
 void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 {
+	build(glm::conjugate(renderer.get_camera().get_rotation() * get_global_rotation(delta)));
+
 	if (!mesh)
 	{
 		return;

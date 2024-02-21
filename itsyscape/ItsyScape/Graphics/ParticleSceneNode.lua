@@ -16,7 +16,7 @@ local NParticleSceneNode = require "nbunny.optimaus.scenenode.particlescenenode"
 local ParticleSceneNode = Class(SceneNode)
 ParticleSceneNode.DEFAULT_SHADER = ShaderResource()
 do
-	ParticleSceneNode.DEFAULT_SHADER:loadFromFile("Resources/Shaders/StaticModel")
+	ParticleSceneNode.DEFAULT_SHADER:loadFromFile("Resources/Shaders/Particle")
 end
 
 function ParticleSceneNode:new()

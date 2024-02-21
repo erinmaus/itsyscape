@@ -105,7 +105,7 @@ namespace nbunny
 		void emit(int count);
 
 		glm::quat get_global_rotation(float delta) const;
-		void build(float delta);
+		void build(const glm::quat& inverse_rotation);
 		void push_particle_quad(const Particle& p, glm::quat rotation);
 
 	public:
