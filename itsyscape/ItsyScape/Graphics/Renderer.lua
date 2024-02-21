@@ -50,6 +50,14 @@ function Renderer:new()
 	self.passDebugStats = Renderer.PassDebugStats()
 end
 
+function Renderer:getDeferredPass()
+	return self.finalDeferredPass
+end
+
+function Renderer:getForwardPass()
+	return self.finalForwardPass
+end
+
 function Renderer:getHandle()
 	return self._renderer
 end
