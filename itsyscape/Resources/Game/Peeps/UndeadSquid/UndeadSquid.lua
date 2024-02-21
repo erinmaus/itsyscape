@@ -17,6 +17,7 @@ local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local FishBehavior = require "ItsyScape.Peep.Behaviors.FishBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
@@ -43,6 +44,7 @@ function UndeadSquid:new(resource, name, ...)
 	movement.noClip = true
 
 	self:addBehavior(RotationBehavior)
+	self:addBehavior(FishBehavior)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge

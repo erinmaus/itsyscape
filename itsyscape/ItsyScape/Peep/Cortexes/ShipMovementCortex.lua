@@ -14,6 +14,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Cortex = require "ItsyScape.Peep.Cortex"
+local FishBehavior = require "ItsyScape.Peep.Behaviors.FishBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
@@ -55,10 +56,10 @@ function ShipMovementCortex.Ship:prepare()
 	local height = (map:getHeight() - 4) * map:getCellSize()
 	local radius = height / 2
 	local numCircles = width / height * 2 + 1
-	for i = 1, numCircles do
+	for i = 0, numCircles * 2 do
 		local cellSize = width / numCircles
 		local circle = {
-			x =  i / numCircles * width - radius - width / 2,
+			x =  (i / 2) / numCircles * width - radius - width / 2,
 			y = 0,
 			radius = math.sqrt(radius * 1.25)
 		}
@@ -230,6 +231,30 @@ function ShipMovementCortex.Ship:isColliding(other)
 	return false
 end
 
+function ShipMovementCortex.Ship:handleFishCollision(other)
+	local shipMovement = self.ship:getBehavior(ShipMovementBehavior)
+	if not shipMovement then
+		return
+	end
+
+	local otherMovement = other:getBehavior(MovementBehavior)
+	if not otherMovement then
+		return
+	end
+
+	local shipRadius = math.sqrt(math.max(shipMovement.length, shipMovement.beam))
+	local shipPosition = Utility.Peep.getPosition(self.ship) * Vector.PLANE_XZ
+	local otherPosition = Utility.Peep.getPosition(other) * Vector.PLANE_XZ
+
+	local difference = otherPosition - shipPosition
+	local distance = difference:getLength()
+
+	if distance <= shipRadius then
+		local clampedPosition = shipPosition + difference:getNormal() * shipRadius
+		Utility.Peep.setPosition(other, clampedPosition)
+	end
+end
+
 function ShipMovementCortex.Ship:handleShipCollision(other)
 	local _, selfPositionBehavior = self.ship:addBehavior(PositionBehavior)
 	local _, otherPositionBehavior = other.ship:addBehavior(PositionBehavior)
@@ -272,6 +297,17 @@ function ShipMovementCortex:new()
 
 	self.ships = {}
 	self.pendingShips = {}
+	self.fish = {}
+end
+
+function ShipMovementCortex:previewPeep(peep)
+	Cortex.previewPeep(self, peep)
+
+	if peep:hasBehavior(FishBehavior) then
+		self.fish[peep] = true
+	else
+		self.fish[peep] = nil
+	end
 end
 
 function ShipMovementCortex:addPeep(peep)
@@ -350,12 +386,18 @@ function ShipMovementCortex:update(delta)
 	end
 
 	for currentPeep in self:iterate() do
+		local currentShip = self.ships[currentPeep]
+
 		for otherPeep in self:iterate() do
 			if currentPeep ~= otherPeep and currentPeep:getLayerName() == otherPeep:getLayerName() then
-				local currentShip = self.ships[currentPeep]
 				local otherShip = self.ships[otherPeep]
-
 				currentShip:handleShipCollision(otherShip)
+			end
+		end
+
+		for otherPeep in pairs(self.fish) do
+			if otherPeep:getLayerName() == currentPeep:getLayerName() then
+				currentShip:handleFishCollision(otherPeep)
 			end
 		end
 	end
