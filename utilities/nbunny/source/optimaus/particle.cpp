@@ -32,6 +32,7 @@ void nbunny::Particle::reset()
 	age = 0.0f;
 	texture_index = 0;
 	color = glm::vec4(1.0f);
+	random = 0.0f;
 }
 
 class DirectionalEmitter : public nbunny::ParticleEmitter
@@ -181,7 +182,7 @@ public:
 	{
 		auto table = sol::stack::get<sol::table>(L, -1);
 
-		auto l = table.get_or("lifetime", sol::table(L, sol::create));
+		auto l = table.get_or("lifetime", table.get_or("age", sol::table(L, sol::create)));
 		min_lifetime = l.get_or(1, 1.0f);
 		max_lifetime = l.get_or(2, min_lifetime);
 	}
@@ -422,6 +423,33 @@ public:
 	}
 };
 
+class TwinklePath : public nbunny::ParticlePath
+{
+public:
+	float speed = 1.0f;
+	float min_alpha = 0.0f;
+	float max_alpha = 1.0f;
+
+	void from_definition(lua_State* L)
+	{
+		auto table = sol::stack::get<sol::table>(L, -1);
+
+		speed = table.get_or("speed", 1.0f);
+
+		auto a = table.get_or("alpha", sol::table(L, sol::create));
+		min_alpha = a.get_or(1, 0.0f);
+		max_alpha = a.get_or(2, 1.0f);
+	}
+
+	void update(nbunny::Particle& p, float delta)
+	{
+		auto alpha = std::abs(std::sin(p.age * speed + p.random * LOVE_M_PI_2));
+		alpha = alpha * (max_alpha - min_alpha) + min_alpha;
+
+		p.color.a *= alpha;
+	}
+};
+
 class GravityPath : public nbunny::ParticlePath
 {
 public:
@@ -438,6 +466,28 @@ public:
 	void update(nbunny::Particle& p, float delta)
 	{
 		p.velocity += gravity * delta;
+	}
+};
+
+class SingularityPath : public nbunny::ParticlePath
+{
+public:
+	glm::vec3 position = glm::vec3(0.0f, -10.0f, 0.0f);
+	float speed = 10.0f;
+
+	void from_definition(lua_State* L)
+	{
+		auto table = sol::stack::get<sol::table>(L, -1);
+
+		auto g = table.get_or("position", sol::table(L, sol::create));
+		position = glm::vec3(g.get_or(1, 0.0f), g.get_or(2, -10.0f), g.get_or(3, 0.0f));
+		speed = table.get_or("speed", 10.0f);
+	}
+
+	void update(nbunny::Particle& p, float delta)
+	{
+		auto acceleration = glm::normalize(position - p.position) * speed;
+		p.velocity += acceleration * delta;
 	}
 };
 
@@ -585,6 +635,9 @@ void nbunny::ParticleSceneNode::emit(int count)
 	{
 		Particle p;
 
+		auto rng = love::math::Math::instance.getRandomGenerator();
+		p.random = rng->random();
+
 		for (auto& emitter: emitters)
 		{
 			emitter->emit(p);
@@ -723,9 +776,17 @@ void nbunny::ParticleSceneNode::set_paths(lua_State* L, sol::table& path_definit
 		{
 			path = std::make_shared<FadeInOutPath>();
 		}
+		else if (type == "TwinklePath")
+		{
+			path = std::make_shared<TwinklePath>();
+		}
 		else if (type == "GravityPath")
 		{
 			path = std::make_shared<GravityPath>();
+		}
+		else if (type == "SingularityPath")
+		{
+			path = std::make_shared<SingularityPath>();
 		}
 		else if (type == "SizePath")
 		{
@@ -825,6 +886,7 @@ void nbunny::ParticleSceneNode::from_definition(lua_State* L)
 	auto rows = table.get_or("rows", 1);
 	auto columns = table.get_or("columns", 1);
 
+	textures.clear();
 	for (auto i = 0; i < rows; ++i)
 	{
 		for (auto j = 0; j < columns; ++j)

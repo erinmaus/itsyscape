@@ -33,6 +33,7 @@ namespace nbunny
 		float age = 0.0f;
 		int texture_index = 0;
 		glm::vec4 color = glm::vec4(1.0f);
+		float random = 0.0f;
 
 		void reset();
 	};

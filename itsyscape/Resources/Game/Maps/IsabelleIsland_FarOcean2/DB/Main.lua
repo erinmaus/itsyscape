@@ -193,6 +193,13 @@ do
 		MapObject = M["Cthulhu"]
 	}
 
+	ItsyScape.Meta.PeepMashinaState {
+		State = "spawn",
+		Tree = "Resources/Game/Maps/IsabelleIsland_FarOcean2/Scripts/Cthulhu.lua",
+		IsDefault = 1,
+		Resource = M["Cthulhu"]
+	}
+
 	M["Cthulhu"] {
 		ItsyScape.Action.InvisibleAttack()
 	}
@@ -280,7 +287,7 @@ end
 M["Anchor_JenkinsShip_1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 48,
+		PositionX = 56,
 		PositionY = 0,
 		PositionZ = 64,
 		Map = M._MAP,
@@ -328,9 +335,9 @@ end
 M["Anchor_JenkinsShip_Flee1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = -96,
+		PositionX = -64,
 		PositionY = 0,
-		PositionZ = -96,
+		PositionZ = -64,
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_Flee1",
 		Resource = M["Anchor_JenkinsShip_Flee1"]
@@ -340,9 +347,9 @@ end
 M["Anchor_JenkinsShip_Flee2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 96,
+		PositionX = 64,
 		PositionY = 0,
-		PositionZ = -96,
+		PositionZ = -64,
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_Flee2",
 		Resource = M["Anchor_JenkinsShip_Flee2"]
@@ -352,9 +359,9 @@ end
 M["Anchor_JenkinsShip_Flee3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 96,
+		PositionX = 64,
 		PositionY = 0,
-		PositionZ = 96,
+		PositionZ = 64,
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_Flee3",
 		Resource = M["Anchor_JenkinsShip_Flee3"]
@@ -366,7 +373,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 0,
 		PositionY = 0,
-		PositionZ = 96,
+		PositionZ = 64,
 		Map = M._MAP,
 		Name = "Anchor_JenkinsShip_Flee4",
 		Resource = M["Anchor_JenkinsShip_Flee4"]
