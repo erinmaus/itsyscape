@@ -34,7 +34,7 @@ function UndeadSquid:new(resource, name, ...)
 	Creep.new(self, resource, name or 'UndeadSquid', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(12, 10, 6)
+	size.size = Vector(16, 10, 6)
 	size.offset = Vector(0, 1, 0)
 
 	local movement = self:getBehavior(MovementBehavior)
