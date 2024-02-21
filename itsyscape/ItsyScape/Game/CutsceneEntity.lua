@@ -152,6 +152,8 @@ function CutsceneEntity:lookAt(target, duration)
 
 			if Class.isCompatibleType(target, CutsceneEntity) then
 				Utility.Peep.lookAt(self.peep, target:getPeep(), delta)
+			elseif Class.isCompatibleType(target, Quaternion) then
+				Utility.Peep.setRotation(self.peep, target)
 			elseif type(target) == 'string' then
 				local mapResource = Utility.Peep.getMapResource(self.peep)
 				local anchorX, anchorY, anchorZ = Utility.Map.getAnchorPosition(self.game, mapResource, anchor)

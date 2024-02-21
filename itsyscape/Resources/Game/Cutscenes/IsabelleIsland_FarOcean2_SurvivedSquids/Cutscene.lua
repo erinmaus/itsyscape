@@ -1,6 +1,7 @@
 return Sequence {
 	Orlando:stopAnimation("x-run"),
 	Orlando:setState(false),
+	Cthulhu:setState(false),
 
 	Jenkins:setState("sail"),
 	Player:dialog("IntroDialog"),
@@ -11,6 +12,7 @@ return Sequence {
 	CapnRaven:wait(4),
 
 	Camera:target(Cthulhu),
+	Cthulhu:lookAt(Quaternion.IDENTITY),
 	Camera:zoom(50),
 	Camera:translate(Vector(0, 12, 0)),
 	Camera:zoom(20, 2),
@@ -19,4 +21,3 @@ return Sequence {
 --	Player:move("@IsabelleIsland_WhalingTemple", "Anchor_Spawn")
 	Player:move("@Sailing_WhaleIsland", "Anchor_Spawn")
 }
-

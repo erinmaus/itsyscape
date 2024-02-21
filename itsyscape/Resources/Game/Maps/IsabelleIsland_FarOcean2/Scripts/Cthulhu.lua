@@ -15,101 +15,146 @@ local Mashina = require "ItsyScape.Mashina"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 
-local PIRATE_TARGET = B.Reference("Cthulhu", "PIRATE_TARGET")
-local JENKINS_TARGET = B.Reference("Cthulhu", "JENKINS_TARGET")
+local TARGET = B.Reference("Cthulhu", "TARGET")
+local OFFSET = B.Reference("Cthulhu", "OFFSET")
+
+local DISTANCE = 4
+
+local FindTargetTry = Mashina.RandomTry {
+	Mashina.Peep.FindNearbyPeep {
+		filters = {
+			Probe.resource("Map", "Ship_IsabelleIsland_PortmasterJenkins")
+		},
+
+		[TARGET] = B.Output.result
+	},
+
+	Mashina.Peep.FindNearbyPeep {
+		filters = {
+			Probe.resource("Map", "Ship_IsabelleIsland_Pirate")
+		},
+
+		[TARGET] = B.Output.result
+	}
+}
+
+local SwimSequence = Mashina.Sequence {
+	Mashina.Sailing.GetNearestOffset {
+		target = TARGET,
+		offsets = {
+			Ray(Vector(16, 0, -16), -Vector.UNIT_Z),
+			Ray(Vector(-16, 0, -16), -Vector.UNIT_Z),
+			Ray(Vector(16, 0, -32), -Vector.UNIT_Z),
+			Ray(Vector(-16, 0, -32), -Vector.UNIT_Z),
+		},
+		[OFFSET] = B.Output.result
+	},
+
+	Mashina.Sailing.Swim {
+		target = TARGET,
+		offset = OFFSET,
+		distance = DISTANCE
+	}
+}
+
+local AttackSequence =  Mashina.Step {
+	Mashina.Peep.PlayAnimation {
+		animation = "Cthulhu_Attack",
+		slot = "combat",
+		priority = 1000
+	},
+
+	Mashina.Peep.LookAt {
+		target = TARGET
+	},
+
+	Mashina.Peep.Talk {
+		message = "Urm'yth rh'lr rh'sylk...",
+		duration = 4,
+		log = false
+	},
+
+	Mashina.RandomTry {
+		Mashina.Peep.FireProjectile {
+			destination = TARGET,
+			offset = Vector(-40, 5, 20),
+			projectile = "Starfall"
+		},
+
+		Mashina.Peep.FireProjectile {
+			destination = TARGET,
+			offset = Vector(-40, 5, -20),
+			projectile = "Starfall"
+		},
+
+		Mashina.Peep.FireProjectile {
+			destination = TARGET,
+			offset = Vector(0, 5, 0),
+			projectile = "DecayingBolt"
+		},
+
+		Mashina.Peep.FireProjectile {
+			destination = TARGET,
+			offset = Vector(0, 5, 0),
+			projectile = "DecayingBolt"
+		}
+	},
+
+	Mashina.Peep.TimeOut {
+		min_duration = 4,
+		max_duration = 8
+	}
+}
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
-		Mashina.Peep.TimeOut {
+		Mashina.Peep.Talk {
+			message = "Urm'yth rh'lr rh'sylk...",
 			duration = 4
 		},
 
-		Mashina.Peep.Talk {
-			message = "Urm'yth rh'lr rh'sylk..."
+		Mashina.Peep.FindNearbyPeep {
+			filters = {
+				Probe.resource("Map", "Ship_IsabelleIsland_PortmasterJenkins")
+			},
+
+			[TARGET] = B.Output.result
+		},
+
+		Mashina.Peep.TimeOut {
+			duration = 2
+		},
+
+		Mashina.Peep.PlayAnimation {
+			animation = "Cthulhu_Attack",
+			slot = "combat",
+			priority = 1000
+		},
+
+		Mashina.Peep.TimeOut {
+			duration = 2,
+		},
+
+		Mashina.Peep.FireProjectile {
+			destination = TARGET,
+			offset = Vector(-40, 5, 0),
+			projectile = "Starfall"
+		},
+
+		Mashina.Peep.TimeOut {
+			duration = 10,
 		},
 
 		Mashina.Repeat {
-			Mashina.ParallelSequence {
-				Mashina.Step {
-					Mashina.Peep.FindNearbyPeep {
-						filters = {
-							Probe.resource("Map", "Ship_IsabelleIsland_Pirate")
-						},
+			Mashina.Step {
+				-- We want to persist the state of the "FindTargetTry" node
+				drop = false,
 
-						[PIRATE_TARGET] = B.Output.result
-					},
-
-					Mashina.RandomTry {
-						Mashina.Peep.FireProjectile {
-							destination = PIRATE_TARGET,
-							offset = Vector(-40, 5, 20),
-							projectile = "Starfall"
-						},
-
-						Mashina.Peep.FireProjectile {
-							destination = PIRATE_TARGET,
-							offset = Vector(-40, 5, -20),
-							projectile = "Starfall"
-						},
-
-						Mashina.Peep.FireProjectile {
-							destination = PIRATE_TARGET,
-							offset = Vector(0, 5, 0),
-							projectile = "DecayingBolt"
-						},
-
-						Mashina.Peep.FireProjectile {
-							destination = PIRATE_TARGET,
-							offset = Vector(0, 5, 0),
-							projectile = "DecayingBolt"
-						}
-					},
-
-					Mashina.Peep.TimeOut {
-						min_duration = 8,
-						max_duration = 12
-					}
-				},
+				FindTargetTry,
 
 				Mashina.Step {
-					Mashina.Peep.FindNearbyPeep {
-						filters = {
-							Probe.resource("Map", "Ship_IsabelleIsland_PortmasterJenkins")
-						},
-
-						[JENKINS_TARGET] = B.Output.result
-					},
-
-					Mashina.RandomTry {
-						Mashina.Peep.FireProjectile {
-							destination = JENKINS_TARGET,
-							offset = Vector(-40, 5, 20),
-							projectile = "Starfall"
-						},
-
-						Mashina.Peep.FireProjectile {
-							destination = JENKINS_TARGET,
-							offset = Vector(-40, 5, -20),
-							projectile = "Starfall"
-						},
-
-						Mashina.Peep.FireProjectile {
-							destination = JENKINS_TARGET,
-							offset = Vector(0, 5, 0),
-							projectile = "DecayingBolt"
-						},
-
-						Mashina.Peep.FireProjectile {
-							destination = JENKINS_TARGET,
-							offset = Vector(0, 5, 0),
-							projectile = "DecayingBolt"
-						}
-					},
-
-					Mashina.Peep.TimeOut {
-						min_duration = 8,
-						max_duration = 12
-					}
+					SwimSequence,
+					AttackSequence
 				}
 			}
 		}

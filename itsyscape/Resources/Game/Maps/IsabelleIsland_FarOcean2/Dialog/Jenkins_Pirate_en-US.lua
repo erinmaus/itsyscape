@@ -67,7 +67,7 @@ if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", _TARGET) then
 	message "Aye aye, captain!"
 
 	_TARGET:getState():give("KeyItem", "PreTutorial_Start")
-elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARGET) then
+elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARGET) or true then
 	focus "Cthulhu"
 	do
 		local player = Utility.Peep.getPlayerModel(_TARGET)
@@ -91,7 +91,11 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARG
 	message "So I am, ye traitor! What's it to yer?"
 
 	focus "Rosalind"
-	message "Enough with the banter! Let's get out of here!"
+	message {
+		"Enough with the banter! Let's get out of here!",
+		"Look what Cthulhu did with his Starfall attack!",
+		"He's not wasting time!"
+	}
 
 	focus "Orlando"
 	message "YES! ARE YOU TWO CRAZY?! LET'S GO!"
@@ -99,7 +103,8 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARG
 	focus "Jenkins"
 	message {
 		"Aye! %person{${PLAYER_NAME}}, man the cannons 'n plug any leaks!",
-		"%person{Rosalind}, blast them squid to 'ell with yer magic!"
+		"%person{Rosalind}, blast them squid to 'ell with yer magic!",
+		"I'll get us out o' harm's way!"
 	}
 
 	focus "Rosalind"
@@ -162,7 +167,7 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefendShip", _TARGET
 	}
 
 	if result == AND_ME then
-		message "And me!"
+		message "Don't forget me!"
 
 		focus "Jenkins"
 		message {
@@ -175,7 +180,7 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefendShip", _TARGET
 		focus "Jenkins"
 		message {
 			"Wet feet? Har har har!",
-			"Let's be ready for anything, mates.",
+			"Let's be ready for anythin', mates.",
 			"To the %location{Whaling Temple}!"
 		}
 	end

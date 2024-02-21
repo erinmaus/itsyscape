@@ -12,6 +12,7 @@ local B = require "B"
 local Step = B.Node("Step")
 Step.INDEX = B.Local()
 Step.DEBUG = B.Reference()
+Step.DROP = B.Reference()
 
 function Step:update(mashina, state, executor)
 	local index = state[self.INDEX] or 1
@@ -35,7 +36,14 @@ function Step:update(mashina, state, executor)
 	end
 
 	state[self.INDEX] = nil
-	executor:drop()
+	
+	local drop = state[self.DROP]
+	drop = drop == nil and true or drop
+
+	if drop then
+		executor:drop()
+	end
+
 	return B.Status.Success
 end
 

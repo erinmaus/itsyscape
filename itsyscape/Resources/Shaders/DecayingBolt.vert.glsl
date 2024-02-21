@@ -10,5 +10,5 @@ void performTransform(
 	projectedPosition = modelViewProjectionMatrix * position;
 
 	vec3 normalizedCoordinates = projectedPosition.xyz / projectedPosition.w;
-	frag_ScreenCoord = normalizedCoordinates.xy * vec2(0.5) + vec2(0.5) ;
+	frag_ScreenCoord = normalizedCoordinates.xy * vec2(0.5) + vec2(0.5);
 }
