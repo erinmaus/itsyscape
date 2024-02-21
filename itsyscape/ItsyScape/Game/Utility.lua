@@ -1953,7 +1953,12 @@ end
 function Utility.Peep.getParentTransform(peep)
 	local director = peep:getDirector()
 	local stage = director:getGameInstance():getStage()
-	local layer = Utility.Peep.getLayer(peep)
+	local position = peep:getBehavior(PositionBehavior)
+	if not position or not position.layer then
+		return love.math.newTransform()
+	end
+
+	local layer = position.layer
 
 	local instance = stage:getInstanceByLayer(layer)
 	if not instance then
@@ -2839,17 +2844,26 @@ function Utility.Peep.face3D(self)
 	else
 		local rotation = self:getBehavior(RotationBehavior)
 		local targetTile = self:getBehavior(TargetTileBehavior)
-		if rotation and targetTile and targetTile.pathNode then
+		local movement = self:getBehavior(MovementBehavior)
+		local isWalking = targetTile and targetTile.pathNode
+		local isMoving = movement and (movement.velocity * Vector.PLANE_XZ):getLength() > 0
+		if rotation and (isWalking or isMoving) then
 			local position = self:getBehavior(PositionBehavior)
 			local map = self:getDirector():getMap(position.layer)
 
-			if map then
-				local selfPosition = Utility.Peep.getPosition(self)
+			local xzSelfPosition = Utility.Peep.getPosition(self) * Vector.PLANE_XZ
+			local xzTargetPosition, direction
+			if isWalking and map then
 				local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
-				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-				local xzTilePosition = tilePosition * Vector.PLANE_XZ
-				local direction = (xzSelfPosition - xzTilePosition):getNormal()
+				xzTargetPosition = tilePosition * Vector.PLANE_XZ
+				direction = (xzSelfPosition - xzTargetPosition):getNormal()
+			elseif isMoving then
+				local velocity = movement.velocity * Vector.PLANE_XZ
+				xzTargetPosition = xzSelfPosition + (velocity)
+				direction = velocity:getNormal()
+			end
 
+			if xzTargetPosition and direction then
 				if (direction - face3D.direction):getLength() > 0.01 then
 					face3D.rotation = rotation.rotation
 					face3D.time = love.timer.getTime()
@@ -2858,7 +2872,7 @@ function Utility.Peep.face3D(self)
 
 				local delta = math.min((love.timer.getTime() - face3D.time) / face3D.duration, 1)
 
-				local targetRotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition)
+				local targetRotation = Quaternion.lookAt(xzTargetPosition, xzSelfPosition)
 				rotation.rotation = face3D.rotation:slerp(targetRotation, delta):getNormal()
 
 				return true

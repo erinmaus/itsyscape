@@ -194,9 +194,9 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "spawn",
-		Tree = "Resources/Game/Maps/IsabelleIsland_FarOcean2/Scripts/Cthulhu.lua",
+		State = "attack",
 		IsDefault = 1,
+		Tree = "Resources/Game/Maps/IsabelleIsland_FarOcean2/Scripts/Cthulhu.lua",
 		Resource = M["Cthulhu"]
 	}
 

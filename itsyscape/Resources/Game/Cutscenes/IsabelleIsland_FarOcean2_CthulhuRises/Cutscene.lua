@@ -46,12 +46,29 @@ return Sequence {
 	Map:poke("boom", SoakedLog:getPeep()),
 	Map:poke("boom", DeadPrincess:getPeep()),
 
-	Rosalind:setState("attack"),
 	Orlando:setState("run"),
 
-	Player:wait(2),
+	Camera:zoom(35),
+	Camera:translate(Vector(0, 10, 0)),
+	Map:wait(4),
+
+	Camera:target(Jenkins),
+	Camera:translate(Vector(0, 0, 0)),
+	Camera:zoom(35),
+	Jenkins:talk("Oi! Watch out, Rosalind!", 3),
+	Jenkins:wait(3),
+
+	Camera:target(Rosalind),
+	Rosalind:talk("Aah! The light! It burns!", 3),
+	Rosalind:wait(3),
+
+	Camera:target(Orlando),
+	Orlando:talk("OH NO, ROSALIND!", 3),
+	Orlando:wait(3),
+
 	Player:dialog("IntroDialog"),
 
+	Rosalind:setState("attack"),
 	Jenkins:setState("flee"),
 	Map:poke("flee")
 }

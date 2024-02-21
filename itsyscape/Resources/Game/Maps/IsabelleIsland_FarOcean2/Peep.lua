@@ -115,7 +115,8 @@ function Ocean:onPlacePlayer(playerPeep, anchor, ship)
 
 	Utility.Peep.setPosition(playerPeep, Vector(x, y, z))
 
-	self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
+	--self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
+	self:summonCthulhu()
 end
 
 function Ocean:onPlayCutscene(playerPeep, cutscene)
@@ -344,6 +345,20 @@ function Ocean:updateCthulhuFlee()
 	end
 end
 
+function Ocean:updateWhirlpoolPosition()
+	local whirlpool = self:getBehavior(WhirlpoolBehavior)
+	if not whirlpool then
+		return
+	end
+
+	local cthulhu = self:getDirector():probe(self:getLayerName(), Probe.resource("Peep", "Cthulhu"))[1]
+	if not cthulhu then
+		return
+	end
+
+	whirlpool.center = Utility.Peep.getPosition(cthulhu)
+end
+
 function Ocean:updateCannonTargets()
 	if self.currentTutorialState ~= Ocean.STATE_CANNON_TUTORIAL and self.currentTutorialState ~= Ocean.STATE_CTHULHU_FLEE then
 		for k, v in pairs(self.cannonTargets) do
@@ -528,8 +543,6 @@ function Ocean:updateCannonTargets()
 end
 
 function Ocean:updateTutorial()
-	self:updateCannonTargets()
-
 	if self.currentTutorialState == Ocean.STATE_CANNON_TUTORIAL then
 		self:updateCannonTutorial()
 	elseif self.currentTutorialState == Ocean.STATE_CTHULHU_RISE then
@@ -537,6 +550,9 @@ function Ocean:updateTutorial()
 	elseif self.currentTutorialState == Ocean.STATE_CTHULHU_FLEE then
 		self:updateCthulhuFlee()
 	end
+
+	self:updateCannonTargets()
+	self:updateWhirlpoolPosition()
 end
 
 function Ocean:update(...)
