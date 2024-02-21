@@ -14,6 +14,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local FishBehavior = require "ItsyScape.Peep.Behaviors.FishBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
@@ -31,7 +32,7 @@ function Cthulhu:new(resource, name, ...)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 18
-	movement.maxAcceleration = 8
+	movement.maxAcceleration = 16
 	movement.noClip = true
 
 	local status = self:getBehavior(CombatStatusBehavior)
@@ -39,6 +40,7 @@ function Cthulhu:new(resource, name, ...)
 	status.maximumHitpoints = 20000
 
 	self:addBehavior(RotationBehavior)
+	self:addBehavior(FishBehavior)
 end
 
 function Cthulhu:ready(director, game)

@@ -85,6 +85,21 @@ function Swim:update(mashina, state, executor)
 
 			Utility.Peep.setRotation(mashina, rotation)
 		end
+
+		if shipMovement then
+			-- Try and avoid the ship.
+
+			local radius = math.max(shipMovement.length, shipMovement.beam) / 2
+
+			local projectedPosition = currentPosition + movement.velocity * Vector.PLANE_XZ
+			local projectedDifference = projectedPosition - otherPosition
+			local projectedDistanceFromShip = projectedDifference:getLength()
+
+			if projectedDistanceFromShip <= radius then
+				local modifiedOtherPosition = otherPosition + projectedDifference:getNormal() * radius
+				direction = (modifiedOtherPosition - currentPosition):getNormal()
+			end
+		end
 	end
 
 	if isClose or distanceFromTarget < distance then

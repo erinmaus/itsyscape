@@ -326,7 +326,6 @@ function MovementCortex:update(delta)
 
 			movement:clampMovement()
 
-			movement.acceleration = movement.acceleration + movement.acceleration * delta
 			clampVector(movement.acceleration)
 
 			local wasMoving
