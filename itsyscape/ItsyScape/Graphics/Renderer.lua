@@ -111,9 +111,11 @@ function Renderer:draw(scene, delta, width, height)
 
 	local projection, view = self.camera:getTransforms()
 	local eye, target = self.camera:getEye(), self.camera:getPosition()
+	local rotation = self.camera:getCombinedRotation()
 	self._renderer:getCamera():update(view, projection)
 	self._renderer:getCamera():moveEye(eye:get())
 	self._renderer:getCamera():moveTarget(target:get())
+	self._renderer:getCamera():rotate(rotation:get())
 	self._renderer:draw(scene:getHandle(), delta, width, height)
 end
 

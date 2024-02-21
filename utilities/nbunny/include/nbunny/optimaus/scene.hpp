@@ -202,6 +202,8 @@ namespace nbunny
 		glm::vec3 eye_position = glm::vec3(0.0f);
 		glm::vec3 target_position = glm::vec3(0.0f);
 
+		glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+
 		bool is_cull_enabled = true;
 
 		static const int NUM_PLANES = 6;
@@ -232,6 +234,8 @@ namespace nbunny
 		const glm::vec3& get_eye_position() const;
 		const glm::vec3& get_target_position() const;
 
+		const glm::quat& get_rotation() const;
+
 		void update(
 			const glm::mat4& view,
 			const glm::mat4& projection);
@@ -239,6 +243,8 @@ namespace nbunny
 		void move(
 			const glm::vec3& eye_position,
 			const glm::vec3& target_position);
+
+		void rotate(const glm::quat& rotation);
 
 		bool inside(const SceneNode& node, float delta) const;
 	};

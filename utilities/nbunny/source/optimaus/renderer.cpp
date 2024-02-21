@@ -109,6 +109,25 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		shader->updateUniform(time_uniform, 1);
 	}
 
+	if (camera)
+	{
+		auto view = camera->get_view();
+		auto view_matrix_uniform = shader->getUniformInfo("scape_ViewMatrix");
+		if (view_matrix_uniform)
+		{
+			std::memcpy(view_matrix_uniform->floats, glm::value_ptr(view), sizeof(glm::mat4));
+			shader->updateUniform(view_matrix_uniform, 1);
+		}
+
+		auto projection = camera->get_projection();
+		auto projection_matrix_uniform = shader->getUniformInfo("scape_ProjectionMatrix");
+		if (projection_matrix_uniform)
+		{
+			std::memcpy(projection_matrix_uniform->floats, glm::value_ptr(projection), sizeof(glm::mat4));
+			shader->updateUniform(projection_matrix_uniform, 1);
+		}
+	}
+
 	if (!node.is_base_type())
 	{
 		node.before_draw(*this, delta);
