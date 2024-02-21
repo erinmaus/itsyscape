@@ -1706,36 +1706,39 @@ function ProCombatStatusHUD:updatePowers(type, buttons, powers, pendingID, radia
 		local power = powers[i]
 		local button = buttons[i]
 
-		local coolDown = button:getData('coolDown')
-		local icon = button:getData('icon')
+		if power and button then
 
-		icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
+			local coolDown = button:getData('coolDown')
+			local icon = button:getData('icon')
 
-		local description = {}
-		for i = 1, #power.description do
-			table.insert(description, ToolTip.Text(power.description[i]))
-		end
+			icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
 
-		local toolTip = {
-			ToolTip.Header(power.name),
-			unpack(power.description)
-		}
+			local description = {}
+			for i = 1, #power.description do
+				table.insert(description, ToolTip.Text(power.description[i]))
+			end
 
-		button:setToolTip(unpack(toolTip))
+			local toolTip = {
+				ToolTip.Header(power.name),
+				unpack(power.description)
+			}
 
-		if power.coolDown and power.coolDown ~= 0 then
-			coolDown:setText(tostring(power.coolDown))
-		else
-			coolDown:setText("")
-		end
+			button:setToolTip(unpack(toolTip))
 
-		button:setID("ProCombatStatusHUD-Power" .. power.id)
+			if power.coolDown and power.coolDown ~= 0 then
+				coolDown:setText(tostring(power.coolDown))
+			else
+				coolDown:setText("")
+			end
 
-		if pendingID == power.id then
-			button:addChild(self.subPending)
-			pendingIndex = i
-		else
-			button:removeChild(self.subPending)
+			button:setID("ProCombatStatusHUD-Power" .. power.id)
+
+			if pendingID == power.id then
+				button:addChild(self.subPending)
+				pendingIndex = i
+			else
+				button:removeChild(self.subPending)
+			end
 		end
 	end
 
