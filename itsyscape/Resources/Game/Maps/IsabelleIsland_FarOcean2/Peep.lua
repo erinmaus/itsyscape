@@ -115,8 +115,7 @@ function Ocean:onPlacePlayer(playerPeep, anchor, ship)
 
 	Utility.Peep.setPosition(playerPeep, Vector(x, y, z))
 
-	--self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
-	self:summonCthulhu()
+	self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
 end
 
 function Ocean:onPlayCutscene(playerPeep, cutscene)
