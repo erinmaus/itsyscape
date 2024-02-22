@@ -304,4 +304,10 @@ do
 		Cutscene = Cutscene,
 		Resource = M["Yendorian_Mast"]
 	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "TheEmptyKing",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene"
+	}
 end

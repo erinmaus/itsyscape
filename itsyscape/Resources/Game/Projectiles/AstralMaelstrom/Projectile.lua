@@ -23,10 +23,14 @@ AstralMaelstrom.CLAMP_BOTTOM = true
 AstralMaelstrom.DROP_OFF  = 4
 AstralMaelstrom.ELEVATION = 32
 
-AstralMaelstrom.FALL_DURATION = 1.5
-AstralMaelstrom.DURATION = 3
+AstralMaelstrom.FALL_DURATION = 2
+AstralMaelstrom.DURATION = 6
+
+AstralMaelstrom.FLAME_TRAIL_OFFSET = Vector(0, 2, 0)
 
 AstralMaelstrom.SIZE = 4
+AstralMaelstrom.SPLODE_DELTA_THRESHOLD = 0.25
+AstralMaelstrom.SPLODE_DELTA_DURATION  = 0.25
 
 AstralMaelstrom.PARTICLE_SYSTEM_FIRE = {
 	texture = "Resources/Game/Projectiles/AstralMaelstrom/Fire.png",
@@ -79,7 +83,7 @@ AstralMaelstrom.PARTICLE_SYSTEM_FIRE = {
 		type = "RandomDelayEmissionStrategy",
 		count = { 30, 60 },
 		delay = { 1 / 30 },
-		duration = { 1.5 }
+		duration = { 2 }
 	}
 }
 
@@ -268,7 +272,7 @@ function AstralMaelstrom:update(delta)
 	local hitPosition = self.hitPosition - Vector(0, AstralMaelstrom.DROP_OFF, 0)
 	local position = self.startPosition:lerp(hitPosition, math.min(delta / (self.FALL_DURATION / self.DURATION), 1))
 
-	if delta > 0.5 and position.y <= self.hitPosition.y then
+	if delta > self.FALL_DURATION / self.DURATION and position.y <= self.hitPosition.y then
 		self.splosionParticleSystem:play()
 		self.smokeParticleSystem:play()
 
@@ -278,11 +282,13 @@ function AstralMaelstrom:update(delta)
 		end
 	end
 
+	local alpha = 1 - math.min(math.max(delta - AstralMaelstrom.SPLODE_DELTA_THRESHOLD, 0) / AstralMaelstrom.SPLODE_DELTA_DURATION, 1)
 	local angle = self:getTime() * math.pi * 2
 	local rotation = Quaternion.fromAxisAngle(Vector.UNIT_Z, angle)
 	self.quad:getTransform():setLocalRotation(rotation)
 	self.quad:getTransform():setLocalTranslation(position)
-	self.trailParticleSystem:updateLocalPosition(position)
+	self.quad:getMaterial():setColor(Color(1, 1, 1, alpha))
+	self.trailParticleSystem:updateLocalPosition(position + AstralMaelstrom.FLAME_TRAIL_OFFSET)
 
 	self:ready()
 end

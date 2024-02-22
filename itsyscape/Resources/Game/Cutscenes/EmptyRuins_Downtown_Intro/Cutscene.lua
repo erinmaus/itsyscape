@@ -21,10 +21,10 @@ return Sequence {
 		YendorianSwordfish:fireProjectile(YendorianSwordfish, "AstralMaelstrom"),
 		Camera:relativeVerticalRotate(-math.pi / 8),
 		Map:poke("cutsceneAttack", YendorianSwordfish:getPeep()),
-		YendorianMast:wait(1.5),
+		YendorianMast:wait(2),
 		Camera:shake(1.5),
 		Map:poke("cutsceneKill", YendorianSwordfish:getPeep()),
-		YendorianSwordfish:wait(2.5)
+		YendorianSwordfish:wait(3)
 	},
 
 	Sequence {
@@ -34,11 +34,11 @@ return Sequence {
 		Camera:verticalRotate(-math.pi / 3),
 		Camera:relativeHorizontalRotate(-math.pi / 48),
 		Map:poke("cutsceneAttack", YendorianMast:getPeep()),
-		YendorianMast:wait(1.5),
+		YendorianMast:wait(2),
 		Camera:shake(1.5),
 		Map:poke("cutsceneKill", YendorianMast:getPeep()),
-		YendorianMast:wait(2.0)
+		YendorianMast:wait(3)
 	},
 
-	Player:move("@Intro_Realm?mute=1", "Anchor_Spawn")
+	Player:move("@Intro_Realm?mute=1", "Anchor_Spawn", 6)
 }

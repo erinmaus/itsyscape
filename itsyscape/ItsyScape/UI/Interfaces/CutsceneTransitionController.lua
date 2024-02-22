@@ -12,8 +12,12 @@ local Controller = require "ItsyScape.UI.Controller"
 
 local CutsceneTransitionController = Class(Controller)
 
-function CutsceneTransitionController:new(peep, director, lines, duration)
+function CutsceneTransitionController:new(peep, director, minDuration)
 	Controller.new(self, peep, director)
+
+	self.state = {
+		minDuration = minDuration
+	}
 
 	self.isClosing = false
 end
@@ -32,6 +36,10 @@ function CutsceneTransitionController:poke(actionID, actionIndex, e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
+end
+
+function CutsceneTransitionController:pull()
+	return self.state
 end
 
 return CutsceneTransitionController

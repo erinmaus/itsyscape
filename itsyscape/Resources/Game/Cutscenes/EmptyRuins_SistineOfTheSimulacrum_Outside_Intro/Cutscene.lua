@@ -49,17 +49,21 @@ local WAKE2 = {
 }
 
 local NarrationSequence = Sequence {
-	Player:narrate("", RITUAL1, 10),
-	Player:wait(3),
+	Player:narrate("", RITUAL1, 12),
+	Player:wait(4),
 
-	Player:narrate("", RITUAL2, 7),
-	Player:wait(7),
+	Player:narrate("", RITUAL2, 8),
+	Player:wait(8),
 
-	Player:narrate("", WAKE1, 10),
-	Player:wait(3),
+	Player:wait(1),
 
-	Player:narrate("", WAKE2, 7),
-	Player:wait(7),
+	Player:narrate("", WAKE1, 12),
+	Player:wait(4),
+
+	Player:narrate("", WAKE2, 8),
+	Player:wait(8),
+
+	Player:wait(1)
 }
 
 local FightSequence = Sequence {
@@ -141,7 +145,21 @@ local FightSequence = Sequence {
 		Yendor:wait(2),
 		Camera:shake(3.5),
 		Yendor:playAnimation("Yendor_Die"),
-		Yendor:wait(3.5),
+		Yendor:wait(2.5),
+
+		Camera:zoom(30, 2),
+		Camera:translate(Vector(0, 0, -10), 2),
+		Camera:relativeVerticalRotate(math.pi / 4 + math.pi / 8, 2),
+		Yendor:wait(4),
+
+		Camera:zoom(30),
+		Camera:translate(Vector(0, 5.5, 0)),
+		Camera:relativeVerticalRotate(0),
+		Camera:horizontalRotate(0),
+		Camera:target(TheEmptyKing),
+		TheEmptyKing:lookAt(Quaternion.IDENTITY),
+		Camera:zoom(4, 2),
+		TheEmptyKing:wait(2)
 	}
 }
 
