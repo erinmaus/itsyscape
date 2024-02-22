@@ -33,7 +33,7 @@ local PEACE3 = {
 	width = DramaticTextController.CANVAS_WIDTH - 64,
 	x = 32,
 	y = DramaticTextController.CANVAS_HEIGHT - 256,
-	text = "A peace has kept between the mortal world and a divine bureaucracy - the Fate Mashina -"
+	text = "An uneasy peace has kept between the mortal world and a divine bureaucracy - the Fate Mashina -"
 }
 
 local PEACE4 = {
@@ -49,17 +49,17 @@ local PEACE4 = {
 }
 
 local NarrationSequence = Sequence {
-	Player:narrate("", PEACE1, 10),
-	Player:wait(5),
+	Player:narrate("", PEACE1, 11),
+	Player:wait(6),
 
 	Player:narrate("", PEACE2, 5),
-	Player:wait(5),
+	Player:wait(6),
 
-	Player:narrate("", PEACE3, 10),
-	Player:wait(5),
+	Player:narrate("", PEACE3, 11),
+	Player:wait(6),
 
 	Player:narrate("", PEACE4, 5),
-	Player:wait(5),
+	Player:wait(6),
 }
 
 local MapSequence = Sequence {
@@ -103,5 +103,5 @@ return Sequence {
 		}
 	},
 
-	Player:move("Rumbridge_Castle_Floor1?cutscene=intro,mute=1", "Anchor_FromStairs")
+	Player:move("Rumbridge_Castle_Floor1?cutscene=intro,mute=1", "Anchor_FromStairs", 6)
 }

@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- ItsyScape/Game/CutsceneEntity.lua
 --
@@ -28,11 +29,11 @@ function CutsceneEntity:new(peep)
 	self.game = peep:getDirector():getGameInstance()
 end
 
-function CutsceneEntity:move(map, anchor)
+function CutsceneEntity:move(map, anchor, minDuration)
 	local DELAY_SECONDS = 0.5
 	if self.peep:hasBehavior(PlayerBehavior) then
 		return function()
-			Utility.UI.openInterface(self.peep, "CutsceneTransition", false)
+			Utility.UI.openInterface(self.peep, "CutsceneTransition", false, minDuration)
 
 			local time = love.timer.getTime()
 			while love.timer.getTime() < time + DELAY_SECONDS do
@@ -491,11 +492,13 @@ end
 
 function CutsceneEntity:wait(duration)
 	return function()
+		local b = love.timer.getTime()
 		local currentTime = duration
 		while currentTime > 0 do
 			currentTime = currentTime - self.game:getDelta()
 			coroutine.yield()
 		end
+		local a = love.timer.getTime()
 	end
 end
 

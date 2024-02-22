@@ -65,18 +65,14 @@ function CutscenePeep:update(...)
 	Peep.update(self, ...)
 
 	if self.cutscene then
-		self.startTime = self.startTime or love.timer.getTime()
 		if not self.cutscene:update() then
 			if self.cameraName then
 				local player = Utility.Peep.getPlayerModel(self.player)
 				player:changeCamera("Default")
 			end
 
-			local endTime = love.timer.getTime()
-			self:poke('done', endTime - self.startTime)
+			self:poke('done')
 			Utility.Peep.poof(self)
-
-			Log.info("Finished cutscene '%s' in %.2f seconds.", self:getName(), endTime - self.startTime)
 		end
 	else
 		Utility.Peep.poof(self)

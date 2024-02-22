@@ -1,7 +1,7 @@
 Animation "Yendor Attack (Magic)" {
 	Channel {
 		Particles {
-			duration = 3,
+			duration = 3.5,
 			attach = "jaw.t",
 			scale = { 4, 4, 4 },
 			reverseRotation = "X_90",
@@ -31,7 +31,7 @@ Animation "Yendor Attack (Magic)" {
 					},
 					{
 						type = "RandomLifetimeEmitter",
-						age = { 2, 2.5 }
+						age = { 1, 1.5 }
 					},
 					{
 						type = "RandomScaleEmitter",

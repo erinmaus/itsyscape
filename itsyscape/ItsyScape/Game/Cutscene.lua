@@ -42,6 +42,7 @@ function Cutscene:new(resource, player, director, layerName, map, entities)
 
 	self.player = Utility.Peep.getPlayerModel(player)
 	self._onPlayerMove = function()
+		self:_finish()
 		self.isDone = true
 		self.player.onMove:unregister(self._onPlayerMove)
 	end
@@ -236,7 +237,14 @@ function Cutscene:loadCutscene()
 	self.didStart = false
 end
 
+function Cutscene:_finish()
+	local startTime = self.startTime or love.timer.getTime()
+	local endTime = love.timer.getTime()
+	Log.info("Finished cutscene '%s' in %.2f seconds.", self.resource.name, endTime - startTime)
+end
+
 function Cutscene:update()
+
 	if not self.didStart then
 		local isOpen, index = Utility.UI.isOpen(self.player:getActor():getPeep(), "CutsceneTransition")
 
@@ -249,6 +257,8 @@ function Cutscene:update()
 	end
 
 	if not self.isDone and coroutine.status(self.script) ~= "dead" then
+		self.startTime = self.startTime or love.timer.getTime()
+
 		self.didStart = true
 		local s, e = coroutine.resume(self.script)
 		if not s then
@@ -259,6 +269,7 @@ function Cutscene:update()
 	end
 
 	if not self.isDone then
+		self:_finish()
 		self.player.onMove:unregister(self._onPlayerMove)
 		self.isDone = true
 	end
