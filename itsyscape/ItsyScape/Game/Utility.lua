@@ -1420,6 +1420,7 @@ function Utility.Map.getTileRotation(map, i, j)
 end
 
 function Utility.Map.playCutscene(map, resource, cameraName, player, entities)
+	player = player or Utility.Peep.getPlayer(map)
 	local director = map:getDirector()
 
 	if type(resource) == 'string' then

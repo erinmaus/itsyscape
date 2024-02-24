@@ -52,12 +52,13 @@ function NewGame:onPlayerEnter(player)
 			x = 32,
 			y = DramaticTextController.CANVAS_HEIGHT / 2 - 64,
 			text = string.format("Welcome to the Realm, %s.", playerPeep:getName())
-		} }, 4)
+		} }, 6)
 
 		stage:movePeep(
 			playerPeep,
-			"@EmptyRuins_Downtown?cutscene=1,mute=1",
+			"@Intro_Realm",
 			"Anchor_Spawn")
+
 		-- stage:movePeep(
 		-- 	playerPeep,
 		-- 	"@IsabelleIsland_FarOcean2",

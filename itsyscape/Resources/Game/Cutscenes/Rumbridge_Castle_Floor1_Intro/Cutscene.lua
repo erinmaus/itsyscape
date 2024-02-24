@@ -25,6 +25,9 @@ local WHISPERS = {
 }
 
 return Sequence {
+	RumbridgeCastle1:show(),
+	RumbridgeCastle2:show(),
+
 	Player:narrate("", SHADOWS, 8),
 
 	Kvre:playAnimation("Darken"),

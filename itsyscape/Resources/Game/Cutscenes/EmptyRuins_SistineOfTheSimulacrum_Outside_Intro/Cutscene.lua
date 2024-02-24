@@ -158,12 +158,17 @@ local FightSequence = Sequence {
 		Camera:horizontalRotate(0),
 		Camera:target(TheEmptyKing),
 		TheEmptyKing:lookAt(Quaternion.IDENTITY),
-		Camera:zoom(4, 2),
+		Camera:zoom(7.5, 2),
 		TheEmptyKing:wait(2)
 	}
 }
 
 return Sequence {
+	Sistine:show(),
+	DowntownFloor1:show(),
+	DowntownFloor2:show(),
+	DowntownFloor3:show(),
+
 	Map:playMusic("TutorialIntro"),
 
 	Parallel {

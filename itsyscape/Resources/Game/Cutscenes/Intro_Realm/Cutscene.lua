@@ -64,23 +64,23 @@ local NarrationSequence = Sequence {
 
 local MapSequence = Sequence {
 	Sequence {
-		Map:poke("show", "Rumbridge_Town_Center"),
+		RumbridgeTownCenter:show(),
 
 		Map:wait(8),
 
-		Map:poke("hide", "Rumbridge_Town_Center"),
+		RumbridgeTownCenter:hide()
 	},
 
 	Sequence {
-		Map:poke("show", "EmptyRuins_DragonValley_Ginsville"),
+		Ginsville:show(),
 
 		Map:wait(8),
 
-		Map:poke("hide", "EmptyRuins_DragonValley_Ginsville"),
+		Ginsville:hide()
 	},
 
 	Sequence {
-		Map:poke("show", "ViziersRock_Town_Center"),
+		ViziersRockTownCenter:show(),
 
 		Map:wait(8)
 	}
@@ -103,5 +103,8 @@ return Sequence {
 		}
 	},
 
-	Player:move("Rumbridge_Castle_Floor1?cutscene=intro,mute=1", "Anchor_FromStairs", 6)
+	RumbridgeCastle:poke("playIntroCutscene", Player:getPeep()),
+	Player:wait(),
+
+	ViziersRockTownCenter:hide()
 }
