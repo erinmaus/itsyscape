@@ -35,6 +35,7 @@ function Castle:onLoad(filename, args, layer)
 
 	if args.cutscene then
 		self:silence('playerEnter', Map.showPlayerMapInfo)
+		self:initIntroCutscene()
 	end
 
 	self:initGuards()
@@ -66,15 +67,7 @@ function Castle:incrementSuperSupperSaboteurDialogTick()
 end
 
 function Castle:onPlayerEnter(player)
-	local args = self:getArguments()
-
-	if args.cutscene then
-		if args.cutscene == Castle.CUTSCENE_INTRO then
-			self:initIntroCutscene(player)
-		end
-	else
-		self:initSuperSupperSaboteurInstance(player)
-	end
+	self:initSuperSupperSaboteurInstance(player)
 end
 
 function Castle:initSuperSupperSaboteurInstance(player)
@@ -161,14 +154,10 @@ function Castle:playSuperSupperSaboteurCutscene(player)
 	end)
 end
 
-function Castle:initIntroCutscene(player)
-	local peep = player:getActor():getPeep()
-
+function Castle:initIntroCutscene()
 	Utility.spawnMapObjectAtAnchor(self, "EarlReddick", "Anchor_EarlReddick")
 	Utility.spawnMapObjectAtAnchor(self, "Kvre", "Anchor_EarlReddick_Left")
 	Utility.spawnMapObjectAtAnchor(self, "Isabelle", "Anchor_EarlReddick_Right")
-
-	self:pushPoke("playIntroCutscene", peep)
 end
 
 function Castle:onPlayIntroCutscene(peep)

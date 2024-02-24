@@ -28,6 +28,14 @@ function CutscenePeep:new(resource, cameraName, player, map, entities, ...)
 		end
 	end
 
+	local cutscenes = player:getDirector():probe(
+		function(p)
+			if Class.isCompatibleType(p, CutscenePeep) and p.player == player then
+				return self.cameraName ~= nil
+			end
+		end)
+	self.suppressCameraChange = #cutscenes >= 1
+
 	if not player then
 		Log.error("No player for cutscene '%s'!", resource and resource.name)
 	else
@@ -66,7 +74,7 @@ function CutscenePeep:update(...)
 
 	if self.cutscene then
 		if not self.cutscene:update() then
-			if self.cameraName then
+			if self.cameraName and not self.suppressCameraChange then
 				local player = Utility.Peep.getPlayerModel(self.player)
 				player:changeCamera("Default")
 			end

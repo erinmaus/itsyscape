@@ -176,4 +176,28 @@ do
 		Cutscene = Cutscene,
 		Resource = M["CameraDolly"]
 	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "Sistine",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_SistineOfTheSimulacrum_Outside"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "DowntownFloor1",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_Downtown"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "DowntownFloor2",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_Downtown_Floor2"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "DowntownFloor3",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_Downtown_Floor3"
+	}
 end

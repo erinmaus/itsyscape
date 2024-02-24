@@ -459,4 +459,16 @@ do
 		Cutscene = Cutscene,
 		Resource = M["Kvre"]
 	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "RumbridgeCastle1",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Rumbridge_Castle"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "RumbridgeCastle2",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Rumbridge_Castle_Floor1"
+	}
 end

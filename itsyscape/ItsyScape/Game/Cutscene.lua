@@ -43,12 +43,14 @@ function Cutscene:new(resource, player, director, layerName, map, entities)
 	self.player = Utility.Peep.getPlayerModel(player)
 	self._onPlayerMove = function()
 		self:_finish()
-		self.isDone = true
-		self.player.onMove:unregister(self._onPlayerMove)
 	end
 	self.player.onMove:register(self._onPlayerMove)
 
 	Analytics:playedCutscene(player, resource.name)
+end
+
+function Cutscene:getShouldRestoreCamera()
+	return not self.suppressCameraRestore
 end
 
 function Cutscene:addEntity(name, Type, probe)
@@ -238,13 +240,16 @@ function Cutscene:loadCutscene()
 end
 
 function Cutscene:_finish()
+	self.isDone = true
+
 	local startTime = self.startTime or love.timer.getTime()
 	local endTime = love.timer.getTime()
 	Log.info("Finished cutscene '%s' in %.2f seconds.", self.resource.name, endTime - startTime)
+
+	self.player.onMove:unregister(self._onPlayerMove)
 end
 
 function Cutscene:update()
-
 	if not self.didStart then
 		local isOpen, index = Utility.UI.isOpen(self.player:getActor():getPeep(), "CutsceneTransition")
 
@@ -270,8 +275,6 @@ function Cutscene:update()
 
 	if not self.isDone then
 		self:_finish()
-		self.player.onMove:unregister(self._onPlayerMove)
-		self.isDone = true
 	end
 
 	return false

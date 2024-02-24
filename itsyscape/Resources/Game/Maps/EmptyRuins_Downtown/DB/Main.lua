@@ -305,9 +305,33 @@ do
 		Resource = M["Yendorian_Mast"]
 	}
 
-	ItsyScape.Meta.CutscenePeep {
-		Name = "TheEmptyKing",
+	ItsyScape.Meta.CutsceneMap {
+		Name = "Intro",
 		Cutscene = Cutscene,
-		Resource = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene"
+		Resource = ItsyScape.Resource.Map "Intro_Realm"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "Sistine",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_SistineOfTheSimulacrum_Outside"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "DowntownFloor1",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_Downtown"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "DowntownFloor2",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_Downtown_Floor2"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "DowntownFloor3",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_Downtown_Floor3"
 	}
 end

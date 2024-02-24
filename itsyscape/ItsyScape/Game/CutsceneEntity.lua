@@ -493,7 +493,7 @@ end
 function CutsceneEntity:wait(duration)
 	return function()
 		local b = love.timer.getTime()
-		local currentTime = duration
+		local currentTime = duration or 0
 		while currentTime > 0 do
 			currentTime = currentTime - self.game:getDelta()
 			coroutine.yield()

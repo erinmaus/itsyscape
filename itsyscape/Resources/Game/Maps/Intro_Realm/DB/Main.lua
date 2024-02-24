@@ -90,4 +90,34 @@ do
 		Cutscene = Cutscene,
 		Resource = M["CameraDolly"]
 	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "RumbridgeCastle",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Rumbridge_Castle_Floor1"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "RumbridgeTownCenter",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Rumbridge_Town_Center"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "Ginsville",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_DragonValley_Ginsville"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "ViziersRockTownCenter",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "ViziersRock_Town_Center"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "DowntownFloor3",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "EmptyRuins_Downtown_Floor3"
+	}
 end

@@ -63,10 +63,6 @@ end
 function Downtown:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	if args.cutscene then
-		self:silence('playerEnter', Map.showPlayerMapInfo)
-	end
-
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:forecast(layer, "EmptyRuins_Downtown_Bubbles", "Fungal", {
 		gravity = { 0, 3, 0 },
@@ -96,9 +92,6 @@ function Downtown:onPlayerEnter(player)
 	self:prepareDebugCutscene(playerPeep)
 
 	local args = self:getArguments() or {}
-	if args.cutscene then
-		self:pushPoke("prepareCutscene", playerPeep)
-	end
 end
 
 function Downtown:onPlayerLeave(player)
@@ -123,13 +116,13 @@ function Downtown:prepareDebugCutscene(player)
 		"DEBUG_TRIGGER_1", actionCallback, openCallback)
 end
 
-function Downtown:onPrepareCutscene(player)
-	if not self.cutsceneState[player] then
-		self:prepareDowntownCutscene(player)
-		self:prepareSistineCutscene(player)
+function Downtown:onPrepareCutscene(playerPeep)
+	if not self.cutsceneState[playerPeep] then
+		self:prepareDowntownCutscene(playerPeep)
+		self:prepareSistineCutscene(playerPeep)
 	end
 
-	self:pushPoke("playSistineCutscene", player, "EmptyRuins_SistineOfTheSimulacrum_Outside_Intro")
+	self:pushPoke("playSistineCutscene", playerPeep, "EmptyRuins_SistineOfTheSimulacrum_Outside_Intro")
 end
 
 function Downtown:prepareDowntownCutscene(player)
@@ -188,7 +181,7 @@ end
 function Downtown:onPlayDowntownCutscene(peep, cutscene)
 	Utility.UI.closeAll(peep, nil, { "CutsceneTransition", "DramaticText" })
 
-	local cutscene = Utility.Map.playCutscene(self, cutscene, "StandardCutscene")
+	local cutscene = Utility.Map.playCutscene(self, cutscene, "StandardCutscene", peep)
 	cutscene:listen("done", self.onFinishCutscene, self, peep)
 end
 
@@ -240,10 +233,6 @@ function Downtown:onCutsceneKill(peep)
 end
 
 function Downtown:onFinishCutscene(player)
-	Utility.UI.openGroup(
-		player,
-		Utility.UI.Groups.WORLD)
-
 	self:prepareDebugCutscene(player)
 end
 
