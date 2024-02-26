@@ -130,23 +130,6 @@ do
 	}
 end
 
-M["Water"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0,
-		PositionY = 0,
-		PositionZ = 0,
-		Name = "Water",
-		Map = M._MAP,
-		Resource = M["Water"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "EndlessWater",
-		MapObject = M["Water"]
-	}
-end
-
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -156,5 +139,52 @@ do
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
+	}
+end
+
+
+M["TrapDoor_ToMine"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31,
+		PositionY = 5,
+		PositionZ = 31,
+		Name = "TrapDoor_ToMine",
+		Map = M._MAP,
+		Resource = M["TrapDoor_ToMine"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
+		MapObject = M["TrapDoor_ToMine"]
+	}
+end
+
+M["BossDoor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 76,
+		PositionY = 5,
+		PositionZ = 53,
+		Name = "BossDoor",
+		Map = M._MAP,
+		Resource = M["BossDoor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Base",
+		MapObject = M["BossDoor"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yendorian door",
+		Language = "en-US",
+		Resource = M["BossDoor"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Doesn't look like there's a simple way to open this door.",
+		Language = "en-US",
+		Resource = M["BossDoor"]
 	}
 end
