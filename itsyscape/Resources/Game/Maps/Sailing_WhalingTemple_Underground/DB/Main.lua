@@ -1,21 +1,86 @@
-local M = include "Resources/Game/Maps/Sailing_WhalingTemple/DB/Default.lua"
+local M = include "Resources/Game/Maps/Sailing_WhalingTemple_Underground/DB/Default.lua"
 
-ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Maps.Sailing_WhalingTemple.Peep",
-	Resource = M._MAP
-}
+-- ItsyScape.Meta.PeepID {
+-- 	Value = "Resources.Game.Maps.Sailing_WhalingTemple_Underground.Peep",
+-- 	Resource = M._MAP
+-- }
 
 ItsyScape.Meta.ResourceName {
-	Value = "The Whaling Temple",
+	Value = "Underground, The Whaling Temple",
 	Language = "en-US",
 	Resource = M._MAP
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A whaling temple thought to be abandoned by Yendorians.",
+	Value = "A cave running under the abandoned Yendorian whaling temple.",
 	Language = "en-US",
 	Resource = M._MAP
 }
+
+M["Ladder_FromFish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 49,
+		Name = "Ladder_FromFish",
+		Map = M._MAP,
+		Resource = M["Ladder_FromFish"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "MetalLadder_Default",
+		MapObject = M["Ladder_FromFish"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromMine",
+		Map = ItsyScape.Resource.Map "Sailing_WhalingTemple",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		XProgressive = "Climbing-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_FromFish"] {
+		TravelAction
+	}
+end
+
+M["Anchor_FromFish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 5,
+		PositionZ = 51,
+		Name = "Anchor_FromFish",
+		Map = M._MAP,
+		Resource = M["Anchor_FromFish"]
+	}
+end
+
+M["Ladder_ToBoss"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 0,
+		PositionZ = 41,
+		Name = "Ladder_ToBoss",
+		Map = M._MAP,
+		Resource = M["Ladder_ToBoss"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "MetalLadder_Default",
+		MapObject = M["Ladder_ToBoss"]
+	}
+end
 
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
@@ -130,91 +195,40 @@ do
 	}
 end
 
-M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+M["Door_FromYenderling"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 63,
-		PositionY = 3,
-		PositionZ = 67,
-		Name = "Anchor_Spawn",
+		PositionX = 13,
+		PositionY = 0,
+		PositionZ = 39,
+		Name = "Door_FromYenderling",
 		Map = M._MAP,
-		Resource = M["Anchor_Spawn"]
-	}
-end
-
-M["TrapDoor_ToMine"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
-		PositionY = 5,
-		PositionZ = 31,
-		Name = "TrapDoor_ToMine",
-		Map = M._MAP,
-		Resource = M["TrapDoor_ToMine"]
+		Resource = M["Door_FromYenderling"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
-		MapObject = M["TrapDoor_ToMine"]
-	}
-
-	local TravelAction = ItsyScape.Action.Travel()
-
-	ItsyScape.Meta.TravelDestination {
-		Anchor = "Anchor_FromFish",
-		Map = ItsyScape.Resource.Map "Sailing_WhalingTemple_Underground",
-		Action = TravelAction
-	}
-
-	ItsyScape.Meta.ActionVerb {
-		Value = "Descend",
-		XProgressive = "Descending",
-		Language = "en-US",
-		Action = TravelAction
-	}
-
-	M["TrapDoor_ToMine"] {
-		TravelAction
+		Prop = ItsyScape.Resource.Prop "Door_IronGate",
+		MapObject = M["Door_FromYenderling"]
 	}
 end
 
-M["Anchor_FromMine"] = ItsyScape.Resource.MapObject.Unique()
+M["Door_ToBoss"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
-		PositionY = 5,
-		PositionZ = 33,
-		Name = "Anchor_FromMine",
+		PositionX = 29,
+		PositionY = 0,
+		PositionZ = 17,
+		RotationX = 0,
+		RotationY = 0.707107,
+		RotationZ = 0,
+		RotationW = 0.707107,
+		Name = "Door_ToBoss",
 		Map = M._MAP,
-		Resource = M["Anchor_FromMine"]
-	}
-end
-
-M["BossDoor"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 76,
-		PositionY = 5,
-		PositionZ = 53,
-		Name = "BossDoor",
-		Map = M._MAP,
-		Resource = M["BossDoor"]
+		Resource = M["Door_ToBoss"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Base",
-		MapObject = M["BossDoor"]
-	}
-
-	ItsyScape.Meta.ResourceName {
-		Value = "Yendorian door",
-		Language = "en-US",
-		Resource = M["BossDoor"]
-	}
-
-	ItsyScape.Meta.ResourceDescription {
-		Value = "Doesn't look like there's a simple way to open this door.",
-		Language = "en-US",
-		Resource = M["BossDoor"]
+		Prop = ItsyScape.Resource.Prop "Door_IronGate",
+		MapObject = M["Door_ToBoss"]
 	}
 end
