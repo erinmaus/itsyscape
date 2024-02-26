@@ -54,15 +54,18 @@ function NewGame:onPlayerEnter(player)
 			text = string.format("Welcome to the Realm, %s.", playerPeep:getName())
 		} }, 6)
 
-		stage:movePeep(
-			playerPeep,
-			"@Intro_Realm",
-			"Anchor_Spawn")
-
-		-- stage:movePeep(
-		-- 	playerPeep,
-		-- 	"@IsabelleIsland_FarOcean2",
-		-- 	"Anchor_Spawn")
+		if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
+			print(">>> @Intro_Realm")
+			stage:movePeep(
+				playerPeep,
+				"@Intro_Realm",
+				"Anchor_Spawn")
+		else
+			stage:movePeep(
+				playerPeep,
+				"@IsabelleIsland_FarOcean2",
+				"Anchor_Spawn")
+		end
 	end)
 end
 

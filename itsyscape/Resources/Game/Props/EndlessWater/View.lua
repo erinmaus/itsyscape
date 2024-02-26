@@ -81,10 +81,12 @@ function EndlessWater:load()
 					local shader = renderer:getCurrentShader()
 					local state = self:getProp():getState()
 
-					for k, v in pairs(EndlessWater.WHIRLPOOL_PROPS) do
-						local prop = state.whirlpool[v]
-						if prop and shader:hasUniform(k) then
-							shader:send(k, prop)
+					if state.whirlpool then
+						for k, v in pairs(EndlessWater.WHIRLPOOL_PROPS) do
+							local prop = state.whirlpool[v]
+							if prop and shader:hasUniform(k) then
+								shader:send(k, prop)
+							end
 						end
 					end
 
@@ -96,9 +98,11 @@ function EndlessWater:load()
 						shader:send("scape_WhirlpoolFoamColor", { EndlessWater.FOAM_COLOR:get() })
 					end
 
-					water:setYOffset(state.ocean.offset)
-					water:setPositionTimeScale(state.ocean.positionTimeScale)
-					water:setTextureTimeScale(unpack(state.ocean.textureTimeScale))
+					if state.ocean and state.ocean.hasOcean then
+						water:setYOffset(state.ocean.offset)
+						water:setPositionTimeScale(state.ocean.positionTimeScale)
+						water:setTextureTimeScale(unpack(state.ocean.textureTimeScale))
+					end
 				end
 
 				water:setParent(self.waterParent)
@@ -116,7 +120,7 @@ function EndlessWater:tick()
 
 	local state = self:getProp():getState()
 	for _, water in ipairs(self.waters) do
-		if state.whirlpool.hasWhirlpool then
+		if state.whirlpool and state.whirlpool.hasWhirlpool then
 			water:getMaterial():setShader(EndlessWater.WHIRLPOOL_SHADER)
 		else
 			water:getMaterial():setShader(EndlessWater.WATER_SHADER)

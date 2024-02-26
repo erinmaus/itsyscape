@@ -18,7 +18,7 @@ local LightBeamSceneNode = require "ItsyScape.Graphics.LightBeamSceneNode"
 
 local Lightning = Class(Projectile)
 
-Lightning.DURATION = 0.5
+Lightning.DURATION = 0.75
 Lightning.MAX_AMBIENCE = 0.5
 Lightning.SPAWN_OFFSET = Vector.UNIT_Y * 20
 Lightning.MIN_SPAWN_RADIUS = 10

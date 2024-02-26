@@ -115,8 +115,19 @@ function Ocean:onPlacePlayer(playerPeep, anchor, ship)
 
 	Utility.Peep.setPosition(playerPeep, Vector(x, y, z))
 
-	self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
-	--self:summonCthulhu()
+	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
+		self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
+	elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", playerPeep) then
+		self:summonCthulhu()
+	else
+		playerPeep:removeBehavior(DisabledBehavior)
+
+		Utility.UI.closeAll(playerPeep, nil, { "CutsceneTransition", "DramaticText" })
+
+		-- This usually shouldn't happen...
+		playerPeep:getState():give("KeyItem", "PreTutorial_DefendShip")
+		game:getStage():movePeep(playerPeep, "Sailing_WhalingTemple", "Anchor_Spawn")
+	end
 end
 
 function Ocean:onPlayCutscene(playerPeep, cutscene)

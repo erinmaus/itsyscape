@@ -1,0 +1,10 @@
+{
+	{
+		tileSetID = "Antilogika_AzathothIce",
+		maskID =
+		{
+			default = true,
+		},
+		autoMask = true,
+	},
+}
