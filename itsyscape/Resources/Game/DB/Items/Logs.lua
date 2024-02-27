@@ -1022,3 +1022,24 @@ ItsyScape.Meta.Item {
 	Value = 1,
 	Resource = ItsyScape.Resource.Item "Charcoal"
 }
+
+do
+	local Bush = ItsyScape.Resource.Prop "TentacleBush_Default"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Tentacle bush",
+		Language = "en-US",
+		Resource = Bush
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Better not try and chop that... It just might fight back!",
+		Language = "en-US",
+		Resource = Bush
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Resource = Bush
+	}
+end
