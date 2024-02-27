@@ -1388,6 +1388,7 @@ include "Resources/Game/DB/Maps/PreTutorial/PreTutorial.lua"
 include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 include "Resources/Game/DB/Maps/Sailing.lua"
 include "Resources/Game/DB/Maps/EmptyRuins.lua"
+include "Resources/Game/DB/Maps/Yendorian.lua"
 
 -- Quests
 include "Resources/Game/DB/Quests/IslandsOfMadness/Quest.lua"
