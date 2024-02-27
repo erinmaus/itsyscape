@@ -130,6 +130,18 @@ do
 	}
 end
 
+M["Anchor_InjuredYendorianArcher"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 5,
+		PositionZ = 29,
+		Name = "Anchor_InjuredYendorianArcher",
+		Map = M._MAP,
+		Resource = M["Anchor_InjuredYendorianArcher"]
+	}
+end
+
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
