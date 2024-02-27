@@ -8,6 +8,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <cmath>
 #include "common/Module.h"
 #include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
@@ -105,7 +106,7 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	auto time_uniform = shader->getUniformInfo("scape_Time");
 	if (time_uniform)
 	{
-        *time_uniform->floats = timer_instance->getTime() - time;
+        *time_uniform->floats = std::fmod(timer_instance->getTime() - time, 1.0f);
 		shader->updateUniform(time_uniform, 1);
 	}
 
