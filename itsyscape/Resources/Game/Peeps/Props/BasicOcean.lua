@@ -27,7 +27,7 @@ function BasicOcean:getPropState()
 
 	return {
 		ocean = {
-			hasWater = ocean ~= nil,
+			hasOcean = ocean ~= nil,
 			y = ocean.depth,
 			offset = ocean.offset,
 			positionTimeScale = ocean.positionTimeScale,
