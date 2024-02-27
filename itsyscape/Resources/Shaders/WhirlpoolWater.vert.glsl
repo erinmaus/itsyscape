@@ -1,8 +1,8 @@
 #line 1
 
-uniform float scape_Time;
-uniform vec4 scape_TimeScale;
-uniform float scape_YOffset;
+uniform highp float scape_Time;
+uniform highp vec4 scape_TimeScale;
+uniform highp float scape_YOffset;
 
 const float PI = 3.1415926535;
 

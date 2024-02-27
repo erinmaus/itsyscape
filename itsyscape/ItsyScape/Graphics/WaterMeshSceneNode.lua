@@ -118,10 +118,6 @@ function WaterMeshSceneNode:draw(renderer, delta)
 		shader:send("scape_DiffuseTexture", texture:getResource())
 	end
 
-	if shader:hasUniform("scape_Time") then
-		shader:send("scape_Time", love.timer.getTime())
-	end
-
 	if shader:hasUniform("scape_TimeScale") then
 		shader:send("scape_TimeScale", { self.textureTimeScale.x, self.textureTimeScale.y, self.positionTimeScale, self.width })
 	end
