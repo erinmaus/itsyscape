@@ -23,6 +23,12 @@ void performTransform(
 	weightedBonePosition += m3 * position * VertexBoneWeight.z;
 	weightedBonePosition += m4 * position * VertexBoneWeight.w;
 
+	vec3 weightedNormal = vec3(0.0);
+	weightedNormal += mat3(m1) * VertexNormal * VertexBoneWeight.x;
+	weightedNormal += mat3(m2) * VertexNormal * VertexBoneWeight.y;
+	weightedNormal += mat3(m3) * VertexNormal * VertexBoneWeight.z;
+	weightedNormal += mat3(m4) * VertexNormal * VertexBoneWeight.w;
+
 	localPosition = weightedBonePosition.xyz;
 	projectedPosition = modelViewProjectionMatrix * weightedBonePosition;
 
@@ -30,4 +36,6 @@ void performTransform(
 		VertexDirection,
 		(scape_WorldMatrix * vec4(1.0, 0.0, 0.0, 0.0)).x
 	);
+
+	frag_Normal = normalize(mat3(scape_NormalMatrix) * weightedNormal);
 }
