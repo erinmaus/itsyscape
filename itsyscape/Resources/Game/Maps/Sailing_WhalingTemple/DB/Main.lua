@@ -154,6 +154,95 @@ do
 	}
 end
 
+M["Anchor_Ship"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 1.5,
+		PositionZ = 83,
+		Name = "Anchor_Ship",
+		Map = M._MAP,
+		Resource = M["Anchor_Ship"]
+	}
+end
+
+M["Rowboat"] = ItsyScape.Resource.MapObject.Unique()
+do
+	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 4)
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 69,
+		PositionY = 2,
+		PositionZ = 73,
+		RotationX = rotation.x,
+		RotationY = rotation.y,
+		RotationZ = rotation.z,
+		RotationW = rotation.w,
+		Name = "Rowboat",
+		Map = M._MAP,
+		Resource = M["Rowboat"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Rowboat_Default",
+		MapObject = M["Rowboat"]
+	}
+end
+
+M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 3,
+		PositionZ = 65,
+		Direction = -1,
+		Name = "Orlando",
+		Map = M._MAP,
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		MapObject = M["Orlando"]
+	}
+end
+
+M["Rosalind"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 3,
+		PositionZ = 71,
+		Direction = 1,
+		Name = "Rosalind",
+		Map = M._MAP,
+		Resource = M["Rosalind"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind",
+		MapObject = M["Rosalind"]
+	}
+end
+
+M["Jenkins"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 3,
+		PositionZ = 67,
+		Direction = -1,
+		Name = "Jenkins",
+		Map = M._MAP,
+		Resource = M["Jenkins"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins",
+		MapObject = M["Jenkins"]
+	}
+end
+
 M["TrapDoor_ToMine"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

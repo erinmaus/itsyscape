@@ -34,6 +34,10 @@ function WhalingTemple:onLoad(filename, args, layer)
 		wind = { 15, 0, 0 },
 		heaviness = 1
 	})
+
+	Utility.spawnMapAtAnchor(self, "Ship_IsabelleIsland_PortmasterJenkins", "Anchor_Ship", {
+		jenkins_state = 2
+	})
 end
 
 function WhalingTemple:onZap()
