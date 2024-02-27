@@ -25,6 +25,7 @@ local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
 local Ship = Class(ShipMapPeep)
 Ship.STATE_SQUID   = 0
 Ship.STATE_PIRATES = 1
+Ship.STATE_PORT    = 2
 Ship.COMBAT_HINT = {
 	{
 		position = 'up',
@@ -209,8 +210,10 @@ function Ship:onLoad(filename, arguments, layer)
 	local state = tonumber(arguments['jenkins_state'] or Ship.STATE_SQUID)
 	if state == Ship.STATE_SQUID then
 		self:initSquidEncounter()
-	else
+	elseif state == Ship.STATE_PIRATES then
 		self:initPirateEncounter()
+	elseif state == Ship.STATE_PORT then
+		self:initPort()
 	end
 end
 
@@ -218,6 +221,14 @@ function Ship:initSquidEncounter()
 	local jenkins = Utility.spawnMapObjectAtAnchor(self, "Jenkins_Squid", "Anchor_Jenkins_Spawn")
 	Sailing.setCaptain(self, jenkins:getPeep())
 
+	local sailor1 = Utility.spawnMapObjectAtAnchor(self, "Sailor1", "Anchor_Sailor1_Spawn")
+	Sailing.setCrewMember(self, sailor1:getPeep())
+
+	local sailor2 = Utility.spawnMapObjectAtAnchor(self, "Sailor2", "Anchor_Sailor2_Spawn")
+	Sailing.setCrewMember(self, sailor2:getPeep())
+end
+
+function Ship:initPort()
 	local sailor1 = Utility.spawnMapObjectAtAnchor(self, "Sailor1", "Anchor_Sailor1_Spawn")
 	Sailing.setCrewMember(self, sailor1:getPeep())
 
