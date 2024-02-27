@@ -73,7 +73,7 @@ function NoiseBuilder:sample2D(x, y)
 	return self:sample3D(x, y, 0)
 end
 
-function NoiseBuilder:sample3D(x, y, z, w)
+function NoiseBuilder:sample3D(x, y, z)
 	return self:sample4D(x, y, z, 0)
 end
 
