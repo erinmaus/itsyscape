@@ -1241,7 +1241,7 @@ function DemoApplication:update(delta)
 
 			if scale > 1 and currentCursor ~= self.highDPICursor then
 				love.mouse.setCursor(self.highDPICursor)
-			elseif currentCursor ~= self.defaultCursor then
+			elseif scale <= 1 and currentCursor ~= self.defaultCursor then
 				love.mouse.setCursor(self.defaultCursor)
 			end
 		end
