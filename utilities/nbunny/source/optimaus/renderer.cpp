@@ -106,7 +106,7 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	auto time_uniform = shader->getUniformInfo("scape_Time");
 	if (time_uniform)
 	{
-        *time_uniform->floats = std::fmod(timer_instance->getTime() - time, 1.0f);
+		*time_uniform->floats = timer_instance->getTime() - time;
 		shader->updateUniform(time_uniform, 1);
 	}
 
