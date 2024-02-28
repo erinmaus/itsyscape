@@ -141,7 +141,7 @@ function SpriteManager:draw(scene, camera, delta)
 		return i.z > j.z
 	end)
 
-	local width, height = love.window.getMode()
+	local width, height = love.graphics.getScaledMode()
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
 	love.graphics.ortho(width, height)
