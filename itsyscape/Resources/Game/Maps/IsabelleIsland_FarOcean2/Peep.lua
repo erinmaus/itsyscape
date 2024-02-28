@@ -123,6 +123,7 @@ function Ocean:onPlacePlayer(playerPeep, anchor, ship)
 		playerPeep:removeBehavior(DisabledBehavior)
 
 		Utility.UI.closeAll(playerPeep, nil, { "CutsceneTransition", "DramaticText" })
+		Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
 
 		-- This usually shouldn't happen...
 		playerPeep:getState():give("KeyItem", "PreTutorial_DefendShip")
