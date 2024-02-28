@@ -153,9 +153,8 @@ function SpriteManager:draw(scene, camera, delta)
 	local width, height = love.graphics.getScaledMode()
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
-	love.graphics.translate(paddingX, paddingY)
-	love.graphics.scale(scaleX, scaleY)
-	love.graphics.ortho(scaledWidth, scaledHeight)
+	love.graphics.scale(scaleX, scaleY, 1)
+	love.graphics.ortho(realWidth, realHeight)
 
 	for i = 1, #self.sprites do
 		local sprite = self.sprites[i]
