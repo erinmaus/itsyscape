@@ -124,6 +124,11 @@ function SpriteManager:_isVisible(scene, node)
 end
 
 function SpriteManager:draw(scene, camera, delta)
+	local realWidth, realHeight = love.window.getMode()
+	local scaledWidth, scaledHeight, _, _, paddingX, paddingY = love.graphics.getScaledMode()
+
+	-- I messed something up with the fork in love.window.getMode that screws up
+	-- the camera:apply() call (if camera:apply() is called BEFORE getMode)
 	camera:apply()
 
 	local positions = {}
@@ -132,7 +137,11 @@ function SpriteManager:draw(scene, camera, delta)
 		local transform = sprite:getSceneNode():getTransform():getGlobalDeltaTransform(delta)
 		local position = Vector(transform:transformPoint(0, 0, 0)) + sprite:getOffset()
 
-		positions[sprite] = Vector(love.graphics.project(position.x, position.y, position.z))
+		local x, y, z = love.graphics.project(position:get())
+		x = x / realWidth * scaledWidth
+		y = y / realHeight * scaledHeight
+
+		positions[sprite] = Vector(x, y, z)
 	end
 
 	table.sort(self.sprites, function(a, b)
@@ -144,7 +153,8 @@ function SpriteManager:draw(scene, camera, delta)
 	local width, height = love.graphics.getScaledMode()
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
-	love.graphics.ortho(width, height)
+	love.graphics.translate(paddingX, paddingY)
+	love.graphics.ortho(scaledWidth, scaledHeight)
 
 	for i = 1, #self.sprites do
 		local sprite = self.sprites[i]
