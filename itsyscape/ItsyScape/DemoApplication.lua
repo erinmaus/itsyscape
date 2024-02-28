@@ -1256,16 +1256,18 @@ function DemoApplication:draw(delta)
 	Application.draw(self, delta)
 
 	if self.isScreenshotPending then
+		local _, _, scaleX, scaleY = love.graphics.getScaledMode()
 		local cursor
 		do
-			local _, _, scale = love.graphics.getScaledMode()
-			if scale > 1 then
+			if scaleX > 1 then
 				cursor = love.graphics.newImage("Resources/Game/UI/Cursor@2x.png")
 			else
 				cursor = love.graphics.newImage("Resources/Game/UI/Cursor.png")
 			end
 		end
-		love.graphics.draw(cursor, love.mouse.getPosition())
+
+		local mouseX, mouseY = love.mouse.getPosition()
+		love.graphics.draw(cursor, mouseX, mouseY, 0, scaleX, scaleY)
 
 		self.isScreenshotPending = false
 	end
