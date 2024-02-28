@@ -125,7 +125,7 @@ end
 
 function SpriteManager:draw(scene, camera, delta)
 	local realWidth, realHeight = love.window.getMode()
-	local scaledWidth, scaledHeight, _, _, paddingX, paddingY = love.graphics.getScaledMode()
+	local scaledWidth, scaledHeight, scaleX, scaleY, paddingX, paddingY = love.graphics.getScaledMode()
 
 	-- I messed something up with the fork in love.window.getMode that screws up
 	-- the camera:apply() call (if camera:apply() is called BEFORE getMode)
@@ -154,6 +154,7 @@ function SpriteManager:draw(scene, camera, delta)
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
 	love.graphics.translate(paddingX, paddingY)
+	love.graphics.scale(scaleX, scaleY)
 	love.graphics.ortho(scaledWidth, scaledHeight)
 
 	for i = 1, #self.sprites do
