@@ -66,6 +66,7 @@ function TextButtonStyle:new(t, resources)
 end
 
 function TextButtonStyle:draw(widget)
+	local _, _, scaleX, scaleY = love.graphics.getScaledMode()
 	local width, height = widget:getSize()
 
 	if widget:getIsFocused() and self.states['active'] then
@@ -80,8 +81,8 @@ function TextButtonStyle:draw(widget)
 		local x, y = itsyrealm.graphics.getPseudoScissor()
 		itsyrealm.graphics.intersectPseudoScissor(
 			x + self.padding, y + self.padding,
-			width - self.padding * 2,
-			height - self.padding * 2)
+			(width - self.padding * 2) * scaleX,
+			(height - self.padding * 2) * scaleY)
 		itsyrealm.graphics.applyPseudoScissor()
 		itsyrealm.graphics.translate(self.padding, self.padding)
 	end

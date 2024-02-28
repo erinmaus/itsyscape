@@ -98,7 +98,8 @@ function DemoApplication:new()
 	self:disconnect()
 
 	if not _MOBILE then
-		self.defaultCursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
+		self.defaultCursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 8, 4)
+		self.highDPICursor = love.mouse.newCursor("Resources/Game/UI/Cursor@2x.png", 16, 8)
 
 		local _, blankCursorImageData = self:getGameView():getTranslucentTexture()
 		self.blankCursor = love.mouse.newCursor(blankCursorImageData, 0, 0)
@@ -1236,7 +1237,11 @@ function DemoApplication:update(delta)
 				love.mouse.setCursor(self.blankCursor)
 			end
 		else
-			if currentCursor ~= self.defaultCursor then
+			local _, _, scale = love.graphics.getScaledMode()
+
+			if scale > 1 and currentCursor ~= self.highDPICursor then
+				love.mouse.setCursor(self.highDPICursor)
+			elseif currentCursor ~= self.defaultCursor then
 				love.mouse.setCursor(self.defaultCursor)
 			end
 		end
