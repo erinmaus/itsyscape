@@ -223,6 +223,30 @@ do
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind",
 		MapObject = M["Rosalind"]
 	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = TalkAction
+	}
+
+	M["Rosalind"] {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "follow",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Rosalind_FollowLogic.lua",
+		Resource = M["Rosalind"]
+	}
 end
 
 M["Jenkins"] = ItsyScape.Resource.MapObject.Unique()
@@ -240,6 +264,36 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins",
 		MapObject = M["Jenkins"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Jenkins_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Jenkins"],
+		Name = "Jenkins",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = TalkAction
+	}
+
+	M["Jenkins"] {
+		TalkAction
 	}
 end
 

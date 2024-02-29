@@ -16,7 +16,7 @@ FollowerBehavior.NIL_ID = 0
 
 -- Constructs a FollowerBehavior.
 --
--- * scope: Scope of the follower. Defaults to 'General'. Scope is used to creeate storage
+-- * scope: Scope of the follower. Defaults to 'General'. Scope is used to create storage
 --          for the peep, if necessary.
 -- * id: Index of the follower in the scope. An ID of 0 is invalid.
 -- * playerID: The player ID this follower belongs to.

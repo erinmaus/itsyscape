@@ -13,8 +13,8 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
-local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
-local SailorsCommon = require "Resources.Game.Peeps.Sailors.Common"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 
 local WhalingTemple = Class(Map)
 WhalingTemple.MIN_LIGHTNING_PERIOD = 4
@@ -38,6 +38,64 @@ function WhalingTemple:onLoad(filename, args, layer)
 	Utility.spawnMapAtAnchor(self, "Ship_IsabelleIsland_PortmasterJenkins", "Anchor_Ship", {
 		jenkins_state = 2
 	})
+end
+
+function WhalingTemple:onPlayerEnter(player)
+	local playerPeep = player:getActor():getPeep()
+
+	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ArriveAtTheWhalingTemple", playerPeep) then
+		self:makePlayerTalkToPeep(playerPeep, "IsabelleIsland_Port_PortmasterJenkins")
+	else
+		self:makeRosalindFollowPlayer(playerPeep, true)
+	end
+end
+
+function WhalingTemple:makeRosalindFollowPlayer(playerPeep, teleport)
+	local director = self:getDirector()
+	local rosalind = director:probe(self:getLayerName(), Probe.resource("Peep", "IsabelleIsland_Rosalind"))[1]
+	if not rosalind then
+		return
+	end
+
+	local _, follower = rosalind:addBehavior(FollowerBehavior)
+	follower.playerID = Utility.Peep.getPlayerModel(playerPeep):getID()
+
+	local mashina = rosalind:getBehavior(MashinaBehavior)
+	if mashina then
+		mashina.currentState = "follow"
+	end
+
+	if teleport then
+		Utility.Peep.setPosition(rosalind, Utility.Peep.getPosition(playerPeep) + Vector(0, 0, 0.5))
+	end
+end
+
+function WhalingTemple:makePlayerTalkToPeep(playerPeep, otherPeepResourceName)
+	local director = self:getDirector()
+	local otherPeep = director:probe(self:getLayerName(), Probe.resource("Peep", otherPeepResourceName))[1]
+	if not otherPeep then
+		return
+	end
+
+	local otherPeepMapObject = Utility.Peep.getMapObject(otherPeep)
+	if not otherPeepMapObject then
+		return
+	end
+
+	local actions = Utility.getActions(
+		game,
+		otherPeepMapObject,
+		'world')
+	for _, action in ipairs(actions) do
+		if action.instance:is("talk") then
+			return Utility.UI.openInterface(
+				playerPeep,
+				"DialogBox",
+				true,
+				action.instance,
+				otherPeep)
+		end
+	end
 end
 
 function WhalingTemple:onZap()

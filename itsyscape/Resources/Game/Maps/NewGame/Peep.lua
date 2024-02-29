@@ -55,10 +55,14 @@ function NewGame:onPlayerEnter(player)
 		} }, 6)
 
 		if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
-			print(">>> @Intro_Realm")
 			stage:movePeep(
 				playerPeep,
 				"@Intro_Realm",
+				"Anchor_Spawn")
+		elseif playerPeep:getState():has("KeyItem", "PreTutorial_ArriveAtTheWhalingTemple") then
+			stage:movePeep(
+				playerPeep,
+				"@Sailing_WhalingTemple",
 				"Anchor_Spawn")
 		else
 			stage:movePeep(
