@@ -27,7 +27,12 @@ Quest "PreTutorial" {
 	Step "PreTutorial_Start",
 	Step "PreTutorial_CthulhuRises",
 	Step "PreTutorial_DefendShip",
-	Step "PreTutorial_ArriveAtTheWhaleTemple",
+	Step "PreTutorial_ArriveAtTheWhalingTemple",
+	Step {
+		"PreTutorial_ChoppedTree",
+		"PreTutorial_Fished",
+		"PreTutorial_CookedFish"
+	},
 	Step "PreTutorial_Teleported"
 }
 
@@ -48,7 +53,22 @@ Description "PreTutorial_DefendShip" {
 	after = "Thanks to you and Rosalind, the crew survived the encounter with Cthulhu and the squids. But the ship was still badly damaged..."
 }
 
-Description "PreTutorial_ArriveAtTheWhaleTemple" {
+Description "PreTutorial_ArriveAtTheWhalingTemple" {
 	before = "Jenkins plotted a course for the abandoned Yendorian outpost, the Whaling Temple.",
 	after = "Jenkins and the crew, including you, arrived safely at the abandoned Yendorian output, the Whaling Temple."
+}
+
+Description "PreTutorial_ChoppedTree" {
+	before = "Jenkins asked if you could get some wood to repair the ship.",
+	after = "After chopping a tree, you got some wood to repair Jenkin's ship."
+}
+
+Description "PreTutorial_Fished" {
+	before = "The crew needs some food. Find some fish on the island.",
+	after = "After coming across some sardines, you fished them up. Now they need to be cooked!"
+}
+
+Description "PreTutorial_CookedFish" {
+	before = "The sardines need to be cooked.",
+	after = "You cooked the sardines."
 }
