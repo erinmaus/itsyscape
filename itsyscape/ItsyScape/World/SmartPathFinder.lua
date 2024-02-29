@@ -198,7 +198,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 	if j > 1 then
 		local top = self.map:getTile(i, j - 1)
 		if (top.bottomLeft <= tile.topLeft or
-		    top.bottomRight <= tile.topLeft) and
+		    top.bottomRight <= tile.topRight) and
 		   not top:hasFlag('impassable') and
 		   (not top:hasFlag("wall-bottom") and not tile:hasFlag("wall-top")) and
 		   (not top:hasFlag('door') or (edge.action and edge.action:is("open")))
