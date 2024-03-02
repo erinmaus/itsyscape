@@ -19,6 +19,57 @@ local Tree = BTreeBuilder.Node() {
 			[PLAYER] = B.Output.player
 		},
 
+		Mashina.Try {
+			Mashina.Sequence {
+				Mashina.Try {
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_ChoppedTree"
+					},
+
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_ChoppedTree"
+					}
+				},
+
+				Mashina.Peep.Step {
+					Mashina.Navigation.EnteredPassage {
+						peep = PLAYER,
+						passage = "Passage_ToFishingArea"
+					},
+
+					Mashina.Peep.Talk {
+						message = "Hey, don't go too far yet!",
+						duration = 4
+					},
+
+					Mashina.Player.Disable {
+						player = PLAYER
+					},
+
+					Mashina.Player.Walk {
+						player = PLAYER,
+						target = "Anchor_FromFishingArea"
+					},
+
+					Mashina.Peep.Wait {
+						peep = PLAYER
+					},
+
+					Mashina.Player.Enable {
+						player = PLAYER,
+					},
+
+					Mashina.Player.Dialog {
+						peep = PLAYER
+					}
+				}
+			}
+		},
+
 		Mashina.Success {
 			Mashina.Sequence {
 				Mashina.Invert {

@@ -28,11 +28,18 @@ Quest "PreTutorial" {
 	Step "PreTutorial_CthulhuRises",
 	Step "PreTutorial_DefendShip",
 	Step "PreTutorial_ArriveAtTheWhalingTemple",
+
 	Step {
+		"PreTutorial_FoundTrees",
 		"PreTutorial_ChoppedTree",
+		"Pretutorial_CraftedWeapon",
+	},
+
+	Step {
 		"PreTutorial_Fished",
 		"PreTutorial_CookedFish"
 	},
+
 	Step "PreTutorial_Teleported"
 }
 
@@ -58,9 +65,19 @@ Description "PreTutorial_ArriveAtTheWhalingTemple" {
 	after = "Jenkins and the crew, including you, arrived safely at the abandoned Yendorian output, the Whaling Temple."
 }
 
+Description "PreTutorial_FoundTrees" {
+	before = "Jenkins asked if you could get some wood to repair the ship. Find some suitable trees.",
+	after = "While exploring the island, you and Rosalind discover some shadow fir trees."
+}
+
 Description "PreTutorial_ChoppedTree" {
-	before = "Jenkins asked if you could get some wood to repair the ship.",
+	before = "Rosalind gave you an axe to chop the trees.",
 	after = "After chopping a tree, you got some wood to repair Jenkin's ship."
+}
+
+Description "PreTutorial_CraftedWeapon" {
+	before = "Looks like you can craft some weapons from the wood.",
+	after = "You crafted some shadow logs into a weapon."
 }
 
 Description "PreTutorial_Fished" {

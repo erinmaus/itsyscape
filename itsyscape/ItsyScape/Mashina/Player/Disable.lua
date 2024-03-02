@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Peep/Wait.lua
+-- ItsyScape/Mashina/Player/Disable.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,22 +8,17 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
-local Probe = require "ItsyScape.Peep.Probe"
 local Utility = require "ItsyScape.Game.Utility"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 
-local Wait = B.Node("Wait")
-Wait.PEEP = B.Reference()
-Wait.QUEUE = B.Reference()
+local Disable = B.Node("Disable")
+Disable.PLAYER = B.Reference()
 
-function Wait:update(mashina, state, executor)
-	local peep = state[self.PEEP] or mashina
-	local q = state[self.QUEUE]
-
-	if peep:getCommandQueue(q):getIsPending() then
-		return B.Status.Working
-	end
+function Disable:update(mashina, state, executor)
+	local player = state[self.PLAYER]
+	player:addBehavior(DisabledBehavior)
 
 	return B.Status.Success
 end
 
-return Wait
+return Disable

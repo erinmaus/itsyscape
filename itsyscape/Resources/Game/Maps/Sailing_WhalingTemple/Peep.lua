@@ -15,6 +15,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.V2Common"
 
 local WhalingTemple = Class(Map)
 WhalingTemple.MIN_LIGHTNING_PERIOD = 4
@@ -48,6 +49,42 @@ function WhalingTemple:onPlayerEnter(player)
 	else
 		self:makeRosalindFollowPlayer(playerPeep, true)
 	end
+
+	self:prepareQuest(playerPeep)
+end
+
+function WhalingTemple:prepareQuest(playerPeep)
+	Utility.Quest.listenForKeyItemHint(playerPeep, "PreTutorial")
+
+	Utility.Quest.listenForKeyItem(playerPeep, "PreTutorial_FoundTrees", function()
+		local trees = self:getDirector():probe(
+			self:getLayerName(),
+			Probe.resource("Prop", "ShadowTree_Stormy"))
+
+		table.sort(trees, function(a, b)
+			local aDistance = (Utility.Peep.getPosition(a) - Utility.Peep.getPosition(playerPeep)):getLengthSquared()
+			local bDistance = (Utility.Peep.getPosition(b) - Utility.Peep.getPosition(playerPeep)):getLengthSquared()
+
+			return aDistance < bDistance
+		end)
+
+		local tree = trees[1]
+		if tree then
+			local position = Utility.Peep.getPosition(tree)
+			local treeTarget = Utility.spawnPropAtPosition(tree, "Target_Default", position.x, position.y, position.z)
+			treeTarget:setTarget(tree, _MOBILE and "Tap the tree to chop it!" or "Click on the tree to chop it!")
+
+			self:listenForAction(
+				"Chop",
+				treeTarget,
+				"You'll keep chopping the tree until the tree is felled.",
+				_MOBILE and "You only need to tap once to chop!" or "You only need to click once to chop!")
+		end
+	end)
+
+	Utility.Quest.listenForItem(player, "ShadowLogs", function()
+		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
+	end)
 end
 
 function WhalingTemple:makeRosalindFollowPlayer(playerPeep, teleport)
