@@ -458,7 +458,7 @@ function ActorView:_doApplySkin(slotNodes)
 						end
 
 						-- Only the client's player's lights should be global.
-						if self.actor == self.game:getGame():getPlayer():getActor() then
+						if self.game:getGame():getPlayer() and self.actor == self.game:getGame():getPlayer():getActor() then
 							outputLight:setIsGlobal(true)
 						end
 						
@@ -722,12 +722,9 @@ function ActorView:getLocalBonePosition(boneName, position, rotation)
 		return Vector.ZERO
 	end
 
-	local inverseBindPoseTransform = bone:getInverseBindPose()
-
 	local composedTransform = love.math.newTransform()
 	composedTransform:applyQuaternion(rotation:get())
 	composedTransform:apply(boneTransform)
-	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
 
 	return Vector(composedTransform:transformPoint(position:get()))
 end
@@ -801,6 +798,10 @@ function ActorView:updateAnimations(delta)
 		end
 	end
 
+	if self.localTransforms then
+		transforms:copy(self.localTransforms)
+	end
+
 	for _, slotNodes in pairs(self.skins) do
 		for i = 1, #slotNodes do
 			if slotNodes[i].particles then
@@ -823,10 +824,6 @@ function ActorView:updateAnimations(delta)
 				end
 			end
 		end
-	end
-
-	if self.localTransforms then
-		transforms:copy(self.localTransforms)
 	end
 
 	local skeleton = self.animatable:getSkeleton()

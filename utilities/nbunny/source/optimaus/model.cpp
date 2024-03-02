@@ -183,6 +183,26 @@ void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 		}
 	}
 
+	// This was a dumb decision a while back.
+	// 3D skinned models assume a specific rotation before rendering.
+	// Override the default scape_World etc with this rotated value.
+	auto world = glm::rotate(get_transform().get_global(delta), (float)-LOVE_M_PI / 2.0f, glm::vec3(1, 0, 0));
+
+	auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
+	if (world_matrix_uniform)
+	{
+		std::memcpy(world_matrix_uniform->floats, glm::value_ptr(world), sizeof(glm::mat4));
+		shader->updateUniform(world_matrix_uniform, 1);
+	}
+
+	auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
+	if (normal_matrix_uniform)
+	{
+		auto normal_matrix = glm::inverse(glm::transpose(world));
+		std::memcpy(normal_matrix_uniform->floats, glm::value_ptr(normal_matrix), sizeof(glm::mat4));
+		shader->updateUniform(normal_matrix_uniform, 1);
+	}
+
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
 	love::Matrix4 matrix(glm::value_ptr(get_transform().get_global(delta)));

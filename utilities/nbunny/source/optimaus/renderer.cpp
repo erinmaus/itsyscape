@@ -110,6 +110,23 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		shader->updateUniform(time_uniform, 1);
 	}
 
+	auto world = node.get_transform().get_global(delta);
+
+	auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
+	if (world_matrix_uniform)
+	{
+		std::memcpy(world_matrix_uniform->floats, glm::value_ptr(world), sizeof(glm::mat4));
+		shader->updateUniform(world_matrix_uniform, 1);
+	}
+
+	auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
+	if (normal_matrix_uniform)
+	{
+		auto normal_matrix = glm::inverse(glm::transpose(world));
+		std::memcpy(normal_matrix_uniform->floats, glm::value_ptr(normal_matrix), sizeof(glm::mat4));
+		shader->updateUniform(normal_matrix_uniform, 1);
+	}
+
 	if (camera)
 	{
 		auto view = camera->get_view();
