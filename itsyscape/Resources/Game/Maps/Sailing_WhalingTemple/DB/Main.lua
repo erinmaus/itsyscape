@@ -373,3 +373,87 @@ do
 		Resource = M["BossDoor"]
 	}
 end
+
+M["Maggot1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29,
+		PositionY = 4,
+		PositionZ = 51,
+		Direction = -1,
+		Name = "Maggot1",
+		Map = M._MAP,
+		Resource = M["Maggot1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_Maggot",
+		MapObject = M["Maggot1"]
+	}
+end
+
+M["Maggot2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 4,
+		PositionZ = 45,
+		Direction = 1,
+		Name = "Maggot2",
+		Map = M._MAP,
+		Resource = M["Maggot2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_Maggot",
+		MapObject = M["Maggot2"]
+	}
+end
+
+M["Maggot3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49,
+		PositionY = 4,
+		PositionZ = 49,
+		Direction = -1,
+		Name = "Maggot3",
+		Map = M._MAP,
+		Resource = M["Maggot3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_Maggot",
+		MapObject = M["Maggot3"]
+	}
+end
+
+M["Passage_ToFishingArea"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_ToFishingArea",
+		Map = M._MAP,
+		Resource = M["Passage_ToFishingArea"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 20,
+		Z1 = 26,
+		X2 = 22,
+		Z2 = 29,
+		Map = M._MAP,
+		Resource = M["Passage_ToFishingArea"]
+	}
+end
+
+M["Anchor_FromFishingArea"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 4,
+		PositionZ = 59,
+		Name = "Anchor_FromFishingArea",
+		Map = M._MAP,
+		Resource = M["Anchor_FromFishingArea"]
+	}
+end

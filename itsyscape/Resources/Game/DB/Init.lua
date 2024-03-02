@@ -190,7 +190,8 @@ Game "ItsyScape"
 		Peep = Meta.TYPE_RESOURCE,
 		MapObject = Meta.TYPE_RESOURCE,
 		DoesNotDespawn = Meta.TYPE_INTEGER,
-		DoesNotRespawn = Meta.TYPE_INTEGER
+		DoesNotRespawn = Meta.TYPE_INTEGER,
+		DoesRespawn = Meta.TYPE_INTEGER
 	}
 
 	Meta "MapObjectGroup" {
@@ -203,6 +204,12 @@ Game "ItsyScape"
 		Name = Meta.TYPE_TEXT,
 		Action = Meta.TYPE_ACTION,
 		Map = Meta.TYPE_RESOURCE
+	}
+
+	Meta "NamedPeepAction" {
+		Name = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION,
+		Peep = Meta.TYPE_RESOURCE
 	}
 
 	ResourceType "Raid"

@@ -5090,6 +5090,26 @@ function Utility.Quest.listenForItem(peep, itemID, callback)
 	peep:listen('move', silence)
 end
 
+function Utility.Quest._showKeyItemHint(peep)
+	local targetTime = love.timer.getTime() + 2.5
+
+	Utility.UI.openInterface(
+		peep,
+		"TutorialHint",
+		false,
+		"QuestProgressNotification",
+		nil,
+		function()
+			return love.timer.getTime() > targetTime
+		end)
+end
+
+function Utility.Quest.listenForKeyItemHint(peep, quest)
+	Utility.Quest.listenForKeyItem(peep, string.format("%s_(.+)", quest), function()
+		Utility.Quest._showKeyItemHint(peep)
+	end)
+end
+
 function Utility.Quest.listenForKeyItem(peep, keyItemID, callback)
 	local listen, silence
 

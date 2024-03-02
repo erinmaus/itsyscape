@@ -559,7 +559,14 @@ do
 	local Maggot = ItsyScape.Resource.Peep "PreTutorial_Maggot"
 
 	ItsyScape.Resource.Peep "PreTutorial_Maggot" {
-		ItsyScape.Action.Attack()
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "PreTutorial_Maggot_Primary",
+				Count = 1
+			}
+		}
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -581,7 +588,7 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(5),
 		Resource = Maggot
 	}
 
@@ -596,5 +603,20 @@ do
 		DefenseRanged = -50,
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Maggot
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Maggot/Maggot_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = Maggot
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Bait",
+		Weight = 500,
+		Count = 10,
+		Range = 5,
+		Resource = ItsyScape.Resource.DropTable "PreTutorial_Maggot_Primary"
 	}
 end
