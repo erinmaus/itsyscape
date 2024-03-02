@@ -242,6 +242,26 @@ do
 		TalkAction
 	}
 
+	local NamedTalkActionTrees = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Trees_en-US.lua",
+		Language = "en-US",
+		Action = NamedTalkActionTrees
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = NamedTalkActionTrees
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "TalkAboutTrees",
+		Action = NamedTalkActionTrees,
+		Peep = M["Rosalind"]
+	}
+
 	ItsyScape.Meta.PeepMashinaState {
 		State = "follow",
 		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Rosalind_FollowLogic.lua",
@@ -437,12 +457,30 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectRectanglePassage {
-		X1 = 20,
-		Z1 = 26,
-		X2 = 22,
-		Z2 = 29,
+		X1 = 38,
+		Z1 = 50,
+		X2 = 44,
+		Z2 = 58,
 		Map = M._MAP,
 		Resource = M["Passage_ToFishingArea"]
+	}
+end
+
+M["Passage_Trees"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_Trees",
+		Map = M._MAP,
+		Resource = M["Passage_Trees"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 32,
+		Z1 = 60,
+		X2 = 50,
+		Z2 = 76,
+		Map = M._MAP,
+		Resource = M["Passage_Trees"]
 	}
 end
 
@@ -451,7 +489,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 41,
 		PositionY = 4,
-		PositionZ = 59,
+		PositionZ = 63,
 		Name = "Anchor_FromFishingArea",
 		Map = M._MAP,
 		Resource = M["Anchor_FromFishingArea"]

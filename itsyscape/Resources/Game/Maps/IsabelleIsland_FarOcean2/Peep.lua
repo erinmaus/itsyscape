@@ -98,8 +98,6 @@ function Ocean:onLoad(...)
 end
 
 function Ocean:onPlayerEnter(player)
-	Utility.Quest.listenForKeyItemHint(player, "PreTutorial")
-
 	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.soakedLog)
 end
 
@@ -108,6 +106,8 @@ function Ocean:onPlayerLeave(player)
 end
 
 function Ocean:onPlacePlayer(playerPeep, anchor, ship)
+	Utility.Quest.listenForKeyItemHint(playerPeep, "PreTutorial")
+
 	local layer = ship:getLayer()
 	Utility.Peep.setLayer(playerPeep, layer)
 

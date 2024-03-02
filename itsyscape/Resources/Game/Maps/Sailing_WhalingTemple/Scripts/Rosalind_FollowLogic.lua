@@ -13,19 +13,67 @@ local Mashina = require "ItsyScape.Mashina"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 
 local PLAYER = B.Reference("Rosalind", "PLAYER")
+local CURRENT_PASSAGE = B.Reference("Rosalind", "CURRENT_PASSAGE")
+local ENTERED_PASSAGE = B.Reference("Rosalind", "ENTERED_PASSAGE")
+
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Peep.GetPlayer {
 			[PLAYER] = B.Output.player
 		},
 
+		Mashina.Success {
+			Mashina.Try {
+				Mashina.Sequence {
+					Mashina.Navigation.EnteredPassage {
+						peep = PLAYER,
+						[CURRENT_PASSAGE] = B.Output.passage
+					},
+
+					Mashina.Set {
+						value = true,
+						[ENTERED_PASSAGE] = B.Output.result
+					}
+				},
+
+				Mashina.Set {
+					value = false,
+					[ENTERED_PASSAGE] = B.Output.result
+				}
+			}
+		},
+
 		Mashina.Try {
+			Mashina.Sequence {
+				Mashina.Player.IsNextQuestStep {
+					player = PLAYER,
+					quest = "PreTutorial",
+					step = "PreTutorial_FoundTrees"
+				},
+
+				Mashina.Step {
+					Mashina.Compare.Equal {
+						left = CURRENT_PASSAGE,
+						right = "Passage_Trees"
+					},
+
+					Mashina.Check {
+						condition = ENTERED_PASSAGE,
+					},
+
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutTrees",
+						player = PLAYER
+					}
+				}
+			},
+
 			Mashina.Sequence {
 				Mashina.Try {
 					Mashina.Player.IsNextQuestStep {
 						player = PLAYER,
 						quest = "PreTutorial",
-						step = "PreTutorial_ChoppedTree"
+						step = "PreTutorial_FoundTrees"
 					},
 
 					Mashina.Player.IsNextQuestStep {
@@ -35,10 +83,14 @@ local Tree = BTreeBuilder.Node() {
 					}
 				},
 
-				Mashina.Peep.Step {
-					Mashina.Navigation.EnteredPassage {
-						peep = PLAYER,
-						passage = "Passage_ToFishingArea"
+				Mashina.Step {
+					Mashina.Compare.Equal {
+						left = CURRENT_PASSAGE,
+						right = "Passage_ToFishingArea"
+					},
+
+					Mashina.Check {
+						condition = ENTERED_PASSAGE,
 					},
 
 					Mashina.Peep.Talk {
@@ -64,29 +116,30 @@ local Tree = BTreeBuilder.Node() {
 					},
 
 					Mashina.Player.Dialog {
-						peep = PLAYER
+						named_action = "TalkAboutTrees",
+						player = PLAYER
 					}
 				}
-			}
-		},
+			},
 
-		Mashina.Success {
-			Mashina.Sequence {
-				Mashina.Invert {
-					Mashina.Navigation.TargetMoved {
-						peep = PLAYER
-					}
-				},
-
-				Mashina.Step {
-					Mashina.Navigation.WalkToPeep {
-						peep = PLAYER,
-						distance = 2,
-						as_close_as_possible = false
+			Mashina.Success {
+				Mashina.Sequence {
+					Mashina.Invert {
+						Mashina.Navigation.TargetMoved {
+							peep = PLAYER
+						}
 					},
 
-					Mashina.Repeat {
-						Mashina.Peep.Wait
+					Mashina.Step {
+						Mashina.Navigation.WalkToPeep {
+							peep = PLAYER,
+							distance = 2,
+							as_close_as_possible = false
+						},
+
+						Mashina.Repeat {
+							Mashina.Peep.Wait
+						}
 					}
 				}
 			}
