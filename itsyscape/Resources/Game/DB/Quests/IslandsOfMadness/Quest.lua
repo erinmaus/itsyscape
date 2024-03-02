@@ -29,16 +29,12 @@ Quest "PreTutorial" {
 	Step "PreTutorial_DefendShip",
 	Step "PreTutorial_ArriveAtTheWhalingTemple",
 
-	Step {
-		"PreTutorial_FoundTrees",
-		"PreTutorial_ChoppedTree",
-		"Pretutorial_CraftedWeapon",
-	},
+	Step "PreTutorial_FoundTrees",
+	Step "PreTutorial_ChoppedTree",
+	Step "PreTutorial_CraftedWeapon",
 
-	Step {
-		"PreTutorial_Fished",
-		"PreTutorial_CookedFish"
-	},
+	Step "PreTutorial_Fished",
+	Step "PreTutorial_CookedFish",
 
 	Step "PreTutorial_Teleported"
 }

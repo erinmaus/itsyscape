@@ -37,7 +37,7 @@ function Walk:update(mashina, state, executor)
 	elseif Class.isCompatibleType(target, Peep) then
 		position = Utility.Peep.getPosition(target)
 	elseif type(target) == "string" then
-		local map = Utility.Peep.getMapResource(peep)
+		local map = Utility.Peep.getMapResource(player)
 		local game = mashina:getDirector():getGameInstance()
 
 		position = Vector(Utility.Map.getAnchorPosition(game, map, target))
@@ -50,7 +50,7 @@ function Walk:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local i, j = map:getTileAt(position.x, 0, position.z)
+	local _, i, j = map:getTileAt(position.x, position.z)
 	local k = Utility.Peep.getLayer(player)
 
 	local s
@@ -60,7 +60,7 @@ function Walk:update(mashina, state, executor)
 		self.k = k
 		self.walk = coroutine.wrap(Utility.Peep.walk)
 
-		s = self.walk(mashina, i, j, k, state[self.DISTANCE], {
+		s = self.walk(player, i, j, k, state[self.DISTANCE], {
 			asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE],
 			yield = true,
 			isCutscene = true

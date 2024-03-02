@@ -77,6 +77,7 @@ function Dialog:update(mashina, state, executor)
 		if Utility.UI.isOpen(player, "DialogBox") then
 			return B.Status.Working
 		else
+			state[self.OPENED] = nil
 			return B.Status.Success
 		end
 	end

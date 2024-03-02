@@ -72,17 +72,37 @@ function WhalingTemple:prepareQuest(playerPeep)
 		if tree then
 			local position = Utility.Peep.getPosition(tree)
 			local treeTarget = Utility.spawnPropAtPosition(tree, "Target_Default", position.x, position.y, position.z)
-			treeTarget:setTarget(tree, _MOBILE and "Tap the tree to chop it!" or "Click on the tree to chop it!")
+			treeTarget = treeTarget and treeTarget:getPeep()
 
-			self:listenForAction(
-				"Chop",
-				treeTarget,
-				"You'll keep chopping the tree until the tree is felled.",
-				_MOBILE and "You only need to tap once to chop!" or "You only need to click once to chop!")
+			if treeTarget then
+				treeTarget:setTarget(tree, _MOBILE and "Tap the tree to chop it!" or "Click on the tree to chop it!")
+
+				PreTutorialCommon.listenForAction(
+					playerPeep,
+					"Chop",
+					treeTarget,
+					"You'll keep chopping the tree until the tree is felled.",
+					_MOBILE and "You only need to tap once to chop!" or "You only need to click once to chop!")
+			end
 		end
 	end)
 
-	Utility.Quest.listenForItem(player, "ShadowLogs", function()
+	Utility.Quest.listenForItem(playerPeep, "ShadowLogs", function()
+		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
+	end)
+
+	Utility.Quest.listenForItem(playerPeep, "ToyLongsword", function()
+		playerPeep:getState():give("KeyItem", "PreTutorial_CraftedWeapon")
+		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
+	end)
+
+	Utility.Quest.listenForItem(playerPeep, "ToyBoomerang", function()
+		playerPeep:getState():give("KeyItem", "PreTutorial_CraftedWeapon")
+		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
+	end)
+
+	Utility.Quest.listenForItem(playerPeep, "ToyWand", function()
+		playerPeep:getState():give("KeyItem", "PreTutorial_CraftedWeapon")
 		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
 	end)
 end

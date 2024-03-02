@@ -1,9 +1,12 @@
 speaker "Rosalind"
 
-if not _TARGET:getState():has("KeyItem", "PreTutorial_ChoppedTree") then
-	message "Looks like there's plenty of trees to chop for wood."
-elseif not _TARGET:getState():has("KeyItem", "PreTutorial_Fished") then
-	message "We should find some fish."
-elseif not _TARGET:getState():has("KeyItem", "PreTutorial_CookedFish") then
-	message "We should cook the fish."
+--if not _TARGET:getState():has("KeyItem", "PreTutorial_FoundTrees") then
+if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_FoundTrees", _TARGET) and
+   Utility.Peep.isInPassage(_TARGET, "Passage_Trees")
+then
+	defer "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Trees_en-US.lua"
+elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CraftedWeapon", _TARGET) then
+	defer 
+else
+	message "Let's explore!"
 end

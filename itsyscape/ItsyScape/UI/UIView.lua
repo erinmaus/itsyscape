@@ -817,9 +817,10 @@ function itsyrealm.graphics.getPseudoScissor()
 	return unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
 end
 
-function itsyrealm.graphics.drawItem(handle, width, height, icon, count, color, note, disabled, active)
+function itsyrealm.graphics.drawItem(handle, width, height, icon, itemID, count, color, note, disabled, active)
 	local key = string.format(
-		"%dx%d_%s_%s_%s_%s",
+		"%s_%dx%d_%s_%s_%s_%s",
+		itemID,
 		width,
 		height,
 		count,
@@ -986,8 +987,8 @@ end
 
 itsyrealm.graphics.disabled.clearPseudoScissor = itsyrealm.graphics.clearPseudoScissor
 
-function itsyrealm.graphics.disabled.drawItem(_, ...)
-	itsyrealm.graphics.impl.drawItemIcon(...)
+function itsyrealm.graphics.disabled.drawItem(_, width, height, icon, id, ...)
+	itsyrealm.graphics.impl.drawItemIcon(width, height, icon, ...)
 end
 
 function itsyrealm.graphics.disabled.resetPseudoScissor()

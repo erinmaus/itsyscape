@@ -54,13 +54,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Toy longsword",
+		Value = "Upcoming hero's longsword",
 		Language = "en-US",
 		Resource = Item
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Good for sparring practice if you're a child.",
+		Value = "An unusually effective wooden longsword. Bit too dangerous for sparring practice...",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "ToyLongsword"
 	}
@@ -137,13 +137,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Toy wand",
+		Value = "Upcoming hero's wand",
 		Language = "en-US",
 		Resource = Item
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "With enough imagination, even a twig can be a weapon.",
+		Value = "A wand with an innate spell of Yendorian origin; perfect for an upcoming hero!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "ToyWand"
 	}
@@ -221,13 +221,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Toy boomerang",
+		Value = "Upcoming hero's boomerang",
 		Language = "en-US",
 		Resource = Item
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Still hurts, just not much.",
+		Value = "Don't need to worry about ammo with a boomerang! It always comes back!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "ToyBoomerang"
 	}

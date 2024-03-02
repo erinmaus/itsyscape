@@ -1009,7 +1009,7 @@ function Utility.UI.tutorial(target, tips, done)
 				false,
 				tips[index].id,
 				tips[index].message,
-				tips[index].open(target),
+				tips[index].open(target, {}),
 				{ position = tips[index].position, style = tips[index].style },
 				after)
 		else
@@ -2699,6 +2699,34 @@ function Utility.Peep.getTile(peep)
 	local tile, i, j = map:getTileAt(position.x, position.z)
 
 	return i, j, k, tile
+end
+
+function Utility.Peep.isInPassage(peep, passage)
+	local position = Utility.Peep.getPosition(peep)
+	local mapResource = Utility.Peep.getMapResource(peep)
+
+	local gameDB = peep:getDirector():getGameDB()
+	local passages = gameDB:getRecords("MapObjectRectanglePassage", {
+		Map = mapResource
+	})
+	for i = 1, #passages do
+		local x1, z1 = passages[i]:get("X1"), passages[i]:get("Z1")
+		local x2, z2 = passages[i]:get("X2"), passages[i]:get("Z2")
+		if position.x >= x1 and position.x <= x2 and
+		   position.z >= z1 and position.z <= z2
+		then
+			local mapObject = gameDB:getRecord("MapObjectReference", {
+				Map = mapResource,
+				Resource = passages[i]:get("Resource")
+			})
+
+			if mapObject:get("Name") == passage then
+				return true
+			end
+		end
+	end
+
+	return false
 end
 
 function Utility.Peep.getTileRotation(peep)

@@ -15,7 +15,7 @@ local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Step {
 			Mashina.Navigation.Wander {
-				radial_distance = 16
+				radial_distance = 4
 			},
 
 			Mashina.Peep.Wait
