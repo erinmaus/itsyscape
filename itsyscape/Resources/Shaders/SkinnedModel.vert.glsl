@@ -13,11 +13,12 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	vec4 weightedBonePosition = vec4(0.0);
 	mat4 m1 = scape_Bones[int(VertexBoneIndex.x) - 1];
 	mat4 m2 = scape_Bones[int(VertexBoneIndex.y) - 1];
 	mat4 m3 = scape_Bones[int(VertexBoneIndex.z) - 1];
 	mat4 m4 = scape_Bones[int(VertexBoneIndex.w) - 1];
+
+	vec4 weightedBonePosition = vec4(0.0);
 	weightedBonePosition += m1 * position * VertexBoneWeight.x;
 	weightedBonePosition += m2 * position * VertexBoneWeight.y;
 	weightedBonePosition += m3 * position * VertexBoneWeight.z;
@@ -37,5 +38,5 @@ void performTransform(
 		(scape_WorldMatrix * vec4(1.0, 0.0, 0.0, 0.0)).x
 	);
 
-	frag_Normal = normalize(mat3(scape_NormalMatrix) * weightedNormal);
+	frag_Normal = normalize(mat3(scape_NormalMatrix) * normalize(weightedNormal));
 }
