@@ -1769,18 +1769,20 @@ function ProCombatStatusHUD:updateSpells()
 		local spell = spells[i]
 		local button = self.spellButtons[i]
 
-		if spell.active then
-			button:getChildAt(1):setSpellActive(true)
+		if spell and button then
+			if spell.active then
+				button:getChildAt(1):setSpellActive(true)
 
-			radialSpellsButtonIcon:setSpellID(spell.id)
-			radialSpellsButtonIcon:setSpellActive(true)
+				radialSpellsButtonIcon:setSpellID(spell.id)
+				radialSpellsButtonIcon:setSpellActive(true)
 
-			hasActiveSpell = true
-		else
-			button:getChildAt(1):setSpellActive(false)
+				hasActiveSpell = true
+			else
+				button:getChildAt(1):setSpellActive(false)
+			end
+
+			button:setID("ProCombatStatusHUD-Spell" .. spell.id)
 		end
-
-		button:setID("ProCombatStatusHUD-Spell" .. spell.id)
 	end
 
 	if not hasActiveSpell then

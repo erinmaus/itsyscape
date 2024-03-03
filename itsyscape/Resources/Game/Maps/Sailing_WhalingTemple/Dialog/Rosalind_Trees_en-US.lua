@@ -41,7 +41,7 @@ if not _TARGET:getState():has("KeyItem", "PreTutorial_FoundTrees") then
 			"Make some room and talk to me again."
 		}
 
-		_TARGET:removeBehavior(DisabledBehavior)
+		defer "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Drop_en-US.lua"
 	end
 elseif not _TARGET:getState():has("KeyItem", "PreTutorial_ChoppedTree") then
 	_TARGET:addBehavior(DisabledBehavior)
@@ -67,7 +67,7 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_ChoppedTree") then
 				"Make some room by dropping an item and then talk to me."
 			}
 
-			_TARGET:removeBehavior(DisabledBehavior)
+			defer "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Drop_en-US.lua"
 		end
 
 		_TARGET:getState():give("KeyItem", "PreTutorial_ChoppedTree")
@@ -123,7 +123,7 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_CraftedWeapon") then
 			"Make some room by dropping an item and then talk to me."
 		}
 
-		_TARGET:removeBehavior(DisabledBehavior)
+		defer "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Drop_en-US.lua"
 	end
 else
 	message {

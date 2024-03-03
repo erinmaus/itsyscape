@@ -417,7 +417,12 @@ function PlayerInventory:probe(button)
 			end
 		})
 
-		self:getView():probe(actions)
+		local pokeMenu = self:getView():probe(actions)
+		pokeMenu.onClose:register(function()
+			self:sendPoke("probe", nil, { index = false })
+		end)
+
+		self:sendPoke("probe", nil, { index = index })
 	end
 end
 

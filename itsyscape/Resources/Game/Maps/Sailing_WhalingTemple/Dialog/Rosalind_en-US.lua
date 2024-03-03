@@ -52,6 +52,9 @@ if not gaveAllItems then
 		"but your inventory is full.",
 		"Make some space and talk to me again."
 	}
+
+	defer "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Drop_en-US.lua"
+	return
 end
 
 if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_FoundTrees", _TARGET) and

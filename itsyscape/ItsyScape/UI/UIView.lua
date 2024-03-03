@@ -1237,6 +1237,8 @@ function UIView:probe(actions)
 
 		self.root:addChild(self.pokeMenu)
 	end
+
+	return self.pokeMenu
 end
 
 function UIView:isPokeMenu(widget)

@@ -80,12 +80,14 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_Fished") then
 			"Here's a %item{fishing rod}.",
 			"If you run out of %item{bait}, just kill more maggots!"
 		}
+
+		_TARGET:removeBehavior(DisabledBehavior)
 	else
 		message {
 			"Your bag is full!",
 			"Make some room so I can give you a %item{fishing rod}."
 		}
-	end
 
-	_TARGET:removeBehavior(DisabledBehavior)
+		defer "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Drop_en-US.lua"
+	end
 end
