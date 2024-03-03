@@ -601,6 +601,9 @@ do
 		DefenseCrush = -50,
 		DefenseMagic = -50,
 		DefenseRanged = -50,
+		StrengthMelee = -100,
+		StrengthMagic = -100,
+		StrengthRanged = -100,
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Maggot
 	}

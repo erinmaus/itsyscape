@@ -5,6 +5,10 @@ local INVENTORY_FLAGS = {
 	['item-inventory'] = true
 }
 
+local EQUIPMENT_FLAGS = {
+	['item-inventory'] = true
+}
+
 speaker "Rosalind"
 
 if not _TARGET:getState():has("KeyItem", "PreTutorial_FoundTrees") then
@@ -15,7 +19,22 @@ if not _TARGET:getState():has("KeyItem", "PreTutorial_FoundTrees") then
 		"These might just work to repair the ship."
 	}
 
-	if not _TARGET:getState():give("Item", "BronzeHatchet", 1, INVENTORY_FLAGS) then
+	if _TARGET:getState():has("Item", "BronzeHatchet", 1, INVENTORY_FLAGS) or
+	   _TARGET:getState():has("Item", "BronzeHatchet", 1, EQUIPMENT_FLAGS) or
+	   _TARGET:getState():give("Item", "BronzeHatchet", 1, INVENTORY_FLAGS)
+	then
+		message {
+			"Here's a bronze hatchet.",
+			"Let's cut down some of those trees!"
+		}
+
+		message "Let me show you how to equip that axe..."
+
+		PreTutorialCommon.startRibbonTutorial(_TARGET, PreTutorialCommon.EQUIP_BRONZE_HATCHET, "PlayerInventory", function()
+			_TARGET:getState():give("KeyItem", "PreTutorial_FoundTrees")
+			_TARGET:removeBehavior(DisabledBehavior)
+		end)
+	else
 		message {
 			"Somehow your bag is full!",
 			"I can't give you a bronze hatchet.",
@@ -23,16 +42,6 @@ if not _TARGET:getState():has("KeyItem", "PreTutorial_FoundTrees") then
 		}
 
 		_TARGET:removeBehavior(DisabledBehavior)
-	else
-		message {
-			"Here's a bronze hatchet.",
-			"Let's cut down some of those trees!"
-		}
-
-		PreTutorialCommon.startRibbonTutorial(_TARGET, PreTutorialCommon.EQUIP_BRONZE_HATCHET, "PlayerInventory", function()
-			_TARGET:removeBehavior(DisabledBehavior)
-			_TARGET:getState():give("KeyItem", "PreTutorial_FoundTrees")
-		end)
 	end
 elseif not _TARGET:getState():has("KeyItem", "PreTutorial_ChoppedTree") then
 	_TARGET:addBehavior(DisabledBehavior)
@@ -78,7 +87,27 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_CraftedWeapon") then
 		"Only %empty{Fate} knows what's further along!"
 	}
 
-	if _TARGET:getState():has("Item", "Knife", 1, INVENTORY_FLAGS) or _TARGET:getState():give("Item", "Knife", 1, INVENTORY_FLAGS) then
+	if not _TARGET:getState():has("Item", "ShadowLogs", 1, INVENTORY_FLAGS) then
+		message "You'll need to chop some more logs to make a weapon."
+
+		_TARGET:removeBehavior(DisabledBehavior)
+	elseif _TARGET:getState():has("Item", "Knife", 1, INVENTORY_FLAGS) then
+		message {
+			"You can use the %item{knife} I gave you to",
+			"%hint{craft wooden weapons} from the shadow logs."
+		}
+
+		PreTutorialCommon.startRibbonTutorial(_TARGET, PreTutorialCommon.CRAFT_TOY_WEAPON, "PlayerInventory", function()
+			_TARGET:removeBehavior(DisabledBehavior)
+
+			if _TARGET:getState():has("Item", "ToyWand", 1, INVENTORY_FLAGS) or
+			   _TARGET:getState():has("Item", "ToyLongsword", 1, INVENTORY_FLAGS) or
+			   _TARGET:getState():has("Item", "ToyBommerang", 1, INVENTORY_FLAGS)
+			then
+				PreTutorialCommon.makeRosalindTalk(_TARGET, "TalkAboutTrees")
+			end
+		end)
+	elseif _TARGET:getState():give("Item", "Knife", 1, INVENTORY_FLAGS) then
 		message {
 			"Here's a %item{knife}.",
 			"You can use it to %hint{craft wooden weapons} from the shadow logs."
@@ -86,6 +115,7 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_CraftedWeapon") then
 
 		PreTutorialCommon.startRibbonTutorial(_TARGET, PreTutorialCommon.CRAFT_TOY_WEAPON, "PlayerInventory", function()
 			_TARGET:removeBehavior(DisabledBehavior)
+			PreTutorialCommon.makeRosalindTalk(_TARGET, "TalkAboutTrees")
 		end)
 	else
 		message {

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 
 local Common = {}
 
@@ -16,6 +17,10 @@ Common.HINT_WAIT_TIME = 5
 
 local INVENTORY_FLAGS = {
 	['item-inventory'] = true
+}
+
+local EQUIPMENT_FLAGS = {
+	['item-equipment'] = true
 }
 
 Common.EQUIP_BRONZE_HATCHET = {
@@ -35,7 +40,76 @@ Common.EQUIP_BRONZE_HATCHET = {
 		message = not _MOBILE and "Click on the bronze hatchet to equip it." or "Tap on the bronze hatchet to equip it.",
 		open = function(target)
 			return function()
-				return not target:getState():has('Item', "BronzeHatchet", 1, INVENTORY_FLAGS)
+				return target:getState():has('Item', "BronzeHatchet", 1, EQUIPMENT_FLAGS)
+			end
+		end
+	}
+}
+
+Common.EQUIP_TOY_WAND = {
+	{
+		position = 'up',
+		id = "Ribbon-PlayerInventory",
+		message = not _MOBILE and "Click here to access your inventory." or "Tap here to access your inventory.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "PlayerInventory")
+			end
+		end,
+	},
+	{
+		position = 'up',
+		id = "Inventory-ToyWand",
+		message = not _MOBILE and "Click on the wand to equip it." or "Tap on the wand to equip it.",
+		open = function(target)
+			return function()
+				return target:getState():has('Item', "ToyWand", 1, EQUIPMENT_FLAGS)
+			end
+		end
+	}
+}
+
+Common.EQUIP_TOY_LONGSWORD = {
+	{
+		position = 'up',
+		id = "Ribbon-PlayerInventory",
+		message = not _MOBILE and "Click here to access your inventory." or "Tap here to access your inventory.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "PlayerInventory")
+			end
+		end,
+	},
+	{
+		position = 'up',
+		id = "Inventory-ToyLongsword",
+		message = not _MOBILE and "Click on the longsword to equip it." or "Tap on the longsword to equip it.",
+		open = function(target)
+			return function()
+				return target:getState():has('Item', "ToyLongsword", 1, EQUIPMENT_FLAGS)
+			end
+		end
+	}
+}
+
+Common.EQUIP_TOY_BOOMERANG = {
+	{
+		position = 'up',
+		id = "Ribbon-PlayerInventory",
+		message = not _MOBILE and "Click here to access your inventory." or "Tap here to access your inventory.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "PlayerInventory")
+			end
+		end,
+	},
+	{
+		position = 'up',
+		id = "Inventory-ToyBoomerang",
+		message = not _MOBILE and "Click on the boomerang to equip it." or "Tap on the boomerang to equip it.",
+		open = function(target)
+			return function()
+				return target:getState():has('Item', "ToyBoomerang", 1, EQUIPMENT_FLAGS)
 			end
 		end
 	}
@@ -149,10 +223,10 @@ function Common.listenForAction(playerPeep, action, target, firstMessage, otherM
 				Utility.Peep.notify(playerPeep, otherMessage, notifiedPlayer)
 				notifiedPlayer = true
 			end
-		end
 
-		if target then
-			Utility.Peep.poof(target)
+			if target then
+				Utility.Peep.poof(target)
+			end
 		end
 	end
 
@@ -165,6 +239,99 @@ function Common.listenForAction(playerPeep, action, target, firstMessage, otherM
 	playerPeep:listen("actionPerformed", _performAction)
 	playerPeep:listen("resourceObtained", _move)
 	playerPeep:listen("move", _move)
+end
+
+function Common.listenForAttack(playerPeep)
+	local director = playerPeep:getDirector()
+
+	local maggots = director:probe(
+		playerPeep:getLayerName(),
+		Probe.resource("Peep", "PreTutorial_Maggot"))
+
+	table.sort(maggots, function(a, b)
+		local aDistance = (Utility.Peep.getPosition(a) - Utility.Peep.getPosition(playerPeep)):getLengthSquared()
+		local bDistance = (Utility.Peep.getPosition(b) - Utility.Peep.getPosition(playerPeep)):getLengthSquared()
+
+		return aDistance < bDistance
+	end)
+
+	local maggot = maggots[1]
+	local maggotTarget
+	if maggot then
+		local position = Utility.Peep.getPosition(maggot)
+		maggotTarget = Utility.spawnPropAtPosition(maggot, "Target_Default", position.x, position.y, position.z)
+		maggotTarget = maggotTarget and maggotTarget:getPeep()
+
+		if maggotTarget then
+			maggotTarget:setTarget(maggot, _MOBILE and "Tap the maggot to attack it!" or "Click on the maggot to attack it!")
+		end
+	end
+
+	local numTimesAttacked = 0
+	local previousTarget = nil
+
+	local SPAM_MESSAGE_THRESHOLD = 3
+
+	local notifiedPlayer = false
+
+	local silence
+
+	local function die()
+		print(">>> die")
+		previousTarget:silence("die", die)
+
+		playerPeep:getState():give("KeyItem", "PreTutorial_KilledMaggot")
+		silence()
+	end
+
+	local function performAttackAction(_, e)
+		if e.action:is("Attack") then
+			if numTimesAttacked == 0 then
+				Utility.Peep.notify(playerPeep, "You'll automatically deal blows until the foe is slain.")
+			end
+
+			numTimesAttacked = numTimesAttacked + 1
+
+			if numTimesAttacked > SPAM_MESSAGE_THRESHOLD then
+				numTimesAttacked = 1
+
+				Utility.Peep.notify(playerPeep, _MOBILE and "You only need to tap once to attack!" or "You only need to click once to attack!", notifiedPlayer)
+				notifiedPlayer = true
+			end
+		end
+	end
+
+	local function performInitiateAttack()
+		if maggotTarget then
+			Utility.Peep.poof(maggotTarget)
+		end
+
+		local currentTarget = playerPeep:getBehavior(CombatTargetBehavior)
+		currentTarget = currentTarget and currentTarget.actor and currentTarget.actor:getPeep()
+
+		if previousTarget ~= currentTarget then
+			if previousTarget then
+				previousTarget:silence("die", die)
+			end
+
+			if currentTarget then
+				print(">>> listen for die on current target")
+				currentTarget:listen("die", die)
+			end
+
+			previousTarget = currentTarget
+			numTimesAttacked = 1
+		end
+	end
+
+	silence = function()
+		playerPeep:silence("actionPerformed", performAttackAction)
+		playerPeep:silence("initiateAttack", performInitiateAttack)
+		playerPeep:silence("move", silence)
+	end
+
+	playerPeep:listen("actionPerformed", performAttackAction)
+	playerPeep:listen("initiateAttack", performInitiateAttack)
 end
 
 function Common.makeRosalindTalk(playerPeep, name)

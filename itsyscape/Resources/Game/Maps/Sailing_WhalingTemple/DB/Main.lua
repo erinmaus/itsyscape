@@ -262,6 +262,26 @@ do
 		Peep = M["Rosalind"]
 	}
 
+	local NamedTalkActionFish = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Fish_en-US.lua",
+		Language = "en-US",
+		Action = NamedTalkActionFish
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = NamedTalkActionFish
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "TalkAboutFish",
+		Action = NamedTalkActionFish,
+		Peep = M["Rosalind"]
+	}
+
 	ItsyScape.Meta.PeepMashinaState {
 		State = "follow",
 		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Rosalind_FollowLogic.lua",
@@ -333,7 +353,12 @@ do
 		MapObject = M["TrapDoor_ToMine"]
 	}
 
-	local TravelAction = ItsyScape.Action.Travel()
+	local TravelAction = ItsyScape.Action.Travel() {
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "PreTutorial_CookedFish",
+			Count = 1
+		}
+	}
 
 	ItsyScape.Meta.TravelDestination {
 		Anchor = "Anchor_FromFish",
@@ -408,7 +433,8 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "PreTutorial_Maggot",
-		MapObject = M["Maggot1"]
+		MapObject = M["Maggot1"],
+		DoesRespawn = 1
 	}
 end
 
@@ -426,7 +452,8 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "PreTutorial_Maggot",
-		MapObject = M["Maggot2"]
+		MapObject = M["Maggot2"],
+		DoesRespawn = 1
 	}
 end
 
@@ -444,7 +471,8 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "PreTutorial_Maggot",
-		MapObject = M["Maggot3"]
+		MapObject = M["Maggot3"],
+		DoesRespawn = 1
 	}
 end
 
@@ -463,6 +491,24 @@ do
 		Z2 = 58,
 		Map = M._MAP,
 		Resource = M["Passage_ToFishingArea"]
+	}
+end
+
+M["Passage_FishingArea"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_FishingArea",
+		Map = M._MAP,
+		Resource = M["Passage_FishingArea"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 36,
+		Z1 = 46,
+		X2 = 46,
+		Z2 = 50,
+		Map = M._MAP,
+		Resource = M["Passage_FishingArea"]
 	}
 end
 

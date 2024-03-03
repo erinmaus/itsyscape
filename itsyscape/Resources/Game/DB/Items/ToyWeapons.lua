@@ -13,7 +13,7 @@ do
 
 	local EquipAction = ItsyScape.Action.Equip() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Magic",
+			Resource = ItsyScape.Resource.Skill "Attack",
 			Count = ItsyScape.Utility.xpForLevel(1)
 		}
 	}
