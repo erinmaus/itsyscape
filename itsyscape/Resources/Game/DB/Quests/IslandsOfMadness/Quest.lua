@@ -33,6 +33,8 @@ Quest "PreTutorial" {
 	Step "PreTutorial_ChoppedTree",
 	Step "PreTutorial_CraftedWeapon",
 
+	Step "PreTutorial_FoundFish",
+	Step "PreTutorial_KilledMaggot",
 	Step "PreTutorial_Fished",
 	Step "PreTutorial_CookedFish",
 
@@ -76,8 +78,18 @@ Description "PreTutorial_CraftedWeapon" {
 	after = "You crafted some shadow logs into a weapon."
 }
 
-Description "PreTutorial_Fished" {
+Description "PreTutorial_FoundFish" {
 	before = "The crew needs some food. Find some fish on the island.",
+	after = "There are some sardines conviently surrounded by giant maggots."
+}
+
+Description "PreTutorial_KilledMaggot" {
+	before = "Slay a giant maggot to use it as bait.",
+	after = "You slayed a giant maggot and gathered some bait."
+}
+
+Description "PreTutorial_Fished" {
+	before = "Using the fishing rod Rosalind gave you, fish up some sardines.",
 	after = "After coming across some sardines, you fished them up. Now they need to be cooked!"
 }
 

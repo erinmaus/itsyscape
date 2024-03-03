@@ -122,6 +122,38 @@ local Tree = BTreeBuilder.Node() {
 				}
 			},
 
+			Mashina.Sequence {
+				Mashina.Try {
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_FoundFish"
+					},
+
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_KilledMaggot"
+					},
+				},
+
+				Mashina.Step {
+					Mashina.Compare.Equal {
+						left = CURRENT_PASSAGE,
+						right = "Passage_FishingArea"
+					},
+
+					Mashina.Check {
+						condition = ENTERED_PASSAGE,
+					},
+
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutFish",
+						player = PLAYER
+					}
+				}
+			},
+
 			Mashina.Success {
 				Mashina.Sequence {
 					Mashina.Invert {

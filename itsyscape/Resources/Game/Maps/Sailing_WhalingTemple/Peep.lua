@@ -68,7 +68,17 @@ function WhalingTemple:prepareQuest(playerPeep)
 			return aDistance < bDistance
 		end)
 
-		local tree = trees[1]
+		local tree
+		for _, t in ipairs(trees) do
+			local treeY = Utility.Peep.getPosition(t).y
+			local playerY = Utility.Peep.getPosition(playerPeep).y
+
+			if treeY == playerY then
+				tree = t
+				break
+			end
+		end
+
 		if tree then
 			local position = Utility.Peep.getPosition(tree)
 			local treeTarget = Utility.spawnPropAtPosition(tree, "Target_Default", position.x, position.y, position.z)
@@ -104,6 +114,10 @@ function WhalingTemple:prepareQuest(playerPeep)
 	Utility.Quest.listenForItem(playerPeep, "ToyWand", function()
 		playerPeep:getState():give("KeyItem", "PreTutorial_CraftedWeapon")
 		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
+	end)
+
+	Utility.Quest.listenForKeyItem(playerPeep, "PreTutorial_KilledMaggot", function()
+		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
 	end)
 end
 
