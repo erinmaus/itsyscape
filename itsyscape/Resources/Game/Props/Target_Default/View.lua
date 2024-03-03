@@ -10,6 +10,8 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Color = require "ItsyScape.Graphics.Color"
+local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
@@ -36,6 +38,12 @@ function TargetView:load()
 	self.quad:getTransform():setLocalTranslation(Vector(0, 0.125, 0))
 	self.quad:getTransform():setLocalRotation(Quaternion.X_90)
 	self.quad:setParent(root)
+
+	self.light = PointLightSceneNode()
+	self.light:setAttenuation(8)
+	self.light:getTransform():setLocalTranslation(Vector(0, 4, 0))
+	self.light:setColor(Color(1, 1, 0, 1))
+	self.light:setParent(root)
 
 	self.canvas = love.graphics.newCanvas(TargetView.CANVAS_SIZE, TargetView.CANVAS_SIZE)
 	self.texture = TextureResource(self.canvas)
