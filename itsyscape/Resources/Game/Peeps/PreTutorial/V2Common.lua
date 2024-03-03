@@ -10,6 +10,7 @@
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local Common = {}
 
@@ -277,7 +278,6 @@ function Common.listenForAttack(playerPeep)
 	local silence
 
 	local function die()
-		print(">>> die")
 		previousTarget:silence("die", die)
 
 		playerPeep:getState():give("KeyItem", "PreTutorial_KilledMaggot")
@@ -315,7 +315,6 @@ function Common.listenForAttack(playerPeep)
 			end
 
 			if currentTarget then
-				print(">>> listen for die on current target")
 				currentTarget:listen("die", die)
 			end
 
@@ -368,6 +367,108 @@ function Common.makeRosalindTalk(playerPeep, name)
 
 
 	Utility.UI.openInterface(playerPeep, "DialogBox", true, action.instance, rosalind)
+end
+
+function Common.startDropItemTutorial(playerPeep, done)
+	local inventory = playerPeep:getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+	if not inventory then
+		return
+	end
+
+	local broker = inventory:getBroker()
+	local count = broker:countItems(inventory)
+	if count < inventory:getMaxInventorySpace() then
+		-- The player has available room.
+		return
+	end
+
+	local itemToDrop
+	do
+		local itemCounts = {}
+		for item in broker:iterateItems(inventory) do
+			local id = item:getID()
+			local count = itemCounts[id] or 0
+			count = count + 1
+
+			if count >= 2 then
+				itemToDrop = item
+				break
+			end
+
+			itemCounts[id] = count
+		end
+	end
+
+	if not itemToDrop then
+		-- Try and drop last item in inventory.
+		for item in broker:iterateItems(inventory) do
+			itemToDrop = item
+		end
+	end
+
+	if not itemToDrop then
+		-- ???
+		Log.warn("Player '%s' doesn't have any items to drop...?")
+		return
+	end
+
+	local itemName = Utility.Item.getInstanceName(itemToDrop)
+
+	local tutorial = {
+		{
+			position = 'up',
+			id = "Ribbon-PlayerInventory",
+			message = not _MOBILE and "Click here to access your inventory." or "Tap here to access your inventory.",
+			open = function(target)
+				return function()
+					return Utility.UI.isOpen(target, "PlayerInventory")
+				end
+			end,
+		},
+		{
+			position = 'up',
+			id = string.format("Inventory-%s", itemToDrop:getID()),
+			message = not _MOBILE and "Right-click on the item to open the poke menu." or "Long tap on the item to open the poke menu.",
+			open = function(target)
+				return function()
+					if broker:countItems(inventory) < inventory:getMaxInventorySpace() then
+						return true
+					end
+
+					local open, index = Utility.UI.isOpen(target, "PlayerInventory")
+					if open then
+						local interface = Utility.UI.getOpenInterface(target, "PlayerInventory", index)
+						return interface.lastProbedItem and interface.lastProbedItem:getID() == itemToDrop:getID()
+					end
+
+					return true
+				end
+			end
+		},
+		{
+			position = 'up',
+			id = string.format("PokeMenu-Drop-%s", itemName),
+			message = not _MOBILE and "Click on the drop action option to drop the item." or "Tap on the drop action to drop the item.",
+			open = function(target)
+				return function()
+					if broker:countItems(inventory) < inventory:getMaxInventorySpace() then
+						return true
+					end
+
+					local open, index = Utility.UI.isOpen(target, "PlayerInventory")
+					if open then
+						local interface = Utility.UI.getOpenInterface(target, "PlayerInventory", index)
+						return not interface.lastProbedItem or interface.lastProbedItem:getID() ~= itemToDrop:getID()
+					end
+
+					return true
+				end
+			end
+		}
+	}
+
+	Common.startRibbonTutorial(playerPeep, tutorial, "PlayerInventory", done)
 end
 
 return Common
