@@ -15,6 +15,7 @@ local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local PLAYER = B.Reference("Rosalind", "PLAYER")
 local CURRENT_PASSAGE = B.Reference("Rosalind", "CURRENT_PASSAGE")
 local ENTERED_PASSAGE = B.Reference("Rosalind", "ENTERED_PASSAGE")
+local TALKED_ABOUT_FISH = B.Reference("Rosalind", "TALKED_ABOUT_FISH")
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
@@ -145,6 +146,17 @@ local Tree = BTreeBuilder.Node() {
 
 					Mashina.Check {
 						condition = ENTERED_PASSAGE,
+					},
+
+					Mashina.Invert {
+						Mashina.Check {
+							condition = TALKED_ABOUT_FISH,
+						}
+					},
+
+					Mashina.Set {
+						value = true,
+						[TALKED_ABOUT_FISH] = B.Output.result
 					},
 
 					Mashina.Player.Dialog {

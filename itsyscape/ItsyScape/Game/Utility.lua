@@ -74,6 +74,8 @@ function Utility.save(player, saveLocation, talk, ...)
 			end
 
 			if saveLocation then
+				local isInstanced = Utility.Peep.getInstance(player):getIsLocal()
+
 				local map = player:getBehavior(MapResourceReferenceBehavior)
 				if map and map.map then
 					map = map.map
@@ -84,6 +86,7 @@ function Utility.save(player, saveLocation, talk, ...)
 					if position then
 						location:set({
 							name = map.name,
+							instance = isInstanced,
 							x = position.position.x,
 							y = position.position.y,
 							z = position.position.z
@@ -91,6 +94,7 @@ function Utility.save(player, saveLocation, talk, ...)
 
 						spawn:set({
 							name = map.name,
+							instance = isInstanced,
 							x = position.position.x,
 							y = position.position.y,
 							z = position.position.z
@@ -152,7 +156,7 @@ function Utility.orientateToAnchor(peep, map, anchor)
 end
 
 function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
-	radius = radius or 1
+	radius = radius or 0
 
 	if type(resource) == 'string' then
 		local gameDB = peep:getDirector():getGameDB()
@@ -299,7 +303,7 @@ function Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
 end
 
 function Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
-	radius = radius or 1
+	radius = radius or 0
 
 	if type(prop) == 'string' then
 		local gameDB = peep:getDirector():getGameDB()

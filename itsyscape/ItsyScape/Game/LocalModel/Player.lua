@@ -168,9 +168,16 @@ function LocalPlayer:spawn(storage, newGame, password)
 				if root:hasSection("Location") then
 					local location = root:getSection("Location")
 					if location:get("name") then
+						local mapName
+						if location:get("instance") then
+							mapName = "@" .. location:get("name")
+						else
+							mapName = location:get("name")
+						end
+
 						self.stage:movePeep(
 							actor:getPeep(),
-							location:get("name"),
+							mapName,
 							Vector(
 								location:get("x"),
 								location:get("y"),

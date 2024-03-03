@@ -28,6 +28,41 @@ function NewGame:onLoad(...)
 		NewGame.SISTINE_LOCATION)
 end
 
+function NewGame:movePlayer(playerPeep)
+	local stage = self:getDirector():getGameInstance():getStage()
+
+	Utility.UI.openInterface(playerPeep, "CutsceneTransition", false, 6)
+	Utility.UI.openInterface(playerPeep, "DramaticText", false, { {
+		color = { 1, 1, 1, 1 },
+		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+		fontSize = 96,
+		textShadow = true,
+		align = 'center',
+		width = DramaticTextController.CANVAS_WIDTH - 64,
+		x = 32,
+		y = DramaticTextController.CANVAS_HEIGHT / 2 - 64,
+		text = string.format("Welcome to the Realm, %s.", playerPeep:getName())
+	} }, 6)
+
+	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
+		stage:movePeep(
+			playerPeep,
+			"@Intro_Realm",
+			"Anchor_Spawn")
+	elseif playerPeep:getState():has("KeyItem", "PreTutorial_ArriveAtTheWhalingTemple") then
+		playerPeep:removeBehavior(DisabledBehavior)
+		stage:movePeep(
+			playerPeep,
+			"@Sailing_WhalingTemple",
+			"Anchor_Spawn")
+	else
+		stage:movePeep(
+			playerPeep,
+			"@IsabelleIsland_FarOcean2",
+			"Anchor_Spawn")
+	end
+end
+
 function NewGame:onPlayerEnter(player)
 	local playerPeep = player:getActor():getPeep()
 	playerPeep:addBehavior(DisabledBehavior)
@@ -37,40 +72,14 @@ function NewGame:onPlayerEnter(player)
 	player:pokeCamera("zoom", 100, 0)
 	player:pokeCamera("verticalRotate", -math.pi / 2 + math.pi / 8, 0)
 
-	Utility.UI.closeAll(playerPeep)
-	Utility.UI.openInterface(playerPeep, "CharacterCustomization", true, function()
-		local stage = self:getDirector():getGameInstance():getStage()
-
-		Utility.UI.openInterface(playerPeep, "CutsceneTransition", false, 6)
-		Utility.UI.openInterface(playerPeep, "DramaticText", false, { {
-			color = { 1, 1, 1, 1 },
-			font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-			fontSize = 96,
-			textShadow = true,
-			align = 'center',
-			width = DramaticTextController.CANVAS_WIDTH - 64,
-			x = 32,
-			y = DramaticTextController.CANVAS_HEIGHT / 2 - 64,
-			text = string.format("Welcome to the Realm, %s.", playerPeep:getName())
-		} }, 6)
-
-		if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
-			stage:movePeep(
-				playerPeep,
-				"@Intro_Realm",
-				"Anchor_Spawn")
-		elseif playerPeep:getState():has("KeyItem", "PreTutorial_ArriveAtTheWhalingTemple") then
-			stage:movePeep(
-				playerPeep,
-				"@Sailing_WhalingTemple",
-				"Anchor_Spawn")
-		else
-			stage:movePeep(
-				playerPeep,
-				"@IsabelleIsland_FarOcean2",
-				"Anchor_Spawn")
-		end
-	end)
+	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
+		Utility.UI.closeAll(playerPeep)
+		Utility.UI.openInterface(playerPeep, "CharacterCustomization", true, function()
+			self:movePlayer(playerPeep)
+		end)
+	else
+		self:movePlayer(playerPeep)
+	end
 end
 
 function NewGame:onPlayerLeave(player)

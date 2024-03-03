@@ -13,8 +13,11 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
-local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.V2Common"
 
 local WhalingTemple = Class(Map)
@@ -119,6 +122,43 @@ function WhalingTemple:prepareQuest(playerPeep)
 	Utility.Quest.listenForKeyItem(playerPeep, "PreTutorial_KilledMaggot", function()
 		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
 	end)
+
+	do
+		local stage = self:getDirector():getGameInstance():getStage()
+		local ground = stage:getGround(self:getLayer())
+		local inventory = ground and ground:hasBehavior(InventoryBehavior) and ground:getBehavior(InventoryBehavior).inventory
+		if inventory then
+			local targets = {}
+
+			local function listenForBaitDrop(item, _, _, _, peep)
+				local position = stage:getMap(self:getLayer()):getTileCenter(Utility.Peep.getTile(peep))
+
+				if playerPeep:getState():has("KeyItem", "PreTutorial_Fished") then
+					return
+				end
+
+				if peep and not peep:hasBehavior(PlayerBehavior) then
+					local target = Utility.spawnPropAtPosition(self, "Target_Default", position.x, position.y, position.z)
+					target = target and target:getPeep()
+
+					if target then
+						target:setTarget("Bait", not _MOBILE and "Click on the loot bag to pick up the bait!" or "Tap on the loot bag to pick up the bait!")
+						targets[item:getRef()] = target
+					end
+				end
+			end
+
+			local function listenForBaitTake(item)
+				if targets[item:getRef()] then
+					Utility.Peep.poof(targets[item:getRef()])
+					targets[item:getRef()] = nil
+				end
+			end
+
+			inventory.onDropItem:register(listenForBaitDrop)
+			inventory.onTakeItem:register(listenForBaitTake)
+		end
+	end
 end
 
 function WhalingTemple:makeRosalindFollowPlayer(playerPeep, teleport)
