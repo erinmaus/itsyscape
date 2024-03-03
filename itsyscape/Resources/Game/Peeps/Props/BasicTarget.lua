@@ -21,7 +21,7 @@ local BasicTarget = Class(PassableProp)
 function BasicTarget:update(...)
 	PassableProp.update(self, ...)
 
-	if self.target then
+	if self.target and type(self.target) ~= "string" then
 		Utility.Peep.setPosition(self, Utility.Peep.getPosition(self.target))
 
 		local status = self.target:getBehavior(CombatStatusBehavior)
@@ -42,8 +42,17 @@ end
 function BasicTarget:getPropState()
 	local offset = self:hasBehavior(PositionBehavior) and self:getBehavior(PositionBehavior).offset
 
+	local name = false
+	if self.target then
+		if type(self.target) == "string" then
+			name = self.target
+		else
+			name = self.target:getName()
+		end
+	end
+
 	return {
-		name = self.target and self.target:getName(),
+		name = name,
 		description = self.description,
 		offset = offset and { offset:get() }
 	}

@@ -18,7 +18,7 @@ local ITEMS = {
 		id = "Knife",
 		keyItem = "PreTutorial_ChoppedTree",
 		message = {
-			"Seems the %item{knife} fell out yor bag.",
+			"Seems the %item{knife} fell out of your bag.",
 			"Here's another!"
 		}
 	},
