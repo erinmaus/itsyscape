@@ -120,6 +120,36 @@ function WhalingTemple:prepareQuest(playerPeep)
 	end)
 
 	Utility.Quest.listenForKeyItem(playerPeep, "PreTutorial_KilledMaggot", function()
+		local fish = self:getDirector():probe(
+			self:getLayerName(),
+			Probe.resource("Prop", "Sardine_Default"))
+
+		table.sort(fish, function(a, b)
+			local aDistance = (Utility.Peep.getPosition(a) - Utility.Peep.getPosition(playerPeep)):getLengthSquared()
+			local bDistance = (Utility.Peep.getPosition(b) - Utility.Peep.getPosition(playerPeep)):getLengthSquared()
+
+			return aDistance < bDistance
+		end)
+
+		fish = fish[1]
+
+		if fish then
+			local position = Utility.Peep.getPosition(fish)
+			local fishTarget = Utility.spawnPropAtPosition(fish, "Target_Default", position.x, position.y, position.z)
+			fishTarget = fishTarget and fishTarget:getPeep()
+
+			if fishTarget then
+				fishTarget:setTarget(fish, _MOBILE and "Tap the sardine to fish it!" or "Click on the sardine to fish it!")
+
+				PreTutorialCommon.listenForAction(
+					playerPeep,
+					"Fish",
+					fishTarget,
+					"You'll keep fishing for the sardine until you reel it in..",
+					_MOBILE and "You only need to tap once to fish!" or "You only need to click once to fish!")
+			end
+		end
+
 		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
 	end)
 

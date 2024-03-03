@@ -419,6 +419,57 @@ do
 	}
 end
 
+M["Sardine1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 2,
+		PositionZ = 39,
+		Name = "Sardine1",
+		Map = M._MAP,
+		Resource = M["Sardine1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Sardine_Default",
+		MapObject = M["Sardine1"]
+	}
+end
+
+M["Sardine2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 2,
+		PositionZ = 41,
+		Name = "Sardine2",
+		Map = M._MAP,
+		Resource = M["Sardine2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Sardine_Default",
+		MapObject = M["Sardine2"]
+	}
+end
+
+M["Sardine3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 2,
+		PositionZ = 37,
+		Name = "Sardine3",
+		Map = M._MAP,
+		Resource = M["Sardine3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Sardine_Default",
+		MapObject = M["Sardine3"]
+	}
+end
+
 M["Maggot1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
