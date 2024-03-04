@@ -232,7 +232,8 @@ Game "ItsyScape"
 		Map = Meta.TYPE_RESOURCE,
 		Arguments = Meta.TYPE_TEXT,
 		Anchor = Meta.TYPE_TEXT,
-		Action = Meta.TYPE_ACTION
+		Action = Meta.TYPE_ACTION,
+		IsInstance = Meta.TYPE_INTEGER
 	}
 
 	Meta "PartyTravelDestination" {

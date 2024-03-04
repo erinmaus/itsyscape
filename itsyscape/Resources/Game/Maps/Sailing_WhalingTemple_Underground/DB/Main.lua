@@ -38,6 +38,7 @@ do
 	ItsyScape.Meta.TravelDestination {
 		Anchor = "Anchor_FromMine",
 		Map = ItsyScape.Resource.Map "Sailing_WhalingTemple",
+		IsInstance = 1,
 		Action = TravelAction
 	}
 

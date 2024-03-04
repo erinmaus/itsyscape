@@ -43,7 +43,7 @@ function Sleep:perform(state, player, target)
 		return false
 	end
 
-	if target and self:canPerform(state) then
+	if target and self:canPerform(state) and self:canTransfer(state) then
 		local i, j, k = Utility.Peep.getTileAnchor(target)
 		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = true })
 
@@ -51,7 +51,8 @@ function Sleep:perform(state, player, target)
 			local save = CallbackCommand(self.save, self, player)
 			local perform = CallbackCommand(Action.perform, self, state, player)
 			local notification = CallbackCommand(Utility.Peep.notify, player, "Game saved! You will respawn here upon death.")
-			local command = CompositeCommand(true, walk, save, poof, perform, notification, wait)
+			local transfer = CallbackCommand(self.transfer, self, state, player)
+			local command = CompositeCommand(true, walk, transfer, save, perform, notification)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

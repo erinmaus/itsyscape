@@ -211,6 +211,89 @@ function Utility.spawnActorAtAnchor(peep, resource, anchor, radius)
 	end
 end
 
+function Utility.spawnInstancedMapObjectAtAnchor(peep, playerPeep, mapObject, anchor, radius)
+	local FollowerCortex = require "ItsyScape.Peep.Cortexes.FollowerCortex"
+
+	radius = radius or 0
+
+	local gameDB = peep:getDirector():getGameDB()
+	local mapResource = Utility.Peep.getMapResource(peep)
+
+	if type(mapObject) == 'string' then
+		local m = mapObject
+
+		local reference = gameDB:getRecord("MapObjectReference", {
+			Name = mapObject,
+			Map = mapResource
+		})
+
+		if not reference then
+			Log.warn("Map object reference '%s' not found.", m)
+			return nil, nil
+		end
+
+		mapObject = reference:get("Resource")
+		if not mapObject then
+			Log.info("Map object '%s' not found.", m)
+			return nil, nil
+		end
+	end
+
+	local mapObjectResource
+	do
+		local peepMapObject = gameDB:getRecord("PeepMapObject", {
+			MapObject = mapObject
+		})
+
+		local propMapObject = gameDB:getRecord("PropMapObject", {
+			MapObject = mapObject
+		})
+
+		mapObjectResource = (peepMapObject and peepMapObject:get("Peep")) or (propMapObject and propMapObject:get("Prop"))
+	end
+
+	if not mapObjectResource then
+		return nil, nil
+	end
+
+	local followerCortex = peep:getDirector():getCortex(FollowerCortex)
+	local currentPeep
+	for peep in followerCortex:iterateFollowers(Utility.Peep.getPlayerModel(playerPeep)) do
+		local resource = Utility.Peep.getResource(peep)
+		if resource then
+			if resource.id.value == mapObjectResource.id.value then
+				currentPeep = peep
+				break
+			end
+		end
+	end
+
+	if currentPeep then
+		local actorReference = currentPeep:getBehavior(ActorReferenceBehavior)
+		local propReference = currentPeep:getBehavior(PropReferenceBehavior)
+
+		return actorReference and actorReference.actor, propReference and propReference.prop
+	end
+
+	local actor, prop = Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
+	local playerID = Utility.Peep.getPlayerModel(playerPeep):getID()
+
+	if actor then
+		local _, follower = actor:getPeep():addBehavior(FollowerBehavior)
+		follower.playerID = playerID
+
+		local _, instance = actor:getPeep():addBehavior(InstancedBehavior)
+		instance.playerID = playerID
+	end
+
+	if prop then
+		local _, instance = prop:getPeep():addBehavior(InstancedBehavior)
+		instance.playerID = playerID
+	end
+
+	return actor, prop
+end
+
 function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 	radius = radius or 0
 
