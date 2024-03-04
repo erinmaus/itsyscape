@@ -2689,7 +2689,7 @@ end
 --
 -- Returns true on success, false on failure.
 function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
-	local command, reason = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
+	local command, r = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if command then
 		local queue = peep:getCommandQueue()
 		local success = queue:interrupt(command)
@@ -2698,12 +2698,14 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 		-- Animator cortexes use velocity and/or the target tile behavior as indicators a peep
 		-- is walking. So pre-emptively signal the peep is walking, so a walking animation isn't
 		-- interrupted.
-		peep:addBehavior(TargetTileBehavior)
+		if r:getNumNodes() > 1 then
+			peep:addBehavior(TargetTileBehavior)
+		end
 
 		return success
 	end
 
-	return false, reason
+	return false, r
 end
 
 function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)
