@@ -213,6 +213,24 @@ do
 	}
 end
 
+M["Yenderling"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 14,
+		PositionY = 1,
+		PositionZ = 50,
+		Name = "Yenderling",
+		Map = M._MAP,
+		Resource = M["Yenderling"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "PreTutorial_Yenderling",
+		MapObject = M["Yenderling"],
+		DoesNotDespawn = 1
+	}
+end
+
 M["Door_ToBoss"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
