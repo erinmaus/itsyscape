@@ -168,6 +168,7 @@ function LocalGameManager:onActorMoved(_, actor, previousLayerName, currentLayer
 					"ItsyScape.Game.Model.Stage",
 					0,
 					"onActorSpawned",
+					nil,
 					actor:getPeepID(), actor)
 				self:assignTargetToLastPush(player)
 
