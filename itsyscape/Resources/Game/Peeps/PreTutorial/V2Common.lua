@@ -187,6 +187,51 @@ Common.CRAFT_TOY_WEAPON = {
 	}
 }
 
+Common.LIGHT_FIRE = {
+	{
+		position = 'up',
+		id = "Ribbon-PlayerInventory",
+		message = not _MOBILE and "Click here to access your inventory." or "Tap here to access your inventory.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "PlayerInventory")
+			end
+		end,
+	},
+	{
+		position = 'up',
+		id = "Inventory-Tinderbox",
+		message = not _MOBILE and "Click on the tinderbox." or "Tap on the tinderbox.",
+		open = function(target)
+			return function()
+				local open, index = Utility.UI.isOpen(target, "PlayerInventory")
+				if open then
+					local interface = Utility.UI.getOpenInterface(target, "PlayerInventory", index)
+					return interface.lastUsedItem and interface.lastUsedItem:getID() == "Tinderbox"
+				end
+
+				return true
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "Inventory-ShadowLogs",
+		message = not _MOBILE and "Click on shadow logs to light a fire using the tinderbox." or "Tap on the shadow logs to light a fire using the tinderbox.",
+		open = function(target)
+			return function()
+				local open, index = Utility.UI.isOpen(target, "PlayerInventory")
+				if open then
+					local interface = Utility.UI.getOpenInterface(target, "PlayerInventory", index)
+					return not interface.lastUsedItem
+				end
+
+				return true
+			end
+		end
+	}
+}
+
 function Common.startRibbonTutorial(playerPeep, tutorial, ui, done)
 	local state = {}
 	Utility.UI.openInterface(

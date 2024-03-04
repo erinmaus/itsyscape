@@ -101,7 +101,9 @@ function WhalingTemple:prepareQuest(playerPeep)
 	end)
 
 	Utility.Quest.listenForItem(playerPeep, "ShadowLogs", function()
-		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
+		if not playerPeep:getState():has("KeyItem", "PreTutorial_CraftedWeapon") then
+			PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
+		end
 	end)
 
 	Utility.Quest.listenForItem(playerPeep, "ToyLongsword", function()
@@ -150,6 +152,11 @@ function WhalingTemple:prepareQuest(playerPeep)
 			end
 		end
 
+		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
+	end)
+
+	Utility.Quest.listenForItem(playerPeep, "Sardine", function()
+		playerPeep:getState():give("KeyItem", "PreTutorial_Fished")
 		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
 	end)
 
@@ -273,6 +280,68 @@ function WhalingTemple:onSplode(position, layer)
 	end
 end
 
+function WhalingTemple:updateFireHint()
+	local playerPeep = Utility.Peep.getPlayer(self)
+	if not playerPeep then
+		return
+	end
+
+	if playerPeep:getState():has("KeyItem", "PreTutorial_CookedFish") then
+		return
+	end
+
+	do
+		local targets = self:getDirector():probe(
+			self:getLayerName(),
+			Probe.resource("Prop", "Target_Default"),
+			function(peep)
+				return peep.target and peep.target:wasPoofed()
+			end)
+
+		for _, target in ipairs(targets) do
+			Utility.Peep.poof(target)
+		end
+	end
+
+	local fires = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Prop", "ShadowFire"))
+
+	if #fires ~= 1 then
+		return
+	end
+
+	local fire = fires[1]
+	local targets = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Prop", "Target_Default"),
+		function(peep)
+			return peep.target == fire
+		end)
+
+	if #targets >= 1 then
+		return
+	end
+
+	local position = Utility.Peep.getPosition(fire)
+	local fireTarget = Utility.spawnPropAtPosition(fire, "Target_Default", position.x, position.y, position.z)
+	fireTarget = fireTarget and fireTarget:getPeep()
+
+	if fireTarget then
+		fireTarget:setTarget(fire, not _MOBILE and "Click the fire to cook!" or "Tap the fire to cook!")
+
+		local function onCookSardine()
+			Utility.Peep.poof(fireTarget)
+			playerPeep:getCommandQueue():interrupt()
+			playerPeep:getState():give("KeyItem", "PreTutorial_CookedFish")
+			PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
+		end
+
+		Utility.Quest.listenForItem(playerPeep, "CookedSardine", onCookSardine)
+		Utility.Quest.listenForItem(playerPeep, "BurntSardine", onCookSardine)
+	end
+end
+
 function WhalingTemple:update(director, game)
 	Map.update(self, director, game)
 
@@ -281,6 +350,8 @@ function WhalingTemple:update(director, game)
 		self:onZap()
 		self:onBoom()
 	end
+
+	self:updateFireHint()
 end
 
 return WhalingTemple

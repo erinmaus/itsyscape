@@ -151,12 +151,15 @@ function TutorialHint:place(widget)
 
 	self.label:setPosition(x, y)
 	self.label:setSize(textWidth, textHeight)
+	self.label:setIsClickThrough(true)
+
 	self.panel:setPosition(
 		x - TutorialHint.PADDING,
 		y - TutorialHint.PADDING)
 	self.panel:setSize(
 		textWidth + TutorialHint.PADDING * 2,
 		textHeight + TutorialHint.PADDING * 2)
+	self.panel:setIsClickThrough(true)
 end
 
 function TutorialHint:getTargetWidget(Type)

@@ -31,6 +31,8 @@ function PlayerInventoryController:poke(actionID, actionIndex, e)
 		self:pokeItem(e)
 	elseif actionID == "probe" then
 		self:probeItem(e)
+	elseif actionID == "use" then
+		self:useItem(e)
 	elseif actionID == "useItemOnItem" then
 		self:useItemOnItem(e)
 	elseif actionID == "useItemOnProp" then
@@ -154,6 +156,30 @@ function PlayerInventoryController:probeItem(e)
 	end
 
 	self.lastProbedItem = item
+end
+
+function PlayerInventoryController:useItem(e)
+	if not e.index then
+		self.lastUsedItem = nil
+		return
+	end
+
+	assert(type(e.index) == 'number', "index is not number")
+
+	local item
+	do
+		local inventory = self:getPeep():getBehavior(InventoryBehavior)
+		if inventory and inventory.inventory then
+			local broker = inventory.inventory:getBroker()
+
+			for i in broker:iterateItemsByKey(inventory.inventory, e.index) do
+				item = i
+				break
+			end
+		end
+	end
+
+	self.lastUsedItem = item
 end
 
 function PlayerInventoryController:_tryUseItem(item, actions)
