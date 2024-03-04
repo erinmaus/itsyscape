@@ -26,6 +26,7 @@ function DialogBoxController:new(peep, director, action, target)
 
 	self.action = action
 	self.target = target
+	self.hidRibbonTab = false
 
 	if target then
 		target:poke('talkingStart')
@@ -90,14 +91,6 @@ function DialogBoxController:new(peep, director, action, target)
 	end
 
 	self.needsPump = true
-
-	Utility.UI.broadcast(
-		self:getDirector():getGameInstance():getUI(),
-		self:getPeep(),
-		"Ribbon",
-		"hide",
-		nil,
-		{})
 end
 
 function DialogBoxController:poke(actionID, actionIndex, e)
@@ -211,6 +204,17 @@ function DialogBoxController:pump(e, ...)
 			-- Pump again. We want a Packet that requires us to wait.
 			self:pump()
 		end
+
+		if not self.hidRibbonTab then
+			Utility.UI.broadcast(
+				self:getDirector():getGameInstance():getUI(),
+				self:getPeep(),
+				"Ribbon",
+				"hide",
+				nil,
+				{})
+			self.hidRibbonTab = true
+		end
 	else
 		self.state = { done = true }
 	end
@@ -233,13 +237,16 @@ function DialogBoxController:close()
 		self.target:poke('talkingStop')
 	end
 
-	Utility.UI.broadcast(
-		self:getDirector():getGameInstance():getUI(),
-		self:getPeep(),
-		"Ribbon",
-		"show",
-		nil,
-		{})
+	if self.hidRibbonTab then
+		print(">>> showing ribbon")
+		Utility.UI.broadcast(
+			self:getDirector():getGameInstance():getUI(),
+			self:getPeep(),
+			"Ribbon",
+			"show",
+			nil,
+			{})
+	end
 end
 
 function DialogBoxController:update(...)
