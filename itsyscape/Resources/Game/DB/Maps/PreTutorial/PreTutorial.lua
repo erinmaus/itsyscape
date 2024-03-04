@@ -623,3 +623,46 @@ do
 		Resource = ItsyScape.Resource.DropTable "PreTutorial_Maggot_Primary"
 	}
 end
+
+do
+	local Yenderling = ItsyScape.Resource.Peep "PreTutorial_Yenderling"
+
+	ItsyScape.Resource.Peep "PreTutorial_Yenderling" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Yenderling.BaseYenderling",
+		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yenderling",
+		Language = "en-US",
+		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "No one seems to know where Yenderlings come from, but where there's one, there's always a hundred more hidden in the dark...",
+		Language = "en-US",
+		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(10),
+		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(2),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(5),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Yenderling
+	}
+end

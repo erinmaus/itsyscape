@@ -116,20 +116,16 @@ function WhalingTemple:prepareQuest(playerPeep)
 		end
 	end)
 
-	Utility.Quest.listenForItem(playerPeep, "ToyLongsword", function()
-		playerPeep:getState():give("KeyItem", "PreTutorial_CraftedWeapon")
-		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
-	end)
+	local function _craftedWeapon()
+		if not playerPeep:getState():has("KeyItem", "PreTutorial_CraftedWeapon") then
+			playerPeep:getState():give("KeyItem", "PreTutorial_CraftedWeapon")
+			PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
+		end
+	end
 
-	Utility.Quest.listenForItem(playerPeep, "ToyBoomerang", function()
-		playerPeep:getState():give("KeyItem", "PreTutorial_CraftedWeapon")
-		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
-	end)
-
-	Utility.Quest.listenForItem(playerPeep, "ToyWand", function()
-		playerPeep:getState():give("KeyItem", "PreTutorial_CraftedWeapon")
-		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutTrees")
-	end)
+	Utility.Quest.listenForItem(playerPeep, "ToyLongsword", _craftedWeapon)
+	Utility.Quest.listenForItem(playerPeep, "ToyBoomerang", _craftedWeapon)
+	Utility.Quest.listenForItem(playerPeep, "ToyWand", _craftedWeapon)
 
 	Utility.Quest.listenForKeyItem(playerPeep, "PreTutorial_KilledMaggot", function()
 		local fish = self:getDirector():probe(
