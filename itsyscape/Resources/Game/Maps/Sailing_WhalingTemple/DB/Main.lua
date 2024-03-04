@@ -207,13 +207,22 @@ do
 	}
 end
 
-M["Rosalind"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Rosalind"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 61,
 		PositionY = 3,
 		PositionZ = 71,
 		Direction = 1,
+		Name = "Anchor_Rosalind",
+		Map = M._MAP,
+		Resource = M["Anchor_Rosalind"]
+	}
+end
+
+M["Rosalind"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
 		Name = "Rosalind",
 		Map = M._MAP,
 		Resource = M["Rosalind"]
@@ -281,6 +290,27 @@ do
 		Action = NamedTalkActionFish,
 		Peep = M["Rosalind"]
 	}
+
+	local NamedTalkActionDungeon = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Dungeon_en-US.lua",
+		Language = "en-US",
+		Action = NamedTalkActionDungeon
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = NamedTalkActionDungeon
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "TalkAboutDungeon",
+		Action = NamedTalkActionDungeon,
+		Peep = M["Rosalind"]
+	}
+
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "follow",
@@ -357,12 +387,23 @@ do
 		Requirement {
 			Resource = ItsyScape.Resource.KeyItem "PreTutorial_CookedFish",
 			Count = 1
+		},
+
+		Requirement {
+			Resource = ItsyScape.Resource.KeyItem "PreTutorial_SleptAtBed",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.KeyItem "PreTutorial_ExploreDungeon",
+			Count = 1
 		}
 	}
 
 	ItsyScape.Meta.TravelDestination {
 		Anchor = "Anchor_FromFish",
 		Map = ItsyScape.Resource.Map "Sailing_WhalingTemple_Underground",
+		IsInstance = 1,
 		Action = TravelAction
 	}
 
@@ -527,6 +568,32 @@ do
 	}
 end
 
+M["Bed"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 26,
+		PositionY = 4,
+		PositionZ = 49,
+		Name = "Bed",
+		Map = M._MAP,
+		Resource = M["Bed"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_Bed",
+		MapObject = M["Bed"]
+	}
+
+	M["Bed"] {
+		ItsyScape.Action.Sleep() {
+			Output {
+				Resource = ItsyScape.Resource.KeyItem "PreTutorial_SleptAtBed",
+				Count = 1
+			}
+		}
+	}
+end
+
 M["Passage_ToFishingArea"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {
@@ -581,6 +648,24 @@ do
 	}
 end
 
+M["Passage_BeforeTrapdoor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_BeforeTrapdoor",
+		Map = M._MAP,
+		Resource = M["Passage_BeforeTrapdoor"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 28,
+		Z1 = 32,
+		X2 = 36,
+		Z2 = 36,
+		Map = M._MAP,
+		Resource = M["Passage_BeforeTrapdoor"]
+	}
+end
+
 M["Anchor_FromFishingArea"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -590,5 +675,29 @@ do
 		Name = "Anchor_FromFishingArea",
 		Map = M._MAP,
 		Resource = M["Anchor_FromFishingArea"]
+	}
+end
+
+M["Anchor_ToBed"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27,
+		PositionY = 4,
+		PositionZ = 51,
+		Name = "Anchor_ToBed",
+		Map = M._MAP,
+		Resource = M["Anchor_ToBed"]
+	}
+end
+
+M["Anchor_FromTrapdoor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 5,
+		PositionZ = 39,
+		Name = "Anchor_FromTrapdoor",
+		Map = M._MAP,
+		Resource = M["Anchor_FromTrapdoor"]
 	}
 end

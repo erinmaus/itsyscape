@@ -38,7 +38,15 @@ Quest "PreTutorial" {
 	Step "PreTutorial_Fished",
 	Step "PreTutorial_CookedFish",
 
+	Step "PreTutorial_ExploreDungeon",
+
 	Step "PreTutorial_Teleported"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Sleep at the makeshift bed near the bridge before the trapdoor entrance.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SleptAtBed"
 }
 
 local Description = ItsyScape.Utility.QuestStepDescription
@@ -60,7 +68,7 @@ Description "PreTutorial_DefendShip" {
 
 Description "PreTutorial_ArriveAtTheWhalingTemple" {
 	before = "Jenkins plotted a course for the abandoned Yendorian outpost, the Whaling Temple.",
-	after = "Jenkins and the crew, including you, arrived safely at the abandoned Yendorian output, the Whaling Temple."
+	after = "Jenkins and the crew, including you, arrived safely at the abandoned Yendorian outpost, the Whaling Temple."
 }
 
 Description "PreTutorial_FoundTrees" {
@@ -96,4 +104,9 @@ Description "PreTutorial_Fished" {
 Description "PreTutorial_CookedFish" {
 	before = "The sardines need to be cooked.",
 	after = "You cooked the sardines."
+}
+
+Description "PreTutorial_ExploreDungeon" {
+	before = "Looks like there's a trapdoor north of the bridge, better investigate!",
+	after = "You entered the trapdoor north of the bridge and discovered a cave under the island."
 }

@@ -166,6 +166,137 @@ local Tree = BTreeBuilder.Node() {
 				}
 			},
 
+			Mashina.Sequence {
+				Mashina.Try {
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_FoundFish"
+					},
+
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_KilledMaggot"
+					},
+
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_Fished"
+					},
+
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_CookedFish"
+					}
+				},
+
+				Mashina.Step {
+					Mashina.Compare.Equal {
+						left = CURRENT_PASSAGE,
+						right = "Passage_BeforeTrapdoor"
+					},
+
+					Mashina.Check {
+						condition = ENTERED_PASSAGE,
+					},
+
+					Mashina.Peep.Talk {
+						message = "Hey, don't go too far yet!",
+						duration = 4
+					},
+
+					Mashina.Player.Disable {
+						player = PLAYER
+					},
+
+					Mashina.Player.Walk {
+						player = PLAYER,
+						target = "Anchor_FromTrapdoor"
+					},
+
+					Mashina.Peep.Wait {
+						peep = PLAYER
+					},
+
+					Mashina.Player.Enable {
+						player = PLAYER,
+					},
+
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutDungeon",
+						player = PLAYER
+					}
+				}
+			},
+
+			Mashina.Sequence {
+				Mashina.Try {
+					Mashina.Invert {
+						Mashina.Player.HasKeyItem {
+							player = PLAYER,
+							key_item = "PreTutorial_SleptAtBed"
+						}
+					}
+				},
+
+				Mashina.Step {
+					Mashina.Compare.Equal {
+						left = CURRENT_PASSAGE,
+						right = "Passage_BeforeTrapdoor"
+					},
+
+					Mashina.Check {
+						condition = ENTERED_PASSAGE,
+					},
+
+					Mashina.Peep.Talk {
+						message = "Hey, before we go further, follow me!",
+						duration = 4
+					},
+
+					Mashina.Player.Disable {
+						player = PLAYER
+					},
+
+					Mashina.ParallelSequence {
+						Mashina.Step {
+							Mashina.Player.Walk {
+								player = PLAYER,
+								distance = 2,
+								as_close_as_possible = false,
+								target = "Anchor_ToBed"
+							},
+
+							Mashina.Peep.Wait {
+								peep = PLAYER
+							}
+						},
+
+						Mashina.Step {
+							Mashina.Peep.Walk {
+								target = "Anchor_ToBed",
+								distance = 0,
+								as_close_as_possible = true,
+							},
+
+							Mashina.Peep.Wait
+						}
+					},
+
+					Mashina.Player.Enable {
+						player = PLAYER,
+					},
+
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutDungeon",
+						player = PLAYER
+					}
+				}
+			},
+
 			Mashina.Success {
 				Mashina.Sequence {
 					Mashina.Invert {

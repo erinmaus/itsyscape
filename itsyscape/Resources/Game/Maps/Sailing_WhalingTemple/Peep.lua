@@ -15,6 +15,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
@@ -44,16 +45,25 @@ function WhalingTemple:onLoad(filename, args, layer)
 	})
 end
 
+function WhalingTemple:trySpawnRosalind(playerPeep)
+	Utility.spawnInstancedMapObjectAtAnchor(self, playerPeep, "Rosalind", "Anchor_Rosalind")
+end
+
 function WhalingTemple:onPlayerEnter(player)
 	local playerPeep = player:getActor():getPeep()
 
+	self:trySpawnRosalind(playerPeep)
+	self:prepareQuest(playerPeep)
+
+	self:pushPoke("preparePlayer", playerPeep)
+end
+
+function WhalingTemple:onPreparePlayer(playerPeep)
 	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ArriveAtTheWhalingTemple", playerPeep) then
 		self:makePlayerTalkToPeep(playerPeep, "IsabelleIsland_Port_PortmasterJenkins")
 	else
 		self:makeRosalindFollowPlayer(playerPeep, true)
 	end
-
-	self:prepareQuest(playerPeep)
 end
 
 function WhalingTemple:prepareQuest(playerPeep)
@@ -207,6 +217,10 @@ function WhalingTemple:makeRosalindFollowPlayer(playerPeep, teleport)
 
 	local _, follower = rosalind:addBehavior(FollowerBehavior)
 	follower.playerID = Utility.Peep.getPlayerModel(playerPeep):getID()
+	follower.followAcrossMaps = true
+
+	local _, instanced = rosalind:addBehavior(InstancedBehavior)
+	instanced.playerID = Utility.Peep.getPlayerModel(playerPeep):getID()
 
 	local mashina = rosalind:getBehavior(MashinaBehavior)
 	if mashina then

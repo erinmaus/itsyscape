@@ -65,6 +65,9 @@ function Dialog:update(mashina, state, executor)
 		local mapObject = Utility.Peep.getMapObject(mashina)
 
 		if (mapObject and _try(mapObject)) or (resource and _try(resource)) then
+			Utility.Peep.face(mashina, player)
+			Utility.Peep.face(player, mashina)
+
 			state[self.OPENED] = true
 
 			return B.Status.Working

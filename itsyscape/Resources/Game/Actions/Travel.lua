@@ -132,7 +132,11 @@ function Travel:travel(state, peep, target)
 				raid:addInstance(newInstance)
 			end
 		else
-			stage:movePeep(peep, map.name .. arguments, destination)
+			if record:get("IsInstance") == 0 then
+				stage:movePeep(peep, map.name .. arguments, destination)
+			else
+				stage:movePeep(peep, "@" .. map.name .. arguments, destination)
+			end
 		end
 	end
 
