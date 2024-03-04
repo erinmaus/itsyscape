@@ -166,8 +166,10 @@ function WhalingTemple:prepareQuest(playerPeep)
 	end)
 
 	Utility.Quest.listenForItem(playerPeep, "Sardine", function()
-		playerPeep:getState():give("KeyItem", "PreTutorial_Fished")
-		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
+		if not playerPeep:getState():has("KeyItem", "PreTutorial_Fished") then
+			playerPeep:getState():give("KeyItem", "PreTutorial_Fished")
+			PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
+		end
 	end)
 
 	do
