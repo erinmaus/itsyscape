@@ -1,9 +1,9 @@
 local M = include "Resources/Game/Maps/Sailing_WhalingTemple_Underground/DB/Default.lua"
 
--- ItsyScape.Meta.PeepID {
--- 	Value = "Resources.Game.Maps.Sailing_WhalingTemple_Underground.Peep",
--- 	Resource = M._MAP
--- }
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Sailing_WhalingTemple_Underground.Peep",
+	Resource = M._MAP
+}
 
 ItsyScape.Meta.ResourceName {
 	Value = "Underground, The Whaling Temple",
@@ -226,8 +226,7 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "PreTutorial_Yenderling",
-		MapObject = M["Yenderling"],
-		DoesNotDespawn = 1
+		MapObject = M["Yenderling"]
 	}
 end
 

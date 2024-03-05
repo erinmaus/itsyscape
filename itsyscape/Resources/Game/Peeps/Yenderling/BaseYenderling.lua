@@ -84,6 +84,8 @@ function BaseYenderling:ready(director, game)
 
 	local _, stance = self:addBehavior(StanceBehavior)
 	stance.stance = Weapon.STANCE_DEFENSIVE
+
+	Utility.Peep.equipXWeapon(self, "Yenderling_Slap")
 end
 
 function BaseYenderling:update(...)

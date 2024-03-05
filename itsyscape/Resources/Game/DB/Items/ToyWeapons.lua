@@ -54,7 +54,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Upcoming hero's longsword",
+		Value = "Up-and-coming hero's longsword",
 		Language = "en-US",
 		Resource = Item
 	}
@@ -137,7 +137,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Upcoming hero's wand",
+		Value = "Up-and-coming hero's wand",
 		Language = "en-US",
 		Resource = Item
 	}
@@ -221,7 +221,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Upcoming hero's boomerang",
+		Value = "Up-and-coming hero's boomerang",
 		Language = "en-US",
 		Resource = Item
 	}
