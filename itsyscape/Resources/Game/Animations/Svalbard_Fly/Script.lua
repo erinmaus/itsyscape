@@ -1,5 +1,4 @@
 Animation "Svalbard Fly" {
-	fadesIn = true,
 	fadesOut = true,
 
 	Target {
