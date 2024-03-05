@@ -1574,6 +1574,10 @@ function ProCombatStatusHUD:positionTarget(targetWidget, sortedWidgets, delta)
 	local increment = math.pi * 2 / ProCombatStatusHUD.MAX_TARGETS
 	local angle = increment * (index - 1) - math.pi / 4
 
+	if index > 2 then
+		angle = angle + math.pi / 2
+	end
+
 	local halfSize = Vector(width, height) * 0.5
 
 	local x = math.cos(angle) * radius
