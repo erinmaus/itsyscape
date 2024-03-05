@@ -26,6 +26,8 @@ function BaseYenderling:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(3.5, 3.5, 3.5)
+	size.pan = Vector(0, 2, 0)
+	size.zoom = 4
 
 	self:addBehavior(RotationBehavior)
 end

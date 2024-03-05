@@ -13,6 +13,7 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.V2Common"
@@ -27,6 +28,22 @@ function WhalingTempleUnderground:onPlayerEnter(player)
 	local playerPeep = player:getActor():getPeep()
 
 	self:prepareQuest(playerPeep)
+	self:pushPoke("preparePlayer", playerPeep)
+end
+
+function WhalingTempleUnderground:onPreparePlayer(playerPeep)
+	if not playerPeep:getState():has("KeyItem", "PreTutorial_FoundYenderling") then
+		Utility.UI.closeAll(playerPeep)
+
+		playerPeep:addBehavior(DisabledBehavior)
+		local cutscene = Utility.Map.playCutscene(self, "Sailing_WhalingTemple_Underground_Yenderling", "StandardCutscene", playerPeep)
+		cutscene:listen("done", self.onFinishCutscene, self, playerPeep)
+	end
+end
+
+function WhalingTempleUnderground:onFinishCutscene(playerPeep)
+	playerPeep:removeBehavior(DisabledBehavior)
+	Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
 end
 
 function WhalingTempleUnderground:prepareQuest(playerPeep)
