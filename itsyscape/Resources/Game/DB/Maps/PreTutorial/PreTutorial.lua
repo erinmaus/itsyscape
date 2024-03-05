@@ -628,7 +628,14 @@ do
 	local Yenderling = ItsyScape.Resource.Peep "PreTutorial_Yenderling"
 
 	ItsyScape.Resource.Peep "PreTutorial_Yenderling" {
-		ItsyScape.Action.Attack()
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "PreTutorial_Yenderling_Primary",
+				Count = 1
+			}
+		}
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -664,5 +671,11 @@ do
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(5),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "AzatiteShard",
+		Count = 5,
+		Resource = ItsyScape.Resource.DropTable "PreTutorial_Yenderling_Primary"
 	}
 end

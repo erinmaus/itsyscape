@@ -39,6 +39,8 @@ Quest "PreTutorial" {
 	Step "PreTutorial_CookedFish",
 
 	Step "PreTutorial_ExploreDungeon",
+	Step "PreTutorial_FoundYenderling",
+	Step "PreTutorial_SlayedYenderling",
 
 	Step "PreTutorial_Teleported"
 }
@@ -47,6 +49,12 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Sleep at the makeshift bed near the bridge before the trapdoor entrance.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_SleptAtBed"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Learn about stances from Rosalind.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "PreTutorial_LearnedAboutStances"
 }
 
 local Description = ItsyScape.Utility.QuestStepDescription
@@ -109,4 +117,14 @@ Description "PreTutorial_CookedFish" {
 Description "PreTutorial_ExploreDungeon" {
 	before = "Looks like there's a trapdoor north of the bridge, better investigate!",
 	after = "You entered the trapdoor north of the bridge and discovered a cave under the island."
+}
+
+Description "PreTutorial_FoundYenderling" {
+	before = "Explore the cave.",
+	after = "Under the Whaling Temple, you and Rosalind discovered a yenderling."
+}
+
+Description "PreTutorial_SlayedYenderling" {
+	before = "Slay the yenderling.",
+	after = "The yenderlign was tanky, but after Rosalind taught you the importance of stances you were able to take it down."
 }
