@@ -335,7 +335,6 @@ function ActorView:playAnimation(slot, animation, priority, time)
 			if (a.definition and a.definition:getFadesOut()) or
 			   (a.instance and definition:getResource():getFadesIn())
 			then
-				Log.info("Queueing animation.")
 				a.next = {
 					cacheRef = animation,
 					definition = definition:getResource(),
