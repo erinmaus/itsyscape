@@ -291,14 +291,14 @@ function DialogBox:update(...)
 		if node == self.actor then
 			local direction, r = node:getDirection()
 			if r then
-				rotation = -r
+				rotation = (-r) * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
 			elseif direction.x < 0 then
 				rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
 			end
 		elseif node == self.prop then
-			rotation = -node:getRotation()
+			rotation = (-node:getRotation()) * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
 		end
-		self.speakerIcon:getParentNode():getTransform():setLocalRotation(rotation)
+		self.speakerIcon:getParentNode():getTransform():setLocalRotation(rotation:getNormal())
 
 		local otherTransform = self.speakerIcon:getParentNode():getTransform():getGlobalTransform()
 		otherTransform:apply(transform)
