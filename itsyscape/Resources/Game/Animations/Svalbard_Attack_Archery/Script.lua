@@ -1,7 +1,7 @@
 Animation "Svalbard Attack (Archery)" {
 	Channel {
 		Particles {
-			duration = 3,
+			duration = 2,
 			attach = "tongue",
 
 			system = {
@@ -53,7 +53,7 @@ Animation "Svalbard Attack (Archery)" {
 					type = "RandomDelayEmissionStrategy",
 					count = { 5, 10 },
 					delay = { 0.125 },
-					duration = { 3 }
+					duration = { 1 }
 				}
 			}
 
