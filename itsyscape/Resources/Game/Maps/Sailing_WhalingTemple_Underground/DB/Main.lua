@@ -211,6 +211,29 @@ do
 		Prop = ItsyScape.Resource.Prop "Door_IronGate",
 		MapObject = M["Door_FromYenderling"]
 	}
+
+	M["Door_FromYenderling"] {
+		ItsyScape.Action.Open() {
+			Requirement {
+				Resource = ItsyScape.Resource.KeyItem "PreTutorial_SlayedYenderling",
+				Count = 1
+			}
+		},
+
+		ItsyScape.Action.Close()
+	}
+end
+
+M["Anchor_BeforeYenderling"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21,
+		PositionY = 0,
+		PositionZ = 51,
+		Name = "Anchor_BeforeYenderling",
+		Map = M._MAP,
+		Resource = M["Anchor_BeforeYenderling"]
+	}
 end
 
 M["Yenderling"] = ItsyScape.Resource.MapObject.Unique()
@@ -248,5 +271,21 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_IronGate",
 		MapObject = M["Door_ToBoss"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_WhalingTemple_Underground_Yenderling"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Yenderling",
+		Cutscene = Cutscene,
+		Resource = M["Yenderling"]
+	}
+
+	ItsyScape.Meta.CutscenePeep {
+		Name = "Rosalind",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind"
 	}
 end

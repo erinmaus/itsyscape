@@ -305,16 +305,42 @@ do
 		Action = NamedTalkActionDungeon
 	}
 
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "PreTutorial_Yenderling",
+		Name = "Yenderling",
+		Action = NamedTalkActionDungeon
+	}
+
 	ItsyScape.Meta.NamedPeepAction {
 		Name = "TalkAboutDungeon",
 		Action = NamedTalkActionDungeon,
 		Peep = M["Rosalind"]
 	}
 
-
 	ItsyScape.Meta.PeepMashinaState {
 		State = "follow",
 		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Rosalind_FollowLogic.lua",
+		Resource = M["Rosalind"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumStaff",
+		Count = 1,
+		Resource = M["Rosalind"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyStab = -1000,
+		AccuracySlash = -1000,
+		AccuracyCrush = -1000,
+		AccuracyMagic = -1000,
+		DefenseStab = 5000,
+		DefenseSlash = 5000,
+		DefenseCrush = 5000,
+		DefenseMagic = 5000,
+		DefenseRanged = 5000,
+		StrengthMagic = -1000,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = M["Rosalind"]
 	}
 end
