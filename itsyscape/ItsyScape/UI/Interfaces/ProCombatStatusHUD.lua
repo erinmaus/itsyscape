@@ -737,7 +737,6 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.equipmentSlot = 1
 
 	self.radialMenu = ProCombatStatusHUD.RadialMenu(self)
-	self.radialMenu:setZDepth(1000)
 	self:prepareRadialMenu()
 
 	self.subPending = ProCombatStatusHUD.Pending()
@@ -749,6 +748,8 @@ function ProCombatStatusHUD:new(id, index, ui)
 
 	self.radialMenuKeybind = Keybinds["PLAYER_1_FOCUS"]
 	self.isRadialMenuKeybindDown = self.radialMenuKeybind:isDown()
+
+	self:setZDepth(-100)
 end
 
 function ProCombatStatusHUD:loadConfig()
