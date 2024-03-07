@@ -104,7 +104,8 @@ local graphicsState = {
 	oldSizes = {},
 	currentSizes = setmetatable({}, { __mode = "k" }),
 	pendingSizes = {},
-	seenSizes = {}
+	seenSizes = {},
+	time = 0
 }
 
 do
@@ -122,6 +123,10 @@ do
 
 	local w, h = love.window.getMode()
 	table.insert(graphicsState.pseudoScissor, { 0, 0, w, h })
+end
+
+function itsyrealm.graphics.getTime()
+	return graphicsState.time
 end
 
 function itsyrealm.graphics.impl.captureRenderState()
@@ -386,6 +391,8 @@ function itsyrealm.graphics.disable()
 end
 
 function itsyrealm.graphics.start()
+	graphicsState.time = graphicsState.time + love.timer.getDelta()
+
 	graphicsState.transform:reset()
 end
 
@@ -427,6 +434,15 @@ function itsyrealm.graphics.debug()
 						graphicsState.atlas.layers[i].rectangles[j].image:getTexture(),
 						graphicsState.atlas.layers[i].rectangles[j].i * cellSize,
 						graphicsState.atlas.layers[i].rectangles[j].j * cellSize)
+
+					love.graphics.push("all")
+					love.graphics.setColor(0, 0, 0, 1)
+					love.graphics.scale(2, 2)
+					love.graphics.print(
+						string.format("%.2f", itsyrealm.graphics.getTime() - graphicsState.atlas.layers[i].rectangles[j].image.time),
+						graphicsState.atlas.layers[i].rectangles[j].i * cellSize / 2,
+						graphicsState.atlas.layers[i].rectangles[j].j * cellSize / 2)
+					love.graphics.pop()
 				end
 
 				if isCollision then
@@ -565,7 +581,7 @@ function itsyrealm.graphics.flushes.Font.getBatch(handle)
 			pending.batch = love.graphics.newText(handle)
 		end
 
-		return pending.batch, pending.v
+		return pending.batch
 	end
 
 	return nil
@@ -636,7 +652,8 @@ function itsyrealm.graphics.stop()
 	for i = 1, graphicsState.drawQueue.n do
 		local draw = graphicsState.drawQueue[i]
 		local size = graphicsState.sizes[i]
- 
+
+		local shouldFlush = false
 		if size and size.handle ~= nil then
 			local handle = size.handle or defaultHandle
 
@@ -652,16 +669,8 @@ function itsyrealm.graphics.stop()
 
 			if currentNumSizes > 1 then
 				if size.force or (previousHandle ~= currentHandle and itsyrealm.graphics.shouldFlush(size)) then
-					itsyrealm.graphics.flush()
-					currentNumSizes = 0
+					shouldFlush = true
 				end
-			end
-
-			if not graphicsState.currentSizes[handle] then
-				currentNumSizes = currentNumSizes + 1
-				graphicsState.currentSizes[handle] = table.remove(graphicsState.oldSizes, #graphicsState.oldSizes) or {}
-
-				table.insert(graphicsState.pendingSizes, handle)
 			end
 
 			table.insert(graphicsState.currentSizes[handle], size)
@@ -672,6 +681,11 @@ function itsyrealm.graphics.stop()
 		else
 			love.graphics.setBlendMode('alpha')
 			draw.command(unpack(draw, 1, draw.n))
+		end
+
+		if shouldFlush then
+			itsyrealm.graphics.flush()
+			currentNumSizes = 0
 		end
 
 		if size then

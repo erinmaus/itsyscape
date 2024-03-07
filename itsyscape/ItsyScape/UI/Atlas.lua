@@ -10,14 +10,14 @@
 local Class = require "ItsyScape.Common.Class"
 
 local Atlas = Class()
-Atlas.STALE_LIMIT_SECONDS = 5
+Atlas.STALE_LIMIT_SECONDS = 10
 
 Atlas.Image = Class()
 function Atlas.Image:new(texture)
 	self.texture = texture
 	self.x = 0
 	self.y = 0
-	self.time = love.timer.getTime()
+	self.time = itsyrealm.graphics.getTime()
 	self.layer = 0
 	self.key = false
 end
@@ -47,7 +47,7 @@ function Atlas.Image:replace(texture)
 end
 
 function Atlas.Image:update()
-	self.time = love.timer.getTime()
+	self.time = itsyrealm.graphics.getTime()
 end
 
 function Atlas.Image:reset(key)
@@ -61,7 +61,7 @@ function Atlas.Image:reset(key)
 end
 
 function Atlas.Image:stale()
-	local currentTime = love.timer.getTime()
+	local currentTime = itsyrealm.graphics.getTime()
 	return currentTime > self.time + Atlas.STALE_LIMIT_SECONDS
 end
 
