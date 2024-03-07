@@ -170,10 +170,11 @@ function WhalingTempleUnderground:prepareQuest(playerPeep)
 				if targets[item:getRef()] then
 					Utility.Peep.poof(targets[item:getRef()])
 					targets[item:getRef()] = nil
-				end
 
-				if peep then
 					peep:getState():give("KeyItem", "PreTutorial_CollectedAzatiteShards")
+					peep:addBehavior(DisabledBehavior)
+
+					PreTutorialCommon.makeRosalindTalk(peep, "TalkAboutDungeon")
 				end
 			end
 
