@@ -393,6 +393,43 @@ do
 	}
 end
 
+M["Ladder_FromMine"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 3,
+		PositionZ = 21,
+		Name = "Ladder_FromMine",
+		Map = M._MAP,
+		Resource = M["Ladder_FromMine"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "MetalLadder_Default",
+		MapObject = M["Ladder_FromMine"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromBoss",
+		Map = ItsyScape.Resource.Map "Sailing_WhalingTemple_Underground",
+		IsInstance = 1,
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		XProgressive = "Climbing-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_FromMine"] {
+		TravelAction
+	}
+end
+
 M["TrapDoor_ToMine"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -443,6 +480,12 @@ do
 	M["TrapDoor_ToMine"] {
 		TravelAction
 	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["TrapDoor_ToMine"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_ExploreDungeon"
+	}
 end
 
 M["Anchor_FromMine"] = ItsyScape.Resource.MapObject.Unique()
@@ -454,6 +497,18 @@ do
 		Name = "Anchor_FromMine",
 		Map = M._MAP,
 		Resource = M["Anchor_FromMine"]
+	}
+end
+
+M["Anchor_FromMineToBoss"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 5,
+		PositionZ = 23,
+		Name = "Anchor_FromMineToBoss",
+		Map = M._MAP,
+		Resource = M["Anchor_FromMineToBoss"]
 	}
 end
 

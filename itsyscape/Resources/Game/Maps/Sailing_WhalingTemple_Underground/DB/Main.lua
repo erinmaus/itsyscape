@@ -66,6 +66,18 @@ do
 	}
 end
 
+M["Anchor_FromBoss"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 0,
+		PositionZ = 39,
+		Name = "Anchor_FromBoss",
+		Map = M._MAP,
+		Resource = M["Anchor_FromBoss"]
+	}
+end
+
 M["Ladder_ToBoss"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -80,6 +92,26 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "MetalLadder_Default",
 		MapObject = M["Ladder_ToBoss"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.TravelDestination {
+		Anchor = "Anchor_FromMineToBoss",
+		Map = ItsyScape.Resource.Map "Sailing_WhalingTemple",
+		IsInstance = 1,
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		XProgressive = "Climbing-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Ladder_ToBoss"] {
+		TravelAction
 	}
 end
 

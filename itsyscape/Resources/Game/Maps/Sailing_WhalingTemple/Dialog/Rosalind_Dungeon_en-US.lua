@@ -184,6 +184,33 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_MinedCopper") then
 			"Let's not get ahead of ourselves!",
 			"You need some armor!"
 		}
+	else
+		speaker "Rosalind"
+		message {
+			"Azatite is rare...",
+			"It's thought to be from Azathoth.",
+		}
+
+		message {
+			"The Old One, Yendor, made Azathoth in Her image.",
+			"There hasn't been a way to Azathoth in centuries, if not longer."
+		}
+
+		message "Obviously, a yenderling might have some connection, but..."
+		message "...it's still strange that azatite showed up now, of all times."
+
+		message {
+			"Sorry for the rambling,",
+			"it's just unsettling to see azatite on the Realm."
+		}
+
+		message {
+			"Anyway... Let's go!",
+			"There's a furnace up ahead and some ore.",
+			"Looks like we might be able to make you armor!"
+		}
+
+		_TARGET:removeBehavior(DisabledBehavior)
 	end
 elseif not _TARGET:getState():has("KeyItem", "PreTutorial_SmeltedWeirdBars") then
 	message {

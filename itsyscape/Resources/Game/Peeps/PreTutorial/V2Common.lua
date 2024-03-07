@@ -463,7 +463,6 @@ function Common.makeRosalindTalk(playerPeep, name)
 		return
 	end
 
-
 	Utility.UI.openInterface(playerPeep, "DialogBox", true, action.instance, rosalind)
 end
 
