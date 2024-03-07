@@ -78,8 +78,8 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(1, 1),
-		StrengthMelee = ItsyScape.Utility.styleBonusForWeapon(2, 1),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(5),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(5),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "ToyLongsword"
 	}
@@ -161,9 +161,9 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(1, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(1, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
-		StrengthMagic = ItsyScape.Utility.styleBonusForWeapon(1, 1),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(5, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(5, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(5),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "ToyWand"
 	}
@@ -245,8 +245,8 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(1, 1),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(1, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(5),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(5),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "ToyBoomerang"
 	}
