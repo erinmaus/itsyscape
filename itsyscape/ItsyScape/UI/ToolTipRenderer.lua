@@ -121,10 +121,12 @@ function ToolTipRenderer:draw(widget, state)
 		end
 	end
 
-	image:draw(
-		-self.padding, -self.padding,
-		width,
-		height)
+	itsyrealm.graphics.translate(-self.padding, -self.padding)
+	itsyrealm.graphics.pushInterface(width, height)
+
+	image:draw(0, 0, width, height)
+
+	itsyrealm.graphics.translate(self.padding, self.padding)
 
 	for i = 1, #draw do
 		draw[i]()
@@ -132,6 +134,15 @@ function ToolTipRenderer:draw(widget, state)
 
 	love.graphics.setFont(previousFont)
 	love.graphics.setColor(1, 1, 1, 1)
+
+	if sx + width > screenWidth then
+		itsyrealm.graphics.translate(-(screenWidth - (sx + width)), 0)
+	end
+	if sy + height > screenHeight then
+		itsyrealm.graphics.translate(0, -(screenHeight - (sy + height)))
+	end
+
+	itsyrealm.graphics.translate(-ToolTipRenderer.OFFSET_X, -ToolTipRenderer.OFFSET_Y)
 end
 
 return ToolTipRenderer
