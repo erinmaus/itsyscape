@@ -10,9 +10,11 @@
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
+local Probe = require "ItsyScape.Peep.Probe"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 
 local PLAYER = B.Reference("Rosalind", "PLAYER")
+local TARGET = B.Reference("Rosalind", "TARGET")
 local CURRENT_PASSAGE = B.Reference("Rosalind", "CURRENT_PASSAGE")
 local ENTERED_PASSAGE = B.Reference("Rosalind", "ENTERED_PASSAGE")
 local TALKED_ABOUT_FISH = B.Reference("Rosalind", "TALKED_ABOUT_FISH")
@@ -298,22 +300,60 @@ local Tree = BTreeBuilder.Node() {
 			},
 
 			Mashina.Success {
-				Mashina.Sequence {
-					Mashina.Invert {
-						Mashina.Navigation.TargetMoved {
-							peep = PLAYER
+				Mashina.Try {
+					Mashina.Sequence {
+						Mashina.Invert {
+							Mashina.Player.HasKeyItem {
+								player = PLAYER,
+								key_item = "PreTutorial_SlayedYenderling"
+							}
+						},
+
+						Mashina.Peep.FindNearbyCombatTarget {
+							include_npcs = true,
+							filters = {
+								Probe.resource("Peep", "PreTutorial_Yenderling")
+							},
+
+							[TARGET] = B.Output.result
+						},
+
+						Mashina.Step {
+							Mashina.Peep.Walk {
+								target = "Anchor_BeforeYenderling",
+							},
+
+							Mashina.Peep.Wait,
+
+							Mashina.Peep.EngageCombatTarget {
+								peep = TARGET
+							},
+
+							Mashina.Repeat {
+								Mashina.Peep.IsAlive {
+									peep = TARGET
+								}
+							}
 						}
 					},
 
-					Mashina.Step {
-						Mashina.Navigation.WalkToPeep {
-							peep = PLAYER,
-							distance = 2,
-							as_close_as_possible = false
+					Mashina.Sequence {
+						Mashina.Invert {
+							Mashina.Navigation.TargetMoved {
+								peep = PLAYER
+							}
 						},
 
-						Mashina.Repeat {
-							Mashina.Peep.Wait
+						Mashina.Step {
+							Mashina.Navigation.WalkToPeep {
+								peep = PLAYER,
+								distance = 2,
+								as_close_as_possible = false
+							},
+
+							Mashina.Repeat {
+								Mashina.Peep.Wait
+							}
 						}
 					}
 				}

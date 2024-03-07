@@ -16,6 +16,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
@@ -28,6 +29,9 @@ function BaseYenderling:new(resource, name, ...)
 	size.size = Vector(3.5, 3.5, 3.5)
 	size.pan = Vector(0, 2, 0)
 	size.zoom = 4
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
 
 	self:addBehavior(RotationBehavior)
 end

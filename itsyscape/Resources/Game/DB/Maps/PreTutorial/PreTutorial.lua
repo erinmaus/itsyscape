@@ -663,11 +663,6 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(1),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(2),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(2),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(2),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(2),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(2),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(5),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Yenderling

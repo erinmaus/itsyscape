@@ -251,6 +251,13 @@ do
 		Peep = ItsyScape.Resource.Peep "PreTutorial_Yenderling",
 		MapObject = M["Yenderling"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle-attack",
+		IsDefault = 1,
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple_Underground/Scripts/Yenderling_AttackLogic.lua",
+		Resource = M["Yenderling"]
+	}
 end
 
 M["Door_ToBoss"] = ItsyScape.Resource.MapObject.Unique()

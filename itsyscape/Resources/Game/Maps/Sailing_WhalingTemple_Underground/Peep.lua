@@ -50,11 +50,11 @@ function WhalingTempleUnderground:prepareQuest(playerPeep)
 	do
 		local yenderlings = self:getDirector():probe(
 			self:getLayerName(),
-			Probe.resource("Prop", "PreTutorial_Yenderling"))
+			Probe.resource("Peep", "PreTutorial_Yenderling"))
 
 		for _, yenderling in ipairs(yenderlings) do
 			yenderling:listen("die", function()
-				playerPeep:getState():give("PreTutorial_SlayedYenderling")
+				playerPeep:getState():give("KeyItem", "PreTutorial_SlayedYenderling")
 			end)
 		end
 	end
