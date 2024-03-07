@@ -592,6 +592,8 @@ function One:onMoveInstance(previousInstance, currentInstance)
 		local peep = actor:getPeep()
 		local follower = peep:getBehavior(FollowerBehavior)
 		if follower and follower.followAcrossMaps and follower.playerID == player:getID() then
+			peep:getCommandQueue():clear(true)
+
 			stage:movePeep(peep, currentInstance, Utility.Peep.getPosition(self))
 
 			Log.info(
