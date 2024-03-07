@@ -999,7 +999,10 @@ Utility.UI.Groups = {
 function Utility.UI.openGroup(peep, group)
 	for i = 1, #group do
 		local interfaceID = group[i]
-		Utility.UI.openInterface(peep, interfaceID, false)
+
+		if not Utility.UI.isOpen(peep, interfaceID) then
+			Utility.UI.openInterface(peep, interfaceID, false)
+		end
 	end
 end
 
@@ -2306,7 +2309,7 @@ function Utility.Peep.getStorage(peep, instancedPlayer)
 		end
 
 		local follower = peep:getBehavior(FollowerBehavior)
-		if follower and follower.id ~= FollowerBehavior.NIL_ID then
+		if follower and follower.followerID ~= FollowerBehavior.NIL_ID then
 			local worldStorage = director:getPlayerStorage(Utility.Peep.getPlayer(peep)):getRoot()
 			local scopedStorage = worldStorage:getSection("Follower"):getSection(follower.scope)
 
