@@ -182,12 +182,6 @@ function BasicCannon:onFire(peep, item)
 					local s, hit = ray:hitBounds(min, max, transform)
 					if s then
 						hit = Vector(transform:transformPoint(hit:get()))
-
-						if peep:hasBehavior("Player") then
-							print(">>> hit", p:getName(), hit:get())
-							print(">>> cannon", ray.origin:get())
-							print(">>> distance", (hit - ray.origin):getLength(), "max", range)
-						end
 					end
 
 				return s and (hit - ray.origin):getLength() <= range

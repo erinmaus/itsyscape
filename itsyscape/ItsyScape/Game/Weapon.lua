@@ -262,11 +262,6 @@ function Weapon.DamageRoll:roll()
 		minHit = math.max(minHit, 1)
 	end
 
-	print(">>>", self.peep:getName(), "min", minHit, "max", maxHit)
-	print(">>>", "reduction", self.hitReduction)
-	print(">>>", "min boost", self.minHitBoost)
-	print(">>>", "max boost", self.maxHitBoost)
-
 	minHit = math.min(minHit, maxHit)
 	maxHit = math.max(minHit, maxHit)
 

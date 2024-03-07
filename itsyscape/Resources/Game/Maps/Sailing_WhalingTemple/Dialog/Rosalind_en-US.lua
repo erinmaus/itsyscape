@@ -29,6 +29,22 @@ local ITEMS = {
 			"Seems you're missing the %item{fishing rod}.",
 			"Here you go!"
 		}
+	},
+	{
+		id = "BronzePickaxe",
+		keyItem = "PreTutorial_CollectedAzatiteShards",
+		message = {
+			"Huh, where'd your %item{bronze pickaxe} go?",
+			"Here's another!"
+		}
+	},
+	{
+		id = "Hammer",
+		keyItem = "PreTutorial_CollectedAzatiteShards",
+		message = {
+			"You can't smith without a %item{hammer}!",
+			"Here you go!"
+		}
 	}
 }
 
@@ -63,6 +79,10 @@ then
 	defer "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Trees_en-US.lua"
 elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CraftedWeapon", _TARGET) then
 	defer "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Trees_en-US.lua"
+elseif _TARGET:getState():has("KeyItem", "PreTutorial_SmithedUpAndComingHeroItem") and
+       not _TARGET:getState():has("KeyItem", "PreTutorial_SmithedUpAndComingHeroArmor")
+then
+	defer "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Dungeon_en-US.lua"
 else
 	message "Let's explore!"
 end

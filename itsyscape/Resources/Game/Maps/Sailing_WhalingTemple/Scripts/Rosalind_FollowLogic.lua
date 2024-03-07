@@ -48,30 +48,6 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Try {
 			Mashina.Sequence {
-				Mashina.Player.IsNextQuestStep {
-					player = PLAYER,
-					quest = "PreTutorial",
-					step = "PreTutorial_FoundTrees"
-				},
-
-				Mashina.Step {
-					Mashina.Compare.Equal {
-						left = CURRENT_PASSAGE,
-						right = "Passage_Trees"
-					},
-
-					Mashina.Check {
-						condition = ENTERED_PASSAGE,
-					},
-
-					Mashina.Player.Dialog {
-						named_action = "TalkAboutTrees",
-						player = PLAYER
-					}
-				}
-			},
-
-			Mashina.Sequence {
 				Mashina.Try {
 					Mashina.Player.IsNextQuestStep {
 						player = PLAYER,
@@ -235,12 +211,10 @@ local Tree = BTreeBuilder.Node() {
 			},
 
 			Mashina.Sequence {
-				Mashina.Try {
-					Mashina.Invert {
-						Mashina.Player.HasKeyItem {
-							player = PLAYER,
-							key_item = "PreTutorial_SleptAtBed"
-						}
+				Mashina.Invert {
+					Mashina.Player.HasKeyItem {
+						player = PLAYER,
+						key_item = "PreTutorial_SleptAtBed"
 					}
 				},
 
@@ -296,6 +270,274 @@ local Tree = BTreeBuilder.Node() {
 						named_action = "TalkAboutDungeon",
 						player = PLAYER
 					}
+				}
+			},
+
+			Mashina.Sequence {
+				Mashina.Step {
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_CollectedAzatiteShards"
+					},
+
+					Mashina.Compare.Equal {
+						left = CURRENT_PASSAGE,
+						right = "Passage_ToMine"
+					},
+
+					Mashina.Check {
+						condition = ENTERED_PASSAGE,
+					},
+
+					Mashina.Player.Disable {
+						player = PLAYER
+					},
+
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutDungeon",
+						player = PLAYER
+					},
+
+					Mashina.Try {
+						-- If the player somehow has azatite shards
+						-- but does not have the key item saying they
+						-- collected the shards, the dialog will set it.
+						-- We don't want to continue if that happened.
+						Mashina.Player.IsNextQuestStep {
+							player = PLAYER,
+							quest = "PreTutorial",
+							step = "PreTutorial_CollectedAzatiteShards"
+						},
+
+						Mashina.Failure {
+							Mashina.Player.Enable {
+								player = PLAYER
+							}
+						}
+					},
+
+					Mashina.ParallelSequence {
+						Mashina.Step {
+							Mashina.Player.Walk {
+								player = PLAYER,
+								target = "Yenderling",
+								distance = 0,
+								as_close_as_possible = true
+							},
+
+							Mashina.Peep.Wait {
+								peep = PLAYER
+							}
+						},
+
+						Mashina.Step {
+							Mashina.Peep.Walk {
+								target = "Yenderling",
+								distance = 2,
+								as_close_as_possible = false
+							},
+
+							Mashina.Peep.Wait
+						}
+					},
+
+					Mashina.Player.Enable {
+						player = PLAYER
+					}
+				}
+			},
+
+			Mashina.Step {
+				Mashina.Player.IsNextQuestStep {
+					player = PLAYER,
+					quest = "PreTutorial",
+					step = "PreTutorial_MinedCopper"
+				},
+
+				Mashina.Invert {
+					Mashina.Player.HasKeyItem {
+						player = PLAYER,
+						key_item = "PreTutorial_TalkedAboutMine"
+					}
+				},
+
+				Mashina.Compare.Equal {
+					left = CURRENT_PASSAGE,
+					right = "Passage_ToMine"
+				},
+
+				Mashina.Check {
+					condition = ENTERED_PASSAGE,
+				},
+
+				Mashina.Player.Disable {
+					player = PLAYER
+				},
+
+				Mashina.Player.Dialog {
+					named_action = "TalkAboutDungeon",
+					player = PLAYER
+				},
+
+				Mashina.ParallelSequence {
+					Mashina.Step {
+						Mashina.Player.Walk {
+							player = PLAYER,
+							target = "Anchor_ToMine",
+							distance = 0,
+							as_close_as_possible = true
+						},
+
+						Mashina.Peep.Wait {
+							peep = PLAYER
+						}
+					},
+
+					Mashina.Step {
+						Mashina.Peep.TimeOut {
+							duration = 2
+						},
+
+						Mashina.Peep.Walk {
+							target = "Anchor_ToMine",
+							distance = 2,
+							as_close_as_possible = false
+						},
+
+						Mashina.Peep.Wait {
+							peep = PLAYER
+						}
+					}
+				},
+
+				Mashina.Player.Dialog {
+					named_action = "TalkAboutDungeon",
+					player = PLAYER
+				},
+
+				Mashina.Player.Enable {
+					player = PLAYER
+				}
+			},
+
+			Mashina.Sequence {
+				Mashina.Invert {
+					Mashina.Player.HasKeyItem {
+						player = PLAYER,
+						key_item = "PreTutorial_SmithedUpAndComingHeroArmor"
+					}
+				},
+
+				Mashina.Step {
+					Mashina.Compare.Equal {
+						left = CURRENT_PASSAGE,
+						right = "Passage_ToBossDoor"
+					},
+
+					Mashina.Check {
+						condition = ENTERED_PASSAGE,
+					},
+
+					Mashina.Player.Disable {
+						player = PLAYER
+					},
+
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutDungeon",
+						player = PLAYER
+					},
+
+					Mashina.ParallelSequence {
+						Mashina.Step {
+							Mashina.Player.Walk {
+								player = PLAYER,
+								target = "Anchor_ToSmithy",
+								distance = 0,
+								as_close_as_possible = true
+							},
+
+							Mashina.Peep.Wait {
+								peep = PLAYER
+							}
+						},
+
+						Mashina.Step {
+							Mashina.Peep.Walk {
+								target = "Anchor_ToSmithy",
+								distance = 2,
+								as_close_as_possible = false
+							},
+
+							Mashina.Peep.Wait {
+								peep = PLAYER
+							}
+						}
+					},
+
+					Mashina.Player.Enable {
+						player = PLAYER
+					}
+				}
+			},
+
+			Mashina.Sequence {
+				Mashina.Invert {
+					Mashina.Player.HasKeyItem {
+						player = PLAYER,
+						key_item = "PreTutorial_SmithedUpAndComingHeroArmor"
+					},
+				},
+
+				Mashina.Invert {
+					Mashina.Player.HasKeyItem {
+						player = PLAYER,
+						key_item = "PreTutorial_GetMoreAzatiteShards"
+					},
+				},
+
+				Mashina.Invert {
+					Mashina.Try {
+						Mashina.Peep.HasInventoryItem {
+							peep = PLAYER,
+							item = "AzatiteShard"
+						},
+
+						Mashina.Peep.HasInventoryItem {
+							peep = PLAYER,
+							item = "WeirdAlloyBar"
+						}
+					}
+				},
+
+				Mashina.Invert {
+					Mashina.Sequence {
+						Mashina.Player.HasKeyItem {
+							player = PLAYER,
+							key_item = "PreTutorial_SmithedUpAndComingHeroHelmet"
+						},
+
+						Mashina.Player.HasKeyItem {
+							player = PLAYER,
+							key_item = "PreTutorial_SmithedUpAndComingHeroGloves"
+						},
+
+						Mashina.Player.HasKeyItem {
+							player = PLAYER,
+							key_item = "PreTutorial_SmithedUpAndComingHeroPlatebody"
+						},
+
+						Mashina.Player.HasKeyItem {
+							player = PLAYER,
+							key_item = "PreTutorial_SmithedUpAndComingHeroBoots"
+						},
+
+					}
+				},
+
+				Mashina.Player.Dialog {
+					named_action = "TalkAboutDungeon",
+					player = PLAYER
 				}
 			},
 

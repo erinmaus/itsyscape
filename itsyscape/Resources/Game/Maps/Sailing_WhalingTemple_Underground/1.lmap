@@ -3335,6 +3335,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{
@@ -6778,6 +6779,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 			},
 		},
 		{

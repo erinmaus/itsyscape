@@ -238,7 +238,6 @@ function DialogBoxController:close()
 	end
 
 	if self.hidRibbonTab then
-		print(">>> showing ribbon")
 		Utility.UI.broadcast(
 			self:getDirector():getGameInstance():getUI(),
 			self:getPeep(),

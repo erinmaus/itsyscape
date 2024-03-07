@@ -42,6 +42,20 @@ Quest "PreTutorial" {
 	Step "PreTutorial_FoundYenderling",
 	Step "PreTutorial_SlayedYenderling",
 
+	Step "PreTutorial_CollectedAzatiteShards",
+	Step "PreTutorial_MinedCopper",
+	Step "PreTutorial_SmeltedWeirdBars",
+
+	Step {
+		"PreTutorial_SmithedUpAndComingHeroItem",
+		"PreTutorial_SmithedUpAndComingHeroHelmet",
+		"PreTutorial_SmithedUpAndComingHeroGloves",
+		"PreTutorial_SmithedUpAndComingHeroPlatebody",
+		"PreTutorial_SmithedUpAndComingHeroBoots"
+	},
+
+	Step "PreTutorial_SmithedUpAndComingHeroArmor",
+
 	Step "PreTutorial_Teleported"
 }
 
@@ -55,6 +69,18 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Learn about stances from Rosalind.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_LearnedAboutStances"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Talk about the mine under the Whaling Temple.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedAboutMine"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Told to get more azatite shards from the yenderling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "PreTutorial_GetMoreAzatiteShards"
 }
 
 local Description = ItsyScape.Utility.QuestStepDescription
@@ -126,5 +152,50 @@ Description "PreTutorial_FoundYenderling" {
 
 Description "PreTutorial_SlayedYenderling" {
 	before = "Slay the yenderling.",
-	after = "The yenderlign was tanky, but after Rosalind taught you the importance of stances you were able to take it down."
+	after = "The yenderling was tanky, but after Rosalind taught you the importance of stances you were able to take it down."
+}
+
+Description "PreTutorial_CollectedAzatiteShards" {
+	before = "Collect the azatite shards dropped by the yenderling.",
+	after = "The yenderling dropped a few azatite shards. You picked them up."
+}
+
+Description "PreTutorial_MinedCopper" {
+	before = "Rosalind suggested you make some armor for what lay ahead. You'll need to mine some copper using the pickaxe Rosalind gave you.",
+	after = "Taking Rosalind's suggestion to make some armor for what lay ahead, you mined some copper using the pickaxe Rosalind gave you."
+}
+
+Description "PreTutorial_SmeltedWeirdBars" {
+	before = "Rosalind told you about a weird alloy you can make using azatite shards and copper. Smelt some weird alloy bars at the furnace to make the bars.",
+	after = "Taking Rosalind's suggestion to make some armor for what lay ahead, you mined some copper."
+}
+
+Description "PreTutorial_SmithedUpAndComingHeroItem" {
+	before = "With the weird alloy bars, smith the up-and-coming armor at the anvil.",
+	after = "You started smithing the up-and-coming armor at the anvil."
+}
+
+Description "PreTutorial_SmithedUpAndComingHeroHelmet" {
+	before = "Smith a helmet from the weird alloy.",
+	after = "You smithed a helmet from the weird alloy."
+}
+
+Description "PreTutorial_SmithedUpAndComingHeroGloves" {
+	before = "Smith gloves from the weird alloy.",
+	after = "You smithed gloves from the weird alloy."
+}
+
+Description "PreTutorial_SmithedUpAndComingHeroPlatebody" {
+	before = "Smith a platebody from the weird alloy.",
+	after = "You smithed a platebody from the weird alloy."
+}
+
+Description "PreTutorial_SmithedUpAndComingHeroBoots" {
+	before = "Smith boots from the weird alloy.",
+	after = "You smithed boots from the weird alloy."
+}
+
+Description "PreTutorial_SmithedUpAndComingHeroArmor" {
+	before = "You need to smith a complete set of up-and-coming hero armor.",
+	after = "You smithed a complete set of up-and-coming hero armor."
 }

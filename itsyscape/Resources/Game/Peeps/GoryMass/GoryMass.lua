@@ -303,7 +303,6 @@ function GoryMass:update(...)
 		local target = self:getBehavior(CombatTargetBehavior)
 		target = target and target.actor
 		if target and not self:isMoving() then
-			print(">>> ROLLING!")
 			self:poke("startRoll", target:getPeep())
 		end
 	end
