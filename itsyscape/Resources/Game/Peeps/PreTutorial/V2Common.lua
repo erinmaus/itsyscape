@@ -187,6 +187,59 @@ Common.CRAFT_TOY_WEAPON = {
 	}
 }
 
+Common.SMITH_ARMOR = {
+	{
+		position = 'up',
+		id = "CraftWindow",
+		message = not _MOBILE and "Click on a piece of weird alloy armor." or "Tap on a piece of weird alloy armor",
+		open = function(target)
+			return function()
+				local open, index = Utility.UI.isOpen(target, "CraftWindow")
+				if open then
+					local gameDB = target:getDirector():getGameDB()
+					local brochure = gameDB:getBrochure()
+
+					local interface = Utility.UI.getOpenInterface(target, "CraftWindow", index)
+					if interface.currentAction then
+						for resource in brochure:findResourcesByAction(interface.currentAction:getAction()) do
+							local resourceType = brochure:getResourceTypeFromResource(resource)
+
+							if resource.name:match("UpAndComing") and resourceType and resourceType.name == "Item" then
+								return true
+							end
+						end
+					end
+
+					return false
+				end
+
+				return true
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "Craft-QuantityInput",
+		message = "Double check to make sure you're making the right amount of things!",
+		open = function(target, state)
+			return function()
+				state.time = state.time or love.timer.getTime()
+				return not Utility.UI.isOpen(target, "CraftWindow") or love.timer.getTime() > state.time + Common.HINT_WAIT_TIME
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "Craft-MakeIt!",
+		message = not _MOBILE and "Once you're happy, click here to craft the armor!" or "Once you're happy, tap here to craft the armor!",
+		open = function(target)
+			return function()
+				return not Utility.UI.isOpen(target, "CraftWindow")
+			end
+		end
+	}
+}
+
 Common.LIGHT_FIRE = {
 	{
 		position = 'up',

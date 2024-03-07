@@ -34,129 +34,8 @@ QuestProgressNotification.HINT_WIDTH = 240
 QuestProgressNotification.HINT_HEIGHT = 128
 QuestProgressNotification.SCROLL_TIME = 0.75
 
-QuestProgressNotification.LocationHint = Class(Drawable)
-
-function QuestProgressNotification.LocationHint:new(hint, interface)
-	Drawable.new(self)
-
-	self.hint = hint
-	self.interface = interface
-
-	self:setSize(
-		QuestProgressNotification.HINT_WIDTH,
-		QuestProgressNotification.HINT_HEIGHT)
-
-	local label = Label()
-	label:setStyle(LabelStyle({
-		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-		fontSize = 22,
-		textShadow = true,
-		width = QuestProgressNotification.HINT_WIDTH,
-		color = { 1, 1, 0, 1 },
-		align = 'center'
-	}, interface:getView():getResources()))
-	label:setText(hint.description)
-	label:setIsClickThrough(true)
-	self:addChild(label)
-
-	self:setIsClickThrough(true)
-	self:setZDepth(-1)
-end
-
-function QuestProgressNotification.LocationHint:getWorldPosition(worldTransform, position)
-	local gameView = self.interface:getView():getGameView()
-
-	local camera = gameView:getRenderer():getCamera()
-	local projectionTransform, viewTransform = camera:getTransforms()
-
-	local completeTransform = love.math.newTransform()
-	completeTransform:apply(projectionTransform)
-	completeTransform:apply(viewTransform)
-	completeTransform:apply(worldTransform)
-
-	result = Vector(completeTransform:transformPoint(position:get()))
-	result = (result + Vector(1)) * Vector(0.5) * Vector(camera:getWidth(), camera:getHeight(), 1)
-
-	return result
-end
-
-function QuestProgressNotification.LocationHint:getActorPosition(actorID)
-	local gameView = self.interface:getView():getGameView()
-	local actorView = gameView:getActor(gameView:getActorByID(actorID))
-
-	if not actorView then
-		return Vector.ZERO
-	end
-
-	local actorPosition
-	do
-		local worldTransform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
-		actorPosition = self:getWorldPosition(worldTransform, -Vector.UNIT_Y)
-	end
-
-	return actorPosition
-end
-
-function QuestProgressNotification.LocationHint:getPropPosition(propID)
-	local gameView = self.interface:getView():getGameView()
-	local propView = gameView:getProp(gameView:getPropByID(propID))
-
-	if not propView then
-		return Vector.ZERO
-	end
-
-	local propPosition
-	do
-		local worldTransform = propView:getRoot():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
-		propPosition = self:getWorldPosition(worldTransform, -Vector.UNIT_Y)
-	end
-
-	return propPosition
-end
-
-function QuestProgressNotification.LocationHint:getMapPosition(layer, vector)
-	local mapSceneNode = self.interface:getView():getGameView():getMapSceneNode(layer)
-	if mapSceneNode then
-		local worldTransform = mapSceneNode:getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
-		return self:getWorldPosition(worldTransform, vector)
-	end
-
-	return Vector.ZERO
-end
-
-function QuestProgressNotification.LocationHint:update()
-	Drawable.update(self, delta)
-
-	local w, h = self:getSize()
-	local windowWidth, windowHeight, scaleX, scaleY, offsetX, offsetY = love.graphics.getScaledMode()
-
-	local screenPosition
-	do
-		if self.hint.prop then
-			screenPosition = self:getPropPosition(self.hint.prop)
-		elseif self.hint.actor then
-			screenPosition = self:getActorPosition(self.hint.actor)
-		elseif self.hint.layer then
-			screenPosition = self:getMapPosition(self.hint.layer, Vector(self.hint.x, self.hint.y, self.hint.z))
-		else
-			screenPosition = Vector.ZERO
-		end
-	end
-	screenPosition = screenPosition / Vector(scaleX, scaleY)
-
-	local x, y = self:getParent():getPosition()
-	x = x + offsetX
-	y = y + offsetY
-
-	self:setPosition(
-		math.min(math.max(screenPosition.x, 0), windowWidth) - w / 2 - x,
-		math.min(math.max(screenPosition.y, 0), windowHeight) - h / 2 - y)
-end
-
 function QuestProgressNotification:new(id, index, ui)
 	Interface.new(self, id, index, ui)
-
-	self.hints = {}
 
 	self:updatePosition()
 	self:setSize(QuestProgressNotification.WIDTH, QuestProgressNotification.HEIGHT)
@@ -237,7 +116,6 @@ function QuestProgressNotification:new(id, index, ui)
 	self:setZDepth(-1)
 
 	self:updateQuest()
-	self:updateHints()
 end
 
 function QuestProgressNotification:getOverflow()
@@ -262,21 +140,6 @@ function QuestProgressNotification:updateQuest()
 	}
 
 	self.guideLabel:setText(label or "")
-end
-
-function QuestProgressNotification:updateHints()
-	for i = 1, #self.hints do
-		self:removeChild(self.hints[i])
-	end
-	table.clear(self.hints)
-
-	local state = self:getState()
-	local hints = state.hints or {}
-	for i = 1, #hints do
-		local hint = QuestProgressNotification.LocationHint(state.hints[i], self)
-		self:addChild(hint)
-		table.insert(self.hints, hint)
-	end
 end
 
 function QuestProgressNotification:update(delta)

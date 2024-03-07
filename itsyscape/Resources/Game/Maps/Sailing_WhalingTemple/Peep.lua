@@ -193,7 +193,7 @@ function WhalingTemple:prepareQuest(playerPeep)
 				end
 			end
 
-			local function listenForBaitTake(item)
+			local function listenForBaitTake(item, _, _, peep)
 				if targets[item:getRef()] then
 					Utility.Peep.poof(targets[item:getRef()])
 					targets[item:getRef()] = nil

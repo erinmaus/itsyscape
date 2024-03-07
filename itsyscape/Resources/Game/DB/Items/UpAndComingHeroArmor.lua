@@ -284,7 +284,6 @@ ItsyScape.Meta.Equipment {
 	DefenseStab = ItsyScape.Utility.styleBonusForFeet(1),
 	DefenseCrush = ItsyScape.Utility.styleBonusForFeet(1),
 	DefenseSlash = ItsyScape.Utility.styleBonusForFeet(1),
-	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(1),
 	DefenseRanged = ItsyScape.Utility.styleBonusForFeet(1),
 	DefenseMagic = ItsyScape.Utility.styleBonusForFeet(1),
 	StrengthMelee = 2,

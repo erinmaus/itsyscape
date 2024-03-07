@@ -249,7 +249,8 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "PreTutorial_Yenderling",
-		MapObject = M["Yenderling"]
+		MapObject = M["Yenderling"],
+		DoesRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
@@ -260,12 +261,102 @@ do
 	}
 end
 
+M["Zombi1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Zombi1",
+		Map = M._MAP,
+		Resource = M["Zombi1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Zombi_Base_Attackable",
+		MapObject = M["Zombi1"],
+		DoesRespawn = 1
+	}
+end
+
+M["Zombi2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 0,
+		PositionZ = 21,
+		Name = "Zombi2",
+		Map = M._MAP,
+		Resource = M["Zombi2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Zombi_Base_Attackable",
+		MapObject = M["Zombi2"],
+		DoesRespawn = 1
+	}
+end
+
+M["Zombi3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49,
+		PositionY = 0,
+		PositionZ = 21,
+		Name = "Zombi3",
+		Map = M._MAP,
+		Resource = M["Zombi3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Zombi_Base_Attackable",
+		MapObject = M["Zombi3"],
+		DoesRespawn = 1
+	}
+end
+
+M["Zombi4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 0,
+		PositionZ = 31,
+		Name = "Zombi4",
+		Map = M._MAP,
+		Resource = M["Zombi4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Zombi_Base_Attackable",
+		MapObject = M["Zombi4"],
+		DoesRespawn = 1
+	}
+end
+
+M["Zombi5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 53,
+		PositionY = 0,
+		PositionZ = 39,
+		Name = "Zombi5",
+		Map = M._MAP,
+		Resource = M["Zombi5"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Zombi_Base_Attackable",
+		MapObject = M["Zombi5"],
+		DoesRespawn = 1
+	}
+end
+
 M["Door_ToBoss"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 29,
 		PositionY = 0,
-		PositionZ = 17,
+		PositionZ = 17.25,
 		RotationX = 0,
 		RotationY = 0.707107,
 		RotationZ = 0,
@@ -278,6 +369,103 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Door_IronGate",
 		MapObject = M["Door_ToBoss"]
+	}
+
+	M["Door_ToBoss"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
+	}
+end
+
+M["Passage_ToBossDoor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_ToBossDoor",
+		Map = M._MAP,
+		Resource = M["Passage_ToBossDoor"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 26,
+		Z1 = 16,
+		X2 = 28,
+		Z2 = 20,
+		Map = M._MAP,
+		Resource = M["Passage_ToBossDoor"]
+	}
+end
+
+M["Passage_ToMine"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_ToMine",
+		Map = M._MAP,
+		Resource = M["Passage_ToMine"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 8,
+		Z1 = 34,
+		X2 = 18,
+		Z2 = 42,
+		Map = M._MAP,
+		Resource = M["Passage_ToMine"]
+	}
+end
+
+M["Passage_Mine"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_Mine",
+		Map = M._MAP,
+		Resource = M["Passage_Mine"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 15,
+		Z1 = 23,
+		X2 = 19,
+		Z2 = 27,
+		Map = M._MAP,
+		Resource = M["Passage_Mine"]
+	}
+end
+
+M["Anchor_ToMine"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17,
+		PositionY = 0,
+		PositionZ = 25,
+		Name = "Anchor_ToMine",
+		Map = M._MAP,
+		Resource = M["Anchor_ToMine"]
+	}
+end
+
+M["Anchor_ToSmithy"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 0,
+		PositionZ = 17,
+		Name = "Anchor_ToSmithy",
+		Map = M._MAP,
+		Resource = M["Anchor_ToSmithy"]
+	}
+end
+
+do
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Anvil_Default1"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_SmithedUpAndComingHeroItem"
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Furnace_Default1"],
+		KeyItem = ItsyScape.Resource.KeyItem "PreTutorial_SmeltedWeirdBars"
 	}
 end
 
