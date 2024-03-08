@@ -679,6 +679,13 @@ function itsyrealm.graphics.stop()
 		if type(currentHandle) == "userdata" then
 			itsyrealm.graphics.queue(currentHandle, size, draw.command, unpack(draw, 1, draw.n))
 		else
+			if shouldFlush then
+				itsyrealm.graphics.flush()
+				currentNumSizes = 0
+
+				shouldFlush = false
+			end
+
 			love.graphics.setBlendMode('alpha')
 			draw.command(unpack(draw, 1, draw.n))
 		end
