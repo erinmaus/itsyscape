@@ -74,7 +74,7 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", _TARG
 		player:pokeCamera("translate", Vector(0, 10, 0))
 	end
 	message {
-		"Screeeeeeeeeeee! Screeeeee!",
+		"Screeeeeeeeeeee! Screeeeee!\n",
 		"(MORTALS! YENDOR COMES FOR YOU!)"
 	}
 

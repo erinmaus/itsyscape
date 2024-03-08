@@ -273,78 +273,106 @@ local Tree = BTreeBuilder.Node() {
 				}
 			},
 
-			Mashina.Sequence {
-				Mashina.Step {
+			Mashina.Step {
+				Mashina.Invert {
+					Mashina.Player.HasKeyItem {
+						player = PLAYER,
+						key_item = "PreTutorial_LearnedAboutStances"
+					}
+				},
+
+				Mashina.Peep.HasCombatTarget {
+					peep = PLAYER
+				},
+
+				Mashina.Peep.DidAttack,
+				Mashina.Peep.DidAttack,
+				Mashina.Peep.DidAttack,
+
+				Mashina.Player.Disable {
+					player = PLAYER,
+				},
+
+				Mashina.Player.Dialog {
+					named_action = "TalkAboutDungeon",
+					player = PLAYER
+				},
+
+				Mashina.Player.Enable {
+					player = PLAYER,
+				}
+			},
+
+			Mashina.Step {
+				Mashina.Player.IsNextQuestStep {
+					player = PLAYER,
+					quest = "PreTutorial",
+					step = "PreTutorial_CollectedAzatiteShards"
+				},
+
+				Mashina.Compare.Equal {
+					left = CURRENT_PASSAGE,
+					right = "Passage_ToMine"
+				},
+
+				Mashina.Check {
+					condition = ENTERED_PASSAGE,
+				},
+
+				Mashina.Player.Disable {
+					player = PLAYER
+				},
+
+				Mashina.Player.Dialog {
+					named_action = "TalkAboutDungeon",
+					player = PLAYER
+				},
+
+				Mashina.Try {
+					-- If the player somehow has azatite shards
+					-- but does not have the key item saying they
+					-- collected the shards, the dialog will set it.
+					-- We don't want to continue if that happened.
 					Mashina.Player.IsNextQuestStep {
 						player = PLAYER,
 						quest = "PreTutorial",
 						step = "PreTutorial_CollectedAzatiteShards"
 					},
 
-					Mashina.Compare.Equal {
-						left = CURRENT_PASSAGE,
-						right = "Passage_ToMine"
-					},
-
-					Mashina.Check {
-						condition = ENTERED_PASSAGE,
-					},
-
-					Mashina.Player.Disable {
-						player = PLAYER
-					},
-
-					Mashina.Player.Dialog {
-						named_action = "TalkAboutDungeon",
-						player = PLAYER
-					},
-
-					Mashina.Try {
-						-- If the player somehow has azatite shards
-						-- but does not have the key item saying they
-						-- collected the shards, the dialog will set it.
-						-- We don't want to continue if that happened.
-						Mashina.Player.IsNextQuestStep {
-							player = PLAYER,
-							quest = "PreTutorial",
-							step = "PreTutorial_CollectedAzatiteShards"
-						},
-
-						Mashina.Failure {
-							Mashina.Player.Enable {
-								player = PLAYER
-							}
+					Mashina.Failure {
+						Mashina.Player.Enable {
+							player = PLAYER
 						}
-					},
-
-					Mashina.ParallelSequence {
-						Mashina.Step {
-							Mashina.Player.Walk {
-								player = PLAYER,
-								target = "Yenderling",
-								distance = 0,
-								as_close_as_possible = true
-							},
-
-							Mashina.Peep.Wait {
-								peep = PLAYER
-							}
-						},
-
-						Mashina.Step {
-							Mashina.Peep.Walk {
-								target = "Yenderling",
-								distance = 2,
-								as_close_as_possible = false
-							},
-
-							Mashina.Peep.Wait
-						}
-					},
-
-					Mashina.Player.Enable {
-						player = PLAYER
 					}
+				},
+
+				Mashina.ParallelSequence {
+					Mashina.Step {
+						Mashina.Player.Walk {
+							player = PLAYER,
+							target = "Yenderling",
+							distance = 0,
+							as_close_as_possible = true
+						},
+
+						Mashina.Peep.Wait {
+							peep = PLAYER
+						}
+					},
+
+					Mashina.Step {
+						Mashina.Peep.Walk {
+							target = "Yenderling",
+							distance = 2,
+							as_close_as_possible = false
+						},
+
+						Mashina.Peep.Wait
+					}
+				},
+
+				Mashina.Player.Enable {
+					player = PLAYER
 				}
 			},
 

@@ -8,8 +8,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local Common = {}
@@ -280,6 +282,29 @@ Common.LIGHT_FIRE = {
 				end
 
 				return true
+			end
+		end
+	}
+}
+
+Common.CHANGE_STANCE = {
+	{
+		position = 'up',
+		id = "Ribbon-PlayerStance",
+		message = not _MOBILE and "Click here to see your stance." or "Tap here to see your stance.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "PlayerStance")
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "PlayerStance",
+		message = not _MOBILE and "Change your stance to 'Aggressive' to deal more damage." or "Change your stance to 'Aggressive' to deal more damage.",
+		open = function(target)
+			return function()
+				return not target:hasBehavior(StanceBehavior) or target:getBehavior(StanceBehavior).stance == Weapon.STANCE_AGGRESSIVE
 			end
 		end
 	}
