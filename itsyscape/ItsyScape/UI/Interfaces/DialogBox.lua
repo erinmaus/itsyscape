@@ -42,7 +42,7 @@ function DialogBox.concatMessage(message)
 			end
 
 			table.insert(m, { 1, 1, 1, 1 })
-			table.insert(m, "\n")
+			table.insert(m, " ")
 		end
 	end
 
