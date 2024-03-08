@@ -1,7 +1,9 @@
+local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.V2Common"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local INVENTORY_FLAGS = {
 	['item-inventory'] = true
@@ -47,7 +49,7 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_FoundYenderling") then
 
 	speaker "Yenderling"
 	message {
-		"Screeee! Screeeeee!",
+		"Screeee! Screeeeee!\n",
 		"(Your end is my beginning, mortals.)"
 	}
 
@@ -59,15 +61,14 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_FoundYenderling") then
 
 	speaker "Yenderling"
 	message {
-		"Screee!",
+		"Screee!\n",
 		"(Just give in. Give up. Let the madness take you.)",
 
 	}
 
 	speaker "_TARGET"
 	message {
-		"(Horrifying images of death and",
-		"decay race through your mind.)",
+		"(Horrifying images of death and decay race through your mind.)\n",
 		"I'm scared...!"
 	}
 
@@ -80,12 +81,49 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_FoundYenderling") then
 
 	speaker "Yenderling"
 	message {
-		"ScreEEEEeeeeEEEE!",
-		"(There is no hope. Just lay down your weapons.)",
-		"(Just let me beat you to death.)"
+		"ScreEEEEeeeeEEEE!\n",
+		"(There is no hope. Just lay down your weapons.)\n",
+		"(Just let me beat you to death.)\n"
 	}
 
 	_TARGET:getState():give("KeyItem", "PreTutorial_FoundYenderling")
+elseif not _TARGET:getState():has("KeyItem", "PreTutorial_SlayedYenderling") then
+	_TARGET:getState():give("KeyItem", "PreTutorial_LearnedAboutStances")
+
+	local stance = _TARGET:getBehavior(StanceBehavior)
+	stance = stance and stance.stance
+
+	if stance == Weapon.STANCE_AGGRESSIVE then
+		message {
+			"Good job %hint{using an aggressive stance}!",
+			"The Yenderling is using a %hint{defensive stance},",
+			"which reduces the damage dealt to it."
+		}
+
+		message {
+			"The aggressive stance %hint{increases the max damage you deal},",
+			"and the controlled stance %hint{increases your accuracy}"
+		}
+	else
+		message {
+			"The Yenderling is using a %hint{defensive stance}!",
+			"Without using an %hint{aggressive stance},",
+			"you might not be able to deal any damage!"
+		}
+
+		message {
+			"The stances also change which skill you'll gain XP in",
+			"depending on the weapon you're wielding."
+		}
+
+		message "An aggressive stance will %hint{give XP in the skill that boosts damage}, like Strength, Wisdom, or Dexterity."
+		message "A controlled stance will %hint{give XP in the skill that boosts accuracy}, like Attack, Magic, or Archery."
+		message "And a the defensive stance %hint{will always give you Defense XP}."
+
+		message "This is how you change your stance..."
+
+		PreTutorialCommon.startRibbonTutorial(_TARGET, PreTutorialCommon.CHANGE_STANCE, "PlayerStance")
+	end
 elseif not _TARGET:getState():has("KeyItem", "PreTutorial_CollectedAzatiteShards") then
 	local isYenderlingAlive
 	do
