@@ -80,8 +80,7 @@ then
 end
 
 message {
-	"\n\nWhat would you like to know?\n",
-	"my cutie potaot :3"
+	"What would you like to know?"
 }
 
 local CURSED_ORE = option "Kursed Ore"
