@@ -49,15 +49,15 @@ function DefaultCameraController:new(...)
 
 	self.curveMode = DefaultCameraController.SHOW_MODE_NONE
 
-	self.cameraVerticalRotationOffset = 0
-	self.cameraHorizontalRotationOffset = 0
+	self.cameraVerticalRotationOffset = _CONF.camera and _CONF.camera.verticalRotationOffset or 0
+	self.cameraHorizontalRotationOffset = _CONF.camera and _CONF.camera.horizontalRotationOffset or 0
 	self.cameraOffset = Vector(0)
 
 	self:getCamera():setHorizontalRotation(
-		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION)
+		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset)
 	self:getCamera():setVerticalRotation(
-		DefaultCameraController.CAMERA_VERTICAL_ROTATION)
-	self:getCamera():setDistance(DefaultCameraController.DEFAULT_DISTANCE)
+		DefaultCameraController.CAMERA_VERTICAL_ROTATION + self.cameraVerticalRotationOffset)
+	self:getCamera():setDistance(_CONF.camera and _CONF.camera.distance or DefaultCameraController.DEFAULT_DISTANCE)
 
 	self.targetDistance = self:getCamera():getDistance()
 
@@ -490,6 +490,14 @@ function DefaultCameraController:update(delta)
 			self.currentShakingOffset = Vector(0)
 		end
 	end
+
+	local cameraDetails = _CONF.camera or {}
+	do
+		cameraDetails.horizontalRotationOffset = self.cameraHorizontalRotationOffset
+		cameraDetails.verticalRotationOffset = self.cameraVerticalRotationOffset
+		cameraDetails.distance = self.targetDistance
+	end
+	_CONF.camera = cameraDetails
 end
 
 function DefaultCameraController:onMapRotationStick()
