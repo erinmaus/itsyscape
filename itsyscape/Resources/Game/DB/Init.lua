@@ -37,6 +37,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepHealth" {
+		Hitpoints = Meta.TYPE_REAL,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "Dummy" {
 		Tier = Meta.TYPE_INTEGER,
 		CombatStyle = Meta.TYPE_INTEGER,

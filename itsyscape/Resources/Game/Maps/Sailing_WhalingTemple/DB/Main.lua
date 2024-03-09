@@ -130,15 +130,186 @@ do
 	}
 end
 
-M["Anchor_InjuredYendorianArcher"] = ItsyScape.Resource.MapObject.Unique()
+M["YendorianBallista"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "YendorianBallista",
+		Map = M._MAP,
+		Resource = M["YendorianBallista"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
+		MapObject = M["YendorianBallista"]
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 20,
+		Resource = M["YendorianBallista"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/YendorianBallista_AttackLogic.lua",
+		Resource = M["YendorianBallista"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Yendorian_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["YendorianBallista"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = M["YendorianBallista"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = M["YendorianBallista"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = M["YendorianBallista"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(1),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["YendorianBallista"]
+	}
+end
+
+M["YendorianMast"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "YendorianMast",
+		Map = M._MAP,
+		Resource = M["YendorianMast"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Mast",
+		MapObject = M["YendorianMast"]
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 20,
+		Resource = M["YendorianMast"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/YendorianMast_AttackLogic.lua",
+		Resource = M["YendorianMast"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Yendorian_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["YendorianMast"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = M["YendorianMast"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = M["YendorianMast"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = M["YendorianMast"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(1),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(1),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["YendorianMast"]
+	}
+end
+
+M["YendorianSwordfish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "YendorianSwordfish",
+		Map = M._MAP,
+		Resource = M["YendorianSwordfish"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
+		MapObject = M["YendorianSwordfish"]
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 20,
+		Resource = M["YendorianSwordfish"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/YendorianSwordfish_AttackLogic.lua",
+		Resource = M["YendorianSwordfish"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Yendorian_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["YendorianSwordfish"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = M["YendorianSwordfish"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = M["YendorianSwordfish"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(1),
+		Resource = M["YendorianSwordfish"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(1),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["YendorianSwordfish"]
+	}
+end
+
+M["Anchor_InjuredYendorian"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 67,
+		PositionX = 69,
 		PositionY = 5,
-		PositionZ = 29,
-		Name = "Anchor_InjuredYendorianArcher",
+		PositionZ = 37,
+		Name = "Anchor_InjuredYendorian",
 		Map = M._MAP,
-		Resource = M["Anchor_InjuredYendorianArcher"]
+		Resource = M["Anchor_InjuredYendorian"]
 	}
 end
 
@@ -321,6 +492,44 @@ do
 		State = "follow",
 		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Rosalind_FollowLogic.lua",
 		Resource = M["Rosalind"]
+	}
+
+	local NamedTalkActionBoss = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Boss_en-US.lua",
+		Language = "en-US",
+		Action = NamedTalkActionBoss
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = NamedTalkActionBoss
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["YendorianBallista"],
+		Name = "Yendorian",
+		Action = NamedTalkActionBoss
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["YendorianMast"],
+		Name = "Yendorian",
+		Action = NamedTalkActionBoss
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["YendorianSwordfish"],
+		Name = "Yendorian",
+		Action = NamedTalkActionBoss
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "TalkAboutBoss",
+		Action = NamedTalkActionBoss,
+		Peep = M["Rosalind"]
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
@@ -780,5 +989,23 @@ do
 		Name = "Anchor_FromTrapdoor",
 		Map = M._MAP,
 		Resource = M["Anchor_FromTrapdoor"]
+	}
+end
+
+M["Passage_BossArena"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_BossArena",
+		Map = M._MAP,
+		Resource = M["Passage_BossArena"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 49,
+		Z1 = 9,
+		X2 = 89,
+		Z2 = 43,
+		Map = M._MAP,
+		Resource = M["Passage_BossArena"]
 	}
 end

@@ -279,13 +279,14 @@ function Director:update(delta)
 					local key = self.keys[peep]
 
 					self:assignPeep(peep, key)
-					peep:preUpdate(self, self:getGameInstance())
 
 					local layer = self.peepsByLayer[key]
 					if not layer then
 						layer = {}
 						self.peepsByLayer[key] = layer
 					end
+
+					peep:preUpdate(self, self:getGameInstance())
 
 					table.insert(layer, peep)
 				end

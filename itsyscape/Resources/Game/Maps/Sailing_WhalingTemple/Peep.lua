@@ -11,6 +11,10 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
+local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
+local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
+local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
@@ -34,12 +38,6 @@ end
 function WhalingTemple:onLoad(filename, args, layer)
 	Map.onLoad(self, filename, args, layer)
 
-	local stage = self:getDirector():getGameInstance():getStage()
-	stage:forecast(layer, 'Sailing_WhalingTemple_HeavyRain', 'Rain', {
-		wind = { 15, 0, 0 },
-		heaviness = 1
-	})
-
 	Utility.spawnMapAtAnchor(self, "Ship_IsabelleIsland_PortmasterJenkins", "Anchor_Ship", {
 		jenkins_state = 2
 	})
@@ -49,8 +47,20 @@ function WhalingTemple:trySpawnRosalind(playerPeep)
 	Utility.spawnInstancedMapObjectAtAnchor(self, playerPeep, "Rosalind", "Anchor_Rosalind")
 end
 
+function WhalingTemple:onRain()
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:forecast(layer, 'Sailing_WhalingTemple_HeavyRain', 'Rain', {
+		wind = { 15, 0, 0 },
+		heaviness = 1
+	})
+end
+
 function WhalingTemple:onPlayerEnter(player)
 	local playerPeep = player:getActor():getPeep()
+
+	if playerPeep:getState():has("KeyItem", "PreTutorial_SmithedUpAndComingHeroArmor") then
+		self:poke("rain")
+	end
 
 	self:trySpawnRosalind(playerPeep)
 	self:prepareQuest(playerPeep)
@@ -63,6 +73,16 @@ function WhalingTemple:onPreparePlayer(playerPeep)
 		self:makePlayerTalkToPeep(playerPeep, "IsabelleIsland_Port_PortmasterJenkins")
 	else
 		self:makeRosalindFollowPlayer(playerPeep, true)
+	end
+
+	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_FoundInjuredYendorian", playerPeep) or
+	   Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ReasonedWithYendorian", playerPeep) -- or any other options
+	then
+		if Utility.Peep.isInPassage(playerPeep, "Passage_BossArena") then
+			playerPeep:addBehavior(DisabledBehavior)
+		end
+
+		PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutBoss")
 	end
 end
 
@@ -204,6 +224,40 @@ function WhalingTemple:prepareQuest(playerPeep)
 			inventory.onTakeItem:register(listenForBaitTake)
 		end
 	end
+
+	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_FoundInjuredYendorian", playerPeep) or
+	   Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ReasonedWithYendorian", playerPeep)
+	then
+		if Utility.Peep.isInPassage(playerPeep, "Passage_BossArena") then
+			local playerWeapon = Utility.Peep.getEquippedWeapon(playerPeep)
+			playerWeapon = Class.isCompatibleType(playerWeapon, Weapon) and playerWeapon
+
+			local yendorianMapObjectName
+			if playerWeapon then
+				if Class.isCompatibleType(playerWeapon, MagicWeapon) then
+					yendorianMapObjectName = "YendorianMast"
+				elseif Class.isCompatibleType(playerWeapon, MeleeWeapon) then
+					yendorianMapObjectName = "YendorianSwordfish"
+				elseif Class.isCompatibleType(playerWeapon, RangedWeapon) then
+					yendorianMapObjectName = "YendorianBallista"
+				end
+			else
+				yendorianMapObjectName = "YendorianBallista"
+			end
+
+			local yendorian
+			if yendorianMapObjectName then
+				yendorian = Utility.spawnMapObjectAtAnchor(self, yendorianMapObjectName, "Anchor_InjuredYendorian")
+			end
+
+			if yendorian then
+				yendorian = yendorian:getPeep()
+				yendorian:listen("finalize", function()
+					Utility.Peep.equipXWeapon(yendorian, string.format("%s_Injured", yendorianMapObjectName))
+				end)
+			end
+		end
+	end
 end
 
 function WhalingTemple:makeRosalindFollowPlayer(playerPeep, teleport)
@@ -262,13 +316,17 @@ function WhalingTemple:onZap()
 	self.lightningTime = love.math.random() * (self.MAX_LIGHTNING_PERIOD - self.MIN_LIGHTNING_PERIOD) + self.MIN_LIGHTNING_PERIOD
 end
 
-function WhalingTemple:onBoom(ship)
-	local player = Utility.Peep.getPlayer(self)
-	if not player then
+function WhalingTemple:onBoom()
+	local playerPeep = Utility.Peep.getPlayer(self)
+	if not playerPeep then
 		return
 	end
 
-	local i, j, layer = Utility.Peep.getTile(player)
+	if playerPeep:getState():has("KeyItem", "PreTutorial_SmithedUpAndComingHeroArmor") then
+		return
+	end
+
+	local i, j, layer = Utility.Peep.getTile(playerPeep)
 
 	local director = self:getDirector()
 	local map = director:getMap(layer)

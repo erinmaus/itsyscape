@@ -10,6 +10,9 @@ local function focus(speakerName)
 	if actor then
 		local player = Utility.Peep.getPlayerModel(_TARGET)
 		player:pokeCamera("targetActor", actor:getID())
+		player:pokeCamera("targetActor", actor:getID())
+		player:pokeCamera("verticalRotate", -math.pi / 2)
+		player:pokeCamera("horizontalRotate", -math.pi / 6)
 		player:pokeCamera("zoom", 35)
 		player:pokeCamera("translate", Vector(0, 0, 0))
 	end
