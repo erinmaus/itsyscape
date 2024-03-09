@@ -61,6 +61,7 @@ function Peep:new(name)
 	self:addPoke('assign')
 	self:addPoke('move')
 	self:addPoke('finalize')
+	self:addPoke('postReady')
 	self:addPoke('reaper')
 	self:addPoke('poof')
 	self:addPoke('effectAdded')
@@ -503,6 +504,7 @@ end
 function Peep:ready(director, game)
 	self:poke('ready', director, game)
 	self:poke('finalize', director, game)
+	self:pushPoke('postReady', director, game)
 	self.finalized = true
 end
 

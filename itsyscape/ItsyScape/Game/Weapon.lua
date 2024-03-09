@@ -257,6 +257,8 @@ function Weapon.DamageRoll:roll()
 	local minHit = math.max(self:getMinHit() - self.hitReduction, 0)
 	local maxHit = math.max(self:getMaxHit() - self.hitReduction + self.maxHitBoost, 0)
 
+	print(">>> bla", self:getSelf():getName(), "hit reduction", self.hitReduction, "max hit boost", self.maxHitBoost)
+
 	minHit = math.min(minHit + self.minHitBoost, maxHit)
 	if maxHit > 0 then
 		minHit = math.max(minHit, 1)
