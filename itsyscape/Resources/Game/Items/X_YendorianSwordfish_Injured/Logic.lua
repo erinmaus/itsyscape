@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/X_YendorianMast/Logic.lua
+-- Resources/Game/Items/X_YendorianSwordfish_Injured/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,25 +8,22 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
-local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
+local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 
-local YendorianMast = Class(MagicWeapon)
+local YendorianSwordfish = Class(MeleeWeapon)
 
-function YendorianMast:getBonusForStance(peep)
-	return Weapon.BONUS_MAGIC
+function YendorianSwordfish:getAttackRange(peep)
+	return 3.5
 end
 
-function YendorianMast:getAttackRange()
-	return 11
+function YendorianSwordfish:getBonusForStance(peep)
+	return Weapon.BONUS_SLASH
 end
 
-function YendorianMast:getWeaponType()
-	return 'staff'
+function YendorianSwordfish:getCooldown()
+	return 3
 end
 
-function YendorianMast:getCooldown(peep)
-	return 1.8
-end
-
-return YendorianMast
+return YendorianSwordfish

@@ -3331,11 +3331,16 @@ function Utility.Peep.Mashina:onReady(director)
 					local record = records[i]
 					local state = record:get("State")
 					local tree = record:get("Tree")
-					m.states[state] = love.filesystem.load(tree)()
+					local code = love.filesystem.load(tree)
+					if code then
+						m.states[state] = code()
 
-					local default = record:get("IsDefault")
-					if default and default ~= 0 and not m.currentState then
-						m.currentState = state
+						local default = record:get("IsDefault")
+						if default and default ~= 0 and not m.currentState then
+							m.currentState = state
+						end
+					else
+						m.states[state] = nil
 					end
 				end
 			end
@@ -3878,6 +3883,23 @@ function Utility.Peep.Attackable:onReady(director)
 	end
 end
 
+function Utility.Peep.Attackable:onFinalize(director)
+	local gameDB = director:getGameDB()
+	local resource = Utility.Peep.getResource(self)
+	local mapObject = Utility.Peep.getMapObject(self)
+
+	local mapObjectHealth = mapObject and gameDB:getRecord("PeepHealth", { Resource = mapObject })
+	local resourceHealth = resource and gameDB:getRecord("PeepHealth", { Resource = resource })
+
+	local health = (mapObjectHealth and mapObjectHealth:get("Hitpoints")) or (resourceHealth and resourceHealth:get("Hitpoints"))
+
+	if health then
+		local _, status = self:addBehavior(CombatStatusBehavior)
+		status.currentHitpoints = health
+		status.maximumHitpoints = health
+	end
+end
+
 function Utility.Peep.makeAttackable(peep, retaliate)
 	if retaliate == nil then
 		retaliate = true
@@ -3891,6 +3913,7 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:addPoke('switchStyle')
 
 	peep:listen('ready', Utility.Peep.Attackable.onReady)
+	peep:listen('finalize', Utility.Peep.Attackable.onFinalize)
 
 	if retaliate then
 		peep:listen('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)

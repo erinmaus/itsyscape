@@ -22,6 +22,7 @@ ItsyScape.Meta.ResourceDescription {
 
 local Quest = ItsyScape.Utility.Quest
 local Step = ItsyScape.Utility.QuestStep
+local Branch = ItsyScape.Utility.QuestBranch
 
 Quest "PreTutorial" {
 	Step "PreTutorial_Start",
@@ -53,8 +54,26 @@ Quest "PreTutorial" {
 		"PreTutorial_SmithedUpAndComingHeroPlatebody",
 		"PreTutorial_SmithedUpAndComingHeroBoots"
 	},
-
 	Step "PreTutorial_SmithedUpAndComingHeroArmor",
+
+	Step "PreTutorial_FoundInjuredYendorian",
+	Branch {
+		{
+			Step "PreTutorial_InsultedYendorian",
+			Step "PreTutorial_DefeatedInjuredYendorian",
+			Step "PreTutorial_Teleported"
+		},
+		{
+			Step "PreTutorial_ReasonedWithYendorian",
+			Step "PreTutorial_DefeatedInjuredYendorian",
+			Step "PreTutorial_Teleported"
+		},
+		{
+			Step "PreTutorial_DidACowardlyThing",
+			Step "PreTutorial_DefeatedInjuredYendorian",
+			Step "PreTutorial_Teleported"
+		}
+	},
 
 	Step "PreTutorial_Teleported"
 }
@@ -81,6 +100,18 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Told to get more azatite shards from the yenderling.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.KeyItem "PreTutorial_GetMoreAzatiteShards"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Talked about the weather.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "PreTutorial_TalkedAboutWeather"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Told about how to prevent the Yendorian special attack.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "PreTutorial_PreventYendorianSpecialAttack"
 }
 
 local Description = ItsyScape.Utility.QuestStepDescription
@@ -198,4 +229,29 @@ Description "PreTutorial_SmithedUpAndComingHeroBoots" {
 Description "PreTutorial_SmithedUpAndComingHeroArmor" {
 	before = "You need to smith a complete set of up-and-coming hero armor.",
 	after = "You smithed a complete set of up-and-coming hero armor."
+}
+
+Description "PreTutorial_FoundInjuredYendorian" {
+	before = "There's a little bit of the cave left to explore.",
+	after = "After exploring the cave and surfacing, you and Rosalind discovered an injured Yendorian soldier. It asked what you're doing on Yendor's holy island."
+}
+
+Description "PreTutorial_InsultedYendorian" {
+	before = "Will you insult the Yendorian?",
+	after = "For some reason, you decided to insult the Yendorian. Rosalind was not happy, and the Yendorian was enraged."
+}
+
+Description "PreTutorial_ReasonedWithYendorian" {
+	before = "Will you reason with the Yendorian?",
+	after = "You and Rosalind tried to reason with the Yendorian but failed."
+}
+
+Description "PreTutorial_DidACowardlyThing" {
+	before = "Will you flee from the Yendorian?",
+	after = "You could not flee from the Yendorian and Rosalind did not like your display of cowardice."
+}
+
+Description "PreTutorial_DefeatedInjuredYendorian" {
+	before = "The injured Yendorian soldier was aggressive! Fight back!",
+	after = "You and Rosalind defeated the Yendorian soldier together."
 }

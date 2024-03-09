@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/X_YendorianMast/Logic.lua
+-- Resources/Game/Items/X_YendorianMast_Injured/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -17,8 +17,13 @@ function YendorianMast:getBonusForStance(peep)
 	return Weapon.BONUS_MAGIC
 end
 
+function YendorianMast:rollDamage(peep, purpose, target)
+	-- We want to overrie the magic damage.
+	return Weapon.rollDamage(peep, purpose, target)
+end
+
 function YendorianMast:getAttackRange()
-	return 11
+	return 10
 end
 
 function YendorianMast:getWeaponType()
@@ -26,7 +31,11 @@ function YendorianMast:getWeaponType()
 end
 
 function YendorianMast:getCooldown(peep)
-	return 1.8
+	return 3
+end
+
+function YendorianMast:getProjectile()
+	return "StormLightning"
 end
 
 return YendorianMast
