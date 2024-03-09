@@ -76,7 +76,8 @@ function WhalingTemple:onPreparePlayer(playerPeep)
 	end
 
 	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_FoundInjuredYendorian", playerPeep) or
-	   Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ReasonedWithYendorian", playerPeep) -- or any other options
+	   Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ReasonedWithYendorian", playerPeep) or -- or any other options
+	   Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendorian", playerPeep)
 	then
 		if Utility.Peep.isInPassage(playerPeep, "Passage_BossArena") then
 			playerPeep:addBehavior(DisabledBehavior)
@@ -226,7 +227,8 @@ function WhalingTemple:prepareQuest(playerPeep)
 	end
 
 	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_FoundInjuredYendorian", playerPeep) or
-	   Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ReasonedWithYendorian", playerPeep)
+	   Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ReasonedWithYendorian", playerPeep) or
+	   Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendorian", playerPeep)
 	then
 		if Utility.Peep.isInPassage(playerPeep, "Passage_BossArena") then
 			local playerWeapon = Utility.Peep.getEquippedWeapon(playerPeep)

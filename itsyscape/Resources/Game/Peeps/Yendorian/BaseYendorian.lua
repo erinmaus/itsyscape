@@ -10,11 +10,13 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
-local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local BaseYendorian = Class(Creep)
 
@@ -55,6 +57,9 @@ function BaseYendorian:ready(director, game)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Yendorian_Die/Script.lua")
 	self:addResource("animation-die", dieAnimation)
+
+	local _, stance = self:addBehavior(StanceBehavior)
+	stance.stance = Weapon.STANCE_AGGRESSIVE
 
 	Creep.ready(self, director, game)
 end

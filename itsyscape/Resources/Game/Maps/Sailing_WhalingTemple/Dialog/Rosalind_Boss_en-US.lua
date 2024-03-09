@@ -138,8 +138,22 @@ then
 		message "*whispers* Have you been hanging around %person{Orlando} too much?! Cowardice will get us nowhere!"
 
 		focus "Yendorian"
-		message "*cough* %person{Yendor} abhors cowardice. *cough* But bones are bones and meat is meat. You will serve well as zombi food."
+		message "*cough* %person{Yendor} abhors fear. *cough* But bones are bones and meat is meat. You will serve well as zombi food."
 	end
+
+	playerModel:changeCamera("Default")
+	_TARGET:removeBehavior(DisabledBehavior)
+elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendorian", _TARGET) then
+	local playerModel = Utility.Peep.getPlayerModel(_TARGET)
+	playerModel:changeCamera("StandardCutscene")
+
+	focus "Yendorian"
+	Utility.Peep.lookAt(_SPEAKERS["Yendorian"], _TARGET)
+
+	message "*cough* You're back for more punishment?! *cough*"
+
+	focus "Rosalind"
+	message "Let's take care of this!"
 
 	playerModel:changeCamera("Default")
 	_TARGET:removeBehavior(DisabledBehavior)

@@ -3883,7 +3883,7 @@ function Utility.Peep.Attackable:onReady(director)
 	end
 end
 
-function Utility.Peep.Attackable:onFinalize(director)
+function Utility.Peep.Attackable:onPostReady(director)
 	local gameDB = director:getGameDB()
 	local resource = Utility.Peep.getResource(self)
 	local mapObject = Utility.Peep.getMapObject(self)
@@ -3897,6 +3897,8 @@ function Utility.Peep.Attackable:onFinalize(director)
 		local _, status = self:addBehavior(CombatStatusBehavior)
 		status.currentHitpoints = health
 		status.maximumHitpoints = health
+
+		print(">>> status", Log.dump(status))
 	end
 end
 
@@ -3913,7 +3915,7 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:addPoke('switchStyle')
 
 	peep:listen('ready', Utility.Peep.Attackable.onReady)
-	peep:listen('finalize', Utility.Peep.Attackable.onFinalize)
+	peep:listen('postReady', Utility.Peep.Attackable.onPostReady)
 
 	if retaliate then
 		peep:listen('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)

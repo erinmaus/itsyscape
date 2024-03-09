@@ -163,13 +163,13 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Archery",
-		Value = ItsyScape.Utility.xpForLevel(5),
+		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = M["YendorianBallista"]
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Dexterity",
-		Value = ItsyScape.Utility.xpForLevel(5),
+		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = M["YendorianBallista"]
 	}
 
@@ -220,13 +220,13 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Magic",
-		Value = ItsyScape.Utility.xpForLevel(5),
+		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = M["YendorianMast"]
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Wisdom",
-		Value = ItsyScape.Utility.xpForLevel(5),
+		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = M["YendorianMast"]
 	}
 
@@ -277,13 +277,13 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Archery",
-		Value = ItsyScape.Utility.xpForLevel(5),
+		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = M["YendorianSwordfish"]
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Dexterity",
-		Value = ItsyScape.Utility.xpForLevel(5),
+		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = M["YendorianSwordfish"]
 	}
 
