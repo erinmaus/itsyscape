@@ -3935,6 +3935,8 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:listen('heal', Utility.Peep.Attackable.onHeal)
 	peep:addPoke('resurrect')
 	peep:listen('resurrect', Utility.Peep.Attackable.onResurrect)
+	peep:addPoke('powerApplied')
+	peep:addPoke('powerActivated')
 end
 
 function Utility.Peep.makeSkiller(peep)

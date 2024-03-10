@@ -11,6 +11,7 @@ local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
 
 local Dialog = B.Node("Dialog")
+Dialog.PEEP = B.Reference()
 Dialog.PLAYER = B.Reference()
 Dialog.NAMED_ACTION = B.Reference()
 Dialog.OPENED = B.Local()
@@ -27,6 +28,8 @@ function Dialog:update(mashina, state, executor)
 	local name = state[self.NAMED_ACTION]
 	local opened = state[self.OPENED]
 
+	local peep = state[self.PEEP] or mashina
+
 	if not opened then
 		local function _try(resource)
 			if name then
@@ -41,18 +44,18 @@ function Dialog:update(mashina, state, executor)
 
 				local action = Utility.getAction(game, namedAction:get("Action"), false, false)
 				if not action then
-					Log.warn("Couldn't get named peep action '%s' for peep '%s'!", name, mashina:getName())
+					Log.warn("Couldn't get named peep action '%s' for peep '%s'!", name, peep:getName())
 					return false
 				end
 
-				Utility.UI.openInterface(player, "DialogBox", true, action.instance, mashina)
+				Utility.UI.openInterface(player, "DialogBox", true, action.instance, peep)
 				return true
 			else
 				local actions = Utility.getActions(game, resource, "world")
 
 				for _, action in ipairs(actions) do
 					if action.instance:is("talk") or action.instance:is("yell") then
-						Utility.UI.openInterface(player, "DialogBox", true, action.instance, mashina)
+						Utility.UI.openInterface(player, "DialogBox", true, action.instance, peep)
 						return true
 					end
 				end
@@ -61,12 +64,12 @@ function Dialog:update(mashina, state, executor)
 			end
 		end
 
-		local resource = Utility.Peep.getMapResource(mashina)
-		local mapObject = Utility.Peep.getMapObject(mashina)
+		local resource = Utility.Peep.getMapResource(peep)
+		local mapObject = Utility.Peep.getMapObject(peep)
 
 		if (mapObject and _try(mapObject)) or (resource and _try(resource)) then
-			Utility.Peep.face(mashina, player)
-			Utility.Peep.face(player, mashina)
+			Utility.Peep.face(peep, player)
+			Utility.Peep.face(player, peep)
 
 			state[self.OPENED] = true
 

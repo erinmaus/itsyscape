@@ -150,7 +150,7 @@ do
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "attack",
-		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/YendorianBallista_AttackLogic.lua",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Yendorian_AttackLogic.lua",
 		Resource = M["YendorianBallista"]
 	}
 
@@ -207,7 +207,7 @@ do
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "attack",
-		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/YendorianMast_AttackLogic.lua",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Yendorian_AttackLogic.lua",
 		Resource = M["YendorianMast"]
 	}
 
@@ -264,7 +264,7 @@ do
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "attack",
-		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/YendorianSwordfish_AttackLogic.lua",
+		Tree = "Resources/Game/Maps/Sailing_WhalingTemple/Scripts/Yendorian_AttackLogic.lua",
 		Resource = M["YendorianSwordfish"]
 	}
 
@@ -310,6 +310,32 @@ do
 		Name = "Anchor_InjuredYendorian",
 		Map = M._MAP,
 		Resource = M["Anchor_InjuredYendorian"]
+	}
+end
+
+M["Anchor_Portal"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 69,
+		PositionY = 10,
+		PositionZ = 29,
+		Name = "Anchor_Portal",
+		Map = M._MAP,
+		Resource = M["Anchor_Portal"]
+	}
+end
+
+M["Portal"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Portal",
+		Map = M._MAP,
+		Resource = M["Portal"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Portal_Chasm",
+		MapObject = M["Portal"]
 	}
 end
 
