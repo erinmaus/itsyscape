@@ -15,6 +15,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
+local Color = require "ItsyScape.Graphics.Color"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
@@ -23,6 +24,7 @@ local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.V2Common"
 
 local WhalingTemple = Class(Map)
@@ -411,6 +413,26 @@ function WhalingTemple:updateFireHint()
 
 		Utility.Quest.listenForItem(playerPeep, "CookedSardine", onCookSardine)
 		Utility.Quest.listenForItem(playerPeep, "BurntSardine", onCookSardine)
+	end
+end
+
+function WhalingTemple:onOpenMantokPortal()
+	local azathoth, layer = Utility.spawnMapAtAnchor(self, "PreTutorial_Mantok", "Anchor_Portal")
+
+	if azathoth then
+		azathoth:addBehavior(DisabledBehavior)
+		azathoth:listen("ready", function()
+			local _, portal = Utility.spawnMapObjectAtAnchor(self, "Portal", "Anchor_Portal")
+			local portalPeep = portal and portal:getPeep()
+			if portalPeep then
+				portalPeep:setColor(Color(0, 0, 0, 1))
+
+				local _, portal = portalPeep:addBehavior(TeleportalBehavior)
+				portal.offset = Vector(0, 10, 0)
+				portal.distance = 0
+				portal.layer = layer
+			end
+		end)
 	end
 end
 

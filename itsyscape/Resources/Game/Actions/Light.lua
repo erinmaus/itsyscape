@@ -23,36 +23,14 @@ Light.DURATION = 1.0
 function Light:perform(state, peep, item)
 	local gameDB = self:getGame():getGameDB()
 	if self:canPerform(state) and self:canTransfer(state) then
-		local light = CallbackCommand(self.transfer, self, peep:getState(), peep, { ['item-inventory'] = true })
+		local light = CallbackCommand(self.transfer, self, peep:getState(), peep, { ['item-inventory'] = true. ['item-instances'] = { item } })
 		local wait = WaitCommand(Light.DURATION, false)
-
-		local walk
-		do
-			local position = peep:getBehavior(PositionBehavior)
-			if position then
-				local layer = position.layer or 1
-				local map = peep:getDirector():getMap(layer)
-				if map then
-					local tile, i, j = map:getTileAt(position.position.x, position.position.z)
-					if tile:hasFlag('blocking') then
-						Log.info("(%d, %d) is blocking; cannot light fire.", i, j)
-						return false
-					end
-
-					if map:canMove(i, j, -1, 0) then
-						walk = Utility.Peep.getWalk(peep, i - 1, j, layer, 0)
-					end
-				end
-			end
-		end
 
 		local perform = CallbackCommand(Action.perform, self, state, peep)
 
 		local queue = peep:getCommandQueue()
 		local success = queue:interrupt(light) and queue:push(perform) and queue:push(wait)
 		if success and walk then
-			return queue:push(walk)
-		else
 			return success
 		end
 	end

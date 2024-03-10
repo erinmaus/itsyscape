@@ -68,6 +68,8 @@ function BasicPortal:getPropState()
 		color = { self.color:get() },
 		absolutePosition = { absolutePosition:get() },
 		localPosition = { localPosition:get() },
+		offset = { teleportal.offset:get() },
+		distance = teleportal.distance,
 		i = teleportal.i, j = teleportal.j, layer = teleportal.layer
 	}
 end

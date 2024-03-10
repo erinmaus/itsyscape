@@ -64,6 +64,7 @@ function PlayerPowers:new(id, index, ui)
 	end
 
 	self.offensivePowersLayout = GridLayout()
+	self.offensivePowersLayout:setID("PlayerPowers-Offensive")
 	self.offensivePowersLayout:setWrapContents(true)
 	self.offensivePowersLayout:setUniformSize(
 		true,
@@ -97,6 +98,7 @@ function PlayerPowers:new(id, index, ui)
 	end
 
 	self.defensivePowersLayout = GridLayout()
+	self.defensivePowersLayout:setID("PlayerPowers-Defensive")
 	self.defensivePowersLayout:setWrapContents(true)
 	self.defensivePowersLayout:setUniformSize(
 		true,

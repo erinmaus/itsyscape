@@ -38,8 +38,6 @@ function FireProjectile:update(mashina, state, executor)
 			offset = Utility.Peep.getRotation(destination):transformVector(offset)
 			destination = Utility.Peep.getPosition(destination) + offset
 		end
-
-
 	else
 		destination = destination + offset
 	end

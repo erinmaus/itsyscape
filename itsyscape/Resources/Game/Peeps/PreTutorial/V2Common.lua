@@ -310,6 +310,35 @@ Common.CHANGE_STANCE = {
 	}
 }
 
+Common.USE_POWER = {
+	{
+		position = 'up',
+		id = "Ribbon-PlayerPowers",
+		message = not _MOBILE and "Click here to see your powers." or "Tap here to see your powers.",
+		open = function(target)
+			return function()
+				return Utility.UI.isOpen(target, "PlayerPowers")
+			end
+		end
+	},
+	{
+		position = 'up',
+		id = "PlayerPowers-Offensive",
+		message = not _MOBILE and "Click on an offensive power while attacking the Yendorian.\nYou will deal a special attack!" or "Tap an offensive power while attacking the Yendorian.\nYou will deal a special attack!",
+		open = function(target)
+			local isDone = false
+			local function _powerApplied()
+				isDone = true
+				target:silence("powerActivated", _powerApplied)
+			end
+
+			return function()
+				return isDone
+			end
+		end
+	},
+}
+
 function Common.startRibbonTutorial(playerPeep, tutorial, ui, done)
 	local state = {}
 	Utility.UI.openInterface(

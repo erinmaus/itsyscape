@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local MathCommon = require "ItsyScape.Common.Math.Common"
@@ -274,6 +275,9 @@ function ActorView:new(actor, actorID)
 
 	self.healthBar = false
 	self.sprites = setmetatable({}, { __mode = 'k' })
+
+	self.onPreComputeBoneTransforms = Callback()
+	self.onPostComputeBoneTransforms = Callback()
 end
 
 function ActorView:getActor()
@@ -797,6 +801,7 @@ function ActorView:updateAnimations(delta)
 		end
 	end
 
+	self:onPreComputeBoneTransforms(transforms, self.animatable)
 	if self.localTransforms then
 		transforms:copy(self.localTransforms)
 	end
@@ -832,7 +837,7 @@ function ActorView:updateAnimations(delta)
 
 		skeleton:applyBindPose(transforms)
 	end
-
+	self:onPostComputeBoneTransforms(transforms, self.animatable)
 end
 
 return ActorView

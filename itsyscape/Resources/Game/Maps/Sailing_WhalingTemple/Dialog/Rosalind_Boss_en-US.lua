@@ -144,17 +144,36 @@ then
 	playerModel:changeCamera("Default")
 	_TARGET:removeBehavior(DisabledBehavior)
 elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendorian", _TARGET) then
-	local playerModel = Utility.Peep.getPlayerModel(_TARGET)
-	playerModel:changeCamera("StandardCutscene")
+	if not _TARGET:hasBehavior(DisabledBehavior) then
+		_TARGET:addBehavior(DisabledBehavior)
 
-	focus "Yendorian"
-	Utility.Peep.lookAt(_SPEAKERS["Yendorian"], _TARGET)
+		speaker "Rosalind"
+		message {
+			"The Yendorian is trying to summon %person{The First One}!",
+			"That would be apocalyptic!",
+			"I didn't even know that was possible anymore!"
+		}
 
-	message "*cough* You're back for more punishment?! *cough*"
+		message "We need to %hint{surprise the Yendorian} to break its concentration!"
 
-	focus "Rosalind"
-	message "Let's take care of this!"
+		speaker "A %hint{use a stronger type of attack}, called a power, is perfect for this."
 
-	playerModel:changeCamera("Default")
-	_TARGET:removeBehavior(DisabledBehavior)
+		speaker "Let me show you how to use a power..."
+
+		PreTutorialCommon.startRibbonTutorial(_TARGET, PreTutorialCommon.USE_POWER, "PlayerPowers")
+	else
+		local playerModel = Utility.Peep.getPlayerModel(_TARGET)
+		playerModel:changeCamera("StandardCutscene")
+
+		focus "Yendorian"
+		Utility.Peep.lookAt(_SPEAKERS["Yendorian"], _TARGET)
+
+		message "*cough* You're back for more punishment?! *cough*"
+
+		focus "Rosalind"
+		message "Let's take care of this!"
+
+		playerModel:changeCamera("Default")
+		_TARGET:removeBehavior(DisabledBehavior)
+	end
 end
