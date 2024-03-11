@@ -11,6 +11,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 

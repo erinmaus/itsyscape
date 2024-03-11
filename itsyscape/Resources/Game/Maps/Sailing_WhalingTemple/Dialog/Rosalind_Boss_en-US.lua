@@ -103,7 +103,7 @@ then
 		focus "Yendorian"
 		playerModel:pokeCamera("shake", 0.75)
 
-		message "*cough* FOOLS! RODENTS! VERMINS! ROACHES! *hack*"
+		message "*cough* FOOLS! RODENTS! VERMIN! ROACHES! *hack*"
 		message "You'll be reborn to serve *cough* %person{Yendor} soon enough as the lowliest of the undead!"
 
 		focus "Rosalind"

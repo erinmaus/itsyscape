@@ -16,8 +16,10 @@ local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
 local Color = require "ItsyScape.Graphics.Color"
+local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
@@ -433,6 +435,40 @@ function WhalingTemple:onOpenMantokPortal()
 				portal.layer = layer
 			end
 		end)
+	end
+end
+
+function WhalingTemple:onSummonMantok(p)
+	local portal = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("Portal"))[1]
+
+	if not portal then
+		return
+	end
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("MantokBeam", portal, p.peep)
+
+	local status = p.peep:getBehavior(CombatStatusBehavior)
+	if not status then
+		return
+	end
+
+	local damage = p.damage
+
+	local hitpointsAfterDamage = math.max(status.currentHitpoints - damage, 1)
+	local adjustedDamage = status.currentHitpoints - hitpointsAfterDamage
+	local attack = AttackPoke({
+		aggressor = p.aggressor,
+		damage = adjustedDamage
+	})
+
+	print(">>> damage", damage, "adjustedDamage", adjustedDamage, "hitpoints", hitpointsAfterDamage)
+	if adjustedDamage > 0 then
+		p.peep:poke("hit", attack)
+	else
+		p.peep:poke("miss", attack)
 	end
 end
 
