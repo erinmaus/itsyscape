@@ -21,11 +21,10 @@ local CURRENT_HEALTH = B.Reference("Yendorian", "CURRENT_HEALTH")
 local HEALTH_DIFFERENCE = B.Reference("Yendorian", "HEALTH_DIFFERENCE")
 local SUMMON_MANTOK = B.Reference("Yendorian", "SUMMON_MANTOK")
 
-local PHASE_1_THRESHOLD_HEALTH = 29
+local PHASE_1_THRESHOLD_HEALTH = 15
 
-local PHASE_3_THRESHOLD_1_HEALTH = 25
-local PHASE_3_THRESHOLD_2_HEALTH = 15
-local PHASE_3_THRESHOLD_3_HEALTH = 5
+local PHASE_3_THRESHOLD_1_HEALTH = 10
+local PHASE_3_THRESHOLD_2_HEALTH = 5
 
 local Setup = Mashina.Sequence {
 	Mashina.Peep.GetPlayer {
@@ -140,7 +139,7 @@ local Phase2AttackLogic = Mashina.Step {
 						},
 
 						Mashina.Subtract {
-							left = 30,
+							left = 20,
 							right = CURRENT_HEALTH,
 							[HEALTH_DIFFERENCE] = B.Output.result
 						},
@@ -162,7 +161,7 @@ local Phase2AttackLogic = Mashina.Step {
 			},
 
 			Mashina.Subtract {
-				left = 30,
+				left = 20,
 				right = CURRENT_HEALTH,
 				[HEALTH_DIFFERENCE] = B.Output.result
 			},
@@ -255,7 +254,6 @@ end
 local Phase3AttackLogic = Mashina.Step {
 	Phase3AttackSpecialWrapper(PHASE_3_THRESHOLD_1_HEALTH),
 	Phase3AttackSpecialWrapper(PHASE_3_THRESHOLD_2_HEALTH),
-	Phase3AttackSpecialWrapper(PHASE_3_THRESHOLD_3_HEALTH),
 
 	Mashina.Peep.Talk {
 		message = "*cough* I have failed you, Yendor...",
