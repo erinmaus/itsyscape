@@ -8,6 +8,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <cmath>
 #include "common/Module.h"
 #include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
@@ -105,8 +106,44 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	auto time_uniform = shader->getUniformInfo("scape_Time");
 	if (time_uniform)
 	{
-        *time_uniform->floats = timer_instance->getTime() - time;
+		*time_uniform->floats = timer_instance->getTime() - time;
 		shader->updateUniform(time_uniform, 1);
+	}
+
+	auto world = node.get_transform().get_global(delta);
+
+	auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
+	if (world_matrix_uniform)
+	{
+		std::memcpy(world_matrix_uniform->floats, glm::value_ptr(world), sizeof(glm::mat4));
+		shader->updateUniform(world_matrix_uniform, 1);
+	}
+
+	auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
+	if (normal_matrix_uniform)
+	{
+		auto normal_matrix = glm::inverse(glm::transpose(world));
+		std::memcpy(normal_matrix_uniform->floats, glm::value_ptr(normal_matrix), sizeof(glm::mat4));
+		shader->updateUniform(normal_matrix_uniform, 1);
+	}
+
+	if (camera)
+	{
+		auto view = camera->get_view();
+		auto view_matrix_uniform = shader->getUniformInfo("scape_ViewMatrix");
+		if (view_matrix_uniform)
+		{
+			std::memcpy(view_matrix_uniform->floats, glm::value_ptr(view), sizeof(glm::mat4));
+			shader->updateUniform(view_matrix_uniform, 1);
+		}
+
+		auto projection = camera->get_projection();
+		auto projection_matrix_uniform = shader->getUniformInfo("scape_ProjectionMatrix");
+		if (projection_matrix_uniform)
+		{
+			std::memcpy(projection_matrix_uniform->floats, glm::value_ptr(projection), sizeof(glm::mat4));
+			shader->updateUniform(projection_matrix_uniform, 1);
+		}
 	}
 
 	if (!node.is_base_type())

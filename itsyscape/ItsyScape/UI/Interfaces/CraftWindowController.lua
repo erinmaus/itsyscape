@@ -225,6 +225,8 @@ function CraftWindowController:select(e)
 		"populateRequirements",
 		nil,
 		{ result })
+
+	self.currentAction = self.actionsByID[e.id]
 end
 
 return CraftWindowController

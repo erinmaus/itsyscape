@@ -131,4 +131,8 @@ function Wander:update(mashina, state, executor)
 	return B.Status.Working
 end
 
+function Wander:deactivated()
+	self.walk = nil
+end
+
 return Wander

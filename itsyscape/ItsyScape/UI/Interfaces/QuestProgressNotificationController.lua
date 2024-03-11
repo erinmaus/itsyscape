@@ -48,6 +48,8 @@ end
 function QuestProgressNotificationController:new(peep, director, keyItem)
 	Controller.new(self, peep, director)
 
+	self.targets = {}
+
 	local game = director:getGameInstance()
 	local gameDB = director:getGameDB()
 	local brochure = gameDB:getBrochure()
@@ -69,6 +71,7 @@ function QuestProgressNotificationController:new(peep, director, keyItem)
 			end
 		end
 	end
+
 end
 
 function QuestProgressNotificationController:poke(actionID, actionIndex, e)
@@ -98,12 +101,6 @@ function QuestProgressNotificationController:updateQuest(quest)
 	self.nextStep = nil
 	self.mapResource = nil
 	self.tryAgain = true
-
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"updateQuest",
-		nil,
-		{})
 end
 
 function QuestProgressNotificationController:updateKeyItem(keyItem)
@@ -125,6 +122,11 @@ function QuestProgressNotificationController:updateMapHints()
 	if (self.mapResource and self.mapResource.name == mapResource.name) and self.nextStep.id == nextStep.id and not self.tryAgain then
 		return
 	end
+
+	for target in pairs(self.targets) do
+		Utility.Peep.poof(target)
+	end
+	table.clear(self.targets)
 
 	local tryAgain = false
 	local hints = {}
@@ -154,6 +156,15 @@ function QuestProgressNotificationController:updateMapHints()
 						if actor and actor.actor then
 							table.insert(hints, { actor = actor.actor:getID(), description = description })
 						end
+
+						local position = Utility.Peep.getPosition(hit)
+						local hintTarget = Utility.spawnPropAtPosition(hit, "Target_Default", position.x, position.y, position.z)
+						hintTarget = hintTarget and hintTarget:getPeep()
+
+						if hintTarget then
+							hintTarget:setTarget(hit, description)
+							self.targets[hintTarget] = true
+						end
 					elseif not gameDB:getRecord("PeepMapObject", { MapObject = mapObject }) and
 					       not gameDB:getRecord("PropMapObject", { MapObject = mapObject })
 					then
@@ -177,12 +188,6 @@ function QuestProgressNotificationController:updateMapHints()
 			end
 		end
 	end
-
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"updateHints",
-		nil,
-		{})
 
 	self.mapResource = mapResource
 	self.nextStep = nextStep

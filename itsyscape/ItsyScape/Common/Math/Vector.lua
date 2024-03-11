@@ -52,25 +52,33 @@ end
 
 function Vector.transformBounds(min, max, transform)
 	local corners = {
-		Vector(min.x, min.y, min.z),
-		Vector(max.x, min.y, min.z),
-		Vector(min.x, max.y, min.z),
-		Vector(min.x, min.y, max.z),
-		Vector(max.x, max.y, min.z),
-		Vector(max.x, min.y, max.z),
-		Vector(min.x, max.y, max.z),
-		Vector(max.x, max.y, max.z)
+		min.x, min.y, min.z,
+		max.x, min.y, min.z,
+		min.x, max.y, min.z,
+		min.x, min.y, max.z,
+		max.x, max.y, min.z,
+		max.x, min.y, max.z,
+		min.x, max.y, max.z,
+		max.x, max.y, max.z
 	}
 
-	local min, max = Vector(math.huge), Vector(-math.huge)
-	for i = 1, #corners do
-		local corner = corners[i]
-		corner = Vector(transform:transformPoint(corner.x, corner.y, corner.z))
-		min = min:min(corner)
-		max = max:max(corner)
+	local minX, minY, minZ = math.huge, math.huge, math.huge
+	local maxX, maxY, maxZ = -math.huge, -math.huge, -math.huge
+
+	for i = 1, #corners, 3 do
+		local pX, pY, pZ = unpack(corners, i)
+		local tX, tY, tZ = transform:transformPoint(pX, pY, pZ)
+
+		minX = math.min(tX, minX)
+		minY = math.min(tY, minY)
+		minZ = math.min(tZ, minZ)
+
+		maxX = math.max(tX, maxX)
+		maxY = math.max(tY, maxY)
+		maxZ = math.max(tZ, maxZ)
 	end
 
-	return min, max
+	return Vector(minX, minY, minZ), Vector(maxX, maxY, maxZ)
 end
 
 -- Linearly interpolates this vector with other.

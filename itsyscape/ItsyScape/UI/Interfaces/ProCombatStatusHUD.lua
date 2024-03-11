@@ -737,7 +737,6 @@ function ProCombatStatusHUD:new(id, index, ui)
 	self.equipmentSlot = 1
 
 	self.radialMenu = ProCombatStatusHUD.RadialMenu(self)
-	self.radialMenu:setZDepth(1000)
 	self:prepareRadialMenu()
 
 	self.subPending = ProCombatStatusHUD.Pending()
@@ -749,6 +748,8 @@ function ProCombatStatusHUD:new(id, index, ui)
 
 	self.radialMenuKeybind = Keybinds["PLAYER_1_FOCUS"]
 	self.isRadialMenuKeybindDown = self.radialMenuKeybind:isDown()
+
+	self:setZDepth(-100)
 end
 
 function ProCombatStatusHUD:loadConfig()
@@ -1574,6 +1575,10 @@ function ProCombatStatusHUD:positionTarget(targetWidget, sortedWidgets, delta)
 	local increment = math.pi * 2 / ProCombatStatusHUD.MAX_TARGETS
 	local angle = increment * (index - 1) - math.pi / 4
 
+	if index > 2 then
+		angle = angle + math.pi / 2
+	end
+
 	local halfSize = Vector(width, height) * 0.5
 
 	local x = math.cos(angle) * radius
@@ -1706,36 +1711,39 @@ function ProCombatStatusHUD:updatePowers(type, buttons, powers, pendingID, radia
 		local power = powers[i]
 		local button = buttons[i]
 
-		local coolDown = button:getData('coolDown')
-		local icon = button:getData('icon')
+		if power and button then
 
-		icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
+			local coolDown = button:getData('coolDown')
+			local icon = button:getData('icon')
 
-		local description = {}
-		for i = 1, #power.description do
-			table.insert(description, ToolTip.Text(power.description[i]))
-		end
+			icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
 
-		local toolTip = {
-			ToolTip.Header(power.name),
-			unpack(power.description)
-		}
+			local description = {}
+			for i = 1, #power.description do
+				table.insert(description, ToolTip.Text(power.description[i]))
+			end
 
-		button:setToolTip(unpack(toolTip))
+			local toolTip = {
+				ToolTip.Header(power.name),
+				unpack(power.description)
+			}
 
-		if power.coolDown and power.coolDown ~= 0 then
-			coolDown:setText(tostring(power.coolDown))
-		else
-			coolDown:setText("")
-		end
+			button:setToolTip(unpack(toolTip))
 
-		button:setID("ProCombatStatusHUD-Power" .. power.id)
+			if power.coolDown and power.coolDown ~= 0 then
+				coolDown:setText(tostring(power.coolDown))
+			else
+				coolDown:setText("")
+			end
 
-		if pendingID == power.id then
-			button:addChild(self.subPending)
-			pendingIndex = i
-		else
-			button:removeChild(self.subPending)
+			button:setID("ProCombatStatusHUD-Power" .. power.id)
+
+			if pendingID == power.id then
+				button:addChild(self.subPending)
+				pendingIndex = i
+			else
+				button:removeChild(self.subPending)
+			end
 		end
 	end
 
@@ -1766,18 +1774,20 @@ function ProCombatStatusHUD:updateSpells()
 		local spell = spells[i]
 		local button = self.spellButtons[i]
 
-		if spell.active then
-			button:getChildAt(1):setSpellActive(true)
+		if spell and button then
+			if spell.active then
+				button:getChildAt(1):setSpellActive(true)
 
-			radialSpellsButtonIcon:setSpellID(spell.id)
-			radialSpellsButtonIcon:setSpellActive(true)
+				radialSpellsButtonIcon:setSpellID(spell.id)
+				radialSpellsButtonIcon:setSpellActive(true)
 
-			hasActiveSpell = true
-		else
-			button:getChildAt(1):setSpellActive(false)
+				hasActiveSpell = true
+			else
+				button:getChildAt(1):setSpellActive(false)
+			end
+
+			button:setID("ProCombatStatusHUD-Spell" .. spell.id)
 		end
-
-		button:setID("ProCombatStatusHUD-Spell" .. spell.id)
 	end
 
 	if not hasActiveSpell then

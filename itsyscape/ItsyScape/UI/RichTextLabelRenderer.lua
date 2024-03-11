@@ -26,14 +26,20 @@ function RichTextLabelRenderer.Draw:new(renderer, blocks, resources, width)
 	self.left = 0
 	self.height = 0
 	self.width = width
+	self.text = {
+		[renderer.fonts.header] = love.graphics.newText(renderer.fonts.header),
+		[renderer.fonts.text] = love.graphics.newText(renderer.fonts.text)
+	}
+end
+
+function RichTextLabelRenderer.Draw:pushText(font, text, x, y)
+	local t = self.text[font]
+	if t then
+		t:add(text, x, y)
+	end
 end
 
 function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
-	if not parent then
-		self.y = self.y + self.height
-		self.height = 0
-	end
-
 	local lineHeight = font:getHeight()
 	self.height = math.max(self.height, lineHeight)
 
@@ -55,7 +61,7 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 				local word = words[j]
 				local width = font:getWidth(word)
 
-				local needsSpace = j < #words
+				local needsSpace = (j < #words)
 				if width + self.x > self.width then
 					self.y = self.y + lineHeight
 					self.x = self.left
@@ -64,7 +70,7 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 					needsSpace = false
 				end
 
-				itsyrealm.graphics.print({ word }, self.x, self.y)
+				self:pushText(font, word, self.x, self.y)
 				self.x = self.x + width
 
 				if needsSpace then
@@ -81,7 +87,6 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 			end
 
 			self.x = self.left
-			self.y = self.y + self.height
 			self.height = lineHeight
 
 			love.graphics.setColor(1, 1, 1, 1)
@@ -89,6 +94,8 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 			self:drawBlock(snippet, text)
 		end
 	end
+
+	self.y = self.y + lineHeight
 end
 
 function RichTextLabelRenderer.Draw:drawText(text, parent)
@@ -103,8 +110,6 @@ function RichTextLabelRenderer.Draw:drawText(text, parent)
 	love.graphics.setFont(font)
 
 	self:doDrawText(text, parent, font)
-
-	self.y = self.y + self.height
 end
 
 function RichTextLabelRenderer.Draw:drawHeader(text, parent)
@@ -116,8 +121,11 @@ function RichTextLabelRenderer.Draw:drawHeader(text, parent)
 	end
 
 	local font = self.renderer.fonts.header
-	love.graphics.setFont(font)
+	if text ~= self.blocks[1] then
+		self.y = self.y + font:getHeight()
+	end
 
+	love.graphics.setFont(font)
 	self:doDrawText(text, parent, font)
 end
 
@@ -154,7 +162,7 @@ function RichTextLabelRenderer.Draw:drawLink(block, parent)
 	end
 
 	love.graphics.setColor(color)
-	itsyrealm.graphics.print({ block.text }, self.x, self.y)
+	self:pushText(font, block.text, self.x, self.y)
 
 	self.x = self.x + width
 
@@ -284,7 +292,11 @@ function RichTextLabelRenderer.Draw:draw()
 		self.x = self.left
 	end
 
-	self.y = self.y + self.height
+	self.y = self.y + self.height + self.renderer.fonts.text:getHeight()
+
+	for _, text in pairs(self.text) do
+		itsyrealm.graphics.uncachedDraw(text)
+	end
 end
 
 function RichTextLabelRenderer:new(t, resources)

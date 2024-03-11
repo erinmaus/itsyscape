@@ -48,7 +48,6 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen('die', self.onDie, self)
 	peep:listen('resurrect', self.onResurrect, self)
 	peep:listen('resourceHit', self.onResourceHit, self)
-	peep:listen('resourceObtained', self.onResourceObtained, self)
 	peep:listen('actionPerformed', self.onActionPerformed, self)
 	peep:listen('transferItemFrom', self.peekEquip, self)
 	peep:listen('transferItemTo', self.peekEquip, self)
@@ -69,7 +68,6 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	peep:silence('die', self.onDie)
 	peep:silence('resurrect', self.onResurrect)
 	peep:silence('resourceHit', self.onResourceHit)
-	peep:silence('resourceObtained', self.onResourceObtained)
 	peep:silence('actionPerformed', self.onActionPerformed)
 	peep:silence('transferItemFrom', self.peekEquip)
 	peep:silence('transferItemTo', self.peekEquip)
@@ -279,13 +277,6 @@ function HumanoidActorAnimatorCortex:onResourceHit(peep, p)
 				resource)
 			break
 		end
-	end
-end
-
-function HumanoidActorAnimatorCortex:onResourceObtained(peep)
-	local actor = peep:getBehavior(ActorReferenceBehavior).actor
-	if actor then
-		actor:playAnimation('skill', false)
 	end
 end
 

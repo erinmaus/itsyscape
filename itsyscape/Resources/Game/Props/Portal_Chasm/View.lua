@@ -20,21 +20,28 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 
 local PortalView = Class(PropView)
 
+PortalView.EMISSION_STRATEGY_ENABLED = {
+	type = "RandomDelayEmissionStrategy",
+	count = { 10, 11 },
+	delay = { 1 / 30 },
+	duration = { math.huge }
+}
+
+PortalView.COLOR_FROM = Color(0.9, 0.4, 0.0, 1.0)
+PortalView.COLOR_TO = Color(0.0, 0.8, 1.0, 1.0)
+
+PortalView.EMISSION_STRATEGY_DISABLED = {}
+
 PortalView.PARTICLE_SYSTEM_PORTAL = {
-	numParticles = 50,
-	texture = "Resources/Game/Props/Portal_Chasm/Blank.png",
+	texture = "Resources/Game/Props/Portal_Chasm/Particle.png",
+	columns = 4,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 1, 5 },
-			speed = { 0, 0 },
-			acceleration = { 0, 0 }
-		},
-		{
-			type = "DirectionalEmitter",
-			direction = { 0, 1, 0 },
-			speed = { 10, 15 },
+			radius = { 0, 0 },
+			speed = { 1.5, 1.6 },
+			zRange = { 0, 0 }
 		},
 		{
 			type = "RandomColorEmitter",
@@ -44,23 +51,24 @@ PortalView.PARTICLE_SYSTEM_PORTAL = {
 		},
 		{
 			type = "RandomLifetimeEmitter",
-			age = { 1, 1.5 }
+			age = { 1, 1 }
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 1, 1 }
+			scale = { 0.5, 0.75 }
 		},
 		{
 			type = "RandomRotationEmitter",
-			rotation = { 0, 360 }
+			rotation = { 0, 360 },
+			velocity = { 120, 180}
 		}
 	},
 
 	paths = {
 		{
 			type = "FadeInOutPath",
-			fadeInPercent = { 0.2 },
-			fadeOutPercent = { 0.8 },
+			fadeInPercent = { 0.05 },
+			fadeOutPercent = { 0.95 },
 			tween = { 'sineEaseOut' }
 		},
 		{
@@ -69,59 +77,46 @@ PortalView.PARTICLE_SYSTEM_PORTAL = {
 		}
 	},
 
-	emissionStrategy = {
-		type = "RandomDelayEmissionStrategy",
-		count = { 5, 10 },
-		delay = { 0.125 },
-		duration = { math.huge }
-	}
+	emissionStrategy = PortalView.EMISSION_STRATEGY_ENABLED
 }
 
 PortalView.PARTICLE_SYSTEM_ENERGY = {
-	numParticles = 100,
-	texture = "Resources/Game/Props/Portal_Chasm/NorthernLights.png",
+	texture = "Resources/Game/Props/Portal_Chasm/Particle.png",
 	columns = 4,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 4, 5 },
-			speed = { 0, 0 },
-			acceleration = { 0, 0 }
-		},
-		{
-			type = "DirectionalEmitter",
-			direction = { 0, 1, 0 },
-			speed = { 10, 15 },
+			radius = { 1.5, 1.6 },
+			speed = { 2.5, 2.75 },
+			zRange = { 0, 0 }
 		},
 		{
 			type = "RandomColorEmitter",
 			colors = {
-				{ 1.0, 0.9, 0.5, 0.0 },
-				{ 0.2, 0.8, 0.4, 0.0 },
-				{ 0.2, 0.8, 0.4, 0.0 },
-				{ 0.2, 0.8, 0.4, 0.0 },
+				{ 1.0, 1.0, 1.0, 0.0 }
 			}
 		},
 		{
 			type = "RandomLifetimeEmitter",
-			age = { 1, 1.5 }
+			age = { 1, 1 }
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 0.6, 0.8 }
+			scale = { 0.5, 0.75 }
 		},
 		{
 			type = "RandomRotationEmitter",
-			rotation = { 0, 360 }
+			rotation = { 0, 360 },
+			velocity = { 120, 180}
 		}
 	},
 
 	paths = {
 		{
 			type = "FadeInOutPath",
-			fadeInPercent = { 0.2 },
-			fadeOutPercent = { 0.8 },
+			fadeInPercent = { 0.05 },
+			fadeOutPercent = { 0.95 },
 			tween = { 'sineEaseOut' }
 		},
 		{
@@ -130,16 +125,11 @@ PortalView.PARTICLE_SYSTEM_ENERGY = {
 		}
 	},
 
-	emissionStrategy = {
-		type = "RandomDelayEmissionStrategy",
-		count = { 10, 20 },
-		delay = { 0.125 },
-		duration = { math.huge }
-	}
+	emissionStrategy = PortalView.EMISSION_STRATEGY_ENABLED
 }
 
-PortalView.WIDTH = 256
-PortalView.HEIGHT = 256
+PortalView.WIDTH = 512
+PortalView.HEIGHT = 512
 
 function PortalView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -166,10 +156,12 @@ function PortalView:load()
 		self.portal = ParticleSceneNode()
 		self.portal:initParticleSystemFromDef(PortalView.PARTICLE_SYSTEM_PORTAL, resources)
 		self.portal:getMaterial():setShader(self.shader)
+		self.portal:getTransform():setLocalScale(Vector(1, 1.5, 1))
 		self.portal:setParent(root)
 
 		self.energy = ParticleSceneNode()
 		self.energy:initParticleSystemFromDef(PortalView.PARTICLE_SYSTEM_ENERGY, resources)
+		self.energy:getTransform():setLocalScale(Vector(1, 1.5, 1))
 		self.energy:setParent(root)
 
 		self.portal:onWillRender(function(renderer)
@@ -207,15 +199,23 @@ function PortalView:update(delta)
 	local parentCamera = parentRenderer:getCamera()
 	local selfCamera = self.camera
 
+	local colorDelta = math.abs(math.sin(love.timer.getTime() * math.pi))
+	local color = PortalView.COLOR_FROM:lerp(PortalView.COLOR_TO, colorDelta)
+
+	if self.energy then
+		self.energy:getMaterial():setColor(color)
+	end
+
 	selfCamera:setFieldOfView(parentCamera:getFieldOfView())
 	selfCamera:setVerticalRotation(parentCamera:getVerticalRotation())
 	selfCamera:setHorizontalRotation(parentCamera:getHorizontalRotation())
+	selfCamera:setUp(parentCamera:getUp())
 	selfCamera:setNear(parentCamera:getNear())
 	selfCamera:setFar(parentCamera:getFar())
-	selfCamera:setDistance(parentCamera:getDistance())
 
 	local state = self:getProp():getState()
-	selfCamera:setPosition(Vector(unpack(state.absolutePosition or { parentCamera:getPosition():get() })))
+	selfCamera:setDistance(parentCamera:getDistance() + (state.distance or 0))
+	selfCamera:setPosition(Vector(unpack(state.absolutePosition or { parentCamera:getPosition():get() })) + Vector(unpack(state.offset or { Vector.ZERO:get() })))
 
 	do
 		local mapSceneNode = gameView:getMapSceneNode(state.layer)

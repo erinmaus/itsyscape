@@ -122,30 +122,6 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
-}
-
-ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Archery",
 	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
@@ -160,12 +136,6 @@ ItsyScape.Meta.PeepStat {
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
 	Value = ItsyScape.Utility.xpForLevel(50),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(200),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
@@ -222,18 +192,6 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
-}
-
-ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
 	Value = ItsyScape.Utility.xpForLevel(55),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
@@ -246,26 +204,8 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Archery",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
-}
-
-ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
 	Value = ItsyScape.Utility.xpForLevel(50),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(200),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
@@ -334,38 +274,8 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Archery",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Value = ItsyScape.Utility.xpForLevel(55),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
-}
-
-ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
 	Value = ItsyScape.Utility.xpForLevel(50),
-	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
-}
-
-ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Constitution",
-	Value = ItsyScape.Utility.xpForLevel(200),
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 

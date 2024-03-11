@@ -66,10 +66,6 @@ function Callback:invoke(...)
 
 			results.n = results.n + n
 		else
-			if self.debug then
-				print(">>> debugging", "#n", h.n, "#p", postfixArgs.n, unpack(args, 1, args.n))
-			end
-
 			handler(unpack(args, 1, args.n))
 		end
 	end

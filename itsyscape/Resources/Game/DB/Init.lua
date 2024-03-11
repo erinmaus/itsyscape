@@ -37,6 +37,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepHealth" {
+		Hitpoints = Meta.TYPE_REAL,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "Dummy" {
 		Tier = Meta.TYPE_INTEGER,
 		CombatStyle = Meta.TYPE_INTEGER,
@@ -70,7 +75,7 @@ Game "ItsyScape"
 
 	Meta "PeepInventoryItem" {
 		Item = Meta.TYPE_RESOURCE,
-		Count = Meta.TYPE_INTEGER,
+		Count = Meta.TYPE_REAL,
 		Noted = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
@@ -170,6 +175,10 @@ Game "ItsyScape"
 		OffsetX = Meta.TYPE_REAL,
 		OffsetY = Meta.TYPE_REAL,
 		OffsetZ = Meta.TYPE_REAL,
+		PanX = Meta.TYPE_REAL,
+		PanY = Meta.TYPE_REAL,
+		PanZ = Meta.TYPE_REAL,
+		ZoomZ = Meta.TYPE_REAL,
 		SingleTile = Meta.TYPE_INTEGER,
 		MapObject = Meta.TYPE_RESOURCE
 	}
@@ -186,7 +195,8 @@ Game "ItsyScape"
 		Peep = Meta.TYPE_RESOURCE,
 		MapObject = Meta.TYPE_RESOURCE,
 		DoesNotDespawn = Meta.TYPE_INTEGER,
-		DoesNotRespawn = Meta.TYPE_INTEGER
+		DoesNotRespawn = Meta.TYPE_INTEGER,
+		DoesRespawn = Meta.TYPE_INTEGER
 	}
 
 	Meta "MapObjectGroup" {
@@ -199,6 +209,12 @@ Game "ItsyScape"
 		Name = Meta.TYPE_TEXT,
 		Action = Meta.TYPE_ACTION,
 		Map = Meta.TYPE_RESOURCE
+	}
+
+	Meta "NamedPeepAction" {
+		Name = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION,
+		Peep = Meta.TYPE_RESOURCE
 	}
 
 	ResourceType "Raid"
@@ -221,7 +237,8 @@ Game "ItsyScape"
 		Map = Meta.TYPE_RESOURCE,
 		Arguments = Meta.TYPE_TEXT,
 		Anchor = Meta.TYPE_TEXT,
-		Action = Meta.TYPE_ACTION
+		Action = Meta.TYPE_ACTION,
+		IsInstance = Meta.TYPE_INTEGER
 	}
 
 	Meta "PartyTravelDestination" {
@@ -297,6 +314,7 @@ Game "ItsyScape"
 		StrengthMelee = Meta.TYPE_INTEGER,
 		StrengthRanged = Meta.TYPE_INTEGER,
 		StrengthMagic = Meta.TYPE_INTEGER,
+		StrengthSailing = Meta.TYPE_INTEGER,
 		Prayer = Meta.TYPE_INTEGER,
 
 		-- The equip slot.
@@ -607,9 +625,12 @@ Game "ItsyScape"
 
 	Meta "Cannon" {
 		Range = Meta.TYPE_INTEGER,
-		MinDamage = Meta.TYPE_INTEGER,
-		MaxDamage = Meta.TYPE_INTEGER,
-		Cannonball = Meta.TYPE_RESOURCE,
+		AmmoType = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CannonAmmo" {
+		AmmoType = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -712,6 +733,7 @@ Game "ItsyScape"
 		Distance = Meta.TYPE_INTEGER,
 		Defense = Meta.TYPE_INTEGER,
 		Speed = Meta.TYPE_INTEGER,
+		Turn = Meta.TYPE_INTEGER,
 		Storage = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
@@ -1227,6 +1249,7 @@ include "Resources/Game/DB/Items/IronFlamethrower.lua"
 include "Resources/Game/DB/Items/Bullets.lua"
 include "Resources/Game/DB/Items/Guns.lua"
 include "Resources/Game/DB/Items/FishingRods.lua"
+include "Resources/Game/DB/Items/UpAndComingHeroArmor.lua"
 
 -- Misc
 include "Resources/Game/DB/Items/Currency.lua"
@@ -1272,6 +1295,7 @@ include "Resources/Game/DB/Creeps/Behemoth.lua"
 include "Resources/Game/DB/Creeps/PetrifiedSpider.lua"
 include "Resources/Game/DB/Creeps/BarrelMimic.lua"
 include "Resources/Game/DB/Creeps/CrateMimic.lua"
+include "Resources/Game/DB/Creeps/Mantok.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
@@ -1379,9 +1403,10 @@ include "Resources/Game/DB/Maps/PreTutorial/PreTutorial.lua"
 include "Resources/Game/DB/Maps/Fungal/Fungal.lua"
 include "Resources/Game/DB/Maps/Sailing.lua"
 include "Resources/Game/DB/Maps/EmptyRuins.lua"
+include "Resources/Game/DB/Maps/Yendorian.lua"
 
 -- Quests
-include "Resources/Game/DB/Quests/PreTutorial/Quest.lua"
+include "Resources/Game/DB/Quests/IslandsOfMadness/Quest.lua"
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 include "Resources/Game/DB/Quests/RavensEye/Quest.lua"
 include "Resources/Game/DB/Quests/MysteriousMachinations/Quest.lua"

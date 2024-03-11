@@ -82,11 +82,14 @@ function GroundInventoryProvider:onTransferTo(item, source, count, purpose)
 		self:getBroker():tagItem(item, "owner", purpose)
 	end
 
-	self.onDropItem(item, key, position, count)
+	local s, r = xpcall(self.onDropItem, debug.traceback, item, key, position, count, sourcePeep)
+	if not s then
+		Log.warn("Error firing drop item event: %s", r)
+	end
 end
 
 function GroundInventoryProvider:onTransferFrom(source, item, count, purpose)
-	self.onTakeItem(item, self:getBroker():getItemKey(item), count)
+	self.onTakeItem(item, self:getBroker():getItemKey(item), count, source:getPeep())
 end
 
 return GroundInventoryProvider

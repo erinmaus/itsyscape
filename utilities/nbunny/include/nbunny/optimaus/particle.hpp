@@ -33,6 +33,7 @@ namespace nbunny
 		float age = 0.0f;
 		int texture_index = 0;
 		glm::vec4 color = glm::vec4(1.0f);
+		float random = 0.0f;
 
 		void reset();
 	};
@@ -43,6 +44,7 @@ namespace nbunny
 		virtual ~ParticleEmitter() = default;
 
 		virtual void update_local_position(const glm::vec3& position) {};
+		virtual void update_local_direction(const glm::vec3& direction) {};
 
 		virtual void from_definition(lua_State* L) = 0;
 		virtual void emit(Particle& p) = 0;
@@ -103,7 +105,7 @@ namespace nbunny
 		void emit(int count);
 
 		glm::quat get_global_rotation(float delta) const;
-		void build(float delta);
+		void build(const glm::quat& inverse_rotation);
 		void push_particle_quad(const Particle& p, glm::quat rotation);
 
 	public:
@@ -120,6 +122,7 @@ namespace nbunny
 
 		void from_definition(lua_State* L);
 		void update_local_position(const glm::vec3& position);
+		void update_local_direction(const glm::vec3& direction);
 
 		void pause();
 		void play();

@@ -15,7 +15,7 @@ RandomCheck.CHANCE = B.Reference()
 function RandomCheck:update(mashina, state, executor)
 	local a = state[self.CHANCE] or 1.0
 
-	if math.random() <= a then
+	if love.math.random() <= a then
 		return B.Status.Success
 	else
 		return B.Status.Failure

@@ -13,6 +13,10 @@ local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 
 local GoryMassAttack = Class(MeleeWeapon)
 
+function GoryMassAttack:getAttackRange()
+	return math.huge
+end
+
 function GoryMassAttack:rollDamage(peep, purpose, target)
 	local roll = MeleeWeapon.rollDamage(self, peep, purpose, target)
 	local maxHit = roll:getMaxHit()
@@ -23,7 +27,7 @@ function GoryMassAttack:rollDamage(peep, purpose, target)
 end
 
 function GoryMassAttack:perform(peep, target)
-	self:onAttackHit(peep, target)
+	return true
 end
 
 function GoryMassAttack:getBonusForStance(peep)

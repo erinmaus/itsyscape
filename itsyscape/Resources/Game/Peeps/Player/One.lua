@@ -496,16 +496,23 @@ function One:update(...)
 		local storage = director:getPlayerStorage(self):getRoot()
 		local spawn = storage:getSection("Spawn")
 		if spawn and spawn:get("name") then
+			local mapName
+			if spawn:get("instance") then
+				mapName = "@" .. spawn:get("name")
+			else
+				mapName = spawn:get("name")
+			end
+
 			stage:movePeep(
 				self,
-				spawn:get("name"),
+				mapName,
 				Vector(spawn:get("x"), spawn:get("y"), spawn:get("z")),
 				true)
 		else
 			stage:movePeep(
 				self,
-				"IsabelleIsland_Tower",
-				"Anchor_StartGame",
+				"NewGame",
+				"Anchor_Spawn",
 				true)
 		end
 
@@ -585,6 +592,8 @@ function One:onMoveInstance(previousInstance, currentInstance)
 		local peep = actor:getPeep()
 		local follower = peep:getBehavior(FollowerBehavior)
 		if follower and follower.followAcrossMaps and follower.playerID == player:getID() then
+			peep:getCommandQueue():clear(true)
+
 			stage:movePeep(peep, currentInstance, Utility.Peep.getPosition(self))
 
 			Log.info(

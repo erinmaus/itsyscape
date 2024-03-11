@@ -109,6 +109,14 @@ function ThirdPersonCamera:getRotation()
 	return self.rotation
 end
 
+function ThirdPersonCamera:getCombinedRotation()
+	local y = Quaternion.fromAxisAngle(self.up, -(self.verticalRotation - math.pi / 2)):getNormal()
+	local x = Quaternion.fromAxisAngle(Vector.UNIT_X, self.horizontalRotation):getNormal()
+	local lookAt = (x * y):getNormal()
+
+	return (lookAt * self.rotation):getNormal()
+end
+
 function ThirdPersonCamera:setRotation(value)
 	self.rotation = value or Quaternion.IDENTITY
 end

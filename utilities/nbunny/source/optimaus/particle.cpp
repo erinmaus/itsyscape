@@ -32,6 +32,7 @@ void nbunny::Particle::reset()
 	age = 0.0f;
 	texture_index = 0;
 	color = glm::vec4(1.0f);
+	random = 0.0f;
 }
 
 class DirectionalEmitter : public nbunny::ParticleEmitter
@@ -39,6 +40,11 @@ class DirectionalEmitter : public nbunny::ParticleEmitter
 public:
 	glm::vec3 direction;
 	float min_speed, max_speed;
+
+	void update_local_direction(const glm::vec3& value)
+	{
+		direction = glm::normalize(value);
+	}
 
 	void from_definition(lua_State* L)
 	{
@@ -176,7 +182,7 @@ public:
 	{
 		auto table = sol::stack::get<sol::table>(L, -1);
 
-		auto l = table.get_or("lifetime", sol::table(L, sol::create));
+		auto l = table.get_or("lifetime", table.get_or("age", sol::table(L, sol::create)));
 		min_lifetime = l.get_or(1, 1.0f);
 		max_lifetime = l.get_or(2, min_lifetime);
 	}
@@ -417,6 +423,33 @@ public:
 	}
 };
 
+class TwinklePath : public nbunny::ParticlePath
+{
+public:
+	float speed = 1.0f;
+	float min_alpha = 0.0f;
+	float max_alpha = 1.0f;
+
+	void from_definition(lua_State* L)
+	{
+		auto table = sol::stack::get<sol::table>(L, -1);
+
+		speed = table.get_or("speed", 1.0f);
+
+		auto a = table.get_or("alpha", sol::table(L, sol::create));
+		min_alpha = a.get_or(1, 0.0f);
+		max_alpha = a.get_or(2, 1.0f);
+	}
+
+	void update(nbunny::Particle& p, float delta)
+	{
+		auto alpha = std::abs(std::sin(p.age * speed + p.random * LOVE_M_PI_2));
+		alpha = alpha * (max_alpha - min_alpha) + min_alpha;
+
+		p.color.a *= alpha;
+	}
+};
+
 class GravityPath : public nbunny::ParticlePath
 {
 public:
@@ -433,6 +466,28 @@ public:
 	void update(nbunny::Particle& p, float delta)
 	{
 		p.velocity += gravity * delta;
+	}
+};
+
+class SingularityPath : public nbunny::ParticlePath
+{
+public:
+	glm::vec3 position = glm::vec3(0.0f, -10.0f, 0.0f);
+	float speed = 10.0f;
+
+	void from_definition(lua_State* L)
+	{
+		auto table = sol::stack::get<sol::table>(L, -1);
+
+		auto g = table.get_or("position", sol::table(L, sol::create));
+		position = glm::vec3(g.get_or(1, 0.0f), g.get_or(2, -10.0f), g.get_or(3, 0.0f));
+		speed = table.get_or("speed", 10.0f);
+	}
+
+	void update(nbunny::Particle& p, float delta)
+	{
+		auto acceleration = glm::normalize(position - p.position) * speed;
+		p.velocity += acceleration * delta;
 	}
 };
 
@@ -509,12 +564,12 @@ nbunny::ParticleSceneNode::ParticleSceneNode(int reference) :
 		{ "VertexColor", love::graphics::vertex::DATA_FLOAT, 4 },
 	}),
 	quad({
-		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
 		{ glm::vec3( 1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f) },
-		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) },
 		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
 		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) }
+		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
+		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) },
+		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) }
 	})
 {
 	// Nothing.
@@ -545,6 +600,9 @@ void nbunny::ParticleSceneNode::update(float time_delta)
 
 	emit(count);
 
+	auto min = glm::vec3(std::numeric_limits<float>::infinity());
+	auto max = glm::vec3(-std::numeric_limits<float>::infinity());
+
 	std::size_t i = 0;
 	while (i < particles.size())
 	{
@@ -564,6 +622,9 @@ void nbunny::ParticleSceneNode::update(float time_delta)
 				path->update(p, time_delta);
 			}
 
+			min = glm::min(min, p.position);
+			max = glm::max(max, p.position);
+
 			++i;
 		}
 		else
@@ -572,6 +633,9 @@ void nbunny::ParticleSceneNode::update(float time_delta)
 			particles.pop_back();
 		}
 	}
+
+	set_min(min);
+	set_max(max);
 }
 
 void nbunny::ParticleSceneNode::emit(int count)
@@ -579,6 +643,9 @@ void nbunny::ParticleSceneNode::emit(int count)
 	while (count > 0)
 	{
 		Particle p;
+
+		auto rng = love::math::Math::instance.getRandomGenerator();
+		p.random = rng->random();
 
 		for (auto& emitter: emitters)
 		{
@@ -612,24 +679,14 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 	return glm::slerp(previous_rotation, current_rotation, delta);
 }
 
-void nbunny::ParticleSceneNode::build(float delta)
+void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation)
 {
-	auto inverse_rotation = glm::conjugate(get_global_rotation(delta));
-	auto min = glm::vec3(std::numeric_limits<float>::infinity());
-	auto max = glm::vec3(-std::numeric_limits<float>::infinity());
-
 	vertices.clear();
 
 	for (auto& particle: particles)
 	{
 		push_particle_quad(particle, inverse_rotation);
-
-		min = glm::min(min, particle.position);
-		max = glm::max(max, particle.position);
 	}
-
-	set_min(min);
-	set_max(max);
 
 	if (mesh)
 	{
@@ -718,9 +775,17 @@ void nbunny::ParticleSceneNode::set_paths(lua_State* L, sol::table& path_definit
 		{
 			path = std::make_shared<FadeInOutPath>();
 		}
+		else if (type == "TwinklePath")
+		{
+			path = std::make_shared<TwinklePath>();
+		}
 		else if (type == "GravityPath")
 		{
 			path = std::make_shared<GravityPath>();
+		}
+		else if (type == "SingularityPath")
+		{
+			path = std::make_shared<SingularityPath>();
 		}
 		else if (type == "SizePath")
 		{
@@ -820,6 +885,7 @@ void nbunny::ParticleSceneNode::from_definition(lua_State* L)
 	auto rows = table.get_or("rows", 1);
 	auto columns = table.get_or("columns", 1);
 
+	textures.clear();
 	for (auto i = 0; i < rows; ++i)
 	{
 		for (auto j = 0; j < columns; ++j)
@@ -851,6 +917,14 @@ void nbunny::ParticleSceneNode::update_local_position(const glm::vec3& position)
 	}
 }
 
+void nbunny::ParticleSceneNode::update_local_direction(const glm::vec3& direction)
+{
+	for (auto& emitter: emitters)
+	{
+		emitter->update_local_direction(direction);
+	}
+}
+
 void nbunny::ParticleSceneNode::pause()
 {
 	is_playing = false;
@@ -874,11 +948,12 @@ void nbunny::ParticleSceneNode::frame(float delta, float time_delta)
 	}
 
 	update(time_delta);
-	build(delta);
 }
 
 void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 {
+	build(glm::conjugate(renderer.get_camera().get_rotation() * get_global_rotation(delta)));
+
 	if (!mesh)
 	{
 		return;
@@ -918,6 +993,18 @@ int nbunny_particle_scene_node_update_local_position(lua_State* L)
 	auto z = luaL_checknumber(L, 4);
 
 	node.update_local_position(glm::vec3(x, y, z));
+
+	return 0;
+}
+
+int nbunny_particle_scene_node_update_local_direction(lua_State* L)
+{
+	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
+	auto x = luaL_checknumber(L, 2);
+	auto y = luaL_checknumber(L, 3);
+	auto z = luaL_checknumber(L, 4);
+
+	node.update_local_direction(glm::vec3(x, y, z));
 
 	return 0;
 }
@@ -965,6 +1052,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_particlescenenode(lua_State*
 		"initPathsFromDef", &nbunny_particle_scene_node_init_paths_from_def,
 		"initEmissionStrategyFromDef", &nbunny_particle_scene_node_init_emission_strategy_from_def,
 		"updateLocalPosition", &nbunny_particle_scene_node_update_local_position,
+		"updateLocalDirection", &nbunny_particle_scene_node_update_local_direction,
 		"pause", &nbunny::ParticleSceneNode::pause,
 		"play", &nbunny::ParticleSceneNode::play,
 		"getIsPlaying", &nbunny::ParticleSceneNode::get_is_playing);

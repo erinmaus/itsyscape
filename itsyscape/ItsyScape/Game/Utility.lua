@@ -42,6 +42,7 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
@@ -73,6 +74,8 @@ function Utility.save(player, saveLocation, talk, ...)
 			end
 
 			if saveLocation then
+				local isInstanced = Utility.Peep.getInstance(player):getIsLocal()
+
 				local map = player:getBehavior(MapResourceReferenceBehavior)
 				if map and map.map then
 					map = map.map
@@ -83,6 +86,7 @@ function Utility.save(player, saveLocation, talk, ...)
 					if position then
 						location:set({
 							name = map.name,
+							instance = isInstanced,
 							x = position.position.x,
 							y = position.position.y,
 							z = position.position.z
@@ -90,6 +94,7 @@ function Utility.save(player, saveLocation, talk, ...)
 
 						spawn:set({
 							name = map.name,
+							instance = isInstanced,
 							x = position.position.x,
 							y = position.position.y,
 							z = position.position.z
@@ -124,8 +129,13 @@ function Utility.orientateToAnchor(peep, map, anchor)
 		local direction = Utility.Map.getAnchorDirection(game, map, anchor)
 
 		if rotation ~= Quaternion.IDENTITY then
-			local _, r = peep:addBehavior(RotationBehavior)
-			r.rotation = rotation
+			local shipMovement = peep:getBehavior(ShipMovementBehavior)
+			if shipMovement then
+				shipMovement.rotation = rotation
+			else
+				local _, r = peep:addBehavior(RotationBehavior)
+				r.rotation = rotation
+			end
 		end
 
 		if scale ~= Vector.ONE then
@@ -146,7 +156,7 @@ function Utility.orientateToAnchor(peep, map, anchor)
 end
 
 function Utility.spawnActorAtPosition(peep, resource, x, y, z, radius)
-	radius = radius or 1
+	radius = radius or 0
 
 	if type(resource) == 'string' then
 		local gameDB = peep:getDirector():getGameDB()
@@ -201,8 +211,91 @@ function Utility.spawnActorAtAnchor(peep, resource, anchor, radius)
 	end
 end
 
+function Utility.spawnInstancedMapObjectAtAnchor(peep, playerPeep, mapObject, anchor, radius)
+	local FollowerCortex = require "ItsyScape.Peep.Cortexes.FollowerCortex"
+
+	radius = radius or 0
+
+	local gameDB = peep:getDirector():getGameDB()
+	local mapResource = Utility.Peep.getMapResource(peep)
+
+	if type(mapObject) == 'string' then
+		local m = mapObject
+
+		local reference = gameDB:getRecord("MapObjectReference", {
+			Name = mapObject,
+			Map = mapResource
+		})
+
+		if not reference then
+			Log.warn("Map object reference '%s' not found.", m)
+			return nil, nil
+		end
+
+		mapObject = reference:get("Resource")
+		if not mapObject then
+			Log.info("Map object '%s' not found.", m)
+			return nil, nil
+		end
+	end
+
+	local mapObjectResource
+	do
+		local peepMapObject = gameDB:getRecord("PeepMapObject", {
+			MapObject = mapObject
+		})
+
+		local propMapObject = gameDB:getRecord("PropMapObject", {
+			MapObject = mapObject
+		})
+
+		mapObjectResource = (peepMapObject and peepMapObject:get("Peep")) or (propMapObject and propMapObject:get("Prop"))
+	end
+
+	if not mapObjectResource then
+		return nil, nil
+	end
+
+	local followerCortex = peep:getDirector():getCortex(FollowerCortex)
+	local currentPeep
+	for peep in followerCortex:iterateFollowers(Utility.Peep.getPlayerModel(playerPeep)) do
+		local resource = Utility.Peep.getResource(peep)
+		if resource then
+			if resource.id.value == mapObjectResource.id.value then
+				currentPeep = peep
+				break
+			end
+		end
+	end
+
+	if currentPeep then
+		local actorReference = currentPeep:getBehavior(ActorReferenceBehavior)
+		local propReference = currentPeep:getBehavior(PropReferenceBehavior)
+
+		return actorReference and actorReference.actor, propReference and propReference.prop
+	end
+
+	local actor, prop = Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
+	local playerID = Utility.Peep.getPlayerModel(playerPeep):getID()
+
+	if actor then
+		local _, follower = actor:getPeep():addBehavior(FollowerBehavior)
+		follower.playerID = playerID
+
+		local _, instance = actor:getPeep():addBehavior(InstancedBehavior)
+		instance.playerID = playerID
+	end
+
+	if prop then
+		local _, instance = prop:getPeep():addBehavior(InstancedBehavior)
+		instance.playerID = playerID
+	end
+
+	return actor, prop
+end
+
 function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
-	radius = radius or 1
+	radius = radius or 0
 
 	if type(mapObject) == 'string' then
 		local m = mapObject
@@ -234,9 +327,9 @@ function Utility.spawnMapObjectAtPosition(peep, mapObject, x, y, z, radius)
 		local position = actorPeep:getBehavior(PositionBehavior)
 		if position then
 			position.position = Vector(
-				x + ((math.random() * 2) - 1) * radius,
+				x + ((love.math.random() * 2) - 1) * radius,
 				y, 
-				z + ((math.random() * 2) - 1) * radius)
+				z + ((love.math.random() * 2) - 1) * radius)
 		end
 
 		actorPeep:poke('spawnedByPeep', { peep = peep })
@@ -293,7 +386,7 @@ function Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
 end
 
 function Utility.spawnPropAtPosition(peep, prop, x, y, z, radius)
-	radius = radius or 1
+	radius = radius or 0
 
 	if type(prop) == 'string' then
 		local gameDB = peep:getDirector():getGameDB()
@@ -350,7 +443,7 @@ end
 function Utility.spawnMapAtAnchor(peep, resource, anchor, args)
 	local resourceName
 	if type(resource) == 'string' then
-	resourceName = resource
+		resourceName = resource
 	else
 		resourceName = resource.name
 	end
@@ -362,20 +455,40 @@ function Utility.spawnMapAtAnchor(peep, resource, anchor, args)
 		anchor)
 
 	if x and y and z then
-		local _, ship = Utility.Map.spawnMap(peep, resourceName, Vector(x, y, z), args)
-
-		ship:listen('finalize', function()
-			Utility.orientateToAnchor(ship, map, anchor)
-			local position = ship:getBehavior(PositionBehavior)
-			position.offset = Vector(0, position.position.y, 0)
-			position.position = Vector(position.position.x, 0, position.position.z)
-		end)
-		
-		return ship
+		return Utility.spawnMapAtPosition(peep, resource, x, y, z, args)
 	else
 		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
-		return nil
+		return nil, nil
 	end
+end
+
+function Utility.spawnMapAtPosition(peep, resource, x, y, z, args)
+	local resourceName
+	if type(resource) == 'string' then
+		resourceName = resource
+	else
+		resourceName = resource.name
+	end
+
+	local map = Utility.Peep.getMapResource(peep)
+	local layer, mapScript = Utility.Map.spawnMap(peep, resourceName, Vector(x, y, z), args)
+
+	if mapScript then
+		mapScript:listen('finalize', function()
+			Utility.orientateToAnchor(mapScript, map, anchor)
+
+			local position = mapScript:getBehavior(PositionBehavior)
+			if Class.isCompatibleType(mapScript, require "Resources.Game.Peeps.Maps.ShipMapPeep") then
+				position.offset = Vector(0, position.position.y, 0)
+				position.position = Vector(position.position.x, 0, position.position.z)
+			end
+		end)
+
+		return mapScript, layer
+	end
+
+	Log.error("Couldn't spawn map '%s'.", resourceName)
+	return nil, nil
 end
 
 function Utility.performAction(game, resource, id, scope, ...)
@@ -898,11 +1011,21 @@ Utility.UI.Groups = {
 function Utility.UI.openGroup(peep, group)
 	for i = 1, #group do
 		local interfaceID = group[i]
-		Utility.UI.openInterface(peep, interfaceID, false)
+
+		if not Utility.UI.isOpen(peep, interfaceID) then
+			Utility.UI.openInterface(peep, interfaceID, false)
+		end
 	end
 end
 
-function Utility.UI.closeAll(peep, id)
+function Utility.UI.closeAll(peep, id, exceptions)
+	local e = {}
+	if exceptions then
+		for _, exception in ipairs(exceptions) do
+			e[exception] = true
+		end
+	end
+
 	local ui = peep:getDirector():getGameInstance():getUI()
 
 	local interfaces = {}
@@ -913,7 +1036,9 @@ function Utility.UI.closeAll(peep, id)
 	end
 
 	for i = 1, #interfaces do
-		ui:close(interfaces[i].id, interfaces[i].index)
+		if not e[interfaces[i].id] then
+			ui:close(interfaces[i].id, interfaces[i].index)
+		end
 	end
 end
 
@@ -972,7 +1097,7 @@ function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
 	return ui:get(interfaceID, interfaceIndex)
 end
 
-function Utility.UI.tutorial(target, tips)
+function Utility.UI.tutorial(target, tips, done)
 	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 	target:addBehavior(DisabledBehavior)
 
@@ -986,11 +1111,15 @@ function Utility.UI.tutorial(target, tips)
 				false,
 				tips[index].id,
 				tips[index].message,
-				tips[index].open(target),
+				tips[index].open(target, {}),
 				{ position = tips[index].position, style = tips[index].style },
 				after)
 		else
 			target:removeBehavior(DisabledBehavior)
+
+			if done then
+				done()
+			end
 		end
 	end
 
@@ -1351,7 +1480,9 @@ function Utility.Item.getItemsInPeepInventory(peep, itemID)
 
 	local result = {}
 	for item in inventory:getBroker():iterateItems(inventory) do
-		if item:getID() == itemID then
+		if type(itemID) == "string" and item:getID() == itemID then
+			table.insert(result, item)
+		elseif type(itemID) == "table" or type(itemID) == "function" and itemID(item) then
 			table.insert(result, item)
 		end
 	end
@@ -1390,26 +1521,28 @@ function Utility.Map.getTileRotation(map, i, j)
 	end
 end
 
-function Utility.Map.playCutscene(peep, resource, cameraName, player, entities)
-	local director = peep:getDirector()
+function Utility.Map.playCutscene(map, resource, cameraName, player, entities)
+	player = player or Utility.Peep.getPlayer(map)
+	local director = map:getDirector()
 
 	if type(resource) == 'string' then
 		resource = director:getGameDB():getResource(resource, "Cutscene")
 	end
 
 	return director:addPeep(
-		peep:getLayerName(),
+		map:getLayerName(),
 		require "ItsyScape.Peep.Peeps.Cutscene",
 		resource,
 		cameraName,
 		player,
+		map,
 		entities)
 end
 
 function Utility.Map.getTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
-	local center = stage:getMap(layer):getTileCenter(i, j)
-	return center
+	local center = stage:getMap(layer) and stage:getMap(layer):getTileCenter(i, j)
+	return center or Vector.ZERO
 end
 
 function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
@@ -1424,7 +1557,7 @@ function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
 	if not mapScript then
 		return center
 	else
-		local transform = Utility.Peep.getTransform(mapScript)
+		local transform = Utility.Peep.getMapTransform(mapScript)
 		return Vector(transform:transformPoint(center.x, center.y, center.z))
 	end
 end
@@ -1549,12 +1682,12 @@ function Utility.Map.spawnMap(peep, map, position, args)
 	return mapLayer, mapScript
 end
 
-function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
+function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation, args)
 	local WATER_ELEVATION = 1.75
 
 	local stage = peep:getDirector():getGameInstance():getStage()
 	local instance = stage:getPeepInstance(peep)
-	local shipLayer, shipScript = stage:loadMapResource(instance, shipName)
+	local shipLayer, shipScript = stage:loadMapResource(instance, shipName, args)
 
 	if shipScript then
 		local baseMap = stage:getMap(layer)
@@ -1581,6 +1714,8 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 				if position then
 					position.position = Vector(x, WATER_ELEVATION, z)
 				end
+
+				peep:poke("spawnedByPeep", { peep = shipScript })
 			end)
 
 			shipScript.boatFoamProp = peep
@@ -1595,6 +1730,8 @@ function Utility.Map.spawnShip(peep, shipName, layer, i, j, elevation)
 				if position then
 					position.position = Vector(x, WATER_ELEVATION, z)
 				end
+
+				peep:poke("spawnedByPeep", { peep = shipScript })
 			end)
 
 			shipScript.boatFoamTrailProp = peep
@@ -1841,6 +1978,23 @@ function Utility.Peep.getTransform(peep)
 	return transform
 end
 
+function Utility.Peep.getAbsoluteTransform(peep)
+	local transform = love.math.newTransform()
+	do
+		local mapScript = Utility.Peep.getMapScript(peep)
+		if mapScript then
+			local parentTransform = Utility.Peep.getMapTransform(mapScript)
+			transform:apply(parentTransform)
+		end
+
+
+		local peepTransform = Utility.Peep.getTransform(peep)
+		transform:apply(peepTransform)
+	end
+
+	return transform
+end
+
 function Utility.Peep.getMapTransform(peep)
 	local transform = love.math.newTransform()
 
@@ -1902,7 +2056,12 @@ end
 function Utility.Peep.getParentTransform(peep)
 	local director = peep:getDirector()
 	local stage = director:getGameInstance():getStage()
-	local layer = Utility.Peep.getLayer(peep)
+	local position = peep:getBehavior(PositionBehavior)
+	if not position or not position.layer then
+		return love.math.newTransform()
+	end
+
+	local layer = position.layer
 
 	local instance = stage:getInstanceByLayer(layer)
 	if not instance then
@@ -1935,13 +2094,9 @@ function Utility.Peep.getLayer(peep)
 end
 
 function Utility.Peep.setLayer(peep, layer)
-	if peep:isCompatibleType(require "ItsyScape.Peep.Peeps.Map") then
-		Log.error("Can't change layer of map '%s' with this method.", peep:getName())
-	else
-		local position = peep:getBehavior(PositionBehavior)
-		if position then
-			position.layer = layer
-		end
+	local position = peep:getBehavior(PositionBehavior)
+	if position then
+		position.layer = layer
 	end
 end
 
@@ -1954,12 +2109,20 @@ function Utility.Peep.getPosition(peep)
 	end
 end
 
-function Utility.Peep.setPosition(peep, position)
+function Utility.Peep.setPosition(peep, position, lerp)
 	local p = peep:getBehavior(PositionBehavior)
 	if p then
 		p.position = position
 	else
 		Log.warn("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
+	end
+
+	if not lerp then
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+		if actor then
+			actor:onTeleport(position)
+		end
 	end
 end
 
@@ -2158,7 +2321,7 @@ function Utility.Peep.getStorage(peep, instancedPlayer)
 		end
 
 		local follower = peep:getBehavior(FollowerBehavior)
-		if follower and follower.id ~= FollowerBehavior.NIL_ID then
+		if follower and follower.followerID ~= FollowerBehavior.NIL_ID then
 			local worldStorage = director:getPlayerStorage(Utility.Peep.getPlayer(peep)):getRoot()
 			local scopedStorage = worldStorage:getSection("Follower"):getSection(follower.scope)
 
@@ -2410,6 +2573,7 @@ function Utility.Peep.equipXWeapon(peep, id)
 			xWeapon:onEquip(peep)
 		end
 	end
+
 end
 
 function Utility.Peep.equipXShield(peep, id)
@@ -2541,7 +2705,7 @@ end
 --
 -- Returns true on success, false on failure.
 function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
-	local command, reason = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
+	local command, r = Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	if command then
 		local queue = peep:getCommandQueue()
 		local success = queue:interrupt(command)
@@ -2550,12 +2714,14 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 		-- Animator cortexes use velocity and/or the target tile behavior as indicators a peep
 		-- is walking. So pre-emptively signal the peep is walking, so a walking animation isn't
 		-- interrupted.
-		peep:addBehavior(TargetTileBehavior)
+		if r:getNumNodes() > 1 then
+			peep:addBehavior(TargetTileBehavior)
+		end
 
 		return success
 	end
 
-	return false, reason
+	return false, r
 end
 
 function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)
@@ -2638,6 +2804,34 @@ function Utility.Peep.getTile(peep)
 	local tile, i, j = map:getTileAt(position.x, position.z)
 
 	return i, j, k, tile
+end
+
+function Utility.Peep.isInPassage(peep, passage)
+	local position = Utility.Peep.getPosition(peep)
+	local mapResource = Utility.Peep.getMapResource(peep)
+
+	local gameDB = peep:getDirector():getGameDB()
+	local passages = gameDB:getRecords("MapObjectRectanglePassage", {
+		Map = mapResource
+	})
+	for i = 1, #passages do
+		local x1, z1 = passages[i]:get("X1"), passages[i]:get("Z1")
+		local x2, z2 = passages[i]:get("X2"), passages[i]:get("Z2")
+		if position.x >= x1 and position.x <= x2 and
+		   position.z >= z1 and position.z <= z2
+		then
+			local mapObject = gameDB:getRecord("MapObjectReference", {
+				Map = mapResource,
+				Resource = passages[i]:get("Resource")
+			})
+
+			if mapObject:get("Name") == passage then
+				return true
+			end
+		end
+	end
+
+	return false
 end
 
 function Utility.Peep.getTileRotation(peep)
@@ -2784,17 +2978,26 @@ function Utility.Peep.face3D(self)
 	else
 		local rotation = self:getBehavior(RotationBehavior)
 		local targetTile = self:getBehavior(TargetTileBehavior)
-		if rotation and targetTile and targetTile.pathNode then
+		local movement = self:getBehavior(MovementBehavior)
+		local isWalking = targetTile and targetTile.pathNode
+		local isMoving = movement and (movement.velocity * Vector.PLANE_XZ):getLength() > 0
+		if rotation and (isWalking or isMoving) then
 			local position = self:getBehavior(PositionBehavior)
 			local map = self:getDirector():getMap(position.layer)
 
-			if map then
-				local selfPosition = Utility.Peep.getPosition(self)
+			local xzSelfPosition = Utility.Peep.getPosition(self) * Vector.PLANE_XZ
+			local xzTargetPosition, direction
+			if isWalking and map then
 				local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
-				local xzSelfPosition = selfPosition * Vector.PLANE_XZ
-				local xzTilePosition = tilePosition * Vector.PLANE_XZ
-				local direction = (xzSelfPosition - xzTilePosition):getNormal()
+				xzTargetPosition = tilePosition * Vector.PLANE_XZ
+				direction = (xzSelfPosition - xzTargetPosition):getNormal()
+			elseif isMoving then
+				local velocity = movement.velocity * Vector.PLANE_XZ
+				xzTargetPosition = xzSelfPosition + (velocity)
+				direction = velocity:getNormal()
+			end
 
+			if xzTargetPosition and direction then
 				if (direction - face3D.direction):getLength() > 0.01 then
 					face3D.rotation = rotation.rotation
 					face3D.time = love.timer.getTime()
@@ -2803,7 +3006,7 @@ function Utility.Peep.face3D(self)
 
 				local delta = math.min((love.timer.getTime() - face3D.time) / face3D.duration, 1)
 
-				local targetRotation = Quaternion.lookAt(xzTilePosition, xzSelfPosition)
+				local targetRotation = Quaternion.lookAt(xzTargetPosition, xzSelfPosition)
 				rotation.rotation = face3D.rotation:slerp(targetRotation, delta):getNormal()
 
 				return true
@@ -2960,11 +3163,6 @@ function Utility.Peep.getMap(peep)
 end
 
 function Utility.Peep.getMapResource(peep)
-	local map = peep:getBehavior(MapResourceReferenceBehavior)
-	if map and map.map then
-		return map.map
-	end
-
 	return Utility.Peep.getMapResourceFromLayer(peep)
 end
 
@@ -3140,17 +3338,22 @@ Utility.Peep.Mashina = {}
 function Utility.Peep.Mashina:onReady(director)
 	local function setMashinaStates(records)
 		if #records > 0 then
-			local s, m = self:addBehavior(MashinaBehavior)
-			if s then
+			local m = self:getBehavior(MashinaBehavior)
+			if m then
 				for i = 1, #records do
 					local record = records[i]
 					local state = record:get("State")
 					local tree = record:get("Tree")
-					m.states[state] = love.filesystem.load(tree)()
+					local code = love.filesystem.load(tree)
+					if code then
+						m.states[state] = code()
 
-					local default = record:get("IsDefault")
-					if default and default ~= 0 and not m.currentState then
-						m.currentState = state
+						local default = record:get("IsDefault")
+						if default and default ~= 0 and not m.currentState then
+							m.currentState = state
+						end
+					else
+						m.states[state] = nil
 					end
 				end
 			end
@@ -3693,6 +3896,25 @@ function Utility.Peep.Attackable:onReady(director)
 	end
 end
 
+function Utility.Peep.Attackable:onPostReady(director)
+	local gameDB = director:getGameDB()
+	local resource = Utility.Peep.getResource(self)
+	local mapObject = Utility.Peep.getMapObject(self)
+
+	local mapObjectHealth = mapObject and gameDB:getRecord("PeepHealth", { Resource = mapObject })
+	local resourceHealth = resource and gameDB:getRecord("PeepHealth", { Resource = resource })
+
+	local health = (mapObjectHealth and mapObjectHealth:get("Hitpoints")) or (resourceHealth and resourceHealth:get("Hitpoints"))
+
+	if health then
+		local _, status = self:addBehavior(CombatStatusBehavior)
+		status.currentHitpoints = health
+		status.maximumHitpoints = health
+
+		print(">>> status", Log.dump(status))
+	end
+end
+
 function Utility.Peep.makeAttackable(peep, retaliate)
 	if retaliate == nil then
 		retaliate = true
@@ -3706,6 +3928,7 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:addPoke('switchStyle')
 
 	peep:listen('ready', Utility.Peep.Attackable.onReady)
+	peep:listen('postReady', Utility.Peep.Attackable.onPostReady)
 
 	if retaliate then
 		peep:listen('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
@@ -3725,6 +3948,8 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:listen('heal', Utility.Peep.Attackable.onHeal)
 	peep:addPoke('resurrect')
 	peep:listen('resurrect', Utility.Peep.Attackable.onResurrect)
+	peep:addPoke('powerApplied')
+	peep:addPoke('powerActivated')
 end
 
 function Utility.Peep.makeSkiller(peep)
@@ -5023,6 +5248,26 @@ function Utility.Quest.listenForItem(peep, itemID, callback)
 	peep:listen('transferItemTo', listen)
 	peep:listen('spawnItem', listen)
 	peep:listen('move', silence)
+end
+
+function Utility.Quest._showKeyItemHint(peep)
+	local targetTime = love.timer.getTime() + 2.5
+
+	Utility.UI.openInterface(
+		peep,
+		"TutorialHint",
+		false,
+		"QuestProgressNotification",
+		nil,
+		function()
+			return love.timer.getTime() > targetTime
+		end)
+end
+
+function Utility.Quest.listenForKeyItemHint(peep, quest)
+	Utility.Quest.listenForKeyItem(peep, string.format("%s_(.+)", quest), function()
+		Utility.Quest._showKeyItemHint(peep)
+	end)
 end
 
 function Utility.Quest.listenForKeyItem(peep, keyItemID, callback)

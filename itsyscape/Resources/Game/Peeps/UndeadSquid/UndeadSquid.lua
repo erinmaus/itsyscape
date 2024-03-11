@@ -17,7 +17,9 @@ local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local FishBehavior = require "ItsyScape.Peep.Behaviors.FishBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
@@ -33,12 +35,16 @@ function UndeadSquid:new(resource, name, ...)
 	Creep.new(self, resource, name or 'UndeadSquid', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(12, 10, 6)
+	size.size = Vector(16, 10, 6)
 	size.offset = Vector(0, 1, 0)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.maxSpeed = 6
-	movement.maxAcceleration = 6
+	movement.maxSpeed = 16
+	movement.maxAcceleration = 12
+	movement.noClip = true
+
+	self:addBehavior(RotationBehavior)
+	self:addBehavior(FishBehavior)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge
@@ -108,12 +114,17 @@ end
 
 function UndeadSquid:onInk(p)
 	local attack = AttackPoke({
-		damage = math.random(UndeadSquid.INK_MIN, UndeadSquid.INK_MAX),
+		damage = love.math.random(p.min or UndeadSquid.INK_MIN, p.max or UndeadSquid.INK_MAX),
 		aggressor = self,
 		attackType = Weapon.BONUS_ARCHERY,
 		weaponType = 'x-squid'
 	})
-	p.target:poke('hit', attack)
+
+	if attack:getDamage() == 0 then
+		p.target:poke('miss', attack)
+	else
+		p.target:poke('hit', attack)
+	end
 
 	self:poke('initiateAttack', AttackPoke())
 
@@ -121,64 +132,71 @@ function UndeadSquid:onInk(p)
 	stage:fireProjectile('UndeadSquidInk', self, p.target)
 end
 
-function UndeadSquid:onAttackShip()
-	local map = Utility.Peep.getMapResource(self)
-	if map then
-		local stage = self:getDirector():getGameInstance():getStage()
-		local mapScript = Utility.Peep.getMapScript(self)
+function UndeadSquid:onAttackShip(shipMapScript)
+	local stage = self:getDirector():getGameInstance():getStage()
 
-		if mapScript:isCompatibleType(MapScript) then
-			local arguments = mapScript:getArguments()
-			if arguments["ship"] then
-				local shipName = arguments["ship"]
-				local instance = stage:getPeepInstance(self)
-				local shipMapScript = instance:getMapScriptByMapFilename(shipName)
-				local shipMapLayer = shipMapScript:getLayer()
-				local shipMap = stage:getMap(shipMapLayer)
+	if not shipMapScript then
+		local map = Utility.Peep.getMapResource(self)
+		if map then
+			local mapScript = Utility.Peep.getMapScript(self)
 
-				Log.info("Attacking %s.", shipMapScript:getName())
-
-				local tiles = {}
-				for j = 1, shipMap:getHeight() do
-					for i = 1, shipMap:getWidth() do
-						local tile = shipMap:getTile(i, j)
-						if tile:hasFlag("floor") and not tile:hasFlag("impassable") and not tile:hasFlag("blocking") then
-							table.insert(tiles, { i = i, j = j, tile = tile })
-						end
-					end
+			if mapScript:isCompatibleType(MapScript) then
+				local arguments = mapScript:getArguments()
+				if arguments["ship"] then
+					local shipName = arguments["ship"]
+					local instance = stage:getPeepInstance(self)
+					shipMapScript = instance:getMapScriptByMapFilename(shipName)
 				end
+			end
+		end
 
-				local tile = tiles[math.random(#tiles)]
-				if tile then
-					local center = shipMap:getTileCenter(tile.i, tile.j)
-					local s, leak = stage:placeProp("resource://IsabelleIsland_Port_WaterLeak", shipMapLayer, shipMapScript:getLayerName())
-					if s then
-						local leakPeep = leak:getPeep()
-						local position = leakPeep:getBehavior(PositionBehavior)
-						if position then
-							position.position = center
+		if not shipMapScript then
+			Log.info("Undead squid couldn't find ship to attack!")
+		end
+	end
 
-							leakPeep:listen('finalize', function()
-								stage:fireProjectile('UndeadSquidRock', self, leak)
-							end)
-						end
+	Log.info("Attacking %s.", shipMapScript:getName())
 
-						shipMapScript:pushPoke(UndeadSquid.LEAK_TIME_SECONDS, 'leak', {
-							leak = leakPeep
-						})
-					end
-				end
+	local shipMapLayer = shipMapScript:getLayer()
+	local shipMap = self:getDirector():getMap(shipMapLayer)
 
-				local weapon = self:getBehavior(WeaponBehavior)
-				local damage = weapon.weapon:rollDamage(self, Weapon.PURPOSE_KILL, shipMapScript)
-
-				shipMapScript:poke('hit', AttackPoke({
-					damage = damage:roll(),
-					aggressor = self
-				}))
+	local tiles = {}
+	for j = 1, shipMap:getHeight() do
+		for i = 1, shipMap:getWidth() do
+			local tile = shipMap:getTile(i, j)
+			if tile:hasFlag("floor") and not tile:hasFlag("impassable") and not tile:hasFlag("blocking") then
+				table.insert(tiles, { i = i, j = j, tile = tile })
 			end
 		end
 	end
+
+	local tile = tiles[love.math.random(#tiles)]
+	if tile then
+		local center = shipMap:getTileCenter(tile.i, tile.j)
+		local leak = Utility.spawnPropAtPosition(shipMapScript, "IsabelleIsland_Port_WaterLeak", center:get())
+		if leak then
+			local leakPeep = leak:getPeep()
+			leakPeep:listen('finalize', function()
+				stage:fireProjectile(
+					'UndeadSquidRock',
+					self,
+					Utility.Map.getAbsoluteTilePosition(self:getDirector(), tile.i, tile.j, shipMapScript:getLayer()),
+					shipMapScript:getLayer())
+			end)
+
+			shipMapScript:pushPoke(UndeadSquid.LEAK_TIME_SECONDS, 'leak', {
+				leak = leakPeep
+			})
+		end
+	end
+
+	local weapon = self:getBehavior(WeaponBehavior)
+	local damage = weapon.weapon:rollDamage(self, Weapon.PURPOSE_KILL, shipMapScript)
+
+	shipMapScript:poke('hit', AttackPoke({
+		damage = damage:roll(),
+		aggressor = self
+	}))
 
 	self:poke('initiateAttack', AttackPoke())
 end

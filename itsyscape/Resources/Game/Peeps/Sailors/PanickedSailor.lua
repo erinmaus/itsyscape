@@ -99,14 +99,7 @@ function Sailor:ready(director, game)
 			end
 
 			if p:getDamageType() ~= 'leak' then
-				local message = HIT_MESSAGES[math.random(#HIT_MESSAGES)]
-
-				local actor = self:getBehavior(ActorReferenceBehavior)
-				if actor and actor.actor then
-					actor = actor.actor
-
-					actor:flash('Message', 1, message)
-				end
+				self.hasPendingMessage = true
 			end
 		end)
 	end
@@ -122,6 +115,21 @@ function Sailor:onDie()
 				aggressor = self
 			}))
 		end
+	end
+end
+
+function Sailor:update(...)
+	Player.update(self, ...)
+
+	if self.hasPendingMessage then
+		local message = HIT_MESSAGES[love.math.random(#HIT_MESSAGES)]
+		local actor = self:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+		if actor then
+			actor:flash('Message', 1, message)
+		end
+
+		self.hasPendingMessage = false
 	end
 end
 

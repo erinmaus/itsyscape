@@ -13,7 +13,7 @@ do
 
 	local EquipAction = ItsyScape.Action.Equip() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Magic",
+			Resource = ItsyScape.Resource.Skill "Attack",
 			Count = ItsyScape.Utility.xpForLevel(1)
 		}
 	}
@@ -54,13 +54,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Toy longsword",
+		Value = "Up-and-coming hero's longsword",
 		Language = "en-US",
 		Resource = Item
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Good for sparring practice if you're a child.",
+		Value = "An unusually effective wooden longsword. Bit too dangerous for sparring practice...",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "ToyLongsword"
 	}
@@ -78,8 +78,8 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(1, 1),
-		StrengthMelee = ItsyScape.Utility.styleBonusForWeapon(2, 1),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(5),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(5),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "ToyLongsword"
 	}
@@ -137,13 +137,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Toy wand",
+		Value = "Up-and-coming hero's wand",
 		Language = "en-US",
 		Resource = Item
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "With enough imagination, even a twig can be a weapon.",
+		Value = "A wand with an innate spell of Yendorian origin; perfect for an upcoming hero!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "ToyWand"
 	}
@@ -161,9 +161,9 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(1, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(1, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
-		StrengthMagic = ItsyScape.Utility.styleBonusForWeapon(1, 1),
+		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(5, ItsyScape.Utility.WEAPON_SECONDARY_WEIGHT),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(5, ItsyScape.Utility.WEAPON_PRIMARY_WEIGHT),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(5),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "ToyWand"
 	}
@@ -221,13 +221,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Toy boomerang",
+		Value = "Up-and-coming hero's boomerang",
 		Language = "en-US",
 		Resource = Item
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Still hurts, just not much.",
+		Value = "Don't need to worry about ammo with a boomerang! It always comes back!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "ToyBoomerang"
 	}
@@ -245,8 +245,8 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(1, 1),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(1, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(5),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(5),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "ToyBoomerang"
 	}

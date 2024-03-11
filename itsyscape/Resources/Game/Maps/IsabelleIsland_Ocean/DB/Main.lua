@@ -120,6 +120,10 @@ do
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
 	}
+
+	M["UndeadSquid"] {
+		ItsyScape.Action.InvisibleAttack()
+	}
 end
 
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()

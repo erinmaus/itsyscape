@@ -172,7 +172,7 @@ function Ship:updateStats(storage, item, defaultResource)
 				local stat = ShipStatsBehavior.BASE_STATS[i]
 				local value = record:get(stat)
 
-				stats[stat] = stats[stat] + value
+				stats[stat] = stats[stat] + (value or 0)
 			end
 		end
 	end

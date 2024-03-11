@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local utf8 = require "utf8"
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
 local TextInput = require "ItsyScape.UI.TextInput"
@@ -36,6 +37,7 @@ function LabelStyle:new(t, resources)
 
 	self.textShadow = t.textShadow or false
 	self.spaceLines = t.spaceLines or false
+	self.minJustifyLineWidthPercent = t.minJustifyLineWidthPercent or 0.75
 
 	self.align = t.align or 'left'
 end
@@ -63,7 +65,7 @@ function LabelStyle:draw(widget, state)
 			end
 		end
 
-		local x = 0
+		local x, y = 0, 0
 		if width == 0 then
 			local r
 			if type(text) == 'table' then
@@ -79,24 +81,103 @@ function LabelStyle:draw(widget, state)
 			end
 		end
 
+		local maxWidth = self.width or width
 		local oldLineHeight = font:getLineHeight()
-		local y = 0
+		local newLines = {}
 		if self.spaceLines then
-			local _, text = font:getWrap(text, self.width or width)
+			local prespacedText = text
+			if type(text) == "string" then
+				prespacedText = { { 1, 1, 1, 1 }, text }
+			end
 
-			local fontHeight = self.font:getHeight()
-			local newLineHeight = math.min(height / (fontHeight * #text), 1.5)
-			font:setLineHeight(newLineHeight)
-			y = height / 2 - (newLineHeight * fontHeight * #text) / 2
+			local transformedText = {}
+			for i = 1, #prespacedText, 2 do
+				local transformedSequence = prespacedText[i + 1]:gsub("([ ]+)", " ")
+				for _, code in utf8.codes(transformedSequence) do
+					local c = utf8.char(code)
+					if c:match("\n") then
+						table.insert(newLines, #transformedText)
+					end
+
+					table.insert(transformedText, prespacedText[i])
+					table.insert(transformedText, utf8.char(code))
+				end
+			end
+
+			local wrappedWidth, wrappedText = font:getWrap(transformedText, maxWidth)
+			local currentIndex = 0
+
+			local commonAlign = #wrappedText == 1 and self.align or "justify"
+			local finalAlign = self.align
+
+			local newLineHeight = math.min(height / #wrappedText, font:getHeight() * 1.5)
+			local yOffset = (newLineHeight - font:getHeight()) / 2
+
+			local wordX = 0
+			local wordY = height / 2 - (newLineHeight * #wrappedText) / 2
+			local words = {}
+			local currentIndex = 0
+			for index, line in ipairs(wrappedText) do
+				local length = utf8.len(line)
+
+				table.clear(words)
+				wrappedText[index]:gsub("([^ ]+)", function(s)
+					if utf8.len(s) > 0 then
+						table.insert(words, s)
+					end
+				end)
+
+				local lineLength = 0
+				for _, w in ipairs(words) do
+					lineLength = lineLength + font:getWidth(w)
+				end
+
+				local spaceLength
+				if lineLength < maxWidth * self.minJustifyLineWidthPercent then
+					spaceLength = self.font:getWidth(" ")
+					wordX = (maxWidth - (spaceLength * (#words - 1) + lineLength)) / 2
+				else
+					spaceLength = (maxWidth - lineLength) / (#words - 1)
+				end
+
+				for _, w in ipairs(words) do
+					local word = {}
+					for i in utf8.codes(w) do
+						for i = #newLines, 1, -1 do
+							if (currentIndex + i) * 2 > newLines[i] then
+								table.remove(newLines, i)
+								currentIndex = currentIndex + 1
+							end
+						end
+
+						table.insert(word, transformedText[(currentIndex + i) * 2 - 1])
+						table.insert(word, transformedText[(currentIndex + i) * 2])
+					end
+					currentIndex = currentIndex + utf8.len(w) + 1
+
+					if self.textShadow then
+						love.graphics.setColor(0, 0, 0, self.color.a)
+						itsyrealm.graphics.print(word, x + wordX + 1, y + wordY + 1)
+					end
+
+					love.graphics.setColor(self.color:get())
+					itsyrealm.graphics.print(word, x + wordX, y + wordY)
+
+					wordX = wordX + font:getWidth(w) + spaceLength
+				end
+
+				wordY = wordY + newLineHeight
+				wordX = 0
+			end
+		else
+			if self.textShadow then
+				love.graphics.setColor(0, 0, 0, self.color.a)
+				itsyrealm.graphics.printf(text, x + 1, y + 1, maxWidth, self.align)
+			end
+
+			love.graphics.setColor(self.color:get())
+			itsyrealm.graphics.printf(text, x, y, maxWidth, self.align)
 		end
-
-		if self.textShadow then
-			love.graphics.setColor(0, 0, 0, self.color.a)
-			itsyrealm.graphics.printf(text, x + 1, y + 1, self.width or width, self.align)
-		end
-
-		love.graphics.setColor(self.color:get())
-		itsyrealm.graphics.printf(text, x, y, self.width or width, self.align)
 
 		love.graphics.setFont(previousFont)
 

@@ -576,7 +576,10 @@ local INTERFACE_BLACKLIST = {
 	"PlayerEquipment",
 	"PlayerStats",
 	"PlayerSpells",
-	"PlayerPrayers"
+	"PlayerPrayers",
+	"PlayerPowers",
+	"DramaticText",
+	"CutsceneTransition"
 }
 
 function Client:openedInterface(peep, interface, blocking)

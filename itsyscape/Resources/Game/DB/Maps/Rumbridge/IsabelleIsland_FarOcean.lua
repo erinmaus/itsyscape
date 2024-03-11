@@ -71,6 +71,12 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate"
 	}
 
+	ItsyScape.Meta.PeepInventoryItem {
+		Item = ItsyScape.Resource.Item "StyrofoamCannonball",
+		Count = math.huge,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate"
+	}
+
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
 		Value = ItsyScape.Utility.xpForLevel(5),

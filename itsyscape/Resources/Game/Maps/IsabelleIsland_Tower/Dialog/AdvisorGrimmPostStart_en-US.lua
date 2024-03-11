@@ -79,7 +79,9 @@ then
 	end
 end
 
-message "What would you like to know?"
+message {
+	"What would you like to know?"
+}
 
 local CURSED_ORE = option "Kursed Ore"
 local ANCIENT_DRIFTWOOD = option "Ancient Driftwood"

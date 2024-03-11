@@ -36,7 +36,7 @@ function GatherResourceCommand:new(prop, tool, callback, t)
 end
 
 function GatherResourceCommand:getIsFinished()
-	return self.isFinished
+	return self.isFinished and self.time == 0
 end
 
 function GatherResourceCommand:onResourceObtained(peep, e)
@@ -116,7 +116,6 @@ function GatherResourceCommand:hideTool(peep)
 				self.slot,
 				Equipment.SKIN_PRIORITY_EQUIPMENT_OVERRIDE,
 				self.skin)
-			actor:playAnimation('skill', nil, nil)
 		end
 	end
 end
@@ -135,7 +134,7 @@ function GatherResourceCommand:update(delta, peep)
 	if self.time > self.cooldown then
 		self:attack(peep)
 		self.time = 0
-	else
+	elseif not self.isFinished then
 		self.time = self.time + delta
 	end
 end

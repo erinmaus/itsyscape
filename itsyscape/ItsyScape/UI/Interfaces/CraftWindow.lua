@@ -64,6 +64,7 @@ function CraftWindow:new(id, index, ui)
 	self:addChild(self.grid)
 
 	self.requirementsPanel = ScrollablePanel(GridLayout)
+	self.requirementsPanel:setID("Craft-Requirements")
 	self.requirementsPanel:setScrollBarOffset(CraftWindow.BUTTON_SIZE)
 	self.requirementsPanel:getInnerPanel():setPadding(0, 0)
 	self.requirementsPanel:getInnerPanel():setWrapContents(true)

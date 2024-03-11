@@ -17,6 +17,7 @@ local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local SailorsCommon = require "Resources.Game.Peeps.Sailors.Common"
 
 local Port = Class(Map)
@@ -104,12 +105,14 @@ end
 function Port:onSpawnShip(player)
 	local playerPeep = player:getActor() and player:getActor():getPeep()
 	if playerPeep and playerPeep:getState():has("SailingItem", "Ship") then
-		local _, ship = Utility.Map.spawnMap(self, "Ship_Player1", Vector(4, 0, 48), {
+		local _, ship = Utility.Map.spawnMap(self, "Ship_Player1", Vector(16, 0, 32), {
 			isInstancedToPlayer = true,
 			player = player
 		})
-		local rotation = ship:getBehavior(RotationBehavior)
-		rotation.rotation = Quaternion.Y_90
+		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+		if shipMovement then
+			shipMovement.rotation = Quaternion.Y_90
+		end
 		local position = ship:getBehavior(PositionBehavior)
 		position.offset = Vector(0, 2, 0)
 	end

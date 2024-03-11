@@ -691,6 +691,11 @@ const glm::vec3& nbunny::Camera::get_target_position() const
 	return target_position;
 }
 
+const glm::quat& nbunny::Camera::get_rotation() const
+{
+	return rotation;
+}
+
 void nbunny::Camera::update(const glm::mat4& view, const glm::mat4& projection)
 {
 	this->view = view;
@@ -702,6 +707,11 @@ void nbunny::Camera::move(const glm::vec3& eye_position, const glm::vec3& target
 {
 	this->eye_position = eye_position;
 	this->target_position = target_position;
+}
+
+void nbunny::Camera::rotate(const glm::quat& rotation)
+{
+	this->rotation = rotation;
 }
 
 bool nbunny::Camera::inside(const SceneNode& node, float delta) const
@@ -1340,6 +1350,19 @@ static int nbunny_camera_move_eye(lua_State* L)
 	return 0;
 }
 
+static int nbunny_camera_rotate(lua_State* L)
+{
+	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+	float w = (float)luaL_checknumber(L, 5);
+
+	camera->rotate(glm::quat(w, x, y, z));
+
+	return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 {
@@ -1352,6 +1375,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 		"update", &nbunny_camera_update,
 		"moveTarget", &nbunny_camera_move_target,
 		"moveEye", &nbunny_camera_move_eye,
+		"rotate", &nbunny_camera_rotate,
 		"inside", &nbunny::Camera::inside);
 
 	sol::stack::push(L, T);

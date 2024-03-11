@@ -17,7 +17,7 @@ local MapScript = require "ItsyScape.Peep.Peeps.Map"
 
 local Cutscene = Class()
 
-function Cutscene:new(resource, player, director, layerName, entities)
+function Cutscene:new(resource, player, director, layerName, map, entities)
 	self.director = director
 	self.game = director:getGameInstance()
 	self.gameDB = director:getGameDB()
@@ -26,7 +26,7 @@ function Cutscene:new(resource, player, director, layerName, entities)
 
 	self.entities = {
 		Player = CutsceneEntity(player),
-		Map = CutsceneMap(Utility.Peep.getMapScript(player)),
+		Map = CutsceneMap(Class.isCompatibleType(map, MapScript) and map or Utility.Peep.getMapScript(player)),
 		Camera = CutsceneCamera(self.game, Utility.Peep.getPlayerModel(player))
 	}
 
@@ -42,12 +42,15 @@ function Cutscene:new(resource, player, director, layerName, entities)
 
 	self.player = Utility.Peep.getPlayerModel(player)
 	self._onPlayerMove = function()
-		self.isDone = true
-		self.player.onMove:unregister(self._onPlayerMove)
+		self:_finish()
 	end
 	self.player.onMove:register(self._onPlayerMove)
 
 	Analytics:playedCutscene(player, resource.name)
+end
+
+function Cutscene:getShouldRestoreCamera()
+	return not self.suppressCameraRestore
 end
 
 function Cutscene:addEntity(name, Type, probe)
@@ -163,6 +166,7 @@ end
 function Cutscene.While(t)
 	local condition = coroutine.create(t[1])
 	local current = coroutine.create(t[2])
+	local quick = t.quick
 	local isError = false
 	local index = 2
 
@@ -194,7 +198,7 @@ function Cutscene.While(t)
 			end
 
 			coroutine.yield()
-		until (coroutine.status(condition) == "dead" and coroutine.status(current) == "dead" and index > #t) or isError
+		until (coroutine.status(condition) == "dead" and (t.quick or (coroutine.status(current) == "dead" and index > #t))) or isError
 	end
 end
 
@@ -231,11 +235,36 @@ function Cutscene:loadCutscene()
 		r = Cutscene.empty
 	end
 
-	self.script = coroutine.create(r)	
+	self.script = coroutine.create(r)
+	self.didStart = false
+end
+
+function Cutscene:_finish()
+	self.isDone = true
+
+	local startTime = self.startTime or love.timer.getTime()
+	local endTime = love.timer.getTime()
+	Log.info("Finished cutscene '%s' in %.2f seconds.", self.resource.name, endTime - startTime)
+
+	self.player.onMove:unregister(self._onPlayerMove)
 end
 
 function Cutscene:update()
+	if not self.didStart then
+		local isOpen, index = Utility.UI.isOpen(self.player:getActor():getPeep(), "CutsceneTransition")
+
+		if isOpen then
+			local interface = Utility.UI.getOpenInterface(self.player:getActor():getPeep(), "CutsceneTransition", index)
+			if not interface:getIsClosing() then
+				return true
+			end
+		end
+	end
+
 	if not self.isDone and coroutine.status(self.script) ~= "dead" then
+		self.startTime = self.startTime or love.timer.getTime()
+
+		self.didStart = true
 		local s, e = coroutine.resume(self.script)
 		if not s then
 			Log.warn("Error running cutscene '%s': %s %s", self.resource.name, e, debug.traceback(self.script))
@@ -245,8 +274,7 @@ function Cutscene:update()
 	end
 
 	if not self.isDone then
-		self.player.onMove:unregister(self._onPlayerMove)
-		self.isDone = true
+		self:_finish()
 	end
 
 	return false

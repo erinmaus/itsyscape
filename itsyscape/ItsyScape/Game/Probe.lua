@@ -293,20 +293,17 @@ function Probe:actors()
 
 	local count = 0
 	for actor in self.game:getStage():iterateActors() do
+		local transform
 		local min, max = actor:getBounds()
 		do
-			min = min or Vector.ZERO
-			max = max or Vector.ZERO
-
 			local _, _, layer = actor:getTile()
 			local node = self.gameView:getMapSceneNode(layer)
 			if node then
-				local transform = node:getTransform():getGlobalDeltaTransform(0)
-				min, max = Vector.transformBounds(min, max, transform)
+				transform = node:getTransform():getGlobalDeltaTransform(0)
 			end
 		end
 
-		local s, p = self.ray:hitBounds(min, max)
+		local s, p = self.ray:hitBounds(min, max, transform)
 		if s then
 			local actions = actor:getActions('world')
 			for i = 1, #actions do
@@ -354,22 +351,21 @@ function Probe:props()
 
 	local count = 0
 	for prop in self.game:getStage():iterateProps() do
+		local transform
 		local min, max = prop:getBounds()
 		do
-			min = min or Vector.ZERO
-			max = max or Vector.ZERO
-
-			local _, layer = prop:getPosition()
+			local _, _, layer = prop:getTile()
 			local node = self.gameView:getMapSceneNode(layer)
 			if node then
-				local transform = node:getTransform():getGlobalDeltaTransform(0)
-				min, max = Vector.transformBounds(min, max, transform)
+				transform = node:getTransform():getGlobalDeltaTransform(0)
 			end
 		end
 
+		local s, p = self.ray:hitBounds(min, max, transform)
+
 		local _, _, propLayer = prop:getTile()
 
-		local s, p = self.ray:hitBounds(min, max)
+		local s, p = self.ray:hitBounds(min, max, transform)
 		if s then
 			local actions = prop:getActions('world')
 			for i = 1, #actions do

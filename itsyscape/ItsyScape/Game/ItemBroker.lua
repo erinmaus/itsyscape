@@ -1074,6 +1074,14 @@ function ItemBroker:countItemsByKey(provider, key)
 	return count
 end
 
+function ItemBroker:countItems(provider)
+	local count = 0
+	for item in self:iterateItems(provider) do
+		count = count + 1
+	end
+	return count
+end
+
 -- Returns an iterator over the tags assigned to 'item'.
 function ItemBroker:tags(item)
 	assert(item ~= nil, "item is nil")

@@ -180,15 +180,16 @@ function Make:gather(state, player, prop, toolType, skill)
 				local i, j, k = Utility.Peep.getTileAnchor(prop)
 				local walk = Utility.Peep.getWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
 				local face = CallbackCommand(Utility.Peep.face, player, prop)
+				local perform = CallbackCommand(Action.perform, self, state, player)
 
 				if not walk then
 					return false
 				end
 
-				local callback = Callback.bind(self.make, self, state, player, prop)
+				local callback = Callback.bind(self.finishGather, self, state, player, prop)
 				local gatherCommand = GatherResourceCommand(prop, bestTool, callback, { skill = skill, skin = skin, action = self })
 				local queue = player:getCommandQueue()
-				queue:interrupt(CompositeCommand(nil, walk, face, gatherCommand))
+				queue:interrupt(CompositeCommand(nil, walk, face, perform, gatherCommand))
 
 				return true
 			else
@@ -252,6 +253,16 @@ function Make:getDynamicCount(state, player, flags)
 	f['action-output-count'] = count
 
 	return f
+end
+
+function Make:finishGather(state, player, prop, flags)
+	self:transfer(state, player, flags)
+
+	if prop then
+		self:gatherSecondaries(state, player, prop)
+	end
+
+	player:poke('resourceObtained', {})
 end
 
 function Make:make(state, player, prop, flags)

@@ -35,15 +35,15 @@ function Tower:onPlayerEnter(player)
 end
 
 function Tower:initCutscene(player)
-	local metOrlando = player:getState():has("KeyItem", "CalmBeforeTheStorm_MetOrlando")
-	if not metOrlando then
-		Log.info("Player '%s' has not met Orlando!", player:getName())
+	local metGrimm = player:getState():has("KeyItem", "CalmBeforeTheStorm_MetGrimm")
+	if not metGrimm then
+		Log.info("Player '%s' has not met Grimm!", player:getName())
 
-		local orlando = Utility.spawnMapObjectAtAnchor(self, "Orlando", "Anchor_Orlando", 0)
-		orlando = orlando:getPeep()
+		local grimm = Utility.spawnMapObjectAtAnchor(self, "Grimm", "Anchor_Grimm", 0)
+		grimm = grimm:getPeep()
 
 		Utility.Map.playCutscene(self, "IsabelleIsland_Tower_Floor5_Introduction", "StandardCutscene", player, {
-			Orlando = orlando
+			Grimm = grimm
 		})
 	end
 end

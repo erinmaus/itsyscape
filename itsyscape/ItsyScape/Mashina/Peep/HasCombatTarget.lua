@@ -25,9 +25,11 @@ function HasCombatTarget:update(mashina, state, executor)
 	peepTarget = peepTarget and peepTarget:getPeep()
 
 	if peepTarget then
+		state[self.TARGET] = peepTarget
 		return B.Status.Success
 	end
 
+	state[self.TARGET] = nil
 	return B.Status.Failure
 end
 

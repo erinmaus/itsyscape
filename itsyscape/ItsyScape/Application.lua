@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- ItsyScape/Application.lua
 --
@@ -86,6 +87,7 @@ Application.CLICK_RADIUS = 32
 Application.DEBUG_DRAW_THRESHOLD = 160
 Application.DEBUG_MEMORY_POLLS_SECONDS = 5
 Application.MAX_TICKS = 100
+Application.MAX_DRAW_CALLS = 120
 
 Application.SINGLE_PLAYER_TICKS_PER_SECOND = 30
 Application.MULTIPLAYER_PLAYER_TICKS_PER_SECOND = 10
@@ -151,6 +153,7 @@ function Application:new(multiThreaded)
 
 	self.times = {}
 	self.ticks = {}
+	self.drawCalls = {}
 
 	if _CONF.server then
 		Log.info("Server only.")
@@ -489,21 +492,35 @@ function Application:update(delta)
 	self.clickActionTime = self.clickActionTime - delta
 
 	self:updateMemoryUsage()
+
+	if _DEBUG ~= "plus" then
+		local step = (_CONF.clientGCStepMS or 1) / 1000
+
+		local startTime = love.timer.getTime()
+		while love.timer.getTime() < startTime + step do
+			collectgarbage("step", 1)
+		end
+	end
 end
 
 function Application:doCommonTick()
-	table.insert(self.ticks, 1, love.timer.getTime() - self.previousTickTime)
+	table.insert(self.ticks, 1, {
+		client = love.timer.getTime() - self.previousTickTime,
+		server = self:getGame():getDelta(),
+	})
 	while #self.ticks > self.MAX_TICKS do
 		table.remove(self.ticks)
 	end
 
 	local average
-	self.maxTick = 0
+	self.maxClientTick = 0
+	self.maxServerTick = 0
 	do
 		local sum = 0
 		for i = 1, #self.ticks do
-			self.maxTick = math.max(self.maxTick, self.ticks[i])
-			sum = sum + self.ticks[i]
+			self.maxClientTick = math.max(self.maxClientTick, self.ticks[i].client)
+			self.maxServerTick = math.max(self.maxServerTick, self.ticks[i].server)
+			sum = sum + self.ticks[i].client
 		end
 		average = sum / math.max(#self.ticks, 1)
 
@@ -520,14 +537,19 @@ function Application:getAverageTickDelta()
 	return self.averageTick or self:getGame():getDelta() or 0
 end
 
-function Application:getMaxTickDelta()
-	return self.maxTick or self:getGame():getDelta() or 0
+function Application:getMaxClientTickDelta()
+	return self.maxClientTick or self:getGame():getDelta() or 0
+end
+
+function Application:getMaxServerTickDelta()
+	return self.maxServerTick or self:getGame():getDelta() or 0
 end
 
 function Application:tickSingleThread()
 	self:doCommonTick()
 
 	self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
+	self:measure('uiView:tick()', function() self.uiView:tick() end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
 end
 
@@ -537,6 +559,8 @@ function Application:tickMultiThread()
 	if self.show3D then
 		self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
 	end
+
+	self:measure('uiView:tick()', function() self.uiView:tick() end)
 
 	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
@@ -728,7 +752,7 @@ function Application:background()
 				local storage = PlayerStorage()
 				storage:deserialize(serializedStorage)
 
-				self:savePlayer(self.game:getPlayer(), storage, false)
+				self:savePlayer(self:getGame():getPlayer(), storage, false)
 			end
 		end
 	end
@@ -736,7 +760,7 @@ end
 
 function Application:quit(isError)
 	if self.multiThreaded then
-		self.game:quit()
+		self:getGame():quit()
 		self.remoteGameManager:pushTick()
 		self.gameView:quit()
 
@@ -762,7 +786,7 @@ function Application:quit(isError)
 						local storage = PlayerStorage()
 						storage:deserialize(serializedStorage)
 
-						self:savePlayer(self.game:getPlayer(), storage, isError)
+						self:savePlayer(self:getGame():getPlayer(), storage, isError)
 					end
 				else
 					Log.warn("Didn't receive save command from logic thread before timeout.")
@@ -860,16 +884,22 @@ function Application:getPreviousFrameDelta()
 end
 
 function Application:drawDebug()
-	if not _DEBUG or not self.showDebug then
+	if not _DEBUG or (not self.showDebug and not _MOBILE) then
 		return
 	end
 
 	love.graphics.setFont(self.defaultFont)
 
 	local drawCalls = love.graphics.getStats().drawcalls
+	table.insert(self.drawCalls, drawCalls)
+	while #self.drawCalls > self.MAX_DRAW_CALLS do
+		table.remove(self.drawCalls, 1)
+	end
+	local maxDrawCalls = math.max(unpack(self.drawCalls))
+
 	local width = love.window.getMode()
 	r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
-	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d MB)\n", love.timer.getFPS(), drawCalls, collectgarbage("count") / 1024)
+	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, %03d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024)
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
@@ -894,26 +924,39 @@ function Application:drawDebug()
 	end
 
 	r = r .. string.format(
-			"tick delta: average = %.04f ms, max = %0.4f ms, target = %.04f ms, last = %.04f ms\n",
+			"average tick = %.04f ms\nmax (client) tick = %0.4f ms\nmax (server) tick = %0.4f ms\ntarget tick = %.04f ms\nlast tick = %.04f ms\n",
 			self:getAverageTickDelta() * 1000,
-			self:getMaxTickDelta() * 1000,
-			self.game:getTargetDelta() * 1000,
-			self.game:getDelta() * 1000)
+			self:getMaxClientTickDelta() * 1000,
+			self:getMaxServerTickDelta() * 1000,
+			self:getGame():getTargetDelta() * 1000,
+			self:getGame():getDelta() * 1000)
+
+	if not _MOBILE then
+		local w, lines = love.graphics.getFont():getWrap(r, width)
+
+		love.graphics.setColor(0, 0, 0, 0.25)
+		love.graphics.rectangle(
+			"fill",
+			width - w,
+			0,
+			w,
+			#lines * love.graphics.getFont():getHeight())
+	end
 
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.printf(
 		r,
-		width - 600 + 1,
-		1,
-		600,
+		2,
+		2,
+		width,
 		'right')
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.printf(
 		r,
-		width - 600,
 		0,
-		600,
+		0,
+		width,
 		'right')
 end
 
@@ -935,7 +978,7 @@ function Application:_draw()
 		self.gameView:getRenderer():present()
 
 		if self.show2D then
-			self.gameView:getSpriteManager():draw(self.camera, delta)
+			self.gameView:getSpriteManager():draw(self.gameView:getScene(), self.camera, delta)
 		end
 	end
 

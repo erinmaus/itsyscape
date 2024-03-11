@@ -14,7 +14,7 @@ local Peep = require "ItsyScape.Peep.Peep"
 
 local CutscenePeep = Class(Peep)
 
-function CutscenePeep:new(resource, cameraName, player, entities, ...)
+function CutscenePeep:new(resource, cameraName, player, map, entities, ...)
 	Peep.new(self, ...)
 
 	if not resource then
@@ -28,12 +28,21 @@ function CutscenePeep:new(resource, cameraName, player, entities, ...)
 		end
 	end
 
+	local cutscenes = player:getDirector():probe(
+		function(p)
+			if Class.isCompatibleType(p, CutscenePeep) and p.player == player then
+				return self.cameraName ~= nil
+			end
+		end)
+	self.suppressCameraChange = #cutscenes >= 1
+
 	if not player then
 		Log.error("No player for cutscene '%s'!", resource and resource.name)
 	else
 		self.player = player
 	end
 
+	self.map = map
 	self.entities = entities or {}
 
 	self:addPoke('done')
@@ -50,6 +59,7 @@ function CutscenePeep:onReady()
 			self.player,
 			self:getDirector(),
 			self:getLayerName(),
+			self.map,
 			self.entities)
 
 		if self.cameraName then
@@ -64,13 +74,13 @@ function CutscenePeep:update(...)
 
 	if self.cutscene then
 		if not self.cutscene:update() then
-			self:poke('done')
-			Utility.Peep.poof(self)
-
-			if self.cameraName then
+			if self.cameraName and not self.suppressCameraChange then
 				local player = Utility.Peep.getPlayerModel(self.player)
 				player:changeCamera("Default")
 			end
+
+			self:poke('done')
+			Utility.Peep.poof(self)
 		end
 	else
 		Utility.Peep.poof(self)

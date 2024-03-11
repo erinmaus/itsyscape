@@ -54,7 +54,8 @@ function TutorialHintController:update(delta)
 	local result = self.openCallback(
 		self:getPeep(),
 		self:getDirector(),
-		self:getGame():getUI())
+		self:getGame():getUI(),
+		self.state)
 
 	if result then
 		if self.nextCallback then

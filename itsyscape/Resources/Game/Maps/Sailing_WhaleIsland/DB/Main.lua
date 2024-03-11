@@ -162,9 +162,9 @@ end
 M["Anchor_Ship"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27,
+		PositionX = 47,
 		PositionY = -0.25,
-		PositionZ = 27,
+		PositionZ = 17,
 		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
 		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
 		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,

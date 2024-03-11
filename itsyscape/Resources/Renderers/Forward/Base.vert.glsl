@@ -1,3 +1,7 @@
+#ifdef GL_ES
+precision highp float;
+#endif
+
 #line 1
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +32,9 @@ void performTransform(
 
 vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 {
+	frag_Normal = normalize(mat3(scape_NormalMatrix) * VertexNormal);
+	frag_Texture = VertexTexture;
+
 	vec3 localPosition = vec3(0.0);
 	vec4 projectedPosition = vec4(0.0);
 	performTransform(
@@ -37,8 +44,6 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 		projectedPosition);
 
 	frag_Position = (scape_WorldMatrix * vec4(localPosition, 1.0)).xyz;
-	frag_Normal = normalize(mat3(scape_NormalMatrix) * VertexNormal);
-	frag_Texture = VertexTexture;
 
 	return projectedPosition;
 }

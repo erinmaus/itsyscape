@@ -45,6 +45,15 @@ function RemoteGameManager:new(rpcService, ...)
 	self:registerInterface("ItsyScape.Game.Model.Prop", RemoteProp)
 	self:registerInterface("ItsyScape.Game.Model.UI", RemoteUI)
 
+	self.processedTicks = {
+		["ItsyScape.Game.Model.Actor"] = 0,
+		["ItsyScape.Game.Model.Game"] = 0,
+		["ItsyScape.Game.Model.Stage"] = 0,
+		["ItsyScape.Game.Model.Player"] = 0,
+		["ItsyScape.Game.Model.Prop"] = 0,
+		["ItsyScape.Game.Model.UI"] = 0
+	}
+
 	self:newInstance("ItsyScape.Game.Model.Game", 0, RemoteGame(self, ...))
 	GameProxy:wrapClient(
 		"ItsyScape.Game.Model.Game",
@@ -80,6 +89,10 @@ function RemoteGameManager:swapRPCService(rpcService)
 
 	self:removeAllInstances("ItsyScape.Game.Model.Actor")
 	self:removeAllInstances("ItsyScape.Game.Model.Prop")
+
+	for interface in pairs(self.processedTicks) do
+		self.processedTicks[interface] = 0
+	end
 end
 
 function RemoteGameManager:removeAllInstances(type)
@@ -105,8 +118,31 @@ function RemoteGameManager:receive()
 		if e then
 			self.pending:pull(e)
 			if e.type == EventQueue.EVENT_TYPE_TICK then
-				self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
-				self:flush()
+				if e.interface then
+					if self.processedTicks[e.interface] then
+						self.processedTicks[e.interface] = self.processedTicks[e.interface] + 1
+
+						local isMatch = true
+						for _, ticks in pairs(self.processedTicks) do
+							if ticks == 0 then
+								isMatch = false
+							end
+						end
+
+						if isMatch then
+							for interface, ticks in pairs(self.processedTicks) do
+								self.processedTicks[interface] = ticks - 1
+							end
+
+							self.pending:sort("__timestamp")
+							self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
+							self:flush()
+						end
+					end
+				else
+					self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
+					self:flush()
+				end
 			end
 		end
 	until e == nil
@@ -115,12 +151,24 @@ function RemoteGameManager:receive()
 end
 
 function RemoteGameManager:_flush()
+	local n = 0
 	for i = 1, self.pending:length() do
+		n = n + 1
 		self.pending:get(i - 1, self.event)
 		self:process(self.event)
+
+		if self.event.type == EventQueue.EVENT_TYPE_TICK then
+			local j = i + 1
+			while self.event.type == EventQueue.EVENT_TYPE_TICK and j <= self.pending:length() do
+				self.pending:get(j - 1, self.event)
+				j = j + 1
+			end
+
+			break
+		end
 	end
 
-	self.pending:clear()
+	self.pending:clear(n)
 end
 
 function RemoteGameManager:flush()

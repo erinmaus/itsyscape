@@ -5,7 +5,7 @@ set -xe
 cd build
 git clone https://github.com/love2d/megasource || true
 cd megasource
-git checkout .
+git checkout . && git checkout 11.x
 git apply ../../megasource.patch
 cd ..
 

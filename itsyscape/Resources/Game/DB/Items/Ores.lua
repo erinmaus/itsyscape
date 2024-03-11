@@ -18,6 +18,7 @@ local ORES = {
 			"PurpleSaltPeter",
 			"BlackFlint",
 			"CrumblySulfur",
+			"AzatiteShard",
 			"VegetableOil",
 			"Sapphire"
 		}

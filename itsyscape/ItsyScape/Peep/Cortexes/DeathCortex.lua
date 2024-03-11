@@ -52,6 +52,8 @@ function DeathCortex:onDie(peep)
 		return
 	end
 
+	local instance = Utility.Peep.getInstance(peep)
+
 	local despawns, respawns = true, true
 
 	local gameDB = self:getDirector():getGameDB()
@@ -63,7 +65,7 @@ function DeathCortex:onDie(peep)
 
 		if peepMapObject then
 			despawns = peepMapObject:get("DoesNotDespawn") == 0
-			respawns = peepMapObject:get("DoesNotRespawn") == 0
+			respawns = (peepMapObject:get("DoesNotRespawn") == 0 and not instance:getIsGlobal()) or peepMapObject:get("DoesRespawn") ~= 0
 		end
 	else
 		respawns = false

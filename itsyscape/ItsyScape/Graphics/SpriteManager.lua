@@ -110,7 +110,25 @@ function SpriteManager:update(delta)
 	end
 end
 
-function SpriteManager:draw(camera, delta)
+function SpriteManager:_isVisible(scene, node)
+	local current = node
+	while current do
+		if current == scene then
+			return true
+		end
+
+		current = current:getParent()
+	end
+
+	return false
+end
+
+function SpriteManager:draw(scene, camera, delta)
+	local realWidth, realHeight = love.window.getMode()
+	local scaledWidth, scaledHeight, scaleX, scaleY, paddingX, paddingY = love.graphics.getScaledMode()
+
+	-- I messed something up with the fork in love.window.getMode that screws up
+	-- the camera:apply() call (if camera:apply() is called BEFORE getMode)
 	camera:apply()
 
 	local positions = {}
@@ -119,7 +137,11 @@ function SpriteManager:draw(camera, delta)
 		local transform = sprite:getSceneNode():getTransform():getGlobalDeltaTransform(delta)
 		local position = Vector(transform:transformPoint(0, 0, 0)) + sprite:getOffset()
 
-		positions[sprite] = Vector(love.graphics.project(position.x, position.y, position.z))
+		local x, y, z = love.graphics.project(position:get())
+		x = x / realWidth * scaledWidth
+		y = y / realHeight * scaledHeight
+
+		positions[sprite] = Vector(x, y, z)
 	end
 
 	table.sort(self.sprites, function(a, b)
@@ -128,17 +150,20 @@ function SpriteManager:draw(camera, delta)
 		return i.z > j.z
 	end)
 
-	local width, height = love.window.getMode()
+	local width, height = love.graphics.getScaledMode()
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
-	love.graphics.ortho(width, height)
+	love.graphics.scale(scaleX, scaleY, 1)
+	love.graphics.ortho(realWidth, realHeight)
 
 	for i = 1, #self.sprites do
 		local sprite = self.sprites[i]
 		local time = self.times[sprite]
 		local position = positions[sprite]
 
-		sprite:draw(position, time)
+		if self:_isVisible(scene, sprite:getSceneNode()) then
+			sprite:draw(position, time)
+		end
 	end
 end
 

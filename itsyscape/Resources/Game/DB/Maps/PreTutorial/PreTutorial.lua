@@ -559,7 +559,14 @@ do
 	local Maggot = ItsyScape.Resource.Peep "PreTutorial_Maggot"
 
 	ItsyScape.Resource.Peep "PreTutorial_Maggot" {
-		ItsyScape.Action.Attack()
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "PreTutorial_Maggot_Primary",
+				Count = 1
+			}
+		}
 	}
 
 	ItsyScape.Meta.PeepID {
@@ -581,7 +588,7 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(10),
+		Value = ItsyScape.Utility.xpForLevel(5),
 		Resource = Maggot
 	}
 
@@ -594,7 +601,76 @@ do
 		DefenseCrush = -50,
 		DefenseMagic = -50,
 		DefenseRanged = -50,
+		StrengthMelee = -100,
+		StrengthMagic = -100,
+		StrengthRanged = -100,
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Maggot
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Maggot/Maggot_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = Maggot
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "Bait",
+		Weight = 500,
+		Count = 10,
+		Range = 5,
+		Resource = ItsyScape.Resource.DropTable "PreTutorial_Maggot_Primary"
+	}
+end
+
+do
+	local Yenderling = ItsyScape.Resource.Peep "PreTutorial_Yenderling"
+
+	ItsyScape.Resource.Peep "PreTutorial_Yenderling" {
+		ItsyScape.Action.Attack(),
+
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "PreTutorial_Yenderling_Primary",
+				Count = 1
+			}
+		}
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Yenderling.BaseYenderling",
+		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yenderling",
+		Language = "en-US",
+		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "No one seems to know where Yenderlings come from, but where there's one, there's always a hundred more hidden in the dark...",
+		Language = "en-US",
+		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(5),
+		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(5),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Yenderling
+	}
+
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "AzatiteShard",
+		Count = 5,
+		Resource = ItsyScape.Resource.DropTable "PreTutorial_Yenderling_Primary"
 	}
 end

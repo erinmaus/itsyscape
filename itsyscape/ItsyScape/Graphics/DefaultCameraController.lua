@@ -49,15 +49,15 @@ function DefaultCameraController:new(...)
 
 	self.curveMode = DefaultCameraController.SHOW_MODE_NONE
 
-	self.cameraVerticalRotationOffset = 0
-	self.cameraHorizontalRotationOffset = 0
+	self.cameraVerticalRotationOffset = _CONF.camera and _CONF.camera.verticalRotationOffset or 0
+	self.cameraHorizontalRotationOffset = _CONF.camera and _CONF.camera.horizontalRotationOffset or 0
 	self.cameraOffset = Vector(0)
 
 	self:getCamera():setHorizontalRotation(
-		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION)
+		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset)
 	self:getCamera():setVerticalRotation(
-		DefaultCameraController.CAMERA_VERTICAL_ROTATION)
-	self:getCamera():setDistance(DefaultCameraController.DEFAULT_DISTANCE)
+		DefaultCameraController.CAMERA_VERTICAL_ROTATION + self.cameraVerticalRotationOffset)
+	self:getCamera():setDistance(_CONF.camera and _CONF.camera.distance or DefaultCameraController.DEFAULT_DISTANCE)
 
 	self.targetDistance = self:getCamera():getDistance()
 
@@ -74,7 +74,12 @@ function DefaultCameraController:getPlayerMapRotation()
 		return Quaternion.IDENTITY
 	end
 
-	local _, _, layer = player:getActor():getTile()
+	local actor = player:getActor()
+	if not actor then
+		return Quaternion.IDENTITY
+	end
+
+	local _, _, layer = actor:getTile()
 
 	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
 
@@ -226,12 +231,15 @@ function DefaultCameraController:_rotate(dx, dy)
 	local angle2 = self.cameraHorizontalRotationOffset + -dy / 128
 
 	if not _DEBUG then
-		angle1 = math.max(
-			angle1,
-			-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-		angle1 = math.min(
-			angle1,
-			DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+		if not self.isRotationUnlocked or self.isRotationUnlocked <= 0 then
+			angle1 = math.max(
+				angle1,
+				-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+			angle1 = math.min(
+				angle1,
+				DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+		end
+
 		angle2 = math.max(
 			angle2,
 			-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
@@ -308,12 +316,15 @@ function DefaultCameraController:updateControls(delta)
 		end
 	end
 
-	angle1 = math.max(
-		angle1,
-		-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-	angle1 = math.min(
-		angle1,
-		DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+	if not self.isRotationUnlocked or self.isRotationUnlocked <= 0 then
+		angle1 = math.max(
+			angle1,
+			-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+		angle1 = math.min(
+			angle1,
+			DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+	end
+
 	angle2 = math.max(
 		angle2,
 		-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
@@ -479,6 +490,14 @@ function DefaultCameraController:update(delta)
 			self.currentShakingOffset = Vector(0)
 		end
 	end
+
+	local cameraDetails = _CONF.camera or {}
+	do
+		cameraDetails.horizontalRotationOffset = self.cameraHorizontalRotationOffset
+		cameraDetails.verticalRotationOffset = self.cameraVerticalRotationOffset
+		cameraDetails.distance = self.targetDistance
+	end
+	_CONF.camera = cameraDetails
 end
 
 function DefaultCameraController:onMapRotationStick()
@@ -487,6 +506,21 @@ end
 
 function DefaultCameraController:onMapRotationUnstick()
 	self.mapRotationSticky = (self.mapRotationSticky or 1) - 1
+end
+
+function DefaultCameraController:onUnlockRotation()
+	self.isRotationUnlocked = (self.isRotationUnlocked or 0) + 1
+end
+
+function DefaultCameraController:onLockRotation()
+	self.isRotationLocked = (self.isRotationUnlocked or 1) - 1
+
+	self.cameraVerticalRotationOffset = math.max(
+		self.cameraVerticalRotationOffset,
+		-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+	self.cameraVerticalRotationOffset = math.min(
+		self.cameraVerticalRotationOffset,
+		DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
 end
 
 function DefaultCameraController:onShake(duration, interval, min, max)

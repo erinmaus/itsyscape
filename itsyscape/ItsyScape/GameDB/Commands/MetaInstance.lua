@@ -56,6 +56,11 @@ function MetaInstance:instantiate(brochure)
 			instance.__prompt[key] = l
 		end
 
+		for columnName, columnType in self.meta:iterate() do
+			instance[columnName] = instance[columnName] or self.meta.DEFAULTS[columnType]
+			instance.__prompt[columnName] = instance.__prompt[columnName] or self.meta.DEFAULTS[columnType]
+		end
+
 		local s, e = pcall(function() brochure:insert(self.definition, self.instance) end)
 		if not s then
 			local message = string.format("%s:%d: Could not insert Meta ('%s') from: %s", self.debugInfo.source, self.debugInfo.currentline, self.meta:getName(), Log.stringify(self.values))
