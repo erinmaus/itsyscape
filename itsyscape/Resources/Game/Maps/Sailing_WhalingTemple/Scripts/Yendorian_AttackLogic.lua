@@ -26,6 +26,8 @@ local PHASE_1_THRESHOLD_HEALTH = 15
 local PHASE_3_THRESHOLD_1_HEALTH = 10
 local PHASE_3_THRESHOLD_2_HEALTH = 5
 
+local PHASE_3_SPECIAL_DAMAGE = 3
+
 local Setup = Mashina.Sequence {
 	Mashina.Peep.GetPlayer {
 		[PLAYER] = B.Output.player
@@ -97,11 +99,7 @@ local Phase2AttackLogic = Mashina.Step {
 			},
 
 			Mashina.Repeat {
-				Mashina.Invert {
-					Mashina.Check {
-						condition = SUMMON_MANTOK
-					}
-				}
+				Mashina.Success
 			}
 		},
 
@@ -144,8 +142,10 @@ local Phase2AttackLogic = Mashina.Step {
 							[HEALTH_DIFFERENCE] = B.Output.result
 						},
 
-						Mashina.Peep.Heal {
-							hitpoints = HEALTH_DIFFERENCE
+						Mashina.Success {
+							Mashina.Peep.Heal {
+								hitpoints = HEALTH_DIFFERENCE
+							}
 						}
 					}
 				}
@@ -166,8 +166,10 @@ local Phase2AttackLogic = Mashina.Step {
 				[HEALTH_DIFFERENCE] = B.Output.result
 			},
 
-			Mashina.Peep.Heal {
-				hitpoints = HEALTH_DIFFERENCE
+			Mashina.Success {
+				Mashina.Peep.Heal {
+					hitpoints = HEALTH_DIFFERENCE
+				}
 			},
 
 			Mashina.Set {
@@ -220,7 +222,20 @@ local Phase3AttackSpecial = Mashina.ParallelTry {
 			},
 
 			Mashina.Peep.PokeMap {
-				event = "summonMantok"
+				event = "summonMantok",
+				poke = function(mashina, state)
+					return {
+						aggressor = mashina,
+						damage = PHASE_3_SPECIAL_DAMAGE,
+						peep = state[PLAYER]
+					}
+				end
+			},
+
+			Mashina.Peep.Talk {
+				peep = ROSALIND,
+				message = "Oh no! Are you ok? You just got blased by Man'tok!",
+				duration = 4
 			},
 
 			Mashina.Failure

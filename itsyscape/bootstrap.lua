@@ -98,6 +98,10 @@ do
 	math.clamp = function(a, min, max)
 		return math.max(math.min(a, max or 1), min or 0)
 	end
+
+	math.lerp = function(from, to, delta)
+		return to * delta + from * (1 - delta)
+	end
 end
 
 Log = require "ItsyScape.Common.Log"
