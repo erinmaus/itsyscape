@@ -501,6 +501,8 @@ function ProCombatStatusHUDController:updatePowersState(powers)
 				local coolDown = b.powers[resource.id.value] - time
 				if coolDown > 0 then
 					p.coolDown = math.floor(coolDown)
+				else
+					p.coolDown = 0
 				end
 			end
 		end

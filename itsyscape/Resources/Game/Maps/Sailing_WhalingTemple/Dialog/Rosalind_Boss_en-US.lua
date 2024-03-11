@@ -4,6 +4,8 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.V2Common"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
+local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 
 local INVENTORY_FLAGS = {
 	['item-inventory'] = true
@@ -159,6 +161,9 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendo
 		speaker "A %hint{use a stronger type of attack}, called a power, is perfect for this."
 
 		speaker "Let me show you how to use a power..."
+
+		local powers = _TARGET:getBehavior(PendingPowerBehavior)
+		_TARGET:removeBehavior(PowerCoolDownBehavior)
 
 		PreTutorialCommon.startRibbonTutorial(_TARGET, PreTutorialCommon.USE_POWER, "PlayerPowers")
 	else
