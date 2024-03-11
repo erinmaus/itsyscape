@@ -88,8 +88,6 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_FoundYenderling") then
 
 	_TARGET:getState():give("KeyItem", "PreTutorial_FoundYenderling")
 elseif not _TARGET:getState():has("KeyItem", "PreTutorial_SlayedYenderling") then
-	_TARGET:getState():give("KeyItem", "PreTutorial_LearnedAboutStances")
-
 	local stance = _TARGET:getBehavior(StanceBehavior)
 	stance = stance and stance.stance
 
@@ -122,7 +120,9 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_SlayedYenderling") the
 
 		message "This is how you change your stance..."
 
-		PreTutorialCommon.startRibbonTutorial(_TARGET, PreTutorialCommon.CHANGE_STANCE, "PlayerStance")
+		PreTutorialCommon.startRibbonTutorial(_TARGET, PreTutorialCommon.CHANGE_STANCE, "PlayerStance", function()
+			_TARGET:getState():give("KeyItem", "PreTutorial_LearnedAboutStances")
+		end)
 	end
 elseif not _TARGET:getState():has("KeyItem", "PreTutorial_CollectedAzatiteShards") then
 	local isYenderlingAlive

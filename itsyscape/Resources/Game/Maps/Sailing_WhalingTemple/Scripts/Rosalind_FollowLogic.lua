@@ -18,6 +18,7 @@ local TARGET = B.Reference("Rosalind", "TARGET")
 local CURRENT_PASSAGE = B.Reference("Rosalind", "CURRENT_PASSAGE")
 local ENTERED_PASSAGE = B.Reference("Rosalind", "ENTERED_PASSAGE")
 local TALKED_ABOUT_FISH = B.Reference("Rosalind", "TALKED_ABOUT_FISH")
+local TALKED_ABOUT_STANCES = B.Reference("Rosalind", "TALKED_ABOUT_STANCES")
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
@@ -279,6 +280,17 @@ local Tree = BTreeBuilder.Node() {
 						player = PLAYER,
 						key_item = "PreTutorial_LearnedAboutStances"
 					}
+				},
+
+				Mashina.Invert {
+					Mashina.Check {
+						condition = TALKED_ABOUT_STANCES,
+					}
+				},
+
+				Mashina.Set {
+					value = true,
+					[TALKED_ABOUT_STANCES] = B.Output.result
 				},
 
 				Mashina.Peep.HasCombatTarget {
@@ -563,9 +575,20 @@ local Tree = BTreeBuilder.Node() {
 					}
 				},
 
-				Mashina.Player.Dialog {
-					named_action = "TalkAboutDungeon",
-					player = PLAYER
+				Mashina.Step {
+					Mashina.Compare.Equal {
+						left = CURRENT_PASSAGE,
+						right = "Passage_ToBossDoor"
+					},
+
+					Mashina.Check {
+						condition = ENTERED_PASSAGE,
+					},
+
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutDungeon",
+						player = PLAYER
+					}
 				}
 			},
 

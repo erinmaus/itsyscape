@@ -1541,8 +1541,8 @@ end
 
 function Utility.Map.getTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
-	local center = stage:getMap(layer):getTileCenter(i, j)
-	return center
+	local center = stage:getMap(layer) and stage:getMap(layer):getTileCenter(i, j)
+	return center or Vector.ZERO
 end
 
 function Utility.Map.getAbsoluteTilePosition(director, i, j, layer)
@@ -2573,6 +2573,7 @@ function Utility.Peep.equipXWeapon(peep, id)
 			xWeapon:onEquip(peep)
 		end
 	end
+
 end
 
 function Utility.Peep.equipXShield(peep, id)
