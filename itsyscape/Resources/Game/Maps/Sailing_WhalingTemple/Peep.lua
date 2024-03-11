@@ -17,6 +17,7 @@ local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
 local Color = require "ItsyScape.Graphics.Color"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local Peep = require "ItsyScape.Peep.Peep"
 local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
@@ -53,16 +54,18 @@ end
 
 function WhalingTemple:onRain()
 	local stage = self:getDirector():getGameInstance():getStage()
-	stage:forecast(layer, 'Sailing_WhalingTemple_HeavyRain', 'Rain', {
+	stage:forecast(self:getLayer(), 'Sailing_WhalingTemple_HeavyRain', 'Rain', {
 		wind = { 15, 0, 0 },
 		heaviness = 1
 	})
+
+	stage:playMusic(self:getLayer(), "ambience", "StormyOcean1")
 end
 
 function WhalingTemple:onPlayerEnter(player)
 	local playerPeep = player:getActor():getPeep()
 
-	if playerPeep:getState():has("KeyItem", "PreTutorial_SmithedUpAndComingHeroArmor") then
+	if not playerPeep:getState():has("KeyItem", "PreTutorial_SmithedUpAndComingHeroArmor") then
 		self:poke("rain")
 	end
 
@@ -258,7 +261,7 @@ function WhalingTemple:prepareQuest(playerPeep)
 
 			if yendorian then
 				yendorian = yendorian:getPeep()
-				yendorian:listen("finalize", function()
+				yendorian:listen("postReady", function()
 					Utility.Peep.equipXWeapon(yendorian, string.format("%s_Injured", yendorianMapObjectName))
 				end)
 				yendorian:listen("die", function()
@@ -273,7 +276,8 @@ function WhalingTemple:prepareQuest(playerPeep)
 				end)
 			end
 		end
-	elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_TurnedInSupplies", playerPeep) or
+	elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_InformedJenkins", playerPeep) or
+	       Utility.Quest.isNextStep("PreTutorial", "PreTutorial_TurnedInSupplies", playerPeep) or
 	       Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Teleported", playerPeep) or
 	       Utility.Quest.didComplete("PreTutorial", playerPeep)
 	then
@@ -388,7 +392,7 @@ function WhalingTemple:updateFireHint()
 			self:getLayerName(),
 			Probe.resource("Prop", "Target_Default"),
 			function(peep)
-				return peep.target and peep.target:wasPoofed()
+				return peep.target and Class.isCompatibleType(peep.target, Peep) and peep.target:wasPoofed()
 			end)
 
 		for _, target in ipairs(targets) do
