@@ -21,10 +21,10 @@ local CURRENT_HEALTH = B.Reference("Yendorian", "CURRENT_HEALTH")
 local HEALTH_DIFFERENCE = B.Reference("Yendorian", "HEALTH_DIFFERENCE")
 local SUMMON_MANTOK = B.Reference("Yendorian", "SUMMON_MANTOK")
 
-local PHASE_1_THRESHOLD_HEALTH = 18
+local PHASE_1_THRESHOLD_HEALTH = 29
 
-local PHASE_3_THRESHOLD_1_HEALTH = 15
-local PHASE_3_THRESHOLD_2_HEALTH = 10
+local PHASE_3_THRESHOLD_1_HEALTH = 25
+local PHASE_3_THRESHOLD_2_HEALTH = 15
 local PHASE_3_THRESHOLD_3_HEALTH = 5
 
 local Setup = Mashina.Sequence {
@@ -50,10 +50,8 @@ local AttackLoop = Mashina.Step {
 	Mashina.Peep.DidAttack,
 
 	Mashina.Success {
-		Mashina.Step {
-			Mashina.Peep.EngageCombatTarget {
-				peep = ROSALIND,
-			}
+		Mashina.Peep.EngageCombatTarget {
+			peep = ROSALIND,
 		}
 	},
 
@@ -91,7 +89,7 @@ local Phase2AttackLogic = Mashina.Step {
 		duration = 4
 	},
 
-	Mashina.ParallelSequence {
+	Mashina.ParallelTry {
 		Mashina.Step {
 			Mashina.Player.Dialog {
 				named_action = "TalkAboutBoss",
@@ -138,11 +136,11 @@ local Phase2AttackLogic = Mashina.Step {
 						Mashina.Peep.Talk {
 							message = "(Man'tok... Hear the pleas of your *cough* child...)",
 							log = false,
-							duration = 4
+							duration = 2
 						},
 
 						Mashina.Subtract {
-							left = 20,
+							left = 30,
 							right = CURRENT_HEALTH,
 							[HEALTH_DIFFERENCE] = B.Output.result
 						},
@@ -163,19 +161,21 @@ local Phase2AttackLogic = Mashina.Step {
 				duration = 4,
 			},
 
+			Mashina.Subtract {
+				left = 30,
+				right = CURRENT_HEALTH,
+				[HEALTH_DIFFERENCE] = B.Output.result
+			},
+
+			Mashina.Peep.Heal {
+				hitpoints = HEALTH_DIFFERENCE
+			},
+
 			Mashina.Set {
 				value = true,
 				[SUMMON_MANTOK] = B.Output.result
-			},
-
-			Mashina.Peep.Talk {
-				message = "done with summon"
 			}
 		}
-	},
-
-	Mashina.Peep.Talk {
-		message = "done with everything"
 	}
 }
 
@@ -191,6 +191,13 @@ local Phase3AttackSpecial = Mashina.ParallelTry {
 
 			Mashina.Peep.Talk {
 				message = "Man'tok! Come forth and slay these vermin!",
+				log = false,
+				duration = 4
+			},
+
+			Mashina.Peep.Talk {
+				peep = ROSALIND,
+				message = "Quick! Use a power!",
 				duration = 4
 			},
 
@@ -200,6 +207,16 @@ local Phase3AttackSpecial = Mashina.ParallelTry {
 
 			Mashina.Peep.Talk {
 				message = "OH, MAN'TOK! *cough* FATHER! *hack* TEAR THEM APART!",
+				log = false,
+				duration = 4
+			},
+
+			Mashina.Peep.FireProjectile {
+				projectile = "SummonPortal",
+				destination = Vector.ZERO
+			},
+
+			Mashina.Peep.TimeOut {
 				duration = 4
 			},
 
@@ -212,16 +229,18 @@ local Phase3AttackSpecial = Mashina.ParallelTry {
 	}
 }
 
-local Phase3AttackSpecialWrapper = function(HEALTH)
+local Phase3AttackSpecialWrapper = function(health)
 	return Mashina.Success {
 		Mashina.Try {
 			Mashina.Sequence {
 				Mashina.Compare.GreaterThan {
 					left = CURRENT_HEALTH,
-					right = HEALTH,
+					right = health,
 				},
 
-				AttackLoop
+				Mashina.Repeat {
+					AttackLoop
+				}
 			},
 
 			Mashina.Sequence {
@@ -244,6 +263,10 @@ local Phase3AttackLogic = Mashina.Step {
 	}
 }
 
+local Die = Mashina.Repeat {
+	Mashina.Peep.IsAlive
+}
+
 local Tree = BTreeBuilder.Node() {
 	Mashina.Sequence {
 		Setup,
@@ -262,17 +285,17 @@ local Tree = BTreeBuilder.Node() {
 
 			Mashina.Sequence {
 				Mashina.Success {
-					Mashina.Peep.DisengageCombatTarget
+					Mashina.Sequence {
+						Mashina.Peep.DisengageCombatTarget
+					}
 				},
 
 				Phase2AttackLogic,
 			},
 
-			Phase3AttackLogic
-		},
+			Phase3AttackLogic,
 
-		Mashina.Repeat {
-			Mashina.Peep.IsAlive
+			Die
 		}
 	}
 }

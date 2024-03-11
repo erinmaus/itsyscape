@@ -144,7 +144,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 20,
+		Hitpoints = 30,
 		Resource = M["YendorianBallista"]
 	}
 
@@ -181,6 +181,11 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(1),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(5),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(5),
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(1),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = M["YendorianBallista"]
@@ -201,7 +206,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 20,
+		Hitpoints = 30,
 		Resource = M["YendorianMast"]
 	}
 
@@ -238,6 +243,11 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(1),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(5),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(5),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(1),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(1),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = M["YendorianMast"]
@@ -258,7 +268,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 20,
+		Hitpoints = 30,
 		Resource = M["YendorianSwordfish"]
 	}
 
@@ -276,13 +286,13 @@ do
 	}
 
 	ItsyScape.Meta.PeepStat {
-		Skill = ItsyScape.Resource.Skill "Archery",
+		Skill = ItsyScape.Resource.Skill "Attack",
 		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = M["YendorianSwordfish"]
 	}
 
 	ItsyScape.Meta.PeepStat {
-		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Skill = ItsyScape.Resource.Skill "Strength",
 		Value = ItsyScape.Utility.xpForLevel(1),
 		Resource = M["YendorianSwordfish"]
 	}
@@ -295,6 +305,11 @@ do
 
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(1),
+		DefenseStab = ItsyScape.Utility.styleBonusForBody(5),
+		DefenseSlash = ItsyScape.Utility.styleBonusForBody(5),
+		DefenseCrush = ItsyScape.Utility.styleBonusForBody(5),
+		DefenseMagic = ItsyScape.Utility.styleBonusForBody(1),
+		DefenseRanged = ItsyScape.Utility.styleBonusForBody(5),
 		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(1),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = M["YendorianSwordfish"]
