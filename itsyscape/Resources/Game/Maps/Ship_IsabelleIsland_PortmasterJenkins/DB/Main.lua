@@ -443,7 +443,7 @@ do
 	}
 
 	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Jenkins_Pirate"],
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins",
 		Name = "Jenkins",
 		Action = TalkAction
 	}

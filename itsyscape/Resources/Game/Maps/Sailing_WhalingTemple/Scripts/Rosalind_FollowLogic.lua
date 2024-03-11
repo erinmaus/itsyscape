@@ -274,7 +274,13 @@ local Tree = BTreeBuilder.Node() {
 				}
 			},
 
-			Mashina.Step {
+			Mashina.Sequence {
+				Mashina.Invert {
+					Mashina.Check {
+						condition = TALKED_ABOUT_STANCES,
+					}
+				},
+
 				Mashina.Invert {
 					Mashina.Player.HasKeyItem {
 						player = PLAYER,
@@ -282,36 +288,32 @@ local Tree = BTreeBuilder.Node() {
 					}
 				},
 
-				Mashina.Invert {
-					Mashina.Check {
-						condition = TALKED_ABOUT_STANCES,
+				Mashina.Step {
+					Mashina.Peep.HasCombatTarget {
+						peep = PLAYER
+					},
+
+					Mashina.Peep.DidAttack,
+					Mashina.Peep.DidAttack,
+					Mashina.Peep.DidAttack,
+
+					Mashina.Player.Disable {
+						player = PLAYER,
+					},
+
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutDungeon",
+						player = PLAYER
+					},
+
+					Mashina.Player.Enable {
+						player = PLAYER,
+					},
+
+					Mashina.Set {
+						value = true,
+						[TALKED_ABOUT_STANCES] = B.Output.result
 					}
-				},
-
-				Mashina.Set {
-					value = true,
-					[TALKED_ABOUT_STANCES] = B.Output.result
-				},
-
-				Mashina.Peep.HasCombatTarget {
-					peep = PLAYER
-				},
-
-				Mashina.Peep.DidAttack,
-				Mashina.Peep.DidAttack,
-				Mashina.Peep.DidAttack,
-
-				Mashina.Player.Disable {
-					player = PLAYER,
-				},
-
-				Mashina.Player.Dialog {
-					named_action = "TalkAboutDungeon",
-					player = PLAYER
-				},
-
-				Mashina.Player.Enable {
-					player = PLAYER,
 				}
 			},
 

@@ -19,7 +19,7 @@ end
 
 function YendorianMast:rollDamage(peep, purpose, target)
 	-- We want to overrie the magic damage.
-	return Weapon.rollDamage(peep, purpose, target)
+	return Weapon.rollDamage(self, peep, purpose, target)
 end
 
 function YendorianMast:getAttackRange()

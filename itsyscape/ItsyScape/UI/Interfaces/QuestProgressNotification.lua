@@ -167,6 +167,8 @@ function QuestProgressNotification:update(delta)
 			self.scrollTime = nil
 		end
 	end
+
+	self:updateQuest()
 end
 
 return QuestProgressNotification

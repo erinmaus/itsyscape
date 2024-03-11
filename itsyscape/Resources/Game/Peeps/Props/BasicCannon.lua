@@ -153,7 +153,7 @@ function BasicCannon:onFire(peep, item)
 
 			-- TODO: Take into account 'face' from MapObjectLocation
 			local ray = Ray(
-				Utility.Peep.getAbsolutePosition(self) + Vector.UNIT_Y + direction,
+				Utility.Peep.getAbsolutePosition(self) + Vector.UNIT_Y,
 				direction)
 
 			local hits = director:probe(self:getLayerName(),
@@ -179,6 +179,7 @@ function BasicCannon:onFire(peep, item)
 					local max = Vector(size.x / 2, size.y, size.z / 2)
 
 					local transform = Utility.Peep.getAbsoluteTransform(p)
+
 					local s, hit = ray:hitBounds(min, max, transform)
 					if s then
 						hit = Vector(transform:transformPoint(hit:get()))

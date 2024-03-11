@@ -145,7 +145,6 @@ function LabelStyle:draw(widget, state)
 					for i in utf8.codes(w) do
 						for i = #newLines, 1, -1 do
 							if (currentIndex + i) * 2 > newLines[i] then
-								print(">>> matched newline")
 								table.remove(newLines, i)
 								currentIndex = currentIndex + 1
 							end

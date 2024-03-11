@@ -144,9 +144,12 @@ function ShipMapPeep:onLoad(filename, args, layer)
 			instance = self
 		})
 
+
 		stage:loadMusic(layer, map)
 
 		if script then
+			Utility.Peep.setLayer(self, scriptLayer)
+
 			local baseMap = stage:getMap(scriptLayer)
 			local selfMap = stage:getMap(self:getLayer())
 

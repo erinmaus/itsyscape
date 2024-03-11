@@ -101,12 +101,6 @@ function QuestProgressNotificationController:updateQuest(quest)
 	self.nextStep = nil
 	self.mapResource = nil
 	self.tryAgain = true
-
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"updateQuest",
-		nil,
-		{})
 end
 
 function QuestProgressNotificationController:updateKeyItem(keyItem)
