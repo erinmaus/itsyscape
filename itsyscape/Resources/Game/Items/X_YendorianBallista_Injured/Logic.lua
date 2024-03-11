@@ -19,7 +19,7 @@ function YendorianBallista:getAmmo()
 end
 
 function YendorianBallista:getAttackRange(peep)
-	return 10
+	return 4
 end
 
 function YendorianBallista:getWeaponType()

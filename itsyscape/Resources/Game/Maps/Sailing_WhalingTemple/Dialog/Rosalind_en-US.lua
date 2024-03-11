@@ -31,6 +31,14 @@ local ITEMS = {
 		}
 	},
 	{
+		id = "Tinderbox",
+		keyItem = "PreTutorial_Fished",
+		message = {
+			"Can't light fires without a %item{tinderbox}!",
+			"Don't be a pyromaniac!"
+		}
+	},
+	{
 		id = "BronzePickaxe",
 		keyItem = "PreTutorial_CollectedAzatiteShards",
 		message = {

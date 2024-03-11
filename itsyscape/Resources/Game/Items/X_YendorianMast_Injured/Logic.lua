@@ -23,7 +23,7 @@ function YendorianMast:rollDamage(peep, purpose, target)
 end
 
 function YendorianMast:getAttackRange()
-	return 10
+	return 4
 end
 
 function YendorianMast:getWeaponType()

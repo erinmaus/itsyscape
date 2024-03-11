@@ -2557,6 +2557,7 @@ function Utility.Peep.equipXWeapon(peep, id)
 	local s, weapon = peep:addBehavior(WeaponBehavior)
 	if s then
 		weapon.weapon = xWeapon
+		print(">>> equipped X Weapon", id)
 		if Class.isDerived(xWeapon:getType(), Equipment) then
 			xWeapon:onEquip(peep)
 		end

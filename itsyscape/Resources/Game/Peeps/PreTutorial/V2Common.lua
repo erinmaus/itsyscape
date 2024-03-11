@@ -332,7 +332,10 @@ Common.USE_POWER = {
 				target:silence("powerActivated", _powerApplied)
 			end
 
+			target:listen("powerActivated", _powerApplied)
+
 			return function()
+				target:removeBehavior(DisabledBehavior)
 				return isDone
 			end
 		end

@@ -239,11 +239,11 @@ function WhalingTemple:prepareQuest(playerPeep)
 			local yendorianMapObjectName
 			if playerWeapon then
 				if Class.isCompatibleType(playerWeapon, MagicWeapon) then
-					yendorianMapObjectName = "YendorianMast"
-				elseif Class.isCompatibleType(playerWeapon, MeleeWeapon) then
 					yendorianMapObjectName = "YendorianSwordfish"
-				elseif Class.isCompatibleType(playerWeapon, RangedWeapon) then
+				elseif Class.isCompatibleType(playerWeapon, MeleeWeapon) then
 					yendorianMapObjectName = "YendorianBallista"
+				elseif Class.isCompatibleType(playerWeapon, RangedWeapon) then
+					yendorianMapObjectName = "YendorianMast"
 				end
 			else
 				yendorianMapObjectName = "YendorianBallista"

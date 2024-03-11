@@ -23,7 +23,9 @@ Summon.PARTICLE_SYSTEM = {
 			type = "RadialEmitter",
 			radius = { 1 },
 			speed = { 5, 7 },
-			yRange = { 0, 0.25 }
+			xRange = { 0, 0.125 },
+			zRange = { 0, 0.125 },
+			yRange = { 0.5, 0.25 }
 		},
 		{
 			type = "RandomColorEmitter",
@@ -60,8 +62,8 @@ Summon.PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 10, 20 },
-		delay = { 1 / 30 },
+		count = { 5, 10 },
+		delay = { 1 / 20 },
 		duration = { 4 }
 	}
 }
@@ -80,8 +82,8 @@ function Summon:load()
 	local root = self:getRoot()
 
 	self.particleSystem = ParticleSceneNode()
-	self.particleSystem:setParent(root)
 	self.particleSystem:initParticleSystemFromDef(Summon.PARTICLE_SYSTEM, resources)
+	self.particleSystem:setParent(root)
 end
 
 function Summon:getDuration()
@@ -91,7 +93,7 @@ end
 function Summon:update(elapsed)
 	Projectile.update(self, elapsed)
 
-	local position = self:getTargetPosition(self:getDestination())
+	local position = self:getTargetPosition(self:getSource())
 	local root = self:getRoot()
 	root:getTransform():setLocalTranslation(position)
 
