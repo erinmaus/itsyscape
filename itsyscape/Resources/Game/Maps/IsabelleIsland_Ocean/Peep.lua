@@ -10,8 +10,11 @@
 local Class = require "ItsyScape.Common.Class"
 local BossStat = require "ItsyScape.Game.BossStat"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
 local Ocean = Class(Map)
 
@@ -33,6 +36,23 @@ function Ocean:onFinalize(...)
 
 	local stats = self:getBehavior(BossStatsBehavior)
 	table.insert(stats.stats, self.squidRageStat)
+end
+
+function Ocean:onLoad(...)
+	Map.onLoad(self, ...)
+
+	local squid = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("UndeadSquid"))[1]
+	if squid then
+		squid:removeBehavior(RotationBehavior)
+
+		local movement = squid:getBehavior(MovementBehavior)
+		if movement then
+			movement.maxSpeed = 6
+			movement.maxAcceleration = 6
+		end
+	end
 end
 
 function Ocean:onSquidEnraged()

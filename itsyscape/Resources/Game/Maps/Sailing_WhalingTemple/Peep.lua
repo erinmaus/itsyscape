@@ -429,9 +429,12 @@ function WhalingTemple:updateFireHint()
 
 		local function onCookSardine()
 			Utility.Peep.poof(fireTarget)
-			playerPeep:getCommandQueue():interrupt()
-			playerPeep:getState():give("KeyItem", "PreTutorial_CookedFish")
-			PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
+
+			if not playerPeep:getState():has("KeyItem", "PreTutorial_CookedFish") then
+				playerPeep:getCommandQueue():interrupt()
+				playerPeep:getState():give("KeyItem", "PreTutorial_CookedFish")
+				PreTutorialCommon.makeRosalindTalk(playerPeep, "TalkAboutFish")
+			end
 		end
 
 		Utility.Quest.listenForItem(playerPeep, "CookedSardine", onCookSardine)
