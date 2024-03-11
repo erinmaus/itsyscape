@@ -12,13 +12,13 @@ Animation "Human Action (Enchant) 1" {
 					{
 						type = "RadialEmitter",
 						radius = { 0.0 },
-						speed = { 0.25, 0.75 },
+						speed = { 2, 2.5 },
 						position = { 0, 1.5, 0 },
 						acceleration = { 0, 0 }
 					},
 					{
 						type = "RandomLifetimeEmitter",
-						age = { 0.25, 0.5 }
+						age = { 0.5, 0.5 }
 					},
 					{
 						type = "RandomScaleEmitter",
@@ -29,8 +29,8 @@ Animation "Human Action (Enchant) 1" {
 				paths = {
 					{
 						type = "FadeInOutPath",
-						fadeInPercent = { 0.2 },
-						fadeOutPercent = { 0.8 },
+						fadeInPercent = { 0.1 },
+						fadeOutPercent = { 0.9 },
 						tween = { 'sineEaseOut' }
 					}
 				},
@@ -38,8 +38,8 @@ Animation "Human Action (Enchant) 1" {
 				emissionStrategy = {
 					type = "RandomDelayEmissionStrategy",
 					count = { 5, 10 },
-					delay = { 0.5 },
-					duration = { 1.5 }
+					delay = { 1 / 30 },
+					duration = { 1.0 }
 				}
 			}
 		}

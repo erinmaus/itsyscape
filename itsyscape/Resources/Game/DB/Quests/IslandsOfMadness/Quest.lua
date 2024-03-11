@@ -61,17 +61,47 @@ Quest "PreTutorial" {
 		{
 			Step "PreTutorial_InsultedYendorian",
 			Step "PreTutorial_DefeatedInjuredYendorian",
-			Step "PreTutorial_Teleported"
+			Step "PreTutorial_InformedJenkins",
+			Branch {
+				{
+					Step "PreTutorial_TurnedInSupplies",
+					Step "PreTutorial_Teleported"
+				},
+				{
+					Step "PreTutorial_DidNotTurnInSupplies",
+					Step "PreTutorial_Teleported"
+				}
+			}
 		},
 		{
 			Step "PreTutorial_ReasonedWithYendorian",
 			Step "PreTutorial_DefeatedInjuredYendorian",
-			Step "PreTutorial_Teleported"
+			Step "PreTutorial_InformedJenkins",
+			Branch {
+				{
+					Step "PreTutorial_TurnedInSupplies",
+					Step "PreTutorial_Teleported"
+				},
+				{
+					Step "PreTutorial_DidNotTurnInSupplies",
+					Step "PreTutorial_Teleported"
+				}
+			}
 		},
 		{
 			Step "PreTutorial_DidACowardlyThing",
 			Step "PreTutorial_DefeatedInjuredYendorian",
-			Step "PreTutorial_Teleported"
+			Step "PreTutorial_InformedJenkins",
+			Branch {
+				{
+					Step "PreTutorial_TurnedInSupplies",
+					Step "PreTutorial_Teleported"
+				},
+				{
+					Step "PreTutorial_DidNotTurnInSupplies",
+					Step "PreTutorial_Teleported"
+				}
+			}
 		}
 	},
 
@@ -253,5 +283,25 @@ Description "PreTutorial_DidACowardlyThing" {
 
 Description "PreTutorial_DefeatedInjuredYendorian" {
 	before = "The injured Yendorian soldier was aggressive! Fight back!",
-	after = "You and Rosalind defeated the Yendorian soldier together."
+	after = "You and Rosalind defeated the Yendorian soldier together. Good job!"
+}
+
+Description "PreTutorial_InformedJenkins" {
+	before = "Give Jenkins a status update.",
+	after = "You and Rosalind gave Jenkins a status update about the Yendorian and portal."
+}
+
+Description "PreTutorial_DidNotTurnInSupplies" {
+	before = "Don't turn in any supplies.",
+	after = "Rosalind had gathered some supplies when you rested and turned them in to Jenkins."
+}
+
+Description "PreTutorial_TurnedInSupplies" {
+	before = "Turn in some supplies.",
+	after = "Jenkins took some logs and fish off your hands."
+}
+
+Description "PreTutorial_Teleported" {
+	before = "Go back to the portal and teleport to Isabelle Island.",
+	after = "You went through the portal to Isabelle Island. Quest complete!"
 }

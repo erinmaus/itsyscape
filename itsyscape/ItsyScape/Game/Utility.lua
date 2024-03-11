@@ -455,28 +455,40 @@ function Utility.spawnMapAtAnchor(peep, resource, anchor, args)
 		anchor)
 
 	if x and y and z then
-		local layer, mapScript = Utility.Map.spawnMap(peep, resourceName, Vector(x, y, z), args)
-
-		if mapScript then
-			mapScript:listen('finalize', function()
-				Utility.orientateToAnchor(mapScript, map, anchor)
-
-				local position = mapScript:getBehavior(PositionBehavior)
-				if Class.isCompatibleType(mapScript, require "Resources.Game.Peeps.Maps.ShipMapPeep") then
-					position.offset = Vector(0, position.position.y, 0)
-					position.position = Vector(position.position.x, 0, position.position.z)
-				end
-			end)
-
-			return mapScript, layer
-		end
-
-		Log.error("Couldn't spawn map '%s'.", resourceName)
-		return nil, nil
+		return Utility.spawnMapAtPosition(peep, resource, x, y, z, args)
 	else
 		Log.warn("Anchor '%s' for map '%s' not found.", anchor, map.name)
 		return nil, nil
 	end
+end
+
+function Utility.spawnMapAtPosition(peep, resource, x, y, z, args)
+	local resourceName
+	if type(resource) == 'string' then
+		resourceName = resource
+	else
+		resourceName = resource.name
+	end
+
+	local map = Utility.Peep.getMapResource(peep)
+	local layer, mapScript = Utility.Map.spawnMap(peep, resourceName, Vector(x, y, z), args)
+
+	if mapScript then
+		mapScript:listen('finalize', function()
+			Utility.orientateToAnchor(mapScript, map, anchor)
+
+			local position = mapScript:getBehavior(PositionBehavior)
+			if Class.isCompatibleType(mapScript, require "Resources.Game.Peeps.Maps.ShipMapPeep") then
+				position.offset = Vector(0, position.position.y, 0)
+				position.position = Vector(position.position.x, 0, position.position.z)
+			end
+		end)
+
+		return mapScript, layer
+	end
+
+	Log.error("Couldn't spawn map '%s'.", resourceName)
+	return nil, nil
 end
 
 function Utility.performAction(game, resource, id, scope, ...)

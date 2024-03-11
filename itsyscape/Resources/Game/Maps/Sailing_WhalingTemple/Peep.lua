@@ -261,8 +261,23 @@ function WhalingTemple:prepareQuest(playerPeep)
 				yendorian:listen("finalize", function()
 					Utility.Peep.equipXWeapon(yendorian, string.format("%s_Injured", yendorianMapObjectName))
 				end)
+				yendorian:listen("die", function()
+					playerPeep:getState():give("KeyItem", "PreTutorial_DefeatedInjuredYendorian")
+
+					Utility.UI.closeAll(playerPeep)
+
+					playerPeep:addBehavior(DisabledBehavior)
+
+					local cutscene = Utility.Map.playCutscene(self, "Sailing_WhalingTemple_DefeatedYendorian", "StandardCutscene", playerPeep)
+					cutscene:listen("done", self.onFinishCutscene, self, playerPeep)
+				end)
 			end
 		end
+	elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_TurnedInSupplies", playerPeep) or
+	       Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Teleported", playerPeep) or
+	       Utility.Quest.didComplete("PreTutorial", playerPeep)
+	then
+		self:pushPoke("stabilizePortal", playerPeep)
 	end
 end
 
@@ -288,6 +303,8 @@ function WhalingTemple:makeRosalindFollowPlayer(playerPeep, teleport)
 	if teleport then
 		Utility.Peep.setPosition(rosalind, Utility.Peep.getPosition(playerPeep) + Vector(0, 0, 0.5))
 	end
+
+	Utility.Peep.talk(rosalind, string.format("Hey, %s! Talk to me if you need help.", playerPeep:getName()), nil, 4)
 end
 
 function WhalingTemple:makePlayerTalkToPeep(playerPeep, otherPeepResourceName)
@@ -424,14 +441,14 @@ function WhalingTemple:onOpenMantokPortal()
 	if azathoth then
 		azathoth:addBehavior(DisabledBehavior)
 		azathoth:listen("ready", function()
-			local _, portal = Utility.spawnMapObjectAtAnchor(self, "Portal", "Anchor_Portal")
+			local _, portal = Utility.spawnMapObjectAtAnchor(self, "MantokPortal", "Anchor_MantokPortal")
 			local portalPeep = portal and portal:getPeep()
 			if portalPeep then
 				portalPeep:setColor(Color(0, 0, 0, 1))
 
 				local _, portal = portalPeep:addBehavior(TeleportalBehavior)
-				portal.offset = Vector(0, 10, 0)
-				portal.distance = 0
+				portal.offset = Vector(0, 2.5, 0)
+				portal.distance = 10
 				portal.layer = layer
 			end
 		end)
@@ -441,7 +458,7 @@ end
 function WhalingTemple:onSummonMantok(p)
 	local portal = self:getDirector():probe(
 		self:getLayerName(),
-		Probe.namedMapObject("Portal"))[1]
+		Probe.namedMapObject("MantokPortal"))[1]
 
 	if not portal then
 		return
@@ -464,12 +481,82 @@ function WhalingTemple:onSummonMantok(p)
 		damage = adjustedDamage
 	})
 
-	print(">>> damage", damage, "adjustedDamage", adjustedDamage, "hitpoints", hitpointsAfterDamage)
 	if adjustedDamage > 0 then
 		p.peep:poke("hit", attack)
 	else
 		p.peep:poke("miss", attack)
 	end
+end
+
+function WhalingTemple:onStabilizePortal()
+	local azathoth = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Map", "PreTutorial_Mantok"))[1]
+	if azathoth then
+		local stage = self:getDirector():getGameInstance():getStage()
+		stage:unloadMap(azathoth:getLayer())
+	end
+
+	local portalPeep = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("MantokPortal"))[1]
+
+	local isabelleIsland, layer = Utility.spawnMapAtPosition(self, "IsabelleIsland_Tower", -1000, 0, -1000)
+	if isabelleIsland then
+		isabelleIsland:addBehavior(DisabledBehavior)
+		isabelleIsland:listen("ready", function()
+			if not portalPeep then
+				local _, portal = Utility.spawnMapObjectAtAnchor(self, "MantokPortal", "Anchor_MantokPortal")
+				portalPeep = portal:getPeep()
+			end
+
+			if portalPeep then
+				local _, portal = portalPeep:addBehavior(TeleportalBehavior)
+				portal.i = 16
+				portal.j = 32
+				portal.offset = Vector.ZERO
+				portal.distance = 50
+				portal.layer = layer
+
+				local gameDB = self:getDirector():getGameDB()
+				local mapObjectReference = gameDB:getRecord("MapObjectReference", {
+					Map = Utility.Peep.getMapResource(self),
+					Name = "MantokPortalStable"
+				})
+
+				if mapObjectReference then
+					Utility.Peep.setMapObject(portalPeep, mapObjectReference:get("Resource"))
+
+					if portalPeep:getIsReady() then
+						Utility.Peep.setNameMagically(portalPeep)
+					end
+				end
+			end
+		end)
+	end
+
+	local door = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.layer(self:getLayer()),
+		Probe.namedMapObject("BossDoor"))[1]
+	if door then
+		door:poke("open")
+
+		local gameDB = self:getDirector():getGameDB()
+		local mapObjectReference = gameDB:getRecord("MapObjectReference", {
+			Map = Utility.Peep.getMapResource(self),
+			Name = "BossDoorOpen"
+		})
+
+		if mapObjectReference then
+			Utility.Peep.setMapObject(door, mapObjectReference:get("Resource"))
+		end
+	end
+end
+
+function WhalingTemple:onFinishCutscene(playerPeep)
+	playerPeep:removeBehavior(DisabledBehavior)
+	Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
 end
 
 function WhalingTemple:update(director, game)

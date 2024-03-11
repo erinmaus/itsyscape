@@ -145,6 +145,8 @@ then
 
 	playerModel:changeCamera("Default")
 	_TARGET:removeBehavior(DisabledBehavior)
+
+	Utility.Peep.attack(_SPEAKERS["Yendorian"], _TARGET)
 elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendorian", _TARGET) then
 	if not _TARGET:hasBehavior(DisabledBehavior) then
 		_TARGET:addBehavior(DisabledBehavior)
@@ -180,5 +182,7 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendo
 
 		playerModel:changeCamera("Default")
 		_TARGET:removeBehavior(DisabledBehavior)
+
+		Utility.Peep.attack(_SPEAKERS["Yendorian"], _TARGET)
 	end
 end

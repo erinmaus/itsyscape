@@ -328,29 +328,41 @@ do
 	}
 end
 
-M["Anchor_Portal"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_MantokPortal"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 69,
 		PositionY = 10,
 		PositionZ = 29,
-		Name = "Anchor_Portal",
+		Name = "Anchor_MantokPortal",
 		Map = M._MAP,
-		Resource = M["Anchor_Portal"]
+		Resource = M["Anchor_MantokPortal"]
 	}
 end
 
-M["Portal"] = ItsyScape.Resource.MapObject.Unique()
+M["MantokPortal"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {
-		Name = "Portal",
+		Name = "MantokPortal",
 		Map = M._MAP,
-		Resource = M["Portal"]
+		Resource = M["MantokPortal"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Portal_Chasm",
-		MapObject = M["Portal"]
+		MapObject = M["MantokPortal"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Unstable portal",
+		Language = "en-US",
+		Resource = M["MantokPortal"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An unstable portal to some horrible place with some horrible creature...",
+		Language = "en-US",
+		Resource = M["MantokPortal"]
 	}
 end
 
@@ -416,6 +428,24 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
 		MapObject = M["Orlando"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Orlando_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["Orlando"] {
+		TalkAction
 	}
 end
 
@@ -573,6 +603,26 @@ do
 		Peep = M["Rosalind"]
 	}
 
+	local NamedTalkActionPortal = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Portal_en-US.lua",
+		Language = "en-US",
+		Action = NamedTalkActionPortal
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = NamedTalkActionPortal
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "TalkAboutPortal",
+		Action = NamedTalkActionPortal,
+		Peep = M["Rosalind"]
+	}
+
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "IsabelliumStaff",
 		Count = 1,
@@ -639,6 +689,57 @@ do
 	}
 
 	M["Jenkins"] {
+		TalkAction
+	}
+end
+
+M["MantokPortalStable"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "MantokPortalStable",
+		Map = M._MAP,
+		Resource = M["MantokPortalStable"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Portal_Chasm",
+		MapObject = M["MantokPortalStable"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Stable portal",
+		Language = "en-US",
+		Resource = M["MantokPortalStable"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Rosalind used her witch magic to stabilize the portal. It leads to Isabelle Island now.",
+		Language = "en-US",
+		Resource = M["MantokPortalStable"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Sailing_WhalingTemple/Dialog/Rosalind_Portal_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Traverse",
+		XProgressive = "Traversing",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["MantokPortalStable"] {
 		TalkAction
 	}
 end
@@ -788,6 +889,32 @@ do
 		Value = "Doesn't look like there's a simple way to open this door.",
 		Language = "en-US",
 		Resource = M["BossDoor"]
+	}
+end
+
+M["BossDoorOpen"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "BossDoorOpen",
+		Map = M._MAP,
+		Resource = M["BossDoorOpen"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "HighChambersYendor_BigDoor_Base",
+		MapObject = M["BossDoorOpen"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yendorian door",
+		Language = "en-US",
+		Resource = M["BossDoorOpen"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Looks like the door has opened...",
+		Language = "en-US",
+		Resource = M["BossDoorOpen"]
 	}
 end
 
@@ -1048,5 +1175,15 @@ do
 		Z2 = 43,
 		Map = M._MAP,
 		Resource = M["Passage_BossArena"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_WhalingTemple_DefeatedYendorian"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Rosalind",
+		Cutscene = Cutscene,
+		Resource = M["Rosalind"]
 	}
 end

@@ -1,5 +1,13 @@
 // From https://github.com/tobspr/GLSL-Color-Spaces
 
+
+#ifdef GL_ES
+float clamp(float value, float min, float max)
+{
+    return max(min(value, max), min);
+}
+#endif
+
 #ifndef saturate
 #define saturate(v) clamp(v, 0, 1)
 #endif
