@@ -22,7 +22,7 @@ local PortalView = Class(PropView)
 
 PortalView.EMISSION_STRATEGY_ENABLED = {
 	type = "RandomDelayEmissionStrategy",
-	count = { 10, 20 },
+	count = { 10, 11 },
 	delay = { 1 / 30 },
 	duration = { math.huge }
 }
@@ -40,7 +40,7 @@ PortalView.PARTICLE_SYSTEM_PORTAL = {
 		{
 			type = "RadialEmitter",
 			radius = { 0, 0 },
-			speed = { 2.5, 2.6 },
+			speed = { 1.5, 1.6 },
 			zRange = { 0, 0 }
 		},
 		{
@@ -51,7 +51,7 @@ PortalView.PARTICLE_SYSTEM_PORTAL = {
 		},
 		{
 			type = "RandomLifetimeEmitter",
-			age = { 0.5, 0.5 }
+			age = { 1, 1 }
 		},
 		{
 			type = "RandomScaleEmitter",
@@ -88,7 +88,7 @@ PortalView.PARTICLE_SYSTEM_ENERGY = {
 		{
 			type = "RadialEmitter",
 			radius = { 1.5, 1.6 },
-			speed = { 5, 5.25 },
+			speed = { 2.5, 2.75 },
 			zRange = { 0, 0 }
 		},
 		{
@@ -99,7 +99,7 @@ PortalView.PARTICLE_SYSTEM_ENERGY = {
 		},
 		{
 			type = "RandomLifetimeEmitter",
-			age = { 0.45, 0.45 }
+			age = { 1, 1 }
 		},
 		{
 			type = "RandomScaleEmitter",

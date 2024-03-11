@@ -199,11 +199,13 @@ function CutsceneEntity:walkTo(anchor, distance)
 
 		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep), distance, { isCutscene = true })
 		if success then
-			local peepI, peepJ
+			local peepI, peepJ, peepDistance
 			repeat
 				peepI, peepJ = Utility.Peep.getTile(self.peep)
 				coroutine.yield()
-			until peepI == anchorI and peepJ == anchorJ
+
+				peepDistance = (Utility.Peep.getPosition(self.peep) * Vector.PLANE_XZ - Vector(anchorX, 0, anchorZ)):getLength()
+			until (peepI == anchorI and peepJ == anchorJ) or (distance and peepDistance <= distance)
 		end
 	end
 end
@@ -562,6 +564,7 @@ function CutsceneEntity:dialog(name, target)
 			Log.warn("Couldn't get named action '%s' for peep '%s' on map '%s'!", name, self.peep:getName(), map and map.name or "???")
 		end
 
+		Log.info("Got named action '%s' for peep '%s' on map '%s'.", name, self.peep:getName(), map and map.name or "???")
 		Utility.UI.openInterface(self.peep, "DialogBox", true, action.instance, target and target:getPeep() or self.peep)
 
 		while Utility.UI.isOpen(self.peep, "DialogBox") do
