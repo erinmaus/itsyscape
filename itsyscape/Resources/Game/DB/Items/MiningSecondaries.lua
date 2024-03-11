@@ -288,3 +288,45 @@ do
 		Resource = ItsyScape.Resource.Item "BlueTableSalt"
 	}
 end
+
+ItsyScape.Resource.Item "AzatiteShard" {
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Count = ItsyScape.Utility.xpForLevel(15),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = ItsyScape.Utility.xpForResource(15),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = 1,
+			Resource = ItsyScape.Resource.Item "AzatiteShard"
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Azatite shard",
+	Resource = ItsyScape.Resource.Item "AzatiteShard"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "A strange metalic crystal from another dimension. It's cold to the touch.",
+	Resource = ItsyScape.Resource.Item "AzatiteShard"
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Value = ItsyScape.Utility.valueForItem(5),
+	Resource = ItsyScape.Resource.Item "AzatiteShard"
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 25,
+	Resource = ItsyScape.Resource.Item "AzatiteShard"
+}

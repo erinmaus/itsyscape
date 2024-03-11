@@ -69,6 +69,8 @@ function LocalGameManager:new(rpcService, game)
 	game:getStage().onActorMoved:register(self.onActorMoved, self)
 	game:getStage().onPropMoved:register(self.onPropMoved, self)
 
+	self.ui = {}
+
 	self.rpcService:connect(self)
 end
 
@@ -166,6 +168,7 @@ function LocalGameManager:onActorMoved(_, actor, previousLayerName, currentLayer
 					"ItsyScape.Game.Model.Stage",
 					0,
 					"onActorSpawned",
+					nil,
 					actor:getPeepID(), actor)
 				self:assignTargetToLastPush(player)
 
@@ -375,8 +378,26 @@ function LocalGameManager:sendToPlayer(player)
 					else
 						isPlayerMatch = isPlayerMatch or interface and interface:getPlayer() and interface:getPlayer():getID() == player:getID()
 
+						local isRPCMatch = true
 						if isPlayerMatch then
-							self:_doSend(player, e, true, LocalGameManager.UI_CHANNEL)
+							if e.callback == "onClose" and self.ui[interfaceID] and self.ui[interfaceID][interfaceIndex] then
+								self.ui[interfaceID][interfaceIndex] = nil
+							elseif e.callback == "onPush" then
+								local v = e:rawget("value")
+
+								if self.ui[interfaceID] and self.ui[interfaceID][interfaceIndex] and self.ui[interfaceID][interfaceIndex] == v then
+									isRPCMatch = false
+								else
+									local ui = self.ui[interfaceID] or {}
+									ui[interfaceIndex] = v
+
+									self.ui[interfaceID] = ui
+								end
+							end
+						end
+
+						if isRPCMatch then
+							self:_doSend(player, e)
 						end
 					end
 				end

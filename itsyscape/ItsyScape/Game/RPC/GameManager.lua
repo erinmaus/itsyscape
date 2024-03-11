@@ -282,7 +282,9 @@ function GameManager:process(e)
 	elseif e.type == EventQueue.EVENT_TYPE_DESTROY then
 		self:processDestroy(e)
 	elseif e.type == EventQueue.EVENT_TYPE_CALLBACK then
-		self:processCallback(e)
+		self.debugStats:measure(
+			string.format("%s::%s::%s::process", e.type, e.interface, e.callback),
+			self.processCallback, self, e)
 	elseif e.type == EventQueue.EVENT_TYPE_PROPERTY then
 		self:processProperty(e)
 	elseif e.type == EventQueue.EVENT_TYPE_TICK then

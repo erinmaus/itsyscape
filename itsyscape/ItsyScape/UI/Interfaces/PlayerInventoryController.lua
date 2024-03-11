@@ -29,6 +29,10 @@ function PlayerInventoryController:poke(actionID, actionIndex, e)
 		self:drop(e)
 	elseif actionID == "poke" then
 		self:pokeItem(e)
+	elseif actionID == "probe" then
+		self:probeItem(e)
+	elseif actionID == "use" then
+		self:useItem(e)
 	elseif actionID == "useItemOnItem" then
 		self:useItemOnItem(e)
 	elseif actionID == "useItemOnProp" then
@@ -130,6 +134,54 @@ function PlayerInventoryController:pokeItem(e)
 	end
 end
 
+function PlayerInventoryController:probeItem(e)
+	if not e.index then
+		self.lastProbedItem = nil
+		return
+	end
+
+	assert(type(e.index) == 'number', "index is not number")
+
+	local item
+	do
+		local inventory = self:getPeep():getBehavior(InventoryBehavior)
+		if inventory and inventory.inventory then
+			local broker = inventory.inventory:getBroker()
+
+			for i in broker:iterateItemsByKey(inventory.inventory, e.index) do
+				item = i
+				break
+			end
+		end
+	end
+
+	self.lastProbedItem = item
+end
+
+function PlayerInventoryController:useItem(e)
+	if not e.index then
+		self.lastUsedItem = nil
+		return
+	end
+
+	assert(type(e.index) == 'number', "index is not number")
+
+	local item
+	do
+		local inventory = self:getPeep():getBehavior(InventoryBehavior)
+		if inventory and inventory.inventory then
+			local broker = inventory.inventory:getBroker()
+
+			for i in broker:iterateItemsByKey(inventory.inventory, e.index) do
+				item = i
+				break
+			end
+		end
+	end
+
+	self.lastUsedItem = item
+end
+
 function PlayerInventoryController:_tryUseItem(item, actions)
 	local game = self:getGame()
 	local gameDB = game:getGameDB()
@@ -196,6 +248,13 @@ function PlayerInventoryController:_tryUseItem(item, actions)
 			})
 
 			if itemResource and isIngredient then
+				performAction = true
+			end
+		elseif actions[i].instance:is("Fire") then
+			local itemResource = gameDB:getResource(item:getID(), "Item")
+			local isCannonAmmo = gameDB:getRecord("CannonAmmo", { Resource = itemResource })
+
+			if itemResource and isCannonAmmo then
 				performAction = true
 			end
 		else
@@ -344,7 +403,7 @@ function PlayerInventoryController:useItemOnProp(e)
 				Utility.Peep.getResource(prop:getPeep()),
 				actionID,
 				'world',
-				self:getPeep():getState(), self:getPeep(), prop:getPeep())
+				self:getPeep():getState(), self:getPeep(), prop:getPeep(), item)
 			or (
 				Utility.Peep.getMapObject(prop:getPeep()) and
 				Utility.performAction(
@@ -352,7 +411,7 @@ function PlayerInventoryController:useItemOnProp(e)
 					Utility.Peep.getMapObject(prop:getPeep()),
 					actionID,
 					'world',
-					self:getPeep():getState(), self:getPeep(), prop:getPeep())
+					self:getPeep():getState(), self:getPeep(), prop:getPeep(), item)
 				)
 		)
 
@@ -409,7 +468,7 @@ function PlayerInventoryController:useItemOnActor(e)
 				Utility.Peep.getResource(actor:getPeep()),
 				actionID,
 				'world',
-				self:getPeep():getState(), self:getPeep(), actor:getPeep())
+				self:getPeep():getState(), self:getPeep(), actor:getPeep(), item)
 			or (
 				Utility.Peep.getMapObject(actor:getPeep()) and
 				Utility.performAction(
@@ -417,7 +476,7 @@ function PlayerInventoryController:useItemOnActor(e)
 					Utility.Peep.getMapObject(actor:getPeep()),
 					actionID,
 					'world',
-					self:getPeep():getState(), self:getPeep(), actor:getPeep())
+					self:getPeep():getState(), self:getPeep(), actor:getPeep(), item)
 				)
 		)
 

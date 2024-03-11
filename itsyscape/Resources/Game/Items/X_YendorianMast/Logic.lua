@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/X_Svalbard_Attack_Magic/Logic.lua
+-- Resources/Game/Items/X_YendorianMast/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --

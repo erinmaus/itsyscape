@@ -66,7 +66,7 @@ function Skeleton.Transforms:getHandle()
 end
 
 function Skeleton.Transforms:getSkeleton()
-	return self.Skeleton
+	return self.skeleton
 end
 
 function Skeleton.Transforms:applyTransform(index, transform)

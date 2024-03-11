@@ -12,6 +12,14 @@
 do
 	ItsyScape.Meta.ResourceCategoryGroup {
 		Key = "Metal",
+		Value = "WeirdAlloy",
+		Language = "en-US",
+		Name = "Weird alloy",
+		Tier = 0
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Metal",
 		Value = "Copper",
 		Language = "en-US",
 		Name = "Copper",

@@ -326,6 +326,8 @@ function PlayerInventory:useItem(button, index)
 
 	self.facade = PlayerInventory.UseItemFacade(self, self:getView(), self:getState().items[index])
 	root:addChild(self.facade)
+
+	self:sendPoke("use", nil, { index = index })
 end
 
 function PlayerInventory:useItemOnProp(prop)
@@ -361,6 +363,8 @@ function PlayerInventory:cancelUse()
 		self.facade:unsetToolTip()
 		self.facade:getParent():removeChild(self.facade)
 	end
+
+	self:sendPoke("use", nil, { index = false })
 end
 
 function PlayerInventory:probe(button)
@@ -417,7 +421,12 @@ function PlayerInventory:probe(button)
 			end
 		})
 
-		self:getView():probe(actions)
+		local pokeMenu = self:getView():probe(actions)
+		pokeMenu.onClose:register(function()
+			self:sendPoke("probe", nil, { index = false })
+		end)
+
+		self:sendPoke("probe", nil, { index = index })
 	end
 end
 

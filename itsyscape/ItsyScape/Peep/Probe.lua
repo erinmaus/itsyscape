@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local ShipCrewMemberBehavior = require "ItsyScape.Peep.Behaviors.ShipCrewMemberBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 
@@ -157,6 +158,15 @@ function Probe.follower(player)
 	return Callback.bind(_follower, player, peep)
 end
 
+local _crew = function(ship, peep)
+	local crew = peep:getBehavior(ShipCrewMemberBehavior)
+	return crew and crew.ship == ship
+end
+
+function Probe.crew(ship)
+	return Callback.bind(_crew, ship)
+end
+
 local _mapObjectGroup = function(name, peep)
 	local gameDB = peep:getDirector():getGameDB()
 	local mapObject = Utility.Peep.getMapObject(peep)
@@ -221,7 +231,7 @@ local _layer = function(layer, peep)
 end
 
 function Probe.layer(layer)
-	Callback.bind(_layer, layer)
+	return Callback.bind(_layer, layer)
 end
 
 return Probe

@@ -93,7 +93,8 @@ function CreepActorAnimatorCortex:onReceiveAttack(peep, p)
 		self:playAnimation(
 			peep,
 			CreepActorAnimatorCortex.DEFEND_PRIORITY,
-			resource)
+			resource,
+			"combat-defend")
 	end
 end
 

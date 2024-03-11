@@ -132,10 +132,10 @@ function AnimationInstance:play(time, windingDown)
 						channel.stopped = true
 					end
 
-					if channel.current ~= #channel then
-						self.times[channel] = relativeTime
-						relativeTime = 0
-					else
+					self.times[channel] = time
+					relativeTime = 0
+
+					if channel.current == #channel then
 						channel.done = true
 					end
 				end

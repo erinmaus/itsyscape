@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local CommandInstance = require "ItsyScape.Game.Animation.Commands.CommandInstance"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
@@ -47,6 +48,7 @@ function ParticlesInstance:play(animatable, time)
 		local attach = self.command:getAttach()
 		local rotation = Quaternion[self.command:getRotation()]
 		local reverseRotation = Quaternion[self.command:getReverseRotation()]
+		local direction = self.command:getDirection()
 		local scale = self.command:getScale()
 		if attach then
 			local transform = love.math.newTransform()
@@ -66,6 +68,11 @@ function ParticlesInstance:play(animatable, time)
 
 				local localPosition = Vector(transform:transformPoint(0, 0, 0))
 				self.sceneNode:updateLocalPosition(localPosition)
+
+				if direction:getLength() > 0 then
+					local _, q = MathCommon.decomposeTransform(otherTransform)
+					self.sceneNode:updateLocalDirection((-q:getNormal()):transformVector(direction))
+				end
 			end)
 		end
 	end

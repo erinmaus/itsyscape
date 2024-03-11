@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Event = require "ItsyScape.Game.RPC.Event"
 local State = require "ItsyScape.Game.RPC.State"
@@ -111,17 +112,17 @@ function Proxy:wrapServer(interface, id, instance, gameManager)
 		local event = self.events[i]:getValue()
 
 		if Class.isCompatibleType(event, Event.Set) then
-			instance[event:getCallbackName()]:register(gameManager.setStateForPropertyGroup, gameManager, interface, id, event)
+			instance[event:getCallbackName()]:register(Callback.bind(gameManager.setStateForPropertyGroup, gameManager, interface, id, event))
 		elseif Class.isCompatibleType(event, Event.Unset) then
-			instance[event:getCallbackName()]:register(gameManager.unsetStateForPropertyGroup, gameManager, interface, id, event)
+			instance[event:getCallbackName()]:register(Callback.bind(gameManager.unsetStateForPropertyGroup, gameManager, interface, id, event))
 		elseif Class.isCompatibleType(event, Event.ServerToClientRPC) then
-			instance[event:getCallbackName()]:register(gameManager.invokeCallback, gameManager, interface, id, event)
+			instance[event:getCallbackName()]:register(Callback.bind(gameManager.invokeCallback, gameManager, interface, id, event))
 		elseif Class.isCompatibleType(event, Event.ClientToServerRPC) then
 			Log.debug("Ignoring event '%s' of type 'ClientToServerRPC'; wrapping for server, not client.", key)
 		elseif Class.isCompatibleType(event, Event.Create) then
-			instance[event:getCallbackName()]:register(event:getFunc(), event, gameManager)
+			instance[event:getCallbackName()]:register(Callback.bind(event:getFunc(), event, gameManager))
 		elseif Class.isCompatibleType(event, Event.Destroy) then
-			instance[event:getCallbackName()]:register(event:getFunc(), event, gameManager)
+			instance[event:getCallbackName()]:register(Callback.bind(event:getFunc(), event, gameManager))
 		end
 	end
 end
@@ -152,9 +153,9 @@ function Proxy:wrapClient(interface, id, instance, gameManager)
 				gameManager:invokeCallback(interface, id, event, ...)
 			end
 		elseif Class.isCompatibleType(event, Event.Set) then
-			instance[event:getCallbackName()]:register(gameManager.setLocalStateForPropertyGroup, gameManager, interface, id, event)
+			instance[event:getCallbackName()]:register(Callback.bind(gameManager.setLocalStateForPropertyGroup, gameManager, interface, id, event))
 		elseif Class.isCompatibleType(event, Event.Unset) then
-			instance[event:getCallbackName()]:register(gameManager.unsetLocalStateForPropertyGroup, gameManager, interface, id, event)
+			instance[event:getCallbackName()]:register(Callback.bind(gameManager.unsetLocalStateForPropertyGroup, gameManager, interface, id, event))
 		elseif Class.isCompatibleType(event, Event.Get) then
 			instance[name] = function(...)
 				return gameManager:getStateForPropertyGroup(interface, id, event, ...)

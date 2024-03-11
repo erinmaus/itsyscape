@@ -22,7 +22,7 @@ local LOGS = {
 	["Common"] = {
 		tier = 0,
 		weight = 8,
-		health = 3,
+		health = 4,
 		tinderbox = "Tinderbox",
 		variants = { "Snowy" },
 		secondaries = {
@@ -34,7 +34,7 @@ local LOGS = {
 	["Shadow"] = {
 		tier = 0,
 		weight = -2,
-		health = 2,
+		health = 4,
 		tinderbox = "Tinderbox",
 		variants = { "Stormy" }
 	},
@@ -766,7 +766,7 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A fire that burns blue with the fiery of Yendor.",
+	Value = "A fire that burns blue with the fury of Yendor.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "AzathothianFire"
 }
@@ -786,7 +786,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Meta.ResourceDescription {
 	Value = "A shadow of the great common fir tree of the Realm, whipped around in a frenzy.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "ShadowTree_Default"
+	Resource = ItsyScape.Resource.Prop "ShadowTree_Stormy"
 }
 
 ItsyScape.Meta.ResourceDescription {

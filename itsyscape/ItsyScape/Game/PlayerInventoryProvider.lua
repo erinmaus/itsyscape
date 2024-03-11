@@ -101,6 +101,8 @@ function PlayerInventoryProvider:load(...)
 		return
 	end
 
+	Log.engine("Trying to restore inventory for peep '%s'...", self.peep:getName())
+
 	local broker = self:getBroker()
 
 	local storage = Utility.Item.getStorage(self.peep, "Player")
@@ -110,7 +112,11 @@ function PlayerInventoryProvider:load(...)
 			Log.info("Restoring inventory item '%s' (%d count) for peep '%s'.", item:getID(), item:getCount(), self.peep:getName())
 			broker:setItemZ(item, broker:getItemKey(item))
 		end
+	else
+		Log.engine("No storage for peep '%s'.", self.peep:getName())
 	end
+
+	Log.engine("Restored inventory for peep '%s'.", self.peep:getName())
 end
 
 function PlayerInventoryProvider:unload(...)

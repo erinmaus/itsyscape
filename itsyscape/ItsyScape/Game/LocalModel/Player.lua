@@ -156,12 +156,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 			if newGame then
 				self.stage:movePeep(
 					actor:getPeep(),
-					"Ship_IsabelleIsland_PortmasterJenkins?map=IsabelleIsland_FarOcean," ..
-					"jenkins_state=1," ..
-					"i=16," ..
-					"j=16," ..
-					"shore=@IsabelleIsland_FarOcean_Cutscene," ..
-					"shoreAnchor=Anchor_Spawn",
+					"NewGame",
 					"Anchor_Spawn")
 				actor:getPeep():pushPoke('bootstrapComplete')
 				Analytics:startGame(actor:getPeep())
@@ -173,9 +168,16 @@ function LocalPlayer:spawn(storage, newGame, password)
 				if root:hasSection("Location") then
 					local location = root:getSection("Location")
 					if location:get("name") then
+						local mapName
+						if location:get("instance") then
+							mapName = "@" .. location:get("name")
+						else
+							mapName = location:get("name")
+						end
+
 						self.stage:movePeep(
 							actor:getPeep(),
-							location:get("name"),
+							mapName,
 							Vector(
 								location:get("x"),
 								location:get("y"),

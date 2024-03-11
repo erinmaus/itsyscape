@@ -11,9 +11,12 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Utility = require "ItsyScape.Game.Utility"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local FishBehavior = require "ItsyScape.Peep.Behaviors.FishBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
@@ -24,14 +27,20 @@ function Cthulhu:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(12, 24, 4)
+	size.zoom = 0.75
+	size.pan = Vector(0, 12, 0)
 
 	local movement = self:getBehavior(MovementBehavior)
-	movement.velocityMultiplier = 0.25
-	movement.accelerationMultiplier = 0.25
+	movement.maxSpeed = 18
+	movement.maxAcceleration = 16
+	movement.noClip = true
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.currentHitpoints = 20000
 	status.maximumHitpoints = 20000
+
+	self:addBehavior(RotationBehavior)
+	self:addBehavior(FishBehavior)
 end
 
 function Cthulhu:ready(director, game)
@@ -55,7 +64,21 @@ function Cthulhu:ready(director, game)
 		"Resources/Game/Animations/Cthulhu_Idle/Script.lua")
 	self:addResource("animation-idle", idleAnimation)
 
+	local swimAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Cthulhu_Swim/Script.lua")
+	self:addResource("animation-walk", swimAnimation)
+
+	local attackAnimation = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Cthulhu_Attack/Script.lua")
+	self:addResource("animation-attack", attackAnimation)
+
 	Creep.ready(self, director, game)
+end
+
+function Cthulhu:update()
+	Utility.Peep.face3D(self)
 end
 
 return Cthulhu

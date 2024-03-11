@@ -29,6 +29,7 @@ function Particles:new(t)
 	self.rotation = t.rotation or 'IDENTITY'
 	self.reverseRotation = t.reverseRotation or 'IDENTITY'
 	self.scale = Vector(unpack(t.scale or { 1, 1, 1 }))
+	self.direction = Vector(unpack(t.direction or { 0, 0, 0 }))
 end
 
 function Particles:getDuration()
@@ -77,6 +78,14 @@ end
 
 function Particles:setScale(value)
 	self.scale = value
+end
+
+function Particles:getDirection()
+	return self.direction
+end
+
+function Particles:setDirection(value)
+	self.direction = value
 end
 
 function Particles:instantiate()

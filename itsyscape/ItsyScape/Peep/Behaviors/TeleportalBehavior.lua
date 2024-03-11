@@ -18,6 +18,8 @@ local TeleportalBehavior = Behavior("Teleportal")
 function TeleportalBehavior:new()
 	self.i = 1
 	self.j = 1
+	self.offset = Vector.ZERO
+	self.distance = 0
 	self.layer = false
 	Behavior.Type.new(self)
 end

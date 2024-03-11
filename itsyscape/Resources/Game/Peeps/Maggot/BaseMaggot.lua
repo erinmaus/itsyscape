@@ -22,7 +22,7 @@ function BaseMaggot:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Maggot_Base', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(2.5, 8, 2.5)
+	size.size = Vector(2.5, 4.5, 2.5)
 	size.offset = Vector(0, 0, 0)
 end
 

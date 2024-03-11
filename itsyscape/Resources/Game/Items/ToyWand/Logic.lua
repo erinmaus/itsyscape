@@ -13,4 +13,12 @@ local Wand = require "Resources.Game.Items.Common.Wand"
 
 local ToyWand = Class(Wand)
 
+function ToyWand:getNearAttackRange(peep)
+	return self:getFarAttackRange(peep)
+end
+
+function ToyWand:getProjectile(peep)
+	return Wand.getProjectile(self, peep) or "IsabelleStrike"
+end
+
 return ToyWand

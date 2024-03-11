@@ -87,6 +87,13 @@ void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNo
 	Light light;
 	node.to_light(light, delta);
 
+	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
+	if (color_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(COLOR_INDEX));
+		shader->sendTextures(color_texture_uniform, &texture, 1);
+	}
+
 	auto light_ambient_coefficient_uniform = shader->getUniformInfo("scape_LightAmbientCoefficient");
 	if (light_ambient_coefficient_uniform)
 	{
@@ -120,6 +127,13 @@ void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSce
 		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1);	
 	}
 
+	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
+	if (color_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(COLOR_INDEX));
+		shader->sendTextures(color_texture_uniform, &texture, 1);
+	}
+
 	auto light_direction_uniform = shader->getUniformInfo("scape_LightDirection");
 	if (light_direction_uniform)
 	{
@@ -151,6 +165,13 @@ void nbunny::DeferredRendererPass::draw_point_light(lua_State* L, LightSceneNode
 	{
 		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
 		shader->sendTextures(position_texture_uniform, &texture, 1);	
+	}
+
+	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
+	if (color_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(COLOR_INDEX));
+		shader->sendTextures(color_texture_uniform, &texture, 1);
 	}
 
 	auto light_position_uniform = shader->getUniformInfo("scape_LightPosition");
@@ -273,23 +294,6 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 	{
 		auto shader = get_node_shader(L, *scene_node);
 		renderer->set_current_shader(shader);
-
-		auto world = scene_node->get_transform().get_global(delta);
-
-		auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
-		if (world_matrix_uniform)
-		{
-			std::memcpy(world_matrix_uniform->floats, glm::value_ptr(world), sizeof(glm::mat4));
-			shader->updateUniform(world_matrix_uniform, 1);
-		}
-
-		auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
-		if (normal_matrix_uniform)
-		{
-			auto normal_matrix = glm::inverse(glm::transpose(world));
-            std::memcpy(normal_matrix_uniform->floats, glm::value_ptr(normal_matrix), sizeof(glm::mat4));
-			shader->updateUniform(normal_matrix_uniform, 1);
-		}
 
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
         graphics->setMeshCullMode(love::graphics::CULL_BACK);

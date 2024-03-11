@@ -81,7 +81,7 @@ function SvalbardDragonfyreSpecial:getWeaponType()
 end
 
 function SvalbardDragonfyreSpecial:getCooldown(peep)
-	return 4
+	return 3
 end
 
 function SvalbardDragonfyreSpecial:getProjectile()

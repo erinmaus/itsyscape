@@ -344,6 +344,7 @@ function Nominomicon:showBossDrops(bosses)
 						boss.name
 					},
 					boss.description,
+					"",
 					boss.count >= 1 and string.format("You've killed %s %d %s.", boss.name, boss.count, boss.count > 1 and "times" or "time") or "You haven't killed this boss yet."
 				})
 

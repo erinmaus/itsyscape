@@ -232,15 +232,11 @@ function RagingFireView:initParticles()
 	local fire = RagingFireView.FIRE_PARTICLES(
 		self.currentRadius,
 		self.currentDirection)
-	-- self.flames:initEmittersFromDef(fire.emitters)
-	-- self.flames:initPathsFromDef(fire.paths)
 	self.flames:initParticleSystemFromDef(fire, resources)
 
 	local smoke = RagingFireView.SMOKE_PARTICLES(
 		self.currentRadius,
 		self.currentDirection)
-	-- self.smoke:initEmittersFromDef(smoke.emitters)
-	-- self.smoke:initPathsFromDef(smoke.paths)
 	self.smoke:initParticleSystemFromDef(smoke, resources)
 end
 
@@ -249,7 +245,7 @@ function RagingFireView:tick()
 
 	local rootTransform = self:getRoot():getTransform()
 	rootTransform:setLocalScale(Vector.ONE)
-	rootTransform:tick()
+	self:getRoot():tick()
 
 	if self.flickerTime < 0 then
 		self:flicker()

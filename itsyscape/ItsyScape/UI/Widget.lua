@@ -419,6 +419,12 @@ function Widget:getOverflow()
 	return false
 end
 
+-- Returns true if the widget's bounding box should emit a size for
+-- draw caching.
+function Widget:getIsBlocking()
+	return true
+end
+
 function Widget:getIsFocusable()
 	return false
 end

@@ -9,6 +9,14 @@
 --------------------------------------------------------------------------------
 
 local BARS = {
+	["WeirdAlloy"] = {
+		niceName = "Weird alloy",
+		tier = 1,
+		weight = 0,
+		{ name = "CopperOre", count = 1 },
+		{ name = "AzatiteShard", count = 1 }
+	},
+
 	["Bronze"] = {
 		tier = 1,
 		weight = 6.4,
@@ -133,6 +141,12 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Almost completely useless!",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "TinBar"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Known as the weird alloy because it theoretically should offer extreme protection against all kinds of attacks, but in practice is pretty weak.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "WeirdAlloyBar"
 }
 
 ItsyScape.Meta.ResourceDescription {

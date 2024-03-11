@@ -29,30 +29,30 @@ do
 	}
 end
 
-M["Anchor_Orlando"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Grimm"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 19,
 		PositionY = 0,
 		PositionZ = 35,
 		Direction = 1,
-		Name = "Anchor_Orlando",
+		Name = "Anchor_Grimm",
 		Map = M._MAP,
-		Resource = M["Anchor_Orlando"]
+		Resource = M["Anchor_Grimm"]
 	}
 end
 
-M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
+M["Grimm"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {
-		Name = "Orlando",
+		Name = "Grimm",
 		Map = M._MAP,
-		Resource = M["Orlando"]
+		Resource = M["Grimm"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
-		MapObject = M["Orlando"]
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_AdvisorGrimm",
+		MapObject = M["Grimm"]
 	}
 end
 
@@ -68,15 +68,15 @@ do
 	}
 end
 
-M["Anchor_OrlandoOnTower"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_GrimmOnTower"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 23,
 		PositionY = 7,
 		PositionZ = 27,
-		Name = "Anchor_OrlandoOnTower",
+		Name = "Anchor_GrimmOnTower",
 		Map = M._MAP,
-		Resource = M["Anchor_OrlandoOnTower"]
+		Resource = M["Anchor_GrimmOnTower"]
 	}
 end
 
@@ -134,49 +134,48 @@ do
 end
 
 do
-	local TalkAction = ItsyScape.Action.Yell()
+	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Orlando"],
-		Name = "Orlando",
+		Resource = M["Grimm"],
+		Name = "Grimm",
 		Action = TalkAction
 	}
 
 	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/IsabelleIsland_Tower_Floor5/Dialog/Orlando1_en-US.lua",
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower_Floor5/Dialog/Grimm1_en-US.lua",
 		Language = "en-US",
 		Action = TalkAction
 	}
 
 	ItsyScape.Meta.NamedMapAction {
-		Name = "OrlandoYell1",
+		Name = "GrimmYell1",
 		Action = TalkAction,
 		Map = M._MAP
 	}
 end
 
 do
-	local TalkAction = ItsyScape.Action.Yell()
+	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Orlando"],
-		Name = "Orlando",
+		Resource = M["Grimm"],
+		Name = "Grimm",
 		Action = TalkAction
 	}
 
 	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/IsabelleIsland_Tower_Floor5/Dialog/Orlando2_en-US.lua",
+		Script = "Resources/Game/Maps/IsabelleIsland_Tower_Floor5/Dialog/Grimm2_en-US.lua",
 		Language = "en-US",
 		Action = TalkAction
 	}
 
 	ItsyScape.Meta.NamedMapAction {
-		Name = "OrlandoYell2",
+		Name = "GrimmYell2",
 		Action = TalkAction,
 		Map = M._MAP
 	}
 end
-
 
 do
 	local Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_Floor5_Introduction"

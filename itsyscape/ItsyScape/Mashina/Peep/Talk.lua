@@ -29,6 +29,12 @@ function Talk:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
+	if type(message) == "function" then
+		message = message(mashina, state, executor)
+	else
+		message = tostring(message)
+	end
+
 	local actor = peep:getBehavior(ActorReferenceBehavior)
 	if not actor or not actor.actor then
 		return B.Status.Failure

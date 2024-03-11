@@ -52,6 +52,9 @@ namespace nbunny
 		std::size_t length() const;
 		void* get_pointer();
 
+		void compress();
+		void decompress();
+
 	private:
 		std::vector<std::uint8_t> buffer;
 		std::size_t current_offset = 0;
@@ -106,6 +109,7 @@ namespace nbunny
 
 		bool operator ==(const GameManagerVariant& other) const;
 		bool operator !=(const GameManagerVariant& other) const;
+		static bool less(const GameManagerVariant& search_key, const GameManagerVariant& current_key);
 
 		void unset();
 
@@ -114,8 +118,6 @@ namespace nbunny
 
 	private:
 		int type = TYPE_NIL;
-
-		static int less(const GameManagerVariant& search_key, const GameManagerVariant& current_key);
 
 		struct Table
 		{
@@ -312,7 +314,7 @@ namespace nbunny
 	public:
 		GameManagerEventQueue() = default;
 
-		void clear();
+		void clear(std::size_t count = 0);
 
 		void from_buffer(GameManagerBuffer& buffer);
 		void to_buffer(GameManagerBuffer& buffer);
@@ -320,6 +322,8 @@ namespace nbunny
 		void push(GameManagerVariant&& value);
 		void pull(const GameManagerVariant& value);
 		void pop(GameManagerVariant& value);
+
+		void sort(const GameManagerVariant& key);
 
 		std::size_t length() const;
 		void get(std::size_t index, GameManagerVariant& event) const;

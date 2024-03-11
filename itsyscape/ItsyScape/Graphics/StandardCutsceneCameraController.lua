@@ -26,28 +26,28 @@ function StandardCutsceneCameraController:new(...)
 	self.targetVerticalRotation = StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION
 	self.currentVerticalRotationTime = 1
 	self.targetVerticalRotationTime = 1
-	self.verticalRotationTween = 'expEaseOut'
+	self.verticalRotationTween = 'linear'
 
 	self.currentHorizontalRotation = StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION
 	self.previousHorizontalRotation = StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION
 	self.targetHorizontalRotation = StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION
 	self.currentHorizontalRotationTime = 1
 	self.targetHorizontalRotationTime = 1
-	self.horizontalRotationTween = 'expEaseOut'
+	self.horizontalRotationTween = 'linear'
 
 	self.currentZoom = StandardCutsceneCameraController.ZOOM
 	self.previousZoom = StandardCutsceneCameraController.ZOOM
 	self.targetZoom = StandardCutsceneCameraController.ZOOM
 	self.currentZoomTime = 1
 	self.targetZoomTime = 1
-	self.zoomTween = 'sineEaseOut'
+	self.zoomTween = 'linear'
 
 	self.currentTranslation = StandardCutsceneCameraController.TRANSLATION
 	self.previousTranslation = StandardCutsceneCameraController.TRANSLATION
 	self.targetTranslation = StandardCutsceneCameraController.TRANSLATION
 	self.currentTranslationTime = 1
 	self.targetTranslationTime = 1
-	self.translationTween = 'expEaseOut'
+	self.translationTween = 'linear'
 
 	self:trySetTargetActor()
 end
@@ -56,7 +56,6 @@ function StandardCutsceneCameraController:trySetTargetActor()
 	if not self.targetActor then
 		local player = self:getGame():getPlayer()
 		player = player and player:getActor()
-
 
 		self.targetActor = player or false
 	end
@@ -73,6 +72,7 @@ function StandardCutsceneCameraController:getTargetPosition()
 		local actor = gameView:getActor(self.targetActor)
 		if actor then
 			local node = actor:getSceneNode()
+			local _, _, layer = self.targetActor:getTile()
 			local transform = node:getTransform():getGlobalDeltaTransform(delta or 0)
 			position = Vector(transform:transformPoint(0, 1, 0))
 		end
@@ -118,7 +118,7 @@ function StandardCutsceneCameraController:onTranslate(position, duration)
 	self.previousTranslation = self.currentTranslation
 	self.targetTranslation = position
 
-	if duration == 0 then
+	if duration == 0 or not duration then
 		self.currentTranslationTime = 1
 		self.targetTranslationTime = 1
 		self.currentTranslation = self.targetTranslation
@@ -145,7 +145,7 @@ function StandardCutsceneCameraController:onZoom(distance, duration)
 	self.previousZoom = self.currentZoom
 	self.targetZoom = distance
 
-	if duration == 0 then
+	if duration == 0 or not duration then
 		self.currentZoomTime = 1
 		self.targetZoomTime = 1
 		self.currentZoom = self.targetZoom
@@ -159,7 +159,7 @@ function StandardCutsceneCameraController:onVerticalRotate(angle, duration)
 	self.previousVerticalRotation = self.currentVerticalRotation
 	self.targetVerticalRotation = angle
 
-	if duration == 0 then
+	if duration == 0 or not duration then
 		self.currentVerticalRotationTime = 1
 		self.targetVerticalRotationTime = 1
 		self.currentVerticalRotation = self.targetVerticalRotation
@@ -173,7 +173,7 @@ function StandardCutsceneCameraController:onHorizontalRotate(angle, duration)
 	self.previousHorizontalRotation = self.currentHorizontalRotation
 	self.targetHorizontalRotation = angle
 
-	if duration == 0 then
+	if duration == 0 or not duration then
 		self.currentHorizontalRotationTime = 1
 		self.targetHorizontalRotationTime = 1
 		self.currentHorizontalRotation = self.targetHorizontalRotation
@@ -195,6 +195,52 @@ function StandardCutsceneCameraController:onShake(duration, interval, min, max)
 	self.currentShakingOffset = Vector(0)
 end
 
+function StandardCutsceneCameraController:onMapRotationStick(duration)
+	self.mapRotationSticky = (self.mapRotationSticky or 0) + 1
+	self.mapRotationStickyDuration = duration or 0
+end
+
+function StandardCutsceneCameraController:onMapRotationUnstick()
+	self.mapRotationSticky = (self.mapRotationSticky or 1) - 1
+end
+
+function StandardCutsceneCameraController:getActorMapRotation()
+	if not self.targetActor then
+		return Quaternion.IDENTITY
+	end
+
+	local _, _, layer = self.targetActor:getTile()
+	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
+	if not mapSceneNode then
+		return Quaternion.IDENTITY
+	end
+
+	local _, previousRotation = mapSceneNode:getTransform():getPreviousTransform()
+	local currentRotation = mapSceneNode:getTransform():getLocalRotation()
+	local rotation = previousRotation:slerp(currentRotation, self:getApp():getFrameDelta())
+
+	if self.currentActorLayer ~= layer then
+		self.currentActorLayer = layer
+		self.previousActorMapRotation = self.currentActorMapRotation
+		self.previousActorMapRotationTime = 0
+	end
+
+	self.currentActorMapRotation = rotation
+
+	if self.previousActorMapRotation then
+		local delta
+		if self.mapRotationStickyDuration > 0 then
+			delta = math.min(self.previousActorMapRotationTime / self.mapRotationStickyDuration, 1)
+		else
+			delta = 1
+		end
+
+		return self.previousActorMapRotation:slerp(self.currentActorMapRotation, delta)
+	else
+		return self.currentActorMapRotation
+	end
+end
+
 function StandardCutsceneCameraController:draw()
 	local shake
 	if self.currentShakingOffset and self.previousShakingOffset then
@@ -207,6 +253,12 @@ function StandardCutsceneCameraController:draw()
 	self:getCamera():setHorizontalRotation(self.currentHorizontalRotation)
 	self:getCamera():setVerticalRotation(self.currentVerticalRotation)
 	self:getCamera():setPosition(self:getTargetPosition() + self.currentTranslation + shake)
+
+	if self.mapRotationSticky and self.mapRotationSticky > 0 then
+		self:getCamera():setRotation(-self:getActorMapRotation())
+	else
+		self:getCamera():setRotation()
+	end
 end
 
 return StandardCutsceneCameraController

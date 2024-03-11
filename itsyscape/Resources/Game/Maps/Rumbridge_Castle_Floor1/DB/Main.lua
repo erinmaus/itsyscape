@@ -331,6 +331,34 @@ do
 	}
 end
 
+M["Kvre"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Kvre",
+		Map = M._MAP,
+		Resource = M["Kvre"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Drakkenson_Kvre",
+		MapObject = M["Kvre"]
+	}
+end
+
+M["Isabelle"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Isabelle",
+		Map = M._MAP,
+		Resource = M["Isabelle"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean",
+		MapObject = M["Isabelle"]
+	}
+end
+
 do
 	local TalkAction = ItsyScape.Action.Talk()
 
@@ -408,5 +436,39 @@ do
 		Name = "Hellhound",
 		Cutscene = Cutscene,
 		Resource = ItsyScape.Resource.Peep "SuperSupperSaboteur_Hellhound"
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Rumbridge_Castle_Floor1_Intro"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "EarlReddick",
+		Cutscene = Cutscene,
+		Resource = M["EarlReddick"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Isabelle",
+		Cutscene = Cutscene,
+		Resource = M["Isabelle"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Kvre",
+		Cutscene = Cutscene,
+		Resource = M["Kvre"]
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "RumbridgeCastle1",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Rumbridge_Castle"
+	}
+
+	ItsyScape.Meta.CutsceneMap {
+		Name = "RumbridgeCastle2",
+		Cutscene = Cutscene,
+		Resource = ItsyScape.Resource.Map "Rumbridge_Castle_Floor1"
 	}
 end

@@ -98,7 +98,8 @@ function DemoApplication:new()
 	self:disconnect()
 
 	if not _MOBILE then
-		self.defaultCursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 0, 0)
+		self.defaultCursor = love.mouse.newCursor("Resources/Game/UI/Cursor.png", 8, 4)
+		self.highDPICursor = love.mouse.newCursor("Resources/Game/UI/Cursor@2x.png", 16, 8)
 
 		local _, blankCursorImageData = self:getGameView():getTranslucentTexture()
 		self.blankCursor = love.mouse.newCursor(blankCursorImageData, 0, 0)
@@ -242,12 +243,6 @@ function DemoApplication:quit(isError)
 	Resource.quit()
 
 	self.patchNotesServiceInputChannel:push({ type = "quit" })
-	self.patchNotesServiceThread:wait()
-
-	local e = self.patchNotesServiceThread:getError()
-	if e then
-		Log.warn("Error quitting patch notes thread: %s", e)
-	end
 
 	Application.quit(self, isError)
 
@@ -453,7 +448,7 @@ function DemoApplication:openMainMenu()
 	end
 
 	self:setConf({
-		_DEBUG = _DEBUG or conf.debug,
+		_DEBUG = _DEBUG or (_CONF and _CONF.debug),
 		_CONF = _CONF
 	})
 end
@@ -1242,7 +1237,11 @@ function DemoApplication:update(delta)
 				love.mouse.setCursor(self.blankCursor)
 			end
 		else
-			if currentCursor ~= self.defaultCursor then
+			local _, _, scale = love.graphics.getScaledMode()
+
+			if scale > 1 and currentCursor ~= self.highDPICursor then
+				love.mouse.setCursor(self.highDPICursor)
+			elseif scale <= 1 and currentCursor ~= self.defaultCursor then
 				love.mouse.setCursor(self.defaultCursor)
 			end
 		end
@@ -1257,8 +1256,18 @@ function DemoApplication:draw(delta)
 	Application.draw(self, delta)
 
 	if self.isScreenshotPending then
-		local cursor = love.graphics.newImage("Resources/Game/UI/Cursor.png")
-		love.graphics.draw(cursor, love.mouse.getPosition())
+		local _, _, scaleX, scaleY = love.graphics.getScaledMode()
+		local cursor
+		do
+			if scaleX > 1 then
+				cursor = love.graphics.newImage("Resources/Game/UI/Cursor@2x.png")
+			else
+				cursor = love.graphics.newImage("Resources/Game/UI/Cursor.png")
+			end
+		end
+
+		local mouseX, mouseY = love.mouse.getPosition()
+		love.graphics.draw(cursor, mouseX, mouseY, 0, scaleX, scaleY)
 
 		self.isScreenshotPending = false
 	end

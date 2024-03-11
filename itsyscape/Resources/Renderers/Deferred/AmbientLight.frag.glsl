@@ -10,6 +10,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+uniform Image scape_ColorTexture;
 
 uniform vec3 scape_LightColor;
 uniform float scape_LightAmbientCoefficient;
@@ -21,6 +22,6 @@ vec4 effect(
 	vec2 screenCoordinate)
 {
 	vec3 result = scape_LightColor * scape_LightAmbientCoefficient;
-
-	return vec4(result, 1.0);
+	float alpha = Texel(scape_ColorTexture, textureCoordinate).a;
+	return vec4(result, alpha);
 }

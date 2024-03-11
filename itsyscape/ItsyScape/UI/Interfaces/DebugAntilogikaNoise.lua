@@ -40,7 +40,7 @@ function DebugAntilogikaNoise.Noise:refresh()
 end
 
 function DebugAntilogikaNoise.Noise:draw()
-	itsyrealm.graphics.draw(self.texture)
+	itsyrealm.graphics.uncachedDraw(self.texture)
 end
 
 DebugAntilogikaNoise.WIDTH  = 480
@@ -139,6 +139,10 @@ function DebugAntilogikaNoise:new(id, index, ui)
 	self.closeButton:setText("X")
 	self.closeButton.onClick:register(self.onCancelButtonClicked, self)
 	self:addChild(self.closeButton)
+end
+
+function DebugAntilogikaNoise:getOverflow()
+	return true
 end
 
 function DebugAntilogikaNoise:onParameterInputChanged(param, textInput)

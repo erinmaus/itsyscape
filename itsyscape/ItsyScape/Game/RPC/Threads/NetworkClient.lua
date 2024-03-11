@@ -15,6 +15,7 @@ require "bootstrap"
 
 local enet = require "enet"
 local buffer = require "string.buffer"
+local EventQueue = require "ItsyScape.Game.RPC.EventQueue"
 local cerror = require "nbunny.cerror"
 local NBuffer = require "nbunny.gamemanager.buffer"
 local NEventQueue = require "nbunny.gamemanager.eventqueue"
@@ -40,6 +41,25 @@ local function disconnectAllClients()
 	end
 end
 
+local compressedCount, decompressedCount = 0, 0
+local start = love.timer.getTime()
+
+local MAX_CHANNELS = 10
+local MAX_PEERS = 8
+
+local interfaceToChannel = {
+	["ItsyScape.Game.Model.Actor"]  = 1,
+	["ItsyScape.Game.Model.Game"]   = 2,
+	["ItsyScape.Game.Model.Player"] = 3,
+	["ItsyScape.Game.Model.Prop"]   = 4,
+	["ItsyScape.Game.Model.Stage"]  = 5,
+	["ItsyScape.Game.Model.UI"]     = 6
+}
+
+local function getChannel(interface)
+	return interfaceToChannel[interface] or 0
+end
+
 while isRunning do
 	local e
 
@@ -49,6 +69,7 @@ while isRunning do
 			if e.type == "send" then
 				local client = clientsByID[e.client]
 				if client then
+					NBuffer.compress(e.data)
 					client:send(NBuffer.pointer(e.data), NBuffer.length(e.data))
 				else
 					Log.warnOnce("Client %d does not exist; cannot send.", e.client)
@@ -65,10 +86,25 @@ while isRunning do
 					local v = NVariant()
 					while batch:length() > 0 do
 						batch:pop(v)
-						local buffer = NBuffer.create(v)
 
-						client:send(NBuffer.pointer(buffer), NBuffer.length(buffer))
-						NBuffer.free(buffer)
+						if v.type == EventQueue.EVENT_TYPE_TICK then
+							for interface, channel in pairs(interfaceToChannel) do
+								v.interface = interface
+
+								local buffer = NBuffer.create(v)
+								NBuffer.compress(buffer)
+
+								client:send(NBuffer.pointer(buffer), NBuffer.length(buffer), channel, "reliable")
+								NBuffer.free(buffer)
+							end
+						else
+							local channel = getChannel(v.interface)
+							local buffer = NBuffer.create(v)
+							NBuffer.compress(buffer)
+
+							client:send(NBuffer.pointer(buffer), NBuffer.length(buffer), channel, "reliable")
+							NBuffer.free(buffer)
+						end
 					end
 				else
 					Log.warnOnce("Client %d does not exist; cannot batch send.", e.client)
@@ -84,7 +120,7 @@ while isRunning do
 			elseif e.type == "listen" then
 				disconnectAllClients()
 				Log.engine("Listening @ '%s'.", e.address)
-				local s, e = pcall(enet.host_create, e.address)
+				local s, e = pcall(enet.host_create, e.address, MAX_PEERS, MAX_CHANNELS)
 				if not s then
 					Log.warn("Error listening: %s.", e)
 					outputChannel:push({
@@ -100,7 +136,7 @@ while isRunning do
 				Log.engine("Connecting @ '%s'.", e.address)
 
 				host = enet.host_create()
-				local s, e = pcall(host.connect, host, e.address)
+				local s, e = pcall(host.connect, host, e.address, MAX_CHANNELS)
 				if not s then
 					Log.warn("Error connecting: %s.", e)
 					outputChannel:push({
@@ -139,10 +175,17 @@ while isRunning do
 
 		if e then
 			if e.type == "receive" then
+				compressedCount = compressedCount + #e.data
+
+				local data = NBuffer.create(e.data)
+				NBuffer.decompress(data)
+
+				decompressedCount = decompressedCount + NBuffer.length(data)
+
 				outputChannel:push({
 					type = "receive",
 					client = e.peer:connect_id(),
-					data = NBuffer.create(e.data)
+					data = data
 				})
 			elseif e.type == "connect" then
 				local address = getClientAddress(e)
@@ -201,5 +244,11 @@ end
 if host then
 	host:destroy()
 end
+
+Log.info(
+	"Received %d compressed bytes (%d decompressed bytes) in %f seconds.",
+	compressedCount,
+	decompressedCount,
+	love.timer.getTime() - start)
 
 Log.quit()

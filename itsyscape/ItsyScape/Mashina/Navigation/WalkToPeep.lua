@@ -25,6 +25,7 @@ function WalkToPeep:update(mashina, state, executor)
 
 	local s
 	if not self.walk then
+		local i, j, k = Utility.Peep.getTile(peep)
 		self.walk = coroutine.wrap(Utility.Peep.walk)
 		s = self.walk(mashina, i, j, k, state[self.DISTANCE], {
 			asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE],
@@ -34,7 +35,7 @@ function WalkToPeep:update(mashina, state, executor)
 		s = self.walk()
 	end
 
-	if coroutine.status(self.walk) == "dead" then
+	if s ~= nil then
 		self.walk = nil
 
 		if s then
@@ -45,6 +46,10 @@ function WalkToPeep:update(mashina, state, executor)
 	else
 		return B.Status.Working
 	end
+end
+
+function WalkToPeep:deactivated()
+	self.walk = nil
 end
 
 return WalkToPeep

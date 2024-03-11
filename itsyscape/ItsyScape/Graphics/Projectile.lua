@@ -80,12 +80,14 @@ function Projectile:getDestination()
 	return self.destination
 end
 
-function Projectile:playAnimation(target, animation)
+function Projectile:playAnimation(target, animation, slot, priority)
+	target = target or self.gameView:getGame():getPlayer():getActor()
+
 	if Class.isCompatibleType(target, Actor) then
 		local filename = string.format("Resources/Game/Animations/%s/Script.lua", animation)
 		local cacheRef = CacheRef("ItsyScape.Graphics.AnimationResource", filename)
 
-		target:onAnimationPlayed("x-projectile-sfx", 0, cacheRef)
+		target:onAnimationPlayed(slot or "x-projectile-fx", priority or 0, cacheRef)
 	end
 end
 

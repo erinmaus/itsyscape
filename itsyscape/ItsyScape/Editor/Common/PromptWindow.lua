@@ -110,6 +110,7 @@ function PromptWindow:open(query, title, value, width, height)
 	self.input:setHint(query)
 
 	self:setSize(width, height)
+	self:performLayout()
 
 	local windowWidth, windowHeight = love.window.getMode()
 	local x, y = windowWidth / 2 - width / 2, windowHeight / 2 - height / 2

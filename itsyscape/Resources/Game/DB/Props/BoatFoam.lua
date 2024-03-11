@@ -13,7 +13,7 @@ ItsyScape.Resource.Prop "BoatFoam_Small_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Value = "Resources.Game.Peeps.Props.BasicBoatFoam",
 	Resource = ItsyScape.Resource.Prop "BoatFoam_Small_Default"
 }
 
@@ -42,7 +42,7 @@ ItsyScape.Resource.Prop "BoatFoamTrail_Small_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Value = "Resources.Game.Peeps.Props.BasicBoatFoam",
 	Resource = ItsyScape.Resource.Prop "BoatFoamTrail_Small_Default"
 }
 

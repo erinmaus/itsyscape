@@ -21,7 +21,7 @@ function Log.sendError(message, targetStack)
 		local file = love.filesystem.read("Player/Common.dat") or "{}"
 		local r, e = loadstring("return " .. file)
 		if r then
-			r, e = pcall(setfenv(e, {}))
+			r, e = pcall(setfenv(r, {}))
 		end
 
 		if r and type(e) == 'table' then

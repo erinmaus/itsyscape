@@ -42,7 +42,7 @@ function DialogBox.concatMessage(message)
 			end
 
 			table.insert(m, { 1, 1, 1, 1 })
-			table.insert(m, "\n")
+			table.insert(m, " ")
 		end
 	end
 
@@ -288,10 +288,17 @@ function DialogBox:update(...)
 
 		-- Flip if facing left.
 		local rotation = Quaternion.IDENTITY
-		if node == self.actor and node:getDirection().x < 0 then
-			rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
+		if node == self.actor then
+			local direction, r = node:getDirection()
+			if r then
+				rotation = (-r) * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
+			elseif direction.x < 0 then
+				rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
+			end
+		elseif node == self.prop then
+			rotation = (-node:getRotation()) * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
 		end
-		self.speakerIcon:getParentNode():getTransform():setLocalRotation(rotation)
+		self.speakerIcon:getParentNode():getTransform():setLocalRotation(rotation:getNormal())
 
 		local otherTransform = self.speakerIcon:getParentNode():getTransform():getGlobalTransform()
 		otherTransform:apply(transform)

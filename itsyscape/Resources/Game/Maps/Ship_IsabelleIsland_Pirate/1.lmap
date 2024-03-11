@@ -633,6 +633,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -644,6 +645,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -655,6 +657,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -666,6 +669,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -677,60 +681,7 @@
 			flags =
 			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 10, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 10, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 10, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 10, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
-			edge = 2, flat = 10, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -752,6 +703,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -763,6 +715,65 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			edge = 2, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["shoot"] = true
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			edge = 2, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["shoot"] = true
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			edge = 2, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			edge = 2, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["shoot"] = true
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			edge = 2, flat = 10, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -774,6 +785,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -835,6 +847,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -847,6 +860,7 @@
 			{
 				["floor"] = true,
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -991,6 +1005,7 @@
 			{
 				["floor"] = true,
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1002,6 +1017,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1053,6 +1069,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1065,6 +1082,7 @@
 			{
 				["floor"] = true,
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1110,6 +1128,7 @@
 			{
 				["floor"] = true,
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1166,6 +1185,7 @@
 			{
 				["floor"] = true,
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1211,6 +1231,7 @@
 			{
 				["floor"] = true,
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1222,6 +1243,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1273,6 +1295,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1285,6 +1308,7 @@
 			{
 				["floor"] = true,
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1429,6 +1453,7 @@
 			{
 				["floor"] = true,
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1440,6 +1465,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1501,6 +1527,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1512,6 +1539,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1523,6 +1551,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1534,6 +1563,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1545,6 +1575,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1556,6 +1587,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1567,6 +1599,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1578,6 +1611,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1589,6 +1623,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1600,6 +1635,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1611,6 +1647,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1622,6 +1659,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1633,6 +1671,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{
@@ -1644,6 +1683,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["shoot"] = true
 			},
 		},
 		{

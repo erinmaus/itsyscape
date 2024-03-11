@@ -21,8 +21,18 @@ ShipStatsBehavior.BASE_STATS = {
 	"Distance",
 	"Defense",
 	"Speed",
-	"Storage"
+	"Storage",
+
+	-- Degrees the ship will turn per second.
+	"Turn"
 }
+
+ShipStatsBehavior.STAT_HEALTH   = "Health"
+ShipStatsBehavior.STAT_DISTANCE = "Distance"
+ShipStatsBehavior.STAT_DEFENSE  = "Defense"
+ShipStatsBehavior.STAT_SPEED    = "Speed"
+ShipStatsBehavior.STAT_STORAGE  = "Storage"
+ShipStatsBehavior.STAT_TURN     = "Turn"
 
 -- These are optional, for example merchant ships.
 ShipStatsBehavior.EXTRA_STATS = {

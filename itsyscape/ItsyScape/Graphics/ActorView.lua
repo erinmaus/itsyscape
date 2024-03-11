@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local MathCommon = require "ItsyScape.Common.Math.Common"
@@ -274,6 +275,9 @@ function ActorView:new(actor, actorID)
 
 	self.healthBar = false
 	self.sprites = setmetatable({}, { __mode = 'k' })
+
+	self.onPreComputeBoneTransforms = Callback()
+	self.onPostComputeBoneTransforms = Callback()
 end
 
 function ActorView:getActor()
@@ -335,7 +339,6 @@ function ActorView:playAnimation(slot, animation, priority, time)
 			if (a.definition and a.definition:getFadesOut()) or
 			   (a.instance and definition:getResource():getFadesIn())
 			then
-				Log.info("Queueing animation.")
 				a.next = {
 					cacheRef = animation,
 					definition = definition:getResource(),
@@ -448,7 +451,7 @@ function ActorView:_doApplySkin(slotNodes)
 					slot.lights = {}
 
 					for i = 1, #lights do
-						local inputLight = lights[i]
+						local inputLight = lights[i].light
 						local outputLight
 
 						if inputLight:isPoint() then
@@ -458,14 +461,17 @@ function ActorView:_doApplySkin(slotNodes)
 						end
 
 						-- Only the client's player's lights should be global.
-						if self.actor == self.game:getGame():getPlayer():getActor() then
+						if self.game:getGame():getPlayer() and self.actor == self.game:getGame():getPlayer():getActor() then
 							outputLight:setIsGlobal(true)
 						end
 						
 						if outputLight then
 							outputLight:fromLight(inputLight)
 							outputLight:setParent(slot.sceneNode)
-							table.insert(slot.lights, outputLight)
+							table.insert(slot.lights, {
+								sceneNode = outputLight,
+								info = lights[i].info
+							})
 						end
 					end
 				end
@@ -714,12 +720,14 @@ function ActorView:getLocalBonePosition(boneName, position, rotation)
 	rotation = rotation or Quaternion.IDENTITY
 
 	local boneTransform = self:getLocalBoneTransform(boneName)
-	local inverseBindPoseTransform = self:getSkeleton():getBoneByName(boneName):getInverseBindPose()
+	local bone = self:getSkeleton():getBoneByName(boneName)
+	if not bone then
+		return Vector.ZERO
+	end
 
 	local composedTransform = love.math.newTransform()
 	composedTransform:applyQuaternion(rotation:get())
 	composedTransform:apply(boneTransform)
-	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
 
 	return Vector(composedTransform:transformPoint(position:get()))
 end
@@ -735,7 +743,12 @@ function ActorView:getBoneWorldPosition(boneName, position, rotation)
 
 	local nodeTransform = self.sceneNode:getTransform():getGlobalTransform()
 	local boneTransform = self:getLocalBoneTransform(boneName)
-	local inverseBindPoseTransform = self:getSkeleton():getBoneByName(boneName):getInverseBindPose()
+	local bone = self:getSkeleton():getBoneByName(boneName)
+	if not bone then
+		return Vector.ZERO
+	end
+
+	local inverseBindPoseTransform = bone:getInverseBindPose()
 
 	local composedTransform = love.math.newTransform()
 	composedTransform:apply(nodeTransform)
@@ -788,6 +801,11 @@ function ActorView:updateAnimations(delta)
 		end
 	end
 
+	self:onPreComputeBoneTransforms(transforms, self.animatable)
+	if self.localTransforms then
+		transforms:copy(self.localTransforms)
+	end
+
 	for _, slotNodes in pairs(self.skins) do
 		for i = 1, #slotNodes do
 			if slotNodes[i].particles then
@@ -799,11 +817,17 @@ function ActorView:updateAnimations(delta)
 					end
 				end
 			end
-		end
-	end
 
-	if self.localTransforms then
-		transforms:copy(self.localTransforms)
+			if slotNodes[i].lights then
+				for j = 1, #slotNodes[i].lights do
+					local l = slotNodes[i].lights[j]
+					if l.info.attach then
+						local localPosition = self:getLocalBonePosition(l.info.attach, Vector(unpack(l.info.position or {})))
+						l.sceneNode:getTransform():setLocalTranslation(localPosition)
+					end
+				end
+			end
+		end
 	end
 
 	local skeleton = self.animatable:getSkeleton()
@@ -813,7 +837,7 @@ function ActorView:updateAnimations(delta)
 
 		skeleton:applyBindPose(transforms)
 	end
-
+	self:onPostComputeBoneTransforms(transforms, self.animatable)
 end
 
 return ActorView

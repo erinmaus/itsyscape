@@ -20,6 +20,7 @@ local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownB
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Weapon = Class(Equipment)
+Weapon.STANCE_NONE       = 0 -- For NPCs
 Weapon.STANCE_AGGRESSIVE = 1 -- Gives strength, wisdom, or dexterity XP
 Weapon.STANCE_CONTROLLED = 2 -- Gives attack, magic, or archery XP
 Weapon.STANCE_DEFENSIVE  = 3 -- Gives defense XP
@@ -27,6 +28,7 @@ Weapon.STYLE_NONE    = 0
 Weapon.STYLE_MAGIC   = 1
 Weapon.STYLE_ARCHERY = 2
 Weapon.STYLE_MELEE   = 3
+Weapon.STYLE_SAILING = 4
 
 Weapon.PURPOSE_KILL = 'kill'
 Weapon.PURPOSE_TOOL = 'tool'
@@ -49,6 +51,8 @@ Weapon.BONUSES       = {
 Weapon.DamageRoll = Class()
 
 function Weapon.DamageRoll:new(weapon, peep, purpose, target)
+	local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+
 	purpose = purpose or Weapon.PURPOSE_KILL
 
 	self.weapon = weapon
@@ -71,6 +75,8 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 			bonusType = 'StrengthRanged'
 		elseif self.style == Weapon.STYLE_MELEE then
 			bonusType = 'StrengthMelee'
+		elseif self.style == Weapon.STYLE_SAILING then
+			bonusType = 'StrengthSailing'
 		end
 
 		local success
@@ -80,19 +86,27 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		end
 	end
 
-	if purpose == Weapon.PURPOSE_KILL then
-		local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
+	bonuses = Utility.Peep.getEquipmentBonuses(peep)
 
+	self.minHitBoost = 0
+	self.maxHitBoost = 0
+	if purpose == Weapon.PURPOSE_KILL then
 		local stance = peep:getBehavior(StanceBehavior)
 		if stance then
 			if stance.stance == Weapon.STANCE_AGGRESSIVE then
+				self.maxHitBoost = 1 + math.floor((level or 1) * 0.1 + 0.5)
 				level = (level or 1) + 8
+			elseif stance.stance == Weapon.STANCE_CONTROLLED then
+				local strengthSkill, accuracySkill = weapon:getSkill(purpose)
+				local strengthLevel = stats and stats:hasSkill(strengthSkill) and stats:getSkill(strengthSkill):getWorkingLevel()
+				local attackLevel = stats and stats:hasSkill(strengthSkill) and stats:getSkill(strengthSkill):getWorkingLevel()
+
+				local minLevel = math.min(strengthLevel or 1, attackLevel or 1)
+				self.minHitBoost = math.floor(minLevel * 0.05 + 0.5)
 			end
 		end
 
 		self.stat = skill
-
-		bonuses = Utility.Peep.getEquipmentBonuses(peep)
 		self.bonus = (bonuses[bonusType] or 0)
 	elseif purpose == Weapon.PURPOSE_TOOL then
 		self.bonus = 0
@@ -115,8 +129,10 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 
 	self.bonusType = bonusType
 	self.level = level or 1
+	self.hitReduction = 0
+	self.damageMultiplier = 1
 
-	if target and target:hasBehavior(PlayerBehavior) then
+	if target then
 		local targetBonuses = Utility.Peep.getEquipmentBonuses(target)
 		local targetStats
 		do
@@ -134,29 +150,30 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		local stance = target:getBehavior(StanceBehavior)
 		if stance then
 			if stance.stance == Weapon.STANCE_DEFENSIVE then
+				self.hitReduction = 1 + math.floor(defenseLevel * 0.15 + 0.5)
 				defenseLevel = defenseLevel + 8
 			end
 		end
 
-		local styleBonus = weapon:getBonusForStance(peep)
+		if target:hasBehavior(PlayerBehavior) then
+			local styleBonus = weapon:getBonusForStance(peep)
 
-		local accuracyBonusName = "Accuracy" .. styleBonus
-		local accuracyBonus = bonuses[accuracyBonusName]
-		local accuracyTier = math.max(CurveConfig.StyleBonus:solvePlus(accuracyBonus * 3) - 10, 0)
+			local accuracyBonusName = "Accuracy" .. styleBonus
+			local accuracyBonus = bonuses[accuracyBonusName] or 0
+			local accuracyTier = math.max(CurveConfig.StyleBonus:solvePlus(accuracyBonus * 3) - 10, 0)
 
-		local defenseBonusName = "Defense" .. styleBonus
-		local defenseBonus = targetBonuses[defenseBonusName]
-		local defenseTier = math.max(CurveConfig.StyleBonus:solvePlus(defenseBonus), 0)
+			local defenseBonusName = "Defense" .. styleBonus
+			local defenseBonus = targetBonuses[defenseBonusName] or 0
+			local defenseTier = math.max(CurveConfig.StyleBonus:solvePlus(defenseBonus), 0)
 
-		local armorDamageReduction = math.max(math.min(CurveConfig.ArmorDamageReduction:evaluate(defenseTier - accuracyTier), 100), 0)
-		local defenseDamageReduction = math.max(math.min(CurveConfig.DefenseDamageReduction:evaluate(defenseLevel), 100), 0)
-		local totalDamageReduction = armorDamageReduction + defenseDamageReduction
+			local armorDamageReduction = math.max(math.min(CurveConfig.ArmorDamageReduction:evaluate(defenseTier - accuracyTier), 100), 0)
+			local defenseDamageReduction = math.max(math.min(CurveConfig.DefenseDamageReduction:evaluate(defenseLevel), 100), 0)
+			local totalDamageReduction = armorDamageReduction + defenseDamageReduction
 
-		local clampedMultiplier = math.max(math.min(totalDamageReduction / 100, 1), 0)
+			local clampedMultiplier = math.max(math.min(totalDamageReduction / 100, 1), 0)
 
-		self.damageMultiplier = 1 - clampedMultiplier
-	else
-		self.damageMultiplier = 1
+			self.damageMultiplier = 1 - clampedMultiplier
+		end
 	end
 end
 
@@ -237,13 +254,18 @@ function Weapon.DamageRoll:setDamageMultiplier(value)
 end
 
 function Weapon.DamageRoll:roll()
-	local minHit = self:getMinHit()
-	local maxHit = self:getMaxHit()
+	local minHit = math.max(self:getMinHit() - self.hitReduction, 0)
+	local maxHit = math.max(self:getMaxHit() - self.hitReduction + self.maxHitBoost, 0)
+
+	minHit = math.min(minHit + self.minHitBoost, maxHit)
+	if maxHit > 0 then
+		minHit = math.max(minHit, 1)
+	end
 
 	minHit = math.min(minHit, maxHit)
 	maxHit = math.max(minHit, maxHit)
 
-	return math.ceil(math.random(minHit, maxHit) * self.damageMultiplier)
+	return math.ceil(love.math.random(minHit, maxHit) * self.damageMultiplier)
 end
 
 Weapon.AttackRoll = Class()
@@ -282,8 +304,8 @@ function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 	end
 
 	self.defenseBonus = defenseBonus
+	self.stanceAttackRollMultiplier = 1
 
-	-- TODO: Handle prayers
 	local attackLevel
 	do
 		local stats = peep:getBehavior(StatsBehavior)
@@ -301,6 +323,7 @@ function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 		if stance then
 			if stance.stance == Weapon.STANCE_CONTROLLED then
 				attackLevel = (attackLevel or 1) + 8
+				self.stanceAttackRollMultiplier = 1.1
 			end
 		end
 
@@ -409,7 +432,7 @@ function Weapon.AttackRoll:setAlwaysHits(value)
 end
 
 function Weapon.AttackRoll:roll()
-	local maxAttackRoll = self:getMaxAttackRoll()
+	local maxAttackRoll = math.floor(self:getMaxAttackRoll() * self.stanceAttackRollMultiplier)
 	local maxDefenseRoll = self:getMaxDefenseRoll()
 
 	local attackRoll, defenseRoll
@@ -417,8 +440,8 @@ function Weapon.AttackRoll:roll()
 		attackRoll = 1
 		defenseRoll = 0
 	else
-		attackRoll = math.floor(math.random(0, maxAttackRoll))
-		defenseRoll = math.floor(math.random(0, maxDefenseRoll))
+		attackRoll = math.floor(love.math.random(0, maxAttackRoll))
+		defenseRoll = math.floor(love.math.random(0, maxDefenseRoll))
 	end
 
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
@@ -548,23 +571,26 @@ function Weapon:onAttackMiss(peep, target)
 end
 
 function Weapon:applyCooldown(peep, target)
-	peep:addBehavior(AttackCooldownBehavior)
+	if self:getCooldown(peep) == 0 then
+		return
+	end
 
-	local cooldown = peep:getBehavior(AttackCooldownBehavior)
-	cooldown.cooldown = math.max(cooldown.cooldown, self:getCooldown(peep))
-	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTime()
-
+	local cooldown = self:getCooldown(peep)
 	do
 		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-			cooldown.cooldown = effect:applyToSelfWeaponCooldown(peep, cooldown.cooldown)
+			cooldown = effect:applyToSelfWeaponCooldown(peep, cooldown)
 		end
 
 		if target then
 			for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-				cooldown.cooldown = effect:applyToTargetWeaponCooldown(target, cooldown.cooldown)
+				cooldown = effect:applyToTargetWeaponCooldown(target, cooldown)
 			end
 		end
 	end
+
+	local _, c = peep:addBehavior(AttackCooldownBehavior)
+	c.cooldown = math.max(c.cooldown, cooldown)
+	c.ticks = peep:getDirector():getGameInstance():getCurrentTime()
 end
 
 function Weapon:perform(peep, target)

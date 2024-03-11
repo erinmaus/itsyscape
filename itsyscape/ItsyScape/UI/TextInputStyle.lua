@@ -66,7 +66,7 @@ function TextButtonStyle:new(t, resources)
 end
 
 function TextButtonStyle:draw(widget)
-	--if widget then return end
+	local _, _, scaleX, scaleY = love.graphics.getScaledMode()
 	local width, height = widget:getSize()
 
 	if widget:getIsFocused() and self.states['active'] then
@@ -81,8 +81,8 @@ function TextButtonStyle:draw(widget)
 		local x, y = itsyrealm.graphics.getPseudoScissor()
 		itsyrealm.graphics.intersectPseudoScissor(
 			x + self.padding, y + self.padding,
-			width - self.padding * 2,
-			height - self.padding * 2)
+			(width - self.padding * 2) * scaleX,
+			(height - self.padding * 2) * scaleY)
 		itsyrealm.graphics.applyPseudoScissor()
 		itsyrealm.graphics.translate(self.padding, self.padding)
 	end
@@ -147,7 +147,7 @@ function TextButtonStyle:draw(widget)
 		if self.textShadow then
 			love.graphics.setColor(0, 0, 0, 1)
 			itsyrealm.graphics.printf(
-				{ widget:getText() },
+				widget:getText(),
 				textX + 1,
 				textY + 1,
 				textWidth,
@@ -156,7 +156,7 @@ function TextButtonStyle:draw(widget)
 
 		love.graphics.setColor(self.color:get())
 		itsyrealm.graphics.printf(
-			{ widget:getText() },
+			widget:getText(),
 			textX,
 			textY,
 			textWidth,

@@ -17,8 +17,6 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
-local PirateEncounterTalkAction = ItsyScape.Action.Talk()
-
 M["Light_Lantern1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -195,8 +193,34 @@ do
 		MapObject = M["Jenkins_Pirate"]
 	}
 
-	M["Jenkins_Pirate"] {
-		PirateEncounterTalkAction
+	ItsyScape.Meta.PeepMashinaState {
+		State = "cutscene",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_CutsceneLogic.lua",
+		Resource = M["Jenkins_Pirate"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "engage",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_EngageLogic.lua",
+		Resource = M["Jenkins_Pirate"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_IdleLogic.lua",
+		Resource = M["Jenkins_Pirate"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "cthulhu",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_CthulhuLogic.lua",
+		Resource = M["Jenkins_Pirate"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "flee",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Jenkins_FleeLogic.lua",
+		Resource = M["Jenkins_Pirate"]
 	}
 end
 
@@ -210,37 +234,6 @@ do
 		Name = "Anchor_Jenkins_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Jenkins_Spawn"]
-	}
-end
-
-M["CapnRaven"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "CapnRaven",
-		Map = M._MAP,
-		Resource = M["CapnRaven"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain",
-		MapObject = M["CapnRaven"]
-	}
-
-	M["CapnRaven"] {
-		PirateEncounterTalkAction
-	}
-end
-
-M["Anchor_CapnRaven_Spawn"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 17.0,
-		PositionY = 4.0,
-		PositionZ = 11.0,
-		Direction = -1,
-		Name = "Anchor_CapnRaven_Spawn",
-		Map = M._MAP,
-		Resource = M["Anchor_CapnRaven_Spawn"]
 	}
 end
 
@@ -265,91 +258,57 @@ do
 	}
 end
 
-M["Wizard"] = ItsyScape.Resource.MapObject.Unique()
+M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {
-		Name = "Wizard",
+		Name = "Orlando",
 		Map = M._MAP,
-		Resource = M["Wizard"]
+		Resource = M["Orlando"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Wizard",
-		MapObject = M["Wizard"]
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		MapObject = M["Orlando"]
 	}
 
-	M["Wizard"] {
-		PirateEncounterTalkAction
+	ItsyScape.Meta.PeepMashinaState {
+		State = "run",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Orlando.lua",
+		Resource = M["Orlando"]
+	}
+
+	M["Orlando"] {
+		ItsyScape.Action.InvisibleAttack()
 	}
 end
 
-M["Archer"] = ItsyScape.Resource.MapObject.Unique()
+M["Rosalind"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {
-		Name = "Archer",
+		Name = "Rosalind",
 		Map = M._MAP,
-		Resource = M["Archer"]
+		Resource = M["Rosalind"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Archer",
-		MapObject = M["Archer"]
-	}
-
-	M["Archer"] {
-		PirateEncounterTalkAction
-	}
-end
-
-M["Pirate1"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "Pirate1",
-		Map = M._MAP,
-		Resource = M["Pirate1"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
-		MapObject = M["Pirate1"],
-		DoesNotDespawn = 1,
-		DoesNotRespawn = 1
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Rosalind",
+		MapObject = M["Rosalind"]
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "BronzeLongsword",
+		Item = ItsyScape.Resource.Item "IsabelliumStaff",
 		Count = 1,
-		Resource = M["Pirate1"]
+		Resource = M["Rosalind"]
 	}
 
-	M["Pirate1"] {
-		ItsyScape.Action.Attack()
-	}
-end
-
-M["Pirate2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "Pirate2",
-		Map = M._MAP,
-		Resource = M["Pirate2"]
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Scripts/Rosalind.lua",
+		Resource = M["Rosalind"]
 	}
 
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_Pirate",
-		MapObject = M["Pirate2"],
-		DoesNotDespawn = 1,
-		DoesNotRespawn = 1
-	}
-
-	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "BronzeLongsword",
-		Count = 1,
-		Resource = M["Pirate2"]
-	}
-
-	M["Pirate2"] {
-		ItsyScape.Action.Attack()
+	M["Rosalind"] {
+		ItsyScape.Action.InvisibleAttack()
 	}
 end
 
@@ -366,16 +325,16 @@ do
 	}
 end
 
-M["Anchor_Pirate1_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Orlando_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 19.0,
 		PositionY = 5.0,
 		PositionZ = 11.0,
 		Direction = 1,
-		Name = "Anchor_Pirate1_Spawn",
+		Name = "Anchor_Orlando_Spawn",
 		Map = M._MAP,
-		Resource = M["Anchor_Pirate1_Spawn"]
+		Resource = M["Anchor_Orlando_Spawn"]
 	}
 end
 
@@ -413,16 +372,16 @@ do
 	}
 end
 
-M["Anchor_Pirate2_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Rosalind_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 27.0,
+		PositionX = 7.0,
 		PositionY = 5.0,
-		PositionZ = 13.0,
-		Direction = 1,
-		Name = "Anchor_Pirate2_Spawn",
+		PositionZ = 11.0,
+		Direction = -1,
+		Name = "Anchor_Rosalind_Spawn",
 		Map = M._MAP,
-		Resource = M["Anchor_Pirate2_Spawn"]
+		Resource = M["Anchor_Rosalind_Spawn"]
 	}
 end
 
@@ -430,7 +389,7 @@ M["SunkenChest"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 39.0,
-		PositionY = -2.0,
+		PositionY = -1000.0,
 		PositionZ = 19.0,
 		Name = "SunkenChest",
 		Map = M._MAP,
@@ -455,20 +414,100 @@ do
 	}
 end
 
-ItsyScape.Meta.TalkSpeaker {
-	Resource = M["Jenkins_Pirate"],
-	Name = "Jenkins",
-	Action = PirateEncounterTalkAction
-}
+M["IronCannonballPile"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 10.5,
+		PositionY = 4,
+		PositionZ = 11,
+		RotationX = ItsyScape.Utility.Quaternion.Y_90.x,
+		RotationY = ItsyScape.Utility.Quaternion.Y_90.y,
+		RotationZ = ItsyScape.Utility.Quaternion.Y_90.z,
+		RotationW = ItsyScape.Utility.Quaternion.Y_90.w,
+		Name = "IronCannonballPile",
+		Map = M._MAP,
+		Resource = M["IronCannonballPile"]
+	}
 
-ItsyScape.Meta.TalkSpeaker {
-	Resource = M["CapnRaven"],
-	Name = "CapnRaven",
-	Action = PirateEncounterTalkAction
-}
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IronCannonballPile",
+		MapObject = M["IronCannonballPile"]
+	}
 
-ItsyScape.Meta.TalkDialog {
-	Script = "Resources/Game/Maps/IsabelleIsland_FarOcean/Dialog/DialogBootstrap_en-US.lua",
-	Language = "en-US",
-	Action = PirateEncounterTalkAction
-}
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/Ship_IsabelleIsland_PortmasterJenkins/Dialog/Cannonballs_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Port_PortmasterJenkins",
+		Name = "Jenkins",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["IronCannonballPile"],
+		Name = "IronCannonballPile",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Verb = "Take",
+		XProgressive = "Taking",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	M["IronCannonballPile"] {
+		TalkAction
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkDialog {
+		Script = "Resources/Game/Maps/IsabelleIsland_FarOcean2/Dialog/Jenkins_Pirate_en-US.lua",
+		Language = "en-US",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Jenkins_Pirate"],
+		Name = "Jenkins",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_FarOcean_PirateCaptain",
+		Name = "CapnRaven",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = ItsyScape.Resource.Peep "Cthulhu",
+		Name = "Cthulhu",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedMapAction {
+		Name = "IntroDialog",
+		Action = TalkAction,
+		Map = M._MAP
+	}
+end

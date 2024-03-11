@@ -14,14 +14,19 @@ local DramaticTextController = Class(Controller)
 DramaticTextController.CANVAS_WIDTH = 1920
 DramaticTextController.CANVAS_HEIGHT = 1080
 
-function DramaticTextController:new(peep, director, lines)
+function DramaticTextController:new(peep, director, lines, duration)
 	Controller.new(self, peep, director)
 
-	self.state = { lines = lines }
+	duration = duration or math.huge
+	self.state = { lines = lines, maxDuration = duration, time = love.timer.getTime() }
 end
 
 function DramaticTextController:poke(actionID, actionIndex, e)
-	Controller.poke(self, actionID, actionIndex, e)
+	if actionID == "close" then
+		self:getGame():getUI():closeInstance(self)
+	else
+		Controller.poke(self, actionID, actionIndex, e)
+	end
 end
 
 function DramaticTextController:pull()

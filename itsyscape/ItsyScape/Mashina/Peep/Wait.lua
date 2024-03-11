@@ -12,11 +12,14 @@ local Probe = require "ItsyScape.Peep.Probe"
 local Utility = require "ItsyScape.Game.Utility"
 
 local Wait = B.Node("Wait")
+Wait.PEEP = B.Reference()
 Wait.QUEUE = B.Reference()
 
 function Wait:update(mashina, state, executor)
+	local peep = state[self.PEEP] or mashina
 	local q = state[self.QUEUE]
-	if mashina:getCommandQueue(q):getIsPending() then
+
+	if peep:getCommandQueue(q):getIsPending() then
 		return B.Status.Working
 	end
 

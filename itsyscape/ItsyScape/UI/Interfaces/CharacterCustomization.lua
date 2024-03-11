@@ -40,6 +40,9 @@ CharacterCustomization.CUSTOMIZATION_HEIGHT = 540
 CharacterCustomization.INPUT_HEIGHT = 64
 CharacterCustomization.LABEL_HEIGHT = 48
 
+CharacterCustomization.MAX_WIDTH = 1280
+CharacterCustomization.MAX_HEIGHT = 800
+
 CharacterCustomization.TITLE_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
 	fontSize = 32,
@@ -139,7 +142,14 @@ function CharacterCustomization:new(id, index, ui)
 	self.onChangeGenderPlurality = Callback()
 
 	local w, h = love.graphics.getScaledMode()
-	self:setSize(w, h)
+	self:setSize(
+		math.min(w, CharacterCustomization.MAX_WIDTH),
+		math.min(h, CharacterCustomization.MAX_HEIGHT))
+
+	local selfW, selfH = self:getSize()
+	self:setPosition(w / 2 - selfW / 2, h / 2 - selfH / 2)
+
+	w, h = selfW, selfH
 
 	local isTooSmall = h < (CharacterCustomization.INFO_HEIGHT + CharacterCustomization.DIALOG_HEIGHT)
 
@@ -400,7 +410,6 @@ function CharacterCustomization:new(id, index, ui)
 			local label = Label()
 			label:setText(name)
 			label:setStyle(LabelStyle(CharacterCustomization.VALUE_STYLE, ui:getResources()))
-			label:setText(name)
 			grid:addChild(label)
 
 			local input = TextInput()
@@ -601,7 +610,9 @@ function CharacterCustomization:new(id, index, ui)
 end
 
 function CharacterCustomization:getIsFullscreen()
-	return true
+	local w, h = love.graphics.getScaledMode()
+	local selfW, selfH = self:getSize()
+	return w == selfW and h == selfH
 end
 
 function CharacterCustomization:submitTextInputs()

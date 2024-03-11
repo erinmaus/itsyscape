@@ -254,7 +254,7 @@ function Instance:new(id, filename, stage)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
 
-	self._onUnloadMap = function(_, map, layer)
+	self._onUnloadMap = function(_, layer)
 		if self:hasLayer(layer, true) then
 			Log.engine(
 				"Unloaded map from instance %s (%d) on layer %d.",
@@ -859,7 +859,6 @@ function Instance:getMapScriptByLayer(layer)
 		return mapScript:getPeep()
 	end
 
-	Log.warn("No map script for layer %d in instance %s (%d).", layer, self:getFilename(), self:getID())
 	return nil
 end
 
@@ -1153,7 +1152,7 @@ function Instance:unloadPlayer(localGameManager, player)
 			0,
 			"onUnloadMap",
 			nil,
-			map, layer)
+			layer)
 		localGameManager:assignTargetToLastPush(player)
 
 		Log.engine("Unloaded layer %d.", layer)

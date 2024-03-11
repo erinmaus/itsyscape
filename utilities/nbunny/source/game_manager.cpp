@@ -1,15 +1,15 @@
-
 ////////////////////////////////////////////////////////////////////////////////
 // source/game_manager.cpp
 //
 // This file is a part of ItsyScape.
 //
-// This Source Code Form is subject to the terms of the Mozilla Public
+// This Source Co Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <algorithm>
+#include "modules/data/DataModule.h"
 #include "nbunny/game_manager.hpp"
 
 static int GAME_MANAGER_REF = 0;
@@ -103,6 +103,31 @@ void* nbunny::GameManagerBuffer::get_pointer()
 	return &buffer[0];
 }
 
+void nbunny::GameManagerBuffer::compress()
+{
+	auto result = love::data::compress(love::data::Compressor::FORMAT_LZ4, (const char*)&buffer[0], buffer.size(), 9);
+
+	current_offset = 0;
+	buffer.resize(0);
+
+	append((const std::uint8_t*)result->getData(), result->getSize());
+
+	result->release();
+}
+
+void nbunny::GameManagerBuffer::decompress()
+{
+	std::size_t new_size;
+	auto result = love::data::decompress(love::data::Compressor::FORMAT_LZ4, (const char*)&buffer[0], buffer.size(), new_size);
+
+	current_offset = 0;
+	buffer.resize(0);
+
+	append((const std::uint8_t*)result, new_size);
+
+	delete[] result;
+}
+
 static int nbunny_game_manager_buffer_create(lua_State* L)
 {
 	if (lua_isstring(L, 1))
@@ -126,6 +151,28 @@ static int nbunny_game_manager_buffer_create(lua_State* L)
 	}
 
 	return 1;
+}
+
+static int nbunny_game_manager_buffer_compress(lua_State* L)
+{
+	if (lua_islightuserdata(L, 1))
+	{
+		auto buffer = (nbunny::GameManagerBuffer*)lua_touserdata(L, 1);
+		buffer->compress();
+	}
+
+	return 0;
+}
+
+static int nbunny_game_manager_buffer_decompress(lua_State* L)
+{
+	if (lua_islightuserdata(L, 1))
+	{
+		auto buffer = (nbunny::GameManagerBuffer*)lua_touserdata(L, 1);
+		buffer->decompress();
+	}
+
+	return 0;
 }
 
 static int nbunny_game_manager_buffer_free(lua_State* L)
@@ -181,6 +228,12 @@ NBUNNY_EXPORT int luaopen_nbunny_gamemanager_buffer(lua_State* L)
 
 	lua_pushcfunction(L, &nbunny_game_manager_buffer_pointer);
 	lua_setfield(L, -2, "pointer");
+
+	lua_pushcfunction(L, &nbunny_game_manager_buffer_compress);
+	lua_setfield(L, -2, "compress");
+
+	lua_pushcfunction(L, &nbunny_game_manager_buffer_decompress);
+	lua_setfield(L, -2, "decompress");
 
 	return 1;
 }
@@ -763,7 +816,7 @@ void nbunny::GameManagerVariant::unset()
 	type = TYPE_NIL;
 }
 
-int nbunny::GameManagerVariant::less(const GameManagerVariant& search_key, const GameManagerVariant& current_key)
+bool nbunny::GameManagerVariant::less(const GameManagerVariant& search_key, const GameManagerVariant& current_key)
 {
 	if (search_key.type != current_key.type)
 	{
@@ -1658,9 +1711,17 @@ NBUNNY_EXPORT int luaopen_nbunny_gamemanager_property(lua_State* L)
 	return 1;
 }
 
-void nbunny::GameManagerEventQueue::clear()
+void nbunny::GameManagerEventQueue::clear(std::size_t count)
 {
-	events.clear();
+	if (count == 0)
+	{
+		events.clear();
+	}
+	else
+	{
+		auto max = std::max(count, events.size());
+		events.erase(events.begin(), events.begin() + max);
+	}
 }
 
 void nbunny::GameManagerEventQueue::from_buffer(GameManagerBuffer& buffer)
@@ -1699,6 +1760,17 @@ void nbunny::GameManagerEventQueue::pop(GameManagerVariant& value)
 {
 	value = events.front();
 	events.pop_front();
+}
+
+void nbunny::GameManagerEventQueue::sort(const GameManagerVariant& key)
+{
+	std::sort(
+		events.begin(),
+		events.end(),
+		[&](auto& a, auto& b)
+		{
+			return GameManagerVariant::less(a.get(key), b.get(key));
+		});
 }
 
 std::size_t nbunny::GameManagerEventQueue::length() const
@@ -1750,6 +1822,26 @@ static int nbunny_game_manager_event_queue_push(lua_State* L)
 	return 0;
 }
 
+static int nbunny_game_manager_event_queue_sort(lua_State* L)
+{
+	auto queue = sol::stack::get<nbunny::GameManagerEventQueue*>(L, 1);
+
+	nbunny::GameManagerVariant key;
+	auto key_variant = sol::stack::get<sol::optional<nbunny::GameManagerVariant>>(L, 2);
+	if (key_variant.has_value())
+	{
+		key = key_variant.value();
+	}
+	else
+	{
+		key.from_lua(L, 2);
+	}
+
+	queue->sort(key);
+
+	return 0;
+}
+
 static int nbunny_game_manager_event_queue_from_buffer(lua_State* L)
 {
 	auto queue = sol::stack::get<nbunny::GameManagerEventQueue*>(L, 1);
@@ -1785,6 +1877,7 @@ NBUNNY_EXPORT int luaopen_nbunny_gamemanager_eventqueue(lua_State* L)
 		"pop", &nbunny::GameManagerEventQueue::pop,
 		"length", &nbunny::GameManagerEventQueue::length,
 		"get", &nbunny::GameManagerEventQueue::get,
+		"sort", &nbunny_game_manager_event_queue_sort,
 		"fromBuffer", &nbunny_game_manager_event_queue_from_buffer,
 		"toBuffer", &nbunny_game_manager_event_queue_to_buffer);
 

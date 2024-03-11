@@ -37,6 +37,7 @@ function YendorianDoorView:new(prop, gameView)
 	self.time = 0
 	self.portalTime = 0
 	self.swirlTime = 0
+	self.doorAlpha = 1
 end
 
 function YendorianDoorView:load()
@@ -68,7 +69,12 @@ function YendorianDoorView:load()
 		self.door:fromGroup(self.mesh:getResource(), "Door")
 		self.door:getMaterial():setShader(self.shader)
 		self.door:getMaterial():setTextures(self.texture)
-		self.door:getMaterial():setUniform("scape_Alpha", 1.0)
+		self.door:onWillRender(function(renderer)
+			local currentShader = renderer:getCurrentShader()
+			if currentShader:hasUniform("scape_Alpha") then
+				currentShader:send("scape_Alpha", self.doorAlpha)
+			end
+		end)
 		self.door:setParent(root)
 
 		self.swirl = DecorationSceneNode()
@@ -127,7 +133,7 @@ function YendorianDoorView:update(delta)
 
 			local alpha1 = delta * alphaWidth + alphaMin
 			local alpha2 = alpha1 * Tween.powerEaseOut(self.portalTime / YendorianDoorView.FADE_PORTAL_TIME, 2)
-			self.door:getMaterial():setUniform("scape_Alpha", 1 - alpha2)
+			self.doorAlpha = 1 - alpha2
 		end
 
 		do

@@ -320,6 +320,10 @@ function WidgetRenderManager:draw(widget, state, cursor)
 	if renderer then
 		local _, _, w, h = itsyrealm.graphics.getPseudoScissor()
 
+		if widget:getIsBlocking() then
+			itsyrealm.graphics.pushInterface(widget:getSize())
+		end
+
 		if (w > 0 and h > 0) or widget:getOverflow() then
 			self.debugStats:measure(renderer, widget, state)
 		end

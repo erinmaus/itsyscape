@@ -23,3 +23,12 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "X_ShipRock"
 }
+
+do
+	local Water = ItsyScape.Resource.Prop "EndlessWater"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicOcean",
+		Resource = Water
+	}
+end

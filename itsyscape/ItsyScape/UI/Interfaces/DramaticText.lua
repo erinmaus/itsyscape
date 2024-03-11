@@ -12,6 +12,8 @@ local Tween = require "ItsyScape.Common.Math.Tween"
 local Color = require "ItsyScape.Graphics.Color"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
+local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local Drawable = require "ItsyScape.UI.Drawable"
 
@@ -25,7 +27,8 @@ function DramaticText:new(id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
 
-	self.styles = {}
+	self.labelStyles = {}
+	self.panelStyles = {}
 	local state = self:getState()
 	for i = 1, #state.lines do
 		local line = state.lines[i]
@@ -36,20 +39,44 @@ function DramaticText:new(id, index, ui)
 			fontSize = line.fontSize / DramaticText.CANVAS_HEIGHT * h,
 			textShadow = line.textShadow,
 			align = line.align,
-			width = (line.width or 0) / DramaticText.CANVAS_WIDTH * w
+			width = line.width and (line.width / DramaticText.CANVAS_WIDTH * w) or w
 		}, ui:getResources())
 		label:setStyle(labelStyle)
 		label:setSize(
-			(line.width or 0) / DramaticText.CANVAS_WIDTH * w,
-			(line.height or 0) / DramaticText.CANVAS_HEIGHT * h)
+			line.width and (line.width / DramaticText.CANVAS_WIDTH * w) or w,
+			line.height and (line.height / DramaticText.CANVAS_HEIGHT * h) or h)
 		label:setPosition(
-			(line.x or 0) / DramaticText.CANVAS_WIDTH * w,
-			(line.y or 0) / DramaticText.CANVAS_HEIGHT * h)
-		label:setText({ line.text })
+			line.x and (line.x / DramaticText.CANVAS_WIDTH * w) or 0,
+			line.y and (line.y / DramaticText.CANVAS_HEIGHT * h) or (h / 2))
+		label:setText(line.text)
 
+		local panel = Panel()
+		local panelStyle = PanelStyle({
+			color = line.backgroundColor or { 0, 0, 0, 0.5 },
+			radius = line.backgroundRadius
+		}, ui:getResources())
+		panel:setStyle(panelStyle)
+
+		local width, lines = labelStyle.font:getWrap(line.text, labelStyle.width)
+		panel:setSize(
+			width + panelStyle.radius * 2,
+			#lines * labelStyle.font:getHeight() * labelStyle.font:getLineHeight() + panelStyle.radius * 2)
+		local labelX, labelY = label:getPosition()
+		if labelStyle.align == "center" then
+			local labelWidth = label:getSize()
+			labelX = labelX + (labelWidth / 2 - width / 2)
+		end
+		panel:setPosition(labelX - panelStyle.radius, labelY - panelStyle.radius)
+
+		self:addChild(panel)
 		self:addChild(label)
-		table.insert(self.styles, labelStyle)
+		table.insert(self.labelStyles, labelStyle)
+		table.insert(self.panelStyles, panelStyle)
 	end
+
+	self.time = -(state.time - math.floor(state.time))
+
+	self:setZDepth(10000)
 end
 
 function DramaticText:getOverflow()
@@ -59,13 +86,40 @@ end
 function DramaticText:update(delta)
 	Interface.update(self, delta)
 
-	self.time = (self.time or 0) + delta
-	local mu = math.min(self.time / DramaticText.FADE_IN_DURATION, 1)
-	local alpha = Tween.sineEaseOut(mu)
-	for i = 1, #self.styles do
-		local style = self.styles[i]
-		local color = style.color
-		style.color = Color(color.r, color.g, color.b, alpha)
+	local state = self:getState()
+	if state.maxDuration ~= math.huge then
+		local fadeInDuration = math.min(state.maxDuration / 2, DramaticText.FADE_IN_DURATION)
+
+		self.time = self.time + delta
+
+		local mu
+		if self.time < 0 then
+			mu = 0
+		elseif self.time >= state.maxDuration then
+			mu = 0
+			self:sendPoke("close", nil, {})
+		elseif self.time <= fadeInDuration then
+			mu = math.min(self.time / fadeInDuration, 1)
+		elseif self.time >= state.maxDuration - fadeInDuration then
+			mu = 1 - math.min((self.time - (state.maxDuration - fadeInDuration)) / fadeInDuration, 1)
+		else
+			mu = 1
+		end
+
+		local alpha = Tween.sineEaseOut(mu)
+		do
+			for i = 1, #self.labelStyles do
+				local style = self.labelStyles[i]
+				local color = style.color
+				style.color = Color(color.r, color.g, color.b, alpha)
+			end
+
+			for i = 1, #self.panelStyles do
+				local style = self.panelStyles[i]
+				local line = state.lines[i]
+				style.color[4] = (line.backgroundColor and line.backgroundColor[4] or 0.5) * alpha
+			end
+		end
 	end
 end
 

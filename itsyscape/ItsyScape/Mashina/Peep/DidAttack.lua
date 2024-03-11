@@ -16,6 +16,7 @@ DidAttack.PEEP = B.Reference()
 DidAttack.DEALT_DAMAGE = B.Reference()
 DidAttack.MISSED = B.Reference()
 DidAttack.ATTACK_POKE = B.Reference()
+DidAttack.TARGET = B.Reference()
 DidAttack.DAMAGE = B.Reference()
 DidAttack.INTERNAL_ATTACK_POKE = B.Local()
 DidAttack.ATTACKED = B.Local()
@@ -41,7 +42,7 @@ function DidAttack:update(mashina, state, executor)
 	end
 end
 
-function DidAttack:hit(peep, dealtDamage, missed, state, _, p)
+function DidAttack:hit(peep, dealtDamage, missed, state, _, p, target)
 	if (missed == true or missed == nil) and p:getDamage() == 0 then
 		state[self.ATTACKED] = true
 	end
@@ -52,6 +53,10 @@ function DidAttack:hit(peep, dealtDamage, missed, state, _, p)
 
 	if state[self.ATTACKED] == nil then
 		state[self.ATTACKED] = false
+	end
+
+	if state[self.ATTACKED] then
+		state[self.TARGET] = target
 	end
 
 	state[self.INTERNAL_ATTACK_POKE] = p

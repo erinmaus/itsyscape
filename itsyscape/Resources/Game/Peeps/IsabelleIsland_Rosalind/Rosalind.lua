@@ -14,12 +14,16 @@ local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Rosalind = Class(Player)
 
 function Rosalind:new(resource, name, ...)
 	Player.new(self, resource, name or 'Rosalind', ...)
+
+	local _, status = self:addBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = math.huge
 end
 
 function Rosalind:ready(director, game)

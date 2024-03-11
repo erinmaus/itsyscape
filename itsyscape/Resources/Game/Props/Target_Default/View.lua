@@ -10,6 +10,8 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Color = require "ItsyScape.Graphics.Color"
+local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
@@ -37,6 +39,12 @@ function TargetView:load()
 	self.quad:getTransform():setLocalRotation(Quaternion.X_90)
 	self.quad:setParent(root)
 
+	self.light = PointLightSceneNode()
+	self.light:setAttenuation(8)
+	self.light:getTransform():setLocalTranslation(Vector(0, 4, 0))
+	self.light:setColor(Color(1, 1, 0, 1))
+	self.light:setParent(root)
+
 	self.canvas = love.graphics.newCanvas(TargetView.CANVAS_SIZE, TargetView.CANVAS_SIZE)
 	self.texture = TextureResource(self.canvas)
 	self.quad:getMaterial():setTextures(self.texture)
@@ -62,7 +70,7 @@ function TargetView:tick()
 		self.sprite = self:getGameView():getSpriteManager():add(
 			"TargetHint",
 			self:getRoot(),
-			Vector(unpack(self:getProp():getState().offset or { 0, 1, 0 })),
+			Vector(unpack(self:getProp():getState().offset or { 0, 2, 0 })),
 			self:getProp())
 	end
 end
@@ -77,11 +85,11 @@ function TargetView:update(delta)
 	love.graphics.setColor(1, 1, 0, 1)
 
 	love.graphics.setLineWidth(TargetView.LINE_WIDTH)
-	itsyrealm.graphics.circle('line', self.canvas:getWidth() / 2, self.canvas:getHeight() / 2, TargetView.RADIUS)
+	love.graphics.circle('line', self.canvas:getWidth() / 2, self.canvas:getHeight() / 2, TargetView.RADIUS)
 
 	local fudge = math.sin(love.timer.getTime() * math.pi / 4) * TargetView.RADIUS_FUDGE
 	love.graphics.setLineWidth(TargetView.LINE_WIDTH / 2)
-	itsyrealm.graphics.circle('line', self.canvas:getWidth() / 2, self.canvas:getHeight() / 2, TargetView.RADIUS + fudge)
+	love.graphics.circle('line', self.canvas:getWidth() / 2, self.canvas:getHeight() / 2, TargetView.RADIUS + fudge)
 
 	love.graphics.pop()
 end

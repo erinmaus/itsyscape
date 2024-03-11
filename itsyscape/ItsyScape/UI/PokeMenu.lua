@@ -56,6 +56,7 @@ function PokeMenu:new(view, actions)
 		end
 
 		local button = Button()
+		button:setID(string.format("PokeMenu-%s-%s", action.verb, action.object))
 		button:setText(text)
 		button:setStyle(buttonStyle)
 		button.onClick:register(function()
