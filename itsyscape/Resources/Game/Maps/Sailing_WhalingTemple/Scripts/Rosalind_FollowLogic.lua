@@ -18,6 +18,7 @@ local TARGET = B.Reference("Rosalind", "TARGET")
 local CURRENT_PASSAGE = B.Reference("Rosalind", "CURRENT_PASSAGE")
 local ENTERED_PASSAGE = B.Reference("Rosalind", "ENTERED_PASSAGE")
 local TALKED_ABOUT_FISH = B.Reference("Rosalind", "TALKED_ABOUT_FISH")
+local TALKED_ABOUT_TREES = B.Reference("Rosalind", "TALKED_ABOUT_TREES")
 local TALKED_ABOUT_STANCES = B.Reference("Rosalind", "TALKED_ABOUT_STANCES")
 
 local Tree = BTreeBuilder.Node() {
@@ -48,6 +49,81 @@ local Tree = BTreeBuilder.Node() {
 		},
 
 		Mashina.Try {
+			Mashina.Sequence {
+				Mashina.Try {
+					Mashina.Player.IsNextQuestStep {
+						player = PLAYER,
+						quest = "PreTutorial",
+						step = "PreTutorial_FoundTrees"
+					}
+				},
+
+				Mashina.Step {
+					Mashina.Compare.Equal {
+						left = CURRENT_PASSAGE,
+						right = "Passage_Trees"
+					},
+
+					Mashina.Check {
+						condition = ENTERED_PASSAGE,
+					},
+
+					Mashina.Invert {
+						Mashina.Check {
+							condition = TALKED_ABOUT_TREES,
+						}
+					},
+
+					Mashina.Set {
+						value = true,
+						[TALKED_ABOUT_TREES] = B.Output.result
+					},
+
+					Mashina.Peep.Talk {
+						message = "Look, some trees!",
+						duration = 4
+					},
+
+					Mashina.Player.Disable {
+						player = PLAYER
+					},
+
+					Mashina.ParallelSequence {
+						Mashina.Step {
+							Mashina.Player.Walk {
+								player = PLAYER,
+								distance = 2,
+								as_close_as_possible = false,
+								target = "Anchor_ToTrees"
+							},
+
+							Mashina.Peep.Wait {
+								peep = PLAYER
+							}
+						},
+
+						Mashina.Step {
+							Mashina.Peep.Walk {
+								target = "Anchor_ToTrees",
+								distance = 0,
+								as_close_as_possible = true,
+							},
+
+							Mashina.Peep.Wait
+						}
+					},
+
+					Mashina.Player.Enable {
+						player = PLAYER,
+					},
+
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutTrees",
+						player = PLAYER
+					}
+				}
+			},
+
 			Mashina.Sequence {
 				Mashina.Try {
 					Mashina.Player.IsNextQuestStep {
