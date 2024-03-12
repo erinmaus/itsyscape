@@ -1124,6 +1124,18 @@ do
 	}
 end
 
+M["Anchor_ToTrees"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 71,
+		Name = "Anchor_ToTrees",
+		Map = M._MAP,
+		Resource = M["Anchor_ToTrees"]
+	}
+end
+
 M["Anchor_FromFishingArea"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
