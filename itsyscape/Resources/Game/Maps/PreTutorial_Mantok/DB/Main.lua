@@ -1,4 +1,4 @@
-local M = include "Resources/Game/Maps/Pretutorial_Mantok/DB/Default.lua"
+local M = include "Resources/Game/Maps/PreTutorial_Mantok/DB/Default.lua"
 
 ItsyScape.Meta.ResourceName {
 	Value = "Azathoth",
