@@ -234,7 +234,7 @@ local Phase3AttackSpecial = Mashina.ParallelTry {
 
 			Mashina.Peep.Talk {
 				peep = ROSALIND,
-				message = "Oh no! Are you ok? You just got blased by Man'tok!",
+				message = "Oh no! Are you ok? You just got blasted by Man'tok!",
 				duration = 4
 			},
 
