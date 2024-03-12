@@ -1,17 +1,5 @@
 // From https://github.com/tobspr/GLSL-Color-Spaces
 
-
-#ifdef GL_ES
-float clamp(float value, float min, float max)
-{
-    return max(min(value, max), min);
-}
-#endif
-
-#ifndef saturate
-#define saturate(v) clamp(v, 0, 1)
-#endif
-
 const float HCV_EPSILON = 1e-10;
 const float HSL_EPSILON = 1e-10;
 
@@ -30,7 +18,7 @@ vec3 hue_to_rgb(float hue)
     float R = abs(hue * 6.0 - 3.0) - 1.0;
     float G = 2.0 - abs(hue * 6.0 - 2.0);
     float B = 2.0 - abs(hue * 6.0 - 4.0);
-    return saturate(vec3(R,G,B));
+    return clamp(vec3(R,G,B), vec3(0.0), vec3(1.0));
 }
 
 // Converts from linear rgb to HSL
