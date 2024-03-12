@@ -109,8 +109,15 @@ function PlayerInventory.UseItemFacade:mouseMove(...)
 
 	self.hits = hits
 
+	local isBlocked = false
+	do
+		local blockedWidget
+		isBlocked, blockedWidget = self.ui:getInputProvider():isBlocking(x, y)
+		isBlocked = isBlocked and blockedWidget ~= self
+	end
+
 	self:unsetToolTip()
-	if #self.hits >= 1 then
+	if #self.hits >= 1 and not isBlocked then
 		local hit = self.hits[1]
 
 		local renderManager = self.ui:getRenderManager()

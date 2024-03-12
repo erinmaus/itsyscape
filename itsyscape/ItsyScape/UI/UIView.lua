@@ -187,14 +187,7 @@ function itsyrealm.graphics.impl.polygon(...)
 	love.graphics.polygon(...)
 end
 
-function itsyrealm.graphics.impl.drawItemIcon(width, height, icon, count, color, note, disabled, active)
-	local alpha
-	if active then
-		alpha = math.sin(love.timer.getTime() * math.pi)
-	else
-		alpha = 1
-	end
-
+function itsyrealm.graphics.impl.drawItemIcon(width, height, icon, count, color, note, disabled)
 	local scaleX, scaleY
 	local x, y
 	local originX, originY
@@ -220,9 +213,9 @@ function itsyrealm.graphics.impl.drawItemIcon(width, height, icon, count, color,
 	end
 
 	if disabled then
-		love.graphics.setColor(0.3, 0.3, 0.3, alpha)
+		love.graphics.setColor(0.3, 0.3, 0.3, 1)
 	else
-		love.graphics.setColor(1, 1, 1, alpha)
+		love.graphics.setColor(1, 1, 1, 1)
 	end
 
 	love.graphics.draw(icon, x, y, 0, itemScaleX, itemScaleY, originX, originY)
@@ -264,10 +257,18 @@ function itsyrealm.graphics.impl.newItemIcon(width, height, ...)
 	return image
 end
 
-function itsyrealm.graphics.impl.drawItem(renderState, handle)
+function itsyrealm.graphics.impl.drawItem(renderState, handle, active)
 	local atlas = graphicsState.atlas:getTexture()
 	local layer = graphicsState.atlas:layer(handle)
 	local atlasQuad = graphicsState.atlas:quad(handle)
+
+	local alpha
+	if active then
+		alpha = math.min(math.abs(math.sin(love.timer.getTime() * math.pi + math.pi / 4)) * 1.75, 1)
+	else
+		alpha = 1
+	end
+	love.graphics.setColor(1, 1, 1, alpha)
 
 	love.graphics.origin()
 	love.graphics.applyTransform(renderState.transform)
@@ -840,14 +841,13 @@ end
 
 function itsyrealm.graphics.drawItem(handle, width, height, icon, itemID, count, color, note, disabled, active)
 	local key = string.format(
-		"%s_%dx%d_%s_%s_%s_%s",
+		"%s_%dx%d_%s_%s_%s",
 		itemID,
 		width,
 		height,
 		count,
 		Log.boolean(note),
-		Log.boolean(disabled),
-		Log.boolean(active))
+		Log.boolean(disabled))
 
 	if not graphicsState.atlas:has(handle) then
 		graphicsState.atlas:add(handle, itsyrealm.graphics.impl.newItemIcon(width, height, icon, count, color, note, disabled, active), key)
@@ -861,7 +861,8 @@ function itsyrealm.graphics.drawItem(handle, width, height, icon, itemID, count,
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.drawItem,
 		itsyrealm.graphics.impl.captureRenderState(),
-		handle)
+		handle,
+		active)
 end
 
 function itsyrealm.graphics.drawq(image, quad, x, y, rotation, scaleX, scaleY, ...)
