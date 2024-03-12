@@ -127,7 +127,7 @@ elseif not _TARGET:getState():has("KeyItem", "PreTutorial_CraftedWeapon") then
 	end
 else
 	message {
-		"With that %item{upcoming hero's weapon} you crafted,",
+		"With that %item{up-and-coming hero's weapon} you crafted,",
 		"it should be safe to move forward.",
 		"Let's see what else is out there."
 	}
