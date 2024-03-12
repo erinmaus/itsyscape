@@ -144,7 +144,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 20,
+		Hitpoints = 25,
 		Resource = M["YendorianBallista"]
 	}
 
@@ -206,7 +206,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 20,
+		Hitpoints = 25,
 		Resource = M["YendorianMast"]
 	}
 
@@ -268,7 +268,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 20,
+		Hitpoints = 25,
 		Resource = M["YendorianSwordfish"]
 	}
 
