@@ -27,7 +27,7 @@ function YendorianBallista:getWeaponType()
 end
 
 function YendorianBallista:getProjectile()
-	return 'YendorianBallista'
+	return 'YendorianBoltStrike'
 end
 
 function YendorianBallista:getDelay()

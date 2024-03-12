@@ -21,10 +21,10 @@ local CURRENT_HEALTH = B.Reference("Yendorian", "CURRENT_HEALTH")
 local HEALTH_DIFFERENCE = B.Reference("Yendorian", "HEALTH_DIFFERENCE")
 local SUMMON_MANTOK = B.Reference("Yendorian", "SUMMON_MANTOK")
 
-local PHASE_1_THRESHOLD_HEALTH = 15
+local PHASE_1_THRESHOLD_HEALTH = 20
 
-local PHASE_3_THRESHOLD_1_HEALTH = 10
-local PHASE_3_THRESHOLD_2_HEALTH = 5
+local PHASE_3_THRESHOLD_1_HEALTH = 20
+local PHASE_3_THRESHOLD_2_HEALTH = 10
 
 local PHASE_3_SPECIAL_DAMAGE = 3
 
@@ -137,7 +137,7 @@ local Phase2AttackLogic = Mashina.Step {
 						},
 
 						Mashina.Subtract {
-							left = 20,
+							left = 25,
 							right = CURRENT_HEALTH,
 							[HEALTH_DIFFERENCE] = B.Output.result
 						},
@@ -161,7 +161,7 @@ local Phase2AttackLogic = Mashina.Step {
 			},
 
 			Mashina.Subtract {
-				left = 20,
+				left = 25,
 				right = CURRENT_HEALTH,
 				[HEALTH_DIFFERENCE] = B.Output.result
 			},
@@ -234,7 +234,7 @@ local Phase3AttackSpecial = Mashina.ParallelTry {
 
 			Mashina.Peep.Talk {
 				peep = ROSALIND,
-				message = "Oh no! Are you ok? You just got blased by Man'tok!",
+				message = "Oh no! Are you ok? You just got blasted by Man'tok!",
 				duration = 4
 			},
 

@@ -144,7 +144,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 20,
+		Hitpoints = 25,
 		Resource = M["YendorianBallista"]
 	}
 
@@ -206,7 +206,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 20,
+		Hitpoints = 25,
 		Resource = M["YendorianMast"]
 	}
 
@@ -268,7 +268,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 20,
+		Hitpoints = 25,
 		Resource = M["YendorianSwordfish"]
 	}
 
@@ -1121,6 +1121,18 @@ do
 		Z2 = 36,
 		Map = M._MAP,
 		Resource = M["Passage_BeforeTrapdoor"]
+	}
+end
+
+M["Anchor_ToTrees"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 71,
+		Name = "Anchor_ToTrees",
+		Map = M._MAP,
+		Resource = M["Anchor_ToTrees"]
 	}
 end
 

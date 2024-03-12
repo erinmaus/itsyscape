@@ -227,7 +227,7 @@ Description "PreTutorial_MinedCopper" {
 }
 
 Description "PreTutorial_SmeltedWeirdBars" {
-	before = "Rosalind told you about a weird alloy you can make using azatite shards and copper. Smelt some weird alloy bars at the furnace to make the bars.",
+	before = "Rosalind told you about a weird alloy you can make using azatite shards and copper. Smelt some azatite and copper at the furnace to make the weird alloy bars.",
 	after = "Taking Rosalind's suggestion to make some armor for what lay ahead, you mined some copper."
 }
 

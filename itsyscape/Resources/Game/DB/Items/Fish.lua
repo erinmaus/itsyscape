@@ -513,8 +513,8 @@ do
 
 	ItsyScape.Meta.CookingFailedAction {
 		Output = FailAction,
-		Start = 1,
-		Stop = 6,
+		Start = 0,
+		Stop = 4,
 		Action = CookAction
 	}
 
