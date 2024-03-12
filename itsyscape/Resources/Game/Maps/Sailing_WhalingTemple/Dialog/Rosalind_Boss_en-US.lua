@@ -146,6 +146,7 @@ then
 	playerModel:changeCamera("Default")
 	_TARGET:removeBehavior(DisabledBehavior)
 
+	Utility.UI.openInterface(_TARGET, "BossHUD", false, _SPEAKERS["Yendorian"])
 	Utility.Peep.attack(_SPEAKERS["Yendorian"], _TARGET)
 elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendorian", _TARGET) then
 	if not _TARGET:hasBehavior(DisabledBehavior) then
@@ -155,7 +156,7 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendo
 		message {
 			"The Yendorian is trying to summon %person{The First One}!",
 			"That would be apocalyptic!",
-			"I didn't even know that was possible anymore!"
+			"I didn't even know that was possible!"
 		}
 
 		message "We need to %hint{surprise the Yendorian} to break its concentration!"
@@ -183,6 +184,7 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_DefeatedInjuredYendo
 		playerModel:changeCamera("Default")
 		_TARGET:removeBehavior(DisabledBehavior)
 
+		Utility.UI.openInterface(_TARGET, "BossHUD", false, _SPEAKERS["Yendorian"])
 		Utility.Peep.attack(_SPEAKERS["Yendorian"], _TARGET)
 	end
 end
