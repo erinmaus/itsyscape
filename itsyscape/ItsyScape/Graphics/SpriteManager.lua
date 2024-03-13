@@ -154,6 +154,7 @@ function SpriteManager:draw(scene, camera, delta)
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
 	love.graphics.scale(scaleX, scaleY, 1)
+	love.graphics.translate(paddingX, paddingY)
 	love.graphics.ortho(realWidth, realHeight)
 
 	for i = 1, #self.sprites do

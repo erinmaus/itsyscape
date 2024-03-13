@@ -193,6 +193,12 @@ local Tree = BTreeBuilder.Node() {
 					},
 				},
 
+				Mashina.Invert {
+					Mashina.Check {
+						condition = TALKED_ABOUT_FISH,
+					}
+				},
+
 				Mashina.Step {
 					Mashina.Compare.Equal {
 						left = CURRENT_PASSAGE,
@@ -203,20 +209,14 @@ local Tree = BTreeBuilder.Node() {
 						condition = ENTERED_PASSAGE,
 					},
 
-					Mashina.Invert {
-						Mashina.Check {
-							condition = TALKED_ABOUT_FISH,
-						}
+					Mashina.Player.Dialog {
+						named_action = "TalkAboutFish",
+						player = PLAYER
 					},
 
 					Mashina.Set {
 						value = true,
 						[TALKED_ABOUT_FISH] = B.Output.result
-					},
-
-					Mashina.Player.Dialog {
-						named_action = "TalkAboutFish",
-						player = PLAYER
 					}
 				}
 			},
@@ -351,6 +351,12 @@ local Tree = BTreeBuilder.Node() {
 			},
 
 			Mashina.Sequence {
+				Mashina.Player.IsNextQuestStep {
+					player = PLAYER,
+					quest = "PreTutorial",
+					step = "PreTutorial_SlayedYenderling"
+				},
+
 				Mashina.Invert {
 					Mashina.Check {
 						condition = TALKED_ABOUT_STANCES,

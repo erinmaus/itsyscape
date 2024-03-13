@@ -22,7 +22,7 @@ if not _TARGET:getState():has("KeyItem", "PreTutorial_KilledMaggot") then
 
 	local hasToyWeaponEquipped = _TARGET:getState():has("Item", "ToyWand", 1, EQUIPMENT_FLAGS) or
 	                             _TARGET:getState():has("Item", "ToyLongsword", 1, EQUIPMENT_FLAGS) or
-	                             _TARGET:getState():has("Item", "ToyBommerang", 1, EQUIPMENT_FLAGS)
+	                             _TARGET:getState():has("Item", "ToyBoomerang", 1, EQUIPMENT_FLAGS)
 
 	local function listenForAttack()
 		_TARGET:removeBehavior(DisabledBehavior)
@@ -38,7 +38,7 @@ if not _TARGET:getState():has("KeyItem", "PreTutorial_KilledMaggot") then
 		elseif _TARGET:getState():has("Item", "ToyLongsword", 1, INVENTORY_FLAGS) then
 			hint = PreTutorialCommon.EQUIP_TOY_LONGSWORD
 			toy = "longsword"
-		elseif _TARGET:getState():has("Item", "ToyBommerang", 1, INVENTORY_FLAGS) then
+		elseif _TARGET:getState():has("Item", "ToyBoomerang", 1, INVENTORY_FLAGS) then
 			hint = PreTutorialCommon.EQUIP_TOY_BOOMERANG
 			toy = "boomerang"
 		else
@@ -47,6 +47,8 @@ if not _TARGET:getState():has("KeyItem", "PreTutorial_KilledMaggot") then
 				"before fighting a maggot."
 			}
 
+			listenForAttack()
+			_TARGET:removeBehavior(DisabledBehavior)
 			return
 		end
 
