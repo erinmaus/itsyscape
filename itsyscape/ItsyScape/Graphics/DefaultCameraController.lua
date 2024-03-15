@@ -17,7 +17,7 @@ local DefaultCameraController = Class(CameraController)
 DefaultCameraController.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
 DefaultCameraController.CAMERA_VERTICAL_ROTATION = -math.pi / 2
 DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
+DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 128
 DefaultCameraController.SCROLL_MULTIPLIER = 4
 DefaultCameraController.MIN_DISTANCE = 1
 DefaultCameraController.MAX_DISTANCE = 60
@@ -35,6 +35,7 @@ DefaultCameraController.SHOW_MODE_MOVE   = "move"
 
 DefaultCameraController.CLICK_STILL_MAX        = 24
 DefaultCameraController.CLICK_DRAG_DENOMINATOR = 4
+DefaultCameraController.SCROLL_SPEED_MULTIPLIER = 5
 
 DefaultCameraController.SPEED = math.pi / 2
 
@@ -66,6 +67,8 @@ function DefaultCameraController:new(...)
 	self.targetOpponentDistance = 0
 
 	self.cursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
+
+	self:onUnlockRotation()
 end
 
 function DefaultCameraController:getPlayerMapRotation()
@@ -222,6 +225,10 @@ function DefaultCameraController:mouseScroll(uiActive, x, y)
 	end
 
 	if not uiActive then
+		if love.system.getOS() ~= "OS X" then
+			y = y * DefaultCameraController.SCROLL_SPEED_MULTIPLIER
+		end
+
 		self:_scroll(y)
 	end
 end
