@@ -15,6 +15,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 
 local BaseMaggot = Class(Creep)
 
@@ -24,6 +25,8 @@ function BaseMaggot:new(resource, name, ...)
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(2.5, 4.5, 2.5)
 	size.offset = Vector(0, 0, 0)
+
+	self:addBehavior(ScaleBehavior)
 end
 
 function BaseMaggot:ready(director, game)
