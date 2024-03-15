@@ -15,6 +15,7 @@ local ActorView = require "ItsyScape.Graphics.ActorView"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
+local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
@@ -79,6 +80,8 @@ function GameView:new(game)
 	whiteTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
 	self.whiteTexture = TextureResource(love.graphics.newImage(whiteTextureImageData))
 	self.whiteTextureImageData = whiteTextureImageData
+
+	self.defaultMapMaskTexture = LayerTextureResource(love.graphics.newArrayImage(whiteTextureImageData))
 
 	local itemTextureImageData = love.image.newImageData(1, 1)
 	itemTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
@@ -592,7 +595,7 @@ function GameView:updateMap(map, layer)
 					if m.mapMeshMasks then
 						node:getMaterial():setTextures(m.texture, m.mask:getTexture())
 					else
-						node:getMaterial():setTextures(m.texture)
+						node:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
 					end
 				end)
 			end
