@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local utf8 = require "utf8"
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
 local TextInput = require "ItsyScape.UI.TextInput"
@@ -110,23 +111,27 @@ function TextButtonStyle:draw(widget)
 				activeCursor = leftCursor
 			end
 
-			local cursorPosition = font:getWidth(widget:getText():sub(1, activeCursor))
+			local cursorPosition = font:getWidth(utf8.sub(widget:getText(), 1, activeCursor + 1))
 
 			if leftCursor == rightCursor then
 				selectionWidth = 0
 			else
-				selectionWidth = font:getWidth(widget:getText():sub(leftCursor + 1, rightCursor))
+				selectionWidth = font:getWidth(
+					utf8.sub(widget:getText(), leftCursor + 1, rightCursor + 1))
 			end
 
-			selectionX = font:getWidth(widget:getText():sub(1, leftCursor))
-
-			if cursorPosition > width / 2 then
-				textX = -(cursorPosition - width / 2)
-				cursorX = width / 2
-				selectionX = selectionX + textX
+			if cursorPosition > width - self.padding then
+				textX = -(cursorPosition - width + self.padding + 8)
+				cursorX = width - self.padding - 8
 			else
 				textX = 0
 				cursorX = cursorPosition
+			end
+
+			if widget:getActiveCursor() == TextInput.CURSOR_RIGHT then
+				selectionX = cursorX - selectionWidth
+			else
+				selectionX = cursorX
 			end
 
 			textY = height / 2 - font:getHeight() / 2
