@@ -57,6 +57,7 @@ function FishView:load()
 		function(mesh)
 			self.decoration:fromGroup(mesh:getResource(), "Fish")
 			self.decoration:getMaterial():setTextures(self.texture)
+			self.decoration:getMaterial():setIsFullLit(true)
 			self.decoration:setParent(root)
 		end)
 end
