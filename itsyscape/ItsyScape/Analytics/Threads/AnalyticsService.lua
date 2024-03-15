@@ -54,7 +54,7 @@ local function makeAnalyticEvent(data)
 		}
 
 		properties["Event ID"] = eventID
-		properties["Session ID"] = sessionID
+		properties["$session_id"] = sessionID
 	end
 
 	local event = {
