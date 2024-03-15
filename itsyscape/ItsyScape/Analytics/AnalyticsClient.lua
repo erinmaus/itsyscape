@@ -238,6 +238,11 @@ function Client:performedAction(peep, action)
 
 				if hit then
 					resource = Utility.Peep.getResource(hit) or resource
+				else
+					local peepMapObject = self.gameDB:getRecord("PeepMapObject", { MapObject = resource })
+					local propMapObject = self.gameDB:getRecord("PropMapObject", { MapObject = resource })
+
+					resource = (peepMapObject and peepMapObject:get("Peep")) or (propMapObject and propMapObject:get("Prop")) or resource
 				end
 			end
 		end
@@ -272,6 +277,11 @@ function Client:failedAction(peep, action)
 
 				if hit then
 					resource = Utility.Peep.getResource(hit) or resource
+				else
+					local peepMapObject = self.gameDB:getRecord("PeepMapObject", { MapObject = resource })
+					local propMapObject = self.gameDB:getRecord("PropMapObject", { MapObject = resource })
+
+					resource = (peepMapObject and peepMapObject:get("Peep")) or (propMapObject and propMapObject:get("Prop")) or resource
 				end
 			end
 		end
