@@ -563,7 +563,7 @@ end
 function DemoApplication:mouseProbePress(x, y, button, isUIActive)
 	local probeAction = self.cameraController:mousePress(isUIActive, x, y, button)
 	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
-		self:probe(x, y, true)
+		self:probe(x, y, true, function(probe) self.uiView:probe(probe:toArray()) end)
 	elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
 		self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
 	end
@@ -581,7 +581,7 @@ end
 function DemoApplication:mouseProbeRelease(x, y, button, isUIActive)
 	local probeAction = self.cameraController:mouseRelease(isUIActive, x, y, button)
 	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
-		self:probe(x, y, true)
+		self:probe(x, y, true, function(probe) self.uiView:probe(probe:toArray()) end)
 	elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
 		self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
 	end

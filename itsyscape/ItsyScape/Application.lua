@@ -399,22 +399,38 @@ function Application:probe(x, y, performDefault, callback, tests)
 	end)
 	probe:all(function()
 		if performDefault then
+			local numPrimaryActions = 0
+
 			for action in probe:iterate() do
+				print(">>> action", action.id, action.suppress)
 				if action.id ~= "Examine" and not action.suppress then
-					if action.id == "Walk" then
-						self.clickActionType = Application.CLICK_WALK
-					else
-						self.clickActionType = Application.CLICK_ACTION
+					if action.id ~= "Walk" then
+						numPrimaryActions = numPrimaryActions + 1
 					end
+				end
+			end
 
-					self.clickActionTime = Application.CLICK_DURATION
-					self.clickX, self.clickY = love.mouse.getPosition()
+			print(">>> actions", numPrimaryActions)
 
-					local s, r = pcall(action.callback)
-					if not s then
-						Log.warn("couldn't perform action: %s", r)
+			if numPrimaryActions <= 1 or _CONF.probe == false then
+				for action in probe:iterate() do
+					if action.id ~= "Examine" and not action.suppress then
+						if action.id == "Walk" then
+							self.clickActionType = Application.CLICK_WALK
+						else
+							self.clickActionType = Application.CLICK_ACTION
+						end
+
+						self.clickActionTime = Application.CLICK_DURATION
+						self.clickX, self.clickY = love.mouse.getPosition()
+
+						local s, r = pcall(action.callback)
+						if not s then
+							Log.warn("couldn't perform action: %s", r)
+						end
+
+						return
 					end
-					break
 				end
 			end
 		end

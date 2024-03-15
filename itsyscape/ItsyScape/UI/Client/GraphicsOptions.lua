@@ -209,7 +209,7 @@ function GraphicsOptions:new(application)
 			GraphicsOptions.INPUT_HEIGHT)
 		self.fullscreenOnButton = onButton
 
-		if _CONF.fullscreen then
+		if _CONF.fullscreen or _CONF.fullscreen == nil then
 			onButton:setStyle(
 				ButtonStyle(
 					GraphicsOptions.ACTIVE_ITEM_STYLE,
@@ -234,7 +234,7 @@ function GraphicsOptions:new(application)
 		offButton:setSize(
 			GraphicsOptions.INPUT_WIDTH,
 			GraphicsOptions.INPUT_HEIGHT)
-		if not _CONF.fullscreen then
+		if _CONF.fullscreen == false then
 			offButton:setStyle(
 				ButtonStyle(
 					GraphicsOptions.ACTIVE_ITEM_STYLE,
@@ -490,6 +490,74 @@ function GraphicsOptions:new(application)
 	end
 
 	do
+		local label = Label()
+		label:setStyle(
+			LabelStyle(
+				GraphicsOptions.INPUT_STYLE,
+				self.application:getUIView():getResources()))
+		label:setText(_MOBILE and "One-Tap" or "One-Click")
+		label:setPosition(
+			GraphicsOptions.WIDTH / 2 + GraphicsOptions.PADDING * 2,
+			GraphicsOptions.PADDING * 6 + GraphicsOptions.INPUT_HEIGHT * 4)
+		label:setSize(GraphicsOptions.WIDTH / 4, GraphicsOptions.INPUT_HEIGHT)
+		self:addChild(label)
+
+		local onButton = Button()
+		onButton:setText('On')
+		onButton:setToolTip(
+			ToolTip.Text("Enable one-click (or one-tap) gameplay."),
+			ToolTip.Text("One-click gameplay means if there's more than one action you can perform by using a click or tap, the probe menu will pop up showing you all options."),
+			ToolTip.Text("If disabled, you will perform the first action. You can always right-click or long-tap to open the probe menu."))
+		onButton:setPosition(
+			GraphicsOptions.WIDTH * (2 / 3) + GraphicsOptions.PADDING * 3,
+			GraphicsOptions.PADDING * 6 + GraphicsOptions.INPUT_HEIGHT * 4)
+		onButton:setSize(
+			GraphicsOptions.INPUT_WIDTH,
+			GraphicsOptions.INPUT_HEIGHT)
+
+		if _CONF.probe or _CONF.probe == nil then
+			onButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.ACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		else
+			onButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.INACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		end
+		onButton.onClick:register(self.enableProbe, self, true)
+		self:addChild(onButton)
+		self.probeOnButton = onButton
+
+		local offButton = Button()
+		offButton:setText('Off')
+		onButton:setToolTip(
+			ToolTip.Text("Disable one-click (or one-tap) gameplay."),
+			ToolTip.Text("You will have to right-click or long-tap if there's more than one action you can perform to open the probe menu."))
+		offButton:setPosition(
+			GraphicsOptions.WIDTH * (2 / 3) + GraphicsOptions.INPUT_WIDTH + GraphicsOptions.PADDING * 4,
+			GraphicsOptions.PADDING * 6 + GraphicsOptions.INPUT_HEIGHT * 4)
+		offButton:setSize(
+			GraphicsOptions.INPUT_WIDTH,
+			GraphicsOptions.INPUT_HEIGHT)
+		if _CONF.probe == false then
+			offButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.ACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		else
+			offButton:setStyle(
+				ButtonStyle(
+					GraphicsOptions.INACTIVE_ITEM_STYLE,
+					self.application:getUIView():getResources()))
+		end
+		offButton.onClick:register(self.enableProbe, self, false)
+		self:addChild(offButton)
+		self.probeOffButton = offButton
+	end
+
+	do
 		local confirmButton = Button()
 		confirmButton:setText("Confirm")
 		confirmButton:setStyle(
@@ -524,10 +592,11 @@ function GraphicsOptions:new(application)
 	self.conf = {
 		width = _CONF.width,
 		height = _CONF.height,
-		vsync = _CONF.vsync,
-		fullscreen = _CONF.fullscreen,
-		debug = _CONF.debug,
-		analytics = _ANALYTICS_ENABLED
+		vsync = _CONF.vsync == nil and -1 or _CONF.vsync,
+		fullscreen = _CONF.fullscreen == nil and true or _CONF.fullscreen,
+		debug = _CONF.debug == nil and false or _CONF.debug,
+		probe = _CONF.probe == nil and true or _CONF.probe,
+		analytics = _ANALYTICS_ENABLED == nil and true or _ANALYTICS_ENABLED
 	}
 
 	self.onClose = Callback()
@@ -668,6 +737,29 @@ function GraphicsOptions:enableAnalytics(enabled)
 	end
 end
 
+function GraphicsOptions:enableProbe(enabled)
+	self.conf.probe = enabled
+	if enabled then
+		self.probeOffButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.probeOnButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.ACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+	else
+		self.probeOnButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.INACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+		self.probeOffButton:setStyle(
+			ButtonStyle(
+				GraphicsOptions.ACTIVE_ITEM_STYLE,
+				self.application:getUIView():getResources()))
+	end
+end
+
 function GraphicsOptions:confirm(save)
 	if save then
 		_CONF.width = self.conf.width
@@ -676,6 +768,7 @@ function GraphicsOptions:confirm(save)
 		_CONF.vsync = self.conf.vsync
 		_CONF.debug = self.conf.debug
 		_CONF.analytics = self.conf.analytics
+		_CONF.probe = self.conf.probe
 	end
 
 	self.onClose(save, self.conf)

@@ -27,6 +27,10 @@ Probe.PROP_FILTERS = {
 		return prop:getState().open
 	end,
 
+	['close'] = function()
+		return true
+	end,
+
 	['light_prop'] = function(prop)
 		return prop:getState().lit
 	end,
@@ -381,7 +385,7 @@ function Probe:props()
 					type = "prop",
 					verb = actions[i].verb,
 					object = prop:getName(),
-					suppress = i > 1 or isHidden,
+					suppress = isHidden,
 					description = prop:getDescription(),
 					callback = function()
 						self.game:getPlayer():poke(actions[i].id, prop, 'world')
