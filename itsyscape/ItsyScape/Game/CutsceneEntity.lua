@@ -40,8 +40,10 @@ function CutsceneEntity:move(map, anchor, minDuration)
 				coroutine.yield()
 			end
 
-			local stage = self.game:getStage()
-			stage:movePeep(self.peep, map, anchor)
+			if map and anchor then
+				local stage = self.game:getStage()
+				stage:movePeep(self.peep, map, anchor)
+			end
 		end
 	else
 		Log.warn("Cannot move peep '%s'; not a player!", self.peep:getName())

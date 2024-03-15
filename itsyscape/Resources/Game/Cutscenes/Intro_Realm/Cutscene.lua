@@ -103,8 +103,8 @@ return Sequence {
 		}
 	},
 
-	RumbridgeCastle:poke("playIntroCutscene", Player:getPeep()),
-	Player:wait(),
+	Player:move(),
+	Map:pushPoke("initCutscene", "Rumbridge_Castle_Floor1", "playIntroCutscene"),
 
 	ViziersRockTownCenter:hide()
 }

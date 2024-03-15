@@ -26,6 +26,14 @@ function CutsceneTransitionController:getIsClosing()
 	return self.isClosing
 end
 
+function CutsceneTransitionController:move()
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"onPlayerMove",
+		nil,
+		{})
+end
+
 function CutsceneTransitionController:poke(actionID, actionIndex, e)
 	if actionID == "close" then
 		if self.isClosing then
