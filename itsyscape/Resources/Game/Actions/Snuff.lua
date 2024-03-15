@@ -54,6 +54,8 @@ function Snuff:perform(state, peep, prop)
 
 			local queue = peep:getCommandQueue()
 			return queue:interrupt(command)
+		else
+			return self:failWithMessage(peep, "ActionFail_Walk")
 		end
 	end
 

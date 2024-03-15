@@ -55,3 +55,35 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.KeyItem "Message_QuestRequirementsNotMet"
 }
+
+ItsyScape.Resource.KeyItem "ActionFail_Busy" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Action failed",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "ActionFail_Busy"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "You're currently busy doing something else and can't perform this action.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "ActionFail_Busy"
+}
+
+ItsyScape.Resource.KeyItem "ActionFail_Walk" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Action failed",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "ActionFail_Walk"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "You can't reach that.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.KeyItem "ActionFail_Walk"
+}

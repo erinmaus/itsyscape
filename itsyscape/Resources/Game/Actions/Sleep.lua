@@ -56,6 +56,8 @@ function Sleep:perform(state, player, target)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)
+		else
+			return self:failWithMessage(player, "ActionFail_Walk")
 		end
 	end
 

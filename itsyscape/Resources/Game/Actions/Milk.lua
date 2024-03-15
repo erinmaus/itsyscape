@@ -32,6 +32,10 @@ function Milk:perform(state, player, target)
 
 	local i, j, k = Utility.Peep.getTileAnchor(target)
 	local walk = Utility.Peep.getWalk(player, i, j, k, 2.5)
+	if not walk then
+		return self:failWithMessage(player, "ActionFail_Walk")
+	end
+
 	local face = CallbackCommand(Utility.Peep.face, player, target)
 	local transfer = CallbackCommand(Action.transfer, self, state, player)
 	local wait = WaitCommand(0.5)
