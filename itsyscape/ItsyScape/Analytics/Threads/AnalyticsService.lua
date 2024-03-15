@@ -11,109 +11,28 @@ _LOG_SUFFIX = "analytics"
 require "bootstrap"
 
 local socket = require "socket"
-local API_KEY = "1a23b24552f2cd035666642f5e29946"
+local POSTHOG_API_KEY = "phc_LdsYQWylO249JvLVvSQwgjn5Gs1n5VyP6UbEnIn83U0"
 
 local https = require "https"
 local json = require "json"
 
 local inputChannel = love.thread.getChannel("ItsyScape.Analytics::input")
 
-local BATCH_LIMIT        = 10
-local BATCH_TIME_SECONDS = 1
-local BATCH_TIME_OFFSET  = love.math.random() * BATCH_TIME_SECONDS
-
-local COOL_OFF_TIME_SECONDS = 30
-
-local batch = {}
 local eventID = 1
-local batchTime = love.timer.getTime()
-local targetTime = batchTime + BATCH_TIME_OFFSET + BATCH_TIME_SECONDS
 
 local sessionID = math.floor(socket.gettime() * 1000)
 local deviceID = json.null
 local deviceBrand, deviceModel
 
-local function getBatch()
-	if #batch <= BATCH_LIMIT then
-		return batch
-	end
+local function getTimeStamp()
+	local utcDate = os.date("!*t")
+	local localDate = os.date("%c")
+	utcDate.isdst = localDate.isdst
 
-	local result = {}
-	for i = 1, BATCH_LIMIT do
-		table.insert(result, batch[i])
-	end
+	local seconds = os.time(utcDate)
+	local ms = math.floor((socket.gettime() % 1) * 1000)
 
-	return result
-end
-
-local function updateBatch(events)
-	for i = 1, #events do
-		table.remove(batch, 1)
-	end
-end
-
-local function tryFlushBatch(flush)
-	local currentTime = love.timer.getTime()
-	local oldTime = batchTime
-
-	local success = true
-	if (#batch >= BATCH_LIMIT and currentTime >= targetTime) or flush then
-		batchTime = currentTime
-		targetTime = batchTime + BATCH_TIME_OFFSET + BATCH_TIME_SECONDS
-
-		local events = flush and batch or getBatch()
-		local s, data = pcall(json.encode, {
-			api_key = API_KEY,
-			events = events
-		})
-
-		if not s then
-			Log.warn("Couldn't encode events: %s (events = '%s')", data, Log.stringify(events))
-			updateBatch(events)
-
-			return false, false
-		end
-
-		local code, result = https.request("https://api2.amplitude.com/2/httpapi", {
-			method = "POST",
-			data = data,
-			headers = {
-				["Content-Type"] = "application/json",
-				["Accept"] = "*/*"
-			}
-		})
-
-		if code == 200 then
-			Log.engine(
-				"Submitted %d event(s) after %.2f seconds.",
-				#batch, currentTime - oldTime)
-			updateBatch(events)
-		elseif code then
-			if code == 400 then
-				Log.engine(
-					"Could not submit %d event(s) after %.2f seconds due to client error: %s",
-					#batch, currentTime - oldTime,
-					(json.decode(result or "{}") or {}).error or "<unknown error>")
-				success = false
-			elseif code == 413 then
-				Log.engine("Payload too large! Sent %d byte(s) in total.", #data)
-				updateBatch(events)
-				success = false
-			elseif code == 429 then
-				Log.engine("Too many requests! Cooling down...")
-				targetTime = targetTime + COOL_OFF_TIME_SECONDS
-				success = false
-			elseif code >= 500 then
-				Log.engine("Amplitude error! Not flushing events.")
-			end
-		else
-			Log.engine("Error sending events to Amplitude: %s.", result)
-		end
-
-		return true, success
-	end
-
-	return false, success
+	return string.format("%s.%dZ", os.date("%Y-%m-%dT%T", seconds), ms)
 end
 
 local function makeAnalyticEvent(data)
@@ -121,30 +40,65 @@ local function makeAnalyticEvent(data)
 		return nil
 	end
 
-	local result = {
-		device_id = deviceID,
-		session_id = sessionID,
-		event_type = data.event,
-		os_name = love.system.getOS(),
-		event_id = eventID,
-		app_version = _ITSYREALM_VERSION,
-		event_properties = data.properties,
-		user_properties = {
+	local properties = data.properties
+	do
+		properties["$set"] = {
 			["GPU Brand"] = deviceBrand,
-			["Processor and GPU"] = deviceModel
+			["Processor and GPU"] = deviceModel,
+			["OS Name"] = love.system.getOS(),
+			["Latest App Version"] = _ITSYREALM_VERSION
 		}
+
+		properties["$set_once"] = {
+			["Initial App Version"] = _ITSYREALM_VERSION
+		}
+
+		properties["Event ID"] = eventID
+		properties["Session ID"] = sessionID
+	end
+
+	local event = {
+		api_key = POSTHOG_API_KEY,
+		event = data.event,
+		distinct_id = deviceID,
+		timestamp = getTimeStamp(),
+		properties = properties
 	}
 
 	eventID = eventID + 1
 
-	return result
+	return event
+end
+
+local function sendAnalyticEvent(event)
+	local s, data = pcall(json.encode, event)
+
+	if not s then
+		Log.warn("Couldn't encode event: %s (event = '%s')", data, Log.stringify(event))
+		return false, false
+	end
+
+	local code, result = https.request("https://app.posthog.com/capture/", {
+		method = "POST",
+		data = data,
+		headers = {
+			["Content-Type"] = "application/json",
+			["Accept"] = "*/*"
+		}
+	})
+
+	if code == 200 then
+		Log.engine("Submitted event %s.", event.event)
+		return true
+	else
+		Log.warn("Could not submit analytic (status code = %d): %s", status, result)
+		return false
+	end
 end
 
 local function pushAnalyticEvent(data)
 	local event = makeAnalyticEvent(data)
-	if event then
-		table.insert(batch, event)
-	end
+	sendAnalyticEvent(event)
 end
 
 Log.info("Starting analytics service...")
@@ -165,11 +119,6 @@ do
 				isEnabled = false
 				isRunning = false
 			end
-
-			if type(config.pending) == 'table' then
-				batch = config.pending
-				eventID = #batch + 1
-			end
 		else
 			Log.warn("Couldn't process 'Player/Common.dat': %s", Log.stringify(config))
 		end
@@ -182,46 +131,16 @@ while isRunning do
 	if type(event) == 'table' then
 		if event.type == 'quit' then
 			isRunning = false
-			isEnabled = not event.disable
-
-			if isEnabled then
-				tryFlushBatch(true)
-			end
 		elseif event.type == 'submit' then
-			pushAnalyticEvent(event.data)
-			tryFlushBatch(event.flush or false)
+			if isEnabled then
+				pushAnalyticEvent(event.data)
+			end
 		elseif event.type == 'session' then
 			sessionID = math.floor(socket.gettime() * 1000)
 		elseif event.type == 'id' then
 			deviceID = event.id or json.null
 			deviceBrand = event.brand or nil
 			deviceModel = event.model or nil
-		end
-	end
-end
-
-if isEnabled and #batch > 0 then
-	local file = love.filesystem.read("Player/Common.dat") or "{}"
-	local r, e = loadstring("return " .. file)
-	if not r then
-		Log.warn("Failed to parse 'Player/Common.dat': %s", e)
-	else
-		local success, config = pcall(setfenv(r, {}))
-		if config then
-			for i = 1, #batch do
-				batch[i].event_id = i
-			end
-
-			config.pending = batch
-
-			local serpent = require "serpent"
-			local serializedConfig = serpent.block(config, { comment = false })
-
-			love.filesystem.write("Player/Common.dat", serializedConfig)
-
-			Log.info("Saved %d pending event(s).", #batch)
-		else
-			Log.warn("Couldn't process 'Player/Common.dat': %s", Log.stringify(config))
 		end
 	end
 end

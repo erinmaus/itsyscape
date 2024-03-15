@@ -41,7 +41,7 @@ function Client:_startThread()
 	self.serviceThread:start()
 end
 
-function Client:getConfig()
+function Client.getConfig()
 	local config = {}
 	do
 		local file = love.filesystem.read("Player/Common.dat") or "{}"
@@ -59,10 +59,14 @@ function Client:getConfig()
 		end
 	end
 
+	if config.enabled ~= false then
+		config.enabled = true
+	end
+
 	return config
 end
 
-function Client:saveConfig(config)
+function Client.saveConfig(config)
 	local serializedConfig = serpent.block(config, { comment = false })
 	local s, e = love.filesystem.write("Player/Common.dat", serializedConfig)
 	if not s then
@@ -71,7 +75,7 @@ function Client:saveConfig(config)
 end
 
 function Client:_loadID(device)
-	local config = self:getConfig()
+	local config = Client.getConfig()
 
 	if config.enabled == false then
 		Log.info("Analytics disabled.")
@@ -86,7 +90,7 @@ function Client:_loadID(device)
 		end
 
 		config.id = table.concat(id)
-		self:saveConfig(config)
+		Client.saveConfig(config)
 	end
 
 	Log.info("Got analytics ID '%s'.", config.id)
@@ -700,15 +704,15 @@ function Client:submit(event, properties, flush)
 end
 
 function Client:getIsEnabled()
-	local enable = self:getConfig().enable
+	local enable = Client.getConfig().enable
 	return enable == nil or enable
 end
 
 function Client:enable(device)
-	local config = self:getConfig()
+	local config = Client.getConfig()
 	config.enable = true
 
-	self:saveConfig(config)
+	Client.saveConfig(config)
 	self:_loadID(device)
 
 	if not self.serviceThread:isRunning() then
@@ -717,11 +721,11 @@ function Client:enable(device)
 end
 
 function Client:disable()
-	local config = self:getConfig()
+	local config = Client.getConfig()
 	config.pending = nil
 	config.enable = false
 
-	self:saveConfig(config)
+	Client.saveConfig(config)
 
 	if self.serviceThread:isRunning() then
 		self:_quit(true)
