@@ -721,6 +721,46 @@ function LocalStage:unloadMap(layer)
 	end
 end
 
+function LocalStage:unloadLayer(layer)
+	do
+		local p = {}
+
+		for prop in self:iterateProps() do
+			local propLayer = Utility.Peep.getLayer(prop:getPeep())
+			if propLayer == layer then
+				table.insert(p, prop)
+			end
+		end
+
+		for _, prop in ipairs(p) do
+			self:removeProp(prop)
+		end
+	end
+
+	do
+		local p = {}
+
+		for actor in self:iterateActors() do
+			local actorLayer = Utility.Peep.getLayer(actor:getPeep())
+			if actorLayer == layer and not actor:getPeep():getBehavior(PlayerBehavior) then
+				table.insert(p, actor)
+			end
+		end
+
+		do
+			self:collectLayerItems(layer)
+			self.grounds = {}
+		end
+
+		for _, actor in ipairs(p) do
+			self:killActor(actor)
+		end
+	end
+
+	self:unloadMap(layer)
+	self:deleteLayer(layer)
+end
+
 function LocalStage:flood(key, water, layer)
 	self.onWaterFlood(self, key, water, layer)
 end
@@ -761,7 +801,7 @@ function LocalStage:unloadAll(instance)
 		end
 
 		do
-			self:collectItems(instance)
+			self:collectInstanceItems(instance)
 			self.grounds = {}
 		end
 
@@ -1386,31 +1426,23 @@ function LocalStage:collectAllItems()
 	Log.engine("Collecting items across the multiverse...")
 
 	for i = 1, #self.instances do
-		self:collectItems(self.instances[i])
+		self:collectInstanceItems(self.instances[i])
 	end
 
 	Log.engine("Collected items from %d instances.", #self.instances)
 end
 
-function LocalStage:collectItems(instance)
-	Log.engine("Collecting items in instance %s (%d).", instance:getFilename(), instance:getID())
+function LocalStage:collectLayerItems(layer)
+	local ground = self.grounds[layer]
+	if not ground then
+		Log.warn("No ground for layer %d.", layer)
+		return
+	end
 
 	local transactions = {}
 
 	local broker = self.game:getDirector():getItemBroker()
 	local manager = self.game:getDirector():getItemManager()
-	local layer = instance:getBaseLayer()
-
-	if not layer then
-		Log.warn("No layer for instance %s (%d); cannot collect items.", instance:getFilename(), instance:getID())
-		return
-	end
-
-	local ground = self.grounds[layer]
-	if not ground then
-		Log.warn("No ground for layer %d in instance %s (%d).", layer, instance:getFilename(), instance:getID())
-		return
-	end
 
 	inventory = ground:getBehavior(InventoryBehavior).inventory
 	if broker:hasProvider(inventory) then
@@ -1453,6 +1485,14 @@ function LocalStage:collectItems(instance)
 				"Couldn't commit pickicide on layer %d in instance %s (%d): %s",
 				layer, instance:getFilename(), instance:getID(), r)
 		end
+	end
+end
+
+function LocalStage:collectInstanceItems(instance)
+	Log.engine("Collecting items in instance %s (%d).", instance:getFilename(), instance:getID())
+
+	for layer in instance:iterateLayers() do
+		self:collectLayerItems(layer)
 	end
 end
 
