@@ -237,9 +237,8 @@ do
 		Resource = M["UndeadSquid"]
 	}
 
-	ItsyScape.Meta.PeepStat {
-		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(15),
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 15,
 		Resource = M["UndeadSquid"]
 	}
 

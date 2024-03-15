@@ -6,6 +6,13 @@ local INVENTORY_FLAGS = {
 
 PLAYER_NAME = _TARGET:getName()
 
+-- There was a report the quest didn't advance,
+-- so ensure the player has all pre-reqs up to this point.
+-- TODO: Figure out what happened.
+_TARGET:getState():give("KeyItem", "PreTutorial_Start")
+_TARGET:getState():give("KeyItem", "PreTutorial_CthulhuRises")
+
+
 if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ArriveAtTheWhalingTemple", _TARGET) then
 	_TARGET:addBehavior(DisabledBehavior)
 
