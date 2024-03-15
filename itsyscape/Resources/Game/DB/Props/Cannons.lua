@@ -195,7 +195,7 @@ ItsyScape.Resource.Prop "IronCannonballPile" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
 }
 
