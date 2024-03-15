@@ -406,11 +406,50 @@ function Action:getFailureReason(state, peep)
 	return { requirements = requirements, inputs = inputs, action = self }
 end
 
+function Action:failWithMessage(peep, messageKeyItemName)
+	if peep:hasBehavior(DisabledBehavior) and messageKeyItemName == "ActionFail_Walk" then
+		messageKeyItemName = "ActionFail_Busy"
+	end
+
+	local resource = self.gameDB:getResource(messageKeyItemName, "KeyItem")
+	if resource then
+		peep:poke("actionFailed", {
+			requirements = {
+				{
+					type = "KeyItem",
+					resource = "Message",
+					name = Utility.getName(resource, self.gameDB) or ("*" .. resource.name),
+					description = Utility.getDescription(resource, self.gameDB),
+					count = 1
+				}
+			},
+			inputs = {},
+			action = self
+		})
+
+		Utility.Peep.notify(peep, Utility.getDescription(resource, self.gameDB), true)
+	end
+
+	return false, true
+end
+
 -- Called when the action fails
 function Action:fail(state, peep, ...)
-	local reason = self:getFailureReason(state, peep, ...)
+	local queue = peep:getCommandQueue()
+	if queue then
+		local command = queue:getCurrent()
+		if command then
+			if not command:getIsInterruptible() then
+				self:failWithMessage(peep, "ActionFail_Busy")
+				return
+			end
+		end
+	end
 
+	local reason = self:getFailureReason(state, peep, ...)
 	peep:poke('actionFailed', reason)
+
+	return false, true
 end
 
 return Action
