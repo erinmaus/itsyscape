@@ -33,6 +33,8 @@ function Teleport:perform(state, player, target)
 		local command = CompositeCommand(true, walk, face, interface, perform)
 
 		return player:getCommandQueue():interrupt(command)
+	else
+		return self:failWithMessage(player, "ActionFail_Walk")
 	end
 
 	return false

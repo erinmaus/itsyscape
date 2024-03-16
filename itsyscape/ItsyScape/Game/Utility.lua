@@ -508,7 +508,9 @@ function Utility.performAction(game, resource, id, scope, ...)
 				local ActionType = r
 				if ActionType.SCOPES and (ActionType.SCOPES[scope] or not scope) then
 					local a = ActionType(game, action)
-					if not a:perform(...) then
+
+					local didPerformAction, didFail = a:perform(...)
+					if not didPerformAction and not didFail then
 						a:fail(...)
 						foundAction = false
 					else

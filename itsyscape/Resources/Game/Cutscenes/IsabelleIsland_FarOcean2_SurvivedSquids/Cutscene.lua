@@ -18,5 +18,5 @@ return Sequence {
 	Camera:zoom(20, 2),
 
 	Player:wait(2),
-	Player:move("Sailing_WhalingTemple", "Anchor_Spawn")
+	Player:move("@Sailing_WhalingTemple", "Anchor_Spawn")
 }

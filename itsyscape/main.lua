@@ -42,6 +42,13 @@ itsyrealm = {
 _ARGS = {}
 
 _ANALYTICS_ENABLED = false
+do
+	local AnalyticsClient = require "ItsyScape.Analytics.AnalyticsClient"
+	local config = AnalyticsClient.getConfig()
+	if config and config.enabled then
+		_ANALYTICS_ENABLED = true
+	end
+end
 
 function love.load(args)
 	local main

@@ -40,8 +40,9 @@ return Sequence {
 		YendorianMast:wait(3)
 	},
 
-	Intro:poke("playCutscene", Player:getPeep()),
-	Player:wait(),
+	Player:move(),
+	Intro:pushPoke("initCutscene", "Intro_Realm", "playIntroCutscene"),
+	Intro:wait(1),
 
 	Sistine:hide(),
 	DowntownFloor1:hide(),

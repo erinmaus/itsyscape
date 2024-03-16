@@ -17,11 +17,12 @@ local DefaultCameraController = Class(CameraController)
 DefaultCameraController.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
 DefaultCameraController.CAMERA_VERTICAL_ROTATION = -math.pi / 2
 DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
+DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 128
 DefaultCameraController.SCROLL_MULTIPLIER = 4
 DefaultCameraController.MIN_DISTANCE = 1
 DefaultCameraController.MAX_DISTANCE = 60
 DefaultCameraController.DEFAULT_DISTANCE = 30
+DefaultCameraController.SCROLL_DISTANCE_Y_ENGAGE = 128
 
 DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD = 1.0
 
@@ -35,6 +36,7 @@ DefaultCameraController.SHOW_MODE_MOVE   = "move"
 
 DefaultCameraController.CLICK_STILL_MAX        = 24
 DefaultCameraController.CLICK_DRAG_DENOMINATOR = 4
+DefaultCameraController.SCROLL_SPEED_MULTIPLIER = 5
 
 DefaultCameraController.SPEED = math.pi / 2
 
@@ -66,6 +68,8 @@ function DefaultCameraController:new(...)
 	self.targetOpponentDistance = 0
 
 	self.cursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
+
+	self:onUnlockRotation()
 end
 
 function DefaultCameraController:getPlayerMapRotation()
@@ -222,6 +226,10 @@ function DefaultCameraController:mouseScroll(uiActive, x, y)
 	end
 
 	if not uiActive then
+		if love.system.getOS() ~= "OS X" then
+			y = y * DefaultCameraController.SCROLL_SPEED_MULTIPLIER
+		end
+
 		self:_scroll(y)
 	end
 end
@@ -262,16 +270,23 @@ function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
 		return
 	end
 
+	self.distanceX = (self.distanceX or 0) + (dx or 0)
+	self.distanceY = (self.distanceY or 0) + (dy or 0)
+
 	if self.isCameraDragging then
 		self:_rotate(dx, dy)
 
-		if self.isActionButtonDown and math.abs(self.cameraHorizontalRotationOffset) == DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET then
+		local isRotationLocked = math.abs(self.cameraHorizontalRotationOffset) == DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET
+		local isEngaged
+		do
+			local _, _, scale = love.graphics.getScaledMode()
+			isEngaged = math.abs(self.distanceY) >= (scale * DefaultCameraController.SCROLL_DISTANCE_Y_ENGAGE)
+		end
+
+		if self.isActionButtonDown and isRotationLocked and isEngaged then
 			self:_scroll(-dy / DefaultCameraController.CLICK_DRAG_DENOMINATOR)
 		end
 	elseif self.isActionButtonDown then
-		self.distanceX = (self.distanceX or 0) + dx
-		self.distanceY = (self.distanceY or 0) + dy
-
 		local difference = math.sqrt(self.distanceX ^ 2 + self.distanceY ^ 2)
 		if difference > DefaultCameraController.CLICK_STILL_MAX then
 			self.isCameraDragging = true

@@ -35,6 +35,8 @@ function Talk:perform(state, player, target)
 		local command = CompositeCommand(true, walk, face, interface, transfer, perform, analytic)
 
 		return player:getCommandQueue():interrupt(command)
+	else
+		return self:failWithMessage(player, "ActionFail_Walk")
 	end
 
 	return false

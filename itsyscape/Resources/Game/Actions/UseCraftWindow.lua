@@ -33,6 +33,8 @@ function UseCraftWindow:perform(state, player, prop, action, count)
 
 		local queue = player:getCommandQueue()
 		return queue:interrupt(command)
+	else
+		return self:failWithMessage(player, "ActionFail_Walk")
 	end
 
 	return false

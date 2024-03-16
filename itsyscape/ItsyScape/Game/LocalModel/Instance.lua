@@ -780,6 +780,10 @@ function Instance:hasLayer(layer, player)
 		return self.layersPendingRemovalByID[layer] and self.layersPendingRemovalByID[layer].playerID == player:getID()
 	end
 
+	if self.layersPendingRemovalByID[layer] and self.layersPendingRemovalByID[layer].playerID == true then
+		return true
+	end
+
 	if player and player ~= true then
 		return self.layersByID[layer] == true or self.layersByID[layer] == player:getID()
 	else
