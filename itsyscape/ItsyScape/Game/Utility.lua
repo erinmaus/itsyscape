@@ -3912,8 +3912,6 @@ function Utility.Peep.Attackable:onPostReady(director)
 		local _, status = self:addBehavior(CombatStatusBehavior)
 		status.currentHitpoints = health
 		status.maximumHitpoints = health
-
-		print(">>> status", Log.dump(status))
 	end
 end
 
