@@ -281,7 +281,6 @@ function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
 		do
 			local _, _, scale = love.graphics.getScaledMode()
 			isEngaged = math.abs(self.distanceY) >= (scale * DefaultCameraController.SCROLL_DISTANCE_Y_ENGAGE)
-			print(">>> dy", self.distanceY, (scale * DefaultCameraController.SCROLL_DISTANCE_Y_ENGAGE))
 		end
 
 		if self.isActionButtonDown and isRotationLocked and isEngaged then
