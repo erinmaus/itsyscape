@@ -400,17 +400,17 @@ function Application:probe(x, y, performDefault, callback, tests)
 	probe:all(function()
 		if performDefault then
 			local numPrimaryActions = 0
+			local hasWalk = false
 
 			for action in probe:iterate() do
-				print(">>> action", action.id, action.suppress)
 				if action.id ~= "Examine" and not action.suppress then
 					if action.id ~= "Walk" then
 						numPrimaryActions = numPrimaryActions + 1
+					else
+						hasWalk = true
 					end
 				end
 			end
-
-			print(">>> actions", numPrimaryActions)
 
 			if numPrimaryActions <= 1 or _CONF.probe == false then
 				for action in probe:iterate() do
@@ -432,6 +432,10 @@ function Application:probe(x, y, performDefault, callback, tests)
 						return
 					end
 				end
+			end
+
+			if numPrimaryActions <= 1 and not hasWalk then
+				return
 			end
 		end
 
