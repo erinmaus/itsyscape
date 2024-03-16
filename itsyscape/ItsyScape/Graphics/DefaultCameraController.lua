@@ -270,8 +270,8 @@ function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
 		return
 	end
 
-	self.distanceX = (self.distanceX or 0) + dx
-	self.distanceY = (self.distanceY or 0) + dy
+	self.distanceX = (self.distanceX or 0) + (dx or 0)
+	self.distanceY = (self.distanceY or 0) + (dy or 0)
 
 	if self.isCameraDragging then
 		self:_rotate(dx, dy)
