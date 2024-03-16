@@ -129,7 +129,7 @@ function Ocean:onPlacePlayer(playerPeep, anchor, ship)
 
 		-- This usually shouldn't happen...
 		playerPeep:getState():give("KeyItem", "PreTutorial_DefendShip")
-		game:getStage():movePeep(playerPeep, "Sailing_WhalingTemple", "Anchor_Spawn")
+		game:getStage():movePeep(playerPeep, "@Sailing_WhalingTemple", "Anchor_Spawn")
 	end
 end
 
