@@ -102,6 +102,13 @@ do
 	math.lerp = function(from, to, delta)
 		return to * delta + from * (1 - delta)
 	end
+
+	local utf8 = require "utf8"
+	function utf8.sub(s, i, j)
+		local stringI = utf8.offset(s, i or 1) or #s + 1
+		local stringJ = (j and utf8.offset(s, j) and utf8.offset(s, j) - 1) or #s
+		return s:sub(stringI, stringJ)
+	end
 end
 
 Log = require "ItsyScape.Common.Log"

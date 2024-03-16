@@ -183,7 +183,7 @@ function Make:gather(state, player, prop, toolType, skill)
 				local perform = CallbackCommand(Action.perform, self, state, player)
 
 				if not walk then
-					return false
+					return self:failWithMessage(player, "ActionFail_Walk")
 				end
 
 				local callback = Callback.bind(self.finishGather, self, state, player, prop)

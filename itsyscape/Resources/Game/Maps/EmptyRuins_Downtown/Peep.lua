@@ -95,7 +95,7 @@ function Downtown:onPlayerEnter(player)
 end
 
 function Downtown:onPlayerLeave(player)
-	self.cutsceneState[player:getActor():getPeep()] = nil
+	self.cutsceneState[player] = nil
 end
 
 function Downtown:prepareDebugCutscene(player)
@@ -117,7 +117,7 @@ function Downtown:prepareDebugCutscene(player)
 end
 
 function Downtown:onPrepareCutscene(playerPeep)
-	if not self.cutsceneState[playerPeep] then
+	if not self.cutsceneState[Utility.Peep.getPlayerModel(playerPeep)] then
 		self:prepareDowntownCutscene(playerPeep)
 		self:prepareSistineCutscene(playerPeep)
 	end
@@ -161,7 +161,7 @@ function Downtown:prepareDowntownCutscene(player)
 		table.insert(state, skirmish)
 	end
 
-	self.cutsceneState[player] = state
+	self.cutsceneState[Utility.Peep.getPlayerModel(player)] = state
 end
 
 function Downtown:prepareSistineCutscene()

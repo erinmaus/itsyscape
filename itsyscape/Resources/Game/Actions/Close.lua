@@ -44,6 +44,8 @@ function Close:perform(state, player, prop, channel)
 
 			local queue = player:getCommandQueue(channel)
 			return queue:push(command)
+		else
+			return self:failWithMessage(player, "ActionFail_Walk")
 		end
 	end
 
