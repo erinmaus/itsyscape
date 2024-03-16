@@ -15,7 +15,7 @@ local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 local MaggotSmash = Class(MeleeWeapon)
 
 function MaggotSmash:getAttackRange(peep)
-	return 4
+	return 2
 end
 
 function MaggotSmash:getBonusForStance(peep)
