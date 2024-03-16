@@ -65,7 +65,7 @@ function DeathCortex:onDie(peep)
 
 		if peepMapObject then
 			despawns = peepMapObject:get("DoesNotDespawn") == 0
-			respawns = (peepMapObject:get("DoesNotRespawn") == 0 and not instance:getIsGlobal()) or peepMapObject:get("DoesRespawn") ~= 0
+			respawns = not (peepMapObject:get("DoesNotRespawn") == 0 and instance:getIsLocal()) or (instance:getIsGlobal() or peepMapObject:get("DoesRespawn") ~= 0)
 		end
 	else
 		respawns = false
