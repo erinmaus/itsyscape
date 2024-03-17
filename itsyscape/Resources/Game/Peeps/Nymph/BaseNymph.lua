@@ -77,7 +77,7 @@ function BaseNymph:ready(director, game)
 	runes:add("EarthRune")
 
 	local stance = self:getBehavior(StanceBehavior)
-	stance.stance = Weapon.STANCE_AGGRESSIVE
+	stance.stance = Weapon.STANCE_CONTROLLED
 	stance.useSpell = true
 
 	local spell = self:getBehavior(ActiveSpellBehavior)
