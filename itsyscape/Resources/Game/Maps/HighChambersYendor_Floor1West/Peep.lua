@@ -63,6 +63,14 @@ end
 function HighChambersYendor:onPlayerEnter(player)
 	player:getActor():getPeep():getState():give("KeyItem", "CalmBeforeTheStorm_OpenedHighChambersYendor", 1)
 	self:openPrisonDoor()
+
+	if self.minibossEngaged then
+		local _, _, interface = Utility.UI.openInterface(
+			Utility.Peep.getInstance(self),
+			"BossHUD",
+			false,
+			unpack(self:getMiniboss()))
+	end
 end
 
 function HighChambersYendor:initTorchPuzzle()
