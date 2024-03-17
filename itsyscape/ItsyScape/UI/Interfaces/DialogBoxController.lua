@@ -24,6 +24,8 @@ local DialogBoxController = Class(Controller)
 function DialogBoxController:new(peep, director, action, target)
 	Controller.new(self, peep, director)
 
+	Analytics:talkedToNPC(peep, target, action)
+
 	self.action = action
 	self.target = target
 	self.hidRibbonTab = false

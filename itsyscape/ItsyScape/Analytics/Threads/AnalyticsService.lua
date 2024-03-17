@@ -46,7 +46,8 @@ local function makeAnalyticEvent(data)
 			["GPU Brand"] = deviceBrand,
 			["Processor and GPU"] = deviceModel,
 			["OS Name"] = love.system.getOS(),
-			["Latest App Version"] = _ITSYREALM_VERSION
+			["Latest App Version"] = _ITSYREALM_VERSION,
+			["Latest Player Name"] = properties["Player Name"]
 		}
 
 		properties["$set_once"] = {
