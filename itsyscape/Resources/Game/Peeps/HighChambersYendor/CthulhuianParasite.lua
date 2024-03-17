@@ -38,7 +38,7 @@ function CthulhuianParasite:ready(director, game)
 	self:getState():addProvider("Item", runes)
 
 	local stance = self:getBehavior(StanceBehavior)
-	stance.stance = Weapon.STANCE_AGGRESSIVE
+	stance.stance = Weapon.STANCE_NONE
 	stance.useSpell = true
 
 	local spell = self:getBehavior(ActiveSpellBehavior)
