@@ -431,7 +431,7 @@ function Client:talkedToNPC(peep, target, action)
 
 	self:submit(Events.TALKED_TO_NPC, {
 		["Player Name"] = peep:getName(),
-		["Target Name"] = target:getName(),
+		["Target Name"] = target and target:getName(),
 		["Dialogue Script"] = talkDialog and talkDialog:get("Script")
 	})
 end
