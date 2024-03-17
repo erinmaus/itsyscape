@@ -67,6 +67,8 @@ function Client.getConfig()
 end
 
 function Client.saveConfig(config)
+	love.filesystem.createDirectory("Player")
+
 	local serializedConfig = serpent.block(config, { comment = false })
 	local s, e = love.filesystem.write("Player/Common.dat", serializedConfig)
 	if not s then
