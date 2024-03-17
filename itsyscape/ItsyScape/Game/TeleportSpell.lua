@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Spell = require "ItsyScape.Game.Spell"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 
@@ -25,6 +26,11 @@ function TeleportSpell:cast(peep)
 	local record = gameDB:getRecord("TravelDestination", { Action = self:getAction() })
 	if not record then
 		Log.info("Spell '%s' has no destination.", self:getResource().name)
+		return
+	end
+
+	if peep:hasBehavior(DisabledBehavior) then
+		Log.info("Peep '%s' is not able to teleport.", peep:getName())
 		return
 	end
 
