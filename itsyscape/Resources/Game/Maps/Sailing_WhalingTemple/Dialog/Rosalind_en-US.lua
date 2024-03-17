@@ -1,3 +1,5 @@
+local PreTutorialCommon = require "Resources.Game.Peeps.PreTutorial.V2Common"
+
 speaker "Rosalind"
 
 local INVENTORY_FLAGS = {
@@ -124,6 +126,23 @@ elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CookedFish", _TARGET
 		"If you light a fire, you can cook the fish on the fire.",
 		"On the mainland, you can also use %item{ranges}, which are far superior."
 	}
+
+	if _TARGET:getState():has("Item", "ShadowLogs", 1, INVENTORY_FLAGS) then
+		local YES = option "Yep! Show me how to light a fire!"
+		local NO  = option "No... I'll figure it out myself."
+
+		message "Do you want me to show you how to light a fire?"
+
+		local result = select { YES, NO }
+		if result == YES then
+			PreTutorialCommon.startRibbonTutorial(
+				_TARGET,
+				PreTutorialCommon.LIGHT_FIRE,
+				"PlayerInventory")
+		end
+	else
+		message "Chop some logs from a tree and then I can show you how to light a fire."
+	end
 elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_ExploreDungeon", _TARGET) then
 	if not _TARGET:getState():has("KeyItem", "PreTutorial_SleptAtBed") then
 		message "You probably should rest before we move forward."

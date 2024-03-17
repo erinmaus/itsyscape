@@ -31,7 +31,6 @@ function Talk:perform(state, player, target)
 		local interface = OpenInterfaceCommand("DialogBox", true, self, target)
 		local transfer = CallbackCommand(Action.transfer, self, state, player)
 		local perform = CallbackCommand(Action.perform, self, state, player)
-		local analytic = player:hasBehavior(PlayerBehavior) and CallbackCommand(Analytics.talkedToNPC, Analytics, player, target, self)
 		local command = CompositeCommand(true, walk, face, interface, transfer, perform, analytic)
 
 		return player:getCommandQueue():interrupt(command)
