@@ -25,6 +25,7 @@ function BaseYendor:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(15, 15, 40)
+	size.pan = Vector(0, 10, 0)
 
 	self:addBehavior(RotationBehavior)
 end
