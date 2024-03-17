@@ -123,9 +123,9 @@ local Tree = BTreeBuilder.Node() {
 			},
 
 			Mashina.Success {
-				Mashina.Sequence {
+				Mashina.Try {
 					Mashina.Check {
-						condition = function(_, state) return not state[AGGRESSOR] end
+						condition = function(_, state) return state[AGGRESSOR] end
 					},
 
 					Mashina.Navigation.TargetMoved {
