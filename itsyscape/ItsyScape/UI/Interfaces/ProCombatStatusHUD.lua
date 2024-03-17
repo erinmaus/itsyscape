@@ -13,7 +13,7 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
-local Color = require "ItsyScape.Graphics.Color"
+local Color = require "ItsyScape.Graπphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Button = require "ItsyScape.UI.Button"
@@ -1712,7 +1712,6 @@ function ProCombatStatusHUD:updatePowers(type, buttons, powers, pendingID, radia
 		local button = buttons[i]
 
 		if power and button then
-
 			local coolDown = button:getData('coolDown')
 			local icon = button:getData('icon')
 
@@ -1801,15 +1800,17 @@ function ProCombatStatusHUD:updatePrayers()
 	for i = 1, #prayers do
 		local prayer = prayers[i]
 		local button = self.prayerButtons[i]
-		local icon = button:getChildAt(1)
+		if button and prayer then
+			local icon = button:getChildAt(1)
 
-		if prayer.active then
-			icon:setColor(Color(1, 1, 1, 1))
-		else
-			icon:setColor(Color(0.3, 0.3, 0.3))
+			if prayer.active then
+				icon:setColor(Color(1, 1, 1, 1))
+			else
+				icon:setColor(Color(0.3, 0.3, 0.3))
+			end
+
+			button:setID("ProCombatStatusHUD-Prayer" .. prayer.id)
 		end
-
-		button:setID("ProCombatStatusHUD-Prayer" .. prayer.id)
 	end
 end
 
