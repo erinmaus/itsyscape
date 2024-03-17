@@ -230,12 +230,12 @@ do
 		ItsyScape.Action.Equip() {
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Woodcutting",
-				Count = 1
+				Count = ItsyScape.Utility.xpForLevel(0)
 			},
 
 			Requirement {
 				Resource = ItsyScape.Resource.Skill "Attack",
-				Count = 1
+				Count = ItsyScape.Utility.xpForLevel(0)
 			}
 		},
 
