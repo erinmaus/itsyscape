@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
-local AirStrike = require "ItsyScape.Resources.Game.Projectiles.AirStrike.Projectile"
+local AirStrike = require "Resources.Game.Projectiles.AirStrike.Projectile"
 
 local IsabelleStrike = Class(AirStrike)
 
