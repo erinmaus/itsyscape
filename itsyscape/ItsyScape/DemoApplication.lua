@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Utility = require "ItsyScape.Game.Utility"
@@ -1114,6 +1115,16 @@ function DemoApplication:updatePlayerMovement()
 		if right then
 			x = x + 1
 		end
+	end
+
+	local rotation = self:getCamera():getCombinedRotation()
+
+	local beforeMovement = Vector(x, 0, z):getNormal()
+	local afterMovement = (-rotation):getNormal():transformVector(Vector(-x, 0, -z):getNormal()):getNormal()
+
+	if beforeMovement:dot(afterMovement) < 0 then
+		x = -x
+		z = -z
 	end
 
 	local focusedWidget = self:getUIView():getInputProvider():getFocusedWidget()
