@@ -8,6 +8,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local CacheRef = require "ItsyScape.Game.CacheRef"
+local Probe = require "ItsyScape.Peep.Probe"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 
 local Dream = Class(Map)
@@ -33,6 +36,22 @@ function Dream:onLoad(filename, args, layer)
 		ceiling = 20,
 		heaviness = 0.5
 	})
+
+	local yendor = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("Yendor"))[1]
+	if yendor then
+		local animation = CacheRef(
+			"ItsyScape.Graphics.AnimationResource",
+			"Resources/Game/Animations/Darken/Script.lua")
+
+		local actor = yendor:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		if actor then
+			actor:playAnimation("x-darken", 0, animation)
+		end
+	end
 end
 
 return Dream

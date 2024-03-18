@@ -6,6 +6,17 @@ message {
 	"I'm your host and merchant extraordinaire... %person{Isabelle}!"
 }
 
+message {
+	"I'm glad to see you're awake!",
+	"That must've been one heck of an adventure!",
+	"Glad everyone made it out safe and sound!"
+}
+
+message {
+	"While you were sleeping, %person{Jenkins}, %person{Orlando}, and %person{Rosalind} made it back.",
+	"They told me everything that happened. It's a miracle no one perished!"
+}
+
 local INFO = option "Can you tell me about this place?"
 local HELP = option "Do you need help?"
 local QUIT = option "Smell you later!"

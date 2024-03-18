@@ -122,7 +122,7 @@ function FoggyForest:spawnBossyNymph(e)
 
 	local nymph = actor:getPeep()
 
-	nymph:listen('finalize', function()
+	nymph:listen("postReady", function()
 		Utility.UI.openInterface(player, "BossHUD", false, nymph)
 
 		local actions = Utility.getActions(

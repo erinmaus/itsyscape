@@ -2,8 +2,9 @@ speaker "Rosalind"
 
 PLAYER_NAME = _TARGET:getName()
 message {
-	"Hey-ey-ey there, %person{${PLAYER_NAME}}!",
-	"I'm %person{Rosalind}, your %hint{local Idromancer}.",
+	"Hey there, %person{${PLAYER_NAME}}!",
+	"Glad we're safe and sound, huh?",
+	"If you don't remember, I'm your %hint{local Idromancer}!",
 	"I can help you change your identity."
 }
 

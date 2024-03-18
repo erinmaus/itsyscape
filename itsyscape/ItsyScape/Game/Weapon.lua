@@ -94,7 +94,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		local stance = peep:getBehavior(StanceBehavior)
 		if stance then
 			if stance.stance == Weapon.STANCE_AGGRESSIVE then
-				self.maxHitBoost = 1 + math.floor((level or 1) * 0.1 + 0.5)
+				self.maxHitBoost = 1 + math.floor((level or 1) * 0.1)
 				level = (level or 1) + 8
 			elseif stance.stance == Weapon.STANCE_CONTROLLED then
 				local strengthSkill, accuracySkill = weapon:getSkill(purpose)
@@ -102,7 +102,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 				local attackLevel = stats and stats:hasSkill(strengthSkill) and stats:getSkill(strengthSkill):getWorkingLevel()
 
 				local minLevel = math.min(strengthLevel or 1, attackLevel or 1)
-				self.minHitBoost = math.floor(minLevel * 0.05 + 0.5)
+				self.minHitBoost = math.floor(minLevel * 0.05)
 			end
 		end
 
@@ -150,7 +150,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		local stance = target:getBehavior(StanceBehavior)
 		if stance then
 			if stance.stance == Weapon.STANCE_DEFENSIVE then
-				self.hitReduction = 1 + math.floor(defenseLevel * 0.15 + 0.5)
+				self.hitReduction = 1 + math.floor(defenseLevel * 0.15)
 				defenseLevel = defenseLevel + 8
 			end
 		end

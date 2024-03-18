@@ -12,7 +12,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "This dream takes place under the ocean.",
+	Value = "This dream takes place in the Rh'lor seas.",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -116,38 +116,38 @@ do
 	}
 end
 
-M["Nyarlathotep"] = ItsyScape.Resource.MapObject.Unique()
+M["Cthulhu"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 33,
 		PositionY = 1,
-		PositionZ = 51,
+		PositionZ = 8,
 		Direction = -1,
-		Name = "Nyarlathotep",
+		Name = "Cthulhu",
 		Map = M._MAP,
-		Resource = M["Nyarlathotep"]
+		Resource = M["Cthulhu"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene",
-		MapObject = M["Nyarlathotep"]
+		Peep = ItsyScape.Resource.Peep "Cthulhu",
+		MapObject = M["Cthulhu"]
 	}
 
 	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Meta.TalkSpeaker {
-		Resource = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene",
-		Name = "Nyarlathotep",
+		Resource = M["Cthulhu"],
+		Name = "Cthulhu",
 		Action = TalkAction
 	}
 
 	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/Dream_CalmBeforeTheStorm_Ship/Dialog/Nyarlathotep_en-US.lua",
+		Script = "Resources/Game/Maps/Dream_CalmBeforeTheStorm_Ship/Dialog/Cthulhu_en-US.lua",
 		Language = "en-US",
 		Action = TalkAction
 	}
 
-	M["Nyarlathotep"] {
+	M["Cthulhu"] {
 		TalkAction
 	}
 end
@@ -163,8 +163,8 @@ do
 	local rotation = rotation1 * rotation2
 
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 33,
-		PositionY = 8,
+		PositionX = 37,
+		PositionY = 4,
 		PositionZ = 33,
 		RotationX = rotation.x,
 		RotationY = rotation.y,
