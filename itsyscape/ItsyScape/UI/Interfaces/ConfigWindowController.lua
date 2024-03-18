@@ -18,6 +18,8 @@ local ConfigWindowController = Class(Controller)
 function ConfigWindowController:poke(actionID, actionIndex, e)
 	if actionID == "quit" then
 		self:quit(e)
+	elseif actionID == "rate" then
+		self:rate(e)
 	elseif actionID == "cancel" then
 		self:cancel(e)
 	else
@@ -37,6 +39,30 @@ end
 
 function ConfigWindowController:cancel(e)
 	self:getGame():getUI():closeInstance(self)
+end
+
+function ConfigWindowController:rate(e)
+	if e.rating == true then
+		Analytics:rateSession(self:getPeep(), "Thumbs Up")
+	elseif e.rating == false then
+		Analytics:rateSession(self:getPeep(), "Thumbs Down")
+	else
+		Analytics:rateSession(self:getPeep(), "Skip")
+	end
+
+	local playerStorage = Utility.Peep.getStorage(self:getPeep())
+	local clockSection = playerStorage:getSection("clock")
+	clockSection:set("survey", os.time())
+end
+
+function ConfigWindowController:pull()
+	local playerStorage = Utility.Peep.getStorage(self:getPeep())
+	local clockSection = playerStorage:getSection("clock")
+	local lastSurveyTime = clockSection:get("survey") or (os.time() - Utility.Time.DAY)
+
+	return {
+		showSurvey = (os.time() - lastSurveyTime) >= Utility.Time.DAY
+	}
 end
 
 return ConfigWindowController
