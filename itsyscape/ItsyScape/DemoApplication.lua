@@ -240,6 +240,10 @@ function DemoApplication:openTitleScreen()
 end
 
 function DemoApplication:quit(isError)
+	if not _DEBUG and not _MOBILE and not self:getIsPaused() and (_ANALYTICS_ENABLED and self:tryQuit()) then
+		return true
+	end
+
 	local Resource = require "ItsyScape.Graphics.Resource"
 	Resource.quit()
 
@@ -251,7 +255,12 @@ function DemoApplication:quit(isError)
 end
 
 function DemoApplication:quitGame()
-	self:openTitleScreen()
+	if self:getIsQutting() then
+		self:quit()
+		love.event.quit()
+	else
+		self:openTitleScreen()
+	end
 end
 
 function DemoApplication:closeMainMenu()

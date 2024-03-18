@@ -124,6 +124,15 @@ function Client:endGame(peep)
 	self:newSession()
 end
 
+function Client:rateSession(peep, rating)
+	self:submit(Events.RATED_SESSION, {
+		["Player Name"] = peep:getName(),
+		["Player Pronouns"] = table.concat(Utility.Text.getPronouns(peep), "/"),
+		["Local Time"] = os.date(),
+		["Rating"] = rating or "Skip"
+	}, true)
+end
+
 function Client:gotKeyItem(peep, keyItem, quest)
 	keyItem = self.gameDB:getResource(keyItem, "KeyItem")
 	if not keyItem then

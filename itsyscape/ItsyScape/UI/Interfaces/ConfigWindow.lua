@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GridLayout = require "ItsyScape.UI.GridLayout"
+local Icon = require "ItsyScape.UI.Icon"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
@@ -20,9 +21,9 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Controls = require "ItsyScape.UI.Client.Controls"
 
 local ConfigWindow = Class(Interface)
-ConfigWindow.DEFAULT_WIDTH = 480
-ConfigWindow.DEFAULT_HEIGHT = 240
-ConfigWindow.PADDING = 8
+ConfigWindow.DEFAULT_WIDTH = 560
+ConfigWindow.DEFAULT_HEIGHT = 400
+ConfigWindow.PADDING = 16
 ConfigWindow.LINE_HEIGHT = 24
 ConfigWindow.BUTTON_SIZE = 48
 
@@ -55,7 +56,8 @@ function ConfigWindow:new(id, index, ui)
 	self:addChild(self.panel)
 
 	local layout = GridLayout()
-	layout:setSize(ConfigWindow.DEFAULT_WIDTH / 2, Controls.DEFAULT_HEIGHT)
+	layout:setPosition(0, ConfigWindow.DEFAULT_HEIGHT / 2 - ConfigWindow.BUTTON_SIZE)
+	layout:setSize(ConfigWindow.DEFAULT_WIDTH / 2, ConfigWindow.DEFAULT_HEIGHT / 2 - ConfigWindow.BUTTON_SIZE)
 	layout:setUniformSize(true, ConfigWindow.BUTTON_SIZE, ConfigWindow.BUTTON_SIZE)
 	layout:setPadding(ConfigWindow.PADDING, ConfigWindow.PADDING)
 	layout:setWrapContents(true)
@@ -108,24 +110,56 @@ function ConfigWindow:new(id, index, ui)
 	soundButton:setToolTip(ToolTip.Text("Toggle sound and music on/off."))
 	layout:addChild(soundButton)
 
-	self.titleLabel = Label()
-	self.titleLabel:setStyle(LabelStyle({
+	self.settingsLabel = Label()
+	self.settingsLabel:setStyle(LabelStyle({
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
 		fontSize = 32,
 		color = { 1, 1, 1, 1 },
 		textShadow = true,
-		align = "center"
+		align = "left"
 	}, ui:getResources()))
-	self.titleLabel:setPosition(ConfigWindow.DEFAULT_WIDTH / 2 - ConfigWindow.PADDING, ConfigWindow.PADDING)
-	self.titleLabel:setSize(ConfigWindow.DEFAULT_WIDTH / 2 - ConfigWindow.PADDING * 2, ConfigWindow.LINE_HEIGHT * 2)
-	self.titleLabel:setText("ItsyRealm")
-	self:addChild(self.titleLabel)
+	self.settingsLabel:setPosition(ConfigWindow.PADDING, ConfigWindow.PADDING)
+	self.settingsLabel:setSize(ConfigWindow.DEFAULT_WIDTH / 2 - ConfigWindow.PADDING * 2, ConfigWindow.LINE_HEIGHT * 2)
+	self.settingsLabel:setText("Settings")
+	self:addChild(self.settingsLabel)
 
-	local label = Label()
-	label:setText("Make sure you're in a safe place before changing settings.")
-	label:setSize(ConfigWindow.DEFAULT_WIDTH / 2 - ConfigWindow.PADDING * 2, ConfigWindow.LINE_HEIGHT)
-	label:setPosition(ConfigWindow.DEFAULT_WIDTH / 2 + ConfigWindow.PADDING, ConfigWindow.PADDING + ConfigWindow.BUTTON_SIZE)
-	self:addChild(label)
+	local configLabel = Label()
+	configLabel:setText("Make sure you're in a safe place before changing settings.")
+	configLabel:setSize(ConfigWindow.DEFAULT_WIDTH / 2 - ConfigWindow.PADDING * 2, ConfigWindow.LINE_HEIGHT)
+	configLabel:setPosition(ConfigWindow.PADDING, ConfigWindow.PADDING + ConfigWindow.BUTTON_SIZE)
+	self:addChild(configLabel)
+
+	self.surveyLabel = Label()
+	self.surveyLabel:setSize(ConfigWindow.DEFAULT_WIDTH / 2 - ConfigWindow.PADDING * 2, ConfigWindow.LINE_HEIGHT)
+	self.surveyLabel:setPosition(ConfigWindow.DEFAULT_WIDTH / 2 + ConfigWindow.PADDING, ConfigWindow.PADDING + ConfigWindow.BUTTON_SIZE)
+	self:addChild(self.surveyLabel)
+
+	self.surveyLayout = GridLayout()
+	self.surveyLayout:setPosition(ConfigWindow.DEFAULT_WIDTH / 2, ConfigWindow.DEFAULT_HEIGHT / 2 - ConfigWindow.BUTTON_SIZE)
+	self.surveyLayout:setSize(ConfigWindow.DEFAULT_WIDTH / 2, ConfigWindow.DEFAULT_HEIGHT / 2 - ConfigWindow.BUTTON_SIZE)
+	self.surveyLayout:setUniformSize(true, ConfigWindow.DEFAULT_WIDTH / 2 - ConfigWindow.PADDING * 2, ConfigWindow.BUTTON_SIZE)
+	self.surveyLayout:setPadding(ConfigWindow.PADDING, ConfigWindow.PADDING)
+	self.surveyLayout:setWrapContents(true)
+
+	local yesButton = Button()
+	local yesIcon = Icon()
+	yesIcon:setIcon("Resources/Game/UI/Icons/Concepts/Happy.png")
+	yesIcon:setPosition(ConfigWindow.PADDING, 0)
+	yesButton:addChild(yesIcon)
+	yesButton:setText("Yes")
+	yesButton.onClick:register(self.rateSession, self, true)
+	self.surveyLayout:addChild(yesButton)
+
+	local noButton = Button()
+	local noIcon = Icon()
+	noIcon:setIcon("Resources/Game/UI/Icons/Concepts/Angry.png")
+	noIcon:setPosition(ConfigWindow.PADDING, 0)
+	noButton:addChild(noIcon)
+	noButton:setText("No")
+	noButton.onClick:register(self.rateSession, self, true)
+	self.surveyLayout:addChild(noButton)
+
+	self:tryShowSurvey()
 
 	self.quitButton = Button()
 	self.quitButton:setSize(
@@ -155,8 +189,40 @@ function ConfigWindow:new(id, index, ui)
 	self:setSize(ConfigWindow.DEFAULT_WIDTH, ConfigWindow.DEFAULT_HEIGHT)
 end
 
+function ConfigWindow:rateSession(rating)
+	self:sendPoke("rate", nil, { rating = rating })
+end
+
 function ConfigWindow:quit()
 	self:sendPoke("quit", nil, {})
+end
+
+function ConfigWindow:tryShowSurvey()
+	local state = self:getState()
+
+	if not _ANALYTICS_ENABLED then
+		self.surveyLabel:setText("Thank you for playing ItsyRealm!")
+	else
+		if state.showSurvey then
+			self.surveyLabel:setText("Did you enjoy playing ItsyRealm today?")
+
+			if not self.surveyLayout:getParent() then
+				self:addChild(self.surveyLayout)
+			end
+		else
+			self.surveyLabel:setText("Thank you for your feedback!")
+
+			if self.surveyLayout:getParent() then
+				self:removeChild(self.surveyLayout)
+			end
+		end
+	end
+end
+
+function ConfigWindow:update(...)
+	Interface.update(self, ...)
+
+	self:tryShowSurvey()
 end
 
 function ConfigWindow:close()

@@ -195,6 +195,7 @@ function Application:new(multiThreaded)
 	self.paused = false
 
 	self.playMode = Application.PLAY_MODE_SINGLE_PLAYER
+	self.isQuitting = flase
 end
 
 local memoryLabel
@@ -470,6 +471,9 @@ function Application:processAdminEvents()
 
 		if type(event) == 'table' and event.type == 'analytics' then
 			_ANALYTICS_ENABLED = event.enable
+		elseif type(event) == 'table' and event.type == 'quit' then
+			self:quit(false)
+			love.event.quit()
 		end
 	until not event
 end
@@ -776,6 +780,23 @@ function Application:background()
 			end
 		end
 	end
+end
+
+function Application:getIsQuitting()
+	return self.isQuitting
+end
+
+function Application:tryQuit()
+	if self.isQuitting then
+		return false
+	end
+
+	self.isQuitting = true
+	self.inputAdminChannel:push({
+		type = "tryQuit"
+	})
+
+	return true
 end
 
 function Application:quit(isError)
