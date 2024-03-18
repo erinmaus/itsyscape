@@ -5,6 +5,6 @@
 	j = -16,
 	width = 64,
 	height = 54,
-	y = 8.75,
+	y = 8.25,
 	finesse = 3
 }
