@@ -12,7 +12,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "This dream takes place in the Empty King's throne room.",
+	Value = "This dream takes place in Yendor's throne room.",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -116,287 +116,255 @@ do
 	}
 end
 
-M["TheEmptyKing"] = ItsyScape.Resource.MapObject.Unique()
+M["Yendor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 33,
 		PositionY = 1,
-		PositionZ = 33,
-		Name = "TheEmptyKing",
+		PositionZ = 17,
+		Name = "Yendor",
 		Map = M._MAP,
-		Resource = M["TheEmptyKing"]
+		Resource = M["Yendor"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "TheEmptyKing_Cutscene",
-		MapObject = M["TheEmptyKing"]
+		Peep = ItsyScape.Resource.Peep "Yendor",
+		MapObject = M["Yendor"]
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 8,
+		Resource = M["Yendor"]
 	}
 
 	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Meta.TalkSpeaker {
-		Resource = ItsyScape.Resource.Peep "TheEmptyKing_Cutscene",
-		Name = "TheEmptyKing",
+		Resource = M["Yendor"],
+		Name = "Yendor",
 		Action = TalkAction
 	}
 
 	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/Dream_CalmBeforeTheStorm_ThroneRoom/Dialog/TheEmptyKing_en-US.lua",
+		Script = "Resources/Game/Maps/Dream_CalmBeforeTheStorm_ThroneRoom/Dialog/Yendor_en-US.lua",
 		Language = "en-US",
 		Action = TalkAction
 	}
 
-	M["TheEmptyKing"] {
+	M["Yendor"] {
 		TalkAction
 	}
 end
 
-M["Nyarlathotep"] = ItsyScape.Resource.MapObject.Unique()
+M["Maggot1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
+		PositionX = 25,
 		PositionY = 1,
-		PositionZ = 35,
-		Direction = 1, 
-		Name = "Nyarlathotep",
+		PositionZ = 37,
+		Name = "Maggot1",
 		Map = M._MAP,
-		Resource = M["Nyarlathotep"]
+		Resource = M["Maggot1"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene",
-		MapObject = M["Nyarlathotep"]
-	}
-
-	local TalkAction = ItsyScape.Action.Talk()
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = ItsyScape.Resource.Peep "Nyarlathotep_Cutscene",
-		Name = "Nyarlathotep",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkDialog {
-		Script = "Resources/Game/Maps/Dream_CalmBeforeTheStorm_ThroneRoom/Dialog/Nyarlathotep_en-US.lua",
-		Language = "en-US",
-		Action = TalkAction
-	}
-
-	M["Nyarlathotep"] {
-		TalkAction
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot1"]
 	}
 end
 
-M["EmptyZealot1"] = ItsyScape.Resource.MapObject.Unique()
+M["Maggot2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 1,
+		PositionZ = 39,
+		Name = "Maggot2",
+		Map = M._MAP,
+		Resource = M["Maggot2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot2"]
+	}
+end
+
+M["Maggot3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 1,
+		PositionZ = 41,
+		Name = "Maggot3",
+		Map = M._MAP,
+		Resource = M["Maggot3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot3"]
+	}
+end
+
+M["Maggot4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 29,
 		PositionY = 1,
 		PositionZ = 37,
-		Name = "EmptyZealot1",
+		Name = "Maggot4",
 		Map = M._MAP,
-		Resource = M["EmptyZealot1"]
+		Resource = M["Maggot4"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot1"]
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot4"]
 	}
 end
 
-M["EmptyZealot2"] = ItsyScape.Resource.MapObject.Unique()
+M["Maggot5"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 29,
 		PositionY = 1,
 		PositionZ = 39,
-		Name = "EmptyZealot2",
+		Name = "Maggot5",
 		Map = M._MAP,
-		Resource = M["EmptyZealot2"]
+		Resource = M["Maggot5"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot2"]
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot5"]
 	}
 end
 
-M["EmptyZealot3"] = ItsyScape.Resource.MapObject.Unique()
+M["Maggot6"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 29,
 		PositionY = 1,
 		PositionZ = 41,
-		Name = "EmptyZealot3",
+		Name = "Maggot6",
 		Map = M._MAP,
-		Resource = M["EmptyZealot3"]
+		Resource = M["Maggot6"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot3"]
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot6"]
 	}
 end
 
-
-
-M["EmptyZealot4"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
-		PositionY = 1,
-		PositionZ = 37,
-		Name = "EmptyZealot4",
-		Map = M._MAP,
-		Resource = M["EmptyZealot4"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot4"]
-	}
-end
-
-M["EmptyZealot5"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
-		PositionY = 1,
-		PositionZ = 39,
-		Name = "EmptyZealot5",
-		Map = M._MAP,
-		Resource = M["EmptyZealot5"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot5"]
-	}
-end
-
-M["EmptyZealot6"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 31,
-		PositionY = 1,
-		PositionZ = 41,
-		Name = "EmptyZealot6",
-		Map = M._MAP,
-		Resource = M["EmptyZealot6"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot6"]
-	}
-end
-
-M["EmptyZealot7"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 35,
-		PositionY = 1,
-		PositionZ = 37,
-		Name = "EmptyZealot7",
-		Direction = -1,
-		Map = M._MAP,
-		Resource = M["EmptyZealot7"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot7"]
-	}
-end
-
-M["EmptyZealot8"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 35,
-		PositionY = 1,
-		PositionZ = 39,
-		Name = "EmptyZealot8",
-		Direction = -1,
-		Map = M._MAP,
-		Resource = M["EmptyZealot8"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot8"]
-	}
-end
-
-M["EmptyZealot9"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 35,
-		PositionY = 1,
-		PositionZ = 41,
-		Name = "EmptyZealot9",
-		Direction = -1,
-		Map = M._MAP,
-		Resource = M["EmptyZealot9"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot9"]
-	}
-end
-
-
-
-M["EmptyZealot10"] = ItsyScape.Resource.MapObject.Unique()
+M["Maggot7"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 37,
 		PositionY = 1,
 		PositionZ = 37,
-		Name = "EmptyZealot10",
+		Name = "Maggot7",
 		Direction = -1,
 		Map = M._MAP,
-		Resource = M["EmptyZealot10"]
+		Resource = M["Maggot7"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot10"]
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot7"]
 	}
 end
 
-M["EmptyZealot11"] = ItsyScape.Resource.MapObject.Unique()
+M["Maggot8"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 37,
 		PositionY = 1,
 		PositionZ = 39,
-		Name = "EmptyZealot11",
+		Name = "Maggot8",
 		Direction = -1,
 		Map = M._MAP,
-		Resource = M["EmptyZealot11"]
+		Resource = M["Maggot8"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot11"]
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot8"]
 	}
 end
 
-M["EmptyZealot12"] = ItsyScape.Resource.MapObject.Unique()
+M["Maggot9"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 37,
 		PositionY = 1,
 		PositionZ = 41,
-		Name = "EmptyZealot12",
+		Name = "Maggot9",
 		Direction = -1,
 		Map = M._MAP,
-		Resource = M["EmptyZealot12"]
+		Resource = M["Maggot9"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "EmptyZealot_Cutscene",
-		MapObject = M["EmptyZealot12"]
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot9"]
+	}
+end
+
+
+
+M["Maggot10"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 1,
+		PositionZ = 37,
+		Name = "Maggot10",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Maggot10"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot10"]
+	}
+end
+
+M["Maggot11"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 1,
+		PositionZ = 39,
+		Name = "Maggot11",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Maggot11"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot11"]
+	}
+end
+
+M["Maggot12"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41,
+		PositionY = 1,
+		PositionZ = 41,
+		Name = "Maggot12",
+		Direction = -1,
+		Map = M._MAP,
+		Resource = M["Maggot12"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot",
+		MapObject = M["Maggot12"]
 	}
 end

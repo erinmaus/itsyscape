@@ -397,7 +397,7 @@ function LocalPlayer:findPath(i, j, k)
 end
 
 function LocalPlayer:move(x, z)
-	if not self:isReady() then
+	if not self:isReady() or not self:getActor():getPeep():getIsReady() then
 		return false
 	end
 

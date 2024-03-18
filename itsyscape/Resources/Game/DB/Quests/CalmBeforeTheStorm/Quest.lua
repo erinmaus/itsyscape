@@ -206,16 +206,37 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 do
+	local Maggot = ItsyScape.Resource.Peep "CalmBeforeTheStorm_Maggot"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Maggot.BaseMaggot",
+		Resource = Maggot
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Giant maggot",
+		Language = "en-US",
+		Resource = Maggot
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "It writhes in horror, eating at the carcass of a slain god.",
+		Language = "en-US",
+		Resource = Maggot
+	}
+end
+
+do
 	local Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_ThroneRoom"
 
 	ItsyScape.Meta.ResourceName {
-		Value = "The Empty King's Throne Room",
+		Value = "Yendor's Throne Room",
 		Language = "en-US",
 		Resource = Dream
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "The Empty King kindly requests your audience.",
+		Value = "Yendor kindly requests your audience.",
 		Language = "en-US",
 		Resource = Dream
 	}
@@ -223,7 +244,7 @@ do
 	ItsyScape.Meta.DreamRequirement {
 		Map = ItsyScape.Resource.Map "Dream_CalmBeforeTheStorm_ThroneRoom",
 		Anchor = "Anchor_Spawn",
-		KeyItem = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledBoundNymph",
+		KeyItem = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated",
 		Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_ThroneRoom"
 	}
 end
@@ -232,7 +253,7 @@ do
 	local Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_Ship"
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Ocean",
+		Value = "Rh'lor Ocean",
 		Language = "en-US",
 		Resource = Dream
 	}
@@ -246,7 +267,7 @@ do
 	ItsyScape.Meta.DreamRequirement {
 		Map = ItsyScape.Resource.Map "Dream_CalmBeforeTheStorm_Ship",
 		Anchor = "Anchor_Spawn",
-		KeyItem = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_IsabelleDefeated",
+		KeyItem = ItsyScape.Resource.KeyItem "CalmBeforeTheStorm_KilledBoundNymph",
 		Dream = ItsyScape.Resource.Dream "CalmBeforeTheStorm_Ship"
 	}
 end
