@@ -32,6 +32,7 @@ function CreepActorAnimatorCortex:new()
 
 	self.walking = {}
 	self.idling = {}
+	self.idleTime = {}
 end
 
 function CreepActorAnimatorCortex:addPeep(peep)
@@ -41,6 +42,8 @@ function CreepActorAnimatorCortex:addPeep(peep)
 	peep:listen('receiveAttack', self.onReceiveAttack, self)
 	peep:listen('die', self.onDie, self)
 	peep:listen('resurrect', self.onResurect, self)
+
+	self.idleTime[peep] = love.math.random()
 end
 
 function CreepActorAnimatorCortex:removePeep(peep)
@@ -53,6 +56,7 @@ function CreepActorAnimatorCortex:removePeep(peep)
 
 	self.walking[peep] = nil
 	self.idling[peep] = nil
+	self.idleTime[peep] = nil
 end
 
 function CreepActorAnimatorCortex:playAnimation(peep, priority, resource, slot)
@@ -149,7 +153,10 @@ function CreepActorAnimatorCortex:update(delta)
 					"animation-idle",
 					"ItsyScape.Graphics.AnimationResource")
 				if resource then
-					actor:playAnimation('main', CreepActorAnimatorCortex.WALK_PRIORITY, resource)
+					print(">>> idle", peep:getName(), self.idleTime[peep])
+
+					actor:playAnimation('main', CreepActorAnimatorCortex.WALK_PRIORITY, resource, nil, self.idleTime[peep])
+					self.idleTime[peep] = nil
 					self.idling[peep] = true
 					self.walking[peep] = nil
 				end
