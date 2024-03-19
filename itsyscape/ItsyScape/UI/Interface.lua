@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
 local Utility = require "ItsyScape.Game.Utility"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
@@ -21,6 +22,7 @@ function Interface:new(id, index, view)
 	self.id = id
 	self.index = index
 	self.view = view
+	self.onClose = Callback()
 end
 
 -- Gets the UI model this interface belongs to.

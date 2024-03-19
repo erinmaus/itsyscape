@@ -186,6 +186,12 @@ function ConfigWindow:new(id, index, ui)
 	self.closeButton:setText("X")
 	self:addChild(self.closeButton)
 
+	self.onClose:register(function()
+		if _APP then
+			_APP:dismissQuit()
+		end
+	end)
+
 	self:setSize(ConfigWindow.DEFAULT_WIDTH, ConfigWindow.DEFAULT_HEIGHT)
 end
 

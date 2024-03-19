@@ -782,6 +782,10 @@ function Application:background()
 	end
 end
 
+function Application:dismissQuit()
+	self.isQuitting = false
+end
+
 function Application:getIsQuitting()
 	return self.isQuitting
 end
