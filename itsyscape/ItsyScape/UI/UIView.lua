@@ -1157,6 +1157,8 @@ function UIView:close(ui, interfaceID, index)
 	if interfaces then
 		local interface = interfaces[index]
 		if interface then
+			interface:onClose()
+
 			self.root:removeChild(interface)
 			interfaces[index] = nil
 		end

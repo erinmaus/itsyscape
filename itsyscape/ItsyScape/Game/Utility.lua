@@ -1021,7 +1021,7 @@ function Utility.UI.openGroup(peep, group)
 end
 
 function Utility.UI.closeAll(peep, id, exceptions)
-	local e = {}
+	local e = { ["ConfigWindow"] = true }
 	if exceptions then
 		for _, exception in ipairs(exceptions) do
 			e[exception] = true

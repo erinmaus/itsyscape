@@ -19,6 +19,7 @@ local buffer = require "string.buffer"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local AnalyticsClient = require "ItsyScape.Analytics.AnalyticsClient"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
+local Utility = require "ItsyScape.Game.Utility"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
 local ChannelRPCService = require "ItsyScape.Game.RPC.ChannelRPCService"
 local ServerRPCService = require "ItsyScape.Game.RPC.ServerRPCService"
@@ -307,6 +308,23 @@ while isRunning do
 					type = 'save',
 					storage = buffer.encode(storage and storage:serialize() or {})
 				})
+			elseif e.type == 'tryQuit' then
+				for _, player in game:iteratePlayers() do
+					if player:getID() == adminPlayerID then
+						if Utility.UI.isOpen(player:getActor():getPeep(), "ConfigWindow") then
+							outputAdminChannel:push({
+								type = 'quit'
+							})
+						else
+							Utility.UI.openInterface(
+								player:getActor():getPeep(),
+								"ConfigWindow",
+								false)
+						end
+
+						break
+					end
+				end
 			elseif e.type == 'background' then
 				local storage
 				for _, player in game:iteratePlayers() do
