@@ -269,6 +269,10 @@ function love.quit()
 
 	local result = _APP:quit()
 
+	if result then
+		return result
+	end
+
 	do	
 		local Keybinds = require "ItsyScape.UI.Keybinds"
 		for i = 1, #Keybinds do
