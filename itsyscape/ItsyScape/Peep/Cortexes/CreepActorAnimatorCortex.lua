@@ -153,8 +153,6 @@ function CreepActorAnimatorCortex:update(delta)
 					"animation-idle",
 					"ItsyScape.Graphics.AnimationResource")
 				if resource then
-					print(">>> idle", peep:getName(), self.idleTime[peep])
-
 					actor:playAnimation('main', CreepActorAnimatorCortex.WALK_PRIORITY, resource, nil, self.idleTime[peep])
 					self.idleTime[peep] = nil
 					self.idling[peep] = true

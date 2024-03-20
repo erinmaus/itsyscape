@@ -11,6 +11,7 @@
 local EVENTS = {
 	START_GAME = "Start Game",
 	END_GAME = "End Game",
+	RATED_SESSION = "Rated Session",
 	GOT_KEY_ITEM = "Made Quest Progress",
 	STARTED_QUEST = "Started Quest",
 	COMPLETED_QUEST = "Completed Quest",
