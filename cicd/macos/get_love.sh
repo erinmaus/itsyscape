@@ -13,5 +13,5 @@ mkdir -p platform/xcode/macosx/Frameworks/Lua.framework/Versions/A/Headers
 cp ../include/*.h platform/xcode/macosx/Frameworks/Lua.framework/Versions/A/Headers
 cp ../include/*.hpp platform/xcode/macosx/Frameworks/Lua.framework/Versions/A/Headers
 
-xcodebuild clean archive -project platform/xcode/love.xcodeproj -scheme love-macosx -configuration Release -archivePath love-macos.xcarchive
+xcodebuild ONLY_ACTIVE_ARCH=NO clean archive -project platform/xcode/love.xcodeproj -scheme love-macosx -configuration Release -archivePath love-macos.xcarchive
 xcodebuild -exportArchive -archivePath love-macos.xcarchive -exportPath ../../staging -exportOptionsPlist platform/xcode/macosx/macos-copy-app.plist
