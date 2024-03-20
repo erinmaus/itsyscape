@@ -10,38 +10,38 @@
 		{
 			type = 'point',
 			color = { 1, 0, 0 },
-			position = { -1.5, 0.25, -1.5 },
-			attenuation = 3
+			position = { 1.50, 0.25, 0 },
+			attenuation = 2
 		},
 		{
 			type = 'point',
 			color = { 1, 0.5, 0 },
-			position = { 0, 0, .25,1.5 },
-			attenuation = 3
+			position = { 0.75, 0.25, 1.30 },
+			attenuation = 2
 		},
 		{
 			type = 'point',
 			color = { 1, 1, 0 },
-			position = { 1.5, 0.25, -1.5 },
-			attenuation = 3
+			position = { -0.75, 0.25, 1.30 },
+			attenuation = 2
 		},
 		{
 			type = 'point',
 			color = { 0, 1, 0 },
-			position = { -1.5, 0.25, 1.5 },
-			attenuation = 3
+			position = { -1.50, 0.25, 0.00 },
+			attenuation = 2
 		},
 		{
 			type = 'point',
-			color = { 0, 0, 0 },
-			position = { 0, 0, .25,.5 },
-			attenuation = 3
+			color = { 0, 0, 1 },
+			position = { -0.75, 0.25, -1.30 },
+			attenuation = 2
 		},
 		{
 			type = 'point',
-			color = { 0, 0.8, 0.7 },
-			position = { 1.5, 0.25, 1.5 },
-			attenuation = 3
+			color = { 0.5, 0, 0.5 },
+			position = { 0.75, 0.25, -1.30 },
+			attenuation = 2
 		}
 	}
 }
