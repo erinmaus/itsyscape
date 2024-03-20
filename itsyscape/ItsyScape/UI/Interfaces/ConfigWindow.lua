@@ -156,7 +156,7 @@ function ConfigWindow:new(id, index, ui)
 	noIcon:setPosition(ConfigWindow.PADDING, 0)
 	noButton:addChild(noIcon)
 	noButton:setText("No")
-	noButton.onClick:register(self.rateSession, self, true)
+	noButton.onClick:register(self.rateSession, self, false)
 	self.surveyLayout:addChild(noButton)
 
 	self:tryShowSurvey()
