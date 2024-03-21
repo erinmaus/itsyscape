@@ -312,7 +312,7 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 	light_buffer.use();
 
     auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-    graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+    graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
     graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 1.0f), love::OptionalInt(), love::OptionalDouble());
 
