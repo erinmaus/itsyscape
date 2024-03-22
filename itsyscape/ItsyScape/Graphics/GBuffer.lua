@@ -18,18 +18,20 @@ local GBuffer = Class()
 GBuffer.COLOR_INDEX = 1
 GBuffer.POSITION_INDEX = 2
 GBuffer.NORMAL_SPECULAR_INDEX = 3
+GBuffer.OUTLINE_INDEX = 4
 
 -- Formats of the color, posotion, normal/specular, and depth/stencil bindings.
 GBuffer.COLOR_FORMAT = 'rgba8'
 GBuffer.POSITION_FORMAT = 'rgba16f'
 GBuffer.NORMAL_SPECULAR_FORMAT = 'rgba16f'
-GBuffer.DEPTH_STENCIL_FORMAT = 'depth24stencil8'
+GBuffer.OUTLINE_FORMAT = 'rgba8'
+GBuffer.DEPTH_STENCIL_FORMAT = 'depth24'
 
 -- Constructs a new GBuffer with the provided dimensions.
 --
 -- The dimensions are clamped to at least 1.
 function GBuffer:new(width, height)
-	self._buffer = NGBuffer(GBuffer.COLOR_FORMAT, GBuffer.POSITION_FORMAT, GBuffer.NORMAL_SPECULAR_FORMAT);
+	self._buffer = NGBuffer(GBuffer.COLOR_FORMAT, GBuffer.POSITION_FORMAT, GBuffer.NORMAL_SPECULAR_FORMAT, GBuffer.OUTLINE_FORMAT);
 	self:resize(width, height)
 end
 
@@ -84,6 +86,11 @@ end
 -- Gets the normal/specular binding of the GBuffer.
 function GBuffer:getNormalSpecular()
 	return self._buffer:getCanvas(GBuffer.NORMAL_SPECULAR_INDEX)
+end
+
+-- Gets the outline binding of the GBuffer.
+function GBuffer:getOutline()
+	return self._buffer:getCanvas(GBuffer.OUTLINE_INDEX)
 end
 
 -- Gets the depth/stencil binding of the GBuffer.

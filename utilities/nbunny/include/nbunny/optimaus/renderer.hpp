@@ -25,7 +25,8 @@ namespace nbunny
 		RENDERER_PASS_DEFERRED = 1,
 		RENDERER_PASS_FORWARD  = 2,
 		RENDERER_PASS_MOBILE   = 3,
-		RENDERER_PASS_MAX      = 3
+		RENDERER_PASS_OUTLINE  = 4,
+		RENDERER_PASS_MAX      = 4
 	};
 
 	class RendererPass;
