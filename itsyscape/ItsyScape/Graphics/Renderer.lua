@@ -31,11 +31,13 @@ Renderer.PassDebugStats = Class(DebugStats)
 Renderer.OUTLINE_SHADER = ShaderResource()
 Renderer.INIT_DISTANCE_SHADER = ShaderResource()
 Renderer.DISTANCE_SHADER = ShaderResource()
+Renderer.COMBINE_SHADER = ShaderResource()
 Renderer.COMPOSE_SHADER = ShaderResource()
 do
 	Renderer.OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Outline")
 	Renderer.INIT_DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/InitDistance")
 	Renderer.DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Distance")
+	Renderer.COMBINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Combine")
 	Renderer.COMPOSE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Compose")
 end
 
@@ -66,10 +68,11 @@ function Renderer:new()
 	self.passDebugStats = Renderer.PassDebugStats()
 
 	self.outlineBuffer = NGBuffer("rgba32f")
-	self.distanceBuffer = NGBuffer("rgba16f", "rgba16f")
+	self.distanceBuffer = NGBuffer("rgba16f", "rgba16f", "rgba16f")
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
 	self.initDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_DISTANCE_SHADER:getResource():getSource())
 	self.distancePostProcessShader = love.graphics.newShader(Renderer.DISTANCE_SHADER:getResource():getSource())
+	self.combinePostProcessShader = love.graphics.newShader(Renderer.COMBINE_SHADER:getResource():getSource())
 	self.composePostProcessShader = love.graphics.newShader(Renderer.COMPOSE_SHADER:getResource():getSource())
 
 	self.occlusionQueryObjects = {}
@@ -171,6 +174,7 @@ function Renderer:_drawOutlines(width, height)
 
 	local currentBuffer = self.distanceBuffer:getCanvas(1)
 	local nextBuffer = self.distanceBuffer:getCanvas(2)
+	local mixBuffer = self.distanceBuffer:getCanvas(3)
 
 	love.graphics.setShader(self.initDistancePostProcessShader)
 	self.initDistancePostProcessShader:send("scape_InColor", 0.0)
@@ -247,20 +251,19 @@ function Renderer:_drawOutlines(width, height)
 		currentBuffer, nextBuffer = nextBuffer, currentBuffer
 	end
 
-	print(">>> n", n)
+	love.graphics.setCanvas(mixBuffer)
+	love.graphics.setShader(self.combinePostProcessShader)
+	self.combinePostProcessShader:send("scape_Other", currentBuffer)
+	love.graphics.draw(nextBuffer)
 
-	love.graphics.origin()
 	love.graphics.setCanvas(buffer:getColor())
-	--love.graphics.setBlendMode("alpha", "premultiplied")
-	love.graphics.setBlendMode("replace")
+	love.graphics.setBlendMode("alpha", "premultiplied")
 	love.graphics.setShader(self.composePostProcessShader)
-	-- self.composePostProcessShader:send("scape_MaxDistance", 16)
-	-- self.composePostProcessShader:send("scape_DiscardDistance", math.huge)
-	-- self.composePostProcessShader:send("scape_OutlineTexture", self.outlinePass:getOBuffer():getCanvas(1))
-	-- self.composePostProcessShader:send("scape_DiffuseTexture", buffer:getColor())
-	--love.graphics.scale(8, 8, 1)
-	love.graphics.setShader()
-	love.graphics.draw(currentBuffer)
+	self.composePostProcessShader:send("scape_MaxDistance", 16)
+	self.composePostProcessShader:send("scape_DiscardDistance", 1)
+	--self.composePostProcessShader:send("scape_OutlineTexture", self.outlinePass:getOBuffer():getCanvas(1))
+	--self.composePostProcessShader:send("scape_DiffuseTexture", buffer:getColor())
+	love.graphics.draw(mixBuffer)
 	--love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 
 	love.graphics.pop()
