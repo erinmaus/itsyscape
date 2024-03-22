@@ -1,22 +1,22 @@
-uniform vec2 scape_TexelSize;
-uniform float scape_MaxDistance;
 uniform sampler2D scape_OutlineTexture;
-uniform sampler2D scape_DiffuseTexture;
 
 vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
 {
-	vec4 sample = Texel(texture, textureCoordinate);
-	vec2 position = sample.xy;
-	float distance = length(position - textureCoordinate);
+	vec4 outlineSample = Texel(scape_OutlineTexture, textureCoordinate);
 
-	float outline = Texel(scape_OutlineTexture, textureCoordinate).r;
+	return vec4(vec3(0.0), 1.0 - outlineSample.r);
 
-	if (outline < 1.0)
-	{
-		return vec4(Texel(scape_DiffuseTexture, sample.xy).rgb, sample.a);
-	}
+	// vec2 position = sample.xy;
+	// float distance = length(position - textureCoordinate);
 
-	return Texel(scape_DiffuseTexture, textureCoordinate);
+	// float outline = Texel(scape_OutlineTexture, textureCoordinate).r;
+
+	// if (outline < 1.0)
+	// {
+	// 	return vec4(Texel(scape_DiffuseTexture, sample.xy).rgb, sample.a);
+	// }
+
+	// return Texel(scape_DiffuseTexture, textureCoordinate);
 
 	// if (sample.b > 0.0)
 	// {

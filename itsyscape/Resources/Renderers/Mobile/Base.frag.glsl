@@ -18,7 +18,6 @@
 #define SCAPE_MAX_LIGHTS 16
 #define SCAPE_MAX_FOG    4
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 1.0 / 128.0
-#define SCAPE_BLACK_THRESHOLD 27.0 / 255.0
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
@@ -110,11 +109,6 @@ vec4 effect(
 	float alpha = diffuse.a * color.a;
 
 	if (alpha < SCAPE_ALPHA_DISCARD_THRESHOLD)
-	{
-		discard;
-	}
-
-	if (diffuse.r <= SCAPE_BLACK_THRESHOLD && diffuse.g <= SCAPE_BLACK_THRESHOLD && diffuse.b <= SCAPE_BLACK_THRESHOLD)
 	{
 		discard;
 	}
