@@ -26,6 +26,10 @@ function ShaderResource.Source:new(pixel, vertex)
 	self.vertex = vertex
 end
 
+function ShaderResource.Source:getSource()
+	return self.pixel, self.vertex
+end
+
 function ShaderResource.Source:getPixelSource()
 	return self.pixel
 end

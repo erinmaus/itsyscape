@@ -1,11 +1,7 @@
-#ifdef GL_ES
-precision highp float;
-#endif
-
 #line 1
 
 ////////////////////////////////////////////////////////////////////////////////
-// Resource/Renderer/Deferred/Base.frag.glsl
+// Resource/Renderer/Outline/Base.frag.glsl
 //
 // This file is a part of ItsyScape.
 //
@@ -14,40 +10,37 @@ precision highp float;
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+#define SCAPE_ALPHA_DISCARD_THRESHOLD 1.0 / 128.0
+#define SCAPE_BLACK_THRESHOLD 27.0 / 255.0
+
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
-varying vec4 frag_Color;
 varying vec2 frag_Texture;
-
-#define SCAPE_BLACK_THRESHOLD 27.0 / 255.0
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
-void effect()
+vec4 effect(
+	vec4 color,
+	Image texture,
+	vec2 textureCoordinate,
+	vec2 screenCoordinate)
 {
-	vec4 diffuse = performEffect(frag_Color, frag_Texture);
-	if (diffuse.a < 250.0 / 255.0)
+	vec4 diffuse = performEffect(color, frag_Texture);
+	float alpha = diffuse.a * color.a;
+
+	if (alpha < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{
 		discard;
 	}
-	else
-	{
-		diffuse.a = 1.0;
-	}
 
-	vec3 outline;
 	if (diffuse.r <= SCAPE_BLACK_THRESHOLD && diffuse.g <= SCAPE_BLACK_THRESHOLD && diffuse.b <= SCAPE_BLACK_THRESHOLD)
 	{
-		outline = vec3(0.0);
-		diffuse.a = 0.0;
+		diffuse.rgb = vec3(0.0);
 	}
 	else
 	{
-		outline = vec3(1.0);
+		diffuse.rgb = vec3(1.0);
 	}
 
-	love_Canvases[0] = diffuse;
-	love_Canvases[1] = vec4(frag_Position, diffuse.a);
-	love_Canvases[2] = vec4(frag_Normal, diffuse.a);
-	love_Canvases[3] = vec4(outline, 1.0);
+	return vec4(diffuse.rgb, alpha);
 }
