@@ -1,15 +1,12 @@
-uniform float scape_InColor;
-uniform float scape_OutColor;
-
 vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
 {
-	float sample = Texel(texture, textureCoordinate).r;
-	if (sample == 1.0)
+	vec4 sample = Texel(texture, textureCoordinate);
+	if (sample.r == 1.0)
 	{
-		return vec4(0.0, 0.0, scape_InColor, 1.0); // should be 0
+		return vec4(textureCoordinate.st, 0.0, sample.a);
 	}
 	else
 	{
-		return vec4(0.0, 0.0, scape_OutColor, 1.0); // should be infinity
+		return vec4(-1.0, -1.0, 0.0, sample.a);
 	}
 }
