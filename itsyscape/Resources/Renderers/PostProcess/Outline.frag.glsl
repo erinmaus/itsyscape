@@ -30,8 +30,6 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float d2 = linearDepth(Texel(texture, uv2).r);
 	float d3 = linearDepth(Texel(texture, uv3).r);
 
-	gl_FragDepth = Texel(texture, textureCoordinate).r;
-
 	float d = length(vec2(d1 - d0, d3 - d2));
 	d = smoothstep(scape_MinDepth, scape_MaxDepth, d);
 	if (d < 1.0)

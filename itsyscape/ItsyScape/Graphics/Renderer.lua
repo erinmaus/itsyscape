@@ -65,7 +65,7 @@ function Renderer:new()
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()
 
-	self.outlineBuffer = NGBuffer("rgba32f")
+	self.outlineBuffer = NGBuffer("rgba32f", "rgba8")
 	self.distanceBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
 	self.initDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_DISTANCE_SHADER:getResource():getSource())
@@ -128,12 +128,22 @@ function Renderer:getCurrentShader()
 end
 
 function Renderer:_drawOutlines(width, height)
+	self.t = self.t or 4
+	if love.keyboard.isDown("q") then
+		self.t = self.t + 0.25
+		print(">>> + t", self.t)
+	elseif love.keyboard.isDown("a") then
+		self.t = self.t - 0.25
+		print(">>> - t", math.max(self.t, 0))
+	end
+	self.t = math.max(self.t, 0)
+
 	local buffer = self:getOutputBuffer()
 	self.outlinePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.outlinePostProcessShader:send("scape_Far", self.camera:getFar())
 	self.outlinePostProcessShader:send("scape_MinDepth", 0)
 	self.outlinePostProcessShader:send("scape_MaxDepth", 1)
-	self.outlinePostProcessShader:send("scape_OutlineThickness", 2)
+	self.outlinePostProcessShader:send("scape_OutlineThickness", self.t)
 	self.outlinePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 
 	love.graphics.push("all")
@@ -144,15 +154,13 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setCanvas(self.outlineBuffer:getCanvas(1))
 	love.graphics.draw(buffer:getDepthStencil())
 
-	love.graphics.setCanvas({
-		self.outlinePass:getOBuffer():getCanvas(1),
-		depthstencil = buffer:getDepthStencil()
-	})
+	love.graphics.setCanvas(self.outlineBuffer:getCanvas(2))
+	love.graphics.clear(1, 1, 1, 1)
 	love.graphics.setShader(self.outlinePostProcessShader)
 	love.graphics.setBlendMode("alpha")
-	love.graphics.setDepthMode("lequal", true)
+	love.graphics.setDepthMode("always", false)
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.draw(self.outlineBuffer:getCanvas(1))
+	love.graphics.draw(buffer:getDepthStencil())
 
 	-- love.graphics.setCanvas(buffer:getColor())
 	-- love.graphics.setShader()
@@ -161,83 +169,72 @@ function Renderer:_drawOutlines(width, height)
 	-- love.graphics.setColor(1, 1, 1, 1)
 	-- love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 
-	local scale = 1
-	local smallBufferWidth = width / scale
-	local smallBufferHeight = height / scale
-	self.distanceBuffer:resize(smallBufferWidth, smallBufferHeight)
+	-- local scale = 1
+	-- local smallBufferWidth = width / scale
+	-- local smallBufferHeight = height / scale
+	-- self.distanceBuffer:resize(smallBufferWidth, smallBufferHeight)
 
-	love.graphics.setBlendMode("replace")
-	love.graphics.setDepthMode("always", false)
-	love.graphics.setColor(1, 1, 1, 1)
+	-- love.graphics.setBlendMode("replace")
+	-- love.graphics.setDepthMode("always", false)
+	-- love.graphics.setColor(1, 1, 1, 1)
 
-	local currentBuffer = self.distanceBuffer:getCanvas(1)
-	local nextBuffer = self.distanceBuffer:getCanvas(2)
+	-- local currentBuffer = self.distanceBuffer:getCanvas(1)
+	-- local nextBuffer = self.distanceBuffer:getCanvas(2)
 
-	love.graphics.setShader(self.initDistancePostProcessShader)
-	love.graphics.scale(1 / scale, 1 / scale, 1)
-	love.graphics.setCanvas(currentBuffer)
-	love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
-	love.graphics.setCanvas(nextBuffer)
-	love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
+	-- love.graphics.setShader(self.initDistancePostProcessShader)
+	-- love.graphics.scale(1 / scale, 1 / scale, 1)
+	-- love.graphics.setCanvas(currentBuffer)
+	-- love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
+	-- love.graphics.setCanvas(nextBuffer)
+	-- love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 
-	love.graphics.origin()
-	love.graphics.setShader(self.distancePostProcessShader)
+	-- love.graphics.origin()
+	-- love.graphics.setShader(self.distancePostProcessShader)
 
-	--self.distancePostProcessShader:send("scape_TextureSize", { smallBufferWidth, smallBufferHeight })
-	self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
+	-- --self.distancePostProcessShader:send("scape_TextureSize", { smallBufferWidth, smallBufferHeight })
+	-- self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
 
-	local log2 = function(x)
-		return math.log(x) / math.log(2)
-	end
+	-- local log2 = function(x)
+	-- 	return math.log(x) / math.log(2)
+	-- end
 
-	local currentX = smallBufferWidth
-	local currentY = smallBufferHeight
-	local n = 1
-	local steps = math.ceil(log2(math.max(smallBufferWidth, smallBufferHeight))) + 1
-	while currentX > 1 or currentY > 1 do
-		self.distancePostProcessShader:send("scape_JumpDistance", { currentX / smallBufferWidth, currentY / smallBufferHeight })
-		love.graphics.setCanvas(nextBuffer)
-		love.graphics.draw(currentBuffer)
+	-- local currentX = smallBufferWidth
+	-- local currentY = smallBufferHeight
+	-- local n = 1
+	-- local steps = math.ceil(log2(math.max(smallBufferWidth, smallBufferHeight))) + 1
+	-- while currentX > 1 or currentY > 1 do
+	-- 	self.distancePostProcessShader:send("scape_JumpDistance", { currentX / smallBufferWidth, currentY / smallBufferHeight })
+	-- 	love.graphics.setCanvas(nextBuffer)
+	-- 	love.graphics.draw(currentBuffer)
 
-		currentBuffer, nextBuffer = nextBuffer, currentBuffer
+	-- 	currentBuffer, nextBuffer = nextBuffer, currentBuffer
 
-		n = n + 1
-		if n > steps then
-			break
-		end
+	-- 	n = n + 1
+	-- 	if n > steps then
+	-- 		break
+	-- 	end
 
-		currentX = currentX / 2
-		if currentX < 1 then
-			currentX = 1
-		end
+	-- 	currentX = currentX / 2
+	-- 	if currentX < 1 then
+	-- 		currentX = 1
+	-- 	end
 
-		currentY = currentY / 2
-		if currentY < 1 then
-			currentY = 1
-		end
-	end
-
-	self.t = self.t or 32
-	if love.keyboard.isDown("q") then
-		self.t = self.t + 8
-		print(">>> +t", self.t)
-	elseif love.keyboard.isDown("a") then
-		self.t = self.t - 8
-		print(">>> -t", self.t)
-	end
-	self.t = math.max(self.t, 0)
+	-- 	currentY = currentY / 2
+	-- 	if currentY < 1 then
+	-- 		currentY = 1
+	-- 	end
+	-- end
 
 	love.graphics.setCanvas(buffer:getColor())
-	love.graphics.setBlendMode("alpha", "premultiplied")
-	love.graphics.setShader()
-	love.graphics.setShader(self.composePostProcessShader)
+	--love.graphics.setBlendMode("alpha", "premultiplied")
+	love.graphics.setBlendMode("replace")
+	--love.graphics.setShader()
+	--love.graphics.setShader(self.composePostProcessShader)
 	-- self.composePostProcessShader:send("scape_TexelSize", { 1 / smallBufferWidth, 1 / smallBufferHeight })
 	--self.composePostProcessShader:send("scape_MaxDistance", 1 / self.t)
-	self.composePostProcessShader:send("scape_OutlineTexture", self.outlinePass:getOBuffer():getCanvas(1))
-	self.composePostProcessShader:send("scape_DiffuseTexture", buffer:getColor())
+	--self.composePostProcessShader:send("scape_OutlineTexture", )
 	love.graphics.scale(scale, scale, 1)
-	love.graphics.draw(nextBuffer)
-	--love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
+	love.graphics.draw(self.outlineBuffer:getCanvas(2))
 
 	love.graphics.pop()
 end
