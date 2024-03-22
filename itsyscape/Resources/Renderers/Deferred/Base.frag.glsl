@@ -38,16 +38,10 @@ void effect()
 	vec3 outline;
 	if (diffuse.r <= SCAPE_BLACK_THRESHOLD && diffuse.g <= SCAPE_BLACK_THRESHOLD && diffuse.b <= SCAPE_BLACK_THRESHOLD)
 	{
-		outline = vec3(0.0);
-		diffuse.a = 0.0;
-	}
-	else
-	{
-		outline = vec3(1.0);
+		discard;
 	}
 
 	love_Canvases[0] = diffuse;
 	love_Canvases[1] = vec4(frag_Position, diffuse.a);
 	love_Canvases[2] = vec4(frag_Normal, diffuse.a);
-	love_Canvases[3] = vec4(outline, 1.0);
 }

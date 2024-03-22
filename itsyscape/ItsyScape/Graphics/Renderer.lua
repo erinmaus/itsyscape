@@ -31,13 +31,11 @@ Renderer.PassDebugStats = Class(DebugStats)
 Renderer.OUTLINE_SHADER = ShaderResource()
 Renderer.INIT_DISTANCE_SHADER = ShaderResource()
 Renderer.DISTANCE_SHADER = ShaderResource()
-Renderer.COMBINE_SHADER = ShaderResource()
 Renderer.COMPOSE_SHADER = ShaderResource()
 do
 	Renderer.OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Outline")
 	Renderer.INIT_DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/InitDistance")
-	Renderer.DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Distance")
-	Renderer.COMBINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Combine")
+	Renderer.DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/JumpDistance")
 	Renderer.COMPOSE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Compose")
 end
 
@@ -72,7 +70,6 @@ function Renderer:new()
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
 	self.initDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_DISTANCE_SHADER:getResource():getSource())
 	self.distancePostProcessShader = love.graphics.newShader(Renderer.DISTANCE_SHADER:getResource():getSource())
-	self.combinePostProcessShader = love.graphics.newShader(Renderer.COMBINE_SHADER:getResource():getSource())
 	self.composePostProcessShader = love.graphics.newShader(Renderer.COMPOSE_SHADER:getResource():getSource())
 
 	self.occlusionQueryObjects = {}
@@ -164,8 +161,9 @@ function Renderer:_drawOutlines(width, height)
 	-- love.graphics.setColor(1, 1, 1, 1)
 	-- love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 
-	local smallBufferWidth = width
-	local smallBufferHeight = height
+	local scale = 1
+	local smallBufferWidth = width / scale
+	local smallBufferHeight = height / scale
 	self.distanceBuffer:resize(smallBufferWidth, smallBufferHeight)
 
 	love.graphics.setBlendMode("replace")
@@ -174,96 +172,47 @@ function Renderer:_drawOutlines(width, height)
 
 	local currentBuffer = self.distanceBuffer:getCanvas(1)
 	local nextBuffer = self.distanceBuffer:getCanvas(2)
-	local mixBuffer = self.distanceBuffer:getCanvas(3)
 
 	love.graphics.setShader(self.initDistancePostProcessShader)
-	self.initDistancePostProcessShader:send("scape_InColor", 0.0)
-	self.initDistancePostProcessShader:send("scape_OutColor", math.huge)
 	love.graphics.setCanvas(currentBuffer)
+	love.graphics.scale(1 / scale, 1 / scale, 1)
 	love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 
-	local n = 1
+	love.graphics.origin()
 	love.graphics.setShader(self.distancePostProcessShader)
 
-	local xPasses = smallBufferWidth / 8
-	for i = 1, xPasses do
-		local beta = (1 + (i - 1) * 2)
-		local offsetX = 1.0 / smallBufferWidth
-		local offsetY = 0
+	self.distancePostProcessShader:send("scape_TextureSize", { smallBufferWidth, smallBufferHeight })
+	self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
 
-		self.distancePostProcessShader:send("scape_Beta", beta)
-		self.distancePostProcessShader:send("scape_Offset", { offsetX, offsetY })
+	local currentX = smallBufferWidth
+	local currentY = smallBufferHeight
+	while currentX > 1 or currentY > 1 do
+		currentX = currentX / 2
+		if currentX < 1 then
+			currentX = 1
+		end
 
-		local query = self.occlusionQueryObjects[n] or NGL.createAnySampleQuery()
+		currentY = currentY / 2
+		if currentY < 1 then
+			currentY = 1
+		end
+
+		self.distancePostProcessShader:send("scape_JumpDistance", { currentX, currentY })
 		love.graphics.setCanvas(nextBuffer)
-		NGL.beginAnySampleQuery(query)
-
-		if i > 1 then
-			NGL.beginConditionalRender(self.occlusionQueryObjects[n - 1])
-		end
-
 		love.graphics.draw(currentBuffer)
-		love.graphics.flushBatch()
-
-		if i > 1 then
-			NGL.endConditionalRender()
-		end
-
-		NGL.endAnySampleQuery()
-		love.graphics.setCanvas()
-
-		self.occlusionQueryObjects[n] = query
-		n = n + 1
 
 		currentBuffer, nextBuffer = nextBuffer, currentBuffer
 	end
-
-	local yPasses = smallBufferHeight / 8
-	for i = 1, yPasses do
-		local beta = (1 + (i - 1) * 2)
-		local offsetX = 0
-		local offsetY = 1.0 / smallBufferHeight
-
-		self.distancePostProcessShader:send("scape_Beta", beta)
-		self.distancePostProcessShader:send("scape_Offset", { offsetX, offsetY })
-
-		local query = self.occlusionQueryObjects[n] or NGL.createAnySampleQuery()
-		love.graphics.setCanvas(nextBuffer)
-		NGL.beginAnySampleQuery(query)
-
-		if i > 1 then
-			NGL.beginConditionalRender(self.occlusionQueryObjects[n - 1])
-		end
-
-		love.graphics.draw(currentBuffer)
-		love.graphics.flushBatch()
-
-		if i > 1 then
-			NGL.endConditionalRender()
-		end
-
-		NGL.endAnySampleQuery()
-		love.graphics.setCanvas()
-
-		self.occlusionQueryObjects[n] = query
-		n = n + 1
-
-		currentBuffer, nextBuffer = nextBuffer, currentBuffer
-	end
-
-	love.graphics.setCanvas(mixBuffer)
-	love.graphics.setShader(self.combinePostProcessShader)
-	self.combinePostProcessShader:send("scape_Other", currentBuffer)
-	love.graphics.draw(nextBuffer)
 
 	love.graphics.setCanvas(buffer:getColor())
 	love.graphics.setBlendMode("alpha", "premultiplied")
+	--love.graphics.setShader()
 	love.graphics.setShader(self.composePostProcessShader)
+	self.composePostProcessShader:send("scape_TexelSize", { 1 / smallBufferWidth, 1 / smallBufferHeight })
 	self.composePostProcessShader:send("scape_MaxDistance", 16)
-	self.composePostProcessShader:send("scape_DiscardDistance", 1)
 	--self.composePostProcessShader:send("scape_OutlineTexture", self.outlinePass:getOBuffer():getCanvas(1))
 	--self.composePostProcessShader:send("scape_DiffuseTexture", buffer:getColor())
-	love.graphics.draw(mixBuffer)
+	love.graphics.draw(currentBuffer)
 	--love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 
 	love.graphics.pop()
