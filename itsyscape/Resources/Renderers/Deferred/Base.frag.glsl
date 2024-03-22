@@ -19,8 +19,6 @@ varying vec3 frag_Normal;
 varying vec4 frag_Color;
 varying vec2 frag_Texture;
 
-#define SCAPE_BLACK_THRESHOLD 27.0 / 255.0
-
 vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
 void effect()
@@ -33,12 +31,6 @@ void effect()
 	else
 	{
 		diffuse.a = 1.0;
-	}
-
-	vec3 outline;
-	if (diffuse.r <= SCAPE_BLACK_THRESHOLD && diffuse.g <= SCAPE_BLACK_THRESHOLD && diffuse.b <= SCAPE_BLACK_THRESHOLD)
-	{
-		discard;
 	}
 
 	love_Canvases[0] = diffuse;
