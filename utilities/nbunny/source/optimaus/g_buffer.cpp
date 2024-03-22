@@ -16,7 +16,7 @@
 
 nbunny::GBuffer::GBuffer(const std::vector<love::PixelFormat>& pixel_formats)
 {
-	this->pixel_formats.push_back(love::PIXELFORMAT_DEPTH24_STENCIL8);
+	this->pixel_formats.push_back(love::PIXELFORMAT_DEPTH24);
 	this->pixel_formats.insert(this->pixel_formats.end(), pixel_formats.begin(), pixel_formats.end());
 }
 
@@ -51,6 +51,7 @@ void nbunny::GBuffer::resize(int width, int height)
 		settings.height = this->height;
 		settings.dpiScale = instance->getScreenDPIScale();
 		settings.format = pixel_format;
+		settings.readable = true;
 
 		love::graphics::Canvas* canvas = instance->newCanvas(settings);
 		canvases.push_back(canvas);
