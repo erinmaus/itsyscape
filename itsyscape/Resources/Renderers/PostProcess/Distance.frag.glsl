@@ -12,11 +12,6 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float w = scape_Beta + leftPixel.b;
 	float B = min(min(A, e), w);
 
-	if (A == B)
-	{
-		discard;
-	}
-
 	vec4 result = vec4(vec3(0.0), 1.0);
 	result.rg = leftPixel.rg;
 	result.b = B;
@@ -36,6 +31,11 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	if (e <= w && w <= A)
 	{
 		result.rg = rightPixel.rg;
+	}
+
+	if (A == B && result.r == selfPixel.r && result.g == selfPixel.g)
+	{
+		discard;
 	}
 
 	return result;
