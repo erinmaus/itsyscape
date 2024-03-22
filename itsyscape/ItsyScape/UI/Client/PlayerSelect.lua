@@ -347,7 +347,7 @@ function PlayerSelect:update(delta)
 	Widget.update(self, delta)
 
 	for i = 1, #self.players do
-		self.players[i].view:update(delta)
+		self.players[i].view:update(0)
 	end
 end
 

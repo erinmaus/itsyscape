@@ -66,7 +66,7 @@ function Renderer:new()
 	self.passDebugStats = Renderer.PassDebugStats()
 
 	self.outlineBuffer = NGBuffer("rgba32f")
-	self.distanceBuffer = NGBuffer("rgba16f", "rgba16f", "rgba16f")
+	self.distanceBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
 	self.initDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_DISTANCE_SHADER:getResource():getSource())
 	self.distancePostProcessShader = love.graphics.newShader(Renderer.DISTANCE_SHADER:getResource():getSource())
@@ -174,19 +174,38 @@ function Renderer:_drawOutlines(width, height)
 	local nextBuffer = self.distanceBuffer:getCanvas(2)
 
 	love.graphics.setShader(self.initDistancePostProcessShader)
-	love.graphics.setCanvas(currentBuffer)
 	love.graphics.scale(1 / scale, 1 / scale, 1)
+	love.graphics.setCanvas(currentBuffer)
+	love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
+	love.graphics.setCanvas(nextBuffer)
 	love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 
 	love.graphics.origin()
 	love.graphics.setShader(self.distancePostProcessShader)
 
-	self.distancePostProcessShader:send("scape_TextureSize", { smallBufferWidth, smallBufferHeight })
+	--self.distancePostProcessShader:send("scape_TextureSize", { smallBufferWidth, smallBufferHeight })
 	self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
+
+	local log2 = function(x)
+		return math.log(x) / math.log(2)
+	end
 
 	local currentX = smallBufferWidth
 	local currentY = smallBufferHeight
+	local n = 1
+	local steps = math.ceil(log2(math.max(smallBufferWidth, smallBufferHeight))) + 1
 	while currentX > 1 or currentY > 1 do
+		self.distancePostProcessShader:send("scape_JumpDistance", { currentX / smallBufferWidth, currentY / smallBufferHeight })
+		love.graphics.setCanvas(nextBuffer)
+		love.graphics.draw(currentBuffer)
+
+		currentBuffer, nextBuffer = nextBuffer, currentBuffer
+
+		n = n + 1
+		if n > steps then
+			break
+		end
+
 		currentX = currentX / 2
 		if currentX < 1 then
 			currentX = 1
@@ -196,23 +215,28 @@ function Renderer:_drawOutlines(width, height)
 		if currentY < 1 then
 			currentY = 1
 		end
-
-		self.distancePostProcessShader:send("scape_JumpDistance", { currentX, currentY })
-		love.graphics.setCanvas(nextBuffer)
-		love.graphics.draw(currentBuffer)
-
-		currentBuffer, nextBuffer = nextBuffer, currentBuffer
 	end
+
+	self.t = self.t or 32
+	if love.keyboard.isDown("q") then
+		self.t = self.t + 8
+		print(">>> +t", self.t)
+	elseif love.keyboard.isDown("a") then
+		self.t = self.t - 8
+		print(">>> -t", self.t)
+	end
+	self.t = math.max(self.t, 0)
 
 	love.graphics.setCanvas(buffer:getColor())
 	love.graphics.setBlendMode("alpha", "premultiplied")
-	--love.graphics.setShader()
+	love.graphics.setShader()
 	love.graphics.setShader(self.composePostProcessShader)
-	self.composePostProcessShader:send("scape_TexelSize", { 1 / smallBufferWidth, 1 / smallBufferHeight })
-	self.composePostProcessShader:send("scape_MaxDistance", 16)
-	--self.composePostProcessShader:send("scape_OutlineTexture", self.outlinePass:getOBuffer():getCanvas(1))
-	--self.composePostProcessShader:send("scape_DiffuseTexture", buffer:getColor())
-	love.graphics.draw(currentBuffer)
+	-- self.composePostProcessShader:send("scape_TexelSize", { 1 / smallBufferWidth, 1 / smallBufferHeight })
+	--self.composePostProcessShader:send("scape_MaxDistance", 1 / self.t)
+	self.composePostProcessShader:send("scape_OutlineTexture", self.outlinePass:getOBuffer():getCanvas(1))
+	self.composePostProcessShader:send("scape_DiffuseTexture", buffer:getColor())
+	love.graphics.scale(scale, scale, 1)
+	love.graphics.draw(nextBuffer)
 	--love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 
 	love.graphics.pop()
