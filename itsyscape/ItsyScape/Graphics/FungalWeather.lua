@@ -59,7 +59,7 @@ function FungalWeather.SceneNode:draw(renderer, delta)
 	if shader:hasUniform("scape_DiffuseTexture") and
 	   diffuseTexture and diffuseTexture:getIsReady()
 	then
-		shader:send("scape_DiffuseTexture", diffuseTexture:getResource())
+		shader:send("scape_DiffuseTexture", diffuseTexture:getResource(renderer:getCurrentPass():getID()))
 	end
 
 	if mesh then
