@@ -104,6 +104,7 @@ end
 function PokeMenu:mouseLeave(...)
 	Widget.mouseLeave(self, ...)
 
+
 	self:close()
 end
 
