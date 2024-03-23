@@ -31,11 +31,13 @@ Renderer.NodeDebugStats = Class(DebugStats)
 Renderer.PassDebugStats = Class(DebugStats)
 
 Renderer.OUTLINE_SHADER = ShaderResource()
+Renderer.CUSTOM_OUTLINE_SHADER = ShaderResource()
 Renderer.INIT_DISTANCE_SHADER = ShaderResource()
 Renderer.DISTANCE_SHADER = ShaderResource()
 Renderer.COMPOSE_SHADER = ShaderResource()
 do
 	Renderer.OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Outline")
+	Renderer.CUSTOM_OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/CustomOutline")
 	Renderer.INIT_DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/InitDistance")
 	Renderer.DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/JumpDistance")
 	Renderer.COMPOSE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Compose")
@@ -75,6 +77,11 @@ function Renderer:new()
 	self.outlinePass = OutlineRendererPass(self)
 	self.finalDeferredPass = DeferredRendererPass(self)
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
+	self.passesByID = {
+		[self.outlinePass:getID()] = self.outlinePass,
+		[self.finalDeferredPass:getID()] = self.finalDeferredPass,
+		[self.finalForwardPass:getID()] = self.finalForwardPass
+	}
 
 	self._renderer:addRendererPass(self.outlinePass:getHandle())
 	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
@@ -86,6 +93,7 @@ function Renderer:new()
 	self.outlineBuffer = NGBuffer("rgba32f", "rgba8")
 	self.distanceBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
+	self.customOutlinePostProcessShader = love.graphics.newShader(Renderer.CUSTOM_OUTLINE_SHADER:getResource():getSource())
 	self.initDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_DISTANCE_SHADER:getResource():getSource())
 	self.distancePostProcessShader = love.graphics.newShader(Renderer.DISTANCE_SHADER:getResource():getSource())
 	self.composePostProcessShader = love.graphics.newShader(Renderer.COMPOSE_SHADER:getResource():getSource())
@@ -143,24 +151,18 @@ function Renderer:getCurrentShader()
 	return self._renderer:getCurrentShader()
 end
 
-function Renderer:_drawOutlines(width, height)
-	self.t = self.t or 5
-	local step = 1 / 30
-	if love.keyboard.isDown("q") then
-		self.t = self.t + step
-		print(">>> + t", self.t)
-	elseif love.keyboard.isDown("a") then
-		self.t = self.t - step
-		print(">>> - t", math.max(self.t, 0))
-	end
-	self.t = math.max(self.t, 0)
+function Renderer:getCurrentPass()
+	local passID = self._renderer:getCurrentPassID()
+	return self.passesByID[passID]
+end
 
+function Renderer:_drawOutlines(width, height)
 	local buffer = self:getOutputBuffer()
 	self.outlinePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.outlinePostProcessShader:send("scape_Far", self.camera:getFar())
-	--self.outlinePostProcessShader:send("scape_MinDepth", 0)
-	self.outlinePostProcessShader:send("scape_MaxDepth", 10)
-	self.outlinePostProcessShader:send("scape_OutlineThickness", self.t)
+	--self.outlinePostProcessShader:send("scape_MinDepth", 0.125)
+	self.outlinePostProcessShader:send("scape_MaxDepth", -100)
+	self.outlinePostProcessShader:send("scape_OutlineThickness", 5)
 	self.outlinePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 
 	love.graphics.push("all")
@@ -177,6 +179,14 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setBlendMode("alpha")
 	love.graphics.setDepthMode("always", false)
 	love.graphics.draw(buffer:getDepthStencil())
+
+	love.graphics.setShader(self.customOutlinePostProcessShader)
+	love.graphics.setColor(0, 0, 0, 1)
+	self.customOutlinePostProcessShader:send("scape_TexelSize", { 1.0 / width, 1.0 / height })
+	self.customOutlinePostProcessShader:send("scape_OutlineThickness", 2.5)
+	love.graphics.setBlendMode("alpha")
+	love.graphics.setDepthMode("always", false)
+	love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 
 	-- love.graphics.setCanvas(buffer:getColor())
 	-- love.graphics.setShader()
@@ -260,15 +270,16 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setCanvas(buffer:getColor())
 	--love.graphics.setBlendMode("alpha", "premultiplied")
 	--love.graphics.setBlendMode("alpha", "alphamultiply")
-	love.graphics.setBlendMode("replace")
-	--love.graphics.setShader()
-	love.graphics.setShader(self.composePostProcessShader)
+	love.graphics.setBlendMode("alpha")
+	love.graphics.setShader()
 	--self.composePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
+	love.graphics.setShader(self.composePostProcessShader)
 	self.composePostProcessShader:send("scape_NoiseTextureX", self.outlineNoiseTextureX)
 	self.composePostProcessShader:send("scape_NoiseTextureY", self.outlineNoiseTextureY)
 	self.composePostProcessShader:send("scape_NoiseTexelSize", { 1 / noiseWidth, 1 / noiseHeight })
-	self.composePostProcessShader:send("scape_OutlineTurbulence", 0.5)
+	self.composePostProcessShader:send("scape_OutlineTurbulence", 0.75)
 	love.graphics.draw(self.outlineBuffer:getCanvas(2))
+	--love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 	--self.composePostProcessShader:send("scape_OutlineTexture", )
 	--love.graphics.draw(buffer:getColor())
 

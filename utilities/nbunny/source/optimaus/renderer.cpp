@@ -69,6 +69,11 @@ love::graphics::Shader* nbunny::Renderer::get_current_shader() const
 	return current_shader;
 }
 
+int nbunny::Renderer::get_current_pass_id() const
+{
+	return current_renderer_pass_id;
+}
+
 nbunny::ShaderCache& nbunny::Renderer::get_shader_cache()
 {
 	return shader_cache;
@@ -94,8 +99,11 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 
 	for (auto& renderer_pass: renderer_passes)
 	{
+		current_renderer_pass_id = renderer_pass->get_renderer_pass_id();
 		renderer_pass->draw(L, node, delta);
 	}
+
+	current_renderer_pass_id = RENDERER_PASS_NONE;
 }
 
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
@@ -378,6 +386,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_renderer(lua_State* L)
 		"getCamera", &nbunny_renderer_get_camera,
         "getCurrentShader", &nbunny_renderer_get_current_shader,
 		"getShaderCache", &nbunny_renderer_get_shader_cache,
+		"getCurrentPassID", &nbunny::Renderer::get_current_pass_id,
 		"draw", &nbunny_renderer_draw);
 
 	sol::stack::push(L, T);
@@ -390,7 +399,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_rendererpass(lua_State* L)
 {
 	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::RendererPass>("NRendererPass",
 		"new", sol::no_constructor,
-		"getRendererPassID", &nbunny::RendererPass::get_renderer_pass_id);
+		"getID", &nbunny::RendererPass::get_renderer_pass_id);
 
 	sol::stack::push(L, T);
 
