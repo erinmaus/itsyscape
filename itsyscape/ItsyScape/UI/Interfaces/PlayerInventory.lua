@@ -142,7 +142,7 @@ function PlayerInventory.UseItemFacade:mousePress(_x, _y, button)
 
 	self:mouseMove(love.mouse.getPosition())
 
-	if button == 1 then
+	if button == 1 and (_CONF.probe == false or #self.hits <= 1) then
 		local hit = self.hits[1]
 		if hit then
 			if hit.actor then
@@ -155,15 +155,16 @@ function PlayerInventory.UseItemFacade:mousePress(_x, _y, button)
 		else
 			self.interface:cancelUse()
 		end
-	elseif button == 2 then
+	elseif button == 2 or (button == 1 and #self.hits > 1 and _CONF.probe ~= false) then
 		local actions = {}
+
 
 		for i = 1, #self.hits do
 			local hit = self.hits[i]
 			if hit.prop then
 				table.insert(actions, {
 					id = hit.prop:getID(),
-					verb = string.format("Use %s ->", self.item.name),
+					verb = string.format("Use %s  ->", self.item.name),
 					object = hit.prop:getName(),
 					callback = function()
 						self.interface:useItemOnProp(hit.prop)
@@ -181,6 +182,7 @@ function PlayerInventory.UseItemFacade:mousePress(_x, _y, button)
 			end
 		end
 
+		print(">>> button == 2", #actions)
 		self.ui:probe(actions)
 	end
 
@@ -360,7 +362,9 @@ function PlayerInventory:cancelUse()
 		self:getView():getRenderManager():setCursor(nil)
 	end
 
-	self.activeButtonIcon:setIsActive(false)
+	if self.activeButtonIcon then
+		self.activeButtonIcon:setIsActive(false)
+	end
 
 	self.isUsingItem = false
 	self.activeButtonIcon = nil
