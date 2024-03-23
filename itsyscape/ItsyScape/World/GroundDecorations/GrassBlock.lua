@@ -58,7 +58,7 @@ function GrassBlock:emit(tileSet, map, i, j, tileSetTile, mapTile)
 
 				self:addFeature(
 					self.FEATURE,
-					Vector(offsetX, offsetY, offsetZ),
+					Vector(offsetX, offsetY - 0.125, offsetZ),
 					Quaternion.fromAxisAngle(Vector.UNIT_Y, rotation),
 					Vector(scale),
 					self.COLOR * Color(color, color, color, 1))
