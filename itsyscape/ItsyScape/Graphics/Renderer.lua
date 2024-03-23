@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
@@ -20,6 +21,7 @@ local NShaderCache = require "nbunny.optimaus.shadercache"
 local NRenderer = require "nbunny.optimaus.renderer"
 local NGBuffer = require "nbunny.optimaus.gbuffer"
 local NGL = require "nbunny.gl"
+local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
 
 -- Renderer type. Manages rendering resources and logic.
 local Renderer = Class()
@@ -51,6 +53,22 @@ function Renderer.PassDebugStats:process(pass, scene, delta)
 	pass:endDraw(scene, delta)
 end
 
+Renderer.X_NOISE = NoiseBuilder {
+	persistence = 4,
+	scale = 128,
+	octaves = 1,
+	lacunarity = 1,
+	offset = Vector(37, 47, 17)
+}
+
+Renderer.Y_NOISE = NoiseBuilder {
+	persistence = 4,
+	scale = 128,
+	octaves = 1,
+	lacunarity = 1,
+	offset = Vector(73, 14, 64)
+}
+
 function Renderer:new()
 	self._renderer = NRenderer(self)
 
@@ -71,8 +89,6 @@ function Renderer:new()
 	self.initDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_DISTANCE_SHADER:getResource():getSource())
 	self.distancePostProcessShader = love.graphics.newShader(Renderer.DISTANCE_SHADER:getResource():getSource())
 	self.composePostProcessShader = love.graphics.newShader(Renderer.COMPOSE_SHADER:getResource():getSource())
-
-	self.occlusionQueryObjects = {}
 end
 
 function Renderer:getDeferredPass()
@@ -128,12 +144,13 @@ function Renderer:getCurrentShader()
 end
 
 function Renderer:_drawOutlines(width, height)
-	self.t = self.t or 4
+	self.t = self.t or 5
+	local step = 1 / 30
 	if love.keyboard.isDown("q") then
-		self.t = self.t + 0.25
+		self.t = self.t + step
 		print(">>> + t", self.t)
 	elseif love.keyboard.isDown("a") then
-		self.t = self.t - 0.25
+		self.t = self.t - step
 		print(">>> - t", math.max(self.t, 0))
 	end
 	self.t = math.max(self.t, 0)
@@ -141,8 +158,8 @@ function Renderer:_drawOutlines(width, height)
 	local buffer = self:getOutputBuffer()
 	self.outlinePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.outlinePostProcessShader:send("scape_Far", self.camera:getFar())
-	self.outlinePostProcessShader:send("scape_MinDepth", 0)
-	self.outlinePostProcessShader:send("scape_MaxDepth", 1)
+	--self.outlinePostProcessShader:send("scape_MinDepth", 0)
+	self.outlinePostProcessShader:send("scape_MaxDepth", 10)
 	self.outlinePostProcessShader:send("scape_OutlineThickness", self.t)
 	self.outlinePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 
@@ -159,7 +176,6 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setShader(self.outlinePostProcessShader)
 	love.graphics.setBlendMode("alpha")
 	love.graphics.setDepthMode("always", false)
-	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.draw(buffer:getDepthStencil())
 
 	-- love.graphics.setCanvas(buffer:getColor())
@@ -225,16 +241,38 @@ function Renderer:_drawOutlines(width, height)
 	-- 	end
 	-- end
 
+	local noiseWidth = width / 8
+	local noiseHeight = height / 8
+
+	if not self.outlineNoiseTextureX or noiseWidth ~= self.outlineNoiseTextureX:getWidth() or noiseHeight ~= self.outlineNoiseTextureX:getHeight() then
+		local noise = self.X_NOISE
+		self.outlineNoiseTextureX = love.graphics.newImage(noise:sampleTestImage(noiseWidth, noiseHeight))
+		self.outlineNoiseTextureX:setWrap("mirroredrepeat", "mirroredrepeat")
+	end
+
+	if not self.outlineNoiseTextureY or noiseWidth ~= self.outlineNoiseTextureY:getWidth() or noiseHeight ~= self.outlineNoiseTextureY:getHeight() then
+		local noise = self.Y_NOISE
+		self.outlineNoiseTextureY = love.graphics.newImage(noise:sampleTestImage(noiseWidth, noiseHeight))
+		self.outlineNoiseTextureY:setWrap("mirroredrepeat", "mirroredrepeat")
+	end
+
+	--love.graphics.setCanvas(self.outlineBuffer:getCanvas(2))
 	love.graphics.setCanvas(buffer:getColor())
 	--love.graphics.setBlendMode("alpha", "premultiplied")
+	--love.graphics.setBlendMode("alpha", "alphamultiply")
 	love.graphics.setBlendMode("replace")
 	--love.graphics.setShader()
-	--love.graphics.setShader(self.composePostProcessShader)
-	-- self.composePostProcessShader:send("scape_TexelSize", { 1 / smallBufferWidth, 1 / smallBufferHeight })
-	--self.composePostProcessShader:send("scape_MaxDistance", 1 / self.t)
-	--self.composePostProcessShader:send("scape_OutlineTexture", )
-	love.graphics.scale(scale, scale, 1)
+	love.graphics.setShader(self.composePostProcessShader)
+	--self.composePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
+	self.composePostProcessShader:send("scape_NoiseTextureX", self.outlineNoiseTextureX)
+	self.composePostProcessShader:send("scape_NoiseTextureY", self.outlineNoiseTextureY)
+	self.composePostProcessShader:send("scape_NoiseTexelSize", { 1 / noiseWidth, 1 / noiseHeight })
+	self.composePostProcessShader:send("scape_OutlineTurbulence", 0.5)
 	love.graphics.draw(self.outlineBuffer:getCanvas(2))
+	--self.composePostProcessShader:send("scape_OutlineTexture", )
+	--love.graphics.draw(buffer:getColor())
+
+	--love.graphics.setCanvas(buffer:getColor())
 
 	love.graphics.pop()
 end
