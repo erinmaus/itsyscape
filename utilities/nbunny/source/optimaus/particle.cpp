@@ -965,7 +965,7 @@ void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 	auto diffuse_texture_uniform = shader->getUniformInfo("scape_DiffuseTexture");
 	if (diffuse_texture_uniform && textures.size() >= 1)
 	{
-		auto texture = textures[0]->get_texture();
+		auto texture = textures[0]->get_per_pass_texture(renderer.get_current_pass_id());
 		if (texture)
 		{
 			shader->sendTextures(diffuse_texture_uniform, &texture, 1);

@@ -26,18 +26,17 @@ namespace nbunny
 	private:
 		enum
 		{
-			MAX_LIGHTS = 16,
 			MAX_FOG    = 4
 		};
 
 		GBuffer& o_buffer;
 
 		std::vector<SceneNode*> visible_scene_nodes;
+		std::vector<SceneNode*> opaque_outline_scene_nodes;
+		std::vector<SceneNode*> translucent_outline_scene_nodes;
 
 		void walk_all_nodes(SceneNode& node, float delta);
-
 		void draw_nodes(lua_State* L, float delta);
-		void get_nearby_lights(SceneNode& node, float delta);
 
 	public:
 		OutlineRendererPass(GBuffer& o_buffer);

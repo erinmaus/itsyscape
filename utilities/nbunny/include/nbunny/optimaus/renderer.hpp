@@ -22,6 +22,7 @@ namespace nbunny
 {
 	enum
 	{
+		RENDERER_PASS_NONE     = 0,
 		RENDERER_PASS_DEFERRED = 1,
 		RENDERER_PASS_FORWARD  = 2,
 		RENDERER_PASS_MOBILE   = 3,
@@ -50,6 +51,8 @@ namespace nbunny
 
 		float time = 0.0f;
 
+		int current_renderer_pass_id = 0;
+
 	public:
 		Renderer(int reference);
 		~Renderer() = default;
@@ -65,6 +68,7 @@ namespace nbunny
 
 		void set_current_shader(love::graphics::Shader* value);
 		love::graphics::Shader* get_current_shader() const;
+		int get_current_pass_id() const;
 
 		ShaderCache& get_shader_cache();
 		const ShaderCache& get_shader_cache() const;
@@ -81,7 +85,7 @@ namespace nbunny
 
 	public:
 		RendererPass(int renderer_pass_id);
-		~RendererPass() = default;
+		virtual ~RendererPass() = default;
 
 		int get_renderer_pass_id() const;
 

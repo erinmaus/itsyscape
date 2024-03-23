@@ -8,6 +8,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <algorithm>
 #include "modules/graphics/Graphics.h"
 #include "modules/math/Transform.h"
 #include "nbunny/optimaus/outline_renderer_pass.hpp"
@@ -16,6 +17,35 @@ void nbunny::OutlineRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
 	visible_scene_nodes.clear();
 	SceneNode::walk_by_position(node, get_renderer()->get_camera(), delta, visible_scene_nodes);
+
+	opaque_outline_scene_nodes.clear();
+	translucent_outline_scene_nodes.clear();
+	for (auto& visible_scene_node: visible_scene_nodes)
+	{
+		auto& material = visible_scene_node->get_material();
+		auto& textures = material.get_textures();
+
+		if (textures.size() == 0)
+		{
+			continue;
+		}
+
+		if (!textures.at(0)->has_per_pass_texture(get_renderer_pass_id()))
+		{
+			continue;
+		}
+
+		if (material.get_is_translucent() || material.get_is_full_lit())
+		{
+			translucent_outline_scene_nodes.push_back(visible_scene_node);
+		}
+		else
+		{
+			opaque_outline_scene_nodes.push_back(visible_scene_node);
+		}
+	}
+
+	std::reverse(opaque_outline_scene_nodes.begin(), opaque_outline_scene_nodes.end());
 }
 
 love::graphics::Shader* nbunny::OutlineRendererPass::get_node_shader(lua_State* L, const SceneNode& node)
@@ -48,7 +78,23 @@ void nbunny::OutlineRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
 
-	for (auto& scene_node: visible_scene_nodes)
+	for (auto& scene_node: opaque_outline_scene_nodes)
+	{
+		auto shader = get_node_shader(L, *scene_node);
+		if (!shader)
+		{
+			continue;
+		}
+		renderer->set_current_shader(shader);
+
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
+        graphics->setMeshCullMode(love::graphics::CULL_BACK);
+		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+
+		renderer->draw_node(L, *scene_node, delta);
+	}
+
+	for (auto& scene_node: translucent_outline_scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
 		if (!shader)
@@ -65,8 +111,6 @@ void nbunny::OutlineRendererPass::draw_nodes(lua_State* L, float delta)
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
 
 		renderer->draw_node(L, *scene_node, delta);
-
-		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 }
 

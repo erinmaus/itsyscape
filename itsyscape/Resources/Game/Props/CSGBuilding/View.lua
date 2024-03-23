@@ -48,7 +48,7 @@ function CSGBuilding.Node:draw(renderer)
 	   diffuseTexture and diffuseTexture:getIsReady()
 	then
 		diffuseTexture:getResource():setWrap("repeat")
-		shader:send("scape_DiffuseTexture", diffuseTexture:getResource())
+		shader:send("scape_DiffuseTexture", diffuseTexture:getResource(renderer:getCurrentPass():getID()))
 	end
 
 	if shader:hasUniform("scape_Scale") then

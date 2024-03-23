@@ -21,7 +21,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	// {
 	// 	return vec4(vec3(0.0), sample.a);
 	// }
-	return sample;
+	return vec4(sample.rgb, 1.0);
 
 	// vec2 position = sample.xy;
 	// float distance = length(position - textureCoordinate);

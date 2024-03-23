@@ -69,7 +69,7 @@ function MapMeshSceneNode:draw(renderer, delta)
 	if shader:hasUniform("scape_DiffuseTexture") and
 	   diffuse and diffuse:getIsReady()
 	then
-		diffuse:getResource():setFilter('nearest', 'nearest')
+		diffuse:getResource(renderer:getCurrentPass():getID()):setFilter('nearest', 'nearest')
 		shader:send("scape_DiffuseTexture", diffuse:getResource())
 	end
 
