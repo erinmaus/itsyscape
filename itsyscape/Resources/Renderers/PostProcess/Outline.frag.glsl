@@ -14,26 +14,26 @@ float linearDepth(float depthSample)
 
 vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
 {
-	float halfOutlineThickness = ceil(scape_OutlineThickness / 2.0);
+	float halfOutlineThickness = ceil(scape_OutlineThickness / 2.0) - 1;
 	vec2 halfTexelSize = scape_TexelSize / 2.0;
 
 	float referenceDepthSample = linearDepth(Texel(texture, textureCoordinate).r);
 
 	float sumDepthSamples = 0.0;
 	float numDepthSamples = 0.0;
+	float minDepthSample = referenceDepthSample;
+	float maxDepthSample = referenceDepthSample;
 	for (float x = -halfOutlineThickness; x <= halfOutlineThickness; x += 1.0)
 	{
 		for (float y = -halfOutlineThickness; y <= halfOutlineThickness; y += 1.0)
 		{
-			// Weight will be 1.0 if approximately x != 0 and y != 0.
-			// Otherwise will be 0.0.
-			float weight = 1 - (step(x, 0.1) * step(0.1, x) * step(y, 0.1) * step(y, 0.1));
-
 			vec2 otherDepthSampleTextureCoordinate = textureCoordinate + vec2(x, y) * scape_TexelSize;
-			float otherDepthSample = Texel(texture, otherDepthSampleTextureCoordinate).r;
+			float otherDepthSample = linearDepth(Texel(texture, otherDepthSampleTextureCoordinate).r);
 
-			sumDepthSamples += weight * otherDepthSample;
-			numDepthSamples += weight;
+			sumDepthSamples += otherDepthSample;
+			numDepthSamples += 1.0;
+			maxDepthSample = max(otherDepthSample, maxDepthSample);
+			minDepthSample = min(otherDepthSample, minDepthSample);
 		}
 	}
 
@@ -45,9 +45,21 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 
 	// 5 - (10 * 0.5)
 
-	//float d = step(scape_MaxDepth, sumDepthSamples - (referenceDepthSample * numDepthSamples));
+	//float d = sumDepthSamples - (referenceDepthSample * numDepthSamples);
+	//float d = 1.0 - smoothstep(scape_MinDepth, scape_MaxDepth, referenceDepthSample - (sumDepthSamples / numDepthSamples));
+	//float d = referenceDepthSample;
+	// float d1 = minDepthSample;
+	// //float d2 = smoothstep(scape_MinDepth, scape_MaxDepth, d1);
+	// float d2 = 0.0;
+	// float d3 = maxDepthSample;
+	// float d4 = referenceDepthSample;
+	float difference = (sumDepthSamples / numDepthSamples) - minDepthSample;
+	float d = 1.0 - smoothstep(scape_MinDepth, scape_MaxDepth, difference);
+	//float d = difference;
+	//float d = step(scape_MinDepth, difference) * step(difference, scape_MaxDepth);
 
-	float d = sumDepthSamples - (referenceDepthSample * numDepthSamples);
+	//float d = sumDepthSamples - (referenceDepthSample * numDepthSamples);
+	//float d = referenceDepthSample;
 	//float d = sumDepthSamples - (referenceDepthSample * numDepthSamples);
 
 	//float minDepth = scape_MinDepth / depthRange;
@@ -72,5 +84,5 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	// 	d = 1.0;
 	// }
 
-	return vec4(color.rgb * d, 1.0);
+	return vec4(color.rgb * d, 1);
 }
