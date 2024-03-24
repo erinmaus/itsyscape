@@ -70,7 +70,7 @@ function TextureResource:loadFromFile(filename, resourceManager)
 
 		if perPassTextureFilename ~= filename and love.filesystem.getInfo(perPassTextureFilename) then
 			local perPassImage = love.graphics.newImage(perPassTextureFilename)
-			perPassImage:setFilter("nearest", "nearest")
+			perPassImage:setFilter("linear", "linear")
 
 			self:getHandle():setPerPassTexture(passID, perPassImage)
 		end
