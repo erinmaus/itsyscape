@@ -160,15 +160,16 @@ function Renderer:_drawOutlines(width, height)
 	local buffer = self:getOutputBuffer()
 	self.outlinePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.outlinePostProcessShader:send("scape_Far", self.camera:getFar())
-	self.outlinePostProcessShader:send("scape_MinDepth", 0.3)
-	self.outlinePostProcessShader:send("scape_MaxDepth", 1.0)
-	self.outlinePostProcessShader:send("scape_OutlineThickness", 5)
+	self.outlinePostProcessShader:send("scape_MinDepth", 0.00001)
+	self.outlinePostProcessShader:send("scape_MaxDepth", 0.02)
+	self.outlinePostProcessShader:send("scape_OutlineThickness", 1)
 	self.outlinePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 
 	love.graphics.push("all")
 	love.graphics.origin()
 
 	self.outlineBuffer:resize(width, height)
+	self.outlineBuffer:getCanvas(2):setFilter("linear", "linear")
 	-- buffer:getDepthStencil():setFilter("nearest", "nearest")
 	-- love.graphics.setShader()
 	-- love.graphics.setCanvas(self.outlineBuffer:getCanvas(1))
@@ -199,57 +200,53 @@ function Renderer:_drawOutlines(width, height)
 	-- local scale = 1
 	-- local smallBufferWidth = width / scale
 	-- local smallBufferHeight = height / scale
-	-- self.distanceBuffer:resize(smallBufferWidth, smallBufferHeight)
+	self.distanceBuffer:resize(width, height)
 
-	-- love.graphics.setBlendMode("replace")
-	-- love.graphics.setDepthMode("always", false)
-	-- love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setBlendMode("replace")
+	love.graphics.setDepthMode("always", false)
+	love.graphics.setColor(1, 1, 1, 1)
 
-	-- local currentBuffer = self.distanceBuffer:getCanvas(1)
-	-- local nextBuffer = self.distanceBuffer:getCanvas(2)
-
-	-- love.graphics.setShader(self.initDistancePostProcessShader)
+	local currentBuffer = self.distanceBuffer:getCanvas(1)
+	currentBuffer:setFilter("nearest", "nearest")
+	local nextBuffer = self.distanceBuffer:getCanvas(2)
+	nextBuffer:setFilter("nearest", "nearest")
+	
+	love.graphics.setShader(self.initDistancePostProcessShader)
+	self.initDistancePostProcessShader:send("scape_TextureSize", { width, height })
 	-- love.graphics.scale(1 / scale, 1 / scale, 1)
-	-- love.graphics.setCanvas(currentBuffer)
-	-- love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
-	-- love.graphics.setCanvas(nextBuffer)
-	-- love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
+	love.graphics.setCanvas(currentBuffer)
+	love.graphics.draw(self.outlineBuffer:getCanvas(2))
+	love.graphics.setCanvas(nextBuffer)
+	love.graphics.draw(self.outlineBuffer:getCanvas(2))
 
 	-- love.graphics.origin()
 	-- love.graphics.setShader(self.distancePostProcessShader)
 
-	-- --self.distancePostProcessShader:send("scape_TextureSize", { smallBufferWidth, smallBufferHeight })
-	-- self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
+	love.graphics.setShader(self.distancePostProcessShader)
+	self.distancePostProcessShader:send("scape_TextureSize", { width, height })
+	self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
 
-	-- local log2 = function(x)
-	-- 	return math.log(x) / math.log(2)
-	-- end
+	
+	local currentX, currentY
+	repeat
+		self.distancePostProcessShader:send("scape_JumpDistance", { (currentX or 1) / width, (currentY or 1) / height })
+		love.graphics.setCanvas(nextBuffer)
+		love.graphics.draw(currentBuffer)
 
-	-- local currentX = smallBufferWidth
-	-- local currentY = smallBufferHeight
-	-- local n = 1
-	-- local steps = math.ceil(log2(math.max(smallBufferWidth, smallBufferHeight))) + 1
+		currentX = math.max((currentX or width) / 2, 1)
+		currentY = math.max((currentY or height) / 2, 1)
+		currentBuffer, nextBuffer = nextBuffer, currentBuffer
+	until currentX <= 1 and currentY <= 1
+
 	-- while currentX > 1 or currentY > 1 do
-	-- 	self.distancePostProcessShader:send("scape_JumpDistance", { currentX / smallBufferWidth, currentY / smallBufferHeight })
+	-- 	currentX = math.max(currentX / 2, 1)
+	-- 	currentY = math.max(currentY / 2, 1)
+	
+	-- 	self.distancePostProcessShader:send("scape_JumpDistance", { currentX / width, currentY / height })
 	-- 	love.graphics.setCanvas(nextBuffer)
 	-- 	love.graphics.draw(currentBuffer)
 
 	-- 	currentBuffer, nextBuffer = nextBuffer, currentBuffer
-
-	-- 	n = n + 1
-	-- 	if n > steps then
-	-- 		break
-	-- 	end
-
-	-- 	currentX = currentX / 2
-	-- 	if currentX < 1 then
-	-- 		currentX = 1
-	-- 	end
-
-	-- 	currentY = currentY / 2
-	-- 	if currentY < 1 then
-	-- 		currentY = 1
-	-- 	end
 	-- end
 
 	local noiseWidth = width / 8
@@ -271,15 +268,17 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setCanvas(buffer:getColor())
 	--love.graphics.setBlendMode("alpha", "premultiplied")
 	--love.graphics.setBlendMode("alpha", "alphamultiply")
-	love.graphics.setBlendMode("alpha")
+	love.graphics.setBlendMode("replace")
 	love.graphics.setShader()
-	--self.composePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 	love.graphics.setShader(self.composePostProcessShader)
-	self.composePostProcessShader:send("scape_NoiseTextureX", self.outlineNoiseTextureX)
-	self.composePostProcessShader:send("scape_NoiseTextureY", self.outlineNoiseTextureY)
-	self.composePostProcessShader:send("scape_NoiseTexelSize", { 1 / noiseWidth, 1 / noiseHeight })
-	self.composePostProcessShader:send("scape_OutlineTurbulence", 0.75)
-	love.graphics.draw(self.outlineBuffer:getCanvas(2))
+	love.graphics.setColor(1, 1, 1, 1)
+	--self.composePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
+	--self.composePostProcessShader:send("scape_NoiseTextureX", self.outlineNoiseTextureX)
+	--self.composePostProcessShader:send("scape_NoiseTextureY", self.outlineNoiseTextureY)
+	--self.composePostProcessShader:send("scape_NoiseTexelSize", { 1 / noiseWidth, 1 / noiseHeight })
+	--self.composePostProcessShader:send("scape_OutlineTurbulence", 0.75)
+	self.composePostProcessShader:send("scape_OutlineThickness", 5);
+	love.graphics.draw(currentBuffer)
 	--love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
 	--self.composePostProcessShader:send("scape_OutlineTexture", )
 	--love.graphics.draw(buffer:getColor())
