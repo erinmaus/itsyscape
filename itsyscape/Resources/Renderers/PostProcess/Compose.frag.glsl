@@ -1,5 +1,17 @@
-uniform vec2 scape_TexelSize;
-uniform float scape_OutlineThickness;
+uniform sampler2D scape_DepthTexture;
+uniform float scape_Near;
+uniform float scape_Far;
+uniform float scape_NearOutlineDistance;
+uniform float scape_FarOutlineDistance;
+uniform float scape_MinOutlineThickness;
+uniform float scape_MaxOutlineThickness;
+
+float linearDepth(float depthSample)
+{
+	depthSample = 2.0 * depthSample - 1.0;
+	float zLinear = 2.0 * scape_Near * scape_Far / (scape_Far + scape_Near - depthSample * (scape_Far - scape_Near));
+	return zLinear;
+}
 
 vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
 {
@@ -20,8 +32,12 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	// }
 	//return vec4(sample.rgb, 1.0);
 
+	float depth = linearDepth(Texel(scape_DepthTexture, textureCoordinate).r);
+	float remappedDepth = 1.0 - clamp((depth - scape_NearOutlineDistance) / (scape_FarOutlineDistance - scape_NearOutlineDistance), 0.0, 1.0);
+	float thickness = mix(scape_MinOutlineThickness, scape_MaxOutlineThickness, remappedDepth);
+
 	float d = distance(textureCoordinate, sample.xy);
-	float a = smoothstep(0, max(scape_OutlineThickness / 2.0, 1), sample.z);
+	float a = smoothstep(0, max(thickness / 2.0, 1), sample.z);
 	return vec4(color.rgb * vec3(a), 1.0);
 	//float distance = length(position - textureCoordinate);
 
