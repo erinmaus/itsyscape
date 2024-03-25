@@ -11,29 +11,26 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 1.0 / 128.0
-#define SCAPE_BLACK_DISCARD_THRESHOLD 27.0 / 128.0
+#define SCAPE_BLACK_DISCARD_THRESHOLD 27.0 / 255.0
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
 varying vec2 frag_Texture;
+varying vec4 frag_Color;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
-vec4 effect(
-	vec4 color,
-	Image texture,
-	vec2 textureCoordinate,
-	vec2 screenCoordinate)
+void effect()
 {
-	vec4 diffuse = performEffect(color, frag_Texture);
-	float alpha = diffuse.a * color.a;
+	vec4 diffuse = performEffect(frag_Color, frag_Texture);
 
-	if (alpha < SCAPE_ALPHA_DISCARD_THRESHOLD)
+	if (diffuse.a < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{
 		discard;
 	}
-	
-	diffuse.rgb = vec3(step(diffuse.r, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.r, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.b, SCAPE_BLACK_DISCARD_THRESHOLD));
 
-	return vec4(diffuse.rgb, alpha);
+	diffuse.rgb = vec3(step(diffuse.r, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.r, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.b, SCAPE_BLACK_DISCARD_THRESHOLD));
+	diffuse.a = 1.0;
+
+	love_Canvases[0] = diffuse;
 }

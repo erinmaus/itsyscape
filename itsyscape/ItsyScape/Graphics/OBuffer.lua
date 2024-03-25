@@ -15,6 +15,7 @@ local OBuffer = Class()
 OBuffer.OUTLINE_INDEX = 1
 
 OBuffer.OUTLINE_FORMAT = 'rgba8'
+OBuffer.NORMAL_FORMAT = 'rgba16f'
 OBuffer.DEPTH_STENCIL_FORMAT = 'depth24'
 
 function OBuffer:new(width, height)

@@ -23,6 +23,7 @@ attribute vec2 VertexTexture;
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
 varying vec2 frag_Texture;
+varying vec4 frag_Color;
 
 void performTransform(
 	mat4 modelViewProjection,
@@ -34,6 +35,7 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 {
 	frag_Normal = normalize(mat3(scape_NormalMatrix) * VertexNormal);
 	frag_Texture = VertexTexture;
+	frag_Color = ConstantColor;
 
 	vec3 localPosition = vec3(0.0);
 	vec4 projectedPosition = vec4(0.0);
