@@ -220,11 +220,6 @@ function love.keypressed(...)
 			_APP.show3D = not _APP.show3D
 		elseif (select(1, ...) == 'f5') then
 			itsyrealm.graphics.disable()
-		elseif (select(1, ...) == 'f12') then
-			local p = require "ProFi"
-			jit.off()
-			p:setGetTimeMethod(love.timer.getTime)
-			p:start()
 		end
 	end
 end

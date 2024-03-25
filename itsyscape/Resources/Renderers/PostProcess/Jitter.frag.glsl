@@ -1,7 +1,6 @@
 uniform sampler2D scape_NoiseTextureX;
 uniform sampler2D scape_NoiseTextureY;
 uniform vec2 scape_NoiseTexelSize;
-uniform vec2 scape_TexelSize;
 uniform float scape_OutlineTurbulence;
 
 vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
