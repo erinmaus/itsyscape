@@ -10,8 +10,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
-#define SCAPE_ALPHA_DISCARD_THRESHOLD 1.0 / 128.0
-#define SCAPE_BLACK_DISCARD_THRESHOLD 27.0 / 255.0
+#define SCAPE_ALPHA_DISCARD_THRESHOLD 0.5
+#define SCAPE_BLACK_DISCARD_THRESHOLD 128.0 / 255.0
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
@@ -29,7 +29,12 @@ void effect()
 		discard;
 	}
 
-	diffuse.rgb = vec3(step(diffuse.r, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.r, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.b, SCAPE_BLACK_DISCARD_THRESHOLD));
+	//diffuse.rgb = vec3(1 - (step(diffuse.r, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.g, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.b, SCAPE_BLACK_DISCARD_THRESHOLD)));
+	if (diffuse.r < SCAPE_BLACK_DISCARD_THRESHOLD || diffuse.g < SCAPE_BLACK_DISCARD_THRESHOLD || diffuse.b < SCAPE_BLACK_DISCARD_THRESHOLD)
+	{
+		diffuse.rgb = vec3(0.0);
+	}
+
 	diffuse.a = 1.0;
 
 	love_Canvases[0] = diffuse;
