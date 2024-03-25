@@ -21,7 +21,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	//return vec4(sample.rgb, 1.0);
 
 	float d = distance(textureCoordinate, sample.xy);
-	float a = smoothstep(0, scape_OutlineThickness / 2.0, sample.z);
+	float a = smoothstep(0, max(scape_OutlineThickness / 2.0, 1), sample.z);
 	return vec4(color.rgb * vec3(a), 1.0);
 	//float distance = length(position - textureCoordinate);
 
