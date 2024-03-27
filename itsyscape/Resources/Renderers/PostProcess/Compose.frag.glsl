@@ -33,11 +33,11 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	//return vec4(sample.rgb, 1.0);
 
 	float depth = linearDepth(Texel(scape_DepthTexture, textureCoordinate).r);
-	float remappedDepth = 1.0 - clamp((depth - scape_NearOutlineDistance) / (scape_FarOutlineDistance - scape_NearOutlineDistance), 0.0, 1.0);
-	float thickness = mix(scape_MinOutlineThickness, scape_MaxOutlineThickness, remappedDepth);
+	float remappedDepth = smoothstep(scape_NearOutlineDistance, scape_FarOutlineDistance, depth);
+	float thickness = mix(scape_MinOutlineThickness, scape_MaxOutlineThickness, 1.0 - remappedDepth);
 
 	float d = distance(textureCoordinate, sample.xy);
-	float a = smoothstep(0, max(thickness / 2.0, 1), sample.z);
+	float a = step(max(thickness / 2.0, 1.0), sample.z);
 	return vec4(color.rgb * vec3(a), 1.0);
 	//float distance = length(position - textureCoordinate);
 
