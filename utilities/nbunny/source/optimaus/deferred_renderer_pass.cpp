@@ -22,10 +22,12 @@ static const std::string SHADER_AMBIENT_LIGHT     = "AmbientLight";
 static const std::string SHADER_DIRECTIONAL_LIGHT = "DirectionalLight";
 static const std::string SHADER_POINT_LIGHT       = "PointLight";
 static const std::string SHADER_FOG               = "Fog";
+static const std::string SHADER_COPY_DEPTH        = "CopyDepth";
 
 nbunny::DeferredRendererPass::DeferredRendererPass() :
 	RendererPass(RENDERER_PASS_DEFERRED),
 	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F }),
+	depth_buffer({}),
 	light_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	fog_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	output_buffer(love::PIXELFORMAT_RGBA8, g_buffer)
@@ -262,6 +264,24 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
 }
 
+void nbunny::DeferredRendererPass::copy_depth_buffer(lua_State* L)
+{
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	depth_buffer.use();
+
+    graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, true);
+    graphics->origin();
+    graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+
+	graphics->clear(love::graphics::OptionalColorf(), false, 1.0f);
+
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_DEPTH_COPY, SHADER_COPY_DEPTH);
+	get_renderer()->set_current_shader(shader);
+
+	graphics->draw(g_buffer.get_canvas(0), love::Matrix4());
+}
+
 void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 {
 	auto renderer = get_renderer();
@@ -483,6 +503,11 @@ nbunny::GBuffer& nbunny::DeferredRendererPass::get_g_buffer()
 	return g_buffer;
 }
 
+nbunny::GBuffer& nbunny::DeferredRendererPass::get_depth_buffer()
+{
+	return depth_buffer;
+}
+
 nbunny::LBuffer& nbunny::DeferredRendererPass::get_output_buffer()
 {
 	return output_buffer;
@@ -496,11 +521,14 @@ void nbunny::DeferredRendererPass::draw(lua_State* L, SceneNode& node, float del
 	draw_nodes(L, delta);
 	draw_lights(L, delta);
 	draw_fog(L, delta);
+
+	copy_depth_buffer(L);
 }
 
 void nbunny::DeferredRendererPass::resize(int width, int height)
 {
 	g_buffer.resize(width, height);
+	depth_buffer.resize(width, height);
 	light_buffer.resize(g_buffer);
 	fog_buffer.resize(g_buffer);
 	output_buffer.resize(g_buffer);
@@ -527,6 +555,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_deferredrendererpass(lua_State* L)
 		sol::base_classes, sol::bases<nbunny::RendererPass>(),
 		sol::call_constructor, sol::factories(&nbunny_deferred_renderer_pass_create),
 		"getGBuffer", &nbunny::DeferredRendererPass::get_g_buffer,
+		"getDepthBuffer", &nbunny::DeferredRendererPass::get_depth_buffer,
 		"getCBuffer", &nbunny::DeferredRendererPass::get_output_buffer);
 
 	sol::stack::push(L, T);

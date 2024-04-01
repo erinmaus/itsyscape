@@ -27,6 +27,7 @@ namespace nbunny
 	{
 	private:
 		GBuffer g_buffer;
+		GBuffer depth_buffer;
 		LBuffer light_buffer;
 		LBuffer fog_buffer;
 		LBuffer output_buffer;
@@ -44,7 +45,8 @@ namespace nbunny
 			BUILTIN_SHADER_AMBIENT_LIGHT     = -2,
 			BUILTIN_SHADER_DIRECTIONAL_LIGHT = -3,
 			BUILTIN_SHADER_POINT_LIGHT       = -4,
-			BUILTIN_SHADER_FOG               = -5
+			BUILTIN_SHADER_FOG               = -5,
+			BUILTIN_SHADER_DEPTH_COPY        = -6
 		};
 
 		std::vector<SceneNode*> visible_scene_nodes;
@@ -63,6 +65,7 @@ namespace nbunny
 		void draw_nodes(lua_State* L, float delta);
 		void draw_lights(lua_State* L, float delta);
 		void draw_fog(lua_State* L, float delta);
+		void copy_depth_buffer(lua_State* L);
 
 		void mix_lights();
 		void mix_fog();
@@ -74,6 +77,7 @@ namespace nbunny
 		~DeferredRendererPass() = default;
 
 		GBuffer& get_g_buffer();
+		GBuffer& get_depth_buffer();
 
 		LBuffer& get_output_buffer();
 
