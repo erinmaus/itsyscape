@@ -1,4 +1,6 @@
 uniform sampler2D scape_DepthTexture;
+uniform sampler2D scape_AlphaDistanceTexture;
+uniform sampler2D scape_AlphaMaskTexture;
 uniform float scape_Near;
 uniform float scape_Far;
 uniform float scape_NearOutlineDistance;
@@ -21,7 +23,8 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	// noise = (noise * vec2(2.0)) - vec2(1.0);
 	// noise *= scape_OutlineTurbulence * scape_NoiseTexelSize;
 
-	vec4 sample = Texel(texture, textureCoordinate);
+	vec4 outlineSample = Texel(texture, textureCoordinate);
+	vec4 alphaSample = Texel(scape_AlphaDistanceTexture, textureCoordinate);
 	// if (sample.r > 27 / 255.0 || sample.r > 27 / 255.0 || sample.r > 27 / 255.0)
 	// {
 	// 	return vec4(vec3(1.0), sample.a);
@@ -36,11 +39,12 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float remappedDepth = smoothstep(scape_NearOutlineDistance, scape_FarOutlineDistance, depth);
 	float thickness = mix(scape_MinOutlineThickness, scape_MaxOutlineThickness, 1.0 - remappedDepth);
 
-	float d = distance(textureCoordinate, sample.xy);
+	float d = distance(textureCoordinate, outlineSample.xy);
 	//float a = step(max(thickness / 2.0, 1.0), sample.z);
-	float a = smoothstep(0.0, max(thickness / 2.0, 1.0), sample.z);
+	float a = smoothstep(0.0, max(thickness / 2.0, 1.0), outlineSample.z);
+	float alpha = max(Texel(scape_AlphaMaskTexture, alphaSample.xy).r, 0.0);
 	//return vec4(color.rgb * vec3(depth, thickness, a), 1.0);
-	return vec4(color.rgb * vec3(a), 1.0);
+	return vec4(color.rgb * vec3(a), alpha);
 	//float distance = length(position - textureCoordinate);
 
 	// float outline = Texel(scape_OutlineTexture, textureCoordinate).r;
