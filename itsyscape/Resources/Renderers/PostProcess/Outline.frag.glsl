@@ -8,6 +8,7 @@ uniform float scape_MaxDepth;
 uniform vec2 scape_TexelSize;
 uniform float scape_OutlineThickness;
 uniform sampler2D scape_NormalTexture;
+uniform sampler2D scape_AlphaMaskTexture;
 
 float linearDepth(float depthSample)
 {
@@ -29,6 +30,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float numDepthSamples = 0.0;
 	float minDepthSample = referenceDepthSample;
 	float maxDepthSample = referenceDepthSample;
+	float minAlpha = 1.0;
 	for (float x = -halfOutlineThickness; x <= halfOutlineThickness; x += 1.0)
 	{
 		for (float y = -halfOutlineThickness; y <= halfOutlineThickness; y += 1.0)
@@ -36,12 +38,14 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 			vec2 otherDepthSampleTextureCoordinate = textureCoordinate + vec2(x, y) * scape_TexelSize;
 			float otherDepthSample = linearDepth(Texel(texture, otherDepthSampleTextureCoordinate).r);
 			vec3 otherNormal = Texel(scape_NormalTexture, otherDepthSampleTextureCoordinate).xyz;
+			float alpha = Texel(scape_AlphaMaskTexture, otherDepthSampleTextureCoordinate).r;
 
 			sumDepthSamples += otherDepthSample - referenceDepthSample;
 			numDepthSamples += 1.0;
 			sumNormalDot += dot(referenceNormal, otherNormal);
 			maxDepthSample = max(otherDepthSample, maxDepthSample);
 			minDepthSample = min(otherDepthSample, minDepthSample);
+			minAlpha = min(minAlpha, alpha);
 		}
 	}
 
@@ -103,5 +107,5 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	// }
 
 	//return vec4(color.rgb * vec3(sumDepthSamples / numDepthSamples, minDepthSample, d), 1);
-	return vec4(color.rgb * vec3(d), 1.0);
+	return vec4(color.rgb * vec3(d), minAlpha);
 }

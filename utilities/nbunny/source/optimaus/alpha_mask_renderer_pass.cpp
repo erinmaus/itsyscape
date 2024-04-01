@@ -76,6 +76,13 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 		renderer->set_current_shader(shader);
 
+		auto alpha_mask_uniform = shader->getUniformInfo("scape_AlphaMask");
+		if (alpha_mask_uniform)
+		{
+			*alpha_mask_uniform->floats = 1.0;
+			shader->updateUniform(alpha_mask_uniform, 1);
+		}
+
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
@@ -92,9 +99,16 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 		renderer->set_current_shader(shader);
 
+		auto alpha_mask_uniform = shader->getUniformInfo("scape_AlphaMask");
+		if (alpha_mask_uniform)
+		{
+			*alpha_mask_uniform->floats = 0.0;
+			shader->updateUniform(alpha_mask_uniform, 1);
+		}
+
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
