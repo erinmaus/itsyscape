@@ -33,6 +33,10 @@ function DeferredRendererPass:getCBuffer()
 	return self._rendererPass:getCBuffer()
 end
 
+function DeferredRendererPass:getDepthBuffer()
+	return self._rendererPass:getDepthBuffer():getCanvas(0)
+end
+
 function DeferredRendererPass:getIsFullLit()
 	return self.isFullLit
 end

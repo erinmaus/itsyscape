@@ -60,12 +60,24 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
     a_buffer.use();
 
 	graphics->clear(
-		love::Colorf(-1.0, 0.0, 0.0, 1.0),
+		love::Colorf(0.0, 0.0, 0.0, 1.0),
 		0,
 		1.0f);
 
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
+
+	love::graphics::Graphics::ColorMask enabledMask;
+	enabledMask.r = true;
+	enabledMask.g = true;
+	enabledMask.b = true;
+	enabledMask.a = true;
+
+	love::graphics::Graphics::ColorMask disabledMask;
+	disabledMask.r = false;
+	disabledMask.g = false;
+	disabledMask.b = false;
+	disabledMask.a = false;
 
 	for (auto& scene_node: opaque_scene_nodes)
 	{
@@ -83,7 +95,7 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 			shader->updateUniform(alpha_mask_uniform, 1);
 		}
 
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
 
@@ -106,9 +118,15 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 			shader->updateUniform(alpha_mask_uniform, 1);
 		}
 
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+
+		graphics->setColorMask(disabledMask);
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+		renderer->draw_node(L, *scene_node, delta);
+
+		graphics->setColorMask(enabledMask);
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
+		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
