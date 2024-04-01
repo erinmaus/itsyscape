@@ -37,7 +37,9 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float thickness = mix(scape_MinOutlineThickness, scape_MaxOutlineThickness, 1.0 - remappedDepth);
 
 	float d = distance(textureCoordinate, sample.xy);
-	float a = step(max(thickness / 2.0, 1.0), sample.z);
+	//float a = step(max(thickness / 2.0, 1.0), sample.z);
+	float a = smoothstep(0.0, max(thickness / 2.0, 1.0), sample.z);
+	//return vec4(color.rgb * vec3(depth, thickness, a), 1.0);
 	return vec4(color.rgb * vec3(a), 1.0);
 	//float distance = length(position - textureCoordinate);
 
