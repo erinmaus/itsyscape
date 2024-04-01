@@ -14,6 +14,7 @@ local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
 local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
 local OutlineRendererPass = require "ItsyScape.Graphics.OutlineRendererPass"
+local AlphaMaskRendererPass = require "ItsyScape.Graphics.AlphaMaskRendererPass"
 local LBuffer = require "ItsyScape.Graphics.LBuffer"
 local GBuffer = require "ItsyScape.Graphics.GBuffer"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
@@ -81,10 +82,12 @@ function Renderer:new()
 	self.outlinePass = OutlineRendererPass(self)
 	self.finalDeferredPass = DeferredRendererPass(self)
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
+	self.alphaMaskPass = AlphaMaskRendererPass(self)
 	self.passesByID = {
 		[self.outlinePass:getID()] = self.outlinePass,
 		[self.finalDeferredPass:getID()] = self.finalDeferredPass,
-		[self.finalForwardPass:getID()] = self.finalForwardPass
+		[self.finalForwardPass:getID()] = self.finalForwardPass,
+		[self.alphaMaskPass:getID()] = self.alphaMaskPass
 	}
 
 	self._renderer:addRendererPass(self.outlinePass:getHandle())
@@ -96,6 +99,7 @@ function Renderer:new()
 
 	self.outlineBuffer = NGBuffer("rgba32f", "rgba8", "rgba32f")
 	self.distanceBuffer = NGBuffer("rgba32f", "rgba32f")
+	self.alphaBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
 	self.customOutlinePostProcessShader = love.graphics.newShader(Renderer.CUSTOM_OUTLINE_SHADER:getResource():getSource())
 	self.initDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_DISTANCE_SHADER:getResource():getSource())
@@ -227,17 +231,17 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setDepthMode("always", false)
 	love.graphics.setColor(1, 1, 1, 1)
 
-	local currentBuffer = self.distanceBuffer:getCanvas(1)
-	currentBuffer:setFilter("nearest", "nearest")
-	local nextBuffer = self.distanceBuffer:getCanvas(2)
-	nextBuffer:setFilter("nearest", "nearest")
+	local currentOutlineBuffer = self.distanceBuffer:getCanvas(1)
+	currentOutlineBuffer:setFilter("nearest", "nearest")
+	local nextOutlineBuffer = self.distanceBuffer:getCanvas(2)
+	nextOutlineBuffer:setFilter("nearest", "nearest")
 	
 	love.graphics.setShader(self.initDistancePostProcessShader)
 	self.initDistancePostProcessShader:send("scape_TextureSize", { width, height })
 	-- love.graphics.scale(1 / scale, 1 / scale, 1)
-	love.graphics.setCanvas(currentBuffer)
+	love.graphics.setCanvas(currentOutlineBuffer)
 	love.graphics.draw(self.outlineBuffer:getCanvas(2))
-	love.graphics.setCanvas(nextBuffer)
+	love.graphics.setCanvas(nextOutlineBuffer)
 	love.graphics.draw(self.outlineBuffer:getCanvas(2))
 
 	-- love.graphics.origin()
@@ -247,26 +251,55 @@ function Renderer:_drawOutlines(width, height)
 	self.distancePostProcessShader:send("scape_TextureSize", { width, height })
 	self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
 	
-	local currentX, currentY
+	local currentDistanceX, currentDistanceY
 	repeat
-		self.distancePostProcessShader:send("scape_JumpDistance", { (currentX or 1) / width, (currentY or 1) / height })
-		love.graphics.setCanvas(nextBuffer)
-		love.graphics.draw(currentBuffer)
+		self.distancePostProcessShader:send("scape_JumpDistance", { (currentDistanceX or 1) / width, (currentDistanceY or 1) / height })
+		love.graphics.setCanvas(nextOutlineBuffer)
+		love.graphics.draw(currentOutlineBuffer)
 
-		currentX = math.max((currentX or width) / 2, 1)
-		currentY = math.max((currentY or height) / 2, 1)
-		currentBuffer, nextBuffer = nextBuffer, currentBuffer
-	until currentX <= 1 and currentY <= 1
+		currentDistanceX = math.max((currentDistanceX or width) / 2, 1)
+		currentDistanceY = math.max((currentDistanceY or height) / 2, 1)
+		currentOutlineBuffer, nextOutlineBuffer = nextOutlineBuffer, currentOutlineBuffer
+	until currentDistanceX <= 1 and currentDistanceY <= 1
 
-	-- while currentX > 1 or currentY > 1 do
-	-- 	currentX = math.max(currentX / 2, 1)
-	-- 	currentY = math.max(currentY / 2, 1)
+	self.alphaBuffer:resize(width, height)
+
+	local currentAlphaBuffer = self.alphaBuffer:getCanvas(1)
+	currentAlphaBuffer:setFilter("nearest", "nearest")
+	local nextAlphaBuffer = self.alphaBuffer:getCanvas(2)
+	nextAlphaBuffer:setFilter("nearest", "nearest")
 	
-	-- 	self.distancePostProcessShader:send("scape_JumpDistance", { currentX / width, currentY / height })
-	-- 	love.graphics.setCanvas(nextBuffer)
-	-- 	-- DRAW love.graphics.draw(currentBuffer)
+	love.graphics.setShader(self.initDistancePostProcessShader)
+	self.initDistancePostProcessShader:send("scape_TextureSize", { width, height })
+	love.graphics.setCanvas(currentBuffer)
+	love.graphics.draw(self.alphaMaskPass:getABuffer():getCanvas(1))
+	love.graphics.setCanvas(nextBuffer)
+	love.graphics.draw(self.alphaMaskPass:getABuffer():getCanvas(1))
 
-	-- 	currentBuffer, nextBuffer = nextBuffer, currentBuffer
+	love.graphics.setShader(self.distancePostProcessShader)
+	self.distancePostProcessShader:send("scape_TextureSize", { width, height })
+	self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
+	
+	local currentAlphaX, currentAlphaY
+	repeat
+		self.distancePostProcessShader:send("scape_JumpDistance", { (currentAlphaX or 1) / width, (currentAlphaY or 1) / height })
+		love.graphics.setCanvas(nextAlphaBuffer)
+		love.graphics.draw(currentAlphaBuffer)
+
+		currentAlphaX = math.max((currentAlphaX or width) / 2, 1)
+		currentAlphaY = math.max((currentAlphaY or height) / 2, 1)
+		currentBuffer, nextBuffer = nextBuffer, currentBuffer
+	until currentAlphaX <= 1 and currentAlphaY <= 1
+
+	-- while currentDistanceX > 1 or currentDistanceY > 1 do
+	-- 	currentDistanceX = math.max(currentDistanceX / 2, 1)
+	-- 	currentDistanceY = math.max(currentDistanceY / 2, 1)
+	
+	-- 	self.distancePostProcessShader:send("scape_JumpDistance", { currentDistanceX / width, currentDistanceY / height })
+	-- 	love.graphics.setCanvas(nextOutlineBuffer)
+	-- 	-- DRAW love.graphics.draw(currentOutlineBuffer)
+
+	-- 	currentOutlineBuffer, nextOutlineBuffer = nextOutlineBuffer, currentOutlineBuffer
 	-- end
 
 	local noiseWidth = width / 8
@@ -292,6 +325,8 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setShader()
 	love.graphics.setShader(self.composePostProcessShader)
 	self.composePostProcessShader:send("scape_DepthTexture", buffer:getDepthStencil())
+	self.composePostProcessShader:send("scape_AlphaDistanceTexture", currentAlphaBuffer)
+	self.composePostProcessShader:send("scape_AlphaMaskTexture", self.alphaMaskPass:getABuffer():getCanvas(1))
 	self.composePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.composePostProcessShader:send("scape_Far", self.camera:getFar())
 	self.composePostProcessShader:send("scape_MinOutlineThickness", 1)
@@ -299,7 +334,7 @@ function Renderer:_drawOutlines(width, height)
 	self.composePostProcessShader:send("scape_NearOutlineDistance", -20)
 	self.composePostProcessShader:send("scape_FarOutlineDistance", 50)
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.draw(currentBuffer)
+	love.graphics.draw(currentOutlineBuffer)
 	
 	self.jitterPostProcessShader:send("scape_NoiseTextureX", self.outlineNoiseTextureX)
 	self.jitterPostProcessShader:send("scape_NoiseTextureY", self.outlineNoiseTextureY)
