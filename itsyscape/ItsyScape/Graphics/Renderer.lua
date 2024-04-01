@@ -39,6 +39,7 @@ Renderer.REVERSE_INIT_DISTANCE_SHADER = ShaderResource()
 Renderer.DISTANCE_SHADER = ShaderResource()
 Renderer.COMPOSE_SHADER = ShaderResource()
 Renderer.JITTER_SHADER = ShaderResource()
+Renderer.SOBEL_SHADER = ShaderResource()
 do
 	Renderer.OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Outline")
 	Renderer.CUSTOM_OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/CustomOutline")
@@ -48,6 +49,7 @@ do
 	Renderer.DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/JumpDistance")
 	Renderer.COMPOSE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Compose")
 	Renderer.JITTER_SHADER:loadFromFile("Resources/Renderers/PostProcess/Jitter")
+	Renderer.SOBEL_SHADER:loadFromFile("Resources/Renderers/PostProcess/Sobel")
 end
 
 function Renderer.NodeDebugStats:process(node, renderer, delta)
@@ -100,7 +102,7 @@ function Renderer:new()
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()
 
-	self.outlineBuffer = NGBuffer("rgba32f", "rgba8", "rgba32f")
+	self.outlineBuffer = NGBuffer("rgba8", "rgba8", "rgba32f")
 	self.distanceBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.alphaBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
@@ -111,6 +113,7 @@ function Renderer:new()
 	self.distancePostProcessShader = love.graphics.newShader(Renderer.DISTANCE_SHADER:getResource():getSource())
 	self.composePostProcessShader = love.graphics.newShader(Renderer.COMPOSE_SHADER:getResource():getSource())
 	self.jitterPostProcessShader = love.graphics.newShader(Renderer.JITTER_SHADER:getResource():getSource())
+	self.sobelPostProcessShader = love.graphics.newShader(Renderer.SOBEL_SHADER:getResource():getSource())
 end
 
 function Renderer:getDeferredPass()
@@ -183,47 +186,56 @@ function Renderer:_drawOutlines(width, height)
 	self.outlinePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 	self.outlinePostProcessShader:send("scape_NormalTexture", self.finalDeferredPass:getGBuffer():getCanvas(3))
 	self.outlinePostProcessShader:send("scape_AlphaMaskTexture", self.alphaMaskPass:getABuffer():getCanvas(1))
-
+	
 	love.graphics.push("all")
 	love.graphics.origin()
-
+	
 	self.outlineBuffer:resize(width, height)
+	self.outlineBuffer:getCanvas(1):setFilter("linear", "linear")
 	self.outlineBuffer:getCanvas(2):setFilter("linear", "linear")
 	-- buffer:getDepthStencil():setFilter("nearest", "nearest")
 	-- love.graphics.setShader()
 	-- love.graphics.setCanvas(self.outlineBuffer:getCanvas(1))
 	-- love.graphics.draw(buffer:getDepthStencil())
-
+	
 	love.graphics.setShader()
 	love.graphics.setCanvas(self.outlineBuffer:getCanvas(3))
 	love.graphics.clear(1.0, 0.0, 0.0, 1.0)
-	love.graphics.setBlendMode("replace")
+	love.graphics.setBlendMode("replace", "premultiplied")
 	love.graphics.setDepthMode("always", false)
-	love.graphics.draw(buffer:getDepthStencil())
-
+	love.graphics.draw(self.alphaMaskPass:getABuffer():getCanvas(0))
+	
 	love.graphics.setCanvas({
 		self.outlineBuffer:getCanvas(2),
-		depthstencil = buffer:getDepthStencil()
+		depthstencil = self.alphaMaskPass:getABuffer():getCanvas(0)
 	})
 	love.graphics.setShader(self.outlinePostProcessShader)
-	love.graphics.setBlendMode("replace")
+	love.graphics.setBlendMode("replace", "premultiplied")
 	love.graphics.setDepthMode("always", false)
-	love.graphics.draw(self.outlineBuffer:getCanvas(3))
-
+	love.graphics.draw(self.finalDeferredPass:getDepthBuffer())
+	
 	self.outlinePass:getOBuffer():getCanvas(0):setFilter("nearest", "nearest")
-
+	
 	love.graphics.setShader(self.customOutlinePostProcessShader)
 	--self.customOutlinePostProcessShader:send("scape_TexelSize", { 1.0 / width, 1.0 / height })
 	--self.customOutlinePostProcessShader:send("scape_OutlineThickness", 2.5)
 	self.customOutlinePostProcessShader:send("scape_DepthTexture", self.outlinePass:getOBuffer():getCanvas(0))
-	self.customOutlinePostProcessShader:send("scape_AlphaMaskTexture", self.alphaMaskPass:getABuffer():getCanvas(1))
-	love.graphics.setBlendMode("replace")
+	love.graphics.setBlendMode("replace", "premultiplied")
 	love.graphics.setDepthMode("lequal", false)
 	love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
+	
+	love.graphics.setShader(self.sobelPostProcessShader)
+	self.sobelPostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
+	self.sobelPostProcessShader:send("scape_AlphaMaskTexture", self.alphaMaskPass:getABuffer():getCanvas(1))
+	love.graphics.setBlendMode("multiply", "premultiplied")
+	love.graphics.setDepthMode("always", false)
+	--love.graphics.draw(buffer:getColor())
+	love.graphics.draw(self.alphaMaskPass:getABuffer():getCanvas(2))
+
 
 	-- love.graphics.setCanvas(buffer:getColor())
 	-- love.graphics.setShader()
-	-- love.graphics.setBlendMode("replace")
+	-- love.graphics.setBlendMode("replace", "premultiplied")
 	-- love.graphics.setDepthMode("always", false)
 	-- love.graphics.setColor(1, 1, 1, 1)
 	--love.graphics.draw(self.outlinePass:getOBuffer():getCanvas(1))
@@ -233,7 +245,7 @@ function Renderer:_drawOutlines(width, height)
 	-- local smallBufferHeight = height / scale
 	self.distanceBuffer:resize(width, height)
 
-	love.graphics.setBlendMode("replace")
+	love.graphics.setBlendMode("replace", "premultiplied")
 	love.graphics.setDepthMode("always", false)
 	love.graphics.setColor(1, 1, 1, 1)
 
@@ -323,14 +335,14 @@ function Renderer:_drawOutlines(width, height)
 		self.outlineNoiseTextureY:setWrap("mirroredrepeat", "mirroredrepeat")
 	end
 
-	love.graphics.setCanvas(self.outlineBuffer:getCanvas(2))
+	love.graphics.setCanvas(self.outlineBuffer:getCanvas(1))
 	--love.graphics.setCanvas(buffer:getColor())
 	--love.graphics.setBlendMode("alpha", "premultiplied")
 	--love.graphics.setBlendMode("alpha", "alphamultiply")
-	love.graphics.setBlendMode("replace")
+	love.graphics.setBlendMode("replace", "alphamultiply")
 	love.graphics.setShader()
 	love.graphics.setShader(self.composePostProcessShader)
-	self.composePostProcessShader:send("scape_DepthTexture", buffer:getDepthStencil())
+	self.composePostProcessShader:send("scape_DepthTexture", self.alphaMaskPass:getABuffer():getCanvas(0))
 	self.composePostProcessShader:send("scape_OutlineTexture", self.outlineBuffer:getCanvas(2))
 	self.composePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.composePostProcessShader:send("scape_Far", self.camera:getFar())
@@ -338,6 +350,7 @@ function Renderer:_drawOutlines(width, height)
 	self.composePostProcessShader:send("scape_MaxOutlineThickness", 20)
 	self.composePostProcessShader:send("scape_NearOutlineDistance", -20)
 	self.composePostProcessShader:send("scape_FarOutlineDistance", 50)
+	self.composePostProcessShader:send("scape_TextureSize", { width, height })
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(currentOutlineBuffer)
 	
@@ -352,7 +365,7 @@ function Renderer:_drawOutlines(width, height)
 
 	love.graphics.setCanvas(buffer:getColor())
 	love.graphics.setBlendMode("multiply", "premultiplied")
-	love.graphics.draw(self.outlineBuffer:getCanvas(2))
+	love.graphics.draw(self.outlineBuffer:getCanvas(1))
 	love.graphics.setShader()
 
 	love.graphics.pop()

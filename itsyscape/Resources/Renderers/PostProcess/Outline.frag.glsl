@@ -76,7 +76,8 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 
 	float difference = abs(sumDepthSamples / numDepthSamples);
 	float d = smoothstep(minDepthComparison, maxDepthComparison, difference);
-	d = step(d, 0.1);
+	//d = 1.0 - d;
+	d = 1.0 - step(0.5, d);
 	//float d = difference;
 	//float d = step(scape_MinDepth, difference) * step(difference, scape_MaxDepth);
 

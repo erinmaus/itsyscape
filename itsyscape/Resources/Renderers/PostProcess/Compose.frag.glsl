@@ -1,5 +1,6 @@
 uniform sampler2D scape_DepthTexture;
 uniform sampler2D scape_OutlineTexture;
+uniform vec2 scape_TextureSize;
 uniform float scape_Near;
 uniform float scape_Far;
 uniform float scape_NearOutlineDistance;
@@ -40,7 +41,11 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float d = distance(textureCoordinate, outlineSample.xy);
 	//float a = step(max(thickness / 2.0, 1.0), sample.z);
 	float a = smoothstep(0.0, max(thickness / 2.0, 1.0), outlineSample.z);
-	float alpha = max(Texel(scape_OutlineTexture, outlineSample.xy).r, 0.0);
+	float alpha = 1.0;
+	if (a < 1.0)
+	{
+		alpha = Texel(scape_OutlineTexture, outlineSample.xy / scape_TextureSize).a;
+	}
 	//return vec4(color.rgb * vec3(depth, thickness, a), 1.0);
 	return vec4(color.rgb * vec3(a), alpha);
 	//float distance = length(position - textureCoordinate);
