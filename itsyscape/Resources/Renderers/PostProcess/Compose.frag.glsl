@@ -42,6 +42,8 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float d = distance(textureCoordinate, outlineSample.xy);
 	//float a = step(max(thickness / 2.0, 1.0), sample.z);
 	float a = smoothstep(0.0, max(thickness / 2.0, 1.0), outlineSample.z);
+	//a = step(1.0, a);
+	//float a = step(max(thickness / 2.0, 1.0), outlineSample.z);
 
 	float alpha = 1.0;
 	for (float x = -1.0; x <= 1.0; x += 1.0)
