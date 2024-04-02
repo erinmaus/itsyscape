@@ -137,8 +137,6 @@ function Application:new(multiThreaded)
 			vendor, device = select(3, love.graphics.getRendererInfo())
 		end
 
-		print(">>> vendor", vendor, device)
-
 		self.gameThread = love.thread.newThread("ItsyScape/Game/LocalModel/Threads/Game.lua")
 		self.gameThread:start({
 			_DEBUG = _DEBUG,
