@@ -13,7 +13,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 		discard;
 	}
 
-	gl_FragDepth = depth - 0.0001;
+	gl_FragDepth = depth - 0.00001;
 
 	return vec4(outlineSample.rgb, 1.0);
 }
