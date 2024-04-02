@@ -15,6 +15,27 @@ float linearDepth(float depthSample)
 	return zLinear;
 }
 
+float sharpStepSide(float x, float n, float c)
+{
+	return pow(x, c) / pow(n, c - 1.0);
+}
+
+float sharpStep(float p1, float p2, float x, float p, float s)
+{
+	float clampedX = clamp((x - p1) / (p2 - p1), 0.0, 1.0);
+	float c = 2.0 / (1.0 - s) - 1.0;
+
+	float d = 0.0;
+	if (clampedX < p)
+	{
+		return sharpStepSide(clampedX, p, c);
+	}
+	else
+	{
+		return 1.0 - sharpStepSide(1.0 - clampedX, 1.0 - p, c);
+	}
+}
+
 vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
 {
 	// vec2 noise = vec2(
@@ -41,7 +62,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 
 	float d = distance(textureCoordinate, outlineSample.xy);
 	//float a = step(max(thickness / 2.0, 1.0), sample.z);
-	float a = smoothstep(0.0, max(thickness / 2.0, 1.0), outlineSample.z);
+	float a = sharpStep(0.0, max(thickness / 2.0, 1.0), outlineSample.z, 0.5, 0.75);
 	//a = step(1.0, a);
 	//float a = step(max(thickness / 2.0, 1.0), outlineSample.z);
 
