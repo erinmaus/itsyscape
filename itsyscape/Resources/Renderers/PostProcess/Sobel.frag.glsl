@@ -17,13 +17,31 @@ void makeKernel(inout vec4 n[9], sampler2D texture, vec2 textureCoordinate)
 	n[8] = Texel(texture, textureCoordinate + vec2(  x, y));
 }
 
+float getMinAlpha(Image texture, vec2 textureCoordinate)
+{
+	float minAlpha = 1.0;
+
+	for (float x = -1.0; x <= 1; x += 1.0)
+	{
+		for (float y = -1.0; y <= 1; y += 1.0)
+		{
+			float alpha = Texel(texture, textureCoordinate + vec2(x, y) * scape_TexelSize).r;
+			minAlpha = min(alpha, minAlpha);
+		}
+	}
+
+	return minAlpha;
+}
+
 vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
 {
-	float alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).r;
+	float alpha = getMinAlpha(scape_AlphaMaskTexture, textureCoordinate);
 	if (alpha <= 0.0 || alpha >= 1.0)
 	{
 		discard;
 	}
+
+	alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).r;
 
 	vec4 n[9];
 	makeKernel(n, texture, textureCoordinate);
@@ -31,7 +49,13 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	vec4 horizontalEdge = n[2] + (2.0 * n[5]) + n[8] - (n[0] + (2.0 * n[3]) + n[6]);
   	vec4 verticalEdge = n[0] + (2.0 * n[1]) + n[2] - (n[6] + (2.0 * n[7]) + n[8]);
 	vec4 sobel = sqrt((horizontalEdge * horizontalEdge) + (verticalEdge * verticalEdge));
-	float outline = 1.0 - step(0.5, (sobel.r + sobel.g + sobel.b) / 3.0);
+	float outline = 1.0 - step(0.5, sobel.r);
+
+	if (outline >= 1.0)
+	{
+		alpha = 1.0;
+	}
     
     return vec4(vec3(outline), alpha);
+	//return vec4(sobel.rgb, 1.0);
 }

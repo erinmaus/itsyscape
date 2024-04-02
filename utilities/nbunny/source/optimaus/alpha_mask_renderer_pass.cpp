@@ -120,10 +120,6 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
-		graphics->setColorMask(disabledMask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-		renderer->draw_node(L, *scene_node, delta);
-
 		graphics->setColorMask(enabledMask);
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
