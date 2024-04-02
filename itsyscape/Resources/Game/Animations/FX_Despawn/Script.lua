@@ -2,7 +2,7 @@ Animation "Despawn FX" {
 	Target {
 		Tint {
 			1, 1, 1, 0,
-			duration = 2,
+			duration = 0.5,
 			tween = 'sineIn'
 		},
 
