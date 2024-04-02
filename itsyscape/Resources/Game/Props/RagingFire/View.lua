@@ -63,7 +63,7 @@ RagingFireView.FIRE_PARTICLES = function(radius, wind)
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.25 }
+				scale = { 1.5 }
 			},
 			{
 				type = "RandomRotationEmitter",
