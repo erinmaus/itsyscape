@@ -126,7 +126,7 @@ function MirrorView:tick()
 		love.graphics.push('all')
 		love.graphics.setScissor()
 		selfRenderer:setCamera(selfCamera)
-		selfRenderer:draw(gameView:getScene(), 0, MirrorView.WIDTH, MirrorView.HEIGHT)
+		--selfRenderer:draw(gameView:getScene(), 0, MirrorView.WIDTH, MirrorView.HEIGHT)
 		love.graphics.pop()
 		
 		if self.mirrorNode then self.mirrorNode:setParent(self:getRoot()) end
