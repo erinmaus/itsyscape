@@ -65,7 +65,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float remappedDepth = smoothstep(scape_NearOutlineDistance, scape_FarOutlineDistance, depth);
 	float thickness = mix(scape_MinOutlineThickness, scape_MaxOutlineThickness, 1.0 - remappedDepth);
 	float alphaMultiplier = 1.0 - smoothstep(scape_FarOutlineDistance, scape_FarOutlineDistance + scape_OutlineFadeDepth, depth);
-	alphaMultiplier = mix(scape_MaxOutlineDepthAlpha, scape_MinOutlineDepthAlpha, alphaMultiplier);
+	alphaMultiplier = mix(scape_MinOutlineDepthAlpha, scape_MaxOutlineDepthAlpha, alphaMultiplier);
 
 	float noise = Texel(scape_NoiseTexture, textureCoordinate).r;
 	thickness += noise * scape_MaxNoiseDistance;
