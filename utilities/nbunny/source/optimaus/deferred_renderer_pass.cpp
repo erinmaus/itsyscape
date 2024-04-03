@@ -315,6 +315,13 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		auto shader = get_node_shader(L, *scene_node);
 		renderer->set_current_shader(shader);
 
+		auto normal_edge_uniform = shader->getUniformInfo("scape_NormalEdgeEnabled");
+		if (normal_edge_uniform)
+		{
+			*normal_edge_uniform->floats = scene_node->get_material().get_is_normal_edge_detection_enabled() ? 1.0f : 0.0f;
+			shader->updateUniform(normal_edge_uniform, 1);
+		}
+
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 

@@ -117,6 +117,14 @@ function Material:setIsCullDisabled(value)
 	self._handle:setIsCullDisabled(value or false)
 end
 
+function Material:getIsNormalEdgeDetectionEnabled()
+	return self._handle:getIsNormalEdgeDetectionEnabled()
+end
+
+function Material:setIsNormalEdgeDetectionEnabled(value)
+	self._handle:setIsNormalEdgeDetectionEnabled(value == nil and true or value)
+end
+
 function Material:getColor()
 	return Color(self._handle:getColor())
 end
