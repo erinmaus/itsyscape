@@ -17,7 +17,7 @@ local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
 local GrassBlock = Class(Block)
 GrassBlock.OCTAVES = 1
 GrassBlock.SATURATION = 4
-GrassBlock.THRESHOLD = 0.45
+GrassBlock.THRESHOLD = 0.55
 GrassBlock.FUDGE = 0.83
 GrassBlock.COLOR = Color(0.5, 0.7, 0.1, 1.0)
 GrassBlock.FEATURE = "grass"
@@ -70,7 +70,7 @@ function GrassBlock:emit(tileSet, map, i, j, tileSetTile, mapTile)
 				absoluteZ / (map:getCellSize() * map:getHeight()))
 			local noise3 = self.NOISE_PROPS:sample3D(
 				absoluteX / (map:getCellSize() * map:getWidth()),
-				0,
+				1.5,
 				absoluteZ / (map:getCellSize() * map:getHeight()))
 
 			if noise1 > self.THRESHOLD and noise2 < self.THRESHOLD then
@@ -83,7 +83,7 @@ function GrassBlock:emit(tileSet, map, i, j, tileSetTile, mapTile)
 				local color = self:noise(self.OCTAVES, offsetX / self.FUDGE, offsetY / self.FUDGE, offsetZ / self.FUDGE, 0.25)
 				color = (color + 1) / 2
 
-				local rotation = (noise3 * 2 - 1) * (math.pi / 2)
+				local rotation = (noise3 / 0.5) * (math.pi / 2) - math.pi / 2
 
 				self:addFeature(
 					self.FEATURE,
