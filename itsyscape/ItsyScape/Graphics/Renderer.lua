@@ -66,7 +66,7 @@ end
 
 Renderer.X_NOISE = NoiseBuilder {
 	persistence = 4,
-	scale = 128,
+	scale = 16,
 	octaves = 1,
 	lacunarity = 1,
 	offset = Vector(37, 47, 17)
@@ -74,7 +74,7 @@ Renderer.X_NOISE = NoiseBuilder {
 
 Renderer.Y_NOISE = NoiseBuilder {
 	persistence = 4,
-	scale = 128,
+	scale = 16,
 	octaves = 1,
 	lacunarity = 1,
 	offset = Vector(73, 14, 64)
@@ -348,7 +348,7 @@ function Renderer:_drawOutlines(width, height)
 	self.composePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.composePostProcessShader:send("scape_Far", self.camera:getFar())
 	self.composePostProcessShader:send("scape_MinOutlineThickness", 1)
-	self.composePostProcessShader:send("scape_MaxOutlineThickness", 9)
+	self.composePostProcessShader:send("scape_MaxOutlineThickness", 12)
 	self.composePostProcessShader:send("scape_NearOutlineDistance", -20)
 	self.composePostProcessShader:send("scape_FarOutlineDistance", 50)
 	self.composePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })

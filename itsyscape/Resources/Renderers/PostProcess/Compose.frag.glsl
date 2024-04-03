@@ -1,5 +1,7 @@
 uniform sampler2D scape_DepthTexture;
 uniform sampler2D scape_OutlineTexture;
+uniform sampler2D scape_NoiseTexture;
+uniform float scape_MaxNoiseDistance;
 uniform vec2 scape_TexelSize;
 uniform float scape_Near;
 uniform float scape_Far;
@@ -59,6 +61,8 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float depth = linearDepth(Texel(scape_DepthTexture, textureCoordinate).r);
 	float remappedDepth = smoothstep(scape_NearOutlineDistance, scape_FarOutlineDistance, depth);
 	float thickness = mix(scape_MinOutlineThickness, scape_MaxOutlineThickness, 1.0 - remappedDepth);
+	float noise = Texel(scape_NoiseTexture, textureCoordinate).r;
+	thickness += noise * scape_MaxNoiseDistance;
 
 	float d = distance(textureCoordinate, outlineSample.xy);
 	//float a = step(max(thickness / 2.0, 1.0), sample.z);
