@@ -78,8 +78,9 @@ function GrassBlock:emit(tileSet, map, i, j, tileSetTile, mapTile)
 				local offsetZ = self:noise(self.OCTAVES, absoluteX, absoluteY, absoluteZ, 0.75) * 2 - 1 + absoluteZ
 				local offsetY = map:getInterpolatedHeight(offsetX, offsetZ) - (1.0 - ((noise1 - self.THRESHOLD) / (1 - self.THRESHOLD))) * self.CLUMP_EDGE_Y_OFFSET_MAX
 
-				local scale = self:noise(self.OCTAVES, offsetX / self.FUDGE, offsetY / self.FUDGE, offsetZ / self.FUDGE, 0.5)
-				scale = scale + 0.5
+				local scale = self:noise(self.OCTAVES, offsetX / self.FUDGE, offsetY / self.FUDGE, offsetZ / self.FUDGE, 1.0)
+				scale = scale + 1
+
 				local color = self:noise(self.OCTAVES, offsetX / self.FUDGE, offsetY / self.FUDGE, offsetZ / self.FUDGE, 0.25)
 				color = (color + 1) / 2
 
