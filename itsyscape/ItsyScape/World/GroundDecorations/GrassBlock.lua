@@ -29,6 +29,13 @@ GrassBlock.NOISE_CLUMP = NoiseBuilder.TILE {
 	lacunarity = -3
 }
 
+GrassBlock.NOISE_PROPS  = NoiseBuilder {
+	persistence = 16,
+	scale = 128,
+	octaves = 3,
+	lacunarity = 2
+}
+
 GrassBlock.NOISE_TILE  = NoiseBuilder {
 	persistence = 4,
 	scale = 128,
@@ -61,19 +68,22 @@ function GrassBlock:emit(tileSet, map, i, j, tileSetTile, mapTile)
 				absoluteX / (map:getCellSize() * map:getWidth()),
 				0,
 				absoluteZ / (map:getCellSize() * map:getHeight()))
+			local noise3 = self.NOISE_PROPS:sample3D(
+				absoluteX / (map:getCellSize() * map:getWidth()),
+				0,
+				absoluteZ / (map:getCellSize() * map:getHeight()))
 
 			if noise1 > self.THRESHOLD and noise2 < self.THRESHOLD then
 				local offsetX = self:noise(self.OCTAVES, absoluteX, absoluteY, absoluteZ, 0.25) * 2 - 1 + absoluteX
 				local offsetZ = self:noise(self.OCTAVES, absoluteX, absoluteY, absoluteZ, 0.75) * 2 - 1 + absoluteZ
 				local offsetY = map:getInterpolatedHeight(offsetX, offsetZ) - (1.0 - ((noise1 - self.THRESHOLD) / (1 - self.THRESHOLD))) * self.CLUMP_EDGE_Y_OFFSET_MAX
-				print("offsetY", noise1, ((noise1 - self.THRESHOLD) / (1 - self.THRESHOLD)) * self.CLUMP_EDGE_Y_OFFSET_MAX)
 
 				local scale = self:noise(self.OCTAVES, offsetX / self.FUDGE, offsetY / self.FUDGE, offsetZ / self.FUDGE, 0.5)
 				scale = scale + 0.5
 				local color = self:noise(self.OCTAVES, offsetX / self.FUDGE, offsetY / self.FUDGE, offsetZ / self.FUDGE, 0.25)
 				color = (color + 1) / 2
 
-				local rotation = (noise2 * 2 - 1) * (math.pi / 2)
+				local rotation = (noise3 * 2 - 1) * (math.pi / 2)
 
 				self:addFeature(
 					self.FEATURE,
