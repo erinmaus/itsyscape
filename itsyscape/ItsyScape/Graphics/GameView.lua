@@ -487,7 +487,8 @@ function GameView:updateGroundDecorations(m)
 
 				local decoration = ground:getDecoration()
 				local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
-				self:decorate(groupName, decoration, m.layer)
+				local sceneNode = self:decorate(groupName, decoration, m.layer)
+				sceneNode:getMaterial():setIsNormalEdgeDetectionEnabled(false)
 			end
 		end
 	end
@@ -823,6 +824,7 @@ function GameView:decorate(group, decoration, layer)
 	if decoration then
 		local d = {}
 
+		local sceneNode = DecorationSceneNode()
 		self.resourceManager:queueEvent(function()
 			if self.decorations[groupName] ~= d then
 				Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
@@ -843,7 +845,6 @@ function GameView:decorate(group, decoration, layer)
 				TextureResource,
 				textureFilename)
 
-			local sceneNode = DecorationSceneNode()
 			sceneNode:fromDecoration(decoration, staticMesh:getResource())
 			sceneNode:getMaterial():setTextures(texture)
 
@@ -857,8 +858,11 @@ function GameView:decorate(group, decoration, layer)
 		d.decoration = decoration
 		d.name = group
 		d.layer = layer
+		d.sceneNode = sceneNode
 
 		self.decorations[groupName] = d
+
+		return sceneNode
 	end
 end
 

@@ -30,6 +30,7 @@ function MapMeshSceneNode:new()
 	self.isOwner = false
 
 	self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
+	self:getMaterial():setIsNormalEdgeDetectionEnabled(false)
 end
 
 function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor)

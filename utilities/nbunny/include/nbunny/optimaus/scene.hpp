@@ -92,6 +92,7 @@ namespace nbunny
 		bool is_full_lit = false;
 		bool is_z_write_disabled = false;
 		bool is_cull_disabled = false;
+		bool is_normal_edge_detection_enabled = true;
 		glm::vec4 color = glm::vec4(1.0f);
 
 		bool is_light_target_position_enabled = false;
@@ -117,6 +118,9 @@ namespace nbunny
 
 		void set_is_cull_disabled(bool value);
 		bool get_is_cull_disabled() const;
+
+		void set_is_normal_edge_detection_enabled(bool value);
+		bool get_is_normal_edge_detection_enabled() const;
 
 		const glm::vec4& get_color() const;
 		void set_color(const glm::vec4& value);

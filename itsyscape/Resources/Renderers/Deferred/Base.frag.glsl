@@ -14,6 +14,8 @@ precision highp float;
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+uniform float scape_NormalEdgeDetection;
+
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
 varying vec4 frag_Color;
@@ -35,5 +37,5 @@ void effect()
 
 	love_Canvases[0] = diffuse;
 	love_Canvases[1] = vec4(frag_Position, diffuse.a);
-	love_Canvases[2] = vec4(frag_Normal, diffuse.a);
+	love_Canvases[2] = vec4(frag_Normal, scape_NormalEdgeDetection);
 }
