@@ -9,6 +9,9 @@ uniform float scape_NearOutlineDistance;
 uniform float scape_FarOutlineDistance;
 uniform float scape_MinOutlineThickness;
 uniform float scape_MaxOutlineThickness;
+uniform float scape_MinOutlineDepthAlpha;
+uniform float scape_MaxOutlineDepthAlpha;
+uniform float scape_OutlineFadeDepth;
 
 float linearDepth(float depthSample)
 {
@@ -61,12 +64,15 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float depth = linearDepth(Texel(scape_DepthTexture, textureCoordinate).r);
 	float remappedDepth = smoothstep(scape_NearOutlineDistance, scape_FarOutlineDistance, depth);
 	float thickness = mix(scape_MinOutlineThickness, scape_MaxOutlineThickness, 1.0 - remappedDepth);
+	float alphaMultiplier = 1.0 - smoothstep(scape_FarOutlineDistance, scape_FarOutlineDistance + scape_OutlineFadeDepth, depth);
+	alphaMultiplier = mix(scape_MaxOutlineDepthAlpha, scape_MinOutlineDepthAlpha, alphaMultiplier);
+
 	float noise = Texel(scape_NoiseTexture, textureCoordinate).r;
 	thickness += noise * scape_MaxNoiseDistance;
 
-	float d = distance(textureCoordinate, outlineSample.xy);
+	//float d = distance(textureCoordinate / scape_TexelSize, outlineSample.xy);
 	//float a = step(max(thickness / 2.0, 1.0), sample.z);
-	float a = sharpStep(0.0, max(thickness / 2.0, 1.0), outlineSample.z, 0.5, 0.75);
+	float a = sharpStep(0.0, thickness / 2.0, outlineSample.z, 0.5, 0.75);
 	//a = step(1.0, a);
 	//float a = step(max(thickness / 2.0, 1.0), outlineSample.z);
 
@@ -85,7 +91,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	}
 
 	//return vec4(color.rgb * vec3(depth, thickness, a), 1.0);
-	return vec4(color.rgb * vec3(a), alpha);
+	return vec4(vec3(0.0), alpha * (1.0 - a) * alphaMultiplier);
 	//float distance = length(position - textureCoordinate);
 
 	// float outline = Texel(scape_OutlineTexture, textureCoordinate).r;
