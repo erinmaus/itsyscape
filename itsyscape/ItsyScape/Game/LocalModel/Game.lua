@@ -145,15 +145,6 @@ function LocalGame:spawnPlayer(clientID)
 	self.playersByID[player:getID()] = player
 
 	local storage = PlayerStorage()
-	storage:getRoot():set({
-		Location = {
-			x = 1,
-			y = 0,
-			z = 1,
-			name = "@TitleScreen_EmptyRuins",
-			isTitleScreen = true
-		}
-	})
 	player:spawn(storage, false)
 
 	player.onLeave:register(self._onPlayerLeave, self)
