@@ -130,8 +130,8 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float normalSobel = getNormalSobel(scape_NormalTexture, textureCoordinate);
 	//float sobel = max(getDepthSobel(texture, textureCoordinate), getNormalSobel(scape_NormalTexture, textureCoordinate));
 	float d = max(
-		step(0.5, normalSobel),
-		step(0.9, depthSobel));
+		step(0.2, normalSobel),
+		step(0.2, depthSobel));
 
 	//return step(9.0, numDepthSamples) * vec4(1.0, 0.0, 0.0, 1.0);
 
