@@ -68,6 +68,14 @@ do
 
 	ItsyScape.Meta.ResourceCategoryGroup {
 		Key = "Metal",
+		Value = "Mithril",
+		Language = "en-US",
+		Name = "Mithril",
+		Tier = 20
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Metal",
 		Value = "Adamant",
 		Language = "en-US",
 		Name = "Adamant",
@@ -131,6 +139,38 @@ do
 		Language = "en-US",
 		Name = "Willow",
 		Tier = 10
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Wood",
+		Value = "Oak",
+		Language = "en-US",
+		Name = "Oak",
+		Tier = 20
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Wood",
+		Value = "Maple",
+		Language = "en-US",
+		Name = "Maple",
+		Tier = 30
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Wood",
+		Value = "Yew",
+		Language = "en-US",
+		Name = "Yew",
+		Tier = 40
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Key = "Wood",
+		Value = "PetrifiedSpider",
+		Language = "en-US",
+		Name = "Petrified spider",
+		Tier = 50
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
