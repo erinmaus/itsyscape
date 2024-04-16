@@ -23,7 +23,7 @@ while true do
 				end
 
 				local s = love.filesystem.read(request.filename)
-				output:push(s)
+				output:push(s or "")
 			elseif request.type == 'lua' then
 				if not love.filesystem.getInfo(request.filename) then
 					Log.warn("Filename '%s' not found!", request.filename)
@@ -42,7 +42,7 @@ while true do
 				end
 
 				local l = assert(setfenv(s, {}))()
-				output:push(l)
+				output:push(l or {})
 			elseif request.type == 'quit' then
 				return
 			end
