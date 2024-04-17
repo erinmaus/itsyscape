@@ -1,4 +1,5 @@
 {
-	model = "Resources/Game/Skins/BugGuts/Coif.lmesh",
-	texture = "Resources/Game/Skins/Common/LeatherArmor/BugGuts.png"
+	model = "Resources/Game/Skins/Common/Equipment/Helmet.lmesh",
+	texture = "Resources/Game/Skins/Common/LeatherArmor/BugGuts.png",
+	isOccluding = true
 }
