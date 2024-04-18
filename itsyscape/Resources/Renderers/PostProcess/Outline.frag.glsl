@@ -19,11 +19,24 @@ float linearDepth(float depthSample)
 	return zLinear;
 }
 
+const mat3 G[9] = mat3[](
+	1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 ),
+	1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 ),
+	1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 ),
+	1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) ),
+	1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 ),
+	1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 ),
+	1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 ),
+	1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 ),
+	1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 )
+);
+
 void makeDepthKernel(inout float n[9], sampler2D texture, vec2 textureCoordinate)
 {
 	float x = scape_TexelSize.x;
     float y = scape_TexelSize.y;
 
+	//n[4] = sampleAverageDepth(texture, textureCoordinate);
 	n[4] = linearDepth(Texel(texture, textureCoordinate).r);
 	n[0] = abs(linearDepth(Texel(texture, textureCoordinate + vec2( -x, -y)).r) - n[4]);
 	n[1] = abs(linearDepth(Texel(texture, textureCoordinate + vec2(0.0, -y)).r) - n[4]);
@@ -37,14 +50,43 @@ void makeDepthKernel(inout float n[9], sampler2D texture, vec2 textureCoordinate
 
 float getDepthSobel(sampler2D texture, vec2 textureCoordinate)
 {
-	float n[9];
-	makeDepthKernel(n, texture, textureCoordinate);
+	//float n[9];
+	//makeDepthKernel(n, texture, textureCoordinate);
+	mat3 I;
+	float cnv[9];
 
-	float horizontalEdge = n[2] + (2.0 * n[5]) + n[8] - (n[0] + (2.0 * n[3]) + n[6]);
-  	float verticalEdge = n[0] + (2.0 * n[1]) + n[2] - (n[6] + (2.0 * n[7]) + n[8]);
-	float sobel = sqrt((horizontalEdge * horizontalEdge) + (verticalEdge * verticalEdge));
+	float center = linearDepth(Texel(texture, textureCoordinate).r);
+	//float center = 0.0;
 
-	return sobel;
+	int Ii = 0;
+	for (float x = -1.0; x <= 1.0; x += 1.0)
+	{
+		int Ij = 0;
+		for (float y = -1.0; y <= 1.0; y += 1.0)
+		{
+			float sample = abs(linearDepth(Texel(texture, textureCoordinate + vec2(x, y) * scape_TexelSize).r) - center);
+			I[Ii][Ij] = sample;
+
+			Ij += 1;
+		}
+
+		Ii += 1;
+	}
+	
+	for (int i = 0; i < 9; i++)
+	{
+		float dp3 = dot(G[i][0], I[0]) + dot(G[i][1], I[1]) + dot(G[i][2], I[2]);
+		cnv[i] = dp3 * dp3; 
+	}
+
+	float M = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]);
+	float S = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + (cnv[8] + M);
+
+	//float horizontalEdge = n[2] + (2.0 * n[5]) + n[8] - (n[0] + (2.0 * n[3]) + n[6]);
+  	//float verticalEdge = n[0] + (2.0 * n[1]) + n[2] - (n[6] + (2.0 * n[7]) + n[8]);
+	//float sobel = sqrt((horizontalEdge * horizontalEdge) + (verticalEdge * verticalEdge));
+
+	return sqrt(M / S);
 }
 
 void makeNormalKernel(inout vec4 n[9], sampler2D texture, vec2 textureCoordinate)
