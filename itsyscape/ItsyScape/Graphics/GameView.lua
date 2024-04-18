@@ -488,7 +488,6 @@ function GameView:updateGroundDecorations(m)
 				local decoration = ground:getDecoration()
 				local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
 				local sceneNode = self:decorate(groupName, decoration, m.layer)
-				sceneNode:getMaterial():setIsNormalEdgeDetectionEnabled(false)
 			end
 		end
 	end
