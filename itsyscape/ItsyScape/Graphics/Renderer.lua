@@ -102,7 +102,7 @@ function Renderer:new()
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()
 
-	self.outlineBuffer = NGBuffer("rgba8", "rgba8", "rgba32f")
+	self.outlineBuffer = NGBuffer("rgba32f", "rgba32f", "rgba32f")
 	self.distanceBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.alphaBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
