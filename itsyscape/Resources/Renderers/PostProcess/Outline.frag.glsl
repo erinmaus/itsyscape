@@ -48,6 +48,22 @@ void makeDepthKernel(inout float n[9], sampler2D texture, vec2 textureCoordinate
 	n[8] = abs(linearDepth(Texel(texture, textureCoordinate + vec2(  x, y)).r) - n[4]);
 }
 
+float sampleAverageDepth(sampler2D texture, vec2 textureCoordinate)
+{
+	float sumDepth = 0.0;
+	float numDepthSamples = 0.0;
+	for (float x = -1.0; x <= 1.0; x += 1.0)
+	{
+		for (float y = -1.0; y <= 1.0; y += 1.0)
+		{
+			sumDepth += linearDepth(Texel(texture, textureCoordinate + vec2(x, y) * scape_TexelSize).r);
+			numDepthSamples += 1.0;
+		}
+	}
+
+	return sumDepth / numDepthSamples;
+}
+
 float getDepthSobel(sampler2D texture, vec2 textureCoordinate)
 {
 	//float n[9];
@@ -58,19 +74,15 @@ float getDepthSobel(sampler2D texture, vec2 textureCoordinate)
 	float center = linearDepth(Texel(texture, textureCoordinate).r);
 	//float center = 0.0;
 
-	int Ii = 0;
-	for (float x = -1.0; x <= 1.0; x += 1.0)
+	for (int x = 0; x < 3; x += 1)
 	{
-		int Ij = 0;
-		for (float y = -1.0; y <= 1.0; y += 1.0)
+		for (int y = 0; y < 3; y += 1)
 		{
-			float sample = abs(linearDepth(Texel(texture, textureCoordinate + vec2(x, y) * scape_TexelSize).r) - center);
-			I[Ii][Ij] = sample;
-
-			Ij += 1;
+			//float sample = abs(linearDepth(Texel(texture, textureCoordinate + vec2(x, y) * scape_TexelSize).r) - center);
+			float sample = linearDepth(Texel(texture, textureCoordinate + vec2(float(x - 1), float(y - 1)) * scape_TexelSize).r);
+			//float sample = sampleAverageDepth(texture, textureCoordinate + vec2(float(x - 1), float(y - 1)) * scape_TexelSize);
+			I[x][y] = abs(sample - center);
 		}
-
-		Ii += 1;
 	}
 	
 	for (int i = 0; i < 9; i++)
@@ -86,7 +98,7 @@ float getDepthSobel(sampler2D texture, vec2 textureCoordinate)
   	//float verticalEdge = n[0] + (2.0 * n[1]) + n[2] - (n[6] + (2.0 * n[7]) + n[8]);
 	//float sobel = sqrt((horizontalEdge * horizontalEdge) + (verticalEdge * verticalEdge));
 
-	return sqrt(M / S);
+	return sqrt(M / (S + (1.0 - step(0.001, S))));
 }
 
 void makeNormalKernel(inout vec4 n[9], sampler2D texture, vec2 textureCoordinate)
@@ -173,7 +185,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	//float sobel = max(getDepthSobel(texture, textureCoordinate), getNormalSobel(scape_NormalTexture, textureCoordinate));
 	float d = max(
 		step(0.2, normalSobel),
-		step(0.2, depthSobel));
+		smoothstep(0.05, 0.1, depthSobel));
 
 	//return step(9.0, numDepthSamples) * vec4(1.0, 0.0, 0.0, 1.0);
 
@@ -235,5 +247,5 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 
 	//return vec4(color.rgb * vec3(sumDepthSamples / numDepthSamples, minDepthSample, d), 1);
 	//return vec4(color.rgb * vec3(normalSobel, depthSobel, max(normalSobel, depthSobel)), alpha);
-	return vec4(color.rgb * vec3(1.0 - d), 1.0);
+	return vec4(color.rgb * vec3(1.0 - d, depthSobel, linearDepth(Texel(texture, textureCoordinate).r)), 1.0);
 }
