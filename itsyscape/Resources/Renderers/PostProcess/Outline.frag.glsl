@@ -98,7 +98,7 @@ float getDepthSobel(sampler2D texture, vec2 textureCoordinate)
   	//float verticalEdge = n[0] + (2.0 * n[1]) + n[2] - (n[6] + (2.0 * n[7]) + n[8]);
 	//float sobel = sqrt((horizontalEdge * horizontalEdge) + (verticalEdge * verticalEdge));
 
-	return sqrt(M / (S + (1.0 - step(0.001, S))));
+	return sqrt(M / max(S, 0.001));
 }
 
 void makeNormalKernel(inout vec4 n[9], sampler2D texture, vec2 textureCoordinate)
@@ -126,7 +126,7 @@ float getNormalSobel(sampler2D texture, vec2 textureCoordinate)
   	vec4 verticalEdge = n[0] + (2.0 * n[1]) + n[2] - (n[6] + (2.0 * n[7]) + n[8]);
 	vec4 sobel = sqrt((horizontalEdge * horizontalEdge) + (verticalEdge * verticalEdge));
 
-	return ((sobel.r + sobel.g + sobel.b) / 3.0) * n[4].w;
+	return ((sobel.r + sobel.g + sobel.b) / 3.0);
 }
 
 float getMinAlpha(Image texture, vec2 textureCoordinate)
@@ -179,13 +179,11 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 
 	//alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).r;
 
-	float alpha = getMinAlpha(scape_AlphaMaskTexture, textureCoordinate);
+	float sobelMultiplier = Texel(scape_NormalTexture, textureCoordinate).a;
 	float depthSobel = getDepthSobel(texture, textureCoordinate);
 	float normalSobel = getNormalSobel(scape_NormalTexture, textureCoordinate);
 	//float sobel = max(getDepthSobel(texture, textureCoordinate), getNormalSobel(scape_NormalTexture, textureCoordinate));
-	float d = max(
-		step(0.2, normalSobel),
-		smoothstep(0.05, 0.1, depthSobel));
+	float d = max(step(0.2, normalSobel), step(0.2, depthSobel)) * sobelMultiplier;
 
 	//return step(9.0, numDepthSamples) * vec4(1.0, 0.0, 0.0, 1.0);
 
