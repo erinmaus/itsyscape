@@ -1,5 +1,5 @@
 {
-	model = "Resources/Game/Skins/BullseyeLantern/BullseyeLantern.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Pocket.lmesh",
 	texture = "Resources/Game/Skins/BullseyeLantern/BullseyeLantern_Rainbow.png",
 	lights = {
 		{
