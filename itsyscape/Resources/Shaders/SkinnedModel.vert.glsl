@@ -1,5 +1,6 @@
 #define MAX_BONES 48
 uniform mat4 scape_Bones[MAX_BONES];
+uniform mat4 scape_ViewMatrix;
 
 attribute vec4 VertexBoneIndex;
 attribute vec4 VertexBoneWeight;
@@ -35,7 +36,7 @@ void performTransform(
 
 	frag_Direction = vec2(
 		VertexDirection,
-		(scape_WorldMatrix * vec4(1.0, 0.0, 0.0, 0.0)).x
+		(scape_ViewMatrix * scape_WorldMatrix * vec4(1.0, 0.0, 0.0, 0.0)).x
 	);
 
 	frag_Normal = normalize(mat3(scape_NormalMatrix) * normalize(weightedNormal));
