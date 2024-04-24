@@ -24,6 +24,11 @@ void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 	{
 		auto& material = visible_scene_node->get_material();
 
+		if (!material.get_is_normal_edge_detection_enabled())
+		{
+			continue;
+		}
+
 		if (material.get_is_translucent() || material.get_is_full_lit())
 		{
 			translucent_scene_nodes.push_back(visible_scene_node);
