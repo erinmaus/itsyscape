@@ -1,5 +1,5 @@
 {
-	model = "Resources/Game/Skins/CottonCloth/Hat.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/WizardHat.lmesh",
 	texture = "Resources/Game/Skins/CottonCloth/Texture.png",
 	isBlocking = false
 }
