@@ -24,7 +24,7 @@ void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 	{
 		auto& material = visible_scene_node->get_material();
 
-		if (!material.get_is_normal_edge_detection_enabled())
+		if (!material.get_is_normal_edge_detection_enabled() && (material.get_is_translucent() || material.get_is_full_lit()))
 		{
 			continue;
 		}
@@ -100,6 +100,15 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 			shader->updateUniform(alpha_mask_uniform, 1);
 		}
 
+		if (!scene_node->get_material().get_is_normal_edge_detection_enabled())
+		{
+			graphics->setColorMask(disabledMask);
+		}
+		else
+		{
+			graphics->setColorMask(enabledMask);
+		}
+
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
@@ -138,6 +147,8 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 
 		renderer->draw_node(L, *scene_node, delta);
 	}
+
+	graphics->setColorMask(enabledMask);
 }
 
 nbunny::AlphaMaskRendererPass::AlphaMaskRendererPass(GBuffer& a_buffer) :
