@@ -50,10 +50,6 @@ function Orlando:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Red.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Isabellium/HelmetlessIsabellium.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_SELF, Equipment.SKIN_PRIORITY_BASE, body)
 	local weapon = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Isabellium/IsabelliumZweihander.lua")
