@@ -1,4 +1,4 @@
 {
-	model = "Resources/Game/Skins/Isabellium/Boots.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Boots.lmesh",
 	texture = "Resources/Game/Skins/Isabellium/Isabellium.png"
 }

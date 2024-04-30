@@ -101,6 +101,30 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumGloves",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumBoots",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumPlatebody",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumHelmet",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
 		Value = ItsyScape.Utility.xpForLevel(100),
@@ -367,6 +391,24 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
 		Value = "Hopeless romantic.",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumGloves",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumBoots",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumPlatebody",
+		Count = 1,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
 	}
 

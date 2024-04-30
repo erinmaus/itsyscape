@@ -71,10 +71,6 @@ function IsabelleMean:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/Amulets/AmuletOfYendor.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_NECK, Equipment.SKIN_PRIORITY_EQUIPMENT, amuletOfYendor)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Isabellium/Isabellium.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_SELF, Equipment.SKIN_PRIORITY_BASE, body)
 
 	self:onSwitchStyle(IsabelleMean.STYLE_MELEE)
 
