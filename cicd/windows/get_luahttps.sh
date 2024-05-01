@@ -7,7 +7,7 @@ cd build
 git clone https://github.com/love2d/lua-https || true
 cd lua-https
 
-sed -i '' 's/CMAKE_CXX_STANDARD 11/CMAKE_CXX_STANDARD 14/g' ./src/CMakeLists.txt
+sed -i.bak 's/CMAKE_CXX_STANDARD 11/CMAKE_CXX_STANDARD 14/g' ./src/CMakeLists.txt
 
 cmake \
 	-Bbuild \
