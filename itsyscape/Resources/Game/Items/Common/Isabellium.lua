@@ -86,6 +86,7 @@ function Isabellium:detach()
 	stats = stats and stats.stats
 	if stats then
 		stats.onLevelUp:unregister(self._onLevelUp)
+		stats.onBoost:register(self._onLevelUp)
 		stats.onDeserialize:unregister(self._onLevelUp)
 	end
 end
