@@ -4,7 +4,7 @@ set -xe
 
 cd build
 git clone https://github.com/erinmaus/love2d || true
-git clone https://github.com/love2d/love-apple-dependencies || true
+git clone -b 11.x https://github.com/love2d/love-apple-dependencies || true
 
 cd love2d
 cp -a ../love-apple-dependencies/macOS/Frameworks platform/xcode/macosx
