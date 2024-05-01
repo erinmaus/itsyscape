@@ -164,7 +164,7 @@ function PlayerInventory.UseItemFacade:mousePress(_x, _y, button)
 			if hit.prop then
 				table.insert(actions, {
 					id = hit.prop:getID(),
-					verb = string.format("Use %s  ->", self.item.name),
+					verb = string.format("Use %s ->", self.item.name),
 					object = hit.prop:getName(),
 					callback = function()
 						self.interface:useItemOnProp(hit.prop)
@@ -182,7 +182,6 @@ function PlayerInventory.UseItemFacade:mousePress(_x, _y, button)
 			end
 		end
 
-		print(">>> button == 2", #actions)
 		self.ui:probe(actions)
 	end
 
