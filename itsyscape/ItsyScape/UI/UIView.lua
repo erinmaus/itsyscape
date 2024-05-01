@@ -1232,10 +1232,10 @@ end
 function UIView:probe(actions)
 	self:closePokeMenu()
 
-	self.pokeMenu = PokeMenu(self, actions)
+	self.pendingPokeMenu = PokeMenu(self, actions)
 	do
 		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
-		local menuWidth, menuHeight = self.pokeMenu:getSize()
+		local menuWidth, menuHeight = self.pendingPokeMenu:getSize()
 		local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
 		mouseX = mouseX - offsetX
 		mouseY = mouseY - offsetY
@@ -1253,16 +1253,16 @@ function UIView:probe(actions)
 			menuY = menuY - difference
 		end
 
-		self.pokeMenu:setPosition(
+		self.pendingPokeMenu:setPosition(
 			menuX,
 			menuY)
 
-		self.pokeMenu.onClose:register(function() self.pokeMenu = false end)
+		self.pendingPokeMenu.onClose:register(function() self.pendingPokeMenu = false end)
 
-		self.root:addChild(self.pokeMenu)
+		self.root:addChild(self.pendingPokeMenu)
 	end
 
-	return self.pokeMenu
+	return self.pendingPokeMenu
 end
 
 function UIView:isPokeMenu(widget)
@@ -1302,6 +1302,11 @@ function UIView:tick()
 end
 
 function UIView:update(delta)
+	if self.pendingPokeMenu then
+		self.pokeMenu = self.pendingPokeMenu
+		self.pendingPokeMenu = nil
+	end
+
 	for i = 1, #self.pokes do
 		local poke = self.pokes[i]
 

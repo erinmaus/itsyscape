@@ -159,17 +159,16 @@ function TextInput:keyDown(key, scan, isRepeat, ...)
 			self:setCursor(self:_getTextLength())
 		end
 	elseif key == "delete" then
-		if self:getLeftCursor() ~= 0 then
-			if self.cursorLength == 0 then
-				self.text = self:_subText(1, self.cursorIndex + 1) ..
-				            self:_subText(self.cursorIndex + 2)
-				self.onValueChanged(self, self.text)
-			else
-				self.text = self:_subText(1, self:getLeftCursor() + 1) ..
-				            self:_subText(self:getRightCursor() + 1)
-				self.onValueChanged(self, self.text)
-			end
+		if self.cursorLength == 0 then
+			self.text = self:_subText(1, self.cursorIndex + 1) ..
+			            self:_subText(self.cursorIndex + 2)
+			self.onValueChanged(self, self.text)
+		else
+			self.text = self:_subText(1, self:getLeftCursor() + 1) ..
+			            self:_subText(self:getRightCursor() + 1)
+			self.onValueChanged(self, self.text)
 		end
+
 		self:setCursor(self:getLeftCursor(), 0)
 	elseif key == 'backspace' then
 	--if key == 'backspace' then
@@ -202,18 +201,19 @@ function TextInput:keyDown(key, scan, isRepeat, ...)
 		-- 	self:moveCursor(self:getLeftCursor() - 1)
 		-- end
 
-		if self:getLeftCursor() ~= 0 then
-			if self.cursorLength == 0 then
-				self.text = self:_subText(1, self.cursorIndex) ..
-				            self:_subText(self.cursorIndex + 1)
-				self.onValueChanged(self, self.text)
-				self.cursorIndex = self.cursorIndex - 1
-			else
-				self.text = self:_subText(1, self:getLeftCursor() + 1) ..
-				            self:_subText(self:getRightCursor() + 1)
-				self.onValueChanged(self, self.text)
-			end
+		if self.cursorLength == 0 then
+			self.text = self:_subText(1, self.cursorIndex) ..
+			            self:_subText(self.cursorIndex + 1)
+			self.onValueChanged(self, self.text)
+			self.cursorIndex = self.cursorIndex - 1
+		elseif self.cursorLength == self:_getTextLength() then
+			self.text = ""
+		else
+			self.text = self:_subText(1, self:getLeftCursor() + 1) ..
+			            self:_subText(self:getRightCursor() + 1)
+			self.onValueChanged(self, self.text)
 		end
+
 		self:setCursor(self:getLeftCursor(), 0)
 	elseif (key == 'lshift' or key == 'rshift') and not isRepeat then
 		self.isShiftDown = self.isShiftDown + 1
