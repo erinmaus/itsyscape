@@ -20,11 +20,16 @@ void nbunny::ParticleOutlineRendererPass::walk_all_nodes(SceneNode& node, float 
 	SceneNode::walk_by_position(node, get_renderer()->get_camera(), delta, visible_scene_nodes);
 
 	particle_scene_nodes.clear();
+	other_scene_nodes.clear();
 	for (auto& visible_scene_node: visible_scene_nodes)
 	{
 		if (visible_scene_node->get_type() == ParticleSceneNode::type_pointer)
 		{
             particle_scene_nodes.push_back(visible_scene_node);
+		}
+		else if (!visible_scene_node->get_material().get_is_z_write_disabled())
+		{
+			other_scene_nodes.push_back(visible_scene_node);
 		}
 	}
 }
@@ -71,6 +76,22 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 	disabledMask.b = false;
 	disabledMask.a = false;
 
+	for (auto& scene_node: other_scene_nodes)
+	{
+		auto shader = get_node_shader(L, *scene_node);
+		if (!shader)
+		{
+			continue;
+		}
+		renderer->set_current_shader(shader);
+
+        graphics->setMeshCullMode(love::graphics::CULL_BACK);
+
+		graphics->setColorMask(disabledMask);
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);	
+		renderer->draw_node(L, *scene_node, delta);
+	}
+
 	for (auto& scene_node: particle_scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
@@ -83,7 +104,7 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
 		graphics->setColorMask(disabledMask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);	
 		renderer->draw_node(L, *scene_node, delta);
 
 		graphics->setColorMask(enabledMask);
