@@ -14,6 +14,7 @@ local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
 local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
 local OutlineRendererPass = require "ItsyScape.Graphics.OutlineRendererPass"
+local ParticleOutlineRendererPass = require "ItsyScape.Graphics.ParticleOutlineRendererPass"
 local AlphaMaskRendererPass = require "ItsyScape.Graphics.AlphaMaskRendererPass"
 local LBuffer = require "ItsyScape.Graphics.LBuffer"
 local GBuffer = require "ItsyScape.Graphics.GBuffer"
@@ -87,18 +88,21 @@ function Renderer:new()
 	self.finalDeferredPass = DeferredRendererPass(self)
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
 	self.alphaMaskPass = AlphaMaskRendererPass(self)
+	self.particleOutlinePass = ParticleOutlineRendererPass(self)
 	self.passesByID = {
 		[self.outlinePass:getID()] = self.outlinePass,
 		[self.finalDeferredPass:getID()] = self.finalDeferredPass,
 		[self.finalForwardPass:getID()] = self.finalForwardPass,
-		[self.alphaMaskPass:getID()] = self.alphaMaskPass
+		[self.alphaMaskPass:getID()] = self.alphaMaskPass,
+		[self.particleOutlinePass:getID()] = self.particleOutlinePass,
 	}
 
 	self._renderer:addRendererPass(self.outlinePass:getHandle())
 	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
 	self._renderer:addRendererPass(self.finalForwardPass:getHandle())
 	self._renderer:addRendererPass(self.alphaMaskPass:getHandle())
-
+	self._renderer:addRendererPass(self.particleOutlinePass:getHandle())
+	
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()
 
@@ -234,7 +238,9 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setDepthMode("always", false)
 	--love.graphics.draw(buffer:getColor())
 	love.graphics.draw(self.alphaMaskPass:getABuffer():getCanvas(2))
-
+	
+	self.sobelPostProcessShader:send("scape_AlphaMaskTexture", self.particleOutlinePass:getOBuffer():getCanvas(1))
+	love.graphics.draw(self.particleOutlinePass:getOBuffer():getCanvas(1))
 
 	-- love.graphics.setCanvas(buffer:getColor())
 	-- love.graphics.setShader()

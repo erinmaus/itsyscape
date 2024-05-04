@@ -12,6 +12,7 @@
 #include "modules/graphics/Graphics.h"
 #include "modules/math/Transform.h"
 #include "nbunny/optimaus/alpha_mask_renderer_pass.hpp"
+#include "nbunny/optimaus/particle.hpp"
 
 void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
@@ -25,6 +26,11 @@ void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 		auto& material = visible_scene_node->get_material();
 
 		if (!material.get_is_normal_edge_detection_enabled() && (material.get_is_translucent() || material.get_is_full_lit()))
+		{
+			continue;
+		}
+
+		if (visible_scene_node->get_type() == ParticleSceneNode::type_pointer)
 		{
 			continue;
 		}

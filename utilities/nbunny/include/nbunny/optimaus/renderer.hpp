@@ -22,13 +22,14 @@ namespace nbunny
 {
 	enum
 	{
-		RENDERER_PASS_NONE       = 0,
-		RENDERER_PASS_DEFERRED   = 1,
-		RENDERER_PASS_FORWARD    = 2,
-		RENDERER_PASS_MOBILE     = 3,
-		RENDERER_PASS_OUTLINE    = 4,
-		RENDERER_PASS_ALPHA_MASK = 5,
-		RENDERER_PASS_MAX        = 5
+		RENDERER_PASS_NONE             = 0,
+		RENDERER_PASS_DEFERRED         = 1,
+		RENDERER_PASS_FORWARD          = 2,
+		RENDERER_PASS_MOBILE           = 3,
+		RENDERER_PASS_OUTLINE          = 4,
+		RENDERER_PASS_ALPHA_MASK       = 5,
+		RENDERER_PASS_PARTICLE_OUTLINE = 6,
+		RENDERER_PASS_MAX              = 6
 	};
 
 	class RendererPass;
