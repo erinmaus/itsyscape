@@ -66,8 +66,6 @@ float sampleAverageDepth(sampler2D texture, vec2 textureCoordinate)
 
 float getDepthSobel(sampler2D texture, vec2 textureCoordinate)
 {
-	//float n[9];
-	//makeDepthKernel(n, texture, textureCoordinate);
 	mat3 I;
 	float cnv[9];
 

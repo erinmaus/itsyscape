@@ -217,6 +217,8 @@ function Renderer:_drawOutlines(width, height)
 	self.outlinePass:getOBuffer():getCanvas(0):setFilter("nearest", "nearest")
 	
 	love.graphics.setShader(self.customOutlinePostProcessShader)
+	self.customOutlinePostProcessShader:send("scape_Near", self.camera:getNear())
+	self.customOutlinePostProcessShader:send("scape_Far", self.camera:getFar())
 	--self.customOutlinePostProcessShader:send("scape_TexelSize", { 1.0 / width, 1.0 / height })
 	--self.customOutlinePostProcessShader:send("scape_OutlineThickness", 2.5)
 	self.customOutlinePostProcessShader:send("scape_DepthTexture", self.outlinePass:getOBuffer():getCanvas(0))

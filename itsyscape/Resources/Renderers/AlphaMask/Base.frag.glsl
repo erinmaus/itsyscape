@@ -11,6 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 0.1
+#define SCAPE_ALPHA_PASS 1
 
 uniform float scape_AlphaMask;
 
@@ -30,8 +31,6 @@ void effect()
 		discard;
 	}
 
-	float alpha = max(diffuse.a, scape_AlphaMask);
-
-	love_Canvases[0] = vec4(alpha, 0.0, 0.0, alpha);
-	love_Canvases[1] = vec4(frag_Position.z, 0.0, 0.0, alpha);
+	love_Canvases[0] = vec4(1.0, 0.0, 0.0, scape_AlphaMask);
+	love_Canvases[1] = vec4(frag_Position.z, 0.0, 0.0, diffuse.a);
 }
