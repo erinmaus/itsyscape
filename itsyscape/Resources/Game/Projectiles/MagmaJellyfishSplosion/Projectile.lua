@@ -73,7 +73,6 @@ Splosion.PARTICLE_SYSTEM_FIRE = {
 Splosion.PARTICLE_SYSTEM_SMOKE = {
 	numParticles = 50,
 	texture = "Resources/Game/Projectiles/MagmaJellyfishSplosion/Particle_Smoke.png",
-	columns = 4,
 
 	emitters = {
 		{
