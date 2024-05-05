@@ -1,4 +1,4 @@
 {
-	model = "Resources/Game/Skins/NobleSilk/Gloves.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Gloves.lmesh",
 	texture = "Resources/Game/Skins/NobleSilk/Texture.png"
 }
