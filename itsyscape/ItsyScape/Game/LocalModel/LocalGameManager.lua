@@ -267,8 +267,7 @@ end
 function LocalGameManager:sendToPlayer(player)
 	local playerInstance = player:getInstance()
 	if not playerInstance then
-		Log.warn("Player '%s' (%d) not ready; no instance.", (player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
-		return
+		playerInstance = self.game:getStage():getPeepInstance()
 	end
 
 	local queue = self:getQueue()
