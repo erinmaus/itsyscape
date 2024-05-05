@@ -161,10 +161,6 @@ function LocalPlayer:spawn(storage, newGame, password)
 				actor:getPeep():pushPoke('bootstrapComplete')
 				Analytics:startGame(actor:getPeep())
 			else
-				if not root:hasSection("Location") or not root:getSection("Location"):get("name") then
-					self:_updateLastLocation(storage)
-				end
-
 				if root:hasSection("Location") then
 					local location = root:getSection("Location")
 					if location:get("name") then
@@ -200,8 +196,6 @@ function LocalPlayer:spawn(storage, newGame, password)
 							Utility.Peep.setPosition(actor:getPeep(), Vector(x, y, z))
 						end
 					end
-				else
-					Log.warn("Couldn't place player (%d) peep - loading not continuing.", self.id)
 				end
 			end
 		end)
@@ -225,13 +219,15 @@ function Player:_updateLastLocation(storage)
 
 	local finishedQuest = playerPeep:getState():has('Quest', "PreTutorial")
 
-	local map, anchor
+	local map, anchor, isInstance
 	if finishedQuest then
 		map = "IsabelleIsland_Tower_Floor5"
 		anchor = "Anchor_StartGame"
+		isInstance = nil
 	else
-		map = "PreTutorial_MansionFloor1"
+		map = "Sailing_WhalingTemple"
 		anchor = "Anchor_Spawn"
+		isInstance = true
 	end
 
 	if map and anchor then
@@ -245,6 +241,7 @@ function Player:_updateLastLocation(storage)
 			x = x,
 			y = y,
 			z = z,
+			instance = isInstance
 		})
 
 		spawnSection:set({
