@@ -59,15 +59,20 @@ function PathTexture.Path:draw(color)
 	love.graphics.draw(self.mesh)
 end
 
-function PathTexture.Path.loadFromTable(path)
+function PathTexture.Path.loadFromTable(path, index)
 	local points = {}
-	for _, subpath in ipairs(path) do
-		local triangulation = love.math.triangulate(subpath)
+	for i, subpath in ipairs(path) do
+		local success, result = pcall(love.math.triangulate, subpath)
+		if not success then
+			Log.warn("Could not triangulate subpath %d for path %s: %s", i, path.id or index, result)
+		else
+			local triangulation = love.math.triangulate(subpath)
 
-		for _, triangle in ipairs(triangulation) do
-			table.insert(points, { triangle[1], triangle[2] })
-			table.insert(points, { triangle[3], triangle[4] })
-			table.insert(points, { triangle[5], triangle[6] })
+			for _, triangle in ipairs(triangulation) do
+				table.insert(points, { triangle[1], triangle[2] })
+				table.insert(points, { triangle[3], triangle[4] })
+				table.insert(points, { triangle[5], triangle[6] })
+			end
 		end
 	end
 
@@ -75,6 +80,11 @@ function PathTexture.Path.loadFromTable(path)
 
 	if coroutine.running() then
 		coroutine.yield()
+	end
+
+	if #points == 0 then
+		Log.warn("Couldn't triangulate path %s! No points.", path.id or index)
+		return nil
 	end
 
 	return PathTexture.Path(path.id, color, points, path.clip or {})
@@ -107,14 +117,18 @@ end
 function PathTexture.loadFromTable(t)
 	local texture = PathTexture(t.width, t.height)
 
-	for _, path in ipairs(t.paths) do
-		local p = PathTexture.Path.loadFromTable(path)
-		texture:addPath(p)
+	for i, path in ipairs(t.paths) do
+		local p = PathTexture.Path.loadFromTable(path, i)
+		if p then
+			texture:addPath(p)
+		end
 	end
 
-	for _, path in ipairs(t.clips) do
-		local c = PathTexture.Path.loadFromTable(path)
-		texture:addClip(c)
+	for i, path in ipairs(t.clips) do
+		local c = PathTexture.Path.loadFromTable(path, i)
+		if c then
+			texture:addClip(c)
+		end
 	end
 
 	return texture
