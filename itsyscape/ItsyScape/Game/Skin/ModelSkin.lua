@@ -81,7 +81,6 @@ function ModelSkin:loadFromFile(filename)
 	end
 
 	if result.colors then
-		print(">>> has colors")
 		for _, color in ipairs(result.colors) do
 			table.insert(self.colors, {
 				name = color.name,
@@ -89,8 +88,6 @@ function ModelSkin:loadFromFile(filename)
 				saturationOffset = color.saturationOffset and color.saturationOffset / 255,
 				lightnessOffset = color.lightnessOffset and color.lightnessOffset / 255,
 			})
-
-			print(">>> color", color.name)
 
 			for _, path in ipairs(color) do
 				self.pathToColor[path] = color.name
@@ -283,26 +280,28 @@ end
 function ModelSkin:_getColor(colorName, colors, c)
 	for _, color in ipairs(self.colors) do
 		if color.name == colorName then
-			local color = colors and colors[colorName]
-			if color and color.parent then
-				color = self:_getColor(color.parent.name, colors)
+			local result = colors and colors[colorName]
+
+			if not result then
+				result = c[colorName] or Color(Vector(love.math.random(), love.math.random(), love.math.random()):getNormal():get())
+				c[colorName] = result
 			end
 
-			if not color then
-				color = c[colorName] or Color(Vector(love.math.random(), love.math.random(), love.math.random()):getNormal():get())
-				c[colorName] = color
+			if color and color.parent then
+				result = self:_getColor(color.parent.name, colors, c)
 			end
 
 			if color.hueOffset or color.saturationOffset or color.lightnessOffset then
-				local h, s, l = color:toHSL()
-				h = h + color.hueOffset
-				s = math.clamp(s + color.saturationOffset)
-				l = math.clamp(l + color.lightnessOffset)
+				local h, s, l = result:toHSL()
+				h = h + (color.hueOffset or 0)
+				s = math.clamp(s + (color.saturationOffset or 0))
+				l = math.clamp(l + (color.lightnessOffset or 0))
 
-				color = Color.fromHSL(h % 1, s, l)
+				local b = result
+				result = Color.fromHSL(h % 1, s, l)
 			end
 
-			return color
+			return result
 		end
 	end
 
@@ -314,7 +313,6 @@ function ModelSkin:mapPathsToColors(colors, c)
 	local c = {}
 
 	for pathID, colorName in pairs(self.pathToColor) do
-		print(">>> colorName", colorName)
 		result[pathID] = self:_getColor(colorName, color, c)
 	end
 

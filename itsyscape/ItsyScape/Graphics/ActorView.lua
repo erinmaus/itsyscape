@@ -423,7 +423,6 @@ function ActorView:_doApplySkin(slotNodes)
 						slot.sceneNode:getMaterial():setTextures(slot.textureResource)
 						print(">>> set lvg")
 					else
-						print(">>> not lvg")
 						slot.sceneNode:getMaterial():setTextures(textureResource)
 					end
 
