@@ -99,6 +99,8 @@ function Color.fromHSL(h, s, l)
 end
 
 function Color:toHSL()
+	local r, g, b = self:get()
+
 	local max, min = math.max(r, g, b), math.min(r, g, b)
 	if max == min then return 0, 0, min end
 

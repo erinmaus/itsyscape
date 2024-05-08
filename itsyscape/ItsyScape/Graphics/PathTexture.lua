@@ -13,17 +13,29 @@ local Resource = require "ItsyScape.Graphics.Resource"
 
 local PathTexture = Class()
 
+local MASK_SHADER = love.graphics.newShader([[
+	uniform Image scape_ClipMask;
+
+	vec4 effect(
+		vec4 color,
+		Image texture,
+		vec2 textureCoordinate,
+		vec2 screenCoordinate)
+	{
+		float shapeMaskSample = Texel(texture, textureCoordinate).r;
+		float clipMaskSample = Texel(scape_ClipMask, textureCoordinate).r;
+
+		return vec4(color.rgb, step(0.5, shapeMaskSample) * step(0.5, clipMaskSample));
+	}
+]])
+
 PathTexture.Path = Class()
-PathTexture.Path.VERTEX_FORMAT = {
-	{ "VertexPosition", "float", 2 },
-}
 
 function PathTexture.Path:new(id, color, points, clip)
 	self.id = id
 	self.color = color
 
-	self.mesh = love.graphics.newMesh(PathTexture.Path.VERTEX_FORMAT, points, 'triangles', 'static')
-	self.mesh:setAttributeEnabled("VertexPosition", true)
+	self.mesh = love.graphics.newMesh(points, 'triangles', 'static')
 
 	self.clip = { unpack(clip) }
 end
@@ -122,39 +134,63 @@ function PathTexture:draw(canvas, colors)
 	if not canvas or canvas:getWidth() ~= self.width or canvas:getHeight() ~= self.height then
 		canvas = love.graphics.newCanvas(self.width, self.height)
 	end
+	
+	local maskCanvas = love.graphics.newCanvas(self.width, self.height)
+	local shapeCanvas = love.graphics.newCanvas(self.width, self.height)
 
 	love.graphics.push("all")
+	love.graphics.setMeshCullMode("none")
 	love.graphics.origin()
-	love.graphics.setCanvas({ canvas, stencil = true })
+
+	love.graphics.setCanvas(canvas)
 	love.graphics.clear(0, 0, 0, 0)
 
 	for _, path in ipairs(self.paths) do
-		love.graphics.clear(false, true, false)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setShader()
+		love.graphics.setStencilTest()
 
-		-- local clipPaths = path:getClipPaths()
-		-- local compare = 1
+		local clipPaths = path:getClipPaths()
+		if #clipPaths > 0 then
+			love.graphics.setCanvas({ maskCanvas, stencil = true })
+			love.graphics.clear(0, 0, 0, 1, 0, false)
 
-		-- if #clipPaths > 0 then
-		-- 	compare = 0
+			for i = #clipPaths, 1, -1 do
+				local clipPath = self.clips[clipPaths[i]]
+				if clipPath then
+					love.graphics.stencil(function()
+						clipPath:draw()
+					end, "invert", 0, true)
+				end
+			end
 
-		-- 	for i = #clipPaths, 1, -1 do
-		-- 		local clipPath = self.clips[clipPaths[i]]
-		-- 		if clipPath then
-		-- 			love.graphics.stencil(function()
-		-- 				clipPath:draw()
-		-- 			end, "invert", 0, false)
-		-- 		end
-		-- 	end
-		-- end
+			love.graphics.setStencilTest("notequal", 0)
+			love.graphics.rectangle("fill", 0, 0, self.width, self.height)
+		else
+			love.graphics.setCanvas(maskCanvas)
+			love.graphics.clear(1, 1, 1, 1)
+		end
 
-		-- love.graphics.stencil(function()
-		-- 	path:draw()
-		-- end, "invert", 0, false)
-
-		-- love.graphics.setStencilTest("notequal", compare)
-		path:draw(colors[path:getID()])
+		love.graphics.setCanvas({ shapeCanvas, stencil = true })
+		love.graphics.clear(0, 0, 0, 1, 0, false)
+		love.graphics.setStencilTest()
+		love.graphics.stencil(function()
+			path:draw()
+		end, "invert", 0, true)
+		love.graphics.setStencilTest("notequal", 0)
+		love.graphics.rectangle("fill", 0, 0, self.width, self.height)
+		
+		love.graphics.setCanvas(canvas)
+		love.graphics.setStencilTest()
+		love.graphics.setColor((colors[path:getID()] or Color()):get())
+		love.graphics.setShader(MASK_SHADER)
+		MASK_SHADER:send("scape_ClipMask", maskCanvas)
+		love.graphics.draw(shapeCanvas)
 	end
 	love.graphics.pop("all")
+
+	shapeCanvas:release()
+	maskCanvas:release()
 
 	return canvas
 end
