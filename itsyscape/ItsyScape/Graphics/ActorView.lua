@@ -18,6 +18,8 @@ local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local PathTextureResource = require "ItsyScape.Graphics.PathTextureResource"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
@@ -412,7 +414,18 @@ function ActorView:_doApplySkin(slotNodes)
 				local textureCacheRef = slot.instance:getTexture()
 				if textureCacheRef then
 					local textureResource = resourceManager:loadCacheRef(textureCacheRef)
-					slot.sceneNode:getMaterial():setTextures(textureResource)
+
+					if Class.isCompatibleType(textureResource, PathTextureResource) then
+						slot.texture = textureResource
+						slot.canvas = slot.texture:getResource():draw(slot.canvas, slot.instance:mapPathsToColors(slot.colors))
+						slot.textureResource = TextureResource(slot.canvas)
+
+						slot.sceneNode:getMaterial():setTextures(slot.textureResource)
+						print(">>> set lvg")
+					else
+						print(">>> not lvg")
+						slot.sceneNode:getMaterial():setTextures(textureResource)
+					end
 
 					if coroutine.running() then
 						coroutine.yield()

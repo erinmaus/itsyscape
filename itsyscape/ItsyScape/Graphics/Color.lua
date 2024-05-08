@@ -68,6 +68,57 @@ function Color:get(multiplier)
 	return self.r * multiplier, self.g * multiplier, self.b * multiplier, self.a * multiplier
 end
 
+function Color.fromHSL(h, s, l)
+	local w = (h % 1) * 6
+	local c = (1 - math.abs(2 * l - 1)) * s
+	local x = c * (1 - math.abs(w % 2 - 1))
+	local m = l - c / 2
+
+	local r, g, b = m, m, m
+	if w < 1 then
+		r = r + c
+		g = g + x
+	elseif w < 2 then
+		r = r + x
+		g = g + c
+	elseif w < 3 then
+		g = g + c
+		b = b + x
+	elseif w < 4 then
+		g = g + x
+		b = b + c
+	elseif w < 5 then
+		b = b + c
+		r = r + x
+	else
+		b = b + x
+		r = r + c
+	end
+
+	return Color(r, g, b)
+end
+
+function Color:toHSL()
+	local max, min = math.max(r, g, b), math.min(r, g, b)
+	if max == min then return 0, 0, min end
+
+	local l, d = max + min, max - min
+	local s = d / (l > 1 and (2 - l) or l)
+	l = l / 2
+
+	local h
+	if max == r then
+		h = (g - b) / d
+		if g < b then h = h + 6 end
+	elseif max == g then
+		h = (b - r) / d + 2
+	else
+		h = (r - g) / d + 4
+	end
+
+	return h / 6, s, l
+end
+
 -- Adds two colors, or a color and a scalar, clamping the result to 0 .. 1
 -- inclusive.
 function Metatable.__add(a, b)

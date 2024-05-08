@@ -21,6 +21,7 @@ local ModelSkin = Class(Skin)
 function ModelSkin:new()
 	self.model = false
 	self.texture = false
+	self.pathTexture = false
 	self.isBlocking = true
 	self.isOccluded = false
 	self.isOccluding = false
@@ -32,6 +33,8 @@ function ModelSkin:new()
 	self.rotation = Quaternion(0, 0, 0, 1)
 	self.lights = {}
 	self.particles = {}
+	self.colors = {}
+	self.pathToColor = {}
 end
 
 function ModelSkin:getResource()
@@ -71,6 +74,39 @@ function ModelSkin:loadFromFile(filename)
 		self.texture = CacheRef("ItsyScape.Graphics.TextureResource", result.texture)
 	else
 		self.texture = false
+	end
+
+	if result.pathTexture then
+		self.texture = CacheRef("ItsyScape.Graphics.PathTextureResource", result.pathTexture)
+	end
+
+	if result.colors then
+		print(">>> has colors")
+		for _, color in ipairs(result.colors) do
+			table.insert(self.colors, {
+				name = color.name,
+				hueOffset = color.hueOffset and color.hueOffset / 360,
+				saturationOffset = color.saturationOffset and color.saturationOffset / 255,
+				lightnessOffset = color.lightnessOffset and color.lightnessOffset / 255,
+			})
+
+			print(">>> color", color.name)
+
+			for _, path in ipairs(color) do
+				self.pathToColor[path] = color.name
+			end
+		end
+
+		for i, color in ipairs(self.colors) do
+			if result.colors[i].parent then
+				for j = 1, i do
+					if self.colors[j].name == result.colors[i].parent then
+						color.parent = self.colors[j]
+						break
+					end
+				end
+			end
+		end
 	end
 
 	if result.isBlocking == nil then
@@ -238,6 +274,51 @@ end
 
 function ModelSkin:getShader()
 	return self.shader
+end
+
+function ModelSkin:getColors()
+	return self.colors
+end
+
+function ModelSkin:_getColor(colorName, colors, c)
+	for _, color in ipairs(self.colors) do
+		if color.name == colorName then
+			local color = colors and colors[colorName]
+			if color and color.parent then
+				color = self:_getColor(color.parent.name, colors)
+			end
+
+			if not color then
+				color = c[colorName] or Color(Vector(love.math.random(), love.math.random(), love.math.random()):getNormal():get())
+				c[colorName] = color
+			end
+
+			if color.hueOffset or color.saturationOffset or color.lightnessOffset then
+				local h, s, l = color:toHSL()
+				h = h + color.hueOffset
+				s = math.clamp(s + color.saturationOffset)
+				l = math.clamp(l + color.lightnessOffset)
+
+				color = Color.fromHSL(h % 1, s, l)
+			end
+
+			return color
+		end
+	end
+
+	return colors[colorName]
+end
+
+function ModelSkin:mapPathsToColors(colors, c)
+	local result = {}
+	local c = {}
+
+	for pathID, colorName in pairs(self.pathToColor) do
+		print(">>> colorName", colorName)
+		result[pathID] = self:_getColor(colorName, color, c)
+	end
+
+	return result
 end
 
 return ModelSkin

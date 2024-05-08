@@ -37,7 +37,7 @@ while true do
 						s = load(love.filesystem.read(cacheFilename))
 					else
 						local file = love.filesystem.read(request.filename)
-						s = loadstring("return " .. (file or "nil"))
+						s, e = loadstring("return " .. (file or "nil"))
 					end
 				end
 
