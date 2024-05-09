@@ -20,6 +20,7 @@ function SceneSnippet:new()
 	self.root = SceneNode()
 	self.camera = false
 	self.isFullLit = false
+	self.fps = 0
 end
 
 function SceneSnippet:getRoot()
@@ -60,6 +61,14 @@ end
 
 function SceneSnippet:setCamera(camera)
 	self.camera = camera or self.camera
+end
+
+function SceneSnippet:setFPS(fps)
+	self.fps = fps or 0
+end
+
+function SceneSnippet:getFPS()
+	return self.fps
 end
 
 return SceneSnippet
