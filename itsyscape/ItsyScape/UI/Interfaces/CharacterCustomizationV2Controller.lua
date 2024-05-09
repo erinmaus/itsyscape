@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Message = require "ItsyScape.Game.Dialog.Message"
+local Color = require "ItsyScape.Graphics.Color"
 local Controller = require "ItsyScape.UI.Controller"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 
@@ -47,7 +48,11 @@ local SKINS = {
 		{ name = "Demon horns", filename = "Resources/Game/Skins/PlayerKit1/Hair/DemonicHorns.lua" },
 		{ name = "Draconic horns", filename = "Resources/Game/Skins/PlayerKit1/Hair/DraconicHorns.lua" },
 		{ name = "Bald", filename = "Resources/Game/Skins/PlayerKit1/Hair/Bald.lua" },
-		{ name = "Dragon horns (black)", filename = "Resources/Game/Skins/PlayerKit1/Hair/Haru.lua", player = "Haru" }
+		{ name = "Dragon horns (black)", filename = "Resources/Game/Skins/PlayerKit1/Hair/Haru.lua", player = "Haru" },
+
+		palette = {
+			{ Color.fromHexString("ff0000"):get() },
+		}
 	},
 
 	eyes = {
@@ -70,7 +75,7 @@ local SKINS = {
 		{ name = "Dummy eyes", filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Dummy.lua" },
 		{ name = "Demonic eyes (brown-red)", filename = "Resources/Game/Skins/PlayerKit1/Eyes/DemonicEyes_BrownRed.lua" },
 		{ name = "Draconic eyes (white-green)", filename = "Resources/Game/Skins/PlayerKit1/Eyes/DraconicEyes_WhiteGreen.lua" },
-		{ name = "Eyeless", filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyeless.lua" }
+		{ name = "Eyeless", filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyeless.lua" },
 	},
 
 	head = {
@@ -219,10 +224,8 @@ function CharacterCustomizationController:new(peep, director, closeCallback)
 end
 
 function CharacterCustomizationController:poke(actionID, actionIndex, e)
-	if actionID == "previousWardrobe" then
-		self:previousWardrobe(e)
-	elseif actionID == "nextWardrobe" then
-		self:nextWardrobe(e)
+	if actionID == "changeSlot" then
+		self:changeSlot(e)
 	elseif actionID == "changeGender" then
 		self:changeGender(e)
 	elseif actionID == "changeGenderDescription" then
@@ -267,6 +270,26 @@ function CharacterCustomizationController:getIndex(slot)
 	end
 
 	return 0
+end
+
+function CharacterCustomizationController:changeSlot(e)
+	assert(type(e.slot) == "string", "expected string for slot")
+	assert(SKINS[e.slot], "slot not found")
+
+	local slot = SKINS[e.slot]
+
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		"populateSkinOptions",
+		nil,
+		{
+			self:getSkinStorage():get(),
+			slot,
+			slot.slot,
+			slot.priority,
+			e.slot,
+			slot.palette
+		})
 end
 
 function CharacterCustomizationController:changeWardrobe(slot, index)
@@ -521,18 +544,6 @@ function CharacterCustomizationController:update(delta)
 
 	if not self.isReady then
 		self.isReady = true
-
-		self:getDirector():getGameInstance():getUI():sendPoke(
-			self,
-			"populateSkinOptions",
-			nil,
-			{
-				self:getSkinStorage():get(),
-				SKINS.hair,
-				SKINS.hair.slot,
-				SKINS.hair.priority,
-				{}
-			})
 	end
 end
 

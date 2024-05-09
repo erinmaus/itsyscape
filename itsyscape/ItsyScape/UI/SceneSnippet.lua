@@ -20,7 +20,7 @@ function SceneSnippet:new()
 	self.root = SceneNode()
 	self.camera = false
 	self.isFullLit = false
-	self.fps = 0
+	self.alwaysRender = false
 end
 
 function SceneSnippet:getRoot()
@@ -63,12 +63,12 @@ function SceneSnippet:setCamera(camera)
 	self.camera = camera or self.camera
 end
 
-function SceneSnippet:setFPS(fps)
-	self.fps = fps or 0
+function SceneSnippet:setAlwaysRender(value)
+	self.alwaysRender = value or false
 end
 
-function SceneSnippet:getFPS()
-	return self.fps
+function SceneSnippet:getAlwaysRender()
+	return self.alwaysRender
 end
 
 return SceneSnippet

@@ -277,9 +277,12 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setShader(self.distancePostProcessShader)
 	self.distancePostProcessShader:send("scape_TextureSize", { width, height })
 	self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
+
+	local c = 0
 	
 	local currentDistanceX, currentDistanceY
 	repeat
+		c = c + 1
 		self.distancePostProcessShader:send("scape_JumpDistance", { (currentDistanceX or 1) / width, (currentDistanceY or 1) / height })
 		love.graphics.setCanvas(nextOutlineBuffer)
 		love.graphics.draw(currentOutlineBuffer)
@@ -329,8 +332,8 @@ function Renderer:_drawOutlines(width, height)
 	-- 	currentOutlineBuffer, nextOutlineBuffer = nextOutlineBuffer, currentOutlineBuffer
 	-- end
 
-	local noiseWidth = width / 8
-	local noiseHeight = height / 8
+	local noiseWidth = math.floor(width / 8)
+	local noiseHeight = math.floor(height / 8)
 
 	if not self.outlineNoiseTextureX or noiseWidth ~= self.outlineNoiseTextureX:getWidth() or noiseHeight ~= self.outlineNoiseTextureX:getHeight() then
 		local noise = self.X_NOISE
