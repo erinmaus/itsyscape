@@ -68,7 +68,7 @@ function SceneSnippetRenderer:draw(widget)
 		local renderer = self.renderers[widget]
 		local isRendered = self.renders[widget]
 
-		if not isRendered and self.currentNumRenders < self.MAX_RENDERS_PER_FRAME then
+		if (not isRendered and self.currentNumRenders < self.MAX_RENDERS_PER_FRAME) or widget:getAlwaysRender() then
 			local oldParent
 			if widget:getChildNode() and widget:getParentNode() then
 				oldParent = widget:getChildNode():getParent()

@@ -229,12 +229,10 @@ end
 function LocalStage:getGlobalInstanceByFilename(filename)
 	local instances = self.instances[filename]
 	if not instances then
-		Log.warn("No instances for filename '%s'.", filename)
 		return nil
 	end
 
 	if not instances.global then
-		Log.error("No global instance for filename '%s'.", filename)
 		return nil
 	end
 

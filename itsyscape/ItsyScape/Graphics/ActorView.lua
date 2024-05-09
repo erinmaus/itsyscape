@@ -9,13 +9,13 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
-local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
 local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
@@ -385,7 +385,12 @@ end
 
 function ActorView:_updateSkinTexture(slot)
 	if Class.isCompatibleType(slot.texture, PathTextureResource) then
-		slot.canvas = slot.texture:getResource():draw(slot.canvas, slot.instance:mapPathsToColors(slot.config))
+		local colors = {}
+		for index, color in ipairs(slot.config or {}) do
+			colors[index] = Color(unpack(color))
+		end
+
+		slot.canvas = slot.texture:getResource():draw(slot.canvas, slot.instance:mapPathsToColors(colors))
 		slot.sceneNode:getMaterial():setTextures(TextureResource(slot.canvas))
 	elseif slot.texture then
 		slot.sceneNode:getMaterial():setTextures(slot.texture)
@@ -541,8 +546,13 @@ function ActorView:_doApplySkin(slotNodes)
 end
 
 function ActorView:applySkin(slotNodes)
+	local copySlotNodes = {}
+	for _, slotNode in ipairs(slotNodes) do
+		table.insert(copySlotNodes, slotNode)
+	end
+
 	local resourceManager = self.game:getResourceManager()
-	resourceManager:queueEvent(self._doApplySkin, self, slotNodes)
+	resourceManager:queueEvent(self._doApplySkin, self, copySlotNodes)
 end
 
 function ActorView:transmogrify(body)
@@ -574,45 +584,19 @@ function ActorView:changeSkin(slot, priority, skin, config)
 	end
 
 	local slotNodes = self.skins[slot] or {}
-	if not priority then
-		for i = 1, #slotNodes do
-			local s = slotNodes[i]
-			if s.definition == skin then
-				table.remove(slotNodes, i)
 
-				if s.sceneNode then
-					s.sceneNode:setParent(nil)
-				end
+	local oldSkinSlotNode
+	for i = 1, #slotNodes do
+		local s = slotNodes[i]
+		if s.priority == priority then
+			table.remove(slotNodes, i)
+			oldSkinSlotNode = s
 
-				Log.engine(
-					"Unset skin for '%s' (%d) @ slot '%s' (%s): '%s'.",
-					self.actor:getName(), self.actor:getID(),
-					Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot),
-					skin:getFilename())
-
-				break
-			end
+			break
 		end
-	else
-		for i = 1, #slotNodes do
-			local s = slotNodes[i]
-			if s.priority == priority then
-				table.remove(slotNodes, i)
+	end
 
-				if s.sceneNode then
-					s.sceneNode:setParent(nil)
-				end
-
-				Log.engine(
-					"Unset existing skin for '%s' (%d) @ slot '%s' (%s, priority = %d): '%s'.",
-					self.actor:getName(), self.actor:getID(),
-					Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot), priority,
-					s.definition:getFilename())
-
-				break
-			end
-		end
-
+	if priority then
 		local s = {
 			definition = skin,
 			priority = priority,
@@ -625,6 +609,18 @@ function ActorView:changeSkin(slot, priority, skin, config)
 
 	self:applySkin(slotNodes)
 	self.skins[slot] = slotNodes
+
+	if oldSkinSlotNode then
+		self.game:getResourceManager():queueEvent(function()
+			oldSkinSlotNode.sceneNode:setParent(nil)
+
+			Log.info(
+				"Unset skin for '%s' (%d) @ slot '%s' (%s): '%s'.",
+				self.actor:getName(), self.actor:getID(),
+				Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot),
+				oldSkinSlotNode.definition:getFilename())
+		end)
+	end
 end
 
 function ActorView:move(position, layer, instant)
