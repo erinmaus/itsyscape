@@ -226,11 +226,11 @@ function ActorView:new(actor, actorID)
 
 	self.skins = {}
 	self.models = {}
-	self._onSkinChanged = function(_, slot, priority, skin)
+	self._onSkinChanged = function(_, slot, priority, skin, config)
 		Log.engine(
 			"Skin slot '%s' (priority = %d) changed to '%s' for '%s' (%d).",
 			slot, priority, skin and skin:getFilename(), self.actor:getName(), self.actor:getID() or -1)
-		self:changeSkin(slot, priority, skin)
+		self:changeSkin(slot, priority, skin, config)
 	end
 	actor.onSkinChanged:register(self._onSkinChanged)
 	self._onSkinRemoved = function(_, slot, priority, skin)
@@ -383,6 +383,18 @@ function ActorView:playAnimation(slot, animation, priority, time)
 	end
 end
 
+function ActorView:_updateSkinTexture(slot)
+	if Class.isCompatibleType(slot.texture, PathTextureResource) then
+		slot.canvas = slot.texture:getResource():draw(slot.canvas, slot.instance:mapPathsToColors(slot.config))
+		slot.sceneNode:getMaterial():setTextures(TextureResource(slot.canvas))
+	elseif slot.texture then
+		slot.sceneNode:getMaterial():setTextures(slot.texture)
+	else
+		local translucentTexture = self.game:getTranslucentTexture()
+		slot.sceneNode:getMaterial():setTextures(translucentTexture)
+	end
+end
+
 function ActorView:_doApplySkin(slotNodes)
 	local resourceManager = self.game:getResourceManager()
 
@@ -413,25 +425,12 @@ function ActorView:_doApplySkin(slotNodes)
 
 				local textureCacheRef = slot.instance:getTexture()
 				if textureCacheRef then
-					local textureResource = resourceManager:loadCacheRef(textureCacheRef)
-
-					if Class.isCompatibleType(textureResource, PathTextureResource) then
-						slot.texture = textureResource
-						slot.canvas = slot.texture:getResource():draw(slot.canvas, slot.instance:mapPathsToColors(slot.colors))
-						slot.textureResource = TextureResource(slot.canvas)
-
-						slot.sceneNode:getMaterial():setTextures(slot.textureResource)
-						print(">>> set lvg")
-					else
-						slot.sceneNode:getMaterial():setTextures(textureResource)
-					end
+					slot.texture = resourceManager:loadCacheRef(textureCacheRef)
+					self:_updateSkinTexture(slot)
 
 					if coroutine.running() then
 						coroutine.yield()
 					end
-				else
-					local translucentTexture = self.game:getTranslucentTexture()
-					slot.sceneNode:getMaterial():setTextures(translucentTexture)
 				end
 
 				local shaderCacheRef = slot.instance:getShader()
@@ -569,7 +568,7 @@ function ActorView:getSkins(slot)
 	return self.skins[slot]
 end
 
-function ActorView:changeSkin(slot, priority, skin)
+function ActorView:changeSkin(slot, priority, skin, config)
 	if not skin then
 		return
 	end
@@ -616,7 +615,8 @@ function ActorView:changeSkin(slot, priority, skin)
 
 		local s = {
 			definition = skin,
-			priority = priority
+			priority = priority,
+			config = config or {}
 		}
 
 		table.insert(slotNodes, s)
@@ -850,6 +850,14 @@ function ActorView:updateAnimations(delta)
 		skeleton:applyBindPose(transforms)
 	end
 	self:onPostComputeBoneTransforms(transforms, self.animatable)
+end
+
+function ActorView:dirty()
+	for skin in pairs(self.skins) do
+		for slot in ipairs(skin) do
+			self:_updateSkinTexture(slot)
+		end
+	end
 end
 
 return ActorView

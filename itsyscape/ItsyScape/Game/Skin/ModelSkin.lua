@@ -278,9 +278,10 @@ function ModelSkin:getColors()
 end
 
 function ModelSkin:_getColor(colorName, colors, c)
-	for _, color in ipairs(self.colors) do
+	for index, color in ipairs(self.colors) do
 		if color.name == colorName then
 			local result = colors and colors[colorName]
+			result = result or colors[index]
 
 			if not result then
 				result = c[colorName] or Color(Vector(love.math.random(), love.math.random(), love.math.random()):getNormal():get())
@@ -313,7 +314,7 @@ function ModelSkin:mapPathsToColors(colors, c)
 	local c = {}
 
 	for pathID, colorName in pairs(self.pathToColor) do
-		result[pathID] = self:_getColor(colorName, color, c)
+		result[pathID] = self:_getColor(colorName, colors, c)
 	end
 
 	return result

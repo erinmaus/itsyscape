@@ -1348,6 +1348,10 @@ function GameView:dirty()
 			end
 		end
 	end
+
+	for _, actor in pairs(self.actors) do
+		actor:dirty()
+	end
 end
 
 function GameView:dumpStatsToCSV()

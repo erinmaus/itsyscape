@@ -76,7 +76,7 @@ function PathTexture.Path.loadFromTable(path, index)
 		end
 	end
 
-	local color = Color.fromHexString((path.color and path.color:sub(2)) or "ffffff")
+	local color = Color.fromHexString((path.fill and path.fill:sub(2)) or "ffffff")
 
 	if coroutine.running() then
 		coroutine.yield()
@@ -196,7 +196,7 @@ function PathTexture:draw(canvas, colors)
 		
 		love.graphics.setCanvas(canvas)
 		love.graphics.setStencilTest()
-		love.graphics.setColor((colors[path:getID()] or Color()):get())
+		love.graphics.setColor((colors[path:getID()] or path:getColor()):get())
 		love.graphics.setShader(MASK_SHADER)
 		MASK_SHADER:send("scape_ClipMask", maskCanvas)
 		love.graphics.draw(shapeCanvas)

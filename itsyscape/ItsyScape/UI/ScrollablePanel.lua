@@ -174,12 +174,20 @@ function ScrollablePanel:performLayout()
 	self:setScrollSize(self.panel:getSize())
 end
 
+function ScrollablePanel:getNumChildren()
+	return self.panel:getNumChildren()
+end
+
 function ScrollablePanel:addChild(...)
 	self.panel:addChild(...)
 end
 
 function ScrollablePanel:removeChild(...)
 	self.panel:removeChild(...)
+end
+
+function ScrollablePanel:getChildAt(...)
+	return self.panel:getChildAt(...)
 end
 
 function ScrollablePanel:mouseScroll(x, y)

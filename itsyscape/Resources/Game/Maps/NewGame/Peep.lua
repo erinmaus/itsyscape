@@ -74,7 +74,7 @@ function NewGame:onPlayerEnter(player)
 
 	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
 		Utility.UI.closeAll(playerPeep)
-		Utility.UI.openInterface(playerPeep, "CharacterCustomization", true, function()
+		Utility.UI.openInterface(playerPeep, "CharacterCustomizationV2", true, function()
 			self:movePlayer(playerPeep)
 		end)
 	else
