@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
+local NullActor = require "ItsyScape.Game.Null.Actor"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
 local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
@@ -408,15 +409,19 @@ function ActorView:_doApplySkin(slotNodes)
 		local skin = slot.definition
 
 		if slot.sceneNode then
-			slot.sceneNode:setParent(false)
+			slot.sceneNode:setParent(nil)
 		end
 
-		if self.body then
+		if slot.instance and self.body == slot.body then
+			slot.sceneNode:setParent(self.sceneNode)
+			self:_updateSkinTexture(slot)
+		elseif self.body then
 			if Class.isDerived(skin:getResourceType(), ModelSkin) then
 				local instance = resourceManager:loadCacheRef(skin)
 
 				slot.instance = instance
 				slot.sceneNode = ModelSceneNode()
+				slot.body = self.body
 
 				if slot.instance:getModel() then
 					local model = resourceManager:loadCacheRef(slot.instance:getModel())
@@ -561,8 +566,13 @@ function ActorView:transmogrify(body)
 	self.animatable:_newTransforms()
 	self.localTransforms = self.body:getSkeleton():createTransforms()
 
+	local immediate = Class.isCompatibleType(self.actor, NullActor)
 	for _, slotNodes in pairs(self.skins) do
-		self:applySkin(slotNodes)
+		if immediate then
+			self:_doApplySkin(slotNodes)
+		else
+			self:applySkin(slotNodes)
+		end
 	end
 end
 
@@ -588,7 +598,7 @@ function ActorView:changeSkin(slot, priority, skin, config)
 	local oldSkinSlotNode
 	for i = 1, #slotNodes do
 		local s = slotNodes[i]
-		if s.priority == priority then
+		if s.priority == priority or s.definition == skin then
 			table.remove(slotNodes, i)
 			oldSkinSlotNode = s
 
@@ -607,19 +617,30 @@ function ActorView:changeSkin(slot, priority, skin, config)
 		table.sort(slotNodes, function(a, b) return a.priority < b.priority end)
 	end
 
-	self:applySkin(slotNodes)
+	local immediate = Class.isCompatibleType(self.actor, NullActor)
+	if immediate then
+		self:_doApplySkin(slotNodes)
+	else
+		self:applySkin(slotNodes)
+	end
 	self.skins[slot] = slotNodes
 
 	if oldSkinSlotNode then
-		self.game:getResourceManager():queueEvent(function()
+		local function unsetSkin()
 			oldSkinSlotNode.sceneNode:setParent(nil)
 
-			Log.info(
+			Log.engine(
 				"Unset skin for '%s' (%d) @ slot '%s' (%s): '%s'.",
 				self.actor:getName(), self.actor:getID(),
 				Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot),
 				oldSkinSlotNode.definition:getFilename())
-		end)
+		end
+
+		if immediate then
+			unsetSkin()
+		else
+			self.game:getResourceManager():queueEvent(unsetSkin)
+		end
 	end
 end
 

@@ -315,6 +315,8 @@ function CharacterCustomization.LightnessSlider:updateColor(h, s, l)
 	self:_updateImage()
 end
 
+CharacterCustomization.UPDATE_COLOR_FPS = 1 / 15
+
 CharacterCustomization.INACTIVE_SKIN_BUTTON_STYLE = {
 	inactive = Color(0, 0, 0, 0),
 	hover = Color(0.7, 0.6, 0.5),
@@ -550,6 +552,12 @@ function CharacterCustomization:changeSlot(slot)
 end
 
 function CharacterCustomization:updateColor(h, s, l)
+	self.pendingUpdatedColor = { h, s, l }
+end
+
+function CharacterCustomization:_updateSkins()
+	local h, s, l = unpack(self.pendingUpdatedColor)
+
 	self.hueSlider:updateColor(h, s, l)
 	self.saturationSlider:updateColor(h, s, l)
 	self.lightnessSlider:updateColor(h, s, l)
@@ -619,14 +627,17 @@ function CharacterCustomization:updateCurrentPlayer(sceneSnippet, playerSkinStor
 	if sceneSnippet then
 		sceneSnippet:setChildNode(actorView:getSceneNode())
 
-		local parentNode = SceneNode()
-		parentNode:setParent(sceneSnippet:getRoot())
+		local parentNode = sceneSnippet:getParentNode()
+		if not parentNode then
+			parentNode = SceneNode()
+			parentNode:setParent(sceneSnippet:getRoot())
 
-		local ambientLightSceneNode = AmbientLightSceneNode()
-		ambientLightSceneNode:setAmbience(1)
-		ambientLightSceneNode:setParent(parentNode)
+			local ambientLightSceneNode = AmbientLightSceneNode()
+			ambientLightSceneNode:setAmbience(1)
+			ambientLightSceneNode:setParent(parentNode)
 
-		sceneSnippet:setParentNode(parentNode)
+			sceneSnippet:setParentNode(parentNode)
+		end
 	end
 
 	return actor, actorView
@@ -741,6 +752,17 @@ function CharacterCustomization:update(delta)
 		local actorView = widget:getData("actorView")
 		if actorView then
 			actorView:update(0)
+		end
+	end
+
+	if self.pendingUpdatedColor then
+		self.pendingUpdatedColorTime = (self.pendingUpdatedColorTime or 0) + delta
+
+		if self.pendingUpdatedColorTime >= self.UPDATE_COLOR_FPS then
+			self:_updateSkins()
+
+			self.pendingUpdatedColor = nil
+			self.pendingUpdatedColorTime = nil
 		end
 	end
 end
