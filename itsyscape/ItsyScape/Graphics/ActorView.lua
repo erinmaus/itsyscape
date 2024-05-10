@@ -287,6 +287,10 @@ function ActorView:getActor()
 	return self.actor
 end
 
+function ActorView:getIsImmediate()
+	return Class.isCompatibleType(self.actor, NullActor)
+end
+
 function ActorView:attach(game)
 	self.game = game
 end
@@ -338,7 +342,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 	local a = self.animations[slot] or {}
 
 	if priority and animation then
-		self.game:getResourceManager():queueCacheRef(animation, function(definition)
+		local function loadAnimation(definition)
 			if (a.definition and a.definition:getFadesOut()) or
 			   (a.instance and definition:getResource():getFadesIn())
 			then
@@ -367,11 +371,17 @@ function ActorView:playAnimation(slot, animation, priority, time)
 			self.animations[slot] = a
 			self:sortAnimations()
 			self:updateAnimations(0)
-		end)
+		end
+
+		if self:getIsImmediate() then
+			loadAnimation(self.game:getResourceManager():loadCacheRef(animation))
+		else
+			self.game:getResourceManager():queueCacheRef(animation, loadAnimation)
+		end
 
 		self.animations[slot] = a
 	else
-		self.game:getResourceManager():queueEvent(function()
+		local function stopAnimation()
 			local animation = self.animations[slot]
 			if animation then
 				self.animatable:removePlayingAnimation(animation.id)
@@ -380,7 +390,13 @@ function ActorView:playAnimation(slot, animation, priority, time)
 			self.animations[slot] = nil
 			self:sortAnimations()
 			self:updateAnimations(0)
-		end)
+		end
+
+		if self:getIsImmediate() then
+			stopAnimation()
+		else
+			self.game:getResourceManager():queueEvent(stopAnimation)
+		end
 	end
 end
 
@@ -566,9 +582,8 @@ function ActorView:transmogrify(body)
 	self.animatable:_newTransforms()
 	self.localTransforms = self.body:getSkeleton():createTransforms()
 
-	local immediate = Class.isCompatibleType(self.actor, NullActor)
 	for _, slotNodes in pairs(self.skins) do
-		if immediate then
+		if self:getIsImmediate() then
 			self:_doApplySkin(slotNodes)
 		else
 			self:applySkin(slotNodes)
@@ -617,8 +632,7 @@ function ActorView:changeSkin(slot, priority, skin, config)
 		table.sort(slotNodes, function(a, b) return a.priority < b.priority end)
 	end
 
-	local immediate = Class.isCompatibleType(self.actor, NullActor)
-	if immediate then
+	if self:getIsImmediate() then
 		self:_doApplySkin(slotNodes)
 	else
 		self:applySkin(slotNodes)
@@ -636,7 +650,7 @@ function ActorView:changeSkin(slot, priority, skin, config)
 				oldSkinSlotNode.definition:getFilename())
 		end
 
-		if immediate then
+		if self:getIsImmediate() then
 			unsetSkin()
 		else
 			self.game:getResourceManager():queueEvent(unsetSkin)
