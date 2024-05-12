@@ -143,7 +143,7 @@ function GridLayout:layoutChild(child)
 	local y = self.currentY or edgePaddingY
 	if self.currentX then
 		if x + childWidth + self.paddingX > width then
-			self.currentX = childWidth + self.paddingX * 2
+			self.currentX = childWidth + self.paddingX + edgePaddingX
 			x = edgePaddingX
 
 			y = y + self.paddingY
@@ -156,7 +156,7 @@ function GridLayout:layoutChild(child)
 			self.maxRowHeight = math.max(self.maxRowHeight or 0, childHeight)
 		end
 	else
-		self.currentX = childWidth + self.paddingX * 2
+		self.currentX = childWidth + self.paddingX + edgePaddingX
 		self.maxRowHeight = math.max(self.maxRowHeight or 0, childHeight)
 	end
 

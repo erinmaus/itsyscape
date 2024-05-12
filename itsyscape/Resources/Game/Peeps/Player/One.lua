@@ -125,12 +125,13 @@ function One:onChangeWardrobe(e)
 	do
 		if e.type and e.filename then
 			local ref = CacheRef(e.type, e.filename)
-			actor:setSkin(e.slot, e.priority, ref)
+			actor:setSkin(e.slot, e.priority, ref, e.config)
 		end
 
 		local storage = self:getDirector():getPlayerStorage(self)
 		storage = storage:getRoot():getSection("Player"):getSection("Skin")
 
+		storage:removeSection(e.slotName)
 		storage:getSection(e.slotName):set(e)
 	end
 end
@@ -312,13 +313,22 @@ function One:ready(director, game)
 		local slot = SLOTS[i]
 		if skin:hasSection(slot) then
 			local s = skin:getSection(slot)
+
+			local config
+			if s:hasSection("config") then
+				config = s:getSection("config"):get()
+			else
+				config = {}
+			end
+
 			self:onChangeWardrobe({
 				slot = s:get('slot'),
 				slotName = s:get('slotName'),
 				priority = s:get('priority'),
 				name = s:get('name'),
 				filename = s:get('filename'),
-				type = s:get('type')
+				type = s:get('type'),
+				config = config
 			})
 		else
 			self:onChangeWardrobe({

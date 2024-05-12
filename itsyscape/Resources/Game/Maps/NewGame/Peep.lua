@@ -76,7 +76,7 @@ function NewGame:onPlayerEnter(player)
 		Utility.UI.closeAll(playerPeep)
 		Utility.UI.openInterface(playerPeep, "CharacterCustomizationV2", true, function()
 			self:movePlayer(playerPeep)
-		end)
+		end, true)
 	else
 		self:movePlayer(playerPeep)
 	end
