@@ -200,6 +200,11 @@ function PathTexture:draw(canvas, colors)
 		love.graphics.setShader(MASK_SHADER)
 		MASK_SHADER:send("scape_ClipMask", maskCanvas)
 		love.graphics.draw(shapeCanvas)
+
+		if path.id == "left-eye" then
+			maskCanvas:newImageData():encode("png", "left-eye.mask.png")
+			shapeCanvas:newImageData():encode("png", "left-eye.shape.png")
+		end
 	end
 	love.graphics.pop("all")
 

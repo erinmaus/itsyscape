@@ -408,7 +408,11 @@ function ActorView:_updateSkinTexture(slot)
 		end
 
 		slot.canvas = slot.texture:getResource():draw(slot.canvas, slot.instance:mapPathsToColors(colors))
-		slot.sceneNode:getMaterial():setTextures(TextureResource(slot.canvas))
+
+		local resource = TextureResource(slot.canvas)
+		slot.texture:copyPerPassTextures(resource)
+
+		slot.sceneNode:getMaterial():setTextures(resource)
 	elseif slot.texture then
 		slot.sceneNode:getMaterial():setTextures(slot.texture)
 	else
