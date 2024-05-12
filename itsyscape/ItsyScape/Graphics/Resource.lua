@@ -89,7 +89,13 @@ function Resource.readLua(filename)
 
 		return s
 	else
-		local s = "return " .. love.filesystem.read(filename)
+		local source, error = love.filesystem.read(filename)
+		if not source then
+			Log.error("Couldn't load model %s: %s", filename, error)
+			return {}
+		end
+
+		local s = "return " .. source
 		return assert(setfenv(loadstring(s), {}))()
 	end
 end

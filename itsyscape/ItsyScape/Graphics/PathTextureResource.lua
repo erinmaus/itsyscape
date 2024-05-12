@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 local PathTexture = require "ItsyScape.Graphics.PathTexture"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local PathTextureResource = Resource()
 
@@ -17,6 +18,7 @@ function PathTextureResource:new(texture)
 	Resource.new(self)
 
 	self.texture = texture or false
+	self.perPassTextures = {}
 end
 
 function PathTextureResource:getResource()
@@ -30,6 +32,28 @@ end
 function PathTextureResource:loadFromFile(filename, resourceManager)
 	self:release()
 	self.texture = PathTexture.loadFromFile(filename)
+
+	local modifiedFilename = filename:gsub("(.*)%.(.+)$", "%1.png")
+	for passFilename, passID in pairs(TextureResource.PASSES) do
+		local perPassTextureFilename = modifiedFilename:gsub(
+			"(.*)(%..+)$",
+			string.format("%%1@%s%%2", passFilename))
+
+		if perPassTextureFilename ~= modifiedFilename and love.filesystem.getInfo(perPassTextureFilename) then
+			local perPassImage = love.graphics.newImage(perPassTextureFilename)
+			perPassImage:setFilter("linear", "linear")
+
+			self.perPassTextures[passID] = perPassImage
+		end
+	end
+
+	return result
+end
+
+function PathTextureResource:copyPerPassTextures(destination)
+	for passID, perPassImage in pairs(self.perPassTextures) do
+		destination:getHandle():setPerPassTexture(passID, perPassImage)
+	end
 end
 
 function PathTextureResource:getIsReady()
