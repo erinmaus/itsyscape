@@ -52,6 +52,8 @@ local SKINS = {
 
 		palette = {
 			{ Color.fromHexString("ff0000"):get() },
+			{ Color.fromHexString("00ff00"):get() },
+			{ Color.fromHexString("0000ff"):get() },
 		}
 	},
 
