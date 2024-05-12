@@ -24,7 +24,7 @@ GenderBehavior.GENDER_OTHER       = 'x'
 -- Constructs a GenderBehavior.
 --
 -- * gender: Gender of the Peep. Defaults to 'x'.
--- * pronouns: Pronouns of a Peep. Defaults to they/them/theirs/mazer.
+-- * pronouns: Pronouns of a Peep. Defaults to they/them/theirs/patrician.
 function GenderBehavior:new()
 	Behavior.Type.new(self)
 
@@ -33,7 +33,7 @@ function GenderBehavior:new()
 		"they",
 		"them",
 		"their",
-		"mazer"
+		"patrician"
 	}
 	self.pronounsPlural = true
 	self.description = "Non-Binary"

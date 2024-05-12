@@ -910,7 +910,7 @@ Utility.Text.DEFAULT_PRONOUNS   = {
 			"they",
 			"them",
 			"their",
-			"mazer"
+			"patrician"
 		},
 		["male"] = {
 			"he",

@@ -10,7 +10,6 @@
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
-local Message = require "ItsyScape.Game.Dialog.Message"
 local Color = require "ItsyScape.Graphics.Color"
 local Controller = require "ItsyScape.UI.Controller"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
@@ -198,46 +197,18 @@ local SKINS = {
 	}
 }
 
-CharacterCustomizationController.DIALOG = {
-	{
-		"%person{${Formal} ${name}}! Wake up!",
-		"Help! ${Subject} ${arentOrIsnt} responding...",
-		"Get me ${possessive} potion! We have to help ${object}...!"
-	},
-
-	{
-		"Get ${object} to the cells!",
-		"I demand ${possessive} head on a spike by dawn!",
-		"How dare ${subject} insult me, the Czar?!"
-	},
-
-	{
-		"Fate has a way, %person{${formal} ${name}}, of making things right.",
-		"Remember that..."
-	}
-}
-
-function CharacterCustomizationController:new(peep, director, closeCallback)
+function CharacterCustomizationController:new(peep, director, closeCallback, isNewGame)
 	Controller.new(self, peep, director)
 
 	self.closeCallback = closeCallback
-
-	self.isReady = false
+	self.isNewGame = isNewGame or false
 end
 
 function CharacterCustomizationController:poke(actionID, actionIndex, e)
 	if actionID == "changeSlot" then
 		self:changeSlot(e)
-	elseif actionID == "changeGender" then
-		self:changeGender(e)
-	elseif actionID == "changeGenderDescription" then
-		self:changeGenderDescription(e)
-	elseif actionID == "changePronoun" then
-		self:changePronoun(e)
-	elseif actionID == "changePronounPlurality" then
-		self:changePronounPlurality(e)
-	elseif actionID == "changeName" then
-		self:changeName(e)
+	elseif actionID == "submit" then
+		self:submit(e)
 	elseif actionID == "close" then
 		if self.closeCallback then
 			self.closeCallback()
@@ -254,24 +225,6 @@ function CharacterCustomizationController:getSkinStorage()
 	local storage = director:getPlayerStorage(self:getPeep())
 	local skin = storage:getRoot():getSection("Player"):getSection("Skin")
 	return skin
-end
-
-function CharacterCustomizationController:getIndex(slot)
-	local skin = self:getSkinStorage()
-	local slotSection = skin:getSection(slot)
-	if not slotSection:get("filename") then
-		return 0
-	end
-
-	local filename = sResources/Game/Skins/lotSection:get("filename")
-	for i = 1, #SKINS[slot] do
-		local f = "Resources/Game/Skins/" .. SKINS[slot][i].filename
-		if f == filename then
-			return i
-		end
-	end
-
-	return 0
 end
 
 function CharacterCustomizationController:changeSlot(e)
@@ -294,123 +247,43 @@ function CharacterCustomizationController:changeSlot(e)
 		})
 end
 
-function CharacterCustomizationController:changeWardrobe(slot, index)
-	s = SKINS[slot]
-
-	local filename
-	if s[index].filename then
-		filename = "Resources/Game/Skins/Resources/Game/Skins/" .. s[index].filename
-	else
-		filename = fResources/Game/Skins/alse
-	end
-
-	self.peep:poke('changeWardrobe', {
-		slot = s.slot,
-		slotName = slot,
-		priority = s.priority,
-		name = s[index].name,
-		type = s[index].t,
-		filename = fResources/Game/Skins/ilename
-	})
-
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"changeSlot",
-		nil,
-		{ slot, s[index].name })
-end
-
-function CharacterCustomizationController:previousWardrobe(e)
-	local skin = self:getSkinStorage():getSection(e.slot)
-	local index = self:getIndex(e.slot) - 1
-	if index < 0 then
-		index = #SKINS[e.slot]
-	end
-
-	index = (index - 1) % #SKINS[e.slot] + 1
-	self:changeWardrobe(e.slot, index)
-
-	local playerName = self:pull().name or "Player"
-	local slotName = SKINS[e.slot][index].player
-	if slotName and slotName:lower() ~= playerName:lower() then
-		self:previousWardrobe(e)
-	end
-end
-
-function CharacterCustomizationController:nextWardrobe(e)
-	local skin = self:getSkinStorage():getSection(e.slot)
-	local index = self:getIndex(e.slot) + 1
-	if index > #SKINS[e.slot] then
-		index = 1
-	end
-
-	self:changeWardrobe(e.slot, index)
-
-	local playerName = self:pull().name or "Player"
-	local slotName = SKINS[e.slot][index].player
-	if slotName and slotName:lower() ~= playerName:lower() then
-		self:nextWardrobe(e)
-	end
-end
-
-function CharacterCustomizationController:changeName(e)
-	self:getPeep():poke('rename', { name = e.name })
-
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"updateGender",
-		nil,
-		{ self:pull() })
-end
-
-function CharacterCustomizationController:changeGender(e)
+function CharacterCustomizationController:submit(e)
 	local peep = self:getPeep()
 	local gender = peep:getBehavior(GenderBehavior)
 	if gender then
-		if e.gender == GenderBehavior.GENDER_MALE or
-		   e.gender == GenderBehavior.GENDER_FEMALE or
-		   e.gender == GenderBehavior.GENDER_OTHER
-		then
-			gender.gender = e.gender
-
-			if e.gender == GenderBehavior.GENDER_MALE then
-				gender.pronouns = {
-					'he',
-					'him',
-					'his',
-					'ser'
-				}
-				gender.description = 'Male'
-				gender.pronounsPlural = false
-			elseif e.gender == GenderBehavior.GENDER_FEMALE then
-				gender.pronouns = {
-					'she',
-					'her',
-					'her',
-					'misse'
-				}
-				gender.description = 'Female'
-				gender.pronounsPlural = false
-			elseif e.gender == GenderBehavior.GENDER_OTHER then
-				gender.pronouns = {
-					'they',
-					'them',
-					'their',
-					'mazer'
-				}
-				gender.description = 'Non-Binary'
-				gender.pronounsPlural = true
-			end
-		end
+		gender.gender = e.description.gender
+		gender.description = e.description.description
+		gender.pronounsPlural = e.description.pronouns.plural
+		gender.pronouns = {
+			e.description.pronouns.subject or Utility.Text.DEFAULT_PRONOUNS[gender.gender][1],
+			e.description.pronouns.object or Utility.Text.DEFAULT_PRONOUNS[gender.gender][2],
+			e.description.pronouns.possessive or Utility.Text.DEFAULT_PRONOUNS[gender.gender][3],
+			e.description.pronouns.formal or Utility.Text.DEFAULT_PRONOUNS[gender.gender][4],
+		}
 
 		gender:save(peep)
 	end
 
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"updateGender",
-		nil,
-		{ self:pull() })
+	self:getPeep():poke("rename", { name = e.description.name })
+
+	for slotName, skin in pairs(e.skins) do
+		self:getPeep():poke("changeWardrobe", {
+			slot = skin.slot,
+			slotName = slotName,
+			priority = skin.priority,
+			type = MODEL_SKIN,
+			filename = skin.filename,
+			name = skin.name,
+			config = skin.config
+		})
+	end
+
+
+	if self.closeCallback then
+		self.closeCallback()
+	else
+		self:getGame():getUI():closeInstance(self)
+	end
 end
 
 function CharacterCustomizationController:changeGenderDescription(e)
@@ -482,6 +355,8 @@ function CharacterCustomizationController:pull()
 	local storage = self:getDirector():getPlayerStorage(peep)
 
 	local state = {
+		isNewGame = self.isNewGame,
+		skins = storage:getRoot():getSection("Player"):getSection("Skin"):get(),
 		name = storage:getRoot():getSection("Player"):getSection("Info"):get("name") or "Player",
 		gender = gender.gender,
 		description = gender.description or "Non-Binary",
@@ -491,62 +366,10 @@ function CharacterCustomizationController:pull()
 			possessive = gender.pronouns[GenderBehavior.PRONOUN_POSSESSIVE],
 			formal = gender.pronouns[GenderBehavior.FORMAL_ADDRESS],
 			plural = gender.pronounsPlural
-		},
-
-		skins = storage:getRoot():getSection("Player"):getSection("Skin"):get()
+		}
 	}
-	state.dialog = self:prepDialog(state)
 
 	return state
-end
-
-function CharacterCustomizationController:getPreppedPronounsG(state)
-	local function firstWord(v)
-		return v:sub(1, 1):upper() .. v:sub(2)
-	end
-
-	local arentOrIsnt
-	if state.pronouns.plural then
-		arentOrIsnt = "aren't"
-	else
-		arentOrIsnt = "isn't"
-	end
-
-	return {
-		name = state.name,
-		subject = state.pronouns.subject,
-		Subject = firstWord(state.pronouns.subject),
-		object = state.pronouns.object,
-		Object = firstWord(state.pronouns.object),
-		possessive = state.pronouns.possessive,
-		Possessive = firstWord(state.pronouns.possessive),
-		formal = state.pronouns.formal,
-		Formal = firstWord(state.pronouns.formal),
-		arentOrIsnt = arentOrIsnt
-	}
-end
-
-function CharacterCustomizationController:prepDialog(state)
-	local d = {}
-	local g = self:getPreppedPronounsG(state)
-
-	for i = 1, #CharacterCustomizationController.DIALOG do
-		local input = CharacterCustomizationController.DIALOG[i]
-		local message = Message(input, g)
-		local output = message:inflate()
-
-		table.insert(d, output)
-	end
-
-	return d
-end
-
-function CharacterCustomizationController:update(delta)
-	Controller.update(self, delta)
-
-	if not self.isReady then
-		self.isReady = true
-	end
 end
 
 return CharacterCustomizationController
