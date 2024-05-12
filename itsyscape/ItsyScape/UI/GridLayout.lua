@@ -28,6 +28,7 @@ function GridLayout:new()
 	self.maxRowHeight = false
 	self.wrapContents = false
 	self.currentHeight = 0
+	self.edgePadding = true
 end
 
 function GridLayout:getPadding()
@@ -44,6 +45,14 @@ function GridLayout:setPadding(paddingX, paddingY)
 
 		self:performLayout()
 	end
+end
+
+function GridLayout:setEdgePadding(value)
+	self.edgePadding = value or false
+end
+
+function GridLayout:getEdgePadding()
+	return self.edgePadding
 end
 
 function GridLayout:getUniformSize()
@@ -106,9 +115,6 @@ function GridLayout:layoutChild(child)
 				targetWidth = math.floor((selfWidth - padding) * self.uniformSizeX)
 			else
 				targetWidth = self.uniformSizeX
-				if self:getID() == "sut" then
-					print("tw", targetWidth)
-				end
 			end
 		end
 
@@ -130,14 +136,17 @@ function GridLayout:layoutChild(child)
 	local width, height = self:getSize()
 	local childWidth, childHeight = child:getSize()
 
-	local x = self.currentX or self.paddingX
-	local y = self.currentY or self.paddingY
+	local edgePaddingX = self.edgePadding and self.paddingX or 0
+	local edgePaddingY = self.edgePadding and self.paddingY or 0
+
+	local x = self.currentX or edgePaddingX
+	local y = self.currentY or edgePaddingY
 	if self.currentX then
 		if x + childWidth + self.paddingX > width then
 			self.currentX = childWidth + self.paddingX * 2
-			x = self.paddingX
+			x = edgePaddingX
 
-			y = (self.currentY or self.paddingY) + self.paddingY
+			y = y + self.paddingY
 			y = y + (self.maxRowHeight or 0)
 
 			self.currentY = y

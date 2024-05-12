@@ -278,7 +278,12 @@ function ModelSkin:getColors()
 end
 
 function ModelSkin:_getColor(colorName, colors, c)
-	for index, color in ipairs(self.colors) do
+	local index = 0
+	for _, color in ipairs(self.colors) do
+		if not color.parent then
+			index = index + 1
+		end
+
 		if color.name == colorName then
 			local result = colors and colors[colorName]
 			result = result or colors[index]

@@ -11,6 +11,7 @@ local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
 local NullActor = require "ItsyScape.Game.Null.Actor"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
@@ -333,7 +334,7 @@ CharacterCustomization.INACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
 	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 	pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
-	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 	fontSize = _MOBILE and 28 or 24
 }
 
@@ -341,7 +342,7 @@ CharacterCustomization.ACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
 	hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
 	pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
-	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 	fontSize = _MOBILE and 28 or 24
 }
 
@@ -456,7 +457,7 @@ function CharacterCustomization:new(id, index, ui)
 		button:setText(niceName)
 
 		if isActive then
-			self.activeButton = button
+			self.activeSlotButton = button
 			button:setStyle(ButtonStyle(self.ACTIVE_BUTTON_STYLE, self:getView():getResources()))
 
 			onClick()
@@ -465,7 +466,7 @@ function CharacterCustomization:new(id, index, ui)
 		end
 
 		button.onClick:register(function(_, mouseButton)
-			if self.activeButton == button then
+			if self.activeSlotButton == button then
 				return
 			end
 
@@ -473,12 +474,12 @@ function CharacterCustomization:new(id, index, ui)
 				onClick()
 			end
 
-			if self.activeButton then
-				self.activeButton:setStyle(ButtonStyle(self.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
+			if self.activeSlotButton then
+				self.activeSlotButton:setStyle(ButtonStyle(self.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
 			end
 
 			button:setStyle(ButtonStyle(self.ACTIVE_BUTTON_STYLE, self:getView():getResources()))
-			self.activeButton = button
+			self.activeSlotButton = button
 		end)
 
 		self.slotsLayout:addChild(button)
@@ -500,21 +501,35 @@ function CharacterCustomization:new(id, index, ui)
 	self.colorLayout = GridLayout()
 	self.colorLayout:setSize(columnWidth, colorLayoutHeight)
 	self.colorLayout:setPadding(self.PADDING, self.PADDING)
-	self.colorLayout:setPosition(columnWidth * 2, h - colorLayoutHeight - self.PADDING)
+	self.colorLayout:setPosition(columnWidth * 2, h - colorLayoutHeight)
 	self:addChild(self.colorLayout)
 
+	self.colorSelectionLayout = GridLayout()
+	self.colorSelectionLayout:setEdgePadding(false)
+	self.colorSelectionLayout:setUniformSize(true, self.BUTTON_SIZE, self.BUTTON_SIZE)
+	self.colorSelectionLayout:setPadding(self.PADDING)
+	self.colorSelectionLayout:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
+	self.colorLayout:addChild(self.colorSelectionLayout)
+
+	self.paletteLayout = GridLayout()
+	self.paletteLayout:setEdgePadding(false)
+	self.paletteLayout:setUniformSize(true, self.BUTTON_SIZE, self.BUTTON_SIZE)
+	self.paletteLayout:setPadding(self.PADDING)
+	self.paletteLayout:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
+	self.colorLayout:addChild(self.paletteLayout)
+
 	self.hueSlider = CharacterCustomization.HueSlider()
-	self.hueSlider:setSize(columnWidth - self.PADDING * 2, self.BUTTON_SIZE)
+	self.hueSlider:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
 	self.hueSlider.onUpdateValue:register(self.updateHue, self)
 	self.colorLayout:addChild(self.hueSlider)
 
 	self.saturationSlider = CharacterCustomization.SaturationSlider()
-	self.saturationSlider:setSize(columnWidth - self.PADDING * 2, self.BUTTON_SIZE)
+	self.saturationSlider:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
 	self.saturationSlider.onUpdateValue:register(self.updateSaturation, self)
 	self.colorLayout:addChild(self.saturationSlider)
 
 	self.lightnessSlider = CharacterCustomization.LightnessSlider()
-	self.lightnessSlider:setSize(columnWidth - self.PADDING * 2, self.BUTTON_SIZE)
+	self.lightnessSlider:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
 	self.lightnessSlider.onUpdateValue:register(self.updateLightness, self)
 	self.colorLayout:addChild(self.lightnessSlider)
 
@@ -536,6 +551,8 @@ function CharacterCustomization:new(id, index, ui)
 
 	self.colorConfig = {}
 	self.currentColorIndex = 1
+
+	self.newPlayerSkin = {}
 end
 
 function CharacterCustomization:getIsFullscreen()
@@ -583,11 +600,11 @@ function CharacterCustomization:_updateSkins()
 end
 
 function CharacterCustomization:updateHue(_, value)
-	self:updateColor(value, self.saturationSlider:getValue(), self.hueSlider:getValue())
+	self:updateColor(value, self.saturationSlider:getValue(), self.lightnessSlider:getValue())
 end
 
 function CharacterCustomization:updateSaturation(_, value)
-	self:updateColor(self.hueSlider:getValue(), value, self.hueSlider:getValue())
+	self:updateColor(self.hueSlider:getValue(), value, self.lightnessSlider:getValue())
 end
 
 function CharacterCustomization:updateLightness(_, value)
@@ -650,14 +667,22 @@ function CharacterCustomization:updateSkinOptions(skins, slot, priority, niceNam
 		local actorView = button:getData("actorView")
 		local sceneSnippet = button:getData("scene")
 
-		actor, actorView = self:updateCurrentPlayer(sceneSnippet, self:getState().skins, {
+		local override = {
 			[niceName] = {
 				slot = slot,
 				priority = priority,
 				type = "ItsyScape.Game.Skin.ModelSkin",
 				filename = skin.filename
 			}
-		}, actor, actorView)
+		}
+
+		for key, value in pairs(self.newPlayerSkin) do
+			if not override[key] then
+				override[key] = value
+			end
+		end
+
+		actor, actorView = self:updateCurrentPlayer(sceneSnippet, self:getState().skins, override, actor, actorView)
 
 		button:setData("actor", actor)
 		button:setData("actorView", actorView)
@@ -704,8 +729,6 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 		self.colorConfig[niceName] = colors
 	end
 
-	self.currentColorIndex = math.clamp(self.currentColorIndex, 1, #self.colorConfig[niceName])
-
 	for _, skin in ipairs(skins) do
 		local button = Button()
 		button:setToolTip(skin.name)
@@ -724,8 +747,11 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 		button:addChild(sceneSnippet)
 		button:setData("scene", sceneSnippet)
 
+		local skinInfo = { skin = skin, slot = slot, priority = priority, niceName = niceName, palette = palette }
+		button.onClick:register(self.onSelectSkin, self, skinInfo)
+
 		if isActive then
-			button:setStyle(ButtonStyle(self.ACTIVE_SKIN_BUTTON_STYLE, self:getView():getResources()))
+			self:onSelectSkin(skinInfo, button)
 		else
 			button:setStyle(ButtonStyle(self.INACTIVE_SKIN_BUTTON_STYLE, self:getView():getResources()))
 		end
@@ -738,6 +764,122 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 
 	self.skinOptionLayout:getInnerPanel():setScroll(0, 0)
 	self.skinOptionLayout:setScrollSize(self.skinOptionLayout:getInnerPanel():getSize())
+
+	self:populatePaletteOptions(palette or {})
+end
+
+function CharacterCustomization:onSelectSkin(skinInfo, button)
+	if self.activeSkinButton == button then
+		return
+	end
+
+	if self.activeSkinButton then
+		self.activeSkinButton:setStyle(ButtonStyle(self.INACTIVE_SKIN_BUTTON_STYLE, self:getView():getResources()))
+	end
+	button:setStyle(ButtonStyle(self.ACTIVE_SKIN_BUTTON_STYLE, self:getView():getResources()))
+
+	self.activeSkinButton = button
+
+	if skinInfo then
+		self.newPlayerSkin[skinInfo.niceName] = {
+			slot = skinInfo.slot,
+			priority = skinInfo.priority,
+			type = "ItsyScape.Game.Skin.ModelSkin",
+			filename = skinInfo.skin.filename
+		}
+
+		self.currentModelSkin = ModelSkin()
+		self.currentModelSkin:loadFromFile(skinInfo.skin.filename)
+
+		self:updateCurrentPlayer(
+			self.characterSceneSnippet,
+			self:getState().skins,
+			self.newPlayerSkin,
+			self.currentPlayerActor,
+			self.currentPlayerActorView)
+
+		self:updateColorOptions()
+	end
+end
+
+function CharacterCustomization:populatePaletteOptions(palette)
+	self.paletteLayout:clearChildren()
+
+	for _, color in ipairs(palette) do
+		local inactive = Color(unpack(color))
+		local active = inactive * 0.9
+		local hover = inactive * 1.1
+
+		local style = {
+			inactive = inactive,
+			active = active,
+			hover = hover
+		}
+
+		local h, s, l = inactive:toHSL()
+
+		local button = Button()
+		button:setStyle(ButtonStyle(style, self:getView():getResources()))
+		button.onClick:register(self.updateColor, self, h * 255, s * 255, l * 255)
+
+		self.paletteLayout:addChild(button)
+	end
+end
+
+function CharacterCustomization:updateColorOptions()
+	self.activeColorSelectionButton = nil
+
+	local colorOptions = {}
+	for _, color in ipairs(self.currentModelSkin:getColors()) do
+		if not color.parent then
+			table.insert(colorOptions, color.name)
+		end
+	end
+
+	if #colorOptions == 0 then
+		colorOptions = { "Primary" }
+	end
+
+	self.currentColorIndex = math.clamp(self.currentColorIndex, 1, #colorOptions)
+
+	self.colorSelectionLayout:clearChildren()
+	for index, name in ipairs(colorOptions) do
+		local button = Button()
+
+		if index == self.currentColorIndex then
+			self.activeColorSelectionButton = button
+			button:setStyle(ButtonStyle(self.ACTIVE_BUTTON_STYLE, self:getView():getResources()))
+		else
+			button:setStyle(ButtonStyle(self.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
+		end
+
+		button.onClick:register(self.changeCurrentColorIndex, self, index)
+		button:setToolTip(name)
+		button:setText(tostring(index))
+
+		self.colorSelectionLayout:addChild(button)
+	end
+end
+
+function CharacterCustomization:changeCurrentColorIndex(index, button)
+	if self.activeColorSelectionButton == button then
+		return
+	end
+
+	if self.activeColorSelectionButton then
+		self.activeColorSelectionButton:setStyle(ButtonStyle(self.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
+	end
+
+	self.activeColorSelectionButton = button
+	button:setStyle(ButtonStyle(self.ACTIVE_BUTTON_STYLE, self:getView():getResources()))
+
+	self.currentColorIndex = math.clamp(index, 1, self.colorSelectionLayout:getNumChildren())
+
+	local colors = self.colorConfig[self.currentSlot]
+	local color = colors and colors[self.currentColorIndex]
+	if color then
+		self:updateColor(color.h * 255, color.s * 255, color.l * 255)
+	end
 end
 
 function CharacterCustomization:update(delta)
