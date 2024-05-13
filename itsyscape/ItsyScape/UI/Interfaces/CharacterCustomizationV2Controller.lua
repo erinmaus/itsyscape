@@ -63,7 +63,7 @@ local SKINS = {
 		{ name = "Draconic/demonic eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/SnakeEyes.lua" },
 		{ name = "Heterochromic eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/Eyes_Heterochromia.lua" },
 		{ name = "Heterochromic draconic/demonic eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/SnakeEyes_Heterochromia.lua" },
-		{ name = "Robot eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/SnakeEyes_Heterochromia.lua" },
+		{ name = "Robot eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/RobotEyes.lua" },
 		{ name = "Holes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/Holes.lua" }
 	},
 
