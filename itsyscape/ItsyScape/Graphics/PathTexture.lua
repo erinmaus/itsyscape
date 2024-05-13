@@ -191,6 +191,7 @@ function PathTexture:draw(canvas, colors)
 		love.graphics.stencil(function()
 			path:draw()
 		end, "invert", 0, true)
+		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.setStencilTest("notequal", 0)
 		love.graphics.rectangle("fill", 0, 0, self.width, self.height)
 		

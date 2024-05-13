@@ -415,7 +415,7 @@ function ActorView:_updateSkinTexture(slot)
 		slot.sceneNode:getMaterial():setTextures(resource)
 	elseif slot.texture then
 		slot.sceneNode:getMaterial():setTextures(slot.texture)
-	else
+	elseif slot.sceneNode then
 		local translucentTexture = self.game:getTranslucentTexture()
 		slot.sceneNode:getMaterial():setTextures(translucentTexture)
 	end
@@ -888,8 +888,8 @@ function ActorView:updateAnimations(delta)
 end
 
 function ActorView:dirty()
-	for skin in pairs(self.skins) do
-		for slot in ipairs(skin) do
+	for _, skin in pairs(self.skins) do
+		for _, slot in ipairs(skin) do
 			self:_updateSkinTexture(slot)
 		end
 	end
