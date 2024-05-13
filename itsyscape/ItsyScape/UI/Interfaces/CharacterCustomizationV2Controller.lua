@@ -64,20 +64,29 @@ local SKINS = {
 		{ name = "Heterochromic eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/Eyes_Heterochromia.lua" },
 		{ name = "Heterochromic draconic/demonic eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/SnakeEyes_Heterochromia.lua" },
 		{ name = "Robot eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/RobotEyes.lua" },
-		{ name = "Holes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/Holes.lua" }
+
+		palette = {
+			{ Color.fromHexString("ff0000"):get() },
+			{ Color.fromHexString("00ff00"):get() },
+			{ Color.fromHexString("0000ff"):get() },
+		},
+
+		defaultColorConfig = {
+			{ index = 1, Color.fromHexString("8358c3"):get() },
+			{ Color.fromHexString("ffffff"):get() },
+			{ Color.fromHexString("000000"):get() },
+			{ index = 1, Color.fromHexString("8358c3"):get() },
+			{ Color.fromHexString("000000"):get() },
+			{ Color.fromHexString("ffffff"):get() }
+		}
 	},
 
 	head = {
 		slot = Equipment.PLAYER_SLOT_HEAD,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		{ name = "Light", filename = "Resources/Game/Skins/PlayerKit1/Head/Light.lua" },
-		{ name = "Medium", filename = "Resources/Game/Skins/PlayerKit1/Head/Medium.lua" },
-		{ name = "Dark", filename = "Resources/Game/Skins/PlayerKit1/Head/Dark.lua" },
-		{ name = "Fig", filename = "Resources/Game/Skins/PlayerKit1/Head/Minifig.lua" },
+
+		{ name = "Human/humanlike", filename = "Resources/Game/Skins/PlayerKit2/Head/Humanlike.lua" },
 		{ name = "Undead", filename = "Resources/Game/Skins/PlayerKit1/Head/Zombi.lua" },
-		{ name = "Undead (Fungal)", filename = "Resources/Game/Skins/PlayerKit1/Head/Fungal.lua" },
-		{ name = "Undead (Nymph)", filename = "Resources/Game/Skins/PlayerKit1/Head/Nymph.lua" },
-		{ name = "Unreal", filename = "Resources/Game/Skins/PlayerKit1/Head/Unreal.lua" },
 		{ name = "Mummy", filename = "Resources/Game/Skins/PlayerKit1/Head/Mummy.lua" },
 		{ name = "Partially digested", filename = "Resources/Game/Skins/PlayerKit1/Head/PartiallyDigested.lua" },
 		{ name = "Skeleton", filename = "Resources/Game/Skins/Skeleton/Head.lua" },
@@ -86,7 +95,21 @@ local SKINS = {
 		{ name = "Robot Mk II", filename = "Resources/Game/Skins/PlayerKit1/Head/Robot_MkII.lua" },
 		{ name = "Demonic", filename = "Resources/Game/Skins/PlayerKit1/Head/Demonic.lua" },
 		{ name = "Draconic", filename = "Resources/Game/Skins/PlayerKit1/Head/Draconic.lua" },
-		{ name = "Eye", filename = "Resources/Game/Skins/PlayerKit1/Head/Eye.lua" }
+		{ name = "Eye", filename = "Resources/Game/Skins/PlayerKit1/Head/Eye.lua" },
+
+		palette = {
+			{ Color.fromHexString("efe3a9"):get() },
+			{ Color.fromHexString("c5995f"):get() },
+			{ Color.fromHexString("a4693c"):get() },
+			{ Color.fromHexString("ffcc00"):get() },
+			{ Color.fromHexString("bf50d9"):get() },
+			{ Color.fromHexString("535d6c"):get() },
+		},
+
+		defaultColorConfig = {
+			{ index = 1, Color.fromHexString("efe3a9"):get() },
+			{ index = 2, Color.fromHexString("535d6c"):get() },
+		}
 	},
 
 	body = {
@@ -219,19 +242,37 @@ function CharacterCustomizationController:changeSlot(e)
 	assert(type(e.slot) == "string", "expected string for slot")
 	assert(SKINS[e.slot], "slot not found")
 
+	local skinStorage = self:getSkinStorage():get()
 	local slot = SKINS[e.slot]
+
+	local defaultColorConfig = {}
+	for _, color in ipairs(slot.defaultColorConfig or {}) do
+		local result
+		if color.index then
+			result = skinStorage[e.slot].config[color.index]
+
+			if not result then
+				result = { unpack(color) }
+			end
+		else
+			result = color
+		end
+
+		table.insert(defaultColorConfig, result)
+	end
 
 	self:getDirector():getGameInstance():getUI():sendPoke(
 		self,
 		"populateSkinOptions",
 		nil,
 		{
-			self:getSkinStorage():get(),
+			skinStorage,
 			slot,
 			slot.slot,
 			slot.priority,
 			e.slot,
-			slot.palette
+			slot.palette,
+			defaultColorConfig
 		})
 end
 
@@ -271,68 +312,6 @@ function CharacterCustomizationController:submit(e)
 		self.closeCallback()
 	else
 		self:getGame():getUI():closeInstance(self)
-	end
-end
-
-function CharacterCustomizationController:changeGenderDescription(e)
-	assert(type(e.description) == 'string', "description must be string")
-
-	local peep = self:getPeep()
-	local gender = peep:getBehavior(GenderBehavior)
-	if gender then
-		gender.description = e.description
-
-		gender:save(peep)
-	end
-
-	if e.refresh then
-		self:getDirector():getGameInstance():getUI():sendPoke(
-			self,
-			"updateGender",
-			nil,
-			{ self:pull() })
-	end
-end
-
-function CharacterCustomizationController:changePronoun(e)
-	assert(type(e.index) == 'string', "index must be string")
-	assert(type(e.value) == 'string', "value must be string")
-
-	local peep = self:getPeep()
-	local gender = peep:getBehavior(GenderBehavior)
-	if gender then
-		local pronounIndex = PRONOUN_INDEX[e.index]
-		assert(pronounIndex ~= nil, "pronoun index must be valid")
-
-		gender.pronouns[pronounIndex] = e.value
-
-		gender:save(peep)
-	end
-
-	if e.refresh then
-		self:getDirector():getGameInstance():getUI():sendPoke(
-			self,
-			"updateGender",
-			nil,
-			{ self:pull() })
-	end
-end
-
-function CharacterCustomizationController:changePronounPlurality(e)
-	assert(type(e.value) == 'boolean', "value must be boolean")
-
-	local peep = self:getPeep()
-	local gender = peep:getBehavior(GenderBehavior)
-	if gender then
-		gender.pronounsPlural = e.value
-	end
-
-	if e.refresh then
-		self:getDirector():getGameInstance():getUI():sendPoke(
-			self,
-			"updateGender",
-			nil,
-			{ self:pull() })
 	end
 end
 
