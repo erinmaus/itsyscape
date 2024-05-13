@@ -197,15 +197,10 @@ function PathTexture:draw(canvas, colors)
 		
 		love.graphics.setCanvas(canvas)
 		love.graphics.setStencilTest()
-		love.graphics.setColor((colors[path:getID()] or path:getColor()):get())
+		love.graphics.setColor((colors[path:getID()] or colors[path:getColor():toHexString(false, "#")] or path:getColor()):get())
 		love.graphics.setShader(MASK_SHADER)
 		MASK_SHADER:send("scape_ClipMask", maskCanvas)
 		love.graphics.draw(shapeCanvas)
-
-		if path.id == "left-eye" then
-			maskCanvas:newImageData():encode("png", "left-eye.mask.png")
-			shapeCanvas:newImageData():encode("png", "left-eye.shape.png")
-		end
 	end
 	love.graphics.pop("all")
 

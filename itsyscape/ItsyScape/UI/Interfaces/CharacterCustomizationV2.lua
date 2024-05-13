@@ -1088,6 +1088,10 @@ function CharacterCustomization:updateSkinOptions(skins, slot, priority, niceNam
 
 		button:setData("actor", actor)
 		button:setData("actorView", actorView)
+
+		if coroutine.running() then
+			coroutine.yield()
+		end
 	end
 end
 
@@ -1171,7 +1175,9 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 	end
 
 	self._updateSkinOptions = Callback.bind(self.updateSkinOptions, self, skins, slot, priority, niceName)
-	self._updateSkinOptions()
+
+	local gameView = self:getView():getGameView()
+	gameView:getResourceManager():queueEvent(self._updateSkinOptions)
 
 	self.skinOptionLayout:getInnerPanel():setScroll(0, 0)
 	self.skinOptionLayout:setScrollSize(self.skinOptionLayout:getInnerPanel():getSize())
