@@ -92,6 +92,10 @@ function ModelSkin:loadFromFile(filename)
 			for _, path in ipairs(color) do
 				self.pathToColor[path] = color.name
 			end
+
+			if color.color then
+				self.pathToColor[color.color] = color.name
+			end
 		end
 
 		for i, color in ipairs(self.colors) do
@@ -284,7 +288,7 @@ function ModelSkin:_getColor(colorName, colors, c)
 			index = index + 1
 		end
 
-		if color.name == colorName then
+		if color.name == colorName or color.color == colorName then
 			local result = colors and colors[colorName]
 			result = result or colors[index]
 

@@ -64,6 +64,7 @@ local SKINS = {
 		{ name = "Heterochromic eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/Eyes_Heterochromia.lua" },
 		{ name = "Heterochromic draconic/demonic eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/SnakeEyes_Heterochromia.lua" },
 		{ name = "Robot eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/RobotEyes.lua" },
+		{ name = "Skull holes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/Holes.lua" },
 
 		palette = {
 			{ Color.fromHexString("ff0000"):get() },

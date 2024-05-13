@@ -41,6 +41,16 @@ function Color.fromHexString(color, alpha)
 	return nil
 end
 
+function Color:toHexString(includeAlpha, prefix)
+	prefix = prefix or ""
+
+	if includeAlpha then
+		return string.format("%s%02x%02x%02x%02x", prefix, self.r * 255, self.g * 255, self.b * 255, self.a * 255)
+	end
+		
+	return string.format("%s%02x%02x%02x", prefix, self.r * 255, self.g * 255, self.b * 255)
+end
+
 
 -- Clamps the colors in the range of 0 .. 1 inclusive.
 --
