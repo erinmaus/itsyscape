@@ -18,14 +18,14 @@
 			"right-eye"
 		},
 		{
-			name = "Left Iris",
-
-			"left-iris"
-		},
-		{
 			name = "Left Eyebrow",
 
 			"left-brow"
+		},
+		{
+			name = "Left Iris",
+
+			"left-iris"
 		},
 		{
 			name = "Left Eye",

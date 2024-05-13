@@ -1091,7 +1091,7 @@ function CharacterCustomization:updateSkinOptions(skins, slot, priority, niceNam
 	end
 end
 
-function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, slot, priority, niceName, palette)
+function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, slot, priority, niceName, palette, defaultColorConfig)
 	self.skinOptionLayout:clearChildren()
 
 	local _, buttonWidth, buttonHeight = self.skinOptionLayout:getInnerPanel():getUniformSize()
@@ -1104,15 +1104,15 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 		self.skinOptionCamera:setDistance(cameraConfig.zoom)
 	end
 
-	if not self.colorConfig[niceName] then
+	if not self.colorConfig[niceName] or #self.colorConfig[niceName] == 0 then
 		local config
 		do
 			if playerSkinStorage[niceName].config then
 				config = playerSkinStorage[niceName].config
 			end
 
-			if not config and palette then
-				config = palette
+			if not config or #config == 0 then
+				config = defaultColorConfig or palette
 			end
 
 			if not config or #config == 0 then
@@ -1136,10 +1136,19 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 		button:setToolTip(skin.name)
 
 		local isActive = false
-		for _, otherSkin in pairs(playerSkinStorage) do
+		for _, otherSkin in pairs(self.newPlayerSkin) do
 			if otherSkin.filename == skin.filename then
 				isActive = true
 				break
+			end
+		end
+
+		if not isActive and not self.newPlayerSkin[niceName] then
+			for _, otherSkin in pairs(playerSkinStorage) do
+				if otherSkin.filename == skin.filename then
+					isActive = true
+					break
+				end
 			end
 		end
 
@@ -1299,13 +1308,19 @@ function CharacterCustomization:submit()
 	}
 
 	for slotName, skin in pairs(self.newPlayerSkin) do
+		local colorConfig = {}
+
+		for _, color in ipairs(self.colorConfig[slotName] or {}) do
+			table.insert(colorConfig, { unpack(color) })
+		end
+
 		e.skins[slotName] = {
 			slot = skin.slot,
 			priority = skin.priority,
 			type = skin.type,
 			filename = skin.filename,
 			name = skin.name,
-			config = self.colorConfig[slotName] or {}
+			config = colorConfig
 		}
 	end
 
