@@ -9,10 +9,10 @@
 			"hand2"
 		},
 		{
-			name = "Hand Highlight",
+			name = "Stripe Highlight",
 
 			"stripe1",
 			"stripe2"
-		},
+		}
 	}
 }
