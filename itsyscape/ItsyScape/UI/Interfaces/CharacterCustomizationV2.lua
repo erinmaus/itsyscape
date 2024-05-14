@@ -190,6 +190,10 @@ function CharacterCustomization.ColorComponentSlider:updateColor(h, s, l)
 	-- Nothing.
 end
 
+function CharacterCustomization.ColorComponentSlider:setValue(value)
+	self.currentValue = value or self.currentValue
+end
+
 function CharacterCustomization.ColorComponentSlider:getValue()
 	return self.currentValue
 end
@@ -259,6 +263,7 @@ function CharacterCustomization.HueSlider:setSize(...)
 end
 
 function CharacterCustomization.HueSlider:updateColor(h, s, l)
+	self:setValue(h)
 	self.saturation = s
 	self.lightness = l
 
@@ -286,6 +291,7 @@ end
 
 function CharacterCustomization.SaturationSlider:updateColor(h, s, l)
 	self.hue = h
+	self:setValue(s)
 	self.lightness = l
 
 	self:_updateImage()
@@ -313,6 +319,7 @@ end
 function CharacterCustomization.LightnessSlider:updateColor(h, s, l)
 	self.hue = h
 	self.saturation = s
+	self:setValue(l)
 
 	self:_updateImage()
 end
