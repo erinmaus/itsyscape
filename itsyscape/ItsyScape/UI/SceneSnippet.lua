@@ -21,10 +21,19 @@ function SceneSnippet:new()
 	self.camera = false
 	self.isFullLit = false
 	self.alwaysRender = false
+	self.isFocusable = false
 end
 
 function SceneSnippet:getRoot()
 	return self.root
+end
+
+function SceneSnippet:setIsFocusable(value)
+	self.isFocusable = value or false
+end
+
+function SceneSnippet:getIsFocusable()
+	return self.isFocusable
 end
 
 function SceneSnippet:setRoot(value)

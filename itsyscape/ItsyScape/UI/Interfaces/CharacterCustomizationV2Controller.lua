@@ -66,6 +66,7 @@ local SKINS = {
 		{ name = "Heterochromic draconic/demonic eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/SnakeEyes_Heterochromia.lua" },
 		{ name = "Robot eyes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/RobotEyes.lua" },
 		{ name = "Skull holes", filename = "Resources/Game/Skins/PlayerKit2/Eyes/Holes.lua" },
+		{ name = "No eyes", filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyeless.lua" },
 
 		palette = {
 			{ Color.fromHexString("6c4527"):get() },
@@ -91,17 +92,15 @@ local SKINS = {
 		slot = Equipment.PLAYER_SLOT_HEAD,
 		priority = Equipment.SKIN_PRIORITY_BASE,
 
-		{ name = "Human/humanlike", filename = "Resources/Game/Skins/PlayerKit2/Head/Humanlike.lua" },
-		{ name = "Undead", filename = "Resources/Game/Skins/PlayerKit1/Head/Zombi.lua" },
-		{ name = "Mummy", filename = "Resources/Game/Skins/PlayerKit1/Head/Mummy.lua" },
-		{ name = "Partially digested", filename = "Resources/Game/Skins/PlayerKit1/Head/PartiallyDigested.lua" },
-		{ name = "Skeleton", filename = "Resources/Game/Skins/Skeleton/Head.lua" },
-		{ name = "Ancient skeleton", filename = "Resources/Game/Skins/AncientSkeleton/Head.lua" },
-		{ name = "Dummy", filename = "Resources/Game/Skins/PlayerKit1/Head/Dummy.lua" },
-		{ name = "Robot Mk II", filename = "Resources/Game/Skins/PlayerKit1/Head/Robot_MkII.lua" },
-		{ name = "Demonic", filename = "Resources/Game/Skins/PlayerKit1/Head/Demonic.lua" },
-		{ name = "Draconic", filename = "Resources/Game/Skins/PlayerKit1/Head/Draconic.lua" },
-		{ name = "Eye", filename = "Resources/Game/Skins/PlayerKit1/Head/Eye.lua" },
+		{ name = "Human/humanlike head", filename = "Resources/Game/Skins/PlayerKit2/Head/Humanlike.lua" },
+		{ name = "Demonic/draconic head", filename = "Resources/Game/Skins/PlayerKit2/Head/SnakeLike.lua" },
+		{ name = "Zombi head", filename = "Resources/Game/Skins/PlayerKit2/Head/Zombi.lua" },
+		{ name = "Mummy head", filename = "Resources/Game/Skins/PlayerKit2/Head/Mummy.lua" },
+		{ name = "Partially digested adventurer head", filename = "Resources/Game/Skins/PlayerKit2/Head/PartiallyDigested.lua" },
+		{ name = "Skeleton head", filename = "Resources/Game/Skins/Skeleton/Head.lua" },
+		{ name = "Dummy head", filename = "Resources/Game/Skins/PlayerKit2/Head/Dummy.lua" },
+		{ name = "Robot head", filename = "Resources/Game/Skins/PlayerKit2/Head/Robot.lua" },
+		{ name = "Eye", filename = "Resources/Game/Skins/PlayerKit2/Head/Eye.lua" },
 
 		palette = {
 			{ Color.fromHexString("efe3a9"):get() },
