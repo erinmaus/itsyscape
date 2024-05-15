@@ -1,24 +1,30 @@
 {
 	model = "Resources/Game/Skins/Common/PlayerKit1/Head.lmesh",
-	pathTexture = "Resources/Game/Skins/PlayerKit2/Head/Humanlike.lvg",
+	pathTexture = "Resources/Game/Skins/PlayerKit2/Head/PartiallyDigested.lvg",
 	colors = {
 		{
-			name = "Skin",
-
-			"head1-light",
-			"head2-light",
-			"ear-light"
+			name = "Bone",
+			color = "#e9ddaf"
 		},
 		{
-			name = "Shadow",
-			parent = "Skin",
+			name = "Bone Shadow",
+			color = "#e4cf9d",
 
-			hueOffset = -10,
+			parent = "Bone",
+
+			hueOffset = -15,
 			lightnessOffset = -20,
+			saturationOffset = -5
+		},
+		{
+			name = "Bone Crack",
+			color = "#d4af64",
 
-			"head1-shadow",
-			"head2-shadow",
-			"ear-shadow"
+			parent = "Bone",
+
+			hueOffset = 20,
+			lightnessOffset = -10,
+			saturationOffset = -10
 		}
 	},
 	isBlocking = false

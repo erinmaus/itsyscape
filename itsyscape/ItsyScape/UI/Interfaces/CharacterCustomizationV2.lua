@@ -16,6 +16,7 @@ local NullActor = require "ItsyScape.Game.Null.Actor"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
+local DefaultCameraController = require "ItsyScape.Graphics.DefaultCameraController"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
@@ -531,16 +532,16 @@ function CharacterCustomization:new(id, index, ui)
 
 	self.skinOptionCamera = ThirdPersonCamera()
 	self.skinOptionCamera:setUp(-Vector.UNIT_Y)
-	self.skinOptionCamera:setVerticalRotation(-math.pi / 2)
-	self.skinOptionCamera:setHorizontalRotation(-math.pi / 12)
+	self.skinOptionCamera:setVerticalRotation(DefaultCameraController.CAMERA_VERTICAL_ROTATION)
+	self.skinOptionCamera:setHorizontalRotation(DefaultCameraController.CAMERA_HORIZONTAL_ROTATION)
 	self.skinOptionCamera:setPosition(Vector(0, 1.5, 0))
 	self.skinOptionCamera:setDistance(2.5)
 
 	self.characterCamera = ThirdPersonCamera()
 	self.characterCamera:setUp(-Vector.UNIT_Y)
 	self.characterCamera:setDistance(7)
-	self.characterCamera:setVerticalRotation(-math.pi / 2)
-	self.characterCamera:setHorizontalRotation(-math.pi / 12)
+	self.characterCamera:setVerticalRotation(DefaultCameraController.CAMERA_VERTICAL_ROTATION)
+	self.characterCamera:setHorizontalRotation(DefaultCameraController.CAMERA_HORIZONTAL_ROTATION)
 	self.characterCamera:setPosition(Vector.UNIT_Y)
 	self.characterCamera:setWidth(columnWidth)
 	self.characterCamera:setHeight(h)
@@ -554,6 +555,10 @@ function CharacterCustomization:new(id, index, ui)
 	self.characterSceneSnippet:setPosition(columnWidth, 0)
 	self.characterSceneSnippet:setCamera(self.characterCamera)
 	self.characterSceneSnippet:setAlwaysRender(true)
+	self.characterSceneSnippet:setIsFocusable(true)
+	self.characterSceneSnippet.onMousePress:register(self.onStartCameraDrag, self)
+	self.characterSceneSnippet.onMouseRelease:register(self.onStopCameraDrag, self)
+	self.characterSceneSnippet.onMouseMove:register(self.updateCameraDrag, self)
 	self:addChild(self.characterSceneSnippet)
 
 	self.skinPanel = Panel()
@@ -923,6 +928,32 @@ function CharacterCustomization:new(id, index, ui)
 			description = state.description
 		}
 	end
+end
+
+function CharacterCustomization:onStartCameraDrag()
+	self.isCameraDragging = true
+end
+
+function CharacterCustomization:onStopCameraDrag()
+	self.isCameraDragging = false
+end
+
+function CharacterCustomization:updateCameraDrag(_, _, _, dx, dy)
+	if not self.isCameraDragging then
+		return
+	end
+
+	self.verticalOffset = (self.verticalOffset or 0) + dx / 128
+	self.horizontalOffset = (self.horizontalOffset or 0) - dy / 128
+
+	self.horizontalOffset = math.clamp(
+		self.horizontalOffset,
+		-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET,
+		DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+
+
+	self.characterCamera:setVerticalRotation(DefaultCameraController.CAMERA_VERTICAL_ROTATION + self.verticalOffset)
+	self.characterCamera:setHorizontalRotation(DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.horizontalOffset)
 end
 
 function CharacterCustomization:getIsFullscreen()
