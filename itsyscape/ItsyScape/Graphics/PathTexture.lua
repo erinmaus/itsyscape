@@ -178,7 +178,14 @@ function PathTexture:draw(canvas, colors)
 				end
 			end
 
-			love.graphics.setStencilTest("notequal", 0)
+			local compare
+			if #clipPaths % 2 == 0 then
+				compare = 255
+			else
+				compare = 0
+			end
+
+			love.graphics.setStencilTest("notequal", compare)
 			love.graphics.rectangle("fill", 0, 0, self.width, self.height)
 		else
 			love.graphics.setCanvas(maskCanvas)

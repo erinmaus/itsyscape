@@ -111,6 +111,7 @@ function CharacterCustomization.ColorComponentSlider:new(min, max)
 	self.sliderColor = Color()
 
 	self.onUpdateValue = Callback()
+	self.onDone = Callback()
 end
 
 function CharacterCustomization.ColorComponentSlider:getIsFocusable()
@@ -139,6 +140,8 @@ function CharacterCustomization.ColorComponentSlider:mouseRelease(x, y, button)
 	if self.isSliding then
 		self:_handleMouseAction(x, y)
 		self.isSliding = false
+
+		self:onDone()
 	end
 end
 
@@ -595,16 +598,19 @@ function CharacterCustomization:new(id, index, ui)
 	self.hueSlider = CharacterCustomization.HueSlider()
 	self.hueSlider:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
 	self.hueSlider.onUpdateValue:register(self.updateHue, self)
+	self.hueSlider.onDone:register(self.onDoneDragging, self)
 	self.colorLayout:addChild(self.hueSlider)
 
 	self.saturationSlider = CharacterCustomization.SaturationSlider()
 	self.saturationSlider:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
 	self.saturationSlider.onUpdateValue:register(self.updateSaturation, self)
+	self.saturationSlider.onDone:register(self.onDoneDragging, self)
 	self.colorLayout:addChild(self.saturationSlider)
 
 	self.lightnessSlider = CharacterCustomization.LightnessSlider()
 	self.lightnessSlider:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
 	self.lightnessSlider.onUpdateValue:register(self.updateLightness, self)
+	self.lightnessSlider.onDone:register(self.onDoneDragging, self)
 	self.colorLayout:addChild(self.lightnessSlider)
 
 	local skinButtonSize = math.floor((columnWidth - ScrollablePanel.DEFAULT_SCROLL_SIZE - self.PADDING) / self.NUM_SKIN_COLUMNS) - self.PADDING * 2
@@ -1008,6 +1014,11 @@ function CharacterCustomization:changeGenderDescription(value)
 	self.description.description = value
 end
 
+function CharacterCustomization:changePronoun(key, value)
+	self.description.pronouns[key] = value
+	self.onChangeGenderPronouns(value)
+end
+
 function CharacterCustomization:changePronounPlurality(value)
 	self.description.pronouns.plural = value
 	self.onChangeGenderPlurality(value)
@@ -1018,7 +1029,10 @@ function CharacterCustomization:updateColor(h, s, l)
 end
 
 function CharacterCustomization:_updateSkins()
-	local h, s, l = unpack(self.pendingUpdatedColor)
+	local h, s, l = unpack(self.pendingUpdatedColor or {})
+	h = h or self.hueSlider:getValue()
+	s = s or self.saturationSlider:getValue()
+	l = l or self.lightnessSlider:getValue()
 
 	self.hueSlider:updateColor(h, s, l)
 	self.saturationSlider:updateColor(h, s, l)
@@ -1041,7 +1055,12 @@ function CharacterCustomization:_updateSkins()
 	colors[self.currentColorIndex] = { h = h, s = s, l = l, Color.fromHSL(h, s, l):get() }
 
 	self.currentPlayerActor, self.currentPlayerActorView = self:updateCurrentPlayer(self.characterSceneSnippet, self:getState().skins, self.newPlayerSkin, self.currentPlayerActor, self.currentPlayerActorView)
-	self._updateSkinOptions()
+end
+
+function CharacterCustomization:onDoneDragging()
+	if self._updateSkinOptions then
+		self:_updateSkinOptions()
+	end
 end
 
 function CharacterCustomization:updateHue(_, value)
