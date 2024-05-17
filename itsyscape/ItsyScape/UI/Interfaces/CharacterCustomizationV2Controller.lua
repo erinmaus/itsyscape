@@ -128,6 +128,8 @@ local SKINS = {
 		{ name = "Dress", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Dress.lua" },
 		{ name = "Dummy", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Dummy.lua" },
 		{ name = "Fancy pirate garb", filename = "Resources/Game/Skins/PlayerKit2/Shirts/FancyPirateGarb.lua" },
+		{ name = "Witch (huntress)", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Hunter.lua" },
+		{ name = "Lab coat", filename = "Resources/Game/Skins/PlayerKit2/Shirts/LabCoat.lua" },
 	},
 
 	hands = {
