@@ -39,8 +39,8 @@
 
 			parent = "Buckle",
 
-			hueOffset = -10,
-			lightnessOffset = 40
+			hueOffset = -20,
+			lightnessOffset = 75
 		},
 	},
 }
