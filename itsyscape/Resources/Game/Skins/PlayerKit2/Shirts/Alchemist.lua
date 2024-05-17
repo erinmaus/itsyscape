@@ -1,5 +1,5 @@
 {
-	model = "Resources/Game/Skins/Common/PlayerKit1/Shirt.lmesh",
+	model = "Resources/Game/Skins/Common/PlayerKit1/Dress.lmesh",
 	pathTexture = "Resources/Game/Skins/PlayerKit2/Shirts/Alchemist.lvg",
 	colors = {
 		{

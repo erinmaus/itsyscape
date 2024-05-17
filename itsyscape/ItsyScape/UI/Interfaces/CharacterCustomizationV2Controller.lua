@@ -125,6 +125,9 @@ local SKINS = {
 		{ name = "Cannoneer", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Cannoneer.lua" },
 		{ name = "Chef", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Chef.lua" },
 		{ name = "Cross stitch", filename = "Resources/Game/Skins/PlayerKit2/Shirts/CrossStitch.lua" },
+		{ name = "Dress", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Dress.lua" },
+		{ name = "Dummy", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Dummy.lua" },
+		{ name = "Fancy pirate garb", filename = "Resources/Game/Skins/PlayerKit2/Shirts/FancyPirateGarb.lua" },
 	},
 
 	hands = {
