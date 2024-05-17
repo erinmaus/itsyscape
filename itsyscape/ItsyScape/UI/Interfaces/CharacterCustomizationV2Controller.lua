@@ -121,8 +121,10 @@ local SKINS = {
 		slot = Equipment.PLAYER_SLOT_BODY,
 		priority = Equipment.SKIN_PRIORITY_BASE,
 		{ name = "Alchemist", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Alchemist.lua" },
-		{ name = "BankerSuit", filename = "Resources/Game/Skins/PlayerKit2/Shirts/BankerSuit.lua" },
-		{ name = "Cannoneer", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Cannoneer.lua" }
+		{ name = "Suit", filename = "Resources/Game/Skins/PlayerKit2/Shirts/BankerSuit.lua" },
+		{ name = "Cannoneer", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Cannoneer.lua" },
+		{ name = "Chef", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Chef.lua" },
+		{ name = "Cross stitch", filename = "Resources/Game/Skins/PlayerKit2/Shirts/CrossStitch.lua" },
 	},
 
 	hands = {
