@@ -99,6 +99,8 @@ CharacterCustomization.ColorComponentSlider.SHADER = love.graphics.newShader([[
 	}
 ]])
 
+CharacterCustomization.ColorComponentSlider.SLIDER_WIDTH = 24
+
 function CharacterCustomization.ColorComponentSlider:new(min, max)
 	Drawable.new(self)
 
@@ -106,6 +108,7 @@ function CharacterCustomization.ColorComponentSlider:new(min, max)
 	self.min = min
 	self.max = max
 	self.currentValue = math.floor((max - min) / 2)
+	self.sliderColor = Color()
 
 	self.onUpdateValue = Callback()
 end
@@ -188,7 +191,7 @@ function CharacterCustomization.ColorComponentSlider:getImage()
 end
 
 function CharacterCustomization.ColorComponentSlider:updateColor(h, s, l)
-	-- Nothing.
+	self.sliderColor = Color.fromHSL(h / 255, s / 255, l / 255)
 end
 
 function CharacterCustomization.ColorComponentSlider:setValue(value)
@@ -220,37 +223,33 @@ function CharacterCustomization.ColorComponentSlider:draw(resources, state)
 
 	self.border:draw(-2, -2, width + 4, height + 4)
 
-	if true then
-		return
-	end
-
-	if not self.sliderImage then
-		self.sliderImage = resources:load(love.graphics.newImage, "Resources/Renderers/Widget/Common/Slider.png")
-	end
-
-	local width = self:getSize()
-	local x = math.floor(width * ((self.currentValue - self.min) / (self.max - self.min)))
-
 	local scale = 1
 	if self.isSliding then
 		scale = 1.25
 	end
 
-	itsyrealm.graphics.draw(
-		self.sliderImage,
-		x, -(self.sliderImage:getHeight() / 2),
-		0,
-		scale, scale,
-		self.sliderImage:getWidth() / 2, self.sliderImage:getHeight() /2)
+	local sliderWidth = self.SLIDER_WIDTH * scale
+	local sliderHeight = height * scale
+	local x = math.floor(width * ((self.currentValue - self.min) / (self.max - self.min))) - (sliderWidth / 2)
+	local y = height / 2 - (sliderHeight / 2)
+
+	love.graphics.setColor(0, 0, 0, 0.5)
+	itsyrealm.graphics.rectangle("fill", x + 2, y + 2, sliderWidth, sliderHeight)
+
+	love.graphics.setColor(self.sliderColor:get())
+	itsyrealm.graphics.rectangle("fill", x, y, sliderWidth, sliderHeight)
+
+	love.graphics.setColor(1, 1, 1, 1)
+	itsyrealm.graphics.rectangle("line", x, y, sliderWidth, sliderHeight)
 end
 
 CharacterCustomization.HueSlider = Class(CharacterCustomization.ColorComponentSlider)
 
 function CharacterCustomization.HueSlider:new()
+	CharacterCustomization.ColorComponentSlider.new(self, 0, 255)
+
 	self.saturation = 128
 	self.lightness = 255
-
-	return CharacterCustomization.ColorComponentSlider.new(self, 0, 255)
 end
 
 function CharacterCustomization.HueSlider:_updateImage()
@@ -264,6 +263,8 @@ function CharacterCustomization.HueSlider:setSize(...)
 end
 
 function CharacterCustomization.HueSlider:updateColor(h, s, l)
+	CharacterCustomization.ColorComponentSlider.updateColor(self, h, s, l)
+
 	self:setValue(h)
 	self.saturation = s
 	self.lightness = l
@@ -274,10 +275,10 @@ end
 CharacterCustomization.SaturationSlider = Class(CharacterCustomization.ColorComponentSlider)
 
 function CharacterCustomization.SaturationSlider:new()
+	CharacterCustomization.ColorComponentSlider.new(self, 0, 255)
+
 	self.hue = 255
 	self.lightness = 255
-
-	return CharacterCustomization.ColorComponentSlider.new(self, 0, 255)
 end
 
 function CharacterCustomization.SaturationSlider:_updateImage()
@@ -291,6 +292,8 @@ function CharacterCustomization.SaturationSlider:setSize(...)
 end
 
 function CharacterCustomization.SaturationSlider:updateColor(h, s, l)
+	CharacterCustomization.ColorComponentSlider.updateColor(self, h, s, l)
+
 	self.hue = h
 	self:setValue(s)
 	self.lightness = l
@@ -301,10 +304,10 @@ end
 CharacterCustomization.LightnessSlider = Class(CharacterCustomization.ColorComponentSlider)
 
 function CharacterCustomization.LightnessSlider:new()
+	CharacterCustomization.ColorComponentSlider.new(self, 0, 255)
+
 	self.hue = 255
 	self.saturation = 255
-
-	return CharacterCustomization.ColorComponentSlider.new(self, 0, 255)
 end
 
 function CharacterCustomization.LightnessSlider:_updateImage()
@@ -318,6 +321,8 @@ function CharacterCustomization.LightnessSlider:setSize(...)
 end
 
 function CharacterCustomization.LightnessSlider:updateColor(h, s, l)
+	CharacterCustomization.ColorComponentSlider.updateColor(self, h, s, l)
+
 	self.hue = h
 	self.saturation = s
 	self:setValue(l)
