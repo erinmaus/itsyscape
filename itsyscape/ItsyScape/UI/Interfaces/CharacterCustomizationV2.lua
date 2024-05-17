@@ -1341,7 +1341,8 @@ function CharacterCustomization:changeCurrentColorIndex(index, button)
 	local colors = self.colorConfig[self.currentSlot]
 	local color = colors and colors[self.currentColorIndex]
 	if color then
-		self:updateColor(color.h * 255, color.s * 255, color.l * 255)
+		local h, s, l = Color(unpack(color)):toHSL()
+		self:updateColor(h * 255, s * 255, l * 255)
 	end
 end
 
