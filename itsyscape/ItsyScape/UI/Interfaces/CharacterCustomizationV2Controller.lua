@@ -46,6 +46,7 @@ local SKINS = {
 		{ name = "Curly", filename = "Resources/Game/Skins/PlayerKit2/Hair/Curly.lua" },
 		{ name = "Grrl punk", filename = "Resources/Game/Skins/PlayerKit2/Hair/GrrlPunk.lua" },
 		{ name = "Horns", filename = "Resources/Game/Skins/PlayerKit2/Hair/Horns.lua" },
+		{ name = "Robot", filename = "Resources/Game/Skins/PlayerKit2/Hair/Robot.lua" },
 		{ name = "Bald", filename = "Resources/Game/Skins/PlayerKit1/Hair/Bald.lua" },
 
 		palette = {
@@ -120,16 +121,29 @@ local SKINS = {
 	body = {
 		slot = Equipment.PLAYER_SLOT_BODY,
 		priority = Equipment.SKIN_PRIORITY_BASE,
+		{ name = "Plaid", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Plaid.lua" },
 		{ name = "Alchemist", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Alchemist.lua" },
 		{ name = "Suit", filename = "Resources/Game/Skins/PlayerKit2/Shirts/BankerSuit.lua" },
 		{ name = "Cannoneer", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Cannoneer.lua" },
+		{ name = "Navigator", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Navigator.lua" },
+		{ name = "Scallywag", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Scallywag.lua" },
 		{ name = "Chef", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Chef.lua" },
 		{ name = "Cross stitch", filename = "Resources/Game/Skins/PlayerKit2/Shirts/CrossStitch.lua" },
+		{ name = "X utility belt", filename = "Resources/Game/Skins/PlayerKit2/Shirts/XUtilityBelt.lua" },
 		{ name = "Dress", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Dress.lua" },
 		{ name = "Dummy", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Dummy.lua" },
+		{ name = "Pirate vest", filename = "Resources/Game/Skins/PlayerKit2/Shirts/PirateVest.lua" },
 		{ name = "Fancy pirate garb", filename = "Resources/Game/Skins/PlayerKit2/Shirts/FancyPirateGarb.lua" },
+		{ name = "Fancy robe", filename = "Resources/Game/Skins/PlayerKit2/Shirts/FancyRobe.lua" },
+		{ name = "Robe", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Robe.lua" },
+		{ name = "Royal robe", filename = "Resources/Game/Skins/PlayerKit2/Shirts/RoyalRobe.lua" },
+		{ name = "Prisoner", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Prisoner.lua" },
 		{ name = "Witch (huntress)", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Hunter.lua" },
+		{ name = "Witch (winter tunic)", filename = "Resources/Game/Skins/PlayerKit2/Shirts/WinterTunic.lua" },
 		{ name = "Lab coat", filename = "Resources/Game/Skins/PlayerKit2/Shirts/LabCoat.lua" },
+		{ name = "Mummy", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Mummy.lua" },
+		{ name = "Partially digested adventurer body", filename = "Resources/Game/Skins/PlayerKit2/Shirts/PartiallyDigested.lua" },
+		{ name = "Robot", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Robot.lua" },
 	},
 
 	hands = {
