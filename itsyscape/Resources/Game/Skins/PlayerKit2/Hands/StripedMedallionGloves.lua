@@ -5,8 +5,8 @@
 		{
 			name = "Glove",
 
-			"hand1",
-			"hand2"
+			"glove1",
+			"glove2"
 		},
 		{
 			name = "Stripe",
