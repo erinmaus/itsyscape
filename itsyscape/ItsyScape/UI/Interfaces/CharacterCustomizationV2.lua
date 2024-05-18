@@ -1058,8 +1058,10 @@ function CharacterCustomization:_updateSkins()
 end
 
 function CharacterCustomization:onDoneDragging()
+	self:_updateSkins()
+
 	if self._updateSkinOptions then
-		self:_updateSkinOptions()
+		self._updateSkinOptions()
 	end
 end
 
@@ -1287,8 +1289,9 @@ function CharacterCustomization:populatePaletteOptions(palette)
 
 	for _, color in ipairs(palette) do
 		local inactive = Color(unpack(color))
-		local pressed = inactive - 0.2
-		local hover = inactive + 0.2
+		local h, s, l = inactive:toHSL()
+		local pressed = Color.fromHSL(h, s, l - 0.2)
+		local hover = Color.fromHSL(h, s, l + 0.2)
 
 		local style = {
 			inactive = inactive,
@@ -1300,9 +1303,18 @@ function CharacterCustomization:populatePaletteOptions(palette)
 
 		local button = Button()
 		button:setStyle(ButtonStyle(style, self:getView():getResources()))
-		button.onClick:register(self.updateColor, self, h * 255, s * 255, l * 255)
+		button.onClick:register(self.selectPaletteColor, self, h * 255, s * 255, l * 255)
 
 		self.paletteLayout:addChild(button)
+	end
+end
+
+function CharacterCustomization:selectPaletteColor(h, s, l)
+	self:updateColor(h, s, l)
+	self:_updateSkins()
+
+	if self._updateSkinOptions then
+		self._updateSkinOptions()
 	end
 end
 
