@@ -334,6 +334,7 @@ function CharacterCustomization.LightnessSlider:updateColor(h, s, l)
 end
 
 CharacterCustomization.UPDATE_COLOR_FPS = 1 / 15
+CharacterCustomization.UPDATE_SKINS_FPS = 1 / 30
 
 CharacterCustomization.INACTIVE_SKIN_BUTTON_STYLE = {
 	inactive = Color(0, 0, 0, 0),
@@ -1057,12 +1058,16 @@ function CharacterCustomization:_updateSkins()
 	self.currentPlayerActor, self.currentPlayerActorView = self:updateCurrentPlayer(self.characterSceneSnippet, self:getState().skins, self.newPlayerSkin, self.currentPlayerActor, self.currentPlayerActorView)
 end
 
+function CharacterCustomization:signalSkinOptionsUpdate()
+	if self._updateSkinOptionsCallback then
+		self._updateSkinOptions = coroutine.wrap(function() return self._updateSkinOptionsCallback() end)
+	end
+end
+
 function CharacterCustomization:onDoneDragging()
 	self:_updateSkins()
 
-	if self._updateSkinOptions then
-		self._updateSkinOptions()
-	end
+	self:signalSkinOptionsUpdate()
 end
 
 function CharacterCustomization:updateHue(_, value)
@@ -1157,6 +1162,8 @@ function CharacterCustomization:updateSkinOptions(skins, slot, priority, niceNam
 			coroutine.yield()
 		end
 	end
+
+	return true
 end
 
 function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, slot, priority, niceName, palette, defaultColorConfig)
@@ -1238,10 +1245,10 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 		self.skinOptionLayout:addChild(button)
 	end
 
-	self._updateSkinOptions = Callback.bind(self.updateSkinOptions, self, skins, slot, priority, niceName)
+	self._updateSkinOptionsCallback = Callback.bind(self.updateSkinOptions, self, skins, slot, priority, niceName)
 
 	local gameView = self:getView():getGameView()
-	gameView:getResourceManager():queueEvent(self._updateSkinOptions)
+	gameView:getResourceManager():queueEvent(self._updateSkinOptionsCallback)
 
 	self.skinOptionLayout:getInnerPanel():setScroll(0, 0)
 	self.skinOptionLayout:setScrollSize(self.skinOptionLayout:getInnerPanel():getSize())
@@ -1313,9 +1320,7 @@ function CharacterCustomization:selectPaletteColor(h, s, l)
 	self:updateColor(h, s, l)
 	self:_updateSkins()
 
-	if self._updateSkinOptions then
-		self._updateSkinOptions()
-	end
+	self:signalSkinOptionsUpdate()
 end
 
 function CharacterCustomization:updateColorOptions()
@@ -1431,6 +1436,24 @@ function CharacterCustomization:update(delta)
 
 			self.pendingUpdatedColor = nil
 			self.pendingUpdatedColorTime = nil
+		end
+	end
+
+	if self._updateSkinOptions then
+		local startTime = love.timer.getTime()
+		local endTime = startTime + self.UPDATE_SKINS_FPS
+
+		local isDone
+		repeat
+			isDone = self._updateSkinOptions()
+
+			if love.timer.getTime() > endTime then
+				break
+			end
+		until isDone
+
+		if isDone then
+			self._updateSkinOptions = nil
 		end
 	end
 end

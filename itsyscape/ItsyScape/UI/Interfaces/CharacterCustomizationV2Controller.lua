@@ -121,6 +121,7 @@ local SKINS = {
 	body = {
 		slot = Equipment.PLAYER_SLOT_BODY,
 		priority = Equipment.SKIN_PRIORITY_BASE,
+		{ name = "Plain shirt", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Plain.lua" },
 		{ name = "Plaid shirt", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Plaid.lua" },
 		{ name = "Alchemist coat", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Alchemist.lua" },
 		{ name = "Suit", filename = "Resources/Game/Skins/PlayerKit2/Shirts/BankerSuit.lua" },
@@ -153,6 +154,7 @@ local SKINS = {
 			{ Color.fromHexString("3771c8"):get() },
 			{ Color.fromHexString("ffcc00"):get() },
 			{ Color.fromHexString("855ad8"):get() },
+			{ Color.fromHexString("76523c"):get() },
 			{ Color.fromHexString("ebf7f9"):get() },
 		},
 
@@ -215,6 +217,7 @@ local SKINS = {
 		{ name = "Robot feet", filename = "Resources/Game/Skins/PlayerKit2/Shoes/Robot.lua" },
 
 		palette = {
+			{ Color.fromHexString("76523c"):get() },
 			{ Color.fromHexString("4d2f24"):get() },
 			{ Color.fromHexString("4d4d4d"):get() },
 			{ Color.fromHexString("e9ddaf"):get() },
