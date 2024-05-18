@@ -121,8 +121,8 @@ local SKINS = {
 	body = {
 		slot = Equipment.PLAYER_SLOT_BODY,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		{ name = "Plaid", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Plaid.lua" },
-		{ name = "Alchemist", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Alchemist.lua" },
+		{ name = "Plaid shirt", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Plaid.lua" },
+		{ name = "Alchemist coat", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Alchemist.lua" },
 		{ name = "Suit", filename = "Resources/Game/Skins/PlayerKit2/Shirts/BankerSuit.lua" },
 		{ name = "Cannoneer", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Cannoneer.lua" },
 		{ name = "Navigator", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Navigator.lua" },
@@ -134,6 +134,7 @@ local SKINS = {
 		{ name = "Dummy", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Dummy.lua" },
 		{ name = "Pirate vest", filename = "Resources/Game/Skins/PlayerKit2/Shirts/PirateVest.lua" },
 		{ name = "Fancy pirate garb", filename = "Resources/Game/Skins/PlayerKit2/Shirts/FancyPirateGarb.lua" },
+		{ name = "Prestigious sailor's dress", filename = "Resources/Game/Skins/PlayerKit2/Shirts/PrestigiousSailorsDress.lua" },
 		{ name = "Fancy robe", filename = "Resources/Game/Skins/PlayerKit2/Shirts/FancyRobe.lua" },
 		{ name = "Robe", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Robe.lua" },
 		{ name = "Royal robe", filename = "Resources/Game/Skins/PlayerKit2/Shirts/RoyalRobe.lua" },
@@ -141,9 +142,27 @@ local SKINS = {
 		{ name = "Witch (huntress)", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Hunter.lua" },
 		{ name = "Witch (winter tunic)", filename = "Resources/Game/Skins/PlayerKit2/Shirts/WinterTunic.lua" },
 		{ name = "Lab coat", filename = "Resources/Game/Skins/PlayerKit2/Shirts/LabCoat.lua" },
-		{ name = "Mummy", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Mummy.lua" },
+		{ name = "Skeleton body", filename = "Resources/Game/Skins/Skeleton/Body.lua" },
+		{ name = "Mummy body", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Mummy.lua" },
 		{ name = "Partially digested adventurer body", filename = "Resources/Game/Skins/PlayerKit2/Shirts/PartiallyDigested.lua" },
-		{ name = "Robot", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Robot.lua" },
+		{ name = "Robot body", filename = "Resources/Game/Skins/PlayerKit2/Shirts/Robot.lua" },
+
+		palette = {
+			{ Color.fromHexString("cb1d1d"):get() },
+			{ Color.fromHexString("abc837"):get() },
+			{ Color.fromHexString("3771c8"):get() },
+			{ Color.fromHexString("ffcc00"):get() },
+			{ Color.fromHexString("855ad8"):get() },
+			{ Color.fromHexString("ebf7f9"):get() },
+		},
+
+		defaultColorConfig = {
+			{ Color.fromHexString("cb1d1d"):get() },
+			{ Color.fromHexString("ebf7f9"):get() },
+			{ Color.fromHexString("ffcc00"):get() },
+			{ Color.fromHexString("cb1d1d"):get() },
+			{ Color.fromHexString("abc837"):get() },
+		}
 	},
 
 	hands = {
@@ -182,20 +201,30 @@ local SKINS = {
 	feet = {
 		slot = Equipment.PLAYER_SLOT_FEET,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		{ name = "Rugged boots", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua" },
-		{ name = "Worn boots", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Boots2.lua" },
-		{ name = "Fancy shoes", filename = "Resources/Game/Skins/PlayerKit1/Shoes/FancyShoes1.lua" },
-		{ name = "Sailor's boots", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Boots3.lua" },
-		{ name = "Red sailor's boots", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Boots3_Red.lua" },
-		{ name = "Seafarer's boots", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Boots_Seafarer1.lua" },
-		{ name = "Navy-blue seafarer's boots", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Boots_Seafarer2.lua" },
-		{ name = "Hunter's boots", filename = "Resources/Game/Skins/PlayerKit1/Shoes/HunterBoots.lua" },
-		{ name = "Mummy feet", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Feet_Mummy.lua" },
-		{ name = "Partially digested feet", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Feet_PartiallyDigested.lua" },
-		{ name = "Skeleton", filename = "Resources/Game/Skins/Skeleton/Feet.lua" },
-		{ name = "Ancient skeleton", filename = "Resources/Game/Skins/AncientSkeleton/Feet.lua" },
-		{ name = "Dummy", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Dummy.lua" },
-		{ name = "Robot Mk II", filename = "Resources/Game/Skins/PlayerKit1/Shoes/Robot_MkII.lua" },
+		{ name = "Rugged boots", filename = "Resources/Game/Skins/PlayerKit2/Shoes/Boots1.lua" },
+		{ name = "Worn boots", filename = "Resources/Game/Skins/PlayerKit2/Shoes/Boots2.lua" },
+		{ name = "Sailor's boots", filename = "Resources/Game/Skins/PlayerKit2/Shoes/Boots3.lua" },
+		{ name = "Rubber boots", filename = "Resources/Game/Skins/PlayerKit2/Shoes/LongBoots1.lua" },
+		{ name = "Fancy oxfords", filename = "Resources/Game/Skins/PlayerKit2/Shoes/FancyShoes1.lua" },
+		{ name = "Seafarer's boots", filename = "Resources/Game/Skins/PlayerKit2/Shoes/Boots_Seafarer1.lua" },
+		{ name = "Hunter's boots", filename = "Resources/Game/Skins/PlayerKit2/Shoes/HunterBoots.lua" },
+		{ name = "Mummy feet", filename = "Resources/Game/Skins/PlayerKit2/Shoes/Mummy.lua" },
+		{ name = "Partially digested feet", filename = "Resources/Game/Skins/PlayerKit2/Shoes/PartiallyDigested.lua" },
+		{ name = "Skeleton feet", filename = "Resources/Game/Skins/Skeleton/Feet.lua" },
+		{ name = "Dummy feet", filename = "Resources/Game/Skins/PlayerKit2/Shoes/Dummy.lua" },
+		{ name = "Robot feet", filename = "Resources/Game/Skins/PlayerKit2/Shoes/Robot.lua" },
+
+		palette = {
+			{ Color.fromHexString("4d2f24"):get() },
+			{ Color.fromHexString("4d4d4d"):get() },
+			{ Color.fromHexString("e9ddaf"):get() },
+			{ Color.fromHexString("535d6c"):get() },
+		},
+
+		defaultColorConfig = {
+			{ Color.fromHexString("4d2f24"):get() },
+			{ Color.fromHexString("4d4d4d"):get() }
+		}
 	}
 }
 
