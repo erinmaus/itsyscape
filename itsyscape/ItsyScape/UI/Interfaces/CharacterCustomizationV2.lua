@@ -25,6 +25,7 @@ local ConfirmWindow = require "ItsyScape.Editor.Common.ConfirmWindow"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Drawable = require "ItsyScape.UI.Drawable"
+local Icon = require "ItsyScape.UI.Icon"
 local Interface = require "ItsyScape.UI.Interface"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
@@ -381,7 +382,7 @@ CharacterCustomization.CANCEL_BUTTON_STYLE = {
 	hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
 	pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-	fontSize = _MOBILE and 32 or 28
+	fontSize = 24
 }
 
 CharacterCustomization.CONFIRM_BUTTON_STYLE = {
@@ -389,8 +390,11 @@ CharacterCustomization.CONFIRM_BUTTON_STYLE = {
 	hover = "Resources/Renderers/Widget/Button/Purple-Hover.9.png",
 	pressed = "Resources/Renderers/Widget/Button/Purple-Pressed.9.png",
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-	fontSize = _MOBILE and 32 or 28
+	fontSize = 24
 }
+
+CharacterCustomization.MAX_WIDTH = 1280
+CharacterCustomization.MAX_HEIGHT = 720
 
 CharacterCustomization.BUTTON_SIZE = 48
 
@@ -422,12 +426,18 @@ CharacterCustomization.TEXT_INPUT_STYLE = {
 	padding = 4
 }
 
-CharacterCustomization.NUM_MAIN_COLUMNS = 3
+CharacterCustomization.NUM_MAIN_COLUMNS = 2
 CharacterCustomization.NUM_SKIN_COLUMNS = _MOBILE and 2 or 3
 
 CharacterCustomization.PADDING = 8
 
+CharacterCustomization.LEFT_COLUMN_WIDTH = 256
+
+CharacterCustomization.ANIMATE_COLOR_TIME_SECONDS = 1
+
 CharacterCustomization.PLAYER_SKIN_TYPE_NAME = "ItsyScape.Game.Skin.ModelSkin"
+
+CharacterCustomization.CAMERA_ANIMATION_TIME = 0.5
 
 CharacterCustomization.CAMERA = {
 	hair = {
@@ -458,6 +468,11 @@ CharacterCustomization.CAMERA = {
 	feet = {
 		zoom = 2,
 		position = Vector(0, 0.25, 0)
+	},
+
+	default = {
+		zoom = 5,
+		position = Vector.UNIT_Y
 	}
 }
 
@@ -535,9 +550,16 @@ function CharacterCustomization:new(id, index, ui)
 	self.onChangeGenderPlurality = Callback() 
 	self.onChangeGenderDescription = Callback() 
 
-	local w, h = love.graphics.getScaledMode()
-	local columnWidth = math.floor(w / self.NUM_MAIN_COLUMNS)
+	local windowWidth, windowHeight = love.graphics.getScaledMode()
+	local w = math.min(windowWidth, self.MAX_WIDTH)
+	local h = math.min(windowHeight, self.MAX_HEIGHT)
+
+	local columnWidth = math.floor((w - self.LEFT_COLUMN_WIDTH) / self.NUM_MAIN_COLUMNS)
+	local columnStart = self.LEFT_COLUMN_WIDTH
+	self:setPosition(windowWidth / 2 - w / 2, windowHeight / 2 - h / 2)
 	self:setSize(w, h)
+
+	self.isFullscreen = windowWidth == w and windowHeight == h
 
 	self.skinOptionCamera = ThirdPersonCamera()
 	self.skinOptionCamera:setUp(-Vector.UNIT_Y)
@@ -561,7 +583,7 @@ function CharacterCustomization:new(id, index, ui)
 
 	self.characterSceneSnippet = SceneSnippet()
 	self.characterSceneSnippet:setSize(columnWidth, h)
-	self.characterSceneSnippet:setPosition(columnWidth, 0)
+	self.characterSceneSnippet:setPosition(columnStart, 0)
 	self.characterSceneSnippet:setCamera(self.characterCamera)
 	self.characterSceneSnippet:setAlwaysRender(true)
 	self.characterSceneSnippet:setIsFocusable(true)
@@ -572,29 +594,35 @@ function CharacterCustomization:new(id, index, ui)
 
 	self.skinPanel = Panel()
 	self.skinPanel:setSize(columnWidth, h)
-	self.skinPanel:setPosition(columnWidth * 2, 0)
+	self.skinPanel:setPosition(columnStart + columnWidth, 0)
 	self.skinPanel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
 
-	local colorLayoutHeight = 6 * (self.BUTTON_SIZE + self.PADDING) + self.PADDING
+	local colorLayoutHeight = 7 * (self.BUTTON_SIZE + self.PADDING) + self.PADDING
 	self.colorLayout = GridLayout()
 	self.colorLayout:setSize(columnWidth, colorLayoutHeight)
 	self.colorLayout:setPadding(self.PADDING, self.PADDING)
 	self.colorLayout:setPosition(0, h - colorLayoutHeight)
 	self.skinPanel:addChild(self.colorLayout)
 
-	self.colorSelectionLayout = GridLayout()
-	self.colorSelectionLayout:setEdgePadding(false)
-	self.colorSelectionLayout:setUniformSize(true, self.BUTTON_SIZE, self.BUTTON_SIZE)
-	self.colorSelectionLayout:setPadding(self.PADDING)
-	self.colorSelectionLayout:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
+	self.colorSelectionLayout = ScrollablePanel(GridLayout)
+	self.colorSelectionLayout:getInnerPanel():setUniformSize(true, columnWidth - self.PADDING * 2 - ScrollablePanel.DEFAULT_SCROLL_SIZE, self.BUTTON_SIZE)
+	self.colorSelectionLayout:getInnerPanel():setPadding(0, 0)
+	self.colorSelectionLayout:getInnerPanel():setWrapContents(true)
+	self.colorSelectionLayout:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE * 3)
+	self.colorSelectionLayout:setScrollBarVisible(true, false)
 	self.colorLayout:addChild(self.colorSelectionLayout)
 
 	self.paletteLayout = GridLayout()
 	self.paletteLayout:setEdgePadding(false)
-	self.paletteLayout:setUniformSize(true, self.BUTTON_SIZE, self.BUTTON_SIZE)
 	self.paletteLayout:setPadding(self.PADDING)
 	self.paletteLayout:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
 	self.colorLayout:addChild(self.paletteLayout)
+
+	self.copyColorLayout = ScrollablePanel(GridLayout)
+	self.copyColorLayout:getInnerPanel():setUniformSize(true, columnWidth - self.PADDING * 2, self.BUTTON_SIZE)
+	self.copyColorLayout:getInnerPanel():setPadding(self.PADDING, self.PADDING)
+	self.copyColorLayout:setSize(self.colorLayout:getSize())
+	self.copyColorLayout:setPosition(self.colorLayout:getPosition())
 
 	self.hueSlider = CharacterCustomization.HueSlider()
 	self.hueSlider:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
@@ -632,7 +660,7 @@ function CharacterCustomization:new(id, index, ui)
 
 	self.descriptionPanel = Panel()
 	self.descriptionPanel:setSize(columnWidth, h)
-	self.descriptionPanel:setPosition(columnWidth * 2)
+	self.descriptionPanel:setPosition(columnWidth + columnStart)
 	self.descriptionPanel:setStyle(PanelStyle({ image = false }, self:getView():getResources()))
 
 	local descriptionLayout = ScrollablePanel(GridLayout)
@@ -837,8 +865,8 @@ function CharacterCustomization:new(id, index, ui)
 
 	self.slotsLayout = GridLayout()
 	self.slotsLayout:setPosition(self.PADDING, self.PADDING)
-	self.slotsLayout:setSize(columnWidth, h)
-	self.slotsLayout:setUniformSize(true, columnWidth - self.PADDING * 2, 0)
+	self.slotsLayout:setSize(self.LEFT_COLUMN_WIDTH, h)
+	self.slotsLayout:setUniformSize(true, self.LEFT_COLUMN_WIDTH - self.PADDING * 2, 0)
 	self.slotsLayout:setPadding(self.PADDING)
 	self:addChild(self.slotsLayout)
 
@@ -881,17 +909,17 @@ function CharacterCustomization:new(id, index, ui)
 	end
 	addSlot("Description", Callback.bind(self.openDescription, self), true)
 
-	local canCancel = not self:getState().isNewGame
+	local canCancel = self:getState().isNewGame
 
 	local width
 	if canCancel then
-		width = columnWidth / 2 - self.PADDING * 3
+		width = self.LEFT_COLUMN_WIDTH / 2 - self.PADDING * 3
 
 		local cancelButton = Button()
 		cancelButton:setText("Cancel")
-		cancelButton:setSize(width, self.BUTTON_SIZE * 2)
+		cancelButton:setSize(width, self.BUTTON_SIZE)
 		cancelButton:setStyle(ButtonStyle(self.CANCEL_BUTTON_STYLE, self:getView():getResources()))
-		cancelButton:setPosition(self.PADDING, h - self.BUTTON_SIZE * 2 - self.PADDING)
+		cancelButton:setPosition(self.PADDING, h - self.BUTTON_SIZE - self.PADDING)
 		cancelButton.onClick:register(function()
 			local window = ConfirmWindow(_APP)
 
@@ -899,7 +927,7 @@ function CharacterCustomization:new(id, index, ui)
 				self:sendPoke("close", nil, {})
 			end)
 
-			window:open("Are you sure you want to discard any changes?", nil, columnWidth)
+			window:open("Are you sure you want to discard any changes?", nil, self.LEFT_COLUMN_WIDTH)
 
 			local x, y = self.slotsLayout:getAbsolutePosition()
 			local slotsWidth, slotsHeight = self.slotsLayout:getSize()
@@ -909,14 +937,14 @@ function CharacterCustomization:new(id, index, ui)
 
 		self:addChild(cancelButton)
 	else
-		width = columnWidth - self.PADDING * 2
+		width = self.LEFT_COLUMN_WIDTH - self.PADDING * 2
 	end
 
 	local confirmButton = Button()
 	confirmButton:setText("Confirm")
-	confirmButton:setSize(width, self.BUTTON_SIZE * 2)
+	confirmButton:setSize(width, self.BUTTON_SIZE)
 	confirmButton:setStyle(ButtonStyle(self.CONFIRM_BUTTON_STYLE, self:getView():getResources()))
-	confirmButton:setPosition(columnWidth - width - self.PADDING, h - self.BUTTON_SIZE * 2 - self.PADDING)
+	confirmButton:setPosition(self.LEFT_COLUMN_WIDTH - width - self.PADDING, h - self.BUTTON_SIZE - self.PADDING)
 	confirmButton.onClick:register(function()
 		self:submit()
 	end)
@@ -969,10 +997,13 @@ function CharacterCustomization:updateCameraDrag(_, _, _, dx, dy)
 end
 
 function CharacterCustomization:getIsFullscreen()
-	return true
+	return self.isFullscreen
 end
 
 function CharacterCustomization:openDescription()
+	self.currentSlot = "default"
+	self:startCameraAnimation()
+
 	self:removeChild(self.skinPanel)
 	self:addChild(self.descriptionPanel)
 end
@@ -983,6 +1014,14 @@ function CharacterCustomization:changeSlot(slot)
 
 	self.currentSlot = slot
 	self:sendPoke("changeSlot", nil, { slot = slot })
+
+	self:startCameraAnimation()
+end
+
+function CharacterCustomization:startCameraAnimation()
+	self.cameraAnimationTime = self.CAMERA_ANIMATION_TIME
+	self.oldZoom = self.characterCamera:getDistance()
+	self.oldPosition = self.characterCamera:getPosition()
 end
 
 function CharacterCustomization:changeName(value)
@@ -1246,9 +1285,7 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 	end
 
 	self._updateSkinOptionsCallback = Callback.bind(self.updateSkinOptions, self, skins, slot, priority, niceName)
-
-	local gameView = self:getView():getGameView()
-	gameView:getResourceManager():queueEvent(self._updateSkinOptionsCallback)
+	self:signalSkinOptionsUpdate()
 
 	self.skinOptionLayout:getInnerPanel():setScroll(0, 0)
 	self.skinOptionLayout:setScrollSize(self.skinOptionLayout:getInnerPanel():getSize())
@@ -1287,12 +1324,25 @@ function CharacterCustomization:onSelectSkin(skinInfo, button)
 			self.currentPlayerActor,
 			self.currentPlayerActorView)
 
-		self:updateColorOptions()
+		self:updateColorOptions(colorConfig)
 	end
 end
 
 function CharacterCustomization:populatePaletteOptions(palette)
 	self.paletteLayout:clearChildren()
+
+	local copyButton = Button()
+	copyButton:setSize(self.BUTTON_SIZE, self.BUTTON_SIZE)
+	copyButton.onClick:register(self.showCopyColor, self)
+	copyButton:setToolTip("Choose a color from another customization slot.")
+
+	local copyIcon = Icon()
+	copyIcon:setIcon("Resources/Game/UI/Icons/Things/Eyedropper.png")
+	copyIcon:setSize(self.BUTTON_SIZE - 4, self.BUTTON_SIZE - 4)
+	copyIcon:setPosition(2, 2)
+	copyButton:addChild(copyIcon)
+
+	self.paletteLayout:addChild(copyButton)
 
 	for _, color in ipairs(palette) do
 		local inactive = Color(unpack(color))
@@ -1309,6 +1359,7 @@ function CharacterCustomization:populatePaletteOptions(palette)
 		local h, s, l = inactive:toHSL()
 
 		local button = Button()
+		button:setSize(self.BUTTON_SIZE * (3 / 4), self.BUTTON_SIZE)
 		button:setStyle(ButtonStyle(style, self:getView():getResources()))
 		button.onClick:register(self.selectPaletteColor, self, h * 255, s * 255, l * 255)
 
@@ -1316,14 +1367,87 @@ function CharacterCustomization:populatePaletteOptions(palette)
 	end
 end
 
+function CharacterCustomization:showCopyColor()
+	self.copyColorLayout:clearChildren()
+
+	for _, slot in ipairs(self.SLOTS) do
+		local paletteLayout = GridLayout()
+		paletteLayout:setEdgePadding(false)
+		paletteLayout:setPadding(self.PADDING)
+
+		local label = Label()
+		label:setText(slot.niceName)
+		label:setSize(self.BUTTON_SIZE * 3, self.BUTTON_SIZE)
+		label:setStyle(LabelStyle(self.VALUE_LABEL_STYLE, self:getView():getResources()))
+		paletteLayout:addChild(label)
+
+		local skin = ModelSkin()
+		do
+			local skinInfo = self.newPlayerSkin[slot.slot] or self:getState().skins[slot.slot]
+			skin:loadFromFile(skinInfo.filename)
+		end
+
+		local maxColorOptions = 0
+		do
+			for _, color in ipairs(skin:getColors()) do
+				if not color.parent then
+					maxColorOptions = maxColorOptions + 1
+				end
+			end
+		end
+
+		for index, color in ipairs(self.colorConfig[slot.slot] or {}) do
+			if index <= maxColorOptions then
+				local inactive = Color(unpack(color))
+				local h, s, l = inactive:toHSL()
+				local pressed = Color.fromHSL(h, s, l - 0.2)
+				local hover = Color.fromHSL(h, s, l + 0.2)
+
+				local style = {
+					inactive = inactive,
+					pressed = pressed,
+					hover = hover
+				}
+
+				local h, s, l = inactive:toHSL()
+
+				local button = Button()
+				button:setSize(self.BUTTON_SIZE * (3 / 4), self.BUTTON_SIZE)
+				button:setStyle(ButtonStyle(style, self:getView():getResources()))
+				button.onClick:register(self.selectPaletteColor, self, h * 255, s * 255, l * 255)
+
+				paletteLayout:addChild(button)
+			end
+		end
+
+		self.copyColorLayout:addChild(paletteLayout)
+	end
+
+	local cancelButton = Button()
+	cancelButton:setText("Cancel")
+	cancelButton:setSize(self.BUTTON_SIZE * 3, self.BUTTON_SIZE)
+	cancelButton:setStyle(ButtonStyle(CharacterCustomization.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
+	cancelButton.onClick:register(function()
+		self.skinPanel:removeChild(self.copyColorLayout)
+		self.skinPanel:addChild(self.colorLayout)
+	end)
+	self.copyColorLayout:addChild(cancelButton)
+
+	self.skinPanel:removeChild(self.colorLayout)
+	self.skinPanel:addChild(self.copyColorLayout)
+end
+
 function CharacterCustomization:selectPaletteColor(h, s, l)
+	self.skinPanel:removeChild(self.copyColorLayout)
+	self.skinPanel:addChild(self.colorLayout)
+
 	self:updateColor(h, s, l)
 	self:_updateSkins()
 
 	self:signalSkinOptionsUpdate()
 end
 
-function CharacterCustomization:updateColorOptions()
+function CharacterCustomization:updateColorOptions(colorConfig)
 	self.activeColorSelectionButton = nil
 
 	local colorOptions = {}
@@ -1345,17 +1469,20 @@ function CharacterCustomization:updateColorOptions()
 
 		if index == self.currentColorIndex then
 			self.activeColorSelectionButton = button
-			button:setStyle(ButtonStyle(self.ACTIVE_BUTTON_STYLE, self:getView():getResources()))
+			button:setStyle(ButtonStyle(self.ACTIVE_SKIN_BUTTON_STYLE, self:getView():getResources()))
 		else
-			button:setStyle(ButtonStyle(self.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
+			button:setStyle(ButtonStyle(self.INACTIVE_SKIN_BUTTON_STYLE, self:getView():getResources()))
 		end
 
 		button.onClick:register(self.changeCurrentColorIndex, self, index)
 		button:setToolTip(name)
-		button:setText(tostring(index))
+		button:setText(name)
 
 		self.colorSelectionLayout:addChild(button)
 	end
+
+	self.colorSelectionLayout:setScrollSize(self.colorSelectionLayout:getInnerPanel():getSize())
+	self.colorSelectionLayout:getInnerPanel():setScroll(0, 0)
 
 	local colorConfig = self.colorConfig[self.currentSlot]
 	local color = colorConfig and colorConfig[self.currentColorIndex]
@@ -1366,18 +1493,19 @@ function CharacterCustomization:updateColorOptions()
 end
 
 function CharacterCustomization:changeCurrentColorIndex(index, button)
+	self.currentColorIndex = math.clamp(index, 1, self.colorSelectionLayout:getNumChildren())
+	self.animateCurrentColorIndexTime = love.timer.getTime() + self.ANIMATE_COLOR_TIME_SECONDS
+
 	if self.activeColorSelectionButton == button then
 		return
 	end
 
 	if self.activeColorSelectionButton then
-		self.activeColorSelectionButton:setStyle(ButtonStyle(self.INACTIVE_BUTTON_STYLE, self:getView():getResources()))
+		self.activeColorSelectionButton:setStyle(ButtonStyle(self.INACTIVE_SKIN_BUTTON_STYLE, self:getView():getResources()))
 	end
 
 	self.activeColorSelectionButton = button
-	button:setStyle(ButtonStyle(self.ACTIVE_BUTTON_STYLE, self:getView():getResources()))
-
-	self.currentColorIndex = math.clamp(index, 1, self.colorSelectionLayout:getNumChildren())
+	button:setStyle(ButtonStyle(self.ACTIVE_SKIN_BUTTON_STYLE, self:getView():getResources()))
 
 	local colors = self.colorConfig[self.currentSlot]
 	local color = colors and colors[self.currentColorIndex]
@@ -1421,6 +1549,47 @@ function CharacterCustomization:update(delta)
 	end
 	self.currentPlayerActorView:update(delta)
 
+	do
+		local currentTime = love.timer.getTime()
+		if (self.animateCurrentColorIndexTime or 0) > currentTime then 
+			local animationTime = (self.animateCurrentColorIndexTime or 0) - currentTime
+			local mu = math.abs(math.sin(math.pi * (1 - (animationTime / self.ANIMATE_COLOR_TIME_SECONDS))))
+
+			local oldColor = self.colorConfig[self.currentSlot][self.currentColorIndex]
+
+			local h, s, l = Color(unpack(oldColor)):toHSL()
+			local targetLightness
+			if l > 0.5 then
+				targetLightness = 0
+			else
+				targetLightness = 1
+			end
+
+			l = math.lerp(l, targetLightness, mu)
+
+			local newColor = { h = h, s = s, l = l, Color.fromHSL(h, s, l):get() }
+			self.colorConfig[self.currentSlot][self.currentColorIndex] = newColor
+
+			self:updateCurrentPlayer(
+				self.characterSceneSnippet,
+				self:getState().skins,
+				self.newPlayerSkin,
+				self.currentPlayerActor,
+				self.currentPlayerActorView)
+
+			self.colorConfig[self.currentSlot][self.currentColorIndex] = oldColor
+		elseif self.animateCurrentColorIndexTime then
+			self.animateCurrentColorIndexTime = nil
+
+			self:updateCurrentPlayer(
+				self.characterSceneSnippet,
+				self:getState().skins,
+				self.newPlayerSkin,
+				self.currentPlayerActor,
+				self.currentPlayerActorView)
+		end
+	end
+
 	for _, widget in self.skinOptionLayout:getInnerPanel():iterate() do
 		local actorView = widget:getData("actorView")
 		if actorView then
@@ -1454,6 +1623,20 @@ function CharacterCustomization:update(delta)
 
 		if isDone then
 			self._updateSkinOptions = nil
+		end
+	end
+
+	if self.cameraAnimationTime then
+		self.cameraAnimationTime = math.max(self.cameraAnimationTime - delta, 0)
+
+		local mu = 1 - (self.cameraAnimationTime / self.CAMERA_ANIMATION_TIME)
+
+		local target = self.CAMERA[self.currentSlot]
+		self.characterCamera:setPosition(self.oldPosition:lerp(target.position, mu))
+		self.characterCamera:setDistance(math.lerp(self.oldZoom, target.zoom + 2, mu))
+
+		if self.cameraAnimationTime <= 0 then
+			self.cameraAnimationTime = nil
 		end
 	end
 end
