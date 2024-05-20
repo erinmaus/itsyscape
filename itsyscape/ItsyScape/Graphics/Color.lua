@@ -78,6 +78,16 @@ function Color:get(multiplier)
 	return self.r * multiplier, self.g * multiplier, self.b * multiplier, self.a * multiplier
 end
 
+function Color:shiftHSL(h, s, l)
+	local currentH, currentS, currentL = self:toHSL()
+
+	h = h + currentH
+	s = math.clamp(currentS + s)
+	l = math.clamp(currentL + l)
+
+	return Color.fromHSL(h, s, l)
+end
+
 function Color.fromHSL(h, s, l)
 	local w = (h % 1) * 6
 	local c = (1 - math.abs(2 * l - 1)) * s

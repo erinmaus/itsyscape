@@ -41,6 +41,8 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Player = Class(Peep)
 
+Player.Palette = Utility.Peep.Human.Palette
+
 function Player:new(resource, ...)
 	Peep.new(self, ...)
 
@@ -71,6 +73,10 @@ function Player:new(resource, ...)
 	Utility.Peep.setResource(self, resource)
 
 	Utility.Peep.makeDummy(self)
+end
+
+function Player:applySkin(...)
+	Utility.Peep.Human.applySkin(self, ...)
 end
 
 function Player:ready(director, game)

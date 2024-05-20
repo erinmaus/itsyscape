@@ -4223,6 +4223,59 @@ function Utility.Peep.Creep:applySkins()
 end
 
 Utility.Peep.Human = {}
+Utility.Peep.Human.Palette = {
+	SKIN_LIGHT = Color.fromHexString("efe3a9"),
+	SKIN_MEDIUM = Color.fromHexString("c5995f"),
+	SKIN_DARK = Color.fromHexString("a4693c"),
+	SKIN_PLASTIC = Color.fromHexString("ffcc00"),
+	SKIN_ZOMBI = Color.fromHexString("bf50d9"),
+
+	HAIR_BROWN = Color.fromHexString("6c4527"),
+	HAIR_BLACK = Color.fromHexString("3e3e3e"),
+	HAIR_PURPLE = Color.fromHexString("8358c3"),
+	HAIR_RED = Color.fromHexString("d45500"),
+	HAIR_GREEN = Color.fromHexString("8dd35f"),
+
+	EYE_BLACK = Color.fromHexString("000000"),
+	EYE_WHITE = Color.fromHexString("ffffff"),
+
+	BONE = Color.fromHexString("e9ddaf"),
+	BONE_ANCIENT = Color.fromHexString("939dac"),
+
+	PRIMARY_RED = Color.fromHexString("cb1d1d"),
+	PRIMARY_GREEN = Color.fromHexString("abc837"),
+	PRIMARY_BLUE = Color.fromHexString("3771c8"),
+	PRIMARY_YELLOW = Color.fromHexString("ffcc00"),
+	PRIMARY_PURPLE = Color.fromHexString("855ad8"),
+	PRIMARY_BROWN = Color.fromHexString("76523c"),
+	PRIMARY_WHITE = Color.fromHexString("ebf7f9"),
+	PRIMARY_BLACK = Color.fromHexString("4d4d4d"),
+
+	ACCENT_GREEN = Color.fromHexString("8dd35f"),
+	ACCENT_PINK = Color.fromHexString("ff2a7f"),
+}
+
+function Utility.Peep.Human:applySkin(slot, priority, relativeFilename, colorConfig)
+	colorConfig = colorConfig or {}
+
+	local remappedColorConfig = {}
+	for _, color in ipairs(colorConfig) do
+		table.insert(remappedColorConfig, { color:get() })
+	end
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return false
+	end
+
+	local skin = CacheRef("ItsyScape.Game.Skin.ModelSkin", string.format("Resources/Game/Skins/%s", relativeFilename))
+	actor:setSkin(slot, priority, skin, remappedColorConfig)
+
+	return true
+end
+
 function Utility.Peep.Human:applySkins()
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
@@ -4244,8 +4297,26 @@ function Utility.Peep.Human:applySkins()
 			for i = 1, #skins do
 				local skin = skins[i]
 				if skin:get("Type") and skin:get("Filename") then
+					local colors = gameDB:getRecords("PeepSkinColor", {
+						Resource = resource,
+						Slot = skin:get("Slot"),
+						Priority = skin:get("Priority")
+					})
+
+					local colorConfig = {}
+					for _, color in ipairs(colors) do
+						local key = color:get("Color")
+						local c = Utility.Peep.Human.Palette[key] or Color.fromHexString(key) or Color(1, 0, 0)
+
+						local h = color:get("H")
+						local s = color:get("S")
+						local l = color:get("L")
+
+						table.insert(colorConfig, { c:shiftHSL(h, s, l):get() })
+					end
+
 					local c = CacheRef(skin:get("Type"), skin:get("Filename"))
-					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c)
+					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c, colorConfig)
 				end
 			end
 		end
