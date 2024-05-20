@@ -345,6 +345,16 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepSkinColor" {
+		Priority = Meta.TYPE_REAL,
+		Slot = Meta.TYPE_INTEGER,
+		Color = Meta.TYPE_TEXT,
+		H = Meta.TYPE_REAL,
+		S = Meta.TYPE_REAL,
+		L = Meta.TYPE_REAL,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PeepBody" {
 		Type = Meta.TYPE_TEXT,
 		Filename = Meta.TYPE_TEXT,
@@ -1162,6 +1172,52 @@ function ItsyScape.Utility.QuestStepDescription(keyItem)
 			Language = t.language or "en-US",
 			Resource = KeyItem
 		}
+	end
+end
+
+function ItsyScape.Utility.skins(resource, skins)
+	for _, skin in ipairs(skins) do
+		local slot = skin.slot
+		local priority = skin.priority
+		local filename = skin.filename
+		local resourceType = skin.type or "ItsyScape.Game.Skin.ModelSkin"
+
+		if slot and priority and filename then
+			ItsyScape.Meta.PeepSkin {
+				Type = resourceType,
+				Filename = string.format("Resources/Game/Skins/%s", filename),
+				Priority = priority,
+				Slot = slot,
+				Resource = resource
+			}
+
+			for _, c in ipairs(skin.colors or {}) do
+				if type(c) == "string" then
+					ItsyScape.Meta.PeepSkinColor {
+						Priority = priority,
+						Slot = slot,
+						Color = c,
+						Resource = resource,
+					}
+				else
+					ItsyScape.Meta.PeepSkinColor {
+						Priority = priority,
+						Slot = slot,
+						Color = c.color or "ff0000",
+						H = c.h,
+						S = c.s,
+						L = c.l,
+						Resource = resource,
+					}
+				end
+			end
+		else
+			local info = debug.getinfo(2, "Sl")
+			local message = string.format(
+				"%s:%d: Could not apply skin to resource: missing one or more fields (slot, priority, or filename)",
+				info.source, info.currentline)
+			ItsyScape.Error(message)
+		end
 	end
 end
 

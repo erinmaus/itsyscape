@@ -4,7 +4,7 @@
 	colors = {
 		{
 			name = "Shirt",
-			color = "#ffcc00"
+			color = "#333333"
 		},
 		{
 			name = "Jacket",
