@@ -1218,10 +1218,10 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 		self.skinOptionCamera:setDistance(cameraConfig.zoom)
 	end
 
-	if not self.colorConfig[niceName] or #self.colorConfig[niceName] == 0 then
-		local config
+	if not self.colorConfig[niceName] or #self.colorConfig[niceName] == 0 or (defaultColorConfig and #self.colorConfig[niceName] < #defaultColorConfig) then
+		local config = self.colorConfig[niceName]
 		do
-			if playerSkinStorage[niceName].config then
+			if not config and playerSkinStorage[niceName].config then
 				config = playerSkinStorage[niceName].config
 			end
 
@@ -1232,6 +1232,17 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 			if not config or #config == 0 then
 				local color = Color(Vector(love.math.random(), love.math.random(), love.math.random()):getNormal():get())
 				config = { color }
+			end
+
+			print(">>> #config", config and #config)
+			print(">>> #defaultColorConfig", defaultColorConfig and #defaultColorConfig)
+
+			if config and defaultColorConfig and #config < #defaultColorConfig then
+				print("YES!!!!!!!!")
+
+				for i = #config + 1, #defaultColorConfig do
+					config[i] = defaultColorConfig[i]
+				end
 			end
 		end
 
@@ -1557,7 +1568,7 @@ function CharacterCustomization:update(delta)
 
 			local oldColor = self.colorConfig[self.currentSlot][self.currentColorIndex]
 
-			local h, s, l = Color(unpack(oldColor)):toHSL()
+			local h, s, l = Color(unpack(oldColor or {})):toHSL()
 			local targetLightness
 			if l > 0.5 then
 				targetLightness = 0

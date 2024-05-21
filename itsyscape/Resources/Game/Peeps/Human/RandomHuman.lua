@@ -108,6 +108,11 @@ function RandomHuman:ready(director, game)
 		Equipment.SKIN_PRIORITY_BASE,
 		"PlayerKit2/Hands/Humanlike.lua",
 		{ skinColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		shoe,
+		{ shoeColor })
 end
 
 return RandomHuman

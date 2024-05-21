@@ -60,7 +60,7 @@ end
 --                                 -- Defaults to true.
 -- }
 function ModelSkin:loadFromFile(filename)
-	local file = "return " .. love.filesystem.read(filename)
+	local file = "return " .. (love.filesystem.read(filename) or "{}")
 	local chunk = assert(loadstring(file))
 	local result = setfenv(chunk, {})()
 
