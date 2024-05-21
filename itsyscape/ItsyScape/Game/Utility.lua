@@ -4232,6 +4232,8 @@ Utility.Peep.Human.Palette = {
 
 	HAIR_BROWN = Color.fromHexString("6c4527"),
 	HAIR_BLACK = Color.fromHexString("3e3e3e"),
+	HAIR_GREY = Color.fromHexString("cccccc"),
+	HAIR_BLONDE = Color.fromHexString("ffeeaa"),
 	HAIR_PURPLE = Color.fromHexString("8358c3"),
 	HAIR_RED = Color.fromHexString("d45500"),
 	HAIR_GREEN = Color.fromHexString("8dd35f"),
@@ -4247,8 +4249,10 @@ Utility.Peep.Human.Palette = {
 	PRIMARY_BLUE = Color.fromHexString("3771c8"),
 	PRIMARY_YELLOW = Color.fromHexString("ffcc00"),
 	PRIMARY_PURPLE = Color.fromHexString("855ad8"),
+	PRIMARY_PINK = Color.fromHexString("ffd5e5"),
 	PRIMARY_BROWN = Color.fromHexString("76523c"),
 	PRIMARY_WHITE = Color.fromHexString("ebf7f9"),
+	PRIMARY_GREY = Color.fromHexString("cccccc"),
 	PRIMARY_BLACK = Color.fromHexString("4d4d4d"),
 
 	ACCENT_GREEN = Color.fromHexString("8dd35f"),
@@ -4270,7 +4274,12 @@ function Utility.Peep.Human:applySkin(slot, priority, relativeFilename, colorCon
 		return false
 	end
 
-	local skin = CacheRef("ItsyScape.Game.Skin.ModelSkin", string.format("Resources/Game/Skins/%s", relativeFilename))
+	local filename = string.format("Resources/Game/Skins/%s", relativeFilename)
+	if not love.filesystem.getInfo(filename) then
+		error(string.format("Could not find skin '%s'!", filename))
+	end
+
+	local skin = CacheRef("ItsyScape.Game.Skin.ModelSkin", filename)
 	actor:setSkin(slot, priority, skin, remappedColorConfig)
 
 	return true

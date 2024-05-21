@@ -15,68 +15,56 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 
 local RandomHuman = Class(Player)
 
-local SLOTS = {
-	{
-		slot = Equipment.PLAYER_SLOT_HEAD,
-		priority = Equipment.SKIN_PRIORITY_BASE,
-		"Resources/Game/Skins/PlayerKit1/Head/Light.lua",
-		"Resources/Game/Skins/PlayerKit1/Head/Medium.lua",
-		"Resources/Game/Skins/PlayerKit1/Head/Dark.lua",
-		"Resources/Game/Skins/PlayerKit1/Head/Minifig.lua"
-	},
-	{
-		slot = Equipment.PLAYER_SLOT_HEAD,
-		priority = math.huge,
+local SKIN_COLORS = {
+	Player.Palette.SKIN_LIGHT,
+	Player.Palette.SKIN_MEDIUM,
+	Player.Palette.SKIN_DARK,
+	Player.Palette.SKIN_PLASTIC
+}
 
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Brown.lua",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Black.lua",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Grey.lua",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Green.lua"
-	},
-	{
-		slot = Equipment.PLAYER_SLOT_BODY,
-		priority = Equipment.SKIN_PRIORITY_BASE,
+local HAIR_COLORS = {
+	Player.Palette.HAIR_BROWN,
+	Player.Palette.HAIR_BLACK,
+	Player.Palette.HAIR_GREY,
+	Player.Palette.HAIR_BLONDE
+}
 
-		"Resources/Game/Skins/PlayerKit1/Shirts/Red.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Green.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Blue.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/RedPlaid.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/GreenPlaid.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/BluePlaid.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Yellow.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/RedDress.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/GreenDress.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/BlueDress.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/YellowDress.lua"
-	},
-	{
-		slot = Equipment.PLAYER_SLOT_FEET,
-		priority = Equipment.SKIN_PRIORITY_BASE,
+local SHIRT_COLORS = {
+	Player.Palette.PRIMARY_RED,
+	Player.Palette.PRIMARY_GREEN,
+	Player.Palette.PRIMARY_BLUE,
+	Player.Palette.PRIMARY_YELLOW,
+	Player.Palette.PRIMARY_PURPLE,
+	Player.Palette.PRIMARY_BROWN,
+	Player.Palette.PRIMARY_WHITE,
+	Player.Palette.PRIMARY_GREY,
+	Player.Palette.PRIMARY_BLACK
+}
 
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1_Black.lua",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots3.lua",
-		"Resources/Game/Skins/PlayerKit1/Shoes/LongBoots1.lua"
-	},
-	{
-		slot = Equipment.PLAYER_SLOT_HANDS,
-		priority = Equipment.SKIN_PRIORITY_BASE,
+local SHOE_COLORS = {
+	Player.Palette.PRIMARY_BROWN,
+	Player.Palette.PRIMARY_BLACK
+}
 
-		"Resources/Game/Skins/PlayerKit1/Hands/BlackGloves.lua",
-		"Resources/Game/Skins/PlayerKit1/Hands/RedGloves.lua",
-		"Resources/Game/Skins/PlayerKit1/Hands/BlueGloves.lua",
-		"Resources/Game/Skins/PlayerKit1/Hands/GreenGloves.lua",
-	},
-	{
-		slot = Equipment.PLAYER_SLOT_HEAD,
-		priority = Equipment.SKIN_PRIORITY_ACCENT,
+local SHIRT_SKINS = {
+	"PlayerKit2/Shirts/Plain.lua",
+	"PlayerKit2/Shirts/Dress.lua"
+}
 
-		"Resources/Game/Skins/PlayerKit1/Hair/Afro.lua",
-		"Resources/Game/Skins/PlayerKit1/Hair/Enby.lua",
-		"Resources/Game/Skins/PlayerKit1/Hair/Emo.lua",
-		"Resources/Game/Skins/PlayerKit1/Hair/Fade.lua"
-	}
+local SHOE_SKINS = {
+	"PlayerKit2/Shoes/Boots1.lua",
+	"PlayerKit2/Shoes/Boots2.lua",
+	"PlayerKit2/Shoes/Boots3.lua",
+	"PlayerKit2/Shoes/LongBoots1.lua"
+}
+
+local HAIR_SKINS = {
+	"PlayerKit2/Hair/Afro.lua",
+	"PlayerKit2/Hair/Enby.lua",
+	"PlayerKit2/Hair/Emo.lua",
+	"PlayerKit2/Hair/Fade.lua",
+	"PlayerKit2/Hair/Pixie.lua",
+	"PlayerKit2/Hair/Messy1.lua"
 }
 
 function RandomHuman:new(resource, name, ...)
@@ -84,20 +72,42 @@ function RandomHuman:new(resource, name, ...)
 end
 
 function RandomHuman:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	for _, slot in ipairs(SLOTS) do
-		local index = love.math.random(#slot)
-		local filename = slot[index]
-
-		local skin = CacheRef("ItsyScape.Game.Skin.ModelSkin", filename)
-		actor:setSkin(slot.slot, slot.priority, skin)
-	end
-
 	Player.ready(self, director, game)
+
+	local skinColor = SKIN_COLORS[love.math.random(#SKIN_COLORS)]
+	local hairColor = HAIR_COLORS[love.math.random(#HAIR_COLORS)]
+	local shoeColor = SHOE_COLORS[love.math.random(#SHOE_COLORS)]
+	local shirtColor = SHIRT_COLORS[love.math.random(#SHIRT_COLORS)]
+
+	local shirt = SHIRT_SKINS[love.math.random(#SHIRT_SKINS)]
+	local shoe = SHOE_SKINS[love.math.random(#SHOE_SKINS)]
+	local hair = HAIR_SKINS[love.math.random(#HAIR_SKINS)]
+
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Humanlike.lua",
+		{ skinColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_ACCENT,
+		hair,
+		{ hairColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ hairColor, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		shirt,
+		{ shirtColor, Player.Palette.PRIMARY_BROWN, Player.Palette.PRIMARY_GREY })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Hands/Humanlike.lua",
+		{ skinColor })
 end
 
 return RandomHuman

@@ -24,15 +24,11 @@ end
 function SkeletonAlice:ready(director, game)
 	BaseSkeleton.ready(self, director, game)
 
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/PinkDress.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/Dress.lua",
+		{ Player.Palette.PRIMARY_BLUE })
 end
 
 return SkeletonAlice

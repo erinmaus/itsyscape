@@ -19,11 +19,18 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local RandomMonk = Class(Player)
 
 local SKIN = {
-	"Light",
-	"Medium",
-	"Dark",
-	"Minifig",
-	"Zombi"
+	Player.Palette.SKIN_LIGHT,
+	Player.Palette.SKIN_MEDIUM,
+	Player.Palette.SKIN_DARK,
+	Player.Palette.SKIN_PLASTIC
+}
+
+local HAIR = {
+	Player.Palette.HAIR_BROWN,
+	Player.Palette.HAIR_BLACK,
+	Player.Palette.HAIR_BLACK:setHSL(nil, nil, 0.7), -- Light grey
+	Player.Palette.HAIR_RED,
+	Player.Palette.HAIR_BLONDE
 }
 
 function RandomMonk:new(resource, name, ...)
@@ -33,41 +40,29 @@ end
 function RandomMonk:ready(director, game)
 	Player.ready(self, director, game)
 
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	actor = actor and actor.actor
-
-	if not actor then
-		return
-	end
-
 	local skin = SKIN[love.math.random(#SKIN)]
+	local hair = HAIR[love.math.random(#HAIR)]
 
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Head/%s.lua", skin))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/MonkRobe.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-
-	local eyes
-	if skin == "Zombi" then
-		eyes = CacheRef(
-			"ItsyScape.Game.Skin.ModelSkin",
-			"Resources/Game/Skins/PlayerKit1/Eyes/WhiteEyes_Green.lua")
-	else
-		eyes = CacheRef(
-			"ItsyScape.Game.Skin.ModelSkin",
-			"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Brown.lua")
-	end
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Hands/%s.lua", skin))
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Humanlike.lua",
+		{ skin })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ hair, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/Robe.lua",
+		{ Player.Palette.PRIMARY_BROWN:setHSL(nil, 0.4, 0.6) })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Hands/Humanlike.lua",
+		{ skin })
 end
 
 return RandomMonk
