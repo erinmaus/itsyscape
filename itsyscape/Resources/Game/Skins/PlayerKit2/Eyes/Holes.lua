@@ -3,10 +3,8 @@
 	pathTexture = "Resources/Game/Skins/PlayerKit2/Eyes/Holes.lvg",
 	colors = {
 		{
-			name = "Eye",
-
-			"left-eye",
-			"right-eye"
+			name = "Holes",
+			color = "000000"
 		}
 	},
 	isBlocking = false,

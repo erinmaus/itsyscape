@@ -8,20 +8,26 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Color = require "ItsyScape.Graphics.Color"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local Prisoner = Class(Player)
 
-Prisoner.SKIN = {
-	"Light",
-	"Medium",
-	"Dark",
-	"Minifig",
-	"Zombi"
+Prisoner.SKIN_COLORS = {
+	Player.Palette.SKIN_LIGHT,
+	Player.Palette.SKIN_MEDIUM,
+	Player.Palette.SKIN_DARK,
+	Player.Palette.SKIN_PLASTIC
+}
+
+Prisoner.HAIR_COLORS = {
+	Player.Palette.HAIR_BROWN,
+	Player.Palette.HAIR_BLACK,
+	Player.Palette.HAIR_GREY,
+	Player.Palette.HAIR_BLONDE
 }
 
 function Prisoner:new(resource, name, ...)
@@ -32,40 +38,37 @@ function Prisoner:new(resource, name, ...)
 end
 
 function Prisoner:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	local skinName = Prisoner.SKIN[love.math.random(#Prisoner.SKIN)]
-
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Human.lskel")
-	actor:setBody(body)
-
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Head/%s.lua", skinName))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Grey.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Prisoner.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Hands/%s.lua", skinName))
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/LongBoots1.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
-
 	Player.ready(self, director, game)
+
+	local skinColor = self.SKIN_COLORS[love.math.random(#self.SKIN_COLORS)]
+	local hairColor = self.HAIR_COLORS[love.math.random(#self.HAIR_COLORS)]
+
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Humanlike.lua",
+		{ skinColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ hairColor, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/Prisoner.lua",
+		{ Color.fromHexString("ffffff"), Color.fromHexString("000000") })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Hands/Humanlike.lua",
+		{ skinColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/LongBoots1.lua",
+		{ Player.Palette.PRIMARY_BLACK })
+
 end
 
 return Prisoner
