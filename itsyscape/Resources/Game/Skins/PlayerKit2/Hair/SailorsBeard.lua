@@ -25,6 +25,5 @@
 			saturationOffset = -10,
 		}
 	},
-	isBlocking = false,
-	isOccluded = true
+	isBlocking = false
 }
