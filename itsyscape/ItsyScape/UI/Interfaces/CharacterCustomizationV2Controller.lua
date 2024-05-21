@@ -55,6 +55,11 @@ local SKINS = {
 			{ Color.fromHexString("8358c3"):get() },
 			{ Color.fromHexString("d45500"):get() },
 			{ Color.fromHexString("8dd35f"):get() }
+		},
+
+		defaultColorConfig = {
+			{ index = 1, Color.fromHexString("8358c3"):get() },
+			{ index = 1, Color.fromHexString("8358c3"):get() },
 		}
 	},
 
@@ -162,8 +167,8 @@ local SKINS = {
 			{ Color.fromHexString("cb1d1d"):get() },
 			{ Color.fromHexString("ebf7f9"):get() },
 			{ Color.fromHexString("ffcc00"):get() },
-			{ Color.fromHexString("cb1d1d"):get() },
-			{ Color.fromHexString("abc837"):get() },
+			{ Color.fromHexString("333333"):get() },
+			{ Color.fromHexString("ffffff"):get() },
 		}
 	},
 

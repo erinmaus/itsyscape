@@ -244,45 +244,94 @@ function One:assign(director, key, ...)
 	end
 end
 
+One.SKIN_COLORS = {
+	Utility.Peep.Human.Palette.SKIN_LIGHT,
+	Utility.Peep.Human.Palette.SKIN_MEDIUM,
+	Utility.Peep.Human.Palette.SKIN_DARK,
+	Utility.Peep.Human.Palette.SKIN_PLASTIC,
+}
+
+One.SHIRT_COLORS = {
+	Utility.Peep.Human.Palette.PRIMARY_RED,
+	Utility.Peep.Human.Palette.PRIMARY_GREEN,
+	Utility.Peep.Human.Palette.PRIMARY_BLUE,
+	Utility.Peep.Human.Palette.PRIMARY_YELLOW,
+	Utility.Peep.Human.Palette.PRIMARY_PURPLE,
+	Utility.Peep.Human.Palette.PRIMARY_PINK,
+	Utility.Peep.Human.Palette.PRIMARY_BROWN,
+	Utility.Peep.Human.Palette.PRIMARY_WHITE,
+	Utility.Peep.Human.Palette.PRIMARY_GREY,
+	Utility.Peep.Human.Palette.PRIMARY_BLACK,
+}
+
+One.HAIR_COLORS = {
+	Utility.Peep.Human.Palette.HAIR_BROWN,
+	Utility.Peep.Human.Palette.HAIR_BLACK,
+	Utility.Peep.Human.Palette.HAIR_GREY,
+	Utility.Peep.Human.Palette.HAIR_BLONDE,
+	Utility.Peep.Human.Palette.HAIR_PURPLE,
+	Utility.Peep.Human.Palette.HAIR_RED,
+	Utility.Peep.Human.Palette.HAIR_GREEN,
+}
+
+One.SHOE_COLORS = {
+	Utility.Peep.Human.Palette.PRIMARY_BROWN,
+	Utility.Peep.Human.Palette.PRIMARY_GREY,
+	Utility.Peep.Human.Palette.PRIMARY_BLACK,
+}
+
 One.SKINS = {
 	head = {
 		slot = Equipment.PLAYER_SLOT_HEAD,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		"Resources/Game/Skins/PlayerKit1/Head/Light.lua",
-		"Resources/Game/Skins/PlayerKit1/Head/Medium.lua",
-		"Resources/Game/Skins/PlayerKit1/Head/Dark.lua",
-		"Resources/Game/Skins/PlayerKit1/Head/Minifig.lua"
+		colors = One.SKIN_COLORS,
+
+		"Resources/Game/Skins/PlayerKit2/Head/Humanlike.lua",
 	},
 	eyes = {
 		slot = Equipment.PLAYER_SLOT_HEAD,
 		priority = math.huge,
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua"
+		colors = { Utility.Peep.Human.Palette.PRIMARY_PURPLE },
+		otherColors = { Utility.Peep.Human.Palette.EYE_WHITE, Utility.Peep.Human.Palette.EYE_BLACK },
+
+		"Resources/Game/Skins/PlayerKit2/Eyes/Eyes.lua",
 	},
 	feet = {
 		slot = Equipment.PLAYER_SLOT_FEET,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua"
+		colors = One.SHOE_COLORS,
+		otherColors = { Utility.Peep.Human.Palette.PRIMARY_GREY },
+
+		"Resources/Game/Skins/PlayerKit2/Shoes/Boots1.lua"
 	},
 	body = {
 		slot = Equipment.PLAYER_SLOT_BODY,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		"Resources/Game/Skins/PlayerKit1/Shirts/Red.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Green.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Blue.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Yellow.lua"
+		colors = One.SHIRT_COLORS,
+		otherColors = { Utility.Peep.Human.Palette.PRIMARY_BROWN, Utility.Peep.Human.Palette.PRIMARY_GREY },
+
+		"Resources/Game/Skins/PlayerKit2/Shirts/Plain.lua"
 	},
 	hands = {
 		slot = Equipment.PLAYER_SLOT_HANDS,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		"Resources/Game/Skins/PlayerKit1/Hands/BlackGloves.lua"
+		colors = One.SHOE_COLORS,
+
+		"Resources/Game/Skins/PlayerKit2/Hands/Gloves.lua"
 	},
 	hair = {
 		slot = Equipment.PLAYER_SLOT_HEAD,
 		priority = Equipment.SKIN_PRIORITY_ACCENT,
-		"Resources/Game/Skins/PlayerKit1/Hair/Afro.lua",
-		"Resources/Game/Skins/PlayerKit1/Hair/Enby.lua",
-		"Resources/Game/Skins/PlayerKit1/Hair/Emo.lua",
-		"Resources/Game/Skins/PlayerKit1/Hair/Fade.lua"
+		colors = One.HAIR_COLORS,
+
+		"Resources/Game/Skins/PlayerKit2/Hair/Afro.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Enby.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Emo.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Fade.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Pixie.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Messy1.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Braid.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/GrrlPunk.lua"
 	}
 }
 
@@ -331,13 +380,23 @@ function One:ready(director, game)
 				config = config
 			})
 		else
+			local config = {
+				roll(One.SKINS[slot].colors),
+				unpack(One.SKINS[slot].otherColors or {}),
+			}
+
+			for index, c in ipairs(config) do
+				config[index] = { c:get() }
+			end
+
 			self:onChangeWardrobe({
 				slot = One.SKINS[slot].slot,
 				slotName = slot,
 				priority = One.SKINS[slot].priority,
 				name = 'Default',
 				filename = roll(One.SKINS[slot]),
-				type = "ItsyScape.Game.Skin.ModelSkin"
+				type = "ItsyScape.Game.Skin.ModelSkin",
+				config = config
 			})
 		end
 	end
