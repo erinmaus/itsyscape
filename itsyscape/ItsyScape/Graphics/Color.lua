@@ -79,11 +79,25 @@ function Color:get(multiplier)
 end
 
 function Color:shiftHSL(h, s, l)
+	h = h or 0
+	s = s or 0
+	l = l or 0
+
 	local currentH, currentS, currentL = self:toHSL()
 
 	h = h + currentH
 	s = math.clamp(currentS + s)
 	l = math.clamp(currentL + l)
+
+	return Color.fromHSL(h, s, l)
+end
+
+function Color:setHSL(h, s, l)
+	local currentH, currentS, currentL = self:toHSL()
+
+	h = h or currentH
+	s = s or currentS
+	l = l or currentL
 
 	return Color.fromHSL(h, s, l)
 end

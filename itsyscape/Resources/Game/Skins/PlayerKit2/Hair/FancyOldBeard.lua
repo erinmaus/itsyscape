@@ -8,7 +8,7 @@
 		},
 		{
 			name = "Hair Highlight",
-			color = "#959595"
+			color = "#959595",
 
 			parent = "Hair",
 
