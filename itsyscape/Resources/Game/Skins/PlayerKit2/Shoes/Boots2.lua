@@ -16,7 +16,7 @@
 		},
 		{
 			name = "Boot Highlight",
-			color = "#4d2f24",
+			color = "#e4cfba",
 			parent = "Boot",
 
 			saturationOffset = 20,

@@ -16,26 +16,34 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 
 local Guard = Class(Player)
 
-Guard.SKIN = {
-	"Light",
-	"Medium",
-	"Dark",
-	"Minifig"
+Guard.SKIN_COLORS = {
+	Player.Palette.SKIN_LIGHT,
+	Player.Palette.SKIN_MEDIUM,
+	Player.Palette.SKIN_DARK,
+	Player.Palette.SKIN_PLASTIC
 }
 
-Guard.HAIR = {
-	"Afro",
-	"Enby",
-	"Emo",
-	"Fade",
-	"Messy_Black",
-	"Pixie"
+Guard.HAIR_COLORS = {
+	Player.Palette.HAIR_BROWN,
+	Player.Palette.HAIR_BLACK,
+	Player.Palette.HAIR_GREY,
+	Player.Palette.HAIR_BLONDE
 }
 
-Guard.SHIRT = {
-	"RedPlaid",
-	"BluePlaid",
-	"GreenPlaid"
+Guard.SHIRT_COLORS = {
+	Player.Palette.PRIMARY_RED,
+	Player.Palette.PRIMARY_GREEN,
+	Player.Palette.PRIMARY_BLUE,
+	Player.Palette.PRIMARY_YELLOW
+}
+
+Guard.HAIR_SKINS = {
+	"PlayerKit2/Hair/Afro.lua",
+	"PlayerKit2/Hair/Enby.lua",
+	"PlayerKit2/Hair/Emo.lua",
+	"PlayerKit2/Hair/Fade.lua",
+	"PlayerKit2/Hair/Messy1.lua",
+	"PlayerKit2/Hair/Pixie.lua"
 }
 
 function Guard:new(resource, name, ...)
@@ -46,46 +54,43 @@ function Guard:new(resource, name, ...)
 end
 
 function Guard:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	local skinName = Guard.SKIN[love.math.random(#Guard.SKIN)]
-	local hairName = Guard.HAIR[love.math.random(#Guard.HAIR)]
-	local shirtName = Guard.SHIRT[love.math.random(#Guard.SHIRT)]
-
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Human.lskel")
-	actor:setBody(body)
-
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Head/%s.lua", skinName))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local hair = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Hair/%s.lua", hairName))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Shirts/%s.lua", shirtName))
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Hands/%s.lua", skinName))
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots2.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
-
 	Player.ready(self, director, game)
+
+	local skinColor = Guard.SKIN_COLORS[love.math.random(#Guard.SKIN_COLORS)]
+	local hairColor = Guard.HAIR_COLORS[love.math.random(#Guard.HAIR_COLORS)]
+	local shirtColor = Guard.SHIRT_COLORS[love.math.random(#Guard.SHIRT_COLORS)]
+
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Humanlike.lua",
+		{ skinColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_ACCENT,
+		Guard.HAIR_SKINS[love.math.random(#Guard.HAIR_SKINS)],
+		{ hairColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ hairColor, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/Plaid.lua",
+		{ shirtColor, Player.Palette.PRIMARY_BROWN, Player.Palette.PRIMARY_GREY, Player.Palette.PRIMARY_BLACK, Player.Palette.PRIMARY_GREY })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Hands/Humanlike.lua",
+		{ skinColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/Boots2.lua",
+		{ Player.Palette.PRIMARY_BLACK })
+
 end
 
 return Guard
