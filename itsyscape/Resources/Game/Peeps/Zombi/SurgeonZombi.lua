@@ -29,14 +29,16 @@ function SurgeonZombi:ready(director, game)
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge
 
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/ChefOutfit.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1_Black.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/Chef.lua",
+		{ Player.Palette.PRIMARY_WHITE })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/Boots1.lua",
+		{ Player.Palette.PRIMARY_BLACK })
 end
 
 return SurgeonZombi
