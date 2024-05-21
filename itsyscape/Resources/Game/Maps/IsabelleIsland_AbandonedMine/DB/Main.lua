@@ -324,24 +324,6 @@ do
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "BronzePlatebody",
-		Count = 1,
-		Resource = M["MiningTutor"]
-	}
-
-	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "BronzeGloves",
-		Count = 1,
-		Resource = M["MiningTutor"]
-	}
-
-	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "BronzeBoots",
-		Count = 1,
-		Resource = M["MiningTutor"]
-	}
-
-	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "BronzePickaxe",
 		Count = 1,
 		Resource = M["MiningTutor"]
