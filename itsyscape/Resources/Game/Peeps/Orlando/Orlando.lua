@@ -38,22 +38,25 @@ function Orlando:ready(director, game)
 			"ItsyScape.Game.Body",
 			"Resources/Game/Bodies/Human.lskel"))
 
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Light.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local hair = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hair/RedPunk.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Red.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local weapon = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Isabellium/IsabelliumZweihander.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_TWO_HANDED, Equipment.SKIN_PRIORITY_BASE, weapon)
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Humanlike.lua",
+		{ Player.Palette.SKIN_LIGHT })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_ACCENT,
+		"PlayerKit2/Hair/Punk.lua",
+		{ Player.Palette.HAIR_RED })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ Player.Palette.HAIR_RED, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_TWO_HANDED,
+		Equipment.SKIN_PRIORITY_BASE,
+		"Isabellium/IsabelliumZweihander.lua")
 
 	Utility.Peep.equipXWeapon(self, "IsabelliumZweihander")
 
