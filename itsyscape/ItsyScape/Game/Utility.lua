@@ -4229,6 +4229,7 @@ Utility.Peep.Human.Palette = {
 	SKIN_DARK = Color.fromHexString("a4693c"),
 	SKIN_PLASTIC = Color.fromHexString("ffcc00"),
 	SKIN_ZOMBI = Color.fromHexString("bf50d9"),
+	SKIN_NYMPH = Color.fromHexString("cdde87"),
 
 	HAIR_BROWN = Color.fromHexString("6c4527"),
 	HAIR_BLACK = Color.fromHexString("3e3e3e"),
