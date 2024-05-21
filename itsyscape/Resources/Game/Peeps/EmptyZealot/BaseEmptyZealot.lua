@@ -34,7 +34,7 @@ function BaseEmptyZealot:ready(director, game)
 	self:applySkin(
 		Equipment.PLAYER_SLOT_HEAD,
 		math.huge,
-		"PlayerKit1/Eyes/Eyes.lua",
+		"PlayerKit2/Eyes/Eyes.lua",
 		{ Player.Palette.HAIR_PURPLE, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
 	self:applySkin(
 		Equipment.PLAYER_SLOT_BODY,

@@ -28,16 +28,6 @@ end
 function Orlando:ready(director, game)
 	Player.ready(self, director, game)
 
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	actor:setBody(
-		CacheRef(
-			"ItsyScape.Game.Body",
-			"Resources/Game/Bodies/Human.lskel"))
-
 	self:applySkin(
 		Equipment.PLAYER_SLOT_HEAD,
 		Equipment.SKIN_PRIORITY_BASE,
