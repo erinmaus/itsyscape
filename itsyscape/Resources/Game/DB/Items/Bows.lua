@@ -250,7 +250,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(5, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(15, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "PunyBow"
 	}
@@ -291,7 +291,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(15, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(25, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "BendyBow"
 	}
@@ -332,7 +332,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(25, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(35, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "PettyBow"
 	}
@@ -373,7 +373,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(35, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(45, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "ShakyBow"
 	}
@@ -414,7 +414,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(45, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "SpindlyBow"
 	}
@@ -443,7 +443,7 @@ end
 do
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(54, 1),
-		StrengthRanged = ItsyScape.Utility.styleBonusForWeapon(53, 1),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(53, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_RIGHT_HAND,
 		Resource = ItsyScape.Resource.Item "TerrifyingBoomerang"
 	}
@@ -455,7 +455,7 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(65, 1),
 		EquipSlot = ItsyScape.Utility.Equipment.PLAYER_SLOT_TWO_HANDED,
 		Resource = ItsyScape.Resource.Item "TerrifyingBow"
 	}
