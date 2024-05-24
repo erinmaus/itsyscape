@@ -110,7 +110,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Theodyssius",
+		Peep = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene",
 		MapObject = M["Theodyssius"]
 	}
 end
