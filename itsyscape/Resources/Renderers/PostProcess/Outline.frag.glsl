@@ -11,6 +11,7 @@ uniform sampler2D scape_NormalTexture;
 uniform sampler2D scape_AlphaMaskTexture;
 uniform vec4 scape_FarPlane;
 uniform vec4 scape_NearPlane;
+uniform float scape_DepthStep;
 
 float linearDepth(float depthSample)
 {
@@ -181,7 +182,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	float depthSobel = getDepthSobel(texture, textureCoordinate);
 	float normalSobel = getNormalSobel(scape_NormalTexture, textureCoordinate);
 	//float sobel = max(getDepthSobel(texture, textureCoordinate), getNormalSobel(scape_NormalTexture, textureCoordinate));
-	float d = max(step(1.5, normalSobel), step(0.5, depthSobel)) * sobelMultiplier;
+	float d = max(step(1.5, normalSobel), step(scape_DepthStep, depthSobel)) * sobelMultiplier;
 
 	//return step(9.0, numDepthSamples) * vec4(1.0, 0.0, 0.0, 1.0);
 

@@ -41,6 +41,7 @@ Renderer.DISTANCE_SHADER = ShaderResource()
 Renderer.COMPOSE_SHADER = ShaderResource()
 Renderer.JITTER_SHADER = ShaderResource()
 Renderer.SOBEL_SHADER = ShaderResource()
+Renderer.BLUR_SHADER = ShaderResource()
 do
 	Renderer.OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Outline")
 	Renderer.CUSTOM_OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/CustomOutline")
@@ -51,6 +52,7 @@ do
 	Renderer.COMPOSE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Compose")
 	Renderer.JITTER_SHADER:loadFromFile("Resources/Renderers/PostProcess/Jitter")
 	Renderer.SOBEL_SHADER:loadFromFile("Resources/Renderers/PostProcess/Sobel")
+	Renderer.BLUR_SHADER:loadFromFile("Resources/Renderers/PostProcess/Blur")
 end
 
 function Renderer.NodeDebugStats:process(node, renderer, delta)
@@ -108,6 +110,7 @@ function Renderer:new()
 
 	self.outlineBuffer = NGBuffer("rgba32f", "rgba32f", "rgba32f")
 	self.distanceBuffer = NGBuffer("rgba32f", "rgba32f")
+	self.blurBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.alphaBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
 	self.customOutlinePostProcessShader = love.graphics.newShader(Renderer.CUSTOM_OUTLINE_SHADER:getResource():getSource())
@@ -118,6 +121,7 @@ function Renderer:new()
 	self.composePostProcessShader = love.graphics.newShader(Renderer.COMPOSE_SHADER:getResource():getSource())
 	self.jitterPostProcessShader = love.graphics.newShader(Renderer.JITTER_SHADER:getResource():getSource())
 	self.sobelPostProcessShader = love.graphics.newShader(Renderer.SOBEL_SHADER:getResource():getSource())
+	self.blurPostProcessShader = love.graphics.newShader(Renderer.BLUR_SHADER:getResource():getSource())
 end
 
 function Renderer:getDeferredPass()
@@ -178,6 +182,16 @@ function Renderer:getCurrentPass()
 end
 
 function Renderer:_drawOutlines(width, height)
+	self._depthStep = self._depthStep or 0.5
+	if love.keyboard.isDown("k") then
+		self._depthStep = self._depthStep + 0.1 * love.timer.getDelta()
+		print(">>> +step", self._depthStep)
+	end
+	if love.keyboard.isDown("l") then
+		self._depthStep = self._depthStep - 0.1 * love.timer.getDelta()
+		print(">>> -step", self._depthStep)
+	end
+
 	local buffer = self:getOutputBuffer()
 	self.outlinePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.outlinePostProcessShader:send("scape_Far", self.camera:getFar())
@@ -189,10 +203,15 @@ function Renderer:_drawOutlines(width, height)
 	-- self.outlinePostProcessShader:send("scape_OutlineThickness", 1)
 	self.outlinePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 	self.outlinePostProcessShader:send("scape_NormalTexture", self.finalDeferredPass:getGBuffer():getCanvas(3))
+	self.outlinePostProcessShader:send("scape_DepthStep", self._depthStep)
 	--self.outlinePostProcessShader:send("scape_AlphaMaskTexture", self.alphaMaskPass:getABuffer():getCanvas(1))
 	
 	love.graphics.push("all")
 	love.graphics.origin()
+
+	self.blurBuffer:resize(width, height)
+	self.blurBuffer:getCanvas(1):setFilter("linear", "linear")
+	self.blurBuffer:getCanvas(2):setFilter("linear", "linear")
 	
 	self.outlineBuffer:resize(width, height)
 	self.outlineBuffer:getCanvas(1):setFilter("linear", "linear")
@@ -368,6 +387,17 @@ function Renderer:_drawOutlines(width, height)
 	self.composePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(currentOutlineBuffer)
+
+	love.graphics.setShader(self.blurPostProcessShader)
+	love.graphics.setCanvas(self.blurBuffer:getCanvas(1))
+	self.blurPostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
+	self.blurPostProcessShader:send("scape_Direction", { 1, 0 })
+	love.graphics.draw(self.outlineBuffer:getCanvas(1))
+
+	love.graphics.setShader(self.blurPostProcessShader)
+	love.graphics.setCanvas(self.blurBuffer:getCanvas(2))
+	self.blurPostProcessShader:send("scape_Direction", { 0, 1 })
+	love.graphics.draw(self.blurBuffer:getCanvas(1))
 	
 	self.jitterPostProcessShader:send("scape_NoiseTextureX", self.outlineNoiseTextureX)
 	self.jitterPostProcessShader:send("scape_NoiseTextureY", self.outlineNoiseTextureY)
@@ -381,6 +411,7 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.setCanvas(buffer:getColor())
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setBlendMode("alpha", "alphamultiply")
+	--love.graphics.draw(self.blurBuffer:getCanvas(2))
 	love.graphics.draw(self.outlineBuffer:getCanvas(1))
 	love.graphics.setShader()
 
