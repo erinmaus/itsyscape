@@ -21,12 +21,7 @@
 		},
 		{
 			name = "Trim",
-			color = "#ffcc00",
-
-			parent = "Jacket",
-
-			hueOffset = 50,
-			lightnessOffset = 20
+			color = "#ffcc00"
 		}
 	},
 }

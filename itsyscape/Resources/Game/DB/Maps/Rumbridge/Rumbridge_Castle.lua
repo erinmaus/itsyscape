@@ -195,7 +195,8 @@ do
 			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
 			colors = {
 				"PRIMARY_BLACK",
-				"PRIMARY_RED"
+				"PRIMARY_RED",
+				"PRIMARY_YELLOW"
 			}
 		},
 		{

@@ -206,45 +206,53 @@ do
 		Resource = Yohn
 	}
 
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Shirts/RoyalBlueRobes.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Resource = Yohn
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes_GreyBrown.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
-		Priority = math.huge,
-		Resource = Yohn
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Hands/RoyalBlueGloves.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Resource = Yohn
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Head/Light.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Resource = Yohn
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Hair/MiddleAgeMessy.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_ACCENT,
-		Resource = Yohn
-	}
+	ItsyScape.Utility.skins(Yohn, {
+		{	
+			filename = "PlayerKit2/Head/Humanlike.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"SKIN_LIGHT"
+			}
+		},
+		{
+			filename = "PlayerKit2/Hair/MiddleAgeMessy.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_ACCENT,
+			colors = {
+				"6c5353"
+			}
+		},
+		{
+			filename = "PlayerKit2/Eyes/Eyes.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+			priority = math.huge,
+			colors = {
+				"6c5353",
+				"EYE_WHITE",
+				"EYE_BLACK"
+			}
+		},
+		{
+			filename = "PlayerKit2/Shirts/RoyalRobe.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"3771c8",
+				"87aade",
+				"PRIMARY_YELLOW"
+			}
+		},
+		{
+			filename = "PlayerKit2/Hands/StripedGloves.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"3771c8",
+				"PRIMARY_YELLOW"
+			}
+		}
+	})
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "BluePartyHat",
