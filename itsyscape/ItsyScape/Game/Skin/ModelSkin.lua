@@ -31,6 +31,7 @@ function ModelSkin:new()
 	self.position = Vector(0)
 	self.scale = Vector(1)
 	self.rotation = Quaternion(0, 0, 0, 1)
+	self.outlineThreshold = 0.5
 	self.lights = {}
 	self.particles = {}
 	self.colors = {}
@@ -215,6 +216,10 @@ function ModelSkin:loadFromFile(filename)
 	end
 
 	self.particles = result.particles or {}
+
+	if result.outlineThreshold then
+		self.outlineThreshold = result.outlineThreshold
+	end
 end
 
 -- Gets the model CacheRef.
@@ -279,6 +284,10 @@ end
 
 function ModelSkin:getColors()
 	return self.colors
+end
+
+function ModelSkin:getOutlineThreshold()
+	return self.outlineThreshold
 end
 
 function ModelSkin:_getColor(colorName, colors, c)

@@ -908,8 +908,7 @@ function GameView:flood(key, water, layer)
 			node:setParent(parent)
 		end)
 
-	node:getMaterial():setIsNormalEdgeDetectionEnabled(false)
-
+	node:getMaterial():setOutlineThreshold(1.0)
 
 	self.water[key] = node
 end

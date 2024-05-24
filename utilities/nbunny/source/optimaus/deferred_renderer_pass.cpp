@@ -306,7 +306,11 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		clear_color = glm::vec4(light.color, 1.0f);
 	}
 	graphics->clear(
-		love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),
+		{
+			love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),
+			love::Colorf(0.0, 0.0, 0.0, 1.0),
+			love::Colorf(0.0, 0.0, 0.0, 1.0)
+		},
 		0,
 		1.0f);
 
@@ -315,11 +319,11 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		auto shader = get_node_shader(L, *scene_node);
 		renderer->set_current_shader(shader);
 
-		auto normal_edge_uniform = shader->getUniformInfo("scape_NormalEdgeEnabled");
-		if (normal_edge_uniform)
+		auto outline_threshold = shader->getUniformInfo("scape_OutlineThreshold");
+		if (outline_threshold)
 		{
-			*normal_edge_uniform->floats = scene_node->get_material().get_is_normal_edge_detection_enabled() ? 1.0f : 0.0f;
-			shader->updateUniform(normal_edge_uniform, 1);
+			*outline_threshold->floats = scene_node->get_material().get_outline_threshold();
+			shader->updateUniform(outline_threshold, 1);
 		}
 	
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
