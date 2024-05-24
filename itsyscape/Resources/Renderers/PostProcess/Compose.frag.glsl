@@ -72,7 +72,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 
 	//float d = distance(textureCoordinate / scape_TexelSize, outlineSample.xy);
 	//float a = step(max(thickness / 2.0, 1.0), sample.z);
-	float a = sharpStep(0.0, thickness / 2.0, outlineSample.z, 0.5, 0.75);
+	float a = sharpStep(0.0, thickness / 2.0, outlineSample.z, 0.25, 0.75);
 	//a = step(1.0, a);
 	//float a = step(max(thickness / 2.0, 1.0), outlineSample.z);
 
