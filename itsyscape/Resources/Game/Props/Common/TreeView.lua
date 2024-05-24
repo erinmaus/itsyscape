@@ -61,7 +61,6 @@ function TreeView:applyAnimation(time, animation)
 	skeleton:applyBindPose(self.transforms)
 end
 
-
 function TreeView:load()
 	PropView.load(self)
 

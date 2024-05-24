@@ -240,14 +240,14 @@ bool nbunny::SceneNodeMaterial::get_is_cull_disabled() const
 	return is_cull_disabled;
 }
 
-void nbunny::SceneNodeMaterial::set_is_normal_edge_detection_enabled(bool value)
+void nbunny::SceneNodeMaterial::set_outline_threshold(float value)
 {
-	is_normal_edge_detection_enabled = value;	
+	outline_threshold = value;	
 }
 
-bool nbunny::SceneNodeMaterial::get_is_normal_edge_detection_enabled() const
+float nbunny::SceneNodeMaterial::get_outline_threshold() const
 {
-	return is_normal_edge_detection_enabled;
+	return outline_threshold;
 }
 
 const glm::vec4& nbunny::SceneNodeMaterial::get_color() const
@@ -1074,8 +1074,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getIsZWriteDisabled", &nbunny::SceneNodeMaterial::get_is_z_write_disabled,
 		"setIsCullDisabled", &nbunny::SceneNodeMaterial::set_is_cull_disabled,
 		"getIsCullDisabled", &nbunny::SceneNodeMaterial::get_is_cull_disabled,
-		"setIsNormalEdgeDetectionEnabled", &nbunny::SceneNodeMaterial::set_is_normal_edge_detection_enabled,
-		"getIsNormalEdgeDetectionEnabled", &nbunny::SceneNodeMaterial::get_is_normal_edge_detection_enabled,
+		"setOutlineThreshold", &nbunny::SceneNodeMaterial::set_outline_threshold,
+		"getOutlineThreshold", &nbunny::SceneNodeMaterial::get_outline_threshold,
 		"setColor", &nbunny_scene_node_material_set_color,
 		"getColor", &nbunny_scene_node_material_get_color,
 		"setShader", &nbunny::SceneNodeMaterial::set_shader,

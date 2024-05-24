@@ -182,7 +182,7 @@ function Renderer:getCurrentPass()
 end
 
 function Renderer:_drawOutlines(width, height)
-	self._depthStep = self._depthStep or 0.5
+	self._depthStep = self._depthStep or 0
 	if love.keyboard.isDown("k") then
 		self._depthStep = self._depthStep + 0.1 * love.timer.getDelta()
 		print(">>> +step", self._depthStep)

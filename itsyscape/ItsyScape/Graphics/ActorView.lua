@@ -478,6 +478,7 @@ function ActorView:_doApplySkin(slotNodes)
 					slot.sceneNode:getMaterial():setIsZWriteDisabled(true)
 				end
 				slot.sceneNode:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
+				slot.sceneNode:getMaterial():setOutlineThreshold(slot.instance:getOutlineThreshold())
 
 				local transform = slot.sceneNode:getTransform()
 				transform:setLocalTranslation(slot.instance:getPosition())
