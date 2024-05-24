@@ -50,45 +50,54 @@ do
 		Resource = Farmer
 	}
 
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Black.lua",
-		Priority = math.huge,
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
-		Resource = Farmer
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Shirts/BluePlaid.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Resource = Farmer
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Head/Medium.lua",
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
-		Resource = Farmer
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Hands/Medium.lua",
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
-		Resource = Farmer
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Shoes/LongBoots1.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Resource = Farmer
-	}
+	ItsyScape.Utility.skins(Farmer, {
+		{
+			filename = "PlayerKit2/Head/Humanlike.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"SKIN_MEDIUM"
+			}
+		},
+		{
+			filename = "PlayerKit2/Eyes/Eyes.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+			priority = math.huge,
+			colors = {
+				"HAIR_BLACK",
+				"EYE_WHITE",
+				"EYE_BLACK"
+			}
+		},
+		{
+			filename = "PlayerKit2/Shirts/Plaid.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"PRIMARY_BLUE",
+				"PRIMARY_BROWN",
+				"PRIMARY_GREY",
+				"PRIMARY_BLACK",
+				"PRIMARY_WHITE"
+			}
+		},
+		{
+			filename = "PlayerKit2/Hands/Humanlike.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"SKIN_MEDIUM"
+			}
+		},
+		{
+			filename = "PlayerKit2/Shoes/LongBoots1.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"PRIMARY_BLACK"
+			}
+		},
+	})
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "StrawHat",

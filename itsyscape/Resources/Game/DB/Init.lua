@@ -1214,8 +1214,11 @@ function ItsyScape.Utility.skins(resource, skins)
 		else
 			local info = debug.getinfo(2, "Sl")
 			local message = string.format(
-				"%s:%d: Could not apply skin to resource: missing one or more fields (slot, priority, or filename)",
-				info.source, info.currentline)
+				"%s:%d: Could not apply skin to resource: missing one or more fields (slot = %s, priority = %s, or filename = %s)",
+				info.source, info.currentline,
+				tostring(slot),
+				tostring(priority),
+				tostring(filename))
 			ItsyScape.Error(message)
 		end
 	end
