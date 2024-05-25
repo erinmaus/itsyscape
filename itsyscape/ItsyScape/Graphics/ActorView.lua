@@ -449,7 +449,7 @@ function ActorView:_doApplySkin(slotNodes)
 					slot.sceneNode:setModel(model)
 
 					if coroutine.running() then
-						coroutine.yield()
+						--coroutine.yield()
 					end
 				end
 
@@ -459,7 +459,7 @@ function ActorView:_doApplySkin(slotNodes)
 					self:_updateSkinTexture(slot)
 
 					if coroutine.running() then
-						coroutine.yield()
+						--coroutine.yield()
 					end
 				end
 
@@ -469,7 +469,7 @@ function ActorView:_doApplySkin(slotNodes)
 					slot.sceneNode:getMaterial():setShader(shaderResource)
 
 					if coroutine.running() then
-						coroutine.yield()
+						--coroutine.yield()
 					end
 				end
 
@@ -535,6 +535,10 @@ function ActorView:_doApplySkin(slotNodes)
 				end
 
 				self.models[slot.sceneNode] = true
+
+				if coroutine.running() then
+					coroutine.yield()
+				end
 			end
 		else
 			if slot.sceneNode then

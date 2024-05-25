@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local NResource = require "nbunny.optimaus.resource"
 local NResourceInstance = require "nbunny.optimaus.resourceinstance"
@@ -85,6 +86,11 @@ function Resource.readLua(filename)
 		while not s do
 			coroutine.yield()
 			s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
+		end
+
+		if type(s) == "table" then
+			print(">>> read", filename)
+			return buffer.decode(s.table)
 		end
 
 		return s

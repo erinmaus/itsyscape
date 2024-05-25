@@ -7,6 +7,8 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
+
 require "bootstrap"
 require "love.timer"
 
@@ -29,19 +31,19 @@ while true do
 					Log.warn("Filename '%s' not found!", request.filename)
 				end
 
-				local s
+				local l
 				do
 					local cacheFilename = request.filename .. ".cache"
 					local hasCache = love.filesystem.getInfo(cacheFilename)
 					if hasCache then
-						s = load(love.filesystem.read(cacheFilename))
+						l = { table = love.filesystem.read(cacheFilename) }
 					else
 						local file = love.filesystem.read(request.filename)
 						s, e = loadstring("return " .. (file or "nil"))
+						l = { table = buffer.encode(assert(setfenv(s, {}))() or {}) }
 					end
 				end
 
-				local l = assert(setfenv(s, {}))()
 				output:push(l or {})
 			elseif request.type == 'quit' then
 				return
@@ -49,5 +51,5 @@ while true do
 		end
 	until not request
 
-	love.timer.sleep(0)
+	love.timer.sleep(0.001)
 end
