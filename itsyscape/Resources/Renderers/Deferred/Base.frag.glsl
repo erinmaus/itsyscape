@@ -35,7 +35,13 @@ void effect()
 		diffuse.a = 1.0;
 	}
 
+	float outlineThreshold = scape_OutlineThreshold;
+	if (outlineThreshold < 0.0)
+	{
+		outlineThreshold = 1.0;
+	}
+
 	love_Canvases[0] = diffuse;
 	love_Canvases[1] = vec4(frag_Position, diffuse.a);
-	love_Canvases[2] = vec4(frag_Normal, scape_OutlineThreshold);
+	love_Canvases[2] = vec4(frag_Normal, outlineThreshold);
 }
