@@ -61,6 +61,7 @@ end
 function TextureResource:loadFromFile(filename, resourceManager)
 	local image = love.graphics.newImage(filename) 
 	image:setFilter('nearest', 'nearest')
+	image:setWrap("repeat")
 	self:getHandle():setTexture(image)
 
 	for passFilename, passID in pairs(self.PASSES) do
@@ -71,6 +72,7 @@ function TextureResource:loadFromFile(filename, resourceManager)
 		if perPassTextureFilename ~= filename and love.filesystem.getInfo(perPassTextureFilename) then
 			local perPassImage = love.graphics.newImage(perPassTextureFilename)
 			perPassImage:setFilter("linear", "linear")
+			perPassImage:setWrap("repeat")
 
 			self:getHandle():setPerPassTexture(passID, perPassImage)
 		end
