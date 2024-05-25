@@ -89,7 +89,6 @@ function Resource.readLua(filename)
 		end
 
 		if type(s) == "table" then
-			print(">>> read", filename)
 			return buffer.decode(s.table)
 		end
 
