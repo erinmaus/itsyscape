@@ -2133,7 +2133,7 @@ function Utility.Peep.getScale(peep)
 	if scale then
 		return scale.scale
 	else
-		return Vector.ZERO
+		return Vector.ONE
 	end
 end
 
