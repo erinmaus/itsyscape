@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Ray = require "ItsyScape.Common.Math.Ray"
@@ -570,9 +571,7 @@ function Map.loadFromFile(filename)
 	local cacheFilename = filename .. ".cache"
 	local hasCache = love.filesystem.getInfo(cacheFilename)
 	if hasCache then
-		local chunk = assert(load(love.filesystem.read(cacheFilename)))
-		local t = assert(setfenv(chunk, {})())
-
+		local t = buffer.decode(love.filesystem.read(cacheFilename))
 		return Map.loadFromTable(t)
 	else
 		return Map.loadFromString(love.filesystem.read(filename))

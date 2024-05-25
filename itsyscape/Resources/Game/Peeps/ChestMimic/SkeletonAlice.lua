@@ -28,7 +28,7 @@ function SkeletonAlice:ready(director, game)
 		Equipment.PLAYER_SLOT_BODY,
 		Equipment.SKIN_PRIORITY_BASE,
 		"PlayerKit2/Shirts/Dress.lua",
-		{ Player.Palette.PRIMARY_BLUE })
+		{ BaseSkeleton.Palette.PRIMARY_BLUE })
 end
 
 return SkeletonAlice
