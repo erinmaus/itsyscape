@@ -82,11 +82,6 @@ do
 		Map = M._MAP,
 		Resource = M["Anchor_Yendor"]
 	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Yendor",
-		MapObject = M["Anchor_Yendor"]
-	}
 end
 
 M["TheEmptyKing"] = ItsyScape.Resource.MapObject.Unique()
@@ -112,11 +107,6 @@ do
 		Name = "Anchor_TheEmptyKing",
 		Map = M._MAP,
 		Resource = M["Anchor_TheEmptyKing"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "TheEmptyKing_FullyRealized_Cutscene",
-		MapObject = M["Anchor_TheEmptyKing"]
 	}
 end
 

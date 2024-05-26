@@ -1019,7 +1019,7 @@ function DemoApplication:snapshotPlayerPeep()
 
 		local renderer = Renderer()
 		love.graphics.setScissor()
-		renderer:setClearColor(Color(1, 1, 1, 1))
+		renderer:setClearColor(Color(0, 0, 0, 0))
 		renderer:setCullEnabled(false)
 		renderer:setCamera(camera)
 
