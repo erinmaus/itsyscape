@@ -998,7 +998,9 @@ function DemoApplication:snapshotPlayerPeep()
 	if _DEBUG then
 		actors = {}
 		for actor in self:getGame():getStage():iterateActors() do
-			table.insert(actors, actor)
+			if self:getGameView():getActor(actor) then
+				table.insert(actors, actor)
+			end
 		end
 	else
 		actors = { self:getGame():getPlayer():getActor() }
@@ -1017,7 +1019,7 @@ function DemoApplication:snapshotPlayerPeep()
 
 		local renderer = Renderer()
 		love.graphics.setScissor()
-		renderer:setClearColor(Color(0, 0, 0, 0))
+		renderer:setClearColor(Color(1, 1, 1, 1))
 		renderer:setCullEnabled(false)
 		renderer:setCamera(camera)
 
@@ -1028,7 +1030,7 @@ function DemoApplication:snapshotPlayerPeep()
 			do
 				local min, max = actor:getBounds()
 				local offset = (max.y - min.y) / 2
-				zoom = (max.z - min.z) + math.max((max.y - min.y), (max.x - min.x)) + 4
+				zoom = gameCamera:getDistance()
 
 				local transform = view:getSceneNode():getTransform():getGlobalTransform(self:getFrameDelta())
 				position = Vector(transform:transformPoint(0, offset, 0))

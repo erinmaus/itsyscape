@@ -44,7 +44,7 @@ function NewGame:movePlayer(playerPeep)
 		text = string.format("Welcome to the Realm, %s.", playerPeep:getName())
 	} }, 6)
 
-	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) and not _DEBUG then
+	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) and _DEBUG then
 		stage:movePeep(
 			playerPeep,
 			"@Intro_Realm",
