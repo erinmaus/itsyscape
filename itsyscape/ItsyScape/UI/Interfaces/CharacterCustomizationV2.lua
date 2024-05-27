@@ -909,7 +909,7 @@ function CharacterCustomization:new(id, index, ui)
 	end
 	addSlot("Description", Callback.bind(self.openDescription, self), true)
 
-	local canCancel = self:getState().isNewGame
+	local canCancel = not self:getState().isNewGame
 
 	local width
 	if canCancel then
