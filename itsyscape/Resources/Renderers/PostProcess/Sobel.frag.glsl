@@ -68,7 +68,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 
 	alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).r;
 
-	float sobel = getDepthSobel(scape_AlphaMaskTexture, textureCoordinate);
+	float sobel = getDepthSobel(texture, textureCoordinate);
 	float outline = step(0.5, sobel);
     
     return vec4(vec3(1.0 - outline), outline);

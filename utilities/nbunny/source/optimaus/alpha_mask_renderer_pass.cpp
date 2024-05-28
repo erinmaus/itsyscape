@@ -106,14 +106,7 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 			shader->updateUniform(alpha_mask_uniform, 1);
 		}
 
-		if (scene_node->get_material().get_outline_threshold() <= 0.0)
-		{
-			graphics->setColorMask(disabledMask);
-		}
-		else
-		{
-			graphics->setColorMask(enabledMask);
-		}
+		graphics->setColorMask(disabledMask);
 
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
