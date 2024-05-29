@@ -30,7 +30,12 @@ function PropView:getGameView()
 end
 
 function PropView:getResources()
-	return self.gameView:getResourceManager()
+	if not self.resourceView or not self.resourceView:getIsPending() then
+		local resourceManager = self.gameView:getResourceManager()
+		self.resourceView = resourceManager:newView()
+	end
+
+	return self.resourceView
 end
 
 function PropView:getRoot()

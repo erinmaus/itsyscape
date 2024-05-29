@@ -16,9 +16,89 @@ local ResourceManager = Class()
 ResourceManager.DESKTOP_FRAME_DURATION = 1 / 60
 ResourceManager.MOBILE_FRAME_DURATION  = 1 / 10
 
+ResourceManager.View = Class()
+
+function ResourceManager.View:new(resourceManager)
+	self.resourceManager = resourceManager
+
+	self.pending = {}
+	self.pendingIndex = 0
+
+	self.resourceManager:queueAsyncEvent(self._poll, self)
+
+	self.isDone = false
+end
+
+function ResourceManager.View:getIsPending()
+	return self.isDone, #self.pending
+end
+
+function ResourceManager.View:_poll()
+	local currentIndex = 1
+
+	while currentIndex <= #self.pending do
+		local pending = self.pending[currentIndex]
+
+		if pending.ready then
+			if pending.resource then
+				pending.callback(pending.resource)
+			else
+				pending.callback()
+			end
+
+			currentIndex = currentIndex + 1
+		end
+
+		coroutine.yield()
+	end
+
+	self.isDone = true
+end
+
+function ResourceManager.View:queue(resourceType, filename, callback, ...)
+	self.pendingIndex = self.pendingIndex + 1
+	local index = self.pendingIndex
+
+	self.pending[index] = { callback = callback, filename = filename }
+
+	self.resourceManager:queueAsync(
+		resourceType,
+		filename,
+		function(resource)
+			self.pending[index].ready = true
+			self.pending[index].resource = resource
+		end, ...)
+end
+
+function ResourceManager.View:queueAsync(...)
+	self.resourceManager:queueAsync(...)
+end
+
+function ResourceManager.View:queueCacheRef(ref, callback, ...)
+	self:queue(ref:getResourceType(), ref:getFilename(), callback, ...)
+end
+
+function ResourceManager.View:queueAsyncCacheRef(...)
+	self.resourceManager:queueAsyncCacheRef(...)
+end
+
+function ResourceManager.View:queueEvent(callback, ...)
+	self.pendingIndex = self.pendingIndex + 1
+	local index = self.pendingIndex
+
+	self.pending[index] = { callback = Callback.bind(callback, ...), ready = true }
+end
+
+function ResourceManager.View:queueAsyncEvent(...)
+	self.resourceManager:queueAsyncEvent(...)
+end
+
 function ResourceManager:new()
 	self.resources = {}
-	self.pending = {}
+	self.loadStats = {}
+	self.pendingSyncEvents = {}
+	self.pendingAsyncEvents = {}
+	self.pendingResources = {}
 
 	if _MOBILE then
 		self.frameDuration = ResourceManager.MOBILE_FRAME_DURATION
@@ -42,22 +122,88 @@ end
 
 -- Returns true if pending resources are in the queue, false otherwise.
 function ResourceManager:getIsPending()
-	return #self.pending > 0, #self.pending
+	return #self.pendingSyncEvents > 0 or #self.pendingAsyncEvents > 0, #self.pendingSyncEvents + #self.pendingAsyncEvents
 end
 
 -- Loads async resources.
 function ResourceManager:update()
-	local breakTime = love.timer.getTime() + self.frameDuration
-	local currentTime
-
 	if self:getIsPending() and not self.wasPending then
-		self.onPending(self, #self.pending)
+		self.onPending(self, #self.pendingSyncEvents + #self.pendingAsyncEvents)
 		self.wasPending = true
 	end
 
+	do
+		local index = 1
+		while index <= #self.pendingResources do
+			local pending = self.pendingResources[index]
+			local callback = pending.callback
+			local status = coroutine.status(callback)
+
+			if status == "suspended" then
+				local success, result = coroutine.resume(callback)
+				if not success then
+					Log.warn("Error running coroutine: %s", result)
+					if _DEBUG then
+						Log.warn(debug.traceback(callback))
+					end
+				end
+
+				if coroutine.status(callback) == "dead" then
+					if pending.filename or pending.traceback then
+						Log.debug("Preloaded resource %s.", pending.filename or pending.traceback)
+					end
+
+					pending.resource = result
+					pending.done = true
+
+					table.remove(self.pendingResources, index)
+				else
+					index = index + 1
+				end
+			end
+		end
+	end
+
+	local currentTime = love.timer.getTime()
+	local pendingAsyncEventBreakTime = currentTime + self.frameDuration
+
+	do
+		local index = 1
+		while index <= #self.pendingAsyncEvents and currentTime < pendingAsyncEventBreakTime do
+			local pending = self.pendingAsyncEvents[index]
+			local callback = pending.callback
+			local status = coroutine.status(callback)
+
+			if status == "suspended" then
+				local success, result = coroutine.resume(callback)
+				if not success then
+					Log.warn("Error running coroutine: %s", result)
+					if _DEBUG then
+						Log.warn(debug.traceback(callback))
+					end
+				end
+
+				if coroutine.status(callback) == "dead" then
+					if pending.filename or pending.traceback then
+						Log.debug("Loaded async resource/event %s.", pending.filename or pending.traceback)
+					end
+
+					table.remove(self.pendingAsyncEvents, index)
+				else
+					index = index + 1
+				end
+			end
+
+			currentTime = love.timer.getTime()
+		end
+	end
+
+	currentTime = love.timer.getTime()
+	local pendingSyncEventBreakTime = currentTime + self.frameDuration
+
 	local count = 0
 	repeat
-		local top = self.pending[1]
+		local top = self.pendingSyncEvents[1]
 		if not top then
 			break
 		end
@@ -72,23 +218,30 @@ function ResourceManager:update()
 					Log.warn(debug.traceback(callback))
 				end
 			end
-		elseif status == 'dead' then
-			table.remove(self.pending, 1)
+		end
+
+		status = coroutine.status(callback)
+		if status == 'dead' then
+			if top.filename or top.traceback then
+				Log.debug("Loaded sync resource/event %s.", top.filename or top.traceback)
+			end
+
+			table.remove(self.pendingSyncEvents, 1)
 			count = count + 1
 		end
 
 		currentTime = love.timer.getTime()
-	until currentTime > breakTime
+	until currentTime > pendingSyncEventBreakTime
 
-	if currentTime and currentTime > breakTime then
-		Log.debug('Resource loading spilled %d ms.', math.floor((currentTime - breakTime) * 1000))
+	if currentTime and currentTime > pendingSyncEventBreakTime + self.frameDuration then
+		Log.info('Resource loading spilled %d ms.', math.floor((currentTime - pendingSyncEventBreakTime) * 1000))
 	end
 
 	if count > 0 then
-		self.onUpdate(count, #self.pending)
+		self.onUpdate(count, #self.pendingSyncEvents + #self.pendingAsyncEvents)
 	end
 
-	if #self.pending == 0 and self.wasPending then
+	if #self.pendingSyncEvents == 0 and #self.pendingAsyncEvents == 0 and self.wasPending then
 		self.onFinish(self)
 		self.wasPending = false
 	end
@@ -98,10 +251,20 @@ end
 function ResourceManager:_load(resourceType, filename, ...)
 	local resourcesOfType = self.resources[resourceType] or setmetatable({}, { __mode = 'v' })
 	if not resourcesOfType[filename] then
-		local resource = resourceType()
-		resource:loadFromFile(filename, self, ...)
-		resourcesOfType[filename] = resource
-		self.resources[resourceType] = resourcesOfType
+		local before = love.timer.getTime()
+		do
+			local resource = resourceType()
+			resource:loadFromFile(filename, self, ...)
+			resourcesOfType[filename] = resource
+			self.resources[resourceType] = resourcesOfType
+		end
+		local after = love.timer.getTime()
+
+		local duration = after - before
+		local stats = self.loadStats[resourceType] or {}
+		stats.totalTime = (stats.totalTime or 0) + duration
+		stats.numSamples = (stats.numSamples or 0) + 1
+		self.loadStats[resourceType] = stats
 	end
 
 	return resourcesOfType[filename]
@@ -141,18 +304,26 @@ function ResourceManager:loadCacheRef(ref, ...)
 	return self:_blockingLoad(ref:getResourceType(), ref:getFilename(), ...)
 end
 
--- Queues a resource.
-function ResourceManager:queue(resourceType, filename, callback, ...)
+function ResourceManager:_queue(resourceType, filename, async, callback, ...)
 	if not Class.isDerived(resourceType, Resource) then
 		error("expected Resource-derived type")
 	end
 
 	local load = Callback.bind(self._load, self, resourceType, filename, ...)
+	local l = function()
+		return load()
+	end
+
+	local pending = { callback = coroutine.create(l), filename = filename }
+
 	local c = function()
 		function wrappedCallback()
-			local resource = load()
+			while not pending.done do
+				coroutine.yield()
+			end
+
 			if callback then
-				callback(resource)
+				callback(pending.resource)
 			end
 		end
 
@@ -162,16 +333,34 @@ function ResourceManager:queue(resourceType, filename, callback, ...)
 		end
 	end
 
-	table.insert(self.pending, { filename = filename, callback = coroutine.create(c), traceback = _DEBUG and debug.traceback() })
+	table.insert(self.pendingResources, pending)
+
+	local e = { filename = filename, callback = coroutine.create(c), traceback = _DEBUG and debug.traceback() }
+	if async then
+		table.insert(self.pendingAsyncEvents, e)
+	else
+		table.insert(self.pendingSyncEvents, e)
+	end
 end
 
--- Queues a CacheRef.
+function ResourceManager:queueAsync(resourceType, filename, callback, ...)
+	self:_queue(resourceType, filename, true, callback, ...)
+end
+
+function ResourceManager:queue(resourceType, filename, callback, ...)
+	self:_queue(resourceType, filename, false, callback, ...)
+end
+
 function ResourceManager:queueCacheRef(ref, callback, ...)
 	self:queue(ref:getResourceType(), ref:getFilename(), callback, ...)
 end
 
+function ResourceManager:queueAsyncCacheRef(ref, callback, ...)
+	self:queueAsync(ref:getResourceType(), ref:getFilename(), callback, ...)
+end
+
 -- Queues a callback. No resource loading is performed.
-function ResourceManager:queueEvent(callback, ...)
+function ResourceManager:_queueEvent(async, callback, ...)
 	callback = Callback.bind(callback, ...)
 	local traceback = _DEBUG and debug.traceback()
 	local c = function()
@@ -184,7 +373,49 @@ function ResourceManager:queueEvent(callback, ...)
 		end
 	end
 
-	table.insert(self.pending, { callback = coroutine.create(c), traceback = _DEBUG and debug.traceback() })
+	local e = { callback = coroutine.create(c), traceback = _DEBUG and debug.traceback() }
+	if async then
+		table.insert(self.pendingAsyncEvents, e)
+	else
+		table.insert(self.pendingSyncEvents, e)
+	end
+end
+
+function ResourceManager:queueEvent(...)
+	self:_queueEvent(false, ...)
+end
+
+function ResourceManager:queueAsyncEvent(...)
+	self:_queueEvent(true, ...)
+end
+
+local function _sortStats(a, b)
+	return a.name < b.name
+end
+
+function ResourceManager:getStats()
+	local result = {}
+
+	for resourceType, resourceStats in pairs(self.loadStats) do
+		local debugInfo = resourceType._DEBUG
+		local shortName = debugInfo and debugInfo.shortName
+		if shortName then
+			table.insert(result, {
+				name = shortName,
+				mean = resourceStats.totalTime / resourceStats.numSamples,
+				total = resourceStats.totalTime,
+				count = resourceStats.numSamples
+			})
+		end
+	end
+
+	table.sort(result, _sortStats)
+
+	return result
+end
+
+function ResourceManager:newView()
+	return ResourceManager.View(self)
 end
 
 return ResourceManager

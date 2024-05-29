@@ -518,11 +518,6 @@
 			},
 		},
 		{
-			id = "path1885-2",
-			fill = "#e9ddaf",
-			clip = { "clippath-5", },
-		},
-		{
 			id = "path1871-2",
 			fill = "#e4cf9d",
 			clip = { "clippath-5", },

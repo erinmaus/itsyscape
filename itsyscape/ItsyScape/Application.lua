@@ -25,6 +25,7 @@ local RemoteGameManager = require "ItsyScape.Game.RemoteModel.RemoteGameManager"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Renderer = require "ItsyScape.Graphics.Renderer"
+local Resource = require "ItsyScape.Graphics.Resource"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local function inspectGameDB(gameDB)
@@ -232,6 +233,11 @@ function Application:dumpMemoryStats()
 		stats.min, stats.max, stats.average, stats.median,
 		stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference,
 		love.timer.getFPS())
+
+	local stats = self.gameView:getResourceManager():getStats()
+	for _, stat in ipairs(stats) do
+		Log.info("Resource stats for '%s': mean = %0.2f ms, total = %.2f ms, count = %d", stat.name, stat.mean * 1000, stat.total * 1000, stat.count)
+	end
 
 	self.previousMemoryUsage.time = currentTime
 end
@@ -479,6 +485,8 @@ function Application:processAdminEvents()
 end
 
 function Application:update(delta)
+	Resource.update()
+
 	-- Accumulator. Stores time until next tick.
 	self.time = self.time + delta
 
@@ -805,6 +813,8 @@ end
 
 function Application:quit(isError)
 	if self.multiThreaded then
+		Resource.quit()
+
 		self:getGame():quit()
 		self.remoteGameManager:pushTick()
 		self.gameView:quit()
@@ -936,6 +946,7 @@ function Application:drawDebug()
 	love.graphics.setFont(self.defaultFont)
 
 	local drawCalls = love.graphics.getStats().drawcalls
+	local textureMemory = love.graphics.getStats().texturememory
 	table.insert(self.drawCalls, drawCalls)
 	while #self.drawCalls > self.MAX_DRAW_CALLS do
 		table.remove(self.drawCalls, 1)
@@ -944,7 +955,7 @@ function Application:drawDebug()
 
 	local width = love.window.getMode()
 	r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
-	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, %03d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024)
+	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, %03d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024 + textureMemory / 1024 / 1024)
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(

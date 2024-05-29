@@ -21,6 +21,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
@@ -207,6 +208,10 @@ function CombatCortex:update(delta)
 		local target = peep:getBehavior(CombatTargetBehavior)
 		if target then
 			target = target.actor and target.actor:getPeep()
+
+			if target:hasBehavior(DisabledBehavior) then
+				target = nil
+			end
 		end
 
 		do

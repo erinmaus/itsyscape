@@ -171,6 +171,11 @@ function LocalPlayer:spawn(storage, newGame, password)
 							mapName = location:get("name")
 						end
 
+						actor:getPeep():addBehavior(DisabledBehavior)
+						Utility.UI.openInterface(actor:getPeep(), "CutsceneTransition", false, nil, function()
+							actor:getPeep():removeBehavior(DisabledBehavior)
+						end)
+
 						self.stage:movePeep(
 							actor:getPeep(),
 							mapName,
@@ -434,7 +439,18 @@ function LocalPlayer:isPendingActionMovement()
 end
 
 function LocalPlayer:tryPerformPoke()
-	local movement = self:getActor():getPeep():getBehavior(MovementBehavior)
+	local peep = self.actor:getPeep()
+
+	if not peep or peep:hasBehavior(DisabledBehavior) then
+		self.nextObject = nil
+		self.nextActionID = nil
+		self.nextActionScope = nil
+		self.lastPokeTime = nil
+
+		return
+	end
+
+	local movement = peep:getBehavior(MovementBehavior)
 	if not movement or movement.velocity:getLength() == 0 or self:isPendingActionMovement() then
 		if self.lastPokeTime and self.lastPokeTime + LocalPlayer.POKE_GRACE_PERIOD > love.timer.getTime() then
 			local obj = self.nextObject

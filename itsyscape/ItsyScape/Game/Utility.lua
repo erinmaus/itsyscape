@@ -56,6 +56,45 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 -- any resources.
 local Utility = {}
 
+function _doMove(stage, player, path, anchor, raid)
+	local instance = stage:movePeep(player, path, anchor)
+
+	if instance ~= path and raid then
+		raid:addInstance(instance)
+	end
+end
+
+function Utility.move(player, path, anchor, raid)
+	local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+
+	local move = CallbackCommand(_doMove, player:getDirector():getGameInstance():getStage(), player, path, anchor, raid)
+	local wait = WaitCommand(0.5, false)
+	local command = CompositeCommand(true, wait, move)
+
+	if not player:getCommandQueue():interrupt(command) then
+		Log.info("Couldn't interrupt command queue for player '%s'; cannot move.", player:getName())
+		return false
+	end
+
+	player:addBehavior(DisabledBehavior)
+	player:removeBehavior(TargetTileBehavior)
+
+	local movement = player:getBehavior(MovementBehavior)
+	if movement then
+		movement.velocity = Vector.ZERO
+		movement.acceleration = Vector.ZERO
+	end
+
+	Utility.UI.openInterface(player, "CutsceneTransition", false, nil, function()
+		player:removeBehavior(DisabledBehavior)
+	end)
+
+	return true
+end
+
 function Utility.save(player, saveLocation, talk, ...)
 	local director = player:getDirector()
 	if not director then
@@ -3718,6 +3757,10 @@ function Utility.Peep.Attackable:onHeal(p)
 end
 
 function Utility.Peep.Attackable:onHit(p)
+	if self:hasBehavior(DisabledBehavior) then
+		return
+	end
+
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if not combat then
 		return

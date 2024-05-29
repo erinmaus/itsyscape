@@ -30,6 +30,11 @@ void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 			continue;
 		}
 
+		if (material.get_color().a <= 0.0)
+		{
+			continue;
+		}
+
 		if (visible_scene_node->get_type() == ParticleSceneNode::type_pointer)
 		{
 			continue;

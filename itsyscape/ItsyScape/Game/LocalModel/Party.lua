@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
+local Utility = require "ItsyScape.Game.Utility"
 local PartyBehavior = require "ItsyScape.Peep.Behaviors.PartyBehavior"
 
 local Party = Class()
@@ -356,10 +357,7 @@ function Party:start(otherMap, otherAnchor)
 	Analytics:startedRaid(leader:getActor():getPeep(), self:getRaid():getResource().name)
 
 	local originalInstance = leader:getInstance()
-	local instance = self:getGame():getStage():movePeep(
-		leader:getActor():getPeep(),
-		"@" .. filename,
-		anchor)
+	local instance = self:getGame():getStage():newLocalInstance(filename)
 
 	if not instance then
 		Log.warn("Couldn't start raid for party %d because leader move failed.", self:getID())
@@ -369,12 +367,11 @@ function Party:start(otherMap, otherAnchor)
 	self:getRaid():addInstance(instance)
 
 	for _, player in self:iteratePlayers() do
+		local moveCommand
+
 		local isInSameInstance = originalInstance and originalInstance:hasPlayer(player)
-		if player ~= leader and isInSameInstance then
-			self:getGame():getStage():movePeep(
-				player:getActor():getPeep(),
-				instance,
-				anchor)
+		if isInSameInstance then
+			Utility.move(player:getActor():getPeep(), instance, anchor)
 		else
 			if player ~= leader and not isInSameInstance and originalInstance then
 				Log.info(
@@ -385,6 +382,7 @@ function Party:start(otherMap, otherAnchor)
 			end
 		end
 	end
+
 
 	Log.info(
 		"And so the party %d began the raid at instance %s (%d), lead by the brave and/or foolish player '%s' (%d)! Good luck!",
@@ -434,20 +432,12 @@ function Party:rejoin(player, otherMap, otherAnchor)
 		local instance = instances[1]
 
 		Log.info("Going to existing instance %s (%d).", instance:getFilename(), instance:getID())
-		self:getGame():getStage():movePeep(
-			player:getActor():getPeep(),
-			instance,
-			anchor)
+		Utility.move(player:getActor():getPeep(), instance, anchor)
 	else
 		Log.warn(
 			"Kinda wonky, party %d doesn't have a raid instance for map %s. That's weird.",
 			self:getID(), filename)
-
-		local instance = self:getGame():getStage():movePeep(
-			player:getActor():getPeep(),
-			filename,
-			anchor)
-		self:getRaid():addInstance(instance)
+		Utility.move(player:getActor():getPeep(), instance, anchor, self:getRaid())
 	end
 
 	Log.info(
