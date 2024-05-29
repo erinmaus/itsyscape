@@ -376,7 +376,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 		if self:getIsImmediate() then
 			loadAnimation(self.game:getResourceManager():loadCacheRef(animation))
 		else
-			self.game:getResourceManager():queueCacheRef(animation, loadAnimation)
+			self.game:getResourceManager():queueAsyncCacheRef(animation, loadAnimation)
 		end
 
 		self.animations[slot] = a
@@ -395,7 +395,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 		if self:getIsImmediate() then
 			stopAnimation()
 		else
-			self.game:getResourceManager():queueEvent(stopAnimation)
+			self.game:getResourceManager():queueAsyncEvent(stopAnimation)
 		end
 	end
 end
@@ -421,10 +421,14 @@ function ActorView:_updateSkinTexture(slot)
 	end
 end
 
-function ActorView:_doApplySkin(slotNodes)
+function ActorView:_doApplySkin(slotNodes, slot, generation)
 	local resourceManager = self.game:getResourceManager()
 
 	for i = 1, #slotNodes do
+		if self.skins[slot] and self.skins[slot].generation ~= generation then
+			return
+		end
+
 		local slot = slotNodes[i]
 		local skin = slot.definition
 
@@ -449,7 +453,7 @@ function ActorView:_doApplySkin(slotNodes)
 					slot.sceneNode:setModel(model)
 
 					if coroutine.running() then
-						--coroutine.yield()
+						coroutine.yield()
 					end
 				end
 
@@ -459,7 +463,7 @@ function ActorView:_doApplySkin(slotNodes)
 					self:_updateSkinTexture(slot)
 
 					if coroutine.running() then
-						--coroutine.yield()
+						coroutine.yield()
 					end
 				end
 
@@ -469,7 +473,7 @@ function ActorView:_doApplySkin(slotNodes)
 					slot.sceneNode:getMaterial():setShader(shaderResource)
 
 					if coroutine.running() then
-						--coroutine.yield()
+						coroutine.yield()
 					end
 				end
 
@@ -550,6 +554,10 @@ function ActorView:_doApplySkin(slotNodes)
 		end
 	end
 
+	if self.skins[slot] and self.skins[slot].generation ~= generation then
+		return
+	end
+
 	for i = 1, #slotNodes do
 		local slotNode = slotNodes[i]
 
@@ -575,14 +583,14 @@ function ActorView:_doApplySkin(slotNodes)
 	end
 end
 
-function ActorView:applySkin(slotNodes)
+function ActorView:applySkin(slot, slotNodes)
 	local copySlotNodes = {}
 	for _, slotNode in ipairs(slotNodes) do
 		table.insert(copySlotNodes, slotNode)
 	end
 
 	local resourceManager = self.game:getResourceManager()
-	resourceManager:queueEvent(self._doApplySkin, self, copySlotNodes)
+	resourceManager:queueAsyncEvent(self._doApplySkin, self, copySlotNodes, slot, slotNodes.generation)
 end
 
 function ActorView:transmogrify(body)
@@ -591,11 +599,11 @@ function ActorView:transmogrify(body)
 	self.animatable:_newTransforms()
 	self.localTransforms = self.body:getSkeleton():createTransforms()
 
-	for _, slotNodes in pairs(self.skins) do
+	for slot, slotNodes in pairs(self.skins) do
 		if self:getIsImmediate() then
-			self:_doApplySkin(slotNodes)
+			self:_doApplySkin(slotNodes, slot, slotNodes.generation)
 		else
-			self:applySkin(slotNodes)
+			self:applySkin(slot, slotNodes)
 		end
 	end
 end
@@ -617,7 +625,7 @@ function ActorView:changeSkin(slot, priority, skin, config)
 		return
 	end
 
-	local slotNodes = self.skins[slot] or {}
+	local slotNodes = self.skins[slot] or { generation = 0 }
 
 	local oldSkinSlotNode
 	for i = 1, #slotNodes do
@@ -641,30 +649,18 @@ function ActorView:changeSkin(slot, priority, skin, config)
 		table.sort(slotNodes, function(a, b) return a.priority < b.priority end)
 	end
 
+	slotNodes.generation = slotNodes.generation + 1
 	if self:getIsImmediate() then
-		self:_doApplySkin(slotNodes)
+		self:_doApplySkin(slotNodes, slot, slotNodes.generation)
 	else
-		self:applySkin(slotNodes)
+		self:applySkin(slot, slotNodes, slotNodes.generation)
 	end
+
+	if oldSkinSlotNode and oldSkinSlotNode.sceneNode then
+		oldSkinSlotNode.sceneNode:setParent(nil)
+	end
+
 	self.skins[slot] = slotNodes
-
-	if oldSkinSlotNode then
-		local function unsetSkin()
-			oldSkinSlotNode.sceneNode:setParent(nil)
-
-			Log.engine(
-				"Unset skin for '%s' (%d) @ slot '%s' (%s): '%s'.",
-				self.actor:getName(), self.actor:getID(),
-				Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot),
-				oldSkinSlotNode.definition:getFilename())
-		end
-
-		if self:getIsImmediate() then
-			unsetSkin()
-		else
-			self.game:getResourceManager():queueEvent(unsetSkin)
-		end
-	end
 end
 
 function ActorView:move(position, layer, instant)

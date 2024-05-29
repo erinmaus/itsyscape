@@ -193,6 +193,8 @@ function ConfigWindow:new(id, index, ui)
 	end)
 
 	self:setSize(ConfigWindow.DEFAULT_WIDTH, ConfigWindow.DEFAULT_HEIGHT)
+
+	self:setZDepth(10000)
 end
 
 function ConfigWindow:rateSession(rating)

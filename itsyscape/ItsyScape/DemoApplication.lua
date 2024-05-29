@@ -244,9 +244,6 @@ function DemoApplication:quit(isError)
 		return true
 	end
 
-	local Resource = require "ItsyScape.Graphics.Resource"
-	Resource.quit()
-
 	self.patchNotesServiceInputChannel:push({ type = "quit" })
 
 	Application.quit(self, isError)

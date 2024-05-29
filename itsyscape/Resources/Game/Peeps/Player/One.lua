@@ -614,8 +614,7 @@ function One:onActionPerformed(e)
 	local combatStatus = self:getBehavior(CombatStatusBehavior)
 	if (self.deadTimer > 0 and self.deadTimer ~= math.huge) or
 	   (self.rezzTimer > 0 and self.rezzTimer ~= math.huge) or
-	   (combatStatus and combatStatus.dead) or
-	   self:hasBehavior(DisabledBehavior)
+	   (combatStatus and combatStatus.dead)
 	then
 		self:interrupt(true)
 	end

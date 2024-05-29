@@ -25,7 +25,7 @@ while true do
 				end
 
 				local s = love.filesystem.read(request.filename)
-				output:push(s or "")
+				output:push({ id = request.id, value = s or "" })
 			elseif request.type == 'lua' then
 				if not love.filesystem.getInfo(request.filename) then
 					Log.warn("Filename '%s' not found!", request.filename)
@@ -36,11 +36,11 @@ while true do
 					local cacheFilename = request.filename .. ".cache"
 					local hasCache = love.filesystem.getInfo(cacheFilename)
 					if hasCache then
-						l = { table = love.filesystem.read(cacheFilename) }
+						l = { id = request.id, table = love.filesystem.read(cacheFilename) }
 					else
 						local file = love.filesystem.read(request.filename)
 						s, e = loadstring("return " .. (file or "nil"))
-						l = { table = buffer.encode(assert(setfenv(s, {}))() or {}) }
+						l = { id = request.id, table = buffer.encode(assert(setfenv(s, {}))() or {}) }
 					end
 				end
 

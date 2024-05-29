@@ -178,17 +178,13 @@ function GameView:attach(game)
 	stage.onPropRemoved:register(self._onPropRemoved)
 
 	self._onDropItem = function(_, ref, item, tile, position)
-		Log.info(
-			"Dropped item '%s' (ref = %d, count = %d) at (%d, %d) on layer %d.",
-			item.id, ref, item.count, tile.i, tile.j, tile.layer)
+		Log.info("Dropped item '%s' (ref = %d, count = %d) at (%d, %d) on layer %d.", item.id, ref, item.count, tile.i, tile.j, tile.layer)
 		self:spawnItem(item, tile, position)
 	end
 	stage.onDropItem:register(self._onDropItem)
 
 	self._onTakeItem = function(_, ref, item)
-		Log.info(
-			"Item '%s' (ref = %d, count = %d) taken.",
-			item.id, ref, item.count)
+		Log.info("Item '%s' (ref = %d, count = %d) taken.", item.id, ref, item.count)
 		self:poofItem(item)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
@@ -483,11 +479,13 @@ function GameView:updateGroundDecorations(m)
 			local GroundType = chunk()
 			if GroundType then
 				local ground = GroundType()
-				ground:emitAll(m.tileSet, m.map)
+				self.resourceManager:queueAsyncEvent(function()
+					ground:emitAll(m.tileSet, m.map)
 
-				local decoration = ground:getDecoration()
-				local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
-				local sceneNode = self:decorate(groupName, decoration, m.layer)
+					local decoration = ground:getDecoration()
+					local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
+					local sceneNode = self:decorate(groupName, decoration, m.layer)
+				end)
 			end
 		end
 	end
@@ -582,7 +580,7 @@ function GameView:updateMap(map, layer)
 				local node = MapMeshSceneNode()
 				node:setParent(m.node)
 				table.insert(m.parts, node)
-				self.resourceManager:queueEvent(function()
+				self.resourceManager:queueAsyncEvent(function()
 					node:fromMap(
 						m.map,
 						m.tileSet,
@@ -603,7 +601,7 @@ function GameView:updateMap(map, layer)
 
 		m.weatherMap:addMap(m.map)
 
-		self:updateGroundDecorations(m)
+		self.resourceManager:queueEvent(self.updateGroundDecorations, self, m)
 	end
 end
 
@@ -824,7 +822,7 @@ function GameView:decorate(group, decoration, layer)
 		local d = {}
 
 		local sceneNode = DecorationSceneNode()
-		self.resourceManager:queueEvent(function()
+		self.resourceManager:queueAsyncEvent(function()
 			if self.decorations[groupName] ~= d then
 				Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
 				return
