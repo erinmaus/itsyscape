@@ -234,11 +234,6 @@ function Application:dumpMemoryStats()
 		stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference,
 		love.timer.getFPS())
 
-	local stats = self.gameView:getResourceManager():getStats()
-	for _, stat in ipairs(stats) do
-		Log.info("Resource stats for '%s': mean = %0.2f ms, total = %.2f ms, count = %d", stat.name, stat.mean * 1000, stat.total * 1000, stat.count)
-	end
-
 	self.previousMemoryUsage.time = currentTime
 end
 
