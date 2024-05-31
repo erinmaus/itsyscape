@@ -1106,31 +1106,36 @@ function DemoApplication:updatePlayerMovement()
 	local left = Keybinds['PLAYER_1_MOVE_LEFT']:isDown()
 	local right = Keybinds['PLAYER_1_MOVE_RIGHT']:isDown()
 
+	local isMoving = up or down or left or right
+	if not self.wasMoving and isMoving then
+		self.wasMoving = true
+		self.initialMovementRotation = self:getCamera():getCombinedRotation()
+	else
+		self.wasMoving = isMoving
+	end
+
 	local x, z = 0, 0
 	do
 		if up then
-			z = z - 1
-		end
-
-		if down then
 			z = z + 1
 		end
 
+		if down then
+			z = z - 1
+		end
+
 		if left then
-			x = x - 1
+			x = x + 1
 		end
 
 		if right then
-			x = x + 1
+			x = x - 1
 		end
 	end
 
-	local rotation = self:getCamera():getCombinedRotation()
-
-	local beforeMovement = Vector(x, 0, z):getNormal()
-	local afterMovement = (-rotation):getNormal():transformVector(Vector(-x, 0, -z):getNormal()):getNormal()
-
-	if beforeMovement:dot(afterMovement) < 0 then
+	local rotation = self.initialMovementRotation or Quaternion.IDENTITY
+	local forward = (-rotation):getNormal():transformVector(Vector.UNIT_Z):getNormal()
+	if forward.z < 0 then
 		x = -x
 		z = -z
 	end

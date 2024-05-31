@@ -105,11 +105,6 @@ function ThirdPersonCamera:_getMirrorMatrix()
 		-2 * planeNormal.x * planeNormal.z,     -2 * planeNormal.y * planeNormal.z,     -2 * planeNormal.z * planeNormal.z + 1,    0,
 		-2 * planeNormal.x * planeD,            -2 * planeNormal.y * planeD,            -2 * planeNormal.z * planeD,               1)
 
-	print(-2 * planeNormal.x * planeNormal.x + 1, -2 * planeNormal.y * planeNormal.x,     -2 * planeNormal.z * planeNormal.x,        0)
-	print(-2 * planeNormal.x * planeNormal.y,     -2 * planeNormal.y * planeNormal.y + 1, -2 * planeNormal.z * planeNormal.y,        0)
-	print(-2 * planeNormal.x * planeNormal.z,     -2 * planeNormal.y * planeNormal.z,     -2 * planeNormal.z * planeNormal.z + 1,    0)
-	print(-2 * planeNormal.x * planeD,            -2 * planeNormal.y * planeD,            -2 * planeNormal.z * planeD,               1)
-
 	return transform
 end
 
@@ -117,26 +112,17 @@ function ThirdPersonCamera:getTransforms(projection, view)
 	projection = projection or love.math.newTransform()
 	do
 		projection:reset()
-		projection:perspective(
-			self.fieldOfView,
-			self.width / self.height,
-			self.near, self.far)
 
 		local halfTan = math.tan(self.fieldOfView / 2)
 		local aspect = self.width / self.height
 
-
 		local m = { projection:getMatrix() }
-		-- m[1] = 1 / (halfTan * aspect)
-		-- m[6] = 1 / halfTan
-		-- m[11] = -(self.far + self.near) / (self.far - self.near)
-		-- m[12] = -1
-		-- m[15] = -(2 * self.far * self.near) / (self.far - self.near)
 		m[1] = 1 / (halfTan * aspect)
 		m[6] = 1 / halfTan
 		m[11] = (self.far + self.near) / (self.far - self.near)
 		m[12] = 1
 		m[15] = -(2 * self.far * self.near) / (self.far - self.near)
+		m[16] = 0
 
 		projection:setMatrix("column", unpack(m))
 	end
@@ -146,23 +132,13 @@ function ThirdPersonCamera:getTransforms(projection, view)
 		view:reset()
 
 		local mirrorMatrix = self:_getMirrorMatrix()
-
-		local y = Quaternion.fromAxisAngle(self.up, self.verticalRotation + math.pi / 2):getNormal()
-		local x = Quaternion.fromAxisAngle(Vector.UNIT_X, -self.horizontalRotation + math.pi):getNormal()
-
-		local lookAt
-		if self.hasReflection then
-			lookAt = (x * y):getNormal()
-		else
-			lookAt = (x * y):getNormal()
-		end
-
-		local rotation = self.rotation * lookAt
+		local rotation = self:getCombinedRotation()
 
 		view:scale(self.scale:get())
 		view:translate(0, 0, self.distance)
 		view:applyQuaternion(rotation:get())
 		view:translate((-self.position):get())
+		view:apply(mirrorMatrix)
 	end
 
 	return projection, view
@@ -196,17 +172,8 @@ function ThirdPersonCamera:getVerticalRotation()
 	return self.verticalRotation
 end
 
---local HALF_PI = math.pi / 2
 function ThirdPersonCamera:setHorizontalRotation(value)
 	self.horizontalRotation = value or self.horizontalRotation
-
-	-- if self.horizontalRotation > HALF_PI then
-	-- 	self.horizontalRotation = HALF_PI - math.pi / 128
-	-- end
-
-	-- if self.horizontalRotation < -HALF_PI then
-	-- 	self.horizontalRotation = -HALF_PI + math.pi / 128
-	-- end
 end
 
 function ThirdPersonCamera:getHorizontalRotation()
@@ -218,8 +185,8 @@ function ThirdPersonCamera:getRotation()
 end
 
 function ThirdPersonCamera:getCombinedRotation()
-	local y = Quaternion.fromAxisAngle(self.up, -(self.verticalRotation - math.pi / 2)):getNormal()
-	local x = Quaternion.fromAxisAngle(Vector.UNIT_X, self.horizontalRotation):getNormal()
+	local y = Quaternion.fromAxisAngle(self.up, self.verticalRotation + math.pi / 2):getNormal()
+	local x = Quaternion.fromAxisAngle(Vector.UNIT_X, -self.horizontalRotation + math.pi):getNormal()
 	local lookAt = (x * y):getNormal()
 
 	return (lookAt * self.rotation):getNormal()
@@ -237,17 +204,8 @@ function ThirdPersonCamera:getScale()
 	return self.scale
 end
 
-local TWO_PI = math.pi * 2
 function ThirdPersonCamera:setVerticalRotation(value)
 	self.verticalRotation = value or self.verticalRotation
-
-	-- while self.verticalRotation >= TWO_PI do
-	-- 	self.verticalRotation = self.verticalRotation - TWO_PI
-	-- end
-
-	-- while self.verticalRotation < 0 do
-	-- 	self.verticalRotation = self.verticalRotation + TWO_PI
-	-- end
 end
 
 function ThirdPersonCamera:getNear()
@@ -285,10 +243,7 @@ function ThirdPersonCamera:getUp()
 end
 
 function ThirdPersonCamera:getForward()
-	local y = Quaternion.fromAxisAngle(self.up, (self.verticalRotation - math.pi / 2)):getNormal()
-	local x = Quaternion.fromAxisAngle(Vector.UNIT_X, self.horizontalRotation):getNormal()
-	local rotation = x * y * self.rotation
-
+	local rotation = self:getCombinedRotation()
 	return rotation:transformVector(Vector.UNIT_Z):getNormal()
 end
 
@@ -306,11 +261,11 @@ function ThirdPersonCamera:getStrafeForward()
 end
 
 function ThirdPersonCamera:getLeft()
-	return self.up:cross(self:getForward())
+	return self.up:cross(self:getForward()):getNormal()
 end
 
 function ThirdPersonCamera:getStrafeLeft()
-	return self.up:cross(self:getStrafeForward())
+	return self.up:cross(self:getStrafeForward()):getNormal()
 end
 
 function ThirdPersonCamera:getPosition()
@@ -330,6 +285,24 @@ function ThirdPersonCamera:apply()
 
 	love.graphics.projection(projection)
 	love.graphics.replaceTransform(view)
+end
+
+function ThirdPersonCamera:mirror(parentCamera, rootPosition, rootRotation, mirrorNormal)
+	local eyeNormal = parentCamera:getForward()
+	local transformedMirrorNormal = rootRotation:getNormal():transformVector(mirrorNormal):getNormal()
+	local clipPlaneNormal = rootRotation:getNormal():transformVector(-mirrorNormal):getNormal()
+	local reflectionNormal = eyeNormal:reflect(transformedMirrorNormal):getNormal()
+
+	self:setPosition(rootPosition)
+	self:setFieldOfView(parentCamera:getFieldOfView())
+	self:setNear(parentCamera:getNear())
+	self:setFar(parentCamera:getFar())
+	self:setVerticalRotation(parentCamera:getVerticalRotation())
+	self:setHorizontalRotation(parentCamera:getHorizontalRotation())
+	self:setRotation(parentCamera:getRotation())
+	self:setScale(parentCamera:getScale())
+	self:setMirrorPlane(transformedMirrorNormal, rootPosition)
+	self:setClipPlane(clipPlaneNormal, rootPosition + clipPlaneNormal)
 end
 
 return ThirdPersonCamera
