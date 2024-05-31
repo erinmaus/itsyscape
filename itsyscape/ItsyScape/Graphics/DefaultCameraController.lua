@@ -256,6 +256,9 @@ function DefaultCameraController:_rotate(dx, dy)
 			DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
 	end
 
+	angle1 = angle1 % (math.pi * 2)
+	angle2 = angle2 % (math.pi * 2)
+
 	self:getCamera():setVerticalRotation(
 		DefaultCameraController.CAMERA_VERTICAL_ROTATION + angle1)
 	self:getCamera():setHorizontalRotation(
