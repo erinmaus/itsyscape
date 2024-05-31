@@ -14,6 +14,7 @@
 #define NBUNNY_OPTIMAUS_SCENE_HPP
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <vector>
 #include "nbunny/nbunny.hpp"
@@ -206,6 +207,9 @@ namespace nbunny
 		glm::vec3 eye_position = glm::vec3(0.0f);
 		glm::vec3 target_position = glm::vec3(0.0f);
 
+		glm::vec3 bounding_sphere_position = glm::vec3(0.0f);
+		float bounding_sphere_radius = std::numeric_limits<float>::infinity();
+
 		glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 
 		bool is_cull_enabled = true;
@@ -215,6 +219,9 @@ namespace nbunny
 
 		static const int NUM_POINTS = 8;
 		mutable glm::vec3 minFrustum, maxFrustum;
+
+		glm::vec4 clip_plane = glm::vec4(0.0);
+		bool is_clip_plane_enabled = false;
 
 		mutable bool is_dirty = true;
 
@@ -247,6 +254,18 @@ namespace nbunny
 		void move(
 			const glm::vec3& eye_position,
 			const glm::vec3& target_position);
+		
+		void set_bounding_sphere_position(const glm::vec3& value);
+		const glm::vec3& get_bounding_sphere_position() const;
+
+		void set_bounding_sphere_radius(float distance);
+		float get_bounding_sphere_radius() const;
+
+		void set_clip_plane(const glm::vec4& value);
+		const glm::vec4& get_clip_plane() const;
+
+		void set_is_clip_plane_enabled(bool value);
+		bool get_is_clip_plane_enabled() const;
 
 		void rotate(const glm::quat& rotation);
 

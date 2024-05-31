@@ -719,9 +719,82 @@ void nbunny::Camera::move(const glm::vec3& eye_position, const glm::vec3& target
 	this->target_position = target_position;
 }
 
+void nbunny::Camera::set_bounding_sphere_position(const glm::vec3& value)
+{
+	bounding_sphere_position = value;
+}
+
+const glm::vec3& nbunny::Camera::get_bounding_sphere_position() const
+{
+	return bounding_sphere_position;
+}
+
+void nbunny::Camera::set_bounding_sphere_radius(float value)
+{
+	bounding_sphere_radius = value;
+}
+
+float nbunny::Camera::get_bounding_sphere_radius() const
+{
+	return bounding_sphere_radius;
+}
+
+void nbunny::Camera::set_clip_plane(const glm::vec4& value)
+{
+	clip_plane = value;
+}
+
+const glm::vec4& nbunny::Camera::get_clip_plane() const
+{
+	return clip_plane;
+}
+
+void nbunny::Camera::set_is_clip_plane_enabled(bool value)
+{
+	is_clip_plane_enabled = value;
+}
+
+bool nbunny::Camera::get_is_clip_plane_enabled() const
+{
+	return is_clip_plane_enabled;
+}
+
 void nbunny::Camera::rotate(const glm::quat& rotation)
 {
 	this->rotation = rotation;
+}
+
+static float get_square_axis_difference(float value, float min, float max)
+{
+	float difference = 0.0;
+
+	if (value < min)
+	{
+		difference = value - min;
+	}
+	else if (value > max)
+	{
+		difference = value - max;
+	}
+
+	return difference * difference;
+}
+
+bool is_node_intersecting_sphere(const glm::vec3& min, const glm::vec3& max, const glm::vec3& position, float radius)
+{
+	if (radius == std::numeric_limits<float>::infinity())
+	{
+		return true;
+	}
+
+	float radius_squared = radius * radius;
+	float min_distance = 0.0;
+
+	min_distance += get_square_axis_difference(position.x, min.x, max.x);
+	min_distance += get_square_axis_difference(position.z, min.z, max.z);
+	min_distance += get_square_axis_difference(position.z, min.z, max.z);
+
+	return min_distance <= radius_squared;
 }
 
 bool nbunny::Camera::inside(const SceneNode& node, float delta) const
@@ -750,6 +823,11 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 		auto p = glm::vec3(transform * glm::vec4(corners[i], 1.0f));
 		min = glm::min(min, p);
 		max = glm::max(max, p);
+	}
+
+	if (!is_node_intersecting_sphere(min, max, bounding_sphere_position, bounding_sphere_radius))
+	{
+		return false;
 	}
 
 	compute_planes();
@@ -1362,6 +1440,42 @@ static int nbunny_camera_move_eye(lua_State* L)
 	return 0;
 }
 
+static int nbunny_camera_update_bounding_sphere(lua_State* L)
+{
+	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+	float radius = (float)luaL_checknumber(L, 5);
+
+	camera->set_bounding_sphere_position(glm::vec3(x, y, z));
+	camera->set_bounding_sphere_radius(radius);
+
+	return 0;
+}
+
+static int nbunny_camera_set_clip_plane(lua_State* L)
+{
+	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+	float w = (float)luaL_checknumber(L, 5);
+
+	camera->set_clip_plane(glm::vec4(x, y, z, w));
+	camera->set_is_clip_plane_enabled(true);
+
+	return 0;
+}
+
+static int nbunny_camera_unset_clip_plane(lua_State* L)
+{
+	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	camera->set_is_clip_plane_enabled(false);
+
+	return 0;
+}
+
 static int nbunny_camera_rotate(lua_State* L)
 {
 	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
@@ -1386,6 +1500,9 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 		"getProjection", &nbunny_camera_get_projection,
 		"update", &nbunny_camera_update,
 		"moveTarget", &nbunny_camera_move_target,
+		"updateBoundingSphere", &nbunny_camera_update_bounding_sphere,
+		"setClipPlane", &nbunny_camera_set_clip_plane,
+		"unsetClipPlane", &nbunny_camera_unset_clip_plane,
 		"moveEye", &nbunny_camera_move_eye,
 		"rotate", &nbunny_camera_rotate,
 		"inside", &nbunny::Camera::inside);

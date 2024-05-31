@@ -15,6 +15,7 @@
 #include "modules/timer/Timer.h"
 #include "modules/filesystem/Filesystem.h"
 #include "nbunny/optimaus/renderer.hpp"
+#include "modules/graphics/opengl/OpenGL.h"
 
 nbunny::Renderer::Renderer(int reference) :
 	reference(reference), camera(&default_camera)
@@ -104,6 +105,8 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	}
 
 	current_renderer_pass_id = RENDERER_PASS_NONE;
+
+	glad::glDisable(GL_CLIP_DISTANCE0);
 }
 
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
@@ -152,6 +155,27 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 			std::memcpy(projection_matrix_uniform->floats, glm::value_ptr(projection), sizeof(glm::mat4));
 			shader->updateUniform(projection_matrix_uniform, 1);
 		}
+
+		if (camera->get_is_clip_plane_enabled())
+		{
+			glad::glEnable(GL_CLIP_DISTANCE0);
+
+			auto clip_plane = camera->get_clip_plane();
+			auto clip_plane_uniform = shader->getUniformInfo("scape_ClipPlane");
+			if (clip_plane_uniform)
+			{
+				std::memcpy(clip_plane_uniform->floats, glm::value_ptr(clip_plane), sizeof(glm::vec4));
+				shader->updateUniform(clip_plane_uniform, 1);
+			}
+		}
+		else
+		{
+			glad::glDisable(GL_CLIP_DISTANCE0);
+		}
+	}
+	else
+	{
+		glad::glDisable(GL_CLIP_DISTANCE0);
 	}
 
 	if (!node.is_base_type())
@@ -228,8 +252,8 @@ void nbunny::RendererPass::load_builtin_shader(
 
 	get_renderer()->get_shader_cache().register_renderer_pass(
 		get_renderer_pass_id(),
-		vertex_source,
-		pixel_source);
+		"#pragma language glsl3\n" + vertex_source,
+		"#pragma language glsl3\n" + pixel_source);
 }
 
 love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, const SceneNode& node)

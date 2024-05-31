@@ -428,10 +428,22 @@ function Renderer:draw(scene, delta, width, height)
 	local projection, view = self.camera:getTransforms()
 	local eye, target = self.camera:getEye(), self.camera:getPosition()
 	local rotation = self.camera:getCombinedRotation()
+	local boundingSpherePosition, boundingSphereRadius = self.camera:getBoundingSphere()
+	local isClipPlaneEnabled, clipPlaneNormal, clipPlanePosition = self.camera:getClipPlane()
+	if isClipPlaneEnabled then
+		local normal = clipPlaneNormal:getNormal()
+		local d = -normal:dot(clipPlanePosition)
+
+		self._renderer:getCamera():setClipPlane(normal.x, normal.y, normal.z, d)
+	else
+		self._renderer:getCamera():unsetClipPlane()
+	end
+
 	self._renderer:getCamera():update(view, projection)
 	self._renderer:getCamera():moveEye(eye:get())
 	self._renderer:getCamera():moveTarget(target:get())
 	self._renderer:getCamera():rotate(rotation:get())
+	self._renderer:getCamera():updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
 	self._renderer:draw(scene:getHandle(), delta, width, height)
 	self:_drawOutlines(width, height)
 end

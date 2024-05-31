@@ -13,18 +13,18 @@ const mat3 G[9] = mat3[](
 	1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 )
 );
 
-float getDepthSobel(sampler2D texture, vec2 textureCoordinate)
+float getDepthSobel(sampler2D image, vec2 textureCoordinate)
 {
 	mat3 I;
 	float cnv[9];
 
-	float center = Texel(texture, textureCoordinate).r;
+	float center = Texel(image, textureCoordinate).r;
 
 	for (int x = 0; x < 3; x += 1)
 	{
 		for (int y = 0; y < 3; y += 1)
 		{
-			float sample = Texel(texture, textureCoordinate + vec2(float(x - 1), float(y - 1)) * scape_TexelSize).r;
+			float sample = Texel(image, textureCoordinate + vec2(float(x - 1), float(y - 1)) * scape_TexelSize).r;
 			I[x][y] = abs(sample - center);
 			//I[x][y] = sample;
 		}
@@ -42,7 +42,7 @@ float getDepthSobel(sampler2D texture, vec2 textureCoordinate)
 	return sqrt(M / max(S, 0.001));
 }
 
-float getMinAlpha(Image texture, vec2 textureCoordinate)
+float getMinAlpha(Image image, vec2 textureCoordinate)
 {
 	float minAlpha = 1.0;
 
@@ -50,7 +50,7 @@ float getMinAlpha(Image texture, vec2 textureCoordinate)
 	{
 		for (float y = -1.0; y <= 1; y += 1.0)
 		{
-			float alpha = Texel(texture, textureCoordinate + vec2(x, y) * scape_TexelSize).r;
+			float alpha = Texel(image, textureCoordinate + vec2(x, y) * scape_TexelSize).r;
 			minAlpha = min(alpha, minAlpha);
 		}
 	}
@@ -58,7 +58,7 @@ float getMinAlpha(Image texture, vec2 textureCoordinate)
 	return minAlpha;
 }
 
-vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
+vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
 	float alpha = getMinAlpha(scape_AlphaMaskTexture, textureCoordinate);
 	if (alpha >= 1.0)
@@ -68,7 +68,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 
 	alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).r;
 
-	float sobel = getDepthSobel(texture, textureCoordinate);
+	float sobel = getDepthSobel(image, textureCoordinate);
 	float outline = step(0.5, sobel);
     
     return vec4(vec3(1.0 - outline), outline);

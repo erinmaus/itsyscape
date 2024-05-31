@@ -22,8 +22,8 @@ ShaderResource.DEFAULT   = ShaderResource.COMPOSITE
 
 ShaderResource.Source = Class()
 function ShaderResource.Source:new(pixel, vertex)
-	self.pixel = pixel
-	self.vertex = vertex
+	self.pixel = pixel and ("#pragma language glsl3\n" .. pixel) or ""
+	self.vertex = vertex and ("#pragma language glsl3\n" .. vertex) or ""
 end
 
 function ShaderResource.Source:getSource()

@@ -20,9 +20,9 @@ float restoreDepth(float zLinear)
 	return z;
 }
 
-vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
+vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
-	vec4 outlineSample = Texel(texture, textureCoordinate);
+	vec4 outlineSample = Texel(image, textureCoordinate);
 	float depth = linearDepth(Texel(scape_DepthTexture, textureCoordinate).r);
 
 	if (outlineSample.r >= SCAPE_BLACK_DISCARD_THRESHOLD || outlineSample.g >= SCAPE_BLACK_DISCARD_THRESHOLD || outlineSample.b >= SCAPE_BLACK_DISCARD_THRESHOLD)

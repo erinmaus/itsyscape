@@ -18,15 +18,11 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
+local FogSceneNode = require "ItsyScape.Graphics.FogSceneNode"
 
 local MirrorView = Class(PropView)
-MirrorView.WIDTH = 128
-MirrorView.HEIGHT = 256
-
-MirrorView.Camera = Class(ThirdPersonCamera)
-function MirrorView.Camera:new()
-	ThirdPersonCamera.new(self)
-end
+MirrorView.WIDTH = 256
+MirrorView.HEIGHT = 512
 
 function MirrorView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -40,7 +36,12 @@ function MirrorView:load()
 
 	local renderer = Renderer(true)
 	self.renderer = renderer
-	self.camera = MirrorView.Camera()
+	self.camera = ThirdPersonCamera()
+	self.fog = FogSceneNode()
+	self.fog:setNearDistance(2)
+	self.fog:setFarDistance(5)
+	self.fog:setColor(Color(0))
+	self.fog:setFollowMode(FogSceneNode.FOLLOW_MODE_TARGET)
 
 	resources:queue(
 		StaticMeshResource,
@@ -82,6 +83,10 @@ function MirrorView:load()
 				texture:setFilter('linear', 'linear')
 				shader:send("scape_ReflectionTexture", texture)
 			end
+
+			if shader:hasUniform("scape_TextureSize") then
+				shader:send("scape_TextureSize", { love.graphics.getWidth(), love.graphics.getHeight() })
+			end
 		end)
 
 		resources:queue(
@@ -93,8 +98,29 @@ function MirrorView:load()
 	end)
 end
 
-function MirrorView:tick()
-	PropView.tick(self)
+function MirrorView:getIsStatic()
+	return false
+end
+
+local function getSignFromPoints(a, b, c, bias)
+	local result = ((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x))
+
+	-- This bias prevents 'jittering' when result is close to zero.
+	-- Otherwise, the ship will jitter between +/-.
+	local sign
+	if result > 0 + (bias or 0) then
+		sign = 1
+	elseif result < 0 - (bias or 0) then
+		sign = -1
+	else
+		sign = 0
+	end
+
+	return sign
+end
+
+function MirrorView:update(delta)
+	PropView.update(self, delta)
 
 	local gameView = self:getGameView()
 
@@ -104,30 +130,109 @@ function MirrorView:tick()
 	local selfCamera = self.camera
 
 	local rootTransform = self:getRoot():getTransform()
-	local rootPosition = Vector(rootTransform:getGlobalTransform():transformPoint(0, 0, 0))
-	local rootRotation = rootTransform:getLocalRotation()
-	local forwardVector = rootRotation:transformVector(Vector.UNIT_Z * 2)
-	selfCamera:setPosition(rootPosition + forwardVector + Vector.UNIT_Y)
+	--rootTransform:setLocalTranslation(self:getProp():getPosition() + Vector.UNIT_Y * 2)
+	local y = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.sin(love.timer.getTime() / math.pi) * math.rad(45))
+	--local x = Quaternion.fromAxisAngle(Vector.UNIT_X, math.sin(love.timer.getTime() / math.pi) * math.rad(22.5))
+	local x = Quaternion.fromAxisAngle(Vector.UNIT_X, math.rad(45))
+	--rootTransform:setLocalRotation(x * y)
+	--rootTransform:setLocalRotation(x)
+	--rootTransform:setLocalRotation(x)
 
+	local rootPosition = Vector(rootTransform:getGlobalTransform():transformPoint(0, 1.5, 0))
+	local rootRotation = rootTransform:getLocalRotation()
+	local width = MirrorView.WIDTH
+	local height = MirrorView.HEIGHT
+	--local eyeNormal = (parentCamera:getForward() - rootPosition):getNormal()
+	--local eyeNormal = ((parentCamera:getEye() - rootPosition) * Vector.PLANE_XZ):getNormal()
+	--local eyeNormal = (parentCamera:getForward() * Vector.PLANE_XZ):getNormal()
+	local eyeNormal = parentCamera:getForward()
+	local yAxisAngle = 2 * math.acos(Quaternion(0, rootRotation.y, 0, rootRotation.w):getNormal().w)
+	local xAxisAngle = 2 * math.acos(Quaternion(rootRotation.x, 0, 0, rootRotation.w):getNormal().w)
+	-- local mirrorNormal = eyeNormal:reflect(-Vector.UNIT_Y):getNormal()
+	-- local mirrorYAxis = rootRotation:transformVector(Vector.UNIT_Y):getNormal()
+	-- local mirrorYAngle = math.acos(mirrorYAxis:dot(Vector.UNIT_Y))
+	-- local mirrorXAxis = rootRotation:transformVector(Vector.UNIT_X):getNormal()
+	-- local mirrorXAngle = math.acos(mirrorXAxis:dot(Vector.UNIT_X))
+	-- local mirrorZAxis = rootRotation:transformVector(-Vector.UNIT_Z):getNormal()
+	-- print(">>> mirror z axis", mirrorZAxis:get())
+	-- local mirrorYSign = getSignFromPoints(mirrorYAxis, Vector.ZERO, mirrorZAxis)
+	-- local mirrorXSign = getSignFromPoints(mirrorXAxis, Vector.ZERO, mirrorZAxis)
+	-- --local mirrorNormal = clipPlaneNormal:reflect(parentCamera:getForward()):getNormal()
+	-- mirrorYAngle = 0
+
+	local xAxisAngle = math.atan2(2.0 * (rootRotation.y * rootRotation.z + rootRotation.w * rootRotation.x) , rootRotation.w * rootRotation.w - rootRotation.x * rootRotation.x - rootRotation.y * rootRotation.y + rootRotation.z * rootRotation.z)
+	local yAxisAngle = math.asin(-2.0 * (rootRotation.x * rootRotation.z - rootRotation.w * rootRotation.y))
+	local roll = math.atan2(2.0 * (rootRotation.x * rootRotation.y + rootRotation.w * rootRotation.z) , rootRotation.w * rootRotation.w + rootRotation.x * rootRotation.x - rootRotation.y * rootRotation.y - rootRotation.z * rootRotation.z)
+
+	--print("yaw", math.deg(yaw))
+	--print("pitch", math.deg(pitch))
+
+	-- if mirrorXSign < 0 then
+	-- 	mirrorXSign = -1
+	-- elseif mirrorXSign > 0 then
+	-- 	mirrorXSign = 1
+	-- end
+
+	-- if mirrorYSign < 0 then
+	-- 	mirrorYSign = -1
+	-- elseif mirrorYSign > 0 then
+	-- 	mirrorYSign = 1
+	-- end
+
+	-- mirrorYAngle = mirrorYAngle * mirrorYSign
+	-- mirrorXAngle = mirrorXAngle * mirrorXSign
+
+
+	--local clipPlaneYRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, -mirrorYAngle)
+	--local clipPlaneXRotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -mirrorXAngle)
+	--local clipPlaneRotation = rootRotation * clipPlaneXRotation * clipPlaneYRotation
+	local clipPlaneNormal = rootRotation:transformVector(-Vector.UNIT_Z):getNormal()
+
+	print(">>> y axis angle", math.deg(yAxisAngle))
+	print(">>> x axis angle", math.deg(xAxisAngle))
+	print(">>> z axis angle", math.deg(roll))
+
+	print(">>> clipPlaneNormal", clipPlaneNormal:get())
+	--print(">>> mirrorNormal", mirrorNormal:get())
+
+	selfCamera:setPosition(rootPosition)
+	--selfCamera:setPosition(:getPosition())
+	--selfCamera:setPosition(parentCamera:getPosition())
 	selfCamera:setFieldOfView(parentCamera:getFieldOfView())
 	selfCamera:setNear(parentCamera:getNear())
 	selfCamera:setFar(parentCamera:getFar())
-	selfCamera:setHorizontalRotation(0)
-	selfCamera:setVerticalRotation(math.pi / 2)
-	selfCamera:setDistance(5)
-	selfCamera:setRotation((rootRotation * Quaternion.X_180 * Quaternion.Y_180):getNormal())
-	selfCamera:setWidth(MirrorView.WIDTH)
-	selfCamera:setHeight(MirrorView.HEIGHT)
+	--selfCamera:setVerticalRotation(math.pi / 2)
+	--selfCamera:setHorizontalRotation(0)
+	--selfCamera:setVerticalRotation(parentCamera:getVerticalRotation() )
+	--selfCamera:setHorizontalRotation(parentCamera:getHorizontalRotation())
+	selfCamera:setVerticalRotation(parentCamera:getVerticalRotation() + yAxisAngle)
+	--selfCamera:setHorizontalRotation((parentCamera:getHorizontalRotation() + xAxisAngle) % (math.pi / 2))
+	selfCamera:setHorizontalRotation(parentCamera:getHorizontalRotation() + xAxisAngle)
+	selfCamera:setDistance(-10)
+	--selfCamera:setRotation(rootRotation:getNormal())
+	selfCamera:setRotation(parentCamera:getRotation())
+	--selfCamera:setRotation(Quaternion.lookAt(clipPlaneNormal, Vector.UNIT_Z, Vector.UNIT_Z):getNormal())
+	selfCamera:setWidth(width)
+	selfCamera:setHeight(height)
+	selfCamera:setScale(Vector(-1, 1, -1))
+	--selfCamera:setClipPlane(clipPlaneNormal, rootPosition)
+	--parentCamera:setPosition(rootPosition)
 
 	do
 		if self.mirrorNode then self.mirrorNode:setParent(nil) end
 		if self.reflectionNode then self.reflectionNode:setParent(nil) end
 
+		local scene = gameView:getScene()
+		--self.fog:setParent(scene)
+
 		love.graphics.push('all')
 		love.graphics.setScissor()
+		love.graphics.setFrontFaceWinding("ccw")
 		selfRenderer:setCamera(selfCamera)
-		--selfRenderer:draw(gameView:getScene(), 0, MirrorView.WIDTH, MirrorView.HEIGHT)
+		selfRenderer:draw(gameView:getScene(), 0, width, height)
 		love.graphics.pop()
+
+		self.fog:setParent(nil)
 		
 		if self.mirrorNode then self.mirrorNode:setParent(self:getRoot()) end
 		if self.reflectionNode then self.reflectionNode:setParent(self:getRoot()) end

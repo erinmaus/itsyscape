@@ -235,7 +235,7 @@ function DefaultCameraController:mouseScroll(uiActive, x, y)
 end
 
 function DefaultCameraController:_rotate(dx, dy)
-	local angle1 = self.cameraVerticalRotationOffset + dx / 128
+	local angle1 = self.cameraVerticalRotationOffset + -dx / 128
 	local angle2 = self.cameraHorizontalRotationOffset + -dy / 128
 
 	if not _DEBUG then

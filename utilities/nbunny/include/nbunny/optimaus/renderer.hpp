@@ -13,6 +13,7 @@
 #ifndef NBUNNY_OPTIMAUS_RENDERER_HPP
 #define NBUNNY_OPTIMAUS_RENDERER_HPP
 
+#include <vector>
 #include "modules/graphics/Shader.h"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/scene.hpp"

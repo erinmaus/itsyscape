@@ -2,7 +2,7 @@ uniform vec2 scape_TextureSize;
 uniform vec2 scape_JumpDistance;
 uniform float scape_MaxDistance;
 
-void jump(Image texture, vec2 textureCoordinate, vec2 offset, inout vec3 current)
+void jump(Image image, vec2 textureCoordinate, vec2 offset, inout vec3 current)
 {
 	vec2 position = textureCoordinate + scape_JumpDistance * offset;
 	position = clamp(position, vec2(0.0), vec2(1.0));
@@ -11,7 +11,7 @@ void jump(Image texture, vec2 textureCoordinate, vec2 offset, inout vec3 current
 	// 	return;
 	// }
 
-	vec4 sample = Texel(texture, position);
+	vec4 sample = Texel(image, position);
 	if (sample.z < 0.0)
 	{
 		return;
@@ -27,7 +27,7 @@ void jump(Image texture, vec2 textureCoordinate, vec2 offset, inout vec3 current
 	}
 }
 
-vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
+vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
 	vec3 current = vec3(vec2(0.0), scape_MaxDistance);
 
@@ -35,7 +35,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	{
 		for (float y = -1.0; y <= 1.0; y += 1.0)
 		{
-			jump(texture, textureCoordinate, vec2(x, y), current);
+			jump(image, textureCoordinate, vec2(x, y), current);
 		}
 	}
 
@@ -44,6 +44,6 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 		discard;
 	}
 
-	//return vec4(current.rg, 0.0, Texel(texture, textureCoordinate).a);
+	//return vec4(current.rg, 0.0, Texel(image, textureCoordinate).a);
 	return vec4(current.xy, current.z, 1.0);
 }
