@@ -3,7 +3,7 @@ uniform sampler2D scape_NoiseTextureY;
 uniform vec2 scape_NoiseTexelSize;
 uniform float scape_OutlineTurbulence;
 
-vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
+vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
 	vec2 noise = vec2(
 		Texel(scape_NoiseTextureX, textureCoordinate).r,
@@ -11,7 +11,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	noise = (noise * vec2(2.0)) - vec2(1.0);
 	noise *= scape_OutlineTurbulence * scape_NoiseTexelSize;
 
-	vec4 sample = Texel(texture, textureCoordinate + noise);
+	vec4 sample = Texel(image, textureCoordinate + noise);
 	// if (sample.r > 27 / 255.0 || sample.r > 27 / 255.0 || sample.r > 27 / 255.0)
 	// {
 	// 	return vec4(vec3(1.0), sample.a);

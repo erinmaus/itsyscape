@@ -1,5 +1,6 @@
 #ifdef GL_ES
 precision highp float;
+#extension GL_EXT_clip_cull_distance : enable
 #endif
 
 #line 1
@@ -19,6 +20,7 @@ attribute vec2 VertexTexture;
 
 uniform mat4 scape_WorldMatrix;
 uniform mat4 scape_NormalMatrix;
+uniform vec4 scape_ClipPlane;
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
@@ -45,7 +47,10 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 		localPosition,
 		projectedPosition);
 
-	frag_Position = (scape_WorldMatrix * vec4(localPosition, 1.0)).xyz;
+	vec4 worldPosition = scape_WorldMatrix * vec4(localPosition, 1.0);
+	frag_Position = worldPosition.xyz;
+
+	gl_ClipDistance[0] = -dot(worldPosition, scape_ClipPlane);
 
 	return projectedPosition;
 }

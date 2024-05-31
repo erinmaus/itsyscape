@@ -41,7 +41,7 @@ float sharpStep(float p1, float p2, float x, float p, float s)
 	}
 }
 
-vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordinates)
+vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
 	// vec2 noise = vec2(
 	// 	Texel(scape_NoiseTextureX, textureCoordinate).r,
@@ -49,7 +49,7 @@ vec4 effect(vec4 color, Image texture, vec2 textureCoordinate, vec2 screenCoordi
 	// noise = (noise * vec2(2.0)) - vec2(1.0);
 	// noise *= scape_OutlineTurbulence * scape_NoiseTexelSize;
 
-	vec4 outlineSample = Texel(texture, textureCoordinate);
+	vec4 outlineSample = Texel(image, textureCoordinate);
 	// if (sample.r > 27 / 255.0 || sample.r > 27 / 255.0 || sample.r > 27 / 255.0)
 	// {
 	// 	return vec4(vec3(1.0), sample.a);

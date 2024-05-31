@@ -34,6 +34,15 @@ function Vector:dot(other)
 	return self.x * other.x + self.y * other.y + self.z * other.z
 end
 
+function Vector:reflect(normal)
+	local dot = self:dot(normal)
+	return self - 2.0 * normal * dot
+end
+
+function Vector:project(other)
+	return self:dot(other) / other:dot(other) * other
+end
+
 -- Returns a vector with the minimum components of both vectors.
 function Vector:min(other)
 	return Vector(
