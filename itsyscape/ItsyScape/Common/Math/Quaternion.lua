@@ -142,6 +142,14 @@ function Quaternion:transformVector(vector)
 	return Vector((normal * v * conjugate):get())
 end
 
+function Quaternion:getEulerXYZ()
+	local x = math.atan2(2.0 * (self.y * self.z + self.w * self.x) , self.w * self.w - self.x * self.x - self.y * self.y + self.z * self.z)
+	local y = math.asin(-2.0 * (self.x * self.z - self.w * self.y))
+	local z = math.atan2(2.0 * (self.x * self.y + self.w * self.z) , self.w * self.w + self.x * self.x - self.y * self.y - self.z * self.z)
+
+	return x, y, z
+end
+
 -- Adds two quaternions.
 function Metatable.__add(a, b)
 	local result = Quaternion()
