@@ -16,6 +16,8 @@ local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSc
 
 local EditorApplication = Class(Application)
 function EditorApplication:new()
+	_EDITOR = true
+
 	Application.new(self)
 
 	self.isCameraDragging = false

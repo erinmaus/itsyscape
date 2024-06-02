@@ -19,6 +19,7 @@ local ConfirmWindow = require "ItsyScape.Editor.Common.ConfirmWindow"
 local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
 local DecorationList = require "ItsyScape.Editor.Map.DecorationList"
 local DecorationPalette = require "ItsyScape.Editor.Map.DecorationPalette"
+local Gizmo = require "ItsyScape.Editor.Map.Gizmo"
 local LandscapeToolPanel = require "ItsyScape.Editor.Map.LandscapeToolPanel"
 local PropPalette = require "ItsyScape.Editor.Map.PropPalette"
 local NewMapInterface = require "ItsyScape.Editor.Map.NewMapInterface"
@@ -418,6 +419,11 @@ function MapEditorApplication:mousePress(x, y, button)
 							self.propNames[p] = name
 
 							self.lastProp = p
+
+							self.gizmo = Gizmo(
+								Gizmo.RotationAxisOperation(Vector.UNIT_X),
+								Gizmo.RotationAxisOperation(Vector.UNIT_Y),
+								Gizmo.RotationAxisOperation(Vector.UNIT_Z))
 						end
 					end
 				end
@@ -1046,13 +1052,14 @@ function MapEditorApplication:drawFlags()
 			local z = (j - 1) * map:getCellSize()
 
 			local s, t, r = projectionView:transformPoint(x, y, z)
-			s = (s + 1) / 2  * w
+			s = (s + 1) / 2 * w
 			t = (t + 1) / 2 * h
 			if r > 0 and r < 1 then
 				local tile = map:getTile(i, j)
 				for i = 1, #self.flagIcons do
 					local flag = self.flagIcons[i]
 					if tile:hasFlag(flag.name) then
+						love.graphics.setColor(1, 1, 1, 1)
 						love.graphics.draw(flag.icon, s, t, 0, 0.5, 0.5)
 						s = s + flag.icon:getWidth() * 0.5
 					end
@@ -1067,6 +1074,18 @@ function MapEditorApplication:draw(...)
 
 	if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
 		self:drawFlags()
+	end
+
+	if self.gizmo then
+		local p = self:getGameView():getProp(self.lastProp)
+		if p then
+			local min, max = self.lastProp:getBounds()
+			local sceneNode = p:getRoot()
+			local x, y = love.mouse.getPosition()
+			self.gizmo:hover(x, y, 16, self:getCamera(), sceneNode)
+			self.gizmo:update(sceneNode, max - min)
+			self.gizmo:draw(self:getCamera(), sceneNode)
+		end
 	end
 
 	do
