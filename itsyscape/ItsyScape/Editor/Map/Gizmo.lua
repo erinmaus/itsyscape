@@ -15,7 +15,7 @@ local Color = require "ItsyScape.Graphics.Color"
 
 local Gizmo = Class()
 
-Gizmo.HOVER_DISTANCE = 16
+Gizmo.DEFAULT_HOVER_DISTANCE = 16
 Gizmo.SNAP_DISTANCE  = 64
 
 Gizmo.Operation = Class()
@@ -25,6 +25,10 @@ Gizmo.Operation.MODE_ACTIVE = "active"
 
 function Gizmo.Operation:new()
 	self.lines = {}
+	self.linesConnected = true
+	self.shape = {}
+	self.shapeStart = Vector.ZERO
+	self.shapeRotate = false
 	self.color = Color(1)
 end
 
@@ -32,13 +36,13 @@ function Gizmo.Operation:setColor(color)
 	self.color = color
 end
 
-function Gizmo.Operation:move(x, y, camera, sceneNode, snap)
-	-- Nothing.
+function Gizmo.Operation:move(currentX, currentY, previousX, previousY, camera, sceneNode, snap)
+	return false
 end
 
 function Gizmo.Operation:distance(x, y, camera, sceneNode)
 	local p = Vector(x, y, 0)
-	local l = self:_getTransformedLines(camera, sceneNode)
+	local l = self:_getTransformedLines(self.lines, camera, sceneNode)
 
 	local minDistance = math.huge
 	for i = 1, #l + 2, 2 do
@@ -65,17 +69,24 @@ function Gizmo.Operation:distance(x, y, camera, sceneNode)
 	return math.sqrt(minDistance)
 end
 
-function Gizmo.Operation:setLines(lines)
+function Gizmo.Operation:setLines(connected, lines)
+	self.linesConnected = connected
 	self.lines = lines
 end
 
-function Gizmo.Operation:_getTransformedLines(camera, sceneNode)
+function Gizmo.Operation:setShape(start, rotate, shape)
+	self.shapeRotate = rotate
+	self.shapeStart = start
+	self.shape = shape
+end
+
+function Gizmo.Operation:_getTransformedLines(lines, camera, sceneNode)
 	local world = sceneNode:getTransform():getGlobalTransform()
 	local center = Vector(world:transformPoint(0, 0, 0))
 
 	local l = {}
 	do
-		for _, point in ipairs(self.lines) do
+		for _, point in ipairs(lines) do
 			local x, y = camera:project(point + center):get()
 
 			table.insert(l, x)
@@ -86,8 +97,40 @@ function Gizmo.Operation:_getTransformedLines(camera, sceneNode)
 	return l
 end
 
+function Gizmo.Operation:_getTransformedShape(shape, camera, sceneNode)
+	local world = sceneNode:getTransform():getGlobalTransform()
+	local center = Vector(world:transformPoint(0, 0, 0))
+
+	local rotation = Quaternion.IDENTITY
+	if self.shapeRotate then
+		local p1 = camera:project(center)
+		p1 = Vector(p1.x, p1.y, 0)
+
+		local p2 = camera:project(center + self.shapeStart)
+		p2 = Vector(p2.x, p2.y, 0)
+
+		local difference = p2 - p1
+		local angle = math.atan2(difference.y, difference.x)
+		rotation = Quaternion.fromAxisAngle(Vector.UNIT_Z, angle)
+	end
+
+	local l = {}
+	do
+		for _, point in ipairs(shape) do
+			local x, y = camera:project(center + self.shapeStart):get()
+			point = rotation:transformVector(point)
+
+			table.insert(l, x + point.x)
+			table.insert(l, y + point.y)
+		end
+	end
+
+	return l
+end
+
 function Gizmo.Operation:draw(camera, sceneNode, mode)
-	local l = self:_getTransformedLines(camera, sceneNode)
+	local l = self:_getTransformedLines(self.lines, camera, sceneNode)
+	local s = self:_getTransformedShape(self.shape, camera, sceneNode)
 
 	local color, lineWidth
 	do
@@ -103,14 +146,153 @@ function Gizmo.Operation:draw(camera, sceneNode, mode)
 			color = Color.fromHSL(h, s, l - 0.1)
 			lineWidth = 4
 		end
+
+		if not self.linesConnected then
+			lineWidth = 1
+		end
 	end
 
 	love.graphics.push("all")
 	love.graphics.setLineWidth(lineWidth or 2)
 	love.graphics.setLineJoin("bevel")
 	love.graphics.setColor((color or self.color):get())
-	love.graphics.line(l)
+
+	if #l >= 2 then
+		if self.linesConnected then
+			love.graphics.line(l)
+		else
+			for i = 1, #l, 4 do
+				love.graphics.line(l[i], l[i + 1], l[i + 2], l[i + 3])
+			end
+		end
+	end
+
+	if #s >= 3 then
+		love.graphics.polygon("fill", s)
+	end
+
 	love.graphics.pop()
+end
+
+Gizmo.BoundingBoxOperation = Class(Gizmo.Operation)
+
+function Gizmo.BoundingBoxOperation:new()
+	Gizmo.Operation.new(self)
+
+	self:setColor(Color(0.5))
+end
+
+function Gizmo.BoundingBoxOperation:update(sceneNode, size)
+	self:buildMesh(sceneNode, size)
+end
+
+function Gizmo.BoundingBoxOperation:buildMesh(sceneNode, size)
+	local world = sceneNode:getTransform():getGlobalTransform()
+	local center = Vector(world:transformPoint(0, 0, 0))
+
+	local halfSize = size / 2
+	local min = Vector(-halfSize.x, 0, -halfSize.z) 
+	local max = Vector(halfSize.x, size.y, halfSize.z)
+	local lines = {
+		-- Top
+		Vector(min.x, max.y, min.z), Vector(max.x, max.y, min.z),
+		Vector(max.x, max.y, min.z), Vector(max.x, max.y, max.z),
+		Vector(max.x, max.y, max.z), Vector(min.x, max.y, max.z),
+		Vector(min.x, max.y, max.z), Vector(min.x, max.y, min.z),
+
+		-- Bottom
+		Vector(min.x, min.y, min.z), Vector(max.x, min.y, min.z),
+		Vector(max.x, min.y, min.z), Vector(max.x, min.y, max.z),
+		Vector(max.x, min.y, max.z), Vector(min.x, min.y, max.z),
+		Vector(min.x, min.y, max.z), Vector(min.x, min.y, min.z),
+
+		-- Sides
+		Vector(min.x, max.y, min.z), Vector(min.x, min.y, min.z),
+		Vector(max.x, max.y, min.z), Vector(max.x, min.y, min.z),
+		Vector(max.x, max.y, max.z), Vector(max.x, min.y, max.z),
+		Vector(min.x, max.y, max.z), Vector(min.x, min.y, max.z),
+ 	}
+
+ 	self:setLines(false, lines)
+end
+
+Gizmo.TranslationAxisOperation = Class(Gizmo.Operation)
+Gizmo.TranslationAxisOperation.LENGTH = 4
+Gizmo.TranslationAxisOperation.SHAPE_SIZE = 16
+Gizmo.TranslationAxisOperation.MOVE_DISTANCE = 32
+Gizmo.TranslationAxisOperation.SNAP_DISTANCE = 0.25
+
+function Gizmo.TranslationAxisOperation:new(axis, x, y, z)
+	Gizmo.Operation.new(self)
+
+	self.axis = axis
+	self.xAxis = x or Vector.UNIT_X
+	self.yAxis = y or Vector.UNIT_Z
+
+	self:setColor(Color((self.axis:abs() * (3 / 4)):get()))
+end
+
+function Gizmo.TranslationAxisOperation:update(sceneNode, size)
+	self:buildMesh(sceneNode, size)
+end
+
+function Gizmo.TranslationAxisOperation:move(currentX, currentY, previousX, previousY, camera, sceneNode, snap)
+	local distance, axis
+	do
+		local world = sceneNode:getTransform():getGlobalTransform()
+		local center = Vector(world:transformPoint(0, 0, 0))
+		local v1 = camera:project(center)
+		local v2 = camera:project(center + self.axis * self.LENGTH)
+		local axisDirection = (v2 - v1):getNormal()
+
+		local currentPoint = Vector(currentX, currentY, 0)
+		local previousPoint = Vector(previousX, previousY, 0)
+		local movementDirection = (currentPoint - previousPoint):getNormal()
+
+		distance = (currentPoint - previousPoint):getLength() * math.sign(-movementDirection:dot(axisDirection)) / self.MOVE_DISTANCE
+
+		if self.axis:getLengthSquared() > 1 then
+			axis = -(self.xAxis * Vector(movementDirection.x) + self.yAxis * Vector(movementDirection.y))
+			distance = math.abs(distance)
+		else
+			axis = self.axis
+		end
+	end
+
+	if snap then
+		distance = math.sign(distance) * math.floor(math.abs(distance) / self.SNAP_DISTANCE) * self.SNAP_DISTANCE
+	end
+
+	if snap and math.abs(distance) == 0 then
+		return false
+	elseif snap then
+		distance = -distance
+	end
+
+	local transform = sceneNode:getTransform()
+	local translation = axis * distance
+	transform:setLocalTranslation(sceneNode:getTransform():getLocalTranslation() + translation)
+
+	return true
+end
+
+function Gizmo.TranslationAxisOperation:buildMesh(sceneNode, size)
+	local endPoint = (self.axis:getNormal()) * self.LENGTH
+
+	self:setLines(true, {
+		Vector(0),
+		endPoint
+	})
+
+	self:setShape(
+		endPoint,
+		false,
+		{
+			Vector(-0.5, -0.5, 0) * self.SHAPE_SIZE,
+			Vector(-0.5, 0.5, 0) * self.SHAPE_SIZE,
+			Vector(0.5, 0.5, 0) * self.SHAPE_SIZE,
+			Vector(0.5, -0.5, 0) * self.SHAPE_SIZE,
+		})
 end
 
 Gizmo.RotationAxisOperation = Class(Gizmo.Operation)
@@ -122,7 +304,6 @@ function Gizmo.RotationAxisOperation:new(axis)
 	Gizmo.Operation.new(self)
 
 	self.axis = axis
-
 	self:setColor(Color((self.axis:abs() * (3 / 4)):get()))
 end
 
@@ -161,7 +342,7 @@ function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previou
 	local transform = sceneNode:getTransform()
 	local axis = (-transform:getLocalRotation()):getNormal():transformVector(self.axis)
 	local rotation = Quaternion.fromAxisAngle(axis, angle)
-	sceneNode:getTransform():setLocalRotation((sceneNode:getTransform():getLocalRotation() * rotation):getNormal())
+	transform:setLocalRotation((sceneNode:getTransform():getLocalRotation() * rotation):getNormal())
 
 	return true
 end
@@ -197,14 +378,83 @@ function Gizmo.RotationAxisOperation:buildMesh(sceneNode, size)
 		table.insert(lines, point)
 	end
 
-	self:setLines(lines)
+	self:setLines(true, lines)
+end
+
+Gizmo.ScaleAxisOperation = Class(Gizmo.Operation)
+Gizmo.ScaleAxisOperation.LENGTH = 4
+Gizmo.ScaleAxisOperation.SHAPE_SIZE = 16
+Gizmo.ScaleAxisOperation.MOVE_DISTANCE = 32
+Gizmo.ScaleAxisOperation.SNAP_DISTANCE = 0.25
+
+function Gizmo.ScaleAxisOperation:new(axis)
+	Gizmo.Operation.new(self)
+
+	self.axis = axis
+	self:setColor(Color((self.axis:abs() * (3 / 4)):get()))
+end
+
+function Gizmo.ScaleAxisOperation:update(sceneNode, size)
+	self:buildMesh(sceneNode, size)
+end
+
+function Gizmo.ScaleAxisOperation:move(currentX, currentY, previousX, previousY, camera, sceneNode, snap)
+	local distance
+	do
+		local world = sceneNode:getTransform():getGlobalTransform()
+		local center = Vector(world:transformPoint(0, 0, 0))
+		local v1 = camera:project(center)
+		local v2 = camera:project(center + self.axis * self.LENGTH)
+		local axisDirection = (v2 - v1):getNormal()
+
+		local currentPoint = Vector(currentX, currentY, 0)
+		local previousPoint = Vector(previousX, previousY, 0)
+		local movementDirection = (currentPoint - previousPoint):getNormal()
+
+		distance = (currentPoint - previousPoint):getLength() * math.sign(-movementDirection:dot(axisDirection)) / self.MOVE_DISTANCE
+	end
+
+	if snap then
+		distance = math.sign(distance) * math.floor(math.abs(distance) / self.SNAP_DISTANCE) * self.SNAP_DISTANCE
+	end
+
+	if snap and math.abs(distance) == 0 then
+		return false
+	elseif snap then
+		distance = -distance
+	end
+
+	local transform = sceneNode:getTransform()
+	local translation = self.axis * distance
+	transform:setLocalScale(sceneNode:getTransform():getLocalScale() + translation)
+
+	return true
+end
+
+function Gizmo.ScaleAxisOperation:buildMesh(sceneNode, size)
+	local endPoint = (self.axis:getNormal()) * self.LENGTH
+
+	self:setLines(true, {
+		Vector(0),
+		endPoint
+	})
+
+	self:setShape(
+		endPoint,
+		true,
+		{
+			Vector(-0.5, -0.5, 0) * self.SHAPE_SIZE,
+			Vector(1, 0, 0) * self.SHAPE_SIZE,
+			Vector(-0.5, 0.5, 0) * self.SHAPE_SIZE
+		})
 end
 
 function Gizmo:new(target, ...)
 	self.target = target
 	self.operations = { ... }
 	self.operationModes = {}
-	self.isMultiAxis = false
+	self.isMultiAxis = true
+	self.hoverDistance = self.DEFAULT_HOVER_DISTANCE
 end
 
 function Gizmo:getTarget()
@@ -229,13 +479,21 @@ function Gizmo:getIsMultiAxis(value)
 	return self.isMultiAxis
 end
 
+function Gizmo:setHoverDistance(value)
+	self.hoverDistance = value or self.DEFAULT_HOVER_DISTANCE
+end
+
+function Gizmo:getHoverDistance(value)
+	return self.hoverDistance
+end
+
 function Gizmo:hover(x, y, camera, sceneNode)
 	local isGrabbed = false
 
 	if self.isMultiAxis then
 		for index, operation in ipairs(self.operations) do
 			local distance = operation:distance(x, y, camera, sceneNode)
-			if distance < self.HOVER_DISTANCE then
+			if distance < self.hoverDistance then
 				self.operationModes[index] = love.mouse.isDown(1) and Gizmo.Operation.MODE_ACTIVE or Gizmo.Operation.MODE_HOVER
 				isGrabbed = true
 			else
@@ -247,7 +505,7 @@ function Gizmo:hover(x, y, camera, sceneNode)
 		local operationIndex
 		for index, operation in ipairs(self.operations) do
 			local distance = operation:distance(x, y, camera, sceneNode)
-			if distance < minDistance and distance < self.HOVER_DISTANCE then
+			if distance < minDistance and distance < self.hoverDistance then
 				distance = minDistance
 				operationIndex = index
 			end
@@ -278,6 +536,8 @@ function Gizmo:move(currentX, currentY, previousX, previousY, camera, sceneNode,
 end
 
 function Gizmo:update(sceneNode, size)
+	size = size:max(Vector.ONE)
+
 	for _, operation in ipairs(self.operations) do
 		operation:update(sceneNode, size)
 	end

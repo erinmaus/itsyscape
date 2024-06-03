@@ -408,7 +408,7 @@ function MapEditorApplication:mousePress(x, y, button)
 						end
 					end
 				end
-			elseif self.currentTool == MapEditorApplication.TOOL_PROP then
+			elseif self.currentTool == MapEditorApplication.TOOL_PROP and not (self.gizmo and self.gizmo:getIsActive()) then
 				if not love.keyboard.isDown("lctrl") and not love.keyboard.isDown("rctrl") then
 					self.lastProp = nil
 
@@ -416,6 +416,10 @@ function MapEditorApplication:mousePress(x, y, button)
 					for prop in self:getGame():getStage():iterateProps() do
 						local ray = self:shoot(x, y)
 						local min, max = prop:getBounds()
+						local size = max - min
+						size = size:max(Vector.ONE)
+						min, max = Vector(-size.x / 2, 0, -size.y / 2) + prop:getPosition(), Vector(size.x / 2, size.y, size.x / 2) + prop:getPosition()
+
 						local s, p = ray:hitBounds(min, max)
 						if s then
 							table.insert(hits, { position = p, prop = prop })
@@ -435,7 +439,7 @@ function MapEditorApplication:mousePress(x, y, button)
 					self.lastProp = nil
 				end
 
-				if not self.lastProp and not (self.gizmo and self.gizmo:getIsActive()) then
+				if not self.lastProp then
 					local prop = self.propPalette:getCurrentProp()
 					if prop then
 						local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, 1, "::orphan")
@@ -467,6 +471,11 @@ function MapEditorApplication:mousePress(x, y, button)
 							end
 						end
 					end
+				end
+
+				if self.lastProp then
+					self.gizmo = Gizmo(self.lastProp, Gizmo.BoundingBoxOperation())
+					self.gizmo:setHoverDistance(-math.huge)
 				end
 			end
 		elseif button == 2 then
@@ -733,16 +742,20 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				elseif key == "g" then
 					self.gizmo = Gizmo(
 						self.lastProp,
-						Gizmo.RotationAxisOperation(Vector.UNIT_X),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
+						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
+					self.gizmo:setIsMultiAxis(false)
 					self.isGizmoGrabbed = false
 				elseif key == "s" then
 					self.gizmo = Gizmo(
 						self.lastProp,
-						Gizmo.RotationAxisOperation(Vector.UNIT_X),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+						Gizmo.ScaleAxisOperation(Vector.UNIT_X),
+						Gizmo.ScaleAxisOperation(Vector.UNIT_Y),
+						Gizmo.ScaleAxisOperation(Vector.UNIT_Z),
+						Gizmo.ScaleAxisOperation(Vector.ONE))
+					self.gizmo:setIsMultiAxis(false)
 					self.isGizmoGrabbed = false
 				elseif key == "del" then
 					if self.gizmo and self.gizmo:getTarget() == self.lastProp then
