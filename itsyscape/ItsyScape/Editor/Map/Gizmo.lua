@@ -286,12 +286,11 @@ function Gizmo.TranslationAxisOperation:buildMesh(sceneNode, size)
 
 	self:setShape(
 		endPoint,
-		false,
+		true,
 		{
 			Vector(-0.5, -0.5, 0) * self.SHAPE_SIZE,
-			Vector(-0.5, 0.5, 0) * self.SHAPE_SIZE,
-			Vector(0.5, 0.5, 0) * self.SHAPE_SIZE,
-			Vector(0.5, -0.5, 0) * self.SHAPE_SIZE,
+			Vector(1, 0, 0) * self.SHAPE_SIZE,
+			Vector(-0.5, 0.5, 0) * self.SHAPE_SIZE
 		})
 end
 
@@ -441,11 +440,12 @@ function Gizmo.ScaleAxisOperation:buildMesh(sceneNode, size)
 
 	self:setShape(
 		endPoint,
-		true,
+		false,
 		{
 			Vector(-0.5, -0.5, 0) * self.SHAPE_SIZE,
-			Vector(1, 0, 0) * self.SHAPE_SIZE,
-			Vector(-0.5, 0.5, 0) * self.SHAPE_SIZE
+			Vector(-0.5, 0.5, 0) * self.SHAPE_SIZE,
+			Vector(0.5, 0.5, 0) * self.SHAPE_SIZE,
+			Vector(0.5, -0.5, 0) * self.SHAPE_SIZE,
 		})
 end
 
