@@ -89,21 +89,24 @@ end
 function Gizmo.Operation:draw(camera, sceneNode, mode)
 	local l = self:_getTransformedLines(camera, sceneNode)
 
-	local color
+	local color, lineWidth
 	do
 		if mode == self.MODE_NONE then
 			color = self.color
+			lineWidth = 2
 		elseif mode == self.MODE_HOVER then
 			local h, s, l = self.color:toHSL()
 			color = Color.fromHSL(h, s, l + 0.25)
+			lineWidth = 4
 		elseif mode == self.MODE_ACTIVE then
 			local h, s, l = self.color:toHSL()
 			color = Color.fromHSL(h, s, l - 0.1)
+			lineWidth = 4
 		end
 	end
 
 	love.graphics.push("all")
-	love.graphics.setLineWidth(2)
+	love.graphics.setLineWidth(lineWidth or 2)
 	love.graphics.setLineJoin("bevel")
 	love.graphics.setColor((color or self.color):get())
 	love.graphics.line(l)
@@ -138,21 +141,21 @@ function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previou
 		local currentAngle = math.atan2(differenceCurrentY, differenceCurrentX)
 		local previousAngle = math.atan2(differencePreviousY, differencePreviousX)
 
-		if previousAngle > currentAngle then
-			angle = -(previousAngle - currentAngle)
-		else
+		if snap then
 			angle = currentAngle - previousAngle
+		else
+			angle = previousAngle - currentAngle
 		end
 	end
 
 	if snap then
-		print(">>> b4", math.deg(angle))
 		angle = math.sign(angle) * math.floor(math.abs(angle) / self.STEP_ANGLE) * self.STEP_ANGLE
-		print(">>> after", math.deg(angle))
 	end
 
 	if snap and math.abs(angle) == 0 then
 		return false
+	else
+		angle = -angle
 	end
 
 	local transform = sceneNode:getTransform()
@@ -174,7 +177,7 @@ function Gizmo.RotationAxisOperation:buildMesh(sceneNode, size)
 	end
 	size = size * 2
 	size = math.max(size:get())
-	size = size * Vector(1, 1.25, 1.5)
+	size = size + Vector(0, 1, 2)
 
 	local v
 	if self.axis == Vector.UNIT_X then
