@@ -29,6 +29,10 @@ function Vector:get()
 	return self.x, self.y, self.z
 end
 
+function Vector:abs()
+	return Vector(math.abs(self.x), math.abs(self.y), math.abs(self.z))
+end
+
 -- Calculates and returns the dot product of two vectors.
 function Vector:dot(other)
 	return self.x * other.x + self.y * other.y + self.z * other.z
