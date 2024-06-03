@@ -177,8 +177,8 @@ function EditorApplication:mouseMove(x, y, dx, dy)
 	if self.isCameraDragging then
 		local camera = self:getCamera()
 		if self.dragButton == 2 then
-			local offsetX = -dx / 32 * camera:getLeft() * Vector.UNIT_X
-			local offsetZ = dy / 32 * camera:getForward() * Vector.UNIT_Z
+			local offsetX = -dx / 32 * camera:getLeft() * Vector.PLANE_XZ
+			local offsetZ = dy / 32 * camera:getForward() * Vector.PLANE_XZ
 			local position = camera:getPosition() + offsetX + offsetZ
 			camera:setPosition(position)
 		elseif self.dragButton == 3 then

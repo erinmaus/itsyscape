@@ -356,8 +356,6 @@ function MapEditorApplication:mousePress(x, y, button)
 						if self.isGizmoGrabbed then
 							self.gizmoGrabX = x
 							self.gizmoGrabY = y
-							self.gizmoGrabDifferenceX = 0
-							self.gizmoGrabDifferenceY = 0
 						end
 					end
 				end
@@ -501,30 +499,6 @@ function MapEditorApplication:mousePress(x, y, button)
 						self:getGame():getStage():decorate(group, decoration)
 					end
 				end
-			elseif self.currentTool == MapEditorApplication.TOOL_PROP then
-				local hit
-				do
-					local hits = {}
-					for prop in self:getGame():getStage():iterateProps() do
-						local ray = self:shoot(x, y)
-						local min, max = prop:getBounds()
-						local s, p = ray:hitBounds(min, max)
-						if s then
-							table.insert(hits, { position = p, prop = prop })
-						end
-					end
-
-					local eye = self:getCamera():getEye()
-					table.sort(hits, function(a, b)
-						return (a.position - eye):getLength() < (b.position - eye):getLength()
-					end)
-
-					hit = hits[1]
-				end
-
-				if hit then
-					self:getGame():getStage():removeProp(hit.prop)
-				end
 			end
 		end
 	end
@@ -637,16 +611,9 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					self.gizmo:hover(x, y, self:getCamera(), sceneNode)
 				else
 					if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
-						self.gizmoGrabDifferenceX = self.gizmoGrabDifferenceX + dx
-						self.gizmoGrabDifferenceY = self.gizmoGrabDifferenceY + dy
-
-						print(">>> previousX", x + self.gizmoGrabDifferenceX, "y", y + self.gizmoGrabDifferenceY)
-
-						if self.gizmo:move(x, y, x + self.gizmoGrabDifferenceX, y + self.gizmoGrabDifferenceY, self:getCamera(), sceneNode, true) then
-							self.gizmoGrabDifferenceX = 0
-							self.gizmoGrabDifferenceY = 0
-
-							print("YE!P")
+						if self.gizmo:move(x, y, self.gizmoGrabX, self.gizmoGrabY, self:getCamera(), sceneNode, true) then
+							self.gizmoGrabX = x
+							self.gizmoGrabY = y
 						end
 					else
 						self.gizmo:move(x, y, x + dx, y + dy, self:getCamera(), sceneNode, false)
@@ -756,20 +723,6 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 			if self.currentTool == MapEditorApplication.TOOL_PROP and self.lastProp and self.lastProp:getPeep() then
 				if key == "r" then
-					-- local rotation = Quaternion.IDENTITY
-					-- if love.keyboard.isDown('y') then
-					-- 	rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 2)
-					-- end
-					-- if love.keyboard.isDown('x') then
-					-- 	rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi / 2)
-					-- end
-					-- if love.keyboard.isDown('z') then
-					-- 	rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 2)
-					-- end
-
-					-- local behavior = self.lastProp:getPeep():getBehavior('Rotation')
-					-- behavior.rotation = behavior.rotation * rotation
-
 					self.gizmo = Gizmo(
 						self.lastProp,
 						Gizmo.RotationAxisOperation(Vector.UNIT_X),
@@ -777,7 +730,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
 					self.gizmo:setIsMultiAxis(false)
 					self.isGizmoGrabbed = false
-				elseif key == "t" then
+				elseif key == "g" then
 					self.gizmo = Gizmo(
 						self.lastProp,
 						Gizmo.RotationAxisOperation(Vector.UNIT_X),
@@ -791,6 +744,15 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
 						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
 					self.isGizmoGrabbed = false
+				elseif key == "del" then
+					if self.gizmo and self.gizmo:getTarget() == self.lastProp then
+						self.gizmo = nil
+					end
+
+					if self.lastProp then
+						self:getGame():getStage():removeProp(self.lastProp)
+						self.lastProp = nil
+					end
 				else
 					local position = Vector.ZERO
 					if key == 'up' then
