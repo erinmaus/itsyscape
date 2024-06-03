@@ -13,6 +13,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local Utility = require "ItsyScape.Game.Utility"
+local Prop = require "ItsyScape.Game.Model.Prop"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local ConfirmWindow = require "ItsyScape.Editor.Common.ConfirmWindow"
@@ -343,6 +344,25 @@ end
 function MapEditorApplication:mousePress(x, y, button)
 	if not EditorApplication.mousePress(self, x, y, button) then
 		if button == 1 then
+			if self.gizmo then
+				local target = self.gizmo:getTarget()
+
+				if Class.isCompatibleType(target, Prop) then
+					local p = self:getGameView():getProp(target)
+					if p then
+						local min, max = target:getBounds()
+						local sceneNode = p:getRoot()
+						self.isGizmoGrabbed = self.gizmo:hover(x, y, self:getCamera(), sceneNode)
+						if self.isGizmoGrabbed then
+							self.gizmoGrabX = x
+							self.gizmoGrabY = y
+							self.gizmoGrabDifferenceX = 0
+							self.gizmoGrabDifferenceY = 0
+						end
+					end
+				end
+			end
+
 			if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
 				self:makeMotion(x, y, button)
 				self.motion:onMousePressed(self:makeMotionEvent(x, y, button))
@@ -391,39 +411,62 @@ function MapEditorApplication:mousePress(x, y, button)
 					end
 				end
 			elseif self.currentTool == MapEditorApplication.TOOL_PROP then
-				local prop = self.propPalette:getCurrentProp()
-				if prop then
-					local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, 1, "::orphan")
-					if s then
-						local motion = MapMotion(self:getGame():getStage():getMap(1))
-						motion:onMousePressed(self:makeMotionEvent(x, y, button))
+				if not love.keyboard.isDown("lctrl") and not love.keyboard.isDown("rctrl") then
+					self.lastProp = nil
 
-						local t, i, j = motion:getTile()
-						if t then
-							local y = t:getInterpolatedHeight(0.5, 0.5)
-							local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
-							local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
+					local hits = {}
+					for prop in self:getGame():getStage():iterateProps() do
+						local ray = self:shoot(x, y)
+						local min, max = prop:getBounds()
+						local s, p = ray:hitBounds(min, max)
+						if s then
+							table.insert(hits, { position = p, prop = prop })
+						end
+					end
 
-							local peep = p:getPeep()
-							local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
-							position.position = Vector(x, y, z)
+					local eye = self:getCamera():getEye()
+					table.sort(hits, function(a, b)
+						return (a.position - eye):getLength() < (b.position - eye):getLength()
+					end)
 
-							local index = 1
-							local name
-							repeat
-								name = string.format("%s%d", prop.name, index)
-								index = index + 1
-							until self.propNames[name] == nil
+					local hit = hits[1]
+					if hit then
+						self.lastProp = hit.prop
+					end
+				else
+					self.lastProp = nil
+				end
 
-							self.propNames[name] = p
-							self.propNames[p] = name
+				if not self.lastProp and not (self.gizmo and self.gizmo:getIsActive()) then
+					local prop = self.propPalette:getCurrentProp()
+					if prop then
+						local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, 1, "::orphan")
+						if s then
+							local motion = MapMotion(self:getGame():getStage():getMap(1))
+							motion:onMousePressed(self:makeMotionEvent(x, y, button))
 
-							self.lastProp = p
+							local t, i, j = motion:getTile()
+							if t then
+								local y = t:getInterpolatedHeight(0.5, 0.5)
+								local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
+								local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
 
-							self.gizmo = Gizmo(
-								Gizmo.RotationAxisOperation(Vector.UNIT_X),
-								Gizmo.RotationAxisOperation(Vector.UNIT_Y),
-								Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+								local peep = p:getPeep()
+								local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
+								position.position = Vector(x, y, z)
+
+								local index = 1
+								local name
+								repeat
+									name = string.format("%s%d", prop.name, index)
+									index = index + 1
+								until self.propNames[name] == nil
+
+								self.propNames[name] = p
+								self.propNames[p] = name
+
+								self.lastProp = p
+							end
 						end
 					end
 				end
@@ -581,6 +624,47 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		end
 	end
 
+	if self.gizmo then
+		local target = self.gizmo:getTarget()
+
+		if Class.isCompatibleType(target, Prop) then
+			local p = self:getGameView():getProp(target)
+			if p then
+				local min, max = target:getBounds()
+				local sceneNode = p:getRoot()
+
+				if not self.isGizmoGrabbed then
+					self.gizmo:hover(x, y, self:getCamera(), sceneNode)
+				else
+					if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
+						self.gizmoGrabDifferenceX = self.gizmoGrabDifferenceX + dx
+						self.gizmoGrabDifferenceY = self.gizmoGrabDifferenceY + dy
+
+						print(">>> previousX", x + self.gizmoGrabDifferenceX, "y", y + self.gizmoGrabDifferenceY)
+
+						if self.gizmo:move(x, y, x + self.gizmoGrabDifferenceX, y + self.gizmoGrabDifferenceY, self:getCamera(), sceneNode, true) then
+							self.gizmoGrabDifferenceX = 0
+							self.gizmoGrabDifferenceY = 0
+
+							print("YE!P")
+						end
+					else
+						self.gizmo:move(x, y, x + dx, y + dy, self:getCamera(), sceneNode, false)
+					end
+				end
+
+				local transform = sceneNode:getTransform()
+				local translation = transform:getLocalTranslation()
+				local rotation = transform:getLocalRotation()
+				local scale = transform:getLocalScale()
+
+				Utility.Peep.setPosition(target:getPeep(), translation)
+				Utility.Peep.setRotation(target:getPeep(), rotation)
+				Utility.Peep.setScale(target:getPeep(), scale)
+			end
+		end
+	end
+
 	local hit
 	do
 		local hits = {}
@@ -615,6 +699,8 @@ function MapEditorApplication:mouseRelease(x, y, button)
 
 		self.isDragging = false
 	end
+
+	self.isGizmoGrabbed = false
 end
 
 function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
@@ -669,20 +755,42 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 			end
 
 			if self.currentTool == MapEditorApplication.TOOL_PROP and self.lastProp and self.lastProp:getPeep() then
-				if key == 'r' then
-					local rotation = Quaternion.IDENTITY
-					if love.keyboard.isDown('y') then
-						rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 2)
-					end
-					if love.keyboard.isDown('x') then
-						rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi / 2)
-					end
-					if love.keyboard.isDown('z') then
-						rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 2)
-					end
+				if key == "r" then
+					-- local rotation = Quaternion.IDENTITY
+					-- if love.keyboard.isDown('y') then
+					-- 	rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 2)
+					-- end
+					-- if love.keyboard.isDown('x') then
+					-- 	rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi / 2)
+					-- end
+					-- if love.keyboard.isDown('z') then
+					-- 	rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 2)
+					-- end
 
-					local behavior = self.lastProp:getPeep():getBehavior('Rotation')
-					behavior.rotation = behavior.rotation * rotation
+					-- local behavior = self.lastProp:getPeep():getBehavior('Rotation')
+					-- behavior.rotation = behavior.rotation * rotation
+
+					self.gizmo = Gizmo(
+						self.lastProp,
+						Gizmo.RotationAxisOperation(Vector.UNIT_X),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+					self.gizmo:setIsMultiAxis(false)
+					self.isGizmoGrabbed = false
+				elseif key == "t" then
+					self.gizmo = Gizmo(
+						self.lastProp,
+						Gizmo.RotationAxisOperation(Vector.UNIT_X),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+					self.isGizmoGrabbed = false
+				elseif key == "s" then
+					self.gizmo = Gizmo(
+						self.lastProp,
+						Gizmo.RotationAxisOperation(Vector.UNIT_X),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+					self.isGizmoGrabbed = false
 				else
 					local position = Vector.ZERO
 					if key == 'up' then
@@ -1077,14 +1185,16 @@ function MapEditorApplication:draw(...)
 	end
 
 	if self.gizmo then
-		local p = self:getGameView():getProp(self.lastProp)
-		if p then
-			local min, max = self.lastProp:getBounds()
-			local sceneNode = p:getRoot()
-			local x, y = love.mouse.getPosition()
-			self.gizmo:hover(x, y, 16, self:getCamera(), sceneNode)
-			self.gizmo:update(sceneNode, max - min)
-			self.gizmo:draw(self:getCamera(), sceneNode)
+		local target = self.gizmo:getTarget()
+
+		if Class.isCompatibleType(target, Prop) then
+			local p = self:getGameView():getProp(target)
+			if p then
+				local min, max = target:getBounds()
+				local sceneNode = p:getRoot()
+				self.gizmo:update(sceneNode, max - min)
+				self.gizmo:draw(self:getCamera(), sceneNode)
+			end
 		end
 	end
 

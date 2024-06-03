@@ -103,6 +103,14 @@ do
 		return to * delta + from * (1 - delta)
 	end
 
+	math.sign = function(v)
+		if v < 0 then
+			return -1
+		end
+
+		return 1
+	end
+
 	local utf8 = require "utf8"
 	function utf8.sub(s, i, j)
 		local stringI = utf8.offset(s, i or 1) or #s + 1

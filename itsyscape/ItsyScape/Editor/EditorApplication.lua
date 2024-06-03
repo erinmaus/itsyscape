@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
@@ -140,14 +141,7 @@ end
 
 function EditorApplication:mousePress(x, y, button)
 	if not Application.mousePress(self, x, y, button) then
-		local isShiftDown = love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")
-		if button == 1 and isShiftDown then
-			self:probe(x, y, true)
-			return true
-		elseif button == 2 and isShiftDown then
-			self:probe(x, y, false)
-			return true
-		elseif button ~= 1 and not isShiftDown then
+		if button ~= 1 then
 			self.isCameraDragging = true
 			self.dragButton = button
 			return false
@@ -183,12 +177,12 @@ function EditorApplication:mouseMove(x, y, dx, dy)
 	if self.isCameraDragging then
 		local camera = self:getCamera()
 		if self.dragButton == 2 then
-			local offsetX = dx / 32 * camera:getStrafeLeft()
-			local offsetZ = dy / 32 * camera:getStrafeForward()
+			local offsetX = -dx / 32 * camera:getLeft() * Vector.UNIT_X
+			local offsetZ = dy / 32 * camera:getForward() * Vector.UNIT_Z
 			local position = camera:getPosition() + offsetX + offsetZ
 			camera:setPosition(position)
 		elseif self.dragButton == 3 then
-			local angle1 = dx / 128
+			local angle1 = -dx / 128
 			local angle2 = -dy / 128
 			camera:setVerticalRotation(
 				camera:getVerticalRotation() + angle1)

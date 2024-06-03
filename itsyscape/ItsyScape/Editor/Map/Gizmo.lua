@@ -15,6 +15,9 @@ local Color = require "ItsyScape.Graphics.Color"
 
 local Gizmo = Class()
 
+Gizmo.HOVER_DISTANCE = 16
+Gizmo.SNAP_DISTANCE  = 64
+
 Gizmo.Operation = Class()
 Gizmo.Operation.MODE_NONE   = "none"
 Gizmo.Operation.MODE_HOVER  = "hover"
@@ -27,6 +30,10 @@ end
 
 function Gizmo.Operation:setColor(color)
 	self.color = color
+end
+
+function Gizmo.Operation:move(x, y, camera, sceneNode, snap)
+	-- Nothing.
 end
 
 function Gizmo.Operation:distance(x, y, camera, sceneNode)
@@ -66,20 +73,10 @@ function Gizmo.Operation:_getTransformedLines(camera, sceneNode)
 	local world = sceneNode:getTransform():getGlobalTransform()
 	local center = Vector(world:transformPoint(0, 0, 0))
 
-	local projectionView
-	do
-		local p, v = camera:getTransforms()
-		projectionView = p * v
-	end
-
-	local w, h = love.window.getMode()
-
 	local l = {}
 	do
 		for _, point in ipairs(self.lines) do
-			local x, y, z = projectionView:transformPoint((point + center):get())
-			x = (x + 1) / 2 * w
-			y = (y + 1) / 2 * h
+			local x, y = camera:project(point + center):get()
 
 			table.insert(l, x)
 			table.insert(l, y)
@@ -101,7 +98,7 @@ function Gizmo.Operation:draw(camera, sceneNode, mode)
 			color = Color.fromHSL(h, s, l + 0.25)
 		elseif mode == self.MODE_ACTIVE then
 			local h, s, l = self.color:toHSL()
-			color = Color.fromHSL(h, s, l - 0.25)
+			color = Color.fromHSL(h, s, l - 0.1)
 		end
 	end
 
@@ -115,17 +112,55 @@ end
 
 Gizmo.RotationAxisOperation = Class(Gizmo.Operation)
 Gizmo.RotationAxisOperation.SEGMENTS = 32
+Gizmo.RotationAxisOperation.STEP_ANGLE = math.rad(45)
+Gizmo.RotationAxisOperation.MOVE_DISTANCE = 64
 
 function Gizmo.RotationAxisOperation:new(axis)
 	Gizmo.Operation.new(self)
 
 	self.axis = axis
 
-	self:setColor(Color((self.axis * (3 / 4)):get()))
+	self:setColor(Color((self.axis:abs() * (3 / 4)):get()))
 end
 
 function Gizmo.RotationAxisOperation:update(sceneNode, size)
 	self:buildMesh(sceneNode, size)
+end
+
+function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previousY, camera, sceneNode, snap)
+	local angle
+	do
+		local world = sceneNode:getTransform():getGlobalTransform()
+		local center = Vector(world:transformPoint(0, 0, 0))
+		local centerX, centerY = camera:project(center):get()
+		local differenceCurrentX, differenceCurrentY = centerX - currentX, centerY - currentY
+		local differencePreviousX, differencePreviousY = centerX - previousX, centerY - previousY
+		local currentAngle = math.atan2(differenceCurrentY, differenceCurrentX)
+		local previousAngle = math.atan2(differencePreviousY, differencePreviousX)
+
+		if previousAngle > currentAngle then
+			angle = -(previousAngle - currentAngle)
+		else
+			angle = currentAngle - previousAngle
+		end
+	end
+
+	if snap then
+		print(">>> b4", math.deg(angle))
+		angle = math.sign(angle) * math.floor(math.abs(angle) / self.STEP_ANGLE) * self.STEP_ANGLE
+		print(">>> after", math.deg(angle))
+	end
+
+	if snap and math.abs(angle) == 0 then
+		return false
+	end
+
+	local transform = sceneNode:getTransform()
+	local axis = (-transform:getLocalRotation()):getNormal():transformVector(self.axis)
+	local rotation = Quaternion.fromAxisAngle(axis, angle)
+	sceneNode:getTransform():setLocalRotation((sceneNode:getTransform():getLocalRotation() * rotation):getNormal())
+
+	return true
 end
 
 function Gizmo.RotationAxisOperation:buildMesh(sceneNode, size)
@@ -153,7 +188,7 @@ function Gizmo.RotationAxisOperation:buildMesh(sceneNode, size)
 		local delta = (i - 1) / (self.SEGMENTS - 1)
 		local angle = math.pi * 2 * delta
 
-		local pointRotation = rotation * Quaternion.fromAxisAngle(self.axis, angle)
+		local pointRotation = Quaternion.fromAxisAngle(self.axis, angle)
 		local point = pointRotation:transformVector(size * v)
 
 		table.insert(lines, point)
@@ -162,20 +197,81 @@ function Gizmo.RotationAxisOperation:buildMesh(sceneNode, size)
 	self:setLines(lines)
 end
 
-function Gizmo:new(...)
+function Gizmo:new(target, ...)
+	self.target = target
 	self.operations = { ... }
 	self.operationModes = {}
+	self.isMultiAxis = false
 end
 
-function Gizmo:hover(x, y, minDistance, camera, sceneNode)
-	for index, operation in ipairs(self.operations) do
-		local distance = operation:distance(x, y, camera, sceneNode)
-		if distance < minDistance then
-			self.operationModes[index] = love.mouse.isDown(1) and Gizmo.Operation.MODE_ACTIVE or Gizmo.Operation.MODE_HOVER
-		else
-			self.operationModes[index] = Gizmo.Operation.MODE_NONE
+function Gizmo:getTarget()
+	return self.target
+end
+
+function Gizmo:getIsActive()
+	for _, mode in ipairs(self.operationModes) do
+		if mode ~= Gizmo.Operation.MODE_NONE then
+			return true
 		end
 	end
+
+	return false
+end
+
+function Gizmo:setIsMultiAxis(value)
+	self.isMultiAxis = value or false
+end
+
+function Gizmo:getIsMultiAxis(value)
+	return self.isMultiAxis
+end
+
+function Gizmo:hover(x, y, camera, sceneNode)
+	local isGrabbed = false
+
+	if self.isMultiAxis then
+		for index, operation in ipairs(self.operations) do
+			local distance = operation:distance(x, y, camera, sceneNode)
+			if distance < self.HOVER_DISTANCE then
+				self.operationModes[index] = love.mouse.isDown(1) and Gizmo.Operation.MODE_ACTIVE or Gizmo.Operation.MODE_HOVER
+				isGrabbed = true
+			else
+				self.operationModes[index] = Gizmo.Operation.MODE_NONE
+			end
+		end
+	else
+		local minDistance = math.huge
+		local operationIndex
+		for index, operation in ipairs(self.operations) do
+			local distance = operation:distance(x, y, camera, sceneNode)
+			if distance < minDistance and distance < self.HOVER_DISTANCE then
+				distance = minDistance
+				operationIndex = index
+			end
+
+			self.operationModes[index] = Gizmo.Operation.MODE_NONE
+		end
+
+		if operationIndex then
+			self.operationModes[operationIndex] = love.mouse.isDown(1) and Gizmo.Operation.MODE_ACTIVE or Gizmo.Operation.MODE_HOVER
+			isGrabbed = true
+		end
+	end
+
+	return isGrabbed
+end
+
+function Gizmo:move(currentX, currentY, previousX, previousY, camera, sceneNode, snap)
+	local success = true
+
+	for index, operation in ipairs(self.operations) do
+		local isActive = self.operationModes[index] == Gizmo.Operation.MODE_ACTIVE
+		if isActive then
+			success = success and operation:move(currentX, currentY, previousX, previousY, camera, sceneNode, snap)
+		end
+	end
+
+	return success
 end
 
 function Gizmo:update(sceneNode, size)

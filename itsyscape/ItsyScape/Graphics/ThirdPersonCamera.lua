@@ -108,6 +108,16 @@ function ThirdPersonCamera:_getMirrorMatrix()
 	return transform
 end
 
+function ThirdPersonCamera:project(point)
+	local projection, view = self:getTransforms()
+	local projectionView = projection * view
+	local x, y, z = projectionView:transformPoint(point:get())
+	x = (x + 1) / 2 * self.width
+	y = (y + 1) / 2 * self.height
+
+	return Vector(x, y, z)
+end
+
 function ThirdPersonCamera:getTransforms(projection, view)
 	projection = projection or love.math.newTransform()
 	do
