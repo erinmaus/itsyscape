@@ -8,13 +8,66 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <regex>
+#include <sstream>
 #include "common/Exception.h"
 #include "common/Module.h"
 #include "common/runtime.h"
+#include "modules/filesystem/Filesystem.h"
 #include "modules/graphics/Graphics.h"
 
 #include "nbunny/optimaus/shader_cache.hpp"
 #include "nbunny/optimaus/resource.hpp"
+
+std::string nbunny::ShaderCache::ShaderSource::parse_includes(const std::string& source, std::unordered_set<std::string>& filenames)
+{
+	std::string result;
+
+	auto filesystem = love::Module::getInstance<love::filesystem::Filesystem>(love::Module::M_FILESYSTEM);
+
+	auto include_regex = std::regex("#include\\s+\"([^\"]+)\"\r?\n?");
+
+	auto begin = std::sregex_iterator(source.begin(), source.end(), include_regex);
+	auto end = std::sregex_iterator();
+
+	if (std::distance(begin, end) == 0)
+	{
+		return source;
+	}
+
+	std::size_t current_line_number = 1;
+
+	std::string suffix;
+	for (auto i = begin; i != end; ++i)
+	{
+		auto filename = (*i)[1].str();
+		if (!filenames.contains(filename))
+		{
+			filenames.insert(filename);
+
+			auto sub_source_file_data = filesystem->read(filename.c_str());
+			std::string sub_source(reinterpret_cast<const char*>(sub_source_file_data->getData()), sub_source_file_data->getSize());
+
+			result += i->prefix().str() + "#line 1\n" + parse_includes(sub_source, filenames) + "\n";
+
+			auto prefix = i->prefix().str();
+			current_line_number += std::count(prefix.begin(), prefix.end(), '\n');
+
+			std::stringstream line;
+			line << "#line" << " " << current_line_number << std::endl;
+
+			result += line.str();
+
+			++current_line_number;
+		}
+
+		suffix = i->suffix();
+	}
+
+	result += suffix;
+
+	return result;
+}
 
 nbunny::ShaderCache::~ShaderCache()
 {

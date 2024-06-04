@@ -13,30 +13,39 @@
 #ifndef NBUNNY_OPTIMAUS_SHADER_CACHE
 #define NBUNNY_OPTIMAUS_SHADER_CACHE
 
+#include <iostream>
 #include <functional>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include "modules/graphics/Shader.h"
 
 namespace nbunny
 {
 	class ShaderCache
 	{
-	private:
-		typedef std::unordered_map<int, love::graphics::Shader*> ShaderMap;
-		typedef std::unordered_map<int, ShaderMap> CacheMap;
-
+	public:
 		struct ShaderSource
 		{
 			std::string vertex;
 			std::string pixel;
 
-			inline ShaderSource(const std::string& vertex, const std::string& pixel) :
-				vertex(vertex), pixel(pixel)
+			inline ShaderSource(const std::string& vertex, const std::string& pixel)
 			{
-				// Nothing.
+				std::unordered_set<std::string> vertex_filenames;
+				this->vertex = parse_includes(vertex, vertex_filenames);
+
+				std::unordered_set<std::string> pixel_filenames;
+				this->pixel = parse_includes(pixel, pixel_filenames);
 			}
+
+		private:
+			static std::string parse_includes(const std::string& source, std::unordered_set<std::string>& filenames);
 		};
+
+	private:
+		typedef std::unordered_map<int, love::graphics::Shader*> ShaderMap;
+		typedef std::unordered_map<int, ShaderMap> CacheMap;
 
 		typedef std::unordered_map<int, ShaderSource> BaseShadeSourceMap;
 

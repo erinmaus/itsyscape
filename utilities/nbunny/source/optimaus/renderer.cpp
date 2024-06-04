@@ -282,23 +282,24 @@ love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, cons
                 lua_pushvalue(L, -2);
                 lua_call(L, 1, 1);
 
-                v = base_vertex_source;
-
                 lua_getfield(L, -1, "getVertexSource");
                 lua_pushvalue(L, -2);
                 lua_call(L, 1, 1);
 
-                v += luaL_checkstring(L, -1);
+                std::string vertex_source = luaL_checkstring(L, -1);
                 lua_pop(L, 1);
-
-                p = base_pixel_source;
 
                 lua_getfield(L, -1, "getPixelSource");
                 lua_pushvalue(L, -2);
                 lua_call(L, 1, 1);
 
-                p += luaL_checkstring(L, -1);
+                std::string pixel_source luaL_checkstring(L, -1);
                 lua_pop(L, 1);
+
+                auto shader_source = ShaderCache::ShaderSource(vertex_source, pixel_source);
+
+                v = base_vertex_source + shader_source.vertex;
+                p = base_pixel_source + shader_source.pixel;
 
                 // Pop return value from "getResource" and the reference
                 lua_pop(L, 2);
