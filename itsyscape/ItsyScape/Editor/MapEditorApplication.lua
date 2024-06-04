@@ -35,9 +35,13 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local FlattenMapMotion = require "ItsyScape.World.FlattenMapMotion"
 local HillMapMotion = require "ItsyScape.World.HillMapMotion"
 local Map = require "ItsyScape.World.Map"
+local MapCurve = require "ItsyScape.World.MapCurve"
 local MapMeshMask = require "ItsyScape.World.MapMeshMask"
 local MapMotion = require "ItsyScape.World.MapMotion"
 local TileSet = require "ItsyScape.World.TileSet"
+
+print(">>> y X z", Vector.UNIT_Y:cross(Vector.UNIT_Z):get())
+print(">>> z X y", Vector.UNIT_Z:cross(Vector.UNIT_Y):get())
 
 local MapEditorApplication = Class(EditorApplication)
 MapEditorApplication.TOOL_NONE = 0
@@ -45,6 +49,7 @@ MapEditorApplication.TOOL_TERRAIN = 1
 MapEditorApplication.TOOL_PAINT = 2
 MapEditorApplication.TOOL_DECORATE = 3
 MapEditorApplication.TOOL_PROP = 4
+MapEditorApplication.TOOL_CURVE = 5
 
 function MapEditorApplication:new()
 	-- ew
@@ -147,6 +152,25 @@ function MapEditorApplication:setTool(tool)
 	elseif tool == MapEditorApplication.TOOL_PROP then
 		self.currentTool = MapEditorApplication.TOOL_PROP
 		self.propPalette:open()
+	elseif tool == MapEditorApplication.TOOL_CURVE then
+		self.currentTool = MapEditorApplication.TOOL_CURVE
+
+		local map = self:getGame():getStage():getMap(1)
+		self.curvePoints = { { map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2 } }
+		self.curveRotations = { { Quaternion.IDENTITY:get() } }
+		self.curveAxis = { 0, 0, 1 }
+		self.curveMin = { 0, 0, 0 }
+		self.curveMax = { 0, 0, map:getHeight() * map:getCellSize() + 1 }
+		self.curveIndex = 1
+		self.curvePreview = true
+
+		self.gizmo = Gizmo(
+			Vector(unpack(self.curvePoints[1])),
+			Gizmo.TranslationAxisOperation(Vector.UNIT_X),
+			Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
+			Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
+			Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
+		self.gizmo:setIsMultiAxis(false)
 	end
 end
 
@@ -179,6 +203,20 @@ function MapEditorApplication:getLastDecorationFeature()
 	end
 
 	return nil
+end
+
+function MapEditorApplication:updateCurve()
+	if self.curvePreview and #self.curvePoints >= 3 then
+		self:getGameView():bendMap(1, {
+			min = self.curveMin,
+			max = self.curveMax,
+			axis = self.curveAxis,
+			points = self.curvePoints,
+			rotations = self.curveRotations
+		})
+	else
+		self:getGameView():bendMap(1)
+	end
 end
 
 function MapEditorApplication:updateGrid(stage, map, layer)
@@ -378,6 +416,14 @@ function MapEditorApplication:mousePress(x, y, button)
 						self.gizmoGrabX = x
 						self.gizmoGrabY = y
 					end
+				elseif Class.isCompatibleType(target, Vector) then
+					local sceneNode = SceneNode()
+					sceneNode:getTransform():setLocalTranslation(target)
+					self.isGizmoGrabbed = self.gizmo:hover(x, y, self:getCamera(), sceneNode)
+					if self.isGizmoGrabbed then
+						self.gizmoGrabX = x
+						self.gizmoGrabY = y
+					end
 				end
 			end
 
@@ -534,6 +580,30 @@ function MapEditorApplication:mousePress(x, y, button)
 					self.gizmo = Gizmo(self.lastProp, Gizmo.BoundingBoxOperation())
 					self.gizmo:setHoverDistance(-math.huge)
 				end
+			elseif self.currentTool == MapEditorApplication.TOOL_CURVE and not (self.gizmo and self.gizmo:getIsActive()) then
+				local minDistance = math.huge
+				local clickedCurveIndex
+				for index, c in ipairs(self.curvePoints) do
+					local curvePoint = Vector(unpack(c))
+					local screenPoint = self:getCamera():project(curvePoint)
+					local distance = (screenPoint - Vector(x, y, 0)):getLength()
+
+					if distance <= minDistance then
+						minDistance = distance
+						clickedCurveIndex = index
+					end
+				end
+
+				if clickedCurveIndex and minDistance <= 16 then
+					self.curveIndex = clickedCurveIndex
+					self.gizmo = Gizmo(
+						Vector(unpack(self.curvePoints[self.curveIndex])),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
+						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
+					self.gizmo:setIsMultiAxis(false)
+				end
 			end
 		end
 	end
@@ -645,6 +715,10 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			end
 		elseif Class.isCompatibleType(target, Decoration.Feature) then
 			sceneNode = self:decorationFeatureToSceneNode(target)
+		elseif Class.isCompatibleType(target, Vector) then
+			sceneNode = SceneNode()
+			sceneNode:getTransform():setLocalTranslation(target)
+			sceneNode:getTransform():setLocalRotation(Quaternion(unpack(self.curveRotations[self.curveIndex])))
 		end
 
 		if sceneNode then
@@ -660,25 +734,34 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					self.gizmo:move(x, y, x + dx, y + dy, self:getCamera(), sceneNode, false)
 				end
 			end
-		end
 
-		local transform = sceneNode:getTransform()
-		local translation = transform:getLocalTranslation()
-		local rotation = transform:getLocalRotation()
-		local scale = transform:getLocalScale()
+			local transform = sceneNode:getTransform()
+			local translation = transform:getLocalTranslation()
+			local rotation = transform:getLocalRotation()
+			local scale = transform:getLocalScale()
 
-		if Class.isCompatibleType(target, Prop) then
-			Utility.Peep.setPosition(target:getPeep(), translation)
-			Utility.Peep.setRotation(target:getPeep(), rotation)
-			Utility.Peep.setScale(target:getPeep(), scale)
-		elseif Class.isCompatibleType(target, Decoration.Feature) then
-			target:setPosition(translation)
-			target:setRotation(rotation)
-			target:setScale(scale)
+			if Class.isCompatibleType(target, Prop) then
+				Utility.Peep.setPosition(target:getPeep(), translation)
+				Utility.Peep.setRotation(target:getPeep(), rotation)
+				Utility.Peep.setScale(target:getPeep(), scale)
+			elseif Class.isCompatibleType(target, Decoration.Feature) then
+				target:setPosition(translation)
+				target:setRotation(rotation)
+				target:setScale(scale)
 
-			local group, decoration = self.decorationList:getCurrentDecoration()
-			if group and decoration then
-				self:getGameView():decorate(group, decoration, 1)
+				local group, decoration = self.decorationList:getCurrentDecoration()
+				if group and decoration then
+					self:getGameView():decorate(group, decoration, 1)
+				end
+			elseif Class.isCompatibleType(target, Vector) then
+				if self.currentTool == MapEditorApplication.TOOL_CURVE then
+					self.curvePoints[self.curveIndex] = { translation:get() }
+					self.curveRotations[self.curveIndex] = { rotation:get() }
+
+					self:updateCurve()
+
+					target.x, target.y, target.z = translation:get()
+				end
 			end
 		end
 	end
@@ -735,6 +818,8 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				self:setTool(MapEditorApplication.TOOL_DECORATE)
 			elseif key == 'f4' then
 				self:setTool(MapEditorApplication.TOOL_PROP)
+			elseif key == 'f5' then
+				self:setTool(MapEditorApplication.TOOL_CURVE)
 			end
 
 			if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
@@ -799,7 +884,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						Gizmo.ScaleAxisOperation(Vector.ONE))
 					self.gizmo:setIsMultiAxis(false)
 					self.isGizmoGrabbed = false
-				elseif key == "del" then
+				elseif key == "delete" then
 					if self.gizmo and self.gizmo:getTarget() == self.lastProp then
 						self.gizmo = nil
 					end
@@ -893,7 +978,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							end
 						end
 					end
-				elseif key == "del" then
+				elseif key == "delete" then
 					if self.gizmo then
 						local feature = self.gizmo and self.gizmo:getTarget()
 						self.gizmo = nil
@@ -945,6 +1030,88 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				else
 					self:save(self.filename)
 				end
+			end
+
+			if self.currentTool == MapEditorApplication.TOOL_CURVE then
+				local map = self:getGame():getStage():getMap(1)
+				if key == "x" then
+					self.curveAxis = { 1, 0, 0 }
+					self.curveMin = { 0, 0, 0 }
+					self.curveMax = { map:getWidth() * map:getCellSize() + 1, 0, 0 }
+				elseif key == "z" then
+					self.curveAxis = { 0, 0, 1 }
+					self.curveMin = { 0, 0, 0 }
+					self.curveMax = { 0, 0, map:getHeight() * map:getCellSize() + 1 }
+				elseif key == "e" then
+					if self.curveIndex < #self.curvePoints then
+						local currentPoint = Vector(unpack(self.curvePoints[self.curveIndex]))
+						local nextPoint = Vector(unpack(self.curvePoints[self.curveIndex + 1]))
+
+						local currentRotation = Quaternion(unpack(self.curveRotations[self.curveIndex]))
+
+						local normal = (nextPoint - currentPoint):getNormal()
+						local point = currentPoint + normal * 4
+
+						table.insert(self.curvePoints, self.curveIndex + 1, { point:get() })
+						table.insert(self.curveRotations, self.curveIndex + 1, { currentRotation:get() })
+					elseif self.curveIndex == #self.curvePoints then
+						local point = Vector(unpack(self.curvePoints[self.curveIndex]))
+						point = point + Vector(0, 8, 0)
+
+						table.insert(self.curvePoints, { point:get() })
+						table.insert(self.curveRotations, { Quaternion(unpack(self.curveRotations[self.curveIndex - 1] or {})):get() })
+					end
+
+					self.curveIndex = math.clamp(self.curveIndex + 1, 1, #self.curvePoints)
+
+					self.gizmo = Gizmo(
+						Vector(unpack(self.curvePoints[self.curveIndex])),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
+						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
+					self.gizmo:setIsMultiAxis(false)
+				elseif key == "delete" then
+					if #self.curvePoints > 1 then
+						table.remove(self.curvePoints, self.curveIndex)
+						table.remove(self.curveRotations, self.curveIndex)
+						self.curveIndex = math.clamp(self.curveIndex, 1, #self.curvePoints)
+
+						self.gizmo = nil
+					end
+				elseif key == "p" then
+					self.curvePreview = not self.curvePreview
+				elseif key == "g" then
+					self.gizmo = Gizmo(
+						Vector(unpack(self.curvePoints[self.curveIndex])),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
+						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
+					self.gizmo:setIsMultiAxis(false)
+					self.isGizmoGrabbed = false
+				elseif key == "r" then
+					self.gizmo = Gizmo(
+						Vector(unpack(self.curvePoints[self.curveIndex])),
+						Gizmo.RotationAxisOperation(Vector.UNIT_X),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+					self.gizmo:setIsMultiAxis(false)
+					self.isGizmoGrabbed = false
+				elseif key == "return" then
+					local curve = Log.dump({ points = self.curvePoints, rotations = self.curveRotations })
+
+					if self.filename then
+						local curveFilename = self:getOutputFilename("Maps", self.filename, "curve.txt")
+						self:makeOutputDirectory("Maps", self.filename)
+						love.filesystem.write(curveFilename, curve)
+						Log.info("Saved curve info to '%s'.", curveFilename)
+					end
+
+					Log.info("Curve points = %s", curve)
+				end
+
+				self:updateCurve()
 			end
 
 			if key == 'o' and
@@ -1250,11 +1417,52 @@ function MapEditorApplication:drawFlags()
 	end
 end
 
+function MapEditorApplication:drawCurve()
+	local curve = MapCurve(self:getGame():getStage():getMap(1), {
+		min = self.curveMin,
+		max = self.curveMax,
+		axis = self.curveAxis,
+		points = self.curvePoints,
+		rotations = self.curveRotations
+	})
+
+	love.graphics.push("all")
+	love.graphics.setLineWidth(4)
+	love.graphics.setLineJoin("bevel")
+	love.graphics.setColor(1, 1, 1, 1)
+
+	if #self.curvePoints >= 3 then
+		local worldPoints = curve:render()
+		local screenPoints = {}
+
+		for _, worldPoint in ipairs(worldPoints) do
+			local screenPoint = self:getCamera():project(worldPoint)
+			table.insert(screenPoints, screenPoint.x)
+			table.insert(screenPoints, screenPoint.y)
+		end
+
+		love.graphics.line(screenPoints)
+	end
+
+	for _, c in ipairs(self.curvePoints) do
+		local curvePoint = Vector(unpack(c))
+		local screenPoint = self:getCamera():project(curvePoint)
+
+		love.graphics.circle("fill", screenPoint.x, screenPoint.y, 16)
+	end
+
+	love.graphics.pop()
+end
+
 function MapEditorApplication:draw(...)
 	EditorApplication.draw(self, ...)
 
 	if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
 		self:drawFlags()
+	end
+
+	if self.currentTool == MapEditorApplication.TOOL_CURVE then
+		self:drawCurve()
 	end
 
 	if self.gizmo then
@@ -1270,6 +1478,12 @@ function MapEditorApplication:draw(...)
 			end
 		elseif Class.isCompatibleType(target, Decoration.Feature) then
 			local sceneNode = self:decorationFeatureToSceneNode(target)
+			self.gizmo:update(sceneNode, Vector.ONE)
+			self.gizmo:draw(self:getCamera(), sceneNode)
+		elseif Class.isCompatibleType(target, Vector) then
+			local sceneNode = SceneNode()
+			sceneNode:getTransform():setLocalTranslation(target)
+
 			self.gizmo:update(sceneNode, Vector.ONE)
 			self.gizmo:draw(self:getCamera(), sceneNode)
 		end
