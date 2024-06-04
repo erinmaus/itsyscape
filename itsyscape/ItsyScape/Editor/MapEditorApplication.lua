@@ -107,7 +107,7 @@ function MapEditorApplication:new()
 	self.previousJ = 0
 	self.currentJ = 0
 
-	self.lastDecorationFeature = false
+	self.currentFeatureIndex = false
 	self.lastProp = false
 	self.filename = false
 
@@ -127,6 +127,9 @@ function MapEditorApplication:setTool(tool)
 		self.windows[i]:close()
 	end
 
+	self.gizmo = nil
+	self.isGizmoGrabbed = false
+
 	if tool == MapEditorApplication.TOOL_TERRAIN then
 		self.currentTool = MapEditorApplication.TOOL_TERRAIN
 		self.terrainToolPanel:open()
@@ -137,7 +140,7 @@ function MapEditorApplication:setTool(tool)
 		self.landscapeToolPanel:open(nil, nil, nil, self.tileSetPalette)
 		self.landscapeToolPanel:setToolSize(0)
 	elseif tool == MapEditorApplication.TOOL_DECORATE then
-		self.lastDecorationFeature = false
+		self.currentFeatureIndex = false
 		self.currentTool = MapEditorApplication.TOOL_DECORATE
 		self.decorationList:open()
 		self.decorationPalette:open()
@@ -159,10 +162,20 @@ function MapEditorApplication:initialize()
 	end)
 end
 
+function MapEditorApplication:decorationFeatureToSceneNode(feature)
+	local sceneNode = SceneNode()
+	local transform = sceneNode:getTransform()
+	transform:setLocalTranslation(feature:getPosition())
+	transform:setLocalScale(feature:getScale())
+	transform:setLocalRotation(feature:getRotation())
+
+	return sceneNode
+end
+
 function MapEditorApplication:getLastDecorationFeature()
 	local _, decoration = self.decorationList:getCurrentDecoration()
-	if decoration then
-		return decoration:getFeatureByIndex(decoration:getNumFeatures())
+	if decoration and self.currentFeatureIndex then
+		return decoration:getFeatureByIndex(self.currentFeatureIndex)
 	end
 
 	return nil
@@ -358,6 +371,13 @@ function MapEditorApplication:mousePress(x, y, button)
 							self.gizmoGrabY = y
 						end
 					end
+				elseif Class.isCompatibleType(target, Decoration.Feature) then
+					local sceneNode = self:decorationFeatureToSceneNode(target)
+					self.isGizmoGrabbed = self.gizmo:hover(x, y, self:getCamera(), sceneNode)
+					if self.isGizmoGrabbed then
+						self.gizmoGrabX = x
+						self.gizmoGrabY = y
+					end
 				end
 			end
 
@@ -377,35 +397,72 @@ function MapEditorApplication:mousePress(x, y, button)
 			elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 				self:paint()
 				self.isDragging = true
-			elseif self.currentTool == MapEditorApplication.TOOL_DECORATE then
+			elseif self.currentTool == MapEditorApplication.TOOL_DECORATE and not (self.gizmo and self.gizmo:getIsActive()) then
 				local group, decoration = self.decorationList:getCurrentDecoration()
 				if group and decoration then
-					local tile = self.decorationPalette:getCurrentGroup()
-					if tile then
-						local motion = MapMotion(self:getGame():getStage():getMap(1))
-						motion:onMousePressed(self:makeMotionEvent(x, y, button))
+					local hit
+					do
+						local tileSetFilename = string.format(
+							"Resources/Game/TileSets/%s/Layout.lstatic",
+							decoration:getTileSetID())
+						local staticMesh = self:getGameView():getResourceManager():load(
+							StaticMeshResource,
+							tileSetFilename)
 
-						local t, i, j = motion:getTile()
-						if t then
-							local y = t:getInterpolatedHeight(0.5, 0.5)
-							local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
-							local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
+						do
+							local hits = decoration:testRay(self:shoot(x, y), staticMesh:getResource())
+							table.sort(hits, function(a, b)
+								local i = self:getCamera():getEye() - a[Decoration.RAY_TEST_RESULT_POSITION]
+								local j = self:getCamera():getEye() - b[Decoration.RAY_TEST_RESULT_POSITION]
 
-							local rotation, scale
-							local lastDecorationFeature = self:getLastDecorationFeature()
-							if lastDecorationFeature then
-								rotation = lastDecorationFeature:getRotation()
-								scale = lastDecorationFeature:getScale()
-							end
+								return i:getLength() < j:getLength()
+							end)
 
-							decoration:add(
-								tile,
-								Vector(x, y, z),
-								rotation,
-								scale,
-								self.currentDecorationColor)
-							self:getGame():getStage():decorate(group, decoration)
+							hit = hits[1]
 						end
+					end
+
+					local feature
+					if hit then
+						self.currentFeatureIndex = hit[Decoration.RAY_TEST_RESULT_INDEX]
+						feature = self:getLastDecorationFeature()
+					end
+
+					if not feature then
+						local tile = self.decorationPalette:getCurrentGroup()
+						if tile then
+							local motion = MapMotion(self:getGame():getStage():getMap(1))
+							motion:onMousePressed(self:makeMotionEvent(x, y, button))
+
+							local t, i, j = motion:getTile()
+							if t then
+								local y = t:getInterpolatedHeight(0.5, 0.5)
+								local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
+								local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
+
+								local rotation, scale
+								local lastDecorationFeature = self:getLastDecorationFeature()
+								if lastDecorationFeature then
+									rotation = lastDecorationFeature:getRotation()
+									scale = lastDecorationFeature:getScale()
+								end
+
+								feature = decoration:add(
+									tile,
+									Vector(x, y, z),
+									rotation,
+									scale,
+									self.currentDecorationColor)
+								self:getGame():getStage():decorate(group, decoration)
+
+								self.currentFeatureIndex = decoration:getNumFeatures()
+							end
+						end
+					end
+
+					if feature then
+						self.gizmo = Gizmo(feature, Gizmo.BoundingBoxOperation())
+						self.gizmo:setHoverDistance(-math.huge)
 					end
 				end
 			elseif self.currentTool == MapEditorApplication.TOOL_PROP and not (self.gizmo and self.gizmo:getIsActive()) then
@@ -476,37 +533,6 @@ function MapEditorApplication:mousePress(x, y, button)
 				if self.lastProp then
 					self.gizmo = Gizmo(self.lastProp, Gizmo.BoundingBoxOperation())
 					self.gizmo:setHoverDistance(-math.huge)
-				end
-			end
-		elseif button == 2 then
-			if self.currentTool == MapEditorApplication.TOOL_DECORATE then
-				local group, decoration = self.decorationList:getCurrentDecoration()
-				if group and decoration then
-					local tileSetFilename = string.format(
-						"Resources/Game/TileSets/%s/Layout.lstatic",
-						decoration:getTileSetID())
-					local staticMesh = self:getGameView():getResourceManager():load(
-						StaticMeshResource,
-						tileSetFilename)
-
-					local hit
-					do
-						local hits = decoration:testRay(self:shoot(x, y), staticMesh:getResource())
-						table.sort(hits, function(a, b)
-							local i = self:getCamera():getEye() - a[Decoration.RAY_TEST_RESULT_POSITION]
-							local j = self:getCamera():getEye() - b[Decoration.RAY_TEST_RESULT_POSITION]
-
-							return i:getLength() < j:getLength()
-						end)
-
-						hit = hits[1]
-					end
-
-
-					if hit then
-						decoration:remove(hit[Decoration.RAY_TEST_RESULT_FEATURE])
-						self:getGame():getStage():decorate(group, decoration)
-					end
 				end
 			end
 		end
@@ -610,33 +636,49 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 	if self.gizmo then
 		local target = self.gizmo:getTarget()
 
+		local sceneNode
 		if Class.isCompatibleType(target, Prop) then
 			local p = self:getGameView():getProp(target)
 			if p then
 				local min, max = target:getBounds()
-				local sceneNode = p:getRoot()
+				sceneNode = p:getRoot()
+			end
+		elseif Class.isCompatibleType(target, Decoration.Feature) then
+			sceneNode = self:decorationFeatureToSceneNode(target)
+		end
 
-				if not self.isGizmoGrabbed then
-					self.gizmo:hover(x, y, self:getCamera(), sceneNode)
-				else
-					if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
-						if self.gizmo:move(x, y, self.gizmoGrabX, self.gizmoGrabY, self:getCamera(), sceneNode, true) then
-							self.gizmoGrabX = x
-							self.gizmoGrabY = y
-						end
-					else
-						self.gizmo:move(x, y, x + dx, y + dy, self:getCamera(), sceneNode, false)
+		if sceneNode then
+			if not self.isGizmoGrabbed then
+				self.gizmo:hover(x, y, self:getCamera(), sceneNode)
+			else
+				if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
+					if self.gizmo:move(x, y, self.gizmoGrabX, self.gizmoGrabY, self:getCamera(), sceneNode, true) then
+						self.gizmoGrabX = x
+						self.gizmoGrabY = y
 					end
+				else
+					self.gizmo:move(x, y, x + dx, y + dy, self:getCamera(), sceneNode, false)
 				end
+			end
+		end
 
-				local transform = sceneNode:getTransform()
-				local translation = transform:getLocalTranslation()
-				local rotation = transform:getLocalRotation()
-				local scale = transform:getLocalScale()
+		local transform = sceneNode:getTransform()
+		local translation = transform:getLocalTranslation()
+		local rotation = transform:getLocalRotation()
+		local scale = transform:getLocalScale()
 
-				Utility.Peep.setPosition(target:getPeep(), translation)
-				Utility.Peep.setRotation(target:getPeep(), rotation)
-				Utility.Peep.setScale(target:getPeep(), scale)
+		if Class.isCompatibleType(target, Prop) then
+			Utility.Peep.setPosition(target:getPeep(), translation)
+			Utility.Peep.setRotation(target:getPeep(), rotation)
+			Utility.Peep.setScale(target:getPeep(), scale)
+		elseif Class.isCompatibleType(target, Decoration.Feature) then
+			target:setPosition(translation)
+			target:setRotation(rotation)
+			target:setScale(scale)
+
+			local group, decoration = self.decorationList:getCurrentDecoration()
+			if group and decoration then
+				self:getGameView():decorate(group, decoration, 1)
 			end
 		end
 	end
@@ -790,24 +832,80 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 			if self.currentTool == MapEditorApplication.TOOL_DECORATE
 			   and self:getLastDecorationFeature()
 			then
-				local lastDecorationFeature = self:getLastDecorationFeature()
-				if key == 'r' then
-					local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 2)
-					local newRotation = lastDecorationFeature:getRotation() * yRotation
-					--newRotation = newRotation:getNormal()
+				local feature = self:getLastDecorationFeature()
+				if key == "r" then
+					self.gizmo = Gizmo(
+						feature,
+						Gizmo.RotationAxisOperation(Vector.UNIT_X),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+					self.gizmo:setIsMultiAxis(false)
+					self.isGizmoGrabbed = false
+				elseif key == "g" then
+					self.gizmo = Gizmo(
+						feature,
+						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
+						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
+						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
+					self.gizmo:setIsMultiAxis(false)
+					self.isGizmoGrabbed = false
+				elseif key == "s" then
+					self.gizmo = Gizmo(
+						feature,
+						Gizmo.ScaleAxisOperation(Vector.UNIT_X),
+						Gizmo.ScaleAxisOperation(Vector.UNIT_Y),
+						Gizmo.ScaleAxisOperation(Vector.UNIT_Z),
+						Gizmo.ScaleAxisOperation(Vector.ONE))
+					self.gizmo:setIsMultiAxis(false)
+					self.isGizmoGrabbed = false
+				elseif key == "d" then
+					if self.gizmo then
+						local feature = self.gizmo:getTarget()
 
-					local group, decoration = self.decorationList:getCurrentDecoration()
-					if decoration then
-						decoration:add(
-							lastDecorationFeature:getID(),
-							lastDecorationFeature:getPosition(),
-							newRotation,
-							lastDecorationFeature:getScale(),
-							lastDecorationFeature:getColor())
+						local group, decoration = self.decorationList:getCurrentDecoration()
+						if group and decoration then
+							local cameraRotation = self:getCamera():getCombinedRotation()
+							local cameraForward = cameraRotation:transformVector(Vector.UNIT_Z)
 
-						if decoration:remove(lastDecorationFeature) then
+							local decorationForward = Vector.UNIT_Z
+							if cameraForward.z < 0 then
+								decorationForward = -Vector.UNIT_Z
+							end
+
+							decorationForward = feature:getRotation():transformVector(decorationForward * 2)
+
+							local newFeature = decoration:add(
+								feature:getID(),
+								feature:getPosition() - decorationForward,
+								feature:getRotation(),
+								feature:getScale(),
+								feature:getColor())
+
 							self:getGame():getStage():decorate(group, decoration)
+
+							if newFeature then
+								self.isGizmoGrabbed = false
+								self.gizmo = Gizmo(newFeature, Gizmo.BoundingBoxOperation())
+								self.gizmo:setHoverDistance(-math.huge)
+
+								self.currentFeatureIndex = decoration:getNumFeatures()
+							end
 						end
+					end
+				elseif key == "del" then
+					if self.gizmo then
+						local feature = self.gizmo and self.gizmo:getTarget()
+						self.gizmo = nil
+
+						local group, decoration = self.decorationList:getCurrentDecoration()
+						if decoration then
+							decoration:remove(feature)
+						end
+
+						self.currentFeatureIndex = nil
+
+						self:getGame():getStage():decorate(group, decoration)
 					end
 				end
 			end
@@ -1170,6 +1268,10 @@ function MapEditorApplication:draw(...)
 				self.gizmo:update(sceneNode, max - min)
 				self.gizmo:draw(self:getCamera(), sceneNode)
 			end
+		elseif Class.isCompatibleType(target, Decoration.Feature) then
+			local sceneNode = self:decorationFeatureToSceneNode(target)
+			self.gizmo:update(sceneNode, Vector.ONE)
+			self.gizmo:draw(self:getCamera(), sceneNode)
 		end
 	end
 

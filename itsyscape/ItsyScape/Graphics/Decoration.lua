@@ -76,7 +76,7 @@ function Decoration.Feature:serialize()
 	}
 end
 
-function Decoration.Feature:map(func, staticMesh)
+function Decoration.Feature:map(func, staticMesh, index)
 	local transform = love.math.newTransform()
 
 	local position = self:getPosition()
@@ -112,7 +112,7 @@ function Decoration.Feature:map(func, staticMesh)
 			local s = v2 - v3
 			local t = v1 - v3
 
-			func(v1, v2, v3, s:cross(t):getNormal(), self)
+			func(v1, v2, v3, s:cross(t):getNormal(), self, index)
 		end
 	end
 end
@@ -241,24 +241,26 @@ end
 
 Decoration.RAY_TEST_RESULT_FEATURE = 1
 Decoration.RAY_TEST_RESULT_POSITION = 2
+Decoration.RAY_TEST_RESULT_INDEX = 3
 
 function Decoration:map(func, staticMesh)
 	local result = {}
 
-	for feature in self:iterate() do
-		feature:map(func, staticMesh)
+	for feature, index in self:iterate() do
+		feature:map(func, staticMesh, index)
 	end
 end
 
 function Decoration:testRay(ray, staticMesh)
 	local result = {}
 
-	self:map(function(v1, v2, v3, _, feature)
+	self:map(function(v1, v2, v3, _, feature, index)
 		local s, p = ray:hitTriangle(v2, v1, v3)
 		if s then
 			table.insert(result, {
 				feature,
-				p
+				p,
+				index
 			})
 		end
 	end, staticMesh)
@@ -274,12 +276,14 @@ function Decoration:iterate()
 	local index = 1
 
 	return function()
+		local previousIndex = index
+
 		local current = self.features[index]
 		if index <= #self.features then
 			index = index + 1
 		end
 
-		return current
+		return current, previousIndex
 	end
 end
 

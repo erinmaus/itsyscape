@@ -45,7 +45,13 @@ function Gizmo.Operation:distance(x, y, camera, sceneNode)
 	local l = self:_getTransformedLines(self.lines, camera, sceneNode)
 
 	local minDistance = math.huge
-	for i = 1, #l + 2, 2 do
+
+	local step = -2
+	if self.linesConnected then
+		step = 2
+	end
+
+	for i = 1, #l + step, 2 do
 		local x1, y1 = l[i], l[i + 1]
 		local x2, y2 = l[(i + 2 - 1) % #l + 1], l[(i + 3 - 1) % #l + 1]
 		local v1 = Vector(x1, y1, 0)
@@ -145,10 +151,6 @@ function Gizmo.Operation:draw(camera, sceneNode, mode)
 			local h, s, l = self.color:toHSL()
 			color = Color.fromHSL(h, s, l - 0.1)
 			lineWidth = 4
-		end
-
-		if not self.linesConnected then
-			lineWidth = 1
 		end
 	end
 
@@ -279,7 +281,7 @@ end
 function Gizmo.TranslationAxisOperation:buildMesh(sceneNode, size)
 	local endPoint = (self.axis:getNormal()) * self.LENGTH
 
-	self:setLines(true, {
+	self:setLines(false, {
 		Vector(0),
 		endPoint
 	})
@@ -433,7 +435,7 @@ end
 function Gizmo.ScaleAxisOperation:buildMesh(sceneNode, size)
 	local endPoint = (self.axis:getNormal()) * self.LENGTH
 
-	self:setLines(true, {
+	self:setLines(false, {
 		Vector(0),
 		endPoint
 	})

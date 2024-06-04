@@ -148,6 +148,14 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 			shader->updateUniform(view_matrix_uniform, 1);
 		}
 
+		auto inverse_view_matrix_uniform = shader->getUniformInfo("scape_InverseViewMatrix");
+		if (view_matrix_uniform)
+		{
+			auto inverse_view = glm::inverse(view);
+			std::memcpy(view_matrix_uniform->floats, glm::value_ptr(inverse_view), sizeof(glm::mat4));
+			shader->updateUniform(view_matrix_uniform, 1);
+		}
+
 		auto projection = camera->get_projection();
 		auto projection_matrix_uniform = shader->getUniformInfo("scape_ProjectionMatrix");
 		if (projection_matrix_uniform)
