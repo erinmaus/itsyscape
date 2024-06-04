@@ -164,11 +164,15 @@ Map.RAY_TEST_RESULT_J = 4
 --
 -- If the array is empty, then no tiles were hit...
 function Map:testRay(ray)
+	return self:testRayWithCurves(ray)
+end
+
+function Map:testRayWithCurves(ray, ...)
 	local hitTiles = {}
 	for j = 1, self.height do
 		for i = 1, self.width do
 			local tile = self:getTile(i, j)
-			local success, point = tile:testRay(ray, i, j, self.cellSize)
+			local success, point = tile:testRayWithCurves(ray, i, j, self.cellSize, ...)
 			if success then
 				table.insert(hitTiles, { tile, point, i, j })
 			end

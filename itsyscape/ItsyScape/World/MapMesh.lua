@@ -56,7 +56,28 @@ function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcess
 	top = math.max(top or 1, 1)
 	bottom = math.min(bottom or map.height, map.height)
 
+	self.left = left
+	self.right = right
+	self.top = top
+	self.bottom = bottom
+
 	self:_buildMesh(left, right, top, bottom)
+end
+
+function MapMesh:getLeft()
+	return self.left
+end
+
+function MapMesh:getRight()
+	return self.right
+end
+
+function MapMesh:getTop()
+	return self.top
+end
+
+function MapMesh:getBottom()
+	return self.bottom
 end
 
 function MapMesh:getBounds()

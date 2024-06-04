@@ -50,6 +50,10 @@ function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcesso
 	self:setBounds(self.mapMesh:getBounds())
 end
 
+function MapMeshSceneNode:getMapMesh()
+	return self.mapMesh
+end
+
 function MapMeshSceneNode:setMapMesh(mapMesh, isMultiTexture)
 	if self.isOwner then
 		if self.mapMesh then
@@ -85,6 +89,10 @@ function MapMeshSceneNode:draw(renderer, delta)
 	if self.mapMesh then
 		self.mapMesh:draw()
 	end
+
+	love.graphics.push("all")
+	self:_debugDrawBounds(renderer, delta)
+	love.graphics.pop()
 end
 
 return MapMeshSceneNode

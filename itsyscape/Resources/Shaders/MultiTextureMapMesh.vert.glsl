@@ -1,4 +1,4 @@
-#line 1
+#include "Resources/Shaders/MapCurve.common.glsl"
 
 attribute vec4 VertexTileBounds;
 attribute vec4 VertexTextureLayer;
@@ -12,8 +12,10 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	localPosition = position.xyz;
-	projectedPosition = modelViewProjectionMatrix * position;
+	vec4 warpedPosition = vec4(transformPointByCurves(position.xyz), position.w);
+
+	localPosition = warpedPosition.xyz;
+	projectedPosition = modelViewProjectionMatrix * warpedPosition;
 	frag_TileBounds = VertexTileBounds;
 	frag_TextureLayer = VertexTextureLayer;
 }
