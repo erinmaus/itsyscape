@@ -606,9 +606,11 @@ function GameView:updateMap(map, layer)
 					local shader = renderer:getCurrentShader()
 
 					local points = {}
+					local rotations = {}
 					for i = 1, #m.curves do
 						local curve = m.curves[i]
 						local p = curve:getPoints()
+						local r = curve:getRotations()
 
 						local axisUniform = string.format("scape_Curves[%d].axis", i - 1)
 						local offsetUniform = string.format("scape_Curves[%d].offset", i - 1)
@@ -619,7 +621,7 @@ function GameView:updateMap(map, layer)
 						end
 
 						if shader:hasUniform(offsetUniform) then
-							shader:send(offsetUniform, { #points, #p })
+							shader:send(offsetUniform, { #points, #p, #rotations, #r })
 						end
 
 						if shader:hasUniform(sizeUniform) then
@@ -629,16 +631,29 @@ function GameView:updateMap(map, layer)
 						end
 
 						for _, point in ipairs(p) do
-							table.insert(points, { point:get() })
+							local x, y, z = point:get()
+							table.insert(points, { x, y, z, 0 })
+						end
+
+						for _, rotation in ipairs(r) do
+							table.insert(rotations, { rotation:get() })
 						end
 					end
 
-					if shader:hasUniform("scape_CurvePoints") and #points > 0 then
-						shader:send("scape_CurvePoints", unpack(points))
+					if shader:hasUniform("scape_CurveTranslations") and #points > 0 then
+						shader:send("scape_CurveTranslations", unpack(points))
+					end
+
+					if shader:hasUniform("scape_CurveRotations") and #rotations > 0 then
+						shader:send("scape_CurveRotations", unpack(rotations))
 					end
 
 					if shader:hasUniform("scape_NumCurves") then
 						shader:send("scape_NumCurves", #m.curves)
+					end
+
+					if shader:hasUniform("scape_MapSize") then
+						shader:send("scape_MapSize", { m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize() })
 					end
 				end)
 			end
@@ -678,13 +693,13 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 		m.weatherMap:setAbsolutePosition(position)
 	end
 
-	self:bendMap(layer, {
-		points = {
-			{ math.cos(0.0) * 16, 0.0, math.sin(0.0) * 32 },
-			{ math.cos(3.14 / 2) * 16, 8.0, math.sin(3.14 / 2) * 32 },
-			{ math.cos(3.14 * 1.5) * 16, -8.0, math.sin(3.14 * 1.5) * 32 }
-		}
-	})
+	-- self:bendMap(layer, {
+	-- 	points = {
+	-- 		{ math.cos(0.0) * 16, 0.0, math.sin(0.0) * 32 },
+	-- 		{ math.cos(3.14 / 2) * 16, 8.0, math.sin(3.14 / 2) * 32 },
+	-- 		{ math.cos(3.14 * 1.5) * 16, -8.0, math.sin(3.14 * 1.5) * 32 }
+	-- 	}
+	-- })
 end
 
 function GameView:_updateMapBounds(m, node, i)

@@ -16,7 +16,7 @@ function MapCurve:new(map, t)
 	t = t or {}
 
 	local min = t.min or { 0, 0, 0 }
-	local max = t.max or { 0, 0, map:getHeight() * map:getCellSize() + 1 }
+	local max = t.max or { 0, 0, map:getHeight() * map:getCellSize() }
 
 	self.min = Vector(unpack(min))
 	self.max = Vector(unpack(max))
@@ -27,7 +27,7 @@ function MapCurve:new(map, t)
 	local points = t.points or {}
 	local xPoints, yPoints, zPoints = {}, {}, {}
 	self.points = {}
-	for _, point in ipairs(t.points) do
+	for _, point in ipairs(points) do
 		table.insert(xPoints, point[1])
 		table.insert(xPoints, 0)
 
@@ -50,6 +50,31 @@ function MapCurve:new(map, t)
 		self.zCurve = love.math.newBezierCurve(zPoints)
 		self.zCurveDerivative = self.zCurve:getDerivative()
 	end
+
+	local rotations = t.rotations or {}
+	self.rotations = {}
+	for _, rotation in ipairs(rotations) do
+		table.insert(self.rotations, Quaternion(unpack(rotation)))
+	end
+end
+
+function MapCurve:_evaluate(p, t, lerp)
+	local curve = {}
+	for index, value in ipairs(p) do
+		curve[index] = value
+	end
+
+	for i = 1, #curve do
+		for j = 1, #curve - i do
+			curve[j] = lerp(curve[j], curve[j + 1], t)
+		end
+	end
+
+	return curve[1]
+end
+
+function MapCurve:evaluateRotation(t)
+	return self:_evaluate(self.rotations, t, Quaternion.slerp)
 end
 
 function MapCurve:getMin()
@@ -68,24 +93,33 @@ function MapCurve:getPoints()
 	return self.points
 end
 
+function MapCurve:getRotations()
+	return self.rotations
+end
+
 function MapCurve:render(depth, result)
 	result = result or {}
 
 	local x, y, z = self.xCurve:render(depth), self.yCurve:render(depth), self.zCurve:render(depth)
+
+	local index = 1
 	for i = 1, #x, 2 do
-		local p = result[i] or Vector()
+		local p = result[index] or Vector()
 
 		p.x = x[i] or 0
 		p.y = y[i] or 0
 		p.z = z[i] or 0
 
-		result[i] = p
+		result[index] = p
+		index = index + 1
 	end
 
-	return result, #x
+	return result, index
 end
 
 function MapCurve:transform(point)
+	if true then return point end
+
 	local planarPoint = Vector(point.x, 0, point.z)
 	local relativePoint = (planarPoint - self.min) / (self.max - self.min)
 	local t = math.min(relativePoint:get())
