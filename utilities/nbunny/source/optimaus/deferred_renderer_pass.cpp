@@ -480,8 +480,10 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(lua_Sta
 				p = base_pixel_source;
 			}
 
-			v += vertex_source;
-			p += pixel_source;
+			auto shader_source = ShaderCache::ShaderSource(vertex_source, pixel_source);
+
+			v += shader_source.vertex;
+			p += shader_source.pixel;
 
             love::luax_getfunction(L, "graphics", "_shaderCodeToGLSL");
 
