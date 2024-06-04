@@ -44,7 +44,7 @@ vec3[SCAPE_MAX_NUM_POINTS_SINGLE_CURVE] getCurve(int index)
 	int end = clamp(offset.x + min(offset.y, SCAPE_MAX_NUM_POINTS_SINGLE_CURVE), 0, SCAPE_MAX_NUM_POINTS);
 
 	int outputIndex = 0;
-	for (int i = offset.x; i < end; ++i)
+	for (int i = start; i < end; ++i)
 	{
 		result[outputIndex] = scape_CurvePoints[i];
 		++outputIndex;
@@ -88,8 +88,8 @@ vec4 transformPointByCurve(int index, vec3 point)
 	vec3 planarPoint = vec3(point.x, 0.0, point.z);
 
 	vec3 relative = (planarPoint - curveMin) / (curveMax - curveMin);
-	float t = max(relative.x, relative.y);
-	if (t < 0.0 || t >= 1.0)
+	float t = min(relative.x, relative.z);
+	if (t < 0.0 || t > 1.0)
 	{
 		return vec4(point, 1.0);
 	}

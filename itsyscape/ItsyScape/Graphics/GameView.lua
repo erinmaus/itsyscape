@@ -28,6 +28,7 @@ local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 local Map = require "ItsyScape.World.Map"
+local MapCurve = require "ItsyScape.World.MapCurve"
 local MapMeshIslandProcessor = require "ItsyScape.World.MapMeshIslandProcessor"
 local TileSet = require "ItsyScape.World.TileSet"
 local MapMeshMask = require "ItsyScape.World.MapMeshMask"
@@ -409,7 +410,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		mapMeshMasks = mapMeshMasks,
 		mask = mapMeshMasks and MapMeshMask.combine(unpack(mapMeshMasks)),
 		islandProcessor = mapMeshMasks and meta.autoMask and MapMeshIslandProcessor(map, tileSet),
-		meta = meta
+		meta = meta,
+		curves = {}
 	}
 
 	m.weatherMap:addMap(m.map)
@@ -580,6 +582,7 @@ function GameView:updateMap(map, layer)
 				local node = MapMeshSceneNode()
 				node:setParent(m.node)
 				table.insert(m.parts, node)
+				local n = #m.parts
 				self.resourceManager:queueAsyncEvent(function()
 					node:fromMap(
 						m.map,
@@ -590,10 +593,52 @@ function GameView:updateMap(map, layer)
 						m.mapMeshMasks,
 						m.islandProcessor)
 
+					self:_updateMapBounds(m, node, n)
+
 					if m.mapMeshMasks then
 						node:getMaterial():setTextures(m.texture, m.mask:getTexture())
 					else
 						node:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
+					end
+				end)
+
+				node:onWillRender(function(renderer)
+					local shader = renderer:getCurrentShader()
+
+					local points = {}
+					for i = 1, #m.curves do
+						local curve = m.curves[i]
+						local p = curve:getPoints()
+
+						local axisUniform = string.format("scape_Curves[%d].axis", i - 1)
+						local offsetUniform = string.format("scape_Curves[%d].offset", i - 1)
+						local sizeUniform = string.format("scape_Curves[%d].size", i - 1)
+
+						if shader:hasUniform(axisUniform) then
+							shader:send(axisUniform, { curve:getAxis():get() })
+						end
+
+						if shader:hasUniform(offsetUniform) then
+							shader:send(offsetUniform, { #points, #p })
+						end
+
+						if shader:hasUniform(sizeUniform) then
+							local min, max = curve:getMin(), curve:getMax()
+							local size = { min.x, min.z, max.x, max.z }
+							shader:send(sizeUniform, size)
+						end
+
+						for _, point in ipairs(p) do
+							table.insert(points, { point:get() })
+						end
+					end
+
+					if shader:hasUniform("scape_CurvePoints") and #points > 0 then
+						shader:send("scape_CurvePoints", unpack(points))
+					end
+
+					if shader:hasUniform("scape_NumCurves") then
+						shader:send("scape_NumCurves", #m.curves)
 					end
 				end)
 			end
@@ -632,6 +677,69 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 		local position = Vector(globalTransform:transformPoint(x, 0, z))
 		m.weatherMap:setAbsolutePosition(position)
 	end
+
+	self:bendMap(layer, {
+		points = {
+			{ math.cos(0.0) * 16, 0.0, math.sin(0.0) * 32 },
+			{ math.cos(3.14 / 2) * 16, 8.0, math.sin(3.14 / 2) * 32 },
+			{ math.cos(3.14 * 1.5) * 16, -8.0, math.sin(3.14 * 1.5) * 32 }
+		}
+	})
+end
+
+function GameView:_updateMapBounds(m, node, i)
+	local mapMesh = node:getMapMesh()
+	if not mapMesh then
+		return
+	end
+
+	local min, max = mapMesh:getBounds()
+
+	local curves = m.curves
+	local newMin, newMax = Vector(math.huge), Vector(-math.huge)
+	for x = min.x, max.x, m.map:getCellSize() do
+		for z = min.z, max.z, m.map:getCellSize() do
+			local points = {
+				Vector(x, min.y, z),
+				Vector(x, min.y, z),
+				Vector(x, max.y, z),
+				Vector(x, min.y, z),
+				Vector(x, max.y, z),
+				Vector(x, max.y, z),
+				Vector(x, min.y, z),
+				Vector(x, max.y, z),
+			}
+
+			for _, point in ipairs(points) do
+				local p = MapCurve.transformAll(point, unpack(curves))
+
+				newMin = newMin:min(p)
+				newMax = newMax:max(p)
+			end
+		end
+	end
+
+	node:setBounds(newMin, newMax)
+end
+
+function GameView:bendMap(layer, ...)
+	local m = self.mapMeshes[layer]
+	if not m then
+		return
+	end
+
+	local curveInfos = { ... }
+	local curves = {}
+	for _, curveInfo in ipairs(curveInfos) do
+		local curve = MapCurve(m.map, curveInfo)
+		table.insert(curves, curve)
+	end
+
+	for _, node in ipairs(m.parts) do
+		self:_updateMapBounds(m, node, _)
+	end
+
+	m.curves = curves
 end
 
 function GameView:getMapSceneNode(layer)

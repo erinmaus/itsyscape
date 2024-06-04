@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local MapCurve = require "ItsyScape.World.MapCurve"
 
 -- Tile type.
 --
@@ -323,10 +324,14 @@ end
 -- Returns true and the point of collision if the ray intersects, false
 -- otherwise.
 function Tile:testRay(ray, i, j, scale)
-	local topLeft = Vector((i - 1) * scale, self.topLeft, (j - 1) * scale)
-	local topRight = Vector(i * scale, self.topRight, (j - 1) * scale)
-	local bottomLeft = Vector((i - 1) * scale, self.bottomLeft, j * scale)
-	local bottomRight = Vector(i * scale, self.bottomRight, j * scale)
+	return self:testRayWithCurves(ray, i, j, scale)
+end
+
+function Tile:testRayWithCurves(ray, i, j, scale, ...)
+	local topLeft = MapCurve.transformAll(Vector((i - 1) * scale, self.topLeft, (j - 1) * scale), ...)
+	local topRight = MapCurve.transformAll(Vector(i * scale, self.topRight, (j - 1) * scale), ...)
+	local bottomLeft = MapCurve.transformAll(Vector((i - 1) * scale, self.bottomLeft, j * scale), ...)
+	local bottomRight = MapCurve.transformAll(Vector(i * scale, self.bottomRight, j * scale), ...)
 
 	local success, point
 	do
