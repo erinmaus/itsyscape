@@ -134,6 +134,20 @@ function Quaternion:getNormal()
 	end
 end
 
+function Quaternion:inverse()
+	local lengthSquared = self:getLengthSquared()
+	if length == 0 then
+		return self
+	end
+
+	local inverseLengthSquared = 1 / lengthSquared
+	return Quaternion(
+		-self.x * inverseLengthSquared,
+		-self.y * inverseLengthSquared,
+		-self.z * inverseLengthSquared,
+		self.w * inverseLengthSquared)
+end
+
 function Quaternion:transformVector(vector)
 	local v = Quaternion(vector.x, vector.y, vector.z, 0)
 	local normal = self:getNormal()

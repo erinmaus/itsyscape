@@ -108,11 +108,11 @@ vec4 slerpCurve(vec4 curve[SCAPE_MAX_NUM_POINTS_SINGLE_CURVE], int numPoints, fl
 	{
 		for (int i = 0; i < numPoints - step; ++i)
 		{
-			curve[i] = slerp(curve[i], curve[i + 1], t);
+			curve[i] = normalize(slerp(normalize(curve[i]), normalize(curve[i + 1]), t));
 		}
 	}
 
-	return normalize(curve[0]);
+	return curve[0];
 }
 
 vec4 transformPointByCurve(int index, vec3 point)
@@ -124,7 +124,7 @@ vec4 transformPointByCurve(int index, vec3 point)
 	vec3 planarPoint = vec3(point.x, 0.0, point.z);
 
 	vec3 relative = (planarPoint - curveMin) / (curveMax - curveMin) * curve.axis;
-	float t = relative.z;
+	float t = max(relative.x, relative.z);
 	if (t < 0.0 || t > 1.0)
 	{
 		return vec4(point, 1.0);
@@ -134,12 +134,18 @@ vec4 transformPointByCurve(int index, vec3 point)
 	int numRotations = curve.offset.w;
 	vec4[SCAPE_MAX_NUM_POINTS_SINGLE_CURVE] translationCurve = getTranslationCurve(index);
 	vec4[SCAPE_MAX_NUM_POINTS_SINGLE_CURVE] rotationCurve = getRotationCurve(index);
+	vec4[SCAPE_MAX_NUM_POINTS_SINGLE_CURVE] tangentCurve = getCurveDerivative(translationCurve, numPoints);
 	vec4 position = lerpCurve(translationCurve, numPoints, t);
 	vec4 rotation = slerpCurve(rotationCurve, numRotations, t);
+	vec3 direction = normalize(lerpCurve(tangentCurve, numPoints - 1, t)).xyz;
 
-	vec3 axis = normalize(cross(vec3(0.0, 1.0, 0.0), curve.axis));
-	vec3 relativePoint = axis * point + vec3(0.0, point.y, 0.0);
-	relativePoint -= axis * vec3(scape_MapSize.x / 2.0, 0.0, scape_MapSize.y / 2.0);
+	vec3 oppositeAxis = normalize(cross(vec3(0.0, 1.0, 0.0), curve.axis));
+	vec3 axis = normalize(cross(curve.axis, direction));
+	vec4 orientation = vec4(axis, 1.0 + dot(curve.axis, direction));
+	vec3 up = quaternionTransformVector(orientation, vec4(0.0, point.y, 0.0, 0.0)).xyz;
+	//vec3 up = vec3(0.0);
+	vec3 center = oppositeAxis * vec3(scape_MapSize.x / 2.0, 0.0, scape_MapSize.y / 2.0);
+	vec3 relativePoint = oppositeAxis * point + up - center;
 	relativePoint = quaternionTransformVector(rotation, vec4(relativePoint, 0.0)).xyz;
 
 	return vec4(position.xyz + relativePoint, 1.0);

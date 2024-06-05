@@ -89,10 +89,6 @@ function MapMeshSceneNode:draw(renderer, delta)
 	if self.mapMesh then
 		self.mapMesh:draw()
 	end
-
-	love.graphics.push("all")
-	self:_debugDrawBounds(renderer, delta)
-	love.graphics.pop()
 end
 
 return MapMeshSceneNode
