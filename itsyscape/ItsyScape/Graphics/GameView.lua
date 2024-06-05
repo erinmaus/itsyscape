@@ -757,6 +757,7 @@ function GameView:bendMap(layer, ...)
 
 	if #curves >= 1 then
 		m.curveTexture = love.graphics.newArrayImage(textures)
+		m.curveTexture:setFilter("nearest", "nearest")
 	else
 		m.curveTexture = nil
 	end
