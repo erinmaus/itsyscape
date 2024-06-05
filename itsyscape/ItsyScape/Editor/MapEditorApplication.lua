@@ -1312,7 +1312,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 					self.isGizmoGrabbed = false
 					self.isEditingCurveNormal = true
 				elseif key == "return" then
-					local curve = Log.dump({ points = self.curvePoints, rotations = self.curveRotations })
+					local curve = Log.dump({ points = self.curvePoints, rotations = self.curveRotations, normals = self.curveNormals })
 
 					if self.filename then
 						local curveFilename = self:getOutputFilename("Maps", self.filename, "curve.txt")
