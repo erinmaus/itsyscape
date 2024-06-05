@@ -15,14 +15,18 @@ local MapCurve = Class()
 function MapCurve:new(map, t)
 	t = t or {}
 
+	self.mapSize = Vector(map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize())
+	self.halfMapSize = self.mapSize / 2
+
 	local min = t.min or { 0, 0, 0 }
-	local max = t.max or { 0, 0, map:getHeight() * map:getCellSize() }
+	local max = t.max or { 0, 0, self,mapSize.z }
 
 	self.min = Vector(unpack(min))
 	self.max = Vector(unpack(max))
 
 	local axis = t.axis or { 0, 0, 1 }
 	self.axis = Vector(unpack(axis))
+	self.oppositeAxis = Vector.UNIT_Y:cross(self.axis):getNormal()
 
 	local points = t.points or {}
 	local xPoints, yPoints, zPoints = {}, {}, {}
@@ -40,14 +44,17 @@ function MapCurve:new(map, t)
 		table.insert(self.points, Vector(unpack(point)))
 	end
 
-	if #self.points >= 3 then
+	if #self.points >= 2 then
 		self.xCurve = love.math.newBezierCurve(xPoints)
-		self.xCurveDerivative = self.xCurve:getDerivative()
 
 		self.yCurve = love.math.newBezierCurve(yPoints)
-		self.yCurveDerivative = self.yCurve:getDerivative()
 
 		self.zCurve = love.math.newBezierCurve(zPoints)
+	end
+
+	if #self.points >= 3 then
+		self.xCurveDerivative = self.xCurve:getDerivative()
+		self.yCurveDerivative = self.yCurve:getDerivative()
 		self.zCurveDerivative = self.zCurve:getDerivative()
 	end
 
@@ -75,6 +82,10 @@ end
 
 function MapCurve:evaluateRotation(t)
 	return self:_evaluate(self.rotations, t, Quaternion.slerp)
+end
+
+function MapCurve:evaluatePosition(t)
+	return self:_evaluate(self.points, t, Vector.lerp)
 end
 
 function MapCurve:getMin()
@@ -118,7 +129,9 @@ function MapCurve:render(depth, result)
 end
 
 function MapCurve:transform(point)
-	if true then return point end
+	if #self.points < 3 then
+		return point
+	end
 
 	local planarPoint = Vector(point.x, 0, point.z)
 	local relativePoint = (planarPoint - self.min) / (self.max - self.min)
@@ -127,16 +140,23 @@ function MapCurve:transform(point)
 		return point
 	end
 
-	local t1 = t
-	local t2 = math.clamp(t1 + 0.01)
+	local position = self:evaluatePosition(t)
+	local rotation = self:evaluateRotation(t):getNormal()
 
-	local tangent1 = Vector(self.xCurveDerivative:evaluate(t1), self.yCurveDerivative:evaluate(t1), self.zCurveDerivative:evaluate(t1)):getNormal()
-	local tangent2 = Vector(self.xCurveDerivative:evaluate(t2), self.yCurveDerivative:evaluate(t2), self.zCurveDerivative:evaluate(t2)):getNormal()
-	local axis = tangent2:cross(tangent1)
-	local d = tangent1:dot(self.axis)
-	local angle = math.acos(d)
-	local rotation = Quaternion.fromAxisAngle(-axis, angle)
-	return rotation:transformVector(point)
+	local direction
+	if #self.points == 2 then
+		direction = (self.points[1] - self.points[2]):getNormal()
+	else
+		direction = Vector(self.xCurveDerivative:evaluate(t), self.yCurveDerivative:evaluate(t), self.zCurveDerivative:evaluate(t)):getNormal()
+	end
+
+	local oppositeAxis = self.oppositeAxis
+	local upAxis = self.axis:cross(direction)
+	local orientation = Quaternion(upAxis.x, upAxis.y, upAxis.z, 1 + self.axis:dot(direction)):getNormal()
+	local up = orientation:transformVector(Vector(0, point.y, 0))
+	local center = self.halfMapSize * oppositeAxis
+	local relativePoint = oppositeAxis * point + up - center
+	return rotation:transformVector(relativePoint) + position
 end
 
 function MapCurve.transformAll(point, curve, ...)
