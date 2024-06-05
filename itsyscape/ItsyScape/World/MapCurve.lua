@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 
@@ -15,11 +16,13 @@ local MapCurve = Class()
 function MapCurve:new(map, t)
 	t = t or {}
 
+	self.width = map:getWidth()
+	self.height = map:getHeight()
 	self.mapSize = Vector(map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize())
 	self.halfMapSize = self.mapSize / 2
 
 	local min = t.min or { 0, 0, 0 }
-	local max = t.max or { 0, 0, self,mapSize.z }
+	local max = t.max or { self.mapSize.x, 0, self.mapSize.z }
 
 	self.min = Vector(unpack(min))
 	self.max = Vector(unpack(max))
@@ -46,17 +49,12 @@ function MapCurve:new(map, t)
 
 	if #self.points >= 2 then
 		self.xCurve = love.math.newBezierCurve(xPoints)
-
 		self.yCurve = love.math.newBezierCurve(yPoints)
-
 		self.zCurve = love.math.newBezierCurve(zPoints)
 	end
 
-	if #self.points >= 3 then
-		self.xCurveDerivative = self.xCurve:getDerivative()
-		self.yCurveDerivative = self.yCurve:getDerivative()
-		self.zCurveDerivative = self.zCurve:getDerivative()
-	end
+	self.direction = self:_derivative(self.points)
+	self.normal = self:_derivative(self.direction)
 
 	local rotations = t.rotations or {}
 	self.rotations = {}
@@ -71,8 +69,8 @@ function MapCurve:_evaluate(p, t, lerp)
 		curve[index] = value
 	end
 
-	for i = 1, #curve do
-		for j = 1, #curve - i do
+	for i = 2, #curve do
+		for j = 1, #curve - i + 1 do
 			curve[j] = lerp(curve[j], curve[j + 1], t)
 		end
 	end
@@ -80,12 +78,38 @@ function MapCurve:_evaluate(p, t, lerp)
 	return curve[1]
 end
 
+function MapCurve:_derivative(p)
+	local result = {}
+	for i = 1, #p - 1 do
+		result[i] = p[i]
+	end
+
+	local degree = #p - 1
+	for i in ipairs(result) do
+		result[i] = (p[i + 1] - p[i]) * degree
+	end
+
+	return result
+end
+
+local slerp = function(a, b, t)
+	return a:getNormal():slerp(b:getNormal(), t):getNormal()
+end
+
 function MapCurve:evaluateRotation(t)
-	return self:_evaluate(self.rotations, t, Quaternion.slerp)
+	return self:_evaluate(self.rotations, t, slerp)
 end
 
 function MapCurve:evaluatePosition(t)
 	return self:_evaluate(self.points, t, Vector.lerp)
+end
+
+function MapCurve:evaluateDirection(t)
+	return self:_evaluate(self.direction, t, Vector.lerp) or Vector.UNIT_Z
+end
+
+function MapCurve:evaluateNormal(t)
+	return self:_evaluate(self.normal, t, Vector.lerp) or Vector.UNIT_Y
 end
 
 function MapCurve:getMin()
@@ -129,12 +153,12 @@ function MapCurve:render(depth, result)
 end
 
 function MapCurve:transform(point)
-	if #self.points < 3 then
+	if #self.points < 2 then
 		return point
 	end
 
 	local planarPoint = Vector(point.x, 0, point.z)
-	local relativePoint = (planarPoint - self.min) / (self.max - self.min)
+	local relativePoint = (planarPoint - self.min) / (self.max - self.min):max(Vector.ONE)
 	local t = math.min(relativePoint:get())
 	if t < 0 or t > 1 then
 		return point
@@ -142,21 +166,58 @@ function MapCurve:transform(point)
 
 	local position = self:evaluatePosition(t)
 	local rotation = self:evaluateRotation(t):getNormal()
-
-	local direction
-	if #self.points == 2 then
-		direction = (self.points[1] - self.points[2]):getNormal()
-	else
-		direction = Vector(self.xCurveDerivative:evaluate(t), self.yCurveDerivative:evaluate(t), self.zCurveDerivative:evaluate(t)):getNormal()
-	end
+	local normal = self:evaluateNormal(t):getNormal()
 
 	local oppositeAxis = self.oppositeAxis
-	local upAxis = self.axis:cross(direction)
-	local orientation = Quaternion(upAxis.x, upAxis.y, upAxis.z, 1 + self.axis:dot(direction)):getNormal()
-	local up = orientation:transformVector(Vector(0, point.y, 0))
+	local up = Vector(point.y) * normal
 	local center = self.halfMapSize * oppositeAxis
-	local relativePoint = oppositeAxis * point + up - center
-	return rotation:transformVector(relativePoint) + position
+	local p = oppositeAxis * point - center + up
+
+	return rotation:transformVector(p) + position
+end
+
+function MapCurve:getCurveTexture()
+	if self.texture then
+		return self.texture
+	end
+
+	local length
+	if self.axis == Vector.UNIT_X then
+		length = self.width
+	else
+		length = self.height
+	end
+
+	local positions = {}
+	local normals = {}
+	local rotations = {}
+
+	local previousUp = Vector.UNIT_Y
+	local previousPosition = self.points[i] 
+	for i = 1, length do
+		local t = (i - 1) / (length - 1)
+
+		positions[i] = self:evaluatePosition(t)
+		normals[i] = self:evaluateNormal(t):getNormal()
+		rotations[i] = self:evaluateRotation(t):getNormal()
+	end
+
+	local image = love.image.newImageData(length, 3, "rgba32f")
+	self.texture = image
+
+	self.texture:mapPixel(function(x)
+		return positions[x + 1].x, positions[x + 1].y, positions[x + 1].z, 1
+	end, 0, 0, length, 1)
+
+	self.texture:mapPixel(function(x)
+		return normals[x + 1].x, normals[x + 1].y, normals[x + 1].z, 1
+	end, 0, 1, length, 1)
+
+	self.texture:mapPixel(function(x)
+		return rotations[x + 1].x, rotations[x + 1].y, rotations[x + 1].z, rotations[x + 1].w
+	end, 0, 2, length, 1)
+
+	return self.texture
 end
 
 function MapCurve.transformAll(point, curve, ...)
