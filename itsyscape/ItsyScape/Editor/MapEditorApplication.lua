@@ -155,11 +155,13 @@ function MapEditorApplication:setTool(tool)
 		local map = self:getGame():getStage():getMap(1)
 		self.curvePoints = { { map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2 } }
 		self.curveRotations = { { Quaternion.IDENTITY:get() } }
+		self.curveNormals = { { 0, 1, 0 } }
 		self.curveAxis = { 0, 0, 1 }
 		self.curveMin = { 0, 0, 0 }
 		self.curveMax = { map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize() }
 		self.curveIndex = 1
 		self.curvePreview = true
+		self.isEditingCurveNormal = false
 
 
   -- self.curvePoints = {
@@ -296,7 +298,8 @@ function MapEditorApplication:updateCurve()
 			max = self.curveMax,
 			axis = self.curveAxis,
 			points = self.curvePoints,
-			rotations = self.curveRotations
+			rotations = self.curveRotations,
+			normals = self.curveNormals
 		})
 	else
 		self:getGameView():bendMap(1)
@@ -802,7 +805,16 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		elseif Class.isCompatibleType(target, Vector) then
 			sceneNode = SceneNode()
 			sceneNode:getTransform():setLocalTranslation(target)
-			sceneNode:getTransform():setLocalRotation(Quaternion(unpack(self.curveRotations[self.curveIndex])))
+
+			if self.currentTool == MapEditorApplication.TOOL_CURVE then
+				if self.isEditingCurveNormal then
+					local normal = Vector(unpack(self.curveNormals[self.curveIndex]))
+					local rotation = Quaternion.lookAt(Vector.ZERO, normal, Vector.UNIT_Y)
+					sceneNode:getTransform():setLocalRotation(rotation)
+				else
+					sceneNode:getTransform():setLocalRotation(Quaternion(unpack(self.curveRotations[self.curveIndex])))
+				end
+			end
 		end
 
 		if sceneNode then
@@ -840,7 +852,12 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			elseif Class.isCompatibleType(target, Vector) then
 				if self.currentTool == MapEditorApplication.TOOL_CURVE then
 					self.curvePoints[self.curveIndex] = { translation:get() }
-					self.curveRotations[self.curveIndex] = { rotation:get() }
+
+					if self.isEditingCurveNormal then
+						self.curveNormals[self.curveIndex] = { rotation:transformVector(Vector.UNIT_Y):getNormal():get() }
+					elseif self.isEditingCurveRotation then
+						self.curveRotations[self.curveIndex] = { rotation:get() }
+					end
 
 					self:updateCurve()
 
@@ -1142,6 +1159,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
 						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
 					self.gizmo:setIsMultiAxis(false)
+					self.isEditingCurveNormal = false
 				elseif key == "l" then
 					if #self.curvePoints >= 3 then
 						local lastPoint1 = Vector(unpack(self.curvePoints[#self.curvePoints]))
@@ -1161,6 +1179,28 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						table.insert(self.curvePoints, { p1:get() })
 						table.insert(self.curvePoints, { p2:get() })
 						table.insert(self.curvePoints, { p3:get() })
+
+						local lastNormal1 = Vector(unpack(self.curveNormals[#self.curveNormals]))
+						local lastNormal2 = Vector(unpack(self.curveNormals[#self.curveNormals - 1]))
+						local firstNormal1 = Vector(unpack(self.curveNormals[1]))
+						local firstNormal2 = Vector(unpack(self.curveNormals[2]))
+
+						local normalLastNormals = (lastNormal1 - lastNormal2):getNormal()
+						local normalFirstNormals = (firstNormal2 - firstNormal1):getNormal()
+
+						local n1 = (lastNormal1 + normalLastNormals * 0.5):getNormal()
+						local n2 = (firstNormal1 - normalFirstNormals * 0.5):getNormal()
+						local n3 = firstNormal1:getNormal()
+
+						if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
+							n1 = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * (1 / 3)):transformVector(n1):getNormal()
+							n2 = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * (2 / 3)):transformVector(n2):getNormal()
+							n3 = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi:transformVector(n3):getNormal())
+						end
+
+						table.insert(self.curveNormals, { n1:get() })
+						table.insert(self.curveNormals, { n2:get() })
+						table.insert(self.curveNormals, { n3:get() })
 
 						local lastRotation1 = Quaternion(unpack(self.curveRotations[#self.curveRotations])):getNormal()
 						local lastRotation2 = Quaternion(unpack(self.curveRotations[#self.curveRotations - 1])):getNormal()
@@ -1193,20 +1233,27 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						local currentRotation = Quaternion(unpack(self.curveRotations[self.curveIndex]))
 						local nextRotation = Quaternion(unpack(self.curveRotations[self.curveIndex + 1]))
 
+						local currentNormal = Vector(unpack(self.curveNormals[self.curveIndex]))
+						local nextNormal = Vector(unpack(self.curveNormals[self.curveIndex + 1]))
+
 						local difference = nextPoint - currentPoint
 						local distance = difference:getLength()
-						local normal = difference / distance
-						local point = currentPoint + normal * distance / 2
+						local pointNormal = difference / distance
+
+						local point = currentPoint + pointNormal * distance / 2
 						local rotation = currentRotation:slerp(nextRotation, 0.5)
+						local normal = currentNormal:lerp(nextNormal, 0.5):getNormal()
 
 						table.insert(self.curvePoints, self.curveIndex + 1, { point:get() })
 						table.insert(self.curveRotations, self.curveIndex + 1, { rotation:get() })
+						table.insert(self.curveNormals, self.curveIndex + 1, { normal:get() })
 					elseif self.curveIndex == #self.curvePoints then
 						local point = Vector(unpack(self.curvePoints[self.curveIndex]))
 						point = point + Vector(0, 8, 0)
 
 						table.insert(self.curvePoints, { point:get() })
 						table.insert(self.curveRotations, { Quaternion(unpack(self.curveRotations[self.curveIndex] or {})):get() })
+						table.insert(self.curveNormals, { unpack(self.curveNormals[self.curveIndex]) })
 					end
 
 					self.curveIndex = math.clamp(self.curveIndex + 1, 1, #self.curvePoints)
@@ -1218,6 +1265,8 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
 						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
 					self.gizmo:setIsMultiAxis(false)
+					self.isEditingCurveNormal = false
+					self.isEditingCurveRotation = false
 				elseif key == "delete" then
 					if #self.curvePoints > 1 then
 						table.remove(self.curvePoints, self.curveIndex)
@@ -1237,6 +1286,8 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
 					self.gizmo:setIsMultiAxis(false)
 					self.isGizmoGrabbed = false
+					self.isEditingCurveNormal = false
+					self.isEditingCurveRotation = false
 				elseif key == "r" then
 					if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
 						self.curveRotations[self.curveIndex] = { Quaternion.IDENTITY:get() }
@@ -1249,6 +1300,17 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
 					self.gizmo:setIsMultiAxis(false)
 					self.isGizmoGrabbed = false
+					self.isEditingCurveNormal = false
+					self.isEditingCurveRotation = true
+				elseif key == "n" then
+					self.gizmo = Gizmo(
+						Vector(unpack(self.curvePoints[self.curveIndex])),
+						Gizmo.RotationAxisOperation(Vector.UNIT_X),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
+						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+					self.gizmo:setIsMultiAxis(false)
+					self.isGizmoGrabbed = false
+					self.isEditingCurveNormal = true
 				elseif key == "return" then
 					local curve = Log.dump({ points = self.curvePoints, rotations = self.curveRotations })
 
@@ -1574,7 +1636,8 @@ function MapEditorApplication:drawCurve()
 		max = self.curveMax,
 		axis = self.curveAxis,
 		points = self.curvePoints,
-		rotations = self.curveRotations
+		rotations = self.curveRotations,
+		normals = self.curveNormals
 	})
 
 	love.graphics.push("all")
@@ -1595,50 +1658,51 @@ function MapEditorApplication:drawCurve()
 
 		local normalPoints = curve:render(2)
 
-		local screenDirections = {}
-		local previousUp = Vector.UNIT_Y
-		for i, directionPoint in ipairs(normalPoints) do
-			local t = (i - 1) / (#normalPoints - 1)
-
-			local direction = curve:evaluateDirection(t):getNormal()
-			local normal = curve:evaluateNormal(t):getNormal()
-
-			local screenPoint = self:getCamera():project(directionPoint)
-			local screenDirection = self:getCamera():project(directionPoint + normal)
-
-			table.insert(screenDirections, screenPoint.x)
-			table.insert(screenDirections, screenPoint.y)
-			table.insert(screenDirections, screenDirection.x)
-			table.insert(screenDirections, screenDirection.y)
-
-			previousUp = up
-		end
-
-		love.graphics.setColor(0.5, 0.5, 0.5, 1)
-		for i = 1, #screenDirections, 4 do
-			love.graphics.line(screenDirections[i], screenDirections[i + 1], screenDirections[i + 2], screenDirections[i + 3])
-		end
-
-		local axes = { Vector.UNIT_X, Vector.UNIT_Y, Vector.UNIT_Z }
-		for _, axis in ipairs(axes) do
-			local screenNormals = {}
-			for i, normalPoint in ipairs(normalPoints) do
+		if self.isEditingCurveNormal then
+			local screenDirections = {}
+			for i, directionPoint in ipairs(normalPoints) do
 				local t = (i - 1) / (#normalPoints - 1)
 
-				local rotation = curve:evaluateRotation(t):getNormal()
-				local normal = rotation:transformVector(axis)
-				local screenPoint = self:getCamera():project(normalPoint)
-				local screenNormal = self:getCamera():project(normalPoint + normal)
+				local direction = curve:evaluateDirection(t):getNormal()
+				local normal = curve:evaluateNormal(t):getNormal()
 
-				table.insert(screenNormals, screenPoint.x)
-				table.insert(screenNormals, screenPoint.y)
-				table.insert(screenNormals, screenNormal.x)
-				table.insert(screenNormals, screenNormal.y)
+				local screenPoint = self:getCamera():project(directionPoint)
+				local screenDirection = self:getCamera():project(directionPoint + normal)
+
+				table.insert(screenDirections, screenPoint.x)
+				table.insert(screenDirections, screenPoint.y)
+				table.insert(screenDirections, screenDirection.x)
+				table.insert(screenDirections, screenDirection.y)
 			end
 
-			love.graphics.setColor(axis.x, axis.y, axis.z)
-			for i = 1, #screenNormals, 4 do
-				love.graphics.line(screenNormals[i], screenNormals[i + 1], screenNormals[i + 2], screenNormals[i + 3])
+			love.graphics.setColor(0.5, 0.5, 0.5, 1)
+			for i = 1, #screenDirections, 4 do
+				love.graphics.line(screenDirections[i], screenDirections[i + 1], screenDirections[i + 2], screenDirections[i + 3])
+			end
+		end
+
+		if self.isEditingCurveRotation then
+			local axes = { Vector.UNIT_X, Vector.UNIT_Y, Vector.UNIT_Z }
+			for _, axis in ipairs(axes) do
+				local screenNormals = {}
+				for i, normalPoint in ipairs(normalPoints) do
+					local t = (i - 1) / (#normalPoints - 1)
+
+					local rotation = curve:evaluateRotation(t):getNormal()
+					local normal = rotation:transformVector(axis)
+					local screenPoint = self:getCamera():project(normalPoint)
+					local screenNormal = self:getCamera():project(normalPoint + normal)
+
+					table.insert(screenNormals, screenPoint.x)
+					table.insert(screenNormals, screenPoint.y)
+					table.insert(screenNormals, screenNormal.x)
+					table.insert(screenNormals, screenNormal.y)
+				end
+
+				love.graphics.setColor(axis.x, axis.y, axis.z)
+				for i = 1, #screenNormals, 4 do
+					love.graphics.line(screenNormals[i], screenNormals[i + 1], screenNormals[i + 2], screenNormals[i + 3])
+				end
 			end
 		end
 	end

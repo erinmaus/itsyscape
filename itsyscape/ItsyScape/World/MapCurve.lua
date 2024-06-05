@@ -53,13 +53,18 @@ function MapCurve:new(map, t)
 		self.zCurve = love.math.newBezierCurve(zPoints)
 	end
 
-	self.direction = self:_derivative(self.points)
-	self.normal = self:_derivative(self.direction)
+	self.directions = self:_derivative(self.points)
 
 	local rotations = t.rotations or {}
 	self.rotations = {}
 	for _, rotation in ipairs(rotations) do
 		table.insert(self.rotations, Quaternion(unpack(rotation)))
+	end
+
+	local normals = t.normals or {}
+	self.normals = {}
+	for _, normal in ipairs(normals) do
+		table.insert(self.normals, Vector(unpack(normal)))
 	end
 end
 
@@ -97,7 +102,7 @@ local slerp = function(a, b, t)
 end
 
 function MapCurve:evaluateRotation(t)
-	return self:_evaluate(self.rotations, t, slerp)
+	return self:_evaluate(self.rotations, t, Quaternion.slerp)
 end
 
 function MapCurve:evaluatePosition(t)
@@ -105,11 +110,11 @@ function MapCurve:evaluatePosition(t)
 end
 
 function MapCurve:evaluateDirection(t)
-	return self:_evaluate(self.direction, t, Vector.lerp) or Vector.UNIT_Z
+	return self:_evaluate(self.directions, t, Vector.lerp) or Vector.UNIT_Z
 end
 
 function MapCurve:evaluateNormal(t)
-	return self:_evaluate(self.normal, t, Vector.lerp) or Vector.UNIT_Y
+	return self:_evaluate(self.normals, t, Vector.lerp)
 end
 
 function MapCurve:getMin()
