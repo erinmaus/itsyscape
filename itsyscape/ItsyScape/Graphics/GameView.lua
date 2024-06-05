@@ -711,7 +711,7 @@ function GameView:_updateMapBounds(m, node, i)
 	local min, max = mapMesh:getBounds()
 	local halfSize = (max - min) / 2
 
-	local newMin, newMax = Vector(math.huge), Vector(-math.huge)
+	local newMin, newMax = min, max
 	for _, curve in ipairs(m.curves) do
 		local points = curve:getPoints()
 
