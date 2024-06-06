@@ -102,7 +102,7 @@ local slerp = function(a, b, t)
 end
 
 function MapCurve:evaluateRotation(t)
-	return self:_evaluate(self.rotations, t, Quaternion.slerp)
+	return self:_evaluate(self.rotations, t, slerp)
 end
 
 function MapCurve:evaluatePosition(t)
@@ -204,7 +204,8 @@ function MapCurve:getCurveTexture()
 
 		positions[i] = self:evaluatePosition(t)
 		rotations[i] = self:evaluateRotation(t):getNormal()
-		normals[i] = rotations[i]:transformVector(self:evaluateNormal(t):getNormal()):getNormal()
+		--normals[i] = rotations[i]:transformVector(self:evaluateNormal(t):getNormal()):getNormal()
+		normals[i] = self:evaluateNormal(t):getNormal()
 	end
 
 	local image = love.image.newImageData(length, 3, "rgba32f")

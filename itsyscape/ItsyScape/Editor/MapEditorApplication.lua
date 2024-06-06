@@ -166,19 +166,18 @@ function MapEditorApplication:setTool(tool)
 		self.isEditingCurveNormal = false
 
 		self.curveRotations = {
-			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi):get() },
 			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, 0):get() },
-			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi):get() },
 			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * 2):get() },
+			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi):get() },
 		}
 
 		local center = Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)
-		local P = 16
+		local P = 8
 		for i = 1, P do
 			local t = (i - 1) / (P - 1)
 			local p = Quaternion.fromAxisAngle(Vector.UNIT_X, t * math.pi * 2):transformVector(Vector(0, 0, 32))
 			table.insert(self.curvePoints, { (p + center):get() })
-			table.insert(self.curveNormals, { p:getNormal():get() })
+			table.insert(self.curveNormals, { (-p):getNormal():get() })
 		end
 
 
@@ -1681,7 +1680,6 @@ function MapEditorApplication:drawCurve()
 			for i, directionPoint in ipairs(normalPoints) do
 				local t = (i - 1) / (#normalPoints - 1)
 
-				local direction = curve:evaluateDirection(t):getNormal()
 				local normal = curve:evaluateNormal(t):getNormal()
 
 				local screenPoint = self:getCamera():project(directionPoint)
@@ -1702,7 +1700,7 @@ function MapEditorApplication:drawCurve()
 		if self.isEditingCurveRotation then
 			local map = self:getGame():getStage():getMap(1)
 			local axes = { -Vector.UNIT_X, Vector.UNIT_X, Vector.UNIT_Y, Vector.UNIT_Z }
-			local offset = { map:getWidth() * map:getCellSize() / 2, map:getWidth() * map:getCellSize() / 2, 1, 1 }
+			local offset = { map:getWidth() * map:getCellSize() / 4, map:getWidth() * map:getCellSize() / 4, 1, 1 }
 			for j, axis in ipairs(axes) do
 				local screenNormals = {}
 				for i, normalPoint in ipairs(normalPoints) do
