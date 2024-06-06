@@ -153,15 +153,33 @@ function MapEditorApplication:setTool(tool)
 		self.currentTool = MapEditorApplication.TOOL_CURVE
 
 		local map = self:getGame():getStage():getMap(1)
-		self.curvePoints = { { map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2 } }
+		--self.curvePoints = { { map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2 } }
+		self.curvePoints = {}
 		self.curveRotations = { { Quaternion.IDENTITY:get() } }
-		self.curveNormals = { { 0, 1, 0 } }
+		--self.curveNormals = { { 0, 1, 0 } }
+		self.curveNormals = {}
 		self.curveAxis = { 0, 0, 1 }
 		self.curveMin = { 0, 0, 0 }
 		self.curveMax = { map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize() }
 		self.curveIndex = 1
 		self.curvePreview = true
 		self.isEditingCurveNormal = false
+
+		self.curveRotations = {
+			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi):get() },
+			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, 0):get() },
+			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi):get() },
+			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * 2):get() },
+		}
+
+		local center = Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)
+		local P = 16
+		for i = 1, P do
+			local t = (i - 1) / (P - 1)
+			local p = Quaternion.fromAxisAngle(Vector.UNIT_X, t * math.pi * 2):transformVector(Vector(0, 0, 32))
+			table.insert(self.curvePoints, { (p + center):get() })
+			table.insert(self.curveNormals, { p:getNormal():get() })
+		end
 
 
   -- self.curvePoints = {
@@ -812,7 +830,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					local rotation = Quaternion.lookAt(Vector.ZERO, normal, Vector.UNIT_Y)
 					sceneNode:getTransform():setLocalRotation(rotation)
 				else
-					sceneNode:getTransform():setLocalRotation(Quaternion(unpack(self.curveRotations[self.curveIndex])))
+					sceneNode:getTransform():setLocalRotation(Quaternion(unpack(self.curveRotations[self.curveIndex] or {})) or Quaternion.IDENTITY)
 				end
 			end
 		end
@@ -856,7 +874,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					if self.isEditingCurveNormal then
 						self.curveNormals[self.curveIndex] = { rotation:transformVector(Vector.UNIT_Y):getNormal():get() }
 					elseif self.isEditingCurveRotation then
-						self.curveRotations[self.curveIndex] = { rotation:get() }
+						--self.curveRotations[self.curveIndex] = { rotation:get() }
 					end
 
 					self:updateCurve()
@@ -1245,14 +1263,14 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						local normal = currentNormal:lerp(nextNormal, 0.5):getNormal()
 
 						table.insert(self.curvePoints, self.curveIndex + 1, { point:get() })
-						table.insert(self.curveRotations, self.curveIndex + 1, { rotation:get() })
+						--table.insert(self.curveRotations, self.curveIndex + 1, { rotation:get() })
 						table.insert(self.curveNormals, self.curveIndex + 1, { normal:get() })
 					elseif self.curveIndex == #self.curvePoints then
 						local point = Vector(unpack(self.curvePoints[self.curveIndex]))
 						point = point + Vector(0, 8, 0)
 
 						table.insert(self.curvePoints, { point:get() })
-						table.insert(self.curveRotations, { Quaternion(unpack(self.curveRotations[self.curveIndex] or {})):get() })
+						--table.insert(self.curveRotations, { Quaternion(unpack(self.curveRotations[self.curveIndex] or {})):get() })
 						table.insert(self.curveNormals, { unpack(self.curveNormals[self.curveIndex]) })
 					end
 
@@ -1682,8 +1700,10 @@ function MapEditorApplication:drawCurve()
 		end
 
 		if self.isEditingCurveRotation then
-			local axes = { Vector.UNIT_X, Vector.UNIT_Y, Vector.UNIT_Z }
-			for _, axis in ipairs(axes) do
+			local map = self:getGame():getStage():getMap(1)
+			local axes = { -Vector.UNIT_X, Vector.UNIT_X, Vector.UNIT_Y, Vector.UNIT_Z }
+			local offset = { map:getWidth() * map:getCellSize() / 2, map:getWidth() * map:getCellSize() / 2, 1, 1 }
+			for j, axis in ipairs(axes) do
 				local screenNormals = {}
 				for i, normalPoint in ipairs(normalPoints) do
 					local t = (i - 1) / (#normalPoints - 1)
@@ -1691,7 +1711,7 @@ function MapEditorApplication:drawCurve()
 					local rotation = curve:evaluateRotation(t):getNormal()
 					local normal = rotation:transformVector(axis)
 					local screenPoint = self:getCamera():project(normalPoint)
-					local screenNormal = self:getCamera():project(normalPoint + normal)
+					local screenNormal = self:getCamera():project(normalPoint + normal * offset[j])
 
 					table.insert(screenNormals, screenPoint.x)
 					table.insert(screenNormals, screenPoint.y)
@@ -1699,7 +1719,7 @@ function MapEditorApplication:drawCurve()
 					table.insert(screenNormals, screenNormal.y)
 				end
 
-				love.graphics.setColor(axis.x, axis.y, axis.z)
+				love.graphics.setColor(math.abs(axis.x), math.abs(axis.y), math.abs(axis.z), 1)
 				for i = 1, #screenNormals, 4 do
 					love.graphics.line(screenNormals[i], screenNormals[i + 1], screenNormals[i + 2], screenNormals[i + 3])
 				end

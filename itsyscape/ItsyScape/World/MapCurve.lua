@@ -203,8 +203,8 @@ function MapCurve:getCurveTexture()
 		local t = (i - 1) / (length - 1)
 
 		positions[i] = self:evaluatePosition(t)
-		normals[i] = self:evaluateNormal(t):getNormal()
 		rotations[i] = self:evaluateRotation(t):getNormal()
+		normals[i] = rotations[i]:transformVector(self:evaluateNormal(t):getNormal()):getNormal()
 	end
 
 	local image = love.image.newImageData(length, 3, "rgba32f")
