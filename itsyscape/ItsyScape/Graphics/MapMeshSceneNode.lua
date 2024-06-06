@@ -87,6 +87,7 @@ function MapMeshSceneNode:draw(renderer, delta)
 	end
 
 	if self.mapMesh then
+		--love.graphics.setMeshCullMode("none")
 		self.mapMesh:draw()
 	end
 end
