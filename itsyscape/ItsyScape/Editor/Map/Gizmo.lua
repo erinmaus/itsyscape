@@ -18,6 +18,11 @@ local Gizmo = Class()
 Gizmo.DEFAULT_HOVER_DISTANCE = 16
 Gizmo.SNAP_DISTANCE  = 64
 
+Gizmo.OPERATION_TRANSLATION = "translation"
+Gizmo.OPERATION_ROTATION    = "rotation"
+Gizmo.OPERATION_SCALE       = "scale"
+Gizmo.OPERATION_BOUNDS      = "bounds"
+
 Gizmo.Operation = Class()
 Gizmo.Operation.MODE_NONE   = "none"
 Gizmo.Operation.MODE_HOVER  = "hover"
@@ -219,7 +224,7 @@ function Gizmo.BoundingBoxOperation:buildMesh(sceneNode, size)
 end
 
 Gizmo.TranslationAxisOperation = Class(Gizmo.Operation)
-Gizmo.TranslationAxisOperation.LENGTH = 4
+Gizmo.TranslationAxisOperation.LENGTH = 2
 Gizmo.TranslationAxisOperation.SHAPE_SIZE = 16
 Gizmo.TranslationAxisOperation.MOVE_DISTANCE = 32
 Gizmo.TranslationAxisOperation.SNAP_DISTANCE = 0.25
@@ -383,7 +388,7 @@ function Gizmo.RotationAxisOperation:buildMesh(sceneNode, size)
 end
 
 Gizmo.ScaleAxisOperation = Class(Gizmo.Operation)
-Gizmo.ScaleAxisOperation.LENGTH = 4
+Gizmo.ScaleAxisOperation.LENGTH = 2
 Gizmo.ScaleAxisOperation.SHAPE_SIZE = 16
 Gizmo.ScaleAxisOperation.MOVE_DISTANCE = 32
 Gizmo.ScaleAxisOperation.SNAP_DISTANCE = 0.25
@@ -455,8 +460,12 @@ function Gizmo:new(target, ...)
 	self.target = target
 	self.operations = { ... }
 	self.operationModes = {}
-	self.isMultiAxis = true
+	self.isMultiAxis = false
 	self.hoverDistance = self.DEFAULT_HOVER_DISTANCE
+end
+
+function Gizmo:setTarget(value)
+	self.target = value or self.target
 end
 
 function Gizmo:getTarget()
@@ -538,8 +547,6 @@ function Gizmo:move(currentX, currentY, previousX, previousY, camera, sceneNode,
 end
 
 function Gizmo:update(sceneNode, size)
-	size = size:max(Vector.ONE)
-
 	for _, operation in ipairs(self.operations) do
 		operation:update(sceneNode, size)
 	end

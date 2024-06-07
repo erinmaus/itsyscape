@@ -608,20 +608,13 @@ function GameView:updateMap(map, layer)
 					local textures = {}
 					for i = 1, #m.curves do
 						local curve = m.curves[i]
-						local p = curve:getPoints()
-						local r = curve:getRotations()
 
 						local axisUniform = string.format("scape_Curves[%d].axis", i - 1)
-						--local offsetUniform = string.format("scape_Curves[%d].offset", i - 1)
 						local sizeUniform = string.format("scape_Curves[%d].size", i - 1)
 
 						if shader:hasUniform(axisUniform) then
 							shader:send(axisUniform, { curve:getAxis():get() })
 						end
-
-						-- if shader:hasUniform(offsetUniform) then
-						-- 	shader:send(offsetUniform, { #points, #p, #rotations, #r })
-						-- end
 
 						if shader:hasUniform(sizeUniform) then
 							local min, max = curve:getMin(), curve:getMax()
@@ -629,29 +622,12 @@ function GameView:updateMap(map, layer)
 							shader:send(sizeUniform, size)
 						end
 
-						-- for _, point in ipairs(p) do
-						-- 	local x, y, z = point:get()
-						-- 	table.insert(points, { x, y, z, 0 })
-						-- end
-
-						-- for _, rotation in ipairs(r) do
-						-- 	table.insert(rotations, { rotation:get() })
-						-- end
-
 						textures[i] = m.curves[i]:getCurveTexture()
 					end
 
 					if shader:hasUniform("scape_CurveTextures") and m.curveTexture then
 						shader:send("scape_CurveTextures", m.curveTexture)
 					end
-
-					-- if shader:hasUniform("scape_CurveTranslations") and #points > 0 then
-					-- 	shader:send("scape_CurveTranslations", unpack(points))
-					-- end
-
-					-- if shader:hasUniform("scape_CurveRotations") and #rotations > 0 then
-					-- 	shader:send("scape_CurveRotations", unpack(rotations))
-					-- end
 
 					if shader:hasUniform("scape_NumCurves") then
 						shader:send("scape_NumCurves", #m.curves)
@@ -718,13 +694,14 @@ function GameView:_updateMapBounds(m, node, i)
 
 	local newMin, newMax = min, max
 	for _, curve in ipairs(m.curves) do
-		local points = curve:getPoints()
+		local positions = curve:getPositions()
 
-		for _, point in ipairs(points) do
-			newMin = newMin:min(point - halfSize)
-			newMin = newMin:min(point + halfSize)
-			newMax = newMax:max(point - halfSize)
-			newMax = newMax:max(point + halfSize)
+		for i = 1, positions:length() do
+			local position = positions:get(i):getValue()
+			newMin = newMin:min(position - halfSize)
+			newMin = newMin:min(position + halfSize)
+			newMax = newMax:max(position - halfSize)
+			newMax = newMax:max(position + halfSize)
 		end
 	end
 
