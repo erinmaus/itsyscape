@@ -120,6 +120,94 @@ function MapEditorApplication:new()
 	self:getGameView():getResourceManager():setFrameDuration(1)
 end
 
+function MapEditorApplication:beginEditCurve(curve)
+	if curve then
+		self.curve = MapCurve(self:getGame():getStage():getMap(1), curve)
+	end
+
+	self.isEditingCurve = true
+
+	local point = self.curve:getPositions():get(1)
+	self:createTranslationGizmo(point)
+end
+
+function MapEditorApplication:endEditCurve()
+	self.isEditingCurve = false
+end
+
+function MapEditorApplication:createCurveValueGizmo(Type, index)
+	if Type == MapCurve.Position then
+		self:createTranslationGizmo(self.curve:getPositions():get(index))
+	elseif Type == MapCurve.Rotation then
+		self:createRotationGizmo(self.curve:getRotations():get(index))
+	elseif Type == MapCurve.Normal then
+		self:createRotationGizmo(self.curve:getNormals():get(index))
+	else
+		self:unsetGizmo()
+	end
+end
+
+function MapEditorApplication:createGizmo(target)
+	if self.gizmoOperation == Gizmo.OPERATION_TRANSLATION then
+		self:createTranslationGizmo(target)
+	elseif self.gizmoOperation == Gizmo.OPERATION_ROTATION then
+		self:createRotationGizmo(target)
+	elseif self.gizmoOperation == Gizmo.OPERATION_SCALE then
+		self:createScaleGizmo(target)
+	elseif self.gizmoOperation == Gizmo.OPERATION_BOUNDS then
+		self:createBoundsGizmo(target)
+	else
+		self:createTranslationGizmo(target)
+	end
+end
+
+function MapEditorApplication:createTranslationGizmo(target)
+	self.gizmo = Gizmo(
+		target,
+		Gizmo.TranslationAxisOperation(Vector.UNIT_X),
+		Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
+		Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
+		Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
+	self.gizmoOperation = Gizmo.OPERATION_TRANSLATION
+	self.isGizmoGrabbed = false
+end
+
+function MapEditorApplication:createRotationGizmo(target)
+	self.gizmo = Gizmo(
+		target,
+		Gizmo.RotationAxisOperation(Vector.UNIT_X),
+		Gizmo.RotationAxisOperation(Vector.UNIT_Y),
+		Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+	self.gizmoOperation = Gizmo.OPERATION_ROTATION
+	self.isGizmoGrabbed = false
+end
+
+function MapEditorApplication:createScaleGizmo(target)
+	self.gizmo = Gizmo(
+		target,
+		Gizmo.ScaleAxisOperation(Vector.UNIT_X),
+		Gizmo.ScaleAxisOperation(Vector.UNIT_Y),
+		Gizmo.ScaleAxisOperation(Vector.UNIT_Z),
+		Gizmo.ScaleAxisOperation(Vector.ONE))
+	self.gizmoOperation = Gizmo.OPERATION_SCALE
+	self.isGizmoGrabbed = false
+end
+
+function MapEditorApplication:createBoundsGizmo(target)
+	self.gizmo = Gizmo(
+		target,
+		Gizmo.BoundingBoxOperation())
+	self.gizmo:setHoverDistance(-math.huge)
+	self.gizmoOperation = Gizmo.OPERATION_BOUNDS
+	self.isGizmoGrabbed = false
+end
+
+function MapEditorApplication:unsetGizmo()
+	self.gizmo = false
+	self.gizmoOperation = nil
+	self.isGizmoGrabbed = false
+end
+
 function MapEditorApplication:setTool(tool)
 	if tool == self.currentTool then
 		return
@@ -129,8 +217,8 @@ function MapEditorApplication:setTool(tool)
 		self.windows[i]:close()
 	end
 
-	self.gizmo = nil
-	self.isGizmoGrabbed = false
+	self:unsetGizmo()
+	self:endEditCurve()
 
 	if tool == MapEditorApplication.TOOL_TERRAIN then
 		self.currentTool = MapEditorApplication.TOOL_TERRAIN
@@ -153,128 +241,33 @@ function MapEditorApplication:setTool(tool)
 		self.currentTool = MapEditorApplication.TOOL_CURVE
 
 		local map = self:getGame():getStage():getMap(1)
-		--self.curvePoints = { { map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2 } }
-		self.curvePoints = {}
-		self.curveRotations = { { Quaternion.IDENTITY:get() } }
-		--self.curveNormals = { { 0, 1, 0 } }
-		self.curveNormals = {}
-		self.curveAxis = { 0, 0, 1 }
-		self.curveMin = { 0, 0, 0 }
-		self.curveMax = { map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize() }
-		self.curveIndex = 1
-		self.curvePreview = true
-		self.isEditingCurveNormal = false
+		self:beginEditCurve(self.curve and self.curve:toConfig() or {
+			min = { 0, 0, 0 },
+			max = { map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize() },
+			axis = { 0, 0, 1 },
+			positions = { { map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2 } },
+			normals = { { 0, 1, 0 } },
+			rotations = { { Quaternion.IDENTITY:get() } }
+		})
 
-		self.curveRotations = {
-			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, 0):get() },
-			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * 2):get() },
-			{ Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi):get() },
-		}
+		-- mobius strip
+		-- self.curveRotations = {
+		-- 	{ Quaternion.fromAxisAngle(Vector.UNIT_Z, 0):get() },
+		-- 	{ Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * 2):get() },
+		-- 	{ Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi):get() },
+		-- }
 
-		local center = Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)
-		local P = 8
-		for i = 1, P do
-			local t = (i - 1) / (P - 1)
-			local p = Quaternion.fromAxisAngle(Vector.UNIT_X, t * math.pi * 2):transformVector(Vector(0, 0, 32))
-			table.insert(self.curvePoints, { (p + center):get() })
-			table.insert(self.curveNormals, { (-p):getNormal():get() })
-		end
-
-
-  -- self.curvePoints = {
-  --   {
-  --     4,
-  --     0,
-  --     32
-  --   },
-  --   {
-  --     4,
-  --     8,
-  --     43.464939868180153
-  --   },
-  --   {
-  --     4,
-  --     16,
-  --     43.464939868180153
-  --   },
-  --   {
-  --     -28.202812479857538,
-  --     24,
-  --     25.068866918632523
-  --   },
-  --   {
-  --     -15.942248276257782,
-  --     33.962287292533148,
-  --     2.1604964464086365
-  --   },
-  --   {
-  --     4,
-  --     -14.29500463548092,
-  --     11.513578929856838
-  --   },
-  --   {
-  --     4,
-  --     0,
-  --     32
-  --   }
-  -- }
-  -- self.curveRotations = {
-  --   {
-  --     -0.18243214355254428,
-  --     0,
-  --     0,
-  --     0.98321844622587518
-  --   },
-  --   {
-  --     -0.74966232601226901,
-  --     0,
-  --     0,
-  --     0.6618205171780901
-  --   },
-  --   {
-  --     -0.15883724242042441,
-  --     0,
-  --     0,
-  --     0.98730478091634666
-  --   },
-  --   {
-  --     -0.60212642532845451,
-  --     0,
-  --     0,
-  --     0.79840075646330477
-  --   },
-  --   {
-  --     0.22357005224315127,
-  --     -0.12907822984532205,
-  --     -1.6149725302133706,
-  --     -2.7972144751576224
-  --   },
-  --   {
-  --     0.32097326300171608,
-  --     -0.55594199939013988,
-  --     2.2686696373403628,
-  --     1.3098170258207895
-  --   },
-  --   {
-  --     1.117074703316069e-17,
-  --     -0.18243214355254428,
-  --     0.98321844622587518,
-  --     6.0204766151657606e-17
-  --   }
-  -- }
-
-  -- for i = 1, #self.curveRotations do
-  -- 	self.curveRotations[i] = { 0, 0, 0, 1 }
-  -- end
-
-		self.gizmo = Gizmo(
-			Vector(unpack(self.curvePoints[1])),
-			Gizmo.TranslationAxisOperation(Vector.UNIT_X),
-			Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
-			Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
-			Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
-		self.gizmo:setIsMultiAxis(false)
+		-- local center = Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)
+		-- local P = 8
+		-- for i = 1, P do
+		-- 	local t = (i - 1) / (P - 1)
+		-- 	local p = Quaternion.fromAxisAngle(Vector.UNIT_X, t * math.pi * 2):transformVector(Vector(0, 0, 32))
+		-- 	table.insert(self.curvePoints, { (p + center):get() })
+		-- 	table.insert(self.curveNormals, { (-p):getNormal():get() })
+		-- end
 	end
+
+	self:updateCurve()
 end
 
 function MapEditorApplication:initialize()
@@ -299,6 +292,26 @@ function MapEditorApplication:decorationFeatureToSceneNode(feature)
 	return sceneNode
 end
 
+function MapEditorApplication:curveToSceneNode(target)
+	local sceneNode = SceneNode()
+
+	if Class.isCompatibleType(target, MapCurve.Position) then
+		sceneNode:getTransform():setLocalTranslation(target:getValue())
+	elseif Class.isCompatibleType(target, MapCurve.Normal) then
+		sceneNode:getTransform():setLocalTranslation(self.curve:getPositions():get(target:getIndex() or 1):getValue())
+
+		local normal = target:getValue()
+		local rotation = Quaternion.lookAt(Vector.ZERO, normal, Vector.UNIT_Y)
+		sceneNode:getTransform():setLocalRotation(rotation)
+	elseif Class.isCompatibleType(target, MapCurve.Rotation) then
+		local t = ((target:getIndex() or 1) - 1) / (self.curve:getRotations():length() - 1)
+		sceneNode:getTransform():setLocalTranslation(self.curve:evaluatePosition(t) + Vector(0, 4, 0))
+		sceneNode:getTransform():setLocalRotation(target:getValue())
+	end
+
+	return sceneNode
+end
+
 function MapEditorApplication:getLastDecorationFeature()
 	local _, decoration = self.decorationList:getCurrentDecoration()
 	if decoration and self.currentFeatureIndex then
@@ -309,17 +322,12 @@ function MapEditorApplication:getLastDecorationFeature()
 end
 
 function MapEditorApplication:updateCurve()
-	if self.curvePreview and #self.curvePoints >= 2 then
-		self:getGameView():bendMap(1, {
-			min = self.curveMin,
-			max = self.curveMax,
-			axis = self.curveAxis,
-			points = self.curvePoints,
-			rotations = self.curveRotations,
-			normals = self.curveNormals
-		})
-	else
-		self:getGameView():bendMap(1)
+	if self.currentTool == MapEditorApplication.TOOL_CURVE then
+		if self.curve:getPositions():length() >= 2 then
+			self:getGameView():bendMap(1, self.curve:toConfig())
+		else
+			self:getGameView():bendMap(1)
+		end
 	end
 end
 
@@ -502,27 +510,20 @@ function MapEditorApplication:mousePress(x, y, button)
 			if self.gizmo then
 				local target = self.gizmo:getTarget()
 
+				local sceneNode
 				if Class.isCompatibleType(target, Prop) then
 					local p = self:getGameView():getProp(target)
 					if p then
 						local min, max = target:getBounds()
-						local sceneNode = p:getRoot()
-						self.isGizmoGrabbed = self.gizmo:hover(x, y, self:getCamera(), sceneNode)
-						if self.isGizmoGrabbed then
-							self.gizmoGrabX = x
-							self.gizmoGrabY = y
-						end
+						sceneNode = p:getRoot()
 					end
 				elseif Class.isCompatibleType(target, Decoration.Feature) then
-					local sceneNode = self:decorationFeatureToSceneNode(target)
-					self.isGizmoGrabbed = self.gizmo:hover(x, y, self:getCamera(), sceneNode)
-					if self.isGizmoGrabbed then
-						self.gizmoGrabX = x
-						self.gizmoGrabY = y
-					end
-				elseif Class.isCompatibleType(target, Vector) then
-					local sceneNode = SceneNode()
-					sceneNode:getTransform():setLocalTranslation(target)
+					sceneNode = self:decorationFeatureToSceneNode(target)
+				elseif Class.isCompatibleType(target, MapCurve.Value) then
+					sceneNode = self:curveToSceneNode(target)
+				end
+
+				if sceneNode then
 					self.isGizmoGrabbed = self.gizmo:hover(x, y, self:getCamera(), sceneNode)
 					if self.isGizmoGrabbed then
 						self.gizmoGrabX = x
@@ -611,8 +612,7 @@ function MapEditorApplication:mousePress(x, y, button)
 					end
 
 					if feature then
-						self.gizmo = Gizmo(feature, Gizmo.BoundingBoxOperation())
-						self.gizmo:setHoverDistance(-math.huge)
+						self:createBoundsGizmo(feature)
 					end
 				end
 			elseif self.currentTool == MapEditorApplication.TOOL_PROP and not (self.gizmo and self.gizmo:getIsActive()) then
@@ -681,32 +681,50 @@ function MapEditorApplication:mousePress(x, y, button)
 				end
 
 				if self.lastProp then
-					self.gizmo = Gizmo(self.lastProp, Gizmo.BoundingBoxOperation())
-					self.gizmo:setHoverDistance(-math.huge)
+					self:createBoundsGizmo(self.lastProp)
 				end
-			elseif self.currentTool == MapEditorApplication.TOOL_CURVE and not (self.gizmo and self.gizmo:getIsActive()) then
+			elseif self.isEditingCurve and not (self.gizmo and self.gizmo:getIsActive()) then
 				local minDistance = math.huge
 				local clickedCurveIndex
-				for index, c in ipairs(self.curvePoints) do
-					local curvePoint = Vector(unpack(c))
+
+				local positionCurve = self.curve:getPositions()
+				for i = 1, positionCurve:length() do
+					local curvePoint = positionCurve:get(i):getValue()
 					local screenPoint = self:getCamera():project(curvePoint)
 					local distance = (screenPoint - Vector(x, y, 0)):getLength()
 
 					if distance <= minDistance then
 						minDistance = distance
-						clickedCurveIndex = index
+						clickedCurveIndex = i
 					end
 				end
 
 				if clickedCurveIndex and minDistance <= 16 then
-					self.curveIndex = clickedCurveIndex
-					self.gizmo = Gizmo(
-						Vector(unpack(self.curvePoints[self.curveIndex])),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
-						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
-					self.gizmo:setIsMultiAxis(false)
+					if self.gizmoOperation == Gizmo.OPERATION_TRANSLATION then
+						self:createTranslationGizmo(positionCurve:get(clickedCurveIndex))
+					elseif self.gizmoOperation == Gizmo.OPERATION_ROTATION then
+						self:createRotationGizmo(self.curve:getNormals():get(clickedCurveIndex))
+					end
+				end
+
+				minDistance = math.huge
+				clickedCurveIndex = nil
+
+				local rotationCurve = self.curve:getRotations()
+				for i = 1, rotationCurve:length() do
+					local t = (i - 1) / (rotationCurve:length() - 1)
+					local curvePoint = positionCurve:evaluate(t) + Vector(0, 4, 0)
+					local screenPoint = self:getCamera():project(curvePoint)
+					local distance = (screenPoint - Vector(x, y, 0)):getLength()
+
+					if distance <= minDistance then
+						minDistance = distance
+						clickedCurveIndex = i
+					end
+				end
+
+				if clickedCurveIndex and minDistance <= 8 then
+					self:createRotationGizmo(rotationCurve:get(clickedCurveIndex))
 				end
 			end
 		end
@@ -819,19 +837,8 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			end
 		elseif Class.isCompatibleType(target, Decoration.Feature) then
 			sceneNode = self:decorationFeatureToSceneNode(target)
-		elseif Class.isCompatibleType(target, Vector) then
-			sceneNode = SceneNode()
-			sceneNode:getTransform():setLocalTranslation(target)
-
-			if self.currentTool == MapEditorApplication.TOOL_CURVE then
-				if self.isEditingCurveNormal then
-					local normal = Vector(unpack(self.curveNormals[self.curveIndex]))
-					local rotation = Quaternion.lookAt(Vector.ZERO, normal, Vector.UNIT_Y)
-					sceneNode:getTransform():setLocalRotation(rotation)
-				else
-					sceneNode:getTransform():setLocalRotation(Quaternion(unpack(self.curveRotations[self.curveIndex] or {})) or Quaternion.IDENTITY)
-				end
-			end
+		elseif Class.isCompatibleType(target, MapCurve.Value) then
+			sceneNode = self:curveToSceneNode(target)
 		end
 
 		if sceneNode then
@@ -866,20 +873,19 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				if group and decoration then
 					self:getGameView():decorate(group, decoration, 1)
 				end
-			elseif Class.isCompatibleType(target, Vector) then
-				if self.currentTool == MapEditorApplication.TOOL_CURVE then
-					self.curvePoints[self.curveIndex] = { translation:get() }
-
-					if self.isEditingCurveNormal then
-						self.curveNormals[self.curveIndex] = { rotation:transformVector(Vector.UNIT_Y):getNormal():get() }
-					elseif self.isEditingCurveRotation then
-						--self.curveRotations[self.curveIndex] = { rotation:get() }
-					end
-
-					self:updateCurve()
-
-					target.x, target.y, target.z = translation:get()
+			elseif Class.isCompatibleType(target, MapCurve.Value) and target:getIndex() then
+				if Class.isCompatibleType(target, MapCurve.Position) then
+					self.curve:getPositions():set(target:getIndex(), MapCurve.Position(translation:get()))
+					self.gizmo:setTarget(self.curve:getPositions():get(target:getIndex()))
+				elseif Class.isCompatibleType(target, MapCurve.Normal) then
+					self.curve:getNormals():set(target:getIndex(), MapCurve.Normal(rotation:transformVector(Vector.UNIT_Y):getNormal():get()))
+					self.gizmo:setTarget(self.curve:getNormals():get(target:getIndex()))
+				elseif Class.isCompatibleType(target, MapCurve.Rotation) then
+					self.curve:getRotations():set(target:getIndex(), MapCurve.Rotation(rotation:get()))
+					self.gizmo:setTarget(self.curve:getRotations():get(target:getIndex()))
 				end
+
+				self:updateCurve()
 			end
 		end
 	end
@@ -977,34 +983,14 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 			if self.currentTool == MapEditorApplication.TOOL_PROP and self.lastProp and self.lastProp:getPeep() then
 				if key == "r" then
-					self.gizmo = Gizmo(
-						self.lastProp,
-						Gizmo.RotationAxisOperation(Vector.UNIT_X),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
-					self.gizmo:setIsMultiAxis(false)
-					self.isGizmoGrabbed = false
+					self:createRotationGizmo(self.lastProp)
 				elseif key == "g" then
-					self.gizmo = Gizmo(
-						self.lastProp,
-						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
-						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
-					self.gizmo:setIsMultiAxis(false)
-					self.isGizmoGrabbed = false
+					self:createTranslationGizmo(self.lastProp)
 				elseif key == "s" then
-					self.gizmo = Gizmo(
-						self.lastProp,
-						Gizmo.ScaleAxisOperation(Vector.UNIT_X),
-						Gizmo.ScaleAxisOperation(Vector.UNIT_Y),
-						Gizmo.ScaleAxisOperation(Vector.UNIT_Z),
-						Gizmo.ScaleAxisOperation(Vector.ONE))
-					self.gizmo:setIsMultiAxis(false)
-					self.isGizmoGrabbed = false
+					self:createScaleGizmo(self.lastProp)
 				elseif key == "delete" then
 					if self.gizmo and self.gizmo:getTarget() == self.lastProp then
-						self.gizmo = nil
+						self:unsetGizmo()
 					end
 
 					if self.lastProp then
@@ -1037,31 +1023,11 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 			then
 				local feature = self:getLastDecorationFeature()
 				if key == "r" then
-					self.gizmo = Gizmo(
-						feature,
-						Gizmo.RotationAxisOperation(Vector.UNIT_X),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
-					self.gizmo:setIsMultiAxis(false)
-					self.isGizmoGrabbed = false
+					self:createRotationGizmo(feature)
 				elseif key == "g" then
-					self.gizmo = Gizmo(
-						feature,
-						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
-						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
-					self.gizmo:setIsMultiAxis(false)
-					self.isGizmoGrabbed = false
+					self:createTranslationGizmo(feature)
 				elseif key == "s" then
-					self.gizmo = Gizmo(
-						feature,
-						Gizmo.ScaleAxisOperation(Vector.UNIT_X),
-						Gizmo.ScaleAxisOperation(Vector.UNIT_Y),
-						Gizmo.ScaleAxisOperation(Vector.UNIT_Z),
-						Gizmo.ScaleAxisOperation(Vector.ONE))
-					self.gizmo:setIsMultiAxis(false)
-					self.isGizmoGrabbed = false
+					self:createScaleGizmo(feature)
 				elseif key == "d" then
 					if self.gizmo then
 						local feature = self.gizmo:getTarget()
@@ -1088,18 +1054,15 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							self:getGame():getStage():decorate(group, decoration)
 
 							if newFeature then
-								self.isGizmoGrabbed = false
-								self.gizmo = Gizmo(newFeature, Gizmo.BoundingBoxOperation())
-								self.gizmo:setHoverDistance(-math.huge)
-
+								self:createBoundsGizmo(newFeature)
 								self.currentFeatureIndex = decoration:getNumFeatures()
 							end
 						end
 					end
 				elseif key == "delete" then
 					if self.gizmo then
-						local feature = self.gizmo and self.gizmo:getTarget()
-						self.gizmo = nil
+						local feature = self.gizmo:getTarget()
+						self:unsetGizmo()
 
 						local group, decoration = self.decorationList:getCurrentDecoration()
 						if decoration then
@@ -1150,195 +1113,109 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				end
 			end
 
-			if self.currentTool == MapEditorApplication.TOOL_CURVE then
-				local map = self:getGame():getStage():getMap(1)
+			if self.isEditingCurve then
 				if key == "x" then
-					self.curveAxis = { 1, 0, 0 }
+					self.curve:setAxis(Vector.UNIT_X)
 				elseif key == "z" then
-					self.curveAxis = { 0, 0, 1 }
+					self.curve:setAxis(Vector.UNIT_Z)
 				elseif key == "tab" then
+					local index
+					local targetType
+					if self.gizmo then
+						local target = self.gizmo:getTarget()
+						if Class.isCompatibleType(target, MapCurve.Value) then
+							index = target:getIndex()
+						end
+
+						targetType = target:getType()
+					end
+
+					index = index or 1
+					targetType = targetType or MapCurve.Position
+
 					if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
-						self.curveIndex = self.curveIndex - 1
+						index = index - 1
 					else
-						self.curveIndex = self.curveIndex + 1
+						index = index + 1
 					end
 
-					if self.curveIndex <= 0 then
-						self.curveIndex = #self.curvePoints
-					elseif self.curveIndex > #self.curvePoints then
-						self.curveIndex = 1
+					local length
+					if targetType == MapCurve.Position or targetType == MapCurve.Normal then
+						length = self.curve:getPositions():length()
+					elseif targetType == MapCurve.Rotation then
+						length = self.curve:getRotations():length()
 					end
 
-					self.gizmo = Gizmo(
-						Vector(unpack(self.curvePoints[self.curveIndex])),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
-						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
-					self.gizmo:setIsMultiAxis(false)
-					self.isEditingCurveNormal = false
-				elseif key == "l" then
-					if #self.curvePoints >= 3 then
-						local lastPoint1 = Vector(unpack(self.curvePoints[#self.curvePoints]))
-						local lastPoint2 = Vector(unpack(self.curvePoints[#self.curvePoints - 1]))
-						local firstPoint1 = Vector(unpack(self.curvePoints[1]))
-						local firstPoint2 = Vector(unpack(self.curvePoints[2]))
-
-						local normalLastPoints = (lastPoint1 - lastPoint2):getNormal()
-						local normalFirstPoints = (firstPoint2 - firstPoint1):getNormal()
-
-						local distancePoints = (lastPoint1 - firstPoint1):getLength()
-
-						local p1 = lastPoint1 + normalLastPoints * distancePoints
-						local p2 = firstPoint1 - normalFirstPoints * distancePoints
-						local p3 = firstPoint1
-
-						table.insert(self.curvePoints, { p1:get() })
-						table.insert(self.curvePoints, { p2:get() })
-						table.insert(self.curvePoints, { p3:get() })
-
-						local lastNormal1 = Vector(unpack(self.curveNormals[#self.curveNormals]))
-						local lastNormal2 = Vector(unpack(self.curveNormals[#self.curveNormals - 1]))
-						local firstNormal1 = Vector(unpack(self.curveNormals[1]))
-						local firstNormal2 = Vector(unpack(self.curveNormals[2]))
-
-						local normalLastNormals = (lastNormal1 - lastNormal2):getNormal()
-						local normalFirstNormals = (firstNormal2 - firstNormal1):getNormal()
-
-						local n1 = (lastNormal1 + normalLastNormals * 0.5):getNormal()
-						local n2 = (firstNormal1 - normalFirstNormals * 0.5):getNormal()
-						local n3 = firstNormal1:getNormal()
-
-						if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
-							n1 = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * (1 / 3)):transformVector(n1):getNormal()
-							n2 = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * (2 / 3)):transformVector(n2):getNormal()
-							n3 = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi:transformVector(n3):getNormal())
+					if length then
+						if index <= 0 then
+							index = length
+						elseif index > length then
+							index = 1
 						end
 
-						table.insert(self.curveNormals, { n1:get() })
-						table.insert(self.curveNormals, { n2:get() })
-						table.insert(self.curveNormals, { n3:get() })
-
-						local lastRotation1 = Quaternion(unpack(self.curveRotations[#self.curveRotations])):getNormal()
-						local lastRotation2 = Quaternion(unpack(self.curveRotations[#self.curveRotations - 1])):getNormal()
-						local firstRotation1 = Quaternion(unpack(self.curveRotations[1])):getNormal()
-						local firstRotation2 = Quaternion(unpack(self.curveRotations[2])):getNormal()
-
-						local normalLastRotation = (lastRotation2 * lastRotation1:inverse())
-						local normalFirstRotation = (firstRotation1 * firstRotation2:inverse())
-						local targetRotation = firstRotation1
-
-						local q1 = lastRotation1:slerp(normalLastRotation, 0.5)
-						local q2 = firstRotation1:slerp(normalFirstRotation, 0.5)
-						local q3 = -firstRotation1
-
-						if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
-							q1 = q1 * Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * (1 / 3))
-							q2 = q2 * Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi * (2 / 3))
-							q3 = q3 * Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi)
-						end
-
-						table.insert(self.curveRotations, { q1:get() })
-						table.insert(self.curveRotations, { q2:get() })
-						table.insert(self.curveRotations, { q3:get() })
+						local target = self.gizmo and self.gizmo:getTarget() or self.curve:getPositions():get(1)
+						self:createCurveValueGizmo(target:getType(), index)
 					end
 				elseif key == "e" then
-					if self.curveIndex < #self.curvePoints then
-						local currentPoint = Vector(unpack(self.curvePoints[self.curveIndex]))
-						local nextPoint = Vector(unpack(self.curvePoints[self.curveIndex + 1]))
+					if self.gizmo then
+						local target = self.gizmo:getTarget()
+						local targetType = target:getType()
 
-						local currentRotation = Quaternion(unpack(self.curveRotations[self.curveIndex]))
-						local nextRotation = Quaternion(unpack(self.curveRotations[self.curveIndex + 1]))
+						local targetIndex = target:getIndex() or 1
+						local nextIndex
+						if targetType == MapCurve.Position or targetType == MapCurve.Normal then
+							self.curve:getPositions():split(targetIndex)
+							self.curve:getNormals():split(targetIndex)
+							nextIndex = math.min(targetIndex + 1, self.curve:getPositions():length())
+						elseif targetType == MapCurve.Rotation then
+							self.curve:getRotations():split(targetIndex)
+							nextIndex = math.min(targetIndex + 1, self.curve:getRotations():length())
+						end
 
-						local currentNormal = Vector(unpack(self.curveNormals[self.curveIndex]))
-						local nextNormal = Vector(unpack(self.curveNormals[self.curveIndex + 1]))
-
-						local difference = nextPoint - currentPoint
-						local distance = difference:getLength()
-						local pointNormal = difference / distance
-
-						local point = currentPoint + pointNormal * distance / 2
-						local rotation = currentRotation:slerp(nextRotation, 0.5)
-						local normal = currentNormal:lerp(nextNormal, 0.5):getNormal()
-
-						table.insert(self.curvePoints, self.curveIndex + 1, { point:get() })
-						--table.insert(self.curveRotations, self.curveIndex + 1, { rotation:get() })
-						table.insert(self.curveNormals, self.curveIndex + 1, { normal:get() })
-					elseif self.curveIndex == #self.curvePoints then
-						local point = Vector(unpack(self.curvePoints[self.curveIndex]))
-						point = point + Vector(0, 8, 0)
-
-						table.insert(self.curvePoints, { point:get() })
-						--table.insert(self.curveRotations, { Quaternion(unpack(self.curveRotations[self.curveIndex] or {})):get() })
-						table.insert(self.curveNormals, { unpack(self.curveNormals[self.curveIndex]) })
+						self:createCurveValueGizmo(targetType, nextIndex or targetIndex)
 					end
-
-					self.curveIndex = math.clamp(self.curveIndex + 1, 1, #self.curvePoints)
-
-					self.gizmo = Gizmo(
-						Vector(unpack(self.curvePoints[self.curveIndex])),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
-						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
-					self.gizmo:setIsMultiAxis(false)
-					self.isEditingCurveNormal = false
-					self.isEditingCurveRotation = false
 				elseif key == "delete" then
-					if #self.curvePoints > 1 then
-						table.remove(self.curvePoints, self.curveIndex)
-						table.remove(self.curveRotations, self.curveIndex)
-						self.curveIndex = math.clamp(self.curveIndex, 1, #self.curvePoints)
+					if self.gizmo then
+						local target = self.gizmo:getTarget()
+						local targetType = target:getType()
 
-						self.gizmo = nil
+						local targetIndex = target:getIndex() or 1
+						if (targetType == MapCurve.Position and self.curve:getPositions():length() >= 2) or
+						   (targetType == MapCurve.Normal and self.curve:getNormals():length() >= 2)
+						then
+							self.curve:getPositions():remove(targetIndex)
+							self.curve:getNormals():remove(targetIndex)
+							self:createCurveValueGizmo(targetType, targetIndex - 1)
+						elseif targetType == MapCurve.Rotation and self.curve:getRotations():length() >= 2 then
+							self.curve:getRotations():remove(targetIndex)
+							self:createCurveValueGizmo(targetType, targetIndex - 1)
+						end
 					end
 				elseif key == "p" then
 					self.curvePreview = not self.curvePreview
 				elseif key == "g" then
-					self.gizmo = Gizmo(
-						Vector(unpack(self.curvePoints[self.curveIndex])),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_X),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
-						Gizmo.TranslationAxisOperation(Vector.UNIT_Z),
-						Gizmo.TranslationAxisOperation(Vector(1, 0, 1)))
-					self.gizmo:setIsMultiAxis(false)
-					self.isGizmoGrabbed = false
-					self.isEditingCurveNormal = false
-					self.isEditingCurveRotation = false
+					if self.gizmo then
+						local target = self.gizmo:getTarget()
+						local targetType = target:getType()
+
+						local targetIndex = target:getIndex() or 1
+						if targetType == MapCurve.Position or targetType == MapCurve.Normal then
+							self:createTranslationGizmo(self.curve:getPositions():get(targetIndex))
+						end
+					end
 				elseif key == "r" then
-					if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
-						self.curveRotations[self.curveIndex] = { Quaternion.IDENTITY:get() }
-					end
+					if self.gizmo then
+						local target = self.gizmo:getTarget()
+						local targetType = target:getType()
 
-					self.gizmo = Gizmo(
-						Vector(unpack(self.curvePoints[self.curveIndex])),
-						Gizmo.RotationAxisOperation(Vector.UNIT_X),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
-					self.gizmo:setIsMultiAxis(false)
-					self.isGizmoGrabbed = false
-					self.isEditingCurveNormal = false
-					self.isEditingCurveRotation = true
-				elseif key == "n" then
-					self.gizmo = Gizmo(
-						Vector(unpack(self.curvePoints[self.curveIndex])),
-						Gizmo.RotationAxisOperation(Vector.UNIT_X),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Y),
-						Gizmo.RotationAxisOperation(Vector.UNIT_Z))
-					self.gizmo:setIsMultiAxis(false)
-					self.isGizmoGrabbed = false
-					self.isEditingCurveNormal = true
+						local targetIndex = target:getIndex() or 1
+						if targetType == MapCurve.Position or targetType == MapCurve.Normal then
+							self:createRotationGizmo(self.curve:getNormals():get(targetIndex))
+						end
+					end
 				elseif key == "return" then
-					local curve = Log.dump({ points = self.curvePoints, rotations = self.curveRotations, normals = self.curveNormals })
-
-					if self.filename then
-						local curveFilename = self:getOutputFilename("Maps", self.filename, "curve.txt")
-						self:makeOutputDirectory("Maps", self.filename)
-						love.filesystem.write(curveFilename, curve)
-						Log.info("Saved curve info to '%s'.", curveFilename)
-					end
-
-					Log.info("Curve points = %s", curve)
+					local curve = Log.dump(self.curve:toConfig())
+					Log.info("Curve = %s", curve)
 				end
 
 				self:updateCurve()
@@ -1648,21 +1525,12 @@ function MapEditorApplication:drawFlags()
 end
 
 function MapEditorApplication:drawCurve()
-	local curve = MapCurve(self:getGame():getStage():getMap(1), {
-		min = self.curveMin,
-		max = self.curveMax,
-		axis = self.curveAxis,
-		points = self.curvePoints,
-		rotations = self.curveRotations,
-		normals = self.curveNormals
-	})
-
 	love.graphics.push("all")
 	love.graphics.setLineWidth(4)
 	love.graphics.setLineJoin("none")
 
-	if #self.curvePoints >= 2 then
-		local worldPoints = curve:render(2)
+	if self.curve:getPositions():length() >= 2 then
+		local worldPoints = self.curve:getPositions():render()
 		local screenPoints = {}
 		for _, worldPoint in ipairs(worldPoints) do
 			local screenPoint = self:getCamera():project(worldPoint)
@@ -1673,14 +1541,14 @@ function MapEditorApplication:drawCurve()
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.line(screenPoints)
 
-		local normalPoints = curve:render(2)
-
-		if self.isEditingCurveNormal then
+		local normalPoints = self.curve:getPositions():render(2)
+		local targetType = self.gizmo and self.gizmo:getTarget():getType()
+		if targetType == MapCurve.Normal then
 			local screenDirections = {}
 			for i, directionPoint in ipairs(normalPoints) do
 				local t = (i - 1) / (#normalPoints - 1)
 
-				local normal = curve:evaluateNormal(t):getNormal()
+				local normal = self.curve:evaluateNormal(t):getNormal()
 
 				local screenPoint = self:getCamera():project(directionPoint)
 				local screenDirection = self:getCamera():project(directionPoint + normal)
@@ -1695,9 +1563,7 @@ function MapEditorApplication:drawCurve()
 			for i = 1, #screenDirections, 4 do
 				love.graphics.line(screenDirections[i], screenDirections[i + 1], screenDirections[i + 2], screenDirections[i + 3])
 			end
-		end
-
-		if self.isEditingCurveRotation then
+		elseif targetType == MapCurve.Rotation then
 			local map = self:getGame():getStage():getMap(1)
 			local axes = { -Vector.UNIT_X, Vector.UNIT_X, Vector.UNIT_Y, Vector.UNIT_Z }
 			local offset = { map:getWidth() * map:getCellSize() / 4, map:getWidth() * map:getCellSize() / 4, 1, 1 }
@@ -1706,7 +1572,7 @@ function MapEditorApplication:drawCurve()
 				for i, normalPoint in ipairs(normalPoints) do
 					local t = (i - 1) / (#normalPoints - 1)
 
-					local rotation = curve:evaluateRotation(t):getNormal()
+					local rotation = self.curve:evaluateRotation(t):getNormal()
 					local normal = rotation:transformVector(axis)
 					local screenPoint = self:getCamera():project(normalPoint)
 					local screenNormal = self:getCamera():project(normalPoint + normal * offset[j])
@@ -1725,12 +1591,24 @@ function MapEditorApplication:drawCurve()
 		end
 	end
 
+	local positions = self.curve:getPositions()
+	local rotations = self.curve:getRotations()
+
 	love.graphics.setColor(1, 1, 1, 1)
-	for _, c in ipairs(self.curvePoints) do
-		local curvePoint = Vector(unpack(c))
+
+	for i = 1, positions:length() do
+		local curvePoint = positions:get(i):getValue()
 		local screenPoint = self:getCamera():project(curvePoint)
 
-		love.graphics.circle("fill", screenPoint.x, screenPoint.y, 16)
+		love.graphics.rectangle("fill", screenPoint.x - 8, screenPoint.y - 8, 16, 16)
+	end
+
+	for i = 1, rotations:length() do
+		local t = (i - 1) / (rotations:length() - 1)
+		local curvePoint = positions:evaluate(t) + Vector(0, 4, 0)
+		local screenPoint = self:getCamera():project(curvePoint)
+
+		love.graphics.circle("fill", screenPoint.x, screenPoint.y, 8)
 	end
 
 	love.graphics.pop()
@@ -1754,19 +1632,20 @@ function MapEditorApplication:draw(...)
 			local p = self:getGameView():getProp(target)
 			if p then
 				local min, max = target:getBounds()
+				local size = (max - min):max(Vector.ONE)
+
 				local sceneNode = p:getRoot()
-				self.gizmo:update(sceneNode, max - min)
+				self.gizmo:update(sceneNode, size)
 				self.gizmo:draw(self:getCamera(), sceneNode)
 			end
 		elseif Class.isCompatibleType(target, Decoration.Feature) then
 			local sceneNode = self:decorationFeatureToSceneNode(target)
 			self.gizmo:update(sceneNode, Vector.ONE)
 			self.gizmo:draw(self:getCamera(), sceneNode)
-		elseif Class.isCompatibleType(target, Vector) then
-			local sceneNode = SceneNode()
-			sceneNode:getTransform():setLocalTranslation(target)
+		elseif Class.isCompatibleType(target, MapCurve.Value) then
+			sceneNode = self:curveToSceneNode(target)
 
-			self.gizmo:update(sceneNode, Vector.ONE)
+			self.gizmo:update(sceneNode, Vector(0.5))
 			self.gizmo:draw(self:getCamera(), sceneNode)
 		end
 	end
