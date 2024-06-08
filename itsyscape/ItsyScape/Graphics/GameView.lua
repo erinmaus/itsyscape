@@ -414,7 +414,44 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		curves = {}
 	}
 
+	local function onWillRender(renderer)
+		local shader = renderer:getCurrentShader()
+
+		local textures = {}
+		for i = 1, #m.curves do
+			local curve = m.curves[i]
+
+			local axisUniform = string.format("scape_Curves[%d].axis", i - 1)
+			local sizeUniform = string.format("scape_Curves[%d].size", i - 1)
+
+			if shader:hasUniform(axisUniform) then
+				shader:send(axisUniform, { curve:getAxis():get() })
+			end
+
+			if shader:hasUniform(sizeUniform) then
+				local min, max = curve:getMin(), curve:getMax()
+				local size = { min.x, min.z, max.x, max.z }
+				shader:send(sizeUniform, size)
+			end
+
+			textures[i] = m.curves[i]:getCurveTexture()
+		end
+
+		if shader:hasUniform("scape_CurveTextures") and m.curveTexture then
+			shader:send("scape_CurveTextures", m.curveTexture)
+		end
+
+		if shader:hasUniform("scape_NumCurves") then
+			shader:send("scape_NumCurves", #m.curves)
+		end
+
+		if shader:hasUniform("scape_MapSize") then
+			shader:send("scape_MapSize", { m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize() })
+		end
+	end
+
 	m.weatherMap:addMap(m.map)
+	m.onWillRender = onWillRender
 
 	self.mapMeshes[layer] = m
 end
@@ -445,9 +482,12 @@ function GameView:removeMap(layer)
 	end
 end
 
+function GameView:_getIsMapEditor()
+	return _APP:getType() == require "ItsyScape.Editor.MapEditorApplication"
+end
+
 function GameView:updateGroundDecorations(m)
-	local isMapEditor = _APP:getType() == require "ItsyScape.Editor.MapEditorApplication"
-	if isMapEditor then
+	if self:_getIsMapEditor() then
 		Log.info("Map editor: not updating ground decorations.")
 		return
 	end
@@ -602,41 +642,7 @@ function GameView:updateMap(map, layer)
 					end
 				end)
 
-				node:onWillRender(function(renderer)
-					local shader = renderer:getCurrentShader()
-
-					local textures = {}
-					for i = 1, #m.curves do
-						local curve = m.curves[i]
-
-						local axisUniform = string.format("scape_Curves[%d].axis", i - 1)
-						local sizeUniform = string.format("scape_Curves[%d].size", i - 1)
-
-						if shader:hasUniform(axisUniform) then
-							shader:send(axisUniform, { curve:getAxis():get() })
-						end
-
-						if shader:hasUniform(sizeUniform) then
-							local min, max = curve:getMin(), curve:getMax()
-							local size = { min.x, min.z, max.x, max.z }
-							shader:send(sizeUniform, size)
-						end
-
-						textures[i] = m.curves[i]:getCurveTexture()
-					end
-
-					if shader:hasUniform("scape_CurveTextures") and m.curveTexture then
-						shader:send("scape_CurveTextures", m.curveTexture)
-					end
-
-					if shader:hasUniform("scape_NumCurves") then
-						shader:send("scape_NumCurves", #m.curves)
-					end
-
-					if shader:hasUniform("scape_MapSize") then
-						shader:send("scape_MapSize", { m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize() })
-					end
-				end)
+				node:onWillRender(m.onWillRender)
 			end
 		end
 
@@ -734,7 +740,7 @@ function GameView:bendMap(layer, ...)
 
 	if #curves >= 1 then
 		m.curveTexture = love.graphics.newArrayImage(textures)
-		m.curveTexture:setFilter("nearest", "nearest")
+		m.curveTexture:setFilter("linear", "linear")
 	else
 		m.curveTexture = nil
 	end
@@ -915,10 +921,17 @@ function GameView:decorate(group, decoration, layer)
 	if self.decorations[groupName] and
 	   self.decorations[groupName].sceneNode
 	then
-		self.decorations[groupName].sceneNode:setParent(nil)
+		local d = self.decorations[groupName]
+
+		d.sceneNode:setParent(nil)
+		if d.alphaSceneNode then
+			d.alphaSceneNode:setParent(nil)
+		end
+
 		self.decorations[groupName] = nil
 	end
 
+	local m = self.mapMeshes[layer]
 	local map = self:getMapSceneNode(layer)
 	if not map then
 		map = self.scene
@@ -952,6 +965,51 @@ function GameView:decorate(group, decoration, layer)
 			sceneNode:getMaterial():setTextures(texture)
 
 			sceneNode:setParent(map)
+
+			if decoration:getIsWall() and not self:_getIsMapEditor() then
+				local shader = self.resourceManager:load(
+					ShaderResource,
+					"Resources/Shaders/WallDecoration")
+				sceneNode:getMaterial():setShader(shader)
+				sceneNode:onWillRender(function(renderer)
+					if m and m.onWillRender then
+						m.onWillRender(renderer)
+					end
+
+					local shader = renderer:getCurrentShader()
+					if shader:hasUniform("scape_ClipAlphaMultiplier") then
+						shader:send("scape_ClipAlphaMultiplier", 0.0)
+					end
+				end)
+
+				local alphaSceneNode = DecorationSceneNode()
+				alphaSceneNode:fromDecoration(decoration, staticMesh:getResource())
+				alphaSceneNode:getMaterial():setTextures(texture)
+				alphaSceneNode:getMaterial():setIsTranslucent(true)
+				alphaSceneNode:setParent(map)
+				alphaSceneNode:getMaterial():setShader(shader)
+				alphaSceneNode:onWillRender(function(renderer)
+					if m and m.onWillRender then
+						m.onWillRender(renderer)
+					end
+
+					local shader = renderer:getCurrentShader()
+					if shader:hasUniform("scape_ClipAlphaMultiplier") then
+						shader:send("scape_ClipAlphaMultiplier", 1.0)
+					end
+				end)
+
+				d.alphaSceneNode = alphaSceneNode
+			else
+				local shader = self.resourceManager:load(
+					ShaderResource,
+					"Resources/Shaders/Decoration")
+				sceneNode:getMaterial():setShader(shader)
+
+				if m then
+					sceneNode:onWillRender(m.onWillRender)
+				end
+			end
 
 			d.sceneNode = sceneNode
 			d.staticMesh = staticMesh

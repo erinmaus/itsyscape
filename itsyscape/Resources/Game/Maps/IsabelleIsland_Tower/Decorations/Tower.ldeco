@@ -1,5 +1,6 @@
 {
 	tileSetID = "RumbridgeCastle",
+	isWall = true,
 	{
 		id = "StoneAndYellowWallpaper-wall.olcorner",
 		position = { 11.000000, 6.000000, 39.000000 },

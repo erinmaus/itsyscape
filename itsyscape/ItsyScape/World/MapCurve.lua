@@ -482,6 +482,8 @@ function MapCurve:getCurveTexture()
 		length = self.height
 	end
 
+	length = math.min(length * 8, 1024)
+
 	local positions = {}
 	local normals = {}
 	local rotations = {}
