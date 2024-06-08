@@ -180,6 +180,22 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		{
 			glad::glDisable(GL_CLIP_DISTANCE0);
 		}
+
+		auto camera_target_uniform = shader->getUniformInfo("scape_CameraTarget");
+		if (camera_target_uniform)
+		{
+			auto target = camera->get_target_position();
+			std::memcpy(camera_target_uniform->floats, glm::value_ptr(target), sizeof(glm::vec3));
+			shader->updateUniform(camera_target_uniform, 1);
+		}
+
+		auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
+		if (camera_eye_uniform)
+		{
+			auto eye = camera->get_eye_position();
+			std::memcpy(camera_eye_uniform->floats, glm::value_ptr(eye), sizeof(glm::vec3));
+			shader->updateUniform(camera_eye_uniform, 1);
+		}
 	}
 	else
 	{

@@ -119,6 +119,7 @@ end
 
 function Decoration:new(d)
 	self.tileSetID = false
+	self.isWall = false
 	self.features = {}
 	self._handle = NDecoration()
 
@@ -145,6 +146,7 @@ end
 
 function Decoration:loadFromTable(t)
 	self.tileSetID = t.tileSetID or self.tileSetID
+	self.isWall = t.isWall or false
 
 	for i = 1, #t do
 		local feature = t[i]
@@ -229,7 +231,8 @@ end
 
 function Decoration:serialize()
 	local result = {
-		tileSetID = self:getTileSetID()
+		tileSetID = self:getTileSetID(),
+		isWall = self:getIsWall()
 	}
 
 	for i = 1, #self.features do
@@ -266,6 +269,10 @@ function Decoration:testRay(ray, staticMesh)
 	end, staticMesh)
 
 	return result
+end
+
+function Decoration:getIsWall()
+	return self.isWall
 end
 
 function Decoration:getTileSetID()
