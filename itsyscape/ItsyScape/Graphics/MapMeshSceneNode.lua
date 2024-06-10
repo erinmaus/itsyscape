@@ -30,7 +30,7 @@ function MapMeshSceneNode:new()
 	self.isOwner = false
 
 	self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
-	self:getMaterial():setOutlineThreshold(0.75)
+	--self:getMaterial():setOutlineThreshold(0.75)
 end
 
 function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor)
@@ -87,7 +87,6 @@ function MapMeshSceneNode:draw(renderer, delta)
 	end
 
 	if self.mapMesh then
-		--love.graphics.setMeshCullMode("none")
 		self.mapMesh:draw()
 	end
 end

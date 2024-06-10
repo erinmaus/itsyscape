@@ -1,5 +1,6 @@
 {
 	tileSetID = "Rumbridge1",
+	isWall = true,
 	{
 		id = "outside.corner-wood",
 		position = { 41.000000, 5.000000, 21.000000 },
