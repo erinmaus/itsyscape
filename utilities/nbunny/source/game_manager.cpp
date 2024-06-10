@@ -1326,6 +1326,35 @@ void nbunny::DecorationTypeProvider::serialize(lua_State* L, int index, GameMana
 	value.set("decoration", decoration);
 }
 
+void nbunny::SplineTypeProvider::deserialize(lua_State* L, const GameManagerVariant& value)
+{
+	push_type(L);
+
+	value.get("spline").to_lua(L);
+	if (lua_pcall(L, 1, 1, 0))
+	{
+		lua_error(L);
+	}
+}
+
+void nbunny::SplineTypeProvider::serialize(lua_State* L, int index, GameManagerVariant& value)
+{
+	lua_getfield(L, index, "serialize");
+	lua_pushvalue(L, index);
+
+	if (lua_pcall(L, 1, 1, 0))
+	{
+		lua_error(L);
+	}
+
+	GameManagerVariant spline;
+	spline.from_lua(L, -1);
+
+	lua_pop(L, 1);
+
+	value.set("spline", spline);
+}
+
 void nbunny::MapTypeProvider::deserialize(lua_State* L, const GameManagerVariant& value)
 {
 	push_type(L);
@@ -1454,6 +1483,10 @@ nbunny::GameManagerState::GameManagerState(lua_State* L)
 		L,
 		"ItsyScape.Graphics.Decoration",
 		"ItsyScape.Graphics.Decoration");
+	connect<SplineTypeProvider>(
+		L,
+		"ItsyScape.Graphics.Spline",
+		"ItsyScape.Graphics.Spline");
 	connect<MapTypeProvider>(
 		L,
 		"ItsyScape.World.Map",

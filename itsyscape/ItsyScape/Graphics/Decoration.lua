@@ -66,13 +66,22 @@ function Decoration.Feature:setColor(value)
 	self:getHandle():setColor(value:get())
 end
 
+function Decoration.Feature:getTexture()
+	return self:getHandle():getTexture() + 1
+end
+
+function Decoration.Feature:setTexture(value)
+	self:getHandle():setTexture((value or 1) - 1)
+end
+
 function Decoration.Feature:serialize()
 	return {
 		id = self:getID(),
 		position = { self:getHandle():getPosition() },
 		rotation = { self:getHandle():getRotation() },
 		scale = { self:getHandle():getScale() },
-		color = { self:getHandle():getColor() }
+		color = { self:getHandle():getColor() },
+		texture = self:getHandle():getTexture()
 	}
 end
 
@@ -155,6 +164,7 @@ function Decoration:loadFromTable(t)
 		local rotation = Quaternion(unpack(feature.rotation or { 0, 0, 0, 1 }))
 		local scale = Vector(unpack(feature.scale or { 1, 1, 1 }))
 		local color = Color(unpack(feature.color or { 1, 1, 1, 1 }))
+		local texture = feature.texture or 1
 		self:add(feature.id, position, rotation, scale, color)
 	end
 
@@ -169,13 +179,14 @@ function Decoration:loadFromTable(t)
 	end
 end
 
-function Decoration:add(id, position, rotation, scale, color)
+function Decoration:add(id, position, rotation, scale, color, texture)
 	local description = Decoration.Feature(NDecorationFeature())
 	description:setID(id)
 	description:setPosition(position or Vector(0))
 	description:setRotation(rotation or Quaternion(0))
 	description:setScale(scale or Vector(1))
 	description:setColor(color or Color(1))
+	description:setTexture(texture or 1)
 
 	local feature = Decoration.Feature(self:getHandle():addFeature(description:getHandle()))
 
@@ -201,6 +212,8 @@ function Decoration:toString()
 	r:pushLine("{")
 	r:pushIndent(1)
 	r:pushFormatLine("tileSetID = %q,", self:getTileSetID())
+	r:pushIndent(1)
+	r:pushFormatLine("isWall = %s,", Log.boolean(self:getIsWall()))
 
 	for i = 1, #self.features do
 		local feature = self.features[i]
@@ -212,6 +225,7 @@ function Decoration:toString()
 			local rotation = feature:getRotation()
 			local scale = feature:getScale()
 			local color = feature:getColor()
+			local texture = feature:getTexture()
 
 			r:pushIndent(2)
 			r:pushFormatLine("id = %q,", feature:getID())
@@ -231,6 +245,8 @@ function Decoration:toString()
 			r:pushFormatLine(
 				"color = { %f, %f, %f, %f },",
 				color.r, color.g, color.b, color.a)
+			r:pushIndent(2)
+			r:pushFormatLine("texture = %d,", texture)
 		end
 		r:pushIndent(1)
 		r:pushLine("},")
