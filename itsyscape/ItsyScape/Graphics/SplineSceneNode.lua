@@ -36,9 +36,10 @@ function SplineSceneNode:new()
 	self:getMaterial():setShader(SplineSceneNode.DEFAULT_SHADER)
 end
 
-function SplineSceneNode:fromSpline(decoration, staticMesh)
+function SplineSceneNode:fromSpline(spline, staticMesh)
 	table.clear(self.vertices)
 
+	local min, max = Vector(math.huge), Vector(-math.huge)
 	for i = 1, spline:getNumFeatures() do
 		local feature = spline:getFeatureByIndex(i)
 
@@ -46,7 +47,7 @@ function SplineSceneNode:fromSpline(decoration, staticMesh)
 			local vertices = staticMesh:getVertices(feature:getID())
 			for i = 1, #vertices, 1 do
 				local v = vertices[i]
-				v = staticMesh:getCurve():transform(Vector(unpack(v, 1, 3)))
+				local p = feature:getCurve():transform(Vector(unpack(v, 1, 3)))
 
 				local nx, ny, nz = unpack(v, 4, 6)
 				local tx, ty = unpack(v, 7, 8)
@@ -64,8 +65,11 @@ function SplineSceneNode:fromSpline(decoration, staticMesh)
 				cb = cb * c.b
 				ca = ca * c.a
 
-				table.insert(vertices, {
-					v.x, v.y, v.z,
+				min = min:min(p)
+				max = max:max(p)
+
+				table.insert(self.vertices, {
+					p.x, p.y, p.z,
 					nx, ny, nz,
 					tx, ty, tz,
 					cr, cg, cb, ca
@@ -73,13 +77,31 @@ function SplineSceneNode:fromSpline(decoration, staticMesh)
 			end
 		end
 
-		if coroutine.isrunning() then
+		if coroutine.running() then
 			coroutine.yield()
 		end
 	end
 
-	if #vertices >= 3 then
+	if #self.vertices >= 3 then
 		self.mesh = love.graphics.newMesh(SplineSceneNode.MESH_FORMAT, self.vertices, 'triangles', 'static')
+		self:setBounds(min, max)
+	else
+		self.mesh = nil
+	end
+end
+
+function SplineSceneNode:draw(renderer)
+	local shader = renderer:getCurrentShader()
+	local diffuse = self:getMaterial():getTexture(1)
+	if shader:hasUniform("scape_DiffuseTexture") and
+	   diffuse and diffuse:getIsReady()
+	then
+		diffuse:getResource(renderer:getCurrentPass():getID()):setFilter('nearest', 'nearest')
+		shader:send("scape_DiffuseTexture", diffuse:getResource())
+	end
+
+	if self.mesh then
+		love.graphics.draw(self.mesh)
 	end
 end
 

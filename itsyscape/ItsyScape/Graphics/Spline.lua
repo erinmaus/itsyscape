@@ -116,14 +116,15 @@ function Spline:loadFromTable(t)
 
 	for i = 1, #t do
 		local feature = t[i]
-		local curve = MapCurve(feature.curve)
+		local curve = MapCurve(nil, feature.curve)
 		local color = Color(unpack(feature.color or { 1, 1, 1, 1 }))
-		self:add(feature.id, curve, color)
+		local texture = feature.texture
+		self:add(feature.id, curve, color, texture)
 	end
 end
 
-function Spline:add(id, curve, color)
-	local feature = Spline.Feature(id, curve, color)
+function Spline:add(id, curve, color, texture)
+	local feature = Spline.Feature(id, curve, color, texture)
 	table.insert(self.features, feature)
 
 	return feature

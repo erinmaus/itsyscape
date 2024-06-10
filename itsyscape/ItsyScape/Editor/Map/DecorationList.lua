@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local Spline = require "ItsyScape.Graphics.Spline"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
@@ -38,11 +39,11 @@ function DecorationList:new(application)
 	panel:setSize(width, windowHeight)
 	self:addChild(panel)
 
-	self.newButton = Button()
-	self.newButton:setText("New")
-	self.newButton:setSize(width - DecorationList.PADDING * 2, 32)
-	self.newButton:setPosition(DecorationList.PADDING, DecorationList.PADDING)
-	self.newButton.onClick:register(function()
+	self.newDecorationButton = Button()
+	self.newDecorationButton:setText("New Decoration")
+	self.newDecorationButton:setSize(width - DecorationList.PADDING * 2, 32)
+	self.newDecorationButton:setPosition(DecorationList.PADDING, DecorationList.PADDING)
+	self.newDecorationButton.onClick:register(function()
 		local namePrompt = PromptWindow(self.application)
 		local tileSetPrompt = PromptWindow(self.application)
 
@@ -64,12 +65,40 @@ function DecorationList:new(application)
 		end)
 		namePrompt:open("Enter name for decoration.", "Name")
 	end)
-	self:addChild(self.newButton)
+	self:addChild(self.newDecorationButton)
+
+	self.newSplineButton = Button()
+	self.newSplineButton:setText("New Spline")
+	self.newSplineButton:setSize(width - DecorationList.PADDING * 2, 32)
+	self.newSplineButton:setPosition(DecorationList.PADDING, DecorationList.PADDING * 2 + 32)
+	self.newSplineButton.onClick:register(function()
+		local namePrompt = PromptWindow(self.application)
+		local tileSetPrompt = PromptWindow(self.application)
+
+		local decorationName
+
+		namePrompt.onSubmit:register(function(_, name)
+			tileSetPrompt:open("Enter decoration tile set ID.", "Tile Set")
+			decorationName = name
+		end)
+
+		tileSetPrompt.onSubmit:register(function(_, name)
+			local decorationFilename = string.format("Resources/Game/TileSets/%s/Layout.lstatic", name)
+			if love.filesystem.getInfo(decorationFilename) then
+				local t = { tileSetID = name }
+				self.application:getGame():getStage():decorate(decorationName, Spline(t))
+			else
+				Log.warn("Couldn't find decoration tile set '%s'.", name)
+			end
+		end)
+		namePrompt:open("Enter name for spline.", "Name")
+	end)
+	self:addChild(self.newSplineButton)
 
 	self.scrollablePanel = ScrollablePanel(GridLayout)
 	self.scrollablePanel:setPosition(
 		DecorationList.PADDING,
-		DecorationList.PADDING + 32)
+		DecorationList.PADDING * 3 + 32 * 2)
 	self.scrollablePanel:setSize(
 		width,
 		windowHeight - 32 - DecorationList.PADDING)

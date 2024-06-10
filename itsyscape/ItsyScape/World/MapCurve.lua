@@ -89,11 +89,6 @@ function MapCurve.Position:split(previousValue, nextValue, t)
 	distance = distance * t
 	local value = a + normal * distance
 
-	print(">>> a", a:get())
-	print(">>> b", b:get())
-	print(">>> v", value:get())
-	print(">>> t", t)
-
 	return MapCurve.Position(value:get())
 end
 
@@ -369,9 +364,10 @@ end
 function MapCurve:new(map, t)
 	t = t or {}
 
-	self.width = map:getWidth()
-	self.height = map:getHeight()
-	self.mapSize = Vector(map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize())
+	self.width = (map and map:getWidth()) or t.width or 0
+	self.height = (map and map:getHeight()) or t.height or 0
+	self.unit = (map and map:getCellSize()) or t.unit or 1
+	self.mapSize = Vector(self.width * self.unit, 0, self.height * self.unit)
 	self.halfMapSize = self.mapSize / 2
 
 	local min = t.min or { 0, 0, 0 }
@@ -447,13 +443,13 @@ function MapCurve:render(depth, result)
 end
 
 function MapCurve:transform(point)
-	if #self.points <= 1 then
+	if self.positionCurve:length() <= 1 then
 		return point
 	end
 
 	local planarPoint = Vector(point.x, 0, point.z)
-	local relativePoint = (planarPoint - self.min) / (self.max - self.min):max(Vector.ONE)
-	local t = math.min(relativePoint:get())
+	local relativePoint = (planarPoint - self.min) / (self.max - self.min):max(Vector.ONE) * self.axis
+	local t = math.max(relativePoint:get())
 	if t < 0 or t > 1 then
 		return point
 	end
@@ -528,6 +524,9 @@ end
 
 function MapCurve:toConfig()
 	return {
+		width = self.width,
+		height = self.height,
+		unit = self.unit,
 		min = { self.min:get() },
 		max = { self.max:get() },
 		axis = { self.axis:get() },
