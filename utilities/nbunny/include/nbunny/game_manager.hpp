@@ -214,6 +214,13 @@ namespace nbunny
 		void serialize(lua_State* L, int index, GameManagerVariant& value) override;
 	};
 
+	class SplineTypeProvider : public TypeProvider
+	{
+	public:
+		void deserialize(lua_State* L, const GameManagerVariant& value) override;
+		void serialize(lua_State* L, int index, GameManagerVariant& value) override;
+	};
+
 	class MapTypeProvider : public TypeProvider
 	{
 	public:

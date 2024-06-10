@@ -40,7 +40,7 @@ float getWallHackAlpha(vec3 position)
 	float d5 = -dot(bottomPlane, p);
 	float d6 = 0.0;
 
-	if (scape_WallHackNear >= 0.0)
+	if (scape_WallHackNear > 0.0)
 	{
 		d6 = -dot(nearPlane, p);
 	}

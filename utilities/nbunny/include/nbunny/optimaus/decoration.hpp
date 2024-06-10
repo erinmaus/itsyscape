@@ -29,6 +29,7 @@ namespace nbunny
 		glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 		glm::vec3 scale = glm::vec3(1.0f);
 		glm::vec4 color = glm::vec4(1.0f);
+		float texture = 0.0f;
 
 		DecorationFeature() = default;
 		DecorationFeature(const DecorationFeature& other) = default;
@@ -60,7 +61,7 @@ namespace nbunny
 		{
 			glm::vec3 position;
 			glm::vec3 normal;
-			glm::vec2 texture;
+			glm::vec3 texture;
 			glm::vec4 color;
 		};
 
