@@ -34,6 +34,7 @@ local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local Map = require "ItsyScape.World.Map"
 local TileSet = require "ItsyScape.World.TileSet"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local Spline = require "ItsyScape.Graphics.Spline"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local LocalStage = Class(Stage)
@@ -1159,10 +1160,19 @@ function LocalStage:loadMapResource(instance, filename, args)
 	end
 
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath .. "/Decorations")) do
-		local group = item:match("(.*)%.ldeco$")
-		if group then
-			local key = directoryPath .. "/Decorations/" .. item
-			local decoration = Decoration(directoryPath .. "/Decorations/" .. item)
+		local decorationName = item:match("(.*)%.ldeco$")
+		local splineName = item:match("(.*)%.lspline$")
+		local filename = directoryPath .. "/Decorations/" .. item
+		local key = filename
+
+		local decoration
+		if decorationName then
+			decoration = Decoration(filename)
+		elseif splineName then
+			decoration = Spline(filename)
+		end
+
+		if decoration then
 			self:decorate(key, decoration, baseLayer)
 		end
 	end
