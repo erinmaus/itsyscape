@@ -1,6 +1,8 @@
 uniform ArrayImage scape_DiffuseTexture;
 uniform ArrayImage scape_MaskTexture;
 
+#include "Resources/Shaders/WallHack.common.glsl"
+
 varying highp vec4 frag_TileBounds;
 varying highp vec4 frag_TextureLayer;
 
@@ -10,6 +12,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 	maskCoordinate.s = 1.0 - maskCoordinate.s;
 
 	float mask = Texel(scape_MaskTexture, vec3(maskCoordinate, frag_TextureLayer.y)).a;
+	float alpha = getWallHackAlpha(frag_Position);
 
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
 
@@ -22,5 +25,5 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 	newTextureCoordinate.t = mod(local.t, (frag_TileBounds.w - frag_TileBounds.z)) + frag_TileBounds.z;
 	newTextureCoordinate.p = frag_TextureLayer.x;
 
-	return Texel(scape_DiffuseTexture, newTextureCoordinate) * color * vec4(1.0, 1.0, 1.0, mask);
+	return Texel(scape_DiffuseTexture, newTextureCoordinate) * color * vec4(1.0, 1.0, 1.0, mask * alpha);
 }

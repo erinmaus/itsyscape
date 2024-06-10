@@ -10,6 +10,7 @@
 local ripple = require "ripple"
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local Color = require "ItsyScape.Graphics.Color"
@@ -44,8 +45,9 @@ function GameView.PropViewDebugStats:process(node, delta)
 	node:update(delta)
 end
 
-function GameView:new(game)
+function GameView:new(game, camera)
 	self.game = game
+	self.camera = camera
 	self.actors = {}
 	self.props = {}
 	self.views = {}
@@ -411,6 +413,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		mask = mapMeshMasks and MapMeshMask.combine(unpack(mapMeshMasks)),
 		islandProcessor = mapMeshMasks and meta.autoMask and MapMeshIslandProcessor(map, tileSet),
 		meta = meta,
+		wallHackEnabled = not (meta and type(meta.wallHack) == "table" and meta.wallHack.enabled == false),
 		curves = {}
 	}
 
@@ -447,6 +450,25 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 
 		if shader:hasUniform("scape_MapSize") then
 			shader:send("scape_MapSize", { m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize() })
+		end
+
+		if m.wallHackEnabled then
+			local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom = 1.25, 1.25, 4.0, 0.0
+
+			if m.meta and type(m.meta.wallHack) == "table" then
+				wallHackLeft = m.meta.wallHack.left or wallHackLeft
+				wallHackRight = m.meta.wallHack.right or wallHackRight
+				wallHackTop = m.meta.wallHack.top or wallHackTop
+				wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
+			end
+
+			if shader:hasUniform("scape_WallHackWindow") then
+				shader:send("scape_WallHackWindow", { wallHackLeft, wallHackRight, wallHackTop, wallHackBottom })
+			end
+
+			if shader:hasUniform("scape_WallHackNear") then
+				shader:send("scape_WallHackNear", 0)
+			end
 		end
 	end
 
@@ -622,7 +644,17 @@ function GameView:updateMap(map, layer)
 				local node = MapMeshSceneNode()
 				node:setParent(m.node)
 				table.insert(m.parts, node)
-				local n = #m.parts
+
+				local alphaNode
+				if m.wallHackEnabled then
+					alphaNode = MapMeshSceneNode()
+					alphaNode:getMaterial():setIsTranslucent(true)
+					alphaNode:getMaterial():setOutlineThreshold(-1.0)
+					alphaNode:setParent(m.node)
+
+					table.insert(m.parts, alphaNode)
+				end
+
 				self.resourceManager:queueAsyncEvent(function()
 					node:fromMap(
 						m.map,
@@ -633,16 +665,124 @@ function GameView:updateMap(map, layer)
 						m.mapMeshMasks,
 						m.islandProcessor)
 
-					self:_updateMapBounds(m, node, n)
+					self:_updateMapBounds(m, node)
 
 					if m.mapMeshMasks then
 						node:getMaterial():setTextures(m.texture, m.mask:getTexture())
 					else
 						node:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
 					end
+
+					if alphaNode then
+						alphaNode:setMapMesh(node:getMapMesh())
+						self:_updateMapBounds(m, alphaNode)
+
+						if m.mapMeshMasks then
+							alphaNode:getMaterial():setTextures(m.texture, m.mask:getTexture())
+						else
+							alphaNode:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
+						end
+					end
 				end)
 
-				node:onWillRender(m.onWillRender)
+				local function getPlayerNearPlane()
+					local near = 0
+
+					local playerActor = self.game:getPlayer():getActor()
+					if playerActor then
+						local playerI, playerJ, playerK = playerActor:getTile()
+
+						if playerK == layer then
+							local eye = self.camera:getEye()
+							local _, eyeI, eyeJ = m.map:getTileAt(eye.x, eye.z)
+
+							local differenceI = eyeI - playerI
+							local differenceJ = eyeJ - playerJ
+
+							local ray = Ray(self.camera:getPosition(), -(self.camera:getEye() - self.camera:getPosition()))
+
+							if math.abs(differenceI) > math.abs(differenceJ) then
+								local directionI = math.sign(differenceI)
+
+								local stopI
+								if directionI < 0 then
+									stopI = 1
+								else
+									stopI = m.map:getWidth()
+								end
+
+								local playerY = map:getTileCenter(playerI, playerJ).y
+								local isHidden = false
+								local step = 0
+								for i = playerI + directionI, stopI, directionI do
+									step = step + map:getCellSize()
+
+									local otherY = map:getTileCenter(i, playerJ).y
+									if otherY > ray:project(step).y - 0.5 and i ~= stopI then
+										isHidden = true
+									elseif isHidden or i == stopI then
+										near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
+										break
+									end
+								end
+							else
+								local directionJ = math.sign(differenceJ)
+
+								local stopJ
+								if directionJ < 0 then
+									stopJ = 1
+								else
+									stopJ = m.map:getHeight()
+								end
+
+								local playerY = map:getTileCenter(playerI, playerJ).y
+								local isHidden = false
+								local step = 0
+								for j = playerJ + directionJ, stopJ, directionJ do
+									step = step + map:getCellSize()
+
+									local otherY = map:getTileCenter(playerI, j).y
+									if otherY > ray:project(step).y - 0.5 and j ~= stopJ then
+										isHidden = true
+									elseif isHidden or j == stopJ then
+										near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
+										break
+									end
+								end
+							end
+						end
+					end
+
+					return near
+				end
+
+				node:onWillRender(function(renderer)
+					m.onWillRender(renderer)
+
+					local shader = renderer:getCurrentShader()
+					if shader:hasUniform("scape_WallHackAlpha") then
+						shader:send("scape_WallHackAlpha", 0.0)
+					end
+
+					if shader:hasUniform("scape_WallHackNear") then
+						shader:send("scape_WallHackNear", getPlayerNearPlane())
+					end
+				end)
+
+				if alphaNode then
+					alphaNode:onWillRender(function(renderer)
+						m.onWillRender(renderer)
+
+						local shader = renderer:getCurrentShader()
+						if shader:hasUniform("scape_WallHackAlpha") then
+							shader:send("scape_WallHackAlpha", 1.0)
+						end
+
+						if shader:hasUniform("scape_WallHackNear") then
+							shader:send("scape_WallHackNear", getPlayerNearPlane())
+						end
+					end)
+				end
 			end
 		end
 
@@ -689,7 +829,7 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 	-- })
 end
 
-function GameView:_updateMapBounds(m, node, i)
+function GameView:_updateMapBounds(m, node)
 	local mapMesh = node:getMapMesh()
 	if not mapMesh then
 		return
@@ -728,7 +868,7 @@ function GameView:bendMap(layer, ...)
 	end
 
 	for _, node in ipairs(m.parts) do
-		self:_updateMapBounds(m, node, _)
+		self:_updateMapBounds(m, node)
 	end
 
 	local textures = {}
@@ -977,8 +1117,8 @@ function GameView:decorate(group, decoration, layer)
 					end
 
 					local shader = renderer:getCurrentShader()
-					if shader:hasUniform("scape_ClipAlphaMultiplier") then
-						shader:send("scape_ClipAlphaMultiplier", 0.0)
+					if shader:hasUniform("scape_WallHackAlpha") then
+						shader:send("scape_WallHackAlpha", 0.0)
 					end
 				end)
 
@@ -987,6 +1127,7 @@ function GameView:decorate(group, decoration, layer)
 				alphaSceneNode:getMaterial():setTextures(texture)
 				alphaSceneNode:getMaterial():setIsTranslucent(true)
 				alphaSceneNode:setParent(map)
+				alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
 				alphaSceneNode:getMaterial():setShader(shader)
 				alphaSceneNode:onWillRender(function(renderer)
 					if m and m.onWillRender then
@@ -994,8 +1135,8 @@ function GameView:decorate(group, decoration, layer)
 					end
 
 					local shader = renderer:getCurrentShader()
-					if shader:hasUniform("scape_ClipAlphaMultiplier") then
-						shader:send("scape_ClipAlphaMultiplier", 1.0)
+					if shader:hasUniform("scape_WallHackAlpha") then
+						shader:send("scape_WallHackAlpha", 1.0)
 					end
 				end)
 

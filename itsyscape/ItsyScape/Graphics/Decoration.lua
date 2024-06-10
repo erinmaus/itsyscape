@@ -120,6 +120,7 @@ end
 function Decoration:new(d)
 	self.tileSetID = false
 	self.isWall = false
+	self.uniforms = {}
 	self.features = {}
 	self._handle = NDecoration()
 
@@ -155,6 +156,16 @@ function Decoration:loadFromTable(t)
 		local scale = Vector(unpack(feature.scale or { 1, 1, 1 }))
 		local color = Color(unpack(feature.color or { 1, 1, 1, 1 }))
 		self:add(feature.id, position, rotation, scale, color)
+	end
+
+	if type(t.uniforms) == "table" then
+		for key, value in pairs(t.uniforms) do
+			if type(value) == "table" and #value >= 1 then
+				self.uniforms[key] = { unpack(value) }
+			elseif type(value) == "number" then
+				self.uniforms[key] = value
+			end
+		end
 	end
 end
 
@@ -232,11 +243,20 @@ end
 function Decoration:serialize()
 	local result = {
 		tileSetID = self:getTileSetID(),
-		isWall = self:getIsWall()
+		isWall = self:getIsWall(),
+		uniforms = {}
 	}
 
 	for i = 1, #self.features do
 		table.insert(result, self.features[i]:serialize())
+	end
+
+	for key, value in pairs(self.uniforms) do
+		if type(value) == "table" then
+			result.uniforms[key] = { unpack(value) }
+		else
+			result.uniforms[key] = value
+		end
 	end
 
 	return result
@@ -277,6 +297,10 @@ end
 
 function Decoration:getTileSetID()
 	return self.tileSetID
+end
+
+function Decoration:getUniform(key)
+	return self.uniforms[key]
 end
 
 function Decoration:iterate()

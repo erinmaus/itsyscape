@@ -172,7 +172,7 @@ function Application:new(multiThreaded)
 			self.camera:setVerticalRotation(-math.pi / 2)
 		end
 
-		self.gameView = GameView(self:getGame())
+		self.gameView = GameView(self:getGame(), self.camera)
 		self.gameView:attach()
 		self.uiView = UIView(self.gameView)
 
