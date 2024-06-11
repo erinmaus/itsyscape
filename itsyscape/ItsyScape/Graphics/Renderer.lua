@@ -16,6 +16,7 @@ local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
 local OutlineRendererPass = require "ItsyScape.Graphics.OutlineRendererPass"
 local ParticleOutlineRendererPass = require "ItsyScape.Graphics.ParticleOutlineRendererPass"
 local AlphaMaskRendererPass = require "ItsyScape.Graphics.AlphaMaskRendererPass"
+local ShadowRendererPass = require "ItsyScape.Graphics.ShadowRendererPass"
 local LBuffer = require "ItsyScape.Graphics.LBuffer"
 local GBuffer = require "ItsyScape.Graphics.GBuffer"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
@@ -86,12 +87,14 @@ Renderer.Y_NOISE = NoiseBuilder {
 function Renderer:new()
 	self._renderer = NRenderer(self)
 
+	self.shadowPass = ShadowRendererPass(self)
 	self.outlinePass = OutlineRendererPass(self)
-	self.finalDeferredPass = DeferredRendererPass(self)
+	self.finalDeferredPass = DeferredRendererPass(self, self.shadowPass)
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
 	self.alphaMaskPass = AlphaMaskRendererPass(self)
 	self.particleOutlinePass = ParticleOutlineRendererPass(self)
 	self.passesByID = {
+		[self.shadowPass:getID()] = self.shadowPass,
 		[self.outlinePass:getID()] = self.outlinePass,
 		[self.finalDeferredPass:getID()] = self.finalDeferredPass,
 		[self.finalForwardPass:getID()] = self.finalForwardPass,
@@ -99,6 +102,7 @@ function Renderer:new()
 		[self.particleOutlinePass:getID()] = self.particleOutlinePass,
 	}
 
+	self._renderer:addRendererPass(self.shadowPass:getHandle())
 	self._renderer:addRendererPass(self.outlinePass:getHandle())
 	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
 	self._renderer:addRendererPass(self.finalForwardPass:getHandle())

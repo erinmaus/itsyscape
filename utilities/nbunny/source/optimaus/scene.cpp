@@ -472,6 +472,16 @@ void nbunny::SceneNode::after_draw(Renderer &renderer, float delta)
 	// Nothing.
 }
 
+void nbunny::SceneNode::collect(SceneNode& node, std::vector<SceneNode*>& result)
+{
+	result.push_back(&node);
+
+	for (auto child: node.children)
+	{
+		collect(*child, result);
+	}
+}
+
 void nbunny::SceneNode::walk_by_material(
 	SceneNode& node,
 	const Camera& camera,
@@ -847,6 +857,19 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 	}
 
 	return true;
+}
+
+int nbunny::Camera::get_num_planes() const
+{
+	return NUM_PLANES;
+}
+
+const glm::vec4& nbunny::Camera::get_plane(int index) const
+{
+	compute_planes();
+
+	index = std::max(std::min(index, NUM_PLANES - 1), 1);
+	return planes[index];
 }
 
 static int nbunny_scene_node_transform_get_scene_node(lua_State* L)

@@ -1,7 +1,7 @@
 #line 1
 
 ////////////////////////////////////////////////////////////////////////////////
-// Resource/Renderer/Deferred/CopyDepth.frag.glsl
+// Resource/Renderer/Shadow/Base.frag.glsl
 //
 // This file is a part of ItsyScape.
 //
@@ -10,12 +10,21 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
-vec4 effect(
-	vec4 color,
-	Image image,
-	vec2 textureCoordinate,
-	vec2 screenCoordinate)
+#define SCAPE_ALPHA_DISCARD_THRESHOLD 0.1
+
+varying vec3 frag_Position;
+varying vec3 frag_Normal;
+varying vec2 frag_Texture;
+varying vec4 frag_Color;
+
+vec4 performEffect(vec4 color, vec2 textureCoordinate);
+
+void effect()
 {
-	gl_FragDepth = Texel(image, textureCoordinate).r;
-    return vec4(0.0);
+	vec4 diffuse = performEffect(frag_Color, frag_Texture);
+
+	if (diffuse.a < SCAPE_ALPHA_DISCARD_THRESHOLD)
+	{
+		discard;
+	}
 }

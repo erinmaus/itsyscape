@@ -186,6 +186,9 @@ namespace nbunny
 		virtual void draw(Renderer& renderer, float delta);
 		virtual void after_draw(Renderer& renderer, float delta);
 
+		static void collect(
+			SceneNode& node,
+			std::vector<SceneNode*>& result);
 		static void walk_by_material(
 			SceneNode& node,
 			const Camera& camera,
@@ -270,6 +273,9 @@ namespace nbunny
 		void rotate(const glm::quat& rotation);
 
 		bool inside(const SceneNode& node, float delta) const;
+
+		int get_num_planes() const;
+		const glm::vec4& get_plane(int index) const;
 	};
 }
 

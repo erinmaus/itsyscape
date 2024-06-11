@@ -46,6 +46,16 @@ Meta "DirectionalLight" {
 	Resource = Meta.TYPE_RESOURCE
 }
 
+Meta "ShadowCastingDirectionalLight" {
+	MinX = Meta.TYPE_REAL,
+	MinY = Meta.TYPE_REAL,
+	MinZ = Meta.TYPE_REAL,
+	MaxX = Meta.TYPE_REAL,
+	MaxY = Meta.TYPE_REAL,
+	MaxZ = Meta.TYPE_REAL,
+	Resource = Meta.TYPE_RESOURCE
+}
+
 local LIGHTS = {
 	"Fog",
 	"PointLight",

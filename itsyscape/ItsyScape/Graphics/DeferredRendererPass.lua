@@ -13,10 +13,11 @@ local NDeferredRendererPass = require "nbunny.optimaus.deferredrendererpass"
 
 local DeferredRendererPass = Class(RendererPass)
 
-function DeferredRendererPass:new(renderer)
+function DeferredRendererPass:new(renderer, shadowPass)
 	RendererPass.new(self, renderer)
 
-	self._rendererPass = NDeferredRendererPass()
+	shadowPass = shadowPass and shadowPass:getHandle()
+	self._rendererPass = NDeferredRendererPass(shadowPass)
 
 	self.isFullLit = false
 end

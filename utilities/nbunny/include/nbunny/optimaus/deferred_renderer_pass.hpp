@@ -20,6 +20,7 @@
 #include "nbunny/optimaus/light.hpp"
 #include "nbunny/optimaus/renderer.hpp"
 #include "nbunny/optimaus/scene.hpp"
+#include "nbunny/optimaus/shadow_renderer_pass.hpp"
 
 namespace nbunny
 {
@@ -31,6 +32,8 @@ namespace nbunny
 		LBuffer light_buffer;
 		LBuffer fog_buffer;
 		LBuffer output_buffer;
+
+		ShadowRendererPass* shadow_pass = nullptr;
 
 		enum
 		{
@@ -46,7 +49,8 @@ namespace nbunny
 			BUILTIN_SHADER_DIRECTIONAL_LIGHT = -3,
 			BUILTIN_SHADER_POINT_LIGHT       = -4,
 			BUILTIN_SHADER_FOG               = -5,
-			BUILTIN_SHADER_DEPTH_COPY        = -6
+			BUILTIN_SHADER_DEPTH_COPY        = -6,
+			BUILTIN_SHADER_SHADOW            = -7
 		};
 
 		std::vector<SceneNode*> visible_scene_nodes;
@@ -65,7 +69,10 @@ namespace nbunny
 		void draw_nodes(lua_State* L, float delta);
 		void draw_lights(lua_State* L, float delta);
 		void draw_fog(lua_State* L, float delta);
+		void draw_shadows(lua_State* L, float delta);
 		void copy_depth_buffer(lua_State* L);
+
+		float ambient_light = 0.0f;
 
 		void mix_lights();
 		void mix_fog();
@@ -73,7 +80,7 @@ namespace nbunny
 		love::graphics::Shader* get_builtin_shader(lua_State* L, int builtin_id, const std::string& filename, bool is_light = true);
 
 	public:
-		DeferredRendererPass();
+		DeferredRendererPass(ShadowRendererPass* shadow_pass);
 		~DeferredRendererPass() = default;
 
 		GBuffer& get_g_buffer();
