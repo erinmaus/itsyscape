@@ -7,6 +7,7 @@ uniform mat4 scape_CascadeLightSpaceMatrices[SCAPE_MAX_CASCADES];
 uniform float scape_CascadeNearPlanes[SCAPE_MAX_CASCADES];
 uniform int scape_NumCascades;
 uniform float scape_ShadowAlpha;
+uniform mat4 scape_View;
 
 #define SCAPE_PCF_BLUR_START -1
 #define SCAPE_PCF_BLUR_END 1
@@ -47,6 +48,7 @@ float calculatePCF(int cascadeIndex, vec3 position, vec2 delta)
             float y = float(j);
 
             comparison += delta.x * x + delta.y * y;
+            //comparison += 0.001;
             float target = Texel(scape_ShadowMap, vec3(position.x + x * scape_TexelSize.x, position.y + y * scape_TexelSize.y, layer)).r;
 
             result += step(target, comparison);
@@ -58,6 +60,13 @@ float calculatePCF(int cascadeIndex, vec3 position, vec2 delta)
     return result /= numSamples;
 }
 
+const vec3 COLORS[4] = vec3[](
+    vec3(1.0, 0.0, 0.0),
+    vec3(0.0, 1.0, 0.0),
+    vec3(0.0, 0.0, 1.0),
+    vec3(1.0, 0.0, 1.0)
+);
+
 vec4 effect(
     vec4 color,
     Image depth,
@@ -65,27 +74,24 @@ vec4 effect(
     vec2 screenCoordinate)
 {
     vec3 worldPosition = Texel(scape_PositionTexture, textureCoordinate).xyz;
+    vec3 viewPosition = (scape_View * vec4(worldPosition, 1.0)).xyz;
 
     int cascadeIndex = 0;
     for (int i = 0; i < scape_NumCascades; ++i)
     {
         float near = scape_CascadeNearPlanes[i];
-        if (worldPosition.z >= near)
+        if (viewPosition.z >= near)
         {
             cascadeIndex = i;
-        }
-        else
-        {
-            break;
         }
     }
 
     vec4 lightPosition = scape_CascadeLightSpaceMatrices[cascadeIndex] * vec4(worldPosition, 1.0);
     vec3 projectedLightPosition = lightPosition.xyz / lightPosition.w;
-    projectedLightPosition = projectedLightPosition * vec3(2.0f) - vec3(1.0f);
+    projectedLightPosition = (projectedLightPosition + vec3(1.0f)) / vec3(2.0f);
 
     vec2 delta = getTexelDepthDeltas(dFdx(projectedLightPosition), dFdy(projectedLightPosition));
     float shadow = calculatePCF(cascadeIndex, projectedLightPosition, delta);
 
-    return vec4(vec3(0.0f), delta * scape_ShadowAlpha);
+    return vec4(COLORS[cascadeIndex], shadow);
 }

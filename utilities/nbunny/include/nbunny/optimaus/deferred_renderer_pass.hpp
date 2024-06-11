@@ -30,6 +30,7 @@ namespace nbunny
 		GBuffer g_buffer;
 		GBuffer depth_buffer;
 		LBuffer light_buffer;
+		LBuffer shadow_buffer;
 		LBuffer fog_buffer;
 		LBuffer output_buffer;
 

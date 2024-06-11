@@ -681,6 +681,36 @@ glm::vec3 nbunny::Camera::get_negative_vertex(
 	return result;
 }
 
+void nbunny::Camera::set_field_of_view(float value)
+{
+	field_of_view = value;
+}
+
+float nbunny::Camera::get_field_of_view() const
+{
+	return field_of_view;
+}
+
+void nbunny::Camera::set_near(float value)
+{
+	near = value;
+}
+
+float nbunny::Camera::get_near() const
+{
+	return near;
+}
+
+void nbunny::Camera::set_far(float value)
+{
+	far = value;
+}
+
+float nbunny::Camera::get_far() const
+{
+	return far;
+}
+
 void nbunny::Camera::set_is_cull_enabled(bool value)
 {
 	is_cull_enabled = value;
@@ -1517,6 +1547,12 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 {
 	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Camera>("NCamera",
 		sol::call_constructor, sol::constructors<nbunny::Camera()>(),
+		"setFieldOfView", &nbunny::Camera::set_field_of_view,
+		"getFieldOfView", &nbunny::Camera::get_field_of_view,
+		"setNear", &nbunny::Camera::set_near,
+		"getNear", &nbunny::Camera::get_near,
+		"setFar", &nbunny::Camera::set_far,
+		"getFar", &nbunny::Camera::get_far,
 		"setIsCullEnabled", &nbunny::Camera::set_is_cull_enabled,
 		"getIsCullEnabled", &nbunny::Camera::get_is_cull_enabled,
 		"getView", &nbunny_camera_get_view,

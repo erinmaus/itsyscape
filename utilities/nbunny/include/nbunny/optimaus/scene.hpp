@@ -223,6 +223,10 @@ namespace nbunny
 		static const int NUM_POINTS = 8;
 		mutable glm::vec3 minFrustum, maxFrustum;
 
+		float field_of_view = glm::radians(30.0f);
+		float near = 0.01f;
+		float far = 192.0f;
+
 		glm::vec4 clip_plane = glm::vec4(0.0);
 		bool is_clip_plane_enabled = false;
 
@@ -238,6 +242,15 @@ namespace nbunny
 	public:
 		Camera() = default;
 		~Camera() = default;
+
+		void set_field_of_view(float value);
+		float get_field_of_view() const;
+
+		void set_near(float value);
+		float get_near() const;
+
+		void set_far(float value);
+		float get_far() const;
 
 		void set_is_cull_enabled(bool value);
 		bool get_is_cull_enabled() const;

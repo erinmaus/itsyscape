@@ -444,6 +444,9 @@ function Renderer:draw(scene, delta, width, height)
 	end
 
 	self._renderer:getCamera():update(view, projection)
+	self._renderer:getCamera():setFieldOfView(self.camera:getFieldOfView())
+	self._renderer:getCamera():setNear(self.camera:getNear())
+	self._renderer:getCamera():setFar(self.camera:getFar())
 	self._renderer:getCamera():moveEye(eye:get())
 	self._renderer:getCamera():moveTarget(target:get())
 	self._renderer:getCamera():rotate(rotation:get())

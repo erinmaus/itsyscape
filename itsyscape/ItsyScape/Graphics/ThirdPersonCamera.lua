@@ -21,7 +21,7 @@ function ThirdPersonCamera:new()
 	self.height = 1
 	self.fieldOfView = math.rad(30)
 	self.near = 0.1
-	self.far = 192
+	self.far = 128
 	self.verticalRotation = 0
 	self.horizontalRotation = 0
 	self.distance = 1

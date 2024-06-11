@@ -23,6 +23,9 @@ vec4 getWallHackPlane(vec3 normal, vec3 point)
 
 float getWallHackAlpha(vec3 position)
 {
+#ifdef SCAPE_SHADOW_PASS
+	return 1.0 - scape_WallHackAlpha;
+#else
 	vec3 eyeToTargetDirection = getWallHackClampedNormal(scape_CameraEye - scape_CameraTarget);
 	vec3 leftDirection = normalize(cross(eyeToTargetDirection, vec3(0.0, 1.0, 0.0)));
 	vec4 farPlane = getWallHackPlane(eyeToTargetDirection, scape_CameraTarget);
@@ -55,4 +58,5 @@ float getWallHackAlpha(vec3 position)
 	}
 
 	return alpha;
+#endif
 }

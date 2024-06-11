@@ -37,8 +37,10 @@ namespace nbunny
 		void walk_all_nodes(SceneNode& node, float delta);
 		void draw_nodes(lua_State* L, float delta);
 
-		std::vector<glm::vec3> viewing_frustum_corners;
-		void calculate_viewing_frustum_corners();
+		void calculate_viewing_frustum_corners(float near, float far, std::vector<glm::vec3>& result) const;
+
+		glm::mat4 get_light_view_matrix(const glm::vec3& center, float delta) const;
+		void get_light_projection_view_matrix(int cascade_index, float delta, glm::mat4& projection_matrix, glm::mat4& view_matrix) const;
 
 		bool has_shadow_map = false;
 
@@ -55,8 +57,8 @@ namespace nbunny
 		void resize(int width, int height) override;
 		void attach(Renderer& renderer) override;
 
-		glm::mat4 get_light_view_matrix(float delta) const;
-		void get_light_projection_matrix(int cascade_index, glm::mat4& projection_matrix, float& near_plane, float& far_plane) const;
+		glm::mat4 get_light_space_matrix(int cascade_index, float delta);
+		float get_near_plane(int cascade_index);
 
         love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node) override;
 	};
