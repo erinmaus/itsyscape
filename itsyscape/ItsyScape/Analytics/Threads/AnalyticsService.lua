@@ -92,7 +92,7 @@ local function sendAnalyticEvent(event)
 		Log.engine("Submitted event %s.", event.event)
 		return true
 	else
-		Log.warn("Could not submit analytic (status code = %d): %s", status, result)
+		Log.warn("Could not submit analytic (status code = %d): %s", code, result)
 		return false
 	end
 end

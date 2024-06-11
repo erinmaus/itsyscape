@@ -56,7 +56,7 @@ function BasicDirectionalLight:ready(director, game)
 		local size = self:getBehavior(SizeBehavior)
 		if size then
 			size.size = max - min
-			size.min = min
+			size.offset = (max - min) / 2 * Vector.PLANE_XZ
 		end
 	end
 

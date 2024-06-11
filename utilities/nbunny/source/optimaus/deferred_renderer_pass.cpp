@@ -32,6 +32,7 @@ nbunny::DeferredRendererPass::DeferredRendererPass(ShadowRendererPass* shadow_pa
 	depth_buffer({}),
 	light_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	fog_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
+	shadow_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	output_buffer(love::PIXELFORMAT_RGBA8, g_buffer)
 {
 	// Nothing.
@@ -295,10 +296,14 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
+	shadow_buffer.use();
+	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 0.0f), love::OptionalInt(), love::OptionalDouble());
+
     graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
     graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
     graphics->origin();
     graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 
 	auto shader = get_builtin_shader(L, BUILTIN_SHADER_SHADOW, SHADER_SHADOW);
 	get_renderer()->set_current_shader(shader);
@@ -326,18 +331,23 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 		shader->updateUniform(texel_size_uniform, 1);
 	}
 
-	auto view_matrix = shadow_pass->get_light_view_matrix(delta);
 	std::vector<glm::mat4> light_space_matrices;
 	std::vector<float> near_planes;
 	for (int i = 0; i < shadow_pass->get_num_cascades(); ++i)
 	{
-		glm::mat4 projection_matrix;
-		float near_plane, far_plane;
+		auto light_space_matrix = shadow_pass->get_light_space_matrix(i, delta);
+		float near_plane = shadow_pass->get_near_plane(i);
 
-		shadow_pass->get_light_projection_matrix(i, projection_matrix, near_plane, far_plane);
-
-		light_space_matrices.push_back(projection_matrix * view_matrix);
+		light_space_matrices.push_back(light_space_matrix);
 		near_planes.push_back(near_plane);
+	}
+
+	auto view_uniform = shader->getUniformInfo("scape_View");
+	if (view_uniform)
+	{
+		auto view = get_renderer()->get_camera().get_view();
+		std::memcpy(view_uniform->floats, glm::value_ptr(view), sizeof(glm::mat4));
+		shader->updateUniform(view_uniform, 1);
 	}
 
 	auto light_space_matrices_uniform = shader->getUniformInfo("scape_CascadeLightSpaceMatrices");
@@ -368,7 +378,25 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 		shader->updateUniform(shadow_alpha_uniform, 1);
 	}
 
-	graphics->draw(g_buffer.get_canvas(0), love::Matrix4());
+	auto near_uniform = shader->getUniformInfo("scape_Near");
+	if (near_uniform)
+	{
+		*near_uniform->floats = get_renderer()->get_camera().get_near();
+		shader->updateUniform(near_uniform, 1);
+	}
+
+	auto far_uniform = shader->getUniformInfo("scape_Far");
+	if (far_uniform)
+	{
+		*far_uniform->floats = get_renderer()->get_camera().get_far();
+		shader->updateUniform(far_uniform, 1);
+	}
+
+	graphics->draw(g_buffer.get_canvas(1), love::Matrix4());
+
+	output_buffer.use();
+    get_renderer()->set_current_shader(nullptr);
+	graphics->draw(shadow_buffer.get_color(), love::Matrix4());
 }
 
 void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
@@ -641,6 +669,7 @@ void nbunny::DeferredRendererPass::resize(int width, int height)
 	depth_buffer.resize(width, height);
 	light_buffer.resize(g_buffer);
 	fog_buffer.resize(g_buffer);
+	shadow_buffer.resize(g_buffer);
 	output_buffer.resize(g_buffer);
 }
 
