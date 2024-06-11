@@ -19,7 +19,8 @@ TextureResource.PASSES = {
 	["Deferred"] = RendererPass.PASS_DEFERRED,
 	["Forward"] = RendererPass.PASS_FORWARD,
 	["Mobile"] = RendererPass.PASS_MOBILE,
-	["Outline"] = RendererPass.PASS_OUTLINE
+	["Outline"] = RendererPass.PASS_OUTLINE,
+	["Shadow"] = RendererPass.PASS_SHADOW
 }
 
 -- Basic TextureResource resource class.

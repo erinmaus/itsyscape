@@ -23,9 +23,11 @@ static const std::string SHADER_DIRECTIONAL_LIGHT = "DirectionalLight";
 static const std::string SHADER_POINT_LIGHT       = "PointLight";
 static const std::string SHADER_FOG               = "Fog";
 static const std::string SHADER_COPY_DEPTH        = "CopyDepth";
+static const std::string SHADER_SHADOW            = "Shadow";
 
-nbunny::DeferredRendererPass::DeferredRendererPass() :
+nbunny::DeferredRendererPass::DeferredRendererPass(ShadowRendererPass* shadow_pass) :
 	RendererPass(RENDERER_PASS_DEFERRED),
+	shadow_pass(shadow_pass),
 	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F }),
 	depth_buffer({}),
 	light_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
@@ -88,6 +90,8 @@ void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNo
 
 	Light light;
 	node.to_light(light, delta);
+
+	ambient_light += light.ambient_coefficient;
 
 	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
 	if (color_texture_uniform)
@@ -282,6 +286,91 @@ void nbunny::DeferredRendererPass::copy_depth_buffer(lua_State* L)
 	graphics->draw(g_buffer.get_canvas(0), love::Matrix4());
 }
 
+void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
+{
+	if (!shadow_pass || !shadow_pass->get_has_shadow_map())
+	{
+		return;
+	}
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+    graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+    graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+    graphics->origin();
+    graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_SHADOW, SHADER_SHADOW);
+	get_renderer()->set_current_shader(shader);
+
+    auto shadow_map = shadow_pass->get_shadow_map();
+	auto shadow_map_texture_uniform = shader->getUniformInfo("scape_ShadowMap");
+	if (shadow_map_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(shadow_map);
+		shader->sendTextures(shadow_map_texture_uniform, &texture, 1);	
+	}
+
+	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
+	if (position_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
+		shader->sendTextures(position_texture_uniform, &texture, 1);	
+	}
+
+	auto texel_size_uniform = shader->getUniformInfo("scape_TexelSize");
+	if (texel_size_uniform)
+	{
+		auto texel_size = glm::vec2(1.0f / shadow_map->getWidth(), 1.0f / shadow_map->getHeight());
+		std::memcpy(texel_size_uniform->floats, glm::value_ptr(texel_size), sizeof(glm::vec2));
+		shader->updateUniform(texel_size_uniform, 1);
+	}
+
+	auto view_matrix = shadow_pass->get_light_view_matrix(delta);
+	std::vector<glm::mat4> light_space_matrices;
+	std::vector<float> near_planes;
+	for (int i = 0; i < shadow_pass->get_num_cascades(); ++i)
+	{
+		glm::mat4 projection_matrix;
+		float near_plane, far_plane;
+
+		shadow_pass->get_light_projection_matrix(i, projection_matrix, near_plane, far_plane);
+
+		light_space_matrices.push_back(projection_matrix * view_matrix);
+		near_planes.push_back(near_plane);
+	}
+
+	auto light_space_matrices_uniform = shader->getUniformInfo("scape_CascadeLightSpaceMatrices");
+	if (light_space_matrices_uniform)
+	{
+		std::memcpy(light_space_matrices_uniform->floats, glm::value_ptr(light_space_matrices[0]), sizeof(glm::mat4) * shadow_pass->get_num_cascades());
+		shader->updateUniform(light_space_matrices_uniform, shadow_pass->get_num_cascades());
+	}
+
+	auto near_planes_uniform = shader->getUniformInfo("scape_CascadeNearPlanes");
+	if (near_planes_uniform)
+	{
+		std::memcpy(near_planes_uniform->floats, &near_planes[0], sizeof(float) * shadow_pass->get_num_cascades());
+		shader->updateUniform(near_planes_uniform, shadow_pass->get_num_cascades());
+	}
+
+	auto num_cascades_uniform = shader->getUniformInfo("scape_NumCascades");
+	if (num_cascades_uniform)
+	{
+		*num_cascades_uniform->ints = shadow_pass->get_num_cascades();
+		shader->updateUniform(num_cascades_uniform, 1);
+	}
+
+	auto shadow_alpha_uniform = shader->getUniformInfo("scape_ShadowAlpha");
+	if (shadow_alpha_uniform)
+	{
+		*shadow_alpha_uniform->floats = std::max(1.0f - std::min(ambient_light, 1.0f), 0.3f);
+		shader->updateUniform(shadow_alpha_uniform, 1);
+	}
+
+	graphics->draw(g_buffer.get_canvas(0), love::Matrix4());
+}
+
 void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 {
 	auto renderer = get_renderer();
@@ -361,6 +450,7 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
         draw_ambient_light(L, full_lit_node, delta);
     }
 
+    ambient_light = 0.0f;
 	for (auto light: light_scene_nodes)
 	{
 		const auto& light_type = light->get_type();
@@ -479,6 +569,11 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(lua_Sta
 				v = base_vertex_source;
 				p = base_pixel_source;
 			}
+			else
+			{
+				v = "#pragma language glsl3\n";
+				p = "#pragma language glsl3\n";
+			}
 
 			auto shader_source = ShaderCache::ShaderSource(vertex_source, pixel_source);
 
@@ -534,6 +629,7 @@ void nbunny::DeferredRendererPass::draw(lua_State* L, SceneNode& node, float del
 
 	draw_nodes(L, delta);
 	draw_lights(L, delta);
+	draw_shadows(L, delta);
 	draw_fog(L, delta);
 
 	copy_depth_buffer(L);
@@ -557,9 +653,18 @@ void nbunny::DeferredRendererPass::attach(Renderer& renderer)
 		"Resources/Renderers/Deferred/Base.frag.glsl");
 }
 
-static std::shared_ptr<nbunny::DeferredRendererPass> nbunny_deferred_renderer_pass_create()
+static std::shared_ptr<nbunny::DeferredRendererPass> nbunny_deferred_renderer_pass_create(
+	sol::variadic_args args, sol::this_state S)
 {
-	return std::make_shared<nbunny::DeferredRendererPass>();
+	lua_State* L = S;
+
+	nbunny::ShadowRendererPass* shadow_pass = nullptr;
+	if (lua_gettop(L) > 1)
+	{
+		shadow_pass = sol::stack::get<nbunny::ShadowRendererPass*>(L, 2);
+	}
+
+	return std::make_shared<nbunny::DeferredRendererPass>(shadow_pass);
 }
 
 extern "C"
