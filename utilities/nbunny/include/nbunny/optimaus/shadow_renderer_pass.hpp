@@ -57,8 +57,10 @@ namespace nbunny
 		void resize(int width, int height) override;
 		void attach(Renderer& renderer) override;
 
-		glm::mat4 get_light_space_matrix(int cascade_index, float delta);
-		float get_near_plane(int cascade_index);
+		glm::mat4 get_light_space_matrix(int cascade_index, float delta) const;
+		float get_near_plane(int cascade_index) const;
+		float get_far_plane(int cascade_index) const;
+		glm::vec3 get_light_direction(float delta) const;
 
         love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node) override;
 	};

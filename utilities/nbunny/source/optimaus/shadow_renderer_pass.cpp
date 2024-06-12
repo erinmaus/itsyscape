@@ -155,15 +155,15 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 	std::vector<glm::vec3> viewing_frustum_corners;
 	calculate_viewing_frustum_corners(near_plane, far_plane, viewing_frustum_corners);
 
-	auto center = glm::vec3(0.0f);
-	for (auto& corner: viewing_frustum_corners)
-	{
-		center += corner;
-	}
-	center /= viewing_frustum_corners.size();
+	// auto center = glm::vec3(0.0f);
+	// for (auto& corner: viewing_frustum_corners)
+	// {
+	// 	center += corner;
+	// }
+	// center /= viewing_frustum_corners.size();
 	//auto center = get_renderer()->get_camera().get_target_position();
 
-	view_matrix = get_light_view_matrix(center, delta);
+	//view_matrix = get_light_view_matrix(center, delta);
 	//view_matrix = glm::mat4(1.0f);
 
 	auto frustum_min = glm::vec3(std::numeric_limits<float>::infinity());
@@ -171,21 +171,48 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 
 	for (auto& corner: viewing_frustum_corners)
 	{
-		auto point = glm::vec3(view_matrix * glm::vec4(corner, 1.0f));
-		//auto point = corner;
+		//auto point = glm::vec3(view_matrix * glm::vec4(corner, 1.0f));
+		auto point = corner;
 		frustum_min = glm::min(frustum_min, point);
 		frustum_max = glm::max(frustum_max, point);
 	}
 
-	auto light_min = directional_light->get_min();
-	auto light_max = directional_light->get_max();
+	auto scene_min = directional_light->get_min();
+	auto scene_max = directional_light->get_max();
+
+	const int NUM_CORNERS = 8;
+	glm::vec3 corners[NUM_CORNERS] =
+	{
+		glm::vec3(scene_min.x, scene_min.y, scene_min.z),
+		glm::vec3(scene_max.x, scene_min.y, scene_min.z),
+		glm::vec3(scene_min.x, scene_max.y, scene_min.z),
+		glm::vec3(scene_min.x, scene_min.y, scene_max.z),
+		glm::vec3(scene_max.x, scene_max.y, scene_min.z),
+		glm::vec3(scene_max.x, scene_min.y, scene_max.z),
+		glm::vec3(scene_min.x, scene_max.y, scene_max.z),
+		glm::vec3(scene_max.x, scene_max.y, scene_max.z)
+	};
+
+	auto light_min = glm::vec3(std::numeric_limits<float>::infinity());
+	auto light_max = glm::vec3(-std::numeric_limits<float>::infinity());
+
+	for (int i = 0; i < NUM_CORNERS; ++i)
+	{
+		auto point = glm::vec3(get_renderer()->get_camera().get_view() * glm::vec4(corners[i], 1.0f));
+		light_min = glm::min(light_min, point);
+		light_max = glm::max(light_max, point);
+	}
 
 	auto bounds_min = glm::max(light_min, frustum_min);
 	auto bounds_max = glm::min(light_max, frustum_max);
+	auto center = (bounds_max - bounds_min) / 2.0f + bounds_min;
+	view_matrix = get_light_view_matrix(center, delta);
 	//auto bounds_min = frustum_min;
 	//auto bounds_max = frustum_max;
 
 	std::cout << "index:" << cascade_index << std::endl;
+	std::cout << "light min: " << light_min.x << ", " << light_min.y << ", " << light_min.z << std::endl;
+	std::cout << "light max: " << light_max.x << ", " << light_max.y << ", " << light_max.z << std::endl;
 	std::cout << "bounds min: " << bounds_min.x << ", " << bounds_min.y << ", " << bounds_min.z << std::endl;
 	std::cout << "bounds max: " << bounds_max.x << ", " << bounds_max.y << ", " << bounds_max.z << std::endl;
 	std::cout << "frustum min: " << frustum_min.x << ", " << frustum_min.y << ", " << frustum_min.z << std::endl;
@@ -193,11 +220,13 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 
 	auto size = bounds_max - bounds_min;
 	auto half_size = size / glm::vec3(2.0f);
+	//auto half_size = size;
 
 	//projection_matrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, bounds_min.z, bounds_max.z);
 	//projection_matrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, bounds_min.z, bounds_max.z);
-	//projection_matrix = glm::ortho(bounds_min.x, bounds_max.x, bounds_min.y, bounds_max.y, bounds_min.z, bounds_max.z);
-	projection_matrix = glm::ortho(frustum_min.x, frustum_max.x, frustum_max.y, frustum_min.y, frustum_min.z, frustum_max.z);
+	projection_matrix = glm::ortho(-half_size.x, half_size.x, half_size.y, -half_size.y, -half_size.z, half_size.z);
+	//projection_matrix = glm::ortho(bounds_min.x, bounds_max.x, bounds_max.y, bounds_min.y, bounds_min.z, bounds_max.z);
+	//projection_matrix = glm::ortho(frustum_min.x, frustum_max.x, frustum_max.y, frustum_min.y, frustum_min.z, frustum_max.z);
 	//projection_matrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, bounds_min.z, bounds_max)
 
 	auto p1 = projection_matrix * view_matrix * glm::vec4(32.0f, 0.0f, 32.0f, 1.0f);
@@ -206,6 +235,7 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 	std::cout << "p1: " << p1.x << ", " << p1.y << ", " << p1.z << ", " << p1.w << std::endl;
 	std::cout << "p2: " << p2.x << ", " << p2.y << ", " << p2.z << ", " << p2.w << std::endl;
 	std::cout << "center: " << center.x << ", " << center.y << ", " << center.z << std::endl;
+	std::cout << std::endl;
  	//projection_matrix = glm::ortho(-half_size.x, half_size.x, half_size.y, -half_size.y, bounds_min.z, bounds_max.z);
 }
 
@@ -359,7 +389,7 @@ void nbunny::ShadowRendererPass::attach(Renderer& renderer)
 		"Resources/Renderers/Shadow/Base.frag.glsl");
 }
 
-glm::mat4 nbunny::ShadowRendererPass::get_light_space_matrix(int cascade_index, float delta)
+glm::mat4 nbunny::ShadowRendererPass::get_light_space_matrix(int cascade_index, float delta) const
 {
 	glm::mat4 projection_matrix, view_matrix;
 	get_light_projection_view_matrix(cascade_index, delta, projection_matrix, view_matrix);
@@ -367,12 +397,27 @@ glm::mat4 nbunny::ShadowRendererPass::get_light_space_matrix(int cascade_index, 
 	return projection_matrix * view_matrix;
 }
 
-float nbunny::ShadowRendererPass::get_near_plane(int cascade_index)
+float nbunny::ShadowRendererPass::get_near_plane(int cascade_index) const
 {
 	float near_plane = get_renderer()->get_camera().get_near();
 	float far_plane = get_renderer()->get_camera().get_far();
 
 	return (far_plane - near_plane) * (cascade_index / (float)num_cascades) + near_plane;
+}
+
+float nbunny::ShadowRendererPass::get_far_plane(int cascade_index) const
+{
+	return get_near_plane(cascade_index + 1);
+}
+
+glm::vec3 nbunny::ShadowRendererPass::get_light_direction(float delta) const
+{
+	auto directional_light = directional_lights.at(0);
+
+	Light light;
+	directional_light->to_light(light, delta);
+
+	return glm::vec3(light.position);
 }
 
 static int nbunny_shadow_renderer_get_shadow_map(lua_State* L)
