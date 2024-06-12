@@ -32,7 +32,7 @@ nbunny::DeferredRendererPass::DeferredRendererPass(ShadowRendererPass* shadow_pa
 	depth_buffer({}),
 	light_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	fog_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
-	shadow_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
+	shadow_buffer(love::PIXELFORMAT_RGBA32F, g_buffer),
 	output_buffer(love::PIXELFORMAT_RGBA8, g_buffer)
 {
 	// Nothing.
@@ -323,6 +323,13 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 		shader->sendTextures(position_texture_uniform, &texture, 1);	
 	}
 
+	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalSpecularTexture");
+	if (normal_map_specular_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_SPECULAR_INDEX));
+		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1);	
+	}
+
 	auto texel_size_uniform = shader->getUniformInfo("scape_TexelSize");
 	if (texel_size_uniform)
 	{
@@ -331,15 +338,24 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 		shader->updateUniform(texel_size_uniform, 1);
 	}
 
+	auto light_direction_uniform = shader->getUniformInfo("scape_LightDirection");
+	if (light_direction_uniform)
+	{
+		auto light_direction = shadow_pass->get_light_direction(delta);
+		std::memcpy(light_direction_uniform->floats, glm::value_ptr(light_direction), sizeof(glm::vec3));
+		shader->updateUniform(light_direction_uniform, 1);
+	}
+
 	std::vector<glm::mat4> light_space_matrices;
-	std::vector<float> near_planes;
+	std::vector<glm::vec2> near_planes;
 	for (int i = 0; i < shadow_pass->get_num_cascades(); ++i)
 	{
 		auto light_space_matrix = shadow_pass->get_light_space_matrix(i, delta);
 		float near_plane = shadow_pass->get_near_plane(i);
+		float far_plane = shadow_pass->get_far_plane(i);
 
 		light_space_matrices.push_back(light_space_matrix);
-		near_planes.push_back(near_plane);
+		near_planes.emplace_back(near_plane, far_plane);
 	}
 
 	auto view_uniform = shader->getUniformInfo("scape_View");
@@ -357,10 +373,10 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 		shader->updateUniform(light_space_matrices_uniform, shadow_pass->get_num_cascades());
 	}
 
-	auto near_planes_uniform = shader->getUniformInfo("scape_CascadeNearPlanes");
+	auto near_planes_uniform = shader->getUniformInfo("scape_CascadePlanes");
 	if (near_planes_uniform)
 	{
-		std::memcpy(near_planes_uniform->floats, &near_planes[0], sizeof(float) * shadow_pass->get_num_cascades());
+		std::memcpy(near_planes_uniform->floats, &near_planes[0], sizeof(glm::vec2) * shadow_pass->get_num_cascades());
 		shader->updateUniform(near_planes_uniform, shadow_pass->get_num_cascades());
 	}
 
