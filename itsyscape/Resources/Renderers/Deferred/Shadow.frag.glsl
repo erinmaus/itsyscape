@@ -58,7 +58,7 @@ vec4 effect(
     }
 
     vec3 normal = normalize(Texel(scape_NormalSpecularTexture, textureCoordinate).xyz);
-    float bias = max(0.05 * (1.0 - dot(normal, scape_LightDirection)), 0.05) / (scape_CascadePlanes[cascadeIndex].y * 0.125f);
+    float bias = max(0.05 * (1.0 - dot(normal, scape_LightDirection)), 0.05) / (scape_CascadePlanes[cascadeIndex].y * 0.25f);
 
     vec4 lightPosition = scape_CascadeLightSpaceMatrices[cascadeIndex] * vec4(worldPosition, 1.0);
     vec3 projectedLightPosition = lightPosition.xyz / lightPosition.w;
