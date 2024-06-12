@@ -1023,7 +1023,8 @@ function Application:_draw()
 	local delta = self:getFrameDelta()
 	do
 		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE) then
-			self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
+			local renderer = self.gameView:getRenderer()
+			self:measure("3d renderer", renderer.draw, renderer, self.gameView:getScene(), delta)
 		end
 
 		self.gameView:getRenderer():present()
@@ -1038,7 +1039,7 @@ function Application:_draw()
 	love.graphics.ortho(width, height)
 
 	if self.showUI then
-		self.uiView:draw()
+		self:measure("ui renderer", self.uiView.draw, self.uiView)
 	end
 
 	if self.clickActionTime > 0 and not (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
