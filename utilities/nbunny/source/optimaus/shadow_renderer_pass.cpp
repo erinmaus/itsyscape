@@ -123,6 +123,9 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 		bounds_max = glm::max(point, bounds_max);
 	}
 
+	bounds_min.z -= 10.0f;
+	bounds_max.z += 10.0f;
+
 	projection_matrix = glm::ortho(bounds_min.x, bounds_max.x, bounds_max.y, bounds_min.y, bounds_min.z, bounds_max.z);
 }
 
