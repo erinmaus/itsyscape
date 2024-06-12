@@ -38,26 +38,6 @@ function BasicDirectionalLight:ready(director, game)
 		if not (x == 0 and y == 0 and z == 0) then
 			self.direction = Vector(x or 0, y or 0, z or 0)
 		end
-
-		local shadow = gameDB:getRecord("ShadowCastingDirectionalLight", {
-			Resource = resource
-		})
-
-		local min, max
-		if not shadow then
-			local map = Utility.Peep.getMap(self)
-			min = Vector(0, -1000, 0)
-			max = Vector(map:getWidth() * map:getCellSize(), 1000, map:getHeight() * map:getCellSize())
-		else
-			min = Vector(shadow:get("MinX"), shadow:get("MinY"), shadow:get("MinZ"))
-			max = Vector(shadow:get("MaxX"), shadow:get("MaxY"), shadow:get("MaxZ"))
-		end
-
-		local size = self:getBehavior(SizeBehavior)
-		if size then
-			size.size = max - min
-			size.offset = (max - min) / 2 * Vector.PLANE_XZ
-		end
 	end
 
 	self:makeGlobal()
