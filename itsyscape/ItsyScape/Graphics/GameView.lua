@@ -627,212 +627,187 @@ function GameView:updateMap(map, layer)
 		end
 		m.parts = {}
 
-		local w, h
-		do
-			local E = 1 / GameView.MAP_MESH_DIVISIONS
-			local partialX = m.map:getWidth() / GameView.MAP_MESH_DIVISIONS
-			local partialY = m.map:getHeight() / GameView.MAP_MESH_DIVISIONS
+		local node = MapMeshSceneNode()
+		node:setParent(m.node)
+		table.insert(m.parts, node)
 
-			w = math.floor(partialX)
-			h = math.floor(partialY)
+		local alphaNode
+		if m.wallHackEnabled then
+			alphaNode = MapMeshSceneNode()
+			alphaNode:getMaterial():setIsTranslucent(true)
+			alphaNode:getMaterial():setOutlineThreshold(-1.0)
+			alphaNode:setParent(m.node)
 
-			if partialX - math.floor(partialX) >= E then
-				w = w + 1
-			end
-
-			if partialY - math.floor(partialY) >= E then
-				h = h + 1
-			end
+			table.insert(m.parts, alphaNode)
 		end
 
-		for j = 1, h do
-			for i = 1, w do
-				local x = (i - 1) * GameView.MAP_MESH_DIVISIONS + 1
-				local y = (j - 1) * GameView.MAP_MESH_DIVISIONS + 1
+		self.resourceManager:queueAsyncEvent(function()
+			node:fromMap(
+				m.map,
+				m.tileSet,
+				1, 1,
+				m.map:getWidth(),
+				m.map:getHeight(),
+				m.mapMeshMasks,
+				m.islandProcessor)
 
-				local node = MapMeshSceneNode()
-				node:setParent(m.node)
-				table.insert(m.parts, node)
+			self:_updateMapBounds(m, node)
 
-				local alphaNode
-				if m.wallHackEnabled then
-					alphaNode = MapMeshSceneNode()
-					alphaNode:getMaterial():setIsTranslucent(true)
-					alphaNode:getMaterial():setOutlineThreshold(-1.0)
-					alphaNode:setParent(m.node)
+			if m.mapMeshMasks then
+				node:getMaterial():setTextures(m.texture, m.mask:getTexture())
+			else
+				node:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
+			end
 
-					table.insert(m.parts, alphaNode)
+			if alphaNode then
+				alphaNode:setMapMesh(node:getMapMesh())
+				self:_updateMapBounds(m, alphaNode)
+
+				if m.mapMeshMasks then
+					alphaNode:getMaterial():setTextures(m.texture, m.mask:getTexture())
+				else
+					alphaNode:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
 				end
+			end
+		end)
 
-				self.resourceManager:queueAsyncEvent(function()
-					node:fromMap(
-						m.map,
-						m.tileSet,
-						x, y,
-						GameView.MAP_MESH_DIVISIONS,
-						GameView.MAP_MESH_DIVISIONS,
-						m.mapMeshMasks,
-						m.islandProcessor)
+		local function getPlayerNearPlane()
+			local near = 0
 
-					self:_updateMapBounds(m, node)
+			local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
+			if playerActor then
+				local playerI, playerJ, playerK = playerActor:getTile()
 
-					if m.mapMeshMasks then
-						node:getMaterial():setTextures(m.texture, m.mask:getTexture())
-					else
-						node:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
-					end
+				if playerK == layer then
+					local eye = self.camera:getEye()
+					local _, eyeI, eyeJ = m.map:getTileAt(eye.x, eye.z)
 
-					if alphaNode then
-						alphaNode:setMapMesh(node:getMapMesh())
-						self:_updateMapBounds(m, alphaNode)
+					local differenceI = eyeI - playerI
+					local differenceJ = eyeJ - playerJ
 
-						if m.mapMeshMasks then
-							alphaNode:getMaterial():setTextures(m.texture, m.mask:getTexture())
+					local forward = self.camera:getForward()
+					forward.y = -forward.y
+
+					local ray = Ray(self.camera:getPosition() + Vector(0, 0.5, 0), forward)
+					if math.abs(differenceI) > math.abs(differenceJ) then
+						local directionI = math.sign(differenceI)
+
+						local stopI
+						if directionI < 0 then
+							stopI = 1
 						else
-							alphaNode:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
+							stopI = m.map:getWidth()
 						end
-					end
-				end)
 
-				local function getPlayerNearPlane()
-					local near = 0
+						local isHidden = false
+						for i = playerI + directionI, stopI, directionI do
+							local center = map:getTileCenter(i, playerJ)
+							local _, projection = ray:closest(center)
 
-					local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
-					if playerActor then
-						local playerI, playerJ, playerK = playerActor:getTile()
+							isHidden = center.y > projection.y
+							if isHidden then
+								break
+							end
+						end
 
-						if playerK == layer then
-							local eye = self.camera:getEye()
-							local _, eyeI, eyeJ = m.map:getTileAt(eye.x, eye.z)
+						if isHidden then
+							local foundCliff = false
+							for i = playerI + directionI, stopI, directionI do
+								local center = map:getTileCenter(i, playerJ)
+								local _, projection = ray:closest(center)
 
-							local differenceI = eyeI - playerI
-							local differenceJ = eyeJ - playerJ
-
-							local forward = self.camera:getForward()
-							forward.y = -forward.y
-
-							local ray = Ray(self.camera:getPosition() + Vector(0, 0.5, 0), forward)
-							if math.abs(differenceI) > math.abs(differenceJ) then
-								local directionI = math.sign(differenceI)
-
-								local stopI
-								if directionI < 0 then
-									stopI = 1
-								else
-									stopI = m.map:getWidth()
+								if center.y > projection.y then
+									foundCliff = true
+								elseif foundCliff or i == stopI then
+									foundCliff = true
+									near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
+									break
 								end
+							end
 
-								local isHidden = false
-								for i = playerI + directionI, stopI, directionI do
-									local center = map:getTileCenter(i, playerJ)
-									local _, projection = ray:closest(center)
+							if not foundCliff then
+								near = -1
+							end
+						else
+							near = -1
+						end
+					else
+						local directionJ = math.sign(differenceJ)
 
-									isHidden = center.y > projection.y
-									if isHidden then
-										break
-									end
+						local stopJ
+						if directionJ < 0 then
+							stopJ = 1
+						else
+							stopJ = m.map:getHeight()
+						end
+
+						local isHidden = false
+						for j = playerJ + directionJ, stopJ, directionJ do
+							local center = map:getTileCenter(playerI, j)
+							local _, projection = ray:closest(center)
+
+							isHidden = center.y > projection.y
+							if isHidden then
+								break
+							end
+						end
+
+						if isHidden then
+							local foundCliff = false
+							for j = playerJ + directionJ, stopJ, directionJ do
+								local center = map:getTileCenter(playerI, j)
+								local _, projection = ray:closest(center)
+
+								if center.y > projection.y then
+									foundCliff = true
+								elseif foundCliff or j == stopJ then
+									foundCliff = true
+									near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
+									break
 								end
+							end
 
-								if isHidden then
-									local foundCliff = false
-									for i = playerI + directionI, stopI, directionI do
-										local center = map:getTileCenter(i, playerJ)
-										local _, projection = ray:closest(center)
-
-										if center.y > projection.y then
-											foundCliff = true
-										elseif foundCliff or i == stopI then
-											foundCliff = true
-											near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
-											break
-										end
-									end
-
-									if not foundCliff then
-										near = -1
-									end
-								else
-									near = -1
-								end
-							else
-								local directionJ = math.sign(differenceJ)
-
-								local stopJ
-								if directionJ < 0 then
-									stopJ = 1
-								else
-									stopJ = m.map:getHeight()
-								end
-
-								local isHidden = false
-								for j = playerJ + directionJ, stopJ, directionJ do
-									local center = map:getTileCenter(playerI, j)
-									local _, projection = ray:closest(center)
-
-									isHidden = center.y > projection.y
-									if isHidden then
-										break
-									end
-								end
-
-								if isHidden then
-									local foundCliff = false
-									for j = playerJ + directionJ, stopJ, directionJ do
-										local center = map:getTileCenter(playerI, j)
-										local _, projection = ray:closest(center)
-
-										if center.y > projection.y then
-											foundCliff = true
-										elseif foundCliff or j == stopJ then
-											foundCliff = true
-											near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
-											break
-										end
-									end
-
-									if not foundCliff then
-										near = -1
-									end
-								else
-									near = -1
-								end
+							if not foundCliff then
+								near = -1
 							end
 						else
 							near = -1
 						end
 					end
-
-					return near
-				end
-
-				node:onWillRender(function(renderer)
-					m.onWillRender(renderer)
-
-					local shader = renderer:getCurrentShader()
-					if shader:hasUniform("scape_WallHackAlpha") then
-						shader:send("scape_WallHackAlpha", 0.0)
-					end
-
-					if shader:hasUniform("scape_WallHackNear") then
-						shader:send("scape_WallHackNear", getPlayerNearPlane())
-					end
-				end)
-
-				if alphaNode then
-					alphaNode:onWillRender(function(renderer)
-						m.onWillRender(renderer)
-
-						local shader = renderer:getCurrentShader()
-						if shader:hasUniform("scape_WallHackAlpha") then
-							shader:send("scape_WallHackAlpha", 1.0)
-						end
-
-						if shader:hasUniform("scape_WallHackNear") then
-							shader:send("scape_WallHackNear", getPlayerNearPlane())
-						end
-					end)
+				else
+					near = -1
 				end
 			end
+
+			return near
+		end
+
+		node:onWillRender(function(renderer)
+			m.onWillRender(renderer)
+
+			local shader = renderer:getCurrentShader()
+			if shader:hasUniform("scape_WallHackAlpha") then
+				shader:send("scape_WallHackAlpha", 0.0)
+			end
+
+			if shader:hasUniform("scape_WallHackNear") then
+				shader:send("scape_WallHackNear", getPlayerNearPlane())
+			end
+		end)
+
+		if alphaNode then
+			alphaNode:onWillRender(function(renderer)
+				m.onWillRender(renderer)
+
+				local shader = renderer:getCurrentShader()
+				if shader:hasUniform("scape_WallHackAlpha") then
+					shader:send("scape_WallHackAlpha", 1.0)
+				end
+
+				if shader:hasUniform("scape_WallHackNear") then
+					shader:send("scape_WallHackNear", getPlayerNearPlane())
+				end
+			end)
 		end
 
 		m.weatherMap:addMap(m.map)
