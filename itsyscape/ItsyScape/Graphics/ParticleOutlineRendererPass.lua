@@ -14,11 +14,11 @@ local NParticleOutlineRendererPass = require "nbunny.optimaus.particleoutlineren
 
 local ParticleOutlineRendererPass = Class(RendererPass)
 
-function ParticleOutlineRendererPass:new(renderer)
+function ParticleOutlineRendererPass:new(renderer, depthBuffer)
 	RendererPass.new(self, renderer)
 
 	self.oBuffer = ParticleOBuffer()
-	self._rendererPass = NParticleOutlineRendererPass(self.oBuffer:getHandle())
+	self._rendererPass = NParticleOutlineRendererPass(self.oBuffer:getHandle(), depthBuffer)
 end
 
 function ParticleOutlineRendererPass:getHandle()

@@ -91,8 +91,8 @@ function Renderer:new()
 	self.outlinePass = OutlineRendererPass(self)
 	self.finalDeferredPass = DeferredRendererPass(self, self.shadowPass)
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
-	self.alphaMaskPass = AlphaMaskRendererPass(self)
-	self.particleOutlinePass = ParticleOutlineRendererPass(self)
+	self.alphaMaskPass = AlphaMaskRendererPass(self, self.finalDeferredPass:getHandle():getDepthBuffer())
+	self.particleOutlinePass = ParticleOutlineRendererPass(self, self.finalDeferredPass:getHandle():getDepthBuffer())
 	self.passesByID = {
 		[self.shadowPass:getID()] = self.shadowPass,
 		[self.outlinePass:getID()] = self.outlinePass,

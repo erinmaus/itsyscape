@@ -43,18 +43,6 @@ namespace nbunny
 			NORMAL_SPECULAR_INDEX = 3
 		};
 
-		enum
-		{
-			BUILTIN_SHADER_DEFAULT           = -1,
-			BUILTIN_SHADER_AMBIENT_LIGHT     = -2,
-			BUILTIN_SHADER_DIRECTIONAL_LIGHT = -3,
-			BUILTIN_SHADER_POINT_LIGHT       = -4,
-			BUILTIN_SHADER_FOG               = -5,
-			BUILTIN_SHADER_DEPTH_COPY        = -6,
-			BUILTIN_SHADER_SHADOW            = -7
-		};
-
-		std::vector<SceneNode*> visible_scene_nodes;
 		std::vector<SceneNode*> drawable_scene_nodes;
 		std::vector<LightSceneNode*> light_scene_nodes;
 		std::vector<FogSceneNode*> fog_scene_nodes;
@@ -81,6 +69,17 @@ namespace nbunny
 		love::graphics::Shader* get_builtin_shader(lua_State* L, int builtin_id, const std::string& filename, bool is_light = true);
 
 	public:
+		enum
+		{
+			BUILTIN_SHADER_DEFAULT           = -1,
+			BUILTIN_SHADER_AMBIENT_LIGHT     = -2,
+			BUILTIN_SHADER_DIRECTIONAL_LIGHT = -3,
+			BUILTIN_SHADER_POINT_LIGHT       = -4,
+			BUILTIN_SHADER_FOG               = -5,
+			BUILTIN_SHADER_DEPTH_COPY        = -6,
+			BUILTIN_SHADER_SHADOW            = -7
+		};
+
 		DeferredRendererPass(ShadowRendererPass* shadow_pass);
 		~DeferredRendererPass() = default;
 

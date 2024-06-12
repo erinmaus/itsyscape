@@ -25,16 +25,18 @@ namespace nbunny
 	{
 	private:
 		GBuffer& a_buffer;
+		GBuffer& depth_buffer;
 
-		std::vector<SceneNode*> visible_scene_nodes;
 		std::vector<SceneNode*> opaque_scene_nodes;
 		std::vector<SceneNode*> translucent_scene_nodes;
 
 		void walk_all_nodes(SceneNode& node, float delta);
 		void draw_nodes(lua_State* L, float delta);
 
+		void copy_depth_buffer();
+
 	public:
-		AlphaMaskRendererPass(GBuffer& a_buffer);
+		AlphaMaskRendererPass(GBuffer& a_buffer, GBuffer& depth_buffer);
 		~AlphaMaskRendererPass() = default;
 
 		GBuffer& get_a_buffer();

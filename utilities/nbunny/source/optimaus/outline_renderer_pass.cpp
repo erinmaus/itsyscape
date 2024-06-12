@@ -15,8 +15,7 @@
 
 void nbunny::OutlineRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
-	visible_scene_nodes.clear();
-	SceneNode::walk_by_position(node, get_renderer()->get_camera(), delta, visible_scene_nodes);
+	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_position();
 
 	opaque_outline_scene_nodes.clear();
 	translucent_outline_scene_nodes.clear();

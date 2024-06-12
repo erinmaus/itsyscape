@@ -31,7 +31,6 @@ namespace nbunny
 
 		GBuffer& o_buffer;
 
-		std::vector<SceneNode*> visible_scene_nodes;
 		std::vector<SceneNode*> opaque_outline_scene_nodes;
 		std::vector<SceneNode*> translucent_outline_scene_nodes;
 

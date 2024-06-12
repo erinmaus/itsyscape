@@ -32,7 +32,6 @@ namespace nbunny
 
 		LBuffer& c_buffer;
 
-		std::vector<SceneNode*> visible_scene_nodes;
 		std::vector<SceneNode*> drawable_scene_nodes;
 		std::vector<LightSceneNode*> global_light_scene_nodes;
 		std::vector<LightSceneNode*> local_light_scene_nodes;

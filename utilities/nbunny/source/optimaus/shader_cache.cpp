@@ -96,6 +96,22 @@ void nbunny::ShaderCache::register_renderer_pass(
 	shader_cache.emplace(renderer_pass_id, ShaderMap());
 }
 
+love::graphics::Shader* nbunny::ShaderCache::get(int renderer_pass_id, int resource_id)
+{
+	auto i = shader_cache.find(renderer_pass_id);
+	if (i != shader_cache.end())
+	{
+		auto& shader_map = i->second;
+		const auto& j = shader_map.find(resource_id);
+		if (j != shader_map.end())
+		{
+			return j->second;
+		}
+	}
+
+	return nullptr;
+}
+
 love::graphics::Shader* nbunny::ShaderCache::build(
 	int renderer_pass_id,
 	int resource_id,

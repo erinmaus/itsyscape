@@ -10,8 +10,8 @@
 
 #pragma once
 
-#ifndef NBUNNY_OPTIMAUS_OUTLINE_RENDERER_PASS_HPP
-#define NBUNNY_OPTIMAUS_OUTLINE_RENDERER_PASS_HPP
+#ifndef NBUNNY_OPTIMAUS_PARTICLE_OUTLINE_RENDERER_PASS_HPP
+#define NBUNNY_OPTIMAUS_PARTICLE_OUTLINE_RENDERER_PASS_HPP
 
 #include "modules/graphics/Shader.h"
 #include "nbunny/optimaus/g_buffer.hpp"
@@ -24,16 +24,18 @@ namespace nbunny
 	{
 	private:
 		GBuffer& o_buffer;
+		GBuffer& depth_buffer;
 
-		std::vector<SceneNode*> visible_scene_nodes;
 		std::vector<SceneNode*> particle_scene_nodes;
 		std::vector<SceneNode*> other_scene_nodes;
 
 		void walk_all_nodes(SceneNode& node, float delta);
 		void draw_nodes(lua_State* L, float delta);
 
+		void copy_depth_buffer();
+
 	public:
-		ParticleOutlineRendererPass(GBuffer& o_buffer);
+		ParticleOutlineRendererPass(GBuffer& o_buffer, GBuffer& depth_buffer);
 		~ParticleOutlineRendererPass() = default;
 
 		GBuffer& get_o_buffer();

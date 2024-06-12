@@ -189,6 +189,11 @@ namespace nbunny
 		static void collect(
 			SceneNode& node,
 			std::vector<SceneNode*>& result);
+
+		static void filter_visible(std::vector<SceneNode*>& nodes, const Camera& camera, float delta, std::vector<SceneNode*>& result);
+		static void sort_by_material(std::vector<SceneNode*>& nodes);
+		static void sort_by_position(std::vector<SceneNode*>& nodes, const Camera& camera, float delta);
+
 		static void walk_by_material(
 			SceneNode& node,
 			const Camera& camera,
@@ -199,6 +204,16 @@ namespace nbunny
 			const Camera& camera,
 			float delta,
 			std::vector<SceneNode*>& result);
+	};
+
+	class LuaSceneNode : public SceneNode
+	{
+	public:
+		static const Type<LuaSceneNode> type_pointer;
+		virtual const BaseType& get_type() const override;
+
+		LuaSceneNode(int reference);
+		virtual ~LuaSceneNode() = default;
 	};
 
 	class Camera
