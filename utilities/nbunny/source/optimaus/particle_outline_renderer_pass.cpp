@@ -135,6 +135,7 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 	}
 
 	graphics->setColorMask(enabledMask);
+	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void nbunny::ParticleOutlineRendererPass::copy_depth_buffer()

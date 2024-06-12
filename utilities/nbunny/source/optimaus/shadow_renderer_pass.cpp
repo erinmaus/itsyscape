@@ -189,7 +189,7 @@ void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 		Camera shadow_camera;
 		shadow_camera.update(view_matrix, projection_matrix);
 
-		for (auto& scene_node: visible_scene_nodes)
+		for (auto& scene_node: shadow_casting_scene_nodes)
 		{
 			if (!shadow_camera.inside(*scene_node, delta))
 			{
