@@ -111,6 +111,8 @@ void nbunny::OutlineRendererPass::draw_nodes(lua_State* L, float delta)
 
 		renderer->draw_node(L, *scene_node, delta);
 	}
+
+	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 nbunny::OutlineRendererPass::OutlineRendererPass(GBuffer& o_buffer) :
