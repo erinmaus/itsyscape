@@ -16,6 +16,8 @@
 #include "nbunny/optimaus/shadow_renderer_pass.hpp"
 #include "nbunny/optimaus/particle.hpp"
 
+#include "modules/keyboard/Keyboard.h"
+
 void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
 	visible_scene_nodes.clear();
@@ -141,16 +143,10 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 	float min_near_plane = get_renderer()->get_camera().get_near();
 	float max_far_plane = get_renderer()->get_camera().get_far();
 
-	std::cout << "min near: " << min_near_plane << std::endl;
-	std::cout << "max far: " << max_far_plane << std::endl;
-
 	float near_plane = min_near_plane + (max_far_plane - min_near_plane) * (cascade_index / (float)num_cascades);
 	float far_plane = min_near_plane + (max_far_plane - min_near_plane) * ((cascade_index + 1) / (float)num_cascades);
 	//float near_plane = min_near_plane;
 	//float far_plane = max_far_plane;
-
-	std::cout << "near: " << near_plane << std::endl;
-	std::cout << "far: " << far_plane << std::endl;
 
 	std::vector<glm::vec3> viewing_frustum_corners;
 	calculate_viewing_frustum_corners(near_plane, far_plane, viewing_frustum_corners);
@@ -210,13 +206,28 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 	//auto bounds_min = frustum_min;
 	//auto bounds_max = frustum_max;
 
+	
+	auto keyboard = love::Module::getInstance<love::keyboard::Keyboard>(love::Module::M_KEYBOARD);
+	if (keyboard->isDown({ love::keyboard::Keyboard::KEY_SPACE })) {
 	std::cout << "index:" << cascade_index << std::endl;
+	std::cout << "min near: " << min_near_plane << std::endl;
+	std::cout << "max far: " << max_far_plane << std::endl;
+	std::cout << "near: " << near_plane << std::endl;
+	std::cout << "far: " << far_plane << std::endl;
 	std::cout << "light min: " << light_min.x << ", " << light_min.y << ", " << light_min.z << std::endl;
 	std::cout << "light max: " << light_max.x << ", " << light_max.y << ", " << light_max.z << std::endl;
 	std::cout << "bounds min: " << bounds_min.x << ", " << bounds_min.y << ", " << bounds_min.z << std::endl;
 	std::cout << "bounds max: " << bounds_max.x << ", " << bounds_max.y << ", " << bounds_max.z << std::endl;
 	std::cout << "frustum min: " << frustum_min.x << ", " << frustum_min.y << ", " << frustum_min.z << std::endl;
 	std::cout << "frustum max: " << frustum_max.x << ", " << frustum_max.y << ", " << frustum_max.z << std::endl;
+	auto p1 = projection_matrix * view_matrix * glm::vec4(32.0f, 0.0f, 32.0f, 1.0f);
+	auto p2 = view_matrix * glm::vec4(32.0f, 0.0f, 32.0f, 1.0f);
+	//view_matrix = get_light_view_matrix(get_renderer()->get_camera().get_target_position(), delta);
+	std::cout << "p1: " << p1.x << ", " << p1.y << ", " << p1.z << ", " << p1.w << std::endl;
+	std::cout << "p2: " << p2.x << ", " << p2.y << ", " << p2.z << ", " << p2.w << std::endl;
+	std::cout << "center: " << center.x << ", " << center.y << ", " << center.z << std::endl;
+	std::cout << std::endl;
+	}
 
 	auto size = bounds_max - bounds_min;
 	auto half_size = size / glm::vec3(2.0f);
@@ -229,13 +240,6 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 	//projection_matrix = glm::ortho(frustum_min.x, frustum_max.x, frustum_max.y, frustum_min.y, frustum_min.z, frustum_max.z);
 	//projection_matrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, bounds_min.z, bounds_max)
 
-	auto p1 = projection_matrix * view_matrix * glm::vec4(32.0f, 0.0f, 32.0f, 1.0f);
-	auto p2 = view_matrix * glm::vec4(32.0f, 0.0f, 32.0f, 1.0f);
-	//view_matrix = get_light_view_matrix(get_renderer()->get_camera().get_target_position(), delta);
-	std::cout << "p1: " << p1.x << ", " << p1.y << ", " << p1.z << ", " << p1.w << std::endl;
-	std::cout << "p2: " << p2.x << ", " << p2.y << ", " << p2.z << ", " << p2.w << std::endl;
-	std::cout << "center: " << center.x << ", " << center.y << ", " << center.z << std::endl;
-	std::cout << std::endl;
  	//projection_matrix = glm::ortho(-half_size.x, half_size.x, half_size.y, -half_size.y, bounds_min.z, bounds_max.z);
 }
 
