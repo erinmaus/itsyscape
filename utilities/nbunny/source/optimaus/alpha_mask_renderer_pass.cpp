@@ -12,12 +12,12 @@
 #include "modules/graphics/Graphics.h"
 #include "modules/math/Transform.h"
 #include "nbunny/optimaus/alpha_mask_renderer_pass.hpp"
+#include "nbunny/optimaus/deferred_renderer_pass.hpp"
 #include "nbunny/optimaus/particle.hpp"
 
 void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
-	visible_scene_nodes.clear();
-	SceneNode::walk_by_position(node, get_renderer()->get_camera(), delta, visible_scene_nodes);
+	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_position();
 
 	opaque_scene_nodes.clear();
 	translucent_scene_nodes.clear();
@@ -43,10 +43,6 @@ void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 		if (material.get_is_translucent() || material.get_is_full_lit())
 		{
 			translucent_scene_nodes.push_back(visible_scene_node);
-		}
-		else
-		{
-			opaque_scene_nodes.push_back(visible_scene_node);
 		}
 	}
 
@@ -74,11 +70,13 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
 
     a_buffer.use();
-
 	graphics->clear(
 		{ love::Colorf(1.0, 1.0, 1.0, 1.0), love::Colorf(0.0, 0.0, 0.0, 1.0) },
 		0,
 		1.0f);
+
+	copy_depth_buffer();
+	graphics->flushStreamDraws();
 
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
@@ -94,31 +92,6 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 	disabledMask.g = false;
 	disabledMask.b = false;
 	disabledMask.a = false;
-
-	for (auto& scene_node: opaque_scene_nodes)
-	{
-		auto shader = get_node_shader(L, *scene_node);
-		if (!shader)
-		{
-			continue;
-		}
-		renderer->set_current_shader(shader);
-
-		auto alpha_mask_uniform = shader->getUniformInfo("scape_AlphaMask");
-		if (alpha_mask_uniform)
-		{
-			*alpha_mask_uniform->floats = 1.0;
-			shader->updateUniform(alpha_mask_uniform, 1);
-		}
-
-		graphics->setColorMask(disabledMask);
-
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
-
-		renderer->draw_node(L, *scene_node, delta);
-	}
 
 	for (auto& scene_node: translucent_scene_nodes)
 	{
@@ -155,8 +128,33 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->setColorMask(enabledMask);
 }
 
-nbunny::AlphaMaskRendererPass::AlphaMaskRendererPass(GBuffer& a_buffer) :
-	RendererPass(RENDERER_PASS_ALPHA_MASK), a_buffer(a_buffer)
+void nbunny::AlphaMaskRendererPass::copy_depth_buffer()
+{	
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+    graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, true);
+    graphics->origin();
+    graphics->setOrtho(a_buffer.get_width(), a_buffer.get_height(), !graphics->isCanvasActive());
+
+	auto shader = get_renderer()->get_shader_cache().get(RENDERER_PASS_DEFERRED, DeferredRendererPass::BUILTIN_SHADER_DEPTH_COPY);
+	if (!shader)
+	{
+		return;
+	}
+
+	love::graphics::Graphics::ColorMask disabledMask;
+	disabledMask.r = false;
+	disabledMask.g = false;
+	disabledMask.b = false;
+	disabledMask.a = false;
+	graphics->setColorMask(disabledMask);
+
+	get_renderer()->set_current_shader(shader);
+	graphics->draw(depth_buffer.get_canvas(0), love::Matrix4());
+}
+
+nbunny::AlphaMaskRendererPass::AlphaMaskRendererPass(GBuffer& a_buffer, GBuffer& depth_buffer) :
+	RendererPass(RENDERER_PASS_ALPHA_MASK), a_buffer(a_buffer), depth_buffer(depth_buffer)
 {
 	// Nothing.
 }
@@ -191,7 +189,8 @@ static std::shared_ptr<nbunny::AlphaMaskRendererPass> nbunny_alpha_mask_renderer
 {
 	lua_State* L = S;
 	auto& a_buffer = sol::stack::get<nbunny::GBuffer&>(L, 2);
-	return std::make_shared<nbunny::AlphaMaskRendererPass>(a_buffer);
+	auto& depth_buffer = sol::stack::get<nbunny::GBuffer&>(L, 3);
+	return std::make_shared<nbunny::AlphaMaskRendererPass>(a_buffer, depth_buffer);
 }
 
 extern "C"

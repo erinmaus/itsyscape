@@ -14,8 +14,7 @@
 
 void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
-	visible_scene_nodes.clear();
-	SceneNode::walk_by_position(node, get_renderer()->get_camera(), delta, visible_scene_nodes);
+	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_position();
 
 	drawable_scene_nodes.clear();
 	for (auto visible_scene_node: visible_scene_nodes)
@@ -30,11 +29,13 @@ void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
 
 void nbunny::ForwardRendererPass::walk_visible_lights()
 {
+	const auto& all_scene_nodes = get_renderer()->get_all_scene_nodes();
+
 	global_light_scene_nodes.clear();
 	local_light_scene_nodes.clear();
 	fog_scene_nodes.clear();
 
-	for (auto node: visible_scene_nodes)
+	for (auto node: all_scene_nodes)
 	{
 		const auto& node_type = node->get_type();
 		if (node_type == AmbientLightSceneNode::type_pointer ||

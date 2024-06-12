@@ -14,11 +14,11 @@ local NAlphaMaskRendererPass = require "nbunny.optimaus.alphamaskrendererpass"
 
 local AlphaMaskRendererPass = Class(RendererPass)
 
-function AlphaMaskRendererPass:new(renderer)
+function AlphaMaskRendererPass:new(renderer, depthBuffer)
 	RendererPass.new(self, renderer)
 
 	self.aBuffer = ABuffer()
-	self._rendererPass = NAlphaMaskRendererPass(self.aBuffer:getHandle())
+	self._rendererPass = NAlphaMaskRendererPass(self.aBuffer:getHandle(), depthBuffer)
 end
 
 function AlphaMaskRendererPass:getHandle()

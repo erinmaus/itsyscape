@@ -47,6 +47,11 @@ namespace nbunny
 		Camera default_camera;
 		Camera* camera = nullptr;
 
+		std::vector<SceneNode*> all_scene_nodes;
+		std::vector<SceneNode*> visible_scene_nodes;
+		std::vector<SceneNode*> visible_scene_nodes_by_material;
+		std::vector<SceneNode*> visible_scene_nodes_by_position;
+
 		glm::vec4 clear_color = glm::vec4(0.39f, 0.58f, 0.93f, 1);
 
 		std::vector<RendererPass*> renderer_passes;
@@ -60,6 +65,11 @@ namespace nbunny
 	public:
 		Renderer(int reference);
 		~Renderer() = default;
+
+		const std::vector<SceneNode*>& get_all_scene_nodes() const;
+		const std::vector<SceneNode*>& get_visible_scene_nodes() const;
+		const std::vector<SceneNode*>& get_visible_scene_nodes_by_material() const;
+		const std::vector<SceneNode*>& get_visible_scene_nodes_by_position() const;
 
 		void add_renderer_pass(RendererPass* renderer_pass);
 

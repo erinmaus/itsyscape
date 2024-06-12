@@ -20,12 +20,11 @@
 
 void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
-	visible_scene_nodes.clear();
-	SceneNode::collect(node, visible_scene_nodes);
+	visible_scene_nodes = get_renderer()->get_all_scene_nodes();
+	SceneNode::sort_by_position(visible_scene_nodes, get_renderer()->get_camera(), delta);
 
 	shadow_casting_scene_nodes.clear();
 	directional_lights.clear();
-
 	for (auto& visible_scene_node: visible_scene_nodes)
 	{
 		auto& material = visible_scene_node->get_material();
@@ -64,43 +63,6 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 			shadow_casting_scene_nodes.push_back(visible_scene_node);
 		}
 	}
-
-	auto& camera = get_renderer()->get_camera();
-
-	std::unordered_map<SceneNode*, glm::vec3> screen_positions;
-	std::stable_sort(
-		shadow_casting_scene_nodes.begin(),
-		shadow_casting_scene_nodes.end(),
-		[&](auto a, auto b)
-		{
-			auto a_screen_position = screen_positions.find(a);
-			if (a_screen_position == screen_positions.end())
-			{
-				auto world = glm::vec3(b->get_transform().get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-				auto p = glm::project(
-					world,
-					camera.get_view(),
-					camera.get_projection(),
-					glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
-				);
-				a_screen_position = screen_positions.insert(std::make_pair(a, p)).first;
-			}
-
-			auto b_screen_position = screen_positions.find(b);
-			if (b_screen_position == screen_positions.end())
-			{
-				auto world = glm::vec3(a->get_transform().get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-				auto p = glm::project(
-					world,
-					camera.get_view(),
-					camera.get_projection(),
-					glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
-				);
-				b_screen_position = screen_positions.insert(std::make_pair(b, p)).first;
-			}
-
-			return glm::floor(a_screen_position->second.z * 1000) > glm::floor(b_screen_position->second.z * 1000);
-		});
 }
 
 void nbunny::ShadowRendererPass::calculate_viewing_frustum_corners(float near, float far, std::vector<glm::vec3>& result) const

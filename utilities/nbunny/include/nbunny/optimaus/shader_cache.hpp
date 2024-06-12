@@ -72,6 +72,8 @@ namespace nbunny
 			int renderer_pass_id,
 			int resource_id,
 			const BuildFunc& build_func);
+
+		love::graphics::Shader* get(int renderer_pass_id, int resource_id);
 	};
 }
 

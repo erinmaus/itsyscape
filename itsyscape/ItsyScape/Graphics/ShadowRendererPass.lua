@@ -13,7 +13,7 @@ local ABuffer = require "ItsyScape.Graphics.ABuffer"
 local NShadowRendererPass = require "nbunny.optimaus.shadowrendererpass"
 
 local ShadowRendererPass = Class(RendererPass)
-ShadowRendererPass.DEFAULT_NUM_CASCADES = 3
+ShadowRendererPass.DEFAULT_NUM_CASCADES = 2
 
 function ShadowRendererPass:new(renderer, numCascades)
 	RendererPass.new(self, renderer)

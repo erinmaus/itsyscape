@@ -482,6 +482,67 @@ void nbunny::SceneNode::collect(SceneNode& node, std::vector<SceneNode*>& result
 	}
 }
 
+void nbunny::SceneNode::filter_visible(std::vector<SceneNode*>& nodes, const Camera& camera, float delta, std::vector<SceneNode*>& result)
+{
+	for (auto node: nodes)
+	{
+		if (!camera.get_is_cull_enabled() || node->get_material().get_is_cull_disabled() || camera.inside(*node, delta))
+		{
+			result.push_back(node);
+		}
+	}
+}
+
+void nbunny::SceneNode::sort_by_material(std::vector<SceneNode*>& nodes)
+{
+	std::stable_sort(
+		nodes.begin(),
+		nodes.end(),
+		[](auto a, auto b)
+		{
+			return a->material < b->material;
+		}
+	);
+}
+
+void nbunny::SceneNode::sort_by_position(std::vector<SceneNode*>& nodes, const Camera& camera, float delta)
+{
+	std::unordered_map<SceneNode*, glm::vec3> screen_positions;
+	std::stable_sort(
+		nodes.begin(),
+		nodes.end(),
+		[&](auto a, auto b)
+		{
+			auto a_screen_position = screen_positions.find(a);
+			if (a_screen_position == screen_positions.end())
+			{
+				auto world = glm::vec3(b->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+				auto p = glm::project(
+					world,
+					camera.get_view(),
+					camera.get_projection(),
+					glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
+				);
+				a_screen_position = screen_positions.insert(std::make_pair(a, p)).first;
+			}
+
+			auto b_screen_position = screen_positions.find(b);
+			if (b_screen_position == screen_positions.end())
+			{
+				auto world = glm::vec3(a->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+				auto p = glm::project(
+					world,
+					camera.get_view(),
+					camera.get_projection(),
+					glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
+				);
+				b_screen_position = screen_positions.insert(std::make_pair(b, p)).first;
+			}
+
+			return glm::floor(a_screen_position->second.z * 1000) < glm::floor(b_screen_position->second.z * 1000);
+		});
+}
+
 void nbunny::SceneNode::walk_by_material(
 	SceneNode& node,
 	const Camera& camera,
@@ -501,14 +562,7 @@ void nbunny::SceneNode::walk_by_material(
 
 	if (!node.parent)
 	{
-		std::stable_sort(
-			result.begin(),
-			result.end(),
-			[](auto a, auto b)
-			{
-				return a->material < b->material;
-			}
-		);
+		sort_by_material(result);
 	}
 }
 
@@ -530,40 +584,7 @@ void nbunny::SceneNode::walk_by_position(
 
 	if (!node.parent)
 	{
-		std::unordered_map<SceneNode*, glm::vec3> screen_positions;
-		std::stable_sort(
-			result.begin(),
-			result.end(),
-			[&](auto a, auto b)
-			{
-				auto a_screen_position = screen_positions.find(a);
-				if (a_screen_position == screen_positions.end())
-				{
-					auto world = glm::vec3(b->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-					auto p = glm::project(
-						world,
-						camera.get_view(),
-						camera.get_projection(),
-						glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
-					);
-					a_screen_position = screen_positions.insert(std::make_pair(a, p)).first;
-				}
-
-				auto b_screen_position = screen_positions.find(b);
-				if (b_screen_position == screen_positions.end())
-				{
-					auto world = glm::vec3(a->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-					auto p = glm::project(
-						world,
-						camera.get_view(),
-						camera.get_projection(),
-						glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
-					);
-					b_screen_position = screen_positions.insert(std::make_pair(b, p)).first;
-				}
-
-				return glm::floor(a_screen_position->second.z * 1000) < glm::floor(b_screen_position->second.z * 1000);
-			});
+		sort_by_position(result, camera, delta);
 	}
 }
 
@@ -1401,6 +1422,31 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode(lua_State* L)
 		"tick", &nbunny::SceneNode::tick,
 		"walkByMaterial", &nbunny_scene_node_walk_by_material,
 		"walkByPosition", &nbunny_scene_node_walk_by_position);
+
+	sol::stack::push(L, T);
+
+	return 1;
+}
+
+const nbunny::Type<nbunny::LuaSceneNode> nbunny::LuaSceneNode::type_pointer;
+
+nbunny::LuaSceneNode::LuaSceneNode(int reference) :
+	SceneNode(reference)
+{
+	// Nothing.
+}
+
+const nbunny::BaseType& nbunny::LuaSceneNode::get_type() const
+{
+	return type_pointer;
+}
+
+extern "C"
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_luascenenode(lua_State* L)
+{
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::LuaSceneNode>("NLuaSceneNode",
+		sol::base_classes, sol::bases<nbunny::SceneNode>(),
+		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::LuaSceneNode>));
 
 	sol::stack::push(L, T);
 

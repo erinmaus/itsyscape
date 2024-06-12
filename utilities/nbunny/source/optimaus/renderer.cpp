@@ -24,6 +24,26 @@ nbunny::Renderer::Renderer(int reference) :
 	time = timer_instance->getTime();
 }
 
+const std::vector<nbunny::SceneNode*>& nbunny::Renderer::get_all_scene_nodes() const
+{
+	return all_scene_nodes;
+}
+
+const std::vector<nbunny::SceneNode*>& nbunny::Renderer::get_visible_scene_nodes() const
+{
+	return visible_scene_nodes;
+}
+
+const std::vector<nbunny::SceneNode*>& nbunny::Renderer::get_visible_scene_nodes_by_material() const
+{
+	return visible_scene_nodes_by_material;
+}
+
+const std::vector<nbunny::SceneNode*>& nbunny::Renderer::get_visible_scene_nodes_by_position() const
+{
+	return visible_scene_nodes_by_position;
+}
+
 void nbunny::Renderer::add_renderer_pass(RendererPass* renderer_pass)
 {
 	renderer_pass->attach(*this);
@@ -97,6 +117,18 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 			renderer_pass->resize(width, height);
 		}
 	}
+
+	all_scene_nodes.clear();
+	SceneNode::collect(node, all_scene_nodes);
+
+	visible_scene_nodes.clear();
+	SceneNode::filter_visible(all_scene_nodes, get_camera(), delta, visible_scene_nodes);
+
+	visible_scene_nodes_by_material = visible_scene_nodes;
+	SceneNode::sort_by_material(visible_scene_nodes_by_material);
+
+	visible_scene_nodes_by_position = visible_scene_nodes;
+	SceneNode::sort_by_position(visible_scene_nodes_by_position, get_camera(), delta);
 
 	for (auto& renderer_pass: renderer_passes)
 	{
@@ -202,7 +234,7 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		glad::glDisable(GL_CLIP_DISTANCE0);
 	}
 
-	if (!node.is_base_type())
+	if (!node.is_base_type() || node.get_type() != LuaSceneNode::type_pointer)
 	{
 		node.before_draw(*this, delta);
 		node.draw(*this, delta);
@@ -214,6 +246,8 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		return;
 	}
 
+	int before = lua_gettop(L);
+
 	get_weak_reference(L, reference);
 	if (lua_isnil(L, -1))
 	{
@@ -221,17 +255,39 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		return;
 	}
 
-	lua_getfield(L, -1, "renderNode");
-	if (lua_isnil(L, -1))
+	if (node.get_type() == LuaSceneNode::type_pointer)
 	{
-		lua_pop(L, 2); // Renderer reference and field
-		return;
-	}
+		lua_getfield(L, -1, "renderNode");
+		if (lua_isnil(L, -1))
+		{
+			lua_pop(L, 2); // Renderer reference and field
+			return;
+		}
 
-	lua_pushvalue(L, -2);
-	node.get_reference(L);
-	lua_pushnumber(L, delta);
-	lua_call(L, 3, 0);
+		lua_pushvalue(L, -2);
+		node.get_reference(L);
+		lua_pushnumber(L, delta);
+		lua_call(L, 3, 0);
+	}
+	else
+	{
+		if (node.get_reference(L))
+		{
+			lua_getfield(L, -1, "willRender");
+			if (!lua_isnil(L, -1) && lua_toboolean(L, -1))
+			{
+				lua_pushvalue(L, -3);
+				lua_pushnumber(L, delta);
+				lua_call(L, 2, 0);
+			}
+			else
+			{
+				lua_pop(L, 1);
+			}
+		}
+
+		lua_pop(L, 1);
+	}
 
 	lua_pop(L, 1); // Renderer reference
 }

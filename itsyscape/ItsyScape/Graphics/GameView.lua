@@ -456,7 +456,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		end
 
 		if m.wallHackEnabled then
-			local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom = 1.25, 1.25, 4.0, 0.0
+			local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom = 1.25, 1.25, 4.0, 0.25
 
 			if m.meta and type(m.meta.wallHack) == "table" then
 				wallHackLeft = m.meta.wallHack.left or wallHackLeft
@@ -574,6 +574,12 @@ function GameView:testMap(layer, ray, callback)
 		origin = { ray.origin.x, ray.origin.y, ray.origin.z },
 		direction = { ray.direction.x, ray.direction.y, ray.direction.z }
 	})
+end
+
+local function sprint(...)
+if love.keyboard.isDown("space") then
+	print(...)
+end
 end
 
 function GameView:updateMap(map, layer)
@@ -702,8 +708,10 @@ function GameView:updateMap(map, layer)
 							local differenceI = eyeI - playerI
 							local differenceJ = eyeJ - playerJ
 
-							local ray = Ray(self.camera:getPosition(), -(self.camera:getEye() - self.camera:getPosition()))
+							local forward = self.camera:getForward()
+							forward.y = -forward.y
 
+							local ray = Ray(self.camera:getPosition() + Vector(0, 0.5, 0), forward)
 							if math.abs(differenceI) > math.abs(differenceJ) then
 								local directionI = math.sign(differenceI)
 
@@ -714,19 +722,37 @@ function GameView:updateMap(map, layer)
 									stopI = m.map:getWidth()
 								end
 
-								local playerY = map:getTileCenter(playerI, playerJ).y
 								local isHidden = false
-								local step = 0
 								for i = playerI + directionI, stopI, directionI do
-									step = step + map:getCellSize()
+									local center = map:getTileCenter(i, playerJ)
+									local _, projection = ray:closest(center)
 
-									local otherY = map:getTileCenter(i, playerJ).y
-									if otherY > ray:project(step).y - 0.5 and i ~= stopI then
-										isHidden = true
-									elseif isHidden or i == stopI then
-										near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
+									isHidden = center.y > projection.y
+									if isHidden then
 										break
 									end
+								end
+
+								if isHidden then
+									local foundCliff = false
+									for i = playerI + directionI, stopI, directionI do
+										local center = map:getTileCenter(i, playerJ)
+										local _, projection = ray:closest(center)
+
+										if center.y > projection.y then
+											foundCliff = true
+										elseif foundCliff or i == stopI then
+											foundCliff = true
+											near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
+											break
+										end
+									end
+
+									if not foundCliff then
+										near = -1
+									end
+								else
+									near = -1
 								end
 							else
 								local directionJ = math.sign(differenceJ)
@@ -738,21 +764,41 @@ function GameView:updateMap(map, layer)
 									stopJ = m.map:getHeight()
 								end
 
-								local playerY = map:getTileCenter(playerI, playerJ).y
 								local isHidden = false
-								local step = 0
 								for j = playerJ + directionJ, stopJ, directionJ do
-									step = step + map:getCellSize()
+									local center = map:getTileCenter(playerI, j)
+									local _, projection = ray:closest(center)
 
-									local otherY = map:getTileCenter(playerI, j).y
-									if otherY > ray:project(step).y - 0.5 and j ~= stopJ then
-										isHidden = true
-									elseif isHidden or j == stopJ then
-										near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
+									isHidden = center.y > projection.y
+									if isHidden then
 										break
 									end
 								end
+
+								if isHidden then
+									local foundCliff = false
+									for j = playerJ + directionJ, stopJ, directionJ do
+										local center = map:getTileCenter(playerI, j)
+										local _, projection = ray:closest(center)
+
+										if center.y > projection.y then
+											foundCliff = true
+										elseif foundCliff or j == stopJ then
+											foundCliff = true
+											near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
+											break
+										end
+									end
+
+									if not foundCliff then
+										near = -1
+									end
+								else
+									near = -1
+								end
 							end
+						else
+							near = -1
 						end
 					end
 
