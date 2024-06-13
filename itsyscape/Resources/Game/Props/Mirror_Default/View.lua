@@ -34,7 +34,7 @@ function MirrorView:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	local renderer = Renderer(true)
+	local renderer = Renderer({ shadows = (_CONF.shadows or _CONF.shadows == nil) and 1 or false })
 	self.renderer = renderer
 	self.camera = ThirdPersonCamera()
 

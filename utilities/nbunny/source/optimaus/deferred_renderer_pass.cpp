@@ -32,7 +32,7 @@ nbunny::DeferredRendererPass::DeferredRendererPass(ShadowRendererPass* shadow_pa
 	depth_buffer({}),
 	light_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	fog_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
-	shadow_buffer(love::PIXELFORMAT_RGBA32F, g_buffer),
+	shadow_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	output_buffer(love::PIXELFORMAT_RGBA8, g_buffer)
 {
 	// Nothing.
