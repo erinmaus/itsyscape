@@ -84,17 +84,22 @@ Renderer.Y_NOISE = NoiseBuilder {
 	offset = Vector(73, 14, 64)
 }
 
-function Renderer:new()
+function Renderer:new(conf)
+	conf = conf or {}
+
 	self._renderer = NRenderer(self)
 
-	self.shadowPass = ShadowRendererPass(self)
+	local shadowsEnabled = not conf or (conf.shadows == nil or conf.shadows == true or (type(conf.shadows) == "number" and conf.shadows >= 1))
+	local shadowQuality = shadowsEnabled and ((conf and type(conf.shadows) == "number" and conf.shadows >= 1 and math.floor(conf.shadows)) or nil)
+
+	self.shadowPass = shadowsEnabled and ShadowRendererPass(self, shadowQuality) or nil
 	self.outlinePass = OutlineRendererPass(self)
 	self.finalDeferredPass = DeferredRendererPass(self, self.shadowPass)
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
 	self.alphaMaskPass = AlphaMaskRendererPass(self, self.finalDeferredPass:getHandle():getDepthBuffer())
 	self.particleOutlinePass = ParticleOutlineRendererPass(self, self.finalDeferredPass:getHandle():getDepthBuffer())
 	self.passesByID = {
-		[self.shadowPass:getID()] = self.shadowPass,
+		[shadowsEnabled and self.shadowPass:getID() or 0] = self.shadowPass,
 		[self.outlinePass:getID()] = self.outlinePass,
 		[self.finalDeferredPass:getID()] = self.finalDeferredPass,
 		[self.finalForwardPass:getID()] = self.finalForwardPass,
@@ -102,7 +107,10 @@ function Renderer:new()
 		[self.particleOutlinePass:getID()] = self.particleOutlinePass,
 	}
 
-	self._renderer:addRendererPass(self.shadowPass:getHandle())
+	if shadowsEnabled then
+		self._renderer:addRendererPass(self.shadowPass:getHandle())
+	end
+
 	self._renderer:addRendererPass(self.outlinePass:getHandle())
 	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
 	self._renderer:addRendererPass(self.finalForwardPass:getHandle())
@@ -112,10 +120,10 @@ function Renderer:new()
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()
 
-	self.outlineBuffer = NGBuffer("rgba32f", "rgba32f", "rgba32f")
-	self.distanceBuffer = NGBuffer("rgba32f", "rgba32f")
-	self.blurBuffer = NGBuffer("rgba32f", "rgba32f")
-	self.alphaBuffer = NGBuffer("rgba32f", "rgba32f")
+	self.outlineBuffer = NGBuffer("rgba8", "rgba8", "rgba8")
+	self.distanceBuffer = NGBuffer("rgba16f", "rgba16f")
+	self.blurBuffer = NGBuffer("rgba8", "rgba8")
+	self.alphaBuffer = NGBuffer("rgba8", "rgba8")
 	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
 	self.customOutlinePostProcessShader = love.graphics.newShader(Renderer.CUSTOM_OUTLINE_SHADER:getResource():getSource())
 	self.initDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_DISTANCE_SHADER:getResource():getSource())
