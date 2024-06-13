@@ -65,7 +65,10 @@ function GameView:new(game, camera)
 
 	self.decorations = {}
 
-	self.renderer = Renderer(_MOBILE)
+	self.renderer = Renderer({
+		shadows = _CONF and _CONF.shadows
+	})
+
 	self.resourceManager = ResourceManager()
 	self.spriteManager = SpriteManager(self.resourceManager)
 
