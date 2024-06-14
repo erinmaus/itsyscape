@@ -328,10 +328,10 @@ function Tile:testRay(ray, i, j, scale)
 end
 
 function Tile:testRayWithCurves(ray, i, j, scale, ...)
-	local topLeft = MapCurve.transformAll(Vector((i - 1) * scale, self.topLeft, (j - 1) * scale), ...)
-	local topRight = MapCurve.transformAll(Vector(i * scale, self.topRight, (j - 1) * scale), ...)
-	local bottomLeft = MapCurve.transformAll(Vector((i - 1) * scale, self.bottomLeft, j * scale), ...)
-	local bottomRight = MapCurve.transformAll(Vector(i * scale, self.bottomRight, j * scale), ...)
+	local topLeft = MapCurve.transformAll(Vector((i - 1) * scale, self.topLeft, (j - 1) * scale), nil, ...)
+	local topRight = MapCurve.transformAll(Vector(i * scale, self.topRight, (j - 1) * scale), nil, ...)
+	local bottomLeft = MapCurve.transformAll(Vector((i - 1) * scale, self.bottomLeft, j * scale), nil, ...)
+	local bottomRight = MapCurve.transformAll(Vector(i * scale, self.bottomRight, j * scale), nil, ...)
 
 	local success, point
 	do

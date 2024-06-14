@@ -29,6 +29,7 @@ function EditorApplication:new()
 		self.light:setIsGlobal(true)
 		self.light:setDirection(-self:getCamera():getForward())
 		self.light:setParent(self:getGameView():getScene())
+		self.light:setDirection(Vector(0, 1, 1))
 		
 		local ambient = AmbientLightSceneNode()
 		ambient:setAmbience(0.4)
