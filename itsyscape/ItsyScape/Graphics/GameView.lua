@@ -458,7 +458,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 			shader:send("scape_MapSize", { m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize() })
 		end
 
-		if m.wallHackEnabled then
+		if m.wallHackEnabled and not self:_getIsMapEditor() then
 			local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom = 1.25, 1.25, 4.0, 0.25
 
 			if m.meta and type(m.meta.wallHack) == "table" then
@@ -924,6 +924,13 @@ function GameView:getMapTileSet(layer)
 	local m = self.mapMeshes[layer]
 	if m then
 		return m.tileSet, m.tileSetID
+	end
+end
+
+function GameView:getMapCurves(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.curves
 	end
 end
 

@@ -442,7 +442,7 @@ function MapCurve:render(depth, result)
 	return self.positionCurve:render(depth, result)
 end
 
-function MapCurve:transform(point)
+function MapCurve:transform(point, rotation)
 	if self.positionCurve:length() <= 1 then
 		return point
 	end
@@ -454,16 +454,22 @@ function MapCurve:transform(point)
 		return point
 	end
 
-	local position = self:evaluatePosition(t)
-	local rotation = self:evaluateRotation(t):getNormal()
-	local normal = self:evaluateNormal(t):getNormal()
+	local curvePosition = self:evaluatePosition(t)
+	local curveRotation = self:evaluateRotation(t):getNormal()
+	local curveNormal = self:evaluateNormal(t):getNormal()
 
 	local oppositeAxis = self.oppositeAxis
-	local up = Vector(point.y) * normal
+	local up = Vector(point.y) * curveNormal
 	local center = self.halfMapSize * oppositeAxis
 	local p = oppositeAxis * point - center + up
+	point = curveRotation:transformVector(p) + curvePosition
 
-	return rotation:transformVector(p) + position
+	if rotation then
+		local upRotation = Quaternion.lookAt(Vector.ZERO, curveNormal, Vector.UNIT_Y)
+		rotation = upRotation * curveRotation * rotation
+	end
+
+	return point, rotation
 end
 
 function MapCurve:getCurveTexture()
@@ -510,16 +516,16 @@ function MapCurve:getCurveTexture()
 	return self.texture
 end
 
-function MapCurve.transformAll(point, curves)
+function MapCurve.transformAll(point, rotation, curves)
 	if not curves then
-		return point
+		return point, rotation
 	end
 
 	for _, curve in ipairs(curves) do
-		point = curve:transform(point)
+		point, rotation = curve:transform(point, rotation)
 	end
 
-	return point
+	return point, rotation
 end
 
 function MapCurve:toConfig()

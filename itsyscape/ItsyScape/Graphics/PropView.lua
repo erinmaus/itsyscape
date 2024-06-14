@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local DebugCubeSceneNode = require "ItsyScape.Graphics.DebugCubeSceneNode"
+local MapCurve = require "ItsyScape.World.MapCurve"
 
 local PropView = Class()
 
@@ -70,12 +71,19 @@ end
 
 function PropView:updateTransform()
 	local position, layer = self.prop:getPosition()
+	local rotation = self.prop:getRotation()
+
+	local curves = self.gameView:getMapCurves(layer)
+	if curves then
+		position, rotation = MapCurve.transformAll(position, rotation, curves)
+	end
+
 	local transform = self.sceneNode:getTransform()
 	transform:setLocalTranslation(position)
-	transform:setLocalRotation(self.prop:getRotation())
+	transform:setLocalRotation(rotation)
 	transform:setLocalScale(self.prop:getScale())
 
-	if self:getIsStatic() then
+	if self:getIsStatic() and (not self.ready or not curves) then
 		self:getRoot():tick()
 	end
 

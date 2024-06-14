@@ -25,6 +25,7 @@ local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
+local MapCurve = require "ItsyScape.World.MapCurve"
 
 local ActorView = Class()
 ActorView.Animatable = Class(Animatable)
@@ -214,6 +215,8 @@ function ActorView:new(actor, actorID)
 	self.sceneNode = SceneNode()
 
 	self.layer = false
+	self.position = false
+	self.rotation = Quaternion.IDENTITY
 
 	self.animations = {}
 	self._onAnimationPlayed = function(_, slot, priority, animation, _, time)
@@ -663,32 +666,60 @@ function ActorView:changeSkin(slot, priority, skin, config)
 	self.skins[slot] = slotNodes
 end
 
-function ActorView:move(position, layer, instant)
-	self.sceneNode:getTransform():setLocalTranslation(position)
+function ActorView:_getPosition(position, layer)
+	position = position or self.position or Vector.ZERO
+	layer = layer or self.layer or 1
 
-	if instant or layer ~= self.layer then
-		self.sceneNode:getTransform():setPreviousTransform(position)
+	local curves = self.game:getMapCurves(layer)
+	if curves then
+		return MapCurve.transformAll(position, curves)
+	end
+
+	return position
+end
+
+function ActorView:_getRotation(rotation, layer)
+	rotation = rotation or self.rotation or Quaternion.IDENTITY
+	layer = layer or self.layer or 1
+
+	local position = self.position or Vector.ZERO
+	local curves = self.game:getMapCurves(layer)
+	if curves then
+		local _, r = MapCurve.transformAll(position, rotation, curves)
+		return r
+	end
+
+	return rotation
+end
+
+function ActorView:move(position, layer, instant)
+	local previousLayer = self.layer
+	local previousPosition = self.position
+
+	self.position = position
+	self.layer = layer
+
+	if instant then
+		local currentPosition = self:_getPosition(position, layer)
+		self.sceneNode:getTransform():setPreviousTransform(currentPosition)
 	end
 
 	local parent = self.game:getMapSceneNode(layer)
 	if parent ~= self.sceneNode:getParent() then
 		self.sceneNode:setParent(parent)
 	end
-
-	self.layer = layer
 end
 
 function ActorView:face(direction, rotation)
-	if rotation then
-		self.sceneNode:getTransform():setLocalRotation(rotation)
-	else
-		-- Assumes models face right.
-		if direction.x < -0.5 then
-			self.sceneNode:getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi))
-		elseif direction.x > 0.5 then
-			self.sceneNode:getTransform():setLocalRotation(Quaternion.IDENTITY)
+	if not rotation then
+		if math.sign(direction.x) < 0 then
+			rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi)
+		else
+			rotation = Quaternion.IDENTITY
 		end
 	end
+
+	self.rotation = rotation
 end
 
 function ActorView:damage(damageType, damage)
@@ -732,6 +763,16 @@ end
 function ActorView:update(delta)
 	self:updateAnimations(delta)
 	self.animatable:update()
+
+	if self.layer then
+		if self.position then
+			self.sceneNode:getTransform():setLocalTranslation(self:_getPosition(self.position, self.layer))
+		end
+
+		if self.rotation then
+			self.sceneNode:getTransform():setLocalRotation(self:_getRotation(self.rotation, self.layer))
+		end
+	end
 end
 
 function ActorView:getBoneTransform(boneName)
