@@ -81,6 +81,7 @@ vec3 scapeApplyLight(
 	vec3 diffuseLight = diffuseCoefficient * color * light.color;
 
 	float specularCoefficient = pow(max(0.0, dot(surfaceToCamera, reflect(-direction, normal))), specular.w);
+	specularCoefficient = clamp(specularCoefficient, 0.0, 1.0);
 	vec3 specularLight = specularCoefficient * specular.rgb * light.color;
 
 	return pointLight + diffuseLight + specularLight + ambientLight;

@@ -40,9 +40,6 @@ void nbunny::ShaderCache::ShaderSource::combine(
 
 	result_vertex_source = result_vertex.str();
 	result_pixel_source = result_pixel.str();
-
-	std::cout << "vertex: " << result_vertex_source << std::endl;
-	std::cout << "pixel: " << result_pixel_source << std::endl;
 }
 
 std::string nbunny::ShaderCache::ShaderSource::parse_includes(const std::string& source, std::unordered_set<std::string>& filenames)
