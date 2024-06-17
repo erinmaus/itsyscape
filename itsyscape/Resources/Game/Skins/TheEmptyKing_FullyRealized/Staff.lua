@@ -8,10 +8,6 @@
 			position = { 4.75, 0, 0.5 },
 			attenuation = 16,
 			attach = "hand.r"
-		},
-		{
-			type = "ambient",
-			ambience = 1.0
 		}
 	}
 }
