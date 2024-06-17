@@ -14,6 +14,8 @@ precision highp float;
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Resources/Shaders/RendererPass.common.glsl"
+
 uniform float scape_OutlineThreshold;
 
 varying vec3 frag_Position;
@@ -23,9 +25,25 @@ varying vec2 frag_Texture;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
+#ifdef SCAPE_LIGHT_MODEL_V2
+void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out vec4 specular);
+#endif
+
 void effect()
 {
+#ifdef SCAPE_LIGHT_MODEL_V2
+	vec4 diffuse = frag_Color;
+	vec3 normal = frag_Normal;
+	vec3 position = frag_Position;
+	vec4 specular = vec4(0.0);
+	performAdvancedEffect(frag_Texture, diffuse, position, normal, specular);
+#else
+	vec3 normal = frag_Normal;
+	vec4 specular = vec4(0.0);
+	vec3 position = frag_Position;
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
+#endif
+
 	if (diffuse.a < 250.0 / 255.0)
 	{
 		discard;
@@ -42,6 +60,7 @@ void effect()
 	}
 
 	love_Canvases[0] = diffuse;
-	love_Canvases[1] = vec4(frag_Position, diffuse.a);
-	love_Canvases[2] = vec4(frag_Normal, outlineThreshold);
+	love_Canvases[1] = vec4(position, diffuse.a);
+	love_Canvases[2] = vec4(normal, outlineThreshold);
+	love_Canvases[3] = specular;
 }

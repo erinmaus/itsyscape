@@ -10,6 +10,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Resources/Shaders/RendererPass.common.glsl"
+
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 0.5
 #define SCAPE_BLACK_DISCARD_THRESHOLD 128.0 / 255.0
 

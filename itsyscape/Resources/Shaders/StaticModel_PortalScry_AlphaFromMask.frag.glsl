@@ -1,5 +1,3 @@
-uniform float scape_Time;
-
 uniform Image scape_DiffuseTexture;
 uniform Image scape_PortalTexture;
 

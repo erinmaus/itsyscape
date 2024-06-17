@@ -28,7 +28,7 @@ static const std::string SHADER_SHADOW            = "Shadow";
 nbunny::DeferredRendererPass::DeferredRendererPass(ShadowRendererPass* shadow_pass) :
 	RendererPass(RENDERER_PASS_DEFERRED),
 	shadow_pass(shadow_pass),
-	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F }),
+	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA8 }),
 	depth_buffer({}),
 	light_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	fog_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
@@ -127,11 +127,25 @@ void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSce
 	Light light;
 	node.to_light(light, delta);
 
-	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalSpecularTexture");
+	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
+	if (position_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
+		shader->sendTextures(position_texture_uniform, &texture, 1);	
+	}
+
+	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalOutlineTexture");
 	if (normal_map_specular_texture_uniform)
 	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_SPECULAR_INDEX));
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_OUTLINE_INDEX));
 		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1);	
+	}
+
+	auto specular_texture_uniform = shader->getUniformInfo("scape_SpecularTexture");
+	if (specular_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(SPECULAR_INDEX));
+		shader->sendTextures(specular_texture_uniform, &texture, 1);
 	}
 
 	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
@@ -153,6 +167,14 @@ void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSce
 	{
         std::memcpy(light_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
 		shader->updateUniform(light_color_uniform, 1);
+	}
+
+	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
+	if (camera_eye_uniform)
+	{
+		auto eye = get_renderer()->get_camera().get_eye_position();
+        std::memcpy(camera_eye_uniform->floats, glm::value_ptr(eye), sizeof(glm::vec3));
+		shader->updateUniform(camera_eye_uniform, 1);
 	}
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
@@ -323,10 +345,10 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 		shader->sendTextures(position_texture_uniform, &texture, 1);	
 	}
 
-	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalSpecularTexture");
+	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalOutlineTexture");
 	if (normal_map_specular_texture_uniform)
 	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_SPECULAR_INDEX));
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_OUTLINE_INDEX));
 		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1);	
 	}
 
@@ -442,7 +464,8 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		{
 			love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),
 			love::Colorf(0.0, 0.0, 0.0, 1.0),
-			love::Colorf(0.0, 0.0, 0.0, 1.0)
+			love::Colorf(0.0, 0.0, 0.0, 1.0),
+			love::Colorf(0.0, 0.0, 0.0, 0.0)
 		},
 		0,
 		1.0f);

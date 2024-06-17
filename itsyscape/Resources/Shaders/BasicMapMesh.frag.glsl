@@ -26,3 +26,5 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 
 	return Texel(scape_DiffuseTexture, newTextureCoordinate) * color * vec4(1.0, 1.0, 1.0, mask * alpha);
 }
+
+#include "Resources/Shaders/MapMesh.common.glsl"
