@@ -29,18 +29,28 @@ namespace nbunny
 		{
 			std::string vertex;
 			std::string pixel;
+			std::string vertex_prologue;
+			std::string pixel_prologue;
 
 			inline ShaderSource(const std::string& vertex, const std::string& pixel)
 			{
 				std::unordered_set<std::string> vertex_filenames;
-				this->vertex = parse_includes(vertex, vertex_filenames);
+				this->vertex = parse_pragmas(parse_includes(vertex, vertex_filenames), vertex_prologue);
 
 				std::unordered_set<std::string> pixel_filenames;
-				this->pixel = parse_includes(pixel, pixel_filenames);
+				this->pixel = parse_pragmas(parse_includes(pixel, pixel_filenames), pixel_prologue);
 			}
+
+			void combine(
+				const std::string& version,
+				const std::string& base_vertex_source,
+				const std::string& base_pixel_source,
+				std::string& result_vertex_source,
+				std::string& result_pixel_source);
 
 		private:
 			static std::string parse_includes(const std::string& source, std::unordered_set<std::string>& filenames);
+			static std::string parse_pragmas(const std::string& source, std::string& prologue);
 		};
 
 	private:

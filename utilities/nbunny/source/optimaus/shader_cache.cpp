@@ -19,6 +19,32 @@
 #include "nbunny/optimaus/shader_cache.hpp"
 #include "nbunny/optimaus/resource.hpp"
 
+void nbunny::ShaderCache::ShaderSource::combine(
+	const std::string& version,
+	const std::string& base_vertex_source,
+	const std::string& base_pixel_source,
+	std::string& result_vertex_source,
+	std::string& result_pixel_source)
+{
+	std::stringstream result_vertex;
+	result_vertex << "#pragma language" << " " << version << "\n";
+	result_vertex << vertex_prologue << "\n";
+	result_vertex << base_vertex_source << "\n";
+	result_vertex << vertex;
+
+	std::stringstream result_pixel;
+	result_pixel << "#pragma language" << " " << version << "\n";
+	result_pixel << pixel_prologue << "\n";
+	result_pixel << base_pixel_source << "\n";
+	result_pixel << pixel;
+
+	result_vertex_source = result_vertex.str();
+	result_pixel_source = result_pixel.str();
+
+	std::cout << "vertex: " << result_vertex_source << std::endl;
+	std::cout << "pixel: " << result_pixel_source << std::endl;
+}
+
 std::string nbunny::ShaderCache::ShaderSource::parse_includes(const std::string& source, std::unordered_set<std::string>& filenames)
 {
 	std::string result;
@@ -66,6 +92,48 @@ std::string nbunny::ShaderCache::ShaderSource::parse_includes(const std::string&
 
 	result += suffix;
 
+	return result;
+}
+
+std::string nbunny::ShaderCache::ShaderSource::parse_pragmas(const std::string& source, std::string& prologue)
+{
+	std::string result;
+
+	auto pragma_regex = std::regex("#pragma\\s+([a-zA-Z_][a-zA-Z_0-9]*)\\s+([a-zA-Z_][a-zA-Z_0-9]*)\\s+([^\\s]*)?\r?\n?");
+
+	auto begin = std::sregex_iterator(source.begin(), source.end(), pragma_regex);
+	auto end = std::sregex_iterator();
+
+	if (std::distance(begin, end) == 0)
+	{
+		return source;
+	}
+
+	std::string suffix;
+	for (auto i = begin; i != end; ++i)
+	{
+		auto match = (*i)[0].str();
+		auto type = (*i)[1].str();
+		auto value = (*i)[2].str();
+
+		if (type == "option")
+		{
+			prologue += std::string("#define ") + value;
+
+			if (i->length() >= 4)
+			{
+				prologue += " ";
+				prologue += (*i)[3].str();
+			}
+
+			prologue += "\n";
+		}
+
+		result += i->prefix().str() + "// " + match;
+		suffix = i->suffix();
+	}
+
+	result += suffix;
 	return result;
 }
 
@@ -186,8 +254,8 @@ static int nbunny_shader_cache_build_composite(lua_State* L)
 	{
 		love::luax_getfunction(L, "graphics", "_shaderCodeToGLSL");
 
-		v = base_vertex_source + vertex_source;
-		p = base_pixel_source + pixel_source;
+		nbunny::ShaderCache::ShaderSource shader_source(vertex_source, pixel_source);
+		shader_source.combine("glsl3", base_vertex_source, base_pixel_source, vertex_source, pixel_source);
 
 		lua_pushboolean(L, get_is_mobile());
 		lua_pushlstring(L, v.data(), v.size());
