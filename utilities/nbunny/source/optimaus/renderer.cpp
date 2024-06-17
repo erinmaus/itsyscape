@@ -332,8 +332,8 @@ void nbunny::RendererPass::load_builtin_shader(
 
 	get_renderer()->get_shader_cache().register_renderer_pass(
 		get_renderer_pass_id(),
-		"#pragma language glsl3\n" + vertex_source,
-		"#pragma language glsl3\n" + pixel_source);
+		vertex_source,
+		pixel_source);
 }
 
 love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, const SceneNode& node)
@@ -369,9 +369,7 @@ love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, cons
                 lua_pop(L, 1);
 
                 auto shader_source = ShaderCache::ShaderSource(vertex_source, pixel_source);
-
-                v = base_vertex_source + shader_source.vertex;
-                p = base_pixel_source + shader_source.pixel;
+                shader_source.combine("glsl3", base_vertex_source, base_pixel_source, v, p);
 
                 // Pop return value from "getResource" and the reference
                 lua_pop(L, 2);

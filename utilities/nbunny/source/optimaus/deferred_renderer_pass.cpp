@@ -608,21 +608,15 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(lua_Sta
 			std::string vertex_source(reinterpret_cast<const char*>(vertex_file_data->getData()), vertex_file_data->getSize());
 			std::string pixel_source(reinterpret_cast<const char*>(pixel_file_data->getData()), pixel_file_data->getSize());
 
+			auto shader_source = ShaderCache::ShaderSource(vertex_source, pixel_source);
 			if (!is_light)
 			{
-				v = base_vertex_source;
-				p = base_pixel_source;
+				shader_source.combine("glsl3", base_vertex_source, base_pixel_source, v, p);
 			}
 			else
 			{
-				v = "#pragma language glsl3\n";
-				p = "#pragma language glsl3\n";
+				shader_source.combine("glsl3", "", "", v, p);
 			}
-
-			auto shader_source = ShaderCache::ShaderSource(vertex_source, pixel_source);
-
-			v += shader_source.vertex;
-			p += shader_source.pixel;
 
             love::luax_getfunction(L, "graphics", "_shaderCodeToGLSL");
 
