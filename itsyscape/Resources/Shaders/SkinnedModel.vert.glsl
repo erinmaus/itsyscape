@@ -1,6 +1,5 @@
 #define MAX_BONES 48
 uniform mat4 scape_Bones[MAX_BONES];
-uniform mat4 scape_ViewMatrix;
 
 attribute vec4 VertexBoneIndex;
 attribute vec4 VertexBoneWeight;

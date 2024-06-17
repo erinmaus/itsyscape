@@ -2,7 +2,7 @@
 
 uniform ArrayImage scape_ShadowMap;
 uniform Image scape_PositionTexture;
-uniform Image scape_NormalSpecularTexture;
+uniform Image scape_NormalOutlineTexture;
 uniform vec2 scape_TexelSize;
 uniform vec3 scape_LightDirection;
 uniform mat4 scape_CascadeLightSpaceMatrices[SCAPE_MAX_CASCADES];
@@ -86,7 +86,7 @@ vec4 effect(
 		}
 	}
 
-	vec3 normal = normalize(Texel(scape_NormalSpecularTexture, textureCoordinate).xyz);
+	vec3 normal = normalize(Texel(scape_NormalOutlineTexture, textureCoordinate).xyz);
 	vec4 lightPosition = scape_CascadeLightSpaceMatrices[cascadeIndex] * vec4(worldPosition, 1.0);
 	vec3 projectedLightPosition = lightPosition.xyz / lightPosition.w;
 	projectedLightPosition = (projectedLightPosition + vec3(1.0)) / vec3(2.0);

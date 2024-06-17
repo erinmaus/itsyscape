@@ -19,6 +19,8 @@ precision highp float;
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Resources/Shaders/RendererPass.common.glsl"
+
 #define SCAPE_MAX_LIGHTS 16
 
 varying vec3 frag_Position;
@@ -40,7 +42,8 @@ vec3 scapeApplyLight(
 	Light light,
 	vec3 position,
 	vec3 normal,
-	vec3 color)
+	vec3 color,
+	vec4 specular)
 {
 	vec3 direction;
 	float attenuation = 1.0;
@@ -64,14 +67,26 @@ vec3 scapeApplyLight(
 		}
 	}
 
+	float specularCoefficient = 0.0;
+	if (diffuseCoefficient > 0.0)
+	{
+		specularCoefficient = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normal))), specular.w);
+	}
+
+	vec3 specularColor = specularCoefficient * specular.rgb * light.intensities;
+
 	vec3 ambient = light.ambientCoefficient * color * light.color;
 	float diffuseCoefficient = max(0.0, dot(normal, direction));
 	vec3 diffuse = diffuseCoefficient * color * light.color;
 
-	return attenuation * diffuse + ambient;
+	return attenuation * (diffuse + specular) + ambient;
 }
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate);
+
+#ifdef SCAPE_LIGHT_MODEL_V2
+void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out vec4 specular);
+#endif
 
 vec4 effect(
 	vec4 color,
@@ -79,7 +94,19 @@ vec4 effect(
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	vec4 diffuse = performEffect(color, frag_Texture);
+#ifdef SCAPE_LIGHT_MODEL_V2
+	vec4 diffuse = frag_Color;
+	vec3 normal = frag_Normal;
+	vec3 position = frag_Position;
+	vec4 specular = vec4(0.0);
+	performAdvancedEffect(textureCoordinate, diffuse, position, normal, specular);
+#else
+	vec3 normal = frag_Normal;
+	vec4 specular = vec4(0.0);
+	vec3 position = frag_Position;
+	vec4 diffuse = performEffect(frag_Color, frag_Texture);
+#endif
+
 	float alpha = diffuse.a * color.a;
 
 	if (alpha < 0.1)
@@ -92,9 +119,10 @@ vec4 effect(
 	{
 		result += scapeApplyLight(
 			scape_Lights[i],
-			frag_Position,
-			frag_Normal,
-			diffuse.rgb);
+			position,
+			normal,
+			diffuse.rgb,
+			specular);
 	}
 
 	return vec4(result.rgb, diffuse.a * color.a);

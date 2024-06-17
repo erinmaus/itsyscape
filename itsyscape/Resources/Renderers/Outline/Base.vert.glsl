@@ -15,9 +15,7 @@ precision highp float;
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
-uniform mat4 scape_WorldMatrix;
-uniform mat4 scape_NormalMatrix;
-uniform vec4 scape_ClipPlane;
+#include "Resources/Shaders/RendererPass.common.glsl"
 
 attribute vec3 VertexNormal;
 attribute vec2 VertexTexture;

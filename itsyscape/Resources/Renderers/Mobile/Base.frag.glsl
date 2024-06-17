@@ -15,6 +15,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Resources/Shaders/RendererPass.common.glsl"
+
 #define SCAPE_MAX_LIGHTS 16
 #define SCAPE_MAX_FOG    4
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 1.0 / 128.0
@@ -46,8 +48,11 @@ vec3 scapeApplyLight(
 	Light light,
 	vec3 position,
 	vec3 normal,
-	vec3 color)
+	vec3 color,
+	vec4 specular)
 {
+	vec3 surfaceToCamera = normalize(scape_CameraEye - position);
+
 	vec3 direction;
 	float attenuation = 0.0;
 	if (light.position.w == 1.0)
@@ -69,12 +74,16 @@ vec3 scapeApplyLight(
 		}
 	}
 
-	vec3 ambient = light.ambientCoefficient * color * light.color;
-	float diffuseCoefficient = max(0.0, dot(normal, direction)) * light.position.w;
-	vec3 diffuse = diffuseCoefficient * color * light.color;
-	vec3 point = attenuation * attenuation * light.color * color;
+	vec3 ambientLight = light.ambientCoefficient * color * light.color;
+	vec3 pointLight = attenuation * attenuation * light.color * color;
 
-	return point + diffuse + ambient;
+	float diffuseCoefficient = max(0.0, dot(normal, direction)) * light.position.w;
+	vec3 diffuseLight = diffuseCoefficient * color * light.color;
+
+	float specularCoefficient = pow(max(0.0, dot(surfaceToCamera, reflect(-direction, normal))), specular.w);
+	vec3 specularLight = specularCoefficient * specular.rgb * light.color;
+
+	return pointLight + diffuseLight + specularLight + ambientLight;
 }
 
 vec3 scapeApplyFog(
@@ -99,15 +108,30 @@ vec3 scapeApplyFog(
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
+#ifdef SCAPE_LIGHT_MODEL_V2
+void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out vec4 specular);
+#endif
+
 vec4 effect(
 	vec4 color,
 	Image texture,
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
+#ifdef SCAPE_LIGHT_MODEL_V2
+	vec4 diffuse = color;
+	vec3 normal = frag_Normal;
+	vec3 position = frag_Position;
+	vec4 specular = vec4(0.0);
+	performAdvancedEffect(textureCoordinate, diffuse, position, normal, specular);
+#else
+	vec3 normal = frag_Normal;
+	vec4 specular = vec4(0.0);
+	vec3 position = frag_Position;
 	vec4 diffuse = performEffect(color, frag_Texture);
-	float alpha = diffuse.a * color.a;
+#endif
 
+	float alpha = diffuse.a * color.a;
 	if (alpha < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{
 		discard;
@@ -118,9 +142,10 @@ vec4 effect(
 	{
 		result += scapeApplyLight(
 			scape_Lights[i],
-			frag_Position,
-			frag_Normal,
-			diffuse.rgb);
+			position,
+			normal,
+			diffuse.rgb,
+			specular);
 	}
 
 	for (int i = 0; i < scape_NumFogs; ++i)

@@ -1,6 +1,5 @@
 #include "Resources/Shaders/MapCurve.common.glsl"
 
-uniform float scape_Time;
 attribute vec4 VertexTileBounds;
 attribute vec4 VertexTextureLayer;
 

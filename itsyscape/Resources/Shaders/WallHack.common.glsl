@@ -1,8 +1,3 @@
-#ifndef SCAPE_WALL_HACK_DO_NOT_DEFINE_CAMERA_UNIFORMS
-uniform vec3 scape_CameraEye;
-uniform vec3 scape_CameraTarget;
-#endif
-
 // Alpha enabled (1.0 = yes, 0.0 = no)
 uniform float scape_WallHackAlpha;
 
