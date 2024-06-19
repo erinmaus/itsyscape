@@ -33,18 +33,18 @@ function MapMeshSceneNode:new()
 	--self:getMaterial():setOutlineThreshold(0.75)
 end
 
-function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor)
+function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor, largeTileSet)
 	if self.isOwner and self.mapMesh then
 		self.mapMesh:release()
 	end
 
-	if Class.isCompatibleType(tileSet, MultiTileSet) then
+	if Class.isCompatibleType(tileSet, MultiTileSet) or largeTileSet then
 		self:getMaterial():setShader(MapMeshSceneNode.MULTITEXTURE_SHADER)
 	else
 		self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
 	end
 
-	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1), mask, islandProcessor)
+	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1), mask, islandProcessor, largeTileSet)
 	self.isOwner = true
 
 	self:setBounds(self.mapMesh:getBounds())
@@ -64,8 +64,13 @@ function MapMeshSceneNode:setMapMesh(mapMesh, isMultiTexture)
 		self.isOwner = false
 	end
 
+	if isMultiTexture then
+		self:getMaterial():setShader(MapMeshSceneNode.MULTITEXTURE_SHADER)
+	else
+		self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
+	end
+
 	self.mapMesh = mapMesh or false
-	self.isMultiTexture = isMultiTexture
 end
 
 function MapMeshSceneNode:draw(renderer, delta)
@@ -84,6 +89,14 @@ function MapMeshSceneNode:draw(renderer, delta)
 	then
 		mask:getResource():setFilter('nearest', 'nearest')
 		shader:send("scape_MaskTexture", mask:getResource())
+	end
+
+	local specular = self:getMaterial():getTexture(3)
+	if shader:hasUniform("scape_SpecularTexture") and
+	   specular and specular:getIsReady()
+	then
+		specular:getResource():setFilter('nearest', 'nearest')
+		shader:send("scape_SpecularTexture", specular:getResource())
 	end
 
 	if self.mapMesh then

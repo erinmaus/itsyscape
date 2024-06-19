@@ -19,6 +19,7 @@ uniform vec3 scape_LightDirection;
 uniform vec3 scape_LightColor;
 
 uniform vec3 scape_CameraEye;
+uniform vec3 scape_CameraTarget;
 
 vec4 effect(
 	vec4 color,
@@ -28,14 +29,16 @@ vec4 effect(
 {
 	vec3 normal = Texel(scape_NormalOutlineTexture, textureCoordinate).xyz;
 	vec3 position = Texel(scape_PositionTexture, textureCoordinate).xyz;
-	vec4 specular = Texel(scape_SpecularTexture, textureCoordinate);
+	float specular = Texel(scape_SpecularTexture, textureCoordinate).r;
 	float lightDotSurface = max(dot(scape_LightDirection, normal), 0.0);
 
 	vec3 surfaceToCamera = normalize(scape_CameraEye - position);
-	float specularCoefficient = pow(max(0.0, dot(surfaceToCamera, reflect(scape_LightDirection, normal))), specular.w);
-	specularCoefficient = clamp(specularCoefficient, 0.0, 1.0);
+	vec3 cameraToTarget = normalize(scape_CameraEye - scape_CameraTarget);
+	//cameraToTarget = normalize(vec3(cameraToTarget.x, -cameraToTarget.y, cameraToTarget.z));
+	float exponent = smoothstep(0.0, 1.0, abs(dot(surfaceToCamera, reflect(normal, -cameraToTarget))));
+	float specularCoefficient = pow(2.0, exponent * specular) - 1.0;
 
-	vec3 result = lightDotSurface * scape_LightColor + specularCoefficient * specular.rgb * scape_LightColor;
-	float alpha = Texel(scape_ColorTexture, textureCoordinate).a;
+	vec3 result = lightDotSurface * scape_LightColor + specularCoefficient * scape_LightColor;
+	float alpha = Texel(scape_PositionTexture, textureCoordinate).w;
 	return vec4(result, alpha);
 }

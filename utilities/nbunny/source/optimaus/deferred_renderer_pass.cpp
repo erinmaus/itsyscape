@@ -42,7 +42,7 @@ void nbunny::DeferredRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
 	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_material();
 
-    drawable_scene_nodes.clear();
+	drawable_scene_nodes.clear();
 	for (auto& visible_scene_node: visible_scene_nodes)
 	{
 		auto& material = visible_scene_node->get_material();
@@ -64,8 +64,8 @@ void nbunny::DeferredRendererPass::walk_visible_lights()
 	{
 		const auto& node_type = node->get_type();
 		if (node_type == AmbientLightSceneNode::type_pointer ||
-		    node_type == DirectionalLightSceneNode::type_pointer ||
-		    node_type == PointLightSceneNode::type_pointer)
+			node_type == DirectionalLightSceneNode::type_pointer ||
+			node_type == PointLightSceneNode::type_pointer)
 		{
 			light_scene_nodes.push_back(reinterpret_cast<LightSceneNode*>(node));
 		}
@@ -87,7 +87,7 @@ void nbunny::DeferredRendererPass::walk_visible_lights()
 void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNode& node, float delta)
 {
 	auto shader = get_builtin_shader(L, BUILTIN_SHADER_AMBIENT_LIGHT, SHADER_AMBIENT_LIGHT);
-    get_renderer()->set_current_shader(shader);
+	get_renderer()->set_current_shader(shader);
 
 	Light light;
 	node.to_light(light, delta);
@@ -104,14 +104,14 @@ void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNo
 	auto light_ambient_coefficient_uniform = shader->getUniformInfo("scape_LightAmbientCoefficient");
 	if (light_ambient_coefficient_uniform)
 	{
-        *light_ambient_coefficient_uniform->floats = light.ambient_coefficient;
+		*light_ambient_coefficient_uniform->floats = light.ambient_coefficient;
 		shader->updateUniform(light_ambient_coefficient_uniform, 1);
 	}
 
 	auto light_color_uniform = shader->getUniformInfo("scape_LightColor");
 	if (light_color_uniform)
 	{
-        std::memcpy(light_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
+		std::memcpy(light_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
 		shader->updateUniform(light_color_uniform, 1);
 	}
 
@@ -131,14 +131,14 @@ void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSce
 	if (position_texture_uniform)
 	{
 		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
-		shader->sendTextures(position_texture_uniform, &texture, 1);	
+		shader->sendTextures(position_texture_uniform, &texture, 1);    
 	}
 
 	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalOutlineTexture");
 	if (normal_map_specular_texture_uniform)
 	{
 		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_OUTLINE_INDEX));
-		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1);	
+		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1); 
 	}
 
 	auto specular_texture_uniform = shader->getUniformInfo("scape_SpecularTexture");
@@ -165,15 +165,23 @@ void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSce
 	auto light_color_uniform = shader->getUniformInfo("scape_LightColor");
 	if (light_color_uniform)
 	{
-        std::memcpy(light_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
+		std::memcpy(light_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
 		shader->updateUniform(light_color_uniform, 1);
+	}
+
+	auto camera_target_uniform = shader->getUniformInfo("scape_CameraTarget");
+	if (camera_target_uniform)
+	{
+		auto eye = get_renderer()->get_camera().get_target_position();
+		std::memcpy(camera_target_uniform->floats, glm::value_ptr(eye), sizeof(glm::vec3));
+		shader->updateUniform(camera_target_uniform, 1);
 	}
 
 	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
 	if (camera_eye_uniform)
 	{
 		auto eye = get_renderer()->get_camera().get_eye_position();
-        std::memcpy(camera_eye_uniform->floats, glm::value_ptr(eye), sizeof(glm::vec3));
+		std::memcpy(camera_eye_uniform->floats, glm::value_ptr(eye), sizeof(glm::vec3));
 		shader->updateUniform(camera_eye_uniform, 1);
 	}
 
@@ -193,7 +201,7 @@ void nbunny::DeferredRendererPass::draw_point_light(lua_State* L, LightSceneNode
 	if (position_texture_uniform)
 	{
 		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
-		shader->sendTextures(position_texture_uniform, &texture, 1);	
+		shader->sendTextures(position_texture_uniform, &texture, 1);    
 	}
 
 	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
@@ -277,7 +285,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 	if (position_texture_uniform)
 	{
 		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
-		shader->sendTextures(position_texture_uniform, &texture, 1);	
+		shader->sendTextures(position_texture_uniform, &texture, 1);    
 	}
 
 	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
@@ -297,9 +305,9 @@ void nbunny::DeferredRendererPass::copy_depth_buffer(lua_State* L)
 
 	depth_buffer.use();
 
-    graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, true);
-    graphics->origin();
-    graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, true);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
 
 	graphics->clear(love::graphics::OptionalColorf(), false, 1.0f);
 
@@ -321,35 +329,35 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 	shadow_buffer.use();
 	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 0.0f), love::OptionalInt(), love::OptionalDouble());
 
-    graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
-    graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
-    graphics->origin();
-    graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 
 	auto shader = get_builtin_shader(L, BUILTIN_SHADER_SHADOW, SHADER_SHADOW);
 	get_renderer()->set_current_shader(shader);
 
-    auto shadow_map = shadow_pass->get_shadow_map();
+	auto shadow_map = shadow_pass->get_shadow_map();
 	auto shadow_map_texture_uniform = shader->getUniformInfo("scape_ShadowMap");
 	if (shadow_map_texture_uniform)
 	{
 		auto texture = static_cast<love::graphics::Texture*>(shadow_map);
-		shader->sendTextures(shadow_map_texture_uniform, &texture, 1);	
+		shader->sendTextures(shadow_map_texture_uniform, &texture, 1);  
 	}
 
 	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
 	if (position_texture_uniform)
 	{
 		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
-		shader->sendTextures(position_texture_uniform, &texture, 1);	
+		shader->sendTextures(position_texture_uniform, &texture, 1);    
 	}
 
 	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalOutlineTexture");
 	if (normal_map_specular_texture_uniform)
 	{
 		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_OUTLINE_INDEX));
-		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1);	
+		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1); 
 	}
 
 	auto texel_size_uniform = shader->getUniformInfo("scape_TexelSize");
@@ -433,7 +441,7 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 	graphics->draw(g_buffer.get_canvas(1), love::Matrix4());
 
 	output_buffer.use();
-    get_renderer()->set_current_shader(nullptr);
+	get_renderer()->set_current_shader(nullptr);
 	graphics->draw(shadow_buffer.get_color(), love::Matrix4());
 }
 
@@ -442,16 +450,16 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 	auto renderer = get_renderer();
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
-    g_buffer.use();
+	g_buffer.use();
 
 	const auto& camera = renderer->get_camera();
-    auto view_matrix = camera.get_view();
-    auto projection_matrix = camera.get_projection();
+	auto view_matrix = camera.get_view();
+	auto projection_matrix = camera.get_projection();
 	love::math::Transform view(love::Matrix4(glm::value_ptr(view_matrix)));
 	love::Matrix4 projection(glm::value_ptr(projection_matrix));
 
-    graphics->replaceTransform(&view);
-    graphics->setProjection(projection);
+	graphics->replaceTransform(&view);
+	graphics->setProjection(projection);
 
 	auto clear_color = renderer->get_clear_color();
 	if (!fog_scene_nodes.empty())
@@ -483,8 +491,8 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 	
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
+		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
+		graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
@@ -499,25 +507,25 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 {
 	light_buffer.use();
 
-    auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-    graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
-    graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 1.0f), love::OptionalInt(), love::OptionalDouble());
+	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 1.0f), love::OptionalInt(), love::OptionalDouble());
 
-    graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
-    graphics->origin();
-    graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
 
 	if (light_scene_nodes.empty())
-    {
-        AmbientLightSceneNode full_lit_node(0);
-        full_lit_node.set_current_ambience(1.0f);
-        full_lit_node.set_previous_ambience(1.0f);
+	{
+		AmbientLightSceneNode full_lit_node(0);
+		full_lit_node.set_current_ambience(1.0f);
+		full_lit_node.set_previous_ambience(1.0f);
 
-        draw_ambient_light(L, full_lit_node, delta);
-    }
+		draw_ambient_light(L, full_lit_node, delta);
+	}
 
-    ambient_light = 0.0f;
+	ambient_light = 0.0f;
 	for (auto light: light_scene_nodes)
 	{
 		const auto& light_type = light->get_type();
@@ -548,7 +556,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
 
 	fog_buffer.use();
 
-    auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 0.0f), love::OptionalInt(), love::OptionalDouble());
 
 	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
@@ -569,7 +577,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
 void nbunny::DeferredRendererPass::mix_lights()
 {
 	output_buffer.use();
-    get_renderer()->set_current_shader(nullptr);
+	get_renderer()->set_current_shader(nullptr);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
@@ -589,7 +597,7 @@ void nbunny::DeferredRendererPass::mix_lights()
 void nbunny::DeferredRendererPass::mix_fog()
 {
 	output_buffer.use();
-    get_renderer()->set_current_shader(nullptr);
+	get_renderer()->set_current_shader(nullptr);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
@@ -598,7 +606,7 @@ void nbunny::DeferredRendererPass::mix_fog()
 	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), false);
 
 	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
-    graphics->draw(fog_buffer.get_color(), love::Matrix4());
+	graphics->draw(fog_buffer.get_color(), love::Matrix4());
 
 	graphics->setCanvas();
 }
@@ -641,19 +649,19 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(lua_Sta
 				shader_source.combine("glsl3", "", "", v, p);
 			}
 
-            love::luax_getfunction(L, "graphics", "_shaderCodeToGLSL");
+			love::luax_getfunction(L, "graphics", "_shaderCodeToGLSL");
 
-            lua_pushboolean(L, get_renderer()->get_shader_cache().get_is_mobile());
-            lua_pushlstring(L, v.c_str(), v.size());
-            lua_pushlstring(L, p.c_str(), p.size());
+			lua_pushboolean(L, get_renderer()->get_shader_cache().get_is_mobile());
+			lua_pushlstring(L, v.c_str(), v.size());
+			lua_pushlstring(L, p.c_str(), p.size());
 
-            if (lua_pcall(L, 3, 2, 0) != 0)
-                luaL_error(L, "%s", lua_tostring(L, -1));
+			if (lua_pcall(L, 3, 2, 0) != 0)
+				luaL_error(L, "%s", lua_tostring(L, -1));
 
-            v = luaL_checkstring(L, -2);
-            p = luaL_checkstring(L, -1);
+			v = luaL_checkstring(L, -2);
+			p = luaL_checkstring(L, -1);
 
-            lua_pop(L, 2);
+			lua_pop(L, 2);
 		});
 }
 
@@ -665,7 +673,7 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_node_shader(lua_State*
 		return get_builtin_shader(L, BUILTIN_SHADER_DEFAULT, SHADER_DEFAULT, false);
 	}
 
-    return RendererPass::get_node_shader(L, node);
+	return RendererPass::get_node_shader(L, node);
 }
 
 nbunny::GBuffer& nbunny::DeferredRendererPass::get_g_buffer()

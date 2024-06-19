@@ -31,6 +31,7 @@ local SpriteManager = require "ItsyScape.Graphics.SpriteManager"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
+local LargeTileSet = require "ItsyScape.World.LargeTileSet"
 local Map = require "ItsyScape.World.Map"
 local MapCurve = require "ItsyScape.World.MapCurve"
 local MapMeshIslandProcessor = require "ItsyScape.World.MapMeshIslandProcessor"
@@ -367,6 +368,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
 	end
 
+	local largeTileSet = LargeTileSet(tileSet)
+
 	local mapMeshMasks = {}
 	if mask then
 		if type(mask) ~= 'table' then
@@ -406,6 +409,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 
 	local m = {
 		tileSet = tileSet,
+		largeTileSet = largeTileSet,
 		texture = texture,
 		tileSetID = tileSetID or "GrassyPlain",
 		filename = filename,
@@ -480,6 +484,11 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 
 	m.weatherMap:addMap(m.map)
 	m.onWillRender = onWillRender
+
+	m.largeTileSet:resize(m.map)
+	self.resourceManager:queueAsyncEvent(function()
+		m.largeTileSet:emitAll(m.map)
+	end)
 
 	self.mapMeshes[layer] = m
 end
@@ -605,6 +614,14 @@ function GameView:updateMap(map, layer)
 			end
 
 			if m.map ~= map then
+				if m.map and (m.map:getWidth() ~= map:getWidth() or m.map:getHeight() ~= map:getHeight()) then
+					m.largeTileSet:resize(map)
+
+					self.resourceManager:queueAsyncEvent(function()
+						m.largeTileSet:emitAll(map)
+					end)
+				end 
+
 				m.map = map
 				if m.islandProcessor then
 					m.islandProcessor = MapMeshIslandProcessor(m.map, m.tileSet)
@@ -652,26 +669,27 @@ function GameView:updateMap(map, layer)
 				m.map:getWidth(),
 				m.map:getHeight(),
 				m.mapMeshMasks,
-				m.islandProcessor)
-
-			self:_updateMapBounds(m, node)
+				m.islandProcessor,
+				m.largeTileSet)
 
 			if m.mapMeshMasks then
-				node:getMaterial():setTextures(m.texture, m.mask:getTexture())
+				node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
 			else
-				node:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
+				node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
 			end
 
 			if alphaNode then
-				alphaNode:setMapMesh(node:getMapMesh())
+				alphaNode:setMapMesh(node:getMapMesh(), true)
 				self:_updateMapBounds(m, alphaNode)
 
 				if m.mapMeshMasks then
-					alphaNode:getMaterial():setTextures(m.texture, m.mask:getTexture())
+					alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
 				else
-					alphaNode:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
+					alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
 				end
 			end
+
+			self:_updateMapBounds(m, node)
 		end)
 
 		local function getPlayerNearPlane()
@@ -1760,7 +1778,11 @@ function GameView:dirty()
 			map.mask = MapMeshMask.combine(unpack(mapMeshMasks))
 
 			for _, node in ipairs(map.parts) do
-				node:getMaterial():setTextures(map.texture, map.mask:getTexture())
+				if m.mapMeshMasks then
+					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture(), map.largeTileSet:getSpecularTexture())
+				else
+					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, map.largeTileSet:getSpecularTexture())
+				end
 			end
 		end
 	end

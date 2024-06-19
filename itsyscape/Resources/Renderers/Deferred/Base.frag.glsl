@@ -23,10 +23,11 @@ varying vec3 frag_Normal;
 varying vec4 frag_Color;
 varying vec2 frag_Texture;
 
-vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
 #ifdef SCAPE_LIGHT_MODEL_V2
-void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out vec4 specular);
+void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out float specular);
+#else
+vec4 performEffect(vec4 color, vec2 textureCoordinate);
 #endif
 
 void effect()
@@ -35,11 +36,11 @@ void effect()
 	vec4 diffuse = frag_Color;
 	vec3 normal = frag_Normal;
 	vec3 position = frag_Position;
-	vec4 specular = vec4(0.0);
+	float specular = 0.0;
 	performAdvancedEffect(frag_Texture, diffuse, position, normal, specular);
 #else
 	vec3 normal = frag_Normal;
-	vec4 specular = vec4(0.0);
+	float specular = 0.0;
 	vec3 position = frag_Position;
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
 #endif
@@ -62,5 +63,5 @@ void effect()
 	love_Canvases[0] = diffuse;
 	love_Canvases[1] = vec4(position, diffuse.a);
 	love_Canvases[2] = vec4(normal, outlineThreshold);
-	love_Canvases[3] = specular;
+	love_Canvases[3] = vec4(specular, 0.0, 0.0, 1.0);
 }
