@@ -34,9 +34,9 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 255,
-		ColorGreen = 255,
-		ColorBlue = 255,
+		ColorRed = 33,
+		ColorGreen = 162,
+		ColorBlue = 234,
 		Resource = M["Light_Ambient"]
 	}
 

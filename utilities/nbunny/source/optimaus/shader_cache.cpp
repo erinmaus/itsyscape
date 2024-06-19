@@ -96,7 +96,7 @@ std::string nbunny::ShaderCache::ShaderSource::parse_pragmas(const std::string& 
 {
 	std::string result;
 
-	auto pragma_regex = std::regex("#pragma\\s+([a-zA-Z_][a-zA-Z_0-9]*)\\s+([a-zA-Z_][a-zA-Z_0-9]*)\\s+([^\\s\n\r]*)?\r?\n?");
+	auto pragma_regex = std::regex("#pragma\\s+([a-zA-Z_][a-zA-Z_0-9]*)\\s+([a-zA-Z_][a-zA-Z_0-9]*)\\s*([^\\s\\n\\r]*)\\s*\\n");
 
 	auto begin = std::sregex_iterator(source.begin(), source.end(), pragma_regex);
 	auto end = std::sregex_iterator();

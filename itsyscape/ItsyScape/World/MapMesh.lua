@@ -42,11 +42,12 @@ MapMesh.FORMAT = {
 --
 -- If 'left', 'right', 'top', and 'bottom' are provided, only a portion of the
 -- map mesh is generated (those tiles that fall within the bounds).
-function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor)
+function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor, largeTileSet)
 	self.vertices = {}
 	self.map = map
 	self.tileSet = tileSet
 	self.isMultiTexture = Class.isCompatibleType(tileSet, MultiTileSet)
+	self.largeTileSet = largeTileSet
 	self.mask = mask
 	self.islandProcessor = islandProcessor
 	self.min, self.max = Vector(math.huge), Vector(-math.huge)
@@ -435,10 +436,19 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 		end
 	end
 
-	local left = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureLeft', 0)
-	local right = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureRight', 1)
-	local top = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureTop', 0)
-	local bottom = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureBottom', 1)
+	local layer, left, right, top, bottom
+	if self.largeTileSet then
+		layer, left, right, top, bottom = self.largeTileSet:getTextureCoordinates(
+			tile.tileSetID,
+			self:_getTileProperty(tile.tileSetID, tileIndex, "name"),
+			i,
+			j)
+	end
+
+	left = left or self:_getTileProperty(tile.tileSetID, tileIndex, 'textureLeft', 0)
+	right = right or self:_getTileProperty(tile.tileSetID, tileIndex, 'textureRight', 1)
+	top = top or self:_getTileProperty(tile.tileSetID, tileIndex, 'textureTop', 0)
+	bottom = bottom or self:_getTileProperty(tile.tileSetID, tileIndex, 'textureBottom', 1)
 
 	local red = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorRed', 255) * tile.red
 	local green = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorGreen', 255) * tile.green
@@ -448,7 +458,7 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 	local texture = { s = s, t = t }
 	local tileBounds = { left = left, right = right, top = top, bottom = bottom }
 	local color = { r = red, g = green, b = blue, a = alpha }
-	local layer = self:_getTileLayer(tile.tileSetID)
+	local layer = layer or self:_getTileLayer(tile.tileSetID)
 
 	local maskKey = self:_getTileProperty(tile.tileSetID, tileIndex, "mask-key", tile:getData("mask-key", "default"))
 	local maskOffset = (maskKey and self.mask and self.mask[maskKey]) or 1

@@ -49,7 +49,7 @@ vec3 scapeApplyLight(
 	vec3 position,
 	vec3 normal,
 	vec3 color,
-	vec4 specular)
+	float specular)
 {
 	vec3 surfaceToCamera = normalize(scape_CameraEye - position);
 
@@ -80,9 +80,8 @@ vec3 scapeApplyLight(
 	float diffuseCoefficient = max(0.0, dot(normal, direction)) * light.position.w;
 	vec3 diffuseLight = diffuseCoefficient * color * light.color;
 
-	float specularCoefficient = pow(max(0.0, dot(surfaceToCamera, reflect(-direction, normal))), specular.w);
-	specularCoefficient = clamp(specularCoefficient, 0.0, 1.0);
-	vec3 specularLight = specularCoefficient * specular.rgb * light.color;
+	float specularCoefficient = pow(2.0, abs(dot(surfaceToCamera, reflect(-direction, normal))) * specular) - 1.0;
+	vec3 specularLight = specularCoefficient * light.color;
 
 	return pointLight + diffuseLight + specularLight + ambientLight;
 }
@@ -107,10 +106,11 @@ vec3 scapeApplyFog(
 	return mix(color, fog.color, factor);
 }
 
-vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
 #ifdef SCAPE_LIGHT_MODEL_V2
-void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out vec4 specular);
+void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out float specular);
+#else
+vec4 performEffect(vec4 color, vec2 textureCoordinate);
 #endif
 
 vec4 effect(
@@ -123,11 +123,11 @@ vec4 effect(
 	vec4 diffuse = color;
 	vec3 normal = frag_Normal;
 	vec3 position = frag_Position;
-	vec4 specular = vec4(0.0);
+	float specular = 0.0;
 	performAdvancedEffect(textureCoordinate, diffuse, position, normal, specular);
 #else
 	vec3 normal = frag_Normal;
-	vec4 specular = vec4(0.0);
+	float specular = 0.0;
 	vec3 position = frag_Position;
 	vec4 diffuse = performEffect(color, frag_Texture);
 #endif
