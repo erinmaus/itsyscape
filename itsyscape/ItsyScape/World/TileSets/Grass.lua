@@ -33,7 +33,7 @@ Grass.OFFSET_NOISE = Noise {
 	attenuation = -2
 }
 
-Grass.MIN_SCALE = 0.75
+Grass.MIN_SCALE = 0.25
 Grass.MAX_SCALE = 1.00
 Grass.SCALE_NOISE = Noise {
 	scale = 4,
@@ -100,6 +100,10 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 	local cellX = i / w
 	local cellY = j / h
 
+	local colors = Noise.UniformSampler(self.COLOR_NOISE)
+	local samples = Noise.UniformSampler(self.SAMPLE_NOISE)
+	local scales = Noise.UniformSampler(self.SCALE_NOISE)
+
 	-- Go an extra tile to cover edges shared with other atlas pieces on top/bottom/left/right
 	for offsetI = -1, w + 2 do
 		for offsetJ = -1, h + 2 do
@@ -114,25 +118,26 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 					local tileY = (y - 1) / (self.SATURATION - 1)
 					local deltaX = (offsetI - 1) / w
 					local deltaY = (offsetJ - 1) / h
+					local noiseX = cellX + deltaX + tileX / w
+					local noiseY = cellY + deltaY + tileY / h
 
-					local offsetX = math.lerp(self.MIN_OFFSET, self.MAX_OFFSET, rng:randomNormal())
-					local offsetY = math.lerp(self.MIN_OFFSET, self.MAX_OFFSET, rng:randomNormal())
+					local offsetX = math.lerp(self.MIN_OFFSET, self.MAX_OFFSET, self.OFFSET_NOISE:sample3D(noiseX, noiseY, 1))
+					local offsetY = math.lerp(self.MIN_OFFSET, self.MAX_OFFSET, self.OFFSET_NOISE:sample3D(noiseX, noiseY, 2))
 					local z = rng:random()
 
-					local scaleDelta = rng:random()
-					local scale = math.lerp(self.MIN_SCALE, self.MAX_SCALE, scaleDelta)
+					local scale = scales:sample2D(noiseX, noiseY)
 
-					local rotationDelta = rng:random()
+					local rotationDelta = self.SCALE_NOISE:sample2D(noiseX, noiseY)
 					local rotation = math.lerp(self.MIN_ROTATION, self.MAX_ROTATION, rotationDelta)
 
-					local colorIndex = math.floor(rng:random(#self.COLORS))
-					local color = self.COLORS[math.clamp(colorIndex, 1, #self.COLORS)]
+					--local colorIndex = math.floor(self.COLOR_NOISE:sample2D(noiseX, noiseY) * #self.COLORS + 1)
+					local color = colors:sample2D(noiseX, noiseY)
+					--local color = self.COLORS[math.clamp(colorIndex, 1, #self.COLORS)]
 
-					c[colorIndex] = (c[colorIndex] or 0) + 1
-
-					local sampleIndex = math.floor(rng:random(#self._DIFFUSE_SAMPLES))
-					local diffuseSample = self._DIFFUSE_SAMPLES[math.clamp(sampleIndex, 1, #self._DIFFUSE_SAMPLES)]
-					local specularSample = self._SPECULAR_SAMPLES[math.clamp(sampleIndex, 1, #self._DIFFUSE_SAMPLES)]
+					--local sampleIndex = math.floor(self.SAMPLE_NOISE:sample2D(noiseX, noiseY) * #self._DIFFUSE_SAMPLES + 1)
+					local sample = samples:sample2D(noiseX, noiseY)
+					--local diffuseSample = self._DIFFUSE_SAMPLES[math.clamp(sampleIndex, 1, #self._DIFFUSE_SAMPLES)]
+					--local specularSample = self._SPECULAR_SAMPLES[math.clamp(sampleIndex, 1, #self._DIFFUSE_SAMPLES)]
 
 					table.insert(grass, {
 						x = (absoluteI + tileX) * tileSize + offsetX,
@@ -141,14 +146,15 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 						scale = scale,
 						rotation = rotation,
 						color = color,
-						diffuseSample = diffuseSample,
-						specularSample = specularSample,
+						sample = sample,
 						colorIndex = colorIndex
 					})
 				end
 			end
 		end
 	end
+
+	table.sort(grass, self._sort)
 
 	if drawType == "diffuse" then
 		love.graphics.clear(self.DIFFUSE_BACKGROUND_COLOR:get())
@@ -157,12 +163,16 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 	end
 
 	for _, g in ipairs(grass) do
+		local scale = scales:range(g.scale, self.MIN_SCALE, self.MAX_SCALE)
 		if drawType == "diffuse" then
-			love.graphics.setColor(g.color:get())
-			love.graphics.draw(g.diffuseSample, g.x, g.y, g.rotation, g.scale, g.scale, g.diffuseSample:getWidth() / 2, g.diffuseSample:getHeight() / 2)
+			local diffuseSample = self._DIFFUSE_SAMPLES[samples:index(g.sample, #self._DIFFUSE_SAMPLES)]
+			local color = self.COLORS[colors:index(g.sample, #self.COLORS)]
+			love.graphics.setColor(color:get())
+			love.graphics.draw(diffuseSample, g.x, g.y, g.rotation, scale, scale, diffuseSample:getWidth() / 2, diffuseSample:getHeight() / 2)
 		elseif drawType == "specular" then
+			local specularSample = self._SPECULAR_SAMPLES[samples:index(g.sample, #self._SPECULAR_SAMPLES)]
 			love.graphics.setColor(1, 1, 1, 1)
-			love.graphics.draw(g.specularSample, g.x, g.y, g.rotation, g.scale, g.scale, g.specularSample:getWidth() / 2, g.specularSample:getHeight() / 2)
+			love.graphics.draw(specularSample, g.x, g.y, g.rotation, scale, scale, specularSample:getWidth() / 2, specularSample:getHeight() / 2)
 		end
 	end
 end
