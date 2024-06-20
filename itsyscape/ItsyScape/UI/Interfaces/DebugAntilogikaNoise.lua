@@ -36,7 +36,7 @@ function DebugAntilogikaNoise.Noise:refresh()
 	noise = noise({ offset = Vector(self.params.x, self.params.y, self.params.z) })
 
 	local w, h = self:getSize()
-	self.texture = love.graphics.newImage(noise:sampleTestImage(w, h, self.params.tiles))
+	self.texture = love.graphics.newImage(noise:sampleTestImage(w, h, self.params.tiles), nil, self.params.w)
 end
 
 function DebugAntilogikaNoise.Noise:draw()
@@ -59,6 +59,7 @@ DebugAntilogikaNoise.PARAMS = {
 	"X",
 	"Y",
 	"Z",
+	"W",
 	"Tiles"
 }
 
@@ -92,6 +93,7 @@ function DebugAntilogikaNoise:new(id, index, ui)
 		x = Noise.DEFAULT:getOffset().x,
 		y = Noise.DEFAULT:getOffset().y,
 		z = Noise.DEFAULT:getOffset().z,
+		w = 0,
 		tiles = 1
 	}
 

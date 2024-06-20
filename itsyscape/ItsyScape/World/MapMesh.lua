@@ -458,7 +458,7 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 	local texture = { s = s, t = t }
 	local tileBounds = { left = left, right = right, top = top, bottom = bottom }
 	local color = { r = red, g = green, b = blue, a = alpha }
-	local layer = layer or self:_getTileLayer(tile.tileSetID)
+	layer = (layer and layer - 1) or self:_getTileLayer(tile.tileSetID)
 
 	local maskKey = self:_getTileProperty(tile.tileSetID, tileIndex, "mask-key", tile:getData("mask-key", "default"))
 	local maskOffset = (maskKey and self.mask and self.mask[maskKey]) or 1

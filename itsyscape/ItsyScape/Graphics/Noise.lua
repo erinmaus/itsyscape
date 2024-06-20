@@ -90,11 +90,14 @@ function Noise:sampleTestImage(width, height, tiles, z, w)
 
 	local data = love.image.newImageData(width, height)
 
+	local c = {}
+
 	data:mapPixel(function(i, j)
 		i = i + 1
 		j = j + 1
 
-		local value = self:sample4D(i / (width / tiles), z or 0, j / (height / tiles), w or 0)
+		local value = self:sample3D(i / (width / tiles), z or 0, j / (height / tiles), w or 0)
+		c[math.floor(value * 10)] = (c[math.floor(value * 10)] or 0) + 1
 		return value, value, value, 1
 	end)
 

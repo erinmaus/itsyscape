@@ -16,6 +16,8 @@ local Block = require "ItsyScape.World.TileSets.Block"
 
 local Grass = Class(Block)
 
+Grass.GLOBAL_OFFSET = Vector(174 / 257)
+
 Grass.SATURATION = 4
 Grass.CLUMP_NOISE = Noise {
 	scale = 32,
@@ -23,8 +25,8 @@ Grass.CLUMP_NOISE = Noise {
 	attenuation = 0
 }
 
-Grass.MIN_OFFSET = 0.1
-Grass.MAX_OFFSET = 0.3
+Grass.MIN_OFFSET = -16
+Grass.MAX_OFFSET = 16
 Grass.OFFSET_NOISE = Noise {
 	scale = 8,
 	octaves = 2,
@@ -41,7 +43,7 @@ Grass.SCALE_NOISE = Noise {
 
 Grass.MIN_ROTATION = -math.pi
 Grass.MAX_ROTATION = math.pi
-Grass.SCALE_NOISE = Noise {
+Grass.ROTATION_NOISE = Noise {
 	scale = 10,
 	octaves = 3,
 	attenuation = 0
@@ -52,22 +54,25 @@ Grass.SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d@Specula
 
 Grass.NUM_SAMPLES = 3
 Grass.SAMPLE_NOISE = Noise {
-	scale = 64,
+	scale = 123,
 	octaves = 1,
 	attenuation = 0
 }
 
-Grass.DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("49784d")
+Grass.DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("689868")
 Grass.SPECULAR_BACKGROUND_COLOR = Color(0)
 
 Grass.COLORS = {
-	Color.fromHexString("4c7a4c"),
 	Color.fromHexString("558855"),
-	Color.fromHexString("689868")
+	Color.fromHexString("4c7a4c"),
+	Color.fromHexString("5d805e"),
+	Color.fromHexString("4f7252"),
+	Color.fromHexString("49784d"),
+	Color.fromHexString("3e6d3a"),
 }
 Grass.COLOR_NOISE = Noise {
 	offset = Vector(0.5, 0, 0.5),
-	scale = 64,
+	scale = 123,
 	octaves = 1,
 	attenuation = 0
 }
@@ -90,52 +95,60 @@ end
 function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 	local grass = {}
 
+	local c = {}
+
+	local cellX = i / w
+	local cellY = j / h
+
 	-- Go an extra tile to cover edges shared with other atlas pieces on top/bottom/left/right
-	for offsetI = 0, w + 1 do
-		for offsetJ = 0, h + 1 do
+	for offsetI = -1, w + 2 do
+		for offsetJ = -1, h + 2 do
 			local absoluteI = (offsetI - 1) + i
 			local absoluteJ = (offsetJ - 1) + j
 
+			local rng = love.math.newRandomGenerator(absoluteI, absoluteJ)
+
 			for x = 1, self.SATURATION do
 				for y = 1, self.SATURATION do
-					local deltaX = (x - 1) / (self.SATURATION - 1)
-					local deltaY = (y - 1) / (self.SATURATION - 1)
-					local noiseX = i + deltaX
-					local noiseY = j + deltaY
+					local tileX = (x - 1) / (self.SATURATION - 1)
+					local tileY = (y - 1) / (self.SATURATION - 1)
+					local deltaX = (offsetI - 1) / w
+					local deltaY = (offsetJ - 1) / h
 
-					local offsetX = self.OFFSET_NOISE:sample3D(noiseX, 0, noiseY)
-					local offsetY = self.OFFSET_NOISE:sample3D(noiseX, 1, noiseY)
-					local z = self.OFFSET_NOISE:sample3D(noiseX, 2, noiseY)
+					local offsetX = math.lerp(self.MIN_OFFSET, self.MAX_OFFSET, rng:randomNormal())
+					local offsetY = math.lerp(self.MIN_OFFSET, self.MAX_OFFSET, rng:randomNormal())
+					local z = rng:random()
 
-					local scaleDelta = self.SCALE_NOISE:sample2D(noiseX, noiseY)
+					local scaleDelta = rng:random()
 					local scale = math.lerp(self.MIN_SCALE, self.MAX_SCALE, scaleDelta)
 
-					local rotationDelta = self.SCALE_NOISE:sample2D(noiseX, noiseY)
+					local rotationDelta = rng:random()
 					local rotation = math.lerp(self.MIN_ROTATION, self.MAX_ROTATION, rotationDelta)
 
-					local colorIndex = math.floor(self.COLOR_NOISE:sample2D(noiseX, noiseY) * #self.COLORS)
+					local colorIndex = math.floor(rng:random(#self.COLORS))
 					local color = self.COLORS[math.clamp(colorIndex, 1, #self.COLORS)]
 
-					local sampleIndex = math.floor(self.SAMPLE_NOISE:sample2D(noiseX, noiseY) * #self._DIFFUSE_SAMPLES)
+					c[colorIndex] = (c[colorIndex] or 0) + 1
+
+					local sampleIndex = math.floor(rng:random(#self._DIFFUSE_SAMPLES))
 					local diffuseSample = self._DIFFUSE_SAMPLES[math.clamp(sampleIndex, 1, #self._DIFFUSE_SAMPLES)]
 					local specularSample = self._SPECULAR_SAMPLES[math.clamp(sampleIndex, 1, #self._DIFFUSE_SAMPLES)]
 
 					table.insert(grass, {
-						x = offsetX + noiseX * tileSize,
-						y = offsetY + noiseY * tileSize,
+						x = (absoluteI + tileX) * tileSize + offsetX,
+						y = (absoluteJ + tileY) * tileSize + offsetY,
 						z = z,
 						scale = scale,
 						rotation = rotation,
 						color = color,
 						diffuseSample = diffuseSample,
-						specularSample = specularSample
+						specularSample = specularSample,
+						colorIndex = colorIndex
 					})
 				end
 			end
 		end
 	end
-
-	table.sort(grass, self._sort)
 
 	if drawType == "diffuse" then
 		love.graphics.clear(self.DIFFUSE_BACKGROUND_COLOR:get())
@@ -146,10 +159,10 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 	for _, g in ipairs(grass) do
 		if drawType == "diffuse" then
 			love.graphics.setColor(g.color:get())
-			love.graphics.draw(g.diffuseSample, x, y, rotation, scale, scale, g.diffuseSample:getWidth() / 2, g.diffuseFilename:getHeight() / 2)
+			love.graphics.draw(g.diffuseSample, g.x, g.y, g.rotation, g.scale, g.scale, g.diffuseSample:getWidth() / 2, g.diffuseSample:getHeight() / 2)
 		elseif drawType == "specular" then
 			love.graphics.setColor(1, 1, 1, 1)
-			love.graphics.draw(g.specularSample, x, y, rotation, scale, scale, g.diffuseSample:getWidth() / 2, g.diffuseFilename:getHeight() / 2)
+			love.graphics.draw(g.specularSample, g.x, g.y, g.rotation, g.scale, g.scale, g.specularSample:getWidth() / 2, g.specularSample:getHeight() / 2)
 		end
 	end
 end
