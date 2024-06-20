@@ -14,6 +14,7 @@ return {
 	grass = Block.Bind(Grass) {
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/GrassyPlain/TropicalYendorianGrass%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/GrassyPlain/TropicalYendorianGrass%d@Specular.png",
-		NUM_SAMPLES = 1
+		NUM_SAMPLES = 1,
+		SATURATION = 2
 	}
 }

@@ -19,7 +19,6 @@ LargeTileSet.TILE_SIZE  = 128
 
 function LargeTileSet:new(tileSet)
 	if not Class.isCompatibleType(tileSet, MultiTileSet) then
-		print(">>> id", tileSet:getID())
 		tileSet = MultiTileSet({ tileSet:getID() }, true)
 	end
 
@@ -89,14 +88,16 @@ function LargeTileSet:_emit(type, map, tileSetID, name, i, j, w, h, tileSize)
 	local tileSetTile, actualTileSet
 	do
 		actualTileSet = self.tileSet:getTileSetByID(tileSetID)
-		tileSetTile = actualTileSet:getTile(name)
+		tileSetTile = actualTileSet:getTile(actualTileSet:getTileIndex(name))
 	end
 
-	if tileSetTile and mapTile.tileSetID then
+	if tileSetTile then
 		local callback = self.tileFunctions[tileSetID] and self.tileFunctions[tileSetID][name]
 		if callback then
 			callback(type, actualTileSet, map, i, j, w, h, tileSetTile, tileSize)
 		end
+	else
+		print(">>> NOOOOOO!!!!", tileSetTile)
 	end
 end
 
@@ -105,7 +106,7 @@ function LargeTileSet:resize(map)
 	local h = math.max(math.ceil(map:getHeight() / (self.ATLAS_SIZE / self.TILE_SIZE)), 1)
 	local t = self.numLargeTiles
 	local d = self.tileSet:getNumTileSets()
-	local layers = (w + h) * self.numLargeTiles + d
+	local layers = (w * h) * self.numLargeTiles + d
 
 	if layers ~= self.layers then
 		self.layers = layers
@@ -118,7 +119,7 @@ function LargeTileSet:resize(map)
 
 	self.numLargeTilesWidth = w
 	self.numLargeTilesHeight = h
-	self.numLayersPerLargeTile = w + h
+	self.numLayersPerLargeTile = w * h
 end
 
 function LargeTileSet:getDiffuseTexture()
@@ -162,6 +163,7 @@ function LargeTileSet:emitAll(map)
 
 					if layer then
 						love.graphics.push("all")
+						love.graphics.setBlendMode("alpha", "alphamultiply")
 
 						love.graphics.origin()
 						love.graphics.translate(
@@ -206,31 +208,31 @@ function LargeTileSet:getTextureCoordinates(tileSetID, name, i, j)
 	end
 
 	local numTilesPerAxis = self.ATLAS_SIZE / self.TILE_SIZE
-	local relativeI = i / numTilesPerAxis
-	local relativeJ = j / numTilesPerAxis
+	local relativeI = (i - 1) / numTilesPerAxis
+	local relativeJ = (j - 1) / numTilesPerAxis
 	local floorI = math.floor(relativeI)
 	local floorJ = math.floor(relativeJ)
 
-	if floorI <= 0 or floorI > self.numLargeTilesWidth or
-	   floorJ <= 0 or floorJ > self.numLargeTilesHeight
+	if floorI < 0 or floorI > self.numLargeTilesWidth or
+	   floorJ < 0 or floorJ > self.numLargeTilesHeight
 	then
 		return nil, nil, nil, nil, nil
 	end
 
 	local fractionalI = relativeI - floorI
 	local fractionalJ = relativeJ - floorJ
-	local atlasIndex = (floorI + 1) * self.numLargeTilesWidth + (floorJ + 1)
+	local atlasIndex = floorI * self.numLargeTilesWidth + floorJ
 
-	local layer = #self.tileSets + (largeTileIndex - 1) * self.numLayersPerLargeTile + atlasIndex
+	local layer = #self.tileSets + 1 + (largeTileIndex - 1) * self.numLayersPerLargeTile + atlasIndex
 	local offsetS = fractionalI
 	local offsetT = fractionalJ
 	local offsetW = 1.0 / numTilesPerAxis
 	local offsetH = 1.0 / numTilesPerAxis
 
-	local left = offsetS
-	local right = offsetS + offsetW
-	local top = offsetT
-	local bottom = offsetT + offsetH
+	local left = offsetS + offsetW
+	local right = offsetS
+	local top = offsetT + offsetH
+	local bottom = offsetT
 
 	return layer, left, right, top, bottom
 end
