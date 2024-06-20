@@ -280,9 +280,11 @@ const std::shared_ptr<nbunny::ResourceInstance>& nbunny::SceneNodeMaterial::get_
 void nbunny::SceneNodeMaterial::set_textures(const std::vector<std::shared_ptr<TextureInstance>>& value)
 {
 	textures = value;
+
+	sorted_textures = value;
 	std::sort(
-		textures.begin(),
-		textures.end(),
+		sorted_textures.begin(),
+		sorted_textures.end(),
 		[&](const auto& a, const auto& b)
 		{
 			return a->get_id() < b->get_id();
@@ -305,22 +307,22 @@ bool nbunny::SceneNodeMaterial::operator <(const SceneNodeMaterial& other) const
 		return false;
 	}
 
-	if (textures.size() < other.textures.size())
+	if (sorted_textures.size() < other.sorted_textures.size())
 	{
 		return true;
 	}
-	else if (textures.size() > other.textures.size())
+	else if (sorted_textures.size() > other.sorted_textures.size())
 	{
 		return false;
 	}
 
-	for (auto i = 0; i < textures.size(); ++i)
+	for (auto i = 0; i < sorted_textures.size(); ++i)
 	{
-		if (textures[i]->get_id() < other.textures[i]->get_id())
+		if (sorted_textures[i]->get_id() < other.sorted_textures[i]->get_id())
 		{
 			return true;
 		}
-		else if (textures[i]->get_id() > other.textures[i]->get_id())
+		else if (sorted_textures[i]->get_id() > other.sorted_textures[i]->get_id())
 		{
 			return false;
 		}

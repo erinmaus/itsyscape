@@ -563,7 +563,7 @@ function GameView:updateGroundDecorations(m)
 
 					local decoration = ground:getDecoration()
 					local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
-					local sceneNode = self:decorate(groupName, decoration, m.layer)
+					self:decorate(groupName, decoration, m.layer)
 				end)
 			end
 		end
@@ -1779,9 +1779,9 @@ function GameView:dirty()
 
 			for _, node in ipairs(map.parts) do
 				if m.mapMeshMasks then
-					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture(), map.largeTileSet:getSpecularTexture())
+					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture(), map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())
 				else
-					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, map.largeTileSet:getSpecularTexture())
+					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())
 				end
 			end
 		end
