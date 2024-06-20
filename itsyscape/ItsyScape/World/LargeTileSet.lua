@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
+local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 
 LargeTileSet = Class()
@@ -33,6 +34,7 @@ function LargeTileSet:new(tileSet)
 	self.layers = 0
 	self.diffuseCanvas = false
 	self.specularCanvas = false
+	self.outlineCanvas = false
 
 	self.numLargeTiles = 0
 	self.numLayersPerLargeTile = 0
@@ -96,8 +98,6 @@ function LargeTileSet:_emit(type, map, tileSetID, name, i, j, w, h, tileSize)
 		if callback then
 			callback(type, actualTileSet, map, i, j, w, h, tileSetTile, tileSize)
 		end
-	else
-		print(">>> NOOOOOO!!!!", tileSetTile)
 	end
 end
 
@@ -112,8 +112,10 @@ function LargeTileSet:resize(map)
 		self.layers = layers
 		self.diffuseCanvas = love.graphics.newCanvas(self.ATLAS_SIZE, self.ATLAS_SIZE, self.layers, { type = "array" })
 		self.specularCanvas = love.graphics.newCanvas(self.ATLAS_SIZE, self.ATLAS_SIZE, self.layers, { type = "array" })
+		self.outlineCanvas = love.graphics.newCanvas(self.ATLAS_SIZE, self.ATLAS_SIZE, self.layers, { type = "array" })
 
 		self.diffuseTexture = LayerTextureResource(self.diffuseCanvas)
+		self.diffuseTexture:getHandle():setPerPassTexture(RendererPass.PASS_OUTLINE, self.outlineCanvas)
 		self.specularTexture = LayerTextureResource(self.specularCanvas)
 	end
 
@@ -138,12 +140,20 @@ function LargeTileSet:emitAll(map)
 
 	local diffuseCanvas = self.diffuseCanvas
 	local specularCanvas = self.specularCanvas
+	local outlineCanvas = self.outlineCanvas
 
 	love.graphics.push("all")
 	for i = 1, texture:getLayerCount() do
 		love.graphics.setCanvas(diffuseCanvas, i)
 		love.graphics.origin()
 		love.graphics.drawLayer(texture, i)
+	end
+	love.graphics.pop()
+
+	love.graphics.push("all")
+	for i = 1, texture:getLayerCount() do
+		love.graphics.setCanvas(outlineCanvas, i)
+		love.graphics.clear(0, 0, 0, 0)
 	end
 	love.graphics.pop()
 
@@ -177,6 +187,10 @@ function LargeTileSet:emitAll(map)
 						love.graphics.setCanvas(specularCanvas, layer)
 						love.graphics.clear(0, 0, 0, 0)
 						self:_emit("specular", map, largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
+
+						love.graphics.setCanvas(outlineCanvas, layer)
+						love.graphics.clear(1, 1, 1, 0)
+						self:_emit("outline", map, largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
 
 						love.graphics.pop()
 					end

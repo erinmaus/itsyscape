@@ -88,6 +88,7 @@ namespace nbunny
 
 		std::shared_ptr<ResourceInstance> shader = std::make_shared<ResourceInstance>();
 		std::vector<std::shared_ptr<TextureInstance>> textures;
+		std::vector<std::shared_ptr<TextureInstance>> sorted_textures;
 
 		bool is_translucent = false;
 		bool is_full_lit = false;

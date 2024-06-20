@@ -79,8 +79,8 @@ function MapMeshSceneNode:draw(renderer, delta)
 	if shader:hasUniform("scape_DiffuseTexture") and
 	   diffuse and diffuse:getIsReady()
 	then
-		diffuse:getResource(renderer:getCurrentPass():getID()):setFilter('nearest', 'nearest')
-		shader:send("scape_DiffuseTexture", diffuse:getResource())
+		diffuse:getHandle():getPerPassTexture(renderer:getCurrentPass():getID()):setFilter('nearest', 'nearest')
+		shader:send("scape_DiffuseTexture", diffuse:getHandle():getPerPassTexture(renderer:getCurrentPass():getID()))
 	end
 
 	local mask = self:getMaterial():getTexture(2)
