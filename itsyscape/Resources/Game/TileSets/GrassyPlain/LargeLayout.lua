@@ -15,6 +15,6 @@ return {
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/GrassyPlain/TropicalYendorianGrass%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/GrassyPlain/TropicalYendorianGrass%d@Specular.png",
 		NUM_SAMPLES = 1,
-		SATURATION = 2
+		SATURATION = 3
 	}
 }

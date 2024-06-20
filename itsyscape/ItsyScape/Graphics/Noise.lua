@@ -12,12 +12,85 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 
 local Noise, Metatable = Class()
 
+Noise.UniformSampler = Class()
+
+function Noise.UniformSampler:new(noise)
+	self.noise = noise
+	self.samples = {}
+	self.cache = {}
+end
+
+function Noise.UniformSampler:sample1D(x)
+	return self:sample4D(x, 0, 0, 0)
+end
+
+function Noise.UniformSampler:sample2D(x, y)
+	return self:sample4D(x, y, 0, 0)
+end
+
+function Noise.UniformSampler:sample3D(x, y, z)
+	return self:sample4D(x, y, z, 0)
+end
+
+function Noise.UniformSampler:sample4D(x, y, z, w)
+	local value = self.noise:sample4D(x, y, z, w)
+	self:_add(x, y, z, w, value)
+
+	return value
+end
+
+function Noise.UniformSampler:_add(x, y, z, w, value)
+	local xCache = self.cache[x] or {}
+	local yCache = xCache[y] or {}
+	local zCache = yCache[z] or {}
+	local wCache = zCache[w] or false
+
+	if not wCache then
+		zCache[w] = true
+		yCache[z] = zCache
+		xCache[y] = yCache
+		self.cache[x] = xCache
+
+		table.insert(self.samples, value)
+		self.isDirty = true
+	end
+end
+
+function Noise.UniformSampler:uniform(value)
+	if self.isDirty then
+		table.sort(self.samples)
+		self.isDirty = false
+	end
+
+	if #self.samples > 1 then
+		for i, v in ipairs(self.samples) do
+			if v > value then
+				return (i - 1) / (#self.samples - 1)
+			end
+		end
+	end
+
+	return 1
+end
+
+function Noise.UniformSampler:range(value, a, b)
+	local max = b or a
+	local min = not b and 1 or a
+
+	local result = self:uniform(value)
+	return result * (max - min) + min
+end
+
+function Noise.UniformSampler:index(value, a, b)
+	return math.floor(self:range(value, a, b))
+end
+
 function Noise:new(t)
 	t = t or {}
 	self.offset = t.offset or Vector(0)
 	self.scale = t.scale or 1
 	self.octaves = t.octaves or 1
-	self.attenuation = t.attenuation
+	self.attenuation = t.attenuation or 0
 end
 
 function Metatable:__call(t)
@@ -89,15 +162,11 @@ function Noise:sampleTestImage(width, height, tiles, z, w)
 	tiles = tiles or 1
 
 	local data = love.image.newImageData(width, height)
-
-	local c = {}
-
 	data:mapPixel(function(i, j)
 		i = i + 1
 		j = j + 1
 
-		local value = self:sample3D(i / (width / tiles), z or 0, j / (height / tiles), w or 0)
-		c[math.floor(value * 10)] = (c[math.floor(value * 10)] or 0) + 1
+		local value = self:sample4D(i / (width / tiles), z or 0, j / (height / tiles), w or 0)
 		return value, value, value, 1
 	end)
 
