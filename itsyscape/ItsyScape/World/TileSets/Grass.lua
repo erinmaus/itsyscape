@@ -34,9 +34,9 @@ Grass.OFFSET_NOISE = Noise {
 }
 
 Grass.MIN_SCALE = 0.5
-Grass.MAX_SCALE = 1.00
+Grass.MAX_SCALE = 1.0
 Grass.SCALE_NOISE = Noise {
-	scale = 4,
+	scale = 3,
 	octaves = 2,
 	attenuation = 0.5
 }
@@ -44,7 +44,7 @@ Grass.SCALE_NOISE = Noise {
 Grass.MIN_ROTATION = -math.pi
 Grass.MAX_ROTATION = math.pi
 Grass.ROTATION_NOISE = Noise {
-	scale = 10,
+	scale = 3,
 	octaves = 3,
 	attenuation = 0
 }
@@ -52,6 +52,7 @@ Grass.ROTATION_NOISE = Noise {
 Grass.DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d.png"
 Grass.SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d@Specular.png"
 Grass.OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d@Outline.png"
+Grass.DIRT_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Dirt%d.png"
 
 Grass.NUM_SAMPLES = 3
 Grass.SAMPLE_NOISE = Noise {
@@ -60,7 +61,7 @@ Grass.SAMPLE_NOISE = Noise {
 	attenuation = 0
 }
 
-Grass.DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("473b31")
+Grass.DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("5c4b40")
 Grass.SPECULAR_BACKGROUND_COLOR = Color(0)
 
 Grass.COLORS = {
@@ -71,6 +72,13 @@ Grass.COLORS = {
 	Color.fromHexString("49784d"),
 	Color.fromHexString("3e6d3a"),
 }
+
+Grass.NUM_DIRT_SAMPLES = 3
+Color.DIRT_COLORS = {
+	Color.fromHexString("876f6d"),
+
+}
+
 Grass.COLOR_NOISE = Noise {
 	offset = Vector(0.5, 0, 0.5),
 	scale = 123,
@@ -90,72 +98,111 @@ function Grass:bind()
 		self._SPECULAR_SAMPLES[i] = specularFilename and love.graphics.newImage(specularFilename)
 		self._OUTLINE_SAMPLES[i] = outlineFilename and love.graphics.newImage(outlineFilename)
 	end
+
+	self._colors = Noise.UniformSampler(self.COLOR_NOISE)
+	self._samples = Noise.UniformSampler(self.SAMPLE_NOISE)
+	self._scales = Noise.UniformSampler(self.SCALE_NOISE)
+	self._rotations = Noise.UniformSampler(self.ROTATION_NOISE)
+	self._offsets = Noise.UniformSampler(self.OFFSET_NOISE)
+	self._cache = {}
 end
 
 function Grass._sort(a, b)
 	return a.z < b.z
 end
 
-function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
-	local grass = {}
+function Grass:_getCacheIndex(i, j, w, h, x, y)
+	return (j - 1) * w + (i - 1) + 1, (y - 1) * self.SATURATION + (x - 1) + 1
+end
 
-	local c = {}
+function Grass:_addCache(i, j, w, h, x, y, g)
+	local index1, index2 = self:_getCacheIndex(i, j, w, h, x, y)
 
-	local cellX = i / w
-	local cellY = j / h
+	local c = self._cache[index1] or {}
+	assert(not c[index2])
 
-	local colors = Noise.UniformSampler(self.COLOR_NOISE)
-	local samples = Noise.UniformSampler(self.SAMPLE_NOISE)
-	local scales = Noise.UniformSampler(self.SCALE_NOISE)
-	local rotations = Noise.UniformSampler(self.ROTATION_NOISE)
-	local offsets = Noise.UniformSampler(self.OFFSET_NOISE)
+	c[index2] = g
+	self._cache[index1] = c
+end
 
-	-- Go an extra tile to cover edges shared with other atlas pieces on top/bottom/left/right
-	for offsetI = -1, w + 2 do
-		for offsetJ = -1, h + 2 do
-			local absoluteI = (offsetI - 1) + i
-			local absoluteJ = (offsetJ - 1) + j
+function Grass:_getCache(i, j, w, h, x, y)
+	local index1, index2  = self:_getCacheIndex(i, j, w, h, x, y)
+	return self._cache[index1] and self._cache[index1][index2]
+end
 
-			local rng = love.math.newRandomGenerator(absoluteI, absoluteJ)
+function Grass:cache(map, i, j, w, h, tileSize)
+	for currentI = 1, map:getWidth() do
+		for currentJ = 1, map:getHeight() do
+			local rng = love.math.newRandomGenerator(currentI, currentJ)
 
 			for x = 1, self.SATURATION do
 				for y = 1, self.SATURATION do
-					local tileX = (x - 1) / (self.SATURATION - 1)
-					local tileY = (y - 1) / (self.SATURATION - 1)
-					local deltaX = (offsetI - 1) / w
-					local deltaY = (offsetJ - 1) / h
-					local noiseX = cellX + deltaX + tileX / w
-					local noiseY = cellY + deltaY + tileY / h
+					local tileX = (x - 1) / (self.SATURATION - 1) / map:getWidth()
+					local tileY = (y - 1) / (self.SATURATION - 1) / map:getHeight()
+					local deltaX = (currentI - 1) / w
+					local deltaY = (currentJ - 1) / h
+					local noiseX = deltaX + tileX
+					local noiseY = deltaY + tileY
 
-					local offsetX = offsets:sample3D(noiseX, noiseY, 1)
-					local offsetY = offsets:sample3D(noiseX, noiseY, 2)
+					local offsetX = self._offsets:sample3D(noiseX, noiseY, 1)
+					local offsetY = self._offsets:sample3D(noiseX, noiseY, 2)
 					local z = rng:random()
 
-					local scale = scales:sample2D(noiseX, noiseY)
-					local rotation = rotations:sample2D(noiseX, noiseY)
-					local color = colors:sample2D(noiseX, noiseY)
-					local sample = samples:sample2D(noiseX, noiseY)
+					--print(">>> noiseX", noiseX, "ox", offsetX, "i", currentI)
+					--print(">>> noiseY", noiseY, "oy", offsetY, "j", currentJ)
+
+					local scale = self._scales:sample2D(noiseX, noiseY)
+					local rotation = self._rotations:sample2D(noiseX, noiseY)
+					local color = self._colors:sample2D(noiseX, noiseY)
+					local sample = self._samples:sample2D(noiseX, noiseY)
 
 					local g = {
-						i = absoluteI * self.SATURATION + x,
-						j = absoluteJ * self.SATURATION + y,
-						x = (absoluteI + tileX) * tileSize,
-						y = (absoluteJ + tileY) * tileSize,
+						i = currentI * self.SATURATION + x,
+						j = currentJ * self.SATURATION + y,
+						x = (currentI + tileX) * tileSize,
+						y = (currentJ + tileY) * tileSize,
 						offsetX = offsetX,
 						offsetY = offsetY,
 						z = z,
 						scale = scale,
 						rotation = rotation,
 						color = color,
-						sample = sample,
-						colorIndex = colorIndex
+						sample = sample
 					}
 
-					table.insert(grass, g)
+					self:_addCache(currentI, currentJ, map:getWidth(), map:getHeight(), x, y, g)
 				end
 			end
 		end
 	end
+end
+
+function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
+	if drawType == "cache" then
+		self:cache(map, i, j, w, h, tileSize)
+		return
+	end
+
+	local grass = {}
+	-- Go an extra tile to cover edges shared with other atlas pieces on top/bottom/left/right
+	for offsetI = -1, w + 2 do
+		for offsetJ = -1, h + 2 do
+			for x = 1, self.SATURATION do
+				for y = 1, self.SATURATION do
+					local currentI = offsetI + i
+					local currentJ = offsetJ + j
+
+					if currentI >= 1 and currentJ >= 1 and currentI <= map:getWidth() and currentJ <= map:getHeight() then
+						local g = self:_getCache(currentI, currentJ, map:getWidth(), map:getHeight(), x, y)
+						assert(g)
+						table.insert(grass, g)
+					end
+				end
+			end
+		end
+	end
+
+	table.sort(grass, Grass._sort)
 
 	if drawType == "diffuse" then
 		love.graphics.clear(self.DIFFUSE_BACKGROUND_COLOR:get())
@@ -164,25 +211,26 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 	end
 
 	for _, g in ipairs(grass) do
-		local scale = scales:range(g.scale, self.MIN_SCALE, self.MAX_SCALE)
-		local rotation = rotations:range(g.rotation, self.MIN_ROTATION, self.MAX_ROTATION)
-		local x = g.x + offsets:range(g.offsetX, self.MIN_OFFSET, self.MAX_OFFSET)
-		local y = g.y + offsets:range(g.offsetY, self.MIN_OFFSET, self.MAX_OFFSET)
+		local scale = self._scales:range(g.scale, self.MIN_SCALE, self.MAX_SCALE)
+		local rotation = self._rotations:range(g.rotation, self.MIN_ROTATION, self.MAX_ROTATION)
+		local x = g.x + self._offsets:range(g.offsetX, self.MIN_OFFSET, self.MAX_OFFSET)
+		local y = g.y + self._offsets:range(g.offsetY, self.MIN_OFFSET, self.MAX_OFFSET)
+
 		if drawType == "diffuse" then
-			local diffuseSample = self._DIFFUSE_SAMPLES[samples:index(g.sample, #self._DIFFUSE_SAMPLES)]
-			local color = self.COLORS[colors:index(g.sample, #self.COLORS)]
+			local diffuseSample = self._DIFFUSE_SAMPLES[self._samples:index(g.sample, #self._DIFFUSE_SAMPLES)]
+			local color = self.COLORS[self._colors:index(g.color, #self.COLORS)]
 			if diffuseSample then
 				love.graphics.setColor(color:get())
 				love.graphics.draw(diffuseSample, x, y, rotation, scale, scale, diffuseSample:getWidth() / 2, diffuseSample:getHeight() / 2)
 			end
 		elseif drawType == "specular" then
-			local specularSample = self._SPECULAR_SAMPLES[samples:index(g.sample, #self._SPECULAR_SAMPLES)]
+			local specularSample = self._SPECULAR_SAMPLES[self._samples:index(g.sample, #self._SPECULAR_SAMPLES)]
 			if specularSample then
 				love.graphics.setColor(1, 1, 1, 1)
 				love.graphics.draw(specularSample, x, y, rotation, scale, scale, specularSample:getWidth() / 2, specularSample:getHeight() / 2)
 			end
 		elseif drawType == "outline" then
-			local outlineSample = self._OUTLINE_SAMPLES[samples:index(g.sample, #self._OUTLINE_SAMPLES)]
+			local outlineSample = self._OUTLINE_SAMPLES[self._samples:index(g.sample, #self._OUTLINE_SAMPLES)]
 			if outlineSample then
 				love.graphics.setColor(1, 1, 1, 1)
 				love.graphics.draw(outlineSample, x, y, rotation, scale, scale, outlineSample:getWidth() / 2, outlineSample:getHeight() / 2)

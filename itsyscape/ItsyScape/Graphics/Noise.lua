@@ -63,11 +63,31 @@ function Noise.UniformSampler:uniform(value)
 	end
 
 	if #self.samples > 1 then
-		for i, v in ipairs(self.samples) do
-			if v > value then
-				return (i - 1) / (#self.samples - 1)
+		local low = 1
+		local high = #self.samples
+		local mid
+		local index
+
+		local iterations = 0
+
+		while low <= high do
+			iterations = iterations + 1
+			mid = low + math.ceil((high - low) / 2)
+			if self.samples[mid] == value then
+				index = mid
+				break
+			elseif self.samples[mid] < value then
+				low = mid + 1
+			else
+				high = mid - 1
 			end
 		end
+
+		if not index then
+			index = mid -- Close enough.
+		end
+
+		return (index - 1) / (#self.samples - 1)
 	end
 
 	return 1

@@ -163,8 +163,11 @@ function LargeTileSet:emitAll(map)
 
 	local numTilesPerAxis = self.ATLAS_SIZE / self.TILE_SIZE
 	for largeTileIndex, largeTileInfo in ipairs(self.largeTiles) do
+		self:_emit("cache", map, largeTileInfo.tileSetID, largeTileInfo.name, 1, 1, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
+
 		for offsetAtlasI = 1, self.numLargeTilesWidth do
 			for offsetAtlasJ = 1, self.numLargeTilesHeight do
+
 				local absoluteI = (offsetAtlasI - 1) * numTilesPerAxis + 1
 				local absoluteJ = (offsetAtlasJ - 1) * numTilesPerAxis + 1
 
