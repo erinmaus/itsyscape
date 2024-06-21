@@ -60,7 +60,7 @@ Grass.SAMPLE_NOISE = Noise {
 	attenuation = 0
 }
 
-Grass.DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("689868")
+Grass.DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("473b31")
 Grass.SPECULAR_BACKGROUND_COLOR = Color(0)
 
 Grass.COLORS = {
@@ -132,19 +132,13 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 					local z = rng:random()
 
 					local scale = scales:sample2D(noiseX, noiseY)
-
 					local rotation = rotations:sample2D(noiseX, noiseY)
-
-					--local colorIndex = math.floor(self.COLOR_NOISE:sample2D(noiseX, noiseY) * #self.COLORS + 1)
 					local color = colors:sample2D(noiseX, noiseY)
-					--local color = self.COLORS[math.clamp(colorIndex, 1, #self.COLORS)]
-
-					--local sampleIndex = math.floor(self.SAMPLE_NOISE:sample2D(noiseX, noiseY) * #self._DIFFUSE_SAMPLES + 1)
 					local sample = samples:sample2D(noiseX, noiseY)
-					--local diffuseSample = self._DIFFUSE_SAMPLES[math.clamp(sampleIndex, 1, #self._DIFFUSE_SAMPLES)]
-					--local specularSample = self._SPECULAR_SAMPLES[math.clamp(sampleIndex, 1, #self._DIFFUSE_SAMPLES)]
 
-					table.insert(grass, {
+					local g = {
+						i = absoluteI * self.SATURATION + x,
+						j = absoluteJ * self.SATURATION + y,
 						x = (absoluteI + tileX) * tileSize,
 						y = (absoluteJ + tileY) * tileSize,
 						offsetX = offsetX,
@@ -155,13 +149,13 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 						color = color,
 						sample = sample,
 						colorIndex = colorIndex
-					})
+					}
+
+					table.insert(grass, g)
 				end
 			end
 		end
 	end
-
-	table.sort(grass, self._sort)
 
 	if drawType == "diffuse" then
 		love.graphics.clear(self.DIFFUSE_BACKGROUND_COLOR:get())

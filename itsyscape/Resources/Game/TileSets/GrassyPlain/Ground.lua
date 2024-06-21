@@ -21,7 +21,7 @@ function GrassyPlainGround:new()
 	GroundDecorations.new(self, "GrassyPlain")
 
 	self:registerTile("grass", GrassBlock:Bind(self) {
-		COLOR = Color(0.5, 0.7, 0.1, 1.0),
+		COLOR = Color.fromHexString("558855"),
 		FEATURE = "grass"
 	})
 
