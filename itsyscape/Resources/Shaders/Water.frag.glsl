@@ -1,6 +1,5 @@
 #line 1
 
-uniform highp float scape_Time;
 uniform highp vec4 scape_TimeScale;
 uniform Image scape_DiffuseTexture;
 
