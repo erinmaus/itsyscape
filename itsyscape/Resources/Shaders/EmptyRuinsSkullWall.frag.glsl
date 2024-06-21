@@ -1,5 +1,4 @@
 uniform ArrayImage scape_DiffuseTexture;
-uniform highp float scape_Time;
 
 varying vec2 frag_TextureLayer;
 varying vec2 frag_TextureTime;
