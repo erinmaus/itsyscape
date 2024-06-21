@@ -137,24 +137,22 @@ function Grass:cache(map, i, j, w, h, tileSize)
 
 			for x = 1, self.SATURATION do
 				for y = 1, self.SATURATION do
-					local tileX = (x - 1) / (self.SATURATION - 1) / map:getWidth()
-					local tileY = (y - 1) / (self.SATURATION - 1) / map:getHeight()
+					local tileX = (x - 1) / (self.SATURATION - 1)
+					local tileY = (y - 1) / (self.SATURATION - 1)
 					local deltaX = (currentI - 1) / w
 					local deltaY = (currentJ - 1) / h
-					local noiseX = deltaX + tileX
-					local noiseY = deltaY + tileY
+					local noiseX = deltaX + tileX / map:getWidth()
+					local noiseY = deltaY + tileY / map:getHeight()
 
 					local offsetX = self._offsets:sample3D(noiseX, noiseY, 1)
 					local offsetY = self._offsets:sample3D(noiseX, noiseY, 2)
 					local z = rng:random()
 
-					--print(">>> noiseX", noiseX, "ox", offsetX, "i", currentI)
-					--print(">>> noiseY", noiseY, "oy", offsetY, "j", currentJ)
-
 					local scale = self._scales:sample2D(noiseX, noiseY)
 					local rotation = self._rotations:sample2D(noiseX, noiseY)
 					local color = self._colors:sample2D(noiseX, noiseY)
 					local sample = self._samples:sample2D(noiseX, noiseY)
+
 
 					local g = {
 						i = currentI * self.SATURATION + x,
