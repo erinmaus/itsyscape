@@ -81,7 +81,7 @@ vec3 scapeApplyLight(
 
 	vec3 cameraToTarget = normalize(scape_CameraEye - scape_CameraTarget);
 	float exponent = abs(dot(surfaceToCamera, reflect(normal, -cameraToTarget)));
-	float specularCoefficient = pow(2.0, exponent * (specular * specular)) - 1.0;
+	float specularCoefficient = max(pow(2.0, exponent * (specular * specular)) - 1.0, 0.0);
 	vec3 specularLight = specularCoefficient * light.color;
 
 	return pointLight + diffuseLight + specularLight + ambientLight;

@@ -422,7 +422,7 @@ function Renderer:_drawOutlines(width, height)
 
 	love.graphics.setCanvas(buffer:getColor())
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.setBlendMode("alpha", "alphamultiply")
+	love.graphics.setBlendMode("multiply", "premultiplied")
 	--love.graphics.draw(self.blurBuffer:getCanvas(2))
 	love.graphics.draw(self.outlineBuffer:getCanvas(1))
 	love.graphics.setShader()

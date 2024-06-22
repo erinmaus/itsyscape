@@ -34,7 +34,7 @@ void effect()
 	//diffuse.rgb = vec3(1 - (step(diffuse.r, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.g, SCAPE_BLACK_DISCARD_THRESHOLD) * step(diffuse.b, SCAPE_BLACK_DISCARD_THRESHOLD)));
 	if (diffuse.r < SCAPE_BLACK_DISCARD_THRESHOLD || diffuse.g < SCAPE_BLACK_DISCARD_THRESHOLD || diffuse.b < SCAPE_BLACK_DISCARD_THRESHOLD)
 	{
-		diffuse.rgb = vec3(0.0);
+		//diffuse.rgb = vec3(0.0);
 	}
 
 	diffuse.a = 1.0;
