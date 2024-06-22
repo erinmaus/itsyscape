@@ -69,10 +69,12 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 
 	float noise = Texel(scape_NoiseTexture, textureCoordinate).r;
 	thickness += noise * scape_MaxNoiseDistance;
+	float halfThickness = thickness / 2.0;
 
 	//float d = distance(textureCoordinate / scape_TexelSize, outlineSample.xy);
 	//float a = step(max(thickness / 2.0, 1.0), sample.z);
-	float a = sharpStep(0.0, thickness / 2.0, outlineSample.z, 0.25, 0.75);
+	float d = step(halfThickness, outlineSample.z);
+	float a = sharpStep(0.0, halfThickness, outlineSample.z, 0.25, 0.75);
 	//a = step(1.0, a);
 	//float a = step(max(thickness / 2.0, 1.0), outlineSample.z);
 
@@ -90,10 +92,17 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		alpha = 1.0;
 	}
 
-	vec3 outlineColor = Texel(scape_OutlineTexture, outlineSample.xy).rgb;
+	vec3 outlineColor = Texel(scape_OutlineTexture, outlineSample.xy * scape_TexelSize).rgb;
+	//outlineColor = mix(outlineColor, vec3(1.0), a);
+	float outlineAlpha = alpha * a;
+	if (outlineSample.z >= halfThickness)
+	{
+		outlineColor = vec3(1.0);
+		outlineAlpha = 1.0;
+	}
 
 	//return vec4(color.rgb * vec3(depth, thickness, a), 1.0);
-	return vec4(outlineColor, alpha * (1.0 - a) * alphaMultiplier);
+	return vec4(mix(vec3(1.0), mix(outlineColor, vec3(1.0), outlineAlpha), alphaMultiplier), 1.0);//; * outlineAlpha, 1.0);
 	//float distance = length(position - textureCoordinate);
 
 	// float outline = Texel(scape_OutlineTexture, textureCoordinate).r;
