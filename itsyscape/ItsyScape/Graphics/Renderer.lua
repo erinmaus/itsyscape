@@ -235,7 +235,7 @@ function Renderer:_drawOutlines(width, height)
 	
 	love.graphics.setShader()
 	love.graphics.setCanvas(self.outlineBuffer:getCanvas(3))
-	love.graphics.clear(1.0, 0.0, 0.0, 1.0)
+	love.graphics.clear(1.0, 1.0, 1.0, 1.0)
 	love.graphics.setBlendMode("replace", "premultiplied")
 	love.graphics.setDepthMode("always", false)
 	love.graphics.draw(self.alphaMaskPass:getABuffer():getCanvas(0))
