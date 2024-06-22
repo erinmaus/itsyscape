@@ -244,5 +244,5 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 
 	//return vec4(color.rgb * vec3(sumDepthSamples / numDepthSamples, minDepthSample, d), 1);
 	//return vec4(color.rgb * vec3(normalSobel, depthSobel, max(normalSobel, depthSobel)), alpha);
-	return vec4(color.rgb * vec3(1.0 - d, depthSobel, linearDepth(Texel(image, textureCoordinate).r)), 1.0);
+	return vec4(color.rgb * vec3(1.0 - d), 1.0);
 }

@@ -27,14 +27,10 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 
 	if (outlineSample.r >= SCAPE_BLACK_DISCARD_THRESHOLD || outlineSample.g >= SCAPE_BLACK_DISCARD_THRESHOLD || outlineSample.b >= SCAPE_BLACK_DISCARD_THRESHOLD)
 	{
-		discard;
+		// discard;
 	}
 
-//<<<<<<< Updated upstream
-//	gl_FragDepth = depth - 0.000005;
-//=======
 	gl_FragDepth = restoreDepth(depth - 0.025);
-//>>>>>>> Stashed changes
 
 	return vec4(outlineSample.rgb, 1.0);
 }

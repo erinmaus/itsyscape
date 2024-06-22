@@ -90,8 +90,10 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		alpha = 1.0;
 	}
 
+	vec3 outlineColor = Texel(scape_OutlineTexture, outlineSample.xy).rgb;
+
 	//return vec4(color.rgb * vec3(depth, thickness, a), 1.0);
-	return vec4(vec3(0.0), alpha * (1.0 - a) * alphaMultiplier);
+	return vec4(outlineColor, alpha * (1.0 - a) * alphaMultiplier);
 	//float distance = length(position - textureCoordinate);
 
 	// float outline = Texel(scape_OutlineTexture, textureCoordinate).r;
