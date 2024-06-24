@@ -19,9 +19,9 @@ DefaultCameraController.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
 DefaultCameraController.CAMERA_VERTICAL_ROTATION = -math.pi / 2
 DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED = math.pi / 2
 DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP_TIME_SECONDS = 0.5
-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
+DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 5
 DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 128
-DefaultCameraController.CAMERA_VERITCAL_ROTATION_FLIP = math.pi / 16
+DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP = math.pi / 4
 DefaultCameraController.SCROLL_MULTIPLIER = 4
 DefaultCameraController.MIN_DISTANCE = 1
 DefaultCameraController.MAX_DISTANCE = 60
@@ -262,7 +262,7 @@ function DefaultCameraController:_rotate(dx, dy)
 				self.cameraVerticalRotationOffsetRemainder = self.cameraVerticalRotationOffsetRemainder + verticalOffset
 			end
 
-			if math.abs(self.cameraVerticalRotationOffsetRemainder) > DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED then
+			if math.abs(self.cameraVerticalRotationOffsetRemainder) > DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP then
 				self.cameraVerticalRotationOffsetRemainder = 0
 				self.isCameraVerticalRotationFlipped = not self.isCameraVerticalRotationFlipped
 				self.cameraVerticalRotationFlipTime = DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP_TIME_SECONDS - (self.cameraVerticalRotationFlipTime or 0)
