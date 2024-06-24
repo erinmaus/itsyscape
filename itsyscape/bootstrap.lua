@@ -111,6 +111,13 @@ do
 		return 1
 	end
 
+	math.lerpAngle = function(from, to, delta)
+		local difference = (to - from) % (math.pi * 2)
+		local distance = (2 * difference) % (math.pi * 2) - difference
+
+		return from + distance * delta
+	end
+
 	local utf8 = require "utf8"
 	function utf8.sub(s, i, j)
 		local stringI = utf8.offset(s, i or 1) or #s + 1

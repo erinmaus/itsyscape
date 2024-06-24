@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local Keybinds = require "ItsyScape.UI.Keybinds"
@@ -16,8 +17,11 @@ local Keybinds = require "ItsyScape.UI.Keybinds"
 local DefaultCameraController = Class(CameraController)
 DefaultCameraController.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
 DefaultCameraController.CAMERA_VERTICAL_ROTATION = -math.pi / 2
+DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED = math.pi / 2
+DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP_TIME_SECONDS = 0.5
 DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
 DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 128
+DefaultCameraController.CAMERA_VERITCAL_ROTATION_FLIP = math.pi / 16
 DefaultCameraController.SCROLL_MULTIPLIER = 4
 DefaultCameraController.MIN_DISTANCE = 1
 DefaultCameraController.MAX_DISTANCE = 60
@@ -48,10 +52,13 @@ function DefaultCameraController:new(...)
 	self.isActionMoving = false
 	self.isActionButtonDown = false
 	self.isCameraDragging = false
+	self.isRotationUnlocked = 0
 
 	self.curveMode = DefaultCameraController.SHOW_MODE_NONE
 
 	self.cameraVerticalRotationOffset = _CONF.camera and _CONF.camera.verticalRotationOffset or 0
+	self.isCameraVerticalRotationFlipped = _CONF.camera and _CONF.camera.isVerticalRotationFlipped or false
+	self.cameraVerticalRotationOffsetRemainder = 0
 	self.cameraHorizontalRotationOffset = _CONF.camera and _CONF.camera.horizontalRotationOffset or 0
 	self.cameraOffset = Vector(0)
 
@@ -68,8 +75,6 @@ function DefaultCameraController:new(...)
 	self.targetOpponentDistance = 0
 
 	self.cursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
-
-	self:onUnlockRotation()
 end
 
 function DefaultCameraController:getPlayerMapRotation()
@@ -208,6 +213,8 @@ function DefaultCameraController:mouseRelease(uiActive, x, y, button)
 		end
 	end
 
+	self.cameraVerticalRotationOffsetRemainder = 0
+
 	return CameraController.PROBE_SUPPRESS
 end
 
@@ -235,17 +242,31 @@ function DefaultCameraController:mouseScroll(uiActive, x, y)
 end
 
 function DefaultCameraController:_rotate(dx, dy)
-	local angle1 = self.cameraVerticalRotationOffset + -dx / 128
-	local angle2 = self.cameraHorizontalRotationOffset + -dy / 128
+	local verticalOffset = -dx / 128
+	local horizontalOffset = (self.isCameraVerticalRotationFlipped and 1 or -1) * dy / 128
+	local angle1 = self.cameraVerticalRotationOffset + verticalOffset
+	local angle2 = self.cameraHorizontalRotationOffset + horizontalOffset
 
 	if not _DEBUG then
-		if not self.isRotationUnlocked or self.isRotationUnlocked <= 0 then
+		if self.isRotationUnlocked <= 0 and not self.cameraVerticalRotationFlipTime then
+			local beforeAngle1Clamp = angle1
+
 			angle1 = math.max(
 				angle1,
 				-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
 			angle1 = math.min(
 				angle1,
 				DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+
+			if beforeAngle1Clamp ~= angle1 then
+				self.cameraVerticalRotationOffsetRemainder = self.cameraVerticalRotationOffsetRemainder + verticalOffset
+			end
+
+			if math.abs(self.cameraVerticalRotationOffsetRemainder) > DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED then
+				self.cameraVerticalRotationOffsetRemainder = 0
+				self.isCameraVerticalRotationFlipped = not self.isCameraVerticalRotationFlipped
+				self.cameraVerticalRotationFlipTime = DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP_TIME_SECONDS - (self.cameraVerticalRotationFlipTime or 0)
+			end
 		end
 
 		angle2 = math.max(
@@ -256,13 +277,8 @@ function DefaultCameraController:_rotate(dx, dy)
 			DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
 	end
 
-	angle1 = angle1 % (math.pi * 2)
-	angle2 = angle2 % (math.pi * 2)
-
-	self:getCamera():setVerticalRotation(
-		DefaultCameraController.CAMERA_VERTICAL_ROTATION + angle1)
-	self:getCamera():setHorizontalRotation(
-		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + angle2)
+	angle1 = math.sign(angle1) * (math.abs(angle1) % (math.pi * 2))
+	angle2 = math.sign(angle2) * (math.abs(angle2) % (math.pi * 2))
 
 	self.cameraVerticalRotationOffset = angle1
 	self.cameraHorizontalRotationOffset = angle2
@@ -467,6 +483,14 @@ function DefaultCameraController:update(delta)
 		end
 	end
 
+	if self.cameraVerticalRotationFlipTime then
+		self.cameraVerticalRotationFlipTime = self.cameraVerticalRotationFlipTime - delta
+		if self.cameraVerticalRotationFlipTime <= 0 then
+			self.cameraVerticalRotationFlipTime = nil
+			self.cameraVerticalRotationOffset = 0
+		end
+	end
+
 	self:updateShow(delta)
 	self:updateControls(delta)
 
@@ -513,6 +537,7 @@ function DefaultCameraController:update(delta)
 	do
 		cameraDetails.horizontalRotationOffset = self.cameraHorizontalRotationOffset
 		cameraDetails.verticalRotationOffset = self.cameraVerticalRotationOffset
+		cameraDetails.isVerticalRotationFlipped = self.isCameraVerticalRotationFlipped
 		cameraDetails.distance = self.targetDistance
 	end
 	_CONF.camera = cameraDetails
@@ -531,14 +556,16 @@ function DefaultCameraController:onUnlockRotation()
 end
 
 function DefaultCameraController:onLockRotation()
-	self.isRotationLocked = (self.isRotationUnlocked or 1) - 1
+	self.isRotationUnlocked = (self.isRotationUnlocked or 1) - 1
 
-	self.cameraVerticalRotationOffset = math.max(
-		self.cameraVerticalRotationOffset,
-		-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-	self.cameraVerticalRotationOffset = math.min(
-		self.cameraVerticalRotationOffset,
-		DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+	if self.isRotationUnlocked <= 0 then
+		self.cameraVerticalRotationOffset = math.max(
+			self.cameraVerticalRotationOffset,
+			-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+		self.cameraVerticalRotationOffset = math.min(
+			self.cameraVerticalRotationOffset,
+			DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+	end
 end
 
 function DefaultCameraController:onShake(duration, interval, min, max)
@@ -638,6 +665,41 @@ function DefaultCameraController:draw()
 	else
 		shake = Vector.ZERO
 	end
+
+	local verticalOffset
+	if self.cameraVerticalRotationFlipTime then
+		local mu = self.cameraVerticalRotationFlipTime / DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP_TIME_SECONDS
+
+		local sourceVerticalRotation
+		local targetVerticalRotation
+		if self.isCameraVerticalRotationFlipped then
+			sourceVerticalRotation = DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED
+			targetVerticalRotation = DefaultCameraController.CAMERA_VERTICAL_ROTATION
+		else
+			sourceVerticalRotation = DefaultCameraController.CAMERA_VERTICAL_ROTATION
+			targetVerticalRotation = DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED
+		end
+		targetVerticalRotation = targetVerticalRotation + self.cameraVerticalRotationOffset
+
+		verticalOffset = math.lerpAngle(
+			sourceVerticalRotation,
+			targetVerticalRotation,
+			Tween.sineEaseOut(mu))
+
+		--verticalOffset = math.sign(self.cameraVerticalRotationOffset) * math.abs(verticalOffset + math.abs(self.cameraVerticalRotationOffset))
+
+		print(">>> current", math.deg(self.cameraVerticalRotationOffset))
+		print(">>> offset", math.deg(verticalOffset))
+		print(">>> mu", mu)
+	elseif self.isCameraVerticalRotationFlipped then
+		verticalOffset = DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED + self.cameraVerticalRotationOffset
+	else
+		verticalOffset = DefaultCameraController.CAMERA_VERTICAL_ROTATION + self.cameraVerticalRotationOffset
+	end
+
+	self:getCamera():setVerticalRotation(verticalOffset)
+	self:getCamera():setHorizontalRotation(
+		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset)
 
 	self:getCamera():setPosition(center + self.cameraOffset + shake)
 
