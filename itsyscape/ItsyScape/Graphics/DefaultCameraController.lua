@@ -12,6 +12,7 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CameraController = require "ItsyScape.Graphics.CameraController"
+local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Keybinds = require "ItsyScape.UI.Keybinds"
 
 local DefaultCameraController = Class(CameraController)
@@ -23,8 +24,8 @@ DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 5
 DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 128
 DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP = math.pi / 4
 DefaultCameraController.SCROLL_MULTIPLIER = 4
-DefaultCameraController.MIN_DISTANCE = 1
-DefaultCameraController.MAX_DISTANCE = 60
+DefaultCameraController.MIN_DISTANCE = 10
+DefaultCameraController.MAX_DISTANCE = 25
 DefaultCameraController.DEFAULT_DISTANCE = 30
 DefaultCameraController.SCROLL_DISTANCE_Y_ENGAGE = 128
 
@@ -53,6 +54,7 @@ function DefaultCameraController:new(...)
 	self.isActionButtonDown = false
 	self.isCameraDragging = false
 	self.isRotationUnlocked = 0
+	self.isPositionUnlocked = 0
 
 	self.curveMode = DefaultCameraController.SHOW_MODE_NONE
 
@@ -551,6 +553,14 @@ function DefaultCameraController:onMapRotationUnstick()
 	self.mapRotationSticky = (self.mapRotationSticky or 1) - 1
 end
 
+function DefaultCameraController:onUnlockPosition()
+	self.isPositionUnlocked = (self.isPositionUnlocked or 0) + 1
+end
+
+function DefaultCameraController:onLockPosition()
+	self.isPositionUnlocked = (self.isPositionUnlocked or 1) - 1
+end
+
 function DefaultCameraController:onUnlockRotation()
 	self.isRotationUnlocked = (self.isRotationUnlocked or 0) + 1
 end
@@ -645,27 +655,62 @@ function DefaultCameraController:demo()
 	end
 end
 
+function DefaultCameraController:_clampCenter(center)
+	local player = self:getGame():getPlayer()
+	if not player then
+		return center
+	end
+
+	local actor = player:getActor()
+	if not actor then
+		return center
+	end
+
+	local _, _, layer = actor:getTile()
+	local map = self:getGameView():getMap(layer)
+	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
+
+	if not map or not mapSceneNode then
+		return center
+	end
+
+	local camera = ThirdPersonCamera()
+	camera:copy(self:getCamera())
+	camera:setPosition(Vector.ZERO)
+	camera:setRotation(Quaternion.IDENTITY)
+	camera:setVerticalRotation(0)
+	camera:setHorizontalRotation(0)
+	camera:setDistance(0)
+	camera:setFar(self:getCamera():getDistance())
+
+	local viewMin, viewMax = Vector(math.huge), Vector(-math.huge)
+	for x = 0, 1 do
+		for z = 0, 1 do
+			local corner = Vector(2 * x - 1, 0, 2 * z - 1)
+			corner = camera:unproject(corner) * Vector.PLANE_XZ
+
+			viewMin = viewMin:min(corner)
+			viewMax = viewMax:max(corner)
+		end
+	end
+
+	local viewSize = Vector(math.max(viewMax.x - viewMin.x, viewMax.z - viewMin.z))
+
+	local delta = self:getApp():getFrameDelta()
+	local transform = mapSceneNode:getTransform():getGlobalDeltaTransform(delta)
+	local mapMin, mapMax = Vector(0, 0, 0), Vector(map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize())
+	mapMin, mapMax = Vector.transformBounds(mapMin, mapMax, transform)
+	local mapHalfSize = (mapMax - mapMin) / 2
+
+	local min = mapMin + viewSize
+	local max = mapMax - viewSize
+	local newCenter = center:clamp(min, max)
+	newCenter.y = center.y
+
+	return newCenter
+end
+
 function DefaultCameraController:draw()
-	local center
-	if self.isTargetting then
-		local playerPosition = self:getPlayerPosition()
-		local targetPosition = self:getTargetPosition()
-		local difference = playerPosition - targetPosition
-		local normal = difference:getNormal()
-		local distance = difference:getLength()
-
-		center = targetPosition + normal * (distance / 2)
-	else
-		center = self:getPlayerPosition()
-	end
-
-	local shake
-	if self.currentShakingOffset and self.previousShakingOffset then
-		shake = self.previousShakingOffset:lerp(self.currentShakingOffset, 1 - (self.currentShakingInterval / self.shakingInterval))
-	else
-		shake = Vector.ZERO
-	end
-
 	local verticalOffset
 	if self.cameraVerticalRotationFlipTime then
 		local mu = self.cameraVerticalRotationFlipTime / DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP_TIME_SECONDS
@@ -685,12 +730,6 @@ function DefaultCameraController:draw()
 			sourceVerticalRotation,
 			targetVerticalRotation,
 			Tween.sineEaseOut(mu))
-
-		--verticalOffset = math.sign(self.cameraVerticalRotationOffset) * math.abs(verticalOffset + math.abs(self.cameraVerticalRotationOffset))
-
-		print(">>> current", math.deg(self.cameraVerticalRotationOffset))
-		print(">>> offset", math.deg(verticalOffset))
-		print(">>> mu", mu)
 	elseif self.isCameraVerticalRotationFlipped then
 		verticalOffset = DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED + self.cameraVerticalRotationOffset
 	else
@@ -700,6 +739,30 @@ function DefaultCameraController:draw()
 	self:getCamera():setVerticalRotation(verticalOffset)
 	self:getCamera():setHorizontalRotation(
 		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset)
+
+	local center
+	if self.isTargetting then
+		local playerPosition = self:getPlayerPosition()
+		local targetPosition = self:getTargetPosition()
+		local difference = playerPosition - targetPosition
+		local normal = difference:getNormal()
+		local distance = difference:getLength()
+
+		center = targetPosition + normal * (distance / 2)
+	else
+		center = self:getPlayerPosition()
+	end
+
+	if self.isPositionUnlocked <= 0 then
+		center = self:_clampCenter(center)
+	end
+
+	local shake
+	if self.currentShakingOffset and self.previousShakingOffset then
+		shake = self.previousShakingOffset:lerp(self.currentShakingOffset, 1 - (self.currentShakingInterval / self.shakingInterval))
+	else
+		shake = Vector.ZERO
+	end
 
 	self:getCamera():setPosition(center + self.cameraOffset + shake)
 
