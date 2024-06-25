@@ -695,7 +695,7 @@ function DefaultCameraController:_clampCenter(center)
 		end
 	end
 
-	local viewSize = Vector(viewMax.x - viewMin.x, 0, viewMax.z - viewMin.z):getLength()
+	local viewSize = Vector(viewMax.x - viewMin.x, 0, viewMax.z - viewMin.z)
 
 	local delta = self:getApp():getFrameDelta()
 	local transform = mapSceneNode:getTransform():getGlobalDeltaTransform(delta)
@@ -754,7 +754,7 @@ function DefaultCameraController:draw()
 		center = self:getPlayerPosition()
 	end
 
-	if self.isPositionUnlocked <= 0 then
+	if not _DEBUG and self.isPositionUnlocked <= 0 then
 		center = self:_clampCenter(center)
 	end
 

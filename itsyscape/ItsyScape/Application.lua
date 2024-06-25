@@ -1023,11 +1023,8 @@ function Application:_draw()
 	local delta = self:getFrameDelta()
 	do
 		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE) then
-			local renderer = self.gameView:getRenderer()
-			self:measure("3d renderer", renderer.draw, renderer, self.gameView:getScene(), delta)
+			self:measure("3d renderer", self.gameView.draw, self.gameView, delta)
 		end
-
-		self.gameView:getRenderer():present()
 
 		if self.show2D then
 			self.gameView:getSpriteManager():draw(self.gameView:getScene(), self.camera, delta)

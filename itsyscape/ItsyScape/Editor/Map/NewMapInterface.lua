@@ -21,7 +21,7 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local NewMapInterface = Class(Widget)
 NewMapInterface.WIDTH = 320
-NewMapInterface.HEIGHT = 320
+NewMapInterface.HEIGHT = 368
 function NewMapInterface:new(application)
 	Widget.new(self)
 
@@ -72,6 +72,14 @@ function NewMapInterface:new(application)
 	self.heightInput:setText("32")
 	inputsGridLayout:addChild(self.heightInput)
 
+	local paddingLabel = Label()
+	paddingLabel:setText("Width:")
+	inputsGridLayout:addChild(paddingLabel)
+
+	self.paddingInput = TextInput()
+	self.paddingInput:setText("16")
+	inputsGridLayout:addChild(self.paddingInput)
+
 	local elevationLabel = Label()
 	elevationLabel:setText("Elevation:")
 	inputsGridLayout:addChild(elevationLabel)
@@ -119,16 +127,31 @@ function NewMapInterface:createMap()
 	local stage = self.application:getGame():getStage()
 	local width = tonumber(self.widthInput:getText()) or 32
 	local height = tonumber(self.heightInput:getText()) or 32
+	local padding = tonumber(self.paddingInput:getText()) or 16
+	local halfPadding = padding / 2
 	local elevation = tonumber(self.elevationInput:getText()) or 1
+
 	if width and height then
-		stage:newMap(width, height, self.tileSetIDInput:getText(), true, 1)
+		stage:newMap(width + padding * 2, height + padding * 2, self.tileSetIDInput:getText(), true, 1)
 		local map = stage:getMap(1)
 		if map then
 			for j = 1, map:getHeight() do
 				for i = 1, map:getWidth() do
 					local tile = map:getTile(i, j)
-					tile.flat = 1
-					tile.edge = 2
+					if j <= padding or j >= height + padding or
+					   i <= padding or i >= width + padding
+					then
+						tile.flat = 3
+					else
+						tile.edge = 2
+					end
+
+					if j <= halfPadding or j >= height + padding + halfPadding or
+					   i <= halfPadding or i >= width + padding + halfPadding
+					then
+						tile:setFlag("impassable")
+					end
+
 					tile.topLeft = elevation
 					tile.topRight = elevation
 					tile.bottomLeft = elevation

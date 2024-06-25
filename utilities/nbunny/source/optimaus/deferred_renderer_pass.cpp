@@ -101,6 +101,13 @@ void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNo
 		shader->sendTextures(color_texture_uniform, &texture, 1);
 	}
 
+	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
+	if (position_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
+		shader->sendTextures(position_texture_uniform, &texture, 1);    
+	}
+
 	auto light_ambient_coefficient_uniform = shader->getUniformInfo("scape_LightAmbientCoefficient");
 	if (light_ambient_coefficient_uniform)
 	{
@@ -462,12 +469,6 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->setProjection(projection);
 
 	auto clear_color = renderer->get_clear_color();
-	if (!fog_scene_nodes.empty())
-	{
-		Light light;
-		fog_scene_nodes.back()->to_light(light, delta);
-		clear_color = glm::vec4(light.color, 1.0f);
-	}
 	graphics->clear(
 		{
 			love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),

@@ -11,6 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 uniform Image scape_ColorTexture;
+uniform Image scape_PositionTexture;
 
 uniform vec3 scape_LightColor;
 uniform float scape_LightAmbientCoefficient;
@@ -22,6 +23,6 @@ vec4 effect(
 	vec2 screenCoordinate)
 {
 	vec3 result = scape_LightColor * scape_LightAmbientCoefficient;
-	float alpha = Texel(scape_ColorTexture, textureCoordinate).a;
+	float alpha = Texel(scape_PositionTexture, textureCoordinate).a;
 	return vec4(result, alpha);
 }

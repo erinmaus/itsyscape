@@ -37,6 +37,7 @@ function EditorApplication:new()
 	end
 
 	self:getGameView():getRenderer():setCullEnabled(false)
+	self:getCamera():setFar(1000)
 end
 
 function EditorApplication:getOutputDirectoryName(category, resource)

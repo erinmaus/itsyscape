@@ -39,6 +39,7 @@ local TileSet = require "ItsyScape.World.TileSet"
 local MapMeshMask = require "ItsyScape.World.MapMeshMask"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
+local SkyboxSceneNode = require "ItsyScape.Graphics.SkyboxSceneNode"
 
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
@@ -60,6 +61,7 @@ function GameView:new(game, camera)
 
 	self.scene = SceneNode()
 	self.mapMeshes = {}
+	self.skyboxes = {}
 	self.tests = { id = 1 }
 
 	self.water = {}
@@ -407,6 +409,24 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		self:removeMap(layer)
 	end
 
+	local node
+	if meta and meta.skybox then
+		node = SkyboxSceneNode()
+
+		local color = meta.skybox.color or {}
+		if type(color) == "string" then
+			color = Color.fromHexString(color)
+		else
+			color = Color(unpack(color))
+		end
+
+		self.skyboxes[node] = {
+			color = color
+		}
+	else
+		node = SceneNode()
+	end
+
 	local m = {
 		tileSet = tileSet,
 		largeTileSet = largeTileSet,
@@ -414,7 +434,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		tileSetID = tileSetID or "GrassyPlain",
 		filename = filename,
 		map = map,
-		node = SceneNode(),
+		node = node,
 		parts = {},
 		layer = layer,
 		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16),
@@ -496,7 +516,11 @@ end
 function GameView:removeMap(layer)
 	local m = self.mapMeshes[layer]
 	if m then
-		m.node:setParent(nil)
+		if self.skyboxes[m.node] then
+			self.skyboxes[m.node] = nil
+		else
+			m.node:setParent(nil)
+		end
 
 		for i = 1, #m.parts do
 			m.parts[i]:setMapMesh(nil)
@@ -588,12 +612,6 @@ function GameView:testMap(layer, ray, callback)
 	})
 end
 
-local function sprint(...)
-if love.keyboard.isDown("space") then
-	print(...)
-end
-end
-
 function GameView:updateMap(map, layer)
 	local m = self.mapMeshes[layer]
 	if m then
@@ -671,6 +689,8 @@ function GameView:updateMap(map, layer)
 				m.mapMeshMasks,
 				m.islandProcessor,
 				m.largeTileSet)
+
+			m.node:setBounds(node:getBounds())
 
 			if m.mapMeshMasks then
 				node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
@@ -849,7 +869,7 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 
 		if disabled and node:getParent() then
 			node:setParent(nil)
-		elseif not disabled and not node:getParent() then
+		elseif not disabled and not node:getParent() and not self.skyboxes[node] then
 			node:setParent(self.scene)
 			node:tick(1)
 		end
@@ -865,14 +885,6 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 		local position = Vector(globalTransform:transformPoint(x, 0, z))
 		m.weatherMap:setAbsolutePosition(position)
 	end
-
-	-- self:bendMap(layer, {
-	-- 	points = {
-	-- 		{ math.cos(0.0) * 16, 0.0, math.sin(0.0) * 32 },
-	-- 		{ math.cos(3.14 / 2) * 16, 8.0, math.sin(3.14 / 2) * 32 },
-	-- 		{ math.cos(3.14 * 1.5) * 16, -8.0, math.sin(3.14 * 1.5) * 32 }
-	-- 	}
-	-- })
 end
 
 function GameView:_updateMapBounds(m, node)
@@ -1731,6 +1743,21 @@ function GameView:update(delta)
 			love.audio.setPosition(transform:transformPoint(0, 0, 0))
 		end
 	end
+end
+
+function GameView:draw(delta)
+	local skybox = next(self.skyboxes)
+	if skybox then
+		local info = self.skyboxes[skybox]
+
+		self.renderer:setClearColor(info.color)
+		self.renderer:draw(skybox, delta)
+		self.renderer:present(false)
+	end
+
+	--self.renderer:setClearColor(Color(0, 0, 0, 0))
+	--self.renderer:draw(self.scene, delta)
+	--self.renderer:present(true)
 end
 
 function GameView:tick(frameDelta)

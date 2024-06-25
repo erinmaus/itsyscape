@@ -468,14 +468,20 @@ function Renderer:getOutputBuffer()
 	return self.finalDeferredPass:getHandle():getCBuffer()
 end
 
-function Renderer:present()
+function Renderer:present(alpha)
 	local buffer = self:getOutputBuffer()
 
 	love.graphics.setShader()
 	love.graphics.setCanvas()
 	love.graphics.origin()
-	love.graphics.setBlendMode('replace')
-	love.graphics.setDepthMode('always', false)
+
+	if alpha then
+		love.graphics.setBlendMode("alpha", "premultiplied")
+	else
+		love.graphics.setBlendMode("replace")
+	end
+
+	love.graphics.setDepthMode("always", false)
 	love.graphics.draw(buffer:getColor())
 end
 
