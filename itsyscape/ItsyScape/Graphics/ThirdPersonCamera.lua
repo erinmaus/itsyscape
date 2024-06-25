@@ -118,6 +118,13 @@ function ThirdPersonCamera:project(point)
 	return Vector(x, y, z)
 end
 
+function ThirdPersonCamera:unproject(point)
+	local projection, view = self:getTransforms()
+	local projectionView = projection * view
+	local x, y, z = projectionView:inverseTransformPoint(point.x, point.y, point.z)
+	return Vector(x, y, z)
+end
+
 function ThirdPersonCamera:getTransforms(projection, view)
 	projection = projection or love.math.newTransform()
 	do
@@ -295,6 +302,32 @@ function ThirdPersonCamera:apply()
 
 	love.graphics.projection(projection)
 	love.graphics.replaceTransform(view)
+end
+
+function ThirdPersonCamera:copy(parentCamera)
+	self:setPosition(parentCamera:getPosition())
+	self:setFieldOfView(parentCamera:getFieldOfView())
+	self:setNear(parentCamera:getNear())
+	self:setFar(parentCamera:getFar())
+	self:setDistance(parentCamera:getDistance())
+	self:setVerticalRotation(parentCamera:getVerticalRotation())
+	self:setHorizontalRotation(parentCamera:getHorizontalRotation())
+	self:setRotation(parentCamera:getRotation())
+	self:setScale(parentCamera:getScale())
+
+	if parentCamera:getMirrorPlane() then
+		local _, normal, point = parentCamera:getMirrorPlane()
+		self:setMirrorPlane(normal, point)
+	else
+		self:unsetMirrorPlane()
+	end
+
+	if parentCamera:getClipPlane() then
+		local _, normal, point = parentCamera:getClipPlane()
+		self:setClipPlane(normal, point)
+	else
+		self:unsetClipPlane()
+	end
 end
 
 function ThirdPersonCamera:mirror(parentCamera, rootPosition, rootRotation, mirrorNormal)

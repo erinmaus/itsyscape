@@ -63,6 +63,10 @@ function Vector:max(other)
 		math.max(self.z, other.z))
 end
 
+function Vector:clamp(min, max)
+	return self:min(max):max(min)
+end
+
 function Vector.transformBounds(min, max, transform)
 	local corners = {
 		min.x, min.y, min.z,
