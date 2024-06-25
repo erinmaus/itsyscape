@@ -217,6 +217,16 @@ namespace nbunny
 		virtual ~LuaSceneNode() = default;
 	};
 
+	class SkyboxSceneNode : public SceneNode
+	{
+	public:
+		static const Type<SkyboxSceneNode> type_pointer;
+		virtual const BaseType& get_type() const override;
+
+		SkyboxSceneNode(int reference);
+		virtual ~SkyboxSceneNode() = default;
+	};
+
 	class Camera
 	{
 	private:
@@ -237,7 +247,7 @@ namespace nbunny
 		mutable glm::vec4 planes[NUM_PLANES];
 
 		static const int NUM_POINTS = 8;
-		mutable glm::vec3 minFrustum, maxFrustum;
+		mutable glm::vec3 min_frustum, max_frustum;
 
 		float field_of_view = glm::radians(30.0f);
 		float near = 0.01f;
@@ -305,6 +315,9 @@ namespace nbunny
 
 		int get_num_planes() const;
 		const glm::vec4& get_plane(int index) const;
+
+		const glm::vec3& get_min_frustum() const;
+		const glm::vec3& get_max_frustum() const;
 	};
 }
 

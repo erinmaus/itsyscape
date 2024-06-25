@@ -17,6 +17,37 @@
 #include "nbunny/optimaus/renderer.hpp"
 #include "modules/graphics/opengl/OpenGL.h"
 
+glm::mat4 nbunny::Renderer::get_skybox_view(SceneNode& skybox_scene_node)
+{
+	auto old_view = get_camera().get_view();
+	get_camera().update(glm::mat4(1.0f), get_camera().get_projection());
+
+	const auto& min_frustum = get_camera().get_min_frustum();
+	const auto& max_frustum = get_camera().get_max_frustum();
+	auto frustum_size = max_frustum - min_frustum;
+
+	const auto& min_scene_node = skybox_scene_node.get_min();
+	const auto& max_scene_node = skybox_scene_node.get_max();
+	auto scene_node_size = max_scene_node - min_scene_node;
+	auto half_scene_node_size = scene_node_size / 2.0f;
+
+	auto relative_size = frustum_size / scene_node_size;
+	auto scale = glm::max(relative_size.x, relative_size.z);
+
+	auto offset_from_matrix = glm::translate(glm::mat4(1.0f), -half_scene_node_size);
+	auto offset_to_matrix = glm::translate(glm::mat4(1.0f), half_scene_node_size);
+	auto rotation_matrix = glm::mat4(glm::mat3(old_view));
+	auto scale_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
+	auto pre_translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-half_scene_node_size.x, 0.0f, -half_scene_node_size.z));
+	auto post_translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, min_frustum.y + frustum_size.y / 4.0f, 0.0f));
+
+	auto skybox_view = offset_to_matrix * pre_translation_matrix * scale_matrix * rotation_matrix * post_translation_matrix * offset_from_matrix;
+
+	get_camera().update(old_view, get_camera().get_projection());
+
+	return skybox_view;
+}
+
 nbunny::Renderer::Renderer(int reference) :
 	reference(reference), camera(&default_camera)
 {
@@ -105,8 +136,15 @@ const nbunny::ShaderCache& nbunny::Renderer::get_shader_cache() const
 	return shader_cache;
 }
 
+nbunny::SceneNode* nbunny::Renderer::get_root_node() const
+{
+	return root_node;
+}
+
 void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int width, int height)
 {
+	root_node = &node;
+
 	if (this->width != width || this->height != height)
 	{
 		this->width = width <= 0 ? 1 : width;
@@ -116,6 +154,15 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 		{
 			renderer_pass->resize(width, height);
 		}
+	}
+
+	glm::mat4 view = get_camera().get_view();
+	if (node.get_type() == SkyboxSceneNode::type_pointer)
+	{
+		std::cout << "is skybox" << std::endl;
+
+		auto transformed_view = get_skybox_view(node);
+		get_camera().update(transformed_view, get_camera().get_projection());
 	}
 
 	all_scene_nodes.clear();
@@ -139,6 +186,9 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	current_renderer_pass_id = RENDERER_PASS_NONE;
 
 	glad::glDisable(GL_CLIP_DISTANCE0);
+
+	root_node = nullptr;
+	get_camera().update(view, get_camera().get_projection());
 }
 
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)

@@ -62,6 +62,12 @@ namespace nbunny
 
 		int current_renderer_pass_id = 0;
 
+		SceneNode* root_node = nullptr;
+
+		glm::mat4 get_skybox_view(SceneNode& skybox_scene_node);
+
+		bool should_clear = false;
+
 	public:
 		Renderer(int reference);
 		~Renderer() = default;
@@ -86,6 +92,8 @@ namespace nbunny
 
 		ShaderCache& get_shader_cache();
 		const ShaderCache& get_shader_cache() const;
+
+		SceneNode* get_root_node() const;
 
 		virtual void draw(lua_State* L, SceneNode& node, float delta, int width, int height);
 		virtual void draw_node(lua_State* L, SceneNode& node, float delta);

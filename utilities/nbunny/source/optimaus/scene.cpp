@@ -597,8 +597,8 @@ void nbunny::Camera::compute_planes() const
 		return;
 	}
 
-	auto projectionView = projection * view;
-	auto m = glm::value_ptr(projectionView);
+	auto projection_view = projection * view;
+	auto m = glm::value_ptr(projection_view);
 
 #define M(i, j) m[(j - 1) * 4 + (i - 1)]
 	// left
@@ -606,62 +606,62 @@ void nbunny::Camera::compute_planes() const
 	planes[0].y = M(1, 2) + M(4, 2);
 	planes[0].z = M(1, 3) + M(4, 3);
 	planes[0].w = M(1, 4) + M(4, 4);
-	float leftLengthInverse = 1.0f / glm::length(glm::vec3(planes[0]));
-	planes[0] *= leftLengthInverse;
+	float left_length_inverse = 1.0f / glm::length(glm::vec3(planes[0]));
+	planes[0] *= left_length_inverse;
 
 	// right
 	planes[1].x = -M(1, 1) + M(4, 1);
 	planes[1].y = -M(1, 2) + M(4, 2);
 	planes[1].z = -M(1, 3) + M(4, 3);
 	planes[1].w = -M(1, 4) + M(4, 4);
-	float rightLengthInverse = 1.0f / glm::length(glm::vec3(planes[1]));
-	planes[1] *= rightLengthInverse;
+	float right_length_inverse = 1.0f / glm::length(glm::vec3(planes[1]));
+	planes[1] *= right_length_inverse;
 
 	// top
 	planes[2].x = -M(2, 1) + M(4, 1);
 	planes[2].y = -M(2, 2) + M(4, 2);
 	planes[2].z = -M(2, 3) + M(4, 3);
 	planes[2].w = -M(2, 4) + M(4, 4);
-	float topLengthInverse = 1.0f / glm::length(glm::vec3(planes[2]));
-	planes[2] *= topLengthInverse;
+	float top_length_inverse = 1.0f / glm::length(glm::vec3(planes[2]));
+	planes[2] *= top_length_inverse;
 
 	// bottom
 	planes[3].x = M(2, 1) + M(4, 1);
 	planes[3].y = M(2, 2) + M(4, 2);
 	planes[3].z = M(2, 3) + M(4, 3);
 	planes[3].w = M(2, 4) + M(4, 4);
-	float bottomLengthInverse = 1.0f / glm::length(glm::vec3(planes[3]));
-	planes[3] *= bottomLengthInverse;
+	float bottom_length_inverse = 1.0f / glm::length(glm::vec3(planes[3]));
+	planes[3] *= bottom_length_inverse;
 
 	// near
 	planes[4].x = M(3, 1) + M(4, 1);
 	planes[4].y = M(3, 2) + M(4, 2);
 	planes[4].z = M(3, 3) + M(4, 3);
 	planes[4].w = M(3, 4) + M(4, 4);
-	float nearLengthInverse = 1.0f / glm::length(glm::vec3(planes[4]));
-	planes[4] *= nearLengthInverse;
+	float near_length_inverse = 1.0f / glm::length(glm::vec3(planes[4]));
+	planes[4] *= near_length_inverse;
 
 	// far
 	planes[5].x = -M(3, 1) + M(4, 1);
 	planes[5].y = -M(3, 2) + M(4, 2);
 	planes[5].z = -M(3, 3) + M(4, 3);
 	planes[5].w = -M(3, 4) + M(4, 4);
-	float farLengthInverse = 1.0f / glm::length(glm::vec3(planes[5]));
-	planes[5] *= farLengthInverse;
+	float far_length_inverse = 1.0f / glm::length(glm::vec3(planes[5]));
+	planes[5] *= far_length_inverse;
 #undef M
 
-	auto inverseViewProjection = glm::inverse(projectionView);
+	auto inverse_view_projection = glm::inverse(projection_view);
 
 	glm::vec4 corners[NUM_POINTS] =
 	{
-		inverseViewProjection * glm::vec4(-1, -1, -1, 1),
-		inverseViewProjection * glm::vec4( 1, -1, -1, 1),
-		inverseViewProjection * glm::vec4(-1,  1, -1, 1),
-		inverseViewProjection * glm::vec4(-1, -1,  1, 1),
-		inverseViewProjection * glm::vec4( 1,  1, -1, 1),
-		inverseViewProjection * glm::vec4( 1, -1,  1, 1),
-		inverseViewProjection * glm::vec4(-1,  1,  1, 1),
-		inverseViewProjection * glm::vec4( 1,  1,  1, 1)
+		inverse_view_projection * glm::vec4(-1, -1, -1, 1),
+		inverse_view_projection * glm::vec4( 1, -1, -1, 1),
+		inverse_view_projection * glm::vec4(-1,  1, -1, 1),
+		inverse_view_projection * glm::vec4(-1, -1,  1, 1),
+		inverse_view_projection * glm::vec4( 1,  1, -1, 1),
+		inverse_view_projection * glm::vec4( 1, -1,  1, 1),
+		inverse_view_projection * glm::vec4(-1,  1,  1, 1),
+		inverse_view_projection * glm::vec4( 1,  1,  1, 1)
 	};
 
 	auto min = glm::vec3(std::numeric_limits<float>::infinity());
@@ -673,8 +673,8 @@ void nbunny::Camera::compute_planes() const
 		max = glm::max(max, p);
 	}
 
-	minFrustum = min;
-	maxFrustum = max;
+	min_frustum = min;
+	max_frustum = max;
 
 	is_dirty = false;
 }
@@ -923,6 +923,18 @@ const glm::vec4& nbunny::Camera::get_plane(int index) const
 
 	index = std::max(std::min(index, NUM_PLANES - 1), 1);
 	return planes[index];
+}
+
+const glm::vec3& nbunny::Camera::get_min_frustum() const
+{
+	compute_planes();
+	return min_frustum;
+}
+
+const glm::vec3& nbunny::Camera::get_max_frustum() const
+{
+	compute_planes();
+	return max_frustum;
 }
 
 static int nbunny_scene_node_transform_get_scene_node(lua_State* L)
@@ -1449,6 +1461,31 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_luascenenode(lua_State* L)
 	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::LuaSceneNode>("NLuaSceneNode",
 		sol::base_classes, sol::bases<nbunny::SceneNode>(),
 		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::LuaSceneNode>));
+
+	sol::stack::push(L, T);
+
+	return 1;
+}
+
+const nbunny::Type<nbunny::SkyboxSceneNode> nbunny::SkyboxSceneNode::type_pointer;
+
+nbunny::SkyboxSceneNode::SkyboxSceneNode(int reference) :
+	SceneNode(reference)
+{
+	// Nothing.
+}
+
+const nbunny::BaseType& nbunny::SkyboxSceneNode::get_type() const
+{
+	return type_pointer;
+}
+
+extern "C"
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_skyboxscenenode(lua_State* L)
+{
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkyboxSceneNode>("NSkyboxSceneNode",
+		sol::base_classes, sol::bases<nbunny::SceneNode>(),
+		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::SkyboxSceneNode>));
 
 	sol::stack::push(L, T);
 
