@@ -1755,9 +1755,9 @@ function GameView:draw(delta)
 		self.renderer:present(false)
 	end
 
-	--self.renderer:setClearColor(Color(0, 0, 0, 0))
-	--self.renderer:draw(self.scene, delta)
-	--self.renderer:present(true)
+	self.renderer:setClearColor(Color(0, 0, 0, 0))
+	self.renderer:draw(self.scene, delta)
+	self.renderer:present(true)
 end
 
 function GameView:tick(frameDelta)

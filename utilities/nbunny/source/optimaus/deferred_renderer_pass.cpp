@@ -15,6 +15,7 @@
 #include "modules/graphics/Graphics.h"
 #include "modules/filesystem/Filesystem.h"
 #include "modules/math/Transform.h"
+#include "modules/graphics/opengl/OpenGL.h"
 #include "nbunny/optimaus/deferred_renderer_pass.hpp"
 
 static const std::string SHADER_DEFAULT           = "Default";
@@ -24,6 +25,7 @@ static const std::string SHADER_POINT_LIGHT       = "PointLight";
 static const std::string SHADER_FOG               = "Fog";
 static const std::string SHADER_COPY_DEPTH        = "CopyDepth";
 static const std::string SHADER_SHADOW            = "Shadow";
+static const std::string SHADER_MIX_LIGHTS        = "MixLights";
 
 nbunny::DeferredRendererPass::DeferredRendererPass(ShadowRendererPass* shadow_pass) :
 	RendererPass(RENDERER_PASS_DEFERRED),
@@ -472,7 +474,7 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->clear(
 		{
 			love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),
-			love::Colorf(0.0, 0.0, 0.0, 1.0),
+			love::Colorf(0.0, 0.0, 0.0, 0.0),
 			love::Colorf(0.0, 0.0, 0.0, 1.0),
 			love::Colorf(0.0, 0.0, 0.0, 0.0)
 		},
@@ -509,9 +511,11 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 	light_buffer.use();
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-	graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
 
-	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 1.0f), love::OptionalInt(), love::OptionalDouble());
+	glad::glBlendFunc(GL_ONE, GL_ONE);
+
+	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 0.0f), love::OptionalInt(), love::OptionalDouble());
 
 	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
 	graphics->origin();
@@ -545,7 +549,10 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 		}
 	}
 
-	mix_lights();
+	// Restore LOVE's BLEND_ADD.
+	glad::glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ONE, GL_ONE);
+
+	mix_lights(L);
 }
 
 void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
@@ -575,7 +582,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
 	mix_fog();
 }
 
-void nbunny::DeferredRendererPass::mix_lights()
+void nbunny::DeferredRendererPass::mix_lights(lua_State* L)
 {
 	output_buffer.use();
 	get_renderer()->set_current_shader(nullptr);
@@ -583,16 +590,25 @@ void nbunny::DeferredRendererPass::mix_lights()
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
 	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
 	graphics->origin();
 	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), false);
+	
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_MIX_LIGHTS, SHADER_MIX_LIGHTS);
+	get_renderer()->set_current_shader(shader);
 
-	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
-	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
+	if (color_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(COLOR_INDEX));
+		shader->sendTextures(color_texture_uniform, &texture, 1);
+	}
 
-	graphics->setBlendMode(love::graphics::Graphics::BLEND_MULTIPLY, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
 	graphics->draw(light_buffer.get_color(), love::Matrix4());
 
 	graphics->setCanvas();
+
+	get_renderer()->set_current_shader(nullptr);
 }
 
 void nbunny::DeferredRendererPass::mix_fog()
