@@ -20,7 +20,7 @@ DefaultCameraController.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
 DefaultCameraController.CAMERA_VERTICAL_ROTATION = -math.pi / 2
 DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED = math.pi / 2
 DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP_TIME_SECONDS = 0.5
-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 5
+DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 8
 DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 128
 DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP = math.pi / 4
 DefaultCameraController.SCROLL_MULTIPLIER = 4
@@ -55,6 +55,8 @@ function DefaultCameraController:new(...)
 	self.isCameraDragging = false
 	self.isRotationUnlocked = 0
 	self.isPositionUnlocked = 0
+
+	self._camera = ThirdPersonCamera()
 
 	self.curveMode = DefaultCameraController.SHOW_MODE_NONE
 
@@ -674,27 +676,26 @@ function DefaultCameraController:_clampCenter(center)
 		return center
 	end
 
-	local camera = ThirdPersonCamera()
-	camera:copy(self:getCamera())
-	camera:setPosition(Vector.ZERO)
-	camera:setRotation(Quaternion.IDENTITY)
-	camera:setVerticalRotation(0)
-	camera:setHorizontalRotation(0)
-	camera:setDistance(0)
-	camera:setFar(self:getCamera():getDistance())
+	self._camera:copy(self:getCamera())
+	self._camera:setPosition(Vector.ZERO)
+	self._camera:setDistance(0)
+	self._camera:setRotation(Quaternion.IDENTITY)
+	self._camera:setVerticalRotation(math.pi / 4)
+	self._camera:setHorizontalRotation(0)
+	self._camera:setFar(self.MAX_DISTANCE * math.sqrt(2))
 
 	local viewMin, viewMax = Vector(math.huge), Vector(-math.huge)
 	for x = 0, 1 do
 		for z = 0, 1 do
 			local corner = Vector(2 * x - 1, 0, 2 * z - 1)
-			corner = camera:unproject(corner) * Vector.PLANE_XZ
+			corner = self._camera:unproject(corner) * Vector.PLANE_XZ
 
 			viewMin = viewMin:min(corner)
 			viewMax = viewMax:max(corner)
 		end
 	end
 
-	local viewSize = Vector(math.max(viewMax.x - viewMin.x, viewMax.z - viewMin.z))
+	local viewSize = Vector(viewMax.x - viewMin.x, 0, viewMax.z - viewMin.z):getLength()
 
 	local delta = self:getApp():getFrameDelta()
 	local transform = mapSceneNode:getTransform():getGlobalDeltaTransform(delta)

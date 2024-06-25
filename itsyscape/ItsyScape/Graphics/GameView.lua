@@ -697,7 +697,8 @@ function GameView:updateMap(map, layer)
 
 			local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
 			if playerActor then
-				local playerI, playerJ, playerK = playerActor:getTile()
+				local _, _, playerK = playerActor:getTile()
+				local _, playerI, playerJ = m.map:getTileAt(self.camera:getPosition().x, self.camera:getPosition().y)
 
 				if playerK == layer then
 					local eye = self.camera:getEye()
