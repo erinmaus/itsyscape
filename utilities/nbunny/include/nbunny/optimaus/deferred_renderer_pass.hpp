@@ -64,7 +64,7 @@ namespace nbunny
 
 		float ambient_light = 0.0f;
 
-		void mix_lights();
+		void mix_lights(lua_State* L);
 		void mix_fog();
 
 		love::graphics::Shader* get_builtin_shader(lua_State* L, int builtin_id, const std::string& filename, bool is_light = true);
@@ -78,7 +78,8 @@ namespace nbunny
 			BUILTIN_SHADER_POINT_LIGHT       = -4,
 			BUILTIN_SHADER_FOG               = -5,
 			BUILTIN_SHADER_DEPTH_COPY        = -6,
-			BUILTIN_SHADER_SHADOW            = -7
+			BUILTIN_SHADER_SHADOW            = -7,
+			BUILTIN_SHADER_MIX_LIGHTS        = -8
 		};
 
 		DeferredRendererPass(ShadowRendererPass* shadow_pass);
