@@ -159,8 +159,6 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	glm::mat4 view = get_camera().get_view();
 	if (node.get_type() == SkyboxSceneNode::type_pointer)
 	{
-		std::cout << "is skybox" << std::endl;
-
 		auto transformed_view = get_skybox_view(node);
 		get_camera().update(transformed_view, get_camera().get_projection());
 	}
