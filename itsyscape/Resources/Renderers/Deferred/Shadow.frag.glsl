@@ -73,7 +73,8 @@ vec4 effect(
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	vec3 worldPosition = Texel(scape_PositionTexture, textureCoordinate).xyz;
+	vec4 positionSample = Texel(scape_PositionTexture, textureCoordinate); 
+	vec3 worldPosition = positionSample.xyz;
 	vec3 viewPosition = (scape_View * vec4(worldPosition, 1.0)).xyz;
 
 	int cascadeIndex = 0;
@@ -99,6 +100,7 @@ vec4 effect(
 		return vec4(0.0);
 	}
 
+	float sceneAlpha = positionSample.a;
 	float shadow = calculatePCF(cascadeIndex, projectedLightPosition, bias);
-	return vec4(vec3(0.0), scape_ShadowAlpha * shadow);
+	return vec4(vec3(0.0), scape_ShadowAlpha * shadow * sceneAlpha);
 }
