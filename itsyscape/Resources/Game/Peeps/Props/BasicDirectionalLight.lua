@@ -43,6 +43,14 @@ function BasicDirectionalLight:ready(director, game)
 	self:makeGlobal()
 end
 
+function BasicDirectionalLight:getDirection()
+	return self.direction
+end
+
+function BasicDirectionalLight:setDirection(value)
+	self.direction = value or self.direction
+end
+
 function BasicDirectionalLight:getPropState()
 	local result = BasicLight.getPropState(self)
 	result.direction = { self.direction.x, self.direction.y, self.direction.z }
