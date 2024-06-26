@@ -549,6 +549,10 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 		}
 	}
 
+	// We want to ensure all draws have been submitted before restoring
+	// the blend state.
+	graphics->flushStreamDraws();
+
 	// Restore LOVE's BLEND_ADD.
 	glad::glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ONE, GL_ONE);
 
