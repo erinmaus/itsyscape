@@ -423,6 +423,50 @@ public:
 	}
 };
 
+class ColorPath : public nbunny::ParticlePath
+{
+public:
+	float fade_in_percent = 0.0f, fade_out_percent = 1.0f;
+	glm::vec4 fade_in_color = glm::vec4(1.0f), fade_out_color = glm::vec4(glm::vec3(1.0f, 0.0f));
+
+	void from_definition(lua_State* L)
+	{
+		auto table = sol::stack::get<sol::table>(L, -1);
+
+		fade_in_percent = table.get_or("fadeInPercent", sol::table(L, sol::create)).get_or(1, fade_in_percent);
+		fade_out_percent = table.get_or("fadeOutPercent", sol::table(L, sol::create)).get_or(1, fade_out_percent);
+
+		auto i = table.get_or("fadeInColor", sol::table(L, sol::create));
+		fade_in_color = glm::vec4(g.get_or(1, 1.0f), g.get_or(2, 1.0f), g.get_or(3, 1.0f), g.get_or(4, 1.0f));
+
+		auto i = table.get_or("fadeOutColor", sol::table(L, sol::create));
+		fade_out_color = glm::vec4(g.get_or(1, 1.0f), g.get_or(2, 1.0f), g.get_or(3, 1.0f), g.get_or(4, 1.0f));
+	}
+
+	void update(nbunny::Particle& p, float delta)
+	{
+		float mu;
+
+		auto percent_age = p.age / p.lifetime;
+		if (percent_age <= fade_in_percent)
+		{
+			mu = sine_ease_out(percent_age / fade_in_percent);
+		}
+		else if (percent_age >= fade_out_percent)
+		{
+			auto difference = percent_age - fade_out_percent;
+			auto range = 1.0f - fade_out_percent;
+			mu = sine_ease_out(1.0f - difference / range);
+		}
+		else
+		{
+			mu = 1.0f;
+		}
+
+		p.color = glm::mix(fade_in_color, fade_out_color, mu);
+	}
+};
+
 class TwinklePath : public nbunny::ParticlePath
 {
 public:
@@ -786,6 +830,10 @@ void nbunny::ParticleSceneNode::set_paths(lua_State* L, sol::table& path_definit
 		else if (type == "SingularityPath")
 		{
 			path = std::make_shared<SingularityPath>();
+		}
+		else if (type == "ColorPath")
+		{
+			path = std::make_shared<ColorPath>();
 		}
 		else if (type == "SizePath")
 		{
