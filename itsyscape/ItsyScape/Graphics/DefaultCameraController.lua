@@ -135,11 +135,14 @@ function DefaultCameraController:getPlayerPosition()
 		if actor then
 			local node = actor:getSceneNode()
 			local transform = node:getTransform():getGlobalDeltaTransform(delta or 0)
-			position = Vector(transform:transformPoint(0, 1, 0))
+			position = Vector(transform:transformPoint(0, 0, 0))
 		end
 	end
 
-	return position or Vector.ZERO
+	position = position or Vector.ZERO
+	position = position + Vector(0, 1, 0)
+
+	return position
 end
 
 function DefaultCameraController:getTargetPosition()

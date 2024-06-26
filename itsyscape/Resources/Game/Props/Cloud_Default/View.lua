@@ -96,7 +96,7 @@ function Cloud:new(prop, gameView)
 end
 
 function Cloud:_getWind()
-	return Vector(self:getProp():getState().wind or {})
+	return Vector(unpack(self:getProp():getState().wind or {}))
 end
 
 function Cloud:_getInColor()

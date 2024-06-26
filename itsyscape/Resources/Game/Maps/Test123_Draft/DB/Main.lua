@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/Test123_Draft/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.Test123_Draft.Peep",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -39,6 +39,7 @@ function ItsyScapeDirector:new(game, gameDB)
 	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorDirectionUpdateCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.FollowerCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.CloudCortex")
+	self:addCortex(require "ItsyScape.Peep.Cortexes.SkyCortex")
 
 	self.game = game
 	self.gameDB = gameDB

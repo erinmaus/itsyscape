@@ -1783,6 +1783,11 @@ function GameView:tick(frameDelta)
 			projectile.tick,
 			projectile)
 	end
+
+	for skybox in pairs(self.skyboxes) do
+		--print(">>> tick skybox", frameDelta)
+		skybox:tick(frameDelta)
+	end
 end
 
 function GameView:quit()
