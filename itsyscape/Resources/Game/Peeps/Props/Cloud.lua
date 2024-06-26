@@ -35,6 +35,10 @@ end
 function Cloud:ready(...)
 	Prop.ready(self, ...)
 
+	local movement = self:getBehavior(MovementBehavior)
+	movement.noClip = true
+	movement.maxSpeed = math.huge
+
 	self.currentCloudID = 0
 	self.cloudState = {}
 
@@ -54,11 +58,7 @@ function Cloud:generateLump()
 		love.math.random() * (self.MAX_LUMP_OFFSET.z - self.MIN_LUMP_OFFSET).z + self.MIN_LUMP_OFFSET.z,
 	}
 
-	print(">>> position", unpack(position))
-
 	local radius = love.math.random() * (self.MAX_LUMP_RADIUS - self.MIN_LUMP_RADIUS) + self.MIN_LUMP_RADIUS
-
-	print(">>> radius", radius)
 
 	return {
 		id = id,

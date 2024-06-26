@@ -16,21 +16,21 @@ function SkyBehavior:new()
 	Behavior.Type.new(self)
 
 	self.sunPosition = Vector()
-	self.windDirection = Vector(1, 0, 1):getNormal()
+	self.windDirection = Vector(1, 0, 0):getNormal()
 	self.windSpeed = 2
 
-	self.cloudiness = 0
+	self.cloudiness = 0.5
 	self.cloudPropType = "Cloud_Default"
 
 	-- Clouds spawn around the mid point to the end point of the troposhere
-	self.troposphereEnd = 60
+	self.troposphereEnd = 30
 
 	-- No clue what goes here?
-	self.stratosphereEnd = 90
+	self.stratosphereEnd = 50
 
 	-- Between the stratosphere and here is where comets, space debris spawn.
 	-- After the mesosphere ends, space starts.
-	self.mesosphereEnd = 120
+	self.mesosphereEnd = 60
 end
 
 return SkyBehavior

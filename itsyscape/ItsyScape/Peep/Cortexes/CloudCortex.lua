@@ -32,10 +32,34 @@ function CloudCortex:update(delta)
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local mapScript = Utility.Peep.getMapScript(peep)
-		local sky = peep:getBehavior(SkyBehavior)
+		local map = Utility.Peep.getMap(peep)
+		local sky = mapScript and mapScript:getBehavior(SkyBehavior)
 
 		if sky and movement then
 			movement.velocity = sky.windDirection * sky.windSpeed
+
+			local position = Utility.Peep.getPosition(peep)
+			local isOutOfBounds = false
+			if math.abs(sky.windDirection.x) > 0 then
+				if sky.windDirection.x > 0 then
+					isOutOfBounds = isOutOfBounds or position.x > (map:getWidth() + map:getWidth() / 2) * map:getCellSize()
+				else
+					isOutOfBounds = isOutOfBounds or position.x < -(map:getWidth() / 2 * map:getCellSize())
+				end
+			end
+
+			if math.abs(sky.windDirection.z) > 0 then
+				if sky.windDirection.z > 0 then
+					isOutOfBounds = isOutOfBounds or position.z > (map:getHeigt() + map:getHeigt() / 2) * map:getCellSize()
+				else
+					isOutOfBounds = isOutOfBounds or position.z < -(map:getHeigt() / 2 * map:getCellSize())
+				end
+			end
+
+			if isOutOfBounds then
+				print(">>> cloud out of bounds", position:get())
+				Utility.Peep.poof(peep)
+			end
 		end
 	end
 end
