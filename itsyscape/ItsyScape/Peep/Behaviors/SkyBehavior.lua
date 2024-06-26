@@ -15,7 +15,8 @@ local SkyBehavior = Behavior("Sky")
 function SkyBehavior:new()
 	Behavior.Type.new(self)
 
-	self.sunPosition = Vector()
+	self.sunNormal = Vector()
+	self.sunDistance = 60
 	self.windDirection = Vector(1, 0, 0):getNormal()
 	self.windSpeed = 2
 

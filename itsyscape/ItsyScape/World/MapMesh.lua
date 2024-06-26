@@ -234,6 +234,10 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 				self:_addFlat(i, j, tile, k)
 			end
 		end
+
+		if coroutine.running() then
+			coroutine.yield()
+		end
 	end
 
 	self:_mask(left, right, top, bottom)
@@ -329,6 +333,10 @@ function MapMesh:_maskIsland(left, right, top, bottom, island)
 
 		self.masks[islandTile.index] = masks
 	end
+
+	if coroutine.running() then
+		coroutine.yield()
+	end
 end
 
 function MapMesh:_mask(left, right, top, bottom)
@@ -348,6 +356,10 @@ function MapMesh:_mask(left, right, top, bottom)
 				for maskType, maskTileID in pairs(tile.mask) do
 					self:_addFlat(i, j, tile, 'flat', maskType, maskTileID)
 				end
+			end
+
+			if coroutine.running() then
+				coroutine.yield()
 			end
 		end
 	end
