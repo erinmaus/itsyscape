@@ -34,6 +34,6 @@ void effect()
 
 	float alpha = max(diffuse.a, scape_AlphaMask);
 
-	love_Canvases[0] = vec4(alpha, 0.0, 0.0, alpha);
+	love_Canvases[0] = vec4(alpha, alpha, alpha, alpha);
 	love_Canvases[1] = vec4(frag_Position.z, 0.0, 0.0, alpha);
 }

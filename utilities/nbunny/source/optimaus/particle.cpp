@@ -427,7 +427,7 @@ class ColorPath : public nbunny::ParticlePath
 {
 public:
 	float fade_in_percent = 0.0f, fade_out_percent = 1.0f;
-	glm::vec4 fade_in_color = glm::vec4(1.0f), fade_out_color = glm::vec4(glm::vec3(1.0f, 0.0f));
+	glm::vec4 fade_in_color = glm::vec4(1.0f), fade_out_color = glm::vec4(glm::vec3(1.0f), 0.0f);
 
 	void from_definition(lua_State* L)
 	{
@@ -437,10 +437,10 @@ public:
 		fade_out_percent = table.get_or("fadeOutPercent", sol::table(L, sol::create)).get_or(1, fade_out_percent);
 
 		auto i = table.get_or("fadeInColor", sol::table(L, sol::create));
-		fade_in_color = glm::vec4(g.get_or(1, 1.0f), g.get_or(2, 1.0f), g.get_or(3, 1.0f), g.get_or(4, 1.0f));
+		fade_in_color = glm::vec4(i.get_or(1, 1.0f), i.get_or(2, 1.0f), i.get_or(3, 1.0f), i.get_or(4, 1.0f));
 
-		auto i = table.get_or("fadeOutColor", sol::table(L, sol::create));
-		fade_out_color = glm::vec4(g.get_or(1, 1.0f), g.get_or(2, 1.0f), g.get_or(3, 1.0f), g.get_or(4, 1.0f));
+		auto o = table.get_or("fadeOutColor", sol::table(L, sol::create));
+		fade_out_color = glm::vec4(o.get_or(1, 1.0f), o.get_or(2, 1.0f), o.get_or(3, 1.0f), o.get_or(4, 1.0f));
 	}
 
 	void update(nbunny::Particle& p, float delta)
