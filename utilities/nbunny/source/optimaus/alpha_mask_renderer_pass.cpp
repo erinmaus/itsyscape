@@ -21,6 +21,7 @@ void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 
 	opaque_scene_nodes.clear();
 	translucent_scene_nodes.clear();
+	particle_scene_nodes.clear();
 	for (auto& visible_scene_node: visible_scene_nodes)
 	{
 		auto& material = visible_scene_node->get_material();
@@ -37,10 +38,9 @@ void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 
 		if (visible_scene_node->get_type() == ParticleSceneNode::type_pointer)
 		{
-			continue;
+			particle_scene_nodes.push_back(visible_scene_node);
 		}
-
-		if (material.get_is_translucent() || material.get_is_full_lit())
+		else if (material.get_is_translucent() || material.get_is_full_lit())
 		{
 			translucent_scene_nodes.push_back(visible_scene_node);
 		}
@@ -122,6 +122,29 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
 
+		renderer->draw_node(L, *scene_node, delta);
+	}	
+
+	for (auto& scene_node: particle_scene_nodes)
+	{
+		auto shader = get_node_shader(L, *scene_node);
+		if (!shader)
+		{
+			continue;
+		}
+		renderer->set_current_shader(shader);
+
+		auto alpha_mask_uniform = shader->getUniformInfo("scape_AlphaMask");
+		if (alpha_mask_uniform)
+		{
+			*alpha_mask_uniform->floats = 0.0;
+			shader->updateUniform(alpha_mask_uniform, 1);
+		}
+
+        graphics->setMeshCullMode(love::graphics::CULL_BACK);
+
+		graphics->setColorMask(disabledMask);
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
 		renderer->draw_node(L, *scene_node, delta);
 	}
 

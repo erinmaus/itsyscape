@@ -29,6 +29,7 @@ namespace nbunny
 
 		std::vector<SceneNode*> opaque_scene_nodes;
 		std::vector<SceneNode*> translucent_scene_nodes;
+		std::vector<SceneNode*> particle_scene_nodes;
 
 		void walk_all_nodes(SceneNode& node, float delta);
 		void draw_nodes(lua_State* L, float delta);

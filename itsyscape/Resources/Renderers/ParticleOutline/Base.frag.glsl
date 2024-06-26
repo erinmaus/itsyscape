@@ -33,5 +33,5 @@ void effect()
 		discard;
 	}
 
-	love_Canvases[0] = vec4(0.0, 0.0, 0.0, 1.0);
+	love_Canvases[0] = vec4(1.0, 1.0, 1.0, 1.0);
 }

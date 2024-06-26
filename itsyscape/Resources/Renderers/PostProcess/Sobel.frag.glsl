@@ -71,5 +71,5 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	float sobel = getDepthSobel(image, textureCoordinate);
 	float outline = step(0.5, sobel);
     
-    return vec4(vec3(outline), alpha);
+    return vec4(vec3(1.0 - outline), alpha);
 }
