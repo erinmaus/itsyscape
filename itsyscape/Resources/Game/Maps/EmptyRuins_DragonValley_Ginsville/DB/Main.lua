@@ -94,32 +94,32 @@ do
 	}
 end
 
--- M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
--- do
--- 	ItsyScape.Meta.MapObjectLocation {
--- 		PositionX = 0,
--- 		PositionY = 0,
--- 		PositionZ = 0,
--- 		Name = "Light_Fog",
--- 		Map = M._MAP,
--- 		Resource = M["Light_Fog"]
--- 	}
+M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Fog",
+		Map = M._MAP,
+		Resource = M["Light_Fog"]
+	}
 
--- 	ItsyScape.Meta.PropMapObject {
--- 		Prop = ItsyScape.Resource.Prop "Fog_Default",
--- 		MapObject = M["Light_Fog"]
--- 	}
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Fog_Default",
+		MapObject = M["Light_Fog"]
+	}
 
--- 	ItsyScape.Meta.Fog {
--- 		ColorRed = 55,
--- 		ColorGreen = 55,
--- 		ColorBlue = 55,
--- 		NearDistance = 10,
--- 		FarDistance = 25,
--- 		FollowTarget = 1,
--- 		Resource = M["Light_Fog"]
--- 	}
--- end
+	ItsyScape.Meta.Fog {
+		ColorRed = 55,
+		ColorGreen = 55,
+		ColorBlue = 55,
+		NearDistance = 10,
+		FarDistance = 25,
+		FollowTarget = 1,
+		Resource = M["Light_Fog"]
+	}
+end
 
 M["Entrance_ToMines"] = ItsyScape.Resource.MapObject.Unique()
 do

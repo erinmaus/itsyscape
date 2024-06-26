@@ -23,6 +23,7 @@ function ParticleSceneNode:new()
 	SceneNode.new(self, NParticleSceneNode)
 
 	self:getMaterial():setShader(ParticleSceneNode.DEFAULT_SHADER)
+	self:getMaterial():setIsZWriteDisabled(true)
 	self:getMaterial():setIsTranslucent(true)
 	self:getMaterial():setIsFullLit(true)
 

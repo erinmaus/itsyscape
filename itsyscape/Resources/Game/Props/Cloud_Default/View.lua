@@ -66,8 +66,8 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 			},
 			{
 				type = "FadeInOutPath",
-				fadeInPercent = { 0.1 },
-				fadeOutPercent = { 0.9 },
+				fadeInPercent = { 0.3 },
+				fadeOutPercent = { 0.6 },
 				tween = { 'sineEaseOut' }
 			},
 			-- {

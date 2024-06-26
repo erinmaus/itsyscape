@@ -16,14 +16,14 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SkyBehavior = require "ItsyScape.Peep.Behaviors.SkyBehavior"
 
 local Cloud = Class(Prop)
-Cloud.MIN_NUM_LUMPS = 4
-Cloud.MAX_NUM_LUMPS = 12
+Cloud.MIN_NUM_LUMPS = 2
+Cloud.MAX_NUM_LUMPS = 6
 
 Cloud.MIN_LUMP_RADIUS = 1
 Cloud.MAX_LUMP_RADIUS = 3
 
-Cloud.MIN_LUMP_OFFSET = Vector(4, 2, 4)
-Cloud.MAX_LUMP_OFFSET = Vector(8, 3, 8)
+Cloud.MIN_LUMP_OFFSET = Vector(4, 1, 4)
+Cloud.MAX_LUMP_OFFSET = Vector(8, 2, 8)
 
 function Cloud:new(...)
 	Prop.new(self, ...)

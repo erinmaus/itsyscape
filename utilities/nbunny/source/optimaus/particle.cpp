@@ -723,9 +723,18 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 	return glm::slerp(previous_rotation, current_rotation, delta);
 }
 
-void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation)
+void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const glm::mat4& view, float delta)
 {
 	vertices.clear();
+
+	auto view_world_transform = view * get_transform().get_global(delta);
+	std::stable_sort(particles.begin(), particles.end(), [&](auto& a, auto& b)
+	{
+		auto a_position = view_world_transform * glm::vec4(a.position, 1.0f);
+		auto b_position = view_world_transform * glm::vec4(b.position, 1.0f);
+
+		return a_position.z > b_position.z;
+	});
 
 	for (auto& particle: particles)
 	{
@@ -1000,7 +1009,10 @@ void nbunny::ParticleSceneNode::frame(float delta, float time_delta)
 
 void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 {
-	build(glm::conjugate(renderer.get_camera().get_rotation() * get_global_rotation(delta)));
+	build(
+		glm::conjugate(renderer.get_camera().get_rotation() * get_global_rotation(delta)),
+		renderer.get_camera().get_view(),
+		delta);
 
 	if (!mesh)
 	{
