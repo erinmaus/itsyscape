@@ -12,19 +12,23 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local Cloud = Class(PropView)
-Cloud.MIN_PARTICLE_COUNT   = 1
-Cloud.MAX_PARTICLE_COUNT   = 3
+Cloud.MIN_PARTICLE_COUNT   = 0.5
+Cloud.MAX_PARTICLE_COUNT   = 1
 
-Cloud.SUN_OBSCURE_RADIUS = 8
+Cloud.SHADER = ShaderResource()
+do
+	Cloud.SHADER:loadFromFile("Resources/Shaders/Cloud")
+end
 
 Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 	radius = math.max(radius or 1, 1)
 	wind = wind or Vector.ZERO
 
-	local minCount = (math.pi * radius ^ 2) * Cloud.MIN_PARTICLE_COUNT
-	local maxCount = (math.pi * radius ^ 2) * Cloud.MAX_PARTICLE_COUNT
+	local minCount = math.ceil((1 + math.sqrt(radius)) * Cloud.MIN_PARTICLE_COUNT)
+	local maxCount = math.ceil((1 + math.sqrt(radius)) * Cloud.MAX_PARTICLE_COUNT)
 
 	return {
 		texture = "Resources/Game/Props/Cloud_Default/Particle.png",
@@ -35,7 +39,8 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 				type = "RadialEmitter",
 				position = { position:get() },
 				radius = { 0, radius / 2 },
-				speed = { 0.5, radius / 4 }
+				speed = { radius / 16, radius / 8 },
+				normal = { true }
 			},
 			{
 				type = "RandomColorEmitter",
@@ -45,7 +50,7 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 			},
 			{
 				type = "RandomLifetimeEmitter",
-				lifetime = { 2, 2.5 }
+				lifetime = { 4, 6 }
 			},
 			{
 				type = "RandomScaleEmitter",
@@ -81,7 +86,7 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
 			count = { minCount, maxCount },
-			delay = { 1 / 16 },
+			delay = { 1 / 4 },
 			duration = math.huge
 		}
 	}
@@ -91,6 +96,8 @@ function Cloud:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
 	self.clouds = {}
+	self.previousSunPosition = Vector()
+	self.currentSunPosition = Vector()
 end
 
 function Cloud:_getWind()
@@ -99,31 +106,12 @@ end
 
 function Cloud:_getInColor()
 	local state = self:getProp():getState()
-	local color = Color(unpack(state.color or {}))
-
-	local sun = Vector(unpack(state.sun or {}))
-
-	local difference = (sun - self:getProp():getPosition()) * Vector.PLANE_XY
-	local length = difference:getLength()
-
-	if length <= Cloud.SUN_OBSCURE_RADIUS then
-		local delta = length / Cloud.SUN_OBSCURE_RADIUS
-		return color * Color(delta)
-	end
-
-	return color
+	return Color(unpack(state.color or {}))
 end
 
 function Cloud:_getOutColor()
 	local state = self:getProp():getState()
-
 	return Color(unpack(state.color or {}))
-end
-
-function Cloud:update(delta)
-	PropView.update(self, delta)
-
-	-- todo update cloud color when it covers sun
 end
 
 function Cloud:updateParticle(cloudInfo, wind, inColor, outColor)
@@ -152,9 +140,22 @@ function Cloud:updateParticle(cloudInfo, wind, inColor, outColor)
 		cloud.wind = wind
 		cloud.inColor = inColor
 		cloud.outColor = outColor
-		cloud.ready = true
 
 		cloud.node:initParticleSystemFromDef(cloudParticleSystemDef, self:getResources())
+
+		if not cloud.ready then
+			cloud.node:onWillRender(function(renderer, delta)
+				local shader = renderer:getCurrentShader()
+				if shader:hasUniform("scape_SunPosition") then
+					shader:send("scape_SunPosition", { self.previousSunPosition:lerp(self.currentSunPosition, delta):get() })
+				end
+			end)
+
+			cloud.node:getMaterial():setShader(Cloud.SHADER)
+			cloud.node:getMaterial():setIsFullLit(false)
+		end
+
+		cloud.ready = true
 	end
 
 	if not cloud.node:getParent() then
@@ -171,11 +172,10 @@ end
 function Cloud:tick()
 	PropView.tick(self)
 
-	local transform = self:getRoot():getTransform()
-	transform:setLocalTranslation(Vector.ZERO)
-	transform:setPreviousTransform(Vector.ZERO)
-
 	local state = self:getProp():getState()
+
+	self.previousSunPosition = self.currentSunPosition
+	self.currentSunPosition = state.sun and Vector(unpack(state.sun)) or Vector()
 
 	for _, cloudInfo in pairs(self.clouds) do
 		cloudInfo.visited = false
@@ -189,8 +189,6 @@ function Cloud:tick()
 		if not cloudInfo.visited then
 			self.clouds[id].node:setParent(nil)
 			self.clouds[id] = nil
-		else
-			cloudInfo.node:updateLocalPosition(self:getProp():getPosition())
 		end
 	end
 end

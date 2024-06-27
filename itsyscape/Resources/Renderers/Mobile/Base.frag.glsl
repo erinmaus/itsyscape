@@ -44,6 +44,10 @@ uniform struct Fog {
 	vec3 position;
 } scape_Fog[SCAPE_MAX_FOG];
 
+#ifdef SCAPE_ENABLE_RIM_LIGHTING
+void getRimLightProperties(vec3 position, inout vec3 eye, out float exponent, out float multiplier);
+#endif
+
 vec3 scapeApplyLight(
 	Light light,
 	vec3 position,
@@ -84,7 +88,20 @@ vec3 scapeApplyLight(
 	float specularCoefficient = max(pow(2.0, exponent * (specular * specular)) - 1.0, 0.0);
 	vec3 specularLight = specularCoefficient * light.color;
 
-	return pointLight + diffuseLight + specularLight + ambientLight;
+#ifdef SCAPE_ENABLE_RIM_LIGHTING
+	vec3 rimLightEye = -surfaceToCamera;
+	float rimLightExponent, rimLightMultiplier;
+	getRimLightProperties(position, rimLightEye, rimLightExponent, rimLightMultiplier);
+
+	float rimLightIntensity = max(0.0, 1.0 - dot(rimLightEye, normal));
+	rimLightIntensity = pow(rimLightIntensity, rimLightExponent) * rimLightMultiplier;
+
+	vec3 rimLight = color * rimLightIntensity;
+#else
+	vec3 rimLight = vec3(0.0);
+#endif
+
+	return pointLight + diffuseLight + specularLight + ambientLight + rimLight;
 }
 
 vec3 scapeApplyFog(

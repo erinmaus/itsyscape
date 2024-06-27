@@ -267,6 +267,7 @@ namespace nbunny
 
 	public:
 		Camera() = default;
+		Camera(const Camera& other) = default;
 		~Camera() = default;
 
 		void set_field_of_view(float value);

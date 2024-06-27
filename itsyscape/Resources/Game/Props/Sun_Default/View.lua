@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
@@ -28,6 +29,7 @@ Sun.PARTICLE_SYSTEM = {
 			type = "RadialEmitter",
 			radius = { 4 },
 			speed = { 2, 4 },
+			zRange = { 0, 0 },
 			acceleration = { 0, 0 }
 		},
 		{
@@ -89,6 +91,9 @@ function Sun:load()
 	self.particles:initParticleSystemFromDef(Sun.PARTICLE_SYSTEM, resources)
 	self.particles:setParent(root)
 
+	self.light = DirectionalLightSceneNode()
+	self.light:setParent(root)
+
 	resources:queue(
 		StaticMeshResource,
 		"Resources/Game/Props/Sun_Default/Model.lstatic",
@@ -123,6 +128,14 @@ function Sun:_updateColor()
 	end
 end
 
+function Sun:_updateLight()
+	local state = self:getProp():getState()
+	if state.normal then
+		local normal = -Vector(unpack(state.normal))
+		self.light:setDirection(normal)
+	end
+end
+
 function Sun:getIsStatic()
 	return false
 end
@@ -131,6 +144,7 @@ function Sun:tick()
 	PropView.tick(self)
 
 	self:_updateColor()
+	self:_updateLight()
 end
 
 return Sun
