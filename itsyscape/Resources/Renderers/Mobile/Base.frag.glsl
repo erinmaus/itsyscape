@@ -89,19 +89,21 @@ vec3 scapeApplyLight(
 	vec3 specularLight = specularCoefficient * light.color;
 
 #ifdef SCAPE_ENABLE_RIM_LIGHTING
-	vec3 rimLightEye = -surfaceToCamera;
+	vec3 rimLightEye = surfaceToCamera;
 	float rimLightExponent, rimLightMultiplier;
 	getRimLightProperties(position, rimLightEye, rimLightExponent, rimLightMultiplier);
 
-	float rimLightIntensity = max(0.0, 1.0 - dot(rimLightEye, normal));
-	rimLightIntensity = pow(rimLightIntensity, rimLightExponent) * rimLightMultiplier;
+	float rimLightIntensity = max(0.0, 1.0 - (dot(rimLightEye, normal) * dot(surfaceToCamera, normal)));
+	// rimLightIntensity = pow(rimLightIntensity, rimLightExponent) * rimLightMultiplier;
 
-	vec3 rimLight = color * rimLightIntensity;
+	vec3 rimLight = (normal + vec3(1.0)) / vec3(2.0);// * rimLightIntensity;
 #else
-	vec3 rimLight = vec3(0.0);
+	vec3 rimLight = (normal + vec3(1.0)) / vec3(2.0);// * rimLightIntensity;
+	//vec3 rimLight = vec3(0.0);
 #endif
 
-	return pointLight + diffuseLight + specularLight + ambientLight + rimLight;
+	//return pointLight + diffuseLight + specularLight + ambientLight + rimLight;
+	return rimLight;
 }
 
 vec3 scapeApplyFog(

@@ -23,6 +23,18 @@ function SkyBehavior:new()
 	self.sunColor = Color(1, 0.4, 0.0, 1.0)
 	self.sunAlpha = 1.0
 
+	self.dawnSkyColor = Color.fromHexString("ff80b2")
+	self.daySkyColor = Color.fromHexString("87cdde")
+	self.duskSkyColor = Color.fromHexString("ff9955")
+	self.nightSkyColor = Color.fromHexString("111128")
+	self.currentSkyColor = self.daySkyColor
+
+	self.dawnAmbientColor = Color.fromHexString("ff80b2", 0.5)
+	self.dayAmbientColor = Color.fromHexString("ffffff", 0.7)
+	self.duskAmbientColor = Color.fromHexString("ff9955", 0.5)
+	self.nightAmbientColor = Color.fromHexString("111128", 0.4)
+	self.currentAmbientColor = self.dayAmbientColor
+
 	self.windDirection = Vector(1, 0, 0):getNormal()
 	self.windSpeed = 2
 

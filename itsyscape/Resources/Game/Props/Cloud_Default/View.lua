@@ -15,8 +15,8 @@ local PropView = require "ItsyScape.Graphics.PropView"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local Cloud = Class(PropView)
-Cloud.MIN_PARTICLE_COUNT   = 0.5
-Cloud.MAX_PARTICLE_COUNT   = 1
+Cloud.MIN_PARTICLE_COUNT   = 5
+Cloud.MAX_PARTICLE_COUNT   = 10
 
 Cloud.SHADER = ShaderResource()
 do

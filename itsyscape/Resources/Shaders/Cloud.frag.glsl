@@ -17,8 +17,8 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 void getRimLightProperties(vec3 position, inout vec3 eye, out float exponent, out float multiplier)
 {
 	eye = normalize(scape_SunPosition - position);
-	exponent = 1.5;
-	multiplier = 2.0;
+	exponent = 1.0;
+	multiplier = 1.0;
 }
 
 #pragma option SCAPE_ENABLE_RIM_LIGHTING

@@ -126,6 +126,13 @@ function Sun:_updateColor()
 			self.particles:getMaterial():setColor(color)
 		end
 	end
+
+	if state.skyColor then
+		local skyColor = Color(unpack(state.skyColor))
+
+		local _, layer = self:getProp():getPosition()
+		self:getGameView():setSkyboxColor(layer, skyColor)
+	end
 end
 
 function Sun:_updateLight()
