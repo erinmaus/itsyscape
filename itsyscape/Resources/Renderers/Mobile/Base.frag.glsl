@@ -94,16 +94,15 @@ vec3 scapeApplyLight(
 	getRimLightProperties(position, rimLightEye, rimLightExponent, rimLightMultiplier);
 
 	float rimLightIntensity = max(0.0, 1.0 - (dot(rimLightEye, normal) * dot(surfaceToCamera, normal)));
-	// rimLightIntensity = pow(rimLightIntensity, rimLightExponent) * rimLightMultiplier;
+	rimLightIntensity = pow(rimLightIntensity, rimLightExponent) * rimLightMultiplier;
 
-	vec3 rimLight = (normal + vec3(1.0)) / vec3(2.0);// * rimLightIntensity;
+	vec3 rimLight = color * rimLightIntensity;
 #else
-	vec3 rimLight = (normal + vec3(1.0)) / vec3(2.0);// * rimLightIntensity;
-	//vec3 rimLight = vec3(0.0);
+	vec3 rimLight = vec3(0.0);
 #endif
 
-	//return pointLight + diffuseLight + specularLight + ambientLight + rimLight;
-	return rimLight;
+	return pointLight + diffuseLight + specularLight + ambientLight + rimLight;
+	//return rimLight;
 }
 
 vec3 scapeApplyFog(
