@@ -71,6 +71,32 @@ function SkyCortex:getDirectionLightNormal()
 		z = math.sin(angle)
 	end
 
+	return Vector(x, y, -z):getNormal()
+end
+
+function SkyCortex:getSunAlpha()
+	local seconds = socket.gettime() % SkyCortex.DAY_IN_SECONDS
+	local delta = seconds / SkyCortex.DAY_IN_SECONDS
+
+	if delta > 0.5 then
+		return 0
+	else
+		return math.min(math.sin(delta / 0.5 * math.pi) * 5, 1)
+	end
+end
+
+function SkyCortex:getSunNormal()
+	local seconds = socket.gettime() % SkyCortex.DAY_IN_SECONDS
+	local delta = seconds / SkyCortex.DAY_IN_SECONDS
+	local angle = delta * math.pi * 2
+
+	local x, y, z
+	do
+		x = math.cos(angle)
+		y = math.sin(angle)
+		z = 0
+	end
+
 	return Vector(x, y, z):getNormal()
 end
 
@@ -125,17 +151,37 @@ function SkyCortex:update(delta)
 			end
 
 			local instance = Utility.Peep.getInstance(peep)
-			local layer = instance:getBaseLayer()
+			local baseLayer = instance:getBaseLayer()
 			local sunDirectionalLight = self:getDirector():probe(
 				peep:getLayerName(),
-				Probe.layer(layer),
+				Probe.layer(baseLayer),
 				Probe.namedMapObject("Light_Sun"),
 				Probe.resource("Prop", "DirectionalLight_Default"))[1]
 
 			if sunDirectionalLight then
 				local normal = self:getDirectionLightNormal()
 				sunDirectionalLight:setDirection(normal)
+			end
+
+			local sun = self:getDirector():probe(
+				peep:getLayerName(),
+				Probe.layer(layer),
+				Probe.resource("Prop", sky.sunPropType))[1]
+
+			if not sun then
+				sun = Utility.spawnPropAtPosition(peep, sky.sunPropType, 0, 0, 0)
+			else
+				local normal = self:getSunNormal()
+				local alpha = self:getSunAlpha()
+
 				sky.sunNormal = normal
+				sky.sunAlpha = alpha
+
+				local position = normal * sky.sunDistance + Vector(map:getWidth() * map:getCellSize() / 2, 0, 0)
+				sky.sunPosition = position
+
+				print(">>> alpha", alpha, "position", position:get())
+				Utility.Peep.setPosition(sun, position)
 			end
 		end
 	end

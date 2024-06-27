@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Behavior = require "ItsyScape.Peep.Behavior"
+local Color = require "ItsyScape.Graphics.Color"
 
 local SkyBehavior = Behavior("Sky")
 
@@ -16,7 +17,12 @@ function SkyBehavior:new()
 	Behavior.Type.new(self)
 
 	self.sunNormal = Vector()
-	self.sunDistance = 60
+	self.sunDistance = 35
+	self.sunPosition = Vector()
+	self.sunPropType = "Sun_Default"
+	self.sunColor = Color(1, 0.4, 0.0, 1.0)
+	self.sunAlpha = 1.0
+
 	self.windDirection = Vector(1, 0, 0):getNormal()
 	self.windSpeed = 2
 

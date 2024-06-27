@@ -208,6 +208,7 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 		love.graphics.clear(self.SPECULAR_BACKGROUND_COLOR:get())
 	end
 
+	local t = 0
 	for _, g in ipairs(grass) do
 		local scale = self._scales:range(g.scale, self.MIN_SCALE, self.MAX_SCALE)
 		local rotation = self._rotations:range(g.rotation, self.MIN_ROTATION, self.MAX_ROTATION)

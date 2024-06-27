@@ -17,6 +17,8 @@ local Cloud = Class(PropView)
 Cloud.MIN_PARTICLE_COUNT   = 1
 Cloud.MAX_PARTICLE_COUNT   = 3
 
+Cloud.SUN_OBSCURE_RADIUS = 8
+
 Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 	radius = math.max(radius or 1, 1)
 	wind = wind or Vector.ZERO
@@ -59,21 +61,17 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 		paths = {
 			{
 				type = "ColorPath",
-				fadeInPercent = { 0.1 },
+				fadeInPercent = { 0.3 },
 				fadeInColor = { inColor:get() },
-				fadeOutPercent = { 0.9 },
+				fadeOutPercent = { 0.6 },
 				fadeOutColor = { outColor:get() },
 			},
 			{
 				type = "FadeInOutPath",
 				fadeInPercent = { 0.3 },
-				fadeOutPercent = { 0.6 },
+				fadeOutPercent = { 0.7 },
 				tween = { 'sineEaseOut' }
 			},
-			-- {
-			-- 	type = "GravityPath",
-			-- 	gravity = { wind:get() }
-			-- },
 			{
 				type = "TextureIndexPath",
 				textures = { 1, 4 }
@@ -101,16 +99,19 @@ end
 
 function Cloud:_getInColor()
 	local state = self:getProp():getState()
+	local color = Color(unpack(state.color or {}))
 
-	return Color(unpack(state.color or {}))
+	local sun = Vector(unpack(state.sun or {}))
 
-	--local gameView = self:getGameView()
-	--local camera = gameView:getCamera()
+	local difference = (sun - self:getProp():getPosition()) * Vector.PLANE_XY
+	local length = difference:getLength()
 
-	--local sun = Vector(state.sun or {})
+	if length <= Cloud.SUN_OBSCURE_RADIUS then
+		local delta = length / Cloud.SUN_OBSCURE_RADIUS
+		return color * Color(delta)
+	end
 
-	--local directionToSun = (gameView:getEye() - gameView:getTarget()):getNormal()
-	--local angle = math.acos(math.dot(direction, ))
+	return color
 end
 
 function Cloud:_getOutColor()
