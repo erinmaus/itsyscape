@@ -117,15 +117,14 @@ function SkyCortex:update(delta)
 				Probe.resource("Prop", sky.cloudPropType))
 
 			if minClouds > #currentClouds then
-				local minY = sky.troposphereEnd / 2
+				local minY = sky.troposphereEnd / 3
 				local maxY = sky.troposphereEnd
 
 				for i = #currentClouds + 1, minClouds do
-					local y = love.math.random(minY, maxY)
 					local x, z
 					if #currentClouds == 0 then
 						x = love.math.random(-map:getWidth() * map:getCellSize(), map:getWidth() * map:getCellSize())
-						z = love.math.random(-map:getHeight() * map:getCellSize(), map:getHeight() * map:getCellSize())
+						z = love.math.random(1, map:getHeight() * map:getCellSize())
 					else
 						local direction = -sky.windDirection
 
@@ -145,6 +144,9 @@ function SkyCortex:update(delta)
 							z = love.math.random(1, map:getHeight() * 2)
 						end
 					end
+
+					local yDelta = math.clamp(z / (map:getHeight() * map:getCellSize()))
+					local y = math.sin(yDelta * math.pi) * (maxY - minY) + minY
 
 					Utility.spawnPropAtPosition(peep, sky.cloudPropType, x, y, z, map:getCellSize())
 				end
@@ -180,7 +182,6 @@ function SkyCortex:update(delta)
 				local position = normal * sky.sunDistance + Vector(map:getWidth() * map:getCellSize() / 2, 0, 0)
 				sky.sunPosition = position
 
-				print(">>> alpha", alpha, "position", position:get())
 				Utility.Peep.setPosition(sun, position)
 			end
 		end

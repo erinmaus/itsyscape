@@ -45,6 +45,7 @@ namespace nbunny
 		ShaderCache shader_cache;
 
 		Camera default_camera;
+		Camera skybox_camera;
 		Camera* camera = nullptr;
 
 		std::vector<SceneNode*> all_scene_nodes;
@@ -64,7 +65,7 @@ namespace nbunny
 
 		SceneNode* root_node = nullptr;
 
-		glm::mat4 get_skybox_view(SceneNode& skybox_scene_node);
+		Camera get_skybox_camera(SceneNode& skybox_scene_node);
 
 		bool should_clear = false;
 

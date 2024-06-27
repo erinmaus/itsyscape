@@ -79,6 +79,7 @@ public:
 	float x_range_center = 0.0f, x_range_width = 1.0f;
 	float y_range_center = 0.0f, y_range_width = 1.0f;
 	float z_range_center = 0.0f, z_range_width = 1.0f;
+	bool set_normal = false;
 
 	void update_local_position(const glm::vec3& value)
 	{
@@ -115,6 +116,8 @@ public:
 		auto z = table.get_or("zRange", sol::table(L, sol::create));
 		z_range_center = z.get_or(1, 0.0f);
 		z_range_width = z.get_or(2, 1.0f);
+
+		set_normal = table.get_or("normal", sol::table(L, sol::create)).get_or(1, false);
 	}
 
 	void emit(nbunny::Particle& p)
@@ -134,6 +137,11 @@ public:
 		p.position = normal * radius + position + local_position;
 		p.velocity = normal * velocity;
 		p.acceleration = normal * acceleration;
+
+		if (set_normal)
+		{
+			p.normal = normal;
+		}
 	}
 };
 
@@ -733,7 +741,7 @@ void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const g
 		auto a_position = view_world_transform * glm::vec4(a.position, 1.0f);
 		auto b_position = view_world_transform * glm::vec4(b.position, 1.0f);
 
-		return a_position.z > b_position.z;
+		return a_position.z < b_position.z;
 	});
 
 	for (auto& particle: particles)
@@ -777,8 +785,9 @@ void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, glm::quat 
 			rotation * glm::angleAxis(p.rotation, glm::vec3(0.0f, 0.0f, 1.0f)),
 			vertex.position
 		);
-		vertex.position += p.position;
 
+		vertex.normal = glm::normalize(p.normal);
+		vertex.position += p.position;
 		vertex.color = p.color;
 
 		if (p.texture_index < textures.size())
