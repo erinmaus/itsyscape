@@ -77,6 +77,7 @@ function Cloud:getPropState()
 
 	return {
 		wind = sky and { (sky.windDirection * sky.windSpeed):get() },
+		sun = sky and { sky.sunPosition:get() },
 		color = { 1, 1, 1, 1 },
 		clouds = self.cloudState
 	}

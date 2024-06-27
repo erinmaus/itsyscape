@@ -137,6 +137,10 @@ function GameView:getScene()
 	return self.scene
 end
 
+function GameView:getCamera()
+	return self.camera
+end
+
 function GameView:attach(game)
 	self.game = game or self.game
 	local stage = self.game:getStage()
@@ -941,6 +945,16 @@ function GameView:bendMap(layer, ...)
 		m.curveTexture:setFilter("linear", "linear")
 	else
 		m.curveTexture = nil
+	end
+end
+
+function GameView:setSkyboxColor(layer, color)
+	local m = self.mapMeshes[layer]
+	if m then
+		local skybox = self.skyboxes[m.node]
+		if skybox then
+			skybox.color = color
+		end
 	end
 end
 

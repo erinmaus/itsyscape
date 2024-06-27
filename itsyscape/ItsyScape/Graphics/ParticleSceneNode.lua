@@ -28,6 +28,7 @@ function ParticleSceneNode:new()
 	self:getMaterial():setIsFullLit(true)
 
 	self.isReady = false
+	self._texture = false
 end
 
 function ParticleSceneNode:pause()
@@ -48,12 +49,18 @@ end
 
 function ParticleSceneNode:initParticleSystemFromDef(def, resources)
 	if def.texture then
-		resources:queue(TextureResource, def.texture, function(texture)
-			self:getMaterial():setTextures(texture)
-			self:getHandle():initParticleSystemFromDef(def)
+		if def.texture ~= self._texture then
+			resources:queue(TextureResource, def.texture, function(texture)
+				self._texture = def.texture
 
-			self.isReady = true
-		end)
+				self:getMaterial():setTextures(texture)
+				self:getHandle():initParticleSystemFromDef(def)
+
+				self.isReady = true
+			end)
+		else
+			self:getHandle():initParticleSystemFromDef(def)
+		end
 	else
 		self:getHandle():initParticleSystemFromDef(def)
 		self.isReady = true

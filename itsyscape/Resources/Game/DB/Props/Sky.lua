@@ -16,3 +16,12 @@ do
 		Resource = Cloud
 	}
 end
+
+do
+	local Cloud = ItsyScape.Resource.Prop "Sun_Default"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.Sun",
+		Resource = Cloud
+	}
+end

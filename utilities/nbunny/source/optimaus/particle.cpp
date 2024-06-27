@@ -460,7 +460,7 @@ public:
 		}
 		else
 		{
-			mu = 1.0f;
+			mu = 0.0f;
 		}
 
 		p.color = glm::mix(fade_in_color, fade_out_color, mu);
