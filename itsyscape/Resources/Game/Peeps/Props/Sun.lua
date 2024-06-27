@@ -29,7 +29,8 @@ function Sun:getPropState()
 	local sky = mapScript and mapScript:getBehavior(SkyBehavior)
 
 	return {
-		color = { sky.sunColor.r, sky.sunColor.g, sky.sunColor.b, sky.sunColor.a * sky.sunAlpha },
+		color = sky and { sky.sunColor.r, sky.sunColor.g, sky.sunColor.b, sky.sunColor.a * sky.sunAlpha },
+		skyColor = sky and { sky.currentSkyColor.r, sky.currentSkyColor.g, sky.currentSkyColor.b, sky.currentSkyColor.a },
 		normal = sky and { sky.sunNormal:get() }
 	}
 end

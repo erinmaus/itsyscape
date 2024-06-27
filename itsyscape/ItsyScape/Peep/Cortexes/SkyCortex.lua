@@ -100,6 +100,22 @@ function SkyCortex:getSunNormal()
 	return Vector(x, y, z):getNormal()
 end
 
+function SkyCortex:getSkyColorIndexDelta(numColors)
+	local seconds = socket.gettime() % SkyCortex.DAY_IN_SECONDS
+
+	local width = 1 / numColors
+	local delta = ((seconds / SkyCortex.DAY_IN_SECONDS) % width) / width
+
+	local mu = math.clamp(math.sin(delta * (math.pi / 2)) * 5)
+	local currentIndex = math.floor(seconds / (SkyCortex.DAY_IN_SECONDS / numColors)) + 1
+	local nextIndex = currentIndex + 1
+	if nextIndex > numColors then
+		nextIndex = 1
+	end
+
+	return currentIndex, nextIndex, mu
+end
+
 function SkyCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local finished = {}
@@ -183,6 +199,71 @@ function SkyCortex:update(delta)
 				sky.sunPosition = position
 
 				Utility.Peep.setPosition(sun, position)
+			end
+
+			do
+				local skyColors = {
+					sky.dawnSkyColor,
+					sky.dawnSkyColor,
+					sky.daySkyColor,
+					sky.daySkyColor,
+					sky.daySkyColor,
+					sky.duskSkyColor,
+					sky.nightSkyColor,
+					sky.nightSkyColor,
+					sky.nightSkyColor
+				}
+
+				local ambientColors = {
+					sky.dawnAmbientColor,
+					sky.dawnAmbientColor,
+					sky.dayAmbientColor,
+					sky.dayAmbientColor,
+					sky.dayAmbientColor,
+					sky.duskAmbientColor,
+					sky.nightAmbientColor,
+					sky.nightAmbientColor,
+					sky.nightAmbientColor
+				}
+
+				local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(#skyColors)
+
+				local skyColor = skyColors[currentIndex]:lerp(skyColors[nextIndex], delta)
+				local ambientColor = ambientColors[currentIndex]:lerp(ambientColors[nextIndex], delta)
+
+				sky.currentSkyColor = skyColor
+				sky.currentAmbientColor = ambientColor
+			end
+
+			local fog = self:getDirector():probe(
+				peep:getLayerName(),
+				Probe.layer(baseLayer),
+				Probe.namedMapObject("Light_Fog"),
+				Probe.resource("Prop", "Fog_Default"))[1]
+			if fog then
+				fog:setColor(sky.currentSkyColor)
+			end
+
+			local ambient = self:getDirector():probe(
+				peep:getLayerName(),
+				Probe.layer(baseLayer),
+				Probe.namedMapObject("Light_Ambient"),
+				Probe.resource("Prop", "AmbientLight_Default"))[1]
+			if ambient then
+				ambient:setColor(sky.currentAmbientColor)
+				ambient:setAmbience(sky.currentAmbientColor.a)
+			end
+
+			local skyAmbientLight = self:getDirector():probe(
+				peep:getLayerName(),
+				Probe.layer(layer),
+				Probe.resource("Prop", "AmbientLight_Default"))[1]
+			
+			if not skyAmbientLight then
+				Utility.spawnPropAtPosition(peep, "AmbientLight_Default", 0, 0, 0)
+			else
+				skyAmbientLight:setColor(sky.currentAmbientColor)
+				skyAmbientLight:setAmbience(sky.currentAmbientColor.a)
 			end
 		end
 	end

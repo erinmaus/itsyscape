@@ -731,7 +731,7 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 	return glm::slerp(previous_rotation, current_rotation, delta);
 }
 
-void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const glm::mat4& view, float delta)
+void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const glm::quat& self_rotation, const glm::mat4& view, float delta)
 {
 	vertices.clear();
 
@@ -746,7 +746,7 @@ void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const g
 
 	for (auto& particle: particles)
 	{
-		push_particle_quad(particle, inverse_rotation);
+		push_particle_quad(particle, inverse_rotation, self_rotation);
 	}
 
 	if (mesh)
@@ -771,7 +771,7 @@ void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const g
 	}
 }
 
-void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, glm::quat rotation)
+void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, const glm::quat& inverse_rotation, const glm::quat& self_rotation)
 {
 	for (auto& template_vertex: quad)
 	{
@@ -782,11 +782,11 @@ void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, glm::quat 
 			template_vertex.position.z
 		);
 		vertex.position = glm::rotate(
-			rotation * glm::angleAxis(p.rotation, glm::vec3(0.0f, 0.0f, 1.0f)),
+			inverse_rotation * glm::angleAxis(p.rotation, glm::vec3(0.0f, 0.0f, 1.0f)),
 			vertex.position
 		);
 
-		vertex.normal = glm::normalize(p.normal);
+		vertex.normal = glm::rotate(self_rotation, glm::normalize(p.normal));
 		vertex.position += p.position;
 		vertex.color = p.color;
 
@@ -1018,8 +1018,10 @@ void nbunny::ParticleSceneNode::frame(float delta, float time_delta)
 
 void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 {
+	auto self_rotation = get_global_rotation(delta);
 	build(
-		glm::conjugate(renderer.get_camera().get_rotation() * get_global_rotation(delta)),
+		glm::conjugate(renderer.get_camera().get_rotation() * self_rotation),
+		self_rotation,
 		renderer.get_camera().get_view(),
 		delta);
 
