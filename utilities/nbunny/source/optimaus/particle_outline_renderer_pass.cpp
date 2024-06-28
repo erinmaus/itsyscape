@@ -128,7 +128,7 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
 		graphics->setColorMask(disabledMask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);	
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());	
 		renderer->draw_node(L, *scene_node, delta);
 
 		graphics->setColorMask(enabledMask);
