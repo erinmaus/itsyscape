@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Sun_Default/View.lua
+-- Resources/Game/Props/Moon_Default/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,23 +11,22 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
-local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
+local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local Sun = Class(PropView)
-Sun.MIN_PARTICLE_COUNT   = 1
-Sun.MAX_PARTICLE_COUNT   = 3
+local Moon = Class(PropView)
 
-Sun.PARTICLE_SYSTEM = {
-	texture = "Resources/Game/Props/Sun_Default/Particle.png",
+Moon.PARTICLE_SYSTEM = {
+	texture = "Resources/Game/Props/Moon_Default/Particle.png",
 	columns = 4,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 4 },
+			radius = { 3 },
 			speed = { 1, 2 },
 			zRange = { 0, 0 },
 			acceleration = { 0, 0 }
@@ -61,7 +60,7 @@ Sun.PARTICLE_SYSTEM = {
 		{
 			type = "FadeInOutPath",
 			fadeInPercent = { 0.3 },
-			fadeOutPercent = { 0.7 },
+			fadeOutPercent = { 0.4 },
 			tween = { 'sineEaseOut' }
 		},
 		{
@@ -72,70 +71,76 @@ Sun.PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 10, 20 },
+		count = { 1, 3 },
 		delay = { 1 / 30 },
 		duration = { math.huge }
 	}
 }
 
-function Sun:load()
+function Moon:load()
 	PropView.load(self)
 
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	self.sun = DecorationSceneNode()
-	self.sun:setParent(root)
+	self.moonExterior = DecorationSceneNode()
+	self.moonExterior:setParent(root)
 
-	self.particles = ParticleSceneNode()
-	self.particles:initParticleSystemFromDef(Sun.PARTICLE_SYSTEM, resources)
-	self.particles:setParent(root)
+	self.moonInterior = DecorationSceneNode()
+	self.moonInterior:setParent(root)
 
 	self.light = DirectionalLightSceneNode()
-	self.light:setParent(root)
+	--self.light:setParent(root)
+
+	self.particles = ParticleSceneNode()
+	self.particles:initParticleSystemFromDef(Moon.PARTICLE_SYSTEM, resources)
+	self.particles:setParent(root)
+
+	resources:queue(
+		TextureResource,
+		"Resources/Game/Props/Moon_Default/Texture.png",
+		function(texture)
+			self.exteriorTexture = texture
+		end)
 
 	resources:queue(
 		StaticMeshResource,
-		"Resources/Game/Props/Sun_Default/Model.lstatic",
+		"Resources/Game/Props/Moon_Default/Model.lstatic",
+		function(model)
+			self.moonExterior:getMaterial():setTextures(self.exteriorTexture)
+			self.moonExterior:getTransform():setLocalScale(Vector(5))
+			self.moonExterior:fromGroup(model:getResource(), "Moon")
+		end)
+
+	resources:queue(
+		StaticMeshResource,
+		"Resources/Game/Props/Moon_Default/Model.lstatic",
 		function(model)
 			local whiteTexture = self:getGameView():getWhiteTexture()
+			self.moonInterior:getMaterial():setTextures(whiteTexture)
+			self.moonInterior:getTransform():setLocalScale(Vector(3.5))
+			self.moonInterior:fromGroup(model:getResource(), "Moon")
 
-			do
-				local material = self.sun:getMaterial()
-				material:setTextures(whiteTexture)
-				material:setIsFullLit(true)
-				self:_updateColor()
-
-				self.sun:getTransform():setLocalScale(Vector(4))
-
-				self.sun:fromGroup(model:getResource(), "Singularity")
-			end
+			self:_updateColor()
 		end)
 end
 
-function Sun:_updateColor()
+function Moon:_updateColor()
 	local state = self:getProp():getState()
 	if state.color then
 		local color = Color(unpack(state.color))
 
-		if self.sun then
-			self.sun:getMaterial():setColor(color)
+		if self.moonInterior then
+			self.moonInterior:getMaterial():setColor(color)
 		end
 
 		if self.particles then
 			self.particles:getMaterial():setColor(color)
 		end
 	end
-
-	if state.skyColor then
-		local skyColor = Color(unpack(state.skyColor))
-
-		local _, layer = self:getProp():getPosition()
-		self:getGameView():setSkyboxColor(layer, skyColor)
-	end
 end
 
-function Sun:_updateLight()
+function Moon:_updateLight()
 	local state = self:getProp():getState()
 	if state.normal then
 		local normal = -Vector(unpack(state.normal))
@@ -143,15 +148,15 @@ function Sun:_updateLight()
 	end
 end
 
-function Sun:getIsStatic()
+function Moon:getIsStatic()
 	return false
 end
 
-function Sun:tick()
+function Moon:tick()
 	PropView.tick(self)
 
 	self:_updateColor()
 	self:_updateLight()
 end
 
-return Sun
+return Moon

@@ -18,10 +18,19 @@ do
 end
 
 do
-	local Cloud = ItsyScape.Resource.Prop "Sun_Default"
+	local Sun = ItsyScape.Resource.Prop "Sun_Default"
 
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.Sun",
-		Resource = Cloud
+		Resource = Sun
+	}
+end
+
+do
+	local Moon = ItsyScape.Resource.Prop "Moon_Default"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Resource = Moon
 	}
 end

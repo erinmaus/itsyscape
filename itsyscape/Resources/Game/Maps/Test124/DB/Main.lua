@@ -17,20 +17,20 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
-M["Cloud"] = ItsyScape.Resource.MapObject.Unique()
+M["Moon"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 64,
 		PositionY = 4,
 		PositionZ = 64,
-		Name = "Cloud",
+		Name = "Moon",
 		Map = M._MAP,
-		Resource = M["Cloud"]
+		Resource = M["Moon"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Cloud_Default",
-		MapObject = M["Cloud"]
+		Prop = ItsyScape.Resource.Prop "Moon_Default",
+		MapObject = M["Moon"]
 	}
 end
 
