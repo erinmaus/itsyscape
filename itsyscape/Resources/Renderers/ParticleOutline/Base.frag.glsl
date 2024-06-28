@@ -33,5 +33,9 @@ void effect()
 		discard;
 	}
 
-	love_Canvases[0] = vec4(1.0, 1.0, 1.0, 1.0);
+#ifdef SCAPE_PARTICLE_OUTLINE_PASS_ZERO_ALPHA
+	diffuse.a = 0.0;
+#endif
+
+	love_Canvases[0] = vec4(1.0, 1.0, 1.0, diffuse.a);
 }
