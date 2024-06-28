@@ -33,9 +33,11 @@ void effect()
 		discard;
 	}
 
+	float mask = diffuse.a;
+
 #ifdef SCAPE_PARTICLE_OUTLINE_PASS_ZERO_ALPHA
 	diffuse.a = 0.0;
 #endif
 
-	love_Canvases[0] = vec4(1.0, 1.0, 1.0, diffuse.a);
+	love_Canvases[0] = vec4(mask, 1.0, 1.0, diffuse.a);
 }

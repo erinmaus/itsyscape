@@ -114,7 +114,7 @@ function Cloud:_getOutColor()
 	return Color(unpack(state.color or {}))
 end
 
-function Cloud:updateParticle(cloudInfo, wind, inColor, outColor)
+function Cloud:updateParticle(cloudInfo, wind, inColor, outColor, alpha)
 	local cloud = self.clouds[cloudInfo.id] or { node = ParticleSceneNode(), ready = false }
 	self.clouds[cloudInfo.id] = cloud
 
@@ -163,6 +163,9 @@ function Cloud:updateParticle(cloudInfo, wind, inColor, outColor)
 		cloud.node:setParent(self:getRoot())
 	end
 
+	local adjustedAlpha = math.clamp(math.sin(alpha * math.pi) * 2.5)
+	cloud.node:getMaterial():setColor(Color(1, 1, 1, adjustedAlpha))
+
 	cloud.visited = true
 end
 
@@ -183,7 +186,7 @@ function Cloud:tick()
 	end
 
 	for _, cloudInfo in ipairs(state.clouds or {}) do
-		self:updateParticle(cloudInfo, self:_getWind(), self:_getInColor(), self:_getOutColor())
+		self:updateParticle(cloudInfo, self:_getWind(), self:_getInColor(), self:_getOutColor(), state.alpha or 0.5)
 	end
 
 	for id, cloudInfo in pairs(self.clouds) do

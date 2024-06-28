@@ -147,7 +147,7 @@ function SkyCortex:update(delta)
 				for i = #currentClouds + 1, minClouds do
 					local x, z
 					if #currentClouds == 0 then
-						x = love.math.random(-map:getWidth() * map:getCellSize(), map:getWidth() * map:getCellSize())
+						x = love.math.random(1, map:getWidth() * map:getCellSize())
 						z = love.math.random(1, map:getHeight() * map:getCellSize())
 					else
 						local direction = -sky.windDirection
@@ -157,7 +157,7 @@ function SkyCortex:update(delta)
 							local centerOffset = math.sqrt(math.max(map:getWidth(), map:getHeight()) * map:getCellSize() / 2)
 							x = centerX + math.sign(direction.x) * (centerOffset + love.math.random(map:getWidth() * map:getCellSize() / 2))
 						else
-							x = love.math.random(1, map:getWidth() * 2)
+							x = love.math.random(1, map:getWidth() * map:getCellSize())
 						end
 
 						if math.abs(direction.z) > 0 then
@@ -165,7 +165,7 @@ function SkyCortex:update(delta)
 							local centerOffset = math.sqrt(math.max(map:getWidth(), map:getHeight()) * map:getCellSize() / 2)
 							z = centerZ + math.sign(direction.z) * (centerOffset + love.math.random(map:getWidth() * map:getCellSize() / 2))
 						else
-							z = love.math.random(1, map:getHeight() * 2)
+							z = love.math.random(1, map:getHeight() * map:getCellSize())
 						end
 					end
 

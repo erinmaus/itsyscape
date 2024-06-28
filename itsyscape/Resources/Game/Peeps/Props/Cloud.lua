@@ -80,11 +80,13 @@ end
 function Cloud:getPropState()
 	local mapScript = Utility.Peep.getMapScript(self)
 	local sky = mapScript and mapScript:getBehavior(SkyBehavior)
+	local cloud = self:getBehavior(CloudBehavior)
 
 	return {
 		wind = sky and { (sky.windDirection * sky.windSpeed):get() },
 		sun = sky and { sky.sunPosition:get() },
 		color = { 1, 1, 1, 1 },
+		alpha = cloud and cloud.alpha or 0.5,
 		clouds = self.cloudState
 	}
 end
