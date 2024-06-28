@@ -24,6 +24,10 @@ varying vec4 frag_Color;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
+#ifdef SCAPE_PARTICLE_OUTLINE_PASS_CUSTOM_ALPHA
+float getParticleOutlinePassAlpha();
+#endif
+
 void effect()
 {
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
@@ -35,8 +39,8 @@ void effect()
 
 	float mask = diffuse.a;
 
-#ifdef SCAPE_PARTICLE_OUTLINE_PASS_ZERO_ALPHA
-	diffuse.a = 0.0;
+#ifdef SCAPE_PARTICLE_OUTLINE_PASS_CUSTOM_ALPHA
+	diffuse.a = getParticleOutlinePassAlpha();
 #endif
 
 	love_Canvases[0] = vec4(mask, 1.0, 1.0, diffuse.a);

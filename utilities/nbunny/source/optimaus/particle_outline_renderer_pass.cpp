@@ -28,6 +28,11 @@ void nbunny::ParticleOutlineRendererPass::walk_all_nodes(SceneNode& node, float 
 	
 		if (visible_scene_node->get_type() == ParticleSceneNode::type_pointer)
 		{
+			if (material.get_outline_threshold() <= -1.0f)
+			{
+				continue;
+			}
+
 			if (material.get_is_translucent() || material.get_is_full_lit())
 			{
             	particle_scene_nodes.push_back(visible_scene_node);

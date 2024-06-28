@@ -21,4 +21,9 @@ void getRimLightProperties(vec3 position, inout vec3 eye, out float exponent, ou
 	multiplier = 1.0;
 }
 
-#pragma option SCAPE_PARTICLE_OUTLINE_PASS_ZERO_ALPHA
+float getParticleOutlinePassAlpha()
+{
+	return 0.05;
+}
+
+#pragma option SCAPE_PARTICLE_OUTLINE_PASS_CUSTOM_ALPHA

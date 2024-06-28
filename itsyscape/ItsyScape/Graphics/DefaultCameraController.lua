@@ -64,7 +64,7 @@ function DefaultCameraController:new(...)
 	self.isCameraVerticalRotationFlipped = _CONF.camera and _CONF.camera.isVerticalRotationFlipped or false
 	self.cameraVerticalRotationOffsetRemainder = 0
 	self.cameraHorizontalRotationOffset = _CONF.camera and _CONF.camera.horizontalRotationOffset or 0
-	self.cameraOffset = Vector(0)
+	self.cameraOffset = Vector(0, 10, 0)
 
 	self:getCamera():setHorizontalRotation(
 		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset)

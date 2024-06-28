@@ -22,6 +22,23 @@ do
 	}
 end
 
+M["Stars"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 64,
+		PositionY = 0,
+		PositionZ = 64,
+		Name = "Stars",
+		Map = M._MAP,
+		Resource = M["Stars"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Stars_Default",
+		MapObject = M["Stars"]
+	}
+end
+
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -516,16 +516,20 @@ public:
 	float speed = 1.0f;
 	float min_alpha = 0.0f;
 	float max_alpha = 1.0f;
+	bool multiply = true;
 
 	void from_definition(lua_State* L)
 	{
 		auto table = sol::stack::get<sol::table>(L, -1);
 
-		speed = table.get_or("speed", 1.0f);
+		speed = table.get_or("speed", sol::table(L, sol::create)).get_or(1, 1.0f);
 
 		auto a = table.get_or("alpha", sol::table(L, sol::create));
 		min_alpha = a.get_or(1, 0.0f);
 		max_alpha = a.get_or(2, 1.0f);
+
+		auto m = table.get_or("multiply", sol::table(L, sol::create));
+		multiply = m.get_or(1, true);
 	}
 
 	void update(nbunny::Particle& p, float delta)
@@ -533,7 +537,14 @@ public:
 		auto alpha = std::abs(std::sin(p.age * speed + p.random * LOVE_M_PI_2));
 		alpha = alpha * (max_alpha - min_alpha) + min_alpha;
 
-		p.color.a *= alpha;
+		if (multiply)
+		{
+			p.color.a *= alpha;
+		}
+		else
+		{
+			p.color.a = alpha;
+		}
 	}
 };
 
