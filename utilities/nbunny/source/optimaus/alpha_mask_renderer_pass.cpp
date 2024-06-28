@@ -117,7 +117,6 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 
 		graphics->setColorMask(enabledMask);
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));

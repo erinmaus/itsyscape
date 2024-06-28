@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include "modules/graphics/Graphics.h"
+#include "modules/graphics/opengl/OpenGL.h"
 #include "modules/math/Transform.h"
 #include "nbunny/optimaus/deferred_renderer_pass.hpp"
 #include "nbunny/optimaus/particle.hpp"
@@ -23,13 +24,16 @@ void nbunny::ParticleOutlineRendererPass::walk_all_nodes(SceneNode& node, float 
 	other_scene_nodes.clear();
 	for (auto& visible_scene_node: visible_scene_nodes)
 	{
+		auto material = visible_scene_node->get_material();
+	
 		if (visible_scene_node->get_type() == ParticleSceneNode::type_pointer)
 		{
-            particle_scene_nodes.push_back(visible_scene_node);
-			continue;
+			if (material.get_is_translucent() || material.get_is_full_lit())
+			{
+            	particle_scene_nodes.push_back(visible_scene_node);
+				continue;
+			}
 		}
-
-		auto material = visible_scene_node->get_material();
 
 		if (material.get_is_z_write_disabled())
 		{
@@ -81,6 +85,9 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
 
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+	glad::glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
 	love::graphics::Graphics::ColorMask enabledMask;
 	enabledMask.r = true;
 	enabledMask.g = true;
@@ -126,7 +133,6 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 
 		graphics->setColorMask(enabledMask);
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
@@ -136,6 +142,13 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 
 	graphics->setColorMask(enabledMask);
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
+
+	// We want to ensure all draws have been submitted before restoring
+	// the blend state.
+	graphics->flushStreamDraws();
+
+	// Restore LOVE's BLEND_ADD.
+	glad::glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_ONE, GL_ONE);
 }
 
 void nbunny::ParticleOutlineRendererPass::copy_depth_buffer()
