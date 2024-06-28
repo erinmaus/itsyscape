@@ -30,7 +30,7 @@ do
 	local Moon = ItsyScape.Resource.Prop "Moon_Default"
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.StaticProp",
+		Value = "Resources.Game.Peeps.Props.Moon",
 		Resource = Moon
 	}
 end

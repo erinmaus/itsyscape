@@ -1760,13 +1760,21 @@ function GameView:update(delta)
 	end
 end
 
-function GameView:draw(delta)
+function GameView:draw(delta, width, height)
 	local skybox = next(self.skyboxes)
 	if skybox then
 		local info = self.skyboxes[skybox]
 
 		self.renderer:setClearColor(info.color)
-		self.renderer:draw(skybox, delta)
+		self.renderer:draw(skybox, delta, width, height, {
+			["scape_MinOutlineThickness"] = 7,
+			["scape_MaxOutlineThickness"] = 7,
+			["scape_NearOutlineDistance"] = 0,
+			["scape_FarOutlineDistance"] = 1000,
+			["scape_MinOutlineDepthAlpha"] = 1,
+			["scape_MaxOutlineDepthAlpha"] = 1,
+			["scape_OutlineFadeDepth"] = 1000
+		})
 		self.renderer:present(false)
 	end
 

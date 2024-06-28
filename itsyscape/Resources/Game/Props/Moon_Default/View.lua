@@ -11,7 +11,6 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
-local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
@@ -28,7 +27,6 @@ Moon.PARTICLE_SYSTEM = {
 			type = "RadialEmitter",
 			radius = { 3 },
 			speed = { 1, 2 },
-			zRange = { 0, 0 },
 			acceleration = { 0, 0 }
 		},
 		{
@@ -89,9 +87,6 @@ function Moon:load()
 	self.moonInterior = DecorationSceneNode()
 	self.moonInterior:setParent(root)
 
-	self.light = DirectionalLightSceneNode()
-	--self.light:setParent(root)
-
 	self.particles = ParticleSceneNode()
 	self.particles:initParticleSystemFromDef(Moon.PARTICLE_SYSTEM, resources)
 	self.particles:setParent(root)
@@ -130,6 +125,10 @@ function Moon:_updateColor()
 	if state.color then
 		local color = Color(unpack(state.color))
 
+		if self.moonExterior then
+			self.moonExterior:getMaterial():setColor(Color(1, 1, 1, color.a))
+		end
+
 		if self.moonInterior then
 			self.moonInterior:getMaterial():setColor(color)
 		end
@@ -137,14 +136,6 @@ function Moon:_updateColor()
 		if self.particles then
 			self.particles:getMaterial():setColor(color)
 		end
-	end
-end
-
-function Moon:_updateLight()
-	local state = self:getProp():getState()
-	if state.normal then
-		local normal = -Vector(unpack(state.normal))
-		self.light:setDirection(normal)
 	end
 end
 
@@ -156,7 +147,6 @@ function Moon:tick()
 	PropView.tick(self)
 
 	self:_updateColor()
-	self:_updateLight()
 end
 
 return Moon

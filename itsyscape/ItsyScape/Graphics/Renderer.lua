@@ -193,7 +193,9 @@ function Renderer:getCurrentPass()
 	return self.passesByID[passID]
 end
 
-function Renderer:_drawOutlines(width, height)
+function Renderer:_drawOutlines(width, height, uniforms)
+	uniforms = uniforms or {}
+
 	self._depthStep = self._depthStep or 0
 	if love.keyboard.isDown("k") then
 		self._depthStep = self._depthStep + 0.1 * love.timer.getDelta()
@@ -215,7 +217,7 @@ function Renderer:_drawOutlines(width, height)
 	-- self.outlinePostProcessShader:send("scape_OutlineThickness", 1)
 	self.outlinePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 	self.outlinePostProcessShader:send("scape_NormalTexture", self.finalDeferredPass:getGBuffer():getCanvas(3))
-	self.outlinePostProcessShader:send("scape_DepthStep", self._depthStep)
+	self.outlinePostProcessShader:send("scape_DepthStep", uniforms["scape_DepthStep"] or self._depthStep)
 	--self.outlinePostProcessShader:send("scape_AlphaMaskTexture", self.alphaMaskPass:getABuffer():getCanvas(1))
 	
 	love.graphics.push("all")
@@ -389,13 +391,13 @@ function Renderer:_drawOutlines(width, height)
 	self.composePostProcessShader:send("scape_OutlineTexture", self.outlineBuffer:getCanvas(2))
 	self.composePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.composePostProcessShader:send("scape_Far", self.camera:getFar())
-	self.composePostProcessShader:send("scape_MinOutlineThickness", 3)
-	self.composePostProcessShader:send("scape_MaxOutlineThickness", 7)
-	self.composePostProcessShader:send("scape_NearOutlineDistance", 20)
-	self.composePostProcessShader:send("scape_FarOutlineDistance", 32)
-	self.composePostProcessShader:send("scape_MinOutlineDepthAlpha", 0.0)
-	self.composePostProcessShader:send("scape_MaxOutlineDepthAlpha", 1.0)
-	self.composePostProcessShader:send("scape_OutlineFadeDepth", 20)
+	self.composePostProcessShader:send("scape_MinOutlineThickness", uniforms["scape_MinOutlineThickness"] or 3)
+	self.composePostProcessShader:send("scape_MaxOutlineThickness", uniforms["scape_MaxOutlineThickness"] or 7)
+	self.composePostProcessShader:send("scape_NearOutlineDistance", uniforms["scape_NearOutlineDistance"] or 20)
+	self.composePostProcessShader:send("scape_FarOutlineDistance", uniforms["scape_FarOutlineDistance"] or 32)
+	self.composePostProcessShader:send("scape_MinOutlineDepthAlpha", uniforms["scape_MinOutlineDepthAlpha"] or 0.0)
+	self.composePostProcessShader:send("scape_MaxOutlineDepthAlpha", uniforms["scape_MaxOutlineDepthAlpha"] or 1.0)
+	self.composePostProcessShader:send("scape_OutlineFadeDepth", uniforms["scape_OutlineFadeDepth"] or 20)
 	self.composePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.draw(currentOutlineBuffer)
@@ -431,7 +433,7 @@ function Renderer:_drawOutlines(width, height)
 	love.graphics.pop()
 end
 
-function Renderer:draw(scene, delta, width, height)
+function Renderer:draw(scene, delta, width, height, uniforms)
 	if not width or not height then
 		width, height = love.window.getMode()
 	end
@@ -461,7 +463,7 @@ function Renderer:draw(scene, delta, width, height)
 	self._renderer:getCamera():rotate(rotation:get())
 	self._renderer:getCamera():updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
 	self._renderer:draw(scene:getHandle(), delta, width, height)
-	self:_drawOutlines(width, height)
+	self:_drawOutlines(width, height, uniforms)
 end
 
 function Renderer:getOutputBuffer()

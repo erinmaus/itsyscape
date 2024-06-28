@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local socket = require "socket"
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
@@ -83,6 +84,13 @@ function SkyCortex:getSunAlpha()
 	else
 		return math.min(math.sin(delta / 0.5 * math.pi) * 5, 1)
 	end
+end
+
+function SkyCortex:getMoonRotation()
+	local seconds = socket.gettime() % SkyCortex.DAY_IN_SECONDS
+	local delta = seconds / (SkyCortex.DAY_IN_SECONDS / 2)
+
+	return Quaternion.fromAxisAngle(Vector.UNIT_Y, delta * math.pi * 2):getNormal()
 end
 
 function SkyCortex:getSunNormal()
@@ -186,19 +194,39 @@ function SkyCortex:update(delta)
 				Probe.layer(layer),
 				Probe.resource("Prop", sky.sunPropType))[1]
 
-			if not sun then
-				sun = Utility.spawnPropAtPosition(peep, sky.sunPropType, 0, 0, 0)
+			local moon = self:getDirector():probe(
+				peep:getLayerName(),
+				Probe.layer(layer),
+				Probe.resource("Prop", sky.moonPropType))[1]
+
+			if not sun or not moon then
+				if not sun then
+					Utility.spawnPropAtPosition(peep, sky.sunPropType, 0, 0, 0)
+				end
+
+				if not moon then
+					Utility.spawnPropAtPosition(peep, sky.moonPropType, 0, 0, 0)
+				end
 			else
 				local normal = self:getSunNormal()
 				local alpha = self:getSunAlpha()
+				local rotation = self:getMoonRotation()
 
 				sky.sunNormal = normal
 				sky.sunAlpha = alpha
+				sky.moonNormal = -normal
+				sky.moonAlpha = 1.0 - alpha
 
-				local position = normal * sky.sunDistance + Vector(map:getWidth() * map:getCellSize() / 2, 0, 0)
-				sky.sunPosition = position
+				local sunPosition = normal * sky.sunDistance + Vector(map:getWidth() * map:getCellSize() / 2, 0, 0)
+				local moonPosition = -normal * sky.moonDistance + Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize())
+				sky.sunPosition = sunPosition
+				sky.moonPosition = moonPosition
 
-				Utility.Peep.setPosition(sun, position)
+				local moonRotation = (sky.moonRotation * rotation):getNormal()
+
+				Utility.Peep.setPosition(sun, sunPosition)
+				Utility.Peep.setPosition(moon, moonPosition)
+				Utility.Peep.setRotation(moon, moonRotation)
 			end
 
 			do
