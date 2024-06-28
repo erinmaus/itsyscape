@@ -20,5 +20,3 @@ void getRimLightProperties(vec3 position, inout vec3 eye, out float exponent, ou
 	exponent = 1.0;
 	multiplier = 1.0;
 }
-
-#pragma option SCAPE_ENABLE_RIM_LIGHTING
