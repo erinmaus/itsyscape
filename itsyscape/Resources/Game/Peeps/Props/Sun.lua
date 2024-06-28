@@ -31,7 +31,7 @@ function Sun:getPropState()
 	return {
 		color = sky and { sky.sunColor.r, sky.sunColor.g, sky.sunColor.b, sky.sunColor.a * sky.sunAlpha },
 		skyColor = sky and { sky.currentSkyColor.r, sky.currentSkyColor.g, sky.currentSkyColor.b, sky.currentSkyColor.a },
-		normal = sky and { (sky.sunColor.a <= 0 and sky.sunNormal or -sky.sunNormal):get() }
+		normal = sky and { (sky.sunColor.a <= 0 and sky.sunNormal or sky.sunNormal):get() }
 	}
 end
 

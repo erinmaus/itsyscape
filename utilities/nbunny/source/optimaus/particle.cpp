@@ -140,7 +140,7 @@ public:
 
 		if (set_normal)
 		{
-			p.normal = normal;
+			p.normal = -normal;
 		}
 	}
 };
@@ -197,9 +197,16 @@ public:
 
 	void emit(nbunny::Particle& p)
 	{
-		auto rng = love::math::Math::instance.getRandomGenerator();
-		float lifetime = rng->random() * (max_lifetime - min_lifetime) + min_lifetime;
-		p.lifetime = lifetime;
+		if (max_lifetime == min_lifetime || min_lifetime == std::numeric_limits<float>::infinity())
+		{
+			p.lifetime = min_lifetime;
+		}
+		else
+		{
+			auto rng = love::math::Math::instance.getRandomGenerator();
+			float lifetime = rng->random() * (max_lifetime - min_lifetime) + min_lifetime;
+			p.lifetime = lifetime;
+		}
 	}
 };
 
@@ -275,6 +282,29 @@ public:
 	}
 };
 
+class RandomTextureIndexEmitter : public nbunny::ParticleEmitter
+{
+public:
+	int min_texture_index = 1, max_texture_index = 1;
+
+	void from_definition(lua_State* L)
+	{
+		auto table = sol::stack::get<sol::table>(L, -1);
+
+		auto t = table.get_or("textures", sol::table(L, sol::create));
+		min_texture_index = t.get_or(1, 1);
+		max_texture_index = t.get_or(2, min_texture_index);
+	}
+
+	void emit(nbunny::Particle& p)
+	{
+		auto rng = love::math::Math::instance.getRandomGenerator();
+		int index = rng->rand() * (max_texture_index - min_texture_index) + min_texture_index;
+
+		p.texture_index = index - 1;
+	}
+};
+
 bool nbunny::ParticleEmissionStrategy::running() const
 {
 	return current_time < duration;
@@ -282,6 +312,11 @@ bool nbunny::ParticleEmissionStrategy::running() const
 
 int nbunny::ParticleEmissionStrategy::roll() const
 {
+	if (min_count == max_count)
+	{
+		return min_count;
+	}
+
 	auto rng = love::math::Math::instance.getRandomGenerator();
 	return rng->rand() % (max_count - min_count) + min_count;
 }
@@ -906,6 +941,10 @@ void nbunny::ParticleSceneNode::set_emitters(lua_State* L, sol::table& emitter_d
 		else if (type == "RandomScaleEmitter")
 		{
 			emitter = std::make_shared<RandomScaleEmitter>();
+		}
+		else if (type == "RandomTextureIndexEmitter")
+		{
+			emitter = std::make_shared<RandomTextureIndexEmitter>();
 		}
 
 		if (emitter)
