@@ -13,6 +13,8 @@ local SkyBehavior = Behavior("Cloud")
 
 function SkyBehavior:new()
 	Behavior.Type.new(self)
+
+	self.alpha = 1
 end
 
 return SkyBehavior

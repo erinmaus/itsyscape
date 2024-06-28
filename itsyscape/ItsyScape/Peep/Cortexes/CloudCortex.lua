@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local CloudBehavior = require "ItsyScape.Peep.Behaviors.CloudBehavior"
@@ -38,26 +39,21 @@ function CloudCortex:update(delta)
 		if sky and movement then
 			movement.velocity = sky.windDirection * sky.windSpeed
 
+
 			local position = Utility.Peep.getPosition(peep)
-			local isOutOfBounds = false
-			if math.abs(sky.windDirection.x) > 0 then
-				if sky.windDirection.x > 0 then
-					isOutOfBounds = isOutOfBounds or position.x > (map:getWidth() + map:getWidth() / 2) * map:getCellSize()
-				else
-					isOutOfBounds = isOutOfBounds or position.x < -(map:getWidth() / 2 * map:getCellSize())
-				end
+			local delta = position / Vector(
+				map:getWidth() * map:getCellSize(),
+				1,
+				map:getHeight() * map:getCellSize())
+			local clampedDelta = delta:clamp(Vector.ZERO, Vector.ONE)
+			local alpha = math.min(clampedDelta.x, clampedDelta.y)
+
+			local cloud = peep:getBehavior(CloudBehavior)
+			if cloud then
+				cloud.alpha = alpha
 			end
 
-			if math.abs(sky.windDirection.z) > 0 then
-				if sky.windDirection.z > 0 then
-					isOutOfBounds = isOutOfBounds or position.z > (map:getHeigt() + map:getHeigt() / 2) * map:getCellSize()
-				else
-					isOutOfBounds = isOutOfBounds or position.z < -(map:getHeigt() / 2 * map:getCellSize())
-				end
-			end
-
-			if isOutOfBounds then
-				print(">>> cloud out of bounds", position:get())
+			if delta.x > 1 or delta.x < 0 or delta.z > 1 or delta.z < 0 then
 				Utility.Peep.poof(peep)
 			end
 		end
