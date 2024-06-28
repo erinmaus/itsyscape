@@ -14,8 +14,6 @@ local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 
 local MoonDebrisRing = Class(PropView)
-MoonDebrisRing.MIN_PARTICLE_COUNT   = 1
-MoonDebrisRing.MAX_PARTICLE_COUNT   = 3
 
 MoonDebrisRing.PARTICLE_SYSTEM = {
 	texture = "Resources/Game/Props/MoonDebrisRing_Default/Particle.png",

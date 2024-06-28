@@ -43,3 +43,12 @@ do
 		Resource = MoonDebrisRing
 	}
 end
+
+do
+	local Stars = ItsyScape.Resource.Prop "Stars_Default"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.Stars",
+		Resource = Stars
+	}
+end

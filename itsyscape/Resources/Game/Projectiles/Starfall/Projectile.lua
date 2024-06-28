@@ -65,7 +65,7 @@ Starfall.STAR_PARTICLE_SYSTEM = {
 		},
 		{
 			type = "TwinklePath",
-			speed = math.pi
+			speed = { math.pi }
 		}
 	},
 
