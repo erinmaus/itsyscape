@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Behavior = require "ItsyScape.Peep.Behavior"
 local Color = require "ItsyScape.Graphics.Color"
@@ -22,6 +23,14 @@ function SkyBehavior:new()
 	self.sunPropType = "Sun_Default"
 	self.sunColor = Color(1, 0.4, 0.0, 1.0)
 	self.sunAlpha = 1.0
+
+	self.moonNormal = Vector()
+	self.moonDistance = 35
+	self.moonPosition = Vector()
+	self.moonPropType = "Moon_Default"
+	self.moonColor = Color.fromHexString("5fd3bc")
+	self.moonRotation = Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi / 4)
+	self.moonAlpha = 1.0
 
 	self.dawnSkyColor = Color.fromHexString("ff80b2")
 	self.daySkyColor = Color.fromHexString("87cdde")
