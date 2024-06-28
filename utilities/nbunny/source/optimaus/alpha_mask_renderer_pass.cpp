@@ -26,7 +26,7 @@ void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 	{
 		auto& material = visible_scene_node->get_material();
 
-		if (material.get_outline_threshold() <= 0.0 && (material.get_is_translucent() || material.get_is_full_lit()))
+		if (material.get_outline_threshold() <= -1.0 && (material.get_is_translucent() || material.get_is_full_lit()))
 		{
 			continue;
 		}
