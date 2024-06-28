@@ -776,7 +776,7 @@ void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const g
 		auto a_position = view_world_transform * glm::vec4(a.position, 1.0f);
 		auto b_position = view_world_transform * glm::vec4(b.position, 1.0f);
 
-		return a_position.z < b_position.z;
+		return a_position.z > b_position.z;
 	});
 
 	for (auto& particle: particles)

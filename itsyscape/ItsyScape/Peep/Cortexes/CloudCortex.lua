@@ -53,7 +53,11 @@ function CloudCortex:update(delta)
 				cloud.alpha = alpha
 			end
 
-			if delta.x > 1 or delta.x < 0 or delta.z > 1 or delta.z < 0 then
+			if (sky.windDirection.x > 0 and delta.x > 1) or
+			   (sky.windDirection.x < 0 and delta.x < 0) or
+			   (sky.windDirection.z > 0 and delta.z > 1) or
+			   (sky.windDirection.z < 0 and delta.z < 0)
+			then
 				Utility.Peep.poof(peep)
 			end
 		end
