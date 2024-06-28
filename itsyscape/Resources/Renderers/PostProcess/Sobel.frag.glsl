@@ -50,7 +50,7 @@ float getMinAlpha(Image image, vec2 textureCoordinate)
 	{
 		for (float y = -1.0; y <= 1; y += 1.0)
 		{
-			float alpha = Texel(image, textureCoordinate + vec2(x, y) * scape_TexelSize).r;
+			float alpha = Texel(image, textureCoordinate + vec2(x, y) * scape_TexelSize).a;
 			minAlpha = min(alpha, minAlpha);
 		}
 	}
@@ -66,10 +66,15 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		//discard;
 	}
 
-	alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).r;
+	alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).a;
 
 	float sobel = getDepthSobel(image, textureCoordinate);
 	float outline = step(0.5, sobel);
+
+	if (outline >= 1.0 && alpha == 0.0)
+	{
+		alpha = 1.0;
+	}
     
     return vec4(vec3(1.0 - outline), alpha);
 }

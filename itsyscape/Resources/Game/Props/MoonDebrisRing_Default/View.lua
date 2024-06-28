@@ -25,7 +25,7 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 28, 32 },
+			radius = { 64, 69 },
 			speed = { 0, 0 },
 			yRange = { 0, 1 / 32 },
 			acceleration = { 0, 0 },
@@ -37,7 +37,7 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 0.2, 0.4 }
+			scale = { 0.5, 0.75 }
 		},
 		{
 			type = "RandomRotationEmitter",
