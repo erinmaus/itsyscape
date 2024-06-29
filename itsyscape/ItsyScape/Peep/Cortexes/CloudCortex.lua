@@ -15,6 +15,7 @@ local CloudBehavior = require "ItsyScape.Peep.Behaviors.CloudBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SkyBehavior = require "ItsyScape.Peep.Behaviors.SkyBehavior"
+local SkyCortex = require "ItsyScape.Peep.Cortexes.SkyCortex"
 
 local CloudCortex = Class(Cortex)
 
@@ -37,8 +38,8 @@ function CloudCortex:update(delta)
 		local sky = mapScript and mapScript:getBehavior(SkyBehavior)
 
 		if sky and movement then
-			movement.velocity = sky.windDirection * sky.windSpeed
-
+			local multiplier = math.max((sky.stopOffsetSeconds - sky.startOffsetSeconds) / SkyCortex.OFFSET_TIME_DELTA_IN_SECONDS, 1)
+			movement.velocity = sky.windDirection * sky.windSpeed * multiplier
 
 			local position = Utility.Peep.getPosition(peep)
 			local delta = position / Vector(

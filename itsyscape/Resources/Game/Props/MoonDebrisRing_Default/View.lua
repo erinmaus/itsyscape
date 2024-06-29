@@ -80,7 +80,8 @@ end
 function MoonDebrisRing:tick()
 	PropView.tick(self)
 
-	local y = Quaternion.fromAxisAngle(Vector.UNIT_Y, love.timer.getTime() * (math.pi / 256))
+	local offset = self:getProp():getState().offset or 0
+	local y = Quaternion.fromAxisAngle(Vector.UNIT_Y, (love.timer.getTime() + offset) * (math.pi / 1024))
 	local z = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 3)
 
 	self:getRoot():getTransform():setLocalRotation((z * y):getNormal())

@@ -1767,8 +1767,8 @@ function GameView:draw(delta, width, height)
 
 		self.renderer:setClearColor(info.color)
 		self.renderer:draw(skybox, delta, width, height, {
-			["scape_MinOutlineThickness"] = 7,
-			["scape_MaxOutlineThickness"] = 7,
+			["scape_MinOutlineThickness"] = 3,
+			["scape_MaxOutlineThickness"] = 3,
 			["scape_NearOutlineDistance"] = 0,
 			["scape_FarOutlineDistance"] = 1000,
 			["scape_MinOutlineDepthAlpha"] = 1,
