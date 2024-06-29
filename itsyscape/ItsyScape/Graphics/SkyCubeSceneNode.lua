@@ -82,7 +82,7 @@ function SkyCubeSceneNode:new()
 	self:setBounds(-Vector.ONE, Vector.ONE)
 	self:getMaterial():setShader(SkyCubeSceneNode.SHADER)
 	self:getMaterial():setIsCullDisabled(true)
-	self:getMaterial():setIsZWriteDisabled(true)
+	self:getMaterial():setIsZWriteDisabled(false)
 	self:getMaterial():setIsFullLit(true)
 	self:getMaterial():setOutlineThreshold(-1)
 
@@ -160,7 +160,7 @@ function SkyCubeSceneNode:_updateMesh(renderer)
 		otherVertex[3] = z
 	end
 
-	self.mesh:setVertices(self.vertices)
+	--self.mesh:setVertices(self.vertices)
 end
 
 function SkyCubeSceneNode:draw(renderer, frameDelta)
@@ -175,10 +175,16 @@ function SkyCubeSceneNode:draw(renderer, frameDelta)
 			local bottomClearColor = self.previousBottomClearColor:lerp(self.currentBottomClearColor, frameDelta)
 			shader:send("scape_BottomClearColor", { bottomClearColor:get() })
 		end
+
+		if shader:hasUniform("scape_WorldMatrix") then
+			shader:send("scape_WorldMatrix", love.math.newTransform())
+		end
 	end
 
 	self:_updateMesh(renderer)
+	love.graphics.setFrontFaceWinding("cw")
 	love.graphics.draw(self.mesh)
+	love.graphics.setFrontFaceWinding("ccw")
 end
 
 return SkyCubeSceneNode

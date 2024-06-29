@@ -1765,7 +1765,7 @@ function GameView:draw(delta, width, height)
 	if skybox then
 		local info = self.skyboxes[skybox]
 
-		self.renderer:setClearColor(info.color)
+		self.renderer:setClearColor(Color(0, 0, 0, 0))
 		self.renderer:draw(skybox, delta, width, height, {
 			["scape_MinOutlineThickness"] = 3,
 			["scape_MaxOutlineThickness"] = 3,

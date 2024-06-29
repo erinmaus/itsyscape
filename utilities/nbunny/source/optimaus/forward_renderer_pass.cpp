@@ -289,17 +289,6 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
 
 		renderer->draw_node(L, *scene_node, delta);
-
-		if (scene_node->get_material().get_is_z_write_disabled())
-		{
-        	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-			graphics->setColorMask(disabled_mask);
-
-			renderer->draw_node(L, *scene_node, delta);
-
-			graphics->setColorMask(enabled_mask);
-		}
-
 		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 }
