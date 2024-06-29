@@ -37,7 +37,7 @@ ItsyScape.Meta.ActionTypeVerb {
 	Value = "Turn-forward-seconds",
 	XProgressive = "Turning-forward-seconds",
 	Language = "en-US",
-	Type = "TurnForwardTimesecond"
+	Type = "TurnForwardTimeSecond"
 }
 
 ActionType "TurnBackwardTime"
