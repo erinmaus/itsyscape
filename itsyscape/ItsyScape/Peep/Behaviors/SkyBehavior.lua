@@ -41,6 +41,7 @@ function SkyBehavior:new()
 	self.daySkyColor = Color.fromHexString("87cdde")
 	self.duskSkyColor = Color.fromHexString("ff9955")
 	self.nightSkyColor = Color.fromHexString("111128")
+	self.previousSkyColor = self.daySkyColor
 	self.currentSkyColor = self.daySkyColor
 
 	self.dawnAmbientColor = Color.fromHexString("ff80b2", 0.5)

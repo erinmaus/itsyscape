@@ -515,6 +515,18 @@ void nbunny::SceneNode::sort_by_position(std::vector<SceneNode*>& nodes, const C
 		nodes.end(),
 		[&](auto a, auto b)
 		{
+			if (a->get_material().get_is_cull_disabled() != b->get_material().get_is_cull_disabled())
+			{
+				if (a->get_material().get_is_cull_disabled())
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
 			auto a_screen_position = screen_positions.find(a);
 			if (a_screen_position == screen_positions.end())
 			{

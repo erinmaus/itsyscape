@@ -35,7 +35,7 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 0.5, 0.75 }
+			scale = { 1, 1.5 }
 		},
 		{
 			type = "RandomRotationEmitter",
@@ -67,9 +67,8 @@ function MoonDebrisRing:load()
 
 	self.particles = ParticleSceneNode()
 	self.particles:initParticleSystemFromDef(MoonDebrisRing.PARTICLE_SYSTEM, resources)
-	self.particles:getMaterial():setIsTranslucent(false)
 	self.particles:getMaterial():setIsZWriteDisabled(false)
-	self.particles:getMaterial():setIsFullLit(false)
+	self.particles:getMaterial():setIsFullLit(true)
 	self.particles:setParent(root)
 end
 

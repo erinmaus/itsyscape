@@ -15,6 +15,7 @@ local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
+local SkyCubeSceneNode = require "ItsyScape.Graphics.SkyCubeSceneNode"
 
 local Sun = Class(PropView)
 Sun.MIN_PARTICLE_COUNT   = 1
@@ -94,6 +95,9 @@ function Sun:load()
 	self.light = DirectionalLightSceneNode()
 	self.light:setParent(root)
 
+	self.skyCube = SkyCubeSceneNode()
+	self.skyCube:setParent(root)
+
 	resources:queue(
 		StaticMeshResource,
 		"Resources/Game/Props/Sun_Default/Model.lstatic",
@@ -111,6 +115,8 @@ function Sun:load()
 				self.sun:fromGroup(model:getResource(), "Singularity")
 			end
 		end)
+
+	self:_updateColor()
 end
 
 function Sun:_updateColor()
@@ -127,11 +133,12 @@ function Sun:_updateColor()
 		end
 	end
 
-	if state.skyColor then
-		local skyColor = Color(unpack(state.skyColor))
+	if state.currentSkyColor and state.previousSkyColor then
+		local previousSkyColor = Color(unpack(state.previousSkyColor))
+		local currentSkyColor = Color(unpack(state.currentSkyColor))
 
-		local _, layer = self:getProp():getPosition()
-		self:getGameView():setSkyboxColor(layer, skyColor)
+		self.skyCube:setTopClearColor(previousSkyColor)
+		self.skyCube:setBottomClearColor(currentSkyColor)
 	end
 end
 

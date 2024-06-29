@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Color = require "ItsyScape.Graphics.Color"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local Probe = require "ItsyScape.Peep.Probe"
 local CloudBehavior = require "ItsyScape.Peep.Behaviors.CloudBehavior"
@@ -147,15 +148,21 @@ end
 function SkyCortex:getSkyColorIndexDelta(seconds, numColors)
 	local width = 1 / numColors
 	local delta = ((seconds / SkyCortex.DAY_IN_SECONDS) % width) / width
-
 	local mu = math.clamp(math.sin(delta * (math.pi / 2)) * 5)
+
 	local currentIndex = math.floor(seconds / (SkyCortex.DAY_IN_SECONDS / numColors)) + 1
+
 	local nextIndex = currentIndex + 1
 	if nextIndex > numColors then
 		nextIndex = 1
 	end
 
-	return currentIndex, nextIndex, mu
+	local previousIndex = currentIndex - 1
+	if previousIndex <= 0 then
+		previousIndex = numColors
+	end
+
+	return previousIndex, currentIndex, nextIndex, mu
 end
 
 function SkyCortex:update(delta)
@@ -214,16 +221,6 @@ function SkyCortex:update(delta)
 			local seconds = self:updateSeconds(delta, sky, instance)
 
 			local baseLayer = instance:getBaseLayer()
-			local sunDirectionalLight = self:getDirector():probe(
-				peep:getLayerName(),
-				Probe.layer(baseLayer),
-				Probe.namedMapObject("Light_Sun"),
-				Probe.resource("Prop", "DirectionalLight_Default"))[1]
-
-			if sunDirectionalLight then
-				local normal = self:getDirectionLightNormal(seconds)
-				sunDirectionalLight:setDirection(normal)
-			end
 
 			local sun = self:getDirector():probe(
 				peep:getLayerName(),
@@ -266,12 +263,26 @@ function SkyCortex:update(delta)
 			end
 
 			do
-				local skyColors = {
+				local previousSkyColors = {
+					sky.nightSkyColor,
+					sky.daySkyColor,
+					sky.daySkyColor,
+					sky.daySkyColor,
+					sky.daySkyColor,
+					sky.daySkyColor,
+					sky.nightSkyColor,
+					sky.nightSkyColor,
+					sky.nightSkyColor,
+					sky.nightSkyColor
+				}
+
+				local currentSkyColors = {
 					sky.dawnSkyColor,
 					sky.dawnSkyColor,
 					sky.daySkyColor,
 					sky.daySkyColor,
 					sky.daySkyColor,
+					sky.duskSkyColor,
 					sky.duskSkyColor,
 					sky.nightSkyColor,
 					sky.nightSkyColor,
@@ -285,17 +296,20 @@ function SkyCortex:update(delta)
 					sky.dayAmbientColor,
 					sky.dayAmbientColor,
 					sky.duskAmbientColor,
+					sky.duskAmbientColor,
 					sky.nightAmbientColor,
 					sky.nightAmbientColor,
 					sky.nightAmbientColor
 				}
 
-				local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #skyColors)
+				local previousIndex, currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #currentSkyColors)
 
-				local skyColor = skyColors[currentIndex]:lerp(skyColors[nextIndex], delta)
+				local currentSkyColor = currentSkyColors[currentIndex]:lerp(currentSkyColors[nextIndex], delta)
+				local previousSkyColor = previousSkyColors[currentIndex]:lerp(previousSkyColors[nextIndex], delta)
 				local ambientColor = ambientColors[currentIndex]:lerp(ambientColors[nextIndex], delta)
 
-				sky.currentSkyColor = skyColor
+				sky.currentSkyColor = currentSkyColor
+				sky.previousSkyColor = previousSkyColor
 				sky.currentAmbientColor = ambientColor
 			end
 
@@ -316,6 +330,18 @@ function SkyCortex:update(delta)
 			if ambient then
 				ambient:setColor(sky.currentAmbientColor)
 				ambient:setAmbience(sky.currentAmbientColor.a)
+			end
+
+			local sunDirectionalLight = self:getDirector():probe(
+				peep:getLayerName(),
+				Probe.layer(baseLayer),
+				Probe.namedMapObject("Light_Sun"),
+				Probe.resource("Prop", "DirectionalLight_Default"))[1]
+
+			if sunDirectionalLight then
+				local normal = self:getDirectionLightNormal(seconds)
+				sunDirectionalLight:setColor(Color(sky.currentAmbientColor.a / 2))
+				sunDirectionalLight:setDirection(normal)
 			end
 
 			local skyAmbientLight = self:getDirector():probe(
