@@ -93,7 +93,7 @@ function MoonDebrisRing:tick()
 	local rotation = (z * y):getNormal()
 	self:getRoot():getTransform():setLocalRotation(rotation)
 
-	local normal = rotation:transformVector(-Vector.UNIT_Z):getNormal()
+	local normal = rotation:transformVector(Vector.UNIT_Z):getNormal()
 	self.light:setDirection(normal)
 end
 
