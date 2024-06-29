@@ -146,6 +146,7 @@ function Sun:_updateLight()
 	local state = self:getProp():getState()
 	if state.normal then
 		local normal = -Vector(unpack(state.normal))
+		self.light:setColor(Color(0.25))
 		self.light:setDirection(normal)
 	end
 end
