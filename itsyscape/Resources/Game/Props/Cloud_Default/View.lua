@@ -153,7 +153,7 @@ function Cloud:updateParticle(cloudInfo, wind, inColor, outColor, alpha)
 
 			cloud.node:getMaterial():setShader(Cloud.SHADER)
 			cloud.node:getMaterial():setIsFullLit(false)
-			cloud.node:getMaterial():setIsZWriteDisabled(true)
+			cloud.node:getMaterial():setIsZWriteDisabled(false)
 		end
 
 		cloud.ready = true
