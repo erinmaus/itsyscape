@@ -18,7 +18,7 @@ ItsyScape.Meta.ActionTypeVerb {
 
 ActionType "TurnForwardTimeHour"
 ItsyScape.Meta.ActionTypeVerb {
-	Value = "Turn-forward-hour",
+	Value = "Turn-forward-hours",
 	XProgressive = "Turning-forward-hours",
 	Language = "en-US",
 	Type = "TurnForwardTimeHour"
@@ -30,6 +30,14 @@ ItsyScape.Meta.ActionTypeVerb {
 	XProgressive = "Turning-forward-minutes",
 	Language = "en-US",
 	Type = "TurnForwardTimeMinute"
+}
+
+ActionType "TurnForwardTimeSecond"
+ItsyScape.Meta.ActionTypeVerb {
+	Value = "Turn-forward-seconds",
+	XProgressive = "Turning-forward-seconds",
+	Language = "en-US",
+	Type = "TurnForwardTimesecond"
 }
 
 ActionType "TurnBackwardTime"
@@ -65,6 +73,7 @@ ItsyScape.Resource.Item "TimeTurner" {
 	TurnForwardTime,
 	ItsyScape.Action.TurnForwardTimeHour(),
 	ItsyScape.Action.TurnForwardTimeMinute(),
+	ItsyScape.Action.TurnForwardTimeSecond(),
 	TurnBackwardTime,
 }
 

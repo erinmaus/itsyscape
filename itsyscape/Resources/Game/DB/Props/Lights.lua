@@ -26,6 +26,7 @@ Meta "Light" {
 	ColorBlue = Meta.TYPE_REAL,
 	ColorNormalized = Meta.TYPE_INTEGER,
 	Local = Meta.TYPE_INTEGER,
+	CastsShadows = Meta.TYPE_INTEGER,
 	Resource = Meta.TYPE_RESOURCE
 }
 

@@ -56,7 +56,10 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 		if (node_type == DirectionalLightSceneNode::type_pointer)
 		{
 			auto light_node = reinterpret_cast<DirectionalLightSceneNode*>(visible_scene_node);
-			directional_lights.push_back(light_node);
+			if (light_node->get_casts_shadows())
+			{
+				directional_lights.push_back(light_node);
+			}
 		}
 		else 
 		{

@@ -342,6 +342,7 @@ function SkyCortex:update(delta)
 				local normal = self:getDirectionLightNormal(seconds)
 				sunDirectionalLight:setColor(Color(sky.currentAmbientColor.a / 2))
 				sunDirectionalLight:setDirection(normal)
+				sunDirectionalLight:setCastsShadows(true)
 			end
 
 			local skyAmbientLight = self:getDirector():probe(
