@@ -58,6 +58,16 @@ bool nbunny::LightSceneNode::get_is_global() const
 	return is_global;
 }
 
+void nbunny::LightSceneNode::set_casts_shadows(bool value)
+{
+	casts_shadows = value;
+}
+
+bool nbunny::LightSceneNode::get_casts_shadows() const
+{
+	return casts_shadows;
+}
+
 void nbunny::LightSceneNode::to_light(Light& light, float delta) const
 {
 	light.color = glm::mix(
@@ -128,6 +138,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_lightscenenode(lua_State* L)
 		"getPreviousColor", &nbunny_light_scene_node_get_previous_color,
 		"setIsGlobal", &nbunny::LightSceneNode::set_is_global,
 		"getIsGlobal", &nbunny::LightSceneNode::get_is_global,
+		"setCastsShadows", &nbunny::LightSceneNode::set_casts_shadows,
+		"getCastsShadows", &nbunny::LightSceneNode::get_casts_shadows,
 		"tick", &nbunny::LightSceneNode::tick);
 
 	sol::stack::push(L, T);

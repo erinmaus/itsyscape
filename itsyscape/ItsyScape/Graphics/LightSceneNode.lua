@@ -20,6 +20,14 @@ function LightSceneNode:new(NType)
 	SceneNode.new(self, NType or NLightSceneNode)
 end
 
+function LightSceneNode:getCastsShadows()
+	return self:getHandle():getCastsShadows()
+end
+
+function LightSceneNode:setCastsShadows(value)
+	self:getHandle():setCastsShadows(value or false)
+end
+
 -- Gets if the light is global.
 --
 -- Global lights are always used to light an object (e.g., forward rendering).

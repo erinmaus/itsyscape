@@ -10,7 +10,9 @@
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Color = require "ItsyScape.Graphics.Color"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 
 local MoonDebrisRing = Class(PropView)
@@ -26,8 +28,7 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 			radius = { 64, 69 },
 			speed = { 0, 0 },
 			yRange = { 0, 1 / 16 },
-			acceleration = { 0, 0 },
-			normal = { true }
+			acceleration = { 0, 0 }
 		},
 		{
 			type = "RandomLifetimeEmitter",
@@ -68,8 +69,14 @@ function MoonDebrisRing:load()
 	self.particles = ParticleSceneNode()
 	self.particles:initParticleSystemFromDef(MoonDebrisRing.PARTICLE_SYSTEM, resources)
 	self.particles:getMaterial():setIsZWriteDisabled(false)
-	self.particles:getMaterial():setIsFullLit(true)
+	self.particles:getMaterial():setIsFullLit(false)
+	self.particles:getMaterial():setIsTranslucent(false)
 	self.particles:setParent(root)
+
+	self.light = DirectionalLightSceneNode()
+	self.light:setColor(Color(0.25))
+	self.light:setDirection(Vector.ZERO)
+	self.light:setParent(root)
 end
 
 function MoonDebrisRing:getIsStatic()
@@ -83,7 +90,11 @@ function MoonDebrisRing:tick()
 	local y = Quaternion.fromAxisAngle(Vector.UNIT_Y, (love.timer.getTime() + offset) * (math.pi / 1024))
 	local z = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 3)
 
-	self:getRoot():getTransform():setLocalRotation((z * y):getNormal())
+	local rotation = (z * y):getNormal()
+	self:getRoot():getTransform():setLocalRotation(rotation)
+
+	local normal = rotation:transformVector(-Vector.UNIT_Z):getNormal()
+	self.light:setDirection(normal)
 end
 
 return MoonDebrisRing

@@ -1,5 +1,3 @@
-varying vec3 frag_NDCPosition;
-
 void performTransform(
 	mat4 modelViewProjectionMatrix,
 	vec4 position,
@@ -8,7 +6,6 @@ void performTransform(
 {
 	localPosition = position.xyz;
 
-	vec4 transformedPosition = scape_ProjectionMatrix * mat4(mat3(scape_ViewMatrix)) * position;
-	frag_NDCPosition = transformedPosition.xyz / transformedPosition.w;
-	projectedPosition = transformedPosition.xyzw;
+	vec4 transformedPosition = scape_ProjectionMatrix * mat4(transpose(mat3(scape_ViewMatrix))) * position;
+	projectedPosition = transformedPosition.xyww;
 }

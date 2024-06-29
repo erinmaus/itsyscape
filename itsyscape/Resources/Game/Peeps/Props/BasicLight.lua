@@ -30,6 +30,14 @@ function BasicLight:setColor(value)
 	self.color = value or self.color
 end
 
+function BasicLight:setCastsShadows(value)
+	self.castsShadows = value or false
+end
+
+function BasicLight:getCastsShadows()
+	return self.castsShadows
+end
+
 function BasicLight:setIsGlobal(value)
 	self.global = value or false
 end
@@ -82,7 +90,8 @@ end
 function BasicLight:getPropState()
 	return {
 		color = { self.color.r, self.color.g, self.color.b },
-		global = self.global
+		global = self.global,
+		castsShadows = self.castsShadows
 	}
 end
 
