@@ -39,7 +39,7 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 				type = "RadialEmitter",
 				position = { position:get() },
 				radius = { 0, radius / 2 },
-				speed = { radius / 16, radius / 8 },
+				speed = { radius / 32, radius / 16 },
 				normal = { true }
 			},
 			{

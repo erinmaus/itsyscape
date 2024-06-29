@@ -20,13 +20,15 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SkyBehavior = require "ItsyScape.Peep.Behaviors.SkyBehavior"
 
 local SkyCortex = Class(Cortex)
---SkyCortex.DAY_IN_SECONDS = 20 * 60
---SkyCortex.FACING_X_IN_SECONDS = 30
+SkyCortex.DAY = 24 * 60 * 60
+SkyCortex.DAY_IN_SECONDS = 20 * 60
+SkyCortex.FACING_X_IN_SECONDS = 30
 --SkyCortex.FACING_X_THRESHOLD = math.pi / 4
-SkyCortex.DAY_IN_SECONDS = 20
-SkyCortex.FACING_X_IN_SECONDS = 1
+--SkyCortex.DAY_IN_SECONDS = 20
+--SkyCortex.FACING_X_IN_SECONDS = 1
 SkyCortex.FACING_X_THRESHOLD = math.pi / 8
 SkyCortex.JITTER_THRESHOLD = 0.9
+SkyCortex.OFFSET_TIME_DELTA_IN_SECONDS = 1
 
 function SkyCortex:new()
 	Cortex.new(self)
@@ -34,11 +36,48 @@ function SkyCortex:new()
 	self:require(SkyBehavior)
 end
 
-function SkyCortex:getDirectionLightNormal()
+function SkyCortex:updateSeconds(delta, sky, instance)
+	local director = self:getDirector()
+	local player = instance:getPartyLeader()
+	local playerPeep = player and player:getActor() and player:getActor():getPeep()
+
+	if playerPeep then
+		local offset = Utility.Time.getSeconds(director:getPlayerStorage(playerPeep):getRoot())
+		offset = offset / SkyCortex.DAY * SkyCortex.DAY_IN_SECONDS
+
+		if offset ~= sky.currentOffsetSeconds then
+			if not sky.currentOffsetSeconds then
+				sky.currentOffsetSeconds = offset
+				sky.startOffsetSeconds = offset
+				sky.stopOffsetSeconds = offset
+				sky.offsetTimeDelta = 1
+			else
+				if offset ~= sky.stopOffsetSeconds then
+					sky.startOffsetSeconds = sky.currentOffsetSeconds
+					sky.stopOffsetSeconds = offset
+
+					sky.offsetTimeDelta = 0
+				end
+			end
+		end
+	end
+
+	if sky.offsetTimeDelta < 1 then
+		sky.offsetTimeDelta = math.clamp(sky.offsetTimeDelta + (delta / SkyCortex.OFFSET_TIME_DELTA_IN_SECONDS))
+		sky.currentOffsetSeconds = math.lerp(sky.startOffsetSeconds, sky.stopOffsetSeconds, sky.offsetTimeDelta)
+	end
+
+	if sky.offsetTimeDelta >= 1 then
+		sky.startOffsetSeconds = sky.currentOffsetSeconds
+		sky.stopOffsetSeconds = sky.currentOffsetSeconds
+	end
+
+	return ((sky.currentOffsetSeconds or 0) + socket.gettime()) % SkyCortex.DAY_IN_SECONDS
+end
+
+function SkyCortex:getDirectionLightNormal(seconds)
 	local HALF_DAY_IN_SECONDS = SkyCortex.DAY_IN_SECONDS / 2
 	local HALF_FACING_X_IN_SECONDS = SkyCortex.FACING_X_IN_SECONDS / 2
-
-	local seconds = socket.gettime() % SkyCortex.DAY_IN_SECONDS
 
 	local isFacingRight = seconds < HALF_FACING_X_IN_SECONDS or seconds > SkyCortex.DAY_IN_SECONDS - HALF_FACING_X_IN_SECONDS
 	local isFacingLeft = seconds > HALF_DAY_IN_SECONDS - HALF_FACING_X_IN_SECONDS and seconds < HALF_DAY_IN_SECONDS + HALF_FACING_X_IN_SECONDS
@@ -75,8 +114,7 @@ function SkyCortex:getDirectionLightNormal()
 	return Vector(x, y, -z):getNormal()
 end
 
-function SkyCortex:getSunAlpha()
-	local seconds = socket.gettime() % SkyCortex.DAY_IN_SECONDS
+function SkyCortex:getSunAlpha(seconds)
 	local delta = seconds / SkyCortex.DAY_IN_SECONDS
 
 	if delta > 0.5 then
@@ -86,15 +124,13 @@ function SkyCortex:getSunAlpha()
 	end
 end
 
-function SkyCortex:getMoonRotation()
-	local seconds = socket.gettime() % SkyCortex.DAY_IN_SECONDS
+function SkyCortex:getMoonRotation(seconds)
 	local delta = seconds / (SkyCortex.DAY_IN_SECONDS / 2)
 
 	return Quaternion.fromAxisAngle(Vector.UNIT_Y, delta * math.pi * 2):getNormal()
 end
 
-function SkyCortex:getSunNormal()
-	local seconds = socket.gettime() % SkyCortex.DAY_IN_SECONDS
+function SkyCortex:getSunNormal(seconds)
 	local delta = seconds / SkyCortex.DAY_IN_SECONDS
 	local angle = delta * math.pi * 2
 
@@ -108,9 +144,7 @@ function SkyCortex:getSunNormal()
 	return Vector(x, y, z):getNormal()
 end
 
-function SkyCortex:getSkyColorIndexDelta(numColors)
-	local seconds = socket.gettime() % SkyCortex.DAY_IN_SECONDS
-
+function SkyCortex:getSkyColorIndexDelta(seconds, numColors)
 	local width = 1 / numColors
 	local delta = ((seconds / SkyCortex.DAY_IN_SECONDS) % width) / width
 
@@ -177,6 +211,8 @@ function SkyCortex:update(delta)
 			end
 
 			local instance = Utility.Peep.getInstance(peep)
+			local seconds = self:updateSeconds(delta, sky, instance)
+
 			local baseLayer = instance:getBaseLayer()
 			local sunDirectionalLight = self:getDirector():probe(
 				peep:getLayerName(),
@@ -185,7 +221,7 @@ function SkyCortex:update(delta)
 				Probe.resource("Prop", "DirectionalLight_Default"))[1]
 
 			if sunDirectionalLight then
-				local normal = self:getDirectionLightNormal()
+				local normal = self:getDirectionLightNormal(seconds)
 				sunDirectionalLight:setDirection(normal)
 			end
 
@@ -208,9 +244,9 @@ function SkyCortex:update(delta)
 					Utility.spawnPropAtPosition(peep, sky.moonPropType, 0, 0, 0)
 				end
 			else
-				local normal = self:getSunNormal()
-				local alpha = self:getSunAlpha()
-				local rotation = self:getMoonRotation()
+				local normal = self:getSunNormal(seconds)
+				local alpha = self:getSunAlpha(seconds)
+				local rotation = self:getMoonRotation(seconds)
 
 				sky.sunNormal = normal
 				sky.sunAlpha = alpha
@@ -254,7 +290,7 @@ function SkyCortex:update(delta)
 					sky.nightAmbientColor
 				}
 
-				local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(#skyColors)
+				local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #skyColors)
 
 				local skyColor = skyColors[currentIndex]:lerp(skyColors[nextIndex], delta)
 				local ambientColor = ambientColors[currentIndex]:lerp(ambientColors[nextIndex], delta)

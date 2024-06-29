@@ -773,6 +773,10 @@ function Utility.Time.getDays(currentTime)
 	return math.floor(os.difftime(currentTime, referenceTime) / Utility.Time.DAY)
 end
 
+function Utility.Time.getSeconds(root)
+	return root:getSection("Clock"):get("seconds") or 0
+end
+
 function Utility.Time.getAndUpdateTime(root)
 	local currentOffset = root:getSection("Clock"):get("offset") or 0
 	local currentGameTime = root:getSection("Clock"):get("time") or os.time()
@@ -785,10 +789,15 @@ function Utility.Time.getAndUpdateTime(root)
 	return currentTime + currentOffset
 end
 
-function Utility.Time.updateTime(root, days)
+function Utility.Time.updateTime(root, days, seconds)
 	local currentOffset = root:getSection("Clock"):get("offset") or 0
 	local futureOffset = currentOffset + Utility.Time.DAY * (days or 1)
 	root:getSection("Clock"):set("offset", futureOffset)
+
+	if seconds then
+		local currentSeconds = root:getSection("Clock"):get("seconds") or 0
+		root:getSection("Clock"):set("seconds", currentSeconds + seconds)
+	end
 
 	return Utility.Time.getAndUpdateTime(root)
 end

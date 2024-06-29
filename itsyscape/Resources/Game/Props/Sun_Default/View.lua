@@ -27,8 +27,8 @@ Sun.PARTICLE_SYSTEM = {
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 4 },
-			speed = { 1, 2 },
+			radius = { 1 },
+			speed = { 0.5, 1 },
 			zRange = { 0, 0 },
 			acceleration = { 0, 0 }
 		},
@@ -47,7 +47,7 @@ Sun.PARTICLE_SYSTEM = {
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 1, 1.5 }
+			scale = { 0.5, 0.7 }
 		},
 		{
 			type = "RandomRotationEmitter",
@@ -72,7 +72,7 @@ Sun.PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 10, 20 },
+		count = { 5, 10 },
 		delay = { 1 / 30 },
 		duration = { math.huge }
 	}
@@ -106,7 +106,7 @@ function Sun:load()
 				material:setIsFullLit(true)
 				self:_updateColor()
 
-				self.sun:getTransform():setLocalScale(Vector(4))
+				self.sun:getTransform():setLocalScale(Vector(1))
 
 				self.sun:fromGroup(model:getResource(), "Singularity")
 			end

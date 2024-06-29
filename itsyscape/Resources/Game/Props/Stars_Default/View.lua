@@ -64,7 +64,7 @@ Stars.GALAXY_PARTICLE_SYSTEM = {
 		{
 			type = "RadialEmitter",
 			radius = { 74, 76 },
-			yRange = { 0.125, 1 / 8 },
+			yRange = { 0.5, 1 / 3 },
 			xRange = { 0, 1 / 32 },
 			speed = { 0 }
 		},
@@ -98,7 +98,7 @@ Stars.GALAXY_PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 200, 200 },
+		count = { 250, 250 },
 		delay = { 0.5 },
 		duration = { 2 }
 	}

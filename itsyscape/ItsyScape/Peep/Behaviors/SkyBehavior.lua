@@ -24,6 +24,11 @@ function SkyBehavior:new()
 	self.sunColor = Color(1, 0.4, 0.0, 1.0)
 	self.sunAlpha = 1.0
 
+	self.currentOffsetSeconds = false
+	self.startOffsetSeconds = 0
+	self.stopOffsetSeconds = 0
+	self.offsetTimeDelta = 0
+
 	self.moonNormal = Vector()
 	self.moonDistance = 35
 	self.moonPosition = Vector()
@@ -45,7 +50,7 @@ function SkyBehavior:new()
 	self.currentAmbientColor = self.dayAmbientColor
 
 	self.windDirection = Vector(1, 0, 0):getNormal()
-	self.windSpeed = 2
+	self.windSpeed = 0.25
 
 	self.cloudiness = 0.5
 	self.cloudPropType = "Cloud_Default"

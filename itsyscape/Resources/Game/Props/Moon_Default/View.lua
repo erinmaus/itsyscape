@@ -25,7 +25,7 @@ Moon.PARTICLE_SYSTEM = {
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 3 },
+			radius = { 2 },
 			speed = { 1, 2 },
 			acceleration = { 0, 0 }
 		},
@@ -103,7 +103,7 @@ function Moon:load()
 		"Resources/Game/Props/Moon_Default/Model.lstatic",
 		function(model)
 			self.moonExterior:getMaterial():setTextures(self.exteriorTexture)
-			self.moonExterior:getTransform():setLocalScale(Vector(5))
+			self.moonExterior:getTransform():setLocalScale(Vector(4))
 			self.moonExterior:fromGroup(model:getResource(), "Moon")
 		end)
 
@@ -113,7 +113,7 @@ function Moon:load()
 		function(model)
 			local whiteTexture = self:getGameView():getWhiteTexture()
 			self.moonInterior:getMaterial():setTextures(whiteTexture)
-			self.moonInterior:getTransform():setLocalScale(Vector(3.5))
+			self.moonInterior:getTransform():setLocalScale(Vector(2.5))
 			self.moonInterior:fromGroup(model:getResource(), "Moon")
 
 			self:_updateColor()

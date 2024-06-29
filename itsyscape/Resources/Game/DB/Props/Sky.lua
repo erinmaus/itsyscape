@@ -39,7 +39,7 @@ do
 	local MoonDebrisRing = ItsyScape.Resource.Prop "MoonDebrisRing_Default"
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Value = "Resources.Game.Peeps.Props.TimedSkyProp",
 		Resource = MoonDebrisRing
 	}
 end

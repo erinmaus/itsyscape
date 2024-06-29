@@ -43,6 +43,10 @@ DefaultCameraController.CLICK_STILL_MAX        = 24
 DefaultCameraController.CLICK_DRAG_DENOMINATOR = 4
 DefaultCameraController.SCROLL_SPEED_MULTIPLIER = 5
 
+DefaultCameraController.PAN_TIME = 0.5
+DefaultCameraController.PAN_DISTANCE = 0
+DefaultCameraController.PAN_OFFSET = Vector(0, 15, 0)
+
 DefaultCameraController.SPEED = math.pi / 2
 
 function DefaultCameraController:new(...)
@@ -55,6 +59,10 @@ function DefaultCameraController:new(...)
 	self.isCameraDragging = false
 	self.isRotationUnlocked = 0
 	self.isPositionUnlocked = 0
+	self.isPanning = false
+	self.panningTime = 0
+	self.panningVerticalRotationOffset = 0
+	self.panningHorizontalRotationOffset = 0
 
 	self._camera = ThirdPersonCamera()
 
@@ -64,7 +72,7 @@ function DefaultCameraController:new(...)
 	self.isCameraVerticalRotationFlipped = _CONF.camera and _CONF.camera.isVerticalRotationFlipped or false
 	self.cameraVerticalRotationOffsetRemainder = 0
 	self.cameraHorizontalRotationOffset = _CONF.camera and _CONF.camera.horizontalRotationOffset or 0
-	self.cameraOffset = Vector(0, 10, 0)
+	self.cameraOffset = Vector(0, 0, 0)
 
 	self:getCamera():setHorizontalRotation(
 		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset)
@@ -73,6 +81,7 @@ function DefaultCameraController:new(...)
 	self:getCamera():setDistance(_CONF.camera and _CONF.camera.distance or DefaultCameraController.DEFAULT_DISTANCE)
 
 	self.targetDistance = self:getCamera():getDistance()
+	self.currentDistance = self:getCamera():getDistance()
 
 	self.isTargetting = _CONF.targetCameraMode or false
 	self.isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
@@ -249,12 +258,14 @@ function DefaultCameraController:mouseScroll(uiActive, x, y)
 end
 
 function DefaultCameraController:_rotate(dx, dy)
+	local panning = self.isPanning and not self:getIsDemoing()
+
 	local verticalOffset = -dx / 128
 	local horizontalOffset = (self.isCameraVerticalRotationFlipped and 1 or -1) * dy / 128
-	local angle1 = self.cameraVerticalRotationOffset + verticalOffset
-	local angle2 = self.cameraHorizontalRotationOffset + horizontalOffset
+	local angle1 = (panning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset) + verticalOffset
+	local angle2 = (panning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset) + horizontalOffset
 
-	if not _DEBUG then
+	if not (_DEBUG or panning) then
 		if self.isRotationUnlocked <= 0 and not self.cameraVerticalRotationFlipTime then
 			local beforeAngle1Clamp = angle1
 
@@ -287,8 +298,13 @@ function DefaultCameraController:_rotate(dx, dy)
 	angle1 = math.sign(angle1) * (math.abs(angle1) % (math.pi * 2))
 	angle2 = math.sign(angle2) * (math.abs(angle2) % (math.pi * 2))
 
-	self.cameraVerticalRotationOffset = angle1
-	self.cameraHorizontalRotationOffset = angle2
+	if panning then
+		self.panningVerticalRotationOffset = angle1
+		self.panningHorizontalRotationOffset = angle2
+	else
+		self.cameraVerticalRotationOffset = angle1
+		self.cameraHorizontalRotationOffset = angle2
+	end
 end
 
 function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
@@ -327,6 +343,13 @@ end
 
 function DefaultCameraController:updateControls(delta)
 	if _DEBUG then
+		self.isPanning = false
+		return
+	end
+
+	local focusedWidget = self:getApp():getUIView():getInputProvider():getFocusedWidget()
+	if focusedWidget and focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput") then
+		self.isPanning = false
 		return
 	end
 
@@ -334,8 +357,10 @@ function DefaultCameraController:updateControls(delta)
 	local downPressed = Keybinds['CAMERA_DOWN']:isDown()
 	local leftPressed = Keybinds['CAMERA_LEFT']:isDown()
 	local rightPressed = Keybinds['CAMERA_RIGHT']:isDown()
+	local panDown = Keybinds['CAMERA_PAN']:isDown()
+	self.isPanning = panDown
 
-	local angle1 = self.cameraVerticalRotationOffset
+	local angle1 = self.isPanning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset
 	do
 		if leftPressed then
 			angle1 = angle1 + DefaultCameraController.SPEED * delta
@@ -346,7 +371,7 @@ function DefaultCameraController:updateControls(delta)
 		end
 	end
 
-	local angle2 = self.cameraHorizontalRotationOffset
+	local angle2 = self.isPanning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset
 	do
 		if upPressed then
 			angle2 = angle2 - DefaultCameraController.SPEED * delta
@@ -357,29 +382,36 @@ function DefaultCameraController:updateControls(delta)
 		end
 	end
 
-	if not self.isRotationUnlocked or self.isRotationUnlocked <= 0 then
-		angle1 = math.max(
-			angle1,
-			-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-		angle1 = math.min(
-			angle1,
-			DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-	end
+	if not self.isPanning then
+		if not self.isRotationUnlocked or self.isRotationUnlocked <= 0 then
+			angle1 = math.max(
+				angle1,
+				-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+			angle1 = math.min(
+				angle1,
+				DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
+		end
 
-	angle2 = math.max(
-		angle2,
-		-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
-	angle2 = math.min(
-		angle2,
-		DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+		angle2 = math.max(
+			angle2,
+			-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+		angle2 = math.min(
+			angle2,
+			DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+	end
 
 	self:getCamera():setVerticalRotation(
 		DefaultCameraController.CAMERA_VERTICAL_ROTATION + angle1)
 	self:getCamera():setHorizontalRotation(
 		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + angle2)
 
-	self.cameraVerticalRotationOffset = angle1
-	self.cameraHorizontalRotationOffset = angle2
+	if self.isPanning then
+		self.panningVerticalRotationOffset = angle1
+		self.panningHorizontalRotationOffset = angle2
+	else
+		self.cameraVerticalRotationOffset = angle1
+		self.cameraHorizontalRotationOffset = angle2
+	end
 end
 
 function DefaultCameraController:debugUpdate(delta)
@@ -438,7 +470,7 @@ function DefaultCameraController:updateScrollPosition(delta)
 		interpolatedDistance = currentDistance + distanceStep
 	end
 
-	self:getCamera():setDistance(interpolatedDistance)
+	self.currentDistance = interpolatedDistance
 end
 
 function DefaultCameraController:updateTargetDistance()
@@ -476,6 +508,20 @@ function DefaultCameraController:updateShow(delta)
 	self.previousCurveY = cy
 end
 
+function DefaultCameraController:updatePanning(delta)
+	if self.isPanning then
+		self.panningTime = self.panningTime + delta
+	else
+		self.panningTime = self.panningTime - delta
+	end
+	self.panningTime = math.clamp(self.panningTime, 0, DefaultCameraController.PAN_TIME)
+
+	if self.panningTime <= 0 then
+		self.panningVerticalRotationOffset = 0
+		self.panningHorizontalRotationOffset = 0
+	end
+end
+
 function DefaultCameraController:update(delta)
 	if _DEBUG then
 		self:debugUpdate(delta)
@@ -500,6 +546,7 @@ function DefaultCameraController:update(delta)
 
 	self:updateShow(delta)
 	self:updateControls(delta)
+	self:updatePanning(delta)
 
 	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	if isFocusDown ~= self.isFocusDown and isFocusDown then
@@ -715,6 +762,8 @@ function DefaultCameraController:_clampCenter(center)
 end
 
 function DefaultCameraController:draw()
+	local distance = self.currentDistance
+
 	local verticalOffset
 	if self.cameraVerticalRotationFlipTime then
 		local mu = self.cameraVerticalRotationFlipTime / DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP_TIME_SECONDS
@@ -740,10 +789,6 @@ function DefaultCameraController:draw()
 		verticalOffset = DefaultCameraController.CAMERA_VERTICAL_ROTATION + self.cameraVerticalRotationOffset
 	end
 
-	self:getCamera():setVerticalRotation(verticalOffset)
-	self:getCamera():setHorizontalRotation(
-		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset)
-
 	local center
 	if self.isTargetting then
 		local playerPosition = self:getPlayerPosition()
@@ -756,6 +801,19 @@ function DefaultCameraController:draw()
 	else
 		center = self:getPlayerPosition()
 	end
+
+	local horizontalOffset = DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset
+	do
+		local panningDelta = math.clamp(self.panningTime / DefaultCameraController.PAN_TIME)
+		verticalOffset = verticalOffset + self.panningVerticalRotationOffset * panningDelta
+		horizontalOffset = horizontalOffset + self.panningHorizontalRotationOffset * panningDelta
+		center = center + DefaultCameraController.PAN_OFFSET * panningDelta
+		distance = math.lerp(distance, DefaultCameraController.PAN_DISTANCE, panningDelta)
+	end
+
+	self:getCamera():setVerticalRotation(verticalOffset)
+	self:getCamera():setHorizontalRotation(horizontalOffset)
+	self:getCamera():setDistance(distance)
 
 	if not _DEBUG and self.isPositionUnlocked <= 0 then
 		center = self:_clampCenter(center)
