@@ -25,8 +25,8 @@ Cloud.MAX_LUMP_RADIUS = 3
 Cloud.MIN_LUMP_OFFSET = Vector(4, 1, 4)
 Cloud.MAX_LUMP_OFFSET = Vector(8, 2, 8)
 
-Cloud.MIN_SCALE = 0.25
-Cloud.MAX_SCALE = 1
+Cloud.MIN_SCALE = 0.5
+Cloud.MAX_SCALE = 1.5
 
 function Cloud:new(...)
 	Prop.new(self, ...)

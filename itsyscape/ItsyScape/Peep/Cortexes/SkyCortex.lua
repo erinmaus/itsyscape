@@ -157,12 +157,7 @@ function SkyCortex:getSkyColorIndexDelta(seconds, numColors)
 		nextIndex = 1
 	end
 
-	local previousIndex = currentIndex - 1
-	if previousIndex <= 0 then
-		previousIndex = numColors
-	end
-
-	return previousIndex, currentIndex, nextIndex, mu
+	return currentIndex, nextIndex, mu
 end
 
 function SkyCortex:update(delta)
@@ -302,8 +297,7 @@ function SkyCortex:update(delta)
 					sky.nightAmbientColor
 				}
 
-				local previousIndex, currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #currentSkyColors)
-
+				local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #currentSkyColors)
 				local currentSkyColor = currentSkyColors[currentIndex]:lerp(currentSkyColors[nextIndex], delta)
 				local previousSkyColor = previousSkyColors[currentIndex]:lerp(previousSkyColors[nextIndex], delta)
 				local ambientColor = ambientColors[currentIndex]:lerp(ambientColors[nextIndex], delta)

@@ -299,7 +299,7 @@ public:
 	void emit(nbunny::Particle& p)
 	{
 		auto rng = love::math::Math::instance.getRandomGenerator();
-		int index = rng->rand() * (max_texture_index - min_texture_index) + min_texture_index;
+		int index = rng->rand() % (max_texture_index - min_texture_index) + min_texture_index;
 
 		p.texture_index = index - 1;
 	}
@@ -832,7 +832,8 @@ void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, const glm:
 			vertex.position
 		);
 
-		vertex.normal = glm::rotate(self_rotation, glm::normalize(p.normal));
+		vertex.normal = glm::normalize(glm::rotate(self_rotation, glm::normalize(p.normal)));
+		//vertex.normal = p.normal;
 		vertex.position += p.position;
 		vertex.color = p.color;
 

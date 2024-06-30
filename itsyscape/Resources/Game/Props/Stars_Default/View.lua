@@ -23,6 +23,7 @@ Stars.STAR_PARTICLE_SYSTEM = {
 		{
 			type = "RadialEmitter",
 			radius = { 70, 80 },
+			yRange = { 0.5, 0.75 },
 			speed = { 0 }
 		},
 		{
@@ -51,7 +52,7 @@ Stars.STAR_PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 250, 250 },
+		count = { 500, 500 },
 		delay = { 0.5 },
 		duration = { 2 }
 	}
