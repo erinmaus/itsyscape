@@ -12,7 +12,7 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
-local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
+local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 
 local MoonDebrisRing = Class(PropView)
@@ -27,8 +27,18 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 			type = "RadialEmitter",
 			radius = { 64, 69 },
 			speed = { 0, 0 },
-			yRange = { 0, 1 / 16 },
-			acceleration = { 0, 0 }
+			yRange = { 0, 1 / 24 },
+			acceleration = { 0, 0 },
+			normal = { true },
+		},
+		{
+			type = "RandomColorEmitter",
+			colors = {
+				{ 1.0, 1.0, 1.0, 1.0 },
+				{ 0.8, 0.8, 0.8, 1.0 },
+				{ 0.6, 0.6, 0.6, 1.0 },
+				{ 0.4, 0.4, 0.4, 1.0 },
+			}
 		},
 		{
 			type = "RandomLifetimeEmitter",
@@ -45,7 +55,7 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 
 		},
 		{
-			type = "RandomTextureIndex",
+			type = "RandomTextureIndexEmitter",
 			textures = { 1, 4 }
 		}
 	},
@@ -54,7 +64,7 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 132, 132 },
+		count = { 100, 100 },
 		delay = { 0.25 },
 		duration = { 2 }
 	}
@@ -73,9 +83,9 @@ function MoonDebrisRing:load()
 	self.particles:getMaterial():setIsTranslucent(false)
 	self.particles:setParent(root)
 
-	self.light = DirectionalLightSceneNode()
-	self.light:setColor(Color(0.25))
-	self.light:setDirection(Vector.ZERO)
+	self.light = PointLightSceneNode()
+	self.light:setColor(Color(0.25, 0.25, 0.25))
+	self.light:setAttenuation(256)
 	self.light:setParent(root)
 end
 
@@ -92,9 +102,6 @@ function MoonDebrisRing:tick()
 
 	local rotation = (z * y):getNormal()
 	self:getRoot():getTransform():setLocalRotation(rotation)
-
-	local normal = rotation:transformVector(Vector.UNIT_Z):getNormal()
-	self.light:setDirection(normal)
 end
 
 return MoonDebrisRing
