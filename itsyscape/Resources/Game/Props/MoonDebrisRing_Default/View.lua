@@ -14,8 +14,13 @@ local Color = require "ItsyScape.Graphics.Color"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local MoonDebrisRing = Class(PropView)
+MoonDebrisRing.SHADER = ShaderResource()
+do
+	MoonDebrisRing.SHADER:loadFromFile("Resources/Shaders/MoonDebris")
+end
 
 MoonDebrisRing.PARTICLE_SYSTEM = {
 	texture = "Resources/Game/Props/MoonDebrisRing_Default/Particle.png",
@@ -73,11 +78,15 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 function MoonDebrisRing:load()
 	PropView.load(self)
 
+	self.currentSkyColor = Color()
+	self.previousSkyColor = false
+
 	local resources = self:getResources()
 	local root = self:getRoot()
 
 	self.particles = ParticleSceneNode()
 	self.particles:initParticleSystemFromDef(MoonDebrisRing.PARTICLE_SYSTEM, resources)
+	self.particles:getMaterial():setShader(MoonDebrisRing.SHADER)
 	self.particles:getMaterial():setIsZWriteDisabled(false)
 	self.particles:getMaterial():setIsFullLit(false)
 	self.particles:getMaterial():setIsTranslucent(false)
@@ -102,6 +111,11 @@ function MoonDebrisRing:tick()
 
 	local rotation = (z * y):getNormal()
 	self:getRoot():getTransform():setLocalRotation(rotation)
+
+	local state = self:getProp():getState()
+	if state.currentSkyColor then
+		self.particles:getMaterial():setColor(Color(unpack(state.currentSkyColor)))
+	end
 end
 
 return MoonDebrisRing
