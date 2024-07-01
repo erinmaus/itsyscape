@@ -16,6 +16,8 @@ local StaticMesh = require "ItsyScape.Graphics.StaticMesh"
 local Color = require "ItsyScape.Graphics.Color"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
+local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Button = require "ItsyScape.UI.Button"
@@ -121,9 +123,20 @@ function DecorationPalette:loadDecorations()
 	self.searchInput:setText("")
 
 	self.staticMesh = StaticMesh(string.format("Resources/Game/TileSets/%s/Layout.lstatic", self.application.currentDecorationTileSet))
-	self.texture = TextureResource()
-	do
-		self.texture:loadFromFile(string.format("Resources/Game/TileSets/%s/Texture.png", self.application.currentDecorationTileSet))
+
+	local textureFilename = string.format(
+		"Resources/Game/TileSets/%s/Texture.png",
+		decoration:getTileSetID())
+	local layerTextureFilename = string.format(
+		"Resources/Game/TileSets/%s/Texture.lua",
+		decoration:getTileSetID())
+
+	if love.filesystem.getInfo(layerTextureFilename) then
+		self.texture = LayerTextureResource()
+		self.texture:loadFromFile(layerTextureFilename)
+	else
+		self.texture = TextureResource()
+		self.texture:loadFromFile(textureFilename)
 	end
 
 	local oldButtons = self.buttons or {}
@@ -143,6 +156,18 @@ function DecorationPalette:loadDecorations()
 		sceneNode:getMaterial():setIsCullDisabled(true)
 		sceneNode:getTransform():setLocalTranslation(Vector(-0.5, 0, -0.5))
 		sceneNode:setParent(sceneSnippet:getRoot())
+
+		local shader
+		if Class.isCompatibleType(texture, LayerTextureResource) then
+			shader = self.resourceManager:load(
+				ShaderResource,
+				"Resources/Shaders/MultiTextureDecoration")
+		else
+			shader = self.resourceManager:load(
+				ShaderResource,
+				"Resources/Shaders/Decoration")
+		end
+		sceneNode:getMaterial():setShader(shader)
 
 		local light = AmbientLightSceneNode()
 		light:setAmbience(1)

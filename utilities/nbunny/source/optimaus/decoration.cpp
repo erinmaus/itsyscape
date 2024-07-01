@@ -207,6 +207,7 @@ nbunny::DecorationSceneNode::DecorationSceneNode(int reference) :
 		{ "VertexPosition", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexNormal", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexTexture", love::graphics::vertex::DATA_FLOAT, 3 },
+		{ "VertexLayer", love::graphics::vertex::DATA_FLOAT, 1 },
 		{ "VertexColor", love::graphics::vertex::DATA_FLOAT, 4 },
 	})
 {
@@ -333,7 +334,8 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 			output_vertex.normal = input_normal;
 
 			auto input_texture = *(const glm::vec2*) (input_vertex + texture_offset);
-			output_vertex.texture = glm::vec3(input_texture, feature->texture);
+			output_vertex.texture = input_texture;
+			output_vertex.layer = feature->texture;
 
 			auto input_color = feature->color;
 			if (has_color)
