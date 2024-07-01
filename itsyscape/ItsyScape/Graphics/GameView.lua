@@ -1167,155 +1167,115 @@ function GameView:decorate(group, decoration, layer)
 		local sceneNode
 		if isSpline then
 			sceneNode = SplineSceneNode()
-			self.resourceManager:queueAsyncEvent(function()
-				local tileSetFilename = string.format(
-					"Resources/Game/TileSets/%s/Layout.lstatic",
-					decoration:getTileSetID())
-				local staticMesh = self.resourceManager:load(
-					StaticMeshResource,
-					tileSetFilename)
-
-				local textureFilename = string.format(
-					"Resources/Game/TileSets/%s/Texture.png",
-					decoration:getTileSetID())
-				local texture = self.resourceManager:load(
-					TextureResource,
-					textureFilename)
-
-				sceneNode:fromSpline(decoration, staticMesh:getResource())
-				sceneNode:getMaterial():setTextures(texture)
-
-				if self.decorations[groupName] ~= d then
-					Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
-					return
-				end
-
-				sceneNode:setParent(map)
-
-				if decoration:getIsWall() and not self:_getIsMapEditor() then
-					local shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/WallDecoration")
-					sceneNode:getMaterial():setShader(shader)
-					sceneNode:onWillRender(function(renderer)
-						if m and m.onWillRender then
-							m.onWillRender(renderer)
-						end
-
-						local shader = renderer:getCurrentShader()
-						if shader:hasUniform("scape_WallHackAlpha") then
-							shader:send("scape_WallHackAlpha", 0.0)
-						end
-					end)
-
-					local alphaSceneNode = SplineSceneNode()
-					alphaSceneNode:fromSpline(decoration, staticMesh:getResource())
-					alphaSceneNode:getMaterial():setTextures(texture)
-					alphaSceneNode:getMaterial():setIsTranslucent(true)
-					alphaSceneNode:setParent(map)
-					alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
-					alphaSceneNode:getMaterial():setShader(shader)
-					alphaSceneNode:onWillRender(function(renderer)
-						if m and m.onWillRender then
-							m.onWillRender(renderer)
-						end
-
-						local shader = renderer:getCurrentShader()
-						if shader:hasUniform("scape_WallHackAlpha") then
-							shader:send("scape_WallHackAlpha", 1.0)
-						end
-					end)
-
-					d.alphaSceneNode = alphaSceneNode
-				else
-					local shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/Decoration")
-					sceneNode:getMaterial():setShader(shader)
-
-					if m then
-						sceneNode:onWillRender(m.onWillRender)
-					end
-				end
-
-				d.staticMesh = staticMesh
-			end)
 		elseif isDecoration then
 			sceneNode = DecorationSceneNode()
-			self.resourceManager:queueAsyncEvent(function()
-				local tileSetFilename = string.format(
-					"Resources/Game/TileSets/%s/Layout.lstatic",
-					decoration:getTileSetID())
-				local staticMesh = self.resourceManager:load(
-					StaticMeshResource,
-					tileSetFilename)
+		end
 
-				local textureFilename = string.format(
-					"Resources/Game/TileSets/%s/Texture.png",
-					decoration:getTileSetID())
-				local texture = self.resourceManager:load(
+		self.resourceManager:queueAsyncEvent(function()
+			local tileSetFilename = string.format(
+				"Resources/Game/TileSets/%s/Layout.lstatic",
+				decoration:getTileSetID())
+			local staticMesh = self.resourceManager:load(
+				StaticMeshResource,
+				tileSetFilename)
+
+			local textureFilename = string.format(
+				"Resources/Game/TileSets/%s/Texture.png",
+				decoration:getTileSetID())
+			local layerTextureFilename = string.format(
+				"Resources/Game/TileSets/%s/Texture.lua",
+				decoration:getTileSetID())
+
+			local texture
+			if love.filesystem.getInfo(layerTextureFilename) then
+				texture = self.resourceManager:load(
+					LayerTextureResource,
+					layerTextureFilename)
+			else
+				texture = self.resourceManager:load(
 					TextureResource,
 					textureFilename)
+			end
 
+			if isSpline then
+				sceneNode:fromSpline(decoration, staticMesh:getResource())
+				sceneNode:getMaterial():setTextures(texture)
+			else
 				sceneNode:fromDecoration(decoration, staticMesh:getResource())
 				sceneNode:getMaterial():setTextures(texture)
+			end
 
-				if self.decorations[groupName] ~= d then
-					Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
-					return
-				end
+			if self.decorations[groupName] ~= d then
+				Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
+				return
+			end
 
-				sceneNode:setParent(map)
+			sceneNode:setParent(map)
 
-				if decoration:getIsWall() and not self:_getIsMapEditor() then
-					local shader = self.resourceManager:load(
+			if decoration:getIsWall() and not self:_getIsMapEditor() then
+				local shader
+				if Class.isCompatibleType(texture, LayerTextureResource) then
+					shader = self.resourceManager:load(
+						ShaderResource,
+						"Resources/Shaders/MultiTextureWallDecoration")
+				else
+					shader = self.resourceManager:load(
 						ShaderResource,
 						"Resources/Shaders/WallDecoration")
-					sceneNode:getMaterial():setShader(shader)
-					sceneNode:onWillRender(function(renderer)
-						if m and m.onWillRender then
-							m.onWillRender(renderer)
-						end
-
-						local shader = renderer:getCurrentShader()
-						if shader:hasUniform("scape_WallHackAlpha") then
-							shader:send("scape_WallHackAlpha", 0.0)
-						end
-					end)
-
-					local alphaSceneNode = DecorationSceneNode()
-					alphaSceneNode:fromDecoration(decoration, staticMesh:getResource())
-					alphaSceneNode:getMaterial():setTextures(texture)
-					alphaSceneNode:getMaterial():setIsTranslucent(true)
-					alphaSceneNode:setParent(map)
-					alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
-					alphaSceneNode:getMaterial():setShader(shader)
-					alphaSceneNode:onWillRender(function(renderer)
-						if m and m.onWillRender then
-							m.onWillRender(renderer)
-						end
-
-						local shader = renderer:getCurrentShader()
-						if shader:hasUniform("scape_WallHackAlpha") then
-							shader:send("scape_WallHackAlpha", 1.0)
-						end
-					end)
-
-					d.alphaSceneNode = alphaSceneNode
-				else
-					local shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/Decoration")
-					sceneNode:getMaterial():setShader(shader)
-
-					if m then
-						sceneNode:onWillRender(m.onWillRender)
-					end
 				end
 
-				d.staticMesh = staticMesh
-			end)
-		end
+				sceneNode:getMaterial():setShader(shader)
+				sceneNode:onWillRender(function(renderer)
+					if m and m.onWillRender then
+						m.onWillRender(renderer)
+					end
+
+					local shader = renderer:getCurrentShader()
+					if shader:hasUniform("scape_WallHackAlpha") then
+						shader:send("scape_WallHackAlpha", 0.0)
+					end
+				end)
+
+				local alphaSceneNode = SplineSceneNode()
+				alphaSceneNode:fromSpline(decoration, staticMesh:getResource())
+				alphaSceneNode:getMaterial():setTextures(texture)
+				alphaSceneNode:getMaterial():setIsTranslucent(true)
+				alphaSceneNode:setParent(map)
+				alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
+				alphaSceneNode:getMaterial():setShader(shader)
+				alphaSceneNode:onWillRender(function(renderer)
+					if m and m.onWillRender then
+						m.onWillRender(renderer)
+					end
+
+					local shader = renderer:getCurrentShader()
+					if shader:hasUniform("scape_WallHackAlpha") then
+						shader:send("scape_WallHackAlpha", 1.0)
+					end
+				end)
+
+				d.alphaSceneNode = alphaSceneNode
+			else
+				local shader
+				if Class.isCompatibleType(texture, LayerTextureResource) then
+					shader = self.resourceManager:load(
+						ShaderResource,
+						"Resources/Shaders/MultiTextureDecoration")
+				else
+					shader = self.resourceManager:load(
+						ShaderResource,
+						"Resources/Shaders/Decoration")
+				end
+
+				sceneNode:getMaterial():setShader(shader)
+
+				if m then
+					sceneNode:onWillRender(m.onWillRender)
+				end
+			end
+
+			d.staticMesh = staticMesh
+		end)
 
 		d.decoration = decoration
 		d.name = group

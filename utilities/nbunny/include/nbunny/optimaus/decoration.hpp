@@ -61,7 +61,8 @@ namespace nbunny
 		{
 			glm::vec3 position;
 			glm::vec3 normal;
-			glm::vec3 texture;
+			glm::vec2 texture;
+			float layer;
 			glm::vec4 color;
 		};
 
