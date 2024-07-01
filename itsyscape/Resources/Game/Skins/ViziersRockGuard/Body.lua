@@ -1,4 +1,4 @@
 {
-	model = "Resources/Game/Skins/ViziersRockGuard/Body.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Body.lmesh",
 	texture = "Resources/Game/Skins/ViziersRockGuard/ViziersRockGuard.png"
 }

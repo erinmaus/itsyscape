@@ -23,12 +23,14 @@ ActorProxy.setSkin = Event.Set(
 	ActorProxy.SKIN,
 	Event.KeyArgument("slot"),
 	Event.KeyArgument("priority"),
-	Event.Argument("skin"))
+	Event.Argument("skin"),
+	Event.Argument("config"))
 ActorProxy.setSkin:link(
 	"onSkinChanged",
 	Event.Argument("slot"),
 	Event.Argument("priority"),
-	Event.Argument("skin"))
+	Event.Argument("skin"),
+	Event.Argument("config"))
 ActorProxy.unsetSkin = Event.Unset(
 	ActorProxy.SKIN,
 	Event.KeyArgument("slot"),

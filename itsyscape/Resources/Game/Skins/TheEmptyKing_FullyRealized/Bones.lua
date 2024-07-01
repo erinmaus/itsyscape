@@ -254,5 +254,6 @@
 				}
 			}
 		}
-	}
+	},
+	outlineThreshold = 0.7
 }

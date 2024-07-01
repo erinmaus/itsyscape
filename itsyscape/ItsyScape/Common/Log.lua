@@ -12,7 +12,7 @@ local debug = require "debug"
 local Log = {}
 
 function Log.sendError(message, targetStack)
-	if _DEBUG then
+	if _DEBUG or _EDITOR then
 		return
 	end
 

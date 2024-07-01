@@ -37,7 +37,8 @@ function Model:loadFromFile(filename, skeleton)
 end
 
 function Model:bindSkeleton(skeleton)
-	local vertices = {}
+	local vertices = self.mappedVertices or {}
+	table.clear(vertices)
 
 	local LOVE_VERTEX_FORMAT_COUNT_INDEX = 3
 	local LOVE_VERTEX_FORMAT_NAME_INDEX = 1
@@ -70,7 +71,12 @@ function Model:bindSkeleton(skeleton)
 	-- Convert bone names to bone indices.
 	-- Also update min max.
 	for i = 1, #self.vertices do
-		local vertex = { unpack(self.vertices[i]) }
+		local vertex = vertices[i] or {}
+
+		for j, value in ipairs(self.vertices[i]) do
+			vertex[j] = value
+		end
+
 		vertices[i] = vertex
 
 		for j = 1, maxBonesPerVertex do
@@ -86,9 +92,13 @@ function Model:bindSkeleton(skeleton)
 			end
 		end
 
-		local p = Vector(unpack(self.vertices[i], positionOffset + 1, positionOffset + positionCount))
-		min = min:min(p)
-		max = max:max(p)
+		local x, y, z = unpack(self.vertices[i], positionOffset + 1, positionOffset + positionCount)
+		min.x = math.min(min.x, x)
+		min.y = math.min(min.y, y)
+		min.z = math.min(min.z, z)
+		max.x = math.max(max.x, x)
+		max.y = math.max(max.y, y)
+		max.z = math.max(max.z, z)
 	end
 
 	local mesh = love.graphics.newMesh(self.format, vertices, 'triangles', 'static')
@@ -102,6 +112,7 @@ function Model:bindSkeleton(skeleton)
 	self.max = max
 
 	self.skeleton = skeleton or false
+	self.mappedVertices = vertices
 end
 
 function Model:loadFromTable(t, skeleton)

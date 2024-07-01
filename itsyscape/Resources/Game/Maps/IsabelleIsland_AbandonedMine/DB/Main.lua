@@ -72,6 +72,37 @@ do
 	}
 end
 
+M["Light_Sun"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Sun",
+		Map = M._MAP,
+		Resource = M["Light_Sun"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "DirectionalLight_Default",
+		MapObject = M["Light_Sun"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 100,
+		ColorGreen = 100,
+		ColorBlue = 100,
+		Resource = M["Light_Sun"]
+	}
+
+	ItsyScape.Meta.DirectionalLight {
+		DirectionX = 4,
+		DirectionY = 8,
+		DirectionZ = -4,
+		Resource = M["Light_Sun"]
+	}
+end
+
 M["Anchor_Entrance"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -321,24 +352,6 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Miner",
 		MapObject = M["MiningTutor"]
-	}
-
-	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "BronzePlatebody",
-		Count = 1,
-		Resource = M["MiningTutor"]
-	}
-
-	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "BronzeGloves",
-		Count = 1,
-		Resource = M["MiningTutor"]
-	}
-
-	ItsyScape.Meta.PeepEquipmentItem {
-		Item = ItsyScape.Resource.Item "BronzeBoots",
-		Count = 1,
-		Resource = M["MiningTutor"]
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {

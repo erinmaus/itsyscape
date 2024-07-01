@@ -1,5 +1,4 @@
 uniform Image scape_DiffuseTexture;
-uniform highp float scape_Time;
 uniform highp float scape_Offset;
 
 varying vec2 frag_Direction;

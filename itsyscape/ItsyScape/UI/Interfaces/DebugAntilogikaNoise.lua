@@ -17,7 +17,7 @@ local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local TextInput = require "ItsyScape.UI.TextInput"
-local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
+local Noise = require "ItsyScape.Graphics.Noise"
 
 local DebugAntilogikaNoise = Class(Interface)
 
@@ -32,11 +32,11 @@ function DebugAntilogikaNoise.Noise:new(params)
 end
 
 function DebugAntilogikaNoise.Noise:refresh()
-	local noise = NoiseBuilder.TERRAIN(self.params)
+	local noise = Noise.DEFAULT(self.params)
 	noise = noise({ offset = Vector(self.params.x, self.params.y, self.params.z) })
 
 	local w, h = self:getSize()
-	self.texture = love.graphics.newImage(noise:sampleTestImage(w, h))
+	self.texture = love.graphics.newImage(noise:sampleTestImage(w, h, self.params.tiles), nil, self.params.w)
 end
 
 function DebugAntilogikaNoise.Noise:draw()
@@ -53,14 +53,14 @@ DebugAntilogikaNoise.PADDING = 8
 DebugAntilogikaNoise.ROW_HEIGHT = 48
 
 DebugAntilogikaNoise.PARAMS = {
-	"Persistence",
 	"Scale",
 	"Octaves",
-	"Amplitude",
-	"Lacunarity",
+	"Attenuation",
 	"X",
 	"Y",
-	"Z"
+	"Z",
+	"W",
+	"Tiles"
 }
 
 function DebugAntilogikaNoise:new(id, index, ui)
@@ -87,14 +87,14 @@ function DebugAntilogikaNoise:new(id, index, ui)
 	self:addChild(layout)
 
 	self.params = {
-		persistence = NoiseBuilder.TERRAIN:getPersistence(),
-		scale = NoiseBuilder.TERRAIN:getScale(),
-		octaves = NoiseBuilder.TERRAIN:getOctaves(),
-		amplitude = NoiseBuilder.TERRAIN:getAmplitude(),
-		lacunarity = NoiseBuilder.TERRAIN:getLacunarity(),
-		x = NoiseBuilder.TERRAIN:getOffset().x,
-		y = NoiseBuilder.TERRAIN:getOffset().y,
-		z = NoiseBuilder.TERRAIN:getOffset().z
+		scale = Noise.DEFAULT:getScale(),
+		octaves = Noise.DEFAULT:getOctaves(),
+		attenuation = Noise.DEFAULT:getAttenuation(),
+		x = Noise.DEFAULT:getOffset().x,
+		y = Noise.DEFAULT:getOffset().y,
+		z = Noise.DEFAULT:getOffset().z,
+		w = 0,
+		tiles = 1
 	}
 
 	for i = 1, #DebugAntilogikaNoise.PARAMS do

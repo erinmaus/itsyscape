@@ -127,7 +127,10 @@ function CutsceneTransition:update(delta)
 			local resources = self:getView():getGameView():getResourceManager()
 			self.wasQueueEmpty = self.wasQueueEmpty or not resources:getIsPending()
 
+
 			if self.wasQueueEmpty then
+				Log.info("Took %0.2f ms to load.", self.time * 1000)
+
 				self.time = 0
 			end
 

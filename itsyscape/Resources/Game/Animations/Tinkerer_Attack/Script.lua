@@ -3,6 +3,7 @@ Animation "Tinkerer Attack" {
 		Particles {
 			duration = 1.5,
 			attach = "wing.l.2",
+			rotation = 'X_270',
 
 			system = {
 				numParticles = 20,
@@ -62,6 +63,7 @@ Animation "Tinkerer Attack" {
 		Particles {
 			duration = 1.5,
 			attach = "wing.l.2",
+			rotation = 'X_270',
 
 			system = {
 				numParticles = 20,

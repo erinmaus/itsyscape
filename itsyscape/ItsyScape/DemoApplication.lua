@@ -42,9 +42,9 @@ DemoApplication.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 4
 DemoApplication.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 12
 DemoApplication.PROBE_TICK = 1 / 10
 DemoApplication.TITLE_SCREENS = {
-	"TitleScreen_EmptyRuins",
-	"TitleScreen_RuinsOfRhysilk",
-	"TitleScreen_ViziersRock",
+--	"TitleScreen_EmptyRuins",
+--	"TitleScreen_RuinsOfRhysilk",
+--	"TitleScreen_ViziersRock",
 	"TitleScreen_IsabelleIsland",
 }
 
@@ -243,9 +243,6 @@ function DemoApplication:quit(isError)
 	if not _DEBUG and not _MOBILE and not self:getIsPaused() and (_ANALYTICS_ENABLED and self:tryQuit()) then
 		return true
 	end
-
-	local Resource = require "ItsyScape.Graphics.Resource"
-	Resource.quit()
 
 	self.patchNotesServiceInputChannel:push({ type = "quit" })
 
@@ -998,7 +995,9 @@ function DemoApplication:snapshotPlayerPeep()
 	if _DEBUG then
 		actors = {}
 		for actor in self:getGame():getStage():iterateActors() do
-			table.insert(actors, actor)
+			if self:getGameView():getActor(actor) then
+				table.insert(actors, actor)
+			end
 		end
 	else
 		actors = { self:getGame():getPlayer():getActor() }
@@ -1028,7 +1027,7 @@ function DemoApplication:snapshotPlayerPeep()
 			do
 				local min, max = actor:getBounds()
 				local offset = (max.y - min.y) / 2
-				zoom = (max.z - min.z) + math.max((max.y - min.y), (max.x - min.x)) + 4
+				zoom = gameCamera:getDistance()
 
 				local transform = view:getSceneNode():getTransform():getGlobalTransform(self:getFrameDelta())
 				position = Vector(transform:transformPoint(0, offset, 0))
@@ -1107,31 +1106,36 @@ function DemoApplication:updatePlayerMovement()
 	local left = Keybinds['PLAYER_1_MOVE_LEFT']:isDown()
 	local right = Keybinds['PLAYER_1_MOVE_RIGHT']:isDown()
 
+	local isMoving = up or down or left or right
+	if not self.wasMoving and isMoving then
+		self.wasMoving = true
+		self.initialMovementRotation = self:getCamera():getCombinedRotation()
+	else
+		self.wasMoving = isMoving
+	end
+
 	local x, z = 0, 0
 	do
 		if up then
-			z = z - 1
-		end
-
-		if down then
 			z = z + 1
 		end
 
+		if down then
+			z = z - 1
+		end
+
 		if left then
-			x = x - 1
+			x = x + 1
 		end
 
 		if right then
-			x = x + 1
+			x = x - 1
 		end
 	end
 
-	local rotation = self:getCamera():getCombinedRotation()
-
-	local beforeMovement = Vector(x, 0, z):getNormal()
-	local afterMovement = (-rotation):getNormal():transformVector(Vector(-x, 0, -z):getNormal()):getNormal()
-
-	if beforeMovement:dot(afterMovement) < 0 then
+	local rotation = self.initialMovementRotation or Quaternion.IDENTITY
+	local forward = (-rotation):getNormal():transformVector(Vector.UNIT_Z):getNormal()
+	if forward.z < 0 then
 		x = -x
 		z = -z
 	end

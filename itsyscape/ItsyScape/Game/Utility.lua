@@ -56,6 +56,45 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 -- any resources.
 local Utility = {}
 
+function _doMove(stage, player, path, anchor, raid)
+	local instance = stage:movePeep(player, path, anchor)
+
+	if instance ~= path and raid then
+		raid:addInstance(instance)
+	end
+end
+
+function Utility.move(player, path, anchor, raid)
+	local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+
+	local move = CallbackCommand(_doMove, player:getDirector():getGameInstance():getStage(), player, path, anchor, raid)
+	local wait = WaitCommand(0.5, false)
+	local command = CompositeCommand(true, wait, move)
+
+	if not player:getCommandQueue():interrupt(command) then
+		Log.info("Couldn't interrupt command queue for player '%s'; cannot move.", player:getName())
+		return false
+	end
+
+	player:addBehavior(DisabledBehavior)
+	player:removeBehavior(TargetTileBehavior)
+
+	local movement = player:getBehavior(MovementBehavior)
+	if movement then
+		movement.velocity = Vector.ZERO
+		movement.acceleration = Vector.ZERO
+	end
+
+	Utility.UI.openInterface(player, "CutsceneTransition", false, nil, function()
+		player:removeBehavior(DisabledBehavior)
+	end)
+
+	return true
+end
+
 function Utility.save(player, saveLocation, talk, ...)
 	local director = player:getDirector()
 	if not director then
@@ -734,6 +773,10 @@ function Utility.Time.getDays(currentTime)
 	return math.floor(os.difftime(currentTime, referenceTime) / Utility.Time.DAY)
 end
 
+function Utility.Time.getSeconds(root)
+	return root:getSection("Clock"):get("seconds") or 0
+end
+
 function Utility.Time.getAndUpdateTime(root)
 	local currentOffset = root:getSection("Clock"):get("offset") or 0
 	local currentGameTime = root:getSection("Clock"):get("time") or os.time()
@@ -746,10 +789,15 @@ function Utility.Time.getAndUpdateTime(root)
 	return currentTime + currentOffset
 end
 
-function Utility.Time.updateTime(root, days)
+function Utility.Time.updateTime(root, days, seconds)
 	local currentOffset = root:getSection("Clock"):get("offset") or 0
 	local futureOffset = currentOffset + Utility.Time.DAY * (days or 1)
 	root:getSection("Clock"):set("offset", futureOffset)
+
+	if seconds then
+		local currentSeconds = root:getSection("Clock"):get("seconds") or 0
+		root:getSection("Clock"):set("seconds", currentSeconds + seconds)
+	end
 
 	return Utility.Time.getAndUpdateTime(root)
 end
@@ -910,7 +958,7 @@ Utility.Text.DEFAULT_PRONOUNS   = {
 			"they",
 			"them",
 			"their",
-			"mazer"
+			"patrician"
 		},
 		["male"] = {
 			"he",
@@ -2133,7 +2181,7 @@ function Utility.Peep.getScale(peep)
 	if scale then
 		return scale.scale
 	else
-		return Vector.ZERO
+		return Vector.ONE
 	end
 end
 
@@ -3718,6 +3766,10 @@ function Utility.Peep.Attackable:onHeal(p)
 end
 
 function Utility.Peep.Attackable:onHit(p)
+	if self:hasBehavior(DisabledBehavior) then
+		return
+	end
+
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if not combat then
 		return
@@ -4223,6 +4275,69 @@ function Utility.Peep.Creep:applySkins()
 end
 
 Utility.Peep.Human = {}
+Utility.Peep.Human.Palette = {
+	SKIN_LIGHT = Color.fromHexString("efe3a9"),
+	SKIN_MEDIUM = Color.fromHexString("c5995f"),
+	SKIN_DARK = Color.fromHexString("a4693c"),
+	SKIN_PLASTIC = Color.fromHexString("ffcc00"),
+	SKIN_ZOMBI = Color.fromHexString("bf50d9"),
+	SKIN_NYMPH = Color.fromHexString("cdde87"),
+
+	HAIR_BROWN = Color.fromHexString("6c4527"),
+	HAIR_BLACK = Color.fromHexString("3e3e3e"),
+	HAIR_GREY = Color.fromHexString("cccccc"),
+	HAIR_BLONDE = Color.fromHexString("ffeeaa"),
+	HAIR_PURPLE = Color.fromHexString("8358c3"),
+	HAIR_RED = Color.fromHexString("d45500"),
+	HAIR_GREEN = Color.fromHexString("8dd35f"),
+
+	EYE_BLACK = Color.fromHexString("000000"),
+	EYE_WHITE = Color.fromHexString("ffffff"),
+
+	BONE = Color.fromHexString("e9ddaf"),
+	BONE_ANCIENT = Color.fromHexString("939dac"),
+
+	PRIMARY_RED = Color.fromHexString("cb1d1d"),
+	PRIMARY_GREEN = Color.fromHexString("abc837"),
+	PRIMARY_BLUE = Color.fromHexString("3771c8"),
+	PRIMARY_YELLOW = Color.fromHexString("ffcc00"),
+	PRIMARY_PURPLE = Color.fromHexString("855ad8"),
+	PRIMARY_PINK = Color.fromHexString("ffd5e5"),
+	PRIMARY_BROWN = Color.fromHexString("76523c"),
+	PRIMARY_WHITE = Color.fromHexString("ebf7f9"),
+	PRIMARY_GREY = Color.fromHexString("cccccc"),
+	PRIMARY_BLACK = Color.fromHexString("4d4d4d"),
+
+	ACCENT_GREEN = Color.fromHexString("8dd35f"),
+	ACCENT_PINK = Color.fromHexString("ff2a7f"),
+}
+
+function Utility.Peep.Human:applySkin(slot, priority, relativeFilename, colorConfig)
+	colorConfig = colorConfig or {}
+
+	local remappedColorConfig = {}
+	for _, color in ipairs(colorConfig) do
+		table.insert(remappedColorConfig, { color:get() })
+	end
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return false
+	end
+
+	local filename = string.format("Resources/Game/Skins/%s", relativeFilename)
+	if not love.filesystem.getInfo(filename) then
+		error(string.format("Could not find skin '%s'!", filename))
+	end
+
+	local skin = CacheRef("ItsyScape.Game.Skin.ModelSkin", filename)
+	actor:setSkin(slot, priority, skin, remappedColorConfig)
+
+	return true
+end
+
 function Utility.Peep.Human:applySkins()
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
@@ -4244,8 +4359,26 @@ function Utility.Peep.Human:applySkins()
 			for i = 1, #skins do
 				local skin = skins[i]
 				if skin:get("Type") and skin:get("Filename") then
+					local colors = gameDB:getRecords("PeepSkinColor", {
+						Resource = resource,
+						Slot = skin:get("Slot"),
+						Priority = skin:get("Priority")
+					})
+
+					local colorConfig = {}
+					for _, color in ipairs(colors) do
+						local key = color:get("Color")
+						local c = Utility.Peep.Human.Palette[key] or Color.fromHexString(key) or Color(1, 0, 0)
+
+						local h = color:get("H")
+						local s = color:get("S")
+						local l = color:get("L")
+
+						table.insert(colorConfig, { c:shiftHSL(h, s, l):get() })
+					end
+
 					local c = CacheRef(skin:get("Type"), skin:get("Filename"))
-					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c)
+					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c, colorConfig)
 				end
 			end
 		end

@@ -9,10 +9,19 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
+local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local NTextureResource = require "nbunny.optimaus.textureresource"
 local NTextureResourceInstance = require "nbunny.optimaus.textureresourceinstance"
 
 local TextureResource = Resource(NTextureResource)
+
+TextureResource.PASSES = {
+	["Deferred"] = RendererPass.PASS_DEFERRED,
+	["Forward"] = RendererPass.PASS_FORWARD,
+	["Mobile"] = RendererPass.PASS_MOBILE,
+	["Outline"] = RendererPass.PASS_OUTLINE,
+	["Shadow"] = RendererPass.PASS_SHADOW
+}
 
 -- Basic TextureResource resource class.
 --
@@ -53,7 +62,22 @@ end
 function TextureResource:loadFromFile(filename, resourceManager)
 	local image = love.graphics.newImage(filename) 
 	image:setFilter('nearest', 'nearest')
+	image:setWrap("repeat")
 	self:getHandle():setTexture(image)
+
+	for passFilename, passID in pairs(self.PASSES) do
+		local perPassTextureFilename = filename:gsub(
+			"(.*)(%..+)$",
+			string.format("%%1@%s%%2", passFilename))
+
+		if perPassTextureFilename ~= filename and love.filesystem.getInfo(perPassTextureFilename) then
+			local perPassImage = love.graphics.newImage(perPassTextureFilename)
+			perPassImage:setFilter("linear", "linear")
+			perPassImage:setWrap("repeat")
+
+			self:getHandle():setPerPassTexture(passID, perPassImage)
+		end
+	end
 end
 
 function TextureResource:getIsReady()

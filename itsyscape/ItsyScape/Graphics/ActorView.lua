@@ -9,19 +9,23 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
-local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
+local NullActor = require "ItsyScape.Game.Null.Actor"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
 local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local PathTextureResource = require "ItsyScape.Graphics.PathTextureResource"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
+local MapCurve = require "ItsyScape.World.MapCurve"
 
 local ActorView = Class()
 ActorView.Animatable = Class(Animatable)
@@ -211,6 +215,8 @@ function ActorView:new(actor, actorID)
 	self.sceneNode = SceneNode()
 
 	self.layer = false
+	self.position = false
+	self.rotation = Quaternion.IDENTITY
 
 	self.animations = {}
 	self._onAnimationPlayed = function(_, slot, priority, animation, _, time)
@@ -224,11 +230,11 @@ function ActorView:new(actor, actorID)
 
 	self.skins = {}
 	self.models = {}
-	self._onSkinChanged = function(_, slot, priority, skin)
+	self._onSkinChanged = function(_, slot, priority, skin, config)
 		Log.engine(
 			"Skin slot '%s' (priority = %d) changed to '%s' for '%s' (%d).",
 			slot, priority, skin and skin:getFilename(), self.actor:getName(), self.actor:getID() or -1)
-		self:changeSkin(slot, priority, skin)
+		self:changeSkin(slot, priority, skin, config)
 	end
 	actor.onSkinChanged:register(self._onSkinChanged)
 	self._onSkinRemoved = function(_, slot, priority, skin)
@@ -284,6 +290,10 @@ function ActorView:getActor()
 	return self.actor
 end
 
+function ActorView:getIsImmediate()
+	return Class.isCompatibleType(self.actor, NullActor)
+end
+
 function ActorView:attach(game)
 	self.game = game
 end
@@ -335,7 +345,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 	local a = self.animations[slot] or {}
 
 	if priority and animation then
-		self.game:getResourceManager():queueCacheRef(animation, function(definition)
+		local function loadAnimation(definition)
 			if (a.definition and a.definition:getFadesOut()) or
 			   (a.instance and definition:getResource():getFadesIn())
 			then
@@ -364,11 +374,17 @@ function ActorView:playAnimation(slot, animation, priority, time)
 			self.animations[slot] = a
 			self:sortAnimations()
 			self:updateAnimations(0)
-		end)
+		end
+
+		if self:getIsImmediate() then
+			loadAnimation(self.game:getResourceManager():loadCacheRef(animation))
+		else
+			self.game:getResourceManager():queueAsyncCacheRef(animation, loadAnimation)
+		end
 
 		self.animations[slot] = a
 	else
-		self.game:getResourceManager():queueEvent(function()
+		local function stopAnimation()
 			local animation = self.animations[slot]
 			if animation then
 				self.animatable:removePlayingAnimation(animation.id)
@@ -377,27 +393,62 @@ function ActorView:playAnimation(slot, animation, priority, time)
 			self.animations[slot] = nil
 			self:sortAnimations()
 			self:updateAnimations(0)
-		end)
+		end
+
+		if self:getIsImmediate() then
+			stopAnimation()
+		else
+			self.game:getResourceManager():queueAsyncEvent(stopAnimation)
+		end
 	end
 end
 
-function ActorView:_doApplySkin(slotNodes)
+function ActorView:_updateSkinTexture(slot)
+	if Class.isCompatibleType(slot.texture, PathTextureResource) then
+		local colors = {}
+		for index, color in ipairs(slot.config or {}) do
+			colors[index] = Color(unpack(color))
+		end
+
+		slot.canvas = slot.texture:getResource():draw(slot.canvas, slot.instance:mapPathsToColors(colors))
+
+		local resource = TextureResource(slot.canvas)
+		slot.texture:copyPerPassTextures(resource)
+
+		slot.sceneNode:getMaterial():setTextures(resource)
+	elseif slot.texture then
+		slot.sceneNode:getMaterial():setTextures(slot.texture)
+	elseif slot.sceneNode then
+		local translucentTexture = self.game:getTranslucentTexture()
+		slot.sceneNode:getMaterial():setTextures(translucentTexture)
+	end
+end
+
+function ActorView:_doApplySkin(slotNodes, slot, generation)
 	local resourceManager = self.game:getResourceManager()
 
 	for i = 1, #slotNodes do
+		if self.skins[slot] and self.skins[slot].generation ~= generation then
+			return
+		end
+
 		local slot = slotNodes[i]
 		local skin = slot.definition
 
 		if slot.sceneNode then
-			slot.sceneNode:setParent(false)
+			slot.sceneNode:setParent(nil)
 		end
 
-		if self.body then
+		if slot.instance and self.body == slot.body then
+			slot.sceneNode:setParent(self.sceneNode)
+			self:_updateSkinTexture(slot)
+		elseif self.body then
 			if Class.isDerived(skin:getResourceType(), ModelSkin) then
 				local instance = resourceManager:loadCacheRef(skin)
 
 				slot.instance = instance
 				slot.sceneNode = ModelSceneNode()
+				slot.body = self.body
 
 				if slot.instance:getModel() then
 					local model = resourceManager:loadCacheRef(slot.instance:getModel())
@@ -411,15 +462,12 @@ function ActorView:_doApplySkin(slotNodes)
 
 				local textureCacheRef = slot.instance:getTexture()
 				if textureCacheRef then
-					local textureResource = resourceManager:loadCacheRef(textureCacheRef)
-					slot.sceneNode:getMaterial():setTextures(textureResource)
+					slot.texture = resourceManager:loadCacheRef(textureCacheRef)
+					self:_updateSkinTexture(slot)
 
 					if coroutine.running() then
 						coroutine.yield()
 					end
-				else
-					local translucentTexture = self.game:getTranslucentTexture()
-					slot.sceneNode:getMaterial():setTextures(translucentTexture)
 				end
 
 				local shaderCacheRef = slot.instance:getShader()
@@ -437,6 +485,7 @@ function ActorView:_doApplySkin(slotNodes)
 					slot.sceneNode:getMaterial():setIsZWriteDisabled(true)
 				end
 				slot.sceneNode:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
+				slot.sceneNode:getMaterial():setOutlineThreshold(slot.instance:getOutlineThreshold())
 
 				local transform = slot.sceneNode:getTransform()
 				transform:setLocalTranslation(slot.instance:getPosition())
@@ -493,6 +542,10 @@ function ActorView:_doApplySkin(slotNodes)
 				end
 
 				self.models[slot.sceneNode] = true
+
+				if coroutine.running() then
+					coroutine.yield()
+				end
 			end
 		else
 			if slot.sceneNode then
@@ -502,6 +555,10 @@ function ActorView:_doApplySkin(slotNodes)
 			slot.instance = false
 			slot.sceneNode = false
 		end
+	end
+
+	if self.skins[slot] and self.skins[slot].generation ~= generation then
+		return
 	end
 
 	for i = 1, #slotNodes do
@@ -529,9 +586,14 @@ function ActorView:_doApplySkin(slotNodes)
 	end
 end
 
-function ActorView:applySkin(slotNodes)
+function ActorView:applySkin(slot, slotNodes)
+	local copySlotNodes = {}
+	for _, slotNode in ipairs(slotNodes) do
+		table.insert(copySlotNodes, slotNode)
+	end
+
 	local resourceManager = self.game:getResourceManager()
-	resourceManager:queueEvent(self._doApplySkin, self, slotNodes)
+	resourceManager:queueAsyncEvent(self._doApplySkin, self, copySlotNodes, slot, slotNodes.generation)
 end
 
 function ActorView:transmogrify(body)
@@ -540,8 +602,12 @@ function ActorView:transmogrify(body)
 	self.animatable:_newTransforms()
 	self.localTransforms = self.body:getSkeleton():createTransforms()
 
-	for _, slotNodes in pairs(self.skins) do
-		self:applySkin(slotNodes)
+	for slot, slotNodes in pairs(self.skins) do
+		if self:getIsImmediate() then
+			self:_doApplySkin(slotNodes, slot, slotNodes.generation)
+		else
+			self:applySkin(slot, slotNodes)
+		end
 	end
 end
 
@@ -557,90 +623,103 @@ function ActorView:getSkins(slot)
 	return self.skins[slot]
 end
 
-function ActorView:changeSkin(slot, priority, skin)
+function ActorView:changeSkin(slot, priority, skin, config)
 	if not skin then
 		return
 	end
 
-	local slotNodes = self.skins[slot] or {}
-	if not priority then
-		for i = 1, #slotNodes do
-			local s = slotNodes[i]
-			if s.definition == skin then
-				table.remove(slotNodes, i)
+	local slotNodes = self.skins[slot] or { generation = 0 }
 
-				if s.sceneNode then
-					s.sceneNode:setParent(nil)
-				end
+	local oldSkinSlotNode
+	for i = 1, #slotNodes do
+		local s = slotNodes[i]
+		if s.priority == priority or s.definition == skin then
+			table.remove(slotNodes, i)
+			oldSkinSlotNode = s
 
-				Log.engine(
-					"Unset skin for '%s' (%d) @ slot '%s' (%s): '%s'.",
-					self.actor:getName(), self.actor:getID(),
-					Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot),
-					skin:getFilename())
-
-				break
-			end
+			break
 		end
-	else
-		for i = 1, #slotNodes do
-			local s = slotNodes[i]
-			if s.priority == priority then
-				table.remove(slotNodes, i)
+	end
 
-				if s.sceneNode then
-					s.sceneNode:setParent(nil)
-				end
-
-				Log.engine(
-					"Unset existing skin for '%s' (%d) @ slot '%s' (%s, priority = %d): '%s'.",
-					self.actor:getName(), self.actor:getID(),
-					Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot), priority,
-					s.definition:getFilename())
-
-				break
-			end
-		end
-
+	if priority then
 		local s = {
 			definition = skin,
-			priority = priority
+			priority = priority,
+			config = config or {}
 		}
 
 		table.insert(slotNodes, s)
 		table.sort(slotNodes, function(a, b) return a.priority < b.priority end)
 	end
 
-	self:applySkin(slotNodes)
+	slotNodes.generation = slotNodes.generation + 1
+	if self:getIsImmediate() then
+		self:_doApplySkin(slotNodes, slot, slotNodes.generation)
+	else
+		self:applySkin(slot, slotNodes, slotNodes.generation)
+	end
+
+	if oldSkinSlotNode and oldSkinSlotNode.sceneNode then
+		oldSkinSlotNode.sceneNode:setParent(nil)
+	end
+
 	self.skins[slot] = slotNodes
 end
 
-function ActorView:move(position, layer, instant)
-	self.sceneNode:getTransform():setLocalTranslation(position)
+function ActorView:_getPosition(position, layer)
+	position = position or self.position or Vector.ZERO
+	layer = layer or self.layer or 1
 
-	if instant or layer ~= self.layer then
-		self.sceneNode:getTransform():setPreviousTransform(position)
+	local curves = self.game:getMapCurves(layer)
+	if curves then
+		return MapCurve.transformAll(position, curves)
+	end
+
+	return position
+end
+
+function ActorView:_getRotation(rotation, layer)
+	rotation = rotation or self.rotation or Quaternion.IDENTITY
+	layer = layer or self.layer or 1
+
+	local position = self.position or Vector.ZERO
+	local curves = self.game:getMapCurves(layer)
+	if curves then
+		local _, r = MapCurve.transformAll(position, rotation, curves)
+		return r
+	end
+
+	return rotation
+end
+
+function ActorView:move(position, layer, instant)
+	local previousLayer = self.layer
+	local previousPosition = self.position
+
+	self.position = position
+	self.layer = layer
+
+	if instant then
+		local currentPosition = self:_getPosition(position, layer)
+		self.sceneNode:getTransform():setPreviousTransform(currentPosition)
 	end
 
 	local parent = self.game:getMapSceneNode(layer)
 	if parent ~= self.sceneNode:getParent() then
 		self.sceneNode:setParent(parent)
 	end
-
-	self.layer = layer
 end
 
 function ActorView:face(direction, rotation)
-	if rotation then
-		self.sceneNode:getTransform():setLocalRotation(rotation)
-	else
-		-- Assumes models face right.
-		if direction.x < -0.5 then
-			self.sceneNode:getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi))
-		elseif direction.x > 0.5 then
-			self.sceneNode:getTransform():setLocalRotation(Quaternion.IDENTITY)
+	if not rotation then
+		if math.sign(direction.x) < 0 then
+			rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi)
+		else
+			rotation = Quaternion.IDENTITY
 		end
 	end
+
+	self.rotation = rotation
 end
 
 function ActorView:damage(damageType, damage)
@@ -684,6 +763,16 @@ end
 function ActorView:update(delta)
 	self:updateAnimations(delta)
 	self.animatable:update()
+
+	if self.layer then
+		if self.position then
+			self.sceneNode:getTransform():setLocalTranslation(self:_getPosition(self.position, self.layer))
+		end
+
+		if self.rotation then
+			self.sceneNode:getTransform():setLocalRotation(self:_getRotation(self.rotation, self.layer))
+		end
+	end
 end
 
 function ActorView:getBoneTransform(boneName)
@@ -838,6 +927,14 @@ function ActorView:updateAnimations(delta)
 		skeleton:applyBindPose(transforms)
 	end
 	self:onPostComputeBoneTransforms(transforms, self.animatable)
+end
+
+function ActorView:dirty()
+	for _, skin in pairs(self.skins) do
+		for _, slot in ipairs(skin) do
+			self:_updateSkinTexture(slot)
+		end
+	end
 end
 
 return ActorView

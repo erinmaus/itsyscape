@@ -45,7 +45,8 @@ function TileSet.loadFromFile(filename, loadTexture)
 		textureHeight = t.textureHeight or texture:getHeight()
 	end
 
-	local result = TileSet()
+	local tileSetID = filename:match("Resources/Game/TileSets/([%w%d_]+)/Layout.lua")
+	local result = TileSet(tileSetID)
 	result.textureFilename = t.texture
 
 	for i = 1, #t do
@@ -77,8 +78,13 @@ function TileSet.loadFromFile(filename, loadTexture)
 end
 
 -- Constructs the tile set.
-function TileSet:new()
+function TileSet:new(id)
 	self.tiles = {}
+	self.tileSetID = id
+end
+
+function TileSet:getID()
+	return self.tileSetID
 end
 
 function TileSet:getTextureFilename()

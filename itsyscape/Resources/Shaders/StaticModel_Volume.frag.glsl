@@ -2,7 +2,6 @@
 uniform ArrayImage scape_DiffuseTexture;
 uniform float scape_TextureDepthScale;
 uniform float scape_NumLayers;
-uniform float scape_Time;
 
 varying vec3 frag_CubeNormal;
 varying vec3 frag_CubePosition;

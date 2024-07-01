@@ -240,6 +240,16 @@ bool nbunny::SceneNodeMaterial::get_is_cull_disabled() const
 	return is_cull_disabled;
 }
 
+void nbunny::SceneNodeMaterial::set_outline_threshold(float value)
+{
+	outline_threshold = value;	
+}
+
+float nbunny::SceneNodeMaterial::get_outline_threshold() const
+{
+	return outline_threshold;
+}
+
 const glm::vec4& nbunny::SceneNodeMaterial::get_color() const
 {
 	return color;
@@ -270,9 +280,11 @@ const std::shared_ptr<nbunny::ResourceInstance>& nbunny::SceneNodeMaterial::get_
 void nbunny::SceneNodeMaterial::set_textures(const std::vector<std::shared_ptr<TextureInstance>>& value)
 {
 	textures = value;
+
+	sorted_textures = value;
 	std::sort(
-		textures.begin(),
-		textures.end(),
+		sorted_textures.begin(),
+		sorted_textures.end(),
 		[&](const auto& a, const auto& b)
 		{
 			return a->get_id() < b->get_id();
@@ -295,22 +307,22 @@ bool nbunny::SceneNodeMaterial::operator <(const SceneNodeMaterial& other) const
 		return false;
 	}
 
-	if (textures.size() < other.textures.size())
+	if (sorted_textures.size() < other.sorted_textures.size())
 	{
 		return true;
 	}
-	else if (textures.size() > other.textures.size())
+	else if (sorted_textures.size() > other.sorted_textures.size())
 	{
 		return false;
 	}
 
-	for (auto i = 0; i < textures.size(); ++i)
+	for (auto i = 0; i < sorted_textures.size(); ++i)
 	{
-		if (textures[i]->get_id() < other.textures[i]->get_id())
+		if (sorted_textures[i]->get_id() < other.sorted_textures[i]->get_id())
 		{
 			return true;
 		}
-		else if (textures[i]->get_id() > other.textures[i]->get_id())
+		else if (sorted_textures[i]->get_id() > other.sorted_textures[i]->get_id())
 		{
 			return false;
 		}
@@ -462,6 +474,89 @@ void nbunny::SceneNode::after_draw(Renderer &renderer, float delta)
 	// Nothing.
 }
 
+void nbunny::SceneNode::collect(SceneNode& node, std::vector<SceneNode*>& result)
+{
+	result.push_back(&node);
+
+	for (auto child: node.children)
+	{
+		collect(*child, result);
+	}
+}
+
+void nbunny::SceneNode::filter_visible(std::vector<SceneNode*>& nodes, const Camera& camera, float delta, std::vector<SceneNode*>& result)
+{
+	for (auto node: nodes)
+	{
+		if (!camera.get_is_cull_enabled() || node->get_material().get_is_cull_disabled() || camera.inside(*node, delta))
+		{
+			result.push_back(node);
+		}
+	}
+}
+
+void nbunny::SceneNode::sort_by_material(std::vector<SceneNode*>& nodes)
+{
+	std::stable_sort(
+		nodes.begin(),
+		nodes.end(),
+		[](auto a, auto b)
+		{
+			return a->material < b->material;
+		}
+	);
+}
+
+void nbunny::SceneNode::sort_by_position(std::vector<SceneNode*>& nodes, const Camera& camera, float delta)
+{
+	std::unordered_map<SceneNode*, glm::vec3> screen_positions;
+	std::stable_sort(
+		nodes.begin(),
+		nodes.end(),
+		[&](auto a, auto b)
+		{
+			if (a->get_material().get_is_cull_disabled() != b->get_material().get_is_cull_disabled())
+			{
+				if (a->get_material().get_is_cull_disabled())
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			auto a_screen_position = screen_positions.find(a);
+			if (a_screen_position == screen_positions.end())
+			{
+				auto world = glm::vec3(b->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+				auto p = glm::project(
+					world,
+					camera.get_view(),
+					camera.get_projection(),
+					glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
+				);
+				a_screen_position = screen_positions.insert(std::make_pair(a, p)).first;
+			}
+
+			auto b_screen_position = screen_positions.find(b);
+			if (b_screen_position == screen_positions.end())
+			{
+				auto world = glm::vec3(a->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+				auto p = glm::project(
+					world,
+					camera.get_view(),
+					camera.get_projection(),
+					glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
+				);
+				b_screen_position = screen_positions.insert(std::make_pair(b, p)).first;
+			}
+
+			return glm::floor(a_screen_position->second.z * 1000) < glm::floor(b_screen_position->second.z * 1000);
+		});
+}
+
 void nbunny::SceneNode::walk_by_material(
 	SceneNode& node,
 	const Camera& camera,
@@ -481,14 +576,7 @@ void nbunny::SceneNode::walk_by_material(
 
 	if (!node.parent)
 	{
-		std::stable_sort(
-			result.begin(),
-			result.end(),
-			[](auto a, auto b)
-			{
-				return a->material < b->material;
-			}
-		);
+		sort_by_material(result);
 	}
 }
 
@@ -510,40 +598,7 @@ void nbunny::SceneNode::walk_by_position(
 
 	if (!node.parent)
 	{
-		std::unordered_map<SceneNode*, glm::vec3> screen_positions;
-		std::stable_sort(
-			result.begin(),
-			result.end(),
-			[&](auto a, auto b)
-			{
-				auto a_screen_position = screen_positions.find(a);
-				if (a_screen_position == screen_positions.end())
-				{
-					auto world = glm::vec3(b->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-					auto p = glm::project(
-						world,
-						camera.get_view(),
-						camera.get_projection(),
-						glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
-					);
-					a_screen_position = screen_positions.insert(std::make_pair(a, p)).first;
-				}
-
-				auto b_screen_position = screen_positions.find(b);
-				if (b_screen_position == screen_positions.end())
-				{
-					auto world = glm::vec3(a->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-					auto p = glm::project(
-						world,
-						camera.get_view(),
-						camera.get_projection(),
-						glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
-					);
-					b_screen_position = screen_positions.insert(std::make_pair(b, p)).first;
-				}
-
-				return glm::floor(a_screen_position->second.z * 1000) < glm::floor(b_screen_position->second.z * 1000);
-			});
+		sort_by_position(result, camera, delta);
 	}
 }
 
@@ -554,8 +609,8 @@ void nbunny::Camera::compute_planes() const
 		return;
 	}
 
-	auto projectionView = projection * view;
-	auto m = glm::value_ptr(projectionView);
+	auto projection_view = projection * view;
+	auto m = glm::value_ptr(projection_view);
 
 #define M(i, j) m[(j - 1) * 4 + (i - 1)]
 	// left
@@ -563,62 +618,62 @@ void nbunny::Camera::compute_planes() const
 	planes[0].y = M(1, 2) + M(4, 2);
 	planes[0].z = M(1, 3) + M(4, 3);
 	planes[0].w = M(1, 4) + M(4, 4);
-	float leftLengthInverse = 1.0f / glm::length(glm::vec3(planes[0]));
-	planes[0] *= leftLengthInverse;
+	float left_length_inverse = 1.0f / glm::length(glm::vec3(planes[0]));
+	planes[0] *= left_length_inverse;
 
 	// right
 	planes[1].x = -M(1, 1) + M(4, 1);
 	planes[1].y = -M(1, 2) + M(4, 2);
 	planes[1].z = -M(1, 3) + M(4, 3);
 	planes[1].w = -M(1, 4) + M(4, 4);
-	float rightLengthInverse = 1.0f / glm::length(glm::vec3(planes[1]));
-	planes[1] *= rightLengthInverse;
+	float right_length_inverse = 1.0f / glm::length(glm::vec3(planes[1]));
+	planes[1] *= right_length_inverse;
 
 	// top
 	planes[2].x = -M(2, 1) + M(4, 1);
 	planes[2].y = -M(2, 2) + M(4, 2);
 	planes[2].z = -M(2, 3) + M(4, 3);
 	planes[2].w = -M(2, 4) + M(4, 4);
-	float topLengthInverse = 1.0f / glm::length(glm::vec3(planes[2]));
-	planes[2] *= topLengthInverse;
+	float top_length_inverse = 1.0f / glm::length(glm::vec3(planes[2]));
+	planes[2] *= top_length_inverse;
 
 	// bottom
 	planes[3].x = M(2, 1) + M(4, 1);
 	planes[3].y = M(2, 2) + M(4, 2);
 	planes[3].z = M(2, 3) + M(4, 3);
 	planes[3].w = M(2, 4) + M(4, 4);
-	float bottomLengthInverse = 1.0f / glm::length(glm::vec3(planes[3]));
-	planes[3] *= bottomLengthInverse;
+	float bottom_length_inverse = 1.0f / glm::length(glm::vec3(planes[3]));
+	planes[3] *= bottom_length_inverse;
 
 	// near
 	planes[4].x = M(3, 1) + M(4, 1);
 	planes[4].y = M(3, 2) + M(4, 2);
 	planes[4].z = M(3, 3) + M(4, 3);
 	planes[4].w = M(3, 4) + M(4, 4);
-	float nearLengthInverse = 1.0f / glm::length(glm::vec3(planes[4]));
-	planes[4] *= nearLengthInverse;
+	float near_length_inverse = 1.0f / glm::length(glm::vec3(planes[4]));
+	planes[4] *= near_length_inverse;
 
 	// far
 	planes[5].x = -M(3, 1) + M(4, 1);
 	planes[5].y = -M(3, 2) + M(4, 2);
 	planes[5].z = -M(3, 3) + M(4, 3);
 	planes[5].w = -M(3, 4) + M(4, 4);
-	float farLengthInverse = 1.0f / glm::length(glm::vec3(planes[5]));
-	planes[5] *= farLengthInverse;
+	float far_length_inverse = 1.0f / glm::length(glm::vec3(planes[5]));
+	planes[5] *= far_length_inverse;
 #undef M
 
-	auto inverseViewProjection = glm::inverse(projectionView);
+	auto inverse_view_projection = glm::inverse(projection_view);
 
 	glm::vec4 corners[NUM_POINTS] =
 	{
-		inverseViewProjection * glm::vec4(-1, -1, -1, 1),
-		inverseViewProjection * glm::vec4( 1, -1, -1, 1),
-		inverseViewProjection * glm::vec4(-1,  1, -1, 1),
-		inverseViewProjection * glm::vec4(-1, -1,  1, 1),
-		inverseViewProjection * glm::vec4( 1,  1, -1, 1),
-		inverseViewProjection * glm::vec4( 1, -1,  1, 1),
-		inverseViewProjection * glm::vec4(-1,  1,  1, 1),
-		inverseViewProjection * glm::vec4( 1,  1,  1, 1)
+		inverse_view_projection * glm::vec4(-1, -1, -1, 1),
+		inverse_view_projection * glm::vec4( 1, -1, -1, 1),
+		inverse_view_projection * glm::vec4(-1,  1, -1, 1),
+		inverse_view_projection * glm::vec4(-1, -1,  1, 1),
+		inverse_view_projection * glm::vec4( 1,  1, -1, 1),
+		inverse_view_projection * glm::vec4( 1, -1,  1, 1),
+		inverse_view_projection * glm::vec4(-1,  1,  1, 1),
+		inverse_view_projection * glm::vec4( 1,  1,  1, 1)
 	};
 
 	auto min = glm::vec3(std::numeric_limits<float>::infinity());
@@ -630,8 +685,8 @@ void nbunny::Camera::compute_planes() const
 		max = glm::max(max, p);
 	}
 
-	minFrustum = min;
-	maxFrustum = max;
+	min_frustum = min;
+	max_frustum = max;
 
 	is_dirty = false;
 }
@@ -659,6 +714,36 @@ glm::vec3 nbunny::Camera::get_negative_vertex(
 	}
 
 	return result;
+}
+
+void nbunny::Camera::set_field_of_view(float value)
+{
+	field_of_view = value;
+}
+
+float nbunny::Camera::get_field_of_view() const
+{
+	return field_of_view;
+}
+
+void nbunny::Camera::set_near(float value)
+{
+	near = value;
+}
+
+float nbunny::Camera::get_near() const
+{
+	return near;
+}
+
+void nbunny::Camera::set_far(float value)
+{
+	far = value;
+}
+
+float nbunny::Camera::get_far() const
+{
+	return far;
 }
 
 void nbunny::Camera::set_is_cull_enabled(bool value)
@@ -709,9 +794,82 @@ void nbunny::Camera::move(const glm::vec3& eye_position, const glm::vec3& target
 	this->target_position = target_position;
 }
 
+void nbunny::Camera::set_bounding_sphere_position(const glm::vec3& value)
+{
+	bounding_sphere_position = value;
+}
+
+const glm::vec3& nbunny::Camera::get_bounding_sphere_position() const
+{
+	return bounding_sphere_position;
+}
+
+void nbunny::Camera::set_bounding_sphere_radius(float value)
+{
+	bounding_sphere_radius = value;
+}
+
+float nbunny::Camera::get_bounding_sphere_radius() const
+{
+	return bounding_sphere_radius;
+}
+
+void nbunny::Camera::set_clip_plane(const glm::vec4& value)
+{
+	clip_plane = value;
+}
+
+const glm::vec4& nbunny::Camera::get_clip_plane() const
+{
+	return clip_plane;
+}
+
+void nbunny::Camera::set_is_clip_plane_enabled(bool value)
+{
+	is_clip_plane_enabled = value;
+}
+
+bool nbunny::Camera::get_is_clip_plane_enabled() const
+{
+	return is_clip_plane_enabled;
+}
+
 void nbunny::Camera::rotate(const glm::quat& rotation)
 {
 	this->rotation = rotation;
+}
+
+static float get_square_axis_difference(float value, float min, float max)
+{
+	float difference = 0.0;
+
+	if (value < min)
+	{
+		difference = value - min;
+	}
+	else if (value > max)
+	{
+		difference = value - max;
+	}
+
+	return difference * difference;
+}
+
+bool is_node_intersecting_sphere(const glm::vec3& min, const glm::vec3& max, const glm::vec3& position, float radius)
+{
+	if (radius == std::numeric_limits<float>::infinity())
+	{
+		return true;
+	}
+
+	float radius_squared = radius * radius;
+	float min_distance = 0.0;
+
+	min_distance += get_square_axis_difference(position.x, min.x, max.x);
+	min_distance += get_square_axis_difference(position.z, min.z, max.z);
+	min_distance += get_square_axis_difference(position.z, min.z, max.z);
+
+	return min_distance <= radius_squared;
 }
 
 bool nbunny::Camera::inside(const SceneNode& node, float delta) const
@@ -742,6 +900,11 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 		max = glm::max(max, p);
 	}
 
+	if (!is_node_intersecting_sphere(min, max, bounding_sphere_position, bounding_sphere_radius))
+	{
+		return false;
+	}
+
 	compute_planes();
 
 	for (int i = 0; i < NUM_PLANES; ++i)
@@ -759,6 +922,31 @@ bool nbunny::Camera::inside(const SceneNode& node, float delta) const
 	}
 
 	return true;
+}
+
+int nbunny::Camera::get_num_planes() const
+{
+	return NUM_PLANES;
+}
+
+const glm::vec4& nbunny::Camera::get_plane(int index) const
+{
+	compute_planes();
+
+	index = std::max(std::min(index, NUM_PLANES - 1), 1);
+	return planes[index];
+}
+
+const glm::vec3& nbunny::Camera::get_min_frustum() const
+{
+	compute_planes();
+	return min_frustum;
+}
+
+const glm::vec3& nbunny::Camera::get_max_frustum() const
+{
+	compute_planes();
+	return max_frustum;
 }
 
 static int nbunny_scene_node_transform_get_scene_node(lua_State* L)
@@ -1064,6 +1252,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getIsZWriteDisabled", &nbunny::SceneNodeMaterial::get_is_z_write_disabled,
 		"setIsCullDisabled", &nbunny::SceneNodeMaterial::set_is_cull_disabled,
 		"getIsCullDisabled", &nbunny::SceneNodeMaterial::get_is_cull_disabled,
+		"setOutlineThreshold", &nbunny::SceneNodeMaterial::set_outline_threshold,
+		"getOutlineThreshold", &nbunny::SceneNodeMaterial::get_outline_threshold,
 		"setColor", &nbunny_scene_node_material_set_color,
 		"getColor", &nbunny_scene_node_material_get_color,
 		"setShader", &nbunny::SceneNodeMaterial::set_shader,
@@ -1264,6 +1454,56 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode(lua_State* L)
 	return 1;
 }
 
+const nbunny::Type<nbunny::LuaSceneNode> nbunny::LuaSceneNode::type_pointer;
+
+nbunny::LuaSceneNode::LuaSceneNode(int reference) :
+	SceneNode(reference)
+{
+	// Nothing.
+}
+
+const nbunny::BaseType& nbunny::LuaSceneNode::get_type() const
+{
+	return type_pointer;
+}
+
+extern "C"
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_luascenenode(lua_State* L)
+{
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::LuaSceneNode>("NLuaSceneNode",
+		sol::base_classes, sol::bases<nbunny::SceneNode>(),
+		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::LuaSceneNode>));
+
+	sol::stack::push(L, T);
+
+	return 1;
+}
+
+const nbunny::Type<nbunny::SkyboxSceneNode> nbunny::SkyboxSceneNode::type_pointer;
+
+nbunny::SkyboxSceneNode::SkyboxSceneNode(int reference) :
+	SceneNode(reference)
+{
+	// Nothing.
+}
+
+const nbunny::BaseType& nbunny::SkyboxSceneNode::get_type() const
+{
+	return type_pointer;
+}
+
+extern "C"
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_skyboxscenenode(lua_State* L)
+{
+	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkyboxSceneNode>("NSkyboxSceneNode",
+		sol::base_classes, sol::bases<nbunny::SceneNode>(),
+		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::SkyboxSceneNode>));
+
+	sol::stack::push(L, T);
+
+	return 1;
+}
+
 static int nbunny_camera_get_view(lua_State* L)
 {
 	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
@@ -1350,6 +1590,42 @@ static int nbunny_camera_move_eye(lua_State* L)
 	return 0;
 }
 
+static int nbunny_camera_update_bounding_sphere(lua_State* L)
+{
+	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+	float radius = (float)luaL_checknumber(L, 5);
+
+	camera->set_bounding_sphere_position(glm::vec3(x, y, z));
+	camera->set_bounding_sphere_radius(radius);
+
+	return 0;
+}
+
+static int nbunny_camera_set_clip_plane(lua_State* L)
+{
+	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+	float w = (float)luaL_checknumber(L, 5);
+
+	camera->set_clip_plane(glm::vec4(x, y, z, w));
+	camera->set_is_clip_plane_enabled(true);
+
+	return 0;
+}
+
+static int nbunny_camera_unset_clip_plane(lua_State* L)
+{
+	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	camera->set_is_clip_plane_enabled(false);
+
+	return 0;
+}
+
 static int nbunny_camera_rotate(lua_State* L)
 {
 	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
@@ -1368,12 +1644,21 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 {
 	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Camera>("NCamera",
 		sol::call_constructor, sol::constructors<nbunny::Camera()>(),
+		"setFieldOfView", &nbunny::Camera::set_field_of_view,
+		"getFieldOfView", &nbunny::Camera::get_field_of_view,
+		"setNear", &nbunny::Camera::set_near,
+		"getNear", &nbunny::Camera::get_near,
+		"setFar", &nbunny::Camera::set_far,
+		"getFar", &nbunny::Camera::get_far,
 		"setIsCullEnabled", &nbunny::Camera::set_is_cull_enabled,
 		"getIsCullEnabled", &nbunny::Camera::get_is_cull_enabled,
 		"getView", &nbunny_camera_get_view,
 		"getProjection", &nbunny_camera_get_projection,
 		"update", &nbunny_camera_update,
 		"moveTarget", &nbunny_camera_move_target,
+		"updateBoundingSphere", &nbunny_camera_update_bounding_sphere,
+		"setClipPlane", &nbunny_camera_set_clip_plane,
+		"unsetClipPlane", &nbunny_camera_unset_clip_plane,
 		"moveEye", &nbunny_camera_move_eye,
 		"rotate", &nbunny_camera_rotate,
 		"inside", &nbunny::Camera::inside);

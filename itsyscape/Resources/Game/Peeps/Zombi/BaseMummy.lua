@@ -23,43 +23,38 @@ function BaseMummy:new(resource, name, ...)
 end
 
 function BaseMummy:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
+	Player.ready(self, director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.stoppingForce = 0.5
 	movement.maxSpeed = 4
 	movement.maxAcceleration = 3
 
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Human.lskel")
-	actor:setBody(body)
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Mummy.lua",
+		{ Player.Palette.BONE_ANCIENT })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ Player.Palette.HAIR_BLACK, Player.Palette.EYE_BLACK, Player.Palette.EYE_WHITE })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/Mummy.lua")
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Hands/Humanlike.lua",
+		{ Player.Palette.BONE_ANCIENT })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/Mummy.lua",
+		{ Player.Palette.BONE_ANCIENT })
 
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Mummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Mummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/WhiteEyes_Black.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/Mummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Feet_Mummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
-
-	Player.ready(self, director, game)
 end
 
 return BaseMummy

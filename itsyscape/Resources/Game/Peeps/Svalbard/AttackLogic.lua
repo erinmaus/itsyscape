@@ -32,12 +32,12 @@ local Tree = BTreeBuilder.Node() {
 			},
 
 			Mashina.Peep.PokeSelf {
-				event = "fly"
+				event = "equipXWeapon",
+				poke = "Svalbard_Attack_Magic"
 			},
 
 			Mashina.Peep.PokeSelf {
-				event = "equipXWeapon",
-				poke = "Svalbard_Attack_Magic"
+				event = "land"
 			},
 
 			Mashina.Peep.DidAttack,

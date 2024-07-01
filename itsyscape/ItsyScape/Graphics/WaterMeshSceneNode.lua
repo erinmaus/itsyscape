@@ -115,7 +115,7 @@ function WaterMeshSceneNode:draw(renderer, delta)
 	then
 		texture:getResource():setFilter('nearest', 'nearest')
 		texture:getResource():setWrap('repeat', 'repeat')
-		shader:send("scape_DiffuseTexture", texture:getResource())
+		shader:send("scape_DiffuseTexture", texture:getResource(renderer:getCurrentPass():getID()))
 	end
 
 	if shader:hasUniform("scape_TimeScale") then

@@ -32,7 +32,7 @@ function PortalView:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	local renderer = Renderer(true)
+	local renderer = Renderer()
 	self.renderer = renderer
 	self.camera = ThirdPersonCamera()
 

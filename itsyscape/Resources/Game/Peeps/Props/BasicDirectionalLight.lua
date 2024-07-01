@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local BasicLight = require "Resources.Game.Peeps.Props.BasicLight"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BasicDirectionalLight = Class(BasicLight)
 
@@ -40,6 +41,14 @@ function BasicDirectionalLight:ready(director, game)
 	end
 
 	self:makeGlobal()
+end
+
+function BasicDirectionalLight:getDirection()
+	return self.direction
+end
+
+function BasicDirectionalLight:setDirection(value)
+	self.direction = value or self.direction
 end
 
 function BasicDirectionalLight:getPropState()

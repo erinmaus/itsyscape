@@ -200,7 +200,7 @@ function AncientKaradon:update(...)
 		local mu = Tween.sineEaseOut(math.min(self.currentDiveTime / AncientKaradon.DIVE_DURATION_SECONDS, 1))
 		local currentPosition = startPosition:lerp(endPosition, mu)
 
-		Utility.Peep.setPosition(self, currentPosition)
+		Utility.Peep.setPosition(self, currentPosition, true)
 
 		if self.currentDiveTime > AncientKaradon.DIVE_DURATION_SECONDS then
 			if self.currentAnimationState == AncientKaradon.STATE_DIVE then
@@ -223,7 +223,7 @@ function AncientKaradon:update(...)
 		local nextPosition = Vector(x, 0, z) + self.swimCenter
 
 		Utility.Peep.lookAt(self, nextPosition)
-		Utility.Peep.setPosition(self, nextPosition)
+		Utility.Peep.setPosition(self, nextPosition, true)
 	elseif self.currentAnimationState == AncientKaradon.STATE_TARGET then
 		Utility.Peep.face3D(self)
 	end

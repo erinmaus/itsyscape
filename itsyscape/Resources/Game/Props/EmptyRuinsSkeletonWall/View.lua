@@ -38,7 +38,7 @@ function EmptyRuinsSkeletonWall.SceneNode:draw(renderer, delta)
 	local shader = renderer:getCurrentShader()
 	local texture = self:getMaterial():getTexture(1)
 	if shader:hasUniform("scape_DiffuseTexture") and texture and texture:getIsReady() then
-		shader:send("scape_DiffuseTexture", self:getMaterial():getTexture(1):getResource())
+		shader:send("scape_DiffuseTexture", self:getMaterial():getTexture(1):getResource(renderer:getCurrentPass():getID()))
 	end
 
 	if self.mesh then

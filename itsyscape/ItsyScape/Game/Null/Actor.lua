@@ -14,7 +14,7 @@ local Actor = require "ItsyScape.Game.Model.Actor"
 local NullActor = Class(Actor)
 
 function NullActor:spawn(id)
-	self.id = id
+	self.id = id or 1
 end
 
 function NullActor:depart()
@@ -97,8 +97,8 @@ function NullActor:setBody(body)
 	self.onTransmogrified(self, body)
 end
 
-function NullActor:setSkin(slot, priority, skin)
-	self.onSkinChanged(self, slot, priority, skin)
+function NullActor:setSkin(slot, priority, skin, config)
+	self.onSkinChanged(self, slot, priority, skin, config)
 end
 
 function NullActor:unsetSkin(slot, priority, skin)

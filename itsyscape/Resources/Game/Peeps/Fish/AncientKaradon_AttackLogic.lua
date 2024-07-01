@@ -94,7 +94,7 @@ local PowersMechanic = Mashina.ParallelTry {
 				},
 
 				Mashina.Peep.QueuePower {
-					power = "BindShadow",
+					power = "Hexagram",
 					require_no_cooldown = true
 				},
 			},

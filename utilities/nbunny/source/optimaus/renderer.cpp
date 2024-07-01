@@ -15,12 +15,70 @@
 #include "modules/timer/Timer.h"
 #include "modules/filesystem/Filesystem.h"
 #include "nbunny/optimaus/renderer.hpp"
+#include "modules/graphics/opengl/OpenGL.h"
+
+nbunny::Camera nbunny::Renderer::get_skybox_camera(SceneNode& skybox_scene_node)
+{
+	Camera skybox_camera(get_camera());
+
+	auto old_view = get_camera().get_view();
+	skybox_camera.update(glm::mat4(1.0f), skybox_camera.get_projection());
+
+	const auto& min_frustum = skybox_camera.get_min_frustum();
+	const auto& max_frustum = skybox_camera.get_max_frustum();
+	auto frustum_size = max_frustum - min_frustum;
+
+	const auto& min_scene_node = skybox_scene_node.get_min();
+	const auto& max_scene_node = skybox_scene_node.get_max();
+	auto scene_node_size = max_scene_node - min_scene_node;
+	auto half_scene_node_size = scene_node_size / 2.0f;
+
+	auto relative_size = frustum_size / scene_node_size;
+	auto scale = glm::max(relative_size.x, relative_size.z);
+	auto translation = glm::vec3(0.0f, min_frustum.y + frustum_size.y / 4.0f, 0.0f);
+
+	auto offset_from_matrix = glm::translate(glm::mat4(1.0f), -half_scene_node_size);
+	auto offset_to_matrix = glm::translate(glm::mat4(1.0f), half_scene_node_size);
+	auto rotation_matrix = glm::mat4(glm::mat3(old_view));
+	auto scale_matrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale));
+	auto pre_translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-half_scene_node_size.x, 0.0f, -half_scene_node_size.z));
+	auto post_translation_matrix = glm::translate(glm::mat4(1.0f), translation);
+
+	auto skybox_view = offset_to_matrix * pre_translation_matrix * scale_matrix * rotation_matrix * post_translation_matrix * offset_from_matrix;
+	skybox_camera.update(skybox_view, skybox_camera.get_projection());
+
+	auto eye = half_scene_node_size + translation;
+	auto target = eye + glm::vec3(rotation_matrix * glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	skybox_camera.move(eye, target);
+
+	return skybox_camera;
+}
 
 nbunny::Renderer::Renderer(int reference) :
 	reference(reference), camera(&default_camera)
 {
 	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
 	time = timer_instance->getTime();
+}
+
+const std::vector<nbunny::SceneNode*>& nbunny::Renderer::get_all_scene_nodes() const
+{
+	return all_scene_nodes;
+}
+
+const std::vector<nbunny::SceneNode*>& nbunny::Renderer::get_visible_scene_nodes() const
+{
+	return visible_scene_nodes;
+}
+
+const std::vector<nbunny::SceneNode*>& nbunny::Renderer::get_visible_scene_nodes_by_material() const
+{
+	return visible_scene_nodes_by_material;
+}
+
+const std::vector<nbunny::SceneNode*>& nbunny::Renderer::get_visible_scene_nodes_by_position() const
+{
+	return visible_scene_nodes_by_position;
 }
 
 void nbunny::Renderer::add_renderer_pass(RendererPass* renderer_pass)
@@ -69,6 +127,11 @@ love::graphics::Shader* nbunny::Renderer::get_current_shader() const
 	return current_shader;
 }
 
+int nbunny::Renderer::get_current_pass_id() const
+{
+	return current_renderer_pass_id;
+}
+
 nbunny::ShaderCache& nbunny::Renderer::get_shader_cache()
 {
 	return shader_cache;
@@ -79,8 +142,16 @@ const nbunny::ShaderCache& nbunny::Renderer::get_shader_cache() const
 	return shader_cache;
 }
 
+nbunny::SceneNode* nbunny::Renderer::get_root_node() const
+{
+	return root_node;
+}
+
 void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int width, int height)
 {
+	root_node = &node;
+	set_camera(default_camera);
+
 	if (this->width != width || this->height != height)
 	{
 		this->width = width <= 0 ? 1 : width;
@@ -92,10 +163,37 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 		}
 	}
 
+	Camera* old_camera = nullptr;
+	if (node.get_type() == SkyboxSceneNode::type_pointer)
+	{
+		skybox_camera = get_skybox_camera(node);
+		set_camera(skybox_camera);
+	}
+
+	all_scene_nodes.clear();
+	SceneNode::collect(node, all_scene_nodes);
+
+	visible_scene_nodes.clear();
+	SceneNode::filter_visible(all_scene_nodes, get_camera(), delta, visible_scene_nodes);
+
+	visible_scene_nodes_by_material = visible_scene_nodes;
+	SceneNode::sort_by_material(visible_scene_nodes_by_material);
+
+	visible_scene_nodes_by_position = visible_scene_nodes;
+	SceneNode::sort_by_position(visible_scene_nodes_by_position, get_camera(), delta);
+
 	for (auto& renderer_pass: renderer_passes)
 	{
+		current_renderer_pass_id = renderer_pass->get_renderer_pass_id();
 		renderer_pass->draw(L, node, delta);
 	}
+
+	current_renderer_pass_id = RENDERER_PASS_NONE;
+
+	glad::glDisable(GL_CLIP_DISTANCE0);
+
+	set_camera(default_camera);
+	root_node = nullptr;
 }
 
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
@@ -137,6 +235,14 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 			shader->updateUniform(view_matrix_uniform, 1);
 		}
 
+		auto inverse_view_matrix_uniform = shader->getUniformInfo("scape_InverseViewMatrix");
+		if (view_matrix_uniform)
+		{
+			auto inverse_view = glm::inverse(view);
+			std::memcpy(view_matrix_uniform->floats, glm::value_ptr(inverse_view), sizeof(glm::mat4));
+			shader->updateUniform(view_matrix_uniform, 1);
+		}
+
 		auto projection = camera->get_projection();
 		auto projection_matrix_uniform = shader->getUniformInfo("scape_ProjectionMatrix");
 		if (projection_matrix_uniform)
@@ -144,9 +250,46 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 			std::memcpy(projection_matrix_uniform->floats, glm::value_ptr(projection), sizeof(glm::mat4));
 			shader->updateUniform(projection_matrix_uniform, 1);
 		}
+
+		if (camera->get_is_clip_plane_enabled())
+		{
+			glad::glEnable(GL_CLIP_DISTANCE0);
+
+			auto clip_plane = camera->get_clip_plane();
+			auto clip_plane_uniform = shader->getUniformInfo("scape_ClipPlane");
+			if (clip_plane_uniform)
+			{
+				std::memcpy(clip_plane_uniform->floats, glm::value_ptr(clip_plane), sizeof(glm::vec4));
+				shader->updateUniform(clip_plane_uniform, 1);
+			}
+		}
+		else
+		{
+			glad::glDisable(GL_CLIP_DISTANCE0);
+		}
+
+		auto camera_target_uniform = shader->getUniformInfo("scape_CameraTarget");
+		if (camera_target_uniform)
+		{
+			auto target = camera->get_target_position();
+			std::memcpy(camera_target_uniform->floats, glm::value_ptr(target), sizeof(glm::vec3));
+			shader->updateUniform(camera_target_uniform, 1);
+		}
+
+		auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
+		if (camera_eye_uniform)
+		{
+			auto eye = camera->get_eye_position();
+			std::memcpy(camera_eye_uniform->floats, glm::value_ptr(eye), sizeof(glm::vec3));
+			shader->updateUniform(camera_eye_uniform, 1);
+		}
+	}
+	else
+	{
+		glad::glDisable(GL_CLIP_DISTANCE0);
 	}
 
-	if (!node.is_base_type())
+	if (!node.is_base_type() || node.get_type() != LuaSceneNode::type_pointer)
 	{
 		node.before_draw(*this, delta);
 		node.draw(*this, delta);
@@ -158,6 +301,8 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		return;
 	}
 
+	int before = lua_gettop(L);
+
 	get_weak_reference(L, reference);
 	if (lua_isnil(L, -1))
 	{
@@ -165,17 +310,39 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		return;
 	}
 
-	lua_getfield(L, -1, "renderNode");
-	if (lua_isnil(L, -1))
+	if (node.get_type() == LuaSceneNode::type_pointer)
 	{
-		lua_pop(L, 2); // Renderer reference and field
-		return;
-	}
+		lua_getfield(L, -1, "renderNode");
+		if (lua_isnil(L, -1))
+		{
+			lua_pop(L, 2); // Renderer reference and field
+			return;
+		}
 
-	lua_pushvalue(L, -2);
-	node.get_reference(L);
-	lua_pushnumber(L, delta);
-	lua_call(L, 3, 0);
+		lua_pushvalue(L, -2);
+		node.get_reference(L);
+		lua_pushnumber(L, delta);
+		lua_call(L, 3, 0);
+	}
+	else
+	{
+		if (node.get_reference(L))
+		{
+			lua_getfield(L, -1, "willRender");
+			if (!lua_isnil(L, -1) && lua_toboolean(L, -1))
+			{
+				lua_pushvalue(L, -3);
+				lua_pushnumber(L, delta);
+				lua_call(L, 2, 0);
+			}
+			else
+			{
+				lua_pop(L, 1);
+			}
+		}
+
+		lua_pop(L, 1);
+	}
 
 	lua_pop(L, 1); // Renderer reference
 }
@@ -242,23 +409,22 @@ love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, cons
                 lua_pushvalue(L, -2);
                 lua_call(L, 1, 1);
 
-                v = base_vertex_source;
-
                 lua_getfield(L, -1, "getVertexSource");
                 lua_pushvalue(L, -2);
                 lua_call(L, 1, 1);
 
-                v += luaL_checkstring(L, -1);
+                std::string vertex_source = luaL_checkstring(L, -1);
                 lua_pop(L, 1);
-
-                p = base_pixel_source;
 
                 lua_getfield(L, -1, "getPixelSource");
                 lua_pushvalue(L, -2);
                 lua_call(L, 1, 1);
 
-                p += luaL_checkstring(L, -1);
+                std::string pixel_source luaL_checkstring(L, -1);
                 lua_pop(L, 1);
+
+                auto shader_source = ShaderCache::ShaderSource(vertex_source, pixel_source);
+                shader_source.combine("glsl3", base_vertex_source, base_pixel_source, v, p);
 
                 // Pop return value from "getResource" and the reference
                 lua_pop(L, 2);
@@ -378,6 +544,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_renderer(lua_State* L)
 		"getCamera", &nbunny_renderer_get_camera,
         "getCurrentShader", &nbunny_renderer_get_current_shader,
 		"getShaderCache", &nbunny_renderer_get_shader_cache,
+		"getCurrentPassID", &nbunny::Renderer::get_current_pass_id,
 		"draw", &nbunny_renderer_draw);
 
 	sol::stack::push(L, T);
@@ -390,7 +557,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_rendererpass(lua_State* L)
 {
 	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::RendererPass>("NRendererPass",
 		"new", sol::no_constructor,
-		"getRendererPassID", &nbunny::RendererPass::get_renderer_pass_id);
+		"getID", &nbunny::RendererPass::get_renderer_pass_id);
 
 	sol::stack::push(L, T);
 

@@ -13,6 +13,8 @@ local NMaterial = require "nbunny.optimaus.scenenodematerial"
 
 local Material, Metatable = Class()
 
+Material.DEFAULT_OUTLINE_THRESHOLD = 0.5
+
 -- Constructs a new Material from the shader and textures.
 --
 -- If no shader is provided, the shader is set to a falsey value.
@@ -20,6 +22,7 @@ local Material, Metatable = Class()
 -- Nil values in textures are ignored.
 function Material:new(node, shader, ...)
 	self._handle = node:getHandle():getMaterial()
+	self._handle:setOutlineThreshold(Material.DEFAULT_OUTLINE_THRESHOLD)
 	self.shader = shader or false
 	self:setTextures(...)
 	self.uniforms = {}
@@ -115,6 +118,14 @@ end
 
 function Material:setIsCullDisabled(value)
 	self._handle:setIsCullDisabled(value or false)
+end
+
+function Material:getOutlineThreshold()
+	return self._handle:getOutlineThreshold()
+end
+
+function Material:setOutlineThreshold(value)
+	self._handle:setOutlineThreshold(value or 0.5)
 end
 
 function Material:getColor()

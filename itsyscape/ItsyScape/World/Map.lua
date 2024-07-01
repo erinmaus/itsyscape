@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Ray = require "ItsyScape.Common.Math.Ray"
@@ -163,11 +164,15 @@ Map.RAY_TEST_RESULT_J = 4
 --
 -- If the array is empty, then no tiles were hit...
 function Map:testRay(ray)
+	return self:testRayWithCurves(ray)
+end
+
+function Map:testRayWithCurves(ray, ...)
 	local hitTiles = {}
 	for j = 1, self.height do
 		for i = 1, self.width do
 			local tile = self:getTile(i, j)
-			local success, point = tile:testRay(ray, i, j, self.cellSize)
+			local success, point = tile:testRayWithCurves(ray, i, j, self.cellSize, ...)
 			if success then
 				table.insert(hitTiles, { tile, point, i, j })
 			end
@@ -570,9 +575,7 @@ function Map.loadFromFile(filename)
 	local cacheFilename = filename .. ".cache"
 	local hasCache = love.filesystem.getInfo(cacheFilename)
 	if hasCache then
-		local chunk = assert(load(love.filesystem.read(cacheFilename)))
-		local t = assert(setfenv(chunk, {})())
-
+		local t = buffer.decode(love.filesystem.read(cacheFilename))
 		return Map.loadFromTable(t)
 	else
 		return Map.loadFromString(love.filesystem.read(filename))

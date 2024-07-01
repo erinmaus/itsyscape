@@ -21,6 +21,7 @@ local ModelSkin = Class(Skin)
 function ModelSkin:new()
 	self.model = false
 	self.texture = false
+	self.pathTexture = false
 	self.isBlocking = true
 	self.isOccluded = false
 	self.isOccluding = false
@@ -30,8 +31,11 @@ function ModelSkin:new()
 	self.position = Vector(0)
 	self.scale = Vector(1)
 	self.rotation = Quaternion(0, 0, 0, 1)
+	self.outlineThreshold = 0.5
 	self.lights = {}
 	self.particles = {}
+	self.colors = {}
+	self.pathToColor = {}
 end
 
 function ModelSkin:getResource()
@@ -57,7 +61,7 @@ end
 --                                 -- Defaults to true.
 -- }
 function ModelSkin:loadFromFile(filename)
-	local file = "return " .. love.filesystem.read(filename)
+	local file = "return " .. (love.filesystem.read(filename) or "{}")
 	local chunk = assert(loadstring(file))
 	local result = setfenv(chunk, {})()
 
@@ -71,6 +75,40 @@ function ModelSkin:loadFromFile(filename)
 		self.texture = CacheRef("ItsyScape.Graphics.TextureResource", result.texture)
 	else
 		self.texture = false
+	end
+
+	if result.pathTexture then
+		self.texture = CacheRef("ItsyScape.Graphics.PathTextureResource", result.pathTexture)
+	end
+
+	if result.colors then
+		for _, color in ipairs(result.colors) do
+			table.insert(self.colors, {
+				name = color.name,
+				hueOffset = color.hueOffset and color.hueOffset / 360,
+				saturationOffset = color.saturationOffset and color.saturationOffset / 255,
+				lightnessOffset = color.lightnessOffset and color.lightnessOffset / 255,
+			})
+
+			for _, path in ipairs(color) do
+				self.pathToColor[path] = color.name
+			end
+
+			if color.color then
+				self.pathToColor[color.color] = color.name
+			end
+		end
+
+		for i, color in ipairs(self.colors) do
+			if result.colors[i].parent then
+				for j = 1, i do
+					if self.colors[j].name == result.colors[i].parent then
+						color.parent = self.colors[j]
+						break
+					end
+				end
+			end
+		end
 	end
 
 	if result.isBlocking == nil then
@@ -178,6 +216,10 @@ function ModelSkin:loadFromFile(filename)
 	end
 
 	self.particles = result.particles or {}
+
+	if result.outlineThreshold then
+		self.outlineThreshold = result.outlineThreshold
+	end
 end
 
 -- Gets the model CacheRef.
@@ -238,6 +280,62 @@ end
 
 function ModelSkin:getShader()
 	return self.shader
+end
+
+function ModelSkin:getColors()
+	return self.colors
+end
+
+function ModelSkin:getOutlineThreshold()
+	return self.outlineThreshold
+end
+
+function ModelSkin:_getColor(colorName, colors, c)
+	local index = 0
+	for _, color in ipairs(self.colors) do
+		if not color.parent then
+			index = index + 1
+		end
+
+		if color.name == colorName or color.color == colorName then
+			local result = colors and colors[colorName]
+			result = result or colors[index]
+
+			if not result then
+				result = c[colorName] or Color(Vector(love.math.random(), love.math.random(), love.math.random()):getNormal():get())
+				c[colorName] = result
+			end
+
+			if color and color.parent then
+				result = self:_getColor(color.parent.name, colors, c)
+			end
+
+			if color.hueOffset or color.saturationOffset or color.lightnessOffset then
+				local h, s, l = result:toHSL()
+				h = h + (color.hueOffset or 0)
+				s = math.clamp(s + (color.saturationOffset or 0))
+				l = math.clamp(l + (color.lightnessOffset or 0))
+
+				local b = result
+				result = Color.fromHSL(h % 1, s, l)
+			end
+
+			return result
+		end
+	end
+
+	return colors[colorName]
+end
+
+function ModelSkin:mapPathsToColors(colors, c)
+	local result = {}
+	local c = {}
+
+	for pathID, colorName in pairs(self.pathToColor) do
+		result[pathID] = self:_getColor(colorName, colors, c)
+	end
+
+	return result
 end
 
 return ModelSkin

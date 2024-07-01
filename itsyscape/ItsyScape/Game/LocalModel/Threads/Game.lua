@@ -256,6 +256,8 @@ while isRunning do
 		if _DEBUG then
 			Log.engine("Slept for %0.2f ms, target was %0.2f.", sleepDuration * 1000, (afterSleep - beforeSleep) * 1000)
 		end
+	else
+		love.timer.sleep(0.01)
 	end
 
 	if duration > game:getTargetDelta() or _DEBUG then

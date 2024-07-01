@@ -70,7 +70,7 @@ do
 			}
 
 			if openSkillGuide == YES then
-				Utility.UI.openInterface(_TARGET, "Engineering", true, "Fletching")
+				Utility.UI.openInterface(_TARGET, "SkillGuide", true, "Engineering")
 				result = QUIT
 			else
 				message "Gotcha."

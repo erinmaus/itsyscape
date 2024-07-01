@@ -108,6 +108,21 @@ static int nbunny_decoration_feature_get_color(lua_State* L)
 	return 4;
 }
 
+static int nbunny_decoration_feature_set_texture(lua_State* L)
+{
+	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
+	float texture = (float)luaL_checknumber(L, 2);
+	feature.texture = texture;
+	return 0;
+}
+
+static int nbunny_decoration_feature_get_texture(lua_State* L)
+{
+	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
+	lua_pushnumber(L, feature.texture);
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_decorationfeature(lua_State* L)
 {
@@ -122,7 +137,9 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_decorationfeature(lua_State* L)
 		"setScale", &nbunny_decoration_feature_set_scale,
 		"getScale", &nbunny_decoration_feature_get_scale,
 		"setColor", &nbunny_decoration_feature_set_color,
-		"getColor", &nbunny_decoration_feature_get_color);
+		"getColor", &nbunny_decoration_feature_get_color,
+		"setTexture", &nbunny_decoration_feature_set_texture,
+		"getTexture", &nbunny_decoration_feature_get_texture);
 
 	sol::stack::push(L, T);
 
@@ -190,6 +207,7 @@ nbunny::DecorationSceneNode::DecorationSceneNode(int reference) :
 		{ "VertexPosition", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexNormal", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexTexture", love::graphics::vertex::DATA_FLOAT, 2 },
+		{ "VertexLayer", love::graphics::vertex::DATA_FLOAT, 1 },
 		{ "VertexColor", love::graphics::vertex::DATA_FLOAT, 4 },
 	})
 {
@@ -317,6 +335,7 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 
 			auto input_texture = *(const glm::vec2*) (input_vertex + texture_offset);
 			output_vertex.texture = input_texture;
+			output_vertex.layer = feature->texture;
 
 			auto input_color = feature->color;
 			if (has_color)
@@ -482,7 +501,7 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 	auto diffuse_texture_uniform = shader->getUniformInfo("scape_DiffuseTexture");
 	if (diffuse_texture_uniform && textures.size() >= 1)
 	{
-		auto texture = textures[0]->get_texture();
+		auto texture = textures[0]->get_per_pass_texture(renderer.get_current_pass_id());
 		if (texture)
 		{
 			shader->sendTextures(diffuse_texture_uniform, &texture, 1);

@@ -37,8 +37,17 @@ function Color.fromHexString(color, alpha)
 		return Color(red, green, blue, alpha or 1)
 	end
 
-	Log.error("Color '%s' not in hex string format.", color)
 	return nil
+end
+
+function Color:toHexString(includeAlpha, prefix)
+	prefix = prefix or ""
+
+	if includeAlpha then
+		return string.format("%s%02x%02x%02x%02x", prefix, self.r * 255, self.g * 255, self.b * 255, self.a * 255)
+	end
+		
+	return string.format("%s%02x%02x%02x", prefix, self.r * 255, self.g * 255, self.b * 255)
 end
 
 
@@ -66,6 +75,83 @@ function Color:get(multiplier)
 	multiplier = multiplier or 1
 
 	return self.r * multiplier, self.g * multiplier, self.b * multiplier, self.a * multiplier
+end
+
+function Color:shiftHSL(h, s, l)
+	h = h or 0
+	s = s or 0
+	l = l or 0
+
+	local currentH, currentS, currentL = self:toHSL()
+
+	h = h + currentH
+	s = math.clamp(currentS + s)
+	l = math.clamp(currentL + l)
+
+	return Color.fromHSL(h, s, l)
+end
+
+function Color:setHSL(h, s, l)
+	local currentH, currentS, currentL = self:toHSL()
+
+	h = h or currentH
+	s = s or currentS
+	l = l or currentL
+
+	return Color.fromHSL(h, s, l)
+end
+
+function Color.fromHSL(h, s, l)
+	local w = (h % 1) * 6
+	local c = (1 - math.abs(2 * l - 1)) * s
+	local x = c * (1 - math.abs(w % 2 - 1))
+	local m = l - c / 2
+
+	local r, g, b = m, m, m
+	if w < 1 then
+		r = r + c
+		g = g + x
+	elseif w < 2 then
+		r = r + x
+		g = g + c
+	elseif w < 3 then
+		g = g + c
+		b = b + x
+	elseif w < 4 then
+		g = g + x
+		b = b + c
+	elseif w < 5 then
+		b = b + c
+		r = r + x
+	else
+		b = b + x
+		r = r + c
+	end
+
+	return Color(r, g, b)
+end
+
+function Color:toHSL()
+	local r, g, b = self:get()
+
+	local max, min = math.max(r, g, b), math.min(r, g, b)
+	if max == min then return 0, 0, min end
+
+	local l, d = max + min, max - min
+	local s = d / (l > 1 and (2 - l) or l)
+	l = l / 2
+
+	local h
+	if max == r then
+		h = (g - b) / d
+		if g < b then h = h + 6 end
+	elseif max == g then
+		h = (b - r) / d + 2
+	else
+		h = (r - g) / d + 4
+	end
+
+	return h / 6, s, l
 end
 
 -- Adds two colors, or a color and a scalar, clamping the result to 0 .. 1
@@ -166,6 +252,18 @@ function Metatable.__div(a, b)
 	end
 
 	return result:clamp()
+end
+
+function Metatable.__eq(a, b)
+	if type(a) == 'number' then
+		return math.floor(b.r * 255) == math.floor(a * 255) and math.floor(b.g * 255) == math.floor(a * 255) and math.floor(b.b * 255) == math.floor(a * 255) and math.floor(b.a * 255) == math.floor(a * 255)
+	elseif type(b) == 'number' then
+		return math.floor(a.r * 255) == math.floor(b * 255) and math.floor(a.g * 255) == math.floor(b * 255) and math.floor(a.b * 255) == math.floor(b * 255) and math.floor(a.a * 255) == math.floor(b * 255)
+	else
+		return math.floor(a.r * 255) == math.floor(b.r * 255) and math.floor(a.g * 255) == math.floor(b.g * 255) and math.floor(a.b * 255) == math.floor(b.b * 255) and math.floor(a.a * 255) == math.floor(b.a * 255)
+	end
+
+	return false
 end
 
 -- Inverts a color.

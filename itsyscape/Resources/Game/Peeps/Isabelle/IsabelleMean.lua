@@ -49,32 +49,20 @@ end
 function IsabelleMean:ready(director, game)
 	Player.ready(self, director, game)
 
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	actor:setBody(
-		CacheRef(
-			"ItsyScape.Game.Body",
-			"Resources/Game/Bodies/Human.lskel"))
-
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Light.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Red.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local amuletOfYendor = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Amulets/AmuletOfYendor.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_NECK, Equipment.SKIN_PRIORITY_EQUIPMENT, amuletOfYendor)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Isabellium/Isabellium.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_SELF, Equipment.SKIN_PRIORITY_BASE, body)
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Humanlike.lua",
+		{ Player.Palette.SKIN_LIGHT })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ Player.Palette.HAIR_RED, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_NECK,
+		Equipment.SKIN_PRIORITY_BASE,
+		"Amulets/AmuletOfYendor.lua")
 
 	self:onSwitchStyle(IsabelleMean.STYLE_MELEE)
 

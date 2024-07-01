@@ -79,6 +79,7 @@ public:
 	float x_range_center = 0.0f, x_range_width = 1.0f;
 	float y_range_center = 0.0f, y_range_width = 1.0f;
 	float z_range_center = 0.0f, z_range_width = 1.0f;
+	bool set_normal = false;
 
 	void update_local_position(const glm::vec3& value)
 	{
@@ -115,6 +116,8 @@ public:
 		auto z = table.get_or("zRange", sol::table(L, sol::create));
 		z_range_center = z.get_or(1, 0.0f);
 		z_range_width = z.get_or(2, 1.0f);
+
+		set_normal = table.get_or("normal", sol::table(L, sol::create)).get_or(1, false);
 	}
 
 	void emit(nbunny::Particle& p)
@@ -134,6 +137,11 @@ public:
 		p.position = normal * radius + position + local_position;
 		p.velocity = normal * velocity;
 		p.acceleration = normal * acceleration;
+
+		if (set_normal)
+		{
+			p.normal = -normal;
+		}
 	}
 };
 
@@ -189,9 +197,16 @@ public:
 
 	void emit(nbunny::Particle& p)
 	{
-		auto rng = love::math::Math::instance.getRandomGenerator();
-		float lifetime = rng->random() * (max_lifetime - min_lifetime) + min_lifetime;
-		p.lifetime = lifetime;
+		if (max_lifetime == min_lifetime || min_lifetime == std::numeric_limits<float>::infinity())
+		{
+			p.lifetime = min_lifetime;
+		}
+		else
+		{
+			auto rng = love::math::Math::instance.getRandomGenerator();
+			float lifetime = rng->random() * (max_lifetime - min_lifetime) + min_lifetime;
+			p.lifetime = lifetime;
+		}
 	}
 };
 
@@ -267,6 +282,29 @@ public:
 	}
 };
 
+class RandomTextureIndexEmitter : public nbunny::ParticleEmitter
+{
+public:
+	int min_texture_index = 1, max_texture_index = 1;
+
+	void from_definition(lua_State* L)
+	{
+		auto table = sol::stack::get<sol::table>(L, -1);
+
+		auto t = table.get_or("textures", sol::table(L, sol::create));
+		min_texture_index = t.get_or(1, 1);
+		max_texture_index = t.get_or(2, min_texture_index);
+	}
+
+	void emit(nbunny::Particle& p)
+	{
+		auto rng = love::math::Math::instance.getRandomGenerator();
+		int index = rng->rand() % (max_texture_index - min_texture_index) + min_texture_index;
+
+		p.texture_index = index - 1;
+	}
+};
+
 bool nbunny::ParticleEmissionStrategy::running() const
 {
 	return current_time < duration;
@@ -274,6 +312,11 @@ bool nbunny::ParticleEmissionStrategy::running() const
 
 int nbunny::ParticleEmissionStrategy::roll() const
 {
+	if (min_count == max_count)
+	{
+		return min_count;
+	}
+
 	auto rng = love::math::Math::instance.getRandomGenerator();
 	return rng->rand() % (max_count - min_count) + min_count;
 }
@@ -423,22 +466,70 @@ public:
 	}
 };
 
+class ColorPath : public nbunny::ParticlePath
+{
+public:
+	float fade_in_percent = 0.0f, fade_out_percent = 1.0f;
+	glm::vec4 fade_in_color = glm::vec4(1.0f), fade_out_color = glm::vec4(glm::vec3(1.0f), 0.0f);
+
+	void from_definition(lua_State* L)
+	{
+		auto table = sol::stack::get<sol::table>(L, -1);
+
+		fade_in_percent = table.get_or("fadeInPercent", sol::table(L, sol::create)).get_or(1, fade_in_percent);
+		fade_out_percent = table.get_or("fadeOutPercent", sol::table(L, sol::create)).get_or(1, fade_out_percent);
+
+		auto i = table.get_or("fadeInColor", sol::table(L, sol::create));
+		fade_in_color = glm::vec4(i.get_or(1, 1.0f), i.get_or(2, 1.0f), i.get_or(3, 1.0f), i.get_or(4, 1.0f));
+
+		auto o = table.get_or("fadeOutColor", sol::table(L, sol::create));
+		fade_out_color = glm::vec4(o.get_or(1, 1.0f), o.get_or(2, 1.0f), o.get_or(3, 1.0f), o.get_or(4, 1.0f));
+	}
+
+	void update(nbunny::Particle& p, float delta)
+	{
+		float mu;
+
+		auto percent_age = p.age / p.lifetime;
+		if (percent_age <= fade_in_percent)
+		{
+			mu = sine_ease_out(percent_age / fade_in_percent);
+		}
+		else if (percent_age >= fade_out_percent)
+		{
+			auto difference = percent_age - fade_out_percent;
+			auto range = 1.0f - fade_out_percent;
+			mu = sine_ease_out(1.0f - difference / range);
+		}
+		else
+		{
+			mu = 0.0f;
+		}
+
+		p.color = glm::mix(fade_in_color, fade_out_color, mu);
+	}
+};
+
 class TwinklePath : public nbunny::ParticlePath
 {
 public:
 	float speed = 1.0f;
 	float min_alpha = 0.0f;
 	float max_alpha = 1.0f;
+	bool multiply = true;
 
 	void from_definition(lua_State* L)
 	{
 		auto table = sol::stack::get<sol::table>(L, -1);
 
-		speed = table.get_or("speed", 1.0f);
+		speed = table.get_or("speed", sol::table(L, sol::create)).get_or(1, 1.0f);
 
 		auto a = table.get_or("alpha", sol::table(L, sol::create));
 		min_alpha = a.get_or(1, 0.0f);
 		max_alpha = a.get_or(2, 1.0f);
+
+		auto m = table.get_or("multiply", sol::table(L, sol::create));
+		multiply = m.get_or(1, true);
 	}
 
 	void update(nbunny::Particle& p, float delta)
@@ -446,7 +537,14 @@ public:
 		auto alpha = std::abs(std::sin(p.age * speed + p.random * LOVE_M_PI_2));
 		alpha = alpha * (max_alpha - min_alpha) + min_alpha;
 
-		p.color.a *= alpha;
+		if (multiply)
+		{
+			p.color.a *= alpha;
+		}
+		else
+		{
+			p.color.a = alpha;
+		}
 	}
 };
 
@@ -679,13 +777,22 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 	return glm::slerp(previous_rotation, current_rotation, delta);
 }
 
-void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation)
+void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const glm::quat& self_rotation, const glm::mat4& view, float delta)
 {
 	vertices.clear();
 
+	auto view_world_transform = view * get_transform().get_global(delta);
+	std::stable_sort(particles.begin(), particles.end(), [&](auto& a, auto& b)
+	{
+		auto a_position = view_world_transform * glm::vec4(a.position, 1.0f);
+		auto b_position = view_world_transform * glm::vec4(b.position, 1.0f);
+
+		return a_position.z > b_position.z;
+	});
+
 	for (auto& particle: particles)
 	{
-		push_particle_quad(particle, inverse_rotation);
+		push_particle_quad(particle, inverse_rotation, self_rotation);
 	}
 
 	if (mesh)
@@ -710,7 +817,7 @@ void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation)
 	}
 }
 
-void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, glm::quat rotation)
+void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, const glm::quat& inverse_rotation, const glm::quat& self_rotation)
 {
 	for (auto& template_vertex: quad)
 	{
@@ -721,11 +828,13 @@ void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, glm::quat 
 			template_vertex.position.z
 		);
 		vertex.position = glm::rotate(
-			rotation * glm::angleAxis(p.rotation, glm::vec3(0.0f, 0.0f, 1.0f)),
+			inverse_rotation * glm::angleAxis(p.rotation, glm::vec3(0.0f, 0.0f, 1.0f)),
 			vertex.position
 		);
-		vertex.position += p.position;
 
+		vertex.normal = glm::normalize(glm::rotate(self_rotation, glm::normalize(p.normal)));
+		//vertex.normal = p.normal;
+		vertex.position += p.position;
 		vertex.color = p.color;
 
 		if (p.texture_index < textures.size())
@@ -787,6 +896,10 @@ void nbunny::ParticleSceneNode::set_paths(lua_State* L, sol::table& path_definit
 		{
 			path = std::make_shared<SingularityPath>();
 		}
+		else if (type == "ColorPath")
+		{
+			path = std::make_shared<ColorPath>();
+		}
 		else if (type == "SizePath")
 		{
 			path = std::make_shared<SizePath>();
@@ -840,6 +953,10 @@ void nbunny::ParticleSceneNode::set_emitters(lua_State* L, sol::table& emitter_d
 		else if (type == "RandomScaleEmitter")
 		{
 			emitter = std::make_shared<RandomScaleEmitter>();
+		}
+		else if (type == "RandomTextureIndexEmitter")
+		{
+			emitter = std::make_shared<RandomTextureIndexEmitter>();
 		}
 
 		if (emitter)
@@ -952,7 +1069,12 @@ void nbunny::ParticleSceneNode::frame(float delta, float time_delta)
 
 void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 {
-	build(glm::conjugate(renderer.get_camera().get_rotation() * get_global_rotation(delta)));
+	auto self_rotation = get_global_rotation(delta);
+	build(
+		glm::conjugate(renderer.get_camera().get_rotation() * self_rotation),
+		self_rotation,
+		renderer.get_camera().get_view(),
+		delta);
 
 	if (!mesh)
 	{
@@ -965,7 +1087,7 @@ void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 	auto diffuse_texture_uniform = shader->getUniformInfo("scape_DiffuseTexture");
 	if (diffuse_texture_uniform && textures.size() >= 1)
 	{
-		auto texture = textures[0]->get_texture();
+		auto texture = textures[0]->get_per_pass_texture(renderer.get_current_pass_id());
 		if (texture)
 		{
 			shader->sendTextures(diffuse_texture_uniform, &texture, 1);

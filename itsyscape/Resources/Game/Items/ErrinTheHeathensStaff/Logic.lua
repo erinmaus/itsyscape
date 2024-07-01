@@ -21,6 +21,17 @@ function ErrinTheHeathensStaff:getNearAttackRange(peep)
 	return 2
 end
 
+function ErrinTheHeathensStaff:perform(peep, target)
+	local result = Staff.perform(self, peep, target)
+
+	if result then
+		local stage = peep:getDirector():getGameInstance():getStage()
+		stage:fireProjectile("Gottskrieg", peep, target)
+	end
+
+	return result
+end
+
 function ErrinTheHeathensStaff:getStyle()
 	return Weapon.STYLE_MAGIC
 end

@@ -25,6 +25,7 @@ local RemoteGameManager = require "ItsyScape.Game.RemoteModel.RemoteGameManager"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Renderer = require "ItsyScape.Graphics.Renderer"
+local Resource = require "ItsyScape.Graphics.Resource"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local function inspectGameDB(gameDB)
@@ -171,7 +172,7 @@ function Application:new(multiThreaded)
 			self.camera:setVerticalRotation(-math.pi / 2)
 		end
 
-		self.gameView = GameView(self:getGame())
+		self.gameView = GameView(self:getGame(), self.camera)
 		self.gameView:attach()
 		self.uiView = UIView(self.gameView)
 
@@ -479,6 +480,8 @@ function Application:processAdminEvents()
 end
 
 function Application:update(delta)
+	Resource.update()
+
 	-- Accumulator. Stores time until next tick.
 	self.time = self.time + delta
 
@@ -805,6 +808,8 @@ end
 
 function Application:quit(isError)
 	if self.multiThreaded then
+		Resource.quit()
+
 		self:getGame():quit()
 		self.remoteGameManager:pushTick()
 		self.gameView:quit()
@@ -936,6 +941,7 @@ function Application:drawDebug()
 	love.graphics.setFont(self.defaultFont)
 
 	local drawCalls = love.graphics.getStats().drawcalls
+	local textureMemory = love.graphics.getStats().texturememory
 	table.insert(self.drawCalls, drawCalls)
 	while #self.drawCalls > self.MAX_DRAW_CALLS do
 		table.remove(self.drawCalls, 1)
@@ -944,7 +950,7 @@ function Application:drawDebug()
 
 	local width = love.window.getMode()
 	r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
-	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, %03d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024)
+	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, %03d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024 + textureMemory / 1024 / 1024)
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
@@ -1017,10 +1023,8 @@ function Application:_draw()
 	local delta = self:getFrameDelta()
 	do
 		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE) then
-			self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
+			self:measure("3d renderer", self.gameView.draw, self.gameView, delta)
 		end
-
-		self.gameView:getRenderer():present()
 
 		if self.show2D then
 			self.gameView:getSpriteManager():draw(self.gameView:getScene(), self.camera, delta)
@@ -1032,7 +1036,7 @@ function Application:_draw()
 	love.graphics.ortho(width, height)
 
 	if self.showUI then
-		self.uiView:draw()
+		self:measure("ui renderer", self.uiView.draw, self.uiView)
 	end
 
 	if self.clickActionTime > 0 and not (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then

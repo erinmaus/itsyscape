@@ -10,16 +10,20 @@
 local ripple = require "ripple"
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
+local Decoration = require "ItsyScape.Graphics.Decoration"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local Spline = require "ItsyScape.Graphics.Spline"
+local SplineSceneNode = require "ItsyScape.Graphics.SplineSceneNode"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
@@ -27,12 +31,15 @@ local SpriteManager = require "ItsyScape.Graphics.SpriteManager"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
+local LargeTileSet = require "ItsyScape.World.LargeTileSet"
 local Map = require "ItsyScape.World.Map"
+local MapCurve = require "ItsyScape.World.MapCurve"
 local MapMeshIslandProcessor = require "ItsyScape.World.MapMeshIslandProcessor"
 local TileSet = require "ItsyScape.World.TileSet"
 local MapMeshMask = require "ItsyScape.World.MapMeshMask"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
+local SkyboxSceneNode = require "ItsyScape.Graphics.SkyboxSceneNode"
 
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
@@ -43,8 +50,9 @@ function GameView.PropViewDebugStats:process(node, delta)
 	node:update(delta)
 end
 
-function GameView:new(game)
+function GameView:new(game, camera)
 	self.game = game
+	self.camera = camera
 	self.actors = {}
 	self.props = {}
 	self.views = {}
@@ -53,13 +61,17 @@ function GameView:new(game)
 
 	self.scene = SceneNode()
 	self.mapMeshes = {}
+	self.skyboxes = {}
 	self.tests = { id = 1 }
 
 	self.water = {}
 
 	self.decorations = {}
 
-	self.renderer = Renderer(_MOBILE)
+	self.renderer = Renderer({
+		shadows = _CONF and _CONF.shadows
+	})
+
 	self.resourceManager = ResourceManager()
 	self.spriteManager = SpriteManager(self.resourceManager)
 
@@ -125,6 +137,10 @@ function GameView:getScene()
 	return self.scene
 end
 
+function GameView:getCamera()
+	return self.camera
+end
+
 function GameView:attach(game)
 	self.game = game or self.game
 	local stage = self.game:getStage()
@@ -178,23 +194,19 @@ function GameView:attach(game)
 	stage.onPropRemoved:register(self._onPropRemoved)
 
 	self._onDropItem = function(_, ref, item, tile, position)
-		Log.info(
-			"Dropped item '%s' (ref = %d, count = %d) at (%d, %d) on layer %d.",
-			item.id, ref, item.count, tile.i, tile.j, tile.layer)
+		Log.info("Dropped item '%s' (ref = %d, count = %d) at (%d, %d) on layer %d.", item.id, ref, item.count, tile.i, tile.j, tile.layer)
 		self:spawnItem(item, tile, position)
 	end
 	stage.onDropItem:register(self._onDropItem)
 
 	self._onTakeItem = function(_, ref, item)
-		Log.info(
-			"Item '%s' (ref = %d, count = %d) taken.",
-			item.id, ref, item.count)
+		Log.info("Item '%s' (ref = %d, count = %d) taken.", item.id, ref, item.count)
 		self:poofItem(item)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
 
 	self._onDecorate = function(_, group, decoration, layer)
-		Log.info("Decorating '%s' on layer %d.", group, layer)
+		Log.info("Decorating '%s' (%s) on layer %d.", group, decoration and decoration:getDebugInfo().shortName or "nil", layer)
 		self:decorate(group, decoration, layer)
 	end
 	stage.onDecorate:register(self._onDecorate)
@@ -362,6 +374,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
 	end
 
+	local largeTileSet = LargeTileSet(tileSet)
+
 	local mapMeshMasks = {}
 	if mask then
 		if type(mask) ~= 'table' then
@@ -399,13 +413,32 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		self:removeMap(layer)
 	end
 
+	local node
+	if meta and meta.skybox then
+		node = SkyboxSceneNode()
+
+		local color = meta.skybox.color or {}
+		if type(color) == "string" then
+			color = Color.fromHexString(color)
+		else
+			color = Color(unpack(color))
+		end
+
+		self.skyboxes[node] = {
+			color = color
+		}
+	else
+		node = SceneNode()
+	end
+
 	local m = {
 		tileSet = tileSet,
+		largeTileSet = largeTileSet,
 		texture = texture,
 		tileSetID = tileSetID or "GrassyPlain",
 		filename = filename,
 		map = map,
-		node = SceneNode(),
+		node = node,
 		parts = {},
 		layer = layer,
 		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16),
@@ -413,10 +446,73 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		mapMeshMasks = mapMeshMasks,
 		mask = mapMeshMasks and MapMeshMask.combine(unpack(mapMeshMasks)),
 		islandProcessor = mapMeshMasks and meta.autoMask and MapMeshIslandProcessor(map, tileSet),
-		meta = meta
+		meta = meta,
+		wallHackEnabled = not (meta and type(meta.wallHack) == "table" and meta.wallHack.enabled == false),
+		curves = {}
 	}
 
+	local function onWillRender(renderer)
+		local shader = renderer:getCurrentShader()
+
+		local textures = {}
+		for i = 1, #m.curves do
+			local curve = m.curves[i]
+
+			local axisUniform = string.format("scape_Curves[%d].axis", i - 1)
+			local sizeUniform = string.format("scape_Curves[%d].size", i - 1)
+
+			if shader:hasUniform(axisUniform) then
+				shader:send(axisUniform, { curve:getAxis():get() })
+			end
+
+			if shader:hasUniform(sizeUniform) then
+				local min, max = curve:getMin(), curve:getMax()
+				local size = { min.x, min.z, max.x, max.z }
+				shader:send(sizeUniform, size)
+			end
+
+			textures[i] = m.curves[i]:getCurveTexture()
+		end
+
+		if shader:hasUniform("scape_CurveTextures") and m.curveTexture then
+			shader:send("scape_CurveTextures", m.curveTexture)
+		end
+
+		if shader:hasUniform("scape_NumCurves") then
+			shader:send("scape_NumCurves", #m.curves)
+		end
+
+		if shader:hasUniform("scape_MapSize") then
+			shader:send("scape_MapSize", { m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize() })
+		end
+
+		if m.wallHackEnabled and not self:_getIsMapEditor() then
+			local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom = 1.25, 1.25, 4.0, 0.25
+
+			if m.meta and type(m.meta.wallHack) == "table" then
+				wallHackLeft = m.meta.wallHack.left or wallHackLeft
+				wallHackRight = m.meta.wallHack.right or wallHackRight
+				wallHackTop = m.meta.wallHack.top or wallHackTop
+				wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
+			end
+
+			if shader:hasUniform("scape_WallHackWindow") then
+				shader:send("scape_WallHackWindow", { wallHackLeft, wallHackRight, wallHackTop, wallHackBottom })
+			end
+
+			if shader:hasUniform("scape_WallHackNear") then
+				shader:send("scape_WallHackNear", 0)
+			end
+		end
+	end
+
 	m.weatherMap:addMap(m.map)
+	m.onWillRender = onWillRender
+
+	m.largeTileSet:resize(m.map)
+	self.resourceManager:queueAsyncEvent(function()
+		m.largeTileSet:emitAll(m.map)
+	end)
 
 	self.mapMeshes[layer] = m
 end
@@ -424,7 +520,11 @@ end
 function GameView:removeMap(layer)
 	local m = self.mapMeshes[layer]
 	if m then
-		m.node:setParent(nil)
+		if self.skyboxes[m.node] then
+			self.skyboxes[m.node] = nil
+		else
+			m.node:setParent(nil)
+		end
 
 		for i = 1, #m.parts do
 			m.parts[i]:setMapMesh(nil)
@@ -447,9 +547,12 @@ function GameView:removeMap(layer)
 	end
 end
 
+function GameView:_getIsMapEditor()
+	return _APP:getType() == require "ItsyScape.Editor.MapEditorApplication"
+end
+
 function GameView:updateGroundDecorations(m)
-	local isMapEditor = _APP:getType() == require "ItsyScape.Editor.MapEditorApplication"
-	if isMapEditor then
+	if self:_getIsMapEditor() then
 		Log.info("Map editor: not updating ground decorations.")
 		return
 	end
@@ -483,11 +586,14 @@ function GameView:updateGroundDecorations(m)
 			local GroundType = chunk()
 			if GroundType then
 				local ground = GroundType()
-				ground:emitAll(m.tileSet, m.map)
+				self.resourceManager:queueAsyncEvent(function()
+					ground:emitAll(m.tileSet, m.map)
 
-				local decoration = ground:getDecoration()
-				local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
-				self:decorate(groupName, decoration, m.layer)
+					local decoration = ground:getDecoration()
+					local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
+					local sceneNode = self:decorate(groupName, decoration, m.layer)
+					sceneNode:getMaterial():setOutlineThreshold(0.5)
+				end)
 			end
 		end
 	end
@@ -531,6 +637,14 @@ function GameView:updateMap(map, layer)
 			end
 
 			if m.map ~= map then
+				if m.map and (m.map:getWidth() ~= map:getWidth() or m.map:getHeight() ~= map:getHeight()) then
+					m.largeTileSet:resize(map)
+
+					self.resourceManager:queueAsyncEvent(function()
+						m.largeTileSet:emitAll(map)
+					end)
+				end 
+
 				m.map = map
 				if m.islandProcessor then
 					m.islandProcessor = MapMeshIslandProcessor(m.map, m.tileSet)
@@ -556,54 +670,196 @@ function GameView:updateMap(map, layer)
 		end
 		m.parts = {}
 
-		local w, h
-		do
-			local E = 1 / GameView.MAP_MESH_DIVISIONS
-			local partialX = m.map:getWidth() / GameView.MAP_MESH_DIVISIONS
-			local partialY = m.map:getHeight() / GameView.MAP_MESH_DIVISIONS
+		local node = MapMeshSceneNode()
+		node:setParent(m.node)
+		table.insert(m.parts, node)
 
-			w = math.floor(partialX)
-			h = math.floor(partialY)
+		local alphaNode
+		if m.wallHackEnabled then
+			alphaNode = MapMeshSceneNode()
+			alphaNode:getMaterial():setIsTranslucent(true)
+			alphaNode:getMaterial():setOutlineThreshold(-1.0)
+			alphaNode:setParent(m.node)
 
-			if partialX - math.floor(partialX) >= E then
-				w = w + 1
-			end
-
-			if partialY - math.floor(partialY) >= E then
-				h = h + 1
-			end
+			table.insert(m.parts, alphaNode)
 		end
 
-		for j = 1, h do
-			for i = 1, w do
-				local x = (i - 1) * GameView.MAP_MESH_DIVISIONS + 1
-				local y = (j - 1) * GameView.MAP_MESH_DIVISIONS + 1
+		self.resourceManager:queueAsyncEvent(function()
+			node:fromMap(
+				m.map,
+				m.tileSet,
+				1, 1,
+				m.map:getWidth(),
+				m.map:getHeight(),
+				m.mapMeshMasks,
+				m.islandProcessor,
+				m.largeTileSet)
 
-				local node = MapMeshSceneNode()
-				node:setParent(m.node)
-				table.insert(m.parts, node)
-				self.resourceManager:queueEvent(function()
-					node:fromMap(
-						m.map,
-						m.tileSet,
-						x, y,
-						GameView.MAP_MESH_DIVISIONS,
-						GameView.MAP_MESH_DIVISIONS,
-						m.mapMeshMasks,
-						m.islandProcessor)
+			m.node:setBounds(node:getBounds())
 
-					if m.mapMeshMasks then
-						node:getMaterial():setTextures(m.texture, m.mask:getTexture())
-					else
-						node:getMaterial():setTextures(m.texture, self.defaultMapMaskTexture)
-					end
-				end)
+			if m.mapMeshMasks then
+				node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
+			else
+				node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
 			end
+
+			if alphaNode then
+				alphaNode:setMapMesh(node:getMapMesh(), true)
+				self:_updateMapBounds(m, alphaNode)
+
+				if m.mapMeshMasks then
+					alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
+				else
+					alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+				end
+			end
+
+			self:_updateMapBounds(m, node)
+		end)
+
+		local function getPlayerNearPlane()
+			local near = 0
+
+			local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
+			if playerActor then
+				local _, _, playerK = playerActor:getTile()
+				local _, playerI, playerJ = m.map:getTileAt(self.camera:getPosition().x, self.camera:getPosition().y)
+
+				if playerK == layer then
+					local eye = self.camera:getEye()
+					local _, eyeI, eyeJ = m.map:getTileAt(eye.x, eye.z)
+
+					local differenceI = eyeI - playerI
+					local differenceJ = eyeJ - playerJ
+
+					local forward = self.camera:getForward()
+					forward.y = -forward.y
+
+					local ray = Ray(self.camera:getPosition() + Vector(0, 0.5, 0), forward)
+					if math.abs(differenceI) > math.abs(differenceJ) then
+						local directionI = math.sign(differenceI)
+
+						local stopI
+						if directionI < 0 then
+							stopI = 1
+						else
+							stopI = m.map:getWidth()
+						end
+
+						local isHidden = false
+						for i = playerI + directionI, stopI, directionI do
+							local center = map:getTileCenter(i, playerJ)
+							local _, projection = ray:closest(center)
+
+							isHidden = center.y > projection.y
+							if isHidden then
+								break
+							end
+						end
+
+						if isHidden then
+							local foundCliff = false
+							for i = playerI + directionI, stopI, directionI do
+								local center = map:getTileCenter(i, playerJ)
+								local _, projection = ray:closest(center)
+
+								if center.y > projection.y then
+									foundCliff = true
+								elseif foundCliff or i == stopI then
+									foundCliff = true
+									near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
+									break
+								end
+							end
+
+							if not foundCliff then
+								near = -1
+							end
+						else
+							near = -1
+						end
+					else
+						local directionJ = math.sign(differenceJ)
+
+						local stopJ
+						if directionJ < 0 then
+							stopJ = 1
+						else
+							stopJ = m.map:getHeight()
+						end
+
+						local isHidden = false
+						for j = playerJ + directionJ, stopJ, directionJ do
+							local center = map:getTileCenter(playerI, j)
+							local _, projection = ray:closest(center)
+
+							isHidden = center.y > projection.y
+							if isHidden then
+								break
+							end
+						end
+
+						if isHidden then
+							local foundCliff = false
+							for j = playerJ + directionJ, stopJ, directionJ do
+								local center = map:getTileCenter(playerI, j)
+								local _, projection = ray:closest(center)
+
+								if center.y > projection.y then
+									foundCliff = true
+								elseif foundCliff or j == stopJ then
+									foundCliff = true
+									near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
+									break
+								end
+							end
+
+							if not foundCliff then
+								near = -1
+							end
+						else
+							near = -1
+						end
+					end
+				else
+					near = -1
+				end
+			end
+
+			return near
+		end
+
+		node:onWillRender(function(renderer)
+			m.onWillRender(renderer)
+
+			local shader = renderer:getCurrentShader()
+			if shader:hasUniform("scape_WallHackAlpha") then
+				shader:send("scape_WallHackAlpha", 0.0)
+			end
+
+			if shader:hasUniform("scape_WallHackNear") then
+				shader:send("scape_WallHackNear", getPlayerNearPlane())
+			end
+		end)
+
+		if alphaNode then
+			alphaNode:onWillRender(function(renderer)
+				m.onWillRender(renderer)
+
+				local shader = renderer:getCurrentShader()
+				if shader:hasUniform("scape_WallHackAlpha") then
+					shader:send("scape_WallHackAlpha", 1.0)
+				end
+
+				if shader:hasUniform("scape_WallHackNear") then
+					shader:send("scape_WallHackNear", getPlayerNearPlane())
+				end
+			end)
 		end
 
 		m.weatherMap:addMap(m.map)
 
-		self:updateGroundDecorations(m)
+		self.resourceManager:queueEvent(self.updateGroundDecorations, self, m)
 	end
 end
 
@@ -618,7 +874,7 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 
 		if disabled and node:getParent() then
 			node:setParent(nil)
-		elseif not disabled and not node:getParent() then
+		elseif not disabled and not node:getParent() and not self.skyboxes[node] then
 			node:setParent(self.scene)
 			node:tick(1)
 		end
@@ -636,6 +892,73 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 	end
 end
 
+function GameView:_updateMapBounds(m, node)
+	local mapMesh = node:getMapMesh()
+	if not mapMesh then
+		return
+	end
+
+	local min, max = mapMesh:getBounds()
+	local halfSize = (max - min) / 2
+
+	local newMin, newMax = min, max
+	for _, curve in ipairs(m.curves) do
+		local positions = curve:getPositions()
+
+		for i = 1, positions:length() do
+			local position = positions:get(i):getValue()
+			newMin = newMin:min(position - halfSize)
+			newMin = newMin:min(position + halfSize)
+			newMax = newMax:max(position - halfSize)
+			newMax = newMax:max(position + halfSize)
+		end
+	end
+
+	node:setBounds(newMin, newMax)
+end
+
+function GameView:bendMap(layer, ...)
+	local m = self.mapMeshes[layer]
+	if not m then
+		return
+	end
+
+	local curveInfos = { ... }
+	local curves = {}
+	for _, curveInfo in ipairs(curveInfos) do
+		local curve = MapCurve(m.map, curveInfo)
+		table.insert(curves, curve)
+	end
+
+	for _, node in ipairs(m.parts) do
+		self:_updateMapBounds(m, node)
+	end
+
+	local textures = {}
+	for i = 1, #curves do
+		textures[i] = curves[i]:getCurveTexture()
+	end
+
+	m.curves = curves
+
+	if #curves >= 1 then
+		m.curveTexture = love.graphics.newArrayImage(textures)
+		m.curveTexture:setFilter("linear", "linear")
+	else
+		m.curveTexture = nil
+	end
+end
+
+function GameView:setSkyboxColor(layer, color)
+	local m = self.mapMeshes[layer]
+	if m then
+		local skybox = self.skyboxes[m.node]
+		if skybox then
+			skybox.color = color
+		end
+	end
+end
+
 function GameView:getMapSceneNode(layer)
 	local m = self.mapMeshes[layer]
 	if m then
@@ -647,6 +970,13 @@ function GameView:getMapTileSet(layer)
 	local m = self.mapMeshes[layer]
 	if m then
 		return m.tileSet, m.tileSetID
+	end
+end
+
+function GameView:getMapCurves(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.curves
 	end
 end
 
@@ -811,24 +1141,37 @@ function GameView:decorate(group, decoration, layer)
 	if self.decorations[groupName] and
 	   self.decorations[groupName].sceneNode
 	then
-		self.decorations[groupName].sceneNode:setParent(nil)
+		local d = self.decorations[groupName]
+
+		d.sceneNode:setParent(nil)
+		if d.alphaSceneNode then
+			d.alphaSceneNode:setParent(nil)
+		end
+
 		self.decorations[groupName] = nil
 	end
 
+	local m = self.mapMeshes[layer]
 	local map = self:getMapSceneNode(layer)
 	if not map then
 		map = self.scene
 	end
 
-	if decoration then
+	local isSpline = Class.isCompatibleType(decoration, Spline)
+	local isDecoration = Class.isCompatibleType(decoration, Decoration)
+	local isValid = isSpline or isDecoration
+
+	if decoration and isValid then
 		local d = {}
 
-		self.resourceManager:queueEvent(function()
-			if self.decorations[groupName] ~= d then
-				Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
-				return
-			end
+		local sceneNode
+		if isSpline then
+			sceneNode = SplineSceneNode()
+		elseif isDecoration then
+			sceneNode = DecorationSceneNode()
+		end
 
+		self.resourceManager:queueAsyncEvent(function()
 			local tileSetFilename = string.format(
 				"Resources/Game/TileSets/%s/Layout.lstatic",
 				decoration:getTileSetID())
@@ -839,26 +1182,109 @@ function GameView:decorate(group, decoration, layer)
 			local textureFilename = string.format(
 				"Resources/Game/TileSets/%s/Texture.png",
 				decoration:getTileSetID())
-			local texture = self.resourceManager:load(
-				TextureResource,
-				textureFilename)
+			local layerTextureFilename = string.format(
+				"Resources/Game/TileSets/%s/Texture.lua",
+				decoration:getTileSetID())
 
-			local sceneNode = DecorationSceneNode()
-			sceneNode:fromDecoration(decoration, staticMesh:getResource())
-			sceneNode:getMaterial():setTextures(texture)
+			local texture
+			if love.filesystem.getInfo(layerTextureFilename) then
+				texture = self.resourceManager:load(
+					LayerTextureResource,
+					layerTextureFilename)
+			else
+				texture = self.resourceManager:load(
+					TextureResource,
+					textureFilename)
+			end
+
+			if isSpline then
+				sceneNode:fromSpline(decoration, staticMesh:getResource())
+				sceneNode:getMaterial():setTextures(texture)
+			else
+				sceneNode:fromDecoration(decoration, staticMesh:getResource())
+				sceneNode:getMaterial():setTextures(texture)
+			end
+
+			if self.decorations[groupName] ~= d then
+				Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
+				return
+			end
 
 			sceneNode:setParent(map)
 
-			d.sceneNode = sceneNode
+			if decoration:getIsWall() and not self:_getIsMapEditor() then
+				local shader
+				if Class.isCompatibleType(texture, LayerTextureResource) then
+					shader = self.resourceManager:load(
+						ShaderResource,
+						"Resources/Shaders/MultiTextureWallDecoration")
+				else
+					shader = self.resourceManager:load(
+						ShaderResource,
+						"Resources/Shaders/WallDecoration")
+				end
+
+				sceneNode:getMaterial():setShader(shader)
+				sceneNode:onWillRender(function(renderer)
+					if m and m.onWillRender then
+						m.onWillRender(renderer)
+					end
+
+					local shader = renderer:getCurrentShader()
+					if shader:hasUniform("scape_WallHackAlpha") then
+						shader:send("scape_WallHackAlpha", 0.0)
+					end
+				end)
+
+				local alphaSceneNode = SplineSceneNode()
+				alphaSceneNode:fromSpline(decoration, staticMesh:getResource())
+				alphaSceneNode:getMaterial():setTextures(texture)
+				alphaSceneNode:getMaterial():setIsTranslucent(true)
+				alphaSceneNode:setParent(map)
+				alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
+				alphaSceneNode:getMaterial():setShader(shader)
+				alphaSceneNode:onWillRender(function(renderer)
+					if m and m.onWillRender then
+						m.onWillRender(renderer)
+					end
+
+					local shader = renderer:getCurrentShader()
+					if shader:hasUniform("scape_WallHackAlpha") then
+						shader:send("scape_WallHackAlpha", 1.0)
+					end
+				end)
+
+				d.alphaSceneNode = alphaSceneNode
+			else
+				local shader
+				if Class.isCompatibleType(texture, LayerTextureResource) then
+					shader = self.resourceManager:load(
+						ShaderResource,
+						"Resources/Shaders/MultiTextureDecoration")
+				else
+					shader = self.resourceManager:load(
+						ShaderResource,
+						"Resources/Shaders/Decoration")
+				end
+
+				sceneNode:getMaterial():setShader(shader)
+
+				if m then
+					sceneNode:onWillRender(m.onWillRender)
+				end
+			end
+
 			d.staticMesh = staticMesh
-			d.layer = layer
 		end)
 
 		d.decoration = decoration
 		d.name = group
 		d.layer = layer
+		d.sceneNode = sceneNode
 
 		self.decorations[groupName] = d
+
+		return sceneNode
 	end
 end
 
@@ -905,6 +1331,7 @@ function GameView:flood(key, water, layer)
 			node:setParent(parent)
 		end)
 
+	node:getMaterial():setOutlineThreshold(-1.0)
 
 	self.water[key] = node
 end
@@ -1293,6 +1720,29 @@ function GameView:update(delta)
 	end
 end
 
+function GameView:draw(delta, width, height)
+	local skybox = next(self.skyboxes)
+	if skybox then
+		local info = self.skyboxes[skybox]
+
+		self.renderer:setClearColor(Color(0, 0, 0, 0))
+		self.renderer:draw(skybox, delta, width, height, {
+			["scape_MinOutlineThickness"] = 3,
+			["scape_MaxOutlineThickness"] = 3,
+			["scape_NearOutlineDistance"] = 0,
+			["scape_FarOutlineDistance"] = 1000,
+			["scape_MinOutlineDepthAlpha"] = 1,
+			["scape_MaxOutlineDepthAlpha"] = 1,
+			["scape_OutlineFadeDepth"] = 1000
+		})
+		self.renderer:present(false)
+	end
+
+	self.renderer:setClearColor(Color(0, 0, 0, 0))
+	self.renderer:draw(self.scene, delta)
+	self.renderer:present(true)
+end
+
 function GameView:tick(frameDelta)
 	self.generalDebugStats:measure("GameView::tickScene", self.scene.tick, self.scene, frameDelta)
 
@@ -1315,6 +1765,11 @@ function GameView:tick(frameDelta)
 			string.format("projectile::%s::tick", projectile:getID()),
 			projectile.tick,
 			projectile)
+	end
+
+	for skybox in pairs(self.skyboxes) do
+		--print(">>> tick skybox", frameDelta)
+		skybox:tick(frameDelta)
 	end
 end
 
@@ -1339,9 +1794,17 @@ function GameView:dirty()
 			map.mask = MapMeshMask.combine(unpack(mapMeshMasks))
 
 			for _, node in ipairs(map.parts) do
-				node:getMaterial():setTextures(map.texture, map.mask:getTexture())
+				if m.mapMeshMasks then
+					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture(), map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())
+				else
+					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())
+				end
 			end
 		end
+	end
+
+	for _, actor in pairs(self.actors) do
+		actor:dirty()
 	end
 end
 

@@ -14,6 +14,7 @@
 #define NBUNNY_OPTIMAUS_SCENE_HPP
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <vector>
 #include "nbunny/nbunny.hpp"
@@ -87,11 +88,13 @@ namespace nbunny
 
 		std::shared_ptr<ResourceInstance> shader = std::make_shared<ResourceInstance>();
 		std::vector<std::shared_ptr<TextureInstance>> textures;
+		std::vector<std::shared_ptr<TextureInstance>> sorted_textures;
 
 		bool is_translucent = false;
 		bool is_full_lit = false;
 		bool is_z_write_disabled = false;
 		bool is_cull_disabled = false;
+		float outline_threshold = 1.0;
 		glm::vec4 color = glm::vec4(1.0f);
 
 		bool is_light_target_position_enabled = false;
@@ -117,6 +120,9 @@ namespace nbunny
 
 		void set_is_cull_disabled(bool value);
 		bool get_is_cull_disabled() const;
+
+		void set_outline_threshold(float value);
+		float get_outline_threshold() const;
 
 		const glm::vec4& get_color() const;
 		void set_color(const glm::vec4& value);
@@ -181,6 +187,14 @@ namespace nbunny
 		virtual void draw(Renderer& renderer, float delta);
 		virtual void after_draw(Renderer& renderer, float delta);
 
+		static void collect(
+			SceneNode& node,
+			std::vector<SceneNode*>& result);
+
+		static void filter_visible(std::vector<SceneNode*>& nodes, const Camera& camera, float delta, std::vector<SceneNode*>& result);
+		static void sort_by_material(std::vector<SceneNode*>& nodes);
+		static void sort_by_position(std::vector<SceneNode*>& nodes, const Camera& camera, float delta);
+
 		static void walk_by_material(
 			SceneNode& node,
 			const Camera& camera,
@@ -193,6 +207,26 @@ namespace nbunny
 			std::vector<SceneNode*>& result);
 	};
 
+	class LuaSceneNode : public SceneNode
+	{
+	public:
+		static const Type<LuaSceneNode> type_pointer;
+		virtual const BaseType& get_type() const override;
+
+		LuaSceneNode(int reference);
+		virtual ~LuaSceneNode() = default;
+	};
+
+	class SkyboxSceneNode : public SceneNode
+	{
+	public:
+		static const Type<SkyboxSceneNode> type_pointer;
+		virtual const BaseType& get_type() const override;
+
+		SkyboxSceneNode(int reference);
+		virtual ~SkyboxSceneNode() = default;
+	};
+
 	class Camera
 	{
 	private:
@@ -202,6 +236,9 @@ namespace nbunny
 		glm::vec3 eye_position = glm::vec3(0.0f);
 		glm::vec3 target_position = glm::vec3(0.0f);
 
+		glm::vec3 bounding_sphere_position = glm::vec3(0.0f);
+		float bounding_sphere_radius = std::numeric_limits<float>::infinity();
+
 		glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 
 		bool is_cull_enabled = true;
@@ -210,7 +247,14 @@ namespace nbunny
 		mutable glm::vec4 planes[NUM_PLANES];
 
 		static const int NUM_POINTS = 8;
-		mutable glm::vec3 minFrustum, maxFrustum;
+		mutable glm::vec3 min_frustum, max_frustum;
+
+		float field_of_view = glm::radians(30.0f);
+		float near = 0.01f;
+		float far = 192.0f;
+
+		glm::vec4 clip_plane = glm::vec4(0.0);
+		bool is_clip_plane_enabled = false;
 
 		mutable bool is_dirty = true;
 
@@ -223,7 +267,17 @@ namespace nbunny
 
 	public:
 		Camera() = default;
+		Camera(const Camera& other) = default;
 		~Camera() = default;
+
+		void set_field_of_view(float value);
+		float get_field_of_view() const;
+
+		void set_near(float value);
+		float get_near() const;
+
+		void set_far(float value);
+		float get_far() const;
 
 		void set_is_cull_enabled(bool value);
 		bool get_is_cull_enabled() const;
@@ -243,10 +297,28 @@ namespace nbunny
 		void move(
 			const glm::vec3& eye_position,
 			const glm::vec3& target_position);
+		
+		void set_bounding_sphere_position(const glm::vec3& value);
+		const glm::vec3& get_bounding_sphere_position() const;
+
+		void set_bounding_sphere_radius(float distance);
+		float get_bounding_sphere_radius() const;
+
+		void set_clip_plane(const glm::vec4& value);
+		const glm::vec4& get_clip_plane() const;
+
+		void set_is_clip_plane_enabled(bool value);
+		bool get_is_clip_plane_enabled() const;
 
 		void rotate(const glm::quat& rotation);
 
 		bool inside(const SceneNode& node, float delta) const;
+
+		int get_num_planes() const;
+		const glm::vec4& get_plane(int index) const;
+
+		const glm::vec3& get_min_frustum() const;
+		const glm::vec3& get_max_frustum() const;
 	};
 }
 

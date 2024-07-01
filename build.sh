@@ -3,7 +3,7 @@ set -e
 compile_lua_resource() {
 	echo "return " > $1.tmp
 	cat $1 >> $1.tmp
-	${LUAJIT} -bs $1.tmp $1.cache
+	${LUAJIT} -e "local buffer = require 'string.buffer'; local result = dofile('$1.tmp'); io.stdout:write(buffer.encode(result));" > $1.cache
 	rm $1.tmp
 	echo "Built $1"
 }

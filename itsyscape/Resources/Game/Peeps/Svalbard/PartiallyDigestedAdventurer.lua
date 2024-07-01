@@ -41,10 +41,7 @@ function PartiallyDigestedAdventurer:onTargetFled()
 end
 
 function PartiallyDigestedAdventurer:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
+	Player.ready(self, director, game)
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.accelerationMultiplier = 0
@@ -53,29 +50,26 @@ function PartiallyDigestedAdventurer:ready(director, game)
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = 3
 
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Human.lskel")
-	actor:setBody(body)
-
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/PartiallyDigested.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/PartiallyDigested.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/PartiallyDigested.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Feet_PartiallyDigested.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
-
-	Player.ready(self, director, game)
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/PartiallyDigested.lua",
+		{ Player.Palette.BONE })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/PartiallyDigested.lua",
+		{ Player.Palette.BONE })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Hands/PartiallyDigested.lua",
+		{ Player.Palette.BONE })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/PartiallyDigested.lua",
+		{ Player.Palette.BONE })
 
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",

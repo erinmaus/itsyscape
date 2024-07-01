@@ -24,6 +24,11 @@ end
 
 function ShadowTreeView:load()
 	TreeView.load(self)
+
+	local resources = self:getResources()
+	resources:queueEvent(function()
+		self.node:getMaterial():setOutlineThreshold(0.65)
+	end)
 end
 
 return ShadowTreeView

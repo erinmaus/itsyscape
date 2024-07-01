@@ -11,17 +11,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 uniform Image scape_ColorTexture;
+uniform Image scape_PositionTexture;
+uniform Image scape_SpecularTexture;
 
 uniform vec3 scape_LightColor;
 uniform float scape_LightAmbientCoefficient;
 
 vec4 effect(
 	vec4 color,
-	Image texture,
+	Image image,
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	vec3 result = scape_LightColor * scape_LightAmbientCoefficient;
-	float alpha = Texel(scape_ColorTexture, textureCoordinate).a;
+	float fullLitCoefficient = Texel(scape_SpecularTexture, textureCoordinate).g;
+	vec3 result = scape_LightColor * clamp(scape_LightAmbientCoefficient + fullLitCoefficient, 0.0, 1.0);
+	float alpha = Texel(scape_PositionTexture, textureCoordinate).a;
 	return vec4(result, alpha);
 }

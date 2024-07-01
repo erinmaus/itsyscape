@@ -10,7 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Hexagram = require "Resources.Game.Projectiles.Power_Hexagram.Projectile"
 
-local PlayerHexagram = Class(Projectile)
+local PlayerHexagram = Class(Hexagram)
 PlayerHexagram.DURATION = 10
 
 return PlayerHexagram

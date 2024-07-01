@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNodeTransform = require "ItsyScape.Graphics.SceneNodeTransform"
 local Material = require "ItsyScape.Graphics.Material"
 local NSceneNode = require "nbunny.optimaus.scenenode"
+local NLuaSceneNode = require "nbunny.optimaus.scenenode.luascenenode"
 local NCamera = require "nbunny.optimaus.camera"
 
 -- Represents the base scene node.
@@ -20,7 +21,9 @@ local NCamera = require "nbunny.optimaus.camera"
 local SceneNode = Class()
 
 function SceneNode:new(NType)
-	self._handle = (NType or NSceneNode)(self)
+	local NBaseType = self:getType() == SceneNode and NSceneNode or NLuaSceneNode
+
+	self._handle = (NType or NBaseType)(self)
 	self.transform = SceneNodeTransform(self)
 	self.material = Material(self)
 	self.parent = false
@@ -51,10 +54,6 @@ function SceneNode:getBounds()
 end
 
 function SceneNode:_debugDrawBounds(renderer, delta)
-	if not Class.isCompatibleType(self, require "ItsyScape.Graphics.ParticleSceneNode") then
-		return
-	end
-
 	love.graphics.setMeshCullMode('back')
 	love.graphics.setDepthMode('lequal', true)
 
@@ -128,6 +127,7 @@ function SceneNode:_debugDrawBounds(renderer, delta)
 
 	love.graphics.push()
 	love.graphics.applyTransform(self:getTransform():getGlobalDeltaTransform(delta))
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(self._boundsMesh)
 	love.graphics.pop()
 

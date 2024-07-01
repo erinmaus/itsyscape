@@ -14,8 +14,7 @@
 
 void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
-	visible_scene_nodes.clear();
-	SceneNode::walk_by_position(node, get_renderer()->get_camera(), delta, visible_scene_nodes);
+	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_position();
 
 	drawable_scene_nodes.clear();
 	for (auto visible_scene_node: visible_scene_nodes)
@@ -30,11 +29,13 @@ void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
 
 void nbunny::ForwardRendererPass::walk_visible_lights()
 {
+	const auto& all_scene_nodes = get_renderer()->get_all_scene_nodes();
+
 	global_light_scene_nodes.clear();
 	local_light_scene_nodes.clear();
 	fog_scene_nodes.clear();
 
-	for (auto node: visible_scene_nodes)
+	for (auto node: all_scene_nodes)
 	{
 		const auto& node_type = node->get_type();
 		if (node_type == AmbientLightSceneNode::type_pointer ||
@@ -232,6 +233,18 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
 
+	love::graphics::Graphics::ColorMask enabled_mask;
+	enabled_mask.r = true;
+	enabled_mask.g = true;
+	enabled_mask.b = true;
+	enabled_mask.a = true;
+
+	love::graphics::Graphics::ColorMask disabled_mask;
+	disabled_mask.r = false;
+	disabled_mask.g = false;
+	disabled_mask.b = false;
+	disabled_mask.a = false;
+
 	for (auto& scene_node: drawable_scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
@@ -276,7 +289,6 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
 
 		renderer->draw_node(L, *scene_node, delta);
-
 		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 }

@@ -23,6 +23,7 @@ namespace nbunny
 	{
 	public:
 		glm::vec3 position = glm::vec3(0.0f);
+		glm::vec3 normal = glm::vec3(0.0f, 0.0f, 1.0f);
 		glm::vec3 velocity = glm::vec3(0.0f);
 		glm::vec3 acceleration = glm::vec3(0.0f);
 		float rotation = 0.0f;
@@ -105,8 +106,8 @@ namespace nbunny
 		void emit(int count);
 
 		glm::quat get_global_rotation(float delta) const;
-		void build(const glm::quat& inverse_rotation);
-		void push_particle_quad(const Particle& p, glm::quat rotation);
+		void build(const glm::quat& inverse_rotation, const glm::quat& self_rotation, const glm::mat4& view, float delta);
+		void push_particle_quad(const Particle& p, const glm::quat& inverse_rotation, const glm::quat& self_rotation);
 
 	public:
 		static const Type<ParticleSceneNode> type_pointer;

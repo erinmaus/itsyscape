@@ -44,31 +44,4 @@ function Common.decomposeTransform(transform)
 	return Vector(m41, m42, m43), q
 end
 
-local function _getKnotInterval(a, b, alpha)
-	return (a - b):getLength() ^ (0.5 * alpha)
-end
-
-local function _remap(a, b, c, d, u)
-	return c:lerp(d, (u - a) / (b - a))
-end
-
-function Common.spline(t, p0, p1, p2, p3, alpha)
-	alpha = alpha or 1
-
-	local k0 = 0
-	local k1 = _getKnotInterval(p0, p1, alpha)
-	local k2 = _getKnotInterval(p1, p2, alpha) + k1
-	local k3 = _getKnotInterval(p2, p3, alpha) + k2
-
-	local u = k1 * (1 - t) + k2 * t
-
-	local A1 = _remap(k0, k1, p0, p1, u)
-	local A2 = _remap(k1, k2, p1, p2, u)
-	local A3 = _remap(k2, k3, p2, p3, u)
-	local B1 = _remap(k0, k2, A1, A2, u)
-	local B2 = _remap(k1, k3, A2, A3, u)
-
-	return _remap(k1, k2, B1, B2, u)
-end
-
 return Common

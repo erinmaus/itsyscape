@@ -106,7 +106,7 @@ function Mite:runAround()
 	position.y = map:getInterpolatedHeight(position.x, position.z)
 
 	Utility.Peep.lookAt(self, position)
-	Utility.Peep.setPosition(self, position)
+	Utility.Peep.setPosition(self, position, true)
 end
 
 function Mite:update(director, game)

@@ -95,8 +95,15 @@ function PlayerSelect.loadPlayerView(actor, storage)
 		local skinType = section:get('type')
 		local skinFilename = section:get('filename')
 
+		local config
+		if section:hasSection("config") then
+			config = section:getSection("config"):get()
+		else
+			config = {}
+		end
+
 		if skinType and skinFilename then
-			actor:setSkin(slot, priority, CacheRef(skinType, skinFilename))
+			actor:setSkin(slot, priority, CacheRef(skinType, skinFilename), config)
 		end
 	end
 end

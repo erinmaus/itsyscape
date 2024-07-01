@@ -44,7 +44,7 @@ function NewGame:movePlayer(playerPeep)
 		text = string.format("Welcome to the Realm, %s.", playerPeep:getName())
 	} }, 6)
 
-	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) and not _DEBUG then
+	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) and _DEBUG then
 		stage:movePeep(
 			playerPeep,
 			"@Intro_Realm",
@@ -74,9 +74,9 @@ function NewGame:onPlayerEnter(player)
 
 	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
 		Utility.UI.closeAll(playerPeep)
-		Utility.UI.openInterface(playerPeep, "CharacterCustomization", true, function()
+		Utility.UI.openInterface(playerPeep, "CharacterCustomizationV2", true, function()
 			self:movePlayer(playerPeep)
-		end)
+		end, true)
 	else
 		self:movePlayer(playerPeep)
 	end

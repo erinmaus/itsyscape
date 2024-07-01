@@ -179,8 +179,14 @@ end
 
 do
 	ItsyScape.Resource.Item "PlagueDoctorHat" {
-		ItsyScape.Action.Equip(),
-		ItsyScape.Action.Dequip(),
+		ItsyScape.Action.Equip() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(55),
+				Resource = ItsyScape.Resource.Skill "Faith"
+			}
+		},
+
+		ItsyScape.Action.Dequip()
 	}
 
 	ItsyScape.Meta.Item {
@@ -214,8 +220,14 @@ end
 
 do
 	ItsyScape.Resource.Item "PlagueDoctor" {
-		ItsyScape.Action.Equip(),
-		ItsyScape.Action.Dequip(),
+		ItsyScape.Action.Equip() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(55),
+				Resource = ItsyScape.Resource.Skill "Faith"
+			}
+		},
+
+		ItsyScape.Action.Dequip()
 	}
 
 	ItsyScape.Meta.Item {
@@ -230,7 +242,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Filters out plague partikles",
+		Value = "Filters out plague partikles.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Item "PlagueDoctor"
 	}
@@ -249,8 +261,14 @@ end
 
 do
 	ItsyScape.Resource.Item "PlagueDoctorHatAndMask" {
-		ItsyScape.Action.Equip(),
-		ItsyScape.Action.Dequip(),
+		ItsyScape.Action.Equip() {
+			Requirement {
+				Count = ItsyScape.Utility.xpForLevel(55),
+				Resource = ItsyScape.Resource.Skill "Faith"
+			}
+		},
+
+		ItsyScape.Action.Dequip()
 	}
 
 	ItsyScape.Meta.Item {

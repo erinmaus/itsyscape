@@ -29,9 +29,22 @@ function Vector:get()
 	return self.x, self.y, self.z
 end
 
+function Vector:abs()
+	return Vector(math.abs(self.x), math.abs(self.y), math.abs(self.z))
+end
+
 -- Calculates and returns the dot product of two vectors.
 function Vector:dot(other)
 	return self.x * other.x + self.y * other.y + self.z * other.z
+end
+
+function Vector:reflect(normal)
+	local dot = self:dot(normal)
+	return self - 2.0 * normal * dot
+end
+
+function Vector:project(other)
+	return self:dot(other) / other:dot(other) * other
 end
 
 -- Returns a vector with the minimum components of both vectors.
@@ -48,6 +61,10 @@ function Vector:max(other)
 		math.max(self.x, other.x),
 		math.max(self.y, other.y),
 		math.max(self.z, other.z))
+end
+
+function Vector:clamp(min, max)
+	return self:min(max):max(min)
 end
 
 function Vector.transformBounds(min, max, transform)

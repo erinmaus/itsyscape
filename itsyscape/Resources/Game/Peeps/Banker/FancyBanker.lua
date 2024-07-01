@@ -20,42 +20,38 @@ function FancyBanker:new(resource, name, ...)
 end
 
 function FancyBanker:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Human.lskel")
-	actor:setBody(body)
-
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Light.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Grey.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local hair = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hair/FancyOld.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/BankerSuit.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/GoldGloves.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/FancyShoes1.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
-
 	Player.ready(self, director, game)
+
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Humanlike.lua",
+		{ Player.Palette.SKIN_MEDIUM })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_ACCENT,
+		"PlayerKit2/Hair/FancyOld.lua",
+		{ Player.Palette.HAIR_BROWN:setHSL(nil, 0.1, 0.4) })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ Player.Palette.HAIR_BROWN:setHSL(nil, 0.1, 0.4), Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/BankerSuit.lua",
+		{ Player.Palette.PRIMARY_BLUE:setHSL(nil, 0.3, 0.5), Player.Palette.PRIMARY_YELLOW, Player.Palette.PRIMARY_BLACK:setHSL(nil, nil, 0.5) })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Hands/Gloves.lua",
+		{ Player.Palette.PRIMARY_YELLOW })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/FancyShoes1.lua",
+		{ Player.Palette.PRIMARY_BLACK })
 end
 
 return FancyBanker

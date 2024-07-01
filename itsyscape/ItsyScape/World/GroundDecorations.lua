@@ -81,6 +81,10 @@ function GroundDecorations:emitAll(tileSet, map)
 		for j = 1, map:getHeight() do
 			self:emit(tileSet, map, i, j)
 		end
+
+		if coroutine.running() then
+			coroutine.yield()
+		end
 	end
 end 
 

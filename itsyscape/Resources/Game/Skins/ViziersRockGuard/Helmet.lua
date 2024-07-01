@@ -1,5 +1,5 @@
 {
-	model = "Resources/Game/Skins/ViziersRockGuard/Helmet.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Helmet.lmesh",
 	texture = "Resources/Game/Skins/ViziersRockGuard/ViziersRockGuard.png",
 	isBlocking = false
 }

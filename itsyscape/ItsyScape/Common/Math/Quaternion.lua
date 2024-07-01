@@ -32,12 +32,6 @@ function Quaternion.lookAt(source, target, up)
 	local forward = (target - source):getNormal()
 
 	local dot = forward:dot(up)
-	if math.abs(dot + 1.0) < E then
-		return Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
-	elseif math.abs(dot - 1.0) < E then
-		return Quaternion.IDENTITY
-	end
-
 	local angle = math.acos(dot)
 	local axis = up:cross(forward):getNormal()
 	return Quaternion.fromAxisAngle(axis, angle):getNormal()
@@ -140,12 +134,34 @@ function Quaternion:getNormal()
 	end
 end
 
+function Quaternion:inverse()
+	local lengthSquared = self:getLengthSquared()
+	if length == 0 then
+		return self
+	end
+
+	local inverseLengthSquared = 1 / lengthSquared
+	return Quaternion(
+		-self.x * inverseLengthSquared,
+		-self.y * inverseLengthSquared,
+		-self.z * inverseLengthSquared,
+		self.w * inverseLengthSquared)
+end
+
 function Quaternion:transformVector(vector)
 	local v = Quaternion(vector.x, vector.y, vector.z, 0)
 	local normal = self:getNormal()
 	local conjugate = -normal
 
 	return Vector((normal * v * conjugate):get())
+end
+
+function Quaternion:getEulerXYZ()
+	local x = math.atan2(2.0 * (self.y * self.z + self.w * self.x) , self.w * self.w - self.x * self.x - self.y * self.y + self.z * self.z)
+	local y = math.asin(-2.0 * (self.x * self.z - self.w * self.y))
+	local z = math.atan2(2.0 * (self.x * self.y + self.w * self.z) , self.w * self.w + self.x * self.x - self.y * self.y - self.z * self.z)
+
+	return x, y, z
 end
 
 -- Adds two quaternions.

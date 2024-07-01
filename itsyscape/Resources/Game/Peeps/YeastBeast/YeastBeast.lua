@@ -66,6 +66,11 @@ function YeastBeast:ready(director, game)
 		"Resources/Game/Skins/YeastBeast/YeastBeast_Jar.lua")
 	actor:setSkin(Equipment.PLAYER_SLOT_BACK, Equipment.SKIN_PRIORITY_BASE, jarSkin)
 
+	local yeastSkin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/YeastBeast/YeastBeast_Yeast.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_BACK, Equipment.SKIN_PRIORITY_ACCENT, yeastSkin)
+
 	local idleAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/YeastBeast_Idle/Script.lua")
