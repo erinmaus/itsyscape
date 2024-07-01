@@ -52,7 +52,7 @@ function Window:load()
 	self.innerCrown = DecorationSceneNode()
 	self.outerCrown = DecorationSceneNode()
 
-	local renderer = Renderer(true)
+	local renderer = Renderer()
 	self.renderer = renderer
 	self.camera = ThirdPersonCamera()
 

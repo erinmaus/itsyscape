@@ -196,16 +196,6 @@ end
 function Renderer:_drawOutlines(width, height, uniforms)
 	uniforms = uniforms or {}
 
-	self._depthStep = self._depthStep or 0
-	if love.keyboard.isDown("k") then
-		self._depthStep = self._depthStep + 0.1 * love.timer.getDelta()
-		print(">>> +step", self._depthStep)
-	end
-	if love.keyboard.isDown("l") then
-		self._depthStep = self._depthStep - 0.1 * love.timer.getDelta()
-		print(">>> -step", self._depthStep)
-	end
-
 	local buffer = self:getOutputBuffer()
 	self.outlinePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.outlinePostProcessShader:send("scape_Far", self.camera:getFar())
@@ -217,7 +207,7 @@ function Renderer:_drawOutlines(width, height, uniforms)
 	-- self.outlinePostProcessShader:send("scape_OutlineThickness", 1)
 	self.outlinePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
 	self.outlinePostProcessShader:send("scape_NormalTexture", self.finalDeferredPass:getGBuffer():getCanvas(3))
-	self.outlinePostProcessShader:send("scape_DepthStep", uniforms["scape_DepthStep"] or self._depthStep)
+	self.outlinePostProcessShader:send("scape_DepthStep", uniforms["scape_DepthStep"] or 0)
 	--self.outlinePostProcessShader:send("scape_AlphaMaskTexture", self.alphaMaskPass:getABuffer():getCanvas(1))
 	
 	love.graphics.push("all")

@@ -619,7 +619,8 @@ function MapEditorApplication:mousePress(x, y, button)
 									Vector(x, y, z),
 									rotation,
 									scale,
-									self.currentDecorationColor)
+									self.currentDecorationColor,
+									self.decorationPalette:getCurrentTexture())
 								self:getGame():getStage():decorate(group, decoration)
 								self.currentFeatureIndex = decoration:getNumFeatures()
 							end

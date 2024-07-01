@@ -206,7 +206,7 @@ nbunny::DecorationSceneNode::DecorationSceneNode(int reference) :
 	mesh_attribs({
 		{ "VertexPosition", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexNormal", love::graphics::vertex::DATA_FLOAT, 3 },
-		{ "VertexTexture", love::graphics::vertex::DATA_FLOAT, 3 },
+		{ "VertexTexture", love::graphics::vertex::DATA_FLOAT, 2 },
 		{ "VertexLayer", love::graphics::vertex::DATA_FLOAT, 1 },
 		{ "VertexColor", love::graphics::vertex::DATA_FLOAT, 4 },
 	})
