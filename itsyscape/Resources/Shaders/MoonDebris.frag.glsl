@@ -2,8 +2,8 @@ uniform Image scape_DiffuseTexture;
 
 varying vec3 frag_LocalPosition;
 
-const float FOG_NEAR = 48.0;
-const float FOG_FAR  = 70.0;
+const float FOG_NEAR = 60.0;
+const float FOG_FAR  = 74.0;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {

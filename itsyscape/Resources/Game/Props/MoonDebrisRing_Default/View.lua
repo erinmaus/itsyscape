@@ -32,7 +32,7 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 			type = "RadialEmitter",
 			radius = { 64, 69 },
 			speed = { 0, 0 },
-			yRange = { 0, 1 / 24 },
+			yRange = { 0, 1 / 28 },
 			acceleration = { 0, 0 },
 			normal = { true },
 		},
@@ -51,7 +51,7 @@ MoonDebrisRing.PARTICLE_SYSTEM = {
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 1, 1.5 }
+			scale = { 0.75, 1.25 }
 		},
 		{
 			type = "RandomRotationEmitter",
@@ -93,7 +93,7 @@ function MoonDebrisRing:load()
 	self.particles:setParent(root)
 
 	self.light = PointLightSceneNode()
-	self.light:setColor(Color(0.25, 0.25, 0.25))
+	self.light:setColor(Color(0.4, 0.4, 0.4))
 	self.light:setAttenuation(256)
 	self.light:setParent(root)
 end

@@ -37,7 +37,6 @@ function Color.fromHexString(color, alpha)
 		return Color(red, green, blue, alpha or 1)
 	end
 
-	Log.error("Color '%s' not in hex string format.", color)
 	return nil
 end
 

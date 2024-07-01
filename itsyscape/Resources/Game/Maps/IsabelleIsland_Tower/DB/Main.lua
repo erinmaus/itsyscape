@@ -66,6 +66,7 @@ do
 		ColorRed = 100,
 		ColorGreen = 100,
 		ColorBlue = 100,
+		CastsShadows = 1,
 		Resource = M["Light_Sun"]
 	}
 
