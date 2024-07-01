@@ -83,6 +83,7 @@ function BasicLight:ready(director, game)
 
 			local isGlobal = light:get("Global")
 			self.global = isGlobal ~= 0
+			self.castsShadows = light:get("CastsShadows") ~= 0
 		end
 	end
 end

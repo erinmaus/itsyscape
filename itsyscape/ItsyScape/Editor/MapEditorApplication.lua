@@ -16,6 +16,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Game.Model.Prop"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
+local ColorPalette = require "ItsyScape.Editor.Common.ColorPalette"
 local ConfirmWindow = require "ItsyScape.Editor.Common.ConfirmWindow"
 local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
 local DecorationList = require "ItsyScape.Editor.Map.DecorationList"
@@ -220,6 +221,10 @@ function MapEditorApplication:setTool(tool)
 
 	self:unsetGizmo()
 	self:endEditCurve()
+
+	if self.currentPalette then
+		self.currentPalette:close()
+	end
 
 	if tool == MapEditorApplication.TOOL_TERRAIN then
 		self.currentTool = MapEditorApplication.TOOL_TERRAIN
@@ -1146,7 +1151,43 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						end
 					end
 
-					if key == "delete" then
+
+					if key == "c" then
+						if not (self.currentPalette and self.currentPalette:getParent()) then
+							self.currentPalette = ColorPalette(self)
+							local function _update(_, color)
+								local currentFeature = self:getLastDecorationFeature()
+								if currentFeature then
+									currentFeature:setColor(color)
+
+									local group, decoration = self.decorationList:getCurrentDecoration()
+									if group and decoration then
+										self:getGame():getStage():decorate(group, decoration)
+									end
+
+									self.currentDecorationColor = color
+								end
+							end
+
+							self.currentPalette.onUpdate:register(_update)
+							self.currentPalette.onSubmit:register(_update)
+							self.currentPalette.onCancel:register(_update)
+
+							local colors = {}
+							local _, decoration = self.decorationList:getCurrentDecoration()
+							for i = 1, decoration:getNumFeatures() do
+								table.insert(colors, decoration:getFeatureByIndex(i):getColor())
+							end
+
+							local x = self.decorationPalette:getAbsolutePosition()
+							x = x - ColorPalette.WIDTH
+
+							local _, h = love.graphics.getScaledMode()
+							local y = h - ColorPalette.HEIGHT
+
+							self.currentPalette:open(feature:getColor(), colors, x, y)
+						end
+					elseif key == "delete" then
 						if self.gizmo then
 							local feature = self.gizmo:getTarget()
 							self:unsetGizmo()

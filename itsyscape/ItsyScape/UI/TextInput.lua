@@ -134,7 +134,15 @@ function TextInput:_getTextLength()
 end
 
 function TextInput:keyDown(key, scan, isRepeat, ...)
-	if key == 'left' then
+	if key == "v" then
+		local isMacOSPaste = love.system.getOS() == "OS X" and (love.keyboard.isDown("lgui") or love.keyboard.isDown("rgui"))
+		local isStandardPaste = love.system.getOS() ~= "OS X" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl"))
+
+		if isMacOSPaste or isStandardPaste then
+			text = love.system.getClipboardText():gsub("[\n\r\t]", "")
+			self:_type(text, true)
+		end
+	elseif key == 'left' then
 		if self.isShiftDown > 0 then
 			self:slideSelection(-1)
 		else
@@ -239,22 +247,27 @@ function TextInput:keyUp(key, ...)
 	Widget.keyUp(self, key, ...)
 end
 
-function TextInput:type(text, ...)
+function TextInput:_type(text, isPaste)
 	local left = self:getLeftCursor()
 	local right = self:getRightCursor()
 
 	self.text = self:_subText(1, self:getLeftCursor() + 1) ..
 	            text ..
 	            self:_subText(self:getRightCursor() + 1)
-	-- if self.cursorIndex == 0 and self.cursorLength == #self.text then
-	-- 	self.text = text
-	-- else
-	-- 	self.text = self.text .. text
-	-- end
 
 	self.onValueChanged(self, self.text)
-	self.cursorIndex = self:getLeftCursor() + 1
+
+	if isPaste then
+		self.cursorIndex = self:getLeftCursor() + utf8.len(text)
+	else
+		self.cursorIndex = self:getLeftCursor() + 1
+	end
+
 	self.cursorLength = 0
+end
+
+function TextInput:type(text, ...)
+	self:_type(text, false)
 
 	Widget.type(self, text, ...)
 end
