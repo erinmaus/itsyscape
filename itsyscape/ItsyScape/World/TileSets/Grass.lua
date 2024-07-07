@@ -20,22 +20,22 @@ Grass.GLOBAL_OFFSET = Vector(174 / 257)
 
 Grass.SATURATION = 4
 
-Grass.CLUMP_NOISE = Noise {
+Grass.DIRT_NOISE = Noise {
 	scale = 3,
 	octaves = 2,
 	attenuation = 0.5
 }
-Grass.CLUMP_THRESHOLD = 0.25
+Grass.DIRT_THRESHOLD = 0.3
 
 Grass.MIN_OFFSET = -16
 Grass.MAX_OFFSET = 16
 Grass.OFFSET_NOISE = Noise {
-	scale = 8,
+	scale = 32,
 	octaves = 2,
 	attenuation = -2
 }
 
-Grass.MIN_SCALE = 0.5
+Grass.MIN_SCALE = 0.2
 Grass.MAX_SCALE = 1.0
 Grass.SCALE_NOISE = Noise {
 	scale = 3,
@@ -46,7 +46,7 @@ Grass.SCALE_NOISE = Noise {
 Grass.MIN_ROTATION = -math.pi
 Grass.MAX_ROTATION = math.pi
 Grass.ROTATION_NOISE = Noise {
-	scale = 3,
+	scale = 13,
 	octaves = 3,
 	attenuation = 0
 }
@@ -77,8 +77,9 @@ Grass.COLORS = {
 
 Grass.NUM_DIRT_SAMPLES = 3
 Color.DIRT_COLORS = {
-	Color.fromHexString("876f6d"),
-
+	Color.fromHexString("524842"),
+	Color.fromHexString("5c4b40"),
+	Color.fromHexString("54423b"),
 }
 
 Grass.COLOR_NOISE = Noise {
@@ -106,7 +107,7 @@ function Grass:bind()
 	self._scales = Noise.UniformSampler(self.SCALE_NOISE)
 	self._rotations = Noise.UniformSampler(self.ROTATION_NOISE)
 	self._offsets = Noise.UniformSampler(self.OFFSET_NOISE)
-	self._clumps = Noise.UniformSampler(self.CLUMP_NOISE)
+	self._dirt = Noise.UniformSampler(self.DIRT_NOISE)
 	self._cache = {}
 end
 
@@ -155,7 +156,7 @@ function Grass:cache(map, i, j, w, h, tileSize)
 					local rotation = self._rotations:sample2D(noiseX, noiseY)
 					local color = self._colors:sample2D(noiseX, noiseY)
 					local sample = self._samples:sample2D(noiseX, noiseY)
-					local clump = self._clumps:sample2D(noiseX, noiseY)
+					local dirt = self._dirt:sample2D(noiseX, noiseY)
 
 					local g = {
 						i = currentI * self.SATURATION + x,
@@ -169,7 +170,7 @@ function Grass:cache(map, i, j, w, h, tileSize)
 						rotation = rotation,
 						color = color,
 						sample = sample,
-						clump = clump
+						dirt = dirt
 					}
 
 					self:_addCache(currentI, currentJ, map:getWidth(), map:getHeight(), x, y, g)
@@ -213,12 +214,17 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 	end
 
 	for _, g in ipairs(grass) do
-		local clump = self._clumps:uniform(g.clump)
-		if clump > self.CLUMP_THRESHOLD then
+		local dirt = self._dirt:uniform(g.dirt)
+		if dirt >= self.DIRT_THRESHOLD then
 			local scale = self._scales:range(g.scale, self.MIN_SCALE, self.MAX_SCALE)
 			local rotation = self._rotations:range(g.rotation, self.MIN_ROTATION, self.MAX_ROTATION)
 			local x = g.x + self._offsets:range(g.offsetX, self.MIN_OFFSET, self.MAX_OFFSET)
 			local y = g.y + self._offsets:range(g.offsetY, self.MIN_OFFSET, self.MAX_OFFSET)
+
+			-- if self.MIN_OFFSET <= -32 then
+			-- 	print(">>> x", g.x, x - g.x)
+			-- 	print(">>> y", g.y, y - g.y)
+			-- end
 
 			if drawType == "diffuse" then
 				local diffuseSample = self._DIFFUSE_SAMPLES[self._samples:index(g.sample, #self._DIFFUSE_SAMPLES)]

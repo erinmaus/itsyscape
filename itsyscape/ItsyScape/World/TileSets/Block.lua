@@ -17,7 +17,7 @@ function Block.Bind(Type, largeTileSet)
 
 		for key, value in pairs(t) do
 			if Type[key] ~= nil and key:match("[A-Z][0-9A-Z_]*") then
-				local isSameLuaType = type(value) == type(Type[key]) and type(value) ~= "table"
+				local isSameLuaType = type(value) == type(Type[key]) and not (type(value) == "table" and getmetatable(value) ~= nil)
 				local valueClassType, typeClassType = Class.getType(value), Class.getType(Type[key])
 				local isSameType = type(value) == "table" and Class.isDerived(valueClassType, typeClassType)
 				assert(isSameLuaType or isSameType, string.format("%s is not the same Lua type or Class", key))

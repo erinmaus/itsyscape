@@ -26,6 +26,8 @@ function Block.Bind(Type, groundDecorations)
 			end
 		end
 
+		block:bind()
+
 		return block
 	end
 end
@@ -42,8 +44,8 @@ function Block:addFeature(id, position, rotation, scale, color)
 	self.groundDecorations:addFeature(id, position, rotation, scale, color)
 end
 
-function Block:noise(...)
-	return self.groundDecorations:noise(...)
+function Block:bind()
+	-- Nothing.
 end
 
 function Block:emit(tileSet, map, i, j, tileSetTile, mapTile)
