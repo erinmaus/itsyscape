@@ -73,7 +73,7 @@ function NewMapInterface:new(application)
 	inputsGridLayout:addChild(self.heightInput)
 
 	local paddingLabel = Label()
-	paddingLabel:setText("Width:")
+	paddingLabel:setText("Padding:")
 	inputsGridLayout:addChild(paddingLabel)
 
 	self.paddingInput = TextInput()
@@ -138,16 +138,16 @@ function NewMapInterface:createMap()
 			for j = 1, map:getHeight() do
 				for i = 1, map:getWidth() do
 					local tile = map:getTile(i, j)
-					if j <= padding or j >= height + padding or
-					   i <= padding or i >= width + padding
+					if j <= padding or j > height + padding or
+					   i <= padding or i > width + padding
 					then
 						tile.flat = 3
 					else
 						tile.edge = 2
 					end
 
-					if j <= halfPadding or j >= height + padding + halfPadding or
-					   i <= halfPadding or i >= width + padding + halfPadding
+					if j <= halfPadding or j > height + padding + halfPadding or
+					   i <= halfPadding or i > width + padding + halfPadding
 					then
 						tile:setFlag("impassable")
 					end

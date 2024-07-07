@@ -144,6 +144,8 @@ function MapEditorApplication:createCurveValueGizmo(Type, index)
 		self:createRotationGizmo(self.curve:getRotations():get(index))
 	elseif Type == MapCurve.Normal then
 		self:createRotationGizmo(self.curve:getNormals():get(index))
+	elseif Type == MapCurve.Scale then
+		self:createScaleGizmo(self.curve:getScales():get(index))
 	else
 		self:unsetGizmo()
 	end
@@ -253,6 +255,7 @@ function MapEditorApplication:setTool(tool)
 			axis = { 0, 0, 1 },
 			positions = { { map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2 } },
 			normals = { { 0, 1, 0 } },
+			scales = { { 1, 1, 1 } },
 			rotations = { { Quaternion.IDENTITY:get() } }
 		})
 
@@ -311,8 +314,11 @@ function MapEditorApplication:curveToSceneNode(target)
 		sceneNode:getTransform():setLocalRotation(rotation)
 	elseif Class.isCompatibleType(target, MapCurve.Rotation) then
 		local t = ((target:getIndex() or 1) - 1) / (self.curve:getRotations():length() - 1)
-		sceneNode:getTransform():setLocalTranslation(self.curve:evaluatePosition(t) + Vector(0, 4, 0))
+		sceneNode:getTransform():setLocalTranslation(self.curve:evaluatePosition(t) + self.curve:evaluateNormal(t) * 4)
 		sceneNode:getTransform():setLocalRotation(target:getValue())
+	elseif Class.isCompatibleType(target, MapCurve.Scale) then
+		sceneNode:getTransform():setLocalTranslation(self.curve:getPositions():get(target:getIndex() or 1):getValue())
+		sceneNode:getTransform():setLocalScale(target:getValue())
 	end
 
 	return sceneNode
@@ -907,6 +913,9 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				elseif Class.isCompatibleType(target, MapCurve.Rotation) then
 					self.curve:getRotations():set(target:getIndex(), MapCurve.Rotation(rotation:get()))
 					self.gizmo:setTarget(self.curve:getRotations():get(target:getIndex()))
+				elseif Class.isCompatibleType(target, MapCurve.Scale) then
+					self.curve:getScales():set(target:getIndex(), MapCurve.Scale(scale:get()))
+					self.gizmo:setTarget(self.curve:getScales():get(target:getIndex()))
 				end
 
 				if needsUpdate then
@@ -1080,6 +1089,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 									axis = { 0, 0, 1 },
 									positions = { { position:get() }, { (position + Vector(0, 0, size.z)):get() } },
 									normals = { { Vector.UNIT_Y:get() }, { Vector.UNIT_Y:get() } },
+									scales = { { Vector.ONE:get() }, { Vector.ONE:get() } },
 									rotations = { { Quaternion.IDENTITY:get() } }
 								})
 
@@ -1270,7 +1280,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 					end
 
 					local length
-					if targetType == MapCurve.Position or targetType == MapCurve.Normal then
+					if targetType == MapCurve.Position or targetType == MapCurve.Normal or targetType == MapCurve.Scale then
 						length = self.curve:getPositions():length()
 					elseif targetType == MapCurve.Rotation then
 						length = self.curve:getRotations():length()
@@ -1293,9 +1303,10 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 						local targetIndex = target:getIndex() or 1
 						local nextIndex
-						if targetType == MapCurve.Position or targetType == MapCurve.Normal then
+						if targetType == MapCurve.Position or targetType == MapCurve.Normal or targetType == MapCurve.Scale then
 							self.curve:getPositions():split(targetIndex)
 							self.curve:getNormals():split(targetIndex)
+							self.curve:getScales():split(targetIndex)
 							nextIndex = math.min(targetIndex + 1, self.curve:getPositions():length())
 						elseif targetType == MapCurve.Rotation then
 							self.curve:getRotations():split(targetIndex)
@@ -1311,10 +1322,12 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 						local targetIndex = target:getIndex() or 1
 						if (targetType == MapCurve.Position and self.curve:getPositions():length() >= 2) or
-						   (targetType == MapCurve.Normal and self.curve:getNormals():length() >= 2)
+						   (targetType == MapCurve.Normal and self.curve:getNormals():length() >= 2) or
+						   (targetType == MapCurve.Scale and self.curve:getScales():length() >= 2)
 						then
 							self.curve:getPositions():remove(targetIndex)
 							self.curve:getNormals():remove(targetIndex)
+							self.curve:getScales():remove(targetIndex)
 							self:createCurveValueGizmo(targetType, targetIndex - 1)
 						elseif targetType == MapCurve.Rotation and self.curve:getRotations():length() >= 2 then
 							self.curve:getRotations():remove(targetIndex)
@@ -1329,7 +1342,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						local targetType = target:getType()
 
 						local targetIndex = target:getIndex() or 1
-						if targetType == MapCurve.Position or targetType == MapCurve.Normal then
+						if targetType == MapCurve.Position or targetType == MapCurve.Normal or targetType == MapCurve.Scale then
 							self:createTranslationGizmo(self.curve:getPositions():get(targetIndex))
 						end
 					end
@@ -1339,8 +1352,18 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						local targetType = target:getType()
 
 						local targetIndex = target:getIndex() or 1
-						if targetType == MapCurve.Position or targetType == MapCurve.Normal then
+						if targetType == MapCurve.Position or targetType == MapCurve.Normal or targetType == MapCurve.Scale then
 							self:createRotationGizmo(self.curve:getNormals():get(targetIndex))
+						end
+					end
+				elseif key == "s" then
+					if self.gizmo then
+						local target = self.gizmo:getTarget()
+						local targetType = target:getType()
+
+						local targetIndex = target:getIndex() or 1
+						if targetType == MapCurve.Position or targetType == MapCurve.Normal or targetType == MapCurve.Scale then
+							self:createScaleGizmo(self.curve:getScales():get(targetIndex))
 						end
 					end
 				elseif key == "return" then
@@ -1706,10 +1729,32 @@ function MapEditorApplication:drawCurve()
 			for i = 1, #screenDirections, 4 do
 				love.graphics.line(screenDirections[i], screenDirections[i + 1], screenDirections[i + 2], screenDirections[i + 3])
 			end
+		elseif targetType == MapCurve.Scale then
+			local axes = { Vector.UNIT_X, Vector.UNIT_Y, Vector.UNIT_Z }
+			for j, axis in ipairs(axes) do
+				local screenScales = {}
+				for i, normalPoint in ipairs(normalPoints) do
+					local t = (i - 1) / (#normalPoints - 1)
+
+					local scale = self.curve:evaluateScale(t)
+					local screenPoint = self:getCamera():project(normalPoint)
+					local screenScale = self:getCamera():project(normalPoint + axis * scale)
+
+					table.insert(screenScales, screenPoint.x)
+					table.insert(screenScales, screenPoint.y)
+					table.insert(screenScales, screenScale.x)
+					table.insert(screenScales, screenScale.y)
+				end
+
+				love.graphics.setColor(math.abs(axis.x), math.abs(axis.y), math.abs(axis.z), 1)
+				for i = 1, #screenScales, 4 do
+					love.graphics.line(screenScales[i], screenScales[i + 1], screenScales[i + 2], screenScales[i + 3])
+				end
+			end
 		elseif targetType == MapCurve.Rotation then
 			local map = self:getGame():getStage():getMap(1)
 			local axes = { -Vector.UNIT_X, Vector.UNIT_X, Vector.UNIT_Y, Vector.UNIT_Z }
-			local offset = { map:getWidth() * map:getCellSize() / 4, map:getWidth() * map:getCellSize() / 4, 1, 1 }
+			local offset = self.currentTool == MapEditorApplication.TOOL_CURVE and { map:getWidth() * map:getCellSize() / 4, map:getWidth() * map:getCellSize() / 4, 1, 1 } or { 1, 1, 1, 1 }
 			for j, axis in ipairs(axes) do
 				local screenNormals = {}
 				for i, normalPoint in ipairs(normalPoints) do
