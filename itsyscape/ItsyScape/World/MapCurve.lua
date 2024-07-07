@@ -97,6 +97,52 @@ function MapCurve.Position:derive(nextValue, degree)
 	return MapCurve.Position(value:get())
 end
 
+MapCurve.Scale = Class(MapCurve.Value)
+
+function MapCurve.Scale:new(...)
+	MapCurve.Value.new(self, Vector, ...)
+end
+
+function MapCurve.Scale:evaluate(currentValue, nextValue, t)
+	return currentValue:lerp(nextValue, t)
+end
+
+function MapCurve.Scale:split(previousValue, nextValue, t)
+	local a, b
+	if nextValue then
+		a = self:getValue()
+		b = nextValue:getValue()
+	elseif previousValue then
+		a = self:getValue()
+		b = previousValue:getValue()
+		t = -t
+	else
+		a = self:getValue()
+		b = self:getValue()
+	end
+
+
+	local difference = b - a
+	local distance = difference:getLength()
+
+	local normal
+	if distance > 0 then
+		normal = difference / distance
+	else
+		return MapCurve.Scale(self:getValue():get())
+	end
+
+	distance = distance * t
+	local value = a + normal * distance
+
+	return MapCurve.Scale(value:get())
+end
+
+function MapCurve.Scale:derive(nextValue, degree)
+	local value = (nextValue - self:getValue()) * degree
+	return MapCurve.Scale(value:get())
+end
+
 MapCurve.Rotation = Class(MapCurve.Value)
 
 function MapCurve.Rotation:new(...)
@@ -383,6 +429,7 @@ function MapCurve:new(map, t)
 	self.positionCurve = MapCurve.Curve(MapCurve.Position, t.positions or {})
 	self.rotationCurve = MapCurve.Curve(MapCurve.Rotation, t.rotations or {})
 	self.normalCurve = MapCurve.Curve(MapCurve.Normal, t.normals or {})
+	self.scaleCurve = MapCurve.Curve(MapCurve.Scale, t.scales or {})
 end
 
 function MapCurve:evaluateRotation(t)
@@ -399,6 +446,10 @@ end
 
 function MapCurve:evaluateNormal(t)
 	return self.normalCurve:evaluate(t)
+end
+
+function MapCurve:evaluateScale(t)
+	return self.scaleCurve:evaluate(t)
 end
 
 function MapCurve:setMin(value)
@@ -438,6 +489,10 @@ function MapCurve:getNormals()
 	return self.normalCurve
 end
 
+function MapCurve:getScales()
+	return self.scaleCurve
+end
+
 function MapCurve:render(depth, result)
 	return self.positionCurve:render(depth, result)
 end
@@ -457,12 +512,13 @@ function MapCurve:transform(point, rotation)
 	local curvePosition = self:evaluatePosition(t)
 	local curveRotation = self:evaluateRotation(t):getNormal()
 	local curveNormal = self:evaluateNormal(t):getNormal()
+	local curveScale = self:evaluateScale(t)
 
 	local oppositeAxis = self.oppositeAxis
 	local up = Vector(point.y) * curveNormal
 	local center = self.halfMapSize * oppositeAxis
 	local p = oppositeAxis * point - center + up
-	point = curveRotation:transformVector(p) + curvePosition
+	point = curveRotation:transformVector(p) * curveScale + curvePosition
 
 	if rotation then
 		local upRotation = Quaternion.lookAt(Vector.ZERO, curveNormal, Vector.UNIT_Y)
@@ -538,7 +594,8 @@ function MapCurve:toConfig()
 		axis = { self.axis:get() },
 		positions = self.positionCurve:toConfig(),
 		rotations = self.rotationCurve:toConfig(),
-		normals = self.normalCurve:toConfig()
+		normals = self.normalCurve:toConfig(),
+		scales = self.scaleCurve:toConfig()
 	}
 end
 

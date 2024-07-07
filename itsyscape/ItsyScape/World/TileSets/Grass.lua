@@ -183,8 +183,8 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 
 	local grass = {}
 	-- Go an extra tile to cover edges shared with other atlas pieces on top/bottom/left/right
-	for offsetI = -1, w + 2 do
-		for offsetJ = -1, h + 2 do
+	for offsetI = -2, w + 2 do
+		for offsetJ = -2, h + 2 do
 			for x = 1, self.SATURATION do
 				for y = 1, self.SATURATION do
 					local currentI = offsetI + i
