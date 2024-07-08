@@ -185,6 +185,10 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	//float sobel = max(getDepthSobel(image, textureCoordinate), getNormalSobel(scape_NormalTexture, textureCoordinate));
 	float d = max(step(1.5, normalSobel), step(max(scape_DepthStep + abs(outlineThreshold), 0.0), depthSobel));
 	vec3 outlineColor = Texel(scape_OutlineColorTexture, textureCoordinate).rgb;
+	if (d < 1.0)
+	{
+		outlineColor = vec3(1.0);
+	}
 
 	//return step(9.0, numDepthSamples) * vec4(1.0, 0.0, 0.0, 1.0);
 
@@ -246,5 +250,5 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 
 	//return vec4(color.rgb * vec3(sumDepthSamples / numDepthSamples, minDepthSample, d), 1);
 	//return vec4(color.rgb * vec3(normalSobel, depthSobel, max(normalSobel, depthSobel)), alpha);
-	return vec4(outlineColor * vec3(1.0 - d), 1.0);
+	return vec4(outlineColor, 1.0);
 }
