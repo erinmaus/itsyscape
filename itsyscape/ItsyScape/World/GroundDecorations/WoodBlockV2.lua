@@ -38,6 +38,8 @@ WoodBlock.NUM_ROWS = 4
 
 WoodBlock.COLORS = {
 	Color.fromHexString("614433"),
+	Color.fromHexString("614433"),
+	Color.fromHexString("614433"),
 	Color.fromHexString("734f38"),
 	Color.fromHexString("54362b"),
 }
@@ -137,13 +139,33 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 		while previousWidth < self.WIDTH and currentWidth < self.WIDTH do
 			local baseTypes
 			if isNextBlockWood and isFarBlockWood then
-				baseTypes = { self.TYPE_SMALL, self.TYPE_MEDIUM, self.TYPE_LARGE }
+				if row % 2 == 0 then
+					baseTypes = { self.TYPE_LARGE, self.TYPE_MEDIUM }
+				else
+					baseTypes = { self.TYPE_MEDIUM, self.TYPE_LARGE }
+				end
+
+				if not isPreviousBlockWood and row % 2 == 0 then
+					table.insert(baseTypes, 1, self.TYPE_SMALL)
+				else
+					table.insert(baseTypes, self.TYPE_SMALL)
+				end
 			else
 				local maxWidth = nextWidth - currentWidth
 				if maxWidth >= self.LARGE_WIDTH then
-					baseTypes = { self.TYPE_SMALL, self.TYPE_MEDIUM, self.TYPE_LARGE }
+					if row % 2 == 0 then
+						baseTypes = { self.TYPE_LARGE, self.TYPE_MEDIUM }
+					else
+						baseTypes = { self.TYPE_MEDIUM, self.TYPE_LARGM }
+					end
+
+					if not isPreviousBlockWood and row % 2 == 0 then
+						table.insert(baseTypes, 1, self.TYPE_SMALL)
+					else
+						table.insert(baseTypes, self.TYPE_SMALL)
+					end
 				elseif maxWidth >= self.MEDIUM_WIDTH then
-					baseTypes = { self.TYPE_SMALL, self.TYPE_MEDIUM }
+					baseTypes = { self.TYPE_MEDIUM, self.TYPE_SMALL }
 				elseif maxWidth >= self.SMALL_WIDTH then
 					baseTypes = { self.TYPE_SMALL }
 				else
@@ -156,23 +178,24 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 				if lastType then
 					lastTypes[lastType] = true
 				end
-
-				if row == 1 and isTopBlockWood then
-					local topCell = self:_getCache(i, j - 1, self.NUM_ROWS)
-					if topCell then
-						lastTypes[topCell.type] = true
-					end
-				else
-					local topCell = self:_getCache(i, j, row - 1)
-					if topCell then
-						lastTypes[topCell.type] = true
-					end
-				end
 			end
+
+			-- 	if row == 1 and isTopBlockWood then
+			-- 		-- local topCell = self:_getCache(i, j - 1, self.NUM_ROWS)
+			-- 		-- if topCell then
+			-- 		-- 	lastTypes[topCell.type] = true
+			-- 		-- end
+			-- 	else
+			-- 		local topCell = self:_getCache(i, j, row - 1)
+			-- 		if topCell and topCell.type then
+			-- 			lastTypes[topCell.type] = true
+			-- 		end
+			-- 	end
+			-- end
 
 			local types = {}
 			for _, t in ipairs(baseTypes) do
-				if not lastTypes[t] then
+				if t ~= lastType then
 					table.insert(types, t)
 				end
 			end
@@ -185,7 +208,7 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 				types = baseTypes
 			end
 
-			local t = types[rng:random(1, #types)]
+			local t = types[1]
 			local index
 			local width
 
