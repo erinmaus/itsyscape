@@ -225,6 +225,14 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		shader->updateUniform(normal_matrix_uniform, 1);
 	}
 
+	auto outline_color = node.get_material().get_outline_color();
+	auto outline_color_uniform = shader->getUniformInfo("scape_OutlineColor");
+	if (outline_color_uniform)
+	{
+		std::memcpy(outline_color_uniform->floats, glm::value_ptr(outline_color), sizeof(glm::vec4));
+		shader->updateUniform(outline_color_uniform, 1);
+	}
+
 	if (camera)
 	{
 		auto view = camera->get_view();
