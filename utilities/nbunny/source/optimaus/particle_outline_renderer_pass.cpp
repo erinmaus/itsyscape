@@ -75,7 +75,10 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
     o_buffer.use();
 
 	graphics->clear(
-		love::Colorf(0.0, 0.0, 0.0, 0.0),
+		{
+			love::Colorf(0.0, 0.0, 0.0, 0.0),
+			love::Colorf(0.0, 0.0, 0.0, 1.0)
+		},
 		0,
 		1.0f);
 

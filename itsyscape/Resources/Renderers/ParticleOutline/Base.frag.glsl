@@ -16,6 +16,7 @@
 #define SCAPE_PARTICLE_OUTLINE_PASS 1
 
 uniform float scape_AlphaMask;
+uniform vec4 scape_OutlineColor;
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
@@ -44,4 +45,5 @@ void effect()
 #endif
 
 	love_Canvases[0] = vec4(mask, 1.0, 1.0, diffuse.a);
+	love_Canvases[1] = vec4(scape_OutlineColor.rgb, diffuse.a);
 }

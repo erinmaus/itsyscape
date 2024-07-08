@@ -30,7 +30,7 @@ static const std::string SHADER_MIX_LIGHTS        = "MixLights";
 nbunny::DeferredRendererPass::DeferredRendererPass(ShadowRendererPass* shadow_pass) :
 	RendererPass(RENDERER_PASS_DEFERRED),
 	shadow_pass(shadow_pass),
-	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA8 }),
+	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA8 }),
 	depth_buffer({}),
 	light_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	fog_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
@@ -476,7 +476,8 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 			love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),
 			love::Colorf(0.0, 0.0, 0.0, 0.0),
 			love::Colorf(0.0, 0.0, 0.0, 1.0),
-			love::Colorf(0.0, 0.0, 0.0, 0.0)
+			love::Colorf(0.0, 0.0, 0.0, 0.0),
+			love::Colorf(0.0, 0.0, 0.0, 1.0)
 		},
 		0,
 		1.0f);

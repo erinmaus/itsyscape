@@ -41,7 +41,8 @@ namespace nbunny
 			COLOR_INDEX          = 1,
 			POSITION_INDEX       = 2,
 			NORMAL_OUTLINE_INDEX = 3,
-			SPECULAR_INDEX       = 4
+			SPECULAR_INDEX       = 4,
+			OUTLINE_COLOR_INDEX  = 5
 		};
 
 		std::vector<SceneNode*> drawable_scene_nodes;
