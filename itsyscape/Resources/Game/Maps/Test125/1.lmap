@@ -23028,7 +23028,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -23061,7 +23061,18 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -23083,7 +23094,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -23094,7 +23105,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -23105,18 +23116,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -23749,7 +23749,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -23782,7 +23782,18 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -23804,7 +23815,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -23815,7 +23826,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -23826,18 +23837,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -24536,7 +24536,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -24547,7 +24547,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},
@@ -24558,7 +24558,7 @@
 		{
 			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
+			edge = 2, flat = 4, decals = {  },
 			data =
 			{
 			},

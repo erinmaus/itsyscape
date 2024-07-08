@@ -23,22 +23,6 @@ function GroundDecorationsV2:new(id)
 	self.tileFunctions = {}
 end
 
-function GroundDecorationsV2:noise(octaves, ...)
-	local sum = 0
-	local average = 0
-	for i = 1, octaves do
-		local args = { ... }
-		for i = 1, #args do
-			args[i] = args[i] * self.FUDGE + i ^ 2
-		end
-
-		sum = sum + 1 / i * love.math.noise(unpack(args))
-		average = average + 1 / i
-	end
-
-	return sum / average
-end
-
 function GroundDecorationsV2:getDecoration()
 	return self.decoration
 end
@@ -52,7 +36,7 @@ function GroundDecorationsV2:registerTile(name, func, ...)
 	self.tileFunctions[name]:register(func, self, ...)
 end
 
-function GroundDecorationsV2:emit(tileSet, map, i, j)
+function GroundDecorationsV2:emit(method, tileSet, map, i, j)
 	local mapTile = map:getTile(i, j)
 
 	local tileSetTile, actualTileSet
@@ -70,21 +54,27 @@ function GroundDecorationsV2:emit(tileSet, map, i, j)
 		local name = tileSetTile.name
 		local tileFunction = self.tileFunctions[name]
 		if tileFunction then
-			tileFunction(actualTileSet, map, i, j, tileSetTile, mapTile)
+			tileFunction(method, actualTileSet, map, i, j, tileSetTile, mapTile)
 		end
 	end
 end
 
-function GroundDecorationsV2:emitAll(tileSet, map)
-	for i = 1, map:getWidth() do
-		for j = 1, map:getHeight() do
-			self:emit(tileSet, map, i, j)
+function GroundDecorationsV2:_emitAll(method, tileSet, map)
+	-- Needs to emit left to right first, then top to bottom
+	for j = 1, map:getHeight() do
+		for i = 1, map:getWidth() do
+			self:emit(method, tileSet, map, i, j)
 		end
 
 		if coroutine.running() then
 			coroutine.yield()
 		end
 	end
+end
+
+function GroundDecorationsV2:emitAll(tileSet, map)
+	self:_emitAll("cache", tileSet, map)
+	self:_emitAll("draw", tileSet, map)
 end 
 
 return GroundDecorationsV2
