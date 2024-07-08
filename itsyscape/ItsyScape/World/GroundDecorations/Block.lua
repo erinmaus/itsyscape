@@ -48,12 +48,12 @@ function Block:bind()
 	-- Nothing.
 end
 
-function Block:emit(tileSet, map, i, j, tileSetTile, mapTile)
+function Block:emit(...)
 	return Class.ABSTRACT()
 end
 
-function Metatable:__call(_, tileSet, map, i, j, tileSetTile, mapTile)
-	return self:emit(tileSet, map, i, j, tileSetTile, mapTile)
+function Metatable:__call(_, ...)
+	return self:emit(...)
 end
 
 return Block

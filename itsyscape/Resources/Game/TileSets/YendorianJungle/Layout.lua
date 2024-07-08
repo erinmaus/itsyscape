@@ -29,5 +29,13 @@
 		width = 128,
 		height = 128,
 		name = "dirt_path"
+	},
+
+	{
+		x = 128,
+		y = 640,
+		width = 128,
+		height = 128,
+		name = "wood"
 	}
 }

@@ -108,30 +108,10 @@ function Grass:bind()
 	self._rotations = Noise.UniformSampler(self.ROTATION_NOISE)
 	self._offsets = Noise.UniformSampler(self.OFFSET_NOISE)
 	self._dirt = Noise.UniformSampler(self.DIRT_NOISE)
-	self._cache = {}
 end
 
 function Grass._sort(a, b)
 	return a.z < b.z
-end
-
-function Grass:_getCacheIndex(i, j, w, h, x, y)
-	return (j - 1) * w + (i - 1) + 1, (y - 1) * self.SATURATION + (x - 1) + 1
-end
-
-function Grass:_addCache(i, j, w, h, x, y, g)
-	local index1, index2 = self:_getCacheIndex(i, j, w, h, x, y)
-
-	local c = self._cache[index1] or {}
-	assert(not c[index2])
-
-	c[index2] = g
-	self._cache[index1] = c
-end
-
-function Grass:_getCache(i, j, w, h, x, y)
-	local index1, index2  = self:_getCacheIndex(i, j, w, h, x, y)
-	return self._cache[index1] and self._cache[index1][index2]
 end
 
 function Grass:cache(map, i, j, w, h, tileSize)
@@ -173,7 +153,7 @@ function Grass:cache(map, i, j, w, h, tileSize)
 						dirt = dirt
 					}
 
-					self:_addCache(currentI, currentJ, map:getWidth(), map:getHeight(), x, y, g)
+					self:addCache(currentI, currentJ, map:getWidth(), map:getHeight(), x, y, self.SATURATION, self.SATURATION, g)
 				end
 			end
 		end
@@ -196,7 +176,7 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 					local currentJ = offsetJ + j
 
 					if currentI >= 1 and currentJ >= 1 and currentI <= map:getWidth() and currentJ <= map:getHeight() then
-						local g = self:_getCache(currentI, currentJ, map:getWidth(), map:getHeight(), x, y)
+						local g = self:getCache(currentI, currentJ, map:getWidth(), map:getHeight(), x, y, self.SATURATION, self.SATURATION)
 						assert(g)
 						table.insert(grass, g)
 					end
@@ -220,11 +200,6 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 			local rotation = self._rotations:range(g.rotation, self.MIN_ROTATION, self.MAX_ROTATION)
 			local x = g.x + self._offsets:range(g.offsetX, self.MIN_OFFSET, self.MAX_OFFSET)
 			local y = g.y + self._offsets:range(g.offsetY, self.MIN_OFFSET, self.MAX_OFFSET)
-
-			-- if self.MIN_OFFSET <= -32 then
-			-- 	print(">>> x", g.x, x - g.x)
-			-- 	print(">>> y", g.y, y - g.y)
-			-- end
 
 			if drawType == "diffuse" then
 				local diffuseSample = self._DIFFUSE_SAMPLES[self._samples:index(g.sample, #self._DIFFUSE_SAMPLES)]

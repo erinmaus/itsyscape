@@ -161,6 +161,10 @@ function LargeTileSet:emitAll(map)
 		coroutine.yield()
 	end
 
+	if true then
+		return
+	end
+
 	local numTilesPerAxis = self.ATLAS_SIZE / self.TILE_SIZE
 	for largeTileIndex, largeTileInfo in ipairs(self.largeTiles) do
 		self:_emit("cache", map, largeTileInfo.tileSetID, largeTileInfo.name, 1, 1, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
