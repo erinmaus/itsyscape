@@ -593,6 +593,7 @@ function GameView:updateGroundDecorations(m)
 					local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
 					local sceneNode = self:decorate(groupName, decoration, m.layer)
 					sceneNode:getMaterial():setOutlineThreshold(0.5)
+					sceneNode:getMaterial():setOutlineColor(Color(0.3))
 				end)
 			end
 		end

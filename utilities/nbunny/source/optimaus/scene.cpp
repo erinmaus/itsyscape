@@ -260,6 +260,16 @@ void nbunny::SceneNodeMaterial::set_color(const glm::vec4& value)
 	color = value;
 }
 
+const glm::vec4& nbunny::SceneNodeMaterial::get_outline_color() const
+{
+	return outline_color;
+}
+
+void nbunny::SceneNodeMaterial::set_outline_color(const glm::vec4& value)
+{
+	outline_color = value;
+}
+
 void nbunny::SceneNodeMaterial::set_shader(const std::shared_ptr<ResourceInstance>& value)
 {
 	if (!value)
@@ -1209,6 +1219,28 @@ static int nbunny_scene_node_material_get_color(lua_State* L)
 	return 4;
 }
 
+static int nbunny_scene_node_material_set_outline_color(lua_State* L)
+{
+	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	float r = (float)luaL_checknumber(L, 2);
+	float g = (float)luaL_checknumber(L, 3);
+	float b = (float)luaL_checknumber(L, 4);
+	float a = (float)luaL_checknumber(L, 5);
+	material->set_outline_color(glm::vec4(r, g, b, a));
+	return 0;
+}
+
+static int nbunny_scene_node_material_get_outline_color(lua_State* L)
+{
+	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	const auto& outline_color = material->get_outline_color();
+	lua_pushnumber(L, outline_color.x);
+	lua_pushnumber(L, outline_color.y);
+	lua_pushnumber(L, outline_color.z);
+	lua_pushnumber(L, outline_color.w);
+	return 4;
+}
+
 static int nbunny_scene_node_material_set_textures(lua_State* L)
 {
 	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
@@ -1256,6 +1288,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getOutlineThreshold", &nbunny::SceneNodeMaterial::get_outline_threshold,
 		"setColor", &nbunny_scene_node_material_set_color,
 		"getColor", &nbunny_scene_node_material_get_color,
+		"setOutlineColor", &nbunny_scene_node_material_set_outline_color,
+		"getOutlineColor", &nbunny_scene_node_material_get_outline_color,
 		"setShader", &nbunny::SceneNodeMaterial::set_shader,
 		"getShader", &nbunny::SceneNodeMaterial::get_shader,
 		"setTextures", &nbunny_scene_node_material_set_textures,

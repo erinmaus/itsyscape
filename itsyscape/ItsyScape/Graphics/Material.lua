@@ -136,6 +136,14 @@ function Material:setColor(value)
 	self._handle:setColor((value or Color(1)):get())
 end
 
+function Material:getOutlineColor()
+	return Color(self._handle:getOutlineColor())
+end
+
+function Material:setOutlineColor(value)
+	self._handle:setOutlineColor((value or Color(0)):get())
+end
+
 -- Gets the number of textures.
 function Material:getNumTextures()
 	return #self.textures

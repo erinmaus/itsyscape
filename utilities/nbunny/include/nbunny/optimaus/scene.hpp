@@ -96,6 +96,7 @@ namespace nbunny
 		bool is_cull_disabled = false;
 		float outline_threshold = 1.0;
 		glm::vec4 color = glm::vec4(1.0f);
+		glm::vec4 outline_color = glm::vec4(glm::vec3(0.0f), 1.0f);
 
 		bool is_light_target_position_enabled = false;
 
@@ -126,6 +127,9 @@ namespace nbunny
 
 		const glm::vec4& get_color() const;
 		void set_color(const glm::vec4& value);
+
+		const glm::vec4& get_outline_color() const;
+		void set_outline_color(const glm::vec4& value);
 
 		void set_shader(const std::shared_ptr<ResourceInstance>& value);
 		const std::shared_ptr<ResourceInstance>& get_shader() const;

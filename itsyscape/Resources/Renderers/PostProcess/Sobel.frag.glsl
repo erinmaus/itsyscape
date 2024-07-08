@@ -1,5 +1,6 @@
 uniform vec2 scape_TexelSize;
 uniform sampler2D scape_AlphaMaskTexture;
+uniform sampler2D scape_OutlineColorTexture;
 
 const mat3 G[9] = mat3[](
 	1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 ),
@@ -75,6 +76,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	{
 		alpha = 1.0;
 	}
-    
-    return vec4(vec3(1.0 - outline), alpha);
+
+	vec3 outlineColor = Texel(scape_OutlineColorTexture, textureCoordinate).rgb;
+    return vec4(vec3(1.0 - outline) * outlineColor, alpha);
 }

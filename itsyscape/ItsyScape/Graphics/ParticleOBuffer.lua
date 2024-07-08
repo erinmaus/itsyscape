@@ -15,9 +15,10 @@ local ParticleOBuffer = Class()
 ParticleOBuffer.ALPHA_MASK_INDEX = 1
 
 ParticleOBuffer.ALPHA_MASK_FORMAT = 'rgba8'
+ParticleOBuffer.OUTLINE_COLOR_INDEX = 'rgba8'
 
 function ParticleOBuffer:new(width, height)
-	self._buffer = NGBuffer(ParticleOBuffer.ALPHA_MASK_FORMAT);
+	self._buffer = NGBuffer(ParticleOBuffer.ALPHA_MASK_FORMAT, ParticleOBuffer.OUTLINE_COLOR_INDEX);
 	self:resize(width, height)
 end
 

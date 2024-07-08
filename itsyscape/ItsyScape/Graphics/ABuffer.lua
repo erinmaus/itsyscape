@@ -16,10 +16,11 @@ ABuffer.ALPHA_INDEX = 1
 
 ABuffer.ALPHA_FORMAT = 'rgba8'
 ABuffer.COLOR_FORMAT = 'rgba32f'
+ABuffer.OUTLINE_COLOR_INDEX = 'rgba8'
 ABuffer.DEPTH_STENCIL_FORMAT = 'depth24'
 
 function ABuffer:new(width, height)
-	self._buffer = NGBuffer(ABuffer.ALPHA_FORMAT, ABuffer.COLOR_FORMAT);
+	self._buffer = NGBuffer(ABuffer.ALPHA_FORMAT, ABuffer.COLOR_FORMAT, ABuffer.OUTLINE_COLOR_INDEX);
 	self:resize(width, height)
 end
 
