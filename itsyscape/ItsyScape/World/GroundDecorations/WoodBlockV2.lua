@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/World/GroundDecorations/WoodBlockBlock.lua
+-- ItsyScape/World/GroundDecorations/WoodBlock.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -20,17 +20,23 @@ WoodBlock.TYPE_SMALL  = "small"
 WoodBlock.TYPE_MEDIUM = "med"
 WoodBlock.TYPE_LARGE  = "large"
 
-WoodBlock.NUM_SMALL = 2
 WoodBlock.SMALL_WIDTH = 1
+WoodBlock.SMALL_FEATURES = {
+	"plank.small.1",
+	"plank.small.2"
+}
 
-WoodBlock.NUM_MEDIUM = 2
 WoodBlock.MEDIUM_WIDTH = 2
+WoodBlock.MEDIUM_FEATURES = {
+	"plank.med.1",
+	"plank.med.2"
+}
 
-WoodBlock.NUM_LARGE = 2
 WoodBlock.LARGE_WIDTH = 3
-
-WoodBlock.FEATURE_FORMAT = "%s.%s.%d"
-WoodBlock.FEATURE = "plank"
+WoodBlock.LARGE_FEATURES = {
+	"plank.large.1",
+	"plank.large.2"
+}
 
 WoodBlock.WIDTH = 2
 
@@ -80,7 +86,6 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 		return
 	end
 
-	print(">>>>", i, j)
 	local rng = love.math.newRandomGenerator(i, j)
 	for row = 1, self.NUM_ROWS do
 		local isNextBlockWood = false
@@ -209,18 +214,18 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 			end
 
 			local t = types[1]
-			local index
+			local feature
 			local width
 
 			if t == self.TYPE_LARGE then
 				width = self.LARGE_WIDTH
-				index = rng:random(1, self.NUM_LARGE)
+				feature = self.LARGE_FEATURES[rng:random(#self.LARGE_FEATURES)]
 			elseif t == self.TYPE_MEDIUM then
 				width = self.MEDIUM_WIDTH
-				index = rng:random(1, self.NUM_MEDIUM)
+				feature = self.MEDIUM_FEATURES[rng:random(#self.MEDIUM_FEATURES)]
 			else
 				width = self.SMALL_WIDTH
-				index = rng:random(1, self.NUM_SMALL)
+				feature = self.SMALL_FEATURES[rng:random(#self.SMALL_FEATURES)]
 			end
 
 			local color = self.COLORS[rng:random(1, #self.COLORS)]
@@ -240,10 +245,8 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 				((row - 0.5) / self.NUM_ROWS + (j - 1)) * map:getCellSize())
 			center.y = map:getInterpolatedHeight(center.x, center.z)
 
-			print("", ">>> add", t, "w", width, "row", row, "max", nextWidth)
-
 			self:addFeature(
-				self.FEATURE_FORMAT:format(self.FEATURE, t, index),
+				feature,
 				center,
 				Quaternion.fromAxisAngle(Vector.UNIT_Y, rotation),
 				Vector.ONE,
@@ -254,7 +257,6 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 		end
 
 		self:_setCache(i, j, row, { width = (currentWidth + previousWidth) - self.WIDTH, type = lastType })
-		print("", ">>> set", currentWidth)
 	end
 end
 
