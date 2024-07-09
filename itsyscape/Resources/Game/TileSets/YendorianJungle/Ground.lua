@@ -20,7 +20,28 @@ function YendorianJungleGround:new()
 	GroundDecorations.new(self, "YendorianJungle")
 
 	self:registerTile("wood", WoodBlock:Bind(self) {
-		NUM_LARGE = 6
+		LARGE_FEATURES = {
+			"plank.large.1",
+			"plank.large.1",
+			"plank.large.1",
+			"plank.large.1",
+			"plank.large.1",
+			"plank.large.1",
+			"plank.large.1",
+			"plank.large.1",
+			"plank.large.2",
+			"plank.large.2",
+			"plank.large.2",
+			"plank.large.2",
+			"plank.large.2",
+			"plank.large.2",
+			"plank.large.2",
+			"plank.large.2",
+			"plank.large.3",
+			"plank.large.4",
+			"plank.large.5",
+			"plank.large.6"
+		}
 	})
 end
 
