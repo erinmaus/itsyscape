@@ -69,6 +69,9 @@ function LocalStage:new(game)
 	self.mapTransformsByLayer = {}
 
 	self.dummyInstance = Instance(0, "<dummy>", self)
+	self.dummyInstance:addLayer(1)
+	table.insert(self.instances, self.dummyInstance)
+	self.instancesByLayer[1] = self.dummyInstance
 
 	self._preloadMapObjects = coroutine.wrap(self.preloadMapObjects)
 	if self:_preloadMapObjects() then

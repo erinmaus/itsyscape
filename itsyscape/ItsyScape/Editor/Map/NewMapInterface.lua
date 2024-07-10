@@ -169,6 +169,15 @@ function NewMapInterface:createMap()
 
 			stage:onMapMoved(1, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 
+			do
+				local MapPeep = require "ItsyScape.Peep.Peeps.Map"
+
+				local peep = self.application:getGame():getDirector():addPeep("::orphan", MapPeep, resource)
+				self.application:getGame():getStage():getPeepInstance():addMapScript(1, peep, filename)
+
+				self.application.mapScriptPeep = peep
+			end
+
 			self.onSubmit(self)
 			self:close()
 		end
