@@ -24,6 +24,7 @@ local DecorationPalette = require "ItsyScape.Editor.Map.DecorationPalette"
 local Gizmo = require "ItsyScape.Editor.Map.Gizmo"
 local LandscapeToolPanel = require "ItsyScape.Editor.Map.LandscapeToolPanel"
 local PropPalette = require "ItsyScape.Editor.Map.PropPalette"
+local MapTransformInterface = require "ItsyScape.Editor.Map.MapTransformInterface"
 local NewMapInterface = require "ItsyScape.Editor.Map.NewMapInterface"
 local TerrainToolPanel = require "ItsyScape.Editor.Map.TerrainToolPanel"
 local TileSetPalette = require "ItsyScape.Editor.Map.TileSetPalette"
@@ -114,6 +115,7 @@ function MapEditorApplication:new()
 	self.currentFeatureIndex = false
 	self.lastProp = false
 	self.filename = false
+	self.currentOtherLayer = 1000
 
 	self.propNames = {}
 
@@ -228,6 +230,8 @@ function MapEditorApplication:setTool(tool)
 		self.currentPalette:close()
 	end
 
+	self:getGameView():bendMap(1)
+
 	if tool == MapEditorApplication.TOOL_TERRAIN then
 		self.currentTool = MapEditorApplication.TOOL_TERRAIN
 		self.terrainToolPanel:open()
@@ -253,9 +257,9 @@ function MapEditorApplication:setTool(tool)
 			min = { 0, 0, 0 },
 			max = { map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize() },
 			axis = { 0, 0, 1 },
-			positions = { { map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2 } },
-			normals = { { 0, 1, 0 } },
-			scales = { { 1, 1, 1 } },
+			positions = { { map:getWidth() * map:getCellSize() / 2, 0, 0 }, { map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() } },
+			normals = { { 0, 1, 0 }, { 0, 1, 0 } },
+			scales = { { 1, 1, 1 }, { 1, 1, 1 } },
 			rotations = { { Quaternion.IDENTITY:get() } }
 		})
 
@@ -754,6 +758,40 @@ function MapEditorApplication:mousePress(x, y, button)
 				if clickedCurveIndex and minDistance <= 8 then
 					self:createRotationGizmo(rotationCurve:get(clickedCurveIndex))
 				end
+			end
+		elseif button == 2 then
+			if self.currentTool == MapEditorApplication.TOOL_CURVE then
+				local actions = {
+					{
+						id = 1,
+						verb = "Transform",
+						object = "Base Map",
+						callback = function()
+							local transformMapInterface = MapTransformInterface(self)
+							self:getUIView():getRoot():addChild(transformMapInterface)
+						end
+					},
+					{
+						id = 1,
+						verb = "Load",
+						object = "Other Map",
+						callback = function()
+							local prompt = PromptWindow(self)
+							prompt.onSubmit:register(function(_, filename)
+								if not self:isResourceNameValid(filename) then
+									local alert = AlertWindow(self)
+									alert:open(string.format("Map name '%s' invalid.", filename))
+								else
+									self:load(filename, true, self.currentOtherLayer)
+									self.currentOtherLayer = self.currentOtherLayer + 1
+								end
+							end)
+							prompt:open("What is the additional map name?", "Load")
+						end
+					}
+				}
+
+				self:getUIView():probe(actions)
 			end
 		end
 	end
@@ -1385,7 +1423,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						local alert = AlertWindow(self)
 						alert:open(string.format("Map name '%s' invalid.", filename))
 					else
-						if self:load(filename, preferExisting) then
+						if self:load(filename, preferExisting, 1) then
 							self.filename = filename
 						end
 					end
@@ -1405,20 +1443,22 @@ function MapEditorApplication:save(filename)
 
 		local decorations = self:getGameView():getDecorations()
 		for group, decoration in pairs(decorations) do
-			local extension
-			if Class.isCompatibleType(decoration, Decoration) then
-				extension = "ldeco"
-			elseif Class.isCompatibleType(decoration, Spline) then
-				extension = "lspline"
-			end
+			if self:getGameView():getDecorationLayer(decoration) == 1 then
+				local extension
+				if Class.isCompatibleType(decoration, Decoration) then
+					extension = "ldeco"
+				elseif Class.isCompatibleType(decoration, Spline) then
+					extension = "lspline"
+				end
 
-			if extension then
-				local filename = self:getOutputFilename("Maps", filename, "Decorations", group .. "." .. extension)
-				local s, r = love.filesystem.write(filename, decoration:toString())
-				if not s then
-					Log.warn(
-						"Couldn't save decoration '%s' to %s: %s",
-						group, filename, r)
+				if extension then
+					local filename = self:getOutputFilename("Maps", filename, "Decorations", group .. "." .. extension)
+					local s, r = love.filesystem.write(filename, decoration:toString())
+					if not s then
+						Log.warn(
+							"Couldn't save decoration '%s' to %s: %s",
+							group, filename, r)
+					end
 				end
 			end
 		end
@@ -1515,8 +1555,10 @@ function MapEditorApplication:save(filename)
 	return false
 end
 
-function MapEditorApplication:load(filename, preferExisting)
-	self:unload()
+function MapEditorApplication:load(filename, preferExisting, baseLayer)
+	if not baseLayer then
+		self:unload()
+	end
 
 	local path
 	if preferExisting then
@@ -1561,23 +1603,25 @@ function MapEditorApplication:load(filename, preferExisting)
 
 			local stage = self:getGame():getStage()
 			stage:newMap(
-				map:getWidth(), map:getHeight(), layerMeta.tileSetID, layerMeta.maskID, 1)
-			stage:updateMap(layer, map)
-			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
+				map:getWidth(), map:getHeight(), layerMeta.tileSetID, layerMeta.maskID, baseLayer or 1)
+			stage:updateMap(baseLayer or 1, map)
+			stage:onMapMoved(baseLayer or 1, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 		end
 	end
 
-	self.meta = meta
+	if not baseLayer then
+		self.meta = meta
+	end
 
 	for _, item in ipairs(love.filesystem.getDirectoryItems(path .. "/Decorations")) do
 		local decoration = item:match("(.*)%.ldeco$")
 		local spline = item:match("(.*)%.lspline$")
 		if decoration then
 			local d = Decoration(path .. "Decorations/" .. item)
-			self:getGame():getStage():decorate(decoration, d)
+			self:getGame():getStage():decorate(decoration, d, baseLayer or 1)
 		elseif spline then
 			local s = Spline(path .. "Decorations/" .. item)
-			self:getGame():getStage():decorate(spline, s)
+			self:getGame():getStage():decorate(spline, s, baseLayer or 1)
 		end
 	end
 
@@ -1613,7 +1657,7 @@ function MapEditorApplication:load(filename, preferExisting)
 					if prop then
 						prop = prop:get("Prop")
 						if prop then
-							local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, 1, "::orphan")
+							local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, baseLayer or 1, "::orphan")
 
 							if s then
 								local peep = p:getPeep()
@@ -1625,13 +1669,24 @@ function MapEditorApplication:load(filename, preferExisting)
 								rotation.rotation = Quaternion(qx, qy, qz, qw)
 							end
 
-							local name = objects[i]:get("Name")
-							self.propNames[name] = p
-							self.propNames[p] = name
+							if not baseLayer then
+								local name = objects[i]:get("Name")
+								self.propNames[name] = p
+								self.propNames[p] = name
+							end
 						end
 					end
 				end
 			end
+		end
+
+		if not baseLayer then
+			local MapPeep = require "ItsyScape.Peep.Peeps.Map"
+
+			local peep = self:getGame():getDirector():addPeep("::orphan", MapPeep, resource)
+			self:getGame():getStage():getPeepInstance():addMapScript(1, peep, filename)
+
+			self.mapScriptPeep = peep
 		end
 	end
 
