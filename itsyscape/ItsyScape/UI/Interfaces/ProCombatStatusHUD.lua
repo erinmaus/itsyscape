@@ -1569,6 +1569,17 @@ function ProCombatStatusHUD:positionTarget(targetWidget, sortedWidgets, delta)
 		end
 	end
 
+	-- local targetActor = self:getView():getGameView():getActorByID(targetWidget.actorID)
+	-- local targetActorView = targetActor and self:getView():getGameView():getActor(targetActor)
+	-- local worldPosition = Vector(targetActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0):transformPoint(0, 0, 0))
+	-- local screenPosition = self:getView():getGameView():getRenderer():getCamera():project(worldPosition)
+	-- if targetWidget.actorID == self:getState().player.actorID then
+	-- 	screenPosition = screenPosition + Vector(ProCombatStatusHUD.Target.WIDTH / 2, 0, 0)
+	-- else
+	-- 	screenPosition = screenPosition - Vector(ProCombatStatusHUD.Target.WIDTH * 1.5, 0, 0)
+	-- end
+	-- screenPosition = screenPosition - Vector(0, ProCombatStatusHUD.Target.HEIGHT / 2, 0)
+
 	local width, height = love.graphics.getScaledMode()
 	local radius = ProCombatStatusHUD.MAX_RADIUS + math.max(ProCombatStatusHUD.Target.WIDTH, ProCombatStatusHUD.Target.HEIGHT) / 3
 
@@ -1592,6 +1603,7 @@ function ProCombatStatusHUD:positionTarget(targetWidget, sortedWidgets, delta)
 		currentPosition.y = currentPosition.y - ProCombatStatusHUD.Target.HEIGHT
 	end
 
+	--currentPosition = screenPosition
 	targetWidget:setPosition(currentPosition.x, currentPosition.y)
 end
 
