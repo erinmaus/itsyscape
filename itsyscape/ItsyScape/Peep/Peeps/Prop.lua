@@ -64,6 +64,10 @@ function Prop:spawnOrPoof(mode)
 				for z = p.z - halfSize.z, p.z + halfSize.z, map:getCellSize() do
 					local tile, i, j = map:getTileAt(x, z)
 
+					if self:getName():lower():match("desk") then
+						print(">>>", mode, i, j)
+					end
+
 					self:spawnOrPoofTile(tile, i, j, mode)
 				end
 			end

@@ -543,3 +543,33 @@ do
 		Value = ItsyScape.Utility.valueForItem(6)
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's desk",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A desk made from the remains of a young dragon... Is this just a display of Isabelle's vanity?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+end
