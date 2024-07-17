@@ -1423,7 +1423,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						local alert = AlertWindow(self)
 						alert:open(string.format("Map name '%s' invalid.", filename))
 					else
-						if self:load(filename, preferExisting, 1) then
+						if self:load(filename, preferExisting) then
 							self.filename = filename
 						end
 					end
