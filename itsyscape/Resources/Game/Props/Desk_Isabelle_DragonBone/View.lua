@@ -53,6 +53,7 @@ function DeskView:load()
 		self.wood = DecorationSceneNode()
 		self.wood:fromGroup(self.mesh:getResource(), "Wood")
 		self.wood:getMaterial():setTextures(self.woodTexture)
+		self.wood:getMaterial():setOutlineThreshold(0.5)
 		self.wood:setParent(root)
 	end)
 end
