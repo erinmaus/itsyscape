@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
+local FontResource = require "ItsyScape.Graphics.FontResource"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local SkeletonResource = require "ItsyScape.Graphics.SkeletonResource"
 local SkeletonAnimationResource = require "ItsyScape.Graphics.SkeletonAnimationResource"
@@ -44,6 +45,24 @@ Book.DEFAULT_MODELS = {
 	}
 }
 
+Book.DEFAULT_ANIMATIONS = {
+	{
+		name = "open",
+		animation = "../Common/Open.lanim",
+		bones = { "cover.front", "cover.back", "spine", "root" }
+	},
+	{
+		name = "close",
+		animation = "../Common/Close.lanim",
+		bones = { "cover.front", "cover.back", "spine", "root" }
+	},
+	{
+		name = "flip",
+		animation = "../Common/Flip.lanim",
+		bones = { "page1", "page2", "page3", "page4", "page5", "page6", "page7" }
+	 }
+}
+
 Book.Part = Class()
 
 function Book.Part:new(book, partType, config)
@@ -53,6 +72,13 @@ function Book.Part:new(book, partType, config)
 
 	self.models = {}
 	self.canvasModel = false
+
+	self.animations = {}
+
+	self.resources = {
+		[FontResource] = {},
+		[TextureResource] = {}
+	}
 end
 
 function Book.Part:getBook()
@@ -128,7 +154,7 @@ function Book.Part:loadModel(modelConfig)
 		return
 	end
 
-	local model = {}
+	local model = { filter = {} }
 	do
 		self:getResources():queueAsync(
 			SkeletonResource,
@@ -170,15 +196,230 @@ end
 
 function Book.Part:loadModels(modelsConfig)
 	if #modelsConfig == 0 then
+		self:loadModel(Book.DEFAULT_MODELS[self.type])
 	else
 		for _, modelConfig in ipairs(modelsConfig) do
-			self:loadModel
+			self:loadModel(modelConfig)
 		end
 	end
 end
 
-function Book.Part:loadAnimations()
-	-- Nothing.
+function Book.Part:loadAnimation(animationConfig)
+	if not (animationConfig.animation and animationConfig.name) then
+		return
+	end
+
+	local animation = { name = animationConfig }
+	do
+		self:getResources():queueAsync(
+			SkeletonAnimationResource,
+			string.format("%s/%s", self:getBook():getBaseFilename(), animationConfig.animation),
+			function(resource)
+				animation.animation = resource
+			end)
+
+		animation.bones = {}
+		for _, bone in ipairs(animationsConfig.bones or {}) do
+			table.insert(animation.bones, bone)
+		end
+	end
+	table.insert(self.animations, animation)
+end
+
+function Book.Part:loadAnimations(animationsConfig)
+	if #animationsConfig == 0 then
+		self:loadModel(Book.DEFAULT_ANIMATIONS)
+	else
+		for _, modelConfig in ipairs(animationsConfig) do
+			self:loadModel(modelConfig)
+		end
+	end
+end
+
+function Book.Park:_drawText(command, width, height)
+	if not (command.fontFamily and command.fontSize) then
+		return
+	end
+
+	local fontSize = math.floor((command.fontSize / 100) * height)
+	local filename = string.format("Resources/Widget/Common/%s.ttf@%d", command.fontFamily, fontSize)
+
+	local font = self.resources[FontResource][filename]
+	if font == nil then
+		self.resources[FontResource][filename] = false
+		self:getResources():queueAsync(
+			FontResource,
+			filename,
+			function(resource)
+				self.resources[FontResource][filename] = resource
+			end)
+	elseif not font or not font:getIsReady() then
+		return
+	end
+
+	local x = (command.x or 0) / 100 * width
+	local y = (command.y or 0) / 100 * height
+	local scaleX = (command.scaleX or 100) / 100
+	local scaleY = (command.scaleY or 100) / 100
+	local rotation = math.rad(command.rotation or 0)
+	local color = Color.fromHexString(command.color or "000000")
+	local align = command.align or "left"
+	local textWidth = (command.width or 100) / 100 * width
+	local _, lines = font:getResource():getWrap(textWidth)
+	local originX = (command.originX or 0) / 100 * textWidth
+	local originY = (command.originY or 0) / 100 * (#lines * font:getResource():getHeight())
+
+	love.graphics.setColor(color:get())
+	love.graphics.setFont(font:getResource())
+	love.graphics.printf(command.value or "", x, y, textWidth, align, rotation, scaleX, scaleY, originX, originY)
+end
+
+function Book.Park:_drawImage(command, width, height)
+	if not command.value then
+		return
+	end
+
+	local filename = string.format("%s/%s", self:getBook():getBaseFilename(), command.value)
+	local image = self.resources[TextureResource][filename]
+	if image == nil then
+		self.resources[TextureResource][filename] = false
+		self:getResources():queueAsync(
+			TextureResource,
+			filename,
+			function(resource)
+				self.resources[TextureResource][filename] = resource
+			end)
+	elseif not image or not image:getIsReady() then
+		return
+	end
+
+	local x = (command.x or 0) / 100 * width
+	local y = (command.y or 0) / 100 * height
+	local scaleX = (command.scaleX or 100) / 100
+	local scaleY = (command.scaleY or 100) / 100
+	local rotation = math.rad(command.rotation or 0)
+	local color = Color.fromHexString(command.color or "ffffff")
+	local originX = (command.originX or 0) / 100 * image:getWidth()
+	local originY = (command.originY or 0) / 100 * image:getHeight()
+
+	love.graphics.setColor(color:get())
+	love.graphics.draw(image:getResource(), x, y, rotation, scaleX, scaleY, originX, originY)
+end
+
+function Book.Part:show()
+	self.visible = true
+end
+
+function Book.Part:hide()
+	self.visible = false
+end
+
+function Book.Part:startAnimation(name)
+	for _, animation in ipairs(self.animations) do
+		if animation.name == name then
+			if not (animation.animation and animation.animation:getIsReady()) then
+				animation.time = 0
+			else
+				animation.time = animation.animation:getResource():getDuration() - animation.time
+			end
+
+			break
+		end
+	end
+end
+
+function Book.Part:finishAnimation(name)
+	for _, animation in ipairs(self.animations) do
+		if animation.name == name then
+			if not (animation.animation and animation.animation:getIsReady()) then
+				animation.time = math.huge
+			else
+				animation.time = animation.animation:getResource():getDuration()
+			end
+
+			break
+		end
+	end
+end
+
+function Book.Part:update(delta)
+	for _, model in ipairs(self.models) do
+		if model.model and model.texture and model.skeleton then
+			if not model.sceneNode then
+				model.transforms = model.skeleton:createTransforms()
+
+				model.model:bindSkeleton(model.skeleton)
+				model.sceneNode = ModelSceneNode()
+				model.sceneNode:setModel(model.model)
+				model.sceneNode:setTransforms(model.transforms)
+			end
+
+			if self.visible and not model.sceneNode:getParent() then
+				model.sceneNode:setParent(self.book:getSceneNode())
+			elseif not self.visible and model.sceneNode:getParent() then
+				model.sceneNode:setParent(nil)
+			end
+
+			if model.canvas then
+				model.sceneNode:getMaterial():setTextures(model.canvas)
+			else
+				model.sceneNode:getMaterial():setTextures(model.texture)
+			end
+
+			for _, animation in ipairs(self.animations) do
+				if animation.animation and not model.filter[animation] then
+					local filter = model.skeleton:createFilter()
+					animation.filter[animation] = filter
+
+					animation.filter:disableAllBones()
+					for _, bone in ipairs(animation.bones) do
+						local boneIndex = model.skeleton:getBoneIndex(bone)
+						if boneIndex and boneIndex >= 1 then
+							animation.filter:enableBoneAtIndex(boneIndex)
+						end
+					end
+				end
+			end
+		end
+	end
+
+	for _, animation in ipairs(self.animations) do
+		animation.time = animation.time + delta
+	end
+end
+
+function Book.Part:draw(commands)
+	if not self.canvasModel then
+		return
+	end
+
+	local commands = commands or self.config.commands
+	if not command then
+		return
+	end
+
+	local model = self.canvasModel
+	if not model.canvas then
+		local canvas = love.graphics.newCanvas(
+			model.texture:getWidth(),
+			model.texture:getHeight())
+		model.canvas = TextureResource(canvas)
+	end
+
+	love.graphics.push("all")
+	love.graphics.setCanvas(model.canvas:getTexture())
+	if model.texture and model.texture:getIsReady() then
+		love.graphics.draw(model.texture:getResource())
+	end
+
+	for _, command in ipairs(commands) do
+		if command.command == "text" then
+			self:_drawText(command, model.canvas:getWidth(), model.canvas:getHeight())
+		elseif command.command = "image" then
+			self:_drawText(command, model.canvas:getWidth(), model.canvas:getHeight())
+		end
+	end
+	love.graphics.pop()
 end
 
 Book.ANIMATION_CLOSED = 1
