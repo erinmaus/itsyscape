@@ -1,0 +1,87 @@
+{
+	"book": {
+		"models": [
+			{
+				"model": "../Common/Book.lmesh",
+				"texture": "Front.png"
+			}
+		]
+	},
+
+	"front": {
+		"models": [
+			{
+				"model": "../Common/Front.lmesh",
+				"texture": "Front.png",
+				"canvas": true
+			}
+		],
+
+		"commands": [
+			{
+				"command": "text",
+				"fontFamily": "Serif/Bold",
+				"fontSize": 10,
+				"value": "book.isabelle_journal.front.title",
+				"x": 0,
+				"y": 15,
+				"width": 100,
+				"align": "center"
+			}
+		]
+	},
+
+	"back": {
+		"models": [
+			{
+				"model": "../Common/Back.lmesh",
+				"texture": "Back.png"
+			}
+		],
+
+		"commands": [],
+	},
+
+	"pages": [
+		{
+			"id": 6,
+			"condition": [
+				{
+					"resource": "KeyItem",
+					"name": "CalmBeforeTheStorm_IsabelleDefeated"
+				}
+			],
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "FancyHandwriting/Regular",
+					"fontSize": 2.5,
+					"value": "book.isabelle_journal.page6.paragraph1",
+					"x": 0,
+					"y": 0,
+					"width": 15,
+					"rotation": 11.25,
+					"color": "000000"
+				},
+				{
+					"command": "image",
+					"condition": [
+						{
+							"invert": true,
+							"resource": "Item",
+							"name": "Coins",
+							"flags": ["item-bank"],
+							"count": 999999
+						}
+					],
+
+					"value": "Page6_PlayerIsPoorLOL.png",
+					"x": 50,
+					"y": 50,
+					"originX": 50,
+					"originY": 50
+				}
+			]
+		}
+	]
+}

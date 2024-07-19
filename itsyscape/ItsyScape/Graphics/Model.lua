@@ -143,6 +143,10 @@ function Model:getMesh()
 	return self:getHandle():getMesh()
 end
 
+function Model:getVertices()
+	return self.mappedVertices
+end
+
 function Model:getFormat()
 	return self.format
 end

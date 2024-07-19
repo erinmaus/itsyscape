@@ -1,0 +1,8 @@
+{
+	"book.isabelle_journal.front.title": "Isabelle",
+	"book.isabelle_journal.page6.paragraph1": [
+		"I hired an adventurer, ${target.name}, today, to help with the... <style color='hint'>pest problem</style>.",
+		"${capitalizeFirstLetter(target.pronoun.subject)} will be leaving port in a few days.",
+		"I look forward to meeting ${target.pronoun.object}... he he he."
+	]
+}
