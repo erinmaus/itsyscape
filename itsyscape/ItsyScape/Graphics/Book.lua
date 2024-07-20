@@ -89,8 +89,8 @@ function Book.Part:getType()
 	return self.type
 end
 
-function Book.Part:getResources()
-	return self.book:getResources()
+function Book.Part:getResourceManager()
+	return self.book:getResourceManager()
 end
 
 function Book.Part:getConfig()
@@ -156,14 +156,14 @@ function Book.Part:loadModel(modelConfig)
 
 	local model = { filter = {} }
 	do
-		self:getResources():queueAsync(
+		self:getResourceManager():queueAsync(
 			SkeletonResource,
 			string.format("%s/%s", self:getBook():getBaseFilename(), modelConfig.skeleton or Book.DEFAULT_SKELETON),
 			function(resource)
 				model.skeleton = resource
 			end)
 
-		self:getResources():queueAsync(
+		self:getResourceManager():queueAsync(
 			ModelResource,
 			string.format("%s/%s", self:getBook():getBaseFilename(), modelConfig.model),
 			function(resource)
@@ -174,7 +174,7 @@ function Book.Part:loadModel(modelConfig)
 				end
 			end)
 
-		self:getResources():queueAsync(
+		self:getResourceManager():queueAsync(
 			TextureResource,
 			string.format("%s/%s", self:getBook():getBaseFilename(), modelConfig.texture),
 			function(resource)
@@ -211,7 +211,7 @@ function Book.Part:loadAnimation(animationConfig)
 
 	local animation = { name = animationConfig }
 	do
-		self:getResources():queueAsync(
+		self:getResourceManager():queueAsync(
 			SkeletonAnimationResource,
 			string.format("%s/%s", self:getBook():getBaseFilename(), animationConfig.animation),
 			function(resource)
@@ -247,7 +247,7 @@ function Book.Park:_drawText(command, width, height)
 	local font = self.resources[FontResource][filename]
 	if font == nil then
 		self.resources[FontResource][filename] = false
-		self:getResources():queueAsync(
+		self:getResourceManager():queueAsync(
 			FontResource,
 			filename,
 			function(resource)
@@ -283,7 +283,7 @@ function Book.Park:_drawImage(command, width, height)
 	local image = self.resources[TextureResource][filename]
 	if image == nil then
 		self.resources[TextureResource][filename] = false
-		self:getResources():queueAsync(
+		self:getResourceManager():queueAsync(
 			TextureResource,
 			filename,
 			function(resource)
@@ -314,7 +314,7 @@ function Book.Part:hide()
 	self.visible = false
 end
 
-function Book.Part:startAnimation(name)
+function Book.Part:startAnimation(name, reverse)
 	for _, animation in ipairs(self.animations) do
 		if animation.name == name then
 			if not (animation.animation and animation.animation:getIsReady()) then
@@ -323,12 +323,14 @@ function Book.Part:startAnimation(name)
 				animation.time = animation.animation:getResource():getDuration() - animation.time
 			end
 
+			animation.reverse = not not reverse
+
 			break
 		end
 	end
 end
 
-function Book.Part:finishAnimation(name)
+function Book.Part:finishAnimation(name, reverse)
 	for _, animation in ipairs(self.animations) do
 		if animation.name == name then
 			if not (animation.animation and animation.animation:getIsReady()) then
@@ -336,6 +338,8 @@ function Book.Part:finishAnimation(name)
 			else
 				animation.time = animation.animation:getResource():getDuration()
 			end
+
+			animation.reverse = not not reverse
 
 			break
 		end
@@ -369,13 +373,13 @@ function Book.Part:update(delta)
 			for _, animation in ipairs(self.animations) do
 				if animation.animation and not model.filter[animation] then
 					local filter = model.skeleton:createFilter()
-					animation.filter[animation] = filter
+					model.filter[animation] = filter
 
-					animation.filter:disableAllBones()
+					filter:disableAllBones()
 					for _, bone in ipairs(animation.bones) do
 						local boneIndex = model.skeleton:getBoneIndex(bone)
 						if boneIndex and boneIndex >= 1 then
-							animation.filter:enableBoneAtIndex(boneIndex)
+							filter:enableBoneAtIndex(boneIndex)
 						end
 					end
 				end
@@ -385,6 +389,27 @@ function Book.Part:update(delta)
 
 	for _, animation in ipairs(self.animations) do
 		animation.time = animation.time + delta
+
+		for _, model in ipairs(self.models) do
+			if model.filter[animation] then
+				local time
+				if animation.time == math.huge then
+					if animation.reverse then
+						time = 0
+					else
+						time = animation.animation:getDuration()
+					end
+				else
+					if animation.reverse then
+						time = animation.animation:getDuration() - animation.time
+					else
+						time = animation.time
+					end
+				end
+
+				animation.animation:computeFilteredTransforms(time, model.transforms, model.filter[animation])
+			end
+		end
 	end
 end
 
@@ -422,224 +447,49 @@ function Book.Part:draw(commands)
 	love.graphics.pop()
 end
 
-Book.ANIMATION_CLOSED = 1
-Book.ANIMATION_OPENED = 2
+function Book:new(bookConfig, resource, gameView)
+	self.bookConfig = bookConfig
+	self.resource = resource
+	self.gameView = gameView
 
-function Book:new(prop, gameView)
-	PropView.new(self, prop, gameView)
+	self.bookParts = {}
+	self:_prepareBookPart(Book.PART_TYPE_BOOK, bookConfig.book or {})
+	self:_prepareBookPart(Book.PART_TYPE_FRONT, bookConfig.front or {})
+	self:_prepareBookPart(Book.PART_TYPE_BACK, bookConfig.back or {})
 
-	self.previousProgress = 0
-	self.shaken = 0
-	self.spawned = false
-	self.depleted = false
-	self.time = 0
-	self.transforms = {}
-	self.animations = {}
+	self.bookPages = {}
+	for _, page in ipairs(bookConfig.pages or {}) do
+		self:_prepareBookPage(page)
+	end
+end
+
+function Book:_prepareBookPart(partType, config)
+	table.insert(self.bookParts, Book.Part(self, partType, config))
+end
+
+function Book:_prepareBookPage(config)
+	table.insert(self.bookPages, Book.Part(self, Book.PART_TYPE_PAGE, config))
+end
+
+function Book:getResource()
+	return self.resource
+end
+
+function Book:getResourceManager()
+	return self.gameView:getResourceManager()
 end
 
 function Book:getBaseFilename()
-	return Class.ABSTRACT()
-end
-
-function Book:getResourcePath(resource)
-	return string.format("%s/%s", self:getBaseFilename(), resource)
-end
-
-function Book:done()
-	-- Nothing.
-end
-
-function Book:getCurrentAnimation()
-	return self.animations[self.currentAnimation]
-	    or self.animations[Book.ANIMATION_IDLE]
-end
-
-function Book:applyAnimation(time, animation)
-	self.transforms:reset()
-	animation:computeFilteredTransforms(time, self.transforms)
-
-	local skeleton = self.skeleton:getResource()
-	skeleton:applyTransforms(self.transforms)
-	skeleton:applyBindPose(self.transforms)
+	return string.format("Resources/Game/Books/%s", self.resource.name)
 end
 
 function Book:load()
-	PropView.load(self)
-
-	local resources = self:getResources()
-	local root = self:getRoot()
-
-	self.node = ModelSceneNode()
-
-	resources:queue(
-		SkeletonResource,
-		self:getResourcePath("Tree.lskel"),
-		function(skeleton)
-			self.skeleton = skeleton
-			self.transforms = skeleton:getResource():createTransforms()
-
-			resources:queue(
-				SkeletonAnimationResource,
-				self:getResourcePath("Spawn.lanim"),
-				function(animation)
-					self.animations[Book.ANIMATION_SPAWNED] = animation:getResource()
-				end,
-				skeleton:getResource())
-			resources:queue(
-				SkeletonAnimationResource,
-				self:getResourcePath("Idle.lanim"),
-				function(animation)
-					self.animations[Book.ANIMATION_IDLE] = animation:getResource()
-				end,
-				skeleton:getResource())
-			resources:queue(
-				SkeletonAnimationResource,
-				self:getResourcePath("Chopped.lanim"),
-				function(animation)
-					self.animations[Book.ANIMATION_CHOPPED] = animation:getResource()
-				end,
-				skeleton:getResource())
-			resources:queue(
-				SkeletonAnimationResource,
-				self:getResourcePath("Felled.lanim"),
-				function(animation)
-					self.animations[Book.ANIMATION_FELLED] = animation:getResource()
-				end,
-				skeleton:getResource())
-			resources:queueEvent(function()
-				self.node:setModel(self.model)
-				self.node:getMaterial():setTextures(self.texture)
-				self.node:setParent(root)
-
-				local idleDuration = self.animations[Book.ANIMATION_IDLE]:getDuration()
-
-				root:onWillRender(function()
-					local animation = self:getCurrentAnimation()
-					if (self.currentAnimation ~= Book.ANIMATION_IDLE and idleDuration <= 1 / 30) or
-					   self.time <= animation:getDuration()
-					then
-						self:applyAnimation(self.time, animation)
-					end
-				end)
-
-				local offset = idleDuration * math.random()
-				self.time = offset
-				self:applyAnimation(offset, self.animations[Book.ANIMATION_IDLE])
-				self.node:setTransforms(self.transforms)
-
-				local state = self:getProp():getState().resource
-				if state then
-					if state.depleted then
-						self.currentAnimation = Book.ANIMATION_FELLED
-						self.time = self.animations[Book.ANIMATION_FELLED]:getDuration()
-						self.depleted = true
-					else
-						self.currentAnimation = Book.ANIMATION_IDLE
-						self.time = math.random() * self.animations[Book.ANIMATION_IDLE]:getDuration()
-						self.depleted = false
-					end
-
-					self.shaken = state.shaken
-				else
-					self.time = self:getCurrentAnimation():getDuration()
-				end
-
-				self:done()
-
-				self.spawned = true
-			end)
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Tree.lmodel"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.model = model
-		end)
-	resources:queue(
-		TextureResource,
-		self:getResourcePath("Texture.png"),
-		function(texture)
-			self.texture = texture
-		end)
-	if love.filesystem.getInfo(self:getResourcePath("Depleted.png")) then
-		resources:queue(
-			TextureResource,
-			self:getResourcePath("Depleted.png"),
-			function(depletedTexture)
-				self.depletedTexture = depletedTexture
-			end)
+	for _, part in ipairs(self.bookParts) do
+		part:load()
 	end
-end
 
-function Book:remove()
-	PropView.remove(self)
-
-	if self.progressBar then
-		self:getGameView():getSpriteManager():poof(self.progressBar)
-	end
-end
-
-function Book:tick()
-	PropView.tick(self)
-
-	local state = self:getProp():getState()
-	if state.resource then
-		local r = state.resource
-		if r.progress > 0 and r.progress < 100 and (not self.progressBar or not self.progressBar:getIsSpawned()) then
-			self.progressBar = self:getGameView():getSpriteManager():add(
-				"ResourceProgressBar",
-				self:getRoot(),
-				Vector(0, 2, 0),
-				self:getProp())
-		end
-
-		if self.previousProgress ~= r.progress or self.shaken ~= r.shaken then
-			self:getResources():queueEvent(function()
-				self.currentAnimation = Book.ANIMATION_CHOPPED
-				self.time = 0
-			end)
-
-			self.previousProgress = r.progress
-			self.shaken = r.shaken
-
-			if self.shaken > 0 and self.depletedTexture then
-				self.node:getMaterial():setTextures(self.depletedTexture)
-			elseif self.shaken <= 0 and self.texture then
-				self.node:getMaterial():setTextures(self.texture)
-			end
-		end
-
-		if r.depleted ~= self.depleted then
-			self:getResources():queueEvent(function()
-				if r.depleted then
-					self.currentAnimation = Book.ANIMATION_FELLED
-				else
-					self.currentAnimation = Book.ANIMATION_SPAWNED
-				end
-			end)
-
-			self.depleted = r.depleted
-		end
-	end
-end
-
-function Book:update(delta)
-	PropView.update(self, delta)
-
-	if self.spawned then
-		local animation = self:getCurrentAnimation()
-
-		self.time = math.min(self.time + delta, animation:getDuration())
-
-		if (self.currentAnimation == Book.ANIMATION_CHOPPED or
-			self.currentAnimation == Book.ANIMATION_IDLE or
-			self.currentAnimation == Book.ANIMATION_SPAWNED) and
-			self.time >= animation:getDuration()
-		then
-			self.time = 0
-			self.currentAnimation = Book.ANIMATION_IDLE
-		end
+	for _, page in ipairs(self.bookPages) do
+		page:load()
 	end
 end
 
