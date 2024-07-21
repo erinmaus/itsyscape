@@ -66,7 +66,7 @@ function DemoApplication:new()
 	self.patchNotesServiceThread = love.thread.newThread("ItsyScape/Analytics/Threads/PatchNotesService.lua")
 	self.patchNotesServiceThread:start(self.patchNotesServiceInputChannel, self.patchNotesServiceOutputChannel)
 
-	if _DEBUG or _DEMO == "conference" then
+	if _ARGS["gyro"] then
 		self.gyroInputChannel = love.thread.newChannel()
 		self.gyroOutputChannel = love.thread.newChannel()
 		self.gyroThread = love.thread.newThread("ItsyScape/UI/Threads/Gyro.lua")
@@ -753,7 +753,7 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 	-- Mouse movement
 	if self.currentGyroMouseDeviceID == deviceID then
 		local deltaX = -(nextGyroState.gyro[2] / math.deg(math.pi / 4))
-		local deltaY = -(nextGyroState.gyro[1] / math.deg(math.pi / 6))
+		local deltaY = -(nextGyroState.gyro[3] / math.deg(math.pi / 8))
 
 		if math.abs(deltaX) < 0.25 then
 			deltaX = 0
