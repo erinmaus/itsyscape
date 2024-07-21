@@ -125,6 +125,14 @@ do
 	table.insert(graphicsState.pseudoScissor, { 0, 0, w, h })
 end
 
+function itsyrealm.mouse.getPosition()
+	if _APP then
+		return _APP:getMousePosition()
+	end
+
+	return love.mouse.getPosition()
+end
+
 function itsyrealm.graphics.getTime()
 	return graphicsState.time
 end
@@ -1236,7 +1244,7 @@ function UIView:probe(actions)
 	do
 		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		local menuWidth, menuHeight = self.pendingPokeMenu:getSize()
-		local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+		local mouseX, mouseY = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 		mouseX = mouseX - offsetX
 		mouseY = mouseY - offsetY
 

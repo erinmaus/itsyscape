@@ -224,7 +224,7 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 end
 
 function WidgetInputProvider:mouseScroll(x, y)
-	local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+	local mouseX, mouseY = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 	local widgets = self:getWidgetsUnderPoint(mouseX, mouseY, nil, nil, nil, true)
 
 	for _, widget in ipairs(widgets) do

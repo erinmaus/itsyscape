@@ -48,7 +48,7 @@ end
 function PlayerInventory.UseItemFacade:mouseMove(...)
 	Widget.mouseMove(self, ...)
 
-	local x, y = love.mouse.getPosition()
+	local x, y = itsyrealm.mouse.getPosition()
 
 	local ray = _APP:shoot(x, y)
 

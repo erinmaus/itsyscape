@@ -65,10 +65,12 @@ Book.DEFAULT_ANIMATIONS = {
 
 Book.Part = Class()
 
-function Book.Part:new(book, partType, config)
+function Book.Part:new(book, partType, config, frontFace)
 	self.book = book
 	self.type = partType
 	self.config = config or {}
+	self.frontFace = frontFace or "ccw"
+	self.depthOffset = 0
 
 	self.models = {}
 	self.canvasModel = false
@@ -95,6 +97,14 @@ end
 
 function Book.Part:getConfig()
 	return self.config
+end
+
+function Book.Part:setDepthOffset(value)
+	self.depthOffset = value or 0
+end
+
+function Book.Part:getDepthOffset()
+	return self.depthOffset
 end
 
 function Book.Part:load()
@@ -346,6 +356,28 @@ function Book.Part:finishAnimation(name, reverse)
 	end
 end
 
+function Book.Part:getAnimationDelta(name)
+	for _, animation in ipairs(self.animations) do
+		if animation.animation and animation.name == name then
+			local time
+			if animation.time == math.huge then
+				time = animation.animation:getDuration()
+			else
+				time = animation.time
+			end
+
+			local delta = time / animation.animation:getDuration()
+			if animation.reverse then
+				delta = 1 - delta
+			end
+
+			return delta
+		end
+	end
+
+	return nil
+end
+
 function Book.Part:update(delta)
 	for _, model in ipairs(self.models) do
 		if model.model and model.texture and model.skeleton then
@@ -356,6 +388,14 @@ function Book.Part:update(delta)
 				model.sceneNode = ModelSceneNode()
 				model.sceneNode:setModel(model.model)
 				model.sceneNode:setTransforms(model.transforms)
+				model.sceneNode:onWillRender(function(renderer, delta)
+					local shader = renderer:getCurrentShader()
+					if shader:hasUniform("scape_DepthOffset") then
+						shader:send("scape_DepthOffset", self.depthOffset)
+					end
+
+					love.graphics.setFrontFaceWinding(self.frontFace)
+				end)
 			end
 
 			if self.visible and not model.sceneNode:getParent() then
@@ -390,24 +430,28 @@ function Book.Part:update(delta)
 	for _, animation in ipairs(self.animations) do
 		animation.time = animation.time + delta
 
-		for _, model in ipairs(self.models) do
-			if model.filter[animation] then
-				local time
-				if animation.time == math.huge then
-					if animation.reverse then
-						time = 0
-					else
-						time = animation.animation:getDuration()
-					end
-				else
-					if animation.reverse then
-						time = animation.animation:getDuration() - animation.time
-					else
-						time = animation.time
-					end
-				end
+		if animation.animation then
+			animation.time = math.min(animation.time, animation.animation:getDuration())
 
-				animation.animation:computeFilteredTransforms(time, model.transforms, model.filter[animation])
+			for _, model in ipairs(self.models) do
+				if model.filter[animation] then
+					local time
+					if animation.time == math.huge then
+						if animation.reverse then
+							time = 0
+						else
+							time = animation.animation:getDuration()
+						end
+					else
+						if animation.reverse then
+							time = animation.animation:getDuration() - animation.time
+						else
+							time = animation.time
+						end
+					end
+
+					animation.animation:computeFilteredTransforms(time, model.transforms, model.filter[animation])
+				end
 			end
 		end
 	end
@@ -452,14 +496,19 @@ function Book:new(bookConfig, resource, gameView)
 	self.resource = resource
 	self.gameView = gameView
 
+	self.previousPage = 0
+	self.currentPage = 0
+
 	self.bookParts = {}
 	self:_prepareBookPart(Book.PART_TYPE_BOOK, bookConfig.book or {})
 	self:_prepareBookPart(Book.PART_TYPE_FRONT, bookConfig.front or {})
 	self:_prepareBookPart(Book.PART_TYPE_BACK, bookConfig.back or {})
 
 	self.bookPages = {}
-	for _, page in ipairs(bookConfig.pages or {}) do
-		self:_prepareBookPage(page)
+	self;_prepareBookPage({}, "ccw")
+	for index, page in ipairs(bookConfig.pages or {}) do
+		local frontFace = index % 2 == 0 and "cw" or "ccw"
+		self:_prepareBookPage(page, frontFace, depthOffset)
 	end
 end
 
@@ -467,8 +516,23 @@ function Book:_prepareBookPart(partType, config)
 	table.insert(self.bookParts, Book.Part(self, partType, config))
 end
 
-function Book:_prepareBookPage(config)
-	table.insert(self.bookPages, Book.Part(self, Book.PART_TYPE_PAGE, config))
+function Book:_prepareBookPage(config, frontFace)
+	table.insert(self.bookPages, Book.Part(self, Book.PART_TYPE_PAGE, config, frontFace))
+end
+
+function Book:flipForward()
+	self.previousPage = self.currentPage
+	self.currentPage = math.min(self.currentPage + 1, #self.bookPages + 1)
+
+	if self.previousPage ~= self.currentPage then
+		if self.currentPage == #self.bookPages + 1 then
+			for i = 1, #self.play
+		end
+	end
+end
+
+function Book:flipBackward()
+	self.currentPage = math.max(self.currentPage - 1, 0)
 end
 
 function Book:getResource()
@@ -490,6 +554,16 @@ function Book:load()
 
 	for _, page in ipairs(self.bookPages) do
 		page:load()
+	end
+end
+
+function Book:update(delta)
+	for _, part in ipairs(self.bookParts) do
+		part:update(delta)
+	end
+
+	for _, page in ipairs(self.bookPages) do
+		page:update(delta)
 	end
 end
 
