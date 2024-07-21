@@ -36,7 +36,9 @@ end
 itsyrealm = {
 	graphics = {
 		impl = {}
-	}
+	},
+
+	mouse = {}
 }
 
 _ARGS = {}
@@ -152,6 +154,18 @@ end
 function love.mousemoved(x, y, dx, dy, isTouch)
 	if _APP and not _CONF.server and not isTouch then
 		_APP:mouseMove(x, y, dx, dy)
+	end
+end
+
+function love.joystickadded(...)
+	if _APP and not _CONF.server then
+		_APP:joystickAdd(...)
+	end
+end
+
+function love.joystickeremoved(...)
+	if _APP and not _CONF.server then
+		_APP:joystickRemove(...)
 	end
 end
 

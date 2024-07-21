@@ -307,6 +307,15 @@ function DefaultCameraController:_rotate(dx, dy)
 	end
 end
 
+function DefaultCameraController:rotate(dx, dy)
+	self:_rotate(dx, dy)
+
+	local isRotationLocked = math.abs(self.cameraHorizontalRotationOffset) == DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET
+	if isRotationLocked then
+		self:_scroll(-dy / DefaultCameraController.CLICK_DRAG_DENOMINATOR)
+	end
+end
+
 function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
 	if self:getIsDemoing() then
 		return

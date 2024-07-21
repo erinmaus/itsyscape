@@ -74,7 +74,7 @@ end
 function WidgetRenderManager:setToolTip(duration, ...)
 	local toolTip = ToolTip(...)
 	toolTip:setDuration(duration or WidgetRenderManager.TOOL_TIP_DURATION)
-	toolTip:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
+	toolTip:setPosition(love.graphics.getScaledPoint(itsyrealm.mouse.getPosition()))
 
 	self.toolTips[toolTip] = true
 
@@ -139,7 +139,7 @@ function WidgetRenderManager:start()
 	self.hovered = {}
 
 	do
-		local mx, my = love.graphics.getScaledPoint(love.mouse.getPosition())
+		local mx, my = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 
 		local widget = self.input:getWidgetUnderPoint(
 			mx, my,
@@ -216,7 +216,7 @@ function WidgetRenderManager:stop()
 		itsyrealm.graphics.translate(-x, -y)
 	end
 
-	local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+	local mouseX, mouseY = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 	if self.cursor.widget then
 		itsyrealm.graphics.translate(self.cursor.x, self.cursor.y)
 		itsyrealm.graphics.translate(mouseX, mouseY)

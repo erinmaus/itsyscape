@@ -424,7 +424,7 @@ function Application:probe(x, y, performDefault, callback, tests)
 						end
 
 						self.clickActionTime = Application.CLICK_DURATION
-						self.clickX, self.clickY = love.mouse.getPosition()
+						self.clickX, self.clickY = itsyrealm.mouse.getPosition()
 
 						local s, r = pcall(action.callback)
 						if not s then
@@ -879,7 +879,7 @@ function Application:mouseRelease(x, y, button)
 end
 
 function Application:mouseScroll(x, y)
-	if self.uiView:getInputProvider():isBlocking(love.mouse.getPosition()) then
+	if self.uiView:getInputProvider():isBlocking(itsyrealm.mouse.getPosition()) then
 		self.uiView:getInputProvider():mouseScroll(x, y)
 		return true
 	end
@@ -891,6 +891,18 @@ function Application:mouseMove(x, y, dx, dy)
 	self.uiView:getInputProvider():mouseMove(x, y, dx, dy)
 
 	return false
+end
+
+function Application:getMousePosition()
+	return love.mouse.getPosition()
+end
+
+function Application:joystickAdd(...)
+	-- Nothing.
+end
+
+function Application:joystickRemove(...)
+	-- Nothing.
 end
 
 function Application:touchPress(...)
