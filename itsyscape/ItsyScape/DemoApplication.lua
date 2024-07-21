@@ -263,6 +263,26 @@ function DemoApplication:joystickRemove(...)
 	end
 end
 
+function DemoApplication:focusGamePadCursor()
+	
+end
+
+function DemoApplication:gamepadButtonDown(joystick, button)
+	if button == "start" then
+		self.isGamePadUIActive = not self.isGamePadUIActive
+
+		if self.isGamePadUIActive then
+			self:focusGamePadCursor()
+		else
+			self:unfocusGamePadCursor()
+		end
+	end
+end
+
+function DemoApplication:gamepadButtonUp(joystick, button)
+	-- Nothing.
+end
+
 function DemoApplication:quit(isError)
 	if not _DEBUG and not _MOBILE and not self:getIsPaused() and (_ANALYTICS_ENABLED and self:tryQuit()) then
 		return true

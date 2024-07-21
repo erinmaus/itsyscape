@@ -31,6 +31,10 @@ function GridLayout:new()
 	self.edgePadding = true
 end
 
+function GridLayout:gamePadAxis(joystick, axis, value)
+	
+end
+
 function GridLayout:getPadding()
 	return self.paddingX, self.paddingY
 end

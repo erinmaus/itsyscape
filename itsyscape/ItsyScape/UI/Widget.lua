@@ -26,6 +26,10 @@ function Widget:new()
 	self.onKeyDown = Callback()
 	self.onKeyUp = Callback()
 	self.onType = Callback()
+	self.onGamePadAxis = Callback()
+	self.onGamePadNavigate = Callback()
+	self.onGamePadButtonDown = Callback()
+	self.onGamePadButtonPress = Callback()
 	self.onZDepthChange = Callback()
 	self.id = false
 	self.text = ""
@@ -479,6 +483,30 @@ end
 
 function Widget:type(...)
 	self.onType(self, ...)
+end
+
+function Widget:gamePadButtonDown(...)
+	self:onGamePadButtonDown(...)
+
+	if self:getParent() then
+		self:getParent():gamePadButtonDown(...)
+	end
+end
+
+function Widget:gamePadButtonUp(...)
+	self:onGamePadButtonUp(...)
+
+	if self:getParent() then
+		self:getParent():gamePadButtonUp(...)
+	end
+end
+
+function Widget:gamePadAxis(...)
+	self:onGamePadAxis(...)
+
+	if self:getParent() then
+		self:getParent():gamePadAxis(...)
+	end
 end
 
 function Widget:update(...)

@@ -19,7 +19,7 @@ function WidgetInputProvider:new(root)
 	self.focusedWidget = false
 	self.clickedWidgets = {}
 	self.hoveredWidgetsTime = {}
-	self.hoveredWidgets = {}
+	self.gamePadWidget = {}
 end
 
 function WidgetInputProvider:getHoveredWidgets()

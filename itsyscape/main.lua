@@ -125,6 +125,8 @@ function love.load(args)
 		Log.info("Volume: %d%%.", love.audio.getVolume() * 100)
 		Log.info("Settings applied.")
 	end
+
+	love.joystick.loadGamepadMappings("ItsyScape/UI/Controller.txt")
 end
 
 function love.update(delta)
@@ -154,6 +156,18 @@ end
 function love.mousemoved(x, y, dx, dy, isTouch)
 	if _APP and not _CONF.server and not isTouch then
 		_APP:mouseMove(x, y, dx, dy)
+	end
+end
+
+function love.gamepadpressed(...)
+	if _APP and not _CONF.server then
+		_APP:gamepadButtonDown(...)
+	end
+end
+
+function love.gamepadreleased(...)
+	if _APP and not _CONF.server then
+		_APP:gamepadButtonUp(...)
 	end
 end
 

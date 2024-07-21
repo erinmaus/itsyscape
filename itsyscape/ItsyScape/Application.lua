@@ -897,6 +897,14 @@ function Application:getMousePosition()
 	return love.mouse.getPosition()
 end
 
+function Application:gamepadButtonDown(...)
+	-- Nothing.
+end
+
+function Application:gamepadButtonUp(...)
+	-- Nothing.
+end
+
 function Application:joystickAdd(...)
 	-- Nothing.
 end
