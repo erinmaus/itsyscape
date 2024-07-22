@@ -23,11 +23,13 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GyroButtons = require "ItsyScape.UI.GyroButtons"
+local Interface = require "ItsyScape.UI.Interface"
 local Keybinds = require "ItsyScape.UI.Keybinds"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local UIView = require "ItsyScape.UI.UIView"
 local Controls = require "ItsyScape.UI.Client.Controls"
 local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions"
 local Screenshot = require "ItsyScape.UI.Client.Screenshot"
@@ -48,6 +50,7 @@ DemoApplication.TITLE_SCREENS = {
 --	"TitleScreen_ViziersRock",
 	"TitleScreen_IsabelleIsland",
 }
+DemoApplication.GYRO_RADIUS = 1
 
 function DemoApplication:new()
 	Application.new(self, true)
@@ -60,6 +63,7 @@ function DemoApplication:new()
 	self.toolTipTick = math.huge
 	self.mouseMoved = false
 	self.mouseX, self.mouseY = math.huge, math.huge
+	self.cursors = {}
 
 	self.patchNotesServiceInputChannel = love.thread.newChannel()
 	self.patchNotesServiceOutputChannel = love.thread.newChannel()
@@ -598,9 +602,9 @@ end
 function DemoApplication:mouseProbePress(x, y, button, isUIActive)
 	local probeAction = self.cameraController:mousePress(isUIActive, x, y, button)
 	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
-		self:probe(x, y, true, function(probe) self.uiView:probe(probe:toArray()) end)
+		self:probe(x, y, true, function(probe) self.uiView:probe(probe:toArray()) end, nil, self.hasGyroInput and DemoApplication.GYRO_RADIUS or 0)
 	elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
-		self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
+		self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end, nil, self.hasGyroInput and DemoApplication.GYRO_RADIUS or 0)
 	end
 end
 
@@ -616,9 +620,9 @@ end
 function DemoApplication:mouseProbeRelease(x, y, button, isUIActive)
 	local probeAction = self.cameraController:mouseRelease(isUIActive, x, y, button)
 	if probeAction == CameraController.PROBE_SELECT_DEFAULT then
-		self:probe(x, y, true, function(probe) self.uiView:probe(probe:toArray()) end)
+		self:probe(x, y, true, function(probe) self.uiView:probe(probe:toArray()) end, nil, self.hasGyroInput and DemoApplication.GYRO_RADIUS or 0)
 	elseif probeAction == CameraController.PROBE_CHOOSE_OPTION then
-		self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end)
+		self:probe(x, y, false, function(probe) self.uiView:probe(probe:toArray()) end, nil, self.hasGyroInput and DemoApplication.GYRO_RADIUS or 0)
 	end
 end
 
@@ -673,7 +677,9 @@ DemoApplication.TOUCH_SCROLL_DENOMINATOR_GAME = 24
 
 function DemoApplication:getMousePosition()
 	if self.currentGyroState and self.currentGyroMouseDeviceID and self.currentGyroState[self.currentGyroMouseDeviceID] then
-		return self.currentGyroState[self.currentGyroMouseDeviceID].currentX, self.currentGyroState[self.currentGyroMouseDeviceID].currentY
+		local gyroState = self.currentGyroState[self.currentGyroMouseDeviceID]
+
+		return gyroState.quasiX or gyroState.currentX, gyroState.quasiY or gyroState.currentY
 	end
 
 	return Application.getMousePosition(self)
@@ -695,9 +701,15 @@ function DemoApplication:pumpGyroMouse(delta)
 				if event.count >= 2 then
 					self.hasGyroInput = true
 					self.gyroDeviceIDs = event.deviceIDs
+					self:getUIView():enableInputScheme(UIView.INPUT_SCHEME_GYRO)
+
+					itsyrealm.graphics.setUIScale(2)
 				else
 					self.hasGyroInput = false
 					self.gyroDeviceIDs = nil
+					self:getUIView():disableInputScheme(UIView.INPUT_SCHEME_GYRO)
+
+					itsyrealm.graphics.setUIScale(1)
 				end
 			elseif eventType == "update" then
 				self:updateGyroMouse(delta, event.deviceID, event.state)
@@ -712,7 +724,6 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 	if not self.currentGyroState[deviceID] then
 		nextGyroState.currentX = math.floor(width / 2)
 		nextGyroState.currentY = math.floor(height / 2)
-		--nextGyroState.accelerationSamples = {}
 
 		self.currentGyroState[deviceID] = nextGyroState
 		return
@@ -724,20 +735,16 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 	-- Left click / right click
 	do
 		local isLeftClickPress = not currentGyroState.buttons["a"] and nextGyroState.buttons["a"]
-		local isLeftClickRelease = currentGyroState.buttons["a"] and not nextGyroState.buttons["a"]
 		local isRightClickPress = not currentGyroState.buttons["x"] and nextGyroState.buttons["x"]
-		local isRightClickRelease = currentGyroState.buttons["x"] and not nextGyroState.buttons["x"]
 
 		if isRightClickPress then
-			self:mousePress(currentGyroState.currentX, currentGyroState.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON)
-		elseif isRightClickRelease then
-			self:mouseRelease(currentGyroState.currentX, currentGyroState.currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON)
+			self:mousePress(currentX, currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON)
+			self:mouseRelease(currentX, currentY, DemoApplication.TOUCH_RIGHT_MOUSE_BUTTON)
 		end
 
 		if isLeftClickPress then
-			self:mousePress(currentGyroState.currentX, currentGyroState.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
-		elseif isLeftClickRelease then
-			self:mouseRelease(currentGyroState.currentX, currentGyroState.currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+			self:mousePress(currentX, currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
+			self:mouseRelease(currentX, currentY, DemoApplication.TOUCH_LEFT_MOUSE_BUTTON)
 		end
 	end
 
@@ -752,14 +759,14 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 
 	-- Mouse movement
 	if self.currentGyroMouseDeviceID == deviceID then
-		local deltaX = -(nextGyroState.gyro[2] / math.deg(math.pi / 4))
-		local deltaY = -(nextGyroState.gyro[3] / math.deg(math.pi / 8))
+		local deltaX = -(nextGyroState.gyro[2] / math.deg(math.pi / 5))
+		local deltaY = -(nextGyroState.gyro[1] / math.deg(math.pi / 7))
 
-		if math.abs(deltaX) < 0.25 then
+		if math.abs(deltaX) < 0.125 then
 			deltaX = 0
 		end
 
-		if math.abs(deltaY) < 0.25 then
+		if math.abs(deltaY) < 0.125 then
 			deltaY = 0
 		end
 
@@ -768,19 +775,102 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 
 		local offsetX = deltaX * width
 		local offsetY = deltaY * height
+		print("offset", "x", offsetX, "y", offsetY)
+		if offsetX ~= 0 then
+			print(">>> bla", nextGyroState.gyro[2])
+		end
 
 		nextGyroState.currentX = math.floor(currentGyroState.currentX + offsetX)
 		nextGyroState.currentY = math.floor(currentGyroState.currentY + offsetY)
 
-		nextGyroState.currentX = math.clamp(nextGyroState.currentX, 0, width)
-		nextGyroState.currentY = math.clamp(nextGyroState.currentY, 0, height)
+		nextGyroState.currentX = math.clamp(nextGyroState.currentX, -32, width + 32)
+		nextGyroState.currentY = math.clamp(nextGyroState.currentY, -32, height + 32)
 
-		if nextGyroState.currentX ~= currentX or nextGyroState.currentY ~= currentY then
+		local px, py = itsyrealm.graphics.getScaledPoint(
+			currentGyroState.quasiX or currentGyroState.currentX,
+			currentGyroState.quasiY or currentGyroState.currentY)
+		local previousWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
+			px, py,
+			nil, nil, nil,
+			function(w)
+				return w:getIsFocusable()
+			end,
+			true)
+		local nx, ny = itsyrealm.graphics.getScaledPoint(
+			nextGyroState.currentX,
+			nextGyroState.currentY)
+		local currentWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
+			nx, ny,
+			nil, nil, nil,
+			function(w)
+				return w:getIsFocusable()
+			end,
+			true)
+
+		local currentInterface = previousWidget
+		while currentWidget and Class.isCompatibleType(currentWidget, Interface) do
+			currentInterface = currentWidget:getParent()
+		end
+
+		local targetWidget = currentInterface or previousWidget
+		if targetWidget then
+			local targetX, targetY = targetWidget:getAbsolutePosition()
+			local targetWidth, targetHeight = targetWidget:getSize()
+
+			local offset = currentInterface ~= nil and 16 or 8
+
+			targetX = targetX - offset
+			targetY = targetY - offset
+			targetWidth = targetWidth + offset * 2
+			targetHeight = targetHeight + offset * 2
+
+			if nx > targetX and nx <= targetX + targetWidth and
+			   ny > targetY and ny <= targetY + targetHeight
+			then
+				nextGyroState.isInterfaceBlocking = true
+			end
+		end
+
+		if previousWidget then
+			local snappedWidget
+			do
+				local previousX, previousY = previousWidget:getAbsolutePosition()
+				local previousWidth, previousHeight = previousWidget:getSize()
+
+				previousX = previousX - 8
+				previousY = previousY - 8
+				previousWidth = previousWidth + 16
+				previousHeight = previousHeight + 16
+
+				if nx > previousX and nx <= previousX + previousWidth and
+				   ny > previousY and ny <= previousY + previousHeight
+				then
+					nextGyroState.isInterfaceBlocking = true
+					snappedWidget = previousWidget
+				end
+			end
+			snappedWidget = snappedWidget or targetWidget
+
+			if snappedWidget and nextGyroState.isInterfaceBlocking then
+				local snappedX, snappedY = snappedWidget:getAbsolutePosition()
+				local snappedWidth, snappedHeight = snappedWidget:getSize()
+
+				local sx, sy = itsyrealm.graphics.inverseGetScaledPoint(snappedX + 1, snappedY + snappedHeight - 1)
+
+				nextGyroState.quasiX = sx
+				nextGyroState.quasiY = sy
+			end
+		end
+
+		local mouseX = nextGyroState.quasiX or nextGyroState.currentX
+		local mouseY = nextGyroState.quasiY or nextGyroState.currentY
+
+		if mouseX ~= currentX or mouseY ~= currentY then
 			self:mouseMove(
-				nextGyroState.currentX,
-				nextGyroState.currentY,
-				currentX - nextGyroState.currentX,
-				currentY - nextGyroState.currentY)
+				mouseX,
+				mouseY,
+				mouseX - currentGyroState.currentX,
+				mouseY - currentGyroState.currentY)
 		end
 	end
 
@@ -825,6 +915,9 @@ end
 
 function DemoApplication:updateMobileMouse()
 	local touches = self:getTouches()
+	if #touches >= 1 then
+		self:getUIView():enableInputScheme(UIView.INPUT_SCHEME_TOUCH)
+	end
 
 	local currentTouchMode = self.currentTouchMode or DemoApplication.TOUCH_MODE_NONE
 
@@ -1275,27 +1368,32 @@ function DemoApplication:snapshotGame()
 	love.graphics.pop()
 end
 
+function DemoApplication:_move(x, z)
+end
+
 function DemoApplication:updatePlayerMovement()
 	local player = self:getGame():getPlayer()
 	if not player then
 		return
 	end
 
-	local up = Keybinds['PLAYER_1_MOVE_UP']:isDown()
-	local down = Keybinds['PLAYER_1_MOVE_DOWN']:isDown()
-	local left = Keybinds['PLAYER_1_MOVE_LEFT']:isDown()
-	local right = Keybinds['PLAYER_1_MOVE_RIGHT']:isDown()
-
-	local isMoving = up or down or left or right
-	if not self.wasMoving and isMoving then
-		self.wasMoving = true
-		self.initialMovementRotation = self:getCamera():getCombinedRotation()
-	else
-		self.wasMoving = isMoving
-	end
-
 	local x, z = 0, 0
-	do
+	if self.hasGyroInput then
+		for _, gyroState in pairs(self.currentGyroState) do
+			if math.abs(gyroState.left[1]) > x and math.abs(gyroState.left[1]) > 0.1 then
+				x = -gyroState.left[1]
+			end
+
+			if math.abs(gyroState.left[2]) > z and math.abs(gyroState.left[2]) > 0.1 then
+				z = gyroState.left[2]
+			end
+		end
+	else
+		local up = Keybinds['PLAYER_1_MOVE_UP']:isDown()
+		local down = Keybinds['PLAYER_1_MOVE_DOWN']:isDown()
+		local left = Keybinds['PLAYER_1_MOVE_LEFT']:isDown()
+		local right = Keybinds['PLAYER_1_MOVE_RIGHT']:isDown()
+
 		if up then
 			z = z + 1
 		end
@@ -1313,18 +1411,30 @@ function DemoApplication:updatePlayerMovement()
 		end
 	end
 
-	local rotation = self.initialMovementRotation or Quaternion.IDENTITY
-	local forward = (-rotation):getNormal():transformVector(Vector.UNIT_Z):getNormal()
-	if forward.z < 0 then
-		x = -x
-		z = -z
+	local isMoving = math.abs(x) > 0 or math.abs(z) > 0
+	if not self.wasMoving and isMoving then
+		self.wasMoving = true
+		self.initialMovementRotation = self:getCamera():getCombinedRotation()
+	else
+		self.wasMoving = isMoving
 	end
 
-	local focusedWidget = self:getUIView():getInputProvider():getFocusedWidget()
-	if not focusedWidget or
-	   not focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput")
-	then
-		player:move(x, z)
+	if isMoving then
+		local rotation = self.initialMovementRotation or Quaternion.IDENTITY
+		local forward = (-rotation):getNormal():transformVector(Vector.UNIT_Z):getNormal()
+		if forward.z < 0 then
+			x = -x
+			z = -z
+		end
+
+		local focusedWidget = self:getUIView():getInputProvider():getFocusedWidget()
+		if not focusedWidget or
+		   not focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput")
+		then
+			player:move(x, z)
+		else
+			player:move(0, 0)
+		end
 	else
 		player:move(0, 0)
 	end
@@ -1361,7 +1471,8 @@ function DemoApplication:updateToolTip(delta)
 		if isUIBlocking or (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
 			self:hideToolTip()
 		else
-			self:probe(self.mouseX, self.mouseY, false, function(probe)
+			local mouseX, mouseY = self:getMousePosition()
+			self:probe(mouseX, mouseY, false, function(probe)
 				local action = probe:toArray()[1]
 				local renderer = self:getUIView():getRenderManager()
 				if action and (action.type ~= 'examine' and action.type ~= 'walk' and not action.suppress) then
@@ -1380,7 +1491,7 @@ function DemoApplication:updateToolTip(delta)
 				else
 					self:hideToolTip()
 				end
-			end, { ['actors'] = true, ['props'] = true, ['loot'] = true })
+			end, { ['actors'] = true, ['props'] = true, ['loot'] = true }, self.hasGyroInput and DemoApplication.GYRO_RADIUS or 0)
 
 			self.mouseMoved = false
 			self.toolTipTick = DemoApplication.PROBE_TICK
@@ -1470,18 +1581,46 @@ function DemoApplication:draw(delta)
 
 	if self.isScreenshotPending or self.hasGyroInput then
 		local _, _, scaleX, scaleY = love.graphics.getScaledMode()
-		local cursor
+		local cursor, realX, realY
 		do
-			if scaleX > 1 then
-				self.largeCursor = self.largeCursor or love.graphics.newImage("Resources/Game/UI/Cursor@2x.png")
-				cursor = self.largeCursor
+			local cursorFilename
+			if self.hasGyroInput and self.currentGyroState and self.currentGyroMouseDeviceID and self.currentGyroState[self.currentGyroMouseDeviceID].isInterfaceBlocking then
+				cursorFilename = "Cursor_Mobile"
+				realX = self.currentGyroState[self.currentGyroMouseDeviceID].currentX
+				realY = self.currentGyroState[self.currentGyroMouseDeviceID].currentY
 			else
-				self.smallCursor = self.smallCursor or love.graphics.newImage("Resources/Game/UI/Cursor.png")
-				cursor = self.smallCursor
+				cursorFilename = "Cursor"
 			end
+
+			local suffix
+			if scaleX > 1 then
+				suffix = "@2x"
+			else
+				suffix = ""
+			end
+
+			local fullFilename = string.format("Resources/Game/UI/%s%s.png", cursorFilename, suffix)
+			if not self.cursors[fullFilename] then
+				self.cursors[fullFilename] = love.graphics.newImage(fullFilename)
+			end
+
+			cursor = self.cursors[fullFilename]
 		end
 
 		local mouseX, mouseY = itsyrealm.mouse.getPosition()
+		if realX and realY and (realX ~= mouseX or realY ~= mouseY) then
+			love.graphics.push("all")
+
+			love.graphics.setLineWidth(6)
+			love.graphics.setColor(0, 0, 0, 0.5)
+
+			love.graphics.line(mouseX, mouseY, realX, realY)
+			love.graphics.circle("line", realX, realY, 12)
+
+			love.graphics.pop()
+			mouseY = mouseY - cursor:getHeight() / 2
+		end
+
 		love.graphics.draw(cursor, mouseX, mouseY, 0, scaleX, scaleY)
 
 		self.isScreenshotPending = false

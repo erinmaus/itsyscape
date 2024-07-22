@@ -71,10 +71,6 @@ while isRunning do
 
 		for index, button in ipairs(GyroButtons) do
 			deviceState.buttons[button] = NGyro.isDown(deviceID, index - 1)
-
-			if deviceState.buttons[button] then
-				print(">>>> YES!", button, index - 1)
-			end
 		end
 
 		outputChannel:push({

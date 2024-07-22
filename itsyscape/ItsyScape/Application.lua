@@ -389,13 +389,13 @@ function Application:getIsMultiThreaded()
 	return self.multiThreaded
 end
 
-function Application:probe(x, y, performDefault, callback, tests)
+function Application:probe(x, y, performDefault, callback, tests, radius)
 	if self.paused then
 		return
 	end
 
 	local ray = self:shoot(x, y)
-	local probe = Probe(self:getGame(), self.gameView, self.gameDB, ray, tests)
+	local probe = Probe(self:getGame(), self.gameView, self.gameDB, ray, tests, radius)
 	probe.onExamine:register(function(name, description)
 		self.uiView:examine(name, description)
 	end)
@@ -867,6 +867,8 @@ function Application:mousePress(x, y, button)
 
 		return true
 	end
+
+	self.uiView:closePokeMenu()
 
 	return false
 end
