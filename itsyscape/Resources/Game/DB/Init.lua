@@ -888,6 +888,9 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+	ResourceType "Book"
+	ItsyScape.Resource.Book "IsabellesJournal"
+
 do
 	local Human = ItsyScape.Resource.Peep "Human"
 

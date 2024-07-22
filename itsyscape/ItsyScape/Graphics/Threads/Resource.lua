@@ -19,6 +19,18 @@ while true do
 	repeat
 		local request = input:pop()
 		if request then
+			if request.filename then
+				local oldFilename
+				local newFilename = request.filename
+
+				repeat
+					oldFilename = newFilename
+					newFilename = oldFilename:gsub("(.+)/.+/%.%./", "%1/")
+				until oldFilename == newFilename
+
+				request.filename = newFilename
+			end
+
 			if request.type == 'file' then
 				if not love.filesystem.getInfo(request.filename) then
 					Log.warn("Filename '%s' not found!", request.filename)
