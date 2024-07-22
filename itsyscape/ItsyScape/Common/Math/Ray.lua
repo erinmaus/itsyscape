@@ -122,7 +122,9 @@ end
 -- Checks if the ray intersects the AABB (min, max).
 --
 -- Returns true and the point (Vector) of collision, false otherwise.
-function Ray:hitBounds(min, max, transform)
+function Ray:hitBounds(min, max, transform, radius)
+	radius = radius or 0
+
 	local r
 	if transform then
 		local MathCommon = require "ItsyScape.Common.Math.Common"
@@ -159,7 +161,7 @@ function Ray:hitBounds(min, max, transform)
 	tMin = math.max(tMin, math.min(tz1, tz2))
 	tMax = math.min(tMax, math.max(tz1, tz2))
  
-	if tMax >= tMin and tMin >= 0 then
+	if tMax + radius >= tMin and tMin >= -radius then
 		return true, r.origin + r.direction * tMin
 	else
 		return false

@@ -40,13 +40,14 @@ Probe.PROP_FILTERS = {
 	end
 }
 
-function Probe:new(game, gameView, gameDB, ray, tests)
+function Probe:new(game, gameView, gameDB, ray, tests, radius)
 	self.onExamine = Callback()
 
 	self.game = game
 	self.gameView = gameView
 	self.gameDB = gameDB
 	self.ray = ray
+	self.radius = radius or 0
 
 	self.actions = {}
 	self.isDirty = false
@@ -307,7 +308,7 @@ function Probe:actors()
 			end
 		end
 
-		local s, p = self.ray:hitBounds(min, max, transform)
+		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
 		if s then
 			local actions = actor:getActions('world')
 			for i = 1, #actions do
@@ -365,11 +366,11 @@ function Probe:props()
 			end
 		end
 
-		local s, p = self.ray:hitBounds(min, max, transform)
+		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
 
 		local _, _, propLayer = prop:getTile()
 
-		local s, p = self.ray:hitBounds(min, max, transform)
+		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
 		if s then
 			local actions = prop:getActions('world')
 			for i = 1, #actions do
