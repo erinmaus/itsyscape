@@ -30,15 +30,17 @@ Book.DEFAULT_SKELETON = "../Common/Book.lskel"
 
 Book.DEFAULT_MODELS = {
 	[Book.PART_TYPE_BOOK] = {
-		--{ model = "../Common/Book.lmesh", texture = "../Common/Book.png" }
+		{ model = "../Common/Book.lmesh", texture = "../Common/Book.png" }
 	},
 
 	[Book.PART_TYPE_FRONT] = {
-		--{ model = "../Common/Front.lmesh", texture = "../Common/Front.png", canvas = true }
+		{ model = "../Common/Front.lmesh", texture = "../Common/Front.png", canvas = true },
+		{ model = "../Common/Page_Left.lmesh", texture = "../Common/Page.png" }
 	},
 
 	[Book.PART_TYPE_BACK] = {
-		--{ model = "../Common/Back.lmesh", texture = "../Common/Back.png", canvas = true }
+		{ model = "../Common/Back.lmesh", texture = "../Common/Back.png", canvas = true },
+		{ model = "../Common/Page_Right.lmesh", texture = "../Common/Page.png" }
 	},
 
 	[Book.PART_TYPE_PAGE] = {
@@ -430,7 +432,6 @@ function Book.Part:update(delta)
 							end
 						end
 
-						--print(">>> compute", animation.name, time)
 						animation.animation:computeFilteredTransforms(time, model.transforms, model.filter[animation])
 					end
 				end
