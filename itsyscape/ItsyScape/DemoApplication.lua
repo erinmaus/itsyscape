@@ -749,7 +749,7 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 	end
 
 	-- Reset mouse position
-	local isCenterPress = not currentGyroState.buttons["d-pad down"] and nextGyroState.buttons["d-pad down"]
+	local isCenterPress = not currentGyroState.buttons["d-pad down"] and nextGyroState.buttons["d-pad down"] or love.keyboard.isDown("space")
 	if isCenterPress then
 		if self.currentGyroMouseDeviceID and self.currentGyroState[self.currentGyroMouseDeviceID] then
 			self.currentGyroState[self.currentGyroMouseDeviceID].currentX = math.floor(width / 2)
@@ -759,7 +759,7 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 
 	-- Mouse movement
 	if self.currentGyroMouseDeviceID == deviceID then
-		local deltaX = -(nextGyroState.gyro[2] / math.deg(math.pi / 5))
+		local deltaX = -(nextGyroState.gyro[2] / math.deg(math.pi / 3))
 		local deltaY = -(nextGyroState.gyro[1] / math.deg(math.pi / 7))
 
 		if math.abs(deltaX) < 0.125 then
@@ -775,10 +775,6 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 
 		local offsetX = deltaX * width
 		local offsetY = deltaY * height
-		print("offset", "x", offsetX, "y", offsetY)
-		if offsetX ~= 0 then
-			print(">>> bla", nextGyroState.gyro[2])
-		end
 
 		nextGyroState.currentX = math.floor(currentGyroState.currentX + offsetX)
 		nextGyroState.currentY = math.floor(currentGyroState.currentY + offsetY)
@@ -855,7 +851,9 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 				local snappedX, snappedY = snappedWidget:getAbsolutePosition()
 				local snappedWidth, snappedHeight = snappedWidget:getSize()
 
-				local sx, sy = itsyrealm.graphics.inverseGetScaledPoint(snappedX + 1, snappedY + snappedHeight - 1)
+				local sx, sy = itsyrealm.graphics.inverseGetScaledPoint(
+					snappedX + snappedWidth / 2,
+					snappedY + snappedHeight / 2)
 
 				nextGyroState.quasiX = sx
 				nextGyroState.quasiY = sy
@@ -892,8 +890,8 @@ function DemoApplication:updateGyroMouse(delta, deviceID, nextGyroState)
 
 	-- Camera movement
 	do
-		local rotationX = nextGyroState.right[1]
-		local rotationY = nextGyroState.right[2]
+		local rotationX = -nextGyroState.right[1]
+		local rotationY = -nextGyroState.right[2]
 
 		if math.abs(rotationX) < 0.1 then
 			rotationX = 0
@@ -1615,13 +1613,13 @@ function DemoApplication:draw(delta)
 			love.graphics.setColor(0, 0, 0, 0.5)
 
 			love.graphics.line(mouseX, mouseY, realX, realY)
-			love.graphics.circle("line", realX, realY, 12)
+			love.graphics.circle("line", mouseX, mouseY, 12)
 
 			love.graphics.pop()
 			mouseY = mouseY - cursor:getHeight() / 2
 		end
 
-		love.graphics.draw(cursor, mouseX, mouseY, 0, scaleX, scaleY)
+		love.graphics.draw(cursor, realX or mouseX, realY or mouseY, 0, scaleX, scaleY)
 
 		self.isScreenshotPending = false
 	end
