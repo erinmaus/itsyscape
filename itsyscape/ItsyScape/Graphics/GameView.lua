@@ -830,7 +830,7 @@ function GameView:updateMap(map, layer)
 			return near
 		end
 
-		node:onWillRender(function(renderer)
+		node:onWillRender(function(renderer, ...)
 			m.onWillRender(renderer)
 
 			local shader = renderer:getCurrentShader()
@@ -1769,7 +1769,6 @@ function GameView:tick(frameDelta)
 	end
 
 	for skybox in pairs(self.skyboxes) do
-		--print(">>> tick skybox", frameDelta)
 		skybox:tick(frameDelta)
 	end
 end
