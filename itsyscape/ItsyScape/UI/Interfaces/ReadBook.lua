@@ -16,6 +16,7 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Interface = require "ItsyScape.UI.Interface"
+local Label = require "ItsyScape.UI.Label"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 
 local ReadBook = Class(Interface)
@@ -33,6 +34,7 @@ function ReadBook:new(...)
 	self.bookSceneSnippet:setPosition(0, 0)
 	self.bookSceneSnippet:setSize(width, height)
 	self.bookSceneSnippet:setCamera(self.camera)
+	self:addChild(self.bookSceneSnippet)
 
 	local state = self:getState()
 	local resource = self:getView():getGame():getGameDB():getResource(state.resource, "Book")
@@ -41,6 +43,7 @@ function ReadBook:new(...)
 
 	local parentSceneNode = SceneNode()
 	parentSceneNode:getTransform():setLocalRotation(Quaternion.X_90)
+	parentSceneNode:setParent(self.bookSceneSnippet:getRoot())
 
 	local ambientLight = AmbientLightSceneNode()
 	ambientLight:setAmbience(0.7)
@@ -56,6 +59,10 @@ function ReadBook:new(...)
 	self:setIsClickThrough(true)
 	self.bookSceneSnippet:setIsClickThrough()
 
+	local label = Label()
+	label:setText("Book Is Open")
+	self:addChild(label)
+
 	self.wasSpaceDown = love.keyboard.isDown("space")
 end
 
@@ -69,8 +76,12 @@ function ReadBook:update(delta)
 	self.wasSpaceDown = isSpaceDown
 
 	local gameCamera = self:getView():getGameView():getCamera()
+	local width, height = self.bookSceneSnippet:getSize()
 	self.camera:copy(gameCamera)
 	self.camera:setPosition(Vector.ZERO)
+	self.camera:setWidth(width)
+	self.camera:setHeight(height)
+	self.camera:setDistance(8)
 
 	self.book:update(delta)
 	self.book:draw()
