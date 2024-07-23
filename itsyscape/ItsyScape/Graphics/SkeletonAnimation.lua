@@ -104,6 +104,10 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 			}
 		end
 
+		if type(boneFramesDefinition) ~= "table" then
+			print(">>> boneFramesDefinition", boneName)
+		end
+
 		assert(#boneFramesDefinition.translation == #boneFramesDefinition.rotation and
 		       #boneFramesDefinition.rotation == #boneFramesDefinition.scale,
 		       "Properties must have same number of frames (because NYI)")
@@ -142,8 +146,10 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 			addFrame(bone:getName())
 		end
 	else
-		for name in pairs(t) do
-			addFrame(name)
+		for name, value in pairs(t) do
+			if type(value) == "table" then
+				addFrame(name)
+			end
 		end
 	end
 

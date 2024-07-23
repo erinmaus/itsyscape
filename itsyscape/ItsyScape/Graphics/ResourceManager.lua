@@ -30,7 +30,7 @@ function ResourceManager.View:new(resourceManager)
 end
 
 function ResourceManager.View:getIsPending()
-	return self.isDone, #self.pending
+	return not self.isDone, #self.pending
 end
 
 function ResourceManager.View:_poll()
@@ -249,6 +249,18 @@ end
 
 -- This actually performs the load.
 function ResourceManager:_load(resourceType, filename, ...)
+	do
+		local oldFilename
+		local newFilename = filename
+
+		repeat
+			oldFilename = newFilename
+			newFilename = oldFilename:gsub("(.+)/.+/%.%./", "%1/")
+		until oldFilename == newFilename
+
+		filename = newFilename
+	end
+
 	local resourcesOfType = self.resources[resourceType] or setmetatable({}, { __mode = 'v' })
 	if not resourcesOfType[filename] then
 		local before = love.timer.getTime()
