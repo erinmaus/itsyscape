@@ -216,7 +216,7 @@ function Book.Part:loadAnimation(animationConfig)
 		return
 	end
 
-	local animation = { name = animationConfig.name }
+	local animation = { name = animationConfig.name, reverse = false, isPlaying = false }
 	do
 		self:getResourceManager():queue(
 			SkeletonAnimationResource,
@@ -341,7 +341,7 @@ function Book.Part:playAnimation(name, reverse)
 
 	for _, animation in ipairs(self.animations) do
 		if animation.name == name then
-			if not animation.isPlaying and not animation.animation and (not not animation.reverse) == reverse then
+			if not animation.isPlaying and not animation.animation and animation.reverse == reverse then
 				animation.time = 0
 			else
 				if animation.reverse ~= reverse then
@@ -359,7 +359,7 @@ function Book.Part:playAnimation(name, reverse)
 	end
 end
 
-function Book.Part:finishAnimation(name, reverse)
+function Book.Part:stopAnimation(name, reverse)
 	for _, animation in ipairs(self.animations) do
 		if animation.name == name then
 			animation.isPlaying = true
@@ -581,12 +581,12 @@ end
 function Book:_initAnimations()
 	for _, part in ipairs(self.bookParts) do
 		part:show()
-		part:finishAnimation("book-open", true)
+		part:stopAnimation("book-open", true)
 	end
 
 	for _, page in ipairs(self.bookPages) do
 		page:show()
-		page:finishAnimation("page-flip", true)
+		page:stopAnimation("page-flip", true)
 	end
 end
 
@@ -598,63 +598,73 @@ function Book:_prepareBookPage(config, frontFace)
 	table.insert(self.bookPages, Book.Part(self, Book.PART_TYPE_PAGE, config, frontFace))
 end
 
-function Book:flipForward()
-	self.previousPage = self.currentPage
-	self.currentPage = math.min(self.currentPage + 2, #self.bookPages + 1)
+function Book:getSceneNode()
+	return self.sceneNode
+end
 
-	if self.previousPage ~= self.currentPage then
-		if self.previousPage == 0 then
+function Book:_flip(reverse)
+	local lowPage = math.min(self.currentPage, self.previousPage)
+	local highPage = math.max(self.currentPage, self.previousPage)
+
+	if lowPage ~= highPage then
+		if lowPage == 0 then
 			for _, part in ipairs(self.bookParts) do
-				part:playAnimation("book-open")
+				part:playAnimation("book-open", reverse)
 			end
 
-			if self.currentPage - 1 >= 1 then
-				self.bookPages[self.currentPage - 1]:playAnimation("book-open")
-				print(">>> play book-open", self.currentPage - 1)
+			if highPage - 1 >= 1 then
+				self.bookPages[highPage - 1]:playAnimation("book-open", reverse)
+				print(">>> play book-open", highPage - 1)
 			end
 
-			if self.currentPage <= #self.bookPages then
-				self.bookPages[self.currentPage]:playAnimation("book-open")
-				print(">>> play book-open", self.currentPage)
+			if highPage <= #self.bookPages and highPage >= 1 then
+				self.bookPages[highPage]:playAnimation("book-open", reverse)
+				print(">>> play book-open", highPage)
 			end
 
-			if self.currentPage + 1 <= #self.bookPages then
-				self.bookPages[self.currentPage + 1]:finishAnimation("book-open", true)
-				print(">>> keep page-flip", self.currentPage + 1)
+			if not reverse and highPage + 1 <= #self.bookPages and highPage + 1 >= 1 then
+				self.bookPages[highPage + 1]:stopAnimation("book-open", true)
+				print(">>> keep page-flip", highPage + 1)
 			end
-		elseif self.currentPage >= #self.bookPages + 1 then
+		elseif highPage >= #self.bookPages + 1 then
 			for _, part in ipairs(self.bookParts) do
-				part:playAnimation("book-close")
+				part:playAnimation("book-close", reverse)
 			end
 
-			if self.previousPage + 1 <= #self.bookPages then
-				self.bookPages[self.previousPage + 1]:playAnimation("book-close")
+			if lowPage + 1 <= #self.bookPages and lowPage + 1 >= 1 then
+				self.bookPages[lowPage + 1]:playAnimation("book-close", reverse)
 			end
 		else
-			if self.previousPage + 1 <= #self.bookPages then
-				self.bookPages[self.previousPage + 1]:playAnimation("page-flip")
-				print(">>>> play page-flip", self.previousPage + 1)
+			if lowPage + 1 <= #self.bookPages and lowPage + 1 >= 1 then
+				self.bookPages[lowPage + 1]:playAnimation("page-flip", reverse)
+				print(">>>> play page-flip", lowPage + 1)
 			end
 
-			if self.currentPage <= #self.bookPages then
-				self.bookPages[self.currentPage]:playAnimation("page-flip")
-				print(">>>> start page-flip", self.currentPage)
+			if highPage <= #self.bookPages and highPage >= 1 then
+				self.bookPages[highPage]:playAnimation("page-flip", reverse)
+				print(">>>> start page-flip", highPage)
 			end
 
-			if self.currentPage + 1 <= #self.bookPages then
-				self.bookPages[self.currentPage + 1]:finishAnimation("page-flip", true)
-				print(">>>> keep page-flip", self.currentPage + 1)
+			if not reverse and highPage + 1 <= #self.bookPages and highPage + 1 >= 1 then
+				self.bookPages[highPage + 1]:stopAnimation("page-flip", true)
+				print(">>>> keep page-flip", highPage + 1)
 			end
 		end
 	end
 end
 
-function Book:getSceneNode()
-	return self.sceneNode
+function Book:flipForward()
+	self.previousPage = self.currentPage
+	self.currentPage = math.min(self.currentPage + 2, #self.bookPages + 1)
+
+	self:_flip(false)
 end
 
 function Book:flipBackward()
-	--self.currentPage = math.max(self.currentPage - 2, 0)
+	self.previousPage = self.currentPage
+	self.currentPage = math.max(self.currentPage - 2, 0)
+
+	self:_flip(true)
 end
 
 function Book:getResource()

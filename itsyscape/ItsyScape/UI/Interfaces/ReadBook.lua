@@ -63,18 +63,26 @@ function ReadBook:new(...)
 	label:setText("Book Is Open")
 	self:addChild(label)
 
-	self.wasSpaceDown = love.keyboard.isDown("space")
+	self.wasFDown = love.keyboard.isDown("f")
+	self.wasBDown = love.keyboard.isDown("b")
 end
 
 function ReadBook:update(delta)
 	Interface.update(self, delta)
 
-	local isSpaceDown = love.keyboard.isDown("space")
-	if not self.wasSpaceDown and isSpaceDown then
+	local isFDown = love.keyboard.isDown("f")
+	if not self.wasFDown and isFDown then
 		self.book:flipForward()
-		print(">>> FLIP!")
+		print(">>> flipForward!")
 	end
-	self.wasSpaceDown = isSpaceDown
+	self.wasFDown = isFDown
+
+	local isBDown = love.keyboard.isDown("b")
+	if not self.wasBDown and isBDown then
+		self.book:flipBackward()
+		print(">>> flipBackward!")
+	end
+	self.wasBDown = isBDown
 
 	local gameCamera = self:getView():getGameView():getCamera()
 	local width, height = self.bookSceneSnippet:getSize()
