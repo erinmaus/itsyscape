@@ -200,7 +200,7 @@ function Book.Part:loadModel(modelConfig)
 		if self.canvasModel then
 			Log.warn("Book '%s' already has a canvas model for part '%s'!", self:getBook():getResource().name, self.type)
 		else
-			self.canvasModel = model						
+			self.canvasModel = model
 		end
 	end
 end
@@ -253,7 +253,7 @@ function Book.Part:_drawText(command, width, height)
 	end
 
 	local fontSize = math.floor((command.fontSize / 100) * height)
-	local filename = string.format("Resources/Widget/Common/%s.ttf@%d", command.fontFamily, fontSize)
+	local filename = string.format("Resources/Renderers/Widget/Common/%s.ttf@%d", command.fontFamily, fontSize)
 
 	local font = self.resources[FontResource][filename]
 	if font == nil then
@@ -264,10 +264,13 @@ function Book.Part:_drawText(command, width, height)
 			function(resource)
 				self.resources[FontResource][filename] = resource
 			end)
-	elseif not font or not font:getIsReady() then
+	end
+
+	if not font or not font:getIsReady() then
 		return
 	end
 
+	local value = command.value or ""
 	local x = (command.x or 0) / 100 * width
 	local y = (command.y or 0) / 100 * height
 	local scaleX = (command.scaleX or 100) / 100
@@ -276,13 +279,13 @@ function Book.Part:_drawText(command, width, height)
 	local color = Color.fromHexString(command.color or "000000")
 	local align = command.align or "left"
 	local textWidth = (command.width or 100) / 100 * width
-	local _, lines = font:getResource():getWrap(textWidth)
+	local _, lines = font:getResource():getWrap(value, textWidth)
 	local originX = (command.originX or 0) / 100 * textWidth
 	local originY = (command.originY or 0) / 100 * (#lines * font:getResource():getHeight())
 
 	love.graphics.setColor(color:get())
 	love.graphics.setFont(font:getResource())
-	love.graphics.printf(command.value or "", x, y, textWidth, align, rotation, scaleX, scaleY, originX, originY)
+	love.graphics.printf(value, x, y, textWidth, align, rotation, scaleX, scaleY, originX, originY)
 end
 
 function Book.Part:_drawImage(command, width, height)
@@ -417,8 +420,8 @@ function Book.Part:update(delta)
 				model.sceneNode:setParent(nil)
 			end
 
-			if model.canvas then
-				model.sceneNode:getMaterial():setTextures(model.canvas)
+			if model.canvasTexture then
+				model.sceneNode:getMaterial():setTextures(model.canvasTexture)
 			else
 				model.sceneNode:getMaterial():setTextures(model.texture)
 			end
@@ -483,20 +486,25 @@ function Book.Part:draw(commands)
 	end
 
 	local commands = commands or self.config.commands
-	if not command then
+	if not commands then
 		return
 	end
 
 	local model = self.canvasModel
 	if not model.canvas then
+		if not model.texture then
+			return
+		end
+
 		local canvas = love.graphics.newCanvas(
 			model.texture:getWidth(),
 			model.texture:getHeight())
-		model.canvas = TextureResource(canvas)
+		model.canvas = canvas
+		model.canvasTexture = TextureResource(canvas)
 	end
 
 	love.graphics.push("all")
-	love.graphics.setCanvas(model.canvas:getTexture())
+	love.graphics.setCanvas(model.canvas)
 	if model.texture and model.texture:getIsReady() then
 		love.graphics.draw(model.texture:getResource())
 	end
