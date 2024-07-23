@@ -563,16 +563,17 @@ function Book:new(bookConfig, resource, gameView)
 	self.bookPages = {}
 	do
 		for index, page in ipairs(bookConfig.pages or {}) do
-			local frontFace = index % 2 == 0 and "cw" or "ccw"
+			local frontFace = index % 2 == 0 and "ccw" or "cw"
+			print(">>> index", index, "is even", index % 2 == 0, "frontFace", frontFace)
 			self:_prepareBookPage(page, frontFace)
 		end
 
-		if #self.bookPages % 2 ~= 0 then
-			-- Books should have an even number of pages,
+		if #self.bookPages % 2 == 0 then
+			-- Books should have an odd number of pages,
 			-- even if the last page is just blank.
 			local lastPage = bookConfig.pages[#bookConfig.pages]
 
-			self:_prepareBookPage({ models = lastPage.models, animations = lastPage.animations }, "ccw")
+			self:_prepareBookPage({ models = lastPage.models, animations = lastPage.animations }, "cw")
 		end
 	end
 end
@@ -584,7 +585,7 @@ function Book:_initAnimations()
 	end
 
 	for _, page in ipairs(self.bookPages) do
-		page:hide()
+		page:show()
 		page:finishAnimation("page-flip", true)
 	end
 end
@@ -607,16 +608,23 @@ function Book:flipForward()
 				part:playAnimation("book-open")
 			end
 
-			if self.previousPage + 1 <= #self.bookPages then
-				self.bookPages[self.previousPage + 1]:playAnimation("book-open")
+			if self.currentPage - 1 >= 1 then
+				self.bookPages[self.currentPage - 1]:playAnimation("book-open")
+				print(">>> play book-open", self.currentPage - 1)
 			end
 
 			if self.currentPage <= #self.bookPages then
-				self.bookPages[self.currentPage]:finishAnimation("page-flip")
+				self.bookPages[self.currentPage]:playAnimation("book-open")
+				print(">>> play book-open", self.currentPage)
+			end
+
+			if self.currentPage + 1 <= #self.bookPages then
+				self.bookPages[self.currentPage + 1]:finishAnimation("book-open", true)
+				print(">>> keep page-flip", self.currentPage + 1)
 			end
 		elseif self.currentPage >= #self.bookPages + 1 then
-			if self.currentPage <= #self.bookPages then
-				self.bookPages[self.currentPage]:playAnimation("book-close")
+			for _, part in ipairs(self.bookParts) do
+				part:playAnimation("book-close")
 			end
 
 			if self.previousPage + 1 <= #self.bookPages then
@@ -625,17 +633,17 @@ function Book:flipForward()
 		else
 			if self.previousPage + 1 <= #self.bookPages then
 				self.bookPages[self.previousPage + 1]:playAnimation("page-flip")
-				print(">>>> start previous + 1", self.previousPage + 1)
+				print(">>>> play page-flip", self.previousPage + 1)
 			end
 
 			if self.currentPage <= #self.bookPages then
 				self.bookPages[self.currentPage]:playAnimation("page-flip")
-				print(">>>> start current", self.currentPage)
+				print(">>>> start page-flip", self.currentPage)
 			end
 
 			if self.currentPage + 1 <= #self.bookPages then
-				self.bookPages[self.currentPage + 1]:finishAnimation("page-flip")
-				print(">>>> keep current + 1", self.currentPage + 1)
+				self.bookPages[self.currentPage + 1]:finishAnimation("page-flip", true)
+				print(">>>> keep page-flip", self.currentPage + 1)
 			end
 		end
 	end
@@ -685,31 +693,32 @@ function Book:update(delta)
 		self.didInitializeAnimations = true
 	end
 
-	for i = 1, self.previousPage do
+	for i = 2, self.currentPage + 1 do
 		local currentPage = self.bookPages[i]
-		local nextPage = self.bookPages[i + 1]
+		local previousPage = self.bookPages[i - 1]
 
-		if currentPage and nextPage then
-			local delta = nextPage:getAnimationDelta("page-flip") or nextPage:getAnimationDelta("book-open") or nextPage:getAnimationDelta("book-close")
+		if currentPage and previousPage then
+			local delta = currentPage:getAnimationDelta("page-flip")
+			--local delta = nextPage:getAnimationDelta("page-flip") or nextPage:getAnimationDelta("book-open") or nextPage:getAnimationDelta("book-close")
 			if delta and delta >= 1 then
-				if currentPage:getIsVisible() then
-				print(">>> hide", i, delta) end
-				currentPage:hide()
+				if previousPage:getIsVisible() then end
+				--print(">>> hide", i, delta) end
+				--previousPage:hide()
 			else
-				if not currentPage:getIsVisible() then
-				print(">>> show", i) end
-				currentPage:show()
+				if not previousPage:getIsVisible() then end
+				--print(">>> show", i) end
+				--previousPage:show()
 			end
 		end
 	end
 
-	for i = self.previousPage + 1, self.currentPage do
-		local currentPage = self.bookPages[i]
-		if currentPage then
-			--print(">>>> force show", i)
-			currentPage:show()
-		end
-	end
+	-- for i = self.previousPage, self.currentPage do
+	-- 	local currentPage = self.bookPages[i]
+	-- 	if currentPage then
+	-- 		--print(">>>> force show", i)
+	-- 		currentPage:show()
+	-- 	end
+	-- end
 
 	for _, part in ipairs(self.bookParts) do
 		part:update(delta)
