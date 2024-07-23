@@ -72,6 +72,7 @@ function ReadBook:update(delta)
 	local isSpaceDown = love.keyboard.isDown("space")
 	if not self.wasSpaceDown and isSpaceDown then
 		self.book:flipForward()
+		print(">>> FLIP!")
 	end
 	self.wasSpaceDown = isSpaceDown
 
@@ -85,6 +86,8 @@ function ReadBook:update(delta)
 
 	self.book:update(delta)
 	self.book:draw()
+
+	--self.bookSceneSnippet:getRoot():getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, love.timer.getTime() / 3.14))
 end
 
 return ReadBook

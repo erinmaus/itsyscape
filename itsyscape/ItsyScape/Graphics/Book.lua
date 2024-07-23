@@ -30,15 +30,15 @@ Book.DEFAULT_SKELETON = "../Common/Book.lskel"
 
 Book.DEFAULT_MODELS = {
 	[Book.PART_TYPE_BOOK] = {
-		{ model = "../Common/Book.lmesh", texture = "../Common/Book.png" }
+		--{ model = "../Common/Book.lmesh", texture = "../Common/Book.png" }
 	},
 
 	[Book.PART_TYPE_FRONT] = {
-		{ model = "../Common/Front.lmesh", texture = "../Common/Front.png", canvas = true }
+		--{ model = "../Common/Front.lmesh", texture = "../Common/Front.png", canvas = true }
 	},
 
 	[Book.PART_TYPE_BACK] = {
-		{ model = "../Common/Back.lmesh", texture = "../Common/Back.png", canvas = true }
+		--{ model = "../Common/Back.lmesh", texture = "../Common/Back.png", canvas = true }
 	},
 
 	[Book.PART_TYPE_PAGE] = {
@@ -57,8 +57,7 @@ Book.DEFAULT_ANIMATIONS = {
 	},
 	{
 		name = "page-flip",
-		animation = "../Common/Flip.lanim",
-		bones = { "page1", "page2", "page3", "page4", "page5", "page6", "page7" }
+		animation = "../Common/Flip.lanim"
 	 }
 }
 
@@ -80,6 +79,10 @@ function Book.Part:new(book, partType, config, frontFace)
 		[FontResource] = {},
 		[TextureResource] = {}
 	}
+
+	if partType == Book.PART_TYPE_PAGE then
+		print(">>> the font face value is", self.frontFace)
+	end
 
 	self.visible = false
 end
@@ -146,10 +149,10 @@ function Book.Part:_pullTextureCoordinates(model)
 	local top, bottom = math.huge, -math.huge
 
 	for _, vertex in ipairs(vertices) do
-		left = math.min(vertex[textureCoordinateOffset])
-		right = math.max(vertex[textureCoordinateOffset])
-		top = math.min(vertex[textureCoordinateOffset] + 1)
-		bottom = math.max(vertex[textureCoordinateOffset] + 1)
+		left = math.min(left, vertex[textureCoordinateOffset])
+		right = math.max(right, vertex[textureCoordinateOffset])
+		top = math.min(top, vertex[textureCoordinateOffset + 1])
+		bottom = math.max(bottom, vertex[textureCoordinateOffset + 1])
 	end
 
 	model.textureCoordinates = {
@@ -167,14 +170,7 @@ function Book.Part:loadModel(modelConfig)
 
 	local model = { filter = {} }
 	do
-		self:getResourceManager():queueAsync(
-			SkeletonResource,
-			string.format("%s/%s", self:getBook():getBaseFilename(), modelConfig.skeleton or Book.DEFAULT_SKELETON),
-			function(resource)
-				model.skeleton = resource:getResource()
-			end)
-
-		self:getResourceManager():queueAsync(
+		self:getResourceManager():queue(
 			ModelResource,
 			string.format("%s/%s", self:getBook():getBaseFilename(), modelConfig.model),
 			function(resource)
@@ -185,7 +181,7 @@ function Book.Part:loadModel(modelConfig)
 				end
 			end)
 
-		self:getResourceManager():queueAsync(
+		self:getResourceManager():queue(
 			TextureResource,
 			string.format("%s/%s", self:getBook():getBaseFilename(), modelConfig.texture),
 			function(resource)
@@ -207,11 +203,11 @@ end
 
 function Book.Part:loadModels(modelsConfig)
 	if #modelsConfig == 0 then
-		self:loadModel(Book.DEFAULT_MODELS[self.type])
-	else
-		for _, modelConfig in ipairs(modelsConfig) do
-			self:loadModel(modelConfig)
-		end
+		modelsConfig = Book.DEFAULT_MODELS[self.type]
+	end
+
+	for _, modelConfig in ipairs(modelsConfig) do
+		self:loadModel(modelConfig)
 	end
 end
 
@@ -220,17 +216,18 @@ function Book.Part:loadAnimation(animationConfig)
 		return
 	end
 
-	local animation = { name = animationConfig }
+	local animation = { name = animationConfig.name }
 	do
-		self:getResourceManager():queueAsync(
+		self:getResourceManager():queue(
 			SkeletonAnimationResource,
 			string.format("%s/%s", self:getBook():getBaseFilename(), animationConfig.animation),
 			function(resource)
 				animation.animation = resource:getResource()
-			end)
+			end,
+			self.skeleton)
 
 		animation.bones = {}
-		for _, bone in ipairs(animationsConfig.bones or {}) do
+		for _, bone in ipairs(animationConfig.bones or {}) do
 			table.insert(animation.bones, bone)
 		end
 	end
@@ -239,12 +236,19 @@ end
 
 function Book.Part:loadAnimations(animationsConfig)
 	if #animationsConfig == 0 then
-		self:loadModel(Book.DEFAULT_ANIMATIONS)
-	else
-		for _, modelConfig in ipairs(animationsConfig) do
-			self:loadModel(modelConfig)
-		end
+		animationsConfig = Book.DEFAULT_ANIMATIONS
 	end
+
+	self:getResourceManager():queue(
+		SkeletonResource,
+		string.format("%s/%s", self:getBook():getBaseFilename(), self.config.skeleton or Book.DEFAULT_SKELETON),
+		function(resource)
+			self.skeleton = resource:getResource()
+
+			for _, animationConfig in ipairs(animationsConfig) do
+				self:loadAnimation(animationConfig)
+			end
+		end)
 end
 
 function Book.Part:_drawText(command, width, height)
@@ -258,7 +262,7 @@ function Book.Part:_drawText(command, width, height)
 	local font = self.resources[FontResource][filename]
 	if font == nil then
 		self.resources[FontResource][filename] = false
-		self:getResourceManager():queueAsync(
+		self:getResourceManager():queue(
 			FontResource,
 			filename,
 			function(resource)
@@ -297,7 +301,7 @@ function Book.Part:_drawImage(command, width, height)
 	local image = self.resources[TextureResource][filename]
 	if image == nil then
 		self.resources[TextureResource][filename] = false
-		self:getResourceManager():queueAsync(
+		self:getResourceManager():queue(
 			TextureResource,
 			filename,
 			function(resource)
@@ -332,18 +336,23 @@ function Book.Part:hide()
 	self.visible = false
 end
 
-function Book.Part:startAnimation(name, reverse)
+function Book.Part:playAnimation(name, reverse)
+	reverse = not not reverse
+
 	for _, animation in ipairs(self.animations) do
 		if animation.name == name then
-			animation.isPlaying = true
-
-			if not (animation.animation and animation.animation:getIsReady()) then
+			if not animation.isPlaying and not animation.animation and (not not animation.reverse) == reverse then
 				animation.time = 0
 			else
-				animation.time = animation.animation:getResource():getDuration() - animation.time
+				if animation.reverse ~= reverse then
+					animation.time = animation.animation:getDuration() - (animation.time or 0)
+				else
+					animation.time = 0
+				end
 			end
 
-			animation.reverse = not not reverse
+			animation.reverse = reverse
+			animation.isPlaying = true
 		else
 			animation.isPlaying = false
 		end
@@ -355,10 +364,10 @@ function Book.Part:finishAnimation(name, reverse)
 		if animation.name == name then
 			animation.isPlaying = true
 
-			if not (animation.animation and animation.animation:getIsReady()) then
+			if not animation.animation then
 				animation.time = math.huge
 			else
-				animation.time = animation.animation:getResource():getDuration()
+				animation.time = animation.animation:getDuration()
 			end
 
 			animation.reverse = not not reverse
@@ -366,10 +375,6 @@ function Book.Part:finishAnimation(name, reverse)
 			animation.isPlaying = false
 		end
 	end
-end
-
-function Book.Part:keepAnimation(name)
-	self:finishAnimation(name, true)
 end
 
 function Book.Part:getAnimationDelta(name)
@@ -382,7 +387,7 @@ function Book.Part:getAnimationDelta(name)
 				time = animation.time
 			end
 
-			local delta = time / animation.animation:getDuration()
+			local delta = (time or 0) / animation.animation:getDuration()
 			if animation.reverse then
 				delta = 1 - delta
 			end
@@ -396,11 +401,49 @@ end
 
 function Book.Part:update(delta)
 	for _, model in ipairs(self.models) do
-		if model.model and model.texture and model.skeleton then
-			if not model.sceneNode then
-				model.transforms = model.skeleton:createTransforms()
+		if model.transforms then
+			model.transforms:reset()
+		end
+	end
 
-				model.model:getResource():bindSkeleton(model.skeleton)
+	for _, animation in ipairs(self.animations) do
+		if animation.isPlaying then
+			animation.time = (animation.time or 0) + delta
+
+			if animation.animation then
+				animation.time = math.min(animation.time, animation.animation:getDuration())
+
+				for _, model in ipairs(self.models) do
+					if model.transforms and model.filter[animation] then
+						local time
+						if animation.time == math.huge then
+							if animation.reverse then
+								time = 0
+							else
+								time = animation.animation:getDuration()
+							end
+						else
+							if animation.reverse then
+								time = animation.animation:getDuration() - animation.time
+							else
+								time = animation.time
+							end
+						end
+
+						--print(">>> compute", animation.name, time)
+						animation.animation:computeFilteredTransforms(time, model.transforms, model.filter[animation])
+					end
+				end
+			end
+		end
+	end
+
+	for _, model in ipairs(self.models) do
+		if model.model and model.texture and self.skeleton then
+			if not model.sceneNode then
+				model.transforms = self.skeleton:createTransforms()
+
+				model.model:getResource():bindSkeleton(self.skeleton)
 				model.sceneNode = ModelSceneNode()
 				model.sceneNode:setModel(model.model)
 				model.sceneNode:setTransforms(model.transforms)
@@ -420,6 +463,9 @@ function Book.Part:update(delta)
 				model.sceneNode:setParent(nil)
 			end
 
+			self.skeleton:applyTransforms(model.transforms)
+			self.skeleton:applyBindPose(model.transforms)
+
 			if model.canvasTexture then
 				model.sceneNode:getMaterial():setTextures(model.canvasTexture)
 			else
@@ -428,7 +474,7 @@ function Book.Part:update(delta)
 
 			for _, animation in ipairs(self.animations) do
 				if animation.animation and not model.filter[animation] then
-					local filter = model.skeleton:createFilter()
+					local filter = self.skeleton:createFilter()
 					model.filter[animation] = filter
 
 					if #animation.bones == 0 then
@@ -437,42 +483,11 @@ function Book.Part:update(delta)
 						filter:disableAllBones()
 
 						for _, bone in ipairs(animation.bones) do
-							local boneIndex = model.skeleton:getBoneIndex(bone)
+							local boneIndex = self.skeleton:getBoneIndex(bone)
 							if boneIndex and boneIndex >= 1 then
 								filter:enableBoneAtIndex(boneIndex)
 							end
 						end
-					end
-				end
-			end
-		end
-	end
-
-	for _, animation in ipairs(self.animations) do
-		if animation.isPlaying then
-			animation.time = animation.time + delta
-
-			if animation.animation then
-				animation.time = math.min(animation.time, animation.animation:getDuration())
-
-				for _, model in ipairs(self.models) do
-					if model.filter[animation] then
-						local time
-						if animation.time == math.huge then
-							if animation.reverse then
-								time = 0
-							else
-								time = animation.animation:getDuration()
-							end
-						else
-							if animation.reverse then
-								time = animation.animation:getDuration() - animation.time
-							else
-								time = animation.time
-							end
-						end
-
-						animation.animation:computeFilteredTransforms(time, model.transforms, model.filter[animation])
 					end
 				end
 			end
@@ -492,7 +507,7 @@ function Book.Part:draw(commands)
 
 	local model = self.canvasModel
 	if not model.canvas then
-		if not model.texture then
+		if not model.texture or not model.textureCoordinates then
 			return
 		end
 
@@ -503,7 +518,16 @@ function Book.Part:draw(commands)
 		model.canvasTexture = TextureResource(canvas)
 	end
 
+	local left = model.canvas:getWidth() * model.textureCoordinates.left
+	local right = model.canvas:getWidth() * model.textureCoordinates.right
+	local top = model.canvas:getHeight() * model.textureCoordinates.top
+	local bottom = model.canvas:getHeight() * model.textureCoordinates.bottom
+	local width = right - left
+	local height = bottom - top
+
 	love.graphics.push("all")
+	love.graphics.origin()
+	love.graphics.translate(left, top, 0)
 	love.graphics.setCanvas(model.canvas)
 	if model.texture and model.texture:getIsReady() then
 		love.graphics.draw(model.texture:getResource())
@@ -511,9 +535,9 @@ function Book.Part:draw(commands)
 
 	for _, command in ipairs(commands) do
 		if command.command == "text" then
-			self:_drawText(command, model.canvas:getWidth(), model.canvas:getHeight())
+			self:_drawText(command, width, height)
 		elseif command.command == "image" then
-			self:_drawText(command, model.canvas:getWidth(), model.canvas:getHeight())
+			self:_drawText(command, width, height)
 		end
 	end
 	love.graphics.pop()
@@ -539,7 +563,7 @@ function Book:new(bookConfig, resource, gameView)
 	self.bookPages = {}
 	do
 		for index, page in ipairs(bookConfig.pages or {}) do
-			local frontFace = index % 2 == 0 and "ccw" or "cw"
+			local frontFace = index % 2 == 0 and "cw" or "ccw"
 			self:_prepareBookPage(page, frontFace)
 		end
 
@@ -551,19 +575,17 @@ function Book:new(bookConfig, resource, gameView)
 			self:_prepareBookPage({ models = lastPage.models, animations = lastPage.animations }, "ccw")
 		end
 	end
-
-	self:_initAnimations()
 end
 
 function Book:_initAnimations()
 	for _, part in ipairs(self.bookParts) do
 		part:show()
-		part:keepAnimation("book-open")
+		part:finishAnimation("book-open", true)
 	end
 
 	for _, page in ipairs(self.bookPages) do
 		page:hide()
-		page:keepAnimation("page-flip")
+		page:finishAnimation("page-flip", true)
 	end
 end
 
@@ -582,35 +604,38 @@ function Book:flipForward()
 	if self.previousPage ~= self.currentPage then
 		if self.previousPage == 0 then
 			for _, part in ipairs(self.bookParts) do
-				part:startAnimation("book-open")
+				part:playAnimation("book-open")
+			end
+
+			if self.previousPage + 1 <= #self.bookPages then
+				self.bookPages[self.previousPage + 1]:playAnimation("book-open")
 			end
 
 			if self.currentPage <= #self.bookPages then
-				self.bookPages[self.currentPage]:startAnimation("book-open")
-			end
-
-			if self.currentPage + 1 <= #self.bookPages then
-				self.bookPages[self.currentPage + 1]:keepAnimation("page-flip")
+				self.bookPages[self.currentPage]:finishAnimation("page-flip")
 			end
 		elseif self.currentPage >= #self.bookPages + 1 then
 			if self.currentPage <= #self.bookPages then
-				self.bookPages[self.currentPage]:startAnimation("book-close")
+				self.bookPages[self.currentPage]:playAnimation("book-close")
 			end
 
 			if self.previousPage + 1 <= #self.bookPages then
-				self.bookPages[self.previousPage + 1]:startAnimation("book-close")
+				self.bookPages[self.previousPage + 1]:playAnimation("book-close")
 			end
 		else
 			if self.previousPage + 1 <= #self.bookPages then
-				self.bookPages[self.previousPage + 1]:startAnimation("page-flip")
+				self.bookPages[self.previousPage + 1]:playAnimation("page-flip")
+				print(">>>> start previous + 1", self.previousPage + 1)
 			end
 
 			if self.currentPage <= #self.bookPages then
-				self.bookPages[self.currentPage]:startAnimation("page-flip")
+				self.bookPages[self.currentPage]:playAnimation("page-flip")
+				print(">>>> start current", self.currentPage)
 			end
 
 			if self.currentPage + 1 <= #self.bookPages then
-				self.bookPages[self.currentPage + 1]:keepAnimation("page-flip")
+				self.bookPages[self.currentPage + 1]:finishAnimation("page-flip")
+				print(">>>> keep current + 1", self.currentPage + 1)
 			end
 		end
 	end
@@ -655,26 +680,43 @@ function Book:load()
 end
 
 function Book:update(delta)
+	if not self.didInitializeAnimations and not self:getIsLoading() then
+		self:_initAnimations()
+		self.didInitializeAnimations = true
+	end
+
+	for i = 1, self.previousPage do
+		local currentPage = self.bookPages[i]
+		local nextPage = self.bookPages[i + 1]
+
+		if currentPage and nextPage then
+			local delta = nextPage:getAnimationDelta("page-flip") or nextPage:getAnimationDelta("book-open") or nextPage:getAnimationDelta("book-close")
+			if delta and delta >= 1 then
+				if currentPage:getIsVisible() then
+				print(">>> hide", i, delta) end
+				currentPage:hide()
+			else
+				if not currentPage:getIsVisible() then
+				print(">>> show", i) end
+				currentPage:show()
+			end
+		end
+	end
+
+	for i = self.previousPage + 1, self.currentPage do
+		local currentPage = self.bookPages[i]
+		if currentPage then
+			--print(">>>> force show", i)
+			currentPage:show()
+		end
+	end
+
 	for _, part in ipairs(self.bookParts) do
 		part:update(delta)
 	end
 
 	for _, page in ipairs(self.bookPages) do
 		page:update(delta)
-	end
-
-	for i = 1, self.currentPage - 1 do
-		local currentPage = self.bookPages[i]
-		local nextPage = self.bookPages[i + 1]
-
-		if currentPage and nextPage then
-			local delta = nextPage:getAnimationDelta("page-flip")
-			if delta and delta >= 1 then
-				currentPage:hide()
-			else
-				currentPage:show()
-			end
-		end
 	end
 end
 
