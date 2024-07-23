@@ -71,16 +71,14 @@ function ReadBook:update(delta)
 	Interface.update(self, delta)
 
 	local isFDown = love.keyboard.isDown("f")
-	if not self.wasFDown and isFDown then
+	if not self.wasFDown and isFDown and not self.book:getIsOpeningOrClosing() then
 		self.book:flipForward()
-		print(">>> flipForward!")
 	end
 	self.wasFDown = isFDown
 
 	local isBDown = love.keyboard.isDown("b")
-	if not self.wasBDown and isBDown then
+	if not self.wasBDown and isBDown and not self.book:getIsOpeningOrClosing() then
 		self.book:flipBackward()
-		print(">>> flipBackward!")
 	end
 	self.wasBDown = isBDown
 

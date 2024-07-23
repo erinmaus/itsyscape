@@ -82,10 +82,6 @@ function Book.Part:new(book, partType, config, frontFace)
 		[TextureResource] = {}
 	}
 
-	if partType == Book.PART_TYPE_PAGE then
-		print(">>> the font face value is", self.frontFace)
-	end
-
 	self.visible = false
 end
 
@@ -390,10 +386,6 @@ function Book.Part:getAnimationDelta(name)
 			end
 
 			local delta = (time or 0) / animation.animation:getDuration()
-			if animation.reverse then
-				delta = 1 - delta
-			end
-
 			return delta
 		end
 	end
@@ -449,11 +441,6 @@ function Book.Part:update(delta)
 				model.sceneNode:setModel(model.model)
 				model.sceneNode:setTransforms(model.transforms)
 				model.sceneNode:onWillRender(function(renderer, delta)
-					local shader = renderer:getCurrentShader()
-					if shader:hasUniform("scape_DepthOffset") then
-						shader:send("scape_DepthOffset", self.depthOffset)
-					end
-
 					love.graphics.setFrontFaceWinding(self.frontFace)
 				end)
 			end
@@ -564,8 +551,7 @@ function Book:new(bookConfig, resource, gameView)
 	self.bookPages = {}
 	do
 		for index, page in ipairs(bookConfig.pages or {}) do
-			local frontFace = index % 2 == 0 and "ccw" or "cw"
-			print(">>> index", index, "is even", index % 2 == 0, "frontFace", frontFace)
+			local frontFace = index % 2 == 0 and "cw" or "ccw"
 			self:_prepareBookPage(page, frontFace)
 		end
 
@@ -574,7 +560,7 @@ function Book:new(bookConfig, resource, gameView)
 			-- even if the last page is just blank.
 			local lastPage = bookConfig.pages[#bookConfig.pages]
 
-			self:_prepareBookPage({ models = lastPage.models, animations = lastPage.animations }, "cw")
+			self:_prepareBookPage({ models = lastPage.models, animations = lastPage.animations }, "ccw")
 		end
 	end
 end
@@ -615,17 +601,14 @@ function Book:_flip(reverse)
 
 			if highPage - 1 >= 1 then
 				self.bookPages[highPage - 1]:playAnimation("book-open", reverse)
-				print(">>> play book-open", highPage - 1)
 			end
 
 			if highPage <= #self.bookPages and highPage >= 1 then
 				self.bookPages[highPage]:playAnimation("book-open", reverse)
-				print(">>> play book-open", highPage)
 			end
 
 			if not reverse and highPage + 1 <= #self.bookPages and highPage + 1 >= 1 then
 				self.bookPages[highPage + 1]:stopAnimation("book-open", true)
-				print(">>> keep page-flip", highPage + 1)
 			end
 		elseif highPage >= #self.bookPages + 1 then
 			for _, part in ipairs(self.bookParts) do
@@ -638,17 +621,14 @@ function Book:_flip(reverse)
 		else
 			if lowPage + 1 <= #self.bookPages and lowPage + 1 >= 1 then
 				self.bookPages[lowPage + 1]:playAnimation("page-flip", reverse)
-				print(">>>> play page-flip", lowPage + 1)
 			end
 
 			if highPage <= #self.bookPages and highPage >= 1 then
 				self.bookPages[highPage]:playAnimation("page-flip", reverse)
-				print(">>>> start page-flip", highPage)
 			end
 
 			if not reverse and highPage + 1 <= #self.bookPages and highPage + 1 >= 1 then
 				self.bookPages[highPage + 1]:stopAnimation("page-flip", true)
-				print(">>>> keep page-flip", highPage + 1)
 			end
 		end
 	end
@@ -698,38 +678,33 @@ function Book:load()
 	end
 end
 
+function Book:getIsOpeningOrClosing()
+	for _, part in ipairs(self.bookParts) do
+		local openDelta = part:getAnimationDelta("book-open")
+		local closeDelta = part:getAnimationDelta("book-close")
+
+		if (openDelta and openDelta < 0.75) or (closeDelta and closeDelta < 0.75) then
+			return true
+		end
+	end
+
+	for _, page in ipairs(self.bookPages) do
+		local openDelta = page:getAnimationDelta("book-open")
+		local closeDelta = page:getAnimationDelta("book-close")
+
+		if (openDelta and openDelta < 0.75) or (closeDelta and closeDelta < 0.75) then
+			return true
+		end
+	end
+
+	return false
+end
+
 function Book:update(delta)
 	if not self.didInitializeAnimations and not self:getIsLoading() then
 		self:_initAnimations()
 		self.didInitializeAnimations = true
 	end
-
-	for i = 2, self.currentPage + 1 do
-		local currentPage = self.bookPages[i]
-		local previousPage = self.bookPages[i - 1]
-
-		if currentPage and previousPage then
-			local delta = currentPage:getAnimationDelta("page-flip")
-			--local delta = nextPage:getAnimationDelta("page-flip") or nextPage:getAnimationDelta("book-open") or nextPage:getAnimationDelta("book-close")
-			if delta and delta >= 1 then
-				if previousPage:getIsVisible() then end
-				--print(">>> hide", i, delta) end
-				--previousPage:hide()
-			else
-				if not previousPage:getIsVisible() then end
-				--print(">>> show", i) end
-				--previousPage:show()
-			end
-		end
-	end
-
-	-- for i = self.previousPage, self.currentPage do
-	-- 	local currentPage = self.bookPages[i]
-	-- 	if currentPage then
-	-- 		--print(">>>> force show", i)
-	-- 		currentPage:show()
-	-- 	end
-	-- end
 
 	for _, part in ipairs(self.bookParts) do
 		part:update(delta)
