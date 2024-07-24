@@ -75,10 +75,14 @@ function SceneSnippetRenderer:draw(widget)
 				widget:getChildNode():setParent(widget:getParentNode())
 			end
 
+			local w, h = widget:getSize()
+			w = w * 2
+			h = h * 2
+
 			love.graphics.push('all')
 			love.graphics.setScissor()
 			renderer:setCamera(camera)
-			renderer:draw(widget:getRoot(), 0, widget:getSize())
+			renderer:draw(widget:getRoot(), 0, w, h)
 			love.graphics.pop()
 
 			if oldParent then
@@ -93,7 +97,7 @@ function SceneSnippetRenderer:draw(widget)
 
 		local color = renderer:getOutputBuffer():getColor()
 		if color then
-			itsyrealm.graphics.uncachedDraw(renderer:getOutputBuffer():getColor())
+			itsyrealm.graphics.uncachedDraw(renderer:getOutputBuffer():getColor(), 0, 0, 0, 0.5, 0.5)
 		end
 	end
 end

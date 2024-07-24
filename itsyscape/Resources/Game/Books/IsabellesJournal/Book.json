@@ -4,6 +4,10 @@
 			{
 				"model": "../Common/Book.lmesh",
 				"texture": "Book.png"
+			},
+			{
+				"model": "../Common/Pages.lmesh",
+				"texture": "Pages.png"
 			}
 		]
 	},
@@ -14,10 +18,6 @@
 				"model": "../Common/Front.lmesh",
 				"texture": "Front.png",
 				"canvas": true
-			},
-			{
-				"model": "../Common/Page_Left.lmesh",
-				"texture": "Page.png"
 			}
 		],
 
@@ -40,10 +40,6 @@
 			{
 				"model": "../Common/Back.lmesh",
 				"texture": "Back.png"
-			},
-			{
-				"model": "../Common/Page_Right.lmesh",
-				"texture": "Page.png"
 			}
 		],
 
@@ -64,11 +60,11 @@
 				{
 					"command": "text",
 					"fontFamily": "Serif/Bold",
-					"fontSize": 2.5,
+					"fontSize": 5,
 					"value": "book.isabelle_journal.page6.paragraph1",
-					"x": 0,
+					"x": 15,
 					"y": 0,
-					"width": 15,
+					"width": 50,
 					"rotation": 11.25,
 					"color": "000000"
 				},
@@ -92,7 +88,21 @@
 				}
 			]
 		},
-		{},
+		{
+			"id": 7,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 5,
+					"value": "hello potato",
+					"x": 15,
+					"y": 0,
+					"width": 50,
+					"color": "000000"
+				}
+			]
+		},
 		{},
 		{},
 		{}

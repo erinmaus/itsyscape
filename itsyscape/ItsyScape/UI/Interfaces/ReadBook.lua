@@ -88,7 +88,7 @@ function ReadBook:update(delta)
 	self.camera:setPosition(Vector.ZERO)
 	self.camera:setWidth(width)
 	self.camera:setHeight(height)
-	self.camera:setDistance(8)
+	self.camera:setDistance(4)
 
 	self.book:update(delta)
 	self.book:draw()

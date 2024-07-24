@@ -30,17 +30,16 @@ Book.DEFAULT_SKELETON = "../Common/Book.lskel"
 
 Book.DEFAULT_MODELS = {
 	[Book.PART_TYPE_BOOK] = {
-		{ model = "../Common/Book.lmesh", texture = "../Common/Book.png" }
+		{ model = "../Common/Book.lmesh", texture = "../Common/Book.png" },
+		{ model = "../Common/Pages.lmesh", texture = "../Common/Pages.png" },
 	},
 
 	[Book.PART_TYPE_FRONT] = {
-		{ model = "../Common/Front.lmesh", texture = "../Common/Front.png", canvas = true },
-		{ model = "../Common/Page_Left.lmesh", texture = "../Common/Page.png" }
+		{ model = "../Common/Front.lmesh", texture = "../Common/Front.png", canvas = true }
 	},
 
 	[Book.PART_TYPE_BACK] = {
-		{ model = "../Common/Back.lmesh", texture = "../Common/Back.png", canvas = true },
-		{ model = "../Common/Page_Right.lmesh", texture = "../Common/Page.png" }
+		{ model = "../Common/Back.lmesh", texture = "../Common/Back.png", canvas = true }
 	},
 
 	[Book.PART_TYPE_PAGE] = {
@@ -54,8 +53,8 @@ Book.DEFAULT_ANIMATIONS = {
 		animation = "../Common/Open.lanim"
 	},
 	{
-		name = "book-close",
-		animation = "../Common/Close.lanim"
+		name = "book-open-page",
+		animation = "../Common/Open_Page.lanim"
 	},
 	{
 		name = "page-flip",
@@ -438,6 +437,11 @@ function Book.Part:update(delta)
 
 				model.model:getResource():bindSkeleton(self.skeleton)
 				model.sceneNode = ModelSceneNode()
+
+				if self.type ~= Book.PART_TYPE_PAGE then
+					model.sceneNode:getMaterial():setOutlineThreshold(0.025)
+				end
+
 				model.sceneNode:setModel(model.model)
 				model.sceneNode:setTransforms(model.transforms)
 				model.sceneNode:onWillRender(function(renderer, delta)
@@ -604,19 +608,19 @@ function Book:_flip(reverse)
 			end
 
 			if highPage <= #self.bookPages and highPage >= 1 then
-				self.bookPages[highPage]:playAnimation("book-open", reverse)
+				self.bookPages[highPage]:playAnimation("book-open-page", reverse)
 			end
 
 			if not reverse and highPage + 1 <= #self.bookPages and highPage + 1 >= 1 then
-				self.bookPages[highPage + 1]:stopAnimation("book-open", true)
+				self.bookPages[highPage + 1]:playAnimation("book-open")
 			end
 		elseif highPage >= #self.bookPages + 1 then
 			for _, part in ipairs(self.bookParts) do
-				part:playAnimation("book-close", reverse)
+				part:playAnimation("book-open", not reverse)
 			end
 
 			if lowPage + 1 <= #self.bookPages and lowPage + 1 >= 1 then
-				self.bookPages[lowPage + 1]:playAnimation("book-close", reverse)
+				self.bookPages[lowPage + 1]:playAnimation("book-open-page", not reverse)
 			end
 		else
 			if lowPage + 1 <= #self.bookPages and lowPage + 1 >= 1 then
@@ -712,6 +716,34 @@ function Book:update(delta)
 
 	for _, page in ipairs(self.bookPages) do
 		page:update(delta)
+	end
+
+	do
+	-- 	-- for _, page in ipairs(self.bookPages) do
+	-- 	-- 	page:hide()
+	-- 	-- end
+
+		local lowPage = math.min(self.currentPage, self.previousPage)
+		local highPage = math.max(self.currentPage, self.previousPage)
+		local minPage = self.currentPage
+		local maxPage = self.currentPage + 1
+
+		--print("lowPage", self.currentPage)
+		for i = 1, #self.bookPages do
+			local page = self.bookPages[i]
+			--print(">>> face", page.frontFace)
+
+			if i < minPage then
+				--print(">>> min hide", i)
+				page:hide()
+			elseif i > maxPage then
+				--print(">>> max hide", i)
+				page:hide()
+			else
+				--print(">>> show", i)
+				page:show()
+			end
+		end
 	end
 end
 
