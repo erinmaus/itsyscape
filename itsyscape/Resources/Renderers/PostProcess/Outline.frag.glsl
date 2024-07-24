@@ -180,8 +180,9 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	//alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).r;
 
 	float outlineThreshold = Texel(scape_NormalTexture, textureCoordinate).a;
-	float depthSobel = getDepthSobel(image, textureCoordinate, step(0.0, outlineThreshold));
+	float outline = linearDepth(Texel(image, textureCoordinate).r);
 	float normalSobel = getNormalSobel(scape_NormalTexture, textureCoordinate);
+	float depthSobel = getDepthSobel(image, textureCoordinate, step(0.0, outlineThreshold));
 	//float sobel = max(getDepthSobel(image, textureCoordinate), getNormalSobel(scape_NormalTexture, textureCoordinate));
 	float d = max(step(1.5, normalSobel), step(max(scape_DepthStep + abs(outlineThreshold), 0.0), depthSobel));
 	vec3 outlineColor = Texel(scape_OutlineColorTexture, textureCoordinate).rgb;
