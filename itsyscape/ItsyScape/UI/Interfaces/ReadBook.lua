@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Book = require "ItsyScape.Graphics.Book"
@@ -72,27 +73,77 @@ function ReadBook:update(delta)
 
 	local isFDown = love.keyboard.isDown("f")
 	if not self.wasFDown and isFDown and not self.book:getIsOpeningOrClosing() then
-		self.book:flipForward()
+		if (self.book:getIsFlipping() and self.book:getWillFlipForwardCloseBook()) then
+			print(">>> waiting... try again!")
+		else
+			print("> FORWARD!")
+			self.book:flipForward()
+		end
 	end
 	self.wasFDown = isFDown
 
 	local isBDown = love.keyboard.isDown("b")
 	if not self.wasBDown and isBDown and not self.book:getIsOpeningOrClosing() then
-		self.book:flipBackward()
+		if (self.book:getIsFlipping() and self.book:getWillFlipBackwardCloseBook()) then
+			print(">>> waiting... try again!")
+		else
+			print("> BACKWARD!")
+			self.book:flipBackward()
+		end
 	end
 	self.wasBDown = isBDown
-
-	local gameCamera = self:getView():getGameView():getCamera()
-	local width, height = self.bookSceneSnippet:getSize()
-	self.camera:copy(gameCamera)
-	self.camera:setPosition(Vector.ZERO)
-	self.camera:setWidth(width)
-	self.camera:setHeight(height)
-	self.camera:setDistance(4)
 
 	self.book:update(delta)
 	self.book:draw()
 
+	local currentState = self.book:getCurrentState()
+	if currentState ~= self.currentBookState then
+		self.previousBookState = self.currentBookState or currentState
+		self.currentBookState = currentState
+		self.currentCameraTime = 0
+		print(">>> reset", "prev", previousState, "curr", currentState)
+	end
+	local previousState = self.previousBookState or currentState
+
+	local rotation
+	do
+		self.currentCameraTime = (self.currentCameraTime or 0) + delta
+		local mu = math.clamp(self.currentCameraTime / 0.25)
+
+		local currentRotation
+		if currentState == Book.STATE_FRONT_COVER then
+			currentRotation = 0
+		elseif currentState == Book.STATE_BACK_COVER then
+			currentRotation = -math.pi
+		else
+			currentRotation = -math.pi / 2
+		end
+
+		local previousRotation
+		if previousState == Book.STATE_FRONT_COVER then
+			previousRotation = 0
+		elseif previousState == Book.STATE_BACK_COVER then
+			previousRotation = -math.pi
+		else
+			previousRotation = -math.pi / 2
+		end
+
+		rotation = math.lerpAngle(previousRotation, currentRotation, Tween.sineEaseOut(mu))
+		if mu >= 1 then
+			self.previousBookState = currentState
+		end
+	end
+
+
+	local gameCamera = self:getView():getGameView():getCamera()
+	local width, height = self.bookSceneSnippet:getSize()
+	self.camera:copy(gameCamera)
+	self.camera:setVerticalRotation(rotation)
+	self.camera:setHorizontalRotation(math.pi / 12)
+	self.camera:setPosition(Vector.ZERO)
+	self.camera:setWidth(width)
+	self.camera:setHeight(height)
+	self.camera:setDistance(4)
 	--self.bookSceneSnippet:getRoot():getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, love.timer.getTime() / 3.14))
 end
 
