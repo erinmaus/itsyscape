@@ -890,6 +890,7 @@ Game "ItsyScape"
 
 	ResourceType "Book"
 	ItsyScape.Resource.Book "IsabellesJournal"
+	ItsyScape.Resource.Book "Necronomicon"
 
 do
 	local Human = ItsyScape.Resource.Peep "Human"
