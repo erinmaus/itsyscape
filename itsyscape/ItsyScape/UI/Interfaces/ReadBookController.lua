@@ -27,6 +27,7 @@ function ReadBookController:_pullPart(partConfig)
 	partConfig = partConfig or {}
 
 	local result = {
+		skeleton = partConfig.skeleton,
 		models = partConfig.models,
 		animations = partConfig.animations,
 		commands = {}
@@ -70,6 +71,7 @@ function ReadBookController:pull()
 			book = self:_pullPart(self.bookConfig.book),
 			front = self:_pullPart(self.bookConfig.front),
 			back = self:_pullPart(self.bookConfig.back),
+			page = self:_pullPart(self.bookConfig.page),
 			pages = {}
 		}
 	}

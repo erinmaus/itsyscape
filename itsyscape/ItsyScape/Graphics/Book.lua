@@ -250,6 +250,7 @@ function Book.Part:loadAnimations(animationsConfig)
 		SkeletonResource,
 		string.format("%s/%s", self:getBook():getBaseFilename(), self.config.skeleton or Book.DEFAULT_SKELETON),
 		function(resource)
+			print(">>> LOADED", string.format("%s/%s", self:getBook():getBaseFilename(), self.config.skeleton or Book.DEFAULT_SKELETON))
 			self.skeleton = resource:getResource()
 
 			for _, animationConfig in ipairs(animationsConfig) do
@@ -588,7 +589,12 @@ function Book:new(bookConfig, resource, gameView)
 	do
 		for index, page in ipairs(bookConfig.pages or {}) do
 			local frontFace = index % 2 == 0 and "cw" or "ccw"
-			self:_prepareBookPage(page, frontFace)
+			self:_prepareBookPage({
+				skeleton = page.skeleton or (bookConfig.page and bookConfig.page.skeleton or nil),
+				models = page.models or (bookConfig.page and bookConfig.page.models or nil),
+				animations = page.animations or (bookConfig.page and bookConfig.page.animations or nil),
+				commands = page.commands or (bookConfig.page and bookConfig.page.commands or nil),
+			}, frontFace)
 		end
 
 		if #self.bookPages % 2 == 0 then
@@ -596,7 +602,11 @@ function Book:new(bookConfig, resource, gameView)
 			-- even if the last page is just blank.
 			local lastPage = bookConfig.pages[#bookConfig.pages]
 
-			self:_prepareBookPage({ models = lastPage.models, animations = lastPage.animations }, "ccw")
+			self:_prepareBookPage({
+				skeleton = lastPage.skeleton or (bookConfig.page and bookConfig.page.skeleton or nil),
+				models = lastPage.models or (bookConfig.page and bookConfig.page.models or nil),
+				animations = lastPage.animations or (bookConfig.page and bookConfig.page.animations or nil),
+			}, "ccw")
 		end
 	end
 end
@@ -658,12 +668,10 @@ function Book:_flip(reverse)
 			if lowPage <= #self.bookPages and lowPage >= 1 then
 				self.bookPages[lowPage]:stopAnimation("book-open-page")
 				self.bookPages[lowPage]:playAnimation("book-open-page", not reverse)
-				print(">>> play book-open-page", lowPage, "reverse?", Log.boolean(not reverse))
 			end
 
 			if highPage - 1 <= #self.bookPages and highPage - 1 >= 1 then
 				self.bookPages[highPage - 1]:playAnimation("book-open", not reverse)
-				print(">>> play book-open", highPage - 1, "reverse?", Log.boolean(not reverse))
 			end
 		else
 			if lowPage + 1 <= #self.bookPages and lowPage + 1 >= 1 then
@@ -799,8 +807,6 @@ function Book:update(delta)
 		local minPage = math.clamp(self.currentPage, 1, #self.bookPages) - 1
 		local maxPage = math.clamp(self.currentPage, 1, #self.bookPages) + 1
 
-		local wasUpdated = false
-
 		for i = 1, #self.bookPages do
 			local page = self.bookPages[i]
 
@@ -838,15 +844,6 @@ function Book:update(delta)
 						page:hide()
 					end
 				end
-			-- elseif i == maxPage + 1 and self.currentPage < self.previousPage then
-			-- 	local previousPage = self.bookPages[i - 1]
-			-- 	local previousPageDelta = previousPage and previousPage:getAnimationDelta()
-
-			-- 	if previousPageDelta and previousPageDelta < 0.9 then
-			-- 		page:show()
-			-- 	else
-			-- 		page:hide()
-			-- 	end
 			else
 				local previousPage = self.bookPages[i - 1]
 				local previousPageDelta = previousPage and previousPage:getAnimationDelta()
@@ -857,17 +854,6 @@ function Book:update(delta)
 				else
 					page:hide()
 				end
-			end
-
-			wasUpdated = wasUpdated or (v ~= page:getIsVisible())
-		end
-
-		if wasUpdated and false then
-			print("--- wasUpdated")
-			print(">>> currentPage", self.currentPage, "previousPage", self.previousPage)
-			print(">>> minPage", minPage, "maxPage", maxPage)
-			for _, page in ipairs(self.bookPages) do
-				print(">>>", _, "visible?", page:getIsVisible(), "anim:", page:getAnimationDelta())
 			end
 		end
 	end

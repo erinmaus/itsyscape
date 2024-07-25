@@ -13,11 +13,14 @@ local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Book = require "ItsyScape.Graphics.Book"
+local Color = require "ItsyScape.Graphics.Color"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Interface = require "ItsyScape.UI.Interface"
 local Label = require "ItsyScape.UI.Label"
+local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 
 local ReadBook = Class(Interface)
@@ -30,6 +33,13 @@ function ReadBook:new(...)
 	self:setPosition(0, 0)
 
 	self.camera = ThirdPersonCamera()
+
+	local panel = Panel()
+	panel:setStyle(PanelStyle({ color = { Color.fromHexString("#ffffff"):get() } }))
+	panel:setSize(width, height)
+	panel:setIsClickThrough(true)
+	self:addChild(panel)
+	
 
 	self.bookSceneSnippet = SceneSnippet()
 	self.bookSceneSnippet:setPosition(0, 0)
@@ -64,6 +74,9 @@ function ReadBook:new(...)
 	label:setText("Book Is Open")
 	self:addChild(label)
 
+	self.currentBookState = "spine"
+	self.ready = false
+
 	self.wasFDown = love.keyboard.isDown("f")
 	self.wasBDown = love.keyboard.isDown("b")
 end
@@ -75,9 +88,12 @@ function ReadBook:update(delta)
 	if not self.wasFDown and isFDown and not self.book:getIsOpeningOrClosing() then
 		if (self.book:getIsFlipping() and self.book:getWillFlipForwardCloseBook()) then
 			print(">>> waiting... try again!")
-		else
+		elseif self.ready then
 			print("> FORWARD!")
 			self.book:flipForward()
+		else
+			self.ready = true
+			print("> READY!")
 		end
 	end
 	self.wasFDown = isFDown
@@ -86,6 +102,9 @@ function ReadBook:update(delta)
 	if not self.wasBDown and isBDown and not self.book:getIsOpeningOrClosing() then
 		if (self.book:getIsFlipping() and self.book:getWillFlipBackwardCloseBook()) then
 			print(">>> waiting... try again!")
+		elseif self.book:getCurrentState() == Book.STATE_FRONT_COVER then
+			self.currentBookState = "spine"
+			self.ready = false
 		else
 			print("> BACKWARD!")
 			self.book:flipBackward()
@@ -96,7 +115,7 @@ function ReadBook:update(delta)
 	self.book:update(delta)
 	self.book:draw()
 
-	local currentState = self.book:getCurrentState()
+	local currentState = self.ready and self.book:getCurrentState() or self.currentBookState
 	if currentState ~= self.currentBookState then
 		self.previousBookState = self.currentBookState or currentState
 		self.currentBookState = currentState
@@ -111,7 +130,9 @@ function ReadBook:update(delta)
 		local mu = math.clamp(self.currentCameraTime / 0.25)
 
 		local currentRotation
-		if currentState == Book.STATE_FRONT_COVER then
+		if currentState == "spine" then
+			currentRotation = math.pi / 2
+		elseif currentState == Book.STATE_FRONT_COVER then
 			currentRotation = 0
 		elseif currentState == Book.STATE_BACK_COVER then
 			currentRotation = -math.pi
@@ -120,7 +141,9 @@ function ReadBook:update(delta)
 		end
 
 		local previousRotation
-		if previousState == Book.STATE_FRONT_COVER then
+		if currentState == "spine" then
+			previousRotation = math.pi / 2
+		elseif previousState == Book.STATE_FRONT_COVER then
 			previousRotation = 0
 		elseif previousState == Book.STATE_BACK_COVER then
 			previousRotation = -math.pi
@@ -139,11 +162,11 @@ function ReadBook:update(delta)
 	local width, height = self.bookSceneSnippet:getSize()
 	self.camera:copy(gameCamera)
 	self.camera:setVerticalRotation(rotation)
-	self.camera:setHorizontalRotation(math.pi / 12)
+	self.camera:setHorizontalRotation(math.pi / 4)
 	self.camera:setPosition(Vector.ZERO)
 	self.camera:setWidth(width)
 	self.camera:setHeight(height)
-	self.camera:setDistance(4)
+	self.camera:setDistance(3)
 	--self.bookSceneSnippet:getRoot():getTransform():setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Y, love.timer.getTime() / 3.14))
 end
 
