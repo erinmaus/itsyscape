@@ -26,19 +26,37 @@
 	},
 
 	"front": {
+		"skeleton": "Skeleton.lskel",
+
 		"models": [
 			{
 				"model": "../Common/Front.lmesh",
 				"texture": "Front.png"
 			}
+		],
+
+		"animations": [
+			{
+				"name": "book-open",
+				"animation": "Open.lanim"
+			}
 		]
 	},
 
 	"back": {
+		"skeleton": "Skeleton.lskel",
+
 		"models": [
 			{
 				"model": "../Common/Back.lmesh",
 				"texture": "Back.png"
+			}
+		],
+
+		"animations": [
+			{
+				"name": "book-open",
+				"animation": "Open.lanim"
 			}
 		]
 	},

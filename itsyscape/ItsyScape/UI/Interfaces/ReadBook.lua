@@ -87,13 +87,13 @@ function ReadBook:update(delta)
 	local isFDown = love.keyboard.isDown("f")
 	if not self.wasFDown and isFDown and not self.book:getIsOpeningOrClosing() then
 		if (self.book:getIsFlipping() and self.book:getWillFlipForwardCloseBook()) then
-			print(">>> waiting... try again!")
-		elseif self.ready then
-			print("> FORWARD!")
-			self.book:flipForward()
+			-- Nothing.
 		else
-			self.ready = true
-			print("> READY!")
+			if self.ready then
+				self.book:flipForward()
+			else
+				self.ready = true
+			end
 		end
 	end
 	self.wasFDown = isFDown
@@ -101,13 +101,16 @@ function ReadBook:update(delta)
 	local isBDown = love.keyboard.isDown("b")
 	if not self.wasBDown and isBDown and not self.book:getIsOpeningOrClosing() then
 		if (self.book:getIsFlipping() and self.book:getWillFlipBackwardCloseBook()) then
-			print(">>> waiting... try again!")
-		elseif self.book:getCurrentState() == Book.STATE_FRONT_COVER then
-			self.currentBookState = "spine"
-			self.ready = false
+			-- Nothing.
 		else
-			print("> BACKWARD!")
-			self.book:flipBackward()
+			if self.book:getCurrentState() == Book.STATE_FRONT_COVER then
+				self.currentBookState = "spine"
+				self.previousBookState = Book.STATE_FRONT_COVER
+				self.currentCameraTime = 0
+				self.ready = false
+			else
+				self.book:flipBackward()
+			end
 		end
 	end
 	self.wasBDown = isBDown
@@ -120,38 +123,47 @@ function ReadBook:update(delta)
 		self.previousBookState = self.currentBookState or currentState
 		self.currentBookState = currentState
 		self.currentCameraTime = 0
-		print(">>> reset", "prev", previousState, "curr", currentState)
 	end
 	local previousState = self.previousBookState or currentState
 
-	local rotation
+	local verticalRotation, horizontalRotation
 	do
 		self.currentCameraTime = (self.currentCameraTime or 0) + delta
 		local mu = math.clamp(self.currentCameraTime / 0.25)
 
-		local currentRotation
+		local currentVerticalRotation, currentHorizontalRotation
 		if currentState == "spine" then
-			currentRotation = math.pi / 2
+			currentVerticalRotation = math.pi / 2
+			currentHorizontalRotation = 0
 		elseif currentState == Book.STATE_FRONT_COVER then
-			currentRotation = 0
+			currentVerticalRotation = 0
+			currentHorizontalRotation = math.pi / 8
 		elseif currentState == Book.STATE_BACK_COVER then
-			currentRotation = -math.pi
+			currentVerticalRotation = -math.pi
+			currentHorizontalRotation = math.pi / 8
 		else
-			currentRotation = -math.pi / 2
+			currentVerticalRotation = -math.pi / 2
+			currentHorizontalRotation = math.pi / 5
 		end
 
-		local previousRotation
-		if currentState == "spine" then
-			previousRotation = math.pi / 2
+		local previousVerticalRotation, previousHorizontalRotation
+		if previousState == "spine" then
+			previousVerticalRotation = math.pi / 2
+			previousHorizontalRotation = 0
 		elseif previousState == Book.STATE_FRONT_COVER then
-			previousRotation = 0
+			previousVerticalRotation = 0
+			previousHorizontalRotation = math.pi / 8
 		elseif previousState == Book.STATE_BACK_COVER then
-			previousRotation = -math.pi
+			previousVerticalRotation = -math.pi
+			previousHorizontalRotation = math.pi / 8
 		else
-			previousRotation = -math.pi / 2
+			previousVerticalRotation = -math.pi / 2
+			previousHorizontalRotation = math.pi / 5
 		end
 
-		rotation = math.lerpAngle(previousRotation, currentRotation, Tween.sineEaseOut(mu))
+		verticalRotation = math.lerpAngle(previousVerticalRotation, currentVerticalRotation, Tween.sineEaseOut(mu))
+		horizontalRotation = math.lerpAngle(previousHorizontalRotation, currentHorizontalRotation, Tween.sineEaseOut(mu))
+
 		if mu >= 1 then
 			self.previousBookState = currentState
 		end
@@ -161,8 +173,8 @@ function ReadBook:update(delta)
 	local gameCamera = self:getView():getGameView():getCamera()
 	local width, height = self.bookSceneSnippet:getSize()
 	self.camera:copy(gameCamera)
-	self.camera:setVerticalRotation(rotation)
-	self.camera:setHorizontalRotation(math.pi / 4)
+	self.camera:setVerticalRotation(verticalRotation)
+	self.camera:setHorizontalRotation(horizontalRotation)
 	self.camera:setPosition(Vector.ZERO)
 	self.camera:setWidth(width)
 	self.camera:setHeight(height)

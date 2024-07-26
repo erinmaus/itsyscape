@@ -250,7 +250,6 @@ function Book.Part:loadAnimations(animationsConfig)
 		SkeletonResource,
 		string.format("%s/%s", self:getBook():getBaseFilename(), self.config.skeleton or Book.DEFAULT_SKELETON),
 		function(resource)
-			print(">>> LOADED", string.format("%s/%s", self:getBook():getBaseFilename(), self.config.skeleton or Book.DEFAULT_SKELETON))
 			self.skeleton = resource:getResource()
 
 			for _, animationConfig in ipairs(animationsConfig) do
@@ -513,7 +512,7 @@ function Book.Part:update(delta)
 	self:_updateVisibility()
 end
 
-function Book.Part:draw(commands)
+function Book.Part:draw(commands, idx)
 	if not self.canvasModel then
 		return
 	end
