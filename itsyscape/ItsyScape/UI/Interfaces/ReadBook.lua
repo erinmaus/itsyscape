@@ -143,7 +143,7 @@ function ReadBook:update(delta)
 			currentHorizontalRotation = math.pi / 8
 		else
 			currentVerticalRotation = -math.pi / 2
-			currentHorizontalRotation = math.pi / 5
+			currentHorizontalRotation = math.pi / 7
 		end
 
 		local previousVerticalRotation, previousHorizontalRotation
@@ -158,7 +158,7 @@ function ReadBook:update(delta)
 			previousHorizontalRotation = math.pi / 8
 		else
 			previousVerticalRotation = -math.pi / 2
-			previousHorizontalRotation = math.pi / 5
+			previousHorizontalRotation = math.pi / 7
 		end
 
 		verticalRotation = math.lerpAngle(previousVerticalRotation, currentVerticalRotation, Tween.sineEaseOut(mu))
