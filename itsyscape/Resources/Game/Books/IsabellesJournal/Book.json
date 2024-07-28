@@ -67,6 +67,16 @@
 		"commands": [],
 	},
 
+	"page": {
+		"models": [
+			{
+				"model": "../Common/Page.lmesh",
+				"texture": "Page.png",
+				"canvas": true
+			}
+		]
+	},
+
 	"pages": [
 		{},
 		{

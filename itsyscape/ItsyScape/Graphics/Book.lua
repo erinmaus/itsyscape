@@ -13,6 +13,7 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
 local FontResource = require "ItsyScape.Graphics.FontResource"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
+local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local SkeletonResource = require "ItsyScape.Graphics.SkeletonResource"
 local SkeletonAnimationResource = require "ItsyScape.Graphics.SkeletonAnimationResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
@@ -266,7 +267,7 @@ function Book.Part:loadAnimations(animationsConfig)
 		end)
 end
 
-function Book.Part:_drawText(command, width, height)
+function Book.Part:_drawText(pass, command, width, height)
 	if not (command.fontFamily and command.fontSize) then
 		return
 	end
@@ -302,8 +303,27 @@ function Book.Part:_drawText(command, width, height)
 	local originX = (command.originX or 0) / 100 * (textWidth or font:getResource():getWidth(value))
 	local originY = (command.originY or 0) / 100 * (#(lines or { value }) * font:getResource():getHeight())
 
-	love.graphics.setColor(color:get())
 	love.graphics.setFont(font:getResource())
+	if pass == RendererPass.PASS_OUTLINE then
+		love.graphics.setColor(0, 0, 0, 1)
+
+		for i = -1, 1, 1 do
+			for j = -1, 1, 1 do
+				if not (i == 0 and j == 0) then
+					if textWidth then
+						love.graphics.printf(value, x + i * 6, y + j * 6, textWidth, align, rotation, scaleX, scaleY, originX, originY)
+					else
+						love.graphics.print(value, x + i * 6, y + j * 6, rotation, scaleX, scaleY, originX, originY)
+					end
+				end
+			end
+		end
+
+		love.graphics.setColor(1, 1, 1, 1)
+	else
+		love.graphics.setColor(color:get())
+	end
+
 	if textWidth then
 		love.graphics.printf(value, x, y, textWidth, align, rotation, scaleX, scaleY, originX, originY)
 	else
@@ -311,7 +331,7 @@ function Book.Part:_drawText(command, width, height)
 	end
 end
 
-function Book.Part:_drawImage(command, width, height)
+function Book.Part:_drawImage(pass, command, width, height)
 	if not command.value then
 		return
 	end
@@ -339,8 +359,21 @@ function Book.Part:_drawImage(command, width, height)
 	local originX = (command.originX or 0) / 100 * image:getWidth()
 	local originY = (command.originY or 0) / 100 * image:getHeight()
 
+
+	local texture
+	if pass == RendererPass.PASS_OUTLINE then
+		texture = image:getHandle():getPerPassTexture(pass)
+		if texture == image:getResource() then
+			love.graphics.setShader(Book.WHITE_SHADER)
+		end
+	else
+		texture = image:getResource()
+	end
+
 	love.graphics.setColor(color:get())
-	love.graphics.draw(image:getResource(), x, y, rotation, scaleX, scaleY, originX, originY)
+	love.graphics.draw(texture, x, y, rotation, scaleX, scaleY, originX, originY)
+
+	love.graphics.setShader()
 end
 
 function Book.Part:getIsVisible()
@@ -524,7 +557,7 @@ function Book.Part:update(delta)
 	self:_updateVisibility()
 end
 
-function Book.Part:_draw(left, right, top, bottom, commands)
+function Book.Part:_draw(left, right, top, bottom, pass, commands)
 	love.graphics.push("all")
 
 	local width = right - left
@@ -540,9 +573,9 @@ function Book.Part:_draw(left, right, top, bottom, commands)
 
 	for _, command in ipairs(commands) do
 		if command.command == "text" then
-			self:_drawText(command, width, height)
+			self:_drawText(pass, command, width, height)
 		elseif command.command == "image" then
-			self:_drawText(command, width, height)
+			self:_drawText(pass, command, width, height)
 		end
 	end
 
@@ -593,23 +626,24 @@ function Book.Part:draw(commands)
 	love.graphics.clear(0, 0, 0, 0)
 	love.graphics.draw(model.texture:getResource())
 
-	self:_draw(left, right, top, bottom, commands)
+	self:_draw(left, right, top, bottom, RendererPass.PASS_NONE, commands)
 
 	if model.outlineCanvas then
 		love.graphics.setCanvas(model.outlineCanvas)
 		love.graphics.clear(0, 0, 0, 0)
 		love.graphics.draw(model.texture:getHandle():getPerPassTexture(TextureResource.PASSES.Outline))
 
-		love.graphics.setShader(Book.WHITE_SHADER)
-		self:_draw(left, right, top, bottom, commands)
+		self:_draw(left, right, top, bottom, RendererPass.PASS_OUTLINE, commands)
+	end
 
-		if love.keyboard.isDown("space") then
-			print(">>> outline", model.canvasTexture:getHandle():getPerPassTexture(TextureResource.PASSES.Outline))
-			print(">>> default", model.canvasTexture:getHandle():getPerPassTexture(-1000))
+	if love.keyboard.isDown("space") then
 		love.graphics.setCanvas()
-		model.outlineCanvas:newImageData():encode("png", string.format("%s_outline.png", self.type))
-		model.canvas:newImageData():encode("png", string.format("%s_default.png", self.type))
+
+		if model.outlineCanvas then
+			model.outlineCanvas:newImageData():encode("png", string.format("%s_outline.png", self.type))
 		end
+
+		model.canvas:newImageData():encode("png", string.format("%s_diffuse.png", self.type))
 	end
 
 	love.graphics.pop()
