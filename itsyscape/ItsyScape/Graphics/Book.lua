@@ -346,18 +346,45 @@ function Book.Part:_drawImage(pass, command, width, height)
 			function(resource)
 				self.resources[TextureResource][filename] = resource
 			end)
-	elseif not image or not image:getIsReady() then
+	end
+
+	if not image or not image:getIsReady() then
 		return
 	end
 
 	local x = (command.x or 0) / 100 * width
 	local y = (command.y or 0) / 100 * height
-	local scaleX = (command.scaleX or 100) / 100
-	local scaleY = (command.scaleY or 100) / 100
 	local rotation = math.rad(command.rotation or 0)
 	local color = Color.fromHexString(command.color or "ffffff")
 	local originX = (command.originX or 0) / 100 * image:getWidth()
 	local originY = (command.originY or 0) / 100 * image:getHeight()
+
+	local scaleX, scaleY
+	do
+		if command.width or command.height then
+			local relativeWidth = command.width and (command.width / 100) * width
+			local relativeHeight = command.height and (command.height / 100) * height
+
+			if relativeWidth then
+				scaleX = relativeWidth / image:getWidth()
+			end
+
+			if relativeHeight then
+				scaleY = relativeHeight / image:getHeight()
+			end
+
+			if not relativeWidth and relativeHeight then
+				scaleX = scaleY
+			end
+
+			if not relativeHeight and relativeWidth then
+				scaleY = scaleX
+			end
+		end
+
+		scaleX = (scaleX or 1) * (command.scaleX or 100) / 100
+		scaleY = (scaleY or 1) * (command.scaleY or 100) / 100
+	end
 
 
 	local texture
@@ -575,7 +602,7 @@ function Book.Part:_draw(left, right, top, bottom, pass, commands)
 		if command.command == "text" then
 			self:_drawText(pass, command, width, height)
 		elseif command.command == "image" then
-			self:_drawText(pass, command, width, height)
+			self:_drawImage(pass, command, width, height)
 		end
 	end
 

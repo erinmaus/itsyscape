@@ -255,7 +255,16 @@ function ResourceManager:_load(resourceType, filename, ...)
 
 		repeat
 			oldFilename = newFilename
-			newFilename = oldFilename:gsub("(.+)/.+/%.%./", "%1/")
+
+			local i, j = oldFilename:find("..", 1, true)
+			if i and j then
+				local prefix = oldFilename:sub(1, i - 1):gsub("^(.*)/.+$", "%1/")
+				local suffix = oldFilename:sub(j + 2)
+
+				newFilename = prefix .. suffix
+			else
+				newFilename = oldFilename
+			end
 		until oldFilename == newFilename
 
 		filename = newFilename
