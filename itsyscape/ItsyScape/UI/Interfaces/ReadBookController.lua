@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local json = require "json"
+local narrator = require "narrator.narrator"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
@@ -21,6 +22,14 @@ function ReadBookController:new(peep, director, resource)
 
 	local filename = string.format("Resources/Game/Books/%s/Book.json", resource.name)
 	self.bookConfig = json.decode(love.filesystem.read(filename))
+
+	local text = love.filesystem.read(string.format("Resources/Game/Books/%s/en_US.ink", resource.name)) or ""
+	self.text = narrator.init_story(narrator.parse_content(text))
+
+	local methods = Utility.Text.bind(peep)
+	for name, method in pairs(methods) do
+		self.text:bind(name, method)
+	end
 end
 
 function ReadBookController:_pullPart(partConfig)
@@ -47,7 +56,7 @@ function ReadBookController:_pullPart(partConfig)
 
 				if resourceType and resourceName then
 					local hasCondition = self:getPeep():getState():has(resourceType, resourceName, count, flags)
-					if command.invert then
+					if condition.invert then
 						hasCondition = not hasCondition
 					end
 
@@ -56,8 +65,34 @@ function ReadBookController:_pullPart(partConfig)
 			end
 		end
 
+		local overrides = { value = command.value }
+		if command.command == "text" then
+			self.text:jump_to(command.value)
+			if self.text:can_continue() then
+				local text = self.text:continue()
+				local result = {}
+				
+				for _, t in ipairs(text) do
+					table.insert(result, string.format("  %s", t.text))
+				end
+
+				overrides.value = table.concat(result, "\n")
+			end
+		end
+
+		local parsedCommand = {}
+		for key, value in pairs(command) do
+			if key == "condition" then
+				-- Nothing.
+			elseif overrides[key] then
+				parsedCommand[key] = overrides[key]
+			else
+				parsedCommand[key] = value
+			end
+		end
+
 		if isVisible then
-			table.insert(result.commands, command)
+			table.insert(result.commands, parsedCommand)
 		end
 	end
 

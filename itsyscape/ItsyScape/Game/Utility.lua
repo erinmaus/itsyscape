@@ -979,6 +979,40 @@ Utility.Text.BE = {
 	[false] = { present = 'is', past = 'was', future = 'will be' }
 }
 
+function Utility.Text.bind(peep, language)
+	local text = {
+		get_player_subject_pronoun = function(upperCase)
+			return Utility.Text.getPronoun(peep, Utility.Text.PRONOUN_SUBJECT, language, upperCase)
+		end,
+
+		get_player_subject_pronoun = function(upperCase)
+			return Utility.Text.getPronoun(peep, Utility.Text.PRONOUN_SUBJECT, language, upperCase)
+		end,
+
+		get_player_possessive_pronoun = function(upperCase)
+			return Utility.Text.getPronoun(peep, Utility.Text.PRONOUN_POSSESSIVE, language, upperCase)
+		end,
+
+		get_player_formal_address = function(upperCase)
+			return Utility.Text.getPronoun(peep, Utility.Text.FORMAL_ADDRESS, language, upperCase)
+		end,
+
+		get_english_present_be = function(upperCase)
+			return Utility.Text.getEnglishBe(peep, "present", upperCase)
+		end,
+
+		get_english_past_be = function(upperCase)
+			return Utility.Text.getEnglishBe(peep, "past", upperCase)
+		end,
+
+		get_english_future_be = function(upperCase)
+			return Utility.Text.getEnglishBe(peep, "future", upperCase)
+		end
+	}
+
+	return text
+end
+
 function Utility.Text.getPronouns(peep)
 	local gender = peep:getBehavior(GenderBehavior)
 	if gender then
@@ -1017,7 +1051,7 @@ function Utility.Text.getPronoun(peep, class, lang, upperCase)
 	return g
 end
 
-function Utility.Text.getEnglishBe(peep)
+function Utility.Text.getEnglishBe(peep, class, upperCase)
 	local g
 	do
 		local gender = peep:getBehavior(GenderBehavior)
@@ -1026,6 +1060,11 @@ function Utility.Text.getEnglishBe(peep)
 		end
 
 		g = g or Utility.Text.BE[true]
+	end
+	g = g[class] or (upperCase and "*Be" or "*be")
+
+	if upperCase then
+		g = g:sub(1, 1):upper() .. g:sub(2)
 	end
 
 	return g

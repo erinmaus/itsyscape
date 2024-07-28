@@ -21,7 +21,7 @@
 				"command": "text",
 				"fontFamily": "Serif/Bold",
 				"fontSize": 10,
-				"value": "Isabelle",
+				"value": "title",
 				"x": 50,
 				"y": 50,
 				"rotation": 90,
@@ -46,7 +46,7 @@
 				"command": "text",
 				"fontFamily": "Serif/Bold",
 				"fontSize": 10,
-				"value": "Isabelle",
+				"value": "title",
 				"x": 0,
 				"y": 12,
 				"width": 100,
@@ -78,129 +78,104 @@
 	},
 
 	"pages": [
-		{},
+		{
+			"id": 0,
+		},
+		{
+			"id": 1,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 3,
+					"value": "page_1",
+					"align": "justify",
+					"x": 5,
+					"y": 5,
+					"width": 80,
+					"color": "000000"
+				}
+			]
+		},
+		{
+			"id": 2,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 3,
+					"value": "page_2",
+					"align": "justify",
+					"x": 20,
+					"y": 5,
+					"width": 75,
+					"color": "000000"
+				}
+			]
+		},
+		{
+			"id": 3,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 3,
+					"value": "page_3",
+					"align": "justify",
+					"x": 5,
+					"y": 5,
+					"width": 80,
+					"color": "000000"
+				}
+			]
+		},
+		{
+			"id": 4,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 3,
+					"value": "page_4",
+					"align": "justify",
+					"x": 20,
+					"y": 5,
+					"width": 75,
+					"color": "000000"
+				}
+			]
+		},
+		{
+			"id": 5,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 3,
+					"value": "page_5",
+					"align": "justify",
+					"x": 5,
+					"y": 5,
+					"width": 80,
+					"color": "000000"
+				}
+			]
+		},
 		{
 			"id": 6,
 			"commands": [
 				{
 					"command": "text",
 					"fontFamily": "Serif/Bold",
-					"fontSize": 5,
-					"value": "I am an adventurer ee-i ee-i oh!",
-					"x": 15,
-					"y": 0,
-					"width": 50,
-					"rotation": 11.25,
-					"color": "000000"
-				},
-				{
-					"command": "image",
-					"condition": [
-						{
-							"resource": "Item",
-							"name": "Coins",
-							"flags": ["item-bank"],
-							"count": 999999
-						}
-					],
-
-					"value": "../../Items/Coins/Icon.png",
-					"x": 50,
-					"y": 50,
-					"originX": 50,
-					"originY": 50
-				}
-			]
-		},
-		{
-			"id": 7,
-			"commands": [
-				{
-					"command": "text",
-					"fontFamily": "Serif/Bold",
-					"fontSize": 5,
-					"value": "hello potato",
-					"x": 15,
-					"y": 0,
-					"width": 50,
+					"fontSize": 3,
+					"value": "page_6",
+					"align": "justify",
+					"x": 20,
+					"y": 5,
+					"width": 75,
 					"color": "000000"
 				}
 			]
 		},
-		{
-			"id": 8,
-			"commands": [
-				{
-					"command": "text",
-					"fontFamily": "Serif/Bold",
-					"fontSize": 5,
-					"value": "hello world!!!",
-					"x": 15,
-					"y": 0,
-					"width": 50,
-					"color": "000000"
-				}
-			]
-		},
-		{
-			"id": 9,
-			"commands": [
-				{
-					"command": "text",
-					"fontFamily": "Serif/Bold",
-					"fontSize": 5,
-					"value": "@@@@",
-					"x": 15,
-					"y": 0,
-					"width": 50,
-					"color": "000000"
-				}
-			]
-		},
-		{
-			"id": 10,
-			"commands": [
-				{
-					"command": "text",
-					"fontFamily": "Serif/Bold",
-					"fontSize": 5,
-					"value": "!!!",
-					"x": 15,
-					"y": 0,
-					"width": 50,
-					"color": "000000"
-				}
-			]
-		},
-		{
-			"id": 10,
-			"commands": [
-				{
-					"command": "text",
-					"fontFamily": "Serif/Bold",
-					"fontSize": 5,
-					"value": "!!! 2",
-					"x": 15,
-					"y": 0,
-					"width": 50,
-					"color": "000000"
-				}
-			]
-		},
-		{
-			"id": 10,
-			"commands": [
-				{
-					"command": "text",
-					"fontFamily": "Serif/Bold",
-					"fontSize": 5,
-					"value": "!!! 3",
-					"x": 15,
-					"y": 0,
-					"width": 50,
-					"color": "000000"
-				}
-			]
-		}
 	]
 }
