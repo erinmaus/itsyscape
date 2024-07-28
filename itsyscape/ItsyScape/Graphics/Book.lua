@@ -21,6 +21,14 @@ local SceneNode = require "ItsyScape.Graphics.SceneNode"
 
 local Book = Class()
 
+Book.WHITE_SHADER = love.graphics.newShader [[
+	vec4 effect(vec4 color, Image image, vec2 textureCoordinates, vec2 screenCoordinates)
+	{
+		float alpha = Texel(image, textureCoordinates).a;
+		return vec4(vec3(1.0), color.a * alpha);
+	}
+]]
+
 Book.PART_TYPE_BOOK  = "book"
 Book.PART_TYPE_FRONT = "front"
 Book.PART_TYPE_BACK  = "back"
@@ -289,14 +297,18 @@ function Book.Part:_drawText(command, width, height)
 	local rotation = math.rad(command.rotation or 0)
 	local color = Color.fromHexString(command.color or "000000")
 	local align = command.align or "left"
-	local textWidth = (command.width or 100) / 100 * width
-	local _, lines = font:getResource():getWrap(value, textWidth)
-	local originX = (command.originX or 0) / 100 * textWidth
-	local originY = (command.originY or 0) / 100 * (#lines * font:getResource():getHeight())
+	local textWidth = command.width and (command.width / 100 * width)
+	local lines = textWidth and select(2, font:getResource():getWrap(value, textWidth))
+	local originX = (command.originX or 0) / 100 * (textWidth or font:getResource():getWidth(value))
+	local originY = (command.originY or 0) / 100 * (#(lines or { value }) * font:getResource():getHeight())
 
 	love.graphics.setColor(color:get())
 	love.graphics.setFont(font:getResource())
-	love.graphics.printf(value, x, y, textWidth, align, rotation, scaleX, scaleY, originX, originY)
+	if textWidth then
+		love.graphics.printf(value, x, y, textWidth, align, rotation, scaleX, scaleY, originX, originY)
+	else
+		love.graphics.print(value, x, y, rotation, scaleX, scaleY, originX, originY)
+	end
 end
 
 function Book.Part:_drawImage(command, width, height)
@@ -512,7 +524,32 @@ function Book.Part:update(delta)
 	self:_updateVisibility()
 end
 
-function Book.Part:draw(commands, idx)
+function Book.Part:_draw(left, right, top, bottom, commands)
+	love.graphics.push("all")
+
+	local width = right - left
+	local height = bottom - top
+
+	love.graphics.origin()
+	if self.frontFace == "cw" then
+		love.graphics.translate(right, 0, 0)
+		love.graphics.scale(-1, 1, 1)
+	else
+		love.graphics.translate(left, top, 0)
+	end
+
+	for _, command in ipairs(commands) do
+		if command.command == "text" then
+			self:_drawText(command, width, height)
+		elseif command.command == "image" then
+			self:_drawText(command, width, height)
+		end
+	end
+
+	love.graphics.pop()
+end
+
+function Book.Part:draw(commands)
 	if not self.canvasModel then
 		return
 	end
@@ -533,37 +570,48 @@ function Book.Part:draw(commands, idx)
 			model.texture:getHeight())
 		model.canvas = canvas
 		model.canvasTexture = TextureResource(canvas)
+
+		local outlinePerPassTexture = model.texture:getHandle():getPerPassTexture(TextureResource.PASSES.Outline)
+		if outlinePerPassTexture and outlinePerPassTexture ~= model.texture:getResource() then
+			local outlineCanvas = love.graphics.newCanvas(
+				model.texture:getWidth(),
+				model.texture:getHeight())
+			model.outlineCanvas = outlineCanvas
+			model.canvasTexture:getHandle():setPerPassTexture(TextureResource.PASSES.Outline, model.outlineCanvas)
+		end
 	end
 
 	local left = model.canvas:getWidth() * model.textureCoordinates.left
 	local right = model.canvas:getWidth() * model.textureCoordinates.right
 	local top = model.canvas:getHeight() * model.textureCoordinates.top
 	local bottom = model.canvas:getHeight() * model.textureCoordinates.bottom
-	local width = right - left
-	local height = bottom - top
 
 	love.graphics.push("all")
-
 	love.graphics.origin()
-	if self.frontFace == "cw" then
-		love.graphics.translate(right, 0, 0)
-		love.graphics.scale(-1, 1, 1)
-	else
-		love.graphics.translate(left, top, 0)
-	end
 
 	love.graphics.setCanvas(model.canvas)
-	if model.texture and model.texture:getIsReady() then
-		love.graphics.draw(model.texture:getResource())
-	end
+	love.graphics.clear(0, 0, 0, 0)
+	love.graphics.draw(model.texture:getResource())
 
-	for _, command in ipairs(commands) do
-		if command.command == "text" then
-			self:_drawText(command, width, height)
-		elseif command.command == "image" then
-			self:_drawText(command, width, height)
+	self:_draw(left, right, top, bottom, commands)
+
+	if model.outlineCanvas then
+		love.graphics.setCanvas(model.outlineCanvas)
+		love.graphics.clear(0, 0, 0, 0)
+		love.graphics.draw(model.texture:getHandle():getPerPassTexture(TextureResource.PASSES.Outline))
+
+		love.graphics.setShader(Book.WHITE_SHADER)
+		self:_draw(left, right, top, bottom, commands)
+
+		if love.keyboard.isDown("space") then
+			print(">>> outline", model.canvasTexture:getHandle():getPerPassTexture(TextureResource.PASSES.Outline))
+			print(">>> default", model.canvasTexture:getHandle():getPerPassTexture(-1000))
+		love.graphics.setCanvas()
+		model.outlineCanvas:newImageData():encode("png", string.format("%s_outline.png", self.type))
+		model.canvas:newImageData():encode("png", string.format("%s_default.png", self.type))
 		end
 	end
+
 	love.graphics.pop()
 end
 

@@ -2,13 +2,33 @@
 	"book": {
 		"models": [
 			{
-				"model": "../Common/Book.lmesh",
+				"model": "../Common/Pages.lmesh",
+				"texture": "Pages.png"
+			},
+			{
+				"model": "Book.lmesh",
 				"texture": "Book.png"
 			},
 			{
-				"model": "../Common/Pages.lmesh",
-				"texture": "Pages.png"
-			}
+				"model": "Spine.lmesh",
+				"texture": "Spine.png",
+				"canvas": true
+			},
+		],
+
+		"commands": [
+			{
+				"command": "text",
+				"fontFamily": "Serif/Bold",
+				"fontSize": 10,
+				"value": "Isabelle",
+				"x": 50,
+				"y": 50,
+				"rotation": 90,
+				"originX": 50,
+				"originY": 50,
+				"color": "ffd42a"
+			},
 		]
 	},
 
@@ -26,11 +46,12 @@
 				"command": "text",
 				"fontFamily": "Serif/Bold",
 				"fontSize": 10,
-				"value": "book.isabelle_journal.front.title",
+				"value": "Isabelle",
 				"x": 0,
-				"y": 15,
+				"y": 12,
 				"width": 100,
-				"align": "center"
+				"align": "center",
+				"color": "000000"
 			}
 		]
 	},
@@ -50,18 +71,12 @@
 		{},
 		{
 			"id": 6,
-			"condition": [
-				{
-					"resource": "KeyItem",
-					"name": "CalmBeforeTheStorm_IsabelleDefeated"
-				}
-			],
 			"commands": [
 				{
 					"command": "text",
 					"fontFamily": "Serif/Bold",
 					"fontSize": 5,
-					"value": "book.isabelle_journal.page6.paragraph1",
+					"value": "I am an adventurer ee-i ee-i oh!",
 					"x": 15,
 					"y": 0,
 					"width": 50,
@@ -72,10 +87,9 @@
 					"command": "image",
 					"condition": [
 						{
-							"invert": true,
 							"resource": "Item",
 							"name": "Coins",
-							"flags": ["item-inventory"],
+							"flags": ["item-bank"],
 							"count": 999999
 						}
 					],
