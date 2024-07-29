@@ -1,6 +1,7 @@
 == title ==
 Isabelle
 
+
 == page_1 ==
 
 The Amulet of Yendor. An artifact of the most divine that grants godhood to those who behold it. Enchanted with the blackmelt of Yendor during the ritual that banished the Old Ones - including our Lord Bastiel, praise Him - from this Realm to the others so far away...
