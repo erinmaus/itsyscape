@@ -4,6 +4,8 @@ Isabelle
 
 == page_1 ==
 
+{get_relative_date_from_birthday(17, 2, -1)}
+
 The Amulet of Yendor. An artifact of the most divine that grants godhood to those who behold it. Enchanted with the blackmelt of Yendor during the ritual that banished the Old Ones - including our Lord Bastiel, praise Him - from this Realm to the others so far away...
 
 But that is all I know. The fragments I obtained from hundreds of pieces of the Necronomicon reveal little else. I know more about the nature of the soul than this amulet!
