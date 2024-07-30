@@ -1,51 +1,120 @@
-== title ==
-Isabelle
+VAR default_style = "<style fontFamily:string='Serif/Regular' fontSize:number='3' align:string='left' color:string='000000' />"
 
+== spine_title ==
+<style fontFamily='Serif/Bold' fontSize='10' align='center' />
+<text x='50' y='50' rotation='90' originX='50' originY='50' color:string='ffd42a'>Isabelle</text>
+
+== front_cover_title ==
+<style fontFamily='Serif/Bold' fontSize='10' align='center' />
+<text x='0' y='12' width='95' color:string='000000'>Isabelle</text>
+
+== function calendar_page(current_time, month) ==
+~ temp year = get_date_component(current_time, "year")
+~ temp calendar_time = to_current_time(year, month, 1)
+~ temp is_long_calendar = common_calendar_get_day(29, calendar_time) != "x"
+~ temp format = "%monthName, %year %age"
+
+{default_style}
+
+{format_date(format, calendar_time)}
+
+<style align='center' />
+<text x='10' y='20' width='10'>F</text>
+<text x='20' y='20' width='10'>M</text>
+<text x='30' y='20' width='10'>T</text>
+<text x='40' y='20' width='10'>T</text>
+<text x='50' y='20' width='10'>W</text>
+<text x='60' y='20' width='10'>E</text>
+<text x='70' y='20' width='10'>Y</text>
+
+<text x='10' y='25' width='10'>{common_calendar_get_day(1, calendar_time)}</text>
+<text x='20' y='25' width='10'>{common_calendar_get_day(2, calendar_time)}</text>
+<text x='30' y='25' width='10'>{common_calendar_get_day(3, calendar_time)}</text>
+<text x='40' y='25' width='10'>{common_calendar_get_day(4, calendar_time)}</text>
+<text x='50' y='25' width='10'>{common_calendar_get_day(5, calendar_time)}</text>
+<text x='60' y='25' width='10'>{common_calendar_get_day(6, calendar_time)}</text>
+<text x='70' y='25' width='10'>{common_calendar_get_day(7, calendar_time)}</text>
+
+<text x='10' y='30' width='10'>{common_calendar_get_day(8, calendar_time)}</text>
+<text x='20' y='30' width='10'>{common_calendar_get_day(9, calendar_time)}</text>
+<text x='30' y='30' width='10'>{common_calendar_get_day(10, calendar_time)}</text>
+<text x='40' y='30' width='10'>{common_calendar_get_day(11, calendar_time)}</text>
+<text x='50' y='30' width='10'>{common_calendar_get_day(12, calendar_time)}</text>
+<text x='60' y='30' width='10'>{common_calendar_get_day(13, calendar_time)}</text>
+<text x='70' y='30' width='10'>{common_calendar_get_day(14, calendar_time)}</text>
+
+<text x='10' y='35' width='10'>{common_calendar_get_day(15, calendar_time)}</text>
+<text x='20' y='35' width='10'>{common_calendar_get_day(16, calendar_time)}</text>
+<text x='30' y='35' width='10'>{common_calendar_get_day(17, calendar_time)}</text>
+<text x='40' y='35' width='10'>{common_calendar_get_day(18, calendar_time)}</text>
+<text x='50' y='35' width='10'>{common_calendar_get_day(19, calendar_time)}</text>
+<text x='60' y='35' width='10'>{common_calendar_get_day(20, calendar_time)}</text>
+<text x='70' y='35' width='10'>{common_calendar_get_day(21, calendar_time)}</text>
+
+<text x='10' y='40' width='10'>{common_calendar_get_day(22, calendar_time)}</text>
+<text x='20' y='40' width='10'>{common_calendar_get_day(23, calendar_time)}</text>
+<text x='30' y='40' width='10'>{common_calendar_get_day(24, calendar_time)}</text>
+<text x='40' y='40' width='10'>{common_calendar_get_day(25, calendar_time)}</text>
+<text x='50' y='40' width='10'>{common_calendar_get_day(26, calendar_time)}</text>
+<text x='60' y='40' width='10'>{common_calendar_get_day(27, calendar_time)}</text>
+<text x='70' y='40' width='10'>{common_calendar_get_day(28, calendar_time)}</text>
+
+{ is_long_calendar: <text x='10' y='45' width='10'>{common_calendar_get_day(29, calendar_time)}</text> }
+{ is_long_calendar: <text x='20' y='45' width='10'>{common_calendar_get_day(30, calendar_time)}</text> }
+{ is_long_calendar: <text x='30' y='45' width='10'>{common_calendar_get_day(31, calendar_time)}</text> }
+{ is_long_calendar: <text x='40' y='45' width='10'>{common_calendar_get_day(32, calendar_time)}</text> }
+{ is_long_calendar: <text x='50' y='45' width='10'>{common_calendar_get_day(33, calendar_time)}</text> }
+{ is_long_calendar: <text x='60' y='45' width='10'>{common_calendar_get_day(34, calendar_time)}</text> }
+{ is_long_calendar: <text x='70' y='45' width='10'>{common_calendar_get_day(35, calendar_time)}</text> }
 
 == page_1 ==
-
-{get_relative_date_from_birthday(17, 2, -1)}
-
-The Amulet of Yendor. An artifact of the most divine that grants godhood to those who behold it. Enchanted with the blackmelt of Yendor during the ritual that banished the Old Ones - including our Lord Bastiel, praise Him - from this Realm to the others so far away...
-
-But that is all I know. The fragments I obtained from hundreds of pieces of the Necronomicon reveal little else. I know more about the nature of the soul than this amulet!
-
-The past years of my quest have have led to more questions than answers. Where is this amulet? I pray to my Lord Bastiel every night to find it. To rid humanity of the stink of The Empty King and shine Lord Bastiel's light upon the Realm once more.
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 1)}
 
 == page_2 ==
-
-Lord Bastiel, praise Him, answered my prayers and I foresaw the location of the amulet in my dreams. In the ruins of Ginsville, unattended and lost in the inner sanctum of the Sistine of the Simulacrum, it calls for me across space... across time.
-
-Today is the day I begin on my quest to steal this amulet from the clutches of The Empty King and Their accursed Divine Bureaucracy. Maybe, just maybe, humanity will be able to overthrow Them... Once and for all.
-
-And yet, Orlando must remain ignorant... I shall not burden him with my quest. If I fail, our bloodline must continue.
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 2)}
 
 == page_3 ==
-
-Bless the Earl of Rumbridge - he has connected me to the fabled secret society. They can briefly open a wormhole into the Sistine, bypassing The Empty King's seemingly insurmountable defenses using their eldritch technology...
-
-I fear those who can bend reality to their will, those who have mastered Antilogika... But this is no time for fear. This is time to act. I have gathered some of my finest comrades to aide me on this quest.
-
-We sail for the fabled Skull Island at dawn. From there, we shall enter the wormhole and take what rightfully belongs to humanity back from Them and Their dictatorship.
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 3)}
 
 == page_4 ==
-
-We have arrived at Skull Island. The secret society welcomed us with open arms. Their technology baffles my mind. The Czar showed me the Intermechanical Needle, the device that will take us to the inner sanctum of the Sistine.
-
-Our plan is certain to succeed. The secret society's intel confirms the location of the amulet. There is a brief moment at dusk where we can take back the amulet.
-
-Once the amulet is in my possession, The Empty King will be no threat. Nothing will be a threat to me anymore. I shall lead humanity to a glorious morning and earn the favor of Lord Bastiel, praise Him.
-
-Tonight, the sun sets on the Realm. Tomorrow, the sun rises on the corpse of The Empty King.
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 4)}
 
 == page_5 ==
-
-We failed. The First Consul arrived as soon as the portal closed.
-
-The amulet... It was kursed. As soon as I touched it, my heart stopped. I am so weak I can barely write of my failure. I yearn for death, but cannot die.
-
-But... somehow, I can move through space with just mere thought. I begged Lord Bastiel, praise Him, to return to the Intermechanical Needle with my comrades and... we returned. Yet, they had been slain in just those mere seconds! How?! Bless their souls, Bastiel.
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 5)}
 
 == page_6 ==
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 6)}
 
-The secret society vowed to help me exact revenge. With my newfound power, I discovered a mysterious agent of chaos... {get_player_subject_pronoun(true)} {get_english_future_be()} most useful to us.
+== page_7 ==
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 7)}
+
+== page_8 ==
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 8)}
+
+== page_9 ==
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 9)}
+
+== page_10 ==
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 10)}
+
+== page_11 ==
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 11)}
+
+== page_12 ==
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 12)}
+
+== page_13 ==
+~ temp current_time = get_current_time()
+{calendar_page(current_time, 13)}

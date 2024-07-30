@@ -1,7 +1,6 @@
 _LOG_SUFFIX = "client"
 require "bootstrap"
 
-
 if _MOBILE then
 	local p = print
 
