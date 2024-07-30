@@ -778,11 +778,10 @@ Utility.Time.INGAME_RITUAL_INFO = {
 Utility.Time.BIRTHDAY_TIME = os.time(Utility.Time.BIRTHDAY_INFO)
 
 Utility.Time.DAYS = {
-	-- TODO MAKE THESE BETTER
 	"Featherday", -- Sunday
 	"Myreday",    -- Monday
 	"Theoday",    -- Tuesday
-	"Wusselday",  -- Wednesday
+	"Brakday" ,   -- Wednesday
 	"Takday",     -- Thursday
 	"Enderday",   -- Friday,
 	"Yenderday"   -- Saturday
@@ -797,32 +796,42 @@ Utility.Time.SHORT_AGE = {
 }
 
 Utility.Time.MONTHS = {
-	"Basturian",
-	"Emptorius",
-	"Godsun",
-	"Prisius",
-	"Gammonbreak",
-	"Yohnus",
 	"Fallsun",
+	"Emptorius",
+	"Longnights",
+	"Basturian",
+	"Godsun",
+	"Yohnus",
+	"Emberdawn",
+	"Prisius",
+	"Linshine",
+	"Chillbreak",
+	"Fogsden",
+	"Darksere",
 	"Yendermonth"
 }
 
 Utility.Time.DAYS_IN_INGAME_MONTH = {
-	51,
+	30,
 	25,
-	50,
-	51,
-	50,
-	51,
-	50,
-	49
+	31,
+	28,
+	29,
+	31,
+	29,
+	30,
+	29,
+	29,
+	28,
+	31,
+	27
 }
 
 Utility.Time.NUM_DAYS_PER_INGAME_YEAR = 377
 
 function Utility.Time._getIngameYearMonthDay(days)
 	local daysSinceRitualYear = Utility.Time.INGAME_BIRTHDAY_INFO.year * Utility.Time.NUM_DAYS_PER_INGAME_YEAR + days
-	local year = math.floor(daysSinceRitualYear / Utility.Time.NUM_DAYS_PER_INGAME_YEAR) + 1
+	local year = math.floor(daysSinceRitualYear / Utility.Time.NUM_DAYS_PER_INGAME_YEAR)
 
 	local day = daysSinceRitualYear - (math.floor(daysSinceRitualYear / Utility.Time.NUM_DAYS_PER_INGAME_YEAR) * Utility.Time.NUM_DAYS_PER_INGAME_YEAR) + 1
 	local dayOfWeek = daysSinceRitualYear % #Utility.Time.DAYS + 1
@@ -855,7 +864,9 @@ function Utility.Time._getIngameYearMonthDay(days)
 		month = month,
 		day = day,
 		age = age,
-		dayOfWeek = dayOfWeek
+		dayOfWeek = dayOfWeek,
+		dayOfWeekName = Utility.Time.DAYS[dayOfWeek],
+		monthName = Utility.Time.MONTHS[month]
 	}
 end
 
@@ -870,10 +881,10 @@ function Utility.Time.toCurrentTime(year, month, day)
 	day = day or 1
 
 	local yearDifference = year - Utility.Time.INGAME_BIRTHDAY_INFO.year
+	local offsetDays = math.abs(yearDifference) * Utility.Time.NUM_DAYS_PER_INGAME_YEAR + (day - 1)
 
-	local offsetDays = (math.abs(yearDifference) + 1) * Utility.Time.NUM_DAYS_PER_INGAME_YEAR + (day - 1)
 	for i = 1, month - 1 do
-		offsetDays = offsetDays + Utility.Time.DAYS_IN_INGAME_MONTH[month]
+		offsetDays = offsetDays + Utility.Time.DAYS_IN_INGAME_MONTH[i]
 	end
 
 	offsetDays = offsetDays * math.sign(yearDifference)
@@ -943,6 +954,7 @@ function Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, year
 		end
 
 		yearMonthDay.dayOfWeek = daysSinceRitualYear % #Utility.Time.DAYS + 1
+		yearMonthDay.dayOfWeekName = Utility.Time.DAYS[yearMonthDay.dayOfWeek]
 	end
 
 	if yearMonthDay.year <= 0 then
@@ -951,6 +963,8 @@ function Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, year
 	else
 		yearMonthDay.age = Utility.Time.AGE_AFTER_RITUAL
 	end
+
+	yearMonthDay.monthName = Utility.Time.MONTHS[yearMonthDay.month]
 
 	return yearMonthDay
 end
@@ -1177,6 +1191,162 @@ Utility.Text.BE = {
 	[false] = { present = 'is', past = 'was', future = 'will be' }
 }
 
+function Utility.Text._find(text, pattern, offset)
+	local i, j = text:sub(offset):find(pattern)
+	if i and j then
+		return i + offset - 1, j + offset - 1
+	end
+
+	return nil, nil
+end
+
+function Utility.Text.parse(text, rootTag)
+	local _find = Utility.Text._find
+
+	local rootElement = {
+		tag = rootTag,
+		attributes = {},
+		children = {}
+	}
+
+	local elementStack = { rootElement }
+
+	local previousI = 1
+	local i, j = 0
+	repeat
+		i, j = text:find("</?([%w_-][%w%d_-]*)", previousI)
+
+		if i and j then
+			if i > previousI then
+				local fragment = text:sub(previousI, i - 1)
+
+				table.insert(elementStack[#elementStack].children, fragment)
+			end
+
+			local elementTag = text:sub(i + 1, j)
+
+			if elementTag:sub(1, 1) == "/" then
+				elementTag = elementTag:sub(2)
+
+				local element = elementStack[#elementStack]
+				if element.tag ~= elementTag then
+					error(string.format("expected ending element tag '%s', got '%s'", element.tag, elementTag))
+				end
+
+				local endTagBracket = text:sub(j + 1, j + 1)
+				if endTagBracket ~= ">" then
+					error(string.format("expected '>' to end element tag '%s', got '%s'", elementTag, endTagBracket))
+				end
+
+				table.remove(elementStack, #elementStack)
+			else
+				local element = { attributes = {}, children = {}, tag = elementTag }
+
+				if #elementStack >= 1 then
+					local parent = elementStack[#elementStack]
+
+					element.parent = parent
+					table.insert(parent.children, element)
+				end
+
+				table.insert(elementStack, element)
+			end
+
+			local attributeJ, attributeI = j
+			repeat
+				local endTagI, endTagJ = _find(text, "^%s*/?>\n?", attributeJ + 1)
+				attributeI, attributeJ = _find(text, "^%s+([%w_-][%w%d_-]*)", attributeJ + 1)
+
+				if attributeI and attributeJ then
+					local attribute = text:sub(attributeI + 1, attributeJ)
+					local typeName = text:sub(attributeJ + 1):match("^:(%w+)=")
+
+					local value
+					do
+						local valueStart = attributeJ + #(typeName or "") + (typeName and 2 or 1)
+						if text:sub(valueStart, valueStart) ~= "=" then
+							value = true
+							typeName = typeName or "boolean"
+						else
+							local valueI, valueJ = _find(text, "^=\'[^\']+\'", valueStart)
+							if valueI and valueJ then
+								while text:sub(valueJ - 1, valueJ - 1) == "\\" do
+									local _
+									_, valueJ = _find(text, "^[^\']+\'", valueJ + 1)
+
+									if not valueJ then
+										error(string.format("value for attribute '%s' in element tag '%s' unterminated", attribute, elementStack[#elementStack].tag))
+									else
+										valueJ = valueJ + 1
+									end
+								end
+
+								value = text:sub(valueI + 2, valueJ - 1):gsub("\\\'", "\'")
+
+								attributeJ = valueJ
+								j = valueJ
+							else
+								error(string.format("attribute '%s' in element tag '%s' malformed", attribute, elementStack[#elementStack].tag))
+							end
+						end
+					end
+
+					if value ~= nil then
+						if typeName then
+							if typeName == "number" then
+								value = tonumber(value) or nil
+							elseif typeName == "string" then
+								value = tostring(value)
+							elseif typeName == "boolean" then
+								if type(value) == "string" then
+									if value:lower() == "true" then
+										value = true
+									elseif value:lower() == "false" then
+										value = false
+									end
+								else
+									value = not not value
+								end
+							end
+						else
+							value = tonumber(value) or value
+							typeName = type(value)
+						end
+
+						local element = elementStack[#elementStack]
+						if element.attributes[attribute] ~= nil then
+							error(string.format("duplicate attribute '%s' in element tag '%s'", attribute, element.tag))
+						else
+							element.attributes[attribute] = { value = value, type = typeName or "?" }
+						end
+					end
+				elseif endTagI and endTagJ then
+					if text:sub(endTagI, endTagJ):match("^%s/>") then
+						table.remove(elementStack, #elementStack)
+					end
+
+					j = endTagJ + 1
+					break
+				else
+					error(string.format("element tag '%s' unterminated", elementStack[#elementStack].tag))
+				end
+			until not attributeI
+
+			previousI = j
+		end
+	until not i
+
+	if previousI and previousI + 1 < #text then
+		table.insert(rootElement.children, text:sub(previousI + 1))
+	end
+
+	if #elementStack > 1 then
+		error(string.format("unmatched element tag '%s'", elementStack[#elementStack].tag))
+	end
+
+	return rootElement
+end
+
 function Utility.Text.bind(peep, language)
 	local TIME_FORMAT = {
 		year = function(yearMonthDay)
@@ -1211,8 +1381,20 @@ function Utility.Text.bind(peep, language)
 			return yearMonthDay.day
 		end,
 
+		dayWithSpacePadding = function(yearMonthDay)
+			return string.format("% 2d", yearMonthDay.day)
+		end,
+
+		dayWithNumberPadding = function(yearMonthDay)
+			return string.format("%02d", yearMonthDay.day)
+		end,
+
 		dayOfWeek = function(yearMonthDay)
 			return yearMonthDay.dayOfWeek
+		end,
+
+		dayOfWeekName = function(yearMonthDay)
+			return yearMonthDay.dayOfWeekName
 		end,
 
 		month = function(yearMonthDay)
@@ -1272,8 +1454,16 @@ function Utility.Text.bind(peep, language)
 		end
 
 		function text.get_relative_date_from_time(dayOffset, monthOffset, yearOffset, format, currentTime)
-			local format = format or "%monthName %day, %yearOptionalShortAge"
 			local yearMonthDay = Utility.Time.offsetIngameTime(currentTime or Utility.Time.BIRTHDAY_TIME, dayOffset, monthOffset, yearOffset)
+			local newTime = Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+
+			return text.format_date(format, newTime)
+		end
+
+		function text.format_date(format, currentTime)
+			local format = format or "%monthName %day, %yearOptionalShortAge"
+			local yearMonthDay = Utility.Time.getIngameYearMonthDay(currentTime or Utility.Time.BIRTHDAY_TIME)
+
 			return format:gsub("%%(%w+)", function(key)
 				local func = TIME_FORMAT[key]
 				if not func then
@@ -1282,6 +1472,45 @@ function Utility.Text.bind(peep, language)
 
 				return func(yearMonthDay)
 			end)
+		end
+
+		function text.get_start_time()
+			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+			return Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
+		end
+
+		function text.get_current_time()
+			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+			return Utility.Time.getAndUpdateTime(rootStorage)
+		end
+
+		function text.get_birthday_time()
+			return Utility.Time.BIRTHDAY_TIME
+		end
+
+		function text.get_date_component(currentTime, component)
+			return Utility.Time.getIngameYearMonthDay(currentTime)[component]
+		end
+
+		function text.to_current_time(year, month, day)
+			return Utility.Time.toCurrentTime(year, month, day)
+		end
+
+		function text.offset_current_time(currentTime, dayOffset, monthOffset, yearOffset)
+			local yearMonthDay = Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, yearOffset)
+			return Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+		end
+
+		function text.get_num_days_in_month(month)
+			return Utility.Time.DAYS_IN_INGAME_MONTH[month]
+		end
+
+		function text.get_month_name(month)
+			return Utility.Time.MONTHS[month]
+		end
+
+		function text.get_day_name(day)
+			return Utility.Time.DAYS[day]
 		end
 	end
 
