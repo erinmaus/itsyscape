@@ -46,7 +46,7 @@ end
 
 function CallStackFrame:jump(container, index)
     self._container = container
-    self._index = index or 1
+    self._index = index or (container and 1 or nil)
 end
 
 function CallStackFrame:canLeave(divertType)

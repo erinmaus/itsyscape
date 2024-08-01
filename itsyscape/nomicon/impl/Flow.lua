@@ -3,6 +3,7 @@ local Choice = require(PATH .. "Choice")
 local Class = require(PATH .. "Class")
 local Constants = require(PATH .. "Constants")
 local Thread = require(PATH .. "Thread")
+local Utility = require(PATH .. "Utility")
 local Value = require(PATH .. "Value")
 local ValueStack = require(PATH .. "ValueStack")
 
@@ -21,12 +22,27 @@ function Flow:new(executor, name)
     self._choices = {}
     self._choiceCount = 0
 
+    self._tags = {}
+    self._currentText = ""
+
     self._threads = { Thread(executor) }
     self._top = 1
 end
 
 function Flow:getName()
     return self._name
+end
+
+function Flow:getNumTags()
+    return #self._tags
+end
+
+function Flow:getTag(index)
+    return self._tags[index]
+end
+
+function Flow:getText()
+    return self._currentText
 end
 
 function Flow:getEvaluationStack()
@@ -199,6 +215,23 @@ function Flow:stop()
 
     self:getCurrentThread():getCallStack():clear()
     self:clearChoices()
+end
+
+function Flow:continue()
+    Utility.clearTable(self._tags)
+
+    local index = self._outputStack:getCount()
+    while index >= 1 and self._outputStack:peek(index):cast(Constants.TYPE_STRING) == "\n" do
+        index = index - 1
+    end
+
+    while index >= 1 and self._outputStack:peek(index):is(Constants.TYPE_TAG) do
+        table.insert(self._tags, self._outputStack:peek(index):cast(Constants.TYPE_STRING))
+        index = index - 1
+    end
+
+    local text = self._outputStack:toString(1, index)
+    self._currentText = text:gsub("^[\n\r%s]*", ""):gsub("[\n\r%s*]*[\n\r]?$"):gsub("([\t%s][\t%s]*)", " ")
 end
 
 return Flow

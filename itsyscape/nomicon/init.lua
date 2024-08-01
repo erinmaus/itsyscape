@@ -4,7 +4,7 @@ local PATH = (...):gsub("%.init$", "")
 
 local nomicon = {
 	_VERSION = "1.0",
-	_DESCRIPTION = "",
+	_DESCRIPTION = "Runs Ink JSON.",
 	_LICENSE = [[
 		Mozilla Public License Version 2.0
 		==================================

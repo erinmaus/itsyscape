@@ -414,6 +414,27 @@ function Executor:_advancePointer()
     if thread:hasDivertedPointer() then
         self:_divert()
     end
+
+    local container, index = thread:getCurrentPointer()
+    index = index + 1
+
+    while index > container:getCount() do
+        local parent = container:getParent()
+        if not parent then
+            container, index = nil, nil
+            break
+        end
+
+        if type(container:getName()) ~= "number" then
+            container, index = nil, nil
+            break
+        end
+
+        container = parent
+        index = container:getName() + 1
+    end
+
+    thread:getCallStack():jump(container, index)
 end
 
 function Executor:_execute()
@@ -429,9 +450,10 @@ function Executor:_execute()
 end
 
 function Executor:step()
+    self:getOutputStack():clear()
+
     self:_advancePointer()
     self:_execute()
-    self:_
 end
 
 function Executor:canContinue()
@@ -448,7 +470,15 @@ function Executor:continue()
                 self:choose(choice)
             end
         end
+
+        local top = self:getOutputStack():peek()
+        if top:is(Constants.TYPE_STRING) and top:getValue() == "\n" then
+            break
+        end
     end
+
+    self._currentFlow:continue()
+    return self._currentFlow:getText()
 end
 
 return Executor

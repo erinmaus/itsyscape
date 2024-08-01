@@ -112,6 +112,10 @@ function ValueStack:unpack(startIndex, stopIndex)
     return (table.unpack or unpack)(startIndex, stopIndex)
 end
 
+function ValueStack:clear()
+    self._top = 0
+end
+
 function ValueStack:pop(count)
     count = count or 1
 
