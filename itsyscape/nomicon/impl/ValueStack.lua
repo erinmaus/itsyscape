@@ -1,9 +1,11 @@
 local PATH = (...):gsub("%.[^%.]+$", "")
 local Class = require(PATH .. "Class")
 local Constants = require(PATH .. "Constants")
-local Utility = require(PATH .. "Utility")
+local Value = require(PATH .. "Value")
 
 local ValueStack = Class()
+
+local GLUE = "\0"
 
 function ValueStack:new()
     self._stack = {}
@@ -11,11 +13,25 @@ function ValueStack:new()
     self._string = {}
 end
 
+function ValueStack:reset()
+    self._top = 0
+end
+
+function ValueStack:clean()
+    while #self._stack > self._top do
+        table.remove(self._stack, #self._stack)
+    end
+
+    while #self._string > self._top do
+        table.remove(self._string, #self._string)
+    end
+end
+
 function ValueStack:copy(other)
     other = other or ValueStack()
 
     for i = 1, self._top do
-        local selfValue = self._top[i]
+        local selfValue = self._stack[i]
         other._stack[i] = selfValue:copy(other._stack[i])
         other._string[i] = self._string[i]
     end
@@ -61,7 +77,20 @@ function ValueStack:toString(startIndex, stopIndex)
         error(string.format("stopIndex (%d) out of bounds", stopIndex))
     end
 
-    return table.concat(self._string, startIndex, stopIndex)
+    local hasGlue = false
+    for i = startIndex, stopIndex do
+        if self._string[i] == GLUE then
+            hasGlue = true
+            break
+        end
+    end
+
+    local result = table.concat(self._string, startIndex, stopIndex)
+    if hasGlue then
+        result = result:gsub("([%s\n\r]*\0[%s\n\r]*)", "")
+    end
+
+    return result
 end
 
 function ValueStack:unpack(startIndex, stopIndex)
@@ -112,17 +141,26 @@ function ValueStack:push(value)
 
     local selfValue = self._stack[self._top]
     if not selfValue then
-        selfValue = value:copy()
+        selfValue = Value(nil, value)
         self._stack[self._top] = selfValue
+    else
+        if not Class.isDerived(Class.getType(value), Value) then
+            value = Value(nil, value)
+        end
+
+        value:copy(selfValue)
     end
 
-    local success, value = selfValue:cast(Constants.TYPE_STRING)
-    if success then
-        assert(type(value) == "string", "cast to string but did not get string back")
-        self._string[self._top] = value
-    else
-        self._string[self._top] = ""
+    local value = selfValue:cast(Constants.TYPE_STRING) or ""
+    assert(type(value) == "string", "cast to string but did not get string back")
+
+    if selfValue:getType() ~= Constants.TYPE_GLUE then
+        if value:find(GLUE) then
+            value = value:gsub(GLUE, "")
+        end
     end
+
+    self._string[self._top] = value
 
     return selfValue
 end

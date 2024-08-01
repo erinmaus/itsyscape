@@ -6,8 +6,11 @@ local Constants = {
     TYPE_DIVERT  = "divert",
     TYPE_POINTER = "pointer",
     TYPE_LIST    = "list",
+    TYPE_GLUE    = "glue",
+    TYPE_TAG     = "tag",
 
-    COMMAND_PUSH_VOID                      = "void",
+    VALUE_GLUE = "<>",
+
     COMMAND_BEGIN_LOGICAL_EVALUATION       = "ev",
     COMMAND_END_LOGICAL_EVALUATION         = "/ev",
     COMMAND_OUT                            = "out",
@@ -20,14 +23,21 @@ local Constants = {
     COMMAND_NO_OPERATION                   = "nop",
     COMMAND_PUSH_CHOICE_COUNT              = "choiceCnt",
     COMMAND_PUSH_TURN_COUNT                = "turn",
-    COMMAND_POP_COUNT_DIVERT_TURNS         = "turns",
+    COMMAND_PUSH_COUNT_DIVERT_TURNS        = "turns",
+    COMMAND_READ_COUNT                     = "readc",
+    COMMAND_RANDOM                         = "rnd",
+    COMMAND_SEED_RANDOM                    = "srnd" ,
     COMMAND_PUSH_VISITS                    = "visit",
     COMMAND_PUSH_SHUFFLE_INDEX             = "seq",
+    COMMAND_START_THREAD                   = "thread",
     COMMAND_DONE                           = "done",
     COMMAND_END                            = "end",
+    COMMAND_PUSH_LIST_FROM_INT             = "listInt",
+    COMMAND_PUSH_LIST_FROM_RANGE           = "range",
+    COMMAND_PUSH_RANDOM_LIST               = "lrnd",
     COMMAND_BEGIN_TAG                      = "#",
     COMMAND_END_TAG                        = "/#",
-
+    
     NATIVE_FUNCTION_ADD                    = "+",
     NATIVE_FUNCTION_SUBTRACT               = "-",
     NATIVE_FUNCTION_DIVIDE                 = "/",
@@ -65,19 +75,22 @@ local Constants = {
     DIVERT_TO_TUNNEL                       = "->t->",
     DIVERT_TO_EXTERNAL_FUNCTION            = "x()",
 
-    ASSIGN_VARIABLE                        = "VAR=",
-    ASSIGN_TEMPORARY                       = "temp=",
+    ASSIGN_GLOBAL_VARIABLE                 = "VAR=",
+    ASSIGN_TEMPORARY_TEMPORARY             = "temp=",
 
     FIELD_VARIABLE_REASSIGNMENT            = "re",
     FIELD_DIVERT_EXTERNAL_FUNCTION_ARGS    = "exArgs",
-    FIELD_DIVERT_VARIABLE                  = "var",
+    FIELD_DIVERT_IS_VARIABLE               = "var",
     FIELD_DIVERT_TARGET                    = "^->",
+    FIELD_DIVERT_IS_CONDITIONAL            = "c",
     FIELD_VARIABLE_POINTER                 = "^var",
     FIELD_CONTEXT_INDEX                    = "ci",
     FIELD_PUSH_VARIABLE_NAME               = "VAR?",
     FIELD_READ_COUNT                       = "CNT?",
     FIELD_CHOICE_POINT_PATH                = "*",
     FIELD_FLAG                             = "flg",
+    FIELD_CONTAINER_FLAGS                  = "#f",
+    FIELD_CONTAINER_NAME                   = "#n",
 
     FLAG_CHOICE_POINT_HAS_CONDITION        = 1,
     FLAG_CHOICE_POINT_HAS_START_CONTENT    = 2,
@@ -85,9 +98,13 @@ local Constants = {
     FLAG_CHOICE_POINT_IS_INVISIBLE_DEFAULT = 8,
     FLAG_CHOICE_POINT_ONLY_ONCE            = 16,
 
+    FLAG_CONTAINER_RECORD_VISITS           = 1,
+    FLAG_CONTAINER_TURN_INDEX              = 2,
+    FLAG_CONTAINER_COUNT_START_ONLY        = 4,
+
     PATH_RELATIVE                          = ".",
     PATH_PARENT                            = "^",
-    PATH_SEPARATOR                         = "."
+    PATH_SEPARATOR                         = ".",
 }
 
 local function __index(_self, key)

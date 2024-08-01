@@ -11,6 +11,7 @@ local BOOLEAN = Constants.TYPE_BOOLEAN
 local DIVERT  = Constants.TYPE_DIVERT
 local POINTER = Constants.TYPE_POINTER
 local LIST    = Constants.TYPE_LIST
+local GLUE    = Constants.TYPE_GLUE
 
 local ADD                   = Constants.NATIVE_FUNCTION_ADD
 local SUBTRACT              = Constants.NATIVE_FUNCTION_SUBTRACT
@@ -217,7 +218,7 @@ local PERFORM = {
             local b = rightValue:cast(LIST)
 
             if a ~= nil and b ~= nil then
-                return a:less(b) or a:equal(b)
+                return a:lessThanOrEquals(b)
             end
         else
             local a = leftValue:cast(coercedType)
@@ -237,7 +238,7 @@ local PERFORM = {
             local b = rightValue:cast(LIST)
 
             if a ~= nil and b ~= nil then
-                return a:greater(b) or a:equal(b)
+                return a:greaterThanOrEquals(b)
             end
         else
             local a = leftValue:cast(coercedType)
@@ -493,17 +494,6 @@ local PERFORM = {
         return nil
     end,
 
-    [LIST_MIN] = function(coercedType, value)
-        if coercedType == LIST then
-            local a = value:cast(LIST)
-            if a ~= nil then
-                return a:min()
-            end
-        end
-
-        return nil
-    end,
-
     [LIST_INVERT] = function(coercedType, value)
         if coercedType == LIST then
             local a = value:cast(LIST)
@@ -519,7 +509,7 @@ local PERFORM = {
         if coercedType == LIST then
             local a = value:cast(LIST)
             if a ~= nil then
-                local max = a:getMax()
+                local max = a:getMaxValue()
                 return max and max.value
             end
         end
@@ -528,7 +518,40 @@ local PERFORM = {
     end,
 }
 
-local NUM_OPERANDS = {}
+local NUM_OPERANDS = {
+    [ADD]                   = 2,
+    [SUBTRACT]              = 2,
+    [DIVIDE]                = 2,
+    [MULTIPLY]              = 2,
+    [MODULO]                = 2,
+    [MODULO]                = 2,
+    [UNARY_NEGATE]          = 1,
+    [EQUAL]                 = 2,
+    [LESS]                  = 2,
+    [GREATER]               = 2,
+    [LESS_THAN_OR_EQUAL]    = 2,
+    [GREATER_THAN_OR_EQUAL] = 2,
+    [NOT_EQUAL]             = 2,
+    [UNARY_NOT]             = 1,
+    [LOGICAL_AND]           = 2,
+    [LOGICAL_OR]            = 2,
+    [MIN]                   = 2,
+    [MAX]                   = 2,
+    [POW]                   = 2,
+    [FLOOR]                 = 1,
+    [CEILING]               = 1,
+    [INT]                   = 1,
+    [FLOAT]                 = 1,
+    [INCLUDE]               = 2,
+    [DOES_NOT_INCLUDE]      = 2,
+    [INTERSECT]             = 2,
+    [LIST_MIN]              = 1,
+    [LIST_MAX]              = 1,
+    [LIST_ALL]              = 1,
+    [LIST_COUNT]            = 1,
+    [LIST_INVERT]           = 1,
+    [LIST_VALUE]            = 1,
+}
 
 local TYPE_PRIORITY = {
     [BOOLEAN] = -1,
@@ -548,6 +571,7 @@ function NativeFunction:_getCoercedType(stack, numParameters)
         local value = stack:peek(-i)
         local valueType = value:getType()
         assert(valueType ~= POINTER, "somehow got a pointer")
+        assert(valueType ~= GLUE, "somehow got glue")
 
         if valueType == VOID then
             error("got 'void' value! function without return value?")
@@ -567,7 +591,7 @@ function NativeFunction:_getCoercedType(stack, numParameters)
     return currentTypePriority
 end
 
-function NativeFunction:call(stack)
+function NativeFunction:call(executor)
     local numParameters = NUM_OPERANDS[self._type]
     if numParameters == nil then
         error(string.format("unhandled native function '%s', cannot determine number of parameters", self._type))
@@ -575,14 +599,18 @@ function NativeFunction:call(stack)
 
     assert(numParameters > 0, string.format("native function '%s' has bad parameter count (%d)", self._type, numParameters))
 
-    local coercedType = self:_getCoercedType(stack, numParameters)
+    local coercedType = self:_getCoercedType(executor:getEvaluationStack(), numParameters)
 
     local func = PERFORM[self._type]
     if func == nil then
         error(string.format("unhandled native function '%s', cannot perform", self._type))
     end
 
-    return func(coercedType, stack:pop(numParameters))
+    return func(coercedType, executor:getEvaluationStack():pop(numParameters))
+end
+
+function NativeFunction.isNativeFunction(instruction)
+    return PERFORM[instruction] ~= nil
 end
 
 return NativeFunction
