@@ -53,6 +53,21 @@ function Variable:assign(executor)
     end
 end
 
+function Variable:call(executor)
+    local value
+    if self:getIsGlobal() then
+        value = executor:getGlobalVariable(self._name)
+    elseif self:getIsTemporary() then
+        value = executor:getTemporaryVariable(self._name)
+    end
+
+    if value == nil then
+        executor:getEvaluationStack():push(0)
+    else
+        executor:getEvaluationStack():push(value)
+    end
+end
+
 function Variable.isVariable(instruction)
     if type(instruction) ~= "table" then
         return false

@@ -44,6 +44,11 @@ function CallStackFrame:enter(divertType, container, index)
     self._index = index
 end
 
+function CallStackFrame:jump(container, index)
+    self._container = container
+    self._index = index or 1
+end
+
 function CallStackFrame:canLeave(divertType)
     if divertType == nil then
         return true

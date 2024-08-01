@@ -52,6 +52,16 @@ function Path:getContainer(index)
     return self._path[index]
 end
 
+function Path:contains(otherContainer)
+    for index, container in ipairs(self._path) do
+        if container == otherContainer then
+            return true, index
+        end
+    end
+
+    return false
+end
+
 function Path:_getCommonParentIndex(otherPath)
     local currentIndex = 1
     local isSame, isOutOfBounds

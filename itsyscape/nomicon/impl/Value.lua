@@ -221,4 +221,10 @@ function Value.isValue(instruction)
     return false
 end
 
+function Value:call(executor)
+    executor:getEvaluationStack():push(self)
+end
+
+Value.VOID = Value(VOID, nil, "void")
+
 return Value

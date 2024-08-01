@@ -23,7 +23,17 @@ function Container:new(parent, name, object)
     self:_parse()
 end
 
+function Container:pointer(path)
+    local _, container, index = self:_search(path)
+    return container, index
+end
+
 function Container:search(path)
+    local container = self:_search(path)
+    return container
+end
+
+function Container:_search(path)
     local current
     if path:sub(1, 1) == "." then
         current = self
@@ -31,21 +41,28 @@ function Container:search(path)
         current = self._path:getContainer(1)
     end
 
+    local previous, previousIndex
     for pathComponent in path:gmatch("%.?([%w%d^]+)%?.") do
+        previous = current
+        previousIndex = nil
+
         if pathComponent == Constants.PATH_PARENT then
             current = self:getParent()
         elseif pathComponent:match("%d+") then
-            current = self:getChild(tonumber(pathComponent) + 1)
+            local index = tonumber(pathComponent) + 1
+            previousIndex = index
+
+            current = self:getChild(index)
         else
             current = self:getChild(pathComponent)
         end
 
         if not current then
-            return nil
+            return nil, nil, nil
         end
     end
 
-    return current
+    return current, previousIndex and previous or current, previousIndex or 1
 end
 
 function Container:getParent()
@@ -169,27 +186,9 @@ function Container:_parse()
     end
 end
 
--- function Command:_findLeaf()
---     local currentContainer
---     local nextContainer = self
---     repeat
---         currentContainer = nextContainer
-
---         local childContainer = currentContainer:getChild(1)
-
---         local isContainer = childContainer and Class.isDerived(Class.getType(nextContainer), Container)
---         local hasChildren = isContainer and childContainer:getCount() >= 1
---         if isContainer and hasChildren then
---             nextContainer = childContainer
---         else
---             nextContainer = nil
---         end
---     until not nextContainer
-
---     if currentContainer ~= self then
---         self._leaf = currentContainer
---     end
--- end
+function Container:call(_executor)
+    -- Nothing.
+end
 
 function Container.isContainer(instruction)
     return type(instruction) == "table" and #instruction >= 1

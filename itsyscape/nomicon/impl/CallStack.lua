@@ -31,6 +31,10 @@ function CallStack:_toAbsoluteIndex(index)
     return index
 end
 
+function CallStack:getFrameCount()
+    return self._top
+end
+
 function CallStack:getFrame(index)
     index = self:_toAbsoluteIndex(index)
 
@@ -49,7 +53,7 @@ function CallStack:clear()
     self._top = 0
 end
 
-function CallStack:enter(divertType, container)
+function CallStack:enter(divertType, container, containerIndex)
     local frame
 
     local index = self._top + 1
@@ -62,8 +66,12 @@ function CallStack:enter(divertType, container)
         frame = self._frames[index]
     end
 
-    frame:enter(divertType, container, index)
+    frame:enter(divertType, container, containerIndex)
     self._top = index
+end
+
+function CallStack:jump(container, index)
+    self:getFrame():jump(container, index)
 end
 
 function CallStack:leave(divertType)

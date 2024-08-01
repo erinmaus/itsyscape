@@ -74,6 +74,7 @@ local Constants = {
     DIVERT_TO_FUNCTION                     = "f()",
     DIVERT_TO_TUNNEL                       = "->t->",
     DIVERT_TO_EXTERNAL_FUNCTION            = "x()",
+    DIVERT_START                           = "main()",
 
     ASSIGN_GLOBAL_VARIABLE                 = "VAR=",
     ASSIGN_TEMPORARY_TEMPORARY             = "temp=",

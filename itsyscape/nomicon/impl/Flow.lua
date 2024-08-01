@@ -1,4 +1,5 @@
 local PATH = (...):gsub("%.[^%.]+$", "")
+local Choice = require(PATH .. "Choice")
 local Class = require(PATH .. "Class")
 local Constants = require(PATH .. "Constants")
 local Thread = require(PATH .. "Thread")
@@ -18,7 +19,7 @@ function Flow:new(executor, name)
     self._outputStackTagIndices = {}
 
     self._choices = {}
-    self._choiceCount = {}
+    self._choiceCount = 0
 
     self._threads = { Thread(executor) }
     self._top = 1
@@ -96,7 +97,7 @@ function Flow:clean()
     end
 
     while #self._choices > self._choiceCount do
-        table.remove(self._choices, self._choiceCount)
+        table.remove(self._choices, #self._choices)
     end
 end
 
@@ -128,6 +129,23 @@ function Flow:pop()
     end
 
     self._top = self._top - 1
+end
+
+function Flow:getThreadCount()
+    return self._top
+end
+
+function Flow:getThread(index)
+    index = index or -1
+    if index < 0 then
+        index = self._top + index + 2
+    end
+
+    if index < 1 or index > self._top then
+        error("thread index out of bounds")
+    end
+
+    return self._top[index]
 end
 
 function Flow:getCurrentThread()

@@ -60,8 +60,42 @@ function Divert:getIsConditional()
     return self._isConditional
 end
 
+function Divert:getNumArgs()
+    if self._type == EXTERNAL_FUNCTION and self._object then
+        return self._object[Constants.FIELD_DIVERT_EXTERNAL_FUNCTION_ARGS] or 0
+    end
+
+    return nil
+end
+
 function Divert:call(executor)
-    -- TODO
+    if self:getIsConditional() then
+        local condition = executor:getEvaluationStack():pop()
+        if condition:cast(Constants.TYPE_BOOLEAN) == false then
+            return
+        end
+    end
+
+    local path
+    if self:getIsVariable() then
+        local identifier = self:getVariableIdentifier()
+        local value = executor:getTemporaryVariable(identifier) or executor:getGlobalVariable(identifier)
+        if value == nil then
+            error(string.format("could not divert using variable with name '%s' as target; variable not found", identifier))
+        end
+
+        path = value:cast(Constants.TYPE_DIVERT)
+        if not path then
+            error(string.format("could not divert using variable with name '%s' as target; variable has type '%s', expected 'DIVERT'", value:getType()))
+        end
+    end
+
+    if self._type == EXTERNAL_FUNCTION then
+        executor:divertToExternal(path, self:getNumArgs())
+    else
+        local container, index = executor:getPointer(path))
+        executor:divertToPointer(self._type, container, index)
+    end
 end
 
 function Divert.isDivert(instruction)

@@ -177,7 +177,7 @@ end
 function ListDefinitions:tryGetValue(a, b)
     if a ~= nil then
         if a:find("%.") or b == nil then
-            return unpack(self._values[a])
+            return (table.unpack or unpack)(self._values[a])
         elseif b ~=  nil then
             local origin = self._origins[a]
             if origin then
@@ -218,7 +218,7 @@ function ListDefinitions:getValue(a, b)
             error(string.format("list value(s) with relative list value name '%s' not found", a))
         end
 
-        return unpack(values)
+        return (table.unpack or unpack)(values)
     end
 
     local origin = self._origins[a]
