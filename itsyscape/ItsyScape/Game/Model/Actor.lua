@@ -17,19 +17,19 @@ local Actor = Class()
 Actor.NIL_ID = 0
 
 function Actor:new()
-	self.onDirectionChanged = Callback()
-	self.onMove = Callback()
-	self.onTeleport = Callback()
-	self.onAnimationPlayed = Callback()
-	self.onAnimationStopped = Callback()
-	self.onTransmogrified = Callback()
-	self.onSkinChanged = Callback()
-	self.onSkinRemoved = Callback()
-	self.onMapChanged = Callback()
+	self.onDirectionChanged = Callback(false)
+	self.onMove = Callback(false)
+	self.onTeleport = Callback(false)
+	self.onAnimationPlayed = Callback(false)
+	self.onAnimationStopped = Callback(false)
+	self.onTransmogrified = Callback(false)
+	self.onSkinChanged = Callback(false)
+	self.onSkinRemoved = Callback(false)
+	self.onMapChanged = Callback(false)
 
 	-- Called with 'damageType' (string) and 'damage'.
-	self.onDamage = Callback()
-	self.onHUDMessage = Callback()
+	self.onDamage = Callback(false)
+	self.onHUDMessage = Callback(false)
 end
 
 -- Spawns the Actor, assigning it the given unique ID.

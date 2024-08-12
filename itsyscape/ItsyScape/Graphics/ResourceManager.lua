@@ -106,9 +106,9 @@ function ResourceManager:new()
 		self.frameDuration = ResourceManager.DESKTOP_FRAME_DURATION
 	end
 
-	self.onPending = Callback()
-	self.onUpdate = Callback()
-	self.onFinish = Callback()
+	self.onPending = Callback(false)
+	self.onUpdate = Callback(false)
+	self.onFinish = Callback(false)
 	self.wasPending = false
 
 	self.fileIOThread = love.thread.newThread("ItsyScape/Graphics/Threads/Resource.lua")

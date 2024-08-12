@@ -53,8 +53,8 @@ function LocalPlayer:new(id, game, stage)
 	self.id = id
 	self.isPlayable = false
 
-	self.onPoof = Callback()
-	self.onForceDisconnect = Callback()
+	self.onPoof = Callback(false)
+	self.onForceDisconnect = Callback(false)
 
 	self.messages = { received = 0 }
 end

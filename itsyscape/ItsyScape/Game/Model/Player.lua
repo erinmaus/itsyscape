@@ -14,11 +14,11 @@ local Player = Class()
 
 -- Constructs a new player.
 function Player:new()
-	self.onChangeCamera = Callback()
-	self.onPokeCamera = Callback()
-	self.onSave = Callback()
-	self.onLeave = Callback()
-	self.onMove = Callback()
+	self.onChangeCamera = Callback(false)
+	self.onPokeCamera = Callback(false)
+	self.onSave = Callback(false)
+	self.onLeave = Callback(false)
+	self.onMove = Callback(false)
 end
 
 -- Gets the Actor this Player is represented by.

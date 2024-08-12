@@ -28,9 +28,9 @@ function Stats.Skill:new(name, max)
 	self.level = 1
 	self.levelBoost = 0
 	self.isDirty = false
-	self.onLevelUp = Callback()
-	self.onXPGain = Callback()
-	self.onBoost = Callback()
+	self.onLevelUp = Callback(false)
+	self.onXPGain = Callback(false)
+	self.onBoost = Callback(false)
 	self.max = max or Stats.Skill.MAX
 end
 
@@ -132,11 +132,11 @@ function Stats:new(id, gameDB, max)
 	self.id = id
 	self.skills = {}
 	self.skillsByIndex = {}
-	self.onLevelUp = Callback()
-	self.onXPGain = Callback()
-	self.onBoost = Callback()
-	self.onDeserialize = Callback()
-	self.onSerialize = Callback()
+	self.onLevelUp = Callback(false)
+	self.onXPGain = Callback(false)
+	self.onBoost = Callback(false)
+	self.onDeserialize = Callback(false)
+	self.onSerialize = Callback(false)
 
 	local brochure = gameDB:getBrochure()
 	local resourceType = Mapp.ResourceType()
