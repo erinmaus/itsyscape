@@ -470,6 +470,15 @@ Game "ItsyScape"
 	ActionType "Open"
 	ActionType "Close"
 
+	ActionType "Dresser_Search"
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Search",
+		XProgressive = "Searching",
+		Language = "en-US",
+		Type = "Dresser_Search"
+	}
+
 	ActionType "Loot"
 	ActionType "Reward"
 	ActionType "LootBag"
