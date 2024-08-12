@@ -232,9 +232,9 @@ function Instance:new(id, filename, stage)
 
 	self.maps = {}
 
-	self.onPlayerEnter = Callback()
-	self.onPlayerLeave = Callback()
-	self.onUnload = Callback()
+	self.onPlayerEnter = Callback(false)
+	self.onPlayerLeave = Callback(false)
+	self.onUnload = Callback(false)
 
 	self._onLoadMap = function(_, map, layer, tileSetID, maskID, meta)
 		if self:hasLayer(layer, true) then

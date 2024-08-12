@@ -20,12 +20,12 @@ local Callback = require "ItsyScape.Common.Callback"
 local Game = Class()
 
 function Game:new()
-	self.onQuit = Callback()
-	self.onLeave = Callback()
-	self.onPlayerSpawned = Callback()
-	self.onPlayerPoofed = Callback()
-	self.onReady = Callback()
-	self.onQuit = Callback()
+	self.onQuit = Callback(false)
+	self.onLeave = Callback(false)
+	self.onPlayerSpawned = Callback(false)
+	self.onPlayerPoofed = Callback(false)
+	self.onReady = Callback(false)
+	self.onQuit = Callback(false)
 end
 
 -- Gets the GameDB.

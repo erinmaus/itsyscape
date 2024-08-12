@@ -282,8 +282,8 @@ function ActorView:new(actor, actorID)
 	self.healthBar = false
 	self.sprites = setmetatable({}, { __mode = 'k' })
 
-	self.onPreComputeBoneTransforms = Callback()
-	self.onPostComputeBoneTransforms = Callback()
+	self.onPreComputeBoneTransforms = Callback(false)
+	self.onPostComputeBoneTransforms = Callback(false)
 end
 
 function ActorView:getActor()

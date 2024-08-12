@@ -139,9 +139,9 @@ function Party:new(id, game, leader)
 
 	self.isLocked = false
 
-	self.onDisbanded = Callback()
-	self.onPlayerJoined = Callback()
-	self.onPlayerLeft = Callback()
+	self.onDisbanded = Callback(false)
+	self.onPlayerJoined = Callback(false)
+	self.onPlayerLeft = Callback(false)
 
 	do
 		local _, party = leader:getActor():getPeep():addBehavior(PartyBehavior)

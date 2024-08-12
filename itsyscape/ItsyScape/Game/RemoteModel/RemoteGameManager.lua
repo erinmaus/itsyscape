@@ -74,7 +74,7 @@ function RemoteGameManager:new(rpcService, ...)
 		self:getInstance("ItsyScape.Game.Model.UI", 0):getInstance(),
 		self)
 
-	self.onTick = Callback()
+	self.onTick = Callback(false)
 
 	self.rpcService:connect(self)
 end

@@ -27,21 +27,21 @@ function Callback:new(doesReturn)
 	self.doesReturn = doesReturn == nil and true or doesReturn
 end
 
-local function concatArgs(prefixArgs, postfixArgs)
-	local concatArgs = {}
+-- local function concatArgs(prefixArgs, postfixArgs)
+-- 	local concatArgs = {}
 
-	for i = 1, prefixArgs.n do
-		concatArgs[i] = prefixArgs[i]
-	end
+-- 	for i = 1, prefixArgs.n do
+-- 		concatArgs[i] = prefixArgs[i]
+-- 	end
 
-	for i = 1, postfixArgs.n do
-		concatArgs[prefixArgs.n + i] = postfixArgs[i]
-	end
+-- 	for i = 1, postfixArgs.n do
+-- 		concatArgs[prefixArgs.n + i] = postfixArgs[i]
+-- 	end
 
-	concatArgs.n = prefixArgs.n + postfixArgs.n
+-- 	concatArgs.n = prefixArgs.n + postfixArgs.n
 
-	return concatArgs
-end
+-- 	return concatArgs
+-- end
 
 -- Invokes the handler.
 --
@@ -50,14 +50,14 @@ end
 --
 -- There is no guarantee to the order the handlers are called.
 function Callback:invoke(...)
-	local postfixArgs = { n = select('#', ...), ... }
+	--local postfixArgs = { n = select('#', ...), ... }
 	local results = { n = 0 }
 
 	for handler, h in pairs(self.handlers) do
-		local args = concatArgs(h, postfixArgs)
+		--local args = concatArgs(h, postfixArgs)
 
 		if self.doesReturn then
-			local r = { handler(unpack(args, 1, args.n)) }
+			local r = { h(...) }
 			local n = table.maxn(r)
 
 			for i = 1, n do
@@ -66,11 +66,33 @@ function Callback:invoke(...)
 
 			results.n = results.n + n
 		else
-			handler(unpack(args, 1, args.n))
+			h(...)
 		end
 	end
 
 	return unpack(results, 1, results.n)
+end
+
+local function make_evil_callback(method, ...)
+    if select("#", ...) == 0 then
+        return method
+    end
+
+    local n = {}
+    for i = 1, select("#", ...) do
+        table.insert(n, "t" .. tostring(i))
+    end
+
+    local args = table.concat(n, ",")
+    local evil_func = string.format([[
+        return function(func, %s)
+            return function(...)
+                return func(%s, ...)
+            end
+        end]], args, args)
+
+    local result = loadstring(evil_func)()
+    return result(method, ...)
 end
 
 -- Registers a handler.
@@ -83,7 +105,8 @@ end
 -- arguments to invoke as 'suffix', thus handler(unpack(prefix), unpack(suffix)).
 function Callback:register(handler, ...)
 	if handler then
-		self.handlers[handler] = { n = select('#', ...), ... }
+		--self.handlers[handler] = { n = select('#', ...), ... }
+		self.handlers[handler] = make_evil_callback(handler, ...)
 	end
 end
 
