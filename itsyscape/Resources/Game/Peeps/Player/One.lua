@@ -632,8 +632,6 @@ end
 function One:onBootstrapComplete()
 	self.didCompleteBootstrap = true
 	Utility.UI.openGroup(self, Utility.UI.Groups.WORLD)
-
-	Utility.UI.openInterface(self, "ReadBook", true, self:getDirector():getGameDB():getResource("IsabellesJournal", "Book"))
 end
 
 function One:onMoveInstance(previousInstance, currentInstance)

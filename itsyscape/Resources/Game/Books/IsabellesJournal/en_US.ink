@@ -16,7 +16,7 @@ VAR default_style = "<style fontFamily:string='Serif/Regular' fontSize:number='3
 
 {default_style}
 
-{format_date(format, calendar_time)}
+{format_date("%monthName\, %year %age", calendar_time)}
 
 <style align='center' />
 <text x='10' y='20' width='10'>F</text>

@@ -568,8 +568,38 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "A desk made from the remains of a young dragon... Is this just a display of Isabelle's vanity?",
+		Value = "A desk made from the remains of a young dragon... Is this just a display of Isabelle's cruelty or vanity?",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Armoire_Isabelle" {
+		ItsyScape.Action.Dresser_Search()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicDresserProp",
+		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 4,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's armoire",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fancier way of saying wardrobe. Wonder what's inside..? Probably a bunch of pink dresses...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
 	}
 end
