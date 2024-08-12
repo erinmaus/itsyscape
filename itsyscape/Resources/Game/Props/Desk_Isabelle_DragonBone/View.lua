@@ -8,8 +8,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
@@ -23,7 +25,11 @@ function DeskView:load()
 	PropView.load(self)
 
 	local resources = self:getResources()
+
 	local root = self:getRoot()
+	local modelRoot = SceneNode()
+	modelRoot:getTransform():setLocalScale(Vector(0.7))
+	modelRoot:setParent(root)
 
 	resources:queue(
 		StaticMeshResource,
@@ -48,13 +54,13 @@ function DeskView:load()
 		self.bone:fromGroup(self.mesh:getResource(), "Bone")
 		self.bone:getMaterial():setTextures(self.boneTexture)
 		self.bone:getMaterial():setOutlineThreshold(0.5)
-		self.bone:setParent(root)
+		self.bone:setParent(modelRoot)
 
 		self.wood = DecorationSceneNode()
 		self.wood:fromGroup(self.mesh:getResource(), "Wood")
 		self.wood:getMaterial():setTextures(self.woodTexture)
 		self.wood:getMaterial():setOutlineThreshold(0.5)
-		self.wood:setParent(root)
+		self.wood:setParent(modelRoot)
 	end)
 end
 

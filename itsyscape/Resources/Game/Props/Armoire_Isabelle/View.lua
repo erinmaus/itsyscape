@@ -56,11 +56,12 @@ function Armoire:load()
 	local root = self:getRoot()
 	local modelRoot = SceneNode()
 	modelRoot:setParent(root)
-	modelRoot:getTransform():setLocalScale(Vector(0.5))
+	modelRoot:getTransform():setLocalScale(Vector(0.6))
 
 	self.interiorNode = ModelSceneNode()
 	self.exteriorNode = ModelSceneNode()
 	self.doorsNode = ModelSceneNode()
+	self.clothesNode = ModelSceneNode()
 
 	resources:queue(
 		SkeletonResource,
@@ -96,6 +97,10 @@ function Armoire:load()
 				self.doorsNode:getMaterial():setTextures(self.doorsTexture)
 				self.doorsNode:setParent(modelRoot)
 
+				self.clothesNode:setModel(self.clothesModel)
+				self.clothesNode:getMaterial():setTextures(self.clothesTexture)
+				self.clothesNode:setParent(modelRoot)
+
 				self.openAnimation:computeFilteredTransforms(0, self.transforms)
 				self.skeleton:getResource():applyTransforms(self.transforms)
 				self.skeleton:getResource():applyBindPose(self.transforms)
@@ -103,6 +108,7 @@ function Armoire:load()
 				self.interiorNode:setTransforms(self.transforms)
 				self.exteriorNode:setTransforms(self.transforms)
 				self.doorsNode:setTransforms(self.transforms)
+				self.clothesNode:setTransforms(self.transforms)
 
 				local state = self:getProp():getState()
 				if state.isOpen then
@@ -137,6 +143,13 @@ function Armoire:load()
 			self.doorsModel = model
 		end)
 	resources:queue(
+		ModelResource,
+		self:getResourcePath("Clothes.lmesh"),
+		function(model)
+			model:getResource():bindSkeleton(self.skeleton:getResource())
+			self.clothesModel = model
+		end)
+	resources:queue(
 		TextureResource,
 		self:getResourcePath("Exterior.png"),
 		function(texture)
@@ -153,6 +166,12 @@ function Armoire:load()
 		self:getResourcePath("Doors.png"),
 		function(texture)
 			self.doorsTexture = texture
+		end)
+	resources:queue(
+		TextureResource,
+		self:getResourcePath("Clothes.png"),
+		function(texture)
+			self.clothesTexture = texture
 		end)
 end
 
