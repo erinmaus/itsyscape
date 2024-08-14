@@ -603,3 +603,33 @@ do
 		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle" {
+		ItsyScape.Action.Sleep()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 3,
+		SizeZ = 3.5,
+		MapObject = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's bed",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's one expensive looking bed...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+end
