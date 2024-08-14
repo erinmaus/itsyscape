@@ -74,7 +74,8 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	//float d = distance(textureCoordinate / scape_TexelSize, outlineSample.xy);
 	//float a = step(max(thickness / 2.0, 1.0), sample.z);
 	float d = step(halfThickness, outlineSample.z);
-	float a = sharpStep(0.0, halfThickness, outlineSample.z, 0.45, 0.55);
+	float a = d;
+	//float a = sharpStep(0.0, halfThickness, outlineSample.z, 0.45, 0.55);
 	//float a = smoothstep(0.0, halfThickness, outlineSample.z);
 	//a = step(1.0, a);
 	//float a = step(max(thickness / 2.0, 1.0), outlineSample.z);
@@ -100,6 +101,11 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	{
 		outlineColor = vec3(1.0);
 		outlineAlpha = 1.0;
+	}
+	else
+	{
+		outlineColor = vec3(0.0);
+		outlineAlpha = 0.0;
 	}
 
 	//return vec4(color.rgb * vec3(depth, thickness, a), 1.0);

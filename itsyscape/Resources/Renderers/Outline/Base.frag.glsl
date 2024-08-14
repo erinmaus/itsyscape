@@ -15,6 +15,9 @@
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 0.5
 #define SCAPE_BLACK_DISCARD_THRESHOLD 128.0 / 255.0
 
+uniform Image scape_OutlineDiffuseTexture;
+uniform vec2 scape_OutlineDiffuseTextureSize;
+
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
 varying vec2 frag_Texture;
@@ -24,7 +27,36 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
 void effect()
 {
-	vec4 diffuse = performEffect(frag_Color, frag_Texture);
+	vec2 textureScale = vec2(1.0) / scape_OutlineDiffuseTextureSize;
+	vec2 from = frag_Texture * scape_OutlineDiffuseTextureSize;
+	vec2 dx = dFdx(from);
+	vec2 dy = dFdx(from);
+
+	float startX = floor(min(from.x, dx.x));
+	float stopX = floor(max(from.x, dx.x));
+	float startY = floor(min(from.y, dx.y));
+	float stopY = floor(max(from.y, dx.y));
+
+	vec4 reference = performEffect(frag_Color, frag_Texture);
+
+	float min = length(reference);
+	vec4 diffuse = reference;
+	// for (float x = startX; x < stopX; x += 1.0)
+	// {
+	// 	for (float y = startY; y < stopY; y += 1.0)
+	// 	{
+	// 		vec4 sample = performEffect(frag_Color, vec2(x, y) * textureScale);
+	// 		float sampleLength = length(sample);
+
+	// 		if (sampleLength < min)
+	// 		{
+	// 			min = sampleLength;
+	// 			diffuse = sample;
+	// 		}
+	// 	}
+	// } 
+	//diffuse = vec4(vec3(length(vec2(stopX, stopY) - vec2(startX, startY)), 0.0, 0.0), 1.0);
+	//diffuse = vec4((stopX - startX) * textureScale.x, 
 
 	if (diffuse.a < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{
