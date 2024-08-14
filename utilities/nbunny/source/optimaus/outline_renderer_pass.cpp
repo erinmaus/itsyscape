@@ -86,26 +86,6 @@ void nbunny::OutlineRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 		renderer->set_current_shader(shader);
 
-		auto& textures = scene_node->get_material().get_textures();
-		if (textures.size() >= 1 && textures.at(0)->has_per_pass_texture(get_renderer_pass_id()))
-		{
-			auto texture = textures.at(0)->get_per_pass_texture(get_renderer_pass_id());
-			auto texture_size = glm::vec2(texture->getWidth(), texture->getHeight());
-
-			auto outline_diffuse_texture_uniform = shader->getUniformInfo("scape_OutlineDiffuseTexture");
-			if (outline_diffuse_texture_uniform)
-			{
-				shader->sendTextures(outline_diffuse_texture_uniform, &texture, 1);
-			}
-
-			auto outline_diffuse_texture_size_uniform = shader->getUniformInfo("scape_OutlineDiffuseTextureSize");
-			if (outline_diffuse_texture_size_uniform)
-			{
-				std::memcpy(outline_diffuse_texture_size_uniform->floats, glm::value_ptr(texture_size), sizeof(glm::vec2));
-				shader->updateUniform(outline_diffuse_texture_size_uniform, 1);
-			}
-		}
-
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);

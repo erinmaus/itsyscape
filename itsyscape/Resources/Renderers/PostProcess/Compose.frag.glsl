@@ -95,17 +95,12 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	}
 
 	vec3 outlineColor = Texel(scape_OutlineTexture, outlineSample.xy * scape_TexelSize).rgb;
-	//outlineColor = mix(outlineColor, vec3(1.0), a);
+	outlineColor = mix(outlineColor, vec3(1.0), a);
 	float outlineAlpha = alpha * a;
 	if (outlineSample.z >= halfThickness)
 	{
 		outlineColor = vec3(1.0);
 		outlineAlpha = 1.0;
-	}
-	else
-	{
-		outlineColor = vec3(0.0);
-		outlineAlpha = 0.0;
 	}
 
 	//return vec4(color.rgb * vec3(depth, thickness, a), 1.0);
