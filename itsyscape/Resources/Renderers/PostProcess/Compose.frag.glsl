@@ -102,7 +102,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	vec3 outlineColor = outlineColor1Luma <= outlineColor2Luma ? outlineColor1 : outlineColor2;
 	outlineColor = mix(outlineColor, vec3(1.0), a);
 	float outlineAlpha = alpha * a;
-	if (outlineSample.z >= halfThickness)
+	if (outlineSample.z >= halfThickness || outlineSample.z < 0.0)
 	{
 		outlineColor = vec3(1.0);
 		outlineAlpha = 1.0;
