@@ -108,8 +108,6 @@ function TextureResource:_generateOutlineImage(image)
 		local texelScaleY = 1.0 / previousHeight
 		self.OUTLINE_MIPMAP_SHADER:send("scape_MipmapTexelScale", { texelScaleX, texelScaleY })
 		self.OUTLINE_MIPMAP_SHADER:send("scape_MipmapBlockSize", { blockWidth * texelScaleX, blockHeight * texelScaleY })
-		print(">>> width, height", previousWidth, previousHeight)
-		print(">>> blockSize w, h", blockWidth, blockHeight)
 
 		love.graphics.clear(1, 1, 1, 0)
 		love.graphics.setCanvas(canvas)
