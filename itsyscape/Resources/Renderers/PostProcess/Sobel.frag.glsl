@@ -26,8 +26,8 @@ float getDepthSobel(sampler2D image, vec2 textureCoordinate)
 		for (int y = 0; y < 3; y += 1)
 		{
 			float sample = Texel(image, textureCoordinate + vec2(float(x - 1), float(y - 1)) * scape_TexelSize).r;
-			I[x][y] = abs(sample - center);
-			//I[x][y] = sample;
+			//I[x][y] = abs(sample - center);
+			I[x][y] = sample;
 		}
 	}
 	
@@ -70,7 +70,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).a;
 
 	float sobel = getDepthSobel(image, textureCoordinate);
-	float outline = step(0.5, sobel);
+	float outline = step(0.2, sobel);
 
 	if (outline >= 1.0 && alpha == 0.0)
 	{
