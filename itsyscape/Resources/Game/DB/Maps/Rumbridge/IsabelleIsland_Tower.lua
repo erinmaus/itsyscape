@@ -633,3 +633,33 @@ do
 		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "ComfyChair_Isabelle" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 2,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's desk chair",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Of course Isabelle could afford such a comfy chair.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+end

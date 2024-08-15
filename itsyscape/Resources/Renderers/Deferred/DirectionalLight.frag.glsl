@@ -34,10 +34,10 @@ vec4 effect(
 
 	vec3 surfaceToCamera = normalize(scape_CameraEye - position);
 	vec3 cameraToTarget = normalize(scape_CameraEye - scape_CameraTarget);
-	float exponent = abs(dot(surfaceToCamera, reflect(normal, -cameraToTarget)));
-	float specularCoefficient = pow(2.0, exponent * (specular * specular)) - 1.0;
+	float exponent = abs(dot(surfaceToCamera, reflect(normal, cameraToTarget)));
+	float specularCoefficient = pow(5.0, exponent * pow(specular, 2.5)) - 1.0;
 
-	vec3 result = lightDotSurface * scape_LightColor + specularCoefficient * scape_LightColor;
+	vec3 result = lightDotSurface * scape_LightColor + vec3(specularCoefficient);
 	float alpha = Texel(scape_PositionTexture, textureCoordinate).w;
 	return vec4(result, alpha);
 }
