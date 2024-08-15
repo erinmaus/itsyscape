@@ -1,5 +1,6 @@
 uniform sampler2D scape_DepthTexture;
 uniform sampler2D scape_OutlineTexture;
+uniform sampler2D scape_OutlineColorTexture;
 uniform sampler2D scape_NoiseTexture;
 uniform float scape_MaxNoiseDistance;
 uniform vec2 scape_TexelSize;
@@ -94,7 +95,11 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		alpha = 1.0;
 	}
 
-	vec3 outlineColor = Texel(scape_OutlineTexture, outlineSample.xy * scape_TexelSize).rgb;
+	vec3 outlineColor1 = Texel(scape_OutlineTexture, outlineSample.xy * scape_TexelSize).rgb;
+	float outlineColor1Luma = length(outlineColor1);
+	vec3 outlineColor2 = Texel(scape_OutlineColorTexture, textureCoordinate).rgb;
+	float outlineColor2Luma = length(outlineColor2);
+	vec3 outlineColor = outlineColor1Luma <= outlineColor2Luma ? outlineColor1 : outlineColor2;
 	outlineColor = mix(outlineColor, vec3(1.0), a);
 	float outlineAlpha = alpha * a;
 	if (outlineSample.z >= halfThickness)
