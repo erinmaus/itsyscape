@@ -389,7 +389,7 @@ function Renderer:_drawOutlines(width, height, uniforms)
 	self.composePostProcessShader:send("scape_MaxOutlineThickness", uniforms["scape_MaxOutlineThickness"] or 20)
 	self.composePostProcessShader:send("scape_NearOutlineDistance", uniforms["scape_NearOutlineDistance"] or 5)
 	self.composePostProcessShader:send("scape_FarOutlineDistance", uniforms["scape_FarOutlineDistance"] or 10)
-	self.composePostProcessShader:send("scape_MinOutlineDepthAlpha", uniforms["scape_MinOutlineDepthAlpha"] or 1.0)
+	self.composePostProcessShader:send("scape_MinOutlineDepthAlpha", uniforms["scape_MinOutlineDepthAlpha"] or 0.5)
 	self.composePostProcessShader:send("scape_MaxOutlineDepthAlpha", uniforms["scape_MaxOutlineDepthAlpha"] or 1.0)
 	self.composePostProcessShader:send("scape_OutlineFadeDepth", uniforms["scape_OutlineFadeDepth"] or 20)
 	self.composePostProcessShader:send("scape_TexelSize", { 1 / width, 1 / height })
@@ -425,6 +425,10 @@ function Renderer:_drawOutlines(width, height, uniforms)
 	love.graphics.setShader()
 
 	love.graphics.pop()
+
+	if love.keyboard.isDown("f10") then
+		self.outlineBuffer:getCanvas(1):newImageData():encode("png", "outline.png")
+	end
 end
 
 function Renderer:draw(scene, delta, width, height, uniforms)

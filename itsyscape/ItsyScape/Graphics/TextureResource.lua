@@ -109,9 +109,15 @@ function TextureResource:_generateOutlineImage(image)
 		self.OUTLINE_MIPMAP_SHADER:send("scape_MipmapTexelScale", { texelScaleX, texelScaleY })
 		self.OUTLINE_MIPMAP_SHADER:send("scape_MipmapBlockSize", { blockWidth * texelScaleX, blockHeight * texelScaleY })
 
+		if width < 128 or height < 128 then
+			previousImage:setFilter("linear", "linear")
+			love.graphics.setShader()
+		else
+			previousImage:setFilter("nearest", "nearest")
+		end
+
 		love.graphics.clear(1, 1, 1, 0)
 		love.graphics.setCanvas(canvas)
-		previousImage:setFilter("nearest", "nearest")
 		previousImage:setWrap("clamp")
 		love.graphics.draw(previousImage, 0, 0, 0, width / previousWidth, height / previousHeight)
 		love.graphics.setCanvas()
