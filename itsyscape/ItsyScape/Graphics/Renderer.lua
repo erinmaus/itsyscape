@@ -303,6 +303,7 @@ function Renderer:_drawOutlines(width, height, uniforms)
 	love.graphics.setShader(self.distancePostProcessShader)
 	self.distancePostProcessShader:send("scape_TextureSize", { width, height })
 	self.distancePostProcessShader:send("scape_MaxDistance", math.huge)
+	self.distancePostProcessShader:send("scape_OutlineTexture", self.outlineBuffer:getCanvas(2))
 
 	local c = 0
 	
@@ -384,8 +385,8 @@ function Renderer:_drawOutlines(width, height, uniforms)
 	self.composePostProcessShader:send("scape_OutlineTexture", self.outlineBuffer:getCanvas(2))
 	self.composePostProcessShader:send("scape_Near", self.camera:getNear())
 	self.composePostProcessShader:send("scape_Far", self.camera:getFar())
-	self.composePostProcessShader:send("scape_MinOutlineThickness", uniforms["scape_MinOutlineThickness"] or 3)
-	self.composePostProcessShader:send("scape_MaxOutlineThickness", uniforms["scape_MaxOutlineThickness"] or 7)
+	self.composePostProcessShader:send("scape_MinOutlineThickness", uniforms["scape_MinOutlineThickness"] or 12)
+	self.composePostProcessShader:send("scape_MaxOutlineThickness", uniforms["scape_MaxOutlineThickness"] or 12)
 	self.composePostProcessShader:send("scape_NearOutlineDistance", uniforms["scape_NearOutlineDistance"] or 20)
 	self.composePostProcessShader:send("scape_FarOutlineDistance", uniforms["scape_FarOutlineDistance"] or 32)
 	self.composePostProcessShader:send("scape_MinOutlineDepthAlpha", uniforms["scape_MinOutlineDepthAlpha"] or 0.0)
