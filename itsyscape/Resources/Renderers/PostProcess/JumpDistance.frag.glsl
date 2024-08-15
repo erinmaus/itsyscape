@@ -1,3 +1,4 @@
+uniform Image scape_OutlineTexture;
 uniform vec2 scape_TextureSize;
 uniform vec2 scape_JumpDistance;
 uniform float scape_MaxDistance;
@@ -11,17 +12,19 @@ void jump(Image image, vec2 textureCoordinate, vec2 offset, inout vec3 current)
 	// 	return;
 	// }
 
-	vec4 sample = Texel(image, position);
-	if (sample.z < 0.0)
+	vec4 jumpSample = Texel(image, position);
+	if (jumpSample.z < 0.0)
 	{
 		return;
 	}
 
-	vec2 seed = sample.xy;
+	vec2 seed = jumpSample.xy;
 	//vec2 currentScaled = floor(textureCoordinate * scape_TextureSize);
 	//vec2 seedScaled = floor(seed * scape_TextureSize);
 	float d = distance(floor(textureCoordinate * scape_TextureSize), seed);
-	if (d < current.z)
+	float currentLuma = length(Texel(scape_OutlineTexture, position).rgb);
+	float referenceLuma = length(Texel(scape_OutlineTexture, seed / scape_TextureSize));
+	if (d < current.z && currentLuma < referenceLuma)
 	{
 		current = vec3(seed, d);
 	}

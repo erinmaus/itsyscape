@@ -129,6 +129,7 @@ function TextureResource:_generateOutlineImage(image)
 	until previousWidth == 1 and previousHeight == 1
 
 	local result = love.graphics.newCanvas(image:getWidth(), image:getHeight(), { mipmaps = "manual" })
+	love.graphics.setShader()
 	for level, mipmap in ipairs(mipmaps) do
 		love.graphics.setCanvas(result, level)
 		love.graphics.clear(1, 1, 1, 0)
