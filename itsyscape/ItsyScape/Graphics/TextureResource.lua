@@ -95,6 +95,9 @@ function TextureResource:_generateOutlineImage(image)
 	local previousHeight = height
 	local previousImage = image
 
+	local widthBreakpoint = math.max(image:getWidth() / 8, 256)
+	local heightBreakpoint = math.max(image:getHeight() / 8, 256)
+
 	love.graphics.push("all")
 	
 	love.graphics.setBlendMode("replace", "premultiplied")
@@ -109,7 +112,7 @@ function TextureResource:_generateOutlineImage(image)
 		self.OUTLINE_MIPMAP_SHADER:send("scape_MipmapTexelScale", { texelScaleX, texelScaleY })
 		self.OUTLINE_MIPMAP_SHADER:send("scape_MipmapBlockSize", { blockWidth * texelScaleX, blockHeight * texelScaleY })
 
-		if width < 128 or height < 128 then
+		if width < widthBreakpoint or height < heightBreakpoint then
 			previousImage:setFilter("linear", "linear")
 			love.graphics.setShader()
 		else
