@@ -156,7 +156,7 @@ function OutlinePostProcessPass:_drawCustomOutlines(width, height)
 		self.customOutlineShader,
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
-		"scape_DepthTexture", deferredRendererPass:getDepthBuffer())
+		"scape_DepthTexture", outlineRendererPass:getOBuffer():getCanvas(outlineRendererPass.DEPTH_INDEX))
 
 	love.graphics.draw(outlineRendererPass:getOBuffer():getCanvas(outlineRendererPass.OUTLINE_INDEX))
 end
@@ -172,7 +172,7 @@ function OutlinePostProcessPass:_drawAlphaOutlines(width, height)
 		"scape_AlphaMaskTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.ALPHA_MASK_INDEX),
 		"scape_OutlineColorTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.OUTLINE_COLOR_INDEX))
 
-	love.graphics.draw(alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.OUTLINE_COLOR_INDEX))
+	love.graphics.draw(alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.ALPHA_Z_INDEX))
 end
 
 function OutlinePostProcessPass:_drawParticleOutlines(width, height)
@@ -186,7 +186,7 @@ function OutlinePostProcessPass:_drawParticleOutlines(width, height)
 		"scape_AlphaMaskTexture", particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.ALPHA_MASK_INDEX),
 		"scape_OutlineColorTexture", particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.OUTLINE_COLOR_INDEX))
 
-	love.graphics.draw(particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.OUTLINE_COLOR_INDEX))
+	love.graphics.draw(particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.ALPHA_MASK_INDEX))
 end
 
 function OutlinePostProcessPass:_generateOutlines(width, height)
@@ -203,6 +203,8 @@ function OutlinePostProcessPass:_generateOutlines(width, height)
 		depthstencil = alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX)
 	})
 	self:_drawCustomOutlines(width, height)
+
+	love.graphics.setBlendMode("alpha", "alphamultiply")
 	self:_drawAlphaOutlines(width, height)
 	self:_drawParticleOutlines(width, height)
 end

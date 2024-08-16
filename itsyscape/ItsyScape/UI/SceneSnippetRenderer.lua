@@ -9,25 +9,38 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
+local OutlinePostProcessPass = require "ItsyScape.Graphics.OutlinePostProcessPass"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local WidgetRenderer = require "ItsyScape.UI.WidgetRenderer"
 
 local SceneSnippetRenderer = Class(WidgetRenderer)
 SceneSnippetRenderer.MAX_RENDERS_PER_FRAME = 4
 
-function SceneSnippetRenderer:new(resources)
+function SceneSnippetRenderer:new(resources, gameView)
 	WidgetRenderer.new(self, resources)
 
+	self.gameView = gameView
+
 	self.renderers = {}
+	self.outlinePostProcessPasses = {}
 	self.renders = {}
 end
 
 function SceneSnippetRenderer:add(widget)
 	WidgetRenderer.add(self, widget)
 
-	self.renderers[widget] = Renderer()
-	self.renderers[widget]:setClearColor(Color(0, 0, 0, 0))
-	self.renderers[widget]:setCullEnabled(false)
+	local renderer = Renderer()
+	renderer:setClearColor(Color(0, 0, 0, 0))
+	renderer:setCullEnabled(false)
+
+	local outlinePostProcessPass = OutlinePostProcessPass(renderer)
+	outlinePostProcessPass:load(self.gameView:getResourceManager())
+	outlinePostProcessPass:setMinOutlineThickness(12)
+	outlinePostProcessPass:setMaxOutlineThickness(12)
+	outlinePostProcessPass:setMinOutlineDepthAlpha(1.0)
+
+	self.renderers[widget] = renderer
+	self.outlinePostProcessPasses[widget] = { outlinePostProcessPass }
 end
 
 function SceneSnippetRenderer:drop(widget)
@@ -35,6 +48,7 @@ function SceneSnippetRenderer:drop(widget)
 
 	self.renderers[widget]:clean()
 	self.renderers[widget] = nil
+	self.outlinePostProcessPasses[widget] = nil
 	self.renders[widget] = nil
 end
 
@@ -82,7 +96,7 @@ function SceneSnippetRenderer:draw(widget)
 			love.graphics.push('all')
 			love.graphics.setScissor()
 			renderer:setCamera(camera)
-			renderer:draw(widget:getRoot(), 0, w, h)
+			renderer:draw(widget:getRoot(), 0, w, h, self.outlinePostProcessPasses[widget])
 			love.graphics.pop()
 
 			if oldParent then
