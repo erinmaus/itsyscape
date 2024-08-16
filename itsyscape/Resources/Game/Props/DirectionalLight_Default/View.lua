@@ -24,9 +24,6 @@ function DirectionalLight:tick()
 	local state = self:getProp():getState()
 	self:getLight():setDirection(Vector(unpack(state.direction or { 1, 0, 1 })):getNormal())
 
-	print(">>> dir direction", self:getLight():getDirection():get())
-	print(">>> dir color", self:getLight():getColor():get())
-
 	local min, max = self:getProp():getBounds()
 	self:getLight():setBounds(min, max)
 end

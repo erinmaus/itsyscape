@@ -6,9 +6,13 @@ uniform Image scape_SpecularTexture;
 void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out float specular)
 {
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
-	specular = Texel(scape_SpecularTexture, textureCoordinate).r;
-	color = Texel(scape_DiffuseTexture, textureCoordinate) * color * vec4(vec3(1.0 - (specular * specular)), 1.0);
-}
+
+	vec4 specularSample = Texel(scape_SpecularTexture, textureCoordinate);
+	vec4 colorSample = Texel(scape_DiffuseTexture, textureCoordinate);
+
+	specular = specularSample.r * specularSample.a;
+	color = colorSample * color * vec4(mix(vec3(specularSample.a), vec3(1.0), 1.0 - specularSample.a), 1.0);
+}	
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {

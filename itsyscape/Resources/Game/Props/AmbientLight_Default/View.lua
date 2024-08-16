@@ -22,9 +22,6 @@ function AmbientLight:tick()
 
 	local state = self:getProp():getState()
 	self:getLight():setAmbience(state.ambience or 1)
-
-	print(">>> amb ambience", self:getLight():getAmbience())
-	print(">>> amb color", self:getLight():getColor():get())
 end
 
 return AmbientLight
