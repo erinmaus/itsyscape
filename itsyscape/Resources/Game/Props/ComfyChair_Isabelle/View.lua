@@ -32,6 +32,9 @@ function Chair:load()
 		"Resources/Game/Props/ComfyChair_Isabelle/Chair_Specular.png",
 		function(texture)
 			self.specularTexture = texture
+
+			local diffuse = self:getModelNode():getMaterial():getTexture(1)
+			self:getModelNode():getMaterial():setTextures(diffuse, self.specularTexture)
 		end)
 	resources:queue(
 		ShaderResource,
