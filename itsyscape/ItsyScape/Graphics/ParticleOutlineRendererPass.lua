@@ -14,6 +14,10 @@ local NParticleOutlineRendererPass = require "nbunny.optimaus.particleoutlineren
 
 local ParticleOutlineRendererPass = Class(RendererPass)
 
+ParticleOutlineRendererPass.DEPTH_INDEX         = 0
+ParticleOutlineRendererPass.ALPHA_MASK_INDEX    = 1
+ParticleOutlineRendererPass.OUTLINE_COLOR_INDEX = 2
+
 function ParticleOutlineRendererPass:new(renderer, depthBuffer)
 	RendererPass.new(self, renderer)
 

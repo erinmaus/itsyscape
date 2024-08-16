@@ -193,6 +193,10 @@ function Renderer:getCurrentPass()
 	return self.passesByID[passID]
 end
 
+function Renderer:getPassByID(passID)
+	return self.passesByID[passID]
+end
+
 function Renderer:_drawOutlines(width, height, uniforms)
 	uniforms = uniforms or {}
 

@@ -14,6 +14,8 @@ local NOutlineRendererPass = require "nbunny.optimaus.outlinerendererpass"
 
 local OutlineRendererPass = Class(RendererPass)
 
+OutlineRendererPass.OUTLINE_INDEX = 1
+
 function OutlineRendererPass:new(renderer)
 	RendererPass.new(self, renderer)
 
