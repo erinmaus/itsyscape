@@ -19,7 +19,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	vec3 outlineColor = Texel(scape_OutlineColorTexture, textureCoordinate).rgb;
 	if (outline < 1.0)
 	{
-		return vec4(1.0);
+		return vec4(vec3(1.0), alpha);
 	}
 
     return vec4(outlineColor, alpha);
