@@ -21,6 +21,7 @@ local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
+local OutlinePostProcessPass = require "ItsyScape.Graphics.OutlinePostProcessPass"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Spline = require "ItsyScape.Graphics.Spline"
 local SplineSceneNode = require "ItsyScape.Graphics.SplineSceneNode"
@@ -68,12 +69,25 @@ function GameView:new(game, camera)
 
 	self.decorations = {}
 
+	self.resourceManager = ResourceManager()
+	self.spriteManager = SpriteManager(self.resourceManager)
+
 	self.renderer = Renderer({
 		shadows = _CONF and _CONF.shadows
 	})
 
-	self.resourceManager = ResourceManager()
-	self.spriteManager = SpriteManager(self.resourceManager)
+	self.sceneOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
+	self.sceneOutlinePostProcessPass:load(self.resourceManager)
+
+	self.skyboxOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
+	self.skyboxOutlinePostProcessPass:load(self.resourceManager)
+	self.skyboxOutlinePostProcessPass:setMinOutlineThickness(3)
+	self.skyboxOutlinePostProcessPass:setMaxOutlineThickness(3)
+	self.skyboxOutlinePostProcessPass:setNearOutlineDistance(0)
+	self.skyboxOutlinePostProcessPass:setFarOutlineDistance(1000)
+	self.skyboxOutlinePostProcessPass:setMinOutlineDepthAlpha(1)
+	self.skyboxOutlinePostProcessPass:setMaxOutlineDepthAlpha(1)
+	self.skyboxOutlinePostProcessPass:setOutlineFadeDepth(1000)
 
 	self.itemBagModel = self.resourceManager:load(
 		ModelResource,
@@ -1727,20 +1741,12 @@ function GameView:draw(delta, width, height)
 		local info = self.skyboxes[skybox]
 
 		self.renderer:setClearColor(Color(0, 0, 0, 0))
-		self.renderer:draw(skybox, delta, width, height, {
-			["scape_MinOutlineThickness"] = 3,
-			["scape_MaxOutlineThickness"] = 3,
-			["scape_NearOutlineDistance"] = 0,
-			["scape_FarOutlineDistance"] = 1000,
-			["scape_MinOutlineDepthAlpha"] = 1,
-			["scape_MaxOutlineDepthAlpha"] = 1,
-			["scape_OutlineFadeDepth"] = 1000
-		})
+		self.renderer:draw(skybox, delta, width, height, { self.skyboxOutlinePostProcessPass })
 		self.renderer:present(false)
 	end
 
 	self.renderer:setClearColor(Color(0, 0, 0, 0))
-	self.renderer:draw(self.scene, delta)
+	self.renderer:draw(self.scene, delta, width, height, { self.sceneOutlinePostProcessPass })
 	self.renderer:present(true)
 end
 

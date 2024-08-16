@@ -6,7 +6,7 @@ uniform sampler2D scape_OutlineColorTexture;
 
 vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
-	alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).a;
+	float alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).a;
 
 	float sobel = getGreyEdge(image, textureCoordinate, scape_TexelSize, 0.0);
 	float outline = step(0.2, sobel);
