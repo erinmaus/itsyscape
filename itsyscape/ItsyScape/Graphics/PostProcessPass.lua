@@ -43,25 +43,30 @@ function PostProcessPass:_loadShader(filename)
 	end
 
 	local shaderResource = self.resources:load(ShaderResource, filename)
+	local shaderSource = shaderResource:getResource()
 
-	local fragmentSource = shaderResource:getPixelSource()
-	local vertexSource = shaderResource:getVertexSource()
+	local fragmentSource = shaderSource:getPixelSource()
+	local vertexSource = shaderSource:getVertexSource()
 	if #vertexSource == 0 then
 		vertexSource = DEFAULT_VERTEX_SHADER_SOURCE
 	end
 
-	local shader = self.shaderCache:buildComposite(self:getID(), shaderResource, fragmentSource, vertexSource)
+	local success, result = pcall(self.shaderCache.buildComposite, self.shaderCache, self:getID(), shaderResource:getHandle(), vertexSource, fragmentSource)
+	if not success then
+		Log.warn("Couldn't build shader '%s'!", filename)
+		error(result, 2)
+	end
 
 	if coroutine.running() then
 		coroutine.yield()
 	end
 
-	return shader
+	return result
 end
 
 function PostProcessPass:loadPostProcessShader(filename)
 	local postProcessFilename = string.format("Resources/Renderers/PostProcess/%s", filename)
-	return self;_loadShader(postProcessFilename)
+	return self:_loadShader(postProcessFilename)
 end
 
 function PostProcessPass:loadShader(filename)
@@ -95,7 +100,7 @@ function PostProcessPass:getRenderer()
 	return self.renderer
 end
 
-function PostProcessPass:draw(uniforms)
+function PostProcessPass:draw(width, height)
 	-- Nothing.
 end
 

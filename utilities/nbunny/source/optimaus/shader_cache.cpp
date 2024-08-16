@@ -252,7 +252,7 @@ static int nbunny_shader_cache_build_composite(lua_State* L)
 		love::luax_getfunction(L, "graphics", "_shaderCodeToGLSL");
 
 		nbunny::ShaderCache::ShaderSource shader_source(vertex_source, pixel_source);
-		shader_source.combine("glsl3", base_vertex_source, base_pixel_source, vertex_source, pixel_source);
+		shader_source.combine("glsl3", base_vertex_source, base_pixel_source, v, p);
 
 		lua_pushboolean(L, get_is_mobile());
 		lua_pushlstring(L, v.data(), v.size());
@@ -265,7 +265,8 @@ static int nbunny_shader_cache_build_composite(lua_State* L)
 		p = luaL_checkstring(L, -1);
 	};
 
-	return nbunny_shader_cache_do_build(L, build_func);
+	love::luax_catchexcept(L, [&]() { nbunny_shader_cache_do_build(L, build_func); });
+	return 1;
 }
 
 static int nbunny_shader_cache_build_primitive(lua_State* L)
@@ -287,7 +288,8 @@ static int nbunny_shader_cache_build_primitive(lua_State* L)
 		p = luaL_checkstring(L, -1);
 	};
 
-	return nbunny_shader_cache_do_build(L, build_func);
+	love::luax_catchexcept(L, [&]() { nbunny_shader_cache_do_build(L, build_func); });
+	return 1;
 }
 
 // This is a very low level method.
@@ -302,6 +304,9 @@ static int nbunny_shader_cache_build(lua_State* L)
 		v = luaL_checkstring(L, 4);
 		p = luaL_checkstring(L, 5);
 	};
+
+	love::luax_catchexcept(L, [&]() { nbunny_shader_cache_do_build(L, build_func); });
+	return 1;
 
 	return nbunny_shader_cache_do_build(L, build_func);
 }

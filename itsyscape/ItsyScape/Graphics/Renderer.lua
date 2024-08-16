@@ -24,7 +24,6 @@ local NShaderCache = require "nbunny.optimaus.shadercache"
 local NRenderer = require "nbunny.optimaus.renderer"
 local NGBuffer = require "nbunny.optimaus.gbuffer"
 local NGL = require "nbunny.gl"
-local NoiseBuilder = require "ItsyScape.Game.Skills.Antilogika.NoiseBuilder"
 
 -- Renderer type. Manages rendering resources and logic.
 local Renderer = Class()
@@ -32,29 +31,6 @@ Renderer.DEFAULT_CLEAR_COLOR = Color(0.39, 0.58, 0.93, 1)
 
 Renderer.NodeDebugStats = Class(DebugStats)
 Renderer.PassDebugStats = Class(DebugStats)
-
-Renderer.OUTLINE_SHADER = ShaderResource()
-Renderer.CUSTOM_OUTLINE_SHADER = ShaderResource()
-Renderer.INIT_DISTANCE_SHADER = ShaderResource()
-Renderer.INIT_ALPHA_DISTANCE_SHADER = ShaderResource()
-Renderer.REVERSE_INIT_DISTANCE_SHADER = ShaderResource()
-Renderer.DISTANCE_SHADER = ShaderResource()
-Renderer.COMPOSE_SHADER = ShaderResource()
-Renderer.JITTER_SHADER = ShaderResource()
-Renderer.SOBEL_SHADER = ShaderResource()
-Renderer.BLUR_SHADER = ShaderResource()
-do
-	Renderer.OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Outline")
-	Renderer.CUSTOM_OUTLINE_SHADER:loadFromFile("Resources/Renderers/PostProcess/CustomOutline")
-	Renderer.INIT_DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/InitDistance")
-	Renderer.INIT_ALPHA_DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/InitAlphaDistance")
-	Renderer.REVERSE_INIT_DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/ReverseInitDistance")
-	Renderer.DISTANCE_SHADER:loadFromFile("Resources/Renderers/PostProcess/JumpDistance")
-	Renderer.COMPOSE_SHADER:loadFromFile("Resources/Renderers/PostProcess/Compose")
-	Renderer.JITTER_SHADER:loadFromFile("Resources/Renderers/PostProcess/Jitter")
-	Renderer.SOBEL_SHADER:loadFromFile("Resources/Renderers/PostProcess/Sobel")
-	Renderer.BLUR_SHADER:loadFromFile("Resources/Renderers/PostProcess/Blur")
-end
 
 function Renderer.NodeDebugStats:process(node, renderer, delta)
 	node:beforeDraw(renderer, delta)
@@ -67,22 +43,6 @@ function Renderer.PassDebugStats:process(pass, scene, delta)
 	pass:draw(scene, delta)
 	pass:endDraw(scene, delta)
 end
-
-Renderer.X_NOISE = NoiseBuilder {
-	persistence = 4,
-	scale = 16,
-	octaves = 1,
-	lacunarity = 1,
-	offset = Vector(37, 47, 17)
-}
-
-Renderer.Y_NOISE = NoiseBuilder {
-	persistence = 4,
-	scale = 16,
-	octaves = 1,
-	lacunarity = 1,
-	offset = Vector(73, 14, 64)
-}
 
 function Renderer:new(conf)
 	conf = conf or {}
@@ -119,21 +79,6 @@ function Renderer:new(conf)
 	
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()
-
-	self.outlineBuffer = NGBuffer("rgba8", "rgba8", "rgba8")
-	self.distanceBuffer = NGBuffer("rgba16f", "rgba16f")
-	self.blurBuffer = NGBuffer("rgba8", "rgba8")
-	self.alphaBuffer = NGBuffer("rgba8", "rgba8")
-	self.outlinePostProcessShader = love.graphics.newShader(Renderer.OUTLINE_SHADER:getResource():getSource())
-	self.customOutlinePostProcessShader = love.graphics.newShader(Renderer.CUSTOM_OUTLINE_SHADER:getResource():getSource())
-	self.initDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_DISTANCE_SHADER:getResource():getSource())
-	self.initAlphaDistancePostProcessShader = love.graphics.newShader(Renderer.INIT_ALPHA_DISTANCE_SHADER:getResource():getSource())
-	self.reverseInitDistancePostProcessShader = love.graphics.newShader(Renderer.REVERSE_INIT_DISTANCE_SHADER:getResource():getSource())
-	self.distancePostProcessShader = love.graphics.newShader(Renderer.DISTANCE_SHADER:getResource():getSource())
-	self.composePostProcessShader = love.graphics.newShader(Renderer.COMPOSE_SHADER:getResource():getSource())
-	self.jitterPostProcessShader = love.graphics.newShader(Renderer.JITTER_SHADER:getResource():getSource())
-	self.sobelPostProcessShader = love.graphics.newShader(Renderer.SOBEL_SHADER:getResource():getSource())
-	self.blurPostProcessShader = love.graphics.newShader(Renderer.BLUR_SHADER:getResource():getSource())
 end
 
 function Renderer:getDeferredPass()
@@ -435,7 +380,7 @@ function Renderer:_drawOutlines(width, height, uniforms)
 	end
 end
 
-function Renderer:draw(scene, delta, width, height, uniforms)
+function Renderer:draw(scene, delta, width, height, postProcessPasses)
 	if not width or not height then
 		width, height = love.window.getMode()
 	end
@@ -464,8 +409,18 @@ function Renderer:draw(scene, delta, width, height, uniforms)
 	self._renderer:getCamera():moveTarget(target:get())
 	self._renderer:getCamera():rotate(rotation:get())
 	self._renderer:getCamera():updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
+
+	love.graphics.push("all")
 	self._renderer:draw(scene:getHandle(), delta, width, height)
-	self:_drawOutlines(width, height, uniforms)
+	love.graphics.pop()
+
+	if postProcessPasses then
+		for _, postProcessPass in ipairs(postProcessPasses) do
+			love.graphics.push("all")
+			postProcessPass:draw(width, height)
+			love.graphics.pop()
+		end
+	end
 end
 
 function Renderer:getOutputBuffer()
