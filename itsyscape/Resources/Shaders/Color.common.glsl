@@ -30,7 +30,7 @@ vec3 rgbToHSL(vec3 rgb)
     return vec3(HCV.x, S, L);
 }
 
-vec3 hslToRgb(vec3 hsl)
+vec3 hslToRGB(vec3 hsl)
 {
     vec3 rgb = hueToRGB(hsl.x);
     float C = (1.0 - abs(2.0 * hsl.z - 1.0)) * hsl.y;
