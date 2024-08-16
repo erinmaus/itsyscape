@@ -14,6 +14,10 @@ local NAlphaMaskRendererPass = require "nbunny.optimaus.alphamaskrendererpass"
 
 local AlphaMaskRendererPass = Class(RendererPass)
 
+AlphaMaskRendererPass.DEPTH_INDEX         = 0
+AlphaMaskRendererPass.ALPHA_MASK_INDEX    = 1
+AlphaMaskRendererPass.OUTLINE_COLOR_INDEX = 2
+
 function AlphaMaskRendererPass:new(renderer, depthBuffer)
 	RendererPass.new(self, renderer)
 
