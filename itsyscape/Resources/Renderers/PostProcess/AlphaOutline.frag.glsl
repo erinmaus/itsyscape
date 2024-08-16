@@ -9,7 +9,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	float alpha = Texel(scape_AlphaMaskTexture, textureCoordinate).a;
 
 	float sobel = getGreyEdge(image, textureCoordinate, scape_TexelSize, 0.0);
-	float outline = step(0.2, sobel);
+	float outline = step(0.4, sobel);
 
 	if (outline >= 1.0 && alpha == 0.0)
 	{
