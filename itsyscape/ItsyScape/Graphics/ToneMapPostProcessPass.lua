@@ -66,7 +66,7 @@ function ToneMapPostProcessPass:load(resources)
 	PostProcessPass.load(self, resources)
 
 	self.toneMapShader = self:loadPostProcessShader("ToneMap")
-	self.toneMapBuffer = NGBuffer("rgba8")
+	self.toneMapBuffer = NGBuffer("rgba32f", "rgba32f")
 end
 
 function ToneMapPostProcessPass:draw(width, height)
@@ -86,8 +86,12 @@ function ToneMapPostProcessPass:draw(width, height)
 	end
 	self:bindShader(self.toneMapShader, "scape_HSLCurveCount", #self.hslCurves)
 
-	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
+	love.graphics.setCanvas(self.toneMapBuffer:getCanvas(2))
 	love.graphics.draw(self.toneMapBuffer:getCanvas(1))
+
+	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
+	love.graphics.setShader()
+	love.graphics.draw(self.toneMapBuffer:getCanvas(2))
 end
 
 return ToneMapPostProcessPass
