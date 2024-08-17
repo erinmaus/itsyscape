@@ -16,12 +16,18 @@ uniform struct HSLCurve
 #include "Resources/Shaders/Color.common.glsl"
 #include "Resources/Shaders/Curve.common.glsl"
 
+const float EPSILON = 1e-3;
+const float UPPER_EPSILON = EPSILON + 1.0;
+const float LOWER_EPSILON = -EPSILON;
+
 void applyHSLCurve(in HSLCurve curve, inout vec3 color)
 {
 	vec3 delta = (color - curve.min) / (curve.max - curve.min);
-	if (delta.x >= 0.0 && delta.x <= 1.0)
+	if (delta.x >= LOWER_EPSILON && delta.x <= UPPER_EPSILON &&
+		delta.y >= LOWER_EPSILON && delta.y <= UPPER_EPSILON &&
+		delta.z >= LOWER_EPSILON && delta.z <= UPPER_EPSILON)
 	{
-		color = interpolateQuadratic(curve.start, curve.middle, curve.end, delta);
+		color = interpolateQuadratic(curve.start, curve.middle, curve.end, clamp(delta, vec3(0.0), vec3(1.0)));
 	}
 }
 
