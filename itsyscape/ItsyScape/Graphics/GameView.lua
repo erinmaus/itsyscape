@@ -1737,39 +1737,6 @@ function GameView:update(delta)
 			love.audio.setPosition(transform:transformPoint(0, 0, 0))
 		end
 	end
-
-	if love.filesystem.getInfo(".tone") then
-		local s, r = pcall(love.filesystem.load, ".tone")
-		if s and r then
-			local _, curves = pcall(r)
-			curves = curves or {}
-
-			local rgbCurves = {}
-			for _, rgbCurve in ipairs(curves.rgb or {}) do
-				local c = ToneMapPostProcessPass.RGBCurve(
-					Vector(unpack(rgbCurve[1] or {})) / Vector(255),
-					Vector(unpack(rgbCurve[2] or {})) / Vector(255),
-					Vector(unpack(rgbCurve[3] or {})) / Vector(255))
-				table.insert(rgbCurves, c)
-			end
-
-			local hslCurves = {}
-			for _, hslCurve in ipairs(curves.hsl or {}) do
-				local c = ToneMapPostProcessPass.HSLCurve(
-					Vector(unpack(hslCurve.min or {})) / Vector(360, 100, 100),
-					Vector(unpack(hslCurve.max or {})) / Vector(360, 100, 100),
-					Vector(unpack(hslCurve[1] or {})) / Vector(360, 100, 100),
-					Vector(unpack(hslCurve[2] or {})) / Vector(360, 100, 100),
-					Vector(unpack(hslCurve[3] or {})) / Vector(360, 100, 100))
-				table.insert(hslCurves, c)
-			end
-
-			self.toneMapPostProcessPass:setRGBCurves(unpack(rgbCurves))
-			self.toneMapPostProcessPass:setHSLCurves(unpack(hslCurves))
-		else
-			print(">>> r", r)
-		end
-	end
 end
 
 function GameView:draw(delta, width, height)
@@ -1778,7 +1745,7 @@ function GameView:draw(delta, width, height)
 		local info = self.skyboxes[skybox]
 
 		self.renderer:setClearColor(Color(0, 0, 0, 0))
-		self.renderer:draw(skybox, delta, width, height, { self.skyboxOutlinePostProcessPass })
+		self.renderer:draw(skybox, delta, width, height, { self.toneMapPostProcessPass, self.skyboxOutlinePostProcessPass })
 		self.renderer:present(false)
 	end
 

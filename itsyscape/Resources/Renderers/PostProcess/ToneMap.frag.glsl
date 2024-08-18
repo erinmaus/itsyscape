@@ -38,9 +38,9 @@ void applyRGBCurve(in RGBCurve curve, inout vec3 color)
 
 vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
-	vec3 sampleColor = Texel(image, textureCoordinate).rgb * color.rgb;
+	vec4 sampleColor = Texel(image, textureCoordinate) * color;
 
-	vec3 currentHSLColor = rgbToHSL(sampleColor);
+	vec3 currentHSLColor = rgbToHSL(sampleColor.rgb);
 	for (int i = 0; i < scape_HSLCurveCount; ++i)
 	{
 		applyHSLCurve(scape_HSLCurves[i], currentHSLColor);
@@ -52,5 +52,5 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		applyRGBCurve(scape_RGBCurves[i], currentRGBColor);
 	}
 
-	return vec4(currentRGBColor, 1.0);
+	return vec4(currentRGBColor, sampleColor.a);
 }
