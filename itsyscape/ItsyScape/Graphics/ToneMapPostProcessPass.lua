@@ -72,6 +72,10 @@ end
 function ToneMapPostProcessPass:draw(width, height)
 	PostProcessPass.draw(self, width, height)
 
+	if #self.rgbCurves == 0 and #self.hslCurves == 0 then
+		return
+	end
+
 	self.toneMapBuffer:resize(width, height)
 	love.graphics.setCanvas(self.toneMapBuffer:getCanvas(1))
 	love.graphics.draw(self:getRenderer():getOutputBuffer():getColor())

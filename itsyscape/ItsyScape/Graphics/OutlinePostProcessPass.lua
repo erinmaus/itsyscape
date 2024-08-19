@@ -32,6 +32,7 @@ function OutlinePostProcessPass:new(...)
 	PostProcessPass.new(self, ...)
 
 	self.depthStep = 0
+	self.normalStep = 0.3
 	self.minOutlineThickness = 3
 	self.maxOutlineThickness = 7
 	self.nearOutlineDistance = 20
@@ -48,6 +49,14 @@ end
 
 function OutlinePostProcessPass:getDepthStep()
 	return self.depthStep
+end
+
+function OutlinePostProcessPass:setNormalStep(value)
+	self.normalStep = value
+end
+
+function OutlinePostProcessPass:getNormalStep()
+	return self.normalStep
 end
 
 function OutlinePostProcessPass:setMinOutlineThickness(value)
@@ -124,32 +133,10 @@ function OutlinePostProcessPass:load(resources)
 	self.jumpFloodShader = self:loadPostProcessShader("JumpFlood")
 	self.composeOutlineShader = self:loadPostProcessShader("ComposeOutline")
 	self.jitterOutlineShader = self:loadPostProcessShader("JitterOutline")
-	self.blurShader = self:loadPostProcessShader("Blur")
 
 	self.outlineBuffer = NGBuffer("rgba8", "rgba8")
 	self.normalBlurBuffer = NGBuffer("rgba16f", "rgba16f")
 	self.distanceBuffer = NGBuffer("rgba16f", "rgba16f")
-end
-
-function OutlinePostProcessPass:_blurNormals(width, height)
-	local camera = self:getRenderer():getCamera()
-	local deferredRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_DEFERRED)
-	local alphaMaskRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_ALPHA_MASK)
-
-	love.graphics.setCanvas(self.normalBlurBuffer:getCanvas(1))
-	self:bindShader(
-		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 0, 1 })
-	love.graphics.draw(deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_OUTLINE_INDEX))
-
-	love.graphics.setCanvas(self.normalBlurBuffer:getCanvas(2))
-	self:bindShader(
-		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 1, 0 })
-	love.graphics.draw(self.normalBlurBuffer:getCanvas(1))
-
 end
 
 function OutlinePostProcessPass:_drawDepthOutline(width, height)
@@ -162,10 +149,11 @@ function OutlinePostProcessPass:_drawDepthOutline(width, height)
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
 		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_NormalTexture", self.normalBlurBuffer:getCanvas(2),
+		"scape_NormalTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_OUTLINE_INDEX),
 		"scape_OutlineThresholdTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_OUTLINE_INDEX),
 		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.OUTLINE_COLOR_INDEX),
-		"scape_DepthStep", self.depthStep)
+		"scape_DepthStep", self.depthStep,
+		"scape_NormalStep", self.normalStep)
 
 	love.graphics.draw(alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX))
 end

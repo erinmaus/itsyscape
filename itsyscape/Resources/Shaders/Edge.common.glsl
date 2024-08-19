@@ -68,7 +68,7 @@ float getGreyEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize, float
 	return sqrt(M / max(S, 0.001));
 }
 
-vec3 getXYZEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize)
+vec3 getNormalEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize)
 {
 	mat3 X, Y, Z;
 	vec3 convulation[9];
@@ -77,7 +77,10 @@ vec3 getXYZEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize)
 	{
 		for (int y = 0; y < 3; y += 1)
 		{
-			vec3 currentSample = Texel(image, textureCoordinate + vec2(float(x - 1), float(y - 1)) * texelSize).rgb;
+			vec3 currentSample = Texel(image, textureCoordinate + vec2(float(x - 1), float(y - 1)) * texelSize).xyz;
+			currentSample += vec3(1.0);
+			currentSample /= vec3(2.0);
+
 			X[x][y] = currentSample.x;
 			Y[x][y] = currentSample.y;
 			Z[x][y] = currentSample.z;
