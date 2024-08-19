@@ -36,7 +36,7 @@ function ModelSkin:new()
 	self.particles = {}
 	self.colors = {}
 	self.pathToColor = {}
-	self.bumpHeight = 0.125
+	self.bumpHeight = 2
 end
 
 function ModelSkin:getResource()

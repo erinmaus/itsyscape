@@ -5,6 +5,7 @@
 uniform Image scape_DiffuseTexture;
 uniform Image scape_SpecularTexture;
 uniform Image scape_HeightmapTexture;
+uniform float scape_BumpHeight;
 
 noperspective varying mat3 frag_NormalMatrix;
 
@@ -17,7 +18,7 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 
 	float height;
 	vec3 preTransformedNormal;
-	calculateBumpNormal(scape_HeightmapTexture, textureCoordinate, vec2(1.0) / vec2(textureSize(scape_HeightmapTexture, 0)), preTransformedNormal, height);
+	calculateBumpNormal(scape_HeightmapTexture, textureCoordinate, vec2(1.0) / vec2(textureSize(scape_HeightmapTexture, 0)), scape_BumpHeight, preTransformedNormal, height);
 
 	normal = normalize(frag_NormalMatrix * preTransformedNormal);
 
