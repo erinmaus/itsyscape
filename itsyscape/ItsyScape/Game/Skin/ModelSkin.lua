@@ -36,6 +36,7 @@ function ModelSkin:new()
 	self.particles = {}
 	self.colors = {}
 	self.pathToColor = {}
+	self.bumpHeight = 0.125
 end
 
 function ModelSkin:getResource()
@@ -220,6 +221,10 @@ function ModelSkin:loadFromFile(filename)
 	if result.outlineThreshold then
 		self.outlineThreshold = result.outlineThreshold
 	end
+
+	if result.bumpHeight then
+		self.bumpHeight = result.bumpHeight
+	end
 end
 
 -- Gets the model CacheRef.
@@ -288,6 +293,10 @@ end
 
 function ModelSkin:getOutlineThreshold()
 	return self.outlineThreshold
+end
+
+function ModelSkin:getBumpHeight()
+	return self.bumpHeight
 end
 
 function ModelSkin:_getColor(colorName, colors, c)

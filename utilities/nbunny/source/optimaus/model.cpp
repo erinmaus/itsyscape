@@ -183,6 +183,26 @@ void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 		}
 	}
 
+	auto specular_texture_uniform = shader->getUniformInfo("scape_SpecularTexture");
+	if (specular_texture_uniform && textures.size() >= 1)
+	{
+		auto texture = textures[0]->get_bound_texture("Specular");
+		if (texture)
+		{
+			shader->sendTextures(specular_texture_uniform, &texture, 1);
+		}
+	}
+
+	auto heightmap_texture_uniform = shader->getUniformInfo("scape_HeightmapTexture");
+	if (heightmap_texture_uniform && textures.size() >= 1)
+	{
+		auto texture = textures[0]->get_bound_texture("Heightmap");
+		if (texture)
+		{
+			shader->sendTextures(heightmap_texture_uniform, &texture, 1);
+		}
+	}
+
 	// This was a dumb decision a while back.
 	// 3D skinned models assume a specific rotation before rendering.
 	// Override the default scape_World etc with this rotated value.

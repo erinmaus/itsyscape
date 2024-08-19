@@ -49,7 +49,7 @@ function DeskView:load()
 		end)
 	resources:queue(
 		TextureResource,
-		"Resources/Game/Props/Bed_FourPoster_Isabelle/Mattress_Specular.png",
+		"Resources/Game/Props/Bed_FourPoster_Isabelle/Mattress@Specular.png",
 		function(texture)
 			self.specularTexture = texture
 		end)

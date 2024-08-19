@@ -29,7 +29,7 @@ function Chair:load()
 	local resources = self:getResources()
 	resources:queue(
 		TextureResource,
-		"Resources/Game/Props/ComfyChair_Isabelle/Chair_Specular.png",
+		"Resources/Game/Props/ComfyChair_Isabelle/Chair@Specular.png",
 		function(texture)
 			self.specularTexture = texture
 

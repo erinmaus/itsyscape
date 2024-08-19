@@ -62,6 +62,18 @@ void nbunny::TextureInstance::set_per_pass_texture(int pass_id, love::graphics::
 	}
 }
 
+void nbunny::TextureInstance::set_bound_texture(const std::string& name, love::graphics::Texture* value)
+{
+	if (!value)
+	{
+		bound_textures.erase(name);
+	}
+	else
+	{
+		bound_textures.insert_or_assign(name, value);
+	}
+}
+
 love::graphics::Texture* nbunny::TextureInstance::get_texture() const
 {
 	return texture.get();
@@ -79,9 +91,25 @@ love::graphics::Texture* nbunny::TextureInstance::get_per_pass_texture(int pass_
 	return texture.get();
 }
 
+love::graphics::Texture* nbunny::TextureInstance::get_bound_texture(const std::string& name) const
+{
+	auto result = bound_textures.find(name);
+	if (result != bound_textures.end())
+	{
+		return result->second.get();
+	}
+
+	return nullptr;
+}
+
 bool nbunny::TextureInstance::has_per_pass_texture(int pass_id) const
 {
 	return per_pass_textures.find(pass_id) != per_pass_textures.end();
+}
+
+bool nbunny::TextureInstance::has_bound_texture(const std::string& name) const
+{
+	return bound_textures.find(name) != bound_textures.end();
 }
 
 static int nbunny_texture_instance_set_texture(lua_State* L)
@@ -112,6 +140,23 @@ static int nbunny_texture_instance_set_per_pass_texture(lua_State* L)
 	{
 		auto t = love::luax_checktype<love::graphics::Texture>(L, 3);
 		texture.set_per_pass_texture(index, t);
+	}
+	return 0;
+}
+
+static int nbunny_texture_instance_set_bound_texture(lua_State* L)
+{
+	auto& texture = sol::stack::get<nbunny::TextureInstance&>(L, 1);
+	auto name = luaL_checkstring(L, 2);
+
+	if (lua_isnil(L, 3))
+	{
+		texture.set_bound_texture(name, nullptr);
+	}
+	else
+	{
+		auto t = love::luax_checktype<love::graphics::Texture>(L, 3);
+		texture.set_bound_texture(name, t);
 	}
 	return 0;
 }
@@ -149,6 +194,24 @@ static int nbunny_texture_instance_get_per_pass_texture(lua_State* L)
 	return 1;
 }
 
+static int nbunny_texture_instance_get_bound_texture(lua_State* L)
+{
+	auto& texture = sol::stack::get<nbunny::TextureInstance&>(L, 1);
+	auto name = luaL_checkstring(L, 2);
+
+	auto t = texture.get_bound_texture(name);
+	if (t == nullptr)
+	{
+		lua_pushnil(L);
+	}
+	else
+	{
+		love::luax_pushtype(L, t);
+	}
+
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_textureresourceinstance(lua_State* L)
 {
@@ -157,8 +220,10 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_textureresourceinstance(lua_State* L)
 		sol::call_constructor, sol::constructors<nbunny::TextureInstance()>(),
 		"setTexture", &nbunny_texture_instance_set_texture,
 		"setPerPassTexture", &nbunny_texture_instance_set_per_pass_texture,
+		"setBoundTexture", &nbunny_texture_instance_set_bound_texture,
 		"getTexture", &nbunny_texture_instance_get_texture,
-		"getPerPassTexture", &nbunny_texture_instance_get_per_pass_texture);
+		"getPerPassTexture", &nbunny_texture_instance_get_per_pass_texture,
+		"getBoundTexture", &nbunny_texture_instance_get_bound_texture);
 
 	sol::stack::push(L, T);
 

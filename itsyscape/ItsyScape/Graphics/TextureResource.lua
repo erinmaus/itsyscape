@@ -51,6 +51,11 @@ TextureResource.PASSES = {
 	["Shadow"] = RendererPass.PASS_SHADOW
 }
 
+TextureResource.BOUND_TEXTURES = {
+	["Specular"] = true,
+	["Heightmap"] = true
+}
+
 -- Basic TextureResource resource class.
 --
 -- Stores a Love2D image.
@@ -172,6 +177,25 @@ function TextureResource:loadFromFile(filename, resourceManager)
 			end
 
 			self:getHandle():setPerPassTexture(passID, perPassImage)
+
+			if coroutine.running() then
+				coroutine.yield()
+			end
+		end
+	end
+
+	for passFilename in pairs(self.BOUND_TEXTURES) do
+		local boundTextureFilename = filename:gsub(
+			"(.*)(%..+)$",
+			string.format("%%1@%s%%2", passFilename))
+
+		if boundTextureFilename ~= filename and love.filesystem.getInfo(boundTextureFilename) then
+			local boundImage = love.graphics.newImage(boundTextureFilename)
+			self:getHandle():setBoundTexture(passFilename, boundImage)
+
+			if coroutine.running() then
+				coroutine.yield()
+			end
 		end
 	end
 end
