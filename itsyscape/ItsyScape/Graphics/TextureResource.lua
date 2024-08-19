@@ -191,8 +191,9 @@ function TextureResource:loadFromFile(filename, resourceManager)
 
 		if boundTextureFilename ~= filename and love.filesystem.getInfo(boundTextureFilename) then
 			local boundImage = love.graphics.newImage(boundTextureFilename)
-			self:getHandle():setBoundTexture(passFilename, boundImage)
+			boundImage:setFilter('linear', 'linear')
 
+			self:getHandle():setBoundTexture(passFilename, boundImage)
 			if coroutine.running() then
 				coroutine.yield()
 			end

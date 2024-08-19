@@ -1,19 +1,21 @@
+#include "Resources/Shaders/Bump.common.glsl"
+
 void calculateBumpNormal(Image heightmapTexture, vec2 textureCoordinate, vec2 texelSize, float scale, out vec3 normal, out float height)
 {
-    float center = texture(heightmapTexture, textureCoordinate).r;
+    float topLeft = Texel(heightmapTexture, textureCoordinate + vec2(-1.0, -1.0) * texelSize).r;
     float left = Texel(heightmapTexture, textureCoordinate + vec2(-1.0, 0.0) * texelSize).r;
-    float right = Texel(heightmapTexture, textureCoordinate + vec2(1.0, 0.0) * texelSize).r;
+    float bottomLeft = Texel(heightmapTexture, textureCoordinate + vec2(-1.0, 1.0) * texelSize).r;
     float top = Texel(heightmapTexture, textureCoordinate + vec2(0.0, -1.0) * texelSize).r;
     float bottom = Texel(heightmapTexture, textureCoordinate + vec2(0.0, 1.0) * texelSize).r;
+    float topRight = Texel(heightmapTexture, textureCoordinate + vec2(1.0, -1.0) * texelSize).r;
+    float right = Texel(heightmapTexture, textureCoordinate + vec2(1.0, 0.0) * texelSize).r;
+    float bottomRight = Texel(heightmapTexture, textureCoordinate + vec2(1.0, 1.0) * texelSize).r;
+    float center = Texel(heightmapTexture, textureCoordinate).r;
 
-    left = (left - 0.5) * 2.0;
-    right = (right - 0.5) * 2.0;
-    top = (top - 0.5) * 2.0;
-    bottom = (bottom - 0.5) * 2.0;
-
-    vec3 a = normalize(vec3(2.0, (left - right) * scale, 0.0));
-    vec3 b = normalize(vec3(0.0, (top - bottom) * scale, 2.0));
-
-    normal = normalize(cross(a, b));
-    height = center;
+    normal = vec3(
+        (topRight + 2.0 * right + bottomRight) - (topLeft + 2.0 * left + bottomLeft),
+        (bottomLeft + 2.0 * bottom + bottomRight) - (topLeft + 2.0 * top + topRight),
+        1.0 / scale);
+    normal = normalize(normal);
+    height = center * scale;
 }
