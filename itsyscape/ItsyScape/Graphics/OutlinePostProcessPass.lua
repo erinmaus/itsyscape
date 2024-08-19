@@ -124,9 +124,32 @@ function OutlinePostProcessPass:load(resources)
 	self.jumpFloodShader = self:loadPostProcessShader("JumpFlood")
 	self.composeOutlineShader = self:loadPostProcessShader("ComposeOutline")
 	self.jitterOutlineShader = self:loadPostProcessShader("JitterOutline")
+	self.blurShader = self:loadPostProcessShader("Blur")
 
-	self.outlineBuffer = NGBuffer("rgba32f", "rgba32f")
+	self.outlineBuffer = NGBuffer("rgba8", "rgba8")
+	self.normalBlurBuffer = NGBuffer("rgba16f", "rgba16f")
 	self.distanceBuffer = NGBuffer("rgba16f", "rgba16f")
+end
+
+function OutlinePostProcessPass:_blurNormals(width, height)
+	local camera = self:getRenderer():getCamera()
+	local deferredRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_DEFERRED)
+	local alphaMaskRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_ALPHA_MASK)
+
+	love.graphics.setCanvas(self.normalBlurBuffer:getCanvas(1))
+	self:bindShader(
+		self.blurShader,
+		"scape_TexelSize", { 1 / width, 1 / height },
+		"scape_Direction", { 0, 1 })
+	love.graphics.draw(deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_OUTLINE_INDEX))
+
+	love.graphics.setCanvas(self.normalBlurBuffer:getCanvas(2))
+	self:bindShader(
+		self.blurShader,
+		"scape_TexelSize", { 1 / width, 1 / height },
+		"scape_Direction", { 1, 0 })
+	love.graphics.draw(self.normalBlurBuffer:getCanvas(1))
+
 end
 
 function OutlinePostProcessPass:_drawDepthOutline(width, height)
@@ -139,7 +162,8 @@ function OutlinePostProcessPass:_drawDepthOutline(width, height)
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
 		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_NormalTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_OUTLINE_INDEX),
+		"scape_NormalTexture", self.normalBlurBuffer:getCanvas(2),
+		"scape_OutlineThresholdTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_OUTLINE_INDEX),
 		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.OUTLINE_COLOR_INDEX),
 		"scape_DepthStep", self.depthStep)
 
@@ -318,6 +342,10 @@ function OutlinePostProcessPass:draw(width, height)
 	self.outlineBuffer:resize(width, height)
 	self.outlineBuffer:getCanvas(1):setFilter("linear", "linear")
 	self.outlineBuffer:getCanvas(2):setFilter("linear", "linear")
+
+	self.normalBlurBuffer:resize(width, height)
+	self.normalBlurBuffer:getCanvas(1):setFilter("linear", "linear")
+	self.normalBlurBuffer:getCanvas(2):setFilter("linear", "linear")
 
 	self.distanceBuffer:resize(width, height)
 	self.distanceBuffer:getCanvas(1):setFilter("nearest", "nearest")
