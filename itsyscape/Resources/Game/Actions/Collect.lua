@@ -29,8 +29,9 @@ function Collect:perform(state, player, target)
 
 		if walk then
 			local open = OpenInterfaceCommand("RewardChest", true, target)
+			local poke = CallbackCommand(target.poke, target, 'search', { action = self:getAction(), target = player })
 			local perform = CallbackCommand(Action.perform, self, state, player)
-			local command = CompositeCommand(true, walk, open, perform)
+			local command = CompositeCommand(true, walk, open, poke, perform)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)
