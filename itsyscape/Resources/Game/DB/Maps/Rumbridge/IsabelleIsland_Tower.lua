@@ -663,3 +663,33 @@ do
 		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "Chest_Isabelle" {
+		ItsyScape.Action.Dresser_Search()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicChest",
+		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 1.5,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's chest",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "I bet that won't open easily... But if you do manage... there might be something valuable in there!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+end

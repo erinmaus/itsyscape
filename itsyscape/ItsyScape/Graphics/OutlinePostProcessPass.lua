@@ -39,7 +39,7 @@ function OutlinePostProcessPass:new(...)
 	self.minOutlineDepthAlpha = 0.5
 	self.maxOutlineDepthAlpha = 1.0
 	self.outlineFadeDepth = 20
-	self.outlineTurbulence = 0.75
+	self.outlineTurbulence = 0.25
 end
 
 function OutlinePostProcessPass:setDepthStep(value)
