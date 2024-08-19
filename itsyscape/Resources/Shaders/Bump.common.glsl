@@ -6,6 +6,11 @@ void calculateBumpNormal(Image heightmapTexture, vec2 textureCoordinate, vec2 te
     float top = Texel(heightmapTexture, textureCoordinate + vec2(0.0, -1.0) * texelSize).r;
     float bottom = Texel(heightmapTexture, textureCoordinate + vec2(0.0, 1.0) * texelSize).r;
 
+    left = (left - 0.5) * 2.0;
+    right = (right - 0.5) * 2.0;
+    top = (top - 0.5) * 2.0;
+    bottom = (bottom - 0.5) * 2.0;
+
     vec3 a = normalize(vec3(2.0, (left - right) * scale, 0.0));
     vec3 b = normalize(vec3(0.0, (top - bottom) * scale, 2.0));
 
