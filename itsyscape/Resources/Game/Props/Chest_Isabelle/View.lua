@@ -84,16 +84,10 @@ function Chest:load()
 				skeleton:getResource())
 			resources:queueEvent(function()
 				self.chestNode:setModel(self.chestModel)
-				self.chestNode:getMaterial():setTextures(self.diffuseTexture, self.specularTexture)
+				self.chestNode:getMaterial():setTextures(self.texture)
 				self.chestNode:getMaterial():setShader(self.velvetShader)
 				--self.chestNode:getMaterial():setOutlineThreshold(-0.01)
 				self.chestNode:setParent(modelRoot)
-				self.chestNode:onWillRender(function(renderer)
-					local shader = renderer:getCurrentShader()
-					if shader and shader:hasUniform("scape_SpecularTexture") then
-						shader:send("scape_SpecularTexture", self.specularTexture:getResource())
-					end
-				end)
 
 				self.openAnimation:computeFilteredTransforms(0, self.transforms)
 				self.skeleton:getResource():applyTransforms(self.transforms)
@@ -123,13 +117,7 @@ function Chest:load()
 		TextureResource,
 		self:getResourcePath("Chest.png"),
 		function(texture)
-			self.diffuseTexture = texture
-		end)
-	resources:queue(
-		TextureResource,
-		self:getResourcePath("Chest_Specular.png"),
-		function(texture)
-			self.specularTexture = texture
+			self.texture = texture
 		end)
 	resources:queue(
 		ShaderResource,

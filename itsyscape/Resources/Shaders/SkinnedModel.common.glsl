@@ -6,6 +6,7 @@ attribute vec4 VertexBoneWeight;
 attribute float VertexDirection;
 
 varying vec2 frag_Direction;
+noperspective varying mat3 frag_NormalMatrix;
 
 void performTransform(
 	mat4 modelViewProjectionMatrix,
@@ -38,5 +39,6 @@ void performTransform(
 		(scape_ViewMatrix * scape_WorldMatrix * vec4(1.0, 0.0, 0.0, 0.0)).x
 	);
 
-	frag_Normal = normalize(mat3(scape_NormalMatrix) * normalize(weightedNormal));
+	frag_NormalMatrix = mat3(scape_NormalMatrix);
+	frag_Normal = normalize(frag_NormalMatrix * normalize(weightedNormal));
 }

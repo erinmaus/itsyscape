@@ -32,6 +32,7 @@ namespace nbunny
 	private:
 		love::StrongRef<love::graphics::Texture> texture;
 		std::map<int, love::StrongRef<love::graphics::Texture>> per_pass_textures;
+		std::map<std::string, love::StrongRef<love::graphics::Texture>> bound_textures;
 
     public:
 		TextureInstance() = default;
@@ -39,10 +40,14 @@ namespace nbunny
 
 		void set_texture(love::graphics::Texture* value);
 		void set_per_pass_texture(int pass_id, love::graphics::Texture* value);
+		void set_bound_texture(const std::string& name, love::graphics::Texture* value);
 
 		love::graphics::Texture* get_texture() const;
 		love::graphics::Texture* get_per_pass_texture(int pass_id) const;
+		love::graphics::Texture* get_bound_texture(const std::string& name) const;
+
 		bool has_per_pass_texture(int pass_id) const;
+		bool has_bound_texture(const std::string& name) const;
     };
 }
 

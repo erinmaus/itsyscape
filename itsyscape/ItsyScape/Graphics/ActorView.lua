@@ -541,6 +541,13 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 					end
 				end
 
+				slot.sceneNode:onWillRender(function(renderer)
+					local currentShader = renderer:getCurrentShader()
+					if currentShader and currentShader:hasUniform("scape_BumpHeight") then
+						currentShader = renderer:send("scape_BumpHeight", slot.instance:getBumpHeight())
+					end
+				end)
+
 				self.models[slot.sceneNode] = true
 
 				if coroutine.running() then
