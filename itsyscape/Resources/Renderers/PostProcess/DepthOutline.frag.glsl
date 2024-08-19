@@ -5,29 +5,18 @@ uniform float scape_DepthStep;
 uniform sampler2D scape_NormalTexture;
 uniform sampler2D scape_OutlineColorTexture;
 
-float getMinAlpha(Image image, vec2 textureCoordinate)
-{
-	float minAlpha = 1.0;
-
-	for (float x = -1.0; x <= 1; x += 1.0)
-	{
-		for (float y = -1.0; y <= 1; y += 1.0)
-		{
-			float alpha = Texel(image, textureCoordinate + vec2(x, y) * scape_TexelSize).r;
-			minAlpha = min(alpha, minAlpha);
-		}
-	}
-
-	return minAlpha;
-}
-
 vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
+	float depthSample = Texel(image, textureCoordinate).r;
+	float linearDepth = linearDepth(depthSample);
+	float width = fwidth(linearDepth);
 	float outlineThreshold = Texel(scape_NormalTexture, textureCoordinate).a;
 	vec3 outlineColor = Texel(scape_OutlineColorTexture, textureCoordinate).rgb;
 	float depthEdge = getDepthEdge(image, textureCoordinate, scape_TexelSize, step(0.0, outlineThreshold));
+	vec3 normalEdge = getXYZEdge(scape_NormalTexture, textureCoordinate, scape_TexelSize);
+	float edgeStep = max(scape_DepthStep + abs(outlineThreshold), 0.0);
 
-	float edge = step(max(scape_DepthStep + abs(outlineThreshold), 0.0), depthEdge);
+	float edge = max(step(edgeStep, length(normalEdge)), step(edgeStep, depthEdge));
 	if (edge < 1.0)
 	{
 		return vec4(1.0);

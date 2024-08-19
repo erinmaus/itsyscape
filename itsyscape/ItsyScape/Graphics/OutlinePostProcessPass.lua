@@ -125,7 +125,7 @@ function OutlinePostProcessPass:load(resources)
 	self.composeOutlineShader = self:loadPostProcessShader("ComposeOutline")
 	self.jitterOutlineShader = self:loadPostProcessShader("JitterOutline")
 
-	self.outlineBuffer = NGBuffer("rgba8", "rgba8")
+	self.outlineBuffer = NGBuffer("rgba32f", "rgba32f")
 	self.distanceBuffer = NGBuffer("rgba16f", "rgba16f")
 end
 
