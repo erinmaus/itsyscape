@@ -57,7 +57,7 @@ function Chest:load()
 	local root = self:getRoot()
 	local modelRoot = SceneNode()
 	modelRoot:setParent(root)
-	modelRoot:getTransform():setLocalScale(Vector(0.5))
+	modelRoot:getTransform():setLocalScale(Vector(0.4))
 
 	self.chestNode = ModelSceneNode()
 
