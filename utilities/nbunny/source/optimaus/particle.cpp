@@ -79,6 +79,7 @@ public:
 	float x_range_center = 0.0f, x_range_width = 1.0f;
 	float y_range_center = 0.0f, y_range_width = 1.0f;
 	float z_range_center = 0.0f, z_range_width = 1.0f;
+	float min_lifetime = 0.0f, max_lifetime = 0.0f;
 	bool set_normal = false;
 
 	void update_local_position(const glm::vec3& value)
@@ -96,6 +97,10 @@ public:
 		auto s = table.get_or("speed", sol::table(L, sol::create));
 		min_speed = s.get_or(1, 0.0f);
 		max_speed = s.get_or(2, min_speed);
+
+		auto l = table.get_or("lifetime", sol::table(L, sol::create));
+		min_lifetime = l.get_or(1, 0.0f);
+		max_lifetime = l.get_or(2, min_lifetime);
 
 		auto r = table.get_or("radius", sol::table(L, sol::create));
 		min_radius = r.get_or(1, 0.0f);
@@ -137,6 +142,22 @@ public:
 		p.position = normal * radius + position + local_position;
 		p.velocity = normal * velocity;
 		p.acceleration = normal * acceleration;
+
+		if (min_lifetime > 0.0f && max_lifetime > 0.0f)
+		{
+			float min = std::min(min_lifetime, max_lifetime);
+			float max = std::max(min_lifetime, max_lifetime);
+
+			float delta = (radius - min_radius) / (max_radius - min_radius);
+			delta *= delta;
+
+			if (min_lifetime > max_lifetime)
+			{
+				delta = 1.0f - delta;
+			}
+
+			p.lifetime = delta * (max - min) + min;
+		}
 
 		if (set_normal)
 		{
@@ -329,9 +350,15 @@ void nbunny::ParticleEmissionStrategy::from_definition(lua_State* L)
 	min_count = c.get_or(1, 1.0f);
 	max_count = c.get_or(2, min_count);
 
+	auto infinity = std::numeric_limits<float>::infinity();
 	auto d = table.get_or("duration", sol::table(L, sol::create));
 	auto min_duration = d.get_or(1, 0);
-	auto max_duration = d.get_or(2, d.get_or(1, std::numeric_limits<float>::infinity()));
+	auto max_duration = d.get_or(2, d.get_or(1, infinity));
+
+	if (min_duration == infinity || max_duration == infinity)
+	{
+		duration = infinity;
+	}
 
 	auto rng = love::math::Math::instance.getRandomGenerator();
 	duration = rng->random() * (max_duration - min_duration) + min_duration;

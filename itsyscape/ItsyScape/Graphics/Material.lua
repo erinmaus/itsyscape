@@ -128,6 +128,14 @@ function Material:setOutlineThreshold(value)
 	self._handle:setOutlineThreshold(value or 0.5)
 end
 
+function Material:getZBias()
+	return self._handle:getZBias()
+end
+
+function Material:setZBias(value)
+	self._handle:setZBias(value or 0.5)
+end
+
 function Material:getColor()
 	return Color(self._handle:getColor())
 end

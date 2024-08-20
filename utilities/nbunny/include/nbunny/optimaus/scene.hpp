@@ -100,6 +100,8 @@ namespace nbunny
 
 		bool is_light_target_position_enabled = false;
 
+		float z_bias = 0.0f;
+
 	public:
 		SceneNodeMaterial(SceneNode& scene_node);
 		~SceneNodeMaterial() = default;
@@ -124,6 +126,9 @@ namespace nbunny
 
 		void set_outline_threshold(float value);
 		float get_outline_threshold() const;
+
+		void set_z_bias(float value);
+		float get_z_bias() const;
 
 		const glm::vec4& get_color() const;
 		void set_color(const glm::vec4& value);

@@ -83,10 +83,11 @@ vec3 scapeApplyLight(
 	float diffuseCoefficient = max(0.0, dot(normal, direction)) * light.position.w;
 	vec3 diffuseLight = diffuseCoefficient * color * light.color;
 
+	vec3 specularSurfaceToCamera = normalize((scape_CameraEye - vec3(0.0, 5.0, 0.0)) - position);
 	vec3 cameraToTarget = normalize(scape_CameraEye - scape_CameraTarget);
-	float exponent = abs(dot(surfaceToCamera, reflect(normal, -cameraToTarget)));
-	float specularCoefficient = max(pow(2.0, exponent * (specular * specular)) - 1.0, 0.0);
-	vec3 specularLight = specularCoefficient * light.color;
+	float exponent = abs(dot(specularSurfaceToCamera, reflect(normal, -cameraToTarget)));
+	float specularCoefficient = pow(5.0, exponent * pow(specular, 2.5)) - 1.0;
+	vec3 specularLight = specularCoefficient * vec3(length(light.color));
 
 #ifdef SCAPE_ENABLE_RIM_LIGHTING
 	vec3 rimLightEye = surfaceToCamera;

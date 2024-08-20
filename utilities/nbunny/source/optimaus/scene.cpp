@@ -250,6 +250,16 @@ float nbunny::SceneNodeMaterial::get_outline_threshold() const
 	return outline_threshold;
 }
 
+void nbunny::SceneNodeMaterial::set_z_bias(float value)
+{
+	z_bias = value;	
+}
+
+float nbunny::SceneNodeMaterial::get_z_bias() const
+{
+	return z_bias;
+}
+
 const glm::vec4& nbunny::SceneNodeMaterial::get_color() const
 {
 	return color;
@@ -563,7 +573,7 @@ void nbunny::SceneNode::sort_by_position(std::vector<SceneNode*>& nodes, const C
 				b_screen_position = screen_positions.insert(std::make_pair(b, p)).first;
 			}
 
-			return glm::floor(a_screen_position->second.z * 1000) < glm::floor(b_screen_position->second.z * 1000);
+			return glm::floor(a_screen_position->second.z * 1000) + a->get_material().get_z_bias() < glm::floor(b_screen_position->second.z * 1000) + b->get_material().get_z_bias();
 		});
 }
 
@@ -1286,6 +1296,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getIsCullDisabled", &nbunny::SceneNodeMaterial::get_is_cull_disabled,
 		"setOutlineThreshold", &nbunny::SceneNodeMaterial::set_outline_threshold,
 		"getOutlineThreshold", &nbunny::SceneNodeMaterial::get_outline_threshold,
+		"setZBias", &nbunny::SceneNodeMaterial::set_z_bias,
+		"getZBias", &nbunny::SceneNodeMaterial::get_z_bias,
 		"setColor", &nbunny_scene_node_material_set_color,
 		"getColor", &nbunny_scene_node_material_get_color,
 		"setOutlineColor", &nbunny_scene_node_material_set_outline_color,
