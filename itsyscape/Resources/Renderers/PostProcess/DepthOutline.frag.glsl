@@ -15,7 +15,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	float outlineThreshold = Texel(scape_OutlineThresholdTexture, textureCoordinate).a;
 	vec3 outlineColor = Texel(scape_OutlineColorTexture, textureCoordinate).rgb;
 	float depthEdge = getDepthEdge(image, textureCoordinate, scape_TexelSize, step(0.0, outlineThreshold));
-	vec3 normalEdge = getNormalEdge(scape_NormalTexture, textureCoordinate, scape_TexelSize);
+	float normalEdge = getNormalEdge(scape_NormalTexture, textureCoordinate, scape_TexelSize);
 	float depthEdgeStep = max(scape_DepthStep + abs(outlineThreshold), 0.0);
 	float normalEdgeStep = max(scape_NormalStep, 0.0);
 
