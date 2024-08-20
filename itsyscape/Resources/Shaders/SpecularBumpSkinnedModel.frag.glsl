@@ -20,7 +20,7 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	normal = normalize(mat3(scape_NormalMatrix) * preTransformedNormal);
 
 	specular = specularSample.r * specularSample.a;
-	color = colorSample * color;
+	color = colorSample * color * vec4(mix(vec3(specularSample.a), vec3(1.0), 1.0 - specularSample.a), 1.0);
 }	
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)

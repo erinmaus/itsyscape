@@ -1,11 +1,11 @@
 {
 	{
-		tileSetID = "YendorianJungle",
 		autoMask = true,
 		maskID =
 		{
-			building = "Building",
 			default = true,
+			building = "Building",
 		},
+		tileSetID = "YendorianJungle",
 	},
 }
