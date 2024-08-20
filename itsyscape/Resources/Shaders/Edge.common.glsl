@@ -68,35 +68,32 @@ float getGreyEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize, float
 	return sqrt(M / max(S, 0.001));
 }
 
-vec3 getNormalEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize)
+float getNormalEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize)
 {
-	mat3 X, Y, Z;
-	vec3 convulation[9];
+	mat3 I;
+	float convulation[9];
+
+	vec3 center = Texel(image, textureCoordinate).xyz;
 
 	for (int x = 0; x < 3; x += 1)
 	{
 		for (int y = 0; y < 3; y += 1)
 		{
 			vec3 currentSample = Texel(image, textureCoordinate + vec2(float(x - 1), float(y - 1)) * texelSize).xyz;
-			currentSample += vec3(1.0);
-			currentSample /= vec3(2.0);
+			float centerDotCurrentSample = dot(center, currentSample);
 
-			X[x][y] = currentSample.x;
-			Y[x][y] = currentSample.y;
-			Z[x][y] = currentSample.z;
+			I[x][y] = centerDotCurrentSample;
 		}
 	}
 	
 	for (int i = 0; i < 9; i++)
 	{
-		float dotProductX = dot(G[i][0], X[0]) + dot(G[i][1], X[1]) + dot(G[i][2], X[2]);
-		float dotProductY = dot(G[i][0], Y[0]) + dot(G[i][1], Y[1]) + dot(G[i][2], Y[2]);
-		float dotProductZ = dot(G[i][0], Z[0]) + dot(G[i][1], Z[1]) + dot(G[i][2], Z[2]);
-		convulation[i] = vec3(dotProductX * dotProductX, dotProductY * dotProductY, dotProductZ * dotProductZ); 
+		float dotProduct = dot(G[i][0], I[0]) + dot(G[i][1], I[1]) + dot(G[i][2], I[2]);
+		convulation[i] = dotProduct * dotProduct; 
 	}
 
-	vec3 M = (convulation[0] + convulation[1]) + (convulation[2] + convulation[3]);
-	vec3 S = (convulation[4] + convulation[5]) + (convulation[6] + convulation[7]) + (convulation[8] + M);
+	float M = (convulation[0] + convulation[1]) + (convulation[2] + convulation[3]);
+	float S = (convulation[4] + convulation[5]) + (convulation[6] + convulation[7]) + (convulation[8] + M);
 
-	return sqrt(M / max(S, vec3(0.001)));
+	return sqrt(M / max(S, 0.001));
 }
