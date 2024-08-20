@@ -33,10 +33,10 @@ Lamp.FLAME = {
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 0, 0.15 },
-			position = { 0, 0.2, 0 },
+			radius = { 0, 0.25 },
+			position = { 0, 0.4, 0 },
 			yRange = { 0, 0 },
-			lifetime = { 0.75, 0.2 }
+			lifetime = { 1.5, 0.4 }
 		},
 		{
 			type = "DirectionalEmitter",
@@ -54,7 +54,7 @@ Lamp.FLAME = {
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 0.05 }
+			scale = { 0.1 }
 		},
 		{
 			type = "RandomRotationEmitter",
