@@ -133,7 +133,7 @@ function Material:getZBias()
 end
 
 function Material:setZBias(value)
-	self._handle:setZBias(value or 0.5)
+	self._handle:setZBias(value)
 end
 
 function Material:getColor()
