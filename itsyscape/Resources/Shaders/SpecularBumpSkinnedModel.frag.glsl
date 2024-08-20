@@ -17,10 +17,17 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	float height;
 	vec3 preTransformedNormal;
 	calculateBumpNormal(scape_HeightmapTexture, textureCoordinate, vec2(1.0) / vec2(textureSize(scape_HeightmapTexture, 0)), scape_BumpHeight, preTransformedNormal, height);
-	normal = normalize(mat3(scape_NormalMatrix) * preTransformedNormal);
+
+	// Currently we can cheat calculating the tangent and bitangent since this is only applied to flat models where the normal is (0, [-/+]1, 0).
+	vec3 currentTangent = normal.yxz;
+	vec3 currentBitangent = normal.xzy;
+	vec3 currentNormal = normal;
+	mat3 tbn = mat3(currentTangent, currentBitangent, currentNormal);
+
+	normal = normalize(tbn * preTransformedNormal);
 
 	specular = specularSample.r * specularSample.a;
-	color = colorSample * color * vec4(mix(vec3(specularSample.a), vec3(1.0), 1.0 - specularSample.a), 1.0);
+	color = colorSample * color * vec4(mix(vec3(specular), vec3(1.0), 1.0 - specularSample.a), 1.0);
 }	
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)

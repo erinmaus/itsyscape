@@ -10,8 +10,8 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	vec4 specularSample = Texel(scape_SpecularTexture, textureCoordinate);
 	vec4 colorSample = Texel(scape_DiffuseTexture, textureCoordinate);
 
-	specular = specularSample.r * specularSample.a;
-	color = colorSample * color * vec4(mix(vec3(specularSample.a), vec3(1.0), 1.0 - specularSample.a), 1.0);
+	specular = specularSample.r * specularSample.a + 0.2;
+	color = colorSample * color * vec4(mix(vec3(specularSample), vec3(1.0), 1.0 - specularSample.a), 1.0);
 }	
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
