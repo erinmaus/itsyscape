@@ -693,3 +693,33 @@ do
 		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "Lamp_IsabelleTower" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 0.5,
+		SizeY = 0.5,
+		SizeZ = 0.5,
+		MapObject = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Lamp",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Lights the way.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+end
