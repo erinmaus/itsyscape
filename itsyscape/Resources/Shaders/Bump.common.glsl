@@ -15,7 +15,7 @@ void calculateBumpNormal(Image heightmapTexture, vec2 textureCoordinate, vec2 te
     normal = vec3(
         (topRight + 2.0 * right + bottomRight) - (topLeft + 2.0 * left + bottomLeft),
         (bottomLeft + 2.0 * bottom + bottomRight) - (topLeft + 2.0 * top + topRight),
-        1.0 / scale);
+        scale);
     normal = normalize(normal);
-    height = center * scale;
+    height = center;
 }
