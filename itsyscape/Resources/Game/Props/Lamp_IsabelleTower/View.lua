@@ -97,7 +97,8 @@ function Lamp:load()
 	self.light = PointLightSceneNode()
 	self.light:setParent(root)
 
-	self.decoration = DecorationSceneNode()
+	self.lamp = DecorationSceneNode()
+	self.base = DecorationSceneNode()
 
 	resources:queue(
 		TextureResource,
@@ -109,18 +110,22 @@ function Lamp:load()
 		StaticMeshResource,
 		"Resources/Game/Props/Lamp_IsabelleTower/Lamp.lstatic",
 		function(mesh)
-			self.decoration:fromGroup(mesh:getResource(), "lamp")
-			self.decoration:getMaterial():setTextures(self.texture)
-			self.decoration:getMaterial():setIsFullLit(true)
-			self.decoration:getMaterial():setIsZWriteDisabled(true)
-			self.decoration:getMaterial():setZBias(0.01)
-			self.decoration:getMaterial():setOutlineThreshold(0.5)
-			self.decoration:setParent(root)
+			self.lamp:fromGroup(mesh:getResource(), "lamp")
+			self.lamp:getMaterial():setTextures(self.texture)
+			self.lamp:getMaterial():setIsFullLit(true)
+			self.lamp:getMaterial():setIsZWriteDisabled(true)
+			self.lamp:getMaterial():setZBias(0.01)
+			self.lamp:getMaterial():setOutlineThreshold(0.5)
+			self.lamp:setParent(root)
+
+			self.base:fromGroup(mesh:getResource(), "lamp.base")
+			self.base:getMaterial():setTextures(self.texture)
+			self.base:setParent(root)
 		end)
 	resources:queueEvent(function()
 		self.flames = ParticleSceneNode()
 		self.flames:initParticleSystemFromDef(Lamp.FLAME, resources)
-		self.flames:setParent(self.decoration)
+		self.flames:setParent(self.lamp)
 	end)
 end
 
