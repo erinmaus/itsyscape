@@ -25,5 +25,5 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		return vec4(1.0);
 	}
 
-	return vec4(length(normalEdge), 0.0, 0.0, 1.0);
+	return vec4(outlineColor, 1.0);
 }
