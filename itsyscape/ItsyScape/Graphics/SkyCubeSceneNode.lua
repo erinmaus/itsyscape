@@ -169,12 +169,12 @@ function SkyCubeSceneNode:draw(renderer, frameDelta)
 	local shader = renderer:getCurrentShader()
 	if shader then
 		if shader:hasUniform("scape_TopClearColor") then
-			local topClearColor = self.previousTopClearColor:lerp(self.currentTopClearColor, frameDelta)
+			local topClearColor = (self.previousTopClearColor or self.currentTopClearColor):lerp(self.currentTopClearColor, frameDelta)
 			shader:send("scape_TopClearColor", { topClearColor:get() })
 		end
 
 		if shader:hasUniform("scape_BottomClearColor") then
-			local bottomClearColor = self.previousBottomClearColor:lerp(self.currentBottomClearColor, frameDelta)
+			local bottomClearColor = (self.previousBottomClearColor or self.currentBottomClearColor):lerp(self.currentBottomClearColor, frameDelta)
 			shader:send("scape_BottomClearColor", { bottomClearColor:get() })
 		end
 

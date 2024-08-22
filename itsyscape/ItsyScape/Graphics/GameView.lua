@@ -41,11 +41,13 @@ local TileSet = require "ItsyScape.World.TileSet"
 local MapMeshMask = require "ItsyScape.World.MapMeshMask"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
+local Block = require "ItsyScape.World.GroundDecorations.Block"
 local SkyboxSceneNode = require "ItsyScape.Graphics.SkyboxSceneNode"
 
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
 GameView.FADE_DURATION = 2
+GameView.ACTOR_CANVAS_CELL_SIZE = 8
 
 GameView.PropViewDebugStats = Class(DebugStats)
 function GameView.PropViewDebugStats:process(node, delta)
@@ -110,6 +112,8 @@ function GameView:new(game, camera)
 	whiteTextureImageData:setPixel(0, 0, 1, 1, 1, 1)
 	self.whiteTexture = TextureResource(love.graphics.newImage(whiteTextureImageData))
 	self.whiteTextureImageData = whiteTextureImageData
+
+	self.actorCanvasCircle = love.graphics.newImage("ItsyScape/Graphics/Resources/GameViewActorCanvasCircle.png")
 
 	self.defaultMapMaskTexture = LayerTextureResource(love.graphics.newArrayImage(whiteTextureImageData))
 
@@ -449,6 +453,11 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		node = SceneNode()
 	end
 
+	local actorCanvas = love.graphics.newCanvas(
+		map:getWidth() * GameView.ACTOR_CANVAS_CELL_SIZE,
+		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
+		{ format = "rgba16f" })
+
 	local m = {
 		tileSet = tileSet,
 		largeTileSet = largeTileSet,
@@ -466,6 +475,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		islandProcessor = mapMeshMasks and meta.autoMask and MapMeshIslandProcessor(map, tileSet),
 		meta = meta,
 		wallHackEnabled = not (meta and type(meta.wallHack) == "table" and meta.wallHack.enabled == false),
+		actorCanvas = actorCanvas,
 		curves = {}
 	}
 
@@ -607,11 +617,31 @@ function GameView:updateGroundDecorations(m)
 				self.resourceManager:queueAsyncEvent(function()
 					ground:emitAll(m.tileSet, m.map)
 
-					local decoration = ground:getDecoration()
-					local groupName = string.format("_x_GroundDecorations_%s", tileSetID)
-					local sceneNode = self:decorate(groupName, decoration, m.layer)
-					sceneNode:getMaterial():setOutlineThreshold(0.5)
-					sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
+					for i = 1, ground:getDecorationCount() do
+						local decoration, group = ground:getDecorationAtIndex(i)
+						local groupName = string.format("_x_GroundDecorations_%s_%s", group, tileSetID)
+						local sceneNode = self:decorate(groupName, decoration, m.layer)
+						sceneNode:getMaterial():setOutlineThreshold(0.5)
+						sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
+
+						if group == Block.GROUP_BENDY then
+							local onWillRender
+							onWillRender = sceneNode:onWillRender(function(renderer, delta)
+								if onWillRender then
+									onWillRender(renderer, delta)
+								end
+
+								local currentShader = renderer:getCurrentShader()
+								if not currentShader then
+									return
+								end
+
+								if currentShader:hasUniform("scape_ActorCanvas") then
+									currentShader:send("scape_ActorCanvas", m.actorCanvas)
+								end
+							end)
+						end
+					end
 				end)
 			end
 		end
@@ -1244,7 +1274,12 @@ function GameView:decorate(group, decoration, layer)
 				end
 
 				sceneNode:getMaterial():setShader(shader)
-				sceneNode:onWillRender(function(renderer)
+				local oldOnWillRender
+				oldOnWillRender = sceneNode:onWillRender(function(renderer, delta)
+					if oldOnWillRender then
+						oldOnWillRender(renderer, delta)
+					end
+
 					if m and m.onWillRender then
 						m.onWillRender(renderer)
 					end
@@ -1262,7 +1297,12 @@ function GameView:decorate(group, decoration, layer)
 				alphaSceneNode:setParent(map)
 				alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
 				alphaSceneNode:getMaterial():setShader(shader)
-				alphaSceneNode:onWillRender(function(renderer)
+				local oldAlphaOnWillRender
+				oldAlphaOnWillRender = alphaSceneNode:onWillRender(function(renderer, delta)
+					if oldAlphaOnWillRender then
+						oldAlphaOnWillRender(renderer, delta)
+					end
+
 					if m and m.onWillRender then
 						m.onWillRender(renderer)
 					end
@@ -1289,7 +1329,14 @@ function GameView:decorate(group, decoration, layer)
 				sceneNode:getMaterial():setShader(shader)
 
 				if m then
-					sceneNode:onWillRender(m.onWillRender)
+					local oldOnWillRender
+					oldOnWillRender = sceneNode:onWillRender(function(...)
+						if oldOnWillRender then
+							oldOnWillRender(...)
+						end
+
+						m.onWillRender(...)
+					end)
 				end
 			end
 
@@ -1739,7 +1786,33 @@ function GameView:update(delta)
 	end
 end
 
+function GameView:_updateActorCanvases()
+	love.graphics.push("all")
+	for layer, m in pairs(self.mapMeshes) do
+		love.graphics.setCanvas(m.actorCanvas)
+		love.graphics.clear(0, 0, 0, 1)
+
+		for actor in self.game:getStage():iterateActors() do
+			local _, _, actorLayer = actor:getTile()
+			if actorLayer == layer then
+				local min, max = actor:getBounds()
+				local size = max - min
+
+				local radius = math.min(size.x, size.z) / 2
+				local relativePosition = (min + size / 2) / m.map:getCellSize() * GameView.ACTOR_CANVAS_CELL_SIZE
+				local relativeScale = radius / m.map:getCellSize() * GameView.ACTOR_CANVAS_CELL_SIZE
+
+				love.graphics.setColor(1, min.y, 1, 1)
+				love.graphics.draw(self.actorCanvasCircle, relativePosition.x, relativePosition.z, 0, relativeScale, relativeScale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
+			end
+		end
+	end
+	love.graphics.pop()
+end
+
 function GameView:draw(delta, width, height)
+	self:_updateActorCanvases()
+
 	local skybox = next(self.skyboxes)
 	if skybox then
 		local info = self.skyboxes[skybox]

@@ -11,6 +11,11 @@ local Class = require "ItsyScape.Common.Class"
 
 local Block, Metatable = Class()
 
+Block.GROUP_STATIC = "static"
+Block.GROUP_BENDY  = "bendy"
+
+Block.GROUP = Block.GROUP_STATIC
+
 function Block.Bind(Type, groundDecorations)
 	return function(t)
 		local block = Type(groundDecorations)
@@ -42,7 +47,7 @@ function Block:getGroundDecorations()
 end
 
 function Block:addFeature(id, position, rotation, scale, color)
-	self.groundDecorations:addFeature(id, position, rotation, scale, color)
+	self.groundDecorations:addFeature(self.GROUP, id, position, rotation, scale, color)
 end
 
 function Block:bind()
