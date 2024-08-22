@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local MapMesh = require "ItsyScape.World.MapMesh"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
@@ -31,6 +32,7 @@ function MapMeshSceneNode:new()
 
 	self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
 	self:getMaterial():setOutlineThreshold(-0.01)
+	self:getMaterial():setOutlineColor(Color(0.7))
 end
 
 function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor, largeTileSet)

@@ -34,6 +34,7 @@ end
 
 function Block:new(groundDecorations)
 	self.groundDecorations = groundDecorations
+	self._cache = {}
 end
 
 function Block:getGroundDecorations()
@@ -46,6 +47,25 @@ end
 
 function Block:bind()
 	-- Nothing.
+end
+
+function Block:_getCacheIndex(i, j, w, h, x, y, subW, subH)
+	return (j - 1) * w + (i - 1) + 1, (y - 1) * subW + (x - 1) + 1
+end
+
+function Block:addCache(i, j, w, h, x, y, subW, subH, g)
+	local index1, index2 = self:_getCacheIndex(i, j, w, h, x, y, subW, subH)
+
+	local c = self._cache[index1] or {}
+	assert(not c[index2])
+
+	c[index2] = g
+	self._cache[index1] = c
+end
+
+function Block:getCache(i, j, w, h, x, y, subW, subH)
+	local index1, index2  = self:_getCacheIndex(i, j, w, h, x, y, subW, subH)
+	return self._cache[index1] and self._cache[index1][index2]
 end
 
 function Block:emit(...)
