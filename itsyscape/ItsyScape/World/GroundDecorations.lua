@@ -53,7 +53,7 @@ function GroundDecorations:registerTile(name, func, ...)
 	self.tileFunctions[name]:register(func, self, ...)
 end
 
-function GroundDecorations:emit(tileSet, map, i, j)
+function GroundDecorations:emit(drawType, tileSet, map, i, j)
 	local mapTile = map:getTile(i, j)
 
 	local tileSetTile, actualTileSet
@@ -71,7 +71,7 @@ function GroundDecorations:emit(tileSet, map, i, j)
 		local name = tileSetTile.name
 		local tileFunction = self.tileFunctions[name]
 		if tileFunction then
-			tileFunction(actualTileSet, map, i, j, tileSetTile, mapTile)
+			tileFunction(drawType, actualTileSet, map, i, j, tileSetTile, mapTile)
 		end
 	end
 end
@@ -79,7 +79,17 @@ end
 function GroundDecorations:emitAll(tileSet, map)
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
-			self:emit(tileSet, map, i, j)
+			self:emit("cache", tileSet, map, i, j)
+		end
+
+		if coroutine.running() then
+			coroutine.yield()
+		end
+	end
+
+	for i = 1, map:getWidth() do
+		for j = 1, map:getHeight() do
+			self:emit("draw", tileSet, map, i, j)
 		end
 
 		if coroutine.running() then

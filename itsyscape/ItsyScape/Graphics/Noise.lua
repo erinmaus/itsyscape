@@ -34,6 +34,10 @@ end
 
 function Noise.UniformSampler:sample4D(x, y, z, w)
 	local value = self.noise:sample4D(x, y, z, w)
+
+	self.min = math.min(value, self.min or value)
+	self.max = math.max(value, self.max or value)
+
 	self:_add(x, y, z, w, value)
 
 	return value
@@ -57,6 +61,10 @@ function Noise.UniformSampler:_add(x, y, z, w, value)
 end
 
 function Noise.UniformSampler:uniform(value)
+	if true and self.min and self.max then
+		return (value - self.min) / (self.max - self.min)
+	end
+
 	if self.isDirty then
 		table.sort(self.samples)
 		self.isDirty = false

@@ -21,22 +21,22 @@ Grass.GLOBAL_OFFSET = Vector(174 / 257)
 Grass.SATURATION = 4
 
 Grass.DIRT_NOISE = Noise {
-	scale = 3,
+	scale = 12,
 	octaves = 2,
 	attenuation = 0.5
 }
 Grass.DIRT_THRESHOLD = 0.3
 
-Grass.MIN_OFFSET = -16
-Grass.MAX_OFFSET = 16
+Grass.MIN_OFFSET = -32
+Grass.MAX_OFFSET = 32
 Grass.OFFSET_NOISE = Noise {
-	scale = 32,
+	scale = 117,
 	octaves = 2,
 	attenuation = -2
 }
 
-Grass.MIN_SCALE = 0.2
-Grass.MAX_SCALE = 1.0
+Grass.MIN_SCALE = 0.5
+Grass.MAX_SCALE = 1.2
 Grass.SCALE_NOISE = Noise {
 	scale = 3,
 	octaves = 2,
@@ -46,8 +46,8 @@ Grass.SCALE_NOISE = Noise {
 Grass.MIN_ROTATION = -math.pi
 Grass.MAX_ROTATION = math.pi
 Grass.ROTATION_NOISE = Noise {
-	scale = 13,
-	octaves = 3,
+	scale = 117,
+	octaves = 2,
 	attenuation = 0
 }
 
@@ -121,12 +121,10 @@ function Grass:cache(map, i, j, w, h, tileSize)
 
 			for x = 1, self.SATURATION do
 				for y = 1, self.SATURATION do
-					local tileX = (x - 1) / (self.SATURATION - 1)
-					local tileY = (y - 1) / (self.SATURATION - 1)
-					local deltaX = (currentI - 1) / w
-					local deltaY = (currentJ - 1) / h
-					local noiseX = deltaX + tileX / map:getWidth()
-					local noiseY = deltaY + tileY / map:getHeight()
+					local absoluteI = currentI + ((x - 1) / (self.SATURATION - 1))
+					local absoluteJ = currentJ + ((y - 1) / (self.SATURATION - 1))
+					local noiseX = absoluteI / map:getWidth()
+					local noiseY = absoluteJ / map:getHeight()
 
 					local offsetX = self._offsets:sample3D(noiseX, noiseY, 1)
 					local offsetY = self._offsets:sample3D(noiseX, noiseY, 2)
@@ -141,8 +139,8 @@ function Grass:cache(map, i, j, w, h, tileSize)
 					local g = {
 						i = currentI * self.SATURATION + x,
 						j = currentJ * self.SATURATION + y,
-						x = (currentI + tileX) * tileSize,
-						y = (currentJ + tileY) * tileSize,
+						x = absoluteI * tileSize,
+						y = absoluteJ * tileSize,
 						offsetX = offsetX,
 						offsetY = offsetY,
 						z = z,

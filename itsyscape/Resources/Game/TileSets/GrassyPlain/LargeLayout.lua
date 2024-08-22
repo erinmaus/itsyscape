@@ -11,7 +11,7 @@ local Block = require "ItsyScape.World.TileSets.Block"
 local Grass = require "ItsyScape.World.TileSets.Grass"
 
 return {
-	grassx = Block.Bind(Grass) {
+	grass = Block.Bind(Grass) {
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/GrassyPlain/TropicalYendorianGrass%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/GrassyPlain/TropicalYendorianGrass%d@Specular.png",
 		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/GrassyPlain/TropicalYendorianGrass%d@Outline.png",
