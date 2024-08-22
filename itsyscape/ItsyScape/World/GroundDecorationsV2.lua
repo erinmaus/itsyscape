@@ -15,20 +15,42 @@ local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local GroundDecorationsV2 = Class()
 
 function GroundDecorationsV2:new(id)
-	self.decoration = Decoration({
-		tileSetID = id
-	})
+	self.decorations = {}
 
 	self.tileSetID = id
 	self.tileFunctions = {}
 end
 
-function GroundDecorationsV2:getDecoration()
-	return self.decoration
+function GroundDecorationsV2:getDecorationCount()
+	return #self.decorations
 end
 
-function GroundDecorationsV2:addFeature(id, position, rotation, scale, color, texture)
-	return self.decoration:add(id, position, rotation, scale, color, texture)
+function GroundDecorationsV2:getDecorationAtIndex(index)
+	if type(index) ~= "number" or index < 1 or index > #self.decorations then
+		return nil, nil
+	end
+
+	local decoration = self.decorations[index]
+	return decoration.decoration, decoration.name
+end
+
+function GroundDecorationsV2:addFeature(group, id, position, rotation, scale, color, texture)
+	local decoration = self.decorations[group]
+	if decoration then
+		decoration = self.decorations[decoration]
+	else
+		decoration = {
+			name = group,
+			decoration = Decoration({
+				tileSetID = self.tileSetID
+			})
+		}
+
+		table.insert(self.decorations, decoration)
+		self.decorations[group] = #self.decorations
+	end
+
+	return decoration.decoration:add(id, position, rotation, scale, color, texture)
 end
 
 function GroundDecorationsV2:registerTile(name, func, ...)

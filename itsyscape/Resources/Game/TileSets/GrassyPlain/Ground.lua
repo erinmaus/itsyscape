@@ -11,7 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
-local GroundDecorations = require "ItsyScape.World.GroundDecorations"
+local GroundDecorations = require "ItsyScape.World.GroundDecorationsV2"
 local GrassBlock = require "ItsyScape.World.GroundDecorations.GrassBlockV2"
 
 local GrassyPlainGround = Class(GroundDecorations)

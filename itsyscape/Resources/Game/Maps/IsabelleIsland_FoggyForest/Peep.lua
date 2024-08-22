@@ -56,6 +56,12 @@ function FoggyForest:new(resource, name, ...)
 	self.treeHealthStat = {}
 end
 
+function FoggyForest:onLoad(...)
+	Map.onLoad(self, ...)
+
+	Utility.Map.spawnMap(self, "Test123_Draft", Vector.ZERO, { isLayer = true })
+end
+
 function FoggyForest:makeStats(player)
 	self.numFoesStat[player] = BossStat({
 		icon = "Resources/Game/UI/Icons/Concepts/Rage.png",

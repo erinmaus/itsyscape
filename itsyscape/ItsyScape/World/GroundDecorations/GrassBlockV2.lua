@@ -16,6 +16,8 @@ local Noise = require "ItsyScape.Graphics.Noise"
 
 local GrassBlock = Class(Block)
 
+GrassBlock.GROUP = Block.GROUP_BENDY
+
 GrassBlock.SATURATION = 6
 
 GrassBlock.DIRT_NOISE = Noise {
