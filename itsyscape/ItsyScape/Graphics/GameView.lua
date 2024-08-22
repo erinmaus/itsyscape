@@ -47,7 +47,7 @@ local SkyboxSceneNode = require "ItsyScape.Graphics.SkyboxSceneNode"
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
 GameView.FADE_DURATION = 2
-GameView.ACTOR_CANVAS_CELL_SIZE = 8
+GameView.ACTOR_CANVAS_CELL_SIZE = 32
 
 GameView.PropViewDebugStats = Class(DebugStats)
 function GameView.PropViewDebugStats:process(node, delta)
@@ -457,6 +457,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		map:getWidth() * GameView.ACTOR_CANVAS_CELL_SIZE,
 		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
 		{ format = "rgba16f" })
+	actorCanvas:setFilter("linear", "linear")
 
 	local m = {
 		tileSet = tileSet,
@@ -639,7 +640,22 @@ function GameView:updateGroundDecorations(m)
 								if currentShader:hasUniform("scape_ActorCanvas") then
 									currentShader:send("scape_ActorCanvas", m.actorCanvas)
 								end
+
+								if currentShader:hasUniform("scape_WindDirection") then
+									currentShader:send("scape_WindDirection", m.meta.windDirection or { Vector(-1, 0, -1):getNormal():get() })
+								end
+
+								if currentShader:hasUniform("scape_WindSpeed") then
+									currentShader:send("scape_WindSpeed", m.meta.windSpeed or 4)
+								end
+
+								if currentShader:hasUniform("scape_WindPattern") then
+									currentShader:send("scape_WindPattern", m.meta.windPattern or { 5, 10, 15 })
+								end
 							end)
+
+							shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
+							sceneNode:getMaterial():setShader(shader)
 						end
 					end
 				end)
@@ -1326,7 +1342,9 @@ function GameView:decorate(group, decoration, layer)
 						"Resources/Shaders/Decoration")
 				end
 
-				sceneNode:getMaterial():setShader(shader)
+				if sceneNode:getMaterial():getShader():getID() == DecorationSceneNode.DEFAULT_SHADER:getID() then
+					sceneNode:getMaterial():setShader(shader)
+				end
 
 				if m then
 					local oldOnWillRender
@@ -1786,24 +1804,33 @@ function GameView:update(delta)
 	end
 end
 
-function GameView:_updateActorCanvases()
+function GameView:_drawActorOnActorCanvas(delta, actor, m)
+	local transform = self:getActor(actor):getSceneNode():getTransform():getGlobalDeltaTransform(delta)
+	local position = Vector(transform:transformPoint(0, 0, 0))
+
+	local min, max = actor:getBounds()
+	local size = max - min
+
+	local radius = math.min(size.x, size.z) / 2
+	local relativePosition = position / Vector(m.map:getWidth() * m.map:getCellSize(), 1.0, m.map:getHeight() * m.map:getCellSize())
+	local relativeScale = (radius + 1.5) / m.map:getCellSize()
+	relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / self.actorCanvasCircle:getWidth())
+
+	love.graphics.draw(self.actorCanvasCircle, relativePosition.x * m.actorCanvas:getWidth(), relativePosition.z * m.actorCanvas:getHeight(), 0, relativeScale, relativeScale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
+end
+
+function GameView:_updateActorCanvases(delta)
 	love.graphics.push("all")
 	for layer, m in pairs(self.mapMeshes) do
 		love.graphics.setCanvas(m.actorCanvas)
 		love.graphics.clear(0, 0, 0, 1)
 
+		love.graphics.setBlendMode("alpha", "alphamultiply")
+
 		for actor in self.game:getStage():iterateActors() do
 			local _, _, actorLayer = actor:getTile()
 			if actorLayer == layer then
-				local min, max = actor:getBounds()
-				local size = max - min
-
-				local radius = math.min(size.x, size.z) / 2
-				local relativePosition = (min + size / 2) / m.map:getCellSize() * GameView.ACTOR_CANVAS_CELL_SIZE
-				local relativeScale = radius / m.map:getCellSize() * GameView.ACTOR_CANVAS_CELL_SIZE
-
-				love.graphics.setColor(1, min.y, 1, 1)
-				love.graphics.draw(self.actorCanvasCircle, relativePosition.x, relativePosition.z, 0, relativeScale, relativeScale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
+				self:_drawActorOnActorCanvas(delta, actor, m)
 			end
 		end
 	end
@@ -1811,7 +1838,7 @@ function GameView:_updateActorCanvases()
 end
 
 function GameView:draw(delta, width, height)
-	self:_updateActorCanvases()
+	self:_updateActorCanvases(delta)
 
 	local skybox = next(self.skyboxes)
 	if skybox then

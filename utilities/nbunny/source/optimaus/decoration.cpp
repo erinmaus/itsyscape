@@ -204,6 +204,9 @@ const nbunny::BaseType& nbunny::DecorationSceneNode::get_type() const
 nbunny::DecorationSceneNode::DecorationSceneNode(int reference) :
 	SceneNode(reference),
 	mesh_attribs({
+		{ "FeaturePosition", love::graphics::vertex::DATA_FLOAT, 3 },
+		{ "FeatureRotation", love::graphics::vertex::DATA_FLOAT, 4 },
+		{ "FeatureScale", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexPosition", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexNormal", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexTexture", love::graphics::vertex::DATA_FLOAT, 2 },
@@ -323,6 +326,10 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 		{
 			auto input_vertex = data + static_mesh_group->getVertexStride() * vertex_index;
 			Vertex output_vertex;
+
+			output_vertex.feature_position = feature->position;
+			output_vertex.feature_rotation = feature->rotation;
+			output_vertex.feature_scale = feature->scale;
 
 			auto input_position = *(const glm::vec3*) (input_vertex + position_offset);
 			input_position = glm::vec3(transform * glm::vec4(input_position, 1.0f));
