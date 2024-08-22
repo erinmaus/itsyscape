@@ -59,6 +59,9 @@ namespace nbunny
 
 		struct Vertex
 		{
+			glm::vec3 feature_position;
+			glm::quat feature_rotation;
+			glm::vec3 feature_scale;
 			glm::vec3 position;
 			glm::vec3 normal;
 			glm::vec2 texture;

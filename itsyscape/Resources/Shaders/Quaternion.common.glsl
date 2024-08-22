@@ -22,6 +22,24 @@ vec4 slerp(vec4 self, vec4 other, float t)
 	return self * vec4(c1) + other * vec4(c2) * sign(d);
 }
 
+vec4 quaternionFromAxisAngle(vec3 axis, float angle)
+{
+	float halfHangle = angle / 2.0;
+	float halfAngleSine = sin(halfHangle);
+	float halfAngleCosine = cos(halfHangle);
+
+	return vec4(vec3(halfAngleSine) * axis, halfAngleCosine);
+}
+
+vec4 quaternionLookAt(vec3 source, vec3 target, vec3 up)
+{
+	vec3 forward = normalize(target - source);
+	float d = dot(forward, up);
+	float angle = acos(d);
+	vec3 axis = normalize(cross(up, forward));
+	return quaternionFromAxisAngle(axis, angle);
+}
+
 vec4 quaternionConjugate(vec4 value)
 {
 	return normalize(vec4(-value.xyz, value.w));
