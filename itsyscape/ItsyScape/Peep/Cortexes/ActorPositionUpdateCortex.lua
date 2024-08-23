@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -19,6 +20,9 @@ function ActorPositionUpdateCortex:new()
 
 	self:require(ActorReferenceBehavior)
 	self:require(PositionBehavior)
+
+	self.positions = setmetatable({}, { __mode = 'k' })
+	self.layers = setmetatable({}, { __mode = 'k' })
 end
 
 function ActorPositionUpdateCortex:update(delta)
@@ -30,7 +34,11 @@ function ActorPositionUpdateCortex:update(delta)
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		if actor then
-			actor:move(position.position, position.layer)
+			if position.position ~= self.positions[actor] or position.layer ~= self.layers[actor] then
+				actor:move(position.position, position.layer)
+				self.positions[actor] = Vector(position.position:get())
+				self.layers[actor] = position.layer
+			end
 		end
 	end
 end

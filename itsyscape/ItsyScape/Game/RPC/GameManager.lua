@@ -121,6 +121,9 @@ function GameManager.Property:new(instance, field)
 	self._handle:setField(field)
 	self._handle:setInstanceInterface(instance:getInterface())
 	self._handle:setInstanceID(instance:getID())
+
+	self.isDirty = true
+	self.values = {}
 end
 
 function GameManager.Property:getField()
@@ -132,14 +135,29 @@ function GameManager.Property:hasValue()
 end
 
 function GameManager.Property:getValue()
-	return self._handle:getValue()
+	if self.isDirty then
+		local value = self._handle:rawgetValue()
+
+		self.n = #value
+
+		table.clear(self.values)
+		for i = 1, self.n do
+			self.values[i] = value:get(i)
+		end
+
+		self.isDirty = false
+	end
+
+	return unpack(self.values, 1, self.n)
 end
 
 function GameManager.Property:update(instance)
+	self.isDirty = true
 	return self._handle:update(instance[self._handle:getField()](instance))
 end
 
 function GameManager.Property:set(instance, ...)
+	self.isDirty = true
 	self._handle:setValue(...)
 end
 

@@ -19,15 +19,24 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
-local TextureResource = require "ItsyScape.Graphics.TextureResource"
-local PathTextureResource = require "ItsyScape.Graphics.PathTextureResource"
+local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
+local Model = require "ItsyScape.Graphics.Model"
+local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
+local PathTextureResource = require "ItsyScape.Graphics.PathTextureResource"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local Atlas = require "ItsyScape.UI.Atlas"
 local MapCurve = require "ItsyScape.World.MapCurve"
 
 local ActorView = Class()
+
+ActorView.DEFAULT_MULTI_SHADER = ShaderResource()
+ActorView.DEFAULT_MULTI_SHADER:loadFromFile("Resources/Shaders/MultiSkinnedModel")
+
 ActorView.Animatable = Class(Animatable)
 function ActorView.Animatable:new(actor)
 	self.actor = actor
@@ -207,12 +216,303 @@ function ActorView.Animatable:update()
 	end
 end
 
+ActorView.CombinedModel = Class()
+ActorView.CombinedModel.VERTEX_FORMAT = {
+	{ 'VertexPosition', 'float', 3 },
+	{ 'VertexNormal', 'float', 3 },
+	{ 'VertexTexture', 'float', 2 },
+	{ 'VertexBoneIndex', 'float', 4 },
+	{ 'VertexBoneWeight', 'float', 4 },
+	{ 'VertexDirection', 'float', 1 },
+	{ 'VertexLayer', 'float', 1 },
+}
+
+function ActorView.CombinedModel:new(actorView, shader)
+	self.actorView = actorView
+	self.shader = shader
+
+	local maxTextureSize = love.graphics.getSystemLimits().texturesize
+	maxTextureSize = math.min(maxTextureSize, 2048)
+
+	self.atlasSize = maxTextureSize
+
+	self.isAtlasDirty = false
+	self.baseAtlas = Atlas(self.atlasSize, self.atlasSize, 128, math.huge)
+	self.perPassAtlases = {}
+	self.boundTextureAtlases = {}
+
+	self.baseModels = {}
+	self.currentBaseModels = {}
+
+	self.mappedVertices = {}
+	self.mappedVertexCount = 0
+
+	self.min = Vector(0)
+	self.max = Vector(0)
+
+	self.inputVertexFormat = {}
+	self.outputVertexFormat = {}
+	self:_buildVertexFormat(self.outputVertexFormat, self.VERTEX_FORMAT)
+
+	self.sceneNode = ModelSceneNode()
+	self.sceneNode:getMaterial():setShader(self.shader)
+
+	self.isUpdating = 0
+end
+
+function ActorView.CombinedModel:getShader()
+	return self.shader
+end
+
+function ActorView.CombinedModel:getSceneNode()
+	return self.sceneNode
+end
+
+function ActorView.CombinedModel:add(baseModelSceneNode, baseTexture)
+	self:remove(baseModelSceneNode)
+
+	table.insert(self.baseModels, { sceneNode = baseModelSceneNode, texture = baseTexture })
+end
+
+function ActorView.CombinedModel:remove(baseModelSceneNode)
+	for i = #self.baseModels, 1, -1 do
+		if self.baseModels[i].sceneNode == baseModelSceneNode then
+			self.baseAtlas:replace(self.baseModels[i].texture)
+			table.remove(self.baseModels, i)
+		end
+	end
+end
+
+function ActorView.CombinedModel:getIsReady()
+	return self.isUpdating == 0
+end
+
+function ActorView.CombinedModel:getIsEmpty()
+	return #self.baseModels == 0
+end
+
+function ActorView.CombinedModel:dirty()
+	self.isAtlasDirty = true
+end
+
+function ActorView.CombinedModel:_getIsModelDirty()
+	if #self.baseModels ~= #self.currentBaseModels then
+		return true
+	end
+
+	for index = 1, #self.currentBaseModels do
+		if self.currentBaseModels[index] ~= self.baseModels[index].sceneNode then
+			return true
+		end
+	end
+
+	return false
+end
+
+function ActorView.CombinedModel:_getOffsetCount(format, name)
+	local LOVE_VERTEX_FORMAT_COUNT_INDEX = 3
+	local LOVE_VERTEX_FORMAT_NAME_INDEX = 1
+
+	local offset = 0
+	local count = 0
+	for i = 1, #format do
+		if format[i][LOVE_VERTEX_FORMAT_NAME_INDEX] == 'VertexBoneIndex' then
+			count = self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]
+			break
+		end
+		offset = offset + self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]
+	end
+
+	return offset, count
+end
+
+function ActorView.CombinedModel:_buildVertexFormat(result, format)
+	local LOVE_VERTEX_FORMAT_COUNT_INDEX = 3
+	local LOVE_VERTEX_FORMAT_NAME_INDEX = 1
+
+	local offset = 1
+	for i = 1, #format do
+		local attribute = format[i]
+		local attributeName = attribute[LOVE_VERTEX_FORMAT_NAME_INDEX]
+		local attributeCount = attribute[LOVE_VERTEX_FORMAT_COUNT_INDEX]
+
+		local r = result[attributeName] or {}
+		r.offset = offset
+		r.count = attributeCount
+
+		result[attributeName] = r
+
+		offset = offset + attributeCount
+	end
+end
+
+function ActorView.CombinedModel:_appendModel(baseModel, baseTexture)
+	local LOVE_VERTEX_FORMAT_NAME_INDEX = 1
+
+	local vertices = baseModel:getVertices()
+	self:_buildVertexFormat(self.inputVertexFormat, baseModel:getFormat())
+
+	for _, attribute in ipairs(self.VERTEX_FORMAT) do
+		local attributeName = attribute[LOVE_VERTEX_FORMAT_NAME_INDEX]
+
+		local inputOffset, inputCount
+		local outputOffset, outputCount
+		do
+			local inputAttribute = self.inputVertexFormat[attributeName]
+			if inputAttribute then
+				inputOffset = inputAttribute.offset
+				inputCount = inputAttribute.count
+			end
+
+			local outputAttribute = self.outputVertexFormat[attributeName]
+			if outputAttribute then
+				outputOffset = outputAttribute.offset
+				outputCount = outputAttribute.count
+			end
+		end
+
+		if not (inputOffset and inputCount and outputOffset and outputCount) then
+			if outputOffset and outputCount then
+				for index, vertex in ipairs(vertices) do
+					local outputVertexIndex = index + self.mappedVertexCount
+					local outputVertex = self.mappedVertices[outputVertexIndex] or {}
+
+					if attributeName == "VertexLayer" then
+						local layer = self.baseAtlas:layer(baseTexture) or 1
+						for i = 1, outputCount do
+							outputVertex[outputOffset + i - 1] = layer - 1
+						end
+					else
+						for i = 1, outputCount do
+							outputVertex[outputOffset + i - 1] = 0
+						end
+					end
+
+					self.mappedVertices[outputVertexIndex] = outputVertex
+				end
+			end
+		else
+			for index, inputVertex in ipairs(vertices) do
+				local outputVertexIndex = index + self.mappedVertexCount
+				local outputVertex = self.mappedVertices[outputVertexIndex] or {}
+
+				for i = 1, inputCount do
+					outputVertex[outputOffset + i - 1] = inputVertex[inputOffset + i - 1]
+				end
+
+				for i = inputCount + 1, outputCount do
+					outputVertex[i] = 0
+				end
+
+				if attributeName == "VertexPosition" then
+					local min = self.min or Vector(math.huge)
+					local max = self.max or Vector(-math.huge)
+
+					min.x = math.min(inputVertex[inputOffset] or min.x, min.x)
+					min.y = math.min(inputVertex[inputOffset + 1] or min.y, min.y)
+					min.z = math.min(inputVertex[inputOffset + 2] or min.z, min.z)
+
+					self.min = min
+					self.max = max
+				elseif attributeName == "VertexTexture" then
+					local left, right, top, bottom = self.baseAtlas:coordinates(baseTexture)
+					local width = right - left
+					local height = bottom - top
+
+					outputVertex[outputOffset] = outputVertex[outputOffset] * width + left
+					outputVertex[outputOffset + 1] = outputVertex[outputOffset + 1] * height + top
+				end
+			end
+		end
+	end
+
+	self.mappedVertexCount = self.mappedVertexCount + #vertices
+end
+
+function ActorView.CombinedModel:_updateModel()
+	table.clear(self.currentBaseModels)
+
+	self.isUpdating = self.isUpdating + 1
+	self.mappedVertexCount = 0
+	self.min = nil
+	self.max = nil
+
+	local totalTime = 0
+	for _, baseModel in ipairs(self.baseModels) do
+		table.insert(self.currentBaseModels, baseModel.sceneNode)
+
+		local model = baseModel.sceneNode:getModel():getResource()
+		local texture = baseModel.texture
+
+		local before = love.timer.getTime()
+		self:_appendModel(model, texture)
+		local after = love.timer.getTime()
+		totalTime = (after - before) * 1000
+
+		if coroutine.running() then
+			coroutine.yield()
+		end
+	end
+
+	print(">>> update time (ms)", totalTime, "#", #self.baseModels)
+
+	if self.mappedVertexCount >= 1 then
+		self.combinedModel = Model.fromMappedVertices(
+			self.VERTEX_FORMAT,
+			self.mappedVertices,
+			self.mappedVertexCount,
+			self.min,
+			self.max,
+			self.actorView:getSkeleton())
+		self.combinedModelResource = ModelResource(self.actorView:getSkeleton(), self.combinedModel)
+		self.sceneNode:setModel(self.combinedModelResource)
+	end
+
+	self.isUpdating = self.isUpdating - 1
+end
+
+function ActorView.CombinedModel:_updateAtlas()
+	local rebuildOtherAtlases = false
+
+	for _, baseModel in ipairs(self.baseModels) do
+		local handle = baseModel.texture
+		local texture = baseModel.sceneNode:getMaterial():getTexture(1)
+		local key = texture:getID()
+
+		if not self.baseAtlas:has(handle) then
+			self.baseAtlas:add(handle, texture:getResource(), key)
+			rebuildOtherAtlases = true
+		elseif self.baseAtlas:reset(handle, key) then
+			self.baseAtlas:replace(handle, texture:getResource(), key)
+		end
+	end
+
+	self.baseAtlas:update()
+
+	if rebuildOtherAtlases then
+		self.texture = LayerTextureResource(self.baseAtlas:getTexture())
+	end
+end
+
+function ActorView.CombinedModel:update()
+	self:_updateAtlas()
+
+	if self:_getIsModelDirty() then
+		self.actorView:getGameView():getResourceManager():queueEvent(self._updateModel, self)
+	end
+
+	if self.texture then
+		self.sceneNode:getMaterial():setTextures(self.texture)
+	end
+end
+
 function ActorView:new(actor, actorID)
 	self.actor = actor
 	self.actorID = actorID
 	self.animatable = ActorView.Animatable(self)
 
 	self.sceneNode = SceneNode()
+	self.combinedModelSceneNodes = {}
 
 	self.layer = false
 	self.position = false
@@ -229,7 +529,8 @@ function ActorView:new(actor, actorID)
 	actor.onAnimationStopped:register(self._onAnimationStopped)
 
 	self.skins = {}
-	self.models = {}
+	self.currentApplySkin = 0
+
 	self._onSkinChanged = function(_, slot, priority, skin, config)
 		Log.engine(
 			"Skin slot '%s' (priority = %d) changed to '%s' for '%s' (%d).",
@@ -296,6 +597,10 @@ end
 
 function ActorView:attach(game)
 	self.game = game
+end
+
+function ActorView:getGameView()
+	return self.game
 end
 
 function ActorView:release()
@@ -415,12 +720,12 @@ function ActorView:_updateSkinTexture(slot)
 		local resource = TextureResource(slot.canvas)
 		slot.texture:copyPerPassTextures(resource)
 
-		slot.sceneNode:getMaterial():setTextures(resource)
+		slot.model:getMaterial():setTextures(resource)
 	elseif slot.texture then
-		slot.sceneNode:getMaterial():setTextures(slot.texture)
+		slot.model:getMaterial():setTextures(slot.texture)
 	elseif slot.sceneNode then
 		local translucentTexture = self.game:getTranslucentTexture()
-		slot.sceneNode:getMaterial():setTextures(translucentTexture)
+		slot.model:getMaterial():setTextures(translucentTexture)
 	end
 end
 
@@ -429,6 +734,10 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 
 	for i = 1, #slotNodes do
 		if self.skins[slot] and self.skins[slot].generation ~= generation then
+			if coroutine.running() then
+				self.currentApplySkin = self.currentApplySkin - 1
+			end
+
 			return
 		end
 
@@ -447,13 +756,15 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 				local instance = resourceManager:loadCacheRef(skin)
 
 				slot.instance = instance
-				slot.sceneNode = ModelSceneNode()
+				slot.sceneNode = SceneNode()
+				slot.model = ModelSceneNode()
+				--slot.model:setParent(slot.sceneNode)
 				slot.body = self.body
 
 				if slot.instance:getModel() then
 					local model = resourceManager:loadCacheRef(slot.instance:getModel())
 					model:getResource():bindSkeleton(self.body:getSkeleton())
-					slot.sceneNode:setModel(model)
+					slot.model:setModel(model)
 
 					if coroutine.running() then
 						coroutine.yield()
@@ -473,27 +784,38 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 				local shaderCacheRef = slot.instance:getShader()
 				if shaderCacheRef then
 					local shaderResource = resourceManager:loadCacheRef(shaderCacheRef)
-					slot.sceneNode:getMaterial():setShader(shaderResource)
+					slot.shader = shaderResource
+					slot.model:getMaterial():setShader(shaderResource)
 
 					if coroutine.running() then
 						coroutine.yield()
 					end
+
+					local multiShaderCacheRef = slot.instance:getMultiShader()
+					if multiShaderCacheRef then
+						local multiShaderResource = resourceManager:loadCacheRef(multiShaderCacheRef)
+						slot.multiShader = multiShaderResource
+
+						if coroutine.running() then
+							coroutine.yield()
+						end
+					end
 				end
 
 				if slot.instance:getIsTranslucent() then
-					slot.sceneNode:getMaterial():setIsTranslucent(true)
-					slot.sceneNode:getMaterial():setIsZWriteDisabled(true)
+					slot.model:getMaterial():setIsTranslucent(true)
+					slot.model:getMaterial():setIsZWriteDisabled(true)
 				end
-				slot.sceneNode:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
-				slot.sceneNode:getMaterial():setOutlineThreshold(slot.instance:getOutlineThreshold())
+				slot.model:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
+				slot.model:getMaterial():setOutlineThreshold(slot.instance:getOutlineThreshold())
 
-				local transform = slot.sceneNode:getTransform()
+				local transform = slot.model:getTransform()
 				transform:setLocalTranslation(slot.instance:getPosition())
 				transform:setLocalScale(slot.instance:getScale())
 				transform:setLocalRotation(slot.instance:getRotation())
 
 				slot.sceneNode:setParent(self.sceneNode)
-				slot.sceneNode:setTransforms(self.animatable:getTransforms())
+				slot.model:setTransforms(self.animatable:getTransforms())
 
 				local lights = slot.instance:getLights()
 				if #lights > 0 then
@@ -549,17 +871,11 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 					end
 				end)
 
-				self.models[slot.sceneNode] = true
-
 				if coroutine.running() then
 					coroutine.yield()
 				end
 			end
 		else
-			if slot.sceneNode then
-				self.models[slot.sceneNode] = nil
-			end
-
 			slot.instance = false
 			slot.sceneNode = false
 		end
@@ -592,6 +908,10 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 			end
 		end
 	end
+
+	if coroutine.running() then
+		self.currentApplySkin = self.currentApplySkin - 1
+	end
 end
 
 function ActorView:applySkin(slot, slotNodes)
@@ -599,6 +919,8 @@ function ActorView:applySkin(slot, slotNodes)
 	for _, slotNode in ipairs(slotNodes) do
 		table.insert(copySlotNodes, slotNode)
 	end
+
+	self.currentApplySkin = self.currentApplySkin + 1
 
 	local resourceManager = self.game:getResourceManager()
 	resourceManager:queueAsyncEvent(self._doApplySkin, self, copySlotNodes, slot, slotNodes.generation)
@@ -613,6 +935,7 @@ function ActorView:transmogrify(body)
 	for slot, slotNodes in pairs(self.skins) do
 		if self:getIsImmediate() then
 			self:_doApplySkin(slotNodes, slot, slotNodes.generation)
+			self:draw()
 		else
 			self:applySkin(slot, slotNodes)
 		end
@@ -663,6 +986,7 @@ function ActorView:changeSkin(slot, priority, skin, config)
 	slotNodes.generation = slotNodes.generation + 1
 	if self:getIsImmediate() then
 		self:_doApplySkin(slotNodes, slot, slotNodes.generation)
+		self:draw()
 	else
 		self:applySkin(slot, slotNodes, slotNodes.generation)
 	end
@@ -779,6 +1103,76 @@ function ActorView:update(delta)
 
 		if self.rotation then
 			self.sceneNode:getTransform():setLocalRotation(self:_getRotation(self.rotation, self.layer))
+		end
+	end
+end
+
+function ActorView:draw()
+	if self.currentApplySkin ~= 0 then
+		return
+	end
+
+	for _, slotNodes in pairs(self.skins) do
+		for _, slot in ipairs(slotNodes) do
+			local modelSceneNode = slot.model
+			local material = modelSceneNode:getMaterial()
+
+			local hasMultiShader = (not slot.shader and not slot.multiShader) or (slot.shader and slot.multiShader)
+			local isForward = material:getIsFullLit() or material:getIsTranslucent()
+			local isTextureCompatible = material:getNumTextures() ~= 1 or (material:getNumTextures() == 1 and material:getTexture(1):isCompatibleType(TextureResource))
+			local isImmediate = self:getIsImmediate()
+
+			if not hasMultiShader or isForward or isMultiTexture or isImmediate then
+				modelSceneNode:setParent(slot.sceneNode)
+			else
+				local texture = material:getTexture(1)
+				local multiShader = material.multiShader or ActorView.DEFAULT_MULTI_SHADER
+
+				modelSceneNode:setParent(nil)
+
+				local combinedModel
+				for _, c in ipairs(self.combinedModelSceneNodes) do
+					if c:getShader():getID() == multiShader:getID() then
+						combinedModel = c
+						break
+					end
+				end
+
+				if not combinedModel or slot.combinedModel ~= combinedModel and slot.sceneNode:getParent() then
+					if slot.combinedModel then
+						slot.combinedModel:remove(modelSceneNode)
+						slot.combinedModel = nil
+					end
+
+					if not combinedModel then
+						combinedModel = ActorView.CombinedModel(self, multiShader)
+						table.insert(self.combinedModelSceneNodes, combinedModel)
+					end
+
+					slot.combinedModel = combinedModel
+					combinedModel:add(modelSceneNode, slot.texture)
+				end
+
+				if combinedModel and not slot.sceneNode:getParent() then
+					combinedModel:remove(modelSceneNode)
+				end
+			end
+		end
+	end
+
+	for i = #self.combinedModelSceneNodes, 1, -1 do
+		local combinedModel = self.combinedModelSceneNodes[i]
+		local sceneNode = combinedModel:getSceneNode()
+
+		if combinedModel:getIsEmpty() then
+			sceneNode:setParent(nil)
+			table.remove(self.combinedModelSceneNodes, i)
+		else
+			combinedModel:update(delta)
+
+			if not sceneNode:getParent() and combinedModel:getIsReady() then
+				sceneNode:setParent(self.sceneNode)
+			end
 		end
 	end
 end
@@ -942,6 +1336,10 @@ function ActorView:dirty()
 		for _, slot in ipairs(skin) do
 			self:_updateSkinTexture(slot)
 		end
+	end
+
+	for _, model in ipairs(Self.combinedModelSceneNodes) do
+		model:dirty()
 	end
 end
 

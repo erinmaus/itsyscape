@@ -194,6 +194,7 @@ function TextureResource:loadFromFile(filename, resourceManager)
 			boundImage:setFilter('linear', 'linear')
 
 			self:getHandle():setBoundTexture(passFilename, boundImage)
+
 			if coroutine.running() then
 				coroutine.yield()
 			end

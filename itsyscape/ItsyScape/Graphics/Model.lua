@@ -19,8 +19,6 @@ function Model:new(d, skeleton, handle)
 		self:loadFromFile(d, skeleton)
 	elseif type(d) == 'table' then
 		self:loadFromTable(d, skeleton)
-	else
-		error(("expected table or filename (string), got %s"):format(type(d)))
 	end
 end
 
@@ -63,7 +61,7 @@ function Model:bindSkeleton(skeleton)
 			break
 		end
 
-		positionOffset = postionOffset + self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]
+		positionOffset = positionOffset + self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]
 	end
 
 	local min, max = Vector(math.huge), Vector(-math.huge)
@@ -101,12 +99,14 @@ function Model:bindSkeleton(skeleton)
 		max.z = math.max(max.z, z)
 	end
 
-	local mesh = love.graphics.newMesh(self.format, vertices, 'triangles', 'static')
-	for _, element in ipairs(self.format) do
-		mesh:setAttributeEnabled(element[1], true)
-	end
+	if #vertices > 1 then
+		local mesh = love.graphics.newMesh(self.format, vertices, 'triangles', 'static')
+		for _, element in ipairs(self.format) do
+			mesh:setAttributeEnabled(element[1], true)
+		end
 
-	self:getHandle():setMesh(mesh)
+		self:getHandle():setMesh(mesh)
+	end
 
 	self.min = min
 	self.max = max
@@ -129,6 +129,34 @@ function Model:loadFromTable(t, skeleton)
 	self.format = format
 
 	self:bindSkeleton(skeleton)
+end
+
+function Model.fromMappedVertices(format, mappedVertices, count, min, max, skeleton)
+	local model = Model()
+
+	model.format = format
+	model.vertices = {}
+
+	model.mappedVertices = {}
+	for i = 1, #mappedVertices do
+		model.mappedVertices[i] = { unpack(mappedVertices[i]) }
+	end
+
+	model.mappedVertices = mappedVertices
+	model.min = min
+	model.max = max
+	model.skeleton = skeleton
+
+	if #mappedVertices > 1 then
+		local mesh = love.graphics.newMesh(format, mappedVertices, 'triangles', 'static')
+		for _, element in ipairs(format) do
+			mesh:setAttributeEnabled(element[1], true)
+		end
+
+		model:getHandle():setMesh(mesh)
+	end
+
+	return model
 end
 
 function Model:getBounds()

@@ -28,6 +28,7 @@ function ModelSkin:new()
 	self.isTranslucent = false
 	self.isGhosty = false
 	self.shader = false
+	self.multiShader = false
 	self.position = Vector(0)
 	self.scale = Vector(1)
 	self.rotation = Quaternion(0, 0, 0, 1)
@@ -149,8 +150,13 @@ function ModelSkin:loadFromFile(filename)
 
 	if result.shader and type(result.shader) == "string" then
 		self.shader = CacheRef("ItsyScape.Graphics.ShaderResource", result.shader)
+
+		if result.multiShader and type(result.multiShader) == "string" then
+			self.multiShader = CacheRef("ItsyScape.Graphics.ShaderResource", result.multiShader)
+		end
 	else
 		self.shader = false
+		self.multiShader = false
 	end
 
 	if result.position and
@@ -285,6 +291,10 @@ end
 
 function ModelSkin:getShader()
 	return self.shader
+end
+
+function ModelSkin:getMultiShader()
+	return self.multiShader
 end
 
 function ModelSkin:getColors()
