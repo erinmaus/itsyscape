@@ -45,6 +45,10 @@ function DebugStats:measure(node, ...)
 
 	local duration, memory, result
 	do
+		if _DEBUG == "plus" then
+			--Log.debug("Measuring %s", nodeName)
+		end
+
 		local beforeMemory, afterMemory
 		local beforeTime = love.timer.getTime()
 
@@ -63,6 +67,10 @@ function DebugStats:measure(node, ...)
 
 		duration = afterTime - beforeTime
 		memory = (afterMemory or 0) - (beforeMemory or 0)
+
+		if _DEBUG == "plus" then
+			--Log.debug("Measured %s, %f kb, %f ms", nodeName, memory, duration * 1000)
+		end
 	end
 
 	stat.minTime = math.min(stat.minTime, duration)

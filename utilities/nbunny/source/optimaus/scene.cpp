@@ -240,6 +240,16 @@ bool nbunny::SceneNodeMaterial::get_is_cull_disabled() const
 	return is_cull_disabled;
 }
 
+void nbunny::SceneNodeMaterial::set_is_rendered(bool value)
+{
+	is_rendered = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_rendered() const
+{
+	return is_rendered;
+}
+
 void nbunny::SceneNodeMaterial::set_outline_threshold(float value)
 {
 	outline_threshold = value;	
@@ -496,8 +506,12 @@ void nbunny::SceneNode::after_draw(Renderer &renderer, float delta)
 
 void nbunny::SceneNode::collect(SceneNode& node, std::vector<SceneNode*>& result)
 {
-	result.push_back(&node);
+	if (!node.material.get_is_rendered())
+	{
+		return;
+	}
 
+	result.push_back(&node);
 	for (auto child: node.children)
 	{
 		collect(*child, result);

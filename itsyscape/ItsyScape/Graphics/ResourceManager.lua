@@ -13,8 +13,9 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
-ResourceManager.DESKTOP_FRAME_DURATION = 1 / 60
-ResourceManager.MOBILE_FRAME_DURATION  = 1 / 10
+ResourceManager.DESKTOP_FRAME_DURATION     = 1 / 60
+ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
+ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = 1 / 1000
 
 ResourceManager.View = Class()
 
@@ -95,6 +96,8 @@ end
 
 function ResourceManager:new()
 	self.resources = {}
+	self.cache = {}
+
 	self.loadStats = {}
 	self.pendingSyncEvents = {}
 	self.pendingAsyncEvents = {}
@@ -115,6 +118,10 @@ function ResourceManager:new()
 	self.fileIOThread:start()
 end
 
+function ResourceManager:clear()
+	table.clear(self.cache)
+end
+
 -- Sets the frame duration, in seconds.
 function ResourceManager:setFrameDuration(value)
 	self.frameDuration = value or self.frameDuration
@@ -127,6 +134,8 @@ end
 
 -- Loads async resources.
 function ResourceManager:update()
+	local updateStartTime = love.timer.getTime()
+
 	if self:getIsPending() and not self.wasPending then
 		self.onPending(self, #self.pendingSyncEvents + #self.pendingAsyncEvents)
 		self.wasPending = true
@@ -140,7 +149,15 @@ function ResourceManager:update()
 			local status = coroutine.status(callback)
 
 			if status == "suspended" then
+				local before = love.timer.getTime()
+				local memoryBefore = collectgarbage("count")
 				local success, result = coroutine.resume(callback)
+				local memoryAfter = collectgarbage("count")
+				local after = love.timer.getTime()
+
+				pending.totalTime = (pending.totalTime or 0) + (after - before) * 1000
+				pending.memory = (pending.memory or 0) + (memoryAfter - memoryBefore)
+
 				if not success then
 					Log.warn("Error running coroutine: %s", result)
 					if _DEBUG then
@@ -150,7 +167,7 @@ function ResourceManager:update()
 
 				if coroutine.status(callback) == "dead" then
 					if pending.filename or pending.traceback then
-						Log.debug("Preloaded resource %s.", pending.filename or pending.traceback)
+						Log.debug("Preloaded resource (%f ms, %f kb) %s.", pending.totalTime, pending.memory, pending.filename or pending.traceback)
 					end
 
 					pending.resource = result
@@ -175,7 +192,15 @@ function ResourceManager:update()
 			local status = coroutine.status(callback)
 
 			if status == "suspended" then
+				local before = love.timer.getTime()
+				local memoryBefore = collectgarbage("count")
 				local success, result = coroutine.resume(callback)
+				local memoryAfter = collectgarbage("count")
+				local after = love.timer.getTime()
+
+				pending.totalTime = (pending.totalTime or 0) + (after - before) * 1000
+				pending.memory = (pending.memory or 0) + (memoryAfter - memoryBefore)
+
 				if not success then
 					Log.warn("Error running coroutine: %s", result)
 					if _DEBUG then
@@ -185,7 +210,7 @@ function ResourceManager:update()
 
 				if coroutine.status(callback) == "dead" then
 					if pending.filename or pending.traceback then
-						Log.debug("Loaded async resource/event %s.", pending.filename or pending.traceback)
+						Log.debug("Loaded async resource/event (%f ms, %f kb):  %s.", pending.totalTime or 0, pending.memory or 0, pending.filename or pending.traceback)
 					end
 
 					table.remove(self.pendingAsyncEvents, index)
@@ -202,6 +227,7 @@ function ResourceManager:update()
 	local pendingSyncEventBreakTime = currentTime + self.frameDuration
 
 	local count = 0
+	local elapsedTimeForSingleResource = 0
 	repeat
 		local top = self.pendingSyncEvents[1]
 		if not top then
@@ -211,7 +237,17 @@ function ResourceManager:update()
 		local callback = top.callback
 		local status = coroutine.status(callback)
 		if status == 'suspended' then
-			local success, error = coroutine.resume(callback)
+			local before = love.timer.getTime()
+			local memoryBefore = collectgarbage("count")
+			local success, result = coroutine.resume(callback)
+			local memoryAfter = collectgarbage("count")
+			local after = love.timer.getTime()
+
+			top.totalTime = (top.totalTime or 0) + (after - before) * 1000
+			top.memory = (top.memory or 0) + (memoryAfter - memoryBefore)
+
+			elapsedTimeForSingleResource = after - before
+
 			if not success then
 				Log.warn("Error running coroutine: %s", error)
 				if _DEBUG then
@@ -223,15 +259,16 @@ function ResourceManager:update()
 		status = coroutine.status(callback)
 		if status == 'dead' then
 			if top.filename or top.traceback then
-				Log.debug("Loaded sync resource/event %s.", top.filename or top.traceback)
+				Log.debug("Loaded sync resource/event (%f ms, %f kb) %s.", top.totalTime or 0, top.memory, top.filename or top.traceback)
 			end
 
 			table.remove(self.pendingSyncEvents, 1)
 			count = count + 1
+			elapsedTimeForSingleResource = 0
 		end
 
 		currentTime = love.timer.getTime()
-	until currentTime > pendingSyncEventBreakTime
+	until currentTime > pendingSyncEventBreakTime and elapsedTimeForSingleResource < ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE
 
 	if currentTime and currentTime > pendingSyncEventBreakTime + self.frameDuration then
 		Log.info('Resource loading spilled %d ms.', math.floor((currentTime - pendingSyncEventBreakTime) * 1000))
@@ -239,6 +276,12 @@ function ResourceManager:update()
 
 	if count > 0 then
 		self.onUpdate(count, #self.pendingSyncEvents + #self.pendingAsyncEvents)
+	end
+
+	local updateStopTime = love.timer.getTime()
+	local totalUpdateTime = (updateStopTime - updateStartTime) * 1000
+	if self.wasPending and totalUpdateTime >= 1 then
+		Log.info("Resources pending; loading took %.2f ms (over 1 ms).", totalUpdateTime)
 	end
 
 	if #self.pendingSyncEvents == 0 and #self.pendingAsyncEvents == 0 and self.wasPending then
@@ -288,6 +331,7 @@ function ResourceManager:_load(resourceType, filename, ...)
 		self.loadStats[resourceType] = stats
 	end
 
+	self.cache[resourcesOfType[filename]] = true
 	return resourcesOfType[filename]
 end
 
@@ -356,7 +400,7 @@ function ResourceManager:_queue(resourceType, filename, async, callback, ...)
 
 	table.insert(self.pendingResources, pending)
 
-	local e = { filename = filename, callback = coroutine.create(c), traceback = _DEBUG and debug.traceback() }
+	local e = { filename = filename, callback = coroutine.create(c), traceback = _DEBUG and debug.traceback(nil, 2) }
 	if async then
 		table.insert(self.pendingAsyncEvents, e)
 	else
@@ -394,7 +438,7 @@ function ResourceManager:_queueEvent(async, callback, ...)
 		end
 	end
 
-	local e = { callback = coroutine.create(c), traceback = _DEBUG and debug.traceback() }
+	local e = { callback = coroutine.create(c), traceback = _DEBUG and debug.traceback(nil, 2) }
 	if async then
 		table.insert(self.pendingAsyncEvents, e)
 	else

@@ -477,9 +477,19 @@ std::string nbunny::GameManagerVariant::as_string() const
 
 nbunny::GameManagerVariant nbunny::GameManagerVariant::get(const GameManagerVariant& key) const
 {
-	if (type != TYPE_TABLE)
+	if (type != TYPE_TABLE && type != TYPE_ARGS)
 	{
-		throw std::runtime_error("not a table");
+		throw std::runtime_error("not a table or args");
+	}
+
+	if (type == TYPE_ARGS && key.type == TYPE_NUMBER)
+	{
+		if (key.as_number() >= 1 and key.as_number() <= length())
+		{
+			return value.args->parameter_values.at(key.as_number() - 1);
+		}
+
+		throw std::runtime_error("index into args out-of-bounds");
 	}
 
 	if (key.type == TYPE_NUMBER && key.as_number() >= 1 && key.as_number() <= length())
@@ -1724,6 +1734,18 @@ static int nbunny_game_manager_property_get_value(lua_State* L)
 	return 0;
 }
 
+static int nbunny_game_manager_property_rawget_value(lua_State* L)
+{
+	auto property = sol::stack::get<nbunny::GameManagerProperty*>(L, 1);
+	if (property->has_value())
+	{
+		sol::stack::push(L, property->get_value());
+		return 1;
+	}
+
+	return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_gamemanager_property(lua_State* L)
 {
@@ -1738,7 +1760,8 @@ NBUNNY_EXPORT int luaopen_nbunny_gamemanager_property(lua_State* L)
 		"setInstanceID", &nbunny::GameManagerProperty::set_instance_id,
 		"getInstanceID", &nbunny::GameManagerProperty::get_instance_id,
 		"setValue", &nbunny_game_manager_property_set_value,
-		"getValue", &nbunny_game_manager_property_get_value);
+		"getValue", &nbunny_game_manager_property_get_value,
+		"rawgetValue", &nbunny_game_manager_property_rawget_value);
 	sol::stack::push(L, T);
 
 	return 1;

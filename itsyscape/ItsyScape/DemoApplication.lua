@@ -88,6 +88,7 @@ function DemoApplication:new()
 		player.onPokeCamera:register(self.pokeCamera, self)
 		player.onSave:register(self.savePlayer, self)
 		player.onMove:register(self.setMapName, self)
+		player.onMove:register(self.clearResourceManagerCache, self)
 
 		if _MOBILE then
 			player.onMove:register(self.requestSave, self)
@@ -179,6 +180,10 @@ end
 
 function DemoApplication:setMapName(_, _, map)
 	self:updateMemoryLabel(map)
+end
+
+function DemoApplication:clearResourceManagerCache()
+	self:getGameView():getResourceManager():clear()
 end
 
 function DemoApplication:quitPlayer()

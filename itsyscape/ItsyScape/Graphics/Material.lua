@@ -90,6 +90,14 @@ function Material:setIsFullLit(value)
 	self._handle:setIsFullLit(value or false)
 end
 
+function Material:getIsRendered()
+	return self._handle:getIsRendered()
+end
+
+function Material:setIsRendered(value)
+	self._handle:setIsRendered(value == nil and value or not not value)
+end
+
 -- If true, the node this material belongs to will use the camera's target position
 -- for forward rendering light locality checks (sometimes good for massive objects)! If false,
 -- will use the node's current position instead. Defaults to false.

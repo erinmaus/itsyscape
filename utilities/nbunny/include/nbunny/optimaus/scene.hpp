@@ -98,6 +98,8 @@ namespace nbunny
 		glm::vec4 color = glm::vec4(1.0f);
 		glm::vec4 outline_color = glm::vec4(glm::vec3(0.0f), 1.0f);
 
+		bool is_rendered = true;
+
 		bool is_light_target_position_enabled = false;
 
 		float z_bias = 0.0f;
@@ -123,6 +125,9 @@ namespace nbunny
 
 		void set_is_cull_disabled(bool value);
 		bool get_is_cull_disabled() const;
+
+		void set_is_rendered(bool value);
+		bool get_is_rendered() const;
 
 		void set_outline_threshold(float value);
 		float get_outline_threshold() const;

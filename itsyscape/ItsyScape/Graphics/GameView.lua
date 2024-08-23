@@ -1838,6 +1838,13 @@ function GameView:_updateActorCanvases(delta)
 end
 
 function GameView:draw(delta, width, height)
+	for _, actor in pairs(self.actors) do
+		self.generalDebugStats:measure(
+			string.format("actor::%s::draw", actor:getActor():getPeepID()),
+			actor.draw,
+			actor)
+	end
+
 	self:_updateActorCanvases(delta)
 
 	local skybox = next(self.skyboxes)
@@ -1889,6 +1896,20 @@ function GameView:quit()
 	})
 
 	self.mapThread:wait()
+
+	if _DEBUG then
+		love.filesystem.createDirectory("Performance")
+
+		local result = { "name, mean, total, count" }
+		local stats = self.resourceManager:getStats()
+		for _, stat in ipairs(stats) do
+			table.insert(result, string.format("%s,%f,%f,%d", stat.name, stat.mean, stat.total, stat.count))
+		end
+
+		local suffix = os.date("%Y-%m-%d %H%M%S")
+		local filename = string.format("Performance/Resources %s.csv", suffix)
+		love.filesystem.write(filename, table.concat(result, "\n"))
+	end
 end
 
 function GameView:dirty()
