@@ -43,10 +43,7 @@ function ModelSceneNode:setModel(model)
 		self:getHandle():setModel(model:getHandle())
 
 		local min, max = model:getResource():getBounds()
-		local size = max - min
-		local center = min + size / 2
-		size = size * ModelSceneNode.BOUNDS_BUFFER
-		self:setBounds(center - size, center + size)
+		self:setBounds(min * ModelSceneNode.BOUNDS_BUFFER, max * ModelSceneNode.BOUNDS_BUFFER)
 	else
 		self:getHandle():setModel()
 	end

@@ -411,6 +411,9 @@ function ActorView.CombinedModel:_appendModel(baseModel, baseTexture)
 					min.x = math.min(inputVertex[inputOffset] or min.x, min.x)
 					min.y = math.min(inputVertex[inputOffset + 1] or min.y, min.y)
 					min.z = math.min(inputVertex[inputOffset + 2] or min.z, min.z)
+					max.x = math.max(inputVertex[inputOffset] or max.x, max.x)
+					max.y = math.max(inputVertex[inputOffset + 1] or max.y, max.y)
+					max.z = math.max(inputVertex[inputOffset + 2] or max.z, max.z)
 
 					self.min = min
 					self.max = max
@@ -419,9 +422,14 @@ function ActorView.CombinedModel:_appendModel(baseModel, baseTexture)
 					local width = right - left
 					local height = bottom - top
 
-					outputVertex[outputOffset] = outputVertex[outputOffset] * width + left
-					outputVertex[outputOffset + 1] = outputVertex[outputOffset + 1] * height + top
+					local s = outputVertex[outputOffset] * width + left
+					local t = 1 - ((1 - outputVertex[outputOffset + 1]) * height + top)
+
+					outputVertex[outputOffset] = s
+					outputVertex[outputOffset + 1] = t
 				end
+
+				self.mappedVertices[outputVertexIndex] = outputVertex
 			end
 		end
 	end
@@ -432,7 +440,6 @@ end
 function ActorView.CombinedModel:_updateModel()
 	table.clear(self.currentBaseModels)
 
-	self.isUpdating = self.isUpdating + 1
 	self.mappedVertexCount = 0
 	self.min = nil
 	self.max = nil
@@ -444,17 +451,12 @@ function ActorView.CombinedModel:_updateModel()
 		local model = baseModel.sceneNode:getModel():getResource()
 		local texture = baseModel.texture
 
-		local before = love.timer.getTime()
 		self:_appendModel(model, texture)
-		local after = love.timer.getTime()
-		totalTime = (after - before) * 1000
 
 		if coroutine.running() then
 			coroutine.yield()
 		end
 	end
-
-	print(">>> update time (ms)", totalTime, "#", #self.baseModels)
 
 	if self.mappedVertexCount >= 1 then
 		self.combinedModel = Model.fromMappedVertices(
@@ -464,8 +466,13 @@ function ActorView.CombinedModel:_updateModel()
 			self.min,
 			self.max,
 			self.actorView:getSkeleton())
-		self.combinedModelResource = ModelResource(self.actorView:getSkeleton(), self.combinedModel)
+		self.combinedModelResource = ModelResource(self.combinedModel)
+
 		self.sceneNode:setModel(self.combinedModelResource)
+	end
+
+	if coroutine.running() then
+		coroutine.yield()
 	end
 
 	self.isUpdating = self.isUpdating - 1
@@ -498,6 +505,7 @@ function ActorView.CombinedModel:update()
 	self:_updateAtlas()
 
 	if self:_getIsModelDirty() then
+		self.isUpdating = self.isUpdating + 1
 		self.actorView:getGameView():getResourceManager():queueEvent(self._updateModel, self)
 	end
 
@@ -758,12 +766,10 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 				slot.instance = instance
 				slot.sceneNode = SceneNode()
 				slot.model = ModelSceneNode()
-				--slot.model:setParent(slot.sceneNode)
 				slot.body = self.body
 
 				if slot.instance:getModel() then
-					local model = resourceManager:loadCacheRef(slot.instance:getModel())
-					model:getResource():bindSkeleton(self.body:getSkeleton())
+					local model = resourceManager:loadCacheRef(slot.instance:getModel(), self.body:getSkeleton())
 					slot.model:setModel(model)
 
 					if coroutine.running() then
@@ -816,6 +822,10 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 
 				slot.sceneNode:setParent(self.sceneNode)
 				slot.model:setTransforms(self.animatable:getTransforms())
+
+				if self:getIsImmediate() then
+					slot.model:setParent(slot.sceneNode)
+				end
 
 				local lights = slot.instance:getLights()
 				if #lights > 0 then
@@ -935,7 +945,6 @@ function ActorView:transmogrify(body)
 	for slot, slotNodes in pairs(self.skins) do
 		if self:getIsImmediate() then
 			self:_doApplySkin(slotNodes, slot, slotNodes.generation)
-			self:draw()
 		else
 			self:applySkin(slot, slotNodes)
 		end
@@ -986,7 +995,6 @@ function ActorView:changeSkin(slot, priority, skin, config)
 	slotNodes.generation = slotNodes.generation + 1
 	if self:getIsImmediate() then
 		self:_doApplySkin(slotNodes, slot, slotNodes.generation)
-		self:draw()
 	else
 		self:applySkin(slot, slotNodes, slotNodes.generation)
 	end
@@ -1172,6 +1180,7 @@ function ActorView:draw()
 
 			if not sceneNode:getParent() and combinedModel:getIsReady() then
 				sceneNode:setParent(self.sceneNode)
+				sceneNode:setTransforms(self.animatable:getTransforms())
 			end
 		end
 	end

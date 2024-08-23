@@ -57,6 +57,13 @@ function FireView:load()
 			self.skeleton = skeleton
 
 			resources:queue(
+				ModelResource,
+				self:getResourcePath("Fire.lmodel"),
+				function(model)
+					self.model = model
+				end,
+				self.skeleton:getResource())
+			resources:queue(
 				SkeletonAnimationResource,
 				self:getResourcePath("Idle.lanim"),
 				function(animation)
@@ -78,13 +85,6 @@ function FireView:load()
 				self.time = 0.0
 				self.spawned = true
 			end)
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Fire.lmodel"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.model = model
 		end)
 	resources:queue(
 		TextureResource,

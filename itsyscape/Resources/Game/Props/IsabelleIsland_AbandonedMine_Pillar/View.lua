@@ -39,45 +39,44 @@ function PillarView:load()
 		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Skeleton.lskel",
 		function(skeleton)
 			self.skeleton = skeleton
-		end)
-	resources:queue(
-		ModelResource,
-		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Model.lmesh",
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.model = model
-		end)
-	resources:queueEvent(function()
-		resources:queue(
-			SkeletonAnimationResource,
-			"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Animation.lanim",
-			function(animation)
-				self.animation = animation
 
-				resources:queueEvent(function()
-					local transforms = {}
-					self.animation:getResource():computeTransforms(0, transforms)
-					self.node:setTransforms(transforms)
-
-					self.node:setParent(root)
+			resources:queue(
+				ModelResource,
+				"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Model.lmesh",
+				function(model)
+					self.model = model
+				end,
+				self.skeleton:getResource())
+			resources:queue(
+				SkeletonAnimationResource,
+				"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Animation.lanim",
+				function(animation)
+					self.animation = animation
+	
+					resources:queueEvent(function()
+						local transforms = {}
+						self.animation:getResource():computeTransforms(0, transforms)
+						self.node:setTransforms(transforms)
+	
+						self.node:setParent(root)
+					end)
+				end,
+				self.skeleton:getResource())
+			resources:queue(
+				TextureResource,
+				"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Texture.png",
+				function(texture)
+					self.texture = texture
 				end)
-			end,
-			self.skeleton:getResource())
+			resources:queueEvent(function()
+				self.node = ModelSceneNode()
+				self.node:setModel(self.model)
+				self.node:getMaterial():setTextures(self.texture)
+		
+				self.node:getTransform():setLocalScale(Vector(2))
+				self.node:getTransform():setLocalTranslation(Vector(0, 1, 0))
+			end)
 		end)
-	resources:queue(
-		TextureResource,
-		"Resources/Game/Props/IsabelleIsland_AbandonedMine_Pillar/Texture.png",
-		function(texture)
-			self.texture = texture
-		end)
-	resources:queueEvent(function()
-		self.node = ModelSceneNode()
-		self.node:setModel(self.model)
-		self.node:getMaterial():setTextures(self.texture)
-
-		self.node:getTransform():setLocalScale(Vector(2))
-		self.node:getTransform():setLocalTranslation(Vector(0, 1, 0))
-	end)
 end
 
 function PillarView:update(delta)

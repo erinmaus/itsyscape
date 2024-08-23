@@ -69,6 +69,14 @@ function Chest:load()
 			self.transforms = skeleton:getResource():createTransforms()
 
 			resources:queue(
+				ModelResource,
+				self:getResourcePath("Chest.lmesh"),
+				function(model)
+					self.chestModel = model	
+				end,
+				self.skeleton:getResource())
+
+			resources:queue(
 				SkeletonAnimationResource,
 				self:getResourcePath("Open.lanim"),
 				function(animation)
@@ -105,13 +113,6 @@ function Chest:load()
 				self.time = self:getCurrentAnimation():getDuration()
 				self.spawned = true
 			end)
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Chest.lmesh"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.chestModel = model	
 		end)
 	resources:queue(
 		TextureResource,

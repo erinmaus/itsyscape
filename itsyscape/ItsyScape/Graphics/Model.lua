@@ -9,21 +9,14 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local NModelResourceInstance = require "nbunny.optimaus.modelresourceinstance"
 
 local Model = Class()
-function Model:new(d, skeleton, handle)
-	self._handle = handle or NModelResourceInstance()
-
+function Model:new(d, skeleton)
 	if type(d) == 'string' then
 		self:loadFromFile(d, skeleton)
 	elseif type(d) == 'table' then
 		self:loadFromTable(d, skeleton)
 	end
-end
-
-function Model:getHandle()
-	return self._handle
 end
 
 function Model:loadFromFile(filename, skeleton)
@@ -34,7 +27,7 @@ function Model:loadFromFile(filename, skeleton)
 	self:loadFromTable(result, skeleton)
 end
 
-function Model:bindSkeleton(skeleton)
+function Model:_bindSkeleton(skeleton)
 	local vertices = self.mappedVertices or {}
 	table.clear(vertices)
 
@@ -105,7 +98,7 @@ function Model:bindSkeleton(skeleton)
 			mesh:setAttributeEnabled(element[1], true)
 		end
 
-		self:getHandle():setMesh(mesh)
+		self.mesh = mesh
 	end
 
 	self.min = min
@@ -128,32 +121,31 @@ function Model:loadFromTable(t, skeleton)
 	self.vertices = vertices
 	self.format = format
 
-	self:bindSkeleton(skeleton)
+	self:_bindSkeleton(skeleton)
 end
 
 function Model.fromMappedVertices(format, mappedVertices, count, min, max, skeleton)
-	local model = Model()
+	local model = Model(skeleton, nil)
 
 	model.format = format
 	model.vertices = {}
 
 	model.mappedVertices = {}
-	for i = 1, #mappedVertices do
+	for i = 1, count do
 		model.mappedVertices[i] = { unpack(mappedVertices[i]) }
 	end
 
-	model.mappedVertices = mappedVertices
 	model.min = min
 	model.max = max
 	model.skeleton = skeleton
 
-	if #mappedVertices > 1 then
-		local mesh = love.graphics.newMesh(format, mappedVertices, 'triangles', 'static')
+	if count > 1 then
+		local mesh = love.graphics.newMesh(format, model.mappedVertices, 'triangles', 'static')
 		for _, element in ipairs(format) do
 			mesh:setAttributeEnabled(element[1], true)
 		end
 
-		model:getHandle():setMesh(mesh)
+		model.mesh = mesh
 	end
 
 	return model
@@ -168,7 +160,7 @@ function Model:getSkeleton()
 end
 
 function Model:getMesh()
-	return self:getHandle():getMesh()
+	return self.mesh
 end
 
 function Model:getVertices()
@@ -177,10 +169,6 @@ end
 
 function Model:getFormat()
 	return self.format
-end
-
-function Model:release()
-	self:getHandle():setMesh()
 end
 
 return Model
