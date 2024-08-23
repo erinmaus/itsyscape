@@ -68,7 +68,7 @@ end
 
 function Atlas.Image:stale()
 	local currentTime = itsyrealm.graphics.getTime()
-	return self.isStale or currentTime > self.time + Atlas.STALE_LIMIT_SECONDS
+	return self.isStale or currentTime > self.time + self.staleLimit
 end
 
 function Atlas.Image:setQuad(quad)

@@ -71,6 +71,34 @@ function Armoire:load()
 			self.transforms = skeleton:getResource():createTransforms()
 
 			resources:queue(
+				ModelResource,
+				self:getResourcePath("Interior.lmesh"),
+				function(model)
+					self.interiorModel = model	
+				end,
+				self.skeleton:getResource())
+			resources:queue(
+				ModelResource,
+				self:getResourcePath("Exterior.lmesh"),
+				function(model)
+					self.exteriorModel = model
+				end,
+				self.skeleton:getResource())
+			resources:queue(
+				ModelResource,
+				self:getResourcePath("Doors.lmesh"),
+				function(model)
+					self.doorsModel = model
+				end,
+				self.skeleton:getResource())
+			resources:queue(
+				ModelResource,
+				self:getResourcePath("Clothes.lmesh"),
+				function(model)
+					self.clothesModel = model
+				end,
+				self.skeleton:getResource())
+			resources:queue(
 				SkeletonAnimationResource,
 				self:getResourcePath("Open.lanim"),
 				function(animation)
@@ -120,34 +148,6 @@ function Armoire:load()
 				self.time = self:getCurrentAnimation():getDuration()
 				self.spawned = true
 			end)
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Interior.lmesh"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.interiorModel = model	
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Exterior.lmesh"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.exteriorModel = model
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Doors.lmesh"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.doorsModel = model
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Clothes.lmesh"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.clothesModel = model
 		end)
 	resources:queue(
 		TextureResource,

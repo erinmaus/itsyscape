@@ -77,6 +77,13 @@ function TreeView:load()
 			self.transforms = skeleton:getResource():createTransforms()
 
 			resources:queue(
+				ModelResource,
+				self:getResourcePath("Tree.lmodel"),
+				function(model)
+					self.model = model
+				end,
+				self.skeleton:getResource())
+			resources:queue(
 				SkeletonAnimationResource,
 				self:getResourcePath("Spawn.lanim"),
 				function(animation)
@@ -146,13 +153,6 @@ function TreeView:load()
 
 				self.spawned = true
 			end)
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Tree.lmodel"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.model = model
 		end)
 	resources:queue(
 		TextureResource,

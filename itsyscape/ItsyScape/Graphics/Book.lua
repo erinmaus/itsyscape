@@ -128,8 +128,8 @@ function Book.Part:getDepthOffset()
 end
 
 function Book.Part:load()
-	self:loadModels(self.config.models or {})
-	self:loadAnimations(self.config.animations or {})
+	self:getResourceManager():queueEvent(self.loadAnimations, self, self.config.animations or {})
+	self:getResourceManager():queueEvent(self.loadModels, self, self.config.models or {})
 end
 
 function Book.Part:_pullTextureCoordinates(model)
@@ -195,7 +195,8 @@ function Book.Part:loadModel(modelConfig)
 				if modelConfig.canvas then
 					self:_pullTextureCoordinates(model)
 				end
-			end)
+			end,
+			self.skeleton:getResource())
 
 		self:getResourceManager():queue(
 			TextureResource,
@@ -240,7 +241,7 @@ function Book.Part:loadAnimation(animationConfig)
 			function(resource)
 				animation.animation = resource:getResource()
 			end,
-			self.skeleton)
+		self.skeleton:getResource())
 
 		animation.bones = {}
 		for _, bone in ipairs(animationConfig.bones or {}) do
@@ -535,8 +536,6 @@ function Book.Part:update(delta)
 		if model.model and model.texture and self.skeleton then
 			if not model.sceneNode then
 				model.transforms = self.skeleton:createTransforms()
-
-				model.model:getResource():bindSkeleton(self.skeleton)
 				model.sceneNode = ModelSceneNode()
 
 				if self.type ~= Book.PART_TYPE_PAGE then
