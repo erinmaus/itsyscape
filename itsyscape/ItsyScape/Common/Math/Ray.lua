@@ -8,26 +8,30 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Pool = require "ItsyScape.Common.Math.Pool"
 local Vector = require "ItsyScape.Common.Math.Vector"
 
 -- Ray type, composed of an origin and direction.
-local Ray = Class()
+local BaseRay = Class()
+local Ray = Pool.wrap(BaseRay)
 
 -- Constructs a ray with the specified origin and direction.
 --
 -- * origin defaults to (0, 0, 0) if unprovided.
 -- * direction defaults to (0, 0, 1) in unprovided; is also normalized
-function Ray:new(origin, direction)
+function BaseRay:new(origin, direction)
 	self.origin = origin or Vector()
 	self.direction = (direction or Vector(0, 0, 1)):getNormal()
 end
 
 -- Returns a point distance units along the ray.
-function Ray:project(distance)
+function BaseRay:project(distance)
 	return self.origin + self.direction * distance
 end
 
-function Ray:closest(point)
+function BaseRay:closest(point)
+	assert(self:compatible(point), "generation mismatch")
+
 	local v = point - self.origin
 	local dot = v:dot(self.direction)
 	if dot == 0 then
@@ -37,7 +41,9 @@ function Ray:closest(point)
 	return dot > 0, self:project(dot)
 end
 
-function Ray:side(point)
+function BaseRay:side(point)
+	assert(self:compatible(point), "generation mismatch")
+
 	local v = point - self.origin
 	local dot = v:dot(self.direction)
 
@@ -50,7 +56,9 @@ function Ray:side(point)
 	end
 end
 
-function Ray:intersect(other)
+function BaseRay:intersect(other)
+	assert(self:compatible(other), "generation mismatch")
+
 	local da = self.origin
 	local db = other.origin
 	local dc = other.origin - self.origin
@@ -78,7 +86,9 @@ end
 -- Checks if the ray intersects the triangle (v1, v2, v3).
 --
 -- Returns true and the point (Vector) of collision, false otherwise.
-function Ray:hitTriangle(v1, v2, v3)
+function BaseRay:hitTriangle(v1, v2, v3)
+	assert(self:compatible(v1) and self:compatible(v2) and self:compatible(v3), "generation mismatch")
+
 	-- http://www.lighthouse3d.com/tutorials/maths/ray-triangle-intersection/
 	local E = 0.01
 	local p = self.origin
@@ -122,7 +132,9 @@ end
 -- Checks if the ray intersects the AABB (min, max).
 --
 -- Returns true and the point (Vector) of collision, false otherwise.
-function Ray:hitBounds(min, max, transform, radius)
+function BaseRay:hitBounds(min, max, transform, radius)
+	assert(self:compatible(min) and self:compatible(max) and min:compatible(max), "generation mismatch")
+
 	radius = radius or 0
 
 	local r
