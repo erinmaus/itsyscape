@@ -8,9 +8,11 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Pool = require "ItsyScape.Common.Math.Pool"
 
 -- Three-dimensional vector type.
-local Vector, Metatable = Class()
+local BaseVector, Metatable = Class()
+local Vector = Pool.wrap(BaseVector)
 
 -- Constructs a new three-dimensional vector from the provided components.
 --
@@ -18,37 +20,42 @@ local Vector, Metatable = Class()
 --
 -- Thus Vector(1) gives { 1, 1, 1 }, Vector() gives { 0, 0, 0 },
 -- and Vector(1, 2) gives { 1, 2, 1 }.
-function Vector:new(x, y, z)
+function BaseVector:new(x, y, z)
 	self.x = x or 0
 	self.y = y or x or 0
 	self.z = z or x or 0
 end
 
 -- Returns the x, y, z components as a tuple.
-function Vector:get()
+function BaseVector:get()
 	return self.x, self.y, self.z
 end
 
-function Vector:abs()
+function BaseVector:abs()
+	assert(self:compatible(), "generation mismatch")
 	return Vector(math.abs(self.x), math.abs(self.y), math.abs(self.z))
 end
 
 -- Calculates and returns the dot product of two vectors.
-function Vector:dot(other)
+function BaseVector:dot(other)
+	assert(self:compatible(other), "generation mismatch")
 	return self.x * other.x + self.y * other.y + self.z * other.z
 end
 
-function Vector:reflect(normal)
+function BaseVector:reflect(normal)
+	assert(self:compatible(normal), "generation mismatch")
 	local dot = self:dot(normal)
 	return self - 2.0 * normal * dot
 end
 
-function Vector:project(other)
+function BaseVector:project(other)
+	assert(self:compatible(other), "generation mismatch")
 	return self:dot(other) / other:dot(other) * other
 end
 
 -- Returns a vector with the minimum components of both vectors.
-function Vector:min(other)
+function BaseVector:min(other)
+	assert(self:compatible(other), "generation mismatch")
 	return Vector(
 		math.min(self.x, other.x),
 		math.min(self.y, other.y),
@@ -56,18 +63,22 @@ function Vector:min(other)
 end
 
 -- Returns a vector with the maximum components of both vectors.
-function Vector:max(other)
+function BaseVector:max(other)
+	assert(self:compatible(other), "generation mismatch")
 	return Vector(
 		math.max(self.x, other.x),
 		math.max(self.y, other.y),
 		math.max(self.z, other.z))
 end
 
-function Vector:clamp(min, max)
+function BaseVector:clamp(min, max)
+	assert(self:compatible(min) and self:compatible(max) and min:compatible(max), "generation mismatch")
 	return self:min(max):max(min)
 end
 
 function Vector.transformBounds(min, max, transform)
+	assert(self:compatible(min) and self:compatible(max) and min:compatible(max), "generation mismatch")
+
 	local corners = {
 		min.x, min.y, min.z,
 		max.x, min.y, min.z,
@@ -103,7 +114,9 @@ end
 -- delta is clamped to 0 .. 1 inclusive.
 --
 -- Returns the interpolated vector.
-function Vector:lerp(other, delta)
+function BaseVector:lerp(other, delta)
+	assert(self:compatible(other), "generation mismatch")
+
 	delta = math.min(math.max(delta, 0.0), 1.0)
 	local result = Vector()
 	result.x = other.x * delta + self.x * (1 - delta)
@@ -113,7 +126,9 @@ function Vector:lerp(other, delta)
 end
 
 -- Calculates the cross product of two vectors.
-function Vector:cross(other)
+function BaseVector:cross(other)
+	assert(self:compatible(other), "generation mismatch")
+
 	local s = self.y * other.z - self.z * other.y
 	local t = self.z * other.x - self.x * other.z
 	local r = self.x * other.y - self.y * other.x
@@ -122,12 +137,14 @@ function Vector:cross(other)
 end
 
 -- Gets the length (i.e., magnitude) of the vector, squared.
-function Vector:getLengthSquared()
+function BaseVector:getLengthSquared()
+	assert(self:compatible(), "generation mismatch")
+
 	return self.x * self.x + self.y * self.y + self.z * self.z
 end
 
 -- Gets the length (i.e., magnitude) of the vector.
-function Vector:getLength()
+function BaseVector:getLength()
 	local lengthSquared = self:getLengthSquared()
 	if lengthSquared == 0 then
 		return 0
@@ -137,7 +154,7 @@ function Vector:getLength()
 end
 
 -- Returns a normal of the vector.
-function Vector:getNormal()
+function BaseVector:getNormal()
 	local length = self:getLength()
 	if length == 0 then
 		return self
@@ -154,14 +171,17 @@ function Metatable.__add(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		assert(b:compatible(), "generation mismatch")
 		result.x = a + b.x
 		result.y = a + b.y
 		result.z = a + b.z
 	elseif type(b) == 'number' then
+		assert(a:compatible(), "generation mismatch")
 		result.x = a.x + b
 		result.y = a.y + b
 		result.z = a.z + b
 	else
+		assert(a:compatible(b), "generation mismatch")
 		result.x = a.x + b.x
 		result.y = a.y + b.y
 		result.z = a.z + b.z
@@ -178,14 +198,17 @@ function Metatable.__sub(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		assert(b:compatible(), "generation mismatch")
 		result.x = a - b.x
 		result.y = a - b.y
 		result.z = a - b.z
 	elseif type(b) == 'number' then
+		assert(a:compatible(), "generation mismatch")
 		result.x = a.x - b
 		result.y = a.y - b
 		result.z = a.z - b
 	else
+		assert(a:compatible(b), "generation mismatch")
 		result.x = a.x - b.x
 		result.y = a.y - b.y
 		result.z = a.z - b.z
@@ -202,14 +225,17 @@ function Metatable.__mul(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		assert(b:compatible(), "generation mismatch")
 		result.x = a * b.x
 		result.y = a * b.y
 		result.z = a * b.z
 	elseif type(b) == 'number' then
+		assert(a:compatible(), "generation mismatch")
 		result.x = a.x * b
 		result.y = a.y * b
 		result.z = a.z * b
 	else
+		assert(a:compatible(b), "generation mismatch")
 		result.x = a.x * b.x
 		result.y = a.y * b.y
 		result.z = a.z * b.z
@@ -227,14 +253,17 @@ function Metatable.__div(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		assert(b:compatible(), "generation mismatch")
 		result.x = a / b.x
 		result.y = a / b.y
 		result.z = a / b.z
 	elseif type(b) == 'number' then
+		assert(a:compatible(), "generation mismatch")
 		result.x = a.x / b
 		result.y = a.y / b
 		result.z = a.z / b
 	else
+		assert(a:compatible(b), "generation mismatch")
 		result.x = a.x / b.x
 		result.y = a.y / b.y
 		result.z = a.z / b.z
@@ -247,6 +276,7 @@ end
 --
 -- Returns { -x, -y, -z }.
 function Metatable.__unm(a)
+	assert(a:compatible(), "generation mismatch")
 	return Vector(-a.x, -a.y, -a.z)
 end
 
@@ -254,14 +284,17 @@ function Metatable.__pow(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		assert(b:compatible(), "generation mismatch")
 		result.x = a ^ b.x
 		result.y = a ^ b.y
 		result.z = a ^ b.z
 	elseif type(b) == 'number' then
+		assert(a:compatible(), "generation mismatch")
 		result.x = a.x ^ b
 		result.y = a.y ^ b
 		result.z = a.z ^ b
 	else
+		assert(a:compatible(b), "generation mismatch")
 		result.x = a.x ^ b.x
 		result.y = a.y ^ b.y
 		result.z = a.z ^ b.z
@@ -271,6 +304,7 @@ function Metatable.__pow(a, b)
 end
 
 function Metatable.__eq(a, b)
+	assert(a:compatible(b), "generation mismatch")
 	return a.x == b.x and a.y == b.y and a.z == b.z
 end
 
