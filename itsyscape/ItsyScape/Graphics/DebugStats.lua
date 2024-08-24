@@ -40,15 +40,12 @@ function DebugStats:measure(node, ...)
 		maxMemory = -math.huge,
 		currentTimeTotal = 0,
 		currentMemoryTotal = 0,
-		samples = 0 
+		sampleCount = 0,
+		samples = {}
 	}
 
 	local duration, memory, result
 	do
-		if _DEBUG == "plus" then
-			--Log.debug("Measuring %s", nodeName)
-		end
-
 		local beforeMemory, afterMemory
 		local beforeTime = love.timer.getTime()
 
@@ -67,10 +64,6 @@ function DebugStats:measure(node, ...)
 
 		duration = afterTime - beforeTime
 		memory = (afterMemory or 0) - (beforeMemory or 0)
-
-		if _DEBUG == "plus" then
-			--Log.debug("Measured %s, %f kb, %f ms", nodeName, memory, duration * 1000)
-		end
 	end
 
 	stat.minTime = math.min(stat.minTime, duration)
@@ -79,7 +72,11 @@ function DebugStats:measure(node, ...)
 	stat.maxMemory = math.max(stat.maxMemory, memory)
 	stat.currentTimeTotal = stat.currentTimeTotal + duration
 	stat.currentMemoryTotal = stat.currentMemoryTotal + memory
-	stat.samples = stat.samples + 1
+	stat.sampleCount = stat.sampleCount + 1
+
+	if _DEBUG == "plus" then
+		table.insert(stat.samples, { time = love.timer.getTime() - Log.START, duration = duration, memory = memory })
+	end
 
 	self.debugStats[nodeName] = stat
 
@@ -110,13 +107,13 @@ function DebugStats:dumpStatsToCSV(topic)
 	end
 
 	local stringifiedStats = {}
-	table.insert(stringifiedStats, "Node, Min Time (ms), Max Time (ms), Min Memory (kbs), Max Memory (kbs), Total Time (secs), Total Memory (kbs), Samples, Avg Time (ms), Avg Mem (kb)")
+	table.insert(stringifiedStats, "Node, Min Time (ms), Max Time (ms), Min Memory (kbs), Max Memory (kbs), Total Time (secs), Total Memory (kbs), Samples, Avg Time (ms), Avg Mem (kb), Avg Mem (kb/s)")
 
 	for i = 1, #sortedDebugStats do
 		local stats = sortedDebugStats[i].stats
 		local nodeName = sortedDebugStats[i].nodeName
 		local f = string.format(
-			"%s, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+			"%s, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
 			nodeName,
 			stats.minTime * 1000,
 			stats.maxTime * 1000,
@@ -124,9 +121,10 @@ function DebugStats:dumpStatsToCSV(topic)
 			stats.maxMemory,
 			stats.currentTimeTotal,
 			stats.currentMemoryTotal,
-			stats.samples,
-			(stats.currentTimeTotal / stats.samples) * 1000,
-			stats.currentMemoryTotal / stats.samples)
+			stats.sampleCount,
+			(stats.currentTimeTotal / stats.sampleCount) * 1000,
+			stats.currentMemoryTotal / stats.sampleCount,
+			stats.currentMemoryTotal / (love.timer.getTime() - Log.START))
 		table.insert(stringifiedStats, f)
 	end
 
@@ -140,6 +138,29 @@ function DebugStats:dumpStatsToCSV(topic)
 		url = url:gsub("/", "\\")
 	end
 	Log.info("Dumped stats for topic '%s' to \"%s\".", topic, url)
+
+	for i = 1, #sortedDebugStats do
+		local stats = sortedDebugStats[i].stats
+		local nodeName = sortedDebugStats[i].nodeName
+
+		if #stats.samples > 0 then
+			local samplesFilename = string.format("Performance/%s %s Samples %d.csv", topic, suffix, i)
+			local stringifiedSamples = {}
+			table.insert(stringifiedSamples, "Timestamp, Node, Time (ms), Memory (kbs)")
+			for _, sample in ipairs(stats.samples) do
+				local f = string.format(
+					"%0.7f, %s, %f, %f",
+					sample.time,
+					nodeName,
+					sample.duration * 1000,
+					sample.memory)
+				table.insert(stringifiedSamples, f)
+			end
+
+			local samplesResult = table.concat(stringifiedSamples, "\n")
+			local s = love.filesystem.write(samplesFilename, samplesResult)
+		end
+	end
 end
 
 DebugStats.GLOBAL = DebugStats.GlobalDebugStats()
