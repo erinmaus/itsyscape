@@ -281,7 +281,7 @@ $(LUAJIT_PATH)/Makefile:
 	git clone --depth 1 -b $(LUAJIT_BRANCH) https://github.com/LuaJIT/LuaJIT $(LUAJIT_PATH)
 
 installdir/lib/libluajit-5.1.so: $(LUAJIT_PATH)/Makefile
-	cd $(LUAJIT_PATH) && LDFLAGS="-Wl,-rpath,'\$$\$$ORIGIN/../lib'" $(MAKE) amalg -j$(NUMBER_OF_PROCESSORS) PREFIX=/usr
+	cd $(LUAJIT_PATH) && LDFLAGS="-Wl,-rpath,'\$$\$$ORIGIN/../lib'" CFLAGS="-DLUAJIT_ENABLE_LUA52COMPAT" $(MAKE) amalg -j$(NUMBER_OF_PROCESSORS) PREFIX=/usr
 	cd $(LUAJIT_PATH) && make install PREFIX=$(INSTALLPREFIX)
 	cd $(LUAJIT_PATH) && make clean
 	strip installdir/lib/libluajit-5.1.so

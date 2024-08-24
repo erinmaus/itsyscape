@@ -57,6 +57,13 @@ function BaseQuaternion:new(x, y, z, w)
 	self.w = w or 1
 end
 
+function BaseQuaternion:copy(other)
+	other.x = self.x
+	other.y = self.y
+	other.z = self.z
+	other.w = self.w
+end
+
 -- Returns the x, y, z, w (in that order) components as a tuple.
 function BaseQuaternion:get()
 	return self.x, self.y, self.z, self.w

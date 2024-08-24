@@ -18,6 +18,10 @@ function Class.isClass(a)
 	return Class.getType(a) ~= nil
 end
 
+function Class.hasInterface(a, b)
+	return Class.isClass(a) and not not Class.getType(a)._INTERFACES[b]
+end
+
 -- Returns the type of a, or nil if a is not a Class instance.
 function Class.getType(a)
 	a = getmetatable(a) or {}
@@ -90,6 +94,24 @@ local function getDebugInfo(self)
 	return self:getType()._DEBUG
 end
 
+local function __index(self, key)
+	return self.__fields[key]
+end
+
+local function __newindex(self, key, value)
+	if Class.hasInterface(value, Class.IPooled) then
+		if not value:getIsPooled() then
+			self.__fields[key] = value
+		elseif currentValue and Class.isType(currentValue, Class.getType(value)) then
+			self.__fields[key] = value:keep(currentValue)
+		else
+			self.__fields[key] = value:keep()
+		end
+	else
+		self.__fields[key] = value
+	end
+end
+
 local Common = {
 	getType = getType,
 	isType = isType,
@@ -103,15 +125,30 @@ local Common = {
 -- the returned class definition. Same for overriding properties or methods.
 --
 -- Returns the class definition and the metatable.
-local function __call(self, parent, stack)
+local function __call(self, parent, stack, ...)
 	local C = Class
 
-	local Type = { __index = parent or Common, __parent = parent, __c = Class }
+	local Type = { __index = parent or Common, __parent = parent, __c = C }
 	local Class = setmetatable({}, Type)
-	local Metatable = { __index = Class, __type = Class }
+	local SelfMetatable = { __index = Class }
+	local Metatable = { __index = __index, __newindex = __newindex, __type = Class }
 	Class._METATABLE = Metatable
 	Class._PARENT = parent or false
 	Class._DEBUG = {}
+	Class._INTERFACES = {}
+
+	if parent then
+		Class._INTERFACES[parent] = true
+	end
+
+	if type(stack) == "table" then
+		Class._INTERFACES[stack] = true
+		stack = nil
+	end
+
+	for i = 1, select("#", ...) do
+		Class._INTERFACES[select(i, ...)] = true
+	end
 
 	do
 		local debug = require "debug"
@@ -142,7 +179,7 @@ local function __call(self, parent, stack)
 	end
 
 	function Type.__call(self, ...)
-		local result = setmetatable({}, Metatable)
+		local result = setmetatable({ __fields = setmetatable({}, SelfMetatable) }, Metatable)
 
 		if Class.new then
 			Class.new(result, ...)
@@ -154,4 +191,26 @@ local function __call(self, parent, stack)
 	return Class, Metatable
 end
 
-return setmetatable(Class, { __call = __call })
+Class = setmetatable(Class, { __call = __call })
+
+Class.IPooled = Class()
+
+function Class.IPooled:keep(other)
+	return Class.ABSTRACT()
+end
+
+function Class.IPooled:getIsPooled()
+	return Class.ABSTRACT()
+end
+
+Class.Table = Class()
+
+function Class.Table._METATABLE:__pairs()
+	return pairs(self.__fields)
+end
+
+function Class.Table._METATABLE:__ipairs()
+	return ipairs(self.__fields)
+end
+
+return Class

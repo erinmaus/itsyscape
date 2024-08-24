@@ -7,6 +7,8 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
+
 local Pool = Class()
 
 Pool.TypePool = Class()
@@ -76,7 +78,6 @@ function Pool:new(options)
 	self.options = options or {}
 	self.poolsByType = {}
 	self.pools = {}
-	self.currentPool 
 	self.generation = 0
 end
 
@@ -125,14 +126,16 @@ function Pool:getPool(WrappedType)
 	local pool = self.poolsByType[WrappedType]
 	if not pool then
 		pool = Pool.TypePool(WrappedType, self)
+
 		self.poolsByType[WrappedType] = pool
+		table.insert(self.pools, pool)
 	end
 
 	return pool
 end
 
 function Pool.wrap(Type)
-	local WrappedType, Metatable = Class(Type, 2)
+	local WrappedType, Metatable = Class(Type, 2, Class.IPooled)
 	
 	function WrappedType:new(pool, n, ...)
 		Type.new(self, ...)
@@ -166,7 +169,7 @@ function Pool.wrap(Type)
 			return true
 		end
 
-		if not other and and self._generation then
+		if not other and self._generation then
 			local current = Pool.getCurrent()
 			if current then
 				return self._generation == current:getGeneration()
@@ -186,49 +189,48 @@ function Pool.wrap(Type)
 		return self._pool and self._n and self._generation
 	end
 
-	Metatable.__add = Type._METATABLE.__add and function(...)
+	function Metatable.__add(...)
 		return Type._METATABLE.__add(...)
 	end
 
-	Metatable.__sub = Type._METATABLE.__sub and function(...)
+	function Metatable.__sub(...)
 		return Type._METATABLE.__sub(...)
 	end
 
-	Metatable.__mul = Type._METATABLE.__mul and function(...)
+	function Metatable.__mul(...)
 		return Type._METATABLE.__mul(...)
 	end
 
-	Metatable.__div = Type._METATABLE.__div and function(...)
+	function Metatable.__div(...)
 		return Type._METATABLE.__div(...)
 	end
 
-	Metatable.__unm = Type._METATABLE.__unm and function(...)
+	function Metatable.__unm(...)
 		return Type._METATABLE.__unm(...)
 	end
 
-	Metatable.__pow = Type._METATABLE.__pow and function(...)
+	function Metatable.__pow(...)
 		return Type._METATABLE.__pow(...)
 	end
 
-	Metatable.__eq = Type._METATABLE.__eq and function(...)
+	function Metatable.__eq(...)
 		return Type._METATABLE.__eq(...)
 	end
 
 	local C = getmetatable(WrappedType)
 	local constructor = C.__call
-	function C.__call(self, a, ...)
-		local pool, n
+	function C.__call(self, a, b, ...)
 		if Class.isCompatibleType(a, Pool.TypePool) then
-			return constructor(a, b, ...)
+			return constructor(self, a, b, ...)
 		end
 
 		local current = Pool.getCurrent()
 		if not current then
-			return constructor(nil, nil, a, ...)
+			return constructor(self, nil, nil, a, b, ...)
 		end
 
 		pool = Pool.getCurrent():getPool(WrappedType)
-		return pool:get(a, ...)
+		return pool:get(a, b, ...)
 	end
 
 	return WrappedType
