@@ -785,6 +785,10 @@ function GameView:updateMap(map, layer)
 		local function getPlayerNearPlane()
 			local near = 0
 
+			if true then
+				return near
+			end
+
 			local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
 			if playerActor then
 				local _, _, playerK = playerActor:getTile()

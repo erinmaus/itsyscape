@@ -13,9 +13,9 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
-ResourceManager.DESKTOP_FRAME_DURATION     = 1 / 60
+ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 60
 ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
-ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = 1 / 1000
+ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = _DEBUG == "plus" and 1 or 1 / 1000
 
 ResourceManager.View = Class()
 
