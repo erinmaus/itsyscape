@@ -26,6 +26,12 @@ function BaseVector:new(x, y, z)
 	self.z = z or x or 0
 end
 
+function BaseVector:copy(other)
+	other.x = self.x
+	other.y = self.y
+	other.z = self.z
+end
+
 -- Returns the x, y, z components as a tuple.
 function BaseVector:get()
 	return self.x, self.y, self.z
@@ -77,7 +83,7 @@ function BaseVector:clamp(min, max)
 end
 
 function Vector.transformBounds(min, max, transform)
-	assert(self:compatible(min) and self:compatible(max) and min:compatible(max), "generation mismatch")
+	assert(min:compatible(max), "generation mismatch")
 
 	local corners = {
 		min.x, min.y, min.z,

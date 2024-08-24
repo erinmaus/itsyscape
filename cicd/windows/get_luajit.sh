@@ -6,7 +6,7 @@ cd build
 git clone https://github.com/LuaJIT/LuaJIT || true
 cd LuaJIT
 git checkout 224129a8e64bfa219d35cd03055bf03952f167f6
-make
+CFLAGS="-DLUAJIT_ENABLE_LUA52COMPAT" make
 
 mkdir -p ../lib
 

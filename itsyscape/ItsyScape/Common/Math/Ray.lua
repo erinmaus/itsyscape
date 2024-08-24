@@ -24,6 +24,11 @@ function BaseRay:new(origin, direction)
 	self.direction = (direction or Vector(0, 0, 1)):getNormal()
 end
 
+function BaseRay:copy(other)
+	other.origin = self.origin
+	other.direction = self.direction
+end
+
 -- Returns a point distance units along the ray.
 function BaseRay:project(distance)
 	return self.origin + self.direction * distance
