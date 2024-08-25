@@ -24,8 +24,8 @@ end
 
 -- Returns the type of a, or nil if a is not a Class instance.
 function Class.getType(a)
-	a = getmetatable(a) or {}
-	a = a.__type or {}
+	a = a and getmetatable(a)
+	a = a and a.__type
 
 	if a and getmetatable(a) and getmetatable(a).__c == Class then
 		return a
@@ -99,13 +99,20 @@ local function __index(self, key)
 end
 
 local function __newindex(self, key, value)
-	if Class.hasInterface(value, Class.IPooled) then
+	if not Class.hasInterface(self, Class.IPooled) and Class.hasInterface(value, Class.IPooled) then
 		if not value:getIsPooled() then
 			self.__fields[key] = value
-		elseif currentValue and Class.isType(currentValue, Class.getType(value)) then
-			self.__fields[key] = value:keep(currentValue)
 		else
-			self.__fields[key] = value:keep()
+			local info = debug.getinfo(2, "Sl")
+			Log.warnOnce(
+				"Storing pooled value (%s) in field %s (%s:%d).",
+				value:getDebugInfo().shortName, Log.dump(key), info.source, info.currentline)
+
+			if currentValue and Class.isType(currentValue, Class.getType(value)) then
+				self.__fields[key] = value:keep(currentValue)
+			else
+				self.__fields[key] = value:keep()
+			end
 		end
 	else
 		self.__fields[key] = value
@@ -131,7 +138,7 @@ local function __call(self, parent, stack, ...)
 	local Type = { __index = parent or Common, __parent = parent, __c = C }
 	local Class = setmetatable({}, Type)
 	local SelfMetatable = { __index = Class }
-	local Metatable = { __index = __index, __newindex = __newindex, __type = Class }
+	local Metatable = { __index = _DEBUG == "plus" and __index or Class, __newindex = _DEBUG == "plus" and __newindex or nil, __type = Class }
 	Class._METATABLE = Metatable
 	Class._PARENT = parent or false
 	Class._DEBUG = {}
@@ -179,13 +186,28 @@ local function __call(self, parent, stack, ...)
 	end
 
 	function Type.__call(self, ...)
-		local result = setmetatable({ __fields = setmetatable({}, SelfMetatable) }, Metatable)
+		local result = {}
+		if _DEBUG then
+			result.__fields = setmetatable({}, SelfMetatable)
+			result = setmetatable(result, Metatable)
+		else
+			result = setmetatable({}, Metatable)
+		end
+
 
 		if Class.new then
 			Class.new(result, ...)
 		end
 
 		return result
+	end
+
+	function Type.__newindex(self, key, value)
+		if C.hasInterface(value, C.IPooled) then
+			rawset(self, key, value:keep())
+		else
+			rawset(self, key, value)
+		end
 	end
 
 	return Class, Metatable
@@ -205,12 +227,26 @@ end
 
 Class.Table = Class()
 
-function Class.Table._METATABLE:__pairs()
-	return pairs(self.__fields)
+function Class.Table:new(t)
+	for i, v in ipairs(t) do
+		self[i] = v
+	end
+
+	for k, v in pairs(t) do
+		self[k] = v
+	end
 end
 
-function Class.Table._METATABLE:__ipairs()
+function Class.Table:length()
+	return #self.__fields
+end
+
+function Class.Table:ipairs()
 	return ipairs(self.__fields)
+end
+
+function Class.Table:pairs()
+	return pairs(self.__fields)
 end
 
 return Class

@@ -94,7 +94,7 @@ local function tick()
 
 			local startTime = love.timer.getTime()
 			while love.timer.getTime() < startTime + step do
-				collectgarbage("step", 1)
+				collectgarbage("step", 20)
 			end
 		end
 

@@ -29,9 +29,9 @@ function ModelSkin:new()
 	self.isGhosty = false
 	self.shader = false
 	self.multiShader = false
-	self.position = Vector(0)
-	self.scale = Vector(1)
-	self.rotation = Quaternion(0, 0, 0, 1)
+	self.position = Vector(0):keep()
+	self.scale = Vector(1):keep()
+	self.rotation = Quaternion():keep()
 	self.outlineThreshold = 0.5
 	self.lights = {}
 	self.particles = {}
@@ -163,27 +163,27 @@ function ModelSkin:loadFromFile(filename)
 	   type(result.position) == 'table' and
 	   #result.position == 3
 	then
-		self.position = Vector(unpack(result.position))
+		self.position = Vector(unpack(result.position)):keep()
 	end
 
 	if result.scale and
 	   type(result.scale) == 'table' and
 	   #result.scale == 3
 	then
-		self.scale = Vector(unpack(result.scale))
+		self.scale = Vector(unpack(result.scale)):keep()
 	end
 
 	if result.rotation and
 	   type(result.rotation) == 'table' and
 	   #result.rotation == 4
 	then
-		self.rotation = Quaternion(unpack(result.rotation))
+		self.rotation = Quaternion(unpack(result.rotation)):keep()
 	end
 
 	if result.rotation and type(result.rotation) == 'string' then
 		local r = Quaternion[result.rotation]
 		if r and Class.isType(r, Quaternion) then
-			self.rotation = Quaternion(r:get())
+			self.rotation = Quaternion(r:get()):keep()
 		end
 	end
 

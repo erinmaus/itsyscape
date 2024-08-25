@@ -15,18 +15,19 @@ Pool.TypePool = Class()
 
 function Pool.TypePool:new(WrappedType, parent)
 	self.WrappedType = WrappedType
-	self.parent = pool
+	self.parent = parent
 
 	self.pools = {}
-
 	self.top = 0
+
+	self:update()
 end
 
 function Pool.TypePool:get(...)
 	self.top = self.top + 1
 
 	local v
-	if self.top < #self.pool then
+	if self.top > #self.pool then
 		v = self.WrappedType(self, self.top, ...)
 		self.pool[self.top] = v
 	else
@@ -56,16 +57,18 @@ end
 
 function Pool.TypePool:add(value)
 	assert(Class.isType(value, WrappedType), "type mismatch for pool")
-	assert(value._pool, "value is not pooled")
-	assert(value._pool == self, "value does not belong to this pool")
+	assert(not value._pool, "value is already pooled")
 	assert(value._n and value._generation, "value is malformed")
-	assert(value._generation == self:getGeneration(), "value is from a different generation")
 
 	table.insert(self.pool, value)
+
+	value._pool = self
+	value._generation = self:getGeneration()
+	value._n = #self.pool
 end
 
 function Pool.TypePool:free(value)
-	assert(Class.isType(value, WrappedType), "type mismatch for pool")
+	assert(Class.isType(value, self.WrappedType), "type mismatch for pool")
 	assert(value._pool, "value is not pooled")
 	assert(value._pool == self, "value does not belong to this pool")
 	assert(value._n and value._generation, "value is malformed")
@@ -87,7 +90,7 @@ end
 
 function Pool:getNumFrames()
 	local numFrames = self.options and self.options.numFrames
-	return numFrames or (_DEBUG and 60 or 1)
+	return numFrames or (_DEBUG and 10 or 1)
 end
 
 function Pool:update()
@@ -98,12 +101,8 @@ function Pool:update()
 	end
 end
 
-function Pool:get()
-
-end
-
 function Pool:makeCurrent()
-	if Pool._CURRENT or Pool._CURRENT ~= self then
+	if Pool._CURRENT and Pool._CURRENT ~= self then
 		error("another pool is current")
 	end
 
@@ -135,7 +134,7 @@ function Pool:getPool(WrappedType)
 end
 
 function Pool.wrap(Type)
-	local WrappedType, Metatable = Class(Type, 2, Class.IPooled)
+	local WrappedType, Metatable = Class(Type, 1, Class.IPooled)
 	
 	function WrappedType:new(pool, n, ...)
 		Type.new(self, ...)
@@ -143,6 +142,16 @@ function Pool.wrap(Type)
 		self._pool = pool
 		self._n = n
 		self._generation = pool and pool:getGeneration()
+	end
+
+	function WrappedType:release()
+		local current = Pool.getCurrent()
+		if not current then
+			return
+		end
+
+		pool = Pool.getCurrent():getPool(WrappedType)
+		pool:add(self)
 	end
 
 	function WrappedType:keep(other)
@@ -154,6 +163,8 @@ function Pool.wrap(Type)
 		end
 
 		if self._pool and self._n and self._generation then
+			Type.keep(self)
+
 			self._pool:free(self)
 
 			self._pool = nil
@@ -165,21 +176,23 @@ function Pool.wrap(Type)
 	end
 
 	function WrappedType:compatible(other)
-		if not _DEBUG then
+		if _DEBUG ~= "plus" then
 			return true
 		end
 
 		if not other and self._generation then
 			local current = Pool.getCurrent()
-			if current then
-				return self._generation == current:getGeneration()
+			if current and self._generation ~= current:getGeneration() then
+				error("generation mismatch")
 			end
 
 			return true
 		end
 
 		if self._generation and other._generation then
-			return self._generation == other._generation
+			if self._generation ~= other._generation then
+				error("generation mismatch")
+			end
 		end
 
 		return true

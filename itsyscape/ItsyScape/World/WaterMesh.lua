@@ -45,8 +45,8 @@ function WaterMesh:draw(texture, ...)
 end
 
 function WaterMesh:_buildMesh()
-	self.min = Vector(math.huge)
-	self.max = Vector(-math.huge)
+	self.min = Vector(math.huge):keep()
+	self.max = Vector(-math.huge):keep()
 
 	for j = 1, self.height do
 		for i = 1, self.width do
@@ -67,8 +67,8 @@ function WaterMesh:_addVertex(position, normal, texture)
 		position.x * 1 / self.scale, position.z * 1 / self.scale
 	}
 
-	self.min = self.min:min(position)
-	self.max = self.max:max(position)
+	self.min = self.min:min(position):keep()
+	self.max = self.max:max(position):keep()
 
 	table.insert(self.vertices, vertex)
 end

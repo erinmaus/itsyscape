@@ -264,6 +264,7 @@ function GameManager:new()
 	self.queue = OutgoingEventQueue()
 
 	self.interfaces = {}
+	self.interfaceInstances = {}
 	self.instances = {}
 
 	self.ticks = 0
@@ -285,9 +286,8 @@ function GameManager:registerInterface(interface, Type)
 	assert(Class.isType(result))
 	assert(Class.isDerived(Type, result))
 
-	self.interfaces[interface] = {
-		type = Type
-	}
+	self.interfaces[interface] = { type = Type }
+	self.interfaceInstances[interface] = {}
 end
 
 function GameManager:getInterfaceType(interface)
@@ -387,17 +387,7 @@ function GameManager:getInstance(interface, id)
 end
 
 function GameManager:iterateInstances(interface)
-	local instances = self.interfaces[interface]
-
-	local current = nil
-	return function()
-		current = next(instances, current)
-		while type(current) ~= "number" and type(current) ~= "nil" do
-			current = next(instances, current)
-		end
-
-		return current and instances[current]:getInstance()
-	end
+	return pairs(self.interfaceInstances[interface])
 end
 
 function GameManager:newInstance(interface, id, obj)
@@ -406,6 +396,7 @@ function GameManager:newInstance(interface, id, obj)
 
 	instances[id] = instance
 	table.insert(self.instances, instance)
+	self.interfaceInstances[interface][obj] = id
 
 	return instance
 end
@@ -415,6 +406,7 @@ function GameManager:destroyInstance(interface, id)
 	local instance = instances[id]
 
 	instances[id] = nil
+	self.interfaceInstances[interface][instance:getInstance()] = nil
 
 	for i = 1, #self.instances do
 		if self.instances[i] == instance then

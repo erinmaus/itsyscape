@@ -17,7 +17,7 @@ local Quaternion = Pool.wrap(BaseQuaternion)
 
 -- Creates a quaternion from an axis and angle.
 function BaseQuaternion.fromAxisAngle(axis, angle)
-	assert(axis:compatible(), "generation mismatch")
+	axis:compatible()
 
 	local halfAngle = angle * 0.5
 	local halfAngleSine = math.sin(halfAngle)
@@ -31,7 +31,9 @@ end
 
 local E = 0.00001
 function BaseQuaternion.lookAt(source, target, up)
-	assert(source:compatible(target) and source:compatible(up) and target:compatible(up), "generation mismatch")
+	source:compatible(target)
+	source:compatible(up)
+	target:compatible(up)
 
 	up = up or -Vector.UNIT_Z
 
@@ -55,6 +57,10 @@ function BaseQuaternion:new(x, y, z, w)
 	self.y = y or x or 0
 	self.z = z or x or 0
 	self.w = w or 1
+end
+
+function BaseQuaternion:keep()
+	-- Nothing
 end
 
 function BaseQuaternion:copy(other)
@@ -88,7 +94,7 @@ end
 --
 -- Implementation borrowed from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
 function BaseQuaternion:slerp(other, delta)
-	assert(self:compatible(other), "generation mismatch")
+	self:compatible(other)
 
 	-- Clamp delta.
 	delta = math.min(math.max(delta, 0.0), 1.0)
@@ -126,7 +132,7 @@ end
 
 -- Gets the length (i.e., magnitude) of the quaternion, squared.
 function BaseQuaternion:getLengthSquared()
-	assert(self:compatible(), "generation mismatch")
+	self:compatible()
 
 	return self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w
 end
@@ -166,17 +172,19 @@ function BaseQuaternion:inverse()
 end
 
 function BaseQuaternion:transformVector(vector)
-	assert(self:compatible(vector), "generation mismatch")
+	self:compatible(vector)
 
 	local v = Quaternion(vector.x, vector.y, vector.z, 0)
 	local normal = self:getNormal()
 	local conjugate = -normal
+	local result = Vector((normal * v * conjugate):get())
+	local a = collectgarbage("count")
 
-	return Vector((normal * v * conjugate):get())
+	return result
 end
 
 function BaseQuaternion:getEulerXYZ()
-	assert(self:compatible(), "generation mismatch")
+	self:compatible()
 
 	local x = math.atan2(2.0 * (self.y * self.z + self.w * self.x) , self.w * self.w - self.x * self.x - self.y * self.y + self.z * self.z)
 	local y = math.asin(-2.0 * (self.x * self.z - self.w * self.y))
@@ -187,7 +195,7 @@ end
 
 -- Adds two quaternions.
 function Metatable.__add(a, b)
-	assert(a:compatible(b), "generation mismatch")
+	a:compatible(b)
 
 	local result = Quaternion()
 	result.x = a.x + b.x
@@ -200,7 +208,7 @@ end
 
 -- Multiplies two quaternions.
 function Metatable.__mul(a, b)
-	assert(a:compatible(b), "generation mismatch")
+	a:compatible(b)
 
 	local result = Quaternion()
 	result.x =  a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x
@@ -215,12 +223,12 @@ end
 --
 -- Returns { -x, -y, -z, w }.
 function Metatable.__unm(a)
-	assert(a:compatible(), "generation mismatch")
+	a:compatible()
 	return Quaternion(-a.x, -a.y, -a.z, a.w)
 end
 
 function Metatable.__eq(a, b)
-	assert(a:compatible(b), "generation mismatch")
+	a:compatible(b)
 	return a.x == b.x and a.y == b.y and a.z == b.z and a.w == b.w
 end
 

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
@@ -1454,6 +1455,27 @@ function DemoApplication:hideToolTip()
 	end
 end
 
+function DemoApplication:_updateToolTip(probe)
+	local action = probe:toArray()[1]
+	local renderer = self:getUIView():getRenderManager()
+	if action and (action.type ~= 'examine' and action.type ~= 'walk' and not action.suppress) then
+		local text = string.format("%s %s", action.verb, action.object)
+		self.showingToolTip = true
+		if (not self.lastToolTipObject or (self.lastToolTipObject.type ~= action.type or self.lastToolTipObject.id ~= action.id)) or not self.showingToolTip then
+			self.toolTip = {
+				ToolTip.Header(text),
+				ToolTip.Text(action.description)
+			}
+			self.lastToolTipObject = action
+
+			renderer:unsetToolTip(self.toolTipWidget)
+			self.toolTipWidget = nil
+		end
+	else
+		self:hideToolTip()
+	end
+end
+
 function DemoApplication:updateToolTip(delta)
 	if _MOBILE or (self.cameraController and not self.cameraController:isCompatibleType(DefaultCameraController)) then
 		self:hideToolTip()
@@ -1475,26 +1497,7 @@ function DemoApplication:updateToolTip(delta)
 			self:hideToolTip()
 		else
 			local mouseX, mouseY = self:getMousePosition()
-			self:probe(mouseX, mouseY, false, function(probe)
-				local action = probe:toArray()[1]
-				local renderer = self:getUIView():getRenderManager()
-				if action and (action.type ~= 'examine' and action.type ~= 'walk' and not action.suppress) then
-					local text = string.format("%s %s", action.verb, action.object)
-					self.showingToolTip = true
-					if (not self.lastToolTipObject or (self.lastToolTipObject.type ~= action.type or self.lastToolTipObject.id ~= action.id)) or not self.showingToolTip then
-						self.toolTip = {
-							ToolTip.Header(text),
-							ToolTip.Text(action.description)
-						}
-						self.lastToolTipObject = action
-
-						renderer:unsetToolTip(self.toolTipWidget)
-						self.toolTipWidget = nil
-					end
-				else
-					self:hideToolTip()
-				end
-			end, { ['actors'] = true, ['props'] = true, ['loot'] = true }, self.hasGyroInput and DemoApplication.GYRO_RADIUS or 0)
+			self:probe(mouseX, mouseY, false, Function(self._updateToolTip, self), { ['actors'] = true, ['props'] = true, ['loot'] = true }, self.hasGyroInput and DemoApplication.GYRO_RADIUS or 0)
 
 			self.mouseMoved = false
 			self.toolTipTick = DemoApplication.PROBE_TICK

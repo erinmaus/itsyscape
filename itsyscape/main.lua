@@ -33,6 +33,9 @@ do
 		_ITSYREALM_VERSION)
 end
 
+local Pool = require "ItsyScape.Common.Math.Pool"
+Pool():makeCurrent()
+
 itsyrealm = {
 	graphics = {
 		impl = {}
@@ -65,7 +68,7 @@ function love.load(args)
 		end
 
 		if args[i] == "/debugplus" or args[i] == "--debugplus" then
-			_DEBUG = 'plus'
+			_DEBUG = "plus"
 		end
 
 		if args[i] == "/phantom" then
@@ -128,6 +131,8 @@ function love.load(args)
 end
 
 function love.update(delta)
+	Pool.getCurrent():update()
+
 	if _APP then
 		_APP:update(delta)
 	end
@@ -440,6 +445,48 @@ function itsyrealm.errorhandler()
 		if love.timer then
 			love.timer.sleep(0.1)
 		end
+	end
+end
+
+function love.run()
+	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
+
+	-- We don't want the first frame's dt to include time taken by love.load.
+	if love.timer then love.timer.step() end
+
+	local dt = 0
+
+	-- Main loop time.
+	return function()
+		-- Process events.
+		if love.event then
+			love.event.pump()
+			for name, a,b,c,d,e,f in love.event.poll() do
+				if name == "quit" then
+					if not love.quit or not love.quit() then
+						return a or 0
+					end
+				end
+				love.handlers[name](a,b,c,d,e,f)
+			end
+		end
+
+		-- Update dt, as we'll be passing it to update
+		if love.timer then dt = love.timer.step() end
+
+		-- Call update and draw
+		if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
+
+		if love.graphics and love.graphics.isActive() then
+			love.graphics.origin()
+			love.graphics.clear(love.graphics.getBackgroundColor())
+
+			if love.draw then love.draw() end
+
+			love.graphics.present()
+		end
+
+		--if love.timer then love.timer.sleep(0.001) end
 	end
 end
 

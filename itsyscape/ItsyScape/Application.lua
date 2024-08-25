@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- ItsyScape/Application.lua
 --
@@ -10,6 +9,7 @@
 --------------------------------------------------------------------------------
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
@@ -197,6 +197,8 @@ function Application:new(multiThreaded)
 
 	self.playMode = Application.PLAY_MODE_SINGLE_PLAYER
 	self.isQuitting = flase
+
+	self.pendingProbes = {}
 end
 
 local memoryLabel
@@ -389,62 +391,66 @@ function Application:getIsMultiThreaded()
 	return self.multiThreaded
 end
 
+function Application:_probe(probe, performDefault, callback)
+	if performDefault then
+		local numPrimaryActions = 0
+		local hasWalk = false
+
+		for _, action in probe:iterate() do
+			if action.id ~= "Examine" and not action.suppress then
+				if action.id ~= "Walk" then
+					numPrimaryActions = numPrimaryActions + 1
+				else
+					hasWalk = true
+				end
+			end
+		end
+
+		if numPrimaryActions <= 1 or _CONF.probe == false then
+			for _, action in probe:iterate() do
+				if action.id ~= "Examine" and not action.suppress then
+					if action.id == "Walk" then
+						self.clickActionType = Application.CLICK_WALK
+					else
+						self.clickActionType = Application.CLICK_ACTION
+					end
+
+					self.clickActionTime = Application.CLICK_DURATION
+					self.clickX, self.clickY = itsyrealm.mouse.getPosition()
+
+					local s, r = pcall(action.callback)
+					if not s then
+						Log.warn("couldn't perform action: %s", r)
+					end
+
+					return
+				end
+			end
+		end
+
+		if numPrimaryActions <= 1 and not hasWalk then
+			return
+		end
+	end
+
+	if callback then
+		callback(probe)
+	end
+
+	table.insert(self.pendingProbes, probe)
+end
+
 function Application:probe(x, y, performDefault, callback, tests, radius)
 	if self.paused then
 		return
 	end
 
+	print(">>> pending", #self.pendingProbes)
+
 	local ray = self:shoot(x, y)
-	local probe = Probe(self:getGame(), self.gameView, self.gameDB, ray, tests, radius)
-	probe.onExamine:register(function(name, description)
-		self.uiView:examine(name, description)
-	end)
-	probe:all(function()
-		if performDefault then
-			local numPrimaryActions = 0
-			local hasWalk = false
-
-			for action in probe:iterate() do
-				if action.id ~= "Examine" and not action.suppress then
-					if action.id ~= "Walk" then
-						numPrimaryActions = numPrimaryActions + 1
-					else
-						hasWalk = true
-					end
-				end
-			end
-
-			if numPrimaryActions <= 1 or _CONF.probe == false then
-				for action in probe:iterate() do
-					if action.id ~= "Examine" and not action.suppress then
-						if action.id == "Walk" then
-							self.clickActionType = Application.CLICK_WALK
-						else
-							self.clickActionType = Application.CLICK_ACTION
-						end
-
-						self.clickActionTime = Application.CLICK_DURATION
-						self.clickX, self.clickY = itsyrealm.mouse.getPosition()
-
-						local s, r = pcall(action.callback)
-						if not s then
-							Log.warn("couldn't perform action: %s", r)
-						end
-
-						return
-					end
-				end
-			end
-
-			if numPrimaryActions <= 1 and not hasWalk then
-				return
-			end
-		end
-
-		if callback then
-			callback(probe)
-		end
-	end)
+	local probe = table.remove(self.pendingProbes) or Probe(self:getGame(), self.gameView, self.gameDB)
+	probe:init(ray, tests, radius)
+	probe:all(Function(self._probe, self, probe, performDefault, callback))
 end
 
 function Application:shoot(x, y)
@@ -521,12 +527,15 @@ function Application:update(delta)
 	self:updateMemoryUsage()
 
 	if _DEBUG ~= "plus" then
-		local step = (_CONF.clientGCStepMS or 1) / 1000
+		local step = (_CONF.clientGCStepMS or 2) / 1000
 
+		local before = love.timer.getTime()
 		local startTime = love.timer.getTime()
 		while love.timer.getTime() < startTime + step do
-			collectgarbage("step", 1)
+			collectgarbage("step", 20)
 		end
+		local after = love.timer.getTime()
+		print(">>> time", (after - before) * 1000)
 	end
 end
 

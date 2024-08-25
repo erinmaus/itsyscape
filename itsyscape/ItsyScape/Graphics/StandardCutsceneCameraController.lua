@@ -91,7 +91,7 @@ function StandardCutsceneCameraController:update(delta)
 	self.currentVerticalRotation = (self.targetVerticalRotation - self.previousVerticalRotation) * Tween[self.verticalRotationTween](self.currentVerticalRotationTime / self.targetVerticalRotationTime) + self.previousVerticalRotation
 
 	self.currentTranslationTime = math.min(self.currentTranslationTime + delta, self.targetTranslationTime)
-	self.currentTranslation = self.previousTranslation:lerp(self.targetTranslation, Tween[self.translationTween](self.currentTranslationTime / self.targetTranslationTime))
+	self.currentTranslation = self.previousTranslation:lerp(self.targetTranslation, Tween[self.translationTween](self.currentTranslationTime / self.targetTranslationTime)):keep()
 
 	if self.isShaking then
 		self.currentShakingInterval = self.currentShakingInterval - delta
@@ -103,13 +103,13 @@ function StandardCutsceneCameraController:update(delta)
 			local z = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
 
 			self.previousShakingOffset = self.currentShakingOffset
-			self.currentShakingOffset = Vector(x, y, z)
+			self.currentShakingOffset = Vector(x, y, z):keep()
 		end
 
 		self.currentShakingDuration = self.currentShakingDuration - delta
 		if self.currentShakingDuration <= 0 then
 			self.isShaking = false
-			self.currentShakingOffset = Vector(0)
+			self.currentShakingOffset = Vector(0):keep()
 		end
 	end
 end
@@ -191,8 +191,8 @@ function StandardCutsceneCameraController:onShake(duration, interval, min, max)
 	self.currentShakingDuration = self.shakingDuration
 	self.minShakingOffset = min or 0
 	self.maxShakingOffset = max or 1
-	self.previousShakingOffset = Vector(0)
-	self.currentShakingOffset = Vector(0)
+	self.previousShakingOffset = Vector(0):keep()
+	self.currentShakingOffset = Vector(0):keep()
 end
 
 function StandardCutsceneCameraController:onMapRotationStick(duration)
@@ -246,7 +246,7 @@ function StandardCutsceneCameraController:draw()
 	if self.currentShakingOffset and self.previousShakingOffset then
 		shake = self.previousShakingOffset:lerp(self.currentShakingOffset, 1 - (self.currentShakingInterval / self.shakingInterval))
 	else
-		shake = Vector.ZERO
+		shake = Vector(0):keep()
 	end
 
 	self:getCamera():setDistance(self.currentZoom)

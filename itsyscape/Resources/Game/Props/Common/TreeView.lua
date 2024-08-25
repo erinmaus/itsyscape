@@ -31,7 +31,6 @@ function TreeView:new(prop, gameView)
 	self.spawned = false
 	self.depleted = false
 	self.time = 0
-	self.transforms = {}
 	self.animations = {}
 end
 

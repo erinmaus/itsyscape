@@ -50,7 +50,7 @@ function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcess
 	self.largeTileSet = largeTileSet
 	self.mask = mask
 	self.islandProcessor = islandProcessor
-	self.min, self.max = Vector(math.huge), Vector(-math.huge)
+	self.min, self.max = Vector(math.huge):keep(), Vector(-math.huge):keep()
 
 	left = math.max(left or 1, 1)
 	right = math.min(right or map.width, map.width)
@@ -388,8 +388,8 @@ function MapMesh:_addVertex(position, normal, texture, tile, color, layer, maskL
 	table.insert(self.vertices, vertex)
 	self.minY = math.min(self.minY or math.huge, position.y)
 	self.maxY = math.max(self.maxY or -math.huge, position.y)
-	self.min = self.min:min(position)
-	self.max = self.max:max(position)
+	self.min = self.min:min(position):keep()
+	self.max = self.max:max(position):keep()
 end
 
 -- Builds a vertex from a local position.

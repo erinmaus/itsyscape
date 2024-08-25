@@ -24,9 +24,14 @@ function BaseRay:new(origin, direction)
 	self.direction = (direction or Vector(0, 0, 1)):getNormal()
 end
 
+function BaseRay:keep()
+	self.origin = self.origin:keep()
+	self.direction = self.direction:keep()
+end
+
 function BaseRay:copy(other)
-	other.origin = self.origin
-	other.direction = self.direction
+	other.origin = self.origin:keep()
+	other.direction = self.direction:keep()
 end
 
 -- Returns a point distance units along the ray.
@@ -35,7 +40,7 @@ function BaseRay:project(distance)
 end
 
 function BaseRay:closest(point)
-	assert(self:compatible(point), "generation mismatch")
+	self:compatible(point)
 
 	local v = point - self.origin
 	local dot = v:dot(self.direction)
@@ -47,7 +52,7 @@ function BaseRay:closest(point)
 end
 
 function BaseRay:side(point)
-	assert(self:compatible(point), "generation mismatch")
+	self:compatible(point)
 
 	local v = point - self.origin
 	local dot = v:dot(self.direction)
@@ -62,7 +67,7 @@ function BaseRay:side(point)
 end
 
 function BaseRay:intersect(other)
-	assert(self:compatible(other), "generation mismatch")
+	self:compatible(other)
 
 	local da = self.origin
 	local db = other.origin
@@ -92,7 +97,9 @@ end
 --
 -- Returns true and the point (Vector) of collision, false otherwise.
 function BaseRay:hitTriangle(v1, v2, v3)
-	assert(self:compatible(v1) and self:compatible(v2) and self:compatible(v3), "generation mismatch")
+	self:compatible(v1)
+	self:compatible(v2)
+	self:compatible(v3)
 
 	-- http://www.lighthouse3d.com/tutorials/maths/ray-triangle-intersection/
 	local E = 0.01
@@ -138,17 +145,19 @@ end
 --
 -- Returns true and the point (Vector) of collision, false otherwise.
 function BaseRay:hitBounds(min, max, transform, radius)
-	assert(self:compatible(min) and self:compatible(max) and min:compatible(max), "generation mismatch")
+	self:compatible(min)
+	self:compatible(max)
+	min:compatible(max)
 
 	radius = radius or 0
 
 	local r
 	if transform then
 		local MathCommon = require "ItsyScape.Common.Math.Common"
-		local inverse = transform:inverse()
 
-		local _, rotation = MathCommon.decomposeTransform(inverse)
-		local p = Vector(inverse:transformPoint(self.origin:get()))
+		local _, rotation = MathCommon.decomposeTransform(transform)
+		rotation = rotation:inverse()
+		local p = Vector(transform:inverseTransformPoint(self.origin:get()))
 		local d = rotation:transformVector(self.direction):getNormal()
 
 		r = Ray(p, d)
@@ -177,7 +186,7 @@ function BaseRay:hitBounds(min, max, transform, radius)
  
 	tMin = math.max(tMin, math.min(tz1, tz2))
 	tMax = math.min(tMax, math.max(tz1, tz2))
- 
+
 	if tMax + radius >= tMin and tMin >= -radius then
 		return true, r.origin + r.direction * tMin
 	else

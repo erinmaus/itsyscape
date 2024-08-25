@@ -31,7 +31,6 @@ function FireView:new(prop, gameView)
 
 	self.spawned = false
 	self.flickerTime = 0
-	self.transforms = {}
 end
 
 function FireView:getTextureFilename()
@@ -55,6 +54,7 @@ function FireView:load()
 		self:getResourcePath("Fire.lskel"),
 		function(skeleton)
 			self.skeleton = skeleton
+			self.transforms = skeleton:createTransforms()
 
 			resources:queue(
 				ModelResource,
@@ -79,7 +79,9 @@ function FireView:load()
 				self.light:getTransform():setLocalTranslation(Vector(0, 0.5, 0.5))
 				self.light:setParent(root)
 
-				self.animation:computeTransforms(0, self.transforms)
+				self.animation:computeFilteredTransforms(0, self.transforms)
+				self.skeleton:applyBindPose(self.transforms)
+
 				self.node:setTransforms(self.transforms)
 
 				self.time = 0.0
@@ -101,11 +103,11 @@ function FireView:flicker()
 
 		local scale = 1.0 + (self:getProp():getScale():getLength() - math.sqrt(3))
 		local attenuationWidth = FireView.MAX_ATTENUATION - FireView.MIN_ATTENUATION
-		local attenuation = math.random() * attenuationWidth + FireView.MAX_ATTENUATION
+		local attenuation = love.math.random() * attenuationWidth + FireView.MAX_ATTENUATION
 		self.light:setAttenuation(attenuation)
 
 		local brightnessWidth = FireView.MAX_COLOR_BRIGHTNESS - FireView.MIN_COLOR_BRIGHTNESS
-		local brightness = math.random() * brightnessWidth + FireView.MAX_COLOR_BRIGHTNESS
+		local brightness = love.math.random() * brightnessWidth + FireView.MAX_COLOR_BRIGHTNESS
 		local color = Color(brightness, brightness, brightness, 1)
 		self.light:setColor(color)
 	end
@@ -132,8 +134,8 @@ function FireView:update(delta)
 	if self.spawned then
 		self.time = self.time + delta
 
-		self.animation:computeTransforms(self.time, self.transforms)
-		self.node:setTransforms(self.transforms)
+		self.animation:computeFilteredTransforms(0, self.transforms)
+		self.skeleton:applyBindPose(self.transforms)
 	end
 end
 

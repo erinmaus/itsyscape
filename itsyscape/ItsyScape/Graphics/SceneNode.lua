@@ -28,7 +28,7 @@ function SceneNode:new(NType)
 	self.material = Material(self)
 	self.parent = false
 	self.children = {}
-	self.min, self.max = Vector(), Vector()
+	self.min, self.max = Vector():keep(), Vector():keep()
 	self.boundsDirty = true
 	self.willRender = false
 end
@@ -136,8 +136,8 @@ function SceneNode:_debugDrawBounds(renderer, delta)
 end
 
 function SceneNode:setBounds(min, max)
-	self.min = min or self.min
-	self.max = max or self.max
+	self.min = (min and min:keep()) or self.min
+	self.max = (max and max:keep()) or self.max
 
 	self._handle:setMin(self.min.x, self.min.y, self.min.z)
 	self._handle:setMax(self.max.x, self.max.y, self.max.z)
