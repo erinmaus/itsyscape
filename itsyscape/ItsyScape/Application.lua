@@ -445,8 +445,6 @@ function Application:probe(x, y, performDefault, callback, tests, radius)
 		return
 	end
 
-	print(">>> pending", #self.pendingProbes)
-
 	local ray = self:shoot(x, y)
 	local probe = table.remove(self.pendingProbes) or Probe(self:getGame(), self.gameView, self.gameDB)
 	probe:init(ray, tests, radius)
@@ -529,13 +527,10 @@ function Application:update(delta)
 	if _DEBUG ~= "plus" then
 		local step = (_CONF.clientGCStepMS or 2) / 1000
 
-		local before = love.timer.getTime()
 		local startTime = love.timer.getTime()
 		while love.timer.getTime() < startTime + step do
 			collectgarbage("step", 20)
 		end
-		local after = love.timer.getTime()
-		print(">>> time", (after - before) * 1000)
 	end
 end
 
