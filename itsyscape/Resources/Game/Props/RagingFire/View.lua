@@ -259,7 +259,7 @@ function RagingFireView:tick()
 	if self.currentDirection ~= direction or
 	   self.currentRadius ~= radius
 	then
-		self.currentDirection = direction
+		self.currentDirection = direction:keep()
 		self.currentRadius = radius
 
 		self:initParticles()

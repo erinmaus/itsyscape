@@ -115,7 +115,7 @@ end
 
 function Noise:new(t)
 	t = t or {}
-	self.offset = t.offset or Vector(0)
+	self.offset = (t.offset or Vector(0)):keep()
 	self.scale = t.scale or 1
 	self.octaves = t.octaves or 1
 	self.attenuation = t.attenuation or 0

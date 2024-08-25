@@ -28,7 +28,7 @@ function WaterMeshSceneNode:new()
 
 	self.yOffset = 0.125
 	self.positionTimeScale = 8
-	self.textureTimeScale = Vector(math.pi / 4, 0.5)
+	self.textureTimeScale = Vector(math.pi / 4, 0.5):keep()
 
 	self.width = 0
 	self.height = self.yOffset * 2

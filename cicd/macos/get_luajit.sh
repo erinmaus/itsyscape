@@ -7,13 +7,13 @@ git clone https://github.com/LuaJIT/LuaJIT || true
 cd LuaJIT
 
 MACOSX_DEPLOYMENT_TARGET="10.12" make clean
-CFLAGS="-DLUAJIT_ENABLE_LUA52COMPAT" TARGET_FLAGS="-arch x86_64" MACOSX_DEPLOYMENT_TARGET="10.12" make
+TARGET_FLAGS="-arch x86_64" MACOSX_DEPLOYMENT_TARGET="10.12" make
 cp ./src/libluajit.so ./src/libluajit_x64.dylib
 install_name_tool -id "@rpath/Lua.framework/Versions/A/Lua" ./src/libluajit_x64.dylib
 
 TARGET_FLAGS="-arch x86_64" MACOSX_DEPLOYMENT_TARGET="11.00" make clean
 
-CFLAGS="-DLUAJIT_ENABLE_LUA52COMPAT" TARGET_FLAGS="-arch arm64" MACOSX_DEPLOYMENT_TARGET="11.00" make
+TARGET_FLAGS="-arch arm64" MACOSX_DEPLOYMENT_TARGET="11.00" make
 cp ./src/libluajit.so ./src/libluajit_m1.dylib
 install_name_tool -id "@rpath/Lua.framework/Versions/A/Lua" ./src/libluajit_m1.dylib
 

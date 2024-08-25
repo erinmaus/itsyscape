@@ -335,6 +335,13 @@ static int nbunny_skeleton_animation_instance_set_key_frames(lua_State* L)
 	return 0;
 }
 
+static int nbunny_skeleton_animation_instance_get_duration(lua_State* L)
+{
+	auto& animation = sol::stack::get<nbunny::SkeletonAnimationInstance&>(L, 1);
+	lua_pushnumber(L, animation.get_duration());
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonanimationresourceinstance(lua_State* L)
 {
@@ -346,7 +353,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonanimationresourceinstance(lua_
 			(void (nbunny::SkeletonAnimationInstance::*)(float, nbunny::SkeletonTransforms&) const) &nbunny::SkeletonAnimationInstance::compute_local_transforms,
 			(void (nbunny::SkeletonAnimationInstance::*)(float, nbunny::SkeletonTransforms&, nbunny::SkeletonTransformsFilter&) const) &nbunny::SkeletonAnimationInstance::compute_local_transforms),
 		"computeLocalTransform", &nbunny::SkeletonAnimationInstance::compute_local_transform,
-		"getDuration", &nbunny::SkeletonAnimationInstance::get_duration);
+		"getDuration", &nbunny_skeleton_animation_instance_get_duration);
 
 	sol::stack::push(L, T);
 

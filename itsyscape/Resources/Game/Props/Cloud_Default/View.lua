@@ -96,8 +96,8 @@ function Cloud:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
 	self.clouds = {}
-	self.previousSunPosition = Vector()
-	self.currentSunPosition = Vector()
+	self.previousSunPosition = Vector():keep()
+	self.currentSunPosition = Vector():keep()
 end
 
 function Cloud:_getWind()
@@ -115,7 +115,7 @@ function Cloud:_getOutColor()
 end
 
 function Cloud:updateParticle(cloudInfo, wind, inColor, outColor, alpha)
-	local cloud = self.clouds[cloudInfo.id] or { node = ParticleSceneNode(), ready = false }
+	local cloud = self.clouds[cloudInfo.id] or Class.Table { node = ParticleSceneNode(), ready = false }
 	self.clouds[cloudInfo.id] = cloud
 
 	local position = cloudInfo.position and Vector(unpack(cloudInfo.position)) or cloud.position
@@ -135,9 +135,9 @@ function Cloud:updateParticle(cloudInfo, wind, inColor, outColor, alpha)
 			inColor,
 			outColor)
 
-		cloud.position = position
+		cloud.position = position:keep()
 		cloud.radius = radius
-		cloud.wind = wind
+		cloud.wind = wind:keep()
 		cloud.inColor = inColor
 		cloud.outColor = outColor
 
@@ -164,7 +164,7 @@ function Cloud:updateParticle(cloudInfo, wind, inColor, outColor, alpha)
 	end
 
 	local adjustedAlpha = math.clamp(math.sin(alpha * math.pi) * 2.5)
-	cloud.node:getMaterial():setColor(Color(1, 1, 1, adjustedAlpha))
+	cloud.node:getMaterial():getHandle():setColor(1, 1, 1, adjustedAlpha)
 
 	cloud.visited = true
 end
@@ -178,8 +178,8 @@ function Cloud:tick()
 
 	local state = self:getProp():getState()
 
-	self.previousSunPosition = self.currentSunPosition
-	self.currentSunPosition = state.sun and Vector(unpack(state.sun)) or Vector()
+	self.currentSunPosition:copy(self.previousSunPosition)
+	(state.sun and Vector(unpack(state.sun)) or Vector()):copy(self.currentSunPosition)
 
 	for _, cloudInfo in pairs(self.clouds) do
 		cloudInfo.visited = false

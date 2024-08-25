@@ -1724,35 +1724,39 @@ function ProCombatStatusHUD:updatePowers(type, buttons, powers, pendingID, radia
 		local button = buttons[i]
 
 		if power and button then
-			local coolDown = button:getData('coolDown')
-			local icon = button:getData('icon')
+			local id = button:getData("id")
+			if id ~= power.id then
+				button:setData("id", power.id)
+				local icon = button:getData('icon')
 
-			icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
+				icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
 
-			local description = {}
-			for i = 1, #power.description do
-				table.insert(description, ToolTip.Text(power.description[i]))
+				local description = {}
+				for i = 1, #power.description do
+					table.insert(description, ToolTip.Text(power.description[i]))
+				end
+
+				local toolTip = {
+					ToolTip.Header(power.name),
+					unpack(power.description)
+				}
+
+				button:setToolTip(unpack(toolTip))
+
+				button:setID("ProCombatStatusHUD-Power" .. power.id)
 			end
 
-			local toolTip = {
-				ToolTip.Header(power.name),
-				unpack(power.description)
-			}
-
-			button:setToolTip(unpack(toolTip))
-
+			local coolDown = button:getData('coolDown')
 			if power.coolDown and power.coolDown ~= 0 then
 				coolDown:setText(tostring(power.coolDown))
 			else
 				coolDown:setText("")
 			end
 
-			button:setID("ProCombatStatusHUD-Power" .. power.id)
-
-			if pendingID == power.id then
+			if pendingID == power.id and self.subPending:getParent() ~= button then
 				button:addChild(self.subPending)
 				pendingIndex = i
-			else
+			elseif pendingID ~= power.id and self.subPending:getParent() == button then
 				button:removeChild(self.subPending)
 			end
 		end
@@ -1797,7 +1801,10 @@ function ProCombatStatusHUD:updateSpells()
 				button:getChildAt(1):setSpellActive(false)
 			end
 
-			button:setID("ProCombatStatusHUD-Spell" .. spell.id)
+			if button:getData("id") ~= spell.id then
+				button:setData("id", spell.id)
+				button:setID("ProCombatStatusHUD-Spell" .. spell.id)
+			end
 		end
 	end
 
@@ -1815,13 +1822,18 @@ function ProCombatStatusHUD:updatePrayers()
 		if button and prayer then
 			local icon = button:getChildAt(1)
 
-			if prayer.active then
+			if prayer.active and not button:getData("active") then
+				button:setData("active", true)
 				icon:setColor(Color(1, 1, 1, 1))
-			else
+			elseif not prayer.active and button:getData("active") then
+				button:setData("active", false)
 				icon:setColor(Color(0.3, 0.3, 0.3))
 			end
 
-			button:setID("ProCombatStatusHUD-Prayer" .. prayer.id)
+			if button:getData("id") ~= prayer.id then
+				button:setData("id", prayer.id)
+				button:setID("ProCombatStatusHUD-Prayer" .. prayer.id)
+			end
 		end
 	end
 end

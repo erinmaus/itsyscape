@@ -101,8 +101,8 @@ function Model:_bindSkeleton(skeleton)
 		self.mesh = mesh
 	end
 
-	self.min = min
-	self.max = max
+	self.min = min:keep()
+	self.max = max:keep()
 
 	self.skeleton = skeleton or false
 	self.mappedVertices = vertices

@@ -1123,6 +1123,15 @@ void nbunny::QuaternionTypeProvider::deserialize(lua_State* L, const GameManager
 	{
 		lua_error(L);
 	}
+
+	lua_getfield(L, -1, "keep");
+	lua_pushvalue(L, -2);
+	if (lua_pcall(L, 1, 1, 0))
+	{
+		lua_error(L);
+	}
+
+	lua_remove(L, -2);
 }
 
 void nbunny::QuaternionTypeProvider::serialize(lua_State* L, int index, GameManagerVariant& value)
@@ -1157,6 +1166,15 @@ void nbunny::VectorTypeProvider::deserialize(lua_State* L, const GameManagerVari
 	{
 		lua_error(L);
 	}
+
+	lua_getfield(L, -1, "keep");
+	lua_pushvalue(L, -2);
+	if (lua_pcall(L, 1, 1, 0))
+	{
+		lua_error(L);
+	}
+
+	lua_remove(L, -2);
 }
 
 void nbunny::VectorTypeProvider::serialize(lua_State* L, int index, GameManagerVariant& value)
@@ -1188,6 +1206,15 @@ void nbunny::RayTypeProvider::deserialize(lua_State* L, const GameManagerVariant
 	{
 		lua_error(L);
 	}
+
+	lua_getfield(L, -1, "keep");
+	lua_pushvalue(L, -2);
+	if (lua_pcall(L, 1, 1, 0))
+	{
+		lua_error(L);
+	}
+
+	lua_remove(L, -2);
 }
 
 void nbunny::RayTypeProvider::serialize(lua_State* L, int index, GameManagerVariant& value)

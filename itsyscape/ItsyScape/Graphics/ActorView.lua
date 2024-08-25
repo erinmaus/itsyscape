@@ -247,8 +247,8 @@ function ActorView.CombinedModel:new(actorView, shader)
 	self.mappedVertices = {}
 	self.mappedVertexCount = 0
 
-	self.min = Vector(0)
-	self.max = Vector(0)
+	self.min = Vector(0):keep()
+	self.max = Vector(0):keep()
 
 	self.inputVertexFormat = {}
 	self.outputVertexFormat = {}
@@ -405,8 +405,8 @@ function ActorView.CombinedModel:_appendModel(baseModel, baseTexture)
 				end
 
 				if attributeName == "VertexPosition" then
-					local min = self.min or Vector(math.huge)
-					local max = self.max or Vector(-math.huge)
+					local min = self.min or Vector(math.huge):keep()
+					local max = self.max or Vector(-math.huge):keep()
 
 					min.x = math.min(inputVertex[inputOffset] or min.x, min.x)
 					min.y = math.min(inputVertex[inputOffset + 1] or min.y, min.y)
@@ -524,7 +524,7 @@ function ActorView:new(actor, actorID)
 
 	self.layer = false
 	self.position = false
-	self.rotation = Quaternion.IDENTITY
+	self.rotation = Quaternion():keep()
 
 	self.animations = {}
 	self._onAnimationPlayed = function(_, slot, priority, animation, _, time)
@@ -1019,7 +1019,7 @@ function ActorView:_getPosition(position, layer)
 end
 
 function ActorView:_getRotation(rotation, layer)
-	rotation = rotation or self.rotation or Quaternion.IDENTITY
+	rotation = (rotation or self.rotation or Quaternion()):keep()
 	layer = layer or self.layer or 1
 
 	local position = self.position or Vector.ZERO

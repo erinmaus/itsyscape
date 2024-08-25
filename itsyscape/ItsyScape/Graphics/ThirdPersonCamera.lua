@@ -25,10 +25,10 @@ function ThirdPersonCamera:new()
 	self.verticalRotation = 0
 	self.horizontalRotation = 0
 	self.distance = 1
-	self.up = Vector(0, 1, 0)
-	self.position = Vector(0, 0, 0)
-	self.rotation = Quaternion.IDENTITY
-	self.scale = Vector.ONE
+	self.up = Vector(0, 1, 0):keep()
+	self.position = Vector(0, 0, 0):keep()
+	self.rotation = Quaternion():keep()
+	self.scale = Vector(1):keep()
 
 	self.hasReflection = false
 	self.reflectionPoint = Vector.ZERO
@@ -38,7 +38,7 @@ function ThirdPersonCamera:new()
 	self.clipPoint = Vector.ZERO
 	self.clipNormal = Vector.ZERO
 	
-	self.boundingSpherePosition = Vector(0)
+	self.boundingSpherePosition = Vector(0):keep()
 	self.boundingSphereRadius = math.huge
 end
 
@@ -251,7 +251,7 @@ end
 
 function ThirdPersonCamera:setUp(value)
 	if value then
-		self.up = value:getNormal()
+		self.up = value:getNormal():keep()
 	end
 end
 
@@ -290,7 +290,7 @@ function ThirdPersonCamera:getPosition()
 end
 
 function ThirdPersonCamera:setPosition(value)
-	self.position = value or self.position
+	self.position = (value or self.position):keep()
 end
 
 function ThirdPersonCamera:getEye()

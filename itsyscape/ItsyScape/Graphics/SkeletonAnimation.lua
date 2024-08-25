@@ -25,9 +25,9 @@ SkeletonAnimation.KeyFrame = Class()
 --  * t defaults to { 0, 0, 0 }
 function SkeletonAnimation.KeyFrame:new(time, s, r, t)
 	self.time = time or 0
-	self.scale = s or Vector(1)
-	self.rotation = r or Quaternion()
-	self.translation = t or Vector(0)
+	self.scale = (s or Vector(1)):keep()
+	self.rotation = (r or Quaternion()):keep()
+	self.translation = (t or Vector(0)):keep()
 
 	self._handle = NSkeletonKeyFrame()
 	self._handle:setTime(time)
@@ -104,10 +104,6 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 			}
 		end
 
-		if type(boneFramesDefinition) ~= "table" then
-			print(">>> boneFramesDefinition", boneName)
-		end
-
 		assert(#boneFramesDefinition.translation == #boneFramesDefinition.rotation and
 		       #boneFramesDefinition.rotation == #boneFramesDefinition.scale,
 		       "Properties must have same number of frames (because NYI)")
@@ -158,11 +154,7 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 end
 
 function SkeletonAnimation:getDuration()
-	if self.skeleton then
-		return self:getHandle():getDuration()
-	else
-		return self.duration
-	end
+	return self.duration
 end
 
 function SkeletonAnimation:computeFilteredTransforms(time, transforms, filter)

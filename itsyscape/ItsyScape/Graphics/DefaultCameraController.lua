@@ -72,7 +72,7 @@ function DefaultCameraController:new(...)
 	self.isCameraVerticalRotationFlipped = _CONF.camera and _CONF.camera.isVerticalRotationFlipped or false
 	self.cameraVerticalRotationOffsetRemainder = 0
 	self.cameraHorizontalRotationOffset = _CONF.camera and _CONF.camera.horizontalRotationOffset or 0
-	self.cameraOffset = Vector(0, 0, 0)
+	self.cameraOffset = Vector(0):keep()
 
 	self:getCamera():setHorizontalRotation(
 		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset)
@@ -435,37 +435,40 @@ function DefaultCameraController:debugUpdate(delta)
 		speed = 4
 	end
 
+	local offset = self.cameraOffset
 	do
 		if love.keyboard.isDown('up') then
-			self.cameraOffset = self.cameraOffset + -Vector.UNIT_Z * speed * delta
+			offset = offset + -Vector.UNIT_Z * speed * delta
 		end
 
 		if love.keyboard.isDown('down') then
-			self.cameraOffset = self.cameraOffset + Vector.UNIT_Z * speed * delta
+			offset = offset + Vector.UNIT_Z * speed * delta
 		end
 	end
 
 	do
 		if love.keyboard.isDown('left') then
-			self.cameraOffset = self.cameraOffset + -Vector.UNIT_X * speed * delta
+			offset = offset + -Vector.UNIT_X * speed * delta
 		end
 		if love.keyboard.isDown('right') then
-			self.cameraOffset = self.cameraOffset + Vector.UNIT_X * speed * delta
+			offset = offset + Vector.UNIT_X * speed * delta
 		end
 	end
 
 	do
 		if love.keyboard.isDown('=') then
-			self.cameraOffset = self.cameraOffset + -Vector.UNIT_Y * speed * delta
+			offset = offset + -Vector.UNIT_Y * speed * delta
 		end
 		if love.keyboard.isDown('-') then
-			self.cameraOffset = self.cameraOffset + Vector.UNIT_Y * speed * delta
+			offset = offset + Vector.UNIT_Y * speed * delta
 		end
 	end
 
 	if love.keyboard.isDown('space') then
-		self.cameraOffset = Vector(0)
+		offset = Vector(0)
 	end
+
+	self.cameraOffset = offset:keep()
 end
 
 function DefaultCameraController:updateScrollPosition(delta)
@@ -487,7 +490,7 @@ function DefaultCameraController:updateTargetDistance()
 	local targetPosition, targetSize = self:getTargetPosition()
 	local distance = (playerPosition - targetPosition):getLength()
 
-	self.targetOpponentDistance = (distance + targetSize)
+	self.targetOpponentDistance = (distance + targetSize):keep()
 end
 
 function DefaultCameraController:updateShow(delta)
@@ -586,7 +589,7 @@ function DefaultCameraController:update(delta)
 			local z = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
 
 			self.previousShakingOffset = self.currentShakingOffset
-			self.currentShakingOffset = Vector(x, y, z)
+			self.currentShakingOffset = Vector(x, y, z):keep()
 		end
 
 		self.currentShakingDuration = self.currentShakingDuration - delta
@@ -647,8 +650,8 @@ function DefaultCameraController:onShake(duration, interval, min, max)
 	self.currentShakingDuration = self.shakingDuration
 	self.minShakingOffset = min or 0
 	self.maxShakingOffset = max or 1
-	self.previousShakingOffset = Vector(0)
-	self.currentShakingOffset = Vector(0)
+	self.previousShakingOffset = Vector(0):keep()
+	self.currentShakingOffset = Vector(0):keep()
 end
 
 function DefaultCameraController:onShowMove(points, duration)
