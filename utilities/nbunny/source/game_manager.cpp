@@ -48,13 +48,13 @@ NBUNNY_EXPORT int luaopen_nbunny_gamemanager(lua_State* L)
 
 nbunny::GameManagerBuffer::GameManagerBuffer()
 {
-	// Nothing.
+	buffer.reserve(4096);
 }
 
 nbunny::GameManagerBuffer::GameManagerBuffer(const std::vector<std::uint8_t>& buffer)
 	: buffer(buffer)
 {
-	// Nothing.
+	this->buffer.reserve(4096);
 }
 
 void nbunny::GameManagerBuffer::read(std::uint8_t* data, std::size_t size)
@@ -619,6 +619,8 @@ void nbunny::GameManagerVariant::to_table()
 
 	type = TYPE_TABLE;
 	value.table = new Table();
+	value.table->key_values.reserve(64);
+	value.table->array_values.reserve(64);
 }
 
 void nbunny::GameManagerVariant::to_args(std::size_t count)
@@ -745,6 +747,7 @@ void nbunny::GameManagerVariant::deserialize(GameManagerBuffer& buffer)
 			std::size_t array_size;
 			buffer.read(array_size);
 
+			value.table->array_values.reserve(array_size);
 			for (std::size_t i = 0; i < array_size; ++i)
 			{
 				GameManagerVariant v;
@@ -756,6 +759,7 @@ void nbunny::GameManagerVariant::deserialize(GameManagerBuffer& buffer)
 			std::size_t keys_size;
 			buffer.read(keys_size);
 
+			value.table->key_values.reserve(keys_size);
 			for (std::size_t i = 0; i < keys_size; ++i)
 			{
 				GameManagerVariant k;
@@ -1811,7 +1815,6 @@ void nbunny::GameManagerEventQueue::from_buffer(GameManagerBuffer& buffer)
 {
 	buffer.seek(0);
 
-	int i = 0;
 	while (buffer.tell() < buffer.length())
 	{
 		GameManagerVariant variant;

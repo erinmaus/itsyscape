@@ -505,9 +505,7 @@ function Application:update(delta)
 	else
 		self:processAdminEvents()
 
-		collectgarbage("stop")
 		self:measure('remoteGameManager:receive()', function() self.remoteGameManager:receive() end)
-		collectgarbage("restart")
 	end
 
 	if not _CONF.server then
@@ -529,7 +527,7 @@ function Application:update(delta)
 
 		local startTime = love.timer.getTime()
 		while love.timer.getTime() < startTime + step do
-			collectgarbage("step", 20)
+			collectgarbage("step", 50)
 		end
 	end
 end

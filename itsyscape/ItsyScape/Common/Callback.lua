@@ -24,6 +24,7 @@ end
 -- Creates a new, empty Callback.
 function Callback:new(doesReturn)
 	self.handlers = {}
+	self.wrappedHandlers = {}
 	self.doesReturn = doesReturn == nil and true or doesReturn
 end
 
@@ -53,7 +54,7 @@ function Callback:invoke(...)
 	--local postfixArgs = { n = select('#', ...), ... }
 	local results = { n = 0 }
 
-	for handler, h in pairs(self.handlers) do
+	for _, h in ipairs(self.wrappedHandlers) do
 		--local args = concatArgs(h, postfixArgs)
 
 		if self.doesReturn then
@@ -104,16 +105,25 @@ end
 -- to invoke. In essence, take the extra arguments here as the 'prefix' and the
 -- arguments to invoke as 'suffix', thus handler(unpack(prefix), unpack(suffix)).
 function Callback:register(handler, ...)
-	if handler then
-		--self.handlers[handler] = { n = select('#', ...), ... }
-		self.handlers[handler] = make_evil_callback(handler, ...)
+	if handler and not self.handlers[handler] then
+		local wrappedHandler = make_evil_callback(handler, ...)
+
+		self.handlers[handler] = wrappedHandler
+		table.insert(self.wrappedHandlers, wrappedHandler)
 	end
 end
 
 -- Unregisters a handler.
 function Callback:unregister(handler)
-	if handler then
+	if handler and self.handlers[handler] then
+		local wrappedHandler = self.handlers[handler]
 		self.handlers[handler] = nil
+
+		for i = #self.wrappedHandlers, 1, -1 do
+			if self.wrappedHandlers[i] == wrappedHandler then
+				table.remove(self.wrappedHandlers, i)
+			end
+		end
 	end
 end
 

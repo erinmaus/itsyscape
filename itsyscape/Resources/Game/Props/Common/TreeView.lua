@@ -63,6 +63,8 @@ end
 function TreeView:load()
 	PropView.load(self)
 
+	if true then return end
+
 	local resources = self:getResources()
 	local root = self:getRoot()
 
@@ -116,15 +118,6 @@ function TreeView:load()
 				self.node:setParent(root)
 
 				local idleDuration = self.animations[TreeView.ANIMATION_IDLE]:getDuration()
-
-				root:onWillRender(function()
-					local animation = self:getCurrentAnimation()
-					if (self.currentAnimation ~= TreeView.ANIMATION_IDLE and idleDuration <= 1 / 30) or
-					   self.time <= animation:getDuration()
-					then
-						self:applyAnimation(self.time, animation)
-					end
-				end)
 
 				local offset = idleDuration * math.random()
 				self.time = offset
@@ -236,6 +229,12 @@ function TreeView:update(delta)
 		then
 			self.time = 0
 			self.currentAnimation = TreeView.ANIMATION_IDLE
+		end
+
+		if (self.currentAnimation ~= TreeView.ANIMATION_IDLE and animation:getDuration() <= 1 / 30) or
+		   self.time <= animation:getDuration()
+		then
+			self:applyAnimation(self.time, animation)
 		end
 	end
 end
