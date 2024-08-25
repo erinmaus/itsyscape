@@ -13,8 +13,8 @@ local Skeleton = require "ItsyScape.Graphics.Skeleton"
 -- Represents the constant physical characteristics of an NPC, player, etc.
 local Body = Class()
 
-function Body:new()
-	self.skeleton = Skeleton.EMPTY
+function Body:new(skeleton)
+	self.skeleton = skeleton or Skeleton.EMPTY
 end
 
 -- TODO actually load a Body instead of a Skeleton (lskel) but ok

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local debug = require "debug"
 local Callback = require "ItsyScape.Common.Callback"
+local Function = require "ItsyScape.Common.Function"
 local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
@@ -87,7 +88,8 @@ function ResourceManager.View:queueEvent(callback, ...)
 	self.pendingIndex = self.pendingIndex + 1
 	local index = self.pendingIndex
 
-	self.pending[index] = { callback = Callback.bind(callback, ...), ready = true }
+	self.pending[index] = { callback = Function(callback, ...), ready = true }
+--	self.pending[index] = { callback = callback.bind(callback, ...), ready = true }
 end
 
 function ResourceManager.View:queueAsyncEvent(...)
@@ -314,7 +316,9 @@ function ResourceManager:_load(resourceType, filename, ...)
 	end
 
 	local resourcesOfType = self.resources[resourceType] or setmetatable({}, { __mode = 'v' })
-	if not resourcesOfType[filename] then
+	if resourcesOfType[filename] then
+		Log.info("Resource '%s' (%s) cached.", filename, resourceType._DEBUG.shortName)
+	else
 		local before = love.timer.getTime()
 		do
 			local resource = resourceType()

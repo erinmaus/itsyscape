@@ -35,11 +35,21 @@ function PlayAnimation:new(filename)
 	self.durationOverride = false
 	self.keep = false
 	self.reverse = false
+
+	local data = "return " .. love.filesystem.read(self.animationFilename)
+	local chunk = assert(loadstring(data))
+	self._skeletonAnimationData = setfenv(chunk, {})()
+
+	if coroutine.running() then
+		coroutine.yield()
+	end
 end
 
 -- Sets some properties. See type description above. 
 function Metatable:__call(t)
 	t = t or {}
+
+	local previousFilename = self.animationFilename
 
 	self:setKeep(t.keep)
 	self:setRepeatAnimation(t.repeatAnimation)
@@ -113,7 +123,13 @@ end
 --
 -- Returns the skeleton.
 function PlayAnimation:load(skeleton)
-	return SkeletonAnimation(self.animationFilename, skeleton)
+	if self._skeleton ~= skeleton then
+		print("skeleton different", self._skeleton, skeleton)
+		self._skeleton = skeleton
+		self._skeletonAnimation = SkeletonAnimation(self._skeletonAnimationData or self.animationFilename, skeleton)
+	end
+
+	return self._skeletonAnimation
 end
 
 function PlayAnimation:instantiate()

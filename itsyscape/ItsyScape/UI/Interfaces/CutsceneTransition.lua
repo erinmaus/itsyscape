@@ -74,7 +74,13 @@ function CutsceneTransition:new(id, index, ui)
 
 	local game = self:getView():getGame()
 	local player = game:getPlayer()
-	player.onMove:register(self.onPlayerMove, self)
+
+	self._onPlayerMove = function() self:onPlayerMove() end
+	player.onMove:register(self._onPlayerMove, self)
+
+	self.onClose:register(function()
+		player.onMove:unregister(self._onPlayerMove)
+	end)
 
 	self.didPlayerMove = false
 	self.isCheckingQueue = false

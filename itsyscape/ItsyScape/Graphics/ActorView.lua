@@ -8,9 +8,11 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
+local Function = require "ItsyScape.Common.Function"
 local Class = require "ItsyScape.Common.Class"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Body = require "ItsyScape.Game.Body"
 local Equipment = require "ItsyScape.Game.Equipment"
 local NullActor = require "ItsyScape.Game.Null.Actor"
 local Animatable = require "ItsyScape.Game.Animation.Animatable"
@@ -19,6 +21,7 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
+local SkeletonResource = require "ItsyScape.Graphics.SkeletonResource"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Model = require "ItsyScape.Graphics.Model"
@@ -642,6 +645,10 @@ function ActorView:getLayer()
 	return self.layer
 end
 
+local function _sortAnimation(a, b)
+	return a.value.priority < b.value.priority
+end
+
 function ActorView:sortAnimations()
 	self.sortedAnimations = {}
 	do
@@ -650,68 +657,68 @@ function ActorView:sortAnimations()
 				table.insert(self.sortedAnimations, { value = animation, key = slot })
 			end
 		end
-		table.sort(self.sortedAnimations, function(a, b) return a.value.priority < b.value.priority end)
+		table.sort(self.sortedAnimations, _sortAnimation)
 	end
+end
+
+function ActorView:_loadAnimation(a, definition, slot, animation, priority, time)
+	if (a.definition and a.definition:getFadesOut()) or
+	   (a.instance and definition:getResource():getFadesIn())
+	then
+		a.next = {
+			cacheRef = animation,
+			definition = definition:getResource(),
+			priority = priority,
+			time = time
+		}
+	else
+		local oldID = a.id
+		if a.instance then
+			a.instance:stop()
+		end
+
+		a.cacheRef = animation
+		a.definition = definition:getResource()
+		a.instance = a.definition:play(self.animatable)
+		a.time = time or 0
+		a.priority = priority or -math.huge
+		a.id = self.animatable:addPlayingAnimation(a.instance, a.time)
+
+		self.animatable:removePlayingAnimation(oldID)
+	end
+
+	self.animations[slot] = a
+	self:sortAnimations()
+	self:updateAnimations(0)
+end
+
+function ActorView:_stopAnimation(slot)
+	local animation = self.animations[slot]
+	if animation then
+		self.animatable:removePlayingAnimation(animation.id)
+	end
+
+	self.animations[slot] = nil
+	self:sortAnimations()
+	self:updateAnimations(0)
 end
 
 function ActorView:playAnimation(slot, animation, priority, time)
 	local a = self.animations[slot] or {}
 
 	if priority and animation then
-		local function loadAnimation(definition)
-			if (a.definition and a.definition:getFadesOut()) or
-			   (a.instance and definition:getResource():getFadesIn())
-			then
-				a.next = {
-					cacheRef = animation,
-					definition = definition:getResource(),
-					priority = priority,
-					time = time
-				}
-			else
-				local oldID = a.id
-				if a.instance then
-					a.instance:stop()
-				end
-
-				a.cacheRef = animation
-				a.definition = definition:getResource()
-				a.instance = a.definition:play(self.animatable)
-				a.time = time or 0
-				a.priority = priority or -math.huge
-				a.id = self.animatable:addPlayingAnimation(a.instance, a.time)
-
-				self.animatable:removePlayingAnimation(oldID)
-			end
-
-			self.animations[slot] = a
-			self:sortAnimations()
-			self:updateAnimations(0)
-		end
-
 		if self:getIsImmediate() then
-			loadAnimation(self.game:getResourceManager():loadCacheRef(animation))
+			self:_loadAnimation(a, self.game:getResourceManager():loadCacheRef(animation), slot, animation, priority, time)
 		else
-			self.game:getResourceManager():queueAsyncCacheRef(animation, loadAnimation)
+			self.game:getResourceManager():queueAsyncEvent(self._loadAnimation, self, a, self.game:getResourceManager():loadCacheRef(animation), slot, animation, priority, time)
 		end
 
 		self.animations[slot] = a
 	else
-		local function stopAnimation()
-			local animation = self.animations[slot]
-			if animation then
-				self.animatable:removePlayingAnimation(animation.id)
-			end
-
-			self.animations[slot] = nil
-			self:sortAnimations()
-			self:updateAnimations(0)
-		end
-
 		if self:getIsImmediate() then
-			stopAnimation()
+			self:_stopAnimation(slot, animation)
 		else
-			self.game:getResourceManager():queueAsyncEvent(stopAnimation)
+			self.game:getResourceManager():queueAsyncEvent(self._stopAnimation, self, slot)
 		end
 	end
 end
@@ -937,7 +944,8 @@ function ActorView:applySkin(slot, slotNodes)
 end
 
 function ActorView:transmogrify(body)
-	self.body = body:load()
+	local skeletonResource = self.game:getResourceManager():load(SkeletonResource, body:getFilename())
+	self.body = Body(skeletonResource:getResource())
 
 	self.animatable:_newTransforms()
 	self.localTransforms = self.body:getSkeleton():createTransforms()
@@ -961,6 +969,10 @@ function ActorView:getSkins(slot)
 	end
 
 	return self.skins[slot]
+end
+
+local function _sortSlotNodes(a, b)
+	return a.priority < b.priority
 end
 
 function ActorView:changeSkin(slot, priority, skin, config)
@@ -989,14 +1001,16 @@ function ActorView:changeSkin(slot, priority, skin, config)
 		}
 
 		table.insert(slotNodes, s)
-		table.sort(slotNodes, function(a, b) return a.priority < b.priority end)
+		table.sort(slotNodes, _sortSlotNodes)
 	end
 
 	slotNodes.generation = slotNodes.generation + 1
-	if self:getIsImmediate() then
-		self:_doApplySkin(slotNodes, slot, slotNodes.generation)
-	else
-		self:applySkin(slot, slotNodes, slotNodes.generation)
+	if self.body then
+		if self:getIsImmediate() then
+			self:_doApplySkin(slotNodes, slot, slotNodes.generation)
+		else
+			self:applySkin(slot, slotNodes, slotNodes.generation)
+		end
 	end
 
 	if oldSkinSlotNode and oldSkinSlotNode.sceneNode then
@@ -1123,46 +1137,48 @@ function ActorView:draw()
 	for _, slotNodes in pairs(self.skins) do
 		for _, slot in ipairs(slotNodes) do
 			local modelSceneNode = slot.model
-			local material = modelSceneNode:getMaterial()
+			if modelSceneNode then
+				local material = modelSceneNode:getMaterial()
 
-			local hasMultiShader = (not slot.shader and not slot.multiShader) or (slot.shader and slot.multiShader)
-			local isForward = material:getIsFullLit() or material:getIsTranslucent()
-			local isTextureCompatible = material:getNumTextures() ~= 1 or (material:getNumTextures() == 1 and material:getTexture(1):isCompatibleType(TextureResource))
-			local isImmediate = self:getIsImmediate()
+				local hasMultiShader = (not slot.shader and not slot.multiShader) or (slot.shader and slot.multiShader)
+				local isForward = material:getIsFullLit() or material:getIsTranslucent()
+				local isTextureCompatible = material:getNumTextures() ~= 1 or (material:getNumTextures() == 1 and material:getTexture(1):isCompatibleType(TextureResource))
+				local isImmediate = self:getIsImmediate()
 
-			if not hasMultiShader or isForward or isMultiTexture or isImmediate then
-				modelSceneNode:setParent(slot.sceneNode)
-			else
-				local texture = material:getTexture(1)
-				local multiShader = material.multiShader or ActorView.DEFAULT_MULTI_SHADER
+				if not hasMultiShader or isForward or isMultiTexture or isImmediate then
+					modelSceneNode:setParent(slot.sceneNode)
+				else
+					local texture = material:getTexture(1)
+					local multiShader = material.multiShader or ActorView.DEFAULT_MULTI_SHADER
 
-				modelSceneNode:setParent(nil)
+					modelSceneNode:setParent(nil)
 
-				local combinedModel
-				for _, c in ipairs(self.combinedModelSceneNodes) do
-					if c:getShader():getID() == multiShader:getID() then
-						combinedModel = c
-						break
-					end
-				end
-
-				if not combinedModel or slot.combinedModel ~= combinedModel and slot.sceneNode:getParent() then
-					if slot.combinedModel then
-						slot.combinedModel:remove(modelSceneNode)
-						slot.combinedModel = nil
+					local combinedModel
+					for _, c in ipairs(self.combinedModelSceneNodes) do
+						if c:getShader():getID() == multiShader:getID() then
+							combinedModel = c
+							break
+						end
 					end
 
-					if not combinedModel then
-						combinedModel = ActorView.CombinedModel(self, multiShader)
-						table.insert(self.combinedModelSceneNodes, combinedModel)
+					if not combinedModel or slot.combinedModel ~= combinedModel and slot.sceneNode:getParent() then
+						if slot.combinedModel then
+							slot.combinedModel:remove(modelSceneNode)
+							slot.combinedModel = nil
+						end
+
+						if not combinedModel then
+							combinedModel = ActorView.CombinedModel(self, multiShader)
+							table.insert(self.combinedModelSceneNodes, combinedModel)
+						end
+
+						slot.combinedModel = combinedModel
+						combinedModel:add(modelSceneNode, slot.texture)
 					end
 
-					slot.combinedModel = combinedModel
-					combinedModel:add(modelSceneNode, slot.texture)
-				end
-
-				if combinedModel and not slot.sceneNode:getParent() then
-					combinedModel:remove(modelSceneNode)
+					if combinedModel and not slot.sceneNode:getParent() then
+						combinedModel:remove(modelSceneNode)
+					end
 				end
 			end
 		end
