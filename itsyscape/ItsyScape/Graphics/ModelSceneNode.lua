@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local Skeleton = require "ItsyScape.Graphics.Skeleton"
@@ -43,6 +44,8 @@ function ModelSceneNode:setModel(model)
 		self:getHandle():setModel(model:getHandle())
 
 		local min, max = model:getResource():getBounds()
+		min = Vector(math.min(min:get()))
+		max = Vector(math.max(max:get()))
 		self:setBounds(min * ModelSceneNode.BOUNDS_BUFFER, max * ModelSceneNode.BOUNDS_BUFFER)
 	else
 		self:getHandle():setModel()

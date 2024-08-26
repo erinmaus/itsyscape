@@ -58,19 +58,11 @@ function Probe:new(game, gameView, gameDB)
 	self.layer = false
 
 	self._sort = function(...)
-		self:sort(...)
+		return self:sort(...)
 	end
 end
 
 function Probe:sort(a, b)
-	if a.n > self.pendingActionsCount and b.n > self.pendingActionsCount then
-		return a.depth < b.depth
-	elseif a.n > self.pendingActionsCount then
-		return false
-	elseif b.n > self.pendingActionsCount then
-		return true
-	end
-
 	return a.depth < b.depth
 end
 
@@ -113,11 +105,14 @@ end
 --  }
 function Probe:iterate()
 	if self.isDirty then
-		table.sort(self.pendingActions, self._sort)
-
 		for i = 1, self.pendingActionsCount do
+			print(">>> depth", self.pendingActions[i].id, self.pendingActions[i].depth)
 			table.insert(self.actions, self.pendingActions[i])
 		end
+
+		table.sort(self.actions, self._sort)
+
+		self.isDirty = false
 	end
 
 	return ipairs(self.actions)
@@ -125,7 +120,10 @@ end
 
 -- Collects actions from Probe.iterate into an array and returns it.
 function Probe:toArray()
-	self:iterate()
+	for _, a in self:iterate() do
+		print(a.verb, a.object, a.depth)
+	end
+
 	return self.actions
 end
 
