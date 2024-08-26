@@ -151,11 +151,11 @@ function Probe:addAction(id, verb, type, object, description, depth, callback, .
 	return pendingAction
 end
 
-function Probe:_all(callback, results)
+function Probe:_all(callback, layer, results)
 	local tests = self.tests or Probe.TESTS
 
 	if tests['loot'] or tests['walk'] then
-		self:getTile(result, layer)
+		self:getTile(results, layer)
 		self:walk()
 		self:loot()
 		self:actors()
@@ -203,7 +203,7 @@ function Probe:all(callback)
 		end
 	end
 
-	self.gameView:testMap(layer, ray, Function(self._all, self, callback))
+	self.gameView:testMap(layer, ray, Function(self._all, self, callback, layer))
 end
 
 -- Returns the tile this probe hit as a tuple in the form (i, j, layer).
@@ -330,7 +330,7 @@ function Probe:loot()
 end
 
 function Probe:_poke(id, target, scope)
-	self.game:getPlayer():poke(actions[i].id, target, scope)
+	self.game:getPlayer():poke(id, target, scope)
 end
 
 -- Adds all actor actions, if possible.

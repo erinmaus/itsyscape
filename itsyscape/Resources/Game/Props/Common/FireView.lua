@@ -54,7 +54,7 @@ function FireView:load()
 		self:getResourcePath("Fire.lskel"),
 		function(skeleton)
 			self.skeleton = skeleton
-			self.transforms = skeleton:createTransforms()
+			self.transforms = skeleton:getResource():createTransforms()
 
 			resources:queue(
 				ModelResource,
@@ -80,7 +80,7 @@ function FireView:load()
 				self.light:setParent(root)
 
 				self.animation:computeFilteredTransforms(0, self.transforms)
-				self.skeleton:applyBindPose(self.transforms)
+				self.skeleton:getResource():applyBindPose(self.transforms)
 
 				self.node:setTransforms(self.transforms)
 
@@ -135,7 +135,7 @@ function FireView:update(delta)
 		self.time = self.time + delta
 
 		self.animation:computeFilteredTransforms(0, self.transforms)
-		self.skeleton:applyBindPose(self.transforms)
+		self.skeleton:getResource():applyBindPose(self.transforms)
 	end
 end
 

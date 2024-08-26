@@ -179,7 +179,9 @@ function Cloud:tick()
 	local state = self:getProp():getState()
 
 	self.currentSunPosition:copy(self.previousSunPosition)
-	(state.sun and Vector(unpack(state.sun)) or Vector()):copy(self.currentSunPosition)
+
+	local currentSunPosition = state.sun and Vector(unpack(state.sun)) or Vector()
+	currentSunPosition:copy(self.currentSunPosition)
 
 	for _, cloudInfo in pairs(self.clouds) do
 		cloudInfo.visited = false
