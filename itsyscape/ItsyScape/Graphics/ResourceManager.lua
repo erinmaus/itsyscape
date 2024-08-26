@@ -280,12 +280,6 @@ function ResourceManager:update()
 		self.onUpdate(count, #self.pendingSyncEvents + #self.pendingAsyncEvents)
 	end
 
-	local updateStopTime = love.timer.getTime()
-	local totalUpdateTime = (updateStopTime - updateStartTime) * 1000
-	if self.wasPending and totalUpdateTime >= 1 then
-		Log.info("Resources pending; loading took %.2f ms (over 1 ms).", totalUpdateTime)
-	end
-
 	if #self.pendingSyncEvents == 0 and #self.pendingAsyncEvents == 0 and self.wasPending then
 		self.onFinish(self)
 		self.wasPending = false
@@ -317,7 +311,7 @@ function ResourceManager:_load(resourceType, filename, ...)
 
 	local resourcesOfType = self.resources[resourceType] or setmetatable({}, { __mode = 'v' })
 	if resourcesOfType[filename] then
-		Log.info("Resource '%s' (%s) cached.", filename, resourceType._DEBUG.shortName)
+		Log.debug("Resource '%s' (%s) cached.", filename, resourceType._DEBUG.shortName)
 	else
 		local before = love.timer.getTime()
 		do

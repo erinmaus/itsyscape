@@ -18,7 +18,7 @@ MapCurve.Value = Class()
 
 function MapCurve.Value:new(Type, ...)
 	self.type = Type
-	self.value = Type(...)
+	self.value = Type(...):keep()
 	self.index = false
 end
 

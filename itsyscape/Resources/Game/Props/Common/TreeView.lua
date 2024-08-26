@@ -63,8 +63,6 @@ end
 function TreeView:load()
 	PropView.load(self)
 
-	if true then return end
-
 	local resources = self:getResources()
 	local root = self:getRoot()
 
