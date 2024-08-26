@@ -228,8 +228,6 @@ function love.keypressed(...)
 					collectgarbage()
 					_DEBUG = oldDebug
 				end
-			else
-				_APP.showDebug = not _APP.showDebug
 			end
 		elseif (select(1, ...) == 'f2') then
 			_APP.showUI = not _APP.showUI
