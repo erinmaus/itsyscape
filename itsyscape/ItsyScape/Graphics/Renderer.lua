@@ -48,6 +48,7 @@ function Renderer:new(conf)
 	conf = conf or {}
 
 	self._renderer = NRenderer(self)
+	self._time = love.timer.getTime()
 
 	local shadowsEnabled = not conf or (conf.shadows == nil or conf.shadows == true or (type(conf.shadows) == "number" and conf.shadows >= 1))
 	local shadowQuality = shadowsEnabled and ((conf and type(conf.shadows) == "number" and conf.shadows >= 1 and math.floor(conf.shadows)) or nil)
@@ -218,6 +219,10 @@ end
 
 function Renderer:renderNode(node, delta)
 	self.nodeDebugStats:measure(node, self, delta)
+end
+
+function Renderer:getTime()
+	return love.timer.getTime() - self._time
 end
 
 return Renderer

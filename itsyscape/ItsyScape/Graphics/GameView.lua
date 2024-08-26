@@ -641,16 +641,18 @@ function GameView:updateGroundDecorations(m)
 									currentShader:send("scape_ActorCanvas", m.actorCanvas)
 								end
 
+								local windDirection, windSpeed, windPattern = self:getWind(m.layer)
+
 								if currentShader:hasUniform("scape_WindDirection") then
-									currentShader:send("scape_WindDirection", m.meta.windDirection or { Vector(-1, 0, -1):getNormal():get() })
+									currentShader:send("scape_WindDirection", { windDirection:get() })
 								end
 
 								if currentShader:hasUniform("scape_WindSpeed") then
-									currentShader:send("scape_WindSpeed", m.meta.windSpeed or 4)
+									currentShader:send("scape_WindSpeed", windSpeed)
 								end
 
 								if currentShader:hasUniform("scape_WindPattern") then
-									currentShader:send("scape_WindPattern", m.meta.windPattern or { 5, 10, 15 })
+									currentShader:send("scape_WindPattern", { windPattern:get() })
 								end
 							end)
 
@@ -1054,6 +1056,17 @@ function GameView:getMap(layer)
 	if m then
 		return m.map
 	end
+end
+
+function GameView:getWind(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return (m.meta.windDirection and Vector(unpack(m.meta.windDirection)) or Vector(-1, 0, -1)):getNormal(),
+		       m.meta.windSpeed or 4,
+		       m.meta.windPattern and vector(m.meta.windPattern) or Vector(5, 10, 15)
+	end
+
+	return Vector(-1, 0, -1):getNormal(), 4, Vector(5, 10, 15)
 end
 
 function GameView:addActor(actorID, actor)

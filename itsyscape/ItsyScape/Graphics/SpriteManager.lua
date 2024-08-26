@@ -162,7 +162,7 @@ function SpriteManager:draw(scene, camera, delta)
 		local time = self.times[sprite]
 		local position = positions[sprite]
 
-		if self:_isVisible(scene, sprite:getSceneNode()) then
+		if self:_isVisible(scene, sprite:getSceneNode()) and position.z <= 1 then
 			sprite:draw(position, time)
 		end
 	end

@@ -373,6 +373,10 @@ function Application:getGame()
 	return self.localGame or self.game
 end
 
+function Application:getGameManager()
+	return self.remoteGameManager
+end
+
 function Application:getGameView()
 	return self.gameView
 end
@@ -380,6 +384,7 @@ end
 function Application:getUIView()
 	return self.uiView
 end
+
 
 function Application:getIsPaused()
 	return self.paused

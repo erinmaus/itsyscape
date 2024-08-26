@@ -246,7 +246,7 @@ function SkyCortex:update(delta)
 				sky.moonAlpha = 1.0 - alpha
 
 				local sunPosition = normal * sky.sunDistance + Vector(map:getWidth() * map:getCellSize() / 2, 0, 0)
-				local moonPosition = -normal * sky.moonDistance + Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize())
+				local moonPosition = -normal * sky.moonDistance + Vector(map:getWidth() * map:getCellSize() / 2, 0, 0)
 				sky.sunPosition = sunPosition
 				sky.moonPosition = moonPosition
 
