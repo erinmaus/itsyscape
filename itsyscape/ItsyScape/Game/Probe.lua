@@ -383,7 +383,17 @@ function Probe:props()
 		return self.probes['props']
 	end
 
-	local _, _, playerLayer = self.game:getPlayer():getActor():getTile()
+	local player = self.game:getPlayer()
+	if not player then
+		return 0
+	end
+
+	local playerActor = player:getActor()
+	if not playerActor then
+		return
+	end
+
+	local _, _, playerLayer = playerActor:getTile()
 
 	local count = 0
 	for prop in self.game:getStage():iterateProps() do

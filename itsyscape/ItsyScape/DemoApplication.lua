@@ -190,6 +190,12 @@ end
 function DemoApplication:quitPlayer()
 	Log.info("Player quit their session.")
 
+	local gameManager = self:getGameManager()
+	if gameManager then
+		gameManager:removeAllInstances("ItsyScape.Game.Model.Actor")
+		gameManager:removeAllInstances("ItsyScape.Game.Model.Prop")
+	end
+
 	self:disconnect()
 end
 

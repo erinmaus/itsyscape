@@ -405,13 +405,15 @@ function GameManager:destroyInstance(interface, id)
 	local instances = self.interfaces[interface]
 	local instance = instances[id]
 
-	instances[id] = nil
-	self.interfaceInstances[interface][instance:getInstance()] = nil
+	if instance then
+		instances[id] = nil
+		self.interfaceInstances[interface][instance:getInstance()] = nil
 
-	for i = 1, #self.instances do
-		if self.instances[i] == instance then
-			table.remove(self.instances, i)
-			break
+		for i = 1, #self.instances do
+			if self.instances[i] == instance then
+				table.remove(self.instances, i)
+				break
+			end
 		end
 	end
 end
