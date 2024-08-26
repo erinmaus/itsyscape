@@ -880,7 +880,7 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 					end
 				end
 
-				slot.sceneNode:onWillRender(function(renderer)
+				slot.model:onWillRender(function(renderer)
 					local currentShader = renderer:getCurrentShader()
 					if currentShader and currentShader:hasUniform("scape_BumpHeight") then
 						local bumpHeight = slot.instance:getBumpHeight()

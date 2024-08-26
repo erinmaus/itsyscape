@@ -835,8 +835,13 @@ function Application:quit(isError)
 				Log.warn("Error quitting logic thread: %s", e)
 			else
 				Log.info("Trying to save player...")
-				local event = self.outputAdminChannel:demand(1)
-				if event and event.type == 'save' then
+
+				local event
+				repeat
+					event = self.outputAdminChannel:demand(1)
+				until not event or (type(event) == "table" and event.type == 'save')
+
+				if event and event.type == "save" then
 					local serializedStorage = buffer.decode(event.storage)
 					if next(serializedStorage) then
 						local storage = PlayerStorage()
