@@ -199,6 +199,8 @@ function Application:new(multiThreaded)
 	self.isQuitting = flase
 
 	self.pendingProbes = {}
+
+	self.showDebug = _CONF.showDebug
 end
 
 local memoryLabel
@@ -474,11 +476,13 @@ function Application:processAdminEvents()
 	repeat 
 		event = self.outputAdminChannel:pop()
 
-		if type(event) == 'table' and event.type == 'analytics' then
+		if type(event) == "table" and event.type == "analytics" then
 			_ANALYTICS_ENABLED = event.enable
-		elseif type(event) == 'table' and event.type == 'quit' then
+		elseif type(event) == "table" and event.type == "quit" then
 			self:quit(false)
 			love.event.quit()
+		elseif type(event) == "table" and event.type == "memory" then
+			self.serverMemory = event.memory or 0
 		end
 	until not event
 end
@@ -921,8 +925,14 @@ function Application:touchMove(...)
 	-- Nothing.
 end
 
-function Application:keyDown(...)
-	self.uiView:getInputProvider():keyDown(...)
+function Application:keyDown(key, ...)
+	self.uiView:getInputProvider():keyDown(key, ...)
+
+	if key == "f1" then
+		self.showDebug = not self.showDebug
+		_CONF.showDebug = self.showDebug
+	end
+
 	return false
 end
 
@@ -949,8 +959,60 @@ function Application:getPreviousFrameDelta()
 	return self.previousFrameDelta or self:getFrameDelta()
 end
 
+function Application:drawFPS()
+	if not self.showDebug then
+		return
+	end
+
+	love.graphics.setFont(self.defaultFont)
+
+	local drawCalls = love.graphics.getStats().drawcalls
+	local textureMemory = love.graphics.getStats().texturememory
+
+	local r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
+	r = (r or "") .. string.format("FPS: %03d (%04d draws, >%04d MB)\n",
+		love.timer.getFPS(),
+		drawCalls,
+		collectgarbage("count") / 1024 + textureMemory / 1024 / 1024 + (self.serverMemory or 0) / 1024)
+	r = r .. string.format(
+		"average tick = %.04f ms\nmax (client) tick = %0.4f ms\nmax (server) tick = %0.4f ms\ntarget tick = %.04f ms\nlast tick = %.04f ms\n",
+		self:getAverageTickDelta() * 1000,
+		self:getMaxClientTickDelta() * 1000,
+		self:getMaxServerTickDelta() * 1000,
+		self:getGame():getTargetDelta() * 1000,
+		self:getGame():getDelta() * 1000)
+
+	local width = love.window.getMode()
+	local w, lines = love.graphics.getFont():getWrap(r, width)
+
+	love.graphics.setColor(0, 0, 0, 0.25)
+	love.graphics.rectangle(
+		"fill",
+		width - w,
+		0,
+		w,
+		#lines * love.graphics.getFont():getHeight())
+
+	love.graphics.setColor(0, 0, 0, 1)
+	love.graphics.printf(
+		r,
+		2,
+		2,
+		width,
+		'right')
+
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.printf(
+		r,
+		0,
+		0,
+		width,
+		'right')
+end
+
 function Application:drawDebug()
-	if not _DEBUG or (not self.showDebug and not _MOBILE) then
+	if not _DEBUG or (not self.showDebug and not _MOBILE) or true then
+		self:drawFPS()
 		return
 	end
 
@@ -965,8 +1027,8 @@ function Application:drawDebug()
 	local maxDrawCalls = math.max(unpack(self.drawCalls))
 
 	local width = love.window.getMode()
-	r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
-	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, %03d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024 + textureMemory / 1024 / 1024)
+	local r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
+	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, >%04d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024 + textureMemory / 1024 / 1024 + (self.serverMemory or 0) / 1024)
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(

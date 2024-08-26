@@ -103,6 +103,11 @@ local function tick()
 		Analytics:update()
 	end
 	measure("End")
+
+	outputAdminChannel:push({
+		type = "memory",
+		memory = collectgarbage("count")
+	})
 end
 
 local function saveOnErrorForMultiPlayer()

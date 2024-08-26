@@ -1418,7 +1418,7 @@ function DemoApplication:updatePlayerMovement()
 	local isMoving = math.abs(x) > 0 or math.abs(z) > 0
 	if not self.wasMoving and isMoving then
 		self.wasMoving = true
-		self.initialMovementRotation = self:getCamera():getCombinedRotation()
+		self.initialMovementRotation = self:getCamera():getCombinedRotation():keep(self.initialMovementRotation)
 	else
 		self.wasMoving = isMoving
 	end
