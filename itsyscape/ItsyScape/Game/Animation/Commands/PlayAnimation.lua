@@ -124,7 +124,6 @@ end
 -- Returns the skeleton.
 function PlayAnimation:load(skeleton)
 	if self._skeleton ~= skeleton then
-		print("skeleton different", self._skeleton, skeleton)
 		self._skeleton = skeleton
 		self._skeletonAnimation = SkeletonAnimation(self._skeletonAnimationData or self.animationFilename, skeleton)
 	end
