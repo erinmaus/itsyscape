@@ -27,16 +27,73 @@ FireView.MAX_ATTENUATION = 1.5
 FireView.MIN_COLOR_BRIGHTNESS = 0.9
 FireView.MAX_COLOR_BRIGHTNESS = 1.0
 
-FireView.FLAME = {
+FireView.INNER_FLAME = {
 	numParticles = 50,
-	texture = "Resources/Game/Props/Lamp_IsabelleTower/Flame.png",
+	texture = "Resources/Game/Props/Common/Particle_Flame.png",
+	columns = 4,
+
+	emitters = {
+		{
+			type = "RadialEmitter",
+			radius = { 0, 0.15 },
+			position = { 0, 0.1, 0 },
+			yRange = { 0, 0 },
+			lifetime = { 1.25, 0.15 }
+		},
+		{
+			type = "DirectionalEmitter",
+			direction = { 0, 1, 0 },
+			speed = { 0.45, 0.45 },
+		},
+		{
+			type = "RandomColorEmitter",
+			colors = {
+				{ Color.fromHexString("ffd52a"):get() },
+				{ Color.fromHexString("ffd52a"):get() },
+				{ Color.fromHexString("ffd52a"):get() },
+				{ Color.fromHexString("ff7701"):get() },
+			}
+		},
+		{
+			type = "RandomScaleEmitter",
+			scale = { 0.1 }
+		},
+		{
+			type = "RandomRotationEmitter",
+			rotation = { 0, 360 }
+		}
+	},
+
+	paths = {
+		{
+			type = "FadeInOutPath",
+			fadeInPercent = { 0.4 },
+			fadeOutPercent = { 0.6 },
+			tween = { 'sineEaseOut' }
+		},
+		{
+			type = "TextureIndexPath",
+			textures = { 1, 4 }
+		}
+	},
+
+	emissionStrategy = {
+		type = "RandomDelayEmissionStrategy",
+		count = { 5, 10 },
+		delay = { 1 / 30 }
+	}
+}
+
+FireView.OUTER_FLAME = {
+	numParticles = 50,
+	texture = "Resources/Game/Props/Common/Particle_Flame.png",
 	columns = 4,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
 			radius = { 0, 0.25 },
-			position = { 0, 0.4, 0 },
+			position = { 0, 0, 0 },
 			yRange = { 0, 0 },
 			lifetime = { 1.5, 0.4 }
 		},
@@ -153,9 +210,13 @@ function FireView:load()
 			self.texture = texture
 		end)
 	resources:queueEvent(function()
-		self.flames = ParticleSceneNode()
-		self.flames:initParticleSystemFromDef(FireView.FLAME, resources)
-		self.flames:setParent(self.node)
+		self.outerFlames = ParticleSceneNode()
+		self.outerFlames:initParticleSystemFromDef(FireView.OUTER_FLAME, resources)
+		self.outerFlames:setParent(self.node)
+
+		self.innerFlames = ParticleSceneNode()
+		self.innerFlames:initParticleSystemFromDef(FireView.INNER_FLAME, resources)
+		self.innerFlames:setParent(self.node)
 	end)
 end
 

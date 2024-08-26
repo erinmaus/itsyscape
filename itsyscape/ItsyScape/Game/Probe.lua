@@ -106,7 +106,6 @@ end
 function Probe:iterate()
 	if self.isDirty then
 		for i = 1, self.pendingActionsCount do
-			print(">>> depth", self.pendingActions[i].id, self.pendingActions[i].depth)
 			table.insert(self.actions, self.pendingActions[i])
 		end
 
@@ -120,10 +119,7 @@ end
 
 -- Collects actions from Probe.iterate into an array and returns it.
 function Probe:toArray()
-	for _, a in self:iterate() do
-		print(a.verb, a.object, a.depth)
-	end
-
+	self:iterate()
 	return self.actions
 end
 
