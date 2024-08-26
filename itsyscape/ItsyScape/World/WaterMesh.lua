@@ -52,6 +52,10 @@ function WaterMesh:_buildMesh()
 		for i = 1, self.width do
 			self:_addFlat(i - 0.5, j - 0.5)
 		end
+
+		if coroutine.running() then
+			coroutine.yield()
+		end
 	end
 
 	self.mesh = love.graphics.newMesh(WaterMesh.FORMAT, self.vertices, 'triangles', 'static')
@@ -67,8 +71,8 @@ function WaterMesh:_addVertex(position, normal, texture)
 		position.x * 1 / self.scale, position.z * 1 / self.scale
 	}
 
-	self.min = self.min:min(position):keep()
-	self.max = self.max:max(position):keep()
+	self.min:min(position):keep(self.min)
+	self.max:max(position):keep(self.max)
 
 	table.insert(self.vertices, vertex)
 end
