@@ -61,6 +61,7 @@ namespace nbunny
 		love::graphics::Shader* current_shader = nullptr;
 
 		float time = 0.0f;
+		float current_time = 0.0f;
 
 		int current_renderer_pass_id = 0;
 

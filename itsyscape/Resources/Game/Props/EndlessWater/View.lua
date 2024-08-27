@@ -124,7 +124,7 @@ function EndlessWater:load()
 					8)
 				water:getMaterial():setIsReflectiveOrRefractive(true)
 				water:getMaterial():setRatioIndexOfRefraction(1.33)
-				water:getMaterial():setReflectionPower()
+				water:getMaterial():setRefractionPower(0.5)
 
 				local function _onWillRender(renderer, delta)
 					local shader = renderer:getCurrentShader()

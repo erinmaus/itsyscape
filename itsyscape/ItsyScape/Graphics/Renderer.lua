@@ -17,6 +17,7 @@ local OutlineRendererPass = require "ItsyScape.Graphics.OutlineRendererPass"
 local ParticleOutlineRendererPass = require "ItsyScape.Graphics.ParticleOutlineRendererPass"
 local AlphaMaskRendererPass = require "ItsyScape.Graphics.AlphaMaskRendererPass"
 local ShadowRendererPass = require "ItsyScape.Graphics.ShadowRendererPass"
+local ReflectionRendererPass = require "ItsyScape.Graphics.ReflectionRendererPass"
 local LBuffer = require "ItsyScape.Graphics.LBuffer"
 local GBuffer = require "ItsyScape.Graphics.GBuffer"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
@@ -59,6 +60,7 @@ function Renderer:new(conf)
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
 	self.alphaMaskPass = AlphaMaskRendererPass(self, self.finalDeferredPass:getHandle():getDepthBuffer())
 	self.particleOutlinePass = ParticleOutlineRendererPass(self, self.finalDeferredPass:getHandle():getDepthBuffer())
+	self.reflectionPass = ReflectionRendererPass(self)
 	self.passesByID = {
 		[shadowsEnabled and self.shadowPass:getID() or 0] = self.shadowPass,
 		[self.outlinePass:getID()] = self.outlinePass,
@@ -66,6 +68,7 @@ function Renderer:new(conf)
 		[self.finalForwardPass:getID()] = self.finalForwardPass,
 		[self.alphaMaskPass:getID()] = self.alphaMaskPass,
 		[self.particleOutlinePass:getID()] = self.particleOutlinePass,
+		[self.reflectionPass:getID()] = self.reflectionPass,
 	}
 
 	if shadowsEnabled then
@@ -77,6 +80,7 @@ function Renderer:new(conf)
 	self._renderer:addRendererPass(self.finalForwardPass:getHandle())
 	self._renderer:addRendererPass(self.alphaMaskPass:getHandle())
 	self._renderer:addRendererPass(self.particleOutlinePass:getHandle())
+	self._renderer:addRendererPass(self.reflectionPass:getHandle())
 	
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()

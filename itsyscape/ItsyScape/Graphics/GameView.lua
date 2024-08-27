@@ -30,6 +30,7 @@ local Renderer = require "ItsyScape.Graphics.Renderer"
 local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local SpriteManager = require "ItsyScape.Graphics.SpriteManager"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local SSRPostProcessPass = require "ItsyScape.Graphics.SSRPostProcessPass"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ToneMapPostProcessPass = require "ItsyScape.Graphics.ToneMapPostProcessPass"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
@@ -81,6 +82,9 @@ function GameView:new(game, camera)
 
 	self.sceneOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
 	self.sceneOutlinePostProcessPass:load(self.resourceManager)
+
+	self.ssrPostProcessPass = SSRPostProcessPass(self.renderer)
+	self.ssrPostProcessPass:load(self.resourceManager)
 
 	self.skyboxOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
 	self.skyboxOutlinePostProcessPass:load(self.resourceManager)
@@ -1891,7 +1895,7 @@ function GameView:draw(delta, width, height)
 	end
 
 	self.renderer:setClearColor(Color(0, 0, 0, 0))
-	self.renderer:draw(self.scene, delta, width, height, { self.toneMapPostProcessPass, self.sceneOutlinePostProcessPass })
+	self.renderer:draw(self.scene, delta, width, height, { self.ssrPostProcessPass, self.toneMapPostProcessPass, self.sceneOutlinePostProcessPass })
 	self.renderer:present(true)
 end
 
