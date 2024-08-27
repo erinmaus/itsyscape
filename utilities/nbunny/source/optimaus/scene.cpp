@@ -290,6 +290,16 @@ float nbunny::SceneNodeMaterial::get_ratio_index_of_refraction() const
 	return ratio_index_of_refraction;
 }
 
+void nbunny::SceneNodeMaterial::set_roughness(float value)
+{
+	roughness = value;	
+}
+
+float nbunny::SceneNodeMaterial::get_roughness() const
+{
+	return roughness;
+}
+
 void nbunny::SceneNodeMaterial::set_z_bias(float value)
 {
 	z_bias = value;	

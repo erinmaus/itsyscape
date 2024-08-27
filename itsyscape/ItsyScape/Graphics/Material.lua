@@ -153,11 +153,29 @@ function Material:setIsReflectiveOrRefractive(value)
 end
 
 function Material:getReflectionPower()
-	return self._handle:getReflectionPower()
+	local result = self._handle:getReflectionPower()
+	if result > 1 then
+		return 0
+	end
+
+	return result
+end
+
+function Material:getRefractionPower()
+	local result = self._handle:getReflectionPower()
+	if result < 1 then
+		return 0
+	end
+
+	return result - 1
 end
 
 function Material:setReflectionPower(value)
-	self._handle:setReflectionPower(value)
+	self._handle:setReflectionPower(math.clamp(value, 0, 1))
+end
+
+function Material:setRefractionPower(value)
+	self._handle:setReflectionPower(math.clamp(value, 0, 1) + 1)
 end
 
 function Material:getRatioIndexOfRefraction()

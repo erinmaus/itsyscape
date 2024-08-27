@@ -149,6 +149,9 @@ nbunny::SceneNode* nbunny::Renderer::get_root_node() const
 
 void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int width, int height)
 {
+	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+	current_time = timer_instance->getTime() - time;
+
 	root_node = &node;
 	set_camera(default_camera);
 
@@ -199,13 +202,12 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 {
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
 	auto shader = get_current_shader();
 
 	auto time_uniform = shader->getUniformInfo("scape_Time");
 	if (time_uniform)
 	{
-		*time_uniform->floats = timer_instance->getTime() - time;
+		*time_uniform->floats = current_time;
 		shader->updateUniform(time_uniform, 1);
 	}
 

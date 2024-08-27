@@ -490,7 +490,7 @@ function DefaultCameraController:updateTargetDistance()
 	local targetPosition, targetSize = self:getTargetPosition()
 	local distance = (playerPosition - targetPosition):getLength()
 
-	self.targetOpponentDistance = (distance + targetSize):keep()
+	self.targetOpponentDistance = distance + targetSize
 end
 
 function DefaultCameraController:updateShow(delta)
