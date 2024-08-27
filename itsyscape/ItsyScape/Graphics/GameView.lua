@@ -1083,35 +1083,33 @@ function GameView:addActor(actorID, actor)
 	local view = ActorView(actor, actorID)
 	view:attach(self)
 
-	self.actors[actor] = view
+	self.actors[actor:getID()] = view
 	self.views[actor] = view
 end
 
 function GameView:getActor(actor)
-	return self.actors[actor]
-end
-
-function GameView:getActorByID(id)
-	for actor in pairs(self.actors) do
-		if actor:getID() == id then
-			return actor
-		end
+	if actor then
+		return self.actors[actor:getID()]
 	end
 
 	return nil
 end
 
+function GameView:getActorByID(id)
+	local actorView = self.actors[id]
+	return actorView and actorView:getActor()
+end
+
 function GameView:removeActor(actor)
-	if self.actors[actor] then
-		local view = self.actors[actor]
-		self.actors[actor]:release()
-		self.actors[actor] = nil
+	if self.actors[actor:getID()] then
+		self.actors[actor:getID()]:release()
+		self.actors[actor:getID()] = nil
 		self.views[actor] = nil
 	end
 end
 
 function GameView:hasActor(actor)
-	return self.actors[actor] ~= nil
+	return self.actors[actor:getID()] ~= nil
 end
 
 function GameView:addProp(propID, prop)
@@ -1852,6 +1850,25 @@ function GameView:_updateActorCanvases(delta)
 		end
 	end
 	love.graphics.pop()
+end
+
+function GameView:drawSkyboxTo(delta, renderer, width, height)
+	local skybox = next(self.skyboxes)
+	if skybox then
+		local info = self.skyboxes[skybox]
+
+		renderer:setClearColor(Color(0, 0, 0, 0))
+		renderer:draw(skybox, delta, width, height)
+
+		return true
+	end
+
+	return false
+end
+
+function GameView:drawWorldTo(delta, renderer, width, height)
+	renderer:setClearColor(Color(0, 0, 0, 0))
+	renderer:draw(self.scene, delta, width, height)
 end
 
 function GameView:draw(delta, width, height)

@@ -98,6 +98,11 @@ namespace nbunny
 		glm::vec4 color = glm::vec4(1.0f);
 		glm::vec4 outline_color = glm::vec4(glm::vec3(0.0f), 1.0f);
 
+		float reflection_power = 0.0f;
+		float ratio_index_of_refraction = 1.0f;
+		float roughness = 0.0f;
+		bool is_reflective_or_refractive = false;
+
 		bool is_rendered = true;
 
 		bool is_light_target_position_enabled = false;
@@ -131,6 +136,18 @@ namespace nbunny
 
 		void set_outline_threshold(float value);
 		float get_outline_threshold() const;
+
+		void set_is_reflective_or_refractive(bool value);
+		bool get_is_reflective_or_refractive() const;
+
+		void set_reflection_power(float value);
+		float get_reflection_power() const;
+
+		void set_ratio_index_of_refraction(float value);
+		float get_ratio_index_of_refraction() const;
+
+		void set_roughness(float value);
+		float get_roughness() const;
 
 		void set_z_bias(float value);
 		float get_z_bias() const;

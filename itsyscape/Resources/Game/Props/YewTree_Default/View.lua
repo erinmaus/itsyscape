@@ -76,7 +76,9 @@ function YewTreeView:done()
 	local willRender
 
 	willRender = root:onWillRender(function()
-		willRender()
+		if willRender then
+			willRender()
+		end
 
 		local transform = self.skeleton:getResource():getLocalBoneTransform("trunk", self.transforms)
 		local point = Vector(transform:transformPoint(0, 3.5, 0))

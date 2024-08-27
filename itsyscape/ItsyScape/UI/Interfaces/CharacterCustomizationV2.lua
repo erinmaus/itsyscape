@@ -1234,12 +1234,7 @@ function CharacterCustomization:populateSkinOptions(playerSkinStorage, skins, sl
 				config = { color }
 			end
 
-			print(">>> #config", config and #config)
-			print(">>> #defaultColorConfig", defaultColorConfig and #defaultColorConfig)
-
 			if config and defaultColorConfig and #config < #defaultColorConfig then
-				print("YES!!!!!!!!")
-
 				for i = #config + 1, #defaultColorConfig do
 					config[i] = defaultColorConfig[i]
 				end

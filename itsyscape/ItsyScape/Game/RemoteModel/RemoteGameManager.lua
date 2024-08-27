@@ -221,6 +221,7 @@ function RemoteGameManager:processCreate(e)
 end
 
 function RemoteGameManager:processDestroy(e)
+	Log.engine("Destroying '%s' (%d).", e.interface, e.id)
 	self:destroyInstance(e.interface, e.id)
 end
 

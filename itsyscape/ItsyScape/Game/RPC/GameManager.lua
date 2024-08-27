@@ -93,7 +93,7 @@ function GameManager.Instance:setProperty(propertyName, ...)
 	property:set(propertyName, ...)
 end
 
-function GameManager.Instance:_updateProperty(property, force)
+function GameManager.Instance:updateProperty(property, force)
 	local isDirty = property:update(self.instance)
 	if isDirty or force then
 		self.gameManager:pushProperty(
@@ -108,7 +108,7 @@ function GameManager.Instance:update(force)
 	for _, property in ipairs(self.properties) do
 		self.gameManager:getDebugStats():measure(
 			string.format("%s::%s::%s", EventQueue.EVENT_TYPE_PROPERTY, self.interface, property:getField()),
-			self._updateProperty,
+			self.updateProperty,
 			self,
 			property,
 			force)

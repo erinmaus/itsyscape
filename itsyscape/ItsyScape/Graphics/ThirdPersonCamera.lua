@@ -210,11 +210,11 @@ function ThirdPersonCamera:getCombinedRotation()
 end
 
 function ThirdPersonCamera:setRotation(value)
-	self.rotation = value or Quaternion.IDENTITY
+	self.rotation = (value or Quaternion.IDENTITY):keep()
 end
 
 function ThirdPersonCamera:setScale(value)
-	self.scale = value or Vector.ONE
+	self.scale = (value or Vector.ONE):keep()
 end
 
 function ThirdPersonCamera:getScale()

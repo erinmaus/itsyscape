@@ -1333,6 +1333,14 @@ function Instance:loadPlayer(localGameManager, player)
 				actor:getID())
 			localGameManager:assignTargetToLastPush(player)
 
+			local instance = localGameManager:getInstance(
+				"ItsyScape.Game.Model.Actor",
+				actor:getID())
+			for _, property in instance:iterateProperties() do
+				instance:updateProperty(property, true)
+				localGameManager:assignTargetToLastPush(player)
+			end
+
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
 				0,
@@ -1357,6 +1365,14 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Prop",
 				prop:getID())
 			localGameManager:assignTargetToLastPush(player)
+
+			local instance = localGameManager:getInstance(
+				"ItsyScape.Game.Model.Prop",
+				prop:getID())
+			for _, property in instance:iterateProperties() do
+				instance:updateProperty(property, true)
+				localGameManager:assignTargetToLastPush(player)
+			end
 
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
@@ -1470,6 +1486,14 @@ function Instance:loadPlayer(localGameManager, player)
 				"ItsyScape.Game.Model.Actor",
 				player:getActor():getID())
 			localGameManager:assignTargetToLastPush(otherPlayer)
+
+			local instance = localGameManager:getInstance(
+				"ItsyScape.Game.Model.Actor",
+				player:getActor():getID())
+			for _, property in instance:iterateProperties() do
+				instance:updateProperty(property, true)
+				localGameManager:assignTargetToLastPush(otherPlayer)
+			end
 
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",

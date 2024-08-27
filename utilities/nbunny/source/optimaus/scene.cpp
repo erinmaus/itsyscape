@@ -260,6 +260,36 @@ float nbunny::SceneNodeMaterial::get_outline_threshold() const
 	return outline_threshold;
 }
 
+void nbunny::SceneNodeMaterial::set_is_reflective_or_refractive(bool value)
+{
+	is_reflective_or_refractive = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_reflective_or_refractive() const
+{
+	return is_reflective_or_refractive;
+}
+
+void nbunny::SceneNodeMaterial::set_reflection_power(float value)
+{
+	reflection_power = value;	
+}
+
+float nbunny::SceneNodeMaterial::get_reflection_power() const
+{
+	return reflection_power;
+}
+
+void nbunny::SceneNodeMaterial::set_ratio_index_of_refraction(float value)
+{
+	ratio_index_of_refraction = value;	
+}
+
+float nbunny::SceneNodeMaterial::get_ratio_index_of_refraction() const
+{
+	return ratio_index_of_refraction;
+}
+
 void nbunny::SceneNodeMaterial::set_z_bias(float value)
 {
 	z_bias = value;	
@@ -1310,6 +1340,14 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getIsCullDisabled", &nbunny::SceneNodeMaterial::get_is_cull_disabled,
 		"setOutlineThreshold", &nbunny::SceneNodeMaterial::set_outline_threshold,
 		"getOutlineThreshold", &nbunny::SceneNodeMaterial::get_outline_threshold,
+		"setIsReflectiveOrRefractive", &nbunny::SceneNodeMaterial::set_is_reflective_or_refractive,
+		"getIsReflectiveOrRefractive", &nbunny::SceneNodeMaterial::get_is_reflective_or_refractive,
+		"setReflectionPower", &nbunny::SceneNodeMaterial::set_reflection_power,
+		"getReflectionPower", &nbunny::SceneNodeMaterial::get_reflection_power,
+		"setRatioIndexOfRefraction", &nbunny::SceneNodeMaterial::set_ratio_index_of_refraction,
+		"getRatioIndexOfRefraction", &nbunny::SceneNodeMaterial::get_ratio_index_of_refraction,
+		"setRoughness", &nbunny::SceneNodeMaterial::set_roughness,
+		"getRoughness", &nbunny::SceneNodeMaterial::get_roughness,
 		"setZBias", &nbunny::SceneNodeMaterial::set_z_bias,
 		"getZBias", &nbunny::SceneNodeMaterial::get_z_bias,
 		"setColor", &nbunny_scene_node_material_set_color,

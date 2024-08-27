@@ -144,6 +144,38 @@ function Material:setZBias(value)
 	self._handle:setZBias(value)
 end
 
+function Material:getIsReflectiveOrRefractive()
+	return self._handle:getIsReflectiveOrRefractive()
+end
+
+function Material:setIsReflectiveOrRefractive(value)
+	self._handle:setIsReflectiveOrRefractive(value)
+end
+
+function Material:getReflectionPower()
+	return self._handle:getReflectionPower()
+end
+
+function Material:setReflectionPower(value)
+	self._handle:setReflectionPower(value)
+end
+
+function Material:getRatioIndexOfRefraction()
+	return self._handle:getRatioIndexOfRefraction()
+end
+
+function Material:setRatioIndexOfRefraction(value)
+	self._handle:setRatioIndexOfRefraction(value)
+end
+
+function Material:getRoughness()
+	return self._handle:getRoughness()
+end
+
+function Material:setRoughness(value)
+	self._handle:setRoughness(value)
+end
+
 function Material:getColor()
 	return Color(self._handle:getColor())
 end
