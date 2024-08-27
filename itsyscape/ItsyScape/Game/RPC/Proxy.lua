@@ -106,6 +106,8 @@ function Proxy:wrapServer(interface, id, instance, gameManager)
 		gameManager:registerProperty(interface, id, propertyName, property)
 	end
 
+	gameManager:getInstance(interface, id):update(true)
+
 	local groups = {}
 	for i = 1, #self.events do
 		local key = self.events[i]:getKey()

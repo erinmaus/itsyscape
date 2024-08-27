@@ -48,6 +48,7 @@ TextureResource.PASSES = {
 	["Forward"] = RendererPass.PASS_FORWARD,
 	["Mobile"] = RendererPass.PASS_MOBILE,
 	["Outline"] = RendererPass.PASS_OUTLINE,
+	["Reflection"] = RendererPass.PASS_REFLECTION,
 	["Shadow"] = RendererPass.PASS_SHADOW
 }
 

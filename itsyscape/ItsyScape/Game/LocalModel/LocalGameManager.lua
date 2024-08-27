@@ -164,6 +164,14 @@ function LocalGameManager:onActorMoved(_, actor, previousLayerName, currentLayer
 					actor:getID())
 				self:assignTargetToLastPush(player)
 
+				local instance = localGameManager:getInstance(
+					"ItsyScape.Game.Model.Actor",
+					actor:getID())
+				for _, property in instance:iterateProperties() do
+					instance:updateProperty(property, true)
+					localGameManager:assignTargetToLastPush(player)
+				end
+
 				self:pushCallback(
 					"ItsyScape.Game.Model.Stage",
 					0,
@@ -202,6 +210,14 @@ function LocalGameManager:onPropMoved(_, prop, previousLayerName, currentLayerNa
 					"ItsyScape.Game.Model.Prop",
 					prop:getID())
 				self:assignTargetToLastPush(player)
+
+				local instance = localGameManager:getInstance(
+					"ItsyScape.Game.Model.Prop",
+					prop:getID())
+				for _, property in instance:iterateProperties() do
+					instance:updateProperty(property, true)
+					localGameManager:assignTargetToLastPush(player)
+				end
 
 				self:pushCallback(
 					"ItsyScape.Game.Model.Stage",

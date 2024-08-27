@@ -1,4 +1,26 @@
-#include "Resources/Shaders/Bump.common.glsl"
+void calculateBumpNormalFromHeight(
+    float topLeft,
+    float left,
+    float bottomLeft,
+    float top,
+    float bottom,
+    float topRight,
+    float right,
+    float bottomRight,
+    float scale,
+    out vec3 normal)
+{
+    float x = (topRight + 2.0 * right + bottomRight) - (topLeft + 2.0 * left + bottomLeft);
+    float y = (bottomLeft + 2.0 * bottom + bottomRight) - (topLeft + 2.0 * top + topRight);
+
+    normal = vec3(x, -y, scale);
+
+    float length = length(normal);
+    if (length > 0.0)
+    {
+        normal = normalize(normal);
+    }
+}
 
 void calculateBumpNormal(Image heightmapTexture, vec2 textureCoordinate, vec2 texelSize, float scale, out vec3 normal, out float height)
 {
@@ -16,11 +38,5 @@ void calculateBumpNormal(Image heightmapTexture, vec2 textureCoordinate, vec2 te
     float y = (bottomLeft + 2.0 * bottom + bottomRight) - (topLeft + 2.0 * top + topRight);
 
     height = center;
-    normal = vec3(x, -y, scale);
-
-    float length = length(normal);
-    if (length > 0.0)
-    {
-        normal = normalize(normal);
-    }
+    calculateBumpNormalFromHeight(topLeft, left, bottomLeft, top, bottom, topRight, right, bottomRight, scale, normal);
 }

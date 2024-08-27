@@ -9,23 +9,50 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
 local PropView = require "ItsyScape.Graphics.PropView"
+local Renderer = require "ItsyScape.Graphics.Renderer"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 
 local EndlessWater = Class(PropView)
 EndlessWater.WHIRLPOOL_SHADER = ShaderResource()
 EndlessWater.WATER_SHADER = ShaderResource()
 do
-	EndlessWater.WHIRLPOOL_SHADER:loadFromFile("Resources/Shaders/WhirlpoolWater")
-	EndlessWater.WATER_SHADER:loadFromFile("Resources/Shaders/Water")
+	EndlessWater.WHIRLPOOL_SHADER:loadFromFile("Resources/Shaders/ReflectiveWater")
+	EndlessWater.WATER_SHADER:loadFromFile("Resources/Shaders/ReflectiveWater")
 end
 
 EndlessWater.HOLE_COLOR = Color.fromHexString("87cdde")
 EndlessWater.FOAM_COLOR = Color.fromHexString("ffffff")
+
+EndlessWater.REFLECTION_WIDTH = 1024
+EndlessWater.REFLECTION_HEIGHT = 1024
+EndlessWater.CUBE_MAP_COUNT = 6
+
+EndlessWater.CUBE_MAP_NORMALS = {
+	Vector(1, 0, 0):keep(),
+	Vector(-1, 0, 0):keep(),
+	Vector(0, 1, 0):keep(),
+	Vector(0, -1, 0):keep(),
+	Vector(0, 0, 1):keep(),
+	Vector(0, 0, -1):keep(),
+}
+
+EndlessWater.CUBE_MAP_ROTATION = {
+	Quaternion.Y_270,
+	Quaternion.Y_90,
+	Quaternion.X_270,
+	Quaternion.X_90,
+	Quaternion.IDENTITY,
+	Quaternion.Y_180
+}
+
+EndlessWater.CUBE_MAP_FOV = math.rad(90)
 
 -- Size of map sector, in terms of unit (1 unit = cell size)
 EndlessWater.SIZE = 64
@@ -56,6 +83,25 @@ function EndlessWater:load()
 	self.waterParent = SceneNode()
 	self.waterParent:setParent(self:getRoot())
 
+	self.camera = ThirdPersonCamera()
+	self.renderer = Renderer({ shadows = false })
+	self.renderer:setCamera(self.camera)
+
+	self.reflectionCanvas = love.graphics.newCanvas(
+		self.REFLECTION_WIDTH,
+		self.REFLECTION_HEIGHT,
+		{ type = "cube" })
+
+	self.reflectionDepthCanvas = love.graphics.newCanvas(
+		self.REFLECTION_WIDTH,
+		self.REFLECTION_HEIGHT,
+		{ type = "cube", format = "r32f" })
+
+	self.skyboxCanvas = love.graphics.newCanvas(
+		self.REFLECTION_WIDTH,
+		self.REFLECTION_HEIGHT,
+		{ type = "cube" })
+
 	resources:queue(
 		TextureResource,
 		"Resources/Game/Water/LightFoamyWater1/Texture.png",
@@ -76,6 +122,9 @@ function EndlessWater:load()
 					EndlessWater.SIZE,
 					1.5,
 					8)
+				water:getMaterial():setIsReflectiveOrRefractive(true)
+				water:getMaterial():setRatioIndexOfRefraction(1.33)
+				water:getMaterial():setReflectionPower()
 
 				local function _onWillRender(renderer, delta)
 					local shader = renderer:getCurrentShader()
@@ -89,6 +138,22 @@ function EndlessWater:load()
 							end
 						end
 					end
+
+					-- if shader:hasUniform("scape_DepthTexture") then
+					-- 	shader:send("scape_DepthTexture", self:getGameView():getRenderer():getOutputBuffer():getDepthStencil())
+					-- end
+
+					-- if shader:hasUniform("scape_ReflectionMap") then
+					-- 	shader:send("scape_ReflectionMap", self.reflectionCanvas)
+					-- end
+
+					-- if shader:hasUniform("scape_ReflectionDepthMap") then
+					-- 	shader:send("scape_ReflectionDepthMap", self.reflectionDepthCanvas)
+					-- end
+
+					-- if shader:hasUniform("scape_SkyboxMap") then
+					-- 	shader:send("scape_SkyboxMap", self.skyboxCanvas)
+					-- end
 
 					if shader:hasUniform("scape_WhirlpoolHoleColor") then
 						shader:send("scape_WhirlpoolHoleColor", { EndlessWater.HOLE_COLOR:get() })
@@ -128,6 +193,20 @@ function EndlessWater:tick()
 	end
 end
 
+function EndlessWater:updateCamera(index)
+	self.camera:setFieldOfView(EndlessWater.CUBE_MAP_FOV)
+	self.camera:setWidth(EndlessWater.REFLECTION_WIDTH)
+	self.camera:setHeight(EndlessWater.REFLECTION_HEIGHT)
+	self.camera:setVerticalRotation(-math.pi / 2)
+	self.camera:setHorizontalRotation(math.pi)
+	self.camera:setDistance(0)
+	self.camera:setPosition(self:getGameView():getCamera():getEye())
+	self.camera:setRotation(EndlessWater.CUBE_MAP_ROTATION[index])
+
+	local x, y, z = self.camera:getRotation():getEulerXYZ()
+	print(">>> euler", index, math.deg(x), math.deg(y), math.deg(z))
+end
+
 function EndlessWater:update(delta)
 	PropView.update(self, delta)
 
@@ -141,6 +220,48 @@ function EndlessWater:update(delta)
 
 	self.waterParent:getTransform():setLocalTranslation(Vector(x, 0, z))
 	self.waterParent:tick(1)
+
+	-- local delta = _APP:getFrameDelta()
+
+	-- self.waterParent:setParent(nil)
+	-- love.graphics.push("all")
+	-- do
+	-- 	for i = 1, EndlessWater.CUBE_MAP_COUNT do
+	-- 		self:updateCamera(i)
+
+	-- 		if self:getGameView():drawSkyboxTo(
+	-- 			delta,
+	-- 			self.renderer,
+	-- 			EndlessWater.REFLECTION_WIDTH,
+	-- 			EndlessWater.REFLECTION_HEIGHT)
+	-- 		then
+	-- 			love.graphics.setCanvas(self.skyboxCanvas, i)
+	-- 			love.graphics.clear(0, 0, 0, 0)
+	-- 			love.graphics.draw(self.renderer:getOutputBuffer():getColor())
+	-- 		end
+	-- 	end
+
+	-- 	for i = 1, EndlessWater.CUBE_MAP_COUNT do
+	-- 		self:updateCamera(i)
+
+	-- 		self:getGameView():drawWorldTo(
+	-- 			delta,
+	-- 			self.renderer,
+	-- 			EndlessWater.REFLECTION_WIDTH,
+	-- 			EndlessWater.REFLECTION_HEIGHT)
+
+	-- 		love.graphics.setCanvas(self.reflectionCanvas, i)
+	-- 		love.graphics.clear(0, 0, 0, 0)
+	-- 		love.graphics.draw(self.renderer:getOutputBuffer():getColor())
+
+	-- 		love.graphics.setCanvas(self.reflectionDepthCanvas, i)
+	-- 		love.graphics.clear(0, 0, 0, 0)
+	-- 		love.graphics.draw(self.renderer:getOutputBuffer():getDepthStencil())
+	-- 	end
+	-- end
+	-- love.graphics.pop()
+
+	-- self.waterParent:setParent(self:getRoot())
 end
 
 return EndlessWater

@@ -45,6 +45,12 @@ function BaseQuaternion.lookAt(source, target, up)
 	return BaseQuaternion.fromAxisAngle(axis, angle):getNormal()
 end
 
+function BaseQuaternion.fromVectors(source, target)
+	local cross = source:cross(target:getNormal())
+	local dot = source:dot(target:getNormal())
+	return Quaternion(cross.x, cross.y, cross.z, 1 + dot)
+end
+
 -- Constructs a new three-dimensional quaternion from the provided components.
 --
 -- Values default to x, except for w. If x is not provided, values default to 0.

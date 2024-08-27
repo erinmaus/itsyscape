@@ -595,7 +595,7 @@ function DefaultCameraController:update(delta)
 		self.currentShakingDuration = self.currentShakingDuration - delta
 		if self.currentShakingDuration <= 0 then
 			self.isShaking = false
-			self.currentShakingOffset = Vector(0)
+			self.currentShakingOffset = Vector(0):keep()
 		end
 	end
 
@@ -833,7 +833,7 @@ function DefaultCameraController:draw()
 
 	local shake
 	if self.currentShakingOffset and self.previousShakingOffset then
-		shake = self.previousShakingOffset:lerp(self.currentShakingOffset, 1 - (self.currentShakingInterval / self.shakingInterval))
+		shake = self.previousShakingOffset:lerp(self.currentShakingOffset, 1 - (self.currentShakingInterval / self.shakingInterval)):keep()
 	else
 		shake = Vector.ZERO
 	end
