@@ -101,6 +101,7 @@ namespace nbunny
 		std::vector<glm::vec4> textures;
 
 		bool is_playing = true;
+		bool is_pending = false;
 
 		void update(float time_delta);
 		void emit(int count);

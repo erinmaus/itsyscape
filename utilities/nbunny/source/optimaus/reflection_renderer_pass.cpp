@@ -21,9 +21,15 @@ void nbunny::ReflectionRendererPass::walk_all_nodes(SceneNode& node, float delta
 	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_position();
 
 	reflective_or_refractive_scene_nodes.clear();
+	translucent_scene_nodes.clear();
 	for (auto& visible_scene_node: visible_scene_nodes)
 	{
 		auto material = visible_scene_node->get_material();
+
+		if (material.get_is_translucent() || material.get_is_full_lit())
+		{
+			translucent_scene_nodes.push_back(visible_scene_node);
+		}
 
         if (material.get_is_reflective_or_refractive())
         {
@@ -65,34 +71,46 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 	love::math::Transform view(love::Matrix4(glm::value_ptr(camera.get_view())));
 	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
 
-    reflection_buffer.use();
+	// if (reflective_or_refractive_scene_nodes.size() == 0)
+	// {
+	// 	return;
+	// }
 
-	graphics->clear(
-		love::Colorf(0.0, 0.0, 0.0, 0.0),
-		0,
-		1.0f);
-
-	if (reflective_or_refractive_scene_nodes.size() == 0)
-	{
-		return;
-	}
+	copy_g_buffer();
 
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
 
-	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+	love::graphics::Graphics::ColorMask enabled_mask;
+	enabled_mask.r = true;
+	enabled_mask.g = true;
+	enabled_mask.b = true;
+	enabled_mask.a = true;
+	graphics->setColorMask(enabled_mask);
 
-	love::graphics::Graphics::ColorMask enabledMask;
-	enabledMask.r = true;
-	enabledMask.g = true;
-	enabledMask.b = true;
-	enabledMask.a = true;
+	reflection_buffer.use();
 
-	love::graphics::Graphics::ColorMask disabledMask;
-	disabledMask.r = false;
-	disabledMask.g = false;
-	disabledMask.b = false;
-	disabledMask.a = false;
+	for (auto& scene_node: translucent_scene_nodes)
+	{
+		auto shader = get_node_shader(L, *scene_node);
+		if (!shader)
+		{
+			continue;
+		}
+		renderer->set_current_shader(shader);
+
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);	
+		renderer->draw_node(L, *scene_node, delta);
+	}
+
+	graphics->clear(
+		{
+			love::graphics::OptionalColorf(love::Colorf(0.0, 0.0, 0.0, 0.0)),
+			love::graphics::OptionalColorf(),
+			love::graphics::OptionalColorf()
+		},
+		0,
+		1.0f);
 
 	for (auto& scene_node: reflective_or_refractive_scene_nodes)
 	{
@@ -113,12 +131,6 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
         }
 
         graphics->setMeshCullMode(love::graphics::CULL_BACK);
-
-		graphics->setColorMask(disabledMask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());	
-		renderer->draw_node(L, *scene_node, delta);
-
-		graphics->setColorMask(enabledMask);
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
 
 		auto color = scene_node->get_material().get_color();
@@ -127,12 +139,66 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 		renderer->draw_node(L, *scene_node, delta);
 	}
 
-	graphics->setColorMask(enabledMask);
+	graphics->setColorMask(enabled_mask);
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-nbunny::ReflectionRendererPass::ReflectionRendererPass() :
-	RendererPass(RENDERER_PASS_REFLECTION), reflection_buffer({ love::PIXELFORMAT_RGBA16F })
+void nbunny::ReflectionRendererPass::copy_g_buffer()
+{	
+	auto renderer = get_renderer();
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	love::graphics::Graphics::RenderTargets render_targets;
+
+	love::graphics::Graphics::ColorMask disabled_alpha_mask;
+	disabled_alpha_mask.r = true;
+	disabled_alpha_mask.g = true;
+	disabled_alpha_mask.b = true;
+	disabled_alpha_mask.a = false;
+	graphics->setColorMask(disabled_alpha_mask);
+
+	renderer->set_current_shader(nullptr);
+	graphics->origin();
+    graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+
+	render_targets.colors.emplace_back(reflection_buffer.get_canvas(NORMALS_INDEX));
+	graphics->setCanvas(render_targets);
+	graphics->draw(g_buffer.get_canvas(DeferredRendererPass::NORMAL_OUTLINE_INDEX), love::Matrix4());
+
+	render_targets.colors.clear();
+	render_targets.colors.emplace_back(reflection_buffer.get_canvas(POSITION_INDEX));
+	graphics->setCanvas(render_targets);
+	graphics->draw(g_buffer.get_canvas(DeferredRendererPass::POSITION_INDEX), love::Matrix4());
+
+	reflection_buffer.use();
+	graphics->origin();
+    graphics->setOrtho(reflection_buffer.get_width(), reflection_buffer.get_height(), !graphics->isCanvasActive());
+    graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, true);
+
+	auto shader = get_renderer()->get_shader_cache().get(RENDERER_PASS_DEFERRED, DeferredRendererPass::BUILTIN_SHADER_DEPTH_COPY);
+	if (!shader)
+	{
+		return;
+	}
+
+	love::graphics::Graphics::ColorMask disabled_mask;
+	disabled_mask.r = false;
+	disabled_mask.g = false;
+	disabled_mask.b = false;
+	disabled_mask.a = false;
+	graphics->setColorMask(disabled_mask);
+
+	get_renderer()->set_current_shader(shader);
+	graphics->draw(g_buffer.get_canvas(0), love::Matrix4());
+
+	graphics->flushStreamDraws();
+}
+
+nbunny::ReflectionRendererPass::ReflectionRendererPass(GBuffer& g_buffer) :
+	RendererPass(RENDERER_PASS_REFLECTION),
+	reflection_buffer({ love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA32F, love::PIXELFORMAT_RGBA16F }),
+	g_buffer(g_buffer)
 {
 	// Nothing.
 }
@@ -165,7 +231,9 @@ void nbunny::ReflectionRendererPass::attach(Renderer& renderer)
 static std::shared_ptr<nbunny::ReflectionRendererPass> nbunny_reflection_renderer_pass_create(
 	sol::variadic_args args, sol::this_state S)
 {
-	return std::make_shared<nbunny::ReflectionRendererPass>();
+	lua_State *L = S;
+	auto& g_buffer = sol::stack::get<nbunny::GBuffer&>(L, 2);
+	return std::make_shared<nbunny::ReflectionRendererPass>(g_buffer);
 }
 
 extern "C"

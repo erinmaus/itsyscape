@@ -24,16 +24,25 @@ namespace nbunny
 	{
 	private:
 		GBuffer reflection_buffer;
+		GBuffer& g_buffer;
 
 		std::vector<SceneNode*> reflective_or_refractive_scene_nodes;
+		std::vector<SceneNode*> translucent_scene_nodes;
 
 		void walk_all_nodes(SceneNode& node, float delta);
 		void draw_nodes(lua_State* L, float delta);
 
-		void copy_depth_buffer();
+		void copy_g_buffer();
 
 	public:
-		ReflectionRendererPass();
+		enum
+		{
+			REFLECTION_PROPERTIES_INDEX = 1,
+			POSITION_INDEX              = 2,
+			NORMALS_INDEX               = 3
+		};
+
+		ReflectionRendererPass(GBuffer& g_buffer);
 		~ReflectionRendererPass() = default;
 
 		GBuffer& get_r_buffer();

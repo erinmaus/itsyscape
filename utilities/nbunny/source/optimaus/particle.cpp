@@ -1092,16 +1092,21 @@ void nbunny::ParticleSceneNode::frame(float delta, float time_delta)
 	}
 
 	update(time_delta);
+	is_pending = true;
 }
 
 void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 {
-	auto self_rotation = get_global_rotation(delta);
-	build(
-		glm::conjugate(renderer.get_camera().get_rotation() * self_rotation),
-		self_rotation,
-		renderer.get_camera().get_view(),
-		delta);
+	if (is_pending)
+	{
+		auto self_rotation = get_global_rotation(delta);
+		build(
+			glm::conjugate(renderer.get_camera().get_rotation() * self_rotation),
+			self_rotation,
+			renderer.get_camera().get_view(),
+			delta);
+		is_pending = false;
+	}
 
 	if (!mesh)
 	{

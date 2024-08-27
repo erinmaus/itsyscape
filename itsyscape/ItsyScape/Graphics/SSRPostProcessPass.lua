@@ -41,7 +41,6 @@ function SSRPostProcessPass:draw(width, height)
 
     love.graphics.clear(0, 0, 0, 0)
 
-    local deferredRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_DEFERRED)
     local reflectionRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_REFLECTION)
     local projection, view = self:getRenderer():getCamera():getTransforms()
 
@@ -50,8 +49,8 @@ function SSRPostProcessPass:draw(width, height)
         "scape_Projection", projection,
         "scape_View", view,
         "scape_TexelSize", { 1 / width, 1 / height },
-        "scape_NormalTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_OUTLINE_INDEX),
-        "scape_PositionTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.POSITION_INDEX),
+        "scape_NormalTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.NORMAL_INDEX),
+        "scape_PositionTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.POSITION_INDEX),
         "scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX),
         "scape_ColorTexture", self:getRenderer():getOutputBuffer():getColor())
     love.graphics.draw(self:getRenderer():getOutputBuffer():getColor())

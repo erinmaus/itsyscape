@@ -36,15 +36,6 @@ namespace nbunny
 
 		ShadowRendererPass* shadow_pass = nullptr;
 
-		enum
-		{
-			COLOR_INDEX          = 1,
-			POSITION_INDEX       = 2,
-			NORMAL_OUTLINE_INDEX = 3,
-			SPECULAR_INDEX       = 4,
-			OUTLINE_COLOR_INDEX  = 5
-		};
-
 		std::vector<SceneNode*> drawable_scene_nodes;
 		std::vector<LightSceneNode*> light_scene_nodes;
 		std::vector<FogSceneNode*> fog_scene_nodes;
@@ -71,6 +62,15 @@ namespace nbunny
 		love::graphics::Shader* get_builtin_shader(lua_State* L, int builtin_id, const std::string& filename, bool is_light = true);
 
 	public:
+		enum
+		{
+			COLOR_INDEX          = 1,
+			POSITION_INDEX       = 2,
+			NORMAL_OUTLINE_INDEX = 3,
+			SPECULAR_INDEX       = 4,
+			OUTLINE_COLOR_INDEX  = 5
+		};
+
 		enum
 		{
 			BUILTIN_SHADER_DEFAULT           = -1,
