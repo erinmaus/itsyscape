@@ -71,10 +71,10 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 	love::math::Transform view(love::Matrix4(glm::value_ptr(camera.get_view())));
 	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
 
-	// if (reflective_or_refractive_scene_nodes.size() == 0)
-	// {
-	// 	return;
-	// }
+	if (reflective_or_refractive_scene_nodes.size() == 0)
+	{
+		return;
+	}
 
 	copy_g_buffer();
 
@@ -109,8 +109,8 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 			love::graphics::OptionalColorf(),
 			love::graphics::OptionalColorf()
 		},
-		0,
-		1.0f);
+		love::OptionalInt(),
+		love::OptionalDouble());
 
 	for (auto& scene_node: reflective_or_refractive_scene_nodes)
 	{
@@ -242,6 +242,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_reflectionrendererpass(lua_State* L)
 	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ReflectionRendererPass>("NReflectionRendererPass",
 		sol::base_classes, sol::bases<nbunny::RendererPass>(),
 		"getRBuffer", &nbunny::ReflectionRendererPass::get_r_buffer,
+		"getHasReflections", &nbunny::ReflectionRendererPass::get_has_reflections,
 		sol::call_constructor, sol::factories(&nbunny_reflection_renderer_pass_create));
 
 	sol::stack::push(L, T);

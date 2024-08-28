@@ -629,7 +629,10 @@ function GameView:updateGroundDecorations(m)
 						sceneNode:getMaterial():setOutlineThreshold(0.5)
 						sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
 
-						if group == Block.GROUP_BENDY then
+						if group == Block.GROUP_SHINY then
+							sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
+							sceneNode:getMaterial():setReflectionPower(1)
+						elseif group == Block.GROUP_BENDY then
 							local onWillRender
 							onWillRender = sceneNode:onWillRender(function(renderer, delta)
 								if onWillRender then
@@ -1105,7 +1108,7 @@ function GameView:getActorByID(id)
 end
 
 function GameView:removeActor(actor)
-	if self.actors[actor:getID()] then
+	if actor and self.actors[actor:getID()] then
 		self.actors[actor:getID()]:release()
 		self.actors[actor:getID()] = nil
 		self.views[actor] = nil

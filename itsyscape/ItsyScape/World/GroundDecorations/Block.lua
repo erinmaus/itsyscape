@@ -13,6 +13,7 @@ local Block, Metatable = Class()
 
 Block.GROUP_STATIC = "static"
 Block.GROUP_BENDY  = "bendy"
+Block.GROUP_SHINY  = "shiny"
 
 Block.GROUP = Block.GROUP_STATIC
 
