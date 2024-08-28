@@ -40,6 +40,8 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot)
 	vec4 startViewSpace = vec4(surfacePosition, 1.0);
 	vec4 endViewSpace = vec4(surfacePosition + pivot * vec3(scape_MaxDistance), 1.0);
 
+	love_Canvases[1] = vec4(dFdx(startViewSpace.z), dFdy(startViewSpace.z), 0.0, 1.0);
+
 	vec4 startPixel = toPixel(startViewSpace);
 	vec4 endPixel = toPixel(endViewSpace);
 
