@@ -15,23 +15,20 @@ local NGBuffer = require "nbunny.optimaus.gbuffer"
 local SSRPostProcessPass = Class(PostProcessPass)
 SSRPostProcessPass.ID = PostProcessPass.newID()
 
-function SSRPostProcessPass:setRGBCurves(...)
-	self.rgbCurves = { ... }
-end
-
-function SSRPostProcessPass:setHSLCurves(...)
-	self.hslCurves = { ... }
-end
-
 function SSRPostProcessPass:load(resources)
 	PostProcessPass.load(self, resources)
 
 	self.mapTextureCoordinatesShader = self:loadPostProcessShader("MapTextureCoordinatesSSR")
-	self.textureCoordinatesBuffer = NGBuffer("rgba8")
+	self.textureCoordinatesBuffer = NGBuffer("rgba8", "rgba32f")
 end
 
 function SSRPostProcessPass:draw(width, height)
 	PostProcessPass.draw(self, width, height)
+
+    local reflectionRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_REFLECTION)
+    if not reflectionRendererPass:getHandle():getHasReflections() then
+        return
+    end
 
     love.graphics.setBlendMode("alpha", "alphamultiply")
 	love.graphics.setDepthMode("always", false)
@@ -41,9 +38,7 @@ function SSRPostProcessPass:draw(width, height)
 
     love.graphics.clear(0, 0, 0, 0)
 
-    local reflectionRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_REFLECTION)
     local projection, view = self:getRenderer():getCamera():getTransforms()
-
     self:bindShader(self.mapTextureCoordinatesShader,
         "scape_CameraEye", { self:getRenderer():getCamera():getEye():get() },
         "scape_Projection", projection,
@@ -55,10 +50,12 @@ function SSRPostProcessPass:draw(width, height)
         "scape_ColorTexture", self:getRenderer():getOutputBuffer():getColor())
     love.graphics.draw(self:getRenderer():getOutputBuffer():getColor())
 
+    if not love.keyboard.isDown("space") then
     love.graphics.setShader()
 	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
     love.graphics.setBlendMode("alpha", "premultiplied")
 	love.graphics.draw(self.textureCoordinatesBuffer:getCanvas(1))
+    end
 end
 
 return SSRPostProcessPass

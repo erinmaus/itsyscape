@@ -15,6 +15,8 @@ local Block = require "ItsyScape.World.GroundDecorations.Block"
 
 local WoodBlock = Class(Block)
 
+WoodBlock.GROUP = Block.GROUP_SHINY
+
 WoodBlock.TYPE_NONE   = "none"
 WoodBlock.TYPE_SMALL  = "small"
 WoodBlock.TYPE_MEDIUM = "med"

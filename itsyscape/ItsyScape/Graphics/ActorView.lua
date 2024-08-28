@@ -822,6 +822,11 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 				slot.model:getMaterial():setIsFullLit(slot.instance:getIsFullLit())
 				slot.model:getMaterial():setOutlineThreshold(slot.instance:getOutlineThreshold())
 
+				if slot.instance:getIsReflective() then
+					slot.model:getMaterial():setIsReflectiveOrRefractive(true)
+					slot.model:getMaterial():setReflectionPower(1.0)
+				end
+
 				local transform = slot.model:getTransform()
 				transform:setLocalTranslation(slot.instance:getPosition())
 				transform:setLocalScale(slot.instance:getScale())

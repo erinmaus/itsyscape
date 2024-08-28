@@ -7,11 +7,12 @@ uniform vec2 scape_TexelSize;
 uniform mat4 scape_Projection;
 uniform mat4 scape_View;
 
-const float MAX_DISTANCE_VIEW_SPACE = 8.0;
-const float RESOLUTION = 1;
+const float MAX_DISTANCE_VIEW_SPACE = 12.0;
+const float RESOLUTION = 0.3;
 const int STEPS = 5;
 const float THICKNESS = 0.05;
 const float MAX_DISTANCE_PIXELS = 256.0;
+const float CLIP_PLANE_Z = 2.0;
 
 vec4 toPixel(vec4 viewPosition)
 {
@@ -31,11 +32,21 @@ vec4 toViewSpace(vec4 worldPosition)
 
 vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot)
 {
+    if (length(surfacePosition) < 0.001)
+    {
+        return vec4(0.0);
+    }
+
     vec4 startViewSpace = vec4(surfacePosition, 1.0);
     vec4 endViewSpace = vec4(surfacePosition + pivot * vec3(MAX_DISTANCE_VIEW_SPACE), 1.0);
 
     vec4 startPixel = toPixel(startViewSpace);
     vec4 endPixel = toPixel(endViewSpace);
+
+    if (endViewSpace.z < CLIP_PLANE_Z)
+    {
+        return vec4(0.0);
+    }
 
     if (startPixel.z < -1.0 || startPixel.z > 1.0 || endPixel.z < -1.0 || endPixel.z > 1.0)
     {
@@ -45,7 +56,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot)
     vec2 delta = endPixel.xy - startPixel.xy;
     float useX = abs(delta.x) >= abs(delta.y) ? 1.0 : 0.0;
     float currentDelta = (useX * abs(delta.x) + (1.0 - useX) * abs(delta.y)) * RESOLUTION;
-    vec2 increment = delta / max(currentDelta, 0.001);
+    vec2 increment = delta / clamp(currentDelta, 0.001, MAX_DISTANCE_PIXELS);
 
     float searchMiss = 0.0;
     float searchHit = 0.0;
@@ -110,8 +121,10 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot)
         float alpha1 = 1.0 - clamp(depth / THICKNESS, 0.0, 1.0);
         float alpha2 = length(localPosition.xyz - surfacePosition) / MAX_DISTANCE_VIEW_SPACE;
         float alpha3 = 1.0 - max(dot(-surfaceViewSpaceNormal, pivot), 0.0);
+        float alpha4 = min(mod(localTextureCoordinate.x, 0.5) / (32.0 * scape_TexelSize.x), 1.0);
+        float alpha5 = min(mod(localTextureCoordinate.y, 0.5) / (32.0 * scape_TexelSize.y), 1.0);
 
-        return vec4(localTextureCoordinate.xy, 0.0, alpha1 * alpha2 * alpha3);
+        return vec4(localTextureCoordinate.xy, 0.0, alpha1 * alpha2 * alpha3 * alpha4 * alpha5);
     }
     else
     {
@@ -132,5 +145,5 @@ void effect()
 
     vec3 reflectionPivot = normalize(reflect(surfaceViewSpaceNormal, normal));
     vec4 reflectionResult = ssr(viewPosition, surfaceViewSpaceNormal, reflectionPivot);
-    love_Canvases[0] = vec4(Texel(scape_ColorTexture, reflectionResult.xy).rgb, reflectionResult.a);
+    love_Canvases[0] = vec4(Texel(scape_ColorTexture, reflectionResult.xy).rgb, reflectionResult.a * reflectionProperties.x);
 }
