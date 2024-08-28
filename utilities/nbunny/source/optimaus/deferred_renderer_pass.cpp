@@ -474,7 +474,7 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->clear(
 		{
 			love::Colorf(clear_color.x, clear_color.y, clear_color.z, clear_color.w),
-			love::Colorf(0.0, 0.0, 0.0, 0.0),
+			love::Colorf(0.0, 0.0, 0.0, 1.0),
 			love::Colorf(0.0, 0.0, 0.0, 1.0),
 			love::Colorf(0.0, 0.0, 0.0, 0.0),
 			love::Colorf(0.0, 0.0, 0.0, 1.0)
@@ -492,6 +492,13 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		{
 			*outline_threshold->floats = scene_node->get_material().get_outline_threshold();
 			shader->updateUniform(outline_threshold, 1);
+		}
+
+		auto reflection_thickness_uniform = shader->getUniformInfo("scape_ReflectionThickness");
+		if (reflection_thickness_uniform)
+		{
+			*reflection_thickness_uniform->floats = scene_node->get_material().get_ratio_index_of_refraction();
+			shader->updateUniform(reflection_thickness_uniform, 1);
 		}
 	
 		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);

@@ -1,16 +1,21 @@
+#line 1
 uniform Image scape_NormalTexture;
 uniform Image scape_PositionTexture;
 uniform Image scape_ReflectionPropertiesTexture;
 uniform Image scape_ColorTexture;
 uniform vec2 scape_TexelSize;
-
 uniform mat4 scape_Projection;
 uniform mat4 scape_View;
+uniform vec3 scape_CameraDirection;
 
-float scape_MaxDistance = 14.0;
+const float MAX_DISTANCE_VIEW_SPACE = 14.0;
 const float RESOLUTION = 1;
-const int STEPS = 60;
-const float THICKNESS = 0.37;
+const float MIN_STEPS = 10;
+const float MAX_STEPS = 60;
+// const float THICKNESS = 0.37;
+//const float THICKNESS = 1.0; // boats in water
+//uniform float THICKNESS;
+const float THICKNESS = 0.11; // players
 const float MAX_DISTANCE_PIXELS = 256.0;
 const float CLIP_PLANE_Z = 2.0;
 
@@ -38,9 +43,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot)
 	}
 
 	vec4 startViewSpace = vec4(surfacePosition, 1.0);
-	vec4 endViewSpace = vec4(surfacePosition + pivot * vec3(scape_MaxDistance), 1.0);
-
-	love_Canvases[1] = vec4(dFdx(startViewSpace.z), dFdy(startViewSpace.z), 0.0, 1.0);
+	vec4 endViewSpace = vec4(surfacePosition + pivot * vec3(MAX_DISTANCE_VIEW_SPACE), 1.0);
 
 	vec4 startPixel = toPixel(startViewSpace);
 	vec4 endPixel = toPixel(endViewSpace);
@@ -96,7 +99,8 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot)
 	}
 	searchHit = searchMiss + ((searchHit - searchMiss) / 2.0);
 
-	int steps = int(float(STEPS) * hitFirstPass);
+	float stepsEstimate = mix(MIN_STEPS, MAX_STEPS, clamp(length(localPosition.xyz - surfacePosition) / MAX_DISTANCE_VIEW_SPACE, 0.0, 1.0));
+	int steps = int(hitFirstPass * stepsEstimate);
 	for(int i = 0; i < steps; ++i)
 	{
 		vec2 currentFragment = mix(startPixel.xy, endPixel.xy, searchHit);
@@ -118,17 +122,19 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot)
 		}
 	}
 
+	love_Canvases[1] = vec4(vec3(steps), 1.0);
+
 	if (hitSecondPass >= 1.0 && localTextureCoordinate.x >= 0.0 && localTextureCoordinate.x <= 1.0 && localTextureCoordinate.y >= 0.0 && localTextureCoordinate.y <= 1.0)
 	{
 		float alpha1 = 1.0 - clamp(depth / THICKNESS, 0.0, 1.0);
-		float alpha2 = 1.0 - min(length(localPosition.xyz - surfacePosition) / scape_MaxDistance, 1);
+		float alpha2 = 1.0 - min(length(localPosition.xyz - surfacePosition) / MAX_DISTANCE_VIEW_SPACE, 1);
 		float alpha3 = 1.0 - max(dot(-surfaceViewSpaceNormal, pivot), 0.0);
 		float alpha4 = min((1.0 - localTextureCoordinate.x) / (16.0 * scape_TexelSize.x), 1.0);
 		float alpha5 = min(localTextureCoordinate.x / (16.0 * scape_TexelSize.x), 1.0);
 		float alpha6 = min((1.0 - localTextureCoordinate.y) / (16.0 * scape_TexelSize.y), 1.0);
 		float alpha7 = min(localTextureCoordinate.y / (16.0 * scape_TexelSize.y), 1.0);
 
-		return vec4(localTextureCoordinate.xy, 0.0, alpha1 * alpha2 * alpha3 * alpha4 * alpha5 * alpha6 * alpha7);
+		return vec4(localTextureCoordinate.xy, 1.0, alpha1 * alpha2 * alpha3 * alpha4 * alpha5 * alpha6 * alpha7);
 	}
 	else
 	{
@@ -143,11 +149,17 @@ void effect()
 	vec4 reflectionProperties = Texel(scape_ReflectionPropertiesTexture, textureCoordinate);
 	vec3 worldPosition = Texel(scape_PositionTexture, textureCoordinate).xyz;
 	vec3 viewPosition = toViewSpace(vec4(worldPosition.xyz, 1.0)).xyz;
-	vec3 surfaceViewSpaceNormal = normalize(viewPosition.xyz);
+	vec3 surfaceViewSpaceNormal = normalize(viewPosition);
 	vec3 normal = normalize(Texel(scape_NormalTexture, textureCoordinate).xyz);
 	normal = normalize(inverse(transpose(mat3(scape_View))) * normal);
 
 	vec3 reflectionPivot = normalize(reflect(surfaceViewSpaceNormal, normal));
 	vec4 reflectionResult = ssr(viewPosition, surfaceViewSpaceNormal, reflectionPivot);
-	love_Canvases[0] = vec4(Texel(scape_ColorTexture, reflectionResult.xy).rgb, reflectionResult.a * reflectionProperties.x);
+	//reflectionResult.a *= 1.0 - max((abs(dot(scape_CameraDirection, surfaceViewSpaceNormal)) - 0.75) / 0.25, 0.0);
+	float reflectionAlpha = min(min(dFdx(reflectionResult.a) + reflectionResult.a, dFdy(reflectionResult.a) + reflectionResult.a), reflectionResult.a);
+	love_Canvases[0] = vec4(reflectionResult.xy, reflectionResult.a * reflectionAlpha * reflectionProperties.x, 1.0);
+	//love_Canvases[1] = vec4(dot(-surfaceViewSpaceNormal, reflectionPivot), dot(surfaceViewSpaceNormal, normal), dot(surfaceViewSpaceNormal, normalize(cross(reflectionPivot, normal))), 1.0);
+	love_Canvases[1] = vec4(dot(scape_CameraDirection, reflectionPivot), dot(scape_CameraDirection, normal), 0.0, 1.0);
+	//love_Canvases[1] = vec4(dFdx(reflectionResult.a) + reflectionResult.a, dFdy(reflectionResult.a) + reflectionResult.a, reflectionResult.a, 1.0);
+	//love_Canvases[0] = vec4(Texel(scape_ColorTexture, reflectionResult.xy).rgb, reflectionAlpha * reflectionProperties.x);
 }
