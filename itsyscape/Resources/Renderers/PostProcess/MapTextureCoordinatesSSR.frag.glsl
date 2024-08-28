@@ -11,7 +11,7 @@ uniform vec3 scape_CameraDirection;
 const float MAX_DISTANCE_VIEW_SPACE = 14.0;
 const float RESOLUTION = 1;
 const float MIN_STEPS = 10;
-const float MAX_STEPS = 60;
+const float MAX_STEPS = 80;
 // const float THICKNESS = 0.37;
 //const float THICKNESS = 1.0; // boats in water
 //uniform float THICKNESS;
@@ -122,7 +122,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot)
 		}
 	}
 
-	love_Canvases[1] = vec4(vec3(steps), 1.0);
+	love_Canvases[1] = vec4(stepsEstimate, 0.0, 0.0, 1.0);
 
 	if (hitSecondPass >= 1.0 && localTextureCoordinate.x >= 0.0 && localTextureCoordinate.x <= 1.0 && localTextureCoordinate.y >= 0.0 && localTextureCoordinate.y <= 1.0)
 	{
@@ -159,7 +159,7 @@ void effect()
 	float reflectionAlpha = min(min(dFdx(reflectionResult.a) + reflectionResult.a, dFdy(reflectionResult.a) + reflectionResult.a), reflectionResult.a);
 	love_Canvases[0] = vec4(reflectionResult.xy, reflectionResult.a * reflectionAlpha * reflectionProperties.x, 1.0);
 	//love_Canvases[1] = vec4(dot(-surfaceViewSpaceNormal, reflectionPivot), dot(surfaceViewSpaceNormal, normal), dot(surfaceViewSpaceNormal, normalize(cross(reflectionPivot, normal))), 1.0);
-	love_Canvases[1] = vec4(dot(scape_CameraDirection, reflectionPivot), dot(scape_CameraDirection, normal), 0.0, 1.0);
+	//love_Canvases[1] = vec4(dot(scape_CameraDirection, reflectionPivot), dot(scape_CameraDirection, normal), 0.0, 1.0);
 	//love_Canvases[1] = vec4(dFdx(reflectionResult.a) + reflectionResult.a, dFdy(reflectionResult.a) + reflectionResult.a, reflectionResult.a, 1.0);
 	//love_Canvases[0] = vec4(Texel(scape_ColorTexture, reflectionResult.xy).rgb, reflectionAlpha * reflectionProperties.x);
 }
