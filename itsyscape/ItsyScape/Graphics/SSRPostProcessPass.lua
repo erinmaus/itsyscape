@@ -25,37 +25,37 @@ end
 function SSRPostProcessPass:draw(width, height)
 	PostProcessPass.draw(self, width, height)
 
-    local reflectionRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_REFLECTION)
-    if not reflectionRendererPass:getHandle():getHasReflections() then
-        return
-    end
+	local reflectionRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_REFLECTION)
+	if not reflectionRendererPass:getHandle():getHasReflections() then
+		return
+	end
 
-    love.graphics.setBlendMode("alpha", "alphamultiply")
+	love.graphics.setBlendMode("alpha", "alphamultiply")
 	love.graphics.setDepthMode("always", false)
 
-    self.textureCoordinatesBuffer:resize(width, height)
-    self.textureCoordinatesBuffer:use()
+	self.textureCoordinatesBuffer:resize(width, height)
+	self.textureCoordinatesBuffer:use()
 
-    love.graphics.clear(0, 0, 0, 0)
+	love.graphics.clear(0, 0, 0, 0)
 
-    local projection, view = self:getRenderer():getCamera():getTransforms()
-    self:bindShader(self.mapTextureCoordinatesShader,
-        "scape_CameraEye", { self:getRenderer():getCamera():getEye():get() },
-        "scape_Projection", projection,
-        "scape_View", view,
-        "scape_TexelSize", { 1 / width, 1 / height },
-        "scape_NormalTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.NORMAL_INDEX),
-        "scape_PositionTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.POSITION_INDEX),
-        "scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX),
-        "scape_ColorTexture", self:getRenderer():getOutputBuffer():getColor())
-    love.graphics.draw(self:getRenderer():getOutputBuffer():getColor())
+	local projection, view = self:getRenderer():getCamera():getTransforms()
+	self:bindShader(self.mapTextureCoordinatesShader,
+		"scape_CameraEye", { self:getRenderer():getCamera():getEye():get() },
+		"scape_Projection", projection,
+		"scape_View", view,
+		"scape_TexelSize", { 1 / width, 1 / height },
+		"scape_NormalTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.NORMAL_INDEX),
+		"scape_PositionTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.POSITION_INDEX),
+		"scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX),
+		"scape_ColorTexture", self:getRenderer():getOutputBuffer():getColor())
+	love.graphics.draw(self:getRenderer():getOutputBuffer():getColor())
 
-    if not love.keyboard.isDown("space") then
-    love.graphics.setShader()
+	if not love.keyboard.isDown("space") then
+	love.graphics.setShader()
 	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
-    love.graphics.setBlendMode("alpha", "premultiplied")
+	love.graphics.setBlendMode("alpha", "premultiplied")
 	love.graphics.draw(self.textureCoordinatesBuffer:getCanvas(1))
-    end
+	end
 end
 
 return SSRPostProcessPass

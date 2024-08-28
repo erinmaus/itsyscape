@@ -35,6 +35,8 @@ function WaterMeshSceneNode:new()
 	self.depth = 0
 
 	self:getMaterial():setShader(WaterMeshSceneNode.DEFAULT_SHADER)
+	self:getMaterial():setIsReflectiveOrRefractive(true)
+	self:getMaterial():setReflectionPower(1.0)
 end
 
 function WaterMeshSceneNode:getYOffset()
@@ -124,6 +126,10 @@ function WaterMeshSceneNode:draw(renderer, delta)
 
 	if shader:hasUniform("scape_YOffset") then
 		shader:send("scape_YOffset", self.yOffset)
+	end
+
+	if shader:hasUniform("scape_XZScale") then
+		shader:send("scape_XZScale", self.waterMesh and self.waterMesh:getScale() or 4)
 	end
 
 	if self.waterMesh then
