@@ -89,6 +89,7 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->setColorMask(enabled_mask);
 
 	reflection_buffer.use();
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
 
 	for (auto& scene_node: translucent_scene_nodes)
 	{
@@ -98,6 +99,13 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 			continue;
 		}
 		renderer->set_current_shader(shader);
+
+		auto reflection_thickness_uniform = shader->getUniformInfo("scape_ReflectionThickness");
+		if (reflection_thickness_uniform)
+		{
+			*reflection_thickness_uniform->floats = scene_node->get_material().get_ratio_index_of_refraction();
+			shader->updateUniform(reflection_thickness_uniform, 1);
+		}
 
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);	
 		renderer->draw_node(L, *scene_node, delta);
