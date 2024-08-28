@@ -28,6 +28,10 @@ function WaterMesh:new(width, height, scale)
 	self:_buildMesh()
 end
 
+function WaterMesh:getScale()
+	return self.scale
+end
+
 function WaterMesh:release()
 	self.mesh:release()
 	self.mesh = false
