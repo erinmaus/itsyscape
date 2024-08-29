@@ -103,7 +103,7 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 		auto reflection_thickness_uniform = shader->getUniformInfo("scape_ReflectionThickness");
 		if (reflection_thickness_uniform)
 		{
-			*reflection_thickness_uniform->floats = scene_node->get_material().get_ratio_index_of_refraction();
+			*reflection_thickness_uniform->floats = scene_node->get_material().get_reflection_distance();
 			shader->updateUniform(reflection_thickness_uniform, 1);
 		}
 
@@ -133,7 +133,7 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
         if (reflection_properties_uniform)
         {
             const auto& material = scene_node->get_material();
-            auto properties = glm::vec3(material.get_reflection_power(), material.get_ratio_index_of_refraction(), material.get_roughness());
+            auto properties = glm::vec3(material.get_reflection_power(), material.get_reflection_distance(), material.get_roughness());
             std::memcpy(reflection_properties_uniform->floats, glm::value_ptr(properties), sizeof(glm::vec3));
             shader->updateUniform(reflection_properties_uniform, 1);
         }
