@@ -76,28 +76,7 @@ function GameView:new(game, camera)
 	self.resourceManager = ResourceManager()
 	self.spriteManager = SpriteManager(self.resourceManager)
 
-	self.renderer = Renderer({
-		shadows = _CONF and _CONF.shadows
-	})
-
-	self.sceneOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
-	self.sceneOutlinePostProcessPass:load(self.resourceManager)
-
-	self.ssrPostProcessPass = SSRPostProcessPass(self.renderer)
-	self.ssrPostProcessPass:load(self.resourceManager)
-
-	self.skyboxOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
-	self.skyboxOutlinePostProcessPass:load(self.resourceManager)
-	self.skyboxOutlinePostProcessPass:setMinOutlineThickness(3)
-	self.skyboxOutlinePostProcessPass:setMaxOutlineThickness(3)
-	self.skyboxOutlinePostProcessPass:setNearOutlineDistance(0)
-	self.skyboxOutlinePostProcessPass:setFarOutlineDistance(1000)
-	self.skyboxOutlinePostProcessPass:setMinOutlineDepthAlpha(1)
-	self.skyboxOutlinePostProcessPass:setMaxOutlineDepthAlpha(1)
-	self.skyboxOutlinePostProcessPass:setOutlineFadeDepth(1000)
-
-	self.toneMapPostProcessPass = ToneMapPostProcessPass(self.renderer)
-	self.toneMapPostProcessPass:load(self.resourceManager)
+	self:initRenderer()
 
 	self.itemBagModel = self.resourceManager:load(
 		ModelResource,
@@ -165,6 +144,37 @@ end
 
 function GameView:getCamera()
 	return self.camera
+end
+
+function GameView:initRenderer(conf)
+	self.renderer = Renderer({
+		shadows = conf and conf.shadows,
+		outlines = conf and conf.outlines,
+		reflections = conf and conf.reflections
+	})
+	self.renderer:setCamera(self.camera)
+
+	self.sceneOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
+	self.sceneOutlinePostProcessPass:load(self.resourceManager)
+
+	self.ssrPostProcessPass = SSRPostProcessPass(self.renderer)
+	self.ssrPostProcessPass:load(self.resourceManager)
+	self.ssrPostProcessPass:setMinMaxSecondPassSteps(_CONF.ssrMinSecondPassSteps, _CONF.ssrMaxSecondPassSteps)
+	self.ssrPostProcessPass:setMaxFirstPassSteps(_CONF.ssrMaxFirstPassSteps)
+	self.ssrPostProcessPass:setMaxDistanceViewSpace(_CONF.ssrMaxDistanceViewSpace)
+
+	self.skyboxOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
+	self.skyboxOutlinePostProcessPass:load(self.resourceManager)
+	self.skyboxOutlinePostProcessPass:setMinOutlineThickness(3)
+	self.skyboxOutlinePostProcessPass:setMaxOutlineThickness(3)
+	self.skyboxOutlinePostProcessPass:setNearOutlineDistance(0)
+	self.skyboxOutlinePostProcessPass:setFarOutlineDistance(1000)
+	self.skyboxOutlinePostProcessPass:setMinOutlineDepthAlpha(1)
+	self.skyboxOutlinePostProcessPass:setMaxOutlineDepthAlpha(1)
+	self.skyboxOutlinePostProcessPass:setOutlineFadeDepth(1000)
+
+	self.toneMapPostProcessPass = ToneMapPostProcessPass(self.renderer)
+	self.toneMapPostProcessPass:load(self.resourceManager)
 end
 
 function GameView:attach(game)
@@ -1979,6 +1989,8 @@ function GameView:dirty()
 	for _, actor in pairs(self.actors) do
 		actor:dirty()
 	end
+
+	self:initRenderer(_CONF)
 end
 
 function GameView:dumpStatsToCSV()

@@ -237,6 +237,27 @@ function love.keypressed(...)
 			_APP.show3D = not _APP.show3D
 		elseif (select(1, ...) == 'f5') then
 			itsyrealm.graphics.disable()
+		elseif (select(1, ...) == "f6") then
+			local file = love.filesystem.read("settings.cfg")
+			if file then
+				local r, e = loadstring('return ' .. file)
+				if r then
+					r, e = pcall(r)
+					if r then
+						_CONF = e
+						_DEBUG = _CONF.debug
+
+						love.window.setMode(_CONF.width, _CONF.height, {
+							fullscreen = _CONF.fullscreen,
+							vsync = _CONF.vsync,
+							display = _CONF.display
+						})
+
+						itsyrealm.graphics.dirty()
+						_APP:getGameView():dirty()
+					end
+				end
+			end
 		end
 	end
 end

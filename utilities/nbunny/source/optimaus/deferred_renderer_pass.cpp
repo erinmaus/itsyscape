@@ -96,20 +96,6 @@ void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNo
 
 	ambient_light += light.ambient_coefficient;
 
-	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
-	if (color_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(COLOR_INDEX));
-		shader->sendTextures(color_texture_uniform, &texture, 1);
-	}
-
-	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
-	if (position_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
-		shader->sendTextures(position_texture_uniform, &texture, 1);    
-	}
-
 	auto light_ambient_coefficient_uniform = shader->getUniformInfo("scape_LightAmbientCoefficient");
 	if (light_ambient_coefficient_uniform)
 	{
@@ -205,6 +191,13 @@ void nbunny::DeferredRendererPass::draw_point_light(lua_State* L, LightSceneNode
 
 	Light light;
 	node.to_light(light, delta);
+
+	auto specular_texture_uniform = shader->getUniformInfo("scape_SpecularTexture");
+	if (specular_texture_uniform)
+	{
+		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(SPECULAR_INDEX));
+		shader->sendTextures(specular_texture_uniform, &texture, 1);    
+	}
 
 	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
 	if (position_texture_uniform)
@@ -477,7 +470,7 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 			love::Colorf(0.0, 0.0, 0.0, 1.0),
 			love::Colorf(0.0, 0.0, 0.0, 1.0),
 			love::Colorf(0.0, 0.0, 0.0, 0.0),
-			love::Colorf(0.0, 0.0, 0.0, 1.0)
+			love::Colorf(0.0, 0.0, 0.0, 0.0)
 		},
 		0,
 		1.0f);

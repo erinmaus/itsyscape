@@ -23,8 +23,47 @@ function SSRPostProcessPass:load(resources)
 	self.combineShader = self:loadPostProcessShader("CombineSSR")
 	self.blurShader = self:loadPostProcessShader("Blur")
 
-	self.textureCoordinatesBuffer = NGBuffer("rgba16f", "rgba16f")
+	self.textureCoordinatesBuffer = NGBuffer("rgba16f")
 	self.colorBuffer = NGBuffer("rgba8", "rgba8", "rgba8")
+
+	self.minSecondPassSteps = 20
+	self.maxSecondPassSteps = 120
+	self.maxFirstPassSteps = 180
+	self.resolution = 0.5
+	self.maxDistanceViewSpace = 14
+end
+
+function SSRPostProcessPass:setMinMaxSecondPassSteps(min, max)
+	self.minSecondPassSteps = math.min(min or self.minSecondPassSteps, max or self.minSecondPassSteps)
+	self.maxSecondPassSteps = math.max(min or self.maxSecondPassSteps, max or self.maxSecondPassSteps)
+end
+
+function SSRPostProcessPass:getMinMaxSecondPassSteps()
+	return self.minSecondPassSteps, self.maxSecondPassSteps
+end
+
+function SSRPostProcessPass:setMaxFirstPassSteps(value)
+	self.maxFirstPassSteps = value or self.maxFirstPassSteps
+end
+
+function SSRPostProcessPass:getMaxFirstPassSteps()
+	return self.maxFirstPassSteps
+end
+
+function SSRPostProcessPass:setResolution(value)
+	self.resolution = value or self.resolution
+end
+
+function SSRPostProcessPass:getResolution()
+	return self.resolution
+end
+
+function SSRPostProcessPass:setMaxDistanceViewSpace(value)
+	self.maxDistanceViewSpace = value or self.maxDistanceViewSpace
+end
+
+function SSRPostProcessPass:getMaxDistanceViewspace()
+	return self.maxDistanceViewSpace
 end
 
 function SSRPostProcessPass:draw(width, height)
@@ -49,6 +88,11 @@ function SSRPostProcessPass:draw(width, height)
 		"scape_Projection", projection,
 		"scape_View", view,
 		"scape_CameraDirection", { cameraDirecion:get() },
+		"scape_MaxDistanceViewSpace", self.maxDistanceViewSpace,
+		"scape_MinSecondPassSteps", self.minSecondPassSteps,
+		"scape_MaxSecondPassSteps", self.maxSecondPassSteps,
+		"scape_MaxFirstPassSteps", self.maxFirstPassSteps,
+		"scape_Resolution", self.resolution,
 		"scape_TexelSize", { 1 / width, 1 / height },
 		"scape_NormalTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.NORMAL_INDEX),
 		"scape_PositionTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.POSITION_INDEX),
@@ -71,6 +115,22 @@ function SSRPostProcessPass:draw(width, height)
 		"scape_TexelSize", { 1 / width, 1 / height },
 		"scape_Direction", { 0, 1 })
 		love.graphics.draw(self.colorBuffer:getCanvas(1))
+		
+	love.graphics.setCanvas(self.colorBuffer:getCanvas(3))
+	love.graphics.clear(0, 0, 0, 0)
+	self:bindShader(
+		self.blurShader,
+		"scape_TexelSize", { 1 / width, 1 / height },
+		"scape_Direction", { 1, 0 })
+	love.graphics.draw(self.colorBuffer:getCanvas(2))
+		
+	love.graphics.setCanvas(self.colorBuffer:getCanvas(2))
+	love.graphics.clear(0, 0, 0, 0)
+	self:bindShader(
+		self.blurShader,
+		"scape_TexelSize", { 1 / width, 1 / height },
+		"scape_Direction", { 0, 1 })
+	love.graphics.draw(self.colorBuffer:getCanvas(3))
 		
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(3))
 	love.graphics.clear(0, 0, 0, 0)

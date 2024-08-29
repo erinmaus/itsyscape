@@ -39,6 +39,7 @@ function ModelSkin:new()
 	self.pathToColor = {}
 	self.bumpHeight = 1
 	self.isReflective = false
+	self.reflectionPower = 0.5
 end
 
 function ModelSkin:getResource()
@@ -236,6 +237,10 @@ function ModelSkin:loadFromFile(filename)
 	if result.isReflective ~= nil then
 		self.isReflective = not not result.isReflective
 	end
+
+	if result.reflectionPower then
+		self.reflectionPower = result.reflectionPower
+	end
 end
 
 -- Gets the model CacheRef.
@@ -316,6 +321,10 @@ end
 
 function ModelSkin:getIsReflective()
 	return self.isReflective
+end
+
+function ModelSkin:getReflectionPower()
+	return self.reflectionPower
 end
 
 function ModelSkin:_getColor(colorName, colors, c)
