@@ -37,6 +37,7 @@ function WaterMeshSceneNode:new()
 	self:getMaterial():setShader(WaterMeshSceneNode.DEFAULT_SHADER)
 	self:getMaterial():setIsReflectiveOrRefractive(true)
 	self:getMaterial():setReflectionPower(1.0)
+	self:getMaterial():setReflectionDistance(0.2)
 end
 
 function WaterMeshSceneNode:getYOffset()

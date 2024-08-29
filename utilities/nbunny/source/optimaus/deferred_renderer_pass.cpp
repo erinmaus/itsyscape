@@ -497,7 +497,7 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		auto reflection_thickness_uniform = shader->getUniformInfo("scape_ReflectionThickness");
 		if (reflection_thickness_uniform)
 		{
-			*reflection_thickness_uniform->floats = scene_node->get_material().get_ratio_index_of_refraction();
+			*reflection_thickness_uniform->floats = scene_node->get_material().get_reflection_distance();
 			shader->updateUniform(reflection_thickness_uniform, 1);
 		}
 	

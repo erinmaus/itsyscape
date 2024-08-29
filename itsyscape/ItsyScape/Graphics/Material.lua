@@ -178,12 +178,12 @@ function Material:setRefractionPower(value)
 	self._handle:setReflectionPower(math.clamp(value, 0, 1) + 1)
 end
 
-function Material:getRatioIndexOfRefraction()
-	return self._handle:getRatioIndexOfRefraction()
+function Material:getReflectionDistance()
+	return self._handle:getReflectionDistance()
 end
 
-function Material:setRatioIndexOfRefraction(value)
-	self._handle:setRatioIndexOfRefraction(value)
+function Material:setReflectionDistance(value)
+	self._handle:setReflectionDistance(value)
 end
 
 function Material:getRoughness()

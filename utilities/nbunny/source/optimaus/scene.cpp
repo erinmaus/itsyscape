@@ -280,14 +280,14 @@ float nbunny::SceneNodeMaterial::get_reflection_power() const
 	return reflection_power;
 }
 
-void nbunny::SceneNodeMaterial::set_ratio_index_of_refraction(float value)
+void nbunny::SceneNodeMaterial::set_reflection_distance(float value)
 {
-	ratio_index_of_refraction = value;	
+	reflection_distance = value;	
 }
 
-float nbunny::SceneNodeMaterial::get_ratio_index_of_refraction() const
+float nbunny::SceneNodeMaterial::get_reflection_distance() const
 {
-	return ratio_index_of_refraction;
+	return reflection_distance;
 }
 
 void nbunny::SceneNodeMaterial::set_roughness(float value)
@@ -1354,8 +1354,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getIsReflectiveOrRefractive", &nbunny::SceneNodeMaterial::get_is_reflective_or_refractive,
 		"setReflectionPower", &nbunny::SceneNodeMaterial::set_reflection_power,
 		"getReflectionPower", &nbunny::SceneNodeMaterial::get_reflection_power,
-		"setRatioIndexOfRefraction", &nbunny::SceneNodeMaterial::set_ratio_index_of_refraction,
-		"getRatioIndexOfRefraction", &nbunny::SceneNodeMaterial::get_ratio_index_of_refraction,
+		"setReflectionDistance", &nbunny::SceneNodeMaterial::set_reflection_distance,
+		"getReflectionDistance", &nbunny::SceneNodeMaterial::get_reflection_distance,
 		"setRoughness", &nbunny::SceneNodeMaterial::set_roughness,
 		"getRoughness", &nbunny::SceneNodeMaterial::get_roughness,
 		"setZBias", &nbunny::SceneNodeMaterial::set_z_bias,
