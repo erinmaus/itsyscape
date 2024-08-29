@@ -5,7 +5,6 @@
 
 uniform float scape_ReflectionThreshold;
 uniform vec3 scape_ReflectionProperties;
-uniform vec4 scape_OutlineColor;
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;

@@ -140,15 +140,13 @@ function SSRPostProcessPass:draw(width, height)
 		"scape_Direction", { 1, 0 })
 	love.graphics.draw(self.colorBuffer:getCanvas(2))
 
-	if not love.keyboard.isDown("space") then
-		love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
-		self:bindShader(self.combineShader,
-			"scape_ClearColorTexture", self.colorBuffer:getCanvas(1),
-			"scape_BlurColorTexture", self.colorBuffer:getCanvas(3),
-			"scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX))
-		love.graphics.setBlendMode("alpha", "premultiplied")
-		love.graphics.draw(self.colorBuffer:getCanvas(1))
-	end
+	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
+	self:bindShader(self.combineShader,
+		"scape_ClearColorTexture", self.colorBuffer:getCanvas(1),
+		"scape_BlurColorTexture", self.colorBuffer:getCanvas(2),
+		"scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX))
+	love.graphics.setBlendMode("alpha", "premultiplied")
+	love.graphics.draw(self.colorBuffer:getCanvas(1))
 end
 
 return SSRPostProcessPass
