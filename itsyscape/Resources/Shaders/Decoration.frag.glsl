@@ -11,5 +11,5 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 void getReflectionProperties(vec2 textureCoordinate, inout float reflectionPower, inout float reflectionDistance, inout float roughness)
 {
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
-	roughness *= 1.0 - Texel(scape_DiffuseTexture, textureCoordinate).r;
+	roughness = 1.0 - Texel(scape_DiffuseTexture, textureCoordinate).r;
 }

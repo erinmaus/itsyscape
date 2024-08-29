@@ -641,7 +641,8 @@ function GameView:updateGroundDecorations(m)
 
 						if group == Block.GROUP_SHINY then
 							sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
-							sceneNode:getMaterial():setReflectionPower(1)
+							sceneNode:getMaterial():setReflectionPower(1.0)
+							sceneNode:getMaterial():setReflectionDistance(0.75)
 							sceneNode:getMaterial():setRoughness(0.5)
 						elseif group == Block.GROUP_BENDY then
 							local onWillRender

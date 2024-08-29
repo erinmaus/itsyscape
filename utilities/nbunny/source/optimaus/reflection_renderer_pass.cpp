@@ -100,16 +100,18 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 		renderer->set_current_shader(shader);
 
-		auto reflection_thickness_uniform = shader->getUniformInfo("scape_ReflectionThickness");
-		if (reflection_thickness_uniform)
+		auto reflection_threshold_uniform = shader->getUniformInfo("scape_ReflectionThreshold");
+		if (reflection_threshold_uniform)
 		{
-			*reflection_thickness_uniform->floats = scene_node->get_material().get_reflection_distance();
-			shader->updateUniform(reflection_thickness_uniform, 1);
+			*reflection_threshold_uniform->floats = 0.0;
+			shader->updateUniform(reflection_threshold_uniform, 1);
 		}
 
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);	
 		renderer->draw_node(L, *scene_node, delta);
 	}
+
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
 	graphics->clear(
 		{
@@ -128,6 +130,13 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 			continue;
 		}
 		renderer->set_current_shader(shader);
+
+		auto reflection_threshold_uniform = shader->getUniformInfo("scape_ReflectionThreshold");
+		if (reflection_threshold_uniform)
+		{
+			*reflection_threshold_uniform->floats = scene_node->get_material().get_reflection_distance();
+			shader->updateUniform(reflection_threshold_uniform, 1);
+		}
 
         auto reflection_properties_uniform = shader->getUniformInfo("scape_ReflectionProperties");
         if (reflection_properties_uniform)

@@ -8,6 +8,6 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
     vec4 clearColorSample = Texel(scape_ClearColorTexture, textureCoordinate);
     vec4 blurColorSample = Texel(scape_BlurColorTexture, textureCoordinate);
     
-    vec3 mixedColorSample = mix(clearColorSample.rgb, blurColorSample.rgb, roughness) * vec3(clearColorSample.a);
-    return vec4(mixedColorSample, blurColorSample.a);
+    vec3 mixedColorSample = mix(clearColorSample.rgb, blurColorSample.rgb, roughness);
+    return vec4(mixedColorSample, max(clearColorSample.a, blurColorSample.a));
 }
