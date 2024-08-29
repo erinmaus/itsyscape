@@ -53,8 +53,12 @@ function Renderer:new(conf)
 
 	local shadowsEnabled = not conf or (conf.shadows == nil or conf.shadows == true or (type(conf.shadows) == "number" and conf.shadows >= 1))
 	local shadowQuality = shadowsEnabled and ((conf and type(conf.shadows) == "number" and conf.shadows >= 1 and math.floor(conf.shadows)) or nil)
+	local outlinesEnabled = not conf or (conf.outlines == nil or not not conf.outlines)
+	local reflectionsEnabled = not conf or (conf.reflections == nil or not not conf.reflections)
 
-	self.shadowPass = shadowsEnabled and ShadowRendererPass(self, shadowQuality) or nil
+	Log.info("Created renderer (shadows = %s, outlines = %s, reflections = %s).", shadowsEnabled, outlinesEnabled, reflectionsEnabled)
+
+	self.shadowPass = ShadowRendererPass(self, shadowQuality)
 	self.outlinePass = OutlineRendererPass(self)
 	self.finalDeferredPass = DeferredRendererPass(self, self.shadowPass)
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
@@ -62,7 +66,7 @@ function Renderer:new(conf)
 	self.particleOutlinePass = ParticleOutlineRendererPass(self, self.finalDeferredPass:getHandle():getDepthBuffer())
 	self.reflectionPass = ReflectionRendererPass(self, self.finalDeferredPass:getHandle():getGBuffer())
 	self.passesByID = {
-		[shadowsEnabled and self.shadowPass:getID() or 0] = self.shadowPass,
+		[self.shadowPass:getID()] = self.shadowPass,
 		[self.outlinePass:getID()] = self.outlinePass,
 		[self.finalDeferredPass:getID()] = self.finalDeferredPass,
 		[self.finalForwardPass:getID()] = self.finalForwardPass,
@@ -75,12 +79,18 @@ function Renderer:new(conf)
 		self._renderer:addRendererPass(self.shadowPass:getHandle())
 	end
 
-	self._renderer:addRendererPass(self.outlinePass:getHandle())
 	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
 	self._renderer:addRendererPass(self.finalForwardPass:getHandle())
-	self._renderer:addRendererPass(self.alphaMaskPass:getHandle())
-	self._renderer:addRendererPass(self.particleOutlinePass:getHandle())
-	self._renderer:addRendererPass(self.reflectionPass:getHandle())
+
+	if outlinesEnabled then
+		self._renderer:addRendererPass(self.outlinePass:getHandle())
+		self._renderer:addRendererPass(self.alphaMaskPass:getHandle())
+		self._renderer:addRendererPass(self.particleOutlinePass:getHandle())
+	end
+
+	if reflectionsEnabled then
+		self._renderer:addRendererPass(self.reflectionPass:getHandle())
+	end
 	
 	self.nodeDebugStats = Renderer.NodeDebugStats()
 	self.passDebugStats = Renderer.PassDebugStats()

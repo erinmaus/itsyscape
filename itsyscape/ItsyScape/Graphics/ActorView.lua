@@ -824,7 +824,7 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 
 				if slot.instance:getIsReflective() then
 					slot.model:getMaterial():setIsReflectiveOrRefractive(true)
-					slot.model:getMaterial():setReflectionPower(1.0)
+					slot.model:getMaterial():setReflectionPower(slot.instance:getReflectionPower())
 				end
 
 				local transform = slot.model:getTransform()
@@ -1368,7 +1368,7 @@ function ActorView:dirty()
 		end
 	end
 
-	for _, model in ipairs(Self.combinedModelSceneNodes) do
+	for _, model in ipairs(self.combinedModelSceneNodes) do
 		model:dirty()
 	end
 end

@@ -8,15 +8,15 @@ uniform mat4 scape_Projection;
 uniform mat4 scape_View;
 uniform vec3 scape_CameraDirection;
 
-const float MAX_DISTANCE_VIEW_SPACE = 14.0;
-const float RESOLUTION = 0.5;
-const float MIN_STEPS = 10.0;
-const float MAX_STEPS = 40.0;
-const float MAX_FIRST_PAST_STEPS = 160;
+uniform float scape_MaxDistanceViewSpace;
+uniform float scape_Resolution;
+uniform float scape_MinSecondPassSteps;
+uniform float scape_MaxSecondPassSteps;
+uniform float scape_MaxFirstPassSteps;
+
 //const float THICKNESS = 1.0; // boats in water
 const float THICKNESS = 0.11; // players / flat npcs
 const float CLIP_PLANE_Z = 2.0;
-const float MAX_DISTANCE_PIXELS = 256.0f;
 
 vec4 toPixel(vec4 viewPosition)
 {
@@ -59,7 +59,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float ma
 
 	vec2 delta = endPixel.xy - startPixel.xy;
 	float useX = abs(delta.x) >= abs(delta.y) ? 1.0 : 0.0;
-	float currentDelta = min((useX * abs(delta.x) + (1.0 - useX) * abs(delta.y)) * RESOLUTION, MAX_FIRST_PAST_STEPS);
+	float currentDelta = min((useX * abs(delta.x) + (1.0 - useX) * abs(delta.y)) * scape_Resolution, scape_MaxFirstPassSteps);
 	vec2 increment = delta / max(currentDelta, 0.001);
 
 	float searchMiss = 0.0;
@@ -98,7 +98,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float ma
 	}
 	searchHit = searchMiss + ((searchHit - searchMiss) / 2.0);
 
-	float stepsEstimate = mix(MIN_STEPS, MAX_STEPS, clamp(length(localPosition.xyz - surfacePosition) / MAX_DISTANCE_VIEW_SPACE, 0.0, 1.0));
+	float stepsEstimate = mix(scape_MinSecondPassSteps, scape_MaxSecondPassSteps, clamp(length(localPosition.xyz - surfacePosition) / scape_MaxDistanceViewSpace, 0.0, 1.0));
 	int steps = int(hitFirstPass * stepsEstimate);
 	for(int i = 0; i < steps; ++i)
 	{
@@ -157,7 +157,7 @@ void effect()
 	normal = normalize(inverse(transpose(mat3(scape_View))) * normal);
 
 	vec3 reflectionPivot = normalize(reflect(surfaceViewSpaceNormal, normal));
-	vec4 reflectionResult = ssr(viewPosition, surfaceViewSpaceNormal, reflectionPivot, reflectionProperties.y * MAX_DISTANCE_VIEW_SPACE);
+	vec4 reflectionResult = ssr(viewPosition, surfaceViewSpaceNormal, reflectionPivot, reflectionProperties.y * scape_MaxDistanceViewSpace);
 	float reflectionAlpha = min(min(dFdx(reflectionResult.a) + reflectionResult.a, dFdy(reflectionResult.a) + reflectionResult.a), reflectionResult.a);
 	love_Canvases[0] = vec4(reflectionResult.xy, reflectionResult.a * reflectionAlpha * reflectionProperties.x, 1.0);
 }

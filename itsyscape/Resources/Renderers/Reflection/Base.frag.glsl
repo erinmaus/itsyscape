@@ -19,6 +19,10 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 vec4 performEffect(vec4 color, vec2 textureCoordinate);
 #endif
 
+#ifdef SCAPE_REFLECTION_PASS_CUSTOM_REFLECTION_PROPERTIES
+void getReflectionProperties(vec2 textureCoordinate, inout float reflectionPower, inout float reflectionDistance, inout float roughness);
+#endif
+
 void effect()
 {
 #ifdef SCAPE_LIGHT_MODEL_V2
@@ -42,7 +46,7 @@ void effect()
     vec3 reflectionProperties = scape_ReflectionProperties;
 
 #ifdef SCAPE_REFLECTION_PASS_CUSTOM_REFLECTION_PROPERTIES
-	getReflectionProperties(reflectionProperties.x, reflectionProperties.y, reflectionProperties.z);
+	getReflectionProperties(frag_Texture, reflectionProperties.x, reflectionProperties.y, reflectionProperties.z);
 #endif
 
 	love_Canvases[0] = vec4(reflectionProperties.xyz, scape_ReflectionThreshold);

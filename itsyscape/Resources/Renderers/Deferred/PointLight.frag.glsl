@@ -11,6 +11,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 uniform Image scape_PositionTexture;
+uniform Image scape_SpecularTexture;
 uniform Image scape_ColorTexture;
 
 uniform float scape_LightAttenuation;
@@ -24,11 +25,11 @@ vec4 effect(
 	vec2 screenCoordinate)
 {
 	vec3 position = Texel(scape_PositionTexture, textureCoordinate).xyz;
+	float alpha = Texel(scape_SpecularTexture, textureCoordinate).a;
 
 	vec3 lightSurfaceDifference = scape_LightPosition - position;
 	float attenuation = clamp(1.0 - length(lightSurfaceDifference) / scape_LightAttenuation, 0.0, 1.0);
 
 	vec3 result = attenuation * attenuation * scape_LightColor;
-	float alpha = Texel(scape_PositionTexture, textureCoordinate).a;
 	return vec4(result, alpha);
 }
