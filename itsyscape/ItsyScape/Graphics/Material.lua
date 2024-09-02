@@ -90,6 +90,14 @@ function Material:setIsFullLit(value)
 	self._handle:setIsFullLit(value or false)
 end
 
+function Material:getIsParticulate()
+	return self._handle:getIsParticulate()
+end
+
+function Material:setIsParticulate(value)
+	self._handle:setIsParticulate(value or false)
+end
+
 function Material:getIsRendered()
 	return self._handle:getIsRendered()
 end

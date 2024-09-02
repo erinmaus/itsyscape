@@ -10,6 +10,7 @@
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
 local Function = require "ItsyScape.Common.Function"
+local Pool = require "ItsyScape.Common.Math.Pool"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
@@ -125,6 +126,8 @@ function DemoApplication:new()
 	end
 
 	self:initTitleScreen()
+
+	Pool():makeCurrent()
 end
 
 function DemoApplication:changeCamera(_, cameraType)
@@ -1541,6 +1544,8 @@ end
 
 function DemoApplication:update(delta)
 	Application.update(self, delta)
+
+	Pool.getCurrent():update()
 
 	self:pumpGyroMouse(delta)
 	self:updateMobileMouse()

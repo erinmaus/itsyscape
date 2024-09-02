@@ -12,7 +12,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "It's a cyclpean test.",
+	Value = "It's a cyclopean test.",
 	Language = "en-US",
 	Resource = M._MAP
 }
