@@ -33,9 +33,6 @@ do
 		_ITSYREALM_VERSION)
 end
 
-local Pool = require "ItsyScape.Common.Math.Pool"
-Pool():makeCurrent()
-
 itsyrealm = {
 	graphics = {
 		impl = {}
@@ -131,8 +128,6 @@ function love.load(args)
 end
 
 function love.update(delta)
-	Pool.getCurrent():update()
-
 	if _APP then
 		_APP:update(delta)
 	end

@@ -300,6 +300,16 @@ float nbunny::SceneNodeMaterial::get_roughness() const
 	return roughness;
 }
 
+void nbunny::SceneNodeMaterial::set_is_particulate(bool value)
+{
+	is_particulate = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_particulate() const
+{
+	return is_particulate;
+}
+
 void nbunny::SceneNodeMaterial::set_z_bias(float value)
 {
 	z_bias = value;	
@@ -1358,6 +1368,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getReflectionDistance", &nbunny::SceneNodeMaterial::get_reflection_distance,
 		"setRoughness", &nbunny::SceneNodeMaterial::set_roughness,
 		"getRoughness", &nbunny::SceneNodeMaterial::get_roughness,
+		"setIsParticulate", &nbunny::SceneNodeMaterial::set_is_particulate,
+		"getIsParticulate", &nbunny::SceneNodeMaterial::get_is_particulate,
 		"setZBias", &nbunny::SceneNodeMaterial::set_z_bias,
 		"getZBias", &nbunny::SceneNodeMaterial::get_z_bias,
 		"setColor", &nbunny_scene_node_material_set_color,

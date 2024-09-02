@@ -107,6 +107,8 @@ namespace nbunny
 
 		bool is_light_target_position_enabled = false;
 
+		bool is_particulate = false;
+
 		float z_bias = 0.0f;
 
 	public:
@@ -148,6 +150,9 @@ namespace nbunny
 
 		void set_roughness(float value);
 		float get_roughness() const;
+
+		void set_is_particulate(bool value);
+		bool get_is_particulate() const;
 
 		void set_z_bias(float value);
 		float get_z_bias() const;
