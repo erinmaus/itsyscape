@@ -159,7 +159,6 @@ function LargeTileSet:emitAll(map)
 
 	if coroutine.running() then
 		coroutine.yield()
-		return
 	end
 
 	local numTilesPerAxis = self.ATLAS_SIZE / self.TILE_SIZE

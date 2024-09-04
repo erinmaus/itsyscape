@@ -1,51 +1,16 @@
+#include "Resources/Shaders/Triplanar.common.glsl"
+
 uniform Image scape_DiffuseTexture;
-uniform float scape_Scale;
 
-struct TriPlanarTextureCoordinates
-{
-	vec2 x, y, z;
-};
-
-TriPlanarTextureCoordinates triplanarMap()
-{
-	TriPlanarTextureCoordinates result;
-
-	result.x = frag_Position.zy * scape_Scale;
-	result.y = frag_Position.xz * scape_Scale;
-	result.z = frag_Position.xy * scape_Scale;
-
-	if (frag_Normal.x < 0.0)
-	{
-		result.x.x = -result.x.x;
-	}
-
-	if (frag_Normal.y < 0.0)
-	{
-		result.y.x = -result.y.x;
-	}
-
-	if (frag_Normal.z < 0.0)
-	{
-		result.z.x = -result.z.x;
-	}
-
-	return result;
-}
-
-vec3 triplanarWeights()
-{
-	vec3 w = abs(frag_Normal);
-	return w / (w.x + w.y + w.z);
-}
+uniform float scape_TriplanarExponent;
+uniform float scape_TriplanarOffset;
+uniform float scape_TriplanarScale;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
-	TriPlanarTextureCoordinates triPlanarTextureCoordinates = triplanarMap();
-	vec3 weight = triplanarWeights();
+	TriplanarTextureCoordinates triPlanarTextureCoordinates = triplanarMap(frag_Position, frag_Normal);
+	vec3 weight = triplanarWeights(frag_Normal, scape_TriplanarOffset, scape_TriplanarExponent + 1.0);
 
-	vec4 x = Texel(scape_DiffuseTexture, triPlanarTextureCoordinates.x) * weight.x;
-	vec4 y = Texel(scape_DiffuseTexture, triPlanarTextureCoordinates.y) * weight.y;
-	vec4 z = Texel(scape_DiffuseTexture, triPlanarTextureCoordinates.z) * weight.z;
-
-	return (x + y + z) * color;
+	vec4 texture = sampleTriplanar(scape_DiffuseTexture, triPlanarTextureCoordinates, weight, scape_TriplanarScale + 1.0);
+	return texture * color;
 }

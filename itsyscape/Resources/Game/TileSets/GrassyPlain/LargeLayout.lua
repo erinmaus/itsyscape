@@ -17,6 +17,6 @@ return {
 		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/GrassyPlain/TropicalYendorianGrass%d@Outline.png",
 		--OUTLINE_SAMPLE_FILENAME = "",
 		NUM_SAMPLES = 1,
-		SATURATION = 3
+		SATURATION = 4
 	}
 }
