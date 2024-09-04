@@ -108,9 +108,9 @@ do
 		RotationY = 0.000000,
 		RotationZ = 0.000000,
 		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
+		ScaleX = 1.5,
+		ScaleY = 1.5,
+		ScaleZ = 1.5,
 		Name = "WhaleSkeletonStatue1",
 		Map = M._MAP,
 		Resource = M["WhaleSkeletonStatue1"]
@@ -119,6 +119,30 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "WhaleSkeletonStatue",
 		MapObject = M["WhaleSkeletonStatue1"]
+	}
+end
+
+M["AncientDriftwood1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81.000000,
+		PositionY = 1.000000,
+		PositionZ = 55.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.5,
+		ScaleY = 1.5,
+		ScaleZ = 1.5,
+		Name = "AncientDriftwood1",
+		Map = M._MAP,
+		Resource = M["AncientDriftwood1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "AncientDriftwood",
+		MapObject = M["AncientDriftwood1"]
 	}
 end
 

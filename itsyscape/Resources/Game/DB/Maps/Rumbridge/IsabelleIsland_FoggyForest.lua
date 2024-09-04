@@ -593,3 +593,26 @@ do
 		Resource = ItsyScape.Resource.Prop "WhaleSkeletonStatue"
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "AncientDriftwood" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = ItsyScape.Resource.Prop "AncientDriftwood"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Ancient driftwood",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "AncientDriftwood"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A strangling tree of some kind.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "AncientDriftwood"
+	}
+end

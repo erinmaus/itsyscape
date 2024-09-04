@@ -602,6 +602,10 @@ function Application:tickMultiThread()
 
 	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
+
+	self.inputAdminChannel:push({
+		type = 'tick'
+	})
 end
 
 function Application:tickServer()

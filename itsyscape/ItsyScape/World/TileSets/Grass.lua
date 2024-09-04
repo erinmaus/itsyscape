@@ -97,10 +97,14 @@ function Grass:bind()
 		local diffuseFilename = string.format(self.DIFFUSE_SAMPLE_FILENAME, i)
 		local specularFilename = #self.SPECULAR_SAMPLE_FILENAME >= 1 and string.format(self.SPECULAR_SAMPLE_FILENAME, i)
 		local outlineFilename = #self.OUTLINE_SAMPLE_FILENAME >= 1 and string.format(self.OUTLINE_SAMPLE_FILENAME, i)
-		self._DIFFUSE_SAMPLES[i] = love.graphics.newImage(diffuseFilename)
-		self._SPECULAR_SAMPLES[i] = specularFilename and love.graphics.newImage(specularFilename)
-		self._OUTLINE_SAMPLES[i] = outlineFilename and love.graphics.newImage(outlineFilename)
+		self._DIFFUSE_SAMPLES[i] = diffuseFilename
+		self._SPECULAR_SAMPLES[i] = specularFilename
+		self._OUTLINE_SAMPLES[i] = outlineFilename
 	end
+
+	self._diffuseSample = #self._DIFFUSE_SAMPLES >= 1 and love.graphics.newArrayImage(self._DIFFUSE_SAMPLES)
+	self._specularSample = #self._SPECULAR_SAMPLES >= 1 and love.graphics.newArrayImage(self._SPECULAR_SAMPLES)
+	self._outlineSample = #self._OUTLINE_SAMPLES >= 1 and love.graphics.newArrayImage(self._OUTLINE_SAMPLES)
 
 	self._colors = Noise.UniformSampler(self.COLOR_NOISE)
 	self._samples = Noise.UniformSampler(self.SAMPLE_NOISE)
@@ -200,23 +204,20 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 			local y = g.y + self._offsets:range(g.offsetY, self.MIN_OFFSET, self.MAX_OFFSET)
 
 			if drawType == "diffuse" then
-				local diffuseSample = self._DIFFUSE_SAMPLES[self._samples:index(g.sample, #self._DIFFUSE_SAMPLES)]
 				local color = self.COLORS[self._colors:index(g.color, #self.COLORS)]
-				if diffuseSample then
+				if self._diffuseSample then
 					love.graphics.setColor(color:get())
-					love.graphics.draw(diffuseSample, x, y, rotation, scale, scale, diffuseSample:getWidth() / 2, diffuseSample:getHeight() / 2)
+					love.graphics.drawLayer(self._diffuseSample, self._samples:index(g.sample, #self._DIFFUSE_SAMPLES), x, y, rotation, scale, scale, self._diffuseSample:getWidth() / 2, self._diffuseSample:getHeight() / 2)
 				end
 			elseif drawType == "specular" then
-				local specularSample = self._SPECULAR_SAMPLES[self._samples:index(g.sample, #self._SPECULAR_SAMPLES)]
-				if specularSample then
+				if self._specularSample then
 					love.graphics.setColor(1, 1, 1, 1)
-					love.graphics.draw(specularSample, x, y, rotation, scale, scale, specularSample:getWidth() / 2, specularSample:getHeight() / 2)
+					love.graphics.drawLayer(self._specularSample, self._samples:index(g.sample, #self._SPECULAR_SAMPLES), x, y, rotation, scale, scale, self._specularSample:getWidth() / 2, self._specularSample:getHeight() / 2)
 				end
 			elseif drawType == "outline" then
-				local outlineSample = self._OUTLINE_SAMPLES[self._samples:index(g.sample, #self._OUTLINE_SAMPLES)]
-				if outlineSample then
+				if self._outlineSample then
 					love.graphics.setColor(1, 1, 1, 1)
-					love.graphics.draw(outlineSample, x, y, rotation, scale, scale, outlineSample:getWidth() / 2, outlineSample:getHeight() / 2)
+					love.graphics.drawLayer(self._outlineSample, self._samples:index(g.sample, #self._OUTLINE_SAMPLES), x, y, rotation, scale, scale, self._outlineSample:getWidth() / 2, self._outlineSample:getHeight() / 2)
 				end
 			end
 		end

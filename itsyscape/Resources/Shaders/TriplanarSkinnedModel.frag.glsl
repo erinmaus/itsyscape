@@ -11,8 +11,6 @@ uniform Image scape_DiffuseTexture;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
-	textureCoordinate.t = 1.0 - textureCoordinate.t;
-
 	TriplanarTextureCoordinates triPlanarTextureCoordinates = triplanarMap(frag_ModelPosition, frag_ModelNormal);
 	vec3 weight = triplanarWeights(frag_ModelNormal, scape_TriplanarOffset, scape_TriplanarExponent + 1.0);
 
