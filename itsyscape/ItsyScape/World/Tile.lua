@@ -243,17 +243,18 @@ function Tile:clamp(s, t, value, direction, maxDistance)
 	end
 end
 
-function Tile:setCorner(s, t, value)
+function Tile:setCorner(s, t, value, clamp)
 	local corner = self:getCornerName(s, t)
 	local direction = self[corner] - value
 	if corner then
 		self[corner] = value
-
-		local ns = (s % 2) + 1
-		local nt = (t % 2) + 1
-		self:clamp(ns, t, value, direction, 1)
-		self:clamp(s, nt, value, direction, 1)
-		self:clamp(ns, nt, value, direction, 2)
+		if clamp or clamp == nil then
+			local ns = (s % 2) + 1
+			local nt = (t % 2) + 1
+			self:clamp(ns, t, value, direction, 1)
+			self:clamp(s, nt, value, direction, 1)
+			self:clamp(ns, nt, value, direction, 2)
+		end
 	end
 end
 

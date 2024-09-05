@@ -770,7 +770,7 @@ function GameView:updateMap(map, layer)
 			table.insert(m.parts, alphaNode)
 		end
 
-		self.resourceManager:queueAsyncEvent(function()
+		local function _update()
 			node:fromMap(
 				m.map,
 				m.tileSet,
@@ -801,7 +801,13 @@ function GameView:updateMap(map, layer)
 			end
 
 			self:_updateMapBounds(m, node)
-		end)
+		end
+
+		if self:_getIsMapEditor() then
+			_update()
+		else
+			self.resourceManager:queueAsyncEvent(_update)
+		end
 
 		local function getPlayerNearPlane()
 			local near = 0
@@ -1439,6 +1445,10 @@ function GameView:flood(key, water, layer)
 
 	if water.alpha then
 		node:getMaterial():setColor(Color(1, 1, 1, water.alpha))
+	end
+
+	if water.reflectionDistance then
+		node:getMaterial():setReflectionDistance(water.reflectionDistance)
 	end
 
 	self.resourceManager:queue(

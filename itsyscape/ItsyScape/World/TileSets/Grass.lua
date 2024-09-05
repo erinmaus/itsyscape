@@ -95,8 +95,8 @@ function Grass:bind()
 	self._OUTLINE_SAMPLES = {}
 	for i = 1, self.NUM_SAMPLES do
 		local diffuseFilename = string.format(self.DIFFUSE_SAMPLE_FILENAME, i)
-		local specularFilename = #self.SPECULAR_SAMPLE_FILENAME >= 1 and string.format(self.SPECULAR_SAMPLE_FILENAME, i)
-		local outlineFilename = #self.OUTLINE_SAMPLE_FILENAME >= 1 and string.format(self.OUTLINE_SAMPLE_FILENAME, i)
+		local specularFilename = #self.SPECULAR_SAMPLE_FILENAME >= 1 and string.format(self.SPECULAR_SAMPLE_FILENAME, i) or nil
+		local outlineFilename = #self.OUTLINE_SAMPLE_FILENAME >= 1 and string.format(self.OUTLINE_SAMPLE_FILENAME, i) or nil
 		self._DIFFUSE_SAMPLES[i] = diffuseFilename
 		self._SPECULAR_SAMPLES[i] = specularFilename
 		self._OUTLINE_SAMPLES[i] = outlineFilename

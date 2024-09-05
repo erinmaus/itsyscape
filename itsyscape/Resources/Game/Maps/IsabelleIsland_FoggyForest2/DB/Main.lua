@@ -97,8 +97,8 @@ do
 		ColorRed = 81,
 		ColorGreen = 16,
 		ColorBlue = 117,
-		NearDistance = 20,
-		FarDistance = 60,
+		NearDistance = 60,
+		FarDistance = 120,
 		Resource = M["Light_Fog"]
 	}
 end
@@ -112,45 +112,5 @@ do
 		Name = "Anchor_AncientDriftwood",
 		Map = M._MAP,
 		Resource = M["Anchor_AncientDriftwood"]
-	}
-end
-
-M["WhaleSkeletonStatue"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 63,
-		PositionY = 4,
-		PositionZ = 63,
-		ScaleX = 1.5,
-		ScaleY = 1.5,
-		ScaleZ = 1.5,
-		Name = "WhaleSkeletonStatue",
-		Map = M._MAP,
-		Resource = M["WhaleSkeletonStatue"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "WhaleSkeletonStatue",
-		MapObject = M["WhaleSkeletonStatue"]
-	}
-end
-
-M["AncientDriftwood"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 63,
-		PositionY = 4,
-		PositionZ = 63,
-		ScaleX = 1.5,
-		ScaleY = 1.5,
-		ScaleZ = 1.5,
-		Name = "AncientDriftwood",
-		Map = M._MAP,
-		Resource = M["AncientDriftwood"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "AncientDriftwood",
-		MapObject = M["AncientDriftwood"]
 	}
 end
