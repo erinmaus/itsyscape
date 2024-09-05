@@ -19,6 +19,7 @@ local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local ColorPalette = require "ItsyScape.Editor.Common.ColorPalette"
 local ConfirmWindow = require "ItsyScape.Editor.Common.ConfirmWindow"
 local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
+local BrushToolPanel = require "ItsyScape.Editor.Map.BrushToolPanel"
 local DecorationList = require "ItsyScape.Editor.Map.DecorationList"
 local DecorationPalette = require "ItsyScape.Editor.Map.DecorationPalette"
 local Gizmo = require "ItsyScape.Editor.Map.Gizmo"
@@ -41,6 +42,7 @@ local Map = require "ItsyScape.World.Map"
 local MapCurve = require "ItsyScape.World.MapCurve"
 local MapMeshMask = require "ItsyScape.World.MapMeshMask"
 local MapMotion = require "ItsyScape.World.MapMotion"
+local Tile = require "ItsyScape.World.Tile"
 local TileSet = require "ItsyScape.World.TileSet"
 
 local MapEditorApplication = Class(EditorApplication)
@@ -50,6 +52,7 @@ MapEditorApplication.TOOL_PAINT = 2
 MapEditorApplication.TOOL_DECORATE = 3
 MapEditorApplication.TOOL_PROP = 4
 MapEditorApplication.TOOL_CURVE = 5
+MapEditorApplication.TOOL_BRUSH = 6
 
 function MapEditorApplication:new()
 	-- ew
@@ -72,6 +75,7 @@ function MapEditorApplication:new()
 	self.terrainToolPanel = TerrainToolPanel(self)
 	self.tileSetPalette = TileSetPalette(self)
 	self.propPalette = PropPalette(self)
+	self.brushToolPanel = BrushToolPanel(self)
 
 	self.decorationList.onSelect:register(self.onSelectDecorationGroup, self)
 
@@ -81,7 +85,8 @@ function MapEditorApplication:new()
 		self.landscapeToolPanel,
 		self.terrainToolPanel,
 		self.tileSetPalette,
-		self.propPalette
+		self.propPalette,
+		self.brushToolPanel
 	}
 
 	self.flagIcons = {
@@ -278,6 +283,9 @@ function MapEditorApplication:setTool(tool)
 		-- 	table.insert(self.curvePoints, { (p + center):get() })
 		-- 	table.insert(self.curveNormals, { (-p):getNormal():get() })
 		-- end
+	elseif tool == MapEditorApplication.TOOL_BRUSH then
+		self.currentTool = MapEditorApplication.TOOL_BRUSH
+		self.brushToolPanel:open()
 	end
 
 	self:updateCurve()
@@ -571,6 +579,9 @@ function MapEditorApplication:mousePress(x, y, button)
 					self:getGame():getStage():getMap(1),
 					motion,
 					i, i, j, j)
+			elseif self.currentTool == MapEditorApplication.TOOL_BRUSH then
+				self.paintingMotion = self:getBrushMotion()
+				self.isPainting = true
 			elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 				self:paint()
 				self.isDragging = true
@@ -857,6 +868,23 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				local tile = map:getTile(self.currentI, self.currentJ)
 				tile:setFlag('building')
 			end
+		elseif self.currentTool == MapEditorApplication.TOOL_BRUSH then
+			local motion = MapMotion(self:getGame():getStage():getMap(1))
+			motion:onMousePressed(self:makeMotionEvent(x, y, 1))
+
+			local _, i, j = motion:getTile()
+			if not self.currentToolNode then
+				self:makeCurrentToolNode()
+			end
+
+			local size = math.max(math.floor(self.brushToolPanel:getToolSize() - 1), 0)
+			self.currentToolNode:fromMap(
+				self:getGame():getStage():getMap(1),
+				motion,
+				i - size,
+				i + size,
+				j - size,
+				j + size)
 		elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 			if not self.currentToolNode then
 				self:makeCurrentToolNode()
@@ -990,11 +1018,19 @@ end
 
 function MapEditorApplication:mouseRelease(x, y, button)
 	if not EditorApplication.mouseRelease(self, x, y, button) then
-		if button == 1 and self.motion then
-			self.motion:onMouseReleased(self:makeMotionEvent(x, y, button))
-			self.motion = false
-		end
+		if button == 1 then
+			if self.motion then
+				self.motion:onMouseReleased(self:makeMotionEvent(x, y, button))
+				self.motion = false
+			end
 
+			self.paintingMotion = nil
+
+			if self.isPainting then
+				self:getGame():getStage():updateMap(1)
+				self.isPainting = false
+			end
+		end
 		self.isDragging = false
 	end
 
@@ -1008,7 +1044,11 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 		if not isRepeat and not isWidgetFocused then
 			if key == 'f1' then
-				self:setTool(MapEditorApplication.TOOL_TERRAIN)
+				if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
+					self:setTool(MapEditorApplication.TOOL_BRUSH)
+				else
+					self:setTool(MapEditorApplication.TOOL_TERRAIN)
+				end
 			elseif key == 'f2' then
 				self:setTool(MapEditorApplication.TOOL_PAINT)
 			elseif key == 'f3' then
@@ -1036,7 +1076,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 					local left = self.currentI - (self.terrainToolPanel.toolSize - 1)
 					local right = self.currentI + (self.terrainToolPanel.toolSize - 1)
 
-					top = math.max(top, 1)
+				 	top = math.max(top, 1)
 					bottom = math.min(map:getHeight(), bottom)
 					left = math.max(left, 1)
 					right = math.min(map:getWidth(), right)
@@ -1855,6 +1895,134 @@ function MapEditorApplication:drawCurve()
 	end
 
 	love.graphics.pop()
+end
+
+function MapEditorApplication:getBrushMotion()
+	local mouseX, mouseY = love.mouse.getPosition()
+	local motionEvent = self:makeMotionEvent(mouseX, mouseY, 1)
+	local map = self:getGame():getStage():getMap(1)
+	local motion = MapMotion(map)
+	motion:onMousePressed(motionEvent)
+
+	return motion
+end
+
+function MapEditorApplication:brush(delta)
+	local isClamped = love.keyboard.isDown("lctrl") or love.keyboard.isDown("lctrl")
+	local map = self:getGame():getStage():getMap(1)
+	local motion = isClamped and self.paintingMotion or self:getBrushMotion()
+
+	local tile, i, j = motion:getTile()
+	if not tile then
+		return
+	end
+
+	local corner = tile:findNearestCorner(motion:getPosition(), i, j, map:getCellSize())
+	for _, c in ipairs(Tile.CORNERS) do
+		if c.name == corner then
+			i = i + (c.offsetX + 1)
+			j = j + (c.offsetY + 1)
+		end
+	end
+
+	local tileElevation = map:getTile(i, j).topLeft
+
+	local brushToolSize = math.floor(self.brushToolPanel:getToolSize() / 2) + 1
+	local startI = math.max(i - brushToolSize, 1)
+	local stopI = math.min(i + brushToolSize, map:getWidth() + 1)
+	local startJ = math.max(j - brushToolSize, 1)
+	local stopJ = math.min(j + brushToolSize, map:getHeight() + 1)
+
+	for currentI = startI, stopI do
+		for currentJ = startJ, stopJ do
+			local distance = math.sqrt((currentI - i) ^ 2 + (currentJ - j) ^ 2)
+			if distance <= brushToolSize then
+				local radiusDelta = 1 - ((distance / brushToolSize) ^ 2)
+				local offset = self.brushToolPanel:getPressure() * delta * radiusDelta
+				local clampFunc = offset < 0 and math.max or math.min
+
+				local currentTile = map:getTile(currentI, currentJ)
+				local currentElevation = currentTile.topLeft
+
+				local isClamped = love.keyboard.isDown("lctrl") or love.keyboard.isDown("lctrl")
+				if isClamped then
+					if offset < 0 and currentElevation > tileElevation then
+						currentElevation = math.max(currentElevation + offset, tileElevation)
+					elseif offset > 0 and currentElevation < tileElevation then
+						currentElevation = math.min(currentElevation + offset, tileElevation)
+					end
+				else
+					currentElevation = currentElevation + offset
+				end
+
+				for offsetI = -1, 0 do
+					for offsetJ = -1, 0 do
+						local cornerI = math.abs(offsetI) + 1
+						local cornerJ = math.abs(offsetJ) + 1
+
+						local otherTile = map:getTile(currentI + offsetI, currentJ + offsetJ)
+						otherTile:setCorner(cornerI, cornerJ, currentElevation, false)
+					end
+				end
+			end
+		end
+	end
+
+	self:updateGrid(self:getGame():getStage(), self:getGame():getStage():getMap(1), 1)
+
+	-- local brushToolSize = math.ceil(math.floor(self.brushTool:getToolSize() * 2) / 2)
+	-- local startS = math.max(s - brushToolSize, 1)
+	-- local stopS = math.min(s + brushToolSize, map:getWidth() * 2 + 1)
+	-- local startT = math.max(t - brushToolSize, 1)
+	-- local stopT = math.min(t + brushToolSize, map:getHeight() * 2 + 1)
+
+	-- local elevations = {}
+	-- for currentS = startS, stopS, 2 do
+	-- 	local e = elevations[currentS], 2 or {}
+	-- 	for currentT = startT, stopT do
+	-- 		local tileS = currentS % -2
+	-- 		local tileT = currentT % -2
+
+	-- 		local sum = 0
+	-- 		local count = 0
+	-- 		for offsetS = -1, 0 do
+	-- 			for offsetT = -1, 0 do
+	-- 				local currentI = math.floor((currentS + offsetS) / 2)
+	-- 				local currentJ = math.floor((currentT + offsetT) / 2)
+
+	-- 				if currentI >= 1 and currentI <= map:getWidth() and currentJ >= 1 and currentJ <= map:getHeight() then
+	-- 					sum = sum + 
+	-- 				end
+	-- 			end
+	-- 		end
+
+	-- 		local average = sum / 4
+	-- 		e[currentT] = average
+	-- 	end
+	-- 	elevations[currentS] = e
+	-- end
+
+	-- for currentS = startS, stopS do
+	-- 	for currentT = startT, stopT do
+	-- 		if radius <= brushToolSize then
+	-- 			local radiusDelta = radius / brushToolSize
+	-- 			local offset = self.brushTool:getPressure() * delta * radiusDelta
+
+	-- 			local currentI = math.floor(currentS / 2)
+	-- 			local currentJ = math.floor(currentT / 2)
+	-- 			local tileS = currentS - currentI * 2 - 1
+	-- 			local tileT = currentT - currentJ * 2 - 1
+	-- 		end
+	-- 	end
+	-- end
+end
+
+function MapEditorApplication:update(delta)
+	EditorApplication.update(self, delta)
+
+	if self.isPainting then
+		self:brush(delta)
+	end
 end
 
 function MapEditorApplication:draw(...)

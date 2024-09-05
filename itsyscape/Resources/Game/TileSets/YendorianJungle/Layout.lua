@@ -37,5 +37,13 @@
 		width = 128,
 		height = 128,
 		name = "wood"
+	},
+
+	{
+		x = 128,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "sand"
 	}
 }
