@@ -21,7 +21,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle111"]
 	}
 end
@@ -45,7 +45,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle17"]
 	}
 end
@@ -69,7 +69,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle110"]
 	}
 end
@@ -93,7 +93,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle16"]
 	}
 end
@@ -117,7 +117,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle11"]
 	}
 end
@@ -141,7 +141,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle123"]
 	}
 end
@@ -165,7 +165,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle130"]
 	}
 end
@@ -189,7 +189,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle128"]
 	}
 end
@@ -213,7 +213,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle115"]
 	}
 end
@@ -237,7 +237,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle1",
+		Prop = ItsyScape.Resource.Prop "CommonTree_Jungle2",
 		MapObject = M["CommonTree_Jungle135"]
 	}
 end

@@ -24,7 +24,7 @@ local LOGS = {
 		weight = 8,
 		health = 4,
 		tinderbox = "Tinderbox",
-		variants = { "Snowy", "Jungle1" },
+		variants = { "Snowy", "Jungle1", "Jungle2" },
 		secondaries = {
 			"Leaf",
 			"Branch"
@@ -36,7 +36,7 @@ local LOGS = {
 		weight = -2,
 		health = 4,
 		tinderbox = "Tinderbox",
-		variants = { "Stormy" }
+		variants = { "Stormy", "Jungle1", "Jungle2" }
 	},
 
 	["Rotten"] = {
@@ -430,6 +430,18 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "A hardy evergreen found all over the tropical regions of the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CommonTree_Jungle1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A hardy evergreen found all over the tropical regions of the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CommonTree_Jungle2"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "This fire won't last long.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "CommonFire"
@@ -781,6 +793,18 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A shadow of the great common fir tree of the Realm.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ShadowTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A shadow of the common jungle pine.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ShadowTree_Jungle1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A shadow of the common jungle pine.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ShadowTree_Jungle2"
 }
 
 ItsyScape.Meta.ResourceDescription {

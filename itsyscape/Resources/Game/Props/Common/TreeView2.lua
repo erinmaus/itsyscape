@@ -159,6 +159,10 @@ function TreeView:load()
 					if currentShader:hasUniform("scape_WindMaxDistance") then
 						currentShader:send("scape_WindMaxDistance", 0.25)
 					end
+
+					if currentShader:hasUniform("scape_WallHackWindow") then
+						currentShader:send("scape_WallHackWindow", { 2.0, 2.0, 2.0, 2.0 })
+					end
 				end)
 
 				local state = self:getProp():getState().resource
@@ -199,7 +203,7 @@ function TreeView:load()
 		ShaderResource,
 		"Resources/Shaders/BendyLeafModel",
 		function(shader)
-			self.leafShader = shader
+			self.leavesShader = shader
 		end)
 end
 
