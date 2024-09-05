@@ -111,7 +111,7 @@ function AncientDriftwood:load()
 				end
 
 				if currentShader:hasUniform("scape_WallHackWindow") then
-					currentShader:send("scape_WallHackWindow", { 2.0, 2.0, 2.0, 2.0 })
+					currentShader:send("scape_WallHackWindow", { 0, 0, 0, 0 })
 				end
 			end)
 		end)

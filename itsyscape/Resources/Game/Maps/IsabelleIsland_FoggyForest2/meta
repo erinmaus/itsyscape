@@ -1,10 +1,10 @@
 {
 	{
-		autoMask = true,
 		tileSetID = "YendorianJungle",
 		maskID =
 		{
 			default = true,
 		},
+		autoMask = true,
 	},
 }

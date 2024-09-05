@@ -23,7 +23,7 @@ void performTransform(
 		afterWorldPosition,
 		normal);
 
-	localPosition = position.xyz + (afterWorldPosition.xyz - beforeWorldPosition.xyz);
+	localPosition = localPosition + (afterWorldPosition.xyz - beforeWorldPosition.xyz);
 	projectedPosition = modelViewProjectionMatrix * vec4(localPosition, 1.0);
 
 	// frag_Normal = normal;
