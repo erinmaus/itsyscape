@@ -188,7 +188,7 @@ for name, tree in spairs(TREES) do
 
 	ItsyScape.Meta.GatherableProp {
 		Health = math.max(tree.woodcutting + 5, 10),
-		SpawnTime = 0,
+		SpawnTime = math.max(tree.woodcutting * 3, 15) * 2,
 		Resource = Tree
 	}
 

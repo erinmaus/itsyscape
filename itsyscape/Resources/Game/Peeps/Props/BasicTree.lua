@@ -98,7 +98,8 @@ function BasicTree:previewShake()
 	g.count = g.count + 1
 
 	local gameDB = self:getDirector():getGameDB()
-	local p = gameDB:getRecord("GatherableProp", {
+	local resource = Utility.Peep.getResource(self)
+	local p = resource and gameDB:getRecord("GatherableProp", {
 		Resource = resource
 	})
 

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Common/TreeView2.lua
+-- Resources/Game/Props/Common/FruitTreeView.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -20,11 +20,13 @@ local SkeletonAnimationResource = require "ItsyScape.Graphics.SkeletonAnimationR
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 
-local TreeView = Class(PropView)
+local FruitTreeView = Class(PropView)
 
-TreeView.FELLED_SPAWN_TIME_SECONDS = 0.75
+FruitTreeView.SHAKE_TIME_SECONDS = 1
+FruitTreeView.MAXIMUM_RANDOM_ANGLE = math.rad(10)
+FruitTreeView.MAXIMUM_RANDOM_SHAKE_ANGLE = math.rad(20)
 
-function TreeView:new(prop, gameView)
+function FruitTreeView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
 	self.previousProgress = 0
@@ -34,34 +36,34 @@ function TreeView:new(prop, gameView)
 	self.time = 0
 end
 
-function TreeView:getBaseModelFilename()
+function FruitTreeView:getBaseModelFilename()
 	return Class.ABSTRACT()
 end
 
-function TreeView:getBaseTextureFilename()
+function FruitTreeView:getBaseTextureFilename()
 	return Class.ABSTRACT()
 end
 
-function TreeView:getResourcePath(Type, resource)
+function FruitTreeView:getResourcePath(Type, resource)
 	if Type == TextureResource then
 		return string.format("%s/%s", self:getBaseTextureFilename(), resource)
-	elseif Type == ModelResource or Type == SkeletonResource then
+	elseif Type == ModelResource or Type == SkeletonResource or Type == SkeletonAnimationResource then
 		return string.format("%s/%s", self:getBaseModelFilename(), resource)
 	else
 		error("unknown type")
 	end
 end
 
-function TreeView:done()
+function FruitTreeView:done()
 	-- Nothing.
 end
 
-function TreeView:getCurrentAnimation()
+function FruitTreeView:getCurrentAnimation()
 	return self.animations[self.currentAnimation]
 	    or self.animations[TreeView.ANIMATION_IDLE]
 end
 
-function TreeView:applyAnimation(time, animation)
+function FruitTreeView:applyAnimation(time, animation)
 	self.transforms:reset()
 	animation:computeFilteredTransforms(time, self.transforms)
 
@@ -70,14 +72,14 @@ function TreeView:applyAnimation(time, animation)
 	skeleton:applyBindPose(self.transforms)
 end
 
-function TreeView:load()
+function FruitTreeView:load()
 	PropView.load(self)
 
 	local resources = self:getResources()
 	local root = self:getRoot()
 
 	self.treeNode = ModelSceneNode()
-	self.trunkNode = ModelSceneNode()
+	self.fruitNode = ModelSceneNode()
 	self.leavesNode = ModelSceneNode()
 
 	resources:queue(
@@ -96,9 +98,9 @@ function TreeView:load()
 				self.skeleton:getResource())
 			resources:queue(
 				ModelResource,
-				self:getResourcePath(ModelResource, "Trunk.lmesh"),
+				self:getResourcePath(ModelResource, "Fruit.lmesh"),
 				function(model)
-					self.trunkModel = model
+					self.fruitModel = model
 				end,
 				self.skeleton:getResource())
 			resources:queue(
@@ -108,6 +110,13 @@ function TreeView:load()
 					self.leavesModel = model
 				end,
 				self.skeleton:getResource())
+			resources:queue(
+				SkeletonAnimationResource,
+				self:getResourcePath(SkeletonAnimationResource, "Pose.lanim"),
+				function(animation)
+					self.poseAnimation = animation
+				end,
+				skeleton:getResource())
 			resources:queueEvent(function()
 				self.treeNode:setModel(self.treeModel)
 				self.treeNode:getMaterial():setShader(self.treeShader)
@@ -116,12 +125,11 @@ function TreeView:load()
 				self.treeNode:setParent(root)
 				self.treeNode:setTransforms(self.transforms)
 
-				self.trunkNode:setModel(self.trunkModel)
-				self.trunkNode:getMaterial():setShader(self.treeShader)
-				self.trunkNode:getMaterial():setTextures(self.barkTexture)
-				self.trunkNode:getMaterial():setOutlineThreshold(-0.01)
-				self.trunkNode:setParent(root)
-				self.trunkNode:setTransforms(self.transforms)
+				self.fruitNode:setModel(self.fruitModel)
+				self.fruitNode:getMaterial():setShader(self.leavesShader)
+				self.fruitNode:getMaterial():setTextures(self.fruitTexture)
+				self.fruitNode:setParent(root)
+				self.fruitNode:setTransforms(self.transforms)
 
 				self.leavesNode:setModel(self.leavesModel)
 				self.leavesNode:getMaterial():setOutlineColor(Color(0.5))
@@ -131,7 +139,7 @@ function TreeView:load()
 				self.leavesNode:setParent(root)
 				self.leavesNode:setTransforms(self.transforms)
 
-				self.leavesNode:onWillRender(function(renderer)
+				local function onWillRender(renderer)
 					local currentShader = renderer:getCurrentShader()
 					if not currentShader then
 						return
@@ -163,22 +171,46 @@ function TreeView:load()
 					if currentShader:hasUniform("scape_WallHackWindow") then
 						currentShader:send("scape_WallHackWindow", { 2.0, 2.0, 2.0, 2.0 })
 					end
-				end)
+				end
+
+				self.leavesNode:onWillRender(onWillRender)
+				self.fruitNode:onWillRender(onWillRender)
 
 				local state = self:getProp():getState().resource
 				if state then
-					self.isDepleted = state.depleted
-					self.wasDepleted = state.depleted
-					if self.wasDepleted then
-						self.time = self.FELLED_SPAWN_TIME_SECONDS
-					else
-						self.time = 0
-					end
+					self.shaken = state.shaken
+					self.time = self.SHAKE_TIME_SECONDS
 				end
 
-				self:done()
+				local i, j = self:getProp():getTile()
+				local rng = love.math.newRandomGenerator(i, j)
+
+				self.idleRotations = {}
+				for i = 1, skeleton:getResource():getNumBones() do
+					local x = (rng:random() * 2) - 1
+					local y = (rng:random() * 2) - 1
+					local z = (rng:random() * 2) - 1
+					local axis = Vector(x, y, z):getNormal()
+
+					local angle = rng:random() * self.MAXIMUM_RANDOM_ANGLE
+					self.idleRotations[i] = Quaternion.fromAxisAngle(axis, angle):keep()
+				end
+
+				self.shakeRotations = {}
+				self.shakeTweenPower = {}
+				for i = 1, skeleton:getResource():getNumBones() do
+					local x = (rng:random() * 2) - 1
+					local y = (rng:random() * 2) - 1
+					local z = (rng:random() * 2) - 1
+					local axis = Vector(x, y, z):getNormal()
+					self.shakeTweenPower[i] = rng:random() + 1
+
+					local angle = rng:random() * self.MAXIMUM_RANDOM_SHAKE_ANGLE
+					self.shakeRotations[i] = Quaternion.fromAxisAngle(axis, angle):keep()
+				end
 
 				self.spawned = true
+				self:done()
 			end)
 		end)
 	resources:queue(
@@ -194,6 +226,12 @@ function TreeView:load()
 			self.barkTexture = texture
 		end)
 	resources:queue(
+		TextureResource,
+		self:getResourcePath(TextureResource, "Fruit.png"),
+		function(texture)
+			self.fruitTexture = texture
+		end)
+	resources:queue(
 		ShaderResource,
 		"Resources/Shaders/TriplanarSkinnedModel",
 		function(shader)
@@ -207,92 +245,47 @@ function TreeView:load()
 		end)
 end
 
-function TreeView:remove()
-	PropView.remove(self)
-
-	if self.progressBar then
-		self:getGameView():getSpriteManager():poof(self.progressBar)
-	end
-end
-
-function TreeView:tick()
+function FruitTreeView:tick()
 	PropView.tick(self)
 
 	local state = self:getProp():getState()
 	if state.resource then
 		local r = state.resource
-		if r.progress > 0 and r.progress < 100 and (not self.progressBar or not self.progressBar:getIsSpawned()) then
-			self.progressBar = self:getGameView():getSpriteManager():add(
-				"ResourceProgressBar",
-				self:getRoot(),
-				Vector(0, 2, 0),
-				self:getProp())
-		end
-
-		if self.previousProgress ~= r.progress then
-			self:getResources():queueEvent(function()
-				self.currentAnimation = TreeView.ANIMATION_CHOPPED
-				self.time = 0
-			end)
-
-			self.previousProgress = r.progress
-		end
-
-		if r.depleted ~= self.isDepleted then
+		if self.shaken ~= r.shaken then
 			self.wasDepleted = self.isDepleted
-			self.isDepleted = r.depleted
+			self.isDepleted = r.shaken > 0
+			self.shaken = r.shaken
 			self.time = 0
 		end
 	end
 end
 
-function TreeView:update(delta)
+function FruitTreeView:update(delta)
 	PropView.update(self, delta)
 
 	if self.spawned then
-		self.time = math.min(self.time + delta, self.FELLED_SPAWN_TIME_SECONDS)
-		local delta = self.time / self.FELLED_SPAWN_TIME_SECONDS
+		self.time = math.min(self.time + delta, self.SHAKE_TIME_SECONDS)
+		local delta = self.time / self.SHAKE_TIME_SECONDS
 
 		if self.isDepleted then
-			self.treeNode:getMaterial():setColor(Color(1, 1, 1, Tween.sineEaseOut(1 - delta)))
-			self.leavesNode:getMaterial():setColor(Color(1, 1, 1, Tween.sineEaseOut(1 - delta)))
-		else
-			self.treeNode:getMaterial():setColor(Color(1, 1, 1, Tween.sineEaseOut(delta)))
-			self.leavesNode:getMaterial():setColor(Color(1, 1, 1, Tween.sineEaseOut(delta)))
+			delta = 1 - delta
 		end
 
+		self.fruitNode:getMaterial():setColor(Color(1, 1, 1, Tween.sineEaseOut(delta)))
+
+		self.poseAnimation:getResource():computeFilteredTransforms(0, self.transforms)
+
+		local transform = love.math.newTransform()
 		for i = 1, self.skeleton:getResource():getNumBones() do
-			self.transforms:setIdentity(i)
-		end
+			if i ~= self.skeleton:getResource():getBoneIndex("root") then
+				local targetRotation = self.idleRotations[i] * self.shakeRotations[i]
+				local rotation = self.idleRotations[i]:slerp(targetRotation, Tween.powerEaseIn(math.sin(delta * math.pi), self.shakeTweenPower[i]))
 
-		do
-			local transform = love.math.newTransform()
-			transform:applyQuaternion(Quaternion.X_90:get())
+				transform:reset()
+				transform:applyQuaternion(rotation:get())
 
-			self.transforms:setTransform(
-				self.skeleton:getResource():getBoneIndex("root"),
-				transform)
-		end
-
-		local r = self:getProp():getState().resource
-		if self.isDepleted and r and r.felledPosition then
-			local targetRotation = Quaternion.lookAt(Vector(unpack(r.felledPosition)) * Vector.PLANE_XZ, self:getProp():getPosition() * Vector.PLANE_XZ, Vector.UNIT_Y)
-			local currentRotation = Quaternion.IDENTITY:slerp(targetRotation, Tween.sineEaseOut(delta))
-
-			local transform = love.math.newTransform()
-			transform:applyQuaternion(currentRotation:get())
-
-			self.transforms:setTransform(
-				self.skeleton:getResource():getBoneIndex("tree"),
-				transform)
-		else
-			local transform = love.math.newTransform()
-			local scale = Tween.sineEaseOut(delta)
-			transform:scale(scale, scale, scale)
-
-			self.transforms:setTransform(
-				self.skeleton:getResource():getBoneIndex("tree"),
-				transform)
+				self.transforms:applyTransform(i, transform)
+			end
 		end
 
 		self.skeleton:getResource():applyTransforms(self.transforms)
@@ -300,4 +293,4 @@ function TreeView:update(delta)
 	end
 end
 
-return TreeView
+return FruitTreeView
