@@ -9,7 +9,7 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	frag_ModelPosition = localPosition;
+	frag_ModelPosition = position.xyz;
 	frag_ModelNormal = VertexNormal;
 
 	basePerformTransform(modelViewProjectionMatrix, position, localPosition, projectedPosition);

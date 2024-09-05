@@ -50,6 +50,9 @@ function SkyBehavior:new()
 	self.nightAmbientColor = Color.fromHexString("111128", 0.4)
 	self.currentAmbientColor = self.dayAmbientColor
 
+	self.sunColor = Color.fromHexString("ffffff")
+	self.moonColor = Color.fromHexString("ffffff")
+
 	self.windDirection = Vector(1, 0, 0):getNormal()
 	self.windSpeed = 0.25
 

@@ -15,8 +15,8 @@ local SkyBehavior = require "ItsyScape.Peep.Behaviors.SkyBehavior"
 
 local TestMap = Class(Map)
 
-function TestMap:onLoad(...)
-	Map.onLoad(self, ...)
+function TestMap:new(...)
+	Map.new(self, ...)
 
 	self:addBehavior(SkyBehavior)
 end

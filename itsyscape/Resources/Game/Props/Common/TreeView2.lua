@@ -191,7 +191,7 @@ function TreeView:load()
 		end)
 	resources:queue(
 		ShaderResource,
-		"Resources/Shaders/TriPlanarSkinnedModel",
+		"Resources/Shaders/TriplanarSkinnedModel",
 		function(shader)
 			self.treeShader = shader
 		end)

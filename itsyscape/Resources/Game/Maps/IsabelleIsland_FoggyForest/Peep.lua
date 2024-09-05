@@ -11,12 +11,14 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local BossStat = require "ItsyScape.Game.BossStat"
 local Utility = require "ItsyScape.Game.Utility"
+local Color = require "ItsyScape.Graphics.Color"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 local BossStatsBehavior = require "ItsyScape.Peep.Behaviors.BossStatsBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
+local SkyBehavior = require "ItsyScape.Peep.Behaviors.SkyBehavior"
 
 local FoggyForest = Class(Map)
 FoggyForest.PEEPS = {
@@ -59,7 +61,12 @@ end
 function FoggyForest:onLoad(...)
 	Map.onLoad(self, ...)
 
-	Utility.Map.spawnMap(self, "Test123_Draft", Vector.ZERO, { isLayer = true })
+	local _, skyMapScript = Utility.Map.spawnMap(self, "Test123_Draft", Vector.ZERO, { isLayer = true })
+	local sky = skyMapScript:getBehavior(SkyBehavior)
+	sky.daySkyColor = Color.fromHexString("644296")
+	sky.dayAmbientColor = Color.fromHexString("b380ff")
+	sky.sunColor = Color.fromHexString("e9c8af")
+	sky.moonColor = Color.fromHexString("afdde9")
 end
 
 function FoggyForest:makeStats(player)
