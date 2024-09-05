@@ -31,6 +31,15 @@ vec4 quaternionFromAxisAngle(vec3 axis, float angle)
 	return vec4(vec3(halfAngleSine) * axis, halfAngleCosine);
 }
 
+vec4 quaternionFromNormals(vec3 u, vec3 v)
+{
+	float d = dot(normalize(u), normalize(v));
+	float halfCos = sqrt(0.5 * (1.0 + d));
+	float halfSin = sqrt(0.5 * (1.0 - d));
+	vec3 c = normalize(cross(u, v));
+	return vec4(c * vec3(halfSin), halfCos);
+}
+
 vec4 quaternionLookAt(vec3 source, vec3 target, vec3 up)
 {
 	vec3 forward = normalize(target - source);
