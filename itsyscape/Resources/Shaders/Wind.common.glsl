@@ -37,7 +37,9 @@ void transformWorldPositionByBump(Image image, vec2 textureCoordinate, float for
 	vec3 normal;
 	float force;
 
-	calculateBumpNormal(image, textureCoordinate, vec2(1.0) / vec2(textureSize(image, 0)), 0.0, normal, force);
+	vec4 bumpSample = Texel(image, textureCoordinate);
+	normal = bumpSample.xyz;
+	force = bumpSample.w;
 
 	if (length(normal) == 0.0)
 	{

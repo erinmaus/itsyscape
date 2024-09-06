@@ -91,8 +91,8 @@ function AncientDriftwood:load()
 					currentShader:send("scape_BumpHeight", 1)
 				end
 
-				if currentShader:hasUniform("scape_ActorBumpForce") then
-					currentShader:send("scape_ActorBumpForce", 0)
+				if currentShader:hasUniform("scape_BumpForce") then
+					currentShader:send("scape_BumpForce", 0)
 				end
 
 				local _, layer = self:getProp():getPosition()
