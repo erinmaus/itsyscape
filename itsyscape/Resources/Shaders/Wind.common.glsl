@@ -1,4 +1,5 @@
 #include "Resources/Shaders/Quaternion.common.glsl"
+#include "Resources/Shaders/Bump.common.glsl"
 
 #ifndef SCAPE_WIND_DO_NOT_DEFINE_UNIFORMS
 uniform vec3 scape_WindDirection;
@@ -24,4 +25,30 @@ void transformWorldPositionByWind(float time, float windSpeed, vec3 windDirectio
 
 	worldPosition = transformedRelativePosition.xyz + anchorPosition;
 	normal = normalize(quaternionTransformVector(currentWindRotation, vec4(normal, 0.0))).xyz;
+}
+
+void transformWorldPositionByBump(Image image, vec2 textureCoordinate, float forceMultiplier, vec3 anchorPosition, inout vec3 position)
+{
+	if (textureCoordinate.x < 0.0 && textureCoordinate.x > 1.0 && textureCoordinate.y < 0.0 && textureCoordinate.y > 1.0)
+	{
+		return;
+	}
+
+	vec3 normal;
+	float force;
+
+	calculateBumpNormal(image, textureCoordinate, vec2(1.0) / vec2(textureSize(image, 0)), 0.0, normal, force);
+
+	if (length(normal) == 0.0)
+	{
+		return;
+	}
+
+	vec4 targetRotation = normalize(quaternionLookAt(vec3(0.0), vec3(-normal.x, 1.0, normal.y), vec3(0.0, 1.0, 0.0)));
+	vec4 relativeRotation = slerp(vec4(vec3(0.0), 1.0), targetRotation, force * forceMultiplier);
+
+	vec4 relativePosition = vec4(position - anchorPosition, 0.0);
+	vec4 transformedRelativePosition = quaternionTransformVector(relativeRotation, relativePosition);
+
+	position = transformedRelativePosition.xyz + anchorPosition;
 }

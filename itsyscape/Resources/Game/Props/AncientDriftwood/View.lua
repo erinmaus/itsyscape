@@ -65,7 +65,7 @@ function AncientDriftwood:load()
 
 	resources:queue(
 		ShaderResource,
-		"Resources/Shaders/TriPlanar",
+		"Resources/Shaders/Triplanar",
 		function(shader)
 			local material = self.tree:getMaterial()
 			material:setShader(shader)
@@ -91,8 +91,8 @@ function AncientDriftwood:load()
 					currentShader:send("scape_BumpHeight", 1)
 				end
 
-				if currentShader:hasUniform("scape_EnableActorBump") then
-					currentShader:send("scape_EnableActorBump", 0)
+				if currentShader:hasUniform("scape_ActorBumpForce") then
+					currentShader:send("scape_ActorBumpForce", 0)
 				end
 
 				local _, layer = self:getProp():getPosition()

@@ -16,12 +16,11 @@ void performTransform(
 {
 	vec3 bendyPosition = position.xyz;
 	vec3 featureWorldPosition = (scape_WorldMatrix * vec4(FeaturePosition, 1.0)).xyz;
-	vec3 vertexWorldPosition = (scape_WorldMatrix * position).xyz;
 
 	if (scape_ActorBumpForce != 0.0)
 	{
-		vec2 relativeFeaturePosition = featureWorldPosition.xz / max(scape_MapSize, vec2(1.0, 1.0));
-		 transformWorldPositionByBump(scape_ActorCanvas, relativeFeaturePosition, scape_ActorBumpForce, FeaturePosition, bendyPosition);
+		vec2 relativePosition = featureWorldPosition.xz / max(scape_MapSize, vec2(1.0, 1.0));
+		transformWorldPositionByBump(scape_ActorCanvas, relativePosition, scape_ActorBumpForce, FeaturePosition, bendyPosition);
 	}
 
 	vec3 normal = VertexNormal;

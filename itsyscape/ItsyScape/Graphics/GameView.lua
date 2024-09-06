@@ -1092,7 +1092,7 @@ function GameView:getWind(layer)
 		       m.actorCanvas
 	end
 
-	return Vector(-1, 0, -1):getNormal(), 4, Vector(5, 10, 15), self.whiteTexture
+	return Vector(-1, 0, -1):getNormal(), 4, Vector(5, 10, 15), self.whiteTexture:getResource()
 end
 
 function GameView:addActor(actorID, actor)
@@ -1858,7 +1858,7 @@ function GameView:_drawActorOnActorCanvas(delta, actor, m)
 
 	local radius = math.min(size.x, size.z) / 2
 	local relativePosition = position / Vector(m.map:getWidth() * m.map:getCellSize(), 1.0, m.map:getHeight() * m.map:getCellSize())
-	local relativeScale = (radius + 1.5) / m.map:getCellSize()
+	local relativeScale = (radius + 3) / m.map:getCellSize()
 	relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / self.actorCanvasCircle:getWidth())
 
 	love.graphics.draw(self.actorCanvasCircle, relativePosition.x * m.actorCanvas:getWidth(), relativePosition.z * m.actorCanvas:getHeight(), 0, relativeScale, relativeScale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
