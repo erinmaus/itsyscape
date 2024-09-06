@@ -31,6 +31,7 @@ OutlinePostProcessPass.Y_NOISE = Noise {
 function OutlinePostProcessPass:new(...)
 	PostProcessPass.new(self, ...)
 
+	self.isEnabled = true
 	self.depthStep = 0
 	self.normalStep = 0.3
 	self.minOutlineThickness = 3
@@ -41,6 +42,14 @@ function OutlinePostProcessPass:new(...)
 	self.maxOutlineDepthAlpha = 1.0
 	self.outlineFadeDepth = 20
 	self.outlineTurbulence = 0.25
+end
+
+function OutlinePostProcessPass:setIsEnabled(value)
+	self.isEnabled = value
+end
+
+function OutlinePostProcessPass:getIsEnabled()
+	return self.isEnabled
 end
 
 function OutlinePostProcessPass:setDepthStep(value)
@@ -326,6 +335,10 @@ end
 
 function OutlinePostProcessPass:draw(width, height)
 	PostProcessPass.draw(self, width, height)
+
+	if not self.isEnabled then
+		return
+	end
 
 	self.outlineBuffer:resize(width, height)
 	self.outlineBuffer:getCanvas(1):setFilter("linear", "linear")

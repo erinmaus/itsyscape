@@ -46,13 +46,13 @@ function YendorianJungleGround:new()
 		}
 	})
 
-	-- self:registerTile("grass", GrassBlock:Bind(self) {
-	-- 	-- Nothing.
-	-- })
+	self:registerTile("grass", GrassBlock:Bind(self) {
+		-- Nothing.
+	})
 
-	-- self:registerTile("grass", VineBlock:Bind(self) {
-	-- 	-- Nothing.
-	-- })
+	self:registerTile("grass", VineBlock:Bind(self) {
+		-- Nothing.
+	})
 end
 
 return YendorianJungleGround

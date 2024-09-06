@@ -158,6 +158,7 @@ function GameView:initRenderer(conf)
 
 	self.sceneOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
 	self.sceneOutlinePostProcessPass:load(self.resourceManager)
+	self.sceneOutlinePostProcessPass:setIsEnabled(not conf or conf.outlines == nil or not not conf.outlines)
 
 	self.ssrPostProcessPass = SSRPostProcessPass(self.renderer)
 	self.ssrPostProcessPass:load(self.resourceManager)
@@ -174,6 +175,7 @@ function GameView:initRenderer(conf)
 	self.skyboxOutlinePostProcessPass:setMinOutlineDepthAlpha(1)
 	self.skyboxOutlinePostProcessPass:setMaxOutlineDepthAlpha(1)
 	self.skyboxOutlinePostProcessPass:setOutlineFadeDepth(1000)
+	self.skyboxOutlinePostProcessPass:setIsEnabled(not conf or conf.outlines == nil or not not conf.outlines)
 
 	self.toneMapPostProcessPass = ToneMapPostProcessPass(self.renderer)
 	self.toneMapPostProcessPass:load(self.resourceManager)
