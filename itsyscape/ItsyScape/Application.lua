@@ -532,7 +532,7 @@ function Application:update(delta)
 	self:updateMemoryUsage()
 
 	if _DEBUG ~= "plus" then
-		local step = (_CONF.clientGCStepMS or 2) / 1000
+		local step = (_CONF.clientGCStepMS or 1) / 1000
 
 		local startTime = love.timer.getTime()
 		while love.timer.getTime() < startTime + step do

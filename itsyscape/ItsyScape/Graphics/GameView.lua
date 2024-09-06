@@ -78,7 +78,7 @@ function GameView:new(game, camera)
 	self.resourceManager = ResourceManager()
 	self.spriteManager = SpriteManager(self.resourceManager)
 
-	self:initRenderer()
+	self:initRenderer(_CONF)
 
 	self.itemBagModel = self.resourceManager:load(
 		ModelResource,

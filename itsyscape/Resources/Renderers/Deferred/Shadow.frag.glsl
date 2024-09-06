@@ -41,39 +41,13 @@ float calculatePCF(int cascadeIndex, vec3 position, float bias)
 	return result /= numSamples;
 }
 
-float calculateBiasDelta(vec3 lightPositionDerivativeX, vec3 lightPositionDerivativeY)
-{
-	// mat2 screenToShadow = mat2(lightPositionDerivativeX.xy, lightPositionDerivativeY.xy);
-	// float d = determinant(screenToShadow);
-	
-	// float inverseD = 1.0 / d;
-	
-	// mat2 shadowToScreen = mat2(
-	// 	screenToShadow[1][1] * inverseD, screenToShadow[0][1] * -inverseD, 
-	// 	screenToShadow[1][0] * -inverseD, screenToShadow[0][1] * inverseD
-	// );
-
-	// vec2 rightTexel = vec2(scape_TexelSize.x, 0.0);
-	// vec2 upTexel = vec2(0.0, scape_TexelSize.y);  
-
-	// vec2 rightTexelDepthRatio = shadowToScreen * rightTexel;
-	// vec2 upTexelDepthRatio = shadowToScreen * upTexel;
-
-	// return vec2(
-	// 	upTexelDepthRatio.x * lightPositionDerivativeX.z + upTexelDepthRatio.y * lightPositionDerivativeY.z,
-	// 	rightTexelDepthRatio.x * lightPositionDerivativeX.z + rightTexelDepthRatio.y * lightPositionDerivativeY.z
-	// );
-	return (lightPositionDerivativeX.z * lightPositionDerivativeX.z + lightPositionDerivativeY.z * lightPositionDerivativeY.z);
-	//return length(lightPositionDerivativeX) + length(lightPositionDerivativeY);
-}
-
 vec4 effect(
 	vec4 color,
 	Image depth,
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	vec4 positionSample = Texel(scape_PositionTexture, textureCoordinate); 
+	vec4 positionSample = Texel(scape_PositionTexture, textureCoordinate);
 	vec3 worldPosition = positionSample.xyz;
 	vec3 viewPosition = (scape_View * vec4(worldPosition, 1.0)).xyz;
 
