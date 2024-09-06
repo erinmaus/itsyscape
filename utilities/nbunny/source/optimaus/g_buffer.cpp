@@ -16,7 +16,7 @@
 
 nbunny::GBuffer::GBuffer(const std::vector<love::PixelFormat>& pixel_formats)
 {
-	this->pixel_formats.push_back(love::PIXELFORMAT_DEPTH24_STENCIL8);
+	this->pixel_formats.push_back(love::PIXELFORMAT_DEPTH24);
 	this->pixel_formats.insert(this->pixel_formats.end(), pixel_formats.begin(), pixel_formats.end());
 }
 

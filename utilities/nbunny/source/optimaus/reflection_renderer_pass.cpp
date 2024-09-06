@@ -214,7 +214,7 @@ void nbunny::ReflectionRendererPass::copy_g_buffer()
 
 nbunny::ReflectionRendererPass::ReflectionRendererPass(GBuffer& g_buffer) :
 	RendererPass(RENDERER_PASS_REFLECTION),
-	reflection_buffer({ love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA32F, love::PIXELFORMAT_RGBA16F }),
+	reflection_buffer({ love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F }),
 	g_buffer(g_buffer)
 {
 	// Nothing.

@@ -500,7 +500,7 @@ function love.run()
 			love.graphics.present()
 		end
 
-		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 2) / 1000) end
+		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 1) / 1000) end
 	end
 end
 

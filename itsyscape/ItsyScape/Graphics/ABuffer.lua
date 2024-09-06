@@ -15,7 +15,7 @@ local ABuffer = Class()
 ABuffer.ALPHA_INDEX = 1
 
 ABuffer.ALPHA_FORMAT = 'rgba8'
-ABuffer.COLOR_FORMAT = 'rgba32f'
+ABuffer.COLOR_FORMAT = 'rgba16f'
 ABuffer.OUTLINE_COLOR_INDEX = 'rgba8'
 ABuffer.DEPTH_STENCIL_FORMAT = 'depth24'
 

@@ -274,7 +274,7 @@ void nbunny::ShadowRendererPass::resize(int width, int height)
 	settings.height = this->height;
 	settings.layers = num_cascades;
 	settings.dpiScale = instance->getScreenDPIScale();
-	settings.format = love::PIXELFORMAT_DEPTH24;
+	settings.format = love::PIXELFORMAT_DEPTH16;
 	settings.type = love::graphics::TEXTURE_2D_ARRAY;
 	settings.readable = true;
 
