@@ -515,6 +515,26 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 		}
 	}
 
+	auto specular_texture_uniform = shader->getUniformInfo("scape_SpecularTexture");
+	if (specular_texture_uniform && textures.size() >= 1)
+	{
+		auto texture = textures[0]->get_bound_texture("Specular");
+		if (texture)
+		{
+			shader->sendTextures(specular_texture_uniform, &texture, 1);
+		}
+	}
+
+	auto heightmap_texture_uniform = shader->getUniformInfo("scape_HeightmapTexture");
+	if (heightmap_texture_uniform && textures.size() >= 1)
+	{
+		auto texture = textures[0]->get_bound_texture("Heightmap");
+		if (texture)
+		{
+			shader->sendTextures(heightmap_texture_uniform, &texture, 1);
+		}
+	}
+
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	love::Matrix4 matrix(glm::value_ptr(get_transform().get_global(delta)));
 	graphics->draw(mesh, matrix);

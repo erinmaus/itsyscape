@@ -118,6 +118,14 @@ function SplineSceneNode:draw(renderer)
 		shader:send("scape_DiffuseTexture", diffuse:getResource())
 	end
 
+	if shader:hasUniform("scape_SpecularTexture") and diffuse and diffuse:getHandle():getBoundTexture("Specular") then
+		shader:send("scape_SpecularTexture", diffuse:getHandle():getBoundTexture("Specular"))
+	end
+
+	if shader:hasUniform("scape_HeightmapTexture") and diffuse and diffuse:getHandle():getBoundTexture("Heightmap") then
+		shader:send("scape_HeightmapTexture", diffuse:getHandle():getBoundTexture("Heightmap"))
+	end
+
 	if self.mesh then
 		love.graphics.draw(self.mesh)
 	end
