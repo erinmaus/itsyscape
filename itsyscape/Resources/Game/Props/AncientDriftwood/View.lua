@@ -91,6 +91,10 @@ function AncientDriftwood:load()
 					currentShader:send("scape_BumpHeight", 1)
 				end
 
+				if currentShader:hasUniform("scape_EnableActorBump") then
+					currentShader:send("scape_EnableActorBump", 0)
+				end
+
 				local _, layer = self:getProp():getPosition()
 				local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
 

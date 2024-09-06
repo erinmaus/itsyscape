@@ -21,7 +21,8 @@ SplineSceneNode.MESH_FORMAT = {
 	{ 'VertexPosition', 'float', 3 },
 	{ 'VertexNormal', 'float', 3 },
 	{ 'VertexTexture', 'float', 3 },
-	{ 'VertexColor', 'float', 4 }
+	{ 'VertexColor', 'float', 4 },
+	{ 'FeaturePosition', 'float', 3 }
 }
 
 SplineSceneNode.DEFAULT_SHADER = ShaderResource()
@@ -45,10 +46,15 @@ function SplineSceneNode:fromSpline(spline, staticMesh)
 		local feature = spline:getFeatureByIndex(i)
 
 		if staticMesh:hasGroup(feature:getID()) then
+			local fx, fy, fz = feature:getCurve():evaluatePosition(0):get()
+			local count = 0
+
 			local vertices = staticMesh:getVertices(feature:getID())
 			for i = 1, #vertices, 1 do
 				local v = vertices[i]
 				local p, r = feature:getCurve():transform(Vector(unpack(v, 1, 3)), Quaternion.IDENTITY)
+
+				local px, py, pz = p:get()
 
 				local nx, ny, nz = unpack(v, 4, 6)
 				nx, ny, nz = r:getNormal():transformVector(Vector(nx, ny, nz)):getNormal():get()
@@ -72,11 +78,20 @@ function SplineSceneNode:fromSpline(spline, staticMesh)
 				max = max:max(p):keep(max)
 
 				table.insert(self.vertices, {
-					p.x, p.y, p.z,
+					px, py, pz,
 					nx, ny, nz,
 					tx, ty, tz,
-					cr, cg, cb, ca
+					cr, cg, cb, ca,
+					fx, fy, fz
 				})
+
+				if count > 10 then
+					if coroutine.running() then
+						coroutine.yield()
+					end
+
+					count = 0
+				end
 			end
 		end
 
