@@ -469,8 +469,8 @@ function MapCurve:getMax()
 end
 
 function MapCurve:setAxis(value)
-	self.axis = value
-	self.oppositeAxis = Vector.UNIT_Y:cross(self.axis):getNormal()
+	self.axis = value:keep()
+	self.oppositeAxis = Vector.UNIT_Y:cross(self.axis):getNormal():keep()
 end
 
 function MapCurve:getAxis()

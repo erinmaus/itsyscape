@@ -24,12 +24,12 @@ local FernView = Class(PropView)
 FernView.MIN_FROND_CIRCLES = 2
 FernView.MAX_FROND_CIRCLES = 4
 FernView.MIN_FRONDS_PER_CIRCLE = 3
-FernView.MAX_FRONDS_PER_CIRCLE = 3
-FernView.MIN_SCALE = 0.1
-FernView.MAX_SCALE = 0.4
-FernView.MIN_RADIUS = 0
-FernView.MAX_RADIUS = 2
-FernView.STEP1 = 0.4
+FernView.MAX_FRONDS_PER_CIRCLE = 5
+FernView.MIN_SCALE = 0.2
+FernView.MAX_SCALE = 0.3
+FernView.MIN_RADIUS = 0.1
+FernView.MAX_RADIUS = 1.0
+FernView.STEP1 = 0.3
 FernView.STEP2 = 0.6
 FernView.STEP3 = 1.1
 
@@ -117,9 +117,9 @@ function FernView:load()
 					axis = { 0, 0, 1 },
 					positions = {
 						{
-							x,
+							x * radius,
 							0,
-							z
+							z * radius,
 						},
 						{
 							x * (radius + self.STEP1),
@@ -205,8 +205,8 @@ function FernView:load()
 				currentShader:send("scape_WindMaxDistance", 0.5)
 			end
 
-			if currentShader:hasUniform("scape_BumpMaxDistance") then
-				currentShader:send("scape_BumpMaxDistance", 0.15)
+			if currentShader:hasUniform("scape_EnableActorBump") then
+				currentShader:send("scape_EnableActorBump", 1)
 			end
 
 			if currentShader:hasUniform("scape_WallHackWindow") then
