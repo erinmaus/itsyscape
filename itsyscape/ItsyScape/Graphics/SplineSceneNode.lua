@@ -53,9 +53,9 @@ function SplineSceneNode:fromSpline(spline, staticMesh)
 			for i = 1, #vertices, 1 do
 				local v = vertices[i]
 				local p, r = feature:getCurve():transform(Vector(unpack(v, 1, 3)), Quaternion.IDENTITY)
-
+				
 				local px, py, pz = p:get()
-
+				
 				local nx, ny, nz = unpack(v, 4, 6)
 				nx, ny, nz = r:getNormal():transformVector(Vector(nx, ny, nz)):getNormal():get()
 
