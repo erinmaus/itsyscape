@@ -53,6 +53,4 @@ void performTransform(
 
 	localPosition = bendyPosition.xyz;
 	projectedPosition = modelViewProjectionMatrix * vec4(localPosition, 1.0);
-
-	frag_Normal = normal;
 }

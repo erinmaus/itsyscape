@@ -46,9 +46,11 @@ function BaseQuaternion.lookAt(source, target, up)
 end
 
 function BaseQuaternion.fromVectors(source, target)
-	local cross = source:cross(target:getNormal())
-	local dot = source:dot(target:getNormal())
-	return Quaternion(cross.x, cross.y, cross.z, 1 + dot)
+	local dot = source:getNormal():dot(target:getNormal())
+	local halfCos = math.sqrt((1 + dot) / 2)
+	local halfSin = math.sqrt((1 - dot) / 2)
+	local cross = source:cross(target):getNormal() * halfSin
+	return Quaternion(cross.x, cross.y, cross.z, halfCos)
 end
 
 -- Constructs a new three-dimensional quaternion from the provided components.

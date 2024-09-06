@@ -139,7 +139,7 @@ function FernView:load()
 					},
 
 					normals = {
-						{ 0, 1, 0 }
+						{ -x, 0, -z }
 					},
 
 					rotations = {
