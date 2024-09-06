@@ -22,7 +22,7 @@ CSGBuilding.HEIGHT = 2
 CSGBuilding.Node = Class(SceneNode)
 CSGBuilding.Node.SHADER = ShaderResource()
 do
-	CSGBuilding.Node.SHADER:loadFromFile("Resources/Shaders/TriPlanar")
+	CSGBuilding.Node.SHADER:loadFromFile("Resources/Shaders/Triplanar")
 end
 
 function CSGBuilding.Node:new()

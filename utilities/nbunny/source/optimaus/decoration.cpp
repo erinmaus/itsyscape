@@ -523,6 +523,11 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 		{
 			shader->sendTextures(specular_texture_uniform, &texture, 1);
 		}
+		else
+		{
+			love::graphics::Texture* null_texture = nullptr;
+			shader->sendTextures(specular_texture_uniform, &null_texture, 1);
+		}
 	}
 
 	auto heightmap_texture_uniform = shader->getUniformInfo("scape_HeightmapTexture");
@@ -532,6 +537,11 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 		if (texture)
 		{
 			shader->sendTextures(heightmap_texture_uniform, &texture, 1);
+		}
+		else
+		{
+			love::graphics::Texture* null_texture = nullptr;
+			shader->sendTextures(heightmap_texture_uniform, &null_texture, 1);
 		}
 	}
 

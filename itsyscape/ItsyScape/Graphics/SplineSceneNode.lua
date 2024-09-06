@@ -47,7 +47,6 @@ function SplineSceneNode:fromSpline(spline, staticMesh)
 
 		if staticMesh:hasGroup(feature:getID()) then
 			local fx, fy, fz = feature:getCurve():evaluatePosition(0):get()
-			local count = 0
 
 			local vertices = staticMesh:getVertices(feature:getID())
 			for i = 1, #vertices, 1 do
@@ -84,14 +83,6 @@ function SplineSceneNode:fromSpline(spline, staticMesh)
 					cr, cg, cb, ca,
 					fx, fy, fz
 				})
-
-				if count > 10 then
-					if coroutine.running() then
-						coroutine.yield()
-					end
-
-					count = 0
-				end
 			end
 		end
 
