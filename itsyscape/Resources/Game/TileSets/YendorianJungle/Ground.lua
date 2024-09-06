@@ -14,6 +14,7 @@ local Color = require "ItsyScape.Graphics.Color"
 local GroundDecorations = require "ItsyScape.World.GroundDecorationsV2"
 local WoodBlock = require "ItsyScape.World.GroundDecorations.WoodBlockV2"
 local GrassBlock = require "ItsyScape.World.GroundDecorations.GrassBlockV2"
+local VineBlock = require "ItsyScape.World.GroundDecorations.VineBlockV2"
 
 local YendorianJungleGround = Class(GroundDecorations)
 
@@ -48,6 +49,14 @@ function YendorianJungleGround:new()
 	self:registerTile("grass", GrassBlock:Bind(self) {
 		COLOR = Color.fromHexString("558855"),
 		FEATURE = "grass"
+	})
+
+	self:registerTile("grass", GrassBlock:Bind(self) {
+		-- Nothing.
+	})
+
+	self:registerTile("grass", VineBlock:Bind(self) {
+		-- Nothing.
 	})
 end
 

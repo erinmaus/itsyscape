@@ -64,8 +64,8 @@ function FoggyForest:onLoad(...)
 	local _, skyMapScript = Utility.Map.spawnMap(self, "Test123_Draft", Vector.ZERO, { isLayer = true })
 	local sky = skyMapScript:getBehavior(SkyBehavior)
 	sky.daySkyColor = Color.fromHexString("644296")
-	sky.dayAmbientColor = Color.fromHexString("b380ff")
-	sky.sunColor = Color.fromHexString("e9c8af")
+	sky.dayAmbientColor = Color.fromHexString("e9c8af")
+	sky.sunColor = Color.fromHexString("b380ff")
 	sky.moonColor = Color.fromHexString("afdde9")
 end
 

@@ -142,12 +142,12 @@ function FernView:load()
 					local map = self:getGameView():getMap(layer)
 					local windDirection, windSpeed, windPattern, actorCanvas = self:getGameView():getWind(layer)
 
-					if currentShader:hasUniform("scape_ActorCanvas") then
-						currentShader:send("scape_ActorCanvas", actorCanvas)
+					if currentShader:hasUniform("scape_BumpCanvas") then
+						currentShader:send("scape_BumpCanvas", actorCanvas)
 					end
 
-					if currentShader:hasUniform("scape_ActorBumpForce") then
-						currentShader:send("scape_ActorBumpForce", 0.25)
+					if currentShader:hasUniform("scape_BumpForce") then
+						currentShader:send("scape_BumpForce", 0.25)
 					end
 
 					if currentShader:hasUniform("scape_MapSize") and map then

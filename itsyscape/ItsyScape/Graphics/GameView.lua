@@ -22,6 +22,7 @@ local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local OutlinePostProcessPass = require "ItsyScape.Graphics.OutlinePostProcessPass"
+local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Spline = require "ItsyScape.Graphics.Spline"
 local SplineSceneNode = require "ItsyScape.Graphics.SplineSceneNode"
@@ -44,6 +45,7 @@ local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
 local Block = require "ItsyScape.World.GroundDecorations.Block"
 local SkyboxSceneNode = require "ItsyScape.Graphics.SkyboxSceneNode"
+local NShaderCache = require "nbunny.optimaus.shadercache"
 
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
@@ -175,6 +177,10 @@ function GameView:initRenderer(conf)
 
 	self.toneMapPostProcessPass = ToneMapPostProcessPass(self.renderer)
 	self.toneMapPostProcessPass:load(self.resourceManager)
+
+	self.shaderCache = PostProcessPass(self.renderer, 0)
+	self.shaderCache:load(self.resourceManager)
+	self.bumpCanvasShader = self.shaderCache:loadPostProcessShader("BumpCanvas")
 end
 
 function GameView:attach(game)
@@ -472,6 +478,11 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
 		{ format = "rgba16f" })
 	actorCanvas:setFilter("linear", "linear")
+	local bumpCanvas = love.graphics.newCanvas(
+		map:getWidth() * GameView.ACTOR_CANVAS_CELL_SIZE,
+		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
+		{ format = "rgba16f" })
+	bumpCanvas:setFilter("linear", "linear")
 
 	local m = {
 		tileSet = tileSet,
@@ -491,6 +502,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		meta = meta,
 		wallHackEnabled = not (meta and type(meta.wallHack) == "table" and meta.wallHack.enabled == false),
 		actorCanvas = actorCanvas,
+		bumpCanvas = bumpCanvas,
 		curves = {}
 	}
 
@@ -656,8 +668,8 @@ function GameView:updateGroundDecorations(m)
 									return
 								end
 
-								if currentShader:hasUniform("scape_ActorCanvas") then
-									currentShader:send("scape_ActorCanvas", m.actorCanvas)
+								if currentShader:hasUniform("scape_BumpCanvas") then
+									currentShader:send("scape_BumpCanvas", m.bumpCanvas)
 								end
 
 								local windDirection, windSpeed, windPattern = self:getWind(m.layer)
@@ -1089,7 +1101,7 @@ function GameView:getWind(layer)
 		return (m.meta.windDirection and Vector(unpack(m.meta.windDirection)) or Vector(-1, 0, -1)):getNormal(),
 		       m.meta.windSpeed or 4,
 		       m.meta.windPattern and vector(m.meta.windPattern) or Vector(5, 10, 15),
-		       m.actorCanvas
+		       m.bumpCanvas
 	end
 
 	return Vector(-1, 0, -1):getNormal(), 4, Vector(5, 10, 15), self.whiteTexture:getResource()
@@ -1870,6 +1882,7 @@ function GameView:_updateActorCanvases(delta)
 		love.graphics.setCanvas(m.actorCanvas)
 		love.graphics.clear(0, 0, 0, 1)
 
+		love.graphics.setShader()
 		love.graphics.setBlendMode("alpha", "alphamultiply")
 
 		for actor in self.game:getStage():iterateActors() do
@@ -1878,6 +1891,13 @@ function GameView:_updateActorCanvases(delta)
 				self:_drawActorOnActorCanvas(delta, actor, m)
 			end
 		end
+
+		love.graphics.setCanvas(m.bumpCanvas)
+		love.graphics.clear(0, 0, 0, 1)
+
+		love.graphics.setShader(self.bumpCanvasShader)
+		love.graphics.setBlendMode("replace", "premultiplied")
+		love.graphics.draw(m.actorCanvas)
 	end
 	love.graphics.pop()
 end
