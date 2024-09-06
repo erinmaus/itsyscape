@@ -413,18 +413,18 @@ function MapCurve:new(map, t)
 	self.width = (map and map:getWidth()) or t.width or 0
 	self.height = (map and map:getHeight()) or t.height or 0
 	self.unit = (map and map:getCellSize()) or t.unit or 1
-	self.mapSize = Vector(self.width * self.unit, 0, self.height * self.unit)
+	self.mapSize = Vector(self.width * self.unit, 0, self.height * self.unit):keep()
 	self.halfMapSize = self.mapSize / 2
 
 	local min = t.min or { 0, 0, 0 }
 	local max = t.max or { self.mapSize.x, 0, self.mapSize.z }
 
-	self.min = Vector(unpack(min))
-	self.max = Vector(unpack(max))
+	self.min = Vector(unpack(min)):keep()
+	self.max = Vector(unpack(max)):keep()
 
 	local axis = t.axis or { 0, 0, 1 }
-	self.axis = Vector(unpack(axis))
-	self.oppositeAxis = Vector.UNIT_Y:cross(self.axis):getNormal()
+	self.axis = Vector(unpack(axis)):keep()
+	self.oppositeAxis = Vector.UNIT_Y:cross(self.axis):getNormal():keep()
 
 	self.positionCurve = MapCurve.Curve(MapCurve.Position, t.positions or {})
 	self.rotationCurve = MapCurve.Curve(MapCurve.Rotation, t.rotations or {})
@@ -453,7 +453,7 @@ function MapCurve:evaluateScale(t)
 end
 
 function MapCurve:setMin(value)
-	self.min = value
+	self.min = value:keep()
 end
 
 function MapCurve:getMin()
@@ -461,7 +461,7 @@ function MapCurve:getMin()
 end
 
 function MapCurve:setMax(value)
-	self.max = value
+	self.max = value:keep()
 end
 
 function MapCurve:getMax()
@@ -499,14 +499,14 @@ end
 
 function MapCurve:transform(point, rotation)
 	if self.positionCurve:length() <= 1 then
-		return point
+		return point, rotation
 	end
 
 	local planarPoint = Vector(point.x, 0, point.z)
 	local relativePoint = (planarPoint - self.min) / (self.max - self.min):max(Vector.ONE) * self.axis
 	local t = math.max(relativePoint:get())
 	if t < 0 or t > 1 then
-		return point
+		return point, rotation
 	end
 
 	local curvePosition = self:evaluatePosition(t)

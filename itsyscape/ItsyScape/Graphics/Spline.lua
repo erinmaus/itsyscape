@@ -97,8 +97,6 @@ function Spline:new(d)
 		self:loadFromFile(d)
 	elseif type(d) == 'table' then
 		self:loadFromTable(d)
-	else
-		error(("expected table or filename (string), got %s"):format(type(d)))
 	end
 end
 

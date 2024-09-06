@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Decoration = require "ItsyScape.Graphics.Decoration"
@@ -39,7 +40,7 @@ end
 function SplineSceneNode:fromSpline(spline, staticMesh)
 	table.clear(self.vertices)
 
-	local min, max = Vector(math.huge), Vector(-math.huge)
+	local min, max = Vector(math.huge):keep(), Vector(-math.huge):keep()
 	for i = 1, spline:getNumFeatures() do
 		local feature = spline:getFeatureByIndex(i)
 
@@ -47,9 +48,11 @@ function SplineSceneNode:fromSpline(spline, staticMesh)
 			local vertices = staticMesh:getVertices(feature:getID())
 			for i = 1, #vertices, 1 do
 				local v = vertices[i]
-				local p = feature:getCurve():transform(Vector(unpack(v, 1, 3)))
+				local p, r = feature:getCurve():transform(Vector(unpack(v, 1, 3)), Quaternion.IDENTITY)
 
 				local nx, ny, nz = unpack(v, 4, 6)
+				nx, ny, nz = r:getNormal():transformVector(Vector(nx, ny, nz)):getNormal():get()
+
 				local tx, ty = unpack(v, 7, 8)
 				local tz = feature:getTexture() - 1
 
@@ -65,8 +68,8 @@ function SplineSceneNode:fromSpline(spline, staticMesh)
 				cb = cb * c.b
 				ca = ca * c.a
 
-				min = min:min(p)
-				max = max:max(p)
+				min = min:min(p):keep(min)
+				max = max:max(p):keep(max)
 
 				table.insert(self.vertices, {
 					p.x, p.y, p.z,

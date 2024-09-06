@@ -103,6 +103,23 @@ do
 	}
 end
 
+M["TestFern"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 42,
+		PositionY = 12,
+		PositionZ = 69,
+		Name = "TestFern",
+		Map = M._MAP,
+		Resource = M["TestFern"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "JungleFern1",
+		MapObject = M["TestFern"]
+	}
+end
+
 M["Anchor_AncientDriftwood"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

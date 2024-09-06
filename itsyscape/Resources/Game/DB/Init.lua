@@ -1447,6 +1447,7 @@ include "Resources/Game/DB/Props/Altars.lua"
 include "Resources/Game/DB/Props/MilkOMatic.lua"
 include "Resources/Game/DB/Props/Target.lua"
 include "Resources/Game/DB/Props/Sky.lua"
+include "Resources/Game/DB/Props/Jungle.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"
