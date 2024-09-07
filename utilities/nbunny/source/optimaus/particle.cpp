@@ -860,13 +860,12 @@ void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, const glm:
 		);
 
 		vertex.normal = glm::normalize(glm::rotate(self_rotation, glm::normalize(p.normal)));
-		//vertex.normal = p.normal;
 		vertex.position += p.position;
 		vertex.color = p.color;
 
-		if (p.texture_index < textures.size())
+		if (!textures.empty())
 		{
-			auto texture = textures.at(p.texture_index);
+			auto texture = textures.at(p.texture_index % textures.size());
 
 			if (template_vertex.texture.x == 0)
 			{

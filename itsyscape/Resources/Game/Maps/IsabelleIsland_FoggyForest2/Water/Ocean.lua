@@ -8,5 +8,5 @@
 	y = 2.75,
 	yOffset = 0.0125,
 	reflectionDistance = 1.0,
-	alpha = 0.95
+	alpha = 0.85
 }

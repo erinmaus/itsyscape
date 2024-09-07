@@ -22,6 +22,10 @@ function PropView:new(prop, gameView)
 	self.ready = false
 end
 
+function PropView:getIsEditor()
+	return Class.isCompatibleType(_APP, require "ItsyScape.Editor.EditorApplication")
+end
+
 function PropView:getProp()
 	return self.prop
 end

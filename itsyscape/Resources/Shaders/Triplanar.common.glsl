@@ -46,3 +46,12 @@ vec4 sampleTriplanar(Image image, TriplanarTextureCoordinates triPlanarTextureCo
 
 	return x + y + z;
 }
+
+vec4 sampleTriplanarArray(ArrayImage image, TriplanarTextureCoordinates triPlanarTextureCoordinates, vec3 weight, float scale, float layer)
+{
+	vec4 x = Texel(image, vec3(triPlanarTextureCoordinates.x * vec2(scale), layer)) * weight.x;
+	vec4 y = Texel(image, vec3(triPlanarTextureCoordinates.y * vec2(scale), layer)) * weight.y;
+	vec4 z = Texel(image, vec3(triPlanarTextureCoordinates.z * vec2(scale), layer)) * weight.z;
+
+	return x + y + z;
+}
