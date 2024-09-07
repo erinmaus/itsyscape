@@ -53,6 +53,10 @@ function YendorianJungleGround:new()
 	self:registerTile("grass", VineBlock:Bind(self) {
 		-- Nothing.
 	})
+
+	self:registerTile("dirt_path", VineBlock:Bind(self) {
+		-- Nothing.
+	})
 end
 
 return YendorianJungleGround

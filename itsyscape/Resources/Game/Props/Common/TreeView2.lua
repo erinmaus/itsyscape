@@ -128,8 +128,10 @@ function TreeView:load()
 				self.leavesNode:getMaterial():setShader(self.leavesShader)
 				self.leavesNode:getMaterial():setTextures(self.leavesTexture)
 				self.leavesNode:getMaterial():setOutlineThreshold(-0.01)
-				self.leavesNode:setParent(root)
 				self.leavesNode:setTransforms(self.transforms)
+				if not self:getIsEditor() then
+					self.leavesNode:setParent(root)
+				end
 
 				self.leavesNode:onWillRender(function(renderer)
 					local currentShader = renderer:getCurrentShader()

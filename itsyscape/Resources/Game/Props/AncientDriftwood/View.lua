@@ -8,14 +8,82 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
+local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local AncientDriftwood = Class(PropView)
+
+AncientDriftwood.PARTICLES = {
+	texture = "Resources/Game/Props/AncientDriftwood/Particle_Leaf.png",
+	columns = 2,
+	rows = 3,
+
+	emitters = {
+		{
+			type = "RadialEmitter",
+			radius = { 2, 5 },
+			yRange = { 0, 0 },
+			normal = { true }
+		},
+		{
+			type = "DirectionalEmitter",
+			direction = { -1, 0, -1 },
+			speed = { 0.75, 1.0 },
+		},
+		{
+			type = "RandomColorEmitter",
+			colors = {
+				{ Color.fromHexString("574470", 0):get() },
+				{ Color.fromHexString("574470", 0):get() },
+				{ Color.fromHexString("4e4470", 0):get() },
+				{ Color.fromHexString("5e5287", 0):get() },
+			}
+		},
+		{
+			type = "RandomLifetimeEmitter",
+			lifetime = { 5, 7 }
+		},
+		{
+			type = "RandomScaleEmitter",
+			scale = { 0.4, 0.5 }
+		},
+		{
+			type = "RandomRotationEmitter",
+			rotation = { 0, 360 },
+			velocity = { 60, 120 }
+		},
+		{
+			type = "RandomTextureIndexEmitter",
+			textures = { 1, 6 }
+		}
+	},
+
+	paths = {
+		{
+			type = "FadeInOutPath",
+			fadeInPercent = { 0.1 },
+			fadeOutPercent = { 0.9 },
+			tween = { 'sineEaseOut' }
+		},
+		{
+			type = "GravityPath",
+			gravity = { 0, -0.25, 0 }
+		}
+	},
+
+	emissionStrategy = {
+		type = "RandomDelayEmissionStrategy",
+		count = { 1, 2 },
+		delay = { 1 / 8 },
+		duration = math.huge
+	}
+}
 
 function AncientDriftwood:getTextureFilename()
 	return "Resources/Game/Props/AncientDriftwood/Tree.png"
@@ -119,6 +187,12 @@ function AncientDriftwood:load()
 				end
 			end)
 		end)
+
+	self.leafParticles = ParticleSceneNode()
+	self.leafParticles:initParticleSystemFromDef(AncientDriftwood.PARTICLES, resources)
+	self.leafParticles:getMaterial():setIsFullLit(false)
+	self.leafParticles:getTransform():setLocalTranslation(Vector(-2, 10, 2))
+	self.leafParticles:setParent(root)
 end
 
 return AncientDriftwood
