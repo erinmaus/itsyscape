@@ -33,9 +33,6 @@ void performTransform(
 
 vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 {
-	//vec3 lightDirection = normalize(scape_ViewMatrix[3].xyz);
-	//float normalDotLight = clamp(1.0 - dot(VertexNormal, lightDirection), 0.0, 1.0);
-
 	frag_Normal = normalize(mat3(scape_NormalMatrix) * VertexNormal);
 	frag_Texture = VertexTexture;
 	frag_Color = ConstantColor;
@@ -44,7 +41,6 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 	vec4 projectedPosition = vec4(0.0);
 	performTransform(
 		modelViewProjection,
-		// vertexPosition - vec4(vec3(normalDotLight * 0.25) * VertexNormal, 0.0),
 		vertexPosition,
 		localPosition,
 		projectedPosition);
