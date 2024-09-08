@@ -233,17 +233,9 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
 
-	love::graphics::Graphics::ColorMask enabled_mask;
-	enabled_mask.r = true;
-	enabled_mask.g = true;
-	enabled_mask.b = true;
-	enabled_mask.a = true;
-
-	love::graphics::Graphics::ColorMask disabled_mask;
-	disabled_mask.r = false;
-	disabled_mask.g = false;
-	disabled_mask.b = false;
-	disabled_mask.a = false;
+	graphics->setMeshCullMode(love::graphics::CULL_BACK);
+	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
 	for (auto& scene_node: drawable_scene_nodes)
 	{
@@ -281,16 +273,23 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 			shader->updateUniform(num_fog_uniform, 1);
 		}
 
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
-
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
 
+		if (scene_node->get_material().get_is_z_write_disabled())
+		{
+			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
+		}
+
 		renderer->draw_node(L, *scene_node, delta);
-		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
+
+		if (scene_node->get_material().get_is_z_write_disabled())
+		{
+			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+		}
 	}
+
+	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 nbunny::ForwardRendererPass::ForwardRendererPass(LBuffer& c_buffer) :

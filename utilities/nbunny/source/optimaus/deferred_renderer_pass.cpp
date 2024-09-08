@@ -474,6 +474,10 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		},
 		0,
 		1.0f);
+	
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+	graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
 	for (auto& scene_node: drawable_scene_nodes)
 	{
@@ -493,18 +497,24 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 			*reflection_thickness_uniform->floats = scene_node->get_material().get_reflection_distance();
 			shader->updateUniform(reflection_thickness_uniform, 1);
 		}
-	
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
-		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
-		graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
 
+		if (scene_node->get_material().get_is_z_write_disabled())
+		{
+			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
+		}
+
 		renderer->draw_node(L, *scene_node, delta);
 
-		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
+		if (scene_node->get_material().get_is_z_write_disabled())
+		{
+			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+		}
 	}
+
+	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
