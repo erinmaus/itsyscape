@@ -96,17 +96,21 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 	glad::glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-	love::graphics::Graphics::ColorMask enabledMask;
-	enabledMask.r = true;
-	enabledMask.g = true;
-	enabledMask.b = true;
-	enabledMask.a = true;
+	love::graphics::Graphics::ColorMask enabled_mask;
+	enabled_mask.r = true;
+	enabled_mask.g = true;
+	enabled_mask.b = true;
+	enabled_mask.a = true;
 
-	love::graphics::Graphics::ColorMask disabledMask;
-	disabledMask.r = false;
-	disabledMask.g = false;
-	disabledMask.b = false;
-	disabledMask.a = false;
+	love::graphics::Graphics::ColorMask disabled_mask;
+	disabled_mask.r = false;
+	disabled_mask.g = false;
+	disabled_mask.b = false;
+	disabled_mask.a = false;
+
+    graphics->setMeshCullMode(love::graphics::CULL_BACK);
+	graphics->setColorMask(disabled_mask);
+    graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);	
 
 	for (auto& scene_node: other_scene_nodes)
 	{
@@ -117,10 +121,6 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 		renderer->set_current_shader(shader);
 
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
-
-		graphics->setColorMask(disabledMask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);	
 		renderer->draw_node(L, *scene_node, delta);
 	}
 
@@ -133,14 +133,11 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 		renderer->set_current_shader(shader);
 
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
-
-		graphics->setColorMask(disabledMask);
+		graphics->setColorMask(disabled_mask);
         graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());	
 		renderer->draw_node(L, *scene_node, delta);
 
-		graphics->setColorMask(enabledMask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
+		graphics->setColorMask(enabled_mask);
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
@@ -148,7 +145,7 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 		renderer->draw_node(L, *scene_node, delta);
 	}
 
-	graphics->setColorMask(enabledMask);
+	graphics->setColorMask(enabled_mask);
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 
 	// We want to ensure all draws have been submitted before restoring
@@ -173,12 +170,12 @@ void nbunny::ParticleOutlineRendererPass::copy_depth_buffer()
 		return;
 	}
 
-	love::graphics::Graphics::ColorMask disabledMask;
-	disabledMask.r = false;
-	disabledMask.g = false;
-	disabledMask.b = false;
-	disabledMask.a = false;
-	graphics->setColorMask(disabledMask);
+	love::graphics::Graphics::ColorMask disabled_mask;
+	disabled_mask.r = false;
+	disabled_mask.g = false;
+	disabled_mask.b = false;
+	disabled_mask.a = false;
+	graphics->setColorMask(disabled_mask);
 
 	get_renderer()->set_current_shader(shader);
 	graphics->draw(depth_buffer.get_canvas(0), love::Matrix4());

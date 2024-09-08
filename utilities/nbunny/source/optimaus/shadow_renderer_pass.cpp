@@ -192,6 +192,10 @@ void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 		Camera shadow_camera;
 		shadow_camera.update(view_matrix, projection_matrix);
 
+		graphics->setColorMask(disabledMask);
+		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+		graphics->setMeshCullMode(love::graphics::CULL_BACK);
+
 		for (auto& scene_node: shadow_casting_scene_nodes)
 		{
 			if (!shadow_camera.inside(*scene_node, delta))
@@ -205,10 +209,6 @@ void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 				continue;
 			}
 			renderer->set_current_shader(shader);
-
-			graphics->setColorMask(disabledMask);
-			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-			graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
 			renderer->draw_node(L, *scene_node, delta);
 		}

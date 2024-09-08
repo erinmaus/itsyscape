@@ -85,17 +85,20 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
 
-	love::graphics::Graphics::ColorMask enabledMask;
-	enabledMask.r = true;
-	enabledMask.g = true;
-	enabledMask.b = true;
-	enabledMask.a = true;
+	love::graphics::Graphics::ColorMask enabled_mask;
+	enabled_mask.r = true;
+	enabled_mask.g = true;
+	enabled_mask.b = true;
+	enabled_mask.a = true;
 
-	love::graphics::Graphics::ColorMask disabledMask;
-	disabledMask.r = false;
-	disabledMask.g = false;
-	disabledMask.b = false;
-	disabledMask.a = false;
+	love::graphics::Graphics::ColorMask disabled_mask;
+	disabled_mask.r = false;
+	disabled_mask.g = false;
+	disabled_mask.b = false;
+	disabled_mask.a = false;
+
+    graphics->setMeshCullMode(love::graphics::CULL_BACK);
+	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
 
 	for (auto& scene_node: translucent_scene_nodes)
 	{
@@ -113,14 +116,10 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 			shader->updateUniform(alpha_mask_uniform, 1);
 		}
 
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
-
-		graphics->setColorMask(disabledMask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+		graphics->setColorMask(disabled_mask);
 		renderer->draw_node(L, *scene_node, delta);
 
-		graphics->setColorMask(enabledMask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
+		graphics->setColorMask(enabled_mask);
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
@@ -144,15 +143,12 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 			shader->updateUniform(alpha_mask_uniform, 1);
 		}
 
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
-
-		graphics->setColorMask(disabledMask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+		graphics->setColorMask(disabled_mask);
 		renderer->draw_node(L, *scene_node, delta);
 	}
 
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
-	graphics->setColorMask(enabledMask);
+	graphics->setColorMask(enabled_mask);
 }
 
 void nbunny::AlphaMaskRendererPass::copy_depth_buffer()
@@ -169,12 +165,12 @@ void nbunny::AlphaMaskRendererPass::copy_depth_buffer()
 		return;
 	}
 
-	love::graphics::Graphics::ColorMask disabledMask;
-	disabledMask.r = false;
-	disabledMask.g = false;
-	disabledMask.b = false;
-	disabledMask.a = false;
-	graphics->setColorMask(disabledMask);
+	love::graphics::Graphics::ColorMask disabled_mask;
+	disabled_mask.r = false;
+	disabled_mask.g = false;
+	disabled_mask.b = false;
+	disabled_mask.a = false;
+	graphics->setColorMask(disabled_mask);
 
 	get_renderer()->set_current_shader(shader);
 	graphics->draw(depth_buffer.get_canvas(0), love::Matrix4());

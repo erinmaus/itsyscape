@@ -77,6 +77,9 @@ void nbunny::OutlineRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
 
+	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+
 	for (auto& scene_node: opaque_outline_scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
@@ -86,13 +89,10 @@ void nbunny::OutlineRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 		renderer->set_current_shader(shader);
 
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
-
 		renderer->draw_node(L, *scene_node, delta);
 	}
 
+	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
 	for (auto& scene_node: translucent_outline_scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
@@ -101,10 +101,6 @@ void nbunny::OutlineRendererPass::draw_nodes(lua_State* L, float delta)
 			continue;
 		}
 		renderer->set_current_shader(shader);
-
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
