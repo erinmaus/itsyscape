@@ -237,39 +237,32 @@ function OutlinePostProcessPass:_jumpFlood(width, height)
 	local currentOutlineBuffer = self.distanceBuffer:getCanvas(1)
 	local nextOutlineBuffer = self.distanceBuffer:getCanvas(2)
 
-	local halfWidth = math.floor(width / 2)
-	local halfHeight = math.floor(height / 2)
-
 	self:bindShader(
 		self.initializeJumpFloodShader,
-		"scape_TextureSize", { halfWidth, halfHeight })
+		"scape_TextureSize", { self.distanceBuffer:getWidth(), self.distanceBuffer:getHeight() })
 
 	love.graphics.setCanvas(currentOutlineBuffer)
 	love.graphics.clear(0, 0, 0, 1)
-	love.graphics.draw(self.outlineBuffer:getCanvas(2))
-
-	love.graphics.setCanvas(nextOutlineBuffer)
-	love.graphics.clear(0, 0, 0, 1)
-	love.graphics.draw(self.outlineBuffer:getCanvas(2))
+	love.graphics.draw(self.outlineBuffer:getCanvas(2), 0, 0, 0, 0.5, 0.5)
 
 	self:bindShader(
 		self.jumpFloodShader,
-		"scape_TextureSize", { halfWidth, halfHeight },
+		"scape_TextureSize", { self.distanceBuffer:getWidth(), self.distanceBuffer:getHeight() },
 		"scape_MaxDistance", math.huge)
 	
 	local currentDistanceX, currentDistanceY
 	repeat
 		self:bindShader(
 			self.jumpFloodShader,
-			"scape_JumpDistance", { (currentDistanceX or 1) / width, (currentDistanceY or 1) / height })
+			"scape_JumpDistance", { (currentDistanceX or 1) / self.distanceBuffer:getWidth(), (currentDistanceY or 1) / self.distanceBuffer:getHeight() })
 
 		love.graphics.setCanvas(nextOutlineBuffer)
 		love.graphics.clear(0, 0, 0, 1)
 
 		love.graphics.draw(currentOutlineBuffer)
 
-		currentDistanceX = math.max((currentDistanceX or width) / 2, 1)
-		currentDistanceY = math.max((currentDistanceY or height) / 2, 1)
+		currentDistanceX = math.max((currentDistanceX or self.distanceBuffer:getWidth()) / 2, 1)
+		currentDistanceY = math.max((currentDistanceY or self.distanceBuffer:getHeight()) / 2, 1)
 		currentOutlineBuffer, nextOutlineBuffer = nextOutlineBuffer, currentOutlineBuffer
 	until currentDistanceX <= 1 and currentDistanceY <= 1
 
@@ -290,7 +283,7 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.OUTLINE_COLOR_INDEX),
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
-		"scape_TexelSize", { 1 / currentOutlineBuffer:getWidth(), 1 / currentOutlineBuffer:getHeight() },
+		"scape_TexelSize", { 1 / width, 1 / height },
 		"scape_MinOutlineThickness", self.minOutlineThickness,
 		"scape_MaxOutlineThickness", self.maxOutlineThickness,
 		"scape_NearOutlineDistance", self.nearOutlineDistance,
