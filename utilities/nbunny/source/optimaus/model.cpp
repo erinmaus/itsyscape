@@ -54,9 +54,33 @@ void nbunny::ModelInstance::set_mesh(love::graphics::Mesh* value)
 	mesh.set(value);
 }
 
+
 love::graphics::Mesh* nbunny::ModelInstance::get_mesh() const
 {
 	return mesh.get();
+}
+
+love::graphics::Mesh* nbunny::ModelInstance::get_per_pass_mesh(int renderer_pass_id) const
+{
+	auto result = per_pass_mesh.find(renderer_pass_id);
+	if (result != per_pass_mesh.end())
+	{
+		return result->second.get();
+	}
+
+	return mesh.get();
+}
+
+void nbunny::ModelInstance::set_per_pass_mesh(int renderer_pass_id, love::graphics::Mesh* value)
+{
+	if (value == nullptr)
+	{
+		per_pass_mesh.erase(renderer_pass_id);
+	}
+	else
+	{
+		per_pass_mesh.insert_or_assign(renderer_pass_id, value);
+	}
 }
 
 static int nbunny_model_instance_set_mesh(lua_State* L)
@@ -70,6 +94,23 @@ static int nbunny_model_instance_set_mesh(lua_State* L)
 	{
 		auto mesh = love::luax_checktype<love::graphics::Mesh>(L, 2);
 		model.set_mesh(mesh);
+	}
+	return 0;
+}
+
+static int nbunny_model_instance_set_per_pass_mesh(lua_State* L)
+{
+	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
+	int renderer_pass_id = luaL_checkinteger(L, 2);
+
+	if (lua_isnil(L, 2))
+	{
+		model.set_per_pass_mesh(renderer_pass_id, nullptr);
+	}
+	else
+	{
+		auto mesh = love::luax_checktype<love::graphics::Mesh>(L, 3);
+		model.set_per_pass_mesh(renderer_pass_id, mesh);
 	}
 	return 0;
 }
@@ -90,6 +131,24 @@ static int nbunny_model_instance_get_mesh(lua_State* L)
 	return 1;
 }
 
+static int nbunny_model_instance_get_per_pass_mesh(lua_State* L)
+{
+	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
+	int renderer_pass_id = luaL_checkinteger(L, 2);
+
+	auto mesh = model.get_per_pass_mesh(renderer_pass_id);
+	if (mesh == nullptr)
+	{
+		lua_pushnil(L);
+	}
+	else
+	{
+		love::luax_pushtype(L, mesh);
+	}
+
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_modelresourceinstance(lua_State* L)
 {
@@ -97,7 +156,9 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_modelresourceinstance(lua_State* L)
 		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
 		sol::call_constructor, sol::constructors<nbunny::ModelInstance()>(),
 		"setMesh", &nbunny_model_instance_set_mesh,
-		"getMesh", &nbunny_model_instance_get_mesh);
+		"getMesh", &nbunny_model_instance_get_mesh,
+		"setPerPassMesh", &nbunny_model_instance_set_per_pass_mesh,
+		"getPerPassMesh", &nbunny_model_instance_get_per_pass_mesh);
 
 	sol::stack::push(L, T);
 
@@ -154,7 +215,7 @@ const std::vector<glm::mat4>& nbunny::ModelSceneNode::get_transforms() const
 
 void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 {
-	if (!model || !model->get_mesh())
+	if (!model || !model->get_per_pass_mesh(renderer.get_current_pass_id()))
 	{
 		return;
 	}
@@ -237,7 +298,7 @@ void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 
 	love::Matrix4 matrix(glm::value_ptr(get_transform().get_global(delta)));
 	matrix.rotate(1, 0, 0, -LOVE_M_PI / 2);
-	graphics->draw(model->get_mesh(), matrix);
+	graphics->draw(model->get_per_pass_mesh(renderer.get_current_pass_id()), matrix);
 }
 
 static int nbunny_model_scene_node_set_model(lua_State* L)

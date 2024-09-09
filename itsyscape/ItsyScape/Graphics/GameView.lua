@@ -652,6 +652,7 @@ function GameView:updateGroundDecorations(m)
 						local sceneNode = self:decorate(groupName, decoration, m.layer)
 						sceneNode:getMaterial():setOutlineThreshold(0.5)
 						sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
+						sceneNode:getMaterial():setIsShadowCaster(false)
 
 						if group == Block.GROUP_SHINY then
 							sceneNode:getMaterial():setIsReflectiveOrRefractive(true)

@@ -103,6 +103,8 @@ namespace nbunny
 		float roughness = 0.0f;
 		bool is_reflective_or_refractive = false;
 
+		bool is_shadow_caster = true;
+
 		bool is_rendered = true;
 
 		bool is_light_target_position_enabled = false;
@@ -132,6 +134,9 @@ namespace nbunny
 
 		void set_is_cull_disabled(bool value);
 		bool get_is_cull_disabled() const;
+
+		void set_is_shadow_caster(bool value);
+		bool get_is_shadow_caster() const;
 
 		void set_is_rendered(bool value);
 		bool get_is_rendered() const;
