@@ -84,7 +84,10 @@ function PostProcessPass:_bindShader(shader, uniform, value, ...)
 end
 
 function PostProcessPass:bindShader(shader, ...)
-	love.graphics.setShader(shader)
+	if love.graphics.getShader() ~= shader then
+		love.graphics.setShader(shader)
+	end
+
 	self:_bindShader(shader, ...)
 end
 
