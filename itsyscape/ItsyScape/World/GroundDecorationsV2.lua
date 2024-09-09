@@ -14,7 +14,12 @@ local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 
 local GroundDecorationsV2 = Class()
 
+-- In world units
+GroundDecorationsV2.CELL_WIDTH = 8
+GroundDecorationsV2.CELL_DEPTH = 8
+
 function GroundDecorationsV2:new(id)
+	self.decorationsByGroup = {}
 	self.decorations = {}
 
 	self.tileSetID = id
@@ -34,11 +39,14 @@ function GroundDecorationsV2:getDecorationAtIndex(index)
 	return decoration.decoration, decoration.name
 end
 
-function GroundDecorationsV2:addFeature(group, id, position, rotation, scale, color, texture)
-	local decoration = self.decorations[group]
-	if decoration then
-		decoration = self.decorations[decoration]
-	else
+function GroundDecorationsV2:_getDecoration(group, position)
+	local x = math.floor(position.x / self.CELL_WIDTH)
+	local z = math.floor(position.z / self.CELL_DEPTH)
+
+	local decorationsRow = self.decorationsByGroup[group] or {}
+	local decoration = decorationsRow[z]
+
+	if not decoration then
 		decoration = {
 			name = group,
 			decoration = Decoration({
@@ -46,10 +54,17 @@ function GroundDecorationsV2:addFeature(group, id, position, rotation, scale, co
 			})
 		}
 
+		decorationsRow[z] = decoration
 		table.insert(self.decorations, decoration)
-		self.decorations[group] = #self.decorations
 	end
 
+	self.decorationsByGroup[group] = decorationsRow
+
+	return decoration
+end
+
+function GroundDecorationsV2:addFeature(group, id, position, rotation, scale, color, texture)
+	local decoration = self:_getDecoration(group, position)
 	return decoration.decoration:add(id, position, rotation, scale, color, texture)
 end
 
@@ -97,6 +112,8 @@ end
 function GroundDecorationsV2:emitAll(tileSet, map)
 	self:_emitAll("cache", tileSet, map)
 	self:_emitAll("draw", tileSet, map)
+
+	print(">>> decos", #self.decorations)
 end 
 
 return GroundDecorationsV2

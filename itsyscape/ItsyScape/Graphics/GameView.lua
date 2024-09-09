@@ -648,7 +648,7 @@ function GameView:updateGroundDecorations(m)
 
 					for i = 1, ground:getDecorationCount() do
 						local decoration, group = ground:getDecorationAtIndex(i)
-						local groupName = string.format("_x_GroundDecorations_%s_%s", group, tileSetID)
+						local groupName = string.format("_x_GroundDecorations_%d_%s", i, tileSetID)
 						local sceneNode = self:decorate(groupName, decoration, m.layer)
 						sceneNode:getMaterial():setOutlineThreshold(0.5)
 						sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
@@ -825,10 +825,6 @@ function GameView:updateMap(map, layer)
 
 		local function getPlayerNearPlane()
 			local near = 0
-
-			if true then
-				return near
-			end
 
 			local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
 			if playerActor then

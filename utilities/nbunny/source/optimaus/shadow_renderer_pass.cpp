@@ -72,23 +72,47 @@ void nbunny::ShadowRendererPass::calculate_viewing_frustum_corners(float near, f
 {
 	auto& camera = get_renderer()->get_camera();
 	auto projection = glm::perspectiveLH(camera.get_field_of_view(), width / (float)height, near, far);
-	auto inverse_projection_view = glm::inverse(projection * camera.get_view());
 
-	result.clear();
-	for (float x = 0.0f; x < 2.0f; x += 1.0f)
+	auto bounds_min = glm::vec3(std::numeric_limits<float>::infinity());
+	auto bounds_max = glm::vec3(-std::numeric_limits<float>::infinity());
+
+	Camera shadow_camera;
+	shadow_camera.update(camera.get_view(), projection);
+
+	for (auto scene_node: shadow_casting_scene_nodes)
 	{
-		for (float y = 0.0f; y < 2.0f; y += 1.0f)
+		if (shadow_camera.inside(*scene_node, 0.0))
 		{
-			for (float z = 0.0f; z < 2.0f; z += 1.0f)
-			{
-				auto corner = glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
-				corner = inverse_projection_view * corner;
-				corner /= corner.w;
+			bounds_min = glm::min(bounds_min, scene_node->get_min());
+			bounds_min = glm::min(bounds_min, scene_node->get_max());
 
-                result.push_back(glm::vec3(corner));
-			}
+			bounds_max = glm::max(bounds_max, scene_node->get_min());
+			bounds_max = glm::max(bounds_max, scene_node->get_max());
 		}
 	}
+
+	result.push_back(bounds_min + (bounds_max - bounds_min) / glm::vec3(2.0f));
+	result.push_back(bounds_min);
+	result.push_back(bounds_max);
+	// std::cout << ">>>: " << result.at(0).x << ", " << result.at(0).y << ", " << result.at(0).z << std::endl;
+
+	// auto inverse_projection_view = glm::inverse(projection * camera.get_view());
+
+	// result.clear();
+	// for (float x = 0.0f; x < 2.0f; x += 1.0f)
+	// {
+	// 	for (float y = 0.0f; y < 2.0f; y += 1.0f)
+	// 	{
+	// 		for (float z = 0.0f; z < 2.0f; z += 1.0f)
+	// 		{
+	// 			auto corner = glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
+	// 			corner = inverse_projection_view * corner;
+	// 			corner /= corner.w;
+
+    //             result.push_back(glm::vec3(corner));
+	// 		}
+	// 	}
+	// }
 }
 
 glm::mat4 nbunny::ShadowRendererPass::get_light_view_matrix(const glm::vec3& center, float delta) const
@@ -109,22 +133,26 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 	std::vector<glm::vec3> viewing_frustum_corners;
 	calculate_viewing_frustum_corners(near_plane, far_plane, viewing_frustum_corners);
 
-	auto center = glm::vec3(0.0f);
-	for (auto& corner: viewing_frustum_corners)
-	{
-		center += corner;
-	}
-	center /= viewing_frustum_corners.size();
+	// auto center = glm::vec3(0.0f);
+	// for (auto& corner: viewing_frustum_corners)
+	// {
+	// 	center += corner;
+	// }
+	// center /= viewing_frustum_corners.size();
+	auto center = viewing_frustum_corners.at(0);
 	view_matrix = get_light_view_matrix(center, delta);
 
-	auto bounds_min = glm::vec3(std::numeric_limits<float>::infinity());
-	auto bounds_max = glm::vec3(-std::numeric_limits<float>::infinity());
-	for (auto& corner: viewing_frustum_corners)
-	{
-		auto point = glm::vec3(view_matrix * glm::vec4(corner, 1.0f));
-		bounds_min = glm::min(point, bounds_min);
-		bounds_max = glm::max(point, bounds_max);
-	}
+	auto bounds_min = viewing_frustum_corners.at(1);
+	auto bounds_max = viewing_frustum_corners.at(2);
+
+	// auto bounds_min = glm::vec3(std::numeric_limits<float>::infinity());
+	// auto bounds_max = glm::vec3(-std::numeric_limits<float>::infinity());
+	// for (auto& corner: viewing_frustum_corners)
+	// {
+	// 	auto point = glm::vec3(view_matrix * glm::vec4(corner, 1.0f));
+	// 	bounds_min = glm::min(point, bounds_min);
+	// 	bounds_max = glm::max(point, bounds_max);
+	// }
 
 	bounds_min.z -= 10.0f;
 	bounds_max.z += 10.0f;
@@ -155,17 +183,21 @@ void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 		return;
 	}
 
-	love::graphics::Graphics::ColorMask disabledMask;
-	disabledMask.r = false;
-	disabledMask.g = false;
-	disabledMask.b = false;
-	disabledMask.a = false;
+	love::graphics::Graphics::ColorMask disabled_mask;
+	disabled_mask.r = false;
+	disabled_mask.g = false;
+	disabled_mask.b = false;
+	disabled_mask.a = false;
 
-	love::graphics::Graphics::ColorMask enabledMask;
-	enabledMask.r = true;
-	enabledMask.g = true;
-	enabledMask.b = true;
-	enabledMask.a = true;
+	love::graphics::Graphics::ColorMask enabled_mask;
+	enabled_mask.r = true;
+	enabled_mask.g = true;
+	enabled_mask.b = true;
+	enabled_mask.a = true;
+
+	graphics->setColorMask(disabled_mask);
+	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+	graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
 	for (int i = 0; i < num_cascades; ++i)
 	{
@@ -192,10 +224,6 @@ void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 		Camera shadow_camera;
 		shadow_camera.update(view_matrix, projection_matrix);
 
-		graphics->setColorMask(disabledMask);
-		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-		graphics->setMeshCullMode(love::graphics::CULL_BACK);
-
 		for (auto& scene_node: shadow_casting_scene_nodes)
 		{
 			if (!shadow_camera.inside(*scene_node, delta))
@@ -214,7 +242,7 @@ void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 	}
 
-	graphics->setColorMask(enabledMask);
+	graphics->setColorMask(enabled_mask);
 }
 
 nbunny::ShadowRendererPass::ShadowRendererPass(int num_cascades) :

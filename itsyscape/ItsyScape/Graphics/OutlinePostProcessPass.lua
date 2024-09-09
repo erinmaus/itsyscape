@@ -42,6 +42,7 @@ function OutlinePostProcessPass:new(...)
 	self.maxOutlineDepthAlpha = 1.0
 	self.outlineFadeDepth = 20
 	self.outlineTurbulence = 0.25
+	self.distanceBufferScale = 1
 end
 
 function OutlinePostProcessPass:setIsEnabled(value)
@@ -130,6 +131,14 @@ end
 
 function OutlinePostProcessPass:getOutlineTurbulence()
 	return self.outlineTurbulence
+end
+
+function OutlinePostProcessPass:setDistanceBufferScale(value)
+	self.distanceBufferScale = value
+end
+
+function OutlinePostProcessPass:getDistanceBufferScale()
+	return self.distanceBufferScale
 end
 
 function OutlinePostProcessPass:load(resources)
@@ -243,7 +252,7 @@ function OutlinePostProcessPass:_jumpFlood(width, height)
 
 	love.graphics.setCanvas(currentOutlineBuffer)
 	love.graphics.clear(0, 0, 0, 1)
-	love.graphics.draw(self.outlineBuffer:getCanvas(2), 0, 0, 0, 0.5, 0.5)
+	love.graphics.draw(self.outlineBuffer:getCanvas(2), 0, 0, 0, self.distanceBufferScale, self.distanceBufferScale)
 
 	self:bindShader(
 		self.jumpFloodShader,
@@ -284,6 +293,7 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
 		"scape_TexelSize", { 1 / width, 1 / height },
+		"scape_TexelScale", { 1 / self.distanceBufferScale, 1 / self.distanceBufferScale },
 		"scape_MinOutlineThickness", self.minOutlineThickness,
 		"scape_MaxOutlineThickness", self.maxOutlineThickness,
 		"scape_NearOutlineDistance", self.nearOutlineDistance,
@@ -293,7 +303,7 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 		"scape_OutlineFadeDepth", self.outlineFadeDepth)
 
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.draw(currentOutlineBuffer, 0, 0, 0, 2, 2)
+	love.graphics.draw(currentOutlineBuffer, 0, 0, 0, 1 / self.distanceBufferScale, 1 / self.distanceBufferScale)
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
@@ -340,9 +350,6 @@ function OutlinePostProcessPass:draw(width, height)
 		return
 	end
 
-	local halfWidth = math.floor(width / 2)
-	local halfHeight = math.floor(height / 2)
-
 	self.outlineBuffer:resize(width, height)
 	self.outlineBuffer:getCanvas(1):setFilter("linear", "linear")
 	self.outlineBuffer:getCanvas(2):setFilter("linear", "linear")
@@ -351,7 +358,7 @@ function OutlinePostProcessPass:draw(width, height)
 	self.normalBlurBuffer:getCanvas(1):setFilter("linear", "linear")
 	self.normalBlurBuffer:getCanvas(2):setFilter("linear", "linear")
 
-	self.distanceBuffer:resize(halfWidth, halfHeight)
+	self.distanceBuffer:resize(math.floor(width * self.distanceBufferScale), math.floor(height * self.distanceBufferScale))
 	self.distanceBuffer:getCanvas(1):setFilter("nearest", "nearest")
 	self.distanceBuffer:getCanvas(2):setFilter("nearest", "nearest")
 
