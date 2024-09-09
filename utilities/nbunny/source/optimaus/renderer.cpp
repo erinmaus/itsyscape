@@ -392,6 +392,14 @@ void nbunny::RendererPass::load_builtin_shader(
 	const std::string& vertex_filename,
 	const std::string& pixel_filename)
 {
+	load_builtin_shader(vertex_filename, pixel_filename, get_renderer_pass_id());
+}
+
+void nbunny::RendererPass::load_builtin_shader(
+	const std::string& vertex_filename,
+	const std::string& pixel_filename,
+	int renderer_pass_id_override)
+{
 	auto filesystem = love::Module::getInstance<love::filesystem::Filesystem>(love::Module::M_FILESYSTEM);
 
 	auto vertex_file_data = filesystem->read(vertex_filename.c_str());
@@ -401,17 +409,22 @@ void nbunny::RendererPass::load_builtin_shader(
 	std::string pixel_source(reinterpret_cast<const char*>(pixel_file_data->getData()), pixel_file_data->getSize());
 
 	get_renderer()->get_shader_cache().register_renderer_pass(
-		get_renderer_pass_id(),
+		renderer_pass_id_override,
 		vertex_source,
 		pixel_source);
 }
 
 love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, const SceneNode& node)
 {
+	return get_node_shader(L, node, renderer_pass_id);
+}
+
+love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, const SceneNode& node, int renderer_pass_id_override)
+{
     auto shader_resource = node.get_material().get_shader();
 
     return get_renderer()->get_shader_cache().build(
-            get_renderer_pass_id(),
+            renderer_pass_id_override,
             shader_resource->get_id(),
             [&](const auto& base_vertex_source, const auto& base_pixel_source, auto& v, auto& p)
             {

@@ -98,6 +98,7 @@ namespace nbunny
 		void attach(Renderer& renderer) override;
 
         love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node) override;
+        love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node, int renderer_pass_id_override) override;
 	};
 }
 

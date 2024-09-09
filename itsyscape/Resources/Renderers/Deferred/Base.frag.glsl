@@ -47,14 +47,7 @@ void effect()
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
 #endif
 
-	if (diffuse.a < 250.0 / 255.0)
-	{
-		discard;
-	}
-	else
-	{
-		diffuse.a = 1.0;
-	}
+	diffuse.a = step(128.0 / 255.0, diffuse.a);
 
 	love_Canvases[0] = diffuse;
 	love_Canvases[1] = vec4(position, diffuse.a);

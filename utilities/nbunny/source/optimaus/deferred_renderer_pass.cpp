@@ -474,10 +474,37 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		},
 		0,
 		1.0f);
+
+	love::graphics::Graphics::ColorMask disabled_mask;
+	disabled_mask.r = false;
+	disabled_mask.g = false;
+	disabled_mask.b = false;
+	disabled_mask.a = false;
+
+	love::graphics::Graphics::ColorMask enabled_mask;
+	enabled_mask.r = true;
+	enabled_mask.g = true;
+	enabled_mask.b = true;
+	enabled_mask.a = true;
 	
 	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
 	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
 	graphics->setMeshCullMode(love::graphics::CULL_BACK);
+
+	graphics->setColorMask(disabled_mask);
+	for (auto& scene_node: drawable_scene_nodes)
+	{
+		auto shader = get_node_shader(L, *scene_node, RENDERER_PASS_DEFERRED_DEPTH);
+		renderer->set_current_shader(shader);
+
+		auto color = scene_node->get_material().get_color();
+		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
+
+		renderer->draw_node(L, *scene_node, delta);
+	}
+
+	graphics->setColorMask(enabled_mask);
+	graphics->setDepthMode(love::graphics::COMPARE_EQUAL, false);
 
 	for (auto& scene_node: drawable_scene_nodes)
 	{
@@ -501,17 +528,7 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
 
-		if (scene_node->get_material().get_is_z_write_disabled())
-		{
-			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
-		}
-
 		renderer->draw_node(L, *scene_node, delta);
-
-		if (scene_node->get_material().get_is_z_write_disabled())
-		{
-			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-		}
 	}
 
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
@@ -699,13 +716,18 @@ love::graphics::Shader* nbunny::DeferredRendererPass::get_builtin_shader(lua_Sta
 
 love::graphics::Shader* nbunny::DeferredRendererPass::get_node_shader(lua_State* L, const SceneNode& node)
 {
+	return get_node_shader(L, node, get_renderer_pass_id());
+}
+
+love::graphics::Shader* nbunny::DeferredRendererPass::get_node_shader(lua_State* L, const SceneNode& node, int renderer_pass_id_override)
+{
 	auto shader_resource = node.get_material().get_shader();
 	if (!shader_resource || shader_resource->get_id() == 0)
 	{
 		return get_builtin_shader(L, BUILTIN_SHADER_DEFAULT, SHADER_DEFAULT, false);
 	}
 
-	return RendererPass::get_node_shader(L, node);
+	return RendererPass::get_node_shader(L, node, renderer_pass_id_override);
 }
 
 nbunny::GBuffer& nbunny::DeferredRendererPass::get_g_buffer()
@@ -753,6 +775,11 @@ void nbunny::DeferredRendererPass::attach(Renderer& renderer)
 	load_builtin_shader(
 		"Resources/Renderers/Deferred/Base.vert.glsl",
 		"Resources/Renderers/Deferred/Base.frag.glsl");
+
+	load_builtin_shader(
+		"Resources/Renderers/DeferredDepth/Base.vert.glsl",
+		"Resources/Renderers/DeferredDepth/Base.frag.glsl",
+		RENDERER_PASS_DEFERRED_DEPTH);
 }
 
 static std::shared_ptr<nbunny::DeferredRendererPass> nbunny_deferred_renderer_pass_create(

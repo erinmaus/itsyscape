@@ -32,7 +32,8 @@ namespace nbunny
 		RENDERER_PASS_PARTICLE_OUTLINE = 6,
 		RENDERER_PASS_SHADOW           = 7,
 		RENDERER_PASS_REFLECTION       = 8,
-		RENDERER_PASS_MAX              = 8
+		RENDERER_PASS_DEFERRED_DEPTH   = 9,
+		RENDERER_PASS_MAX              = 9
 	};
 
 	class RendererPass;
@@ -124,8 +125,13 @@ namespace nbunny
 		virtual void load_builtin_shader(
 			const std::string& vertex_filename,
 			const std::string& pixel_filename);
+		virtual void load_builtin_shader(
+			const std::string& vertex_filename,
+			const std::string& pixel_filename,
+			int renderer_pass_id_override);
 
         virtual love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node);
+        virtual love::graphics::Shader* get_node_shader(lua_State* L, const SceneNode& node, int renderer_pass_id_override);
 	};
 }
 
