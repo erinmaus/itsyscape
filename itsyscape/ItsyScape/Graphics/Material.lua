@@ -98,6 +98,14 @@ function Material:setIsParticulate(value)
 	self._handle:setIsParticulate(value or false)
 end
 
+function Material:getIsShadowCaster()
+	return self._handle:getIsShadowCaster()
+end
+
+function Material:setIsShadowCaster(value)
+	self._handle:setIsShadowCaster(value == nil and true or not not value)
+end
+
 function Material:getIsRendered()
 	return self._handle:getIsRendered()
 end

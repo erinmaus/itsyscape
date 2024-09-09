@@ -240,6 +240,16 @@ bool nbunny::SceneNodeMaterial::get_is_cull_disabled() const
 	return is_cull_disabled;
 }
 
+void nbunny::SceneNodeMaterial::set_is_shadow_caster(bool value)
+{
+	is_shadow_caster = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_shadow_caster() const
+{
+	return is_shadow_caster;
+}
+
 void nbunny::SceneNodeMaterial::set_is_rendered(bool value)
 {
 	is_rendered = value;	
@@ -1358,6 +1368,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getIsZWriteDisabled", &nbunny::SceneNodeMaterial::get_is_z_write_disabled,
 		"setIsCullDisabled", &nbunny::SceneNodeMaterial::set_is_cull_disabled,
 		"getIsCullDisabled", &nbunny::SceneNodeMaterial::get_is_cull_disabled,
+		"setIsShadowCaster", &nbunny::SceneNodeMaterial::set_is_shadow_caster,
+		"getIsShadowCaster", &nbunny::SceneNodeMaterial::get_is_shadow_caster,
 		"setOutlineThreshold", &nbunny::SceneNodeMaterial::set_outline_threshold,
 		"getOutlineThreshold", &nbunny::SceneNodeMaterial::get_outline_threshold,
 		"setIsReflectiveOrRefractive", &nbunny::SceneNodeMaterial::set_is_reflective_or_refractive,

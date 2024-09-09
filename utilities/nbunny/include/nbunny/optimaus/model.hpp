@@ -32,13 +32,17 @@ namespace nbunny
 	{
 	private:
 		love::StrongRef<love::graphics::Mesh> mesh;
+		std::unordered_map<int, love::StrongRef<love::graphics::Mesh>> per_pass_mesh;
 
     public:
 		ModelInstance() = default;
         ModelInstance(int id, int reference);
 
 		void set_mesh(love::graphics::Mesh* value);
+		void set_per_pass_mesh(int renderer_pass_id, love::graphics::Mesh* value);
+
 		love::graphics::Mesh* get_mesh() const;
+		love::graphics::Mesh* get_per_pass_mesh(int renderer_pass_id) const;
     };
 
 	class ModelSceneNode : public SceneNode

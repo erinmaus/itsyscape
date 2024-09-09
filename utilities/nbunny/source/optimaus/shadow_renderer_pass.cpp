@@ -39,6 +39,11 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 			continue;
 		}
 
+		if (!material.get_is_shadow_caster())
+		{
+			continue;
+		}
+
 		const auto& node_type = visible_scene_node->get_type();
 
 		if (node_type == ParticleSceneNode::type_pointer)
@@ -72,47 +77,23 @@ void nbunny::ShadowRendererPass::calculate_viewing_frustum_corners(float near, f
 {
 	auto& camera = get_renderer()->get_camera();
 	auto projection = glm::perspectiveLH(camera.get_field_of_view(), width / (float)height, near, far);
+	auto inverse_projection_view = glm::inverse(projection * camera.get_view());
 
-	auto bounds_min = glm::vec3(std::numeric_limits<float>::infinity());
-	auto bounds_max = glm::vec3(-std::numeric_limits<float>::infinity());
-
-	Camera shadow_camera;
-	shadow_camera.update(camera.get_view(), projection);
-
-	for (auto scene_node: shadow_casting_scene_nodes)
+	result.clear();
+	for (float x = 0.0f; x < 2.0f; x += 1.0f)
 	{
-		if (shadow_camera.inside(*scene_node, 0.0))
+		for (float y = 0.0f; y < 2.0f; y += 1.0f)
 		{
-			bounds_min = glm::min(bounds_min, scene_node->get_min());
-			bounds_min = glm::min(bounds_min, scene_node->get_max());
+			for (float z = 0.0f; z < 2.0f; z += 1.0f)
+			{
+				auto corner = glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
+				corner = inverse_projection_view * corner;
+				corner /= corner.w;
 
-			bounds_max = glm::max(bounds_max, scene_node->get_min());
-			bounds_max = glm::max(bounds_max, scene_node->get_max());
+                result.push_back(glm::vec3(corner));
+			}
 		}
 	}
-
-	result.push_back(bounds_min + (bounds_max - bounds_min) / glm::vec3(2.0f));
-	result.push_back(bounds_min);
-	result.push_back(bounds_max);
-	// std::cout << ">>>: " << result.at(0).x << ", " << result.at(0).y << ", " << result.at(0).z << std::endl;
-
-	// auto inverse_projection_view = glm::inverse(projection * camera.get_view());
-
-	// result.clear();
-	// for (float x = 0.0f; x < 2.0f; x += 1.0f)
-	// {
-	// 	for (float y = 0.0f; y < 2.0f; y += 1.0f)
-	// 	{
-	// 		for (float z = 0.0f; z < 2.0f; z += 1.0f)
-	// 		{
-	// 			auto corner = glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
-	// 			corner = inverse_projection_view * corner;
-	// 			corner /= corner.w;
-
-    //             result.push_back(glm::vec3(corner));
-	// 		}
-	// 	}
-	// }
 }
 
 glm::mat4 nbunny::ShadowRendererPass::get_light_view_matrix(const glm::vec3& center, float delta) const
@@ -133,26 +114,22 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 	std::vector<glm::vec3> viewing_frustum_corners;
 	calculate_viewing_frustum_corners(near_plane, far_plane, viewing_frustum_corners);
 
-	// auto center = glm::vec3(0.0f);
-	// for (auto& corner: viewing_frustum_corners)
-	// {
-	// 	center += corner;
-	// }
-	// center /= viewing_frustum_corners.size();
-	auto center = viewing_frustum_corners.at(0);
+	auto center = glm::vec3(0.0f);
+	for (auto& corner: viewing_frustum_corners)
+	{
+		center += corner;
+	}
+	center /= viewing_frustum_corners.size();
 	view_matrix = get_light_view_matrix(center, delta);
 
-	auto bounds_min = viewing_frustum_corners.at(1);
-	auto bounds_max = viewing_frustum_corners.at(2);
-
-	// auto bounds_min = glm::vec3(std::numeric_limits<float>::infinity());
-	// auto bounds_max = glm::vec3(-std::numeric_limits<float>::infinity());
-	// for (auto& corner: viewing_frustum_corners)
-	// {
-	// 	auto point = glm::vec3(view_matrix * glm::vec4(corner, 1.0f));
-	// 	bounds_min = glm::min(point, bounds_min);
-	// 	bounds_max = glm::max(point, bounds_max);
-	// }
+	auto bounds_min = glm::vec3(std::numeric_limits<float>::infinity());
+	auto bounds_max = glm::vec3(-std::numeric_limits<float>::infinity());
+	for (auto& corner: viewing_frustum_corners)
+	{
+		auto point = glm::vec3(view_matrix * glm::vec4(corner, 1.0f));
+		bounds_min = glm::min(point, bounds_min);
+		bounds_max = glm::max(point, bounds_max);
+	}
 
 	bounds_min.z -= 10.0f;
 	bounds_max.z += 10.0f;
