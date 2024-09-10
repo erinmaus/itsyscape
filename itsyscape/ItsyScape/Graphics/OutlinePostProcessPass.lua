@@ -153,8 +153,7 @@ function OutlinePostProcessPass:load(resources)
 	self.jitterOutlineShader = self:loadPostProcessShader("JitterOutline")
 
 	self.outlineBuffer = NGBuffer("rgba8", "rgba8")
-	self.normalBlurBuffer = NGBuffer("rgba16f", "rgba16f")
-	self.distanceBuffer = NGBuffer("rgba16f", "rgba16f")
+	self.distanceBuffer = NGBuffer("rgba8", "rgba8")
 end
 
 function OutlinePostProcessPass:_drawDepthOutline(width, height)
@@ -353,10 +352,6 @@ function OutlinePostProcessPass:draw(width, height)
 	self.outlineBuffer:resize(width, height)
 	self.outlineBuffer:getCanvas(1):setFilter("linear", "linear")
 	self.outlineBuffer:getCanvas(2):setFilter("linear", "linear")
-
-	self.normalBlurBuffer:resize(width, height)
-	self.normalBlurBuffer:getCanvas(1):setFilter("linear", "linear")
-	self.normalBlurBuffer:getCanvas(2):setFilter("linear", "linear")
 
 	self.distanceBuffer:resize(math.floor(width * self.distanceBufferScale), math.floor(height * self.distanceBufferScale))
 	self.distanceBuffer:getCanvas(1):setFilter("nearest", "nearest")

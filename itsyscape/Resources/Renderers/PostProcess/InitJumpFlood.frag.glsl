@@ -9,10 +9,10 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		sample.b >= 0.0 && sample.b < 1.0 &&
 		sample.a > 0.0
 	) {
-		return vec4(floor(textureCoordinate * scape_TextureSize), 0.0, sample.a);
+		return vec4(0.5, 0.5, 0.0, sample.a);
 	}
 	else
 	{
-		return vec4(0.0, 0.0, -1.0, sample.a);
+		return vec4(0.0, 0.0, 1.0, sample.a);
 	}
 }
