@@ -1,4 +1,4 @@
-#define MAX_JUMP_DISTANCE 127
+#define MAX_JUMP_DISTANCE 64
 
 uniform vec2 scape_TextureSize;
 uniform vec2 scape_JumpDistance;

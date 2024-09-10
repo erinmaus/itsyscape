@@ -1,4 +1,4 @@
-#define MAX_JUMP_DISTANCE 127
+#define MAX_JUMP_DISTANCE 64
 
 #include "Resources/Shaders/Depth.common.glsl"
 
@@ -18,7 +18,7 @@ uniform float scape_OutlineFadeDepth;
 vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
 	vec4 outlineSample = Texel(image, textureCoordinate);
-	vec2 outlineSampleTextureCoordinate = mix(vec2(-1.0), vec2(1.0), outlineSample.xy) * vec2(MAX_JUMP_DISTANCE) * scape_TexelScale + textureCoordinate;
+	vec2 outlineSampleTextureCoordinate = mix(vec2(-1.0), vec2(1.0), outlineSample.xy) * vec2(MAX_JUMP_DISTANCE) * scape_TexelScale * scape_TexelSize + textureCoordinate;
 
 	float depth = linearDepth(Texel(scape_DepthTexture, textureCoordinate).r);
 	float remappedDepth = smoothstep(scape_NearOutlineDistance, scape_FarOutlineDistance, depth);
