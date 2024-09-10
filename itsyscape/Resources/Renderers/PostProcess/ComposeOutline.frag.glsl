@@ -1,3 +1,5 @@
+#define MAX_JUMP_DISTANCE 127
+
 #include "Resources/Shaders/Depth.common.glsl"
 
 uniform sampler2D scape_DepthTexture;
@@ -16,6 +18,7 @@ uniform float scape_OutlineFadeDepth;
 vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
 	vec4 outlineSample = Texel(image, textureCoordinate);
+	vec2 outlineSampleTextureCoordinate = mix(vec2(-1.0), vec2(1.0), outlineSample.xy) * vec2(MAX_JUMP_DISTANCE) * scape_TexelScale + textureCoordinate;
 
 	float depth = linearDepth(Texel(scape_DepthTexture, textureCoordinate).r);
 	float remappedDepth = smoothstep(scape_NearOutlineDistance, scape_FarOutlineDistance, depth);
@@ -24,8 +27,8 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	alphaMultiplier = mix(scape_MinOutlineDepthAlpha, scape_MaxOutlineDepthAlpha, alphaMultiplier);
 
 	float halfThickness = thickness / 2.0;
-	float d = step(halfThickness, outlineSample.z);
-	float a = smoothstep(0.0, halfThickness, outlineSample.z);
+	float d = step(halfThickness, outlineSample.z * MAX_JUMP_DISTANCE);
+	float a = smoothstep(0.0, halfThickness, outlineSample.z * MAX_JUMP_DISTANCE);
 
 	float alpha = 1.0;
 	for (float x = -1.0; x <= 1.0; x += 1.0)
@@ -41,7 +44,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		alpha = 1.0;
 	}
 
-	vec3 outlineColor1 = Texel(scape_OutlineTexture, scape_TexelScale * outlineSample.xy * scape_TexelSize).rgb;
+	vec3 outlineColor1 = Texel(scape_OutlineTexture, outlineSampleTextureCoordinate).rgb;
 	float outlineColor1Luma = length(outlineColor1);
 	vec3 outlineColor2 = Texel(scape_OutlineColorTexture, textureCoordinate).rgb;
 	float outlineColor2Luma = length(outlineColor2);
