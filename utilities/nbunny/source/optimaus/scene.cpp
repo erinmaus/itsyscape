@@ -529,6 +529,43 @@ const glm::vec3& nbunny::SceneNode::get_max() const
 	return max;
 }
 
+float nbunny::SceneNode::calculate_screen_size_percent(const Camera& camera, float delta) const
+{
+	auto transform = camera.get_projection() * camera.get_view() * get_transform().get_global(delta);
+	auto min = get_min();
+	auto max = get_max();
+
+	const int NUM_CORNERS = 8;
+	glm::vec3 corners[NUM_CORNERS] =
+	{
+		glm::vec3(min.x, min.y, min.z),
+		glm::vec3(max.x, min.y, min.z),
+		glm::vec3(min.x, max.y, min.z),
+		glm::vec3(min.x, min.y, max.z),
+		glm::vec3(max.x, max.y, min.z),
+		glm::vec3(max.x, min.y, max.z),
+		glm::vec3(min.x, max.y, max.z),
+		glm::vec3(max.x, max.y, max.z)
+	};
+
+	min = glm::vec3(std::numeric_limits<float>::infinity());
+	max = glm::vec3(-std::numeric_limits<float>::infinity());
+	for (int i = 0; i < NUM_CORNERS; ++i)
+	{
+		auto p = transform * glm::vec4(corners[i], 1.0f);
+		p /= p.w;
+
+		p += glm::vec4(1.0f);
+		p /= glm::vec4(2.0f);
+
+		min = glm::min(min, glm::vec3(p));
+		max = glm::max(max, glm::vec3(p));
+	}
+
+	auto size = max - min;
+	return glm::max(size.x, size.y);
+}
+
 nbunny::SceneNodeTransform& nbunny::SceneNode::get_transform()
 {
 	return transform;

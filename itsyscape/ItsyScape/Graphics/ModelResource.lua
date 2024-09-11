@@ -72,6 +72,28 @@ function ModelResource:loadFromFile(filename, _, skeleton)
 			end
 		end
 	end
+
+	local lodFilename = filename:gsub("(.*)(%..+)$", "%1@LOD.lmeta")
+	if lodFilename ~= filename and love.filesystem.getInfo(lodFilename) then
+		local lod = Resource.readLua(lodFilename)
+
+		for index, screenSize in ipairs(lod) do
+			local s = (type(screenSize) == "table" and screenSize.screenSize) or (type(screenSize) == "number" and screenSize)
+			if s then
+				local lodFilename = filename:gsub(
+					"(.*)(%..+)$",
+					string.format("%%1@%d%%2", index))
+				local lodFile = Resource.readLua(lodFilename)
+				local model = Model(lodFile, skeleton or self.skeleton)
+
+				self:getHandle():setLODMesh(s, model:getMesh())
+
+				if coroutine.running() then
+					coroutine.yield()
+				end
+			end
+		end
+	end
 end
 
 function ModelResource:getIsReady()
