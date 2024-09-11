@@ -1025,7 +1025,7 @@ function Application:drawFPS()
 end
 
 function Application:drawDebug()
-	if not _DEBUG or (not self.showDebug and not _MOBILE) or true then
+	if not _DEBUG or (not self.showDebug and not _MOBILE) then
 		self:drawFPS()
 		return
 	end

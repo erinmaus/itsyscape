@@ -218,6 +218,8 @@ namespace nbunny
 		void set_max(const glm::vec3& value);
 		const glm::vec3& get_max() const;
 
+		float calculate_screen_size_percent(const Camera& camera, float delta) const;
+
 		SceneNodeTransform& get_transform();
 		const SceneNodeTransform& get_transform() const;
 

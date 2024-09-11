@@ -83,6 +83,34 @@ void nbunny::ModelInstance::set_per_pass_mesh(int renderer_pass_id, love::graphi
 	}
 }
 
+void nbunny::ModelInstance::set_lod_mesh(float screen_size_percent, love::graphics::Mesh* value)
+{
+	if (value == nullptr)
+	{
+		lod_mesh.erase(screen_size_percent);
+	}
+	else
+	{
+		lod_mesh.insert_or_assign(screen_size_percent, value);
+	}
+}
+
+bool nbunny::ModelInstance::has_per_pass_mesh(int renderer_pass_id) const
+{
+	return per_pass_mesh.find(renderer_pass_id) != per_pass_mesh.end();
+}
+
+love::graphics::Mesh* nbunny::ModelInstance::get_lod_mesh(float screen_size_percent) const
+{
+	auto lower_bound = lod_mesh.lower_bound(screen_size_percent);
+	if (lower_bound != lod_mesh.end())
+	{
+		return lower_bound->second.get();
+	}
+
+	return mesh.get();
+}
+
 static int nbunny_model_instance_set_mesh(lua_State* L)
 {
 	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
@@ -111,6 +139,23 @@ static int nbunny_model_instance_set_per_pass_mesh(lua_State* L)
 	{
 		auto mesh = love::luax_checktype<love::graphics::Mesh>(L, 3);
 		model.set_per_pass_mesh(renderer_pass_id, mesh);
+	}
+	return 0;
+}
+
+static int nbunny_model_instance_set_lod_mesh(lua_State* L)
+{
+	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
+	auto screen_size_percent = luaL_checknumber(L, 2);
+
+	if (lua_isnil(L, 2))
+	{
+		model.set_lod_mesh(screen_size_percent, nullptr);
+	}
+	else
+	{
+		auto mesh = love::luax_checktype<love::graphics::Mesh>(L, 3);
+		model.set_lod_mesh(screen_size_percent, mesh);
 	}
 	return 0;
 }
@@ -149,6 +194,24 @@ static int nbunny_model_instance_get_per_pass_mesh(lua_State* L)
 	return 1;
 }
 
+static int nbunny_model_instance_get_lod_mesh(lua_State* L)
+{
+	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
+	auto screen_size_percent = luaL_checknumber(L, 2);
+
+	auto mesh = model.get_lod_mesh(screen_size_percent);
+	if (mesh == nullptr)
+	{
+		lua_pushnil(L);
+	}
+	else
+	{
+		love::luax_pushtype(L, mesh);
+	}
+
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_modelresourceinstance(lua_State* L)
 {
@@ -158,7 +221,9 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_modelresourceinstance(lua_State* L)
 		"setMesh", &nbunny_model_instance_set_mesh,
 		"getMesh", &nbunny_model_instance_get_mesh,
 		"setPerPassMesh", &nbunny_model_instance_set_per_pass_mesh,
-		"getPerPassMesh", &nbunny_model_instance_get_per_pass_mesh);
+		"getPerPassMesh", &nbunny_model_instance_get_per_pass_mesh,
+		"setLODMesh", &nbunny_model_instance_set_lod_mesh,
+		"getLODMesh", &nbunny_model_instance_get_lod_mesh);
 
 	sol::stack::push(L, T);
 
@@ -215,7 +280,7 @@ const std::vector<glm::mat4>& nbunny::ModelSceneNode::get_transforms() const
 
 void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 {
-	if (!model || !model->get_per_pass_mesh(renderer.get_current_pass_id()))
+	if (!model || (!model->has_per_pass_mesh(renderer.get_current_pass_id()) && !model->get_mesh()))
 	{
 		return;
 	}
@@ -292,6 +357,16 @@ void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 		auto normal_matrix = glm::inverse(glm::transpose(world));
 		std::memcpy(normal_matrix_uniform->floats, glm::value_ptr(normal_matrix), sizeof(glm::mat4));
 		shader->updateUniform(normal_matrix_uniform, 1);
+	}
+
+	love::graphics::Mesh* mesh = nullptr;
+	if (model->has_per_pass_mesh(renderer.get_current_pass_id()))
+	{
+		mesh = model->get_per_pass_mesh(renderer.get_current_pass_id());
+	}
+	else
+	{
+		mesh = model->get_lod_mesh(calculate_screen_size_percent(renderer.get_camera(), delta));
 	}
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
