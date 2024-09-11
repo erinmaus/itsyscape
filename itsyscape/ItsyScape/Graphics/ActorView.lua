@@ -1078,7 +1078,7 @@ function ActorView:face(direction, rotation)
 		end
 	end
 
-	self.rotation = rotation
+	self.rotation = rotation:keep()
 end
 
 function ActorView:damage(damageType, damage)
