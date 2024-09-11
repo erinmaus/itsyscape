@@ -43,8 +43,9 @@ function GroundDecorationsV2:_getDecoration(group, position)
 	local x = math.floor(position.x / self.CELL_WIDTH)
 	local z = math.floor(position.z / self.CELL_DEPTH)
 
-	local decorationsRow = self.decorationsByGroup[group] or {}
-	local decoration = decorationsRow[z]
+	local decorations = self.decorationsByGroup[group] or {}
+	local decorationRow = decorations[x] or {}
+	local decoration = decorationRow[z] or {}
 
 	if not decoration then
 		decoration = {
@@ -55,10 +56,12 @@ function GroundDecorationsV2:_getDecoration(group, position)
 		}
 
 		decorationsRow[z] = decoration
+		decorations[x] = decorationRow
+
 		table.insert(self.decorations, decoration)
 	end
 
-	self.decorationsByGroup[group] = decorationsRow
+	self.decorationsByGroup[group] = decorations
 
 	return decoration
 end

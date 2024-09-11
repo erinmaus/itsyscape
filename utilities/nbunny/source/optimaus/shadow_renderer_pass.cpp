@@ -21,7 +21,7 @@
 void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
 	visible_scene_nodes = get_renderer()->get_all_scene_nodes();
-	SceneNode::sort_by_position(visible_scene_nodes, get_renderer()->get_camera(), delta);
+	SceneNode::sort_by_material(visible_scene_nodes);
 
 	shadow_casting_scene_nodes.clear();
 	directional_lights.clear();
