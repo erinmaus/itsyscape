@@ -15,6 +15,7 @@
 #include "nbunny/nbunny.hpp"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/scene.hpp"
+#include "nbunny/optimaus/shader_cache.hpp"
 
 nbunny::SceneNodeTransform::SceneNodeTransform(SceneNode& scene_node) :
 	scene_node(scene_node)
@@ -384,6 +385,50 @@ void nbunny::SceneNodeMaterial::set_textures(const std::vector<std::shared_ptr<T
 const std::vector<std::shared_ptr<nbunny::TextureInstance>>& nbunny::SceneNodeMaterial::get_textures() const
 {
 	return textures;
+}
+
+void nbunny::SceneNodeMaterial::set_uniform(const std::string& uniform_name, const float* data, std::size_t count)
+{
+	std::vector<std::uint8_t> value;
+
+	value.resize(count * sizeof(float));
+	std::memcpy(&value[0], data, value.size());
+
+	value_uniforms.insert_or_assign(uniform_name, value);
+}
+
+void nbunny::SceneNodeMaterial::set_uniform(const std::string& uniform_name, const int* data, std::size_t count)
+{
+	std::vector<std::uint8_t> value;
+
+	value.resize(count * sizeof(int));
+	std::memcpy(&value[0], data, value.size());
+
+	value_uniforms.insert_or_assign(uniform_name, value);
+}
+
+void nbunny::SceneNodeMaterial::set_uniform(const std::string& uniform_name, love::graphics::Texture* texture)
+{
+	texture_uniforms.insert_or_assign(uniform_name, texture);
+}
+
+void nbunny::SceneNodeMaterial::unset_uniform(const std::string& uniform_name)
+{
+	value_uniforms.erase(uniform_name);
+	texture_uniforms.erase(uniform_name);
+}
+
+void nbunny::SceneNodeMaterial::apply_uniforms(ShaderCache& cache, love::graphics::Shader* shader) const
+{
+	for (auto& i: value_uniforms)
+	{
+		cache.update_uniform(shader, i.first, i.second);
+	}
+
+	for (auto& i: texture_uniforms)
+	{
+		cache.update_uniform(shader, i.first, i.second);
+	}
 }
 
 bool nbunny::SceneNodeMaterial::operator <(const SceneNodeMaterial& other) const
@@ -1390,6 +1435,56 @@ static int nbunny_scene_node_material_get_textures(lua_State* L)
 	return (int)textures.size();
 }
 
+static int nbunny_scene_node_material_send_int(lua_State* L)
+{
+	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto uniform_name = luaL_checkstring(L, 2);
+
+	std::vector<int> result;
+	auto value = sol::stack::get<sol::table>(L, 3);
+	for (std::size_t i = 0; i < value.size(); ++i)
+	{
+		result.push_back(value.get<int>(i));
+	}
+
+	material->set_uniform(uniform_name, &result[0], result.size());
+
+	return 0;
+}
+
+static int nbunny_scene_node_material_send_float(lua_State* L)
+{
+	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto uniform_name = luaL_checkstring(L, 2);
+
+	std::vector<float> result;
+	auto value = sol::stack::get<sol::table>(L, 3);
+	for (std::size_t i = 0; i < value.size(); ++i)
+	{
+		result.push_back(value.get<float>(i));
+	}
+
+	material->set_uniform(uniform_name, &result[0], result.size());
+
+	return 0;
+}
+
+static int nbunny_scene_node_material_send_texture(lua_State* L)
+{
+	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto uniform_name = luaL_checkstring(L, 2);
+
+	love::graphics::Texture* texture = nullptr;
+	if (!lua_isnil(L, 3))
+	{
+		texture = love::luax_checktype<love::graphics::Texture>(L, 3);
+	}
+
+	material->set_uniform(uniform_name, texture);
+
+	return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 {
@@ -1429,6 +1524,10 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		"getShader", &nbunny::SceneNodeMaterial::get_shader,
 		"setTextures", &nbunny_scene_node_material_set_textures,
 		"getTextures", &nbunny_scene_node_material_get_textures,
+		"setIntUniform", &nbunny_scene_node_material_send_int,
+		"setFloatUniform", &nbunny_scene_node_material_send_float,
+		"setTextureUniform", &nbunny_scene_node_material_send_texture,
+		"unsetUniform", &nbunny::SceneNodeMaterial::unset_uniform,
 		sol::meta_function::less_than, &nbunny::SceneNodeMaterial::operator <);
 
 	sol::stack::push(L, T);

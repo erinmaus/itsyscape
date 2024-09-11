@@ -185,13 +185,10 @@ void nbunny::ForwardRendererPass::send_light_property(
 	float* property_value,
     std::size_t size_bytes)
 {
+	auto& shader_cache = get_renderer()->get_shader_cache();
+
 	std::string uniform_name = array + std::string("[") + std::to_string(index) + std::string("].") + property_name;
-	auto uniform = shader->getUniformInfo(uniform_name);
-	if (uniform)
-	{
-		std::memcpy(uniform->floats, property_value, size_bytes);
-		shader->updateUniform(uniform, 1);
-	}
+	shader_cache.update_uniform(shader, uniform_name, property_value, size_bytes);
 }
 
 void nbunny::ForwardRendererPass::send_light(
@@ -222,6 +219,8 @@ void nbunny::ForwardRendererPass::send_fog(
 void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 {
 	auto renderer = get_renderer();
+	auto& shader_cache = get_renderer()->get_shader_cache();
+
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
 	const auto& camera = renderer->get_camera();
@@ -252,26 +251,16 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 			send_light(shader, lights[i], i);
 		}
 
-		auto num_lights_uniform = shader->getUniformInfo("scape_NumLights");
-		if (num_lights_uniform)
-		{
-			int num_lights = (int)lights.size();
-			*num_lights_uniform->ints = num_lights;
-			shader->updateUniform(num_lights_uniform, 1);
-		}
+		auto num_lights = (int)lights.size();
+		shader_cache.update_uniform(shader, "scape_NumLights", &num_lights, sizeof(int));
 
 		for (auto i = 0; i < fog.size(); ++i)
 		{
 			send_fog(shader, fog[i], i);
 		}
 
-		auto num_fog_uniform = shader->getUniformInfo("scape_NumFogs");
-		if (num_fog_uniform)
-		{
-			int num_fog = scene_node->get_material().get_is_full_lit() ? 0 : (int)fog.size();
-			*num_fog_uniform->ints = num_fog;
-			shader->updateUniform(num_fog_uniform, 1);
-		}
+		int num_fog = scene_node->get_material().get_is_full_lit() ? 0 : (int)fog.size();
+		shader_cache.update_uniform(shader, "scape_NumFog", &num_fog, sizeof(int));
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));

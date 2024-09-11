@@ -286,78 +286,38 @@ void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 	}
 
 	auto shader = renderer.get_current_shader();
+	auto& shader_cache = renderer.get_shader_cache();
 
-	auto bones_uniform = shader->getUniformInfo("scape_Bones");
-	if (bones_uniform)
-	{
-		auto& t = get_transforms();
-		std::memcpy(
-			bones_uniform->floats,
-			glm::value_ptr(t[0]),
-			std::min(bones_uniform->dataSize, t.size() * sizeof(glm::mat4)));
-		shader->updateUniform(bones_uniform, t.size());
-	}
+	auto& transforms = get_transforms();
+	shader_cache.update_uniform(shader, "scape_Bones", glm::value_ptr(transforms[0]), transforms.size() * sizeof(glm::mat4));
 
 	const auto& textures = get_material().get_textures();
-	auto diffuse_texture_uniform = shader->getUniformInfo("scape_DiffuseTexture");
-	if (diffuse_texture_uniform && textures.size() >= 1)
+	if (!textures.empty())
 	{
-		auto texture = textures[0]->get_per_pass_texture(renderer.get_current_pass_id());
-		if (texture)
-		{
-			shader->sendTextures(diffuse_texture_uniform, &texture, 1);
-		}
-	}
+		auto texture = textures.at(0);
+		shader_cache.update_uniform(shader, "scape_DiffuseTexture", texture->get_per_pass_texture(renderer.get_current_pass_id()));
 
-	auto specular_texture_uniform = shader->getUniformInfo("scape_SpecularTexture");
-	if (specular_texture_uniform && textures.size() >= 1)
-	{
-		auto texture = textures[0]->get_bound_texture("Specular");
-		if (texture)
-		{
-			shader->sendTextures(specular_texture_uniform, &texture, 1);
-		}
-		else
-		{
-			love::graphics::Texture* null_texture = nullptr;
-			shader->sendTextures(specular_texture_uniform, &null_texture, 1);
-		}
-	}
+		auto specular_bound_texture = texture->get_bound_texture("Specular");
+		shader_cache.update_uniform(shader, "scape_SpecularTexture", specular_bound_texture);
 
-	auto heightmap_texture_uniform = shader->getUniformInfo("scape_HeightmapTexture");
-	if (heightmap_texture_uniform && textures.size() >= 1)
+		auto heightmap_bound_texture = texture->get_bound_texture("Specular");
+		shader_cache.update_uniform(shader, "scape_HeightmapTexture", heightmap_bound_texture);
+	}
+	else
 	{
-		auto texture = textures[0]->get_bound_texture("Heightmap");
-		if (texture)
-		{
-			shader->sendTextures(heightmap_texture_uniform, &texture, 1);
-		}
-		else
-		{
-			love::graphics::Texture* null_texture = nullptr;
-			shader->sendTextures(heightmap_texture_uniform, &null_texture, 1);
-		}
+		shader_cache.update_uniform(shader, "scape_DiffuseTexture", nullptr);
+		shader_cache.update_uniform(shader, "scape_SpecularTexture", nullptr);
+		shader_cache.update_uniform(shader, "scape_HeightmapTexture", nullptr);
 	}
 
 	// This was a dumb decision a while back.
 	// 3D skinned models assume a specific rotation before rendering.
 	// Override the default scape_World etc with this rotated value.
-	auto world = glm::rotate(get_transform().get_global(delta), (float)-LOVE_M_PI / 2.0f, glm::vec3(1, 0, 0));
+	auto world_matrix = glm::rotate(get_transform().get_global(delta), (float)-LOVE_M_PI / 2.0f, glm::vec3(1, 0, 0));
+	shader_cache.update_uniform(shader, "scape_WorldMatrix", glm::value_ptr(world_matrix), sizeof(glm::mat4));
 
-	auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
-	if (world_matrix_uniform)
-	{
-		std::memcpy(world_matrix_uniform->floats, glm::value_ptr(world), sizeof(glm::mat4));
-		shader->updateUniform(world_matrix_uniform, 1);
-	}
-
-	auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
-	if (normal_matrix_uniform)
-	{
-		auto normal_matrix = glm::inverse(glm::transpose(world));
-		std::memcpy(normal_matrix_uniform->floats, glm::value_ptr(normal_matrix), sizeof(glm::mat4));
-		shader->updateUniform(normal_matrix_uniform, 1);
-	}
+	auto normal_matrix = glm::inverse(glm::transpose(world_matrix));
+	shader_cache.update_uniform(shader, "scape_NormalMatrix", glm::value_ptr(normal_matrix), sizeof(glm::mat4));
 
 	love::graphics::Mesh* mesh = nullptr;
 	if (model->has_per_pass_mesh(renderer.get_current_pass_id()))

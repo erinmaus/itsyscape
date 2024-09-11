@@ -17,6 +17,7 @@
 #include <limits>
 #include <memory>
 #include <vector>
+#include "modules/graphics/Shader.h"
 #include "nbunny/nbunny.hpp"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/resource.hpp"
@@ -27,6 +28,7 @@ namespace nbunny
 	class Renderer;
 	class SceneNode;
 	class Camera;
+	class ShaderCache;
 
 	class SceneNodeTransform
 	{
@@ -89,6 +91,9 @@ namespace nbunny
 		std::shared_ptr<ResourceInstance> shader = std::make_shared<ResourceInstance>();
 		std::vector<std::shared_ptr<TextureInstance>> textures;
 		std::vector<std::shared_ptr<TextureInstance>> sorted_textures;
+
+		std::unordered_map<std::string, std::vector<std::uint8_t>> value_uniforms;
+		std::unordered_map<std::string, love::StrongRef<love::graphics::Texture>> texture_uniforms;
 
 		bool is_translucent = false;
 		bool is_full_lit = false;
@@ -173,6 +178,12 @@ namespace nbunny
 
 		void set_textures(const std::vector<std::shared_ptr<TextureInstance>>& textures);
 		const std::vector<std::shared_ptr<TextureInstance>>& get_textures() const;
+
+		void set_uniform(const std::string& uniform_name, const float* data, std::size_t count);
+		void set_uniform(const std::string& uniform_name, const int* data, std::size_t count);
+		void set_uniform(const std::string& uniform_name, love::graphics::Texture* texture);
+		void unset_uniform(const std::string& uniform_name);
+		void apply_uniforms(ShaderCache& cache, love::graphics::Shader* shader) const;
 
 		bool operator <(const SceneNodeMaterial& other) const;
 	};

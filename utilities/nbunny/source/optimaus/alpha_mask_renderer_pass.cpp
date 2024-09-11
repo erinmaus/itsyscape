@@ -15,6 +15,9 @@
 #include "nbunny/optimaus/deferred_renderer_pass.hpp"
 #include "nbunny/optimaus/particle.hpp"
 
+const float ALPHA_MASK_DISABLED = 0.0f;
+const float ALPHA_MASK_ENABLED = 1.0f;
+
 void nbunny::AlphaMaskRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
 	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_position();
@@ -108,13 +111,7 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 			continue;
 		}
 		renderer->set_current_shader(shader);
-
-		auto alpha_mask_uniform = shader->getUniformInfo("scape_AlphaMask");
-		if (alpha_mask_uniform)
-		{
-			*alpha_mask_uniform->floats = 0.0;
-			shader->updateUniform(alpha_mask_uniform, 1);
-		}
+		renderer->get_shader_cache().update_uniform(shader, "scape_AlphaMask", &ALPHA_MASK_DISABLED, sizeof(float));
 
 		graphics->setColorMask(disabled_mask);
 		renderer->draw_node(L, *scene_node, delta);
@@ -135,13 +132,7 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 			continue;
 		}
 		renderer->set_current_shader(shader);
-
-		auto alpha_mask_uniform = shader->getUniformInfo("scape_AlphaMask");
-		if (alpha_mask_uniform)
-		{
-			*alpha_mask_uniform->floats = 0.0;
-			shader->updateUniform(alpha_mask_uniform, 1);
-		}
+		renderer->get_shader_cache().update_uniform(shader, "scape_AlphaMask", &ALPHA_MASK_DISABLED, sizeof(float));
 
 		graphics->setColorMask(disabled_mask);
 		renderer->draw_node(L, *scene_node, delta);
