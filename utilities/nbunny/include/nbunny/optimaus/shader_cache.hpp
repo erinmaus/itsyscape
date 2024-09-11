@@ -59,8 +59,16 @@ namespace nbunny
 
 		typedef std::unordered_map<int, ShaderSource> BaseShadeSourceMap;
 
+		typedef std::unordered_map<std::string, std::vector<std::uint8_t>> ShaderValueUniformsMap;
+		typedef std::unordered_map<std::string, love::StrongRef<love::graphics::Texture>> ShaderTextureUniformsMap;
+		typedef std::unordered_map<love::graphics::Shader*, ShaderValueUniformsMap> ShaderValues;
+		typedef std::unordered_map<love::graphics::Shader*, ShaderTextureUniformsMap> ShaderTextures;
+
 		CacheMap shader_cache;
 		BaseShadeSourceMap shader_source;
+
+		ShaderValues shader_value_uniforms;
+		ShaderTextures shader_texture_uniforms;
 
 	public:
 		typedef std::function<void(
@@ -84,6 +92,10 @@ namespace nbunny
 			const BuildFunc& build_func);
 
 		love::graphics::Shader* get(int renderer_pass_id, int resource_id);
+
+		void update_uniform(love::graphics::Shader* shader, const std::string& uniform_name, const std::vector<std::uint8_t>& data);
+		void update_uniform(love::graphics::Shader* shader, const std::string& uniform_name, const void* data, std::size_t data_size);
+		void update_uniform(love::graphics::Shader* shader, const std::string& uniform_name, love::graphics::Texture* texture);
 	};
 }
 

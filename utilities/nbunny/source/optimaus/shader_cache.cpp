@@ -177,6 +177,63 @@ love::graphics::Shader* nbunny::ShaderCache::get(int renderer_pass_id, int resou
 	return nullptr;
 }
 
+void nbunny::ShaderCache::update_uniform(
+	love::graphics::Shader* shader,
+	const std::string& uniform_name,
+	const std::vector<std::uint8_t>& data)
+{
+	auto value_uniforms = shader_value_uniforms[shader];
+	auto current_value = value_uniforms.find(uniform_name);
+	if (current_value == value_uniforms.end() || current_value->second != data)
+	{
+		auto uniform = shader->getUniformInfo(uniform_name);
+		if (uniform)
+		{
+			value_uniforms.insert_or_assign(uniform_name, data);
+
+			std::memset(uniform->data, 0, uniform->dataSize);
+			std::memcpy(
+				uniform->data,
+				&value_uniforms[uniform_name][0],
+				std::min(data.size(), uniform->dataSize));
+
+			std::size_t size_per_value = uniform->dataSize / uniform->count;
+			std::size_t count = data.size() / size_per_value;
+
+			shader->updateUniform(uniform, count);
+		}
+	}
+}
+
+void nbunny::ShaderCache::update_uniform(
+	love::graphics::Shader* shader,
+	const std::string& uniform_name,
+	const void* data,
+	std::size_t data_size)
+{
+	auto byte_data = (const std::uint8_t*)data;
+	std::vector<std::uint8_t> d(byte_data, byte_data + data_size + 1);
+	update_uniform(shader, uniform_name, d);
+}
+
+void nbunny::ShaderCache::update_uniform(
+	love::graphics::Shader* shader,
+	const std::string& uniform_name,
+	love::graphics::Texture* texture)
+{
+	auto texture_uniforms = shader_texture_uniforms[shader];
+	auto current_value = texture_uniforms.find(uniform_name);
+	if (current_value == texture_uniforms.end() || current_value->second != texture)
+	{
+		auto uniform = shader->getUniformInfo(uniform_name);
+		if (uniform)
+		{
+			texture_uniforms.insert_or_assign(uniform_name, texture);
+			shader->sendTextures(uniform, &texture, 1);
+		}
+	}
+}
+
 love::graphics::Shader* nbunny::ShaderCache::build(
 	int renderer_pass_id,
 	int resource_id,

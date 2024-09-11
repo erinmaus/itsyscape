@@ -484,19 +484,8 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		auto shader = get_node_shader(L, *scene_node);
 		renderer->set_current_shader(shader);
 
-		auto outline_threshold = shader->getUniformInfo("scape_OutlineThreshold");
-		if (outline_threshold)
-		{
-			*outline_threshold->floats = scene_node->get_material().get_outline_threshold();
-			shader->updateUniform(outline_threshold, 1);
-		}
-
-		auto reflection_thickness_uniform = shader->getUniformInfo("scape_ReflectionThickness");
-		if (reflection_thickness_uniform)
-		{
-			*reflection_thickness_uniform->floats = scene_node->get_material().get_reflection_distance();
-			shader->updateUniform(reflection_thickness_uniform, 1);
-		}
+		auto outline_threshold = scene_node->get_material().get_outline_threshold();
+		renderer->get_shader_cache().update_uniform(shader, "scape_OutlineThreshold", &outline_threshold, sizeof(float));
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));

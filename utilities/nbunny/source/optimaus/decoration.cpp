@@ -503,46 +503,25 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 	}
 
 	auto shader = renderer.get_current_shader();
+	auto& shader_cache = renderer.get_shader_cache();
 
 	const auto& textures = get_material().get_textures();
-	auto diffuse_texture_uniform = shader->getUniformInfo("scape_DiffuseTexture");
-	if (diffuse_texture_uniform && textures.size() >= 1)
+	if (!textures.empty())
 	{
-		auto texture = textures[0]->get_per_pass_texture(renderer.get_current_pass_id());
-		if (texture)
-		{
-			shader->sendTextures(diffuse_texture_uniform, &texture, 1);
-		}
-	}
+		auto texture = textures.at(0);
+		shader_cache.update_uniform(shader, "scape_DiffuseTexture", texture->get_per_pass_texture(renderer.get_current_pass_id()));
 
-	auto specular_texture_uniform = shader->getUniformInfo("scape_SpecularTexture");
-	if (specular_texture_uniform && textures.size() >= 1)
-	{
-		auto texture = textures[0]->get_bound_texture("Specular");
-		if (texture)
-		{
-			shader->sendTextures(specular_texture_uniform, &texture, 1);
-		}
-		else
-		{
-			love::graphics::Texture* null_texture = nullptr;
-			shader->sendTextures(specular_texture_uniform, &null_texture, 1);
-		}
-	}
+		auto specular_bound_texture = texture->get_bound_texture("Specular");
+		shader_cache.update_uniform(shader, "scape_SpecularTexture", specular_bound_texture);
 
-	auto heightmap_texture_uniform = shader->getUniformInfo("scape_HeightmapTexture");
-	if (heightmap_texture_uniform && textures.size() >= 1)
+		auto heightmap_bound_texture = texture->get_bound_texture("Specular");
+		shader_cache.update_uniform(shader, "scape_HeightmapTexture", heightmap_bound_texture);
+	}
+	else
 	{
-		auto texture = textures[0]->get_bound_texture("Heightmap");
-		if (texture)
-		{
-			shader->sendTextures(heightmap_texture_uniform, &texture, 1);
-		}
-		else
-		{
-			love::graphics::Texture* null_texture = nullptr;
-			shader->sendTextures(heightmap_texture_uniform, &null_texture, 1);
-		}
+		shader_cache.update_uniform(shader, "scape_DiffuseTexture", nullptr);
+		shader_cache.update_uniform(shader, "scape_SpecularTexture", nullptr);
+		shader_cache.update_uniform(shader, "scape_HeightmapTexture", nullptr);
 	}
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);

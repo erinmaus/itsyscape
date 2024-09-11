@@ -204,101 +204,52 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	auto shader = get_current_shader();
 
-	auto time_uniform = shader->getUniformInfo("scape_Time");
-	if (time_uniform)
-	{
-		*time_uniform->floats = current_time;
-		shader->updateUniform(time_uniform, 1);
-	}
+	shader_cache.update_uniform(shader, "scape_Time", &current_time, sizeof(float));
 
-	auto world = node.get_transform().get_global(delta);
+	auto world_matrix = node.get_transform().get_global(delta);
+	shader_cache.update_uniform(shader, "scape_WorldMatrix", glm::value_ptr(world_matrix), sizeof(glm::mat4));
 
-	auto world_matrix_uniform = shader->getUniformInfo("scape_WorldMatrix");
-	if (world_matrix_uniform)
-	{
-		std::memcpy(world_matrix_uniform->floats, glm::value_ptr(world), sizeof(glm::mat4));
-		shader->updateUniform(world_matrix_uniform, 1);
-	}
-
-	auto normal_matrix_uniform = shader->getUniformInfo("scape_NormalMatrix");
-	if (normal_matrix_uniform)
-	{
-		auto normal_matrix = glm::inverse(glm::transpose(world));
-		std::memcpy(normal_matrix_uniform->floats, glm::value_ptr(normal_matrix), sizeof(glm::mat4));
-		shader->updateUniform(normal_matrix_uniform, 1);
-	}
+	auto normal_matrix = node.get_transform().get_global(delta);
+	shader_cache.update_uniform(shader, "scape_NormalMatrix", glm::value_ptr(normal_matrix), sizeof(glm::mat4));
 
 	auto outline_color = node.get_material().get_outline_color();
-	auto outline_color_uniform = shader->getUniformInfo("scape_OutlineColor");
-	if (outline_color_uniform)
-	{
-		std::memcpy(outline_color_uniform->floats, glm::value_ptr(outline_color), sizeof(glm::vec4));
-		shader->updateUniform(outline_color_uniform, 1);
-	}
+	shader_cache.update_uniform(shader, "scape_OutlineColor", glm::value_ptr(outline_color), sizeof(glm::vec4));
 
 	if (camera)
 	{
-		auto view = camera->get_view();
-		auto view_matrix_uniform = shader->getUniformInfo("scape_ViewMatrix");
-		if (view_matrix_uniform)
-		{
-			std::memcpy(view_matrix_uniform->floats, glm::value_ptr(view), sizeof(glm::mat4));
-			shader->updateUniform(view_matrix_uniform, 1);
-		}
+		auto view_matrix = camera->get_view();
+		shader_cache.update_uniform(shader, "scape_ViewMatrix", glm::value_ptr(view_matrix), sizeof(glm::mat4));
 
-		auto inverse_view_matrix_uniform = shader->getUniformInfo("scape_InverseViewMatrix");
-		if (view_matrix_uniform)
-		{
-			auto inverse_view = glm::inverse(view);
-			std::memcpy(view_matrix_uniform->floats, glm::value_ptr(inverse_view), sizeof(glm::mat4));
-			shader->updateUniform(view_matrix_uniform, 1);
-		}
+		auto inverse_view_matrix = glm::inverse(view_matrix);
+		shader_cache.update_uniform(shader, "scape_ViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
 
-		auto projection = camera->get_projection();
-		auto projection_matrix_uniform = shader->getUniformInfo("scape_ProjectionMatrix");
-		if (projection_matrix_uniform)
-		{
-			std::memcpy(projection_matrix_uniform->floats, glm::value_ptr(projection), sizeof(glm::mat4));
-			shader->updateUniform(projection_matrix_uniform, 1);
-		}
+		auto projection_matrix = camera->get_view();
+		shader_cache.update_uniform(shader, "scape_ViewMatrix", glm::value_ptr(projection_matrix), sizeof(glm::mat4));
 
 		if (camera->get_is_clip_plane_enabled())
 		{
-			glad::glEnable(GL_CLIP_DISTANCE0);
-
 			auto clip_plane = camera->get_clip_plane();
-			auto clip_plane_uniform = shader->getUniformInfo("scape_ClipPlane");
-			if (clip_plane_uniform)
-			{
-				std::memcpy(clip_plane_uniform->floats, glm::value_ptr(clip_plane), sizeof(glm::vec4));
-				shader->updateUniform(clip_plane_uniform, 1);
-			}
+			shader_cache.update_uniform(shader, "scape_ClipPlane", glm::value_ptr(clip_plane), sizeof(glm::vec4));
+
+			glad::glEnable(GL_CLIP_DISTANCE0);
 		}
 		else
 		{
 			glad::glDisable(GL_CLIP_DISTANCE0);
 		}
 
-		auto camera_target_uniform = shader->getUniformInfo("scape_CameraTarget");
-		if (camera_target_uniform)
-		{
-			auto target = camera->get_target_position();
-			std::memcpy(camera_target_uniform->floats, glm::value_ptr(target), sizeof(glm::vec3));
-			shader->updateUniform(camera_target_uniform, 1);
-		}
+		auto camera_target = camera->get_target_position();
+		shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec4));
 
-		auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
-		if (camera_eye_uniform)
-		{
-			auto eye = camera->get_eye_position();
-			std::memcpy(camera_eye_uniform->floats, glm::value_ptr(eye), sizeof(glm::vec3));
-			shader->updateUniform(camera_eye_uniform, 1);
-		}
+		auto camera_eye = camera->get_eye_position();
+		shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec4));
 	}
 	else
 	{
 		glad::glDisable(GL_CLIP_DISTANCE0);
 	}
+
+	node.get_material().apply_uniforms(shader_cache, shader);
 
 	graphics->push(love::graphics::Graphics::STACK_ALL);
 
