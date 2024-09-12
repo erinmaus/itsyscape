@@ -15,6 +15,10 @@ local Material, Metatable = Class()
 
 Material.DEFAULT_OUTLINE_THRESHOLD = 0.5
 
+Material.UNIFORM_INTEGER = 1 
+Material.UNIFORM_FLOAT   = 2
+Material.UNIFORM_TEXTURE = 3
+
 -- Constructs a new Material from the shader and textures.
 --
 -- If no shader is provided, the shader is set to a falsey value.
@@ -25,7 +29,6 @@ function Material:new(node, shader, ...)
 	self._handle:setOutlineThreshold(Material.DEFAULT_OUTLINE_THRESHOLD)
 	self.shader = shader or false
 	self:setTextures(...)
-	self.uniforms = {}
 end
 
 function Material:getHandle()
@@ -45,22 +48,6 @@ function Material:setShader(value)
 	if self.shader then
 		self._handle:setShader(self.shader:getHandle())
 	end
-end
-
--- Sets a uniform to pass on to the shader.
---
--- If 'value' is nil, the uniform is unset.
---
--- 'key' must be a string.
-function Material:setUniform(key, value)
-	if type(key) == 'string' then
-		self.uniforms[key] = value
-	end
-end
-
--- Gets an iterator over the uniforms.
-function Material:getUniforms()
-	return pairs(self.uniforms)
 end
 
 -- Unsets the shader.
@@ -276,6 +263,36 @@ function Material:unsetTexture(index)
 	table.remove(self.textures.n, index or 1)
 
 	self._handle:setTextures(unpack(self.textures.n))
+end
+
+function Material:send(uniformType, uniform, ...)
+	local data = {}
+
+	for i = 1, select("#", ...) do
+		local values = select(i, ...)
+
+		if type(values) == "table" then
+			for _, a in ipairs(values) do
+				if type(a) == "table" then
+					for _, b in ipairs(a) do
+						table.insert(data, b)
+					end
+				else
+					table.insert(data, a)
+				end
+			end
+		else
+			table.insert(data, values)
+		end
+	end
+
+	if uniformType == Material.UNIFORM_INTEGER then
+		self._handle:setIntUniform(uniform, data)
+	elseif uniformType == Material.UNIFORM_TEXTURE then
+		self._handle:setTextureUniform(uniform, unpack(data))
+	else
+		self._handle:setFloatUniform(uniform, data)
+	end
 end
 
 -- Compares Materials by resources.

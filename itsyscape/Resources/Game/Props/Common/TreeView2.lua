@@ -133,40 +133,6 @@ function TreeView:load()
 					self.leavesNode:setParent(root)
 				end
 
-				self.leavesNode:onWillRender(function(renderer)
-					local currentShader = renderer:getCurrentShader()
-					if not currentShader then
-						return
-					end
-
-					if currentShader:hasUniform("scape_BumpHeight") then
-						currentShader:send("scape_BumpHeight", 1)
-					end
-
-					local _, layer = self:getProp():getPosition()
-					local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
-
-					if currentShader:hasUniform("scape_WindDirection") then
-						currentShader:send("scape_WindDirection", { windDirection:get() })
-					end
-
-					if currentShader:hasUniform("scape_WindSpeed") then
-						currentShader:send("scape_WindSpeed", windSpeed)
-					end
-
-					if currentShader:hasUniform("scape_WindPattern") then
-						currentShader:send("scape_WindPattern", { windPattern:get() })
-					end
-
-					if currentShader:hasUniform("scape_WindMaxDistance") then
-						currentShader:send("scape_WindMaxDistance", 0.25)
-					end
-
-					if currentShader:hasUniform("scape_WallHackWindow") then
-						currentShader:send("scape_WallHackWindow", { 2.0, 2.0, 2.0, 2.0 })
-					end
-				end)
-
 				local state = self:getProp():getState().resource
 				if state then
 					self.isDepleted = state.depleted
@@ -217,6 +183,19 @@ function TreeView:remove()
 	end
 end
 
+function TreeView:_updateNodeUniforms(node)
+	local _, layer = self:getProp():getPosition()
+	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+
+	local material = node:getMaterial()
+	material:send(material.UNIFORM_FLOAT, "scape_BumpHeight", 1)
+	material:send(material.UNIFORM_FLOAT, "scape_WindDirection", { windDirection:get() })
+	material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
+	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", { windPattern:get() })
+	material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", 0.25)
+	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", { 2.0, 2.0, 2.0, 2.0 })
+end
+
 function TreeView:tick()
 	PropView.tick(self)
 
@@ -245,6 +224,10 @@ function TreeView:tick()
 			self.isDepleted = r.depleted
 			self.time = 0
 		end
+	end
+
+	if self.spawned then
+		self:_updateNodeUniforms(self.leavesNode)
 	end
 end
 

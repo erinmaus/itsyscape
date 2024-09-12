@@ -15,6 +15,7 @@ local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local SkeletonResource = require "ItsyScape.Graphics.SkeletonResource"
 local SkeletonAnimationResource = require "ItsyScape.Graphics.SkeletonAnimationResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local Material = require "ItsyScape.Graphics.Material"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 
 local WhaleSkeletonStatue = Class(PropView)
@@ -89,12 +90,7 @@ function WhaleSkeletonStatue:load()
 				self.concreteNode:getMaterial():setTextures(self.concreteTexture)
 				self.concreteNode:setParent(root)
 				self.concreteNode:getMaterial():setOutlineThreshold(-0.005)
-				self.concreteNode:onWillRender(function(renderer)
-					local currentShader = renderer:getCurrentShader()
-					if currentShader and currentShader:hasUniform("scape_BumpHeight") then
-						currentShader:send("scape_BumpHeight", 4)
-					end
-				end)
+				self.concreteNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_BumpHeight", 4)
 
 				self.vineLeavesNode:setModel(self.vineLeavesModel)
 				self.vineLeavesNode:setTransforms(self.transforms)
@@ -104,12 +100,7 @@ function WhaleSkeletonStatue:load()
 				self.vineLeavesNode:getMaterial():setOutlineThreshold(-0.005)
 				self.vineLeavesNode:getMaterial():setOutlineColor(Color(0.5))
 				self.vineLeavesNode:getMaterial():setIsParticulate(true)
-				self.vineLeavesNode:onWillRender(function(renderer)
-					local currentShader = renderer:getCurrentShader()
-					if currentShader and currentShader:hasUniform("scape_BumpHeight") then
-						currentShader:send("scape_BumpHeight", 1)
-					end
-				end)
+				self.vineLeavesNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_BumpHeight", 4)
 
 				self.skeletonNode:setModel(self.skeletonModel)
 				self.skeletonNode:setTransforms(self.transforms)

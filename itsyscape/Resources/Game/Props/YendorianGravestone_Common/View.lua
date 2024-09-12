@@ -50,21 +50,8 @@ function YendorianGravestone:load()
 			material:setShader(shader)
 			material:setTextures(self.texture)
 			material:setOutlineThreshold(-0.005)
-
-			self.node:onWillRender(function(renderer)
-				local currentShader = renderer:getCurrentShader()
-				if not currentShader then
-					return
-				end
-
-				if currentShader:hasUniform("scape_TriplanarScale") then
-					currentShader:send("scape_TriplanarScale", 0, -0.25, -0.5)
-				end
-
-				if currentShader:hasUniform("scape_NumLayers") then
-					currentShader:send("scape_NumLayers", 3)
-				end
-			end)
+			material:send(material.UNIFORM_FLOAT, "scape_TriplanarScale", 0, -0.25, -0.5)
+			material:send(material.UNIFORM_INTEGER, "scape_NumLayers", 3)
 		end)
 end
 
