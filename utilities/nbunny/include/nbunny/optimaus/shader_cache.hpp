@@ -13,6 +13,7 @@
 #ifndef NBUNNY_OPTIMAUS_SHADER_CACHE
 #define NBUNNY_OPTIMAUS_SHADER_CACHE
 
+#include <cstdint>
 #include <iostream>
 #include <functional>
 #include <string>

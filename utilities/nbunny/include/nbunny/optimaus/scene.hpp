@@ -13,6 +13,7 @@
 #ifndef NBUNNY_OPTIMAUS_SCENE_HPP
 #define NBUNNY_OPTIMAUS_SCENE_HPP
 
+#include <cstdint>
 #include <algorithm>
 #include <limits>
 #include <memory>

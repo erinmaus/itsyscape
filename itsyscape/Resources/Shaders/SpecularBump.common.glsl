@@ -18,6 +18,7 @@ void SCAPE_SPECULAR_BUMP_PERFORM_FUNC(vec2 textureCoordinate, inout vec4 color, 
 	vec4 specularSample = Texel(scape_SpecularTexture, textureCoordinate);
 	vec4 colorSample = Texel(scape_DiffuseTexture, textureCoordinate);
 
+#ifndef SCAPE_SPECULAR_BUMP_DISABLE_BUMP
 	float height;
 	vec3 preTransformedNormal;
 	calculateBumpNormal(scape_HeightmapTexture, textureCoordinate, vec2(1.0) / vec2(textureSize(scape_HeightmapTexture, 0)), scape_BumpHeight, preTransformedNormal, height);
@@ -29,6 +30,7 @@ void SCAPE_SPECULAR_BUMP_PERFORM_FUNC(vec2 textureCoordinate, inout vec4 color, 
 	mat3 tbn = mat3(currentTangent, currentBitangent, currentNormal);
 
 	normal = normalize(tbn * preTransformedNormal);
+#endif
 
 	specular = specularSample.r * specularSample.a;
 	color = colorSample * color * vec4(mix(vec3(specular), vec3(1.0), 1.0 - specularSample.a), 1.0);

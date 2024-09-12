@@ -653,7 +653,11 @@ void nbunny::SceneNode::collect(SceneNode& node, std::vector<SceneNode*>& result
 		return;
 	}
 
-	result.push_back(&node);
+	if (!node.is_base_type())
+	{
+		result.push_back(&node);
+	}
+
 	for (auto child: node.children)
 	{
 		collect(*child, result);
@@ -1617,10 +1621,10 @@ static int nbunny_scene_node_set_min(lua_State* L)
 static int nbunny_scene_node_get_min(lua_State* L)
 {
 	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
-	const auto& max = node->get_min();
-	lua_pushnumber(L, max.x);
-	lua_pushnumber(L, max.y);
-	lua_pushnumber(L, max.z);
+	const auto& min = node->get_min();
+	lua_pushnumber(L, min.x);
+	lua_pushnumber(L, min.y);
+	lua_pushnumber(L, min.z);
 	return 3;
 }
 

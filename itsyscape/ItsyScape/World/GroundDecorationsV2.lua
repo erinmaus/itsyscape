@@ -115,8 +115,6 @@ end
 function GroundDecorationsV2:emitAll(tileSet, map)
 	self:_emitAll("cache", tileSet, map)
 	self:_emitAll("draw", tileSet, map)
-
-	print(">>> decos", #self.decorations)
 end 
 
 return GroundDecorationsV2

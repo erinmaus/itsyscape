@@ -21,9 +21,9 @@ vec4 getWallHackPlane(vec3 normal, vec3 point)
 float getWallHackAlpha(vec3 position)
 {
 #ifdef SCAPE_WALL_HACK_DO_NOT_CLAMP_TO_XZ
-	vec3 eyeToTargetDirection = -normalize(scape_ViewMatrix[2].xyz);
-	vec3 leftDirection = normalize(scape_ViewMatrix[0].xyz);
-	vec3 topDirection = normalize(scape_ViewMatrix[1].xyz);
+	vec3 eyeToTargetDirection = -normalize(scape_InverseViewMatrix[2].xyz);
+	vec3 leftDirection = normalize(scape_InverseViewMatrix[0].xyz);
+	vec3 topDirection = normalize(scape_InverseViewMatrix[1].xyz);
 #else
 	vec3 eyeToTargetDirection = getWallHackClampedNormal(scape_CameraEye - scape_CameraTarget);
 	vec3 leftDirection = normalize(cross(eyeToTargetDirection, vec3(0.0, 1.0, 0.0)));
