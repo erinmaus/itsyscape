@@ -8,6 +8,6 @@ void performTransform(
 
 	localPosition = position.xyz;
 
-	vec4 transformedPosition = scape_ProjectionMatrix * mat4(transpose(mat3(scape_ViewMatrix))) * position;
+	vec4 transformedPosition = scape_ProjectionMatrix * mat4(transpose(mat3(scape_InverseViewMatrix))) * position;
 	projectedPosition = transformedPosition.xyww;
 }

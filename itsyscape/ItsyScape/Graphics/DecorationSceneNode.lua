@@ -32,6 +32,10 @@ function DecorationSceneNode:new()
 	self:getMaterial():setOutlineThreshold(-0.01)
 end
 
+function DecorationSceneNode:getBounds()
+	return Vector(self:getHandle():getMin()), Vector(self:getHandle():getMax())
+end
+
 function DecorationSceneNode:fromGroup(staticMesh, group)
 	self:getHandle():fromGroup(group, staticMesh:getHandle())
 end

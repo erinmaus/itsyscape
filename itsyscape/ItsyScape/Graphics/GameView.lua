@@ -506,7 +506,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		wallHackEnabled = not (meta and type(meta.wallHack) == "table" and meta.wallHack.enabled == false),
 		actorCanvas = actorCanvas,
 		bumpCanvas = bumpCanvas,
-		curves = {}
+		curves = {},
+		bendyDecorations = setmetatable({}, { __mode = "k" })
 	}
 
 	local function onWillRender(renderer)
@@ -642,6 +643,8 @@ function GameView:updateGroundDecorations(m)
 							sceneNode:getMaterial():setReflectionDistance(0.75)
 							sceneNode:getMaterial():setRoughness(0.5)
 						elseif group == Block.GROUP_BENDY then
+							m.bendyDecorations[sceneNode] = true
+
 							local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
 							sceneNode:getMaterial():setShader(shader)
 							self:_updateWind(m.layer, sceneNode)
@@ -989,11 +992,39 @@ function GameView:_updatePlayerMapNode()
 		node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", near)
 	end
 
+	-- for _, node in pairs(m.bendyDecorations) do
+	-- 	local min, max = node:getBounds()
+	-- 	local center = min + (max - min)
+	-- 	local distance = ((center - self.camera:getPosition()) * Vector.PLANE_XZ):getLength()
+	-- 	local halfDistance = 16
+		
+	-- 	if distance > halfDistance then
+	-- 		local delta = (distance - halfDistance) / halfDistance
+
+	-- 		if delta >= 1.0 then
+	-- 			node:setParent(nil)
+	-- 		else
+	-- 			if node:getParent() ~= m.node then
+	-- 				node:setParent(m.node)
+	-- 			end
+
+	-- 			node:getMaterial():setIsTranslucent(true)
+	-- 			node:getMaterial():setColor(Color(1, 1, 1, 1 - delta))
+	-- 		end
+	-- 	elseif node:getParent() ~= m.node then
+	-- 		node:setParent(m.node)
+	-- 	end
+	-- end
+
 	if self.previousPlayerLayer and self.previousPlayerLayer ~= layer then
 		local otherM = self.previousPlayerLayer and self.mapMeshes[self.previousPlayerLayer]
 		if otherM then
 			for _, node in ipairs(otherM.parts) do
 				node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+			end
+
+			for _, node in pairs(otherM.decorations) do
+				node:setParent(nil)
 			end
 		end
 

@@ -31,7 +31,7 @@ GrassBlock.DIRT_THRESHOLD = 0.35
 GrassBlock.MIN_OFFSET = -0.25
 GrassBlock.MAX_OFFSET = 0.25
 GrassBlock.OFFSET_NOISE = Noise {
-	scale = 117,
+	scale = 23163,
 	octaves = 2,
 	attenuation = -2
 }

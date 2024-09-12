@@ -64,6 +64,7 @@ namespace nbunny
 		float current_time = 0.0f;
 
 		int current_renderer_pass_id = 0;
+		bool is_clip_enabled = false;
 
 		SceneNode* root_node = nullptr;
 

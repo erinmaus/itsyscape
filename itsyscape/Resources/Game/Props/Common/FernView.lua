@@ -127,56 +127,6 @@ function FernView:load()
 				self.stemNode:getMaterial():setTextures(self.barkTexture)
 				self.stemNode:getMaterial():setOutlineThreshold(-0.01)
 				self.stemNode:setParent(root)
-
-				local function onWillRender(renderer)
-					local currentShader = renderer:getCurrentShader()
-					if not currentShader then
-						return
-					end
-
-					if currentShader:hasUniform("scape_BumpHeight") then
-						currentShader:send("scape_BumpHeight", 1)
-					end
-
-					local _, layer = self:getProp():getPosition()
-					local map = self:getGameView():getMap(layer)
-					local windDirection, windSpeed, windPattern, actorCanvas = self:getGameView():getWind(layer)
-
-					if currentShader:hasUniform("scape_BumpCanvas") then
-						currentShader:send("scape_BumpCanvas", actorCanvas)
-					end
-
-					if currentShader:hasUniform("scape_BumpForce") then
-						currentShader:send("scape_BumpForce", 0.25)
-					end
-
-					if currentShader:hasUniform("scape_MapSize") and map then
-						currentShader:send("scape_MapSize", { map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize() })
-					end
-
-					if currentShader:hasUniform("scape_WindDirection") then
-						currentShader:send("scape_WindDirection", { windDirection:get() })
-					end
-
-					if currentShader:hasUniform("scape_WindSpeed") then
-						currentShader:send("scape_WindSpeed", windSpeed)
-					end
-
-					if currentShader:hasUniform("scape_WindPattern") then
-						currentShader:send("scape_WindPattern", { windPattern:get() })
-					end
-
-					if currentShader:hasUniform("scape_WindMaxDistance") then
-						currentShader:send("scape_WindMaxDistance", 0.5)
-					end
-
-					if currentShader:hasUniform("scape_WallHackWindow") then
-						currentShader:send("scape_WallHackWindow", { 0, 0, 0, 0 })
-					end
-				end
-
-				self.frondNode:onWillRender(onWillRender)
-				self.stemNode:onWillRender(onWillRender)
 			end)
 		end)
 end
@@ -184,6 +134,10 @@ end
 function FernView:_updateNodeUniforms(node)
 	local _, layer = self:getProp():getPosition()
 	local map = self:getGameView():getMap(layer)
+	if not map then
+		return
+	end
+
 	local windDirection, windSpeed, windPattern, bumpCanvas = self:getGameView():getWind(layer)
 
 	local material = node:getMaterial()
@@ -195,7 +149,7 @@ function FernView:_updateNodeUniforms(node)
 	material:send(material.UNIFORM_TEXTURE, "scape_BumpCanvas", bumpCanvas)
 	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", { windPattern:get() })
 	material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", 0.25)
-	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", { 2.0, 2.0, 2.0, 2.0 })
+	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", { 0, 0, 0, 0 })
 end
 
 

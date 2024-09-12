@@ -152,6 +152,8 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
 	current_time = timer_instance->getTime() - time;
 
+	is_clip_enabled = false;
+
 	root_node = &node;
 	set_camera(default_camera);
 
@@ -193,7 +195,11 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 
 	current_renderer_pass_id = RENDERER_PASS_NONE;
 
-	glad::glDisable(GL_CLIP_DISTANCE0);
+	if (is_clip_enabled)
+	{
+		is_clip_enabled = false;
+		glad::glDisable(GL_CLIP_DISTANCE0);
+	}
 
 	set_camera(default_camera);
 	root_node = nullptr;
@@ -221,21 +227,29 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		shader_cache.update_uniform(shader, "scape_ViewMatrix", glm::value_ptr(view_matrix), sizeof(glm::mat4));
 
 		auto inverse_view_matrix = glm::inverse(view_matrix);
-		shader_cache.update_uniform(shader, "scape_ViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
+		shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
 
-		auto projection_matrix = camera->get_view();
-		shader_cache.update_uniform(shader, "scape_ViewMatrix", glm::value_ptr(projection_matrix), sizeof(glm::mat4));
+		auto projection_matrix = camera->get_projection();
+		shader_cache.update_uniform(shader, "scape_ProjectionMatrix", glm::value_ptr(projection_matrix), sizeof(glm::mat4));
 
 		if (camera->get_is_clip_plane_enabled())
 		{
 			auto clip_plane = camera->get_clip_plane();
 			shader_cache.update_uniform(shader, "scape_ClipPlane", glm::value_ptr(clip_plane), sizeof(glm::vec4));
 
-			glad::glEnable(GL_CLIP_DISTANCE0);
+			if (!is_clip_enabled)
+			{
+				is_clip_enabled = true;
+				glad::glEnable(GL_CLIP_DISTANCE0);
+			}
 		}
 		else
 		{
-			glad::glDisable(GL_CLIP_DISTANCE0);
+			if (is_clip_enabled)
+			{
+				is_clip_enabled = false;
+				glad::glDisable(GL_CLIP_DISTANCE0);
+			}
 		}
 
 		auto camera_target = camera->get_target_position();
@@ -279,28 +293,28 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	}
 	else
 	{
-		if (node.get_reference(L))
-		{
-			lua_getfield(L, -1, "willRender");
-			if (!lua_isnil(L, -1) && lua_toboolean(L, -1))
-			{
-				get_weak_reference(L, reference);
-				if (!lua_isnil(L, -1))
-				{
-					lua_pushnumber(L, delta);
-					lua_call(L, 2, 0);
-				}
-				else
-				{
-					lua_pop(L, 1);
-				}
-			}
-			else
-			{
-				lua_pop(L, 1);
-			}
-		}
-		lua_pop(L, 1);
+		// if (node.get_reference(L))
+		// {
+		// 	lua_getfield(L, -1, "willRender");
+		// 	if (!lua_isnil(L, -1) && lua_toboolean(L, -1))
+		// 	{
+		// 		get_weak_reference(L, reference);
+		// 		if (!lua_isnil(L, -1))
+		// 		{
+		// 			lua_pushnumber(L, delta);
+		// 			lua_call(L, 2, 0);
+		// 		}
+		// 		else
+		// 		{
+		// 			lua_pop(L, 1);
+		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		lua_pop(L, 1);
+		// 	}
+		// }
+		// lua_pop(L, 1);
 
 		if (!node.is_base_type())
 		{

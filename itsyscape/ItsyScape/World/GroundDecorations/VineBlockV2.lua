@@ -18,7 +18,7 @@ local VineBlock = Class(Block)
 
 VineBlock.GROUP = Block.GROUP_BENDY
 
-VineBlock.SATURATION = 8
+VineBlock.SATURATION = 3
 
 VineBlock.DIRT_NOISE = Noise {
 	scale = 12,
@@ -26,8 +26,8 @@ VineBlock.DIRT_NOISE = Noise {
 	attenuation = 0.5
 }
 
-VineBlock.VINE_LOWER_THRESHOLD = 0.475
-VineBlock.VINE_UPPER_THRESHOLD = 0.50
+VineBlock.VINE_LOWER_THRESHOLD = 0.45
+VineBlock.VINE_UPPER_THRESHOLD = 0.55
 VineBlock.VINE_NOISE = Noise {
 	scale = 23,
 	octaves = 2,
@@ -39,7 +39,7 @@ VineBlock.DIRT_THRESHOLD = 0.35
 VineBlock.MIN_OFFSET = -0.25
 VineBlock.MAX_OFFSET = 0.25
 VineBlock.OFFSET_NOISE = Noise {
-	scale = 117,
+	scale = 12363,
 	octaves = 2,
 	attenuation = -2
 }
