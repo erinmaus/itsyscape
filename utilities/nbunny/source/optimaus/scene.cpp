@@ -1444,7 +1444,7 @@ static int nbunny_scene_node_material_send_int(lua_State* L)
 	auto value = sol::stack::get<sol::table>(L, 3);
 	for (std::size_t i = 0; i < value.size(); ++i)
 	{
-		result.push_back(value.get<int>(i));
+		result.push_back(value.get<int>(i + 1));
 	}
 
 	material->set_uniform(uniform_name, &result[0], result.size());
@@ -1461,7 +1461,7 @@ static int nbunny_scene_node_material_send_float(lua_State* L)
 	auto value = sol::stack::get<sol::table>(L, 3);
 	for (std::size_t i = 0; i < value.size(); ++i)
 	{
-		result.push_back(value.get<float>(i));
+		result.push_back(value.get<float>(i + 1));
 	}
 
 	material->set_uniform(uniform_name, &result[0], result.size());

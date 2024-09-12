@@ -45,7 +45,7 @@ function GroundDecorationsV2:_getDecoration(group, position)
 
 	local decorations = self.decorationsByGroup[group] or {}
 	local decorationRow = decorations[x] or {}
-	local decoration = decorationRow[z] or {}
+	local decoration = decorationRow[z]
 
 	if not decoration then
 		decoration = {
@@ -55,7 +55,7 @@ function GroundDecorationsV2:_getDecoration(group, position)
 			})
 		}
 
-		decorationsRow[z] = decoration
+		decorationRow[z] = decoration
 		decorations[x] = decorationRow
 
 		table.insert(self.decorations, decoration)
