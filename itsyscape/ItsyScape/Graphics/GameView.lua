@@ -507,7 +507,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		actorCanvas = actorCanvas,
 		bumpCanvas = bumpCanvas,
 		curves = {},
-		bendyDecorations = setmetatable({}, { __mode = "k" })
+		bendyDecorations = setmetatable({}, { __mode = "k" }),
+		decorationTextures = setmetatable({}, { __mode = "v" }),
 	}
 
 	local function onWillRender(renderer)
@@ -632,23 +633,38 @@ function GameView:updateGroundDecorations(m)
 					for i = 1, ground:getDecorationCount() do
 						local decoration, group = ground:getDecorationAtIndex(i)
 						local groupName = string.format("_x_GroundDecorations_%d_%s", i, tileSetID)
-						local sceneNode = self:decorate(groupName, decoration, m.layer)
-						sceneNode:getMaterial():setOutlineThreshold(0.5)
-						sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
-						sceneNode:getMaterial():setIsShadowCaster(false)
+						self:decorate(groupName, decoration, m.layer, function(d)
+							d.sceneNode:getMaterial():setOutlineThreshold(0.5)
+							d.sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
+							d.sceneNode:getMaterial():setIsShadowCaster(false)
 
-						if group == Block.GROUP_SHINY then
-							sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
-							sceneNode:getMaterial():setReflectionPower(1.0)
-							sceneNode:getMaterial():setReflectionDistance(0.75)
-							sceneNode:getMaterial():setRoughness(0.5)
-						elseif group == Block.GROUP_BENDY then
-							m.bendyDecorations[sceneNode] = true
+							if group == Block.GROUP_SHINY then
+								d.sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
+								d.sceneNode:getMaterial():setReflectionPower(1.0)
+								d.sceneNode:getMaterial():setReflectionDistance(0.75)
+								d.sceneNode:getMaterial():setRoughness(0.5)
+							elseif group == Block.GROUP_BENDY then
+								local newTexture = m.decorationTextures[d.texture:getID()]
+								if not newTexture then
+									newTexture = TextureResource(d.texture:getResource())
+									newTexture:getHandle():setBoundTexture("Specular", d.texture:getHandle():getBoundTexture("Specular"))
+									newTexture:getHandle():setBoundTexture("Heightmap", d.texture:getHandle():getBoundTexture("Heightmap"))
+									m.decorationTextures[d.texture:getID()] = newTexture
+								end
 
-							local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
-							sceneNode:getMaterial():setShader(shader)
-							self:_updateWind(m.layer, sceneNode)
-						end
+								d.texture = newTexture
+								d.sceneNode:getMaterial():setTextures(newTexture)
+								if d.alphaSceneNode then
+									d.alphaSceneNode:getMaterial():setTextures(newTexture)
+								end
+
+								m.bendyDecorations[d.sceneNode] = true
+	
+								local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
+								d.sceneNode:getMaterial():setShader(shader)
+								self:_updateWind(m.layer, d.sceneNode)
+							end
+						end)
 					end
 				end)
 			end
@@ -821,9 +837,15 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 end
 
 function GameView:_updateWind(layer, node)
+	local m = self.mapMeshes[layer]
+	if not m then
+		return
+	end
+
 	local windDirection, windSpeed, windPattern, bumpCanvas = self:getWind(layer)
 	local material = node:getMaterial()
 	material:send(material.UNIFORM_TEXTURE, "scape_BumpCanvas", bumpCanvas)
+	material:send(material.UNIFORM_FLOAT, "scape_MapSize", { m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize() })
 	material:send(material.UNIFORM_FLOAT, "scape_WindDirection", { windDirection:get() })
 	material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
 	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", { windPattern:get() })
@@ -1261,7 +1283,7 @@ function GameView:poofItem(item)
 	end
 end
 
-function GameView:decorate(group, decoration, layer)
+function GameView:decorate(group, decoration, layer, callback)
 	local groupName = group .. '#' .. tostring(layer)
 	if self.decorations[groupName] and
 	   self.decorations[groupName].sceneNode
@@ -1386,7 +1408,12 @@ function GameView:decorate(group, decoration, layer)
 				end
 			end
 
+			d.texture = texture
 			d.staticMesh = staticMesh
+
+			if callback then
+				callback(d)
+			end
 		end)
 
 		d.decoration = decoration
