@@ -187,17 +187,25 @@ function Renderer:draw(scene, delta, width, height, postProcessPasses)
 	self._renderer:getCamera():rotate(rotation:get())
 	self._renderer:getCamera():updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
 
+	local before = love.timer.getTime()
 	love.graphics.push("all")
 	self._renderer:draw(scene:getHandle(), delta, width, height)
 	love.graphics.pop()
+	local after = love.timer.getTime()
+	print(">>> 3d time (ms):", (after - before) * 1000)
 
 	if postProcessPasses then
+		before = love.timer.getTime() 
 		for _, postProcessPass in ipairs(postProcessPasses) do
 			love.graphics.push("all")
 			postProcessPass:draw(width, height)
 			love.graphics.pop()
 		end
+		after = love.timer.getTime() 
+		print(">>> post time (ms):", (after - before) * 1000)
 	end
+
+	print("...")
 end
 
 function Renderer:getOutputBuffer()

@@ -497,7 +497,10 @@ function love.run()
 
 			if love.draw then love.draw() end
 
+			local before = love.timer.getTime()
 			love.graphics.present()
+			local after = love.timer.getTime()
+			print(">>> present", (after - before) * 1000)
 		end
 
 		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 1) / 1000) end

@@ -147,10 +147,21 @@ nbunny::SceneNode* nbunny::Renderer::get_root_node() const
 	return root_node;
 }
 
+static double X_CPU_TIME = 0.0f;
+static double X_GPU_TIME = 0.0f;
+static double X_LUA_TIME = 0.0f;
+static double X_UNI_TIME = 0.0f;
+
 void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int width, int height)
 {
 	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
 	current_time = timer_instance->getTime() - time;
+
+	double before = timer_instance->getTime();
+	X_CPU_TIME = 0.0f;
+	X_GPU_TIME = 0.0f;
+	X_LUA_TIME = 0.0f;
+	X_UNI_TIME = 0.0f;
 
 	is_clip_enabled = false;
 
@@ -187,10 +198,16 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	visible_scene_nodes_by_position = visible_scene_nodes;
 	SceneNode::sort_by_position(visible_scene_nodes_by_position, get_camera(), delta);
 
+	int i = 0;
 	for (auto& renderer_pass: renderer_passes)
 	{
+		auto b = timer_instance->getTime();
 		current_renderer_pass_id = renderer_pass->get_renderer_pass_id();
 		renderer_pass->draw(L, node, delta);
+		auto a = timer_instance->getTime();
+		++i;
+
+		std::cout << "pass: " << i << ", ms: " << (a - b) * 1000.0 << std::endl;
 	}
 
 	current_renderer_pass_id = RENDERER_PASS_NONE;
@@ -203,12 +220,22 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 
 	set_camera(default_camera);
 	root_node = nullptr;
+
+	double after = timer_instance->getTime();
+	X_CPU_TIME = (after - before);
+	std::cout << "cpu time ms: " << (X_CPU_TIME - X_GPU_TIME) * 1000.0 << std::endl;
+	std::cout << "gpu time ms: " << X_GPU_TIME * 1000.0 << std::endl;
+	std::cout << "lua time ms: " << X_LUA_TIME * 1000.0 << std::endl;
+	std::cout << "uni time ms: " << X_UNI_TIME * 1000.0 << std::endl;
 }
 
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 {
+	auto timer = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	auto shader = get_current_shader();
+
+	double x1 = timer->getTime();
 
 	shader_cache.update_uniform(shader, "scape_Time", &current_time, sizeof(float));
 
@@ -263,13 +290,19 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		glad::glDisable(GL_CLIP_DISTANCE0);
 	}
 
+	double x2 = timer->getTime();
+	X_UNI_TIME += x2 - x1;
+
 	node.get_material().apply_uniforms(shader_cache, shader);
+
+	auto b = timer->getTime();
 
 	graphics->push(love::graphics::Graphics::STACK_ALL);
 
 	int before = lua_gettop(L);
 	if (node.get_type() == LuaSceneNode::type_pointer)
 	{
+		auto b2 = timer->getTime();
 		if (reference)
 		{
 			get_weak_reference(L, reference);
@@ -290,9 +323,12 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 			}
 			lua_pop(L, 1);
 		}
+		auto a2 = timer->getTime();
+		X_LUA_TIME += a2 - b2;
 	}
 	else
 	{
+		auto b2 = timer->getTime();
 		if (node.get_reference(L))
 		{
 			lua_getfield(L, -1, "willRender");
@@ -315,6 +351,8 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 			}
 		}
 		lua_pop(L, 1);
+		auto a2 = timer->getTime();
+		X_LUA_TIME += a2 - b2;
 
 		if (!node.is_base_type())
 		{
@@ -325,6 +363,10 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	}
 
 	graphics->pop();
+
+	double a = timer->getTime();
+
+	X_GPU_TIME += a - b;
 }
 
 nbunny::RendererPass::RendererPass(int renderer_pass_id) :

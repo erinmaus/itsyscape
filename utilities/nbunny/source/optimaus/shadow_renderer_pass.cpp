@@ -21,7 +21,7 @@
 void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
 	visible_scene_nodes = get_renderer()->get_all_scene_nodes();
-	SceneNode::sort_by_material(visible_scene_nodes);
+	SceneNode::sort_by_position(visible_scene_nodes, get_renderer()->get_camera(), delta);
 
 	shadow_casting_scene_nodes.clear();
 	directional_lights.clear();
@@ -35,11 +35,6 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 		}
 
 		if (material.get_color().a < 1.0f)
-		{
-			continue;
-		}
-
-		if (!material.get_is_shadow_caster())
 		{
 			continue;
 		}
@@ -77,23 +72,47 @@ void nbunny::ShadowRendererPass::calculate_viewing_frustum_corners(float near, f
 {
 	auto& camera = get_renderer()->get_camera();
 	auto projection = glm::perspectiveLH(camera.get_field_of_view(), width / (float)height, near, far);
-	auto inverse_projection_view = glm::inverse(projection * camera.get_view());
 
-	result.clear();
-	for (float x = 0.0f; x < 2.0f; x += 1.0f)
+	auto bounds_min = glm::vec3(std::numeric_limits<float>::infinity());
+	auto bounds_max = glm::vec3(-std::numeric_limits<float>::infinity());
+
+	Camera shadow_camera;
+	shadow_camera.update(camera.get_view(), projection);
+
+	for (auto scene_node: shadow_casting_scene_nodes)
 	{
-		for (float y = 0.0f; y < 2.0f; y += 1.0f)
+		if (shadow_camera.inside(*scene_node, 0.0))
 		{
-			for (float z = 0.0f; z < 2.0f; z += 1.0f)
-			{
-				auto corner = glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
-				corner = inverse_projection_view * corner;
-				corner /= corner.w;
+			bounds_min = glm::min(bounds_min, scene_node->get_min());
+			bounds_min = glm::min(bounds_min, scene_node->get_max());
 
-                result.push_back(glm::vec3(corner));
-			}
+			bounds_max = glm::max(bounds_max, scene_node->get_min());
+			bounds_max = glm::max(bounds_max, scene_node->get_max());
 		}
 	}
+
+	result.push_back(bounds_min + (bounds_max - bounds_min) / glm::vec3(2.0f));
+	result.push_back(bounds_min);
+	result.push_back(bounds_max);
+	// std::cout << ">>>: " << result.at(0).x << ", " << result.at(0).y << ", " << result.at(0).z << std::endl;
+
+	// auto inverse_projection_view = glm::inverse(projection * camera.get_view());
+
+	// result.clear();
+	// for (float x = 0.0f; x < 2.0f; x += 1.0f)
+	// {
+	// 	for (float y = 0.0f; y < 2.0f; y += 1.0f)
+	// 	{
+	// 		for (float z = 0.0f; z < 2.0f; z += 1.0f)
+	// 		{
+	// 			auto corner = glm::vec4(2.0f * x - 1.0f, 2.0f * y - 1.0f, 2.0f * z - 1.0f, 1.0f);
+	// 			corner = inverse_projection_view * corner;
+	// 			corner /= corner.w;
+
+    //             result.push_back(glm::vec3(corner));
+	// 		}
+	// 	}
+	// }
 }
 
 glm::mat4 nbunny::ShadowRendererPass::get_light_view_matrix(const glm::vec3& center, float delta) const
@@ -114,22 +133,26 @@ void nbunny::ShadowRendererPass::get_light_projection_view_matrix(int cascade_in
 	std::vector<glm::vec3> viewing_frustum_corners;
 	calculate_viewing_frustum_corners(near_plane, far_plane, viewing_frustum_corners);
 
-	auto center = glm::vec3(0.0f);
-	for (auto& corner: viewing_frustum_corners)
-	{
-		center += corner;
-	}
-	center /= viewing_frustum_corners.size();
+	// auto center = glm::vec3(0.0f);
+	// for (auto& corner: viewing_frustum_corners)
+	// {
+	// 	center += corner;
+	// }
+	// center /= viewing_frustum_corners.size();
+	auto center = viewing_frustum_corners.at(0);
 	view_matrix = get_light_view_matrix(center, delta);
 
-	auto bounds_min = glm::vec3(std::numeric_limits<float>::infinity());
-	auto bounds_max = glm::vec3(-std::numeric_limits<float>::infinity());
-	for (auto& corner: viewing_frustum_corners)
-	{
-		auto point = glm::vec3(view_matrix * glm::vec4(corner, 1.0f));
-		bounds_min = glm::min(point, bounds_min);
-		bounds_max = glm::max(point, bounds_max);
-	}
+	auto bounds_min = viewing_frustum_corners.at(1);
+	auto bounds_max = viewing_frustum_corners.at(2);
+
+	// auto bounds_min = glm::vec3(std::numeric_limits<float>::infinity());
+	// auto bounds_max = glm::vec3(-std::numeric_limits<float>::infinity());
+	// for (auto& corner: viewing_frustum_corners)
+	// {
+	// 	auto point = glm::vec3(view_matrix * glm::vec4(corner, 1.0f));
+	// 	bounds_min = glm::min(point, bounds_min);
+	// 	bounds_max = glm::max(point, bounds_max);
+	// }
 
 	bounds_min.z -= 10.0f;
 	bounds_max.z += 10.0f;
@@ -148,8 +171,10 @@ love::graphics::Shader* nbunny::ShadowRendererPass::get_node_shader(lua_State* L
     return RendererPass::get_node_shader(L, node);
 }
 
+#include "modules/timer/Timer.h"
 void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 {
+	auto timer = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
 	auto renderer = get_renderer();
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
@@ -201,6 +226,7 @@ void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 		Camera shadow_camera;
 		shadow_camera.update(view_matrix, projection_matrix);
 
+		double s = 0.0;
 		for (auto& scene_node: shadow_casting_scene_nodes)
 		{
 			if (!shadow_camera.inside(*scene_node, delta))
@@ -215,8 +241,12 @@ void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 			}
 			renderer->set_current_shader(shader);
 
+		double b1 = timer->getTime();
 			renderer->draw_node(L, *scene_node, delta);
+		double b2 = timer->getTime();
+		s += b2 - b1;
 		}
+		std::cout << "time " << s * 1000.0 << std::endl;
 	}
 
 	graphics->setColorMask(enabled_mask);
@@ -253,8 +283,16 @@ bool nbunny::ShadowRendererPass::get_has_shadow_map() const
 
 void nbunny::ShadowRendererPass::draw(lua_State* L, SceneNode& node, float delta)
 {
+	auto timer = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+	auto b1 = timer->getTime();
 	walk_all_nodes(node, delta);
+	auto b2 = timer->getTime();
+	std::cout << "walk_all_nodes: " << (b2 - b1) * 1000.0 << std::endl;
+
+	auto a1 = timer->getTime();
 	draw_nodes(L, delta);
+	auto a2 = timer->getTime();
+	std::cout << "draw_nodes: " << (a2 - a1) * 1000.0 << std::endl;
 }
 
 void nbunny::ShadowRendererPass::resize(int width, int height)
