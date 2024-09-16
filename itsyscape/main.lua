@@ -497,7 +497,11 @@ function love.run()
 
 			if love.draw then love.draw() end
 
-			love.graphics.present()
+			if _APP then
+				_APP:measure("love.graphics.present()", love.graphics.present)
+			else
+				love.graphics.present()
+			end
 		end
 
 		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 1) / 1000) end

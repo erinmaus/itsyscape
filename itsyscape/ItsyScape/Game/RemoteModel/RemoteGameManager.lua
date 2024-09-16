@@ -112,19 +112,11 @@ function RemoteGameManager:send()
 end
 
 function RemoteGameManager:receive()
-	local b = love.timer.getTime()
 	local e
-	local t = false
-	local o = 0
-	local c = 0
 	repeat
 		e = self.rpcService:receive()
 		if e then
-		local x = love.timer.getTime() 
 			self.pending:pull(e)
-			local a = love.timer.getTime() 
-			o = o + (a - x)
-			c = c + 1
 			if e.type == EventQueue.EVENT_TYPE_TICK then
 				if e.interface then
 					if self.processedTicks[e.interface] then
@@ -150,7 +142,6 @@ function RemoteGameManager:receive()
 						end
 					end
 				else
-					t = true
 					self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
 					self:flush()
 
@@ -159,7 +150,6 @@ function RemoteGameManager:receive()
 			end
 		end
 	until e == nil
-	local a = love.timer.getTime()
 
 	return false
 end
