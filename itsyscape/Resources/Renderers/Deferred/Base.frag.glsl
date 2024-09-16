@@ -15,10 +15,10 @@ precision highp float;
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Resources/Shaders/RendererPass.common.glsl"
+#include "Resources/Shaders/GBuffer.common.glsl"
 
 uniform float scape_OutlineThreshold;
 uniform vec4 scape_OutlineColor;
-uniform float scape_FullLitCoefficient;
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
@@ -57,8 +57,6 @@ void effect()
 	}
 
 	love_Canvases[0] = diffuse;
-	love_Canvases[1] = vec4(position, diffuse.a);
-	love_Canvases[2] = vec4(normal, scape_OutlineThreshold);
-	love_Canvases[3] = vec4(specular, scape_FullLitCoefficient, 0.0, 1.0);
-	love_Canvases[4] = scape_OutlineColor;
+	love_Canvases[1] = vec4(encodeGBufferNormal(normal), 0.0, 1.0);
+	love_Canvases[2] = vec4(specular, scape_OutlineColor.r, (scape_OutlineThreshold + 1.0) / 2.0, 1.0);
 }

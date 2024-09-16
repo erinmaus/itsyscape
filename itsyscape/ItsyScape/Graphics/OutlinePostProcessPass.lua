@@ -166,9 +166,8 @@ function OutlinePostProcessPass:_drawDepthOutline(width, height)
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
 		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_NormalTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_OUTLINE_INDEX),
-		"scape_OutlineThresholdTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_OUTLINE_INDEX),
-		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.OUTLINE_COLOR_INDEX),
+		"scape_NormalTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_INDEX),
+		"scape_OutlineTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.SPECULAR_OUTLINE_INDEX),
 		"scape_DepthStep", self.depthStep,
 		"scape_NormalStep", self.normalStep)
 
@@ -198,8 +197,7 @@ function OutlinePostProcessPass:_drawAlphaOutlines(width, height)
 	self:bindShader(
 		self.alphaOutlineShader,
 		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_AlphaMaskTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.ALPHA_MASK_INDEX),
-		"scape_OutlineColorTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.OUTLINE_COLOR_INDEX))
+		"scape_OutlineTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.OUTLINE_INDEX))
 
 	love.graphics.draw(alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.ALPHA_Z_INDEX))
 end
@@ -212,10 +210,9 @@ function OutlinePostProcessPass:_drawParticleOutlines(width, height)
 	self:bindShader(
 		self.alphaOutlineShader,
 		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_AlphaMaskTexture", particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.ALPHA_MASK_INDEX),
-		"scape_OutlineColorTexture", particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.OUTLINE_COLOR_INDEX))
+		"scape_OutlineTexture", particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.OUTLINE_INDEX))
 
-	love.graphics.draw(particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.ALPHA_MASK_INDEX))
+	love.graphics.draw(particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.OUTLINE_INDEX))
 end
 
 function OutlinePostProcessPass:_generateOutlines(width, height)
@@ -288,7 +285,7 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 		self.composeOutlineShader,
 		"scape_DepthTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX),
 		"scape_OutlineTexture", self.outlineBuffer:getCanvas(2),
-		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.OUTLINE_COLOR_INDEX),
+		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.SPECULAR_OUTLINE_INDEX),
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
 		"scape_TexelSize", { 1 / width, 1 / height },

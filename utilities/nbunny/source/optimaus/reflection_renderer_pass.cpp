@@ -165,12 +165,8 @@ void nbunny::ReflectionRendererPass::copy_g_buffer()
 
 	render_targets.colors.emplace_back(reflection_buffer.get_canvas(NORMALS_INDEX));
 	graphics->setCanvas(render_targets);
-	graphics->draw(g_buffer.get_canvas(DeferredRendererPass::NORMAL_OUTLINE_INDEX), love::Matrix4());
-
-	render_targets.colors.clear();
-	render_targets.colors.emplace_back(reflection_buffer.get_canvas(POSITION_INDEX));
-	graphics->setCanvas(render_targets);
-	graphics->draw(g_buffer.get_canvas(DeferredRendererPass::POSITION_INDEX), love::Matrix4());
+	graphics->clear(love::Colorf(0.0, 0.0, 0.0, 0.0), false, 1.0f);
+	graphics->draw(g_buffer.get_canvas(DeferredRendererPass::NORMAL_INDEX), love::Matrix4());
 
 	reflection_buffer.use();
 	graphics->origin();

@@ -1,8 +1,14 @@
+#include "Resources/Shaders/GBuffer.common.glsl"
+
 #define SCAPE_MAX_CASCADES 8
 
+uniform mat4 scape_InverseViewMatrix;
+uniform mat4 scape_InverseProjectionMatrix;
+
 uniform ArrayImage scape_ShadowMap;
-uniform Image scape_PositionTexture;
-uniform Image scape_NormalOutlineTexture;
+uniform Image scape_DepthTexture;
+uniform Image scape_NormalTexture;
+uniform Image scape_SpecularOutlineTexture;
 uniform vec2 scape_TexelSize;
 uniform vec3 scape_LightDirection;
 uniform mat4 scape_CascadeLightSpaceMatrices[SCAPE_MAX_CASCADES];
@@ -43,11 +49,12 @@ float calculatePCF(int cascadeIndex, vec3 position, float bias)
 
 vec4 effect(
 	vec4 color,
-	Image depth,
+	Image depthTexture,
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	vec4 positionSample = Texel(scape_PositionTexture, textureCoordinate);
+	float depth = Texel(scape_DepthTexture, textureCoordinate).r;
+	vec3 positionSample = worldPositionFromGBufferDepth(depth, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
 	vec3 worldPosition = positionSample.xyz;
 	vec3 viewPosition = (scape_View * vec4(worldPosition, 1.0)).xyz;
 
@@ -61,7 +68,7 @@ vec4 effect(
 		}
 	}
 
-	vec3 normal = normalize(Texel(scape_NormalOutlineTexture, textureCoordinate).xyz);
+	vec3 normal = normalize(decodeGBufferNormal(Texel(scape_NormalTexture, textureCoordinate).xy));
 	vec4 lightPosition = scape_CascadeLightSpaceMatrices[cascadeIndex] * vec4(worldPosition, 1.0);
 	vec3 projectedLightPosition = lightPosition.xyz / lightPosition.w;
 	projectedLightPosition = (projectedLightPosition + vec3(1.0)) / vec3(2.0);
@@ -74,7 +81,7 @@ vec4 effect(
 		return vec4(0.0);
 	}
 
-	float sceneAlpha = positionSample.a;
+	float sceneAlpha = Texel(scape_SpecularOutlineTexture, textureCoordinate, 1.0).a;
 	float shadow = calculatePCF(cascadeIndex, projectedLightPosition, bias);
 	return vec4(vec3(0.0), scape_ShadowAlpha * shadow * sceneAlpha);
 }

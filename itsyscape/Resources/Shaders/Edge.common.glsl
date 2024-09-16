@@ -1,4 +1,5 @@
 #include "Resources/Shaders/Depth.common.glsl"
+#include "Resources/Shaders/GBuffer.common.glsl"
 
 const mat3 G[9] = mat3[](
 	1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 ),
@@ -73,14 +74,15 @@ float getNormalEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize)
 	mat3 I;
 	float convulation[9];
 
-	vec3 center = Texel(image, textureCoordinate).xyz;
+	vec3 center = decodeGBufferNormal(Texel(image, textureCoordinate).xy);
 
 	for (int x = 0; x < 3; x += 1)
 	{
 		for (int y = 0; y < 3; y += 1)
 		{
-			vec3 currentSample = Texel(image, textureCoordinate + vec2(float(x - 1), float(y - 1)) * texelSize).xyz;
-			float centerDotCurrentSample = dot(center, currentSample);
+			vec2 currentSample = Texel(image, textureCoordinate + vec2(float(x - 1), float(y - 1)) * texelSize).xy;
+			vec3 currentNormal = decodeGBufferNormal(currentSample);
+			float centerDotCurrentSample = dot(center, currentNormal);
 
 			I[x][y] = centerDotCurrentSample;
 		}

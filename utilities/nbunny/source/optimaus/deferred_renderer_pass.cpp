@@ -30,7 +30,7 @@ static const std::string SHADER_MIX_LIGHTS        = "MixLights";
 nbunny::DeferredRendererPass::DeferredRendererPass(ShadowRendererPass* shadow_pass) :
 	RendererPass(RENDERER_PASS_DEFERRED),
 	shadow_pass(shadow_pass),
-	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RGBA8 }),
+	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RG16F, love::PIXELFORMAT_RGBA8 }),
 	depth_buffer({}),
 	light_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
 	fog_buffer(love::PIXELFORMAT_RGBA8, g_buffer),
@@ -96,19 +96,10 @@ void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNo
 
 	ambient_light += light.ambient_coefficient;
 
-	auto light_ambient_coefficient_uniform = shader->getUniformInfo("scape_LightAmbientCoefficient");
-	if (light_ambient_coefficient_uniform)
-	{
-		*light_ambient_coefficient_uniform->floats = light.ambient_coefficient;
-		shader->updateUniform(light_ambient_coefficient_uniform, 1);
-	}
-
-	auto light_color_uniform = shader->getUniformInfo("scape_LightColor");
-	if (light_color_uniform)
-	{
-		std::memcpy(light_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
-		shader->updateUniform(light_color_uniform, 1);
-	}
+	auto& shader_cache = get_renderer()->get_shader_cache();
+	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
+	shader_cache.update_uniform(shader, "scape_LightAmbientCoefficient", &light.ambient_coefficient, sizeof(float));
+	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light.color), sizeof(glm::vec3));
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
@@ -122,63 +113,25 @@ void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSce
 	Light light;
 	node.to_light(light, delta);
 
-	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
-	if (position_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
-		shader->sendTextures(position_texture_uniform, &texture, 1);    
-	}
+	auto& shader_cache = get_renderer()->get_shader_cache();
+	shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
+	shader_cache.update_uniform(shader, "scape_NormalTexture", g_buffer.get_canvas(NORMAL_INDEX));
+	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
 
-	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalOutlineTexture");
-	if (normal_map_specular_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_OUTLINE_INDEX));
-		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1); 
-	}
+	shader_cache.update_uniform(shader, "scape_LightDirection", glm::value_ptr(light.position), sizeof(glm::vec3));
+	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light.color), sizeof(glm::vec3));\
 
-	auto specular_texture_uniform = shader->getUniformInfo("scape_SpecularTexture");
-	if (specular_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(SPECULAR_INDEX));
-		shader->sendTextures(specular_texture_uniform, &texture, 1);
-	}
-
-	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
-	if (color_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(COLOR_INDEX));
-		shader->sendTextures(color_texture_uniform, &texture, 1);
-	}
-
-	auto light_direction_uniform = shader->getUniformInfo("scape_LightDirection");
-	if (light_direction_uniform)
-	{
-		std::memcpy(light_direction_uniform->floats, glm::value_ptr(light.position), sizeof(glm::vec3));
-		shader->updateUniform(light_direction_uniform, 1);
-	}
-
-	auto light_color_uniform = shader->getUniformInfo("scape_LightColor");
-	if (light_color_uniform)
-	{
-		std::memcpy(light_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
-		shader->updateUniform(light_color_uniform, 1);
-	}
-
-	auto camera_target_uniform = shader->getUniformInfo("scape_CameraTarget");
-	if (camera_target_uniform)
-	{
-		auto eye = get_renderer()->get_camera().get_target_position();
-		std::memcpy(camera_target_uniform->floats, glm::value_ptr(eye), sizeof(glm::vec3));
-		shader->updateUniform(camera_target_uniform, 1);
-	}
+	auto camera_target = get_renderer()->get_camera().get_target_position();
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_target), sizeof(glm::vec3));
 
 	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
-	if (camera_eye_uniform)
-	{
-		auto eye = get_renderer()->get_camera().get_eye_position();
-		std::memcpy(camera_eye_uniform->floats, glm::value_ptr(eye), sizeof(glm::vec3));
-		shader->updateUniform(camera_eye_uniform, 1);
-	}
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_target), sizeof(glm::vec3));
+
+	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
+	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
+
+	auto inverse_view_matrix = glm::inverse(get_renderer()->get_camera().get_view());
+	shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
@@ -192,47 +145,20 @@ void nbunny::DeferredRendererPass::draw_point_light(lua_State* L, LightSceneNode
 	Light light;
 	node.to_light(light, delta);
 
-	auto specular_texture_uniform = shader->getUniformInfo("scape_SpecularTexture");
-	if (specular_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(SPECULAR_INDEX));
-		shader->sendTextures(specular_texture_uniform, &texture, 1);    
-	}
+	auto& shader_cache = get_renderer()->get_shader_cache();
+	shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
+	shader_cache.update_uniform(shader, "scape_NormalTexture", g_buffer.get_canvas(NORMAL_INDEX));
+	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
+	
+	shader_cache.update_uniform(shader, "scape_LightPosition", glm::value_ptr(light.position), sizeof(glm::vec3));
+	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light.color), sizeof(glm::vec3));
+	shader_cache.update_uniform(shader, "scape_LightAttenuation", &light.attenuation, sizeof(float));
 
-	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
-	if (position_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
-		shader->sendTextures(position_texture_uniform, &texture, 1);    
-	}
+	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
+	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
 
-	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
-	if (color_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(COLOR_INDEX));
-		shader->sendTextures(color_texture_uniform, &texture, 1);
-	}
-
-	auto light_position_uniform = shader->getUniformInfo("scape_LightPosition");
-	if (light_position_uniform)
-	{
-		std::memcpy(light_position_uniform->floats, glm::value_ptr(light.position), sizeof(glm::vec3));
-		shader->updateUniform(light_position_uniform, 1);
-	}
-
-	auto light_color_uniform = shader->getUniformInfo("scape_LightColor");
-	if (light_color_uniform)
-	{
-		std::memcpy(light_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
-		shader->updateUniform(light_color_uniform, 1);
-	}
-
-	auto light_attenuation_uniform = shader->getUniformInfo("scape_LightAttenuation");
-	if (light_attenuation_uniform)
-	{
-		*light_attenuation_uniform->floats = light.attenuation;
-		shader->updateUniform(light_attenuation_uniform, 1);
-	}
+	auto inverse_view_matrix = glm::inverse(get_renderer()->get_camera().get_view());
+	shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
@@ -246,13 +172,19 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 	Light light;
 	node.to_light(light, delta);
 
+	auto& shader_cache = get_renderer()->get_shader_cache();
+	shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
+	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
+
+	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
+	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
+
+	auto inverse_view_matrix = glm::inverse(get_renderer()->get_camera().get_view());
+	shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
+
 	auto fog_parameters = glm::vec2(light.near_distance, light.far_distance);
-	auto fog_parameters_uniform = shader->getUniformInfo("scape_FogParameters");
-	if (fog_parameters_uniform)
-	{
-		std::memcpy(fog_parameters_uniform->floats, glm::value_ptr(fog_parameters), sizeof(glm::vec2));
-		shader->updateUniform(fog_parameters_uniform, 1);
-	}
+	shader_cache.update_uniform(shader, "scape_FogParameters", glm::value_ptr(fog_parameters), sizeof(glm::vec2));
+	shader_cache.update_uniform(shader, "scape_FogCOlor", glm::value_ptr(light.color), sizeof(glm::vec3));
 
 	glm::vec3 camera_eye;
 	switch (node.get_follow_mode())
@@ -269,33 +201,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 			break;
 	}
 
-	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
-	if (camera_eye_uniform)
-	{
-		std::memcpy(camera_eye_uniform->floats, glm::value_ptr(camera_eye), sizeof(glm::vec3));
-		shader->updateUniform(camera_eye_uniform, 1);
-	}
-
-	auto fog_color_uniform = shader->getUniformInfo("scape_FogColor");
-	if (fog_color_uniform)
-	{
-		std::memcpy(fog_color_uniform->floats, glm::value_ptr(light.color), sizeof(glm::vec3));
-		shader->updateUniform(fog_color_uniform, 1);
-	}
-
-	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
-	if (position_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
-		shader->sendTextures(position_texture_uniform, &texture, 1);    
-	}
-
-	auto color_texture_uniform = shader->getUniformInfo("scape_ColorTexture");
-	if (color_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(COLOR_INDEX));
-		shader->sendTextures(color_texture_uniform, &texture, 1);
-	}
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
@@ -328,7 +234,7 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
-	shadow_buffer.use();
+	shadow_buffer.use(false);
 	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 0.0f), love::OptionalInt(), love::OptionalDouble());
 
 	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, false);
@@ -340,43 +246,28 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 	auto shader = get_builtin_shader(L, BUILTIN_SHADER_SHADOW, SHADER_SHADOW);
 	get_renderer()->set_current_shader(shader);
 
+	auto& shader_cache = get_renderer()->get_shader_cache();
+	shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
+	shader_cache.update_uniform(shader, "scape_NormalTexture", g_buffer.get_canvas(NORMAL_INDEX));
+	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
+
+	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
+	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
+
+	auto view_matrix = get_renderer()->get_camera().get_view();
+	shader_cache.update_uniform(shader, "scape_View", glm::value_ptr(view_matrix), sizeof(glm::mat4));
+
+	auto inverse_view_matrix = glm::inverse(view_matrix);
+	shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
+
 	auto shadow_map = shadow_pass->get_shadow_map();
-	auto shadow_map_texture_uniform = shader->getUniformInfo("scape_ShadowMap");
-	if (shadow_map_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(shadow_map);
-		shader->sendTextures(shadow_map_texture_uniform, &texture, 1);  
-	}
+	shader_cache.update_uniform(shader, "scape_ShadowMap", static_cast<love::graphics::Texture*>(shadow_map));
 
-	auto position_texture_uniform = shader->getUniformInfo("scape_PositionTexture");
-	if (position_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(POSITION_INDEX));
-		shader->sendTextures(position_texture_uniform, &texture, 1);    
-	}
+	auto texel_size = glm::vec2(1.0f / shadow_map->getWidth(), 1.0f / shadow_map->getHeight());
+	shader_cache.update_uniform(shader, "scape_TexelSize", glm::value_ptr(texel_size), sizeof(glm::vec2));
 
-	auto normal_map_specular_texture_uniform = shader->getUniformInfo("scape_NormalOutlineTexture");
-	if (normal_map_specular_texture_uniform)
-	{
-		auto texture = static_cast<love::graphics::Texture*>(g_buffer.get_canvas(NORMAL_OUTLINE_INDEX));
-		shader->sendTextures(normal_map_specular_texture_uniform, &texture, 1); 
-	}
-
-	auto texel_size_uniform = shader->getUniformInfo("scape_TexelSize");
-	if (texel_size_uniform)
-	{
-		auto texel_size = glm::vec2(1.0f / shadow_map->getWidth(), 1.0f / shadow_map->getHeight());
-		std::memcpy(texel_size_uniform->floats, glm::value_ptr(texel_size), sizeof(glm::vec2));
-		shader->updateUniform(texel_size_uniform, 1);
-	}
-
-	auto light_direction_uniform = shader->getUniformInfo("scape_LightDirection");
-	if (light_direction_uniform)
-	{
-		auto light_direction = shadow_pass->get_light_direction(delta);
-		std::memcpy(light_direction_uniform->floats, glm::value_ptr(light_direction), sizeof(glm::vec3));
-		shader->updateUniform(light_direction_uniform, 1);
-	}
+	auto light_direction = shadow_pass->get_light_direction(delta);
+	shader_cache.update_uniform(shader, "scape_LightDirection", glm::value_ptr(light_direction), sizeof(glm::vec3));
 
 	std::vector<glm::mat4> light_space_matrices;
 	std::vector<glm::vec2> near_planes;
@@ -390,57 +281,22 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 		near_planes.emplace_back(near_plane, far_plane);
 	}
 
-	auto view_uniform = shader->getUniformInfo("scape_View");
-	if (view_uniform)
-	{
-		auto view = get_renderer()->get_camera().get_view();
-		std::memcpy(view_uniform->floats, glm::value_ptr(view), sizeof(glm::mat4));
-		shader->updateUniform(view_uniform, 1);
-	}
+	shader_cache.update_uniform(shader, "scape_CascadeLightSpaceMatrices", glm::value_ptr(light_space_matrices[0]), sizeof(glm::mat4) * shadow_pass->get_num_cascades());
+	shader_cache.update_uniform(shader, "scape_CascadePlanes", glm::value_ptr(near_planes[0]), sizeof(glm::vec2) * shadow_pass->get_num_cascades());
 
-	auto light_space_matrices_uniform = shader->getUniformInfo("scape_CascadeLightSpaceMatrices");
-	if (light_space_matrices_uniform)
-	{
-		std::memcpy(light_space_matrices_uniform->floats, glm::value_ptr(light_space_matrices[0]), sizeof(glm::mat4) * shadow_pass->get_num_cascades());
-		shader->updateUniform(light_space_matrices_uniform, shadow_pass->get_num_cascades());
-	}
+	int num_cascades = shadow_pass->get_num_cascades();
+	shader_cache.update_uniform(shader, "scape_NumCascades", &num_cascades, sizeof(int));
+	
+	auto shadow_alpha = std::max(1.0f - std::min(ambient_light, 1.0f), 0.3f);
+	shader_cache.update_uniform(shader, "scape_ShadowAlpha", &shadow_alpha, sizeof(float));
 
-	auto near_planes_uniform = shader->getUniformInfo("scape_CascadePlanes");
-	if (near_planes_uniform)
-	{
-		std::memcpy(near_planes_uniform->floats, &near_planes[0], sizeof(glm::vec2) * shadow_pass->get_num_cascades());
-		shader->updateUniform(near_planes_uniform, shadow_pass->get_num_cascades());
-	}
+	float near = get_renderer()->get_camera().get_near();
+	shader_cache.update_uniform(shader, "scape_Near", &near, sizeof(float));
 
-	auto num_cascades_uniform = shader->getUniformInfo("scape_NumCascades");
-	if (num_cascades_uniform)
-	{
-		*num_cascades_uniform->ints = shadow_pass->get_num_cascades();
-		shader->updateUniform(num_cascades_uniform, 1);
-	}
+	float far = get_renderer()->get_camera().get_far();
+	shader_cache.update_uniform(shader, "scape_Far", &far, sizeof(float));
 
-	auto shadow_alpha_uniform = shader->getUniformInfo("scape_ShadowAlpha");
-	if (shadow_alpha_uniform)
-	{
-		*shadow_alpha_uniform->floats = std::max(1.0f - std::min(ambient_light, 1.0f), 0.3f);
-		shader->updateUniform(shadow_alpha_uniform, 1);
-	}
-
-	auto near_uniform = shader->getUniformInfo("scape_Near");
-	if (near_uniform)
-	{
-		*near_uniform->floats = get_renderer()->get_camera().get_near();
-		shader->updateUniform(near_uniform, 1);
-	}
-
-	auto far_uniform = shader->getUniformInfo("scape_Far");
-	if (far_uniform)
-	{
-		*far_uniform->floats = get_renderer()->get_camera().get_far();
-		shader->updateUniform(far_uniform, 1);
-	}
-
-	graphics->draw(g_buffer.get_canvas(1), love::Matrix4());
+	graphics->draw(g_buffer.get_canvas(DEPTH_INDEX), love::Matrix4());
 
 	output_buffer.use();
 	get_renderer()->set_current_shader(nullptr);

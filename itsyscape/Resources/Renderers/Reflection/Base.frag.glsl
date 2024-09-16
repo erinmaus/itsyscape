@@ -1,4 +1,5 @@
 #include "Resources/Shaders/RendererPass.common.glsl"
+#include "Resources/Shaders/GBuffer.common.glsl"
 
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 0.1
 #define SCAPE_REFLECTION_PASS 1
@@ -49,6 +50,5 @@ void effect()
 #endif
 
 	love_Canvases[0] = vec4(reflectionProperties.xyz, scape_ReflectionThreshold);
-	love_Canvases[1] = vec4(frag_Position, 1.0);
-	love_Canvases[2] = vec4(frag_Normal, 1.0);
+	love_Canvases[1] = vec4(encodeGBufferNormal(normal), 0.0, 1.0);
 }

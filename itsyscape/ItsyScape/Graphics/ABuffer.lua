@@ -13,14 +13,13 @@ local NGBuffer = require "nbunny.optimaus.gbuffer"
 local ABuffer = Class()
 
 ABuffer.ALPHA_INDEX = 1
+ABuffer.Z_INDEX     = 2
 
-ABuffer.ALPHA_FORMAT = 'rgba8'
-ABuffer.COLOR_FORMAT = 'rgba16f'
-ABuffer.OUTLINE_COLOR_INDEX = 'rgba8'
-ABuffer.DEPTH_STENCIL_FORMAT = 'depth24'
+ABuffer.ALPHA_FORMAT = "rgba8"
+ABuffer.Z_FORMAT     = "r16f"
 
 function ABuffer:new(width, height)
-	self._buffer = NGBuffer(ABuffer.ALPHA_FORMAT, ABuffer.COLOR_FORMAT, ABuffer.OUTLINE_COLOR_INDEX);
+	self._buffer = NGBuffer(ABuffer.ALPHA_FORMAT, ABuffer.Z_FORMAT);
 	self:resize(width, height)
 end
 
