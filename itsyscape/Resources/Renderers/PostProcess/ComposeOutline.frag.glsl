@@ -46,7 +46,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 
 	vec3 outlineColor1 = Texel(scape_OutlineTexture, outlineSampleTextureCoordinate).rgb;
 	float outlineColor1Luma = length(outlineColor1);
-	vec3 outlineColor2 = Texel(scape_OutlineColorTexture, textureCoordinate).rgb;
+	vec3 outlineColor2 = vec3(Texel(scape_OutlineColorTexture, textureCoordinate).y);
 	float outlineColor2Luma = length(outlineColor2);
 	vec3 outlineColor = outlineColor1Luma <= outlineColor2Luma ? outlineColor1 : outlineColor2;
 	outlineColor = mix(outlineColor, vec3(1.0), a);

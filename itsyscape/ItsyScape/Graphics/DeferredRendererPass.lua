@@ -13,12 +13,10 @@ local NDeferredRendererPass = require "nbunny.optimaus.deferredrendererpass"
 
 local DeferredRendererPass = Class(RendererPass)
 
-DeferredRendererPass.DEPTH_INDEX          = 0
-DeferredRendererPass.COLOR_INDEX          = 1
-DeferredRendererPass.POSITION_INDEX       = 2
-DeferredRendererPass.NORMAL_OUTLINE_INDEX = 3
-DeferredRendererPass.SPECULAR_INDEX       = 4
-DeferredRendererPass.OUTLINE_COLOR_INDEX  = 5
+DeferredRendererPass.DEPTH_INDEX            = 0
+DeferredRendererPass.COLOR_INDEX            = 1
+DeferredRendererPass.NORMAL_INDEX           = 2
+DeferredRendererPass.SPECULAR_OUTLINE_INDEX = 3
 
 function DeferredRendererPass:new(renderer, shadowPass)
 	RendererPass.new(self, renderer)

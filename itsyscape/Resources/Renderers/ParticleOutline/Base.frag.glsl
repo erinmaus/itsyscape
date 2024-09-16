@@ -44,6 +44,5 @@ void effect()
 	diffuse.a = getParticleOutlinePassAlpha();
 #endif
 
-	love_Canvases[0] = vec4(mask, 1.0, 1.0, diffuse.a);
-	love_Canvases[1] = vec4(scape_OutlineColor.rgb, diffuse.a);
+	love_Canvases[0] = vec4(mask, scape_OutlineColor.r, 0.0, diffuse.a);
 }

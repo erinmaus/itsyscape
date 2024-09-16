@@ -76,8 +76,7 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->clear(
 		{
 			love::Colorf(0.0, 0.0, 0.0, 0.0),
-			love::Colorf(0.0, 0.0, 0.0, 1.0),
-			love::Colorf(0.0, 0.0, 0.0, 1.0)
+			love::Colorf(0.0, 0.0, 0.0, 0.0)
 		},
 		0,
 		1.0f);

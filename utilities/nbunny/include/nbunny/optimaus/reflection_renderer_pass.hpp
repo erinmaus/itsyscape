@@ -38,8 +38,7 @@ namespace nbunny
 		enum
 		{
 			REFLECTION_PROPERTIES_INDEX = 1,
-			POSITION_INDEX              = 2,
-			NORMALS_INDEX               = 3
+			NORMALS_INDEX               = 2
 		};
 
 		ReflectionRendererPass(GBuffer& g_buffer);

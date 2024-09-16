@@ -1,4 +1,4 @@
-#line 1
+#include "Resources/Shaders/GBuffer.common.glsl"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Resource/Renderer/Deferred/DirectionalLight.frag.glsl
@@ -10,10 +10,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
-uniform Image scape_PositionTexture;
-uniform Image scape_NormalOutlineTexture;
-uniform Image scape_SpecularTexture;
-uniform Image scape_ColorTexture;
+uniform Image scape_NormalTexture;
+uniform Image scape_SpecularOutlineTexture;
 
 uniform vec3 scape_LightDirection;
 uniform vec3 scape_LightColor;
@@ -27,9 +25,8 @@ vec4 effect(
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	vec3 normal = Texel(scape_NormalOutlineTexture, textureCoordinate).xyz;
-	vec3 position = Texel(scape_PositionTexture, textureCoordinate).xyz;
-	vec4 specularSample = Texel(scape_SpecularTexture, textureCoordinate);
+	vec3 normal = decodeGBufferNormal(Texel(scape_NormalTexture, textureCoordinate).xy);
+	vec4 specularSample = Texel(scape_SpecularOutlineTexture, textureCoordinate);
 	float specular = specularSample.r;
 	float alpha = specularSample.a;
 	float lightDotSurface = max(dot(scape_LightDirection, normal), 0.0);

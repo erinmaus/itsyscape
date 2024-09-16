@@ -81,11 +81,15 @@ love::graphics::Canvas* nbunny::LBuffer::get_depth_stencil()
 	return g_buffer.get_canvas(0);
 }
 
-void nbunny::LBuffer::use()
+void nbunny::LBuffer::use(bool use_depth)
 {
 	love::graphics::Graphics::RenderTargets render_targets;
 	render_targets.colors.emplace_back(get_color());
-	render_targets.depthStencil = love::graphics::Graphics::RenderTarget(get_depth_stencil());
+
+	if (use_depth)
+	{
+		render_targets.depthStencil = love::graphics::Graphics::RenderTarget(get_depth_stencil());
+	}
 
 	love::graphics::Graphics* instance = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	instance->setCanvas(render_targets);

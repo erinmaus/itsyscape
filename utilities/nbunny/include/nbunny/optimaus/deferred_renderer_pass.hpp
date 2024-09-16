@@ -64,11 +64,10 @@ namespace nbunny
 	public:
 		enum
 		{
-			COLOR_INDEX          = 1,
-			POSITION_INDEX       = 2,
-			NORMAL_OUTLINE_INDEX = 3,
-			SPECULAR_INDEX       = 4,
-			OUTLINE_COLOR_INDEX  = 5
+			DEPTH_INDEX            = 0,
+			COLOR_INDEX            = 1,
+			NORMAL_INDEX           = 2,
+			SPECULAR_OUTLINE_INDEX = 3
 		};
 
 		enum

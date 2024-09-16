@@ -182,7 +182,7 @@ void nbunny::ShaderCache::update_uniform(
 	const std::string& uniform_name,
 	const std::vector<std::uint8_t>& data)
 {
-	auto value_uniforms = shader_value_uniforms[shader];
+	auto& value_uniforms = shader_value_uniforms[shader];
 	auto current_value = value_uniforms.find(uniform_name);
 	if (current_value == value_uniforms.end() || current_value->second != data)
 	{
