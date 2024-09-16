@@ -352,9 +352,21 @@ function Application:measure(name, func, ...)
 		self.times[index].value = after - before
 		self.times[index].memory = memory
 		self.times[index].name = name
+		table.insert(self.times[index].samples, { value = after - before, time = after })
 	else
-		self.times[index] = { value = after - before, memory = memory, name = name, max = 0 }
+		self.times[index] = { value = after - before, memory = memory, name = name, max = 0, average = 0, samples = { { value = after - before, time = after } } }
 	end
+
+	while #self.times[index].samples >= 1 and love.timer.getTime() > self.times[index].samples[1].time + 1 do
+		table.remove(self.times[index].samples, 1)
+	end
+
+	local sum = 0
+	for _, sample in ipairs(self.times[index].samples) do
+		sum = sum + sample.value
+	end
+
+	self.times[index].average = sum / math.max(#self.times[index].samples, 1)
 end
 
 function Application:initialize()
@@ -984,8 +996,9 @@ function Application:drawFPS()
 	local textureMemory = love.graphics.getStats().texturememory
 
 	local r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
-	r = (r or "") .. string.format("FPS: %03d (%04d draws, >%04d MB)\n",
+	r = (r or "") .. string.format("FPS: %03d/%.02f ms] (%04d draws, >%04d MB)\n",
 		love.timer.getFPS(),
+		1 / love.timer.getFPS() * 1000,
 		drawCalls,
 		collectgarbage("count") / 1024 + textureMemory / 1024 / 1024 + (self.serverMemory or 0) / 1024)
 	r = r .. string.format(
@@ -1024,6 +1037,14 @@ function Application:drawFPS()
 		'right')
 end
 
+local MEASURE_ROOT_FUNCS = {
+	"gameView:update()",
+	"uiView:update()",
+	"remoteGameManager:receive()",
+	"draw",
+	"love.graphics.present()"
+}
+
 function Application:drawDebug()
 	if not _DEBUG or (not self.showDebug and not _MOBILE) then
 		self:drawFPS()
@@ -1042,26 +1063,33 @@ function Application:drawDebug()
 
 	local width = love.window.getMode()
 	local r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
-	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, >%04d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024 + textureMemory / 1024 / 1024 + (self.serverMemory or 0) / 1024)
+	r = (r or "") .. string.format("FPS: %03d/%.02f ms (%03d draws, %03d draws max, >%04d MB)\n", love.timer.getFPS(), 1 / love.timer.getFPS() * 1000, drawCalls, maxDrawCalls, collectgarbage("count") / 1024 + textureMemory / 1024 / 1024 + (self.serverMemory or 0) / 1024)
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
-			"%s: %.04f ms (%.04f max), %05d KB (%010d)\n",
+			"%s: %.04f ms (%.04f max, %0.4f avg), %05d KB (%03d)\n",
 			self.times[i].name,
 			self.times[i].value * 1000,
 			(self.times[i].max or self.times[i].value) * 1000,
+			self.times[i].average * 1000,
 			self.times[i].memory,
-			1 / self.times[i].value)
-		sum = sum + self.times[i].value
+			#self.times[i].samples)
+
+		for _, func in ipairs(MEASURE_ROOT_FUNCS) do
+			if func == self.times[i].name then
+				sum = sum + self.times[i].average
+				break
+			end
+		end
 	end
 	if 1 / sum < 60 then
 		r = r .. string.format(
-				"!!! sum: %.04f ms (%010d)\n",
+				"!!! sum: %3.04f ms (%010d)\n",
 				sum * 1000,
 				1 / sum)
 	else
 		r = r .. string.format(
-				"sum: %.04f ms (%010d)\n",
+				"sum: %3.04f ms (%010d)\n",
 				sum * 1000,
 				1 / sum)
 	end
