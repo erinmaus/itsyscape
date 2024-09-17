@@ -798,7 +798,8 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 		current_rotation = parent_current_rotation * current_rotation;
 		previous_rotation = parent_previous_rotation * previous_rotation;
 
-		parent = parent->get_parent();
+		auto p = parent->get_parent().lock();
+		parent = p.get();
 	}
 
 	return glm::slerp(previous_rotation, current_rotation, delta);

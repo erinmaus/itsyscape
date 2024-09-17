@@ -10,6 +10,7 @@
 
 #include <sentry.h>
 #include "nbunny/nbunny.hpp"
+#include "nbunny/lua_runtime.hpp"
 
 static int nbunny_sentry_error(lua_State* L)
 {
@@ -86,12 +87,10 @@ static int nbunny_sentry_close(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_sentry(lua_State* L)
 {
-	auto T = sol::table(nbunny::get_lua_state(L), sol::create);
-	T["error"] = nbunny_sentry_error;
-	T["init"] = nbunny_sentry_init;
-	T["close"] = nbunny_sentry_close;
-
-	sol::stack::push(L, T);
+	lua_newtable(L);
+	nbunny::lua::set_field(L, -1, "error", &nbunny_sentry_error);
+	nbunny::lua::set_field(L, -1, "init", &nbunny_sentry_init);
+	nbunny::lua::set_field(L, -1, "close", &nbunny_sentry_close);
 
 	return 1;
 }

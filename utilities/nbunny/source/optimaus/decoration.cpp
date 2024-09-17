@@ -16,148 +16,154 @@
 
 static int nbunny_decoration_feature_set_tile_id(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
-	feature.tile_id = luaL_checkstring(L, 2);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
+	feature->tile_id = luaL_checkstring(L, 2);
 	return 0;
 }
 
 static int nbunny_decoration_feature_get_tile_id(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
-	lua_pushlstring(L, feature.tile_id.data(), feature.tile_id.size());
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
+	lua_pushlstring(L, feature->tile_id.data(), feature->tile_id.size());
 	return 1;
 }
 
 static int nbunny_decoration_feature_set_position(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
-	feature.position = glm::vec3(x, y, z);
+	feature->position = glm::vec3(x, y, z);
 	return 0;
 }
 
 static int nbunny_decoration_feature_get_position(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
-	lua_pushnumber(L, feature.position.x);
-	lua_pushnumber(L, feature.position.y);
-	lua_pushnumber(L, feature.position.z);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
+	lua_pushnumber(L, feature->position.x);
+	lua_pushnumber(L, feature->position.y);
+	lua_pushnumber(L, feature->position.z);
 	return 3;
 }
 
 static int nbunny_decoration_feature_set_rotation(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
 	float w = (float)luaL_checknumber(L, 5);
-	feature.rotation = glm::quat(w, x, y, z);
+	feature->rotation = glm::quat(w, x, y, z);
 	return 0;
 }
 
 static int nbunny_decoration_feature_get_rotation(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
-	lua_pushnumber(L, feature.rotation.x);
-	lua_pushnumber(L, feature.rotation.y);
-	lua_pushnumber(L, feature.rotation.z);
-	lua_pushnumber(L, feature.rotation.w);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
+	lua_pushnumber(L, feature->rotation.x);
+	lua_pushnumber(L, feature->rotation.y);
+	lua_pushnumber(L, feature->rotation.z);
+	lua_pushnumber(L, feature->rotation.w);
 	return 4;
 }
 
 static int nbunny_decoration_feature_set_scale(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
-	feature.scale = glm::vec3(x, y, z);
+	feature->scale = glm::vec3(x, y, z);
 	return 0;
 }
 
 static int nbunny_decoration_feature_get_scale(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
-	lua_pushnumber(L, feature.scale.x);
-	lua_pushnumber(L, feature.scale.y);
-	lua_pushnumber(L, feature.scale.z);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
+	lua_pushnumber(L, feature->scale.x);
+	lua_pushnumber(L, feature->scale.y);
+	lua_pushnumber(L, feature->scale.z);
 	return 3;
 }
 
 static int nbunny_decoration_feature_set_color(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
 	float w = (float)luaL_checknumber(L, 5);
-	feature.color = glm::vec4(x, y, z, w);
+	feature->color = glm::vec4(x, y, z, w);
 	return 0;
 }
 
 static int nbunny_decoration_feature_get_color(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
-	lua_pushnumber(L, feature.color.x);
-	lua_pushnumber(L, feature.color.y);
-	lua_pushnumber(L, feature.color.z);
-	lua_pushnumber(L, feature.color.w);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
+	lua_pushnumber(L, feature->color.x);
+	lua_pushnumber(L, feature->color.y);
+	lua_pushnumber(L, feature->color.z);
+	lua_pushnumber(L, feature->color.w);
 	return 4;
 }
 
 static int nbunny_decoration_feature_set_texture(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
 	float texture = (float)luaL_checknumber(L, 2);
-	feature.texture = texture;
+	feature->texture = texture;
 	return 0;
 }
 
 static int nbunny_decoration_feature_get_texture(lua_State* L)
 {
-	auto& feature = sol::stack::get<nbunny::DecorationFeature&>(L, 1);
-	lua_pushnumber(L, feature.texture);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 1);
+	lua_pushnumber(L, feature->texture);
+	return 1;
+}
+
+static int nbunny_decoration_feature_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::DecorationFeature>());
 	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_decorationfeature(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::DecorationFeature>("NDecorationFeature",
-		sol::call_constructor, sol::constructors<nbunny::DecorationFeature()>(),
-		"setID", &nbunny_decoration_feature_set_tile_id,
-		"getID", &nbunny_decoration_feature_get_tile_id,
-		"setPosition", &nbunny_decoration_feature_set_position,
-		"getPosition", &nbunny_decoration_feature_get_position,
-		"setRotation", &nbunny_decoration_feature_set_rotation,
- 		"getRotation", &nbunny_decoration_feature_get_rotation,
-		"setScale", &nbunny_decoration_feature_set_scale,
-		"getScale", &nbunny_decoration_feature_get_scale,
-		"setColor", &nbunny_decoration_feature_set_color,
-		"getColor", &nbunny_decoration_feature_get_color,
-		"setTexture", &nbunny_decoration_feature_set_texture,
-		"getTexture", &nbunny_decoration_feature_get_texture);
+	static const luaL_Reg metatable[] = {
+		{ "setID", &nbunny_decoration_feature_set_tile_id },
+		{ "getID", &nbunny_decoration_feature_get_tile_id },
+		{ "setPosition", &nbunny_decoration_feature_set_position },
+		{ "getPosition", &nbunny_decoration_feature_get_position },
+		{ "setRotation", &nbunny_decoration_feature_set_rotation },
+ 		{ "getRotation", &nbunny_decoration_feature_get_rotation },
+		{ "setScale", &nbunny_decoration_feature_set_scale },
+		{ "getScale", &nbunny_decoration_feature_get_scale },
+		{ "setColor", &nbunny_decoration_feature_set_color },
+		{ "getColor", &nbunny_decoration_feature_get_color },
+		{ "setTexture", &nbunny_decoration_feature_set_texture },
+		{ "getTexture", &nbunny_decoration_feature_get_texture }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_type<nbunny::DecorationFeature>(L, &nbunny_decoration_feature_constructor, metatable);
 
 	return 1;
 }
 
-nbunny::DecorationFeature* nbunny::Decoration::add_feature(const DecorationFeature& description)
+std::shared_ptr<nbunny::DecorationFeature> nbunny::Decoration::add_feature(const std::shared_ptr<DecorationFeature>& description)
 {
-	features.emplace_back(std::make_unique<DecorationFeature>(description));
+	features.push_back(description);
 
-	return features.back().get();
+	return features.back();
 }
 
-bool nbunny::Decoration::remove_feature(DecorationFeature* feature)
+bool nbunny::Decoration::remove_feature(const std::shared_ptr<DecorationFeature>& feature)
 {
 	auto i = std::find_if(features.begin(), features.end(), [feature](auto& f)
 	{
-		return f.get() == feature;
+		return f == feature;
 	});
 
 	if (i != features.end())
@@ -174,22 +180,61 @@ std::size_t nbunny::Decoration::get_num_features() const
 	return features.size();
 }
 
-nbunny::DecorationFeature* nbunny::Decoration::get_feature_by_index(std::size_t index) const
+std::shared_ptr<nbunny::DecorationFeature> nbunny::Decoration::get_feature_by_index(std::size_t index) const
 {
-	return features.at(index).get();
+	return features.at(index);
+}
+
+static int nbunny_decoration_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::Decoration>());
+	return 1;
+}
+
+static int nbunny_decoration_add_feature(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::Decoration>(L, 1);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 2);
+	nbunny::lua::push(L, self->add_feature(feature));
+
+	return 1;
+}
+
+static int nbunny_decoration_remove_feature(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::Decoration>(L, 1);
+	auto feature = nbunny::lua::get<nbunny::DecorationFeature>(L, 2);
+	nbunny::lua::push(L, self->remove_feature(feature));
+	return 1;
+}
+
+static int nbunny_decoration_get_num_features(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::Decoration>(L, 1);
+	nbunny::lua::push(L, self->get_num_features());
+	return 1;
+}
+
+static int nbunny_decoration_get_feature_by_index(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::Decoration>(L, 1);
+	auto feature = self->get_feature_by_index(nbunny::lua::get<lua_Number>(L, 2));
+	nbunny::lua::push(L, feature);
+	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_decoration(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Decoration>("NDecoration",
-		sol::call_constructor, sol::constructors<nbunny::Decoration()>(),
-		"addFeature", &nbunny::Decoration::add_feature,
-		"removeFeature", &nbunny::Decoration::remove_feature,
-		"getNumFeatures", &nbunny::Decoration::get_num_features,
-		"getFeatureByIndex", &nbunny::Decoration::get_feature_by_index);
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "addFeature", &nbunny_decoration_add_feature },
+		{ "removeFeature", &nbunny_decoration_remove_feature },
+		{ "getNumFeatures", &nbunny_decoration_get_num_features },
+		{ "getFeatureByIndex", &nbunny_decoration_get_feature_by_index },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_type<nbunny::Decoration>(L, &nbunny_decoration_constructor, metatable);
 
 	return 1;
 }
@@ -233,7 +278,7 @@ static bool get_attrib(
 	auto attribs = mesh->getVertexFormat();
 
 	std::ptrdiff_t offset = 0;
-	for (auto& attrib: attribs)
+	for (auto attrib: attribs)
 	{
 		if (attrib.name == attrib_name && attrib.type == love::graphics::vertex::DATA_FLOAT)
 		{
@@ -378,7 +423,7 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 			love::graphics::PRIMITIVE_TRIANGLES,
 			love::graphics::vertex::USAGE_STATIC);
 
-		for (auto& mesh_attrib: mesh_attribs)
+		for (auto mesh_attrib: mesh_attribs)
 		{
 			mesh->setAttributeEnabled(mesh_attrib.name, true);
 		}
@@ -393,7 +438,7 @@ void nbunny::DecorationSceneNode::from_group(const std::string& group, StaticMes
 	DecorationFeature feature;
 	feature.tile_id = group;
 
-	decoration.add_feature(feature);
+	decoration.add_feature(std::make_shared<DecorationFeature>(feature));
 
 	from_decoration(decoration, static_mesh);
 }
@@ -449,10 +494,10 @@ void nbunny::DecorationSceneNode::lerp(
 
 	for (std::size_t i = 0; i < num_vertices; ++i)
 	{
-		auto& from_vertex = from_vertices[i];
-		auto& to_vertex = to_vertices[i];
+		auto from_vertex = from_vertices[i];
+		auto to_vertex = to_vertices[i];
 
-		auto& output_vertex = buffer[i];
+		auto output_vertex = buffer[i];
 		output_vertex.position = glm::mix(from_vertex.position, to_vertex.position, delta);
 		output_vertex.normal = glm::normalize(glm::mix(from_vertex.normal, to_vertex.normal, delta));
 		output_vertex.texture = glm::mix(from_vertex.texture, to_vertex.texture, delta);
@@ -477,7 +522,7 @@ void nbunny::DecorationSceneNode::lerp(
 			love::graphics::PRIMITIVE_TRIANGLES,
 			love::graphics::vertex::USAGE_STREAM);
 
-		for (auto& mesh_attrib: result.mesh_attribs)
+		for (auto mesh_attrib: result.mesh_attribs)
 		{
 			result.mesh->setAttributeEnabled(mesh_attrib.name, true);
 		}
@@ -503,9 +548,9 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 	}
 
 	auto shader = renderer.get_current_shader();
-	auto& shader_cache = renderer.get_shader_cache();
+	auto shader_cache = renderer.get_shader_cache();
 
-	const auto& textures = get_material().get_textures();
+	const auto textures = get_material().get_textures();
 	if (!textures.empty())
 	{
 		auto texture = textures.at(0);
@@ -529,18 +574,75 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 	graphics->draw(mesh, matrix);
 }
 
+static int nbunny_decoration_scene_node_from_decoration(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::DecorationSceneNode>(L, 1);
+	auto decoration = nbunny::lua::get<nbunny::Decoration>(L, 2);
+	auto static_mesh = nbunny::lua::get<nbunny::StaticMeshInstance>(L, 3);
+
+	self->from_decoration(*decoration, *static_mesh);
+
+	return 0;
+}
+
+static int nbunny_decoration_scene_node_from_group(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::DecorationSceneNode>(L, 1);
+	auto group = nbunny::lua::get<std::string>(L, 2);
+	auto static_mesh = nbunny::lua::get<nbunny::StaticMeshInstance>(L, 3);
+
+	self->from_group(group, *static_mesh);
+
+	return 0;
+}
+
+static int nbunny_decoration_scene_node_from_lerp(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::DecorationSceneNode>(L, 1);
+	auto static_mesh = nbunny::lua::get<nbunny::StaticMeshInstance>(L, 2);
+	auto from_group = nbunny::lua::get<std::string>(L, 3);
+	auto to_group = nbunny::lua::get<std::string>(L, 4);
+	auto delta = nbunny::lua::get<lua_Number>(L, 5);
+
+	self->from_lerp(*static_mesh, from_group, to_group, delta);
+
+	return 0;
+}
+
+static int nbunny_decoration_scene_node_can_lerp(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::DecorationSceneNode>(L, 1);
+	
+	nbunny::lua::push(L, self->can_lerp());
+	
+	return 1;
+}
+
+static int nbunny_decoration_scene_node_lerp(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::DecorationSceneNode>(L, 1);
+	auto from = nbunny::lua::get<nbunny::DecorationSceneNode>(L, 2);
+	auto to = nbunny::lua::get<nbunny::DecorationSceneNode>(L, 3);
+	auto delta = nbunny::lua::get<lua_Number>(L, 4);
+
+	nbunny::DecorationSceneNode::lerp(*self, *from, *to, delta);
+
+	return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_decorationscenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::DecorationSceneNode>("NDecorationSceneNode",
-		sol::base_classes, sol::bases<nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::DecorationSceneNode>),
-		"fromDecoration", &nbunny::DecorationSceneNode::from_decoration,
-		"fromGroup", &nbunny::DecorationSceneNode::from_group,
-		"fromLerp", &nbunny::DecorationSceneNode::from_lerp,
-		"canLerp", &nbunny::DecorationSceneNode::can_lerp,
-		"lerp", &nbunny::DecorationSceneNode::lerp);
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "fromDecoration", &nbunny_decoration_scene_node_from_decoration },
+		{ "fromGroup", &nbunny_decoration_scene_node_from_group },
+		{ "fromLerp", &nbunny_decoration_scene_node_from_lerp },
+		{ "canLerp", &nbunny_decoration_scene_node_can_lerp },
+		{ "lerp", &nbunny_decoration_scene_node_lerp },
+		{ nullptr, nullptr }
+	};
+
+	nbunny::lua::register_child_type<nbunny::LuaSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::DecorationSceneNode>, metatable);
 
 	return 1;
 }

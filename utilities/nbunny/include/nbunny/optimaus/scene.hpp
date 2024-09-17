@@ -20,6 +20,7 @@
 #include <vector>
 #include "modules/graphics/Shader.h"
 #include "nbunny/nbunny.hpp"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/resource.hpp"
 #include "nbunny/optimaus/texture.hpp"
@@ -194,14 +195,14 @@ namespace nbunny
 	private:
 		int reference = 0;
 
-		SceneNode* parent = nullptr;
-		std::vector<SceneNode*> children;
+		std::weak_ptr<SceneNode> parent;
+		std::vector<std::weak_ptr<SceneNode>> children;
 
 		glm::vec3 min = glm::vec3(0.0f);
 		glm::vec3 max = glm::vec3(0.0f);
 
-		SceneNodeTransform transform;
-		SceneNodeMaterial material;
+		std::shared_ptr<SceneNodeTransform> transform;
+		std::shared_ptr<SceneNodeMaterial> material;
 
 	public:
 		static const Type<SceneNode> type_pointer;
@@ -218,11 +219,13 @@ namespace nbunny
 		bool get_ticked() const;
 
 		void unset_parent();
-		void set_parent(SceneNode* value);
-		SceneNode* get_parent();
-		const SceneNode* get_parent() const;
+		void set_parent(const std::weak_ptr<SceneNode>& value);
+		const std::weak_ptr<SceneNode>& get_parent();
+		const std::weak_ptr<SceneNode>& get_parent() const;
 
-		const std::vector<SceneNode*> get_children() const;
+		void add_child(const std::weak_ptr<SceneNode>& child);
+		void remove_child(const std::weak_ptr<SceneNode>& child);
+		const std::vector<std::weak_ptr<SceneNode>>& get_children() const;
 
 		void set_min(const glm::vec3& value);
 		const glm::vec3& get_min() const;
@@ -235,8 +238,12 @@ namespace nbunny
 		SceneNodeTransform& get_transform();
 		const SceneNodeTransform& get_transform() const;
 
+		const std::shared_ptr<SceneNodeTransform>& get_transform_pointer();
+
 		SceneNodeMaterial& get_material();
 		const SceneNodeMaterial& get_material() const;
+
+		const std::shared_ptr<SceneNodeMaterial>& get_material_pointer();
 
 		virtual void before_draw(Renderer& renderer, float delta);
 		virtual void draw(Renderer& renderer, float delta);
@@ -383,6 +390,14 @@ std::shared_ptr<SceneNode> nbunny_scene_node_create(sol::object reference, sol::
 	lua_State* L = S;
 	lua_pushvalue(L, 2);
 	return std::make_shared<SceneNode>(nbunny::set_weak_reference(L));
+}
+
+template <typename SceneNode>
+int nbunny_scene_node_constructor(lua_State* L)
+{
+	auto typed_pointer = std::make_shared<SceneNode>(nbunny::set_weak_reference(L));
+	nbunny::lua::push<SceneNode>(L, typed_pointer);
+	return 1;
 }
 
 #endif
