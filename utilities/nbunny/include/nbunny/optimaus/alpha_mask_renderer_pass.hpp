@@ -13,6 +13,7 @@
 #ifndef NBUNNY_OPTIMAUS_ALPHA_MASK_RENDERER_PASS_HPP
 #define NBUNNY_OPTIMAUS_ALPHA_MASK_RENDERER_PASS_HPP
 
+#include <memory>
 #include "modules/graphics/Shader.h"
 #include "nbunny/optimaus/g_buffer.hpp"
 #include "nbunny/optimaus/light.hpp"
@@ -24,8 +25,8 @@ namespace nbunny
 	class AlphaMaskRendererPass : public RendererPass
 	{
 	private:
-		GBuffer& a_buffer;
-		GBuffer& depth_buffer;
+		std::shared_ptr<GBuffer> a_buffer;
+		std::shared_ptr<GBuffer> depth_buffer;
 
 		std::vector<SceneNode*> opaque_scene_nodes;
 		std::vector<SceneNode*> translucent_scene_nodes;
@@ -37,10 +38,10 @@ namespace nbunny
 		void copy_depth_buffer();
 
 	public:
-		AlphaMaskRendererPass(GBuffer& a_buffer, GBuffer& depth_buffer);
+		AlphaMaskRendererPass(const std::shared_ptr<GBuffer>& a_buffer, const std::shared_ptr<GBuffer>& depth_buffer);
 		~AlphaMaskRendererPass() = default;
 
-		GBuffer& get_a_buffer();
+		const std::shared_ptr<GBuffer>& get_a_buffer();
 
 		void draw(lua_State* L, SceneNode& node, float delta) override;
 		void resize(int width, int height) override;

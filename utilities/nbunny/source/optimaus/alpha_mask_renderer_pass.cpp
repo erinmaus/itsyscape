@@ -11,6 +11,7 @@
 #include <algorithm>
 #include "modules/graphics/Graphics.h"
 #include "modules/math/Transform.h"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/alpha_mask_renderer_pass.hpp"
 #include "nbunny/optimaus/deferred_renderer_pass.hpp"
 #include "nbunny/optimaus/particle.hpp"
@@ -72,7 +73,7 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 	love::math::Transform view(love::Matrix4(glm::value_ptr(camera.get_view())));
 	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
 
-    a_buffer.use();
+    a_buffer->use();
 	graphics->clear(
 		{
 			love::Colorf(0.0, 0.0, 0.0, 0.0),
@@ -147,7 +148,7 @@ void nbunny::AlphaMaskRendererPass::copy_depth_buffer()
 
     graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, true);
     graphics->origin();
-    graphics->setOrtho(a_buffer.get_width(), a_buffer.get_height(), !graphics->isCanvasActive());
+    graphics->setOrtho(a_buffer->get_width(), a_buffer->get_height(), !graphics->isCanvasActive());
 
 	auto shader = get_renderer()->get_shader_cache().get(RENDERER_PASS_DEFERRED, DeferredRendererPass::BUILTIN_SHADER_DEPTH_COPY);
 	if (!shader)
@@ -163,16 +164,16 @@ void nbunny::AlphaMaskRendererPass::copy_depth_buffer()
 	graphics->setColorMask(disabled_mask);
 
 	get_renderer()->set_current_shader(shader);
-	graphics->draw(depth_buffer.get_canvas(0), love::Matrix4());
+	graphics->draw(depth_buffer->get_canvas(0), love::Matrix4());
 }
 
-nbunny::AlphaMaskRendererPass::AlphaMaskRendererPass(GBuffer& a_buffer, GBuffer& depth_buffer) :
+nbunny::AlphaMaskRendererPass::AlphaMaskRendererPass(const std::shared_ptr<GBuffer>& a_buffer, const std::shared_ptr<GBuffer>& depth_buffer) :
 	RendererPass(RENDERER_PASS_ALPHA_MASK), a_buffer(a_buffer), depth_buffer(depth_buffer)
 {
 	// Nothing.
 }
 
-nbunny::GBuffer& nbunny::AlphaMaskRendererPass::get_a_buffer()
+const std::shared_ptr<nbunny::GBuffer>& nbunny::AlphaMaskRendererPass::get_a_buffer()
 {
 	return a_buffer;
 }
@@ -185,7 +186,7 @@ void nbunny::AlphaMaskRendererPass::draw(lua_State* L, SceneNode& node, float de
 
 void nbunny::AlphaMaskRendererPass::resize(int width, int height)
 {
-	a_buffer.resize(width, height);
+	a_buffer->resize(width, height);
 }
 
 void nbunny::AlphaMaskRendererPass::attach(Renderer& renderer)
@@ -197,24 +198,33 @@ void nbunny::AlphaMaskRendererPass::attach(Renderer& renderer)
 		"Resources/Renderers/AlphaMask/Base.frag.glsl");
 }
 
-static std::shared_ptr<nbunny::AlphaMaskRendererPass> nbunny_alpha_mask_renderer_pass_create(
-	sol::variadic_args args, sol::this_state S)
+static int nbunny_alpha_mask_renderer_pass_constructor(lua_State* L)
 {
-	lua_State* L = S;
-	auto& a_buffer = sol::stack::get<nbunny::GBuffer&>(L, 2);
-	auto& depth_buffer = sol::stack::get<nbunny::GBuffer&>(L, 3);
-	return std::make_shared<nbunny::AlphaMaskRendererPass>(a_buffer, depth_buffer);
+	auto a_buffer = nbunny::lua::get<nbunny::GBuffer>(L, 2);
+	auto depth_buffer = nbunny::lua::get<nbunny::GBuffer>(L, 3);
+	
+	nbunny::lua::push(L, std::make_shared<nbunny::AlphaMaskRendererPass>(a_buffer, depth_buffer));
+
+	return 1;
+}
+
+static int nbunny_alpha_mask_renderer_pass_get_a_buffer(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::AlphaMaskRendererPass>(L, 1);
+	nbunny::lua::push(L, self->get_a_buffer());
+
+	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_alphamaskrendererpass(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::AlphaMaskRendererPass>("AlphaMaskRendererPass",
-		sol::base_classes, sol::bases<nbunny::RendererPass>(),
-		"getABuffer", &nbunny::AlphaMaskRendererPass::get_a_buffer,
-		sol::call_constructor, sol::factories(&nbunny_alpha_mask_renderer_pass_create));
+	static const luaL_Reg metatable[] = {
+		{ "getABuffer", &nbunny_alpha_mask_renderer_pass_get_a_buffer },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::AlphaMaskRendererPass, nbunny::RendererPass>(L, &nbunny_alpha_mask_renderer_pass_constructor, metatable);
 
 	return 1;
 }

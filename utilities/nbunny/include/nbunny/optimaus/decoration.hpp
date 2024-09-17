@@ -38,17 +38,17 @@ namespace nbunny
 	class Decoration
 	{
 	private:
-		std::vector<std::unique_ptr<DecorationFeature>> features;
+		std::vector<std::shared_ptr<DecorationFeature>> features;
 
 	public:
 		Decoration() = default;
 		~Decoration() = default;
 
-		DecorationFeature* add_feature(const DecorationFeature& description);
-		bool remove_feature(DecorationFeature* feature);
+		std::shared_ptr<DecorationFeature> add_feature(const std::shared_ptr<DecorationFeature>& description);
+		bool remove_feature(const std::shared_ptr<DecorationFeature>& feature);
 
 		std::size_t get_num_features() const;
-		DecorationFeature* get_feature_by_index(std::size_t index) const;
+		std::shared_ptr<DecorationFeature> get_feature_by_index(std::size_t index) const;
 	};
 
 	class DecorationSceneNode : public SceneNode

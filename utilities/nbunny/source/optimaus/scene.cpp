@@ -13,6 +13,7 @@
 #include "modules/math/Transform.h"
 #include "modules/math/MathModule.h"
 #include "nbunny/nbunny.hpp"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/scene.hpp"
 #include "nbunny/optimaus/shader_cache.hpp"
@@ -166,9 +167,10 @@ glm::mat4 nbunny::SceneNodeTransform::get_global(float delta) const
 	auto local_transform = get_local(delta);
 
 	auto parent = scene_node.get_parent();
-	if (parent)
+	auto p = parent.lock();
+	if (p)
 	{
-		auto parent_transform = parent->get_transform().get_global(delta);
+		auto parent_transform = p->get_transform().get_global(delta);
 		return parent_transform * local_transform;
 	}
 
@@ -469,7 +471,7 @@ bool nbunny::SceneNodeMaterial::operator <(const SceneNodeMaterial& other) const
 const nbunny::Type<nbunny::SceneNode> nbunny::SceneNode::type_pointer;
 
 nbunny::SceneNode::SceneNode(int reference) :
-	reference(reference), transform(*this), material(*this)
+	reference(reference), transform(std::make_shared<SceneNodeTransform>(*this)), material(std::make_shared<SceneNodeMaterial>(*this))
 {
 	// Nothing.
 }
@@ -495,63 +497,93 @@ nbunny::SceneNode::~SceneNode()
 	unset_parent();
 	for (auto child: children)
 	{
-		child->unset_parent();
+		auto c = child.lock();
+		if (c)
+		{
+			c->unset_parent();
+		}
 	}
 }
 
 void nbunny::SceneNode::tick(float delta)
 {
-	transform.tick(delta);
+	transform->tick(delta);
 }
 
 bool nbunny::SceneNode::get_ticked() const
 {
-	return transform.get_ticked();
+	return transform->get_ticked();
 }
 
 void nbunny::SceneNode::unset_parent()
 {
-	if (parent)
+	auto p = parent.lock();
+	if (p)
 	{
-		parent->children.erase(
+		p->children.erase(
 			std::remove_if(
-				parent->children.begin(),
-				parent->children.end(),
+				p->children.begin(),
+				p->children.end(),
 				[this](auto& a)
 				{
-					return a == this;
+					auto l = a.lock();
+					return l && l.get() == this;
 				}
 			),
-			parent->children.end()
+			p->children.end()
 		);
-
-		parent = nullptr;
+		
+		parent.reset();
 	}
 }
 
-void nbunny::SceneNode::set_parent(SceneNode* value)
+void nbunny::SceneNode::set_parent(const std::weak_ptr<SceneNode>& value)
 {
 	unset_parent();
-	if (value)
+	if (value.lock())
 	{
 		parent = value;
-		parent->children.push_back(this);
 	}
 }
 
-nbunny::SceneNode* nbunny::SceneNode::get_parent()
+const std::weak_ptr<nbunny::SceneNode>& nbunny::SceneNode::get_parent()
 {
 	return parent;
 }
 
-const std::vector<nbunny::SceneNode*> nbunny::SceneNode::get_children() const
+const std::weak_ptr<nbunny::SceneNode>& nbunny::SceneNode::get_parent() const
+{
+	return parent;
+}
+
+const std::vector<std::weak_ptr<nbunny::SceneNode>>& nbunny::SceneNode::get_children() const
 {
 	return children;
 }
 
-const nbunny::SceneNode* nbunny::SceneNode::get_parent() const
+void nbunny::SceneNode::add_child(const std::weak_ptr<nbunny::SceneNode>& child)
 {
-	return parent;
+	children.push_back(child);
+}
+
+void nbunny::SceneNode::remove_child(const std::weak_ptr<nbunny::SceneNode>& child)
+{
+	auto c = child.lock();
+
+	if (c)
+	{
+		children.erase(
+			std::remove_if(
+				children.begin(),
+				children.end(),
+				[&](auto& a)
+				{
+					return a.lock() == c;
+				}
+			),
+			children.end()
+		);
+	}
 }
 
 void nbunny::SceneNode::set_min(const glm::vec3& value)
@@ -613,20 +645,30 @@ float nbunny::SceneNode::calculate_screen_size_percent(const Camera& camera, flo
 
 nbunny::SceneNodeTransform& nbunny::SceneNode::get_transform()
 {
-	return transform;
+	return *transform;
 }
 
 const nbunny::SceneNodeTransform& nbunny::SceneNode::get_transform() const
+{
+	return *transform;
+}
+
+const std::shared_ptr<nbunny::SceneNodeTransform>& nbunny::SceneNode::get_transform_pointer()
 {
 	return transform;
 }
 
 nbunny::SceneNodeMaterial& nbunny::SceneNode::get_material()
 {
-	return material;
+	return *material;
 }
 
 const nbunny::SceneNodeMaterial& nbunny::SceneNode::get_material() const
+{
+	return *material;
+}
+
+const std::shared_ptr<nbunny::SceneNodeMaterial>& nbunny::SceneNode::get_material_pointer()
 {
 	return material;
 }
@@ -648,7 +690,7 @@ void nbunny::SceneNode::after_draw(Renderer &renderer, float delta)
 
 void nbunny::SceneNode::collect(SceneNode& node, std::vector<SceneNode*>& result)
 {
-	if (!node.material.get_is_rendered())
+	if (!node.material->get_is_rendered())
 	{
 		return;
 	}
@@ -660,7 +702,11 @@ void nbunny::SceneNode::collect(SceneNode& node, std::vector<SceneNode*>& result
 
 	for (auto child: node.children)
 	{
-		collect(*child, result);
+		auto c = child.lock();
+		if (c)
+		{
+			collect(*c, result);
+		}
 	}
 }
 
@@ -710,7 +756,7 @@ void nbunny::SceneNode::sort_by_position(std::vector<SceneNode*>& nodes, const C
 			auto a_screen_position = screen_positions.find(a);
 			if (a_screen_position == screen_positions.end())
 			{
-				auto world = glm::vec3(b->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+				auto world = glm::vec3(b->transform->get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 				auto p = glm::project(
 					world,
 					camera.get_view(),
@@ -723,7 +769,7 @@ void nbunny::SceneNode::sort_by_position(std::vector<SceneNode*>& nodes, const C
 			auto b_screen_position = screen_positions.find(b);
 			if (b_screen_position == screen_positions.end())
 			{
-				auto world = glm::vec3(a->transform.get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+				auto world = glm::vec3(a->transform->get_global(delta) * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 				auto p = glm::project(
 					world,
 					camera.get_view(),
@@ -749,12 +795,17 @@ void nbunny::SceneNode::walk_by_material(
 		result.push_back(&node);
 	}
 
-	for (auto child: node.children)
+	for (auto& child: node.children)
 	{
-		walk_by_material(*child, camera, delta, result);
+		auto c = child.lock();
+		if (c)
+		{
+			walk_by_material(*c, camera, delta, result);
+		}
 	}
 
-	if (!node.parent)
+	auto p = node.parent.lock();
+	if (!p)
 	{
 		sort_by_material(result);
 	}
@@ -773,10 +824,15 @@ void nbunny::SceneNode::walk_by_position(
 
 	for (auto& child : node.children)
 	{
-		walk_by_position(*child, camera, delta, result);
+		auto c = child.lock();
+		if (c)
+		{
+			walk_by_position(*c, camera, delta, result);
+		}
 	}
 
-	if (!node.parent)
+	auto p = node.parent.lock();
+	if (!p)
 	{
 		sort_by_position(result, camera, delta);
 	}
@@ -1129,17 +1185,9 @@ const glm::vec3& nbunny::Camera::get_max_frustum() const
 	return max_frustum;
 }
 
-static int nbunny_scene_node_transform_get_scene_node(lua_State* L)
-{
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
-
-	sol::stack::push(L, &transform->get_scene_node());
-	return 1;
-}
-
 static int nbunny_scene_node_transform_get_current_translation(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	const auto& current_translation = transform->get_current_translation();
 	lua_pushnumber(L, current_translation.x);
 	lua_pushnumber(L, current_translation.y);
@@ -1149,7 +1197,7 @@ static int nbunny_scene_node_transform_get_current_translation(lua_State* L)
 
 static int nbunny_scene_node_transform_set_current_translation(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1159,7 +1207,7 @@ static int nbunny_scene_node_transform_set_current_translation(lua_State* L)
 
 static int nbunny_scene_node_transform_get_previous_translation(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	const auto& previous_translation = transform->get_previous_translation();
 	lua_pushnumber(L, previous_translation.x);
 	lua_pushnumber(L, previous_translation.y);
@@ -1169,7 +1217,7 @@ static int nbunny_scene_node_transform_get_previous_translation(lua_State* L)
 
 static int nbunny_scene_node_transform_set_previous_translation(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1179,7 +1227,7 @@ static int nbunny_scene_node_transform_set_previous_translation(lua_State* L)
 
 static int nbunny_scene_node_transform_get_current_rotation(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	const auto& current_rotation = transform->get_current_rotation();
 	lua_pushnumber(L, current_rotation.x);
 	lua_pushnumber(L, current_rotation.y);
@@ -1190,7 +1238,7 @@ static int nbunny_scene_node_transform_get_current_rotation(lua_State* L)
 
 static int nbunny_scene_node_transform_set_current_rotation(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1201,7 +1249,7 @@ static int nbunny_scene_node_transform_set_current_rotation(lua_State* L)
 
 static int nbunny_scene_node_transform_get_previous_rotation(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	const auto& previous_rotation = transform->get_previous_rotation();
 	lua_pushnumber(L, previous_rotation.x);
 	lua_pushnumber(L, previous_rotation.y);
@@ -1212,7 +1260,7 @@ static int nbunny_scene_node_transform_get_previous_rotation(lua_State* L)
 
 static int nbunny_scene_node_transform_set_previous_rotation(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1223,7 +1271,7 @@ static int nbunny_scene_node_transform_set_previous_rotation(lua_State* L)
 
 static int nbunny_scene_node_transform_get_previous_scale(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	const auto& previous_scale = transform->get_previous_scale();
 	lua_pushnumber(L, previous_scale.x);
 	lua_pushnumber(L, previous_scale.y);
@@ -1233,7 +1281,7 @@ static int nbunny_scene_node_transform_get_previous_scale(lua_State* L)
 
 static int nbunny_scene_node_transform_set_previous_scale(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1243,7 +1291,7 @@ static int nbunny_scene_node_transform_set_previous_scale(lua_State* L)
 
 static int nbunny_scene_node_transform_get_current_scale(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	const auto& current_scale = transform->get_current_scale();
 	lua_pushnumber(L, current_scale.x);
 	lua_pushnumber(L, current_scale.y);
@@ -1253,7 +1301,7 @@ static int nbunny_scene_node_transform_get_current_scale(lua_State* L)
 
 static int nbunny_scene_node_transform_set_current_scale(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1263,7 +1311,7 @@ static int nbunny_scene_node_transform_set_current_scale(lua_State* L)
 
 static int nbunny_scene_node_transform_get_current_offset(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	const auto& current_offset = transform->get_current_offset();
 	lua_pushnumber(L, current_offset.x);
 	lua_pushnumber(L, current_offset.y);
@@ -1273,7 +1321,7 @@ static int nbunny_scene_node_transform_get_current_offset(lua_State* L)
 
 static int nbunny_scene_node_transform_set_current_offset(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1283,7 +1331,7 @@ static int nbunny_scene_node_transform_set_current_offset(lua_State* L)
 
 static int nbunny_scene_node_transform_get_previous_offset(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	const auto& previous_offset = transform->get_previous_offset();
 	lua_pushnumber(L, previous_offset.x);
 	lua_pushnumber(L, previous_offset.y);
@@ -1293,7 +1341,7 @@ static int nbunny_scene_node_transform_get_previous_offset(lua_State* L)
 
 static int nbunny_scene_node_transform_set_previous_offset(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1303,7 +1351,7 @@ static int nbunny_scene_node_transform_set_previous_offset(lua_State* L)
 
 static int nbunny_scene_node_transform_get_global_delta_transform(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float delta = (float)luaL_checknumber(L, 2);
 	auto t = love::luax_checktype<love::math::Transform>(L, 3, love::math::Transform::type);
 
@@ -1317,7 +1365,7 @@ static int nbunny_scene_node_transform_get_global_delta_transform(lua_State* L)
 
 static int nbunny_scene_node_transform_get_local_delta_transform(lua_State* L)
 {
-	auto transform = sol::stack::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
 	float delta = (float)luaL_checknumber(L, 2);
 	auto t = love::luax_checktype<love::math::Transform>(L, 3, love::math::Transform::type);
 
@@ -1329,47 +1377,50 @@ static int nbunny_scene_node_transform_get_local_delta_transform(lua_State* L)
 	return 0;
 }
 
+static int nbunny_scene_node_transform_tick(lua_State* L)
+{
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto delta = (float)luaL_checknumber(L, 2);
+
+	transform->tick(delta);
+
+	return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodetransform(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SceneNodeTransform>("NSceneNodeTransform",
-		"getSceneNode", &nbunny_scene_node_transform_get_scene_node,
-		"getCurrentRotation", &nbunny_scene_node_transform_get_current_rotation,
-		"setCurrentRotation", &nbunny_scene_node_transform_set_current_rotation,
-		"getCurrentScale", &nbunny_scene_node_transform_get_current_scale,
-		"setCurrentScale", &nbunny_scene_node_transform_set_current_scale,
-		"getCurrentTranslation", &nbunny_scene_node_transform_get_current_translation,
-		"setCurrentTranslation", &nbunny_scene_node_transform_set_current_translation,
-		"getCurrentOffset", &nbunny_scene_node_transform_get_current_offset,
-		"setCurrentOffset", &nbunny_scene_node_transform_set_current_offset,
-		"getPreviousRotation", &nbunny_scene_node_transform_get_previous_rotation,
-		"setPreviousRotation", &nbunny_scene_node_transform_set_previous_rotation,
-		"getPreviousScale", &nbunny_scene_node_transform_get_previous_scale,
-		"setPreviousScale", &nbunny_scene_node_transform_set_previous_scale,
-		"getPreviousTranslation", &nbunny_scene_node_transform_get_previous_translation,
-		"setPreviousTranslation", &nbunny_scene_node_transform_set_previous_translation,
-		"getPreviousOffset", &nbunny_scene_node_transform_get_previous_offset,
-		"setPreviousOffset", &nbunny_scene_node_transform_set_previous_offset,
-		"getGlobalDeltaTransform", &nbunny_scene_node_transform_get_global_delta_transform,
-		"getLocalDeltaTransform", &nbunny_scene_node_transform_get_local_delta_transform,
-		"tick", &nbunny::SceneNodeTransform::tick);
+	static const luaL_Reg metatable[] = {
+		{ "getCurrentRotation", &nbunny_scene_node_transform_get_current_rotation },
+		{ "setCurrentRotation", &nbunny_scene_node_transform_set_current_rotation },
+		{ "getCurrentScale", &nbunny_scene_node_transform_get_current_scale },
+		{ "setCurrentScale", &nbunny_scene_node_transform_set_current_scale },
+		{ "getCurrentTranslation", &nbunny_scene_node_transform_get_current_translation },
+		{ "setCurrentTranslation", &nbunny_scene_node_transform_set_current_translation },
+		{ "getCurrentOffset", &nbunny_scene_node_transform_get_current_offset },
+		{ "setCurrentOffset", &nbunny_scene_node_transform_set_current_offset },
+		{ "getPreviousRotation", &nbunny_scene_node_transform_get_previous_rotation },
+		{ "setPreviousRotation", &nbunny_scene_node_transform_set_previous_rotation },
+		{ "getPreviousScale", &nbunny_scene_node_transform_get_previous_scale },
+		{ "setPreviousScale", &nbunny_scene_node_transform_set_previous_scale },
+		{ "getPreviousTranslation", &nbunny_scene_node_transform_get_previous_translation },
+		{ "setPreviousTranslation", &nbunny_scene_node_transform_set_previous_translation },
+		{ "getPreviousOffset", &nbunny_scene_node_transform_get_previous_offset },
+		{ "setPreviousOffset", &nbunny_scene_node_transform_set_previous_offset },
+		{ "getGlobalDeltaTransform", &nbunny_scene_node_transform_get_global_delta_transform },
+		{ "getLocalDeltaTransform", &nbunny_scene_node_transform_get_local_delta_transform },
+		{ "tick", &nbunny_scene_node_transform_tick },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_type<nbunny::SceneNodeTransform>(L, nullptr, metatable);
 
-	return 1;
-}
-
-static int nbunny_scene_node_material_get_scene_node(lua_State* L)
-{
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
-
-	sol::stack::push(L, &material->get_scene_node());
 	return 1;
 }
 
 static int nbunny_scene_node_material_set_color(lua_State* L)
 {
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
 	float r = (float)luaL_checknumber(L, 2);
 	float g = (float)luaL_checknumber(L, 3);
 	float b = (float)luaL_checknumber(L, 4);
@@ -1380,7 +1431,7 @@ static int nbunny_scene_node_material_set_color(lua_State* L)
 
 static int nbunny_scene_node_material_get_color(lua_State* L)
 {
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
 	const auto& color = material->get_color();
 	lua_pushnumber(L, color.x);
 	lua_pushnumber(L, color.y);
@@ -1391,7 +1442,7 @@ static int nbunny_scene_node_material_get_color(lua_State* L)
 
 static int nbunny_scene_node_material_set_outline_color(lua_State* L)
 {
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
 	float r = (float)luaL_checknumber(L, 2);
 	float g = (float)luaL_checknumber(L, 3);
 	float b = (float)luaL_checknumber(L, 4);
@@ -1402,7 +1453,7 @@ static int nbunny_scene_node_material_set_outline_color(lua_State* L)
 
 static int nbunny_scene_node_material_get_outline_color(lua_State* L)
 {
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
 	const auto& outline_color = material->get_outline_color();
 	lua_pushnumber(L, outline_color.x);
 	lua_pushnumber(L, outline_color.y);
@@ -1413,12 +1464,12 @@ static int nbunny_scene_node_material_get_outline_color(lua_State* L)
 
 static int nbunny_scene_node_material_set_textures(lua_State* L)
 {
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
 
 	std::vector<std::shared_ptr<nbunny::TextureInstance>> textures;
 	for (int i = 2; i <= lua_gettop(L); ++i)
 	{
-		textures.push_back(sol::stack::get<std::shared_ptr<nbunny::TextureInstance>>(L, i));
+		textures.push_back(nbunny::lua::get<nbunny::TextureInstance>(L, i));
 	}
 
 	material->set_textures(textures);
@@ -1428,12 +1479,12 @@ static int nbunny_scene_node_material_set_textures(lua_State* L)
 
 static int nbunny_scene_node_material_get_textures(lua_State* L)
 {
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
 	const auto& textures = material->get_textures();
 
 	for (auto& texture: textures)
 	{
-		sol::stack::push(L, texture);
+		nbunny::lua::push(L, texture);
 	}
 
 	return (int)textures.size();
@@ -1441,14 +1492,13 @@ static int nbunny_scene_node_material_get_textures(lua_State* L)
 
 static int nbunny_scene_node_material_send_int(lua_State* L)
 {
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
 	auto uniform_name = luaL_checkstring(L, 2);
 
 	std::vector<int> result;
-	auto value = sol::stack::get<sol::table>(L, 3);
-	for (std::size_t i = 0; i < value.size(); ++i)
+	for (std::size_t i = 0; i < lua_objlen(L, 3); ++i)
 	{
-		result.push_back(value.get<int>(i + 1));
+		result.push_back(nbunny::lua::get_field<lua_Integer>(L, 3, i + 1));
 	}
 
 	material->set_uniform(uniform_name, &result[0], result.size());
@@ -1458,14 +1508,13 @@ static int nbunny_scene_node_material_send_int(lua_State* L)
 
 static int nbunny_scene_node_material_send_float(lua_State* L)
 {
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
 	auto uniform_name = luaL_checkstring(L, 2);
 
 	std::vector<float> result;
-	auto value = sol::stack::get<sol::table>(L, 3);
-	for (std::size_t i = 0; i < value.size(); ++i)
+	for (std::size_t i = 0; i < lua_objlen(L, 3); ++i)
 	{
-		result.push_back(value.get<float>(i + 1));
+		result.push_back(nbunny::lua::get_field<lua_Number>(L, 3, i + 1));
 	}
 
 	material->set_uniform(uniform_name, &result[0], result.size());
@@ -1475,7 +1524,7 @@ static int nbunny_scene_node_material_send_float(lua_State* L)
 
 static int nbunny_scene_node_material_send_texture(lua_State* L)
 {
-	auto material = sol::stack::get<nbunny::SceneNodeMaterial*>(L, 1);
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
 	auto uniform_name = luaL_checkstring(L, 2);
 
 	love::graphics::Texture* texture = nullptr;
@@ -1489,74 +1538,317 @@ static int nbunny_scene_node_material_send_texture(lua_State* L)
 	return 0;
 }
 
+static int nbunny_scene_node_material_unset_uniform(lua_State* L)
+{
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+	auto uniform_name = luaL_checkstring(L, 2);
+	
+	material->unset_uniform(uniform_name);
+
+	return 0;
+}
+
+static int nbunny_scene_node_material_set_is_translucent(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_translucent(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_translucent(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_translucent());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_is_full_lit(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_full_lit(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_full_lit(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_full_lit());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_is_light_target_position_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_light_target_position_enabled(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_light_target_position_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_light_target_position_enabled());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_is_z_write_disabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_z_write_disabled(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_z_write_disabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_z_write_disabled());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_is_cull_disabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_cull_disabled(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_cull_disabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_cull_disabled());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_is_shadow_caster(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_shadow_caster(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_shadow_caster(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_shadow_caster());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_outline_threshold(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_outline_threshold(nbunny::lua::get<lua_Number>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_outline_threshold(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_outline_threshold());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_is_reflective_or_refractive(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_reflective_or_refractive(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_reflective_or_refractive(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_reflective_or_refractive());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_reflection_power(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_reflection_power(nbunny::lua::get<lua_Number>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_reflection_power(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_reflection_power());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_reflection_distance(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_reflection_distance(nbunny::lua::get<lua_Number>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_reflection_distance(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_reflection_distance());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_roughness(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_roughness(nbunny::lua::get<lua_Number>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_roughness(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_roughness());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_is_particulate(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_particulate(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_particulate(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_particulate());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_z_bias(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_z_bias(nbunny::lua::get<lua_Number>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_z_bias(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_z_bias());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_shader(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_shader(nbunny::lua::get<nbunny::ResourceInstance>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_shader(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_shader());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_lt(lua_State* L)
+{
+	auto a = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+	auto b = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 2);
+
+	nbunny::lua::push(L, a < b);
+
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SceneNodeMaterial>("NSceneNodeMaterial",
-		"getSceneNode", &nbunny_scene_node_material_get_scene_node,
-		"setIsTranslucent", &nbunny::SceneNodeMaterial::set_is_translucent,
-		"getIsTranslucent", &nbunny::SceneNodeMaterial::get_is_translucent,
-		"setIsFullLit", &nbunny::SceneNodeMaterial::set_is_full_lit,
-		"getIsFullLit", &nbunny::SceneNodeMaterial::get_is_full_lit,
-		"setIsLightTargetPositionEnabled", &nbunny::SceneNodeMaterial::set_is_light_target_position_enabled,
-		"getIsLightTargetPositionEnabled", &nbunny::SceneNodeMaterial::get_is_light_target_position_enabled,
-		"setIsZWriteDisabled", &nbunny::SceneNodeMaterial::set_is_z_write_disabled,
-		"getIsZWriteDisabled", &nbunny::SceneNodeMaterial::get_is_z_write_disabled,
-		"setIsCullDisabled", &nbunny::SceneNodeMaterial::set_is_cull_disabled,
-		"getIsCullDisabled", &nbunny::SceneNodeMaterial::get_is_cull_disabled,
-		"setIsShadowCaster", &nbunny::SceneNodeMaterial::set_is_shadow_caster,
-		"getIsShadowCaster", &nbunny::SceneNodeMaterial::get_is_shadow_caster,
-		"setOutlineThreshold", &nbunny::SceneNodeMaterial::set_outline_threshold,
-		"getOutlineThreshold", &nbunny::SceneNodeMaterial::get_outline_threshold,
-		"setIsReflectiveOrRefractive", &nbunny::SceneNodeMaterial::set_is_reflective_or_refractive,
-		"getIsReflectiveOrRefractive", &nbunny::SceneNodeMaterial::get_is_reflective_or_refractive,
-		"setReflectionPower", &nbunny::SceneNodeMaterial::set_reflection_power,
-		"getReflectionPower", &nbunny::SceneNodeMaterial::get_reflection_power,
-		"setReflectionDistance", &nbunny::SceneNodeMaterial::set_reflection_distance,
-		"getReflectionDistance", &nbunny::SceneNodeMaterial::get_reflection_distance,
-		"setRoughness", &nbunny::SceneNodeMaterial::set_roughness,
-		"getRoughness", &nbunny::SceneNodeMaterial::get_roughness,
-		"setIsParticulate", &nbunny::SceneNodeMaterial::set_is_particulate,
-		"getIsParticulate", &nbunny::SceneNodeMaterial::get_is_particulate,
-		"setZBias", &nbunny::SceneNodeMaterial::set_z_bias,
-		"getZBias", &nbunny::SceneNodeMaterial::get_z_bias,
-		"setColor", &nbunny_scene_node_material_set_color,
-		"getColor", &nbunny_scene_node_material_get_color,
-		"setOutlineColor", &nbunny_scene_node_material_set_outline_color,
-		"getOutlineColor", &nbunny_scene_node_material_get_outline_color,
-		"setShader", &nbunny::SceneNodeMaterial::set_shader,
-		"getShader", &nbunny::SceneNodeMaterial::get_shader,
-		"setTextures", &nbunny_scene_node_material_set_textures,
-		"getTextures", &nbunny_scene_node_material_get_textures,
-		"setIntUniform", &nbunny_scene_node_material_send_int,
-		"setFloatUniform", &nbunny_scene_node_material_send_float,
-		"setTextureUniform", &nbunny_scene_node_material_send_texture,
-		"unsetUniform", &nbunny::SceneNodeMaterial::unset_uniform,
-		sol::meta_function::less_than, &nbunny::SceneNodeMaterial::operator <);
+	static const luaL_Reg metatable[] = {
+		{ "setIsTranslucent", &nbunny_scene_node_material_set_is_translucent },
+		{ "getIsTranslucent", &nbunny_scene_node_material_get_is_translucent },
+		{ "setIsFullLit", &nbunny_scene_node_material_set_is_full_lit },
+		{ "getIsFullLit", &nbunny_scene_node_material_get_is_full_lit },
+		{ "setIsLightTargetPositionEnabled", &nbunny_scene_node_material_set_is_light_target_position_enabled },
+		{ "getIsLightTargetPositionEnabled", &nbunny_scene_node_material_get_is_light_target_position_enabled },
+		{ "setIsZWriteDisabled", &nbunny_scene_node_material_set_is_z_write_disabled },
+		{ "getIsZWriteDisabled", &nbunny_scene_node_material_get_is_z_write_disabled },
+		{ "setIsCullDisabled", &nbunny_scene_node_material_set_is_cull_disabled },
+		{ "getIsCullDisabled", &nbunny_scene_node_material_get_is_cull_disabled },
+		{ "setIsShadowCaster", &nbunny_scene_node_material_set_is_shadow_caster },
+		{ "getIsShadowCaster", &nbunny_scene_node_material_get_is_shadow_caster },
+		{ "setOutlineThreshold", &nbunny_scene_node_material_set_outline_threshold },
+		{ "getOutlineThreshold", &nbunny_scene_node_material_get_outline_threshold },
+		{ "setIsReflectiveOrRefractive", &nbunny_scene_node_material_set_is_reflective_or_refractive },
+		{ "getIsReflectiveOrRefractive", &nbunny_scene_node_material_get_is_reflective_or_refractive },
+		{ "setReflectionPower", &nbunny_scene_node_material_set_reflection_power },
+		{ "getReflectionPower", &nbunny_scene_node_material_get_reflection_power },
+		{ "setReflectionDistance", &nbunny_scene_node_material_set_reflection_distance },
+		{ "getReflectionDistance", &nbunny_scene_node_material_get_reflection_distance },
+		{ "setRoughness", &nbunny_scene_node_material_set_roughness },
+		{ "getRoughness", &nbunny_scene_node_material_get_roughness },
+		{ "setIsParticulate", &nbunny_scene_node_material_set_is_particulate },
+		{ "getIsParticulate", &nbunny_scene_node_material_get_is_particulate },
+		{ "setZBias", &nbunny_scene_node_material_set_z_bias },
+		{ "getZBias", &nbunny_scene_node_material_get_z_bias },
+		{ "setColor", &nbunny_scene_node_material_set_color },
+		{ "getColor", &nbunny_scene_node_material_get_color },
+		{ "setOutlineColor", &nbunny_scene_node_material_set_outline_color },
+		{ "getOutlineColor", &nbunny_scene_node_material_get_outline_color },
+		{ "setShader", &nbunny_scene_node_material_set_shader },
+		{ "getShader", &nbunny_scene_node_material_get_shader },
+		{ "setTextures", &nbunny_scene_node_material_set_textures },
+		{ "getTextures", &nbunny_scene_node_material_get_textures },
+		{ "setIntUniform", &nbunny_scene_node_material_send_int },
+		{ "setFloatUniform", &nbunny_scene_node_material_send_float },
+		{ "setTextureUniform", &nbunny_scene_node_material_send_texture },
+		{ "unsetUniform", &nbunny_scene_node_material_unset_uniform },
+		{ "__lt", nbunny_scene_node_material_lt },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_type<nbunny::SceneNodeMaterial>(L, nullptr, metatable);
 
 	return 1;
 }
 
 static int nbunny_scene_node_get_reference(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
 	node->get_reference(L);
 	return 1;
 }
 
 static int nbunny_scene_node_set_parent(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
 
-	if (lua_isnil(L, 2) || (lua_isboolean(L, 2) && !lua_toboolean(L, 2)))
+	node->unset_parent();
+	if (lua_toboolean(L, 2))
 	{
-		node->unset_parent();
-	}
-	else
-	{
-		auto parent = sol::stack::get<nbunny::SceneNode*>(L, 2);
+		auto parent = nbunny::lua::get<nbunny::SceneNode>(L, 2);
+		parent->add_child(node);
 		node->set_parent(parent);
 	}
 
@@ -1565,28 +1857,28 @@ static int nbunny_scene_node_set_parent(lua_State* L)
 
 static int nbunny_scene_node_get_parent(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
 	node->get_reference(L);
 	return 1;
 }
 
 static int nbunny_scene_node_get_transform(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
-	sol::stack::push(L, &node->get_transform());
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	nbunny::lua::push(L, node->get_transform_pointer());
 	return 1;
 }
 
 static int nbunny_scene_node_get_material(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
-	sol::stack::push(L, &node->get_material());
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	nbunny::lua::push(L, node->get_material_pointer());
 	return 1;
 }
 
 static int nbunny_scene_node_get_children(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
 	const auto& children = node->get_children();
 
 	lua_createtable(L, (int)children.size(), 0);
@@ -1594,15 +1886,19 @@ static int nbunny_scene_node_get_children(lua_State* L)
 	int index = 1;
 	for (auto& child: children)
 	{
-		lua_pushinteger(L, index);
-
-		node->get_reference(L);
-		if (!lua_isnil(L, -1))
+		auto c = child.lock();
+		if (c)
 		{
-			++index;
-		}
+			lua_pushinteger(L, index);
 
-		lua_rawset(L, -3);
+			c->get_reference(L);
+			if (!lua_isnil(L, -1))
+			{
+				++index;
+			}
+
+			lua_rawset(L, -3);
+		}
 	}
 
 	return 1;
@@ -1610,7 +1906,7 @@ static int nbunny_scene_node_get_children(lua_State* L)
 
 static int nbunny_scene_node_set_min(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1620,7 +1916,7 @@ static int nbunny_scene_node_set_min(lua_State* L)
 
 static int nbunny_scene_node_get_min(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
 	const auto& min = node->get_min();
 	lua_pushnumber(L, min.x);
 	lua_pushnumber(L, min.y);
@@ -1630,7 +1926,7 @@ static int nbunny_scene_node_get_min(lua_State* L)
 
 static int nbunny_scene_node_set_max(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1640,7 +1936,7 @@ static int nbunny_scene_node_set_max(lua_State* L)
 
 static int nbunny_scene_node_get_max(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
 	const auto& max = node->get_max();
 	lua_pushnumber(L, max.x);
 	lua_pushnumber(L, max.y);
@@ -1648,10 +1944,17 @@ static int nbunny_scene_node_get_max(lua_State* L)
 	return 3;
 }
 
+static int nbunny_scene_node_tick(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	node->tick(luaL_checknumber(L, 2));
+	return 0;
+}
+
 static int nbunny_scene_node_walk_by_material(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 2);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 2);
 	auto delta = (float)luaL_checknumber(L, 3);
 
 	std::vector<nbunny::SceneNode*> result;
@@ -1677,8 +1980,8 @@ static int nbunny_scene_node_walk_by_material(lua_State* L)
 
 static int nbunny_scene_node_walk_by_position(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::SceneNode*>(L, 1);
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 2);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 2);
 	auto delta = (float)luaL_checknumber(L, 3);
 
 	std::vector<nbunny::SceneNode*> result;
@@ -1705,23 +2008,24 @@ static int nbunny_scene_node_walk_by_position(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SceneNode>("NSceneNode",
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::SceneNode>),
-		"getParent", &nbunny_scene_node_get_parent,
-		"setParent", &nbunny_scene_node_set_parent,
-		"getTransform", &nbunny_scene_node_get_transform,
-		"getMaterial", &nbunny_scene_node_get_material,
-		"getReference", &nbunny_scene_node_get_reference,
-		"getChildren", &nbunny_scene_node_get_children,
-		"getMin", &nbunny_scene_node_get_min,
-		"setMin", &nbunny_scene_node_set_min,
-		"getMax", &nbunny_scene_node_get_max,
-		"setMax", &nbunny_scene_node_set_max,
-		"tick", &nbunny::SceneNode::tick,
-		"walkByMaterial", &nbunny_scene_node_walk_by_material,
-		"walkByPosition", &nbunny_scene_node_walk_by_position);
+	static const luaL_Reg metatable[] = {
+		{ "getParent", &nbunny_scene_node_get_parent },
+		{ "setParent", &nbunny_scene_node_set_parent },
+		{ "getTransform", &nbunny_scene_node_get_transform },
+		{ "getMaterial", &nbunny_scene_node_get_material },
+		{ "getReference", &nbunny_scene_node_get_reference },
+		{ "getChildren", &nbunny_scene_node_get_children },
+		{ "getMin", &nbunny_scene_node_get_min },
+		{ "setMin", &nbunny_scene_node_set_min },
+		{ "getMax", &nbunny_scene_node_get_max },
+		{ "setMax", &nbunny_scene_node_set_max },
+		{ "tick", &nbunny_scene_node_tick },
+		{ "walkByMaterial", &nbunny_scene_node_walk_by_material },
+		{ "walkByPosition", &nbunny_scene_node_walk_by_position },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_type<nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::SceneNode>, metatable);
 
 	return 1;
 }
@@ -1742,11 +2046,7 @@ const nbunny::BaseType& nbunny::LuaSceneNode::get_type() const
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_luascenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::LuaSceneNode>("NLuaSceneNode",
-		sol::base_classes, sol::bases<nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::LuaSceneNode>));
-
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::LuaSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::LuaSceneNode>, nullptr);
 
 	return 1;
 }
@@ -1767,18 +2067,14 @@ const nbunny::BaseType& nbunny::SkyboxSceneNode::get_type() const
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_skyboxscenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkyboxSceneNode>("NSkyboxSceneNode",
-		sol::base_classes, sol::bases<nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::SkyboxSceneNode>));
-
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::LuaSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::SkyboxSceneNode>, nullptr);
 
 	return 1;
 }
 
 static int nbunny_camera_get_view(lua_State* L)
 {
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
 
 	love::math::Transform* transform = nullptr;
 	if (!lua_isnil(L, 2))
@@ -1803,7 +2099,7 @@ static int nbunny_camera_get_view(lua_State* L)
 
 static int nbunny_camera_get_projection(lua_State* L)
 {
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
 
 	love::math::Transform* transform = nullptr;
 	if (!lua_isnil(L, 2))
@@ -1828,7 +2124,7 @@ static int nbunny_camera_get_projection(lua_State* L)
 
 static int nbunny_camera_update(lua_State* L)
 {
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
 	auto view = love::luax_checktype<love::math::Transform>(L, 2, love::math::Transform::type);
 	auto projection = love::luax_checktype<love::math::Transform>(L, 3, love::math::Transform::type);
 
@@ -1840,7 +2136,7 @@ static int nbunny_camera_update(lua_State* L)
 
 static int nbunny_camera_move_target(lua_State* L)
 {
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1852,7 +2148,7 @@ static int nbunny_camera_move_target(lua_State* L)
 
 static int nbunny_camera_move_eye(lua_State* L)
 {
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1864,7 +2160,7 @@ static int nbunny_camera_move_eye(lua_State* L)
 
 static int nbunny_camera_update_bounding_sphere(lua_State* L)
 {
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1878,7 +2174,7 @@ static int nbunny_camera_update_bounding_sphere(lua_State* L)
 
 static int nbunny_camera_set_clip_plane(lua_State* L)
 {
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1892,7 +2188,7 @@ static int nbunny_camera_set_clip_plane(lua_State* L)
 
 static int nbunny_camera_unset_clip_plane(lua_State* L)
 {
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
 	camera->set_is_clip_plane_enabled(false);
 
 	return 0;
@@ -1900,7 +2196,7 @@ static int nbunny_camera_unset_clip_plane(lua_State* L)
 
 static int nbunny_camera_rotate(lua_State* L)
 {
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1911,31 +2207,105 @@ static int nbunny_camera_rotate(lua_State* L)
 	return 0;
 }
 
+static int nbunny_camera_set_field_of_view(lua_State* L)
+{
+    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    self->set_field_of_view(nbunny::lua::get<lua_Number>(L, 2));
+    return 0;
+}
+
+static int nbunny_camera_get_field_of_view(lua_State* L)
+{
+    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    nbunny::lua::push(L, self->get_field_of_view());
+    return 1;
+}
+
+static int nbunny_camera_set_near(lua_State* L)
+{
+    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    self->set_near(nbunny::lua::get<lua_Number>(L, 2));
+    return 0;
+}
+
+static int nbunny_camera_get_near(lua_State* L)
+{
+    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    nbunny::lua::push(L, self->get_near());
+    return 1;
+}
+
+static int nbunny_camera_set_far(lua_State* L)
+{
+    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    self->set_far(nbunny::lua::get<lua_Number>(L, 2));
+    return 0;
+}
+
+static int nbunny_camera_get_far(lua_State* L)
+{
+    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    nbunny::lua::push(L, self->get_far());
+    return 1;
+}
+
+static int nbunny_camera_set_is_cull_enabled(lua_State* L)
+{
+    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    self->set_is_cull_enabled(nbunny::lua::get<bool>(L, 2));
+    return 0;
+}
+
+static int nbunny_camera_get_is_cull_enabled(lua_State* L)
+{
+    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    nbunny::lua::push(L, self->get_is_cull_enabled());
+    return 1;
+}
+
+static int nbunny_camera_inside(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 2);
+	auto delta = nbunny::lua::get<lua_Number>(L, 3);
+
+	nbunny::lua::push(L, self->inside(*node, delta));
+
+	return 1;
+}
+
+static int nbunny_camera_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::Camera>());
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Camera>("NCamera",
-		sol::call_constructor, sol::constructors<nbunny::Camera()>(),
-		"setFieldOfView", &nbunny::Camera::set_field_of_view,
-		"getFieldOfView", &nbunny::Camera::get_field_of_view,
-		"setNear", &nbunny::Camera::set_near,
-		"getNear", &nbunny::Camera::get_near,
-		"setFar", &nbunny::Camera::set_far,
-		"getFar", &nbunny::Camera::get_far,
-		"setIsCullEnabled", &nbunny::Camera::set_is_cull_enabled,
-		"getIsCullEnabled", &nbunny::Camera::get_is_cull_enabled,
-		"getView", &nbunny_camera_get_view,
-		"getProjection", &nbunny_camera_get_projection,
-		"update", &nbunny_camera_update,
-		"moveTarget", &nbunny_camera_move_target,
-		"updateBoundingSphere", &nbunny_camera_update_bounding_sphere,
-		"setClipPlane", &nbunny_camera_set_clip_plane,
-		"unsetClipPlane", &nbunny_camera_unset_clip_plane,
-		"moveEye", &nbunny_camera_move_eye,
-		"rotate", &nbunny_camera_rotate,
-		"inside", &nbunny::Camera::inside);
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "setFieldOfView", &nbunny_camera_set_field_of_view },
+		{ "getFieldOfView", &nbunny_camera_get_field_of_view },
+		{ "setNear", &nbunny_camera_set_near },
+		{ "getNear", &nbunny_camera_get_near },
+		{ "setFar", &nbunny_camera_set_far },
+		{ "getFar", &nbunny_camera_get_far },
+		{ "setIsCullEnabled", &nbunny_camera_set_is_cull_enabled },
+		{ "getIsCullEnabled", &nbunny_camera_get_is_cull_enabled },
+		{ "getView", &nbunny_camera_get_view },
+		{ "getProjection", &nbunny_camera_get_projection },
+		{ "update", &nbunny_camera_update },
+		{ "moveTarget", &nbunny_camera_move_target },
+		{ "updateBoundingSphere", &nbunny_camera_update_bounding_sphere },
+		{ "setClipPlane", &nbunny_camera_set_clip_plane },
+		{ "unsetClipPlane", &nbunny_camera_unset_clip_plane },
+		{ "moveEye", &nbunny_camera_move_eye },
+		{ "rotate", &nbunny_camera_rotate },
+		{ "inside", &nbunny_camera_inside },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_type<nbunny::Camera>(L, &nbunny_camera_constructor, metatable);
 
 	return 1;
 }
