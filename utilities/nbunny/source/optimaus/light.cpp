@@ -329,7 +329,7 @@ void nbunny::DirectionalLightSceneNode::tick(float delta)
 
 static int nbunny_directional_light_scene_node_set_current_direction(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::DirectionalLightSceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::DirectionalLightSceneNode*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -339,7 +339,7 @@ static int nbunny_directional_light_scene_node_set_current_direction(lua_State* 
 
 static int nbunny_directional_light_scene_node_get_current_direction(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::DirectionalLightSceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::DirectionalLightSceneNode*>(L, 1);
 	const auto& direction = node->get_current_direction();
 	lua_pushnumber(L, direction.x);
 	lua_pushnumber(L, direction.y);
@@ -349,7 +349,7 @@ static int nbunny_directional_light_scene_node_get_current_direction(lua_State* 
 
 static int nbunny_directional_light_scene_node_set_previous_direction(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::DirectionalLightSceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::DirectionalLightSceneNode*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -359,7 +359,7 @@ static int nbunny_directional_light_scene_node_set_previous_direction(lua_State*
 
 static int nbunny_directional_light_scene_node_get_previous_direction(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::DirectionalLightSceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::DirectionalLightSceneNode*>(L, 1);
 	const auto& direction = node->get_previous_direction();
 	lua_pushnumber(L, direction.x);
 	lua_pushnumber(L, direction.y);
@@ -581,25 +581,99 @@ void nbunny::FogSceneNode::tick(float delta)
 		delta);;
 }
 
+static int nbunny_fog_scene_node_set_current_near_distance(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<lua_Number>(L, 2);
+	node->set_current_near_distance(value);
+	return 0;
+}
+
+static int nbunny_fog_scene_node_get_current_near_distance(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_current_near_distance());
+	return 1;
+}
+
+static int nbunny_fog_scene_node_set_previous_near_distance(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<lua_Number>(L, 2);
+	node->set_previous_near_distance(value);
+	return 0;
+}
+
+static int nbunny_fog_scene_node_get_previous_near_distance(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_previous_near_distance());
+	return 1;
+}
+
+static int nbunny_fog_scene_node_set_current_far_distance(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<lua_Number>(L, 2);
+	node->set_current_far_distance(value);
+	return 0;
+}
+
+static int nbunny_fog_scene_node_get_current_far_distance(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_current_far_distance());
+	return 1;
+}
+
+static int nbunny_fog_scene_node_set_previous_far_distance(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<lua_Number>(L, 2);
+	node->set_previous_far_distance(value);
+	return 0;
+}
+
+static int nbunny_fog_scene_node_get_previous_far_distance(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_previous_far_distance());
+	return 1;
+}
+
+static int nbunny_fog_scene_node_set_follow_mode(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<lua_Integer>(L, 2);
+	node->set_follow_mode((nbunny::FogSceneNode::FollowMode)value);
+	return 0;
+}
+
+static int nbunny_fog_scene_node_get_follow_mode(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_follow_mode());
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_fogscenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::FogSceneNode>("NFogSceneNode",
-		sol::base_classes, sol::bases<nbunny::LightSceneNode, nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::FogSceneNode>),
-		"setCurrentNearDistance", &nbunny::FogSceneNode::set_current_near_distance,
-		"getCurrentNearDistance", &nbunny::FogSceneNode::get_current_near_distance,
-		"setPreviousNearDistance", &nbunny::FogSceneNode::set_previous_near_distance,
-		"getPreviousNearDistance", &nbunny::FogSceneNode::get_previous_near_distance,
-		"setCurrentFarDistance", &nbunny::FogSceneNode::set_current_far_distance,
-		"getCurrentFarDistance", &nbunny::FogSceneNode::get_current_far_distance,
-		"setPreviousFarDistance", &nbunny::FogSceneNode::set_previous_far_distance,
-		"getPreviousFarDistance", &nbunny::FogSceneNode::get_previous_far_distance,
-		"setFollowMode", &nbunny::FogSceneNode::set_follow_mode,
-		"getFollowMode", &nbunny::FogSceneNode::get_follow_mode,
-		"tick", &nbunny::FogSceneNode::tick);
+	static const luaL_Reg metatable[] = {
+		{ "setCurrentNearDistance", &nbunny_fog_scene_node_set_current_near_distance },
+		{ "getCurrentNearDistance", &nbunny_fog_scene_node_get_current_near_distance },
+		{ "setPreviousNearDistance", &nbunny_fog_scene_node_set_previous_near_distance },
+		{ "getPreviousNearDistance", &nbunny_fog_scene_node_get_previous_near_distance },
+		{ "setCurrentFarDistance", &nbunny_fog_scene_node_set_current_far_distance },
+		{ "getCurrentFarDistance", &nbunny_fog_scene_node_get_current_far_distance },
+		{ "setPreviousFarDistance", &nbunny_fog_scene_node_set_previous_far_distance },
+		{ "getPreviousFarDistance", &nbunny_fog_scene_node_get_previous_far_distance },
+		{ "setFollowMode", &nbunny_fog_scene_node_set_follow_mode },
+		{ "getFollowMode", &nbunny_fog_scene_node_get_follow_mode },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::FogSceneNode, nbunny::LightSceneNode>(L, &nbunny_scene_node_constructor<nbunny::FogSceneNode>, metatable);
 
 	return 1;
 }

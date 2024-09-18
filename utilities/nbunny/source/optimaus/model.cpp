@@ -12,6 +12,7 @@
 #include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
 #include "modules/math/MathModule.h"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/model.hpp"
 #include "nbunny/optimaus/renderer.hpp"
@@ -21,24 +22,32 @@ std::shared_ptr<nbunny::ResourceInstance> nbunny::ModelResource::instantiate(lua
 	return std::make_shared<nbunny::ModelInstance>(allocate_id(), set_weak_reference((L)));
 }
 
+static int nbunny_model_resource_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::ModelResource>());
+	return 1;
+}
+
 static int nbunny_model_resource_instantiate(lua_State* L)
 {
-	auto& resource = sol::stack::get<nbunny::ModelResource&>(L, 1);
+	auto resource = nbunny::lua::get<nbunny::ModelResource*>(L, 1);
 	lua_pushvalue(L, 2);
-	auto instance = resource.instantiate(L);
-	sol::stack::push(L, std::reinterpret_pointer_cast<nbunny::ModelInstance>(instance));
+	auto instance = resource->instantiate(L);
+
+	nbunny::lua::push(L, std::reinterpret_pointer_cast<nbunny::ModelInstance>(instance));
+
 	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_modelresource(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ModelResource>("NModelResource",
-		sol::base_classes, sol::bases<nbunny::Resource>(),
-		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::ModelResource>),
-		"instantiate", &nbunny_model_resource_instantiate);
+	static const luaL_Reg metatable[] = {
+		{ "instantiate", &nbunny_model_resource_instantiate },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::ModelResource, nbunny::Resource>(L, &nbunny_model_resource_constructor, metatable);
 
 	return 1;
 }
@@ -113,64 +122,64 @@ love::graphics::Mesh* nbunny::ModelInstance::get_lod_mesh(float screen_size_perc
 
 static int nbunny_model_instance_set_mesh(lua_State* L)
 {
-	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
+	auto model = nbunny::lua::get<nbunny::ModelInstance*>(L, 1);
 	if (lua_isnil(L, 2))
 	{
-		model.set_mesh(nullptr);
+		model->set_mesh(nullptr);
 	}
 	else
 	{
 		auto mesh = love::luax_checktype<love::graphics::Mesh>(L, 2);
-		model.set_mesh(mesh);
+		model->set_mesh(mesh);
 	}
 	return 0;
 }
 
 static int nbunny_model_instance_set_per_pass_mesh(lua_State* L)
 {
-	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
+	auto model = nbunny::lua::get<nbunny::ModelInstance*>(L, 1);
 	int renderer_pass_id = luaL_checkinteger(L, 2);
 
 	if (lua_isnil(L, 2))
 	{
-		model.set_per_pass_mesh(renderer_pass_id, nullptr);
+		model->set_per_pass_mesh(renderer_pass_id, nullptr);
 	}
 	else
 	{
 		auto mesh = love::luax_checktype<love::graphics::Mesh>(L, 3);
-		model.set_per_pass_mesh(renderer_pass_id, mesh);
+		model->set_per_pass_mesh(renderer_pass_id, mesh);
 	}
 	return 0;
 }
 
 static int nbunny_model_instance_set_lod_mesh(lua_State* L)
 {
-	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
+	auto model = nbunny::lua::get<nbunny::ModelInstance*>(L, 1);
 	auto screen_size_percent = luaL_checknumber(L, 2);
 
 	if (lua_isnil(L, 2))
 	{
-		model.set_lod_mesh(screen_size_percent, nullptr);
+		model->set_lod_mesh(screen_size_percent, nullptr);
 	}
 	else
 	{
 		auto mesh = love::luax_checktype<love::graphics::Mesh>(L, 3);
-		model.set_lod_mesh(screen_size_percent, mesh);
+		model->set_lod_mesh(screen_size_percent, mesh);
 	}
 	return 0;
 }
 
 static int nbunny_model_instance_get_mesh(lua_State* L)
 {
-	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
-	auto mesh = model.get_mesh();
+	auto model = nbunny::lua::get<nbunny::ModelInstance*>(L, 1);
+	auto mesh = model->get_mesh();
 	if (mesh == nullptr)
 	{
 		lua_pushnil(L);
 	}
 	else
 	{
-		love::luax_pushtype(L, model.get_mesh());
+		love::luax_pushtype(L, model->get_mesh());
 	}
 
 	return 1;
@@ -178,10 +187,10 @@ static int nbunny_model_instance_get_mesh(lua_State* L)
 
 static int nbunny_model_instance_get_per_pass_mesh(lua_State* L)
 {
-	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
+	auto model = nbunny::lua::get<nbunny::ModelInstance*>(L, 1);
 	int renderer_pass_id = luaL_checkinteger(L, 2);
 
-	auto mesh = model.get_per_pass_mesh(renderer_pass_id);
+	auto mesh = model->get_per_pass_mesh(renderer_pass_id);
 	if (mesh == nullptr)
 	{
 		lua_pushnil(L);
@@ -196,10 +205,10 @@ static int nbunny_model_instance_get_per_pass_mesh(lua_State* L)
 
 static int nbunny_model_instance_get_lod_mesh(lua_State* L)
 {
-	auto& model = sol::stack::get<nbunny::ModelInstance&>(L, 1);
+	auto model = nbunny::lua::get<nbunny::ModelInstance*>(L, 1);
 	auto screen_size_percent = luaL_checknumber(L, 2);
 
-	auto mesh = model.get_lod_mesh(screen_size_percent);
+	auto mesh = model->get_lod_mesh(screen_size_percent);
 	if (mesh == nullptr)
 	{
 		lua_pushnil(L);
@@ -215,17 +224,17 @@ static int nbunny_model_instance_get_lod_mesh(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_modelresourceinstance(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ModelInstance>("NModelInstance",
-		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
-		sol::call_constructor, sol::constructors<nbunny::ModelInstance()>(),
-		"setMesh", &nbunny_model_instance_set_mesh,
-		"getMesh", &nbunny_model_instance_get_mesh,
-		"setPerPassMesh", &nbunny_model_instance_set_per_pass_mesh,
-		"getPerPassMesh", &nbunny_model_instance_get_per_pass_mesh,
-		"setLODMesh", &nbunny_model_instance_set_lod_mesh,
-		"getLODMesh", &nbunny_model_instance_get_lod_mesh);
+	static const luaL_Reg metatable[] = {
+		{ "setMesh", &nbunny_model_instance_set_mesh },
+		{ "getMesh", &nbunny_model_instance_get_mesh },
+		{ "setPerPassMesh", &nbunny_model_instance_set_per_pass_mesh },
+		{ "getPerPassMesh", &nbunny_model_instance_get_per_pass_mesh },
+		{ "setLODMesh", &nbunny_model_instance_set_lod_mesh },
+		{ "getLODMesh", &nbunny_model_instance_get_lod_mesh },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::ModelInstance, nbunny::ResourceInstance>(L, nullptr, metatable);
 
 	return 1;
 }
@@ -338,36 +347,36 @@ void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 
 static int nbunny_model_scene_node_set_model(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ModelSceneNode&>(L, 1);
+	auto node = nbunny::lua::get<nbunny::ModelSceneNode*>(L, 1);
 	if (lua_isnil(L, 2))
 	{
-		node.unset_model();
+		node->unset_model();
 	}
 	else
 	{
-		node.set_model(sol::stack::get<std::shared_ptr<nbunny::ModelInstance>>(L, 2));
+		node->set_model(nbunny::lua::get<nbunny::ModelInstance>(L, 2));
 	}
 	return 0;
 }
 
 static int nbunny_model_scene_node_get_model(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ModelSceneNode&>(L, 1);
-	const auto& model = node.get_model();
+	auto node = nbunny::lua::get<nbunny::ModelSceneNode*>(L, 1);
+	const auto& model = node->get_model();
 	if (!model)
 	{
 		lua_pushnil(L);
 	}
 	else
 	{
-		sol::stack::push(L, model);
+		nbunny::lua::push(L, model);
 	}
 	return 1;
 }
 
 static int nbunny_model_scene_node_set_transforms(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ModelSceneNode&>(L, 1);
+	auto node = nbunny::lua::get<nbunny::ModelSceneNode*>(L, 1);
 
 	if (lua_istable(L, 2))
 	{
@@ -383,11 +392,11 @@ static int nbunny_model_scene_node_set_transforms(lua_State* L)
 			lua_pop(L, 1);
 		}
 
-		node.set_transforms(transforms);
+		node->set_transforms(transforms);
 	}
 	else
 	{
-		node.set_transforms(sol::stack::get<std::shared_ptr<nbunny::SkeletonTransforms>>(L, 2));
+		node->set_transforms(nbunny::lua::get<nbunny::SkeletonTransforms>(L, 2));
 	}
 
 	return 0;
@@ -395,8 +404,8 @@ static int nbunny_model_scene_node_set_transforms(lua_State* L)
 
 static int nbunny_model_scene_node_get_transforms(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ModelSceneNode&>(L, 1);
-	auto& transforms = node.get_transforms();
+	auto node = nbunny::lua::get<nbunny::ModelSceneNode*>(L, 1);
+	auto& transforms = node->get_transforms();
 
 	lua_createtable(L, transforms.size(), 0);
 	int index = 1;
@@ -419,15 +428,15 @@ static int nbunny_model_scene_node_get_transforms(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_modelscenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ModelSceneNode>("NModelSceneNode",
-		sol::base_classes, sol::bases<nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::ModelSceneNode>),
-		"setModel", &nbunny_model_scene_node_set_model,
-		"getModel", &nbunny_model_scene_node_get_model,
-		"setTransforms", &nbunny_model_scene_node_set_transforms,
-		"getTransforms", &nbunny_model_scene_node_get_transforms);
+	static const luaL_Reg metatable[] = {
+		{ "setModel", &nbunny_model_scene_node_set_model },
+		{ "getModel", &nbunny_model_scene_node_get_model },
+		{ "setTransforms", &nbunny_model_scene_node_set_transforms },
+		{ "getTransforms", &nbunny_model_scene_node_get_transforms },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::ModelSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::ModelSceneNode>, metatable);
 
 	return 1;
 }

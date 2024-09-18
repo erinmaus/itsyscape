@@ -142,23 +142,30 @@ void nbunny::OutlineRendererPass::attach(Renderer& renderer)
 		"Resources/Renderers/Outline/Base.frag.glsl");
 }
 
-static std::shared_ptr<nbunny::OutlineRendererPass> nbunny_outline_renderer_pass_create(
-	sol::variadic_args args, sol::this_state S)
+static int nbunny_outline_renderer_pass_constructor(lua_State* L)
 {
-	lua_State* L = S;
-	auto& o_buffer = sol::stack::get<nbunny::GBuffer&>(L, 2);
-	return std::make_shared<nbunny::OutlineRendererPass>(o_buffer);
+	auto o_buffer = nbunny::lua::get<nbunny::GBuffer*>(L, 2);
+	nbunny::lua::push(L, std::make_shared<nbunny::OutlineRendererPass>(*o_buffer));
+
+	return 1;
+}
+
+static int nbunny_outline_renderer_pass_get_o_buffer(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::OutlineRendererPass*>(L, 1);
+	nbunny::lua::push(L, &self->get_o_buffer());
+	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_outlinerendererpass(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::OutlineRendererPass>("NOutlineRendererPass",
-		sol::base_classes, sol::bases<nbunny::RendererPass>(),
-		"getOBuffer", &nbunny::OutlineRendererPass::get_o_buffer,
-		sol::call_constructor, sol::factories(&nbunny_outline_renderer_pass_create));
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "getOBuffer", &nbunny_outline_renderer_pass_get_o_buffer },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_child_type<nbunny::OutlineRendererPass, nbunny::RendererPass>(L, &nbunny_outline_renderer_pass_constructor, metatable);
 
 	return 1;
 }
