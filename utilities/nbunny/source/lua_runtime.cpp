@@ -1,5 +1,41 @@
+////////////////////////////////////////////////////////////////////////////////
+// nbunny/lua_runtime.cpp
+//
+// This file is a part of ItsyScape.
+//
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+////////////////////////////////////////////////////////////////////////////////
+
 #include "nbunny/nbunny.hpp"
 #include "nbunny/lua_runtime.hpp"
+
+void* nbunny::lua::impl::luax_checkudata(lua_State* L, int index, const char* tname)
+{
+    auto real_index = index < 0 ? lua_gettop(L) + index + 1 : index;
+    if (!lua_isuserdata(L, real_index))
+    {
+        luaL_error(L, "expected %s userdata at stack index %d; got %s", tname, real_index, lua_typename(L, lua_type(L, real_index)));
+    }
+
+    luaL_newmetatable(L, tname);
+
+    lua_getmetatable(L, index);
+    while(!lua_rawequal(L, -1, -2) && !lua_isnil(L, -1))
+    {
+        lua_getfield(L, -1, "__parent");
+        lua_remove(L, -2);
+    }
+
+    if (!lua_rawequal(L, -1, -2) || lua_isnil(L, -1))
+    {
+        luaL_error(L, "expected %s userdata at stack index %d; got %s", tname, real_index, lua_typename(L, lua_type(L, real_index)));
+    }
+
+    lua_pop(L, 2);
+    return lua_touserdata(L, real_index);
+}
 
 nbunny::lua::TemporaryReference::TemporaryReference(lua_State* L, int index) :
     L(L), reference(reference)

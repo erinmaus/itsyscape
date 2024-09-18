@@ -195,8 +195,8 @@ namespace nbunny
 	private:
 		int reference = 0;
 
-		std::weak_ptr<SceneNode> parent;
-		std::vector<std::weak_ptr<SceneNode>> children;
+		SceneNode* parent;
+		std::vector<SceneNode*> children;
 
 		glm::vec3 min = glm::vec3(0.0f);
 		glm::vec3 max = glm::vec3(0.0f);
@@ -219,13 +219,11 @@ namespace nbunny
 		bool get_ticked() const;
 
 		void unset_parent();
-		void set_parent(const std::weak_ptr<SceneNode>& value);
-		const std::weak_ptr<SceneNode>& get_parent();
-		const std::weak_ptr<SceneNode>& get_parent() const;
+		void set_parent(SceneNode* value);
+		SceneNode* get_parent();
+		const SceneNode* get_parent() const;
 
-		void add_child(const std::weak_ptr<SceneNode>& child);
-		void remove_child(const std::weak_ptr<SceneNode>& child);
-		const std::vector<std::weak_ptr<SceneNode>>& get_children() const;
+		const std::vector<SceneNode*>& get_children() const;
 
 		void set_min(const glm::vec3& value);
 		const glm::vec3& get_min() const;

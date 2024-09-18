@@ -13,6 +13,7 @@
 #ifndef NBUNNY_OPTIMAUS_DEFERRED_RENDERER_PASS_HPP
 #define NBUNNY_OPTIMAUS_DEFERRED_RENDERER_PASS_HPP
 
+#include <memory>
 #include "modules/graphics/Shader.h"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/g_buffer.hpp"
@@ -34,7 +35,7 @@ namespace nbunny
 		LBuffer fog_buffer;
 		LBuffer output_buffer;
 
-		ShadowRendererPass* shadow_pass = nullptr;
+		std::shared_ptr<ShadowRendererPass> shadow_pass;
 
 		std::vector<SceneNode*> drawable_scene_nodes;
 		std::vector<LightSceneNode*> light_scene_nodes;
@@ -82,7 +83,7 @@ namespace nbunny
 			BUILTIN_SHADER_MIX_LIGHTS        = -8
 		};
 
-		DeferredRendererPass(ShadowRendererPass* shadow_pass);
+		DeferredRendererPass(const std::shared_ptr<ShadowRendererPass>& shadow_pass);
 		~DeferredRendererPass() = default;
 
 		GBuffer& get_g_buffer();

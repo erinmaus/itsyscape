@@ -42,21 +42,21 @@ glm::mat4 nbunny::KeyFrame::interpolate(const KeyFrame& self, const KeyFrame& ot
 
 static int nbunny_keyframe_get_time(lua_State* L)
 {
-	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame>(L, 1);
+	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame*>(L, 1);
 	lua_pushnumber(L, keyFrame->time);
 	return 1;
 }
 
 static int nbunny_keyframe_set_time(lua_State* L)
 {
-	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame>(L, 1);
+	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame*>(L, 1);
 	keyFrame->time = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 static int nbunny_keyframe_get_rotation(lua_State* L)
 {
-	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame>(L, 1);
+	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame*>(L, 1);
 	lua_pushnumber(L, keyFrame->rotation.x);
 	lua_pushnumber(L, keyFrame->rotation.y);
 	lua_pushnumber(L, keyFrame->rotation.z);
@@ -66,7 +66,7 @@ static int nbunny_keyframe_get_rotation(lua_State* L)
 
 static int nbunny_keyframe_set_rotation(lua_State* L)
 {
-	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame>(L, 1);
+	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -77,7 +77,7 @@ static int nbunny_keyframe_set_rotation(lua_State* L)
 
 static int nbunny_keyframe_get_scale(lua_State* L)
 {
-	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame>(L, 1);
+	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame*>(L, 1);
 	lua_pushnumber(L, keyFrame->scale.x);
 	lua_pushnumber(L, keyFrame->scale.y);
 	lua_pushnumber(L, keyFrame->scale.z);
@@ -86,7 +86,7 @@ static int nbunny_keyframe_get_scale(lua_State* L)
 
 static int nbunny_keyframe_set_scale(lua_State* L)
 {
-	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame>(L, 1);
+	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -96,7 +96,7 @@ static int nbunny_keyframe_set_scale(lua_State* L)
 
 static int nbunny_keyframe_get_translation(lua_State* L)
 {
-	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame>(L, 1);
+	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame*>(L, 1);
 	lua_pushnumber(L, keyFrame->translation.x);
 	lua_pushnumber(L, keyFrame->translation.y);
 	lua_pushnumber(L, keyFrame->translation.z);
@@ -105,7 +105,7 @@ static int nbunny_keyframe_get_translation(lua_State* L)
 
 static int nbunny_keyframe_set_translation(lua_State* L)
 {
-	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame>(L, 1);
+	auto keyFrame = nbunny::lua::get<nbunny::KeyFrame*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -115,8 +115,8 @@ static int nbunny_keyframe_set_translation(lua_State* L)
 
 static int nbunny_keyframe_interpolate(lua_State* L)
 {
-	auto self = nbunny::lua::get<nbunny::KeyFrame>(L, 1);
-	auto other = nbunny::lua::get<nbunny::KeyFrame>(L, 2);
+	auto self = nbunny::lua::get<nbunny::KeyFrame*>(L, 1);
+	auto other = nbunny::lua::get<nbunny::KeyFrame*>(L, 2);
 	float time = (float)luaL_checknumber(L, 3);
 	auto result = glm::transpose(nbunny::KeyFrame::interpolate(*self, *other, time));
 	auto pointer = glm::value_ptr(result);
