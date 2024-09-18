@@ -315,22 +315,17 @@ void nbunny::ForwardRendererPass::attach(Renderer& renderer)
 		"Resources/Renderers/Mobile/Base.frag.glsl");
 }
 
-static std::shared_ptr<nbunny::ForwardRendererPass> nbunny_forward_renderer_pass_create(
-	sol::variadic_args args, sol::this_state S)
+static int nbunny_forward_renderer_pass_constructor(lua_State* L)
 {
-	lua_State* L = S;
-	auto& c_buffer = sol::stack::get<nbunny::LBuffer&>(L, 2);
-	return std::make_shared<nbunny::ForwardRendererPass>(c_buffer);
+	auto c_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 2);
+	nbunny::lua::push(L, std::make_shared<nbunny::ForwardRendererPass>(*c_buffer));
+	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_forwardrendererpass(lua_State* L)
-{
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ForwardRendererPass>("NForwardRendererPass",
-		sol::base_classes, sol::bases<nbunny::RendererPass>(),
-		sol::call_constructor, sol::factories(&nbunny_forward_renderer_pass_create));
-
-	sol::stack::push(L, T);
+{	
+	nbunny::lua::register_child_type<nbunny::ForwardRendererPass, nbunny::RendererPass>(L, &nbunny_forward_renderer_pass_constructor, nullptr);
 
 	return 1;
 }

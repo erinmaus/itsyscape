@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "nbunny/optimaus/light.hpp"
+#include "nbunny/lua_runtime.hpp"
 
 const nbunny::Type<nbunny::LightSceneNode> nbunny::LightSceneNode::type_pointer;
 
@@ -88,7 +89,7 @@ void nbunny::LightSceneNode::tick(float delta)
 
 static int nbunny_light_scene_node_set_current_color(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::LightSceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::LightSceneNode*>(L, 1);
 	float r = (float)luaL_checknumber(L, 2);
 	float g = (float)luaL_checknumber(L, 3);
 	float b = (float)luaL_checknumber(L, 4);
@@ -98,7 +99,7 @@ static int nbunny_light_scene_node_set_current_color(lua_State* L)
 
 static int nbunny_light_scene_node_get_current_color(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::LightSceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::LightSceneNode*>(L, 1);
 	const auto& color = node->get_current_color();
 	lua_pushnumber(L, color.x);
 	lua_pushnumber(L, color.y);
@@ -108,7 +109,7 @@ static int nbunny_light_scene_node_get_current_color(lua_State* L)
 
 static int nbunny_light_scene_node_set_previous_color(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::LightSceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::LightSceneNode*>(L, 1);
 	float r = (float)luaL_checknumber(L, 2);
 	float g = (float)luaL_checknumber(L, 3);
 	float b = (float)luaL_checknumber(L, 4);
@@ -118,7 +119,7 @@ static int nbunny_light_scene_node_set_previous_color(lua_State* L)
 
 static int nbunny_light_scene_node_get_previous_color(lua_State* L)
 {
-	auto node = sol::stack::get<nbunny::LightSceneNode*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::LightSceneNode*>(L, 1);
 	const auto& color = node->get_previous_color();
 	lua_pushnumber(L, color.x);
 	lua_pushnumber(L, color.y);
@@ -126,23 +127,51 @@ static int nbunny_light_scene_node_get_previous_color(lua_State* L)
 	return 3;
 }
 
+static int nbunny_light_scene_node_set_is_global(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::LightSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<bool>(L, 2);
+	node->set_is_global(value);
+	return 0;
+}
+
+static int nbunny_light_scene_node_get_is_global(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::LightSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_is_global());
+	return 1;
+}
+
+static int nbunny_light_scene_node_set_casts_shadows(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::LightSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<bool>(L, 2);
+	node->set_casts_shadows(value);
+	return 0;
+}
+
+static int nbunny_light_scene_node_get_casts_shadows(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::LightSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_casts_shadows());
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_lightscenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::LightSceneNode>("NLightSceneNode",
-		sol::base_classes, sol::bases<nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::LightSceneNode>),
-		"setCurrentColor", &nbunny_light_scene_node_set_current_color,
-		"getCurrentColor", &nbunny_light_scene_node_get_current_color,
-		"setPreviousColor", &nbunny_light_scene_node_set_previous_color,
-		"getPreviousColor", &nbunny_light_scene_node_get_previous_color,
-		"setIsGlobal", &nbunny::LightSceneNode::set_is_global,
-		"getIsGlobal", &nbunny::LightSceneNode::get_is_global,
-		"setCastsShadows", &nbunny::LightSceneNode::set_casts_shadows,
-		"getCastsShadows", &nbunny::LightSceneNode::get_casts_shadows,
-		"tick", &nbunny::LightSceneNode::tick);
+	static const luaL_Reg metatable[] = {
+		{ "setCurrentColor", &nbunny_light_scene_node_set_current_color },
+		{ "getCurrentColor", &nbunny_light_scene_node_get_current_color },
+		{ "setPreviousColor", &nbunny_light_scene_node_set_previous_color },
+		{ "getPreviousColor", &nbunny_light_scene_node_get_previous_color },
+		{ "setIsGlobal", &nbunny_light_scene_node_set_is_global },
+		{ "getIsGlobal", &nbunny_light_scene_node_get_is_global },
+		{ "setCastsShadows", &nbunny_light_scene_node_set_casts_shadows },
+		{ "getCastsShadows", &nbunny_light_scene_node_get_casts_shadows },
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::LightSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::LightSceneNode>, metatable);
 
 	return 1;
 }
@@ -199,19 +228,48 @@ void nbunny::AmbientLightSceneNode::tick(float delta)
 		delta);;
 }
 
+static int nbunny_ambient_light_scene_node_set_current_ambience(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::AmbientLightSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<lua_Number>(L, 2);
+	node->set_current_ambience(value);
+	return 0;
+}
+
+static int nbunny_ambient_light_scene_node_get_current_ambience(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::AmbientLightSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_current_ambience());
+	return 1;
+}
+
+static int nbunny_ambient_light_scene_node_set_previous_ambience(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::AmbientLightSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<lua_Number>(L, 2);
+	node->set_previous_ambience(value);
+	return 0;
+}
+
+static int nbunny_ambient_light_scene_node_get_previous_ambience(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::AmbientLightSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_previous_ambience());
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_ambientlightscenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::AmbientLightSceneNode>("NAmbientLightSceneNode",
-		sol::base_classes, sol::bases<nbunny::LightSceneNode, nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::AmbientLightSceneNode>),
-		"setCurrentAmbience", &nbunny::AmbientLightSceneNode::set_current_ambience,
-		"getCurrentAmbience", &nbunny::AmbientLightSceneNode::get_current_ambience,
-		"setPreviousAmbience", &nbunny::AmbientLightSceneNode::set_previous_ambience,
-		"getPreviousAmbience", &nbunny::AmbientLightSceneNode::get_previous_ambience,
-		"tick", &nbunny::AmbientLightSceneNode::tick);
+	static const luaL_Reg metatable[] = {
+		{ "setCurrentAmbience", &nbunny_ambient_light_scene_node_set_current_ambience },
+		{ "getCurrentAmbience", &nbunny_ambient_light_scene_node_get_current_ambience },
+		{ "setPreviousAmbience", &nbunny_ambient_light_scene_node_set_previous_ambience },
+		{ "getPreviousAmbience", &nbunny_ambient_light_scene_node_get_previous_ambience },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::AmbientLightSceneNode, nbunny::LightSceneNode>(L, &nbunny_scene_node_constructor<nbunny::AmbientLightSceneNode>, metatable);
 
 	return 1;
 }
@@ -312,16 +370,15 @@ static int nbunny_directional_light_scene_node_get_previous_direction(lua_State*
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_directionallightscenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::DirectionalLightSceneNode>("NDirectionalLightSceneNode",
-		sol::base_classes, sol::bases<nbunny::LightSceneNode, nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::DirectionalLightSceneNode>),
-		"setCurrentDirection", &nbunny_directional_light_scene_node_set_current_direction,
-		"getCurrentDirection", &nbunny_directional_light_scene_node_get_current_direction,
-		"setPreviousDirection", &nbunny_directional_light_scene_node_set_previous_direction,
-		"getPreviousDirection", &nbunny_directional_light_scene_node_get_previous_direction,
-		"tick", &nbunny::LightSceneNode::tick);
+	static const luaL_Reg metatable[] = {
+		{ "setCurrentDirection", &nbunny_directional_light_scene_node_set_current_direction },
+		{ "getCurrentDirection", &nbunny_directional_light_scene_node_get_current_direction },
+		{ "setPreviousDirection", &nbunny_directional_light_scene_node_set_previous_direction },
+		{ "getPreviousDirection", &nbunny_directional_light_scene_node_get_previous_direction },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::DirectionalLightSceneNode, nbunny::LightSceneNode>(L, &nbunny_scene_node_constructor<nbunny::DirectionalLightSceneNode>, metatable);
 
 	return 1;
 }
@@ -381,19 +438,48 @@ void nbunny::PointLightSceneNode::tick(float delta)
 		delta);;
 }
 
+static int nbunny_point_light_scene_node_set_current_attenuation(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::PointLightSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<lua_Number>(L, 2);
+	node->set_current_attenuation(value);
+	return 0;
+}
+
+static int nbunny_point_light_scene_node_get_current_attenuation(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::PointLightSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_current_attenuation());
+	return 1;
+}
+
+static int nbunny_point_light_scene_node_set_previous_attenuation(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::PointLightSceneNode*>(L, 1);
+	auto value = nbunny::lua::get<lua_Number>(L, 2);
+	node->set_previous_attenuation(value);
+	return 0;
+}
+
+static int nbunny_point_light_scene_node_get_previous_attenuation(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::PointLightSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_previous_attenuation());
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_pointlightscenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::PointLightSceneNode>("NPointLightSceneNode",
-		sol::base_classes, sol::bases<nbunny::LightSceneNode, nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::PointLightSceneNode>),
-		"setCurrentAttenuation", &nbunny::PointLightSceneNode::set_current_attenuation,
-		"getCurrentAttenuation", &nbunny::PointLightSceneNode::get_current_attenuation,
-		"setPreviousAttenuation", &nbunny::PointLightSceneNode::set_previous_attenuation,
-		"getPreviousAttenuation", &nbunny::PointLightSceneNode::get_previous_attenuation,
-		"tick", &nbunny::PointLightSceneNode::tick);
+	static const luaL_Reg metatable[] = {
+		{ "setCurrentAttenuation", &nbunny_point_light_scene_node_set_current_attenuation },
+		{ "getCurrentAttenuation", &nbunny_point_light_scene_node_get_current_attenuation },
+		{ "setPreviousAttenuation", &nbunny_point_light_scene_node_set_previous_attenuation },
+		{ "getPreviousAttenuation", &nbunny_point_light_scene_node_get_previous_attenuation },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::PointLightSceneNode, nbunny::LightSceneNode>(L, &nbunny_scene_node_constructor<nbunny::PointLightSceneNode>, metatable);
 
 	return 1;
 }

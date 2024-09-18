@@ -16,6 +16,7 @@
 #include "modules/graphics/Graphics.h"
 #include "modules/math/MathModule.h"
 #include "modules/timer/Timer.h"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/particle.hpp"
 #include "nbunny/optimaus/renderer.hpp"
 
@@ -798,8 +799,7 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 		current_rotation = parent_current_rotation * current_rotation;
 		previous_rotation = parent_previous_rotation * previous_rotation;
 
-		auto p = parent->get_parent().lock();
-		parent = p.get();
+		parent = parent->get_parent();
 	}
 
 	return glm::slerp(previous_rotation, current_rotation, delta);
@@ -1133,62 +1133,62 @@ void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 
 int nbunny_particle_scene_node_init_particle_system_from_def(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
-	node.from_definition(L);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	node->from_definition(L);
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_update_local_position(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
 	auto x = luaL_checknumber(L, 2);
 	auto y = luaL_checknumber(L, 3);
 	auto z = luaL_checknumber(L, 4);
 
-	node.update_local_position(glm::vec3(x, y, z));
+	node->update_local_position(glm::vec3(x, y, z));
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_update_local_direction(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
 	auto x = luaL_checknumber(L, 2);
 	auto y = luaL_checknumber(L, 3);
 	auto z = luaL_checknumber(L, 4);
 
-	node.update_local_direction(glm::vec3(x, y, z));
+	node->update_local_direction(glm::vec3(x, y, z));
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_init_emitters_from_def(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
 	auto def = sol::stack::get<sol::table>(L, 2);
 
-	node.set_emitters(L, def);
+	node->set_emitters(L, def);
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_init_paths_from_def(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
 	auto def = sol::stack::get<sol::table>(L, 2);
 
-	node.set_paths(L, def);
+	node->set_paths(L, def);
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_init_emission_strategy_from_def(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
 	auto def = sol::stack::get<sol::table>(L, 2);
 
-	node.set_emission_strategy(L, def);
+	node->set_emission_strategy(L, def);
 
 	return 0;
 }

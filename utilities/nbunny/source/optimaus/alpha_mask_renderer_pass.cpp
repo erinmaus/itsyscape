@@ -210,7 +210,7 @@ static int nbunny_alpha_mask_renderer_pass_constructor(lua_State* L)
 
 static int nbunny_alpha_mask_renderer_pass_get_a_buffer(lua_State* L)
 {
-	auto self = nbunny::lua::get<nbunny::AlphaMaskRendererPass>(L, 1);
+	auto self = nbunny::lua::get<nbunny::AlphaMaskRendererPass*>(L, 1);
 	nbunny::lua::push(L, self->get_a_buffer());
 
 	return 1;

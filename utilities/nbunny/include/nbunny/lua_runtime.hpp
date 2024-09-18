@@ -65,6 +65,24 @@ namespace nbunny { namespace lua
             constexpr auto type_name_length = wrapped_name.length() - prefix_length - suffix_length;
             return wrapped_name.substr(prefix_length, type_name_length);
         }
+
+        enum
+        {
+            USERDATA_TYPE_SHARED_POINTER = 0,
+            USERDATA_TYPE_RAW_POINTER = 1
+        };
+
+        template <typename T>
+        struct Userdata
+        {
+            int type;
+            union {
+                std::shared_ptr<T>* shared_pointer;
+                T* raw_pointer;
+            };
+        };
+
+        void* luax_checkudata(lua_State* L, int index, const char* tname);
     }
 
     // Should *NOT* persist after returning to Lua.
@@ -134,15 +152,38 @@ namespace nbunny { namespace lua
     T get_primitive(lua_State* L, int index);
 
     template <typename T>
-    std::enable_if<std::is_class<T>::value && !std::is_same<T, TemporaryReference>::value && !std::is_same<T, std::string>::value, std::shared_ptr<T>>::type get(lua_State* L, int index)
+    std::enable_if<std::is_class<T>::value && !std::is_same<T, TemporaryReference>::value && !std::is_pointer<T>::value && !std::is_same<T, std::string>::value, std::shared_ptr<T>>::type get(lua_State* L, int index)
     {
-        auto pointer = luaL_checkudata(L, index, LuaType<T>::user_type.c_str());
-        auto typed_pointer = static_cast<std::shared_ptr<T>**>(pointer);
-        return **typed_pointer;
+        using Userdata = impl::Userdata<T>;
+        auto userdata = (Userdata*)impl::luax_checkudata(L, index, LuaType<T>::user_type.c_str());
+        if (userdata->type != impl::USERDATA_TYPE_SHARED_POINTER)
+        {
+            luaL_error(L, "expected %s shared pointer userdata, got type %d", LuaType<T>::user_type.c_str(), userdata->type);
+        }
+        
+        return *userdata->shared_pointer;
     }
 
     template <typename T>
-    std::enable_if<!std::is_class<T>::value || std::is_same<T, std::string>::value, T>::type get(lua_State* L, int index)
+    std::enable_if<std::is_pointer<T>::value, T>::type get(lua_State* L, int index)
+    {
+        using Userdata = impl::Userdata<typename std::remove_pointer<T>::type>;
+        auto userdata = (Userdata*)impl::luax_checkudata(L, index, LuaType<T>::user_type.c_str());
+        if (userdata->type == impl::USERDATA_TYPE_SHARED_POINTER)
+        {
+            return userdata->shared_pointer->get();
+        }
+        else if (userdata->type == impl::USERDATA_TYPE_RAW_POINTER)
+        {
+            return userdata->raw_pointer;
+        }
+        
+        luaL_error(L, "unhandled %s userdata pointer type %d", LuaType<T>::user_type.c_str(), userdata->type);
+        return nullptr;
+    }
+
+    template <typename T>
+    std::enable_if<(!std::is_class<T>::value || std::is_same<T, std::string>::value) && !std::is_pointer<T>::value, T>::type get(lua_State* L, int index)
     {
         return get_primitive<T>(L, index);
     }
@@ -212,18 +253,33 @@ namespace nbunny { namespace lua
         luaL_error(L, "unhandled push");
     }
 
-    template <typename T, std::enable_if<std::is_class<T>::value && !std::is_same<T, TemporaryReference>::value, bool>::type = true>
+    template <typename T, std::enable_if<std::is_class<T>::value && !std::is_same<T, TemporaryReference>::value && !std::is_pointer<T>::value, bool>::type = true>
     void push(lua_State* L, const std::shared_ptr<T>& value)
     {
-        auto pointer = lua_newuserdata(L, sizeof(std::shared_ptr<T>*));
-        auto typed_pointer = static_cast<std::shared_ptr<T>**>(pointer);
-        *typed_pointer = new std::shared_ptr<T>(value);
+        using Userdata = impl::Userdata<typename std::remove_pointer<T>::type>;
+
+        auto userdata = (Userdata*)lua_newuserdata(L, sizeof(Userdata));
+        userdata->type = impl::USERDATA_TYPE_SHARED_POINTER;
+        userdata->shared_pointer = new std::shared_ptr<T>(value);
 
         luaL_newmetatable(L, LuaType<T>::user_type.c_str());
         lua_setmetatable(L, -2);
     }
 
-    template <typename T, std::enable_if<!std::is_class<T>::value, bool>::type = true>
+    template <typename T, std::enable_if<std::is_pointer<T>::value, bool>::type = true>
+    void push(lua_State* L, T value)
+    {
+        using Userdata = impl::Userdata<typename std::remove_pointer<T>::type>;
+
+        auto userdata = (Userdata*)lua_newuserdata(L, sizeof(Userdata));
+        userdata->type = impl::USERDATA_TYPE_RAW_POINTER;
+        userdata->raw_pointer = value;
+
+        luaL_newmetatable(L, LuaType<T>::user_type.c_str());
+        lua_setmetatable(L, -2);
+    }
+
+    template <typename T, std::enable_if<!std::is_class<T>::value && !std::is_pointer<T>::value, bool>::type = true>
     void push(lua_State* L, const T& value)
     {
         push_primitive<T>(L, value);

@@ -27,7 +27,7 @@ static const std::string SHADER_COPY_DEPTH        = "CopyDepth";
 static const std::string SHADER_SHADOW            = "Shadow";
 static const std::string SHADER_MIX_LIGHTS        = "MixLights";
 
-nbunny::DeferredRendererPass::DeferredRendererPass(ShadowRendererPass* shadow_pass) :
+nbunny::DeferredRendererPass::DeferredRendererPass(const std::shared_ptr<ShadowRendererPass>& shadow_pass) :
 	RendererPass(RENDERER_PASS_DEFERRED),
 	shadow_pass(shadow_pass),
 	g_buffer({ love::PIXELFORMAT_RGBA8, love::PIXELFORMAT_RG16F, love::PIXELFORMAT_RGBA8 }),
@@ -598,31 +598,51 @@ void nbunny::DeferredRendererPass::attach(Renderer& renderer)
 		"Resources/Renderers/Deferred/Base.frag.glsl");
 }
 
-static std::shared_ptr<nbunny::DeferredRendererPass> nbunny_deferred_renderer_pass_create(
-	sol::variadic_args args, sol::this_state S)
+static int nbunny_deferred_renderer_pass_constructor(lua_State* L)
 {
-	lua_State* L = S;
-
-	nbunny::ShadowRendererPass* shadow_pass = nullptr;
-	if (lua_gettop(L) > 1)
+	std::shared_ptr<nbunny::ShadowRendererPass> shadow_pass;
+	if (!lua_isnil(L, 2))
 	{
-		shadow_pass = sol::stack::get<nbunny::ShadowRendererPass*>(L, 2);
+		shadow_pass = nbunny::lua::get<nbunny::ShadowRendererPass>(L, 1);
 	}
 
-	return std::make_shared<nbunny::DeferredRendererPass>(shadow_pass);
+	nbunny::lua::push(L, std::make_shared<nbunny::DeferredRendererPass>(shadow_pass));
+
+	return 1;
+}
+
+static int nbunny_deferred_renderer_pass_get_g_buffer(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::DeferredRendererPass*>(L, 1);
+	nbunny::lua::push(L, &self->get_g_buffer());
+	return 1;
+}
+
+static int nbunny_deferred_renderer_pass_get_depth_buffer(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::DeferredRendererPass*>(L, 1);
+	nbunny::lua::push(L, &self->get_depth_buffer());
+	return 1;
+}
+
+static int nbunny_deferred_renderer_pass_get_c_buffer(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::DeferredRendererPass*>(L, 1);
+	nbunny::lua::push(L, &self->get_output_buffer());
+	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_deferredrendererpass(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::DeferredRendererPass>("NDeferredRendererPass",
-		sol::base_classes, sol::bases<nbunny::RendererPass>(),
-		sol::call_constructor, sol::factories(&nbunny_deferred_renderer_pass_create),
-		"getGBuffer", &nbunny::DeferredRendererPass::get_g_buffer,
-		"getDepthBuffer", &nbunny::DeferredRendererPass::get_depth_buffer,
-		"getCBuffer", &nbunny::DeferredRendererPass::get_output_buffer);
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "getGBuffer", &nbunny_deferred_renderer_pass_get_g_buffer },
+		{ "getDepthBuffer", &nbunny_deferred_renderer_pass_get_depth_buffer },
+		{ "getCBuffer", &nbunny_deferred_renderer_pass_get_c_buffer },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_child_type<nbunny::DeferredRendererPass, nbunny::RendererPass>(L, &nbunny_deferred_renderer_pass_constructor, metatable);
 
 	return 1;
 }

@@ -167,10 +167,9 @@ glm::mat4 nbunny::SceneNodeTransform::get_global(float delta) const
 	auto local_transform = get_local(delta);
 
 	auto parent = scene_node.get_parent();
-	auto p = parent.lock();
-	if (p)
+	if (parent)
 	{
-		auto parent_transform = p->get_transform().get_global(delta);
+		auto parent_transform = parent->get_transform().get_global(delta);
 		return parent_transform * local_transform;
 	}
 
@@ -497,11 +496,7 @@ nbunny::SceneNode::~SceneNode()
 	unset_parent();
 	for (auto child: children)
 	{
-		auto c = child.lock();
-		if (c)
-		{
-			c->unset_parent();
-		}
+		child->unset_parent();
 	}
 }
 
@@ -517,73 +512,48 @@ bool nbunny::SceneNode::get_ticked() const
 
 void nbunny::SceneNode::unset_parent()
 {
-	auto p = parent.lock();
-	if (p)
+	if (parent)
 	{
-		p->children.erase(
+		parent->children.erase(
 			std::remove_if(
-				p->children.begin(),
-				p->children.end(),
+				parent->children.begin(),
+				parent->children.end(),
 				[this](auto& a)
 				{
-					auto l = a.lock();
-					return l && l.get() == this;
+					return a == this;
 				}
 			),
-			p->children.end()
+			parent->children.end()
 		);
 		
-		parent.reset();
+		parent = nullptr;
 	}
 }
 
-void nbunny::SceneNode::set_parent(const std::weak_ptr<SceneNode>& value)
+void nbunny::SceneNode::set_parent(SceneNode* value)
 {
 	unset_parent();
-	if (value.lock())
+
+	if (value)
 	{
 		parent = value;
+		parent->children.push_back(this);
 	}
 }
 
-const std::weak_ptr<nbunny::SceneNode>& nbunny::SceneNode::get_parent()
+nbunny::SceneNode* nbunny::SceneNode::get_parent()
 {
 	return parent;
 }
 
-const std::weak_ptr<nbunny::SceneNode>& nbunny::SceneNode::get_parent() const
+const nbunny::SceneNode* nbunny::SceneNode::get_parent() const
 {
 	return parent;
 }
 
-const std::vector<std::weak_ptr<nbunny::SceneNode>>& nbunny::SceneNode::get_children() const
+const std::vector<nbunny::SceneNode*>& nbunny::SceneNode::get_children() const
 {
 	return children;
-}
-
-void nbunny::SceneNode::add_child(const std::weak_ptr<nbunny::SceneNode>& child)
-{
-	children.push_back(child);
-}
-
-void nbunny::SceneNode::remove_child(const std::weak_ptr<nbunny::SceneNode>& child)
-{
-	auto c = child.lock();
-
-	if (c)
-	{
-		children.erase(
-			std::remove_if(
-				children.begin(),
-				children.end(),
-				[&](auto& a)
-				{
-					return a.lock() == c;
-				}
-			),
-			children.end()
-		);
-	}
 }
 
 void nbunny::SceneNode::set_min(const glm::vec3& value)
@@ -702,11 +672,7 @@ void nbunny::SceneNode::collect(SceneNode& node, std::vector<SceneNode*>& result
 
 	for (auto child: node.children)
 	{
-		auto c = child.lock();
-		if (c)
-		{
-			collect(*c, result);
-		}
+		collect(*child, result);
 	}
 }
 
@@ -797,15 +763,10 @@ void nbunny::SceneNode::walk_by_material(
 
 	for (auto& child: node.children)
 	{
-		auto c = child.lock();
-		if (c)
-		{
-			walk_by_material(*c, camera, delta, result);
-		}
+		walk_by_material(*child, camera, delta, result);
 	}
 
-	auto p = node.parent.lock();
-	if (!p)
+	if (!node.parent)
 	{
 		sort_by_material(result);
 	}
@@ -824,15 +785,10 @@ void nbunny::SceneNode::walk_by_position(
 
 	for (auto& child : node.children)
 	{
-		auto c = child.lock();
-		if (c)
-		{
-			walk_by_position(*c, camera, delta, result);
-		}
+		walk_by_position(*child, camera, delta, result);
 	}
 
-	auto p = node.parent.lock();
-	if (!p)
+	if (!node.parent)
 	{
 		sort_by_position(result, camera, delta);
 	}
@@ -1187,7 +1143,7 @@ const glm::vec3& nbunny::Camera::get_max_frustum() const
 
 static int nbunny_scene_node_transform_get_current_translation(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	const auto& current_translation = transform->get_current_translation();
 	lua_pushnumber(L, current_translation.x);
 	lua_pushnumber(L, current_translation.y);
@@ -1197,7 +1153,7 @@ static int nbunny_scene_node_transform_get_current_translation(lua_State* L)
 
 static int nbunny_scene_node_transform_set_current_translation(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1207,7 +1163,7 @@ static int nbunny_scene_node_transform_set_current_translation(lua_State* L)
 
 static int nbunny_scene_node_transform_get_previous_translation(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	const auto& previous_translation = transform->get_previous_translation();
 	lua_pushnumber(L, previous_translation.x);
 	lua_pushnumber(L, previous_translation.y);
@@ -1217,7 +1173,7 @@ static int nbunny_scene_node_transform_get_previous_translation(lua_State* L)
 
 static int nbunny_scene_node_transform_set_previous_translation(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1227,7 +1183,7 @@ static int nbunny_scene_node_transform_set_previous_translation(lua_State* L)
 
 static int nbunny_scene_node_transform_get_current_rotation(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	const auto& current_rotation = transform->get_current_rotation();
 	lua_pushnumber(L, current_rotation.x);
 	lua_pushnumber(L, current_rotation.y);
@@ -1238,7 +1194,7 @@ static int nbunny_scene_node_transform_get_current_rotation(lua_State* L)
 
 static int nbunny_scene_node_transform_set_current_rotation(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1249,7 +1205,7 @@ static int nbunny_scene_node_transform_set_current_rotation(lua_State* L)
 
 static int nbunny_scene_node_transform_get_previous_rotation(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	const auto& previous_rotation = transform->get_previous_rotation();
 	lua_pushnumber(L, previous_rotation.x);
 	lua_pushnumber(L, previous_rotation.y);
@@ -1260,7 +1216,7 @@ static int nbunny_scene_node_transform_get_previous_rotation(lua_State* L)
 
 static int nbunny_scene_node_transform_set_previous_rotation(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1271,7 +1227,7 @@ static int nbunny_scene_node_transform_set_previous_rotation(lua_State* L)
 
 static int nbunny_scene_node_transform_get_previous_scale(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	const auto& previous_scale = transform->get_previous_scale();
 	lua_pushnumber(L, previous_scale.x);
 	lua_pushnumber(L, previous_scale.y);
@@ -1281,7 +1237,7 @@ static int nbunny_scene_node_transform_get_previous_scale(lua_State* L)
 
 static int nbunny_scene_node_transform_set_previous_scale(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1291,7 +1247,7 @@ static int nbunny_scene_node_transform_set_previous_scale(lua_State* L)
 
 static int nbunny_scene_node_transform_get_current_scale(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	const auto& current_scale = transform->get_current_scale();
 	lua_pushnumber(L, current_scale.x);
 	lua_pushnumber(L, current_scale.y);
@@ -1301,7 +1257,7 @@ static int nbunny_scene_node_transform_get_current_scale(lua_State* L)
 
 static int nbunny_scene_node_transform_set_current_scale(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1311,7 +1267,7 @@ static int nbunny_scene_node_transform_set_current_scale(lua_State* L)
 
 static int nbunny_scene_node_transform_get_current_offset(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	const auto& current_offset = transform->get_current_offset();
 	lua_pushnumber(L, current_offset.x);
 	lua_pushnumber(L, current_offset.y);
@@ -1321,7 +1277,7 @@ static int nbunny_scene_node_transform_get_current_offset(lua_State* L)
 
 static int nbunny_scene_node_transform_set_current_offset(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1331,7 +1287,7 @@ static int nbunny_scene_node_transform_set_current_offset(lua_State* L)
 
 static int nbunny_scene_node_transform_get_previous_offset(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	const auto& previous_offset = transform->get_previous_offset();
 	lua_pushnumber(L, previous_offset.x);
 	lua_pushnumber(L, previous_offset.y);
@@ -1341,7 +1297,7 @@ static int nbunny_scene_node_transform_get_previous_offset(lua_State* L)
 
 static int nbunny_scene_node_transform_set_previous_offset(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1351,7 +1307,7 @@ static int nbunny_scene_node_transform_set_previous_offset(lua_State* L)
 
 static int nbunny_scene_node_transform_get_global_delta_transform(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float delta = (float)luaL_checknumber(L, 2);
 	auto t = love::luax_checktype<love::math::Transform>(L, 3, love::math::Transform::type);
 
@@ -1365,7 +1321,7 @@ static int nbunny_scene_node_transform_get_global_delta_transform(lua_State* L)
 
 static int nbunny_scene_node_transform_get_local_delta_transform(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	float delta = (float)luaL_checknumber(L, 2);
 	auto t = love::luax_checktype<love::math::Transform>(L, 3, love::math::Transform::type);
 
@@ -1379,7 +1335,7 @@ static int nbunny_scene_node_transform_get_local_delta_transform(lua_State* L)
 
 static int nbunny_scene_node_transform_tick(lua_State* L)
 {
-	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform>(L, 1);
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
 	auto delta = (float)luaL_checknumber(L, 2);
 
 	transform->tick(delta);
@@ -1835,20 +1791,19 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 
 static int nbunny_scene_node_get_reference(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	node->get_reference(L);
 	return 1;
 }
 
 static int nbunny_scene_node_set_parent(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 
 	node->unset_parent();
 	if (lua_toboolean(L, 2))
 	{
-		auto parent = nbunny::lua::get<nbunny::SceneNode>(L, 2);
-		parent->add_child(node);
+		auto parent = nbunny::lua::get<nbunny::SceneNode*>(L, 2);
 		node->set_parent(parent);
 	}
 
@@ -1857,28 +1812,28 @@ static int nbunny_scene_node_set_parent(lua_State* L)
 
 static int nbunny_scene_node_get_parent(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	node->get_reference(L);
 	return 1;
 }
 
 static int nbunny_scene_node_get_transform(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	nbunny::lua::push(L, node->get_transform_pointer());
 	return 1;
 }
 
 static int nbunny_scene_node_get_material(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	nbunny::lua::push(L, node->get_material_pointer());
 	return 1;
 }
 
 static int nbunny_scene_node_get_children(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	const auto& children = node->get_children();
 
 	lua_createtable(L, (int)children.size(), 0);
@@ -1886,19 +1841,15 @@ static int nbunny_scene_node_get_children(lua_State* L)
 	int index = 1;
 	for (auto& child: children)
 	{
-		auto c = child.lock();
-		if (c)
+		lua_pushinteger(L, index);
+
+		child->get_reference(L);
+		if (!lua_isnil(L, -1))
 		{
-			lua_pushinteger(L, index);
-
-			c->get_reference(L);
-			if (!lua_isnil(L, -1))
-			{
-				++index;
-			}
-
-			lua_rawset(L, -3);
+			++index;
 		}
+
+		lua_rawset(L, -3);
 	}
 
 	return 1;
@@ -1906,7 +1857,7 @@ static int nbunny_scene_node_get_children(lua_State* L)
 
 static int nbunny_scene_node_set_min(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1916,7 +1867,7 @@ static int nbunny_scene_node_set_min(lua_State* L)
 
 static int nbunny_scene_node_get_min(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	const auto& min = node->get_min();
 	lua_pushnumber(L, min.x);
 	lua_pushnumber(L, min.y);
@@ -1926,7 +1877,7 @@ static int nbunny_scene_node_get_min(lua_State* L)
 
 static int nbunny_scene_node_set_max(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -1936,7 +1887,7 @@ static int nbunny_scene_node_set_max(lua_State* L)
 
 static int nbunny_scene_node_get_max(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	const auto& max = node->get_max();
 	lua_pushnumber(L, max.x);
 	lua_pushnumber(L, max.y);
@@ -1946,14 +1897,14 @@ static int nbunny_scene_node_get_max(lua_State* L)
 
 static int nbunny_scene_node_tick(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	node->tick(luaL_checknumber(L, 2));
 	return 0;
 }
 
 static int nbunny_scene_node_walk_by_material(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	auto camera = nbunny::lua::get<nbunny::Camera>(L, 2);
 	auto delta = (float)luaL_checknumber(L, 3);
 
@@ -1980,7 +1931,7 @@ static int nbunny_scene_node_walk_by_material(lua_State* L)
 
 static int nbunny_scene_node_walk_by_position(lua_State* L)
 {
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
 	auto camera = nbunny::lua::get<nbunny::Camera>(L, 2);
 	auto delta = (float)luaL_checknumber(L, 3);
 
@@ -2266,7 +2217,7 @@ static int nbunny_camera_get_is_cull_enabled(lua_State* L)
 static int nbunny_camera_inside(lua_State* L)
 {
 	auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
-	auto node = nbunny::lua::get<nbunny::SceneNode>(L, 2);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 2);
 	auto delta = nbunny::lua::get<lua_Number>(L, 3);
 
 	nbunny::lua::push(L, self->inside(*node, delta));
