@@ -425,6 +425,11 @@ love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, cons
             });
 }
 
+static int nbunny_renderer_constructor(lua_State* L)
+{
+	
+}
+
 static std::shared_ptr<nbunny::Renderer> nbunny_renderer_create(sol::variadic_args args, sol::this_state S)
 {
 	lua_State* L = S;

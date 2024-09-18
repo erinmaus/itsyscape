@@ -225,24 +225,38 @@ void nbunny::ReflectionRendererPass::attach(Renderer& renderer)
 		"Resources/Renderers/Reflection/Base.frag.glsl");
 }
 
-static std::shared_ptr<nbunny::ReflectionRendererPass> nbunny_reflection_renderer_pass_create(
-	sol::variadic_args args, sol::this_state S)
+static int nbunny_reflection_renderer_pass_constructor(lua_State* L)
 {
-	lua_State *L = S;
-	auto& g_buffer = sol::stack::get<nbunny::GBuffer&>(L, 2);
-	return std::make_shared<nbunny::ReflectionRendererPass>(g_buffer);
+	auto r_buffer = nbunny::lua::get<nbunny::GBuffer*>(L, 2);
+	nbunny::lua::push(L, std::make_shared<nbunny::ReflectionRendererPass>(*r_buffer));
+
+	return 1;
+}
+
+static int nbunny_reflection_renderer_pass_get_r_buffer(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::ReflectionRendererPass*>(L, 1);
+	nbunny::lua::push(L, &self->get_r_buffer());
+	return 1;
+}
+
+static int nbunny_reflection_renderer_pass_get_has_reflections(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::ReflectionRendererPass*>(L, 1);
+	nbunny::lua::push(L, self->get_has_reflections());
+	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_reflectionrendererpass(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ReflectionRendererPass>("NReflectionRendererPass",
-		sol::base_classes, sol::bases<nbunny::RendererPass>(),
-		"getRBuffer", &nbunny::ReflectionRendererPass::get_r_buffer,
-		"getHasReflections", &nbunny::ReflectionRendererPass::get_has_reflections,
-		sol::call_constructor, sol::factories(&nbunny_reflection_renderer_pass_create));
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "getRBuffer", &nbunny_reflection_renderer_pass_get_r_buffer },
+		{ "getHasReflections", &nbunny_reflection_renderer_pass_get_has_reflections },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_child_type<nbunny::ReflectionRendererPass, nbunny::RendererPass>(L, &nbunny_reflection_renderer_pass_constructor, metatable);
 
 	return 1;
 }
