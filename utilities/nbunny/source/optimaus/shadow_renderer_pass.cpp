@@ -13,10 +13,9 @@
 #include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
 #include "modules/math/Transform.h"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/shadow_renderer_pass.hpp"
 #include "nbunny/optimaus/particle.hpp"
-
-#include "modules/keyboard/Keyboard.h"
 
 void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
@@ -343,6 +342,13 @@ glm::vec3 nbunny::ShadowRendererPass::get_light_direction(float delta) const
 	return glm::vec3(light.position);
 }
 
+static int nbunny_shadow_renderer_pass_constructor(lua_State* L)
+{
+	int num_cascades = luaL_checkinteger(L, 2);
+	nbunny::lua::push(L, std::make_shared<nbunny::ShadowRendererPass>(num_cascades));
+	return 1;
+}
+
 static int nbunny_shadow_renderer_get_shadow_map(lua_State* L)
 {
 	auto renderer = sol::stack::get<nbunny::ShadowRendererPass*>(L, 1);
@@ -354,23 +360,15 @@ static int nbunny_shadow_renderer_get_shadow_map(lua_State* L)
 	return 1;
 }
 
-static std::shared_ptr<nbunny::ShadowRendererPass> nbunny_shadow_renderer_pass_create(
-	sol::variadic_args args, sol::this_state S)
-{
-	lua_State* L = S;
-	int num_cascades = luaL_checkinteger(L, 2);
-	return std::make_shared<nbunny::ShadowRendererPass>(num_cascades);
-}
-
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_shadowrendererpass(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ShadowRendererPass>("ShadowRendererPass",
-		sol::base_classes, sol::bases<nbunny::RendererPass>(),
-		"getShadowMap", nbunny_shadow_renderer_get_shadow_map,
-		sol::call_constructor, sol::factories(&nbunny_shadow_renderer_pass_create));
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "getShadowMap", &nbunny_shadow_renderer_get_shadow_map },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_child_type<nbunny::ShadowRendererPass, nbunny::RendererPass>(L, &nbunny_shadow_renderer_pass_constructor, metatable);
 
 	return 1;
 }

@@ -73,7 +73,7 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 	love::math::Transform view(love::Matrix4(glm::value_ptr(camera.get_view())));
 	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
 
-    a_buffer->use();
+    a_buffer.use();
 	graphics->clear(
 		{
 			love::Colorf(0.0, 0.0, 0.0, 0.0),
@@ -148,7 +148,7 @@ void nbunny::AlphaMaskRendererPass::copy_depth_buffer()
 
     graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, true);
     graphics->origin();
-    graphics->setOrtho(a_buffer->get_width(), a_buffer->get_height(), !graphics->isCanvasActive());
+    graphics->setOrtho(a_buffer.get_width(), a_buffer.get_height(), !graphics->isCanvasActive());
 
 	auto shader = get_renderer()->get_shader_cache().get(RENDERER_PASS_DEFERRED, DeferredRendererPass::BUILTIN_SHADER_DEPTH_COPY);
 	if (!shader)
@@ -164,16 +164,16 @@ void nbunny::AlphaMaskRendererPass::copy_depth_buffer()
 	graphics->setColorMask(disabled_mask);
 
 	get_renderer()->set_current_shader(shader);
-	graphics->draw(depth_buffer->get_canvas(0), love::Matrix4());
+	graphics->draw(depth_buffer.get_canvas(0), love::Matrix4());
 }
 
-nbunny::AlphaMaskRendererPass::AlphaMaskRendererPass(const std::shared_ptr<GBuffer>& a_buffer, const std::shared_ptr<GBuffer>& depth_buffer) :
+nbunny::AlphaMaskRendererPass::AlphaMaskRendererPass(GBuffer& a_buffer, GBuffer& depth_buffer) :
 	RendererPass(RENDERER_PASS_ALPHA_MASK), a_buffer(a_buffer), depth_buffer(depth_buffer)
 {
 	// Nothing.
 }
 
-const std::shared_ptr<nbunny::GBuffer>& nbunny::AlphaMaskRendererPass::get_a_buffer()
+nbunny::GBuffer& nbunny::AlphaMaskRendererPass::get_a_buffer()
 {
 	return a_buffer;
 }
@@ -186,7 +186,7 @@ void nbunny::AlphaMaskRendererPass::draw(lua_State* L, SceneNode& node, float de
 
 void nbunny::AlphaMaskRendererPass::resize(int width, int height)
 {
-	a_buffer->resize(width, height);
+	a_buffer.resize(width, height);
 }
 
 void nbunny::AlphaMaskRendererPass::attach(Renderer& renderer)
@@ -200,10 +200,10 @@ void nbunny::AlphaMaskRendererPass::attach(Renderer& renderer)
 
 static int nbunny_alpha_mask_renderer_pass_constructor(lua_State* L)
 {
-	auto a_buffer = nbunny::lua::get<nbunny::GBuffer>(L, 2);
-	auto depth_buffer = nbunny::lua::get<nbunny::GBuffer>(L, 3);
+	auto a_buffer = nbunny::lua::get<nbunny::GBuffer*>(L, 2);
+	auto depth_buffer = nbunny::lua::get<nbunny::GBuffer*>(L, 3);
 	
-	nbunny::lua::push(L, std::make_shared<nbunny::AlphaMaskRendererPass>(a_buffer, depth_buffer));
+	nbunny::lua::push(L, std::make_shared<nbunny::AlphaMaskRendererPass>(*a_buffer, *depth_buffer));
 
 	return 1;
 }
@@ -211,7 +211,7 @@ static int nbunny_alpha_mask_renderer_pass_constructor(lua_State* L)
 static int nbunny_alpha_mask_renderer_pass_get_a_buffer(lua_State* L)
 {
 	auto self = nbunny::lua::get<nbunny::AlphaMaskRendererPass*>(L, 1);
-	nbunny::lua::push(L, self->get_a_buffer());
+	nbunny::lua::push(L, &self->get_a_buffer());
 
 	return 1;
 }

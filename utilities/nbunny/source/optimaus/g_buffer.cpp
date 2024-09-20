@@ -137,8 +137,8 @@ static int nbunny_g_buffer_get_height(lua_State* L)
 static int nbunny_g_buffer_resize(lua_State* L)
 {
 	auto g_buffer = nbunny::lua::get<nbunny::GBuffer*>(L, 1);
-	auto width = nbunny::lua::get<lua_Integer>(L, 2);
-	auto height = nbunny::lua::get<lua_Integer>(L, 3);
+	auto width = luaL_optinteger(L, 2, 0);
+	auto height = luaL_optinteger(L, 3, 0);
 	
 	g_buffer->resize(width, height);
 

@@ -11,17 +11,41 @@
 #include "nbunny/nbunny.hpp"
 #include "nbunny/lua_runtime.hpp"
 
-void* nbunny::lua::impl::luax_checkudata(lua_State* L, int index, const char* tname)
+int nbunny::lua::impl::luax_newmetatable(lua_State* L, const char* tname, const void* tpointer)
 {
-    auto real_index = index < 0 ? lua_gettop(L) + index + 1 : index;
+    lua_pushlightuserdata(L, const_cast<void*>(tpointer));
+    lua_rawget(L, LUA_REGISTRYINDEX);
+
+    if (lua_isnil(L, -1))
+    {
+        lua_pop(L, 1);
+
+        lua_newtable(L);
+        lua_pushstring(L, tname);
+        lua_setfield(L, -2, "__name");
+
+        lua_pushlightuserdata(L, const_cast<void*>(tpointer));
+        lua_pushvalue(L, -2);
+        lua_rawset(L, LUA_REGISTRYINDEX);
+
+        return 1;
+    }
+
+    return 0;
+}
+
+void* nbunny::lua::impl::luax_checkudata(lua_State* L, int index, const char* tname, const void* tpointer)
+{
+    auto real_index = luax_toabsoluteindex(L, index);
+
     if (!lua_isuserdata(L, real_index))
     {
         luaL_error(L, "expected %s userdata at stack index %d; got %s", tname, real_index, lua_typename(L, lua_type(L, real_index)));
     }
 
-    luaL_newmetatable(L, tname);
+    luax_newmetatable(L, tname, tpointer);
+    lua_getmetatable(L, real_index);
 
-    lua_getmetatable(L, index);
     while(!lua_rawequal(L, -1, -2) && !lua_isnil(L, -1))
     {
         lua_getfield(L, -1, "__parent");
@@ -30,11 +54,34 @@ void* nbunny::lua::impl::luax_checkudata(lua_State* L, int index, const char* tn
 
     if (!lua_rawequal(L, -1, -2) || lua_isnil(L, -1))
     {
-        luaL_error(L, "expected %s userdata at stack index %d; got %s", tname, real_index, lua_typename(L, lua_type(L, real_index)));
+        lua_getmetatable(L, real_index);
+        lua_getfield(L, -1, "__name");
+
+        std::string userdata_type_name;
+        if (lua_isstring(L, -1))
+        {
+            userdata_type_name = lua_tostring(L, -1);
+        }
+        else
+        {
+            userdata_type_name = lua_typename(L, lua_type(L, real_index));
+        }
+
+        luaL_error(L, "expected %s userdata at stack index %d; got %s", tname, real_index, userdata_type_name.c_str());
     }
 
     lua_pop(L, 2);
     return lua_touserdata(L, real_index);
+}
+
+int nbunny::lua::impl::luax_toabsoluteindex(lua_State* L, int index)
+{
+    if (index > 0 || index <= LUA_REGISTRYINDEX)
+    {
+        return index;
+    }
+
+    return lua_gettop(L) + index + 1;
 }
 
 nbunny::lua::TemporaryReference::TemporaryReference(lua_State* L, int index) :

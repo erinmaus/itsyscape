@@ -14,8 +14,9 @@
 #include "modules/graphics/Graphics.h"
 #include "modules/timer/Timer.h"
 #include "modules/filesystem/Filesystem.h"
-#include "nbunny/optimaus/renderer.hpp"
 #include "modules/graphics/opengl/OpenGL.h"
+#include "nbunny/lua_runtime.hpp"
+#include "nbunny/optimaus/renderer.hpp"
 
 nbunny::Camera nbunny::Renderer::get_skybox_camera(SceneNode& skybox_scene_node)
 {
@@ -427,26 +428,20 @@ love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, cons
 
 static int nbunny_renderer_constructor(lua_State* L)
 {
-	
-}
-
-static std::shared_ptr<nbunny::Renderer> nbunny_renderer_create(sol::variadic_args args, sol::this_state S)
-{
-	lua_State* L = S;
-
 	int reference = 0;
 	if (!lua_isnil(L, 2))
 	{
-		lua_pushvalue(L, 2);
 		reference = nbunny::set_weak_reference(L);
 	}
 
-	return std::make_shared<nbunny::Renderer>(reference);
+	nbunny::lua::push(L, std::make_shared<nbunny::Renderer>(reference));
+
+	return 1;
 }
 
 static int nbunny_renderer_set_clear_color(lua_State* L)
 {
-	auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
 	float r = luaL_checknumber(L, 2);
 	float g = luaL_checknumber(L, 3);
 	float b = luaL_checknumber(L, 4);
@@ -457,7 +452,7 @@ static int nbunny_renderer_set_clear_color(lua_State* L)
 
 static int nbunny_renderer_get_clear_color(lua_State* L)
 {
-	auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
 	const auto& clear_color = renderer->get_clear_color();
 	lua_pushnumber(L, clear_color.x);
 	lua_pushnumber(L, clear_color.y);
@@ -466,25 +461,33 @@ static int nbunny_renderer_get_clear_color(lua_State* L)
 	return 4;
 }
 
+static int nbunny_renderer_add_renderer_pass(lua_State* L)
+{
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
+	auto renderer_pass = nbunny::lua::get<nbunny::RendererPass*>(L, 2);
+	renderer->add_renderer_pass(renderer_pass);
+	return 0;
+}
+
 static int nbunny_renderer_set_camera(lua_State* L)
 {
-	auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
-	auto camera = sol::stack::get<nbunny::Camera*>(L, 2);
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 2);
 	renderer->set_camera(*camera);
 	return 0;
 }
 
 static int nbunny_renderer_get_camera(lua_State* L)
 {
-	auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
     auto& camera = renderer->get_camera();
-	sol::stack::push(L, &camera);
+	nbunny::lua::push(L, &camera);
 	return 1;
 }
 
 static int nbunny_renderer_get_current_shader(lua_State* L)
 {
-    auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
+    auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
     auto shader = renderer->get_current_shader();
     if (shader == nullptr)
     {
@@ -500,7 +503,7 @@ static int nbunny_renderer_get_current_shader(lua_State* L)
 
 static int nbunny_renderer_get_shader_cache(lua_State* L)
 {
-	auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
     auto& shader_cache = renderer->get_shader_cache();
 	sol::stack::push(L, &shader_cache);
 	return 1;
@@ -508,43 +511,59 @@ static int nbunny_renderer_get_shader_cache(lua_State* L)
 
 static int nbunny_renderer_draw(lua_State* L)
 {
-	auto renderer = sol::stack::get<nbunny::Renderer*>(L, 1);
-	auto& node = sol::stack::get<nbunny::SceneNode&>(L, 2);
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 2);
 	float delta = (float)luaL_checknumber(L, 3);
 	int width = luaL_checkinteger(L, 4);
 	int height = luaL_checkinteger(L, 5);
-	love::luax_catchexcept(L, [&]() { renderer->draw(L, node, delta, width, height); });
+	love::luax_catchexcept(L, [&]() { renderer->draw(L, *node, delta, width, height); });
 	return 0;
+}
+
+static int nbunny_renderer_get_current_pass_id(lua_State* L)
+{
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
+	nbunny::lua::push(L, renderer->get_current_pass_id());
+	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_renderer(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Renderer>("NRenderer",
-		sol::call_constructor, sol::factories(&nbunny_renderer_create),
-		"addRendererPass", &nbunny::Renderer::add_renderer_pass,
-		"setClearColor", &nbunny_renderer_set_clear_color,
-		"getClearColor", &nbunny_renderer_get_clear_color,
-		"setCamera", &nbunny_renderer_set_camera,
-		"getCamera", &nbunny_renderer_get_camera,
-        "getCurrentShader", &nbunny_renderer_get_current_shader,
-		"getShaderCache", &nbunny_renderer_get_shader_cache,
-		"getCurrentPassID", &nbunny::Renderer::get_current_pass_id,
-		"draw", &nbunny_renderer_draw);
+	static const luaL_Reg metatable[] = {
+		{ "addRendererPass", &nbunny_renderer_add_renderer_pass },
+		{ "setClearColor", &nbunny_renderer_set_clear_color },
+		{ "getClearColor", &nbunny_renderer_get_clear_color },
+		{ "setCamera", &nbunny_renderer_set_camera },
+		{ "getCamera", &nbunny_renderer_get_camera },
+		{ "getCurrentShader", &nbunny_renderer_get_current_shader },
+		{ "getShaderCache", &nbunny_renderer_get_shader_cache },
+		{ "getCurrentPassID", &nbunny_renderer_get_current_pass_id },
+		{ "draw", &nbunny_renderer_draw },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_type<nbunny::Renderer>(L, &nbunny_renderer_constructor, metatable);
 
-	sol::stack::push(L, T);
+	return 1;
+}
 
+static int nbunny_renderer_pass_get_renderer_pass_id(lua_State* L)
+{
+	auto renderer_pass = nbunny::lua::get<nbunny::RendererPass*>(L, 1);
+	nbunny::lua::push(L, renderer_pass->get_renderer_pass_id());
 	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_rendererpass(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::RendererPass>("NRendererPass",
-		"new", sol::no_constructor,
-		"getID", &nbunny::RendererPass::get_renderer_pass_id);
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "getID", &nbunny_renderer_pass_get_renderer_pass_id },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_type<nbunny::RendererPass>(L, nullptr, metatable);
 
 	return 1;
 }

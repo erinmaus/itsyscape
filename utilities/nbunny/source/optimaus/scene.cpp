@@ -1905,7 +1905,7 @@ static int nbunny_scene_node_tick(lua_State* L)
 static int nbunny_scene_node_walk_by_material(lua_State* L)
 {
 	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 2);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 2);
 	auto delta = (float)luaL_checknumber(L, 3);
 
 	std::vector<nbunny::SceneNode*> result;
@@ -1932,7 +1932,7 @@ static int nbunny_scene_node_walk_by_material(lua_State* L)
 static int nbunny_scene_node_walk_by_position(lua_State* L)
 {
 	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 2);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 2);
 	auto delta = (float)luaL_checknumber(L, 3);
 
 	std::vector<nbunny::SceneNode*> result;
@@ -2025,7 +2025,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_skyboxscenenode(lua_State* L
 
 static int nbunny_camera_get_view(lua_State* L)
 {
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
 
 	love::math::Transform* transform = nullptr;
 	if (!lua_isnil(L, 2))
@@ -2050,7 +2050,7 @@ static int nbunny_camera_get_view(lua_State* L)
 
 static int nbunny_camera_get_projection(lua_State* L)
 {
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
 
 	love::math::Transform* transform = nullptr;
 	if (!lua_isnil(L, 2))
@@ -2075,7 +2075,7 @@ static int nbunny_camera_get_projection(lua_State* L)
 
 static int nbunny_camera_update(lua_State* L)
 {
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
 	auto view = love::luax_checktype<love::math::Transform>(L, 2, love::math::Transform::type);
 	auto projection = love::luax_checktype<love::math::Transform>(L, 3, love::math::Transform::type);
 
@@ -2087,7 +2087,7 @@ static int nbunny_camera_update(lua_State* L)
 
 static int nbunny_camera_move_target(lua_State* L)
 {
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -2099,7 +2099,7 @@ static int nbunny_camera_move_target(lua_State* L)
 
 static int nbunny_camera_move_eye(lua_State* L)
 {
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -2111,7 +2111,7 @@ static int nbunny_camera_move_eye(lua_State* L)
 
 static int nbunny_camera_update_bounding_sphere(lua_State* L)
 {
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -2125,7 +2125,7 @@ static int nbunny_camera_update_bounding_sphere(lua_State* L)
 
 static int nbunny_camera_set_clip_plane(lua_State* L)
 {
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -2139,7 +2139,7 @@ static int nbunny_camera_set_clip_plane(lua_State* L)
 
 static int nbunny_camera_unset_clip_plane(lua_State* L)
 {
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
 	camera->set_is_clip_plane_enabled(false);
 
 	return 0;
@@ -2147,7 +2147,7 @@ static int nbunny_camera_unset_clip_plane(lua_State* L)
 
 static int nbunny_camera_rotate(lua_State* L)
 {
-	auto camera = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
 	float x = (float)luaL_checknumber(L, 2);
 	float y = (float)luaL_checknumber(L, 3);
 	float z = (float)luaL_checknumber(L, 4);
@@ -2160,63 +2160,63 @@ static int nbunny_camera_rotate(lua_State* L)
 
 static int nbunny_camera_set_field_of_view(lua_State* L)
 {
-    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    auto self = nbunny::lua::get<nbunny::Camera*>(L, 1);
     self->set_field_of_view(nbunny::lua::get<lua_Number>(L, 2));
     return 0;
 }
 
 static int nbunny_camera_get_field_of_view(lua_State* L)
 {
-    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    auto self = nbunny::lua::get<nbunny::Camera*>(L, 1);
     nbunny::lua::push(L, self->get_field_of_view());
     return 1;
 }
 
 static int nbunny_camera_set_near(lua_State* L)
 {
-    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    auto self = nbunny::lua::get<nbunny::Camera*>(L, 1);
     self->set_near(nbunny::lua::get<lua_Number>(L, 2));
     return 0;
 }
 
 static int nbunny_camera_get_near(lua_State* L)
 {
-    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    auto self = nbunny::lua::get<nbunny::Camera*>(L, 1);
     nbunny::lua::push(L, self->get_near());
     return 1;
 }
 
 static int nbunny_camera_set_far(lua_State* L)
 {
-    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    auto self = nbunny::lua::get<nbunny::Camera*>(L, 1);
     self->set_far(nbunny::lua::get<lua_Number>(L, 2));
     return 0;
 }
 
 static int nbunny_camera_get_far(lua_State* L)
 {
-    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    auto self = nbunny::lua::get<nbunny::Camera*>(L, 1);
     nbunny::lua::push(L, self->get_far());
     return 1;
 }
 
 static int nbunny_camera_set_is_cull_enabled(lua_State* L)
 {
-    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    auto self = nbunny::lua::get<nbunny::Camera*>(L, 1);
     self->set_is_cull_enabled(nbunny::lua::get<bool>(L, 2));
     return 0;
 }
 
 static int nbunny_camera_get_is_cull_enabled(lua_State* L)
 {
-    auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+    auto self = nbunny::lua::get<nbunny::Camera*>(L, 1);
     nbunny::lua::push(L, self->get_is_cull_enabled());
     return 1;
 }
 
 static int nbunny_camera_inside(lua_State* L)
 {
-	auto self = nbunny::lua::get<nbunny::Camera>(L, 1);
+	auto self = nbunny::lua::get<nbunny::Camera*>(L, 1);
 	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 2);
 	auto delta = nbunny::lua::get<lua_Number>(L, 3);
 

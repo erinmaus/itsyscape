@@ -601,9 +601,9 @@ void nbunny::DeferredRendererPass::attach(Renderer& renderer)
 static int nbunny_deferred_renderer_pass_constructor(lua_State* L)
 {
 	std::shared_ptr<nbunny::ShadowRendererPass> shadow_pass;
-	if (!lua_isnil(L, 2))
+	if (lua_toboolean(L, 2))
 	{
-		shadow_pass = nbunny::lua::get<nbunny::ShadowRendererPass>(L, 1);
+		shadow_pass = nbunny::lua::get<nbunny::ShadowRendererPass>(L, 2);
 	}
 
 	nbunny::lua::push(L, std::make_shared<nbunny::DeferredRendererPass>(shadow_pass));
