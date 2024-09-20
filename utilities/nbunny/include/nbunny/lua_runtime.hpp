@@ -82,7 +82,10 @@ namespace nbunny { namespace lua
             };
         };
 
-        void* luax_checkudata(lua_State* L, int index, const char* tname);
+        void* luax_checkudata(lua_State* L, int index, const char* tname, const void* tpointer);
+        int luax_newmetatable(lua_State* L, const char* tname, const void* tpointer);
+
+        int luax_toabsoluteindex(lua_State* L, int index);
     }
 
     // Should *NOT* persist after returning to Lua.
@@ -92,18 +95,25 @@ namespace nbunny { namespace lua
     struct LuaType
     {
         static const std::string user_type;
+        static const int type_pointer;
     };
 
     template <typename T> const std::string LuaType<T>::user_type = std::string { impl::type_name<T>() };
+    template <typename T> const int LuaType<T>::type_pointer = 0;
 
     template <typename T>
     int impl_gc(lua_State* L)
     {
+        using Userdata = impl::Userdata<T>;
+
         auto pointer = lua_touserdata(L, 1);
         if (pointer) 
         {
-            auto typed_pointer = static_cast<std::shared_ptr<T>**>(pointer);
-            delete *typed_pointer;
+            auto userdata = static_cast<Userdata*>(pointer);
+            if (userdata->type == impl::USERDATA_TYPE_SHARED_POINTER)
+            {
+                delete userdata->shared_pointer;
+            }
         }
 
         return 0;
@@ -112,7 +122,7 @@ namespace nbunny { namespace lua
     template <typename T>
     void register_type(lua_State* L, lua_CFunction constructor, const luaL_Reg metatable[])
     {
-        luaL_newmetatable(L, LuaType<T>::user_type.c_str());
+        impl::luax_newmetatable(L, LuaType<T>::user_type.c_str(), &LuaType<T>::type_pointer);
 
         if (metatable)
         {
@@ -139,11 +149,11 @@ namespace nbunny { namespace lua
     {
         register_type<T>(L, constructor, metatable);
         
-        luaL_newmetatable(L, LuaType<P>::user_type.c_str());
+        impl::luax_newmetatable(L, LuaType<P>::user_type.c_str(), &LuaType<P>::type_pointer);
         lua_setfield(L, -2, "__parent");
         
         lua_getmetatable(L, -1);
-        luaL_newmetatable(L, LuaType<P>::user_type.c_str());
+        impl::luax_newmetatable(L, LuaType<P>::user_type.c_str(), &LuaType<P>::type_pointer);
         lua_setfield(L, -2, "__index");
         lua_pop(L, 1);
     }
@@ -155,20 +165,21 @@ namespace nbunny { namespace lua
     std::enable_if<std::is_class<T>::value && !std::is_same<T, TemporaryReference>::value && !std::is_pointer<T>::value && !std::is_same<T, std::string>::value, std::shared_ptr<T>>::type get(lua_State* L, int index)
     {
         using Userdata = impl::Userdata<T>;
-        auto userdata = (Userdata*)impl::luax_checkudata(L, index, LuaType<T>::user_type.c_str());
+        auto userdata = (Userdata*)impl::luax_checkudata(L, index, LuaType<T>::user_type.c_str(), &LuaType<T>::type_pointer);
         if (userdata->type != impl::USERDATA_TYPE_SHARED_POINTER)
         {
-            luaL_error(L, "expected %s shared pointer userdata, got type %d", LuaType<T>::user_type.c_str(), userdata->type);
+            luaL_error(L, "expected %s shared pointer userdata, got type %d at index %d", LuaType<T>::user_type.c_str(), userdata->type, impl::luax_toabsoluteindex(L, index));
         }
         
         return *userdata->shared_pointer;
     }
 
     template <typename T>
-    std::enable_if<std::is_pointer<T>::value, T>::type get(lua_State* L, int index)
+    std::enable_if<std::is_pointer<T>::value && !std::is_same<T, void*>::value && !std::is_same<T, lua_CFunction>::value, T>::type get(lua_State* L, int index)
     {
-        using Userdata = impl::Userdata<typename std::remove_pointer<T>::type>;
-        auto userdata = (Userdata*)impl::luax_checkudata(L, index, LuaType<T>::user_type.c_str());
+        using PointerlessT = typename std::remove_pointer<T>::type;
+        using Userdata = impl::Userdata<PointerlessT>;
+        auto userdata = (Userdata*)impl::luax_checkudata(L, index, LuaType<PointerlessT>::user_type.c_str(), &LuaType<PointerlessT>::type_pointer);
         if (userdata->type == impl::USERDATA_TYPE_SHARED_POINTER)
         {
             return userdata->shared_pointer->get();
@@ -183,7 +194,7 @@ namespace nbunny { namespace lua
     }
 
     template <typename T>
-    std::enable_if<(!std::is_class<T>::value || std::is_same<T, std::string>::value) && !std::is_pointer<T>::value, T>::type get(lua_State* L, int index)
+    std::enable_if<(!std::is_class<T>::value || std::is_same<T, std::string>::value) && (std::is_same<T, void*>::value || std::is_same<T, lua_CFunction>::value || !std::is_pointer<T>::value), T>::type get(lua_State* L, int index)
     {
         return get_primitive<T>(L, index);
     }
@@ -248,41 +259,57 @@ namespace nbunny { namespace lua
     }
 
     template <typename T>
-    void push_primitive(lua_State* L, const T& value)
-    {
-        luaL_error(L, "unhandled push");
-    }
+    void push_primitive(lua_State* L, const T& value);
 
     template <typename T, std::enable_if<std::is_class<T>::value && !std::is_same<T, TemporaryReference>::value && !std::is_pointer<T>::value, bool>::type = true>
     void push(lua_State* L, const std::shared_ptr<T>& value)
     {
-        using Userdata = impl::Userdata<typename std::remove_pointer<T>::type>;
+        using Userdata = impl::Userdata<T>;
 
         auto userdata = (Userdata*)lua_newuserdata(L, sizeof(Userdata));
         userdata->type = impl::USERDATA_TYPE_SHARED_POINTER;
         userdata->shared_pointer = new std::shared_ptr<T>(value);
 
-        luaL_newmetatable(L, LuaType<T>::user_type.c_str());
+        impl::luax_newmetatable(L, LuaType<T>::user_type.c_str(), &LuaType<T>::type_pointer);
         lua_setmetatable(L, -2);
     }
 
-    template <typename T, std::enable_if<std::is_pointer<T>::value, bool>::type = true>
+    template <typename T, std::enable_if<std::is_pointer<T>::value && std::is_pointer<T>::value && !std::is_same<T, void*>::value && !std::is_same<T, lua_CFunction>::value, bool>::type = true>
     void push(lua_State* L, T value)
     {
-        using Userdata = impl::Userdata<typename std::remove_pointer<T>::type>;
+        using PointerlessT = typename std::remove_pointer<T>::type;
+        using Userdata = impl::Userdata<PointerlessT>;
 
         auto userdata = (Userdata*)lua_newuserdata(L, sizeof(Userdata));
         userdata->type = impl::USERDATA_TYPE_RAW_POINTER;
         userdata->raw_pointer = value;
 
-        luaL_newmetatable(L, LuaType<T>::user_type.c_str());
+        impl::luax_newmetatable(L, LuaType<PointerlessT>::user_type.c_str(), &LuaType<PointerlessT>::type_pointer);
         lua_setmetatable(L, -2);
     }
 
-    template <typename T, std::enable_if<!std::is_class<T>::value && !std::is_pointer<T>::value, bool>::type = true>
+    template <typename T, std::enable_if<!std::is_class<T>::value && (std::is_same<T, void*>::value || std::is_same<T, lua_CFunction>::value || !std::is_pointer<T>::value), bool>::type = true>
     void push(lua_State* L, const T& value)
     {
         push_primitive<T>(L, value);
+    }
+
+    template <>
+    inline void push_primitive<int>(lua_State* L, const int& value)
+    {
+        lua_pushinteger(L, value);
+    }
+
+    template <>
+    inline void push_primitive<std::size_t>(lua_State* L, const std::size_t& value)
+    {
+        lua_pushinteger(L, value);
+    }
+
+    template <>
+    inline void push_primitive<float>(lua_State* L, const float& value)
+    {
+        lua_pushnumber(L, value);
     }
 
     template <>
@@ -324,31 +351,35 @@ namespace nbunny { namespace lua
     template <typename T>
     void set_field(lua_State* L, int index, const std::string& key, const T& value)
     {
+        auto absolute_index = impl::luax_toabsoluteindex(L, index);
         push(L, value);
-        lua_setfield(L, index, key.c_str());
+        lua_setfield(L, absolute_index, key.c_str());
     }
 
     template <typename T>
     void set_field(lua_State* L, int index, const std::string& key, const std::shared_ptr<T>& value)
     {
+        auto absolute_index = impl::luax_toabsoluteindex(L, index);
         push(L, value);
-        lua_setfield(L, index, key.c_str());
+        lua_setfield(L, absolute_index, key.c_str());
     }
 
     template <typename T>
     void set_field(lua_State* L, int index, int key, const T& value)
     {
+        auto absolute_index = impl::luax_toabsoluteindex(L, index);
         lua_pushnumber(L, key);
         push(L, value);
-        lua_settable(L, index);
+        lua_settable(L, absolute_index);
     }
 
     template <typename T>
     void set_field(lua_State* L, int index, int key, const std::shared_ptr<T>& value)
     {
+        auto absolute_index = impl::luax_toabsoluteindex(L, index);
         lua_pushnumber(L, key);
         push(L, value);
-        lua_settable(L, index);
+        lua_settable(L, absolute_index);
     }
 
     struct TemporaryReference

@@ -144,7 +144,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_decorationfeature(lua_State* L)
 		{ "setColor", &nbunny_decoration_feature_set_color },
 		{ "getColor", &nbunny_decoration_feature_get_color },
 		{ "setTexture", &nbunny_decoration_feature_set_texture },
-		{ "getTexture", &nbunny_decoration_feature_get_texture }
+		{ "getTexture", &nbunny_decoration_feature_get_texture },
+		{ nullptr, nullptr }
 	};
 
 	nbunny::lua::register_type<nbunny::DecorationFeature>(L, &nbunny_decoration_feature_constructor, metatable);

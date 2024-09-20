@@ -25,8 +25,8 @@ namespace nbunny
 	class AlphaMaskRendererPass : public RendererPass
 	{
 	private:
-		std::shared_ptr<GBuffer> a_buffer;
-		std::shared_ptr<GBuffer> depth_buffer;
+		GBuffer& a_buffer;
+		GBuffer& depth_buffer;
 
 		std::vector<SceneNode*> opaque_scene_nodes;
 		std::vector<SceneNode*> translucent_scene_nodes;
@@ -38,10 +38,10 @@ namespace nbunny
 		void copy_depth_buffer();
 
 	public:
-		AlphaMaskRendererPass(const std::shared_ptr<GBuffer>& a_buffer, const std::shared_ptr<GBuffer>& depth_buffer);
+		AlphaMaskRendererPass(GBuffer& a_buffer, GBuffer& depth_buffer);
 		~AlphaMaskRendererPass() = default;
 
-		const std::shared_ptr<GBuffer>& get_a_buffer();
+		GBuffer& get_a_buffer();
 
 		void draw(lua_State* L, SceneNode& node, float delta) override;
 		void resize(int width, int height) override;

@@ -169,6 +169,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_lightscenenode(lua_State* L)
 		{ "getIsGlobal", &nbunny_light_scene_node_get_is_global },
 		{ "setCastsShadows", &nbunny_light_scene_node_set_casts_shadows },
 		{ "getCastsShadows", &nbunny_light_scene_node_get_casts_shadows },
+		{ nullptr, nullptr }
 	};
 
 	nbunny::lua::register_child_type<nbunny::LightSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::LightSceneNode>, metatable);
@@ -652,7 +653,7 @@ static int nbunny_fog_scene_node_set_follow_mode(lua_State* L)
 static int nbunny_fog_scene_node_get_follow_mode(lua_State* L)
 {
 	auto node = nbunny::lua::get<nbunny::FogSceneNode*>(L, 1);
-	nbunny::lua::push(L, node->get_follow_mode());
+	nbunny::lua::push(L, (int)node->get_follow_mode());
 	return 1;
 }
 
