@@ -22,6 +22,9 @@
 
 namespace nbunny { namespace lua 
 {
+    // Should *NOT* persist after returning to Lua.
+    struct TemporaryReference;
+
     namespace impl
     {
         template <typename T> constexpr std::string_view type_name();
@@ -82,14 +85,56 @@ namespace nbunny { namespace lua
             };
         };
 
+        bool luax_isudata(lua_State* L, int index, const char* tname, const void* tpointer);
         void* luax_checkudata(lua_State* L, int index, const char* tname, const void* tpointer);
         int luax_newmetatable(lua_State* L, const char* tname, const void* tpointer);
 
         int luax_toabsoluteindex(lua_State* L, int index);
-    }
 
-    // Should *NOT* persist after returning to Lua.
-    struct TemporaryReference;
+        template <
+            typename T,
+            bool B = 
+                std::is_class<T>::value &&
+                !std::is_same<T, TemporaryReference>::value &&
+                !std::is_pointer<T>::value &&
+                !std::is_same<T, std::string>::value
+        > struct is_shared_userdata : std::false_type {};
+
+        template <typename T>
+        struct is_shared_userdata<T, true> : std::true_type {};
+
+        template <
+            typename T,
+            bool B = 
+                std::is_pointer<T>::value &&
+                !std::is_same<T, void*>::value &&
+                !std::is_same<T, lua_CFunction>::value
+        > struct is_raw_userdata : std::false_type {};
+
+        template <typename T>
+        struct is_raw_userdata<T, true> : std::true_type {};
+
+        template <typename T, bool B = 
+            (
+                !std::is_class<T>::value ||
+                std::is_same<T, std::string>::value
+            ) &&
+            (
+                std::is_same<T, void*>::value ||
+                std::is_same<T, lua_CFunction>::value ||
+                !std::is_pointer<T>::value
+            )
+        > struct is_primitive : std::false_type {};
+
+        template <typename T>
+        struct is_primitive<T, true> : std::true_type {};
+
+        template <typename T, bool B = std::is_same<T, TemporaryReference>::value>
+        struct is_temporary_reference : std::false_type {};
+
+        template <typename T>
+        struct is_temporary_reference<T, true> : std::true_type {};
+    }
 
     template <typename T>
     struct LuaType
@@ -162,7 +207,7 @@ namespace nbunny { namespace lua
     T get_primitive(lua_State* L, int index);
 
     template <typename T>
-    std::enable_if<std::is_class<T>::value && !std::is_same<T, TemporaryReference>::value && !std::is_pointer<T>::value && !std::is_same<T, std::string>::value, std::shared_ptr<T>>::type get(lua_State* L, int index)
+    std::enable_if<impl::is_shared_userdata<T>::value, std::shared_ptr<T>>::type get(lua_State* L, int index)
     {
         using Userdata = impl::Userdata<T>;
         auto userdata = (Userdata*)impl::luax_checkudata(L, index, LuaType<T>::user_type.c_str(), &LuaType<T>::type_pointer);
@@ -175,7 +220,7 @@ namespace nbunny { namespace lua
     }
 
     template <typename T>
-    std::enable_if<std::is_pointer<T>::value && !std::is_same<T, void*>::value && !std::is_same<T, lua_CFunction>::value, T>::type get(lua_State* L, int index)
+    std::enable_if<impl::is_raw_userdata<T>::value, T>::type get(lua_State* L, int index)
     {
         using PointerlessT = typename std::remove_pointer<T>::type;
         using Userdata = impl::Userdata<PointerlessT>;
@@ -194,9 +239,89 @@ namespace nbunny { namespace lua
     }
 
     template <typename T>
-    std::enable_if<(!std::is_class<T>::value || std::is_same<T, std::string>::value) && (std::is_same<T, void*>::value || std::is_same<T, lua_CFunction>::value || !std::is_pointer<T>::value), T>::type get(lua_State* L, int index)
+    std::enable_if<impl::is_primitive<T>::value, T>::type get(lua_State* L, int index)
     {
         return get_primitive<T>(L, index);
+    }
+
+    template <>
+    inline int get_primitive<int>(lua_State* L, int index)
+    {
+        return luaL_checkinteger(L, index);
+    }
+
+    template <>
+    inline std::size_t get_primitive<std::size_t>(lua_State* L, int index)
+    {
+        auto result = luaL_checkinteger(L, index);
+        if (result < 0)
+        {
+            luaL_error(L, "expected value greater than or equal to zero at index %d, got %d", impl::luax_toabsoluteindex(L, index), result);
+        }
+
+        return (std::size_t)result;
+    }
+
+    template <typename T>
+    T get_primitive_or(lua_State* L, int index, const T& default_value);
+
+    template <>
+    inline int get_primitive_or<int>(lua_State* L, int index, const int& default_value)
+    {
+        return luaL_optinteger(L, index, default_value);
+    }
+
+    template <>
+    inline std::size_t get_primitive_or<std::size_t>(lua_State* L, int index, const std::size_t& default_value)
+    {
+        auto result = luaL_optinteger(L, index, default_value);
+        if (result < 0)
+        {
+            return default_value;
+        }
+
+        return (std::size_t)result;
+    }
+
+    template <>
+    inline float get_primitive_or<float>(lua_State* L, int index, const float& default_value)
+    {
+        return luaL_optnumber(L, index, default_value);
+    }
+
+    template <>
+    inline lua_Integer get_primitive_or<lua_Integer>(lua_State* L, int index, const lua_Integer& default_value)
+    {
+        return luaL_optinteger(L, index, default_value);
+    }
+
+    template <>
+    inline lua_Number get_primitive_or<lua_Number>(lua_State* L, int index, const lua_Number& default_value)
+    {
+        return luaL_optnumber(L, index, default_value);
+    }
+
+    template <>
+    inline std::string get_primitive_or<std::string>(lua_State* L, int index, const std::string& default_value)
+    {
+        return luaL_optstring(L, index, default_value.c_str());
+    }
+
+    template <>
+    inline bool get_primitive_or<bool>(lua_State* L, int index, const bool& default_value)
+    {
+        if (lua_isnone(L, index) || lua_isnil(L, index))
+        {
+            return default_value;
+        }
+
+        return lua_toboolean(L, index);
+    }
+
+    template <>
+    inline float get_primitive<float>(lua_State* L, int index)
+    {
+        return luaL_checknumber(L, index);
     }
 
     template <>
@@ -259,9 +384,60 @@ namespace nbunny { namespace lua
     }
 
     template <typename T>
+    std::enable_if<impl::is_shared_userdata<T>::value, std::shared_ptr<T>>::type get_or(lua_State* L, int index, const std::shared_ptr<T>& default_value)
+    {
+        if (!lua_isnil(L, index) && !lua_isnone(L, index))
+        {
+            return get<T>(L, index);
+        }
+
+        return default_value;
+    }
+
+    template <typename T>
+    std::enable_if<impl::is_raw_userdata<T>::value, T>::type get_or(lua_State* L, int index, T* default_value)
+    {
+        if (!lua_isnil(L, index) && !lua_isnone(L, index))
+        {
+            return get<T>(L, index);
+        }
+
+        return default_value;
+    }
+
+    template <typename T>
+    std::enable_if<impl::is_primitive<T>::value, T>::type get_or(lua_State* L, int index, const T& default_value)
+    {
+        return get_primitive_or<T>(L, index, default_value);
+    }
+
+    template <typename T>
+    auto get_field_or(lua_State* L, int index, const std::string& key, const T& default_value)
+    {
+        lua_getfield(L, index, key.c_str());
+
+        auto result = get_or<T>(L, -1, default_value);
+        lua_pop(L, 1);
+
+        return result;
+    }
+
+    template <typename T>
+    auto get_field_or(lua_State* L, int index, int key, const T& default_value)
+    {
+        lua_pushnumber(L, key);
+        lua_gettable(L, index);
+
+        auto result = get_or<T>(L, -1, default_value);
+        lua_pop(L, 1);
+
+        return result;
+    }
+
+    template <typename T>
     void push_primitive(lua_State* L, const T& value);
 
-    template <typename T, std::enable_if<std::is_class<T>::value && !std::is_same<T, TemporaryReference>::value && !std::is_pointer<T>::value, bool>::type = true>
+    template <typename T, std::enable_if<impl::is_shared_userdata<T>::value, bool>::type = true>
     void push(lua_State* L, const std::shared_ptr<T>& value)
     {
         using Userdata = impl::Userdata<T>;
@@ -274,7 +450,7 @@ namespace nbunny { namespace lua
         lua_setmetatable(L, -2);
     }
 
-    template <typename T, std::enable_if<std::is_pointer<T>::value && std::is_pointer<T>::value && !std::is_same<T, void*>::value && !std::is_same<T, lua_CFunction>::value, bool>::type = true>
+    template <typename T, std::enable_if<impl::is_raw_userdata<T>::value, bool>::type = true>
     void push(lua_State* L, T value)
     {
         using PointerlessT = typename std::remove_pointer<T>::type;
@@ -288,7 +464,7 @@ namespace nbunny { namespace lua
         lua_setmetatable(L, -2);
     }
 
-    template <typename T, std::enable_if<!std::is_class<T>::value && (std::is_same<T, void*>::value || std::is_same<T, lua_CFunction>::value || !std::is_pointer<T>::value), bool>::type = true>
+    template <typename T, std::enable_if<impl::is_primitive<T>::value, bool>::type = true>
     void push(lua_State* L, const T& value)
     {
         push_primitive<T>(L, value);
@@ -403,8 +579,10 @@ namespace nbunny { namespace lua
 
         bool is_valid() const;
 
+        std::size_t size() const;
+
         template <typename T>
-        auto get()
+        auto get() const
         {
             if (!is_valid())
             {
@@ -420,7 +598,7 @@ namespace nbunny { namespace lua
         }
 
         template <typename T>
-        auto get(const std::string& key)
+        auto get(const std::string& key) const
         {
             if (!is_valid())
             {
@@ -436,16 +614,32 @@ namespace nbunny { namespace lua
         }
 
         template <typename T>
-        auto get(int key)
+        auto get(const std::string& key, T default_value) const
         {
             if (!is_valid())
             {
-                throw std::runtime_error("reference is invalid");
+                return default_value;
             }
 
             push();
 
-            auto result = get_field<T>(L, -1, key);
+            auto result = get_field_or<T>(L, -1, key, default_value);
+            lua_pop(L, 1);
+
+            return result;
+        }
+
+        template <typename T>
+        auto get(int key, T default_value) const
+        {
+            if (!is_valid())
+            {
+                return T(default_value);
+            }
+
+            push();
+
+            auto result = get_field_or<T>(L, -1, key, default_value);
             lua_pop(L, 1);
 
             return result;
@@ -453,13 +647,25 @@ namespace nbunny { namespace lua
     };
 
     template <typename T>
-    inline std::enable_if<std::is_same<T, TemporaryReference>::value, TemporaryReference>::type get(lua_State* L, int index)
+    inline std::enable_if<impl::is_temporary_reference<T>::value, T>::type get(lua_State* L, int index)
     {
         lua_pushvalue(L, index);
         return TemporaryReference(L, luaL_ref(L, LUA_REGISTRYINDEX));
     }
 
-    template <typename T, std::enable_if<std::is_same<T, TemporaryReference>::value, bool>::type = true>
+    template <typename T>
+    inline std::enable_if<impl::is_temporary_reference<T>::value, T>::type get_or(lua_State* L, int index, const TemporaryReference& default_value)
+    {
+        if (lua_isnil(L, index) || lua_isnone(L, index))
+        {
+            return default_value;
+        }
+
+        lua_pushvalue(L, index);
+        return TemporaryReference(L, luaL_ref(L, LUA_REGISTRYINDEX));
+    }
+
+    template <typename T, std::enable_if<impl::is_temporary_reference<T>::value, bool>::type = true>
     inline void push(lua_State* L, const TemporaryReference& value)
     {
         if (L != value.L)

@@ -195,7 +195,7 @@ namespace nbunny
 	private:
 		int reference = 0;
 
-		SceneNode* parent;
+		SceneNode* parent = nullptr;
 		std::vector<SceneNode*> children;
 
 		glm::vec3 min = glm::vec3(0.0f);
@@ -380,14 +380,6 @@ namespace nbunny
 		const glm::vec3& get_min_frustum() const;
 		const glm::vec3& get_max_frustum() const;
 	};
-}
-
-template <typename SceneNode>
-std::shared_ptr<SceneNode> nbunny_scene_node_create(sol::object reference, sol::this_state S)
-{
-	lua_State* L = S;
-	lua_pushvalue(L, 2);
-	return std::make_shared<SceneNode>(nbunny::set_weak_reference(L));
 }
 
 template <typename SceneNode>
