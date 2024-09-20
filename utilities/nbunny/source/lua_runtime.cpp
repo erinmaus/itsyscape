@@ -34,6 +34,30 @@ int nbunny::lua::impl::luax_newmetatable(lua_State* L, const char* tname, const 
     return 0;
 }
 
+bool nbunny::lua::impl::luax_isudata(lua_State* L, int index, const char* tname, const void* tpointer)
+{
+    auto real_index = luax_toabsoluteindex(L, index);
+
+    if (!lua_isuserdata(L, real_index))
+    {
+        return false;
+    }
+
+    luax_newmetatable(L, tname, tpointer);
+    lua_getmetatable(L, real_index);
+
+    while(!lua_rawequal(L, -1, -2) && !lua_isnil(L, -1))
+    {
+        lua_getfield(L, -1, "__parent");
+        lua_remove(L, -2);
+    }
+
+    bool result = lua_rawequal(L, -1, -2) && !lua_isnil(L, -1);
+    lua_pop(L, 2);
+
+    return result;
+}
+
 void* nbunny::lua::impl::luax_checkudata(lua_State* L, int index, const char* tname, const void* tpointer)
 {
     auto real_index = luax_toabsoluteindex(L, index);
@@ -136,6 +160,20 @@ int nbunny::lua::TemporaryReference::fork()
     return old_reference;
 }
 
+std::size_t nbunny::lua::TemporaryReference::size() const
+{
+    if (!is_valid())
+    {
+        return 0;
+    }
+
+    push();
+    std::size_t result = lua_objlen(L, -1);
+    lua_pop(L, 1);
+
+    return result;
+}
+
 bool nbunny::lua::TemporaryReference::is_valid() const
 {
     return L && reference != LUA_NOREF;
@@ -145,9 +183,13 @@ nbunny::lua::TemporaryReference& nbunny::lua::TemporaryReference::operator =(con
 {
     reset();
 
-    other.push();
-    L = other.L;
-    reference = luaL_ref(L, LUA_REGISTRYINDEX);
+    if (other.is_valid())
+    {
+        other.push();
+
+        L = other.L;
+        reference = luaL_ref(L, LUA_REGISTRYINDEX);
+    }
 
     return *this;
 }

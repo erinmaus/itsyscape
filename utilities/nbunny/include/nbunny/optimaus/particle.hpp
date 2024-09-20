@@ -15,6 +15,7 @@
 
 #include "modules/graphics/Mesh.h"
 #include "nbunny/nbunny.hpp"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/scene.hpp"
 
 namespace nbunny
@@ -118,9 +119,9 @@ namespace nbunny
 		virtual ~ParticleSceneNode();
 
 		void clear();
-		void set_emission_strategy(lua_State* L, sol::table& def);
-		void set_emitters(lua_State* L, sol::table& def);
-		void set_paths(lua_State* L, sol::table& def);
+		void set_emission_strategy(lua_State* L, const lua::TemporaryReference& def);
+		void set_emitters(lua_State* L, const lua::TemporaryReference& def);
+		void set_paths(lua_State* L, const lua::TemporaryReference& def);
 
 		void from_definition(lua_State* L);
 		void update_local_position(const glm::vec3& position);
