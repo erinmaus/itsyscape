@@ -8,6 +8,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/resource.hpp"
 
@@ -24,6 +25,26 @@ int nbunny::Resource::allocate_id()
 std::shared_ptr<nbunny::ResourceInstance> nbunny::Resource::instantiate(lua_State* L)
 {
 	return std::make_shared<ResourceInstance>(allocate_id(), set_weak_reference(L));
+}
+
+int nbunny_resource_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::Resource>());
+	return 1;
+}
+
+static int nbunny_resource_get_current_id(lua_State* L)
+{
+	auto instance = nbunny::lua::get<nbunny::Resource*>(L, 1);
+	nbunny::lua::push(L, instance->get_current_id());
+	return 1;
+}
+
+static int nbunny_resource_allocate_id(lua_State* L)
+{
+	auto instance = nbunny::lua::get<nbunny::Resource*>(L, 1);
+	nbunny::lua::push(L, instance->allocate_id());
+	return 1;
 }
 
 nbunny::ResourceInstance::ResourceInstance(int id, int reference) :
@@ -48,44 +69,53 @@ bool nbunny::ResourceInstance::get_reference(lua_State* L) const
 	return !lua_isnoneornil(L, -1);
 }
 
-static int nbunny_resource_instance_get_resource(lua_State* L)
+int nbunny_resource_instance_constructor(lua_State* L)
 {
-	auto& instance = sol::stack::get<nbunny::ResourceInstance>(L, 1);
-	instance.get_reference(L);
+	auto id = nbunny::lua::get<int>(L, 2);
+	lua_pushvalue(L, 3);
 
+	nbunny::lua::push(L, std::make_shared<nbunny::ResourceInstance>(id, nbunny::set_weak_reference(L)));
 	return 1;
 }
 
-static int nbunny_resource_instantiate(lua_State* L)
+static int nbunny_resource_instance_get_id(lua_State* L)
 {
-	auto& resource = sol::stack::get<nbunny::Resource>(L, 1);
+	auto instance = nbunny::lua::get<nbunny::ResourceInstance*>(L, 1);
+	nbunny::lua::push(L, instance->get_id());
+	return 1;
+}
 
-	// We only want to capture the second argument
-	lua_pushvalue(L, 2);
-	sol::stack::push(L, resource.instantiate(L));
-
+static int nbunny_resource_instance_get_resource(lua_State* L)
+{
+	auto instance = nbunny::lua::get<nbunny::ResourceInstance*>(L, 1);
+	instance->get_reference(L);
 	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_resourceinstance(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ResourceInstance>("NResourceInstance",
-		"getID", &nbunny::ResourceInstance::get_id,
-		"getResource", &nbunny_resource_instance_get_resource);
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] {
+		{ "getID", &nbunny_resource_instance_get_id },
+		{ "getResource", &nbunny_resource_instance_get_resource },
+		{ nullptr, nullptr }
+	};
+
+	nbunny::lua::register_type<nbunny::ResourceInstance>(L, &nbunny_resource_instance_constructor, metatable);
+
 	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_resource(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::Resource>("NResource",
-		sol::call_constructor, sol::constructors<nbunny::Resource()>(),
-		"getCurrentID", &nbunny::Resource::get_current_id,
-		"allocateID", &nbunny::Resource::allocate_id,
-		"instantiate", &nbunny_resource_instantiate);
+	static const luaL_Reg metatable[] {
+		{ "getCurrentID", &nbunny_resource_get_current_id },
+		{ "allocateID", &nbunny_resource_allocate_id },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_type<nbunny::Resource>(L, &nbunny_resource_constructor, metatable);
+
 	return 1;
 }

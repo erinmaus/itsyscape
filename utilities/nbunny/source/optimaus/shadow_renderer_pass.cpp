@@ -351,7 +351,7 @@ static int nbunny_shadow_renderer_pass_constructor(lua_State* L)
 
 static int nbunny_shadow_renderer_get_shadow_map(lua_State* L)
 {
-	auto renderer = sol::stack::get<nbunny::ShadowRendererPass*>(L, 1);
+	auto renderer = nbunny::lua::get<nbunny::ShadowRendererPass*>(L, 1);
 	auto shadow_map = renderer->get_shadow_map();
 	shadow_map->retain();
 

@@ -16,6 +16,7 @@
 #include "modules/filesystem/Filesystem.h"
 #include "modules/graphics/Graphics.h"
 
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/shader_cache.hpp"
 #include "nbunny/optimaus/resource.hpp"
 
@@ -277,13 +278,13 @@ bool nbunny::ShaderCache::get_is_mobile() const
 
 static int nbunny_shader_cache_do_build(lua_State* L, const nbunny::ShaderCache::BuildFunc build_func)
 {
-	auto& shader_cache = sol::stack::get<nbunny::ShaderCache>(L, 1);
+	auto shader_cache = nbunny::lua::get<nbunny::ShaderCache*>(L, 1);
 	auto renderer_pass_id = luaL_checkinteger(L, 2);
-	auto& resource = sol::stack::get<nbunny::ResourceInstance>(L, 3);
+	auto resource = nbunny::lua::get<nbunny::ResourceInstance*>(L, 3);
 
-	auto shader = shader_cache.build(
+	auto shader = shader_cache->build(
 		renderer_pass_id,
-		resource.get_id(),
+		resource->get_id(),
 		build_func);
 	if (shader == nullptr)
 	{
@@ -295,6 +296,30 @@ static int nbunny_shader_cache_do_build(lua_State* L, const nbunny::ShaderCache:
 	}
 
 	return 1;
+}
+
+static int nbunny_shader_cache_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::ShaderCache>());
+	return 1;
+}
+
+static int nbunny_shader_cache_release(lua_State* L)
+{
+	auto shader_cache = nbunny::lua::get<nbunny::ShaderCache*>(L, 1);
+	shader_cache->release();
+	return 1;
+}
+
+static int nbunny_shader_cache_register_renderer_pass(lua_State* L)
+{
+	auto shader_cache = nbunny::lua::get<nbunny::ShaderCache*>(L, 1);
+	auto renderer_pass_id = nbunny::lua::get<int>(L, 2);
+	auto vertex_source = nbunny::lua::get<std::string>(L, 2);
+	auto pixel_source = nbunny::lua::get<std::string>(L, 3);
+
+	shader_cache->register_renderer_pass(renderer_pass_id, vertex_source, pixel_source);
+	return 0;
 }
 
 static int nbunny_shader_cache_build_composite(lua_State* L)
@@ -364,21 +389,21 @@ static int nbunny_shader_cache_build(lua_State* L)
 
 	love::luax_catchexcept(L, [&]() { nbunny_shader_cache_do_build(L, build_func); });
 	return 1;
-
-	return nbunny_shader_cache_do_build(L, build_func);
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_shadercache(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ShaderCache>("NShaderCache",
-		sol::call_constructor, sol::constructors<nbunny::ShaderCache()>(),
-		"release", &nbunny::ShaderCache::release,
-		"registerRendererPass", &nbunny::ShaderCache::register_renderer_pass,
-		"buildPrimitive", nbunny_shader_cache_build_primitive,
-		"buildComposite", nbunny_shader_cache_build_composite,
-		"build", nbunny_shader_cache_build);
+	static const luaL_Reg metatable[] = {
+		{ "release", &nbunny_shader_cache_release },
+		{ "registerRendererPass", &nbunny_shader_cache_register_renderer_pass },
+		{ "buildPrimitive", nbunny_shader_cache_build_primitive },
+		{ "buildComposite", nbunny_shader_cache_build_composite },
+		{ "build", nbunny_shader_cache_build },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_type<nbunny::ShaderCache>(L, &nbunny_shader_cache_constructor, metatable);
 
-	sol::stack::push(L, T);
 	return 1;
 }

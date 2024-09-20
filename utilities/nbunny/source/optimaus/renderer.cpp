@@ -505,7 +505,7 @@ static int nbunny_renderer_get_shader_cache(lua_State* L)
 {
 	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
     auto& shader_cache = renderer->get_shader_cache();
-	sol::stack::push(L, &shader_cache);
+	nbunny::lua::push(L, &shader_cache);
 	return 1;
 }
 

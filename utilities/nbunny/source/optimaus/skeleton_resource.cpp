@@ -13,6 +13,7 @@
 #include "modules/math/Transform.h"
 #include "modules/math/MathModule.h"
 #include "nbunny/nbunny.hpp"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/skeleton_resource.hpp"
 
@@ -21,24 +22,30 @@ std::shared_ptr<nbunny::ResourceInstance> nbunny::SkeletonResource::instantiate(
 	return std::make_shared<nbunny::SkeletonInstance>(allocate_id(), set_weak_reference(L));
 }
 
+static int nbunny_skeleton_resource_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::SkeletonResource>());
+	return 1;
+}
+
 static int nbunny_skeleton_resource_instantiate(lua_State* L)
 {
-	auto& resource = sol::stack::get<nbunny::SkeletonResource&>(L, 1);
+	auto resource = nbunny::lua::get<nbunny::SkeletonResource*>(L, 1);
 	lua_pushvalue(L, 2);
-	auto instance = resource.instantiate(L);
-	sol::stack::push(L, std::reinterpret_pointer_cast<nbunny::SkeletonInstance>(instance));
+	auto instance = resource->instantiate(L);
+	nbunny::lua::push(L, std::reinterpret_pointer_cast<nbunny::SkeletonInstance>(instance));
 	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonresource(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonResource>("NSkeletonResource",
-		sol::base_classes, sol::bases<nbunny::Resource>(),
-		sol::call_constructor, sol::constructors<nbunny::SkeletonResource()>(),
-		"instantiate", &nbunny_skeleton_resource_instantiate);
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "instnatiate", &nbunny_skeleton_resource_instantiate },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_child_type<nbunny::SkeletonResource, nbunny::Resource>(L, &nbunny_skeleton_resource_constructor, metatable);
 
 	return 1;
 }
@@ -126,38 +133,44 @@ void nbunny::SkeletonInstance::apply_bind_pose(SkeletonTransforms& transforms) c
 	}
 }
 
+static int nbunny_skeleton_bone_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::SkeletonBone>());
+	return 1;
+}
+
 static int nbunny_skeleton_bone_get_name(lua_State* L)
 {
-	auto& bone = sol::stack::get<nbunny::SkeletonBone&>(L, 1);
-	lua_pushlstring(L, bone.name.data(), bone.name.size());
+	auto bone = nbunny::lua::get<nbunny::SkeletonBone*>(L, 1);
+	lua_pushlstring(L, bone->name.data(), bone->name.size());
 	return 1;
 }
 
 static int nbunny_skeleton_bone_get_index(lua_State* L)
 {
-	auto& bone = sol::stack::get<nbunny::SkeletonBone&>(L, 1);
-	lua_pushinteger(L, bone.index);
+	auto bone = nbunny::lua::get<nbunny::SkeletonBone*>(L, 1);
+	lua_pushinteger(L, bone->index);
 	return 1;
 }
 
 static int nbunny_skeleton_bone_get_parent_name(lua_State* L)
 {
-	auto& bone = sol::stack::get<nbunny::SkeletonBone&>(L, 1);
-	lua_pushlstring(L, bone.parent_name.data(), bone.parent_name.size());
+	auto bone = nbunny::lua::get<nbunny::SkeletonBone*>(L, 1);
+	lua_pushlstring(L, bone->parent_name.data(), bone->parent_name.size());
 	return 1;
 }
 
 static int nbunny_skeleton_bone_get_parent_index(lua_State* L)
 {
-	auto& bone = sol::stack::get<nbunny::SkeletonBone&>(L, 1);
-	lua_pushinteger(L, bone.parent_index);
+	auto bone = nbunny::lua::get<nbunny::SkeletonBone*>(L, 1);
+	lua_pushinteger(L, bone->parent_index);
 	return 1;
 }
 
 static int nbunny_skeleton_bone_get_inverse_bind_pose(lua_State* L)
 {
-	auto& bone = sol::stack::get<nbunny::SkeletonBone&>(L, 1);
-	auto pointer = glm::value_ptr(bone.inverse_bind_pose);
+	auto bone = nbunny::lua::get<nbunny::SkeletonBone*>(L, 1);
+	auto pointer = glm::value_ptr(bone->inverse_bind_pose);
 	auto transform = love::math::Math::instance.newTransform();
 	transform->setMatrix(love::Matrix4(pointer));
 	love::luax_pushtype(L, transform);
@@ -168,44 +181,103 @@ static int nbunny_skeleton_bone_get_inverse_bind_pose(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonbone(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonBone>("NSkeletonBone",
-		"getName", &nbunny_skeleton_bone_get_name,
-		"getIndex", &nbunny_skeleton_bone_get_index,
-		"getParentName", &nbunny_skeleton_bone_get_parent_name,
-		"getParentIndex", &nbunny_skeleton_bone_get_parent_index,
-		"getInverseBindPose", &nbunny_skeleton_bone_get_inverse_bind_pose);
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "getName", &nbunny_skeleton_bone_get_name },
+		{ "getIndex", &nbunny_skeleton_bone_get_index },
+		{ "getParentName", &nbunny_skeleton_bone_get_parent_name },
+		{ "getParentIndex", &nbunny_skeleton_bone_get_parent_index },
+		{ "getInverseBindPose", &nbunny_skeleton_bone_get_inverse_bind_pose },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_type<nbunny::SkeletonBone>(L, &nbunny_skeleton_bone_constructor, metatable);
 
 	return 1;
 }
 
 static int nbunny_skeleton_instance_add_bone(lua_State* L)
 {
-	auto& skeleton = sol::stack::get<nbunny::SkeletonInstance&>(L, 1);
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance*>(L, 1);
 	auto transform = love::luax_checktype<love::math::Transform>(L, 4, love::math::Transform::type);
 	auto inverse_bind_pose = glm::make_mat4(transform->getMatrix().getElements());
-	auto bone = skeleton.add_bone(luaL_checkstring(L, 2), luaL_optstring(L, 3, ""), inverse_bind_pose);
-	sol::stack::push(L, bone);
+	auto bone = skeleton->add_bone(luaL_checkstring(L, 2), luaL_optstring(L, 3, ""), inverse_bind_pose);
+	nbunny::lua::push(L, std::make_shared<nbunny::SkeletonBone>(bone));
 	return 1;
+}
+
+static int nbunny_skeleton_instance_get_bone_by_name(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance*>(L, 1);
+	auto name = nbunny::lua::get<std::string>(L, 2);
+	auto bone = skeleton->get_bone_by_name(name);
+	nbunny::lua::push(L, std::make_shared<nbunny::SkeletonBone>(bone));
+	return 1;
+}
+
+static int nbunny_skeleton_instance_get_bone_by_index(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance*>(L, 1);
+	auto index = nbunny::lua::get<int>(L, 2);
+	auto bone = skeleton->get_bone_by_index(index);
+	nbunny::lua::push(L, std::make_shared<nbunny::SkeletonBone>(bone));
+	return 1;
+}
+
+static int nbunny_skeleton_instance_get_bone_index(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance*>(L, 1);
+	auto name = nbunny::lua::get<std::string>(L, 2);
+	nbunny::lua::push(L, skeleton->get_bone_index(name));
+	return 1;
+}
+
+static int nbunny_skeleton_instance_has_bone(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance*>(L, 1);
+	auto name = nbunny::lua::get<std::string>(L, 2);
+	nbunny::lua::push(L, skeleton->has_bone(name));
+	return 1;
+}
+
+static int nbunny_skeleton_instance_get_num_bones(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance*>(L, 1);
+	nbunny::lua::push(L, skeleton->get_num_bones());
+	return 1;
+}
+
+static int nbunny_skeleton_instance_apply_transforms(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance*>(L, 1);
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 2);
+	skeleton->apply_transforms(*transforms);
+	return 0;
+}
+
+static int nbunny_skeleton_instance_apply_bind_pose(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance*>(L, 1);
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 2);
+	skeleton->apply_bind_pose(*transforms);
+	return 0;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonresourceinstance(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonInstance>("NSkeletonInstance",
-		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
-		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::SkeletonInstance>),
-		"addBone", &nbunny_skeleton_instance_add_bone,
-		"getBoneByName", &nbunny::SkeletonInstance::get_bone_by_name,
-		"getBoneByIndex", &nbunny::SkeletonInstance::get_bone_by_index,
-		"getBoneIndex", &nbunny::SkeletonInstance::get_bone_index,
-		"getNumBones", &nbunny::SkeletonInstance::get_num_bones,
-		"hasBone", &nbunny::SkeletonInstance::has_bone,
-		"applyTransforms", &nbunny::SkeletonInstance::apply_transforms,
-		"applyBindPose", &nbunny::SkeletonInstance::apply_bind_pose);
+	static const luaL_Reg metatable[] = {
+		{ "addBone", &nbunny_skeleton_instance_add_bone },
+		{ "getBoneByName", &nbunny_skeleton_instance_get_bone_by_name },
+		{ "getBoneByIndex", &nbunny_skeleton_instance_get_bone_by_index },
+		{ "getBoneIndex", &nbunny_skeleton_instance_get_bone_index },
+		{ "getNumBones", &nbunny_skeleton_instance_get_num_bones },
+		{ "hasBone", &nbunny_skeleton_instance_has_bone },
+		{ "applyTransforms", &nbunny_skeleton_instance_apply_transforms },
+		{ "applyBindPose", &nbunny_skeleton_instance_apply_bind_pose },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::SkeletonInstance, nbunny::ResourceInstance>(L, &nbunny_resource_constructor<nbunny::SkeletonResource>, metatable);
 
 	return 1;
 }
@@ -215,24 +287,30 @@ std::shared_ptr<nbunny::ResourceInstance> nbunny::SkeletonAnimationResource::ins
 	return std::make_shared<nbunny::SkeletonAnimationInstance>(allocate_id(), set_weak_reference(L));
 }
 
+static int nbunny_skeleton_animation_resource_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::SkeletonAnimationResource>());
+	return 1;
+}
+
 static int nbunny_skeleton_animation_resource_instantiate(lua_State* L)
 {
-	auto& resource = sol::stack::get<nbunny::SkeletonAnimationResource&>(L, 1);
+	auto& resource = nbunny::lua::get<nbunny::SkeletonAnimationResource&>(L, 1);
 	lua_pushvalue(L, 2);
 	auto instance = resource.instantiate(L);
-	sol::stack::push(L, std::reinterpret_pointer_cast<nbunny::SkeletonAnimationInstance>(instance));
+	nbunny::lua::push(L, std::reinterpret_pointer_cast<nbunny::SkeletonAnimationInstance>(instance));
 	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonanimationresource(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonAnimationResource>("NSkeletonAnimationResource",
-		sol::base_classes, sol::bases<nbunny::Resource>(),
-		sol::call_constructor, sol::constructors<nbunny::SkeletonAnimationResource>(),
-		"instantiate", &nbunny_skeleton_animation_resource_instantiate);
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "instantiate", &nbunny_skeleton_animation_resource_instantiate },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_child_type<nbunny::SkeletonAnimationResource, nbunny::Resource>(L, &nbunny_skeleton_animation_resource_constructor, metatable);
 
 	return 1;
 }
@@ -318,7 +396,7 @@ void nbunny::SkeletonAnimationInstance::compute_local_transform(
 
 static int nbunny_skeleton_animation_instance_set_key_frames(lua_State* L)
 {
-	auto& animation = sol::stack::get<nbunny::SkeletonAnimationInstance&>(L, 1);
+	auto& animation = nbunny::lua::get<nbunny::SkeletonAnimationInstance&>(L, 1);
 	int bone = luaL_checkinteger(L, 2);
 
 	std::vector<nbunny::KeyFrame> key_frames;
@@ -326,7 +404,7 @@ static int nbunny_skeleton_animation_instance_set_key_frames(lua_State* L)
 	for (std::size_t i = 1; i <= length; ++i)
 	{
 		lua_rawgeti(L, 3, i);
-		key_frames.push_back(sol::stack::get<nbunny::KeyFrame>(L, -1));
+		key_frames.push_back(*nbunny::lua::get<nbunny::KeyFrame*>(L, -1));
 		lua_pop(L, 1);
 	}
 
@@ -337,25 +415,51 @@ static int nbunny_skeleton_animation_instance_set_key_frames(lua_State* L)
 
 static int nbunny_skeleton_animation_instance_get_duration(lua_State* L)
 {
-	auto& animation = sol::stack::get<nbunny::SkeletonAnimationInstance&>(L, 1);
-	lua_pushnumber(L, animation.get_duration());
+	auto animation = nbunny::lua::get<nbunny::SkeletonAnimationInstance*>(L, 1);
+	lua_pushnumber(L, animation->get_duration());
 	return 1;
+}
+
+static int nbunny_skeleton_animation_instance_compute_local_transforms(lua_State* L)
+{
+	auto animation = nbunny::lua::get<nbunny::SkeletonAnimationInstance*>(L, 1);
+	auto delta = nbunny::lua::get<float>(L, 2);
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 3);
+	if (nbunny::lua::is_userdata<nbunny::SkeletonTransformsFilter>(L, 4))
+	{
+		auto filter = nbunny::lua::get<nbunny::SkeletonTransformsFilter*>(L, 4);
+		animation->compute_local_transforms(delta, *transforms, *filter);
+	}
+	else
+	{
+		animation->compute_local_transforms(delta, *transforms);
+	}
+
+	return 0;
+}
+
+static int nbunny_skeleton_animation_instance_compute_local_transform(lua_State* L)
+{
+	auto animation = nbunny::lua::get<nbunny::SkeletonAnimationInstance*>(L, 1);
+	auto delta = nbunny::lua::get<float>(L, 2);
+	auto bone_index = nbunny::lua::get<int>(L, 3);
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 4);
+	animation->compute_local_transform(delta, bone_index, *transforms);
+	return 0;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonanimationresourceinstance(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonAnimationInstance>("NSkeletonAnimationInstance",
-		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
-		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::SkeletonAnimationInstance>),
-		"setKeyFrames", &nbunny_skeleton_animation_instance_set_key_frames,
-		"computeLocalTransforms", sol::overload(
-			(void (nbunny::SkeletonAnimationInstance::*)(float, nbunny::SkeletonTransforms&) const) &nbunny::SkeletonAnimationInstance::compute_local_transforms,
-			(void (nbunny::SkeletonAnimationInstance::*)(float, nbunny::SkeletonTransforms&, nbunny::SkeletonTransformsFilter&) const) &nbunny::SkeletonAnimationInstance::compute_local_transforms),
-		"computeLocalTransform", &nbunny::SkeletonAnimationInstance::compute_local_transform,
-		"getDuration", &nbunny_skeleton_animation_instance_get_duration);
+	static const luaL_Reg metatable[] = {
+		{ "setKeyFrames", &nbunny_skeleton_animation_instance_set_key_frames },
+		{ "computeLocalTransforms", &nbunny_skeleton_animation_instance_compute_local_transforms },
+		{ "computeLocalTransform", &nbunny_skeleton_animation_instance_compute_local_transform },
+		{ "getDuration", &nbunny_skeleton_animation_instance_get_duration },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::SkeletonAnimationInstance, nbunny::ResourceInstance>(L, &nbunny_resource_constructor<nbunny::SkeletonResource>, metatable);
 
 	return 1;
 }
@@ -409,36 +513,46 @@ void nbunny::SkeletonTransforms::copy(SkeletonTransforms& other) const
 	other.transforms = transforms;
 }
 
-static std::shared_ptr<nbunny::SkeletonTransforms> nbunny_skeleton_transforms_create(const std::shared_ptr<nbunny::SkeletonInstance>& skeleton)
+static int nbunny_skeleton_transforms_constructor(lua_State* L)
 {
-	return std::make_shared<nbunny::SkeletonTransforms>(skeleton);
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance>(L, 2);
+	nbunny::lua::push(L, std::make_shared<nbunny::SkeletonTransforms>(skeleton));
+	return 1;
 }
 
 static int nbunny_skeleton_transforms_apply_transform(lua_State* L)
 {
-	auto& transforms = sol::stack::get<nbunny::SkeletonTransforms&>(L, 1);
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 1);
 	int bone_index = luaL_checkinteger(L, 2);
 	auto transform = love::luax_checktype<love::math::Transform>(L, 3);
 	auto matrix = glm::make_mat4(transform->getMatrix().getElements());
-	transforms.apply_transform(bone_index, matrix);
+	transforms->apply_transform(bone_index, matrix);
 	return 0;
 }
 
 static int nbunny_skeleton_transforms_set_transform(lua_State* L)
 {
-	auto& transforms = sol::stack::get<nbunny::SkeletonTransforms&>(L, 1);
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 1);
 	int bone_index = luaL_checkinteger(L, 2);
 	auto transform = love::luax_checktype<love::math::Transform>(L, 3);
 	auto matrix = glm::make_mat4(transform->getMatrix().getElements());
-	transforms.set_transform(bone_index, matrix);
+	transforms->set_transform(bone_index, matrix);
+	return 0;
+}
+
+static int nbunny_skeleton_transforms_set_identity(lua_State* L)
+{
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 1);
+	int bone_index = luaL_checkinteger(L, 2);
+	transforms->set_identity(bone_index);
 	return 0;
 }
 
 static int nbunny_skeleton_transforms_get_transform(lua_State* L)
 {
-	auto& transforms = sol::stack::get<nbunny::SkeletonTransforms&>(L, 1);
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 1);
 	int bone_index = luaL_checkinteger(L, 2);
-	auto matrix = transforms.get_transform(bone_index);
+	auto matrix = transforms->get_transform(bone_index);
 	auto transform = love::math::Math::instance.newTransform();
 	transform->setMatrix(love::Matrix4(glm::value_ptr(matrix)));
 	love::luax_pushtype(L, transform);
@@ -448,13 +562,13 @@ static int nbunny_skeleton_transforms_get_transform(lua_State* L)
 
 static int nbunny_skeleton_transforms_get_transforms(lua_State* L)
 {
-	auto& transforms = sol::stack::get<nbunny::SkeletonTransforms&>(L, 1);
-	auto skeleton = transforms.get_skeleton();
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 1);
+	auto skeleton = transforms->get_skeleton();
 
 	lua_createtable(L, (int)skeleton->get_num_bones(), 0);
 	for (std::size_t i = 0; i < skeleton->get_num_bones(); ++i)
 	{
-		auto matrix = transforms.get_transform(i);
+		auto matrix = transforms->get_transform(i);
 		auto transform = love::math::Math::instance.newTransform();
 		transform->setMatrix(love::Matrix4(glm::value_ptr(matrix)));
 		love::luax_pushtype(L, transform);
@@ -465,20 +579,37 @@ static int nbunny_skeleton_transforms_get_transforms(lua_State* L)
 	return 1;
 }
 
+static int nbunny_skeleton_transforms_reset(lua_State* L)
+{
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 1);
+	int bone_index = luaL_checkinteger(L, 2);
+	transforms->set_identity(bone_index);
+	return 0;
+}
+
+static int nbunny_skeleton_transforms_copy(lua_State* L)
+{
+	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 1);
+	auto other_transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 2);
+	transforms->copy(*other_transforms);
+	return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletontransforms(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonTransforms>("NSkeletonTransforms",
-		sol::call_constructor, sol::factories(&nbunny_skeleton_transforms_create),
-		"applyTransform", &nbunny_skeleton_transforms_apply_transform,
-		"setTransform", &nbunny_skeleton_transforms_set_transform,
-		"setIdentity", &nbunny::SkeletonTransforms::set_identity,
-		"getTransform", &nbunny_skeleton_transforms_get_transform,
-		"getTransforms", &nbunny_skeleton_transforms_get_transforms,
-		"reset", &nbunny::SkeletonTransforms::reset,
-		"copy", &nbunny::SkeletonTransforms::copy);
+	static const luaL_Reg metatable[] = {
+		{ "applyTransform", &nbunny_skeleton_transforms_apply_transform },
+		{ "setTransform", &nbunny_skeleton_transforms_set_transform },
+		{ "setIdentity", &nbunny_skeleton_transforms_set_identity },
+		{ "getTransform", &nbunny_skeleton_transforms_get_transform },
+		{ "getTransforms", &nbunny_skeleton_transforms_get_transforms },
+		{ "reset", &nbunny_skeleton_transforms_reset },
+		{ "copy", &nbunny_skeleton_transforms_copy },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_type<nbunny::SkeletonTransforms>(L, &nbunny_skeleton_transforms_constructor, metatable);
 
 	return 1;
 }
@@ -522,25 +653,73 @@ bool nbunny::SkeletonTransformsFilter::is_disabled(int index) const
 	return enabled_bones.count(index) == 0;
 }
 
-static std::shared_ptr<nbunny::SkeletonTransformsFilter> nbunny_skeleton_transforms_filter_create(
-	const std::shared_ptr<nbunny::SkeletonInstance>& skeleton)
+int nbunny_skeleton_transforms_filter_constructor(lua_State* L)
 {
-	return std::make_shared<nbunny::SkeletonTransformsFilter>(skeleton);
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonInstance>(L, 2);
+	nbunny::lua::push(L, std::make_shared<nbunny::SkeletonTransformsFilter>(skeleton));
+	return 1;
+}
+
+int nbunny_skeleton_transforms_filter_enable_all_bones(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonTransformsFilter*>(L, 1);
+	skeleton->enable_all_bones();
+	return 0;
+}
+
+int nbunny_skeleton_transforms_filter_enable_bone_at_index(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonTransformsFilter*>(L, 1);
+	auto bone_index = nbunny::lua::get<int>(L, 2);
+	skeleton->enable_bone_at_index(bone_index);
+	return 0;
+}
+
+int nbunny_skeleton_transforms_filter_disable_all_bones(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonTransformsFilter*>(L, 1);
+	skeleton->disable_all_bones();
+	return 0;
+}
+
+int nbunny_skeleton_transforms_filter_disable_bone_at_index(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonTransformsFilter*>(L, 1);
+	auto bone_index = nbunny::lua::get<int>(L, 2);
+	skeleton->disable_bone_at_index(bone_index);
+	return 0;
+}
+
+int nbunny_skeleton_transforms_filter_is_enabled(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonTransformsFilter*>(L, 1);
+	auto bone_index = nbunny::lua::get<int>(L, 2);
+	nbunny::lua::push(L, skeleton->is_enabled(bone_index));
+	return 0;
+}
+
+int nbunny_skeleton_transforms_filter_is_disabled(lua_State* L)
+{
+	auto skeleton = nbunny::lua::get<nbunny::SkeletonTransformsFilter*>(L, 1);
+	auto bone_index = nbunny::lua::get<int>(L, 2);
+	nbunny::lua::push(L, skeleton->is_disabled(bone_index));
+	return 0;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletontransformsfilter(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::SkeletonTransformsFilter>("NSkeletonTransformsFilter",
-		sol::call_constructor, sol::factories(&nbunny_skeleton_transforms_filter_create),
-		"enableAllBones", &nbunny::SkeletonTransformsFilter::enable_all_bones,
-		"disableAllBones", &nbunny::SkeletonTransformsFilter::disable_all_bones,
-		"enableBoneAtIndex", &nbunny::SkeletonTransformsFilter::enable_bone_at_index,
-		"disableBoneAtIndex", &nbunny::SkeletonTransformsFilter::disable_bone_at_index,
-		"isEnabled", &nbunny::SkeletonTransformsFilter::is_enabled,
-		"isDisabled", &nbunny::SkeletonTransformsFilter::is_disabled);
+	static const luaL_Reg metatable[] = {
+		{ "enableAllBones", &nbunny_skeleton_transforms_filter_enable_all_bones },
+		{ "disableAllBones", &nbunny_skeleton_transforms_filter_disable_all_bones },
+		{ "enableBoneAtIndex", &nbunny_skeleton_transforms_filter_enable_bone_at_index },
+		{ "disableBoneAtIndex", &nbunny_skeleton_transforms_filter_disable_bone_at_index },
+		{ "isEnabled", &nbunny_skeleton_transforms_filter_is_enabled },
+		{ "isDisabled", &nbunny_skeleton_transforms_filter_is_disabled },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_type<nbunny::SkeletonTransformsFilter>(L, &nbunny_skeleton_transforms_constructor, metatable);
 
 	return 1;
 }

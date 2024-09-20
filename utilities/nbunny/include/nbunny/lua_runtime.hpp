@@ -204,6 +204,12 @@ namespace nbunny { namespace lua
     }
 
     template <typename T>
+    bool is_userdata(lua_State* L, int index)
+    {
+        return impl::luax_isudata(L, index, LuaType<T>::user_type.c_str(), &LuaType<T>::type_pointer);
+    }
+
+    template <typename T>
     T get_primitive(lua_State* L, int index);
 
     template <typename T>
