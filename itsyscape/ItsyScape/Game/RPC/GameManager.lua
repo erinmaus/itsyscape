@@ -93,6 +93,11 @@ function GameManager.Instance:setProperty(propertyName, ...)
 	property:set(propertyName, ...)
 end
 
+function GameManager.Instance:pullProperty(propertyName, field, ...)
+	local property = self.properties[propertyName]
+	property:pull(propertyName, field, ...)
+end
+
 function GameManager.Instance:updateProperty(property, force)
 	local isDirty = property:update(self.instance)
 	if isDirty or force then
@@ -136,7 +141,11 @@ end
 
 function GameManager.Property:getValue()
 	if self.isDirty then
-		local value = self._handle:rawgetValue()
+		if not self._value then
+			self._value = self._handle:rawgetValue()
+		end
+
+		local value = self._value
 
 		self.n = #value
 
@@ -159,6 +168,11 @@ end
 function GameManager.Property:set(instance, ...)
 	self.isDirty = true
 	self._handle:setValue(...)
+end
+
+function GameManager.Property:pull(instance, field, ...)
+	self.isDirty = true
+	self._handle:pullValue(field, ...)
 end
 
 GameManager.PropertyGroup = Class()
@@ -214,16 +228,15 @@ function GameManager.PropertyGroup:findIndexOfKey(key)
 end
 
 function GameManager.PropertyGroup:set(key, ...)
-	local values = NVariant.fromArguments(...)
 	local index, outPrioritized = self:findIndexOfKey(key)
 	if not outPrioritized then
 		if index then
 			self.values[index].key = key
-			self.values[index].value = values
+			self.values[index].value:fromArguments(...)
 		else
 			table.insert(self.values, {
 				key = key,
-				value = values
+				value = NVariant():fromArguments(...)
 			})
 		end
 
@@ -352,7 +365,7 @@ function GameManager:processProperty(e)
 	if not instance then
 		Log.engine("'%s' (ID %d) not found; cannot update property '%s'.", e.interface, e.id, e.property)
 	else
-		instance:setProperty(e.property, e:rawget("value"))
+		instance:pullProperty(e.property, "value", e)
 	end
 end
 

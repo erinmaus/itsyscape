@@ -549,7 +549,7 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 	}
 
 	auto shader = renderer.get_current_shader();
-	auto shader_cache = renderer.get_shader_cache();
+	auto& shader_cache = renderer.get_shader_cache();
 
 	const auto textures = get_material().get_textures();
 	if (!textures.empty())
@@ -643,7 +643,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_decorationscenenode(lua_Stat
 		{ nullptr, nullptr }
 	};
 
-	nbunny::lua::register_child_type<nbunny::LuaSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::DecorationSceneNode>, metatable);
+	nbunny::lua::register_child_type<nbunny::DecorationSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::DecorationSceneNode>, metatable);
 
 	return 1;
 }

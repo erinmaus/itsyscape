@@ -398,13 +398,11 @@ function LocalGameManager:sendToPlayer(player)
 							if e.callback == "onClose" and self.ui[interfaceID] and self.ui[interfaceID][interfaceIndex] then
 								self.ui[interfaceID][interfaceIndex] = nil
 							elseif e.callback == "onPush" then
-								local v = e:rawget("value")
-
 								if self.ui[interfaceID] and self.ui[interfaceID][interfaceIndex] and self.ui[interfaceID][interfaceIndex] == v then
 									isRPCMatch = false
 								else
 									local ui = self.ui[interfaceID] or {}
-									ui[interfaceIndex] = v
+									ui[interfaceIndex] = e:rawget("value")
 
 									self.ui[interfaceID] = ui
 								end

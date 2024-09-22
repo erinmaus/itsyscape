@@ -11,6 +11,53 @@
 #include "nbunny/nbunny.hpp"
 #include "nbunny/lua_runtime.hpp"
 
+// const static int WEAK_USERDATA_REFERENCE_KEY = 0;
+// void nbunny::lua::impl::get_weak_userdata_reference_table(lua_State* L)
+// {
+// 	lua_pushlightuserdata(L, const_cast<int*>(&WEAK_USERDATA_REFERENCE_KEY));
+// 	lua_rawget(L, LUA_REGISTRYINDEX);
+
+// 	if (lua_isnil(L, -1)) {
+// 		lua_pop(L, 1);
+// 		lua_pushlightuserdata(L, const_cast<int*>(&WEAK_USERDATA_REFERENCE_KEY));
+// 		lua_newtable(L);
+
+// 		// Create metatable with 'weak values'.
+// 		lua_newtable(L);
+// 		lua_pushstring(L, "__mode");
+// 		lua_pushstring(L, "v");
+// 		lua_rawset(L, -3);
+
+// 		// Assign metatable.
+// 		lua_setmetatable(L, -2);
+
+// 		// Assign table to registory.
+// 		lua_rawset(L, LUA_REGISTRYINDEX);
+
+// 		// Retrieve table again.
+// 		lua_pushlightuserdata(L, const_cast<int*>(&WEAK_USERDATA_REFERENCE_KEY));
+// 		lua_rawget(L, LUA_REGISTRYINDEX);
+// 	}
+// }
+
+// bool nbunny::lua::impl::get_weak_userdata_reference(lua_State* L, void* key)
+// {
+// 	get_weak_reference_table(L);
+//     lua_
+// 	lua_rawgeti(L, -1, key);
+// 	lua_remove(L, -2);
+// }
+
+// void nbunny::lua::impl::set_weak_userdata_reference(lua_State* L)
+// {
+// 	get_weak_reference_table(L);
+
+//     auto key = lua_touserdata(L, -2);
+//     lua_pushlightuserdata(L, key);
+// 	lua_pushvalue(L, -3);
+//     lua_settable(L, LUA_REGISTRYINDEX);
+// }
+
 int nbunny::lua::impl::luax_newmetatable(lua_State* L, const char* tname, const void* tpointer)
 {
     lua_pushlightuserdata(L, const_cast<void*>(tpointer));
@@ -109,7 +156,7 @@ int nbunny::lua::impl::luax_toabsoluteindex(lua_State* L, int index)
 }
 
 nbunny::lua::TemporaryReference::TemporaryReference(lua_State* L, int index) :
-    L(L), reference(reference)
+    L(L), reference(index)
 {
     // Nothing.
 }

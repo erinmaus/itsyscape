@@ -18,6 +18,7 @@ function OutgoingEventQueue:new()
 	self._handle = NEventQueue()
 	self._popEvent = NVariant()
 	self._getEvent = NVariant()
+	self._args = NVariant()
 	self.timestamp = 0
 end
 
@@ -54,7 +55,7 @@ function OutgoingEventQueue:pushCallback(interface, id, callback, key, ...)
 		"id", id,
 		"callback", callback,
 		"key", key,
-		"value", NVariant.fromArguments(...))
+		"value", self._args:fromArguments(...))
 end
 
 function OutgoingEventQueue:pushProperty(interface, id, property, ...)
@@ -64,7 +65,7 @@ function OutgoingEventQueue:pushProperty(interface, id, property, ...)
 		"interface", interface,
 		"id", id,
 		"property", property,
-		"value", NVariant.fromArguments(...))
+		"value", self._args:fromArguments(...))
 end
 
 function OutgoingEventQueue:pushTick(ticks)

@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include "modules/data/DataModule.h"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/game_manager.hpp"
 
 static int GAME_MANAGER_REF = 0;
@@ -142,7 +143,7 @@ static int nbunny_game_manager_buffer_create(lua_State* L)
 	}
 	else
 	{
-		nbunny::GameManagerVariant* variant = sol::stack::get<nbunny::GameManagerVariant*>(L, 1);
+		nbunny::GameManagerVariant* variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 1);
 		nbunny::GameManagerBuffer* buffer = new nbunny::GameManagerBuffer();
 
 		variant->serialize(*buffer);
@@ -360,10 +361,10 @@ void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, int count)
 	{
 		to_args(count);
 
-		for (int i = 0; i < count; ++i)
+		for (int i = index; i <= count; ++i)
 		{
 			GameManagerVariant v;
-			v.from_lua(L, index + i);
+			v.from_lua(L, i);
 
 			value.args->parameter_values.emplace_back(std::move(v));
 		}
@@ -992,43 +993,55 @@ void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, std::set<cons
 	}
 }
 
-static std::shared_ptr<nbunny::GameManagerVariant> nbunny_game_manager_variant_create()
+static int nbunny_game_manager_variant_create(lua_State* L)
 {
-	return std::make_shared<nbunny::GameManagerVariant>();
+	nbunny::lua::push(L, std::make_shared<nbunny::GameManagerVariant>());
+	return 1;
 }
 
 static int nbunny_game_manager_variant_rawget(lua_State* L)
 {
-	nbunny::GameManagerVariant* variant = sol::stack::get<nbunny::GameManagerVariant*>(L, 1);
+	nbunny::GameManagerVariant* variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 1);
 
 	nbunny::GameManagerVariant key;
 	key.from_lua(L, 2);
 
-	sol::stack::push(L, variant->get(key));
+	nbunny::lua::push(L, std::make_shared<nbunny::GameManagerVariant>(variant->get(key)));
 
 	return 1;
 }
 
 static int nbunny_game_manager_variant_index(lua_State* L)
 {
-	nbunny::GameManagerVariant* variant = sol::stack::get<nbunny::GameManagerVariant*>(L, 1);
+	nbunny::GameManagerVariant* variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 1);
 
 	if (lua_gettop(L) == 1)
 	{
 		return variant->to_lua(L);
 	}
+
+	nbunny::GameManagerVariant key;
+	key.from_lua(L, 2);
+
+	lua_getmetatable(L, 1);
+	lua_pushvalue(L, 2);
+	lua_gettable(L, -2);
+
+	lua_remove(L, -2);
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		return variant->get(key).to_lua(L);
+	}
 	else
 	{
-		nbunny::GameManagerVariant key;
-		key.from_lua(L, 2);
-
-		return variant->get(key).to_lua(L);
+		return 1;
 	}
 }
 
 static int nbunny_game_manager_variant_newindex(lua_State* L)
 {
-	nbunny::GameManagerVariant* variant = sol::stack::get<nbunny::GameManagerVariant*>(L, 1);
+	nbunny::GameManagerVariant* variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 1);
 
 	nbunny::GameManagerVariant key;
 	key.from_lua(L, 2);
@@ -1043,31 +1056,39 @@ static int nbunny_game_manager_variant_newindex(lua_State* L)
 
 static int nbunny_game_manager_variant_from_args(lua_State* L)
 {
-	auto variant = std::make_shared<nbunny::GameManagerVariant>();
-	variant->from_lua(L, 1, lua_gettop(L));
+	auto variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 1);
+	variant->from_lua(L, 2, lua_gettop(L));
 
-	sol::stack::push(L, variant);
+	lua_pushvalue(L, 1);
+	return 1;
+}
+
+static int nbunny_game_manager_variant_length(lua_State* L)
+{
+	auto variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 1);
+	nbunny::lua::push(L, variant->length());
 	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_gamemanager_variant(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::GameManagerVariant>("NGameManagerVariant",
-		sol::call_constructor, sol::factories(&nbunny_game_manager_variant_create),
-		sol::meta_function::index, &nbunny_game_manager_variant_index,
-		sol::meta_function::new_index, &nbunny_game_manager_variant_newindex,
-		sol::meta_function::length, &nbunny::GameManagerVariant::length,
-		"get", &nbunny_game_manager_variant_index,
-		"rawget", &nbunny_game_manager_variant_rawget,
-		"fromArguments", &nbunny_game_manager_variant_from_args);
+	static const luaL_Reg metatable[] = {
+		{ "__index", &nbunny_game_manager_variant_index },
+		{ "__newindex", &nbunny_game_manager_variant_newindex },
+		{ "__len", &nbunny_game_manager_variant_length },
+		{ "get", &nbunny_game_manager_variant_index },
+		{ "rawget", &nbunny_game_manager_variant_rawget },
+		{ "fromArguments", &nbunny_game_manager_variant_from_args },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_type<nbunny::GameManagerVariant>(L, &nbunny_game_manager_variant_create, metatable);
 
 	return 1;
 }
 
-void nbunny::TypeProvider::connect(GameManagerState& state, const std::string& persisted_type_name, const sol::table& type)
+void nbunny::TypeProvider::connect(GameManagerState& state, const std::string& persisted_type_name, int type)
 {
 	this->state = &state;
 	this->persisted_type_name = persisted_type_name;
@@ -1094,7 +1115,7 @@ const std::string& nbunny::TypeProvider::get_persisted_type_name() const
 	return persisted_type_name;
 }
 
-const sol::table& nbunny::TypeProvider::get_type() const
+int nbunny::TypeProvider::get_type() const
 {
 	if (!state)
 	{
@@ -1111,7 +1132,7 @@ void nbunny::TypeProvider::push_type(lua_State* L)
 		throw std::runtime_error("not yet assigned");
 	}
 
-	sol::stack::push(L, type);
+	get_weak_reference(L, type);
 }
 
 void nbunny::QuaternionTypeProvider::deserialize(lua_State* L, const GameManagerVariant& value)
@@ -1594,7 +1615,7 @@ bool nbunny::GameManagerState::from_lua(lua_State* L, int index, GameManagerVari
 		type_providers.begin(),
 		type_providers.end(),
 		[L](auto& pair) {
-			sol::stack::push(L, pair.first);
+			get_weak_reference(L, pair.first);
 
 			auto result = lua_rawequal(L, -1, -2);
 			lua_pop(L, 1);
@@ -1652,12 +1673,12 @@ nbunny::GameManagerState* nbunny::GameManagerState::get(lua_State* L)
 		state = state_shared_pointer.get();
 
 		lua_pushlightuserdata(L, &nbunny::GameManagerState::REF);
-		sol::stack::push(L, state_shared_pointer);
+		nbunny::lua::push(L, state_shared_pointer);
 		lua_rawset(L, LUA_REGISTRYINDEX);
 	}
 	else
 	{
-		state = sol::stack::get<nbunny::GameManagerState*>(L, -1);
+		state = nbunny::lua::get<nbunny::GameManagerState*>(L, -1);
 		lua_pop(L, 1);
 	}
 
@@ -1680,7 +1701,7 @@ bool nbunny::GameManagerProperty::update(lua_State* L)
 
 static int nbunny_game_manager_property_update(lua_State* L)
 {
-	auto property = sol::stack::get<nbunny::GameManagerProperty*>(L, 1);
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
 
 	lua_remove(L, 1);
 	lua_pushboolean(L, property->update(L));
@@ -1731,12 +1752,12 @@ void nbunny::GameManagerProperty::set_value(const GameManagerVariant& value)
 
 static int nbunny_game_manager_property_set_value(lua_State* L)
 {
-	auto property = sol::stack::get<nbunny::GameManagerProperty*>(L, 1);
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
 
-	auto variant = sol::stack::get<sol::optional<nbunny::GameManagerVariant>>(L, 2);
-	if (variant.has_value())
+	if (nbunny::lua::is_userdata<nbunny::GameManagerVariant>(L, 2))
 	{
-		property->set_value(variant.value());
+		auto variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 2);
+		property->set_value(*variant);
 	}
 	else
 	{
@@ -1749,14 +1770,38 @@ static int nbunny_game_manager_property_set_value(lua_State* L)
 	return 0;
 }
 
+static int nbunny_game_manager_property_pull_value(lua_State* L)
+{
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
+
+	nbunny::GameManagerVariant key;
+	key.from_lua(L, 2);
+
+	auto value = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 3);
+	property->set_value(value->get(key));
+
+	return 0;
+}
+
+nbunny::GameManagerVariant& nbunny::GameManagerProperty::get_value()
+{
+	return current_value;
+}
+
 const nbunny::GameManagerVariant& nbunny::GameManagerProperty::get_value() const
 {
 	return current_value;
 }
 
+static int nbunny_game_manager_property_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::GameManagerProperty>());
+	return 1;
+}
+
 static int nbunny_game_manager_property_get_value(lua_State* L)
 {
-	auto property = sol::stack::get<nbunny::GameManagerProperty*>(L, 1);
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
 	if (property->has_value())
 	{
 		return property->get_value().to_lua(L);
@@ -1767,33 +1812,85 @@ static int nbunny_game_manager_property_get_value(lua_State* L)
 
 static int nbunny_game_manager_property_rawget_value(lua_State* L)
 {
-	auto property = sol::stack::get<nbunny::GameManagerProperty*>(L, 1);
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
 	if (property->has_value())
 	{
-		sol::stack::push(L, property->get_value());
+		nbunny::lua::push(L, &property->get_value());
 		return 1;
 	}
 
 	return 0;
 }
 
+static int nbunny_game_manager_property_has_value(lua_State* L)
+{
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
+	nbunny::lua::push(L, property->has_value());
+	return 1;
+}
+
+static int nbunny_game_manager_property_set_field(lua_State* L)
+{
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
+	property->set_field(nbunny::lua::get<std::string>(L, 2));
+	return 0;
+}
+
+static int nbunny_game_manager_property_get_field(lua_State* L)
+{
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
+	nbunny::lua::push(L, property->get_field());
+	return 1;
+}
+
+static int nbunny_game_manager_property_set_instance_interface(lua_State* L)
+{
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
+	property->set_instance_interface(nbunny::lua::get<std::string>(L, 2));
+	return 0;
+}
+
+static int nbunny_game_manager_property_get_instance_interface(lua_State* L)
+{
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
+	nbunny::lua::push(L, property->get_instance_interface());
+	return 1;
+}
+
+static int nbunny_game_manager_property_set_instance_id(lua_State* L)
+{
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
+	property->set_instance_id(nbunny::lua::get<int>(L, 2));
+	return 0;
+}
+
+static int nbunny_game_manager_property_get_instance_id(lua_State* L)
+{
+	auto property = nbunny::lua::get<nbunny::GameManagerProperty*>(L, 1);
+	nbunny::lua::push(L, property->get_instance_id());
+	return 1;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_gamemanager_property(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::GameManagerProperty>("NGameManagerProperty",
-		sol::call_constructor, sol::constructors<nbunny::GameManagerProperty()>(),
-		"update", &nbunny_game_manager_property_update,
-		"hasValue", &nbunny::GameManagerProperty::has_value,
-		"setField", &nbunny::GameManagerProperty::set_field,
-		"getField", &nbunny::GameManagerProperty::get_field,
-		"setInstanceInterface", &nbunny::GameManagerProperty::set_instance_interface,
-		"getInstanceInterface", &nbunny::GameManagerProperty::get_instance_interface,
-		"setInstanceID", &nbunny::GameManagerProperty::set_instance_id,
-		"getInstanceID", &nbunny::GameManagerProperty::get_instance_id,
-		"setValue", &nbunny_game_manager_property_set_value,
-		"getValue", &nbunny_game_manager_property_get_value,
-		"rawgetValue", &nbunny_game_manager_property_rawget_value);
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "update", &nbunny_game_manager_property_update },
+		{ "hasValue", &nbunny_game_manager_property_has_value },
+		{ "setField", &nbunny_game_manager_property_set_field },
+		{ "getField", &nbunny_game_manager_property_get_field },
+		{ "setInstanceInterface", &nbunny_game_manager_property_set_instance_interface },
+		{ "getInstanceInterface", &nbunny_game_manager_property_get_instance_interface },
+		{ "setInstanceID", &nbunny_game_manager_property_set_instance_id },
+		{ "getInstanceID", &nbunny_game_manager_property_get_instance_id },
+		{ "setValue", &nbunny_game_manager_property_set_value },
+		{ "pullValue", &nbunny_game_manager_property_pull_value },
+		{ "getValue", &nbunny_game_manager_property_get_value },
+		{ "rawgetValue", &nbunny_game_manager_property_rawget_value },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_type<nbunny::GameManagerProperty>(L, &nbunny_game_manager_property_constructor, metatable);
 
 	return 1;
 }
@@ -1869,9 +1966,38 @@ void nbunny::GameManagerEventQueue::get(std::size_t index, GameManagerVariant& e
 	event = events.at(index);
 }
 
+static int nbunny_game_manager_event_queue_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::GameManagerEventQueue>());
+	return 1;
+}
+
+static int nbunny_game_manager_event_queue_clear(lua_State* L)
+{
+	auto queue = nbunny::lua::get<nbunny::GameManagerEventQueue*>(L, 1);
+	queue->clear();
+	return 0;
+}
+
+static int nbunny_game_manager_event_queue_pull(lua_State* L)
+{
+	auto queue = nbunny::lua::get<nbunny::GameManagerEventQueue*>(L, 1);
+	auto variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 2);
+	queue->pull(*variant);
+	return 0;
+}
+
+static int nbunny_game_manager_event_queue_pop(lua_State* L)
+{
+	auto queue = nbunny::lua::get<nbunny::GameManagerEventQueue*>(L, 1);
+	auto variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 2);
+	queue->pop(*variant);
+	return 0;
+}
+
 static int nbunny_game_manager_event_queue_push(lua_State* L)
 {
-	auto queue = sol::stack::get<nbunny::GameManagerEventQueue*>(L, 1);
+	auto queue = nbunny::lua::get<nbunny::GameManagerEventQueue*>(L, 1);
 
 	nbunny::GameManagerVariant event;
 	event.to_table();
@@ -1879,10 +2005,9 @@ static int nbunny_game_manager_event_queue_push(lua_State* L)
 	for (int index = 2; index <= lua_gettop(L); index += 2)
 	{
 		nbunny::GameManagerVariant key;
-		auto key_variant = sol::stack::get<sol::optional<nbunny::GameManagerVariant>>(L, index);
-		if (key_variant.has_value())
+		if (nbunny::lua::is_userdata<nbunny::GameManagerVariant>(L, index))
 		{
-			key = key_variant.value();
+			key = *nbunny::lua::get<nbunny::GameManagerVariant>(L, index);
 		}
 		else
 		{
@@ -1890,10 +2015,9 @@ static int nbunny_game_manager_event_queue_push(lua_State* L)
 		}
 
 		nbunny::GameManagerVariant value;
-		auto value_variant = sol::stack::get<sol::optional<nbunny::GameManagerVariant>>(L, index + 1);
-		if (value_variant.has_value())
+		if (nbunny::lua::is_userdata<nbunny::GameManagerVariant>(L, index + 1))
 		{
-			value = value_variant.value();
+			value = *nbunny::lua::get<nbunny::GameManagerVariant>(L, index + 1);
 		}
 		else
 		{
@@ -1910,13 +2034,12 @@ static int nbunny_game_manager_event_queue_push(lua_State* L)
 
 static int nbunny_game_manager_event_queue_sort(lua_State* L)
 {
-	auto queue = sol::stack::get<nbunny::GameManagerEventQueue*>(L, 1);
+	auto queue = nbunny::lua::get<nbunny::GameManagerEventQueue*>(L, 1);
 
 	nbunny::GameManagerVariant key;
-	auto key_variant = sol::stack::get<sol::optional<nbunny::GameManagerVariant>>(L, 2);
-	if (key_variant.has_value())
+	if (nbunny::lua::is_userdata<nbunny::GameManagerVariant>(L, 2))
 	{
-		key = key_variant.value();
+		key = *nbunny::lua::get<nbunny::GameManagerVariant*>(L, 2);
 	}
 	else
 	{
@@ -1930,7 +2053,7 @@ static int nbunny_game_manager_event_queue_sort(lua_State* L)
 
 static int nbunny_game_manager_event_queue_from_buffer(lua_State* L)
 {
-	auto queue = sol::stack::get<nbunny::GameManagerEventQueue*>(L, 1);
+	auto queue = nbunny::lua::get<nbunny::GameManagerEventQueue*>(L, 1);
 
 	if (lua_islightuserdata(L, 2))
 	{
@@ -1943,7 +2066,7 @@ static int nbunny_game_manager_event_queue_from_buffer(lua_State* L)
 
 static int nbunny_game_manager_event_queue_to_buffer(lua_State* L)
 {
-	auto queue = sol::stack::get<nbunny::GameManagerEventQueue*>(L, 1);
+	auto queue = nbunny::lua::get<nbunny::GameManagerEventQueue*>(L, 1);
 
 	nbunny::GameManagerBuffer* buffer = new nbunny::GameManagerBuffer();
 	queue->to_buffer(*buffer);
@@ -1952,22 +2075,39 @@ static int nbunny_game_manager_event_queue_to_buffer(lua_State* L)
 	return 1;
 }
 
+static int nbunny_game_manager_event_queue_length(lua_State* L)
+{
+	auto queue = nbunny::lua::get<nbunny::GameManagerEventQueue*>(L, 1);
+	nbunny::lua::push(L, queue->length());
+	return 1;
+}
+
+static int nbunny_game_manager_event_queue_get(lua_State* L)
+{
+	auto queue = nbunny::lua::get<nbunny::GameManagerEventQueue*>(L, 1);
+	auto index = nbunny::lua::get<std::size_t>(L, 2);
+	auto variant = nbunny::lua::get<nbunny::GameManagerVariant*>(L, 3);
+	queue->get(index, *variant);
+	return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_gamemanager_eventqueue(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::GameManagerEventQueue>("NGameManagerEventQueue",
-		sol::call_constructor, sol::constructors<nbunny::GameManagerEventQueue()>(),
-		"clear", &nbunny::GameManagerEventQueue::clear,
-		"push", &nbunny_game_manager_event_queue_push,
-		"pull", &nbunny::GameManagerEventQueue::pull,
-		"pop", &nbunny::GameManagerEventQueue::pop,
-		"length", &nbunny::GameManagerEventQueue::length,
-		"get", &nbunny::GameManagerEventQueue::get,
-		"sort", &nbunny_game_manager_event_queue_sort,
-		"fromBuffer", &nbunny_game_manager_event_queue_from_buffer,
-		"toBuffer", &nbunny_game_manager_event_queue_to_buffer);
+	static const luaL_Reg metatable[] = {
+		{ "clear", &nbunny_game_manager_event_queue_clear },
+		{ "push", &nbunny_game_manager_event_queue_push },
+		{ "pull", &nbunny_game_manager_event_queue_pull },
+		{ "pop", &nbunny_game_manager_event_queue_pop },
+		{ "length", &nbunny_game_manager_event_queue_length },
+		{ "get", &nbunny_game_manager_event_queue_get },
+		{ "sort", &nbunny_game_manager_event_queue_sort },
+		{ "fromBuffer", &nbunny_game_manager_event_queue_from_buffer },
+		{ "toBuffer", &nbunny_game_manager_event_queue_to_buffer },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_type<nbunny::GameManagerEventQueue>(L, &nbunny_game_manager_event_queue_constructor, metatable);
 
 	return 1;
 }

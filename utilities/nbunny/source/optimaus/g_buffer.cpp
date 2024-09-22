@@ -102,7 +102,7 @@ int nbunny_g_buffer_constructor(lua_State* L)
 {
 	std::vector<love::PixelFormat> pixel_formats;
 
-	for (int i = 2; i < lua_gettop(L); ++i)
+	for (int i = 2; i <= lua_gettop(L); ++i)
 	{
 		auto pixel_format_name = nbunny::lua::get<std::string>(L, i).c_str();
 

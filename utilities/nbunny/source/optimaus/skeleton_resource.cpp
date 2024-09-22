@@ -41,7 +41,7 @@ extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonresource(lua_State* L)
 {
 	static const luaL_Reg metatable[] = {
-		{ "instnatiate", &nbunny_skeleton_resource_instantiate },
+		{ "instantiate", &nbunny_skeleton_resource_instantiate },
 		{ nullptr, nullptr }
 	};
 	
@@ -277,7 +277,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonresourceinstance(lua_State* L)
 		{ nullptr, nullptr }
 	};
 
-	nbunny::lua::register_child_type<nbunny::SkeletonInstance, nbunny::ResourceInstance>(L, &nbunny_resource_constructor<nbunny::SkeletonResource>, metatable);
+	nbunny::lua::register_child_type<nbunny::SkeletonInstance, nbunny::ResourceInstance>(L, &nbunny_resource_constructor<nbunny::SkeletonInstance>, metatable);
 
 	return 1;
 }
@@ -295,9 +295,9 @@ static int nbunny_skeleton_animation_resource_constructor(lua_State* L)
 
 static int nbunny_skeleton_animation_resource_instantiate(lua_State* L)
 {
-	auto& resource = nbunny::lua::get<nbunny::SkeletonAnimationResource&>(L, 1);
+	auto resource = nbunny::lua::get<nbunny::SkeletonAnimationResource*>(L, 1);
 	lua_pushvalue(L, 2);
-	auto instance = resource.instantiate(L);
+	auto instance = resource->instantiate(L);
 	nbunny::lua::push(L, std::reinterpret_pointer_cast<nbunny::SkeletonAnimationInstance>(instance));
 	return 1;
 }
@@ -396,7 +396,7 @@ void nbunny::SkeletonAnimationInstance::compute_local_transform(
 
 static int nbunny_skeleton_animation_instance_set_key_frames(lua_State* L)
 {
-	auto& animation = nbunny::lua::get<nbunny::SkeletonAnimationInstance&>(L, 1);
+	auto animation = nbunny::lua::get<nbunny::SkeletonAnimationInstance*>(L, 1);
 	int bone = luaL_checkinteger(L, 2);
 
 	std::vector<nbunny::KeyFrame> key_frames;
@@ -408,7 +408,7 @@ static int nbunny_skeleton_animation_instance_set_key_frames(lua_State* L)
 		lua_pop(L, 1);
 	}
 
-	animation.set_key_frames(bone, key_frames);
+	animation->set_key_frames(bone, key_frames);
 
 	return 0;
 }
@@ -459,7 +459,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletonanimationresourceinstance(lua_
 		{ nullptr, nullptr }
 	};
 
-	nbunny::lua::register_child_type<nbunny::SkeletonAnimationInstance, nbunny::ResourceInstance>(L, &nbunny_resource_constructor<nbunny::SkeletonResource>, metatable);
+	nbunny::lua::register_child_type<nbunny::SkeletonAnimationInstance, nbunny::ResourceInstance>(L, &nbunny_resource_constructor<nbunny::SkeletonAnimationInstance>, metatable);
 
 	return 1;
 }
@@ -582,8 +582,7 @@ static int nbunny_skeleton_transforms_get_transforms(lua_State* L)
 static int nbunny_skeleton_transforms_reset(lua_State* L)
 {
 	auto transforms = nbunny::lua::get<nbunny::SkeletonTransforms*>(L, 1);
-	int bone_index = luaL_checkinteger(L, 2);
-	transforms->set_identity(bone_index);
+	transforms->reset();
 	return 0;
 }
 
@@ -719,7 +718,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_skeletontransformsfilter(lua_State* L)
 		{ nullptr, nullptr }
 	};
 
-	nbunny::lua::register_type<nbunny::SkeletonTransformsFilter>(L, &nbunny_skeleton_transforms_constructor, metatable);
+	nbunny::lua::register_type<nbunny::SkeletonTransformsFilter>(L, &nbunny_skeleton_transforms_filter_constructor, metatable);
 
 	return 1;
 }
