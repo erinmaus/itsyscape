@@ -76,7 +76,10 @@ namespace nbunny
 			const std::string& base_vertex_source, const std::string& base_pixel_source,
 			std::string& vertex_source, std::string& pixel_source)> BuildFunc;
 		ShaderCache() = default;
+		ShaderCache(const ShaderCache& other) = delete;
 		~ShaderCache();
+
+		ShaderCache& operator =(const ShaderCache& other) = delete;
 
         bool get_is_mobile() const;
 

@@ -19,7 +19,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "nbunny.hpp"
+#include "nbunny/nbunny.hpp"
+#include "nbunny/optimaus/common.hpp"
 
 namespace nbunny
 {
@@ -149,15 +150,15 @@ namespace nbunny
 	private:
 		GameManagerState* state = nullptr;
 		std::string persisted_type_name;
-		sol::table type;
+		int type;
 
 	public:
 		virtual ~TypeProvider() = default;
 
-		void connect(GameManagerState& state, const std::string& persisted_type_name, const sol::table& type);
+		void connect(GameManagerState& state, const std::string& persisted_type_name, int type);
 		GameManagerState& get_state() const;
 		const std::string& get_persisted_type_name() const;
-		const sol::table& get_type() const;
+		int get_type() const;
 
 		void push_type(lua_State* L);
 
@@ -245,7 +246,7 @@ namespace nbunny
 	class GameManagerState
 	{
 	private:
-		std::vector<std::pair<sol::table, std::unique_ptr<TypeProvider>>> type_providers;
+		std::vector<std::pair<int, std::unique_ptr<TypeProvider>>> type_providers;
 		std::unordered_map<TypeProvider*, std::string> type_provider_names;
 		std::unordered_map<TypeProvider*, std::string> persisted_type_provider_names;
 
@@ -264,7 +265,7 @@ namespace nbunny
 			lua_pushstring(L, type_name.c_str());
 			lua_call(L, 1, 1);
 
-			auto key = sol::stack::get<sol::table>(L, -1);
+			auto key = set_weak_reference(L);
 			auto type_provider = std::make_unique<T>();
 			type_provider->connect(*this, persisted_type_name, key);
 
@@ -308,6 +309,7 @@ namespace nbunny
 		bool has_value() const;
 
 		void set_value(const GameManagerVariant& current_value);
+		GameManagerVariant& get_value();
 		const GameManagerVariant& get_value() const;
 
 		void push_value(lua_State* L, GameManagerState& state);

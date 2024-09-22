@@ -47,6 +47,15 @@ static int nbunny_resource_allocate_id(lua_State* L)
 	return 1;
 }
 
+static int nbunny_resource_instantiate(lua_State* L)
+{
+	auto resource = nbunny::lua::get<nbunny::Resource*>(L, 1);
+	lua_pushvalue(L, 2);
+	auto instance = resource->instantiate(L);
+	nbunny::lua::push(L, instance);
+	return 1;
+}
+
 nbunny::ResourceInstance::ResourceInstance(int id, int reference) :
 	id(id), reference(reference)
 {
@@ -112,6 +121,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_resource(lua_State* L)
 	static const luaL_Reg metatable[] {
 		{ "getCurrentID", &nbunny_resource_get_current_id },
 		{ "allocateID", &nbunny_resource_allocate_id },
+		{ "instantiate", &nbunny_resource_instantiate },
 		{ nullptr, nullptr }
 	};
 

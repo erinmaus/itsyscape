@@ -2018,7 +2018,7 @@ const nbunny::BaseType& nbunny::SkyboxSceneNode::get_type() const
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_skyboxscenenode(lua_State* L)
 {
-	nbunny::lua::register_child_type<nbunny::LuaSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::SkyboxSceneNode>, nullptr);
+	nbunny::lua::register_child_type<nbunny::SkyboxSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::SkyboxSceneNode>, nullptr);
 
 	return 1;
 }

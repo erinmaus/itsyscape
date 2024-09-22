@@ -315,8 +315,8 @@ static int nbunny_shader_cache_register_renderer_pass(lua_State* L)
 {
 	auto shader_cache = nbunny::lua::get<nbunny::ShaderCache*>(L, 1);
 	auto renderer_pass_id = nbunny::lua::get<int>(L, 2);
-	auto vertex_source = nbunny::lua::get<std::string>(L, 2);
-	auto pixel_source = nbunny::lua::get<std::string>(L, 3);
+	auto vertex_source = nbunny::lua::get<std::string>(L, 3);
+	auto pixel_source = nbunny::lua::get<std::string>(L, 4);
 
 	shader_cache->register_renderer_pass(renderer_pass_id, vertex_source, pixel_source);
 	return 0;

@@ -955,8 +955,10 @@ function Application:keyDown(key, ...)
 	self.uiView:getInputProvider():keyDown(key, ...)
 
 	if key == "f1" then
-		self.showDebug = not self.showDebug
-		_CONF.showDebug = self.showDebug
+		if not (love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')) then
+			self.showDebug = not self.showDebug
+			_CONF.showDebug = self.showDebug
+		end
 	end
 
 	return false

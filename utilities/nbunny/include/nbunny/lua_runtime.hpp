@@ -169,16 +169,16 @@ namespace nbunny { namespace lua
     {
         impl::luax_newmetatable(L, LuaType<T>::user_type.c_str(), &LuaType<T>::type_pointer);
 
-        if (metatable)
-        {
-            luaL_register(L, nullptr, metatable);
-        }
-
         lua_pushcfunction(L, &impl_gc<T>);
         lua_setfield(L, -2, "__gc");
 
         lua_pushvalue(L, -1);
         lua_setfield(L, -2, "__index");
+
+        if (metatable)
+        {
+            luaL_register(L, nullptr, metatable);
+        }
 
         lua_newtable(L);
         if (constructor)
@@ -431,8 +431,10 @@ namespace nbunny { namespace lua
     template <typename T>
     auto get_field_or(lua_State* L, int index, int key, const T& default_value)
     {
+        int real_index = impl::luax_toabsoluteindex(L, index);
+
         lua_pushnumber(L, key);
-        lua_gettable(L, index);
+        lua_gettable(L, real_index);
 
         auto result = get_or<T>(L, -1, default_value);
         lua_pop(L, 1);
@@ -662,7 +664,7 @@ namespace nbunny { namespace lua
     template <typename T>
     inline std::enable_if<impl::is_temporary_reference<T>::value, T>::type get_or(lua_State* L, int index, const TemporaryReference& default_value)
     {
-        if (lua_isnil(L, index) || lua_isnone(L, index))
+        if (lua_isnoneornil(L, index))
         {
             return default_value;
         }
