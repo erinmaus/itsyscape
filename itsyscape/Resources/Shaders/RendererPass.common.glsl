@@ -12,3 +12,8 @@ uniform vec4 scape_ClipPlane;
 
 uniform vec3 scape_CameraEye;
 uniform vec3 scape_CameraTarget;
+
+mat4 getWorldViewProjection()
+{
+    return scape_ProjectionMatrix * scape_ViewMatrix * scape_WorldMatrix;
+}

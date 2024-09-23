@@ -142,14 +142,14 @@ function FernView:_updateNodeUniforms(node)
 
 	local material = node:getMaterial()
 	material:send(material.UNIFORM_FLOAT, "scape_BumpHeight", 1)
-	material:send(material.UNIFORM_FLOAT, "scape_MapSize", { map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize() })
-	material:send(material.UNIFORM_FLOAT, "scape_WindDirection", { windDirection:get() })
+	material:send(material.UNIFORM_FLOAT, "scape_MapSize", map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize())
+	material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
 	material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
 	material:send(material.UNIFORM_FLOAT, "scape_BumpForce", 0.25)
 	material:send(material.UNIFORM_TEXTURE, "scape_BumpCanvas", bumpCanvas)
-	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", { windPattern:get() })
+	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 	material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", 0.25)
-	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", { 0, 0, 0, 0 })
+	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
 end
 
 
