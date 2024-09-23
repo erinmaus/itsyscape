@@ -155,10 +155,7 @@ function RemoteGameManager:receive()
 end
 
 function RemoteGameManager:_flush()
-	local b = love.timer.getTime()
-	local n = 0
 	for i = 1, self.pending:length() do
-		n = n + 1
 		self.pending:get(i - 1, self.event)
 		self:process(self.event)
 
@@ -172,8 +169,7 @@ function RemoteGameManager:_flush()
 			break
 		end
 	end
-	local a = love.timer.getTime()
-
+	
 	self.pending:clear(n)
 end
 

@@ -88,6 +88,7 @@ namespace nbunny { namespace lua
         bool luax_isudata(lua_State* L, int index, const char* tname, const void* tpointer);
         void* luax_checkudata(lua_State* L, int index, const char* tname, const void* tpointer);
         int luax_newmetatable(lua_State* L, const char* tname, const void* tpointer);
+        void luax_register(lua_State* L, const char* tname, const luaL_Reg* l);
 
         int luax_toabsoluteindex(lua_State* L, int index);
 
@@ -177,7 +178,7 @@ namespace nbunny { namespace lua
 
         if (metatable)
         {
-            luaL_register(L, nullptr, metatable);
+            impl::luax_register(L, LuaType<T>::user_type.c_str(), metatable);
         }
 
         lua_newtable(L);

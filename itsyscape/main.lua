@@ -1,6 +1,8 @@
 _LOG_SUFFIX = "client"
 require "bootstrap"
 
+local NLuaRuntime = require "nbunny.luaruntime"
+
 if _MOBILE then
 	local p = print
 
@@ -203,6 +205,7 @@ function love.touchmoved(...)
 end
 
 local isCollectingGarbage = true
+local isProfiling = false
 local oldDebug = _DEBUG
 function love.keypressed(...)
 	if _APP and not _CONF.server then
@@ -233,23 +236,33 @@ function love.keypressed(...)
 		elseif (select(1, ...) == 'f5') then
 			itsyrealm.graphics.disable()
 		elseif (select(1, ...) == "f6") then
-			local file = love.filesystem.read("settings.cfg")
-			if file then
-				local r, e = loadstring('return ' .. file)
-				if r then
-					r, e = pcall(r)
+			if love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift') then
+				if isProfiling then
+					isProfiling = true
+					require("jit.p").stop()
+				else
+					isProfiling = false
+					require("jit.p").start("3lm1i1")
+				end
+			else
+				local file = love.filesystem.read("settings.cfg")
+				if file then
+					local r, e = loadstring('return ' .. file)
 					if r then
-						_CONF = e
-						_DEBUG = _CONF.debug
+						r, e = pcall(r)
+						if r then
+							_CONF = e
+							_DEBUG = _CONF.debug
 
-						love.window.setMode(_CONF.width, _CONF.height, {
-							fullscreen = _CONF.fullscreen,
-							vsync = _CONF.vsync,
-							display = _CONF.display
-						})
+							love.window.setMode(_CONF.width, _CONF.height, {
+								fullscreen = _CONF.fullscreen,
+								vsync = _CONF.vsync,
+								display = _CONF.display
+							})
 
-						itsyrealm.graphics.dirty()
-						_APP:getGameView():dirty()
+							itsyrealm.graphics.dirty()
+							_APP:getGameView():dirty()
+						end
 					end
 				end
 			end
@@ -289,10 +302,8 @@ function love.focus(isInFocus)
 end
 
 function love.quit()
-	if _DEBUG then
-		local p = require "ProFi"
-		p:stop()
-		p:writeReport("itsyscape.log")
+	if isProfiling then
+		require("jit.p").stop()
 	end
 
 	local result = _APP:quit()
@@ -472,6 +483,10 @@ function love.run()
 
 	-- Main loop time.
 	return function()
+		if _DEBUG then
+			NLuaRuntime.startMeasurements()
+		end
+
 		-- Process events.
 		if love.event then
 			love.event.pump()
@@ -505,6 +520,10 @@ function love.run()
 		end
 
 		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 1) / 1000) end
+
+		if _DEBUG then
+			NLuaRuntime.stopMeasurements()
+		end
 	end
 end
 

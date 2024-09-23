@@ -32,6 +32,8 @@ function TreeView:new(prop, gameView)
 	self.spawned = false
 	self.depleted = false
 	self.time = 0
+	self._transform = love.math.newTransform()
+	self._color = Color(1, 1, 1, 1)
 end
 
 function TreeView:getBaseModelFilename()
@@ -189,16 +191,18 @@ function TreeView:_updateNodeUniforms(node)
 
 	local material = node:getMaterial()
 	material:send(material.UNIFORM_FLOAT, "scape_BumpForce", 0)
-	material:send(material.UNIFORM_FLOAT, "scape_WindDirection", { windDirection:get() })
+	material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
 	material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
-	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", { windPattern:get() })
+	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 	material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", 0.25)
-	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", { 2.0, 2.0, 2.0, 2.0 })
+	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 2.0, 2.0, 2.0, 2.0)
 	material:send(material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
 end
 
 function TreeView:tick()
+	local b = collectgarbage("count")
 	PropView.tick(self)
+	local a = collectgarbage("count")
 
 	local state = self:getProp():getState()
 	if state.resource then
@@ -240,19 +244,20 @@ function TreeView:update(delta)
 		local delta = self.time / self.FELLED_SPAWN_TIME_SECONDS
 
 		if self.isDepleted then
-			self.treeNode:getMaterial():setColor(Color(1, 1, 1, Tween.sineEaseOut(1 - delta)))
-			self.leavesNode:getMaterial():setColor(Color(1, 1, 1, Tween.sineEaseOut(1 - delta)))
+			self._color.a = Tween.sineEaseOut(1 - delta)
 		else
-			self.treeNode:getMaterial():setColor(Color(1, 1, 1, Tween.sineEaseOut(delta)))
-			self.leavesNode:getMaterial():setColor(Color(1, 1, 1, Tween.sineEaseOut(delta)))
+			self._color.a = Tween.sineEaseOut(delta)
 		end
 
-		for i = 1, self.skeleton:getResource():getNumBones() do
-			self.transforms:setIdentity(i)
-		end
+		self.treeNode:getMaterial():setColor(self._color)
+		self.leavesNode:getMaterial():setColor(self._color)
+
+		self.transforms:reset()
 
 		do
-			local transform = love.math.newTransform()
+			local transform = self._transform
+			transform:reset()
+
 			transform:applyQuaternion(Quaternion.X_90:get())
 
 			self.transforms:setTransform(
@@ -265,14 +270,18 @@ function TreeView:update(delta)
 			local targetRotation = Quaternion.lookAt(Vector(unpack(r.felledPosition)) * Vector.PLANE_XZ, self:getProp():getPosition() * Vector.PLANE_XZ, Vector.UNIT_Y)
 			local currentRotation = Quaternion.IDENTITY:slerp(targetRotation, Tween.sineEaseOut(delta))
 
-			local transform = love.math.newTransform()
+			local transform = self._transform
+			transform:reset()
+
 			transform:applyQuaternion(currentRotation:get())
 
 			self.transforms:setTransform(
 				self.skeleton:getResource():getBoneIndex("tree"),
 				transform)
 		else
-			local transform = love.math.newTransform()
+			local transform = self._transform
+			transform:reset()
+
 			local scale = Tween.sineEaseOut(delta)
 			transform:scale(scale, scale, scale)
 

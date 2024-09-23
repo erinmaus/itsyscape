@@ -8,6 +8,9 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "common/Module.h"
+#include "common/runtime.h"
+#include "modules/timer/Timer.h"
 #include "nbunny/nbunny.hpp"
 #include "nbunny/lua_runtime.hpp"
 
@@ -57,6 +60,104 @@
 // 	lua_pushvalue(L, -3);
 //     lua_settable(L, LUA_REGISTRYINDEX);
 // }
+
+thread_local std::unordered_map<std::string, float> luax_wrapper_func_times;
+thread_local bool luax_wrapper_func_measure = false;
+thread_local int luax_wrapper_func_num_calls = 0;
+
+static int nbunny_lua_runtime_get_func_times(lua_State* L)
+{
+    lua_createtable(L, 0, luax_wrapper_func_times.size());
+    float total_time = 0.0f;
+    for (auto& time: luax_wrapper_func_times)
+    {
+        lua_pushlstring(L, time.first.c_str(), time.first.size());
+        lua_pushnumber(L, time.second);
+        lua_settable(L, -3);
+
+        total_time += time.second;
+    }
+
+    lua_pushnumber(L, total_time);
+    return 2;
+}
+
+static int nbunny_lua_runtime_get_num_calls(lua_State* L)
+{
+    lua_pushinteger(L, luax_wrapper_func_num_calls);
+    return 1;
+}
+
+static int nbunny_lua_runtime_start_measurements(lua_State* L)
+{
+    luax_wrapper_func_measure = true;
+    luax_wrapper_func_num_calls = 0;
+    luax_wrapper_func_times.clear();
+    return 0;
+}
+
+static int nbunny_lua_runtime_stop_measurements(lua_State* L)
+{
+    luax_wrapper_func_measure = false;
+    return 0;
+}
+
+extern "C"
+NBUNNY_EXPORT int luaopen_nbunny_luaruntime(lua_State* L)
+{
+    lua_newtable(L);
+
+    lua_pushcfunction(L, &nbunny_lua_runtime_get_func_times);
+    lua_setfield(L, -2, "getMeasurements");
+
+    lua_pushcfunction(L, &nbunny_lua_runtime_get_num_calls);
+    lua_setfield(L, -2, "getNumCalls");
+
+    lua_pushcfunction(L, &nbunny_lua_runtime_start_measurements);
+    lua_setfield(L, -2, "startMeasurements");
+
+    lua_pushcfunction(L, &nbunny_lua_runtime_stop_measurements);
+    lua_setfield(L, -2, "stopMeasurements");
+
+    return 1;
+}
+
+static int luax_wrapper_func(lua_State* L)
+{
+    auto func = lua_tocfunction(L, lua_upvalueindex(1));
+
+    int result = 0;
+    if (luax_wrapper_func_measure)
+    {
+        ++luax_wrapper_func_num_calls;
+
+        auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+        auto before = timer_instance->getTime();
+        love::luax_catchexcept(L, [&]() { result = func(L); });
+        auto after = timer_instance->getTime();
+
+        luax_wrapper_func_times[lua_tostring(L, lua_upvalueindex(2))] += after - before;
+    }
+    else
+    {
+        love::luax_catchexcept(L, [&]() { result = func(L); });
+    }
+
+    return result;
+}
+
+void nbunny::lua::impl::luax_register(lua_State* L, const char* tname, const luaL_Reg* l)
+{
+    for (auto current = l; current->name && current->func; ++current)
+    {
+        auto name = std::string(tname) + std::string("::") + std::string(current->name);
+
+        lua_pushcfunction(L, current->func);
+        lua_pushlstring(L, name.c_str(), name.size());
+        lua_pushcclosure(L, &luax_wrapper_func, 2);
+        lua_setfield(L, -2, current->name);
+    }
+}
 
 int nbunny::lua::impl::luax_newmetatable(lua_State* L, const char* tname, const void* tpointer)
 {

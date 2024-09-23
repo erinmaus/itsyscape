@@ -27,6 +27,7 @@ local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local Resource = require "ItsyScape.Graphics.Resource"
 local ToolTip = require "ItsyScape.UI.ToolTip"
+local NLuaRuntime = require "nbunny.luaruntime"
 
 local function inspectGameDB(gameDB)
 	local VISIBLE_RESOURCES = {
@@ -155,6 +156,7 @@ function Application:new(multiThreaded)
 	self.times = {}
 	self.ticks = {}
 	self.drawCalls = {}
+	self.nbunnyCalls = {}
 
 	if _CONF.server then
 		Log.info("Server only.")
@@ -1063,9 +1065,18 @@ function Application:drawDebug()
 	end
 	local maxDrawCalls = math.max(unpack(self.drawCalls))
 
+	local _, nbunnyTime = NLuaRuntime.getMeasurements()
+
+	local numNbunnyCalls = NLuaRuntime.getNumCalls()
+	table.insert(self.nbunnyCalls, numNbunnyCalls)
+	while #self.nbunnyCalls > self.MAX_DRAW_CALLS do
+		table.remove(self.nbunnyCalls, 1)
+	end
+	numNbunnyCalls = math.max(unpack(self.nbunnyCalls))
+
 	local width = love.window.getMode()
 	local r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
-	r = (r or "") .. string.format("FPS: %03d/%.02f ms (%03d draws, %03d draws max, >%04d MB)\n", love.timer.getFPS(), 1 / love.timer.getFPS() * 1000, drawCalls, maxDrawCalls, collectgarbage("count") / 1024 + textureMemory / 1024 / 1024 + (self.serverMemory or 0) / 1024)
+	r = (r or "") .. string.format("FPS: %03d/%.02f ms (%03d draws, %03d draws max, %04d nbunny calls (%02.02f ms), >%04d MB)\n", love.timer.getFPS(), 1 / love.timer.getFPS() * 1000, drawCalls, maxDrawCalls, numNbunnyCalls, nbunnyTime * 1000, collectgarbage("count") / 1024 + textureMemory / 1024 / 1024 + (self.serverMemory or 0) / 1024)
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(

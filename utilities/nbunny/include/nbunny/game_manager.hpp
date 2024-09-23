@@ -315,6 +315,16 @@ namespace nbunny
 		void push_value(lua_State* L, GameManagerState& state);
 	};
 
+	class GameManagerInstance
+	{
+	private:
+		std::vector<std::shared_ptr<GameManagerProperty>> properties;
+
+	public:
+		GameManagerInstance();
+		~GameManagerInstance() = default;
+	};
+
 	class GameManagerEventQueue
 	{
 	private:
