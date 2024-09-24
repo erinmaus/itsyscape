@@ -350,7 +350,7 @@ nbunny::GameManagerVariant& nbunny::GameManagerVariant::operator =(const GameMan
 	return *this;
 }
 
-void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, int count)
+void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, int count, bool simple_marshal)
 {
 	if (index < 0)
 	{
@@ -364,7 +364,7 @@ void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, int count)
 		for (int i = index; i <= count; ++i)
 		{
 			GameManagerVariant v;
-			v.from_lua(L, i);
+			v.from_lua(L, i, -1, simple_marshal);
 
 			value.args->parameter_values.emplace_back(std::move(v));
 		}
@@ -372,11 +372,11 @@ void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, int count)
 	else
 	{
 		std::set<const void*> e;
-		from_lua(L, index, e);
+		from_lua(L, index, e, simple_marshal);
 	}
 }
 
-int nbunny::GameManagerVariant::to_lua(lua_State* L) const
+int nbunny::GameManagerVariant::to_lua(lua_State* L, bool simple_marshal) const
 {
 	switch (type)
 	{
@@ -395,7 +395,7 @@ int nbunny::GameManagerVariant::to_lua(lua_State* L) const
 			return 1;
 		case TYPE_TABLE:
 			{
-				if (get("__persist").type != TYPE_NIL)
+				if (get("__persist").type != TYPE_NIL && !simple_marshal)
 				{
 					auto state = GameManagerState::get(L);
 					if (!state->to_lua(L, *this))
@@ -515,7 +515,7 @@ nbunny::GameManagerVariant nbunny::GameManagerVariant::get(const GameManagerVari
 
 nbunny::GameManagerVariant nbunny::GameManagerVariant::get(std::size_t index) const
 {
-	if (type != TYPE_TABLE || type != TYPE_ARGS)
+	if (type != TYPE_TABLE && type != TYPE_ARGS)
 	{
 		throw std::runtime_error("not table or args");
 	}
@@ -906,7 +906,7 @@ bool nbunny::GameManagerVariant::less(const GameManagerVariant& search_key, cons
 	}
 }
 
-void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, std::set<const void*>& e)
+void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, std::set<const void*>& e, bool simple_marshal)
 {
 	if (index < 0)
 	{
@@ -953,7 +953,7 @@ void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, std::set<cons
 					lua_rawgeti(L, index, i);
 
 					GameManagerVariant v;
-					v.from_lua(L, -1, e);
+					v.from_lua(L, -1, e, simple_marshal);
 
 					value.table->array_values.emplace_back(std::move(v));
 					lua_pop(L, 1);
@@ -973,10 +973,10 @@ void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, std::set<cons
 					}
 
 					GameManagerVariant k;
-					k.from_lua(L, -2, e);
+					k.from_lua(L, -2, e, simple_marshal);
 
 					GameManagerVariant v;
-					v.from_lua(L, -1, e);
+					v.from_lua(L, -1, e, simple_marshal);
 
 					set(k, v);
 
@@ -988,7 +988,15 @@ void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, std::set<cons
 		}
 		break;
 	default:
-		luaL_error(L, "unexpected or unhandled type '%s' when serializing Lua data", lua_typename(L, lua_type(L, index)));
+		if (simple_marshal)
+		{
+			to_string(lua_typename(L, lua_type(L, index)));
+		}
+		else
+		{
+			luaL_error(L, "unexpected or unhandled type '%s' when serializing Lua data", lua_typename(L, lua_type(L, index)));
+		}
+
 		break;
 	}
 }
@@ -1632,7 +1640,10 @@ bool nbunny::GameManagerState::from_lua(lua_State* L, int index, GameManagerVari
 	}
 
 	value.to_table();
+
+	int top = lua_gettop(L);
 	type_provider->second->serialize(L, index, value);
+	lua_pop(L, lua_gettop(L) - top);
 
 	value.set("__persist", true);
 	value.set("typeName", persisted_type_provider_names.find(type_provider->second.get())->second);

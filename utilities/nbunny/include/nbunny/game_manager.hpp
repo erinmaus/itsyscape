@@ -85,8 +85,8 @@ namespace nbunny
 
 		GameManagerVariant& operator =(const GameManagerVariant& other);
 
-		void from_lua(lua_State* L, int index, int count = -1);
-		int to_lua(lua_State* L) const;
+		void from_lua(lua_State* L, int index, int count = -1, bool simple_marshal = false);
+		int to_lua(lua_State* L, bool simple_marshal = false) const;
 
 		int get_type() const;
 
@@ -140,7 +140,7 @@ namespace nbunny
 			Args* args;
 		} value;
 
-		void from_lua(lua_State* L, int index, std::set<const void*>& e);
+		void from_lua(lua_State* L, int index, std::set<const void*>& e, bool simple_marshal);
 	};
 
 	class GameManagerState;

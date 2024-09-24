@@ -13,57 +13,29 @@
 #include "modules/timer/Timer.h"
 #include "nbunny/nbunny.hpp"
 #include "nbunny/lua_runtime.hpp"
+#include "nbunny/game_manager.hpp"
 
-// const static int WEAK_USERDATA_REFERENCE_KEY = 0;
-// void nbunny::lua::impl::get_weak_userdata_reference_table(lua_State* L)
-// {
-// 	lua_pushlightuserdata(L, const_cast<int*>(&WEAK_USERDATA_REFERENCE_KEY));
-// 	lua_rawget(L, LUA_REGISTRYINDEX);
+struct FuncTime
+{
+    float time = 0.0f;
+    int num_calls = 0;
+};
 
-// 	if (lua_isnil(L, -1)) {
-// 		lua_pop(L, 1);
-// 		lua_pushlightuserdata(L, const_cast<int*>(&WEAK_USERDATA_REFERENCE_KEY));
-// 		lua_newtable(L);
+struct Call
+{
+    std::string func;
+    nbunny::GameManagerVariant arguments;
+    nbunny::GameManagerVariant return_value;
+    std::vector<std::string> stack;
+    float time = 0.0f;
+};
 
-// 		// Create metatable with 'weak values'.
-// 		lua_newtable(L);
-// 		lua_pushstring(L, "__mode");
-// 		lua_pushstring(L, "v");
-// 		lua_rawset(L, -3);
-
-// 		// Assign metatable.
-// 		lua_setmetatable(L, -2);
-
-// 		// Assign table to registory.
-// 		lua_rawset(L, LUA_REGISTRYINDEX);
-
-// 		// Retrieve table again.
-// 		lua_pushlightuserdata(L, const_cast<int*>(&WEAK_USERDATA_REFERENCE_KEY));
-// 		lua_rawget(L, LUA_REGISTRYINDEX);
-// 	}
-// }
-
-// bool nbunny::lua::impl::get_weak_userdata_reference(lua_State* L, void* key)
-// {
-// 	get_weak_reference_table(L);
-//     lua_
-// 	lua_rawgeti(L, -1, key);
-// 	lua_remove(L, -2);
-// }
-
-// void nbunny::lua::impl::set_weak_userdata_reference(lua_State* L)
-// {
-// 	get_weak_reference_table(L);
-
-//     auto key = lua_touserdata(L, -2);
-//     lua_pushlightuserdata(L, key);
-// 	lua_pushvalue(L, -3);
-//     lua_settable(L, LUA_REGISTRYINDEX);
-// }
-
-thread_local std::unordered_map<std::string, float> luax_wrapper_func_times;
+thread_local std::unordered_map<std::string, FuncTime> luax_wrapper_func_times;
 thread_local bool luax_wrapper_func_measure = false;
 thread_local int luax_wrapper_func_num_calls = 0;
+
+thread_local std::vector<Call> luax_wrapper_debug_calls;
+thread_local bool luax_wrapper_func_debug = false;
 
 static int nbunny_lua_runtime_get_func_times(lua_State* L)
 {
@@ -72,14 +44,83 @@ static int nbunny_lua_runtime_get_func_times(lua_State* L)
     for (auto& time: luax_wrapper_func_times)
     {
         lua_pushlstring(L, time.first.c_str(), time.first.size());
-        lua_pushnumber(L, time.second);
+        lua_newtable(L);
+        lua_pushnumber(L, time.second.time * 1000.0f);
+        lua_setfield(L, -2, "time");
+        lua_pushinteger(L, time.second.num_calls);
+        lua_setfield(L, -2, "calls");
         lua_settable(L, -3);
 
-        total_time += time.second;
+        total_time += time.second.time;
     }
 
     lua_pushnumber(L, total_time);
     return 2;
+}
+
+static int nbunny_lua_runtime_get_calls(lua_State* L)
+{
+    lua_createtable(L, 0, luax_wrapper_debug_calls.size());
+    int index = 1;
+    for (auto& call: luax_wrapper_debug_calls)
+    {
+        lua_newtable(L);
+
+        lua_pushlstring(L, call.func.c_str(), call.func.size());
+        lua_setfield(L, -2, "functionName");
+
+        lua_newtable(L);
+
+        lua_newtable(L);
+        for (auto i = 1; i <= call.arguments.length(); ++i)
+        {
+            auto value = call.arguments.get(i - 1);
+            value.to_lua(L);
+            lua_rawseti(L, -2, i);
+        }
+        lua_setfield(L, -2, "values");
+
+        lua_pushinteger(L, call.arguments.length());
+        lua_setfield(L, -2, "n");
+
+        lua_setfield(L, -2, "arguments");
+
+        lua_newtable(L);
+
+        lua_newtable(L);
+        for (auto i = 1; i <= call.return_value.length(); ++i)
+        {
+            auto value = call.return_value.get(i - 1);
+            value.to_lua(L);
+            lua_rawseti(L, -2, i);
+        }
+        lua_setfield(L, -2, "values");
+
+        lua_pushinteger(L, call.return_value.length());
+        lua_setfield(L, -2, "n");
+
+        lua_setfield(L, -2, "returnValue");
+
+        lua_newtable(L);
+        for (auto i = 0; i < call.stack.size(); ++i)
+        {
+            auto& s = call.stack[i];
+            lua_pushlstring(L, s.c_str(), s.size());
+            lua_rawseti(L, -2, i + 1);
+        }
+        lua_setfield(L, -2, "stack");
+
+        lua_pushnumber(L, call.time);
+        lua_setfield(L, -2, "time");
+
+        lua_pushinteger(L, index);
+        lua_setfield(L, -2, "id");
+
+        lua_rawseti(L, -2, index);
+        ++index;
+    }
+
+    return 1;
 }
 
 static int nbunny_lua_runtime_get_num_calls(lua_State* L)
@@ -102,6 +143,19 @@ static int nbunny_lua_runtime_stop_measurements(lua_State* L)
     return 0;
 }
 
+static int nbunny_lua_runtime_start_debug(lua_State* L)
+{
+    luax_wrapper_func_debug = true;
+    luax_wrapper_debug_calls.clear();
+    return 0;
+}
+
+static int nbunny_lua_runtime_stop_debug(lua_State* L)
+{
+    luax_wrapper_func_debug = false;
+    return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_luaruntime(lua_State* L)
 {
@@ -109,6 +163,9 @@ NBUNNY_EXPORT int luaopen_nbunny_luaruntime(lua_State* L)
 
     lua_pushcfunction(L, &nbunny_lua_runtime_get_func_times);
     lua_setfield(L, -2, "getMeasurements");
+
+    lua_pushcfunction(L, &nbunny_lua_runtime_get_calls);
+    lua_setfield(L, -2, "getCalls");
 
     lua_pushcfunction(L, &nbunny_lua_runtime_get_num_calls);
     lua_setfield(L, -2, "getNumCalls");
@@ -118,6 +175,12 @@ NBUNNY_EXPORT int luaopen_nbunny_luaruntime(lua_State* L)
 
     lua_pushcfunction(L, &nbunny_lua_runtime_stop_measurements);
     lua_setfield(L, -2, "stopMeasurements");
+
+    lua_pushcfunction(L, &nbunny_lua_runtime_start_debug);
+    lua_setfield(L, -2, "startDebug");
+
+    lua_pushcfunction(L, &nbunny_lua_runtime_stop_debug);
+    lua_setfield(L, -2, "stopDebug");
 
     return 1;
 }
@@ -129,14 +192,40 @@ static int luax_wrapper_func(lua_State* L)
     int result = 0;
     if (luax_wrapper_func_measure)
     {
+        auto& t = luax_wrapper_func_times[lua_tostring(L, lua_upvalueindex(2))];
+        ++t.num_calls;
         ++luax_wrapper_func_num_calls;
+
+        Call call;
+        if (luax_wrapper_func_debug)
+        {
+            call.func = lua_tostring(L, lua_upvalueindex(2));
+            call.arguments.from_lua(L, 1, lua_gettop(L), true);
+        }
 
         auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
         auto before = timer_instance->getTime();
         love::luax_catchexcept(L, [&]() { result = func(L); });
         auto after = timer_instance->getTime();
 
-        luax_wrapper_func_times[lua_tostring(L, lua_upvalueindex(2))] += after - before;
+        if (luax_wrapper_func_debug)
+        {
+            call.return_value.from_lua(L, call.arguments.length() + 1, lua_gettop(L), true);
+            call.time = (after - before) * 1000.0;
+
+            int level = 1;
+            lua_Debug debug;
+            while(lua_getstack(L, level, &debug))
+            {
+                lua_getinfo(L, "nSl", &debug);
+                call.stack.push_back(std::string(debug.short_src) + std::string(":") + std::to_string(debug.currentline) + std::string("@") + std::string(debug.name ? debug.name : "???"));
+                ++level;
+            }
+
+            luax_wrapper_debug_calls.push_back(call);
+        }
+
+        t.time += after - before;
     }
     else
     {
