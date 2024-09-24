@@ -207,6 +207,7 @@ end
 local isCollectingGarbage = true
 local isProfiling = false
 local oldDebug = _DEBUG
+local dumpNbunnyFuncCalls = false
 function love.keypressed(...)
 	if _APP and not _CONF.server then
 		_APP:keyDown(...)
@@ -244,6 +245,8 @@ function love.keypressed(...)
 					isProfiling = false
 					require("jit.p").start("3lm1i1")
 				end
+			elseif love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
+				dumpNbunnyFuncCalls = true
 			else
 				local file = love.filesystem.read("settings.cfg")
 				if file then
@@ -483,8 +486,14 @@ function love.run()
 
 	-- Main loop time.
 	return function()
+		local oldDumpNbunnyFuncCalls = dumpNbunnyFuncCalls
+		
 		if _DEBUG then
 			NLuaRuntime.startMeasurements()
+
+			if oldDumpNbunnyFuncCalls then
+				NLuaRuntime.startDebug()
+			end
 		end
 
 		-- Process events.
@@ -523,6 +532,56 @@ function love.run()
 
 		if _DEBUG then
 			NLuaRuntime.stopMeasurements()
+
+			if oldDumpNbunnyFuncCalls then
+				NLuaRuntime.stopDebug()
+
+				do
+					local calls, totalTime = NLuaRuntime.getMeasurements()
+					local totalNumCalls = NLuaRuntime.getNumCalls()
+
+					local csv = {}
+					for method, stats in pairs(calls) do
+						table.insert(csv, string.format("%s, %d, %f", method, stats.calls, stats.time))
+					end
+
+					table.sort(csv, function(a, b)
+						return a < b
+					end)
+
+					Log.info("Nbunny function calls (%d total, %.2f ms):\n%s", totalNumCalls, totalTime * 1000, table.concat(csv, "\n"))
+				end
+
+				do
+					local json = require "json"
+					local s, r = pcall(NLuaRuntime.getCalls)
+					if not s then
+						print(">>> WHOOPS!", s, r)
+					end
+
+					local calls = NLuaRuntime.getCalls()
+					table.sort(calls, function(a, b)
+						if a.functionName == b.functionName then
+							return a.time < b.time
+						end
+
+						return a.functionName < b.functionName
+					end)
+
+					for _, call in ipairs(calls) do
+						call.arguments = Log.dump(call.arguments)
+						call.returnValue = Log.dump(call.returnValue)
+					end
+
+					local result = json.encode(calls)
+					--local result = Log.dump(calls)
+
+					local filename = string.format("nbunny-%s.json", os.date("%Y%m%d_%H%M%S"))
+					love.filesystem.write(filename, result)
+				end
+
+				dumpNbunnyFuncCalls = false
+			end
 		end
 	end
 end
