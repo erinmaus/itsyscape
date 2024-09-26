@@ -1,16 +1,14 @@
 vec2 encodeGBufferNormal(vec3 normal)
 {
-    float f = sqrt(normal.z * 8.0 + 8.0);
-    return normal.xy / vec2(f) + vec2(0.5);
+    float l = length(normal.xy);
+    float d = step(l, 0.0);
+    return (normal.xy / vec2(l + d)) * vec2(sqrt((normal.z + 1.0) / 2.0));
 }
 
 vec3 decodeGBufferNormal(vec2 encodedNormal)
 {
-    vec2 transformedEncodedNormal = encodedNormal * vec2(4.0) - vec2(2.0);
-    float f = dot(transformedEncodedNormal, transformedEncodedNormal);
-    float g = sqrt(1.0 - f / 4.0);
-
-    return vec3(encodedNormal * vec2(g), 1.0 - f / 2.0);
+    float l = dot(vec3(encodedNormal, 1.0), vec3(-encodedNormal, 1.0));
+    return vec3(encodedNormal * vec2(sqrt(l)), l) * vec3(2.0) - vec3(vec2(0.0), 1.0);
 }
 
 vec3 worldPositionFromGBufferDepth(float depth, vec2 textureCoordinate, mat4 inverseProjectionMatrix, mat4 inverseViewMatrix)

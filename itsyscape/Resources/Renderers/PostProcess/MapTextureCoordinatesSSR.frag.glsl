@@ -1,11 +1,14 @@
-#line 1
+#include "Resources/Shaders/GBuffer.common.glsl"
+
 uniform Image scape_NormalTexture;
-uniform Image scape_PositionTexture;
+uniform Image scape_DepthTexture;
 uniform Image scape_ReflectionPropertiesTexture;
 uniform Image scape_ColorTexture;
 uniform vec2 scape_TexelSize;
-uniform mat4 scape_Projection;
-uniform mat4 scape_View;
+uniform mat4 scape_ProjectionMatrix;
+uniform mat4 scape_InverseProjectionMatrix;
+uniform mat4 scape_ViewMatrix;
+uniform mat4 scape_InverseViewMatrix;
 uniform vec3 scape_CameraDirection;
 
 uniform float scape_MaxDistanceViewSpace;
@@ -20,7 +23,7 @@ const float CLIP_PLANE_Z = 2.0;
 
 vec4 toPixel(vec4 viewPosition)
 {
-	vec4 result = scape_Projection * viewPosition;
+	vec4 result = scape_ProjectionMatrix * viewPosition;
 	result.xyz /= result.w;
 	result.xy += vec2(1.0);
 	result.xy /= vec2(2.0);
@@ -29,9 +32,16 @@ vec4 toPixel(vec4 viewPosition)
 	return result;
 }
 
+vec4 getWorldPosition(vec2 textureCoordinate)
+{
+	float depth = texture(scape_DepthTexture, textureCoordinate).x;
+	vec3 worldPosition = worldPositionFromGBufferDepth(depth, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
+	return vec4(worldPosition, 1.0);
+}
+
 vec4 toViewSpace(vec4 worldPosition)
 {
-	return scape_View * worldPosition;
+	return scape_ViewMatrix * worldPosition;
 }
 
 vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float maxViewSpaceDistance)
@@ -79,7 +89,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float ma
 		currentPixel += increment;
 
 		localTextureCoordinate = currentPixel * scape_TexelSize;
-		localPosition = toViewSpace(vec4(texture(scape_PositionTexture, localTextureCoordinate).xyz, 1.0));
+		localPosition = toViewSpace(getWorldPosition(localTextureCoordinate));
 
 		vec2 difference = (currentPixel - startPixel.xy) / delta;
 		searchHit = clamp(useX * difference.x + (1.0 - useX) * difference.y, 0.0, 1.0);
@@ -104,7 +114,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float ma
 	{
 		vec2 currentFragment = mix(startPixel.xy, endPixel.xy, searchHit);
 		localTextureCoordinate = currentFragment * scape_TexelSize;
-		localPosition = toViewSpace(vec4(texture(scape_PositionTexture, localTextureCoordinate).xyz, 1.0));
+		localPosition = toViewSpace(getWorldPosition(localTextureCoordinate));
 		viewDistance = (startViewSpace.z * endViewSpace.z) / mix(endViewSpace.z, startViewSpace.z, searchHit);
 		depth = viewDistance - localPosition.z;
 
@@ -150,11 +160,11 @@ void effect()
 		return;
 	}
 
-	vec3 worldPosition = Texel(scape_PositionTexture, textureCoordinate).xyz;
-	vec3 viewPosition = toViewSpace(vec4(worldPosition.xyz, 1.0)).xyz;
+	vec4 worldPosition = getWorldPosition(textureCoordinate);
+	vec3 viewPosition = toViewSpace(worldPosition).xyz;
 	vec3 surfaceViewSpaceNormal = normalize(viewPosition);
-	vec3 normal = normalize(Texel(scape_NormalTexture, textureCoordinate).xyz);
-	normal = normalize(inverse(transpose(mat3(scape_View))) * normal);
+	vec3 normal = normalize(decodeGBufferNormal(Texel(scape_NormalTexture, textureCoordinate).rg));
+	normal = normalize(inverse(transpose(mat3(scape_ViewMatrix))) * normal);
 
 	vec3 reflectionPivot = normalize(reflect(surfaceViewSpaceNormal, normal));
 	vec4 reflectionResult = ssr(viewPosition, surfaceViewSpaceNormal, reflectionPivot, reflectionProperties.y * scape_MaxDistanceViewSpace);

@@ -25,7 +25,6 @@ void performTransform(
 	float left = calculateWaveHeight(localPosition - vec3(-1.0, 0.0, 0.0));
 	float right = calculateWaveHeight(localPosition - vec3(1.0, 0.0, 0.0));
 	frag_Normal = normalize(vec3(2.0 * (left - right), 4.0, 2.0 * (top - bottom)));
-	frag_Normal = vec3(0.0, 1.0, 0.0);
 
 	projectedPosition = modelViewProjectionMatrix * vec4(localPosition, 1.0);
 }
