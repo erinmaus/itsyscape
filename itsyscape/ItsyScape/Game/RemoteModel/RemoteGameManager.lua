@@ -35,8 +35,7 @@ function RemoteGameManager:new(rpcService, ...)
 
 	self.rpcService = rpcService
 
-	self.pending = NEventQueue()
-	self.event = NVariant()
+	self.pending = {}
 
 	self:registerInterface("ItsyScape.Game.Model.Actor", RemoteActor)
 	self:registerInterface("ItsyScape.Game.Model.Game", RemoteGame)
@@ -111,13 +110,20 @@ function RemoteGameManager:send()
 	self:getQueue():tick()
 end
 
+local function _sortPending(a, b)
+	return a.__timestamp < b.__timestamp
+end
+
 function RemoteGameManager:receive()
 	local e
 	repeat
 		e = self.rpcService:receive()
 		if e then
-			self.pending:pull(e)
-			if e.type == EventQueue.EVENT_TYPE_TICK then
+			table.insert(self.pending, e)
+
+			if e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY then
+				self:process(e)
+			elseif e.type == EventQueue.EVENT_TYPE_TICK then
 				if e.interface then
 					if self.processedTicks[e.interface] then
 						self.processedTicks[e.interface] = self.processedTicks[e.interface] + 1
@@ -134,7 +140,7 @@ function RemoteGameManager:receive()
 								self.processedTicks[interface] = ticks - 1
 							end
 
-							self.pending:sort("__timestamp")
+							table.sort(self.pending, _sortPending)
 							self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
 							self:flush()
 
@@ -155,22 +161,35 @@ function RemoteGameManager:receive()
 end
 
 function RemoteGameManager:_flush()
-	for i = 1, self.pending:length() do
-		self.pending:get(i - 1, self.event)
-		self:process(self.event)
+	local n = 0
+	for i = 1, #self.pending do
+		local e = self.pending[i]
 
-		if self.event.type == EventQueue.EVENT_TYPE_TICK then
+		if not (e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY) then
+			self:process(e)
+		end
+
+		if e.type == EventQueue.EVENT_TYPE_TICK then
 			local j = i + 1
-			while self.event.type == EventQueue.EVENT_TYPE_TICK and j <= self.pending:length() do
-				self.pending:get(j - 1, self.event)
+			while e.type == EventQueue.EVENT_TYPE_TICK and j <= #self.pending do
+				e = self.pending[j]
 				j = j + 1
 			end
+
+			n = j
 
 			break
 		end
 	end
-	
-	self.pending:clear(n)
+
+	if n == #self.pending then
+		table.clear(self.pending)
+	else
+		while n > 0 do
+			table.remove(self.pending, 1)
+			n = n - 1
+		end
+	end
 end
 
 function RemoteGameManager:flush()

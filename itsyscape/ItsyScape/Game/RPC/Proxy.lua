@@ -141,7 +141,7 @@ function Proxy:wrapClient(interface, id, instance, gameManager)
 				return property:getDefaultValue()
 			end
 
-			return gameManager:getProperty(interface, id, propertyName)
+			return property:filter(gameManager:getProperty(interface, id, propertyName))
 		end
 	end
 

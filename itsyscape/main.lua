@@ -554,10 +554,6 @@ function love.run()
 
 				do
 					local json = require "json"
-					local s, r = pcall(NLuaRuntime.getCalls)
-					if not s then
-						print(">>> WHOOPS!", s, r)
-					end
 
 					local calls = NLuaRuntime.getCalls()
 					table.sort(calls, function(a, b)

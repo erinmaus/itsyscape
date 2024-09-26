@@ -191,7 +191,9 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	for (auto& renderer_pass: renderer_passes)
 	{
 		current_renderer_pass_id = renderer_pass->get_renderer_pass_id();
+		lua::push_sub(std::string("nbunny::Renderer::draw@renderer_pass_id=") + std::to_string(current_renderer_pass_id));
 		renderer_pass->draw(L, node, delta);
+		lua::pop_sub();
 	}
 
 	current_renderer_pass_id = RENDERER_PASS_NONE;
