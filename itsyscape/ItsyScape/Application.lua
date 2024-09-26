@@ -147,7 +147,8 @@ function Application:new(multiThreaded)
 			model = string.format("%s / %s", jit and jit.arch or "???", device or "???")
 		}, self.inputAdminChannel, self.outputAdminChannel)
 
-		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.tickMultiThread, self)
+		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.preTickMultiThread, self)
+		self.remoteGameManager.onFlush:register((_CONF.server and self.tickServer) or self.postTickMultiThread, self)
 		self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	end
 
@@ -600,16 +601,17 @@ end
 function Application:tickSingleThread()
 	self:doCommonTick()
 
-	self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
+	self:measure('gameView:preTick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
 	self:measure('uiView:tick()', function() self.uiView:tick() end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
+	self:measure('gameView:postTick()', function() self.gameView:postTick(self:getPreviousFrameDelta()) end)
 end
 
-function Application:tickMultiThread()
+function Application:preTickMultiThread()
 	self:doCommonTick()
 
 	if self.show3D then
-		self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
+		self:measure('gameView:preTick()', function() self.gameView:preTick(self:getPreviousFrameDelta()) end)
 	end
 
 	self:measure('uiView:tick()', function() self.uiView:tick() end)
@@ -620,6 +622,10 @@ function Application:tickMultiThread()
 	self.inputAdminChannel:push({
 		type = 'tick'
 	})
+end
+
+function Application:postTickMultiThread()
+	self:measure('gameView:postTick()', function() self.gameView:postTick(self:getPreviousFrameDelta()) end)
 end
 
 function Application:tickServer()

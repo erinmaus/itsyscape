@@ -1952,7 +1952,7 @@ function GameView:draw(delta, width, height)
 	self.renderer:present(true)
 end
 
-function GameView:tick(frameDelta)
+function GameView:preTick(frameDelta)
 	self.generalDebugStats:measure("GameView::tickScene", self.scene.tick, self.scene, frameDelta)
 
 	for projectile in pairs(self.projectiles) do
@@ -1965,7 +1965,9 @@ function GameView:tick(frameDelta)
 	for skybox in pairs(self.skyboxes) do
 		skybox:tick(frameDelta)
 	end
+end
 
+function GameView:postTick()
 	local gameManager = self.game:getGameManager()
 	if gameManager then
 		for _, instance in gameManager:iterateDirty() do
@@ -1974,7 +1976,7 @@ function GameView:tick(frameDelta)
 			local objectView = self.actors[object] or self.props[object]
 			if objectView then
 				self.generalDebugStats:measure(
-					string.format("actor::%s::tick", object:getPeepID()),
+					string.format("%s::%s::tick", interface, object:getPeepID()),
 					objectView.tick,
 					objectView)
 			end

@@ -77,6 +77,7 @@ function RemoteGameManager:new(rpcService, ...)
 		self)
 
 	self.onTick = Callback(false)
+	self.onFlush = Callback(false)
 
 	self.rpcService:connect(self)
 end
@@ -149,16 +150,13 @@ function RemoteGameManager:receive()
 							end
 
 							table.sort(self.pending, _sortPending)
-							self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
-							self:flush()
+							self:tick()
 
 							break
 						end
 					end
 				else
-					self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
-					self:flush()
-
+					self:tick()
 					break
 				end
 			end
@@ -168,12 +166,24 @@ function RemoteGameManager:receive()
 	return false
 end
 
+function RemoteGameManager:tick()
+	self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
+	self:flush()
+	self.onFlush(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
+
+	for _, dirtyInstances in pairs(self.dirtyInstances) do
+		table.clear(dirtyInstances)
+	end
+
+	table.clear(self.dirtyInstancesCache)
+end
+
 function RemoteGameManager:_flush()
 	local n = 0
 	for i = 1, #self.pending do
 		local e = self.pending[i]
-
 		self:markDirty(e)
+
 		if not (e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY) then
 			self:process(e)
 		end
@@ -199,12 +209,6 @@ function RemoteGameManager:_flush()
 			n = n - 1
 		end
 	end
-
-	for _, dirtyInstances in pairs(self.dirtyInstances) do
-		table.clear(dirtyInstances)
-	end
-
-	table.clear(self.dirtyInstancesCache)
 end
 
 function RemoteGameManager:flush()

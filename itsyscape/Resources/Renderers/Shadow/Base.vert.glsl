@@ -40,7 +40,7 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 	vec3 localPosition = vec3(0.0);
 	vec4 projectedPosition = vec4(0.0);
 	performTransform(
-		getWorldViewProjection(),
+		modelViewProjection,
 		vertexPosition,
 		localPosition,
 		projectedPosition);
