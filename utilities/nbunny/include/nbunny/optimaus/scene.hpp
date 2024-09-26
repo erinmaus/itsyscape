@@ -216,7 +216,11 @@ namespace nbunny
 		bool get_reference(lua_State* L) const;
 
 		virtual void tick(float delta);
+		void tick_children(lua_State* L, float delta);
 		bool get_ticked() const;
+
+		virtual void frame(float delta);
+		void frame_children(lua_State* L, float delta);
 
 		void unset_parent();
 		void set_parent(SceneNode* value);

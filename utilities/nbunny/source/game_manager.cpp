@@ -355,6 +355,8 @@ nbunny::GameManagerVariant& nbunny::GameManagerVariant::operator =(GameManagerVa
 	}
 
 	other.type = TYPE_NIL;
+
+	return *this;
 }
 
 void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, int count, bool simple_marshal)

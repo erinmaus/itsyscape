@@ -239,8 +239,4 @@ function SceneNodeTransform:tick(frameDelta)
 	self.previousTranslation = self.translation
 end
 
-function SceneNodeTransform:frame(delta)
-	-- Nothing.
-end
-
 return SceneNodeTransform

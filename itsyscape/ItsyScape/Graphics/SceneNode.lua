@@ -180,18 +180,12 @@ function SceneNode:tick(frameDelta)
 	frameDelta = frameDelta or 1
 
 	self._handle:tick(frameDelta)
-
-	for child in self:iterate() do
-		child:tick(frameDelta)
-	end
+	self._handle:tickChildren(frameDelta)
 end
 
 function SceneNode:frame(delta)
-	self.transform:frame(delta)
-
-	for child in self:iterate() do
-		child:frame(delta)
-	end
+	self._handle:frame(delta)
+	self._handle:frameChildren(delta)
 end
 
 function SceneNode:beforeDraw(renderer, delta)

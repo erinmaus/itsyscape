@@ -37,6 +37,9 @@ function RemoteGameManager:new(rpcService, ...)
 
 	self.pending = {}
 
+	self.dirtyInstances = {}
+	self.dirtyInstancesCache = {}
+
 	self:registerInterface("ItsyScape.Game.Model.Actor", RemoteActor)
 	self:registerInterface("ItsyScape.Game.Model.Game", RemoteGame)
 	self:registerInterface("ItsyScape.Game.Model.Stage", RemoteStage)
@@ -76,6 +79,11 @@ function RemoteGameManager:new(rpcService, ...)
 	self.onTick = Callback(false)
 
 	self.rpcService:connect(self)
+end
+
+function RemoteGameManager:registerInterface(interfaceID, Type)
+	GameManager.registerInterface(self, interfaceID, Type)
+	self.dirtyInstances[interfaceID] = self.dirtyInstances[interfaceID] or {}
 end
 
 function RemoteGameManager:getRPCService()
@@ -165,6 +173,7 @@ function RemoteGameManager:_flush()
 	for i = 1, #self.pending do
 		local e = self.pending[i]
 
+		self:markDirty(e)
 		if not (e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY) then
 			self:process(e)
 		end
@@ -182,7 +191,7 @@ function RemoteGameManager:_flush()
 		end
 	end
 
-	if n == #self.pending then
+	if n >= #self.pending then
 		table.clear(self.pending)
 	else
 		while n > 0 do
@@ -190,6 +199,12 @@ function RemoteGameManager:_flush()
 			n = n - 1
 		end
 	end
+
+	for _, dirtyInstances in pairs(self.dirtyInstances) do
+		table.clear(dirtyInstances)
+	end
+
+	table.clear(self.dirtyInstancesCache)
 end
 
 function RemoteGameManager:flush()
@@ -203,6 +218,17 @@ function RemoteGameManager:pushTick()
 	GameManager.pushTick(self)
 
 	self:send()
+end
+
+function RemoteGameManager:iterateDirty()
+	return ipairs(self.dirtyInstancesCache)
+end
+
+function RemoteGameManager:markDirty(e)
+	if e.interface and e.id and not self.dirtyInstances[e.interface][e.id] then
+		self.dirtyInstances[e.interface][e.id] = true
+		table.insert(self.dirtyInstancesCache, self:getInstance(e.interface, e.id))
+	end
 end
 
 function RemoteGameManager:processCreate(e)

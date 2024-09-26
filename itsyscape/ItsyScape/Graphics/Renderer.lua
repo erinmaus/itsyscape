@@ -162,7 +162,7 @@ function Renderer:draw(scene, delta, width, height, postProcessPasses)
 		width, height = love.window.getMode()
 	end
 
-	scene:frame(delta)
+	--scene:frame(delta)
 
 	local projection, view = self.camera:getTransforms()
 	local eye, target = self.camera:getEye(), self.camera:getPosition()

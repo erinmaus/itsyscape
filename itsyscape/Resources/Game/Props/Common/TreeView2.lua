@@ -200,9 +200,7 @@ function TreeView:_updateNodeUniforms(node)
 end
 
 function TreeView:tick()
-	local b = collectgarbage("count")
 	PropView.tick(self)
-	local a = collectgarbage("count")
 
 	local state = self:getProp():getState()
 	if state.resource then

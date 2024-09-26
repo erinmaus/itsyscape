@@ -22,6 +22,10 @@ function RemoteGame:new(gameManager, gameDB)
 	self.onPlayerPoofed:register(self._onPlayerPoofed, self)
 end
 
+function RemoteGame:getGameManager()
+	return self.gameManager
+end
+
 function RemoteGame:_onPlayerSpawned(_, player, actor)
 	if not player then
 		Log.warn("Spawned player is nil.")
