@@ -15,8 +15,7 @@ local ReflectionRendererPass = Class(RendererPass)
 
 ReflectionRendererPass.DEPTH_INDEX                 = 0
 ReflectionRendererPass.REFLECTION_PROPERTIES_INDEX = 1
-ReflectionRendererPass.POSITION_INDEX              = 2
-ReflectionRendererPass.NORMAL_INDEX                = 3
+ReflectionRendererPass.NORMAL_INDEX                = 2
 
 function ReflectionRendererPass:new(renderer, gBuffer)
 	RendererPass.new(self, renderer)

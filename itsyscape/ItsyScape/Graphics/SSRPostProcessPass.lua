@@ -83,10 +83,13 @@ function SSRPostProcessPass:draw(width, height)
 	love.graphics.clear(0, 0, 0, 0)
 
 	local projection, view = self:getRenderer():getCamera():getTransforms()
+	local inverseProjection, inverseView = projection:inverse(), view:inverse()
 	local cameraDirecion = (self:getRenderer():getCamera():getEye() - self:getRenderer():getCamera():getPosition()):getNormal()
 	self:bindShader(self.mapTextureCoordinatesShader,
-		"scape_Projection", projection,
-		"scape_View", view,
+		"scape_ProjectionMatrix", projection,
+		"scape_ViewMatrix", view,
+		"scape_InverseProjectionMatrix", inverseProjection,
+		"scape_InverseViewMatrix", inverseView,
 		"scape_CameraDirection", { cameraDirecion:get() },
 		"scape_MaxDistanceViewSpace", self.maxDistanceViewSpace,
 		"scape_MinSecondPassSteps", self.minSecondPassSteps,
@@ -95,7 +98,7 @@ function SSRPostProcessPass:draw(width, height)
 		"scape_Resolution", self.resolution,
 		"scape_TexelSize", { 1 / width, 1 / height },
 		"scape_NormalTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.NORMAL_INDEX),
-		"scape_PositionTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.POSITION_INDEX),
+		"scape_DepthTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.DEPTH_INDEX),
 		"scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX))
 	love.graphics.draw(self:getRenderer():getOutputBuffer():getColor())
 	

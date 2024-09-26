@@ -128,7 +128,7 @@ void nbunny::ReflectionRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 		renderer->set_current_shader(shader);
 
-		float reflection_threshold = 0.0f;
+		float reflection_threshold = 1.0f;
 		renderer->get_shader_cache().update_uniform(shader, "scape_ReflectionThreshold", &reflection_threshold, sizeof(float));
 
 		auto& material = scene_node->get_material();
@@ -194,7 +194,7 @@ void nbunny::ReflectionRendererPass::copy_g_buffer()
 
 nbunny::ReflectionRendererPass::ReflectionRendererPass(GBuffer& g_buffer) :
 	RendererPass(RENDERER_PASS_REFLECTION),
-	reflection_buffer({ love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RGBA16F }),
+	reflection_buffer({ love::PIXELFORMAT_RGBA16F, love::PIXELFORMAT_RG16F }),
 	g_buffer(g_buffer)
 {
 	// Nothing.
