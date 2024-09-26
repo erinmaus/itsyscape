@@ -1084,12 +1084,15 @@ bool nbunny::ParticleSceneNode::get_is_playing() const
 	return is_playing;
 }
 
-void nbunny::ParticleSceneNode::frame(float delta, float time_delta)
+void nbunny::ParticleSceneNode::frame(float delta)
 {
 	if (!is_playing)
 	{
 		return;
 	}
+
+	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+	auto time_delta = timer_instance->getDelta();
 
 	update(time_delta);
 	is_pending = true;
@@ -1129,17 +1132,6 @@ void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	love::Matrix4 matrix(glm::value_ptr(get_transform().get_global(delta)));
 	graphics->draw(mesh, matrix);
-}
-
-int nbunny_particle_scene_node_frame(lua_State* L)
-{
-	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
-	auto delta = nbunny::lua::get<float>(L, 2);
-	auto time_delta = nbunny::lua::get<float>(L, 3);
-
-	node->frame(delta, time_delta);
-
-	return 0;
 }
 
 int nbunny_particle_scene_node_clear(lua_State* L)
@@ -1236,7 +1228,6 @@ extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_particlescenenode(lua_State* L)
 {
 	const luaL_Reg metatable[] = {
-		{ "frame", &nbunny_particle_scene_node_frame },
 		{ "initParticleSystemFromDef", &nbunny_particle_scene_node_init_particle_system_from_def },
 		{ "clear", &nbunny_particle_scene_node_clear },
 		{ "initEmittersFromDef", &nbunny_particle_scene_node_init_emitters_from_def },

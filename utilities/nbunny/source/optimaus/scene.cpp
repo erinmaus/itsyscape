@@ -505,9 +505,64 @@ void nbunny::SceneNode::tick(float delta)
 	transform->tick(delta);
 }
 
+void nbunny::SceneNode::tick_children(lua_State* L, float delta)
+{
+	for (auto child: children)
+	{
+		if (child->get_type() == LuaSceneNode::type_pointer)
+		{
+			if (child->get_reference(L))
+			{
+				lua_getfield(L, -1, "tick");
+				lua_pushvalue(L, -2);
+				lua_pushnumber(L, delta);
+				lua_call(L, 2, 0);
+			}
+
+			lua_pop(L, 1);
+		}
+		else
+		{
+			child->tick(delta);
+		}
+
+		child->tick_children(L, delta);
+	}
+}
+
 bool nbunny::SceneNode::get_ticked() const
 {
 	return transform->get_ticked();
+}
+
+void nbunny::SceneNode::frame(float delta)
+{
+	// Nothing.
+}
+
+void nbunny::SceneNode::frame_children(lua_State* L, float delta)
+{
+	for (auto child: children)
+	{
+		if (child->get_type() == LuaSceneNode::type_pointer)
+		{
+			if (child->get_reference(L))
+			{
+				lua_getfield(L, -1, "frame");
+				lua_pushvalue(L, -2);
+				lua_pushnumber(L, delta);
+				lua_call(L, 2, 0);
+			}
+
+			lua_pop(L, 1);
+		}
+		else
+		{
+			child->tick(delta);
+		}
+
+		child->tick_children(L, delta);
+	}
 }
 
 void nbunny::SceneNode::unset_parent()
@@ -1902,6 +1957,37 @@ static int nbunny_scene_node_tick(lua_State* L)
 	return 0;
 }
 
+static int nbunny_scene_node_tick_children(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
+	node->tick_children(L, luaL_checknumber(L, 2));
+	return 0;
+}
+
+static int nbunny_scene_node_frame(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
+	node->frame(luaL_checknumber(L, 2));
+	return 0;
+}
+
+static int nbunny_scene_node_frame_children(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
+	node->frame_children(L, luaL_checknumber(L, 2));
+	return 0;
+}
+
+static int nbunny_scene_node_transform_frame(lua_State* L)
+{
+	auto transform = nbunny::lua::get<nbunny::SceneNodeTransform*>(L, 1);
+	auto delta = (float)luaL_checknumber(L, 2);
+
+	transform->tick(delta);
+
+	return 0;
+}
+
 static int nbunny_scene_node_walk_by_material(lua_State* L)
 {
 	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
@@ -1971,6 +2057,9 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode(lua_State* L)
 		{ "getMax", &nbunny_scene_node_get_max },
 		{ "setMax", &nbunny_scene_node_set_max },
 		{ "tick", &nbunny_scene_node_tick },
+		{ "tickChildren", &nbunny_scene_node_tick_children },
+		{ "frame", &nbunny_scene_node_frame },
+		{ "frameChildren", &nbunny_scene_node_frame_children },
 		{ "walkByMaterial", &nbunny_scene_node_walk_by_material },
 		{ "walkByPosition", &nbunny_scene_node_walk_by_position },
 		{ nullptr, nullptr }

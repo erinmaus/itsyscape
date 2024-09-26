@@ -28,6 +28,10 @@ function Game:new()
 	self.onQuit = Callback(false)
 end
 
+function Game:getGameManager()
+	return nil
+end
+
 -- Gets the GameDB.
 function Game:getGameDB()
 	return Class.ABSTRACT()

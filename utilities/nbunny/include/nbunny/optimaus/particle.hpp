@@ -131,7 +131,7 @@ namespace nbunny
 		void play();
 		bool get_is_playing() const;
 
-		void frame(float delta, float time_delta);
+		void frame(float delta) override;
 		void draw(Renderer& renderer, float delta) override;
 	};
 }
