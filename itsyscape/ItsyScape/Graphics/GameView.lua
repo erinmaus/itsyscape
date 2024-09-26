@@ -506,7 +506,6 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		wallHackEnabled = not (meta and type(meta.wallHack) == "table" and meta.wallHack.enabled == false),
 		actorCanvas = actorCanvas,
 		bumpCanvas = bumpCanvas,
-		curves = {},
 		bendyDecorations = setmetatable({}, { __mode = "k" }),
 		decorationTextures = setmetatable({}, { __mode = "v" }),
 	}
@@ -1304,7 +1303,7 @@ function GameView:decorate(group, decoration, layer, callback)
 		map = self.scene
 	end
 
-	if not Class.isClass(decoration) then
+	if not Class.isClass(decoration) and decoration then
 		local Type = require(decoration.type)
 		decoration = Type(decoration.value)
 	end
@@ -1956,20 +1955,6 @@ end
 function GameView:tick(frameDelta)
 	self.generalDebugStats:measure("GameView::tickScene", self.scene.tick, self.scene, frameDelta)
 
-	for _, actor in pairs(self.actors) do
-		self.generalDebugStats:measure(
-			string.format("actor::%s::tick", actor:getActor():getPeepID()),
-			actor.tick,
-			actor)
-	end
-
-	for _, prop in pairs(self.props) do
-		self.generalDebugStats:measure(
-			string.format("prop::%s::tick", prop:getProp():getPeepID()),
-			prop.tick,
-			prop)
-	end
-
 	for projectile in pairs(self.projectiles) do
 		self.generalDebugStats:measure(
 			string.format("projectile::%s::tick", projectile:getID()),
@@ -1979,6 +1964,35 @@ function GameView:tick(frameDelta)
 
 	for skybox in pairs(self.skyboxes) do
 		skybox:tick(frameDelta)
+	end
+
+	local gameManager = self.game:getGameManager()
+	if gameManager then
+		for _, instance in gameManager:iterateDirty() do
+			local interface = instance:getInterface()
+			local object = instance:getInstance()
+			local objectView = self.actors[object] or self.props[object]
+			if objectView then
+				self.generalDebugStats:measure(
+					string.format("actor::%s::tick", object:getPeepID()),
+					objectView.tick,
+					objectView)
+			end
+		end
+	else
+		for _, actor in pairs(self.actors) do
+			self.generalDebugStats:measure(
+				string.format("actor::%s::tick", actor:getActor():getPeepID()),
+				actor.tick,
+				actor)
+		end
+
+		for _, prop in pairs(self.props) do
+			self.generalDebugStats:measure(
+				string.format("prop::%s::tick", prop:getProp():getPeepID()),
+				prop.tick,
+				prop)
+		end
 	end
 end
 

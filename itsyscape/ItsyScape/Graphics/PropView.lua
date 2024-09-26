@@ -76,28 +76,9 @@ end
 local TEST = true
 
 function PropView:updateTransform()
-	if TEST and love.keyboard.isDown("space") then
-		local t = 0
-		local n = 0
-		local r = {}
-		local transform = self.sceneNode:getTransform()
-		for i = 1, 1000000 do
-			local b = love.timer.getTime()
-			transform:setLocalTranslation(transform:getLocalTranslation())
-			transform:setLocalRotation(transform:getLocalRotation())
-			transform:setLocalScale(transform:getLocalScale())
-			local a = love.timer.getTime()
-			
-			table.insert(r, { p, l })
-			t = t + a - b
-			n = n + 1
-		end
-		
-		print(">>> profile", t * 1000 / n)
-		TEST = false
-	end
 	local position, layer = self.prop:getPosition()
 	local rotation = self.prop:getRotation()
+	local scale = self.prop:getScale()
 
 	local curves = self.gameView:getMapCurves(layer)
 	if curves then
@@ -107,7 +88,7 @@ function PropView:updateTransform()
 	local transform = self.sceneNode:getTransform()
 	transform:setLocalTranslation(position)
 	transform:setLocalRotation(rotation)
-	transform:setLocalScale(self.prop:getScale())
+	transform:setLocalScale(scale)
 
 	if self:getIsStatic() and (not self.ready or not curves) then
 		self:getRoot():tick()

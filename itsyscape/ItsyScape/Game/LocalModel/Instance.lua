@@ -1536,7 +1536,7 @@ function Instance:loadActor(localGameManager, player, actor)
 					actor:getID(),
 					event:getCallbackName(),
 					nil,
-					v.value:get())
+					unpack(v.value.arguments, 1, v.value.n))
 				localGameManager:assignTargetToLastPush(player)
 
 				Log.engine("Restoring property %s via callback %s.", field:getKey(), event:getCallbackName())

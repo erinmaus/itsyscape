@@ -175,7 +175,7 @@ function GameManager.Property:update(instance)
 	self.value = { arguments = { self.property:filter(instance[self.field](instance)) } }
 	self.value.n = table.maxn(self.value.arguments)
 	
-	return _isEqual(self.value, oldValue)
+	return not _isEqual(self.value, oldValue)
 end
 
 function GameManager.Property:set(instance, value)
@@ -245,11 +245,11 @@ function GameManager.PropertyGroup:set(key, ...)
 	if not outPrioritized then
 		if index then
 			self.values[index].key = key
-			self.values[index].value = { n = select("#", ... ), values = { ... } }
+			self.values[index].value = { n = select("#", ... ), arguments = { ... } }
 		else
 			table.insert(self.values, {
 				key = key,
-				value = { n = select("#", ... ), values = { ... } }
+				value = { n = select("#", ... ), arguments = { ... } }
 			})
 		end
 
@@ -277,7 +277,7 @@ function GameManager.PropertyGroup:get(key)
 	local index, outPrioritized = self:findIndexOfKey(key)
 	if index then
 		local v = self.values[index].value
-		return unpack(v.values, 1, v.n)
+		return unpack(v.arguments, 1, v.n)
 	end
 end
 
