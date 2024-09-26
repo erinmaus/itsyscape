@@ -185,7 +185,7 @@ void nbunny::ShaderCache::update_uniform(
 {
 	auto& value_uniforms = shader_value_uniforms[shader];
 	auto current_value = value_uniforms.find(uniform_name);
-	if (current_value == value_uniforms.end() || current_value->second != data)
+	if (current_value == value_uniforms.end() || current_value->second.size() != data.size() || std::memcmp(&current_value->second[0], &data[0], std::min(data.size(), current_value->second.size())))
 	{
 		auto uniform = shader->getUniformInfo(uniform_name);
 		if (uniform)

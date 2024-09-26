@@ -1541,7 +1541,11 @@ function LocalStage:decorate(group, decoration, layer)
 	if not decoration then
 		self.onUndecorate(self, group, layer or 1)
 	else
-		self.onDecorate(self, group, decoration, layer or 1)
+		if Class.isCompatibleType(decoration, Spline) then
+			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Spline", value = decoration:serialize() }, layer or 1)
+		elseif Class.isCompatibleType(decoration, Decoration) then
+			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Decoration", value = decoration:serialize() }, layer or 1)
+		end
 	end
 end
 

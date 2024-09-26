@@ -17,7 +17,7 @@
 
 struct FuncTime
 {
-    float time = 0.0f;
+    double time = 0.0;
     int num_calls = 0;
 };
 
@@ -27,7 +27,7 @@ struct Call
     nbunny::GameManagerVariant arguments;
     nbunny::GameManagerVariant return_value;
     std::vector<std::string> stack;
-    float time = 0.0f;
+    double time = 0.0;
 };
 
 thread_local std::unordered_map<std::string, FuncTime> luax_wrapper_func_times;
@@ -37,10 +37,12 @@ thread_local int luax_wrapper_func_num_calls = 0;
 thread_local std::vector<Call> luax_wrapper_debug_calls;
 thread_local bool luax_wrapper_func_debug = false;
 
+thread_local std::vector<Call> luax_wrapper_pending_debug_calls;
+
 static int nbunny_lua_runtime_get_func_times(lua_State* L)
 {
     lua_createtable(L, 0, luax_wrapper_func_times.size());
-    float total_time = 0.0f;
+    double total_time = 0.0;
     for (auto& time: luax_wrapper_func_times)
     {
         lua_pushlstring(L, time.first.c_str(), time.first.size());
@@ -147,6 +149,7 @@ static int nbunny_lua_runtime_start_debug(lua_State* L)
 {
     luax_wrapper_func_debug = true;
     luax_wrapper_debug_calls.clear();
+    luax_wrapper_pending_debug_calls.clear();
     return 0;
 }
 
@@ -183,6 +186,33 @@ NBUNNY_EXPORT int luaopen_nbunny_luaruntime(lua_State* L)
     lua_setfield(L, -2, "stopDebug");
 
     return 1;
+}
+
+void nbunny::lua::push_sub(const std::string& function_name)
+{
+    if (luax_wrapper_func_debug)
+    {
+        auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+
+        Call call;
+        call.func = function_name;
+        call.time = timer_instance->getTime();
+
+        luax_wrapper_pending_debug_calls.push_back(call);
+    }
+}
+
+void nbunny::lua::pop_sub()
+{
+    if (luax_wrapper_func_debug && !luax_wrapper_debug_calls.empty())
+    {
+        auto call = luax_wrapper_pending_debug_calls.back();
+        luax_wrapper_pending_debug_calls.pop_back();
+
+        auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+        call.time = (timer_instance->getTime() - call.time) * 1000.0;
+        luax_wrapper_debug_calls.push_back(call);
+    }
 }
 
 static int luax_wrapper_func(lua_State* L)

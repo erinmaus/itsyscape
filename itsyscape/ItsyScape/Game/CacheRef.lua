@@ -25,14 +25,13 @@ local CacheRef, Metatable = Class()
 --
 -- filename is the full path to the resource.
 function CacheRef:new(resourceTypeID, filename)
-	self.resourceType = require(resourceTypeID)
 	self.resourceTypeID = resourceTypeID
 	self.filename = filename or ""
 end
 
 -- Gets the underlying type.
 function CacheRef:getResourceType()
-	return self.resourceType
+	return require(self.resourceTypeID)
 end
 
 -- Gets the resourceTypeID. See CacheRef.new.

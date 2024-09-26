@@ -270,40 +270,8 @@ nbunny::GameManagerVariant::GameManagerVariant(const GameManagerVariant& other)
 }
 
 nbunny::GameManagerVariant::GameManagerVariant(GameManagerVariant&& other)
-	: type(other.type)
 {
-	switch (other.type)
-	{
-	case TYPE_NIL:
-	default:
-		// Nothing.
-		break;
-
-	case TYPE_NUMBER:
-		value.number = other.value.number;
-		break;
-
-	case TYPE_BOOLEAN:
-		value.boolean = other.value.boolean;
-		break;
-
-	case TYPE_STRING:
-		value.string = other.value.string;
-		other.value.string = nullptr;
-		break;
-
-	case TYPE_TABLE:
-		value.table = other.value.table;
-		other.value.table = nullptr;
-		break;
-
-	case TYPE_ARGS:
-		value.args = other.value.args;
-		other.value.args = nullptr;
-		break;
-	}
-
-	other.type = TYPE_NIL;
+	*this = other;
 }
 
 nbunny::GameManagerVariant::~GameManagerVariant()
@@ -339,6 +307,7 @@ nbunny::GameManagerVariant& nbunny::GameManagerVariant::operator =(const GameMan
 		value.table = new Table();
 		value.table->array_values = other.value.table->array_values;
 		value.table->key_values = other.value.table->key_values;
+		value.table->string_key_values = other.value.table->string_key_values;
 		break;
 
 	case TYPE_ARGS:
@@ -348,6 +317,44 @@ nbunny::GameManagerVariant& nbunny::GameManagerVariant::operator =(const GameMan
 	}
 
 	return *this;
+}
+
+nbunny::GameManagerVariant& nbunny::GameManagerVariant::operator =(GameManagerVariant&& other)
+{
+	type = other.type;
+
+	switch (other.type)
+	{
+	case TYPE_NIL:
+	default:
+		// Nothing.
+		break;
+
+	case TYPE_NUMBER:
+		value.number = other.value.number;
+		break;
+
+	case TYPE_BOOLEAN:
+		value.boolean = other.value.boolean;
+		break;
+
+	case TYPE_STRING:
+		value.string = other.value.string;
+		other.value.string = nullptr;
+		break;
+
+	case TYPE_TABLE:
+		value.table = other.value.table;
+		other.value.table = nullptr;
+		break;
+
+	case TYPE_ARGS:
+		value.args = other.value.args;
+		other.value.args = nullptr;
+		break;
+	}
+
+	other.type = TYPE_NIL;
 }
 
 void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, int count, bool simple_marshal)
@@ -413,18 +420,24 @@ int nbunny::GameManagerVariant::to_lua(lua_State* L, bool simple_marshal) const
 				}
 				else
 				{
-					lua_createtable(L, value.table->array_values.size(), value.table->key_values.size());
+					lua_createtable(L, value.table->array_values.size(), value.table->key_values.size() + value.table->string_key_values.size());
 
 					for (std::size_t i = 0; i < value.table->array_values.size(); ++i)
 					{
-						value.table->array_values.at(i).to_lua(L);
+						value.table->array_values.at(i).to_lua(L, simple_marshal);
 						lua_rawseti(L, -2, i + 1);
+					}
+
+					for (auto& i: value.table->string_key_values)
+					{
+						i.second.to_lua(L, simple_marshal);
+						lua_setfield(L, -2, i.first.c_str());
 					}
 
 					for (auto& key_value: value.table->key_values)
 					{
-						key_value.first.to_lua(L);
-						key_value.second.to_lua(L);
+						key_value.first.to_lua(L, simple_marshal);
+						key_value.second.to_lua(L, simple_marshal);
 
 						lua_rawset(L, -3);
 					}
@@ -434,7 +447,7 @@ int nbunny::GameManagerVariant::to_lua(lua_State* L, bool simple_marshal) const
 		case TYPE_ARGS:
 			for (std::size_t i = 0; i < value.args->parameter_values.size(); ++i)
 			{
-				value.args->parameter_values.at(i).to_lua(L);
+				value.args->parameter_values.at(i).to_lua(L, simple_marshal);
 			}
 
 			return value.args->parameter_values.size();
@@ -498,6 +511,17 @@ nbunny::GameManagerVariant nbunny::GameManagerVariant::get(const GameManagerVari
 		return value.table->array_values.at(key.as_number() - 1);
 	}
 
+	if (key.type == TYPE_STRING)
+	{
+		auto result = value.table->string_key_values.find(key.as_string());
+		if (result == value.table->string_key_values.end())
+		{
+			return GameManagerVariant();
+		}
+		
+		return result->second;
+	}
+
 	auto result = std::lower_bound(
 		value.table->key_values.begin(),
 		value.table->key_values.end(),
@@ -540,6 +564,13 @@ void nbunny::GameManagerVariant::set(const GameManagerVariant& key, const GameMa
 	if (key.type == TYPE_NUMBER && key.as_number() >= 1 && key.as_number() <= length())
 	{
 		value.table->array_values.at(key.as_number() - 1) = v;
+		return;
+	}
+
+	if (key.type == TYPE_STRING)
+	{
+		value.table->string_key_values.insert_or_assign(key.as_string(), v);
+		return;
 	}
 
 	auto result = std::find_if(
@@ -659,7 +690,8 @@ bool nbunny::GameManagerVariant::operator ==(const GameManagerVariant& other) co
 	else if (type == TYPE_TABLE)
 	{
 		return value.table->array_values == other.value.table->array_values &&
-		       value.table->key_values == other.value.table->key_values;
+		       value.table->key_values == other.value.table->key_values &&
+			   value.table->string_key_values == other.value.table->string_key_values;
 	}
 	else if (type == TYPE_ARGS)
 	{
@@ -672,6 +704,11 @@ bool nbunny::GameManagerVariant::operator ==(const GameManagerVariant& other) co
 bool nbunny::GameManagerVariant::operator !=(const GameManagerVariant& other) const
 {
 	return !(*this == other);
+}
+
+bool nbunny::GameManagerVariant::operator <(const GameManagerVariant& other) const
+{
+	return less(*this, other);
 }
 
 void nbunny::GameManagerVariant::serialize(GameManagerBuffer& buffer)
@@ -697,6 +734,14 @@ void nbunny::GameManagerVariant::serialize(GameManagerBuffer& buffer)
 		for (auto& i: value.table->array_values)
 		{
 			i.serialize(buffer);
+		}
+
+		buffer.append(value.table->string_key_values.size());
+		for (auto& i: value.table->string_key_values)
+		{
+			buffer.append(i.first.size());
+			buffer.append((const std::uint8_t*)i.first.data(), i.first.size());
+			i.second.serialize(buffer);
 		}
 
 		buffer.append(value.table->key_values.size());
@@ -755,6 +800,23 @@ void nbunny::GameManagerVariant::deserialize(GameManagerBuffer& buffer)
 				v.deserialize(buffer);
 
 				value.table->array_values.emplace_back(std::move(v));
+			}
+
+			std::size_t string_keys_size;
+			buffer.read(string_keys_size);
+
+			for (std::size_t i = 0; i < string_keys_size; ++i)
+			{
+				std::size_t key_size;
+				buffer.read(key_size);
+
+				std::string key(key_size, 0);
+				buffer.read((std::uint8_t*)&key.front(), key_size);
+
+				GameManagerVariant v;
+				v.deserialize(buffer);
+
+				value.table->string_key_values.emplace(std::make_pair(key, v));
 			}
 
 			std::size_t keys_size;
@@ -855,6 +917,10 @@ bool nbunny::GameManagerVariant::less(const GameManagerVariant& search_key, cons
 			{
 				return search_key.value.table->array_values.size() < current_key.value.table->array_values.size();
 			}
+			else if (search_key.value.table->string_key_values.size() != current_key.value.table->string_key_values.size())
+			{
+				return search_key.value.table->string_key_values < current_key.value.table->string_key_values;
+			}
 			else if (search_key.value.table->key_values.size() != current_key.value.table->key_values.size())
 			{
 				return search_key.value.table->key_values.size() < current_key.value.table->key_values.size();
@@ -869,6 +935,11 @@ bool nbunny::GameManagerVariant::less(const GameManagerVariant& search_key, cons
 					{
 						return less(array_left, array_right);
 					}
+				}
+				
+				if (search_key.value.table->string_key_values != current_key.value.table->string_key_values)
+				{
+					return search_key.value.table->string_key_values < current_key.value.table->string_key_values;
 				}
 
 				for (std::size_t i = 0; i < search_key.value.table->key_values.size(); ++i)
@@ -962,7 +1033,7 @@ void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, std::set<cons
 				lua_pushnil(L);
 				while (lua_next(L, index))
 				{
-					if (lua_isnumber(L, -2))
+					if (lua_type(L, -2) == LUA_TNUMBER)
 					{
 						int i = lua_tonumber(L, -2);
 						if (i >= 1 && i <= value.table->array_values.size() && value.table->array_values.at(i - 1).type != TYPE_NIL)
@@ -970,6 +1041,18 @@ void nbunny::GameManagerVariant::from_lua(lua_State* L, int index, std::set<cons
 							lua_pop(L, 1);
 							continue;
 						}
+					}
+
+					if (lua_type(L, -2) == LUA_TSTRING)
+					{
+						GameManagerVariant v;
+						v.from_lua(L, -1, e, simple_marshal);
+
+						std::string key = lua_tostring(L, -2);
+						value.table->string_key_values.insert_or_assign(key, v);
+
+						lua_pop(L, 1);
+						continue;
 					}
 
 					GameManagerVariant k;

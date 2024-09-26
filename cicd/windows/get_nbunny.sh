@@ -2,7 +2,8 @@
 
 set -xe
 
-cp -r ../../utilities ./build/nbunny
+mkdir -p ./build/nbunny
+cp -ar ../../utilities/* ./build/nbunny
 
 cd build/nbunny
 

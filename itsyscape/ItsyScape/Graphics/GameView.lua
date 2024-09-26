@@ -251,7 +251,7 @@ function GameView:attach(game)
 	stage.onTakeItem:register(self._onTakeItem)
 
 	self._onDecorate = function(_, group, decoration, layer)
-		Log.info("Decorating '%s' (%s) on layer %d.", group, decoration and decoration:getDebugInfo().shortName or "nil", layer)
+		Log.info("Decorating '%s' (%s) on layer %d.", group, decoration.type, layer)
 		self:decorate(group, decoration, layer)
 	end
 	stage.onDecorate:register(self._onDecorate)
@@ -1304,6 +1304,11 @@ function GameView:decorate(group, decoration, layer, callback)
 		map = self.scene
 	end
 
+	if not Class.isClass(decoration) then
+		local Type = require(decoration.type)
+		decoration = Type(decoration.value)
+	end
+
 	local isSpline = Class.isCompatibleType(decoration, Spline)
 	local isDecoration = Class.isCompatibleType(decoration, Decoration)
 	local isValid = isSpline or isDecoration
@@ -1933,16 +1938,16 @@ function GameView:draw(delta, width, height)
 
 	self:_updateActorCanvases(delta)
 	self:_updatePlayerMapNode()
-
+	
 	local skybox = next(self.skyboxes)
 	if skybox then
 		local info = self.skyboxes[skybox]
-
+		
 		self.renderer:setClearColor(Color(0, 0, 0, 0))
 		self.renderer:draw(skybox, delta, width, height, { self.toneMapPostProcessPass, self.skyboxOutlinePostProcessPass })
 		self.renderer:present(false)
 	end
-
+	
 	self.renderer:setClearColor(Color(0, 0, 0, 0))
 	self.renderer:draw(self.scene, delta, width, height, { self.ssrPostProcessPass, self.toneMapPostProcessPass, self.sceneOutlinePostProcessPass })
 	self.renderer:present(true)
@@ -2012,7 +2017,7 @@ function GameView:dirty()
 			map.mask = MapMeshMask.combine(unpack(mapMeshMasks))
 
 			for _, node in ipairs(map.parts) do
-				if m.mapMeshMasks then
+				if map.mapMeshMasks then
 					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture(), map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())
 				else
 					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())

@@ -256,7 +256,7 @@ function LocalGameManager:destroyInstance(interface, id)
 end
 
 function LocalGameManager:_doSend(player, e)
-	self.pending:pull(e)
+	self.pending:pull(e.__serialized)
 end
 
 function LocalGameManager:_doFlush(player)
@@ -402,7 +402,7 @@ function LocalGameManager:sendToPlayer(player)
 									isRPCMatch = false
 								else
 									local ui = self.ui[interfaceID] or {}
-									ui[interfaceIndex] = e:rawget("value")
+									ui[interfaceIndex] = e.value
 
 									self.ui[interfaceID] = ui
 								end
@@ -476,7 +476,7 @@ function LocalGameManager:processCallback(e)
 		if not ui then
 			Log.info("UI not found trying to call RPC '%s' for player ID %d.", e.callback, e.id)
 		else
-			local interfaceID, interfaceIndex = e:get("value")
+			local interfaceID, interfaceIndex = unpack(e.value.arguments, 1, e.value.n)
 			local interface = ui:get(interfaceID, interfaceIndex)
 			if not interface then
 				Log.warn("Interface (id = '%s', index = %d) not found.", interfaceID, interfaceIndex)

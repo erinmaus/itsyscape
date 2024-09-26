@@ -14,6 +14,7 @@
 #define NBUNNY_GAME_MANAGER_HPP
 
 #include <deque>
+#include <map>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -84,6 +85,7 @@ namespace nbunny
 		~GameManagerVariant();
 
 		GameManagerVariant& operator =(const GameManagerVariant& other);
+		GameManagerVariant& operator =(GameManagerVariant&& other);
 
 		void from_lua(lua_State* L, int index, int count = -1, bool simple_marshal = false);
 		int to_lua(lua_State* L, bool simple_marshal = false) const;
@@ -110,6 +112,7 @@ namespace nbunny
 
 		bool operator ==(const GameManagerVariant& other) const;
 		bool operator !=(const GameManagerVariant& other) const;
+		bool operator <(const GameManagerVariant& other) const;
 		static bool less(const GameManagerVariant& search_key, const GameManagerVariant& current_key);
 
 		void unset();
@@ -124,6 +127,7 @@ namespace nbunny
 		{
 			std::vector<GameManagerVariant> array_values;
 			std::vector<std::pair<GameManagerVariant, GameManagerVariant>> key_values;
+			std::map<std::string, GameManagerVariant> string_key_values;
 		};
 
 		struct Args

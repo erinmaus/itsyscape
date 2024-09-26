@@ -74,7 +74,7 @@ function GameManager.Instance:iterateProperties()
 end
 
 function GameManager.Instance:hasProperty(propertyName)
-	return self.properties[propertyName] ~= nil and self.properties[propertyName]:hasValue()
+	return self.properties[propertyName] ~= nil and self.properties[propertyName]:getHasValue()
 end
 
 function GameManager.Instance:getProperty(propertyName)
@@ -121,58 +121,71 @@ function GameManager.Instance:update(force)
 end
 
 GameManager.Property = Class()
-function GameManager.Property:new(instance, field)
-	self._handle = NProperty()
-	self._handle:setField(field)
-	self._handle:setInstanceInterface(instance:getInterface())
-	self._handle:setInstanceID(instance:getID())
-
-	self.isDirty = true
-	self.values = {}
+function GameManager.Property:new(instance, field, property)
+	self.instance = instance
+	self.field = field
+	self.property = property
+	self.hasValue = false
 end
 
 function GameManager.Property:getField()
-	return self._handle:getField()
+	return self.field
 end
 
-function GameManager.Property:hasValue()
-	return self._handle:hasValue()
+function GameManager.Property:getHasValue()
+	return self.hasValue
 end
 
 function GameManager.Property:getValue()
-	if self.isDirty then
-		if not self._value then
-			self._value = self._handle:rawgetValue()
-		end
+	return unpack(self.value.arguments, 1, self.n)
+end
 
-		local value = self._value
-
-		self.n = #value
-
-		table.clear(self.values)
-		for i = 1, self.n do
-			self.values[i] = value:get(i)
-		end
-
-		self.isDirty = false
+local function _isEqual(a, b)
+	if type(a) ~= type(b) then
+		return false
 	end
 
-	return unpack(self.values, 1, self.n)
+	if type(a) == "table" then
+		if getmetatable(a) or getmetatable(b) then
+			return a == b
+		end
+
+		for k, v in pairs(a) do
+			if b[k] == nil or not _isEqual(v, b[k]) then
+				return false
+			end
+		end
+
+		for k in pairs(b) do
+			if a[k] == nil then
+				return false
+			end
+		end
+		
+		return true
+	end
+
+	return a == b
 end
 
 function GameManager.Property:update(instance)
-	self.isDirty = true
-	return self._handle:update(instance[self._handle:getField()](instance))
+	self.hasValue = true
+
+	local oldValue = self.value
+	self.value = { arguments = { self.property:filter(instance[self.field](instance)) } }
+	self.value.n = table.maxn(self.value.arguments)
+	
+	return _isEqual(self.value, oldValue)
 end
 
-function GameManager.Property:set(instance, ...)
-	self.isDirty = true
-	self._handle:setValue(...)
+function GameManager.Property:set(instance, value)
+	self.hasValue = true
+	self.value = value
 end
 
-function GameManager.Property:pull(instance, field, ...)
-	self.isDirty = true
-	self._handle:pullValue(field, ...)
+function GameManager.Property:pull(instance, field, e)
+	self.hasValue = true
+	self.value = e[field]
 end
 
 GameManager.PropertyGroup = Class()
@@ -232,11 +245,11 @@ function GameManager.PropertyGroup:set(key, ...)
 	if not outPrioritized then
 		if index then
 			self.values[index].key = key
-			self.values[index].value:fromArguments(...)
+			self.values[index].value = { n = select("#", ... ), values = { ... } }
 		else
 			table.insert(self.values, {
 				key = key,
-				value = NVariant():fromArguments(...)
+				value = { n = select("#", ... ), values = { ... } }
 			})
 		end
 
@@ -263,7 +276,8 @@ end
 function GameManager.PropertyGroup:get(key)
 	local index, outPrioritized = self:findIndexOfKey(key)
 	if index then
-		return self.values[index].value:get()
+		local v = self.values[index].value
+		return unpack(v.values, 1, v.n)
 	end
 end
 
@@ -351,7 +365,7 @@ function GameManager:processCallback(e)
 		local event = obj[e.callback]
 
 		if Class.isCompatibleType(event, Callback) or type(event) == "function" then
-			event(obj, e:get("value"))
+			event(obj, unpack(e.value.arguments, 1, e.value.n))
 		end
 	end
 end

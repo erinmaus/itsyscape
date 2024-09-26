@@ -570,7 +570,6 @@ void nbunny::DeferredRendererPass::draw(lua_State* L, SceneNode& node, float del
 {
 	walk_all_nodes(node, delta);
 	walk_visible_lights();
-
 	draw_nodes(L, delta);
 	draw_lights(L, delta);
 	draw_shadows(L, delta);
