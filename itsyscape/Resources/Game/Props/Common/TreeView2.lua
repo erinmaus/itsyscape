@@ -149,6 +149,8 @@ function TreeView:load()
 				self:done()
 
 				self.spawned = true
+
+				self:_updateNodeUniforms(self.leavesNode)
 			end)
 		end)
 	resources:queue(
@@ -227,10 +229,6 @@ function TreeView:tick()
 			self.isDepleted = r.depleted
 			self.time = 0
 		end
-	end
-
-	if self.spawned then
-		self:_updateNodeUniforms(self.leavesNode)
 	end
 end
 
