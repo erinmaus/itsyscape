@@ -766,7 +766,7 @@ void nbunny::ParticleSceneNode::update(float time_delta)
 
 void nbunny::ParticleSceneNode::emit(int count)
 {
-	while (count > 0)
+	while (count > 0 && particles.size() < max_num_particles)
 	{
 		Particle p;
 
@@ -823,24 +823,34 @@ void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const g
 		push_particle_quad(particle, inverse_rotation, self_rotation);
 	}
 
-	if (mesh)
-	{
-		mesh->release();
-		mesh = nullptr;
-	}
-
 	if (vertices.size() > 0)
 	{
-		auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-		mesh = graphics->newMesh(
-			mesh_attribs,
-			&vertices[0],
-			sizeof(Vertex) * vertices.size(),
-			love::graphics::PRIMITIVE_TRIANGLES,
-			love::graphics::vertex::USAGE_STREAM);
+		if (mesh && vertices.size() <= mesh->getVertexCount())
+		{
+			auto p = mesh->mapVertexData();
+			std::memcpy(p, &vertices[0], sizeof(Vertex) * vertices.size());
+			mesh->unmapVertexData();
 
-		for (auto& mesh_attrib: mesh_attribs) {
-			mesh->setAttributeEnabled(mesh_attrib.name, true);
+			mesh->setDrawRange(0, vertices.size());
+		}
+		else
+		{
+			if (mesh)
+			{
+				mesh->release();
+			}
+
+			auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+			mesh = graphics->newMesh(
+				mesh_attribs,
+				&vertices[0],
+				sizeof(Vertex) * vertices.size(),
+				love::graphics::PRIMITIVE_TRIANGLES,
+				love::graphics::vertex::USAGE_STREAM);
+
+			for (auto& mesh_attrib: mesh_attribs) {
+				mesh->setAttributeEnabled(mesh_attrib.name, true);
+			}
 		}
 	}
 }
@@ -1025,6 +1035,8 @@ void nbunny::ParticleSceneNode::set_emission_strategy(lua_State* L, const lua::T
 void nbunny::ParticleSceneNode::from_definition(lua_State* L)
 {
 	auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
+
+	max_num_particles = table.get("numParticles", max_num_particles);
 
 	auto rows = table.get("rows", 1);
 	auto columns = table.get("columns", 1);

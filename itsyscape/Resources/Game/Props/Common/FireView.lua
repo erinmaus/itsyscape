@@ -115,7 +115,7 @@ function FireView:_getInnerParticleDefinition()
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
 			count = { 5, 10 },
-			delay = { 1 / 30 }
+			delay = { 1 / 10 }
 		}
 	}
 
@@ -173,7 +173,7 @@ function FireView:_getOuterParticleDefinition()
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
 			count = { 5, 10 },
-			delay = { 1 / 30 }
+			delay = { 1 / 10 }
 		}
 	}
 
@@ -184,7 +184,7 @@ end
 
 function FireView:_getSmokeParticleDefinition()
 	self._smokeParticleDefinition = self._smokeParticleDefinition or {
-		numParticles = 50,
+		numParticles = 25,
 		texture = "Resources/Game/Props/Common/Particle_Smoke.png",
 		columns = 4,
 
@@ -233,7 +233,7 @@ function FireView:_getSmokeParticleDefinition()
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
 			count = { 2, 5 },
-			delay = { 1 / 25 }
+			delay = { 1 / 10 }
 		}
 	}
 
@@ -362,10 +362,6 @@ end
 function FireView:tick()
 	PropView.tick(self)
 
-	if self.flickerTime < 0 then
-		self:flicker()
-	end
-
 	local state = self:getProp():getState()
 	if state.duration and state.duration < 0.5 then
 		self.node:getTransform():setLocalScale(Vector(state.duration / 0.5))
@@ -376,6 +372,10 @@ function FireView:update(delta)
 	PropView.update(self, delta)
 
 	self.flickerTime = self.flickerTime - delta
+
+	if self.flickerTime < 0 then
+		self:flicker()
+	end
 
 	if self.spawned then
 		self.time = self.time + delta

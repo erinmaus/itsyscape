@@ -558,10 +558,10 @@ void nbunny::SceneNode::frame_children(lua_State* L, float delta)
 		}
 		else
 		{
-			child->tick(delta);
+			child->frame(delta);
 		}
 
-		child->tick_children(L, delta);
+		child->frame_children(L, delta);
 	}
 }
 

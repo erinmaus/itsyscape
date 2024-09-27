@@ -32,6 +32,7 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 
 	return {
 		texture = "Resources/Game/Props/Cloud_Default/Particle.png",
+		numParticles = 25,
 		columns = 4,
 
 		emitters = {
@@ -87,7 +88,7 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 			type = "RandomDelayEmissionStrategy",
 			count = { minCount, maxCount },
 			delay = { 1 / 4 },
-			duration = math.huge
+			duration = { math.huge }
 		}
 	}
 end

@@ -860,7 +860,7 @@ function GameView:_updateMapNode(m, node)
 	local halfSize = (max - min) / 2
 
 	local newMin, newMax = min, max
-	for _, curve in ipairs(m.curves) do
+	for _, curve in ipairs(m.curves or {}) do
 		local positions = curve:getPositions()
 
 		for i = 1, positions:length() do
@@ -875,7 +875,7 @@ function GameView:_updateMapNode(m, node)
 	node:setBounds(newMin, newMax)
 
 	local material = node:getMaterial()
-	if #m.curves > 0 then
+	if m.curves and #m.curves > 0 then
 		for i = 1, #m.curves do
 			local curve = m.curves[i]
 
@@ -892,6 +892,8 @@ function GameView:_updateMapNode(m, node)
 		material:send(Material.UNIFORM_TEXTURE, "scape_CurveTextures", m.curveTexture)
 		material:send(Material.UNIFORM_INTEGER, "scape_NumCurves", #m.curves)
 		material:send(Material.UNIFORM_FLOAT, "scape_MapSize", { m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize() })
+	else
+		material:send(Material.UNIFORM_INTEGER, "scape_NumCurves", 0)
 	end
 
 	if m.wallHackEnabled and not self:_getIsMapEditor() then
@@ -1946,7 +1948,7 @@ function GameView:draw(delta, width, height)
 		self.renderer:draw(skybox, delta, width, height, { self.toneMapPostProcessPass, self.skyboxOutlinePostProcessPass })
 		self.renderer:present(false)
 	end
-	
+
 	self.renderer:setClearColor(Color(0, 0, 0, 0))
 	self.renderer:draw(self.scene, delta, width, height, { self.ssrPostProcessPass, self.toneMapPostProcessPass, self.sceneOutlinePostProcessPass })
 	self.renderer:present(true)

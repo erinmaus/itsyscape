@@ -179,6 +179,26 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	all_scene_nodes.clear();
 	SceneNode::collect(node, all_scene_nodes);
 
+	for (auto pending_scene_node: all_scene_nodes)
+	{
+		if (pending_scene_node->get_type() == LuaSceneNode::type_pointer)
+		{
+			if (pending_scene_node->get_reference(L))
+			{
+				lua_getfield(L, -1, "frame");
+				lua_pushvalue(L, -2);
+				lua_pushnumber(L, delta);
+				lua_call(L, 2, 0);
+			}
+
+			lua_pop(L, 1);
+		}
+		else
+		{
+			pending_scene_node->frame(delta);
+		}
+	}
+
 	visible_scene_nodes.clear();
 	SceneNode::filter_visible(all_scene_nodes, get_camera(), delta, visible_scene_nodes);
 

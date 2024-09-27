@@ -81,7 +81,7 @@ AncientDriftwood.PARTICLES = {
 		type = "RandomDelayEmissionStrategy",
 		count = { 1, 2 },
 		delay = { 1 / 8 },
-		duration = math.huge
+		duration = { math.huge }
 	}
 }
 
