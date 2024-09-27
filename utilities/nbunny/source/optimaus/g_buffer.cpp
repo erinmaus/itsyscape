@@ -104,12 +104,12 @@ int nbunny_g_buffer_constructor(lua_State* L)
 
 	for (int i = 2; i <= lua_gettop(L); ++i)
 	{
-		auto pixel_format_name = nbunny::lua::get<std::string>(L, i).c_str();
+		auto pixel_format_name = nbunny::lua::get<std::string>(L, i);
 
 		love::PixelFormat pixel_format;
-		if (!love::getConstant(pixel_format_name, pixel_format))
+		if (!love::getConstant(pixel_format_name.c_str(), pixel_format))
 		{
-			love::luax_enumerror(L, "pixel format", pixel_format_name);
+			love::luax_enumerror(L, "pixel format", pixel_format_name.c_str());
 		}
 
 		pixel_formats.push_back(pixel_format);
