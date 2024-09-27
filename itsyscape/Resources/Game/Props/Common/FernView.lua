@@ -127,6 +127,9 @@ function FernView:load()
 				self.stemNode:getMaterial():setTextures(self.barkTexture)
 				self.stemNode:getMaterial():setOutlineThreshold(-0.01)
 				self.stemNode:setParent(root)
+
+				self:_updateNodeUniforms(self.frondNode)
+				self:_updateNodeUniforms(self.stemNode)
 			end)
 		end)
 end
@@ -150,14 +153,6 @@ function FernView:_updateNodeUniforms(node)
 	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 	material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", 0.25)
 	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
-end
-
-
-function FernView:tick(...)
-	PropView.tick(self, ...)
-
-	self:_updateNodeUniforms(self.frondNode)
-	self:_updateNodeUniforms(self.stemNode)
 end
 
 return FernView
