@@ -570,7 +570,6 @@ function love.run()
 					end
 
 					local result = json.encode(calls)
-					--local result = Log.dump(calls)
 
 					local filename = string.format("nbunny-%s.json", os.date("%Y%m%d_%H%M%S"))
 					love.filesystem.write(filename, result)

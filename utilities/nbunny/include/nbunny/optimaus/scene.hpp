@@ -204,6 +204,8 @@ namespace nbunny
 		std::shared_ptr<SceneNodeTransform> transform;
 		std::shared_ptr<SceneNodeMaterial> material;
 
+		std::vector<SceneNode*> pending_scene_nodes;
+
 	public:
 		static const Type<SceneNode> type_pointer;
 

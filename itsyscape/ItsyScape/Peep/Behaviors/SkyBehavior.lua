@@ -56,7 +56,7 @@ function SkyBehavior:new()
 	self.windDirection = Vector(1, 0, 0):getNormal()
 	self.windSpeed = 0.25
 
-	self.cloudiness = 0.5
+	self.cloudiness = 0.1
 	self.cloudPropType = "Cloud_Default"
 
 	-- Clouds spawn around the mid point to the end point of the troposhere

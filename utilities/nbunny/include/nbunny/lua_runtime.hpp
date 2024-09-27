@@ -384,8 +384,9 @@ namespace nbunny { namespace lua
     template <typename T>
     auto get_field(lua_State* L, int index, int key)
     {
+        auto real_index = impl::luax_toabsoluteindex(L, index);
         lua_pushnumber(L, key);
-        lua_gettable(L, index);
+        lua_gettable(L, real_index);
 
         auto result = get<T>(L, -1);
         lua_pop(L, 1);

@@ -96,6 +96,7 @@ namespace nbunny
 		std::vector<std::shared_ptr<ParticlePath>> paths;
 		std::shared_ptr<ParticleEmissionStrategy> emission_strategy;
 
+		std::size_t max_num_particles = 100;
 		std::vector<Particle> particles;
 		std::vector<Vertex> vertices;
 

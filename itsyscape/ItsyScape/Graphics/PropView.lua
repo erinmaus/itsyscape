@@ -73,8 +73,6 @@ function PropView:attach()
 	end
 end
 
-local TEST = true
-
 function PropView:updateTransform()
 	local position, layer = self.prop:getPosition()
 	local rotation = self.prop:getRotation()
