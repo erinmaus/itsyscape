@@ -150,6 +150,7 @@ Game "ItsyScape"
 		Direction = Meta.TYPE_REAL,
 		Name = Meta.TYPE_TEXT,
 		Map = Meta.TYPE_RESOURCE,
+		Layer = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
 

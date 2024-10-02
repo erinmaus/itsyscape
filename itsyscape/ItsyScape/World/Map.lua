@@ -198,7 +198,7 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 		return true
 	end
 
-	local steep = math.abs(j2 - j1) > math.abs(i2 - i1);
+	local steep = math.abs(j2 - j1) > math.abs(i2 - i1)
 
 	if steep then
 		i1, j1 = j1, i1

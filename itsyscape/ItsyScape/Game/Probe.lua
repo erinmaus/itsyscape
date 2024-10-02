@@ -66,7 +66,7 @@ function Probe:sort(a, b)
 	return a.depth < b.depth
 end
 
-function Probe:init(ray, tests, radius)
+function Probe:init(ray, tests, radius, layer)
 	self.pendingActionsCount = 0
 
 	self.ray = ray:keep()
@@ -79,7 +79,7 @@ function Probe:init(ray, tests, radius)
 	self.tests = tests
 
 	self.tile = false
-	self.layer = false
+	self.layer = layer or false
 end
 
 -- Returns an iterator over the actions.
@@ -145,78 +145,59 @@ function Probe:addAction(id, verb, type, object, description, depth, callback, .
 	return pendingAction
 end
 
-function Probe:_all(callback, layer, results)
+function Probe:_all(callback, results)
 	local tests = self.tests or Probe.TESTS
 
-	if tests['loot'] or tests['walk'] then
-		self:getTile(results, layer)
-		self:walk()
-		self:loot()
-		self:actors()
-		self:props()
+	self:getTile(results)
+	for test in pairs(tests) do
+		if Probe.TESTS[test] then
+			self[test](self)
+		end
+	end
 
-		if callback then
-			callback()
-		end
-	else
-		for test in pairs(tests) do
-			if Probe.TESTS[test] then
-				self[test](self)
-			end
-		end
-
-		if callback then
-			callback()
-		end
+	if callback then
+		callback()
 	end
 end
 
 -- Probes all actions that can be performed.
 function Probe:all(callback)
-	if not self.game:getPlayer() or not self.game:getPlayer():getActor() then
-		callback()
-		return
-	end
-
-	local layer
-	do
-		local i, j, k = self.game:getPlayer():getActor():getTile()
-		layer = k
-	end
-
-	local ray = self.ray
-	do
-		local node = self.gameView:getMapSceneNode(layer)
-		if node then
-			local transform = node:getTransform():getGlobalDeltaTransform(0)
-			local origin1 = Vector(transform:inverseTransformPoint(self.ray.origin:get()))
-			local origin2 = Vector(transform:inverseTransformPoint((self.ray.origin + self.ray.direction):get()))
-			local direction = origin2 - origin1
-
-			ray = Ray(origin1, direction)
-		end
-	end
-
-	self.gameView:testMap(layer, ray, Function(self._all, self, callback, layer))
+	self.gameView:testMap(nil, self.ray, Function(self._all, self, callback))
 end
 
 -- Returns the tile this probe hit as a tuple in the form (i, j, layer).
 --
 -- If no tile was hit, returns (nil, nil, nil).
-function Probe:getTile(tiles, layer)
+function Probe:getTile(tiles)
 	if tiles then
 		local function sortFunc(a, b)
 			local i = a[Map.RAY_TEST_RESULT_POSITION]
 			local j = b[Map.RAY_TEST_RESULT_POSITION]
-			local s = Vector(love.graphics.project(i.x, i.y, i.z))
-			local t = Vector(love.graphics.project(j.x, j.y, j.z))
+
+			local camera = self.gameView:getCamera()
+			local s = camera:project(Vector(i.x, i.y, i.z))
+			local t = camera:project(Vector(j.x, j.y, j.z))
 
 			return s.z < t.z
 		end
-
 		table.sort(tiles, sortFunc)
-		self.tile = tiles[1]
-		self.layer = layer or 1
+
+		if self.layer then
+			for i = 1, #tiles do
+				if tiles[i].layer == layer then
+					self.tile = tiles[i]
+					self.layer = layer
+					break
+				end
+			end
+		else
+			self.tile = tiles[1]
+			if self.tile then
+				self.layer = self.tile.layer or 1
+			else
+				self.layer = nil
+			end
+		end
 	end
 
 	-- Gotta check again. No tile may have been found.
