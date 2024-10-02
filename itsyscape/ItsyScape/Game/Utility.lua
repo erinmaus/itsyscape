@@ -2707,7 +2707,7 @@ function Utility.Peep.setPosition(peep, position, lerp)
 	if p then
 		p.position = position
 	else
-		Log.warn("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
+		Log.error("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
 	end
 
 	if not lerp then
@@ -2752,6 +2752,15 @@ function Utility.Peep.setRotation(peep, rotation)
 		p.rotation = rotation
 	else
 		Log.warn("Peep '%s' doesn't have a rotation; can't set new rotation.", peep:getName())
+	end
+end
+
+function Utility.Peep.setOrigin(peep, origin)
+	local p = peep:getBehavior(OriginBehavior)
+	if p then
+		p.origin = origin
+	else
+		Log.warn("Peep '%s' doesn't have an origin; can't set new origin.", peep:getName())
 	end
 end
 

@@ -593,13 +593,13 @@ end
 
 function GameView:updateGroundDecorations(m)
 	if self:_getIsMapEditor() then
-		Log.info("Map editor: not updating ground decorations.")
-		return
+		--Log.info("Map editor: not updating ground decorations.")
+		--return
 	end
 
 	local tileSetIDs
 	if type(m.tileSetID) == 'string' then
-		if m.filename then
+		if m.filename and self:_getIsMapEditor() then
 			for i = 1, m.map:getWidth() do
 				for j = 1, m.map:getHeight() do
 					m.map:getTile(i, j).tileSetID = m.tileSetID
@@ -680,8 +680,8 @@ function GameView:testMap(layer, ray, callback)
 		callback = callback
 	}
 
-	love.thread.getChannel('ItsyScape.Map::input'):push({
-		type = 'probe',
+	love.thread.getChannel("ItsyScape.Map::input"):push({
+		type = "probe",
 		id = id,
 		key = layer,
 		origin = { ray.origin.x, ray.origin.y, ray.origin.z },
@@ -814,6 +814,12 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 		transform:setLocalRotation(rotation)
 		transform:setLocalScale(scale)
 		transform:setLocalOffset(offset)
+
+		love.thread.getChannel('ItsyScape.Map::input'):push({
+			type = "transform",
+			key = layer,
+			transform = transform:getGlobalTransform(0),
+		})
 
 		if disabled and node:getParent() then
 			node:setParent(nil)
@@ -1818,34 +1824,44 @@ function GameView:updateMusic(delta)
 	end
 end
 
+function GameView:_processMapQuery(m)
+	if not m then
+		return
+	end
+
+	local test = self.tests[m.id]
+	if not test then
+		return
+	end
+
+	self.tests[m.id] = nil
+	local results = {}
+
+	for i = 1, #m.tiles do
+		local tile = m.tiles[i]
+
+		local m = self.mapMeshes[tile.layer]
+		if m then
+			local result = {
+				[Map.RAY_TEST_RESULT_TILE] = m.map:getTile(tile.i, tile.j),
+				[Map.RAY_TEST_RESULT_I] = tile.i,
+				[Map.RAY_TEST_RESULT_J] = tile.j,
+				[Map.RAY_TEST_RESULT_POSITION] = Vector(unpack(tile.position)),
+				layer = tile.layer
+			}
+
+			table.insert(results, result)
+		end
+	end
+
+	test.callback(results)
+end
+
 function GameView:updateMapQueries(delta)
 	local m
 	repeat
 		m = love.thread.getChannel('ItsyScape.Map::output'):pop()
-		if m and m.type == 'probe' then
-			local test = self.tests[m.id]
-			if test then
-				local mapMesh = self.mapMeshes[test.layer]
-				if mapMesh then
-					self.tests[m.id] = nil
-					local results = {}
-
-					for i = 1, #m.tiles do
-						local tile = m.tiles[i]
-						local result = {
-							[Map.RAY_TEST_RESULT_TILE] = mapMesh.map:getTile(tile.i, tile.j),
-							[Map.RAY_TEST_RESULT_I] = tile.i,
-							[Map.RAY_TEST_RESULT_J] = tile.j,
-							[Map.RAY_TEST_RESULT_POSITION] = Vector(unpack(tile.position))
-						}
-
-						table.insert(results, result)
-					end
-
-					test.callback(results)
-				end
-			end
-		end
+		self:_processMapQuery(m)
 	until m == nil
 end
 

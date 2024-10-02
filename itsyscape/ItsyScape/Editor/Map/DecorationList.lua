@@ -48,17 +48,24 @@ function DecorationList:new(application)
 		local tileSetPrompt = PromptWindow(self.application)
 
 		local decorationName
-
 		namePrompt.onSubmit:register(function(_, name)
 			tileSetPrompt:open("Enter decoration tile set ID.", "Tile Set")
 			decorationName = name
 		end)
 
 		tileSetPrompt.onSubmit:register(function(_, name)
+			local layer = decorationName:match(".*@(%d+)$")
+			if layer then
+				decorationName = decorationName:match("(.*)@%d+$")
+				layer = tonumber(layer)
+			else
+				layer = 1
+			end
+
 			local decorationFilename = string.format("Resources/Game/TileSets/%s/Layout.lstatic", name)
 			if love.filesystem.getInfo(decorationFilename) then
 				local t = { tileSetID = name }
-				self.application:getGame():getStage():decorate(decorationName, Decoration(t))
+				self.application:getGame():getStage():decorate(decorationName, Decoration(t), layer)
 			else
 				Log.warn("Couldn't find decoration tile set '%s'.", name)
 			end
@@ -143,7 +150,7 @@ function DecorationList:update(...)
 	local needsUpdate = false
 	do
 		for k in pairs(decorations) do
-			if not self.decorations[k] then
+			if not k:match("_x") and not self.decorations[k] then
 				needsUpdate = true
 				break
 			end
@@ -167,7 +174,9 @@ function DecorationList:update(...)
 
 		local d = {}
 		for k in pairs(decorations) do
-			table.insert(d, k)
+			if not k:match("_x") then
+				table.insert(d, k)
+			end
 		end
 
 		table.sort(d)

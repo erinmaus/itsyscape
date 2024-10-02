@@ -469,7 +469,7 @@ function Application:probe(x, y, performDefault, callback, tests, radius)
 
 	local ray = self:shoot(x, y)
 	local probe = table.remove(self.pendingProbes) or Probe(self:getGame(), self.gameView, self.gameDB)
-	probe:init(ray, tests, radius)
+	probe:init(ray, tests, radius, layer)
 	probe:all(Function(self._probe, self, probe, performDefault, callback))
 end
 
@@ -601,7 +601,7 @@ end
 function Application:tickSingleThread()
 	self:doCommonTick()
 
-	self:measure('gameView:preTick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
+	self:measure('gameView:preTick()', function() self.gameView:preTick(self:getPreviousFrameDelta()) end)
 	self:measure('uiView:tick()', function() self.uiView:tick() end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
 	self:measure('gameView:postTick()', function() self.gameView:postTick(self:getPreviousFrameDelta()) end)

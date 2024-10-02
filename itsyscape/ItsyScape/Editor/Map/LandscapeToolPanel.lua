@@ -20,12 +20,14 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local LandscapeToolPanel = Class(Widget)
 LandscapeToolPanel.WIDTH = 320
-LandscapeToolPanel.HEIGHT = 128
+LandscapeToolPanel.HEIGHT = 184
 LandscapeToolPanel.SIZE_HILL = -1
 LandscapeToolPanel.SIZE_SINGLE = 1
 LandscapeToolPanel.MODE_FLAT = 1
 LandscapeToolPanel.MODE_EDGE = 2
 LandscapeToolPanel.MODE_DECAL = 3
+LandscapeToolPanel.PAINT_MODE_CIRCLE = 1
+LandscapeToolPanel.PAINT_MODE_RECTANGLE = 2
 
 function LandscapeToolPanel:new(application)
 	Widget.new(self)
@@ -107,14 +109,35 @@ function LandscapeToolPanel:new(application)
 	end)
 	gridLayout:addChild(decalButton)
 
+	local rectangleButton = Button()
+	rectangleButton:setText("Rectangle")
+	rectangleButton:setData("paintMode", LandscapeToolPanel.PAINT_MODE_RECTANGLE)
+	rectangleButton:setSize(96, 48)
+	rectangleButton.onClick:register(function()
+		self:setPaintMode(LandscapeToolPanel.PAINT_MODE_RECTANGLE)
+	end)
+	gridLayout:addChild(rectangleButton)
+
+	local circleButton = Button()
+	circleButton:setText("Circle")
+	circleButton:setData("paintMode", LandscapeToolPanel.PAINT_MODE_CIRCLE)
+	circleButton:setSize(96, 48)
+	circleButton.onClick:register(function()
+		self:setPaintMode(LandscapeToolPanel.PAINT_MODE_CIRCLE)
+	end)
+	gridLayout:addChild(circleButton)
+
 	self.buttons = {
 		flatButton,
 		cliffButton,
-		decalButton
+		decalButton,
+		rectangleButton,
+		circleButton
 	}
 
 	self.toolSize = 0
 	self:setMode(LandscapeToolPanel.MODE_FLAT)
+	self:setPaintMode(LandscapeToolPanel.PAINT_MODE_RECTANGLE)
 end
 
 function LandscapeToolPanel:increaseSize(distance)
@@ -132,7 +155,7 @@ function LandscapeToolPanel:setMode(mode)
 
 	for i = 1, #self.buttons do
 		local button = self.buttons[i]
-		if button:getData('mode') == mode then
+		if button:getData("mode") == mode then
 			button:setStyle(ButtonStyle({
 				pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
 				inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
@@ -143,7 +166,29 @@ function LandscapeToolPanel:setMode(mode)
 				textShadow = true,
 				padding = 4
 			}, self.application:getUIView():getResources()))
-		else
+		elseif button:getData("mode") then
+			button:setStyle(nil)
+		end
+	end
+end
+
+function LandscapeToolPanel:setPaintMode(paintMode)
+	self.paintMode = paintMode
+
+	for i = 1, #self.buttons do
+		local button = self.buttons[i]
+		if button:getData("paintMode") == paintMode then
+			button:setStyle(ButtonStyle({
+				pressed = "Resources/Renderers/Widget/Button/ActiveDefault-Pressed.9.png",
+				inactive = "Resources/Renderers/Widget/Button/ActiveDefault-Inactive.9.png",
+				hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png",
+				color = { 1, 1, 1, 1 },
+				font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+				fontSize = 24,
+				textShadow = true,
+				padding = 4
+			}, self.application:getUIView():getResources()))
+		elseif button:getData("paintMode") then
 			button:setStyle(nil)
 		end
 	end
@@ -151,6 +196,10 @@ end
 
 function LandscapeToolPanel:getMode()
 	return self.mode
+end
+
+function LandscapeToolPanel:getPaintMode()
+	return self.paintMode or LandscapeToolPanel.PAINT_MODE_RECTANGLE
 end
 
 function LandscapeToolPanel:setToolSize(value)

@@ -93,7 +93,8 @@ end
 
 function Gizmo.Operation:_getTransformedLines(lines, camera, sceneNode)
 	local world = sceneNode:getTransform():getGlobalTransform()
-	local center = Vector(world:transformPoint(0, 0, 0))
+	local offset = sceneNode:getTransform():getLocalOffset()
+	local center = Vector(world:transformPoint(0, 0, 0)) + offset
 
 	local l = {}
 	do
@@ -110,7 +111,8 @@ end
 
 function Gizmo.Operation:_getTransformedShape(shape, camera, sceneNode)
 	local world = sceneNode:getTransform():getGlobalTransform()
-	local center = Vector(world:transformPoint(0, 0, 0))
+	local offset = sceneNode:getTransform():getLocalOffset()
+	local center = Vector(world:transformPoint(0, 0, 0)) + offset
 
 	local rotation = Quaternion.IDENTITY
 	if self.shapeRotate then
@@ -360,7 +362,7 @@ function Gizmo.RotationAxisOperation:buildMesh(sceneNode, size)
 		local min, max = sceneNode:getBounds()
 		local size = max - min
 	else
-		size = size
+		size = size:min(Vector(5, 5, 5))
 	end
 	size = size * 2
 	size = math.max(size:get())
