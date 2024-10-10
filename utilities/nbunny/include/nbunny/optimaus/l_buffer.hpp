@@ -45,7 +45,7 @@ namespace nbunny
 		love::graphics::Canvas* get_color();
 		love::graphics::Canvas* get_depth_stencil();
 
-		void use();
+		void use(bool include_depth = true);
 	};
 }
 

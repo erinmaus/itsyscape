@@ -11,26 +11,26 @@
 ItsyScape.Resource.Peep "Chicken_Base" {
 	ItsyScape.Action.Attack(),
 
-	ItsyScape.Action.Loot() {
-		Output {
-			Resource = ItsyScape.Resource.DropTable "Chicken_Primary",
-			Count = 1
-		}
-	},
+	-- ItsyScape.Action.Loot() {
+	-- 	Output {
+	-- 		Resource = ItsyScape.Resource.DropTable "Chicken_Primary",
+	-- 		Count = 1
+	-- 	}
+	-- },
 
-	ItsyScape.Action.Loot() {
-		Output {
-			Resource = ItsyScape.Resource.DropTable "Chicken_Secondary",
-			Count = 1
-		}
-	},
+	-- ItsyScape.Action.Loot() {
+	-- 	Output {
+	-- 		Resource = ItsyScape.Resource.DropTable "Chicken_Secondary",
+	-- 		Count = 1
+	-- 	}
+	-- },
 
-	ItsyScape.Action.Loot() {
-		Output {
-			Resource = ItsyScape.Resource.DropTable "Chicken_Tertiary",
-			Count = 1
-		}
-	}
+	-- ItsyScape.Action.Loot() {
+	-- 	Output {
+	-- 		Resource = ItsyScape.Resource.DropTable "Chicken_Tertiary",
+	-- 		Count = 1
+	-- 	}
+	-- }
 }
 
 ItsyScape.Meta.PeepID {

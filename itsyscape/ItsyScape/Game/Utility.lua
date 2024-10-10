@@ -56,6 +56,45 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 -- any resources.
 local Utility = {}
 
+function _doMove(stage, player, path, anchor, raid)
+	local instance = stage:movePeep(player, path, anchor)
+
+	if instance ~= path and raid then
+		raid:addInstance(instance)
+	end
+end
+
+function Utility.move(player, path, anchor, raid)
+	local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+
+	local move = CallbackCommand(_doMove, player:getDirector():getGameInstance():getStage(), player, path, anchor, raid)
+	local wait = WaitCommand(0.5, false)
+	local command = CompositeCommand(true, wait, move)
+
+	if not player:getCommandQueue():interrupt(command) then
+		Log.info("Couldn't interrupt command queue for player '%s'; cannot move.", player:getName())
+		return false
+	end
+
+	player:addBehavior(DisabledBehavior)
+	player:removeBehavior(TargetTileBehavior)
+
+	local movement = player:getBehavior(MovementBehavior)
+	if movement then
+		movement.velocity = Vector.ZERO
+		movement.acceleration = Vector.ZERO
+	end
+
+	Utility.UI.openInterface(player, "CutsceneTransition", false, nil, function()
+		player:removeBehavior(DisabledBehavior)
+	end)
+
+	return true
+end
+
 function Utility.save(player, saveLocation, talk, ...)
 	local director = player:getDirector()
 	if not director then
@@ -723,15 +762,231 @@ Utility.Time.DAY = 24 * 60 * 60
 Utility.Time.BIRTHDAY_INFO = {
 	year = 2018,
 	month = 3,
-	day = 23
+	day = 23,
+}
+Utility.Time.INGAME_BIRTHDAY_INFO = {
+	year = 1000,
+	month = 1,
+	day = 1
+}
+Utility.Time.INGAME_RITUAL_INFO = {
+	year = 1,
+	month = 2,
+	day = 25,
+	dayOfWeek = 2,
 }
 Utility.Time.BIRTHDAY_TIME = os.time(Utility.Time.BIRTHDAY_INFO)
 
-function Utility.Time.getDays(currentTime)
-	currentTime = currentTime or referenceTime
+Utility.Time.DAYS = {
+	"Featherday", -- Sunday
+	"Myreday",    -- Monday
+	"Theoday",    -- Tuesday
+	"Brakday" ,   -- Wednesday
+	"Takday",     -- Thursday
+	"Enderday",   -- Friday,
+	"Yenderday"   -- Saturday
+}
 
-	local referenceTime = Utility.Time.BIRTHDAY_TIME
+Utility.Time.AGE_BEFORE_RITUAL = "Age of Gods"
+Utility.Time.AGE_AFTER_RITUAL  = "Age of Humanity"
+
+Utility.Time.SHORT_AGE = {
+	[Utility.Time.AGE_BEFORE_RITUAL] = "A.G.",
+	[Utility.Time.AGE_AFTER_RITUAL]  = "A.H."
+}
+
+Utility.Time.MONTHS = {
+	"Fallsun",
+	"Emptorius",
+	"Longnights",
+	"Basturian",
+	"Godsun",
+	"Yohnus",
+	"Emberdawn",
+	"Prisius",
+	"Linshine",
+	"Chillbreak",
+	"Fogsden",
+	"Darksere",
+	"Yendermonth"
+}
+
+Utility.Time.DAYS_IN_INGAME_MONTH = {
+	30,
+	25,
+	31,
+	28,
+	29,
+	31,
+	29,
+	30,
+	29,
+	29,
+	28,
+	31,
+	27
+}
+
+Utility.Time.NUM_DAYS_PER_INGAME_YEAR = 377
+
+function Utility.Time._getIngameYearMonthDay(days)
+	local daysSinceRitualYear = Utility.Time.INGAME_BIRTHDAY_INFO.year * Utility.Time.NUM_DAYS_PER_INGAME_YEAR + days
+	local year = math.floor(daysSinceRitualYear / Utility.Time.NUM_DAYS_PER_INGAME_YEAR)
+
+	local day = daysSinceRitualYear - (math.floor(daysSinceRitualYear / Utility.Time.NUM_DAYS_PER_INGAME_YEAR) * Utility.Time.NUM_DAYS_PER_INGAME_YEAR) + 1
+	local dayOfWeek = daysSinceRitualYear % #Utility.Time.DAYS + 1
+
+	local month
+	do
+		local d = 0
+		for i, daysInMonth in ipairs(Utility.Time.DAYS_IN_INGAME_MONTH) do
+			if day <= d + daysInMonth then
+				month = i
+				break
+			else
+				d = d + daysInMonth
+			end
+		end
+
+		day = day - d
+	end
+
+	local age
+	if year <= 0 then
+		year = math.abs(year) + 1
+		age = Utility.Time.AGE_BEFORE_RITUAL
+	else
+		age = Utility.Time.AGE_AFTER_RITUAL
+	end
+
+	return {
+		year = year,
+		month = month,
+		day = day,
+		age = age,
+		dayOfWeek = dayOfWeek,
+		dayOfWeekName = Utility.Time.DAYS[dayOfWeek],
+		monthName = Utility.Time.MONTHS[month]
+	}
+end
+
+function Utility.Time.getIngameYearMonthDay(currentTime)
+	local days = Utility.Time.getDays(currentTime)
+	return Utility.Time._getIngameYearMonthDay(days)
+end
+
+function Utility.Time.toCurrentTime(year, month, day)
+	year = year or 1
+	month = month or 1
+	day = day or 1
+
+	local yearDifference = year - Utility.Time.INGAME_BIRTHDAY_INFO.year
+	local offsetDays = math.abs(yearDifference) * Utility.Time.NUM_DAYS_PER_INGAME_YEAR + (day - 1)
+
+	for i = 1, month - 1 do
+		offsetDays = offsetDays + Utility.Time.DAYS_IN_INGAME_MONTH[i]
+	end
+
+	offsetDays = offsetDays * math.sign(yearDifference)
+
+	local offsetTime = offsetDays * Utility.Time.DAY
+	local currentTime = Utility.Time.BIRTHDAY_TIME + offsetTime
+	return currentTime
+end
+
+-- Applies years, then months, then days.
+-- Does not handle fractional years/month/days.
+function Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, yearOffset)
+	yearOffset = math.floor(yearOffset or 0)
+	monthOffset = math.floor(monthOffset or 0)
+	dayOffset = math.floor(dayOffset or 0)
+
+	local yearMonthDay = Utility.Time.getIngameYearMonthDay(currentTime)
+
+	if yearMonthDay.age == Utility.AGE_BEFORE_RITUAL then
+		yearMonthDay.year = -(yearMonthDay.year - 1)
+	end
+
+	yearMonthDay.year = yearMonthDay.year + yearOffset + math.floor(monthOffset / #Utility.Time.MONTHS) + math.floor(dayOffset / Utility.Time.NUM_DAYS_PER_INGAME_YEAR)
+
+	local remainderMonths = math.sign(monthOffset) * (math.abs(monthOffset) % #Utility.Time.MONTHS)
+	if monthOffset < 0 then
+		if math.abs(remainderMonths) >= year.month then
+			year = year - 1
+
+			yearMonthDay.month = year.month - remainderMonths + #Utility.Time.MONTHS
+		else
+			yearMonthDay.month = yearMonthDay + remainderMonths
+		end
+	elseif monthOffset > 0 then
+		yearMonthDay.month = yearMonthDay.month + remainderMonths
+		if yearMonthDay.month >= #Utility.Time.MONTHS then
+			yearMonthDay.month = yearMonthDay.month - #Utility.Time.MONTHS
+			year = year + 1
+		end
+	end
+
+	yearMonthDay.day = yearMonthDay.day + math.sign(dayOffset) * math.abs(dayOffset) % Utility.Time.NUM_DAYS_PER_INGAME_YEAR
+	while yearMonthDay.day > Utility.Time.DAYS_IN_INGAME_MONTH[yearMonthDay.month] or yearMonthDay.day <= 0 do
+		if yearMonthDay.day <= 0 then
+			yearMonthDay.day = yearMonthDay + Utility.Time.DAYS_IN_INGAME_MONTH[yearMonthDay.month]
+
+			yearMonthDay.month = yearMonthDay.month - 1
+			if yearMonthDay.month <= 0 then
+				yearMonthDay.month = #Utility.Time.MONTHS
+				yearMonthDay.year = yearMonthDay.year - 1
+			end
+		else
+			yearMonthDay.day = yearMonthDay.day - Utility.Time.DAYS_IN_INGAME_MONTH[yearMonthDay.month]
+
+			yearMonthDay.month = yearMonthDay.month + 1
+			if yearMonthDay.month > #Utility.Time.MONTHS then
+				yearMonthDay.month = 1
+				yearMonthDay.year = yearMonthDay.year + 1
+			end
+		end
+	end
+
+	do
+		local daysSinceRitualYear = Utility.Time.NUM_DAYS_PER_INGAME_YEAR * yearMonthDay.year + yearMonthDay.day
+		for i = 1, yearMonthDay.month - 1 do
+			daysSinceRitualYear = daysSinceRitualYear + Utility.Time.DAYS_IN_INGAME_MONTH[i]
+		end
+
+		yearMonthDay.dayOfWeek = daysSinceRitualYear % #Utility.Time.DAYS + 1
+		yearMonthDay.dayOfWeekName = Utility.Time.DAYS[yearMonthDay.dayOfWeek]
+	end
+
+	if yearMonthDay.year <= 0 then
+		yearMonthDay.year = math.abs(yearMonthDay.year) + 1
+		yearMonthDay.age = Utility.Time.AGE_BEFORE_RITUAL
+	else
+		yearMonthDay.age = Utility.Time.AGE_AFTER_RITUAL
+	end
+
+	yearMonthDay.monthName = Utility.Time.MONTHS[yearMonthDay.month]
+
+	return yearMonthDay
+end
+
+function Utility.Time.getAndUpdateAdventureStartTime(root)
+	local clockStorage = root:getSection("Clock")
+	if not clockStorage:hasValue("start") then
+		clockStorage:set("start", Utility.Time.BIRTHDAY_TIME)
+	end
+
+	return clockStorage:get("start")
+end
+
+function Utility.Time.getDays(currentTime, referenceTime)
+	referenceTime = referenceTime or Utility.Time.BIRTHDAY_TIME
+	currentTime = currentTime or os.time()
+
 	return math.floor(os.difftime(currentTime, referenceTime) / Utility.Time.DAY)
+end
+
+function Utility.Time.getSeconds(root)
+	return root:getSection("Clock"):get("seconds") or 0
 end
 
 function Utility.Time.getAndUpdateTime(root)
@@ -746,10 +1001,15 @@ function Utility.Time.getAndUpdateTime(root)
 	return currentTime + currentOffset
 end
 
-function Utility.Time.updateTime(root, days)
+function Utility.Time.updateTime(root, days, seconds)
 	local currentOffset = root:getSection("Clock"):get("offset") or 0
-	local futureOffset = currentOffset + Utility.Time.DAY * (days or 1)
+	local futureOffset = currentOffset + Utility.Time.DAY * (days or 1) + (seconds or 0)
 	root:getSection("Clock"):set("offset", futureOffset)
+
+	if seconds then
+		local currentSeconds = root:getSection("Clock"):get("seconds") or 0
+		root:getSection("Clock"):set("seconds", currentSeconds + seconds)
+	end
 
 	return Utility.Time.getAndUpdateTime(root)
 end
@@ -910,7 +1170,7 @@ Utility.Text.DEFAULT_PRONOUNS   = {
 			"they",
 			"them",
 			"their",
-			"mazer"
+			"patrician"
 		},
 		["male"] = {
 			"he",
@@ -930,6 +1190,332 @@ Utility.Text.BE = {
 	[true] = { present = 'are', past = 'were', future = 'will be' },
 	[false] = { present = 'is', past = 'was', future = 'will be' }
 }
+
+function Utility.Text._find(text, pattern, offset)
+	local i, j = text:sub(offset):find(pattern)
+	if i and j then
+		return i + offset - 1, j + offset - 1
+	end
+
+	return nil, nil
+end
+
+function Utility.Text.parse(text, rootTag)
+	local _find = Utility.Text._find
+
+	local rootElement = {
+		tag = rootTag,
+		attributes = {},
+		children = {}
+	}
+
+	local elementStack = { rootElement }
+
+	local previousI = 1
+	local i, j = 0
+	repeat
+		i, j = text:find("</?([%w_-][%w%d_-]*)", previousI)
+
+		if i and j then
+			if i > previousI then
+				local fragment = text:sub(previousI, i - 1)
+
+				table.insert(elementStack[#elementStack].children, fragment)
+			end
+
+			local elementTag = text:sub(i + 1, j)
+
+			if elementTag:sub(1, 1) == "/" then
+				elementTag = elementTag:sub(2)
+
+				local element = elementStack[#elementStack]
+				if element.tag ~= elementTag then
+					error(string.format("expected ending element tag '%s', got '%s'", element.tag, elementTag))
+				end
+
+				local endTagBracket = text:sub(j + 1, j + 1)
+				if endTagBracket ~= ">" then
+					error(string.format("expected '>' to end element tag '%s', got '%s'", elementTag, endTagBracket))
+				end
+
+				table.remove(elementStack, #elementStack)
+			else
+				local element = { attributes = {}, children = {}, tag = elementTag }
+
+				if #elementStack >= 1 then
+					local parent = elementStack[#elementStack]
+
+					element.parent = parent
+					table.insert(parent.children, element)
+				end
+
+				table.insert(elementStack, element)
+			end
+
+			local attributeJ, attributeI = j
+			repeat
+				local endTagI, endTagJ = _find(text, "^%s*/?>\n?", attributeJ + 1)
+				attributeI, attributeJ = _find(text, "^%s+([%w_-][%w%d_-]*)", attributeJ + 1)
+
+				if attributeI and attributeJ then
+					local attribute = text:sub(attributeI + 1, attributeJ)
+					local typeName = text:sub(attributeJ + 1):match("^:(%w+)=")
+
+					local value
+					do
+						local valueStart = attributeJ + #(typeName or "") + (typeName and 2 or 1)
+						if text:sub(valueStart, valueStart) ~= "=" then
+							value = true
+							typeName = typeName or "boolean"
+						else
+							local valueI, valueJ = _find(text, "^=\'[^\']+\'", valueStart)
+							if valueI and valueJ then
+								while text:sub(valueJ - 1, valueJ - 1) == "\\" do
+									local _
+									_, valueJ = _find(text, "^[^\']+\'", valueJ + 1)
+
+									if not valueJ then
+										error(string.format("value for attribute '%s' in element tag '%s' unterminated", attribute, elementStack[#elementStack].tag))
+									else
+										valueJ = valueJ + 1
+									end
+								end
+
+								value = text:sub(valueI + 2, valueJ - 1):gsub("\\\'", "\'")
+
+								attributeJ = valueJ
+								j = valueJ
+							else
+								error(string.format("attribute '%s' in element tag '%s' malformed", attribute, elementStack[#elementStack].tag))
+							end
+						end
+					end
+
+					if value ~= nil then
+						if typeName then
+							if typeName == "number" then
+								value = tonumber(value) or nil
+							elseif typeName == "string" then
+								value = tostring(value)
+							elseif typeName == "boolean" then
+								if type(value) == "string" then
+									if value:lower() == "true" then
+										value = true
+									elseif value:lower() == "false" then
+										value = false
+									end
+								else
+									value = not not value
+								end
+							end
+						else
+							value = tonumber(value) or value
+							typeName = type(value)
+						end
+
+						local element = elementStack[#elementStack]
+						if element.attributes[attribute] ~= nil then
+							error(string.format("duplicate attribute '%s' in element tag '%s'", attribute, element.tag))
+						else
+							element.attributes[attribute] = { value = value, type = typeName or "?" }
+						end
+					end
+				elseif endTagI and endTagJ then
+					if text:sub(endTagI, endTagJ):match("^%s/>") then
+						table.remove(elementStack, #elementStack)
+					end
+
+					j = endTagJ + 1
+					break
+				else
+					error(string.format("element tag '%s' unterminated", elementStack[#elementStack].tag))
+				end
+			until not attributeI
+
+			previousI = j
+		end
+	until not i
+
+	if previousI and previousI + 1 < #text then
+		table.insert(rootElement.children, text:sub(previousI + 1))
+	end
+
+	if #elementStack > 1 then
+		error(string.format("unmatched element tag '%s'", elementStack[#elementStack].tag))
+	end
+
+	return rootElement
+end
+
+function Utility.Text.bind(peep, language)
+	local TIME_FORMAT = {
+		year = function(yearMonthDay)
+			return tostring(yearMonthDay.year)
+		end,
+
+		yearOptionalShortAge = function(yearMonthDay)
+			if yearMonthDay.age ~= Utility.Time.AGE_AFTER_RITUAL then
+				return string.format("%d %s", yearMonthDay.year, Utility.Time.SHORT_AGE[yearMonthDay.age])
+			else
+				return tostring(yearMonthDay.year)
+			end
+		end,
+
+		yearOptionalLongAge = function(yearMonthDay)
+			if yearMonthDay.age ~= Utility.Time.AGE_AFTER_RITUAL then
+				return string.format("%d %s", yearMonthDay.year, yearMonthDay.age)
+			else
+				return tostring(yearMonthDay.year)
+			end
+		end,
+
+		age = function(yearMonthDay)
+			return Utility.Time.SHORT_AGE[yearMonthDay.age]
+		end,
+
+		longAge = function(yearMonthDay)
+			return yearMonthDay.age
+		end,
+
+		day = function(yearMonthDay)
+			return yearMonthDay.day
+		end,
+
+		dayWithSpacePadding = function(yearMonthDay)
+			return string.format("% 2d", yearMonthDay.day)
+		end,
+
+		dayWithNumberPadding = function(yearMonthDay)
+			return string.format("%02d", yearMonthDay.day)
+		end,
+
+		dayOfWeek = function(yearMonthDay)
+			return yearMonthDay.dayOfWeek
+		end,
+
+		dayOfWeekName = function(yearMonthDay)
+			return yearMonthDay.dayOfWeekName
+		end,
+
+		month = function(yearMonthDay)
+			return yearMonthDay.month
+		end,
+
+		monthName = function(yearMonthDay)
+			return Utility.Time.MONTHS[yearMonthDay.month]
+		end
+	}
+
+	local text = {}
+	do
+		function text.get_player_subject_pronoun(upperCase)
+			return Utility.Text.getPronoun(peep, Utility.Text.PRONOUN_SUBJECT, language, upperCase)
+		end
+
+		function text.get_player_subject_pronoun(upperCase)
+			return Utility.Text.getPronoun(peep, Utility.Text.PRONOUN_SUBJECT, language, upperCase)
+		end
+
+		function text.get_player_possessive_pronoun(upperCase)
+			return Utility.Text.getPronoun(peep, Utility.Text.PRONOUN_POSSESSIVE, language, upperCase)
+		end
+
+		function text.get_player_formal_address(upperCase)
+			return Utility.Text.getPronoun(peep, Utility.Text.FORMAL_ADDRESS, language, upperCase)
+		end
+
+		function text.get_english_present_be(upperCase)
+			return Utility.Text.getEnglishBe(peep, "present", upperCase)
+		end
+
+		function text.get_english_past_be(upperCase)
+			return Utility.Text.getEnglishBe(peep, "past", upperCase)
+		end
+
+		function text.get_english_future_be(upperCase)
+			return Utility.Text.getEnglishBe(peep, "future", upperCase)
+		end
+
+		function text.get_relative_date_from_start(dayOffset, monthOffset, yearOffset, format)
+			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+			local startTime = Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
+			return text.get_relative_date_from_time(dayOffset, monthOffset, yearOffset, format, startTime)
+		end
+
+		function text.get_relative_date_from_now(dayOffset, monthOffset, yearOffset, format)
+			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+			local currentTime = Utility.Time.getAndUpdateTime(rootStorage)
+			return text.get_relative_date_from_time(dayOffset, monthOffset, yearOffset, format, currentTime)
+		end
+
+		function text.get_relative_date_from_birthday(dayOffset, monthOffset, yearOffset, format)
+			local currentTime = Utility.Time.BIRTHDAY_TIME
+			return text.get_relative_date_from_time(dayOffset, monthOffset, yearOffset, format, currentTime)
+		end
+
+		function text.get_relative_date_from_time(dayOffset, monthOffset, yearOffset, format, currentTime)
+			local yearMonthDay = Utility.Time.offsetIngameTime(currentTime or Utility.Time.BIRTHDAY_TIME, dayOffset, monthOffset, yearOffset)
+			local newTime = Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+
+			return text.format_date(format, newTime)
+		end
+
+		function text.format_date(format, currentTime)
+			local format = format or "%monthName %day, %yearOptionalShortAge"
+			local yearMonthDay = Utility.Time.getIngameYearMonthDay(currentTime or Utility.Time.BIRTHDAY_TIME)
+
+			return format:gsub("%%(%w+)", function(key)
+				local func = TIME_FORMAT[key]
+				if not func then
+					error(string.format("time format specifier '%s' not valid", key))
+				end
+
+				return func(yearMonthDay)
+			end)
+		end
+
+		function text.get_start_time()
+			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+			return Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
+		end
+
+		function text.get_current_time()
+			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+			return Utility.Time.getAndUpdateTime(rootStorage)
+		end
+
+		function text.get_birthday_time()
+			return Utility.Time.BIRTHDAY_TIME
+		end
+
+		function text.get_date_component(currentTime, component)
+			return Utility.Time.getIngameYearMonthDay(currentTime)[component]
+		end
+
+		function text.to_current_time(year, month, day)
+			return Utility.Time.toCurrentTime(year, month, day)
+		end
+
+		function text.offset_current_time(currentTime, dayOffset, monthOffset, yearOffset)
+			local yearMonthDay = Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, yearOffset)
+			return Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+		end
+
+		function text.get_num_days_in_month(month)
+			return Utility.Time.DAYS_IN_INGAME_MONTH[month]
+		end
+
+		function text.get_month_name(month)
+			return Utility.Time.MONTHS[month]
+		end
+
+		function text.get_day_name(day)
+			return Utility.Time.DAYS[day]
+		end
+	end
+
+	return text
+end
 
 function Utility.Text.getPronouns(peep)
 	local gender = peep:getBehavior(GenderBehavior)
@@ -969,7 +1555,7 @@ function Utility.Text.getPronoun(peep, class, lang, upperCase)
 	return g
 end
 
-function Utility.Text.getEnglishBe(peep)
+function Utility.Text.getEnglishBe(peep, class, upperCase)
 	local g
 	do
 		local gender = peep:getBehavior(GenderBehavior)
@@ -978,6 +1564,11 @@ function Utility.Text.getEnglishBe(peep)
 		end
 
 		g = g or Utility.Text.BE[true]
+	end
+	g = g[class] or (upperCase and "*Be" or "*be")
+
+	if upperCase then
+		g = g:sub(1, 1):upper() .. g:sub(2)
 	end
 
 	return g
@@ -2116,7 +2707,7 @@ function Utility.Peep.setPosition(peep, position, lerp)
 	if p then
 		p.position = position
 	else
-		Log.warn("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
+		Log.error("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
 	end
 
 	if not lerp then
@@ -2133,7 +2724,7 @@ function Utility.Peep.getScale(peep)
 	if scale then
 		return scale.scale
 	else
-		return Vector.ZERO
+		return Vector.ONE
 	end
 end
 
@@ -2161,6 +2752,15 @@ function Utility.Peep.setRotation(peep, rotation)
 		p.rotation = rotation
 	else
 		Log.warn("Peep '%s' doesn't have a rotation; can't set new rotation.", peep:getName())
+	end
+end
+
+function Utility.Peep.setOrigin(peep, origin)
+	local p = peep:getBehavior(OriginBehavior)
+	if p then
+		p.origin = origin
+	else
+		Log.warn("Peep '%s' doesn't have an origin; can't set new origin.", peep:getName())
 	end
 end
 
@@ -3718,6 +4318,10 @@ function Utility.Peep.Attackable:onHeal(p)
 end
 
 function Utility.Peep.Attackable:onHit(p)
+	if self:hasBehavior(DisabledBehavior) then
+		return
+	end
+
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if not combat then
 		return
@@ -4223,6 +4827,69 @@ function Utility.Peep.Creep:applySkins()
 end
 
 Utility.Peep.Human = {}
+Utility.Peep.Human.Palette = {
+	SKIN_LIGHT = Color.fromHexString("efe3a9"),
+	SKIN_MEDIUM = Color.fromHexString("c5995f"),
+	SKIN_DARK = Color.fromHexString("a4693c"),
+	SKIN_PLASTIC = Color.fromHexString("ffcc00"),
+	SKIN_ZOMBI = Color.fromHexString("bf50d9"),
+	SKIN_NYMPH = Color.fromHexString("cdde87"),
+
+	HAIR_BROWN = Color.fromHexString("6c4527"),
+	HAIR_BLACK = Color.fromHexString("3e3e3e"),
+	HAIR_GREY = Color.fromHexString("cccccc"),
+	HAIR_BLONDE = Color.fromHexString("ffeeaa"),
+	HAIR_PURPLE = Color.fromHexString("8358c3"),
+	HAIR_RED = Color.fromHexString("d45500"),
+	HAIR_GREEN = Color.fromHexString("8dd35f"),
+
+	EYE_BLACK = Color.fromHexString("000000"),
+	EYE_WHITE = Color.fromHexString("ffffff"),
+
+	BONE = Color.fromHexString("e9ddaf"),
+	BONE_ANCIENT = Color.fromHexString("939dac"),
+
+	PRIMARY_RED = Color.fromHexString("cb1d1d"),
+	PRIMARY_GREEN = Color.fromHexString("abc837"),
+	PRIMARY_BLUE = Color.fromHexString("3771c8"),
+	PRIMARY_YELLOW = Color.fromHexString("ffcc00"),
+	PRIMARY_PURPLE = Color.fromHexString("855ad8"),
+	PRIMARY_PINK = Color.fromHexString("ffd5e5"),
+	PRIMARY_BROWN = Color.fromHexString("76523c"),
+	PRIMARY_WHITE = Color.fromHexString("ebf7f9"),
+	PRIMARY_GREY = Color.fromHexString("cccccc"),
+	PRIMARY_BLACK = Color.fromHexString("4d4d4d"),
+
+	ACCENT_GREEN = Color.fromHexString("8dd35f"),
+	ACCENT_PINK = Color.fromHexString("ff2a7f"),
+}
+
+function Utility.Peep.Human:applySkin(slot, priority, relativeFilename, colorConfig)
+	colorConfig = colorConfig or {}
+
+	local remappedColorConfig = {}
+	for _, color in ipairs(colorConfig) do
+		table.insert(remappedColorConfig, { color:get() })
+	end
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return false
+	end
+
+	local filename = string.format("Resources/Game/Skins/%s", relativeFilename)
+	if not love.filesystem.getInfo(filename) then
+		error(string.format("Could not find skin '%s'!", filename))
+	end
+
+	local skin = CacheRef("ItsyScape.Game.Skin.ModelSkin", filename)
+	actor:setSkin(slot, priority, skin, remappedColorConfig)
+
+	return true
+end
+
 function Utility.Peep.Human:applySkins()
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
@@ -4244,8 +4911,26 @@ function Utility.Peep.Human:applySkins()
 			for i = 1, #skins do
 				local skin = skins[i]
 				if skin:get("Type") and skin:get("Filename") then
+					local colors = gameDB:getRecords("PeepSkinColor", {
+						Resource = resource,
+						Slot = skin:get("Slot"),
+						Priority = skin:get("Priority")
+					})
+
+					local colorConfig = {}
+					for _, color in ipairs(colors) do
+						local key = color:get("Color")
+						local c = Utility.Peep.Human.Palette[key] or Color.fromHexString(key) or Color(1, 0, 0)
+
+						local h = color:get("H")
+						local s = color:get("S")
+						local l = color:get("L")
+
+						table.insert(colorConfig, { c:shiftHSL(h, s, l):get() })
+					end
+
 					local c = CacheRef(skin:get("Type"), skin:get("Filename"))
-					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c)
+					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c, colorConfig)
 				end
 			end
 		end

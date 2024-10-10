@@ -1,5 +1,7 @@
 {
-	model = "Resources/Game/Skins/Isabellium/Helmet.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Helmet.lmesh",
 	texture = "Resources/Game/Skins/Isabellium/Isabellium.png",
-	isBlocking = false
+	shader = "Resources/Shaders/SpecularBumpSkinnedModel",
+	isBlocking = false,
+	isReflective = true
 }

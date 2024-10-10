@@ -41,7 +41,7 @@ function SkeletonResource:loadFromFile(filename, resourceManager)
 	self:release()
 
 	local file = Resource.readLua(filename)
-	self.skeleton = Skeleton(file, self:getHandle())
+	self.skeleton = Skeleton(file)
 end
 
 function SkeletonResource:getIsReady()

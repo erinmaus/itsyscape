@@ -1,10 +1,8 @@
-#line 1
+#include "Resources/Shaders/Water.common.glsl"
 
-uniform highp float scape_Time;
 uniform highp vec4 scape_TimeScale;
 uniform highp float scape_YOffset;
-
-const float PI = 3.1415926535;
+uniform highp float scape_XZScale;
 
 void performTransform(
 	mat4 modelViewProjectionMatrix,
@@ -12,11 +10,11 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	float offset1 = sin(scape_Time * PI + position.x / scape_TimeScale.w * PI * scape_TimeScale.z) * scape_YOffset;
-	float offset2 = sin(scape_Time * PI + position.z / scape_TimeScale.w * PI * scape_TimeScale.z) * scape_YOffset;
-
 	localPosition = position.xyz;
-	localPosition.y += offset1 + offset2;
+	localPosition.y = calculateOldWaveHeight(localPosition, scape_TimeScale.zw, scape_Time, scape_YOffset);
+
+	vec3 normal = calculateOldWaveNormal(localPosition, vec3(scape_XZScale, 1, scape_XZScale), scape_TimeScale.zw, scape_Time, scape_YOffset);
+	frag_Normal = normalize(mat3(scape_NormalMatrix) * normal);
 
 	projectedPosition = modelViewProjectionMatrix * vec4(localPosition, 1.0);
 }

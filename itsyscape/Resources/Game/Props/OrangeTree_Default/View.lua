@@ -8,22 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Vector = require "ItsyScape.Common.Math.Vector"
-local Quaternion = require "ItsyScape.Common.Math.Quaternion"
-local Color = require "ItsyScape.Graphics.Color"
-local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
-local TreeView = require "Resources.Game.Props.Common.TreeView"
-local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
-local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local FruitTreeView = require "Resources.Game.Props.Common.FruitTreeView"
 
-local OrangeTreeView = Class(TreeView)
+local OrangeTreeView = Class(FruitTreeView)
 
-function OrangeTreeView:getBaseFilename()
+function OrangeTreeView:getBaseModelFilename()
 	return "Resources/Game/Props/OrangeTree_Default"
 end
 
-function OrangeTreeView:load()
-	TreeView.load(self)
+function OrangeTreeView:getBaseTextureFilename()
+	return "Resources/Game/Props/OrangeTree_Default"
 end
 
 return OrangeTreeView

@@ -1,5 +1,5 @@
 {
-	model = "Resources/Game/Skins/NobleSilk/Hat.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Helmet.lmesh",
 	texture = "Resources/Game/Skins/NobleSilk/Texture.png",
 	isBlocking = false
 }

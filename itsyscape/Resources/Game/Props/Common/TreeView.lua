@@ -31,7 +31,6 @@ function TreeView:new(prop, gameView)
 	self.spawned = false
 	self.depleted = false
 	self.time = 0
-	self.transforms = {}
 	self.animations = {}
 end
 
@@ -61,7 +60,6 @@ function TreeView:applyAnimation(time, animation)
 	skeleton:applyBindPose(self.transforms)
 end
 
-
 function TreeView:load()
 	PropView.load(self)
 
@@ -77,6 +75,13 @@ function TreeView:load()
 			self.skeleton = skeleton
 			self.transforms = skeleton:getResource():createTransforms()
 
+			resources:queue(
+				ModelResource,
+				self:getResourcePath("Tree.lmodel"),
+				function(model)
+					self.model = model
+				end,
+				self.skeleton:getResource())
 			resources:queue(
 				SkeletonAnimationResource,
 				self:getResourcePath("Spawn.lanim"),
@@ -112,15 +117,6 @@ function TreeView:load()
 
 				local idleDuration = self.animations[TreeView.ANIMATION_IDLE]:getDuration()
 
-				root:onWillRender(function()
-					local animation = self:getCurrentAnimation()
-					if (self.currentAnimation ~= TreeView.ANIMATION_IDLE and idleDuration <= 1 / 30) or
-					   self.time <= animation:getDuration()
-					then
-						self:applyAnimation(self.time, animation)
-					end
-				end)
-
 				local offset = idleDuration * math.random()
 				self.time = offset
 				self:applyAnimation(offset, self.animations[TreeView.ANIMATION_IDLE])
@@ -147,13 +143,6 @@ function TreeView:load()
 
 				self.spawned = true
 			end)
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Tree.lmodel"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.model = model
 		end)
 	resources:queue(
 		TextureResource,
@@ -238,6 +227,12 @@ function TreeView:update(delta)
 		then
 			self.time = 0
 			self.currentAnimation = TreeView.ANIMATION_IDLE
+		end
+
+		if (self.currentAnimation ~= TreeView.ANIMATION_IDLE and animation:getDuration() <= 1 / 30) or
+		   self.time <= animation:getDuration()
+		then
+			self:applyAnimation(self.time, animation)
 		end
 	end
 end

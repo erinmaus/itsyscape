@@ -30,6 +30,17 @@
 	},
 
 	{
+		x = 128,
+		y = 896,
+		width = 128,
+		height = 128,
+		colorRed = 255,
+		colorGreen = 55,
+		colorBlue = 55,
+		name = "impassable"
+	},
+
+	{
 		x = 256,
 		y = 896,
 		width = 128,

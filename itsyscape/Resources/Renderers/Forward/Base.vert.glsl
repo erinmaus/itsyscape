@@ -14,8 +14,7 @@ precision highp float;
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
-uniform mat4 scape_WorldMatrix;
-uniform mat4 scape_NormalMatrix;
+#include "Resources/Shaders/RendererPass.common.glsl"
 
 attribute vec3 VertexNormal;
 attribute vec2 VertexTexture;
@@ -38,7 +37,7 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 	vec3 localPosition = vec3(0.0);
 	vec4 projectedPosition = vec4(0.0);
 	performTransform(
-		modelViewProjection,
+		getWorldViewProjection(),
 		vertexPosition,
 		localPosition,
 		projectedPosition);

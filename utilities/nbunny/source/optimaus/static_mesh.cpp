@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "common/runtime.h"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/static_mesh.hpp"
 
@@ -17,24 +18,30 @@ std::shared_ptr<nbunny::ResourceInstance> nbunny::StaticMeshResource::instantiat
 	return std::make_shared<StaticMeshInstance>(allocate_id(), set_weak_reference((L)));
 }
 
+static int nbunny_static_mesh_resource_constructor(lua_State* L)
+{
+	nbunny::lua::push(L, std::make_shared<nbunny::StaticMeshResource>());
+	return 1;
+}
+
 static int nbunny_static_mesh_resource_instantiate(lua_State* L)
 {
-	auto& resource = sol::stack::get<nbunny::StaticMeshResource&>(L, 1);
+	auto resource = nbunny::lua::get<nbunny::StaticMeshResource*>(L, 1);
 	lua_pushvalue(L, 2);
-	auto instance = resource.instantiate(L);
-	sol::stack::push(L, std::reinterpret_pointer_cast<nbunny::StaticMeshInstance>(instance));
+	auto instance = resource->instantiate(L);
+	nbunny::lua::push(L, std::reinterpret_pointer_cast<nbunny::StaticMeshInstance>(instance));
 	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_staticmeshresource(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::StaticMeshResource>("NStaticMeshResource",
-		sol::base_classes, sol::bases<nbunny::Resource>(),
-		sol::call_constructor, sol::factories(&nbunny_resource_create<nbunny::StaticMeshResource>),
-		"instantiate", &nbunny_static_mesh_resource_instantiate);
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "instantiate", &nbunny_static_mesh_resource_instantiate },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_child_type<nbunny::StaticMeshResource, nbunny::Resource>(L, &nbunny_static_mesh_resource_constructor, metatable);
 
 	return 1;
 }
@@ -76,21 +83,31 @@ const std::vector<std::string>& nbunny::StaticMeshInstance::get_mesh_groups() co
 
 static int nbunny_static_mesh_instance_set_mesh(lua_State* L)
 {
-	auto& static_mesh = sol::stack::get<nbunny::StaticMeshInstance&>(L, 1);
+	auto static_mesh = nbunny::lua::get<nbunny::StaticMeshInstance>(L, 1);
 	auto group = luaL_checkstring(L, 2);
 	auto mesh = love::luax_checktype<love::graphics::Mesh>(L, 3);
 
-	static_mesh.set_mesh(group, mesh);
+	static_mesh->set_mesh(group, mesh);
 
 	return 0;
 }
 
 static int nbunny_static_mesh_instance_get_mesh(lua_State* L)
 {
-	auto& static_mesh = sol::stack::get<nbunny::StaticMeshInstance&>(L, 1);
+	auto static_mesh = nbunny::lua::get<nbunny::StaticMeshInstance>(L, 1);
 	auto group = luaL_checkstring(L, 2);
 
-	love::luax_pushtype(L, static_mesh.get_mesh(group));
+	love::luax_pushtype(L, static_mesh->get_mesh(group));
+
+	return 1;
+}
+
+static int nbunny_static_mesh_instance_has_mesh(lua_State* L)
+{
+	auto static_mesh = nbunny::lua::get<nbunny::StaticMeshInstance>(L, 1);
+	auto group = luaL_checkstring(L, 2);
+
+	nbunny::lua::push(L, static_mesh->has_mesh(group));
 
 	return 1;
 }
@@ -98,14 +115,14 @@ static int nbunny_static_mesh_instance_get_mesh(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_staticmeshresourceinstance(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::StaticMeshInstance>("NStaticMeshInstance",
-		sol::base_classes, sol::bases<nbunny::ResourceInstance>(),
-		sol::call_constructor, sol::constructors<nbunny::StaticMeshInstance()>(),
-		"setMesh", &nbunny_static_mesh_instance_set_mesh,
-		"getMesh", &nbunny_static_mesh_instance_get_mesh,
-		"hasMesh", &nbunny::StaticMeshInstance::has_mesh);
+	static const luaL_Reg metatable[] = {
+		{ "setMesh", &nbunny_static_mesh_instance_set_mesh },
+		{ "getMesh", &nbunny_static_mesh_instance_get_mesh },
+		{ "hasMesh", &nbunny_static_mesh_instance_has_mesh },
+		{ nullptr, nullptr }
+	};
 
-	sol::stack::push(L, T);
+	nbunny::lua::register_child_type<nbunny::StaticMeshInstance, nbunny::ResourceInstance>(L, &nbunny_resource_constructor<nbunny::StaticMeshInstance>, metatable);
 
 	return 1;
 }

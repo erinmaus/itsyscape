@@ -29,7 +29,7 @@ do
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 0.7,
+		Ambience = 0.9,
 		Resource = M["Light_Ambient"]
 	}
 end
@@ -84,7 +84,7 @@ do
 	ItsyScape.Meta.Fog {
 		ColorRed = 55,
 		ColorGreen = 55,
-		ColorBlue = 200,
+		ColorBlue = 255,
 		NearDistance = 20,
 		FarDistance = 40,
 		FollowTarget = 1,

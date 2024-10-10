@@ -63,6 +63,13 @@ function DoorView:load()
 			self.skeleton = skeleton
 
 			resources:queue(
+				ModelResource,
+				self:getResourcePath("Door.lmodel"),
+				function(model)
+					self.model = model
+				end,
+				self.skeleton:getResource())
+			resources:queue(
 				SkeletonAnimationResource,
 				self:getResourcePath("DoorOpen.lanim"),
 				function(animation)
@@ -94,13 +101,6 @@ function DoorView:load()
 				self.time = self:getCurrentAnimation():getDuration()
 				self.spawned = true
 			end)
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("Door.lmodel"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.model = model
 		end)
 	resources:queue(
 		TextureResource,

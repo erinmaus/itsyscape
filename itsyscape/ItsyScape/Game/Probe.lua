@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
+local Function = require "ItsyScape.Common.Function"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
@@ -40,22 +41,45 @@ Probe.PROP_FILTERS = {
 	end
 }
 
-function Probe:new(game, gameView, gameDB, ray, tests)
+function Probe:new(game, gameView, gameDB)
 	self.onExamine = Callback()
 
 	self.game = game
 	self.gameView = gameView
 	self.gameDB = gameDB
-	self.ray = ray
 
+	self.pendingActions = {}
+	self.pendingActionsCount = 0
 	self.actions = {}
-	self.isDirty = false
 
 	self.probes = {}
-	self.tests = tests
 
 	self.tile = false
 	self.layer = false
+
+	self._sort = function(...)
+		return self:sort(...)
+	end
+end
+
+function Probe:sort(a, b)
+	return a.depth < b.depth
+end
+
+function Probe:init(ray, tests, radius, layer)
+	self.pendingActionsCount = 0
+
+	self.ray = ray:keep()
+	self.radius = radius or 0
+
+	table.clear(self.actions)
+	self.isDirty = false
+
+	table.clear(self.probes)
+	self.tests = tests
+
+	self.tile = false
+	self.layer = layer or false
 end
 
 -- Returns an iterator over the actions.
@@ -81,106 +105,99 @@ end
 --  }
 function Probe:iterate()
 	if self.isDirty then
-		table.sort(self.actions, function(a, b) return a.depth < b.depth end)
+		for i = 1, self.pendingActionsCount do
+			table.insert(self.actions, self.pendingActions[i])
+		end
+
+		table.sort(self.actions, self._sort)
+
 		self.isDirty = false
 	end
 
-	local index = 1
-	return function()
-		local current = self.actions[index]
-		if index <= #self.actions then
-			index = index + 1
-		end
-
-		return current
-	end
+	return ipairs(self.actions)
 end
 
 -- Collects actions from Probe.iterate into an array and returns it.
 function Probe:toArray()
-	local result = {}
-	for action in self:iterate() do
-		table.insert(result, action)
-	end
-
-	return result
+	self:iterate()
+	return self.actions
 end
 
 -- Returns the number of actions in the probe.
 function Probe:getCount()
-	return #self.actions
+	return self.pendingActionsCount
+end
+
+function Probe:addAction(id, verb, type, object, description, depth, callback, ...)
+	self.pendingActionsCount = self.pendingActionsCount + 1
+	local pendingAction = self.pendingActions[self.pendingActionsCount] or { n = self.pendingActionsCount, callback = Function() }
+
+	pendingAction.id = id
+	pendingAction.verb = verb
+	pendingAction.type = type
+	pendingAction.object = object
+	pendingAction.description = description
+	pendingAction.callback:rebind(callback, ...)
+	pendingAction.depth = depth
+	pendingAction.suppress = false
+
+	self.pendingActions[self.pendingActionsCount] = pendingAction
+	return pendingAction
+end
+
+function Probe:_all(callback, results)
+	local tests = self.tests or Probe.TESTS
+
+	self:getTile(results)
+	for test in pairs(tests) do
+		if Probe.TESTS[test] then
+			self[test](self)
+		end
+	end
+
+	if callback then
+		callback()
+	end
 end
 
 -- Probes all actions that can be performed.
 function Probe:all(callback)
-	if not self.game:getPlayer() or not self.game:getPlayer():getActor() then
-		callback()
-		return
-	end
-
-	local layer
-	do
-		local i, j, k = self.game:getPlayer():getActor():getTile()
-		layer = k
-	end
-
-	local ray = self.ray
-	do
-		local node = self.gameView:getMapSceneNode(layer)
-		if node then
-			local transform = node:getTransform():getGlobalDeltaTransform(0)
-			local origin1 = Vector(transform:inverseTransformPoint(self.ray.origin:get()))
-			local origin2 = Vector(transform:inverseTransformPoint((self.ray.origin + self.ray.direction):get()))
-			local direction = origin2 - origin1
-
-			ray = Ray(origin1, direction)
-		end
-	end
-
-	local tests = self.tests or Probe.TESTS
-
-	if tests['loot'] or tests['walk'] then
-		self.gameView:testMap(layer, ray, function(result)
-			self:getTile(result, layer)
-			self:walk()
-			self:loot()
-			self:actors()
-			self:props()
-
-			if callback then
-				callback()
-			end
-		end)
-	else
-		for test in pairs(tests) do
-			if Probe.TESTS[test] then
-				self[test](self)
-			end
-		end
-
-		if callback then
-			callback()
-		end
-	end
+	self.gameView:testMap(nil, self.ray, Function(self._all, self, callback))
 end
 
 -- Returns the tile this probe hit as a tuple in the form (i, j, layer).
 --
 -- If no tile was hit, returns (nil, nil, nil).
-function Probe:getTile(tiles, layer)
+function Probe:getTile(tiles)
 	if tiles then
 		local function sortFunc(a, b)
 			local i = a[Map.RAY_TEST_RESULT_POSITION]
 			local j = b[Map.RAY_TEST_RESULT_POSITION]
-			local s = Vector(love.graphics.project(i.x, i.y, i.z))
-			local t = Vector(love.graphics.project(j.x, j.y, j.z))
 
-			return s.z < t.z
+			local camera = self.gameView:getCamera()
+			local s = camera:project(Vector(i.x, i.y, i.z))
+			local t = camera:project(Vector(j.x, j.y, j.z))
+
+			return s.z > t.z
 		end
-
 		table.sort(tiles, sortFunc)
-		self.tile = tiles[1]
-		self.layer = layer or 1
+
+		if self.layer then
+			for i = 1, #tiles do
+				if tiles[i].layer == layer then
+					self.tile = tiles[i]
+					self.layer = layer
+					break
+				end
+			end
+		else
+			self.tile = tiles[1]
+			if self.tile then
+				self.layer = self.tile.layer or 1
+			else
+				self.layer = nil
+			end
+		end
 	end
 
 	-- Gotta check again. No tile may have been found.
@@ -194,6 +211,10 @@ function Probe:getTile(tiles, layer)
 	       self.tile[Map.RAY_TEST_RESULT_POSITION]
 end
 
+function Probe:_walk(i, j, k)
+	self.game:getPlayer():walk(i, j, k)
+end
+
 -- Adds a 'Walk here' action, if possible.
 function Probe:walk()
 	if self.probes['walk'] then
@@ -202,25 +223,24 @@ function Probe:walk()
 
 	local i, j, k, position = self:getTile()
 	if i and j and k then
-		local action = {
-			id = "Walk",
-			verb = "Walk",
-			type = "walk",
-			object = "here", -- lol
-			description = "Walk to this location.",
-			callback = function()
-				self.game:getPlayer():walk(i, j, k)
-			end,
-			depth = position.z
-		}
-
-		table.insert(self.actions, action)
+		self:addAction(
+			"Walk",
+			"Walk",
+			"walk",
+			"here", -- lol
+			"Walk to this location.",
+			position.z,
+			self._walk, self, i, j, k)
 
 		self.probes['walk'] = 1
 		self.isDirty = true
 	end
 
 	return self.probes['walk'] or 0
+end
+
+function Probe:_take(i, j, k, item)
+	self.game:getPlayer():takeItem(i, j, k, item.ref)
 end
 
 -- Adds all 'Take' actions, if possible.
@@ -267,19 +287,14 @@ function Probe:loot()
 				object = name
 			end
 
-			local action = {
-				id = item.ref,
-				type = "item",
-				verb = "Take",
-				object = object,
-				description = description,
-				callback = function()
-					self.game:getPlayer():takeItem(i, j, k, item.ref)
-				end,
-				depth = position.z - (i / #items) -- This ensures items remain stable.
-			}
-
-			table.insert(self.actions, action)
+			self:addAction(
+				item.ref,
+				"Take",
+				"item",
+				object,
+				description,
+				position.z - (i / #items),
+				self._take, self, i, j, k, item)
 			self.isDirty = true
 		end
 
@@ -287,6 +302,10 @@ function Probe:loot()
 	end
 
 	return self.probes['loot'] or 0
+end
+
+function Probe:_poke(id, target, scope)
+	self.game:getPlayer():poke(id, target, scope)
 end
 
 -- Adds all actor actions, if possible.
@@ -307,37 +326,31 @@ function Probe:actors()
 			end
 		end
 
-		local s, p = self.ray:hitBounds(min, max, transform)
+		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
 		if s then
 			local actions = actor:getActions('world')
 			for i = 1, #actions do
-				local action = {
-					id = actions[i].id,
-					type = "actor",
-					verb = actions[i].verb,
-					object = actor:getName(),
-					description = actor:getDescription(),
-					callback = function()
-						self.game:getPlayer():poke(actions[i].id, actor, 'world')
-					end,
-					depth = -p.z + ((i / #actions) / 100)
-				}
+				self:addAction(
+					actions[i].id,
+					actions[i].verb,
+					"actor",
+					actor:getName(),
+					actor:getDescription(),
+					-p.z + ((i / #actions) / 100),
+					self._poke, self, actions[i].id, actor, 'world')
 
-				table.insert(self.actions, action)
 				self.isDirty = true
 				count = count + 1
 			end
 
-			table.insert(self.actions, {
-				id = "Examine",
-				type = 'examine',
-				verb = "Examine",
-				object = actor:getName(),
-				callback = function()
-					self.onExamine(actor:getName(), actor:getDescription())
-				end,
-				depth = -p.z + (((#actions + 1) / #actions) / 100)
-			})
+			self:addAction(
+				"Examine",
+				"Examine",
+				'examine',
+				actor:getName(),
+				actor:getDescription(),
+				-p.z + (((#actions + 1) / #actions) / 100),
+				self.onExamine, actor:getName(), actor:getDescription())
 		end
 	end
 
@@ -351,7 +364,17 @@ function Probe:props()
 		return self.probes['props']
 	end
 
-	local _, _, playerLayer = self.game:getPlayer():getActor():getTile()
+	local player = self.game:getPlayer()
+	if not player then
+		return 0
+	end
+
+	local playerActor = player:getActor()
+	if not playerActor then
+		return
+	end
+
+	local _, _, playerLayer = playerActor:getTile()
 
 	local count = 0
 	for prop in self.game:getStage():iterateProps() do
@@ -365,11 +388,7 @@ function Probe:props()
 			end
 		end
 
-		local s, p = self.ray:hitBounds(min, max, transform)
-
-		local _, _, propLayer = prop:getTile()
-
-		local s, p = self.ray:hitBounds(min, max, transform)
+		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
 		if s then
 			local actions = prop:getActions('world')
 			for i = 1, #actions do
@@ -380,34 +399,28 @@ function Probe:props()
 					isHidden = isHidden or filter(prop)
 				end
 
-				local action = {
-					id = actions[i].id,
-					type = "prop",
-					verb = actions[i].verb,
-					object = prop:getName(),
-					suppress = isHidden,
-					description = prop:getDescription(),
-					callback = function()
-						self.game:getPlayer():poke(actions[i].id, prop, 'world')
-					end,
-					depth = -p.z + ((i / #actions) / 100)
-				}
+				local action = self:addAction(
+					actions[i].id,
+					actions[i].verb,
+					"prop",
+					prop:getName(),
+					prop:getDescription(),
+					-p.z + ((i / #actions) / 100),
+					self._poke, self, actions[i].id, prop, 'world')
+				action.suppress = not isHidden
 
-				table.insert(self.actions, action)
 				self.isDirty = true
 				count = count + 1
 			end
 
-			table.insert(self.actions, {
-				id = "Examine",
-				type = 'examine',
-				verb = "Examine",
-				object = prop:getName(),
-				callback = function()
-					self.onExamine(prop:getName(), prop:getDescription())
-				end,
-				depth = -p.z + (((#actions + 1) / #actions) / 100)
-			})
+			self:addAction(
+				"Examine",
+				"Examine",
+				'examine',
+				prop:getName(),
+				prop:getDescription(),
+				-p.z + (((#actions + 1) / #actions) / 100),
+				self.onExamine, prop:getName(), prop:getDescription())
 		end
 	end
 

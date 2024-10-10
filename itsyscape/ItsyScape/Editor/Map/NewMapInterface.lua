@@ -11,6 +11,7 @@ local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
 local Button = require "ItsyScape.UI.Button"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Label = require "ItsyScape.UI.Label"
@@ -21,11 +22,13 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local NewMapInterface = Class(Widget)
 NewMapInterface.WIDTH = 320
-NewMapInterface.HEIGHT = 320
-function NewMapInterface:new(application)
+NewMapInterface.HEIGHT = 368
+function NewMapInterface:new(application, create)
 	Widget.new(self)
 
 	self.application = application
+	self.create = create == nil and true or not not create
+
 	self.onSubmit = Callback()
 
 	local width, height = love.window.getMode()
@@ -71,6 +74,14 @@ function NewMapInterface:new(application)
 	self.heightInput = TextInput()
 	self.heightInput:setText("32")
 	inputsGridLayout:addChild(self.heightInput)
+
+	local paddingLabel = Label()
+	paddingLabel:setText("Padding:")
+	inputsGridLayout:addChild(paddingLabel)
+
+	self.paddingInput = TextInput()
+	self.paddingInput:setText("16")
+	inputsGridLayout:addChild(self.paddingInput)
 
 	local elevationLabel = Label()
 	elevationLabel:setText("Elevation:")
@@ -119,16 +130,53 @@ function NewMapInterface:createMap()
 	local stage = self.application:getGame():getStage()
 	local width = tonumber(self.widthInput:getText()) or 32
 	local height = tonumber(self.heightInput:getText()) or 32
+	local padding = tonumber(self.paddingInput:getText()) or 16
+	local halfPadding = padding / 2
 	local elevation = tonumber(self.elevationInput:getText()) or 1
+
+	local layer
+	if self.create  then
+		layer = 1
+	else
+		local layers = {}
+		for i = 1, #self.application.mapScriptLayers do
+			table.insert(layers, self.application.mapScriptLayers[i])
+		end
+		table.sort(layers)
+
+		for i = 1, #layers - 1 do
+			local nextLayer = layers[i + 1]
+			local currentLayer = layers[i]
+			if nextLayer > currentLayer + 1 then
+				layer = currentLayer + 1
+				break
+			end 
+		end
+
+		layer = (layers[#layers] or 0) + 1
+	end
+
 	if width and height then
-		stage:newMap(width, height, self.tileSetIDInput:getText(), true, 1)
-		local map = stage:getMap(1)
+		stage:newMap(width + padding * 2, height + padding * 2, self.tileSetIDInput:getText(), true, layer)
+		local map = stage:getMap(layer)
 		if map then
 			for j = 1, map:getHeight() do
 				for i = 1, map:getWidth() do
 					local tile = map:getTile(i, j)
-					tile.flat = 1
-					tile.edge = 2
+					if j <= padding or j > height + padding or
+					   i <= padding or i > width + padding
+					then
+						tile.flat = 3
+					else
+						tile.edge = 2
+					end
+
+					if j <= halfPadding or j > height + padding + halfPadding or
+					   i <= halfPadding or i > width + padding + halfPadding
+					then
+						tile:setFlag("impassable")
+					end
+
 					tile.topLeft = elevation
 					tile.topRight = elevation
 					tile.bottomLeft = elevation
@@ -136,15 +184,34 @@ function NewMapInterface:createMap()
 				end
 			end
 
-			stage:updateMap(1)
+			table.insert(self.application.mapScriptLayers, layer)
+
+			stage:updateMap(layer)
 
 			local center = Vector(
-				map:getWidth() / 2 * map:getCellSize(),
+				map:getWidth() * map:getCellSize() / 2,
 				elevation + 5,
-				map:getHeight() / 2 * map:getCellSize())
+				map:getHeight() * map:getCellSize() / 2)
 			self.application:getCamera():setPosition(center)
 
-			stage:onMapMoved(1, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
+			stage:onMapMoved(layer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2), false)
+
+			do
+				local MapPeep = require "ItsyScape.Peep.Peeps.Map"
+
+				local peep = self.application:getGame():getDirector():addPeep("::orphan", MapPeep, resource)
+				peep:poke("load", "Unsaved", {}, layer)
+				self.application:getGame():getStage():getPeepInstance():addMapScript(layer, peep, filename)
+
+				peep:addBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
+				peep:addBehavior(require "ItsyScape.Peep.Behaviors.ScaleBehavior")
+				peep:addBehavior(require "ItsyScape.Peep.Behaviors.RotationBehavior")
+
+				local _, origin = peep:addBehavior(OriginBehavior)
+				origin.origin = Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)
+
+				self.application.mapScriptPeeps[layer] = peep
+			end
 
 			self.onSubmit(self)
 			self:close()

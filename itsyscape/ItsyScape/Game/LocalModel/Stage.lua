@@ -34,6 +34,7 @@ local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local Map = require "ItsyScape.World.Map"
 local TileSet = require "ItsyScape.World.TileSet"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local Spline = require "ItsyScape.Graphics.Spline"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 
 local LocalStage = Class(Stage)
@@ -68,6 +69,9 @@ function LocalStage:new(game)
 	self.mapTransformsByLayer = {}
 
 	self.dummyInstance = Instance(0, "<dummy>", self)
+	self.dummyInstance:addLayer(1)
+	table.insert(self.instances, self.dummyInstance)
+	self.instancesByLayer[1] = self.dummyInstance
 
 	self._preloadMapObjects = coroutine.wrap(self.preloadMapObjects)
 	if self:_preloadMapObjects() then
@@ -229,12 +233,10 @@ end
 function LocalStage:getGlobalInstanceByFilename(filename)
 	local instances = self.instances[filename]
 	if not instances then
-		Log.warn("No instances for filename '%s'.", filename)
 		return nil
 	end
 
 	if not instances.global then
-		Log.error("No global instance for filename '%s'.", filename)
 		return nil
 	end
 
@@ -1161,10 +1163,19 @@ function LocalStage:loadMapResource(instance, filename, args)
 	end
 
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath .. "/Decorations")) do
-		local group = item:match("(.*)%.ldeco$")
-		if group then
-			local key = directoryPath .. "/Decorations/" .. item
-			local decoration = Decoration(directoryPath .. "/Decorations/" .. item)
+		local decorationName = item:match("(.*)%.ldeco$")
+		local splineName = item:match("(.*)%.lspline$")
+		local filename = directoryPath .. "/Decorations/" .. item
+		local key = filename
+
+		local decoration
+		if decorationName then
+			decoration = Decoration(filename)
+		elseif splineName then
+			decoration = Spline(filename)
+		end
+
+		if decoration then
 			self:decorate(key, decoration, baseLayer)
 		end
 	end
@@ -1530,7 +1541,11 @@ function LocalStage:decorate(group, decoration, layer)
 	if not decoration then
 		self.onUndecorate(self, group, layer or 1)
 	else
-		self.onDecorate(self, group, decoration, layer or 1)
+		if Class.isCompatibleType(decoration, Spline) then
+			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Spline", value = decoration:serialize() }, layer or 1)
+		elseif Class.isCompatibleType(decoration, Decoration) then
+			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Decoration", value = decoration:serialize() }, layer or 1)
+		end
 	end
 end
 

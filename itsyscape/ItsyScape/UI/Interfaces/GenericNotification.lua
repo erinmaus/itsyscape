@@ -24,7 +24,7 @@ function GenericNotification:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
-	local x, y = love.graphics.getScaledPoint(love.mouse.getPosition())
+	local x, y = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 
 	self.panel = Panel()
 	self.panel:setStyle(PanelStyle({
@@ -103,7 +103,7 @@ function GenericNotification:update(...)
 		local _, lines = textStyle.font:getWrap(self.text:getText(), GenericNotification.WIDTH - GenericNotification.PADDING * 2)
 		local wrappedHeight = #lines * textStyle.font:getHeight() * textStyle.font:getLineHeight()
 
-		local x, y = love.graphics.getScaledPoint(love.mouse.getPosition())
+		local x, y = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 		self:setSize(
 			GenericNotification.WIDTH,
 			wrappedHeight + GenericNotification.PADDING * 2)

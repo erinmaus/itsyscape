@@ -1,4 +1,3 @@
-uniform float scape_Time;
 uniform Image scape_DiffuseTexture;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)

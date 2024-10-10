@@ -69,10 +69,15 @@ function MagmaJellyfish:ready(director, game)
 		"Resources/Game/Animations/Jellyfish_Attack/Script.lua")
 	self:addResource("animation-attack", attackAnimation)
 
-	local body = CacheRef(
+	local head = CacheRef(
 		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Jellyfish/MagmaJellyfish.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
+		"Resources/Game/Skins/Jellyfish/MagmaJellyfish_Head.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, head)
+
+	local tentacles = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Jellyfish/MagmaJellyfish_Tentacles.lua")
+	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, tentacles)
 
 	Utility.Peep.equipXWeapon(self, "MagmaJellyfishAttack")
 

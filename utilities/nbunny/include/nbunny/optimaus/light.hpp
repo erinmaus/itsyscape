@@ -30,6 +30,7 @@ namespace nbunny
 		glm::vec3 cone_direction = glm::vec3(0, 1, 0);
 		float near_distance = 0.0f;
 		float far_distance = 0.0f;
+		bool casts_shadows = false;
 	};
 
 	class LightSceneNode : public SceneNode
@@ -39,6 +40,7 @@ namespace nbunny
 		glm::vec3 previous_color = glm::vec3(1.0f);
 
 		bool is_global = false;
+		bool casts_shadows = false;
 
 	public:
 		static const Type<LightSceneNode> type_pointer;
@@ -46,6 +48,9 @@ namespace nbunny
 
 		LightSceneNode(int reference);
 		virtual ~LightSceneNode() = default;
+
+		void set_casts_shadows(bool value);
+		bool get_casts_shadows() const;
 
 		const bool is_base_light_type() const;
 

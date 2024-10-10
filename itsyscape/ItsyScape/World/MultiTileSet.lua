@@ -44,6 +44,14 @@ function MultiTileSet:new(tileSetIDs, loadTexture)
 	end
 end
 
+function MultiTileSet:iterateTileSetIDs()
+	return ipairs(self.tileSetIDs)
+end
+
+function MultiTileSet:getTileSetID(index)
+	return self.tileSetIDs[index]
+end
+
 function MultiTileSet:getNumTileSets()
 	return #self.tileSetIDs
 end

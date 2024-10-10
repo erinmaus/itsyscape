@@ -12,7 +12,7 @@ local Controller = require "ItsyScape.UI.Controller"
 
 local CutsceneTransitionController = Class(Controller)
 
-function CutsceneTransitionController:new(peep, director, minDuration)
+function CutsceneTransitionController:new(peep, director, minDuration, callback)
 	Controller.new(self, peep, director)
 
 	self.state = {
@@ -20,6 +20,7 @@ function CutsceneTransitionController:new(peep, director, minDuration)
 	}
 
 	self.isClosing = false
+	self.callback = callback
 end
 
 function CutsceneTransitionController:getIsClosing()
@@ -37,6 +38,10 @@ end
 function CutsceneTransitionController:poke(actionID, actionIndex, e)
 	if actionID == "close" then
 		if self.isClosing then
+			if self.callback then
+				self.callback()
+			end
+
 			self:getGame():getUI():closeInstance(self)
 		else
 			self.isClosing = true

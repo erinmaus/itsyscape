@@ -101,6 +101,30 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumGloves",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumBoots",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumPlatebody",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumHelmet",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
 		Value = ItsyScape.Utility.xpForLevel(100),
@@ -370,6 +394,24 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
 	}
 
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumGloves",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumBoots",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumPlatebody",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
 		Value = ItsyScape.Utility.xpForLevel(100),
@@ -499,5 +541,185 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Milk,
 		Value = ItsyScape.Utility.valueForItem(6)
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's desk",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A desk made from the remains of a young dragon... Is this just a display of Isabelle's cruelty or vanity?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Armoire_Isabelle" {
+		ItsyScape.Action.Dresser_Search()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicDresserProp",
+		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 4,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's armoire",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fancier way of saying wardrobe. Wonder what's inside..? Probably a bunch of pink dresses...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle" {
+		ItsyScape.Action.Sleep()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 3,
+		SizeZ = 3.5,
+		MapObject = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's bed",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's one expensive looking bed...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "ComfyChair_Isabelle" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 2,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's desk chair",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Of course Isabelle could afford such a comfy chair.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Chest_Isabelle" {
+		ItsyScape.Action.Dresser_Search()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicChest",
+		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 1.5,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's chest",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "I bet that won't open easily... But if you do manage... there might be something valuable in there!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Lamp_IsabelleTower" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 0.5,
+		SizeY = 0.5,
+		SizeZ = 0.5,
+		MapObject = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Lamp",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Lights the way.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
 	}
 end

@@ -1,5 +1,5 @@
 {
-	model = "Resources/Game/Skins/Common/Equipment/Coif.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Helmet.lmesh",
 	texture = "Resources/Game/Skins/Common/LeatherArmor/MooishLeather.png",
 	isBlocking = false
 }

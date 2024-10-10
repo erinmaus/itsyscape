@@ -63,11 +63,6 @@ do
 			Count = ItsyScape.Utility.xpForLevel(25)
 		},
 
-		Requirement {
-			Resource = ItsyScape.Resource.Quest "PreTutorial",
-			Count = 1
-		},
-
 		Input {
 			Resource = ItsyScape.Resource.Item "AirRune",
 			Count = 10

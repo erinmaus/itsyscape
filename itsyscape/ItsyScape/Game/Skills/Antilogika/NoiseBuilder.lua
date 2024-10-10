@@ -15,7 +15,7 @@ local NoiseBuilder, Metatable = Class()
 function NoiseBuilder:new(t)
 	t = t or {}
 	self.persistence = t.persistence or 1
-	self.offset = t.offset or Vector(0)
+	self.offset = (t.offset or Vector(0)):keep()
 	self.scale = t.scale or 1
 	self.octaves = t.octaves or 1
 	self.amplitude = 1
@@ -92,10 +92,7 @@ function NoiseBuilder:sample4D(x, y, z, w)
 		divisor = divisor + d
 	end
 
-	local result = math.max(math.min((sum / divisor), 1), 0)
-	result = (result * 2) - 1
-
-	return result * self.amplitude
+	return math.max(math.min((sum / divisor), 1), 0)
 end
 
 function NoiseBuilder:sampleTestImage(width, height, z, w)
@@ -106,8 +103,6 @@ function NoiseBuilder:sampleTestImage(width, height, z, w)
 		j = j + 1
 
 		local value = self:sample4D(i / width, z or 0, j / height, w or 0)
-		value = ((value / self.amplitude) + 1) / 2
-
 		return value, value, value, 1
 	end)
 

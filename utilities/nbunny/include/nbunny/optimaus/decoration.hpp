@@ -29,6 +29,7 @@ namespace nbunny
 		glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 		glm::vec3 scale = glm::vec3(1.0f);
 		glm::vec4 color = glm::vec4(1.0f);
+		float texture = 0.0f;
 
 		DecorationFeature() = default;
 		DecorationFeature(const DecorationFeature& other) = default;
@@ -37,17 +38,17 @@ namespace nbunny
 	class Decoration
 	{
 	private:
-		std::vector<std::unique_ptr<DecorationFeature>> features;
+		std::vector<std::shared_ptr<DecorationFeature>> features;
 
 	public:
 		Decoration() = default;
 		~Decoration() = default;
 
-		DecorationFeature* add_feature(const DecorationFeature& description);
-		bool remove_feature(DecorationFeature* feature);
+		std::shared_ptr<DecorationFeature> add_feature(const std::shared_ptr<DecorationFeature>& description);
+		bool remove_feature(const std::shared_ptr<DecorationFeature>& feature);
 
 		std::size_t get_num_features() const;
-		DecorationFeature* get_feature_by_index(std::size_t index) const;
+		std::shared_ptr<DecorationFeature> get_feature_by_index(std::size_t index) const;
 	};
 
 	class DecorationSceneNode : public SceneNode
@@ -58,9 +59,13 @@ namespace nbunny
 
 		struct Vertex
 		{
+			glm::vec3 feature_position;
+			glm::quat feature_rotation;
+			glm::vec3 feature_scale;
 			glm::vec3 position;
 			glm::vec3 normal;
 			glm::vec2 texture;
+			float layer;
 			glm::vec4 color;
 		};
 

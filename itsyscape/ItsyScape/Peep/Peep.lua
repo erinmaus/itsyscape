@@ -30,8 +30,8 @@ Peep.DEFAULT_CHANNEL = 1
 
 function Peep:new(name)
 	self.behaviors = {}
-	self.onBehaviorAdded = Callback()
-	self.onBehaviorRemoved = Callback()
+	self.onBehaviorAdded = Callback(false)
+	self.onBehaviorRemoved = Callback(false)
 
 	-- It's a RollerCoaster Tycoon reference.
 	self.name = name or string.format("Guest %d", Peep.PEEPS_TALLY)
@@ -83,9 +83,9 @@ function Peep:addPoke(name)
 	local preview = "preview" .. base
 
 	if self.pokes[name] == nil then
-		self.pokes[name] = Callback()
-		self.pokes[preview] = Callback()
-		self.pokes[post] = Callback()
+		self.pokes[name] = Callback(false)
+		self.pokes[preview] = Callback(false)
+		self.pokes[post] = Callback(false)
 	end
 
 	return self.pokes[name]

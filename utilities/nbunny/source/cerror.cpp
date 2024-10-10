@@ -25,7 +25,7 @@ static int get_error(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_cerror(lua_State* L)
 {
-	sol::stack::push(L, get_error);
+	lua_pushcfunction(L, &get_error);
 
 	return 1;
 }

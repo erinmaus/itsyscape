@@ -1,5 +1,3 @@
-uniform highp float scape_Time;
-
 const float TWO_PI = 6.28;
 const float SPIKES = 2;
 const float RADIUS = 0.2;

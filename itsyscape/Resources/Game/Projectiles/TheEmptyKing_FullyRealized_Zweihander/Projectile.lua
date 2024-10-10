@@ -19,7 +19,7 @@ local Projectile = require "ItsyScape.Graphics.Projectile"
 
 local AncientZweihander = Class(Projectile)
 AncientZweihander.DURATION = 2
-AncientZweihander.OFFSET_POSITION = Vector(-4.15, -9, 0.1)
+AncientZweihander.OFFSET_POSITION = Vector(6, 0, 0)
 AncientZweihander.COLOR = Color.fromHexString("63396f")
 AncientZweihander.DELTA_FADE_OUT = 0.75
 AncientZweihander.DISTANCE = 0.5

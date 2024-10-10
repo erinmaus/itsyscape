@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNodeTransform = require "ItsyScape.Graphics.SceneNodeTransform"
 local Material = require "ItsyScape.Graphics.Material"
 local NSceneNode = require "nbunny.optimaus.scenenode"
+local NLuaSceneNode = require "nbunny.optimaus.scenenode.luascenenode"
 local NCamera = require "nbunny.optimaus.camera"
 
 -- Represents the base scene node.
@@ -20,12 +21,14 @@ local NCamera = require "nbunny.optimaus.camera"
 local SceneNode = Class()
 
 function SceneNode:new(NType)
-	self._handle = (NType or NSceneNode)(self)
+	local NBaseType = self:getType() == SceneNode and NSceneNode or NLuaSceneNode
+
+	self._handle = (NType or NBaseType)(self)
 	self.transform = SceneNodeTransform(self)
 	self.material = Material(self)
 	self.parent = false
 	self.children = {}
-	self.min, self.max = Vector(), Vector()
+	self.min, self.max = Vector():keep(), Vector():keep()
 	self.boundsDirty = true
 	self.willRender = false
 end
@@ -51,10 +54,6 @@ function SceneNode:getBounds()
 end
 
 function SceneNode:_debugDrawBounds(renderer, delta)
-	if not Class.isCompatibleType(self, require "ItsyScape.Graphics.ParticleSceneNode") then
-		return
-	end
-
 	love.graphics.setMeshCullMode('back')
 	love.graphics.setDepthMode('lequal', true)
 
@@ -128,6 +127,7 @@ function SceneNode:_debugDrawBounds(renderer, delta)
 
 	love.graphics.push()
 	love.graphics.applyTransform(self:getTransform():getGlobalDeltaTransform(delta))
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.draw(self._boundsMesh)
 	love.graphics.pop()
 
@@ -136,8 +136,8 @@ function SceneNode:_debugDrawBounds(renderer, delta)
 end
 
 function SceneNode:setBounds(min, max)
-	self.min = min or self.min
-	self.max = max or self.max
+	self.min = (min and min:keep()) or self.min
+	self.max = (max and max:keep()) or self.max
 
 	self._handle:setMin(self.min.x, self.min.y, self.min.z)
 	self._handle:setMax(self.max.x, self.max.y, self.max.z)
@@ -180,18 +180,12 @@ function SceneNode:tick(frameDelta)
 	frameDelta = frameDelta or 1
 
 	self._handle:tick(frameDelta)
-
-	for child in self:iterate() do
-		child:tick(frameDelta)
-	end
+	self._handle:tickChildren(frameDelta)
 end
 
 function SceneNode:frame(delta)
-	self.transform:frame(delta)
-
-	for child in self:iterate() do
-		child:frame(delta)
-	end
+	self._handle:frame(delta)
+	self._handle:frameChildren(delta)
 end
 
 function SceneNode:beforeDraw(renderer, delta)

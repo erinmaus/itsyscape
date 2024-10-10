@@ -143,7 +143,7 @@ function RichTextLabelRenderer.Draw:drawLink(block, parent)
 	screenX = screenX + self.x
 	screenY = screenY + self.y
 
-	local mouseX, mouseY = love.mouse.getPosition()
+	local mouseX, mouseY = itsyrealm.mouse.getPosition()
 
 	local hover
 	if mouseX > screenX and mouseX < screenX + width and

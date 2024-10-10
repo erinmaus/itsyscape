@@ -1,0 +1,208 @@
+{
+	"book": {
+		"skeleton": "Skeleton.lskel",
+
+		"models": [
+			{
+				"model": "../Common/Book.lmesh",
+				"texture": "Book.png"
+			},
+			{
+				"model": "../Common/Pages.lmesh",
+				"texture": "Pages.png"
+			},
+			{
+				"model": "Clasp.lmesh",
+				"texture": "Clasp.png"
+			}
+		],
+
+		"animations": [
+			{
+				"name": "book-open",
+				"animation": "Open.lanim"
+			}
+		]
+	},
+
+	"front": {
+		"skeleton": "Skeleton.lskel",
+
+		"models": [
+			{
+				"model": "../Common/Front.lmesh",
+				"texture": "Front.png"
+			}
+		],
+
+		"animations": [
+			{
+				"name": "book-open",
+				"animation": "Open.lanim"
+			}
+		]
+	},
+
+	"back": {
+		"skeleton": "Skeleton.lskel",
+
+		"models": [
+			{
+				"model": "../Common/Back.lmesh",
+				"texture": "Back.png"
+			}
+		],
+
+		"animations": [
+			{
+				"name": "book-open",
+				"animation": "Open.lanim"
+			}
+		]
+	},
+
+	"page": {
+		"models": [
+			{
+				"model": "../Common/Page.lmesh",
+				"texture": "Page.png",
+				"canvas": true
+			}
+		]
+	},
+
+	"pages": [
+		{
+		},
+		{
+			"id": 6,
+			"condition": [
+				{
+					"resource": "KeyItem",
+					"name": "CalmBeforeTheStorm_IsabelleDefeated"
+				}
+			],
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 5,
+					"value": "That is not dead which can eternal lie.\nAnd with strange aeons even death may die.",
+					"x": 15,
+					"y": 0,
+					"width": 50,
+					"rotation": 11.25,
+					"color": "000000"
+				},
+				{
+					"command": "image",
+					"condition": [
+						{
+							"invert": true,
+							"resource": "Item",
+							"name": "Coins",
+							"flags": ["item-inventory"],
+							"count": 999999
+						}
+					],
+
+					"value": "../../Items/Coins/Icon.png",
+					"x": 50,
+					"y": 50,
+					"originX": 50,
+					"originY": 50
+				}
+			]
+		},
+		{
+			"id": 7,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 5,
+					"value": "hello potato",
+					"x": 15,
+					"y": 0,
+					"width": 50,
+					"color": "000000"
+				}
+			]
+		},
+		{
+			"id": 8,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 5,
+					"value": "hello world!!!",
+					"x": 15,
+					"y": 0,
+					"width": 50,
+					"color": "000000"
+				}
+			]
+		},
+		{
+			"id": 9,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 5,
+					"value": "@@@@",
+					"x": 15,
+					"y": 0,
+					"width": 50,
+					"color": "000000"
+				}
+			]
+		},
+		{
+			"id": 10,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 5,
+					"value": "!!!",
+					"x": 15,
+					"y": 0,
+					"width": 50,
+					"color": "000000"
+				}
+			]
+		},
+		{
+			"id": 10,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 5,
+					"value": "!!! 2",
+					"x": 15,
+					"y": 0,
+					"width": 50,
+					"color": "000000"
+				}
+			]
+		},
+		{
+			"id": 10,
+			"commands": [
+				{
+					"command": "text",
+					"fontFamily": "Serif/Bold",
+					"fontSize": 5,
+					"value": "!!! 3",
+					"x": 15,
+					"y": 0,
+					"width": 50,
+					"color": "000000"
+				}
+			]
+		}
+	]
+}

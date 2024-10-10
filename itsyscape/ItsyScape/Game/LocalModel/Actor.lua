@@ -367,12 +367,12 @@ function LocalActor:iterateAnimationSlots()
 	return pairs(self.animations)
 end
 
-function LocalActor:setSkin(slot, priority, skin)
+function LocalActor:setSkin(slot, priority, skin, config)
 	local s = self.skin[slot] or {}
 
 	if priority then
 		if skin ~= nil then
-			table.insert(s, { priority = priority, skin = skin })
+			table.insert(s, { priority = priority, skin = skin, config = config })
 			table.sort(s, function(a, b) return a.priority < b.priority end)
 		end
 
@@ -392,7 +392,7 @@ function LocalActor:setSkin(slot, priority, skin)
 		Equipment.PLAYER_SLOT_NAMES[slot] or tostring(slot), tostring(slot), priority,
 		skin:getFilename())
 
-	self.onSkinChanged(self, slot, priority, skin)
+	self.onSkinChanged(self, slot, priority, skin, config)
 end
 
 function LocalActor:unsetSkin(slot, priority, skin)
@@ -422,7 +422,7 @@ function LocalActor:getSkin(index)
 	local result = {}
 
 	for i = 1, #slot do
-		table.insert(result, { skin = slot[i].skin, priority = slot[i].priority })
+		table.insert(result, { skin = slot[i].skin, priority = slot[i].priority, config = slot[i].config })
 	end
 
 	return unpack(result)

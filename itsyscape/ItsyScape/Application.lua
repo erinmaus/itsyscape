@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- ItsyScape/Application.lua
 --
@@ -10,6 +9,7 @@
 --------------------------------------------------------------------------------
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
@@ -25,7 +25,9 @@ local RemoteGameManager = require "ItsyScape.Game.RemoteModel.RemoteGameManager"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Renderer = require "ItsyScape.Graphics.Renderer"
+local Resource = require "ItsyScape.Graphics.Resource"
 local ToolTip = require "ItsyScape.UI.ToolTip"
+local NLuaRuntime = require "nbunny.luaruntime"
 
 local function inspectGameDB(gameDB)
 	local VISIBLE_RESOURCES = {
@@ -145,7 +147,8 @@ function Application:new(multiThreaded)
 			model = string.format("%s / %s", jit and jit.arch or "???", device or "???")
 		}, self.inputAdminChannel, self.outputAdminChannel)
 
-		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.tickMultiThread, self)
+		self.remoteGameManager.onTick:register((_CONF.server and self.tickServer) or self.preTickMultiThread, self)
+		self.remoteGameManager.onFlush:register((_CONF.server and self.tickServer) or self.postTickMultiThread, self)
 		self.game = self.remoteGameManager:getInstance("ItsyScape.Game.Model.Game", 0):getInstance()
 	end
 
@@ -154,6 +157,7 @@ function Application:new(multiThreaded)
 	self.times = {}
 	self.ticks = {}
 	self.drawCalls = {}
+	self.nbunnyCalls = {}
 
 	if _CONF.server then
 		Log.info("Server only.")
@@ -171,7 +175,7 @@ function Application:new(multiThreaded)
 			self.camera:setVerticalRotation(-math.pi / 2)
 		end
 
-		self.gameView = GameView(self:getGame())
+		self.gameView = GameView(self:getGame(), self.camera)
 		self.gameView:attach()
 		self.uiView = UIView(self.gameView)
 
@@ -196,6 +200,10 @@ function Application:new(multiThreaded)
 
 	self.playMode = Application.PLAY_MODE_SINGLE_PLAYER
 	self.isQuitting = flase
+
+	self.pendingProbes = {}
+
+	self.showDebug = _CONF.showDebug
 end
 
 local memoryLabel
@@ -347,9 +355,21 @@ function Application:measure(name, func, ...)
 		self.times[index].value = after - before
 		self.times[index].memory = memory
 		self.times[index].name = name
+		table.insert(self.times[index].samples, { value = after - before, time = after })
 	else
-		self.times[index] = { value = after - before, memory = memory, name = name, max = 0 }
+		self.times[index] = { value = after - before, memory = memory, name = name, max = 0, average = 0, samples = { { value = after - before, time = after } } }
 	end
+
+	while #self.times[index].samples >= 1 and love.timer.getTime() > self.times[index].samples[1].time + 1 do
+		table.remove(self.times[index].samples, 1)
+	end
+
+	local sum = 0
+	for _, sample in ipairs(self.times[index].samples) do
+		sum = sum + sample.value
+	end
+
+	self.times[index].average = sum / math.max(#self.times[index].samples, 1)
 end
 
 function Application:initialize()
@@ -368,6 +388,10 @@ function Application:getGame()
 	return self.localGame or self.game
 end
 
+function Application:getGameManager()
+	return self.remoteGameManager
+end
+
 function Application:getGameView()
 	return self.gameView
 end
@@ -375,6 +399,7 @@ end
 function Application:getUIView()
 	return self.uiView
 end
+
 
 function Application:getIsPaused()
 	return self.paused
@@ -388,62 +413,64 @@ function Application:getIsMultiThreaded()
 	return self.multiThreaded
 end
 
-function Application:probe(x, y, performDefault, callback, tests)
+function Application:_probe(probe, performDefault, callback)
+	if performDefault then
+		local numPrimaryActions = 0
+		local hasWalk = false
+
+		for _, action in probe:iterate() do
+			if action.id ~= "Examine" and not action.suppress then
+				if action.id ~= "Walk" then
+					numPrimaryActions = numPrimaryActions + 1
+				else
+					hasWalk = true
+				end
+			end
+		end
+
+		if numPrimaryActions <= 1 or _CONF.probe == false then
+			for _, action in probe:iterate() do
+				if action.id ~= "Examine" and not action.suppress then
+					if action.id == "Walk" then
+						self.clickActionType = Application.CLICK_WALK
+					else
+						self.clickActionType = Application.CLICK_ACTION
+					end
+
+					self.clickActionTime = Application.CLICK_DURATION
+					self.clickX, self.clickY = itsyrealm.mouse.getPosition()
+
+					local s, r = pcall(action.callback)
+					if not s then
+						Log.warn("couldn't perform action: %s", r)
+					end
+
+					return
+				end
+			end
+		end
+
+		if numPrimaryActions <= 1 and not hasWalk then
+			return
+		end
+	end
+
+	if callback then
+		callback(probe)
+	end
+
+	table.insert(self.pendingProbes, probe)
+end
+
+function Application:probe(x, y, performDefault, callback, tests, radius)
 	if self.paused then
 		return
 	end
 
 	local ray = self:shoot(x, y)
-	local probe = Probe(self:getGame(), self.gameView, self.gameDB, ray, tests)
-	probe.onExamine:register(function(name, description)
-		self.uiView:examine(name, description)
-	end)
-	probe:all(function()
-		if performDefault then
-			local numPrimaryActions = 0
-			local hasWalk = false
-
-			for action in probe:iterate() do
-				if action.id ~= "Examine" and not action.suppress then
-					if action.id ~= "Walk" then
-						numPrimaryActions = numPrimaryActions + 1
-					else
-						hasWalk = true
-					end
-				end
-			end
-
-			if numPrimaryActions <= 1 or _CONF.probe == false then
-				for action in probe:iterate() do
-					if action.id ~= "Examine" and not action.suppress then
-						if action.id == "Walk" then
-							self.clickActionType = Application.CLICK_WALK
-						else
-							self.clickActionType = Application.CLICK_ACTION
-						end
-
-						self.clickActionTime = Application.CLICK_DURATION
-						self.clickX, self.clickY = love.mouse.getPosition()
-
-						local s, r = pcall(action.callback)
-						if not s then
-							Log.warn("couldn't perform action: %s", r)
-						end
-
-						return
-					end
-				end
-			end
-
-			if numPrimaryActions <= 1 and not hasWalk then
-				return
-			end
-		end
-
-		if callback then
-			callback(probe)
-		end
-	end)
+	local probe = table.remove(self.pendingProbes) or Probe(self:getGame(), self.gameView, self.gameDB)
+	probe:init(ray, tests, radius, layer)
+	probe:all(Function(self._probe, self, probe, performDefault, callback))
 end
 
 function Application:shoot(x, y)
@@ -469,16 +496,20 @@ function Application:processAdminEvents()
 	repeat 
 		event = self.outputAdminChannel:pop()
 
-		if type(event) == 'table' and event.type == 'analytics' then
+		if type(event) == "table" and event.type == "analytics" then
 			_ANALYTICS_ENABLED = event.enable
-		elseif type(event) == 'table' and event.type == 'quit' then
+		elseif type(event) == "table" and event.type == "quit" then
 			self:quit(false)
 			love.event.quit()
+		elseif type(event) == "table" and event.type == "memory" then
+			self.serverMemory = event.memory or 0
 		end
 	until not event
 end
 
 function Application:update(delta)
+	Resource.update()
+
 	-- Accumulator. Stores time until next tick.
 	self.time = self.time + delta
 
@@ -498,9 +529,7 @@ function Application:update(delta)
 	else
 		self:processAdminEvents()
 
-		collectgarbage("stop")
 		self:measure('remoteGameManager:receive()', function() self.remoteGameManager:receive() end)
-		collectgarbage("restart")
 	end
 
 	if not _CONF.server then
@@ -522,7 +551,7 @@ function Application:update(delta)
 
 		local startTime = love.timer.getTime()
 		while love.timer.getTime() < startTime + step do
-			collectgarbage("step", 1)
+			collectgarbage("step", 50)
 		end
 	end
 end
@@ -572,22 +601,31 @@ end
 function Application:tickSingleThread()
 	self:doCommonTick()
 
-	self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
+	self:measure('gameView:preTick()', function() self.gameView:preTick(self:getPreviousFrameDelta()) end)
 	self:measure('uiView:tick()', function() self.uiView:tick() end)
 	self:measure('game:tick()', function() self.localGame:tick() end)
+	self:measure('gameView:postTick()', function() self.gameView:postTick(self:getPreviousFrameDelta()) end)
 end
 
-function Application:tickMultiThread()
+function Application:preTickMultiThread()
 	self:doCommonTick()
 
 	if self.show3D then
-		self:measure('gameView:tick()', function() self.gameView:tick(self:getPreviousFrameDelta()) end)
+		self:measure('gameView:preTick()', function() self.gameView:preTick(self:getPreviousFrameDelta()) end)
 	end
 
 	self:measure('uiView:tick()', function() self.uiView:tick() end)
 
 	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
+
+	self.inputAdminChannel:push({
+		type = 'tick'
+	})
+end
+
+function Application:postTickMultiThread()
+	self:measure('gameView:postTick()', function() self.gameView:postTick(self:getPreviousFrameDelta()) end)
 end
 
 function Application:tickServer()
@@ -805,6 +843,8 @@ end
 
 function Application:quit(isError)
 	if self.multiThreaded then
+		Resource.quit()
+
 		self:getGame():quit()
 		self.remoteGameManager:pushTick()
 		self.gameView:quit()
@@ -824,8 +864,13 @@ function Application:quit(isError)
 				Log.warn("Error quitting logic thread: %s", e)
 			else
 				Log.info("Trying to save player...")
-				local event = self.outputAdminChannel:demand(1)
-				if event and event.type == 'save' then
+
+				local event
+				repeat
+					event = self.outputAdminChannel:demand(1)
+				until not event or (type(event) == "table" and event.type == 'save')
+
+				if event and event.type == "save" then
 					local serializedStorage = buffer.decode(event.storage)
 					if next(serializedStorage) then
 						local storage = PlayerStorage()
@@ -863,6 +908,8 @@ function Application:mousePress(x, y, button)
 		return true
 	end
 
+	self.uiView:closePokeMenu()
+
 	return false
 end
 
@@ -874,7 +921,7 @@ function Application:mouseRelease(x, y, button)
 end
 
 function Application:mouseScroll(x, y)
-	if self.uiView:getInputProvider():isBlocking(love.mouse.getPosition()) then
+	if self.uiView:getInputProvider():isBlocking(itsyrealm.mouse.getPosition()) then
 		self.uiView:getInputProvider():mouseScroll(x, y)
 		return true
 	end
@@ -886,6 +933,18 @@ function Application:mouseMove(x, y, dx, dy)
 	self.uiView:getInputProvider():mouseMove(x, y, dx, dy)
 
 	return false
+end
+
+function Application:getMousePosition()
+	return love.mouse.getPosition()
+end
+
+function Application:joystickAdd(...)
+	-- Nothing.
+end
+
+function Application:joystickRemove(...)
+	-- Nothing.
 end
 
 function Application:touchPress(...)
@@ -900,8 +959,16 @@ function Application:touchMove(...)
 	-- Nothing.
 end
 
-function Application:keyDown(...)
-	self.uiView:getInputProvider():keyDown(...)
+function Application:keyDown(key, ...)
+	self.uiView:getInputProvider():keyDown(key, ...)
+
+	if key == "f1" then
+		if not (love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')) then
+			self.showDebug = not self.showDebug
+			_CONF.showDebug = self.showDebug
+		end
+	end
+
 	return false
 end
 
@@ -928,42 +995,120 @@ function Application:getPreviousFrameDelta()
 	return self.previousFrameDelta or self:getFrameDelta()
 end
 
-function Application:drawDebug()
-	if not _DEBUG or (not self.showDebug and not _MOBILE) then
+function Application:drawFPS()
+	if not self.showDebug then
 		return
 	end
 
 	love.graphics.setFont(self.defaultFont)
 
 	local drawCalls = love.graphics.getStats().drawcalls
+	local textureMemory = love.graphics.getStats().texturememory
+
+	local r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
+	r = (r or "") .. string.format("FPS: %03d/%.02f ms] (%04d draws, >%04d MB)\n",
+		love.timer.getFPS(),
+		1 / love.timer.getFPS() * 1000,
+		drawCalls,
+		collectgarbage("count") / 1024 + textureMemory / 1024 / 1024 + (self.serverMemory or 0) / 1024)
+	r = r .. string.format(
+		"average tick = %.04f ms\nmax (client) tick = %0.4f ms\nmax (server) tick = %0.4f ms\ntarget tick = %.04f ms\nlast tick = %.04f ms\n",
+		self:getAverageTickDelta() * 1000,
+		self:getMaxClientTickDelta() * 1000,
+		self:getMaxServerTickDelta() * 1000,
+		self:getGame():getTargetDelta() * 1000,
+		self:getGame():getDelta() * 1000)
+
+	local width = love.window.getMode()
+	local w, lines = love.graphics.getFont():getWrap(r, width)
+
+	love.graphics.setColor(0, 0, 0, 0.25)
+	love.graphics.rectangle(
+		"fill",
+		width - w,
+		0,
+		w,
+		#lines * love.graphics.getFont():getHeight())
+
+	love.graphics.setColor(0, 0, 0, 1)
+	love.graphics.printf(
+		r,
+		2,
+		2,
+		width,
+		'right')
+
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.printf(
+		r,
+		0,
+		0,
+		width,
+		'right')
+end
+
+local MEASURE_ROOT_FUNCS = {
+	"gameView:update()",
+	"uiView:update()",
+	"remoteGameManager:receive()",
+	"draw",
+	"love.graphics.present()"
+}
+
+function Application:drawDebug()
+	if not _DEBUG or (not self.showDebug and not _MOBILE) then
+		self:drawFPS()
+		return
+	end
+
+	love.graphics.setFont(self.defaultFont)
+
+	local drawCalls = love.graphics.getStats().drawcalls
+	local textureMemory = love.graphics.getStats().texturememory
 	table.insert(self.drawCalls, drawCalls)
 	while #self.drawCalls > self.MAX_DRAW_CALLS do
 		table.remove(self.drawCalls, 1)
 	end
 	local maxDrawCalls = math.max(unpack(self.drawCalls))
 
+	local _, nbunnyTime = NLuaRuntime.getMeasurements()
+
+	local numNbunnyCalls = NLuaRuntime.getNumCalls()
+	table.insert(self.nbunnyCalls, numNbunnyCalls)
+	while #self.nbunnyCalls > self.MAX_DRAW_CALLS do
+		table.remove(self.nbunnyCalls, 1)
+	end
+	numNbunnyCalls = math.max(unpack(self.nbunnyCalls))
+
 	local width = love.window.getMode()
-	r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
-	r = (r or "") .. string.format("FPS: %03d (%03d draws, %03d draws max, %03d MB)\n", love.timer.getFPS(), drawCalls, maxDrawCalls, collectgarbage("count") / 1024)
+	local r = _ITSYREALM_VERSION and string.format("ItsyRealm %s\n", _ITSYREALM_VERSION)
+	r = (r or "") .. string.format("FPS: %03d/%.02f ms (%03d draws, %03d draws max, %04d nbunny calls (%02.02f ms), >%04d MB)\n", love.timer.getFPS(), 1 / love.timer.getFPS() * 1000, drawCalls, maxDrawCalls, numNbunnyCalls, nbunnyTime * 1000, collectgarbage("count") / 1024 + textureMemory / 1024 / 1024 + (self.serverMemory or 0) / 1024)
 	local sum = 0
 	for i = 1, #self.times do
 		r = r .. string.format(
-			"%s: %.04f ms (%.04f max), %05d KB (%010d)\n",
+			"%s: %.04f ms (%.04f max, %0.4f avg), %05d KB (%03d)\n",
 			self.times[i].name,
 			self.times[i].value * 1000,
 			(self.times[i].max or self.times[i].value) * 1000,
+			self.times[i].average * 1000,
 			self.times[i].memory,
-			1 / self.times[i].value)
-		sum = sum + self.times[i].value
+			#self.times[i].samples)
+
+		for _, func in ipairs(MEASURE_ROOT_FUNCS) do
+			if func == self.times[i].name then
+				sum = sum + self.times[i].average
+				break
+			end
+		end
 	end
 	if 1 / sum < 60 then
 		r = r .. string.format(
-				"!!! sum: %.04f ms (%010d)\n",
+				"!!! sum: %3.04f ms (%010d)\n",
 				sum * 1000,
 				1 / sum)
 	else
 		r = r .. string.format(
-				"sum: %.04f ms (%010d)\n",
+				"sum: %3.04f ms (%010d)\n",
 				sum * 1000,
 				1 / sum)
 	end
@@ -1017,10 +1162,8 @@ function Application:_draw()
 	local delta = self:getFrameDelta()
 	do
 		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE) then
-			self.gameView:getRenderer():draw(self.gameView:getScene(), delta)
+			self:measure("3d renderer", self.gameView.draw, self.gameView, delta)
 		end
-
-		self.gameView:getRenderer():present()
 
 		if self.show2D then
 			self.gameView:getSpriteManager():draw(self.gameView:getScene(), self.camera, delta)
@@ -1032,7 +1175,7 @@ function Application:_draw()
 	love.graphics.ortho(width, height)
 
 	if self.showUI then
-		self.uiView:draw()
+		self:measure("ui renderer", self.uiView.draw, self.uiView)
 	end
 
 	if self.clickActionTime > 0 and not (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then

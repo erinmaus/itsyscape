@@ -61,7 +61,19 @@ UIView.MOBILE_X_PADDING = 48
 UIView.MOBILE_Y_PADDING = 24
 UIView.MOBILE_SCALE     = 0.65
 
-function love.graphics.getScaledMode()
+UIView.INPUT_SCHEME_MOUSE_KEYBOARD = "mouse/keyboard"
+UIView.INPUT_SCHEME_TOUCH          = "touch"
+UIView.INPUT_SCHEME_GYRO           = "gyro"
+UIView.INPUT_SCHEME_GAMEPAD        = "gamepad"
+
+local uiScale = 1
+function itsyrealm.graphics.setUIScale(value)
+	if type(value) == "number" or type(value) == "nil" then
+		uiScale = value or 1
+	end
+end
+
+function itsyrealm.graphics.getScaledMode()
 	local currentWidth, currentHeight = love.window.getMode()
 	local desiredWidth, desiredHeight = UIView.WIDTH, UIView.HEIGHT
 	local paddingX, paddingY = 0, 0
@@ -78,6 +90,7 @@ function love.graphics.getScaledMode()
 	else
 		scale = 1
 	end
+	scale = scale * (uiScale or 1)
 
 	local realWidth = currentWidth / scale - paddingX * 2
 	local realHeight = currentHeight / scale - paddingY * 2
@@ -85,12 +98,28 @@ function love.graphics.getScaledMode()
 	return math.floor(realWidth), math.floor(realHeight), scale, scale, paddingX, paddingY
 end
 
-function love.graphics.getScaledPoint(x, y)
-	local _, _, sx, sy, ox, oy = love.graphics.getScaledMode()
+function itsyrealm.graphics.getScaledPoint(x, y)
+	local _, _, sx, sy, ox, oy = itsyrealm.graphics.getScaledMode()
 	x = x / sx
 	y = y / sy
 
 	return x, y
+end
+
+function itsyrealm.graphics.inverseGetScaledPoint(x, y)
+	local _, _, sx, sy, ox, oy = itsyrealm.graphics.getScaledMode()
+	x = x * sx
+	y = y * sy
+
+	return x, y
+end
+
+function love.graphics.getScaledMode()
+	return itsyrealm.graphics.getScaledMode()
+end
+
+function love.graphics.getScaledPoint(x, y)
+	return itsyrealm.graphics.getScaledPoint(x, y)
 end
 
 local graphicsState = {
@@ -123,6 +152,14 @@ do
 
 	local w, h = love.window.getMode()
 	table.insert(graphicsState.pseudoScissor, { 0, 0, w, h })
+end
+
+function itsyrealm.mouse.getPosition()
+	if _APP then
+		return _APP:getMousePosition()
+	end
+
+	return love.mouse.getPosition()
 end
 
 function itsyrealm.graphics.getTime()
@@ -1034,6 +1071,11 @@ itsyrealm.graphics.disabled.uncachedDrawLayer = love.graphics.drawLayer
 function UIView:new(gameView)
 	self.game = gameView:getGame()
 	self.gameView = gameView
+	self.currentInputSchemes = {
+		[
+			_MOBILE and UIView.INPUT_SCHEME_MOUSE_KEYBOARD or UIView.INPUT_SCHEME_TOUCH
+		] = true
+	}
 
 	local ui = self.game:getUI()
 	ui.onOpen:register(self.open, self)
@@ -1057,7 +1099,7 @@ function UIView:new(gameView)
 	self.renderManager:addRenderer(Panel, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(RichTextLabel, RichTextLabelRenderer(self.resources))
-	self.renderManager:addRenderer(SceneSnippet, SceneSnippetRenderer(self.resources))
+	self.renderManager:addRenderer(SceneSnippet, SceneSnippetRenderer(self.resources, self.gameView))
 	self.renderManager:addRenderer(ScrollBar.Button, ScrollButtonRenderer(self.resources))
 	self.renderManager:addRenderer(ScrollBar.DragButton, ScrollButtonRenderer(self.resources))
 	self.renderManager:addRenderer(SpellIcon, SpellIconRenderer(self.resources))
@@ -1074,6 +1116,18 @@ function UIView:new(gameView)
 	self.pokes = {}
 
 	self.uiState = {}
+end
+
+function UIView:enableInputScheme(inputScheme)
+	self.currentInputSchemes[inputScheme]= true
+end
+
+function UIView:disableInputScheme(inputScheme)
+	self.currentInputSchemes[inputScheme]= nil
+end
+
+function UIView:hasInputScheme(inputScheme)
+	return self.currentInputSchemes[inputScheme] == true
 end
 
 function UIView:pull(interfaceID, interfaceIndex)
@@ -1236,7 +1290,7 @@ function UIView:probe(actions)
 	do
 		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		local menuWidth, menuHeight = self.pendingPokeMenu:getSize()
-		local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+		local mouseX, mouseY = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 		mouseX = mouseX - offsetX
 		mouseY = mouseY - offsetY
 

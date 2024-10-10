@@ -18,15 +18,11 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
+local FogSceneNode = require "ItsyScape.Graphics.FogSceneNode"
 
 local MirrorView = Class(PropView)
-MirrorView.WIDTH = 128
-MirrorView.HEIGHT = 256
-
-MirrorView.Camera = Class(ThirdPersonCamera)
-function MirrorView.Camera:new()
-	ThirdPersonCamera.new(self)
-end
+MirrorView.WIDTH = 256
+MirrorView.HEIGHT = 512
 
 function MirrorView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -38,9 +34,9 @@ function MirrorView:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	local renderer = Renderer(true)
+	local renderer = Renderer({ shadows = (_CONF.shadows or _CONF.shadows == nil) and 1 or false })
 	self.renderer = renderer
-	self.camera = MirrorView.Camera()
+	self.camera = ThirdPersonCamera()
 
 	resources:queue(
 		StaticMeshResource,
@@ -82,6 +78,10 @@ function MirrorView:load()
 				texture:setFilter('linear', 'linear')
 				shader:send("scape_ReflectionTexture", texture)
 			end
+
+			if shader:hasUniform("scape_TextureSize") then
+				shader:send("scape_TextureSize", { love.graphics.getWidth(), love.graphics.getHeight() })
+			end
 		end)
 
 		resources:queue(
@@ -93,8 +93,8 @@ function MirrorView:load()
 	end)
 end
 
-function MirrorView:tick()
-	PropView.tick(self)
+function MirrorView:update(delta)
+	PropView.update(self, delta)
 
 	local gameView = self:getGameView()
 
@@ -104,29 +104,25 @@ function MirrorView:tick()
 	local selfCamera = self.camera
 
 	local rootTransform = self:getRoot():getTransform()
-	local rootPosition = Vector(rootTransform:getGlobalTransform():transformPoint(0, 0, 0))
+	local rootPosition = Vector(rootTransform:getGlobalTransform():transformPoint(0, 1.5, 0))
 	local rootRotation = rootTransform:getLocalRotation()
-	local forwardVector = rootRotation:transformVector(Vector.UNIT_Z * 2)
-	selfCamera:setPosition(rootPosition + forwardVector + Vector.UNIT_Y)
 
-	selfCamera:setFieldOfView(parentCamera:getFieldOfView())
-	selfCamera:setNear(parentCamera:getNear())
-	selfCamera:setFar(parentCamera:getFar())
-	selfCamera:setHorizontalRotation(0)
-	selfCamera:setVerticalRotation(math.pi / 2)
-	selfCamera:setDistance(5)
-	selfCamera:setRotation((rootRotation * Quaternion.X_180 * Quaternion.Y_180):getNormal())
+	selfCamera:mirror(parentCamera, rootPosition, rootRotation, Vector.UNIT_Z)
 	selfCamera:setWidth(MirrorView.WIDTH)
 	selfCamera:setHeight(MirrorView.HEIGHT)
+	selfCamera:setDistance(5)
 
 	do
 		if self.mirrorNode then self.mirrorNode:setParent(nil) end
 		if self.reflectionNode then self.reflectionNode:setParent(nil) end
 
+		local scene = gameView:getScene()
+
 		love.graphics.push('all')
 		love.graphics.setScissor()
+		love.graphics.setFrontFaceWinding("cw")
 		selfRenderer:setCamera(selfCamera)
-		selfRenderer:draw(gameView:getScene(), 0, MirrorView.WIDTH, MirrorView.HEIGHT)
+		selfRenderer:draw(gameView:getScene(), 0, width, MirrorView.HEIGHT)
 		love.graphics.pop()
 		
 		if self.mirrorNode then self.mirrorNode:setParent(self:getRoot()) end

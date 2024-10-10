@@ -15,44 +15,67 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Map = require "ItsyScape.World.Map"
 
 local MAPS = {}
+local TRANSFORMS = {}
 
 local m
 repeat
-	m = love.thread.getChannel('ItsyScape.Map::input'):demand()
-	if m.type == 'load' then
+	m = love.thread.getChannel("ItsyScape.Map::input"):demand()
+	if m.type == "load" then
 		MAPS[m.key] = Map.loadFromTable(buffer.decode(m.data))
-	elseif m.type == 'unload' then
+	elseif m.type == "unload" then
 		MAPS[m.key] = nil
-	elseif m.type == 'probe' then
-		local map = MAPS[m.key]
-		if not map then
-			love.thread.getChannel('ItsyScape.Map::output'):push({
-				type = 'probe',
+	elseif m.type == "transform" then
+		TRANSFORMS[m.key] = m.transform
+	elseif m.type == "probe" then
+		local maps
+		if m.key then
+			maps = { [m.key] = MAPS[m.key] }
+		else
+			maps = MAPS
+		end
+
+		if not next(maps) then
+			love.thread.getChannel("ItsyScape.Map::output"):push({
+				type = "probe",
 				id = m.id,
 				tiles = {}
 			})
 		else
-			local ray = Ray(Vector(unpack(m.origin)), Vector(unpack(m.direction)))
-			local tiles = map:testRay(ray)
 			local result = {}
-			for i = 1, #tiles do
-				local tile = tiles[i]
-				local tileI = tile[Map.RAY_TEST_RESULT_I]
-				local tileJ = tile[Map.RAY_TEST_RESULT_J]
-				local position = tile[Map.RAY_TEST_RESULT_POSITION]
+			for key, map in pairs(maps) do
+				local transform = TRANSFORMS[key] or love.math.newTransform()
 
-				table.insert(result, {
-					i = tileI,
-					j = tileJ,
-					position = { position.x, position.y, position.z }
-				})
+				local ray
+				do
+					ray = Ray(Vector(unpack(m.origin)), Vector(unpack(m.direction)))
+					local origin1 = Vector(transform:inverseTransformPoint(ray.origin:get()))
+					local origin2 = Vector(transform:inverseTransformPoint((ray.origin + ray.direction):get()))
+					local direction = origin2 - origin1
+					ray = Ray(origin1, direction)
+				end
+
+				local tiles = map:testRay(ray)
+
+				for i = 1, #tiles do
+					local tile = tiles[i]
+					local tileI = tile[Map.RAY_TEST_RESULT_I]
+					local tileJ = tile[Map.RAY_TEST_RESULT_J]
+					local position = tile[Map.RAY_TEST_RESULT_POSITION]
+
+					table.insert(result, {
+						i = tileI,
+						j = tileJ,
+						layer = key,
+						position = { position.x, position.y, position.z }
+					})
+				end
 			end
 
-			love.thread.getChannel('ItsyScape.Map::output'):push({
-				type = 'probe',
+			love.thread.getChannel("ItsyScape.Map::output"):push({
+				type = "probe",
 				id = m.id,
 				tiles = result
 			})
 		end
 	end
-until m.type == 'quit'
+until m.type == "quit"

@@ -150,6 +150,7 @@ Game "ItsyScape"
 		Direction = Meta.TYPE_REAL,
 		Name = Meta.TYPE_TEXT,
 		Map = Meta.TYPE_RESOURCE,
+		Layer = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -345,6 +346,16 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepSkinColor" {
+		Priority = Meta.TYPE_REAL,
+		Slot = Meta.TYPE_INTEGER,
+		Color = Meta.TYPE_TEXT,
+		H = Meta.TYPE_REAL,
+		S = Meta.TYPE_REAL,
+		L = Meta.TYPE_REAL,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PeepBody" {
 		Type = Meta.TYPE_TEXT,
 		Filename = Meta.TYPE_TEXT,
@@ -459,6 +470,15 @@ Game "ItsyScape"
 
 	ActionType "Open"
 	ActionType "Close"
+
+	ActionType "Dresser_Search"
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Search",
+		XProgressive = "Searching",
+		Language = "en-US",
+		Type = "Dresser_Search"
+	}
 
 	ActionType "Loot"
 	ActionType "Reward"
@@ -878,6 +898,10 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+	ResourceType "Book"
+	ItsyScape.Resource.Book "IsabellesJournal"
+	ItsyScape.Resource.Book "Necronomicon"
+
 do
 	local Human = ItsyScape.Resource.Peep "Human"
 
@@ -1165,6 +1189,55 @@ function ItsyScape.Utility.QuestStepDescription(keyItem)
 	end
 end
 
+function ItsyScape.Utility.skins(resource, skins)
+	for _, skin in ipairs(skins) do
+		local slot = skin.slot
+		local priority = skin.priority
+		local filename = skin.filename
+		local resourceType = skin.type or "ItsyScape.Game.Skin.ModelSkin"
+
+		if slot and priority and filename then
+			ItsyScape.Meta.PeepSkin {
+				Type = resourceType,
+				Filename = string.format("Resources/Game/Skins/%s", filename),
+				Priority = priority,
+				Slot = slot,
+				Resource = resource
+			}
+
+			for _, c in ipairs(skin.colors or {}) do
+				if type(c) == "string" then
+					ItsyScape.Meta.PeepSkinColor {
+						Priority = priority,
+						Slot = slot,
+						Color = c,
+						Resource = resource,
+					}
+				else
+					ItsyScape.Meta.PeepSkinColor {
+						Priority = priority,
+						Slot = slot,
+						Color = c.color or "ff0000",
+						H = c.h,
+						S = c.s,
+						L = c.l,
+						Resource = resource,
+					}
+				end
+			end
+		else
+			local info = debug.getinfo(2, "Sl")
+			local message = string.format(
+				"%s:%d: Could not apply skin to resource: missing one or more fields (slot = %s, priority = %s, or filename = %s)",
+				info.source, info.currentline,
+				tostring(slot),
+				tostring(priority),
+				tostring(filename))
+			ItsyScape.Error(message)
+		end
+	end
+end
+
 do
 	ItsyScape.Resource.Item "Null" {
 		-- Nothing.
@@ -1374,6 +1447,8 @@ include "Resources/Game/DB/Props/Farm.lua"
 include "Resources/Game/DB/Props/Altars.lua"
 include "Resources/Game/DB/Props/MilkOMatic.lua"
 include "Resources/Game/DB/Props/Target.lua"
+include "Resources/Game/DB/Props/Sky.lua"
+include "Resources/Game/DB/Props/Jungle.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"

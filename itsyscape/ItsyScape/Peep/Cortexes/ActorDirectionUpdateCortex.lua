@@ -20,6 +20,8 @@ function ActorDirectionUpdateCortex:new()
 
 	self:require(ActorReferenceBehavior)
 	self:require(MovementBehavior)
+
+	self.directions = setmetatable({}, { __mode = 'k' })
 end
 
 function ActorDirectionUpdateCortex:update(delta)
@@ -37,7 +39,10 @@ function ActorDirectionUpdateCortex:update(delta)
 				direction = Vector.UNIT_X * facing
 			end
 
-			actor:setDirection(direction)
+			if direction ~= self.directions[actor] then
+				actor:setDirection(direction)
+				self.directions[actor] = direction
+			end
 		end
 	end
 end

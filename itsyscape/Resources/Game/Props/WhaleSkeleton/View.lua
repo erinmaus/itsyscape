@@ -51,6 +51,13 @@ function WhaleSkeleton:load()
 			self.transforms = skeleton:getResource():createTransforms()
 
 			resources:queue(
+				ModelResource,
+				self:getResourcePath("WhaleSkeleton.lmesh"),
+				function(model)
+					self.model = model
+				end,
+				self.skeleton)
+			resources:queue(
 				SkeletonAnimationResource,
 				self:getResourcePath("Idle.lanim"),
 				function(animation)
@@ -66,13 +73,6 @@ function WhaleSkeleton:load()
 
 				self.spawned = true
 			end)
-		end)
-	resources:queue(
-		ModelResource,
-		self:getResourcePath("WhaleSkeleton.lmesh"),
-		function(model)
-			model:getResource():bindSkeleton(self.skeleton:getResource())
-			self.model = model
 		end)
 	resources:queue(
 		TextureResource,

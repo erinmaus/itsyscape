@@ -1,5 +1,6 @@
 #ifdef GL_ES
 precision highp float;
+#extension GL_EXT_clip_cull_distance : enable
 #endif
 
 #line 1
@@ -14,11 +15,10 @@ precision highp float;
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Resources/Shaders/RendererPass.common.glsl"
+
 attribute vec3 VertexNormal;
 attribute vec2 VertexTexture;
-
-uniform mat4 scape_WorldMatrix;
-uniform mat4 scape_NormalMatrix;
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
@@ -40,12 +40,15 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 	vec3 localPosition = vec3(0.0);
 	vec4 projectedPosition = vec4(0.0);
 	performTransform(
-		modelViewProjection,
+		getWorldViewProjection(),
 		vertexPosition,
 		localPosition,
 		projectedPosition);
 
-	frag_Position = (scape_WorldMatrix * vec4(localPosition, 1.0)).xyz;
+	vec4 worldPosition = scape_WorldMatrix * vec4(localPosition, 1.0);
+	frag_Position = worldPosition.xyz;
+
+	gl_ClipDistance[0] = -dot(worldPosition, scape_ClipPlane);
 
 	return projectedPosition;
 }

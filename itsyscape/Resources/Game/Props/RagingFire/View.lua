@@ -63,7 +63,7 @@ RagingFireView.FIRE_PARTICLES = function(radius, wind)
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.25 }
+				scale = { 1.5 }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -259,7 +259,7 @@ function RagingFireView:tick()
 	if self.currentDirection ~= direction or
 	   self.currentRadius ~= radius
 	then
-		self.currentDirection = direction
+		self.currentDirection = direction:keep()
 		self.currentRadius = radius
 
 		self:initParticles()

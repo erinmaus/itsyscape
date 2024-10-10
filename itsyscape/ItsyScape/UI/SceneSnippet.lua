@@ -20,10 +20,20 @@ function SceneSnippet:new()
 	self.root = SceneNode()
 	self.camera = false
 	self.isFullLit = false
+	self.alwaysRender = false
+	self.isFocusable = false
 end
 
 function SceneSnippet:getRoot()
 	return self.root
+end
+
+function SceneSnippet:setIsFocusable(value)
+	self.isFocusable = value or false
+end
+
+function SceneSnippet:getIsFocusable()
+	return self.isFocusable
 end
 
 function SceneSnippet:setRoot(value)
@@ -60,6 +70,14 @@ end
 
 function SceneSnippet:setCamera(camera)
 	self.camera = camera or self.camera
+end
+
+function SceneSnippet:setAlwaysRender(value)
+	self.alwaysRender = value or false
+end
+
+function SceneSnippet:getAlwaysRender()
+	return self.alwaysRender
 end
 
 return SceneSnippet

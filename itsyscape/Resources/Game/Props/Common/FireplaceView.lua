@@ -27,7 +27,7 @@ FireplaceView.MAX_COLOR_BRIGHTNESS = 1.0
 
 FireplaceView.FIRE_PARTICLES = {
 	numParticles = 50,
-	texture = "Resources/Game/Props/Common/FireplaceView_Flame.png",
+	texture = "Resources/Game/Props/Common/Particle_Flame.png",
 	columns = 4,
 
 	emitters = {

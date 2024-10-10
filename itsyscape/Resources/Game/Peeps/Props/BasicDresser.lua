@@ -24,7 +24,7 @@ function BasicDresserProp:new(...)
 end
 
 function BasicDresserProp:onSearch(...)
-	self.isOpen = true
+	self.isOpen = not self.isOpen
 end
 
 function BasicDresserProp:getPropState()

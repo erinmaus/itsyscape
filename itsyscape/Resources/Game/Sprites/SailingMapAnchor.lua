@@ -60,7 +60,7 @@ function SailingMapAnchor:draw(position, time)
 		return
 	end
 
-	local mouseX, mouseY = love.mouse.getPosition()
+	local mouseX, mouseY = itsyrealm.mouse.getPosition()
 	local distance = math.sqrt((mouseX - position.x) ^ 2 + (mouseY - position.y) ^ 2)
 	if distance > SailingMapAnchor.DISTANCE then
 		return

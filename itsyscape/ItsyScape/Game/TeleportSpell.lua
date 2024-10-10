@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Spell = require "ItsyScape.Game.Spell"
+local Utility = require "ItsyScape.Game.Utility"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
@@ -47,17 +48,7 @@ function TeleportSpell:cast(peep)
 	self:consume(peep)
 	self:transfer(peep)
 
-	local stage = self:getGame():getStage()
-	stage:movePeep(peep, map.name .. arguments, destination, true)
-
-	peep:getCommandQueue():clear()
-	peep:removeBehavior(TargetTileBehavior)
-
-	local movement = peep:getBehavior(MovementBehavior)
-	if movement then
-		movement.velocity = Vector.ZERO
-		movement.acceleration = Vector.ZERO
-	end
+	Utility.move(peep, map.name .. arguments, destination)
 end
 
 return TeleportSpell

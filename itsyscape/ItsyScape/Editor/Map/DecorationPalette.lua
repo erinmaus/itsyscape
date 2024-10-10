@@ -16,6 +16,8 @@ local StaticMesh = require "ItsyScape.Graphics.StaticMesh"
 local Color = require "ItsyScape.Graphics.Color"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
+local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Button = require "ItsyScape.UI.Button"
@@ -121,9 +123,20 @@ function DecorationPalette:loadDecorations()
 	self.searchInput:setText("")
 
 	self.staticMesh = StaticMesh(string.format("Resources/Game/TileSets/%s/Layout.lstatic", self.application.currentDecorationTileSet))
-	self.texture = TextureResource()
-	do
-		self.texture:loadFromFile(string.format("Resources/Game/TileSets/%s/Texture.png", self.application.currentDecorationTileSet))
+
+	local textureFilename = string.format(
+		"Resources/Game/TileSets/%s/Texture.png",
+		self.application.currentDecorationTileSet)
+	local layerTextureFilename = string.format(
+		"Resources/Game/TileSets/%s/Texture.lua",
+		self.application.currentDecorationTileSet)
+
+	if love.filesystem.getInfo(layerTextureFilename) then
+		self.texture = LayerTextureResource()
+		self.texture:loadFromFile(layerTextureFilename)
+	else
+		self.texture = TextureResource()
+		self.texture:loadFromFile(textureFilename)
 	end
 
 	local oldButtons = self.buttons or {}
@@ -143,6 +156,14 @@ function DecorationPalette:loadDecorations()
 		sceneNode:getMaterial():setIsCullDisabled(true)
 		sceneNode:getTransform():setLocalTranslation(Vector(-0.5, 0, -0.5))
 		sceneNode:setParent(sceneSnippet:getRoot())
+
+		local shader = ShaderResource()
+		if Class.isCompatibleType(self.texture, LayerTextureResource) then
+			shader:loadFromFile("Resources/Shaders/MultiTextureDecoration")
+		else
+			shader:loadFromFile("Resources/Shaders/Decoration")
+		end
+		sceneNode:getMaterial():setShader(shader)
 
 		local light = AmbientLightSceneNode()
 		light:setAmbience(1)
@@ -216,10 +237,11 @@ function DecorationPalette:close()
 	end
 end
 
-function DecorationPalette:select(group, button)
-	if self.currentGroup == group then
+function DecorationPalette:_select(group, button, texture)
+	if self.currentGroup == group and self.currenTexture == texture then
 		button:setStyle(nil)
 		self.currentGroup = false
+		self.currentTexture = nil
 	else
 		if self.currentGroupButton then
 			self.currentGroupButton:setStyle(false)
@@ -237,6 +259,27 @@ function DecorationPalette:select(group, button)
 		}, self.application:getUIView():getResources()))
 		self.currentGroup = group
 		self.currentGroupButton = button
+		self.currentTexture = texture
+	end
+end
+
+function DecorationPalette:select(group, button, mouseButton)
+	if mouseButton == 1 then
+		self:_select(group, button, 1)
+	elseif mouseButton == 2 and Class.isCompatibleType(self.texture, LayerTextureResource) then
+		local actions = {}
+		for i = 1, self.texture:getLayerCount() do
+			table.insert(actions, {
+				id = i,
+				verb = "Select-Texture",
+				object = tostring(i),
+				callback = function()
+					self:_select(group, button, i)
+				end
+			})
+		end
+
+		self.application:getUIView():probe(actions)
 	end
 end
 
@@ -250,6 +293,10 @@ end
 
 function DecorationPalette:getCurrentGroup()
 	return self.currentGroup
+end
+
+function DecorationPalette:getCurrentTexture()
+	return self.currentTexture
 end
 
 function DecorationPalette:update(...)

@@ -1,4 +1,4 @@
-#line 1
+#include "Resources/Shaders/GBuffer.common.glsl"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Resource/Renderer/Deferred/DirectionalLight.frag.glsl
@@ -10,7 +10,11 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
-uniform Image scape_PositionTexture;
+uniform mat4 scape_InverseViewMatrix;
+uniform mat4 scape_InverseProjectionMatrix;
+
+uniform Image scape_DepthTexture;
+uniform Image scape_SpecularOutlineTexture;
 uniform Image scape_ColorTexture;
 
 uniform float scape_LightAttenuation;
@@ -19,16 +23,17 @@ uniform vec3 scape_LightColor;
 
 vec4 effect(
 	vec4 color,
-	Image texture,
+	Image image,
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
-	vec3 position = Texel(scape_PositionTexture, textureCoordinate).xyz;
+	float depth = Texel(scape_DepthTexture, textureCoordinate).r;
+	vec3 position = worldPositionFromGBufferDepth(depth, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
+	float alpha = Texel(scape_SpecularOutlineTexture, textureCoordinate).a;
 
 	vec3 lightSurfaceDifference = scape_LightPosition - position;
 	float attenuation = clamp(1.0 - length(lightSurfaceDifference) / scape_LightAttenuation, 0.0, 1.0);
 
 	vec3 result = attenuation * attenuation * scape_LightColor;
-	float alpha = Texel(scape_ColorTexture, textureCoordinate).a;
 	return vec4(result, alpha);
 }

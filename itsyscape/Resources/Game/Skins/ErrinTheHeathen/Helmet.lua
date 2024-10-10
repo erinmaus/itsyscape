@@ -1,5 +1,5 @@
 {
-	model = "Resources/Game/Skins/ErrinTheHeathen/Helmet.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/Helmet.lmesh",
 	texture = "Resources/Game/Skins/ErrinTheHeathen/ErrinTheHeathen.png",
 	isBlocking = false
 }

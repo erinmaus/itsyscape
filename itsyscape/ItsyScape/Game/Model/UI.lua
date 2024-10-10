@@ -17,21 +17,21 @@ function UI:new()
 	-- Called when a top-level interface is opened.
 	--
 	-- Arguments are (interfaceID, index).
-	self.onOpen = Callback()
+	self.onOpen = Callback(false)
 
 	-- Called when a top-level interface pushes new state.
 	-- Arguments are (interfaceID, index, state).
-	self.onPush = Callback()
+	self.onPush = Callback(false)
 
 	-- Called when a top-level interface is closed.
 	--
 	-- Arguments are (interfaceID, index).
-	self.onClose = Callback()
+	self.onClose = Callback(false)
 
 	-- Called when an interface is poked (server-to-client).
 	--
 	-- Arguments are (interfaceID, interfaceIndex, actionID, actionIndex, e).
-	self.onPoke = Callback()
+	self.onPoke = Callback(false)
 end
 
 -- Pokes the specified interface (client-to-server).

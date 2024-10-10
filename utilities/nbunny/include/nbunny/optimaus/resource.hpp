@@ -15,6 +15,7 @@
 
 #include <memory>
 #include "nbunny/nbunny.hpp"
+#include "nbunny/lua_runtime.hpp"
 
 namespace nbunny
 {
@@ -53,9 +54,10 @@ namespace nbunny
 }
 
 template <typename Resource>
-std::shared_ptr<Resource> nbunny_resource_create()
+int nbunny_resource_constructor(lua_State* L)
 {
-	return std::make_shared<Resource>();
+	nbunny::lua::push(L, std::make_shared<Resource>());
+	return 1;
 }
 
 #endif

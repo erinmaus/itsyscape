@@ -14,12 +14,14 @@
 #define NBUNNY_GAME_MANAGER_HPP
 
 #include <deque>
+#include <map>
 #include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-#include "nbunny.hpp"
+#include "nbunny/nbunny.hpp"
+#include "nbunny/optimaus/common.hpp"
 
 namespace nbunny
 {
@@ -83,9 +85,10 @@ namespace nbunny
 		~GameManagerVariant();
 
 		GameManagerVariant& operator =(const GameManagerVariant& other);
+		GameManagerVariant& operator =(GameManagerVariant&& other);
 
-		void from_lua(lua_State* L, int index, int count = -1);
-		int to_lua(lua_State* L) const;
+		void from_lua(lua_State* L, int index, int count = -1, bool simple_marshal = false);
+		int to_lua(lua_State* L, bool simple_marshal = false) const;
 
 		int get_type() const;
 
@@ -109,6 +112,7 @@ namespace nbunny
 
 		bool operator ==(const GameManagerVariant& other) const;
 		bool operator !=(const GameManagerVariant& other) const;
+		bool operator <(const GameManagerVariant& other) const;
 		static bool less(const GameManagerVariant& search_key, const GameManagerVariant& current_key);
 
 		void unset();
@@ -123,6 +127,7 @@ namespace nbunny
 		{
 			std::vector<GameManagerVariant> array_values;
 			std::vector<std::pair<GameManagerVariant, GameManagerVariant>> key_values;
+			std::map<std::string, GameManagerVariant> string_key_values;
 		};
 
 		struct Args
@@ -139,7 +144,7 @@ namespace nbunny
 			Args* args;
 		} value;
 
-		void from_lua(lua_State* L, int index, std::set<const void*>& e);
+		void from_lua(lua_State* L, int index, std::set<const void*>& e, bool simple_marshal);
 	};
 
 	class GameManagerState;
@@ -149,15 +154,15 @@ namespace nbunny
 	private:
 		GameManagerState* state = nullptr;
 		std::string persisted_type_name;
-		sol::table type;
+		int type;
 
 	public:
 		virtual ~TypeProvider() = default;
 
-		void connect(GameManagerState& state, const std::string& persisted_type_name, const sol::table& type);
+		void connect(GameManagerState& state, const std::string& persisted_type_name, int type);
 		GameManagerState& get_state() const;
 		const std::string& get_persisted_type_name() const;
-		const sol::table& get_type() const;
+		int get_type() const;
 
 		void push_type(lua_State* L);
 
@@ -214,6 +219,13 @@ namespace nbunny
 		void serialize(lua_State* L, int index, GameManagerVariant& value) override;
 	};
 
+	class SplineTypeProvider : public TypeProvider
+	{
+	public:
+		void deserialize(lua_State* L, const GameManagerVariant& value) override;
+		void serialize(lua_State* L, int index, GameManagerVariant& value) override;
+	};
+
 	class MapTypeProvider : public TypeProvider
 	{
 	public:
@@ -238,7 +250,7 @@ namespace nbunny
 	class GameManagerState
 	{
 	private:
-		std::vector<std::pair<sol::table, std::unique_ptr<TypeProvider>>> type_providers;
+		std::vector<std::pair<int, std::unique_ptr<TypeProvider>>> type_providers;
 		std::unordered_map<TypeProvider*, std::string> type_provider_names;
 		std::unordered_map<TypeProvider*, std::string> persisted_type_provider_names;
 
@@ -257,7 +269,7 @@ namespace nbunny
 			lua_pushstring(L, type_name.c_str());
 			lua_call(L, 1, 1);
 
-			auto key = sol::stack::get<sol::table>(L, -1);
+			auto key = set_weak_reference(L);
 			auto type_provider = std::make_unique<T>();
 			type_provider->connect(*this, persisted_type_name, key);
 
@@ -301,9 +313,20 @@ namespace nbunny
 		bool has_value() const;
 
 		void set_value(const GameManagerVariant& current_value);
+		GameManagerVariant& get_value();
 		const GameManagerVariant& get_value() const;
 
 		void push_value(lua_State* L, GameManagerState& state);
+	};
+
+	class GameManagerInstance
+	{
+	private:
+		std::vector<std::shared_ptr<GameManagerProperty>> properties;
+
+	public:
+		GameManagerInstance();
+		~GameManagerInstance() = default;
 	};
 
 	class GameManagerEventQueue

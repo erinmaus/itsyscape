@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local NStaticMeshResourceInstance = require "nbunny.optimaus.staticmeshresourceinstance"
 
 local StaticMesh = Class()
@@ -92,6 +93,19 @@ end
 
 function StaticMesh:getVertices(group)
 	return self.groups[group].vertices
+end
+
+function StaticMesh:computeBounds(group)
+	local vertices = self:getVertices(group)
+
+	local min, max = Vector(math.huge), Vector(-math.huge)
+	for _, vertex in ipairs(vertices) do
+		local v = Vector(vertex[1], vertex[2], vertex[3])
+		min = min:min(v)
+		max = max:max(v)
+	end
+
+	return min, max
 end
 
 function StaticMesh:iterate()

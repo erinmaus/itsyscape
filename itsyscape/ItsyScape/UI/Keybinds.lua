@@ -38,6 +38,7 @@ add('CAMERA_UP',    'up')
 add('CAMERA_DOWN',  'down')
 add('CAMERA_LEFT',  'left')
 add('CAMERA_RIGHT', 'right')
+add('CAMERA_PAN',   'p')
 
 -- Debug
 if _DEBUG then

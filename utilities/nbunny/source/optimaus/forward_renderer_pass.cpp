@@ -14,8 +14,7 @@
 
 void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
-	visible_scene_nodes.clear();
-	SceneNode::walk_by_position(node, get_renderer()->get_camera(), delta, visible_scene_nodes);
+	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_position();
 
 	drawable_scene_nodes.clear();
 	for (auto visible_scene_node: visible_scene_nodes)
@@ -30,11 +29,13 @@ void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
 
 void nbunny::ForwardRendererPass::walk_visible_lights()
 {
+	const auto& all_scene_nodes = get_renderer()->get_all_scene_nodes();
+
 	global_light_scene_nodes.clear();
 	local_light_scene_nodes.clear();
 	fog_scene_nodes.clear();
 
-	for (auto node: visible_scene_nodes)
+	for (auto node: all_scene_nodes)
 	{
 		const auto& node_type = node->get_type();
 		if (node_type == AmbientLightSceneNode::type_pointer ||
@@ -184,13 +185,10 @@ void nbunny::ForwardRendererPass::send_light_property(
 	float* property_value,
     std::size_t size_bytes)
 {
+	auto& shader_cache = get_renderer()->get_shader_cache();
+
 	std::string uniform_name = array + std::string("[") + std::to_string(index) + std::string("].") + property_name;
-	auto uniform = shader->getUniformInfo(uniform_name);
-	if (uniform)
-	{
-		std::memcpy(uniform->floats, property_value, size_bytes);
-		shader->updateUniform(uniform, 1);
-	}
+	shader_cache.update_uniform(shader, uniform_name, property_value, size_bytes);
 }
 
 void nbunny::ForwardRendererPass::send_light(
@@ -221,6 +219,8 @@ void nbunny::ForwardRendererPass::send_fog(
 void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 {
 	auto renderer = get_renderer();
+	auto& shader_cache = get_renderer()->get_shader_cache();
+
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
 	const auto& camera = renderer->get_camera();
@@ -231,6 +231,10 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
+
+	graphics->setMeshCullMode(love::graphics::CULL_BACK);
+	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
 	for (auto& scene_node: drawable_scene_nodes)
 	{
@@ -247,38 +251,34 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 			send_light(shader, lights[i], i);
 		}
 
-		auto num_lights_uniform = shader->getUniformInfo("scape_NumLights");
-		if (num_lights_uniform)
-		{
-			int num_lights = (int)lights.size();
-			*num_lights_uniform->ints = num_lights;
-			shader->updateUniform(num_lights_uniform, 1);
-		}
+		auto num_lights = (int)lights.size();
+		shader_cache.update_uniform(shader, "scape_NumLights", &num_lights, sizeof(int));
 
 		for (auto i = 0; i < fog.size(); ++i)
 		{
 			send_fog(shader, fog[i], i);
 		}
 
-		auto num_fog_uniform = shader->getUniformInfo("scape_NumFogs");
-		if (num_fog_uniform)
-		{
-			int num_fog = scene_node->get_material().get_is_full_lit() ? 0 : (int)fog.size();
-			*num_fog_uniform->ints = num_fog;
-			shader->updateUniform(num_fog_uniform, 1);
-		}
-
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
-        graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+		int num_fog = scene_node->get_material().get_is_full_lit() ? 0 : (int)fog.size();
+		shader_cache.update_uniform(shader, "scape_NumFog", &num_fog, sizeof(int));
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
 
+		if (scene_node->get_material().get_is_z_write_disabled())
+		{
+			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
+		}
+
 		renderer->draw_node(L, *scene_node, delta);
 
-		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
+		if (scene_node->get_material().get_is_z_write_disabled())
+		{
+			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+		}
 	}
+
+	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 nbunny::ForwardRendererPass::ForwardRendererPass(LBuffer& c_buffer) :
@@ -315,22 +315,17 @@ void nbunny::ForwardRendererPass::attach(Renderer& renderer)
 		"Resources/Renderers/Mobile/Base.frag.glsl");
 }
 
-static std::shared_ptr<nbunny::ForwardRendererPass> nbunny_forward_renderer_pass_create(
-	sol::variadic_args args, sol::this_state S)
+static int nbunny_forward_renderer_pass_constructor(lua_State* L)
 {
-	lua_State* L = S;
-	auto& c_buffer = sol::stack::get<nbunny::LBuffer&>(L, 2);
-	return std::make_shared<nbunny::ForwardRendererPass>(c_buffer);
+	auto c_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 2);
+	nbunny::lua::push(L, std::make_shared<nbunny::ForwardRendererPass>(*c_buffer));
+	return 1;
 }
 
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_forwardrendererpass(lua_State* L)
-{
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ForwardRendererPass>("NForwardRendererPass",
-		sol::base_classes, sol::bases<nbunny::RendererPass>(),
-		sol::call_constructor, sol::factories(&nbunny_forward_renderer_pass_create));
-
-	sol::stack::push(L, T);
+{	
+	nbunny::lua::register_child_type<nbunny::ForwardRendererPass, nbunny::RendererPass>(L, &nbunny_forward_renderer_pass_constructor, nullptr);
 
 	return 1;
 }

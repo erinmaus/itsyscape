@@ -84,6 +84,8 @@ function TheEmptyKing:ready(director, game)
 		"ItsyScape.Game.Skin.ModelSkin",
 		"Resources/Game/Skins/TheEmptyKing_FullyRealized/RobesOutside.lua")
 	actor:setSkin("robes-outside", Equipment.SKIN_PRIORITY_BASE, robesOutsideSkin)
+
+	self:poke("equipZweihander")
 end
 
 function TheEmptyKing:onSummonZweihander(zweihander)

@@ -22,18 +22,28 @@ function Sailor:new(resource, name, ...)
 	Player.new(self, resource, name or 'PanickedSailor', ...)
 end
 
-local HEADS = {
-	"Resources/Game/Skins/PlayerKit1/Head/Light.lua",
-	"Resources/Game/Skins/PlayerKit1/Head/Medium.lua",
-	"Resources/Game/Skins/PlayerKit1/Head/Dark.lua",
-	"Resources/Game/Skins/PlayerKit1/Head/Minifig.lua",
+local SKIN_COLORS = {
+	Player.Palette.SKIN_LIGHT,
+	Player.Palette.SKIN_MEDIUM,
+	Player.Palette.SKIN_DARK,
+	Player.Palette.SKIN_PLASTIC
 }
 
-local HAIRS = {
-	"Resources/Game/Skins/PlayerKit1/Hair/Bald.lua",
-	"Resources/Game/Skins/PlayerKit1/Hair/Enby.lua",
-	"Resources/Game/Skins/PlayerKit1/Hair/Emo.lua",
-	"Resources/Game/Skins/PlayerKit1/Hair/ForwardSpike.lua"
+local HAIR_COLORS = {
+	Player.Palette.HAIR_BROWN,
+	Player.Palette.HAIR_BLACK,
+	Player.Palette.HAIR_GREY,
+	Player.Palette.HAIR_BLONDE
+}
+
+local HAIR_SKINS = {
+	"PlayerKit2/Hair/Afro.lua",
+	"PlayerKit2/Hair/Enby.lua",
+	"PlayerKit2/Hair/Emo.lua",
+	"PlayerKit2/Hair/Fade.lua",
+	"PlayerKit2/Hair/Pixie.lua",
+	"PlayerKit2/Hair/Messy1.lua",
+	"PlayerKit1/Hair/Bald.lua"
 }
 
 local HIT_MESSAGES = {
@@ -46,44 +56,40 @@ local HIT_MESSAGES = {
 function Sailor:ready(director, game)
 	Player.ready(self, director, game)
 
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
+	local skinColor = SKIN_COLORS[love.math.random(#SKIN_COLORS)]
+	local hairColor = HAIR_COLORS[love.math.random(#HAIR_COLORS)]
+	local hair = HAIR_SKINS[love.math.random(#HAIR_SKINS)]
 
-	actor:setBody(
-		CacheRef(
-			"ItsyScape.Game.Body",
-			"Resources/Game/Bodies/Human.lskel"))
-
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		HEADS[math.random(#HEADS)])
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local hair = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		HAIRS[math.random(#HAIRS)])
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_ACCENT, hair)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/White.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-	local neck = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Neck/SailorsStar.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_NECK, Equipment.SKIN_PRIORITY_BASE, neck)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/SailorBlueGloves.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots3.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Humanlike.lua",
+		{ skinColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_ACCENT,
+		hair,
+		{ hairColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ hairColor, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/Plain.lua",
+		{ Player.Palette.PRIMARY_WHITE, Player.Palette.PRIMARY_BROWN, Player.Palette.PRIMARY_GREY })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Hands/Humanlike.lua",
+		{ skinColor })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/Boots3.lua",
+		{ Player.Palette.PRIMARY_BLUE })
 
 	local runAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",

@@ -28,8 +28,8 @@ function Particles:new(t)
 	self.attach = t.attach or false
 	self.rotation = t.rotation or 'IDENTITY'
 	self.reverseRotation = t.reverseRotation or 'IDENTITY'
-	self.scale = Vector(unpack(t.scale or { 1, 1, 1 }))
-	self.direction = Vector(unpack(t.direction or { 0, 0, 0 }))
+	self.scale = Vector(unpack(t.scale or { 1, 1, 1 })):keep()
+	self.direction = Vector(unpack(t.direction or { 0, 0, 0 })):keep()
 end
 
 function Particles:getDuration()

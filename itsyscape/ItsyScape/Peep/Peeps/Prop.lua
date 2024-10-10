@@ -63,7 +63,6 @@ function Prop:spawnOrPoof(mode)
 			for x = p.x - halfSize.x, p.x + halfSize.x, map:getCellSize() do
 				for z = p.z - halfSize.z, p.z + halfSize.z, map:getCellSize() do
 					local tile, i, j = map:getTileAt(x, z)
-
 					self:spawnOrPoofTile(tile, i, j, mode)
 				end
 			end

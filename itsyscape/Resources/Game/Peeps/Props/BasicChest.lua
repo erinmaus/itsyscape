@@ -27,6 +27,12 @@ function BasicChest:new(...)
 	Utility.Peep.addInventory(self, SimpleInventoryProvider)
 
 	self:addPoke('materialize')
+
+	self.isOpen = false
+end
+
+function BasicChest:onSearch(...)
+	self.isOpen = not self.isOpen
 end
 
 function BasicChest:onFinalize(director, game)
@@ -261,6 +267,12 @@ function BasicChest:reward(action, e, xp, items)
 			Log.warn("Unhandled reward: '%s' of type '%s' (%dx)", resource.name, resourceType.name, output.count)
 		end
 	end
+end
+
+function BasicChest:getPropState()
+	return {
+		isOpen = self.isOpen
+	}
 end
 
 return BasicChest

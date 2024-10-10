@@ -74,7 +74,13 @@ function CutsceneTransition:new(id, index, ui)
 
 	local game = self:getView():getGame()
 	local player = game:getPlayer()
-	player.onMove:register(self.onPlayerMove, self)
+
+	self._onPlayerMove = function() self:onPlayerMove() end
+	player.onMove:register(self._onPlayerMove, self)
+
+	self.onClose:register(function()
+		player.onMove:unregister(self._onPlayerMove)
+	end)
 
 	self.didPlayerMove = false
 	self.isCheckingQueue = false
@@ -127,7 +133,10 @@ function CutsceneTransition:update(delta)
 			local resources = self:getView():getGameView():getResourceManager()
 			self.wasQueueEmpty = self.wasQueueEmpty or not resources:getIsPending()
 
+
 			if self.wasQueueEmpty then
+				Log.info("Took %0.2f ms to load.", self.time * 1000)
+
 				self.time = 0
 			end
 

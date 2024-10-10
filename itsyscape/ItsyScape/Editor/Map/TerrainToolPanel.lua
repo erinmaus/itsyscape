@@ -76,6 +76,12 @@ function TerrainToolPanel:new(application)
 	hillButton.onClick:register(self.makeHill, self)
 	gridLayout:addChild(hillButton)
 
+	local brushButton = Button()
+	brushButton:setText("B")
+	brushButton:setSize(48, 48)
+	brushButton.onClick:register(self.makeBrush, self)
+	gridLayout:addChild(brushButton)
+
 	self.toolSize = 1
 end
 
@@ -96,6 +102,11 @@ end
 function TerrainToolPanel:makeHill()
 	self.sizeInput:setText("hill")
 	self.toolSize = -1
+end
+
+function TerrainToolPanel:makeBrush()
+	self.sizeInput:setText("brush")
+	self.toolSize = -2
 end
 
 function TerrainToolPanel:getToolSize()

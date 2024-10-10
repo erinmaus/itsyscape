@@ -20,34 +20,33 @@ function AncientSkeleton:new(resource, name, ...)
 end
 
 function AncientSkeleton:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Human.lskel")
-	actor:setBody(body)
-
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/AncientSkeleton/Head.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, 0, head)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/AncientSkeleton/Body.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/AncientSkeleton/Hands.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, 0, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/AncientSkeleton/Feet.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, 0, feet)
-
 	Player.ready(self, director, game)
+
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"Skeleton/Head.lua",
+		{ Player.Palette.BONE_ANCIENT })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Holes.lua",
+		{ Player.Palette.EYE_BLACK })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"Skeleton/Body.lua",
+		{ Player.Palette.BONE_ANCIENT })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"Skeleton/Hands.lua",
+		{ Player.Palette.BONE_ANCIENT })
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"Skeleton/Feet.lua",
+		{ Player.Palette.BONE_ANCIENT })
 end
 
 return AncientSkeleton

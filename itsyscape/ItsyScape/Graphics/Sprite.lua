@@ -14,7 +14,7 @@ local Sprite = Class()
 function Sprite:new(spriteManager, node, offset)
 	self.spriteManager = spriteManager
 	self.node = node
-	self.offset = offset
+	self.offset = offset:keep()
 end
 
 function Sprite:getSpriteManager()

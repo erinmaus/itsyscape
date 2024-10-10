@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local sort = require "batteries.sort"
 local Class = require "ItsyScape.Common.Class"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local Curve = require "ItsyScape.Game.Curve"
@@ -20,6 +21,7 @@ local Controller = require "ItsyScape.UI.Controller"
 local Effect = require "ItsyScape.Peep.Effect"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -41,6 +43,8 @@ ProCombatStatusHUDController.THINGIES_DEFENSIVE_POWERS = 2
 ProCombatStatusHUDController.THINGIES_SPELLS           = 3
 ProCombatStatusHUDController.THINGIES_PRAYERS          = 4
 ProCombatStatusHUDController.THINGIES_EQUIPMENT        = 5
+
+ProCombatStatusHUDController.MAX_TURN_ORDER = 5
 
 ProCombatStatusHUDController.COMBAT_SKILLS = {
 	"Constitution",
@@ -69,6 +73,7 @@ function ProCombatStatusHUDController:new(peep, director)
 	self.prayerEffects = {}
 	self.offensivePrayers = {}
 	self.usablePrayers = {}
+	self.turns = {}
 
 	self.updateDebugStats = UpdateDebugStats()
 
@@ -833,6 +838,113 @@ function ProCombatStatusHUDController:getEquipment()
 	return result
 end
 
+function ProCombatStatusHUDController:_getTurnOrder(peep)
+	local baseTime = love.timer.getTime()
+
+	local actorReference = peep:getBehavior(ActorReferenceBehavior)
+	local actorID = actorReference and actorReference.actor and actorReference.actor:getID()
+
+	local cooldown = peep:getBehavior(AttackCooldownBehavior)
+	cooldown = cooldown and cooldown.cooldown or 0
+
+	local pendingPower = peep:getBehavior(PendingPowerBehavior)
+	pendingPower = pendingPower and pendingPower.power
+
+	local pendingPowerCooldown
+	if pendingPower then
+		local p = peep:getBehavior(PowerCoolDownBehavior)
+		if p then
+			local resource = pendingPower:getResource()
+			local c = p.powers[resource.id.value]
+			if c then
+				pendingPowerCooldown = c - baseTime
+			end
+		end
+	end
+	pendingPowerCooldown = pendingPowerCooldown or 0
+
+	local equippedWeapon = Utility.Peep.getEquippedWeapon(peep, true) or Weapon()
+	local baseWeaponCooldown = equippedWeapon:getCooldown(peep)
+	if baseWeaponCooldown > 0 then
+		do
+			for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				baseWeaponCooldown = effect:applyToSelfWeaponCooldown(peep, baseWeaponCooldown)
+			end
+
+			local target = peep:getBehavior(CombatTargetBehavior)
+			target = target and target.actor and target.actor:getPeep()
+
+			if target then
+				for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+					baseWeaponCooldown = effect:applyToTargetWeaponCooldown(target, baseWeaponCooldown)
+				end
+			end
+		end
+	else
+		baseWeaponCooldown = 0
+	end
+
+	local result = {}
+	local currentTime = cooldown
+	for i = 1, ProCombatStatusHUDController.MAX_TURN_ORDER do
+		local turn = {
+			id = actorID or 0,
+			time = currentTime + baseTime
+		}
+
+		if pendingPower and currentTime >= pendingPowerCooldown then
+			turn.power = self:_pullPower(pendingPower:getResource())
+		end
+
+		table.insert(result, turn)
+		currentTime = currentTime + baseWeaponCooldown
+	end
+
+	return result
+end
+
+local function _sortTurn(a, b)
+	return a.time < b.time
+end
+
+function ProCombatStatusHUDController:updateTurnOrder()
+	local playerPeep = self:getPeep()
+	local targetPeep = playerPeep:getBehavior(CombatTargetBehavior)
+	targetPeep = targetPeep and targetPeep.actor and targetPeep.actor:getPeep()
+
+	table.clear(self.turns)
+	if not targetPeep then
+		return
+	end
+
+	local playerTurns = self:_getTurnOrder(playerPeep)
+	local targetTurns = self:_getTurnOrder(playerPeep)
+
+	local workingTurns = {}
+	do
+		for _, turn in ipairs(playerTurns) do
+			table.insert(workingTurns, turn)
+		end
+
+		for _, turn in ipairs(targetTurns) do
+			table.insert(workingTurns, turn)
+		end
+	end
+
+	local currentIndex = 1
+	while #self.turns < ProCombatStatusHUDController.MAX_TURN_ORDER and currentIndex <= #workingTurns do
+		local turn = {}
+
+		local currentTime = workingTurns[currentIndex].time
+		while workingTurns[currentIndex] == currentTime do
+			table.insert(turn, workingTurns[currentIndex])
+			currentIndex = currentIndex + 1
+		end
+
+		table.insert(self.turns, turn)
+	end
+end
+
 function ProCombatStatusHUDController:updateState()
 	local director = self:getDirector()
 
@@ -847,7 +959,8 @@ function ProCombatStatusHUDController:updateState()
 		prayers = self.usablePrayers,
 		equipment = self:getEquipment(),
 		config = self:getStorage("Config"):get().config or {},
-		style = self.style
+		style = self.style,
+		turns = self.turns
 	}
 
 	self.combatantsByID = {}
@@ -877,6 +990,21 @@ function ProCombatStatusHUDController:updateState()
 	self:updatePowersState(result.powers.defensive)
 
 	self.state = result
+end
+
+function ProCombatStatusHUDController:_pullPower(powerResource, xp, description)
+	local gameDB = self:getDirector():getGameDB()
+
+	return {
+		index = powerResource.id.value,
+		id = powerResource.name,
+		name = Utility.getName(powerResource, gameDB) or "*" .. powerResource.name,
+		description = {
+			Utility.getDescription(powerResource, gameDB),
+			description
+		},
+		level = xp and Curve.XP_CURVE:getLevel(xp) or 1
+	}
 end
 
 function ProCombatStatusHUDController:getAvailablePowers()
@@ -920,16 +1048,7 @@ function ProCombatStatusHUDController:getAvailablePowers()
 				coolDownDescription = string.format("Cooldown: %d seconds", instance:getCoolDown(self:getPeep()))
 			end
 
-			local result = {
-				index = power.id.value,
-				id = power.name,
-				name = Utility.getName(power, gameDB) or "*" .. power.name,
-				description = {
-					Utility.getDescription(power, gameDB),
-					coolDownDescription
-				},
-				level = Curve.XP_CURVE:getLevel(xp)
-			}
+			local result = self:_pullPower(power, xp, coolDownDescription)
 
 			local skill, powers
 			if isSameStyle then
@@ -1030,6 +1149,7 @@ function ProCombatStatusHUDController:update(delta)
 	self.updateDebugStats:measure("updateCastableSpells", self)
 	self.updateDebugStats:measure("updateUsablePrayers", self)
 	self.updateDebugStats:measure("updateActiveSpell", self)
+	self.updateDebugStats:measure("updateTurnOrder", self)
 
 	if self.isDirty then
 		self.updateDebugStats:measure("updatePowers", self)

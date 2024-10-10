@@ -22,7 +22,7 @@ CSGBuilding.HEIGHT = 2
 CSGBuilding.Node = Class(SceneNode)
 CSGBuilding.Node.SHADER = ShaderResource()
 do
-	CSGBuilding.Node.SHADER:loadFromFile("Resources/Shaders/TriPlanar")
+	CSGBuilding.Node.SHADER:loadFromFile("Resources/Shaders/Triplanar")
 end
 
 function CSGBuilding.Node:new()
@@ -48,7 +48,7 @@ function CSGBuilding.Node:draw(renderer)
 	   diffuseTexture and diffuseTexture:getIsReady()
 	then
 		diffuseTexture:getResource():setWrap("repeat")
-		shader:send("scape_DiffuseTexture", diffuseTexture:getResource())
+		shader:send("scape_DiffuseTexture", diffuseTexture:getResource(renderer:getCurrentPass():getID()))
 	end
 
 	if shader:hasUniform("scape_Scale") then
