@@ -9,8 +9,9 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
-local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Ray = require "ItsyScape.Common.Math.Ray"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Game.Model.Prop"
@@ -550,12 +551,25 @@ function MapEditorApplication:paint()
 	self:getGame():getStage():updateMap(self.currentLayer)
 end
 
-function MapEditorApplication:makeMotionEvent(x, y, button)
+function MapEditorApplication:makeMotionEvent(x, y, button, layer)
+	layer = layer or self.motionLayer or self.currentLayer
+
+	local ray = self:shoot(x, y)
+	local mapSceneNode = self:getGameView():getMapSceneNode(self.motionLayer)
+	if mapSceneNode then
+		local transform = mapSceneNode:getTransform():getGlobalTransform()
+		
+		local origin1 = Vector(transform:inverseTransformPoint(ray.origin:get()))
+		local origin2 = Vector(transform:inverseTransformPoint((ray.origin + ray.direction):get()))
+		local direction = origin2 - origin1
+		ray = Ray(origin1, direction)
+	end
+
 	return {
 		x = x or 0,
 		y = y or 0,
 		button = button or 1,
-		ray = self:shoot(x, y),
+		ray = ray,
 		forward = self:getCamera():getForward(),
 		left = self:getCamera():getLeft(),
 		zoom = self:getCamera():getDistance(),
@@ -564,7 +578,7 @@ function MapEditorApplication:makeMotionEvent(x, y, button)
 end
 
 function MapEditorApplication:makeMotion(x, y, button)
-	local map = self:getGame():getStage():getMap(1)
+	local map = self:getGame():getStage():getMap(self.motionLayer)
 	local size = self.terrainToolPanel:getToolSize()
 	if size == TerrainToolPanel.SIZE_HILL then
 		self.motion = HillMapMotion(map)
@@ -618,8 +632,8 @@ function MapEditorApplication:mousePress(x, y, button)
 				self:probe(x, y, false, function(probe)
 					local _, _, layer = probe:getTile()
 
-					self:makeMotion(x, y, button)
 					self.motionLayer = layer
+					self:makeMotion(x, y, button)
 					self.motion:onMousePressed(self:makeMotionEvent(x, y, button))
 
 					if not self.currentToolNode then
@@ -627,6 +641,7 @@ function MapEditorApplication:mousePress(x, y, button)
 					end
 
 					local _, i, j = self.motion:getTile()
+					self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.motionLayer))
 					self.currentToolNode:fromMap(
 						self:getGame():getStage():getMap(self.motionLayer),
 						motion,
@@ -675,7 +690,7 @@ function MapEditorApplication:mousePress(x, y, button)
 						local tile = self.decorationPalette:getCurrentGroup()
 						if tile then
 							local motion = MapMotion(self:getGame():getStage():getMap(layer))
-							motion:onMousePressed(self:makeMotionEvent(x, y, button))
+							motion:onMousePressed(self:makeMotionEvent(x, y, button, layer))
 
 							local t, i, j = motion:getTile()
 							if t then
@@ -747,8 +762,8 @@ function MapEditorApplication:mousePress(x, y, button)
 					if prop then
 						local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, 1, "::orphan")
 						if s then
-							local motion = MapMotion(self:getGame():getStage():getMap(1))
-							motion:onMousePressed(self:makeMotionEvent(x, y, button))
+							local motion = MapMotion(self:getGame():getStage():getMap(self.currentLayer))
+							motion:onMousePressed(self:makeMotionEvent(x, y, button, self.currentLayer))
 
 							local t, i, j = motion:getTile()
 							if t then
@@ -945,7 +960,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					layer = k
 
 					motion = MapMotion(self:getGame():getStage():getMap(layer))
-					motion:onMousePressed(self:makeMotionEvent(x, y, layer))
+					motion:onMousePressed(self:makeMotionEvent(x, y, nil, layer))
 				end
 
 				local _, i, j = motion:getTile()
@@ -954,6 +969,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				end
 
 				local size = math.max(self.terrainToolPanel.toolSize - 1, 0)
+				self.currentToolNode:setParent(self:getGameView():getMapSceneNode(layer))
 				self.currentToolNode:fromMap(
 					self:getGame():getStage():getMap(layer),
 					motion,
@@ -984,6 +1000,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			end
 
 			local size = math.max(math.floor(self.brushToolPanel:getToolSize() - 1), 0)
+			self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.motionLayer))
 			self.currentToolNode:fromMap(
 				self:getGame():getStage():getMap(self.motionLayer),
 				motion,
@@ -1003,6 +1020,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 
 				local i, j = probe:getTile()
 				local size = math.max(self.landscapeToolPanel:getToolSize(), 0)
+				self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.currentLayer))
 				self.currentToolNode:fromMap(
 					self:getGame():getStage():getMap(self.currentLayer),
 					false,
@@ -2012,11 +2030,13 @@ function MapEditorApplication:drawFlags()
 	local w, h = love.window.getMode()
 
 	local map = self:getGame():getStage():getMap(self.currentLayer)
+	local transform = self:getGameView():getMapSceneNode(self.currentLayer):getTransform():getGlobalTransform()
 	for j = 1, map:getHeight() do
 		for i = 1, map:getWidth() do
 			local x = (i - 1) * map:getCellSize()
 			local y = map:getTileCenter(i, j).y
 			local z = (j - 1) * map:getCellSize()
+			x, y, z = transform:transformPoint(x, y, z)
 
 			local s, t, r = projectionView:transformPoint(x, y, z)
 			s = (s + 1) / 2 * w
