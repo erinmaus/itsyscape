@@ -687,6 +687,10 @@ function GameView:testMap(layer, ray, callback)
 		origin = { ray.origin.x, ray.origin.y, ray.origin.z },
 		direction = { ray.direction.x, ray.direction.y, ray.direction.z }
 	})
+
+	if self:_getIsMapEditor() then
+		self:_processMapQuery(love.thread.getChannel('ItsyScape.Map::output'):demand())
+	end
 end
 
 function GameView:updateMap(map, layer)
