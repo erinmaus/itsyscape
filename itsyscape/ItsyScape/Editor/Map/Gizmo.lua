@@ -94,7 +94,7 @@ end
 function Gizmo.Operation:_getTransformedLines(lines, camera, sceneNode)
 	local world = sceneNode:getTransform():getGlobalTransform()
 	local offset = sceneNode:getTransform():getLocalOffset()
-	local center = Vector(world:transformPoint(0, 0, 0)) + offset
+	local center = Vector(world:transformPoint(offset:get()))
 
 	local l = {}
 	do
@@ -112,7 +112,7 @@ end
 function Gizmo.Operation:_getTransformedShape(shape, camera, sceneNode)
 	local world = sceneNode:getTransform():getGlobalTransform()
 	local offset = sceneNode:getTransform():getLocalOffset()
-	local center = Vector(world:transformPoint(0, 0, 0)) + offset
+	local center = Vector(world:transformPoint(offset:get()))
 
 	local rotation = Quaternion.IDENTITY
 	if self.shapeRotate then
@@ -249,7 +249,7 @@ function Gizmo.TranslationAxisOperation:move(currentX, currentY, previousX, prev
 	local distance, axis
 	do
 		local world = sceneNode:getTransform():getGlobalTransform()
-		local center = Vector(world:transformPoint(0, 0, 0))
+		local center = Vector(world:transformPoint(sceneNode:getTransform():getLocalOffset():get()))
 		local v1 = camera:project(center)
 		local v2 = camera:project(center + self.axis * self.LENGTH)
 		local axisDirection = (v2 - v1):getNormal()
@@ -331,7 +331,7 @@ function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previou
 	local angle
 	do
 		local world = sceneNode:getTransform():getGlobalTransform()
-		local center = Vector(world:transformPoint(0, 0, 0))
+		local center = Vector(world:transformPoint(sceneNode:getTransform():getLocalOffset():get()))
 		local centerX, centerY = camera:project(center):get()
 		local differenceCurrentX, differenceCurrentY = centerX - currentX, centerY - currentY
 		local differencePreviousX, differencePreviousY = centerX - previousX, centerY - previousY
@@ -428,7 +428,7 @@ function Gizmo.ScaleAxisOperation:move(currentX, currentY, previousX, previousY,
 	local distance
 	do
 		local world = sceneNode:getTransform():getGlobalTransform()
-		local center = Vector(world:transformPoint(0, 0, 0))
+		local center = Vector(world:transformPoint(sceneNode:getTransform():getLocalOffset():get()))
 		local v1 = camera:project(center)
 		local v2 = camera:project(center + self.axis * self.LENGTH)
 		local axisDirection = (v2 - v1):getNormal()
