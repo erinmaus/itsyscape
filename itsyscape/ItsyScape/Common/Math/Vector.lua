@@ -46,6 +46,16 @@ function BaseVector:abs()
 	return Vector(math.abs(self.x), math.abs(self.y), math.abs(self.z))
 end
 
+function BaseVector:floor()
+	self:compatible()
+	return Vector(math.floor(self.x), math.floor(self.y), math.floor(self.z))
+end
+
+function BaseVector:ceil()
+	self:compatible()
+	return Vector(math.ceil(self.x), math.ceil(self.y), math.ceil(self.z))
+end
+
 -- Calculates and returns the dot product of two vectors.
 function BaseVector:dot(other)
 	self:compatible(other)

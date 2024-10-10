@@ -191,11 +191,19 @@ function BaseQuaternion:transformVector(vector)
 	return result
 end
 
+function BaseQuaternion.fromEulerXYZ(x, y, z)
+	x = Quaternion.fromAxisAngle(Vector.UNIT_X, x)
+	y = Quaternion.fromAxisAngle(Vector.UNIT_Y, y)
+	z = Quaternion.fromAxisAngle(Vector.UNIT_Z, z)
+
+	return (z * y * x):getNormal()
+end
+
 function BaseQuaternion:getEulerXYZ()
 	self:compatible()
 
 	local x = math.atan2(2.0 * (self.y * self.z + self.w * self.x) , self.w * self.w - self.x * self.x - self.y * self.y + self.z * self.z)
-	local y = math.asin(-2.0 * (self.x * self.z - self.w * self.y))
+	local y = math.asin(math.clamp(-2.0 * (self.x * self.z - self.w * self.y), -1, 1))
 	local z = math.atan2(2.0 * (self.x * self.y + self.w * self.z) , self.w * self.w + self.x * self.x - self.y * self.y - self.z * self.z)
 
 	return x, y, z
