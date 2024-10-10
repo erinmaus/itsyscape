@@ -279,8 +279,16 @@ function Gizmo.TranslationAxisOperation:move(currentX, currentY, previousX, prev
 	end
 
 	local transform = sceneNode:getTransform()
-	local translation = axis * distance
-	transform:setLocalTranslation(sceneNode:getTransform():getLocalTranslation() + translation)
+	local offset = axis * distance
+	local translation
+	if snap then
+		translation = (transform:getLocalTranslation() * axis / Vector(self.SNAP_DISTANCE)):floor() * Vector(self.SNAP_DISTANCE) + offset
+	else
+		translation = transform:getLocalTranslation() * axis + offset
+	end
+	local invertAxis = Vector.ONE - axis
+
+	transform:setLocalTranslation(invertAxis * transform:getLocalTranslation() + translation)
 
 	return true
 end
@@ -348,9 +356,19 @@ function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previou
 	end
 
 	local transform = sceneNode:getTransform()
-	local axis = (-transform:getLocalRotation()):getNormal():transformVector(self.axis)
+	local currentRotation
+	if snap then
+		local currentXYZ = Vector(transform:getLocalRotation():getNormal():getEulerXYZ())
+		local invertAxis = Vector.ONE - self.axis
+		local snappedXYZ = (currentXYZ * self.axis / self.STEP_ANGLE):floor() * self.STEP_ANGLE
+		currentRotation = Quaternion.fromEulerXYZ((invertAxis * currentXYZ + snappedXYZ):get())
+	else
+		currentRotation = transform:getLocalRotation()
+	end
+
+	local axis = (-currentRotation):getNormal():transformVector(self.axis)
 	local rotation = Quaternion.fromAxisAngle(axis, angle)
-	transform:setLocalRotation((sceneNode:getTransform():getLocalRotation() * rotation):getNormal())
+	transform:setLocalRotation((currentRotation * rotation):getNormal())
 
 	return true
 end
@@ -433,8 +451,15 @@ function Gizmo.ScaleAxisOperation:move(currentX, currentY, previousX, previousY,
 	end
 
 	local transform = sceneNode:getTransform()
-	local translation = self.axis * distance
-	transform:setLocalScale(sceneNode:getTransform():getLocalScale() + translation)
+	local offset = axis * distance
+	local scale
+	if snap then
+		scale = (transform:getLocalTranslation() * axis / Vector(self.SNAP_DISTANCE)):floor() * Vector(self.SNAP_DISTANCE) + offset
+	else
+		scale = transform:getLocalTranslation() * axis + offset
+	end
+	local invertAxis = Vector.ONE - axis
+	transform:setLocalScale(sceneNode:getTransform():getLocalScale() + scale)
 
 	return true
 end

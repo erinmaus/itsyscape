@@ -1613,6 +1613,16 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 	end
 end
 
+function MapEditorApplication:_getPhysicalLayer(layer)
+	for index, l in ipairs(self.mapScriptLayers) do
+		if l == layer then
+			return index
+		end
+	end
+
+	return nil
+end
+
 function MapEditorApplication:save(filename)
 	if self:makeOutputDirectory("Maps", filename) then
 		if not self:makeOutputSubdirectory("Maps", filename, "Decorations") then
@@ -1631,19 +1641,21 @@ function MapEditorApplication:save(filename)
 				end
 
 				if extension then
-					local layer = self:getDecorationLayer(decoration)
-					local filename
-					if layer == 1 then
-						filename = self:getOutputFilename("Maps", filename, "Decorations", group .. "." .. extension)
-					else
-						filename = self:getOutputFilename("Maps", filename, "Decorations", group .. "@" .. layer .. "." .. extension)
-					end
+					local layer = self:_getPhysicalLayer(self:getDecorationLayer(decoration))
+					if layer then
+						local filename
+						if layer == 1 then
+							filename = self:getOutputFilename("Maps", filename, "Decorations", group .. "." .. extension)
+						else
+							filename = self:getOutputFilename("Maps", filename, "Decorations", group .. "@" .. layer .. "." .. extension)
+						end
 
-					local s, r = love.filesystem.write(filename, decoration:toString())
-					if not s then
-						Log.warn(
-							"Couldn't save decoration '%s' to %s: %s",
-							group, filename, r)
+						local s, r = love.filesystem.write(filename, decoration:toString())
+						if not s then
+							Log.warn(
+								"Couldn't save decoration '%s' to %s: %s",
+								group, filename, r)
+						end
 					end
 				end
 			end
@@ -1657,7 +1669,7 @@ function MapEditorApplication:save(filename)
 				local filename = self:getOutputFilename(
 					"Maps",
 					filename,
-					StringBuilder.stringify(index, "%d") .. ".lmap")
+					StringBuilder.stringify(i, "%d") .. ".lmap")
 				local s, r = love.filesystem.write(filename, map:toString())
 				if not s then
 					Log.warn(
@@ -1704,13 +1716,26 @@ function MapEditorApplication:save(filename)
 			s:pushFormatLine("M._MAP = ItsyScape.Resource.Map %q", filename)
 			s:pushLine()
 
+			local props = {}
 			for prop in self:getGame():getStage():iterateProps() do
+				local name = self.propNames[prop]
+				if name then
+					table.insert(props, prop)
+				end
+			end
+
+			table.sort(props, function(a, b)
+				return self.propNames[a] < self.propNames[b]
+			end)
+
+			for _, prop in ipairs(props) do
 				local position = prop:getPosition()
 				local rotation = prop:getRotation()
 				local scale = prop:getScale()
 				local _, _, layer = prop:getLayer()
+				layer = self:_getPhysicalLayer(layer)
 				local name = self.propNames[prop]
-				if name then
+				if name and layer then
 					s:pushFormatLine("M[%q] = ItsyScape.Resource.MapObject.Unique()", name)
 					s:pushLine("do")
 					s:pushLine("\tItsyScape.Meta.MapObjectLocation {")
