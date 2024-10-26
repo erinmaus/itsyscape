@@ -97,6 +97,8 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 				local nextMapTile = map:getTile(nextI, j)
 				local nextTileName = tileSet:getTileProperty(nextMapTile.flat, "name")
 				isNextBlockWood = self.WOOD[nextTileName] == true
+				isNextBlockWood = isNextBlockWood and mapTile.topRight == nextMapTile.topLeft
+				isNextBlockWood = isNextBlockWood and mapTile.bottomRight == nextMapTile.bottomLeft
 			end
 		end
 
@@ -107,6 +109,8 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 				local farMapTile = map:getTile(farI, j)
 				local farTileName = tileSet:getTileProperty(farMapTile.flat, "name")
 				isFarBlockWood = self.WOOD[farTileName] == true
+				isFarBlockWood = isFarBlockWood and mapTile.topRight == farMapTile.topLeft
+				isFarBlockWood = isFarBlockWood and mapTile.bottomRight == farMapTile.bottomLeft
 			end
 		end
 
@@ -117,6 +121,8 @@ function WoodBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 				local previousMapTile = map:getTile(previousI, j)
 				local previousTileName = tileSet:getTileProperty(previousMapTile.flat, "name")
 				isPreviousBlockWood = self.WOOD[previousTileName] == true
+				isPreviousBlockWood = isPreviousBlockWood and mapTile.topLeft == previousMapTile.topRight
+				isPreviousBlockWood = isPreviousBlockWood and mapTile.bottomLeft == previousMapTile.bottomRight
 			end
 		end
 

@@ -1470,6 +1470,7 @@ include "Resources/Game/DB/Sailing/Maps.lua"
 include "Resources/Game/DB/Sailing/Rowboat.lua"
 include "Resources/Game/DB/Sailing/KeyItems.lua"
 include "Resources/Game/DB/Sailing/RandomEvents.lua"
+include "Resources/Game/DB/Sailing/NPC.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
