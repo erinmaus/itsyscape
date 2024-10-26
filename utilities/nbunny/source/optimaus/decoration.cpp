@@ -560,7 +560,7 @@ void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 		auto specular_bound_texture = texture->get_bound_texture("Specular");
 		shader_cache.update_uniform(shader, "scape_SpecularTexture", specular_bound_texture);
 
-		auto heightmap_bound_texture = texture->get_bound_texture("Specular");
+		auto heightmap_bound_texture = texture->get_bound_texture("Heightmap");
 		shader_cache.update_uniform(shader, "scape_HeightmapTexture", heightmap_bound_texture);
 	}
 	else

@@ -2,7 +2,7 @@ vec2 encodeGBufferNormal(vec3 normal)
 {
     float l = length(normal.xy);
     float d = step(l, 0.0);
-    return (normal.xy / vec2(l + d)) * vec2(sqrt((normal.z + 1.0) / 2.0));
+    return (normal.xy / vec2(l + d)) * vec2(sqrt((-normal.z + 1.0) / 2.0));
 }
 
 vec3 decodeGBufferNormal(vec2 encodedNormal)

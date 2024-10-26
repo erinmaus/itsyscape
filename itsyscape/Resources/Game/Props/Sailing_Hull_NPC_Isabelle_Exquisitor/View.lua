@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
@@ -43,19 +44,13 @@ Hull.STATE = {
 			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
 			group = "hull.trim",
 			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Trim.png",
-			color = { Color.fromHexString("ffcc00"):get() },
-			isReflective = true,
-			reflectionPower = 0.5,
-			outlineThreshold = -0.05
+			color = { Color.fromHexString("ffcc00"):get() }
 		},
 		{
 			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
 			group = "windows.trim",
 			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Trim.png",
-			color = { Color.fromHexString("ffcc00"):get() },
-			isReflective = true,
-			reflectionPower = 0.5,
-			outlineThreshold = -0.05
+			color = { Color.fromHexString("ffcc00"):get() }
 		},
 		{
 			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
@@ -73,6 +68,14 @@ function Hull:load()
 	local root = self:getRoot()
 
 	self.decoration = DecorationSceneNode()
+
+	local shader
+	resources:queue(
+		ShaderResource,
+		"Resources/Shaders/Decoration",
+		function(s)
+			shader = s
+		end)
 
 	local state = self.STATE
 	if state.attachments then
@@ -107,6 +110,7 @@ function Hull:load()
 						print(">>> has", group, mesh:getResource():hasGroup(group))
 						decoration:fromGroup(mesh:getResource(), group)
 						decoration:getMaterial():setTextures(texture)
+						decoration:getMaterial():setShader(shader)
 						decoration:setParent(root)
 
 						if attachment.color then
