@@ -15,8 +15,8 @@ void calculateBumpNormalFromHeight(
 
     normal = vec3(x, -y, scale);
 
-    float length = length(normal);
-    if (length > 0.0)
+    float l = length(normal);
+    if (l > 0.0)
     {
         normal = normalize(normal);
     }
