@@ -632,20 +632,22 @@ function MapEditorApplication:mousePress(x, y, button)
 				self:probe(x, y, false, function(probe)
 					local _, _, layer = probe:getTile()
 
-					self.motionLayer = layer
-					self:makeMotion(x, y, button)
-					self.motion:onMousePressed(self:makeMotionEvent(x, y, button))
+					if layer then
+						self.motionLayer = layer
+						self:makeMotion(x, y, button)
+						self.motion:onMousePressed(self:makeMotionEvent(x, y, button))
 
-					if not self.currentToolNode then
-						self:makeCurrentToolNode()
+						if not self.currentToolNode then
+							self:makeCurrentToolNode()
+						end
+
+						local _, i, j = self.motion:getTile()
+						self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.motionLayer))
+						self.currentToolNode:fromMap(
+							self:getGame():getStage():getMap(self.motionLayer),
+							motion,
+							i, i, j, j)
 					end
-
-					local _, i, j = self.motion:getTile()
-					self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.motionLayer))
-					self.currentToolNode:fromMap(
-						self:getGame():getStage():getMap(self.motionLayer),
-						motion,
-						i, i, j, j)
 				end)
 			elseif self.currentTool == MapEditorApplication.TOOL_BRUSH then
 				self.paintingMotion = self:getBrushMotion()
@@ -1702,7 +1704,7 @@ function MapEditorApplication:save(filename)
 			for i = 1, #layers do
 				local _, tileSetID = self:getGameView():getMapTileSet(layers[i])
 
-				local map = self:getStage():getMap(layers[i])
+				local map = self:getGame():getStage():getMap(layers[i])
 				local mapScriptPeep = self.mapScriptPeeps[layers[i]]
 				local translation = Utility.Peep.getPosition(mapScriptPeep)
 				local rotation = Utility.Peep.getRotation(mapScriptPeep)
@@ -1743,14 +1745,14 @@ function MapEditorApplication:save(filename)
 			end
 
 			table.sort(props, function(a, b)
-				return self.propNames[a] < self.propNames[b]
+				return self.gpropNames[a] < self.propNames[b]
 			end)
 
 			for _, prop in ipairs(props) do
 				local position = prop:getPosition()
 				local rotation = prop:getRotation()
 				local scale = prop:getScale()
-				local _, _, layer = prop:getLayer()
+				local _, _, layer = prop:getTile()
 				layer = self:_getPhysicalLayer(layer)
 				local name = self.propNames[prop]
 				if name and layer then
@@ -1872,7 +1874,7 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 
 			if layerMeta.transform then
 				Utility.Peep.setPosition(peep, Vector(unpack(layerMeta.transform.translation or {})))
-				Utility.Peep.setRotation(peep, Vector(unpack(layerMeta.transform.rotation or {})))
+				Utility.Peep.setRotation(peep, Quaternion(unpack(layerMeta.transform.rotation or {})))
 				Utility.Peep.setScale(peep, Vector(unpack(layerMeta.transform.scale or {})))
 
 				local _, origin = peep:addBehavior(OriginBehavior)
@@ -2170,8 +2172,8 @@ end
 
 function MapEditorApplication:getBrushMotion()
 	local mouseX, mouseY = love.mouse.getPosition()
-	local motionEvent = self:makeMotionEvent(mouseX, mouseY, 1)
-	local map = self:getGame():getStage():getMap(1)
+	local motionEvent = self:makeMotionEvent(mouseX, mouseY, 1, self.currentLayer)
+	local map = self:getGame():getStage():getMap(self.currentLayer)
 	local motion = MapMotion(map)
 	motion:onMousePressed(motionEvent)
 
