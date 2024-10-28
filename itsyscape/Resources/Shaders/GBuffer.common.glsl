@@ -1,3 +1,16 @@
+vec3 clampGBufferNormal(vec3 normal)
+{
+    normal += vec3(1.0);
+    normal /= vec3(2.0);
+
+    normal *= step(vec3(0.001), normal);
+
+    normal *= vec3(2.0);
+    normal /= vec3(1.0);
+
+    return normalize(normal);
+}
+
 vec2 encodeGBufferNormal(vec3 normal)
 {
     float l = length(normal.xy);
