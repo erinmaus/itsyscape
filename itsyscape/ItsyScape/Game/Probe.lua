@@ -178,7 +178,7 @@ function Probe:getTile(tiles)
 			local s = camera:project(Vector(i.x, i.y, i.z))
 			local t = camera:project(Vector(j.x, j.y, j.z))
 
-			return s.z > t.z
+			return s.z < t.z
 		end
 		table.sort(tiles, sortFunc)
 
