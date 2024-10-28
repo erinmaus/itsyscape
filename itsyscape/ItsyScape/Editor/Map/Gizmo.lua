@@ -366,7 +366,8 @@ function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previou
 		currentRotation = transform:getLocalRotation()
 	end
 
-	local axis = (-currentRotation):getNormal():transformVector(self.axis)
+	--local axis = (-currentRotation):getNormal():transformVector(self.axis)
+	local axis = self.axis
 	local rotation = Quaternion.fromAxisAngle(axis, angle)
 	transform:setLocalRotation((currentRotation * rotation):getNormal())
 

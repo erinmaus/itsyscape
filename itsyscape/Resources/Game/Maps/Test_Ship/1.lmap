@@ -874,7 +874,7 @@
 			},
 		},
 		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			topLeft = 1, topRight = 1, bottomLeft = 1, bottomRight = 1,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =

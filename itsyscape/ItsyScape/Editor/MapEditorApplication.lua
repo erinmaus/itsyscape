@@ -126,6 +126,7 @@ function MapEditorApplication:new()
 
 	self.mapScriptPeeps = {}
 	self.mapScriptLayers = {}
+	self.mapScriptCurves = {}
 
 	self.propNames = {}
 
@@ -244,8 +245,6 @@ function MapEditorApplication:setTool(tool)
 		self.currentPalette:close()
 	end
 
-	self:getGameView():bendMap(1)
-
 	if tool == MapEditorApplication.TOOL_TERRAIN then
 		self.currentTool = MapEditorApplication.TOOL_TERRAIN
 		self.terrainToolPanel:open()
@@ -312,22 +311,42 @@ function MapEditorApplication:decorationFeatureToSceneNode(feature)
 end
 
 function MapEditorApplication:curveToSceneNode(target)
+	local mapSceneNode = self:getGameView():getMapSceneNode(self.curveLayer)
 	local sceneNode = SceneNode()
 
 	if Class.isCompatibleType(target, MapCurve.Position) then
-		sceneNode:getTransform():setLocalTranslation(target:getValue())
+		local translation = target:getValue()
+		if mapSceneNode then
+			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+		end
+
+		sceneNode:getTransform():setLocalTranslation(translation)
 	elseif Class.isCompatibleType(target, MapCurve.Normal) then
-		sceneNode:getTransform():setLocalTranslation(self.curve:getPositions():get(target:getIndex() or 1):getValue())
+		local translation = self.curve:getPositions():get(target:getIndex() or 1):getValue()
+		if mapSceneNode then
+			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+		end
+		sceneNode:getTransform():setLocalTranslation(translation)
 
 		local normal = target:getValue()
 		local rotation = Quaternion.lookAt(Vector.ZERO, normal, Vector.UNIT_Y)
 		sceneNode:getTransform():setLocalRotation(rotation)
 	elseif Class.isCompatibleType(target, MapCurve.Rotation) then
 		local t = ((target:getIndex() or 1) - 1) / (self.curve:getRotations():length() - 1)
-		sceneNode:getTransform():setLocalTranslation(self.curve:evaluatePosition(t) + self.curve:evaluateNormal(t) * 4)
+		local translation = self.curve:evaluatePosition(t) + self.curve:evaluateNormal(t) * 4
+		if mapSceneNode then
+			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+		end
+		sceneNode:getTransform():setLocalTranslation(translation)
+
 		sceneNode:getTransform():setLocalRotation(target:getValue())
 	elseif Class.isCompatibleType(target, MapCurve.Scale) then
-		sceneNode:getTransform():setLocalTranslation(self.curve:getPositions():get(target:getIndex() or 1):getValue())
+		local translation = self.curve:getPositions():get(target:getIndex() or 1):getValue()
+		if mapSceneNode then
+			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+		end
+		sceneNode:getTransform():setLocalTranslation(translation)
+
 		sceneNode:getTransform():setLocalScale(target:getValue())
 	end
 
@@ -346,9 +365,13 @@ end
 function MapEditorApplication:updateCurve()
 	if self.currentTool == MapEditorApplication.TOOL_CURVE then
 		if self.curve and self.curve:getPositions():length() >= 2 then
-			self:getGameView():bendMap(self.curveLayer, self.curve:toConfig())
-		else
+			local config = self.curve:toConfig()
+
+			self:getGameView():bendMap(self.curveLayer, config)
+			self.mapScriptCurves[self.curveLayer] = config
+		elseif self.curveLayer then
 			self:getGameView():bendMap(self.curveLayer)
+			self.mapScriptCurves[self.curveLayer] = nil
 		end
 	elseif self.currentTool == MapEditorApplication.TOOL_DECORATE then
 		local group, decoration = self.decorationList:getCurrentDecoration()
@@ -802,9 +825,15 @@ function MapEditorApplication:mousePress(x, y, button)
 				local minDistance = math.huge
 				local clickedCurveIndex
 
+				local mapSceneNode = self:getGameView():getMapSceneNode(self.curveLayer)
+
 				local positionCurve = self.curve:getPositions()
 				for i = 1, positionCurve:length() do
 					local curvePoint = positionCurve:get(i):getValue()
+					if mapSceneNode then
+						curvePoint = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(curvePoint:get()))
+					end
+
 					local screenPoint = self:getCamera():project(curvePoint)
 					local distance = (screenPoint - Vector(x, y, 0)):getLength()
 
@@ -829,6 +858,10 @@ function MapEditorApplication:mousePress(x, y, button)
 				for i = 1, rotationCurve:length() do
 					local t = (i - 1) / (rotationCurve:length() - 1)
 					local curvePoint = positionCurve:evaluate(t) + Vector(0, 4, 0)
+					if mapSceneNode then
+						curvePoint = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(curvePoint:get()))
+					end
+
 					local screenPoint = self:getCamera():project(curvePoint)
 					local distance = (screenPoint - Vector(x, y, 0)):getLength()
 
@@ -1098,6 +1131,11 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					self:getGameView():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1)
 				end
 			elseif Class.isCompatibleType(target, MapCurve.Value) and target:getIndex() then
+				local mapSceneNode = self:getGameView():getMapSceneNode(self.curveLayer)
+				if mapSceneNode then
+					translation = Vector(mapSceneNode:getTransform():getGlobalTransform():inverseTransformPoint(translation:get()))
+				end
+
 				if Class.isCompatibleType(target, MapCurve.Position) then
 					self.curve:getPositions():set(target:getIndex(), MapCurve.Position(translation:get()))
 					self.gizmo:setTarget(self.curve:getPositions():get(target:getIndex()))
@@ -1598,7 +1636,15 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						self:createScaleGizmo(target)
 					elseif key == "c" then
 						local map = self:getGame():getStage():getMap(target:getLayer())
-						self:beginEditCurve(map, self.curve and self.curve:toConfig() or {
+
+						local config
+						if self.curve then
+							config = self.curve:toConfig()
+						elseif self.mapScriptCurves[target:getLayer()] then
+							config = self.mapScriptCurves[target:getLayer()]
+						end
+
+						self:beginEditCurve(map, config or {
 							min = { 0, 0, 0 },
 							max = { map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize() },
 							axis = { 0, 0, 1 },
@@ -1720,7 +1766,8 @@ function MapEditorApplication:save(filename)
 						rotation = { rotation:get() },
 						scale = { scale:get() },
 						offset = { (offset or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
-					}
+					},
+					curve = self.mapScriptCurves[layers[i]]
 				}
 			end
 
@@ -1888,6 +1935,12 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 			else
 				stage:onMapMoved(realLayer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 			end
+
+			if layerMeta.curve then
+				self:getGameView():bendMap(realLayer, layerMeta.curve)
+
+				self.mapScriptCurves[layer] = layerMeta.curve
+			end
 		end
 	end
 
@@ -1994,6 +2047,7 @@ function MapEditorApplication:unloadLayer(layer)
 	self:getGame():getStage():unloadMap(layer)
 
 	self.mapScriptPeeps[layer] = nil
+	self.mapScriptCurves[layer] = nil
 	for i = 1, #self.mapScriptLayers do
 		if self.mapScriptLayers[i] == layer then
 			table.remove(self.mapScriptLayers, i)
@@ -2066,6 +2120,14 @@ function MapEditorApplication:drawCurve()
 
 	if self.curve:getPositions():length() >= 2 then
 		local worldPoints = self.curve:getPositions():render()
+		for index, worldPoint in ipairs(worldPoints) do
+			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+			if mapNode then
+				local transform = mapNode:getTransform():getGlobalTransform()
+				worldPoints[index] = Vector(transform:transformPoint(worldPoint:get()))
+			end
+		end
+
 		local screenPoints = {}
 		for _, worldPoint in ipairs(worldPoints) do
 			local screenPoint = self:getCamera():project(worldPoint)
@@ -2077,6 +2139,14 @@ function MapEditorApplication:drawCurve()
 		love.graphics.line(screenPoints)
 
 		local normalPoints = self.curve:getPositions():render(2)
+		for index, normalPoint in ipairs(normalPoints) do
+			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+			if mapNode then
+				local transform = mapNode:getTransform():getGlobalTransform()
+				normalPoints[index] = Vector(transform:transformPoint(normalPoint:get()))
+			end
+		end
+
 		local targetType = self.gizmo and self.gizmo:getTarget():getType()
 		if targetType == MapCurve.Normal then
 			local screenDirections = {}
@@ -2155,6 +2225,13 @@ function MapEditorApplication:drawCurve()
 
 	for i = 1, positions:length() do
 		local curvePoint = positions:get(i):getValue()
+
+		local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+		if mapNode then
+			local transform = mapNode:getTransform():getGlobalTransform()
+			curvePoint = Vector(transform:transformPoint(curvePoint:get()))
+		end
+
 		local screenPoint = self:getCamera():project(curvePoint)
 
 		love.graphics.rectangle("fill", screenPoint.x - 8, screenPoint.y - 8, 16, 16)
@@ -2163,8 +2240,14 @@ function MapEditorApplication:drawCurve()
 	for i = 1, rotations:length() do
 		local t = (i - 1) / (rotations:length() - 1)
 		local curvePoint = positions:evaluate(t) + Vector(0, 4, 0)
-		local screenPoint = self:getCamera():project(curvePoint)
 
+		local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+		if mapNode then
+			local transform = mapNode:getTransform():getGlobalTransform()
+			curvePoint = Vector(transform:transformPoint(curvePoint:get()))
+		end
+
+		local screenPoint = self:getCamera():project(curvePoint)
 		love.graphics.circle("fill", screenPoint.x, screenPoint.y, 8)
 	end
 
