@@ -1095,6 +1095,12 @@ function GameView:bendMap(layer, ...)
 	for _, node in ipairs(m.parts) do
 		self:_updateMapNode(m, node)
 	end
+
+	love.thread.getChannel('ItsyScape.Map::input'):push({
+		type = 'bend',
+		key = layer,
+		config = curves[1] and curves[1]:toConfig()
+	})	
 end
 
 function GameView:setSkyboxColor(layer, color)

@@ -13,9 +13,11 @@ local buffer = require "string.buffer"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Map = require "ItsyScape.World.Map"
+local MapCurve = require "ItsyScape.World.MapCurve"
 
 local MAPS = {}
 local TRANSFORMS = {}
+local CURVES = {}
 
 local m
 repeat
@@ -24,8 +26,15 @@ repeat
 		MAPS[m.key] = Map.loadFromTable(buffer.decode(m.data))
 	elseif m.type == "unload" then
 		MAPS[m.key] = nil
+		TRANSFORMS[m.key] = nil
+		CURVES[m.key] = nil
 	elseif m.type == "transform" then
 		TRANSFORMS[m.key] = m.transform
+	elseif m.type == "bend" then
+		local map = MAPS[m.key]
+		if map then
+			CURVES[m.key] = { MapCurve(map, m.config) }
+		end
 	elseif m.type == "probe" then
 		local maps
 		if m.key then
@@ -54,7 +63,12 @@ repeat
 					ray = Ray(origin1, direction)
 				end
 
-				local tiles = map:testRay(ray)
+				local tiles
+				if CURVES[key] then
+					tiles = map:testRayWithCurves(ray, CURVES[key])
+				else
+					tiles = map:testRay(ray)
+				end
 
 				for i = 1, #tiles do
 					local tile = tiles[i]
