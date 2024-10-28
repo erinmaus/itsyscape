@@ -47,8 +47,7 @@ void effect()
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
 #endif
 
-	normal *= step(vec3(0.001), normal);
-	normal = normalize(normal);
+	normal = clampGBufferNormal(normal);
 
 	if (diffuse.a < 250.0 / 255.0)
 	{
