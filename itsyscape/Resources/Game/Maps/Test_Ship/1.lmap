@@ -225,7 +225,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -236,7 +236,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -247,7 +247,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -258,7 +258,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -269,7 +269,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -280,7 +280,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -291,7 +291,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -302,7 +302,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -313,7 +313,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -324,7 +324,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -555,7 +555,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -566,7 +566,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -577,7 +577,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -588,7 +588,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -599,7 +599,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -610,7 +610,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -621,7 +621,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -632,7 +632,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -643,7 +643,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -654,7 +654,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -885,7 +885,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -896,7 +896,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -907,7 +907,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -918,7 +918,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -929,7 +929,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -940,7 +940,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -951,7 +951,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -962,7 +962,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -973,7 +973,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -984,7 +984,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1215,7 +1215,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1226,7 +1226,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1237,7 +1237,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1248,7 +1248,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1259,7 +1259,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1270,7 +1270,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1281,7 +1281,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1292,7 +1292,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1303,7 +1303,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1314,7 +1314,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1545,7 +1545,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1556,7 +1556,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1567,7 +1567,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1578,7 +1578,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1589,7 +1589,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1600,7 +1600,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1611,7 +1611,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1622,7 +1622,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1633,7 +1633,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1644,7 +1644,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1875,7 +1875,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1886,7 +1886,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1897,7 +1897,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1908,7 +1908,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1919,7 +1919,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1930,7 +1930,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1941,7 +1941,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1952,7 +1952,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1963,7 +1963,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -1974,7 +1974,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2205,7 +2205,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2216,7 +2216,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2227,7 +2227,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2238,7 +2238,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2249,7 +2249,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2260,7 +2260,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2271,7 +2271,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2282,7 +2282,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2293,7 +2293,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2304,7 +2304,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2535,7 +2535,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2546,7 +2546,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2557,7 +2557,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2568,7 +2568,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2579,7 +2579,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2590,7 +2590,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2601,7 +2601,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2612,7 +2612,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2623,7 +2623,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =
@@ -2634,7 +2634,7 @@
 			},
 		},
 		{
-			topLeft = 6, topRight = 6, bottomLeft = 6, bottomRight = 6,
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 6, flat = 4, decals = {  },
 			data =

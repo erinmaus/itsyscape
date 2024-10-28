@@ -1856,7 +1856,6 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 			stage:newMap(
 				map:getWidth(), map:getHeight(), layerMeta.tileSetID, layerMeta.maskID, realLayer)
 			stage:updateMap(realLayer, map)
-			stage:onMapMoved(realLayer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 
 			if not baseLayer then
 				table.insert(self.mapScriptLayers, layer)
@@ -1886,6 +1885,8 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 					Utility.Peep.getRotation(peep),
 					Utility.Peep.getScale(peep),
 					origin.origin, false)
+			else
+				stage:onMapMoved(realLayer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 			end
 		end
 	end
