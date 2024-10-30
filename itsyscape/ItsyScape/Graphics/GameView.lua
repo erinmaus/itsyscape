@@ -811,7 +811,8 @@ function GameView:updateMap(map, layer)
 end
 
 function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
-	local node = self:getMapSceneNode(layer)
+	local m = self.mapMeshes[layer]
+	local node = m and m.node
 	if node then
 		local transform = node:getTransform()
 		transform:setLocalTranslation(position)

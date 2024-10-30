@@ -442,32 +442,32 @@ CharacterCustomization.CAMERA_ANIMATION_TIME = 0.5
 CharacterCustomization.CAMERA = {
 	hair = {
 		zoom = 2.5,
-		position = Vector(0, 1.5, 0)
+		position = Vector(0, 1.5, 0):keep()
 	},
 
 	eyes = {
 		zoom = 2,
-		position = Vector(0, 1.5, 0)
+		position = Vector(0, 1.5, 0):keep()
 	},
 
 	head = {
 		zoom = 1.75,
-		position = Vector(0, 1.25, 0)
+		position = Vector(0, 1.25, 0):keep()
 	},
 
 	body = {
 		zoom = 2.5,
-		position = Vector(0, 0.5, 0)
+		position = Vector(0, 0.5, 0):keep()
 	},
 
 	hands = {
 		zoom = 2.5,
-		position = Vector(0, 0.5, 0)
+		position = Vector(0, 0.5, 0):keep()
 	},
 
 	feet = {
 		zoom = 2,
-		position = Vector(0, 0.25, 0)
+		position = Vector(0, 0.25, 0):keep()
 	},
 
 	default = {
@@ -562,14 +562,14 @@ function CharacterCustomization:new(id, index, ui)
 	self.isFullscreen = windowWidth == w and windowHeight == h
 
 	self.skinOptionCamera = ThirdPersonCamera()
-	self.skinOptionCamera:setUp(-Vector.UNIT_Y)
+	self.skinOptionCamera:setUp(Vector.UNIT_Y)
 	self.skinOptionCamera:setVerticalRotation(DefaultCameraController.CAMERA_VERTICAL_ROTATION)
 	self.skinOptionCamera:setHorizontalRotation(DefaultCameraController.CAMERA_HORIZONTAL_ROTATION)
 	self.skinOptionCamera:setPosition(Vector(0, 1.5, 0))
 	self.skinOptionCamera:setDistance(2.5)
 
 	self.characterCamera = ThirdPersonCamera()
-	self.characterCamera:setUp(-Vector.UNIT_Y)
+	self.characterCamera:setUp(Vector.UNIT_Y)
 	self.characterCamera:setDistance(7)
 	self.characterCamera:setVerticalRotation(DefaultCameraController.CAMERA_VERTICAL_ROTATION)
 	self.characterCamera:setHorizontalRotation(DefaultCameraController.CAMERA_HORIZONTAL_ROTATION)

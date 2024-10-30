@@ -877,6 +877,10 @@ function Instance:getMapScriptByMapFilename(filename)
 	return nil
 end
 
+function Instance:getMap(layer)
+	return self.maps[layer]
+end
+
 function Instance:iteratePlayers()
 	return ipairs(self.players)
 end
