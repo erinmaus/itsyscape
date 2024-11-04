@@ -49,6 +49,7 @@ do
 		ColorRed = 128,
 		ColorGreen = 128,
 		ColorBlue = 128,
+		CastsShadows = 1,
 		Resource = M["Light_Sun"]
 	}
 
