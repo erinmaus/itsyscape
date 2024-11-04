@@ -7,7 +7,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 29.500000,
 		PositionY = 0.000000,
-		PositionZ = 8.250000,
+		PositionZ = 8.000000,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
 		RotationZ = 0.000000,

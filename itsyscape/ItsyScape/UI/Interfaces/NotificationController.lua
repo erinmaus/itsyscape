@@ -18,7 +18,7 @@ NotificationController.STEP = 1
 function NotificationController:new(peep, director, constraints)
 	Controller.new(self, peep, director)
 
-	self.constraints = constraints or {}
+	self.constraints = {}
 	self.constraints.inputs = self.constraints.inputs or {}
 	self.constraints.requirements = self.constraints.requirements or {}
 

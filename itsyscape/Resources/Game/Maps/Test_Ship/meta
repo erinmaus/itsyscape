@@ -3,11 +3,10 @@
 		tileSetID = "YendorianJungle",
 		transform =
 		{
-			rotation =
+			scale =
 			{
-				0,
-				0,
-				0,
+				1,
+				1,
 				1,
 			},
 			offset =
@@ -16,17 +15,18 @@
 				0,
 				8,
 			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 			translation =
 			{
 				0,
 				0,
 				0,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
 			},
 		},
 	},
