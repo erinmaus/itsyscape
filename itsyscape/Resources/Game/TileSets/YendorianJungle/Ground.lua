@@ -38,11 +38,7 @@ function YendorianJungleGround:new()
 			"plank.large.2",
 			"plank.large.2",
 			"plank.large.2",
-			"plank.large.2",
-			"plank.large.3",
-			"plank.large.4",
-			"plank.large.5",
-			"plank.large.6"
+			"plank.large.2"
 		}
 	})
 

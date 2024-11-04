@@ -5,9 +5,9 @@ M._MAP = ItsyScape.Resource.Map "Test_Ship"
 M["Sailing_Hull_NPC_Isabelle_Exquisitor1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 30.000000,
+		PositionX = 29.500000,
 		PositionY = 0.000000,
-		PositionZ = 8.000000,
+		PositionZ = 8.250000,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
 		RotationZ = 0.000000,
