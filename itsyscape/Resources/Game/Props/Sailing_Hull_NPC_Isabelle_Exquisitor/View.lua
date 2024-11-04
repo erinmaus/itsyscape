@@ -21,42 +21,27 @@ Hull.STATE = {
 	attachments = {
 		{
 			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
-			group = "hull",
-			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Hull.png",
-			color = { Color.fromHexString("614433"):get() }
+			group = "hull.interior",
+			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Planks.png",
+			color = { Color.fromHexString("614433"):get() },
+			outlineColor = { Color.fromHexString("aaaaaa"):get() },
+			outlineThreshold = 0.3
 		},
 		{
 			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
-			group = "stern",
-			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Stern.png",
-			color = { Color.fromHexString("614433"):get() }
+			group = "hull.exterior",
+			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Planks.png",
+			color = { Color.fromHexString("614433"):get() },
+			outlineColor = { Color.fromHexString("aaaaaa"):get() },
+			outlineThreshold = 0.3
 		},
 		{
 			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
-			group = "windows",
-			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Window.png",
-			isTranslucent = true,
-			color = { Color.fromHexString("87cdde"):get() },
-			outlineThreshold = -1,
-			isZWriteDisabled = true,
-		},
-		{
-			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
-			group = "hull.trim",
-			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Trim.png",
-			color = { Color.fromHexString("ffcc00"):get() }
-		},
-		{
-			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
-			group = "windows.trim",
-			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Trim.png",
-			color = { Color.fromHexString("ffcc00"):get() }
-		},
-		{
-			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
-			group = "deck.wall",
-			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Deck_Wall.png",
-			color = { Color.fromHexString("614433"):get() }
+			group = "stairs.stern",
+			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Planks.png",
+			color = { Color.fromHexString("614433"):get() },
+			outlineColor = { Color.fromHexString("aaaaaa"):get() },
+			outlineThreshold = 0.3
 		}
 	}
 }
@@ -85,9 +70,6 @@ function Hull:load()
 			local textureFilename = attachment.texture
 
 			if meshFilename and group and textureFilename then
-				print(">>> trying...")
-				print("", meshFilename, group)
-				print("", textureFilename)
 				local texture, mesh
 
 				resources:queue(
@@ -107,7 +89,6 @@ function Hull:load()
 				resources:queueEvent(
 					function()
 						local decoration = DecorationSceneNode()
-						print(">>> has", group, mesh:getResource():hasGroup(group))
 						decoration:fromGroup(mesh:getResource(), group)
 						decoration:getMaterial():setTextures(texture)
 						decoration:getMaterial():setShader(shader)
@@ -115,6 +96,10 @@ function Hull:load()
 
 						if attachment.color then
 							decoration:getMaterial():setColor(Color(unpack(attachment.color)))
+						end
+
+						if attachment.outlineColor then
+							decoration:getMaterial():setOutlineColor(Color(unpack(attachment.outlineColor)))
 						end
 
 						if attachment.isTranslucent then
