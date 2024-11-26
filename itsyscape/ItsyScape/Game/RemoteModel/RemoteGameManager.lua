@@ -130,7 +130,7 @@ function RemoteGameManager:receive()
 		if e then
 			table.insert(self.pending, e)
 
-			if e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY then
+			if e.type == EventQueue.EVENT_TYPE_CREATE then
 				self:process(e)
 			elseif e.type == EventQueue.EVENT_TYPE_TICK then
 				if e.interface then
