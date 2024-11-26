@@ -42,6 +42,22 @@ Hull.STATE = {
 			color = { Color.fromHexString("614433"):get() },
 			outlineColor = { Color.fromHexString("aaaaaa"):get() },
 			outlineThreshold = 0.3
+		},
+		{
+			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
+			group = "rail.stern",
+			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Rail_Stern.png",
+			color = { Color.fromHexString("614433"):get() },
+			outlineColor = { Color.fromHexString("aaaaaa"):get() },
+			outlineThreshold = 0.3
+		},
+		{
+			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
+			group = "rail.bow",
+			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Rail_Bow.png",
+			color = { Color.fromHexString("614433"):get() },
+			outlineColor = { Color.fromHexString("aaaaaa"):get() },
+			outlineThreshold = 0.3
 		}
 	}
 }
