@@ -24,6 +24,7 @@ function MapOffsetBehavior:new(x, y, z)
 	self.offset = Vector(0, 0, 0)
 	self.rotation = Quaternion.IDENTITY
 	self.scale = Vector.ONE
+	self.parentLayer = false
 end
 
 return MapOffsetBehavior

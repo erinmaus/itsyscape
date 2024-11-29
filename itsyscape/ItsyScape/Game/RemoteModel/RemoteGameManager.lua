@@ -184,7 +184,7 @@ function RemoteGameManager:_flush()
 		local e = self.pending[i]
 		self:markDirty(e)
 
-		if not (e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY) then
+		if not (e.type == EventQueue.EVENT_TYPE_CREATE) then
 			self:process(e)
 		end
 

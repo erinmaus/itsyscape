@@ -1106,6 +1106,10 @@ function LocalStage:movePeep(peep, path, anchor)
 	return instance
 end
 
+local function _sortLayers(a, b)
+	return a.localLayer < b.localLayer
+end
+
 function LocalStage:loadMapResource(instance, filename, args)
 	args = args or {}
 	local layerName = self:buildLayerNameFromInstanceIDAndFilename(instance:getID(), instance:getFilename())
@@ -1119,33 +1123,47 @@ function LocalStage:loadMapResource(instance, filename, args)
 		meta = setfenv(chunk, {})() or {}
 	end
 
-	local baseLayer
+	local layers = {}
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do
 		local localLayer = item:match(".*(-?%d)%.lmap$")
 		if localLayer then
 			localLayer = tonumber(localLayer)
 
-			local tileSetID
-			if meta[localLayer] then
-				tileSetID = meta[localLayer].tileSetID
-			end
-
-			local layerMeta = meta[localLayer] or {}
-
-			local globalLayer = self:newLayer(instance)
-			baseLayer = baseLayer or globalLayer
-			instance:addLayer(globalLayer, args.isInstancedToPlayer and args.player)
-
-			self:loadMapFromFile(directoryPath .. "/" .. item, globalLayer, layerMeta.tileSetID, layerMeta.maskID, layerMeta)
+			table.insert(layers, { localLayer = localLayer, filename = item })
 		end
+	end
+	table.sort(layers, _sortLayers)
+
+	local group = instance:newMapGroup()
+	local baseLayer
+
+	for i, l in ipairs(layers) do
+		local localLayer = l.localLayer
+		local filename = l.filename
+
+		if localLayer ~= i then
+			error(string.format("incorrectly ordered map (expected %d): '%s/%s'", i, directoryPath, filename))
+		end
+
+		local tileSetID
+		if meta[localLayer] then
+			tileSetID = meta[localLayer].tileSetID
+		end
+
+		local layerMeta = meta[localLayer] or {}
+
+		local globalLayer = self:newLayer(instance)
+		baseLayer = baseLayer or globalLayer
+		instance:addLayer(globalLayer, group, args.isInstancedToPlayer and args.player)
+
+		self:loadMapFromFile(directoryPath .. "/" .. filename, globalLayer, layerMeta.tileSetID, layerMeta.maskID, layerMeta)
+		self:spawnGround(layerName, globalLayer)
 	end
 
 	if not baseLayer then
 		baseLayer = self:newLayer(instance)
 		instance:addLayer(baseLayer)
 	end
-
-	self:spawnGround(layerName, baseLayer)
 
 	if not instance:getBaseLayer() then
 		instance:setBaseLayer(baseLayer)
@@ -1190,7 +1208,9 @@ function LocalStage:loadMapResource(instance, filename, args)
 		})
 
 		for i = 1, #objects do
-			self:instantiateMapObject(objects[i]:get("Resource"), baseLayer, layerName, args.isLayer)
+			local localLayer = math.max(objects[i]:get("Layer"), 1)
+			local globalLayer = instance:getGlobalLayerFromLocalLayer(group, localLayer) or baseLayer
+			self:instantiateMapObject(objects[i]:get("Resource"), globalLayer, layerName, args.isLayer)
 		end
 
 		do
@@ -1217,6 +1237,51 @@ function LocalStage:loadMapResource(instance, filename, args)
 			end
 
 			mapScript = peep
+		end
+
+		for _, l in ipairs(layers) do
+			local localLayer = l.localLayer
+			local globalLayer = instance:getGlobalLayerFromLocalLayer(group, localLayer)
+
+			local layerMeta = meta[localLayer]
+			local currentMapScript = instance:getMapScriptByLayer(globalLayer)
+
+			if not currentMapScript then
+				local peep = self.game:getDirector():addPeep(
+					layerName,
+					require "ItsyScape.Peep.Peeps.Map",
+					resource)
+
+				peep:listen('ready', function(self)
+					self:poke('load', filename, args or {}, globalLayer)
+				end)
+
+				instance:addMapScript(globalLayer, peep, nil)
+
+				local _, m = peep:addBehavior(MapResourceReferenceBehavior)
+				m.map = resource
+
+				if args.isInstancedToPlayer and args.player then
+					local _, instancedBehavior = peep:addBehavior(InstancedBehavior)
+					instancedBehavior.playerID = args.player:getID()
+				end
+
+				currentMapScript = peep
+			end
+
+			local _, offset = currentMapScript:addBehavior(MapOffsetBehavior)
+			if localLayer > 1 then
+				offset.parentLayer = baseLayer
+			end
+
+			if layerMeta.transform then
+				offset.origin = Vector(unpack(layerMeta.transform.origin or {}))
+				offset.offset = Vector(unpack(layerMeta.transform.translation or {}))
+				offset.rotation = Quaternion(unpack(layerMeta.transform.rotation or {}))
+				offset.scale = Vector(unpack(layerMeta.transform.scale or {}))
+
+				print("???", localLayer, globalLayer, Log.dump(offset))
+			end
 		end
 	end
 
@@ -1610,10 +1675,8 @@ function LocalStage:updateMapPositions()
 				if offset then
 					rotation = rotation * offset.rotation
 					scale = scale * offset.scale
-
-					offset = offset.offset
-				else
-					offset = Vector.ZERO
+					origin = origin + offset.origin
+					position = position + offset.offset
 				end
 
 				local disabled = mapScript:hasBehavior(DisabledBehavior)
@@ -1625,7 +1688,6 @@ function LocalStage:updateMapPositions()
 					          currentTransform.rotation ~= rotation or
 					          currentTransform.scale ~= scale or
 					          currentTransform.origin ~= origin or
-					          currentTransform.offset ~= offset or
 					          currentTransform.disabled ~= disabled
 				else
 					didMove = true
@@ -1636,12 +1698,11 @@ function LocalStage:updateMapPositions()
 					rotation = rotation,
 					scale = scale,
 					origin = origin,
-					offset = offset,
 					disabled = disabled
 				}
 
 				if didMove then
-					self.onMapMoved(self, layer, position + offset, rotation, scale, origin, disabled)
+					self.onMapMoved(self, layer, position, rotation, scale, origin, disabled)
 				end
 			end
 		end

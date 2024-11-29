@@ -225,6 +225,9 @@ function Instance:new(id, filename, stage)
 	self.layersByID = {}
 	self.layersPendingRemovalByID = {}
 	self.mapScripts = {}
+	self.mapGroups = {}
+	self.layerToMapGroup = {}
+	self.currentMapGroup = 1
 
 	self.players = {}
 	self.playersByID = {}
@@ -791,11 +794,42 @@ function Instance:hasLayer(layer, player)
 	end
 end
 
-function Instance:addLayer(layer, player)
+function Instance:newMapGroup()
+	local result = self.currentMapGroup
+	self.currentMapGroup = self.currentMapGroup + 1
+
+	self.mapGroups[result] = {}
+
+	return result
+end
+
+function Instance:getMapGroup(layer)
+	return self.layerToMapGroup[layer]
+end
+
+function Instance:getGlobalLayerFromLocalLayer(group, index)
+	if not group then
+		return
+	end
+
+	local g = self.mapGroups[group]
+	if not g then
+		return
+	end
+
+	return g[index]
+end
+
+function Instance:addLayer(layer, group, player)
 	if not self:hasLayer(layer, true) then
 		Log.engine("Adding layer %d to instance %s (%d).", layer, self:getFilename(), self:getID())
 		self.layersByID[layer] = (player and player:getID()) or true
 		table.insert(self.layers, layer)
+
+		if group and self.mapGroups[group] then
+			table.insert(self.mapGroups[group], layer)
+			self.layerToMapGroup[layer] = group
+		end
 	end
 end
 
@@ -813,6 +847,21 @@ function Instance:removeLayer(layer)
 
 			self:removeMapScript(layer)
 
+			local group = self.layerToMapGroup[layer]
+			if group and self.mapGroups[group] then
+				for i, l in ipairs(self.mapGroups[group]) do
+					if l == layer then
+						table.remove(self.mapGroups[group], i)
+						break
+					end
+				end
+
+				if #self.mapGroups[group] == 0 then
+					self.mapGroups[group] = nil
+				end
+			end
+
+			self.layerToMapGroup[layer] = nil
 			break
 		end
 	end

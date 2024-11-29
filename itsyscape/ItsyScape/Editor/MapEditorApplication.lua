@@ -578,7 +578,7 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 	layer = layer or self.motionLayer or self.currentLayer
 
 	local ray = self:shoot(x, y)
-	local mapSceneNode = self:getGameView():getMapSceneNode(self.motionLayer)
+	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
 	if mapSceneNode then
 		local transform = mapSceneNode:getTransform():getGlobalTransform()
 		
@@ -785,7 +785,7 @@ function MapEditorApplication:mousePress(x, y, button)
 				if not self.lastProp then
 					local prop = self.propPalette:getCurrentProp()
 					if prop then
-						local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, 1, "::orphan")
+						local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, self.currentLayer, "::orphan")
 						if s then
 							local motion = MapMotion(self:getGame():getStage():getMap(self.currentLayer))
 							motion:onMousePressed(self:makeMotionEvent(x, y, button, self.currentLayer))
@@ -965,7 +965,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					layer = k
 
 					motion = MapMotion(self:getGame():getStage():getMap(layer))
-					motion:onMousePressed(self:makeMotionEvent(x, y, 1))
+					motion:onMousePressed(self:makeMotionEvent(x, y, 1, layer))
 				end
 
 				if motion and layer then
@@ -1755,7 +1755,7 @@ function MapEditorApplication:save(filename)
 				local translation = Utility.Peep.getPosition(mapScriptPeep)
 				local rotation = Utility.Peep.getRotation(mapScriptPeep)
 				local scale = Utility.Peep.getScale(mapScriptPeep)
-				local offset = mapScriptPeep:hasBehavior(OriginBehavior) and mapScriptPeep:getBehavior(OriginBehavior).origin
+				local origin = mapScriptPeep:hasBehavior(OriginBehavior) and mapScriptPeep:getBehavior(OriginBehavior).origin
 
 				meta[layers[i]] = {
 					tileSetID = tileSetID,
@@ -1765,7 +1765,7 @@ function MapEditorApplication:save(filename)
 						translation = { translation:get() },
 						rotation = { rotation:get() },
 						scale = { scale:get() },
-						offset = { (offset or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
+						origin = { (origin or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
 					},
 					curve = self.mapScriptCurves[layers[i]]
 				}
@@ -1792,7 +1792,7 @@ function MapEditorApplication:save(filename)
 			end
 
 			table.sort(props, function(a, b)
-				return self.gpropNames[a] < self.propNames[b]
+				return self.propNames[a] < self.propNames[b]
 			end)
 
 			for _, prop in ipairs(props) do
@@ -1924,7 +1924,7 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 				Utility.Peep.setScale(peep, Vector(unpack(layerMeta.transform.scale or {})))
 
 				local _, origin = peep:addBehavior(OriginBehavior)
-				origin.origin = Vector(unpack(layerMeta.transform.offset))
+				origin.origin = Vector(unpack(layerMeta.transform.origin or {}))
 
 				stage:onMapMoved(
 					realLayer,
