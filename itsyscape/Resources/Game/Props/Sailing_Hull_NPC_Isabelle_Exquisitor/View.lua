@@ -58,6 +58,23 @@ Hull.STATE = {
 			color = { Color.fromHexString("614433"):get() },
 			outlineColor = { Color.fromHexString("aaaaaa"):get() },
 			outlineThreshold = 0.3
+		},
+		{
+			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
+			group = "window.trim",
+			color = { Color.fromHexString("614433"):get() },
+			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Window_Trim.png",
+			outlineColor = { Color.fromHexString("aaaaaa"):get() },
+			outlineThreshold = 0.3
+		},
+		{
+			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
+			group = "window.glass",
+			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Window_Glass.png",
+			color = { Color.fromHexString("d5f6ff", 0.5):get() },
+			outlineColor = { Color.fromHexString("aaaaaa"):get() },
+			outlineThreshold = -1,
+			isZWriteDisabled = true
 		}
 	}
 }

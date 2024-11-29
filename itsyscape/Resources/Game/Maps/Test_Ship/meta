@@ -3,22 +3,84 @@
 		tileSetID = "YendorianJungle",
 		transform =
 		{
+			origin =
+			{
+				30,
+				0,
+				8,
+			},
 			scale =
 			{
 				1,
 				1,
 				1,
 			},
-			offset =
+			translation =
+			{
+				0,
+				0,
+				0,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+		},
+	},
+	{
+		tileSetID = "YendorianJungle",
+		transform =
+		{
+			origin =
+			{
+				10,
+				0,
+				8,
+			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			translation =
+			{
+				40.750000,
+				4,
+				0,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+		},
+	},
+	{
+		tileSetID = "YendorianJungle",
+		transform =
+		{
+			origin =
 			{
 				30,
 				0,
 				8,
 			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 			translation =
 			{
 				0,
-				0,
+				-4.500000,
 				0,
 			},
 			rotation =

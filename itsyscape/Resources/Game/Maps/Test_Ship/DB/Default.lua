@@ -26,4 +26,29 @@ do
 	}
 end
 
+M["Sailing_Player_CommonHelm2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3.000000,
+		PositionY = 0.000000,
+		PositionZ = 8.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Sailing_Player_CommonHelm2",
+		Map = M._MAP,
+		Layer = 2,
+		Resource = M["Sailing_Player_CommonHelm2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Sailing_Player_CommonHelm",
+		MapObject = M["Sailing_Player_CommonHelm2"]
+	}
+end
+
 return M
