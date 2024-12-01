@@ -1,0 +1,18 @@
+{
+	"RAILING_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFilligree/Model.lstatic",
+			"group": "rail.stern",
+			"texture": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFilligree/Rail_Stern.png",
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFilligree/Model.lstatic",
+			"group": "rail.bow",
+			"texture": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFilligree/Rail_Bow.png",
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		}
+	],
+}

@@ -14,9 +14,6 @@ local SailingItemView = require "Resources.Game.Props.Common.SailingItemView"
 
 local HelmView = Class(SailingItemView)
 
-HelmView.STATIC_ATTACHMENTS = {}
-HelmView.WHEEL_ATTACHMENTS = {}
-
 HelmView.WHEEL_OFFSET = Vector(0, 1.2, -0.3)
 
 HelmView.ROTATION_MULTIPLIER = math.pi * 3

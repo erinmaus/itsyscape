@@ -1,0 +1,19 @@
+{
+	"WINDOW_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Window_Galleon_ExquisiteFilligree/Model.lstatic",
+			"group": "window.trim",
+			"colorIndex": 1,
+			"texture": "Resources/Game/SailingItems/Window_Galleon_ExquisiteFilligree/Window_Trim.png",
+			"outlineThreshold": 0.3
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Window_Galleon_ExquisiteFilligree/Model.lstatic",
+			"group": "window.glass",
+			"texture": "Resources/Game/SailingItems/Window_Galleon_ExquisiteFilligree/Window_Glass.png",
+			"colorIndex": 2,
+			"outlineThreshold": -1,
+			"isZWriteDisabled": true
+		}
+	]
+}

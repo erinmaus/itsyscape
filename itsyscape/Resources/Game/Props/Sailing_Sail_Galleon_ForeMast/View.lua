@@ -13,11 +13,11 @@ local SailView = require "Resources.Game.Props.Common.SailView"
 local GalleonSail = Class(SailView)
 
 function GalleonSail:getSizeClass()
-	return "Galleon"
+	return SailView.SIZE_CLASS_GALLEON
 end
 
 function GalleonSail:getPositionType()
-	return "Fore"
+	return SailView.POSITION_TYPE_FORE
 end
 
 return GalleonSail

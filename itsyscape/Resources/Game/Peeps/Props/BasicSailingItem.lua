@@ -13,6 +13,7 @@ local ColorBehavior = require "ItsyScape.Peep.Behaviors.ColorBehavior"
 local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local SkyBehavior = require "ItsyScape.Peep.Behaviors.SkyBehavior"
+local SailingResourceBehavior = require "ItsyScape.Peep.Behaviors.SailingResourceBehavior"
 
 local BasicSailingItem = Class(PassableProp)
 
@@ -28,6 +29,7 @@ function BasicSailingItem:getPropState()
 	local shipLayer = instance and mapGroup and instance:getGlobalLayerFromLocalLayer(mapGroup, 1)
 	local shipMapScript = instance and shipLayer and instance:getMapScriptByLayer(baseLayer)
 	local shipMovement = shipMapScript:getBehavior(ShipMovementBehavior)
+	local shipResource = shipMapScript and shipMapScript:getBehavior(SailingResourceBehavior)
 
 	local baseMapScript = instance:getBaseMapScript()
 	local baseMapSky = baseMapScript and baseMapScript:getBehavior(SkyBehavior)
@@ -37,8 +39,6 @@ function BasicSailingItem:getPropState()
 	local windDotShip = windDirection:dot(shipDirection)
 	local power = math.max(windDotShip, 0)
 
-	local resource = Utility.Peep.getResource(self)
-
 	local colors = self:getBehavior(ColorBehavior)
 
 	return {
@@ -46,7 +46,7 @@ function BasicSailingItem:getPropState()
 		secondary = { (colors.secondaries[1] or Color()):get() },
 
 		-- new stuff
-		resource = resource and resource.name or false,
+		resource = shipResource and shipResource.resource and shipResource.resource.name or false,
 
 		shipState = {
 			rudderDirection = shipMovement and shipMovement.steerDirection or 0,
