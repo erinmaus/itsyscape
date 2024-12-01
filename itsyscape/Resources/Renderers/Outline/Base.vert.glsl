@@ -17,6 +17,8 @@ precision highp float;
 
 #include "Resources/Shaders/RendererPass.common.glsl"
 
+#define SCAPE_OUTLINE_PASS 1
+
 attribute vec3 VertexNormal;
 attribute vec2 VertexTexture;
 
