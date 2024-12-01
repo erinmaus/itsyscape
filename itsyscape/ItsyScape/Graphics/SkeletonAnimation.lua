@@ -263,4 +263,42 @@ function SkeletonAnimation:applyBindPose(time, transforms, index)
 	transform:apply(bone:getInverseBindPose())
 end
 
+function SkeletonAnimation.blend(skeleton, fromAnimation, fromTime, toAnimation, toTime, duration)
+	local definition = { _version = 2 }
+
+	for i = 1, skeleton:getNumBones() do
+		local bone = skeleton:getBoneByIndex(i)
+		local boneName = bone:getName()
+
+		local previousBoneFrame = fromAnimation:getInterpolatedBoneFrameAtTime(boneName, fromTime)
+		local currentBoneFrame = toAnimation:getInterpolatedBoneFrameAtTime(boneName, toTime)
+
+		if previousBoneFrame or currentBoneFrame then
+			previousBoneFrame = previousBoneFrame or currentBoneFrame
+			currentBoneFrame = currentBoneFrame or previousBoneFrame
+
+			local blendFrame = {
+				translation = {
+					{ time = 0, previousBoneFrame:getTranslation():get() },
+					{ time = duration, currentBoneFrame:getTranslation():get() }
+				},
+
+				rotation = {
+					{ time = 0, previousBoneFrame:getRotation():get() },
+					{ time = duration, currentBoneFrame:getRotation():get() }
+				},
+
+				scale = {
+					{ time = 0, previousBoneFrame:getScale():get() },
+					{ time = duration, currentBoneFrame:getScale():get() }
+				}
+			}
+
+			definition[boneName] = blendFrame
+		end
+	end
+
+	return SkeletonAnimation(definition, skeleton)
+end
+
 return SkeletonAnimation
