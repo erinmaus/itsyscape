@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local json = require "json"
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
@@ -16,6 +17,34 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local SailingItemView = Class(PropView)
+
+function SailingItemView:getAttachments()
+	local state = self:getProp():getState()
+	local resource = state and state.resource
+
+	if not resource then
+		return {}
+	end
+
+	if resource == self._resource then
+		return self._attachments
+	end
+
+	local attachmentsFilename = string.format("Resources/Game/SailingItems/%s/Attachments.json")
+	if not love.filesystem.getInfo(attachmentsFilename) then
+		return {}
+	end
+
+	local attachments = json.decode(love.filesystem.read(attachmentsFilename))
+	if not attachments then
+		return {}
+	end
+
+	self._attachments = attachments
+	self._resource = resource
+
+	return self._attachments
+end
 
 function SailingItemView:updateAttachments(nodes, attachments)
 	local state = self:getProp():getState()

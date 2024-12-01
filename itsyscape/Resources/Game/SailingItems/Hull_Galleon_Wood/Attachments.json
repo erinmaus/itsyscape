@@ -1,0 +1,25 @@
+{
+	"HULL_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Hull_Galleon_Wood/Model.lstatic",
+			"group": "hull.interior",
+			"texture": "Resources/Game/SailingItems/Hull_Galleon_Wood/Texture.png",
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Hull_Galleon_Wood/Model.lstatic",
+			"group": "hull.exterior",
+			"texture": "Resources/Game/SailingItems/Hull_Galleon_Wood/Texture.png",
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		}
+		{
+			"mesh": "Resources/Game/SailingItems/Hull_Galleon_Wood/Model_Stairs.lstatic",
+			"group": "stern.stairs",
+			"texture": "Resources/Game/SailingItems/Hull_Galleon_Wood/Texture.png",
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		}
+	]
+}

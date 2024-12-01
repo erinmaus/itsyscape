@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Sailing_CommonHelm_Default/View.lua
+-- ItsyScape/Peep/Behaviors/SailingResourceBehavior.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -7,9 +7,16 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local Class = require "ItsyScape.Common.Class"
-local HelmView = require "Resources.Game.Props.Common.HelmView"
 
-local CommonHelm = Class(HelmView)
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Behavior = require "ItsyScape.Peep.Behavior"
 
-return CommonHelm
+local SailingResourceBehavior = Behavior("SailingResource")
+
+function SailingResourceBehavior:new()
+	Behavior.Type.new(self)
+
+	self.resource = false
+end
+
+return SailingResourceBehavior

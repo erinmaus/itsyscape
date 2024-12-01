@@ -60,7 +60,7 @@ function SailView:getTextureResourcePath(filename)
 	local resource = state and state.resource
 	resource = resource or "Sail_Common"
 
-	return string.format("ItsyScape/Resources/Game/SailingItems/%s/%s", filename)
+	return string.format("ItsyScape/Resources/Game/SailingItems/%s/%s_%s", resource, self:getPositionType(), filename)
 end
 
 function SailView:load()
