@@ -8,6 +8,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
 local ColorBehavior = require "ItsyScape.Peep.Behaviors.ColorBehavior"
 local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
@@ -28,7 +31,7 @@ function BasicSailingItem:getPropState()
 	local mapGroup = instance and instance:getMapGroup(Utility.Peep.getLayer(self))
 	local shipLayer = instance and mapGroup and instance:getGlobalLayerFromLocalLayer(mapGroup, 1)
 	local shipMapScript = instance and shipLayer and instance:getMapScriptByLayer(baseLayer)
-	local shipMovement = shipMapScript:getBehavior(ShipMovementBehavior)
+	local shipMovement = shipMapScript and shipMapScript:getBehavior(ShipMovementBehavior)
 	local shipResource = shipMapScript and shipMapScript:getBehavior(SailingResourceBehavior)
 
 	local baseMapScript = instance:getBaseMapScript()

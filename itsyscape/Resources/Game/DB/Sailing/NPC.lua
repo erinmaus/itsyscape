@@ -8,6 +8,169 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+local ITEMS = {
+	{
+		type = "Capstan",
+		defaultPropID = "Sailing_Capstan",
+		items = {
+			{
+				id = "ExquisiteDragonBone",
+				name = "Exquisite dragon bone capstan",
+				description = "An expensive capstan made from mahogany and dragon bone."
+			}
+		}
+	},
+	{
+		type = "Figurehead",
+		defaultPropID = "Sailing_Figurehead",
+		items = {
+			{
+				id = "ExquisiteDragonSkull",
+				name = "Exquisite dragon skull figurehead",
+				description = "A figurehead made from the skull of an ancient dragon. Strike fear into your foes!"
+			}
+		}
+	},
+	{
+		type = "Helm",
+		defaultPropID = "Sailing_Helm",
+		items = {
+			{
+				id = "ExquisiteMahogany",
+				name = "Exquisite mahogany helm",
+				description = "The workmanship of this helm is unmatched."
+			}
+		}
+	},
+	{
+		type = "Hull",
+		defaultPropID = "Sailing_Hull",
+		items = {
+			{
+				id = "Galleon_Wood",
+				name = "Wooden galleon hull",
+				description = "A massive hull made from strong wood.",
+			}
+		}
+	},
+	{
+		type = "Mast",
+		slots = {
+			"ForeMast",
+			"MainMast",
+			"RearMast"
+		},
+		defaultPropID = {
+			ForeMast = "Sailing_ForeMast",
+			MainMast = "Sailing_MainMast",
+			RearMast = "Sailing_RearMast"
+		},
+		items = {
+			{
+				id = "ExquisiteMahogany",
+				name = "Exquisite mahogany mast",
+				description = "A strong mast made from mahogany."
+			}
+		}
+	},
+	{
+		type = "Rail",
+		defaultPropID = "Sailing_Rail",
+		items = {
+			{
+				id = "ExquisiteFiligree",
+				name = "Exquisite mahogany filigree",
+				description = "Mahogany rails adorned with wooden filigree."
+			}
+		}
+	},
+	{
+		type = "Sail",
+		slots = {
+			"Sail_ForeMast",
+			"Sail_MainMast",
+			"Sail_RearMast"
+		},
+		defaultPropID = {
+			Sail_ForeMast = "Sailing_Sail_ForeMast",
+			Sail_MainMast = "Sailing_Sail_MainMast",
+			Sail_RearMast = "Sailing_Sail_RearMast"
+		},
+		items = {
+			{
+				id = "ExquisiteFiligree",
+				name = "Exquisite mahogany filigree",
+				description = "Mahogany rails adorned with wooden filigree."
+			}
+		}
+	},
+	{
+		type = "Window",
+		defaultPropID = "Sailing_Window",
+		items = {
+			{
+				id = "Galleon_ExquisiteFiligree",
+				name = "Exquisite filigree window",
+				description = "Windows trimmed with mahogany and wooden filigree."
+			}
+		}
+	}
+}
+
+for _, itemGroup in ipairs(ITEMS) do
+	for _, item in ipairs(itemGroup.items) do
+		local SailingItemName = string.format("%s_%s", itemGroup.type, item.id)
+		local SailingItem = ItsyScape.Resource.SailingItem(SailingItemName)
+
+		ItsyScape.Meta.SailingItemDetails {
+			ItemGroup = "Hull",
+			Resource = SailingItem
+		}
+
+		ItsyScape.Meta.ResourceName {
+			Value = item.name,
+			Language = "en-US",
+			Resource = SailingItem
+		}
+
+		ItsyScape.Meta.ResourceDescription {
+			Value = item.description,
+			Language = "en-US",	
+			Resource = SailingItem
+		}
+
+		local slots = itemGroup.slots and itemGroup.slots or { itemGroup.type }
+		local defaultPropID = type(itemGroup.defaultPropID) == "string" and { [itemGroup.type] = itemGroup.defaultPropID } or itemGroup.defaultPropID
+
+		for index, slot in ipairs(slots) do
+			local PropName = string.format("%s_%s", slot, item.id)
+			local Prop = ItsyScape.Resource.Prop(PropName)
+
+			ItsyScape.Meta.PeepID {
+				Value = "Resources.Game.Peeps.Props.BasicSailingItem",
+				Resource = Prop
+			}
+
+			ItsyScape.Meta.ResourceName {
+				Value = item.name,
+				Language = "en-US",
+				Resource = Prop
+			}
+
+			ItsyScape.Meta.ResourceDescription {
+				Value = item.description,
+				Language = "en-US",	
+				Resource = Prop
+			}
+
+			ItsyScape.Meta.PropAlias {
+				Alias = ItsyScape.Resource.Prop(defaultPropID[slot]),
+				Resource = Prop
+			}
+		end
+	end
+end
+
 do
 	local HullItem = ItsyScape.Resource.SailingItem "Hull_NPC_Isabelle_Exquisitor"
 
@@ -34,7 +197,7 @@ do
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "An exquisite hull made from the finest of woods.",
-		Language = "en-US",
+		Language = "en-US",	
 		Resource = HullItem
 	}
 
@@ -104,116 +267,222 @@ do
 	}
 end
 
-local GalleonForeMastSailProp = ItsyScape.Resource.Prop "Sailing_Sail_Galleon_ForeMast"
+local ForeMastSailProp = ItsyScape.Resource.Prop "Sailing_Sail_ForeMast"
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BasicSailingItem",
-	Resource = GalleonForeMastSailProp
+	Resource = ForeMastSailProp
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Galleon foremast sail",
+	Value = "Foremast sail",
 	Language = "en-US",
-	Resource = GalleonForeMastSailProp
+	Resource = ForeMastSailProp
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Sails on a foremast for a Galleon size-class ship.",
+	Value = "Sails on a foremast for a ship.",
 	Language = "en-US",
-	Resource = GalleonForeMastSailProp
+	Resource = ForeMastSailProp
 }
 
-local GalleonRearMastSailProp = ItsyScape.Resource.Prop "Sailing_Sail_Galleon_RearMast"
+local RearMastSailProp = ItsyScape.Resource.Prop "Sailing_Sail_RearMast"
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BasicSailingItem",
-	Resource = GalleonRearMastSailProp
+	Resource = RearMastSailProp
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Galleon rearmast sail",
+	Value = "Rearmast sail",
 	Language = "en-US",
-	Resource = GalleonRearMastSailProp
+	Resource = RearMastSailProp
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Sails on a rearmast for a Galleon size-class ship.",
+	Value = "Sails on a rearmast for a ship.",
 	Language = "en-US",
-	Resource = GalleonRearMastSailProp
+	Resource = RearMastSailProp
 }
 
-local GalleonMainMastSailProp = ItsyScape.Resource.Prop "Sailing_Sail_Galleon_MainMast"
+local MainMastSailProp = ItsyScape.Resource.Prop "Sailing_Sail_MainMast"
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BasicSailingItem",
-	Resource = GalleonMainMastSailProp
+	Resource = MainMastSailProp
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Galleon mainmast sail",
+	Value = "Mainmast sail",
 	Language = "en-US",
-	Resource = GalleonMainMastSailProp
+	Resource = MainMastSailProp
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Sails on a mainmast for a Galleon size-class ship.",
+	Value = "Sails on a mainmast for a ship.",
 	Language = "en-US",
-	Resource = GalleonMainMastSailProp
+	Resource = MainMastSailProp
 }
 
-local GalleonForeMastSailProp = ItsyScape.Resource.Prop "Sailing_Galleon_ForeMast"
+local ForeMastSailProp = ItsyScape.Resource.Prop "Sailing_ForeMast"
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BasicSailingItem",
-	Resource = GalleonForeMastSailProp
+	Resource = ForeMastSailProp
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Galleon foremast",
+	Value = "Foremast",
 	Language = "en-US",
-	Resource = GalleonForeMastSailProp
+	Resource = ForeMastSailProp
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "The foremast for a Galleon size-class ship.",
+	Value = "The foremast for a ship.",
 	Language = "en-US",
-	Resource = GalleonForeMastSailProp
+	Resource = ForeMastSailProp
 }
 
-local GalleonRearMastSailProp = ItsyScape.Resource.Prop "Sailing_Galleon_RearMast"
+local RearMastSailProp = ItsyScape.Resource.Prop "Sailing_RearMast"
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BasicSailingItem",
-	Resource = GalleonRearMastSailProp
+	Resource = RearMastSailProp
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Galleon rearmast",
+	Value = "Rearmast",
 	Language = "en-US",
-	Resource = GalleonRearMastSailProp
+	Resource = RearMastSailProp
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "The rearmast for a Galleon size-class ship.",
+	Value = "The rearmast for a ship.",
 	Language = "en-US",
-	Resource = GalleonRearMastSailProp
+	Resource = RearMastSailProp
 }
 
-local GalleonMainMastSailProp = ItsyScape.Resource.Prop "Sailing_Galleon_MainMast"
+local MainMastSailProp = ItsyScape.Resource.Prop "Sailing_MainMast"
 
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BasicSailingItem",
-	Resource = GalleonMainMastSailProp
+	Resource = MainMastSailProp
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Galleon mainmast",
+	Value = "Mainmast",
 	Language = "en-US",
-	Resource = GalleonMainMastSailProp
+	Resource = MainMastSailProp
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "The mainmast for a Galleon size-class ship.",
+	Value = "The mainmast for a ship.",
 	Language = "en-US",
-	Resource = GalleonMainMastSailProp
+	Resource = MainMastSailProp
 }
+
+do
+	local SailingProp = ItsyScape.Resource.Prop "Sailing_Capstan"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicSailingItem",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Capstan",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Let's you raise and lower the anchor.",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+end
+
+do
+	local SailingProp = ItsyScape.Resource.Prop "Sailing_Figurehead"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicSailingItem",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Figurehead",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Looks cool.",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+end
+
+do
+	local SailingProp = ItsyScape.Resource.Prop "Sailing_Helm"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicSailingItem",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Helm",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Let's you steer the ship.",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+end
+
+do
+	local SailingProp = ItsyScape.Resource.Prop "Sailing_Hull"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicSailingItem",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Hull",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Keeps water out.",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+end
+
+do
+	local SailingProp = ItsyScape.Resource.Prop "Sailing_Window"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicSailingItem",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Window",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Lets you see out.",
+		Language = "en-US",
+		Resource = SailingProp
+	}
+end
+

@@ -24,7 +24,7 @@ HelmView.ROTATION_SPEED_RADIANS_PER_SECOND = math.pi
 HelmView.ROTATION_TWEEN_SPEED = 0.5
 
 function HelmView:load()
-	PropView.load(self)
+	SailingItemView.load(self)
 
 	local attachments = self:getAttachments()
 
@@ -51,7 +51,7 @@ function HelmView:_getRotation()
 end
 
 function HelmView:update(delta)
-	PropView.update(self, delta)
+	SailingItemView.update(self, delta)
 
 	local targetRotation = self:_getRotation()
 	if self.previousRotation ~= targetRotation and self.previousRotation == self.currentRotation then

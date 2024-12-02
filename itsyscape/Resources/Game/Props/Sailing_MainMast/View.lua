@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Sailing_Window/View/View.lua
+-- Resources/Game/Props/Sailing_MainMast/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,22 +12,22 @@ local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local SailingItemView = require "Resources.Game.Props.Common.SailingItemView"
 
-local WindowView = Class(SailingItemView)
+local MainMastView = Class(SailingItemView)
 
-function WindowView:load()
-	SailingItemView.load(self)
+function MainMastView:load()
+	PropView.load(self)
 
 	local attachments = self:getAttachments()
 	local root = self:getRoot()
 
-	self.staticNodes = self:loadAttachments(root, attachments.WINDOW_ATTACHMENTS)
+	self.staticNodes = self:loadAttachments(root, attachments.MAINMAST_ATTACHMENT)
 end
 
-function WindowView:update(delta)
-	SailingItemView.update(self, delta)
+function MainMastView:update(delta)
+	PropView.update(self, delta)
 
 	local attachments = self:getAttachments()
-	self:updateAttachments(self.staticNodes, attachments.WINDOW_ATTACHMENTS)
+	self:updateAttachments(self.staticNodes, attachments.MAINMAST_ATTACHMENT)
 end
 
-return WindowView
+return MainMastView
