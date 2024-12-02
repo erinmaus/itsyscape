@@ -51,7 +51,7 @@ function SailView:getPositionType()
 end
 
 function SailView:getCommonResourcePath(filename)
-	return string.format("ItsyScape/Resources/Game/SailingItems/Common/Sail/Sail_%s_%s_%s", self:getSizeClass(), self:getPositionType(), filename)
+	return string.format("Resources/Game/SailingItems/Common/Sail/Sail_%sMast_%s", self:getPositionType(), filename)
 end
 
 function SailView:getTextureResourcePath(filename)
@@ -60,7 +60,7 @@ function SailView:getTextureResourcePath(filename)
 	local resource = state and state.resource
 	resource = resource or "Sail_Common"
 
-	return string.format("ItsyScape/Resources/Game/SailingItems/%s/%s_%s", resource, self:getPositionType(), filename)
+	return string.format("Resources/Game/SailingItems/%s/%s_%s", resource, self:getPositionType(), filename)
 end
 
 function SailView:load()
@@ -89,13 +89,14 @@ function SailView:load()
 				SkeletonAnimationResource,
 				self:getCommonResourcePath("Animation_Wind.lanim"),
 				function(animation)
-					self.windAnimation = animation
-				end)
+					self.windAnimation = animation:getResource()
+				end,
+				self.skeleton:getResource())
 			resources:queue(
 				SkeletonAnimationResource,
 				self:getCommonResourcePath("Animation_Hoisted.lanim"),
 				function(animation)
-					self.hoistedAnimation = animation
+					self.hoistedAnimation = animation:getResource()
 				end,
 				skeleton:getResource())
 			resources:queueEvent(function()
@@ -154,10 +155,12 @@ function SailView:updateTextures()
 		local material = self.sailNode:getMaterial()
 
 		material:setTextures(self.staticTexture, self.customTexture)
-		material:send(material.UNIFORM_TEXTURE, "scape_CustomDiffuseTexture", self.customTexture)
+		material:send(material.UNIFORM_TEXTURE, "scape_CustomDiffuseTexture", self.customTexture:getResource())
 	end)
 
 	if state.colors then
+		local material = self.sailNode:getMaterial()
+
 		if state.colors[1] then
 			material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", state.colors[1])
 		end
@@ -190,7 +193,7 @@ end
 -- end
 
 function SailView:getShipState()
-	return self:getShipState().shipState
+	return self:getProp():getState().shipState
 end
 
 function SailView:updateState()
@@ -222,7 +225,7 @@ function SailView:applyAnimation(time, animation)
 end
 
 function SailView:updateAnimation(delta)
-	local blendHoist = self.hoistedAnimation < self.HOIST_ANIMATION_DURATION
+	local blendHoist = self.hoistedTime < self.HOIST_ANIMATION_DURATION
 
 	local currentAnimation, currentTime
 	if blendHoist then
@@ -254,7 +257,7 @@ function SailView:updateAnimation(delta)
 			currentTime = self.power * self.windAnimation:getDuration()
 		end
 	end
-	self:applyAnimation(currentAnimation, currentTime)
+	self:applyAnimation(currentTime, currentAnimation)
 
 	self.hoistedTime = math.min(self.hoistedTime + delta, self.HOIST_ANIMATION_DURATION)
 end
