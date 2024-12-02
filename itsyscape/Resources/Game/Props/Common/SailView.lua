@@ -162,13 +162,29 @@ function SailView:updateTextures()
 		local material = self.sailNode:getMaterial()
 
 		if state.colors[1] then
-			material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", state.colors[1])
+			--material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", state.colors[1])
+			material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", Color.fromHexString("b3002a"):get())
 		end
 
 		if state.colors[2] then
-			material:send(material.UNIFORM_FLOAT, "scape_SecondaryColor", state.colors[2])
+			--material:send(material.UNIFORM_FLOAT, "scape_SecondaryColor", state.colors[2])
+			material:send(material.UNIFORM_FLOAT, "scape_SecondaryColor", Color.fromHexString("ffa100"):get())
 		end
 	end
+end
+
+function SailView:updateWind()
+	local _, layer = self:getProp():getPosition()
+	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+
+	local material = self.sailNode:getMaterial()
+	material:send(material.UNIFORM_FLOAT, "scape_BumpForce", 0)
+	material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
+	material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
+	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
+	material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", 2)
+	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 2.0, 2.0, 2.0, 2.0)
+	material:send(material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
 end
 
 -- function SailView:getWorldPosition(modelPosition, boneWeights)
@@ -202,12 +218,13 @@ function SailView:updateState()
 		return
 	end
 
-	local hoisted = state.sailsHoisted
+	local hoisted = state.sailsHoisted or love.keyboard.isDown("p")
 	if self.hoisted ~= hoisted then
 		self:hoist(hoisted)
 	end
 
-	self.power = state.windPower or 0
+	--self.power = state.windPower or 0
+	self.power = math.clamp(love.mouse.getPosition() / love.graphics.getWidth())
 end
 
 function SailView:hoist(hoisted)
@@ -240,6 +257,9 @@ function SailView:updateAnimation(delta)
 			fromTime, toTime = toTime, fromTime
 		end
 
+		local hoistedDelta = self.hoistedTime / self.HOIST_ANIMATION_DURATION
+		hoistedDelta = Tween.sineEaseOut(hoistedDelta)
+
 		currentAnimation = SkeletonAnimation.blend(
 			self.skeleton:getResource(),
 			fromAnimation,
@@ -247,7 +267,7 @@ function SailView:updateAnimation(delta)
 			toAnimation,
 			toTime,
 			self.HOIST_ANIMATION_DURATION)
-		currentTime = self.hoistedTime
+		currentTime = hoistedDelta * self.HOIST_ANIMATION_DURATION
 	else
 		if self.hoisted then
 			currentAnimation = self.hoistedAnimation
@@ -266,6 +286,7 @@ function SailView:tick()
 	PropView.tick(self)
 
 	self:updateTextures()
+	self:updateWind()
 end
 
 function SailView:update(delta)

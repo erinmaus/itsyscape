@@ -1,6 +1,5 @@
 {
 	{
-		tileSetID = "YendorianJungle",
 		transform =
 		{
 			origin =
@@ -9,10 +8,11 @@
 				0,
 				8,
 			},
-			scale =
+			rotation =
 			{
-				1,
-				1,
+				0,
+				0,
+				0,
 				1,
 			},
 			translation =
@@ -21,17 +21,16 @@
 				0,
 				0,
 			},
-			rotation =
+			scale =
 			{
-				0,
-				0,
-				0,
+				1,
+				1,
 				1,
 			},
 		},
+		tileSetID = "YendorianJungle",
 	},
 	{
-		tileSetID = "YendorianJungle",
 		transform =
 		{
 			origin =
@@ -40,10 +39,11 @@
 				0,
 				8,
 			},
-			scale =
+			rotation =
 			{
-				1,
-				1,
+				0,
+				0,
+				0,
 				1,
 			},
 			translation =
@@ -52,17 +52,16 @@
 				4,
 				0,
 			},
-			rotation =
+			scale =
 			{
-				0,
-				0,
-				0,
+				1,
+				1,
 				1,
 			},
 		},
+		tileSetID = "YendorianJungle",
 	},
 	{
-		tileSetID = "YendorianJungle",
 		transform =
 		{
 			origin =
@@ -71,10 +70,11 @@
 				0,
 				8,
 			},
-			scale =
+			rotation =
 			{
-				1,
-				1,
+				0,
+				0,
+				0,
 				1,
 			},
 			translation =
@@ -83,13 +83,13 @@
 				-4.500000,
 				0,
 			},
-			rotation =
+			scale =
 			{
-				0,
-				0,
-				0,
+				1,
+				1,
 				1,
 			},
 		},
+		tileSetID = "YendorianJungle",
 	},
 }
