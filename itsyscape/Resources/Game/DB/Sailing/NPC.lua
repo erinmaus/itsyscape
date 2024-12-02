@@ -98,9 +98,9 @@ local ITEMS = {
 		},
 		items = {
 			{
-				id = "ExquisiteFiligree",
-				name = "Exquisite mahogany filigree",
-				description = "Mahogany rails adorned with wooden filigree."
+				id = "VelvetDragon",
+				name = "Velvet dragon sails",
+				description = "Sails made from an enchanted velvet featuring a mysterious dragon skull."
 			}
 		}
 	},
