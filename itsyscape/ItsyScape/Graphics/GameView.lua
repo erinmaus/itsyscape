@@ -1154,7 +1154,7 @@ function GameView:getWind(layer)
 	if m then
 		return (m.meta.windDirection and Vector(unpack(m.meta.windDirection)) or Vector(-1, 0, -1)):getNormal(),
 		       m.meta.windSpeed or 4,
-		       m.meta.windPattern and vector(m.meta.windPattern) or Vector(5, 10, 15),
+		       m.meta.windPattern and Vector(unpack(m.meta.windPattern)) or Vector(5, 10, 15),
 		       m.bumpCanvas
 	end
 

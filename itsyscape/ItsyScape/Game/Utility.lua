@@ -2090,9 +2090,9 @@ function Utility.Map.getWind(game, layer)
 	local mapInfo = instance:getMap(layer)
 	local meta = mapInfo and mapInfo:getMeta()
 
-	return (meta.windDirection and Vector(unpack(meta.windDirection)) or Vector(-1, 0, -1)):getNormal(),
-	       meta.windSpeed or 4,
-	       meta.windPattern and vector(meta.windPattern) or Vector(5, 10, 15)
+	return (meta and meta.windDirection and Vector(unpack(meta.windDirection)) or Vector(-1, 0, -1)):getNormal(),
+	       meta and meta.windSpeed or 4,
+	       meta and meta.windPattern and Vector(unpack(meta.windPattern)) or Vector(5, 10, 15)
 end
 
 function Utility.Map.transformWorldPositionByWind(time, windSpeed, windDirection, windPattern, previousWorldPosition, currentWorldPosition, normal)
@@ -2108,7 +2108,7 @@ function Utility.Map.transformWorldPositionByWind(time, windSpeed, windDirection
 	return transformedRelativePosition + previousWorldPosition, normal, currentWindRotation
 end
 
-function Utility.Map.transformWorldPositionByWave(time, windSpeed, windDirection, windPattern, previousWorldPosition, currentWorldPosition, normal)
+function Utility.Map.transformWorldPositionByWave(time, windSpeed, windDirection, windPattern, previousWorldPosition, currentWorldPosition)
 	local windDelta = time * windSpeed
 	local windDeltaCoordinate = windDirection * Vector(windDelta) + currentWorldPosition
 	local windMu = (math.sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.x) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.y) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.z) + 1.0) / 2.0
