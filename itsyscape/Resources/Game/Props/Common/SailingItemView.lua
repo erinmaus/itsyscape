@@ -56,10 +56,14 @@ function SailingItemView:updateAttachments(nodes, attachments)
 
 	for index, attachment in ipairs(attachments) do
 		local color = colors[attachment.colorIndex]
+		local alpha = attachments.alpha
 		local node = nodes[index]
 
 		if node and color then
-			node:getMaterial():setColor(Color(unpack(color)))
+			local color = Color(unpack(color))
+			color.a = alpha or 1
+
+			node:getMaterial():setColor(color)
 		end
 	end
 end

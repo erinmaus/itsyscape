@@ -12,6 +12,7 @@
 			"group": "window.glass",
 			"texture": "Resources/Game/SailingItems/Window_Galleon_ExquisiteFilligree/Window_Glass.png",
 			"colorIndex": 2,
+			"alpha": 0.5,
 			"outlineThreshold": -1,
 			"isZWriteDisabled": true
 		}

@@ -410,7 +410,7 @@ function RandomEvent:onLoad(...)
 	local gameDB = self:getDirector():getGameDB()
 	local player = Utility.Peep.getPlayer(self)
 
-	local scout = gameDB:getResource("RandomEvent_RumbridgeNavyScout", "SailingShip") 
+	local scout = gameDB:getResource("RandomEvent_RumbridgeNavyScout", "SailingShip")
 	local _, ship = Utility.Map.spawnShip(
 		self,
 		"Ship_NPC1",

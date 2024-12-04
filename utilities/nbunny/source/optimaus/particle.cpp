@@ -82,6 +82,7 @@ public:
 	float z_range_center = 0.0f, z_range_width = 1.0f;
 	float min_lifetime = 0.0f, max_lifetime = 0.0f;
 	bool set_normal = false;
+	bool random_normal = false;
 
 	void update_local_position(const glm::vec3& value)
 	{
@@ -124,6 +125,7 @@ public:
 		z_range_width = z.get(2, 1.0f);
 
 		set_normal = table.get("normal", nbunny::lua::TemporaryReference()).get(1, false);
+		random_normal = table.get("randomNormal", nbunny::lua::TemporaryReference()).get(1, false);
 	}
 
 	void emit(nbunny::Particle& p)
@@ -162,7 +164,18 @@ public:
 
 		if (set_normal)
 		{
-			p.normal = -normal;
+			if (random_normal)
+			{
+				auto n = glm::vec3(
+					rng->random() * 2 - 1,
+					rng->random() * 2 - 1,
+					rng->random() * 2 - 1);
+				p.normal = n;
+			}
+			else
+			{
+				p.normal = -normal;
+			}
 		}
 	}
 };
@@ -685,17 +698,18 @@ nbunny::ParticleSceneNode::ParticleSceneNode(int reference) :
 	SceneNode(reference),
 	mesh_attribs({
 		{ "VertexPosition", love::graphics::vertex::DATA_FLOAT, 3 },
+		{ "ParticlePosition", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexNormal", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexTexture", love::graphics::vertex::DATA_FLOAT, 2 },
 		{ "VertexColor", love::graphics::vertex::DATA_FLOAT, 4 },
 	}),
 	quad({
-		{ glm::vec3( 1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
-		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) },
-		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) }
+		{ glm::vec3( 1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f) },
+		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
+		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) },
+		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
+		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) },
+		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) }
 	})
 {
 	// Nothing.
@@ -872,6 +886,7 @@ void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, const glm:
 
 		vertex.normal = glm::normalize(glm::rotate(self_rotation, glm::normalize(p.normal)));
 		vertex.position += p.position;
+		vertex.particle_position = p.position;
 		vertex.color = p.color;
 
 		if (!textures.empty())
@@ -1153,6 +1168,14 @@ int nbunny_particle_scene_node_clear(lua_State* L)
 	return 0;
 }
 
+int nbunny_particle_scene_node_emit(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	auto count = luaL_checkinteger(L, 2);
+	node->emit(count);
+	return 0;
+}
+
 int nbunny_particle_scene_node_play(lua_State* L)
 {
 	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
@@ -1247,6 +1270,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_particlescenenode(lua_State*
 		{ "initEmissionStrategyFromDef", &nbunny_particle_scene_node_init_emission_strategy_from_def },
 		{ "updateLocalPosition", &nbunny_particle_scene_node_update_local_position },
 		{ "updateLocalDirection", &nbunny_particle_scene_node_update_local_direction },
+		{ "emit", &nbunny_particle_scene_node_emit },
 		{ "pause", &nbunny_particle_scene_node_pause },
 		{ "play", &nbunny_particle_scene_node_play },
 		{ "getIsPlaying", &nbunny_particle_scene_node_get_is_playing },

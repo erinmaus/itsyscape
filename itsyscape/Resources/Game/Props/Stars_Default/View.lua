@@ -18,6 +18,7 @@ local Stars = Class(PropView)
 
 Stars.STAR_PARTICLE_SYSTEM = {
 	texture = "Resources/Game/Projectiles/Starfall/Particle.png",
+	numParticles = 2000,
 
 	emitters = {
 		{
