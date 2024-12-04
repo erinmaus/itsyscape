@@ -18,19 +18,16 @@ local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
+local WaterMesh = require "ItsyScape.World.WaterMesh"
 
 local EndlessWater = Class(PropView)
-EndlessWater.WHIRLPOOL_SHADER = ShaderResource()
-EndlessWater.WATER_SHADER = ShaderResource()
+EndlessWater.SHADER = ShaderResource()
 do
-	EndlessWater.WHIRLPOOL_SHADER:loadFromFile("Resources/Shaders/ReflectiveWater")
-	EndlessWater.WATER_SHADER:loadFromFile("Resources/Shaders/ReflectiveWater")
+	EndlessWater.SHADER:loadFromFile("Resources/Shaders/WhirlpoolWater")
 end
 
 EndlessWater.HOLE_COLOR = Color.fromHexString("87cdde")
 EndlessWater.FOAM_COLOR = Color.fromHexString("ffffff")
-
-EndlessWater.CUBE_MAP_FOV = math.rad(90)
 
 -- Size of map sector, in terms of unit (1 unit = cell size)
 EndlessWater.SIZE = 64
@@ -71,65 +68,30 @@ function EndlessWater:load()
 	self.waters = {}
 	for i = -EndlessWater.WIDTH, EndlessWater.WIDTH do
 		for j = -EndlessWater.HEIGHT, EndlessWater.HEIGHT do
-			resources:queueEvent(function()
-				local water = WaterMeshSceneNode()
-				water:generate(
-					nil,
-					i * EndlessWater.SIZE,
-					j * EndlessWater.SIZE,
-					EndlessWater.SIZE,
-					EndlessWater.SIZE,
-					1.5,
-					8)
-				water:getMaterial():setIsReflectiveOrRefractive(true)
-				water:getMaterial():setReflectionPower(1.0)
+			local water = WaterMeshSceneNode()
 
-				local function _onWillRender(renderer, delta)
-					local shader = renderer:getCurrentShader()
-					local state = self:getProp():getState()
+			local translation = Vector(
+				(i * EndlessWater.SIZE - 1) * 2,
+				0,
+				(j * EndlessWater.SIZE - 1) * 2)
+			water:getTransform():setLocalTranslation(translation)
 
-					if state.whirlpool then
-						for k, v in pairs(EndlessWater.WHIRLPOOL_PROPS) do
-							local prop = state.whirlpool[v]
-							if prop and shader:hasUniform(k) then
-								shader:send(k, prop)
-							end
-						end
-					end
+			water:getMaterial():setIsReflectiveOrRefractive(true)
+			water:getMaterial():setReflectionPower(1.0)
+			water:getMaterial():setShader(EndlessWater.SHADER)
+			water:setParent(self.waterParent)
 
-					-- if shader:hasUniform("scape_DepthTexture") then
-					-- 	shader:send("scape_DepthTexture", self:getGameView():getRenderer():getOutputBuffer():getDepthStencil())
-					-- end
-
-					-- if shader:hasUniform("scape_ReflectionMap") then
-					-- 	shader:send("scape_ReflectionMap", self.reflectionCanvas)
-					-- end
-
-					-- if shader:hasUniform("scape_ReflectionDepthMap") then
-					-- 	shader:send("scape_ReflectionDepthMap", self.reflectionDepthCanvas)
-					-- end
-
-					-- if shader:hasUniform("scape_SkyboxMap") then
-					-- 	shader:send("scape_SkyboxMap", self.skyboxCanvas)
-					-- end
-
-					if shader:hasUniform("scape_WhirlpoolHoleColor") then
-						shader:send("scape_WhirlpoolHoleColor", { EndlessWater.HOLE_COLOR:get() })
-					end
-
-					if shader:hasUniform("scape_WhirlpoolFoamColor") then
-						shader:send("scape_WhirlpoolFoamColor", { EndlessWater.FOAM_COLOR:get() })
-					end
-				end
-
-				water:setParent(self.waterParent)
-				water:getMaterial():setTextures(self.texture)
-				--water:onWillRender(_onWillRender)
-
-				table.insert(self.waters, water)
-			end)
+			table.insert(self.waters, water)
 		end
 	end
+
+	resources:queueEvent(function()
+		local waterMesh = WaterMesh(EndlessWater.SIZE * 2, EndlessWater.SIZE * 2, 8)
+		for _, water in ipairs(self.waters) do
+			water:setMesh(waterMesh)
+			water:getMaterial():setTextures(self.texture)
+		end
+	end)
 end
 
 function EndlessWater:tick()
@@ -143,8 +105,6 @@ function EndlessWater:tick()
 		local material = water:getMaterial()
 
 		if state.whirlpool and state.whirlpool.hasWhirlpool then
-			material:setShader(EndlessWater.WHIRLPOOL_SHADER)
-
 			for k, v in pairs(EndlessWater.WHIRLPOOL_PROPS) do
 				local prop = state.whirlpool[v]
 				if prop and shader:hasUniform(k) then
@@ -154,8 +114,9 @@ function EndlessWater:tick()
 
 			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolHoleColor", { EndlessWater.HOLE_COLOR:get() })
 			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolFoamColor", { EndlessWater.FOAM_COLOR:get() })
+			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolAlpha", 1.0)
 		else
-			material:setShader(EndlessWater.WATER_SHADER)
+			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolAlpha", 0.0)
 		end
 
 		if state.ocean and state.ocean.hasOcean then
@@ -169,8 +130,6 @@ function EndlessWater:tick()
 		material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
 		material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 		material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", state.ocean.offset)
-		material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 2.0, 2.0, 2.0, 2.0)
-		material:send(material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
 	end
 end
 

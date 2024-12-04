@@ -41,6 +41,7 @@ function Lightning:load()
 	self.lightningBeam:setParent(root)
 	self.lightningBeam:setBeamSize(0.5)
 	self.lightningBeam:getMaterial():setIsFullLit(true)
+	self.lightningBeam:getMaterial():setIsTranslucent(true)
 	self.lightningBeam:getMaterial():setColor(Lightning.COLOR)
 
 	self.fullPath = {}

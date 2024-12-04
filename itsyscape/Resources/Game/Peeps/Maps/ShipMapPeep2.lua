@@ -1,0 +1,87 @@
+--------------------------------------------------------------------------------
+-- Resources/Game/Peeps/Maps/ShipMapPeep2.lua
+--
+-- This file is a part of ItsyScape.
+--
+-- This Source Code Form is subject to the terms of the Mozilla Public
+-- License, v. 2.0. If a copy of the MPL was not distributed with this
+-- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+--------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
+local MapScript = require "ItsyScape.Peep.Peeps.Map"
+local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
+local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
+local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
+
+local ShipMapScript = Class(MapScript)
+
+function ShipMapScript:new(resource, name, ...)
+	MapScript.new(self, resource, name or 'ShipMapScript', ...)
+
+	self:addBehavior(PositionBehavior)
+	self:addBehavior(RotationBehavior)
+
+	self:addBehavior(BossStatsBehavior)
+	self:addBehavior(ShipMovementBehavior)
+	self:addBehavior(ShipStatsBehavior)
+
+	local _, movement = self:addBehavior(MovementBehavior)
+	movement.noClip = true
+
+	self:addPoke('hit')
+	self:addPoke('sink')
+	self:addPoke('sunk')
+	self:addPoke('beach')
+	self:addPoke('rock')
+	self:addPoke('leak')
+
+	self.isBeached = false
+end
+
+function ShipMapScript:onLoad(...)
+	MapScript.onLoad(self, ...)
+
+	local shipMovement = self:getBehavior(ShipMovementBehavior)
+	if shipMovement then
+		local map = self:getDirector():getMap(self:getLayer())
+		if map then
+			shipMovement.length = map:getWidth() * map:getCellSize()
+			shipMovement.beam = map:getHeight() * map:getCellSize()
+		end
+	end
+end
+
+function ShipMapScript:_updateRotation()
+	local game = self:getDirector():getGameInstance()
+
+	local position = self:getBehavior(PositionBehavior)
+	local layer = position and position.layer or self:getLayer()
+
+	local windDirection, windSpeed, windPattern = Utility.Map.getWind(game, layer)
+
+	local worldPosition = Utility.Peep.getPosition(self)
+	local _, _, rotation = Utility.Map.transformWorldPositionByWind(
+		love.timer.getTime(),
+		windSpeed,
+		windDirection,
+		windPattern,
+		worldPosition - Vector.UNIT_Y,
+		worldPosition)
+
+	Utility.Peep.setRotation(self, Quaternion.IDENTITY:slerp(rotation:getNormal(), 0.1):getNormal())
+end
+
+function ShipMapScript:update(director, game)
+	MapScript.update(self, director, game)
+
+	self:_updateRotation()
+end
+
+return ShipMapScript

@@ -23,13 +23,13 @@ ItsyScape.Meta.ShipSailingItem {
 	Green2 = METAL_COLOR.g,
 	Blue2 = METAL_COLOR.b,
 	IsColorCustomized = 1,
-	Slot = "Capstan",
+	ItemGroup = "Capstan",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Capstan_ExquisiteDragonBone"
 }
 
 ItsyScape.Meta.ShipSailingItem {
-	Slot = "Figurehead",
+	ItemGroup = "Figurehead",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Figurehead_ExquisiteDragonSkull"
 }
@@ -42,7 +42,7 @@ ItsyScape.Meta.ShipSailingItem {
 	Green2 = METAL_COLOR.g,
 	Blue2 = METAL_COLOR.b,
 	IsColorCustomized = 1,
-	Slot = "Figurehead",
+	ItemGroup = "Figurehead",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Helm_ExquisiteMahogany"
 }
@@ -52,7 +52,7 @@ ItsyScape.Meta.ShipSailingItem {
 	Green1 = WOOD_COLOR.g,
 	Blue1 = WOOD_COLOR.b,
 	IsColorCustomized = 1,
-	Slot = "Hull",
+	ItemGroup = "Hull",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Hull_Galleon_Wood"
 }
@@ -65,7 +65,7 @@ ItsyScape.Meta.ShipSailingItem {
 	Green2 = METAL_COLOR.g,
 	Blue2 = METAL_COLOR.b,
 	IsColorCustomized = 1,
-	Slot = "Mast",
+	ItemGroup = "Mast",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Mast_ExquisiteMahogany"
 }
@@ -75,7 +75,7 @@ ItsyScape.Meta.ShipSailingItem {
 	Green1 = WOOD_COLOR.g,
 	Blue1 = WOOD_COLOR.b,
 	IsColorCustomized = 1,
-	Slot = "Rail",
+	ItemGroup = "Rail",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Rail_ExquisiteFiligree"
 }
@@ -89,7 +89,7 @@ ItsyScape.Meta.ShipSailingItem {
 	Blue2 = GLASS_COLOR.b,
 	IsColorCustomized = 1,
 	HasAlpha = 1,
-	Slot = "Sail",
+	ItemGroup = "Sail",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Window_Galleon_ExquisiteFiligree"
 }

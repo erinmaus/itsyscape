@@ -33,6 +33,9 @@ function Ocean:onLoad(...)
 	Map.onLoad(self, ...)
 
 	Utility.Map.spawnMap(self, "Test123_Storm", Vector.ZERO, { isLayer = true })
+	local layer, ship = Utility.Map.spawnMap(self, "Test_Ship", Vector(0, 8, 0))
+
+	self.exquisitor = ship
 
 	-- local exquisitor = gameDB:getResource("NPC_Isabelle_Exquisitor", "SailingShip")
 	-- local _, ship = Utility.Map.spawnMap(
@@ -48,7 +51,7 @@ function Ocean:onLoad(...)
 end
 
 function Ocean:onPlayerEnter(player)
-	--self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.exquisitor)
+	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.exquisitor)
 end
 
 function Ocean:onPlayerLeave(player)
@@ -56,7 +59,9 @@ function Ocean:onPlayerLeave(player)
 end
 
 function Ocean:onPlacePlayer(playerPeep, anchor, ship)
-	Utility.Quest.listenForKeyItemHint(playerPeep, "PreTutorial")
+	if not ship then
+		return
+	end
 
 	local layer = ship:getLayer()
 	Utility.Peep.setLayer(playerPeep, layer)
@@ -80,12 +85,12 @@ function Ocean:onBoom(ship)
 
 	local director = self:getDirector()
 	local map = director:getMap(ship:getLayer())
+	if not map then
+		return
+	end
 
-	local i, j
-	--repeat
-		i = love.math.random(1, map:getWidth())
-		j = love.math.random(1, map:getHeight())
-	--until map:getTile(i, j):hasFlag("floor")
+	local i = love.math.random(1, map:getWidth())
+	local j = love.math.random(1, map:getHeight())
 
 	local position = Utility.Map.getAbsoluteTilePosition(director, i, j, ship:getLayer())
 

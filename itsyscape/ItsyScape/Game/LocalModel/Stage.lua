@@ -1677,6 +1677,11 @@ function LocalStage:updateMapPositions()
 					position = position + offset.offset
 				end
 
+				local parentLayer = false
+				if offset then
+					parentLayer = offset.parentLayer
+				end
+
 				local disabled = mapScript:hasBehavior(DisabledBehavior)
 
 				local didMove = false
@@ -1686,7 +1691,8 @@ function LocalStage:updateMapPositions()
 					          currentTransform.rotation ~= rotation or
 					          currentTransform.scale ~= scale or
 					          currentTransform.origin ~= origin or
-					          currentTransform.disabled ~= disabled
+					          currentTransform.disabled ~= disabled or
+					          currentTransform.parentLayer ~= parentLayer
 				else
 					didMove = true
 				end
@@ -1696,11 +1702,12 @@ function LocalStage:updateMapPositions()
 					rotation = rotation,
 					scale = scale,
 					origin = origin,
-					disabled = disabled
+					disabled = disabled,
+					parentLayer = parentLayer
 				}
 
 				if didMove then
-					self.onMapMoved(self, layer, position, rotation, scale, origin, disabled)
+					self.onMapMoved(self, layer, position, rotation, scale, origin, disabled, parentLayer)
 				end
 			end
 		end

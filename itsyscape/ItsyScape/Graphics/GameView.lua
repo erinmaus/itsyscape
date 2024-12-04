@@ -209,8 +209,8 @@ function GameView:attach(game)
 	end
 	stage.onMapModified:register(self._onMapModified)
 
-	self._onMapMoved = function(_, layer, position, rotation, scale, offset, disabled)
-		self:moveMap(layer, position, rotation, scale, offset, disabled)
+	self._onMapMoved = function(_, layer, position, rotation, scale, offset, disabled, parentLayer)
+		self:moveMap(layer, position, rotation, scale, offset, disabled, parentLayer)
 	end
 	stage.onMapMoved:register(self._onMapMoved)
 
@@ -810,7 +810,7 @@ function GameView:updateMap(map, layer)
 	end
 end
 
-function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
+function GameView:moveMap(layer, position, rotation, scale, offset, disabled, parentLayer)
 	local m = self.mapMeshes[layer]
 	local node = m and m.node
 	if node then
@@ -826,11 +826,18 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled)
 			transform = transform:getGlobalTransform(0),
 		})
 
+		local parentNode = parentLayer and self:getMapSceneNode(parentLayer)
+		parentNode = parentNode or self.scene
+
 		if disabled and node:getParent() then
 			node:setParent(nil)
 		elseif not disabled and not node:getParent() and not self.skyboxes[node] then
-			node:setParent(self.scene)
+			node:setParent(parentNode)
 			node:tick(1)
+		end
+
+		if parentNode ~= node:getParent() and not self.skyboxes[node] then
+			node:setParent(parentNode)
 		end
 	end
 

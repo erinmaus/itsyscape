@@ -22,6 +22,9 @@ function AmbientLight:tick()
 
 	local state = self:getProp():getState()
 	self:getLight():setAmbience(state.ambience or 1)
+
+	local _, _, l = self:getProp():getTile()
+	print(">>> layer", l, "bla", state.ambience)
 end
 
 return AmbientLight

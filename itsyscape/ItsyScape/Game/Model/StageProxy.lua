@@ -56,7 +56,8 @@ StageProxy.moveMap = Event.Set(
 	Event.Argument("rotation"),
 	Event.Argument("scale"),
 	Event.Argument("offset"),
-	Event.Argument("disabled"))
+	Event.Argument("disabled"),
+	Event.Argument("parentLayer"))
 StageProxy.moveMap:link(
 	"onMapMoved",
 	Event.Argument("layer"),
@@ -64,7 +65,8 @@ StageProxy.moveMap:link(
 	Event.Argument("rotation"),
 	Event.Argument("scale"),
 	Event.Argument("offset"),
-	Event.Argument("disabled"))
+	Event.Argument("disabled"),
+	Event.Argument("parentLayer"))
 StageProxy.stopMoveMap = Event.Unset(
 	StageProxy.MAP_MOVE,
 	Event.KeyArgument("layer", true))

@@ -103,6 +103,10 @@ function WaterMeshSceneNode:setMesh(mesh)
 	self:setBounds(self.waterMesh:getBounds())
 end
 
+function WaterMeshSceneNode:getMesh()
+	return self.waterMesh
+end
+
 -- Hahahahaha.
 function WaterMeshSceneNode:degenerate()
 	if self.waterMesh then

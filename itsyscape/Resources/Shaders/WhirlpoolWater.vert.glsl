@@ -1,9 +1,6 @@
-#line 1
+uniform float scape_YOffset;
 
-uniform highp vec4 scape_TimeScale;
-uniform highp float scape_YOffset;
-
-const float PI = 3.1415926535;
+#include "Resources/Shaders/Wind.common.glsl"
 
 void performTransform(
 	mat4 modelViewProjectionMatrix,
@@ -11,11 +8,21 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	float offset1 = sin(scape_Time * PI + position.x / scape_TimeScale.w * PI * scape_TimeScale.z) * scape_YOffset;
-	float offset2 = sin(scape_Time * PI + position.z / scape_TimeScale.w * PI * scape_TimeScale.z) * scape_YOffset;
+	vec3 anchorPosition = (scape_WorldMatrix * position).xyz;
+	vec3 worldPosition = anchorPosition + vec3(0.0, scape_YOffset, 0.0);
 
-	localPosition = position.xyz;
-	localPosition.y += offset1 + offset2;
+	vec3 normal = VertexNormal;
+	transformWorldPositionByWind(
+		scape_Time,
+		scape_WindSpeed,
+		scape_WindDirection,
+		scape_WindPattern,
+		anchorPosition,
+		worldPosition,
+		normal);
 
+	localPosition = (worldPosition - anchorPosition) + position.xyz;
 	projectedPosition = modelViewProjectionMatrix * vec4(localPosition, 1.0);
+
+	frag_Normal = normal;
 }
