@@ -27,6 +27,7 @@ function BasicOcean:getPropState()
 
 	return {
 		time = ocean.time or 0,
+		x = love.timer.getTime(),
 
 		ocean = {
 			hasOcean = ocean ~= nil,

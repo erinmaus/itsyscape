@@ -86,9 +86,18 @@ function ShipMapScript:_updateRotation()
 		worldPosition - (ocean and ocean.offset / 2 or 0.5),
 		worldPosition)
 
+	local playerPeep = Utility.Peep.getInstance(self):getPartyLeader():getActor():getPeep()
+	Utility.Peep.setPosition(playerPeep, worldPosition + Vector(0, 0, 0), true)
+
+	--print(">>> (be) time, offset", ocean.time, ocean.offset)
+	--print(">>> (be) pattern", windPattern:get())
+	--print(">>> (be) ocean pattern", ocean.windPatternMultiplier:get())
+	--print(">>> (be) ocean/wind speed", ocean.windSpeedMultiplier, windSpeed)
+	--print(">>> (be) dir", windDirection:get())
+
 	local rotation = Quaternion.fromVectors(Vector.UNIT_Y, normal):getNormal()
 	--Utility.Peep.setRotation(self, Quaternion.IDENTITY:slerp(rotation, 0.3):getNormal())
-	print(">>> y", worldPosition.y, Log.dump(ocean))
+	--print(">>> y", worldPosition:get())
 	Utility.Peep.setPosition(self, worldPosition + Vector(0, 0, 0))
 end
 

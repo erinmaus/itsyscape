@@ -27,7 +27,8 @@ function OceanUpdateCortex:update(delta)
     for peep in self:iterate() do
         local ocean = peep:getBehavior(OceanBehavior)
         if ocean then
-            ocean.time = time
+            --ocean.time = time
+            ocean.time = 10
         end
     end
 end

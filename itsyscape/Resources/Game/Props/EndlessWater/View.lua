@@ -138,6 +138,12 @@ function EndlessWater:tick()
 		material:send(material.UNIFORM_FLOAT, "scape_WindPatternMultiplier", state.ocean.windPatternMultiplier)
 		material:send(material.UNIFORM_FLOAT, "scape_Time", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()))
 	end
+
+	--print("... (fe) time, offset", state.time, state.ocean.offset)
+	--print("... (fe) pattern", windPattern:get())
+	--print("... (fe) ocean pattern", unpack(state.ocean.windPatternMultiplier))
+	--print("... (fe) ocean/wind speed", state.ocean.windSpeedMultiplier, windSpeed)
+	--print("... (fe) dir", windDirection:get())
 end
 
 function EndlessWater:update(delta)
@@ -153,8 +159,6 @@ function EndlessWater:update(delta)
 
 	self.waterParent:getTransform():setLocalTranslation(Vector(x, 0, z))
 	self.waterParent:tick(1)
-
-	print(">>> time fe", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()))
 end
 
 return EndlessWater
