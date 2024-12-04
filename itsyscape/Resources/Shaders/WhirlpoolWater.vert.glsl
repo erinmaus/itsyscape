@@ -14,7 +14,7 @@ void performTransform(
 	vec3 anchorPosition = transformedPosition - vec3(0.0, scape_YOffset, 0.0);
 	vec3 worldPosition = transformedPosition;
 
-	if (abs(position.x) <= 1 && abs(position.z) <= 1)
+	if (abs(transformedPosition.x) <= 1 && abs(transformedPosition.z) <= 1)
 	{
 		frag_Color = vec4(0.0, 0.0, 1.0, 1.0);		
 	}

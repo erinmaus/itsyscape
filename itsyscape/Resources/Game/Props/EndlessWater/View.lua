@@ -71,9 +71,9 @@ function EndlessWater:load()
 			local water = WaterMeshSceneNode()
 
 			local translation = Vector(
-				(i * EndlessWater.SIZE - 1) * 2,
+				(i * EndlessWater.SIZE) * 2,
 				0,
-				(j * EndlessWater.SIZE - 1) * 2)
+				(j * EndlessWater.SIZE) * 2)
 			water:getTransform():setLocalTranslation(translation)
 
 			water:getMaterial():setIsReflectiveOrRefractive(true)

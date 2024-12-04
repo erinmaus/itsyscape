@@ -2095,29 +2095,29 @@ function Utility.Map.getWind(game, layer)
 	       meta and meta.windPattern and Vector(unpack(meta.windPattern)) or Vector(5, 10, 15)
 end
 
-function Utility.Map.transformWorldPositionByWind(time, windSpeed, windDirection, windPattern, previousWorldPosition, currentWorldPosition, normal)
+function Utility.Map.transformWorldPositionByWind(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition, normal)
 	local windRotation = Quaternion.lookAt(Vector.ZERO, windDirection, Vector.UNIT_Y)
-	local windDelta = time * windSpeed + currentWorldPosition:get() * windSpeed
+	local windDelta = time * windSpeed + worldPosition:getLength() * windSpeed
 	local windMu = (math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z) + 1.0) / 2.0;
 	local currentWindRotation = Quaternion.IDENTITY:slerp(windRotation, windMu):getNormal()
 
-	local relativePosition = currentWorldPosition - previousWorldPosition
+	local relativePosition = worldPosition - anchorPosition
 	local transformedRelativePosition = currentWindRotation:transformVector(relativePosition)
 	normal = currentWindRotation:transformVector(currentWindRotation, normal or Vector.UNIT_Y)
 
-	return transformedRelativePosition + previousWorldPosition, normal, currentWindRotation
+	return transformedRelativePosition + anchorPosition, normal, currentWindRotation
 end
 
-function Utility.Map.transformWorldPositionByWave(time, windSpeed, windDirection, windPattern, previousWorldPosition, currentWorldPosition)
+function Utility.Map.transformWorldPositionByWave(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition)
 	local windDelta = time * windSpeed
-	local windDeltaCoordinate = windDirection * Vector(windDelta) + currentWorldPosition
-	local windMu = (math.sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.x) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.y) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.z) + 1.0) / 2.0
+	local windDeltaCoordinate = windDirection * Vector(windDelta) + worldPosition
+	local windMu = (math.sin((windDeltaCoordinate.x + windDeltaCoordinate.z) / windPattern.x) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.z) / windPattern.y) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.z) / windPattern.z) + 1.0) / 2.0
 	
-	local distance = (previousWorldPosition - currentWorldPosition):getLength()
-	return currentWorldPosition + Vector(0, distance * windMu, 0)
+	local distance = (anchorPosition - worldPosition):getLength()
+	return worldPosition + Vector(0, distance * windMu, 0)
 end
 
-function Utility.Map.calculateWaveNormal(time, windSpeed, windDirection, windPattern, previousWorldPosition, currentWorldPosition, scale)
+function Utility.Map.calculateWaveNormal(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition, scale)
 	scale = scale or Vector.ONE
 
 	local normalWorldPositionLeft = Utility.Map.transformWorldPositionByWave(
@@ -2125,32 +2125,32 @@ function Utility.Map.calculateWaveNormal(time, windSpeed, windDirection, windPat
 		windSpeed,
 		windDirection,
 		windPattern,
-		previousWorldPosition - Vector(scale.x, 0, 0),
-		currentWorldPosition - Vector(scale.x, 0, 0))
+		anchorPosition - Vector(scale.x, 0, 0),
+		worldPosition - Vector(scale.x, 0, 0))
 
 	local normalWorldPositionRight = Utility.Map.transformWorldPositionByWave(
 		time,
 		windSpeed,
 		windDirection,
 		windPattern,
-		previousWorldPosition + Vector(scale.x, 0, 0),
-		currentWorldPosition + Vector(scale.x, 0, 0))
+		anchorPosition + Vector(scale.x, 0, 0),
+		worldPosition + Vector(scale.x, 0, 0))
 
 	local normalWorldPositionTop = Utility.Map.transformWorldPositionByWave(
 		time,
 		windSpeed,
 		windDirection,
 		windPattern,
-		previousWorldPosition - Vector(0, 0, 1),
-		currentWorldPosition - Vector(0, 0, scale.z))
+		anchorPosition - Vector(0, 0, 1),
+		worldPosition - Vector(0, 0, scale.z))
 
 	local normalWorldPositionBottom = Utility.Map.transformWorldPositionByWave(
 		time,
 		windSpeed,
 		windDirection,
 		windPattern,
-		previousWorldPosition + Vector(0, 0, 1),
-		currentWorldPosition + Vector(0, 0, scale.z))
+		anchorPosition + Vector(0, 0, 1),
+		worldPosition + Vector(0, 0, scale.z))
 
 	local normal = Vector(
 		2.0 * (normalWorldPositionLeft.y - normalWorldPositionRight.y),
