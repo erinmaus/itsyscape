@@ -2108,6 +2108,57 @@ function Utility.Map.transformWorldPositionByWind(time, windSpeed, windDirection
 	return transformedRelativePosition + previousWorldPosition, normal, currentWindRotation
 end
 
+function Utility.Map.transformWorldPositionByWave(time, windSpeed, windDirection, windPattern, previousWorldPosition, currentWorldPosition, normal)
+	local windDelta = time * windSpeed
+	local windDeltaCoordinate = windDirection * Vector(windDelta) + currentWorldPosition
+	local windMu = (math.sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.x) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.y) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.z) + 1.0) / 2.0
+	
+	local distance = (previousWorldPosition - currentWorldPosition):getLength()
+	return currentWorldPosition + Vector(0, distance * windMu, 0)
+end
+
+function Utility.Map.calculateWaveNormal(time, windSpeed, windDirection, windPattern, previousWorldPosition, currentWorldPosition, scale)
+	scale = scale or Vector.ONE
+
+	local normalWorldPositionLeft = Utility.Map.transformWorldPositionByWave(
+		time,
+		windSpeed,
+		windDirection,
+		windPattern,
+		previousWorldPosition - Vector(scale.x, 0, 0),
+		currentWorldPosition - Vector(scale.x, 0, 0))
+
+	local normalWorldPositionRight = Utility.Map.transformWorldPositionByWave(
+		time,
+		windSpeed,
+		windDirection,
+		windPattern,
+		previousWorldPosition + Vector(scale.x, 0, 0),
+		currentWorldPosition + Vector(scale.x, 0, 0))
+
+	local normalWorldPositionTop = Utility.Map.transformWorldPositionByWave(
+		time,
+		windSpeed,
+		windDirection,
+		windPattern,
+		previousWorldPosition - Vector(0, 0, 1),
+		currentWorldPosition - Vector(0, 0, scale.z))
+
+	local normalWorldPositionBottom = Utility.Map.transformWorldPositionByWave(
+		time,
+		windSpeed,
+		windDirection,
+		windPattern,
+		previousWorldPosition + Vector(0, 0, 1),
+		currentWorldPosition + Vector(0, 0, scale.z))
+
+	local normal = Vector(
+		2.0 * (normalWorldPositionLeft.y - normalWorldPositionRight.y),
+		4.0,
+		2.0 * (normalWorldPositionTop.y - normalWorldPositionBottom.y))
+	return normal:getNormal()
+end
+
 function Utility.Map.getTileRotation(map, i, j)
 	local tile = map:getTile(i, j)
 	local crease = tile:getCrease()

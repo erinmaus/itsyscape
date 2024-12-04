@@ -26,6 +26,8 @@ Ocean.MAX_LIGHTNING_PERIOD = 5
 function Ocean:new(resource, name, ...)
 	Map.new(self, resource, name or "IsabelleIsland_FarOcean3", ...)
 
+	self:addBehavior(OceanBehavior)
+
 	--self:silence("playerEnter", Map.showPlayerMapInfo)
 end
 
@@ -34,6 +36,7 @@ function Ocean:onLoad(...)
 
 	Utility.Map.spawnMap(self, "Test123_Storm", Vector.ZERO, { isLayer = true })
 	local layer, ship = Utility.Map.spawnMap(self, "Test_Ship", Vector(0, 8, 0))
+	Utility.Peep.setLayer(ship, self:getLayer())
 
 	self.exquisitor = ship
 
@@ -51,7 +54,7 @@ function Ocean:onLoad(...)
 end
 
 function Ocean:onPlayerEnter(player)
-	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.exquisitor)
+	--self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.exquisitor)
 end
 
 function Ocean:onPlayerLeave(player)

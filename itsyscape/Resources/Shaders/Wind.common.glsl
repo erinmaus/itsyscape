@@ -8,6 +8,21 @@ uniform vec3 scape_WindPattern;
 uniform float scape_WindMaxDistance;
 #endif
 
+void transformWorldPositionByWave(float time, float windSpeed, vec3 windDirection, vec3 windPattern, vec3 anchorPosition, inout vec3 worldPosition)
+{
+	if (windSpeed <= 0.0)
+	{
+		return;
+	}
+
+	float windDelta = time * windSpeed;
+	vec2 windDeltaCoordinate = windDirection.xz * vec2(windDelta) + worldPosition.xz;
+	float windMu = (sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.x) * sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.y) * sin((windDeltaCoordinate.x + windDeltaCoordinate.y) / windPattern.z) + 1.0) / 2.0;
+	
+	float anchorWorldDistance = length(anchorPosition - worldPosition);
+	worldPosition.y += anchorWorldDistance * windMu;
+}
+
 void transformWorldPositionByWind(float time, float windSpeed, vec3 windDirection, vec3 windPattern, vec3 anchorPosition, inout vec3 worldPosition, inout vec3 normal)
 {
 	if (windSpeed <= 0.0)
@@ -20,7 +35,7 @@ void transformWorldPositionByWind(float time, float windSpeed, vec3 windDirectio
 	float windMu = (sin(windDelta / windPattern.x) * sin(windDelta / windPattern.y) * sin(windDelta / windPattern.z) + 1.0) / 2.0;
 	vec4 currentWindRotation = slerp(vec4(vec3(0.0), 1.0), windRotation, windMu);
 
-	vec4 relativePosition = vec4(worldPosition - anchorPosition, 0.0);
+	vec4 relativePosition = vec4(worldPosition - anchorPosition, 1.0);
 	vec4 transformedRelativePosition = quaternionTransformVector(currentWindRotation, relativePosition);
 
 	worldPosition = transformedRelativePosition.xyz + anchorPosition;
