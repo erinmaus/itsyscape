@@ -116,7 +116,7 @@ function Storm:load()
 	self.particles:getMaterial():setShader(Storm.SHADER)
 	self.particles:getMaterial():setIsZWriteDisabled(false)
 	self.particles:getMaterial():setIsFullLit(false)
-	self.particles:getMaterial():setColor(Color(1))
+	self.particles:getMaterial():setColor(Color(0.1))
 	self.particles:getMaterial():setOutlineThreshold(-1)
 	self.particles:setParent(root)
 
