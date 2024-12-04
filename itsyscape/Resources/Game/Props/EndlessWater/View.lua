@@ -30,28 +30,6 @@ end
 EndlessWater.HOLE_COLOR = Color.fromHexString("87cdde")
 EndlessWater.FOAM_COLOR = Color.fromHexString("ffffff")
 
-EndlessWater.REFLECTION_WIDTH = 1024
-EndlessWater.REFLECTION_HEIGHT = 1024
-EndlessWater.CUBE_MAP_COUNT = 6
-
-EndlessWater.CUBE_MAP_NORMALS = {
-	Vector(1, 0, 0):keep(),
-	Vector(-1, 0, 0):keep(),
-	Vector(0, 1, 0):keep(),
-	Vector(0, -1, 0):keep(),
-	Vector(0, 0, 1):keep(),
-	Vector(0, 0, -1):keep(),
-}
-
-EndlessWater.CUBE_MAP_ROTATION = {
-	Quaternion.Y_270,
-	Quaternion.Y_90,
-	Quaternion.X_270,
-	Quaternion.X_90,
-	Quaternion.IDENTITY,
-	Quaternion.Y_180
-}
-
 EndlessWater.CUBE_MAP_FOV = math.rad(90)
 
 -- Size of map sector, in terms of unit (1 unit = cell size)
@@ -82,25 +60,6 @@ function EndlessWater:load()
 
 	self.waterParent = SceneNode()
 	self.waterParent:setParent(self:getRoot())
-
-	self.camera = ThirdPersonCamera()
-	self.renderer = Renderer({ shadows = false })
-	self.renderer:setCamera(self.camera)
-
-	self.reflectionCanvas = love.graphics.newCanvas(
-		self.REFLECTION_WIDTH,
-		self.REFLECTION_HEIGHT,
-		{ type = "cube" })
-
-	self.reflectionDepthCanvas = love.graphics.newCanvas(
-		self.REFLECTION_WIDTH,
-		self.REFLECTION_HEIGHT,
-		{ type = "cube", format = "r32f" })
-
-	self.skyboxCanvas = love.graphics.newCanvas(
-		self.REFLECTION_WIDTH,
-		self.REFLECTION_HEIGHT,
-		{ type = "cube" })
 
 	resources:queue(
 		TextureResource,
@@ -161,17 +120,11 @@ function EndlessWater:load()
 					if shader:hasUniform("scape_WhirlpoolFoamColor") then
 						shader:send("scape_WhirlpoolFoamColor", { EndlessWater.FOAM_COLOR:get() })
 					end
-
-					if state.ocean and state.ocean.hasOcean then
-						water:setYOffset(state.ocean.offset)
-						water:setPositionTimeScale(state.ocean.positionTimeScale)
-						water:setTextureTimeScale(unpack(state.ocean.textureTimeScale))
-					end
 				end
 
 				water:setParent(self.waterParent)
 				water:getMaterial():setTextures(self.texture)
-				water:onWillRender(_onWillRender)
+				--water:onWillRender(_onWillRender)
 
 				table.insert(self.waters, water)
 			end)
@@ -183,27 +136,42 @@ function EndlessWater:tick()
 	PropView.tick(self)
 
 	local state = self:getProp():getState()
+	local _, layer = self:getProp():getPosition()
+	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+
 	for _, water in ipairs(self.waters) do
+		local material = water:getMaterial()
+
 		if state.whirlpool and state.whirlpool.hasWhirlpool then
-			water:getMaterial():setShader(EndlessWater.WHIRLPOOL_SHADER)
+			material:setShader(EndlessWater.WHIRLPOOL_SHADER)
+
+			for k, v in pairs(EndlessWater.WHIRLPOOL_PROPS) do
+				local prop = state.whirlpool[v]
+				if prop and shader:hasUniform(k) then
+					material:send(material.UNIFORM_FLOAT, k, prop)
+				end
+			end
+
+			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolHoleColor", { EndlessWater.HOLE_COLOR:get() })
+			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolFoamColor", { EndlessWater.FOAM_COLOR:get() })
 		else
-			water:getMaterial():setShader(EndlessWater.WATER_SHADER)
+			material:setShader(EndlessWater.WATER_SHADER)
 		end
+
+		if state.ocean and state.ocean.hasOcean then
+			water:setYOffset(state.ocean.offset)
+			water:setPositionTimeScale(state.ocean.positionTimeScale)
+			water:setTextureTimeScale(unpack(state.ocean.textureTimeScale))
+		end
+
+		material:send(material.UNIFORM_FLOAT, "scape_BumpForce", 0)
+		material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
+		material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
+		material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
+		material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", state.ocean.offset)
+		material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 2.0, 2.0, 2.0, 2.0)
+		material:send(material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
 	end
-end
-
-function EndlessWater:updateCamera(index)
-	self.camera:setFieldOfView(EndlessWater.CUBE_MAP_FOV)
-	self.camera:setWidth(EndlessWater.REFLECTION_WIDTH)
-	self.camera:setHeight(EndlessWater.REFLECTION_HEIGHT)
-	self.camera:setVerticalRotation(-math.pi / 2)
-	self.camera:setHorizontalRotation(math.pi)
-	self.camera:setDistance(0)
-	self.camera:setPosition(self:getGameView():getCamera():getEye())
-	self.camera:setRotation(EndlessWater.CUBE_MAP_ROTATION[index])
-
-	local x, y, z = self.camera:getRotation():getEulerXYZ()
-	print(">>> euler", index, math.deg(x), math.deg(y), math.deg(z))
 end
 
 function EndlessWater:update(delta)
@@ -219,48 +187,6 @@ function EndlessWater:update(delta)
 
 	self.waterParent:getTransform():setLocalTranslation(Vector(x, 0, z))
 	self.waterParent:tick(1)
-
-	-- local delta = _APP:getFrameDelta()
-
-	-- self.waterParent:setParent(nil)
-	-- love.graphics.push("all")
-	-- do
-	-- 	for i = 1, EndlessWater.CUBE_MAP_COUNT do
-	-- 		self:updateCamera(i)
-
-	-- 		if self:getGameView():drawSkyboxTo(
-	-- 			delta,
-	-- 			self.renderer,
-	-- 			EndlessWater.REFLECTION_WIDTH,
-	-- 			EndlessWater.REFLECTION_HEIGHT)
-	-- 		then
-	-- 			love.graphics.setCanvas(self.skyboxCanvas, i)
-	-- 			love.graphics.clear(0, 0, 0, 0)
-	-- 			love.graphics.draw(self.renderer:getOutputBuffer():getColor())
-	-- 		end
-	-- 	end
-
-	-- 	for i = 1, EndlessWater.CUBE_MAP_COUNT do
-	-- 		self:updateCamera(i)
-
-	-- 		self:getGameView():drawWorldTo(
-	-- 			delta,
-	-- 			self.renderer,
-	-- 			EndlessWater.REFLECTION_WIDTH,
-	-- 			EndlessWater.REFLECTION_HEIGHT)
-
-	-- 		love.graphics.setCanvas(self.reflectionCanvas, i)
-	-- 		love.graphics.clear(0, 0, 0, 0)
-	-- 		love.graphics.draw(self.renderer:getOutputBuffer():getColor())
-
-	-- 		love.graphics.setCanvas(self.reflectionDepthCanvas, i)
-	-- 		love.graphics.clear(0, 0, 0, 0)
-	-- 		love.graphics.draw(self.renderer:getOutputBuffer():getDepthStencil())
-	-- 	end
-	-- end
-	-- love.graphics.pop()
-
-	-- self.waterParent:setParent(self:getRoot())
 end
 
 return EndlessWater

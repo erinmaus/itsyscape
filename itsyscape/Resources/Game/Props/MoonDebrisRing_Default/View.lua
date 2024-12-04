@@ -24,6 +24,7 @@ end
 
 MoonDebrisRing.PARTICLE_SYSTEM = {
 	texture = "Resources/Game/Props/MoonDebrisRing_Default/Particle.png",
+	numParticles = 500,
 	columns = 2,
 	rows = 2,
 

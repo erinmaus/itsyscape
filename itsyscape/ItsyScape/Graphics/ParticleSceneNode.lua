@@ -30,6 +30,14 @@ function ParticleSceneNode:new()
 	self._texture = false
 end
 
+function ParticleSceneNode:emit(count)
+	self:getHandle():emit(count)
+end
+
+function ParticleSceneNode:clear()
+	self:getHandle():clear()
+end
+
 function ParticleSceneNode:pause()
 	self:getHandle():pause()
 end

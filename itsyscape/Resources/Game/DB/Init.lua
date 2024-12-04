@@ -744,6 +744,7 @@ Game "ItsyScape"
 		Prop = Meta.TYPE_TEXT,
 		CanCustomizeColor = Meta.TYPE_INTEGER,
 		IsPirate = Meta.TYPE_INTEGER,
+		IsUnique = Meta.TYPE_INTEGER,
 		ItemGroup = Meta.TYPE_TEXT,
 		Resource = Meta.TYPE_RESOURCE
 	}
@@ -791,6 +792,18 @@ Game "ItsyScape"
 		Map = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ShipSailingItemMapObjectHotspot" {
+		Slot = Meta.TYPE_TEXT,
+		ItemGroup = Meta.TYPE_TEXT,
+		MapObject = Meta.TYPE_RESOURCE
+	}
+
+	Meta "ShipSailingItemPropHotspot" {
+		Slot = Meta.TYPE_TEXT,
+		ItemGroup = Meta.TYPE_TEXT,
+		Prop = Meta.TYPE_RESOURCE
+	}
+
 	Meta "ShipSailingItem" {
 		Red1 = Meta.TYPE_INTEGER,
 		Green1 = Meta.TYPE_INTEGER,
@@ -799,6 +812,7 @@ Game "ItsyScape"
 		Green2 = Meta.TYPE_INTEGER,
 		Blue2 = Meta.TYPE_INTEGER,
 		IsColorCustomized = Meta.TYPE_INTEGER,
+		Slot = Meta.TYPE_TEXT,
 		Ship = Meta.TYPE_RESOURCE,
 		SailingItem = Meta.TYPE_RESOURCE
 	}
@@ -985,6 +999,7 @@ ItsyScape.Utility.Weapon.STYLE_MELEE   = 3
 
 ItsyScape.Utility.Vector = require "ItsyScape.Common.Math.Vector"
 ItsyScape.Utility.Quaternion = require "ItsyScape.Common.Math.Quaternion"
+ItsyScape.Utility.Color = require "ItsyScape.Graphics.Color"
 
 function ItsyScape.Utility.tag(resource, value)
 	ItsyScape.Meta.ResourceTag {
@@ -1471,6 +1486,7 @@ include "Resources/Game/DB/Sailing/Rowboat.lua"
 include "Resources/Game/DB/Sailing/KeyItems.lua"
 include "Resources/Game/DB/Sailing/RandomEvents.lua"
 include "Resources/Game/DB/Sailing/NPC.lua"
+include "Resources/Game/DB/Sailing/Ships/Exquisitor.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"

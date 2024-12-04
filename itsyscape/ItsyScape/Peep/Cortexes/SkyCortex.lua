@@ -171,12 +171,12 @@ function SkyCortex:update(delta)
 			local map = Utility.Peep.getMap(peep)
 
 			local minClouds = math.ceil(sky.cloudiness * math.max(map:getWidth(), map:getHeight()))
-			local currentClouds = self:getDirector():probe(
+			local currentClouds = sky.cloudPropType and self:getDirector():probe(
 				peep:getLayerName(),
 				Probe.layer(layer),
 				Probe.resource("Prop", sky.cloudPropType))
 
-			if minClouds > #currentClouds then
+			if sky.cloudPropType and minClouds > #currentClouds then
 				local minY = sky.troposphereEnd / 3
 				local maxY = sky.troposphereEnd
 
@@ -217,22 +217,22 @@ function SkyCortex:update(delta)
 
 			local baseLayer = instance:getBaseLayer()
 
-			local sun = self:getDirector():probe(
+			local sun = sky.sunPropType and self:getDirector():probe(
 				peep:getLayerName(),
 				Probe.layer(layer),
 				Probe.resource("Prop", sky.sunPropType))[1]
 
-			local moon = self:getDirector():probe(
+			local moon = sky.moonPropType and self:getDirector():probe(
 				peep:getLayerName(),
 				Probe.layer(layer),
 				Probe.resource("Prop", sky.moonPropType))[1]
 
 			if not sun or not moon then
-				if not sun then
+				if not sun and sky.sunPropType then
 					Utility.spawnPropAtPosition(peep, sky.sunPropType, 0, 0, 0)
 				end
 
-				if not moon then
+				if not moon and sky.moonPropType then
 					Utility.spawnPropAtPosition(peep, sky.moonPropType, 0, 0, 0)
 				end
 			else

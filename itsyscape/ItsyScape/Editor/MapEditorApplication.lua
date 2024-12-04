@@ -1994,7 +1994,7 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 					if prop then
 						prop = prop:get("Prop")
 						if prop then
-							local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, baseLayer or 1, "::orphan")
+							local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, layer, "::orphan")
 
 							if s then
 								local peep = p:getPeep()

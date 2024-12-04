@@ -18,6 +18,15 @@ do
 end
 
 do
+	local Sky = ItsyScape.Resource.Prop "Sky_Default"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.Sun",
+		Resource = Sky
+	}
+end
+
+do
 	local Sun = ItsyScape.Resource.Prop "Sun_Default"
 
 	ItsyScape.Meta.PeepID {
@@ -50,5 +59,14 @@ do
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.Stars",
 		Resource = Stars
+	}
+end
+
+do
+	local Storm = ItsyScape.Resource.Prop "Storm_Default"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = Storm
 	}
 end

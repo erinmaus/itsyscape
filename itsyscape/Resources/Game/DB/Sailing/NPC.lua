@@ -123,7 +123,8 @@ for _, itemGroup in ipairs(ITEMS) do
 		local SailingItem = ItsyScape.Resource.SailingItem(SailingItemName)
 
 		ItsyScape.Meta.SailingItemDetails {
-			ItemGroup = "Hull",
+			ItemGroup = itemGroup.type,
+			IsUnique = itemGroup.unique and 1 or 0,
 			Resource = SailingItem
 		}
 
@@ -166,6 +167,12 @@ for _, itemGroup in ipairs(ITEMS) do
 			ItsyScape.Meta.PropAlias {
 				Alias = ItsyScape.Resource.Prop(defaultPropID[slot]),
 				Resource = Prop
+			}
+
+			ItsyScape.Meta.ShipSailingItemPropHotspot {
+				Slot = slot,
+				ItemGroup = itemGroup.type,
+				Prop = Prop
 			}
 		end
 	end

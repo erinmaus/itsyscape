@@ -83,6 +83,7 @@ namespace nbunny
 		struct Vertex
 		{
 			glm::vec3 position;
+			glm::vec3 particle_position;
 			glm::vec3 normal;
 			glm::vec2 texture;
 			glm::vec4 color;
@@ -106,7 +107,6 @@ namespace nbunny
 		bool is_pending = false;
 
 		void update(float time_delta);
-		void emit(int count);
 
 		glm::quat get_global_rotation(float delta) const;
 		void build(const glm::quat& inverse_rotation, const glm::quat& self_rotation, const glm::mat4& view, float delta);
@@ -128,6 +128,7 @@ namespace nbunny
 		void update_local_position(const glm::vec3& position);
 		void update_local_direction(const glm::vec3& direction);
 
+		void emit(int count);
 		void pause();
 		void play();
 		bool get_is_playing() const;

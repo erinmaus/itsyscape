@@ -1279,8 +1279,6 @@ function LocalStage:loadMapResource(instance, filename, args)
 				offset.offset = Vector(unpack(layerMeta.transform.translation or {}))
 				offset.rotation = Quaternion(unpack(layerMeta.transform.rotation or {}))
 				offset.scale = Vector(unpack(layerMeta.transform.scale or {}))
-
-				print("???", localLayer, globalLayer, Log.dump(offset))
 			end
 		end
 	end
