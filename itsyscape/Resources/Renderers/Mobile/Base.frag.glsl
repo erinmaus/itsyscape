@@ -146,7 +146,7 @@ vec4 effect(
 	vec3 normal = frag_Normal;
 	vec3 position = frag_Position;
 	float specular = 0.0;
-	performAdvancedEffect(textureCoordinate, diffuse, position, normal, specular);
+	performAdvancedEffect(frag_Texture, diffuse, position, normal, specular);
 #else
 	vec3 normal = frag_Normal;
 	float specular = 0.0;

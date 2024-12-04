@@ -24,7 +24,7 @@ function TestMap:new(...)
 	sky.sunPropType = false
 	sky.moonPropType = false
 
-	local color = Color.fromHexString("ff0000", 0.4)
+	local color = Color.fromHexString("ffffff", 0.4)
 
 	sky.dawnSkyColor = color
 	sky.daySkyColor = color
