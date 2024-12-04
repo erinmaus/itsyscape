@@ -34,7 +34,7 @@ function BasicOcean:getPropState()
 			textureTimeScale = ocean.textureTimeScale and {
 				ocean.textureTimeScale.x,
 				ocean.textureTimeScale.y
-			}
+			} or {}
 		},
 
 		whirlpool = {

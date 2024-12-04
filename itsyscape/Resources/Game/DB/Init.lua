@@ -813,6 +813,7 @@ Game "ItsyScape"
 		Blue2 = Meta.TYPE_INTEGER,
 		IsColorCustomized = Meta.TYPE_INTEGER,
 		Slot = Meta.TYPE_TEXT,
+		ItemGroup = Meta.TYPE_TEXT,
 		Ship = Meta.TYPE_RESOURCE,
 		SailingItem = Meta.TYPE_RESOURCE
 	}

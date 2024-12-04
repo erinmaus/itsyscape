@@ -1,5 +1,5 @@
 {
-	"RAILING_ATTACHMENTS": [
+	"RAIL_ATTACHMENTS": [
 		{
 			"mesh": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFilligree/Model.lstatic",
 			"group": "rail.stern",

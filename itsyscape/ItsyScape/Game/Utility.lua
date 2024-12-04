@@ -2085,6 +2085,29 @@ end
 
 Utility.Map = {}
 
+function Utility.Map.getWind(game, layer)
+	local instance = game:getStage():getInstanceByLayer(layer)
+	local mapInfo = instance:getMap(layer)
+	local meta = mapInfo and mapInfo:getMeta()
+
+	return (meta.windDirection and Vector(unpack(meta.windDirection)) or Vector(-1, 0, -1)):getNormal(),
+	       meta.windSpeed or 4,
+	       meta.windPattern and vector(meta.windPattern) or Vector(5, 10, 15)
+end
+
+function Utility.Map.transformWorldPositionByWind(time, windSpeed, windDirection, windPattern, previousWorldPosition, currentWorldPosition, normal)
+	local windRotation = Quaternion.lookAt(Vector.ZERO, windDirection, Vector.UNIT_Y)
+	local windDelta = time * windSpeed + currentWorldPosition:get() * windSpeed
+	local windMu = (math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z) + 1.0) / 2.0;
+	local currentWindRotation = Quaternion.IDENTITY:slerp(windRotation, windMu):getNormal()
+
+	local relativePosition = currentWorldPosition - previousWorldPosition
+	local transformedRelativePosition = currentWindRotation:transformVector(relativePosition)
+	normal = currentWindRotation:transformVector(currentWindRotation, normal or Vector.UNIT_Y)
+
+	return transformedRelativePosition + previousWorldPosition, normal, currentWindRotation
+end
+
 function Utility.Map.getTileRotation(map, i, j)
 	local tile = map:getTile(i, j)
 	local crease = tile:getCrease()
@@ -2270,7 +2293,7 @@ function Utility.Map.spawnMap(peep, map, position, args)
 	local mapLayer, mapScript = stage:loadMapResource(instance, map, args)
 
 	local _, p = mapScript:addBehavior(PositionBehavior)
-	p.position = position
+	p.position = position or Vector.ZERO
 
 	return mapLayer, mapScript
 end

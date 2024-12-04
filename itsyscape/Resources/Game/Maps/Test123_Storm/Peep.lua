@@ -36,6 +36,7 @@ function TestMap:new(...)
 	sky.dawnAmbientColor = color
 	sky.dayAmbientColor = color
 	sky.duskAmbientColor = color
+	sky.nightAmbientColor = color
 	sky.currentAmbientColor = color
 
 	sky.cloudPropType = false
