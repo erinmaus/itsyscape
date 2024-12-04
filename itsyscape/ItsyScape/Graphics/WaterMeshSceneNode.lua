@@ -46,7 +46,6 @@ end
 
 function WaterMeshSceneNode:setYOffset(value)
 	self.yOffset = value or self.yOffset
-	self:setBounds(Vector.ZERO, Vector(self.width, self.height, self.depth))
 end
 
 function WaterMeshSceneNode:getPositionTimeScale()

@@ -26,6 +26,8 @@ function BasicOcean:getPropState()
 	local whirlpool = mapScript and mapScript:getBehavior(WhirlpoolBehavior) or {}
 
 	return {
+		time = ocean.time or 0,
+
 		ocean = {
 			hasOcean = ocean ~= nil,
 			y = ocean.depth,
@@ -34,7 +36,9 @@ function BasicOcean:getPropState()
 			textureTimeScale = ocean.textureTimeScale and {
 				ocean.textureTimeScale.x,
 				ocean.textureTimeScale.y
-			} or {}
+			} or {},
+			windSpeedMultiplier = ocean.windSpeedMultiplier or 0.25,
+			windPatternMultiplier = { (ocean.windPatternMultiplier or Vector(2, 4, 8)):get() }
 		},
 
 		whirlpool = {

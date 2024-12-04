@@ -64,18 +64,32 @@ function ShipMapScript:_updateRotation()
 	local position = self:getBehavior(PositionBehavior)
 	local layer = position and position.layer or self:getLayer()
 
+	local mapScript = Utility.Peep.getInstance(self):getMapScriptByLayer(layer)
+	local ocean = mapScript and mapScript:getBehavior(OceanBehavior)
+
 	local windDirection, windSpeed, windPattern = Utility.Map.getWind(game, layer)
 
 	local worldPosition = Utility.Peep.getPosition(self)
-	local _, _, rotation = Utility.Map.transformWorldPositionByWind(
-		love.timer.getTime(),
-		windSpeed,
+	worldPosition = Utility.Map.transformWorldPositionByWave(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
 		windDirection,
-		windPattern,
-		worldPosition - Vector.UNIT_Y,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		Vector(worldPosition.x, -(ocean and ocean.offset or 1), worldPosition.z),
+		Vector(worldPosition.x, 0, worldPosition.z))
+
+	local normal = Utility.Map.calculateWaveNormal(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
+		windDirection,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		worldPosition - (ocean and ocean.offset / 2 or 0.5),
 		worldPosition)
 
-	Utility.Peep.setRotation(self, Quaternion.IDENTITY:slerp(rotation:getNormal(), 0.1):getNormal())
+	local rotation = Quaternion.fromVectors(Vector.UNIT_Y, normal):getNormal()
+	--Utility.Peep.setRotation(self, Quaternion.IDENTITY:slerp(rotation, 0.3):getNormal())
+	print(">>> y", worldPosition.y, Log.dump(ocean))
+	Utility.Peep.setPosition(self, worldPosition + Vector(0, 0, 0))
 end
 
 function ShipMapScript:update(director, game)

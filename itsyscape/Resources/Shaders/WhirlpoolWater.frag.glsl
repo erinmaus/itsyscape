@@ -1,5 +1,3 @@
-#line 1
-
 uniform vec4 scape_TimeScale;
 uniform Image scape_DiffuseTexture;
 
@@ -31,6 +29,8 @@ uniform vec4 scape_WhirlpoolFoamColor;
 
 const float PI = 3.1415926535;
 
+#include "Resources/Shaders/Wind.common.glsl"
+
 vec2 rotate(float theta, vec2 p)
 {
 	float sinTheta = sin(theta);
@@ -41,7 +41,7 @@ vec2 rotate(float theta, vec2 p)
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
-	textureCoordinate += sin(scape_Time * scape_TimeScale.y) * scape_TimeScale.x;
+	textureCoordinate += normalize(scape_WindDirection.xz) * vec2(scape_WindSpeed * scape_Time / 8.0);
 
 	vec2 relativeWorldPosition = frag_Position.xz - scape_WhirlpoolCenter;
 	vec2 whirlpoolCartesianCoordinate = relativeWorldPosition;

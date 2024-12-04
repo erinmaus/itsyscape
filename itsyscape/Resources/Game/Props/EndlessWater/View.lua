@@ -78,6 +78,7 @@ function EndlessWater:load()
 
 			water:getMaterial():setIsReflectiveOrRefractive(true)
 			water:getMaterial():setReflectionPower(1.0)
+			water:getMaterial():setOutlineThreshold(-1.0)
 			water:getMaterial():setShader(EndlessWater.SHADER)
 			water:setParent(self.waterParent)
 
@@ -100,6 +101,9 @@ function EndlessWater:tick()
 	local state = self:getProp():getState()
 	local _, layer = self:getProp():getPosition()
 	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+
+	self.previousTime = self.currentTime
+	self.currentTime = state.time or 0
 
 	for _, water in ipairs(self.waters) do
 		local material = water:getMaterial()
@@ -130,6 +134,9 @@ function EndlessWater:tick()
 		material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
 		material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 		material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", state.ocean.offset)
+		material:send(material.UNIFORM_FLOAT, "scape_WindSpeedMultiplier", state.ocean.windSpeedMultiplier)
+		material:send(material.UNIFORM_FLOAT, "scape_WindPatternMultiplier", state.ocean.windPatternMultiplier)
+		material:send(material.UNIFORM_FLOAT, "scape_Time", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()))
 	end
 end
 
@@ -146,6 +153,8 @@ function EndlessWater:update(delta)
 
 	self.waterParent:getTransform():setLocalTranslation(Vector(x, 0, z))
 	self.waterParent:tick(1)
+
+	print(">>> time fe", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()))
 end
 
 return EndlessWater
