@@ -297,23 +297,49 @@ function SkyCortex:update(delta)
 					sky.nightAmbientColor
 				}
 
+				local skyAmbientColors = {
+					sky.skyDawnAmbientColor,
+					sky.skyDawnAmbientColor,
+					sky.skyDayAmbientColor,
+					sky.skyDayAmbientColor,
+					sky.skyDayAmbientColor,
+					sky.skyDuskAmbientColor,
+					sky.skyDuskAmbientColor,
+					sky.skyNightAmbientColor,
+					sky.skyNightAmbientColor,
+					sky.skyNightAmbientColor
+				}
+
 				local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #currentSkyColors)
 				local currentSkyColor = currentSkyColors[currentIndex]:lerp(currentSkyColors[nextIndex], delta)
 				local previousSkyColor = previousSkyColors[currentIndex]:lerp(previousSkyColors[nextIndex], delta)
 				local ambientColor = ambientColors[currentIndex]:lerp(ambientColors[nextIndex], delta)
+				local skyAmbientColor = skyAmbientColors[currentIndex]:lerp(skyAmbientColors[nextIndex], delta)
 
 				sky.currentSkyColor = currentSkyColor
 				sky.previousSkyColor = previousSkyColor
 				sky.currentAmbientColor = ambientColor
+				sky.currentSkyAmbientColor = skyAmbientColor
 			end
 
-			local fog = self:getDirector():probe(
-				peep:getLayerName(),
-				Probe.layer(baseLayer),
-				Probe.namedMapObject("Light_Fog"),
-				Probe.resource("Prop", "Fog_Default"))[1]
-			if fog then
-				fog:setColor(sky.currentSkyColor)
+			if sky.hasFog then
+				local fog = self:getDirector():probe(
+					peep:getLayerName(),
+					Probe.layer(baseLayer),
+					Probe.namedMapObject("Light_Fog"),
+					Probe.resource("Prop", "Fog_Default"))[1]
+
+				if fog then
+					fog:setColor(sky.currentSkyColor)
+					fog:setNearDistance(sky.fogNearDistance)
+					fog:setFarDistance(sky.fogFarDistance)
+
+					if sky.fogFollowTarget then
+						fog:setFollowTarget()
+					else
+						fog:setFollowEye()
+					end
+				end
 			end
 
 			local ambient = self:getDirector():probe(
@@ -347,6 +373,27 @@ function SkyCortex:update(delta)
 				sunDirectionalLight:setCastsShadows(true)
 			end
 
+			local sunDirectionalLight = self:getDirector():probe(
+				peep:getLayerName(),
+				Probe.layer(baseLayer),
+				Probe.namedMapObject("Light_Sun"),
+				Probe.resource("Prop", "DirectionalLight_Default"))[1]
+
+			if sunDirectionalLight then
+				local sunMoonColors = {
+					sky.sunColor,
+					sky.moonColor
+				}
+
+				local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #sunMoonColors)
+				local currentSunColor = sunMoonColors[currentIndex]:lerp(sunMoonColors[nextIndex], delta)
+
+				local normal = self:getDirectionLightNormal(seconds)
+				sunDirectionalLight:setColor(currentSunColor * sky.currentAmbientColor.a)
+				sunDirectionalLight:setDirection(normal)
+				sunDirectionalLight:setCastsShadows(true)
+			end
+
 			local skyAmbientLight = self:getDirector():probe(
 				peep:getLayerName(),
 				Probe.layer(layer),
@@ -355,8 +402,8 @@ function SkyCortex:update(delta)
 			if not skyAmbientLight then
 				Utility.spawnPropAtPosition(peep, "AmbientLight_Default", 0, 0, 0)
 			else
-				skyAmbientLight:setColor(sky.currentAmbientColor)
-				skyAmbientLight:setAmbience(sky.currentAmbientColor.a)
+				skyAmbientLight:setColor(sky.currentSkyAmbientColor)
+				skyAmbientLight:setAmbience(sky.currentSkyAmbientColor.a)
 			end
 		end
 	end

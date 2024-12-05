@@ -43,12 +43,6 @@ function ShipMovementCortex.Ship:prepare()
 		return
 	end
 
-	local _, origin = self.ship:addBehavior(OriginBehavior)
-	origin.origin = Vector(map:getWidth(), 0, map:getHeight())
-
-	local _, offset = self.ship:addBehavior(MapOffsetBehavior)
-	offset.offset = Vector(-map:getWidth(), 0, -map:getHeight())
-
 	local _, movement = self.ship:addBehavior(MovementBehavior)
 	movement.noClip = true
 

@@ -656,6 +656,12 @@ MapMesh._addTopEdge = addEdgeBuilder(getTopVertices, -1)
 
 MapMesh._addBottomEdge = addEdgeBuilder(getBottomVertices, 1)
 
+local function calculateTriangleNormal(a, b, c)
+	local s = a - b
+	local t = c - a
+	return s:cross(t):getNormal()
+end
+
 -- Simply adds the flat (top).
 function MapMesh:_addFlat(i, j, tile, index, maskType, maskTile)
 	local E = self.map.cellSize / 2
@@ -663,12 +669,6 @@ function MapMesh:_addFlat(i, j, tile, index, maskType, maskTile)
 	local topRight = Vector(E, tile.topRight, -E)
 	local bottomLeft = Vector(-E, tile.bottomLeft, E)
 	local bottomRight = Vector(E, tile.bottomRight, E)
-
-	local function calculateTriangleNormal(a, b, c)
-		local s = a - b
-		local t = c - a
-		return s:cross(t):getNormal()
-	end
 
 	local crease = tile:getCrease()
 	if crease == Tile.CREASE_FORWARD then

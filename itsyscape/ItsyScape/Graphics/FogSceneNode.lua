@@ -67,7 +67,7 @@ function FogSceneNode:toLight(delta)
 
 	delta = 1 - delta
 	local previousNearDistance = self:getPreviousNearDistance()
-	local nearDistance = self:getCurrentNearDistance() * (1 - delta) + previousNearDistance * delta
+	local nearDistance = self:getNearDistance() * (1 - delta) + previousNearDistance * delta
 	local previousFarDistance = self:getPreviousFarDistance()
 	local farDistance = self:getFarDistance() * (1 - delta) + previousFarDistance * delta
 

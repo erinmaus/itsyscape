@@ -1275,7 +1275,6 @@ function LocalStage:loadMapResource(instance, filename, args)
 			end
 
 			if layerMeta.transform then
-				print(">>> layer", localLayer, globalLayer, "origin", unpack(layerMeta.transform.origin))
 				offset.origin = Vector(unpack(layerMeta.transform.origin or {}))
 				offset.offset = Vector(unpack(layerMeta.transform.translation or {}))
 				offset.rotation = Quaternion(unpack(layerMeta.transform.rotation or {}))

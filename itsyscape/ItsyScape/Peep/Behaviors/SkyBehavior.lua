@@ -50,6 +50,17 @@ function SkyBehavior:new()
 	self.nightAmbientColor = Color.fromHexString("111128", 0.6)
 	self.currentAmbientColor = self.dayAmbientColor
 
+	self.skyDawnAmbientColor = Color.fromHexString("ff80b2", 0.5) * Color(0.5)
+	self.skyDayAmbientColor = Color.fromHexString("ffffff", 0.7) * Color(0.5)
+	self.skyDuskAmbientColor = Color.fromHexString("ff9955", 0.5) * Color(0.5)
+	self.skyNightAmbientColor = Color.fromHexString("111128", 0.6)
+	self.currentSkyAmbientColor = self.skyDayAmbientColor
+
+	self.hasFog = false
+	self.fogNearDistance = 40
+	self.fogFarDistance = 100
+	self.fogFollowTarget = false
+
 	self.sunColor = Color.fromHexString("ffffff")
 	self.moonColor = Color.fromHexString("ffffff")
 

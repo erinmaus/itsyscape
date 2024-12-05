@@ -54,7 +54,7 @@ function Ocean:onLoad(...)
 end
 
 function Ocean:onPlayerEnter(player)
-	--self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.exquisitor)
+	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.exquisitor)
 end
 
 function Ocean:onPlayerLeave(player)
