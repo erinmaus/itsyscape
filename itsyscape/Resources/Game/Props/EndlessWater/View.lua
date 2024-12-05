@@ -39,7 +39,7 @@ EndlessWater.SIZE = 64
 EndlessWater.WIDTH  = 1
 EndlessWater.HEIGHT = 1
 
-EndlessWater.CANVAS_CELL_SIZE = 32
+EndlessWater.CANVAS_CELL_SIZE = 8
 
 EndlessWater.WHIRLPOOL_PROPS = {
 	["scape_WhirlpoolCenter"] = "center",
@@ -216,26 +216,38 @@ function EndlessWater:updateShips(delta)
 
 		local projection = love.math.newTransform()
 		projection:ortho(
-			currentTranslation.x,
-			currentTranslation.x + (EndlessWater.WIDTH * 2 + 1) * 2,
-			currentTranslation.y,
-			currentTranslation.y + (EndlessWater.HEIGHT * 2 + 1) * 2,
+			currentTranslation.x - EndlessWater.SIZE * 2,
+			currentTranslation.x + (EndlessWater.WIDTH * 2) * EndlessWater.SIZE * 2,
+			currentTranslation.z - EndlessWater.SIZE * 2,
+			currentTranslation.z + (EndlessWater.HEIGHT * 2) * EndlessWater.SIZE * 2,
 			-(state.ocean and state.ocean.offset * 2 or 32),
 			(state.ocean and state.ocean.offset * 2 or 32))
 
 		local view = love.math.newTransform()
-		view:rotate(0, 0, 1, math.pi / 2)
+		view:rotate(1, 0, 0, math.pi / 2)
+
+		local _, layer = self:getProp():getPosition()
+		local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
 
 		self.shaderCache:bindShader(
 			self.waterShader,
 			"scape_ViewMatrix", view,
-			"scape_ProjectionMatrix", projection)
+			"scape_ProjectionMatrix", projection,
+			"scape_BumpForce", 0,
+			"scape_WindDirection", { windDirection:get() },
+			"scape_WindSpeed", windSpeed,
+			"scape_WindPattern", { windPattern:get() },
+			"scape_WindMaxDistance", state.ocean.offset,
+			"scape_WindSpeedMultiplier", state.ocean.windSpeedMultiplier,
+			"scape_WindPatternMultiplier", state.ocean.windPatternMultiplier,
+			"scape_Time", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()),
+			"scape_YOffset", state.ocean and state.ocean.offset or 0)
 
 		love.graphics.setDepthMode("lequal", true)
 		for _, water in ipairs(self.waters) do
 			self.shaderCache:bindShader(
 				self.waterShader,
-				"scape_WorldMatrix", water:getTransform():getLocalTransform())
+				"scape_WorldMatrix", water:getTransform():getGlobalTransform())
 
 			love.graphics.draw(self.waterMesh:getMesh())
 		end
@@ -283,8 +295,8 @@ function EndlessWater:update(delta)
 
 	local i = math.floor(position.x / (EndlessWater.SIZE * 2))
 	local j = math.floor(position.z / (EndlessWater.SIZE * 2))
-	local x = i * (EndlessWater.SIZE * 2)
-	local z = j * (EndlessWater.SIZE * 2)
+	local x = (i + 0.5) * (EndlessWater.SIZE * 2)
+	local z = (j + 0.5) * (EndlessWater.SIZE * 2)
 
 	self.waterParent:getTransform():setLocalTranslation(Vector(x, 0, z))
 	self.waterParent:tick(1)
