@@ -6,7 +6,7 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Edge of Humanity",
+	Value = "Cusp of Humanity",
 	Language = "en-US",
 	Resource = M._MAP
 }
@@ -75,6 +75,23 @@ do
 		DirectionZ = 4,
 		CastsShadows = 1,
 		Resource = M["Light_Sun"]
+	}
+end
+
+M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Fog",
+		Map = M._MAP,
+		Resource = M["Light_Fog"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Fog_Default",
+		MapObject = M["Light_Fog"]
 	}
 end
 

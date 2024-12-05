@@ -21,23 +21,37 @@ function TestMap:new(...)
 
 	local _, sky = self:addBehavior(SkyBehavior)
 
+	sky.hasFog = true
+	sky.fogFollowTarget = true
+
 	sky.sunPropType = false
 	sky.moonPropType = false
 
-	local color = Color.fromHexString("ffffff", 0.4)
+	local skyColor = Color.fromHexString("111111", 0.3)
+	local worldColor = Color.fromHexString("2d2d55", 0.5)
 
-	sky.dawnSkyColor = color
-	sky.daySkyColor = color
-	sky.duskSkyColor = color
-	sky.nightSkyColor = color
-	sky.previousSkyColor = color
-	sky.currentSkyColor = color
+	local lightColor = Color.fromHexString("255938")
+	sky.sunColor = lightColor
+	sky.moonColor = lightColor
 
-	sky.dawnAmbientColor = color
-	sky.dayAmbientColor = color
-	sky.duskAmbientColor = color
-	sky.nightAmbientColor = color
-	sky.currentAmbientColor = color
+	sky.dawnSkyColor = worldColor
+	sky.daySkyColor = worldColor
+	sky.duskSkyColor = worldColor
+	sky.nightSkyColor = worldColor
+	sky.previousSkyColor = worldColor
+	sky.currentSkyColor = worldColor
+
+	sky.dawnAmbientColor = worldColor
+	sky.dayAmbientColor = worldColor
+	sky.duskAmbientColor = worldColor
+	sky.nightAmbientColor = worldColor
+	sky.currentAmbientColor = worldColor
+
+	sky.skyDawnAmbientColor = skyColor
+	sky.skyDayAmbientColor = skyColor
+	sky.skyDuskAmbientColor = skyColor
+	sky.skyNightAmbientColor = skyColor
+	sky.currentSkyAmbientColor = skyColor
 
 	sky.cloudPropType = false
 end

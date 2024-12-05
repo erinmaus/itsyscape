@@ -46,6 +46,16 @@ end
 
 function WaterMeshSceneNode:setYOffset(value)
 	self.yOffset = value or self.yOffset
+
+	if self.waterMesh then
+		local min, max = self.waterMesh:getBounds()
+
+		if self.yOffset < 0 then
+			self:setBounds(min + Vector(0, self.yOffset, 0), max)
+		else
+			self:setBounds(min, max + Vector(0, self.yOffset, 0))
+		end
+	end
 end
 
 function WaterMeshSceneNode:getPositionTimeScale()

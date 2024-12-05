@@ -56,6 +56,14 @@ Storm.PARTICLES = function(windDirection, minWindSpeed, maxWindSpeed)
 				normal = { true }
 			},
 			{
+				type = "RandomColorEmitter",
+				colors = {
+					{ 1.0, 1.0, 1.0, 0.0 },
+					{ 1.0, 1.0, 1.0, 0.0 },
+					{ 0.2, 0.2, 0.2, 0.0 }
+				}
+			},
+			{
 				type = "DirectionalEmitter",
 				direction = { windDirection:get() },
 				speed = { minWindSpeed or 1, maxWindSpeed or 1.5 }
@@ -116,7 +124,7 @@ function Storm:load()
 	self.particles:getMaterial():setShader(Storm.SHADER)
 	self.particles:getMaterial():setIsZWriteDisabled(false)
 	self.particles:getMaterial():setIsFullLit(false)
-	self.particles:getMaterial():setColor(Color(0.1))
+	self.particles:getMaterial():setColor(Color(1))
 	self.particles:getMaterial():setOutlineThreshold(-1)
 	self.particles:setParent(root)
 
@@ -159,13 +167,6 @@ function Storm:tick()
 
 		local resources = self:getResources()
 		self.particles:initParticleSystemFromDef(stormParticleSystemDef, resources)
-
-		if not self.windDirection or not self.windSpeed then
-			resources:queueEvent(function()
-				--self.particles:emit(4000)
-			end)
-		end
-
 
 		self.windDirection = windDirection:keep()
 		self.windSpeed = windSpeed

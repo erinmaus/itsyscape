@@ -5,7 +5,7 @@
 			origin =
 			{
 				30,
-				-8,
+				0,
 				8,
 			},
 			rotation =
@@ -17,9 +17,9 @@
 			},
 			translation =
 			{
+				-30,
 				0,
-				0,
-				0,
+				-8,
 			},
 			scale =
 			{
