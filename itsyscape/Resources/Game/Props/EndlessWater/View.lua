@@ -16,6 +16,7 @@ local PropView = require "ItsyScape.Graphics.PropView"
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
@@ -113,11 +114,8 @@ function EndlessWater:load()
 	local height = EndlessWater.HEIGHT * 2 + 1
 	height = height * EndlessWater.SIZE * 2 * self.CANVAS_CELL_SIZE
 
-	self.shadowCanvas = love.graphics.newCanvas(width, height, { format = "rgba16f" })
-	self.shadowCanvas:setFilter("linear", "linear")
-
-	self.maskCanvas = love.graphics.newCanvas(width, height)
-	self.maskCanvas:setFilter("linear", "linear")
+	self.shipCanvas = love.graphics.newCanvas(width, height)
+	self.shipCanvas:setFilter("linear", "linear")
 
 	self.bumpCanvas = love.graphics.newCanvas(width, height, { format = "rgba16f" })
 	self.bumpCanvas:setFilter("linear", "linear")
@@ -168,30 +166,6 @@ function EndlessWater:tick()
 	end
 end
 
-function EndlessWater:makeShipMesh(shipState, size)
-	local MESH_FORMAT = {
-		{ "VertexPosition", "float", 3 },
-		{ "VertexTexture", "float", 2 }
-	}
-
-	local MESH_DATA = {
-		{ 0, 0, 0, 0, 0 },
-		{ size.z, 0, 0, 1, 0 },
-		{ size.z, 0, size.x, 1, 1 },
-
-		{ size.z, 0, size.x, 1, 1 },
-		{ 0, 0, size.x, 0, 1 },
-		{ 0, 0, 0, 0, 0 }
-	}
-
-
-	local mesh = love.graphics.newMesh(MESH_FORMAT, MESH_DATA, "triangles", "static")
-	mesh:setAttributeEnabled("VertexPosition", true)
-	mesh:setAttributeEnabled("VertexTexture", true)
-
-	return mesh
-end
-
 function EndlessWater:updateShips(delta)
 	if not self.waterMesh then
 		return
@@ -208,34 +182,26 @@ function EndlessWater:updateShips(delta)
 	self.currentShips = {}
 
 	for _, shipState in ipairs(shipsState) do
-		local mask = shipState.mask
-
-		local maskImage = mask and self.masks[mask]
-		maskImage = maskImage or love.graphics.newImage(string.format("Resources/Game/Props/EndlessWater/Masks/%s.png", mask))
-
-		local shadowImage = mask and self.shadows[mask]
-		shadowImage = shadowImage or love.graphics.newImage(string.format("Resources/Game/Props/EndlessWater/Shadows/%s.png", mask))
-
-		local currentSize = Vector(unpack(shipState.size))
-
-		local mesh
 		local previousShip = previousShips and previousShips[shipState.id]
-		if not previousShip or previousShip.size ~= currentSize then
-			if previousShip and previousShip.mesh then
-				previousShip.mesh:release()
-			end
 
-			mesh = self:makeShipMesh(shipState, currentSize)
-		else
-			mesh = previousShip.mesh
+		local mask = shipState.mask
+		if not previousShip or previousShip.mask ~= mask then
+			local maskMesh = self.masks[mask]
+			if maskMesh == nil then
+				self.masks[mask] = false
+
+				self:getResources():queue(
+					StaticMeshResource,
+					string.format("Resources/Game/SailingItems/Mask_%s/Model.lstatic", mask),
+					function(mesh)
+						self.masks[mask] = mesh
+					end)
+			end
 		end
 
 		local currentShip = {
-			mask = maskImage,
-			shadow = shadowImage,
-			mesh = mesh,
-			state = shipState,
-			size = currentSize
+			mask = shipState.mask,
+			state = shipState
 		}
 
 		self.currentShips[shipState.id] = currentShip
@@ -243,7 +209,7 @@ function EndlessWater:updateShips(delta)
 
 	love.graphics.push("all")
 	do
-		love.graphics.setCanvas({ self.shadowCanvas, self.maskCanvas, depth = true })
+		love.graphics.setCanvas({ self.shipCanvas, depth = true })
 		love.graphics.clear(0, 0, 0, 1)
 
 		local currentTranslation = self.waterParent:getTransform():getLocalTranslation()
@@ -282,25 +248,28 @@ function EndlessWater:updateShips(delta)
 		love.graphics.setDepthMode("gequal", true)
 		local worldTransform = love.math.newTransform()
 		for _, currentShip in pairs(self.currentShips) do
-			local position = Vector(unpack(currentShip.state.position))
-			local rotation = Quaternion(unpack(currentShip.state.rotation))
-			local scale = Vector(unpack(currentShip.state.scale))
-			local origin = Vector(unpack(currentShip.state.origin))
+			local meshResource = self.masks[currentShip.mask]
+			local mesh = meshResource and meshResource:getResource():getMesh("mask")
 
-			worldTransform:reset()
-			worldTransform:translate(origin:get())
-			worldTransform:translate(position:get())
-			worldTransform:scale(scale:get())
-			worldTransform:applyQuaternion(rotation:get())
-			worldTransform:translate((-origin):get())
+			if mesh then
+				local position = Vector(unpack(currentShip.state.position))
+				local rotation = Quaternion(unpack(currentShip.state.rotation))
+				local scale = Vector(unpack(currentShip.state.scale))
+				local origin = Vector(unpack(currentShip.state.origin))
 
-			self.shaderCache:bindShader(
-				self.shipShader,
-				"scape_WorldMatrix", worldTransform,
-				"scape_ShadowTexture", currentShip.shadow,
-				"scape_MaskTexture", currentShip.mask)
+				worldTransform:reset()
+				worldTransform:translate(origin:get())
+				worldTransform:translate(position:get())
+				worldTransform:scale(scale:get())
+				worldTransform:applyQuaternion(rotation:get())
+				worldTransform:translate((-origin):get())
 
-			love.graphics.draw(currentShip.mesh)
+				self.shaderCache:bindShader(
+					self.shipShader,
+					"scape_WorldMatrix", worldTransform)
+
+				love.graphics.draw(mesh)
+			end
 		end
 	end
 	love.graphics.pop()
