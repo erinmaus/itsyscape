@@ -28,7 +28,7 @@ function TestMap:new(...)
 	sky.moonPropType = false
 
 	local skyColor = Color.fromHexString("111111", 0.3)
-	local worldColor = Color.fromHexString("2d2d55", 0.5)
+	local worldColor = Color.fromHexString("2d2d55", 1)
 
 	local lightColor = Color.fromHexString("255938")
 	sky.sunColor = lightColor

@@ -184,7 +184,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 
 	auto fog_parameters = glm::vec2(light.near_distance, light.far_distance);
 	shader_cache.update_uniform(shader, "scape_FogParameters", glm::value_ptr(fog_parameters), sizeof(glm::vec2));
-	shader_cache.update_uniform(shader, "scape_FogCOlor", glm::value_ptr(light.color), sizeof(glm::vec3));
+	shader_cache.update_uniform(shader, "scape_FogColor", glm::value_ptr(light.color), sizeof(glm::vec3));
 
 	glm::vec3 camera_eye;
 	switch (node.get_follow_mode())

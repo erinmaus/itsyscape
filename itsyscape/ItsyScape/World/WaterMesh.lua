@@ -41,6 +41,10 @@ function WaterMesh:getBounds()
 	return self.min, self.max
 end
 
+function WaterMesh:getMesh()
+	return self.mesh
+end
+
 function WaterMesh:draw(texture, ...)
 	if self.mesh then
 		self.mesh:setTexture(texture)

@@ -330,7 +330,7 @@ function SkyCortex:update(delta)
 					Probe.resource("Prop", "Fog_Default"))[1]
 
 				if fog then
-					fog:setColor(sky.currentSkyColor)
+					fog:setColor(sky.currentSkyColor * sky.currentSkyColor.a)
 					fog:setNearDistance(sky.fogNearDistance)
 					fog:setFarDistance(sky.fogFarDistance)
 

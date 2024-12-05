@@ -90,7 +90,7 @@ function GroundDecorationsV2:emit(method, tileSet, map, i, j)
 		tileSetTile = actualTileSet:getTile(mapTile.flat)
 	end
 
-	if tileSetTile and mapTile.tileSetID == self.tileSetID then
+	if tileSetTile and (not mapTile.tileSetID or mapTile.tileSetID == "" or mapTile.tileSetID == self.tileSetID) then
 		local name = tileSetTile.name
 		local tileFunction = self.tileFunctions[name]
 		if tileFunction then

@@ -46,6 +46,9 @@ function ShipMovementBehavior:new()
 	-- Dimensions of ship (beam is "width" of ship)
 	self.length = 0
 	self.beam = 0
+
+	-- Ship mask. Used by EndlessWater et al to tweak water graphics.
+	self.mask = "Galleon_Wood"
 end
 
 return ShipMovementBehavior

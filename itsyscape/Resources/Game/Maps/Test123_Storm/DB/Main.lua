@@ -47,6 +47,13 @@ do
 		Resource = M["Storm"]
 	}
 
+	ItsyScape.Meta.Light {
+		ColorRed = 0,
+		ColorGreen = 255,
+		ColorBlue = 0,
+		Resource = M["Storm"]
+	}
+
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Storm_Default",
 		MapObject = M["Storm"]

@@ -152,10 +152,6 @@ function Lamp:update(delta)
 	PropView.update(self, delta)
 
 	self.flickerTime = self.flickerTime - delta
-end
-
-function Lamp:tick()
-	PropView.tick(self)
 
 	if self.flickerTime < 0 then
 		self:flicker()

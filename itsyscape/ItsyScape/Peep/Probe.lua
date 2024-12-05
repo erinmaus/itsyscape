@@ -227,11 +227,20 @@ function Probe.actionOutput(actionType, outputName, outputType)
 end
 
 local _layer = function(layer, peep)
-	return Utility.Peep.getLayer(peep) == layer
+	local position = peep:getBehavior(PositionBehavior)
+	return position and position.layer == layer
 end
 
 function Probe.layer(layer)
 	return Callback.bind(_layer, layer)
+end
+
+local _component = function(ComponentType, peep)
+	return peep:hasBehavior(ComponentType)
+end
+
+function Probe.component(ComponentType)
+	return Callback.bind(_component, ComponentType)
 end
 
 return Probe

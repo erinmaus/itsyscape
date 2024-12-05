@@ -1884,6 +1884,7 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 		meta = setfenv(chunk, {})() or {}
 	end
 
+	local parentLayer
 	for _, item in ipairs(love.filesystem.getDirectoryItems(path)) do
 		local layer = item:match(".*(-?%d)%.lmap$")
 		if layer then
@@ -1931,7 +1932,9 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 					Utility.Peep.getPosition(peep),
 					Utility.Peep.getRotation(peep),
 					Utility.Peep.getScale(peep),
-					origin.origin, false)
+					origin.origin,
+					false,
+					parentLayer or false)
 			else
 				stage:onMapMoved(realLayer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
 			end
@@ -1941,6 +1944,8 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 
 				self.mapScriptCurves[layer] = layerMeta.curve
 			end
+
+			parentLayer = parentLayer or layer
 		end
 	end
 
