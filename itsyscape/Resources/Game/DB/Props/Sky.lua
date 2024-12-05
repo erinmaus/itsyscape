@@ -66,7 +66,7 @@ do
 	local Storm = ItsyScape.Resource.Prop "Storm_Default"
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Value = "Resources.Game.Peeps.Props.BasicStorm",
 		Resource = Storm
 	}
 end

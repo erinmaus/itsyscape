@@ -138,8 +138,12 @@ function Storm:zap()
 		love.math.random() * 2 - 1):getNormal()
 	position = position * (love.math.random() * (self.MAX_RADIUS - self.MIN_RADIUS) + self.MIN_RADIUS) + self.LIGHTNING_RADIUS_OFFSET
 
+	local state = self:getProp():getState()
+	local colors = state.colors or { { 1, 1, 1 } }
+	local color = colors[love.math.random(#state.colors)]
+
 	local light = PointLightSceneNode()
-	light:setColor(Color(1))
+	light:setColor(Color(unpack(color or { 1, 1, 1 })))
 	light:setParent(self:getRoot())
 	light:getTransform():setLocalTranslation(position)
 

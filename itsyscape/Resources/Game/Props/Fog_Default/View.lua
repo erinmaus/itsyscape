@@ -40,11 +40,4 @@ function Fog:tick()
 	end
 end
 
-function Fog:update(...)
-	PropView.update(self, ...)
-
-	local l = self.fog:toLight(0.5)
-	print(">>> c", unpack(l.color))
-end
-
 return Fog

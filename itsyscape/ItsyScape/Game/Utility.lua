@@ -2637,9 +2637,18 @@ function Utility.Peep.getTransform(peep)
 			scale = Vector.ONE
 		end
 
+		local origin = peep:getBehavior(OriginBehavior)
+		if origin then
+			origin = origin.origin
+		else
+			origin = Vector.ZERO
+		end
+
+		transform:translate(origin:get())
 		transform:translate(position:get())
 		transform:scale(scale:get())
 		transform:applyQuaternion(rotation:get())
+		transform:translate((-origin):get())
 	end
 
 	return transform
@@ -2662,6 +2671,46 @@ function Utility.Peep.getAbsoluteTransform(peep)
 	return transform
 end
 
+function Utility.Peep.getDecomposedMapTransform(peep)
+	local position = peep:getBehavior(PositionBehavior)
+	if position then
+		position = position.position
+	else
+		position = Vector.ZERO
+	end
+
+	local rotation = peep:getBehavior(RotationBehavior)
+	if rotation then
+		rotation = rotation.rotation
+	else
+		rotation = Quaternion.IDENTITY
+	end
+
+	local scale = peep:getBehavior(ScaleBehavior)
+	if scale then
+		scale = scale.scale
+	else
+		scale = Vector.ONE
+	end
+
+	local origin = peep:getBehavior(OriginBehavior)
+	if origin then
+		origin = origin.origin
+	else
+		origin = Vector.ZERO
+	end
+
+	local mapOffset = peep:getBehavior(MapOffsetBehavior)
+	if mapOffset then
+		origin = origin + mapOffset.origin
+		position = position + mapOffset.offset
+		rotation = rotation * mapOffset.rotation
+		scale = scale * mapOffset.scale
+	end
+
+	return position, rotation, scale, origin
+end
+
 function Utility.Peep.getMapTransform(peep)
 	local transform = love.math.newTransform()
 
@@ -2674,41 +2723,7 @@ function Utility.Peep.getMapTransform(peep)
 	end
 
 	do
-		local position = peep:getBehavior(PositionBehavior)
-		if position then
-			position = position.position
-		else
-			position = Vector.ZERO
-		end
-
-		local rotation = peep:getBehavior(RotationBehavior)
-		if rotation then
-			rotation = rotation.rotation
-		else
-			rotation = Quaternion.IDENTITY
-		end
-
-		local scale = peep:getBehavior(ScaleBehavior)
-		if scale then
-			scale = scale.scale
-		else
-			scale = Vector.ONE
-		end
-
-		local origin = peep:getBehavior(OriginBehavior)
-		if origin then
-			origin = origin.origin
-		else
-			origin = Vector.ZERO
-		end
-
-		local mapOffset = peep:getBehavior(MapOffsetBehavior)
-		if mapOffset then
-			origin = origin + mapOffset.origin
-			position = position + mapOffset.offset
-			rotation = rotation * mapOffset.rotation
-			scale = scale * mapOffset.scale
-		end
+		local position, rotation, scale, origin = Utility.Peep.getDecomposedMapTransform(peep)
 
 		transform:translate(origin:get())
 		transform:translate(position:get())
