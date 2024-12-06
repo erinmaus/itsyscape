@@ -831,6 +831,30 @@ function GameView:_updateWind(layer, node)
 	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", { windPattern:get() })
 end
 
+function GameView:_updateMapNodeWallHack(m)
+	local wallHackEnabled = m.wallHackEnabled == nil or m.wallHackEnabled
+	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom = 1.25, 1.25, 4.0, 0.25
+	if wallHackEnabled and not self:_getIsMapEditor() then
+		if m.meta and type(m.meta.wallHack) == "table" then
+			wallHackLeft = m.meta.wallHack.left or wallHackLeft
+			wallHackRight = m.meta.wallHack.right or wallHackRight
+			wallHackTop = m.meta.wallHack.top or wallHackTop
+			wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
+		end
+	else
+		wallHackLeft = 0
+		wallHackRight = 0
+		wallHackTop = 0
+		wallHackBottom = 0
+	end
+
+	for _, part in ipairs(m.parts) do
+		local material = part:getMaterial()
+		material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
+		material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+	end
+end
+
 function GameView:_updateMapNode(m, node)
 	local mapMesh = node:getMapMesh()
 	if not mapMesh then
@@ -876,20 +900,6 @@ function GameView:_updateMapNode(m, node)
 	else
 		material:send(Material.UNIFORM_INTEGER, "scape_NumCurves", 0)
 	end
-
-	if m.wallHackEnabled and not self:_getIsMapEditor() then
-		local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom = 1.25, 1.25, 4.0, 0.25
-
-		if m.meta and type(m.meta.wallHack) == "table" then
-			wallHackLeft = m.meta.wallHack.left or wallHackLeft
-			wallHackRight = m.meta.wallHack.right or wallHackRight
-			wallHackTop = m.meta.wallHack.top or wallHackTop
-			wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
-		end
-
-		material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", { wallHackLeft, wallHackRight, wallHackTop, wallHackBottom })
-		material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
-	end	
 end
 
 function GameView:_updatePlayerMapNode()
@@ -1846,6 +1856,12 @@ function GameView:updateMapQueries(delta)
 	until m == nil
 end
 
+function GameView:updateMaps(delta)
+	for _, m in pairs(self.mapMeshes) do
+		self:_updateMapNodeWallHack(m)
+	end
+end
+
 function GameView:update(delta)
 	_APP:measure("gameView:updateResourceManager()", GameView.updateResourceManager, self)
 	_APP:measure("gameView:updateActors()", GameView.updateActors, self, delta)
@@ -1855,6 +1871,7 @@ function GameView:update(delta)
 	_APP:measure("gameView:updateSprites()", GameView.updateSprites, self, delta)
 	_APP:measure("gameView:updateMusic()", GameView.updateMusic, self, delta)
 	_APP:measure("gameView:updateMapQueries()", GameView.updateMapQueries, self, delta)
+	_APP:measure("gameView:updateMaps()", GameView.updateMaps, self, delta)
 
 	if self.game:getPlayer() then
 		local actor = self:getActor(self.game:getPlayer():getActor())
