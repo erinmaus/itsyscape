@@ -34,6 +34,8 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate);
 
 void effect()
 {
+	love_Canvases[1] = vec4(encodeGBufferNormal(clampGBufferNormal(frag_Normal)), 0.0, 1.0);
+
 #ifdef SCAPE_LIGHT_MODEL_V2
 	vec4 diffuse = frag_Color;
 	vec3 normal = frag_Normal;
@@ -59,6 +61,5 @@ void effect()
 	}
 
 	love_Canvases[0] = diffuse;
-	love_Canvases[1] = vec4(encodeGBufferNormal(normal), 0.0, 1.0);
 	love_Canvases[2] = vec4(specular, scape_OutlineColor.r, (scape_OutlineThreshold + 1.0) / 2.0, 1.0);
 }

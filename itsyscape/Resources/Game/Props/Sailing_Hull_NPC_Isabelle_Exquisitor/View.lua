@@ -28,6 +28,12 @@ Hull.STATE = {
 			outlineThreshold = 0.3
 		},
 		{
+			mesh = "Resources/Game/SailingItems/Mask_Galleon_Wood/Model.lstatic",
+			group = "mask",
+			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Window_Glass.png",
+			isShadowVolume = true
+		},
+		{
 			mesh = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Model.lstatic",
 			group = "hull.exterior",
 			texture = "Resources/Game/SailingItems/Hull_NPC_Isabelle_Exquisitor/Planks.png",
@@ -153,6 +159,10 @@ function Hull:load()
 
 						if attachment.isZWriteDisabled then
 							decoration:getMaterial():setIsZWriteDisabled(attachment.isZWriteDisabled)
+						end
+
+						if attachment.isShadowVolume then
+							decoration:getMaterial():setIsStencilWriteEnabled(attachment.isShadowVolume)
 						end
 					end)
 			end

@@ -120,6 +120,9 @@ namespace nbunny
 
 		float z_bias = 0.0f;
 
+		bool is_stencil_write_enabled = false;
+		bool is_stencil_mask_enabled = false;
+
 	public:
 		SceneNodeMaterial(SceneNode& scene_node);
 		~SceneNodeMaterial() = default;
@@ -135,6 +138,15 @@ namespace nbunny
 
 		void set_is_light_target_position_enabled(bool value);
 		bool get_is_light_target_position_enabled() const;
+
+		void set_is_stencil_write_enabled(bool value);
+		bool get_is_stencil_write_enabled() const;
+
+		void set_is_stencil_mask_enabled(bool value);
+		bool get_is_stencil_mask_enabled() const;
+
+		bool should_stencil_mask() const;
+		bool should_stencil_write() const;
 
 		void set_is_z_write_disabled(bool value);
 		bool get_is_z_write_disabled() const;

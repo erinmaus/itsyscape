@@ -13,6 +13,7 @@
 #include "common/pixelformat.h"
 #include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
+#include "modules/graphics/opengl/OpenGL.h"
 #include "modules/filesystem/Filesystem.h"
 #include "modules/math/Transform.h"
 #include "modules/graphics/opengl/OpenGL.h"
@@ -45,10 +46,26 @@ void nbunny::DeferredRendererPass::walk_all_nodes(SceneNode& node, float delta)
 	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_material();
 
 	drawable_scene_nodes.clear();
+	stencil_masked_drawable_scene_nodes.clear();
+	stencil_write_drawable_scene_nodes.clear();
+
 	for (auto& visible_scene_node: visible_scene_nodes)
 	{
 		auto& material = visible_scene_node->get_material();
-		if (!material.get_is_translucent() && !material.get_is_full_lit())
+		if (material.get_is_translucent() || material.get_is_full_lit())
+		{
+			continue;
+		}
+
+		if (material.should_stencil_mask())
+		{
+			stencil_masked_drawable_scene_nodes.push_back(visible_scene_node);
+		}
+		else if (material.should_stencil_write())
+		{
+			stencil_write_drawable_scene_nodes.push_back(visible_scene_node);
+		}
+		else
 		{
 			drawable_scene_nodes.push_back(visible_scene_node);
 		}
@@ -303,7 +320,41 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 	graphics->draw(shadow_buffer.get_color(), love::Matrix4());
 }
 
-void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
+void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta, const std::vector<SceneNode*>& nodes)
+{
+	auto renderer = get_renderer();
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	love::graphics::CompareMode depth_compare_mode = love::graphics::COMPARE_LEQUAL;
+	bool depth_write_enabled = true;
+	graphics->getDepthMode(depth_compare_mode, depth_write_enabled);
+
+	for (auto& scene_node: nodes)
+	{
+		auto shader = get_node_shader(L, *scene_node);
+		renderer->set_current_shader(shader);
+
+		auto outline_threshold = scene_node->get_material().get_outline_threshold();
+		renderer->get_shader_cache().update_uniform(shader, "scape_OutlineThreshold", &outline_threshold, sizeof(float));
+
+		auto color = scene_node->get_material().get_color();
+		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
+
+		if (scene_node->get_material().get_is_z_write_disabled())
+		{
+			graphics->setDepthMode(depth_compare_mode, false);
+		}
+
+		renderer->draw_node(L, *scene_node, delta);
+
+		if (scene_node->get_material().get_is_z_write_disabled())
+		{
+			graphics->setDepthMode(depth_compare_mode, depth_write_enabled);
+		}
+	}
+}
+
+void nbunny::DeferredRendererPass::draw_pass(lua_State* L, float delta)
 {
 	auto renderer = get_renderer();
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
@@ -328,33 +379,56 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta)
 		},
 		0,
 		1.0f);
+
+	love::graphics::Graphics::ColorMask enabled_mask;
+	enabled_mask.r = true;
+	enabled_mask.g = true;
+	enabled_mask.b = true;
+	enabled_mask.a = true;
+
+	love::graphics::Graphics::ColorMask disabled_mask;
+	disabled_mask.r = false;
+	disabled_mask.g = false;
+	disabled_mask.b = false;
+	disabled_mask.a = false;
 	
 	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
-	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
 	graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
-	for (auto& scene_node: drawable_scene_nodes)
+	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+	if (!stencil_masked_drawable_scene_nodes.empty() && !stencil_write_drawable_scene_nodes.empty())
 	{
-		auto shader = get_node_shader(L, *scene_node);
-		renderer->set_current_shader(shader);
+		graphics->setColorMask(disabled_mask);
+		draw_nodes(L, delta, stencil_masked_drawable_scene_nodes);
 
-		auto outline_threshold = scene_node->get_material().get_outline_threshold();
-		renderer->get_shader_cache().update_uniform(shader, "scape_OutlineThreshold", &outline_threshold, sizeof(float));
+		graphics->setDepthMode(love::graphics::COMPARE_GEQUAL, false);
+		graphics->drawToStencilBuffer(love::graphics::STENCIL_INCREMENT, 0);
+		glad::glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+		draw_nodes(L, delta, stencil_write_drawable_scene_nodes);
 
-		auto color = scene_node->get_material().get_color();
-		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
+		graphics->setMeshCullMode(love::graphics::CULL_FRONT);
+		glad::glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
+		draw_nodes(L, delta, stencil_write_drawable_scene_nodes);
 
-		if (scene_node->get_material().get_is_z_write_disabled())
-		{
-			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
-		}
+		graphics->stopDrawToStencilBuffer();
+		glad::glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-		renderer->draw_node(L, *scene_node, delta);
+		graphics->setMeshCullMode(love::graphics::CULL_BACK);
+		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+	}
 
-		if (scene_node->get_material().get_is_z_write_disabled())
-		{
-			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-		}
+	graphics->setColorMask(enabled_mask);
+	graphics->clear(
+		love::graphics::OptionalColorf(),
+		love::OptionalInt(),
+		1.0f);
+	draw_nodes(L, delta, drawable_scene_nodes);
+
+	if (!stencil_masked_drawable_scene_nodes.empty())
+	{
+		graphics->setStencilTest(love::graphics::COMPARE_EQUAL, 0);
+		draw_nodes(L, delta, stencil_masked_drawable_scene_nodes);
+		graphics->setStencilTest(love::graphics::COMPARE_ALWAYS, 0);
 	}
 
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
@@ -570,7 +644,7 @@ void nbunny::DeferredRendererPass::draw(lua_State* L, SceneNode& node, float del
 {
 	walk_all_nodes(node, delta);
 	walk_visible_lights();
-	draw_nodes(L, delta);
+	draw_pass(L, delta);
 	draw_lights(L, delta);
 	draw_shadows(L, delta);
 	draw_fog(L, delta);

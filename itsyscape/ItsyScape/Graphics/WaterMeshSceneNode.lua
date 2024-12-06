@@ -35,9 +35,7 @@ function WaterMeshSceneNode:new()
 	self.depth = 0
 
 	self:getMaterial():setShader(WaterMeshSceneNode.DEFAULT_SHADER)
-	self:getMaterial():setIsReflectiveOrRefractive(true)
-	self:getMaterial():setReflectionPower(1.0)
-	self:getMaterial():setReflectionDistance(0.2)
+	self:getMaterial():setIsStencilMaskEnabled(true)
 end
 
 function WaterMeshSceneNode:getYOffset()

@@ -68,6 +68,22 @@ function Material:setIsTranslucent(value)
 	self._handle:setIsTranslucent(value or false)
 end
 
+function Material:getIsStencilWriteEnabled()
+	return self._handle:getIsStencilWriteEnabled()
+end
+
+function Material:setIsStencilWriteEnabled(value)
+	self._handle:setIsStencilWriteEnabled(value == nil and false or value)
+end
+
+function Material:getIsStencilMaskEnabled()
+	return self._handle:getIsStencilMaskEnabled()
+end
+
+function Material:setIsStencilMaskEnabled(value)
+	self._handle:setIsStencilMaskEnabled(value == nil and false or value)
+end
+
 -- Returns true if the Material should be fully lit, false otherwise.
 function Material:getIsFullLit()
 	return self._handle:getIsFullLit()

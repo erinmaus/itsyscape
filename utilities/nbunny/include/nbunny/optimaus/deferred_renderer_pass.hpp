@@ -38,6 +38,8 @@ namespace nbunny
 		std::shared_ptr<ShadowRendererPass> shadow_pass;
 
 		std::vector<SceneNode*> drawable_scene_nodes;
+		std::vector<SceneNode*> stencil_masked_drawable_scene_nodes;
+		std::vector<SceneNode*> stencil_write_drawable_scene_nodes;
 		std::vector<LightSceneNode*> light_scene_nodes;
 		std::vector<FogSceneNode*> fog_scene_nodes;
 
@@ -49,7 +51,8 @@ namespace nbunny
 		void draw_point_light(lua_State* L, LightSceneNode& node, float delta);
 		void draw_fog(lua_State* L, FogSceneNode& node, float delta);
 
-		void draw_nodes(lua_State* L, float delta);
+		void draw_nodes(lua_State* L, float delta, const std::vector<SceneNode*>& nodes);
+		void draw_pass(lua_State* L, float delta);
 		void draw_lights(lua_State* L, float delta);
 		void draw_fog(lua_State* L, float delta);
 		void draw_shadows(lua_State* L, float delta);
