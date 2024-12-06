@@ -406,10 +406,6 @@ void nbunny::DeferredRendererPass::draw_pass(lua_State* L, float delta)
 		glad::glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
 		draw_nodes(L, delta, stencil_write_drawable_scene_nodes);
 
-		graphics->setMeshCullMode(love::graphics::CULL_FRONT);
-		glad::glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
-		draw_nodes(L, delta, stencil_write_drawable_scene_nodes);
-
 		graphics->stopDrawToStencilBuffer();
 		glad::glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 

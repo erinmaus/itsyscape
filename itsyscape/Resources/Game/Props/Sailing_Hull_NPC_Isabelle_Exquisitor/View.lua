@@ -93,12 +93,12 @@ function Hull:load()
 
 	self.decoration = DecorationSceneNode()
 
-	local shader
+	local basicShader
 	resources:queue(
 		ShaderResource,
 		"Resources/Shaders/WallDecoration",
 		function(s)
-			shader = s
+			basicShader = s
 		end)
 
 	local state = self.STATE
@@ -135,8 +135,9 @@ function Hull:load()
 						material:setTextures(texture)
 
 						if not attachment.isShadowVolume then
-							material:setShader(shader)
-							material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 2.5, 2.5, 4, 0.25)
+							material:setShader(basicShader)
+							material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 5, 5, 4, 2)
+							--material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 2.5, 2.5, 4, 0.25)
 						end
 
 						if attachment.color then
