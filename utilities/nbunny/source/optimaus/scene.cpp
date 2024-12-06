@@ -222,6 +222,60 @@ bool nbunny::SceneNodeMaterial::get_is_light_target_position_enabled() const
 	return is_light_target_position_enabled;
 }
 
+void nbunny::SceneNodeMaterial::set_is_stencil_write_enabled(bool value)
+{
+	is_stencil_write_enabled = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_stencil_write_enabled() const
+{
+	return is_stencil_write_enabled;
+}
+
+void nbunny::SceneNodeMaterial::set_is_stencil_mask_enabled(bool value)
+{
+	is_stencil_mask_enabled = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_stencil_mask_enabled() const
+{
+	return is_stencil_mask_enabled;
+}
+
+bool nbunny::SceneNodeMaterial::should_stencil_mask() const
+{
+	auto parent = &scene_node;
+	while (parent)
+	{
+		auto& material = parent->get_material();
+		if (material.get_is_stencil_mask_enabled())
+		{
+			return true;
+		}
+
+		parent = parent->get_parent();
+	}
+
+	return false;
+}
+
+bool nbunny::SceneNodeMaterial::should_stencil_write() const
+{
+	auto parent = &scene_node;
+	while (parent)
+	{
+		auto& material = parent->get_material();
+		if (material.get_is_stencil_write_enabled())
+		{
+			return true;
+		}
+
+		parent = parent->get_parent();
+	}
+
+	return false;
+}
+
 void nbunny::SceneNodeMaterial::set_is_z_write_disabled(bool value)
 {
 	is_z_write_disabled = value;	
@@ -1607,6 +1661,38 @@ static int nbunny_scene_node_material_get_is_light_target_position_enabled(lua_S
     return 1;
 }
 
+static int nbunny_scene_node_material_set_is_stencil_write_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_stencil_write_enabled(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_stencil_write_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_stencil_write_enabled());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_is_stencil_mask_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_stencil_mask_enabled(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_stencil_mask_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_stencil_mask_enabled());
+
+    return 1;
+}
+
 static int nbunny_scene_node_material_set_is_z_write_disabled(lua_State* L)
 {
     auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
@@ -1803,6 +1889,10 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		{ "getIsFullLit", &nbunny_scene_node_material_get_is_full_lit },
 		{ "setIsLightTargetPositionEnabled", &nbunny_scene_node_material_set_is_light_target_position_enabled },
 		{ "getIsLightTargetPositionEnabled", &nbunny_scene_node_material_get_is_light_target_position_enabled },
+		{ "setIsStencilWriteEnabled", &nbunny_scene_node_material_set_is_stencil_write_enabled },
+		{ "getIsStencilWriteEnabled", &nbunny_scene_node_material_get_is_stencil_write_enabled },
+		{ "setIsStencilMaskEnabled", &nbunny_scene_node_material_set_is_stencil_mask_enabled },
+		{ "getIsStencilMaskEnabled", &nbunny_scene_node_material_get_is_stencil_mask_enabled },
 		{ "setIsZWriteDisabled", &nbunny_scene_node_material_set_is_z_write_disabled },
 		{ "getIsZWriteDisabled", &nbunny_scene_node_material_get_is_z_write_disabled },
 		{ "setIsCullDisabled", &nbunny_scene_node_material_set_is_cull_disabled },

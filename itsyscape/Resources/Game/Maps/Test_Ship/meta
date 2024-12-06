@@ -1,5 +1,7 @@
 {
 	{
+		isShip = true,
+
 		transform =
 		{
 			translation =

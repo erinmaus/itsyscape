@@ -1,3 +1,6 @@
+uniform Image scape_MaskTexture;
+uniform mat4 scape_BumpProjectionViewMatrix;
+
 uniform vec4 scape_TimeScale;
 uniform Image scape_DiffuseTexture;
 
@@ -41,6 +44,13 @@ vec2 rotate(float theta, vec2 p)
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
+	vec4 relativePosition = scape_BumpProjectionViewMatrix * vec4(frag_Position, 1.0);
+	relativePosition /= relativePosition.w;
+	relativePosition.xyz += vec3(1.0);
+	relativePosition.xyz /= vec3(2.0);
+
+	float outlineAlpha = Texel(scape_MaskTexture, relativePosition.xy).r;
+
 	textureCoordinate += normalize(scape_WindDirection.xz) * vec2(scape_WindSpeed * scape_Time / 8.0);
 
 	vec2 relativeWorldPosition = frag_Position.xz - scape_WhirlpoolCenter;
@@ -64,6 +74,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 
 	float alpha = smoothstep(scape_WhirlpoolRadius - 2.0, scape_WhirlpoolRadius, distanceFromCenter);
 	vec4 compositedSample = mix(whirlpoolSample, waterSample, alpha * scape_WhirlpoolAlpha);
+	vec4 finalSample = mix(compositedSample, scape_WhirlpoolFoamColor, outlineAlpha);
 
-	return compositedSample * color;
+	return finalSample * color;
 }

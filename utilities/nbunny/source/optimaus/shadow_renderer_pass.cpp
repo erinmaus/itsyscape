@@ -43,6 +43,11 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 			continue;
 		}
 
+		if (material.get_is_stencil_write_enabled())
+		{
+			continue;
+		}
+
 		const auto& node_type = visible_scene_node->get_type();
 
 		if (node_type == ParticleSceneNode::type_pointer)

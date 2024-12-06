@@ -126,7 +126,7 @@ end
 M["Sailing_Hull_NPC_Isabelle_Exquisitor1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.500000,
+		PositionX = 30.000000,
 		PositionY = 0.000000,
 		PositionZ = 8.000000,
 		RotationX = 0.000000,
