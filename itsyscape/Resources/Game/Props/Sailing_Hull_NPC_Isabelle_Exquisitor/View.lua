@@ -96,7 +96,7 @@ function Hull:load()
 	local shader
 	resources:queue(
 		ShaderResource,
-		"Resources/Shaders/Decoration",
+		"Resources/Shaders/WallDecoration",
 		function(s)
 			shader = s
 		end)
@@ -129,40 +129,46 @@ function Hull:load()
 					function()
 						local decoration = DecorationSceneNode()
 						decoration:fromGroup(mesh:getResource(), group)
-						decoration:getMaterial():setTextures(texture)
-						decoration:getMaterial():setShader(shader)
 						decoration:setParent(root)
 
+						local material = decoration:getMaterial()
+						material:setTextures(texture)
+
+						if not attachment.isShadowVolume then
+							material:setShader(shader)
+							material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 2.5, 2.5, 4, 0.25)
+						end
+
 						if attachment.color then
-							decoration:getMaterial():setColor(Color(unpack(attachment.color)))
+							material:setColor(Color(unpack(attachment.color)))
 						end
 
 						if attachment.outlineColor then
-							decoration:getMaterial():setOutlineColor(Color(unpack(attachment.outlineColor)))
+							material:setOutlineColor(Color(unpack(attachment.outlineColor)))
 						end
 
 						if attachment.isTranslucent then
-							decoration:getMaterial():setIsTranslucent(true)
+							material:setIsTranslucent(true)
 						end
 
 						if attachment.isReflective then
-							decoration:getMaterial():setIsReflectiveOrRefractive(true)
+							material:setIsReflectiveOrRefractive(true)
 						end
 
 						if attachment.reflectionPower then
-							decoration:getMaterial():setReflectionPower(attachment.reflectionPower)
+							material:setReflectionPower(attachment.reflectionPower)
 						end
 
 						if attachment.outlineThreshold then
-							decoration:getMaterial():setOutlineThreshold(attachment.outlineThreshold)
+							material:setOutlineThreshold(attachment.outlineThreshold)
 						end
 
 						if attachment.isZWriteDisabled then
-							decoration:getMaterial():setIsZWriteDisabled(attachment.isZWriteDisabled)
+							material:setIsZWriteDisabled(attachment.isZWriteDisabled)
 						end
 
 						if attachment.isShadowVolume then
-							decoration:getMaterial():setIsStencilWriteEnabled(attachment.isShadowVolume)
+							material:setIsStencilWriteEnabled(attachment.isShadowVolume)
 						end
 					end)
 			end

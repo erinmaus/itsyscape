@@ -54,11 +54,11 @@ function Ocean:onLoad(...)
 end
 
 function Ocean:onPlayerEnter(player)
-	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.exquisitor)
+	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_BelowDeck", self.exquisitor)
 end
 
 function Ocean:onPlayerLeave(player)
-	player:pokeCamera("lockRotation")
+	--player:pokeCamera("lockRotation")
 end
 
 function Ocean:onPlacePlayer(playerPeep, anchor, ship)
@@ -71,9 +71,10 @@ function Ocean:onPlacePlayer(playerPeep, anchor, ship)
 
 	local map = Utility.Peep.getResource(ship)
 	local game = self:getDirector():getGameInstance()
-	local x, y, z = Utility.Map.getAnchorPosition(game, map, "Anchor_Spawn")
+	local x, y, z, localLayer = Utility.Map.getAnchorPosition(game, map, anchor)
 
 	Utility.Peep.setPosition(playerPeep, Vector(x, y, z))
+	Utility.Peep.setLocalLayer(playerPeep, localLayer, ship)
 end
 
 function Ocean:onZap()

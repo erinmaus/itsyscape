@@ -2265,10 +2265,11 @@ function Utility.Map.getAnchorPosition(game, map, anchor)
 
 	if mapObject then
 		local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
-		return x or 0, y or 0, z or 0
+		local localLayer = math.max(mapObject:get("Layer"), 1)
+		return x or 0, y or 0, z or 0, localLayer
 	end
 
-	return 0, 0, 0
+	return 0, 0, 0, 1
 end
 
 function Utility.Map.getAnchorRotation(game, map, anchor)
@@ -2780,6 +2781,33 @@ function Utility.Peep.setLayer(peep, layer)
 	if position then
 		position.layer = layer
 	end
+end
+
+function Utility.Peep.setLocalLayer(peep, localLayer, mapScript)
+	mapScript = mapScript or Utility.Peep.getMapScript(peep)
+	if not mapScript then
+		return
+	end
+
+	local mapScriptLayer = Utility.Peep.getLayer(mapScript)
+	local instance = peep:getDirector():getGameInstance():getStage():getInstanceByLayer(mapScriptLayer)
+	if not instance then
+		return
+	end
+
+	local mapGroup = instance:getMapGroup(mapScriptLayer)
+	if not mapGroup then
+		return
+	end
+
+	local globalLayer = instance:getGlobalLayerFromLocalLayer(mapGroup, localLayer)
+	if not globalLayer then
+		print(">>> no map group for", mapScriptLayer, "g/l", mapGroup, localLayer)
+		print(">>> d", Log.dump(instance.mapGroups))
+		return
+	end
+
+	Utility.Peep.setLayer(peep, globalLayer)
 end
 
 function Utility.Peep.getPosition(peep)
