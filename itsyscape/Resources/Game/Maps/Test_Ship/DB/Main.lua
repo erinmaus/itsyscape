@@ -5,6 +5,32 @@ ItsyScape.Meta.PeepID {
 	Resource = M._MAP
 }
 
+M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 30,
+		PositionY = 0,
+		PositionZ = 8,
+		Layer = 1,
+		Name = "Anchor_Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Spawn"]
+	}
+end
+
+M["Anchor_BelowDeck"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 30,
+		PositionY = 0,
+		PositionZ = 8,
+		Layer = 3,
+		Name = "Anchor_BelowDeck",
+		Map = M._MAP,
+		Resource = M["Anchor_BelowDeck"]
+	}
+end
+
 M["Hotspot_Capstan"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
