@@ -1,7 +1,13 @@
 {
 	{
 		isShip = true,
-
+		wallHack = {
+			enabled = true,
+			left = 3.5,
+			right = 3.5,
+			top = 5,
+			bottom = 0.25,
+		},
 		transform =
 		{
 			translation =
@@ -33,6 +39,13 @@
 		tileSetID = "YendorianJungle",
 	},
 	{
+		wallHack = {
+			enabled = true,
+			left = 3.5,
+			right = 3.5,
+			top = 5,
+			bottom = 0.25,
+		},
 		transform =
 		{
 			translation =
@@ -64,6 +77,13 @@
 		tileSetID = "YendorianJungle",
 	},
 	{
+		wallHack = {
+			enabled = true,
+			left = 3.5,
+			right = 3.5,
+			top = 5,
+			bottom = 0.25,
+		},
 		transform =
 		{
 			translation =

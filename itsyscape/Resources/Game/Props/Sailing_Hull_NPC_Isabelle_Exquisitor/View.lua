@@ -136,8 +136,7 @@ function Hull:load()
 
 						if not attachment.isShadowVolume then
 							material:setShader(basicShader)
-							material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 5, 5, 4, 2)
-							--material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 2.5, 2.5, 4, 0.25)
+							material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 3.5, 3.5, 5, 0.25)
 						end
 
 						if attachment.color then
