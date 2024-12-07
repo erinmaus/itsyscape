@@ -11,10 +11,17 @@ void performTransform(
 {
 	basePerformTransform(modelViewProjectionMatrix, position, localPosition, projectedPosition);
 
-	vec3 beforeWorldOffset = normalize(mat3(scape_WorldMatrix) * frag_Normal) * vec3(scape_WindMaxDistance);
+	vec3 normal = frag_Normal;
+
+	vec3 direction = normal;
+	if (dot(VertexNormal, vec3(0.0, 1.0, 0.0)) < 0.0)
+	{
+		direction = -direction;
+	}
+
+	vec3 beforeWorldOffset = normalize(mat3(scape_WorldMatrix) * direction) * vec3(scape_WindMaxDistance);
 	vec3 beforeWorldPosition = (scape_WorldMatrix * vec4(localPosition, 1.0)).xyz;
 	vec3 afterWorldPosition = beforeWorldPosition;
-	vec3 normal = VertexNormal;
 	transformWorldPositionByWind(
 		scape_Time,
 		scape_WindSpeed,
@@ -27,5 +34,5 @@ void performTransform(
 	localPosition = localPosition + (afterWorldPosition.xyz - beforeWorldPosition.xyz);
 	projectedPosition = modelViewProjectionMatrix * vec4(localPosition, 1.0);
 
-	// frag_Normal = normal;
+	frag_Normal = normal;
 }
