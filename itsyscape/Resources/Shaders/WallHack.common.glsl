@@ -3,6 +3,8 @@
 // Alpha enabled (1.0 = yes, 0.0 = no)
 uniform float scape_WallHackAlpha;
 
+uniform vec3 scape_WallHackUp;
+
 // x, y == left, right, z, w == top, bottom
 uniform vec4 scape_WallHackWindow;
 uniform float scape_WallHackNear;
@@ -25,9 +27,15 @@ float getWallHackAlpha(vec3 position)
 	vec3 leftDirection = normalize(scape_InverseViewMatrix[0].xyz);
 	vec3 topDirection = normalize(scape_InverseViewMatrix[1].xyz);
 #else
+	vec3 up = scape_WallHackUp;
+	if (length(up) < EPSILON)
+	{
+		up = vec3(0.0, 1.0, 0.0);
+	}
+
 	vec3 eyeToTargetDirection = getWallHackClampedNormal(scape_CameraEye - scape_CameraTarget);
-	vec3 leftDirection = normalize(cross(eyeToTargetDirection, vec3(0.0, 1.0, 0.0)));
-	vec3 topDirection = vec3(0.0, -1.0, 0.0);
+	vec3 leftDirection = normalize(cross(eyeToTargetDirection, up));
+	vec3 topDirection = -up;
 #endif
 	vec4 farPlane = getWallHackPlane(eyeToTargetDirection, scape_CameraTarget);
 	vec4 leftPlane = getWallHackPlane(leftDirection, scape_CameraTarget - leftDirection * vec3(scape_WallHackWindow.x));

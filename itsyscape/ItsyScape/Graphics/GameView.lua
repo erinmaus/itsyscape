@@ -10,6 +10,7 @@
 local ripple = require "ripple"
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
@@ -506,7 +507,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		wallHackEnabled = not (meta and type(meta.wallHack) == "table" and meta.wallHack.enabled == false),
 		actorCanvas = actorCanvas,
 		bumpCanvas = bumpCanvas,
-		bendyDecorations = setmetatable({}, { __mode = "k" }),
+		wallHackDecorations = setmetatable({}, { __mode = "k" }),
 		decorationTextures = setmetatable({}, { __mode = "v" }),
 	}
 
@@ -619,13 +620,14 @@ function GameView:updateGroundDecorations(m)
 								if d.alphaSceneNode then
 									d.alphaSceneNode:getMaterial():setTextures(newTexture)
 								end
-
-								m.bendyDecorations[d.sceneNode] = true
 	
 								local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
 								d.sceneNode:getMaterial():setShader(shader)
 								self:_updateWind(m.layer, d.sceneNode)
 							end
+
+							m.wallHackDecorations[d.sceneNode] = true
+							m.wallHackDirty = true
 						end)
 					end
 				end)
@@ -825,33 +827,65 @@ function GameView:_updateWind(layer, node)
 	local windDirection, windSpeed, windPattern, bumpCanvas = self:getWind(layer)
 	local material = node:getMaterial()
 	material:send(material.UNIFORM_TEXTURE, "scape_BumpCanvas", bumpCanvas)
-	material:send(material.UNIFORM_FLOAT, "scape_MapSize", { m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize() })
-	material:send(material.UNIFORM_FLOAT, "scape_WindDirection", { windDirection:get() })
+	material:send(material.UNIFORM_FLOAT, "scape_MapSize", m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize())
+	material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
 	material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
-	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", { windPattern:get() })
+	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 end
 
 function GameView:_updateMapNodeWallHack(m)
 	local wallHackEnabled = m.wallHackEnabled == nil or m.wallHackEnabled
-	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom = 1.25, 1.25, 4.0, 0.25
+	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 1.25, 1.25, 4, 0.25, 8
 	if wallHackEnabled and not self:_getIsMapEditor() then
 		if m.meta and type(m.meta.wallHack) == "table" then
 			wallHackLeft = m.meta.wallHack.left or wallHackLeft
 			wallHackRight = m.meta.wallHack.right or wallHackRight
 			wallHackTop = m.meta.wallHack.top or wallHackTop
 			wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
+			wallHackNear = m.meta.wallHackNear or wallHackNear
 		end
 	else
 		wallHackLeft = 0
 		wallHackRight = 0
 		wallHackTop = 0
 		wallHackBottom = 0
+		wallHackNear = 0
 	end
 
-	for _, part in ipairs(m.parts) do
-		local material = part:getMaterial()
-		material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
-		material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+	local globalTransform = m.node:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+	local _, rotation = MathCommon.decomposeTransform(globalTransform)
+	local up = rotation:transformVector(Vector.UNIT_Y):getNormal()
+
+	local wallHackParameters = m.wallHackParameters
+	if not wallHackParameters or m.wallHackDirty or
+	   wallHackParameters.left ~= wallHackLeft or wallHackParameters.right ~= wallHackRight or
+	   wallHackParameters.top ~= wallHackTop or wallHackParameters.bottom ~= wallHackBottom or
+	   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up
+	then
+		wallHackParameters = wallHackParameters or {}
+		wallHackParameters.left = wallHackLeft
+		wallHackParameters.right = wallHackRight
+		wallHackParameters.top = wallHackTop
+		wallHackParameters.bottom = wallHackBottom
+		wallHackParameters.near = wallHackNear
+		wallHackParameters.up = up:keep(wallHackParameters.up)
+
+		m.wallHackParameters = wallHackParameters
+		m.wallHackDirty = false
+
+		for _, part in ipairs(m.parts) do
+			local material = part:getMaterial()
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", wallHackNear)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
+		end
+		
+		for decoration in pairs(m.wallHackDecorations) do
+			local material = decoration:getMaterial()
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", wallHackNear)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
+		end
 	end
 end
 
@@ -1077,7 +1111,17 @@ function GameView:bendMap(layer, ...)
 		self:_updateMapNode(m, node)
 	end
 
-	love.thread.getChannel('ItsyScape.Map::input'):push({
+	for _, decorationInfo in pairs(self.decorations) do
+		if decorationInfo.layer == layer then
+			self:_updateMapNode(m, decorationInfo.sceneNode)
+			
+			if decorationInfo.alphaSceneNode then
+				self:_updateMapNode(m, decorationInfo.alphaSceneNode)
+			end
+		end
+	end
+
+	love.thread.getChannel('ItsyScapende.Map::input'):push({
 		type = 'bend',
 		key = layer,
 		config = curves[1] and curves[1]:toConfig()
