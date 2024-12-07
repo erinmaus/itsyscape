@@ -1,3 +1,5 @@
+const float EPSILON = 0.01;
+
 uniform float scape_Time;
 
 uniform mat4 scape_WorldMatrix;

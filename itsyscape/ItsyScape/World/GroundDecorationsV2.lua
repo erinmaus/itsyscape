@@ -51,6 +51,7 @@ function GroundDecorationsV2:_getDecoration(group, position)
 		decoration = {
 			name = group,
 			decoration = Decoration({
+				isWall = true,
 				tileSetID = self.tileSetID
 			})
 		}
