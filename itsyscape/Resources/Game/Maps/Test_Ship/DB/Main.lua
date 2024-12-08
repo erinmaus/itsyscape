@@ -36,7 +36,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 15,
 		PositionY = 0,
-		PositionZ = 0,
+		PositionZ = 8,
 		Name = "Hotspot_Capstan",
 		Map = M._MAP,
 		Resource = M["Hotspot_Capstan"]
@@ -45,7 +45,8 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "Capstan",
 		ItemGroup = "Capstan",
-		MapObject = M["Hotspot_Capstan"]
+		MapObject = M["Hotspot_Capstan"],
+		Map = M._MAP
 	}
 end
 
@@ -54,7 +55,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = -1,
 		PositionY = -1.5,
-		PositionZ = 0,
+		PositionZ = 8,
 		Name = "Hotspot_Figurehead",
 		Map = M._MAP,
 		Resource = M["Hotspot_Figurehead"]
@@ -63,7 +64,8 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "Figurehead",
 		ItemGroup = "Figurehead",
-		MapObject = M["Hotspot_Capstan"]
+		MapObject = M["Hotspot_Figurehead"],
+		Map = M._MAP
 	}
 end
 
@@ -82,14 +84,15 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "Helm",
 		ItemGroup = "Helm",
-		MapObject = M["Hotspot_Helm"]
+		MapObject = M["Hotspot_Helm"],
+		Map = M._MAP
 	}
 end
 
 M["Hotspot_Hull"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.5,
+		PositionX = 30,
 		PositionY = 0,
 		PositionZ = 8,
 		Name = "Hotspot_Hull",
@@ -100,16 +103,21 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "Hull",
 		ItemGroup = "Hull",
-		MapObject = M["Hotspot_Hull"]
+		MapObject = M["Hotspot_Hull"],
+		Map = M._MAP
 	}
 end
 
 M["Hotspot_ForeMast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 12,
+		PositionX = 10,
 		PositionY = 0,
-		PositionZ = 0,
+		PositionZ = 8,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
 		Name = "Hotspot_ForeMast",
 		Map = M._MAP,
 		Resource = M["Hotspot_ForeMast"]
@@ -118,16 +126,21 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "ForeMast",
 		ItemGroup = "Mast",
-		MapObject = M["Hotspot_ForeMast"]
+		MapObject = M["Hotspot_ForeMast"],
+		Map = M._MAP
 	}
 end
 
 M["Hotspot_MainMast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 32,
+		PositionX = 30,
 		PositionY = 0,
-		PositionZ = 0,
+		PositionZ = 8,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
 		Name = "Hotspot_MainMast",
 		Map = M._MAP,
 		Resource = M["Hotspot_MainMast"]
@@ -136,16 +149,21 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "MainMast",
 		ItemGroup = "Mast",
-		MapObject = M["Hotspot_MainMast"]
+		MapObject = M["Hotspot_MainMast"],
+		Map = M._MAP
 	}
 end
 
 M["Hotspot_RearMast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 12,
+		PositionX = 10,
 		PositionY = 0,
-		PositionZ = 0,
+		PositionZ = 8,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
 		Layer = 2,
 		Name = "Hotspot_RearMast",
 		Map = M._MAP,
@@ -155,14 +173,15 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "RearMast",
 		ItemGroup = "Mast",
-		MapObject = M["Hotspot_RearMast"]
+		MapObject = M["Hotspot_RearMast"],
+		Map = M._MAP
 	}
 end
 
 M["Hotspot_Rail"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.5,
+		PositionX = 30,
 		PositionY = 0,
 		PositionZ = 8,
 		Name = "Hotspot_Rail",
@@ -173,18 +192,21 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "Rail",
 		ItemGroup = "Rail",
-		MapObject = M["Hotspot_Rail"]
+		MapObject = M["Hotspot_Rail"],
+		Map = M._MAP
 	}
 end
-
-
 
 M["Hotspot_Sail_ForeMast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 12,
 		PositionY = 0,
-		PositionZ = 0,
+		PositionZ = 8,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
 		Name = "Hotspot_Sail_ForeMast",
 		Map = M._MAP,
 		Resource = M["Hotspot_Sail_ForeMast"]
@@ -193,7 +215,8 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "Sail_ForeMast",
 		ItemGroup = "Sail",
-		MapObject = M["Hotspot_Sail_ForeMast"]
+		MapObject = M["Hotspot_Sail_ForeMast"],
+		Map = M._MAP
 	}
 end
 
@@ -202,7 +225,11 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 32,
 		PositionY = 0,
-		PositionZ = 0,
+		PositionZ = 8,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
 		Name = "Hotspot_Sail_MainMast",
 		Map = M._MAP,
 		Resource = M["Hotspot_Sail_MainMast"]
@@ -211,7 +238,8 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "Sail_MainMast",
 		ItemGroup = "Sail",
-		MapObject = M["Hotspot_Sail_MainMast"]
+		MapObject = M["Hotspot_Sail_MainMast"],
+		Map = M._MAP
 	}
 end
 
@@ -220,8 +248,12 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 12,
 		PositionY = 0,
-		PositionZ = 0,
+		PositionZ = 8,
 		Layer = 2,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
 		Name = "Hotspot_Sail_RearMast",
 		Map = M._MAP,
 		Resource = M["Hotspot_Sail_RearMast"]
@@ -230,7 +262,8 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "Sail_RearMast",
 		ItemGroup = "Sail",
-		MapObject = M["Hotspot_Sail_RearMast"]
+		MapObject = M["Hotspot_Sail_RearMast"],
+		Map = M._MAP
 	}
 end
 
@@ -238,7 +271,7 @@ end
 M["Hotspot_Window"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.5,
+		PositionX = 30,
 		PositionY = 0,
 		PositionZ = 8,
 		Name = "Hotspot_Window",
@@ -249,6 +282,7 @@ do
 	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
 		Slot = "Window",
 		ItemGroup = "Window",
-		MapObject = M["Hotspot_Window"]
+		MapObject = M["Hotspot_Window"],
+		Map = M._MAP
 	}
 end

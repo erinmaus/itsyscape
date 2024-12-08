@@ -11,12 +11,15 @@ local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Color = require "ItsyScape.Graphics.Color"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
+local ColorBehavior = require "ItsyScape.Peep.Behaviors.ColorBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local SailingResourceBehavior = require "ItsyScape.Peep.Behaviors.SailingResourceBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
 
@@ -43,6 +46,8 @@ function ShipMapScript:new(resource, name, ...)
 	self:addPoke('leak')
 
 	self.isBeached = false
+
+	self.props = {}
 end
 
 function ShipMapScript:onLoad(...)
@@ -54,6 +59,52 @@ function ShipMapScript:onLoad(...)
 		if map then
 			shipMovement.length = map:getWidth() * map:getCellSize()
 			shipMovement.beam = map:getHeight() * map:getCellSize()
+		end
+	end
+end
+
+function ShipMapScript:onCustomize(sailingDetails)
+	for _, prop in ipairs(self.props) do
+		Utility.Peep.poof(prop)
+	end
+	table.clear(self.props)
+
+	print(">>> sailingDetails", Log.dump(sailingDetails))
+
+	local gameDB = self:getDirector():getGameDB()
+	local shipMapResource = Utility.Peep.getResource(self)
+	local mapHotspots = gameDB:getRecords("ShipSailingItemMapObjectHotspot", { Map = shipMapResource })
+
+	for _, sailingItem in ipairs(sailingDetails) do
+		for _, mapHotspot in ipairs(mapHotspots) do
+			if (sailingItem.slot == "" or sailingItem.slot == mapHotspot:get("Slot")) and
+			   sailingItem.itemGroup == mapHotspot:get("ItemGroup")
+			then
+				local mapObject = mapHotspot:get("MapObject")
+				local mapObjectLocation = gameDB:getRecord("MapObjectLocation", {
+					Resource = mapObject
+				})
+
+				local propResource = sailingItem.props[mapHotspot:get("Slot")]
+				if propResource then
+					local prop = Utility.spawnPropAtAnchor(
+						self,
+						propResource,
+						mapObjectLocation:get("Name"))
+
+					if prop then
+						local peep = prop:getPeep()
+						local _, sailingResource = peep:addBehavior(SailingResourceBehavior)
+						sailingResource.resource = gameDB:getResource(sailingItem.sailingItemID, "SailingItem")
+
+						local _, color = peep:addBehavior(ColorBehavior)
+						color.primary = Color(unpack(sailingItem.colors[1] or {}))
+						color.secondaries = { Color(unpack(sailingItem.colors[2] or {})) }
+						
+						table.insert(self.props, prop:getPeep())
+					end
+				end
+			end
 		end
 	end
 end

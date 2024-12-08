@@ -1,18 +1,20 @@
 {
 	"RAIL_ATTACHMENTS": [
 		{
-			"mesh": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFilligree/Model.lstatic",
+			"mesh": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFiligree/Model.lstatic",
 			"group": "rail.stern",
-			"texture": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFilligree/Rail_Stern.png",
+			"texture": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFiligree/Rail_Stern.png",
 			"colorIndex": 1,
-			"outlineThreshold": 0.3
+			"outlineThreshold": 0.3,
+			"enableWallHack": true
 		},
 		{
-			"mesh": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFilligree/Model.lstatic",
+			"mesh": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFiligree/Model.lstatic",
 			"group": "rail.bow",
-			"texture": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFilligree/Rail_Bow.png",
+			"texture": "Resources/Game/SailingItems/Railing_Galleon_ExquisiteFiligree/Rail_Bow.png",
 			"colorIndex": 1,
-			"outlineThreshold": 0.3
+			"outlineThreshold": 0.3,
+			"enableWallHack": true
 		}
 	],
 }

@@ -162,13 +162,13 @@ function SailView:updateTextures()
 		local material = self.sailNode:getMaterial()
 
 		if state.colors[1] then
-			--material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", state.colors[1])
-			material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", Color.fromHexString("b3002a"):get())
+			material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", state.colors[1])
+			--material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", Color.fromHexString("b3002a"):get())
 		end
 
 		if state.colors[2] then
-			--material:send(material.UNIFORM_FLOAT, "scape_SecondaryColor", state.colors[2])
-			material:send(material.UNIFORM_FLOAT, "scape_SecondaryColor", Color.fromHexString("ffa100"):get())
+			material:send(material.UNIFORM_FLOAT, "scape_SecondaryColor", state.colors[2])
+			--material:send(material.UNIFORM_FLOAT, "scape_SecondaryColor", Color.fromHexString("ffa100"):get())
 		end
 	end
 end

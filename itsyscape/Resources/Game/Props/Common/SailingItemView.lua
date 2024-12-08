@@ -30,16 +30,12 @@ function SailingItemView:getAttachments()
 		return self._attachments
 	end
 
-	local attachmentsFilename = string.format("Resources/Game/SailingItems/%s/Attachments.json")
+	local attachmentsFilename = string.format("Resources/Game/SailingItems/%s/Attachments.json", resource)
 	if not love.filesystem.getInfo(attachmentsFilename) then
 		return {}
 	end
 
 	local attachments = json.decode(love.filesystem.read(attachmentsFilename))
-	if not attachments then
-		return {}
-	end
-
 	self._attachments = attachments
 	self._resource = resource
 
@@ -47,6 +43,10 @@ function SailingItemView:getAttachments()
 end
 
 function SailingItemView:updateAttachments(nodes, attachments)
+	if not attachments then
+		return
+	end
+
 	local state = self:getProp():getState()
 	local colors = state and state.colors
 
@@ -55,12 +55,12 @@ function SailingItemView:updateAttachments(nodes, attachments)
 	end
 
 	for index, attachment in ipairs(attachments) do
-		local color = colors[attachment.colorIndex]
+		local colorState = colors[attachment.colorIndex]
 		local alpha = attachments.alpha
 		local node = nodes[index]
 
-		if node and color then
-			local color = Color(unpack(color))
+		if node and colorState then
+			local color = Color(unpack(colorState))
 			color.a = alpha or 1
 
 			node:getMaterial():setColor(color)
@@ -69,16 +69,26 @@ function SailingItemView:updateAttachments(nodes, attachments)
 end
 
 function SailingItemView:loadAttachments(parentNode, attachments)
-	PropView.load(self)
+	if not attachments then
+		return {}
+	end
 
 	local resources = self:getResources()
 
-	local shader
+	local wallDecorationShader
+	resources:queue(
+		ShaderResource,
+		"Resources/Shaders/WallDecoration",
+		function(s)
+			wallDecorationShader = s
+		end)
+
+	local decorationShader
 	resources:queue(
 		ShaderResource,
 		"Resources/Shaders/Decoration",
 		function(s)
-			shader = s
+			decorationShader = s
 		end)
 
 	local result = {}
@@ -107,37 +117,53 @@ function SailingItemView:loadAttachments(parentNode, attachments)
 			local decoration = DecorationSceneNode()
 			resources:queueEvent(
 				function()
+					local material = decoration:getMaterial()
 					decoration:fromGroup(mesh:getResource(), group)
-					decoration:getMaterial():setTextures(texture)
-					decoration:getMaterial():setShader(shader)
+					material:setTextures(texture)
 					decoration:setParent(parentNode)
 
+					if attachment.enableWallHack then
+						material:setShader(wallDecorationShader)
+						material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 3.5, 3.5, 6, 0.25)
+						material:send(material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+					end
+
 					if attachment.color then
-						decoration:getMaterial():setColor(Color(unpack(attachment.color)))
+						local r, g, b = unpack(attachment.color)
+						local a = 1
+						if attachment.alpha then
+							a = attachment.alpha
+						end
+
+						material:setColor(Color(r, g, b, a))
 					end
 
 					if attachment.outlineColor then
-						decoration:getMaterial():setOutlineColor(Color(unpack(attachment.outlineColor)))
+						material:setOutlineColor(Color(unpack(attachment.outlineColor)))
 					end
 
 					if attachment.isTranslucent then
-						decoration:getMaterial():setIsTranslucent(true)
+						material:setIsTranslucent(true)
 					end
 
 					if attachment.isReflective then
-						decoration:getMaterial():setIsReflectiveOrRefractive(true)
+						material:setIsReflectiveOrRefractive(true)
 					end
 
 					if attachment.reflectionPower then
-						decoration:getMaterial():setReflectionPower(attachment.reflectionPower)
+						material:setReflectionPower(attachment.reflectionPower)
 					end
 
 					if attachment.outlineThreshold then
-						decoration:getMaterial():setOutlineThreshold(attachment.outlineThreshold)
+						material:setOutlineThreshold(attachment.outlineThreshold)
 					end
 
 					if attachment.isZWriteDisabled then
-						decoration:getMaterial():setIsZWriteDisabled(attachment.isZWriteDisabled)
+						material:setIsZWriteDisabled(attachment.isZWriteDisabled)
+					end
+
+					if attachment.isShadowVolume then
+						material:setIsStencilWriteEnabled(attachment.isShadowVolume)
 					end
 				end)
 

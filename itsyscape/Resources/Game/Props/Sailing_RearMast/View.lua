@@ -20,14 +20,14 @@ function RearMastView:load()
 	local attachments = self:getAttachments()
 	local root = self:getRoot()
 
-	self.staticNodes = self:loadAttachments(root, attachments.REARMAST_ATTACHMENT)
+	self.staticNodes = self:loadAttachments(root, attachments.REARMAST_ATTACHMENTS)
 end
 
 function RearMastView:update(delta)
 	SailingItemView.update(self, delta)
 
 	local attachments = self:getAttachments()
-	self:updateAttachments(self.staticNodes, attachments.REARMAST_ATTACHMENT)
+	self:updateAttachments(self.staticNodes, attachments.REARMAST_ATTACHMENTS)
 end
 
 return RearMastView

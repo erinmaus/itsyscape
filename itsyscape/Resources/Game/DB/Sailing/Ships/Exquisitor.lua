@@ -14,6 +14,7 @@ local PRIMARY_COLOR = ItsyScape.Utility.Color.fromHexString("b3002a")
 local METAL_COLOR   = ItsyScape.Utility.Color.fromHexString("ffa100")
 local WOOD_COLOR    = ItsyScape.Utility.Color.fromHexString("66362c")
 local GLASS_COLOR   = ItsyScape.Utility.Color.fromHexString("d5f6ff")
+local SAIL_COLOR    = ItsyScape.Utility.Color.fromHexString("b3002a")
 
 ItsyScape.Meta.ShipSailingItem {
 	Red1 = WOOD_COLOR.r,
@@ -81,6 +82,19 @@ ItsyScape.Meta.ShipSailingItem {
 }
 
 ItsyScape.Meta.ShipSailingItem {
+	Red1 = SAIL_COLOR.r,
+	Green1 = SAIL_COLOR.g,
+	Blue1 = SAIL_COLOR.b,
+	Red2 = METAL_COLOR.r,
+	Green2 = METAL_COLOR.g,
+	Blue2 = METAL_COLOR.b,
+	IsColorCustomized = 1,
+	ItemGroup = "Sail",
+	Ship = Ship,
+	SailingItem = ItsyScape.Resource.SailingItem "Sail_VelvetDragon"
+}
+
+ItsyScape.Meta.ShipSailingItem {
 	Red1 = WOOD_COLOR.r,
 	Green1 = WOOD_COLOR.g,
 	Blue1 = WOOD_COLOR.b,
@@ -88,8 +102,7 @@ ItsyScape.Meta.ShipSailingItem {
 	Green2 = GLASS_COLOR.g,
 	Blue2 = GLASS_COLOR.b,
 	IsColorCustomized = 1,
-	HasAlpha = 1,
-	ItemGroup = "Sail",
+	ItemGroup = "Window",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Window_Galleon_ExquisiteFiligree"
 }

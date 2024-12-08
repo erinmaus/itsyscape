@@ -172,7 +172,8 @@ for _, itemGroup in ipairs(ITEMS) do
 			ItsyScape.Meta.ShipSailingItemPropHotspot {
 				Slot = slot,
 				ItemGroup = itemGroup.type,
-				Prop = Prop
+				Prop = Prop,
+				SailingItem = SailingItem
 			}
 		end
 	end

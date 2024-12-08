@@ -40,6 +40,11 @@ function Ocean:onLoad(...)
 
 	self.exquisitor = ship
 
+	local exquisitorCustomizations = Sailing.Ship.getNPCCustomizations(
+		self:getDirector():getGameInstance(),
+		"NPC_Isabelle_Exquisitor")
+	self.exquisitor:pushPoke("customize", exquisitorCustomizations)
+
 	-- local exquisitor = gameDB:getResource("NPC_Isabelle_Exquisitor", "SailingShip")
 	-- local _, ship = Utility.Map.spawnMap(
 	-- 	self,
