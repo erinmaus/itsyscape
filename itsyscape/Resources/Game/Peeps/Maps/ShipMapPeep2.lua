@@ -69,8 +69,6 @@ function ShipMapScript:onCustomize(sailingDetails)
 	end
 	table.clear(self.props)
 
-	print(">>> sailingDetails", Log.dump(sailingDetails))
-
 	local gameDB = self:getDirector():getGameDB()
 	local shipMapResource = Utility.Peep.getResource(self)
 	local mapHotspots = gameDB:getRecords("ShipSailingItemMapObjectHotspot", { Map = shipMapResource })

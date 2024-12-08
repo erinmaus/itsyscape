@@ -78,7 +78,7 @@ local ITEMS = {
 		defaultPropID = "Sailing_Rail",
 		items = {
 			{
-				id = "ExquisiteFiligree",
+				id = "Galleon_ExquisiteFiligree",
 				name = "Exquisite mahogany filigree",
 				description = "Mahogany rails adorned with wooden filigree."
 			}
