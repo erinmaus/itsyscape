@@ -15,19 +15,19 @@ local SailingItemView = require "Resources.Game.Props.Common.SailingItemView"
 local MainMastView = Class(SailingItemView)
 
 function MainMastView:load()
-	PropView.load(self)
+	SailingItemView.load(self)
 
 	local attachments = self:getAttachments()
 	local root = self:getRoot()
 
-	self.staticNodes = self:loadAttachments(root, attachments.MAINMAST_ATTACHMENT)
+	self.staticNodes = self:loadAttachments(root, attachments.MAINMAST_ATTACHMENTS)
 end
 
 function MainMastView:update(delta)
-	PropView.update(self, delta)
+	SailingItemView.update(self, delta)
 
 	local attachments = self:getAttachments()
-	self:updateAttachments(self.staticNodes, attachments.MAINMAST_ATTACHMENT)
+	self:updateAttachments(self.staticNodes, attachments.MAINMAST_ATTACHMENTS)
 end
 
 return MainMastView

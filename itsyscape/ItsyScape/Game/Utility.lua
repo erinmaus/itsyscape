@@ -166,6 +166,7 @@ function Utility.orientateToAnchor(peep, map, anchor)
 		local rotation = Quaternion(Utility.Map.getAnchorRotation(game, map, anchor))
 		local scale = Vector(Utility.Map.getAnchorScale(game, map, anchor))
 		local direction = Utility.Map.getAnchorDirection(game, map, anchor)
+		local _, _, _, localLayer = Utility.Map.getAnchorPosition(game, map, anchor)
 
 		if rotation ~= Quaternion.IDENTITY then
 			local shipMovement = peep:getBehavior(ShipMovementBehavior)
@@ -189,6 +190,8 @@ function Utility.orientateToAnchor(peep, map, anchor)
 				movement.targetFacing = direction
 			end
 		end
+
+		Utility.Peep.setLocalLayer(peep, localLayer)
 	end
 
 	return peep
@@ -2802,8 +2805,6 @@ function Utility.Peep.setLocalLayer(peep, localLayer, mapScript)
 
 	local globalLayer = instance:getGlobalLayerFromLocalLayer(mapGroup, localLayer)
 	if not globalLayer then
-		print(">>> no map group for", mapScriptLayer, "g/l", mapGroup, localLayer)
-		print(">>> d", Log.dump(instance.mapGroups))
 		return
 	end
 

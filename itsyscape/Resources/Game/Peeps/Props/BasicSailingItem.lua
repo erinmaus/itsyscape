@@ -29,27 +29,27 @@ end
 function BasicSailingItem:getPropState()
 	local instance = Utility.Peep.getInstance(self)
 	local mapGroup = instance and instance:getMapGroup(Utility.Peep.getLayer(self))
-	local shipLayer = instance and mapGroup and instance:getGlobalLayerFromLocalLayer(mapGroup, 1)
-	local shipMapScript = instance and shipLayer and instance:getMapScriptByLayer(baseLayer)
+	local shipLayer = mapGroup and instance:getGlobalLayerFromLocalLayer(mapGroup, 1)
+	local shipMapScript = shipLayer and instance:getMapScriptByLayer(shipLayer)
 	local shipMovement = shipMapScript and shipMapScript:getBehavior(ShipMovementBehavior)
-	local shipResource = shipMapScript and shipMapScript:getBehavior(SailingResourceBehavior)
 
 	local baseMapScript = instance:getBaseMapScript()
 	local baseMapSky = baseMapScript and baseMapScript:getBehavior(SkyBehavior)
 
 	local windDirection = (baseMapSky and baseMapSky.windDirection or Vector(1, 0, 0)):getNormal()
-	local shipDirection = shipMovement and Quaternion.transformVector(shipMovement.rotation, steerDirectionNormal) or Vector(-1, 0, 0)
+	local shipDirection = shipMovement and Quaternion.transformVector(shipMovement.rotation, shipMovement.steerDirectionNormal) or Vector(-1, 0, 0)
 	local windDotShip = windDirection:dot(shipDirection)
 	local power = math.max(windDotShip, 0)
 
 	local colors = self:getBehavior(ColorBehavior)
+	local sailingResource = self:getBehavior(SailingResourceBehavior)
 
 	return {
 		primary = { colors.primary:get() },
 		secondary = { (colors.secondaries[1] or Color()):get() },
 
 		-- new stuff
-		resource = shipResource and shipResource.resource and shipResource.resource.name or false,
+		resource = sailingResource and sailingResource.resource and sailingResource.resource.name or false,
 
 		shipState = {
 			rudderDirection = shipMovement and shipMovement.steerDirection or 0,

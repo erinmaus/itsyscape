@@ -15,7 +15,7 @@ local SailingItemView = require "Resources.Game.Props.Common.SailingItemView"
 local FigureheadView = Class(SailingItemView)
 
 function FigureheadView:load()
-	PropView.load(self)
+	SailingItemView.load(self)
 
 	local attachments = self:getAttachments()
 	local root = self:getRoot()
@@ -24,7 +24,7 @@ function FigureheadView:load()
 end
 
 function FigureheadView:update(delta)
-	PropView.update(self, delta)
+	SailingItemView.update(self, delta)
 
 	local attachments = self:getAttachments()
 	self:updateAttachments(self.staticNodes, attachments.FIGUREHEAD_ATTACHMENTS)

@@ -12,6 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Color = require "ItsyScape.Graphics.Color"
 local Peep = require "ItsyScape.Peep.Peep"
 local Probe = require "ItsyScape.Peep.Probe"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -434,6 +435,45 @@ Sailing.Ship.SLOTS = {
 	"Storage",
 	"Figurehead"
 }
+
+function Sailing.Ship.getNPCCustomizations(game, shipResource)
+	local gameDB = game:getGameDB()
+
+	if type(shipResource) == "string" then
+		shipResource = gameDB:getResource(shipResource, "SailingShip")
+	end
+
+	if not shipResource then
+		return {}
+	end
+
+	local result = {}
+	local sailingItems = gameDB:getRecords("ShipSailingItem", { Ship = shipResource })
+	for _, inputSailingItem in ipairs(sailingItems) do
+		local sailingItem = {
+			colors = {
+				{ inputSailingItem:get("Red1"), inputSailingItem:get("Green1"), inputSailingItem:get("Blue1") },
+				{ inputSailingItem:get("Red2"), inputSailingItem:get("Green2"), inputSailingItem:get("Blue2") }
+			},
+
+			isColorCustomized = inputSailingItem:get("IsColorCustomized") ~= 0,
+
+			itemGroup = inputSailingItem:get("ItemGroup"),
+			slot = inputSailingItem:get("Slot"),
+			sailingItemID = inputSailingItem:get("SailingItem").name,
+			props = {}
+		}
+
+		local props = gameDB:getRecords("ShipSailingItemPropHotspot", { SailingItem = inputSailingItem:get("SailingItem") })
+		for _, prop in ipairs(props) do
+			sailingItem.props[prop:get("Slot")] = prop:get("Prop").name
+		end
+
+		table.insert(result, sailingItem)
+	end
+
+	return result
+end
 
 function Sailing.Ship.getStats(peep)
 	local storage = peep:getDirector():getPlayerStorage(peep):getRoot()

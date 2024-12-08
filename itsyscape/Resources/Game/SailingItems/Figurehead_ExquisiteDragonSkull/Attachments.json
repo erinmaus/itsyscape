@@ -1,0 +1,9 @@
+{
+	"FIGUREHEAD_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Figurehead_ExquisiteDragonSkull/Model.lstatic",
+			"group": "figurehead",
+			"texture": "Resources/Game/SailingItems/Figurehead_ExquisiteDragonSkull/Texture.png",
+		}
+	]
+}

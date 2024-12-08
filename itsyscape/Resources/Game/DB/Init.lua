@@ -795,13 +795,15 @@ Game "ItsyScape"
 	Meta "ShipSailingItemMapObjectHotspot" {
 		Slot = Meta.TYPE_TEXT,
 		ItemGroup = Meta.TYPE_TEXT,
-		MapObject = Meta.TYPE_RESOURCE
+		MapObject = Meta.TYPE_RESOURCE,
+		Map = Meta.TYPE_RESOURCE
 	}
 
 	Meta "ShipSailingItemPropHotspot" {
 		Slot = Meta.TYPE_TEXT,
 		ItemGroup = Meta.TYPE_TEXT,
-		Prop = Meta.TYPE_RESOURCE
+		Prop = Meta.TYPE_RESOURCE,
+		SailingItem = Meta.TYPE_RESOURCE
 	}
 
 	Meta "ShipSailingItem" {
