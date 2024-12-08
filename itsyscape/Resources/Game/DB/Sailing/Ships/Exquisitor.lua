@@ -43,7 +43,7 @@ ItsyScape.Meta.ShipSailingItem {
 	Green2 = METAL_COLOR.g,
 	Blue2 = METAL_COLOR.b,
 	IsColorCustomized = 1,
-	ItemGroup = "Figurehead",
+	ItemGroup = "Helm",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Helm_ExquisiteMahogany"
 }
