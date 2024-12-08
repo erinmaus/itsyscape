@@ -78,7 +78,7 @@ ItsyScape.Meta.ShipSailingItem {
 	IsColorCustomized = 1,
 	ItemGroup = "Rail",
 	Ship = Ship,
-	SailingItem = ItsyScape.Resource.SailingItem "Rail_ExquisiteFiligree"
+	SailingItem = ItsyScape.Resource.SailingItem "Rail_Galleon_ExquisiteFiligree"
 }
 
 ItsyScape.Meta.ShipSailingItem {
