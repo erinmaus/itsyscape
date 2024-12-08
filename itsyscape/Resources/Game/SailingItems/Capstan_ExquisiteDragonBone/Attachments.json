@@ -10,7 +10,7 @@
 			"group": "capstan",
 			"colorIndex": 1,
 			"texture": "Resources/Game/SailingItems/Capstan_ExquisiteDragonBone/Texture.png",
-			"outlineThreshold": 0.3
+			"outlineThreshold": -0.01
 		}
 	]
 }

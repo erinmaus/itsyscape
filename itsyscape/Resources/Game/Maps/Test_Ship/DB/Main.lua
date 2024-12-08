@@ -74,7 +74,11 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 3,
 		PositionY = 0,
-		PositionZ = 0,
+		PositionZ = 8,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
 		Layer = 2,
 		Name = "Hotspot_Helm",
 		Map = M._MAP,
@@ -111,7 +115,7 @@ end
 M["Hotspot_ForeMast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 10,
+		PositionX = 10.5,
 		PositionY = 0,
 		PositionZ = 8,
 		RotationX = 0.000000,
@@ -134,7 +138,7 @@ end
 M["Hotspot_MainMast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 30,
+		PositionX = 30.5,
 		PositionY = 0,
 		PositionZ = 8,
 		RotationX = 0.000000,
@@ -157,7 +161,7 @@ end
 M["Hotspot_RearMast"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 10,
+		PositionX = 10.5,
 		PositionY = 0,
 		PositionZ = 8,
 		RotationX = 0.000000,

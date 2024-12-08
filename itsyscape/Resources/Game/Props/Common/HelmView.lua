@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local SailingItemView = require "Resources.Game.Props.Common.SailingItemView"
