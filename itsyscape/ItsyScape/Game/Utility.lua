@@ -2789,26 +2789,22 @@ end
 function Utility.Peep.setLocalLayer(peep, localLayer, mapScript)
 	mapScript = mapScript or Utility.Peep.getMapScript(peep)
 	if not mapScript then
-		print(">>> if not mapScript then")
 		return
 	end
 
 	local mapScriptLayer = Utility.Peep.getLayer(mapScript)
 	local instance = peep:getDirector():getGameInstance():getStage():getInstanceByLayer(mapScriptLayer)
 	if not instance then
-		print(">>> if not instance then")
 		return
 	end
 
 	local mapGroup = instance:getMapGroup(mapScriptLayer)
 	if not mapGroup then
-		print(">>> if not mapGroup then")
 		return
 	end
 
 	local globalLayer = instance:getGlobalLayerFromLocalLayer(mapGroup, localLayer)
 	if not globalLayer then
-		print(">>> if not globalLayer then")
 		return
 	end
 

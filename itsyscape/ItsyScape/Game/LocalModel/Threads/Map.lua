@@ -106,8 +106,6 @@ repeat
 				end
 			end
 
-			print(">>> hits", Log.dump(result))
-
 			love.thread.getChannel("ItsyScape.Map::output"):push({
 				type = "probe",
 				id = m.id,

@@ -295,3 +295,122 @@ do
 		Map = M._MAP
 	}
 end
+
+M["Anchor_FromBelowDeck"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 5,
+		Name = "Anchor_FromBelowDeck",
+		Map = M._MAP,
+		Resource = M["Anchor_FromBelowDeck"]
+	}
+end
+
+M["Anchor_FromBelowDeck"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 5,
+		Layer = 1,
+		Name = "Anchor_FromBelowDeck",
+		Map = M._MAP,
+		Resource = M["Anchor_FromBelowDeck"]
+	}
+end
+
+M["Anchor_ToBelowDeck"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37,
+		PositionY = 0,
+		PositionZ = 5,
+		Layer = 3,
+		Name = "Anchor_ToBelowDeck",
+		Map = M._MAP,
+		Resource = M["Anchor_ToBelowDeck"]
+	}
+end
+
+M["TrapDoor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 0,
+		PositionZ = 5,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = -0.707107,
+		Name = "TrapDoor",
+		Map = M._MAP,
+		Resource = M["TrapDoor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TrapDoor_Default",
+		MapObject = M["TrapDoor"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.LocalTravelDestination {
+		Map = M._MAP,
+		Anchor = "Anchor_ToBelowDeck",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-down",
+		XProgressive = "Climbing-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["TrapDoor"] {
+		TravelAction
+	}
+end
+
+M["WoodenLadder_BelowDeck"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 0,
+		PositionZ = 5,
+		RotationX = 0.000000,
+		RotationY = -0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		Layer = 3,
+		Name = "WoodenLadder_BelowDeck",
+		Map = M._MAP,
+		Resource = M["WoodenLadder_BelowDeck"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "WoodenLadder_Default",
+		MapObject = M["WoodenLadder_BelowDeck"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.LocalTravelDestination {
+		Map = M._MAP,
+		Anchor = "Anchor_FromBelowDeck",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Climb-up",
+		XProgressive = "Climbing-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["WoodenLadder_BelowDeck"] {
+		TravelAction
+	}
+end

@@ -825,7 +825,7 @@ function MapEditorApplication:mousePress(x, y, button)
 									self.lastProp = p
 								end
 
-								if love.keyboard.isKeyDown("lshift") or love.keyboard.isKeyDown("rshift") then
+								if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
 									local prompt = PromptWindow(self)
 									prompt.onSubmit:register(function(_, name)
 										makeDefaultName(name)
