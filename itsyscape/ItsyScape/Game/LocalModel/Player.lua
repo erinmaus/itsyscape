@@ -543,11 +543,19 @@ function LocalPlayer:walk(i, j, k)
 end
 
 function LocalPlayer:changeCamera(cameraType)
-	self.onChangeCamera(self, cameraType)
+	self:onChangeCamera(self, cameraType)
+end
+
+function LocalPlayer:pushCamera(cameraType)
+	self:onPushCamera(cameraType)
+end
+
+function LocalPlayer:popCamera()
+	self:onPopCamera()
 end
 
 function LocalPlayer:pokeCamera(event, ...)
-	self.onPokeCamera(self, event, ...)
+	self:onPokeCamera(self, event, ...)
 end
 
 function LocalPlayer:pushMessage(player, message)

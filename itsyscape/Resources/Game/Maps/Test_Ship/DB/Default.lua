@@ -6,12 +6,12 @@ M["Lamp_IsabelleTower1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 37.000000,
-		PositionY = 3.000000,
-		PositionZ = 16.000000,
+		PositionY = 3.750000,
+		PositionZ = 15.500000,
 		RotationX = 0.000000,
-		RotationY = 0.000000,
+		RotationY = -1.000000,
 		RotationZ = 0.000000,
-		RotationW = 1.000000,
+		RotationW = 0.000000,
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
@@ -26,12 +26,12 @@ do
 	}
 end
 
-M["Lamp_IsabelleTower1"] = ItsyScape.Resource.MapObject.Unique()
+M["Lamp_IsabelleTower2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 37.000000,
-		PositionY = 3.000000,
-		PositionZ = 0.000000,
+		PositionY = 3.750000,
+		PositionZ = 0.500000,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
 		RotationZ = 0.000000,
@@ -39,23 +39,23 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Lamp_IsabelleTower1",
+		Name = "Lamp_IsabelleTower2",
 		Map = M._MAP,
-		Resource = M["Lamp_IsabelleTower1"]
+		Resource = M["Lamp_IsabelleTower2"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Lamp_IsabelleTower",
-		MapObject = M["Lamp_IsabelleTower1"]
+		MapObject = M["Lamp_IsabelleTower2"]
 	}
 end
 
 M["Lamp_IsabelleTower3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 29.000000,
+		PositionX = 31.250000,
 		PositionY = 3.000000,
-		PositionZ = 9.000000,
+		PositionZ = 8.000000,
 		RotationX = 0.000000,
 		RotationY = -0.707107,
 		RotationZ = 0.000000,
@@ -77,9 +77,9 @@ end
 M["Lamp_IsabelleTower4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 13.000000,
+		PositionX = 11.250000,
 		PositionY = 3.000000,
-		PositionZ = 9.000000,
+		PositionZ = 8.250000,
 		RotationX = 0.000000,
 		RotationY = -0.707107,
 		RotationZ = 0.000000,
@@ -101,9 +101,9 @@ end
 M["Lamp_IsabelleTower5"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 9,
+		PositionX = 11.250000,
 		PositionY = 3.000000,
-		PositionZ = 9.000000,
+		PositionZ = 8.000000,
 		RotationX = 0.000000,
 		RotationY = -0.707107,
 		RotationZ = 0.000000,
@@ -111,9 +111,9 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Layer = 2,
 		Name = "Lamp_IsabelleTower5",
 		Map = M._MAP,
+		Layer = 2,
 		Resource = M["Lamp_IsabelleTower5"]
 	}
 

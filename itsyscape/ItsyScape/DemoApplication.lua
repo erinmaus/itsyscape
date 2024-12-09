@@ -82,11 +82,14 @@ function DemoApplication:new()
 	self.touches = { current = {}, n = 1 }
 
 	self.cameraController = DefaultCameraController(self)
+	self.cameraControllers = { self.cameraController }
 
 	self:getGame().onReady:register(function(_, player)
 		Log.info("Ready to play with player ID %d!", player:getID())
 
 		player.onChangeCamera:register(self.changeCamera, self)
+		player.onPushCamera:register(self.pushCamera, self)
+		player.onPopCamera:register(self.popCamera, self)
 		player.onPokeCamera:register(self.pokeCamera, self)
 		player.onSave:register(self.savePlayer, self)
 		player.onMove:register(self.setMapName, self)
@@ -138,7 +141,30 @@ function DemoApplication:changeCamera(_, cameraType)
 		Log.error("Could not load camera type '%s': %s", s, r)
 	else
 		self.cameraController = r(self)
+		self.cameraControllers[#self.cameraControllers] = self.cameraController
 	end
+end
+
+function DemoApplication:pushCamera(_, cameraType)
+	local typeName = string.format("ItsyScape.Graphics.%sCameraController", cameraType)
+	local s, r = pcall(require, typeName)
+
+	if not s then
+		Log.error("Could not load camera type '%s': %s", s, r)
+	else
+		self.cameraController = r(self)
+		table.insert(self.cameraControllers, self.cameraController)
+	end
+end
+
+function DemoApplication:popCamera()
+	if #self.cameraControllers <= 1 then
+		Log.warn("Trying to pop last camera!")
+		return
+	end
+
+	table.remove(self.cameraControllers)
+	self.cameraController = self.cameraControllers[#self.cameraControllers]
 end
 
 function DemoApplication:pokeCamera(_, event, ...)

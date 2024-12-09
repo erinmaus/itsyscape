@@ -1,16 +1,20 @@
 {
 	{
-		isShip = true,
-		wallHack = {
-			enabled = true,
-			left = 3.5,
-			right = 3.5,
-			top = 5,
-			bottom = 0.25,
-			near = 6
-		},
+		tileSetID = "YendorianJungle",
 		transform =
 		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			origin =
+			{
+				30,
+				0,
+				8,
+			},
 			translation =
 			{
 				-30,
@@ -24,32 +28,24 @@
 				0,
 				1,
 			},
-			origin =
-			{
-				30,
-				0,
-				8,
-			},
+		},
+	},
+	{
+		tileSetID = "YendorianJungle",
+		transform =
+		{
 			scale =
 			{
 				1,
 				1,
 				1,
 			},
-		},
-		tileSetID = "YendorianJungle",
-	},
-	{
-		wallHack = {
-			enabled = true,
-			left = 3.5,
-			right = 3.5,
-			top = 5,
-			bottom = 0.25,
-			near = 6
-		},
-		transform =
-		{
+			origin =
+			{
+				10,
+				0,
+				8,
+			},
 			translation =
 			{
 				40,
@@ -63,32 +59,24 @@
 				0,
 				1,
 			},
-			origin =
-			{
-				10,
-				0,
-				8,
-			},
+		},
+	},
+	{
+		tileSetID = "YendorianJungle",
+		transform =
+		{
 			scale =
 			{
 				1,
 				1,
 				1,
 			},
-		},
-		tileSetID = "YendorianJungle",
-	},
-	{
-		wallHack = {
-			enabled = true,
-			left = 3.5,
-			right = 3.5,
-			top = 5,
-			bottom = 0.25,
-			near = 6
-		},
-		transform =
-		{
+			origin =
+			{
+				30,
+				0,
+				8,
+			},
 			translation =
 			{
 				0,
@@ -102,19 +90,6 @@
 				0,
 				1,
 			},
-			origin =
-			{
-				30,
-				0,
-				8,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 		},
-		tileSetID = "YendorianJungle",
 	},
 }

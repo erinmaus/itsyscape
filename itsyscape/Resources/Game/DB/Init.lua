@@ -242,6 +242,12 @@ Game "ItsyScape"
 		IsInstance = Meta.TYPE_INTEGER
 	}
 
+	Meta "LocalTravelDestination" {
+		Map = Meta.TYPE_RESOURCE,
+		Anchor = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
+	}
+
 	Meta "PartyTravelDestination" {
 		Action = Meta.TYPE_ACTION,
 		Raid = Meta.TYPE_RESOURCE,
@@ -739,6 +745,11 @@ Game "ItsyScape"
 			Type = "Sailing"
 
 		}
+
+	Meta "MapShip" {
+		SizeClass = Meta.TYPE_TEXT,
+		Map = Meta.TYPE_RESOURCE
+	}
 
 	Meta "SailingItemDetails" {
 		Prop = Meta.TYPE_TEXT,
@@ -1436,6 +1447,24 @@ include "Resources/Game/DB/Effects/Immunities.lua"
 include "Resources/Game/DB/Effects/Misc.lua"
 
 -- Props
+do
+	ItsyScape.Resource.Prop "Null" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = ItsyScape.Resource.Prop "Null"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1,
+		SizeY = 1,
+		SizeZ = 1,
+		MapObject = ItsyScape.Resource.Prop "Null"
+	}
+end
+
 include "Resources/Game/DB/Props/Anvil.lua"
 include "Resources/Game/DB/Props/Flax.lua"
 include "Resources/Game/DB/Props/Furnace.lua"

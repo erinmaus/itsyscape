@@ -14,6 +14,7 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local Utility = require "ItsyScape.Game.Utility"
+local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Prop = require "ItsyScape.Game.Model.Prop"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
@@ -46,7 +47,9 @@ local MapMotion = require "ItsyScape.World.MapMotion"
 local Tile = require "ItsyScape.World.Tile"
 local TileSet = require "ItsyScape.World.TileSet"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
+local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local MapPeep = require "ItsyScape.Peep.Peeps.Map"
+local ShipMapScript = require "Resources.Game.Peeps.Maps.ShipMapPeep2"
 
 local MapEditorApplication = Class(EditorApplication)
 MapEditorApplication.TOOL_NONE = 0
@@ -129,6 +132,8 @@ function MapEditorApplication:new()
 	self.mapScriptCurves = {}
 
 	self.propNames = {}
+
+	self.mapGroup = self:getGame():getStage():getPeepInstance():newMapGroup()
 
 	self:getGameView():getRenderer():setClearColor(self:getGameView():getRenderer():getClearColor() * 0.7)
 
@@ -580,7 +585,7 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 	local ray = self:shoot(x, y)
 	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
 	if mapSceneNode then
-		local transform = mapSceneNode:getTransform():getGlobalTransform()
+		local transform = mapSceneNode:getTransform():getGlobalDeltaTransform(0)
 		
 		local origin1 = Vector(transform:inverseTransformPoint(ray.origin:get()))
 		local origin2 = Vector(transform:inverseTransformPoint((ray.origin + ray.direction):get()))
@@ -758,12 +763,18 @@ function MapEditorApplication:mousePress(x, y, button)
 					local hits = {}
 					for prop in self:getGame():getStage():iterateProps() do
 						local ray = self:shoot(x, y)
+						local _, _, layer = prop:getTile()
 						local min, max = prop:getBounds()
-						local size = max - min
-						size = size:max(Vector.ONE)
-						min, max = Vector(-size.x / 2, 0, -size.y / 2) + prop:getPosition(), Vector(size.x / 2, size.y, size.x / 2) + prop:getPosition()
+						local transform
+						do
+							local _, _, layer = prop:getTile()
+							local node = self:getGameView():getMapSceneNode(layer)
+							if node then
+								transform = node:getTransform():getGlobalDeltaTransform(0)
+							end
+						end
 
-						local s, p = ray:hitBounds(min, max)
+						local s, p = ray:hitBounds(min, max, transform)
 						if s then
 							table.insert(hits, { position = p, prop = prop })
 						end
@@ -800,17 +811,34 @@ function MapEditorApplication:mousePress(x, y, button)
 								local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
 								position.position = Vector(x, y, z)
 
-								local index = 1
-								local name
-								repeat
-									name = string.format("%s%d", prop.name, index)
-									index = index + 1
-								until self.propNames[name] == nil
+								local function makeDefaultName(name)
+									if not name or name == "" then
+										local index = 1
+										repeat
+											name = string.format("%s%d", prop.name, index)
+											index = index + 1
+										until self.propNames[name] == nil
+									end
 
-								self.propNames[name] = p
-								self.propNames[p] = name
+									self.propNames[name] = p
+									self.propNames[p] = name
 
-								self.lastProp = p
+									self.lastProp = p
+								end
+
+								if love.keyboard.isKeyDown("lshift") or love.keyboard.isKeyDown("rshift") then
+									local prompt = PromptWindow(self)
+									prompt.onSubmit:register(function(_, name)
+										makeDefaultName(name)
+									end)
+									prompt.onCancel:register(function()
+										makeDefaultName()
+									end)
+
+									prompt:open("What is the name of the prop?", "Prop name")
+								else
+									makeDefaultName()
+								end
 							end
 						end
 					end
@@ -1167,7 +1195,16 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		for prop in self:getGame():getStage():iterateProps() do
 			local ray = self:shoot(x, y)
 			local min, max = prop:getBounds()
-			local s, p = ray:hitBounds(min, max)
+			local transform
+			do
+				local _, _, layer = prop:getTile()
+				local node = self:getGameView():getMapSceneNode(layer)
+				if node then
+					transform = node:getTransform():getGlobalDeltaTransform(0)
+				end
+			end
+
+			local s, p = ray:hitBounds(min, max, transform)
 			if s then
 				table.insert(hits, { position = p, prop = prop })
 			end
@@ -1752,10 +1789,11 @@ function MapEditorApplication:save(filename)
 
 				local map = self:getGame():getStage():getMap(layers[i])
 				local mapScriptPeep = self.mapScriptPeeps[layers[i]]
-				local translation = Utility.Peep.getPosition(mapScriptPeep)
-				local rotation = Utility.Peep.getRotation(mapScriptPeep)
-				local scale = Utility.Peep.getScale(mapScriptPeep)
-				local origin = mapScriptPeep:hasBehavior(OriginBehavior) and mapScriptPeep:getBehavior(OriginBehavior).origin
+				local offset = mapScriptPeep:getBehavior(MapOffsetBehavior)
+				local translation = offset.offset
+				local rotation = offset.rotation
+				local scale = offset.scale
+				local origin = offset.origin
 
 				meta[layers[i]] = {
 					tileSetID = tileSetID,
@@ -1823,11 +1861,15 @@ function MapEditorApplication:save(filename)
 					end
 					s:pushFormatLine("\t\tResource = M[%q]", name)
 					s:pushFormatLine("\t}")
-					s:pushLine()
-					s:pushLine("\tItsyScape.Meta.PropMapObject {")
-					s:pushFormatLine("\t\tProp = ItsyScape.Resource.Prop %q,", prop:getResourceName())
-					s:pushFormatLine("\t\tMapObject = M[%q]", name)
-					s:pushFormatLine("\t}")
+
+					if prop:getResourceName() ~= "Null" then
+						s:pushLine()
+						s:pushLine("\tItsyScape.Meta.PropMapObject {")
+						s:pushFormatLine("\t\tProp = ItsyScape.Resource.Prop %q,", prop:getResourceName())
+						s:pushFormatLine("\t\tMapObject = M[%q]", name)
+						s:pushFormatLine("\t}")
+					end
+
 					s:pushLine("end")
 					s:pushLine()
 				end
@@ -1849,6 +1891,44 @@ function MapEditorApplication:save(filename)
 	end
 
 	return false
+end
+
+function MapEditorApplication:tryLoadShip(path, filename, baseLayer)
+	local mainFilename = path .. "/DB/Main.lua"
+	if not love.filesystem.getInfo(mainFilename) then
+		return
+	end
+
+	local gameDB = GameDB.create({
+		"Resources/Game/DB/Init.lua",
+		path .. "/DB/Main.lua"
+	}, ":memory:")
+
+	local mapResource = gameDB:getResource(filename, "Map")
+	if not mapResource then
+		return
+	end
+
+	local shipRecord = gameDB:getRecord("MapShip", { Map = mapResource })
+	if not shipRecord then
+		return
+	end
+
+	local shipClass = shipRecord:get("SizeClass")
+	local defaultShipName
+	if shipClass == Sailing.Ship.SIZE_GALLEON then
+		defaultShipName = "NPC_Isabelle_Exquisitor"
+	else
+		return
+	end
+
+	local peep = self:getGame():getDirector():addPeep("::orphan", ShipMapScript, self:getGameDB():getResource(filename, "Map"))
+
+	self:getGame():getStage():getPeepInstance():addMapScript(baseLayer, peep, filename)
+	peep:pushPoke("load", filename, {}, layer)
+
+	local customization = Sailing.Ship.getNPCCustomizations(self:getGame(), defaultShipName)
+	peep:pushPoke("customize", customization)
 end
 
 function MapEditorApplication:load(filename, preferExisting, baseLayer)
@@ -1912,7 +1992,11 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 			local peep = self:getGame():getDirector():addPeep("::orphan", MapPeep, resource)
 			peep:poke("load", filename, {}, layer)
 
-			self:getGame():getStage():getPeepInstance():addMapScript(layer, peep, filename)
+			local instance = self:getGame():getStage():getPeepInstance()
+			instance:removeLayer(layer)
+			instance:addLayer(layer, self.mapGroup)
+
+			instance:addMapScript(layer, peep, filename)
 			self.mapScriptPeeps[layer] = peep
 
 			peep:addBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
@@ -1920,19 +2004,19 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 			peep:addBehavior(require "ItsyScape.Peep.Behaviors.RotationBehavior")
 
 			if layerMeta.transform then
-				Utility.Peep.setPosition(peep, Vector(unpack(layerMeta.transform.translation or {})))
-				Utility.Peep.setRotation(peep, Quaternion(unpack(layerMeta.transform.rotation or {})))
-				Utility.Peep.setScale(peep, Vector(unpack(layerMeta.transform.scale or {})))
-
-				local _, origin = peep:addBehavior(OriginBehavior)
-				origin.origin = Vector(unpack(layerMeta.transform.origin or {}))
+				local _, offset = peep:addBehavior(MapOffsetBehavior)
+				offset.offset = Vector(unpack(layerMeta.transform.translation or {}))
+				offset.rotation = Quaternion(unpack(layerMeta.transform.rotation or {}))
+				offset.scale = Vector(unpack(layerMeta.transform.scale or {}))
+				offset.origin = Vector(unpack(layerMeta.transform.origin or {}))
+				offset.parentLayer = parentLayer
 
 				stage:onMapMoved(
 					realLayer,
-					Utility.Peep.getPosition(peep),
-					Utility.Peep.getRotation(peep),
-					Utility.Peep.getScale(peep),
-					origin.origin,
+					offset.offset,
+					offset.rotation,
+					offset.scale,
+					offset.origin,
 					false,
 					parentLayer or false)
 			else
@@ -1996,31 +2080,34 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 						MapObject = objects[i]:get("Resource")
 					})
 
-					if prop then
-						prop = prop:get("Prop")
-						if prop then
-							local s, p = self:getGame():getStage():placeProp("resource://" .. prop.name, layer, "::orphan")
+					local propName = prop and prop:get("Prop").name or "Null"
 
-							if s then
-								local peep = p:getPeep()
-								local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
-								position.position = Vector(x, y, z)
-								position.layer = layer
-								local scale = peep:getBehavior(require "ItsyScape.Peep.Behaviors.ScaleBehavior")
-								scale.scale = Vector(sx, sy, sz)
-								local rotation = peep:getBehavior(require "ItsyScape.Peep.Behaviors.RotationBehavior")
-								rotation.rotation = Quaternion(qx, qy, qz, qw)
-							end
+					if propName then
+						local s, p = self:getGame():getStage():placeProp("resource://" .. propName, layer, "::orphan")
 
-							if not baseLayer then
-								local name = objects[i]:get("Name")
-								self.propNames[name] = p
-								self.propNames[p] = name
-							end
+						if s then
+							local peep = p:getPeep()
+							local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
+							position.position = Vector(x, y, z)
+							position.layer = layer
+							local scale = peep:getBehavior(require "ItsyScape.Peep.Behaviors.ScaleBehavior")
+							scale.scale = Vector(sx, sy, sz)
+							local rotation = peep:getBehavior(require "ItsyScape.Peep.Behaviors.RotationBehavior")
+							rotation.rotation = Quaternion(qx, qy, qz, qw)
+						end
+
+						if not baseLayer then
+							local name = objects[i]:get("Name")
+							self.propNames[name] = p
+							self.propNames[p] = name
 						end
 					end
 				end
 			end
+		end
+
+		if not baseLayer and preferExisting then
+			self:tryLoadShip(path, filename, 1)
 		end
 	end
 

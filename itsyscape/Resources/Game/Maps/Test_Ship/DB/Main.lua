@@ -5,6 +5,11 @@ ItsyScape.Meta.PeepID {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.MapShip {
+	SizeClass = "Galleon",
+	Map = M._MAP
+}
+
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

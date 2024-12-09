@@ -821,7 +821,7 @@ function Instance:getGlobalLayerFromLocalLayer(group, index)
 end
 
 function Instance:addLayer(layer, group, player)
-	if not self:hasLayer(layer, true) then
+	if not self.layersByID[layer] then
 		Log.engine("Adding layer %d to instance %s (%d).", layer, self:getFilename(), self:getID())
 		self.layersByID[layer] = (player and player:getID()) or true
 		table.insert(self.layers, layer)
