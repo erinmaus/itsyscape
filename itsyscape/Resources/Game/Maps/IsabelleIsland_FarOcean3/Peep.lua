@@ -59,11 +59,15 @@ function Ocean:onLoad(...)
 end
 
 function Ocean:onPlayerEnter(player)
+	player:pokeCamera("mapRotationStick")
+
 	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_BelowDeck", self.exquisitor)
 end
 
 function Ocean:onPlayerLeave(player)
-	--player:pokeCamera("lockRotation")
+	if player then
+		player:pokeCamera("mapRotationUnstick")
+	end
 end
 
 function Ocean:onPlacePlayer(playerPeep, anchor, ship)
