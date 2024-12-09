@@ -789,7 +789,7 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled, pa
 			type = "transform",
 			key = layer,
 			parentKey = parentLayer,
-			transform = transform:getGlobalTransform(0),
+			transform = transform:getLocalDeltaTransform(1),
 		})
 
 		local parentNode = parentLayer and self:getMapSceneNode(parentLayer)

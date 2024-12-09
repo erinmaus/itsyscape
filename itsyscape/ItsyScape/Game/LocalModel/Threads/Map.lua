@@ -28,6 +28,7 @@ repeat
 	elseif m.type == "unload" then
 		MAPS[m.key] = nil
 		TRANSFORMS[m.key] = nil
+		PARENTS[m.key] = nil
 		CURVES[m.key] = nil
 	elseif m.type == "transform" then
 		TRANSFORMS[m.key] = m.transform
@@ -56,14 +57,22 @@ repeat
 			for key, map in pairs(maps) do
 				local transform = love.math.newTransform()
 
-				local parent = key
-				while parent do
-					otherTransform = TRANSFORMS[parent]
-					if otherTransform then
-						transform = otherTransform * transform
+				do
+					local transforms = {}
+
+					local parent = key
+					while parent do
+						local otherTransform = TRANSFORMS[parent]
+						if otherTransform then
+							table.insert(transforms, 1, otherTransform)
+						end
+
+						parent = PARENTS[parent]
 					end
 
-					parent = PARENTS[parent]
+					for _, otherTransform in ipairs(transforms) do
+						transform = otherTransform * transform
+					end
 				end
 
 				local ray
@@ -96,6 +105,8 @@ repeat
 					})
 				end
 			end
+
+			print(">>> hits", Log.dump(result))
 
 			love.thread.getChannel("ItsyScape.Map::output"):push({
 				type = "probe",

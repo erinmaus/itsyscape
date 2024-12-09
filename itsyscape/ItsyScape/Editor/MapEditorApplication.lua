@@ -585,8 +585,7 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 	local ray = self:shoot(x, y)
 	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
 	if mapSceneNode then
-		local transform = mapSceneNode:getTransform():getGlobalDeltaTransform(0)
-		
+		local transform = mapSceneNode:getTransform():getGlobalDeltaTransform(1)
 		local origin1 = Vector(transform:inverseTransformPoint(ray.origin:get()))
 		local origin2 = Vector(transform:inverseTransformPoint((ray.origin + ray.direction):get()))
 		local direction = origin2 - origin1
@@ -1182,9 +1181,12 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					self:updateCurve()
 				end
 			elseif Class.isCompatibleType(target, MapPeep) then
-				Utility.Peep.setPosition(target, translation)
-				Utility.Peep.setRotation(target, rotation)
-				Utility.Peep.setScale(target, scale)
+				local offset = target:getBehavior(MapOffsetBehavior)
+				if offset then
+					offset.position = translation
+					offset.rotation = rotation
+					offset.scale = scale
+				end
 			end
 		end
 	end
@@ -1924,11 +1926,24 @@ function MapEditorApplication:tryLoadShip(path, filename, baseLayer)
 
 	local peep = self:getGame():getDirector():addPeep("::orphan", ShipMapScript, self:getGameDB():getResource(filename, "Map"))
 
+	local currentMapScript = self:getGame():getStage():getPeepInstance():getMapScriptByLayer(baseLayer)
+
 	self:getGame():getStage():getPeepInstance():addMapScript(baseLayer, peep, filename)
 	peep:pushPoke("load", filename, {}, layer)
 
 	local customization = Sailing.Ship.getNPCCustomizations(self:getGame(), defaultShipName)
 	peep:pushPoke("customize", customization)
+
+	if currentMapScript and currentMapScript:hasBehavior(MapOffsetBehavior) then
+		local oldOffset = currentMapScript:getBehavior(MapOffsetBehavior)
+		local _, newOffset = peep:addBehavior(MapOffsetBehavior)
+
+		newOffset.offset = oldOffset.offset
+		newOffset.rotation = oldOffset.rotation
+		newOffset.scale = oldOffset.scale
+		newOffset.origin = oldOffset.origin
+		newOffset.parentLayer = oldOffset.parentLayer or false
+	end
 end
 
 function MapEditorApplication:load(filename, preferExisting, baseLayer)
@@ -2009,7 +2024,7 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 				offset.rotation = Quaternion(unpack(layerMeta.transform.rotation or {}))
 				offset.scale = Vector(unpack(layerMeta.transform.scale or {}))
 				offset.origin = Vector(unpack(layerMeta.transform.origin or {}))
-				offset.parentLayer = parentLayer
+				offset.parentLayer = parentLayer or false
 
 				stage:onMapMoved(
 					realLayer,
@@ -2020,7 +2035,7 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 					false,
 					parentLayer or false)
 			else
-				stage:onMapMoved(realLayer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false)
+				stage:onMapMoved(realLayer, Vector.ZERO, Quaternion.IDENTITY, Vector.ONE, Vector.ZERO, false, parentLayer or false)
 			end
 
 			if layerMeta.curve then
