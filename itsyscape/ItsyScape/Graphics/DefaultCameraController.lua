@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -109,8 +110,11 @@ function DefaultCameraController:getPlayerMapRotation()
 		return Quaternion.IDENTITY
 	end
 
-	local _, previousRotation = mapSceneNode:getTransform():getPreviousTransform()
-	local currentRotation = mapSceneNode:getTransform():getLocalRotation()
+	local previousTransform = mapSceneNode:getTransform():getGlobalDeltaTransform(0)
+	local currentTransform = mapSceneNode:getTransform():getGlobalDeltaTransform(1)
+
+	local _, previousRotation = MathCommon.decomposeTransform(previousTransform)
+	local _, currentRotation = MathCommon.decomposeTransform(currentTransform)
 
 	local rotation = previousRotation:slerp(currentRotation, self:getApp():getFrameDelta())
 
@@ -120,7 +124,7 @@ function DefaultCameraController:getPlayerMapRotation()
 		self.previousPlayerMapRotationTime = 0
 	end
 
-	self.currentPlayerMapRotation = rotation
+	self.currentPlayerMapRotation = rotation:keep(self.currentPlayerMapRotation)
 
 	if self.previousPlayerMapRotation then
 		local delta = math.min(self.previousPlayerMapRotationTime / DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD, 1)
@@ -261,7 +265,7 @@ function DefaultCameraController:_rotate(dx, dy)
 	local panning = self.isPanning and not self:getIsDemoing()
 
 	local verticalOffset = -dx / 128
-	local horizontalOffset = (self.isCameraVerticalRotationFlipped and 1 or -1) * dy / 128
+	local horizontalOffset = dy / 128
 	local angle1 = (panning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset) + verticalOffset
 	local angle2 = (panning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset) + horizontalOffset
 
@@ -610,10 +614,12 @@ function DefaultCameraController:update(delta)
 end
 
 function DefaultCameraController:onMapRotationStick()
+	print(">>> STICKY!")
 	self.mapRotationSticky = (self.mapRotationSticky or 0) + 1
 end
 
 function DefaultCameraController:onMapRotationUnstick()
+	print(">>> NOT STICKY!")
 	self.mapRotationSticky = (self.mapRotationSticky or 1) - 1
 end
 
