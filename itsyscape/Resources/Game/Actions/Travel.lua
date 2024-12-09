@@ -74,6 +74,13 @@ function Travel:travel(state, peep, target)
 
 	local gameDB = self:getGameDB()
 	local record = gameDB:getRecord("TravelDestination", { Action = self:getAction() })
+
+	local isLocal = false
+	if not record then
+		record = gameDB:getRecord("LocalTravelDestination", { Action = self:getAction() })
+		isLocal = record and true
+	end
+
 	if not record then
 		return
 	end
@@ -95,48 +102,59 @@ function Travel:travel(state, peep, target)
 	
 	self:transfer(state, peep, Travel.FLAGS)
 
-	local arguments = record:get("Arguments")
-	if arguments and arguments ~= "" then
-		arguments = "?" .. arguments
-	else
-		arguments = ""
-	end
+	if isLocal then
+		local mapScript = Utility.Peep.getMapScript(peep)
+		local mapScriptResource = Utility.Peep.getResource(mapScript)
 
-	local isSameStage = false
-	do
-		local instance = Utility.Peep.getInstance(peep)
-		local mapScript = instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
-		if mapScript:getFilename() == map.name and arguments == "" then
-			isSameStage = true
+		if mapScriptResource.id.value ~= map.id.value then
+			return
 		end
-	end
 
-	if isSameStage then
-		local anchorPosition = Vector(Utility.Map.getAnchorPosition(
-			self:getGame(),
-			map,
-			destination))
-		Utility.Peep.setPosition(peep, anchorPosition)
+		Utility.orientateToAnchor(peep, mapScriptResource, record:get("Anchor"))
 	else
-		local instance = Utility.Peep.getInstance(peep)
-		local raid = instance:getRaid()
-		local isInGroup = raid ~= nil and gameDB:getRecord("RaidGroup", {
-			Map = map,
-			Raid = raid:getResource()
-		})
-
-		if raid and isInGroup then
-			local existingInstance = raid:getInstances(map.name)[1]
-			if existingInstance then
-				Utility.move(peep, existingInstance, destination)
-			else
-				Utility.move(peep, "@" .. map.name .. arguments, destination, raid)
-			end
+		local arguments = record:get("Arguments")
+		if arguments and arguments ~= "" then
+			arguments = "?" .. arguments
 		else
-			if record:get("IsInstance") == 0 then
-				Utility.move(peep, map.name .. arguments, destination)
+			arguments = ""
+		end
+
+		local isSameStage = false
+		do
+			local instance = Utility.Peep.getInstance(peep)
+			local mapScript = instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
+			if mapScript:getFilename() == map.name and arguments == "" then
+				isSameStage = true
+			end
+		end
+
+		if isSameStage then
+			local anchorPosition = Vector(Utility.Map.getAnchorPosition(
+				self:getGame(),
+				map,
+				destination))
+			Utility.Peep.setPosition(peep, anchorPosition)
+		else
+			local instance = Utility.Peep.getInstance(peep)
+			local raid = instance:getRaid()
+			local isInGroup = raid ~= nil and gameDB:getRecord("RaidGroup", {
+				Map = map,
+				Raid = raid:getResource()
+			})
+
+			if raid and isInGroup then
+				local existingInstance = raid:getInstances(map.name)[1]
+				if existingInstance then
+					Utility.move(peep, existingInstance, destination)
+				else
+					Utility.move(peep, "@" .. map.name .. arguments, destination, raid)
+				end
 			else
-				Utility.move(peep, "@" .. map.name .. arguments, destination)
+				if record:get("IsInstance") == 0 then
+					Utility.move(peep, map.name .. arguments, destination)
+				else
+					Utility.move(peep, "@" .. map.name .. arguments, destination)
+				end
 			end
 		end
 	end

@@ -788,6 +788,7 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled, pa
 		love.thread.getChannel('ItsyScape.Map::input'):push({
 			type = "transform",
 			key = layer,
+			parentKey = parentLayer,
 			transform = transform:getGlobalTransform(0),
 		})
 

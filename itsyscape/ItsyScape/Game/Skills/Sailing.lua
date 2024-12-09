@@ -436,6 +436,10 @@ Sailing.Ship.SLOTS = {
 	"Figurehead"
 }
 
+Sailing.Ship.SIZE_GALLEON    = "Galleon"
+Sailing.Ship.SIZE_BRIGANTINE = "Brigantine"
+Sailing.Ship.SIZE_SLOOP      = "Sloop"
+
 function Sailing.Ship.getNPCCustomizations(game, shipResource)
 	local gameDB = game:getGameDB()
 

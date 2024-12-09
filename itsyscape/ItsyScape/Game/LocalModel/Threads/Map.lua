@@ -18,6 +18,7 @@ local MapCurve = require "ItsyScape.World.MapCurve"
 local MAPS = {}
 local TRANSFORMS = {}
 local CURVES = {}
+local PARENTS = {}
 
 local m
 repeat
@@ -30,6 +31,7 @@ repeat
 		CURVES[m.key] = nil
 	elseif m.type == "transform" then
 		TRANSFORMS[m.key] = m.transform
+		PARENTS[m.key] = m.parentKey or nil
 	elseif m.type == "bend" then
 		local map = MAPS[m.key]
 		if map then
@@ -52,7 +54,17 @@ repeat
 		else
 			local result = {}
 			for key, map in pairs(maps) do
-				local transform = TRANSFORMS[key] or love.math.newTransform()
+				local transform = love.math.newTransform()
+
+				local parent = key
+				while parent do
+					otherTransform = TRANSFORMS[parent]
+					if otherTransform then
+						transform = otherTransform * transform
+					end
+
+					parent = PARENTS[parent]
+				end
 
 				local ray
 				do
