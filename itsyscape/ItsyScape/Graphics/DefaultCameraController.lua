@@ -265,7 +265,7 @@ function DefaultCameraController:_rotate(dx, dy)
 	local panning = self.isPanning and not self:getIsDemoing()
 
 	local verticalOffset = -dx / 128
-	local horizontalOffset = dy / 128
+	local horizontalOffset = -dy / 128
 	local angle1 = (panning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset) + verticalOffset
 	local angle2 = (panning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset) + horizontalOffset
 
