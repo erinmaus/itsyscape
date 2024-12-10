@@ -1807,6 +1807,7 @@ function MapEditorApplication:save(filename)
 						scale = { scale:get() },
 						origin = { (origin or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
 					},
+					wallHack = self.meta and self.meta[layers[i]].wallHack or nil,
 					curve = self.mapScriptCurves[layers[i]]
 				}
 			end
