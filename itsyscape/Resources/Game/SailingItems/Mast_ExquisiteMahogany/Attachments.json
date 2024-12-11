@@ -5,14 +5,16 @@
 			"group": "mast.fore",
 			"texture": "Resources/Game/SailingItems/Mast_ExquisiteMahogany/Texture.png",
 			"colorIndex": 1,
-			"outlineThreshold": -0.01
+			"outlineThreshold": -0.01,
+			"isHideable": true
 		},
 		{
 			"mesh": "Resources/Game/SailingItems/Mast_ExquisiteMahogany/Model.lstatic",
 			"group": "mast.fore.metal",
 			"texture": "Resources/Game/SailingItems/Mast_ExquisiteMahogany/Texture.png",
 			"colorIndex": 2,
-			"outlineThreshold": -0.01
+			"outlineThreshold": -0.01,
+			"isHideable": true
 		}
 	],
 	"MAINMAST_ATTACHMENTS": [
@@ -21,14 +23,16 @@
 			"group": "mast.main",
 			"texture": "Resources/Game/SailingItems/Mast_ExquisiteMahogany/Texture.png",
 			"colorIndex": 1,
-			"outlineThreshold": -0.01
+			"outlineThreshold": -0.01,
+			"isHideable": true
 		},
 		{
 			"mesh": "Resources/Game/SailingItems/Mast_ExquisiteMahogany/Model.lstatic",
 			"group": "mast.main.metal",
 			"texture": "Resources/Game/SailingItems/Mast_ExquisiteMahogany/Texture.png",
 			"colorIndex": 2,
-			"outlineThreshold": -0.01
+			"outlineThreshold": -0.01,
+			"isHideable": true
 		}
 	],
 	"REARMAST_ATTACHMENTS": [
@@ -37,14 +41,16 @@
 			"group": "mast.rear",
 			"texture": "Resources/Game/SailingItems/Mast_ExquisiteMahogany/Texture.png",
 			"colorIndex": 1,
-			"outlineThreshold": -0.01
+			"outlineThreshold": -0.01,
+			"isHideable": true
 		},
 		{
 			"mesh": "Resources/Game/SailingItems/Mast_ExquisiteMahogany/Model.lstatic",
 			"group": "mast.rear.metal",
 			"texture": "Resources/Game/SailingItems/Mast_ExquisiteMahogany/Texture.png",
 			"colorIndex": 2,
-			"outlineThreshold": -0.01
+			"outlineThreshold": -0.01,
+			"isHideable": true
 		}
 	]
 }
