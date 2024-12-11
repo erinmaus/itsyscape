@@ -195,6 +195,28 @@ ItsyScape.Resource.Prop "IronCannonballPile" {
 }
 
 ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.Cannonball",
+	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Iron cannonball pile",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Go ahead! Grab some cannonballs!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
+}
+
+
+ItsyScape.Resource.Prop "IronCannonballPile" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.Props.BlockingProp",
 	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
 }
