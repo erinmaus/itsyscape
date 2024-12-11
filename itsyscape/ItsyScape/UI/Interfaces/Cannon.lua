@@ -61,8 +61,11 @@ function Cannon:tick()
 
 	local width, height = self:getSize()
 
+	local deltaY = 1 - self.currentMouseX / width
+	local deltaX = self.currentMouseY / height
+
 	if self.currentMouseX ~= self.previousMouseX or self.currentMouseY ~= self.previousMouseY then
-		self:sendPoke("tilt", nil, { y = self.currentMouseX / width, x = self.currentMouseY / height })
+		self:sendPoke("tilt", nil, { x = deltaX, y = deltaY })
 	end
 end
 

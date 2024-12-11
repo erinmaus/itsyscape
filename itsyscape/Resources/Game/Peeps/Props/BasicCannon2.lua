@@ -88,7 +88,7 @@ function BasicCannon:previewTilt(x, y)
 		0)
 end
 
-function BasicCannon:onFire(ammo, path, duration)
+function BasicCannon:onFire(peep, ammo, path, duration)
 	local gameDB = self:getDirector():getGameDB()
 
 	local mapScript = Utility.Peep.getMapScript(self)

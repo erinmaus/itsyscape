@@ -9,6 +9,8 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local MathCommon = require "ItsyScape.Common.Math.Common"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Controller = require "ItsyScape.UI.Controller"
@@ -19,6 +21,8 @@ function CannonController:new(peep, director,cannon)
 	Controller.new(self, peep, director)
 
 	self.cannon = cannon
+
+	self:getPlayer():pokeCamera("enterFirstPerson")
 end
 
 function CannonController:poke(actionID, actionIndex, e)
@@ -33,6 +37,12 @@ function CannonController:poke(actionID, actionIndex, e)
 	end
 end
 
+function CannonController:close()
+	Controller.close(self)
+
+	self:getPlayer():pokeCamera("leaveFirstPerson")
+end
+
 function CannonController:tilt(e)
 	local x = math.clamp(e.x or 0.5)
 	local y = math.clamp(e.y or 0.5)
@@ -42,7 +52,7 @@ end
 
 function CannonController:fire(e)
 	self:updatePath()
-	self.cannon:poke("fire", "ItsyCannonball", self.currentPath, self.currentPathDuration)
+	self.cannon:poke("fire", self:getPeep(), "ItsyCannonball", self.currentPath, self.currentPathDuration)
 
 	self:getGame():getUI():closeInstance(self)
 end
@@ -67,6 +77,14 @@ function CannonController:updatePath()
 
 	self.currentPath = cannonballPath
 	self.currentPathDuration = cannonballPathDuration
+
+	local rotation = self.cannon:getCannonDirection()
+	rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi)
+
+	local position = self.cannon:getCannonPosition()
+
+	self:getPlayer():pokeCamera("updateFirstPersonDirection", rotation:getNormal())
+	self:getPlayer():pokeCamera("updateFirstPersonPosition", position)
 end
 
 function CannonController:pull()
