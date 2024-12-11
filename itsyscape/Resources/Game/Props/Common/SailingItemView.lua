@@ -36,8 +36,6 @@ function SailingItemView:updateHiding(delta)
 	if isHidden ~= self.isHidden then
 		self.hiddenTime = self.HIDE_FADE_IN_OUT_DURATION - self.hiddenTime
 		self.isHidden = isHidden
-
-		print(">>> IS HIDING?", isHidden and "yes" or "no")
 	end
 
 	self.hiddenTime = math.min(self.hiddenTime + delta, self.HIDE_FADE_IN_OUT_DURATION)
