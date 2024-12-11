@@ -8,18 +8,24 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Utility = require "ItsyScape.Game.Utility"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Item = require "ItsyScape.Game.Item"
+local Utility = require "ItsyScape.Game.Utility"
+local ICannon = require "ItsyScape.Game.Skills.ICannon"
 local Color = require "ItsyScape.Graphics.Color"
 local Peep = require "ItsyScape.Peep.Peep"
+local MapPeep = require "ItsyScape.Peep.Peeps.Map"
+local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local Probe = require "ItsyScape.Peep.Probe"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local SailingResourceBehavior = require "ItsyScape.Peep.Behaviors.SailingResourceBehavior"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
 local ShipCrewMemberBehavior = require "ItsyScape.Peep.Behaviors.ShipCrewMemberBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Sailing = {}
 
@@ -137,29 +143,73 @@ function Sailing.getShipDirectionNormal(ship)
 	return nil
 end
 
-function Sailing.getShipBow(ship)
+function Sailing.getShipBow(ship, length)
 	if Class.isCompatibleType(ship, Peep) then
 		local shipMovement = ship:getBehavior(ShipMovementBehavior)
 		if shipMovement then
 			local direction = shipMovement.rotation:transformVector(shipMovement.steerDirectionNormal):getNormal()
-			local length = shipMovement.length / 2
+			length = (length or shipMovement.length) / 2
 
 			return direction * length
 		end
+
+		local rotation = Utility.Peep.getRotation(ship):getNormal()
+		local size = Utility.Peep.getSize(ship)
+		return rotation:transformVector(Vector(0, 0, size.z / 2))
 	end
 
 	return nil
 end
 
-function Sailing.getShipStern(ship)
+function Sailing.getShipStern(ship, length)
 	if Class.isCompatibleType(ship, Peep) then
 		local shipMovement = ship:getBehavior(ShipMovementBehavior)
 		if shipMovement then
 			local direction = shipMovement.rotation:transformVector(shipMovement.steerDirectionNormal):getNormal()
-			local length = shipMovement.length / 2
+			length = (length or shipMovement.length) / 2
 
 			return direction * -length
 		end
+
+		local rotation = Utility.Peep.getRotation(ship):getNormal()
+		local size = Utility.Peep.getSize(ship)
+		return rotation:transformVector(Vector(0, 0, -size.z / 2))
+	end
+
+	return nil
+end
+
+function Sailing.getShipStarboard(ship, beam)
+	if Class.isCompatibleType(ship, Peep) then
+		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+		if shipMovement then
+			local direction = shipMovement.rotation:transformVector(shipMovement.opposingSteerDirectionNormal):getNormal()
+			beam = (beam or shipMovement.beam) / 2
+
+			return direction * -beam
+		end
+
+		local rotation = Utility.Peep.getRotation(ship):getNormal()
+		local size = Utility.Peep.getSize(ship)
+		return rotation:transformVector(Vector(size.x / 2, 0, 0))
+	end
+
+	return nil
+end
+
+function Sailing.getShipPort(ship, beam)
+	if Class.isCompatibleType(ship, Peep) then
+		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+		if shipMovement then
+			local direction = shipMovement.rotation:transformVector(shipMovement.opposingSteerDirectionNormal):getNormal()
+			beam = (beam or shipMovement.beam) / 2
+
+			return direction * -beam
+		end
+
+		local rotation = Utility.Peep.getRotation(ship):getNormal()
+		local size = Utility.Peep.getSize(ship)
+		return rotation:transformVector(Vector(-size.x / 2, 0, 0))
 	end
 
 	return nil
@@ -545,6 +595,278 @@ function Sailing.Ship.getInventorySpace(peep)
 	end
 end
 
+Sailing.Ocean = {}
+
+function Sailing.Ocean.getPositionRotation(peep)
+	local game = peep:getDirector():getGameInstance()
+
+	local position = peep:getBehavior(PositionBehavior)
+	local layer = position and position.layer
+
+	if not layer then
+		local instance = Utility.Peep.getInstance(peep)
+		layer = instance:getBaseLayer()
+	end
+
+	local mapScript = Utility.Peep.getInstance(peep):getMapScriptByLayer(layer)
+	local ocean = mapScript and mapScript:getBehavior(OceanBehavior)
+
+	-- Beam (width) needs to be projected out a bit, otherwise
+	-- the ship/fish/whatever will rotate too violently.
+	local beam
+	if peep:hasBehavior(ShipMovementBehavior) then
+		beam = peep:getBehavior(ShipMovementBehavior).beam * 2
+	elseif peep:hasBehavior(SizeBehavior) then
+		beam = peep:getBehavior(SizeBehavior).size.x * 2
+	end
+
+	local peepLeft = Sailing.getShipPort(peep, beam)
+	local peepForward = Sailing.getShipBow(peep)
+	local peepBackward = Sailing.getShipStern(peep)
+
+	local windDirection, windSpeed, windPattern = Utility.Map.getWind(game, layer)
+
+	local worldPosition = Utility.Peep.getPosition(peep)
+	worldPosition = Utility.Map.transformWorldPositionByWave(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
+		windDirection,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		Vector(worldPosition.x, -(ocean and ocean.offset or 1), worldPosition.z),
+		Vector(worldPosition.x, 0, worldPosition.z))
+	local worldPositionXZ = Vector(worldPosition.x, 0, worldPosition.z)
+
+	local worldLeftPosition = Utility.Map.transformWorldPositionByWave(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
+		windDirection,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		Vector(peepLeft.x, -(ocean and ocean.offset or 1), peepLeft.z) + worldPositionXZ,
+		Vector(peepLeft.x, 0, peepLeft.z) + worldPositionXZ)
+
+	local worldForwardPosition = Utility.Map.transformWorldPositionByWave(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
+		windDirection,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		Vector(peepForward.x, -(ocean and ocean.offset or 1), peepForward.z) + worldPositionXZ,
+		Vector(peepForward.x, 0, peepForward.z) + worldPositionXZ)
+
+	local worldBackwardPosition = Utility.Map.transformWorldPositionByWave(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
+		windDirection,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		Vector(peepBackward.x, -(ocean and ocean.offset or 1), peepBackward.z) + worldPositionXZ,
+		Vector(peepBackward.x, 0, peepBackward.z) + worldPositionXZ)
+
+	local normal
+	do
+		local s = worldForwardPosition - worldLeftPosition
+		local t = worldBackwardPosition - worldForwardPosition
+		normal = s:cross(t):getNormal()
+	end
+
+	local rotation = Quaternion.fromVectors(Vector.UNIT_Y, normal):getNormal()
+
+	return worldPosition, rotation
+end
+
+Sailing.Cannon = {}
+
+Sailing.Cannon.DEFAULT_SPEED = 16
+Sailing.Cannon.DEFAULT_GRAVITY = Vector(0, -18, 0)
+Sailing.Cannon.DEFAULT_DRAG = 0.9
+Sailing.Cannon.DEFAULT_TIMESTEP = 1 / 10
+Sailing.Cannon.DEFAULT_MAX_STEPS = 100
+
+Sailing.Cannon.GLOBAL_MAX_STEPS = 1000
+
+function Sailing.Cannon.getDefaultCannonballPathProperties()
+	return {
+		speed = Sailing.Cannon.DEFAULT_SPEED,
+		speedOffset = 0,
+		speedMultiplier = 1,
+
+		gravity = Sailing.Cannon.DEFAULT_GRAVITY,
+		gravityOffset = Vector(0),
+		gravityMultiplier = Vector(1),
+
+		drag = Sailing.Cannon.DEFAULT_DRAG,
+		dragOffset = 0,
+		dragMultiplier = 1,
+
+		timestep = Sailing.Cannon.DEFAULT_TIMESTEP,
+		timestepOffset = 0,
+		timestepMultiplier = 1,
+
+		maxSteps = Sailing.Cannon.DEFAULT_MAX_STEPS,
+		maxStepsOffset = 0,
+		maxStepsMultiplier = 1
+	}
+end
+
+function Sailing.Cannon._getCannonballPathProperties(resource)
+	if not resource then
+		return Sailing.Cannon.getDefaultCannonballPathProperties()
+	end
+
+	local pathRecord = gameDB:getRecord("CannonballPathProperties", { Resource = sailingResource.resource })
+	if not pathRecord then
+		return self:_getDefaultProperties()
+	end
+
+	local speed = pathRecord:get("Speed")
+	local speedOffset = pathRecord:get("SpeedOffset")
+	local speedMultiplier = pathRecord:get("SpeedMultiplier")
+	speedMultiplier = speedMultiplier == 0 and 1 or speedMultiplier
+
+	local gravity = Vector(pathRecord:get("GravityX"), pathRecord:get("GravityY"), pathRecord:get("GravityX"))
+	local gravityOffset = Vector(pathRecord:get("GravityOffsetX"), pathRecord:get("GravityOffsetY"), pathRecord:get("GravityOffsetX"))
+	local gravityMultiplier = Vector(pathRecord:get("GravityMultiplierX"), pathRecord:get("GravityMultiplierY"), pathRecord:get("GravityMultiplierX"))
+	gravityMultiplier = gravityMultiplier:getLength() == 0 and Vector(1)
+
+	local drag = pathRecord:get("Drag")
+	local dragOffset = pathRecord:get("DragOffset")
+	local dragMultiplier = pathRecord:get("DragMultiplier")
+	dragMultiplier = dragMultiplier == 0 and 1 or dragMultiplier
+
+	local timestep = pathRecord:get("Timestep")
+	local timestepOffset = pathRecord:get("TimestepOffset")
+	local timestepMultiplier = pathRecord:get("TimestepMultiplier")
+	timestepMultiplier = timestepMultiplier == 0 and 1 or timestepMultiplier
+
+	local maxSteps = pathRecord:get("MaxSteps")
+	local maxStepsOffset = pathRecord:get("MaxStepsOffset")
+	local maxStepsMultiplier = pathRecord:get("MaxStepsMultiplier")
+	maxStepsMultiplier = maxStepsMultiplier == 0 and 1 or maxStepsMultiplier
+
+	return {
+		speed = speed,
+		speedOffset = speedOffset,
+		speedMultiplier = speedMultiplier,
+
+		gravity = gravity,
+		gravityOffset = gravityOffset,
+		gravityMultiplier = gravityMultiplier,
+
+		drag = drag,
+		dragOffset = dragOffset,
+		dragMultiplier = dragMultiplier,
+
+		timestep = timestep,
+		timestepOffset = timestepOffset,
+		timestepMultiplier = timestepMultiplier,
+
+		maxSteps = maxSteps,
+		maxStepsOffset = maxStepsOffset,
+		maxStepsMultiplier = maxStepsMultiplier,
+	}
+end
+
+function Sailing.Cannon._mergeCannonballPathProperties(...)
+	local result = {}
+
+	for i = 1, select("#", ...) do
+		local properties = select(i, ...)
+
+		result.speed = result.speed or properties.speed
+		result.gravity = result.gravity or properties.gravity
+		result.drag = result.drag or properties.drag
+		result.timestep = result.timestep or properties.timestep
+		result.maxSteps = result.maxSteps or properties.maxSteps
+
+		result.speed = (result.speed + properties.speedOffset) * properties.speedMultiplier
+		result.gravity = (result.gravity + properties.gravityOffset) * properties.gravityMultiplier
+		result.drag = (result.drag + properties.dragOffset) * properties.dragMultiplier
+		result.timestep = (result.timestep + properties.timestepOffset) * properties.timestepMultiplier
+		result.maxSteps = (result.maxSteps + properties.maxStepsOffset) * properties.maxStepsMultiplier
+	end
+
+	return result
+end
+
+function Sailing.Cannon.getCannonballPathProperties(peep, cannon, ammo)
+	local gameDB = peep:getDirector():getGameDB()
+	local stage = peep:getDirector():getGameInstance():getStage()
+
+	local cannonResource
+	if type(cannon) == "string" then
+		cannonResource = gameDB:getRecord(cannon, "SailingItem")
+	elseif Class.isCompatibleType(cannon, Peep) then
+		local sailingResource = cannon:getBehavior(SailingResourceBehavior)
+		if sailingResource and sailingResource.resource then
+			cannonResource = sailingResource.resource
+		end
+	elseif cannon then
+		cannonResource = cannon
+	end
+
+	local ammoResource
+	if type(cannon) == "string" then
+		ammoResource = gameDB:getRecord(cannon, "SailingItem")
+	elseif Class.isCompatibleType(ammo, Peep) then
+		local sailingResource = ammo:getBehavior(SailingResourceBehavior)
+		if sailingResource and sailingResource.resource then
+			ammoResource = sailingResource.resource
+		end
+	elseif Class.isCompatibleType(ammo, Item) then
+		local itemResource = gameDB:getRecord(ammo:getID(), "Item")
+		local ammoRecord = gameDB:getRecord("ItemSailingItemMapping", { Item = itemResource })
+		if ammoRecord then
+			ammoResource = ammoRecord:get("SailingItem")
+		end
+	elseif ammo then
+		ammoResource = ammo
+	end
+
+	local cannonProperties = Sailing.Cannon._getCannonballPathProperties(cannonResource)
+	local ammoProperties = Sailing.Cannon._getCannonballPathProperties(ammoResource)
+
+	return Sailing.Cannon._mergeCannonballPathProperties(cannonProperties, ammoProperties)
+end
+
+function Sailing.Cannon.buildCannonballPath(cannon, properties)
+	local rotation, position
+
+	if Class.hasInterface(cannon, ICannon) then
+		rotation = cannon:getCannonDirection()
+		position = cannon:getCannonPosition()
+	else
+		rotation = Quaternion.IDENTITY
+		position = Utility.Peep.getAbsolutePosition(cannon)
+	end
+
+	local normal = rotation:transformVector(Vector.UNIT_Z)
+	local speed = properties.speed or Sailing.Cannon.DEFAULT_SPEED
+	local gravity = properties.gravity or Sailing.Cannon.DEFAULT_GRAVITY
+	local drag = properties.drag or Sailing.Cannon.DEFAULT_DRAG
+	local timestep = properties.timestep or Sailing.Cannon.DEFAULT_TIMESTEP
+	local maxSteps = properties.maxSteps or Sailing.Cannon.DEFAULT_MAX_STEPS
+	maxSteps = math.clamp(maxSteps, 1, Sailing.Cannon.GLOBAL_MAX_STEPS)
+
+	local currentStep = 1
+	local currentPosition = position
+	local currentVelocity = normal * speed
+
+	local path = { { i = 0, time = 0, position = currentPosition, velocity = currentVelocity } }
+	while currentStep <= maxSteps and currentPosition.y > 0 do
+		local currentDrag = drag * timestep
+		currentVelocity = currentVelocity * currentDrag + gravity * timestep
+		currentPosition = currentPosition + currentVelocity * timestep
+
+		local pathStep = {
+			i = currentStep,
+			time = currentStep * timestep,
+			position = currentPosition,
+			velocity = currentVelocity
+		}
+
+		currentStep = currentStep + 1
+	end
+
+	return path, currentStep * timestep
+end
 
 Sailing.Itinerary = {}
 function Sailing.Itinerary.hasItinerary(peep)

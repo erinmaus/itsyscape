@@ -142,7 +142,7 @@ local function __call(self, parent, stack, ...)
 	Class._METATABLE = Metatable
 	Class._PARENT = parent or false
 	Class._DEBUG = {}
-	Class._INTERFACES = {}
+	Class._INTERFACES = setmetatable({}, { __index = (parent and parent._INTERFACES or {}) })
 
 	if parent then
 		Class._INTERFACES[parent] = true

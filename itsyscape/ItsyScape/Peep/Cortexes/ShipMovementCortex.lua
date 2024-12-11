@@ -245,7 +245,7 @@ function ShipMovementCortex.Ship:handleFishCollision(other)
 
 	if distance <= shipRadius then
 		local clampedPosition = shipPosition + difference:getNormal() * shipRadius
-		Utility.Peep.setPosition(other, clampedPosition)
+		Utility.Peep.setPosition(other, clampedPosition, false)
 	end
 end
 
