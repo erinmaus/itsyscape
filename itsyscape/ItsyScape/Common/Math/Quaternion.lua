@@ -199,6 +199,11 @@ function BaseQuaternion.fromEulerXYZ(x, y, z)
 	return (z * y * x):getNormal()
 end
 
+function BaseQuaternion:getDebugEulerXYZ()
+	local x, y, z = self:getEulerXYZ()
+	return math.deg(x), math.deg(y), math.deg(z)
+end
+
 function BaseQuaternion:getEulerXYZ()
 	self:compatible()
 

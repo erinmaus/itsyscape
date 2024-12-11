@@ -30,6 +30,8 @@ DefaultCameraController.MAX_DISTANCE = 25
 DefaultCameraController.DEFAULT_DISTANCE = 30
 DefaultCameraController.SCROLL_DISTANCE_Y_ENGAGE = 128
 
+DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS = 0.25
+
 DefaultCameraController.MAP_ROTATION_SWITCH_PERIOD = 1.0
 
 DefaultCameraController.ACTION_BUTTON = 1
@@ -60,6 +62,13 @@ function DefaultCameraController:new(...)
 	self.isCameraDragging = false
 	self.isRotationUnlocked = 0
 	self.isPositionUnlocked = 0
+	self.isFirstPerson = 0
+	self.targetFirstPersonDirection = Quaternion.IDENTITY
+	self.previousFirstPersonDirection = Quaternion.IDENTITY
+	self.targetFirstPersonPosition = Vector.ZERO
+	self.previousFirstPersonPosition = Vector.ZERO
+	self.firstPersonDirectionTime = DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS
+	self.firstPersonPositionTime = DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS
 	self.isPanning = false
 	self.panningTime = 0
 	self.panningVerticalRotationOffset = 0
@@ -538,6 +547,31 @@ function DefaultCameraController:updatePanning(delta)
 	end
 end
 
+function DefaultCameraController:updateFirstPerson(delta)
+	if self.nextFirstPersonDirection then
+		local currentRotation = self:_getCurrentFirstPersonRotation()
+
+		self.previousFirstPersonDirection = currentRotation:keep()
+		self.targetFirstPersonDirection = self.nextFirstPersonDirection
+		self.nextFirstPersonDirection = nil
+
+		self.firstPersonDirectionTime = 0
+	end
+
+	if self.nextFirstPersonPosition then
+		local currentPosition = self:_getCurrentFirstPersonPosition()
+
+		self.previousFirstPersonPosition = currentPosition:keep()
+		self.targetFirstPersonPosition = self.nextFirstPersonPosition
+		self.nextFirstPersonPosition = nil
+
+		self.firstPersonPositionTime = 0
+	end
+
+	self.firstPersonDirectionTime = math.min(self.firstPersonDirectionTime + delta, DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS)
+	self.firstPersonPositionTime = math.min(self.firstPersonPositionTime + delta, DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS)
+end
+
 function DefaultCameraController:update(delta)
 	if _DEBUG then
 		self:debugUpdate(delta)
@@ -563,6 +597,7 @@ function DefaultCameraController:update(delta)
 	self:updateShow(delta)
 	self:updateControls(delta)
 	self:updatePanning(delta)
+	self:updateFirstPerson(delta)
 
 	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	if isFocusDown ~= self.isFocusDown and isFocusDown then
@@ -577,7 +612,7 @@ function DefaultCameraController:update(delta)
 	end
 	self.isFocusDown = isFocusDown
 
-	if self.isTargetting then
+	if self.isTargetting and self.isFirstPerson <= 0 then
 		self:updateTargetDistance()
 	end
 
@@ -608,18 +643,49 @@ function DefaultCameraController:update(delta)
 		cameraDetails.horizontalRotationOffset = self.cameraHorizontalRotationOffset
 		cameraDetails.verticalRotationOffset = self.cameraVerticalRotationOffset
 		cameraDetails.isVerticalRotationFlipped = self.isCameraVerticalRotationFlipped
-		cameraDetails.distance = self.targetDistance
+		cameraDetails.distance = self.preFirstPersonTargetDistance or self.targetDistance
 	end
 	_CONF.camera = cameraDetails
 end
 
+function DefaultCameraController:onEnterFirstPerson()
+	local wasFirstPerson = self.isFirstPerson > 0
+
+	self.isFirstPerson = (self.isFirstPerson or 0) + 1
+
+	if self.isFirstPerson > 0 then
+		self.preFirstPersonTargetDistance = self.targetDistance
+		self.targetDistance = 0
+	end
+
+	if not wasFirstPerson then
+		self.previousFirstPersonDirection = self:getCamera():getCombinedRotation():keep()
+		self.targetFirstPersonDirection = self.previousFirstPersonDirection
+	end
+end
+
+function DefaultCameraController:onLeaveFirstPerson()
+	self.isFirstPerson = (self.isFirstPerson or 1) - 1
+
+	if self.isFirstPerson <= 0 then
+		self.targetDistance = self.preFirstPersonTargetDistance
+		self.preFirstPersonTargetDistance = nil
+	end
+end
+
+function DefaultCameraController:onUpdateFirstPersonDirection(rotation)
+	self.nextFirstPersonDirection = rotation:keep()
+end
+
+function DefaultCameraController:onUpdateFirstPersonPosition(position)
+	self.nextFirstPersonPosition = position:keep()
+end
+
 function DefaultCameraController:onMapRotationStick()
-	print(">>> STICKY!")
 	self.mapRotationSticky = (self.mapRotationSticky or 0) + 1
 end
 
 function DefaultCameraController:onMapRotationUnstick()
-	print(">>> NOT STICKY!")
 	self.mapRotationSticky = (self.mapRotationSticky or 1) - 1
 end
 
@@ -779,6 +845,18 @@ function DefaultCameraController:_clampCenter(center)
 	return newCenter
 end
 
+function DefaultCameraController:_getCurrentFirstPersonPosition()
+	local delta = math.clamp(self.firstPersonPositionTime / DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS)
+	local currentPosition = self.previousFirstPersonPosition:lerp(self.targetFirstPersonPosition, delta)
+	return currentPosition
+end
+
+function DefaultCameraController:_getCurrentFirstPersonRotation()
+	local delta = math.clamp(self.firstPersonDirectionTime / DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS)
+	local currentRotation = self.previousFirstPersonDirection:slerp(self.targetFirstPersonDirection, delta)
+	return currentRotation:getNormal()
+end
+
 function DefaultCameraController:draw()
 	local distance = self.currentDistance
 
@@ -808,7 +886,9 @@ function DefaultCameraController:draw()
 	end
 
 	local center
-	if self.isTargetting then
+	if self.isFirstPerson > 0 then
+		center = self:_getCurrentFirstPersonPosition()
+	elseif self.isTargetting then
 		local playerPosition = self:getPlayerPosition()
 		local targetPosition = self:getTargetPosition()
 		local difference = playerPosition - targetPosition
@@ -829,8 +909,14 @@ function DefaultCameraController:draw()
 		distance = math.lerp(distance, DefaultCameraController.PAN_DISTANCE, panningDelta)
 	end
 
-	self:getCamera():setVerticalRotation(verticalOffset)
-	self:getCamera():setHorizontalRotation(horizontalOffset)
+	if self.isFirstPerson > 0 then
+		self:getCamera():setVerticalRotation(-math.pi / 2)
+		self:getCamera():setHorizontalRotation(-math.pi)
+	else
+		self:getCamera():setVerticalRotation(verticalOffset)
+		self:getCamera():setHorizontalRotation(horizontalOffset)
+	end
+
 	self:getCamera():setDistance(distance)
 
 	if not _DEBUG and self.isPositionUnlocked <= 0 then
@@ -846,7 +932,9 @@ function DefaultCameraController:draw()
 
 	self:getCamera():setPosition(center + self.cameraOffset + shake)
 
-	if self.mapRotationSticky and self.mapRotationSticky > 0 then
+	if self.isFirstPerson > 0 then
+		self:getCamera():setRotation(self:_getCurrentFirstPersonRotation())
+	elseif self.mapRotationSticky and self.mapRotationSticky > 0 then
 		self:getCamera():setRotation(-self:getPlayerMapRotation())
 	else
 		self:getCamera():setRotation()
