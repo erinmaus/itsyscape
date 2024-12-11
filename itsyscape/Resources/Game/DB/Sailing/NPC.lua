@@ -10,6 +10,17 @@
 
 local ITEMS = {
 	{
+		type = "Cannon",
+		defaultPropID = "Sailing_Cannon",
+		items = {
+			{
+				id = "Itsy_Gilded",
+				name = "Gilded itsy cannon",
+				description = "The fanciest itsy cannon you'll ever find."
+			}
+		}
+	},
+	{
 		type = "Capstan",
 		defaultPropID = "Sailing_Capstan",
 		items = {

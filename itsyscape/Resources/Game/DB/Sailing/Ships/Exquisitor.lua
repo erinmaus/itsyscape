@@ -24,6 +24,62 @@ ItsyScape.Meta.ShipSailingItem {
 	Green2 = METAL_COLOR.g,
 	Blue2 = METAL_COLOR.b,
 	IsColorCustomized = 1,
+	ItemGroup = "Cannon",
+	Index = 1,
+	Ship = Ship,
+	SailingItem = ItsyScape.Resource.SailingItem "Cannon_Itsy_Gilded"
+}
+
+ItsyScape.Meta.ShipSailingItem {
+	Red1 = WOOD_COLOR.r,
+	Green1 = WOOD_COLOR.g,
+	Blue1 = WOOD_COLOR.b,
+	Red2 = METAL_COLOR.r,
+	Green2 = METAL_COLOR.g,
+	Blue2 = METAL_COLOR.b,
+	IsColorCustomized = 1,
+	ItemGroup = "Cannon",
+	Index = 2,
+	Ship = Ship,
+	SailingItem = ItsyScape.Resource.SailingItem "Cannon_Itsy_Gilded"
+}
+
+ItsyScape.Meta.ShipSailingItem {
+	Red1 = WOOD_COLOR.r,
+	Green1 = WOOD_COLOR.g,
+	Blue1 = WOOD_COLOR.b,
+	Red2 = METAL_COLOR.r,
+	Green2 = METAL_COLOR.g,
+	Blue2 = METAL_COLOR.b,
+	IsColorCustomized = 1,
+	ItemGroup = "Cannon",
+	Index = 3,
+	Ship = Ship,
+	SailingItem = ItsyScape.Resource.SailingItem "Cannon_Itsy_Gilded"
+}
+
+ItsyScape.Meta.ShipSailingItem {
+	Red1 = WOOD_COLOR.r,
+	Green1 = WOOD_COLOR.g,
+	Blue1 = WOOD_COLOR.b,
+	Red2 = METAL_COLOR.r,
+	Green2 = METAL_COLOR.g,
+	Blue2 = METAL_COLOR.b,
+	IsColorCustomized = 1,
+	ItemGroup = "Cannon",
+	Index = 4,
+	Ship = Ship,
+	SailingItem = ItsyScape.Resource.SailingItem "Cannon_Itsy_Gilded"
+}
+
+ItsyScape.Meta.ShipSailingItem {
+	Red1 = WOOD_COLOR.r,
+	Green1 = WOOD_COLOR.g,
+	Blue1 = WOOD_COLOR.b,
+	Red2 = METAL_COLOR.r,
+	Green2 = METAL_COLOR.g,
+	Blue2 = METAL_COLOR.b,
+	IsColorCustomized = 1,
 	ItemGroup = "Capstan",
 	Ship = Ship,
 	SailingItem = ItsyScape.Resource.SailingItem "Capstan_ExquisiteDragonBone"

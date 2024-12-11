@@ -9,6 +9,8 @@
 --------------------------------------------------------------------------------
 local json = require "json"
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
@@ -96,6 +98,7 @@ function SailingItemView:loadAttachments(parentNode, attachments)
 		local meshFilename = attachment.mesh
 		local group = attachment.group
 		local textureFilename = attachment.texture
+		local shaderFilename = attachment.shader
 
 		if meshFilename and group and textureFilename then
 			local texture, mesh
@@ -114,6 +117,16 @@ function SailingItemView:loadAttachments(parentNode, attachments)
 					texture = t
 				end)
 
+			local otherShader
+			if shaderFilename then
+				resources:queue(
+					ShaderResource,
+					shaderFilename,
+					function(s)
+						otherShader = s
+					end)
+			end
+
 			local decoration = DecorationSceneNode()
 			resources:queueEvent(
 				function()
@@ -126,10 +139,59 @@ function SailingItemView:loadAttachments(parentNode, attachments)
 						material:setShader(wallDecorationShader)
 						material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 3.5, 3.5, 6, 0.25)
 						material:send(material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+					else
+						material:setShader(otherShader or decorationShader)
+					end
+
+					if attachment.uniforms then
+						for _, uniform in ipairs(attachment.uniforms) do
+							local t
+							if uniform[1] == "float" then
+								t = material.UNIFORM_FLOAT
+							elseif uniform[2] == "integer" then
+								t = material.UNIFORM_INTEGER
+							else
+								t = material.UNIFORM_FLOAT
+							end
+
+							print(">>> send", t, unpack(uniform, 2))
+
+							material:send(t, unpack(uniform, 2))
+						end
+					end
+
+					local transform = decoration:getTransform()
+					do
+						if attachment.translation then
+							transform:setLocalTranslation(Vector(unpack(attachment.translation)))
+						end
+
+						if attachment.scale then
+							transform:setLocalScale(Vector(unpack(attachment.scale)))
+						end
+
+						if attachment.offset then
+							transform:setLocalOffset(Vector(unpack(attachment.offset)))
+						end
+
+						if attachment.rotation then
+							if #attachment.rotation == 3 then
+								local x, y, z = math.rad(attachment.rotation[1] or 0), math.rad(attachment.rotation[2] or 0), math.rad(attachment.rotation[3] or 0)
+								transform:setLocalRotation(Quaternion.fromEulerXYZ(x, y, z))
+							else
+								transform:setLocalRotation(Quaternion(unpack(attachment.rotation)))
+							end
+						end
 					end
 
 					if attachment.color then
-						local r, g, b = unpack(attachment.color)
+						local r, g, b
+						if type(attachment.color) == "string" then
+							r, g, b = Color.fromHexString(attachment.color):get()
+						else
+							r, g, b = unpack(attachment.color)
+						end
+
 						local a = 1
 						if attachment.alpha then
 							a = attachment.alpha

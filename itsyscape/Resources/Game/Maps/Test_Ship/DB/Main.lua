@@ -308,6 +308,94 @@ do
 	}
 end
 
+M["Hotspot_Starboard_Cannon1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 0,
+		PositionZ = 1,
+		RotationX = -0.000000,
+		RotationY = -1.000000,
+		RotationZ = 0.000000,
+		RotationW = 0.000000,
+		Name = "Hotspot_Starboard_Cannon1",
+		Map = M._MAP,
+		Resource = M["Hotspot_Starboard_Cannon1"]
+	}
+
+	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
+		Slot = "Cannon",
+		ItemGroup = "Cannon",
+		Index = 1,
+		MapObject = M["Hotspot_Starboard_Cannon1"],
+		Map = M._MAP
+	}
+end
+
+M["Hotspot_Starboard_Cannon2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 0,
+		PositionZ = 1,
+		RotationX = -0.000000,
+		RotationY = -1.000000,
+		RotationZ = 0.000000,
+		RotationW = 0.000000,
+		Name = "Hotspot_Starboard_Cannon2",
+		Map = M._MAP,
+		Resource = M["Hotspot_Starboard_Cannon2"]
+	}
+
+	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
+		Slot = "Cannon",
+		ItemGroup = "Cannon",
+		Index = 2,
+		MapObject = M["Hotspot_Starboard_Cannon2"],
+		Map = M._MAP
+	}
+end
+
+M["Hotspot_Port_Cannon1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Hotspot_Port_Cannon1",
+		Map = M._MAP,
+		Resource = M["Hotspot_Port_Cannon1"]
+	}
+
+	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
+		Slot = "Cannon",
+		ItemGroup = "Cannon",
+		Index = 3,
+		MapObject = M["Hotspot_Port_Cannon1"],
+		Map = M._MAP
+	}
+end
+
+M["Hotspot_Port_Cannon2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Hotspot_Port_Cannon2",
+		Map = M._MAP,
+		Resource = M["Hotspot_Port_Cannon2"]
+	}
+
+	ItsyScape.Meta.ShipSailingItemMapObjectHotspot {
+		Slot = "Cannon",
+		ItemGroup = "Cannon",
+		Index = 4,
+		MapObject = M["Hotspot_Port_Cannon2"],
+		Map = M._MAP
+	}
+end
+
 M["Anchor_FromBelowDeck"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -5,16 +5,14 @@
 			"group": "rail.stern",
 			"texture": "Resources/Game/SailingItems/Rail_Galleon_ExquisiteFiligree/Rail_Stern.png",
 			"colorIndex": 1,
-			"outlineThreshold": 0.3,
-			"enableWallHack": true
+			"outlineThreshold": 0.3
 		},
 		{
 			"mesh": "Resources/Game/SailingItems/Rail_Galleon_ExquisiteFiligree/Model.lstatic",
 			"group": "rail.bow",
 			"texture": "Resources/Game/SailingItems/Rail_Galleon_ExquisiteFiligree/Rail_Bow.png",
 			"colorIndex": 1,
-			"outlineThreshold": 0.3,
-			"enableWallHack": true
+			"outlineThreshold": 0.3
 		}
 	],
 }
