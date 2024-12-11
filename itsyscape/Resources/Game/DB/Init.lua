@@ -649,17 +649,6 @@ Game "ItsyScape"
 	ActionType "Dig"
 	ActionType "DigUp"
 
-	Meta "Cannon" {
-		Range = Meta.TYPE_INTEGER,
-		AmmoType = Meta.TYPE_INTEGER,
-		Resource = Meta.TYPE_RESOURCE
-	}
-
-	Meta "CannonAmmo" {
-		AmmoType = Meta.TYPE_INTEGER,
-		Resource = Meta.TYPE_RESOURCE
-	}
-
 	Meta "CookingFailedAction" {
 		Output = Meta.TYPE_ACTION,
 		Start = Meta.TYPE_INTEGER,
@@ -746,6 +735,47 @@ Game "ItsyScape"
 
 		}
 
+	Meta "Cannon" {
+		Range = Meta.TYPE_INTEGER,
+		AmmoType = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CannonballPathProperties" {
+		Speed = Meta.TYPE_REAL,
+		SpeedMultiplier = Meta.TYPE_REAL,
+		SpeedOffset = Meta.TYPE_REAL,
+
+		GravityX = Meta.TYPE_REAL,
+		GravityY = Meta.TYPE_REAL,
+		GravityZ = Meta.TYPE_REAL,
+		GravityMultiplierX = Meta.TYPE_REAL,
+		GravityMultiplierY = Meta.TYPE_REAL,
+		GravityMultiplierZ = Meta.TYPE_REAL,
+		GravityOffsetX = Meta.TYPE_REAL,
+		GravityOffsetY = Meta.TYPE_REAL,
+		GravityOffsetZ = Meta.TYPE_REAL,
+
+		Drag = Meta.TYPE_REAL,
+		DragMultiplier = Meta.TYPE_REAL,
+		DragOffset = Meta.TYPE_REAL,
+
+		Timestep = Meta.TYPE_REAL,
+		TimestepMultiplier = Meta.TYPE_REAL,
+		TimestepOffset = Meta.TYPE_REAL,
+
+		MaxSteps = Meta.TYPE_INTEGER,
+		MaxStepsMultiplier = Meta.TYPE_REAL,
+		MaxStepsOffset = Meta.TYPE_REAL,
+
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CannonAmmo" {
+		AmmoType = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "MapShip" {
 		SizeClass = Meta.TYPE_TEXT,
 		Map = Meta.TYPE_RESOURCE
@@ -801,6 +831,11 @@ Game "ItsyScape"
 	Meta "MapSeaChart" {
 		SeaChart = Meta.TYPE_RESOURCE,
 		Map = Meta.TYPE_RESOURCE
+	}
+
+	Meta "ItemSailingItemMapping" {
+		Item = Meta.TYPE_RESOURCE,
+		SailingItem = Meta.TYPE_RESOURCE
 	}
 
 	Meta "ShipSailingItemMapObjectHotspot" {

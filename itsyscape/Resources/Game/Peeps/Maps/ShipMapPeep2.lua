@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Color = require "ItsyScape.Graphics.Color"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
@@ -108,73 +109,12 @@ function ShipMapScript:onCustomize(sailingDetails)
 	end
 end
 
-function ShipMapScript:_updateRotation()
-	local game = self:getDirector():getGameInstance()
-
-	local position = self:getBehavior(PositionBehavior)
-	local layer = position and position.layer or self:getLayer()
-
-	local mapScript = Utility.Peep.getInstance(self):getMapScriptByLayer(layer)
-	local ocean = mapScript and mapScript:getBehavior(OceanBehavior)
-
-	local shipMovement = self:getBehavior(ShipMovementBehavior)
-	local shipRotation = shipMovement and shipMovement.rotation
-	local shipLeft = shipRotation and shipRotation:transformVector(Vector(0, 0, shipMovement.beam)) or Vector(0, 0, 1)
-	local shipForward = shipRotation and shipRotation:transformVector(Vector(shipMovement.length / 2, 0, 0)) or Vector(1, 0, 0)
-	local shipBackward = shipRotation and shipRotation:transformVector(Vector(-(shipMovement.length / 2), 0, 0)) or Vector(-1, 0, 0)
-
-	local windDirection, windSpeed, windPattern = Utility.Map.getWind(game, layer)
-
-	local worldPosition = Utility.Peep.getPosition(self)
-	worldPosition = Utility.Map.transformWorldPositionByWave(
-		ocean and ocean.time or 0,
-		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
-		windDirection,
-		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
-		Vector(worldPosition.x, -(ocean and ocean.offset or 1), worldPosition.z),
-		Vector(worldPosition.x, 0, worldPosition.z))
-	local worldPositionXZ = Vector(worldPosition.x, 0, worldPosition.z)
-
-	local worldLeftPosition = Utility.Map.transformWorldPositionByWave(
-		ocean and ocean.time or 0,
-		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
-		windDirection,
-		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
-		Vector(shipLeft.x, -(ocean and ocean.offset or 1), shipLeft.z) + worldPositionXZ,
-		Vector(shipLeft.x, 0, shipLeft.z) + worldPositionXZ)
-
-	local worldForwardPosition = Utility.Map.transformWorldPositionByWave(
-		ocean and ocean.time or 0,
-		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
-		windDirection,
-		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
-		Vector(shipForward.x, -(ocean and ocean.offset or 1), shipForward.z) + worldPositionXZ,
-		Vector(shipForward.x, 0, shipForward.z) + worldPositionXZ)
-
-	local worldBackwardPosition = Utility.Map.transformWorldPositionByWave(
-		ocean and ocean.time or 0,
-		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
-		windDirection,
-		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
-		Vector(shipBackward.x, -(ocean and ocean.offset or 1), shipBackward.z) + worldPositionXZ,
-		Vector(shipBackward.x, 0, shipBackward.z) + worldPositionXZ)
-
-	local normal
-	do
-		local s = worldForwardPosition - worldLeftPosition
-		local t = worldBackwardPosition - worldForwardPosition
-		normal = s:cross(t):getNormal()
-	end
-
-	local rotation = Quaternion.fromVectors(Vector.UNIT_Y, normal):getNormal()
-	Utility.Peep.setRotation(self, rotation:getNormal())
-	Utility.Peep.setPosition(self, worldPosition + Vector(0, 8, 0))
-end
-
 function ShipMapScript:update(director, game)
 	MapScript.update(self, director, game)
 
-	self:_updateRotation()
+	local position, rotation = Sailing.Ocean.getPositionRotation(self)
+	Utility.Peep.setRotation(self, rotation)
+	Utility.Peep.setPosition(self, position + Vector(0, 8, 0))
 end
 
 return ShipMapScript

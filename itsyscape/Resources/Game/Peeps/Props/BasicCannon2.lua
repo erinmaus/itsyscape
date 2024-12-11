@@ -12,9 +12,11 @@ local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local ICannon = require "ItsyScape.Game.Skills.ICannon"
+local SailingResourceBehavior = require "ItsyScape.Peep.Behaviors.SailingResourceBehavior"
 local BasicSailingItem = require "Resources.Game.Peeps.Props.BasicSailingItem"
 
-local BasicCannon = Class(BasicSailingItem)
+local BasicCannon = Class(BasicSailingItem, ICannon)
 
 BasicCannon.DEFAULT_SPEED = 16
 BasicCannon.DEFAULT_GRAVITY = Vector(0, -18, 0)
@@ -53,45 +55,19 @@ function BasicCannon:previewTilt(rotation)
 	self.currentRotation = rotation
 end
 
-function BasicCannon:buildPath(position, direction, properties)
-	direction = direction or self:_getRotation(direction)
-	position = position or self:_getPosition()
-	properties = properties or {}
+function BasicCannon:getCannonDirection()
+	return self:_getRotation()
+end
 
-	local normal = direction:transformVector(Vector.UNIT_Z)
-	local speed = properties.speed or self.DEFAULT_SPEED
-	local gravity = properties.gravity or self.DEFAULT_GRAVITY
-	local drag = properties.drag or self.DEFAULT_DRAG
-	local timestep = properties.timestep or self.DEFAULT_TIMESTEP
-	local maxSteps = properties.maxSteps or self.DEFAULT_MAX_STEPS
-
-	local currentStep = 1
-	local currentPosition = position
-	local currentVelocity = normal * speed
-
-	local path = { { i = 0, time = 0, position = currentPosition, velocity = currentVelocity } }
-	while currentStep <= maxSteps and currentPosition.y > 0 do
-		local currentDrag = drag * timestep
-		currentVelocity = currentVelocity * currentDrag + gravity * timestep
-		currentPosition = currentPosition + currentVelocity * timestep
-
-		local pathStep = {
-			i = currentStep,
-			time = currentStep * timestep,
-			position = currentPosition,
-			velocity = currentVelocity
-		}
-
-		currentStep = currentStep + 1
-	end
-
-	return path, currentStep * timestep
+function BasicCannon:getCannonPosition()
+	return self:_getPosition()
 end
 
 function BasicCannon:getPropState()
-	return {
-		rotation = { self.currentRotation:get() }
-	}
+	local propState = BasicSailingItem.getPropState(self)
+	propState.rotation = { self.currentRotation:get() }
+
+	return propState
 end
 
 return BasicCannon
