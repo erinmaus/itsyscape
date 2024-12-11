@@ -658,8 +658,11 @@ function DefaultCameraController:onEnterFirstPerson()
 	end
 
 	if not wasFirstPerson then
-		self.previousFirstPersonDirection = self:getCamera():getCombinedRotation():keep()
+		self.previousFirstPersonDirection = (Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi) * self:getCamera():getCombinedRotation()):getNormal():keep()
 		self.targetFirstPersonDirection = self.previousFirstPersonDirection
+
+		self.previousFirstPersonPosition = self:getCamera():getEye():keep()
+		self.targetFirstPersonPosition = self.previousFirstPersonPosition
 	end
 end
 
