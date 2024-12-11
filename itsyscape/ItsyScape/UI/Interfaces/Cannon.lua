@@ -80,6 +80,7 @@ function Cannon:updatePath(path)
 	self.currentSceneNode:setBeamSize(0.5)
 	self.currentSceneNode:getMaterial():setColor(Color.fromHexString("ffcc00"))
 	self.currentSceneNode:getMaterial():setIsFullLit(true)
+	self.currentSceneNode:getMaterial():setIsShadowCaster(false)
 
 	self.currentSceneNode:buildSeamless(path)
 	self.currentSceneNode:setParent(gameView:getScene())
