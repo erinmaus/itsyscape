@@ -49,7 +49,7 @@ function CannonView:_getRotation()
 	local state = self:getProp():getState()
 	local currentRotation = state and state.rotation
 	currentRotation = currentRotation and Quaternion(unpack(currentRotation))
-	currentRotation = currentRotation or Quaternion.fromAxisAngle(Vector.UNIT_X, math.rad(0))
+	currentRotation = currentRotation or Quaternion.fromAxisAngle(Vector.UNIT_X, math.rad(15))
 
 	do
 		local mouseX, mouseY = love.mouse.getPosition()
@@ -59,7 +59,7 @@ function CannonView:_getRotation()
 		local y = mouseY / height
 
 		local modifiedRotation = Quaternion.fromEulerXYZ(
-			math.rad(math.lerp(-30, 15, y)),
+			math.rad(math.lerp(-30, 30, y)),
 			math.rad(math.lerp(-30, 30, x)),
 			0)
 
