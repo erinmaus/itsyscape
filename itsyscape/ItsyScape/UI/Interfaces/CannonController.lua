@@ -52,7 +52,9 @@ end
 
 function CannonController:fire(e)
 	self:updatePath()
+
 	self.cannon:poke("fire", self:getPeep(), "ItsyCannonball", self.currentPath, self.currentPathDuration)
+	self:getPlayer():pokeCamera("shake", 0.5)
 
 	self:getGame():getUI():closeInstance(self)
 end
@@ -78,12 +80,19 @@ function CannonController:updatePath()
 	self.currentPath = cannonballPath
 	self.currentPathDuration = cannonballPathDuration
 
-	local rotation = self.cannon:getCannonDirection()
-	rotation = rotation * Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi)
+	local position, rotation
+	do
+		rotation = self.cannon:getCannonDirection()
+		local _, y, _ = rotation:getEulerXYZ()
 
-	local position = self.cannon:getCannonPosition()
+		local dot = rotation:transformVector(Vector.UNIT_Z):getNormal():dot(Vector.UNIT_Z)
+		rotation = Quaternion.fromEulerXYZ(0, -math.sign(dot) * y, 0)
+		rotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 8) * self.currentCannonRotation * rotation
 
-	self:getPlayer():pokeCamera("updateFirstPersonDirection", rotation:getNormal())
+		position = Utility.Peep.getAbsolutePosition(self.cannon) + rotation:transformVector(Vector(0, 6, -8))
+	end
+
+	self:getPlayer():pokeCamera("updateFirstPersonDirection", rotation:getNormal(), 20)
 	self:getPlayer():pokeCamera("updateFirstPersonPosition", position)
 end
 
@@ -96,10 +105,10 @@ function CannonController:update(delta)
 
 	local position, rotation = MathCommon.decomposeTransform(Utility.Peep.getAbsoluteTransform(self.cannon))
 	if position ~= self.currentCannonPosition or rotation ~= self.currentCannonRotation then
-		self:updatePath()
-
 		self.currentCannonPosition = position
 		self.currentCannonRotation = rotation
+
+		self:updatePath()
 	end
 end
 

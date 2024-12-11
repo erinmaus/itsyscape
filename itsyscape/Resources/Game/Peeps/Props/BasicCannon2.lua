@@ -19,14 +19,9 @@ local BasicSailingItem = require "Resources.Game.Peeps.Props.BasicSailingItem"
 
 local BasicCannon = Class(BasicSailingItem, ICannon)
 
-BasicCannon.DEFAULT_SPEED = 16
-BasicCannon.DEFAULT_GRAVITY = Vector(0, -18, 0)
-BasicCannon.DEFAULT_DRAG = 0.9
-BasicCannon.DEFAULT_TIMESTEP = 1 / 10
-BasicCannon.DEFAULT_MAX_STEPS = 100
-
 BasicCannon.DEFAULT_ROTATION = Quaternion.fromAxisAngle(Vector.UNIT_X, math.rad(-15))
 BasicCannon.DEFAULT_POSITION = Vector(0, 1.4, 1.5)
+BasicCannon.MUZZLE_POSITION  = Vector(0, 0, 3)
 
 BasicCannon.DEFAULT_MIN_X = math.rad(-30)
 BasicCannon.DEFAULT_MAX_X = math.rad(30)
@@ -50,9 +45,9 @@ function BasicCannon:_getRotation()
 	return (baseRotation * self.currentRotation):getNormal()
 end
 
-function BasicCannon:_getPosition(currentRotation)
-	local currentRotation = currentRotation or self:_getRotation()
-	local currentOffset = currentRotation:transformVector(self.DEFAULT_POSITION)
+function BasicCannon:_getPosition(rotation, position)
+	local currentRotation = rotation or self:_getRotation()
+	local currentOffset = currentRotation:transformVector(self.DEFAULT_POSITION + (position or Vector.ZERO))
 	local currentPosition = Utility.Peep.getAbsolutePosition(self)
 
 	return currentPosition + currentOffset
@@ -133,14 +128,18 @@ function BasicCannon:onFire(peep, ammo, path, duration)
 	cannonballProp:getPeep():listen("ready", function(peep)
 		peep:poke("launch", path, duration)
 	end)
+
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("CannonSplosion", self, self:_getPosition(nil, self.MUZZLE_POSITION), Utility.Peep.getLayer(self))
 end
 
 function BasicCannon:getCannonDirection()
 	return self:_getRotation()
 end
 
-function BasicCannon:getCannonPosition()
-	return self:_getPosition()
+function BasicCannon:getCannonPosition(rotation, offset)
+	return self:_getPosition(rotation, offset)
 end
 
 function BasicCannon:getPropState()

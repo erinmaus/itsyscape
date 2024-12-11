@@ -11,7 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 
 local ICannon = Class()
 
-function ICannon:getCannonPosition()
+function ICannon:getCannonPosition(rotation, offset)
 	return Class.ABSTRACT()
 end
 

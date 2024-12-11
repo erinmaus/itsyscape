@@ -31,7 +31,8 @@ SailView.POSITION_TYPE_FORE = "Fore"
 SailView.POSITION_TYPE_MAIN = "Main"
 SailView.POSITION_TYPE_REAR = "Rear"
 
-SailView.HOIST_ANIMATION_DURATION = 0.5
+SailView.HOIST_ANIMATION_DURATION  = 0.5
+SailView.HIDE_FADE_IN_OUT_DURATION = 0.5
 
 function SailView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -40,6 +41,9 @@ function SailView:new(prop, gameView)
 	self.power = 0
 	self.hoisted = true
 	self.hoistedTime = self.HOIST_ANIMATION_DURATION
+
+	self.hiddenTime = 0
+	self.isHidden = false
 end
 
 function SailView:getSizeClass()
@@ -280,6 +284,24 @@ function SailView:updateAnimation(delta)
 	self.hoistedTime = math.min(self.hoistedTime + delta, self.HOIST_ANIMATION_DURATION)
 end
 
+function SailView:updateHiding(delta)
+	local uiView = _APP:getUIView()
+	local isHidden = uiView:getInterface("Cannon") ~= nil
+	if isHidden ~= self.isHidden then
+		self.hiddenTime = self.HIDE_FADE_IN_OUT_DURATION - self.hiddenTime
+		self.isHidden = isHidden
+	end
+
+	self.hiddenTime = math.min(self.hiddenTime + delta, self.HIDE_FADE_IN_OUT_DURATION)
+
+	local alpha = math.clamp(self.hiddenTime / self.HIDE_FADE_IN_OUT_DURATION)
+	if self.isHidden then
+		alpha = 1 - alpha
+	end
+
+	self.sailNode:getMaterial():setColor(Color(1, 1, 1, alpha))
+end
+
 function SailView:tick()
 	PropView.tick(self)
 
@@ -293,6 +315,7 @@ function SailView:update(delta)
 	if self.spawned then
 		self:updateState()
 		self:updateAnimation(delta)
+		self:updateHiding(delta)
 	end
 end
 

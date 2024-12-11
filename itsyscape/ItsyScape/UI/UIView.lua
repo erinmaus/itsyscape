@@ -1194,6 +1194,18 @@ function UIView:getInterfaces(interfaceID)
 	return pairs(self.interfaces[interfaceID] or {})
 end
 
+function UIView:getInterface(interfaceID, index)
+	local interfaces = self.interfaces[interfaceID]
+	if interfaces then
+		index = index or next(interfaces)
+		if index then
+			return interfaces[index]
+		end
+	end
+
+	return nil
+end
+
 function UIView:open(ui, interfaceID, index)
 	local TypeName = string.format("ItsyScape.UI.Interfaces.%s", interfaceID)
 	local Type = require(TypeName)

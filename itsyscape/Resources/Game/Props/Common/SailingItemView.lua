@@ -20,6 +20,42 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local SailingItemView = Class(PropView)
 
+SailingItemView.HIDE_FADE_IN_OUT_DURATION = 0.5
+
+function SailingItemView:new(prop, gameView)
+	PropView.new(self, prop, gameView)
+
+	self.hiddenTime = 0
+	self.isHidden = false
+	self.hiddenAlpha = 1
+end
+
+function SailingItemView:updateHiding(delta)
+	local uiView = _APP:getUIView()
+	local isHidden = uiView:getInterface("Cannon") ~= nil
+	if isHidden ~= self.isHidden then
+		self.hiddenTime = self.HIDE_FADE_IN_OUT_DURATION - self.hiddenTime
+		self.isHidden = isHidden
+
+		print(">>> IS HIDING?", isHidden and "yes" or "no")
+	end
+
+	self.hiddenTime = math.min(self.hiddenTime + delta, self.HIDE_FADE_IN_OUT_DURATION)
+
+	local alpha = math.clamp(self.hiddenTime / self.HIDE_FADE_IN_OUT_DURATION)
+	if self.isHidden then
+		alpha = 1 - alpha
+	end
+
+	self.hiddenAlpha = alpha
+end
+
+function SailingItemView:load()
+	PropView.update(self)
+
+	self.hiddenTime = self.HIDE_FADE_IN_OUT_DURATION
+end
+
 function SailingItemView:getAttachments()
 	local state = self:getProp():getState()
 	local resource = state and state.resource
@@ -52,21 +88,21 @@ function SailingItemView:updateAttachments(nodes, attachments)
 	local state = self:getProp():getState()
 	local colors = state and state.colors
 
-	if not colors then
-		return
-	end
-
 	for index, attachment in ipairs(attachments) do
-		local colorState = colors[attachment.colorIndex]
+		local colorState = colors and colors[attachment.colorIndex]
 		local alpha = attachments.alpha
 		local node = nodes[index]
 
+		local color = colorState and Color(unpack(colorState)) or Color(node:getMaterial():getColor():get())
 		if node and colorState then
-			local color = Color(unpack(colorState))
 			color.a = alpha or 1
-
-			node:getMaterial():setColor(color)
 		end
+
+		if attachment.isHideable then
+			color.a = self.hiddenAlpha * color.a
+		end
+
+		node:getMaterial():setColor(color)
 	end
 end
 
@@ -232,6 +268,12 @@ function SailingItemView:loadAttachments(parentNode, attachments)
 	end
 
 	return result
+end
+
+function SailingItemView:update(delta)
+	PropView.update(self, delta)
+
+	self:updateHiding(delta)
 end
 
 return SailingItemView

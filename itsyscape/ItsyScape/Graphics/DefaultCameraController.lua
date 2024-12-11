@@ -655,7 +655,6 @@ function DefaultCameraController:onEnterFirstPerson()
 
 	if self.isFirstPerson > 0 then
 		self.preFirstPersonTargetDistance = self.targetDistance
-		self.targetDistance = 0
 	end
 
 	if not wasFirstPerson then
@@ -673,11 +672,16 @@ function DefaultCameraController:onLeaveFirstPerson()
 	end
 end
 
-function DefaultCameraController:onUpdateFirstPersonDirection(rotation)
+function DefaultCameraController:onUpdateFirstPersonDirection(rotation, distance)
 	self.nextFirstPersonDirection = rotation:keep()
+	self.targetDistance = distance or 0
 end
 
 function DefaultCameraController:onUpdateFirstPersonPosition(position)
+	self.nextFirstPersonPosition = position:keep()
+end
+
+function DefaultCameraController:onUpdateFirstPersonDistance(position)
 	self.nextFirstPersonPosition = position:keep()
 end
 
@@ -910,8 +914,8 @@ function DefaultCameraController:draw()
 	end
 
 	if self.isFirstPerson > 0 then
-		self:getCamera():setVerticalRotation(-math.pi / 2)
-		self:getCamera():setHorizontalRotation(-math.pi)
+		self:getCamera():setVerticalRotation(math.pi / 2)
+		self:getCamera():setHorizontalRotation(0)
 	else
 		self:getCamera():setVerticalRotation(verticalOffset)
 		self:getCamera():setHorizontalRotation(horizontalOffset)
