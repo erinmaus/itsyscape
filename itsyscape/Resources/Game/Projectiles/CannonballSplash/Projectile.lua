@@ -31,7 +31,7 @@ Splash.INNER_SPLASH = {
 		{
 			type = "DirectionalEmitter",
 			direction = { 0, 1, 0 },
-			speed = { 1, 1.3 },
+			speed = { 10, 13 },
 		},
 		{
 			type = "RandomColorEmitter",
@@ -98,7 +98,7 @@ Splash.OUTER_SPLASH = {
 		{
 			type = "DirectionalEmitter",
 			direction = { 0, 1, 0 },
-			speed = { 0.7, 1.1 },
+			speed = { 7, 11 },
 		},
 		{
 			type = "RandomColorEmitter",
