@@ -25,8 +25,6 @@ function BasicCannonball:new(...)
 end
 
 function BasicCannonball:onLaunch(path, duration)
-	local path, duration = self:buildPath(position, direction, properties)
-
 	self.currentPath = path
 	self.currentDuration = duration
 	self.currentTime = 0

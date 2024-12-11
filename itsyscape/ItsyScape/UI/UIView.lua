@@ -1353,6 +1353,12 @@ end
 
 function UIView:tick()
 	self.uiState = {}
+
+	for _, interfaces in pairs(self.interfaces) do
+		for _, interface in pairs(interfaces) do
+			interface:tick()
+		end
+	end
 end
 
 function UIView:update(delta)

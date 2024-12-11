@@ -211,41 +211,78 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
 }
 
+do
+	local CannonballItem = ItsyScape.Resource.Item "ItsyCannonball"
+	local CannonballProp = ItsyScape.Resource.Prop "Cannonball_Itsy"
+	local CannonballSailingItem = ItsyScape.Resource.SailingItem "Cannonball_Itsy"
 
-ItsyScape.Resource.Prop "IronCannonballPile" {
-	-- Nothing.
-}
+	ItsyScape.Meta.ResourceName {
+		Value = "Itsy cannonball",
+		Language = "en-US",
+		Resource = CannonballItem
+	}
 
-ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.BlockingProp",
-	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
-}
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A high-quality, incredibly heavy cannonball. This ball brings death and destruction too anything in its path.",
+		Language = "en-US",
+		Resource = CannonballItem
+	}
 
-ItsyScape.Meta.ResourceName {
-	Value = "Iron cannonball pile",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
-}
+	ItsyScape.Meta.Item {
+		Stackable = 1,
+		Resource = CannonballItem
+	}
 
-ItsyScape.Meta.ResourceDescription {
-	Value = "Go ahead! Grab some cannonballs!",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
-}
+	ItsyScape.Meta.ItemSailingItemMapping {
+		Item = CannonballItem,
+		SailingItem = CannonballSailingItem
+	}
 
-ItsyScape.Meta.MapObjectSize {
-	SizeX = 1.5,
-	SizeY = 1.5,
-	SizeZ = 1.5,
-	PanX = 0,
-	PanY = 1,
-	PanZ = 0,
-	Zoom = 2.5,
-	MapObject = ItsyScape.Resource.Prop "IronCannonballPile"
-}
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicCannonball",
+		Resource = CannonballProp
+	}
 
-ItsyScape.Meta.PropAnchor {
-	OffsetI = 0,
-	OffsetJ = 0,
-	Resource = ItsyScape.Resource.Prop "IronCannonballPile"
-}
+	ItsyScape.Meta.ResourceName {
+		Value = "Itsy cannonball",
+		Language = "en-US",
+		Resource = CannonballProp
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Don't get hit by that, you're gonna die!",
+		Language = "en-US",
+		Resource = CannonballProp
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1,
+		SizeY = 1,
+		SizeZ = 1,
+		MapObject = CannonballProp
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Itsy cannonball",
+		Language = "en-US",
+		Resource = CannonballSailingItem
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A high-quality, incredibly heavy cannonball. This ball brings death and destruction too anything in its path.",
+		Language = "en-US",
+		Resource = CannonballSailingItem
+	}
+
+	ItsyScape.Meta.SailingItemDetails {
+		ItemGroup = "Cannonball",
+		Resource = CannonballSailingItem
+	}
+
+	ItsyScape.Meta.ShipSailingItemPropHotspot {
+		Slot = "Cannonball",
+		ItemGroup = "Cannonball",
+		Prop = CannonballProp,
+		SailingItem = CannonballSailingItem
+	}
+end

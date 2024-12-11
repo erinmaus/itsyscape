@@ -45,6 +45,10 @@ function Interface:getIndex()
 	return self.index
 end
 
+function Interface:tick()
+	-- Nothing.
+end
+
 -- Called when the interface is poked.
 function Interface:poke(actionID, actionIndex, e)
 	if actionIndex == nil then
