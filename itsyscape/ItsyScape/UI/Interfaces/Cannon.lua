@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
+local LightBeamSceneNode = require "ItsyScape.Graphics.LightBeamSceneNode"
 local Interface = require "ItsyScape.UI.Interface"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
@@ -15,46 +17,42 @@ local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Widget = require "ItsyScape.UI.Widget"
 local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
-local LightBeamSceneNode = require "ItsyScape.Graphics.LightBeamSceneNode"
 
 local Cannon = Class(Interface)
 
 function Cannon:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	self._onTick = function(...)
-		self:onTick(...)
-	end
-
 	self.onClose:register(function()
 		if self.currentSceneNode then
 			self.currentSceneNode:setParent()
 		end
-
-		self:getView():getGame().onTick:unregister(self._onTick)
 	end)
-
-	self:getView():getGame().onTick:register(self._onTick)
 
 	local w, h = love.graphics.getScaledMode()
 	self:setSize(w, h)
 	self:setPosition(0, 0)
 
 	self:setZDepth(-1000)
-	self:setIsFocusable(true)
 
 	self.currentMouseX, self.currentMouseY = itsyrealm.mouse.getPosition()
 
-	self:onTick()
+	self:tick()
+end
+
+function Cannon:getIsFocusable()
+	return true
 end
 
 function Cannon:mousePress(x, y, ...)
-	Interface.mousePress(x, y, ...)
+	Interface.mousePress(self, x, y, ...)
 
 	self:sendPoke("fire", nil, { resource = "ItsyCannonball" })
 end
 
-function Cannon:onTick()
+function Cannon:tick()
+	Interface.tick(self)
+
 	self.previousMouseX, self.previousMouseY = self.currentMouseX, self.currentMouseY
 	self.currentMouseX, self.currentMouseY = itsyrealm.mouse.getPosition()
 
@@ -64,7 +62,7 @@ function Cannon:onTick()
 	local width, height = self:getSize()
 
 	if self.currentMouseX ~= self.previousMouseX or self.currentMouseY ~= self.previousMouseY then
-		self:sendPoke("tilt", nil, { x = self.currentMouseX / width, y = self.currentMouseX / height })
+		self:sendPoke("tilt", nil, { y = self.currentMouseX / width, x = self.currentMouseY / height })
 	end
 end
 
@@ -81,7 +79,7 @@ function Cannon:updatePath(path)
 	self.currentSceneNode:getMaterial():setIsFullLit(true)
 
 	self.currentSceneNode:buildSeamless(path)
-	self.currentSceneNode:setParent(gameView:getRoot())
+	self.currentSceneNode:setParent(gameView:getScene())
 end
 
 return Cannon

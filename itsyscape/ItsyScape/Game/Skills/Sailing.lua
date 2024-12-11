@@ -674,13 +674,13 @@ end
 
 Sailing.Cannon = {}
 
-Sailing.Cannon.DEFAULT_SPEED = 16
-Sailing.Cannon.DEFAULT_GRAVITY = Vector(0, -18, 0)
-Sailing.Cannon.DEFAULT_DRAG = 0.9
-Sailing.Cannon.DEFAULT_TIMESTEP = 1 / 10
-Sailing.Cannon.DEFAULT_MAX_STEPS = 100
+Sailing.Cannon.DEFAULT_SPEED     = 16
+Sailing.Cannon.DEFAULT_GRAVITY   = Vector(0, -2, 0)
+Sailing.Cannon.DEFAULT_DRAG      = 0.995
+Sailing.Cannon.DEFAULT_TIMESTEP  = 1 / 10
+Sailing.Cannon.DEFAULT_MAX_STEPS = 500
 
-Sailing.Cannon.GLOBAL_MAX_STEPS = 1000
+Sailing.Cannon.GLOBAL_MAX_STEPS = 2000
 
 function Sailing.Cannon.getDefaultCannonballPathProperties()
 	return {
@@ -706,14 +706,14 @@ function Sailing.Cannon.getDefaultCannonballPathProperties()
 	}
 end
 
-function Sailing.Cannon._getCannonballPathProperties(resource)
+function Sailing.Cannon._getCannonballPathProperties(gameDB, resource)
 	if not resource then
 		return Sailing.Cannon.getDefaultCannonballPathProperties()
 	end
 
-	local pathRecord = gameDB:getRecord("CannonballPathProperties", { Resource = sailingResource.resource })
+	local pathRecord = gameDB:getRecord("CannonballPathProperties", { Resource = resource })
 	if not pathRecord then
-		return self:_getDefaultProperties()
+		return Sailing.Cannon.getDefaultCannonballPathProperties()
 	end
 
 	local speed = pathRecord:get("Speed")
@@ -820,8 +820,8 @@ function Sailing.Cannon.getCannonballPathProperties(peep, cannon, ammo)
 		ammoResource = ammo
 	end
 
-	local cannonProperties = Sailing.Cannon._getCannonballPathProperties(cannonResource)
-	local ammoProperties = Sailing.Cannon._getCannonballPathProperties(ammoResource)
+	local cannonProperties = Sailing.Cannon._getCannonballPathProperties(gameDB, cannonResource)
+	local ammoProperties = Sailing.Cannon._getCannonballPathProperties(gameDB, ammoResource)
 
 	return Sailing.Cannon._mergeCannonballPathProperties(cannonProperties, ammoProperties)
 end
@@ -851,9 +851,19 @@ function Sailing.Cannon.buildCannonballPath(cannon, properties)
 
 	local path = { { i = 0, time = 0, position = currentPosition, velocity = currentVelocity } }
 	while currentStep <= maxSteps and currentPosition.y > 0 do
-		local currentDrag = drag * timestep
-		currentVelocity = currentVelocity * currentDrag + gravity * timestep
-		currentPosition = currentPosition + currentVelocity * timestep
+		local velocityTimestep
+		if drag <= 0 or drag >= 1 then
+			velocityTimestep = 1
+		else
+			velocityTimestep = (drag ^ timestep - 1) / math.log(drag)
+		end
+
+		currentVelocity = currentVelocity + gravity * timestep
+		currentPosition = currentPosition + currentVelocity * velocityTimestep
+
+		if drag > 0 and drag < 1 then
+			currentVelocity = currentVelocity * drag ^ timestep
+		end
 
 		local pathStep = {
 			i = currentStep,
@@ -861,6 +871,8 @@ function Sailing.Cannon.buildCannonballPath(cannon, properties)
 			position = currentPosition,
 			velocity = currentVelocity
 		}
+
+		table.insert(path, pathStep)
 
 		currentStep = currentStep + 1
 	end

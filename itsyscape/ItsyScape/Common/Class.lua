@@ -186,13 +186,13 @@ local function __call(self, parent, stack, ...)
 	end
 
 	function Type.__call(self, ...)
-		local result = {}
-		if _DEBUG then
-			result.__fields = setmetatable({}, SelfMetatable)
-			result = setmetatable(result, Metatable)
-		else
-			result = setmetatable({}, Metatable)
-		end
+		local result = setmetatable({}, Metatable)
+		-- if _DEBUG then
+		-- 	result.__fields = setmetatable({}, SelfMetatable)
+		-- 	result = setmetatable(result, Metatable)
+		-- else
+		-- 	result = setmetatable({}, Metatable)
+		-- end
 
 
 		if Class.new then

@@ -736,6 +736,12 @@ Game "ItsyScape"
 		}
 
 	Meta "Cannon" {
+		-- In degrees.
+		MinXRotation = Meta.TYPE_REAL,
+		MaxXRotation = Meta.TYPE_REAL,
+		MinYRotation = Meta.TYPE_REAL,
+		MaxYRotation = Meta.TYPE_REAL,
+
 		Range = Meta.TYPE_INTEGER,
 		AmmoType = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE

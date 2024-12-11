@@ -12,6 +12,7 @@ local ITEMS = {
 	{
 		type = "Cannon",
 		defaultPropID = "Sailing_Cannon",
+		peepID = "Resources.Game.Peeps.Props.BasicCannon2",
 		items = {
 			{
 				id = "Itsy_Gilded",
@@ -159,7 +160,7 @@ for _, itemGroup in ipairs(ITEMS) do
 			local Prop = ItsyScape.Resource.Prop(PropName)
 
 			ItsyScape.Meta.PeepID {
-				Value = "Resources.Game.Peeps.Props.BasicSailingItem",
+				Value = itemGroup.peepID or item.peepID or "Resources.Game.Peeps.Props.BasicSailingItem",
 				Resource = Prop
 			}
 
@@ -505,3 +506,8 @@ do
 	}
 end
 
+do
+	ItsyScape.Resource.Prop "Cannon_Itsy_Gilded" {
+		ItsyScape.Action.Fire()
+	}
+end
