@@ -76,7 +76,8 @@ function ShipMapScript:onCustomize(sailingDetails)
 	for _, sailingItem in ipairs(sailingDetails) do
 		for _, mapHotspot in ipairs(mapHotspots) do
 			if (sailingItem.slot == "" or sailingItem.slot == mapHotspot:get("Slot")) and
-			   sailingItem.itemGroup == mapHotspot:get("ItemGroup")
+			   sailingItem.itemGroup == mapHotspot:get("ItemGroup") and
+			   sailingItem.index == mapHotspot:get("Index")
 			then
 				local mapObject = mapHotspot:get("MapObject")
 				local mapObjectLocation = gameDB:getRecord("MapObjectLocation", {

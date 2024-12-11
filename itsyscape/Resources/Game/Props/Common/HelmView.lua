@@ -19,7 +19,7 @@ local HelmView = Class(SailingItemView)
 HelmView.STATIC_ATTACHMENTS = {}
 HelmView.WHEEL_ATTACHMENTS = {}
 
-HelmView.WHEEL_OFFSET = Vector(0, 1.2, -0.3)
+HelmView.WHEEL_TRANSLATION = Vector(0, 1.2, -0.3)
 
 HelmView.ROTATION_MULTIPLIER = math.pi * 3
 HelmView.ROTATION_SPEED_RADIANS_PER_SECOND = math.pi
@@ -72,7 +72,7 @@ function HelmView:update(delta)
 
 	local wheelTransform = self.wheelNode:getTransform()
 	wheelTransform:setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Z, self.currentRotation))
-	wheelTransform:setLocalTranslation(self.WHEEL_OFFSET)
+	wheelTransform:setLocalTranslation(self.WHEEL_TRANSLATION)
 
 	local attachments = self:getAttachments()
 	self:updateAttachments(self.staticNodes, attachments.STATIC_ATTACHMENTS)

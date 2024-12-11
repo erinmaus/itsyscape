@@ -464,6 +464,8 @@ function Sailing.Ship.getNPCCustomizations(game, shipResource)
 
 			itemGroup = inputSailingItem:get("ItemGroup"),
 			slot = inputSailingItem:get("Slot"),
+			index = inputSailingItem:get("Index"),
+
 			sailingItemID = inputSailingItem:get("SailingItem").name,
 			props = {}
 		}

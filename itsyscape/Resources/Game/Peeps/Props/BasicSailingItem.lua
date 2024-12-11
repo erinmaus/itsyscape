@@ -26,6 +26,10 @@ function BasicSailingItem:new(...)
 	self:addBehavior(ColorBehavior)
 end
 
+function BasicSailingItem:ready(...)
+	PassableProp.ready(self, ...)
+end
+
 function BasicSailingItem:getPropState()
 	local instance = Utility.Peep.getInstance(self)
 	local mapGroup = instance and instance:getMapGroup(Utility.Peep.getLayer(self))

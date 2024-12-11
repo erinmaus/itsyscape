@@ -61,7 +61,7 @@ end
 function Ocean:onPlayerEnter(player)
 	player:pokeCamera("mapRotationStick")
 
-	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_BelowDeck", self.exquisitor)
+	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.exquisitor)
 end
 
 function Ocean:onPlayerLeave(player)

@@ -193,6 +193,7 @@ function TextureResource:loadFromFile(filename, resourceManager)
 		if boundTextureFilename ~= filename and love.filesystem.getInfo(boundTextureFilename) then
 			local boundImage = love.graphics.newImage(boundTextureFilename)
 			boundImage:setFilter('linear', 'linear')
+			boundImage:setWrap("repeat")
 
 			self:getHandle():setBoundTexture(passFilename, boundImage)
 

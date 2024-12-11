@@ -269,7 +269,7 @@ function DefaultCameraController:_rotate(dx, dy)
 	local angle1 = (panning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset) + verticalOffset
 	local angle2 = (panning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset) + horizontalOffset
 
-	if not (_DEBUG or panning) then
+	if not ((_DEBUG and false) or panning) then
 		if self.isRotationUnlocked <= 0 and not self.cameraVerticalRotationFlipTime then
 			local beforeAngle1Clamp = angle1
 
