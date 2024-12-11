@@ -22,15 +22,16 @@ Splash.INNER_SPLASH = {
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 0, 0.15 },
+			radius = { 0, 1 },
 			position = { 0, 0.1, 0 },
 			yRange = { 0, 0 },
-			lifetime = { 1.25, 0.15 }
+			lifetime = { 2, 1 },
+			normal = { true }
 		},
 		{
 			type = "DirectionalEmitter",
 			direction = { 0, 1, 0 },
-			speed = { 0.45, 0.45 },
+			speed = { 1, 1.3 },
 		},
 		{
 			type = "RandomColorEmitter",
@@ -76,7 +77,7 @@ Splash.INNER_SPLASH = {
 		type = "RandomDelayEmissionStrategy",
 		count = { 5, 10 },
 		delay = { 1 / 10 },
-		duration = { 0.25 }
+		duration = { 1 }
 	}
 }
 
@@ -88,15 +89,16 @@ Splash.OUTER_SPLASH = {
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 0, 0.25 },
+			radius = { 0, 2 },
 			position = { 0, 0, 0 },
 			yRange = { 0, 0 },
-			lifetime = { 1.5, 0.4 }
+			lifetime = { 1, 0.5 },
+			normal = { true }
 		},
 		{
 			type = "DirectionalEmitter",
 			direction = { 0, 1, 0 },
-			speed = { 0.45, 0.45 },
+			speed = { 0.7, 1.1 },
 		},
 		{
 			type = "RandomColorEmitter",
@@ -142,11 +144,11 @@ Splash.OUTER_SPLASH = {
 		type = "RandomDelayEmissionStrategy",
 		count = { 5, 10 },
 		delay = { 1 / 10 },
-		duration = { 0.25 }
+		duration = { 1 }
 	}
 }
 
-Splash.DURATION = 3
+Splash.DURATION = 10
 
 function Splash:load()
 	Projectile.load(self)
@@ -154,9 +156,15 @@ function Splash:load()
 	local resources = self:getResources()
 	local root = self:getRoot()
 
-	self.particleSystem = ParticleSceneNode()
-	self.particleSystem:setParent(root)
-	self.particleSystem:initParticleSystemFromDef(Splash.PARTICLE_SYSTEM, resources)
+	self.innerParticleSystem = ParticleSceneNode()
+	self.innerParticleSystem:setParent(root)
+	self.innerParticleSystem:initParticleSystemFromDef(Splash.INNER_SPLASH, resources)
+	self.innerParticleSystem:getMaterial():setIsFullLit(false)
+
+	self.outerParticleSystem = ParticleSceneNode()
+	self.outerParticleSystem:setParent(root)
+	self.outerParticleSystem:initParticleSystemFromDef(Splash.OUTER_SPLASH, resources)
+	self.outerParticleSystem:getMaterial():setIsFullLit(false)
 end
 
 function Splash:getDuration()

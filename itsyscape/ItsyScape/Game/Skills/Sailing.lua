@@ -674,9 +674,9 @@ end
 
 Sailing.Cannon = {}
 
-Sailing.Cannon.DEFAULT_SPEED     = 16
-Sailing.Cannon.DEFAULT_GRAVITY   = Vector(0, -2, 0)
-Sailing.Cannon.DEFAULT_DRAG      = 0.995
+Sailing.Cannon.DEFAULT_SPEED     = 32
+Sailing.Cannon.DEFAULT_GRAVITY   = Vector(0, -4, 0)
+Sailing.Cannon.DEFAULT_DRAG      = 0.99
 Sailing.Cannon.DEFAULT_TIMESTEP  = 1 / 10
 Sailing.Cannon.DEFAULT_MAX_STEPS = 500
 

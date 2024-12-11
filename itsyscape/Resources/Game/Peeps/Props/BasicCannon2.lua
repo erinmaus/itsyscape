@@ -98,7 +98,7 @@ function BasicCannon:onFire(ammo, path, duration)
 
 	local ammoItemResource
 	if type(ammo) == "string" then
-		ammoItemResource = gameDB:getRecord(ammo, "Item")
+		ammoItemResource = gameDB:getResource(ammo, "Item")
 	else
 		ammoItemResource = ammo
 	end
@@ -116,7 +116,7 @@ function BasicCannon:onFire(ammo, path, duration)
 	local ammoPropRecord = gameDB:getRecord("ShipSailingItemPropHotspot", {
 		Slot = "Cannonball",
 		ItemGroup = "Cannonball",
-		SailingITem = ammoItemMappingRecord:get("SailingItem")
+		SailingItem = ammoItemMappingRecord:get("SailingItem")
 	})
 
 	if not ammoPropRecord then

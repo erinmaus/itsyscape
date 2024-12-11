@@ -10,13 +10,14 @@
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
-local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
 
 local BasicCannonball = Class(PassableProp)
 
-BasicCannonball.MAX_WATER_DEPTH = 1
+BasicCannonball.MAX_WATER_DEPTH = 0.5
 
 function BasicCannonball:new(...)
 	PassableProp.new(self, ...)
@@ -29,27 +30,6 @@ function BasicCannonball:onLaunch(path, duration)
 	self.currentDuration = duration
 	self.currentTime = 0
 	self.isLaunched = true
-end
-
-function BasicCannonball:_getWaterLevel()
-	local game = self:getDirector():getGameInstance()
-
-	local layer = Utility.Peep.getLayer(self)
-	local mapScript = Utility.Peep.getInstance(self):getMapScriptByLayer(layer)
-	local ocean = mapScript and mapScript:getBehavior(OceanBehavior)
-
-	local windDirection, windSpeed, windPattern = Utility.Map.getWind(game, layer)
-
-	local worldPosition = Utility.Peep.getPosition(self)
-	worldPosition = Utility.Map.transformWorldPositionByWave(
-		ocean and ocean.time or 0,
-		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
-		windDirection,
-		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
-		Vector(worldPosition.x, -(ocean and ocean.offset or 1), worldPosition.z),
-		Vector(worldPosition.x, 0, worldPosition.z))
-
-	return worldPosition.y
 end
 
 function BasicCannonball:update(director, game)
@@ -75,8 +55,11 @@ function BasicCannonball:update(director, game)
 	local position = currentPath.position:lerp(nextPath.position, math.clamp(stepDelta))
 	Utility.Peep.setPosition(self, position)
 
-	local y = self:_getWaterLevel()
-	if position.y - self.MAX_WATER_DEPTH <= y then
+	local waterPosition = Sailing.Ocean.getPositionRotation(self)
+	if position.y < waterPosition.y - self.MAX_WATER_DEPTH then
+		local stage = game:getStage()
+		stage:fireProjectile("CannonballSplash", Vector.ZERO, Utility.Peep.getAbsolutePosition(self) + Vector(0, 2, 0), Utility.Peep.getLayer(self))
+
 		Utility.Peep.poof(self)
 	end
 end

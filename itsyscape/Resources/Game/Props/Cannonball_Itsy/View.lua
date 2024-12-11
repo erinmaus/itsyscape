@@ -29,6 +29,8 @@ end
 function Cannonball:load()
 	SimpleStaticView.load(self)
 
+	local resources = self:getResources()
+
 	resources:queue(
 		ShaderResource,
 		"Resources/Shaders/SpecularTriplanar",
