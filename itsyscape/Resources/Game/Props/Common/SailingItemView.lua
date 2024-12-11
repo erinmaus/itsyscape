@@ -154,8 +154,6 @@ function SailingItemView:loadAttachments(parentNode, attachments)
 								t = material.UNIFORM_FLOAT
 							end
 
-							print(">>> send", t, unpack(uniform, 2))
-
 							material:send(t, unpack(uniform, 2))
 						end
 					end
