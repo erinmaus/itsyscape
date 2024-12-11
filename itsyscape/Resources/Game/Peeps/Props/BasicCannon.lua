@@ -41,41 +41,6 @@ function BasicCannon:new(...)
 	self:addPoke('cooldown')
 end
 
-function BasicCannon:buildPath(position, direction, properties)
-	position = position or Vector.ZERO
-	direction = direction or Quaternion.IDENTITY
-	properties = properties or {}
-
-	local normal = direction:transformVector(Vector.UNIT_Z)
-	local speed = properties.speed or self.DEFAULT_SPEED
-	local gravity = properties.gravity or self.DEFAULT_GRAVITY
-	local drag = properties.drag or self.DEFAULT_DRAG
-	local timestep = properties.timestep or self.DEFAULT_TIMESTEP
-	local maxSteps = properties.maxSteps or self.DEFAULT_MAX_STEPS
-
-	local currentStep = 1
-	local currentPosition = position
-	local currentVelocity = normal * speed
-
-	local path = { { i = 0, time = 0, position = currentPosition, velocity = currentVelocity } }
-	while currentStep <= maxSteps and currentPosition.y > 0 do
-		local currentDrag = drag * timestep
-		currentVelocity = currentVelocity * currentDrag + gravity * timestep
-		currentPosition = currentPosition + currentVelocity * timestep
-
-		local pathStep = {
-			i = currentStep,
-			time = currentStep * timestep,
-			position = currentPosition,
-			velocity = currentVelocity
-		}
-
-		currentStep = currentStep + 1
-	end
-
-	return path, currentStep * timestep
-end
-
 function BasicCannon:spawnOrPoof(mode)
 	local i, j, layer = Utility.Peep.getTile(self)
 	local map = self:getDirector():getMap(layer)

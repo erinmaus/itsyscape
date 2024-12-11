@@ -125,8 +125,13 @@ function BasicCannon:onFire(peep, ammo, path, duration)
 		return
 	end
 
-	cannonballProp:getPeep():listen("ready", function(peep)
-		peep:poke("launch", path, duration)
+	local cannonballPeep = cannonballProp:getPeep()
+
+	local _, sailingResource = cannonballPeep:addBehavior(SailingResourceBehavior)
+	sailingResource.resource = ammoItemMappingRecord:get("SailingItem")
+
+	cannonballPeep:listen("ready", function()
+		cannonballPeep:poke("launch", peep, self, path, duration)
 	end)
 
 

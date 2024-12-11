@@ -20,22 +20,30 @@ local OFFSET = B.Reference("Cthulhu", "OFFSET")
 
 local DISTANCE = 4
 
-local FindTargetTry = Mashina.RandomTry {
-	Mashina.Peep.FindNearbyPeep {
-		filters = {
-			Probe.resource("Map", "Ship_IsabelleIsland_PortmasterJenkins")
-		},
+-- local FindTargetTry = Mashina.RandomTry {
+-- 	Mashina.Peep.FindNearbyPeep {
+-- 		filters = {
+-- 			Probe.resource("Map", "Ship_IsabelleIsland_PortmasterJenkins")
+-- 		},
 
-		[TARGET] = B.Output.result
+-- 		[TARGET] = B.Output.result
+-- 	},
+
+-- 	Mashina.Peep.FindNearbyPeep {
+-- 		filters = {
+-- 			Probe.resource("Map", "Ship_IsabelleIsland_Pirate")
+-- 		},
+
+-- 		[TARGET] = B.Output.result
+-- 	}
+-- }
+
+local FindTargetTry = Mashina.Peep.FindNearbyPeep {
+	filters = {
+		Probe.resource("Map", "Test_Ship")
 	},
 
-	Mashina.Peep.FindNearbyPeep {
-		filters = {
-			Probe.resource("Map", "Ship_IsabelleIsland_Pirate")
-		},
-
-		[TARGET] = B.Output.result
-	}
+	[TARGET] = B.Output.result
 }
 
 local SwimSequence = Mashina.Sequence {
@@ -113,37 +121,37 @@ local Tree = BTreeBuilder.Node() {
 			duration = 4
 		},
 
-		Mashina.Peep.FindNearbyPeep {
-			filters = {
-				Probe.resource("Map", "Ship_IsabelleIsland_PortmasterJenkins")
-			},
+		-- Mashina.Peep.FindNearbyPeep {
+		-- 	filters = {
+		-- 		Probe.resource("Map", "Ship_IsabelleIsland_PortmasterJenkins")
+		-- 	},
 
-			[TARGET] = B.Output.result
-		},
+		-- 	[TARGET] = B.Output.result
+		-- },
 
-		Mashina.Peep.TimeOut {
-			duration = 2
-		},
+		-- Mashina.Peep.TimeOut {
+		-- 	duration = 2
+		-- },
 
-		Mashina.Peep.PlayAnimation {
-			animation = "Cthulhu_Attack",
-			slot = "combat",
-			priority = 1000
-		},
+		-- Mashina.Peep.PlayAnimation {
+		-- 	animation = "Cthulhu_Attack",
+		-- 	slot = "combat",
+		-- 	priority = 1000
+		-- },
 
-		Mashina.Peep.TimeOut {
-			duration = 2,
-		},
+		-- Mashina.Peep.TimeOut {
+		-- 	duration = 2,
+		-- },
 
-		Mashina.Peep.FireProjectile {
-			destination = TARGET,
-			offset = Vector(-40, 5, 0),
-			projectile = "Starfall"
-		},
+		-- Mashina.Peep.FireProjectile {
+		-- 	destination = TARGET,
+		-- 	offset = Vector(-40, 5, 0),
+		-- 	projectile = "Starfall"
+		-- },
 
-		Mashina.Peep.TimeOut {
-			duration = 10,
-		},
+		-- Mashina.Peep.TimeOut {
+		-- 	duration = 10,
+		-- },
 
 		Mashina.Repeat {
 			Mashina.Step {
