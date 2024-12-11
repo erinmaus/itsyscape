@@ -42,14 +42,14 @@ end
 
 function CannonController:fire(e)
 	self:updatePath()
-	self.cannon:poke("fire", nil, self.currentPath)
+	self.cannon:poke("fire", "ItsyCannonball", self.currentPath, self.currentPathDuration)
 
 	self:getGame():getUI():closeInstance(self)
 end
 
 function CannonController:updatePath()
 	local properties = Sailing.Cannon.getCannonballPathProperties(self:getPeep(), self.cannon)
-	local cannonballPath = Sailing.Cannon.buildCannonballPath(self.cannon, properties)
+	local cannonballPath, cannonballPathDuration = Sailing.Cannon.buildCannonballPath(self.cannon, properties)
 
 	local path = {}
 	for i = 1, #cannonballPath - 1 do
@@ -66,6 +66,7 @@ function CannonController:updatePath()
 		{ path })
 
 	self.currentPath = cannonballPath
+	self.currentPathDuration = cannonballPathDuration
 end
 
 function CannonController:pull()
