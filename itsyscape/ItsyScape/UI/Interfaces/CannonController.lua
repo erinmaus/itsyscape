@@ -17,6 +17,10 @@ local Controller = require "ItsyScape.UI.Controller"
 
 local CannonController = Class(Controller)
 
+CannonController.CAMERA_OFFSET   = Vector(0, 12, 12)
+CannonController.CAMERA_DISTANCE = 30
+CannonController.CAMERA_ROTATION = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 8)
+
 function CannonController:new(peep, director,cannon)
 	Controller.new(self, peep, director)
 
@@ -87,13 +91,14 @@ function CannonController:updatePath()
 
 		local dot = rotation:transformVector(Vector.UNIT_Z):getNormal():dot(Vector.UNIT_Z)
 		local sign = -math.sign(dot)
+		local offset = CannonController.CAMERA_OFFSET * Vector(1, 1, sign)
 		rotation = Quaternion.fromEulerXYZ(0, sign * y, 0)
-		position = Utility.Peep.getAbsolutePosition(self.cannon) + rotation:transformVector(Vector(0, 6, sign * 8))
+		position = Utility.Peep.getAbsolutePosition(self.cannon) + rotation:transformVector(offset)
 
-		rotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 8) * self.currentCannonRotation * rotation
+		rotation = CannonController.CAMERA_ROTATION * self.currentCannonRotation * rotation
 	end
 
-	self:getPlayer():pokeCamera("updateFirstPersonDirection", rotation:getNormal(), 20)
+	self:getPlayer():pokeCamera("updateFirstPersonDirection", rotation:getNormal(), CannonController.CAMERA_DISTANCE)
 	self:getPlayer():pokeCamera("updateFirstPersonPosition", position)
 end
 
