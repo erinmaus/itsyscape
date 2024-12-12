@@ -40,6 +40,9 @@ function SmartPathFinder:new(map, peep, t)
 	end
 
 	self.maxDistanceFromGoal = t.maxDistanceFromGoal or math.huge
+
+	self.edgeIDs = {}
+	self.edgeID = 0
 end
 
 function SmartPathFinder:getMap()
@@ -72,6 +75,7 @@ function SmartPathFinder:makeEdge(i, j, parent, goal)
 	-- where DD = diagonal distance and MD = Manhattan distance
 
 	local edge = {
+		nodeID = j * self.map:getWidth() + i,
 		i = i,
 		j = j,
 		parent = parent
@@ -87,6 +91,7 @@ function SmartPathFinder:makeActionEdge(i, j, parent, goal, prop, action)
 	local edge = self:makeEdge(i, j, parent, goal)
 	edge.prop = prop
 	edge.action = action
+	edge.nodeID = prop
 
 	return edge
 end
@@ -285,7 +290,23 @@ function SmartPathFinder:getNeighbors(edge, goal)
 end
 
 function SmartPathFinder:getID(edge)
-	return edge.j * self.map:getWidth() + edge.i
+	local parentID = edge.parent and edge.parent.nodeID or 0
+
+	local parents = self.edgeIDs[parentID]
+	if not parents then
+		parents = {}
+		self.edgeIDs[parentID] = parents
+	end
+
+	local id = parents[edge.nodeID]
+	if not id then
+		self.edgeID = self.edgeID + 1
+		id = self.edgeID
+
+		parents[edge.nodeID] = id
+	end
+
+	return id
 end
 
 function SmartPathFinder:getCost(edge)
@@ -298,6 +319,7 @@ end
 
 function SmartPathFinder:getEdge(location)
 	return {
+		nodeID = location.j * self.map:getWidth() + location.i,
 		i = location.i,
 		j = location.j,
 		cost = 1,
