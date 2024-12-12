@@ -1497,13 +1497,6 @@ do
 		Value = "Resources.Game.Peeps.Props.PassableProp",
 		Resource = ItsyScape.Resource.Prop "Null"
 	}
-
-	ItsyScape.Meta.MapObjectSize {
-		SizeX = 1,
-		SizeY = 1,
-		SizeZ = 1,
-		MapObject = ItsyScape.Resource.Prop "Null"
-	}
 end
 
 include "Resources/Game/DB/Props/Anvil.lua"

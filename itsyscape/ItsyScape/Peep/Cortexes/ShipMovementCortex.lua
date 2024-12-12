@@ -48,7 +48,7 @@ function ShipMovementCortex.Ship:prepare()
 
 	local width = map:getWidth() * map:getCellSize()
 	local height = map:getHeight() * map:getCellSize()
-	local radius = height
+	local radius = height / 2
 	local numCircles = ((width / height) * 2 + 1)
 	for i = 1, numCircles do
 		local cellSize = width / numCircles
@@ -59,6 +59,15 @@ function ShipMovementCortex.Ship:prepare()
 		}
 
 		table.insert(self.shape, circle)
+
+		local t = Utility.Peep.getTransform(self.ship)
+		local x, y, z = t:transformPoint(circle.x, 0, circle.z)
+
+		local p = Utility.spawnPropAtPosition(
+			Utility.Peep.getInstance(self.ship):getBaseMapScript(),
+			"Null",
+			x, 0, z):getPeep()
+		Utility.Peep.setSize(p, Vector(radius * 2, 1, radius * 2))
 	end
 
 	local _, shipMovement = self.ship:addBehavior(ShipMovementBehavior)
@@ -174,23 +183,25 @@ function ShipMovementCortex.Ship:projectRay(ray)
 			local discriminant = b * b - c
 
 			if discriminant >= 0 then
-				local t1 = math.max(-b - math.sqrt(discriminant), 0)
+				local t1 = -b - math.sqrt(discriminant)
 				local t2 = -b + math.sqrt(discriminant)
 
-				local currentNearPoint = ray.origin + t1 * ray.direction
-				local currentFarPoint = ray.origin + t2 * ray.direction
+				if t1 >= 0 and t2 >= 0 then
+					local currentNearPoint = ray.origin + t1 * ray.direction
+					local currentFarPoint = ray.origin + t2 * ray.direction
 
-				local currentNearPointDistance = (currentNearPoint - ray.origin):getLengthSquared()
-				local currentFarPointDistance = (currentFarPoint - ray.origin):getLengthSquared()
+					local currentNearPointDistance = (currentNearPoint - ray.origin):getLengthSquared()
+					local currentFarPointDistance = (currentFarPoint - ray.origin):getLengthSquared()
 
-				if currentNearPointDistance < nearPointDistance then
-					nearPoint = currentNearPoint
-					nearPointDistance = currentNearPointDistance
-				end
+					if currentNearPointDistance < nearPointDistance then
+						nearPoint = currentNearPoint
+						nearPointDistance = currentNearPointDistance
+					end
 
-				if currentFarPointDistance > farPointDistance then
-					farPoint = currentFarPoint
-					farPointDistance = currentFarPointDistance
+					if currentFarPointDistance > farPointDistance then
+						farPoint = currentFarPoint
+						farPointDistance = currentFarPointDistance
+					end
 				end
 			end
 		end

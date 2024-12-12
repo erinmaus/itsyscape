@@ -50,10 +50,10 @@ local SwimTowardsSequence = Mashina.Sequence {
 	Mashina.Sailing.GetNearestOffset {
 		target = TARGET,
 		offsets = {
-			Ray(Vector(16, 0, -16), -Vector.UNIT_Z),
-			Ray(Vector(-16, 0, -16), -Vector.UNIT_Z),
-			Ray(Vector(16, 0, -32), -Vector.UNIT_Z),
-			Ray(Vector(-16, 0, -32), -Vector.UNIT_Z),
+			Ray(Vector(0, 0, -16), -Vector.UNIT_Z),
+			Ray(Vector(0, 0, 16), -Vector.UNIT_Z),
+			Ray(Vector(16, 0, 0), -Vector.UNIT_Z),
+			Ray(Vector(-16, 0, 0), -Vector.UNIT_Z),
 		},
 		[OFFSET] = B.Output.result
 	},
@@ -67,31 +67,27 @@ local SwimTowardsSequence = Mashina.Sequence {
 
 local SwimAwaySequence = Mashina.Sequence {
 	Mashina.RandomTry {
-		-- Mashina.Sailing.Swim {
-		-- 	target = TARGET,
-		-- 	--offset = Vector(16, 0, 16),
-		-- 	offset = Vector(0, 0, 16),
-		-- 	distance = DISTANCE
-		-- },
-
-		-- Mashina.Sailing.Swim {
-		-- 	target = TARGET,
-		-- 	--offset = Vector(-16, 0, -16),
-		-- 	offset = Vector(0, 0, -16),
-		-- 	DISTANCE = DISTANCE
-		-- },
-
-		-- Mashina.Sailing.Swim {
-		-- 	target = TARGET,
-		-- 	--offset = Vector(16, 0, -16),
-		-- 	offset = Vector(16, 0, 0),
-		-- 	DISTANCE = DISTANCE
-		-- },
+		Mashina.Sailing.Swim {
+			target = TARGET,
+			offset = Vector(16, 0, 16),
+			distance = DISTANCE
+		},
 
 		Mashina.Sailing.Swim {
 			target = TARGET,
-			--offset = Vector(-16, 0, 16),
-			offset = Vector(0, 0, 16),
+			offset = Vector(16, 0, -16),
+			DISTANCE = DISTANCE
+		},
+
+		Mashina.Sailing.Swim {
+			target = TARGET,
+			offset = Vector(16, 0, -16),
+			DISTANCE = DISTANCE
+		},
+
+		Mashina.Sailing.Swim {
+			target = TARGET,
+			offset = Vector(-16, 0, -16),
 			DISTANCE = DISTANCE
 		},
 	}
