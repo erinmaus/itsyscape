@@ -77,6 +77,21 @@ function Sailing.getDirection(ship, targetPosition, bias)
 	return Sailing.getDirectionFromPoints(shipPosition, shipPosition + shipForward, targetPosition, bias)
 end
 
+function Sailing._offsetVectorFromShip(position, target)
+	local shipSize = Sailing.getShipSize(target)
+	local size = Vector()
+
+	if math.abs(position.x) > 0 then
+		size.x = shipSize.x / 2 * math.sign(position.x)
+	end
+
+	if math.abs(position.z) > 0 then
+		size.z = shipSize.z / 2 * math.sign(position.z)
+	end
+
+	return position + size
+end
+
 function Sailing.getShipTarget(ship, target, offset)
 	local position
 	if type(target) == "string" then
@@ -106,7 +121,7 @@ function Sailing.getShipTarget(ship, target, offset)
 				if shipMovement then
 					local r = shipMovement.rotation * Quaternion.Y_90
 					offset = Ray(
-						r:transformVector(offset.origin),
+						r:transformVector(Sailing._offsetVectorFromShip(offset.origin, target)),
 						r:transformVector(offset.direction):getNormal())
 				else
 					offset = Ray(
@@ -115,7 +130,7 @@ function Sailing.getShipTarget(ship, target, offset)
 				end
 			elseif Class.isCompatibleType(offset, Vector) then
 				if shipMovement then
-					offset = (shipMovement.rotation * Quaternion.Y_90):getNormal():transformVector(offset)
+					offset = (shipMovement.rotation * Quaternion.Y_90):getNormal():transformVector(Sailing._offsetVectorFromShip(offset, target))
 				else
 					offset = rotation:transformVector(offset)
 				end
@@ -868,13 +883,6 @@ function Sailing.Navigation.buildNodes(ship, target, offset)
 						local selfDistanceToNear = (selfNode.position - nearPoint):getLengthSquared()
 
 						if selfDistanceToNear <= selfDistanceToOther then
-							if not selfNode.groupID or not otherNode.groupID then
-								print(">>> collision!!", "pt", nearPoint:get())
-								print(">>> distance self", math.floor(math.sqrt(selfDistanceToNear)), math.floor(math.sqrt(selfDistanceToOther)))
-								print("", "self", Log.dump(selfNode))
-								print("", "other", Log.dump(otherNode))
-							end
-
 							hasCollision = true
 							break
 						end
@@ -888,8 +896,6 @@ function Sailing.Navigation.buildNodes(ship, target, offset)
 			end
 		end
 	end
-
-	print(">>> nordes", Log.dump(nodes))
 
 	return nodes, otherShips
 end

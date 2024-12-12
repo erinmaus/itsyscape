@@ -330,7 +330,6 @@ end
 
 function PathFinder.AStar:processEdge(edge, goal)
 	local edgeID = self:getPathFinder():getID(edge)
-	print(">>> process", self:getPathFinder():getDebugInfo().shortName, edgeID, Log.stringify(edge))
 
 	self.open[edgeID] = nil
 	self.closed[edgeID] = edge
