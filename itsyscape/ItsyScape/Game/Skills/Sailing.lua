@@ -17,8 +17,9 @@ local ICannon = require "ItsyScape.Game.Skills.ICannon"
 local Color = require "ItsyScape.Graphics.Color"
 local Peep = require "ItsyScape.Peep.Peep"
 local MapPeep = require "ItsyScape.Peep.Peeps.Map"
-local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local Probe = require "ItsyScape.Peep.Probe"
+local FishBehavior = require "ItsyScape.Peep.Behaviors.FishBehavior"
+local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SailingResourceBehavior = require "ItsyScape.Peep.Behaviors.SailingResourceBehavior"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
@@ -26,6 +27,8 @@ local ShipCrewMemberBehavior = require "ItsyScape.Peep.Behaviors.ShipCrewMemberB
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local PathFinder = require "ItsyScape.World.PathFinder"
+local PathNode = require "ItsyScape.World.PathNode"
 
 local Sailing = {}
 
@@ -122,11 +125,23 @@ function Sailing.getShipTarget(ship, target, offset)
 		position = nil
 	end
 
+	local targetPosition
 	if position then
 		position = position * Vector.PLANE_XZ
+
+		if Class.isCompatibleType(offset, Ray) then
+			targetPosition = position + offset.origin
+		elseif Class.isCompatibleType(offset, Vector) then
+			targetPosition = position + offset
+		else
+			targetPosition = position
+		end
+
+		targetPosition = targetPosition * Vector.PLANE_XZ
 	end
 
-	return position, offset
+
+	return position, offset, targetPosition
 end
 
 -- This is the normal the ship is heading in, NOT the steer direction normal.
@@ -160,6 +175,16 @@ function Sailing.getShipBow(ship, length)
 	return nil
 end
 
+function Sailing.getShipSize(ship)
+	local shipMovement = ship:getBehavior(ShipMovementBehavior)
+	if shipMovement then
+		-- todo take into account steer normal
+		return Vector(shipMovement.length, 0, shipMovement.beam)
+	end
+
+	return Utility.Peep.getSize(ship)
+end
+
 function Sailing.getShipStern(ship, length)
 	if Class.isCompatibleType(ship, Peep) then
 		local shipMovement = ship:getBehavior(ShipMovementBehavior)
@@ -185,7 +210,7 @@ function Sailing.getShipStarboard(ship, beam)
 			local direction = shipMovement.rotation:transformVector(shipMovement.opposingSteerDirectionNormal):getNormal()
 			beam = (beam or shipMovement.beam) / 2
 
-			return direction * -beam
+			return direction * beam
 		end
 
 		local rotation = Utility.Peep.getRotation(ship):getNormal()
@@ -213,6 +238,22 @@ function Sailing.getShipPort(ship, beam)
 
 	return nil
 end
+
+-- function Sailing.getPointRelativeToShip(ship, point)
+-- 	if Class.isCompatibleType(ship, Peep) then
+-- 		local 
+-- 		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+-- 		if shipMovement then
+
+-- 		end
+
+-- 		local rotation = Utility.Peep.getRotation(ship):getNormal()
+-- 		local size = Utility.Peep.getSize(ship)
+-- 		return rotation:transformVector(Vector(-size.x / 2, 0, 0))
+-- 	end
+
+-- 	return point
+-- end
 
 function Sailing.calcCannonMinHit(level, bonus)
 	return math.max(math.ceil((level + 50) * (bonus + 64) / 640), 1)
@@ -592,6 +633,271 @@ function Sailing.Ship.getInventorySpace(peep)
 	if record then
 		return record:get("Storage")
 	end
+end
+
+Sailing.Navigation = {}
+
+Sailing.Navigation.PathFinder = Class(PathFinder)
+
+function Sailing.Navigation.PathFinder:new(nodes, ship)
+	PathFinder.new(self, PathFinder.AStar(self))
+
+	self.nodes = nodes
+	self.ship = ship
+
+	self.edges = {}
+	self.neighborEdges = {}
+
+	self.edgeIDs = {}
+	self.edgeID = 0
+end
+
+function Sailing.Navigation.PathFinder:getNeighbors(edge, goal)
+	if self.neighborEdges[edge.id] then
+		return self.neighborEdges[edge.id]
+	end
+
+	local neighbors = {}
+	for _, neighbor in ipairs(edge.node.neighbors) do
+		table.insert(neighbors, self:makeEdge(self.nodes[neighbor], edge, goal))
+	end
+
+	self.neighborEdges[edge.id] = neighbors
+	return neighbors
+end
+
+function Sailing.Navigation.PathFinder:getID(edge)
+	local parentID = edge.parent and edge.parent.node.id or 0
+
+	local parents = self.edgeIDs[parentID]
+	if not parents then
+		parents = {}
+		self.edgeIDs[parentID] = parents
+	end
+
+	local id = parents[edge.node.id]
+	if not id then
+		self.edgeID = self.edgeID + 1
+		id = self.edgeID
+
+		parents[edge.node.id] = id
+	end
+
+	return id
+end
+
+function Sailing.Navigation.PathFinder:getCost(edge)
+	return edge.cost
+end
+
+function Sailing.Navigation.PathFinder:getScore(edge)
+	return edge.score
+end
+
+function Sailing.Navigation.PathFinder:makeEdge(node, parent, goal)
+	local edge = {
+		id = #self.edges + 1,
+		parent = parent,
+		node = node,
+		score = 0,
+		cost = (parent and parent.cost or 0)
+	}
+
+	table.insert(self.edges, edge)
+
+	if goal then
+		edge.score = self:getDistance(node.position, goal)
+
+		if parent then
+			edge.cost = edge.cost + self:getDistance(self:getLocation(edge), self:getLocation(parent))
+		end
+	end
+
+	return edge
+end
+
+function Sailing.Navigation.PathFinder:getEdge(location)
+	for _, edge in ipairs(self.edges) do
+		if edge.node.position == location and not edge.parent then
+			return edge
+		end
+	end
+
+	local closest
+	local closestDistance = math.huge
+	for _, node in ipairs(self.nodes) do
+		local distance = (location - node.position):getLengthSquared()
+		if distance < closestDistance then
+			closest = node
+			closestDistance = distance
+		end
+	end
+
+	return self:makeEdge(closest)
+end
+
+function Sailing.Navigation.PathFinder:getLocation(edge)
+	return edge.node.position
+end
+
+function Sailing.Navigation.PathFinder:getDistance(a, b)
+	return (a - b):getLengthSquared()
+end
+
+function Sailing.Navigation.PathFinder:sameLocation(a, b)
+	return a == b
+end
+
+function Sailing.Navigation.PathFinder:materialize(edge)
+	return PathNode(edge.node.position.x, edge.node.position.z)
+end
+
+function Sailing.Navigation.PathFinder:getParent(edge)
+	return edge.parent
+end
+
+Sailing.Navigation.SHIP_NAVIGATION_POINTS = {
+	Vector(-1, 0, -1),
+	Vector(0, 0, -1),
+	Vector(1, 0, -1),
+	Vector(1, 0, 0),
+	Vector(1, 0, 1),
+	Vector(0, 0, 1),
+	Vector(-1, 0, 1),
+	Vector(-1, 0, 0)
+}
+
+function Sailing.Navigation.getNavigationPoints(ship, sizeOffset)
+	local shipSize = Sailing.getShipSize(ship)
+	shipSize = shipSize + sizeOffset * 2
+	local halfShipSize = shipSize / 2
+
+	local shipMovement = ship:getBehavior(ShipMovementBehavior)
+	local rotation = shipMovement and shipMovement.rotation or Quaternion.IDENTITY
+
+	local result = {}
+	for _, inputPoint in ipairs(Sailing.Navigation.SHIP_NAVIGATION_POINTS) do
+		local outputPoint = rotation:transformVector(inputPoint * halfShipSize)
+		table.insert(result, outputPoint)
+	end
+
+	return result
+end
+
+function Sailing.Navigation.buildNodes(ship, target, offset)
+	local director = ship:getDirector()
+
+	local layer
+	do
+		position = ship:getBehavior(PositionBehavior)
+		layer = position and position.layer
+		layer = layer or Utility.Peep.getLayer(ship)
+	end
+
+	local otherShips = director:probe(
+		ship:getLayerName(),
+		Probe.layer(layer),
+		Probe.component(ShipMovementBehavior))
+
+	local _, _, targetPosition = Sailing.getShipTarget(ship, target, offset)
+	if not targetPosition then
+		return nil
+	end
+
+	local shipMovementCortex = director:getCortex("ShipMovement")
+	if not shipMovementCortex then
+		return nil
+	end
+
+	local shipPosition = Utility.Peep.getPosition(ship) * Vector.PLANE_XZ
+	local shipSize = Sailing.getShipSize(ship)
+	shipSize = Vector(math.max(shipSize.x, shipSize.z))
+
+	local nodes = {
+		{ id = 1, position = shipPosition, neighbors = {} },
+		{ id = 2, position = targetPosition, neighbors = {} }
+	}
+	for otherShipIndex, otherShip in ipairs(otherShips) do
+		local otherShipPoints = Sailing.Navigation.getNavigationPoints(otherShip, shipSize)
+
+		local startIndex = #nodes
+		for _, otherShipPoint in ipairs(otherShipPoints) do
+			local node = {
+				id = #nodes + 1,
+				shipIndex = otherShipIndex,
+				groupID = otherShip:getTally(),
+				position = otherShipPoint,
+				neighbors = {}
+			}
+
+			table.insert(nodes, node)
+		end
+
+		for indexOffset = 1, #otherShipPoints do
+			local index = startIndex + indexOffset
+			local node = nodes[index]
+
+			local previousNeighorIndexOffset = indexOffset - 1
+			if previousNeighorIndexOffset <= 0 then
+				previousNeighorIndexOffset = #otherShipPoints
+			end
+
+			local nextNeighorIndexOffset = indexOffset + 1
+			if nextNeighorIndexOffset > #otherShipPoints then
+				nextNeighorIndexOffset = 1
+			end
+
+			local previousNeighorNode = nodes[startIndex + previousNeighorIndexOffset]
+			local nextNeighorNode = nodes[startIndex + nextNeighorIndexOffset]
+			table.insert(node.neighbors, previousNeighorNode.id)
+			table.insert(node.neighbors, nextNeighorNode.id)
+		end
+	end
+
+	-- Ew, n ^ 2. If this is a performance issue, we'll need to optimize.
+	for i, selfNode in ipairs(nodes) do
+		for j, otherNode in ipairs(nodes) do
+			if j > i and selfNode.groupID ~= otherNode.groupID then
+				local ray = Ray(selfNode.position, selfNode.position:direction(otherNode.position))
+				local selfDistanceToOther = (selfNode.position - otherNode.position):getLengthSquared()
+
+				local hasCollision = false
+				for _, otherShip in ipairs(otherShips) do
+					local nearPoint = shipMovementCortex:projectRayAgainstShip(otherShip, ray)
+					if nearPoint then
+						local selfDistanceToNear = (selfNode.position - nearPoint):getLengthSquared()
+
+						if selfDistanceToNear <= selfDistanceToOther then
+							hasCollision = true
+							break
+						end
+					end
+				end
+
+				if not hasCollision then
+					table.insert(selfNode.neighbors, otherNode.id)
+					table.insert(otherNode.neighbors, selfNode.id)
+				end
+			end
+		end
+	end
+
+	return nodes, otherShips
+end
+
+function Sailing.Navigation.navigate(nodes)
+	local path = Sailing.Navigation.PathFinder(nodes):find(nodes[1].position, nodes[2].position)
+	if not path or path:getNumNodes() == 0 then
+		return nil
+	end
+
+	local result = {}
+	for i = 1, path:getNumNodes() do
+		local node = path:getNodeAtIndex(i)
+		table.insert(result, Vector(node.i, 0, node.j))
+	end
+
+	return result
 end
 
 Sailing.Ocean = {}

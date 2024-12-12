@@ -19,6 +19,7 @@ local GetNearestOffset = B.Node("GetNearestOffset")
 GetNearestOffset.TARGET = B.Reference()
 GetNearestOffset.OFFSETS = B.Reference()
 GetNearestOffset.RESULT = B.Reference()
+GetNearestOffset.WORST_RESULT = B.Reference()
 GetNearestOffset.RESULTS = B.Reference()
 
 function GetNearestOffset:update(mashina, state, executor)

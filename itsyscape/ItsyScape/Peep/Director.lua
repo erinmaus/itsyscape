@@ -99,6 +99,10 @@ function Director:removeCortex(cortex)
 end
 
 function Director:getCortex(cortexType)
+	if type(cortexType) == "string" then
+		cortexType = require(string.format("ItsyScape.Peep.Cortexes.%sCortex", cortexType))
+	end
+
 	for _, cortex in ipairs(self.cortexes) do
 		if cortex:isCompatibleType(cortexType) then
 			return cortex

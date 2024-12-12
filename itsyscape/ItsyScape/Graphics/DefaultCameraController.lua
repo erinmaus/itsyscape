@@ -278,7 +278,7 @@ function DefaultCameraController:_rotate(dx, dy)
 	local angle1 = (panning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset) + verticalOffset
 	local angle2 = (panning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset) + horizontalOffset
 
-	if not ((_DEBUG and false) or panning) then
+	if not (_DEBUG or panning) then
 		if self.isRotationUnlocked <= 0 and not self.cameraVerticalRotationFlipTime then
 			local beforeAngle1Clamp = angle1
 
@@ -658,7 +658,7 @@ function DefaultCameraController:onEnterFirstPerson()
 	end
 
 	if not wasFirstPerson then
-		self.previousFirstPersonDirection = (Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi) * self:getCamera():getCombinedRotation()):getNormal():keep()
+		self.previousFirstPersonDirection = self:getCamera():getCombinedRotation():getNormal():keep()
 		self.targetFirstPersonDirection = self.previousFirstPersonDirection
 
 		self.previousFirstPersonPosition = self:getCamera():getEye():keep()
@@ -917,8 +917,8 @@ function DefaultCameraController:draw()
 	end
 
 	if self.isFirstPerson > 0 then
-		self:getCamera():setVerticalRotation(math.pi / 2)
-		self:getCamera():setHorizontalRotation(0)
+		self:getCamera():setVerticalRotation(-math.pi / 2)
+		self:getCamera():setHorizontalRotation(math.pi)
 	else
 		self:getCamera():setVerticalRotation(verticalOffset)
 		self:getCamera():setHorizontalRotation(horizontalOffset)

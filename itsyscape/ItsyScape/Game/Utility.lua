@@ -2903,12 +2903,19 @@ function Utility.Peep.getSize(peep)
 end
 
 function Utility.Peep.setSize(peep, size)
-	local size = peep:getBehavior(SizeBehavior)
-	if size then
-		size.size = size
+	local s = peep:getBehavior(SizeBehavior)
+	if s then
+		s.size = size
 	else
 		Log.warn("Peep '%s' doesn't have a size; can't set new size.", peep:getName())
 	end
+end
+
+function Utility.Peep.getBounds(peep)
+	local position = Utility.Peep.getPosition(peep)
+	local size = Utility.Peep.getSize(peep)
+
+	return position - Vector(size.x / 2, 0, size.z / 2), position + Vector(size.x / 2, size.y, size.z / 2)
 end
 
 function Utility.Peep.getTargetLineOfSight(peep, target, offset)
@@ -3654,8 +3661,12 @@ function Utility.Peep.lookAt(self, target, delta)
 
 		if Class.isCompatibleType(target, Vector) then
 			peepPosition = target
-		else
+		elseif Class.isCompatibleType(target, Ray) then
+			peepPosition = target.origin
+		elseif Class.isCompatibleType(target, Peep) then
 			peepPosition = Utility.Peep.getAbsolutePosition(target)
+		else
+			return
 		end
 
 		local selfMapTransform = Utility.Peep.getParentTransform(self)
