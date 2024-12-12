@@ -741,7 +741,7 @@ function Sailing.Navigation.PathFinder:getLocation(edge)
 end
 
 function Sailing.Navigation.PathFinder:getDistance(a, b)
-	return (a - b):getLengthSquared()
+	return (a - b):getLength()
 end
 
 function Sailing.Navigation.PathFinder:sameLocation(a, b)
@@ -857,7 +857,7 @@ function Sailing.Navigation.buildNodes(ship, target, offset)
 	-- Ew, n ^ 2. If this is a performance issue, we'll need to optimize.
 	for i, selfNode in ipairs(nodes) do
 		for j, otherNode in ipairs(nodes) do
-			if j > i and selfNode.groupID ~= otherNode.groupID then
+			if j > i and (selfNode.groupID == nil or otherNode.groupID == nil or selfNode.groupID ~= otherNode.groupID) then
 				local ray = Ray(selfNode.position, selfNode.position:direction(otherNode.position))
 				local selfDistanceToOther = (selfNode.position - otherNode.position):getLengthSquared()
 
@@ -868,6 +868,13 @@ function Sailing.Navigation.buildNodes(ship, target, offset)
 						local selfDistanceToNear = (selfNode.position - nearPoint):getLengthSquared()
 
 						if selfDistanceToNear <= selfDistanceToOther then
+							if not selfNode.groupID or not otherNode.groupID then
+								print(">>> collision!!", "pt", nearPoint:get())
+								print(">>> distance self", math.floor(math.sqrt(selfDistanceToNear)), math.floor(math.sqrt(selfDistanceToOther)))
+								print("", "self", Log.dump(selfNode))
+								print("", "other", Log.dump(otherNode))
+							end
+
 							hasCollision = true
 							break
 						end
@@ -881,6 +888,8 @@ function Sailing.Navigation.buildNodes(ship, target, offset)
 			end
 		end
 	end
+
+	print(">>> nordes", Log.dump(nodes))
 
 	return nodes, otherShips
 end

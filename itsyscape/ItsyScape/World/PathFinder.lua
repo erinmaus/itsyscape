@@ -330,18 +330,18 @@ end
 
 function PathFinder.AStar:processEdge(edge, goal)
 	local edgeID = self:getPathFinder():getID(edge)
+	print(">>> process", self:getPathFinder():getDebugInfo().shortName, edgeID, Log.stringify(edge))
+
 	self.open[edgeID] = nil
 	self.closed[edgeID] = edge
 
 	local neighbors = self:getPathFinder():getNeighbors(edge, goal)
 	for _, neighbor in ipairs(neighbors) do
-		repeat
-			local neighborID = self:getPathFinder():getID(neighbor)
-			if self:getPathFinder():sameLocation(neighbor, goal) then
-				return neighbor
-			elseif self.closed[neighborID] ~= nil then
-				break
-			elseif self.open[neighborID] then
+		local neighborID = self:getPathFinder():getID(neighbor)
+		if self:getPathFinder():sameLocation(self:getPathFinder():getLocation(neighbor), goal) then
+			return neighbor
+		elseif not self.closed[neighborID] then
+			if self.open[neighborID] then
 				local pendingEdge = self.open[neighborID]
 
 				local nextScore = self:getPathFinder():getScore(neighbor)
@@ -352,7 +352,7 @@ function PathFinder.AStar:processEdge(edge, goal)
 			else
 				self.open[neighborID] = neighbor
 			end
-		until true
+		end
 	end
 
 	return nil

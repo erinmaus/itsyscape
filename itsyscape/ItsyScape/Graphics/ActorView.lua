@@ -1126,6 +1126,8 @@ function ActorView:update(delta)
 		if self.rotation then
 			self.sceneNode:getTransform():setLocalRotation(self:_getRotation(self.rotation, self.layer))
 		end
+	else
+		print("???", self.actor:getName())
 	end
 end
 

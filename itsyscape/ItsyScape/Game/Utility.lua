@@ -2832,7 +2832,7 @@ function Utility.Peep.setPosition(peep, position, lerp)
 		local actor = peep:getBehavior(ActorReferenceBehavior)
 		actor = actor and actor.actor
 		if actor then
-			actor:onTeleport(position)
+			actor:onTeleport(position, p.layer)
 		end
 	end
 end
