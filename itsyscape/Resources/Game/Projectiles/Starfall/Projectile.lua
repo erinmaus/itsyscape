@@ -85,12 +85,12 @@ Starfall.STAR_PARTICLE_SYSTEM_PATH_COLLAPSE = {
 	},
 	{
 		type = "TwinklePath",
-		speed = math.pi
+		speed = { math.pi }
 	},
 	{
 		type = "SingularityPath",
 		position = { 0, 0, 0 },
-		speed = 20
+		speed = { 20 }
 	}
 }
 
@@ -102,12 +102,12 @@ Starfall.STAR_PARTICLE_SYSTEM_PATH_EXPLODE = {
 	},
 	{
 		type = "TwinklePath",
-		speed = math.pi
+		speed = { math.pi }
 	},
 	{
 		type = "SingularityPath",
 		position = { 0, 0, 0 },
-		speed = -25
+		speed = { -25 }
 	}
 }
 

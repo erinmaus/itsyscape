@@ -46,16 +46,16 @@ function ShipMovementCortex.Ship:prepare()
 	local _, movement = self.ship:addBehavior(MovementBehavior)
 	movement.noClip = true
 
-	local width = (map:getWidth() - 5.5) * map:getCellSize()
-	local height = (map:getHeight() - 4) * map:getCellSize()
-	local radius = height / 2
-	local numCircles = width / height * 2 + 1
-	for i = 0, numCircles * 2 do
+	local width = map:getWidth() * map:getCellSize()
+	local height = map:getHeight() * map:getCellSize()
+	local radius = height
+	local numCircles = (width / height) * 2 + 1
+	for i = 1, numCircles do
 		local cellSize = width / numCircles
 		local circle = {
-			x =  (i / 2) / numCircles * width - radius - width / 2,
+			x =  (i - 1) / (numCircles - 1) * width,
 			y = 0,
-			radius = math.sqrt(radius * 1.25)
+			radius = radius
 		}
 
 		table.insert(self.shape, circle)
@@ -226,26 +226,28 @@ function ShipMovementCortex.Ship:isColliding(other)
 end
 
 function ShipMovementCortex.Ship:handleFishCollision(other)
-	local shipMovement = self.ship:getBehavior(ShipMovementBehavior)
-	if not shipMovement then
-		return
-	end
+	local selfTransform = Utility.Peep.getTransform(self.ship)
 
-	local otherMovement = other:getBehavior(MovementBehavior)
-	if not otherMovement then
-		return
-	end
-
-	local shipRadius = math.sqrt(math.max(shipMovement.length, shipMovement.beam))
-	local shipPosition = Utility.Peep.getPosition(self.ship) * Vector.PLANE_XZ
 	local otherPosition = Utility.Peep.getPosition(other) * Vector.PLANE_XZ
+	local otherSize = Utility.Peep.getSize(other)
+	local otherRadius = math.max(otherSize.x, otherSize.z) / 2
 
-	local difference = otherPosition - shipPosition
-	local distance = difference:getLength()
+	for i = 1, #self.shape do
+		local selfCircle = self.shape[i]
+		local selfCircleX, _, selfCircleY = selfTransform:transformPoint(selfCircle.x, 0, selfCircle.y)
+		local selfCircleRadius = selfCircle.radius
+		local selfCirclePosition = Vector(selfCircleX, 0, selfCircleY)
 
-	if distance <= shipRadius then
-		local clampedPosition = shipPosition + difference:getNormal() * shipRadius
-		Utility.Peep.setPosition(other, clampedPosition, false)
+		local shipPosition = Utility.Peep.getPosition(self.ship) * Vector.PLANE_XZ
+
+		difference = otherPosition - shipPosition
+		distance = difference:getLength()
+
+		if distance <= selfCircleRadius + otherRadius then
+			local clampedPosition = shipPosition + difference:getNormal() * (selfCircleRadius + otherRadius)
+
+			Utility.Peep.setPosition(other, clampedPosition, false)
+		end
 	end
 end
 

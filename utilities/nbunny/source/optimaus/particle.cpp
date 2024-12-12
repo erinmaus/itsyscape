@@ -620,7 +620,7 @@ public:
 
 		auto g = table.get("position", nbunny::lua::TemporaryReference());
 		position = glm::vec3(g.get(1, 0.0f), g.get(2, -10.0f), g.get(3, 0.0f));
-		speed = table.get("speed", 10.0f);
+		speed = table.get("speed", nbunny::lua::TemporaryReference()).get(1, 10.0f);
 	}
 
 	void update(nbunny::Particle& p, float delta)
