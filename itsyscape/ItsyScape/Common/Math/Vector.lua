@@ -186,6 +186,13 @@ function BaseVector:getNormal()
 	end
 end
 
+function BaseVector:direction(other)
+	self:compatible()
+	other:compatible()
+
+	return (other - self):getNormal()
+end
+
 -- Adds two vectors or a vector and a scalar.
 --
 -- If 'a' is a scalar, 'a' added to each component of 'b' and vice versa for

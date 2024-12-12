@@ -46,7 +46,7 @@ local FindTargetTry = Mashina.Peep.FindNearbyPeep {
 	[TARGET] = B.Output.result
 }
 
-local SwimSequence = Mashina.Sequence {
+local SwimTowardsSequence = Mashina.Sequence {
 	Mashina.Sailing.GetNearestOffset {
 		target = TARGET,
 		offsets = {
@@ -62,6 +62,38 @@ local SwimSequence = Mashina.Sequence {
 		target = TARGET,
 		offset = OFFSET,
 		distance = DISTANCE
+	}
+}
+
+local SwimAwaySequence = Mashina.Sequence {
+	Mashina.RandomTry {
+		-- Mashina.Sailing.Swim {
+		-- 	target = TARGET,
+		-- 	--offset = Vector(16, 0, 16),
+		-- 	offset = Vector(0, 0, 16),
+		-- 	distance = DISTANCE
+		-- },
+
+		-- Mashina.Sailing.Swim {
+		-- 	target = TARGET,
+		-- 	--offset = Vector(-16, 0, -16),
+		-- 	offset = Vector(0, 0, -16),
+		-- 	DISTANCE = DISTANCE
+		-- },
+
+		-- Mashina.Sailing.Swim {
+		-- 	target = TARGET,
+		-- 	--offset = Vector(16, 0, -16),
+		-- 	offset = Vector(16, 0, 0),
+		-- 	DISTANCE = DISTANCE
+		-- },
+
+		Mashina.Sailing.Swim {
+			target = TARGET,
+			--offset = Vector(-16, 0, 16),
+			offset = Vector(0, 0, 16),
+			DISTANCE = DISTANCE
+		},
 	}
 }
 
@@ -158,8 +190,9 @@ local Tree = BTreeBuilder.Node() {
 				FindTargetTry,
 
 				Mashina.Step {
-					SwimSequence,
-					AttackSequence
+					SwimTowardsSequence,
+					AttackSequence,
+					SwimAwaySequence
 				}
 			}
 		}

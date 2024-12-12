@@ -45,11 +45,11 @@ function PathNode:getIsLeaf()
 end
 
 function PathNode:distance(other)
-	local dx = math.abs(self.x - other.x)
-	local dy = math.abs(self.y - other.y)
+	local di = math.abs(self.i - other.i)
+	local dj = math.abs(self.j - other.j)
 	local dl = math.abs(self.layer - other.layer)
 
-	return dx + dy + dl
+	return di + dj + dl
 end
 
 -- Activates the node on the provided Peep.

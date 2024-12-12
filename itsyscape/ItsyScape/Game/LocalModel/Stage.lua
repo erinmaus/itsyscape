@@ -1255,8 +1255,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 			if not currentMapScript then
 				local peep = self.game:getDirector():addPeep(
 					layerName,
-					require "ItsyScape.Peep.Peeps.Map",
-					resource)
+					require "ItsyScape.Peep.Peeps.Map")
 
 				peep:listen('ready', function(self)
 					self:poke('load', filename, args or {}, globalLayer)

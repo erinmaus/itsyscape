@@ -40,6 +40,7 @@ function BasicCannonball:onLaunch(peep, cannon, path, duration)
 	self.currentDuration = duration
 	self.currentTime = 0
 	self.isLaunched = true
+	self.currentHits = {}
 end
 
 function BasicCannonball:_tryHit()
@@ -93,17 +94,17 @@ function BasicCannonball:_tryHit()
 	local aggressor = Utility.Peep.getMapScript(self.currentCannon)
 	local shouldFireProjectile = false
 	for _, hit in ipairs(hits) do
-		local status = hit:getBehavior(CombatStatusBehavior)
-		if status and not status.damage[aggressor] then
+		if not self.currentHits[hit] then
+			self.currentHits[hit] = true
 			shouldFireProjectile = true
 
 			local damageRoll = logic:rollDamage(self.currentPeep, ShipWeapon.PURPOSE_TOOL, hit)
 			local damage = damageRoll:roll()
 
 			local poke = AttackPoke({
-				weaponType = 'cannon',
+				weaponType = "cannon",
 				damage = damage,
-				aggressor = aggressor
+				aggressor = self.currentPeep
 			})
 
 			hit:poke("receiveAttack", poke, self.currentPeep)

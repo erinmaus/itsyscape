@@ -81,7 +81,9 @@ function Cthulhu:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
-function Cthulhu:update()
+function Cthulhu:update(...)
+	Creep.update(self, ...)
+
 	Utility.Peep.face3D(self)
 end
 
