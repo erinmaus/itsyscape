@@ -43,7 +43,6 @@ function GetNearestOffset:update(mashina, state, executor)
 			table.insert(results, {
 				offset = offset,
 				position = po,
-
 			})
 		end
 	end
@@ -59,6 +58,7 @@ function GetNearestOffset:update(mashina, state, executor)
 	for i, offset in ipairs(results) do
 		results[i] = offset.offset
 	end
+
 
 	state[self.RESULT] = results[1]
 	state[self.RESULTS] = results

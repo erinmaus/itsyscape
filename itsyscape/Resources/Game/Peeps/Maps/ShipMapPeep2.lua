@@ -113,7 +113,7 @@ function ShipMapScript:update(director, game)
 	MapScript.update(self, director, game)
 
 	local position, rotation = Sailing.Ocean.getPositionRotation(self)
-	--Utility.Peep.setRotation(self, rotation)
+	Utility.Peep.setRotation(self, rotation)
 	Utility.Peep.setPosition(self, position + Vector(0, 8, 0))
 end
 

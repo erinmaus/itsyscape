@@ -109,11 +109,10 @@ function Sailing.getShipTarget(ship, target, offset)
 					offset = Ray(
 						rotation:transformVector(offset.origin),
 						rotation:transformVector(offset.direction):getNormal())
-					offset = rotation:transformVector(offset)
 				end
 			elseif Class.isCompatibleType(offset, Vector) then
 				if shipMovement then
-					offset = (shipMovement.rotation * Quaternion.Y_90):transformVector(offset)
+					offset = (shipMovement.rotation * Quaternion.Y_90):getNormal():transformVector(offset)
 				else
 					offset = rotation:transformVector(offset)
 				end

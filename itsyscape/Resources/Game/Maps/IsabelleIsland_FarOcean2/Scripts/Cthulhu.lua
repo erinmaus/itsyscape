@@ -155,9 +155,6 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Repeat {
 			Mashina.Step {
-				-- We want to persist the state of the "FindTargetTry" node
-				drop = false,
-
 				FindTargetTry,
 
 				Mashina.Step {

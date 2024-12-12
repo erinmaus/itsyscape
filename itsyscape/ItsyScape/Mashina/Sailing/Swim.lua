@@ -53,6 +53,8 @@ function Swim:update(mashina, state, executor)
 	end	
 	targetPosition = targetPosition * Vector.PLANE_XZ
 
+	print(">>> targetPosition", targetPosition:get())
+
 	local currentPosition = Utility.Peep.getPosition(mashina) * Vector.PLANE_XZ
 	local distanceFromTarget = (targetPosition - currentPosition):getLength()
 	local direction = (targetPosition - currentPosition):getNormal()
@@ -87,8 +89,6 @@ function Swim:update(mashina, state, executor)
 		end
 
 		if shipMovement then
-			-- Try and avoid the ship.
-
 			local radius = math.max(shipMovement.length, shipMovement.beam) / 2
 
 			local projectedPosition = currentPosition + movement.velocity * Vector.PLANE_XZ
