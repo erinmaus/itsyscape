@@ -499,7 +499,7 @@ function Ocean:updateCannonTargets()
 			position = Utility.Peep.getPosition(target)
 		else
 			position = Sailing.getShipTarget(self.soakedLog, self.deadPrincess)
-			normal = Sailing.getShipDirectionNormal(self.deadPrincess)
+			normal = Sailing.getShipForward(self.deadPrincess)
 		end
 	end
 

@@ -59,15 +59,6 @@ function ShipMovementCortex.Ship:prepare()
 		}
 
 		table.insert(self.shape, circle)
-
-		local t = Utility.Peep.getTransform(self.ship)
-		local x, y, z = t:transformPoint(circle.x, 0, circle.z)
-
-		local p = Utility.spawnPropAtPosition(
-			Utility.Peep.getInstance(self.ship):getBaseMapScript(),
-			"Null",
-			x, 0, z):getPeep()
-		Utility.Peep.setSize(p, Vector(radius * 2, 1, radius * 2))
 	end
 
 	local _, shipMovement = self.ship:addBehavior(ShipMovementBehavior)
@@ -94,7 +85,7 @@ function ShipMovementCortex.Ship:steer(steerDirection, rudder)
 
 	local _, shipStats = self.ship:addBehavior(ShipStatsBehavior)
 	local turnRadius = math.rad(shipStats.bonuses[ShipStatsBehavior.STAT_TURN])
-	turnRadius = math.max(turnRadius, math.pi / 16) -- clamp the minimum to something sensible
+	turnRadius = math.max(turnRadius, math.pi / 8) -- clamp the minimum to something sensible
 
 	local shipMovement = self.ship:getBehavior(ShipMovementBehavior)
 	local angle = turnRadius * steerDirection * rudder
@@ -117,7 +108,6 @@ function ShipMovementCortex.Ship:move(delta)
 
 	if shipMovement.steerDirection ~= 0 and shipMovement.isMoving then
 		self:steer(shipMovement.steerDirection, shipMovement.rudder)
-		shipMovement.steerDirection = 0
 	end
 
 	local maxAcceleration = math.max(shipStats.bonuses[ShipStatsBehavior.STAT_SPEED] / self.MAX_ACCELERATION_DENOMINATOR, 1)
@@ -142,18 +132,12 @@ function ShipMovementCortex.Ship:move(delta)
 	shipMovement.rotation = (shipMovement.rotation * rotationStep):getNormal()
 	shipMovement.angularAcceleration = 0
 
-	local steerDirectionNormal = shipMovement.steerDirectionNormal
-	local currentDirectionNormal = Quaternion.transformVector(shipMovement.rotation, steerDirectionNormal)
+	local currentDirectionNormal = Sailing.getShipForward(self.ship)
+	local directionRotation = Quaternion.fromVectors(shipMovement.steerDirectionNormal, currentDirectionNormal)
+	local position, rotation = Sailing.Ocean.getPositionRotation(self.ship)
 
-	local rotation = Quaternion.lookAt(currentDirectionNormal, Vector.ZERO)
-	if ocean then
-		local delta = love.timer.getTime() * ocean.weatherRockMultiplier
-		local mu = math.sin(delta)
-		local angle = mu * ocean.weatherRockRange
-
-		rotation = rotation * Quaternion.fromAxisAngle(shipMovement.rockDirectionNormal, angle)
-	end
-	Utility.Peep.setRotation(self.ship, (rotation * Quaternion.Y_90):getNormal())
+	Utility.Peep.setRotation(self.ship, (directionRotation * rotation):getNormal())
+	Utility.Peep.setPosition(self.ship, position + Vector(0, 8, 0))
 
 	if shipMovement.isMoving then
 		local acceleration = currentDirectionNormal * movement.maxAcceleration

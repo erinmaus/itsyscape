@@ -2090,7 +2090,7 @@ Utility.Map = {}
 
 function Utility.Map.getWind(game, layer)
 	local instance = game:getStage():getInstanceByLayer(layer)
-	local mapInfo = instance:getMap(layer)
+	local mapInfo = instance and instance:getMap(layer)
 	local meta = mapInfo and mapInfo:getMeta()
 
 	return (meta and meta.windDirection and Vector(unpack(meta.windDirection)) or Vector(-1, 0, -1)):getNormal(),
@@ -2704,19 +2704,26 @@ function Utility.Peep.getDecomposedMapTransform(peep)
 		origin = Vector.ZERO
 	end
 
-	local mapOffset = peep:getBehavior(MapOffsetBehavior)
-	if mapOffset then
-		origin = origin + mapOffset.origin
-		position = position + mapOffset.offset
-		rotation = rotation * mapOffset.rotation
-		scale = scale * mapOffset.scale
+	local parent
+	do
+		local mapOffset = peep:getBehavior(MapOffsetBehavior)
+		if mapOffset then
+			origin = origin + mapOffset.origin
+			position = position + mapOffset.offset
+			rotation = rotation * mapOffset.rotation
+			scale = scale * mapOffset.scale
+		end
+
+		if mapOffset.parentLayer then
+			parent = Utility.Peep.getInstance(peep):getMapScriptByLayer(mapOffset.parentLayer)
+		end
 	end
 
-	return position, rotation, scale, origin
+	return position, rotation, scale, origin, parent
 end
 
-function Utility.Peep.getMapTransform(peep)
-	local transform = love.math.newTransform()
+function Utility.Peep.getMapTransform(peep, transform)
+	transform = transform or love.math.newTransform()
 
 	do
 		local transformOverride = peep:getBehavior(TransformBehavior)
@@ -2727,7 +2734,11 @@ function Utility.Peep.getMapTransform(peep)
 	end
 
 	do
-		local position, rotation, scale, origin = Utility.Peep.getDecomposedMapTransform(peep)
+		local position, rotation, scale, origin, parent = Utility.Peep.getDecomposedMapTransform(peep)
+
+		if parent then
+			Utility.Peep.getMapTransform(parent, transform)
+		end
 
 		transform:translate(origin:get())
 		transform:translate(position:get())
@@ -3894,7 +3905,11 @@ function Utility.Peep.getMap(peep)
 end
 
 function Utility.Peep.getMapResource(peep)
-	return Utility.Peep.getMapResourceFromLayer(peep)
+	local instance = Utility.Peep.getInstance(peep)
+	local mapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
+	local groupBaseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup)
+	local mapScript = instance:getMapScriptByLayer(groupBaseLayer)
+	return Utility.Peep.getResource(mapScript)
 end
 
 function Utility.Peep.getMapResourceFromLayer(peep)

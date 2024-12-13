@@ -327,6 +327,8 @@ function GameView:reset()
 	end
 	table.clear(self.props)
 
+	table.clear(self.views)
+
 	for layer in pairs(self.mapMeshes) do
 		Log.info("Clearing map from layer %d.", layer)
 		self:removeMap(layer)
@@ -1239,27 +1241,27 @@ function GameView:addProp(propID, prop)
 	view:attach()
 	view:load()
 
-	self.props[prop] = view
+	self.props[prop:getID()] = view
 	self.views[prop] = view
 end
 
 function GameView:getProp(prop)
-	return self.props[prop]
+	if prop then
+		return self.props[prop:getID()]
+	end
+
+	return nil
 end
 
 function GameView:getPropByID(id)
-	for prop in pairs(self.props) do
-		if prop:getID() == id then
-			return prop
-		end
-	end
+	local propView = self.props[id]
+	return propView and propView:getProp()
 end
 
 function GameView:removeProp(prop)
-	if self.props[prop] then
-		local view = self.props[prop]
-		self.props[prop]:remove()
-		self.props[prop] = nil
+	if prop and self.props[prop:getID()] then
+		self.props[prop:getID()]:remove()
+		self.props[prop:getID()] = nil
 		self.views[prop] = nil
 	end
 end
@@ -2034,7 +2036,7 @@ function GameView:postTick()
 		for _, instance in gameManager:iterateDirty() do
 			local interface = instance:getInterface()
 			local object = instance:getInstance()
-			local objectView = self.actors[object] or self.props[object]
+			local objectView = self.views[object]
 			if objectView then
 				self.generalDebugStats:measure(
 					string.format("%s::%s::tick", interface, object:getPeepID()),

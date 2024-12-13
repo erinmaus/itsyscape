@@ -422,6 +422,19 @@ do
 	}
 end
 
+M["Anchor_Captain"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 5,
+		PositionY = 0,
+		PositionZ = 8,
+		Layer = 2,
+		Name = "Anchor_Captain",
+		Map = M._MAP,
+		Resource = M["Anchor_Captain"]
+	}
+end
+
 M["TrapDoor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -499,6 +512,254 @@ do
 	}
 
 	M["WoodenLadder_BelowDeck"] {
+		TravelAction
+	}
+end
+
+M["Anchor_ToStern_Starboard"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3,
+		PositionY = 0,
+		PositionZ = 1,
+		Layer = 2,
+		Name = "Anchor_ToStern_Starboard",
+		Map = M._MAP,
+		Resource = M["Anchor_ToStern_Starboard"]
+	}
+end
+
+M["Anchor_FromStern_Starboard"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 0,
+		PositionZ = 1,
+		Name = "Anchor_FromStern_Starboard",
+		Map = M._MAP,
+		Resource = M["Anchor_FromStern_Starboard"]
+	}
+end
+
+M["Anchor_ToStern_Port"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3,
+		PositionY = 0,
+		PositionZ = 15,
+		Layer = 2,
+		Name = "Anchor_ToStern_Port",
+		Map = M._MAP,
+		Resource = M["Anchor_ToStern_Port"]
+	}
+end
+
+M["Anchor_FromStern_Port"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Anchor_FromStern_Port",
+		Map = M._MAP,
+		Resource = M["Anchor_FromStern_Port"]
+	}
+end
+
+M["Portal_ToStern_Starboard"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 0,
+		PositionZ = 1,
+		Name = "Portal_ToStern_Starboard",
+		Map = M._MAP,
+		Resource = M["Portal_ToStern_Starboard"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 2,
+		SizeZ = 2,
+		MapObject = M["Portal_ToStern_Starboard"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToStern_Starboard"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Starboard stairs",
+		Language = "en-US",
+		Resource = M["Portal_ToStern_Starboard"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.LocalTravelDestination {
+		Map = M._MAP,
+		Anchor = "Anchor_ToStern_Starboard",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Walk-up",
+		XProgressive = "Walking-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToStern_Starboard"] {
+		TravelAction
+	}
+end
+
+M["Portal_FromStern_Starboard"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 1,
+		PositionY = 0,
+		PositionZ = 1,
+		Layer = 2,
+		Name = "Portal_FromStern_Starboard",
+		Map = M._MAP,
+		Resource = M["Portal_FromStern_Starboard"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 2,
+		SizeZ = 2,
+		MapObject = M["Portal_FromStern_Starboard"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_FromStern_Starboard"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Starboard stairs",
+		Language = "en-US",
+		Resource = M["Portal_FromStern_Starboard"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.LocalTravelDestination {
+		Map = M._MAP,
+		Anchor = "Anchor_FromStern_Starboard",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Walk-down",
+		XProgressive = "Walking-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_FromStern_Starboard"] {
+		TravelAction
+	}
+end
+
+M["Portal_ToStern_Port"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 0,
+		PositionZ = 15,
+		Name = "Portal_ToStern_Port",
+		Map = M._MAP,
+		Resource = M["Portal_ToStern_Port"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 2,
+		SizeZ = 2,
+		MapObject = M["Portal_ToStern_Port"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_ToStern_Port"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Port stairs",
+		Language = "en-US",
+		Resource = M["Portal_ToStern_Port"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.LocalTravelDestination {
+		Map = M._MAP,
+		Anchor = "Anchor_ToStern_Port",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Walk-up",
+		XProgressive = "Walking-up",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_ToStern_Port"] {
+		TravelAction
+	}
+end
+
+M["Portal_FromStern_Port"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 1,
+		PositionY = 0,
+		PositionZ = 15,
+		Layer = 2,
+		Name = "Portal_FromStern_Port",
+		Map = M._MAP,
+		Resource = M["Portal_FromStern_Port"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 2,
+		SizeZ = 2,
+		MapObject = M["Portal_FromStern_Port"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "InvisiblePortal",
+		MapObject = M["Portal_FromStern_Port"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Port stairs",
+		Language = "en-US",
+		Resource = M["Portal_FromStern_Port"]
+	}
+
+	local TravelAction = ItsyScape.Action.Travel()
+
+	ItsyScape.Meta.LocalTravelDestination {
+		Map = M._MAP,
+		Anchor = "Anchor_FromStern_Port",
+		Action = TravelAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Walk-down",
+		XProgressive = "Walking-down",
+		Language = "en-US",
+		Action = TravelAction
+	}
+
+	M["Portal_FromStern_Port"] {
 		TravelAction
 	}
 end

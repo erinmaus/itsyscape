@@ -661,7 +661,7 @@ function DefaultCameraController:onEnterFirstPerson()
 		self.previousFirstPersonDirection = self:getCamera():getCombinedRotation():getNormal():keep()
 		self.targetFirstPersonDirection = self.previousFirstPersonDirection
 
-		self.previousFirstPersonPosition = self:getCamera():getEye():keep()
+		self.previousFirstPersonPosition = self:getCamera():getPosition()
 		self.targetFirstPersonPosition = self.previousFirstPersonPosition
 	end
 end

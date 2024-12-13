@@ -21,8 +21,8 @@ HelmView.WHEEL_ATTACHMENTS = {}
 
 HelmView.WHEEL_TRANSLATION = Vector(0, 1.2, -0.3)
 
-HelmView.ROTATION_MULTIPLIER = math.pi * 3
-HelmView.ROTATION_SPEED_RADIANS_PER_SECOND = math.pi
+HelmView.ROTATION_MULTIPLIER = math.pi * 1.5
+HelmView.ROTATION_SPEED_RADIANS_PER_SECOND = math.pi / 2
 HelmView.ROTATION_TWEEN_SPEED = 0.5
 
 function HelmView:load()
@@ -46,7 +46,7 @@ end
 
 function HelmView:_getRotation()
 	local state = self:getProp():getState()
-	local currentRotation = state and state.direction
+	local currentRotation = state and state.shipState and state.shipState.rudderDirection
 	currentRotation = (currentRotation or 0) * self.ROTATION_MULTIPLIER
 
 	return currentRotation

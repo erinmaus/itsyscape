@@ -103,13 +103,13 @@ function Travel:travel(state, peep, target)
 	self:transfer(state, peep, Travel.FLAGS)
 
 	if isLocal then
-		local mapScript = Utility.Peep.getMapScript(peep)
-		local mapScriptResource = Utility.Peep.getResource(mapScript)
-
-		if mapScriptResource.id.value ~= map.id.value then
+		local mapScriptResource = Utility.Peep.getMapResource(peep)
+		if not mapScriptResource or mapScriptResource.id.value ~= map.id.value then
 			return
 		end
 
+		local position = Vector(Utility.Map.getAnchorPosition(self:getGame(), map, record:get("Anchor")))
+		Utility.Peep.setPosition(peep, position)
 		Utility.orientateToAnchor(peep, mapScriptResource, record:get("Anchor"))
 	else
 		local arguments = record:get("Arguments")
