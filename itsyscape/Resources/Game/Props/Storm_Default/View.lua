@@ -140,7 +140,7 @@ function Storm:zap()
 
 	local state = self:getProp():getState()
 	local colors = state.colors or { { 1, 1, 1 } }
-	local color = colors[love.math.random(#state.colors)]
+	local color = colors[love.math.random(#colors)]
 
 	local light = PointLightSceneNode()
 	light:setColor(Color(unpack(color or { 1, 1, 1 })))
