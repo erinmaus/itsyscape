@@ -94,8 +94,8 @@ function Helm:update(...)
 		local w, h = self.snippet:getSize()
 		self.camera:setWidth(w)
 		self.camera:setHeight(h)
-		self.camera:setDistance(2.5)
-		self.camera:setPosition(propView:getRoot():getTransform():getLocalTranslation() + Vector(0, 1.5, 0))
+		self.camera:setDistance(2)
+		self.camera:setPosition(propView:getRoot():getTransform():getLocalTranslation() + Vector(0, 1.75, 0))
 	end
 end
 
