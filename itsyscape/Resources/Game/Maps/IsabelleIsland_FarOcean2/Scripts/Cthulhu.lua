@@ -67,11 +67,11 @@ local SwimTowardsSequence = Mashina.Sequence {
 
 local SwimAwaySequence = Mashina.Sequence {
 	Mashina.RandomTry {
-		-- Mashina.Sailing.Swim {
-		-- 	target = TARGET,
-		-- 	offset = Vector(0, 0, 16),
-		-- 	distance = DISTANCE
-		-- },
+		Mashina.Sailing.Swim {
+			target = TARGET,
+			offset = Vector(0, 0, 16),
+			distance = DISTANCE
+		},
 
 		Mashina.Sailing.Swim {
 			target = TARGET,
@@ -79,17 +79,17 @@ local SwimAwaySequence = Mashina.Sequence {
 			DISTANCE = DISTANCE
 		},
 
-		-- Mashina.Sailing.Swim {
-		-- 	target = TARGET,
-		-- 	offset = Vector(16, 0, 0),
-		-- 	DISTANCE = DISTANCE
-		-- },
+		Mashina.Sailing.Swim {
+			target = TARGET,
+			offset = Vector(16, 0, 0),
+			DISTANCE = DISTANCE
+		},
 
-		-- Mashina.Sailing.Swim {
-		-- 	target = TARGET,
-		-- 	offset = Vector(-16, 0, 0),
-		-- 	DISTANCE = DISTANCE
-		-- },
+		Mashina.Sailing.Swim {
+			target = TARGET,
+			offset = Vector(-16, 0, 0),
+			DISTANCE = DISTANCE
+		},
 	}
 }
 
