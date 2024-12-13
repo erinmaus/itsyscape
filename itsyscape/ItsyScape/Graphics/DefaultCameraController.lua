@@ -27,6 +27,7 @@ DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP = math.pi / 4
 DefaultCameraController.SCROLL_MULTIPLIER = 4
 DefaultCameraController.MIN_DISTANCE = 10
 DefaultCameraController.MAX_DISTANCE = 25
+DefaultCameraController.MAX_STICKY_DISTANCE = 100
 DefaultCameraController.DEFAULT_DISTANCE = 30
 DefaultCameraController.SCROLL_DISTANCE_Y_ENGAGE = 128
 
@@ -60,6 +61,7 @@ function DefaultCameraController:new(...)
 	self.isActionMoving = false
 	self.isActionButtonDown = false
 	self.isCameraDragging = false
+	self.mapRotationSticky = 0
 	self.isRotationUnlocked = 0
 	self.isPositionUnlocked = 0
 	self.isFirstPerson = 0
@@ -250,7 +252,7 @@ end
 function DefaultCameraController:_scroll(y)
 	local distance = self.targetDistance - y * 0.5
 	if not _DEBUG then
-		self.targetDistance = math.min(math.max(distance, DefaultCameraController.MIN_DISTANCE), DefaultCameraController.MAX_DISTANCE)
+		self.targetDistance = math.min(math.max(distance, DefaultCameraController.MIN_DISTANCE), self.mapRotationSticky > 0 and DefaultCameraController.MAX_STICKY_DISTANCE or DefaultCameraController.MAX_DISTANCE)
 	else
 		self.targetDistance = distance
 	end
@@ -926,7 +928,7 @@ function DefaultCameraController:draw()
 
 	self:getCamera():setDistance(distance)
 
-	if not _DEBUG and self.isPositionUnlocked <= 0 then
+	if not _DEBUG and self.isPositionUnlocked <= 0 and self.mapRotationSticky <= 0 then
 		center = self:_clampCenter(center)
 	end
 

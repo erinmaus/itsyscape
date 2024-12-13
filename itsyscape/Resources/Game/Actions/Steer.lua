@@ -19,7 +19,7 @@ Steer.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
 
 function Steer:perform(state, player, prop)
 	local i, j, k = Utility.Peep.getTileAnchor(prop)
-	local walk = Utility.Peep.getWalk(player, i, j, k, 2.5)
+	local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = false })
 	local face = CallbackCommand(Utility.Peep.face, player, prop)
 
 	if walk then

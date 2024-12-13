@@ -97,7 +97,7 @@ function HelmController:updateCamera()
 	end
 
 	self:getPlayer():pokeCamera("updateFirstPersonDirection", rotation:getNormal(), HelmController.CAMERA_DISTANCE)
-	self:getPlayer():pokeCamera("updateFirstPersonPosition", position)
+	self:getPlayer():pokeCamera("updateFirstPersonPosition", position + Vector(0, 4, 0))
 end
 
 function HelmController:pull()
