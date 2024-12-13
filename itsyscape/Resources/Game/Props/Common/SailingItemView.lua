@@ -32,7 +32,7 @@ end
 
 function SailingItemView:updateHiding(delta)
 	local uiView = _APP:getUIView()
-	local isHidden = uiView:getInterface("Cannon") ~= nil
+	local isHidden = uiView:getInterface("Cannon") ~= nil or uiView:getInterface("Helm") ~= nil
 	if isHidden ~= self.isHidden then
 		self.hiddenTime = self.HIDE_FADE_IN_OUT_DURATION - self.hiddenTime
 		self.isHidden = isHidden

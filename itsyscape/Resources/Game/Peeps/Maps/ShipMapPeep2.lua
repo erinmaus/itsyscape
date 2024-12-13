@@ -34,7 +34,8 @@ function ShipMapScript:new(resource, name, ...)
 
 	self:addBehavior(BossStatsBehavior)
 	self:addBehavior(ShipMovementBehavior)
-	self:addBehavior(ShipStatsBehavior)
+	local _, stats = self:addBehavior(ShipStatsBehavior)
+	stats.bonuses[ShipStatsBehavior.STAT_SPEED] = 400
 
 	local _, movement = self:addBehavior(MovementBehavior)
 	movement.noClip = true
@@ -107,14 +108,6 @@ function ShipMapScript:onCustomize(sailingDetails)
 			end
 		end
 	end
-end
-
-function ShipMapScript:update(director, game)
-	MapScript.update(self, director, game)
-
-	local position, rotation = Sailing.Ocean.getPositionRotation(self)
-	--Utility.Peep.setRotation(self, rotation)
-	Utility.Peep.setPosition(self, position + Vector(0, 8, 0))
 end
 
 return ShipMapScript

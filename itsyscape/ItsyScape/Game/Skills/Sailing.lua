@@ -47,6 +47,19 @@ function Sailing.setCrewMember(ship, peep)
 	crewMember.ship = ship
 end
 
+function Sailing.getShip(peep)
+	local instance = Utility.Peep.getInstance(peep)
+	local mapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
+	local baseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup)
+	local mapScript = instance:getMapScriptByLayer(baseLayer)
+
+	if mapScript:hasBehavior(ShipMovementBehavior) then
+		return mapScript
+	end
+
+	return nil
+end
+
 function Sailing.getDirectionFromPoints(a, b, c, bias)
 	local result = ((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x))
 
@@ -119,7 +132,7 @@ function Sailing.getShipTarget(ship, target, offset)
 
 			if Class.isCompatibleType(offset, Ray) then
 				if shipMovement then
-					local r = shipMovement.rotation * Quaternion.Y_90
+					local r = shipMovement.rotation
 					offset = Ray(
 						r:transformVector(Sailing._offsetVectorFromShip(offset.origin, target)),
 						r:transformVector(offset.direction):getNormal())
@@ -130,7 +143,7 @@ function Sailing.getShipTarget(ship, target, offset)
 				end
 			elseif Class.isCompatibleType(offset, Vector) then
 				if shipMovement then
-					offset = (shipMovement.rotation * Quaternion.Y_90):getNormal():transformVector(Sailing._offsetVectorFromShip(offset, target))
+					offset = shipMovement.rotation:getNormal():transformVector(Sailing._offsetVectorFromShip(offset, target))
 				else
 					offset = rotation:transformVector(offset)
 				end
@@ -161,11 +174,11 @@ end
 
 -- This is the normal the ship is heading in, NOT the steer direction normal.
 -- The steer direction normal is the axis on which 1 or -1 is projected to steer the ship.
-function Sailing.getShipDirectionNormal(ship)
+function Sailing.getShipForward(ship)
 	if Class.isCompatibleType(ship, Peep) then
 		local shipMovement = ship:getBehavior(ShipMovementBehavior)
 		if shipMovement then
-			return (shipMovement.rotation * Quaternion.Y_90):transformVector(shipMovement.steerDirectionNormal):getNormal()
+			return shipMovement.rotation:transformVector(shipMovement.steerDirectionNormal):getNormal()
 		end
 	end
 
@@ -253,22 +266,6 @@ function Sailing.getShipPort(ship, beam)
 
 	return nil
 end
-
--- function Sailing.getPointRelativeToShip(ship, point)
--- 	if Class.isCompatibleType(ship, Peep) then
--- 		local 
--- 		local shipMovement = ship:getBehavior(ShipMovementBehavior)
--- 		if shipMovement then
-
--- 		end
-
--- 		local rotation = Utility.Peep.getRotation(ship):getNormal()
--- 		local size = Utility.Peep.getSize(ship)
--- 		return rotation:transformVector(Vector(-size.x / 2, 0, 0))
--- 	end
-
--- 	return point
--- end
 
 function Sailing.calcCannonMinHit(level, bonus)
 	return math.max(math.ceil((level + 50) * (bonus + 64) / 640), 1)

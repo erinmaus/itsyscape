@@ -90,13 +90,13 @@ function SceneSnippetRenderer:draw(widget)
 			end
 
 			local w, h = widget:getSize()
-			w = w * 2
-			h = h * 2
+			w = w * widget:getDPIScale()
+			h = h * widget:getDPIScale()
 
 			love.graphics.push('all')
 			love.graphics.setScissor()
 			renderer:setCamera(camera)
-			renderer:draw(widget:getRoot(), 0, w, h, self.outlinePostProcessPasses[widget])
+			renderer:draw(widget:getRoot(), _APP:getPreviousFrameDelta(), w, h, self.outlinePostProcessPasses[widget])
 			love.graphics.pop()
 
 			if oldParent then
@@ -111,7 +111,7 @@ function SceneSnippetRenderer:draw(widget)
 
 		local color = renderer:getOutputBuffer():getColor()
 		if color then
-			itsyrealm.graphics.uncachedDraw(renderer:getOutputBuffer():getColor(), 0, 0, 0, 0.5, 0.5)
+			itsyrealm.graphics.uncachedDraw(renderer:getOutputBuffer():getColor(), 0, 0, 0, 1 / widget:getDPIScale(), 1 / widget:getDPIScale())
 		end
 	end
 end

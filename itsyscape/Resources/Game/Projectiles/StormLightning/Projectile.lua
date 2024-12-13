@@ -26,7 +26,7 @@ Lightning.MAX_SPAWN_RADIUS = 40
 Lightning.MAX_SEGMENT_LENGTH = 70 / 1000
 Lightning.MIN_SEGMENT_LENGTH = 40 / 1000
 Lightning.MAX_JITTER_DISTANCE = 2.5
-Lightning.COLOR = Color.fromHexString("ffffff", 1)
+Lightning.COLOR = Color.fromHexString("00ff00", 1)
 
 function Lightning:load()
 	Projectile.load(self)

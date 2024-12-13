@@ -511,3 +511,9 @@ do
 		ItsyScape.Action.Fire()
 	}
 end
+
+do
+	ItsyScape.Resource.Prop "Helm_ExquisiteMahogany" {
+		ItsyScape.Action.Steer()
+	}
+end

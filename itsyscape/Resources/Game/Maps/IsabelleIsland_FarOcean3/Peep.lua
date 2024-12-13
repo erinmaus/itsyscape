@@ -11,11 +11,13 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
+local Color = require "ItsyScape.Graphics.Color"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local WhirlpoolBehavior = require "ItsyScape.Peep.Behaviors.WhirlpoolBehavior"
 local Map = require "ItsyScape.Peep.Peeps.Map"
 
@@ -56,12 +58,28 @@ function Ocean:onLoad(...)
 	-- ship:pushPoke("customize", exquisitor)
 
 	-- self.exquisitor = exquisitor
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	do
+		local layer, mapScript = stage:loadMapResource(Utility.Peep.getInstance(self), "Sailing_Sector")
+		mapScript:addBehavior(PositionBehavior)
+
+		Utility.Peep.setPosition(mapScript, Vector(-32, 0, -32))
+
+		stage:forecast(layer, "IsabelleIsland_FarOcean2_HeavyRain", "Rain", {
+			wind = { -15, 0, 0 },
+			gravity = { 0, -50, 0 },
+			heaviness = 1 / 2,
+			color = { Color.fromHexString("aaeeff", 0.8):get() },
+			size = 1 / 32
+		})
+	end
 end
 
 function Ocean:onPlayerEnter(player)
 	player:pokeCamera("mapRotationStick")
 
-	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Spawn", self.exquisitor)
+	self:pushPoke("placePlayer", player:getActor():getPeep(), "Anchor_Captain", self.exquisitor)
 end
 
 function Ocean:onPlayerLeave(player)

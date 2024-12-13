@@ -808,6 +808,8 @@ function Instance:getMapGroup(layer)
 end
 
 function Instance:getGlobalLayerFromLocalLayer(group, index)
+	index = index or 1
+
 	if not group then
 		return
 	end

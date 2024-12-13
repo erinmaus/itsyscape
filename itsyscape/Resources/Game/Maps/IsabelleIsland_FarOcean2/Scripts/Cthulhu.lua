@@ -104,35 +104,29 @@ local AttackSequence =  Mashina.Step {
 		target = TARGET
 	},
 
-	Mashina.Peep.Talk {
-		message = "Urm'yth rh'lr rh'sylk...",
-		duration = 4,
-		log = false
-	},
-
 	Mashina.RandomTry {
-		Mashina.Peep.FireProjectile {
-			destination = TARGET,
-			offset = Vector(-40, 5, 20),
-			projectile = "Starfall"
-		},
+		-- Mashina.Peep.FireProjectile {
+		-- 	destination = TARGET,
+		-- 	offset = Vector(-40, 5, 20),
+		-- 	projectile = "Starfall"
+		-- },
 
-		Mashina.Peep.FireProjectile {
-			destination = TARGET,
-			offset = Vector(-40, 5, -20),
-			projectile = "Starfall"
-		},
+		-- Mashina.Peep.FireProjectile {
+		-- 	destination = TARGET,
+		-- 	offset = Vector(-40, 5, -20),
+		-- 	projectile = "Starfall"
+		-- },
+
+		-- Mashina.Peep.FireProjectile {
+		-- 	destination = TARGET,
+		-- 	offset = Vector(0, 5, 0),
+		-- 	projectile = "DecayingBolt"
+		-- },
 
 		Mashina.Peep.FireProjectile {
 			destination = TARGET,
 			offset = Vector(0, 5, 0),
-			projectile = "DecayingBolt"
-		},
-
-		Mashina.Peep.FireProjectile {
-			destination = TARGET,
-			offset = Vector(0, 5, 0),
-			projectile = "DecayingBolt"
+			projectile = "AstralMaelstrom"
 		}
 	},
 
