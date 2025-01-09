@@ -35,6 +35,8 @@ function Instance.Map:new(layer, map, tileSetID, maskID, meta)
 	self.maskID = maskID
 	self.meta = meta
 	self.transform = { n = 0 }
+	self.linksByMap = {}
+	self.linksByLayer = {}
 end
 
 function Instance.Map:getLayer()
@@ -66,6 +68,33 @@ end
 
 function Instance.Map:getTransform()
 	return unpack(self.transform, 1, self.transform.n)
+end
+
+function Instance.Map:addLink(otherMap)
+	if not self.linksByMap[otherMap:getLayer()] then
+		self.linksByMap[otherMap:getLayer()] = otherMap
+		table.insert(self.linksByLayer, otherMap:getLayer())
+	end
+end
+
+function Instance.Map:removeLink(otherMap)
+	if self.linksByMap[otherMap:getLayer()] then
+		self.linksByMap[otherMap:getLayer()] = nil
+
+		for i = #self.linksByLayer, 1, -1 do
+			if self.linksByLayer[i] == otherMap:getLayer() then
+				table.remove(self.linksByLayer, i)
+			end
+		end
+	end
+end
+
+function Instance.Map:getLinksByMap()
+	return self.linksByMap
+end
+
+function Instance.Map:getLinksByLayer()
+	return self.linksByLayer
 end
 
 Instance.MapScript = Class()
@@ -228,6 +257,7 @@ function Instance:new(id, filename, stage)
 	self.mapGroups = {}
 	self.layerToMapGroup = {}
 	self.currentMapGroup = 1
+	self.mapLinks = {}
 
 	self.players = {}
 	self.playersByID = {}
@@ -336,6 +366,56 @@ function Instance:new(id, filename, stage)
 		end
 	end
 	stage.onMapMoved:register(self._onMapMoved)
+
+	self._onMapLinked = function(_, layer, otherLayer)
+		if self:hasLayer(layer, true) and self:hasLayer(otherLayer, true) then
+			Log.engine(
+				"Linked layer %d to other layer %d in instance %s (%d).",
+				layer,
+				otherLayer
+				self:getFilename(),
+				self:getID())
+
+			local map = self.maps[layer]
+			local otherMap = self.maps[otherLayer]
+			if map and otherMap then
+				map:addLink(otherMap)
+			end
+		else
+			Log.engine(
+				"Did not link layer %d to other layer %d in instance %s (%d); layer and/or other layer is not in instance.",
+				layer,
+				otherLayer,
+				self:getFilename(),
+				self:getID())
+		end
+	end
+	stage.onMapLinked:register(self._onMapLinked)
+
+	self._onMapUnlinked = function(_, layer, otherLayer)
+		if self:hasLayer(layer, true) and self:hasLayer(otherLayer, true) then
+			Log.engine(
+				"Unlinked layer %d to other layer %d in instance %s (%d).",
+				layer,
+				otherLayer
+				self:getFilename(),
+				self:getID())
+
+			local map = self.maps[layer]
+			local otherMap = self.maps[otherLayer]
+			if map and otherMap then
+				map:removeLink(otherMap)
+			end
+		else
+			Log.engine(
+				"Did not unlink layer %d to other layer %d in instance %s (%d); layer and/or other layer is not in instance.",
+				layer,
+				otherLayer,
+				self:getFilename(),
+				self:getID())
+		end
+	end
+	stage.onMapUnlinked:register(self._onMapUnlinked)
 
 	self.actors = {}
 	self.actorsByID = {}
@@ -707,6 +787,8 @@ function Instance:unload()
 	self.stage.onUnloadMap:unregister(self._onUnloadMap)
 	self.stage.onMapModified:unregister(self._onMapModified)
 	self.stage.onMapMoved:unregister(self._onMapMoved)
+	self.stage.onMapLinked:unregister(self._onMapLinked)
+	self.stage.onMapUnlinked:unregister(self._onMapUnlinked)
 	self.stage.onActorSpawned:unregister(self._onActorSpawned)
 	self.stage.onActorKilled:unregister(self._onActorKilled)
 	self.stage.onPropPlaced:unregister(self._onPropPlaced)

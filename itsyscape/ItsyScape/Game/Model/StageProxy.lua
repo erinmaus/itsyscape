@@ -74,6 +74,23 @@ StageProxy.stopMoveMap:link(
 	"onUnloadMap",
 	Event.Argument("layer"))
 
+-- StageProxy.MAP_LINK = "mapLink"
+-- StageProxy.linkMap = Event.Set(
+-- 	StageProxy.MAP_LINK,
+-- 	Event.KeyArgument("layer", true),
+-- 	Event.KeyArgument("otherLayer", true, true))
+-- StageProxy.linkMap:link(
+-- 	"onMapLinked",
+-- 	Event.Argument("layer"),
+-- 	Event.Argument("otherLayer"))
+-- StageProxy.stopMoveMap = Event.Unset(
+-- 	StageProxy.MAP_LINK,
+-- 	Event.KeyArgument("layer", true),
+-- 	Event.KeyArgument("otherLayer", true, true))
+-- StageProxy.stopMoveMap:link(
+-- 	"onMapUnlinked",
+-- 	Event.Argument("layer"))
+
 StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor, isMoving)
 	if isMoving then
 		Log.engine("Actor '%s' (%d) is moving between instances; not emitting create.", actor:getName(), actor:getID())
