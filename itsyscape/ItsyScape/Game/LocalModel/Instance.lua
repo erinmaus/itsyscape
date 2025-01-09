@@ -372,7 +372,7 @@ function Instance:new(id, filename, stage)
 			Log.engine(
 				"Linked layer %d to other layer %d in instance %s (%d).",
 				layer,
-				otherLayer
+				otherLayer,
 				self:getFilename(),
 				self:getID())
 
@@ -397,7 +397,7 @@ function Instance:new(id, filename, stage)
 			Log.engine(
 				"Unlinked layer %d to other layer %d in instance %s (%d).",
 				layer,
-				otherLayer
+				otherLayer,
 				self:getFilename(),
 				self:getID())
 
