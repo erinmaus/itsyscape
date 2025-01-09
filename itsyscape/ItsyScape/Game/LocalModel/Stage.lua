@@ -1288,6 +1288,15 @@ function LocalStage:loadMapResource(instance, filename, args)
 		end
 	end
 
+	for layer, layerMeta in ipairs(meta) do
+		if layerMeta.links then
+			for _, otherLayer in ipairs(layerMeta.links) do
+				self:onMapLinked(instance:getGlobalLayerFromLocalLayer(group, layer, otherLayer))
+				self:onMapLinked(instance:getGlobalLayerFromLocalLayer(group, otherLayer, layer))
+			end
+		end
+	end
+
 	return baseLayer, mapScript
 end
 

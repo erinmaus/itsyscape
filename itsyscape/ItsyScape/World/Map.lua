@@ -318,7 +318,7 @@ function Map:castRay(ray, stepCallback)
 	return false
 end
 
-function Map:canMove(i, j, di, dj, shoot, isDebug)
+function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	if math.abs(di) > 1 or math.abs(dj) > 1 then
 		return false
 	end
@@ -335,7 +335,7 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 		local left = self:getTile(i - 1, j)
 		if (left.topRight <= tile.topLeft or
 		    left.bottomRight <= tile.bottomLeft) and
-		   (left:getIsPassable() or (left:hasFlag("shoot") and shoot)) and
+		   (isPassableFunc and isPassableFunc(self, i, j, i - 1, j) or (left:getIsPassable() or (left:hasFlag("shoot") and shoot))) and
 		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left"))
 		then
 			isLeftPassable = true

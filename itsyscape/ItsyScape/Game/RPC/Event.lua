@@ -15,9 +15,10 @@ Event.BaseFilter = Class()
 Event.MapLayerFilter = Class(Event.BaseFilter)
 
 Event.BaseArgument = Class()
-function Event.BaseArgument:new(parameter, isFilter)
+function Event.BaseArgument:new(parameter, isFilter, isOptional)
 	self.parameter = parameter
 	self.isFilter = isFilter or false
+	self.isOptional = (isOptional == nil) and false or isOptional
 end
 
 function Event.BaseArgument:getParameter()
@@ -26,6 +27,10 @@ end
 
 function Event.BaseArgument:getIsFilter()
 	return self.isFilter
+end
+
+function Event.BaseArgument:getIsOptional()
+	return self.isOptional
 end
 
 Event.KeyArgument = Class(Event.BaseArgument)
