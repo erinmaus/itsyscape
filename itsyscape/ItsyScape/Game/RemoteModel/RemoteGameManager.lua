@@ -47,6 +47,8 @@ function RemoteGameManager:new(rpcService, ...)
 	self:registerInterface("ItsyScape.Game.Model.Prop", RemoteProp)
 	self:registerInterface("ItsyScape.Game.Model.UI", RemoteUI)
 
+	self.pendingDestroys = {}
+
 	self.processedTicks = {
 		["ItsyScape.Game.Model.Actor"] = 0,
 		["ItsyScape.Game.Model.Game"] = 0,
@@ -130,7 +132,7 @@ function RemoteGameManager:receive()
 		if e then
 			table.insert(self.pending, e)
 
-			if e.type == EventQueue.EVENT_TYPE_CREATE then
+			if e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY then
 				self:process(e)
 			elseif e.type == EventQueue.EVENT_TYPE_TICK then
 				if e.interface then
@@ -175,6 +177,15 @@ function RemoteGameManager:tick()
 		table.clear(dirtyInstances)
 	end
 
+	for interface, instances in pairs(self.pendingDestroys) do
+		for id in pairs(instances) do
+			Log.engine("Destroyed '%s' (%d).", interface, id)
+			self:destroyInstance(interface, id)
+		end
+
+		table.clear(instances)
+	end
+
 	table.clear(self.dirtyInstancesCache)
 end
 
@@ -184,7 +195,7 @@ function RemoteGameManager:_flush()
 		local e = self.pending[i]
 		self:markDirty(e)
 
-		if not (e.type == EventQueue.EVENT_TYPE_CREATE) then
+		if not (e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY) then
 			self:process(e)
 		end
 
@@ -238,7 +249,16 @@ end
 function RemoteGameManager:processCreate(e)
 	local exists = self:getInstance(e.interface, e.id)
 	if exists then
-		Log.debug("Interface '%s' with ID %d already exists; ignoring create.", e.interface, e.id)
+		local pendingInstances = self.pendingDestroys[e.interface]
+		local isPendingDestroy = pendingInstances and pendingInstances[e.id]
+
+		if isPendingDestroy then
+			Log.debug("Interface '%s' with ID %d removed from pending destroy list because of create.", e.interface, e.id)
+			pendingInstances[e.id] = nil
+		else
+			Log.debug("Interface '%s' with ID %d already exists; ignoring create.", e.interface, e.id)
+		end
+
 		return
 	end
 
@@ -256,8 +276,17 @@ function RemoteGameManager:processCreate(e)
 end
 
 function RemoteGameManager:processDestroy(e)
-	Log.engine("Destroying '%s' (%d).", e.interface, e.id)
-	self:destroyInstance(e.interface, e.id)
+	local pendingInstances = self.pendingDestroys[e.interface]
+	if not pendingInstances then
+		pendingInstances = {}
+		self.pendingDestroys[e.interface] = pendingInstances
+	end
+
+	local instance = self:getInstance(e.interface, e.id)
+	if instance then
+		Log.engine("Pending destroy of '%s' (%d).", e.interface, e.id)
+		pendingInstances[e.id] = true
+	end
 end
 
 function RemoteGameManager:processCallback(e)
