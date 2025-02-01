@@ -452,14 +452,14 @@ function Gizmo.ScaleAxisOperation:move(currentX, currentY, previousX, previousY,
 	end
 
 	local transform = sceneNode:getTransform()
-	local offset = axis * distance
+	local offset = self.axis * distance
 	local scale
 	if snap then
-		scale = (transform:getLocalTranslation() * axis / Vector(self.SNAP_DISTANCE)):floor() * Vector(self.SNAP_DISTANCE) + offset
+		scale = (transform:getLocalScale() * self.axis / Vector(self.SNAP_DISTANCE)):floor() * Vector(self.SNAP_DISTANCE) + offset
 	else
-		scale = transform:getLocalTranslation() * axis + offset
+		scale = transform:getLocalScale() * self.axis + offset
 	end
-	local invertAxis = Vector.ONE - axis
+	local invertAxis = Vector.ONE - self.axis
 	transform:setLocalScale(sceneNode:getTransform():getLocalScale() + scale)
 
 	return true

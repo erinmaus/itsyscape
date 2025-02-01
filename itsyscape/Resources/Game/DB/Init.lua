@@ -1580,6 +1580,9 @@ include "Resources/Game/DB/SharedDropTables/Human.lua"
 -- Trailer
 include "Resources/Game/DB/Trailer/Trailer.lua"
 
+-- Art
+include "Resources/Game/DB/Art/Rage/Rage.lua"
+
 do
 	ActionType "Debug_Ascend"
 	ActionType "Debug_Teleport"

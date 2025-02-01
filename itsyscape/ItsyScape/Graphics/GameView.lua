@@ -1931,7 +1931,12 @@ function GameView:update(delta)
 end
 
 function GameView:_drawActorOnActorCanvas(delta, actor, m)
-	local transform = self:getActor(actor):getSceneNode():getTransform():getGlobalDeltaTransform(delta)
+	local actorView = self:getActor(actor)
+	if not actorView then
+		return
+	end
+
+	local transform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(delta)
 	local position = Vector(transform:transformPoint(0, 0, 0))
 
 	local min, max = actor:getBounds()

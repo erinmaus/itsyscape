@@ -1053,7 +1053,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				end
 			end)
 		elseif self.currentTool == MapEditorApplication.TOOL_BRUSH then
-			local motion = MapMotion(self:getGame():getStage():getMap(self.motionLayer))
+			local motion = MapMotion(self:getGame():getStage():getMap(self.motionLayer or 1))
 			motion:onMousePressed(self:makeMotionEvent(x, y, 1))
 
 			local _, i, j = motion:getTile()
@@ -1792,16 +1792,16 @@ function MapEditorApplication:save(filename)
 				local map = self:getGame():getStage():getMap(layers[i])
 				local mapScriptPeep = self.mapScriptPeeps[layers[i]]
 				local offset = mapScriptPeep:getBehavior(MapOffsetBehavior)
-				local translation = offset.offset
-				local rotation = offset.rotation
-				local scale = offset.scale
-				local origin = offset.origin
+				local translation = offset and offset.offset
+				local rotation = offset and offset.rotation
+				local scale = offset and offset.scale
+				local origin = offset and offset.origin
 
 				meta[layers[i]] = {
 					tileSetID = tileSetID,
 					maskID = self.meta and self.meta[layers[i]] and self.meta and self.meta[layers[i]].maskID,
 					autoMask = self.meta and self.meta[layers[i]] and self.meta[layers[i]].autoMask,
-					transform = {
+					transform = offset and {
 						translation = { translation:get() },
 						rotation = { rotation:get() },
 						scale = { scale:get() },

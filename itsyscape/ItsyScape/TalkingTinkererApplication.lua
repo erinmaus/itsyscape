@@ -22,6 +22,7 @@ local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSc
 local Renderer = require "ItsyScape.Graphics.Renderer"
 local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
+local OutlinePostProcessPass = require "ItsyScape.Graphics.OutlinePostProcessPass"
 local ModelSkin = require "ItsyScape.Game.Skin.ModelSkin"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local MapMeshMask = require "ItsyScape.World.MapMeshMask"
@@ -92,7 +93,7 @@ function TalkingTinkererApplication:initTinkerer()
 	-- Make map invisible
 	do
 		local map = stage:newMap(1, 1, "Draft", true, 1)
-		map:getTile(1, 1).flat = 3
+		map:getTile(1, 1).flat = 4
 		stage:updateMap(1, map)
 
 		local instance = stage:newGlobalInstance("dummy")
@@ -114,6 +115,8 @@ function TalkingTinkererApplication:initTinkerer()
 
 		love.event.quit(1)
 	end
+
+	actor:getPeep():getBehavior("Position").position.x = -1000
 
 	self.target = resource
 	self.targetActor = actor
@@ -319,6 +322,12 @@ function TalkingTinkererApplication:renderTick()
 		height = self.HEIGHT
 	end
 
+	local outlinePostProcessPass = OutlinePostProcessPass(self.targetRenderer)
+	outlinePostProcessPass:load(self:getGameView():getResourceManager())
+	outlinePostProcessPass:setMinOutlineThickness(10)
+	outlinePostProcessPass:setMaxOutlineThickness(10)
+	outlinePostProcessPass:setMinOutlineDepthAlpha(1)
+
 	local gameCamera = self:getCamera()
 	gameCamera:setWidth(width)
 	gameCamera:setHeight(height)
@@ -332,7 +341,7 @@ function TalkingTinkererApplication:renderTick()
 		self.targetSceneNode,
 		1,
 		width,
-		height)
+		height, { outlinePostProcessPass })
 	love.graphics.pop()
 
 	return self.targetRenderer:getOutputBuffer():getColor():newImageData()
@@ -357,6 +366,8 @@ function TalkingTinkererApplication:drawTinkerer()
 		self:playAnimation({ animation = "A" })
 	end
 
+	self:getGame():getStage():fireProjectile("ConfettiSplosion", Vector.ZERO, Vector.ZERO)
+
 	local f = love.timer.getDelta
 	love.timer.getDelta = function()
 		return deltaPerTick
@@ -372,7 +383,8 @@ function TalkingTinkererApplication:drawTinkerer()
 			currentFrame = nextFrame
 		end
 
-		self:getGameView():tick()
+		self:getGameView():preTick()
+		self:getGameView():postTick()
 		self:getGameView():update(deltaPerTick)
 
 		local image = self:renderTick()
@@ -450,24 +462,16 @@ end
 
 function TalkingTinkererApplication:draw()
 	local w, h = love.window.getMode()
+	local camera = self:getCamera()
+	camera:setWidth(w)
+	camera:setHeight(h)
 
 	self.cameraController:draw()
-	local gameCamera = self:getCamera()
-	gameCamera:setWidth(w)
-	gameCamera:setHeight(h)
-
-	self.targetRenderer:setClearColor(Color(0, 1, 0, 1))
-	self.targetRenderer:setCullEnabled(true)
-	self.targetRenderer:setCamera(gameCamera)
-
 	love.graphics.push('all')
-	self.targetRenderer:draw(
-		self.targetSceneNode,
-		self:getFrameDelta(),
-		w, h)
+	love.graphics.clear(0, 1, 0, 1)
+	self:getGameView():draw(self:getFrameDelta(), w, h)
+	love.graphics.draw(love.graphics.newImage(self:renderTick()), 0, 0)
 	love.graphics.pop()
-
-	love.graphics.draw(self.targetRenderer:getOutputBuffer():getColor())
 end
 
 function TalkingTinkererApplication:quit()

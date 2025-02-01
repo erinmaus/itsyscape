@@ -39,7 +39,7 @@ Splosion.PARTICLE_SYSTEM = {
 		},
 		{
 			type = "RandomLifetimeEmitter",
-			age = { 1, 1.5 }
+			age = { 0.5, 1 }
 		},
 		{
 			type = "RandomScaleEmitter",
@@ -54,13 +54,13 @@ Splosion.PARTICLE_SYSTEM = {
 	paths = {
 		{
 			type = "FadeInOutPath",
-			fadeInPercent = { 0.3 },
-			fadeOutPercent = { 0.7 },
+			fadeInPercent = { 0.05 },
+			fadeOutPercent = { 0.95 },
 			tween = { 'sineEaseOut' }
 		},
 		{
 			type = "GravityPath",
-			gravity = { 0, -10, 0 }
+			gravity = { 0, -5, 0 }
 		},
 		{
 			type = "TextureIndexPath",
