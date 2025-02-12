@@ -1305,7 +1305,6 @@ function GameView:spawnItem(item, tile)
 
 		lootIconNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
 		lootIconNode:setParent(itemNode)
-		lootIconNode:setParent(itemNode)
 	end
 
 	local map = self:getMapSceneNode(tile.layer)

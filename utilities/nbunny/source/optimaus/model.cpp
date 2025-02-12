@@ -298,7 +298,15 @@ void nbunny::ModelSceneNode::draw(Renderer& renderer, float delta)
 	auto& shader_cache = renderer.get_shader_cache();
 
 	auto& transforms = get_transforms();
-	shader_cache.update_uniform(shader, "scape_Bones", glm::value_ptr(transforms[0]), transforms.size() * sizeof(glm::mat4));
+	if (transforms.empty())
+	{
+		glm::mat4 value;
+		shader_cache.update_uniform(shader, "scape_Bones", glm::value_ptr(value), sizeof(glm::mat4));
+	}
+	else 
+	{
+		shader_cache.update_uniform(shader, "scape_Bones", glm::value_ptr(transforms[0]), transforms.size() * sizeof(glm::mat4));
+	}
 
 	const auto& textures = get_material().get_textures();
 	if (!textures.empty())
