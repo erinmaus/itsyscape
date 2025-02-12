@@ -150,3 +150,15 @@ do
 		ItsyScape.Action.InvisibleAttack()
 	}
 end
+
+M["Island1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = -64,
+		PositionY = 0,
+		PositionZ = -32,
+		Map = M._MAP,
+		Name = "Island1",
+		Resource = M["Island1"]
+	}
+end

@@ -1053,7 +1053,8 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				end
 			end)
 		elseif self.currentTool == MapEditorApplication.TOOL_BRUSH then
-			local motion = MapMotion(self:getGame():getStage():getMap(self.motionLayer or 1))
+			local layer = self.motionLayer or 1
+			local motion = MapMotion(self:getGame():getStage():getMap(layer))
 			motion:onMousePressed(self:makeMotionEvent(x, y, 1))
 
 			local _, i, j = motion:getTile()
@@ -1062,9 +1063,9 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			end
 
 			local size = math.max(math.floor(self.brushToolPanel:getToolSize() - 1), 0)
-			self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.motionLayer))
+			self.currentToolNode:setParent(self:getGameView():getMapSceneNode(layer))
 			self.currentToolNode:fromMap(
-				self:getGame():getStage():getMap(self.motionLayer),
+				self:getGame():getStage():getMap(layer),
 				motion,
 				i - size,
 				i + size,

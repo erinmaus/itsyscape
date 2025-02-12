@@ -37,6 +37,8 @@ function Ocean:onLoad(...)
 	Map.onLoad(self, ...)
 
 	Utility.Map.spawnMap(self, "Test123_Storm", Vector.ZERO, { isLayer = true })
+	Utility.spawnMapAtAnchor(self, "Sailing_ParadoxGatesArchipelago_Island1", "Island1")
+
 	local layer, ship = Utility.Map.spawnMap(self, "Test_Ship", Vector(32, 8, 32))
 	Utility.Peep.setLayer(ship, self:getLayer())
 
