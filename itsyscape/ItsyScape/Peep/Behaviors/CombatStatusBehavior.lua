@@ -33,6 +33,15 @@ function CombatStatusBehavior:new()
 	self.canEngage = true
 	self.deathPoofTime = false
 
+	self.currentZeal = 0
+	self.maximumZeal = 1
+
+	self.currentProwessFlux = 0
+	self.currentCriticalFlux = 0
+	self.currentTimeFlux = 0
+	self.currentStrategyFlux = 0
+	self.currentSynergyFlux = 0
+
 	self.damage = {}
 end
 

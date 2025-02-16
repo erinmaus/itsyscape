@@ -453,6 +453,8 @@ function Weapon:rollAttack(peep, target, bonus)
 	self:applyAttackModifiers(roll)
 	self:previewAttackRoll(roll)
 
+	peep:poke("rollAttack", roll)
+
 	return roll
 end
 
@@ -496,6 +498,8 @@ function Weapon:rollDamage(peep, purpose, target)
 	local roll = Weapon.DamageRoll(self, peep, purpose, target)
 	self:applyDamageModifiers(roll)
 	self:previewDamageRoll(roll)
+
+	peep:poke("rollDamage", roll)
 
 	return roll
 end

@@ -3419,24 +3419,22 @@ function Utility.Peep.canAttack(peep)
 	return status.currentHitpoints > 0 and not status.dead
 end
 
+local function _isAttackable(peep, r)
+	local actions = Utility.getActions(peep:getDirector():getGameInstance(), r)
+	for i = 1, #actions do
+		if actions[i].instance:is("Attack") or actions[i].instance:is("InvisibleAttack") then
+			return true
+		end
+	end
+
+	return false
+end
+
 function Utility.Peep.isAttackable(peep)
 	local resource = Utility.Peep.getResource(peep)
 	local mapObject = Utility.Peep.getMapObject(peep)
 
-	local function isAttackable(r)
-		if r then
-			local actions = Utility.getActions(peep:getDirector():getGameInstance(), r)
-			for i = 1, #actions do
-				if actions[i].instance:is("Attack") or actions[i].instance:is("InvisibleAttack") then
-					return true
-				end
-			end
-		end
-
-		return false
-	end
-
-	return isAttackable(resource) or isAttackable(mapObject) or peep:hasBehavior(PlayerBehavior)
+	return _isAttackable(peep, resource) or _isAttackable(peep, mapObject) or peep:hasBehavior(PlayerBehavior)
 end
 
 -- Makes the peep walk to the tile (i, j, k).

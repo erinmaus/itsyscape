@@ -159,6 +159,11 @@ function BaseVector:cross(other)
 	return Vector(s, t, r)
 end
 
+function Vector:distance(other)
+	local difference = self - other
+	return difference:getLength()
+end
+
 -- Gets the length (i.e., magnitude) of the vector, squared.
 function BaseVector:getLengthSquared()
 	self:compatible()

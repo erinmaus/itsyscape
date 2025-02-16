@@ -1,0 +1,160 @@
+{
+	"loop": {
+		"ticksPerSecond": 5,
+		"tickDurationSeconds": 0.2
+	},
+
+	"baseTargetSwitchZealLoss": 0.1,
+	"baseTargetSwitchZealLossCooldownSeconds": 1,
+
+	"noTargetZealDrainStartSeconds": 10,
+	"noTargetZealDrainRatePerSecond": 0.1,
+
+	"baseStanceSwitchZealLoss": 0.05,
+	"baseTargetSwitchZealLossCooldownSeconds": 1,
+
+	"zealIntervalSeconds": 5,
+
+	"prowessFluxDamageIntervals": [
+		{
+			"maxHit": 1,
+			"upper": 0.04,
+			"lower": 0.04,
+		},
+		{
+			"maxHit": 4,
+			"upper": 0.06,
+			"lower": 0.04
+		},
+		{
+			"maxHit": 10,
+			"upper": 0.08,
+			"lower": 0.04,
+		},
+		{
+			"maxHit": 20,
+			"upper": 0.11,
+			"lower": 0.05,
+		},
+		{
+			"maxHit": 30,
+			"upper": 0.15,
+			"lower": 0.05,
+		},
+		{
+			"maxHit": 50,
+			"upper": 0.165,
+			"lower": 0.075,
+		},
+		{
+			"maxHit": 100,
+			"upper": 0.25,
+			"lower": 0.1,
+		},
+		{
+			"maxHit": 1000,
+			"upper": 0.85,
+			"lower": 0.15,
+		}
+	],
+
+	"prowessFluxControlledInterval": [
+		{
+			"averageLevel": 1,
+			"zeal": 0.03
+		},
+		{
+			"averageLevel": 20,
+			"zeal": 0.04
+		},
+		{
+			"averageLevel": 36,
+			"zeal": 0.05,
+		},
+		{
+			"averageLevel": 55,
+			"zeal": 0.07
+		},
+		{
+			"averageLevel": 69,
+			"zeal": 0.09
+		},
+		{
+			"averageLevel": 89,
+			"zeal": 0.11
+		},
+		{
+			"averageLevel": 123,
+			"zeal": 0.16
+		},
+		{
+			"averageLevel": 300,
+			"zeal": 0.5
+		}
+	],
+
+	"criticalFluxZealMultiplierStep": 0.25,
+	"criticalFluxZealMaxMultiplier": 2,
+	"criticalFluxZealMinMultiplier": 0.75,
+
+	"strategyGrades": {
+		"F": {
+			"value": 0,
+			"label": "Failure"
+		},
+
+		"D": {
+			"value": 2,
+			"label": "Terrible"
+		},
+
+		"C": {
+			"value": 5,
+			"label": "Good"
+		},
+
+		"B": {
+			"value": 8,
+			"label": "Great"
+		},
+
+		"A": {
+			"value": 11,
+			"label": "Awesome"
+		},
+
+		"S": {
+			"value": 14,
+			"label": "Perfect"
+		}
+	},
+
+	"strategyFluxGrades": [
+		{
+			"grade": 14,
+			"zeal": 0.3
+		},
+		{
+			"grade": 11,
+			"zeal": 0.15
+		},
+		{
+			"grade": 8,
+			"zeal": 0.1
+		},
+		{
+			"grade": 5,
+			"zeal": 0.05
+		},
+		{
+			"grade": 2,
+			"zeal": -0.1
+		},
+		{
+			"grade": 0,
+			"zeal": -0.2
+		}
+	],
+
+	"synergyFluxFactor": 0.1
+}

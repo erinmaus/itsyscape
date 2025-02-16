@@ -104,8 +104,8 @@ function Power:activate(activator, target)
 	end
 end
 
-function Power:getCoolDown(peep)
-	return math.huge
+function Power:getCost(peep)
+	return 1
 end
 
 return Power
