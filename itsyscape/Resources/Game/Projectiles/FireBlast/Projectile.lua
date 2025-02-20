@@ -185,7 +185,6 @@ function FireBlast:update(elapsed)
 
 		if self.fireParticleSystem:getIsReady() then
 			self.fireParticleSystem:updateLocalPosition(position)
-			print("local position", position:get())
 		end
 		
 		if self.smokeParticleSystem:getIsReady() then

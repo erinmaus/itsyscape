@@ -4463,6 +4463,13 @@ function Utility.Peep.Attackable:onHeal(p)
 	end
 end
 
+function Utility.Peep.Attackable:onZeal(p)
+	local status = self:getBehavior(CombatStatusBehavior)
+	if status then
+		status.currentZeal = math.clamp(status.currentZeal + p:getZeal(), 0, status.maximumZeal)
+	end
+end
+
 function Utility.Peep.Attackable:onHit(p)
 	if self:hasBehavior(DisabledBehavior) then
 		return
@@ -4672,34 +4679,38 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 
 	peep:addBehavior(CombatStatusBehavior)
 
-	peep:addPoke('initiateAttack')
-	peep:listen('initiateAttack', Utility.Peep.Attackable.onInitiateAttack)
-	peep:addPoke('receiveAttack')
-	peep:addPoke('switchStyle')
+	peep:addPoke("initiateAttack")
+	peep:listen("initiateAttack", Utility.Peep.Attackable.onInitiateAttack)
+	peep:addPoke("receiveAttack")
+	peep:addPoke("switchStyle")
+	peep:addPoke("rollAttack")
+	peep:addPoke("rollDamage")
 
-	peep:listen('ready', Utility.Peep.Attackable.onReady)
-	peep:listen('postReady', Utility.Peep.Attackable.onPostReady)
+	peep:listen("ready", Utility.Peep.Attackable.onReady)
+	peep:listen("postReady", Utility.Peep.Attackable.onPostReady)
 
 	if retaliate then
-		peep:listen('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+		peep:listen("receiveAttack", Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	else
-		peep:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
+		peep:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
 	end
 
-	peep:addPoke('targetFled')
-	peep:listen('targetFled', Utility.Peep.Attackable.onTargetFled)
-	peep:addPoke('hit')
-	peep:listen('hit', Utility.Peep.Attackable.onHit)
-	peep:addPoke('miss')
-	peep:listen('miss', Utility.Peep.Attackable.onMiss)
-	peep:addPoke('die')
-	peep:listen('die', Utility.Peep.Attackable.onDie)
-	peep:addPoke('heal')
-	peep:listen('heal', Utility.Peep.Attackable.onHeal)
-	peep:addPoke('resurrect')
-	peep:listen('resurrect', Utility.Peep.Attackable.onResurrect)
-	peep:addPoke('powerApplied')
-	peep:addPoke('powerActivated')
+	peep:addPoke("targetFled")
+	peep:listen("targetFled", Utility.Peep.Attackable.onTargetFled)
+	peep:addPoke("hit")
+	peep:listen("hit", Utility.Peep.Attackable.onHit)
+	peep:addPoke("miss")
+	peep:listen("miss", Utility.Peep.Attackable.onMiss)
+	peep:addPoke("die")
+	peep:listen("die", Utility.Peep.Attackable.onDie)
+	peep:addPoke("heal")
+	peep:listen("heal", Utility.Peep.Attackable.onHeal)
+	peep:addPoke("resurrect")
+	peep:listen("resurrect", Utility.Peep.Attackable.onResurrect)
+	peep:addPoke("powerApplied")
+	peep:addPoke("powerActivated")
+	peep:addPoke("zeal")
+	peep:listen("zeal", Utility.Peep.Attackable.onZeal)
 end
 
 function Utility.Peep.makeSkiller(peep)

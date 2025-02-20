@@ -390,7 +390,7 @@ function CombatCortex:_givePeepZeal(peep)
 	local maxCriticalMultiplier = self.config:get(CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER)
 	local criticalMultiplierStep = self.config:get(CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP)
 
-	local criticalMultiplier = 1 + (((roll.accuracyBonus * 3) / roll.defenseBonus - 1) * criticalMultiplierStep)
+	local criticalMultiplier = 1 + (((rollInfo.accuracyBonus * 3) / rollInfo.defenseBonus - 1) * criticalMultiplierStep)
 	criticalMultiplier = math.clamp(criticalMultiplier, minCriticalMultiplier, maxCriticalMultiplier)
 
 	local currentStanceInfo = self.currentStance[peep]
@@ -499,7 +499,6 @@ function CombatCortex:tickPeep(delta, peep)
 	local isWithinRange = self:_isPeepWithinRange(peep, target)
 	local isAttackable = self:_canPeepAttackTarget(peep, target)
 	if not (isWithinRange and isAttackable) then
-		print("isWithinRange", isWithinRange, "isAttackable", isAttackable)
 		peep:removeBehavior(CombatTargetBehavior)
 		return
 	end
