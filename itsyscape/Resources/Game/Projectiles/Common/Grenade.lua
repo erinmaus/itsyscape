@@ -127,8 +127,8 @@ end
 
 function Grenade:tick()
 	if not self.sourcePosition or not self.destinationPosition then
-		self.sourcePosition = self:getTargetPosition(self:getSource()) + Vector.UNIT_Y
-		self.destinationPosition = self:getTargetPosition(self:getDestination())
+		self.sourcePosition = (self:getTargetPosition(self:getSource()) + Vector.UNIT_Y):keep()
+		self.destinationPosition = (self:getTargetPosition(self:getDestination())):keep()
 
 		local rotation = Quaternion.lookAt(self.sourcePosition, self.destinationPosition)
 		self.rotationDirection = rotation:transformVector(Vector.UNIT_Z)

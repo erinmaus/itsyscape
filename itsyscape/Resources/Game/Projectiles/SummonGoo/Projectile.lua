@@ -82,7 +82,7 @@ function SummonGoo:tick()
 			mapWidth = math.max(math.ceil(max.x - min.x), 1)
 			mapHeight = math.max(math.ceil(max.z - min.z), 1)
 
-			self.lightOffset = Vector(0, (max.y - min.y) / 2, 0)
+			self.lightOffset = Vector(0, (max.y - min.y) / 2, 0):keep()
 		elseif Class.isCompatibleType(destination, Vector) then
 			local source = self:getSource()
 
@@ -100,7 +100,7 @@ function SummonGoo:tick()
 			mapWidth = 3
 			mapHeight = 3
 
-			self.lightOffset = Vector(0, 1.5, 0)
+			self.lightOffset = Vector(0, 1.5, 0):keep()
 		else
 			return
 		end

@@ -217,6 +217,10 @@ function Weapon.DamageRoll:setBonus(value)
 	self.bonus = value or self.bonus
 end
 
+function Weapon.DamageRoll:getBaseHit()
+	return Utility.Combat.calcMaxHit(self.level, 1, self.bonus)
+end
+
 function Weapon.DamageRoll:getMaxHit()
 	return self.maxHit or Utility.Combat.calcMaxHit(self.level, 1, self.bonus)
 end

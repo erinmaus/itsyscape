@@ -116,9 +116,9 @@ function Zap:tick()
 			transform:apply(actorTransform)
 			transform:apply(anglerTransform)
 
-			self.spawnPosition = Vector(transform:transformPoint(0, 0, 0))
+			self.spawnPosition = Vector(transform:transformPoint(0, 0, 0)):keep()
 		else
-			self.spawnPosition = self:getTargetPosition(self:getSource())
+			self.spawnPosition = self:getTargetPosition(self:getSource()):keep()
 		end
 
 		local hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)

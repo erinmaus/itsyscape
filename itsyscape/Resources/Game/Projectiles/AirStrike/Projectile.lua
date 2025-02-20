@@ -55,7 +55,7 @@ function AirStrike:generatePath(spawn, hit)
 		local position = Vector(
 			math.cos(delta * math.pi * 2) * (self.RADIUS),
 			math.sin(delta * math.pi * 2) * (self.RADIUS),
-			-currentDistance / totalDistance * crowDistance)
+			-currentDistance / totalDistance * crowDistance):keep()
 		table.insert(self.fullPath, position)
 
 		currentDistance = currentDistance + self.SEGMENT_LENGTH

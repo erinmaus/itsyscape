@@ -98,7 +98,7 @@ function BindShadow:tick()
 		self.spawnPosition = Vector(
 			(max.x - min.x) / 2 + min.x,
 			min.y - 1,
-			(max.z - min.z) / 2 + min.z)
+			(max.z - min.z) / 2 + min.z):keep()
 	end
 end
 

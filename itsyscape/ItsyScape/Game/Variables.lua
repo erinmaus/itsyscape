@@ -11,13 +11,13 @@ local json = require("json")
 local Class = require ("ItsyScape.Common.Class")
 
 local Variables = Class()
-Variables.RETURN = "_"
+Variables.DEFAULT = "_"
 
 Variables.PathParameter = Class()
 function Variables.PathParameter:new(name, defaultValue)
 	assert(type(name) ~= "nil")
 	assert(type(defaultValue) ~= "nil")
-	assert(name ~= Variables.RETURN, "name cannot be `Variables.RETURN`")
+	assert(name ~= Variables.DEFAULT, "name cannot be `Variables.DEFAULT`")
 
 	self.name = name
 	self.defaultValue = self.defaultValue
@@ -85,9 +85,11 @@ function Variables:get(path, ...)
 
 		current = current[key]
 		if current == nil then
-			return get(Variables.RETURN, ...)
+			return get(Variables.DEFAULT, ...)
 		end
 	end
+
+	return current
 end
 
 return Variables

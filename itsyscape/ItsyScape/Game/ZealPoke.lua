@@ -14,7 +14,9 @@ local ZealPoke = Class()
 ZealPoke.TYPE_TARGET_SWITCH = "TARGET_SWITCH"
 ZealPoke.TYPE_TARGET_LOST   = "TARGET_LOST"
 ZealPoke.TYPE_STANCE_SWITCH = "STANCE_SWITCH"
-ZealPoke.TYPE_USEP_POWER    = "USE_POWER"
+ZealPoke.TYPE_USE_POWER     = "USE_POWER"
+ZealPoke.TYPE_ATTACK        = "ATTACK"
+ZealPoke.TYPE_DEFEND        = "DEFEND"
 
 function ZealPoke:new(zealPokeType)
 	self.type = zealPokeType
@@ -77,11 +79,47 @@ end
 function ZealPoke.onUsePower(t)
 	assert(type(t) == "table")
 
-	local event = ZealPoke(ZealPoke.TYPE_USEP_POWER)
+	local event = ZealPoke(ZealPoke.TYPE_USE_POWER)
 	event.power = t.power or false
 	event.zeal = t.zeal or 0
 
 	return event
+end
+
+function ZealPoke.onAttack(t)
+	assert(type(t) == "table")
+
+	local event = ZealPoke(ZealPoke.TYPE_ATTACK)
+	event.accuracyRoll = t.accuracyRoll or false
+	event.damageRoll = t.damageRoll or false
+	event.attack = t.attack or false
+	event.zeal = t.zeal or 0
+
+	return event
+end
+
+function ZealPoke.onDefend(t)
+	assert(type(t) == "table")
+
+	local event = ZealPoke(ZealPoke.TYPE_DEFEND)
+	event.accuracyRoll = t.accuracyRoll or false
+	event.damageRoll = t.damageRoll or false
+	event.attack = t.attack or false
+	event.zeal = t.zeal or 0
+
+	return event
+end
+
+function ZealPoke:getAccuracyRoll()
+	return self.accuracyRoll
+end
+
+function ZealPoke:getDamageRoll()
+	return self.damageRoll
+end
+
+function ZealPoke:getAttack()
+	return self.attack
 end
 
 function ZealPoke:getPower()

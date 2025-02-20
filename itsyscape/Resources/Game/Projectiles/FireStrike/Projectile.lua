@@ -165,7 +165,7 @@ end
 
 function FireStrike:tick()
 	if not self.spawnPosition then
-		self.spawnPosition = self:getTargetPosition(self:getSource())
+		self.spawnPosition = self:getTargetPosition(self:getSource()):keep()
 
 		local hitPosition = self:getTargetPosition(self:getDestination())
 		self.duration = math.max((self.spawnPosition - hitPosition):getLength() / self.SPEED, 0.5)

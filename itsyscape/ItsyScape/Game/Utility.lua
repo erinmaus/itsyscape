@@ -3420,6 +3420,10 @@ function Utility.Peep.canAttack(peep)
 end
 
 local function _isAttackable(peep, r)
+	if not r then
+		return false
+	end
+
 	local actions = Utility.getActions(peep:getDirector():getGameInstance(), r)
 	for i = 1, #actions do
 		if actions[i].instance:is("Attack") or actions[i].instance:is("InvisibleAttack") then
@@ -4829,26 +4833,36 @@ function Utility.Peep.Dummy:onFinalize()
 		"Resources/Game/Bodies/Human.lskel")
 	actor:setBody(body)
 
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Dummy.lua",
+		{ Utility.Peep.Human.Palette.SKIN_MEDIUM })
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/Dummy.lua",
+		{ Utility.Peep.Human.Palette.SKIN_MEDIUM })
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ Utility.Peep.Human.Palette.ACCENT_PINK, Utility.Peep.Human.Palette.EYE_BLACK, Utility.Peep.Human.Palette.EYE_WHITE })
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE, 
+		"PlayerKit2/Hands/Dummy.lua",
+		{ Utility.Peep.Human.Palette.SKIN_MEDIUM })
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/Dummy.lua",
+		{ Utility.Peep.Human.Palette.SKIN_MEDIUM })
 
 	if dummy:get("Shield") ~= "" and not Class.isCompatibleType(self, require "ItsyScape.Peep.Peeps.Player") then
 		local shieldSkin = CacheRef(

@@ -56,7 +56,7 @@ function IceBarrage:tick()
 		local x = max.x - min.x
 		local z = max.z - min.z
 
-		self.size = Vector(math.max(x, z)) / 2
+		self.size = (Vector(math.max(x, z)) / 2):keep()
 
 		self.position.y = self.position.y - (max.y - min.y) / 2
 	end

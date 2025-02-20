@@ -74,8 +74,8 @@ function Icicle:tick()
 
 		self.size = Vector(math.max(x, y, z)) / 4
 
-		self.startPosition = self.startPosition + Vector.UNIT_Y * (y / 2 + Icicle.START_Y * self.size)
-		self.targetPosition = self.startPosition - Vector.UNIT_Y * (y / 2 - Icicle.TARGET_Y * self.size)
+		self.startPosition = (self.startPosition + Vector.UNIT_Y * (y / 2 + Icicle.START_Y * self.size)):keep()
+		self.targetPosition = (self.startPosition - Vector.UNIT_Y * (y / 2 - Icicle.TARGET_Y * self.size)):keep()
 
 		local root = self:getRoot()
 		root:getTransform():setPreviousTransform(self.startPosition, Quaternion.Z_90, self.size)

@@ -134,7 +134,7 @@ end
 
 function Gravity:tick()
 	if not self.position or not self.size then
-		self.position = self:getTargetPosition(self:getDestination()) + Vector(0, Gravity.MAX_SIZE, 0)
+		self.position = (self:getTargetPosition(self:getDestination()) + Vector(0, Gravity.MAX_SIZE, 0)):keep()
 
 		local min, max = self:getDestination():getBounds()
 		local center = max - min

@@ -1045,7 +1045,7 @@ function ProCombatStatusHUDController:getAvailablePowers()
 			do
 				local PowerType = Utility.Peep.getPowerType(power, gameDB)
 				local instance = PowerType(self:getGame(), power)
-				coolDownDescription = string.format("Cooldown: %d seconds", instance:getCoolDown(self:getPeep()))
+				coolDownDescription = string.format("Cooldown: %d%%", instance:getCost(self:getPeep()) * 100)
 			end
 
 			local result = self:_pullPower(power, xp, coolDownDescription)

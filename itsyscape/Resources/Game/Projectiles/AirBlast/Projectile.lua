@@ -108,7 +108,7 @@ function AirBlast:generatePath(spawn, hit)
 		local position = Vector(
 			math.cos(delta * math.pi * 2) * (AirBlast.RADIUS),
 			math.sin(delta * math.pi * 2) * (AirBlast.RADIUS),
-			-currentDistance / totalDistance * crowDistance)
+			-currentDistance / totalDistance * crowDistance):keep()
 		table.insert(self.fullPath, position)
 
 		currentDistance = currentDistance + AirBlast.SEGMENT_LENGTH
@@ -140,8 +140,8 @@ end
 
 function AirBlast:tick()
 	if not self.spawnPosition then
-		self.hitPosition = self:getTargetPosition(self:getDestination())
-		self.spawnPosition = self:getTargetPosition(self:getSource())
+		self.hitPosition = self:getTargetPosition(self:getDestination()):keep()
+		self.spawnPosition = self:getTargetPosition(self:getSource()):keep()
 
 		self:generatePath(self.spawnPosition, self.hitPosition)
 
