@@ -11,7 +11,7 @@
 	"noTargetZealDrainRatePerSecond": 0.1,
 
 	"baseStanceSwitchZealLoss": 0.05,
-	"baseTargetSwitchZealLossCooldownSeconds": 1,
+	"baseStanceSwitchZealLossCooldownSeconds": 1,
 
 	"zealIntervalSeconds": 5,
 
@@ -61,35 +61,35 @@
 	"prowessFluxControlledInterval": [
 		{
 			"averageLevel": 1,
-			"zeal": 0.03
+			"zeal": 0.02
 		},
 		{
 			"averageLevel": 20,
-			"zeal": 0.04
+			"zeal": 0.03
 		},
 		{
 			"averageLevel": 36,
-			"zeal": 0.05,
+			"zeal": 0.04,
 		},
 		{
 			"averageLevel": 55,
-			"zeal": 0.07
+			"zeal": 0.05
 		},
 		{
 			"averageLevel": 69,
-			"zeal": 0.09
+			"zeal": 0.07
 		},
 		{
 			"averageLevel": 89,
-			"zeal": 0.11
+			"zeal": 0.09
 		},
 		{
 			"averageLevel": 123,
-			"zeal": 0.16
+			"zeal": 0.11
 		},
 		{
 			"averageLevel": 300,
-			"zeal": 0.5
+			"zeal": 0.25
 		}
 	],
 

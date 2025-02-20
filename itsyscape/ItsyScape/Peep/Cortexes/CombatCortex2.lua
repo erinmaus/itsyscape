@@ -25,13 +25,11 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
-local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
-local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
-local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
-local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
+local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 
 local CombatCortex = Class(Cortex)
 
@@ -314,7 +312,7 @@ function CombatCortex:_getDamageZeal(damage, maxHit)
 
 	local currentIndex
 	for i = 1, #prowess do
-		if maxHit >= prowess[i].averageLevel then
+		if maxHit >= prowess[i].maxHit then
 			currentIndex = i
 		else
 			break
@@ -330,7 +328,7 @@ function CombatCortex:_getDamageZeal(damage, maxHit)
 		if muDenominator == 0 then
 			mu = 0
 		else
-			mu = deltaNumerator / deltaDenominator
+			mu = muNumerator / muDenominator
 		end
 	end
 
@@ -341,6 +339,13 @@ function CombatCortex:_getDamageZeal(damage, maxHit)
 	local zeal = math.lerp(lower, upper, delta)
 
 	return zeal
+end
+
+local ZEAL_INTERVAL_SECONDS = Variables.Path("zealIntervalSeconds")
+function CombatCortex:_scaleZealByWeaponSpeed(zeal, weaponSpeed)
+	local zealInterval = self.config:get(ZEAL_INTERVAL_SECONDS)
+	local relativeWeaponZealInteral = weaponSpeed / zealInterval
+	return zeal * relativeWeaponZealInteral
 end
 
 function CombatCortex:_getLevelZeal(averageLevel)
@@ -379,7 +384,7 @@ local CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP = Variables.Path("criticalFluxZealMulti
 local CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER = Variables.Path("criticalFluxZealMaxMultiplier")
 local CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER = Variables.Path("criticalFluxZealMinMultiplier")
 
-function CombatCortex:_givePeepZeal(peep)
+function CombatCortex:_givePeepZeal(peep, target)
 	local rollInfo = self.currentRoll[peep]
 
 	if not (rollInfo.initiateAttack and rollInfo.rolledAttack and rollInfo.rolledDamage) then
@@ -398,14 +403,20 @@ function CombatCortex:_givePeepZeal(peep)
 		local averageLevel = (rollInfo.damageSkillLevel + rollInfo.attackSkillLevel)
 		local zeal = self:_getLevelZeal(averageLevel)
 
+		local weapon = self:_getPeepWeapon(peep)
+		zeal = self:_scaleZealByWeaponSpeed(zeal, weapon:getCooldown(peep))
+
 		peep:poke("zeal", ZealPoke.onAttack({
 			accurracyRoll = rollInfo.accuracyRoll,
 			damageRoll = rollInfo.damageRoll,
 			attack = rollInfo.damageAttackPoke,
 			zeal = zeal
 		}))
-	elseif currentStanceInfo.stance == Weapon.STANCE_AGGRESIVE then
+	elseif currentStanceInfo.stance == Weapon.STANCE_AGGRESSIVE then
 		local zeal = self:_getDamageZeal(rollInfo.damageDealt, rollInfo.baseHit)
+
+		local weapon = self:_getPeepWeapon(peep)
+		zeal = self:_scaleZealByWeaponSpeed(zeal, weapon:getCooldown(peep))
 
 		peep:poke("zeal", ZealPoke.onAttack({
 			accurracyRoll = rollInfo.accuracyRoll,
@@ -471,6 +482,9 @@ function CombatCortex:updatePeepStance(delta, peep)
 		}))
 
 		currentStanceInfo.cooldown = self.config:get(BASE_STANCE_SWITCH_ZEAL_LOSS_COOLDOWN_SECONDS)
+	end
+
+	if isStanceDifferent then
 		currentStanceInfo.stance = stance
 	end
 end

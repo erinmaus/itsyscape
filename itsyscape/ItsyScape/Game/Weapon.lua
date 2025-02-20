@@ -578,9 +578,10 @@ function Weapon:onAttackMiss(peep, target)
 	return attack
 end
 
-function Weapon:applyCooldown(peep, target)
-	if self:getCooldown(peep) == 0 then
-		return
+function Weapon:getModifiedCooldown(peep, target)
+	local cooldown = self:getCooldown(peep)
+	if cooldown == 0 then
+		return 0
 	end
 
 	local cooldown = self:getCooldown(peep)
@@ -596,6 +597,11 @@ function Weapon:applyCooldown(peep, target)
 		end
 	end
 
+	return cooldown
+end
+
+function Weapon:applyCooldown(peep, target)
+	local cooldown = self:getModifiedCooldown(peep, target)
 	local _, c = peep:addBehavior(AttackCooldownBehavior)
 	c.cooldown = math.max(c.cooldown, cooldown)
 	c.ticks = peep:getDirector():getGameInstance():getCurrentTime()

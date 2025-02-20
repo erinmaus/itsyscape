@@ -4464,10 +4464,25 @@ function Utility.Peep.Attackable:onHeal(p)
 end
 
 function Utility.Peep.Attackable:onZeal(p)
-	local status = self:getBehavior(CombatStatusBehavior)
-	if status then
-		status.currentZeal = math.clamp(status.currentZeal + p:getZeal(), 0, status.maximumZeal)
+	local zeal = p:getZeal()
+
+	for effect in self:getEffects(require "ItsyScape.Peep.Effects.ZealEffect") do
+		zeal = effect:modifyZealEvent(p, zeal)
 	end
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	if not status then
+		return
+	end
+
+	local currentZeal = status.currentZeal + zeal
+	for effect in self:getEffects(require "ItsyScape.Peep.Effects.ZealEffect") do
+		currentZeal = effect:modifyZeal(p, currentZeal)
+	end
+
+
+	status.currentZeal = math.clamp(currentZeal, 0, status.maximumZeal)
+	print("currentZeal", status.currentZeal, "addtl zeal", zeal)
 end
 
 function Utility.Peep.Attackable:onHit(p)
