@@ -26,6 +26,10 @@ function Widget:new()
 	self.onKeyDown = Callback()
 	self.onKeyUp = Callback()
 	self.onType = Callback()
+	self.onGamepadPress = Callback()
+	self.onGamepadRelease = Callback()
+	self.onGamepadAxis = Callback()
+	self.onGamepadDirection = Callback()
 	self.onZDepthChange = Callback()
 	self.id = false
 	self.text = ""
@@ -434,27 +438,45 @@ function Widget:getIsFocused()
 end
 
 function Widget:mousePress(...)
-	self.onMousePress(self, ...)
+	self:onMousePress(...)
+	if self:getParent() then
+		self:getParent():mousePress(...)
+	end
 end
 
 function Widget:mouseRelease(...)
-	self.onMouseRelease(self, ...)
+	self:onMouseRelease(...)
+	if self:getParent() then
+		self:getParent():mouseRelease(...)
+	end
 end
 
 function Widget:mouseEnter(...)
-	self.onMouseEnter(self, ...)
+	self:onMouseEnter(...)
+	if self:getParent() then
+		self:getParent():mouseEnter(...)
+	end
 end
 
 function Widget:mouseLeave(...)
-	self.onMouseLeave(self, ...)
+	self:onMouseLeave(...)
+	if self:getParent() then
+		self:getParent():mouseLeave(...)
+	end
 end
 
 function Widget:mouseMove(...)
-	self.onMouseMove(self, ...)
+	self:onMouseMove(...)
+	if self:getParent() then
+		self:getParent():mouseMove(...)
+	end
 end
 
 function Widget:mouseScroll(...)
-	self.onMouseScroll(self, ...)
+	self:onMouseScroll(...)
+	if self:getParent() then
+		self:getParent():mouseScroll(...)
+	end
 end
 
 function Widget:focus(...)
@@ -468,18 +490,54 @@ function Widget:blur(...)
 end
 
 function Widget:keyDown(...)
-	self.onKeyDown(self, ...)
-	return false
+	self:onKeyDown(...)
+	if self:getParent()then
+		self:getParent():keyDown(...)
+	end
 end
 
 function Widget:keyUp(...)
-	self.onKeyUp(self, ...)
-	return false
+	self:onKeyUp(...)
+	if self:getParent()then
+		self:getParent():keyUp(...)
+	end
 end
 
 function Widget:type(...)
-	self.onType(self, ...)
+	self:onType(...)
+	if self:getParent()then
+		self:getParent():type(...)
+	end
 end
+
+function Widget:gamepadPress(...)
+	self:onGamepadPress(...)
+	if self:getParent() then
+		self:getParent():gamepadPress(...)
+	end
+end
+
+function Widget:gamepadRelease(...)
+	self:onGamepadRelease(...)
+	if self:getParent() then
+		self:getParent():gamepadRelease(...)
+	end
+end
+
+function Widget:gamepadAxis(...)
+	self:onGamepadAxis(...)
+	if self:getParent() then
+		self:getParent():gamepadAxis(...)
+	end
+end
+
+function Widget:gamepadDirection(...)
+	self:onGamepadDirection(...)
+	if self:getParent() then
+		self:getParent():gamepadDirection(...)
+	end
+end
+
 
 function Widget:update(...)
 	if _DEBUG == 'plus' then

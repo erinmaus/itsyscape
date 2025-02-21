@@ -1,0 +1,11 @@
+{
+	"direction": {
+		"xAxis": "rightx",
+		"yAxis": "righty",
+		"axisSensitivity": 0.3,
+
+		"minTime": 0.1,
+		"startTime": 0.5,
+		"accelerationStep": 0.15,
+	}
+}

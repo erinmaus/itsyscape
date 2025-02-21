@@ -1374,6 +1374,8 @@ function UIView:tick()
 end
 
 function UIView:update(delta)
+	self.inputProvider:update(delta)
+
 	if self.pendingPokeMenu then
 		self.pokeMenu = self.pendingPokeMenu
 		self.pendingPokeMenu = nil

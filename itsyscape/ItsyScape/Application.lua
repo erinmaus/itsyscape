@@ -940,11 +940,23 @@ function Application:getMousePosition()
 end
 
 function Application:joystickAdd(...)
-	-- Nothing.
+	self.uiView:getInputProvider():joystickAdd(...)
 end
 
 function Application:joystickRemove(...)
-	-- Nothing.
+	self.uiView:getInputProvider():joystickRemove(...)
+end
+
+function Application:gamepadRelease(...)
+	self.uiView:getInputProvider():gamepadRelease(...)
+end
+
+function Application:gamepadPress(...)
+	self.uiView:getInputProvider():gamepadPress(...)
+end
+
+function Application:gamepadAxis(...)
+	self.uiView:getInputProvider():gamepadAxis(...)
 end
 
 function Application:touchPress(...)

@@ -8,9 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Variables = require "ItsyScape.Game.Variables"
 local Widget = require "ItsyScape.UI.Widget"
 
 local WidgetInputProvider = Class()
+
+local DIRECTION_X_AXIS = Variables.Path("direction", "xAxis")
+local DIRECTION_Y_AXIS = Variables.Path("direction", "yAxis")
+local DIRECTION_AXIS_SENSITIVITY = Variables.Path("direction", "axisSensitivity")
+local DIRECTION_MIN_TIME = Variables.Path("direction", "minTime")
+local DIRECTION_START_TIME = Variables.Path("direction", "startTime")
 
 function WidgetInputProvider:new(root)
 	assert(Class.isCompatibleType(root, Widget), "root is not Widget")
@@ -20,6 +27,11 @@ function WidgetInputProvider:new(root)
 	self.clickedWidgets = {}
 	self.hoveredWidgetsTime = {}
 	self.hoveredWidgets = {}
+	self.joysticks = {}
+	self.currentJoystickIndex = 1
+	self.currentJoystick = false
+
+	self.config = Variables("Resources/Game/Variables/Input.json")
 end
 
 function WidgetInputProvider:getHoveredWidgets()
@@ -90,6 +102,21 @@ function WidgetInputProvider:getWidgetsUnderPoint(x, y, px, py, widget, overflow
 			table.insert(result, 1, widget)
 			result[widget] = true
 		end
+	end
+
+	return result
+end
+
+function WidgetInputProvider:getFocusableWidgets(widget, result)
+	result = result or {}
+	widget = widget or self.root
+
+	if widget:getIsFocusable() then
+		table.insert(result, widget)
+	end
+
+	for _, childWidget in widget:zIterate() do
+		self:getFocusableWidgets(childWidget, result)
 	end
 
 	return result
@@ -232,6 +259,80 @@ function WidgetInputProvider:mouseScroll(x, y)
 	end
 end
 
+function WidgetInputProvider:joystickAdd(joystick)
+	local index = self.currentJoystickIndex
+	self.currentJoystickIndex = self.currentJoystickIndex + 1
+
+	local _, id = joystick:getID()
+	self.joysticks[id] = {
+		index = index,
+		axis = {},
+		joystick = joystick,
+		directionChange = 0,
+		directionX = 0,
+		directionY = 0,
+		lastDirectionAxis = false,
+		elapsed = 0,
+		velocity = 0
+	}
+
+	if not self.currentJoystick then
+		self.currentJoystick = joystick
+	end
+end
+
+function WidgetInputProvider:joystickRemove(joystick)
+	local _, id = joystick:getID()
+	self.joysticks[id] = nil
+
+	if self.currentJoystick then
+		local _, currentID = self.currentJoystick:getID()
+		if currentID == id then
+			self.currentJoystick = nil
+		end
+	end
+
+	if not self.currentJoystick then
+		local currentJoystick = nil
+		for _, joystickInfo in pairs(self.joysticks) do
+			if not currentJoystick or joystickInfo.index < currentJoystick.index then
+				currentJoystick = joystickInfo
+			end
+		end
+
+		if currentJoystick then
+			self.currentJoystick = currentJoystick.joystick
+		end
+	end
+end
+
+function WidgetInputProvider:gamepadRelease(...)
+	local widget = self:getFocusedWidget()
+	if widget then
+		widget:gamepadRelease(...)
+	end
+end
+
+function WidgetInputProvider:gamepadPress(...)
+	local widget = self:getFocusedWidget()
+	if widget then
+		widget:gamepadPress(...)
+	end
+end
+
+function WidgetInputProvider:gamepadAxis(joystick, axis, value)
+	local widget = self:getFocusedWidget()
+	if widget then
+		widget:gamepadAxis(joystick, axis, value)
+	end
+
+	local _, id = joystick:getID()
+	local joystickInfo = self.joysticks[id]
+	if joystickInfo then
+		joystickInfo.axis[axis] = value
+	end
+end
+
 function WidgetInputProvider:tryFocusNext(widget, e)
 	if widget:getIsFocusable() and widget ~= self:getFocusedWidget() then
 		local f = self:getFocusedWidget()
@@ -318,6 +419,113 @@ function WidgetInputProvider:type(...)
 	if f then
 		f:type(...)
 	end
+end
+
+function WidgetInputProvider:_updateGamepadFocus(directionX, directionY)
+	local focusedWidget = self:getFocusedWidget()
+	local focusableWidgets = self:getFocusableWidgets()
+
+	if not focusedWidget and #focusableWidgets == 0 then
+		return
+	end
+
+	if not focusedWidget then
+		self:setFocusedWidget(focusableWidgets[1], "gamepad")
+		return
+	end
+
+	local focusedWidgetX, focusedWidgetY = focusedWidget:getAbsolutePosition()
+	local focusedWidgetWidth, focusedWidgetHeight = focusedWidget:getSize()
+
+	local focusableWidget
+	local focusableWidgetDistance = math.huge
+	for _, widget in ipairs(focusableWidgets) do
+		local widget = focusedWidgets[i]
+		local x, y = widget:getAbsolutePosition()
+		local w, h = widget:getSize()
+
+		local dx = x - focusedWidgetX
+		local dy = y - focusedWidgetY
+
+		if ((directionX ~= 0 and math.zerosign(dx) == directionX) or
+		    (directionY ~= 0 and math.zerosign(dy) == directionY)) and
+		   focusedWidget ~= widget
+		then
+			local ux = math.max(0, focusedWidgetX - (x + w))
+			local uy = math.max(0, focusedWidgetY - (y + h))
+
+			local vx = math.max(0, x - (focusedWidgetX + focusedWidgetWidth))
+			local vy = math.max(0, y - (focusedWidgetY + focusedWidgetHeight))
+
+			local ud = ux ^ 2 + uy ^ 2
+			local vd = vx ^ 2 + vy ^ 2
+			local distance = math.sqrt(ud + vd)
+
+			if distance < focusableWidgetDistance then
+				focusableWidgetDistance = distance
+				focusableWidget = focusableWidgets[i]
+			end
+		end
+	end
+
+	if focusableWidget then
+		self:setFocusedWidget(focusableWidgets, "gamepad")
+	end
+end
+
+function WidgetInputProvider:_updateGamepad(delta)
+	if not self.currentJoystick then
+		return
+	end
+
+	local _, id = self.currentJoystick:getID()
+	local joystickInfo = self.joysticks[id]
+	if not joystickInfo then
+		return
+	end
+
+	local xAxis = self.config:get(DIRECTION_X_AXIS)
+	local yAxis = self.config:get(DIRECTION_Y_AXIS)
+	local axisSensitivity = self.config:get(DIRECTION_AXIS_SENSITIVITY)
+
+	local isXEngaged = math.abs(joystickInfo.axis[xAxis]) > axisSensitivity
+	local isYEngaged = math.abs(joystickInfo.axis[yAxis]) > axisSensitivity
+
+	if not (isXEngaged or isYEngaged) then
+		return
+	end
+
+	local xAxisValue = math.abs(joystickInfo.axis[xAxis])
+	local yAxisValue = math.abs(joystickInfo.axis[yAxis])
+
+	local directionX, directionY
+	if math.abs(xAxisValue) >= math.abs(yAxisValue) then
+		directionX = math.zerosign(xAxisValue)
+		directionY = 0
+	else
+		directionX = 0
+		directionY = math.zerosign(yAxisValue)
+	end
+
+	if joystickInfo.directionX ~= directionX or joystickInfo.directionY ~= directionY then
+		joystickInfo.velocity = self.config:get(DIRECTION_START_TIME)
+		joystickInfo.elapsed = 0
+	end
+
+	joystickInfo.directionX = directionX
+	joystickInfo.directionY = directionY
+
+	joystickInfo.elapsed = joystickInfo.elapsed - delta
+	if joystickInfo.elapsed < 0 then
+		self:_updateGamepadFocus()
+
+		joystickInfo.velocity = math.max(joystickInfo.velocity - self.config:get(DIRECTION_ACCELERATION_STEP), self.config:get(DIRECTION_MIN_TIME))
+		joystickInfo.elapsed = joystickInfo.velocity
+	end
+end
+
+function WidgetInputProvider:update(delta)
+	self:_updateGamepad(delta)
 end
 
 return WidgetInputProvider

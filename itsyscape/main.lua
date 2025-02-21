@@ -171,6 +171,24 @@ function love.joystickeremoved(...)
 	end
 end
 
+function love.gamepadaxis(...)
+	if _APP and not _CONF.server then
+		_APP:gamepadAxis(...)
+	end
+end
+
+function love.gamepadreleased(...)
+	if _APP and not _CONF.server then
+		_APP:gamepadRelease(...)
+	end
+end
+
+function love.gamepadpressed(...)
+	if _APP and not _CONF.server then
+		_APP:gamepadPress(...)
+	end
+end
+
 -- Uncomment to test single-touch controls
 -- _MOBILE = true
 

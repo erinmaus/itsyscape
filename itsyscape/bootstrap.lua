@@ -111,6 +111,16 @@ do
 		return 1
 	end
 
+	math.zerosign = function(v)
+		if v < 0 then
+			return -1
+		elseif v > 0 then
+			return 1
+		end
+
+		return 0
+	end
+
 	math.lerpAngle = function(from, to, delta)
 		local difference = (to - from) % (math.pi * 2)
 		local distance = (2 * difference) % (math.pi * 2) - difference
