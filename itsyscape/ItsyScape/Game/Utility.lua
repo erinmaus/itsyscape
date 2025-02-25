@@ -4482,7 +4482,6 @@ function Utility.Peep.Attackable:onZeal(p)
 
 
 	status.currentZeal = math.clamp(currentZeal, 0, status.maximumZeal)
-	print("currentZeal", status.currentZeal, "addtl zeal", zeal)
 end
 
 function Utility.Peep.Attackable:onHit(p)

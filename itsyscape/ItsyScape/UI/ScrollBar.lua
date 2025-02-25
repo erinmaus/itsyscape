@@ -74,7 +74,7 @@ function ScrollBar:setIsClickThrough(value)
 end
 
 function ScrollBar:mouseScroll(x, y)
-	Widget.mouseScroll(self, x, y)
+	self:onMouseScroll(x, y)
 
 	if self:getIsVertical() then
 		self:scroll(-y)

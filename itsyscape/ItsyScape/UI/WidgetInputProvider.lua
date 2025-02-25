@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Variables = require "ItsyScape.Game.Variables"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local Widget = require "ItsyScape.UI.Widget"
 
 local WidgetInputProvider = Class()
@@ -18,6 +19,7 @@ local DIRECTION_Y_AXIS = Variables.Path("direction", "yAxis")
 local DIRECTION_AXIS_SENSITIVITY = Variables.Path("direction", "axisSensitivity")
 local DIRECTION_MIN_TIME = Variables.Path("direction", "minTime")
 local DIRECTION_START_TIME = Variables.Path("direction", "startTime")
+local DIRECTION_ACCELERATION_STEP = Variables.Path("direction", "accelerationStep")
 
 function WidgetInputProvider:new(root)
 	assert(Class.isCompatibleType(root, Widget), "root is not Widget")
@@ -429,6 +431,20 @@ function WidgetInputProvider:_updateGamepadFocus(directionX, directionY)
 		return
 	end
 
+	local hasGamepadSink
+	do
+		local current = focusedWidget
+		while current and not Class.isCompatibleType(current, GamepadSink) do
+			current = current and current:getParent()
+		end
+
+		hasGamepadSink = Class.isCompatibleType(current, GamepadSink)
+	end
+
+	if hasGamepadSink then
+		return
+	end
+
 	if not focusedWidget then
 		self:setFocusedWidget(focusableWidgets[1], "gamepad")
 		return
@@ -440,36 +456,27 @@ function WidgetInputProvider:_updateGamepadFocus(directionX, directionY)
 	local focusableWidget
 	local focusableWidgetDistance = math.huge
 	for _, widget in ipairs(focusableWidgets) do
-		local widget = focusedWidgets[i]
 		local x, y = widget:getAbsolutePosition()
 		local w, h = widget:getSize()
 
-		local dx = x - focusedWidgetX
-		local dy = y - focusedWidgetY
+		local dx = (x + w / 2) - (focusedWidgetX + focusedWidgetWidth / 2)
+		local dy = (y + h / 2) - (focusedWidgetY + focusedWidgetHeight / 2)
 
 		if ((directionX ~= 0 and math.zerosign(dx) == directionX) or
 		    (directionY ~= 0 and math.zerosign(dy) == directionY)) and
 		   focusedWidget ~= widget
 		then
-			local ux = math.max(0, focusedWidgetX - (x + w))
-			local uy = math.max(0, focusedWidgetY - (y + h))
-
-			local vx = math.max(0, x - (focusedWidgetX + focusedWidgetWidth))
-			local vy = math.max(0, y - (focusedWidgetY + focusedWidgetHeight))
-
-			local ud = ux ^ 2 + uy ^ 2
-			local vd = vx ^ 2 + vy ^ 2
-			local distance = math.sqrt(ud + vd)
+			local distance = math.sqrt(dx ^ 2 + dy ^ 2)
 
 			if distance < focusableWidgetDistance then
 				focusableWidgetDistance = distance
-				focusableWidget = focusableWidgets[i]
+				focusableWidget = widget
 			end
 		end
 	end
 
 	if focusableWidget then
-		self:setFocusedWidget(focusableWidgets, "gamepad")
+		self:setFocusedWidget(focusableWidget, "gamepad")
 	end
 end
 
@@ -488,15 +495,15 @@ function WidgetInputProvider:_updateGamepad(delta)
 	local yAxis = self.config:get(DIRECTION_Y_AXIS)
 	local axisSensitivity = self.config:get(DIRECTION_AXIS_SENSITIVITY)
 
-	local isXEngaged = math.abs(joystickInfo.axis[xAxis]) > axisSensitivity
-	local isYEngaged = math.abs(joystickInfo.axis[yAxis]) > axisSensitivity
+	local isXEngaged = math.abs(joystickInfo.axis[xAxis] or 0) > axisSensitivity
+	local isYEngaged = math.abs(joystickInfo.axis[yAxis] or 0) > axisSensitivity
 
 	if not (isXEngaged or isYEngaged) then
 		return
 	end
 
-	local xAxisValue = math.abs(joystickInfo.axis[xAxis])
-	local yAxisValue = math.abs(joystickInfo.axis[yAxis])
+	local xAxisValue = joystickInfo.axis[xAxis] or 0
+	local yAxisValue = joystickInfo.axis[yAxis] or 0
 
 	local directionX, directionY
 	if math.abs(xAxisValue) >= math.abs(yAxisValue) then
@@ -517,7 +524,7 @@ function WidgetInputProvider:_updateGamepad(delta)
 
 	joystickInfo.elapsed = joystickInfo.elapsed - delta
 	if joystickInfo.elapsed < 0 then
-		self:_updateGamepadFocus()
+		self:_updateGamepadFocus(directionX, directionY)
 
 		joystickInfo.velocity = math.max(joystickInfo.velocity - self.config:get(DIRECTION_ACCELERATION_STEP), self.config:get(DIRECTION_MIN_TIME))
 		joystickInfo.elapsed = joystickInfo.velocity
