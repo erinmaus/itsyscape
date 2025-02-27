@@ -14,17 +14,19 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local WidgetInputProvider = Class()
 
-local DIRECTION_X_AXIS = Variables.Path("direction", "xAxis")
-local DIRECTION_Y_AXIS = Variables.Path("direction", "yAxis")
-local DIRECTION_AXIS_SENSITIVITY = Variables.Path("direction", "axisSensitivity")
-local DIRECTION_MIN_TIME = Variables.Path("direction", "minTime")
-local DIRECTION_START_TIME = Variables.Path("direction", "startTime")
-local DIRECTION_ACCELERATION_STEP = Variables.Path("direction", "accelerationStep")
+local DIRECTION_X_AXIS = Variables.Path("keybinds", "ui", "xAxis")
+local DIRECTION_Y_AXIS = Variables.Path("keybinds", "ui", "yAxis")
+local DIRECTION_AXIS_SENSITIVITY = Variables.Path("ui", "legacyGamepadControls", "axisSensitivity")
+local DIRECTION_MIN_TIME = Variables.Path("ui", "legacyGamepadControls", "minTime")
+local DIRECTION_START_TIME = Variables.Path("ui", "legacyGamepadControls", "startTime")
+local DIRECTION_ACCELERATION_STEP = Variables.Path("ui", "legacyGamepadControls", "accelerationStep")
 
 function WidgetInputProvider:new(root)
 	assert(Class.isCompatibleType(root, Widget), "root is not Widget")
 
 	self.root = root
+	self.root:setData(WidgetInputProvider, self)
+
 	self.focusedWidget = false
 	self.clickedWidgets = {}
 	self.hoveredWidgetsTime = {}
@@ -34,6 +36,29 @@ function WidgetInputProvider:new(root)
 	self.currentJoystick = false
 
 	self.config = Variables("Resources/Game/Variables/Input.json")
+end
+
+function WidgetInputProvider:getConfig()
+	return self.config
+end
+
+function WidgetInputProvider:isCurrentJoystick(joystick)
+	if not self.currentJoystick then
+		return false
+	end
+
+	local _, currentID = self.currentJoystick:getID()
+	return self.currentJoystick == joystick
+end
+
+function WidgetInputProvider:getGamepadAxis(joystick, axis)
+	local _, id = joystick:getID()
+	local joystickInfo = self.joysticks[id]
+	if not joystickInfo then
+		return 0
+	end
+
+	return joystickInfo.axis[axis] or 0
 end
 
 function WidgetInputProvider:getHoveredWidgets()
@@ -160,16 +185,23 @@ function WidgetInputProvider:getWidgetUnderPoint(x, y, px, py, widget, filter, o
 	return nil
 end
 
+local function focusableWidgetFilter(w)
+	return w:getIsFocusable()
+end
+
+local function clickedWidgetFilter(w)
+	return not w:getIsClickThrough()
+end
+
+local function clickableWidgetFilter(w)
+	local isFocusable = w:getIsFocusable() and not w:getIsClickThrough()
+	local isVisible = not w:getParent() or w:getParent():isChildVisible(w)
+
+	return isFocusable and isVisible
+end
+
 function WidgetInputProvider:mousePress(x, y, button)
 	x, y = love.graphics.getScaledPoint(x, y)
-
-	local function clickedWidgetFilter(w)
-		return not w:getIsClickThrough()
-	end
-
-	local function clickableWidgetFilter(w)
-		return w:getIsFocusable() and not w:getIsClickThrough()
-	end
 
 	local clickedWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, clickedWidgetFilter, true)
 	local clickableWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, clickableWidgetFilter, true)
@@ -195,11 +227,8 @@ end
 
 function WidgetInputProvider:mouseRelease(x, y, button)
 	x, y = love.graphics.getScaledPoint(x, y)
-	local function f(w)
-		return w:getIsFocusable() and not w:getIsClickThrough()
-	end
 
-	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
+	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, clickableWidgetFilter, true)
 	if widget then
 		widget:mouseRelease(x, y, button)
 	end
@@ -212,11 +241,8 @@ end
 
 function WidgetInputProvider:mouseMove(x, y, dx, dy)
 	x, y = love.graphics.getScaledPoint(x, y)
-	local function f(w)
-		return w:getIsFocusable()
-	end
 
-	local top = self:getWidgetUnderPoint(x, y, nil, nil, nil, f, true)
+	local top = self:getWidgetUnderPoint(x, y, nil, nil, nil, focusableWidgetFilter, true)
 
 	local widgets = self:getWidgetsUnderPoint(x, y, nil, nil, nil, true)
 	for _, widget in ipairs(widgets) do
@@ -323,15 +349,15 @@ function WidgetInputProvider:gamepadPress(...)
 end
 
 function WidgetInputProvider:gamepadAxis(joystick, axis, value)
-	local widget = self:getFocusedWidget()
-	if widget then
-		widget:gamepadAxis(joystick, axis, value)
-	end
-
 	local _, id = joystick:getID()
 	local joystickInfo = self.joysticks[id]
 	if joystickInfo then
 		joystickInfo.axis[axis] = value
+	end
+
+	local widget = self:getFocusedWidget()
+	if widget then
+		widget:gamepadAxis(joystick, axis, value)
 	end
 end
 
@@ -431,14 +457,14 @@ function WidgetInputProvider:_updateGamepadFocus(directionX, directionY)
 		return
 	end
 
-	local hasGamepadSink
+	local hasGamepadSink = false
 	do
 		local current = focusedWidget
-		while current and not Class.isCompatibleType(current, GamepadSink) do
+		while current and not hasGamepadSink do
+			local sink = current:getData(GamepadSink)
+			hasGamepadSink = hasGamepadSink or (sink ~= nil and Class.isCompatibleType(sink, GamepadSink))
 			current = current and current:getParent()
 		end
-
-		hasGamepadSink = Class.isCompatibleType(current, GamepadSink)
 	end
 
 	if hasGamepadSink then

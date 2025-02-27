@@ -270,6 +270,10 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		end
 	end
 
+	if widget:getParent() and not widget:getParent():isChildVisible(widget) then
+		return
+	end
+
 	if widget == self.cursor.widget and not cursor then
 		self.cursor.state = state
 		return

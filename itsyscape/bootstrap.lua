@@ -128,6 +128,16 @@ do
 		return from + distance * delta
 	end
 
+	math.diffAngle = function(left, right)
+		local result = left - right
+		result = (result + math.pi) % (math.pi * 2) - math.pi
+		return result
+	end
+
+	math.wrapIndex = function(value, increment, max)
+    	return (value + increment - 1) % max + 1
+	end
+
 	local utf8 = require "utf8"
 	function utf8.sub(s, i, j)
 		local stringI = utf8.offset(s, i or 1) or #s + 1

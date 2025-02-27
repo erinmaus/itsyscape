@@ -22,7 +22,9 @@ function Widget:new()
 	self.onMouseMove = Callback()
 	self.onMouseScroll = Callback()
 	self.onFocus = Callback()
+	self.onFocusChild = Callback()
 	self.onBlur = Callback()
+	self.onBlurChild = Callback()
 	self.onKeyDown = Callback()
 	self.onKeyUp = Callback()
 	self.onType = Callback()
@@ -52,6 +54,33 @@ function Widget:new()
 	self.data = {}
 	self.toolTip = false
 	self.isClickThrough = false
+	self.isVisible = true
+end
+
+function Widget:getRoot()
+	local current = self
+	while current:getParent() do
+		current = current:getParent()
+	end
+
+	return current
+end
+
+function Widget:getInputProvider()
+	-- Cyclic dependency. RIP.
+	local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
+
+	local root = self:getRoot()
+	if not root then
+		return
+	end
+
+	local inputProvider = root:getData(WidgetInputProvider)
+	if not Class.isCompatibleType(inputProvider, WidgetInputProvider) then
+		return nil
+	end
+
+	return inputProvider
 end
 
 function Widget:getID()
@@ -359,6 +388,18 @@ function Widget:setScrollSize(w, h)
 	end
 end
 
+function Widget:setIsVisible(value)
+	self.isVisible = value == nil and true or (not not value)
+end
+
+function Widget:getIsVisible()
+	return self.isVisible
+end
+
+function Widget:isChildVisible(childWidget)
+	return childWidget:getIsVisible()
+end
+
 function Widget:getZDepth()
 	return self.zDepth
 end
@@ -482,11 +523,23 @@ end
 function Widget:focus(...)
 	self.onFocus(self, ...)
 	self.isFocused = true
+
+	local parent = self:getParent()
+	while parent do
+		parent:onFocusChild(self, ...)
+		parent = parent:getParent()
+	end
 end
 
 function Widget:blur(...)
 	self.onBlur(self, ...)
 	self.isFocused = false
+
+	local parent = self:getParent()
+	while parent do
+		parent:onBlurChild(self, ...)
+		parent = parent:getParent()
+	end
 end
 
 function Widget:keyDown(...)

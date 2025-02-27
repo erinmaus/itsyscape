@@ -57,11 +57,19 @@ function Button:mouseRelease(x, y, button, ...)
 end
 
 function Button:keyUp(key, ...)
-	if key == 'enter' or key == 'space' then
-		self.onClick(self)
+	if key == "enter" or key == "space" then
+		self:onClick("keyboard")
 	end
 
 	Widget.keyUp(self, key, ...)
+end
+
+function Button:gamepadRelease(joystick, button)
+	if button == "a" then
+		self:onClick("gamepad")
+	end
+
+	Widget.gamepadRelease(self, joystick, button)
 end
 
 return Button

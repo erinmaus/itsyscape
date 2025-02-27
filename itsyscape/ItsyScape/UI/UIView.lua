@@ -1346,6 +1346,10 @@ function UIView:closePokeMenu()
 	end
 end
 
+function UIView:focus(widget, reason)
+	self.inputProvider:setFocusedWidget(widget, reason)
+end
+
 function UIView:findWidgetByID(id, topLevelWidget)
 	topLevelWidget = topLevelWidget or self.root
 
