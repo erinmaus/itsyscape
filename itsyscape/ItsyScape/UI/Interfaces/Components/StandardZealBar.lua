@@ -136,26 +136,28 @@ function StandardZealBar:update(delta)
 	while self.currentTime > self.targetTime do
 		self.currentTime = self.currentTime - self.targetTime
 
-		local numSteps = math.max(math.floor(relativeZeal * 20), 1)
-		local stepWidth = (relativeZeal * width) / numSteps
-		local x = -stepWidth / 2
-		for i = 1, numSteps do
-			local maxWidth = (self.squish ^ (i - 1)) * (stepWidth / 2)
+		local numSteps = math.max(math.floor(relativeZeal * 20), 0)
+		if numSteps > 0 then
+			local stepWidth = (relativeZeal * width) / numSteps
+			local x = -stepWidth / 2
+			for i = 1, numSteps do
+				local maxWidth = (self.squish ^ (i - 1)) * (stepWidth / 2)
 
-			self.innerFireParticles:updateParticleSystemProperties({
-				EmissionArea = { "normal", maxWidth / 3, 0, 0, true },
-				Position = { x, height }
-			})
+				self.innerFireParticles:updateParticleSystemProperties({
+					EmissionArea = { "normal", maxWidth / 3, 0, 0, true },
+					Position = { x, height }
+				})
 
-			self.outerFireParticles:updateParticleSystemProperties({
-				EmissionArea = { "normal", maxWidth / 3, 0, 0, true },
-				Position = { x, height - 16 }
-			})
+				self.outerFireParticles:updateParticleSystemProperties({
+					EmissionArea = { "normal", maxWidth / 3, 0, 0, true },
+					Position = { x, height - 16 }
+				})
 
-			self.innerFireParticles:emit(math.floor(maxWidth / 6) + 1, math.floor(maxWidth / 7) + 2)
-			self.outerFireParticles:emit(math.floor(maxWidth / 7) + 2, math.floor(maxWidth / 8) + 3)
+				self.innerFireParticles:emit(math.floor(maxWidth / 6) + 1, math.floor(maxWidth / 7) + 2)
+				self.outerFireParticles:emit(math.floor(maxWidth / 7) + 2, math.floor(maxWidth / 8) + 3)
 
-			x = x + stepWidth
+				x = x + stepWidth
+			end
 		end
 	end
 

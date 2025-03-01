@@ -11,9 +11,21 @@ local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Power = require "ItsyScape.Game.Power"
 local Utility = require "ItsyScape.Game.Utility"
+local Variables = require "ItsyScape.Game.Variables"
 local ZealEffect = require "ItsyScape.Peep.Effects.ZealEffect"
 
+local CONFIG = Variables.load("Resources/Game/Variables/Combat.json")
+local BASE_COST_PATH = Variables.Path("zealCost", Variables.PathParameter("tier"), "baseCost")
+local MAX_COST_REDUCTION_PATH = Variables.Path("zealCost", Variables.PathParameter("tier"), "maxCostReduction")
+
 local CombatPower = Class(Power)
+
+CombatPower.TIER_NAMES = {
+	"tier1",
+	"tier2",
+	"tier3",
+	"tier4"
+}
 
 function CombatPower:new(...)
 	Power.new(self, ...)
@@ -26,14 +38,21 @@ function CombatPower:new(...)
 	self.maxReduction = 0
 	self.minLevel = 1
 	self.maxLevel = 99
+	self.tier = 1
 
 	local gameDB = self:getGame():getGameDB()
 	local cost = gameDB:getRecord("CombatPowerZealCost", { Resource = self:getResource() })
-	if cost then
+	local tier = gameDB:getRecord("CombatPowerTier", { Resource = self:getResource() })
+	if cost and tier then
+		local tierName = self.TIER_NAMES[tier:get("Tier")] or "tier1"
+
+		local baseCost = CONFIG:get(BASE_COST_PATH, "tier", tierName)
+		local maxCostReduction = CONFIG:get(MAX_COST_REDUCTION_PATH, "tier", tierName)
+
 		self:setCost(
 			cost:get("Skill").name,
-			cost:get("BaseCost") / 100,
-			cost:get("MaxReduction") / 100,
+			baseCost,
+			maxCostReduction,
 			cost:get("MinLevel"),
 			cost:get("MaxLevel"))
 	end
@@ -66,6 +85,10 @@ function CombatPower:getXWeapon(peep)
 	return nil
 end
 
+function CombatPower:getTier()
+	return self.tier
+end
+
 function CombatPower:getCost(peep)
 	if not self.governingStat then
 		return 1
@@ -96,7 +119,7 @@ function CombatPower:getCost(peep)
 	end
 
 	for effect in peep:getEffects(ZealEffect) do
-		cost = effect:modifyPowerCost(self, cost)
+		cost = effect:modifyTierCost(self.tier, cost)
 	end
 
 	return cost

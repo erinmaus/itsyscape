@@ -264,6 +264,11 @@ function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 		return false
 	end
 
+	local hasCooldown = selfPeep:hasBehavior(AttackCooldownBehavior)
+	if hasCooldown and not power:getIsInstant() then
+		return false
+	end
+
 	local didUsePower = power:perform(selfPeep, targetPeep)
 	if not didUsePower then
 		return false
@@ -526,7 +531,7 @@ function CombatCortex:tickPeep(delta, peep)
 	end
 
 	local hasCooldown = peep:hasBehavior(AttackCooldownBehavior)
-	if hasCooldown then
+	if not didUsePower and hasCooldown then
 		return
 	end
 

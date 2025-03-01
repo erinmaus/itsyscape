@@ -27,9 +27,12 @@ ItsyScape.Resource.Power "Backstab" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 45,
-	MaxReduction = 25,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "Backstab"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Attack",
@@ -67,9 +70,12 @@ ItsyScape.Resource.Power "Taunt" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "Taunt"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Attack",
@@ -130,9 +136,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Parry"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "Parry"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Attack",
@@ -186,9 +195,12 @@ ItsyScape.Resource.Power "Tornado" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Tornado"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 5,
 	MaxLevel = 55,
 	Skill = ItsyScape.Resource.Skill "Attack",
@@ -226,9 +238,12 @@ ItsyScape.Resource.Power "Decapitate" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Decapitate"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 10,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Attack",
@@ -273,9 +288,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Riposte"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Riposte"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 20,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Attack",
@@ -329,9 +347,12 @@ ItsyScape.Resource.Power "Earthquake" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 3,
+	Resource = ItsyScape.Resource.Power "Earthquake"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 30,
 	MaxLevel = 60,
 	Skill = ItsyScape.Resource.Skill "Attack",
@@ -376,9 +397,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Counter"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Counter"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 40,
 	MaxLevel = 80,
 	Skill = ItsyScape.Resource.Skill "Attack",

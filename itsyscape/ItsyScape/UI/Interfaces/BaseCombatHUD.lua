@@ -23,7 +23,10 @@ function BaseCombatHUD:new(...)
 	Interface.new(self, ...)
 
 	self.playerInfo = CombatTarget("left", self:getView():getResources())
+	self.playerInfo:setZDepth(1)
+
 	self.targetInfo = CombatTarget("right", self:getView():getResources())
+	self.targetInfo:setZDepth(0.5)
 
 	self:performLayout()
 end
@@ -42,39 +45,62 @@ function BaseCombatHUD:performLayout()
 
 	local targetWidth = self.playerInfo:getRowSize()
 	self.targetInfo:setPosition(w / 2 + self.PADDING / 2, 0)
+
+	self.isShowing = false
+end
+
+function BaseCombatHUD:_toggleInfo(enabled, info)
+	if enabled and not info:getParent() then
+		self:addChild(info)
+	elseif not enabled and info:getParent() then
+		info:getParent():removeChild(info)
+	end
+end
+
+function BaseCombatHUD:togglePlayerInfo(enabled)
+	self:_toggleInfo(enabled, self.playerInfo)
+end
+
+function BaseCombatHUD:toggleTargetInfo(enabled)
+	self:_toggleInfo(enabled, self.targetInfo)
+end
+
+function BaseCombatHUD:show()
+	self.isShowing = true
+end
+
+function BaseCombatHUD:hide()
+	self.isShowing = false
+end
+
+function BaseCombatHUD:isShowing()
+	return self.isShowing
 end
 
 function BaseCombatHUD:update(delta)
 	Interface.update(self, delta)
 
+	local showPlayer = self.isShowing
+	local showTarget = false
+
 	local state = self:getState()
 	if #state.combatants > 1 then
+		showPlayer = true
+
 		local playerState = state.player
 		self.playerInfo:updateTarget(playerState)
 
 		for _, combatantState in ipairs(state.combatants) do
 			if combatantState.actorID == playerState.targetID then
+				showTarget = true
 				self.targetInfo:updateTarget(combatantState)
 				break
 			end
 		end
-
-		if not self.playerInfo:getParent() then
-			self:addChild(self.playerInfo)
-		end
-
-		if not self.targetInfo:getParent() then
-			self:addChild(self.targetInfo)
-		end
-	else
-		if self.playerInfo:getParent() then
-			self:removeChild(self.playerInfo)
-		end
-
-		if self.targetInfo:getParent() then
-			self:removeChild(self.targetInfo)
-		end
 	end
+
+	self:togglePlayerInfo(showPlayer)
+	self:toggleTargetInfo(showTarget)
 end
 
 return BaseCombatHUD

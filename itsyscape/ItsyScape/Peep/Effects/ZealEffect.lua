@@ -12,7 +12,7 @@ local Effect = require "ItsyScape.Peep.Effect"
 
 local ZealEffect = Class(Effect)
 
-function ZealEffect:modifyPowerCost(power, cost)
+function ZealEffect:modifyTierCost(tier, cost)
 	return cost
 end
 

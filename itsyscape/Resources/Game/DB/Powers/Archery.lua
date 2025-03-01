@@ -27,9 +27,12 @@ ItsyScape.Resource.Power "Shockwave" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "Shockwave"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -67,9 +70,12 @@ ItsyScape.Resource.Power "DoubleTake" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 40,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "DoubleTake"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -107,9 +113,12 @@ ItsyScape.Resource.Power "PiercingShot" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "PiercingShot"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -152,9 +161,12 @@ ItsyScape.Resource.Power "Boom" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Boom"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 5,
 	MaxLevel = 55,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -219,9 +231,12 @@ ItsyScape.Resource.Power "Snipe" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Snipe"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 10,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -259,9 +274,12 @@ ItsyScape.Resource.Power "TrickShot" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 20,
 	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -315,9 +333,12 @@ ItsyScape.Resource.Power "SoulStrike" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 3,
+	Resource = ItsyScape.Resource.Power "SoulStrike"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 30,
 	MaxLevel = 80,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -355,9 +376,12 @@ ItsyScape.Resource.Power "Headshot" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 90,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Headshot"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 40,
 	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -395,9 +419,12 @@ ItsyScape.Resource.Power "Hesitate" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Hesitate"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 50,
 	MaxLevel = 80,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -440,9 +467,12 @@ ItsyScape.Resource.Power "Nuke" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 300,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 4,
+	Resource = ItsyScape.Resource.Power "Nuke"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 60,
 	MaxLevel = 90,
 	Skill = ItsyScape.Resource.Skill "Archery",

@@ -4,6 +4,28 @@
 		"tickDurationSeconds": 0.2
 	},
 
+	"zealCost": {
+		"tier1": {
+			"baseCost": 0.05,
+			"maxCostReduction": 0.05
+		},
+
+		"tier2": {
+			"baseCost": 0.25,
+			"maxCostReduction": 0.05
+		},
+
+		"tier3": {
+			"baseCost": 0.5,
+			"maxCostReduction": 0.1
+		},
+		
+		"tier4": {
+			"baseCost": 1.0,
+			"maxCostReduction": 0.2
+		}
+	},
+
 	"baseTargetSwitchZealLoss": 0.1,
 	"baseTargetSwitchZealLossCooldownSeconds": 1,
 

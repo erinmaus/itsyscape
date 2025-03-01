@@ -677,9 +677,12 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "CombatPowerTier" {
+		Tier = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "CombatPowerZealCost" {
-		BaseCost = Meta.TYPE_REAL,
-		MaxReduction = Meta.TYPE_REAL,
 		MinLevel = Meta.TYPE_INTEGER,
 		MaxLevel = Meta.TYPE_INTEGER,
 		Skill = Meta.TYPE_RESOURCE,

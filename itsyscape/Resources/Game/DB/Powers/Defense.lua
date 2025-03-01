@@ -29,9 +29,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Prepare"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "Prepare"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Defense",
@@ -87,9 +90,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Absorb"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "Absorb"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Defense",
@@ -145,9 +151,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "IronSkin"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 180,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "IronSkin"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Defense",
@@ -203,9 +212,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Freedom"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "Freedom"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 5,
 	MaxLevel = 55,
 	Skill = ItsyScape.Resource.Skill "Defense",
@@ -238,9 +250,12 @@ ItsyScape.Resource.Power "Bash" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 90,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Bash"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 10,
 	MaxLevel = 60,
 	Skill = ItsyScape.Resource.Skill "Defense",
@@ -280,9 +295,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Deflect"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 3,
+	Resource = ItsyScape.Resource.Power "Deflect"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Defense",
@@ -338,9 +356,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Fury"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 300,
-	MaxReduction = 150,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 3,
+	Resource = ItsyScape.Resource.Power "Fury"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 30,
 	MaxLevel = 99,
 	Skill = ItsyScape.Resource.Skill "Defense",
@@ -396,9 +417,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Meditate"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Meditate"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 40,
 	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Defense",
