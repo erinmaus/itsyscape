@@ -16,6 +16,7 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Widget = require "ItsyScape.UI.Widget"
 local StandardHealthBar = require "ItsyScape.UI.Interfaces.Components.StandardHealthBar"
+local StandardZealBar = require "ItsyScape.UI.Interfaces.Components.StandardZealBar"
 local Particles = require "ItsyScape.UI.Particles"
 
 local CombatTarget = Class(Widget)
@@ -26,7 +27,9 @@ function CombatTarget:new(align, resources)
 	Widget.new(self)
 
 	self.rowWidth = 400
-	self.rowHeight = 48
+	self.titleHeight = 48
+	self.healthHeight = 48
+	self.zealHeight = 32
 	self.padding = 4
 	self.align = align
 
@@ -60,15 +63,21 @@ end
 
 function CombatTarget:performLayout()
 	self.titleLabel:setPosition(0, 0)
-	self.titleLabel:setSize(self.rowWidth, self.rowHeight)
+	self.titleLabel:setSize(self.rowWidth, self.titleHeight)
 
 	if self.healthBar then
-		self.healthBar:setSize(self.rowWidth, self.rowHeight)
-		self.healthBar:setPosition(0, self.rowHeight)
+		self.healthBar:setSize(self.rowWidth, self.healthHeight)
+		self.healthBar:setPosition(0, self.titleHeight)
+	end
+
+	if self.zealBar then
+		self.zealBar:setSize(self.rowWidth, self.zealHeight)
+		self.zealBar:setPosition(0, self.titleHeight + self.healthHeight + self.padding)
 	end
 end
 
 function CombatTarget:updateTarget(targetInfo)
+	local isHealthBarNew = false
 	local healthBarType = targetInfo.meta.healthBarTypeName and require(targetInfo.meta.healthBarTypeName) or StandardHealthBar
 	if self.healthBarType ~= healthBarType then
 		if self.healthBar then
@@ -78,12 +87,27 @@ function CombatTarget:updateTarget(targetInfo)
 		self.healthBarType = healthBarType
 		self.healthBar = healthBarType()
 		self:addChild(self.healthBar)
+		isHealthBarNew = true
 	end
 
-	self.healthBar:updateHealth(targetInfo.stats.hitpoints.current, targetInfo.stats.hitpoints.max)
-	self.titleLabel:setText((targetInfo.name or ""):gsub(Utility.Text.INFINITY, "infinite"))
+	local isZealBarNew = false
+	local zealBarType = targetInfo.meta.zealBarTypeName and require(targetInfo.meta.zealBarTypeName) or StandardZealBar
+	if self.zealBarType ~= zealBarType then
+		if self.zealBar then
+			self:removeChild(self.zealBar)
+		end
+
+		self.zealBarType = zealBarType
+		self.zealBar = zealBarType()
+		self:addChild(self.zealBar)
+		isZealBarNew = true
+	end
 
 	self:performLayout()
+
+	self.healthBar:updateHealth(targetInfo.stats.hitpoints.current, targetInfo.stats.hitpoints.max)
+	self.zealBar:updateZeal(targetInfo.stats.zeal.current, targetInfo.stats.zeal.max)
+	self.titleLabel:setText((targetInfo.name or ""):gsub(Utility.Text.INFINITY, "infinite"))
 end
 
 return CombatTarget

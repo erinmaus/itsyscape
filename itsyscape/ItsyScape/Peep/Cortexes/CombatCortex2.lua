@@ -270,11 +270,11 @@ function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 	end
 
 	power:activate(selfPeep, targetPeep)
-	power:removeBehavior(PendingPowerBehavior)
+	selfPeep:removeBehavior(PendingPowerBehavior)
 
 	selfPeep:poke("zeal", ZealPoke.onUsePower({
 		power = power,
-		zeal = zealCost
+		zeal = -(zealCost / 100)
 	}))
 
 	if not power:getIsQuick() and power:getRequiresTarget() then

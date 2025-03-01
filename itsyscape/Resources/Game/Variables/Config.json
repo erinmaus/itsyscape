@@ -1,7 +1,7 @@
 {
 	"colors": {
-		"ui.combat.health.text": "ffffff",
-		"ui.combat.health.textShadow": "000000",
+		"ui.combat.bar.text": "ffffff",
+		"ui.combat.bar.textShadow": "000000",
 		"ui.combat.health.damage": "8c2726",
 		"ui.combat.health.hitpoints": "589c2b",
 		"ui.combat.zeal.fire": "f26722",

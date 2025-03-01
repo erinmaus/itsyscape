@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 
 local Particles = Class(Drawable)
@@ -25,6 +26,8 @@ function Particles:new()
 	self.particleSystem = false
 	self.emits = {}
 
+	self.tintColor = Color()
+
 	self.overflow = true
 	self:setIsClickThrough(true)
 end
@@ -35,6 +38,14 @@ end
 
 function Particles:getOverflow()
 	return self.overflow
+end
+
+function Particles:setTintColor(value)
+	self.tintColor = value
+end
+
+function Particles:getTintColor()
+	return self.tintColor
 end
 
 function Particles:setTexture(textureFilename)
@@ -126,15 +137,18 @@ function Particles:draw(resources, state)
 		self.isParticleSystemDirty = false
 	end
 
+	love.graphics.push("all")
 	if not self:getOverflow() then
 		itsyrealm.graphics.applyPseudoScissor()
 	end
 
+	love.graphics.setColor(self.tintColor:get())
 	itsyrealm.graphics.uncachedDraw(self.particleSystem)
 
 	if not self:getOverflow() then
 		itsyrealm.graphics.resetPseudoScissor()
 	end
+	love.graphics.pop()
 end
 
 return Particles

@@ -33,9 +33,9 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Confuse"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 15,
+	MaxReduction = 5,
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -95,9 +95,9 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Weaken"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 15,
+	MaxReduction = 5,
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -157,9 +157,9 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Curse"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 15,
+	MaxReduction = 5,
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -213,9 +213,9 @@ ItsyScape.Resource.Power "Corrupt" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 30,
-	MaxReduction = 10,
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 25,
+	MaxReduction = 5,
 	MinLevel = 5,
 	MaxLevel = 35,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -268,9 +268,9 @@ ItsyScape.Resource.Power "Nirvana" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 300,
-	MaxReduction = 150,
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 50,
+	MaxReduction = 10,
 	MinLevel = 10,
 	MaxLevel = 100,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -337,9 +337,9 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Hexagram"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 25,
+	MaxReduction = 5,
 	MinLevel = 20,
 	MaxLevel = 60,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -393,9 +393,9 @@ ItsyScape.Resource.Power "IceBarrage" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 90,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 25,
+	MaxReduction = 5,
 	MinLevel = 30,
 	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -449,9 +449,9 @@ ItsyScape.Resource.Power "Gravity" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 150,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 50,
+	MaxReduction = 10,
 	MinLevel = 40,
 	MaxLevel = 90,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -489,9 +489,9 @@ ItsyScape.Resource.Power "BindShadow" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 25,
+	MaxReduction = 5,
 	MinLevel = 50,
 	MaxLevel = 90,
 	Skill = ItsyScape.Resource.Skill "Magic",

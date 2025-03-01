@@ -15,6 +15,7 @@ local Variables = require "ItsyScape.Game.Variables"
 local Drawable = require "ItsyScape.UI.Drawable"
 local Widget = require "ItsyScape.UI.Widget"
 local Particles = require "ItsyScape.UI.Particles"
+local StandardBarLabel = require "ItsyScape.UI.Interfaces.Components.StandardBarLabel"
 
 StandardHealthBar = Class(Drawable)
 
@@ -51,6 +52,9 @@ function StandardHealthBar:new()
 		}
 	})
 	self:addChild(self.healthParticles)
+
+	self.label = StandardBarLabel()
+	self:addChild(self.label)
 
 	self.currentHealth = 1
 	self.maximumHealth = 1
@@ -162,7 +166,7 @@ function StandardHealthBar:updateHealth(current, maximum)
 	self.currentHealth = current
 	self.maximumHealth = maximum
 
-	self:setText(string.format("%s/%s", Utility.Text.prettyNumber(current), Utility.Text.prettyNumber(maximum)))
+	self.label:setText(string.format("%s/%s", Utility.Text.prettyNumber(current), Utility.Text.prettyNumber(maximum)))
 end
 
 function StandardHealthBar:update(delta)
@@ -187,18 +191,6 @@ function StandardHealthBar:update(delta)
 	end
 end
 
-function StandardHealthBar:loadDynamic(resources)
-	local _, height = self:getSize()
-	local newFontSize = math.max(height - self.padding * 2, 8)
-	if self.fontSize ~= newFontSize then
-		self.fontSize = newFontSize
-		self.font = resources:load(
-			love.graphics.newFont,
-			"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
-			self.fontSize)
-	end
-end
-
 function StandardHealthBar:loadStatic(resources)
 	if self.isReady then
 		return
@@ -213,7 +205,6 @@ end
 
 function StandardHealthBar:draw(resources, state)
 	self:loadStatic(resources)
-	self:loadDynamic(resources)
 
 	local width, height = self:getSize()
 	local scale = height / self.bloodSplatImage:getHeight()
@@ -221,9 +212,14 @@ function StandardHealthBar:draw(resources, state)
 	local damageColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", "ui.combat.health.damage"))
 	local hitpointsColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", "ui.combat.health.hitpoints"))
 
+	local damageWidth = (1 - (self.currentRelativeValue / 100)) * width
+
 	love.graphics.push("all")
 	love.graphics.setColor(hitpointsColor:get())
 	itsyrealm.graphics.rectangle("fill", 0, 0, width, height, height / 4, height / 4)
+
+	love.graphics.setColor(damageColor:get())
+	itsyrealm.graphics.rectangle("fill", width - damageWidth, 0, damageWidth, height, height / 4, height / 4)
 
 	itsyrealm.graphics.applyPseudoScissor()
 	for _, bloodSplat in ipairs(self.bloodSplats) do
@@ -246,18 +242,6 @@ function StandardHealthBar:draw(resources, state)
 		love.graphics.setColor(color:get())
 		itsyrealm.graphics.draw(self.bloodSplatImage, x, y, bloodSplat.rotation, localScale, localScale, imageWidth / 2, imageHeight / 2)
 	end
-
-	local textColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", "ui.combat.health.text"))
-	local textShadowColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", "ui.combat.health.textShadow"))
-
-	local fontHeight = self.font:getHeight()
-	local textY = height / 2 - fontHeight / 2
-
-	love.graphics.setColor(textShadowColor:get())
-	itsyrealm.graphics.print(self:getText(), self.padding + 2, textY + 2)
-
-	love.graphics.setColor(textColor:get())
-	itsyrealm.graphics.print(self:getText(), self.padding, textY)
 
 	itsyrealm.graphics.resetPseudoScissor()
 	love.graphics.pop()

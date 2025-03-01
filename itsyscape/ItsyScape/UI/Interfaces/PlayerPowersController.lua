@@ -49,32 +49,6 @@ function PlayerPowersController:getPendingPowerID()
 	return nil
 end
 
-function PlayerPowersController:updatePowersState(powers)
-	local peep = self:getPeep()
-	local gameDB = self:getDirector():getGameDB()
-
-	local b = peep:getBehavior(PowerCoolDownBehavior)
-	if not b then
-		peep:addBehavior(PowerCoolDownBehavior)
-		b = peep:getBehavior(PowerCoolDownBehavior)
-	end
-
-	if b then
-		local time = love.timer.getTime()
-		for i = 1, #powers do
-			local p = powers[i]
-
-			local resource = gameDB:getResource(p.id, "Power")
-			if b.powers[resource.id.value] then
-				local coolDown = b.powers[resource.id.value] - time
-				if coolDown > 0 then
-					p.coolDown = math.floor(coolDown)
-				end
-			end
-		end
-	end
-end
-
 function PlayerPowersController:getAvailablePowers()
 	local offensivePowers = {}
 	local defensivePowers = {}
@@ -117,7 +91,7 @@ function PlayerPowersController:getAvailablePowers()
 			do
 				local PowerType = Utility.Peep.getPowerType(power, gameDB)
 				instance = PowerType(self:getGame(), power)
-				coolDownDescription = string.format("Cooldown: %d seconds", instance:getCoolDown(self:getPeep()))
+				coolDownDescription = string.format("Zeal: %d%%", instance:getCost(self:getPeep()) * 100)
 			end
 
 			local result = {
@@ -226,9 +200,6 @@ function PlayerPowersController:updateState()
 		defensive = self.currentDefensivePowers,
 		pendingID = self:getPendingPowerID()
 	}
-
-	self:updatePowersState(result.offensive)
-	self:updatePowersState(result.defensive)
 
 	self.state = result
 end
