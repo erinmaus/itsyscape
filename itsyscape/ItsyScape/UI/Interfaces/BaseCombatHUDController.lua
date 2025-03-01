@@ -31,6 +31,7 @@ local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehav
 local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
+local ZealEffect = require "ItsyScape.Peep.Effects.ZealEffect"
 
 local BaseCombatHUDController = Class(Controller)
 

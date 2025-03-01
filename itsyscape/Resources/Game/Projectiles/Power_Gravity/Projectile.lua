@@ -158,8 +158,8 @@ function Gravity:update(elapsed)
 		self.fog:setNearDistance((fogValue + Gravity.FOG_FAR) * self.size)
 		self.fog:setFarDistance(fogValue * self.size)
 		self.fog:setColor(Gravity.SINGULARITY_COLOR)
-		self.fog:getHandle():tick()
 		self.fog:setParent(root)
+		self.fog:tick()
 
 		self.singularity:getMaterial():setColor(Color(
 			Gravity.SINGULARITY_COLOR.r,

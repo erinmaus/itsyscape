@@ -69,6 +69,11 @@ function Interface:poke(actionID, actionIndex, e)
 	return false
 end
 
+function Interface:focus(widget, reason)
+	local inputProvider = self:getUIView():getInputProvider()
+	inputProvider:setFocusedWidget(widget, reason)
+end
+
 -- Utility to poke the correct Interface via the UI model.
 function Interface:sendPoke(actionID, actionIndex, e)
 	return self:getUI():poke(

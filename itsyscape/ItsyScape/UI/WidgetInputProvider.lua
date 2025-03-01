@@ -35,7 +35,12 @@ function WidgetInputProvider:new(root)
 	self.currentJoystickIndex = 1
 	self.currentJoystick = false
 
-	self.config = Variables("Resources/Game/Variables/Input.json")
+	self.config = Variables.load("Resources/Game/Variables/Input.json")
+end
+
+local KEYBIND_PATH = Variables.Path("keybinds", "ui", Variables.PathParameter("key"))
+function WidgetInputProvider:getKeybind(keyBindName)
+	return self.config:get(KEYBIND_PATH, "key", keyBindName)
 end
 
 function WidgetInputProvider:getConfig()

@@ -37,6 +37,7 @@ function Widget:new()
 	self.id = false
 	self.text = ""
 	self.isFocused = false
+	self.isChildFocused = false
 	self.x = 0
 	self.y = 0
 	self.width = 0
@@ -487,6 +488,10 @@ end
 
 function Widget:getIsFocusable()
 	return false
+end
+
+function Widget:getIsChildFocused()
+	return self.isChildFocused
 end
 
 function Widget:getIsFocused()

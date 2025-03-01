@@ -1599,7 +1599,7 @@ Utility.UI.Groups = {
 	WORLD = {
 		"Ribbon",
 		"Chat",
-		"BaseCombatHUD",
+		"GamepadCombatHUD",
 		"QuestProgressNotification"
 	}
 }

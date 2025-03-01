@@ -430,8 +430,6 @@ function DemoApplication:openMainMenu()
 			currentChild:getData("circle").enabled = true
 			currentChild:getData("circle").fill = Color(1, 0.8, 0, 0.5)
 			currentChild:addChild(currentChild:getData("action"))
-
-			print(currentChild:getData("name"), currentChild:getData("description"))
 			
 			label:setText({
 				{ t = "header", currentChild:getData("name") },
