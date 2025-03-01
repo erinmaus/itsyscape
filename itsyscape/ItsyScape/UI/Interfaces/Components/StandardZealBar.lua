@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local Utility = require "ItsyScape.Game.Utility"
@@ -98,6 +99,11 @@ function StandardZealBar:new()
 
 	self.currentZeal = 0
 	self.maximumZeal = 1
+	self.tier = 1
+
+	self.currentZealColor = false
+	self.currentZealTransitionTime = 0
+	self.targetZealTransitionTime = 0.25
 
 	self.isReady = false
 end
@@ -126,6 +132,22 @@ function StandardZealBar:updateZeal(current, maximum)
 	self.label:setText(string.format("%s%%", Utility.Text.prettyNumber(math.floor(current * 100))))
 end
 
+function StandardZealBar:updateZealTier(tier)
+	if self.tier == tier then
+		return
+	end
+
+	local currentColorName = string.format("ui.combat.zeal.tier%dFire", self.tier)
+	local nextColorName = string.format("ui.combat.zeal.tier%dFire", tier)
+	local currentColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", currentColorName))
+	local nextColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", nextColorName))
+
+	local delta = Tween.sineEaseOut(self.currentZealTransitionTime / self.targetZealTransitionTime)
+	self.currentZealColor = (self.currentZealColor or currentColor):lerp(currentColor, delta)
+	self.currentZealTransitionTime = 0
+	self.tier = tier
+end
+
 function StandardZealBar:update(delta)
 	Drawable.update(self, delta)
 
@@ -139,7 +161,7 @@ function StandardZealBar:update(delta)
 		local numSteps = math.max(math.floor(relativeZeal * 20), 0)
 		if numSteps > 0 then
 			local stepWidth = (relativeZeal * width) / numSteps
-			local x = -stepWidth / 2
+			local x = 0
 			for i = 1, numSteps do
 				local maxWidth = (self.squish ^ (i - 1)) * (stepWidth / 2)
 
@@ -161,7 +183,21 @@ function StandardZealBar:update(delta)
 		end
 	end
 
-	local outerZealColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", "ui.combat.zeal.fire"))
+	if self.currentZeal >= 1 then
+		self.outerFireParticles:setOverflow(true)
+		self.innerFireParticles:setOverflow(true)
+	else
+		self.outerFireParticles:setOverflow(false)
+		self.innerFireParticles:setOverflow(false)
+	end
+
+	self.currentZealTransitionTime = math.min(self.currentZealTransitionTime + delta, self.targetZealTransitionTime)
+	local delta = Tween.sineEaseOut(self.currentZealTransitionTime / self.targetZealTransitionTime)
+
+	local currentColorName = string.format("ui.combat.zeal.tier%dFire", self.tier)
+	local currentZealColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", currentColorName))
+
+	local outerZealColor = (self.currentZealColor or currentZealColor):lerp(currentZealColor, delta)
 	self.outerFireParticles:setTintColor(outerZealColor)
 
 	local innerZealColor = outerZealColor:shiftHSL(self.innerHueShift, self.innerSaturationShift, self.innerLightnessShift)

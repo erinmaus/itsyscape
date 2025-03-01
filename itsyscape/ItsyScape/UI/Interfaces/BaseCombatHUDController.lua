@@ -16,6 +16,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Spell = require "ItsyScape.Game.Spell"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
+local Variables = require "ItsyScape.Game.Variables"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Controller = require "ItsyScape.UI.Controller"
@@ -52,6 +53,9 @@ BaseCombatHUDController.COMBAT_SKILLS = {
 	"Defense",
 	"Faith"
 }
+
+local CONFIG = Variables.load("Resources/Game/Variables/Combat.json")
+local BASE_COST_PATH = Variables.Path("zealCost", Variables.PathParameter("tier"), "baseCost")
 
 function BaseCombatHUDController:new(peep, director)
 	Controller.new(self, peep, director)
@@ -400,13 +404,28 @@ function BaseCombatHUDController:pullStateForPeep(peep)
 
 			result.stats.zeal = {
 				current = status.currentZeal,
-				max = status.maximumZeal
+				max = status.maximumZeal,
+				tier = 0
 			}
+
+			for tier, tierName in ipairs(CombatPower.TIER_NAMES) do
+				local cost = CONFIG:get(BASE_COST_PATH, "tier", tierName)
+
+				for effect in peep:getEffects(ZealEffect) do
+					cost = effect:modifyTierCost(tier, cost)
+				end
+
+				if status.currentZeal >= cost then
+					result.stats.zeal.tier = tier
+				else
+					break
+				end
+			end
 		else
 			result.stats = {
 				prayer = { current = 0, max = 0 },
 				hitpoints = { current = 0, max = 0 },
-				zeal = { current = 0, max = 0 }
+				zeal = { current = 0, max = 0, tier = 0 }
 			}
 		end
 	end
@@ -1018,7 +1037,8 @@ function BaseCombatHUDController:_pullPower(peep, powerResource, xp, extraDescri
 			extraDescription
 		},
 		level = xp and Curve.XP_CURVE:getLevel(xp) or 1,
-		zeal = Class.isCompatibleType(power, CombatPower) and power:getCost(peep) or 0
+		zeal = Class.isCompatibleType(power, CombatPower) and power:getCost(peep) or 0,
+		tier = Class.isCompatibleType(power, CombatPower) and power:getTier() or 1
 	}
 end
 

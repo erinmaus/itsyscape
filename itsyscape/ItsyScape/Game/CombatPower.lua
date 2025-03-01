@@ -21,10 +21,19 @@ local MAX_COST_REDUCTION_PATH = Variables.Path("zealCost", Variables.PathParamet
 local CombatPower = Class(Power)
 
 CombatPower.TIER_NAMES = {
+	[0] = "tier0",
 	"tier1",
 	"tier2",
 	"tier3",
 	"tier4"
+}
+
+CombatPower.NAMED_TIERS = {
+	tier0 = 0,
+	tier1 = 1,
+	tier2 = 2,
+	tier3 = 3,
+	tier4 = 4
 }
 
 function CombatPower:new(...)

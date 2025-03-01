@@ -107,6 +107,7 @@ function CombatTarget:updateTarget(targetInfo)
 
 	self.healthBar:updateHealth(targetInfo.stats.hitpoints.current, targetInfo.stats.hitpoints.max)
 	self.zealBar:updateZeal(targetInfo.stats.zeal.current, targetInfo.stats.zeal.max)
+	self.zealBar:updateZealTier(targetInfo.stats.zeal.tier)
 	self.titleLabel:setText((targetInfo.name or ""):gsub(Utility.Text.INFINITY, "infinite"))
 end
 
