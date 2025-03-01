@@ -16,7 +16,6 @@ Variables.DEFAULT = "_"
 Variables.PathParameter = Class()
 function Variables.PathParameter:new(name, defaultValue)
 	assert(type(name) ~= "nil")
-	assert(type(defaultValue) ~= "nil")
 	assert(name ~= Variables.DEFAULT, "name cannot be `Variables.DEFAULT`")
 
 	self.name = name
@@ -42,6 +41,22 @@ function Variables:new(filename)
 	self.modifiedTime = -1
 
 	self:_tryUpdate()
+end
+
+local cache = {}
+function Variables.load(filename)
+	if not cache[filename] then
+		cache[filename] = Variables(filename)
+		cache[filename]:_tryUpdate()
+	end
+
+	return cache[filename]
+end
+
+function Variables.update()
+	for _, variables in pairs(cache) do
+		variables:_tryUpdate()
+	end
 end
 
 function Variables:_tryUpdate()

@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Property = require "ItsyScape.UI.Property"
+local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
 
 local Widget = Class()
 
@@ -81,6 +82,20 @@ function Widget:getInputProvider()
 	end
 
 	return inputProvider
+end
+
+function Widget:getResourceManager()
+	local root = self:getRoot()
+	if not root then
+		return
+	end
+
+	local resources = root:getData(WidgetResourceManager)
+	if not Class.isCompatibleType(resources, WidgetResourceManager) then
+		return nil
+	end
+
+	return resources
 end
 
 function Widget:getID()
@@ -441,7 +456,7 @@ function Widget:getIsDraggable()
 end
 
 function Widget:getIsClickThrough()
-	return self.isClickThrough
+	return self.isClickThrough or (self:getParent() and self:getParent():getIsClickThrough())
 end
 
 function Widget:setIsClickThrough(value)
@@ -494,23 +509,14 @@ end
 
 function Widget:mouseEnter(...)
 	self:onMouseEnter(...)
-	if self:getParent() then
-		self:getParent():mouseEnter(...)
-	end
 end
 
 function Widget:mouseLeave(...)
 	self:onMouseLeave(...)
-	if self:getParent() then
-		self:getParent():mouseLeave(...)
-	end
 end
 
 function Widget:mouseMove(...)
 	self:onMouseMove(...)
-	if self:getParent() then
-		self:getParent():mouseMove(...)
-	end
 end
 
 function Widget:mouseScroll(...)

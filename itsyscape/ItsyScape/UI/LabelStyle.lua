@@ -172,7 +172,7 @@ function LabelStyle:draw(widget, state)
 		else
 			if self.textShadow then
 				love.graphics.setColor(0, 0, 0, self.color.a)
-				itsyrealm.graphics.printf(text, x + 1, y + 1, maxWidth, self.align)
+				itsyrealm.graphics.printf(text, x + 2, y + 2, maxWidth, self.align)
 			end
 
 			love.graphics.setColor(self.color:get())

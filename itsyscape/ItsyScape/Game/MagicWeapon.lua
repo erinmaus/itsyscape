@@ -59,6 +59,10 @@ function MagicWeapon:rollDamage(peep, purpose, target)
 		spell:applyDamageRoll(roll)
 	end
 
+	if spell then
+		roll:setDamageMultiplier(-1)
+	end
+
 	return roll
 end
 

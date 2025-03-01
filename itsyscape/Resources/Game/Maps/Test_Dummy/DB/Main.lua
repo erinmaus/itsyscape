@@ -29,7 +29,7 @@ do
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 0.5,
+		Ambience = 0.7,
 		Resource = M["Light_Ambient"]
 	}
 end

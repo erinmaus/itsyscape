@@ -1087,6 +1087,7 @@ function UIView:new(gameView)
 	self.inputProvider = WidgetInputProvider(self.root)
 
 	self.resources = WidgetResourceManager()
+	self.root:setData(WidgetResourceManager, self.resources)
 
 	self.renderManager = WidgetRenderManager(self.inputProvider)
 	self.renderManager:addRenderer(Button, ButtonRenderer(self.resources))
