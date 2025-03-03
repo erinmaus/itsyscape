@@ -54,8 +54,101 @@ function BaseCombatHUD:new(...)
 	self.thingies = {}
 	self.thingiesButtons = {}
 	self.openedThingies = {}
+	self.isShowing = false
+
+	self.currentPendingPowerType = false
+	self.currentPendingPowerID = false
+	self.currentCombatStyle = false
+	self.currentStance = false
+	self.currentSpellID = false
 
 	self:performLayout()
+end
+
+function BaseCombatHUD:onSelectPendingPower(powerType, pendingPowerID)
+	-- Nothing.
+end
+
+function BaseCombatHUD:onClearPendingPower(powerType, pendingPowerID)
+	-- Nothing.
+end
+
+function BaseCombatHUD:onSwitchCombatStyle(oldCombatStyle, newCombatStyle)
+	-- Nothing.
+end
+
+function BaseCombatHUD:onSwitchStance(oldStance, newStance)
+	-- Nothing.
+end
+
+function BaseCombatHUD:onSwitchSpell(oldSpell, newSpell)
+	-- Nothing.
+end
+
+function BaseCombatHUD:_getPowerType(powerID)
+	local state = self:getState()
+
+	for _, powerState in ipairs(state.powers.offensive) do
+		if powerState.id == powerID then
+			return BaseCombatHUD.THINGIES_OFFENSIVE_POWERS
+		end
+	end
+
+	for _, powerState in ipairs(state.powers.defensive) do
+		if powerState.id == powerID then
+			return BaseCombatHUD.THINGIES_DEFENSIVE_POWERS
+		end
+	end
+
+	return nil
+end
+
+function BaseCombatHUD:resetEvents()
+	self.currentPendingPowerType = false
+	self.currentPendingPowerID = false
+	self.currentCombatStyle = false
+	self.currentStance = false
+	self.currentSpellID = false
+
+	self:updateEvents()
+end
+
+function BaseCombatHUD:updateEvents()
+	local state = self:getState()
+
+	local activespellID = state.activeSpellID or false
+	if state.activeSpellID ~= self.currentSpellID then
+		self:onSwitchSpell(self.currentSpellID, state.activeSpellID)
+		self.currentSpellID = state.activeSpellID
+	end
+
+	local powerID = state.powers.pendingID or false
+	if state.powers.pendingID ~= self.currentPendingPowerID then
+		local newPowerType = state.powers.pendingID and self:_getPowerType(state.powers.pendingID)
+
+		if self.currentPendingPowerID then
+			self:onClearPendingPower(self.currentPendingPowerType, self.currentPendingPowerID)
+		end
+
+		if powerID then
+			self:onSelectPendingPower(newPowerType, powerID)
+		end
+
+		self.currentPendingPowerID = powerID
+		self.currentPendingPowerType = newPowerType or false
+	end
+
+	local style = state.style or false
+	if style ~= self.currentCombatStyle then
+		self:onSwitchCombatStyle(self.currentCombatStyle, style)
+		self.currentCombatStyle = style
+	end
+
+	local stance = state.stance or false
+	if stance ~= self.currentCombatStyle then
+		self:onSwitchCombatStyle(self.currentCombatStyle, stance)
+		self.currentCombatStyle = stance
+	end
 end
 
 function BaseCombatHUD:isEnabled(name)
@@ -258,6 +351,8 @@ function BaseCombatHUD:refreshThingies()
 	self:_initPowersThingies(BaseCombatHUD.THINGIES_OFFENSIVE_POWERS)
 	self:_initPowersThingies(BaseCombatHUD.THINGIES_DEFENSIVE_POWERS)
 
+	self:resetEvents()
+
 	self:performLayout()
 end
 
@@ -275,8 +370,6 @@ function BaseCombatHUD:performLayout()
 
 	local targetWidth = self.playerInfo:getRowSize()
 	self.targetInfo:setPosition(w / 2 + self.PADDING / 2, 0)
-
-	self.isShowing = false
 end
 
 function BaseCombatHUD:_toggleInfo(enabled, info)
@@ -306,6 +399,10 @@ function BaseCombatHUD:openMenu()
 
 	if self.menu:getParent() == self then
 		return false
+	end
+
+	for name, button in pairs(self.thingiesButtons) do
+		self:updateMenuButton(name, button)
 	end
 
 	self:addChild(self.menu)
@@ -347,6 +444,12 @@ end
 
 function BaseCombatHUD:update(delta)
 	Interface.update(self, delta)
+
+	if not self.menu then
+		self:_createMenu()
+	end
+
+	self:updateEvents()
 
 	local showPlayer = self:getIsShowing()
 	local showTarget = false

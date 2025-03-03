@@ -475,6 +475,10 @@ function BaseCombatHUDController:pullStateForPeep(peep)
 				})
 			end
 		end
+
+		local stance = peep:getBehavior(StanceBehavior)
+		result.stance = stance and stance.stance or Weapon.STANCE_NONE
+		result.style = weapon:getStyle()
 	end
 
 	return result
@@ -511,6 +515,10 @@ function BaseCombatHUDController:getPendingPowerID()
 	end
 
 	return nil
+end
+
+function BaseCombatHUDController:getPowerType(id)
+
 end
 
 function BaseCombatHUDController:updatePowersState(powers)
@@ -978,10 +986,12 @@ function BaseCombatHUDController:updateState()
 			pendingID = self:getPendingPowerID()
 		},
 		spells = self.castableSpells,
+		activeSpellID = self.activeSpellID,
 		prayers = self.usablePrayers,
 		equipment = self:getEquipment(),
 		config = self:getStorage("Config"):get().config or {},
 		style = self.style,
+		stance = self.stance,
 		turns = self.turns
 	}
 
@@ -1148,6 +1158,9 @@ function BaseCombatHUDController:updateStyle()
 			self:useSpell()
 		end
 	end
+
+	local stance = peep:getBehavior(StanceBehavior)
+	self.stance = stance and stance.stance or Weapon.STANCE_NONE
 end
 
 function BaseCombatHUDController:updatePowers()

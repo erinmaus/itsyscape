@@ -19,10 +19,10 @@ function GamepadCirclePanel:new()
 	self.isEnabled = false
 
 	self.outlineColor = Color.fromHexString("ffcc00", 0.75)
-	self.innerOutlineThickness = 8
-	self.outerOutlineThickness = 4
+	self.innerOutlineThickness = 6
+	self.outerOutlineThickness = 2
 
-	self.radiusFudge = 4
+	self.radiusFudge = 8
 	self.radiusSpeed = math.pi / 4
 
 	self.fillColor = Color(0, 0, 0, 0.5)
@@ -91,14 +91,14 @@ function GamepadCirclePanel:draw(...)
 	love.graphics.setColor(self.fillColor:get())
 	itsyrealm.graphics.circle("fill", x, y, radius)
 
-	if self:_isEnabled() then
+	if self.isEnabled then
 		love.graphics.setColor(self.outlineColor:get())
 
-		love.graphics.setLineWidth(self.outerOutlineThickness)
+		love.graphics.setLineWidth(self.innerOutlineThickness)
 		itsyrealm.graphics.circle("line", x, y, radius)
 
 		local fudge = math.sin(love.timer.getTime() * self.radiusSpeed) * self.radiusFudge
-		love.graphics.setLineWidth(self.innerOutlineThickness)
+		love.graphics.setLineWidth(self.outerOutlineThickness)
 		itsyrealm.graphics.circle("line", x, y, radius + fudge)
 	end
 

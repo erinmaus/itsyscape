@@ -17,7 +17,7 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local SpiralLayout = Class(Layout)
 SpiralLayout.DEFAULT_RADIUS = 256
-SpiralLayout.DEFAULT_NUM_OPTIONS = 8
+SpiralLayout.DEFAULT_NUM_OPTIONS = 6
 
 function SpiralLayout:new()
 	Layout.new(self)
@@ -86,7 +86,7 @@ function SpiralLayout:focus(reason)
 
 	self.currentFocusedChildIndex = math.clamp(self.currentFocusedChildIndex, 1, self:getNumChildren()) + 1
 
-	local child = self:getChildAt(self.currentFocusedChildIndex)
+	local child = self:getChildAt(self.currentFocusedChildIndex + 1)
 	if not child then
 		return
 	end
@@ -98,6 +98,7 @@ function SpiralLayout:focus(reason)
 
 	inputProvider:setFocusedWidget(child, reason)
 	self:onChildSelected(child, nil)
+	self:onChildVisible(child, 1)
 end
 
 function SpiralLayout:_blurChild(widget)
@@ -125,7 +126,7 @@ function SpiralLayout:_focusChild(widget)
 	for index, widget in self:iterate() do
 		if widget == previousParent then
 			if self.currentFocusedChildIndex ~= index then
-				self:onChildSelected(widget, self:getChildAt(self.currentFocusedChildIndex or 1))
+				self:onChildSelected(widget, self:getChildAt(self.currentFocusedChildIndex or 2))
 			end
 
 			self.currentFocusedChildIndex = index
@@ -172,6 +173,20 @@ function SpiralLayout:addChild(child)
 	self:performLayout()
 end
 
+function SpiralLayout:getNumOptions()
+	return self:getNumChildren() - 1
+end
+
+function SpiralLayout:getOptionAt(index)
+	local numOptions = self:getNumChildren()
+	if index < 0 then
+		index = index + self:getNumOptions() + 1
+	end
+
+	index = math.clamp(index, 1, numOptions)
+	return self:getChildAt(index + 1)
+end
+
 local PREVIOUS_FADE_OUT_ANGLE = 2 * math.pi
 local PREVIOUS_ANGLE = 3 * math.pi
 local CURRENT_ANGLE = 4 * math.pi
@@ -195,13 +210,30 @@ function SpiralLayout:performLayout()
 	local numNextOptions = math.ceil((NEXT_ANGLE - CURRENT_ANGLE) * step)
 	local numPostCapOptions = math.ceil((NEXT_FADE_OUT_ANGLE - NEXT_ANGLE) * step)
 
-	local minIndex = -(numPreviousOptions + numPreCapOptions) - 1
-	local maxIndex = numNextOptions + numPostCapOptions + 1
-
 	local previousFadeOutInterval = (PREVIOUS_ANGLE - PREVIOUS_FADE_OUT_ANGLE) / numPreCapOptions
 	local previousInterval = (CURRENT_ANGLE - PREVIOUS_ANGLE) / numPreviousOptions
 	local nextInterval = (NEXT_ANGLE - CURRENT_ANGLE) / numNextOptions
 	local nextFadeOutInterval = (NEXT_FADE_OUT_ANGLE - NEXT_ANGLE) / numPostCapOptions
+
+	local minIndex, maxIndex
+	do
+		local numOptions = self:getNumChildren() - 1
+
+		local totalCount = numPreviousOptions + numPreCapOptions + numNextOptions + numPostCapOptions
+		if totalCount > numOptions then
+			numPreviousOptions = numPreviousOptions + 1
+			numNextOptions = numNextOptions + 1
+
+			previousInterval = (CURRENT_ANGLE - PREVIOUS_ANGLE) / numPreviousOptions
+			nextInterval = (NEXT_ANGLE - CURRENT_ANGLE) / numNextOptions
+
+			minIndex = -numPreviousOptions
+			maxIndex = numNextOptions
+		else
+			minIndex = -(numPreviousOptions + numPreCapOptions) - 1
+			maxIndex = numNextOptions + numPostCapOptions + 1
+		end
+	end
 
 	table.clear(self.visibleWidgets)
 	self.visibleWidgets[self.innerPanel] = true
@@ -209,8 +241,6 @@ function SpiralLayout:performLayout()
 	for i = minIndex, maxIndex do
 		local absoluteIndex = math.wrapIndex(i + currentIndex, 0, self:getNumChildren() - 1)
 		absoluteIndex = absoluteIndex + 1
-
-		print("i", i, "absoluteIndex", absoluteIndex)
 
 		local widget = self:getChildAt(absoluteIndex)
 
@@ -234,7 +264,7 @@ function SpiralLayout:performLayout()
 			widget:setZDepth(1)
 		end
 
-		angle = angle + targetCurrentAngleDifference
+		angle = angle-- + targetCurrentAngleDifference
 
 		local delta
 		if angle <= PREVIOUS_ANGLE then
@@ -244,6 +274,8 @@ function SpiralLayout:performLayout()
 		else
 			delta = 1
 		end
+
+		delta = math.clamp(delta)
 
 		self:onChildVisible(widget, delta)
 
@@ -329,7 +361,7 @@ function SpiralLayout:update(delta)
 	Layout.update(self, delta)
 
 	if self.nextFocusedChildIndex then
-		self:_setCurrentAngle((self.nextFocusedChildIndex - 1) / (self.numOptions - 1) * math.pi * 2, false)
+		--self:_setCurrentAngle((self.nextFocusedChildIndex - 1) / self.numOptions * math.pi * 2, false)
 	end
 
 	if self.hasAxisInput then

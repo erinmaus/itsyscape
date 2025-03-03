@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
@@ -37,15 +38,51 @@ GamepadCombatHUD.ICON_OFFSET        = 2
 GamepadCombatHUD.MIN_ICON_ALPHA     = 0.25
 GamepadCombatHUD.MAX_ICON_ALPHA     = 1
 
-GamepadCombatHUD.CIRCLE_PANEL_DISABLED_COLOR = Color.fromHexString("999999")
-GamepadCombatHUD.CIRCLE_PANEL_ENABLED_COLOR  = Color.fromHexString("ffcc00")
+GamepadCombatHUD.CIRCLE_PANEL_DISABLED_COLOR = Color.fromHexString("999999", 0.75)
+GamepadCombatHUD.CIRCLE_PANEL_ENABLED_COLOR  = Color.fromHexString("ffcc00", 0.75)
+GamepadCombatHUD.CIRCLE_PANEL_SPELL_COLOR    = Color.fromHexString("00ff00", 0.5)
 GamepadCombatHUD.ICON_ENABLED_COLOR          = Color.fromHexString("ffffff")
 GamepadCombatHUD.ICON_DISABLED_COLOR         = Color.fromHexString("333333")
+
+GamepadCombatHUD.COMBAT_STYLE_ICONS = {
+	[Weapon.STYLE_NONE] = "Resources/Game/Items/Null/Icon.png",
+	[Weapon.STYLE_MAGIC] = "Resources/Game/UI/Icons/Skills/Magic.png",
+	[Weapon.STYLE_ARCHERY] = "Resources/Game/UI/Icons/Skills/Archery.png",
+	[Weapon.STYLE_MELEE] = "Resources/Game/UI/Icons/Skills/Attack.png",
+	[Weapon.STYLE_SAILING] = "Resources/Game/UI/Icons/Skills/Sailing.png"
+}
+
+GamepadCombatHUD.COMBAT_STANCE_ICONS = {
+	[Weapon.STYLE_MAGIC] = {
+		[Weapon.STANCE_NONE] = "Resources/Game/Items/Null/Icon.png",
+		[Weapon.STANCE_CONTROLLED] = "Resources/Game/UI/Icons/Skills/Magic.png",
+		[Weapon.STANCE_AGGRESSIVE] = "Resources/Game/UI/Icons/Skills/Wisdom.png",
+		[Weapon.STANCE_DEFENSIVE] = "Resources/Game/UI/Icons/Skills/Defense.png"
+	},
+	[Weapon.STYLE_ARCHERY] = {
+		[Weapon.STANCE_NONE] = "Resources/Game/Items/Null/Icon.png",
+		[Weapon.STANCE_CONTROLLED] = "Resources/Game/UI/Icons/Skills/Archery.png",
+		[Weapon.STANCE_AGGRESSIVE] = "Resources/Game/UI/Icons/Skills/Dexterity.png",
+		[Weapon.STANCE_DEFENSIVE] = "Resources/Game/UI/Icons/Skills/Defense.png"
+	},
+	[Weapon.STYLE_MELEE] = {
+		[Weapon.STANCE_NONE] = "Resources/Game/Items/Null/Icon.png",
+		[Weapon.STANCE_CONTROLLED] = "Resources/Game/UI/Icons/Skills/Attack.png",
+		[Weapon.STANCE_AGGRESSIVE] = "Resources/Game/UI/Icons/Skills/Strength.png",
+		[Weapon.STANCE_DEFENSIVE] = "Resources/Game/UI/Icons/Skills/Defense.png"
+	},
+	[Weapon.STYLE_SAILING] = {
+		[Weapon.STANCE_NONE] = "Resources/Game/Items/Null/Icon.png",
+		[Weapon.STANCE_CONTROLLED] = "Resources/Game/UI/Icons/Skills/Sailing.png",
+		[Weapon.STANCE_AGGRESSIVE] = "Resources/Game/UI/Icons/Skills/Sailing.png",
+		[Weapon.STANCE_DEFENSIVE] = "Resources/Game/UI/Icons/Skills/Sailing.png"
+	}
+}
 
 function GamepadCombatHUD:new(...)
 	BaseCombatHUD.new(self, ...)
 
-	local uiView = self:getUIView()
+	local uiView = self:getView()
 	local rootNode = uiView:getRoot()
 
 	self._onGamepadRelease = function(_, joystick, button)
@@ -70,31 +107,120 @@ function GamepadCombatHUD:new(...)
 	self:_initCommon()
 end
 
+function GamepadCombatHUD:onSwitchCombatStyle(oldCombatStyle, newCombatStyle)
+	BaseCombatHUD.onSwitchCombatStyle(self, oldCombatStyle, newCombatStyle)
+
+	local button = self:getThingiesButton(BaseCombatHUD.THINGIES_STANCE)
+	if not button then
+		return
+	end
+
+	local icon = button:getData("icon")
+
+	newCombatStyle = newCombatStyle or Weapon.STYLE_NONE
+
+	local iconFilename = GamepadCombatHUD.COMBAT_STYLE_ICONS[newCombatStyle]
+	iconFilename = iconFilename or GamepadCombatHUD.COMBAT_STYLE_ICONS[Weapon.STYLE_NONE]
+
+	icon:setIcon(iconFilename or false)
+end
+
+function GamepadCombatHUD:onSelectPendingPower(powerType, pendingPowerID)
+	BaseCombatHUD.onSelectPendingPower(self, powerType, pendingPowerID)
+
+	local button = self:getThingiesButton(powerType)
+	if not button then
+		return
+	end
+
+	local icon = button:getData("icon")
+	icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", pendingPowerID))
+
+	button:addChild(self.pendingPowerMenuIcon)
+	self.pendingPowerMenuIcon:setSize(icon:getSize())
+end
+
+function GamepadCombatHUD:onClearPendingPower(powerType, pendingPowerID)
+	BaseCombatHUD.onClearPendingPower(self, powerType, pendingPowerID)
+
+	local button = self:getThingiesButton(powerType)
+	if not button then
+		return
+	end
+
+	local icon = button:getData("icon")
+	if powerType == BaseCombatHUD.THINGIES_OFFENSIVE_POWERS then
+		icon:setIcon("Resources/Game/UI/Icons/Concepts/Powers.png")
+	elseif powerType == BaseCombatHUD.THINGIES_DEFENSIVE_POWERS then
+		icon:setIcon("Resources/Game/UI/Icons/Skills/Defense.png")
+	end
+
+	if self.pendingPowerMenuIcon:getParent() == button then
+		button:removeChild(self.pendingPowerMenuIcon)
+	end
+end
+
+function GamepadCombatHUD:onSwitchSpell(oldSpell, newSpell)
+	BaseCombatHUD.onSwitchSpell(self, oldSpell, newSpell)
+
+	local button = self:getThingiesButton(BaseCombatHUD.THINGIES_SPELLS)
+	if not button then
+		return
+	end
+
+	local icon = button:getData("icon")
+
+	if newSpell then
+		icon:setIcon(string.format("Resources/Game/Spells/%s/Icon.png", newSpell))
+
+		local panel = button:getData("panel")
+		if not panel:getData("enabled") then
+			panel:setData("enabled", true)
+			panel:setData("previousColor", panel:getData("currentColor") or Color(panel:getOutlineColor():get()))
+			panel:setData("currentColor", Color(self.CIRCLE_PANEL_SPELL_COLOR:get()))
+			panel:setOutlineColor(self.CIRCLE_PANEL_SPELL_COLOR)
+			panel:enable()
+		end
+	else
+		icon:setIcon(string.format("Resources/Game/Spells/FireBlast/Icon.png"))
+
+		local panel = button:getData("panel")
+		panel:setOutlineColor(panel:getData("previousColor") or self.CIRCLE_PANEL_ENABLED_COLOR)
+		panel:unsetData("enabled")
+		panel:unsetData("previousColor")
+		panel:unsetData("currentColor")
+
+		if not button:getIsFocused() then
+			panel:disable()
+		end
+	end
+end
+
 function GamepadCombatHUD:_initCommon()
 	self.iconGamepadPrimaryAction = Icon()
-	self.iconGamepadPrimaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayerStation/button_a.png")
+	self.iconGamepadPrimaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_a.png")
 	self.iconGamepadPrimaryAction:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
 	self.iconGamepadPrimaryAction:setPosition(
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE / 2,
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE / 2)
+		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
+		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
 	self.iconGamepadSecondaryAction = Icon()
-	self.iconGamepadSecondaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayerStation/button_y.png")
+	self.iconGamepadSecondaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_y.png")
 	self.iconGamepadSecondaryAction:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
 	self.iconGamepadSecondaryAction:setPosition(
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE / 2,
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE / 2)
+		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
+		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
 	self.iconGamepadBack = Icon()
-	self.iconGamepadBack:setIcon("Resources/Game/UI/Icons/Controllers/PlayerStation/button_b.png")
+	self.iconGamepadBack:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_b.png")
 	self.iconGamepadBack:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
 	self.iconGamepadBack:setPosition(
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE / 2,
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE / 2)
+		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
+		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
 	self.iconGamepadMenuAction = Icon()
-	self.iconGamepadMenuAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayerStation/button_x.png")
+	self.iconGamepadMenuAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_x.png")
 	self.iconGamepadMenuAction:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
 	self.iconGamepadMenuAction:setPosition(
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE / 2,
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE / 2)
+		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
+		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
 
 	self.pendingPowerIcon = PendingPowerIcon()
 	self.pendingPowerIcon:setPosition(self.ICON_OFFSET, self.ICON_OFFSET)
@@ -108,7 +234,12 @@ end
 function GamepadCombatHUD:openMenu()
 	local didOpen = BaseCombatHUD.openMenu(self)
 	if didOpen then
-		self:focus(self:getMenu(), "select")
+		local menu = self:getMenu()
+
+		self:focus(menu, "select")
+
+		self.currentSpiralMenu = menu
+		self:layoutSpiralMenu(self.currentSpiralMenu)
 	end
 end
 
@@ -125,8 +256,8 @@ function GamepadCombatHUD:layoutSpiralMenu(spiralMenu)
 
 	local radius = spiralMenu:getRadius()
 	spiralMenu:setPosition(
-		width / 2 + radius + self.SPIRAL_OFFSET,
-		height / 2 + radius + self.SPIRAL_OFFSET)
+		width / 2 + radius / 2 + self.SPIRAL_OFFSET,
+		height / 2 + radius / 2 + self.SPIRAL_OFFSET)
 end
 
 function GamepadCombatHUD:openSpiralMenu(spiralMenu)
@@ -175,12 +306,12 @@ end
 
 function GamepadCombatHUD:newSpiralButton()
 	local button = Button()
-	button:setStyle(ButtonStyle({}, self:getUIView():getResources()))
+	button:setStyle(ButtonStyle({}, self:getView():getResources()))
 
 	local panel = GamepadCirclePanel()
 	panel:setOutlineColor(self.CIRCLE_PANEL_ENABLED_COLOR)
-	panel:setOutlineThickness(2, 4)
-	panel:setRadius(2)
+	panel:setOutlineThickness(1, 3)
+	panel:setRadius(5)
 	button:addChild(panel)
 	button:setData("panel", panel)
 
@@ -203,18 +334,23 @@ function GamepadCombatHUD:layoutSpiralButton(button, delta)
 		iconSize = math.lerp(self.MINIMUM_ICON_SIZE, self.DEFAULT_ICON_SIZE, delta)
 	end
 
+	local panel = button:getData("panel")
 	if button:getIsFocused() then
-		button:getData("panel"):enable()
+		panel:enable()
 
 		if self.iconGamepadPrimaryAction:getParent() ~= button then
 			button:addChild(self.iconGamepadPrimaryAction)
 		end
 	else
-		button:getData("panel"):disable()
+		panel:disable()
 
 		if self.iconGamepadPrimaryAction:getParent() == button then
 			button:removeChild(self.iconGamepadPrimaryAction)
 		end
+	end
+
+	if panel:getData("enabled") then
+		panel:enable()
 	end
 
 	button:setSize(buttonSize, buttonSize)
@@ -222,12 +358,17 @@ function GamepadCombatHUD:layoutSpiralButton(button, delta)
 	local icon = button:getData("icon")
 	icon:setSize(iconSize, iconSize)
 	icon:setColor(Color(1, 1, 1, alpha))
+end
 
-	self:layoutSpiralButton(button)
+function GamepadCombatHUD:_onMenuOptionVisible(_, button, delta)
+	self:layoutSpiralButton(button, delta)
 end
 
 function GamepadCombatHUD:newMenu()
-	return self:newSpiralMenu("main")
+	local menu = self:newSpiralMenu("main")
+	menu.onChildVisible:register(self._onMenuOptionVisible, self)
+
+	return menu
 end
 
 function GamepadCombatHUD:newMenuButton(name)
@@ -242,9 +383,9 @@ function GamepadCombatHUD:updateMenuButton(name, button)
 	local panel = button:getData("panel")
 
 	local isEnabled = self:isEnabled(name)
-	if isEnabled then
+	if isEnabled or panel:getData("enabled") then
 		icon:setColor(self.ICON_ENABLED_COLOR)
-		panel:setOutlineColor(self.CIRCLE_PANEL_ENABLED_COLOR)
+		panel:setOutlineColor(panel:getData("currentColor") or self.CIRCLE_PANEL_ENABLED_COLOR)
 	else
 		icon:setColor(self.ICON_DISABLED_COLOR)
 		panel:setOutlineColor(self.CIRCLE_PANEL_DISABLED_COLOR)
@@ -288,6 +429,10 @@ function GamepadCombatHUD:newPowerThingies(name, powersState)
 	local powersSpiral = self:newSpiralMenu(name)
 	powersSpiral.onChildVisible:register(self._onPowerVisible, self)
 	return powersSpiral
+end
+
+function GamepadCombatHUD:update(delta)
+	BaseCombatHUD.update(self, delta)
 end
 
 return GamepadCombatHUD

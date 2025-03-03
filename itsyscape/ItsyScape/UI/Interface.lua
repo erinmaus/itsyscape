@@ -70,7 +70,7 @@ function Interface:poke(actionID, actionIndex, e)
 end
 
 function Interface:focus(widget, reason)
-	local inputProvider = self:getUIView():getInputProvider()
+	local inputProvider = self:getView():getInputProvider()
 	inputProvider:setFocusedWidget(widget, reason)
 end
 

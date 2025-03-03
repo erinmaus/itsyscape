@@ -340,14 +340,14 @@ function WidgetInputProvider:joystickRemove(joystick)
 end
 
 function WidgetInputProvider:gamepadRelease(...)
-	local widget = self:getFocusedWidget()
+	local widget = self:getFocusedWidget() or self.root
 	if widget then
 		widget:gamepadRelease(...)
 	end
 end
 
 function WidgetInputProvider:gamepadPress(...)
-	local widget = self:getFocusedWidget()
+	local widget = self:getFocusedWidget() or self.root
 	if widget then
 		widget:gamepadPress(...)
 	end
@@ -422,7 +422,7 @@ end
 function WidgetInputProvider:keyDown(key, ...)
 	local captured
 	do
-		local f = self:getFocusedWidget()
+		local f = self:getFocusedWidget() or self.root
 		if f then
 			captured = f:keyDown(key, ...)
 		else
@@ -441,14 +441,14 @@ function WidgetInputProvider:keyDown(key, ...)
 end
 
 function WidgetInputProvider:keyUp(...)
-	local f = self:getFocusedWidget()
+	local f = self:getFocusedWidget() or self.root
 	if f then
 		f:keyUp(...)
 	end
 end
 
 function WidgetInputProvider:type(...)
-	local f = self:getFocusedWidget()
+	local f = self:getFocusedWidget() or self.root
 	if f then
 		f:type(...)
 	end
