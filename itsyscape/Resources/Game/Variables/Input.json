@@ -16,7 +16,10 @@
 			"axisSensitivity": 0.5,
 			"radialDrag": 1,
 
-			"gamepadOpenCombatRing": "rightshoulder"
+			"gamepadOpenCombatRing": "rightshoulder",
+			"gamepadPrimaryAction": "a",
+			"gamepadSecondaryAction": "y",
+			"gamepadBack": "b"
 		}
 	}
 }

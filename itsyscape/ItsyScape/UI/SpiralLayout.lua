@@ -215,22 +215,13 @@ end
 
 function SpiralLayout:_setAngle(currentAngle, focus)
 	local minAngle = 0
-	local maxAngle = (self:getNumOptions() - 1) / (self.numVisibleOptions - 1) * (math.pi * 2)
+	local maxAngle = (self:getNumOptions() + 1) / self.numVisibleOptions * (math.pi * 2)
 
-	-- TODO use modulo if this is a performance issue
-	while currentAngle < minAngle do
-		currentAngle = currentAngle + maxAngle
-	end
-
-	while currentAngle > maxAngle do
-		currentAngle = currentAngle - maxAngle
-	end
-
-	currentAngle = math.clamp(currentAngle, minAngle, maxAngle)
+	currentAngle = math.wrap(currentAngle, minAngle, maxAngle)
 	self.currentAngle = currentAngle
 
 	if focus then
-		local nextFocusedChildIndex = math.floor(self.currentAngle / (math.pi * 2) * (self.numVisibleOptions - 1)) + 1
+		local nextFocusedChildIndex = math.floor(self.currentAngle / (math.pi * 2) * self.numVisibleOptions) + 1
 		nextFocusedChildIndex = math.clamp(nextFocusedChildIndex, 1, self:getNumOptions())
 
 		local childWidget = self:getOptionAt(nextFocusedChildIndex)
@@ -255,7 +246,8 @@ function SpiralLayout:getNumOptions()
 end
 
 function SpiralLayout:getNumRemainingOptions()
-	return self:getNumOptions() % self:getNumVisibleOptions()
+	local remainder = math.wrapIndex(self:getNumOptions(), 1, self:getNumVisibleOptions())
+	return self:getNumVisibleOptions() - remainder + 1
 end
 
 function SpiralLayout:getOptionAt(index)
@@ -280,13 +272,13 @@ function SpiralLayout:performLayout()
 	end
 
 	local currentIndex = self.currentFocusedChildIndex or 1
-	local targetAngle = (currentIndex - 1) / (self.numVisibleOptions - 1) * (math.pi * 2)
-	local targetCurrentAngleDifference = targetAngle - self.currentAngle
-	local globalDelta = math.clamp(targetCurrentAngleDifference / (math.pi * 2 / self.numVisibleOptions))
+	local targetAngle = (currentIndex - 1) / self.numVisibleOptions * (math.pi * 2)
+	local targetCurrentAngleDifference = math.diffAngle(self.currentAngle, targetAngle)
+	local globalDelta = 1 - math.clamp(targetCurrentAngleDifference / ((math.pi * 2) / self.numVisibleOptions))
 	local offsetAngle = targetAngle % (math.pi * 2)
 
-	local minIndex = -math.floor(self.numVisibleOptions / 2)
-	local maxIndex = math.ceil(self.numVisibleOptions / 2) + 1
+	local minIndex = -math.floor(self.numVisibleOptions / 2) + 1
+	local maxIndex = math.ceil(self.numVisibleOptions / 2)
 
 	table.clear(self.visibleWidgets)
 	self.visibleWidgets[self.innerPanelWrapper] = true
@@ -295,7 +287,6 @@ function SpiralLayout:performLayout()
 		local absoluteIndex = math.wrapIndex(i + currentIndex, 0, self:getNumChildren() - 1)
 		local widget = self:getOptionAt(absoluteIndex)
 
-		local mu = i / self.numVisibleOptions
 		local currentMu = i / self.numVisibleOptions
 		local nextMu = (i + 1) / self.numVisibleOptions
 		local mu = math.lerp(currentMu, nextMu, globalDelta)

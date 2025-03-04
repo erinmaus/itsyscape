@@ -138,6 +138,10 @@ do
     	return (value + increment - 1) % max + 1
 	end
 
+	math.wrap = function(value, min, max)
+		return min + ((value - min) % (max - min))
+	end
+
 	local utf8 = require "utf8"
 	function utf8.sub(s, i, j)
 		local stringI = utf8.offset(s, i or 1) or #s + 1

@@ -23,8 +23,9 @@ local PendingPowerIcon = require "ItsyScape.UI.Interfaces.Components.PendingPowe
 local GamepadCombatHUD = Class(BaseCombatHUD)
 
 GamepadCombatHUD.SPIRAL_OFFSET             = 32
-GamepadCombatHUD.SPIRAL_RADIUS             = 276
-GamepadCombatHUD.SPIRAL_INNER_PANEL_RADIUS = 192
+GamepadCombatHUD.SPIRAL_OUTER_RADIUS       = 256
+GamepadCombatHUD.SPIRAL_INNER_RADIUS       = 192
+GamepadCombatHUD.SPIRAL_INNER_PANEL_RADIUS = 128
 
 GamepadCombatHUD.SELECTED_BUTTON_SIZE = 68
 GamepadCombatHUD.DEFAULT_BUTTON_SIZE  = 52
@@ -82,6 +83,7 @@ GamepadCombatHUD.COMBAT_STANCE_ICONS = {
 function GamepadCombatHUD:new(...)
 	self.thingiesAngles = {}
 	self.thingiesStack = {}
+	self.thingiesProperties = {}
 
 	BaseCombatHUD.new(self, ...)
 
@@ -249,7 +251,6 @@ function GamepadCombatHUD:openThingies(name, targetWidget)
 		self:addChild(thingiesWidget)
 	end
 
-
 	return didOpen
 end
 
@@ -273,28 +274,37 @@ function GamepadCombatHUD:openMenu()
 		end
 
 		self:layoutSpiralMenu(menu)
+	end
+end
 
-		table.insert(self.thingiesStack, self.FEATURE_MENU)
+function GamepadCombatHUD:clear()
+	while #self.thingiesStack > 1 do
+		self:back()
 	end
 end
 
 function GamepadCombatHUD:back()
-	if #self.thingiesStack > 1 then
-		local top = table.remove(self.thingiesStack)
+	if #self.thingiesStack == 0 then
+		return false
+	end
 
-		if top == self.FEATURE_MENU then
-			self:closeMenu()
+	local top = table.remove(self.thingiesStack)
+	if top == self.FEATURE_MENU then
+		self:closeMenu()
+	else
+		self:closeThingies(top)
+	end
+
+	if #self.thingiesStack >= 1 then
+		local current = self.thingiesStack[#self.thingiesStack]
+		if current == self.FEATURE_MENU then
+			self:openMenu()
 		else
-			self:closeThingies(top)
+			self:openThingies(current)
 		end
 	end
 
-	local current = self.thingiesStack[#self.thingiesStack]
-	if current == self.FEATURE_MENU then
-		self:openMenu()
-	else
-		self:openThingies(current)
-	end
+	return true
 end
 
 function GamepadCombatHUD:closeMenu()
@@ -305,8 +315,16 @@ function GamepadCombatHUD:closeMenu()
 	end
 end
 
+function GamepadCombatHUD:show()
+	local didShow = BaseCombatHUD.show(self)
+	if didShow then
+		table.insert(self.thingiesStack, self.FEATURE_MENU)
+	end
+end
+
 function GamepadCombatHUD:toggleCombatRing()
 	if self:getIsShowing() then
+		self:clear()
 		self:hide()
 	else
 		self:show()
@@ -329,11 +347,8 @@ function GamepadCombatHUD:openSpiralMenu(spiralMenu)
 end
 
 function GamepadCombatHUD:selectThingies(name, target)
-	print("selectThingies", name)
-
 	local isOpen = BaseCombatHUD.selectThingies(self, name, target)
 	if not isOpen then
-		print("", "not open")
 		return
 	end
 
@@ -363,10 +378,22 @@ function GamepadCombatHUD:performLayout()
 	end
 end
 
+function GamepadCombatHUD:onSpiralMenuGamepadButtonRelease(name, _, joystick, button)
+	local inputProvider = self:getView():getInputProvider()
+
+	if not inputProvider:isCurrentJoystick(joystick) then
+		return
+	end
+
+	if inputProvider:getKeybind("gamepadBack") == button then
+		self:back()
+	end
+end
+
 function GamepadCombatHUD:newSpiralMenu(name)
 	local spiralMenu = SpiralLayout()
 	spiralMenu:setData("name", name)
-	spiralMenu:setRadius(self.SPIRAL_RADIUS)
+	spiralMenu:setRadius(self.SPIRAL_INNER_RADIUS, self.SPIRAL_OUTER_RADIUS)
 
 	local circlePanel = GamepadCirclePanel()
 	circlePanel:enable()
@@ -379,7 +406,20 @@ function GamepadCombatHUD:newSpiralMenu(name)
 		-(self.SPIRAL_INNER_PANEL_RADIUS / 2))
 	spiralMenu:getInnerPanel():addChild(circlePanel)
 
+	spiralMenu.onGamepadRelease:register(self.onSpiralMenuGamepadButtonRelease, self, name)
+
 	return spiralMenu
+end
+
+function GamepadCombatHUD:finishSpiralMenu(name, spiralMenu)
+	local numRemaining = spiralMenu:getNumRemainingOptions()
+
+	for i = 1, numRemaining do
+		local button = self:newSpiralButton()
+		button:setData("isDisabled", true)
+
+		spiralMenu:addChild(button)
+	end
 end
 
 function GamepadCombatHUD:newSpiralButton()
@@ -404,6 +444,8 @@ function GamepadCombatHUD:layoutSpiralButton(button, delta)
 	delta = delta or button:getData("delta") or 1
 	button:setData("delta", delta)
 
+	local isDisabled = button:getData("isDisabled")
+
 	local buttonSize, iconSize, alpha
 	if button:getIsFocused() then
 		alpha = 1
@@ -419,7 +461,7 @@ function GamepadCombatHUD:layoutSpiralButton(button, delta)
 	if button:getIsFocused() then
 		panel:enable()
 
-		if self.iconGamepadPrimaryAction:getParent() ~= button then
+		if self.iconGamepadPrimaryAction:getParent() ~= button and not isDisabled then
 			button:addChild(self.iconGamepadPrimaryAction)
 		end
 	else
@@ -503,6 +545,7 @@ function GamepadCombatHUD:updatePowerButton(button, powerState, isPending)
 	button:setData("isPending", isPending)
 	if isPending then
 		button:addChild(self.pendingPowerIcon)
+		self.pendingPowerIcon:setSize(icon:getSize())
 	elseif self.pendingPowerIcon:getParent() == button then
 		button:removeChild(self.pendingPowerIcon)
 	end
@@ -524,11 +567,12 @@ end
 function GamepadCombatHUD:newPowerThingies(name, powersState)
 	local powersSpiral = self:newSpiralMenu(name)
 	powersSpiral.onChildVisible:register(self._onPowerVisible, self)
+
 	return powersSpiral
 end
 
-function GamepadCombatHUD:finishPowerThingies(name, thingiesWidget, powerState)
-
+function GamepadCombatHUD:finishPowerThingies(name, thingiesWidget)
+	self:finishSpiralMenu(name, thingiesWidget)
 end
 
 function GamepadCombatHUD:update(delta)
@@ -536,4 +580,3 @@ function GamepadCombatHUD:update(delta)
 end
 
 return GamepadCombatHUD
-

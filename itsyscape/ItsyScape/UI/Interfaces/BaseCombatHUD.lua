@@ -89,6 +89,18 @@ function BaseCombatHUD:onSwitchSpell(oldSpell, newSpell)
 	-- Nothing.
 end
 
+function BaseCombatHUD:activateDefensivePower(index)
+	self:sendPoke("activateDefensivePower", nil, {
+		index = index
+	})
+end
+
+function BaseCombatHUD:activateOffensivePower(index)
+	self:sendPoke("activateOffensivePower", nil, {
+		index = index
+	})
+end
+
 function BaseCombatHUD:_getPowerType(powerID)
 	local state = self:getState()
 
@@ -300,14 +312,29 @@ function BaseCombatHUD:newPowerThingies(name, powersState)
 	return Class.ABSTRACT()
 end
 
+function BaseCombatHUD:finishPowerThingies(name, thingiesWidget)
+	Class.ABSTRACT()
+end
+
+function BaseCombatHUD:_getPowersStateKey(name)
+	if name == BaseCombatHUD.THINGIES_OFFENSIVE_POWERS then
+		return "offensive"
+	elseif name == BaseCombatHUD.THINGIES_DEFENSIVE_POWERS then
+		return "defensive"
+	end
+
+	return nil
+end
+
 function BaseCombatHUD:_initPowersThingies(name, powersState)
 	self:_unregisterThingies(name)
 
-	local stateKey
+	local stateKey = self:_getPowersStateKey(name)
+	local callback
 	if name == BaseCombatHUD.THINGIES_OFFENSIVE_POWERS then
-		stateKey = "offensive"
+		callback = self.activateOffensivePower
 	elseif name == BaseCombatHUD.THINGIES_DEFENSIVE_POWERS then
-		stateKey = "defensive"
+		callback = self.activateDefensivePower
 	else
 		return
 	end
@@ -321,24 +348,18 @@ function BaseCombatHUD:_initPowersThingies(name, powersState)
 
 	for i, powerState in ipairs(powersState) do
 		local button = self:newPowerButton(powerState)
-		button.onClick:register(self.onActivateDefensivePower, self, i)
+		button.onClick:register(callback, self, i)
 
 		powersThingie.widget:addChild(button)
 		table.insert(powersThingie.buttons, button)
 	end
 
+	self:finishPowerThingies(name, powersThingie.widget)
 	self:_registerThingies(name, powersThingie)
 end
 
 function BaseCombatHUD:_updatePowersThingies(name)
-	local stateKey
-	if name == BaseCombatHUD.THINGIES_OFFENSIVE_POWERS then
-		stateKey = "offensive"
-	elseif name == BaseCombatHUD.THINGIES_DEFENSIVE_POWERS then
-		stateKey = "defensive"
-	else
-		return
-	end
+	local stateKey = self:_getPowersStateKey(name)
 
 	local state = self:getState()
 	local powersState = state.powers[stateKey]
@@ -348,7 +369,7 @@ function BaseCombatHUD:_updatePowersThingies(name)
 	for i, powerState in ipairs(powersState) do
 		local button = buttons[i]
 		if button then
-			self:updatePowerButton(button, powerState, powerState.id == pendingID)
+			self:updatePowerButton(button, powerState, powerState.id == pendingPowerID)
 			button:setID(string.format("BaseCombatHUD-Power-%s", powerState.id))
 		end
 	end
@@ -444,19 +465,25 @@ function BaseCombatHUD:closeMenu()
 end
 
 function BaseCombatHUD:show()
-	if not self.isShowing then
-		self:openMenu()
+	if self.isShowing then
+		return false
 	end
 
+	self:openMenu()
 	self.isShowing = true
+
+	return true
 end
 
 function BaseCombatHUD:hide()
-	if self.isShowing then
-		self:closeMenu()
+	if not self.isShowing then
+		return false
 	end
 
+	self:closeMenu()
+
 	self.isShowing = false
+	return true
 end
 
 function BaseCombatHUD:getIsShowing()
