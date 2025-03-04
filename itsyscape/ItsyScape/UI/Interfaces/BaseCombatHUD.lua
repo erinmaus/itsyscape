@@ -27,6 +27,8 @@ BaseCombatHUD.THINGIES_PRAYERS          = "prayers"
 BaseCombatHUD.THINGIES_SPELLS           = "spells"
 BaseCombatHUD.THINGIES_EQUIPMENT        = "equipment"
 BaseCombatHUD.THINGIES_FLEE             = "flee"
+
+BaseCombatHUD.FEATURE_MENU              = "menu"
 BaseCombatHUD.FEATURE_HITPOINTS         = "hitpoints"
 BaseCombatHUD.FEATURE_ZEAL              = "zeal"
 BaseCombatHUD.FEATURE_EFFECTS           = "effects"
@@ -61,6 +63,8 @@ function BaseCombatHUD:new(...)
 	self.currentCombatStyle = false
 	self.currentStance = false
 	self.currentSpellID = false
+
+	self.wasRefreshed = false
 
 	self:performLayout()
 end
@@ -109,6 +113,9 @@ function BaseCombatHUD:resetEvents()
 	self.currentCombatStyle = false
 	self.currentStance = false
 	self.currentSpellID = false
+
+	self:onClearPendingPower(BaseCombatHUD.THINGIES_OFFENSIVE_POWERS, false)
+	self:onClearPendingPower(BaseCombatHUD.THINGIES_DEFENSIVE_POWERS, false)
 
 	self:updateEvents()
 end
@@ -165,6 +172,10 @@ function BaseCombatHUD:isThingiesOpen(name)
 	return self.openedThingies[name] == true
 end
 
+function BaseCombatHUD:_getThingies(name)
+	return self.thingies[name]
+end
+
 function BaseCombatHUD:getThingiesWidget(name)
 	return self.thingies[name] and self.thingies[name].widget
 end
@@ -188,7 +199,7 @@ end
 
 function BaseCombatHUD:closeThingies(name)
 	if not self:isThingiesOpen(name) then
-		return
+		return false
 	end
 
 	local thingies = self.thingies[name]
@@ -332,9 +343,10 @@ function BaseCombatHUD:_updatePowersThingies(name)
 	local state = self:getState()
 	local powersState = state.powers[stateKey]
 	local pendingPowerID = state.powers.pendingID
+	local buttons = self:_getThingies(name).buttons
 
 	for i, powerState in ipairs(powersState) do
-		local button = self.defensivePowersButtons[i]
+		local button = buttons[i]
 		if button then
 			self:updatePowerButton(button, powerState, powerState.id == pendingID)
 			button:setID(string.format("BaseCombatHUD-Power-%s", powerState.id))
@@ -343,8 +355,17 @@ function BaseCombatHUD:_updatePowersThingies(name)
 end
 
 function BaseCombatHUD:updateThingies()
+	if not self.wasRefreshed then
+		return
+	end
+
 	self:_updatePowersThingies(BaseCombatHUD.THINGIES_OFFENSIVE_POWERS)
 	self:_updatePowersThingies(BaseCombatHUD.THINGIES_DEFENSIVE_POWERS)
+end
+
+function BaseCombatHUD:refresh()
+	self.wasRefreshed = true
+	self:refreshThingies()
 end
 
 function BaseCombatHUD:refreshThingies()
@@ -472,6 +493,8 @@ function BaseCombatHUD:update(delta)
 
 	self:togglePlayerInfo(showPlayer)
 	self:toggleTargetInfo(showTarget)
+
+	self:updateThingies()
 end
 
 return BaseCombatHUD

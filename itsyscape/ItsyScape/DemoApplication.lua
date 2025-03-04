@@ -427,14 +427,17 @@ function DemoApplication:openMainMenu()
 				previousChild:removeChild(previousChild:getData("action"))
 			end
 
-			currentChild:getData("circle").enabled = true
-			currentChild:getData("circle").fill = Color(1, 0.8, 0, 0.5)
-			currentChild:addChild(currentChild:getData("action"))
-			
-			label:setText({
-				{ t = "header", currentChild:getData("name") },
-				currentChild:getData("description")
-			})
+			if currentChild then
+				currentChild:getData("circle").enabled = true
+				currentChild:getData("circle").fill = Color(1, 0.8, 0, 0.5)
+				currentChild:addChild(currentChild:getData("action"))
+				
+				label:setText({
+					{ t = "header", currentChild:getData("name") },
+					currentChild:getData("description")
+				})
+
+			end
 
 			active = currentChild
 		end)

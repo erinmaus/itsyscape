@@ -532,8 +532,8 @@ function Widget:mouseScroll(...)
 end
 
 function Widget:focus(...)
-	self.onFocus(self, ...)
 	self.isFocused = true
+	self.onFocus(self, ...)
 
 	local parent = self:getParent()
 	while parent do
@@ -543,8 +543,8 @@ function Widget:focus(...)
 end
 
 function Widget:blur(...)
-	self.onBlur(self, ...)
 	self.isFocused = false
+	self.onBlur(self, ...)
 
 	local parent = self:getParent()
 	while parent do

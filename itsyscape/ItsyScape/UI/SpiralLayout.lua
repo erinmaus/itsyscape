@@ -47,6 +47,8 @@ function SpiralLayout:new()
 
 	self.currentFocusedChildIndex = 1
 	self.nextFocusedChildIndex = false
+	self.focusNextChild = false
+
 	self.visibleWidgets = {}
 
 	self.innerRadius = self.DEFAULT_RADIUS
@@ -102,8 +104,46 @@ function SpiralLayout:getOverflow()
 	return true
 end
 
-function SpiralLayout:getFocusedChildIndex()
-	return self.currentFocusedChildIndex
+function SpiralLayout:getFocusedOptionIndex()
+	return self.nextFocusedChildIndex or self.currentFocusedChildIndex
+end
+
+function SpiralLayout:setFocusedOptionIndex(value)
+	value = math.clamp(value or self.currentFocusedChildIndex, 1, self:getNumOptions())
+	if value == self.currentFocusedChildIndex then
+		return
+	end
+
+	local child = self:getOptionAt(value)
+	if not child then
+		return
+	end
+
+	self.nextFocusedChildIndex = value
+
+	local inputProvider = self:getInputProvider()
+	if not inputProvider then
+		self.focusNextChild = true
+		return
+	end
+
+	local previousFocusedChildIndex = self.currentFocusedChildIndex
+	self.currentFocusedChildIndex = value
+
+	local previousChild = self:getOptionAt(previousFocusedChildIndex)
+	local currentChild = self:getOptionAt(self.currentFocusedChildIndex)
+
+	inputProvider:setFocusedWidget(currentChild, "select")
+	self:onChildSelected(currentChild, previousChild)
+	self:onChildVisible(currentChild, 1)
+end
+
+function SpiralLayout:getCurrentAngle()
+	return self.currentAngle
+end
+
+function SpiralLayout:setCurrentAngle(value)
+	self:_setAngle(value, true)
 end
 
 function SpiralLayout:focus(reason)
@@ -132,6 +172,17 @@ function SpiralLayout:_blurChild(widget)
 	while currentParent and currentParent ~= self do
 		previousParent = currentParent
 		currentParent = currentParent:getParent()
+	end
+
+	if currentParent ~= self then
+		return
+	end
+
+	for index, widget in self:iterate() do
+		if widget == previousParent then
+			self:onChildSelected(nil, widget)
+			break
+		end
 	end
 end
 
@@ -182,8 +233,6 @@ function SpiralLayout:_setAngle(currentAngle, focus)
 		local nextFocusedChildIndex = math.floor(self.currentAngle / (math.pi * 2) * (self.numVisibleOptions - 1)) + 1
 		nextFocusedChildIndex = math.clamp(nextFocusedChildIndex, 1, self:getNumOptions())
 
-		Log.error("nextFocusedChildIndex %d, currentFocusedChildIndex %d", nextFocusedChildIndex, self.currentFocusedChildIndex)
-
 		local childWidget = self:getOptionAt(nextFocusedChildIndex)
 		local inputProvider = self:getInputProvider()
 
@@ -217,6 +266,10 @@ function SpiralLayout:getOptionAt(index)
 
 	index = math.clamp(index, 1, numOptions)
 	return self:getChildAt(index + 1)
+end
+
+function SpiralLayout:getCurrentOption()
+	return self:getOptionAt(self:getFocusedOptionIndex())
 end
 
 function SpiralLayout:performLayout()
@@ -344,7 +397,10 @@ function SpiralLayout:update(delta)
 
 	if self.nextFocusedChildIndex then
 		local targetAngle = ((self.nextFocusedChildIndex - 1) / (self:getNumVisibleOptions() - 1)) * math.pi * 2
-		self:_setAngle(targetAngle, false)
+		self:_setAngle(targetAngle, self.focusNextChild)
+
+		self.nextFocusedChildIndex = false
+		self.focusNextChild = false
 	end
 
 	if self.hasAxisInput then
