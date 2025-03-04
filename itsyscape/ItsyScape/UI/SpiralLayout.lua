@@ -16,7 +16,8 @@ local Layout = require "ItsyScape.UI.Layout"
 local Widget = require "ItsyScape.UI.Widget"
 
 local SpiralLayout = Class(Layout)
-SpiralLayout.DEFAULT_RADIUS = 128
+SpiralLayout.DEFAULT_OUTER_RADIUS = 128
+SpiralLayout.DEFAULT_INNER_RADIUS = 96
 SpiralLayout.DEFAULT_NUM_OPTIONS = 8
 SpiralLayout.DEFAULT_SQUISH = 1.2
 
@@ -48,7 +49,8 @@ function SpiralLayout:new()
 	self.nextFocusedChildIndex = false
 	self.visibleWidgets = {}
 
-	self.radius = self.DEFAULT_RADIUS
+	self.innerRadius = self.DEFAULT_RADIUS
+	self.outerRadius = self.DEFAULT_OUTER_RADIUS
 	self.numVisibleOptions = self.DEFAULT_NUM_OPTIONS
 	self.squish = self.DEFAULT_SQUISH
 
@@ -61,20 +63,30 @@ function SpiralLayout:new()
 	self.previousYAxisValue = 0
 	self.hasAxisInput = false
 
-	self:addChild(self.innerPanel)
+	self:addChild(self.innerPanelWrapper)
 end
 
 function SpiralLayout:getInnerPanel()
 	return self.innerPanel
 end
 
-function SpiralLayout:setRadius(value)
-	self.radius = value or self.DEFAULT_RADIUS
+function SpiralLayout:setRadius(innerValue, outerValue)
+	self.innerRadius = value or self.DEFAULT_INNER_RADIUS
+	self.outerRadius = value or self.DEFAULT_OUTER_RADIUS
+
 	self:performLayout()
 end
 
 function SpiralLayout:getRadius()
-	return self.radius
+	return self.innerRadius, self.outerRadius
+end
+
+function SpiralLayout:setSquish(value)
+	self.squish = value or self.DEFAULT_SQUISH
+end
+
+function SpiralLayout:getSquish()
+	return self.squish
 end
 
 function SpiralLayout:setNumVisibleOptions(value)
@@ -191,6 +203,10 @@ function SpiralLayout:getNumOptions()
 	return self:getNumChildren() - 1
 end
 
+function SpiralLayout:getNumRemainingOptions()
+	return self:getNumOptions() % self:getNumVisibleOptions()
+end
+
 function SpiralLayout:getOptionAt(index)
 	local numOptions = self:getNumChildren()
 	if index < 0 then
@@ -200,12 +216,6 @@ function SpiralLayout:getOptionAt(index)
 	index = math.clamp(index, 1, numOptions)
 	return self:getChildAt(index + 1)
 end
-
-local PREVIOUS_FADE_OUT_ANGLE = 2 * math.pi
-local PREVIOUS_ANGLE = 3 * math.pi
-local CURRENT_ANGLE = 4 * math.pi
-local NEXT_ANGLE = 4.5 * math.pi
-local NEXT_FADE_OUT_ANGLE =  5 * math.pi
 
 function SpiralLayout:performLayout()
 	Layout.performLayout(self)
@@ -220,48 +230,31 @@ function SpiralLayout:performLayout()
 	local globalDelta = math.clamp(targetCurrentAngleDifference / (math.pi * 2 / self.numVisibleOptions))
 	local offsetAngle = targetAngle % (math.pi * 2)
 
-	print("targetCurrentAngleDifference", math.floor(math.deg(targetCurrentAngleDifference)))
-	print("globalDelta", globalDelta)
-
-	local step = self.numVisibleOptions / (math.pi * 2)
-	local numPreviousOptions = math.ceil((CURRENT_ANGLE - PREVIOUS_ANGLE) * step)
-	local numPreCapOptions = math.ceil((PREVIOUS_ANGLE - PREVIOUS_FADE_OUT_ANGLE) * step)
-	local numNextOptions = math.ceil((NEXT_ANGLE - CURRENT_ANGLE) * step)
-	local numPostCapOptions = math.ceil((NEXT_FADE_OUT_ANGLE - NEXT_ANGLE) * step)
-	local numActiveOptions = numPreviousOptions + numNextOptions + 1
-
-	local angleOffset = ((currentIndex - 1) / (self.numVisibleOptions - 1)) * (math.pi * 2)
-
 	local minIndex = -math.floor(self.numVisibleOptions / 2)
 	local maxIndex = math.ceil(self.numVisibleOptions / 2) + 1
 
 	table.clear(self.visibleWidgets)
-	self.visibleWidgets[self.innerPanel] = true
+	self.visibleWidgets[self.innerPanelWrapper] = true
 
 	for i = minIndex, maxIndex do
 		local absoluteIndex = math.wrapIndex(i + currentIndex, 0, self:getNumChildren() - 1)
 		local widget = self:getOptionAt(absoluteIndex)
 
-		local absoluteAngle = ((absoluteIndex - 1) / (self.numVisibleOptions - 1))
-		local radiusDelta = math.sin((i + (-minIndex)) / self.numVisibleOptions / 2)
-		local radius = math.lerp(self.radius / 2, self.radius, radiusDelta)
-
 		local mu = i / self.numVisibleOptions
 		local currentMu = i / self.numVisibleOptions
 		local nextMu = (i + 1) / self.numVisibleOptions
-		local mu = math.clamp(math.lerp(currentMu, nextMu, globalDelta))
+		local mu = math.lerp(currentMu, nextMu, globalDelta)
 
 		local relativeAngle = i / self.numVisibleOptions * (math.pi * 2)
 		local angle = relativeAngle + offsetAngle
 		local widgetDelta = 1 - math.abs(mu * 2)
-		local radiusDelta = widgetDelta
-		local radius = math.lerp(self.radius / 2, self.radius, radiusDelta)
-
-		print("i", i, "angle", math.floor(math.deg(angle)), "mu", mu, "w", widgetDelta, "r", radiusDelta, widget:getData("name"))
+		widgetDelta = math.clamp(math.sin(widgetDelta * (math.pi / 2)) * self.squish)
+		local radiusDelta = mu + 0.5
+		radiusDelta = math.clamp(math.sin(radiusDelta * (math.pi / 2)) * self.squish)
+		local radius = math.lerp(self.innerRadius, self.outerRadius, radiusDelta)
 
 		self:onChildVisible(widget, widgetDelta)
 
-		--local radius = -(((angle / (math.pi * 2) * self.radius) / 3) ^ self.squish)
 		local x = math.cos(angle) * radius
 		local y = math.sin(angle) * radius
 
@@ -273,8 +266,6 @@ function SpiralLayout:performLayout()
 
 		self.visibleWidgets[widget] = true
 	end
-
-	print("")
 end
 
 function SpiralLayout:isChildVisible(childWidget)
