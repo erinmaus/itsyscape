@@ -14,7 +14,7 @@
 			"xAxis": "rightx",
 			"yAxis": "righty",
 			"axisSensitivity": 0.5,
-			"radialDrag": 0.75,
+			"radialDrag": 1,
 
 			"gamepadOpenCombatRing": "rightshoulder"
 		}

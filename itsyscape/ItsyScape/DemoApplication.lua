@@ -374,7 +374,7 @@ function DemoApplication:openMainMenu()
 		local Widget = require "ItsyScape.UI.Widget"
 		local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 		local spiral = SpiralLayout()
-		spiral:setRadius(276)
+		spiral:setRadius(160)
 
 		local label = RichTextLabel()
 		label:setPosition(32, 32)

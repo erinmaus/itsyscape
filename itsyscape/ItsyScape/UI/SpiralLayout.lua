@@ -16,15 +16,29 @@ local Layout = require "ItsyScape.UI.Layout"
 local Widget = require "ItsyScape.UI.Widget"
 
 local SpiralLayout = Class(Layout)
-SpiralLayout.DEFAULT_RADIUS = 256
-SpiralLayout.DEFAULT_NUM_OPTIONS = 6
+SpiralLayout.DEFAULT_RADIUS = 128
+SpiralLayout.DEFAULT_NUM_OPTIONS = 8
+SpiralLayout.DEFAULT_SQUISH = 1.2
+
+SpiralLayout.InnerPanelWrapper = Class(Widget)
+
+function SpiralLayout.InnerPanelWrapper:getOverflow()
+	return true
+end
 
 function SpiralLayout:new()
 	Layout.new(self)
 
+	self.innerPanelWrapper = SpiralLayout.InnerPanelWrapper()
 	self.innerPanel = Widget()
+	self.cursor = Widget()
+
+	self.innerPanelWrapper:addChild(self.innerPanel)
+	self.innerPanelWrapper:addChild(self.cursor)
+
 	self.onChildSelected = Callback()
 	self.onChildVisible = Callback()
+	self.onMoveCursor = Callback()
 
 	self.onBlurChild:register(self._blurChild)
 	self.onFocusChild:register(self._focusChild)
@@ -35,11 +49,10 @@ function SpiralLayout:new()
 	self.visibleWidgets = {}
 
 	self.radius = self.DEFAULT_RADIUS
-	self.numOptions = self.DEFAULT_NUM_OPTIONS
-	self.numPreOptions = self.DEFAULT_NUM_PRE_OPTIONS
-	self.numPostOptions = self.DEFAULT_NUM_POST_OPTIONS
+	self.numVisibleOptions = self.DEFAULT_NUM_OPTIONS
 	self.squish = self.DEFAULT_SQUISH
 
+	self.targetAngle = 0
 	self.currentAngle = 0
 
 	self.currentXAxisValue = 0
@@ -64,13 +77,13 @@ function SpiralLayout:getRadius()
 	return self.radius
 end
 
-function SpiralLayout:setNumOptions(value)
-	self.numOptions = value or self.DEFAULT_NUM_OPTIONS
+function SpiralLayout:setNumVisibleOptions(value)
+	self.numVisibleOptions = value or self.DEFAULT_NUM_OPTIONS
 	self:performLayout()
 end
 
-function SpiralLayout:getNumOptions()
-	return self.numOptions
+function SpiralLayout:getNumVisibleOptions()
+	return self.numVisibleOptions
 end
 
 function SpiralLayout:getOverflow()
@@ -136,27 +149,28 @@ function SpiralLayout:_focusChild(widget)
 	end
 end
 
-function SpiralLayout:_setCurrentAngle(angle, focus)
+function SpiralLayout:_setAngle(currentAngle, targetAngle, focus)
 	local minAngle = 0
-	local maxAngle = (self:getNumChildren() - 1) / self.numOptions * math.pi * 2
+	local maxAngle = (self:getNumOptions() - 1) / (self.numVisibleOptions - 1) * (math.pi * 2)
 
 	-- TODO use modulo if this is a performance issue
-	while angle < minAngle do
-		angle = angle + maxAngle
+	while currentAngle < minAngle do
+		currentAngle = currentAngle + maxAngle
 	end
 
-	while angle > maxAngle do
-		angle = angle - maxAngle
+	while currentAngle > maxAngle do
+		currentAngle = currentAngle - maxAngle
 	end
 
-	angle = math.clamp(angle, minAngle, maxAngle)
-	self.currentAngle = angle
+	currentAngle = math.clamp(currentAngle, minAngle, maxAngle)
+	self.currentAngle = currentAngle
+	self.targetAngle = targetAngle % (math.pi * 2)
 
 	if focus then
-		local nextFocusedChildIndex = math.floor(self.currentAngle / 2 / math.pi * self.numOptions) + 1
-		nextFocusedChildIndex = math.clamp(nextFocusedChildIndex, 1, (self:getNumChildren() - 1)) + 1
+		local nextFocusedChildIndex = math.floor(self.currentAngle / (math.pi * 2) * (self.numVisibleOptions - 1)) + 1
+		nextFocusedChildIndex = math.clamp(nextFocusedChildIndex, 1, self:getNumOptions())
 
-		local childWidget = self:getChildAt(nextFocusedChildIndex)
+		local childWidget = self:getOptionAt(nextFocusedChildIndex)
 		local inputProvider = self:getInputProvider()
 
 		if childWidget and inputProvider and not childWidget:getIsFocused() then
@@ -201,87 +215,55 @@ function SpiralLayout:performLayout()
 	end
 
 	local currentIndex = self.currentFocusedChildIndex or 1
-	local targetAngle = currentIndex / self.numOptions * (math.pi * 2)
-	local targetCurrentAngleDifference = targetAngle - self.currentAngle - math.pi / 8
+	local targetAngle = (currentIndex - 1) / (self.numVisibleOptions - 1) * (math.pi * 2)
+	local targetCurrentAngleDifference = targetAngle - self.currentAngle
+	local globalDelta = math.clamp(targetCurrentAngleDifference / (math.pi * 2 / self.numVisibleOptions))
+	local offsetAngle = targetAngle % (math.pi * 2)
 
-	local step = self.numOptions / (math.pi * 2)
+	print("targetCurrentAngleDifference", math.floor(math.deg(targetCurrentAngleDifference)))
+	print("globalDelta", globalDelta)
+
+	local step = self.numVisibleOptions / (math.pi * 2)
 	local numPreviousOptions = math.ceil((CURRENT_ANGLE - PREVIOUS_ANGLE) * step)
 	local numPreCapOptions = math.ceil((PREVIOUS_ANGLE - PREVIOUS_FADE_OUT_ANGLE) * step)
 	local numNextOptions = math.ceil((NEXT_ANGLE - CURRENT_ANGLE) * step)
 	local numPostCapOptions = math.ceil((NEXT_FADE_OUT_ANGLE - NEXT_ANGLE) * step)
+	local numActiveOptions = numPreviousOptions + numNextOptions + 1
 
-	local previousFadeOutInterval = (PREVIOUS_ANGLE - PREVIOUS_FADE_OUT_ANGLE) / numPreCapOptions
-	local previousInterval = (CURRENT_ANGLE - PREVIOUS_ANGLE) / numPreviousOptions
-	local nextInterval = (NEXT_ANGLE - CURRENT_ANGLE) / numNextOptions
-	local nextFadeOutInterval = (NEXT_FADE_OUT_ANGLE - NEXT_ANGLE) / numPostCapOptions
+	local angleOffset = ((currentIndex - 1) / (self.numVisibleOptions - 1)) * (math.pi * 2)
 
-	local minIndex, maxIndex
-	do
-		local numOptions = self:getNumChildren() - 1
-
-		local totalCount = numPreviousOptions + numPreCapOptions + numNextOptions + numPostCapOptions
-		if totalCount > numOptions then
-			numPreviousOptions = numPreviousOptions + 1
-			numNextOptions = numNextOptions + 1
-
-			previousInterval = (CURRENT_ANGLE - PREVIOUS_ANGLE) / numPreviousOptions
-			nextInterval = (NEXT_ANGLE - CURRENT_ANGLE) / numNextOptions
-
-			minIndex = -numPreviousOptions
-			maxIndex = numNextOptions
-		else
-			minIndex = -(numPreviousOptions + numPreCapOptions) - 1
-			maxIndex = numNextOptions + numPostCapOptions + 1
-		end
-	end
+	local minIndex = -math.floor(self.numVisibleOptions / 2)
+	local maxIndex = math.ceil(self.numVisibleOptions / 2) + 1
 
 	table.clear(self.visibleWidgets)
 	self.visibleWidgets[self.innerPanel] = true
 
 	for i = minIndex, maxIndex do
 		local absoluteIndex = math.wrapIndex(i + currentIndex, 0, self:getNumChildren() - 1)
-		absoluteIndex = absoluteIndex + 1
+		local widget = self:getOptionAt(absoluteIndex)
 
-		local widget = self:getChildAt(absoluteIndex)
+		local absoluteAngle = ((absoluteIndex - 1) / (self.numVisibleOptions - 1))
+		local radiusDelta = math.sin((i + (-minIndex)) / self.numVisibleOptions / 2)
+		local radius = math.lerp(self.radius / 2, self.radius, radiusDelta)
 
-		local angle
-		if i <= -numPreviousOptions then
-			local index = numPreCapOptions - math.abs(i + numPreviousOptions)
-			angle = index * previousFadeOutInterval + PREVIOUS_FADE_OUT_ANGLE
-			widget:setZDepth(-1)
-		elseif i > numNextOptions then
-			local index = i - numNextOptions
-			angle = index * nextFadeOutInterval + NEXT_ANGLE
-			widget:setZDepth(1)
-		elseif i < 0 then
-			angle = (numPreviousOptions - math.abs(i)) * previousInterval + PREVIOUS_ANGLE
-			widget:setZDepth(1)
-		elseif i > 0 then
-			angle = i * nextInterval + CURRENT_ANGLE
-			widget:setZDepth(1)
-		else
-			angle = CURRENT_ANGLE
-			widget:setZDepth(1)
-		end
+		local mu = i / self.numVisibleOptions
+		local currentMu = i / self.numVisibleOptions
+		local nextMu = (i + 1) / self.numVisibleOptions
+		local mu = math.clamp(math.lerp(currentMu, nextMu, globalDelta))
 
-		angle = angle-- + targetCurrentAngleDifference
+		local relativeAngle = i / self.numVisibleOptions * (math.pi * 2)
+		local angle = relativeAngle + offsetAngle
+		local widgetDelta = 1 - math.abs(mu * 2)
+		local radiusDelta = widgetDelta
+		local radius = math.lerp(self.radius / 2, self.radius, radiusDelta)
 
-		local delta
-		if angle <= PREVIOUS_ANGLE then
-			delta = (angle - PREVIOUS_FADE_OUT_ANGLE) / (PREVIOUS_ANGLE - PREVIOUS_FADE_OUT_ANGLE)
-		elseif angle >= NEXT_ANGLE then
-			delta = 1 - ((angle - NEXT_ANGLE) / (NEXT_FADE_OUT_ANGLE - NEXT_ANGLE))
-		else
-			delta = 1
-		end
+		print("i", i, "angle", math.floor(math.deg(angle)), "mu", mu, "w", widgetDelta, "r", radiusDelta, widget:getData("name"))
 
-		delta = math.clamp(delta)
+		self:onChildVisible(widget, widgetDelta)
 
-		self:onChildVisible(widget, delta)
-
-		local radius = -(angle / (math.pi * 2) * self.radius) / 4
-		local x = math.cos(-angle) * radius
-		local y = math.sin(-angle) * radius
+		--local radius = -(((angle / (math.pi * 2) * self.radius) / 3) ^ self.squish)
+		local x = math.cos(angle) * radius
+		local y = math.sin(angle) * radius
 
 		local w, h = widget:getSize()
 		x = x - w / 2
@@ -291,6 +273,8 @@ function SpiralLayout:performLayout()
 
 		self.visibleWidgets[widget] = true
 	end
+
+	print("")
 end
 
 function SpiralLayout:isChildVisible(childWidget)
@@ -344,24 +328,30 @@ function SpiralLayout:_updateInput()
 
 	local currentAxis = (Vector(-self.currentXAxisValue, self.currentYAxisValue)):getNormal()
 	local currentAngle = math.atan2(currentAxis.y, currentAxis.x)
+	currentAngle = currentAngle % (math.pi * 2)
 
 	local previousAngle
 	if self.previousXAxisValue == 0 and self.previousYAxisValue == 0 then
-		previousAngle = currentAngle
+		previousAngle = 0
 	else
 		local previousAxis = (Vector(-self.previousXAxisValue, self.previousYAxisValue)):getNormal()
 		previousAngle = math.atan2(previousAxis.y, previousAxis.x)
 	end
+	previousAngle = previousAngle % (math.pi * 2)
+
+	local focusedAngle = ((self.currentFocusedChildIndex or 1) / self:getNumVisibleOptions() * (math.pi * 2))
+	focusedAngle = currentAngle % (math.pi * 2)
 
 	local difference = math.diffAngle(currentAngle, previousAngle) * drag
-	self:_setCurrentAngle(self.currentAngle - difference, true)
+	self:_setAngle(self.currentAngle - difference, focusedAngle, true)
 end
 
 function SpiralLayout:update(delta)
 	Layout.update(self, delta)
 
 	if self.nextFocusedChildIndex then
-		--self:_setCurrentAngle((self.nextFocusedChildIndex - 1) / self.numOptions * math.pi * 2, false)
+		local targetAngle = ((self.nextFocusedChildIndex - 1) / (self:getNumVisibleOptions() - 1)) * math.pi * 2
+		self:_setAngle(targetAngle, targetAngle, false)
 	end
 
 	if self.hasAxisInput then
