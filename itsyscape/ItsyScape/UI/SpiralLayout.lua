@@ -73,8 +73,8 @@ function SpiralLayout:getInnerPanel()
 end
 
 function SpiralLayout:setRadius(innerValue, outerValue)
-	self.innerRadius = value or self.DEFAULT_INNER_RADIUS
-	self.outerRadius = value or self.DEFAULT_OUTER_RADIUS
+	self.innerRadius = innerValue or self.DEFAULT_INNER_RADIUS
+	self.outerRadius = outerValue or self.DEFAULT_OUTER_RADIUS
 
 	self:performLayout()
 end
@@ -278,7 +278,7 @@ function SpiralLayout:performLayout()
 	local offsetAngle = targetAngle % (math.pi * 2)
 
 	local minIndex = -math.floor(self.numVisibleOptions / 2) + 1
-	local maxIndex = math.ceil(self.numVisibleOptions / 2)
+	local maxIndex = math.ceil(self.numVisibleOptions / 2) + 1
 
 	table.clear(self.visibleWidgets)
 	self.visibleWidgets[self.innerPanelWrapper] = true

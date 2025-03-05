@@ -582,7 +582,6 @@ function Widget:gamepadPress(...)
 end
 
 function Widget:gamepadRelease(...)
-	print(self:getID(), ...)
 	self:onGamepadRelease(...)
 	if self:getParent() then
 		self:getParent():gamepadRelease(...)

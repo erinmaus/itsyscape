@@ -14,6 +14,8 @@ local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Drawable = require "ItsyScape.UI.Drawable"
 local Icon = require "ItsyScape.UI.Icon"
+local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
+local RichTextLabelStyle = require "ItsyScape.UI.RichTextLabelStyle"
 local SpiralLayout = require "ItsyScape.UI.SpiralLayout"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local BaseCombatHUD = require "ItsyScape.UI.Interfaces.BaseCombatHUD"
@@ -23,9 +25,9 @@ local PendingPowerIcon = require "ItsyScape.UI.Interfaces.Components.PendingPowe
 local GamepadCombatHUD = Class(BaseCombatHUD)
 
 GamepadCombatHUD.SPIRAL_OFFSET             = 32
-GamepadCombatHUD.SPIRAL_OUTER_RADIUS       = 256
-GamepadCombatHUD.SPIRAL_INNER_RADIUS       = 192
-GamepadCombatHUD.SPIRAL_INNER_PANEL_RADIUS = 128
+GamepadCombatHUD.SPIRAL_OUTER_RADIUS       = 168
+GamepadCombatHUD.SPIRAL_INNER_RADIUS       = 144
+GamepadCombatHUD.SPIRAL_INNER_PANEL_RADIUS = 144
 
 GamepadCombatHUD.SELECTED_BUTTON_SIZE = 68
 GamepadCombatHUD.DEFAULT_BUTTON_SIZE  = 52
@@ -78,6 +80,14 @@ GamepadCombatHUD.COMBAT_STANCE_ICONS = {
 		[Weapon.STANCE_AGGRESSIVE] = "Resources/Game/UI/Icons/Skills/Sailing.png",
 		[Weapon.STANCE_DEFENSIVE] = "Resources/Game/UI/Icons/Skills/Sailing.png"
 	}
+}
+
+GamepadCombatHUD.SPIRAL_INNER_PANEL_LABEL_STYLE = {
+	textFont = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	textFontSize = 22,
+
+	headerFont = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	headerFontSize = 26
 }
 
 function GamepadCombatHUD:new(...)
@@ -399,11 +409,11 @@ function GamepadCombatHUD:newSpiralMenu(name)
 	circlePanel:enable()
 
 	spiralMenu:getInnerPanel():setSize(
-		self.SPIRAL_INNER_PANEL_RADIUS,
-		self.SPIRAL_INNER_PANEL_RADIUS)
+		self.SPIRAL_INNER_PANEL_RADIUS * 2,
+		self.SPIRAL_INNER_PANEL_RADIUS * 2)
 	spiralMenu:getInnerPanel():setPosition(
-		-(self.SPIRAL_INNER_PANEL_RADIUS / 2),
-		-(self.SPIRAL_INNER_PANEL_RADIUS / 2))
+		-self.SPIRAL_INNER_PANEL_RADIUS,
+		-self.SPIRAL_INNER_PANEL_RADIUS)
 	spiralMenu:getInnerPanel():addChild(circlePanel)
 
 	spiralMenu.onGamepadRelease:register(self.onSpiralMenuGamepadButtonRelease, self, name)
@@ -495,10 +505,28 @@ end
 
 function GamepadCombatHUD:_onMenuOptionVisible(_, button, delta)
 	self:layoutSpiralButton(button, delta)
+
+	if self.pendingPowerMenuIcon:getParent() == button then
+		local icon = button:getData("icon")
+		self.pendingPowerMenuIcon:setSize(icon:getSize())
+	end
 end
 
 function GamepadCombatHUD:_onMenuOptionSelected(_, currentButton, previousButton)
 	self:focusSpiralButton(currentButton, previousButton)
+
+	if currentButton then
+		local name = currentButton:getData("name")
+
+		local menu = self:getMenu()
+		local innerPanel = menu:getInnerPanel()
+
+		local label = innerPanel:getData("label")
+		label:setText({
+			{ t = "header", self:getThingiesName(name) },
+			self:getThingiesDescription(name)
+		})
+	end
 end
 
 function GamepadCombatHUD:newMenu()
@@ -506,10 +534,22 @@ function GamepadCombatHUD:newMenu()
 	menu.onChildVisible:register(self._onMenuOptionVisible, self)
 	menu.onChildSelected:register(self._onMenuOptionSelected, self)
 
+	local size = math.sqrt(2) * self.SPIRAL_INNER_PANEL_RADIUS - self.PADDING * 2
+	local padding = math.floor(self.SPIRAL_INNER_PANEL_RADIUS - size / 2 + self.PADDING)
+
+	local label = RichTextLabel()
+	label:setSize(size, size)
+	label:setPosition(padding, padding)
+	label:setStyle(RichTextLabelStyle(self.SPIRAL_INNER_PANEL_LABEL_STYLE, self:getView():getResources()))
+
+	local innerPanel = menu:getInnerPanel()
+	innerPanel:setData("label", label)
+	innerPanel:addChild(label)
+
 	return menu
 end
 
-function GamepadCombatHUD:newMenuButton(name)
+function GamepadCombatHUD:newMenuButton(_, name)
 	local button = self:newSpiralButton()
 	button:setData("name", name)
 

@@ -35,7 +35,6 @@ function Activate:perform(state, player, target)
 
 	local s = Utility.Peep.getEquippedShield(player, true)
 	if self:getIsDefensive() and not Utility.Peep.getEquippedShield(player, true) then
-		print("is defensive", s)
 		return false
 	end
 

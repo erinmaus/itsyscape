@@ -44,6 +44,41 @@ BaseCombatHUD.MENU_BUTTONS = {
 	BaseCombatHUD.THINGIES_FLEE
 }
 
+BaseCombatHUD.THINGIES_DESCRIPTIONS = {
+	[BaseCombatHUD.THINGIES_STANCE] = {
+		name = "Stance",
+		description = "Affects the damage you give and take and what rites you can use."
+	},
+	[BaseCombatHUD.THINGIES_OFFENSIVE_POWERS] = {
+		name = "Rites of Malice",
+		description = "Special attacks that deal damage and have other effects."
+	},
+	[BaseCombatHUD.THINGIES_DEFENSIVE_POWERS] = {
+		name = "Rites of Bulwark",
+		description = "Special maneuvers that reduce damage and have other effects."
+	},
+	[BaseCombatHUD.THINGIES_FOOD] = {
+		name = "Healing",
+		description = "Food and other items that heal."
+	},
+	[BaseCombatHUD.THINGIES_PRAYERS] = {
+		name = "Prayers",
+		description = "Buffs powered by Faith."
+	},
+	[BaseCombatHUD.THINGIES_SPELLS] = {
+		name = "Spells",
+		description = "Alternative attacks for magic weapons."
+	},
+	[BaseCombatHUD.THINGIES_EQUIPMENT] = {
+		name = "Equipment",
+		description = "Quickly change equipment."
+	},
+	[BaseCombatHUD.THINGIES_FLEE] = {
+		name = "Flee",
+		description = "Dis-engage from combat with your foe."
+	}
+}
+
 function BaseCombatHUD:new(...)
 	Interface.new(self, ...)
 
@@ -186,6 +221,16 @@ end
 
 function BaseCombatHUD:_getThingies(name)
 	return self.thingies[name]
+end
+
+function BaseCombatHUD:getThingiesName(name)
+	local thingies = self.THINGIES_DESCRIPTIONS[name]
+	return thingies and thingies.name or "???"
+end
+
+function BaseCombatHUD:getThingiesDescription(name)
+	local thingies = self.THINGIES_DESCRIPTIONS[name]
+	return thingies and thingies.description or "???"
 end
 
 function BaseCombatHUD:getThingiesWidget(name)
