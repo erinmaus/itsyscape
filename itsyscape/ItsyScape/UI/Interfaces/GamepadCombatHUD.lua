@@ -54,7 +54,7 @@ GamepadCombatHUD.MAX_ICON_ALPHA     = 1
 
 GamepadCombatHUD.CIRCLE_PANEL_DISABLED_COLOR = Color.fromHexString("999999", 0.75)
 GamepadCombatHUD.CIRCLE_PANEL_ENABLED_COLOR  = Color.fromHexString("ffcc00", 0.75)
-GamepadCombatHUD.CIRCLE_PANEL_SPELL_COLOR    = Color.fromHexString("00ff00", 0.5)
+GamepadCombatHUD.CIRCLE_PANEL_ACTIVE_COLOR   = Color.fromHexString("00ff00", 0.5)
 GamepadCombatHUD.ICON_ENABLED_COLOR          = Color.fromHexString("ffffff")
 GamepadCombatHUD.ICON_DISABLED_COLOR         = Color.fromHexString("333333")
 
@@ -116,6 +116,51 @@ GamepadCombatHUD.RITE_TIER_NAMES = {
 	"II",
 	"III",
 	"IV"
+}
+
+GamepadCombatHUD.STANCE_DESCRIPTIONS = {
+	[Weapon.STANCE_CONTROLLED] = {
+		title = "Controlled",
+		description = {
+			"Go with the flow and respond to any situation.",
+			"Both rites of malice and bulwark are at your disposal.",
+			"Earn $ATTACK_SKILL XP for slain foes."
+		}
+	},
+	[Weapon.STANCE_AGGRESSIVE] = {
+		title = "Aggressive",
+		description = {
+			"Tap into your fury and increase your damage.",
+			"Only rites of malice can be invoked.",
+			"Earn $STRENGTH_SKILL XP for slain foes."
+		}
+	},
+	[Weapon.STANCE_DEFENSIVE] = {
+		title = "Defensive",
+		description = {
+			"Focus on dodging your foe to decrease damage taken.",
+			"Only rites of bulwark can be invoked.",
+			"Earn $DEFENSE_SKILL XP for slain foes."
+		}
+	}
+}
+
+GamepadCombatHUD.STANCE_SKILL_XP = {
+	[Weapon.STYLE_MAGIC] = {
+		ATTACK_SKILL = "Magic",
+		STRENGTH_SKILL = "Wisdom",
+		DEFENSE_SKILL = "Defense"
+	},
+	[Weapon.STYLE_ARCHERY] = {
+		ATTACK_SKILL = "Archery",
+		STRENGTH_SKILL = "Dexterity",
+		DEFENSE_SKILL = "Defense"
+	},
+	[Weapon.STYLE_MELEE] = {
+		ATTACK_SKILL = "Attack",
+		STRENGTH_SKILL = "Strength",
+		DEFENSE_SKILL = "Defense"
+	}
 }
 
 function GamepadCombatHUD:new(...)
@@ -220,8 +265,8 @@ function GamepadCombatHUD:onSwitchSpell(oldSpell, newSpell)
 		if not panel:getData("enabled") then
 			panel:setData("enabled", true)
 			panel:setData("previousColor", panel:getData("currentColor") or Color(panel:getOutlineColor():get()))
-			panel:setData("currentColor", Color(self.CIRCLE_PANEL_SPELL_COLOR:get()))
-			panel:setOutlineColor(self.CIRCLE_PANEL_SPELL_COLOR)
+			panel:setData("currentColor", Color(self.CIRCLE_PANEL_ACTIVE_COLOR:get()))
+			panel:setOutlineColor(self.CIRCLE_PANEL_ACTIVE_COLOR)
 			panel:enable()
 		end
 	else
@@ -289,6 +334,7 @@ function GamepadCombatHUD:openThingies(name, targetWidget)
 		end
 
 		self:addChild(thingiesWidget)
+		self:focus(thingiesWidget)
 	end
 
 	return didOpen
@@ -646,6 +692,10 @@ function GamepadCombatHUD:layoutSpiralButton(button, delta)
 		panel:enable()
 	end
 
+	if button:getData("stance") then
+		print("stance button layout", button:getData("stance"), panel:getData("enabled"))
+	end
+
 	button:setSize(buttonSize, buttonSize)
 
 	local icon = button:getData("icon")
@@ -681,10 +731,25 @@ function GamepadCombatHUD:_onMenuOptionSelected(_, currentButton, previousButton
 		local menu = self:getMenu()
 		local innerPanel = menu:getInnerPanel()
 
+		local additionalDescription
+		if name == self.THINGIES_DEFENSIVE_POWERS and not self:isEnabled(name) then
+			additionalDescription = { t = "text", color = { 1, 0, 0, 1 }, "Your current stance prohibits rites of bulwark." }
+		elseif name == self.THINGIES_OFFENSIVE_POWERS and not self:isEnabled(name) then
+			additionalDescription = { t = "text", color = { 1, 0, 0, 1 }, "Your current stance prohibits rites of malice." }
+		end
+
+		local color
+		if not self:isEnabled(name) then
+			color = Color(0.5)
+		else
+			color = Color(1)
+		end
+
 		local label = innerPanel:getData("label")
 		label:setText({
-			{ t = "header", self:getThingiesName(name) },
-			self:getThingiesDescription(name)
+			{ t = "header", color = { color:get() }, self:getThingiesName(name) },
+			{ t = "text", color = { color:get() }, self:getThingiesDescription(name) },
+			additionalDescription
 		})
 	end
 end
@@ -726,10 +791,13 @@ function GamepadCombatHUD:updateMenuButton(name, button)
 	local panel = button:getData("panel")
 
 	local isEnabled = self:isEnabled(name)
+
 	if isEnabled or panel:getData("enabled") then
+		button:unsetData("isDisabled")
 		icon:setColor(self.ICON_ENABLED_COLOR)
 		panel:setOutlineColor(panel:getData("currentColor") or self.CIRCLE_PANEL_ENABLED_COLOR)
 	else
+		button:setData("isDisabled", true)
 		icon:setColor(self.ICON_DISABLED_COLOR)
 		panel:setOutlineColor(self.CIRCLE_PANEL_DISABLED_COLOR)
 	end
@@ -846,7 +914,7 @@ function GamepadCombatHUD:finishPowerThingies(name, thingiesWidget)
 end
 
 function GamepadCombatHUD:_onFoodVisible(_, child, delta)
-	self:layoutPowerButton(child, delta)
+	self:layoutSpiralButton(child, delta)
 end
 
 function GamepadCombatHUD:_onFoodSelected(menu, current)
@@ -891,6 +959,16 @@ function GamepadCombatHUD:_onFoodSelected(menu, current)
 	end
 end
 
+function GamepadCombatHUD:_updateFoodThingiesInterface(name)
+	local result = {
+		titleText = self:getThingiesName(name),
+		subtitleText = "no sorting", menuActionText = "Sort",
+		icon = "Resources/Game/UI/Icons/Skills/Constitution.png"
+	}
+
+	return result
+end
+
 function GamepadCombatHUD:newFoodThingies(name)
 	local foodSpiral = self:newSpiralMenu(name)
 	foodSpiral.onChildVisible:register(self._onFoodVisible, self)
@@ -922,6 +1000,128 @@ end
 
 function GamepadCombatHUD:finishFoodThingies(name, spiralMenu)
 	self:finishSpiralMenu(name, spiralMenu)
+end
+
+function GamepadCombatHUD:getStanceInfo(style, stance)
+	if not style or not stance then
+		return "???", {}
+	end
+
+	local input = self.STANCE_DESCRIPTIONS[stance]
+	if not input then
+		return "???", {}
+	end
+
+	local skills = self.STANCE_SKILL_XP[style]
+	if not skills then
+		return "???", {}
+	end
+
+	local description = {}
+	for i = 1, #input.description do
+		local d = input.description[i]:gsub("%$([^%s]+)", skills)
+		table.insert(description, d)
+	end
+
+	return input.title, description
+end
+
+function GamepadCombatHUD:_onStanceVisible(_, child, delta)
+	print(">>> visible", child:getData(stance))
+	self:layoutSpiralButton(child, delta)
+end
+
+function GamepadCombatHUD:_onStanceSelected(menu, current)
+	if not current then
+		return
+	end
+
+	local index = menu:getFocusedOptionIndex()
+
+	local state = self:getState()
+	local stance = current:getData("stance")
+
+	local innerPanel = menu:getInnerPanel()
+	local label = innerPanel:getData("label")
+
+	local currentStyle = self:getState().style
+
+	local title, description = self:getStanceInfo(currentStyle, stance)
+
+	if not stance then
+		label:setText({
+			{ t = "header", color = { 0.4, 0.4, 0.4, 1.0 }, "Nothing" },
+			{ t = "text", color = { 0.4, 0.4, 0.4, 1.0 }, "Maybe there will be more stances in the future..." }
+		})
+	else
+		label:setText({
+			{ t = "header", title },
+			unpack(description)
+		})
+	end
+end
+
+function GamepadCombatHUD:_updateStanceThingiesInterface(name)
+	local result = {
+		titleText = self:getThingiesName(name),
+		icon = "Resources/Game/UI/Icons/Common/Stance.png"
+	}
+
+	return result
+end
+
+function GamepadCombatHUD:newStanceThingies(name)
+	local stanceSpiral = self:newSpiralMenu(name)
+	stanceSpiral.onChildVisible:register(self._onStanceVisible, self)
+	stanceSpiral.onChildSelected:register(self._onStanceSelected, self)
+
+	self:addSpiralMenuRichTextLabel(stanceSpiral)
+	self:addStandardThingiesInterface(stanceSpiral, self._updateStanceThingiesInterface)
+
+	return stanceSpiral
+end
+
+function GamepadCombatHUD:newStanceButton(foodState)
+	return self:newSpiralButton()
+end
+
+function GamepadCombatHUD:updateStanceButton(button, stance, combatStyle, isActive)
+	button:setData("stance", stance)
+
+	local icon = button:getData("icon")
+	icon:setIcon((self.COMBAT_STANCE_ICONS[combatStyle] or self.COMBAT_STANCE_ICONS[Weapon.STYLE_MELEE])[stance])
+
+	local panel = button:getData("panel")
+	if isActive then
+		panel:setOutlineColor(self.CIRCLE_PANEL_ACTIVE_COLOR)
+		panel:setData("enabled", true)
+		panel:enable()
+	else
+		panel:unsetData("enabled")
+		panel:setOutlineColor(self.CIRCLE_PANEL_ENABLED_COLOR)
+
+		if not button:getIsFocused() then
+			panel:disable()
+		end
+	end
+end
+
+function GamepadCombatHUD:finishStanceThingies(name, spiralMenu)
+	self:finishSpiralMenu(name, spiralMenu)
+end
+
+function GamepadCombatHUD:refreshThingies()
+	BaseCombatHUD.refreshThingies(self)
+
+	if #self.thingiesStack >= 1 then
+		local current = self.thingiesStack[#self.thingiesStack]
+		if current == self.FEATURE_MENU then
+			self:openMenu()
+			self:focus(self:getMenu())
+		else
+			self:openThingies(current)
+		end
+	end
 end
 
 function GamepadCombatHUD:update(delta)

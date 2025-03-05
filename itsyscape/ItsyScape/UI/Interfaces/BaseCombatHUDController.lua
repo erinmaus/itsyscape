@@ -142,6 +142,8 @@ function BaseCombatHUDController:poke(actionID, actionIndex, e)
 		self:equip(e)
 	elseif actionID == "eat" then
 		self:eat(e)
+	elseif actionID == "changeStance" then
+		self:changeStance(e)
 	elseif actionID == "setConfig" then
 		self:setConfig(e)
 	else
@@ -210,6 +212,18 @@ function BaseCombatHUDController:pray(e)
 	local peep = self:getPeep()
 	if prayer then
 		prayer:perform(peep:getState(), peep)
+	end
+end
+
+function BaseCombatHUDController:changeStance(e)
+	if e.stance == Weapon.STANCE_AGGRESSIVE or
+	   e.stance == Weapon.STANCE_CONTROLLED or
+	   e.stance == Weapon.STANCE_DEFENSIVE
+	then
+		local stance = self:getPeep():getBehavior(StanceBehavior)
+		if stance then
+			stance.stance = e.stance
+		end
 	end
 end
 
@@ -365,8 +379,19 @@ function BaseCombatHUDController:equip(e)
 	end
 end
 
+function BaseCombatHUDController:getConfig()
+	local config = self:getStorage("Config"):get().config or {}
+
+	local disabled = config.disabled or {}
+	disabled["equipment"] = true
+	config.disabled = disabled
+
+	return config
+end
+
 function BaseCombatHUDController:setConfig(e)
 	local configStorage = self:getStorage("Config")
+
 	configStorage:set({
 		config = e.config
 	})
@@ -1025,7 +1050,7 @@ function BaseCombatHUDController:updateState()
 		prayers = self.usablePrayers,
 		food= self:getFood(),
 		equipment = self:getEquipment(),
-		config = self:getStorage("Config"):get().config or {},
+		config = self:getConfig(),
 		style = self.style,
 		stance = self.stance,
 		turns = self.turns

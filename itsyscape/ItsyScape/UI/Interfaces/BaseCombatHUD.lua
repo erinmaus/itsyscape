@@ -10,6 +10,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Color = require "ItsyScape.Graphics.Color"
 local Interface = require "ItsyScape.UI.Interface"
 local Drawable = require "ItsyScape.UI.Drawable"
@@ -209,7 +210,17 @@ end
 function BaseCombatHUD:isEnabled(name)
 	local state = self:getState()
 	local config = state.config
-	return not config or not config.disabled or config.disabled[name] == nil
+	local isEnabled = not config or not config.disabled or config.disabled[name] == nil
+
+	if name == BaseCombatHUD.THINGIES_DEFENSIVE_POWERS and state.stance == Weapon.STANCE_AGGRESSIVE then
+		return false 
+	end
+
+	if name == BaseCombatHUD.THINGIES_OFFENSIVE_POWERS and state.stance == Weapon.STANCE_DEFENSIVE then
+		return false
+	end
+
+	return isEnabled
 end
 
 function BaseCombatHUD:hasThingies(name)
@@ -498,6 +509,78 @@ function BaseCombatHUD:_updateFoodThingies()
 	end
 end
 
+
+
+function BaseCombatHUD:newStanceThingies(name)
+	return Class.ABSTRACT()
+end
+
+function BaseCombatHUD:newStanceButton()
+	return Class.ABSTRACT()
+end
+
+function BaseCombatHUD:updateStanceButton(button, stance, combatStyle, isActive)
+	Class.ABSTRACT()
+end
+
+function BaseCombatHUD:finishStanceThingies(name, thingiesWidget)
+	Class.ABSTRACT()
+end
+
+local STANCES = {
+	Weapon.STANCE_CONTROLLED,
+	Weapon.STANCE_AGGRESSIVE,
+	Weapon.STANCE_DEFENSIVE,
+}
+
+local STANCE_IDS = {
+	[Weapon.STANCE_CONTROLLED] = "Controlled",
+	[Weapon.STANCE_AGGRESSIVE] = "Aggressive",
+	[Weapon.STANCE_DEFENSIVE] = "Defensive",
+}
+
+function BaseCombatHUD:changeStance(stance)
+	self:sendPoke("changeStance", nil, {
+		stance = stance
+	})
+end
+
+function BaseCombatHUD:_initStanceThingies()
+	self:_unregisterThingies(BaseCombatHUD.THINGIES_STANCE)
+
+	local state = self:getState()
+
+	local stanceThingie = { buttons = {} }
+	stanceThingie.widget = self:newStanceThingies(BaseCombatHUD.THINGIES_STANCE, stanceState)
+
+	for i, stance in ipairs(STANCES) do
+		local button = self:newStanceButton(stanceState)
+		button.onClick:register(self.changeStance, self, stance)
+
+		stanceThingie.widget:addChild(button)
+		table.insert(stanceThingie.buttons, button)
+	end
+
+	self:finishStanceThingies(BaseCombatHUD.THINGIES_STANCE, stanceThingie.widget)
+	self:_registerThingies(BaseCombatHUD.THINGIES_STANCE, stanceThingie)
+end
+
+function BaseCombatHUD:_updateStanceThingies()
+	local state = self:getState()
+	local currentStyle = state.style
+	local currentStance = state.stance
+
+	local buttons = self:_getThingies(BaseCombatHUD.THINGIES_STANCE).buttons
+
+	for i, stance in ipairs(STANCES) do
+		local button = buttons[i]
+		if button then
+			self:updateStanceButton(button, stance, currentStyle, currentStance == stance)
+			button:setID(string.format("BaseCombatHUD-Stance-%s", STANCE_IDS[stance] or stance))
+		end
+	end
+end
+
 function BaseCombatHUD:updateThingies()
 	if not self.wasRefreshed then
 		return
@@ -506,6 +589,7 @@ function BaseCombatHUD:updateThingies()
 	self:_updatePowersThingies(BaseCombatHUD.THINGIES_OFFENSIVE_POWERS)
 	self:_updatePowersThingies(BaseCombatHUD.THINGIES_DEFENSIVE_POWERS)
 	self:_updateFoodThingies()
+	self:_updateStanceThingies()
 end
 
 function BaseCombatHUD:refresh()
@@ -517,10 +601,12 @@ function BaseCombatHUD:refreshThingies()
 	self:_initPowersThingies(BaseCombatHUD.THINGIES_OFFENSIVE_POWERS)
 	self:_initPowersThingies(BaseCombatHUD.THINGIES_DEFENSIVE_POWERS)
 	self:_initFoodThingies()
+	self:_initStanceThingies()
 
 	self:resetEvents()
-
 	self:performLayout()
+
+	self:updateThingies()
 end
 
 function BaseCombatHUD:getOverflow()

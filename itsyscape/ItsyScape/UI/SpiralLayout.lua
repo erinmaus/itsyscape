@@ -10,7 +10,7 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local Variables = require "ItsyScape.Game.Variables"
+local Config = require "ItsyScape.Game.Config"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local Layout = require "ItsyScape.UI.Layout"
 local Widget = require "ItsyScape.UI.Widget"
@@ -319,11 +319,6 @@ function SpiralLayout:isChildVisible(childWidget)
 	return self.visibleWidgets[childWidget] == true
 end
 
-local KEYBIND_X_AXIS = Variables.Path("keybinds", "ui", "xAxis")
-local KEYBIND_Y_AXIS = Variables.Path("keybinds", "ui", "yAxis")
-local KEYBIND_AXIS_SENSITIVITY = Variables.Path("keybinds", "ui", "axisSensitivity")
-local KEYBIND_RADIAL_DRAG = Variables.Path("keybinds", "ui", "radialDrag")
-
 function SpiralLayout:gamepadAxis(joystick, axis, value)
 	Layout.gamepadAxis(self, joystick, axis, value)
 
@@ -336,11 +331,9 @@ function SpiralLayout:gamepadAxis(joystick, axis, value)
 		return
 	end
 
-	local inputConfig = inputProvider:getConfig()
-
-	local xAxis = inputConfig:get(KEYBIND_X_AXIS)
-	local yAxis = inputConfig:get(KEYBIND_Y_AXIS)
-	local axisSensitivity = inputConfig:get(KEYBIND_AXIS_SENSITIVITY)
+	local xAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "xAxis")
+	local yAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "yAxis")
+	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity")
 
 	if not (axis == xAxis or axis == yAxis) then
 		return
@@ -355,33 +348,34 @@ function SpiralLayout:gamepadAxis(joystick, axis, value)
 end
 
 function SpiralLayout:_updateInput()
-	local drag
-	do
-		local inputProvider = self:getInputProvider()
-		local inputConfig = inputProvider and inputProvider:getConfig()
-		local radialDrag = inputConfig and inputConfig:get(KEYBIND_RADIAL_DRAG)
+	local drag = Config.get("Input", "KEYBIND", "type", "ui", "name", "radialDrag") or 1
+	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity")
 
-		drag = radialDrag or 1
-	end
+	if math.abs(self.previousXAxisValue) < axisSensitivity and math.abs(self.previousYAxisValue) < axisSensitivity then
+		local currentAxis = Vector(-self.currentXAxisValue, -self.currentYAxisValue)
+		local currentAxisAngle = math.wrap(math.atan2(currentAxis.y, currentAxis.x) + math.pi, 0, math.pi * 2)
 
-	local currentAxis = (Vector(-self.currentXAxisValue, self.currentYAxisValue)):getNormal()
-	local currentAngle = math.atan2(currentAxis.y, currentAxis.x)
-	currentAngle = currentAngle % (math.pi * 2)
+		local numRotations = math.floor((self:getFocusedOptionIndex() - 1) / self.numVisibleOptions)
+		currentAngle = numRotations * math.pi * 2 + (math.pi / self.numVisibleOptions)
 
-	local previousAngle
-	if self.previousXAxisValue == 0 and self.previousYAxisValue == 0 then
-		previousAngle = 0
+		print("currentAngle", math.floor(math.deg(currentAngle)))
+		print("axisAngle", math.floor(math.deg(currentAxisAngle)))
+
+		self:_setAngle(currentAngle + currentAxisAngle, true)
 	else
-		local previousAxis = (Vector(-self.previousXAxisValue, self.previousYAxisValue)):getNormal()
-		previousAngle = math.atan2(previousAxis.y, previousAxis.x)
+		local currentAxis = (Vector(-self.currentXAxisValue, self.currentYAxisValue))
+		local currentAxisAngle = math.atan2(currentAxis.y, currentAxis.x)
+		currentAxisAngle = currentAxisAngle % (math.pi * 2)
+
+		local previousAxis = (Vector(-self.previousXAxisValue, self.previousYAxisValue))
+		local previousAxisAngle = math.atan2(previousAxis.y, previousAxis.x)
+
+		currentAngle = self.currentAngle
+		previousAxisAngle = previousAxisAngle % (math.pi * 2)
+
+		local difference = math.diffAngle(currentAxisAngle, previousAxisAngle) * drag
+		self:_setAngle(self.currentAngle - difference, true)
 	end
-	previousAngle = previousAngle % (math.pi * 2)
-
-	local focusedAngle = ((self.currentFocusedChildIndex or 1) / self:getNumVisibleOptions() * (math.pi * 2))
-	focusedAngle = currentAngle % (math.pi * 2)
-
-	local difference = math.diffAngle(currentAngle, previousAngle) * drag
-	self:_setAngle(self.currentAngle - difference, true)
 end
 
 function SpiralLayout:update(delta)

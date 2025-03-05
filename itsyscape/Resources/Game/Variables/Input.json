@@ -1,4 +1,8 @@
 {
+	"$paths": {
+		"KEYBIND": ["keybinds", "$type", "$name"]
+	},
+
 	"ui": {
 		"legacyGamepadControls": {
 			"axisSensitivity": 0.3,
@@ -13,7 +17,7 @@
 		"ui": {
 			"xAxis": "rightx",
 			"yAxis": "righty",
-			"axisSensitivity": 0.3,
+			"axisSensitivity": 0.6,
 			"radialDrag": 1,
 
 			"gamepadOpenCombatRing": "rightshoulder",
