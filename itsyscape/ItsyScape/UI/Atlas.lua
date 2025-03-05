@@ -255,6 +255,9 @@ end
 
 function Atlas.Layer:update()
 	for _, rectangle in ipairs(self.pendingUpdates) do
+		love.graphics.setColor(0, 0, 0, 0)
+		love.graphics.rectangle("fill", rectangle.i * self.cellSize, rectangle.j * self.cellSize, rectangle.width * self.cellSize, rectangle.height * self.cellSize)
+		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.draw(rectangle.image:getTexture(), rectangle.i * self.cellSize, rectangle.j * self.cellSize)
 	end
 
@@ -356,11 +359,34 @@ function Atlas:replace(handle, image)
 		if not image then
 			wrappedImage:forceStale()
 		else
-			wrappedImage:replace(image)
-			wrappedImage:update()
+			local currentWidth = wrappedImage:getTexture():getWidth()
+			local currentHeight = wrappedImage:getTexture():getHeight()
+			local newWidth = image:getWidth()
+			local newHeight = image:getWidth()
 
-			local layer = wrappedImage:getLayer()
-			self.layers[layer]:replace(wrappedImage)
+			if newWidth > currentWidth or newHeight > currentHeight then
+				wrappedImage:forceStale()
+
+				for i = #self.images, 1, -1 do
+					local h = self.images[i]
+					local w = self.handles[h]
+
+					if h == handle then
+						self.layers[w:getLayer()]:remove(w)
+
+						table.remove(self.images, i)
+						self.handles[handle] = nil
+					end
+				end
+
+				self:add(handle, image)
+			else
+				wrappedImage:replace(image)
+				wrappedImage:update()
+
+				local layer = wrappedImage:getLayer()
+				self.layers[layer]:replace(wrappedImage)
+			end
 		end
 	end
 end
@@ -389,6 +415,8 @@ function Atlas:layer(handle)
 	if self:has(handle) then
 		return self.handles[handle]:getLayer()
 	end
+
+	assert(false, "WTF")
 end
 
 function Atlas:texture(handle)

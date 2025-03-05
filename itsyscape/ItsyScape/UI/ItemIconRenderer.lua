@@ -72,7 +72,9 @@ function ItemIconRenderer:draw(widget, state)
 	local oldFont = love.graphics.getFont()
 
 	love.graphics.setFont(self.font)
+	love.graphics.setColor(widget:getColor():get())
 	itsyrealm.graphics.drawItem(widget, width, height, icon, itemID, count, color, note, disabled, active)
+	love.graphics.setColor(1, 1, 1, 1)
 
 	love.graphics.setFont(oldFont)
 end

@@ -1844,12 +1844,6 @@ function DemoApplication:draw(delta)
 			self.gyroIcon:getWidth() / 2,
 			self.gyroIcon:getHeight() / 2)
 	end
-
-	local w, h = love.window.getMode()
-	love.graphics.push("all")
-	love.graphics.setColor(0, 1, 0, 1)
-	love.graphics.rectangle("fill", w / 2 - 4, h / 2 - 4, 8, 8)
-	love.graphics.pop()
 end
 
 return DemoApplication

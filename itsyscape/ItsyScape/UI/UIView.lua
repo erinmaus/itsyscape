@@ -249,17 +249,16 @@ function itsyrealm.graphics.impl.drawItemIcon(width, height, icon, count, color,
 			originX, originY)
 	end
 
+	local r, g, b, a = love.graphics.getColor()
+
 	if disabled then
-		love.graphics.setColor(0.3, 0.3, 0.3, 1)
+		love.graphics.setColor(0.3, 0.3, 0.3, a)
 	else
 		love.graphics.setColor(1, 1, 1, 1)
 	end
 
 	love.graphics.draw(icon, x, y, 0, itemScaleX, itemScaleY, originX, originY)
-
-	if isDisabled then
-		love.graphics.setColor(1, 1, 1, 1)
-	end
+	love.graphics.setColor(r, g, b, a)
 
 	if count ~= "1" then
 		love.graphics.setColor(unpack(color))
@@ -305,7 +304,9 @@ function itsyrealm.graphics.impl.drawItem(renderState, handle, active)
 	else
 		alpha = 1
 	end
-	love.graphics.setColor(1, 1, 1, alpha)
+
+	local r, g, b, a = unpack(renderState.color)
+	love.graphics.setColor(r, g, b, a * alpha)
 
 	love.graphics.origin()
 	love.graphics.applyTransform(renderState.transform)

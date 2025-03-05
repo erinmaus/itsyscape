@@ -15,6 +15,7 @@ local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Drawable = require "ItsyScape.UI.Drawable"
 local Icon = require "ItsyScape.UI.Icon"
+local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
@@ -807,7 +808,7 @@ function GamepadCombatHUD:_onPowerSelected(menu, current)
 		local description = powerState.description
 
 		local colorName = string.format("ui.combat.zeal.tier%dFire", tier)
-		local color = Color.fromHexString(Config.get("Config", "COLOR", "color", colorName))
+		local color = Color.fromHexString(Config.get("Config", "COLOR", "color", colorName)):shiftHSL(0, 0, 0.2)
 
 		label:setText({
 			{ t = "header", powerState.name },
@@ -842,6 +843,85 @@ end
 
 function GamepadCombatHUD:finishPowerThingies(name, thingiesWidget)
 	self:finishSpiralMenu(name, thingiesWidget)
+end
+
+function GamepadCombatHUD:_onFoodVisible(_, child, delta)
+	self:layoutPowerButton(child, delta)
+end
+
+function GamepadCombatHUD:_onFoodSelected(menu, current)
+	if not current then
+		return
+	end
+
+	local index = menu:getFocusedOptionIndex()
+
+	local state = self:getState()
+	local foodState = state.food[index]
+
+	local innerPanel = menu:getInnerPanel()
+	local label = innerPanel:getData("label")
+
+	if not foodState then
+		label:setText({
+			{ t = "header", color = { 0.4, 0.4, 0.4, 1.0 }, "Nothing" },
+			{ t = "text", color = { 0.4, 0.4, 0.4, 1.0 }, "Gather and cook more food!" }
+		})
+	else
+		local healColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.health.hitpoints")):shiftHSL(0, 0, 0.2)
+		local damageColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.health.damage")):shiftHSL(0, 0, 0.2)
+
+		local text, color 
+		if foodState.health == 0 then
+			text = "Heals 0 hitpoints."
+			color = damageColor
+		elseif foodState.health < 0 then
+			text = string.format("Damages %d hitpoints.", math.abs(foodState.health))
+			color = damageColor
+		else
+			text = string.format("Heals %d hitpoints.", foodState.health)
+			color = healColor
+		end
+
+		label:setText({
+			{ t = "header", foodState.name },
+			{ t = "text", color = { color:get() }, text },
+			foodState.description
+		})
+	end
+end
+
+function GamepadCombatHUD:newFoodThingies(name)
+	local foodSpiral = self:newSpiralMenu(name)
+	foodSpiral.onChildVisible:register(self._onFoodVisible, self)
+	foodSpiral.onChildSelected:register(self._onFoodSelected, self)
+
+	self:addSpiralMenuRichTextLabel(foodSpiral)
+	self:addStandardThingiesInterface(foodSpiral, self._updatePowersThingiesInterface)
+
+	return foodSpiral
+end
+
+function GamepadCombatHUD:newFoodButton(foodState)
+	local button = self:newSpiralButton()
+
+	local itemIcon = ItemIcon()
+	button:addChild(itemIcon)
+
+	button:removeChild(button:getData("icon"))
+	button:setData("icon", itemIcon)
+
+	return button
+end
+
+function GamepadCombatHUD:updateFoodButton(button, foodState)
+	local icon = button:getData("icon")
+	icon:setItemID(foodState.id)
+	icon:setItemCount(foodState.count)
+end
+
+function GamepadCombatHUD:finishFoodThingies(name, spiralMenu)
+	self:finishSpiralMenu(name, spiralMenu)
 end
 
 function GamepadCombatHUD:update(delta)

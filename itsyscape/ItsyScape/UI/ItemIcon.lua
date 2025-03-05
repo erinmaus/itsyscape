@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local Widget = require "ItsyScape.UI.Widget"
 
 local ItemIcon = Class(Widget)
@@ -21,8 +22,17 @@ function ItemIcon:new()
 	self.itemIsNoted = false
 	self.isDisabled = false
 	self.isActive = false
+	self.color = Color()
 
 	self:setSize(ItemIcon.DEFAULT_SIZE, ItemIcon.DEFAULT_SIZE)
+end
+
+function ItemIcon:setColor(value)
+	self.color = value or Color()
+end
+
+function ItemIcon:getColor()
+	return self.color
 end
 
 function ItemIcon:setItemIsNoted(value)

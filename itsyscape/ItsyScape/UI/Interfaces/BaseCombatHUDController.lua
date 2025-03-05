@@ -13,6 +13,7 @@ local CombatPower = require "ItsyScape.Game.CombatPower"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
+local ItemInstance = require "ItsyScape.Game.ItemInstance"
 local Spell = require "ItsyScape.Game.Spell"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
@@ -27,6 +28,7 @@ local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownB
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -74,6 +76,7 @@ function BaseCombatHUDController:new(peep, director)
 	self.offensivePrayers = {}
 	self.usablePrayers = {}
 	self.turns = {}
+	self.food = {}
 
 	self.powers = {}
 	self:_pullPowers()
@@ -137,6 +140,8 @@ function BaseCombatHUDController:poke(actionID, actionIndex, e)
 		self:deleteEquipmentSlot(e)
 	elseif actionID == "equip" then
 		self:equip(e)
+	elseif actionID == "eat" then
+		self:eat(e)
 	elseif actionID == "setConfig" then
 		self:setConfig(e)
 	else
@@ -205,6 +210,36 @@ function BaseCombatHUDController:pray(e)
 	local peep = self:getPeep()
 	if prayer then
 		prayer:perform(peep:getState(), peep)
+	end
+end
+
+function BaseCombatHUDController:eat(e)
+	local item
+	do
+		local inventory = self:getPeep():getBehavior(InventoryBehavior)
+		if inventory and inventory.inventory then
+			local broker = inventory.inventory:getBroker()
+
+			for i in broker:iterateItemsByKey(inventory.inventory, e.key) do
+				item = i
+				break
+			end
+		end
+	end
+
+	if not item then
+		Log.error("No item at key %d", e.index)
+		return
+	end
+
+	local itemResource = self:getGame():getGameDB():getResource(item:getID(), "Item")
+	if itemResource then
+		Utility.performAction(
+			self:getGame(),
+			itemResource,
+			"eat",
+			"inventory",
+			self:getPeep():getState(), self:getPeep(), item)
 	end
 end
 
@@ -988,6 +1023,7 @@ function BaseCombatHUDController:updateState()
 		spells = self.castableSpells,
 		activeSpellID = self.activeSpellID,
 		prayers = self.usablePrayers,
+		food= self:getFood(),
 		equipment = self:getEquipment(),
 		config = self:getStorage("Config"):get().config or {},
 		style = self.style,
@@ -1170,6 +1206,125 @@ function BaseCombatHUDController:updatePowers()
 	self.currentDefensivePowers = defensivePowers
 end
 
+function BaseCombatHUDController:tryPullFood(key, item)
+	if item:isNoted() then
+		return nil
+	end
+
+	local gameDB = self:getDirector():getGameDB()
+	local itemResource = gameDB:getResource(item:getID(), "Item")
+	if not itemResource then
+		return nil
+	end
+
+	local actions = Utility.getActions(self:getDirector():getGameInstance(), itemResource, 'inventory', false)
+	local eatAction
+	for _, action in ipairs(actions) do
+		if action.instance:is("eat") then
+			eatAction = action.instance
+			break
+		end
+	end
+
+	if not eatAction then
+		return nil
+	end
+
+	local health = 0
+
+	local healingPower = gameDB:getRecord("HealingPower", { Action = eatAction:getAction() })
+	if healingPower then
+		health = health + healingPower:get("HitPoints")
+	end
+
+	local healingUserdata = item:getUserdata("ItemHealingUserdata")
+	if healingUserdata then
+		health = health + self:getHitpoints()
+	end
+
+	local result = {}
+	result.key = key
+	result.health = health
+	result.id = item:getID()
+	result.count = item:getCount()
+	result.name = Utility.Item.getInstanceName(item)
+	result.description = Utility.Item.getInstanceDescription(item)
+	result.instance = item
+
+	return result
+end
+
+function BaseCombatHUDController:tryAddFood(item)
+	for _, food in ipairs(self.food) do
+		if food.id == item.id and ItemInstance.isSame(food.instances[1].instance, item.instance) then
+			table.insert(food.instances, item)
+			food.count = food.count + item.count
+			return
+		end
+	end
+
+	local result = {
+		id = item.id,
+		count = item.count,
+		name = item.name,
+		description = item.description,
+		health = item.health,
+		instances = { item }
+	}
+
+	table.insert(self.food, result)
+end
+
+function BaseCombatHUDController:updateFood()
+	local oldFood = self.food
+	self.food = {}
+
+	local inventory = self:getPeep():getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+	if not inventory then
+		return
+	end
+
+	local broker = inventory:getBroker()
+	if not broker then
+		return
+	end
+
+	for key in broker:keys(inventory) do
+		for item in broker:iterateItemsByKey(inventory, key) do
+			local food = self:tryPullFood(key, item)
+			if food then
+				self:tryAddFood(food)
+			end
+		end
+	end
+
+	self.isDirty = self.isDirty or #oldFood ~= #self.food
+end
+
+function BaseCombatHUDController:getFood()
+	local foodState = {}
+
+	for _, food in ipairs(self.food) do
+		local result = {
+			id = food.id,
+			count = food.count,
+			name = food.name,
+			description = food.description,
+			health = food.health,
+			keys = {}
+		}
+
+		for _, item in ipairs(food.instances) do
+			table.insert(result.keys, item.key)
+		end
+
+		table.insert(foodState, result)
+	end
+
+	return foodState
+end
+
 function BaseCombatHUDController:sendRefresh()
 	local ui = self:getDirector():getGameInstance():getUI()
 	ui:sendPoke(self, "refresh", nil, {})
@@ -1192,6 +1347,7 @@ function BaseCombatHUDController:update(delta)
 	self.updateDebugStats:measure("updateUsablePrayers", self)
 	self.updateDebugStats:measure("updateActiveSpell", self)
 	self.updateDebugStats:measure("updateTurnOrder", self)
+	self.updateDebugStats:measure("updateFood", self)
 
 	if self.isDirty then
 		self.updateDebugStats:measure("updatePowers", self)
