@@ -1,4 +1,8 @@
 {
+	"$paths": {
+		"COLOR": ["colors", "$color"]
+	},
+
 	"colors": {
 		"ui.combat.bar.text": "ffffff",
 		"ui.combat.bar.textShadow": "000000",

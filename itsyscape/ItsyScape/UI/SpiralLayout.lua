@@ -31,8 +31,8 @@ function SpiralLayout:new()
 	Layout.new(self)
 
 	self.innerPanelWrapper = SpiralLayout.InnerPanelWrapper()
-	self.innerPanel = Widget()
-	self.cursor = Widget()
+	self.innerPanel = SpiralLayout.InnerPanelWrapper()
+	self.cursor = SpiralLayout.InnerPanelWrapper()
 
 	self.innerPanelWrapper:addChild(self.innerPanel)
 	self.innerPanelWrapper:addChild(self.cursor)
@@ -203,11 +203,12 @@ function SpiralLayout:_focusChild(widget)
 		local optionIndex = index - 1
 		if widget == previousParent then
 			if self.currentFocusedChildIndex ~= optionIndex then
+				self.currentFocusedChildIndex = optionIndex
+				self.nextFocusedChildIndex = optionIndex
+
 				self:onChildSelected(widget, self:getOptionAt(self.currentFocusedChildIndex or 1))
 			end
 
-			self.currentFocusedChildIndex = optionIndex
-			self.nextFocusedChildIndex = optionIndex
 			break
 		end
 	end

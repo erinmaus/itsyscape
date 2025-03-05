@@ -8,21 +8,31 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Config = require "ItsyScape.Game.Config"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Drawable = require "ItsyScape.UI.Drawable"
 local Icon = require "ItsyScape.UI.Icon"
+local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local RichTextLabelStyle = require "ItsyScape.UI.RichTextLabelStyle"
 local SpiralLayout = require "ItsyScape.UI.SpiralLayout"
 local ToolTip = require "ItsyScape.UI.ToolTip"
+local Widget = require "ItsyScape.UI.Widget"
 local BaseCombatHUD = require "ItsyScape.UI.Interfaces.BaseCombatHUD"
 local GamepadCirclePanel = require "ItsyScape.UI.Interfaces.Components.GamepadCirclePanel"
 local PendingPowerIcon = require "ItsyScape.UI.Interfaces.Components.PendingPowerIcon"
 
 local GamepadCombatHUD = Class(BaseCombatHUD)
+
+GamepadCombatHUD.StandardInterfaceContainer = Class(Widget)
+
+function GamepadCombatHUD.StandardInterfaceContainer:getOverflow()
+	return true
+end
 
 GamepadCombatHUD.SPIRAL_OFFSET             = 32
 GamepadCombatHUD.SPIRAL_OUTER_RADIUS       = 168
@@ -46,6 +56,9 @@ GamepadCombatHUD.CIRCLE_PANEL_ENABLED_COLOR  = Color.fromHexString("ffcc00", 0.7
 GamepadCombatHUD.CIRCLE_PANEL_SPELL_COLOR    = Color.fromHexString("00ff00", 0.5)
 GamepadCombatHUD.ICON_ENABLED_COLOR          = Color.fromHexString("ffffff")
 GamepadCombatHUD.ICON_DISABLED_COLOR         = Color.fromHexString("333333")
+
+GamepadCombatHUD.STANDARD_INTERFACE_TITLE_WIDTH = 96
+GamepadCombatHUD.STANDARD_INTERFACE_TITLE_HEIGHT = 48
 
 GamepadCombatHUD.COMBAT_STYLE_ICONS = {
 	[Weapon.STYLE_NONE] = "Resources/Game/Items/Null/Icon.png",
@@ -84,10 +97,24 @@ GamepadCombatHUD.COMBAT_STANCE_ICONS = {
 
 GamepadCombatHUD.SPIRAL_INNER_PANEL_LABEL_STYLE = {
 	textFont = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	textFontSize = 22,
+	textFontSize = 16,
 
 	headerFont = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-	headerFontSize = 26
+	headerFontSize = 22
+}
+
+GamepadCombatHUD.SPIRAL_INNER_PANEL_BUTTON_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/Serif/Regular.ttf",
+	fontSize = 32,
+	color = { 1, 1, 1, 1 },
+	textShadow = true
+}
+
+GamepadCombatHUD.RITE_TIER_NAMES = {
+	"I",
+	"II",
+	"III",
+	"IV"
 }
 
 function GamepadCombatHUD:new(...)
@@ -214,6 +241,20 @@ function GamepadCombatHUD:onSwitchSpell(oldSpell, newSpell)
 	end
 end
 
+function GamepadCombatHUD:_newBackIcon()
+	local icon = Icon()
+	icon:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_b.png")
+	icon:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
+	return icon
+end
+
+function GamepadCombatHUD:_newMenuActionIcon()
+	local icon = Icon()
+	icon:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_x.png")
+	icon:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
+	return icon
+end
+
 function GamepadCombatHUD:_initCommon()
 	self.iconGamepadPrimaryAction = Icon()
 	self.iconGamepadPrimaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_a.png")
@@ -225,18 +266,6 @@ function GamepadCombatHUD:_initCommon()
 	self.iconGamepadSecondaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_y.png")
 	self.iconGamepadSecondaryAction:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
 	self.iconGamepadSecondaryAction:setPosition(
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
-	self.iconGamepadBack = Icon()
-	self.iconGamepadBack:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_b.png")
-	self.iconGamepadBack:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
-	self.iconGamepadBack:setPosition(
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
-		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
-	self.iconGamepadMenuAction = Icon()
-	self.iconGamepadMenuAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_x.png")
-	self.iconGamepadMenuAction:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
-	self.iconGamepadMenuAction:setPosition(
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
 
@@ -352,6 +381,7 @@ end
 
 function GamepadCombatHUD:openSpiralMenu(spiralMenu)
 	self:layoutSpiralMenu(spiralMenu)
+	self:updateStandardThingiesInterface(spiralMenu)
 
 	self:focus(spiralMenu, "select")
 end
@@ -400,6 +430,132 @@ function GamepadCombatHUD:onSpiralMenuGamepadButtonRelease(name, _, joystick, bu
 	end
 end
 
+function GamepadCombatHUD:addSpiralMenuRichTextLabel(menu)
+	local size = math.sqrt(2) * self.SPIRAL_INNER_PANEL_RADIUS - self.PADDING * 2
+	local padding = math.floor(self.SPIRAL_INNER_PANEL_RADIUS - size / 2 + self.PADDING)
+
+	local label = RichTextLabel()
+	label:setSize(size, size)
+	label:setPosition(padding, padding)
+	label:setStyle(RichTextLabelStyle(self.SPIRAL_INNER_PANEL_LABEL_STYLE, self:getView():getResources()))
+
+	local innerPanel = menu:getInnerPanel()
+	innerPanel:setData("label", label)
+	innerPanel:addChild(label)
+end
+
+function GamepadCombatHUD:addStandardThingiesInterface(menu, getDataCallback)
+	local shadowLabel = RichTextLabel()
+	shadowLabel:setStyle(RichTextLabelStyle(self.SPIRAL_INNER_PANEL_LABEL_STYLE, self:getView():getResources()))
+	shadowLabel:setSize(self.STANDARD_INTERFACE_TITLE_WIDTH, 0)
+	shadowLabel:setWrapContents(true)
+	shadowLabel:setPosition(-self.STANDARD_INTERFACE_TITLE_WIDTH + 2, -self.STANDARD_INTERFACE_TITLE_HEIGHT + 2)
+
+	local label = RichTextLabel()
+	label:setStyle(RichTextLabelStyle(self.SPIRAL_INNER_PANEL_LABEL_STYLE, self:getView():getResources()))
+	label:setSize(self.STANDARD_INTERFACE_TITLE_WIDTH, 0)
+	label:setWrapContents(true)
+	label:setPosition(-self.STANDARD_INTERFACE_TITLE_WIDTH, -self.STANDARD_INTERFACE_TITLE_HEIGHT)
+
+	local icon = Icon()
+	icon:setSize(self.STANDARD_INTERFACE_TITLE_HEIGHT, self.STANDARD_INTERFACE_TITLE_HEIGHT)
+	icon:setPosition(
+		-self.STANDARD_INTERFACE_TITLE_WIDTH - self.STANDARD_INTERFACE_TITLE_HEIGHT - self.PADDING,
+		-self.STANDARD_INTERFACE_TITLE_HEIGHT - (self.STANDARD_INTERFACE_TITLE_HEIGHT / 2 - self.SPIRAL_INNER_PANEL_LABEL_STYLE.headerFontSize / 2))
+
+	local backIcon = self:_newBackIcon()
+	backIcon:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2, -self.STANDARD_INTERFACE_TITLE_HEIGHT)
+
+	local backLabel = Label()
+	backLabel:setStyle(LabelStyle(self.SPIRAL_INNER_PANEL_BUTTON_LABEL_STYLE, self:getView():getResources()))
+	backLabel:setPosition(
+		self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2 + self.DEFAULT_ICON_SIZE + self.PADDING,
+		-self.STANDARD_INTERFACE_TITLE_HEIGHT + (self.DEFAULT_ICON_SIZE / 2 - self.SPIRAL_INNER_PANEL_BUTTON_LABEL_STYLE.fontSize / 2))
+	backLabel:setText("Back")
+
+	local menuActionIcon = self:_newMenuActionIcon()
+	menuActionIcon:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2 + self.STANDARD_INTERFACE_TITLE_HEIGHT, self.PADDING)
+
+	local menuActionLabel = Label()
+	menuActionLabel:setPosition(
+		self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2 + self.STANDARD_INTERFACE_TITLE_HEIGHT + self.DEFAULT_ICON_SIZE + self.PADDING,
+		self.PADDING + (self.DEFAULT_ICON_SIZE / 2 - self.SPIRAL_INNER_PANEL_BUTTON_LABEL_STYLE.fontSize / 2))
+	menuActionLabel:setStyle(LabelStyle(self.SPIRAL_INNER_PANEL_BUTTON_LABEL_STYLE, self:getView():getResources()))
+	menuActionLabel:setText("")
+
+	local container = GamepadCombatHUD.StandardInterfaceContainer()
+	container:addChild(shadowLabel)
+	container:addChild(label)
+	container:addChild(icon)
+	container:addChild(backIcon)
+	container:addChild(backLabel)
+	container:setData("shadowLabel", shadowLabel)
+	container:setData("label", label)
+	container:setData("icon", icon)
+	container:setData("menuActionIcon", menuActionIcon)
+	container:setData("menuActionLabel", menuActionLabel)
+	container:setData("getDataCallback", getDataCallback)
+
+	local innerPanel = menu:getInnerPanel()
+	innerPanel:setData("standardInterface", container)
+	innerPanel:addChild(container)
+end
+
+function GamepadCombatHUD:updateStandardThingiesInterface(menu)
+	local innerPanel = menu:getInnerPanel()
+	local container = innerPanel:getData("standardInterface")
+	if not container then
+		return
+	end
+
+	local getDataCallback = container:getData("getDataCallback")
+	if not getDataCallback then
+		return
+	end
+
+	local data = getDataCallback(self, menu:getData("name"), menu)
+	if not data then
+		return
+	end
+
+	local icon = container:getData("icon")
+	icon:setIcon(data.icon)
+
+	local shadowLabel = container:getData("shadowLabel")
+	shadowLabel:setText({
+		{ t = "header", color = { 0, 0, 0, 1 }, data.titleText or "" },
+		{ t = "text", color = { 0, 0, 0, 1 }, data.subtitleText or "" }
+	})
+
+	local label = container:getData("label")
+	label:setText({
+		{ t = "header", data.titleText or "" },
+		{ t = "text", data.subtitleText or "" }
+	})
+
+	local menuActionLabel = container:getData("menuActionLabel")
+	local menuActionIcon = container:getData("menuActionIcon")
+	if data.menuActionText then
+		menuActionLabel:setText(data.menuActionText)
+
+		if menuActionLabel:getParent() ~= container then
+			container:addChild(menuActionLabel)
+		end
+
+		if menuActionIcon:getParent() ~= container then
+			container:addChild(menuActionIcon)
+		end
+	else
+		if menuActionLabel:getParent() == container then
+			container:removeChild(menuActionLabel)
+		end
+
+		if menuActionIcon:getParent() == container then
+			container:removeChild(menuActionIcon)
+		end
+	end
+end
+
 function GamepadCombatHUD:newSpiralMenu(name)
 	local spiralMenu = SpiralLayout()
 	spiralMenu:setData("name", name)
@@ -427,6 +583,9 @@ function GamepadCombatHUD:finishSpiralMenu(name, spiralMenu)
 	for i = 1, numRemaining do
 		local button = self:newSpiralButton()
 		button:setData("isDisabled", true)
+
+		local panel = button:getData("panel")
+		panel:setOutlineColor(self.CIRCLE_PANEL_DISABLED_COLOR)
 
 		spiralMenu:addChild(button)
 	end
@@ -534,17 +693,7 @@ function GamepadCombatHUD:newMenu()
 	menu.onChildVisible:register(self._onMenuOptionVisible, self)
 	menu.onChildSelected:register(self._onMenuOptionSelected, self)
 
-	local size = math.sqrt(2) * self.SPIRAL_INNER_PANEL_RADIUS - self.PADDING * 2
-	local padding = math.floor(self.SPIRAL_INNER_PANEL_RADIUS - size / 2 + self.PADDING)
-
-	local label = RichTextLabel()
-	label:setSize(size, size)
-	label:setPosition(padding, padding)
-	label:setStyle(RichTextLabelStyle(self.SPIRAL_INNER_PANEL_LABEL_STYLE, self:getView():getResources()))
-
-	local innerPanel = menu:getInnerPanel()
-	innerPanel:setData("label", label)
-	innerPanel:addChild(label)
+	self:addSpiralMenuRichTextLabel(menu)
 
 	return menu
 end
@@ -553,7 +702,22 @@ function GamepadCombatHUD:newMenuButton(_, name)
 	local button = self:newSpiralButton()
 	button:setData("name", name)
 
+	local icon = button:getData("icon")
+	if name == self.THINGIES_FLEE then
+		icon:setIcon("Resources/Game/UI/Icons/Concepts/Flee.png")
+	elseif name == self.THINGIES_FOOD then
+		icon:setIcon("Resources/Game/UI/Icons/Skills/Constitution.png")
+	elseif name == self.THINGIES_PRAYERS then
+		icon:setIcon("Resources/Game/UI/Icons/Skills/Faith.png")
+	elseif name == self.THINGIES_EQUIPMENT then
+		icon:setIcon("Resources/Game/UI/Icons/Common/Equipment.png")
+	end
+
 	return button
+end
+
+function GamepadCombatHUD:finishMenu(menu)
+	menu:setNumVisibleOptions(menu:getNumOptions())
 end
 
 function GamepadCombatHUD:updateMenuButton(name, button)
@@ -604,9 +768,74 @@ function GamepadCombatHUD:_onPowerVisible(_, child, delta)
 	self:layoutPowerButton(child, delta)
 end
 
+function GamepadCombatHUD:_onPowerSelected(menu, current)
+	if not current then
+		return
+	end
+
+	local index = menu:getFocusedOptionIndex()
+
+	local stateKey
+	do
+		local name = menu:getData("name")
+		if name == self.THINGIES_OFFENSIVE_POWERS then
+			stateKey = "offensive"
+		elseif name == self.THINGIES_DEFENSIVE_POWERS then
+			stateKey = "defensive"
+		end
+	end
+
+	local state = self:getState()
+	local powersState = state.powers[stateKey]
+	if not powersState then
+		return
+	end
+
+	local innerPanel = menu:getInnerPanel()
+	local label = innerPanel:getData("label")
+
+	local powerState = powersState[index]
+	if not powerState then
+		label:setText({
+			{ t = "header", color = { 0.4, 0.4, 0.4, 1.0 }, "Nothing" },
+			{ t = "text", color = { 0.4, 0.4, 0.4, 1.0 }, "Unlock more rites as you level up and explore!" }
+		})
+	else
+		local tier = powerState.tier
+		local zeal = powerState.zeal
+		local name = powerState.name
+		local description = powerState.description
+
+		local colorName = string.format("ui.combat.zeal.tier%dFire", tier)
+		local color = Color.fromHexString(Config.get("Config", "COLOR", "color", colorName))
+
+		label:setText({
+			{ t = "header", powerState.name },
+			{ t = "text", color = { color:get() }, string.format("A tier %s rite. Consumes %d%% zeal.", self.RITE_TIER_NAMES[tier] or tier, zeal * 100) },
+			unpack(description)
+		})
+	end
+end
+
+function GamepadCombatHUD:_updatePowersThingiesInterface(name)
+	local result = { titleText = self:getThingiesName(name), subtitleText = "by level", menuActionText = "Sort" }
+
+	if name == BaseCombatHUD.THINGIES_OFFENSIVE_POWERS then
+		result.icon = "Resources/Game/UI/Icons/Concepts/Powers.png"
+	elseif name == BaseCombatHUD.THINGIES_DEFENSIVE_POWERS then
+		result.icon = "Resources/Game/UI/Icons/Skills/Defense.png"
+	end
+
+	return result
+end
+
 function GamepadCombatHUD:newPowerThingies(name, powersState)
 	local powersSpiral = self:newSpiralMenu(name)
 	powersSpiral.onChildVisible:register(self._onPowerVisible, self)
+	powersSpiral.onChildSelected:register(self._onPowerSelected, self)
+
+	self:addSpiralMenuRichTextLabel(powersSpiral)
+	self:addStandardThingiesInterface(powersSpiral, self._updatePowersThingiesInterface)
 
 	return powersSpiral
 end

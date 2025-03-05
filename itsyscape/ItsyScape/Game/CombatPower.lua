@@ -53,6 +53,8 @@ function CombatPower:new(...)
 	local cost = gameDB:getRecord("CombatPowerZealCost", { Resource = self:getResource() })
 	local tier = gameDB:getRecord("CombatPowerTier", { Resource = self:getResource() })
 	if cost and tier then
+		self.tier = tier:get("Tier")
+
 		local tierName = self.TIER_NAMES[tier:get("Tier")] or "tier1"
 
 		local baseCost = CONFIG:get(BASE_COST_PATH, "tier", tierName)

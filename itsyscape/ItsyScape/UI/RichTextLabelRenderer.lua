@@ -39,7 +39,7 @@ end
 function RichTextLabelRenderer.Draw:pushText(font, text, x, y)
 	local t = self.text[font]
 	if t then
-		t:add(text, x, y)
+		t:add({ { love.graphics.getColor() }, text }, x, y)
 	end
 end
 

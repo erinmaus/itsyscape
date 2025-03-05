@@ -325,6 +325,10 @@ function BaseCombatHUD:newMenuButton(name)
 	return Class.ABSTRACT()
 end
 
+function BaseCombatHUD:finishMenu(menu)
+	Class.ABSTRACT()
+end
+
 function BaseCombatHUD:_newMenuButton(menu, name)
 	local button = self:newMenuButton(menu, name)
 	button:setID(string.format("BaseCombatHUD-%s", name))
@@ -341,6 +345,8 @@ function BaseCombatHUD:_createMenu()
 	for i, name in ipairs(self.MENU_BUTTONS) do
 		self:_newMenuButton(menu, name)
 	end
+
+	self:finishMenu(menu)
 
 	self.menu = menu
 end
