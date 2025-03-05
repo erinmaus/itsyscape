@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- ItsyScape/UI/Interfaces/BaseCombatHUD.lua
 --
@@ -199,9 +200,9 @@ function BaseCombatHUD:updateEvents()
 	end
 
 	local stance = state.stance or false
-	if stance ~= self.currentCombatStyle then
-		self:onSwitchCombatStyle(self.currentCombatStyle, stance)
-		self.currentCombatStyle = stance
+	if stance ~= self.currentCombatStance then
+		self:onSwitchStance(self.currentCombatStance, stance)
+		self.currentCombatStance = stance
 	end
 end
 

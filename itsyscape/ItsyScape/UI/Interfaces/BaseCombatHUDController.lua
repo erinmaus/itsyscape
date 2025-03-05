@@ -804,7 +804,7 @@ function BaseCombatHUDController:updateUsablePrayers()
 			end
 
 			local usable = prayerAction:canPerform(self:getPeep():getState())
-			local isCorrectStyle = prayer.style == self.style or prayer.style == "All"
+			local isCorrectStyle = prayer.style == self.styleName or prayer.style == "All"
 			local isCombatPrayer = not prayer.isNonCombat
 			if (usable and isCorrectStyle and isCombatPrayer) or isActive then
 				table.insert(prayers, prayer)
@@ -1105,7 +1105,7 @@ function BaseCombatHUDController:getAvailablePowers()
 			if actionType.name:lower() == "activate" then
 				for requirement in brochure:getRequirements(action) do
 					local resource = brochure:getConstraintResource(requirement)
-					if resource.name == self.style then
+					if resource.name == self.styleName then
 						isSameStyle = true
 						xp = requirement.count
 						break
@@ -1127,7 +1127,7 @@ function BaseCombatHUDController:getAvailablePowers()
 
 			local skill, powers
 			if isSameStyle then
-				skill = self.style
+				skill = self.styleName
 				powers = offensivePowers
 			elseif isDefensive then
 				skill = "Defense"
@@ -1168,29 +1168,31 @@ function BaseCombatHUDController:updateStyle()
 
 	local oldStyle = self.style
 	self.style = nil
+	self.styleName = nil
 
 	local weapon = Utility.Peep.getEquippedWeapon(peep, true)
 	if weapon then
 		weapon = self:getDirector():getItemManager():getLogic(weapon:getID())
 
 		if weapon and weapon:isCompatibleType(Weapon) then
-			local style = weapon:getStyle()
-			if style == Weapon.STYLE_MAGIC then
-				self.style = "Magic"
-			elseif style == Weapon.STYLE_ARCHERY then
-				self.style = "Archery"
-			elseif style == Weapon.STYLE_MELEE then
-				self.style = "Attack"
+			self.style = weapon:getStyle()
+			if self.style == Weapon.STYLE_MAGIC then
+				self.styleName = "Magic"
+			elseif self.style == Weapon.STYLE_ARCHERY then
+				self.styleName = "Archery"
+			elseif self.style == Weapon.STYLE_MELEE then
+				self.styleName = "Attack"
 			end
 		end
 	end
 
-	self.style = self.style or "Attack"
+	self.style = self.style or Weapon.STYLE_MELEE
+	self.styleName = self.styleName or "Attack"
 
 	if self.style ~= oldStyle then
 		self.isDirty = true
 
-		if self.style == "Magic" then
+		if self.style == Weapon.STYLE_MAGIC then
 			self:useSpell()
 		end
 	end
