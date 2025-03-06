@@ -358,9 +358,6 @@ function SpiralLayout:_updateInput()
 		local numRotations = math.floor((self:getFocusedOptionIndex() - 1) / self.numVisibleOptions)
 		currentAngle = numRotations * math.pi * 2 + (math.pi / self.numVisibleOptions)
 
-		print("currentAngle", math.floor(math.deg(currentAngle)))
-		print("axisAngle", math.floor(math.deg(currentAxisAngle)))
-
 		self:_setAngle(currentAngle + currentAxisAngle, true)
 	else
 		local currentAxis = (Vector(-self.currentXAxisValue, self.currentYAxisValue))
