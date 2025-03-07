@@ -12,7 +12,7 @@
 
 #include "Resources/Shaders/RendererPass.common.glsl"
 
-#define SCAPE_ALPHA_DISCARD_THRESHOLD 0.1
+#define SCAPE_ALPHA_DISCARD_THRESHOLD 250.0 / 255.0
 #define SCAPE_SHIMMER_PASS 1
 
 uniform vec4 scape_ShimmerColor;

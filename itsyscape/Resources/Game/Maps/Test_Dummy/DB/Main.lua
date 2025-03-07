@@ -119,3 +119,27 @@ do
 		MapObject = M["Wizard"]
 	}
 end
+
+M["Chest"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21,
+		PositionY = 0,
+		PositionZ = 1,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chest",
+		Map = M._MAP,
+		Resource = M["Chest"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Isabelle",
+		MapObject = M["Chest"]
+	}
+
+	M["Chest"] {
+		ItsyScape.Action.Bank()
+	}
+end

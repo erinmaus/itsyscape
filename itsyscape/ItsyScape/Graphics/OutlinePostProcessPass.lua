@@ -50,8 +50,7 @@ function OutlinePostProcessPass:new(...)
 	self.translucentTextureImageData = translucentTextureImageData
 
 	self.shimmerTexture = self.translucentTexture
-	self.shimmerSpeed = 16
-	self.startTime = love.timer.getTime()
+	self.shimmerRadius = 16
 end
 
 function OutlinePostProcessPass:setIsEnabled(value)
@@ -158,12 +157,12 @@ function OutlinePostProcessPass:getShimmerTexture()
 	return self.shimmerTexture
 end
 
-function OutlinePostProcessPass:setShimmerSpeed(value)
-	self.shimmerSpeed = value
+function OutlinePostProcessPass:setShimmerRadius(value)
+	self.shimmerRadius = value
 end
 
-function OutlinePostProcessPass:getShimmerSpeed()
-	return self.shimmerSpeed
+function OutlinePostProcessPass:getShimmerRadius()
+	return self.shimmerRadius
 end
 
 function OutlinePostProcessPass:load(resources)
@@ -176,9 +175,12 @@ function OutlinePostProcessPass:load(resources)
 	self.jumpFloodShader = self:loadPostProcessShader("JumpFlood")
 	self.composeOutlineShader = self:loadPostProcessShader("ComposeOutline")
 	self.jitterOutlineShader = self:loadPostProcessShader("JitterOutline")
+	self.dilateShader = self:loadPostProcessShader("Dilate")
+	self.composeDilateShader = self:loadPostProcessShader("ComposeDilate")
 
 	self.outlineBuffer = NGBuffer("rgba8", "rgba8")
 	self.distanceBuffer = NGBuffer("rgba8", "rgba8")
+	self.dilateBuffer = NGBuffer("rgba8")
 end
 
 function OutlinePostProcessPass:_drawDepthOutline(width, height)
@@ -303,8 +305,6 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 	local camera = self:getRenderer():getCamera()
 	local deferredRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_DEFERRED)
 	local alphaMaskRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_ALPHA_MASK)
-	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
-	local currentTime = love.timer.getTime()
 
 	love.graphics.setCanvas(self.outlineBuffer:getCanvas(1))
 	love.graphics.clear(0, 0, 0, 0)
@@ -315,10 +315,7 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 		"scape_DepthTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX),
 		"scape_OutlineTexture", self.outlineBuffer:getCanvas(2),
 		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.SPECULAR_OUTLINE_INDEX),
-		"scape_ShimmerTexture", shimmerRendererPass and shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX) or self.translucentTexture,
-		"scape_ShimmerPatternTexture", self.shimmerTexture,
-		"scape_ShimmerPatternTexelScale", { 1 / self.shimmerTexture:getWidth(), 1 / self.shimmerTexture:getHeight() },
-		"scape_ShimmerPatternOffset", { (currentTime - self.startTime) * self.shimmerSpeed, (currentTime - self.startTime) * self.shimmerSpeed },
+		"scape_ShimmerTexture", self.translucentTexture,
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
 		"scape_TexelSize", { 1 / width, 1 / height },
@@ -356,17 +353,45 @@ function OutlinePostProcessPass:_updateNoise(width, height)
 	self.noiseHeight = noiseHeight
 end
 
-function OutlinePostProcessPass:_finish(width, height)
-	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
+function OutlinePostProcessPass:_dilate(width, height)
+	love.graphics.setCanvas(self.dilateBuffer:getCanvas(1))
+	love.graphics.clear(0, 0, 0, 0)
+
 	love.graphics.setBlendMode("alpha")
 	love.graphics.setDepthMode("always", false)
-	love.graphics.setColorMask(true, true, true, false)
+	love.graphics.setColorMask(true, true, true, true)
+
+	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
+	local highlightTexture = shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX)
+
+	self:bindShader(
+		self.dilateShader,
+		"scape_TexelSize", { 1 / highlightTexture:getWidth(), 1 / highlightTexture:getHeight() },
+		"scape_KernelRadius", self.shimmerRadius)
+
+	love.graphics.draw(highlightTexture)
+end
+
+function OutlinePostProcessPass:_finish(width, height)
+	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
+	love.graphics.setBlendMode("alpha", "premultiplied")
+
+	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
+
+	self:bindShader(
+		self.composeDilateShader,
+		"scape_DilateTexture", self.dilateBuffer:getCanvas(1))
+
+	love.graphics.draw(shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX))
+
+	local composedBuffer = self.outlineBuffer:getCanvas(1)
 
 	self:bindShader(
 		self.jitterOutlineShader,
 		"scape_NoiseTextureX", self.outlineNoiseTextureX,
 		"scape_NoiseTextureY", self.outlineNoiseTextureY,
 		"scape_NoiseTexelSize", { 1 / self.noiseWidth, 1 / self.noiseHeight },
+		"scape_TextureSize", { composedBuffer:getWidth(), composedBuffer:getHeight() },
 		"scape_OutlineTurbulence", self.outlineTurbulence)
 
 	love.graphics.draw(self.outlineBuffer:getCanvas(1))
@@ -383,6 +408,9 @@ function OutlinePostProcessPass:draw(width, height)
 	self.outlineBuffer:getCanvas(1):setFilter("linear", "linear")
 	self.outlineBuffer:getCanvas(2):setFilter("linear", "linear")
 
+	self.dilateBuffer:resize(width, height)
+	self.dilateBuffer:getCanvas(1):setFilter("linear", "linear")
+
 	self.distanceBuffer:resize(math.floor(width * self.distanceBufferScale), math.floor(height * self.distanceBufferScale))
 	self.distanceBuffer:getCanvas(1):setFilter("nearest", "nearest")
 	self.distanceBuffer:getCanvas(2):setFilter("nearest", "nearest")
@@ -393,6 +421,7 @@ function OutlinePostProcessPass:draw(width, height)
 	local currentOutlineBuffer = self:_jumpFlood(width, height)
 	self:_composeOutline(currentOutlineBuffer, width, height)
 	self:_updateNoise(width, height)
+	self:_dilate(width, height)
 	self:_finish(width, height)
 end
 
