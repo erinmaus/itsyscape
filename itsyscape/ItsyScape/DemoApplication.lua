@@ -1700,9 +1700,9 @@ function DemoApplication:updateNearbyShimmer(delta)
 
 		local color
 		if isAttackable then
-			color = attackable
+			color = Color(attackable:get())
 		else
-			color = interactive
+			color = Color(interactive:get())
 		end
 
 		if not shimmeringObject.isActive and shimmeringObject.time == DemoApplication.SHIMMER_DURATION then
@@ -1710,9 +1710,11 @@ function DemoApplication:updateNearbyShimmer(delta)
 			isShimmering = false
 		elseif isShimmering then
 			if node then
+				color.a = delta
+
 				local material = node:getMaterial()
 				material:setIsShimmerEnabled(not isOnlyExaminable)
-				material:setShimmerColor(black:lerp(color, delta))
+				material:setShimmerColor(color)
 			end
 		end
 

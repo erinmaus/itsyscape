@@ -33,5 +33,5 @@ void effect()
 		discard;
 	}
 
-	love_Canvases[0] = vec4(scape_ShimmerColor.rgb, 1.0);
+	love_Canvases[0] = vec4(scape_ShimmerColor.rgba);
 }

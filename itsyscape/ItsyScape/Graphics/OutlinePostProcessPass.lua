@@ -50,7 +50,7 @@ function OutlinePostProcessPass:new(...)
 	self.translucentTextureImageData = translucentTextureImageData
 
 	self.shimmerTexture = self.translucentTexture
-	self.shimmerRadius = 16
+	self.shimmerRadius = 8
 end
 
 function OutlinePostProcessPass:setIsEnabled(value)
