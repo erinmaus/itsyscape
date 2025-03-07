@@ -54,14 +54,28 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	vec3 outlineColor2 = vec3(Texel(scape_OutlineColorTexture, textureCoordinate).y);
 	float outlineColor2Luma = length(outlineColor2);
 	vec3 outlineColor = outlineColor1Luma <= outlineColor2Luma ? outlineColor1 : outlineColor2;
-	outlineColor = shimmerColor.a == 1.0 ? shimmerColor.rgb : mix(outlineColor, vec3(1.0), a);
+	outlineColor = mix(outlineColor, vec3(1.0), a);
 
 	float outlineAlpha = alpha * a;
+	bool canShimmer = true;
 	if (outlineSample.z >= halfThickness || outlineSample.z < 0.0)
 	{
 		outlineColor = vec3(1.0);
 		outlineAlpha = 1.0;
+		canShimmer = false;
 	}
 
-	return vec4(mix(vec3(1.0), mix(outlineColor, vec3(1.0), outlineAlpha), alphaMultiplier), 1.0);
+	vec4 result;
+	if (shimmerColor.a == 1.0 && canShimmer)
+	{
+		result.rgb = mix(shimmerColor.rgb, vec3(0.0), outlineAlpha);
+		result.a = alphaMultiplier * (1.0 - (alpha * a));
+	}
+	else
+	{
+		result.rgb = mix(vec3(1.0), mix(outlineColor, vec3(1.0), outlineAlpha), alphaMultiplier);
+		result.a = 1.0;
+	}
+
+	return result;
 }

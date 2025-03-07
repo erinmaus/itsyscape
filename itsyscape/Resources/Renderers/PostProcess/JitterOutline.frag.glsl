@@ -12,5 +12,17 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	noise *= scape_OutlineTurbulence * scape_NoiseTexelSize;
 
 	vec4 sample = Texel(image, textureCoordinate + noise);
-	return vec4(sample.rgb, 1.0);
+
+	vec4 result;
+	if (sample.r == sample.g && sample.r == sample.b)
+	{
+		result.rgb = vec3(0.0);
+		result.a = (1.0 - sample.r) * sample.a;
+	}
+	else
+	{
+		result = sample;
+	}
+
+	return result;
 }

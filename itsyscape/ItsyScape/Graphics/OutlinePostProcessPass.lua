@@ -307,7 +307,9 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 	local currentTime = love.timer.getTime()
 
 	love.graphics.setCanvas(self.outlineBuffer:getCanvas(1))
-	love.graphics.setBlendMode("replace", "premultiplied")
+	love.graphics.clear(0, 0, 0, 0)
+	love.graphics.setBlendMode("alpha")
+
 	self:bindShader(
 		self.composeOutlineShader,
 		"scape_DepthTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX),
@@ -356,7 +358,7 @@ end
 
 function OutlinePostProcessPass:_finish(width, height)
 	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
-	love.graphics.setBlendMode("multiply", "premultiplied")
+	love.graphics.setBlendMode("alpha")
 	love.graphics.setDepthMode("always", false)
 	love.graphics.setColorMask(true, true, true, false)
 

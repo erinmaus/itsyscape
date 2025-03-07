@@ -152,13 +152,15 @@ function Probe:getCount()
 	return self.pendingActionsCount
 end
 
-function Probe:addAction(id, verb, type, object, description, depth, callback, ...)
+function Probe:addAction(id, verb, type, objectID, objectType, object, description, depth, callback, ...)
 	self.pendingActionsCount = self.pendingActionsCount + 1
 	local pendingAction = self.pendingActions[self.pendingActionsCount] or { n = self.pendingActionsCount, callback = Function() }
 
 	pendingAction.id = id
-	pendingAction.verb = verb
 	pendingAction.type = type
+	pendingAction.verb = verb
+	pendingAction.objectID = objectID
+	pendingAction.objectType = objectType
 	pendingAction.object = object
 	pendingAction.description = description
 	pendingAction.callback:rebind(callback, ...)
@@ -252,9 +254,11 @@ function Probe:walk()
 	local i, j, k, position = self:getTile()
 	if i and j and k then
 		self:addAction(
-			"Walk",
+			-1,
 			"Walk",
 			"walk",
+			-1,
+			"client",
 			"here", -- lol
 			"Walk to this location.",
 			position.z,
@@ -308,14 +312,18 @@ function Probe:_loot(i, j, k, position)
 			object = name
 		end
 
-		self:addAction(
-			item.ref,
+		local action = self:addAction(
+			-1,
 			"Take",
+			"take",
+			item.ref,
 			"item",
 			object,
 			description,
 			position.z - (i / #items),
 			self._take, self, i, j, k, item)
+		action.objectID = item.ref
+
 		self.isDirty = true
 	end
 
@@ -387,9 +395,11 @@ function Probe:actors()
 		if s then
 			local actions = actor:getActions("world")
 			for i = 1, #actions do
-				self:addAction(
+				local action = self:addAction(
 					actions[i].id,
 					actions[i].verb,
+					actions[i].type,
+					actor:getID(),
 					"actor",
 					actor:getName(),
 					actor:getDescription(),
@@ -400,10 +410,12 @@ function Probe:actors()
 				count = count + 1
 			end
 
-			self:addAction(
-				"Examine",
+			local action = self:addAction(
+				-1,
 				"Examine",
 				"examine",
+				actor:getID(),
+				"actor",
 				actor:getName(),
 				actor:getDescription(),
 				-p.z + (((#actions + 1) / #actions) / 100),
@@ -470,6 +482,8 @@ function Probe:props()
 				local action = self:addAction(
 					actions[i].id,
 					actions[i].verb,
+					actions[i].type,
+					prop:getID(),
 					"prop",
 					prop:getName(),
 					prop:getDescription(),
@@ -481,14 +495,17 @@ function Probe:props()
 				count = count + 1
 			end
 
-			self:addAction(
-				"Examine",
+			local action = self:addAction(
+				-1,
 				"Examine",
 				"examine",
+				prop:getID(),
+				"prop",
 				prop:getName(),
 				prop:getDescription(),
 				-p.z + (((#actions + 1) / #actions) / 100),
 				self.onExamine, prop:getName(), prop:getDescription())
+			action.objectID = prop:getID()
 		end
 	end
 

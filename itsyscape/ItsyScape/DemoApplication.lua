@@ -56,6 +56,7 @@ DemoApplication.TITLE_SCREENS = {
 	"TitleScreen_IsabelleIsland",
 }
 DemoApplication.GYRO_RADIUS = 1
+DemoApplication.SHIMMER_DURATION = 0.25
 
 function DemoApplication:new()
 	Application.new(self, true)
@@ -63,6 +64,7 @@ function DemoApplication:new()
 	self.previousPlayerPosition = false
 	self.currentPlayerPosition = false
 	self.currentPlayerDirection = Vector(1, 0, 0):keep()
+	self.shimmeringObjects = {}
 
 	self.showingToolTip = false
 	self.lastToolTipObject = false
@@ -1597,43 +1599,129 @@ function DemoApplication:updatePositionProbe()
 
 	local results = probe:toArray()
 
-	if self.results then
-		for _, result in ipairs(self.results) do
-			local node
-			if result.type == "prop" then
-				local prop = gameView:getProp(gameView:getPropByID(result.id))
-				node = prop and prop:getRoot()
-			elseif result.type == "actor" then
-				local actor = gameView:getActor(gameView:getActorByID(result.id))
-				node = actor and actor:getSceneNode()
-			elseif result.type == "item" then
-				node = gameView:getItem(result.id)
-			end
+	for _, shimmeringObject in ipairs(self.shimmeringObjects) do
+		shimmeringObject.isPending = true
+	end
 
-			if node then
-				local material = node:getMaterial()
-				material:setIsShimmerEnabled(false)
+	for _, result in ipairs(results) do
+		local currentShimmeringObject
+
+		for i, shimmeringObject in ipairs(self.shimmeringObjects) do
+			if shimmeringObject.objectID == result.objectID and
+			   shimmeringObject.objectType == result.objectType
+			then
+				currentShimmeringObject = shimmeringObject
+				break
+			end
+		end
+
+		if not currentShimmeringObject then
+			currentShimmeringObject = {
+				objectID = result.objectID,
+				objectType = result.objectType,
+				time = 0,
+				isPending = false,
+				isActive = true,
+				actions = {}
+			}
+
+			table.insert(self.shimmeringObjects, currentShimmeringObject)
+		end
+
+		if not currentShimmeringObject.isActive then
+			currentShimmeringObject.isActive = true
+			currentShimmeringObject.time = DemoApplication.SHIMMER_DURATION - currentShimmeringObject.time
+		end
+
+		currentShimmeringObject.actions[result.id] = result
+		currentShimmeringObject.isPending = false
+	end
+
+	for _, shimmeringObject in ipairs(self.shimmeringObjects) do
+		if shimmeringObject.isPending then
+			if shimmeringObject.isActive then
+				shimmeringObject.isActive = false
+				shimmeringObject.time = DemoApplication.SHIMMER_DURATION - shimmeringObject.time
 			end
 		end
 	end
+end
 
-	self.results = results
-	for _, result in ipairs(self.results) do
-		local node
-		if result.type == "prop" then
-			local prop = gameView:getProp(gameView:getPropByID(result.id))
-			node = prop and prop:getRoot()
-		elseif result.type == "actor" then
-			local actor = gameView:getActor(gameView:getActorByID(result.id))
-			node = actor and actor:getSceneNode()
-		elseif result.type == "item" then
-			node = gameView:getItem(result.id)
+function DemoApplication:updateNearbyShimmer(delta)
+	local gameView = self:getGameView()
+
+	local playerActorID = self:getGame():getPlayer()
+	playerActorID = playerActorID and playerActorID:getActor()
+	playerActorID = playerActorID and playerActorID:getID()
+
+	local black = Color(0)
+	local attackable = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.attackable"))
+	local interactive = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.interactive"))
+
+	for i = #self.shimmeringObjects, 1, -1 do
+		local shimmeringObject = self.shimmeringObjects[i]
+
+		shimmeringObject.time = math.min(shimmeringObject.time + delta, DemoApplication.SHIMMER_DURATION)
+
+		local delta = shimmeringObject.time / DemoApplication.SHIMMER_DURATION
+		if not shimmeringObject.isActive then
+			delta = 1 - delta
 		end
 
-		if node then
-			local material = node:getMaterial()
-			material:setIsShimmerEnabled(true)
-			material:setShimmerColor(Color(1, 0.5, 0, 1))
+		local node
+		if shimmeringObject.objectType == "prop" then
+			local prop = gameView:getProp(gameView:getPropByID(shimmeringObject.objectID))
+			node = prop and prop:getRoot()
+		elseif shimmeringObject.objectType == "actor" then
+			local actor = gameView:getActor(gameView:getActorByID(shimmeringObject.objectID))
+			node = actor and actor:getSceneNode()
+		elseif shimmeringObject.objectType == "item" then
+			node = gameView:getItem(shimmeringObject.objectID)
+		end
+
+		local isAttackable
+		local isOnlyExaminable = true
+		for _, action in pairs(shimmeringObject.actions) do
+			if action.type:lower() ~= "examine" then
+				isOnlyExaminable = false
+			end
+
+			if action.type:lower() == "attack" then
+				isAttackable = true
+			end
+		end
+
+		local isShimmering = true
+		if shimmeringObject.objectID == playerActorID and shimmeringObject.objectType == "actor" then
+			isShimmering = false
+		elseif isOnlyExaminable then
+			isShimmering = false
+		end
+
+		local color
+		if isAttackable then
+			color = attackable
+		else
+			color = interactive
+		end
+
+		if not shimmeringObject.isActive and shimmeringObject.time == DemoApplication.SHIMMER_DURATION then
+			table.remove(self.shimmeringObjects, i)
+			isShimmering = false
+		elseif isShimmering then
+			if node then
+				local material = node:getMaterial()
+				material:setIsShimmerEnabled(not isOnlyExaminable)
+				material:setShimmerColor(black:lerp(color, delta))
+			end
+		end
+
+		if not isShimmering then
+			if node then
+				local material = node:getMaterial()
+				material:setIsShimmerEnabled(false)
+				material:setShimmerColor(Color(1))
+			end
 		end
 	end
 end
@@ -1690,11 +1778,11 @@ function DemoApplication:updatePlayerMovement()
 			local yAxis = inputProvider:getGamepadAxis(currentJoystick, yAxisKeybind)
 
 			if math.abs(xAxis) > axisSensitivity then
-				x = x + math.sign(xAxis)
+				x = x + -math.sign(xAxis)
 			end
 
 			if math.abs(yAxis) > axisSensitivity then
-				z = z + math.sign(yAxis)
+				z = z + -math.sign(yAxis)
 			end
 		end
 	end
@@ -1706,7 +1794,7 @@ function DemoApplication:updatePlayerMovement()
 	if isMoving then
 		local rotation = self:getCamera():getLocalRotation()
 		local forward = rotation:getNormal():transformVector(Vector.UNIT_Z):getNormal()
-		if forward.z > 0 then
+		if forward.z < 0 then
 			x = -x
 			z = -z
 		end
@@ -1827,6 +1915,8 @@ function DemoApplication:update(delta)
 
 	self:updatePlayerMovement()
 	self:updateToolTip(delta)
+
+	self:updateNearbyShimmer(delta)
 
 	self.cameraController:update(delta)
 
