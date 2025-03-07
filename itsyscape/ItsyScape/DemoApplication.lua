@@ -14,6 +14,7 @@ local Pool = require "ItsyScape.Common.Math.Pool"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
+local Config = require "ItsyScape.Game.Config"
 local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
 local TitleScreen = require "ItsyScape.Graphics.TitleScreen"
@@ -834,6 +835,18 @@ function DemoApplication:mouseMove(x, y, dx, dy)
 	end
 end
 
+function DemoApplication:gamepadAxis(joystick, axis, value)
+	Application.gamepadAxis(self, joystick, axis, value)
+
+	local inputProvider = self:getUIView():getInputProvider()
+	if not inputProvider:isCurrentJoystick(joystick) then
+		return
+	end
+
+	local isUIActive = not not inputProvider:getFocusedWidget()
+	self.cameraController:gamepadAxis(isUIActive, axis, value)
+end
+
 function DemoApplication:getTouches()
 	local result = {}
 	for _, touch in pairs(self.touches.current) do
@@ -1599,18 +1612,42 @@ function DemoApplication:updatePlayerMovement()
 		end
 	end
 
+	do
+		local xAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadMoveXAxis")
+		local yAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadMoveYAxis")
+		local axisSensitivity = Config.get("Input", "KEYBIND", "type", "world", "name", "axisSensitivity")
+
+		local inputProvider = self:getUIView():getInputProvider()
+		local currentJoystick = inputProvider:getCurrentJoystick()
+		if currentJoystick then
+			local xAxis = inputProvider:getGamepadAxis(currentJoystick, xAxisKeybind)
+			local yAxis = inputProvider:getGamepadAxis(currentJoystick, yAxisKeybind)
+
+			if math.abs(xAxis) > axisSensitivity then
+				x = x + math.sign(xAxis)
+			end
+
+			if math.abs(yAxis) > axisSensitivity then
+				z = z + math.sign(yAxis)
+			end
+		end
+	end
+
+	x = math.clamp(x, -1, 1)
+	z = math.clamp(z, -1, 1)
+
 	local isMoving = math.abs(x) > 0 or math.abs(z) > 0
 	if not self.wasMoving and isMoving then
 		self.wasMoving = true
-		self.initialMovementRotation = self:getCamera():getCombinedRotation():keep(self.initialMovementRotation)
+		self.initialMovementRotation = self:getCamera():getLocalRotation():keep(self.initialMovementRotation)
 	else
 		self.wasMoving = isMoving
 	end
 
 	if isMoving then
 		local rotation = self.initialMovementRotation or Quaternion.IDENTITY
-		local forward = (-rotation):getNormal():transformVector(Vector.UNIT_Z):getNormal()
-		if forward.z < 0 then
+		local forward = rotation:getNormal():transformVector(Vector.UNIT_Z):getNormal()
+		if forward.z > 0 then
 			x = -x
 			z = -z
 		end

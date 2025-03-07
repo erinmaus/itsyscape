@@ -24,6 +24,16 @@
 			"gamepadPrimaryAction": "a",
 			"gamepadSecondaryAction": "y",
 			"gamepadBack": "b"
+		},
+
+		"world": {
+			"axisSensitivity": 0.5,
+			"gamepadMoveXAxis": "leftx",
+			"gamepadMoveYAxis": "lefty",
+			"gamepadCameraXAxis": "rightx",
+			"gamepadCameraYAxis": "righty",
+			"gamepadProbe": "x",
+			"gamepadAction": "a"
 		}
 	}
 }

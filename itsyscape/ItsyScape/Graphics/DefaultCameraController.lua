@@ -12,6 +12,7 @@ local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Config = require "ItsyScape.Game.Config"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Keybinds = require "ItsyScape.UI.Keybinds"
@@ -75,6 +76,8 @@ function DefaultCameraController:new(...)
 	self.panningTime = 0
 	self.panningVerticalRotationOffset = 0
 	self.panningHorizontalRotationOffset = 0
+	self.gamepadX = 0
+	self.gamepadY = 0
 
 	self._camera = ThirdPersonCamera()
 
@@ -361,6 +364,26 @@ function DefaultCameraController:mouseMove(uiActive, x, y, dx, dy)
 	end
 end
 
+function DefaultCameraController:gamepadAxis(uiActive, axis, value)
+	local xAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCameraXAxis")
+	local yAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCameraYAxis")
+	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "world", "name", "axisSensitivity")
+
+	if math.abs(value) < axisSensitivity then
+		value = 0
+	else
+		value = value
+	end
+
+	if axis == xAxisKeybind then
+		self.gamepadX = value
+	elseif axis == yAxisKeybind then
+		self.gamepadY = value
+	end
+
+	self.canControlCameraWithGamepad = not uiActive
+end
+
 function DefaultCameraController:getIsMouseCaptured()
 	return self.isActionButtonDown and self.isActionMoving and self.isCameraDragging
 end
@@ -368,7 +391,6 @@ end
 function DefaultCameraController:updateControls(delta)
 	if _DEBUG then
 		self.isPanning = false
-		return
 	end
 
 	local focusedWidget = self:getApp():getUIView():getInputProvider():getFocusedWidget()
@@ -386,27 +408,35 @@ function DefaultCameraController:updateControls(delta)
 
 	local angle1 = self.isPanning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset
 	do
-		if leftPressed then
+		if not _DEBUG and leftPressed then
 			angle1 = angle1 + DefaultCameraController.SPEED * delta
 		end
 
-		if rightPressed then
+		if not _DEBUG and rightPressed then
 			angle1 = angle1 - DefaultCameraController.SPEED * delta
+		end
+
+		if self.canControlCameraWithGamepad then
+			angle1 = angle1 + DefaultCameraController.SPEED * delta * self.gamepadX
 		end
 	end
 
 	local angle2 = self.isPanning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset
 	do
-		if upPressed then
+		if not _DEBUG and upPressed then
 			angle2 = angle2 - DefaultCameraController.SPEED * delta
 		end
 
-		if downPressed then
+		if not _DEBUG and downPressed then
 			angle2 = angle2 + DefaultCameraController.SPEED * delta
+		end
+
+		if self.canControlCameraWithGamepad then
+			angle2 = angle2 + DefaultCameraController.SPEED * delta * self.gamepadY
 		end
 	end
 
-	if not self.isPanning then
+	if not _DEBUG and not self.isPanning then
 		if not self.isRotationUnlocked or self.isRotationUnlocked <= 0 then
 			angle1 = math.max(
 				angle1,

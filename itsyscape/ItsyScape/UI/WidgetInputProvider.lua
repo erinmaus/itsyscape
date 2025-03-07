@@ -47,6 +47,10 @@ function WidgetInputProvider:getConfig()
 	return self.config
 end
 
+function WidgetInputProvider:getCurrentJoystick()
+	return self.currentJoystick
+end
+
 function WidgetInputProvider:isCurrentJoystick(joystick)
 	if not self.currentJoystick then
 		return false
@@ -458,7 +462,7 @@ function WidgetInputProvider:_updateGamepadFocus(directionX, directionY)
 	local focusedWidget = self:getFocusedWidget()
 	local focusableWidgets = self:getFocusableWidgets()
 
-	if not focusedWidget and #focusableWidgets == 0 then
+	if not focusedWidget then
 		return
 	end
 

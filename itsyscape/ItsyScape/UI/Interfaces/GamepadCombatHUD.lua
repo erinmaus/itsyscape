@@ -334,7 +334,7 @@ function GamepadCombatHUD:openThingies(name, targetWidget)
 		end
 
 		self:addChild(thingiesWidget)
-		self:focus(thingiesWidget)
+		self:focusChild(thingiesWidget)
 	end
 
 	return didOpen
@@ -353,7 +353,7 @@ function GamepadCombatHUD:openMenu()
 	if didOpen then
 		local menu = self:getMenu()
 
-		self:focus(menu, "select")
+		self:focusChild(menu, "select")
 
 		if self.thingiesAngles[self.FEATURE_MENU] then
 			menu:setCurrentAngle(self.thingiesAngles[self.FEATURE_MENU])
@@ -430,7 +430,7 @@ function GamepadCombatHUD:openSpiralMenu(spiralMenu)
 	self:layoutSpiralMenu(spiralMenu)
 	self:updateStandardThingiesInterface(spiralMenu)
 
-	self:focus(spiralMenu, "select")
+	self:focusChild(spiralMenu, "select")
 end
 
 function GamepadCombatHUD:selectThingies(name, target)
@@ -723,7 +723,7 @@ function GamepadCombatHUD:_onMenuOptionVisible(_, button, delta)
 end
 
 function GamepadCombatHUD:_onMenuOptionSelected(_, currentButton, previousButton)
-	self:focusSpiralButton(currentButton, previousButton)
+	self:focusChildSpiralButton(currentButton, previousButton)
 
 	if currentButton then
 		local name = currentButton:getData("name")
@@ -1117,7 +1117,7 @@ function GamepadCombatHUD:refreshThingies()
 		local current = self.thingiesStack[#self.thingiesStack]
 		if current == self.FEATURE_MENU then
 			self:openMenu()
-			self:focus(self:getMenu())
+			self:focusChild(self:getMenu())
 		else
 			self:openThingies(current)
 		end

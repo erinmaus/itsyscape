@@ -201,6 +201,13 @@ function ThirdPersonCamera:getRotation()
 	return self.rotation
 end
 
+function ThirdPersonCamera:getLocalRotation()
+	local y = Quaternion.fromAxisAngle(self.up, self.verticalRotation + math.pi / 2):getNormal()
+	local x = Quaternion.fromAxisAngle(Vector.UNIT_X, -self.horizontalRotation + math.pi):getNormal()
+
+	return (y * x):getNormal()
+end
+
 function ThirdPersonCamera:getCombinedRotation()
 	local y = Quaternion.fromAxisAngle(self.up, self.verticalRotation + math.pi / 2):getNormal()
 	local x = Quaternion.fromAxisAngle(Vector.UNIT_X, -self.horizontalRotation + math.pi):getNormal()

@@ -50,6 +50,10 @@ function CameraController:mouseMove(uiActive, x, y, dx, dy)
 	-- Nothing.
 end
 
+function CameraController:gamepadAxis(uiActive, axis, value)
+	-- Nothing.
+end
+
 function CameraController:rotate(dx, dy)
 	-- Nothing.
 end
