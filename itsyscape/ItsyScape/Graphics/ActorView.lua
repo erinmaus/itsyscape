@@ -523,8 +523,6 @@ function ActorView:new(actor, actorID)
 	self.animatable = ActorView.Animatable(self)
 
 	self.sceneNode = SceneNode()
-	self.sceneNode:getMaterial():setIsShimmerEnabled(true)
-	self.sceneNode:getMaterial():setShimmerColor(Color(1, 0, 0, 1))
 
 	self.combinedModelSceneNodes = {}
 

@@ -63,6 +63,5 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		outlineAlpha = 1.0;
 	}
 
-	//return vec4(mix(vec3(1.0), mix(outlineColor, vec3(1.0), outlineAlpha), alphaMultiplier), 1.0);
-	return vec4(shimmerColor.rgb, 1.0);
+	return vec4(mix(vec3(1.0), mix(outlineColor, vec3(1.0), outlineAlpha), alphaMultiplier), 1.0);
 }

@@ -1327,6 +1327,10 @@ function GameView:poofItem(item)
 	end
 end
 
+function GameView:getItem(ref)
+	return self.items[item.ref]
+end
+
 function GameView:decorate(group, decoration, layer, callback)
 	local groupName = group .. '#' .. tostring(layer)
 	if self.decorations[groupName] and

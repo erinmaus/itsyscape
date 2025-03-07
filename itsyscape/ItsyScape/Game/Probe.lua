@@ -17,26 +17,26 @@ local Map = require "ItsyScape.World.Map"
 
 local Probe = Class()
 Probe.TESTS = {
-	['walk'] = true,
-	['loot'] = true,
-	['actors'] = true,
-	['props'] = true
+	["walk"] = true,
+	["loot"] = true,
+	["actors"] = true,
+	["props"] = true
 }
 
 Probe.PROP_FILTERS = {
-	['open'] = function(prop)
+	["open"] = function(prop)
 		return prop:getState().open
 	end,
 
-	['close'] = function()
+	["close"] = function()
 		return true
 	end,
 
-	['light_prop'] = function(prop)
+	["light_prop"] = function(prop)
 		return prop:getState().lit
 	end,
 
-	['snuff'] = function(prop)
+	["snuff"] = function(prop)
 		return not prop:getState().lit
 	end
 }
@@ -56,6 +56,8 @@ function Probe:new(game, gameView, gameDB)
 
 	self.tile = false
 	self.layer = false
+	self.min = false
+	self.max = false
 
 	self._sort = function(...)
 		return self:sort(...)
@@ -80,6 +82,28 @@ function Probe:init(ray, tests, radius, layer)
 
 	self.tile = false
 	self.layer = layer or false
+end
+
+function Probe:setTile(i, j, layer)
+	local map = self.gameView:getMap(layer)
+	if not map then
+		return
+	end
+
+	local position = map:getTileCenter(i, j)
+	self:getTile({
+		{
+			layer = layer,
+			[Map.RAY_TEST_RESULT_POSITION] = { x = position.x, y = position.y, z = position. z },
+			[Map.RAY_TEST_RESULT_I] = i,
+			[Map.RAY_TEST_RESULT_J] = j
+		}
+	})
+end
+
+function Probe:setBounds(min, max, layer)
+	self.min = min:min(max):keep()
+	self.max = min:max(max):keep()
 end
 
 -- Returns an iterator over the actions.
@@ -146,9 +170,18 @@ function Probe:addAction(id, verb, type, object, description, depth, callback, .
 end
 
 function Probe:_all(callback, results)
+	self:getTile(results)
+	self:run(callback)
+end
+
+-- Probes all actions that can be performed.
+function Probe:all(callback)
+	self.gameView:testMap(nil, self.ray, Function(self._all, self, callback))
+end
+
+function Probe:run(callback)
 	local tests = self.tests or Probe.TESTS
 
-	self:getTile(results)
 	for test in pairs(tests) do
 		if Probe.TESTS[test] then
 			self[test](self)
@@ -158,11 +191,6 @@ function Probe:_all(callback, results)
 	if callback then
 		callback()
 	end
-end
-
--- Probes all actions that can be performed.
-function Probe:all(callback)
-	self.gameView:testMap(nil, self.ray, Function(self._all, self, callback))
 end
 
 -- Returns the tile this probe hit as a tuple in the form (i, j, layer).
@@ -215,10 +243,10 @@ function Probe:_walk(i, j, k)
 	self.game:getPlayer():walk(i, j, k)
 end
 
--- Adds a 'Walk here' action, if possible.
+-- Adds a "Walk here" action, if possible.
 function Probe:walk()
-	if self.probes['walk'] then
-		return self.probes['walk']
+	if self.probes["walk"] then
+		return self.probes["walk"]
 	end
 
 	local i, j, k, position = self:getTile()
@@ -232,76 +260,94 @@ function Probe:walk()
 			position.z,
 			self._walk, self, i, j, k)
 
-		self.probes['walk'] = 1
+		self.probes["walk"] = 1
 		self.isDirty = true
 	end
 
-	return self.probes['walk'] or 0
+	return self.probes["walk"] or 0
 end
 
 function Probe:_take(i, j, k, item)
 	self.game:getPlayer():takeItem(i, j, k, item.ref)
 end
 
--- Adds all 'Take' actions, if possible.
+function Probe:_loot(i, j, k, position)
+	local items = self.game:getStage():getItemsAtTile(i, j, k)
+
+	for _, item in pairs(items) do
+		item = item.item
+
+		local name, description
+		do
+			-- TODO: [LANG]
+			name = Utility.Item.getName(item.id, self.gameDB, "en-US")
+			if not name then
+				name = "*" .. item.id
+			end
+
+			description = Utility.Item.getDescription(item.id, self.gameDB, "en-US")
+			if not description then
+				description = "Pick up item from the ground."
+			end
+		end
+
+		local object
+		if item.count > 1 then
+			if item.noted then
+				object = string.format(
+					"%s (%s, noted)",
+					name,
+					Utility.Item.getItemCountShorthand(item.count))
+			else
+				object = string.format(
+					"%s (%s)",
+					name,
+					Utility.Item.getItemCountShorthand(item.count))
+			end
+		else
+			object = name
+		end
+
+		self:addAction(
+			item.ref,
+			"Take",
+			"item",
+			object,
+			description,
+			position.z - (i / #items),
+			self._take, self, i, j, k, item)
+		self.isDirty = true
+	end
+
+	self.probes["loot"] = (self.probes["loot"] or 0) + #items
+end
+
+-- Adds all "Take" actions, if possible.
 function Probe:loot()
-	if self.probes['loot'] then
-		return self.probes['loot']
+	if self.probes["loot"] then
+		return self.probes["loot"]
 	end
 
 	local i, j, k, position = self:getTile()
 	if i and j and k and position then
-		local items = self.game:getStage():getItemsAtTile(i, j, k)
+		if self.min and self.max then
+			local map = self.gameView:getMap(k)
+			if map then
+				local _, minI, minJ = map:getTileAt(self.min.x, self.min.z)
+				local _, maxI, maxJ = map:getTileAt(self.max.x, self.max.z)
 
-		for _, item in pairs(items) do
-			item = item.item
-
-			local name, description
-			do
-				-- TODO: [LANG]
-				name = Utility.Item.getName(item.id, self.gameDB, "en-US")
-				if not name then
-					name = "*" .. item.id
-				end
-
-				description = Utility.Item.getDescription(item.id, self.gameDB, "en-US")
-				if not description then
-					description = "Pick up item from the ground."
+				for i = minI, maxI do
+					for j = minJ, maxJ do
+						self:_loot(i, j, k, map:getTileCenter(i, j))
+					end
 				end
 			end
-
-			local object
-			if item.count > 1 then
-				if item.noted then
-					object = string.format(
-						"%s (%s, noted)",
-						name,
-						Utility.Item.getItemCountShorthand(item.count))
-				else
-					object = string.format(
-						"%s (%s)",
-						name,
-						Utility.Item.getItemCountShorthand(item.count))
-				end
-			else
-				object = name
-			end
-
-			self:addAction(
-				item.ref,
-				"Take",
-				"item",
-				object,
-				description,
-				position.z - (i / #items),
-				self._take, self, i, j, k, item)
-			self.isDirty = true
+		else
+			self:_loot(i, j, k, position)
 		end
-
-		self.probes['loot'] = #items
 	end
 
-	return self.probes['loot'] or 0
+	return self.probes["loot"] or 0
 end
 
 function Probe:_poke(id, target, scope)
@@ -310,8 +356,8 @@ end
 
 -- Adds all actor actions, if possible.
 function Probe:actors()
-	if self.probes['actors'] then
-		return self.probes['actors']
+	if self.probes["actors"] then
+		return self.probes["actors"]
 	end
 
 	local count = 0
@@ -327,8 +373,19 @@ function Probe:actors()
 		end
 
 		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
+		if not s and self.min and self.max then
+			min, max = Vector.transformBounds(min, max, transform)
+
+			if self.min.x < max.x and self.max.x > min.x and
+			   self.min.z < max.z and self.max.z > min.z
+			then
+				s = true
+				p = actor:getPosition()
+			end
+		end
+
 		if s then
-			local actions = actor:getActions('world')
+			local actions = actor:getActions("world")
 			for i = 1, #actions do
 				self:addAction(
 					actions[i].id,
@@ -337,7 +394,7 @@ function Probe:actors()
 					actor:getName(),
 					actor:getDescription(),
 					-p.z + ((i / #actions) / 100),
-					self._poke, self, actions[i].id, actor, 'world')
+					self._poke, self, actions[i].id, actor, "world")
 
 				self.isDirty = true
 				count = count + 1
@@ -346,7 +403,7 @@ function Probe:actors()
 			self:addAction(
 				"Examine",
 				"Examine",
-				'examine',
+				"examine",
 				actor:getName(),
 				actor:getDescription(),
 				-p.z + (((#actions + 1) / #actions) / 100),
@@ -354,14 +411,14 @@ function Probe:actors()
 		end
 	end
 
-	self.probes['actors'] = count
+	self.probes["actors"] = count
 	return count
 end
 
 -- Adds all prop actions, if possible.
 function Probe:props()
-	if self.probes['props'] then
-		return self.probes['props']
+	if self.probes["props"] then
+		return self.probes["props"]
 	end
 
 	local player = self.game:getPlayer()
@@ -389,8 +446,19 @@ function Probe:props()
 		end
 
 		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
+		if not s and self.min and self.max then
+			min, max = Vector.transformBounds(min, max, transform)
+
+			if self.min.x < max.x and self.max.x > min.x and
+			   self.min.z < max.z and self.max.z > min.z
+			then
+				s = true
+				p = prop:getPosition()
+			end
+		end
+
 		if s then
-			local actions = prop:getActions('world')
+			local actions = prop:getActions("world")
 			for i = 1, #actions do
 				local filter = Probe.PROP_FILTERS[actions[i].type:lower()]
 
@@ -406,7 +474,7 @@ function Probe:props()
 					prop:getName(),
 					prop:getDescription(),
 					-p.z + ((i / #actions) / 100),
-					self._poke, self, actions[i].id, prop, 'world')
+					self._poke, self, actions[i].id, prop, "world")
 				action.suppress = not isHidden
 
 				self.isDirty = true
@@ -416,7 +484,7 @@ function Probe:props()
 			self:addAction(
 				"Examine",
 				"Examine",
-				'examine',
+				"examine",
 				prop:getName(),
 				prop:getDescription(),
 				-p.z + (((#actions + 1) / #actions) / 100),
@@ -424,7 +492,7 @@ function Probe:props()
 		end
 	end
 
-	self.probes['props'] = count
+	self.probes["props"] = count
 	return count
 end
 

@@ -102,6 +102,10 @@ end
 function Vector.transformBounds(min, max, transform)
 	min:compatible(max)
 
+	if not transform then
+		return min, max
+	end
+
 	local corners = {
 		min.x, min.y, min.z,
 		max.x, min.y, min.z,

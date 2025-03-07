@@ -462,7 +462,7 @@ function Application:_probe(probe, performDefault, callback)
 	table.insert(self.pendingProbes, probe)
 end
 
-function Application:probe(x, y, performDefault, callback, tests, radius)
+function Application:probe(x, y, performDefault, callback, tests, radius, layer)
 	if self.paused then
 		return
 	end

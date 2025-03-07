@@ -12,9 +12,11 @@ local Class = require "ItsyScape.Common.Class"
 local Function = require "ItsyScape.Common.Function"
 local Pool = require "ItsyScape.Common.Math.Pool"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Config = require "ItsyScape.Game.Config"
+local Probe = require "ItsyScape.Game.Probe"
 local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
 local TitleScreen = require "ItsyScape.Graphics.TitleScreen"
@@ -60,6 +62,7 @@ function DemoApplication:new()
 
 	self.previousPlayerPosition = false
 	self.currentPlayerPosition = false
+	self.currentPlayerDirection = Vector(1, 0, 0):keep()
 
 	self.showingToolTip = false
 	self.lastToolTipObject = false
@@ -1569,7 +1572,70 @@ function DemoApplication:snapshotGame()
 	love.graphics.pop()
 end
 
-function DemoApplication:_move(x, z)
+function DemoApplication:updatePositionProbe()
+	local gameView = self:getGameView()
+
+	local player = self:getGame():getPlayer()
+	local playerActor = player and player:getActor()
+	local playerActorView = playerActor and gameView:getActor(playerActor)
+	if not playerActorView then
+		return
+	end
+
+	local i, j, layer = playerActor:getTile()
+	local position = Vector(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0):transformPoint(0, 0, 0))
+	local direction = self.currentPlayerDirection
+
+	local a = position + Vector(-2, 0, -2) * direction
+	local b = position + Vector(4, 0, 4) * direction
+
+	local probe = Probe(self:getGame(), gameView, self:getGameDB())
+	probe:init(Ray(position, direction))
+	probe:setBounds(a, b)
+	probe:setTile(i, j, layer)
+	probe:run()
+
+	local results = probe:toArray()
+
+	if self.results then
+		for _, result in ipairs(self.results) do
+			local node
+			if result.type == "prop" then
+				local prop = gameView:getProp(gameView:getPropByID(result.id))
+				node = prop and prop:getRoot()
+			elseif result.type == "actor" then
+				local actor = gameView:getActor(gameView:getActorByID(result.id))
+				node = actor and actor:getSceneNode()
+			elseif result.type == "item" then
+				node = gameView:getItem(result.id)
+			end
+
+			if node then
+				local material = node:getMaterial()
+				material:setIsShimmerEnabled(false)
+			end
+		end
+	end
+
+	self.results = results
+	for _, result in ipairs(self.results) do
+		local node
+		if result.type == "prop" then
+			local prop = gameView:getProp(gameView:getPropByID(result.id))
+			node = prop and prop:getRoot()
+		elseif result.type == "actor" then
+			local actor = gameView:getActor(gameView:getActorByID(result.id))
+			node = actor and actor:getSceneNode()
+		elseif result.type == "item" then
+			node = gameView:getItem(result.id)
+		end
+
+		if node then
+			local material = node:getMaterial()
+			material:setIsShimmerEnabled(true)
+			material:setShimmerColor(Color(1, 0.5, 0, 1))
+		end
+	end
 end
 
 function DemoApplication:updatePlayerMovement()
@@ -1653,6 +1719,8 @@ function DemoApplication:updatePlayerMovement()
 		else
 			player:move(0, 0)
 		end
+
+		self.currentPlayerDirection = Vector(x, 0, z):getNormal():keep()
 	else
 		player:move(0, 0)
 	end
@@ -1688,6 +1756,8 @@ function DemoApplication:_updateToolTip(probe)
 	else
 		self:hideToolTip()
 	end
+
+	self:updatePositionProbe()
 end
 
 function DemoApplication:updateToolTip(delta)
