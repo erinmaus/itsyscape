@@ -156,6 +156,13 @@ void nbunny::ShimmerRendererPass::copy_depth_buffer()
 
 	get_renderer()->set_current_shader(shader);
 	graphics->draw(depth_buffer.get_canvas(0), love::Matrix4());
+
+	love::graphics::Graphics::ColorMask enabled_mask;
+	enabled_mask.r = true;
+	enabled_mask.g = true;
+	enabled_mask.b = true;
+	enabled_mask.a = true;
+	graphics->setColorMask(enabled_mask);
 }
 
 nbunny::ShimmerRendererPass::ShimmerRendererPass(GBuffer& o_buffer, GBuffer& depth_buffer) :
