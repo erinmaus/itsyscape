@@ -275,26 +275,22 @@ function DefaultCameraController:mouseScroll(uiActive, x, y)
 	end
 end
 
-function DefaultCameraController:_rotate(dx, dy)
+function DefaultCameraController:_setAngles(verticalRotation, horizontalRotation)
 	local panning = self.isPanning and not self:getIsDemoing()
-
-	local verticalOffset = -dx / 128
-	local horizontalOffset = -dy / 128
-	local angle1 = (panning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset) + verticalOffset
-	local angle2 = (panning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset) + horizontalOffset
+	local verticalOffset = verticalRotation - (panning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset)
 
 	if not (_DEBUG or panning) then
 		if self.isRotationUnlocked <= 0 and not self.cameraVerticalRotationFlipTime then
-			local beforeAngle1Clamp = angle1
+			local beforeClamp = verticalRotation
 
-			angle1 = math.max(
-				angle1,
+			verticalRotation = math.max(
+				verticalRotation,
 				-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-			angle1 = math.min(
-				angle1,
+			verticalRotation = math.min(
+				verticalRotation,
 				DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
 
-			if beforeAngle1Clamp ~= angle1 then
+			if beforeClamp ~= verticalRotation then
 				self.cameraVerticalRotationOffsetRemainder = self.cameraVerticalRotationOffsetRemainder + verticalOffset
 			end
 
@@ -305,24 +301,33 @@ function DefaultCameraController:_rotate(dx, dy)
 			end
 		end
 
-		angle2 = math.max(
-			angle2,
+		horizontalRotation = math.max(
+			horizontalRotation,
 			-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
-		angle2 = math.min(
-			angle2,
+		horizontalRotation = math.min(
+			horizontalRotation,
 			DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
 	end
 
-	angle1 = math.sign(angle1) * (math.abs(angle1) % (math.pi * 2))
-	angle2 = math.sign(angle2) * (math.abs(angle2) % (math.pi * 2))
+	verticalRotation = math.sign(verticalRotation) * (math.abs(verticalRotation) % (math.pi * 2))
+	horizontalRotation = math.sign(horizontalRotation) * (math.abs(horizontalRotation) % (math.pi * 2))
 
 	if panning then
-		self.panningVerticalRotationOffset = angle1
-		self.panningHorizontalRotationOffset = angle2
+		self.panningVerticalRotationOffset = verticalRotation
+		self.panningHorizontalRotationOffset = horizontalRotation
 	else
-		self.cameraVerticalRotationOffset = angle1
-		self.cameraHorizontalRotationOffset = angle2
+		self.cameraVerticalRotationOffset = verticalRotation
+		self.cameraHorizontalRotationOffset = horizontalRotation
 	end
+end
+
+function DefaultCameraController:_rotate(dx, dy)
+	local verticalOffset = -dx / 128
+	local horizontalOffset = -dy / 128
+	local angle1 = (panning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset) + verticalOffset
+	local angle2 = (panning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset) + horizontalOffset
+
+	self:_setAngles(angle1, angle2)
 end
 
 function DefaultCameraController:rotate(dx, dy)
@@ -367,6 +372,8 @@ end
 function DefaultCameraController:gamepadAxis(uiActive, axis, value)
 	local xAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCameraXAxis")
 	local yAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCameraYAxis")
+	local xAxisMultiplier = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCameraXAxisMultiplier")
+	local yAxisMultiplier = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCameraYAxisMultiplier")
 	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "world", "name", "axisSensitivity")
 
 	if math.abs(value) < axisSensitivity then
@@ -376,9 +383,9 @@ function DefaultCameraController:gamepadAxis(uiActive, axis, value)
 	end
 
 	if axis == xAxisKeybind then
-		self.gamepadX = value
+		self.gamepadX = value * xAxisMultiplier
 	elseif axis == yAxisKeybind then
-		self.gamepadY = value
+		self.gamepadY = value * yAxisMultiplier
 	end
 
 	self.canControlCameraWithGamepad = not uiActive
@@ -436,36 +443,7 @@ function DefaultCameraController:updateControls(delta)
 		end
 	end
 
-	if not _DEBUG and not self.isPanning then
-		if not self.isRotationUnlocked or self.isRotationUnlocked <= 0 then
-			angle1 = math.max(
-				angle1,
-				-DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-			angle1 = math.min(
-				angle1,
-				DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
-		end
-
-		angle2 = math.max(
-			angle2,
-			-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
-		angle2 = math.min(
-			angle2,
-			DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
-	end
-
-	self:getCamera():setVerticalRotation(
-		DefaultCameraController.CAMERA_VERTICAL_ROTATION + angle1)
-	self:getCamera():setHorizontalRotation(
-		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + angle2)
-
-	if self.isPanning then
-		self.panningVerticalRotationOffset = angle1
-		self.panningHorizontalRotationOffset = angle2
-	else
-		self.cameraVerticalRotationOffset = angle1
-		self.cameraHorizontalRotationOffset = angle2
-	end
+	self:_setAngles(angle1, angle2)
 end
 
 function DefaultCameraController:debugUpdate(delta)

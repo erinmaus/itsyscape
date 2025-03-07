@@ -5,6 +5,8 @@
 uniform sampler2D scape_DepthTexture;
 uniform sampler2D scape_OutlineTexture;
 uniform sampler2D scape_OutlineColorTexture;
+uniform sampler2D scape_ShimmerTexture;
+uniform sampler2D scape_ShimmerPatternTexture;
 uniform vec2 scape_TexelSize;
 uniform vec2 scape_TexelScale;
 uniform float scape_NearOutlineDistance;
@@ -14,6 +16,8 @@ uniform float scape_MaxOutlineThickness;
 uniform float scape_MinOutlineDepthAlpha;
 uniform float scape_MaxOutlineDepthAlpha;
 uniform float scape_OutlineFadeDepth;
+uniform vec2 scape_ShimmerPatternTextureScale;
+uniform vec2 scape_ShimmerPatternTextureOffset;
 
 vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
@@ -44,12 +48,14 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		alpha = 1.0;
 	}
 
+	vec4 shimmerColor = Texel(scape_ShimmerTexture, outlineSampleTextureCoordinate);
 	vec3 outlineColor1 = Texel(scape_OutlineTexture, outlineSampleTextureCoordinate).rgb;
 	float outlineColor1Luma = length(outlineColor1);
 	vec3 outlineColor2 = vec3(Texel(scape_OutlineColorTexture, textureCoordinate).y);
 	float outlineColor2Luma = length(outlineColor2);
 	vec3 outlineColor = outlineColor1Luma <= outlineColor2Luma ? outlineColor1 : outlineColor2;
-	outlineColor = mix(outlineColor, vec3(1.0), a);
+	outlineColor = shimmerColor.a == 1.0 ? shimmerColor.rgb : mix(outlineColor, vec3(1.0), a);
+
 	float outlineAlpha = alpha * a;
 	if (outlineSample.z >= halfThickness || outlineSample.z < 0.0)
 	{
@@ -57,5 +63,6 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 		outlineAlpha = 1.0;
 	}
 
-	return vec4(mix(vec3(1.0), mix(outlineColor, vec3(1.0), outlineAlpha), alphaMultiplier), 1.0);
+	//return vec4(mix(vec3(1.0), mix(outlineColor, vec3(1.0), outlineAlpha), alphaMultiplier), 1.0);
+	return vec4(shimmerColor.rgb, 1.0);
 }

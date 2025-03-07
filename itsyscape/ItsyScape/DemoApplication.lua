@@ -1637,15 +1637,8 @@ function DemoApplication:updatePlayerMovement()
 	z = math.clamp(z, -1, 1)
 
 	local isMoving = math.abs(x) > 0 or math.abs(z) > 0
-	if not self.wasMoving and isMoving then
-		self.wasMoving = true
-		self.initialMovementRotation = self:getCamera():getLocalRotation():keep(self.initialMovementRotation)
-	else
-		self.wasMoving = isMoving
-	end
-
 	if isMoving then
-		local rotation = self.initialMovementRotation or Quaternion.IDENTITY
+		local rotation = self:getCamera():getLocalRotation()
 		local forward = rotation:getNormal():transformVector(Vector.UNIT_Z):getNormal()
 		if forward.z > 0 then
 			x = -x

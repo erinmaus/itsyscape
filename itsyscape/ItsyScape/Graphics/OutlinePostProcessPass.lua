@@ -43,6 +43,15 @@ function OutlinePostProcessPass:new(...)
 	self.outlineFadeDepth = 20
 	self.outlineTurbulence = 0.25
 	self.distanceBufferScale = 1
+
+	local translucentTextureImageData = love.image.newImageData(1, 1)
+	translucentTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
+	self.translucentTexture = love.graphics.newImage(translucentTextureImageData)
+	self.translucentTextureImageData = translucentTextureImageData
+
+	self.shimmerTexture = self.translucentTexture
+	self.shimmerSpeed = 16
+	self.startTime = love.timer.getTime()
 end
 
 function OutlinePostProcessPass:setIsEnabled(value)
@@ -139,6 +148,22 @@ end
 
 function OutlinePostProcessPass:getDistanceBufferScale()
 	return self.distanceBufferScale
+end
+
+function OutlinePostProcessPass:setShimmerTexture(value)
+	self.shimmerTexture = value or self.translucentTexture
+end
+
+function OutlinePostProcessPass:getShimmerTexture()
+	return self.shimmerTexture
+end
+
+function OutlinePostProcessPass:setShimmerSpeed(value)
+	self.shimmerSpeed = value
+end
+
+function OutlinePostProcessPass:getShimmerSpeed()
+	return self.shimmerSpeed
 end
 
 function OutlinePostProcessPass:load(resources)
@@ -278,6 +303,8 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 	local camera = self:getRenderer():getCamera()
 	local deferredRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_DEFERRED)
 	local alphaMaskRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_ALPHA_MASK)
+	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
+	local currentTime = love.timer.getTime()
 
 	love.graphics.setCanvas(self.outlineBuffer:getCanvas(1))
 	love.graphics.setBlendMode("replace", "premultiplied")
@@ -286,6 +313,10 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 		"scape_DepthTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX),
 		"scape_OutlineTexture", self.outlineBuffer:getCanvas(2),
 		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.SPECULAR_OUTLINE_INDEX),
+		"scape_ShimmerTexture", shimmerRendererPass and shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX) or self.translucentTexture,
+		"scape_ShimmerPatternTexture", self.shimmerTexture,
+		"scape_ShimmerPatternTexelScale", { 1 / self.shimmerTexture:getWidth(), 1 / self.shimmerTexture:getHeight() },
+		"scape_ShimmerPatternOffset", { (currentTime - self.startTime) * self.shimmerSpeed, (currentTime - self.startTime) * self.shimmerSpeed },
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
 		"scape_TexelSize", { 1 / width, 1 / height },

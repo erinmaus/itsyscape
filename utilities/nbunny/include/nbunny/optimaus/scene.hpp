@@ -123,6 +123,9 @@ namespace nbunny
 		bool is_stencil_write_enabled = false;
 		bool is_stencil_mask_enabled = false;
 
+		bool is_shimmer_enabled = false;
+		glm::vec4 shimmer_color = glm::vec4(1.0f);
+
 	public:
 		SceneNodeMaterial(SceneNode& scene_node);
 		~SceneNodeMaterial() = default;
@@ -180,6 +183,12 @@ namespace nbunny
 
 		void set_z_bias(float value);
 		float get_z_bias() const;
+
+		void set_is_shimmer_enabled(bool value);
+		bool get_is_shimmer_enabled() const;
+
+		const glm::vec4& get_shimmer_color() const;
+		void set_shimmer_color(const glm::vec4& value);
 
 		const glm::vec4& get_color() const;
 		void set_color(const glm::vec4& value);

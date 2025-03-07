@@ -32,7 +32,8 @@ namespace nbunny
 		RENDERER_PASS_PARTICLE_OUTLINE = 6,
 		RENDERER_PASS_SHADOW           = 7,
 		RENDERER_PASS_REFLECTION       = 8,
-		RENDERER_PASS_MAX              = 8
+		RENDERER_PASS_SHIMMER          = 9,
+		RENDERER_PASS_MAX              = 9
 	};
 
 	class RendererPass;

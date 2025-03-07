@@ -386,6 +386,26 @@ float nbunny::SceneNodeMaterial::get_z_bias() const
 	return z_bias;
 }
 
+void nbunny::SceneNodeMaterial::set_is_shimmer_enabled(bool value)
+{
+	is_shimmer_enabled = value;	
+}
+
+bool nbunny::SceneNodeMaterial::get_is_shimmer_enabled() const
+{
+	return is_shimmer_enabled;
+}
+
+const glm::vec4& nbunny::SceneNodeMaterial::get_shimmer_color() const
+{
+	return shimmer_color;
+}
+
+void nbunny::SceneNodeMaterial::set_shimmer_color(const glm::vec4& value)
+{
+	shimmer_color = value;
+}
+
 const glm::vec4& nbunny::SceneNodeMaterial::get_color() const
 {
 	return color;
@@ -1505,6 +1525,44 @@ static int nbunny_scene_node_material_get_color(lua_State* L)
 	return 4;
 }
 
+static int nbunny_scene_node_material_set_shimmer_color(lua_State* L)
+{
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+	float r = (float)luaL_checknumber(L, 2);
+	float g = (float)luaL_checknumber(L, 3);
+	float b = (float)luaL_checknumber(L, 4);
+	float a = (float)luaL_checknumber(L, 5);
+	material->set_shimmer_color(glm::vec4(r, g, b, a));
+	return 0;
+}
+
+static int nbunny_scene_node_material_get_shimmer_color(lua_State* L)
+{
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+	const auto& color = material->get_shimmer_color();
+	lua_pushnumber(L, color.x);
+	lua_pushnumber(L, color.y);
+	lua_pushnumber(L, color.z);
+	lua_pushnumber(L, color.w);
+	return 4;
+}
+
+static int nbunny_scene_node_material_set_is_shimmer_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_shimmer_enabled(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_shimmer_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_shimmer_enabled());
+
+    return 1;
+}
+
 static int nbunny_scene_node_material_set_outline_color(lua_State* L)
 {
 	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
@@ -1913,6 +1971,10 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		{ "getIsParticulate", &nbunny_scene_node_material_get_is_particulate },
 		{ "setZBias", &nbunny_scene_node_material_set_z_bias },
 		{ "getZBias", &nbunny_scene_node_material_get_z_bias },
+		{ "setIsShimmerEnabled", &nbunny_scene_node_material_set_is_shimmer_enabled },
+		{ "getIsShimmerEnabled", &nbunny_scene_node_material_get_is_shimmer_enabled },
+		{ "setShimmerColor", &nbunny_scene_node_material_set_shimmer_color },
+		{ "getShimmerColor", &nbunny_scene_node_material_get_shimmer_color },
 		{ "setColor", &nbunny_scene_node_material_set_color },
 		{ "getColor", &nbunny_scene_node_material_get_color },
 		{ "setOutlineColor", &nbunny_scene_node_material_set_outline_color },

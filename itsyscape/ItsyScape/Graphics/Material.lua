@@ -15,7 +15,7 @@ local Material, Metatable = Class()
 
 Material.DEFAULT_OUTLINE_THRESHOLD = 0.5
 
-Material.UNIFORM_INTEGER = 1 
+Material.UNIFORM_INTEGER = 1
 Material.UNIFORM_FLOAT   = 2
 Material.UNIFORM_TEXTURE = 3
 
@@ -227,6 +227,22 @@ end
 
 function Material:setOutlineColor(value)
 	self._handle:setOutlineColor((value or Color(0)):get())
+end
+
+function Material:getIsShimmerEnabled()
+	return self._handle:getIsShimmerEnabled()
+end
+
+function Material:setIsShimmerEnabled(value)
+	self._handle:setIsShimmerEnabled(value)
+end
+
+function Material:getShimmerColor()
+	return Color(self._handle:getShimmerColor())
+end
+
+function Material:setShimmerColor(value)
+	self._handle:setShimmerColor((value or Color(0)):get())
 end
 
 -- Gets the number of textures.
