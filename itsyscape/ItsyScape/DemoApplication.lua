@@ -65,6 +65,50 @@ function DemoApplication:new()
 	self.currentPlayerPosition = false
 	self.currentPlayerDirection = Vector(1, 0, 0):keep()
 	self.shimmeringObjects = {}
+	self.pendingObjectID = false
+	self.pendingObjectType = false
+
+	self._sortShimmerObjects = function(a, b)
+		local nodeA = self:_getShimmerObjectNode(a)
+		local nodeB = self:_getShimmerObjectNode(b)
+
+		if nodeA and nodeB then
+			local relativePosition
+			do
+				local player = self:getGame():getPlayer()
+				player = player and player:getActor()
+				player = player and self:getGameView():getActor(player)
+
+				if player then
+					relativePosition = Vector.ZERO:transform(player:getSceneNode():getTransform():getGlobalDeltaTransform(0))
+				else
+					relativePosition = Vector.ZERO
+				end
+			end
+
+			local positionA = Vector.ZERO:transform(nodeA:getTransform():getGlobalDeltaTransform(0))
+			local distanceA = (relativePosition - positionA):getLengthSquared()
+			local directionA = relativePosition:direction(positionA):getNormal()
+			local dotA = directionA:dot(self.currentPlayerDirection)
+
+			local positionB = Vector.ZERO:transform(nodeB:getTransform():getGlobalDeltaTransform(0))
+			local distanceB = (relativePosition - positionB):getLengthSquared()
+			local directionB = relativePosition:direction(positionB):getNormal()
+			local dotB = directionB:dot(self.currentPlayerDirection)
+
+			if dotA == dotB then
+				return distanceA < distanceB
+			end
+
+			return dotA > dotB
+		end
+
+		if nodeA then
+			return true
+		end
+
+		return false
+	end
 
 	self.showingToolTip = false
 	self.lastToolTipObject = false
@@ -1574,6 +1618,23 @@ function DemoApplication:snapshotGame()
 	love.graphics.pop()
 end
 
+function DemoApplication:_getShimmerObjectNode(shimmeringObject)
+	local gameView = self:getGameView()
+
+	local node
+	if shimmeringObject.objectType == "prop" then
+		local prop = gameView:getProp(gameView:getPropByID(shimmeringObject.objectID))
+		node = prop and prop:getRoot()
+	elseif shimmeringObject.objectType == "actor" then
+		local actor = gameView:getActor(gameView:getActorByID(shimmeringObject.objectID))
+		node = actor and actor:getSceneNode()
+	elseif shimmeringObject.objectType == "item" then
+		node = gameView:getItem(shimmeringObject.objectID)
+	end
+
+	return node
+end
+
 function DemoApplication:updatePositionProbe()
 	local gameView = self:getGameView()
 
@@ -1642,11 +1703,26 @@ function DemoApplication:updatePositionProbe()
 			end
 		end
 	end
+
+	table.sort(self.shimmeringObjects, self._sortShimmerObjects)
+
+	if self.pendingObjectID and self.pendingObjectType then
+		local hasPendingObject = false
+		for _, shimmeringObject in ipairs(self.shimmeringObjects) do
+			if self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType and shimmeringObject.isActive then
+				hasPendingObject = true
+				break
+			end
+		end
+
+		if not hasPendingObject then
+			self.pendingObjectID = false
+			self.pendingObjectType = false
+		end
+	end
 end
 
 function DemoApplication:updateNearbyShimmer(delta)
-	local gameView = self:getGameView()
-
 	local playerActorID = self:getGame():getPlayer()
 	playerActorID = playerActorID and playerActorID:getActor()
 	playerActorID = playerActorID and playerActorID:getID()
@@ -1654,6 +1730,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 	local black = Color(0)
 	local attackable = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.attackable"))
 	local interactive = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.interactive"))
+	local unselected = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.unselected"))
 
 	for i = #self.shimmeringObjects, 1, -1 do
 		local shimmeringObject = self.shimmeringObjects[i]
@@ -1665,21 +1742,12 @@ function DemoApplication:updateNearbyShimmer(delta)
 			delta = 1 - delta
 		end
 
-		local node
-		if shimmeringObject.objectType == "prop" then
-			local prop = gameView:getProp(gameView:getPropByID(shimmeringObject.objectID))
-			node = prop and prop:getRoot()
-		elseif shimmeringObject.objectType == "actor" then
-			local actor = gameView:getActor(gameView:getActorByID(shimmeringObject.objectID))
-			node = actor and actor:getSceneNode()
-		elseif shimmeringObject.objectType == "item" then
-			node = gameView:getItem(shimmeringObject.objectID)
-		end
+		local node = self:_getShimmerObjectNode(shimmeringObject)
 
 		local isAttackable
 		local isOnlyExaminable = true
 		for _, action in pairs(shimmeringObject.actions) do
-			if action.type:lower() ~= "examine" then
+			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") then
 				isOnlyExaminable = false
 			end
 
@@ -1695,11 +1763,22 @@ function DemoApplication:updateNearbyShimmer(delta)
 			isShimmering = false
 		end
 
+		if isShimmering and not (self.pendingObjectID and self.pendingObjectType) and shimmeringObject.isActive then
+			self.pendingObjectID = shimmeringObject.objectID
+			self.pendingObjectType = shimmeringObject.objectType
+		end
+
+		local isActive = self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType
+
 		local color
-		if isAttackable then
-			color = Color(attackable:get())
+		if isActive then
+			if isAttackable then
+				color = Color(attackable:get())
+			else
+				color = Color(interactive:get())
+			end
 		else
-			color = Color(interactive:get())
+			color = Color(unselected:get())
 		end
 
 		if not shimmeringObject.isActive and shimmeringObject.time == DemoApplication.SHIMMER_DURATION then

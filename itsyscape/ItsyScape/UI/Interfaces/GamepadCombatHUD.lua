@@ -723,7 +723,7 @@ function GamepadCombatHUD:_onMenuOptionVisible(_, button, delta)
 end
 
 function GamepadCombatHUD:_onMenuOptionSelected(_, currentButton, previousButton)
-	self:focusChildSpiralButton(currentButton, previousButton)
+	self:focusSpiralButton(currentButton, previousButton)
 
 	if currentButton then
 		local name = currentButton:getData("name")

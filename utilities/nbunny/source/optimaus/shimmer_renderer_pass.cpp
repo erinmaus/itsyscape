@@ -86,9 +86,6 @@ void nbunny::ShimmerRendererPass::draw_nodes(lua_State* L, float delta)
 		return;
 	}
 
-	copy_depth_buffer();
-	graphics->flushStreamDraws();
-
 	graphics->replaceTransform(&view);
 	graphics->setProjection(projection);
 
