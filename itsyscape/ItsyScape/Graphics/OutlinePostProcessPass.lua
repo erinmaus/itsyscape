@@ -376,14 +376,6 @@ function OutlinePostProcessPass:_finish(width, height)
 	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
 	love.graphics.setBlendMode("alpha", "premultiplied")
 
-	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
-
-	self:bindShader(
-		self.composeDilateShader,
-		"scape_DilateTexture", self.dilateBuffer:getCanvas(1))
-
-	love.graphics.draw(shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX))
-
 	local composedBuffer = self.outlineBuffer:getCanvas(1)
 
 	self:bindShader(
@@ -395,6 +387,14 @@ function OutlinePostProcessPass:_finish(width, height)
 		"scape_OutlineTurbulence", self.outlineTurbulence)
 
 	love.graphics.draw(self.outlineBuffer:getCanvas(1))
+
+	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
+
+	self:bindShader(
+		self.composeDilateShader,
+		"scape_DilateTexture", self.dilateBuffer:getCanvas(1))
+
+	love.graphics.draw(shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX))
 end
 
 function OutlinePostProcessPass:draw(width, height)
