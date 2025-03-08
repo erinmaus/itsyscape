@@ -44,4 +44,17 @@ function Common.decomposeTransform(transform)
 	return Vector(m41, m42, m43), q
 end
 
+function Common.projectPointOnLineSegment(a, b, p)
+	local distanceSquared = (a - b):getLengthSquared()
+	if distanceSquared == 0 then
+		return p
+	end
+
+	local pMinusA = p - a
+	local bMinusA = b - a
+	local t = math.clamp(pMinusA:dot(bMinusA) / distanceSquared)
+
+	return a + bMinusA * t
+end
+
 return Common

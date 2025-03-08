@@ -1588,12 +1588,9 @@ function DemoApplication:updatePositionProbe()
 	local position = Vector(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0):transformPoint(0, 0, 0))
 	local direction = self.currentPlayerDirection
 
-	local a = position + Vector(-2, 0, -2) * direction
-	local b = position + Vector(4, 0, 4) * direction
-
 	local probe = Probe(self:getGame(), gameView, self:getGameDB())
-	probe:init(Ray(position, direction))
-	probe:setBounds(a, b)
+	probe:init(Ray(position - direction * 1.5, direction))
+	probe:setCone(2.5, 2)
 	probe:setTile(i, j, layer)
 	probe:run()
 

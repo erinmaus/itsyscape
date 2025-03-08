@@ -99,6 +99,14 @@ function BaseVector:clamp(min, max)
 	return self:min(max):max(min)
 end
 
+function Vector:transform(transform)
+	if not transform then
+		return self
+	end
+
+	return Vector(transform:transformPoint(self.x, self.y, self.z))
+end
+
 function Vector.transformBounds(min, max, transform)
 	min:compatible(max)
 

@@ -10,6 +10,7 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Function = require "ItsyScape.Common.Function"
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
@@ -56,8 +57,8 @@ function Probe:new(game, gameView, gameDB)
 
 	self.tile = false
 	self.layer = false
-	self.min = false
-	self.max = false
+	self.coneLength = false
+	self.coneRadius = false
 
 	self._sort = function(...)
 		return self:sort(...)
@@ -101,9 +102,9 @@ function Probe:setTile(i, j, layer)
 	})
 end
 
-function Probe:setBounds(min, max, layer)
-	self.min = min:min(max):keep()
-	self.max = min:max(max):keep()
+function Probe:setCone(coneLength, coneRadius)
+	self.coneLength = coneLength
+	self.coneRadius = coneRadius
 end
 
 -- Returns an iterator over the actions.
@@ -338,21 +339,21 @@ function Probe:loot()
 
 	local i, j, k, position = self:getTile()
 	if i and j and k and position then
-		if self.min and self.max then
-			local map = self.gameView:getMap(k)
-			if map then
-				local _, minI, minJ = map:getTileAt(self.min.x, self.min.z)
-				local _, maxI, maxJ = map:getTileAt(self.max.x, self.max.z)
+		-- if self.min and self.max then
+		-- 	local map = self.gameView:getMap(k)
+		-- 	if map then
+		-- 		local _, minI, minJ = map:getTileAt(self.min.x, self.min.z)
+		-- 		local _, maxI, maxJ = map:getTileAt(self.max.x, self.max.z)
 
-				for i = minI, maxI do
-					for j = minJ, maxJ do
-						self:_loot(i, j, k, map:getTileCenter(i, j))
-					end
-				end
-			end
-		else
+		-- 		for i = minI, maxI do
+		-- 			for j = minJ, maxJ do
+		-- 				self:_loot(i, j, k, map:getTileCenter(i, j))
+		-- 			end
+		-- 		end
+		-- 	end
+		-- else
 			self:_loot(i, j, k, position)
-		end
+		-- end
 	end
 
 	return self.probes["loot"] or 0
@@ -360,6 +361,41 @@ end
 
 function Probe:_poke(id, target, scope)
 	self.game:getPlayer():poke(id, target, scope)
+end
+
+function Probe:_isPointInCone(point)
+	local difference = point - self.ray.origin
+	local distance = difference:dot(self.ray.direction)
+	local radius = (distance / self.coneLength) * self.coneRadius
+
+	local orthogonalDistance = (difference - self.ray.direction * distance):getLength()
+	return orthogonalDistance < radius, orthogonalDistance
+end
+
+function Probe:_isInCone(min, max, transform)
+	if not (self.coneRadius and self.coneLength) then
+		return false
+	end
+
+	local best, bestDistance = false, math.huge
+	local h, d
+
+	local points = {
+		MathCommon.projectPointOnLineSegment(Vector(min.x, 0, min.z):transform(transform), Vector(max.x, 0, min.z):transform(transform), self.ray.origin),
+		MathCommon.projectPointOnLineSegment(Vector(max.x, 0, min.z):transform(transform), Vector(max.x, 0, max.z):transform(transform), self.ray.origin),
+		MathCommon.projectPointOnLineSegment(Vector(max.x, 0, max.z):transform(transform), Vector(min.x, 0, max.z):transform(transform), self.ray.origin),
+		MathCommon.projectPointOnLineSegment(Vector(min.x, 0, max.z):transform(transform), Vector(min.x, 0, min.z):transform(transform), self.ray.origin)
+	}
+
+	for _, point in ipairs(points) do
+		local h, d = self:_isPointInCone(point)
+		if h and d < bestDistance then
+			best = point
+			bestDistance = d
+		end
+	end
+
+	return not not best, best
 end
 
 -- Adds all actor actions, if possible.
@@ -381,15 +417,8 @@ function Probe:actors()
 		end
 
 		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
-		if not s and self.min and self.max then
-			min, max = Vector.transformBounds(min, max, transform)
-
-			if self.min.x < max.x and self.max.x > min.x and
-			   self.min.z < max.z and self.max.z > min.z
-			then
-				s = true
-				p = actor:getPosition()
-			end
+		if not s then
+			s, p = self:_isInCone(min, max, transform)
 		end
 
 		if s then
@@ -458,15 +487,8 @@ function Probe:props()
 		end
 
 		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
-		if not s and self.min and self.max then
-			min, max = Vector.transformBounds(min, max, transform)
-
-			if self.min.x < max.x and self.max.x > min.x and
-			   self.min.z < max.z and self.max.z > min.z
-			then
-				s = true
-				p = prop:getPosition()
-			end
+		if not s then
+			s, p = self:_isInCone(min, max, transform)
 		end
 
 		if s then
