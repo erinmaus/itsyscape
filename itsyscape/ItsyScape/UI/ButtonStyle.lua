@@ -62,6 +62,7 @@ function ButtonStyle:new(t, resources)
 	self.textShadow = t.textShadow or false
 	self.textOutline = t.textOutline or false
 	self.textShadowOffset = t.textShadowOffset or 1
+	self.padding = t.padding or 0
 
 	if t.icon and type(t.icon) == 'table' and t.icon.filename then
 		self.icon = resources:load(love.graphics.newImage, t.icon.filename)
@@ -134,6 +135,8 @@ function ButtonStyle:draw(widget)
 		else
 			-- Nothing needed for 'left'.
 		end
+
+		x = x + self.padding
 
 		if self.textShadow or self.textOutline then
 			love.graphics.setColor(0, 0, 0, 1)

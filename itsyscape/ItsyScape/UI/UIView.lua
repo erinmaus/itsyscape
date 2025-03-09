@@ -24,7 +24,7 @@ local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
-local PokeMenu = require "ItsyScape.UI.PokeMenu"
+local PokeMenu = require "ItsyScape.UI.GamepadPokeMenu"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelRenderer = require "ItsyScape.UI.PanelRenderer"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
@@ -1295,6 +1295,10 @@ function UIView:examine(a, b)
 			image = "Resources/Renderers/Widget/Panel/Examine.9.png"
 		}, self.resources))
 	end
+end
+
+function UIView:gamepadProbe(actions)
+
 end
 
 function UIView:probe(actions)

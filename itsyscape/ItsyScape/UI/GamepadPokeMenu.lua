@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/PokeMenu.lua
+-- ItsyScape/UI/GamepadPokeMenu.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,37 +9,44 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local Config = require "ItsyScape.Game.Config"
 local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Widget = require "ItsyScape.UI.Widget"
 
-local PokeMenu = Class(Widget)
-PokeMenu.PADDING = 6
+local GamepadPokeMenu = Class(Widget)
+GamepadPokeMenu.PADDING = 8
 
-function PokeMenu:new(view, actions)
+function GamepadPokeMenu:new(view, actions)
 	Widget.new(self)
 
 	self.uiView = view
 
 	local buttonStyle = ButtonStyle({
-		inactive = Color(0, 0, 0, 0),
-		pressed = Color(29 / 255, 25 / 255, 19 / 255, 1),
-		hover = Color(147 / 255, 124 / 255, 94 / 255, 1),
+		inactive = "Resources/Game/UI/Buttons/Probe-Default.png",
+		pressed = "Resources/Game/UI/Buttons/Probe-Pressed.png",
+		hover = "Resources/Game/UI/Buttons/Probe-Hover.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-		fontSize = _MOBILE and 24 or 16,
-		textX = 0.0,
+		fontSize = 24,
+		textX = 0,
+		padding = GamepadPokeMenu.PADDING,
 		textY = 0.5,
 		textAlign = 'left'
 	}, view:getResources())
 
 	local panelStyle = PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/Default.9.png"
+		image = "Resources/Game/UI/Panels/Probe.png"
 	}, view:getResources())
 	self:setStyle(panelStyle)
 
 	self.actions = {}
+
+	local itemColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.item"))
+	local propColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.prop"))
+	local actorColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.actor"))
+	local miscColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.misc"))
 
 	local maxTextLength = 0
 	local function addAction(action)
@@ -50,16 +57,36 @@ function PokeMenu:new(view, actions)
 			callback = action.callback
 		})
 
-		local text
+		local objectColor
+		if action.objectType == "item" then
+			objectColor = itemColor
+		elseif action.objectType == "prop" then
+			objectColor = propColor
+		elseif action.objectType == "actor" then
+			objectColor = actorColor
+		else
+			objectColor = miscColor
+		end
+
+		local buttonText, text
 		if action.object then
 			text = string.format("%s %s", action.verb or "*Poke", action.object)
+			buttonText = {
+				{ 1, 1, 1, 1 },
+				action.verb or "*Poke",
+				{ 1, 1, 1, 1 },
+				" ",
+				{ objectColor:get() },
+				action.object
+			}
 		else
 			text = action.verb or "*Poke"
+			buttonText = text
 		end
 
 		local button = Button()
-		button:setID(string.format("PokeMenu-%s-%s", action.verb, action.object))
-		button:setText(text)
+		button:setID(string.format("GamepadPokeMenu-%s-%s", action.verb, action.object))
+		button:setText(buttonText)
 		button:setStyle(buttonStyle)
 		button.onClick:register(function()
 			local s, r = pcall(action.callback)
@@ -71,7 +98,7 @@ function PokeMenu:new(view, actions)
 		end)
 
 		local textLength = buttonStyle.font:getWidth(text)
-		maxTextLength = math.max(textLength + PokeMenu.PADDING * 2, maxTextLength)
+		maxTextLength = math.max(textLength + GamepadPokeMenu.PADDING * 2, maxTextLength)
 
 		self:addChild(button)
 	end
@@ -89,28 +116,30 @@ function PokeMenu:new(view, actions)
 		end
 	})
 
-	local width = maxTextLength
-	local height = buttonStyle.font:getHeight() + PokeMenu.PADDING * 2
-	self:setSize(width + PokeMenu.PADDING * 2, height * #self.actions + PokeMenu.PADDING * 2)
+	local width = maxTextLength + GamepadPokeMenu.PADDING * 2
+	local height = buttonStyle.font:getHeight() + GamepadPokeMenu.PADDING * 2
+	self:setSize(width + GamepadPokeMenu.PADDING * 2, height * #self.actions + GamepadPokeMenu.PADDING * 2)
 
-	local y = PokeMenu.PADDING
+	local y = GamepadPokeMenu.PADDING
 	for _, child in self:iterate() do
 		child:setSize(width, height)
-		child:setPosition(PokeMenu.PADDING, y)
-		y = y + height
+		child:setPosition(GamepadPokeMenu.PADDING, y)
+		y = y + height + GamepadPokeMenu.PADDING
 	end
+
+	self:setSize(width + GamepadPokeMenu.PADDING * 2, y)
 
 	self.onClose = Callback()
 end
 
-function PokeMenu:mouseLeave(...)
+function GamepadPokeMenu:mouseLeave(...)
 	if not self.uiView:hasInputScheme(self.uiView.INPUT_SCHEME_GYRO) then
 		Widget.mouseLeave(self, ...)
 		self:close()
 	end
 end
 
-function PokeMenu:close()
+function GamepadPokeMenu:close()
 	local p = self:getParent()
 	if p then
 		p:removeChild(self)
@@ -119,4 +148,4 @@ function PokeMenu:close()
 	end
 end
 
-return PokeMenu
+return GamepadPokeMenu
