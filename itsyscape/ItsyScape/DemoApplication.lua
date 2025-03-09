@@ -1749,8 +1749,7 @@ function DemoApplication:updatePositionProbe()
 		end
 
 		if not hasPendingObject then
-			self.pendingObjectID = false
-			self.pendingObjectType = false
+			self:nextShimmer()
 		end
 	end
 end
@@ -1776,12 +1775,24 @@ function DemoApplication:nextShimmer()
 	end
 
 	if not currentIndex and #shimmerCandidates > 0 then
+		if self.pendingObjectType == "item" then
+			for i, shimmerCandidate in ipairs(shimmerCandidates) do
+				if shimmerCandidate.objectType == "item" then
+					self.pendingObjectID = shimmerCandidate.objectID
+					self.pendingObjectType = shimmerCandidate.objectType
+					break
+				end
+			end
+		end
+
 		self.pendingObjectID = shimmerCandidates[1].objectID
 		self.pendingObjectType = shimmerCandidates[1].objectType
 		return
 	end
 
 	if #shimmerCandidates == 0 then
+		self.pendingObjectID = false
+		self.pendingObjectType = false
 		return
 	end
 
