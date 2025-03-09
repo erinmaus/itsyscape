@@ -18,16 +18,21 @@ local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Config = require "ItsyScape.Game.Config"
 local Probe = require "ItsyScape.Game.Probe"
 local Utility = require "ItsyScape.Game.Utility"
+local Actor = require "ItsyScape.Game.Model.Actor"
+local Prop = require "ItsyScape.Game.Model.Prop"
 local Color = require "ItsyScape.Graphics.Color"
 local TitleScreen = require "ItsyScape.Graphics.TitleScreen"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local DefaultCameraController = require "ItsyScape.Graphics.DefaultCameraController"
 local Renderer = require "ItsyScape.Graphics.Renderer"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GyroButtons = require "ItsyScape.UI.GyroButtons"
+local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local Keybinds = require "ItsyScape.UI.Keybinds"
 local Panel = require "ItsyScape.UI.Panel"
@@ -58,6 +63,41 @@ DemoApplication.TITLE_SCREENS = {
 DemoApplication.GYRO_RADIUS = 1
 DemoApplication.SHIMMER_DURATION = 0.25
 
+DemoApplication.SHIMMER_CURRENT_OBJECT_LABEL_STYLE = function(color)
+	return {
+		color = { color:get() },
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+		fontSize = 26,
+		textShadow = true
+	}
+end
+
+DemoApplication.ItemProxy = Class()
+
+function DemoApplication.ItemProxy:new(item)
+	self.item = item
+end
+
+function DemoApplication.ItemProxy:getID()
+	return self.item.item.id
+end
+
+function DemoApplication.ItemProxy:getCount()
+	return self.item.item.count
+end
+
+function DemoApplication.ItemProxy:getIsNoted()
+	return self.item.item.noted
+end
+
+function DemoApplication.ItemProxy:getTile()
+	return self.item.tile.i, self.item.tile.j, self.item.tile.layer
+end
+
+function DemoApplication.ItemProxy:getPosition()
+	return self.item.position
+end
+
 function DemoApplication:new()
 	Application.new(self, true)
 
@@ -67,6 +107,8 @@ function DemoApplication:new()
 	self.shimmeringObjects = {}
 	self.pendingObjectID = false
 	self.pendingObjectType = false
+	self.shimmerLabel = Label()
+	self.shimmerLabel:setZDepth(-1000)
 
 	self._sortShimmerObjects = function(a, b)
 		if a.type ~= b.type then
@@ -79,8 +121,8 @@ function DemoApplication:new()
 			end
 		end
 
-		local nodeA = self:_getShimmerObjectNode(a)
-		local nodeB = self:_getShimmerObjectNode(b)
+		local nodeA = self:_getShimmerNodeObject(a)
+		local nodeB = self:_getShimmerNodeObject(b)
 
 		if nodeA and nodeB then
 			local relativePosition
@@ -1651,21 +1693,94 @@ function DemoApplication:snapshotGame()
 	love.graphics.pop()
 end
 
-function DemoApplication:_getShimmerObjectNode(shimmeringObject)
+function DemoApplication:_getObjectUIPosition(object, y, padding)
 	local gameView = self:getGameView()
 
-	local node
+	local min, max
+	local layer
+
+	if Class.isCompatibleType(object, Prop) then
+		local i, j, k = object:getTile()
+		layer = k
+		min, max = object:getBounds()
+
+		local propView = gameView:getProp(object)
+		if propView then
+			local position = Vector.ZERO:transform(propView:getRoot():getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta()))
+			local halfSize = (max - min) / 2
+			min, max = position - halfSize, position + halfSize
+		end
+	elseif Class.isCompatibleType(object, Actor) then
+		local i, j, k = object:getTile()
+		layer = k
+		min, max = object:getBounds()
+
+		local actorView = gameView:getActor(object)
+		if actorView then
+			local position = Vector.ZERO:transform(actorView:getSceneNode():getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta()))			local halfSize = (max - min) / 2
+			min, max = position - halfSize, position + halfSize
+		end
+	elseif Class.isCompatibleType(object, Vector) then
+		min = object
+		max = object
+	elseif Class.isCompatibleType(object, DemoApplication.ItemProxy) then
+		local i, j, k = object:getTile()
+		layer = k
+		min = object:getPosition() - Vector(0.25, 0, 0.25)
+		max = object:getPosition() + Vector(0.25, 1, 0.25)
+	end
+
+	if layer then
+		local node = gameView:getMapSceneNode(layer)
+		local transform = node and node:getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta())
+		if transform then
+			min, max = Vector.transformBounds(min, max, transform)
+		end
+	end
+
+	local size = max - min
+	local halfSize = size / 2
+
+	local top = Vector(min.x, min.y, min.z) + Vector(halfSize.x, size.y, halfSize.z)
+	local bottom = Vector(min.x, min.y, min.z) + Vector(halfSize.x, 0, halfSize.z)
+
+	local camera = self:getCamera()
+
+	local uiTop = camera:project(top)
+	local uiBottom = camera:project(bottom)
+
+	local x = uiBottom.x + (uiTop.x - uiBottom.x) / 2
+	local y = (uiTop.y - (padding or 0)) + (uiTop.y - uiBottom.y + padding * 2) * y - padding
+
+	return itsyrealm.graphics.getScaledPoint(x, y)
+end
+
+function DemoApplication:_getShimmerNodeObject(shimmeringObject)
+	local gameView = self:getGameView()
+	local stage = self:getGame():getStage()
+
+	local node, object
 	if shimmeringObject.objectType == "prop" then
-		local prop = gameView:getProp(gameView:getPropByID(shimmeringObject.objectID))
-		node = prop and prop:getRoot()
+		object = gameView:getPropByID(shimmeringObject.objectID)
+
+		local propView = gameView:getProp(object)
+		node = propView and propView:getRoot()
 	elseif shimmeringObject.objectType == "actor" then
-		local actor = gameView:getActor(gameView:getActorByID(shimmeringObject.objectID))
-		node = actor and actor:getSceneNode()
+		object = gameView:getActorByID(shimmeringObject.objectID)
+
+		local actorView = gameView:getActor(object)
+		node = actorView and actorView:getSceneNode()
 	elseif shimmeringObject.objectType == "item" then
+		local item = stage:getItem(shimmeringObject.objectID)
+		if not item then
+			return nil, nil
+		end
+
+		object = DemoApplication.ItemProxy(item)
 		node = gameView:getItem(shimmeringObject.objectID)
 	end
 
-	return node
+	return node, object
 end
 
 function DemoApplication:updatePositionProbe()
@@ -1708,6 +1823,7 @@ function DemoApplication:updatePositionProbe()
 
 		if not currentShimmeringObject then
 			currentShimmeringObject = {
+				object = result.object,
 				objectID = result.objectID,
 				objectType = result.objectType,
 				time = 0,
@@ -1847,11 +1963,11 @@ function DemoApplication:updateNearbyShimmer(delta)
 	playerActorID = playerActorID and playerActorID:getActor()
 	playerActorID = playerActorID and playerActorID:getID()
 
-	local black = Color(0)
 	local attackable = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.attackable"))
 	local interactive = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.interactive"))
 	local unselected = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.unselected"))
 
+	local hasActive = false
 	for i = #self.shimmeringObjects, 1, -1 do
 		local shimmeringObject = self.shimmeringObjects[i]
 
@@ -1862,7 +1978,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 			delta = 1 - delta
 		end
 
-		local node = self:_getShimmerObjectNode(shimmeringObject)
+		local node, object = self:_getShimmerNodeObject(shimmeringObject)
 
 		local isAttackable
 		local isOnlyExaminable = true
@@ -1897,6 +2013,19 @@ function DemoApplication:updateNearbyShimmer(delta)
 			else
 				color = Color(interactive:get())
 			end
+
+			if node then
+				self.shimmerLabel:setStyle(LabelStyle(DemoApplication.SHIMMER_CURRENT_OBJECT_LABEL_STYLE(color), self:getUIView():getResources()))
+				self.shimmerLabel:setText(shimmeringObject.object)
+				local width = self.shimmerLabel:getStyle().font:getWidth(shimmeringObject.object)
+
+				local x, y = self:_getObjectUIPosition(object, 1, self.shimmerLabel:getStyle().font:getHeight())
+				self.shimmerLabel:setPosition(x - width / 2, y)
+
+				self:getUIView():getRoot():addChild(self.shimmerLabel)
+
+				hasActive = true
+			end
 		else
 			color = Color(unselected:get())
 		end
@@ -1921,6 +2050,10 @@ function DemoApplication:updateNearbyShimmer(delta)
 				material:setShimmerColor(Color(1))
 			end
 		end
+	end
+
+	if not hasActive then
+		self:getUIView():getRoot():removeChild(self.shimmerLabel)
 	end
 end
 

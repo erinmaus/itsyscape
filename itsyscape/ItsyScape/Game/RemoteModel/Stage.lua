@@ -26,8 +26,13 @@ function RemoteStage:iterateItems()
 	return pairs(self.itemSpies)
 end
 
+function RemoteStage:getItem(ref)
+	return self.itemSpies[ref]
+end
+
 function RemoteStage:spyOnDropItem(ref, item, tile, position)
 	self.itemSpies[ref] = {
+		ref = ref,
 		item = item,
 		tile = tile,
 		position = position
