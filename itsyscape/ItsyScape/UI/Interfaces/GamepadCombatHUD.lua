@@ -1027,7 +1027,6 @@ function GamepadCombatHUD:getStanceInfo(style, stance)
 end
 
 function GamepadCombatHUD:_onStanceVisible(_, child, delta)
-	print(">>> visible", child:getData(stance))
 	self:layoutSpiralButton(child, delta)
 end
 

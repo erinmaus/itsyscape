@@ -413,46 +413,50 @@ function Application:getIsMultiThreaded()
 	return self.multiThreaded
 end
 
+function Application:probeActions(actions, performDefault, callback)
+	local numPrimaryActions = 0
+	local hasWalk = false
+
+	for _, action in ipairs(actions) do
+		if action.type:lower() ~= "examine" and not action.suppress then
+			if action.type:lower() ~= "walk" then
+				numPrimaryActions = numPrimaryActions + 1
+			else
+				hasWalk = true
+			end
+		end
+	end
+
+	if numPrimaryActions <= 1 or _CONF.probe == false then
+		for _, action in ipairs(actions) do
+			if action.type:lower() ~= "examine" and not action.suppress then
+				if action.type:lower() == "walk" then
+					self.clickActionType = Application.CLICK_WALK
+				else
+					self.clickActionType = Application.CLICK_ACTION
+				end
+
+				self.clickActionTime = Application.CLICK_DURATION
+				self.clickX, self.clickY = itsyrealm.mouse.getPosition()
+
+				local s, r = pcall(action.callback)
+				if not s then
+					Log.warn("couldn't perform action: %s", r)
+				end
+
+				return
+			end
+		end
+	end
+
+	if numPrimaryActions <= 1 and not hasWalk then
+		return
+	end
+end
+
 function Application:_probe(probe, performDefault, callback)
 	if performDefault then
-		local numPrimaryActions = 0
-		local hasWalk = false
-
-		for _, action in probe:iterate() do
-			if action.id ~= "Examine" and not action.suppress then
-				if action.id ~= "Walk" then
-					numPrimaryActions = numPrimaryActions + 1
-				else
-					hasWalk = true
-				end
-			end
-		end
-
-		if numPrimaryActions <= 1 or _CONF.probe == false then
-			for _, action in probe:iterate() do
-				if action.id ~= "Examine" and not action.suppress then
-					if action.id == "Walk" then
-						self.clickActionType = Application.CLICK_WALK
-					else
-						self.clickActionType = Application.CLICK_ACTION
-					end
-
-					self.clickActionTime = Application.CLICK_DURATION
-					self.clickX, self.clickY = itsyrealm.mouse.getPosition()
-
-					local s, r = pcall(action.callback)
-					if not s then
-						Log.warn("couldn't perform action: %s", r)
-					end
-
-					return
-				end
-			end
-		end
-
-		if numPrimaryActions <= 1 and not hasWalk then
-			return
-		end
+		self:probeActions(probe:toArray(), performDefault)
 	end
 
 	if callback then
@@ -462,6 +466,10 @@ function Application:_probe(probe, performDefault, callback)
 	table.insert(self.pendingProbes, probe)
 end
 
+function Application:_examine(name, description)
+	self.uiView:examine(name, description)
+end
+
 function Application:probe(x, y, performDefault, callback, tests, radius, layer)
 	if self.paused then
 		return
@@ -469,6 +477,7 @@ function Application:probe(x, y, performDefault, callback, tests, radius, layer)
 
 	local ray = self:shoot(x, y)
 	local probe = table.remove(self.pendingProbes) or Probe(self:getGame(), self.gameView, self.gameDB)
+	probe.onExamine:register(self._examine, self)
 	probe:init(ray, tests, radius, layer)
 	probe:all(Function(self._probe, self, probe, performDefault, callback))
 end

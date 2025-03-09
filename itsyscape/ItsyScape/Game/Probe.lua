@@ -276,59 +276,50 @@ function Probe:_take(i, j, k, item)
 	self.game:getPlayer():takeItem(i, j, k, item.ref)
 end
 
-function Probe:_loot(i, j, k, position)
-	local items = self.game:getStage():getItemsAtTile(i, j, k)
-
-	for _, item in pairs(items) do
-		item = item.item
-
-		local name, description
-		do
-			-- TODO: [LANG]
-			name = Utility.Item.getName(item.id, self.gameDB, "en-US")
-			if not name then
-				name = "*" .. item.id
-			end
-
-			description = Utility.Item.getDescription(item.id, self.gameDB, "en-US")
-			if not description then
-				description = "Pick up item from the ground."
-			end
+function Probe:_loot(item, i, j, k, position)
+	local name, description
+	do
+		-- TODO: [LANG]
+		name = Utility.Item.getName(item.id, self.gameDB, "en-US")
+		if not name then
+			name = "*" .. item.id
 		end
 
-		local object
-		if item.count > 1 then
-			if item.noted then
-				object = string.format(
-					"%s (%s, noted)",
-					name,
-					Utility.Item.getItemCountShorthand(item.count))
-			else
-				object = string.format(
-					"%s (%s)",
-					name,
-					Utility.Item.getItemCountShorthand(item.count))
-			end
-		else
-			object = name
+		description = Utility.Item.getDescription(item.id, self.gameDB, "en-US")
+		if not description then
+			description = "Pick up item from the ground."
 		end
-
-		local action = self:addAction(
-			-1,
-			"Take",
-			"take",
-			item.ref,
-			"item",
-			object,
-			description,
-			position.z - (i / #items),
-			self._take, self, i, j, k, item)
-		action.objectID = item.ref
-
-		self.isDirty = true
 	end
 
-	self.probes["loot"] = (self.probes["loot"] or 0) + #items
+	local object
+	if item.count > 1 then
+		if item.noted then
+			object = string.format(
+				"%s (%s, noted)",
+				name,
+				Utility.Item.getItemCountShorthand(item.count))
+		else
+			object = string.format(
+				"%s (%s)",
+				name,
+				Utility.Item.getItemCountShorthand(item.count))
+		end
+	else
+		object = name
+	end
+
+	local action = self:addAction(
+		-1,
+		"Take",
+		"take",
+		item.ref,
+		"item",
+		object,
+		description,
+		-position.z,
+		self._take, self, i, j, k, item)
+
+	self.probes["loot"] = (self.probes["loot"] or 0) + 1
 end
 
 -- Adds all "Take" actions, if possible.
@@ -337,23 +328,18 @@ function Probe:loot()
 		return self.probes["loot"]
 	end
 
-	local i, j, k, position = self:getTile()
-	if i and j and k and position then
-		-- if self.min and self.max then
-		-- 	local map = self.gameView:getMap(k)
-		-- 	if map then
-		-- 		local _, minI, minJ = map:getTileAt(self.min.x, self.min.z)
-		-- 		local _, maxI, maxJ = map:getTileAt(self.max.x, self.max.z)
+	for ref, item in self.game:getStage():iterateItems() do
+		local min = item.position - Vector(0.5)
+		local max = item.position + Vector(0.5)
 
-		-- 		for i = minI, maxI do
-		-- 			for j = minJ, maxJ do
-		-- 				self:_loot(i, j, k, map:getTileCenter(i, j))
-		-- 			end
-		-- 		end
-		-- 	end
-		-- else
-			self:_loot(i, j, k, position)
-		-- end
+		local s, p = self.ray:hitBounds(min, max, nil, self.radius)
+		if not s then
+			s, p = self:_isInCone(min, max)
+		end
+
+		if s then
+			self:_loot(item.item, item.tile.i, item.tile.j, item.tile.layer, item.position)
+		end
 	end
 
 	return self.probes["loot"] or 0
@@ -366,10 +352,11 @@ end
 function Probe:_isPointInCone(point)
 	local difference = point - self.ray.origin
 	local distance = difference:dot(self.ray.direction)
+	local delta = distance / self.coneLength
 	local radius = (distance / self.coneLength) * self.coneRadius
 
 	local orthogonalDistance = (difference - self.ray.direction * distance):getLength()
-	return orthogonalDistance < radius, orthogonalDistance
+	return orthogonalDistance < radius and delta <= 1, orthogonalDistance
 end
 
 function Probe:_isInCone(min, max, transform)

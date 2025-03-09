@@ -69,6 +69,16 @@ function DemoApplication:new()
 	self.pendingObjectType = false
 
 	self._sortShimmerObjects = function(a, b)
+		if a.type ~= b.type then
+			if a.type == "item" then
+				return false
+			end
+
+			if b.type == "item" then
+				return true
+			end
+		end
+
 		local nodeA = self:_getShimmerObjectNode(a)
 		local nodeB = self:_getShimmerObjectNode(b)
 
@@ -96,11 +106,14 @@ function DemoApplication:new()
 			local directionB = relativePosition:direction(positionB):getNormal()
 			local dotB = directionB:dot(self.currentPlayerDirection)
 
-			if dotA == dotB then
+			local angleA = math.deg(math.acos(math.clamp(dotA, -1, 1)))
+			local angleB = math.deg(math.acos(math.clamp(dotB, -1, 1)))
+
+			if math.abs(angleA - angleB) < 8 then
 				return distanceA < distanceB
 			end
 
-			return dotA > dotB
+			return dotA < dotB
 		end
 
 		if nodeA then
@@ -896,6 +909,26 @@ function DemoApplication:gamepadAxis(joystick, axis, value)
 	self.cameraController:gamepadAxis(isUIActive, axis, value)
 end
 
+function DemoApplication:gamepadRelease(joystick, button)
+	Application.gamepadRelease(self, joystick, button)
+
+	local inputProvider = self:getUIView():getInputProvider()
+	if not inputProvider:isCurrentJoystick(joystick) then
+		return
+	end
+
+	local cycleTargetButton = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCycleTarget")
+	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
+	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
+	if button == cycleTargetButton then
+		self:nextShimmer()
+	elseif button == gamepadProbe then
+		self:probeCurrentShimmer(false)
+	elseif button == gamepadAction then
+		self:probeCurrentShimmer(true)
+	end
+end
+
 function DemoApplication:getTouches()
 	local result = {}
 	for _, touch in pairs(self.touches.current) do
@@ -1651,7 +1684,7 @@ function DemoApplication:updatePositionProbe()
 
 	local probe = Probe(self:getGame(), gameView, self:getGameDB())
 	probe:init(Ray(position - direction * 1.5, direction))
-	probe:setCone(2.5, 2)
+	probe:setCone(4.5, 3)
 	probe:setTile(i, j, layer)
 	probe:run()
 
@@ -1719,6 +1752,82 @@ function DemoApplication:updatePositionProbe()
 			self.pendingObjectID = false
 			self.pendingObjectType = false
 		end
+	end
+end
+
+function DemoApplication:nextShimmer()
+	local currentIndex
+
+	local shimmerCandidates = {}
+	for i, shimmeringObject in ipairs(self.shimmeringObjects) do
+		local isOnlyExaminable = true
+		for _, action in pairs(shimmeringObject.actions) do
+			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") then
+				isOnlyExaminable = false
+			end
+		end
+
+		if not isOnlyExaminable and shimmeringObject.isActive then
+			table.insert(shimmerCandidates, shimmeringObject)
+			if self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType then
+				currentIndex = #shimmerCandidates
+			end
+		end
+	end
+
+	if not currentIndex and #shimmerCandidates > 0 then
+		self.pendingObjectID = shimmerCandidates[1].objectID
+		self.pendingObjectType = shimmerCandidates[1].objectType
+		return
+	end
+
+	if #shimmerCandidates == 0 then
+		return
+	end
+
+	local nextIndex
+	if self.pendingObjectType == "item" then
+		local nextItemIndex
+		for i = 1, #shimmerCandidates - 1 do
+			nextItemIndex = math.wrapIndex(currentIndex, i, #shimmerCandidates)
+			if shimmerCandidates[nextItemIndex].type == "item" then
+				break
+			end
+		end
+
+		if nextItemIndex then
+			nextIndex = nextItemIndex
+		end
+	end
+
+	nextIndex = nextIndex or math.wrapIndex(currentIndex, 1, #shimmerCandidates)
+	local candidate = shimmerCandidates[nextIndex]
+	if candidate then
+		self.pendingObjectID = candidate.objectID
+		self.pendingObjectType = candidate.objectType
+	end
+end
+
+local function _sortActions(a, b)
+	return a.depth < b.depth
+end
+
+function DemoApplication:probeCurrentShimmer(performDefault)
+	local actions = {}
+
+	for i, shimmeringObject in ipairs(self.shimmeringObjects) do
+		if self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType then
+			for _, action in pairs(shimmeringObject.actions) do
+				table.insert(actions, action)
+			end
+		end
+	end
+
+	table.sort(actions, _sortActions)
+	if performDefault then
+		self:probeActions(actions, performDefault)
+	else
+		self:getUIView():probe(actions)
 	end
 end
 

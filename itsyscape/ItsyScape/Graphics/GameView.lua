@@ -695,7 +695,7 @@ function GameView:updateMap(map, layer)
 			end
 		end
 
-		do
+		if not (m.meta and m.meta.skybox) then
 			local before = love.timer.getTime()
 			love.thread.getChannel('ItsyScape.Map::input'):push({
 				type = 'load',
@@ -1278,12 +1278,7 @@ function GameView:getTranslucentTexture()
 	return self.translucentTexture, self.translucentTextureImageData
 end
 
-function GameView:spawnItem(item, tile)
-	local map = self:getMap(tile.layer)
-	if map then
-		position = map:getTileCenter(tile.i, tile.j)
-	end
-
+function GameView:spawnItem(item, tile, position)
 	local itemNode = SceneNode()
 	do
 		local lootBagNode = ModelSceneNode()
@@ -1328,7 +1323,7 @@ function GameView:poofItem(item)
 end
 
 function GameView:getItem(ref)
-	return self.items[item.ref]
+	return self.items[ref]
 end
 
 function GameView:decorate(group, decoration, layer, callback)

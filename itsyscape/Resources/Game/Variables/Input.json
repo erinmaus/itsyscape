@@ -35,7 +35,8 @@
 			"gamepadCameraXAxisMultiplier": 1,
 			"gamepadCameraYAxisMultiplier": -1,
 			"gamepadProbe": "x",
-			"gamepadAction": "a"
+			"gamepadAction": "a",
+			"gamepadCycleTarget": "y",
 		}
 	}
 }

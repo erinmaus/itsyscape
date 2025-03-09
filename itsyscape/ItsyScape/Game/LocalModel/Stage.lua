@@ -316,7 +316,11 @@ function LocalStage:notifyDropItem(layer, item, key, source)
 	if Class.isCompatibleType(source, Vector) then
 		position = source
 	else
-		position = Utility.Peep.getPosition(source:getPeep())
+		local map = self:getMap(layer)
+		local tileCenter = map:getTileCenter(key.i, key.j)
+		local x = (love.math.random() * 2) - 1
+		local z = (love.math.random() * 2) - 1
+		position = tileCenter + Vector(x, 0, z)
 	end
 
 	Log.engine(
