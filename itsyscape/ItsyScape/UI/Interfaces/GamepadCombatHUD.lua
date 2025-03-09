@@ -364,7 +364,7 @@ function GamepadCombatHUD:openMenu()
 end
 
 function GamepadCombatHUD:clear()
-	while #self.thingiesStack > 1 do
+	while #self.thingiesStack > 0 do
 		self:back()
 	end
 end
