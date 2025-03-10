@@ -1301,7 +1301,7 @@ function UIView:gamepadProbe(actions)
 
 end
 
-function UIView:probe(actions)
+function UIView:probe(actions, x, y, centerX, centerY)
 	self:closePokeMenu()
 
 	self.pendingPokeMenu = PokeMenu(self, actions)
@@ -1309,6 +1309,19 @@ function UIView:probe(actions)
 		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		local menuWidth, menuHeight = self.pendingPokeMenu:getSize()
 		local mouseX, mouseY = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+		mouseX = x or mouseX
+		mouseY = y or mouseY
+
+		if centerX then
+			local pokeMenuWidth = self.pendingPokeMenu:getSize()
+			mouseX = mouseX - pokeMenuWidth / 2
+		end
+
+		if centerY then
+			local _, pokeMenuHeight = self.pendingPokeMenu:getSize()
+			mouseY = mouseY - pokeMenuHeight / 2
+		end
+
 		mouseX = mouseX - offsetX
 		mouseY = mouseY - offsetY
 

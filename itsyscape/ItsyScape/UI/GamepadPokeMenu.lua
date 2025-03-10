@@ -130,13 +130,21 @@ function GamepadPokeMenu:new(view, actions)
 	self:setSize(width + GamepadPokeMenu.PADDING * 2, y)
 
 	self.onClose = Callback()
+
+	self:setZDepth(10000)
 end
 
-function GamepadPokeMenu:mouseLeave(...)
-	if not self.uiView:hasInputScheme(self.uiView.INPUT_SCHEME_GYRO) then
-		Widget.mouseLeave(self, ...)
-		self:close()
+function GamepadPokeMenu:gamepadPress(joystick, button)
+	local inputProvider = self:getInputProvider()
+	if not (inputProvider and inputProvider:isCurrentJoystick(joystick)) then
+		return
 	end
+
+	if inputProvider:getKeybind("gamepadBack") ~= button then
+		return
+	end
+
+	self:close()
 end
 
 function GamepadPokeMenu:close()

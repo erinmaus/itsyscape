@@ -1749,8 +1749,9 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 	local uiTop = camera:project(top)
 	local uiBottom = camera:project(bottom)
 
+	padding = padding or 0
 	local x = uiBottom.x + (uiTop.x - uiBottom.x) / 2
-	local y = (uiTop.y - (padding or 0)) + (uiTop.y - uiBottom.y + padding * 2) * y - padding
+	local y = (uiTop.y - padding) + (uiTop.y - uiBottom.y + padding * 2) * y - padding
 
 	return itsyrealm.graphics.getScaledPoint(x, y)
 end
@@ -1942,19 +1943,28 @@ end
 function DemoApplication:probeCurrentShimmer(performDefault)
 	local actions = {}
 
+	local node, object
 	for i, shimmeringObject in ipairs(self.shimmeringObjects) do
 		if self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType then
 			for _, action in pairs(shimmeringObject.actions) do
 				table.insert(actions, action)
 			end
+
+			node, object = self:_getShimmerNodeObject(shimmeringObject)
 		end
 	end
+
+	if not (node and object) then
+		return
+	end
+
+	local x, y = self:_getObjectUIPosition(object, 0)
 
 	table.sort(actions, _sortActions)
 	if performDefault then
 		self:probeActions(actions, performDefault)
 	else
-		self:getUIView():probe(actions)
+		self:getUIView():probe(actions, x, y, true, false)
 	end
 end
 
