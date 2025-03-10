@@ -13,6 +13,7 @@ local Config = require "ItsyScape.Game.Config"
 local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Widget = require "ItsyScape.UI.Widget"
 
@@ -47,6 +48,10 @@ function GamepadPokeMenu:new(view, actions)
 	local propColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.prop"))
 	local actorColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.actor"))
 	local miscColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.misc"))
+
+	self.gridLayout = GamepadGridLayout()
+	self.gridLayout:setWrapContents(true)
+	self:addChild(self.gridLayout)
 
 	local maxTextLength = 0
 	local function addAction(action)
@@ -100,7 +105,7 @@ function GamepadPokeMenu:new(view, actions)
 		local textLength = buttonStyle.font:getWidth(text)
 		maxTextLength = math.max(textLength + GamepadPokeMenu.PADDING * 2, maxTextLength)
 
-		self:addChild(button)
+		self.gridLayout:addChild(button)
 	end
 
 	for i = 1, #actions do
@@ -117,21 +122,32 @@ function GamepadPokeMenu:new(view, actions)
 	})
 
 	local width = maxTextLength + GamepadPokeMenu.PADDING * 2
-	local height = buttonStyle.font:getHeight() + GamepadPokeMenu.PADDING * 2
-	self:setSize(width + GamepadPokeMenu.PADDING * 2, height * #self.actions + GamepadPokeMenu.PADDING * 2)
+	local height = buttonStyle.font:getHeight()
 
-	local y = GamepadPokeMenu.PADDING
-	for _, child in self:iterate() do
-		child:setSize(width, height)
-		child:setPosition(GamepadPokeMenu.PADDING, y)
-		y = y + height + GamepadPokeMenu.PADDING
-	end
+	self.gridLayout:setSize(width, 0)
+	self.gridLayout:setUniformSize(true, width, height + GamepadPokeMenu.PADDING * 2)
+	self.gridLayout:setPadding(0, GamepadPokeMenu.PADDING)
+	self.gridLayout:setPosition(GamepadPokeMenu.PADDING, GamepadPokeMenu.PADDING)
+	self.gridLayout:performLayout()
 
-	self:setSize(width + GamepadPokeMenu.PADDING * 2, y)
+	local width, height = self.gridLayout:getSize()
+
+	self:setSize(width + GamepadPokeMenu.PADDING * 2, height + GamepadPokeMenu.PADDING * 2)
 
 	self.onClose = Callback()
 
 	self:setZDepth(10000)
+end
+
+function GamepadPokeMenu:focus(reason)
+	Widget.focus(self, reason)
+
+	local inputProvider = self:getInputProvider()
+	if not inputProvider then
+		return
+	end
+
+	inputProvider:setFocusedWidget(self.gridLayout, reason)
 end
 
 function GamepadPokeMenu:gamepadPress(joystick, button)

@@ -477,6 +477,7 @@ function WidgetInputProvider:_updateGamepadFocus(directionX, directionY)
 	end
 
 	if hasGamepadSink then
+		focusedWidget:gamepadDirection(directionX, directionY)
 		return
 	end
 
@@ -534,6 +535,10 @@ function WidgetInputProvider:_updateGamepad(delta)
 	local isYEngaged = math.abs(joystickInfo.axis[yAxis] or 0) > axisSensitivity
 
 	if not (isXEngaged or isYEngaged) then
+		joystickInfo.directionX = 0
+		joystickInfo.directionY = 0
+		joystickInfo.velocity = self.config:get(DIRECTION_START_TIME)
+		joystickInfo.elapsed = 0
 		return
 	end
 

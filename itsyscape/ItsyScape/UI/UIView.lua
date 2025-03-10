@@ -24,7 +24,7 @@ local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
-local PokeMenu = require "ItsyScape.UI.GamepadPokeMenu"
+local GamepadPokeMenu = require "ItsyScape.UI.GamepadPokeMenu"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelRenderer = require "ItsyScape.UI.PanelRenderer"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
@@ -1099,7 +1099,7 @@ function UIView:new(gameView)
 	self.renderManager:addRenderer(Icon, IconRenderer(self.resources))
 	self.renderManager:addRenderer(ItemIcon, ItemIconRenderer(self.resources))
 	self.renderManager:addRenderer(Panel, PanelRenderer(self.resources))
-	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
+	self.renderManager:addRenderer(GamepadPokeMenu, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(RichTextLabel, RichTextLabelRenderer(self.resources))
 	self.renderManager:addRenderer(SceneSnippet, SceneSnippetRenderer(self.resources, self.gameView))
 	self.renderManager:addRenderer(ScrollBar.Button, ScrollButtonRenderer(self.resources))
@@ -1297,14 +1297,10 @@ function UIView:examine(a, b)
 	end
 end
 
-function UIView:gamepadProbe(actions)
-
-end
-
 function UIView:probe(actions, x, y, centerX, centerY)
 	self:closePokeMenu()
 
-	self.pendingPokeMenu = PokeMenu(self, actions)
+	self.pendingPokeMenu = GamepadPokeMenu(self, actions)
 	do
 		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		local menuWidth, menuHeight = self.pendingPokeMenu:getSize()
@@ -1325,8 +1321,8 @@ function UIView:probe(actions, x, y, centerX, centerY)
 		mouseX = mouseX - offsetX
 		mouseY = mouseY - offsetY
 
-		local menuX = mouseX - PokeMenu.PADDING
-		local menuY = mouseY - PokeMenu.PADDING
+		local menuX = mouseX - GamepadPokeMenu.PADDING
+		local menuY = mouseY - GamepadPokeMenu.PADDING
 
 		if menuX + menuWidth > windowWidth then
 			local difference = menuX + menuWidth - windowWidth
@@ -1346,6 +1342,8 @@ function UIView:probe(actions, x, y, centerX, centerY)
 
 		self.root:addChild(self.pendingPokeMenu)
 	end
+
+	self.inputProvider:setFocusedWidget(self.pendingPokeMenu, "select")
 
 	return self.pendingPokeMenu
 end
