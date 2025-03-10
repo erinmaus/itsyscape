@@ -20,6 +20,8 @@ local GamepadGridLayout = Class(GridLayout)
 function GamepadGridLayout:new()
 	GridLayout.new(self)
 
+	self.onWrapFocus = Callback()
+
 	self.onBlurChild:register(self._blurChild)
 	self.onFocusChild:register(self._focusChild)
 	self:setData(GamepadSink, GamepadSink())
@@ -110,7 +112,7 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 		then
 			local distance = math.sqrt(dx ^ 2 + dy ^ 2)
 
-			if distance > oppositeFocusableWidgetDistance then
+			if distance > oppositeFocusableWidget then
 				oppositeFocusableWidgetDistance = distance
 				oppositeFocusableWidget = widget
 			end
@@ -121,6 +123,7 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 		inputProvider:setFocusedWidget(focusableWidget, "select")
 	elseif oppositeFocusableWidget then
 		inputProvider:setFocusedWidget(oppositeFocusableWidget, "select")
+		self:onWrapFocus(oppositeFocusableWidget, directionX, directionY)
 	end
 end
 
