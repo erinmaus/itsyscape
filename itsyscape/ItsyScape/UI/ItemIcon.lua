@@ -50,7 +50,7 @@ function ItemIcon:getItemIsNoted()
 end
 
 function ItemIcon:setItemID(value)
-	self.itemID = value or self.itemID
+	self.itemID = value or false
 end
 
 function ItemIcon:getItemID()

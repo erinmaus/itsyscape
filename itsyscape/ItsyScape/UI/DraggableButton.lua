@@ -130,10 +130,17 @@ function DraggableButton:mouseMove(x, y, ...)
 	Widget.mouseMove(self, x, y, ...)
 end
 
-function DraggableButton:focus(e)
-	if e == 'key' then
-		self:blur()
+function DraggableButton:gamepadRelease(joystick, button)
+	local inputProvider = self:getInputProvider()
+	if inputProvider and inputProvider:isCurrentJoystick(joystick) then
+		if button == inputProvider:getKeybind("gamepadPrimaryAction") then
+			self:onLeftClick()
+		elseif button == inputProvider:getKeybind("gamepadSecondaryAction") then
+			self:onRightClick()
+		end
 	end
+
+	Widget.gamepadRelease(self, joystick, button)
 end
 
 return DraggableButton

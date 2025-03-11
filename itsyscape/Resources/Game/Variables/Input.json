@@ -23,6 +23,7 @@
 			"gamepadOpenCombatRing": "rightshoulder",
 			"gamepadPrimaryAction": "a",
 			"gamepadSecondaryAction": "y",
+			"gamepadTertiaryAction": "x",
 			"gamepadBack": "b"
 		},
 

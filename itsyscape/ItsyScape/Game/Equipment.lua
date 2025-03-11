@@ -23,7 +23,6 @@ Equipment.PLAYER_SLOT_FINGER = 8
 Equipment.PLAYER_SLOT_POCKET = 9
 Equipment.PLAYER_SLOT_QUIVER = 10
 Equipment.PLAYER_SLOT_EFFECT = 11
-Equipment.PLAYER_SLOTS_MAX   = 11
 
 Equipment.AMMO_NONE       = 0
 Equipment.AMMO_ARROW      = 1
@@ -36,6 +35,10 @@ Equipment.AMMO_ANY        = math.huge
 Equipment.PLAYER_SLOT_RIGHT_HAND = 20
 Equipment.PLAYER_SLOT_LEFT_HAND  = 21
 Equipment.PLAYER_SLOT_TWO_HANDED = 22
+
+-- TWO_HANDED is for all purposes treated as an exclusive RIGHT_HAND slot
+-- (i.e., RIGHT_HAND = item, LEFT_HAND = no item).
+Equipment.PLAYER_SLOTS_MAX   = 13
 
 Equipment.PLAYER_SLOT_NAMES = {
 	[Equipment.PLAYER_SLOT_SELF] = "PLAYER_SLOT_SELF",
@@ -55,6 +58,7 @@ Equipment.PLAYER_SLOT_NAMES = {
 	[Equipment.PLAYER_SLOT_LEFT_HAND] = "PLAYER_SLOT_LEFT_HAND",
 	[Equipment.PLAYER_SLOT_TWO_HANDED] = "PLAYER_SLOT_TWO_HANDED"
 }
+
 
 Equipment.SKIN_PRIORITY_BASE               = 0
 Equipment.SKIN_PRIORITY_ACCENT             = 10

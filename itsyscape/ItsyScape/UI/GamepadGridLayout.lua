@@ -86,7 +86,8 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 	local focusableWidget
 	local focusableWidgetDistance = math.huge
 	local oppositeFocusableWidget
-	local oppositeFocusableWidgetDistance = 0
+	local oppositeFocusableWidgetEuclideanDistance = math.huge
+	local oppositeFocusableWidgetManhattanDistance = 0
 	for _, widget in self:iterate() do
 		local x, y = widget:getAbsolutePosition()
 		local w, h = widget:getSize()
@@ -110,10 +111,16 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 		    (directionY ~= 0 and math.zerosign(dy) == -directionY)) and
 		   self.currentFocusedWidget ~= widget
 		then
-			local distance = math.sqrt(dx ^ 2 + dy ^ 2)
+			dx = math.floor(dx)
+			dy = math.floor(dy)
 
-			if distance > oppositeFocusableWidget then
-				oppositeFocusableWidgetDistance = distance
+			local euclideanDistance = math.sqrt(dx ^ 2 + dy ^ 2)
+			local manhattanDistance = math.abs(directionX * dx) + math.abs(directionY * dy)
+
+			if manhattanDistance > oppositeFocusableWidgetManhattanDistance or
+			   (manhattanDistance == oppositeFocusableWidgetManhattanDistance and euclideanDistance < oppositeFocusableWidgetEuclideanDistance) then
+				oppositeFocusableWidgetEuclideanDistance = euclideanDistance
+				oppositeFocusableWidgetManhattanDistance = manhattanDistance
 				oppositeFocusableWidget = widget
 			end
 		end

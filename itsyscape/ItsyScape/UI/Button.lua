@@ -65,8 +65,13 @@ function Button:keyUp(key, ...)
 end
 
 function Button:gamepadRelease(joystick, button)
-	if button == "a" then
-		self:onClick("gamepad")
+	local inputProvider = self:getInputProvider()
+	if inputProvider and inputProvider:isCurrentJoystick(joystick) then
+		if button == inputProvider:getKeybind("gamepadPrimaryAction") then
+			self:onClick(1)
+		elseif button == inputProvider:getKeybind("gamepadSecondaryAction") then
+			self:onClick(2)
+		end
 	end
 
 	Widget.gamepadRelease(self, joystick, button)

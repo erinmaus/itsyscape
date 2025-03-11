@@ -289,8 +289,7 @@ function PlayerInventory:setNumItems(value)
 end
 
 function PlayerInventory:examine(index, button)
-	local icon = button:getData('icon')
-
+	local icon = button:getData("icon")
 	self:examineItem(icon, self:getState().items, index)
 end
 

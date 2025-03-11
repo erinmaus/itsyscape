@@ -25,6 +25,10 @@ function Interface:new(id, index, view)
 	self.onClose = Callback()
 end
 
+function Interface:attach()
+	-- Nothing.
+end
+
 -- Gets the UI model this interface belongs to.
 function Interface:getUI()
 	return self.view:getUI()

@@ -167,8 +167,7 @@ function GamepadPokeMenu:close()
 	local p = self:getParent()
 	if p then
 		p:removeChild(self)
-
-		self.onClose(self)
+		self:onClose()
 	end
 end
 

@@ -1218,6 +1218,7 @@ function UIView:open(ui, interfaceID, index)
 	self.interfaces[interfaceID] = interfaces
 
 	self.root:addChild(interface)
+	interface:attach()
 end
 
 function UIView:close(ui, interfaceID, index)
@@ -1338,14 +1339,26 @@ function UIView:probe(actions, x, y, centerX, centerY)
 			menuX,
 			menuY)
 
-		self.pendingPokeMenu.onClose:register(function() self.pendingPokeMenu = false end)
+		self.pendingPokeMenu.onClose:register(self._onPokeMenuClosed, self)
 
 		self.root:addChild(self.pendingPokeMenu)
 	end
 
+	self.previousFocusedWidget = self.inputProvider:getFocusedWidget()
 	self.inputProvider:setFocusedWidget(self.pendingPokeMenu, "select")
 
 	return self.pendingPokeMenu
+end
+
+function UIView:_onPokeMenuClosed(pokeMenu)
+	if self.pokeMenu == pokeMenu and self.previousFocusedWidget then
+		self.inputProvider:setFocusedWidget(self.previousFocusedWidget, "select")
+		self.previousFocusedWidget = nil
+	end
+
+	if self.pendingPokeMenu == pokeMenu then
+		self.pendingPokeMenu = nil
+	end
 end
 
 function UIView:isPokeMenu(widget)
