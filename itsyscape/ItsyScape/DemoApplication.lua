@@ -954,6 +954,8 @@ end
 function DemoApplication:gamepadRelease(joystick, button)
 	Application.gamepadRelease(self, joystick, button)
 
+	print("button", button)
+
 	local inputProvider = self:getUIView():getInputProvider()
 	if not inputProvider:isCurrentJoystick(joystick) then
 		return

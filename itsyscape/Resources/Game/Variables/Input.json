@@ -21,6 +21,7 @@
 			"radialDrag": 1,
 
 			"gamepadOpenCombatRing": "rightshoulder",
+			"gamepadOpenRibbon": "start",
 			"gamepadPrimaryAction": "a",
 			"gamepadSecondaryAction": "y",
 			"gamepadTertiaryAction": "x",

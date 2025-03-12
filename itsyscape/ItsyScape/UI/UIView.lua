@@ -256,23 +256,28 @@ function itsyrealm.graphics.impl.drawItemIcon(width, height, icon, count, color,
 	if disabled then
 		love.graphics.setColor(0.3, 0.3, 0.3, a)
 	else
-		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setColor(1, 1, 1, a)
 	end
 
 	love.graphics.draw(icon, x, y, 0, itemScaleX, itemScaleY, originX, originY)
-	love.graphics.setColor(r, g, b, a)
 
 	if count ~= "1" then
-		love.graphics.setColor(unpack(color))
-
 		local textWidth = love.graphics.getFont():getWidth(count)
 
+		local x = width - textWidth - 2
+		local y = 2
+
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.print(count, width - textWidth, 2, 0, 0, scaleX, scaleY)
+		love.graphics.print(count, x - 2, y - 2, 0, scaleX, scaleY)
+		love.graphics.print(count, x + 2, y - 2, 0, scaleX, scaleY)
+		love.graphics.print(count, x - 2, y + 2, 0, scaleX, scaleY)
+		love.graphics.print(count, x + 2, y + 2, 0, scaleX, scaleY)
 
 		love.graphics.setColor(unpack(color))
-		love.graphics.print(count, width - textWidth - 2, 0, 0, scaleX, scaleY)
+		love.graphics.print(count, x, y, 0, scaleX, scaleY)
 	end
+
+	love.graphics.setColor(r, g, b, a)
 end
 
 function itsyrealm.graphics.impl.newItemIcon(width, height, ...)

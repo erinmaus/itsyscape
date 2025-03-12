@@ -32,6 +32,13 @@ GamepadIconRenderer.GAMEPAD_BUTTON = {
 	["triggerleft"] = "l2"
 }
 
+GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE = {
+	["PlayStation"] = {
+		["start"] = "button_options",
+		["back"] = "button_create",
+	}
+}
+
 function GamepadIconRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
 
@@ -44,7 +51,10 @@ function GamepadIconRenderer:_buildNames(joystickName, icon)
 
 	local id = icon:getCurrentButtonID()
 	local action = icon:getCurrentButtonAction() or "none"
-	local button = id and GamepadIconRenderer.GAMEPAD_BUTTON[id]
+	local button = id and (
+		(GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller] and GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller][id]) or
+		GamepadIconRenderer.GAMEPAD_BUTTON[id] or
+		id)
 
 	if not button then
 		return nil, nil

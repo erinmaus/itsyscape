@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Function = require "ItsyScape.Common.Function"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Icon = require "ItsyScape.UI.Icon"
@@ -20,6 +21,8 @@ local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Interface = require "ItsyScape.UI.Interface"
+local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
@@ -61,12 +64,16 @@ GamepadRibbon.PADDING = 8
 GamepadRibbon.CONTENT_WIDTH = GamepadContentTab.WIDTH * 2 + GamepadRibbon.PADDING * 3
 GamepadRibbon.CONTENT_HEIGHT = GamepadContentTab.HEIGHT + GamepadRibbon.PADDING * 2
 
+GamepadRibbon.RIBBON_LOGO_SIZE = 32
+
 GamepadRibbon.TAB_BUTTON_SIZE = 64
 GamepadRibbon.TAB_CONTAINER_WIDTH = 640
 GamepadRibbon.TAB_CONTAINER_HEIGHT = 128
 
+GamepadRibbon.TITLE_ROW_HEIGHT = 26
+
 GamepadRibbon.WINDOW_WIDTH = GamepadRibbon.TAB_CONTAINER_WIDTH
-GamepadRibbon.WINDOW_HEIGHT = GamepadRibbon.CONTENT_HEIGHT
+GamepadRibbon.WINDOW_HEIGHT = GamepadRibbon.CONTENT_HEIGHT + GamepadRibbon.TITLE_ROW_HEIGHT
 
 GamepadRibbon.ACTIVE_TAB_BUTTON_STYLE = {
 	inactive = "Resources/Game/UI/Buttons/ActiveRibbonTab-Default.png",
@@ -107,6 +114,23 @@ function GamepadRibbon:new(id, index, ui)
 	self.tabPanel:setStyle(PanelStyle(self.TAB_CONTAINER_PANEL_STYLE, self:getView():getResources()))
 	self.container:addChild(self.tabPanel)
 
+	local ribbonIcon = Icon()
+	ribbonIcon:setIcon("Resources/Game/UI/Icons/Logo.png")
+	ribbonIcon:setSize(self.RIBBON_LOGO_SIZE, self.RIBBON_LOGO_SIZE)
+	ribbonIcon:setPosition(self.PADDING, self.PADDING + self.PADDING / 2)
+	self.tabPanel:addChild(ribbonIcon)
+
+	local ribbonLabel = Label()
+	ribbonLabel:setText("Ribbon")
+	ribbonLabel:setStyle({
+		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+		fontSize = self.RIBBON_LOGO_SIZE,
+		color = { 1, 1, 1, 1 },
+		textShadow = true
+	}, LabelStyle)
+	ribbonLabel:setPosition(self.RIBBON_LOGO_SIZE + self.PADDING * 2, self.PADDING / 2)
+	self.tabPanel:addChild(ribbonLabel)
+
 	self.tabLayout = GamepadGridLayout()
 	self.tabLayout:setSize(self.TAB_CONTAINER_WIDTH, self.CONTENT_HEIGHT)
 	self.tabLayout:setUniformSize(true, self.TAB_BUTTON_SIZE, self.TAB_BUTTON_SIZE)
@@ -120,13 +144,23 @@ function GamepadRibbon:new(id, index, ui)
 	self.contentPanel:setStyle(PanelStyle(self.CONTENT_PANEL_STYLE, self:getView():getResources()))
 	self.container:addChild(self.contentPanel)
 
+	self.titleLabel = Label()
+	self.titleLabel:setStyle({
+		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+		fontSize = self.TITLE_ROW_HEIGHT,
+		color = { 1, 1, 1, 1 },
+		textShadow = true
+	}, LabelStyle)
+	self.titleLabel:setPosition(self.PADDING, 0)
+	self.contentPanel:addChild(self.titleLabel)
+
 	self.contentLayout = GridLayout()
 	self.contentLayout:setSize(self.CONTENT_WIDTH, self.CONTENT_HEIGHT)
 	self.contentLayout:setPadding(self.PADDING, self.PADDING)
 	self.contentLayout:setUniformSize(true, GamepadContentTab.WIDTH, GamepadContentTab.HEIGHT)
 	self.contentLayout:setPosition(
 			self.TAB_CONTAINER_WIDTH / 2 - self.CONTENT_WIDTH / 2,
-			self.TAB_CONTAINER_HEIGHT)
+			self.TAB_CONTAINER_HEIGHT + self.TITLE_ROW_HEIGHT)
 	self:addChild(self.contentLayout)
 
 	self:setSize(
@@ -137,6 +171,12 @@ function GamepadRibbon:new(id, index, ui)
 	self:_initEquipmentTab()
 	self:_initSkillTab()
 	self:_initSettingsTab()
+
+	self.ribbonKeybindInfo = GamepadToolTip()
+	self.ribbonKeybindInfo:setHasBackground(false)
+	self.ribbonKeybindInfo:setKeybind("gamepadOpenRibbon")
+	self.ribbonKeybindInfo:setText("Close")
+	self:addChild(self.ribbonKeybindInfo)
 
 	self.secondaryKeybindInfo = GamepadToolTip()
 	self.secondaryKeybindInfo:setHasBackground(false)
@@ -223,17 +263,22 @@ function GamepadRibbon:performLayout()
 		self.TAB_CONTAINER_WIDTH / 2 - physicalTabLayoutWidth / 2,
 		self.TAB_CONTAINER_HEIGHT - tabHeight)
 
+	local ribbonKeybindWidth, ribbonKeybindHeight = self.ribbonKeybindInfo:getSize()
 	local secondaryKeybindWidth, secondaryKeybindHeight = self.secondaryKeybindInfo:getSize()
 	local tertiaryKeybindWidth, tertiaryKeybindHeight = self.tertiaryKeybindInfo:getSize()
 	local width = math.max(secondaryKeybindWidth, tertiaryKeybindWidth)
 
-	self.secondaryKeybindInfo:setPosition(
+	self.ribbonKeybindInfo:setPosition(
 		self.TAB_CONTAINER_WIDTH - width - self.PADDING,
 		0)
 
+	self.secondaryKeybindInfo:setPosition(
+		self.TAB_CONTAINER_WIDTH - width - self.PADDING,
+		ribbonKeybindHeight)
+
 	self.tertiaryKeybindInfo:setPosition(
 		self.TAB_CONTAINER_WIDTH - width - self.PADDING,
-		secondaryKeybindHeight)
+		ribbonKeybindHeight + secondaryKeybindHeight)
 end
 
 function GamepadRibbon:openTab(tab)
@@ -294,6 +339,7 @@ function GamepadRibbon:_openInventoryTab()
 	self.contentLayout:addChild(self.itemInfoContent)
 	self:focusChild(self.inventoryTabContent, "select")
 
+	self.titleLabel:setText("Inventory")
 	self:_setKeybindInfo("More options", "Swap")
 end
 

@@ -1804,6 +1804,7 @@ function Utility.Item.getItemCountShorthand(count, lang)
 	lang = lang or "en-US"
 	-- 'lang' is NYI.
 
+	local TEN_THOUSAND     = 10000
 	local HUNDRED_THOUSAND = 100000
 	local MILLION          = 1000000
 	local BILLION          = 1000000000
@@ -1826,6 +1827,9 @@ function Utility.Item.getItemCountShorthand(count, lang)
 	elseif count >= HUNDRED_THOUSAND then
 		text = string.format("%dk", count / HUNDRED_THOUSAND * 100)
 		color = { 1, 1, 1, 1 }
+	elseif count >= TEN_THOUSAND then
+		text = string.format("%dk", count / TEN_THOUSAND * 10)
+		color = { 1, 1, 0, 1 }
 	else
 		text = string.format("%d", count)
 		color = { 1, 1, 0, 1 }
