@@ -86,21 +86,15 @@ function GamepadIconRenderer:_getIcon(joystickName, icon)
 
 		local value = self.icons[path]
 		if value == nil then
-			print("trying", path)
 			if love.filesystem.getInfo(path) then
 				local s, r = pcall(love.graphics.newImage, path)
 				if not s then
 					value = false
 				else
-					print("success!")
 					value = r
 				end
 			else
 				value = false
-			end
-
-			if not value then
-				print("not successful")
 			end
 		end
 

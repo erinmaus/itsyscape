@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Config = require "ItsyScape.Game.Config"
 local Color = require "ItsyScape.Graphics.Color"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
@@ -49,17 +50,50 @@ function GamepadToolTip:new()
 
 	self.onStyleChange:register(self.performLayout, self)
 
+	self.hasBackground = true
 	self:setStyle({
 		image = "Resources/Game/UI/Panels/ToolTip.png"
 	}, PanelStyle)
+
+	self.keybind = false
+end
+
+function GamepadToolTip:setKeybind(keybind)
+	self.keybind = keybind or false
+end
+
+function GamepadToolTip:getKeybind()
+	return self.keybind
 end
 
 function GamepadToolTip:setButtonID(id)
-	self.gamepadIcon:setID(id)
+	self.gamepadIcon:setButtonID(id)
 end
 
 function GamepadToolTip:getGamepadIcon()
 	return self.gamepadIcon
+end
+
+function GamepadToolTip:setHasBackground(value)
+	value = not not value
+
+	if self.hasBackground ~= value then
+		self.hasBackground = value
+
+		if self.hasBackground then
+			self:setStyle({
+				image = "Resources/Game/UI/Panels/ToolTip.png"
+			}, PanelStyle)
+		else
+			self:setStyle({
+				image = false
+			}, PanelStyle)
+		end
+	end
+end
+
+function GamepadToolTip:getHasBackground()
+	return self.hasBackground
 end
 
 function GamepadToolTip:performLayout()
@@ -91,6 +125,19 @@ function GamepadToolTip:setText(value)
 
 	self.label:setText(value)
 	self:performLayout()
+end
+
+function GamepadToolTip:update(delta)
+	Panel.update(self, delta)
+
+	if self.keybind then
+		local inputProvider = self:getInputProvider()
+		local buttonID = inputProvider and inputProvider:getKeybind(self.keybind)
+
+		if buttonID then
+			self:setButtonID(buttonID)
+		end
+	end
 end
 
 return GamepadToolTip

@@ -129,8 +129,9 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 	if focusableWidget then
 		inputProvider:setFocusedWidget(focusableWidget, "select")
 	elseif oppositeFocusableWidget then
-		inputProvider:setFocusedWidget(oppositeFocusableWidget, "select")
 		self:onWrapFocus(oppositeFocusableWidget, directionX, directionY)
+	else
+		self:onWrapFocus(nil, directionX, directionY)
 	end
 end
 

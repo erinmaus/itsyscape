@@ -47,7 +47,9 @@ function InventoryGamepadContentTab:new(interface)
 		true,
 		self.ICON_SIZE + self.BUTTON_PADDING * 2,
 		self.ICON_SIZE + self.BUTTON_PADDING * 2)
+	self.layout.onBlurChild:register(self._onBlurLayoutChild, self)
 	self.layout.onFocusChild:register(self._onFocusLayoutChild, self)
+	self.layout.onWrapFocus:register(self._onLayoutWrapFocus, self)
 	self:addChild(self.layout)
 
 	self.swapIcon = ItemIcon()
@@ -57,10 +59,12 @@ function InventoryGamepadContentTab:new(interface)
 	self:addChild(self.swapIcon)
 
 	self.toolTip = GamepadToolTip()
+	self.toolTip:setKeybind("gamepadPrimaryAction")
 	self:getInterface().onClose:register(self._onClose, self)
 
 	self.numItems = 0
 	self.currentInventorySlotIndex = -1
+	self.showToolTip = false
 end
 
 function InventoryGamepadContentTab:getCurrentInventorySlotIndex()
@@ -73,7 +77,7 @@ function InventoryGamepadContentTab:_updateToolTip()
 	local state = self:getState()
 	local item = state.items and state.items[self.currentInventorySlotIndex]
 	local action = item and item.actions[1]
-	if (item and action) or self.currentSwapIndex then
+	if ((item and action) or self.currentSwapIndex) and self.showToolTip then
 		if self.toolTip:getParent() ~= root then
 			root:addChild(self.toolTip)
 		end
@@ -102,6 +106,11 @@ function InventoryGamepadContentTab:_updateToolTip()
 	end
 end
 
+function InventoryGamepadContentTab:_onBlurLayoutChild(layout, child)
+	self.showToolTip = false
+	self:_updateToolTip()
+end
+
 function InventoryGamepadContentTab:_onFocusLayoutChild(layout, child)
 	if not child then
 		return
@@ -117,7 +126,21 @@ function InventoryGamepadContentTab:_onFocusLayoutChild(layout, child)
 		childX - iconWidth / 2,
 		childY - iconHeight / 2)
 
+	self.showToolTip = true
 	self:_updateToolTip()
+end
+
+function InventoryGamepadContentTab:_onLayoutWrapFocus(_, child, directionX, directionY)
+	local inputProvider = self:getInputProvider()
+	if inputProvider then
+		if directionX ~= 0 then
+			inputProvider:setFocusedWidget(child, "select")
+		elseif directionY > 0 then
+			inputProvider:setFocusedWidget(child, "select")
+		end
+	end
+
+	self:onWrapFocus(directionX, directionY)
 end
 
 function InventoryGamepadContentTab:_onClose()
@@ -136,7 +159,8 @@ function InventoryGamepadContentTab:focus(reason)
 
 	local inputProvider = self:getInputProvider()
 	if inputProvider then
-		inputProvider:setFocusedWidget(self.layout, reason)
+		local child = self.layout:getChildAt(self.currentInventorySlotIndex)
+		inputProvider:setFocusedWidget(child or self.layout, reason)
 	end
 end
 

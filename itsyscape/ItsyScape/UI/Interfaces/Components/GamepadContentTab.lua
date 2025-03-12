@@ -22,6 +22,8 @@ function GamepadContentTab:new(interface)
 	self.interface = interface
 	self.currentState = {}
 
+	self.onWrapFocus = Callback()
+
 	self:setSize(self.WIDTH, self.HEIGHT)
 end
 
