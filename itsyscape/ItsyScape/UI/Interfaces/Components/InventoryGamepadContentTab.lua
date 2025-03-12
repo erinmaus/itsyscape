@@ -27,8 +27,14 @@ local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadCon
 local InventoryGamepadContentTab = Class(GamepadContentTab)
 InventoryGamepadContentTab.PADDING = 8
 InventoryGamepadContentTab.ICON_SIZE = 48
-InventoryGamepadContentTab.BUTTON_PADDING = 2
+InventoryGamepadContentTab.BUTTON_PADDING = 4
 InventoryGamepadContentTab.SWAP_ICON_COLOR = Color(0.8, 0.8, 0.8, 0.5)
+
+InventoryGamepadContentTab.ITEM_BUTTON_STYLE = {
+	pressed = "Resources/Game/UI/Buttons/ItemButton-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/ItemButton-Hover.png",
+	inactive = "Resources/Game/UI/Buttons/ItemButton-Default.png"
+}
 
 function InventoryGamepadContentTab:new(interface)
 	GamepadContentTab.new(self, interface)
@@ -50,12 +56,19 @@ function InventoryGamepadContentTab:new(interface)
 	self:addChild(self.swapIcon)
 
 	self.numItems = 0
+	self.currentInventorySlotIndex = 1
+end
+
+function InventoryGamepadContentTab:getCurrentInventorySlotIndex()
+	return self.currentInventorySlotIndex
 end
 
 function InventoryGamepadContentTab:_onFocusLayoutChild(layout, child)
 	if not child then
 		return
 	end
+
+	self.currentInventorySlotIndex = child:getData("index") or -1
 
 	local iconWidth, iconHeight = self.swapIcon:getSize()
 	local childX, childY = child:getPosition()
@@ -89,6 +102,7 @@ function InventoryGamepadContentTab:updateNumItems(count)
 			button:setSize(
 				self.ICON_SIZE + self.BUTTON_PADDING * 2,
 				self.ICON_SIZE + self.BUTTON_PADDING * 2)
+			button:setStyle(ButtonStyle(self.ITEM_BUTTON_STYLE, self:getResources()))
 
 			local icon = ItemIcon()
 			icon:setSize(self.ICON_SIZE, self.ICON_SIZE)

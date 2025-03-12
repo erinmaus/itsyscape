@@ -1979,6 +1979,21 @@ function Utility.Item.getStats(id, gameDB)
 	return nil
 end
 
+function Utility.Item.getSlot(item)
+	local gameDB = item:getManager():getGameDB()
+	local itemResource = gameDB:getResource(item:getID(), "Item")
+	if not itemResource then
+		return nil
+	end
+
+	local equipmentRecord = gameDB:getRecord("Equipment", { Resource = itemResource })
+	if not equipmentRecord then
+		return nil
+	end
+
+	return equipmentRecord:get("EquipSlot")
+end
+
 function Utility.Item.getInstanceStats(item, peep)
 	local baseStats = Utility.Item.getStats(item:getID(), item:getManager():getGameDB())
 

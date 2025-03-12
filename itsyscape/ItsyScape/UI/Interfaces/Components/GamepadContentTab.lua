@@ -13,8 +13,8 @@ local Utility = require "ItsyScape.Game.Utility"
 local Panel = require "ItsyScape.UI.Panel"
 
 local GamepadContentTab = Class(Panel)
-GamepadContentTab.WIDTH = 248
-GamepadContentTab.HEIGHT = 428
+GamepadContentTab.WIDTH = 264
+GamepadContentTab.HEIGHT = 456
 
 function GamepadContentTab:new(interface)
 	Panel.new(self)

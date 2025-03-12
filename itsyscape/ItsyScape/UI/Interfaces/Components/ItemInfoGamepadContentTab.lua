@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/Interfaces/InventoryGamepadContentTab.lua
+-- ItsyScape/UI/Interfaces/ItemInfoGamepadContentTab.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,230 +11,174 @@ local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Function = require "ItsyScape.Common.Function"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local Utility = require "ItsyScape.Game.Utility"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Widget = require "ItsyScape.UI.Widget"
+local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
-local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local GridLayout = require "ItsyScape.UI.GridLayout"
+local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
-local GamepadContentTab = require "ItsyScape.UI.Interfaces.GamepadContentTab"
 local Widget = require "ItsyScape.UI.Widget"
+local EquipmentStatsPanel = require "ItsyScape.UI.Interfaces.Common.EquipmentStatsPanel"
+local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 
-local InventoryGamepadContentTab = Class(GamepadContentTab)
-InventoryGamepadContentTab.PADDING = 8
-InventoryGamepadContentTab.ICON_SIZE = 48
-InventoryGamepadContentTab.BUTTON_PADDING = 2
+local ItemInfoGamepadContentTab = Class(GamepadContentTab)
+ItemInfoGamepadContentTab.PADDING = 8
+ItemInfoGamepadContentTab.BIG_ICON = 64
+ItemInfoGamepadContentTab.BUTTON_PADDING = 6
 
-function InventoryGamepadContentTab:new(interface)
+ItemInfoGamepadContentTab.ITEM_BUTTON_STYLE = {
+	pressed = "Resources/Game/UI/Buttons/ItemButton-Default.png",
+	hover = "Resources/Game/UI/Buttons/ItemButton-Default.png",
+	inactive = "Resources/Game/UI/Buttons/ItemButton-Default.png"
+}
+
+ItemInfoGamepadContentTab.ITEM_NAME_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/Serif/SemiBold.ttf",
+	fontSize = 16,
+	color = { 1, 1, 1, 1 },
+	lineHeight = 0.8,
+	textShadow = true
+}
+
+ItemInfoGamepadContentTab.ITEM_DESCRIPTION_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 16,
+	color = { 1, 1, 1, 1 },
+	textShadow = true
+}
+
+ItemInfoGamepadContentTab.NO_STATS_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+	fontSize = 24,
+	color = { 1, 1, 1, 1 },
+	textShadow = true,
+	align = "center"
+}
+
+ItemInfoGamepadContentTab.GROUP_PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/WindowGroup.png"
+}
+
+function ItemInfoGamepadContentTab:new(interface)
 	GamepadContentTab.new(self, interface)
 
 	self.layout = GridLayout()
 	self.layout:setSize(self:getSize())
-	self.layout:setPadding(self.PADDING, self.PADDING)
-	self.layout:setUniformSize(
-		true,
-		self.ICON_SIZE + self.BUTTON_PADDING * 2,
-		self.ICON_SIZE + self.BUTTON_PADDING * 2)
+	self.layout:setPadding(0, self.PADDING)
 	self:addChild(self.layout)
 
-	self.numItems = 0
+	local titleLabel = GridLayout()
+	titleLabel:setPadding(self.PADDING, self.PADDING)
+	titleLabel:setSize(self.WIDTH, self.BIG_ICON)
+
+	self.layout:addChild(titleLabel)
+
+	local button = Button()
+	button:setStyle(ButtonStyle(self.ITEM_BUTTON_STYLE, self:getResources()))
+	button:setSize(self.BIG_ICON, self.BIG_ICON)
+	titleLabel:addChild(button)
+
+	self.itemIcon = ItemIcon()
+	self.itemIcon:setPosition(self.BUTTON_PADDING, self.BUTTON_PADDING)
+	self.itemIcon:setSize(self.BIG_ICON - self.BUTTON_PADDING * 2, self.BIG_ICON - self.BUTTON_PADDING * 2)
+	button:addChild(self.itemIcon)
+
+	self.itemNameLabel = Label()
+	self.itemNameLabel:setStyle(LabelStyle(self.ITEM_NAME_LABEL_STYLE, self:getResources()))
+	self.itemNameLabel:setSize(self.WIDTH - self.BIG_ICON - self.PADDING * 3, self.BIG_ICON)
+	titleLabel:addChild(self.itemNameLabel)
+
+	local description = Panel()
+	description:setStyle(PanelStyle(self.GROUP_PANEL_STYLE, self:getResources()))
+	description:setSize(
+		self.WIDTH,
+		self.HEIGHT - EquipmentStatsPanel.DEFAULT_HEIGHT - self.BIG_ICON - self.PADDING * 4)
+
+	local descriptionWidth, descriptionHeight = description:getSize()
+
+	self.descriptionLabel = Label()
+	self.descriptionLabel:setPosition(self.PADDING, self.PADDING)
+	self.descriptionLabel:setSize(descriptionWidth - self.PADDING * 2, descriptionHeight - self.PADDING * 2)
+	self.descriptionLabel:setStyle(LabelStyle(self.ITEM_DESCRIPTION_LABEL_STYLE, self:getResources()))
+	description:addChild(self.descriptionLabel)
+
+	self.layout:addChild(description)
+
+	self.noStatsLabel = Label()
+	self.noStatsLabel:setStyle(LabelStyle(self.NO_STATS_LABEL_STYLE, self:getResources()))
+	self.noStatsLabel:setText("There are no equipment stats to show.")
+	self.noStatsLabel:setPosition(self.PADDING, EquipmentStatsPanel.DEFAULT_HEIGHT / 2 - self.NO_STATS_LABEL_STYLE.fontSize)
+	self.noStatsLabel:setSize(self.WIDTH - self.PADDING * 2, self.NO_STATS_LABEL_STYLE.fontSize * 2)
+
+	self.stats = EquipmentStatsPanel(self:getUIView(), { width = self.WIDTH - self.PADDING * 2 })
+	self.stats:setPosition(self.PADDING, self.PADDING)
+
+	self.statsPanel = Panel()
+	self.statsPanel:setStyle(PanelStyle(self.GROUP_PANEL_STYLE, self:getResources()))
+	self.statsPanel:setSize(self.WIDTH, EquipmentStatsPanel.DEFAULT_HEIGHT)
+	self.layout:addChild(self.statsPanel)
+
+	self.layout:performLayout()
 end
 
-function InventoryGamepadContentTab:updateNumItems(count)
-	if value < #self.buttons then
-		while self.layout:getNumChildren() > count do
-			self.layout:removeChild(self.layout:getChildAt(count))
-		end
-	else
-		for i = self.layout:getNumChildren() + 1, count do
-			local button = DraggableButton()
-			button:setSize(
-				self.ICON_SIZE + self.BUTTON_PADDING * 2,
-				self.ICON_SIZE + self.BUTTON_PADDING * 2)
-
-			local icon = ItemIcon()
-			icon:setSize(self.ICON_SIZE, self.ICON_SIZE)
-			icon:setPosition(self.BUTTON_PADDING, self.BUTTON_PADDING)
-			button:addChild(icon)
-
-			button.onDrop:register(self.buttonSwap, self)
-			button.onDrag:register(self.buttonDrag, self)
-			button.onLeftClick:register(self.activate, self, i)
-			button.onRightClick:register(self.probe, self, i)
-			button.onMouseMove:register(self.prepareToolTip, self, i)
-
-			button:setData("icon", icon)
-			button:getData("index", i)
-		end
-	end
-end
-
-function InventoryGamepadContentTab:pokeInventoryItem(index, actionID)
-	self:getInterface():sendPoke("pokeInventoryItem", nil, { index = index, id = actionID })
-end
-
-function InventoryGamepadContentTab:swapInventoryItem(a, b)
-	self:getInterface():sendPoke("swapInventoryItems", nil, { a = a, b = b })
-
-	local state = self:getState()
-	if state.items then
-		state.items[a], state.items[b] = state.items[b], state.items[a]
-	end
-
-	self:refresh(state)
-end
-
-function InventoryGamepadContentTab:dropInventoryItem(index)
-	self:getInterface():sendPoke("dropInventoryItem", nil, { index = index })
-end
-
-function InventoryGamepadContentTab:probeInventoryItem(index)
-	self:getInterface():sendPoke("probeInventoryItem", nil, { index = index })
-end
-
-function InventoryGamepadContentTab:beginSwap(index)
-	local button = self.layout:getChildAt(index)
-	if not button then
-		return
-	end
-
-	local icon = button:getData("icon")
-	icon:setIsActive(true)
-
-	self.currentSwapIndex = index
-end
-
-function InventoryGamepadContentTab:endSwap(index)
-	if not self.currentSwapIndex then
-		return
-	end
-
-	local button = self.layout:getChildAt(self.currentSwapIndex)
-	if not button then
-		return
-	end
-
-	local icon = button:getData("icon")
-	icon:setIsActive(false)
-
-	if index ~= self.currentSwapIndex then
-		self:swapInventoryItem(self.currentSwapIndex, index)
-	end
-
-	self.currentSwapIndex = false
-end
-
-function InventoryGamepadContentTab:buttonSwap(button, x, y)
-	local index = button:getData("index")
-
-	local newIndex
-	for _, widget in self.layout:iterate() do
-		local widgetX, widgetY = widget:getPosition()
-		local widgetWidth, widgetHeight = widget:getSize()
-
-		if x >= widgetX and y >= widgetY and x <= widgetX + widgetWidth and y <= widgetY + widgetHeight then
-			local newIndex = widget
-			break
-		end
-	end
-
-	if index and newIndex and index ~= newIndex then
-		self:swapInventoryItem(index, newIndex)
-	end
-
-	local renderManager = self:getUIView():getRenderManager()
-	if renderManager:getCursor() == button:getData("icon") then
-		renderManager:setCursor(button:getData("icon"))
-	end
-end
-
-function InventoryGamepadContentTab:buttonDrag(button)
-	local renderManager = self:getUIView():getRenderManager()
-	if renderManager:getCursor() ~= button:getData("icon") then
-		renderManager:setCursor(button:getData("icon"))
-	end
-end
-
-function InventoryGamepadContentTab:refresh(state)
+function ItemInfoGamepadContentTab:refresh(state)
 	GamepadContentTab.refresh(self, state)
 
-	if state.count ~= self.numItems then
-		self:updateNumItems(self.numItems)
-	end
-
-	for i = 1, state.count do
-		local icon = self:getChildAt(i)
-
-		local item = state.items[i]
-		if not item then
-			icon:setItemID(false)
-			icon:setItemCount(0)
-			icon:setItemIsNoted(false)
-		else
-			icon:setItemID(item.id)
-			icon:setItemCount(item.count)
-			icon:setItemIsNoted(not not item.noted)
-		end
-	end
-end
-
-function InventoryGamepadContentTab:probe(index, button)
-	local state = self:getState()
-	if not state.items then
-		return
-	end
-
-	local item = state.items[index]
-	local item = items[index]
+	local item = state.item
 	if not item then
+		self.itemIcon:setItemID(false)
+		self.itemIcon:setItemCount(0)
+		self.itemIcon:setItemIsNoted(false)
+		self.itemNameLabel:setText("Empty inventory slot")
+		self.descriptionLabel:setText("Go out and collect more items!")
+
+		if self.stats:getParent() == self.statsPanel then
+			self.statsPanel:removeChild(self.stats)
+		end
+
+		if self.noStatsLabel:getParent() ~= self.statsPanel then
+			self.statsPanel:addChild(self.noStatsLabel)
+		end
+
 		return
 	end
 
-	local object = item.name
+	self.itemIcon:setItemID(item.id)
+	self.itemIcon:setItemCount(item.count)
+	self.itemIcon:setItemIsNoted(item.noted)
 
-	local actions = {}
-	for _, action in ipairs(item.actions) do
-		table.insert(actions, {
-			id = action.type,
-			verb = action.verb,
-			object = object,
-			objectType = "item",
-			callback = Function(self.pokeInventoryItem, self, index, action.id)
-		})
+	if #item.actions > 0 then
+		self.itemNameLabel:setText(string.format("%s %s", item.actions[1].verb, item.name))
+	else
+		self.itemNameLabel:setText(item.name)
 	end
 
-	table.insert(actions, {
-		id = "Examine",
-		verb = "Examine",
-		object = object,
-		objectType = "item",
-		callback = Function(self.examine, self, item)
-	})
+	self.descriptionLabel:setText(item.description)
 
-	table.insert(actions, {
-		id = "Drop",
-		verb = "Drop",
-		object = object,
-		objectType = "item",
-		callback = Function(self.drop, self, index)
-	})
+	if not item.stats or #item.stats == 0 or not item.slot then
+		if self.stats:getParent() == self.statsPanel then
+			self.statsPanel:removeChild(self.stats)
+		end
 
-	local pokeMenu = self:getUIView():probe(actions)
-	pokeMenu.onClose:register(Function(self.probeInventoryItem, self, false))
+		if self.noStatsLabel:getParent() ~= self.statsPanel then
+			self.statsPanel:addChild(self.noStatsLabel)
+		end
+	else
+		if self.stats:getParent() ~= self.statsPanel then
+			self.statsPanel:addChild(self.stats)
+		end
 
-	self:probeInventoryItem(index)
+		if self.noStatsLabel:getParent() == self.statsPanel then
+			self.statsPanel:removeChild(self.noStatsLabel)
+		end
+
+		self.stats:compareStats(item.stats, state.otherItem and state.otherItem.stats)
+	end
 end
 
-function InventoryGamepadContentTab:examine(item)
-	self:getUIView():examine(self:getItemExamine(item))
-end
-
-function InventoryGamepadContentTab:prepareToolTip(index, button)
-	local icon = button:getData("icon")
-	self:examineItem(icon, self:getState().items, index)
-end
-
-return InventoryGamepadContentTab
+return ItemInfoGamepadContentTab

@@ -295,11 +295,13 @@ function Widget:getChildAt(index)
 end
 
 function Widget:hasParent(p)
+	local previous = p
 	local current = self.parent
 	while current do
 		if current == p then
-			return true
+			return true, previous
 		else
+			previous = current
 			current = current.parent
 		end
 	end

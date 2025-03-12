@@ -550,6 +550,7 @@ function GamepadRibbonController:pullItem(item)
 	result.name = Utility.Item.getInstanceName(item)
 	result.description = Utility.Item.getInstanceDescription(item)
 	result.stats = Utility.Item.getInstanceStats(item, self:getPeep())
+	result.slot = Utility.Item.getSlot(item)
 	self:pullActions(item, result)
 
 	return result
@@ -618,7 +619,7 @@ end
 function GamepadRibbonController:pullEquipment()
 	local items = {}
 
-	local equipment = self:getPeep():getBehavior(InventoryBehavior)
+	local equipment = self:getPeep():getBehavior(EquipmentBehavior)
 	equipment = equipment and equipment.equipment
 
 	if not equipment then
@@ -630,8 +631,8 @@ function GamepadRibbonController:pullEquipment()
 		return items
 	end
 
-	for key in broker:keys(equipment.equipment) do
-		for item in broker:iterateItemsByKey(equipment.equipment, key) do
+	for key in broker:keys(equipment) do
+		for item in broker:iterateItemsByKey(equipment, key) do
 			if key == Equipment.PLAYER_SLOT_TWO_HANDED then
 				key = Equipment.PLAYER_SLOT_RIGHT_HAND
 			end

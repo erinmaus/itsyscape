@@ -25,6 +25,7 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 local InventoryGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.InventoryGamepadContentTab"
+local ItemInfoGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.ItemInfoGamepadContentTab"
 
 local GamepadRibbon = Class(Interface)
 
@@ -60,19 +61,27 @@ GamepadRibbon.CONTENT_WIDTH = GamepadContentTab.WIDTH * 2 + GamepadRibbon.PADDIN
 GamepadRibbon.CONTENT_HEIGHT = GamepadContentTab.HEIGHT + GamepadRibbon.PADDING * 2
 
 GamepadRibbon.TAB_BUTTON_SIZE = 64
-GamepadRibbon.TAB_CONTAINER_WIDTH = 640
+GamepadRibbon.TAB_CONTAINER_WIDTH = GamepadRibbon.CONTENT_WIDTH
 GamepadRibbon.TAB_CONTAINER_HEIGHT = GamepadRibbon.TAB_BUTTON_SIZE + GamepadRibbon.PADDING
 
-GamepadRibbon.ACTIVE_TAB_STYLE = {
+GamepadRibbon.ACTIVE_TAB_BUTTON_STYLE = {
 	inactive = "Resources/Game/UI/Buttons/ActiveRibbonTab-Default.png",
 	hover = "Resources/Game/UI/Buttons/ActiveRibbonTab-Hover.png",
 	pressed = "Resources/Game/UI/Buttons/ActiveRibbonTab-Pressed.png"
 }
 
-GamepadRibbon.INACTIVE_TAB_STYLE = {
+GamepadRibbon.INACTIVE_TAB_BUTTON_STYLE = {
 	inactive = "Resources/Game/UI/Buttons/RibbonTab-Default.png",
 	hover = "Resources/Game/UI/Buttons/RibbonTab-Hover.png",
 	pressed = "Resources/Game/UI/Buttons/RibbonTab-Pressed.png"
+}
+
+GamepadRibbon.TAB_CONTAINER_PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/WindowTitle.png"
+}
+
+GamepadRibbon.CONTENT_PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/WindowContent.png"
 }
 
 function GamepadRibbon:new(id, index, ui)
@@ -88,6 +97,7 @@ function GamepadRibbon:new(id, index, ui)
 
 	local tabPanel = Panel()
 	tabPanel:setSize(self.TAB_CONTAINER_WIDTH, self.TAB_CONTAINER_HEIGHT)
+	tabPanel:setStyle(PanelStyle(self.TAB_CONTAINER_PANEL_STYLE, self:getView():getResources()))
 	self.container:addChild(tabPanel)
 
 	self.tabLayout = GamepadGridLayout()
@@ -99,12 +109,13 @@ function GamepadRibbon:new(id, index, ui)
 	local contentPanel = Panel()
 	contentPanel:setSize(self.CONTENT_WIDTH, self.CONTENT_HEIGHT)
 	contentPanel:setPosition(self.TAB_CONTAINER_WIDTH / 2 -  self.CONTENT_WIDTH / 2, self.TAB_CONTAINER_HEIGHT)
+	contentPanel:setStyle(PanelStyle(self.CONTENT_PANEL_STYLE, self:getView():getResources()))
 	self.container:addChild(contentPanel)
 
 	self.contentLayout = GridLayout()
 	self.contentLayout:setSize(self.CONTENT_WIDTH, self.CONTENT_HEIGHT)
 	self.contentLayout:setPadding(self.PADDING, self.PADDING)
-	self.contentLayout:setUniformSize(true, self.CONTENT_WIDTH, self.CONTENT_HEIGHT)
+	self.contentLayout:setUniformSize(true, GamepadContentTab.WIDTH, GamepadContentTab.HEIGHT)
 	self.contentLayout:setPosition(
 			self.TAB_CONTAINER_WIDTH / 2 - self.CONTENT_WIDTH / 2,
 			self.TAB_CONTAINER_HEIGHT)
@@ -153,12 +164,12 @@ function GamepadRibbon:openTab(tab)
 
 	local currentTabButton = self.tabButtons[self.currentTabName]
 	if currentTabButton then
-		currentTabButton:setStyle(ButtonStyle(self.INACTIVE_TAB_STYLE, self:getView():getResources()))
+		currentTabButton:setStyle(ButtonStyle(self.INACTIVE_TAB_BUTTON_STYLE, self:getView():getResources()))
 	end
 
 	local nextTabButton = self.tabButtons[tab]
 	if nextTabButton then
-		nextTabButton:setStyle(ButtonStyle(self.ACTIVE_TAB_STYLE, self:getView():getResources()))
+		nextTabButton:setStyle(ButtonStyle(self.ACTIVE_TAB_BUTTON_STYLE, self:getView():getResources()))
 	end
 
 	self.currentTabName = tab
@@ -166,12 +177,35 @@ end
 
 function GamepadRibbon:_openInventoryTab()
 	self.contentLayout:addChild(self.inventoryTabContent)
-	self.inventoryTabContent:refresh(self:getState().inventory)
+	self.contentLayout:addChild(self.itemInfoContent)
 	self:focusChild(self.inventoryTabContent, "select")
+end
+
+function GamepadRibbon:_updateInventoryTab()
+	local state = self:getState()
+
+	self.inventoryTabContent:refresh(state.inventory)
+
+	local index = self.inventoryTabContent:getCurrentInventorySlotIndex()
+	local item = state.inventory.items[index]
+	local otherItem
+	if item then
+		local slot
+		if item.slot == Equipment.PLAYER_SLOT_TWO_HANDED then
+			slot = Equipment.PLAYER_SLOT_RIGHT_HANDED
+		else
+			slot = item.slot
+		end
+
+		otherItem = state.equipment.items[slot]
+	end
+
+	self.itemInfoContent:refresh({ item = item, otherItem = otherItem })
 end
 
 function GamepadRibbon:_initInventoryTab()
 	self.inventoryTabContent = InventoryGamepadContentTab(self)
+	self.itemInfoContent = ItemInfoGamepadContentTab(self)
 
 	self:_addTab(
 		"inventory",
@@ -197,10 +231,10 @@ function GamepadRibbon:_onSelectTab(tab, openFunc, button, buttonIndex)
 	end
 
 	if self.previousActiveTabButton then
-		self.previousActiveTabButton:setStyle(ButtonStyle(self.INACTIVE_TAB_STYLE, self:getView():getResources()))
+		self.previousActiveTabButton:setStyle(ButtonStyle(self.INACTIVE_TAB_BUTTON_STYLE, self:getView():getResources()))
 	end
 
-	button:setStyle(ButtonStyle(self.ACTIVE_TAB_STYLE, self:getView():getResources()))
+	button:setStyle(ButtonStyle(self.ACTIVE_TAB_BUTTON_STYLE, self:getView():getResources()))
 	self.previousActiveTabButton = button
 
 	self:openTab(tab)
@@ -212,14 +246,14 @@ function GamepadRibbon:_onSelectTab(tab, openFunc, button, buttonIndex)
 	self:sendPoke("openTab", nil, { tab = tab })
 end
 
-function GamepadRibbon:_addTab(tab, icon, openFunc)
+function GamepadRibbon:_addTab(tab, iconFilename, openFunc)
 	local button = Button()
 	button:setID(string.format("Ribbon-%s", tab))
-	button:setStyle(ButtonStyle(self.INACTIVE_TAB_STYLE, self:getView():getResources()))
+	button:setStyle(ButtonStyle(self.INACTIVE_TAB_BUTTON_STYLE, self:getView():getResources()))
 	button.onClick:register(self._onSelectTab, tab, openFunc)
 
 	local icon = Icon()
-	icon:setIcon(icon)
+	icon:setIcon(iconFilename)
 	icon:setSize(self.TAB_BUTTON_SIZE, self.TAB_BUTTON_SIZE)
 	button:addChild(icon)
 
@@ -256,8 +290,7 @@ end
 function GamepadRibbon:update(delta)
 	Interface.update(self, delta)
 
-	local state = self:getState()
-	self.inventoryTabContent:refresh(state.inventory)
+	self:_updateInventoryTab()
 end
 
 return GamepadRibbon

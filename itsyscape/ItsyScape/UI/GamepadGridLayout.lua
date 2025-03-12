@@ -76,7 +76,7 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 	end
 
 	if not self.currentFocusedWidget then
-		inputProvider:setFocus(self:getChildAt(1), "select")
+		inputProvider:setFocusedWidget(self:getChildAt(1), "select")
 		return
 	end
 
