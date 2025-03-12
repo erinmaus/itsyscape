@@ -25,6 +25,8 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
 local GamepadPokeMenu = require "ItsyScape.UI.GamepadPokeMenu"
+local GamepadIcon = require "ItsyScape.UI.GamepadIcon"
+local GamepadIconRenderer = require "ItsyScape.UI.GamepadIconRenderer"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelRenderer = require "ItsyScape.UI.PanelRenderer"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
@@ -1108,6 +1110,7 @@ function UIView:new(gameView)
 	self.renderManager:addRenderer(TextInput, TextInputRenderer(self.resources))
 	self.renderManager:addRenderer(Texture, TextureRenderer(self.resources))
 	self.renderManager:addRenderer(ToolTip, ToolTipRenderer(self.resources))
+	self.renderManager:addRenderer(GamepadIcon, GamepadIconRenderer(self.resources))
 
 	self.interfaces = {}
 

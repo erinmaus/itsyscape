@@ -358,6 +358,8 @@ function WidgetInputProvider:gamepadPress(...)
 end
 
 function WidgetInputProvider:gamepadAxis(joystick, axis, value)
+	print("name", joystick:getName())
+
 	local _, id = joystick:getID()
 	local joystickInfo = self.joysticks[id]
 	if joystickInfo then
