@@ -12,6 +12,7 @@ local Callback = require "ItsyScape.Common.Callback"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Property = require "ItsyScape.UI.Property"
 local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
+local WidgetStyle = require "ItsyScape.UI.WidgetStyle"
 
 local Widget = Class()
 
@@ -34,6 +35,7 @@ function Widget:new()
 	self.onGamepadAxis = Callback()
 	self.onGamepadDirection = Callback()
 	self.onZDepthChange = Callback()
+	self.onStyleChange = Callback()
 	self.id = false
 	self.text = ""
 	self.isFocused = false
@@ -59,7 +61,7 @@ function Widget:new()
 	self.isVisible = true
 end
 
-function Widget:getRoot()
+function Widget:getRootParent()
 	local current = self
 	while current:getParent() do
 		current = current:getParent()
@@ -72,10 +74,11 @@ function Widget:getInputProvider()
 	-- Cyclic dependency. RIP.
 	local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
 
-	local root = self:getRoot()
+	local root = self:getRootParent()
 	if not root then
 		return
 	end
+
 
 	local inputProvider = root:getData(WidgetInputProvider)
 	if not Class.isCompatibleType(inputProvider, WidgetInputProvider) then
@@ -86,7 +89,7 @@ function Widget:getInputProvider()
 end
 
 function Widget:getResourceManager()
-	local root = self:getRoot()
+	local root = self:getRootParent()
 	if not root then
 		return
 	end
@@ -471,11 +474,28 @@ function Widget:performLayout()
 end
 
 function Widget:getStyle()
+	if not Class.isCompatibleType(self.style, WidgetStyle) and self.styleType then
+		local resourceManager = self:getResourceManager()
+		if not resourceManager then
+			return false
+		end
+
+		self.style = self.styleType(self.style, resourceManager)
+		self.styleType = nil
+
+		self:onStyleChange(self.style)
+	end
+
 	return self.style
 end
 
-function Widget:setStyle(style)
+function Widget:setStyle(style, styleType)
 	self.style = style or false
+	self.styleType = styleType
+
+	if self.style and Class.isCompatibleType(self.style, WidgetStyle) then
+		self:onStyleChange(self.style)
+	end
 end
 
 function Widget:getOverflow()
@@ -621,6 +641,11 @@ function Widget:update(...)
 			end
 
 			count = #self.children
+		end
+
+		if self:getResourceManager() and self.styleType then
+			-- Force style update.
+			self:getStyle()
 		end
 	end
 end

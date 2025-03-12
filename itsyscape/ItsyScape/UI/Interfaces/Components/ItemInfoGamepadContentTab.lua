@@ -152,12 +152,7 @@ function ItemInfoGamepadContentTab:refresh(state)
 	self.itemIcon:setItemCount(item.count)
 	self.itemIcon:setItemIsNoted(item.noted)
 
-	if #item.actions > 0 then
-		self.itemNameLabel:setText(string.format("%s %s", item.actions[1].verb, item.name))
-	else
-		self.itemNameLabel:setText(item.name)
-	end
-
+	self.itemNameLabel:setText(item.name)
 	self.descriptionLabel:setText(item.description)
 
 	if not item.stats or #item.stats == 0 or not item.slot then

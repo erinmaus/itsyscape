@@ -22,6 +22,7 @@ local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 
 local InventoryGamepadContentTab = Class(GamepadContentTab)
@@ -55,12 +56,50 @@ function InventoryGamepadContentTab:new(interface)
 	self.swapIcon:setColor(self.SWAP_ICON_COLOR)
 	self:addChild(self.swapIcon)
 
+	self.toolTip = GamepadToolTip()
+	self:getInterface().onClose:register(self._onClose, self)
+
 	self.numItems = 0
-	self.currentInventorySlotIndex = 1
+	self.currentInventorySlotIndex = -1
 end
 
 function InventoryGamepadContentTab:getCurrentInventorySlotIndex()
 	return self.currentInventorySlotIndex
+end
+
+function InventoryGamepadContentTab:_updateToolTip()
+	local root = self:getUIView():getRoot()
+
+	local state = self:getState()
+	local item = state.items and state.items[self.currentInventorySlotIndex]
+	local action = item and item.actions[1]
+	if (item and action) or self.currentSwapIndex then
+		if self.toolTip:getParent() ~= root then
+			root:addChild(self.toolTip)
+		end
+
+		if self.currentSwapIndex then
+			self.toolTip:setText("Swap")
+		else
+			self.toolTip:setText(action.verb)
+		end
+
+		local toolTipWidth = self.toolTip:getSize()
+
+		local child = self.layout:getChildAt(self.currentInventorySlotIndex)
+		local absoluteChildX, absoluteChildY = child:getAbsolutePosition()
+		local childWidth, childHeight = child:getSize()
+		local positionX, positionY = absoluteChildX + childWidth - self.PADDING, absoluteChildY + childHeight - self.PADDING
+
+		local selfAbsoluteX1 = self.layout:getAbsolutePosition()
+		local selfWidth = self.layout:getSize()
+
+		self.toolTip:setPosition(math.min(positionX, selfAbsoluteX1 + selfWidth - toolTipWidth), positionY)
+	else
+		if self.toolTip:getParent() == root then
+			root:removeChild(self.toolTip)
+		end
+	end
 end
 
 function InventoryGamepadContentTab:_onFocusLayoutChild(layout, child)
@@ -72,10 +111,20 @@ function InventoryGamepadContentTab:_onFocusLayoutChild(layout, child)
 
 	local iconWidth, iconHeight = self.swapIcon:getSize()
 	local childX, childY = child:getPosition()
+	local childWidth, childHeight = child:getSize()
 
 	self.swapIcon:setPosition(
 		childX - iconWidth / 2,
 		childY - iconHeight / 2)
+
+	self:_updateToolTip()
+end
+
+function InventoryGamepadContentTab:_onClose()
+	local toolTipParent = self.toolTip:getParent()
+	if toolTipParent then
+		toolTipParent:removeChild(self.toolTip)
+	end
 end
 
 function InventoryGamepadContentTab:getIsFocusable()
@@ -164,7 +213,6 @@ function InventoryGamepadContentTab:_onInventoryItemGamepadRelease(index, _, joy
 		return
 	end
 
-	Log.dump("_onInventoryItemGamepadRelease")
 	if self.currentSwapIndex then
 		self:endSwap(index)
 	else
@@ -266,6 +314,17 @@ function InventoryGamepadContentTab:refresh(state)
 			icon:setItemIsNoted(not not item.noted)
 		end
 	end
+
+	local slotIndex = math.clamp(self.currentInventorySlotIndex, 1, self.layout:getNumChildren())
+	if slotIndex ~= self.currentInventorySlotIndex then
+		local child = self.layout:getChildAt(slotIndex)
+		local inputProvider = self:getInputProvider()
+		if inputProvider and child then
+			inputProvider:setFocusedWidget(child, "select")
+		end
+	end
+
+	self:_updateToolTip()
 end
 
 function InventoryGamepadContentTab:activate(index, button)

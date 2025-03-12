@@ -23,14 +23,17 @@ GamepadIcon.CONTROLLERS = {
 function GamepadIcon:new()
 	Widget.new(self)
 
-	self.ids = {}
-	self.actions = {}
+	self.buttonIDs = {}
+	self.buttonActions = {}
 	self.time = 0
 	self.speed = 0.5
 	self.outline = false
+	self.useDefaultColor = true
+	self.hasDropShadow = false
 	self.color = Color()
 
 	self:setSize(GamepadIcon.DEFAULT_SIZE, GamepadIcon.DEFAULT_SIZE)
+	self:setButtonID("a")
 end
 
 function GamepadIcon:_getAtTime(array, time)
@@ -47,56 +50,56 @@ function GamepadIcon:_getAtTime(array, time)
 	return array[index]
 end
 
-function GamepadIcon:setID(id)
-	self.ids = { id }
+function GamepadIcon:setButtonID(id)
+	self.buttonIDs = { id }
 	self.time = 0
 end
 
-function GamepadIcon:setIDs(...)
-	self.ids = { ... }
+function GamepadIcon:setButtonIDs(...)
+	self.buttonIDs = { ... }
 	self.time = 0
 end
 
-function GamepadIcon:getID()
-	return self.ids[1] or false
+function GamepadIcon:getButtonID()
+	return self.buttonIDs[1] or false
 end
 
-function GamepadIcon:getIDs()
-	return unpack(self.ids)
+function GamepadIcon:getButtonIDs()
+	return unpack(self.buttonIDs)
 end
 
-function GamepadIcon:getCurrentID()
-	return self:getIDAtTime()
+function GamepadIcon:getCurrentButtonID()
+	return self:getButtonIDAtTime(self.time)
 end
 
-function GamepadIcon:getIDAtTime(time)
-	self:_getAtTime(self.ids, time)
+function GamepadIcon:getButtonIDAtTime(time)
+	return self:_getAtTime(self.buttonIDs, time)
 end
 
-function GamepadIcon:getAction()
-	return self.actions[1] or false
+function GamepadIcon:getButtonAction()
+	return self.buttonActions[1] or false
 end
 
-function GamepadIcon:setAction(action)
-	self.actions = { actions }
+function GamepadIcon:setButtonAction(action)
+	self.buttonActions = { actions }
 	self.time = 0
 end
 
-function GamepadIcon:setActions(...)
-	self.actions = { actions }
+function GamepadIcon:setButtonActions(...)
+	self.buttonActions = { actions }
 	self.time = 0
 end
 
-function GamepadIcon:getAction()
-	return unpack(self.actions)
+function GamepadIcon:getButtonAction()
+	return unpack(self.buttonActions)
 end
 
-function GamepadIcon:getCurrentAction()
-	return self:getActionAtTime(self.time)
+function GamepadIcon:getCurrentButtonAction()
+	return self:getButtonActionAtTime(self.time)
 end
 
-function GamepadIcon:getActionAtTime(time)
-	return self:_getAtTime(self.actions, time)
+function GamepadIcon:getButtonActionAtTime(time)
+	return self:_getAtTime(self.buttonActions, time)
 end
 
 function GamepadIcon:setOutline(value)
@@ -113,6 +116,22 @@ end
 
 function GamepadIcon:getColor()
 	return self.color
+end
+
+function GamepadIcon:setUseDefaultColor(value)
+	self.useDefaultColor = value or false
+end
+
+function GamepadIcon:getUseDefaultColor()
+	return self.useDefaultColor
+end
+
+function GamepadIcon:setHasDropShadow(value)
+	self.hasDropShadow = value or false
+end
+
+function GamepadIcon:getHasDropShadow()
+	return self.hasDropShadow
 end
 
 function GamepadIcon:update(delta)

@@ -42,8 +42,8 @@ function GamepadIconRenderer:_buildNames(joystickName, icon)
 	local controller = GamepadIcon.CONTROLLERS[joystickName] or GamepadIcon.CONTROLLERS["Default"]
 	local prefix = string.format("Resources/Game/UI/Icons/Controllers/DB/%s", controller)
 
-	local id = icon:getCurrentID()
-	local action = icon:getCurrentAction() or "none"
+	local id = icon:getCurrentButtonID()
+	local action = icon:getCurrentButtonAction() or "none"
 	local button = id and GamepadIconRenderer.GAMEPAD_BUTTON[id]
 
 	if not button then
@@ -64,6 +64,14 @@ function GamepadIconRenderer:_buildNames(joystickName, icon)
 		}
 	end
 
+	if icon:getUseDefaultColor() then
+		if icon:getOutline() then
+			table.insert(suffixes, 1, string.format("%s_color_%s_outline", controller, button))
+		else
+			table.insert(suffixes, 1, string.format("%s_color_%s", controller, button))
+		end
+	end
+
 	return prefix, suffixes
 end
 
@@ -78,15 +86,21 @@ function GamepadIconRenderer:_getIcon(joystickName, icon)
 
 		local value = self.icons[path]
 		if value == nil then
+			print("trying", path)
 			if love.filesystem.getInfo(path) then
 				local s, r = pcall(love.graphics.newImage, path)
 				if not s then
 					value = false
 				else
+					print("success!")
 					value = r
 				end
 			else
 				value = false
+			end
+
+			if not value then
+				print("not successful")
 			end
 		end
 
@@ -105,11 +119,9 @@ function GamepadIconRenderer:draw(widget, state)
 	local inputProvider = widget:getInputProvider()
 	local joystickName = inputProvider and inputProvider:getCurrentJoystick() and inputProvider:getCurrentJoystick():getName() or "Default"
 
-	love.graphics.setColor(widget:getColor():get())
 
-	local icon = self;_getIcon(joystickName, widget)
+	local icon = self:_getIcon(joystickName, widget)
 	if icon then
-		local icon = self.icons[icon]
 		local scaleX, scaleY
 		do
 			local width, height = widget:getSize()
@@ -117,6 +129,12 @@ function GamepadIconRenderer:draw(widget, state)
 			scaleY = height / icon:getHeight()
 		end
 
+		if widget:getHasDropShadow() then
+			love.graphics.setColor(0, 0, 0, widget:getColor().a)
+			itsyrealm.graphics.draw(icon, 2, 2, 0, scaleX, scaleY)
+		end
+
+		love.graphics.setColor(widget:getColor():get())
 		itsyrealm.graphics.draw(icon, 0, 0, 0, scaleX, scaleY)
 	end
 
