@@ -64,7 +64,7 @@ function EquipmentGamepadContentTab:new(interface)
 	statsPanel:setStyle(self.GROUP_PANEL_STYLE, PanelStyle)
 	statsPanel:setSize(self.WIDTH, EquipmentStatsPanel.DEFAULT_HEIGHT)
 	local _, layoutHeight = self.layout:getSize()
-	statsPanel:setPosition(0, layoutHeight + self.PADDING)
+	statsPanel:setPosition(0, layoutHeight + self.PADDING / 2)
 	self:addChild(statsPanel)
 
 	self.stats = EquipmentStatsPanel(self:getUIView(), { width = self.WIDTH - self.PADDING * 2 })

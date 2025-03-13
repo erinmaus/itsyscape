@@ -18,6 +18,7 @@ local Icon = require "ItsyScape.UI.Icon"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
+local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local RichTextLabelStyle = require "ItsyScape.UI.RichTextLabelStyle"
 local SpiralLayout = require "ItsyScape.UI.SpiralLayout"
@@ -338,6 +339,7 @@ function GamepadCombatHUD:openMenu()
 		end
 
 		self:layoutSpiralMenu(menu)
+		self:updateStandardThingiesInterface(menu)
 	end
 end
 
@@ -354,7 +356,7 @@ function GamepadCombatHUD:back()
 
 	local top = table.remove(self.thingiesStack)
 	if top == self.FEATURE_MENU then
-		self:closeMenu()
+		self:hide()
 	else
 		self:closeThingies(top)
 	end
@@ -486,39 +488,28 @@ function GamepadCombatHUD:addStandardThingiesInterface(menu, getDataCallback)
 	icon:setSize(self.STANDARD_INTERFACE_TITLE_HEIGHT, self.STANDARD_INTERFACE_TITLE_HEIGHT)
 	icon:setPosition(
 		-self.STANDARD_INTERFACE_TITLE_WIDTH - self.STANDARD_INTERFACE_TITLE_HEIGHT - self.PADDING,
-		-self.STANDARD_INTERFACE_TITLE_HEIGHT - (self.STANDARD_INTERFACE_TITLE_HEIGHT / 2 - self.SPIRAL_INNER_PANEL_LABEL_STYLE.headerFontSize / 2))
+		-self.STANDARD_INTERFACE_TITLE_HEIGHT - (self.STANDARD_INTERFACE_TITLE_HEIGHT / 2 - self.SPIRAL_INNER_PANEL_LABEL_STYLE.headerFontSize))
 
-	local backIcon = self:_newBackIcon()
-	backIcon:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2, -self.STANDARD_INTERFACE_TITLE_HEIGHT)
+	local backToolTip = GamepadToolTip()
+	backToolTip:setHasBackground(false)
+	backToolTip:setButtonID("b")
+	backToolTip:setText("Back")
+	backToolTip:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2, -self.STANDARD_INTERFACE_TITLE_HEIGHT)
 
-	local backLabel = Label()
-	backLabel:setStyle(LabelStyle(self.SPIRAL_INNER_PANEL_BUTTON_LABEL_STYLE, self:getView():getResources()))
-	backLabel:setPosition(
-		self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2 + self.DEFAULT_ICON_SIZE + self.PADDING,
-		-self.STANDARD_INTERFACE_TITLE_HEIGHT + (self.DEFAULT_ICON_SIZE / 2 - self.SPIRAL_INNER_PANEL_BUTTON_LABEL_STYLE.fontSize / 2))
-	backLabel:setText("Back")
-
-	local menuActionIcon = self:_newMenuActionIcon()
-	menuActionIcon:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2 + self.STANDARD_INTERFACE_TITLE_HEIGHT, self.PADDING)
-
-	local menuActionLabel = Label()
-	menuActionLabel:setPosition(
-		self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2 + self.STANDARD_INTERFACE_TITLE_HEIGHT + self.DEFAULT_ICON_SIZE + self.PADDING,
-		self.PADDING + (self.DEFAULT_ICON_SIZE / 2 - self.SPIRAL_INNER_PANEL_BUTTON_LABEL_STYLE.fontSize / 2))
-	menuActionLabel:setStyle(LabelStyle(self.SPIRAL_INNER_PANEL_BUTTON_LABEL_STYLE, self:getView():getResources()))
-	menuActionLabel:setText("")
+	local menuActionToolTip = GamepadToolTip()
+	menuActionToolTip:setHasBackground(false)
+	menuActionToolTip:setButtonID("x")
+	menuActionToolTip:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2 + self.STANDARD_INTERFACE_TITLE_HEIGHT, self.PADDING)
 
 	local container = GamepadCombatHUD.StandardInterfaceContainer()
 	container:addChild(shadowLabel)
 	container:addChild(label)
 	container:addChild(icon)
-	container:addChild(backIcon)
-	container:addChild(backLabel)
+	container:addChild(backToolTip)
 	container:setData("shadowLabel", shadowLabel)
 	container:setData("label", label)
 	container:setData("icon", icon)
-	container:setData("menuActionIcon", menuActionIcon)
-	container:setData("menuActionLabel", menuActionLabel)
+	container:setData("menuActionToolTip", menuActionToolTip)
 	container:setData("getDataCallback", getDataCallback)
 
 	local innerPanel = menu:getInnerPanel()
@@ -558,25 +549,16 @@ function GamepadCombatHUD:updateStandardThingiesInterface(menu)
 		{ t = "text", data.subtitleText or "" }
 	})
 
-	local menuActionLabel = container:getData("menuActionLabel")
-	local menuActionIcon = container:getData("menuActionIcon")
+	local menuActionToolTip = container:getData("menuActionToolTip")
 	if data.menuActionText then
-		menuActionLabel:setText(data.menuActionText)
+		menuActionToolTip:setText(data.menuActionText)
 
-		if menuActionLabel:getParent() ~= container then
-			container:addChild(menuActionLabel)
-		end
-
-		if menuActionIcon:getParent() ~= container then
-			container:addChild(menuActionIcon)
+		if menuActionToolTip:getParent() ~= container then
+			container:addChild(menuActionToolTip)
 		end
 	else
-		if menuActionLabel:getParent() == container then
-			container:removeChild(menuActionLabel)
-		end
-
-		if menuActionIcon:getParent() == container then
-			container:removeChild(menuActionIcon)
+		if menuActionToolTip:getParent() == container then
+			container:removeChild(menuActionToolTip)
 		end
 	end
 end
@@ -728,12 +710,22 @@ function GamepadCombatHUD:_onMenuOptionSelected(_, currentButton, previousButton
 	end
 end
 
+function GamepadCombatHUD:_updateMenuInterface()
+	local result = {
+		titleText = "Ring",
+		icon = "Resources/Game/UI/Icons/Logo.png"
+	}
+
+	return result
+end
+
 function GamepadCombatHUD:newMenu()
 	local menu = self:newSpiralMenu("main")
 	menu.onChildVisible:register(self._onMenuOptionVisible, self)
 	menu.onChildSelected:register(self._onMenuOptionSelected, self)
 
 	self:addSpiralMenuRichTextLabel(menu)
+	self:addStandardThingiesInterface(menu, self._updateMenuInterface)
 
 	return menu
 end
@@ -861,7 +853,7 @@ function GamepadCombatHUD:_onPowerSelected(menu, current)
 end
 
 function GamepadCombatHUD:_updatePowersThingiesInterface(name)
-	local result = { titleText = self:getThingiesName(name), subtitleText = "by level", menuActionText = "Sort" }
+	local result = { titleText = self:getThingiesName(name) }
 
 	if name == BaseCombatHUD.THINGIES_OFFENSIVE_POWERS then
 		result.icon = "Resources/Game/UI/Icons/Concepts/Powers.png"
@@ -936,7 +928,6 @@ end
 function GamepadCombatHUD:_updateFoodThingiesInterface(name)
 	local result = {
 		titleText = self:getThingiesName(name),
-		subtitleText = "no sorting", menuActionText = "Sort",
 		icon = "Resources/Game/UI/Icons/Skills/Constitution.png"
 	}
 
@@ -949,7 +940,7 @@ function GamepadCombatHUD:newFoodThingies(name)
 	foodSpiral.onChildSelected:register(self._onFoodSelected, self)
 
 	self:addSpiralMenuRichTextLabel(foodSpiral)
-	self:addStandardThingiesInterface(foodSpiral, self._updatePowersThingiesInterface)
+	self:addStandardThingiesInterface(foodSpiral, self._updateFoodThingiesInterface)
 
 	return foodSpiral
 end
