@@ -193,15 +193,20 @@ end
 function GamepadRibbon:toggle()
 	self.isShowing = not self.isShowing
 
+	local inputProvider = self:getInputProvider()
 	if self.isShowing then
 		self:addChild(self.container)
 
-		local inputProvider = self:getInputProvider()
 		local child = self.contentLayout:getChildAt(1)
 		if inputProvider and child then
 			inputProvider:setFocusedWidget(child, "select")
 		end
 	else
+		local focusedWidget = inputProvider:getFocusedWidget()
+		if focusedWidget and focusedWidget:hasParent(self) then
+			inputProvider:setFocusedWidget(nil, "close")
+		end
+
 		self:removeChild(self.container)
 	end
 
