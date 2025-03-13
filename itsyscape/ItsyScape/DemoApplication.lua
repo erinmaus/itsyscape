@@ -63,6 +63,11 @@ DemoApplication.TITLE_SCREENS = {
 DemoApplication.GYRO_RADIUS = 1
 DemoApplication.SHIMMER_DURATION = 0.25
 
+DemoApplication.GAMEPAD_TOGGLE_INTERFACES = {
+	"GamepadRibbon",
+	"GamepadCombatHUD"
+}
+
 DemoApplication.SHIMMER_CURRENT_OBJECT_LABEL_STYLE = function(color)
 	return {
 		color = { color:get() },
@@ -473,147 +478,6 @@ function DemoApplication:openMainMenu()
 		hover = "Resources/Renderers/Widget/Button/ActiveDefault-Hover.9.png"
 	}
 
-	do
-		local SpiralLayout = require "ItsyScape.UI.SpiralLayout"
-		local Icon = require "ItsyScape.UI.Icon"
-		local Widget = require "ItsyScape.UI.Widget"
-		local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
-		local spiral = SpiralLayout()
-		spiral:setRadius(160, 196)
-
-		local label = RichTextLabel()
-		label:setPosition(32, 32)
-		label:setSize(128, 96)
-
-		local Drawable = require "ItsyScape.UI.Drawable"
-
-		local Circle = Class(Drawable)
-		function Circle:new()
-			Drawable.new(self)
-
-			self.enabled = false
-			self.outline = Color(1, 0.8, 0, 1)
-			self.outlineThickness = 8
-			self.fill = Color(0, 0, 0, 0.5)
-		end
-
-		function Circle:draw(...)
-			Drawable.draw(self, ...)
-
-			local x, y = self:getPosition()
-
-			local target = self:getParent() or self
-
-			local w, h = target:getSize()
-			x = x + w / 2
-			y = y + h / 2
-
-			local radius = math.min(w, h) / 2
-
-			love.graphics.push("all")
-
-			love.graphics.setColor(self.fill:get())
-			itsyrealm.graphics.circle("fill", x, y, radius)
-
-			if self.enabled then
-				love.graphics.setColor(self.outline:get())
-				love.graphics.setLineWidth(self.outlineThickness)
-				itsyrealm.graphics.circle("line", x, y, radius)
-			end
-
-			love.graphics.pop()
-		end
-
-		local active
-		spiral.onChildSelected:register(function(_, currentChild, previousChild)
-			if previousChild then
-				previousChild:getData("circle").enabled = false
-				previousChild:getData("circle").fill = Color(0, 0, 0, 0.5)
-				previousChild:removeChild(previousChild:getData("action"))
-			end
-
-			if currentChild then
-				currentChild:getData("circle").enabled = true
-				currentChild:getData("circle").fill = Color(1, 0.8, 0, 0.5)
-				currentChild:addChild(currentChild:getData("action"))
-				
-				label:setText({
-					{ t = "header", currentChild:getData("name") },
-					currentChild:getData("description")
-				})
-
-			end
-
-			active = currentChild
-		end)
-
-		local SELECTED_SIZE = 64
-		local DEFAULT_SIZE = 48
-		local MIN_SIZE = 24
-
-		spiral.onChildVisible:register(function(_, child, delta)
-			delta = math.min(math.sin(delta * (math.pi / 2)) * 1.1, 1)
-
-			local alpha = math.lerp(0.25, 1, delta)
-			child:getData("icon"):setColor(Color(1, 1, 1, alpha))
-
-			local size = math.lerp(MIN_SIZE, active == child and SELECTED_SIZE or DEFAULT_SIZE, delta)
-			child:getData("icon"):setSize(size, size)
-			child:setSize(size, size)
-		end)
-
-		local gameDB = self:getGameDB()
-		for power in gameDB:getResources("Power") do
-			local button = Button()
-			button:setStyle(ButtonStyle(
-				INACTIVE_BUTTON_STYLE,
-				self:getUIView():getResources()))
-			button:setToolTip(power.name)
-			button:setSize(DEFAULT_SIZE, DEFAULT_SIZE)
-
-			local name = gameDB:getRecord("ResourceName", { Resource = power })
-			name = name and name:get("Value") or "???"
-			local description = gameDB:getRecord("ResourceDescription", { Resource = power })
-			description = description and description:get("Value") or "IDK"
-
-			local icon = Icon()
-			icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.name))
-
-			local actionIcon = Icon()
-			actionIcon:setIcon("Resources/Game/UI/Icons/Controllers/NintendoSwitch/switch_button_a.png")
-			actionIcon:setSize(48, 48)
-			actionIcon:setColor(Color(0.4, 0.8, 0.4, 1))
-			actionIcon:setPosition(SELECTED_SIZE - 24, SELECTED_SIZE - 24)
-
-			local circle = Circle()
-			circle.enabled = false
-
-			button:addChild(circle)
-			button:addChild(icon)
-			button:setData("name", name)
-			button:setData("description", description)
-			button:setData("circle", circle)
-			button:setData("icon", icon)
-			button:setData("action", actionIcon)
-
-			spiral:addChild(button)
-		end
-
-		local w, h = love.graphics.getScaledMode()
-		spiral:setPosition(w / 2, h / 2)
-
-		local circle = Circle()
-		circle.enabled = true
-
-		spiral:getInnerPanel():setSize(192, 192)
-		spiral:getInnerPanel():setPosition(-96, -96)
-		spiral:getInnerPanel():addChild(circle)
-		spiral:getInnerPanel():addChild(label)
-
-		self.mainMenu:addChild(spiral)
-		self:getUIView():getInputProvider():setFocusedWidget(spiral)
-	end
-
 	local BUTTON_SIZE = 64
 	local PADDING = 8
 
@@ -951,6 +815,24 @@ function DemoApplication:gamepadAxis(joystick, axis, value)
 	self.cameraController:gamepadAxis(isUIActive, axis, value)
 end
 
+function DemoApplication:toggleUI(hud)
+	for _, interfaceID in ipairs(DemoApplication.GAMEPAD_TOGGLE_INTERFACES) do
+		if interfaceID ~= hud then
+			local interface = self:getUIView():getInterface(interfaceID)
+			if interface and interface:getIsShowing() then
+				print("HIDE", interfaceID)
+				interface:toggle()
+			end
+		end
+	end
+
+	local interface = self:getUIView():getInterface(hud)
+	if interface then
+		print("SHOW", hud)
+		interface:toggle()
+	end
+end
+
 function DemoApplication:gamepadRelease(joystick, button)
 	Application.gamepadRelease(self, joystick, button)
 
@@ -962,12 +844,21 @@ function DemoApplication:gamepadRelease(joystick, button)
 	local cycleTargetButton = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCycleTarget")
 	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
 	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
-	if button == cycleTargetButton then
-		self:nextShimmer()
-	elseif button == gamepadProbe then
-		self:probeCurrentShimmer(false)
-	elseif button == gamepadAction then
-		self:probeCurrentShimmer(true)
+
+	if not inputProvider:getFocusedWidget() then
+		if button == cycleTargetButton then
+			self:nextShimmer()
+		elseif button == gamepadProbe then
+			self:probeCurrentShimmer(false)
+		elseif button == gamepadAction then
+			self:probeCurrentShimmer(true)
+		end
+	end
+
+	if button == inputProvider:getKeybind("gamepadOpenCombatRing") then
+		self:toggleUI("GamepadCombatHUD")
+	elseif button == inputProvider:getKeybind("gamepadOpenRibbon") then
+		self:toggleUI("GamepadRibbon")
 	end
 end
 
@@ -2031,6 +1922,9 @@ function DemoApplication:updateNearbyShimmer(delta)
 
 				local x, y = self:_getObjectUIPosition(object, 1, self.shimmerLabel:getStyle().font:getHeight())
 				self.shimmerLabel:setPosition(x - width / 2, y)
+				self.shimmerLabel:setSize(
+					self.shimmerLabel:getStyle().font:getWidth(shimmeringObject.object),
+					self.shimmerLabel:getStyle().font:getHeight())
 
 				self:getUIView():getRoot():addChild(self.shimmerLabel)
 

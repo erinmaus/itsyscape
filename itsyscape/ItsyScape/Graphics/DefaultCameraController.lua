@@ -25,6 +25,7 @@ DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP_TIME_SECONDS = 0.5
 DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET = math.pi / 8
 DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET = math.pi / 6 - math.pi / 128
 DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIP = math.pi / 4
+DefaultCameraController.CAMERA_HORIZONTAL_ROTATION_SCROLL = math.pi / 8
 DefaultCameraController.SCROLL_MULTIPLIER = 4
 DefaultCameraController.MIN_DISTANCE = 10
 DefaultCameraController.MAX_DISTANCE = 25
@@ -52,7 +53,8 @@ DefaultCameraController.PAN_TIME = 0.5
 DefaultCameraController.PAN_DISTANCE = 0
 DefaultCameraController.PAN_OFFSET = Vector(0, 15, 0)
 
-DefaultCameraController.SPEED = math.pi / 2
+DefaultCameraController.ROTATE_SPEED = math.pi / 2
+DefaultCameraController.SCROLL_SPEED = 32 / (math.pi / 2)
 
 function DefaultCameraController:new(...)
 	CameraController.new(self, ...)
@@ -87,6 +89,7 @@ function DefaultCameraController:new(...)
 	self.isCameraVerticalRotationFlipped = _CONF.camera and _CONF.camera.isVerticalRotationFlipped or false
 	self.cameraVerticalRotationOffsetRemainder = 0
 	self.cameraHorizontalRotationOffset = _CONF.camera and _CONF.camera.horizontalRotationOffset or 0
+	self.cameraHorizontalRotationOffsetRemainder = 0
 	self.cameraOffset = Vector(0):keep()
 
 	self:getCamera():setHorizontalRotation(
@@ -281,7 +284,7 @@ function DefaultCameraController:_setAngles(verticalRotation, horizontalRotation
 
 	if not (_DEBUG or panning) then
 		if self.isRotationUnlocked <= 0 and not self.cameraVerticalRotationFlipTime then
-			local beforeClamp = verticalRotation
+			local beforeVerticalClamp = verticalRotation
 
 			verticalRotation = math.max(
 				verticalRotation,
@@ -290,7 +293,7 @@ function DefaultCameraController:_setAngles(verticalRotation, horizontalRotation
 				verticalRotation,
 				DefaultCameraController.MAX_CAMERA_VERTICAL_ROTATION_OFFSET)
 
-			if beforeClamp ~= verticalRotation then
+			if beforeVerticalClamp ~= verticalRotation then
 				self.cameraVerticalRotationOffsetRemainder = self.cameraVerticalRotationOffsetRemainder + verticalOffset
 			end
 
@@ -301,12 +304,26 @@ function DefaultCameraController:_setAngles(verticalRotation, horizontalRotation
 			end
 		end
 
+		local beforeHorizontalClamp = horizontalRotation
+
 		horizontalRotation = math.max(
 			horizontalRotation,
 			-DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
 		horizontalRotation = math.min(
 			horizontalRotation,
 			DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET)
+
+		local differenceHorizontalClamp = math.diffAngle(beforeHorizontalClamp, horizontalRotation)
+		if beforeHorizontalClamp == 0 then
+			self.cameraHorizontalRotationOffsetRemainder = 0
+		else
+			self.cameraHorizontalRotationOffsetRemainder = self.cameraHorizontalRotationOffsetRemainder + differenceHorizontalClamp
+		end
+
+		if math.abs(self.cameraHorizontalRotationOffsetRemainder) > DefaultCameraController.CAMERA_HORIZONTAL_ROTATION_SCROLL then
+			local dy = differenceHorizontalClamp * DefaultCameraController.SCROLL_SPEED
+			self:_scroll(dy)
+		end
 	end
 
 	verticalRotation = math.sign(verticalRotation) * (math.abs(verticalRotation) % (math.pi * 2))
@@ -416,30 +433,30 @@ function DefaultCameraController:updateControls(delta)
 	local angle1 = self.isPanning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset
 	do
 		if not _DEBUG and leftPressed then
-			angle1 = angle1 + DefaultCameraController.SPEED * delta
+			angle1 = angle1 + DefaultCameraController.ROTATE_SPEED * delta
 		end
 
 		if not _DEBUG and rightPressed then
-			angle1 = angle1 - DefaultCameraController.SPEED * delta
+			angle1 = angle1 - DefaultCameraController.ROTATE_SPEED * delta
 		end
 
 		if self.canControlCameraWithGamepad then
-			angle1 = angle1 + DefaultCameraController.SPEED * delta * self.gamepadX
+			angle1 = angle1 + DefaultCameraController.ROTATE_SPEED * delta * self.gamepadX
 		end
 	end
 
 	local angle2 = self.isPanning and self.panningHorizontalRotationOffset or self.cameraHorizontalRotationOffset
 	do
 		if not _DEBUG and upPressed then
-			angle2 = angle2 - DefaultCameraController.SPEED * delta
+			angle2 = angle2 - DefaultCameraController.ROTATE_SPEED * delta
 		end
 
 		if not _DEBUG and downPressed then
-			angle2 = angle2 + DefaultCameraController.SPEED * delta
+			angle2 = angle2 + DefaultCameraController.ROTATE_SPEED * delta
 		end
 
 		if self.canControlCameraWithGamepad then
-			angle2 = angle2 + DefaultCameraController.SPEED * delta * self.gamepadY
+			angle2 = angle2 + DefaultCameraController.ROTATE_SPEED * delta * self.gamepadY
 		end
 	end
 

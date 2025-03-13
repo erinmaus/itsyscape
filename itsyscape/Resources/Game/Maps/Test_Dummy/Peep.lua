@@ -20,4 +20,12 @@ function TestMap:onLoad(...)
 	Utility.Map.spawnMap(self, "Test123_Draft", Vector.ZERO, { isLayer = true })
 end
 
+function TestMap:onPlayerEnter(player)
+	player:pokeCamera("unlockPosition")
+end
+
+function TestMap:onPlayerLeave(player)
+	player:pokeCamera("lockPosition")
+end
+
 return TestMap

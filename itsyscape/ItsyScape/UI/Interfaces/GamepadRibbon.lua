@@ -108,7 +108,6 @@ function GamepadRibbon:new(id, index, ui)
 	self.previousFocusedContent = false
 
 	self.container = GamepadRibbon.Container()
-	self:addChild(self.container)
 
 	self.tabPanel = Panel()
 	self.tabPanel:setSize(self.TAB_CONTAINER_WIDTH, self.TAB_CONTAINER_HEIGHT)
@@ -162,7 +161,7 @@ function GamepadRibbon:new(id, index, ui)
 	self.contentLayout:setPosition(
 			self.TAB_CONTAINER_WIDTH / 2 - self.CONTENT_WIDTH / 2,
 			self.TAB_CONTAINER_HEIGHT + self.TITLE_ROW_HEIGHT)
-	self:addChild(self.contentLayout)
+	self.container:addChild(self.contentLayout)
 
 	self:setSize(
 		self.WINDOW_WIDTH,
@@ -177,7 +176,7 @@ function GamepadRibbon:new(id, index, ui)
 	self.ribbonKeybindInfo:setHasBackground(false)
 	self.ribbonKeybindInfo:setKeybind("gamepadOpenRibbon")
 	self.ribbonKeybindInfo:setText("Close")
-	self:addChild(self.ribbonKeybindInfo)
+	self.container:addChild(self.ribbonKeybindInfo)
 
 	self.secondaryKeybindInfo = GamepadToolTip()
 	self.secondaryKeybindInfo:setHasBackground(false)
@@ -189,6 +188,28 @@ function GamepadRibbon:new(id, index, ui)
 
 	self:performLayout()
 	self.isDirty = false
+end
+
+function GamepadRibbon:toggle()
+	self.isShowing = not self.isShowing
+
+	if self.isShowing then
+		self:addChild(self.container)
+
+		local inputProvider = self:getInputProvider()
+		local child = self.contentLayout:getChildAt(1)
+		if inputProvider and child then
+			inputProvider:setFocusedWidget(child, "select")
+		end
+	else
+		self:removeChild(self.container)
+	end
+
+	self.isDirty = true
+end
+
+function GamepadRibbon:getIsShowing()
+	return self.isShowing
 end
 
 function GamepadRibbon:attach(reason)
@@ -320,12 +341,12 @@ function GamepadRibbon:_setKeybindInfo(secondary, tertiary)
 		self.secondaryKeybindInfo:setText(secondary)
 		self.secondaryKeybindInfo:performLayout()
 
-		if self.secondaryKeybindInfo:getParent() ~= self then
-			self:addChild(self.secondaryKeybindInfo)
+		if self.secondaryKeybindInfo:getParent() ~= self.container then
+			self.container:addChild(self.secondaryKeybindInfo)
 		end
 	else
-		if self.secondaryKeybindInfo:getParent() == self then
-			self:removeChild(self.secondaryKeybindInfo)
+		if self.secondaryKeybindInfo:getParent() == self.container then
+			self.container:removeChild(self.secondaryKeybindInfo)
 		end
 	end
 
@@ -333,12 +354,12 @@ function GamepadRibbon:_setKeybindInfo(secondary, tertiary)
 		self.tertiaryKeybindInfo:setText(tertiary)
 		self.tertiaryKeybindInfo:performLayout()
 
-		if self.tertiaryKeybindInfo:getParent() ~= self then
-			self:addChild(self.tertiaryKeybindInfo)
+		if self.tertiaryKeybindInfo:getParent() ~= self.container then
+			self.container:addChild(self.tertiaryKeybindInfo)
 		end
 	else
-		if self.tertiaryKeybindInfo:getParent() == self then
-			self:removeChild(self.tertiaryKeybindInfo)
+		if self.tertiaryKeybindInfo:getParent() == self.container then
+			self.container:removeChild(self.tertiaryKeybindInfo)
 		end
 	end
 end

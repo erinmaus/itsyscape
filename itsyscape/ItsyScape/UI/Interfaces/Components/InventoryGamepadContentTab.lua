@@ -436,7 +436,7 @@ function InventoryGamepadContentTab:probe(index, button)
 			verb = "Drop",
 			object = object,
 			objectType = "item",
-			callback = Function(self.drop, self, index)
+			callback = Function(self.dropInventoryItem, self, index)
 		})
 	end
 

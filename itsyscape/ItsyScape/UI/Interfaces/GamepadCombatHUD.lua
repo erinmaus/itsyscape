@@ -170,28 +170,6 @@ function GamepadCombatHUD:new(...)
 
 	BaseCombatHUD.new(self, ...)
 
-	local uiView = self:getView()
-	local rootNode = uiView:getRoot()
-
-	self._onGamepadRelease = function(_, joystick, button)
-		local inputProvider = uiView:getInputProvider()
-
-		if not inputProvider:isCurrentJoystick(joystick) then
-			return
-		end
-
-		if inputProvider:getKeybind("gamepadOpenCombatRing") ~= button then
-			return
-		end
-
-		self:toggleCombatRing()
-	end
-	rootNode.onGamepadRelease:register(self._onGamepadRelease)
-
-	self.onClose:register(function()
-		rootNode.onGamepadRelease:unregister(self._onGamepadRelease)
-	end)
-
 	self:_initCommon()
 end
 
@@ -408,7 +386,7 @@ function GamepadCombatHUD:show()
 	end
 end
 
-function GamepadCombatHUD:toggleCombatRing()
+function GamepadCombatHUD:toggle()
 	if self:getIsShowing() then
 		self:clear()
 		self:hide()
