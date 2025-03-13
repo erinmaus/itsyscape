@@ -28,6 +28,7 @@ local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
+local EquipmentGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.EquipmentGamepadContentTab"
 local InventoryGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.InventoryGamepadContentTab"
 local ItemInfoGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.ItemInfoGamepadContentTab"
 
@@ -100,7 +101,7 @@ function GamepadRibbon:new(id, index, ui)
 
 	self:setData(GamepadSink, GamepadSink())
 
-	self.activeTab = false
+	self.currentTabName = false
 	self.tabButtons = {}
 	self.tabFuncs = {}
 
@@ -192,19 +193,22 @@ end
 
 function GamepadRibbon:attach(reason)
 	self:openTab("inventory")
+	self:focusChild(self.inventoryTabContent, "select")
 end
 
 function GamepadRibbon:getOverflow()
 	return true
 end
 
-function GamepadRibbon:_onTabWrapFocus(_, _, directionX, directionY)
+function GamepadRibbon:_onTabWrapFocus(_, widget, directionX, directionY)
 	local inputProvider = self:getInputProvider()
 	if not inputProvider then
 		return
 	end
 
-	if directionY > 0 then
+	if directionX ~= 0 then
+		inputProvider:setFocusedWidget(widget, "select")
+	elseif directionY > 0 then
 		local child = self.previousFocusedContent or self.contentLayout:getChildAt(1)
 		if child then
 			inputProvider:setFocusedWidget(child, "select")
@@ -282,6 +286,10 @@ function GamepadRibbon:performLayout()
 end
 
 function GamepadRibbon:openTab(tab)
+	if self.currentTabName == tab then
+		return
+	end
+
 	self.contentLayout:clearChildren()
 
 	local currentTabButton = self.tabButtons[self.currentTabName]
@@ -304,6 +312,7 @@ function GamepadRibbon:openTab(tab)
 	self:sendPoke("openTab", nil, { tab = tab })
 
 	self.isDirty = true
+	self.previousFocusedContent = false
 end
 
 function GamepadRibbon:_setKeybindInfo(secondary, tertiary)
@@ -337,7 +346,7 @@ end
 function GamepadRibbon:_openInventoryTab()
 	self.contentLayout:addChild(self.inventoryTabContent)
 	self.contentLayout:addChild(self.itemInfoContent)
-	self:focusChild(self.inventoryTabContent, "select")
+	self:_updateInventoryTab()
 
 	self.titleLabel:setText("Inventory")
 	self:_setKeybindInfo("More options", "Swap")
@@ -362,7 +371,9 @@ function GamepadRibbon:_updateInventoryTab()
 		otherItem = state.equipment.items[slot]
 	end
 
-	self.itemInfoContent:refresh({ item = item, otherItem = otherItem })
+	if self.currentTabName == "inventory" then
+		self.itemInfoContent:refresh({ item = item, otherItem = otherItem })
+	end
 end
 
 function GamepadRibbon:_initInventoryTab()
@@ -377,8 +388,40 @@ function GamepadRibbon:_initInventoryTab()
 		self._openInventoryTab)
 end
 
+function GamepadRibbon:_openEquipmentTab()
+	self.contentLayout:addChild(self.equipmentTabContent)
+	self.contentLayout:addChild(self.itemInfoContent)
+	self:_updateEquipmentTab()
+
+	self.titleLabel:setText("Equipment")
+	self:_setKeybindInfo("More options")
+end
+
+function GamepadRibbon:_updateEquipmentTab()
+	local state = self:getState()
+
+	self.equipmentTabContent:refresh({
+		items = state.equipment.items,
+		count = state.equipment.count,
+		stats = state.stats
+	})
+
+	local slot = self.equipmentTabContent:getCurrentEquipmentSlot()
+	local item = self.equipmentTabContent:getEquipmentItem(slot)
+
+	if self.currentTabName == "equipment" then
+		self.itemInfoContent:refresh({ item = item })
+	end
+end
+
 function GamepadRibbon:_initEquipmentTab()
-	self:_addTab("equipment", "Resources/Game/UI/Icons/Common/Equipment.png")
+	self.equipmentTabContent = EquipmentGamepadContentTab(self)
+	self.equipmentTabContent.onWrapFocus:register(self._onContentWrapFocus, self)
+
+	self:_addTab(
+		"equipment",
+		"Resources/Game/UI/Icons/Common/Equipment.png",
+		self._openEquipmentTab)
 end
 
 function GamepadRibbon:_initSkillTab()
@@ -401,7 +444,8 @@ function GamepadRibbon:_addTab(tab, iconFilename, openFunc)
 	local button = Button()
 	button:setID(string.format("Ribbon-%s", tab))
 	button:setStyle(ButtonStyle(self.INACTIVE_TAB_BUTTON_STYLE, self:getView():getResources()))
-	button.onClick:register(self._onSelectTab, tab)
+	button:setToolTip(unpack(self.TOOL_TIPS[tab] or {}))
+	button.onClick:register(self._onSelectTab, self, tab)
 
 	local icon = Icon()
 	icon:setIcon(iconFilename)
@@ -444,6 +488,7 @@ function GamepadRibbon:update(delta)
 	Interface.update(self, delta)
 
 	self:_updateInventoryTab()
+	self:_updateEquipmentTab()
 
 	if self.isDirty then
 		self:performLayout()

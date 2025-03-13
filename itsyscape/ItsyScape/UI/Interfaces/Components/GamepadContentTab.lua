@@ -51,4 +51,12 @@ function GamepadContentTab:getResources()
 	return self.interface:getView():getResources()
 end
 
+function GamepadContentTab:getGame()
+	return self.interface:getView():getGame()
+end
+
+function GamepadContentTab:getGameDB()
+	return self.interface:getView():getGame():getGameDB()
+end
+
 return GamepadContentTab

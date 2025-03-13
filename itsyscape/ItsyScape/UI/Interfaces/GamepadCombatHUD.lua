@@ -692,10 +692,6 @@ function GamepadCombatHUD:layoutSpiralButton(button, delta)
 		panel:enable()
 	end
 
-	if button:getData("stance") then
-		print("stance button layout", button:getData("stance"), panel:getData("enabled"))
-	end
-
 	button:setSize(buttonSize, buttonSize)
 
 	local icon = button:getData("icon")

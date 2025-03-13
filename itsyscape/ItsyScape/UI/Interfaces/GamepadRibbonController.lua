@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
+local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -88,7 +89,6 @@ function GamepadRibbonController:pull()
 	return {
 		inventory = { items = self:pullInventory(), count = self:getInventorySpace() },
 		equipment = { items = self:pullEquipment(), count = Equipment.PLAYER_SLOTS_MAX },
-		stats = self:pullEquipmentStats(),
 		skills = self:pullSkills(),
 		stats = self:pullEquipmentStats()
 	}
@@ -425,7 +425,7 @@ function GamepadRibbonController:pokeEquipmentItem(e)
 	assert(type(e.index) == "number", "index is not number")
 	assert(type(e.id) == "number", "id is not number")
 
-	local equipment = self:getPeep():getBehavior(InventoryBehavior)
+	local equipment = self:getPeep():getBehavior(EquipmentBehavior)
 	equipment = equipment and equipment.equipment
 
 	if not equipment then
@@ -514,7 +514,7 @@ function GamepadRibbonController:probeEquipmentItem(e)
 
 	local index, item
 	do
-		local equipment = self:getPeep():getBehavior(InventoryBehavior)
+		local equipment = self:getPeep():getBehavior(EquipmentBehavior)
 		equipment = equipment and equipment.equipment
 
 		if equipment then
@@ -542,7 +542,7 @@ function GamepadRibbonController:probeEquipmentItem(e)
 	self.currentEquipmentProbeItem = item
 end
 
-function GamepadRibbonController:pullItem(item)
+function GamepadRibbonController:pullItem(item, scope)
 	local result = {}
 	result.id = item:getID()
 	result.count = item:getCount()
@@ -551,12 +551,12 @@ function GamepadRibbonController:pullItem(item)
 	result.description = Utility.Item.getInstanceDescription(item)
 	result.stats = Utility.Item.getInstanceStats(item, self:getPeep())
 	result.slot = Utility.Item.getSlot(item)
-	self:pullActions(item, result)
+	self:pullActions(item, result, scope)
 
 	return result
 end
 
-function GamepadRibbonController:pullActions(item, result)
+function GamepadRibbonController:pullActions(item, result, scope)
 	if item:isNoted() then
 		result.actions = {}
 		return
@@ -568,7 +568,7 @@ function GamepadRibbonController:pullActions(item, result)
 		result.actions = Utility.getActions(
 			self:getDirector():getGameInstance(),
 			itemResource,
-			"inventory",
+			scope,
 			true)
 	else
 		result.actions = {}
@@ -592,7 +592,7 @@ function GamepadRibbonController:pullInventory()
 
 	for key in broker:keys(inventory) do
 		for item in broker:iterateItemsByKey(inventory, key) do
-			items[key] = self:pullItem(item)
+			items[key] = self:pullItem(item, "inventory")
 			break
 		end
 	end
@@ -637,7 +637,7 @@ function GamepadRibbonController:pullEquipment()
 				key = Equipment.PLAYER_SLOT_RIGHT_HAND
 			end
 
-			items[key] = self:pullItem(item)
+			items[key] = self:pullItem(item, "equipment")
 			break
 		end
 	end
@@ -672,7 +672,17 @@ function GamepadRibbonController:pullSkills()
 end
 
 function GamepadRibbonController:pullEquipmentStats()
-	return Utility.Peep.getEquipmentBonuses(self:getPeep())
+	local bonuses = Utility.Peep.getEquipmentBonuses(self:getPeep())
+
+	local result = {}
+	for i = 1, #EquipmentInventoryProvider.STATS do
+		table.insert(result, {
+			name = EquipmentInventoryProvider.STATS[i],
+			value = bonuses[EquipmentInventoryProvider.STATS[i]]
+		})
+	end
+
+	return result
 end
 
 function GamepadRibbonController:spawn(e)

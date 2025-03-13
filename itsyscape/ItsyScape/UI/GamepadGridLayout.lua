@@ -41,14 +41,15 @@ function GamepadGridLayout:focus(reason)
 		return
 	end
 
-	if self.currentFocusedWidget and self.currentFocusedWidget:getParent() == self then
-		inputProvider:setFocusedWidget(self.currentFocusedWidget, reason)
+	if self.previousFocusedWidget and self.previousFocusedWidget:getParent() == self then
+		inputProvider:setFocusedWidget(self.previousFocusedWidget, reason)
 	elseif self:getNumChildren() > 0 then
 		inputProvider:setFocusedWidget(self:getChildAt(1), reason)
 	end
 end
 
 function GamepadGridLayout:_blurChild(widget)
+	self.previousFocusedWidget = self.currentFocusedWidget
 	self.currentFocusedWidget = false
 end
 

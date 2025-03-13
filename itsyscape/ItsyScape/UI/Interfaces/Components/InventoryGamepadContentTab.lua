@@ -63,7 +63,7 @@ function InventoryGamepadContentTab:new(interface)
 	self:getInterface().onClose:register(self._onClose, self)
 
 	self.numItems = 0
-	self.currentInventorySlotIndex = -1
+	self.currentInventorySlotIndex = 1
 	self.showToolTip = false
 end
 
