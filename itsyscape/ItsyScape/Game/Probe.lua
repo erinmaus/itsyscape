@@ -336,7 +336,7 @@ function Probe:_loot(item, i, j, k, position)
 	end
 
 	self:addAction(
-		-1,
+		0,
 		"Take",
 		"take",
 		item.item.ref,
@@ -348,8 +348,8 @@ function Probe:_loot(item, i, j, k, position)
 
 	self:addAction(
 		-1,
-		"Take",
-		"take",
+		"Examine",
+		"examine",
 		item.item.ref,
 		"item",
 		object,

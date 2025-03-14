@@ -833,7 +833,7 @@ function DemoApplication:gamepadRelease(joystick, button)
 		end
 	end
 
-	if button == inputProvider:getKeybind("gamepadOpenCombatRing") then
+	if button == inputProvider:getKeybind("gamepadOpenCombatRing") and not self:isInterfaceBlockingGamepadMovement() then
 		self:toggleUI("GamepadCombatHUD")
 	elseif button == inputProvider:getKeybind("gamepadOpenRibbon") then
 		self:toggleUI("GamepadRibbon")

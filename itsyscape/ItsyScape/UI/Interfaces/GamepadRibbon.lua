@@ -104,6 +104,7 @@ function GamepadRibbon:new(id, index, ui)
 	self.currentTabName = false
 	self.tabButtons = {}
 	self.tabFuncs = {}
+	self.tabs = {}
 
 	self.previousFocusedContent = false
 
@@ -188,6 +189,41 @@ function GamepadRibbon:new(id, index, ui)
 
 	self:performLayout()
 	self.isDirty = false
+end
+
+function GamepadRibbon:gamepadRelease(joystick, button)
+	Interface.gamepadRelease(self, joystick, button)
+
+	local inputProvider = self:getInputProvider()
+	if not (inputProvider and inputProvider:isCurrentJoystick(joystick)) then
+		return
+	end
+
+	local currentTabIndex = self:_getTabIndex(self.currentTabName)
+	if not currentTabIndex then
+		return
+	end
+
+	local offset
+	if button == inputProvider:getKeybind("gamepadNext") then
+		offset = 1
+	elseif button == inputProvider:getKeybind("gamepadPrevious") then
+		offset = -1
+	end
+
+	if offset then
+		local index = math.wrapIndex(currentTabIndex, offset, #self.tabs)
+
+		local currentFocusedWidget = inputProvider:getFocusedWidget()
+
+		inputProvider:setFocusedWidget(self.tabLayout:getChildAt(index), "select")
+		self:openTab(self.tabs[index])
+
+		if not currentFocusedWidget:hasParent(self.tabLayout) then
+			local child = self.contentLayout:getChildAt(1)
+			inputProvider:setFocusedWidget(child or self.tabLayout, "select")
+		end
+	end
 end
 
 function GamepadRibbon:toggle()
@@ -483,6 +519,18 @@ function GamepadRibbon:_addTab(tab, iconFilename, openFunc)
 
 	self.tabButtons[tab] = button
 	self.tabFuncs[tab] = openFunc
+
+	table.insert(self.tabs, tab)
+end
+
+function GamepadRibbon:_getTabIndex(tab)
+	for i, t in ipairs(self.tabs) do
+		if t == tab then
+			return i
+		end
+	end
+
+	return nil
 end
 
 function GamepadRibbon:activate(tab, isTabButton)
