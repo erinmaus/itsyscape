@@ -79,6 +79,15 @@ function love.load(args)
 			_ARGS[c:lower()] = true
 		end
 
+		local c, o = args[i]:match("/f:(%w+)=(.+)")
+		if not (c and o) then
+			c, o = args[i]:match("--f:(%w+)=(.+)")
+		end
+
+		if c and o then
+			_ARGS[c:lower()] = o
+		end
+
 		table.insert(_ARGS, args[i])
 	end
 

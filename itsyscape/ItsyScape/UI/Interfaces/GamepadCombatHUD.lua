@@ -37,7 +37,7 @@ function GamepadCombatHUD.StandardInterfaceContainer:getOverflow()
 end
 
 GamepadCombatHUD.SPIRAL_OFFSET             = 32
-GamepadCombatHUD.SPIRAL_OUTER_RADIUS       = 168
+GamepadCombatHUD.SPIRAL_OUTER_RADIUS       = 192
 GamepadCombatHUD.SPIRAL_INNER_RADIUS       = 144
 GamepadCombatHUD.SPIRAL_INNER_PANEL_RADIUS = 144
 

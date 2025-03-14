@@ -16,6 +16,7 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Probe = require "ItsyScape.Game.Probe"
+local Variables = require "ItsyScape.Game.Variables"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
 local ClientRPCService = require "ItsyScape.Game.RPC.ClientRPCService"
@@ -518,6 +519,10 @@ end
 
 function Application:update(delta)
 	Resource.update()
+
+	if _DEBUG then
+		Variables.update()
+	end
 
 	-- Accumulator. Stores time until next tick.
 	self.time = self.time + delta
