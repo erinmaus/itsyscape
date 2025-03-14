@@ -1253,7 +1253,14 @@ function UIView:poke(ui, interfaceID, index, actionID, actionIndex, e)
 	})
 end
 
-function UIView:examine(a, b)
+function UIView:_layoutToolTip(widget, toolTip)
+	local absoluteX, absoluteY = widget:getAbsolutePosition()
+	local widgetWidth, widgetHeight = widget:getSize()
+	local toolTipWidth, toolTipHeight = toolTip:getSize()
+	toolTip:setPosition(absoluteX - toolTipWidth / 2, absoluteY + widgetHeight / 2)
+end
+
+function UIView:examine(a, b, w)
 	local object, description
 	if a and b then
 		object = a
@@ -1312,6 +1319,11 @@ function UIView:examine(a, b)
 		toolTip:setStyle(PanelStyle({
 			image = "Resources/Game/UI/Panels/ToolTip.png"
 		}, self.resources))
+	end
+
+	if w then
+		print(">>> onLayout")
+		toolTip.onLayout:register(self._layoutToolTip, self, w)
 	end
 
 	return toolTip

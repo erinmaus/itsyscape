@@ -25,8 +25,8 @@ function ToolTip.Header:new(text, k)
 
 	k = k or {}
 	self.text = text or "Lorem Ipsum"
-	self.color = k.color or Color(0, 0, 0, 1)
-	self.shadow = k.shadow or false
+	self.color = k.color or Color(1, 1, 1, 1)
+	self.shadow = k.shadow == nil and true or k.shadow
 end
 
 ToolTip.Text = Class(ToolTip.Component)
@@ -35,8 +35,8 @@ function ToolTip.Text:new(text, k)
 
 	k = k or {}
 	self.text = text or "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-	self.color = k.color or Color(0, 0, 0, 1)
-	self.shadow = k.shadow or false
+	self.color = k.color or Color(1, 1, 1, 1)
+	self.shadow = k.shadow == nil and true or k.shadow
 end
 
 ToolTip.Image = Class(ToolTip.Component)

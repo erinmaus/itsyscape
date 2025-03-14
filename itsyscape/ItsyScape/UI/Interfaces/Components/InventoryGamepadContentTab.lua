@@ -428,7 +428,7 @@ function InventoryGamepadContentTab:probe(index, button)
 			verb = "Examine",
 			object = object,
 			objectType = "item",
-			callback = Function(self.examine, self, item)
+			callback = Function(self.examine, self, item, button)
 		})
 
 		table.insert(actions, {
@@ -451,8 +451,9 @@ function InventoryGamepadContentTab:probe(index, button)
 	self:probeInventoryItem(index)
 end
 
-function InventoryGamepadContentTab:examine(item)
-	self:getUIView():examine(self:getInterface():getItemExamine(item))
+function InventoryGamepadContentTab:examine(item, widget)
+	local a, b = self:getInterface():getItemExamine(item)
+	self:getUIView():examine(a, b, widget)
 end
 
 function InventoryGamepadContentTab:prepareToolTip(index, button)

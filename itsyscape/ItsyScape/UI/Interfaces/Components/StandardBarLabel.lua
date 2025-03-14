@@ -52,6 +52,8 @@ function StandardBarLabel:draw(resources, state)
 	local fontHeight = self.font:getHeight()
 	local textY = height / 2 - fontHeight / 2
 
+	love.graphics.setFont(self.font)
+
 	love.graphics.setColor(textShadowColor:get())
 	itsyrealm.graphics.print(self:getText(), self.padding + 2, textY + 2)
 

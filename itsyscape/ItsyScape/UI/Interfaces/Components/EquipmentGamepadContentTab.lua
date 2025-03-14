@@ -301,7 +301,7 @@ function EquipmentGamepadContentTab:probe(index, button)
 		verb = "Examine",
 		object = object,
 		objectType = "item",
-		callback = Function(self.examine, self, item)
+		callback = Function(self.examine, self, item, button)
 	})
 
 	local buttonX, buttonY = button:getAbsolutePosition()
@@ -315,8 +315,9 @@ function EquipmentGamepadContentTab:probe(index, button)
 	self:probeEquipmentItem(index)
 end
 
-function EquipmentGamepadContentTab:examine(item)
-	self:getUIView():examine(self:getInterface():getItemExamine(item))
+function EquipmentGamepadContentTab:examine(item, widget)
+	local a, b = self:getInterface():getItemExamine(item)
+	self:getUIView():examine(a, b, widget)
 end
 
 function EquipmentGamepadContentTab:prepareToolTip(index, button)
