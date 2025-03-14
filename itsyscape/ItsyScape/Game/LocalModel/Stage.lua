@@ -280,6 +280,10 @@ function LocalStage:getPeepInstance(peep)
 	return self:getInstanceByFilenameAndID(filename, id) or self.dummyInstance
 end
 
+function LocalStage:iterateItems()
+	return pairs({})
+end
+
 function LocalStage:spawnGround(filename, layer)
 	Log.engine(
 		"Spawning ground on layer %d in instance layer name '%s'.",

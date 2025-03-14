@@ -559,8 +559,8 @@ end
 
 function GameView:updateGroundDecorations(m)
 	if self:_getIsMapEditor() then
-		--Log.info("Map editor: not updating ground decorations.")
-		--return
+		Log.info("Map editor: not updating ground decorations.")
+		return
 	end
 
 	local tileSetIDs
