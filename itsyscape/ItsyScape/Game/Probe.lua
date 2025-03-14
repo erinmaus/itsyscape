@@ -388,12 +388,15 @@ function Probe:_poke(id, target, scope)
 end
 
 function Probe:_isPointInCone(point)
-	local difference = point - self.ray.origin
-	local distance = difference:dot(self.ray.direction)
+	local xzOrigin = self.ray.origin * Vector.PLANE_XZ
+	local xzDirection = (self.ray.direction * Vector.PLANE_XZ):getNormal()
+
+	local difference = point - xzOrigin
+	local distance = difference:dot(xzDirection)
 	local delta = distance / self.coneLength
 	local radius = (distance / self.coneLength) * self.coneRadius
 
-	local orthogonalDistance = (difference - self.ray.direction * distance):getLength()
+	local orthogonalDistance = (difference - xzDirection * distance):getLength()
 	return orthogonalDistance < radius and delta <= 1, orthogonalDistance
 end
 
