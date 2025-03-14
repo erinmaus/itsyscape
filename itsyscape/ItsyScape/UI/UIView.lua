@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Atlas = require "ItsyScape.UI.Atlas"
 local Button = require "ItsyScape.UI.Button"
@@ -1287,11 +1288,19 @@ function UIView:examine(a, b)
 	end
 
 	if not Class.isCompatibleType(object, ToolTip.Component) then
-		object = ToolTip.Header(object)
+		object = ToolTip.Header(object, {
+			shadow = true,
+			color = Color(1, 1, 1)
+		})
 	end
 
 	if type(description) == "string" then
-		description = { ToolTip.Text(description) }
+		description = {
+			ToolTip.Text(description, {
+				shadow = true,
+				color = Color(1, 1, 1)
+			})
+		}
 	end
 
 	local toolTip = self.renderManager:setToolTip(
@@ -1301,9 +1310,11 @@ function UIView:examine(a, b)
 
 	if not _MOBILE then
 		toolTip:setStyle(PanelStyle({
-			image = "Resources/Renderers/Widget/Panel/Examine.9.png"
+			image = "Resources/Game/UI/Panels/ToolTip.png"
 		}, self.resources))
 	end
+
+	return toolTip
 end
 
 function UIView:probe(actions, x, y, centerX, centerY)

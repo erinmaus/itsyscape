@@ -17,6 +17,33 @@ local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.World.Map"
 
 local Probe = Class()
+
+Probe.Item = Class()
+
+function Probe.Item:new(item)
+	self.item = item
+end
+
+function Probe.Item:getID()
+	return self.item.item.id
+end
+
+function Probe.Item:getCount()
+	return self.item.item.count
+end
+
+function Probe.Item:getIsNoted()
+	return self.item.item.noted
+end
+
+function Probe.Item:getTile()
+	return self.item.tile.i, self.item.tile.j, self.item.tile.layer
+end
+
+function Probe.Item:getPosition()
+	return self.item.position
+end
+
 Probe.TESTS = {
 	["walk"] = true,
 	["loot"] = true,
@@ -280,44 +307,55 @@ function Probe:_loot(item, i, j, k, position)
 	local name, description
 	do
 		-- TODO: [LANG]
-		name = Utility.Item.getName(item.id, self.gameDB, "en-US")
+		name = Utility.Item.getName(item.item.id, self.gameDB, "en-US")
 		if not name then
-			name = "*" .. item.id
+			name = "*" .. item.item.id
 		end
 
-		description = Utility.Item.getDescription(item.id, self.gameDB, "en-US")
+		description = Utility.Item.getDescription(item.item.id, self.gameDB, "en-US")
 		if not description then
 			description = "Pick up item from the ground."
 		end
 	end
 
 	local object
-	if item.count > 1 then
-		if item.noted then
+	if item.item.count > 1 then
+		if item.item.noted then
 			object = string.format(
 				"%s (%s, noted)",
 				name,
-				Utility.Item.getItemCountShorthand(item.count))
+				Utility.Item.getItemCountShorthand(item.item.count))
 		else
 			object = string.format(
 				"%s (%s)",
 				name,
-				Utility.Item.getItemCountShorthand(item.count))
+				Utility.Item.getItemCountShorthand(item.item.count))
 		end
 	else
 		object = name
 	end
 
-	local action = self:addAction(
+	self:addAction(
 		-1,
 		"Take",
 		"take",
-		item.ref,
+		item.item.ref,
 		"item",
 		object,
 		description,
 		-position.z,
 		self._take, self, i, j, k, item)
+
+	self:addAction(
+		-1,
+		"Take",
+		"take",
+		item.item.ref,
+		"item",
+		object,
+		description,
+		-position.z,
+		self.onExamine, object, description, Probe.Item(item))
 
 	self.probes["loot"] = (self.probes["loot"] or 0) + 1
 end
@@ -338,7 +376,7 @@ function Probe:loot()
 		end
 
 		if s then
-			self:_loot(item.item, item.tile.i, item.tile.j, item.tile.layer, item.position)
+			self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, item.position)
 		end
 	end
 
@@ -435,7 +473,7 @@ function Probe:actors()
 				actor:getName(),
 				actor:getDescription(),
 				-p.z + (((#actions + 1) / #actions) / 100),
-				self.onExamine, actor:getName(), actor:getDescription())
+				self.onExamine, actor:getName(), actor:getDescription(), actor)
 		end
 	end
 
@@ -513,7 +551,7 @@ function Probe:props()
 				prop:getName(),
 				prop:getDescription(),
 				-p.z + (((#actions + 1) / #actions) / 100),
-				self.onExamine, prop:getName(), prop:getDescription())
+				self.onExamine, prop:getName(), prop:getDescription(), prop)
 			action.objectID = prop:getID()
 		end
 	end

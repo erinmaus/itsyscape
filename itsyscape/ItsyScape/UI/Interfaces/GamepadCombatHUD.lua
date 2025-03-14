@@ -18,6 +18,7 @@ local Icon = require "ItsyScape.UI.Icon"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local RichTextLabelStyle = require "ItsyScape.UI.RichTextLabelStyle"
@@ -170,6 +171,8 @@ function GamepadCombatHUD:new(...)
 	self.thingiesProperties = {}
 
 	BaseCombatHUD.new(self, ...)
+
+	self:setData(GamepadSink, GamepadSink({ isBlocking = false }))
 
 	self:_initCommon()
 end

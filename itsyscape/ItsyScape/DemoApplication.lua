@@ -30,6 +30,8 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
+local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local GyroButtons = require "ItsyScape.UI.GyroButtons"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
@@ -77,32 +79,6 @@ DemoApplication.SHIMMER_CURRENT_OBJECT_LABEL_STYLE = function(color)
 	}
 end
 
-DemoApplication.ItemProxy = Class()
-
-function DemoApplication.ItemProxy:new(item)
-	self.item = item
-end
-
-function DemoApplication.ItemProxy:getID()
-	return self.item.item.id
-end
-
-function DemoApplication.ItemProxy:getCount()
-	return self.item.item.count
-end
-
-function DemoApplication.ItemProxy:getIsNoted()
-	return self.item.item.noted
-end
-
-function DemoApplication.ItemProxy:getTile()
-	return self.item.tile.i, self.item.tile.j, self.item.tile.layer
-end
-
-function DemoApplication.ItemProxy:getPosition()
-	return self.item.position
-end
-
 function DemoApplication:new()
 	Application.new(self, true)
 
@@ -114,6 +90,8 @@ function DemoApplication:new()
 	self.pendingObjectType = false
 	self.shimmerLabel = Label()
 	self.shimmerLabel:setZDepth(-1000)
+	self.shimmerToolTip = GamepadToolTip()
+	self.shimmerToolTip:setZDepth(-900)
 
 	self._sortShimmerObjects = function(a, b)
 		if a.type ~= b.type then
@@ -820,7 +798,6 @@ function DemoApplication:toggleUI(hud)
 		if interfaceID ~= hud then
 			local interface = self:getUIView():getInterface(interfaceID)
 			if interface and interface:getIsShowing() then
-				print("HIDE", interfaceID)
 				interface:toggle()
 			end
 		end
@@ -828,12 +805,13 @@ function DemoApplication:toggleUI(hud)
 
 	local interface = self:getUIView():getInterface(hud)
 	if interface then
-		print("SHOW", hud)
 		interface:toggle()
 	end
 end
 
 function DemoApplication:gamepadRelease(joystick, button)
+	local inputProvider = self:getUIView():getInputProvider()
+	local focusedWidget = inputProvider:getFocusedWidget()
 	Application.gamepadRelease(self, joystick, button)
 
 	local inputProvider = self:getUIView():getInputProvider()
@@ -845,7 +823,7 @@ function DemoApplication:gamepadRelease(joystick, button)
 	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
 	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
 
-	if not inputProvider:getFocusedWidget() then
+	if not focusedWidget then
 		if button == cycleTargetButton then
 			self:nextShimmer()
 		elseif button == gamepadProbe then
@@ -1598,8 +1576,9 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 		local propView = gameView:getProp(object)
 		if propView then
 			local position = Vector.ZERO:transform(propView:getRoot():getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta()))
-			local halfSize = (max - min) / 2
-			min, max = position - halfSize, position + halfSize
+			local size = max - min
+			local halfSize = size / 2
+			min, max = position, position + Vector(halfSize.x, size.y, halfSize.z)
 		end
 	elseif Class.isCompatibleType(object, Actor) then
 		local i, j, k = object:getTile()
@@ -1608,13 +1587,15 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 
 		local actorView = gameView:getActor(object)
 		if actorView then
-			local position = Vector.ZERO:transform(actorView:getSceneNode():getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta()))			local halfSize = (max - min) / 2
-			min, max = position - halfSize, position + halfSize
+			local position = Vector.ZERO:transform(actorView:getSceneNode():getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta()))
+			local size = max - min
+			local halfSize = size / 2
+			min, max = position, position + Vector(halfSize.x, size.y, halfSize.z)
 		end
 	elseif Class.isCompatibleType(object, Vector) then
 		min = object
 		max = object
-	elseif Class.isCompatibleType(object, DemoApplication.ItemProxy) then
+	elseif Class.isCompatibleType(object, Probe.Item) then
 		local i, j, k = object:getTile()
 		layer = k
 		min = object:getPosition() - Vector(0.25, 0, 0.25)
@@ -1642,7 +1623,7 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 
 	padding = padding or 0
 	local x = uiBottom.x + (uiTop.x - uiBottom.x) / 2
-	local y = (uiTop.y - padding) + (uiTop.y - uiBottom.y + padding * 2) * y - padding
+	local y = math.lerp(uiBottom.y + padding, uiTop.y - padding, y)
 
 	return itsyrealm.graphics.getScaledPoint(x, y)
 end
@@ -1668,11 +1649,22 @@ function DemoApplication:_getShimmerNodeObject(shimmeringObject)
 			return nil, nil
 		end
 
-		object = DemoApplication.ItemProxy(item)
+		object = Probe.Item(item)
 		node = gameView:getItem(shimmeringObject.objectID)
 	end
 
 	return node, object
+end
+
+function DemoApplication:layoutShimmerExamine(x, y, toolTip)
+	local toolTipWidth, toolTipHeight = toolTip:getSize()
+	toolTip:setPosition(x - toolTipWidth / 2, y - toolTipHeight / 2)
+end
+
+function DemoApplication:examineShimmer(name, description, object)
+	local toolTip = self:getUIView():examine(name, description)
+	local x, y = self:_getObjectUIPosition(object, 0.5)
+	toolTip.onLayout:register(self.layoutShimmerExamine, self, x, y)
 end
 
 function DemoApplication:updatePositionProbe()
@@ -1690,6 +1682,7 @@ function DemoApplication:updatePositionProbe()
 	local direction = self.currentPlayerDirection
 
 	local probe = Probe(self:getGame(), gameView, self:getGameDB())
+	probe.onExamine:register(self.examineShimmer, self)
 	probe:init(Ray(position - direction * 1.5, direction))
 	probe:setCone(4.5, 3)
 	probe:setTile(i, j, layer)
@@ -1831,27 +1824,34 @@ local function _sortActions(a, b)
 	return a.depth < b.depth
 end
 
-function DemoApplication:probeCurrentShimmer(performDefault)
+function DemoApplication:getShimmerActions(shimmeringObject)
 	local actions = {}
+
+	for _, action in pairs(shimmeringObject.actions) do
+		table.insert(actions, action)
+	end
+
+	table.sort(actions, _sortActions)
+
+	return actions
+end
+
+function DemoApplication:probeCurrentShimmer(performDefault)
+	local actions
 
 	local node, object
 	for i, shimmeringObject in ipairs(self.shimmeringObjects) do
 		if self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType then
-			for _, action in pairs(shimmeringObject.actions) do
-				table.insert(actions, action)
-			end
-
+			actions = self:getShimmerActions(shimmeringObject)
 			node, object = self:_getShimmerNodeObject(shimmeringObject)
 		end
 	end
 
-	if not (node and object) then
+	if not (node and object and actions) then
 		return
 	end
 
 	local x, y = self:_getObjectUIPosition(object, 0)
-
-	table.sort(actions, _sortActions)
 	if performDefault then
 		self:probeActions(actions, performDefault)
 	else
@@ -1920,11 +1920,21 @@ function DemoApplication:updateNearbyShimmer(delta)
 				self.shimmerLabel:setText(shimmeringObject.object)
 				local width = self.shimmerLabel:getStyle().font:getWidth(shimmeringObject.object)
 
-				local x, y = self:_getObjectUIPosition(object, 1, self.shimmerLabel:getStyle().font:getHeight())
-				self.shimmerLabel:setPosition(x - width / 2, y)
+				local labelX, labelY = self:_getObjectUIPosition(object, 1, self.shimmerLabel:getStyle().font:getHeight())
+				self.shimmerLabel:setPosition(labelX - width / 2, labelY)
 				self.shimmerLabel:setSize(
 					self.shimmerLabel:getStyle().font:getWidth(shimmeringObject.object),
 					self.shimmerLabel:getStyle().font:getHeight())
+
+				local action = self:getShimmerActions(shimmeringObject)[1]
+				if action then
+					local toolTipX, toolTipY = self:_getObjectUIPosition(object, 0)
+					self.shimmerToolTip:setPosition(toolTipX, toolTipY)
+					self.shimmerToolTip:setText(action.verb)
+					self:getUIView():getRoot():addChild(self.shimmerToolTip)
+				else
+					self:getUIView():getRoot():removeChild(self.shimmerToolTip)
+				end
 
 				self:getUIView():getRoot():addChild(self.shimmerLabel)
 
@@ -1958,7 +1968,21 @@ function DemoApplication:updateNearbyShimmer(delta)
 
 	if not hasActive then
 		self:getUIView():getRoot():removeChild(self.shimmerLabel)
+		self:getUIView():getRoot():removeChild(self.shimmerToolTip)
 	end
+end
+
+function DemoApplication:isInterfaceBlockingGamepadMovement()
+	local inputProvider = self:getUIView():getInputProvider()
+	local focusedWidget = inputProvider:getFocusedWidget()
+
+	if not focusedWidget then
+		return false
+	end
+
+	local interfaceParent = focusedWidget:getParentOfType(Interface)
+	local gamepadSink = interfaceParent and interfaceParent:getData(GamepadSink)
+	return gamepadSink and gamepadSink:getIsBlocking()
 end
 
 function DemoApplication:updatePlayerMovement()
@@ -2008,7 +2032,7 @@ function DemoApplication:updatePlayerMovement()
 
 		local inputProvider = self:getUIView():getInputProvider()
 		local currentJoystick = inputProvider:getCurrentJoystick()
-		if currentJoystick then
+		if currentJoystick and not self:isInterfaceBlockingGamepadMovement() then
 			local xAxis = inputProvider:getGamepadAxis(currentJoystick, xAxisKeybind)
 			local yAxis = inputProvider:getGamepadAxis(currentJoystick, yAxisKeybind)
 

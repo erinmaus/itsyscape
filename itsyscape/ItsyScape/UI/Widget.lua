@@ -155,6 +155,17 @@ function Widget:getData(key)
 	return self.data[key]
 end
 
+function Widget:getParentData(key)
+	local current = self
+	local data
+	repeat
+		data = current:getData(key)
+		current = current:getParent()
+	until data ~= nil or current == nil
+
+	return data
+end
+
 function Widget:deserialize(t)
 	t = t or {}
 
@@ -332,6 +343,15 @@ function Widget:isSiblingOf(widget)
 	end
 
 	return false
+end
+
+function Widget:getParentOfType(Type)
+	local parent = self.parent
+	while parent and not Class.isCompatibleType(parent, Type) do
+		parent = parent.parent
+	end
+
+	return parent
 end
 
 function Widget:getParent()

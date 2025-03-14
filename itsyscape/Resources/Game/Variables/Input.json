@@ -17,11 +17,16 @@
 		"ui": {
 			"xAxis": "rightx",
 			"yAxis": "righty",
+			"alternateXAxis": "leftx",
+			"alternateYAxis": "lefty",
+
 			"axisSensitivity": 0.6,
 			"radialDrag": 1,
 
 			"gamepadOpenCombatRing": "rightshoulder",
 			"gamepadOpenRibbon": "start",
+			"gamepadNext": "rightshoulder",
+			"gamepadPrevious": "leftshoulder",
 			"gamepadPrimaryAction": "a",
 			"gamepadSecondaryAction": "y",
 			"gamepadTertiaryAction": "x",

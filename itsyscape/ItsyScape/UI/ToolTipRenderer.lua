@@ -97,6 +97,12 @@ function ToolTipRenderer:draw(widget, state)
 	width = width + self.padding * 2
 	height = height + self.padding * 2
 
+	local currentWidth, currentHeight = widget:getSize()
+	if currentWidth == 0 and currentHeight == 0 then
+		widget:setSize(width, height)
+		widget:onLayout()
+	end
+
 	local screenWidth, screenHeight, scale = love.graphics.getScaledMode()
 	local sx, sy = itsyrealm.graphics.transformPoint(ToolTipRenderer.OFFSET_X, ToolTipRenderer.OFFSET_Y)
 	sx = sx / scale
