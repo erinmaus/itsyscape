@@ -33,14 +33,6 @@ function Fire:new(prop, gameView)
 	self.flickerTime = 0
 end
 
-function Fire:getTextureFilename()
-	return Class.ABSTRACT()
-end
-
-function Fire:getResourcePath(resource)
-	return string.format("Resources/Game/Props/Common/Fire/%s", resource)
-end
-
 function Fire:_updateDirection(direction, speed)
 	local position, layer = self.prop:getPosition()
 	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
@@ -284,6 +276,10 @@ function Fire:load()
 		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
 		self.innerFlames:setParent(root)
 
+		self.smoke = ParticleSceneNode()
+		self.smoke:initParticleSystemFromDef(self:_getSmokeParticleDefinition(), resources)
+		self.smoke:setParent(root)
+
 		self.light = PointLightSceneNode()
 		self.light:getTransform():setLocalTranslation(Vector(0, 0.5, 0.5))
 		self.light:setParent(root)
@@ -337,6 +333,10 @@ function Fire:update(delta)
 
 		if self.innerFlames then
 			self.innerFlames:initEmittersFromDef(self:_getInnerParticleDefinition().emitters)
+		end
+
+		if self.smoke then
+			self.smoke:initEmittersFromDef(self:_getSmokeParticleDefinition().emitters)
 		end
 	end
 end
