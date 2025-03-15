@@ -119,6 +119,10 @@ function GamepadToolTip:performLayout()
 		color = { 1, 1, 1, 1 },
 		textShadow = true
 	}, LabelStyle)
+	if not self.label:updateStyle() then
+		self:setSize(0, 0)
+		return
+	end
 
 	local style = self:getStyle()
 	if not style then

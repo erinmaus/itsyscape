@@ -1600,13 +1600,13 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 		layer = k
 		min = object:getPosition() - Vector(0.25, 0, 0.25)
 		max = object:getPosition() + Vector(0.25, 1, 0.25)
-	end
 
-	if layer then
-		local node = gameView:getMapSceneNode(layer)
-		local transform = node and node:getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta())
-		if transform then
-			min, max = Vector.transformBounds(min, max, transform)
+		if layer then
+			local node = gameView:getMapSceneNode(layer)
+			local transform = node and node:getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta())
+			if transform then
+				min, max = Vector.transformBounds(min, max, transform)
+			end
 		end
 	end
 

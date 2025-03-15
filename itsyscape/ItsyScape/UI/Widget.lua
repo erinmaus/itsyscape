@@ -493,7 +493,7 @@ function Widget:performLayout()
 	-- Nothing.
 end
 
-function Widget:getStyle()
+function Widget:updateStyle()
 	if not Class.isCompatibleType(self.style, WidgetStyle) and self.styleType then
 		local resourceManager = self:getResourceManager()
 		if not resourceManager then
@@ -504,9 +504,19 @@ function Widget:getStyle()
 		self.styleType = nil
 
 		self:onStyleChange(self.style)
+
+		return true
 	end
 
-	return self.style
+	return not not self.style
+end
+
+function Widget:getStyle()
+	if self:updateStyle() then
+		return self.style
+	end
+
+	return false
 end
 
 function Widget:setStyle(style, styleType)
