@@ -30,8 +30,10 @@ GamepadToolTip.CONTROLLERS = {
 function GamepadToolTip:new()
 	Panel.new(self)
 
+	self.buttonSize = self.BUTTON_SIZE
+	self.maxWidth = self.MAX_WIDTH
+
 	self.gamepadIcon = GamepadIcon()
-	self.gamepadIcon:setSize(self.BUTTON_SIZE, self.BUTTON_SIZE)
 	self.gamepadIcon:setPosition(self.PADDING, self.PADDING)
 	self.gamepadIcon:setButtonID("a")
 	self.gamepadIcon:setButtonAction("color")
@@ -45,7 +47,7 @@ function GamepadToolTip:new()
 		color = { 1, 1, 1, 1 },
 		textShadow = true
 	}, LabelStyle)
-	self.label:setPosition(self.BUTTON_SIZE + self.PADDING * 2, self.PADDING)
+	self.label:setPosition(self.buttonSize + self.PADDING * 2, self.PADDING)
 	self:addChild(self.label)
 
 	self.onStyleChange:register(self.performLayout, self)
@@ -56,6 +58,15 @@ function GamepadToolTip:new()
 	}, PanelStyle)
 
 	self.keybind = false
+end
+
+function GamepadToolTip:setRowSize(width, height)
+	self.maxWidth = width
+	self.buttonSize = height
+end
+
+function GamepadToolTip:getRowSize()
+	return self.maxWidth, self.buttonSize
 end
 
 function GamepadToolTip:setKeybind(keybind)
@@ -99,6 +110,16 @@ end
 function GamepadToolTip:performLayout()
 	Panel.performLayout(self)
 
+	self.gamepadIcon:setSize(self.buttonSize, self.buttonSize)
+	self.label:setPosition(self.buttonSize + self.PADDING * 2)
+
+	self.label:setStyle({
+		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
+		fontSize = self.buttonSize - self.PADDING * 2,
+		color = { 1, 1, 1, 1 },
+		textShadow = true
+	}, LabelStyle)
+
 	local style = self:getStyle()
 	if not style then
 		self:setSize(0, 0)
@@ -110,13 +131,13 @@ function GamepadToolTip:performLayout()
 	local text = self:getText()
 	local width, lines = labelStyle.font:getWrap(
 		text,
-		self.MAX_WIDTH - GamepadToolTip.BUTTON_SIZE - GamepadToolTip.PADDING * 4)
+		self.maxWidth - self.buttonSize - self.PADDING * 4)
 
 	local height = #lines * labelStyle.font:getHeight()
 
 	self.label:setSize(width, height)
 	self:setSize(
-		math.min(width + GamepadToolTip.BUTTON_SIZE + GamepadToolTip.PADDING * 4, self.MAX_WIDTH),
+		math.min(width + self.buttonSize + self.PADDING * 4, self.maxWidth),
 		math.max(height + self.PADDING * 2, self.BUTTON_SIZE + self.PADDING * 2))
 end
 

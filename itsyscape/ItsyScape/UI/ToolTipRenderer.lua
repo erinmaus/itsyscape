@@ -101,6 +101,7 @@ function ToolTipRenderer:draw(widget, state)
 	if currentWidth == 0 and currentHeight == 0 then
 		widget:setSize(width, height)
 		widget:onLayout()
+		return
 	end
 
 	local screenWidth, screenHeight, scale = love.graphics.getScaledMode()

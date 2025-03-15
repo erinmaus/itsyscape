@@ -18,6 +18,9 @@ local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Keybinds = require "ItsyScape.UI.Keybinds"
+local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
+local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
@@ -31,6 +34,18 @@ local DialogBox = Class(Interface)
 DialogBox.PADDING = 16
 DialogBox.WIDTH = 960
 DialogBox.HEIGHT = 240
+DialogBox.OPTION_HEIGHT = 48
+
+DialogBox.OPTION_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/Button-Default.png",
+	pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/Button-Hover.png",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 32,
+	textX = 0.5,
+	textY = 0.5,
+	padding = 4
+}
 
 function DialogBox.concatMessage(message)
 	local m = {}
@@ -52,13 +67,27 @@ end
 function DialogBox:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
+	self:setData(GamepadSink, GamepadSink({ isBlocking = true }))
+
 	local w, h = love.graphics.getScaledMode()
 	self:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
 	self:setPosition(w / 2 - DialogBox.WIDTH / 2, h - DialogBox.HEIGHT)
 
-	local panel = Panel()
-	panel:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
-	self:addChild(panel)
+	self.panel = Panel()
+	self.panel:setStyle({
+	image = "Resources/Game/UI/Buttons/Dialog-Default.png"
+	}, PanelStyle)
+	self.panel:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
+	self:addChild(self.panel)
+
+	self.dialogButton = Button()
+	self.dialogButton:setStyle({
+		hover = "Resources/Game/UI/Buttons/Dialog-Default.png",
+		pressed = "Resources/Game/UI/Buttons/Dialog-Pressed.png",
+		inactive = "Resources/Game/UI/Buttons/Dialog-Default.png"
+	}, ButtonStyle)
+	self.dialogButton:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
+	self.dialogButton.onClick:register(DialogBox._onClickDialogButton, self)
 
 	self.speakerLabel = Label()
 	self.speakerLabel:setText("Unknown")
@@ -86,32 +115,33 @@ function DialogBox:new(id, index, ui)
 	self.messageLabel:setSize(
 		DialogBox.WIDTH - DialogBox.PADDING * 3 - DialogBox.HEIGHT,
 		DialogBox.HEIGHT - DialogBox.PADDING * 2 - 24)
-	panel:addChild(self.messageLabel)
+	self.messageLabel:setIsClickThrough(true)
+	self.dialogButton:addChild(self.messageLabel)
 
-	local clickToContinue = Label()
-	clickToContinue:setText("Click to continue")
-	clickToContinue:setStyle(LabelStyle({
+	self.clickToContinue = Label()
+	self.clickToContinue:setText("Click to continue")
+	self.clickToContinue:setStyle({
 		align = 'center',
 		textShadow = true,
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 		fontSize = _MOBILE and 28 or 24
-	}, self:getView():getResources()))
-	clickToContinue:setPosition(
-		0,
+	}, LabelStyle)
+	self.clickToContinue:setPosition(
+		self.messageLabel:getPosition(),
 		DialogBox.HEIGHT - 24 - DialogBox.PADDING * 2)
-	self.messageLabel:addChild(clickToContinue)
+	self.clickToContinue:setIsClickThrough(true)
+
+	self.pressToContinue = GamepadToolTip()
+	self.pressToContinue:setHasBackground(false)
+	self.pressToContinue:setText("Continue")
+	self.pressToContinue:setPosition(
+		DialogBox.WIDTH / 2 - GamepadToolTip.MAX_WIDTH / 2,
+		DialogBox.HEIGHT - GamepadToolTip.BUTTON_SIZE - DialogBox.PADDING)
+	self.pressToContinue:setIsClickThrough(true)
 
 	self.inputBox = TextInput()
 	self.inputBox:setSize(DialogBox.WIDTH - DialogBox.PADDING * 2, 32)
 	self.inputBox:setPosition(DialogBox.PADDING, DialogBox.HEIGHT / 2 - 16)
-
-	self.nextButton = Button()
-	self.nextButton:setStyle(ButtonStyle({
-		hover = Color(0, 0, 0, 0.05),
-		pressed = Color(0, 0, 0, 0.1)
-	}, self:getView():getResources()))
-	self.nextButton:setSize(w, DialogBox.HEIGHT)
-	self.nextButton.onClick:register(DialogBox.pump, self)
 
 	self.speakerIconBackground = Panel()
 	self.speakerIconBackground:setStyle(PanelStyle({
@@ -123,7 +153,7 @@ function DialogBox:new(id, index, ui)
 	self.speakerIconBackground:setPosition(
 		DialogBox.PADDING,
 		DialogBox.PADDING)
-	self:addChild(self.speakerIconBackground)
+	self.dialogButton:addChild(self.speakerIconBackground)
 
 	self.speakerIcon = SceneSnippet()
 	self.speakerIcon:setSize(
@@ -134,7 +164,7 @@ function DialogBox:new(id, index, ui)
 		DialogBox.PADDING)
 	self.speakerIcon:setParentNode(SceneNode())
 	self.speakerIcon:setRoot(self.speakerIcon:getParentNode())
-	self:addChild(self.speakerIcon)
+	self.dialogButton:addChild(self.speakerIcon)
 
 	self.options = {}
 
@@ -153,6 +183,12 @@ function DialogBox:getOverflow()
 	return true
 end
 
+function DialogBox:_onClickDialogButton(_, buttonIndex)
+	if buttonIndex == 1 then
+		self:pump()
+	end
+end
+
 function DialogBox:pump()
 	local state = self:getState()
 
@@ -163,6 +199,12 @@ function DialogBox:pump()
 	end
 end
 
+function DialogBox:_onClickOptionButton(index, _, buttonIndex)
+	if buttonIndex == 1 then
+		self:select(index)
+	end
+end
+
 function DialogBox:select(index)
 	self:sendPoke("select", nil, { index = index })
 end
@@ -170,18 +212,32 @@ end
 function DialogBox:next(state)
 	state = state or self:getState()
 
-	for i = 1, #self.options do
-		self:removeChild(self.options[i])
-	end
-	self.options = {}
+	self:removeChild(self.gridLayout)
+	self.gridLayout = nil
 
 	if state.content then
 		self.messageLabel:setText(DialogBox.concatMessage(state.content))
 
-		self:addChild(self.messageLabel)
-		self:addChild(self.nextButton)
-		self:addChild(self.speakerIcon)
-		self:addChild(self.speakerIconBackground)
+		self:addChild(self.dialogButton)
+
+		local inputProvider = self:getInputProvider()
+		if inputProvider and inputProvider:getCurrentJoystick() then
+			self:removeChild(self.clickToContinue)
+			self:addChild(self.pressToContinue)
+
+			self.pressToContinue:update(0)
+			local x = self.messageLabel:getPosition()
+			local labelWidth, labelHeight = self.messageLabel:getSize()
+			local toolTipWidth, toolTipHeight = self.pressToContinue:getSize()
+			self.pressToContinue:setPosition(
+				x + labelWidth / 2 - toolTipWidth / 2,
+				self.HEIGHT - toolTipHeight - self.PADDING)
+		else
+			self:removeChild(self.pressToContinue)
+			self:addChild(self.clickToContinue)
+		end
+
+		self:focusChild(self.dialogButton)
 	elseif state.input then
 		self.messageLabel:setText(DialogBox.concatMessage(state.content))
 
@@ -191,32 +247,39 @@ function DialogBox:next(state)
 		self:addChild(self.inputBox)
 		self:addChild(self.nextButton)
 	elseif state.options then
-		self:removeChild(self.messageLabel)
 		self.messageLabel:setText("")
+		self:removeChild(self.dialogButton)
 		self:removeChild(self.inputBox)
-		local y = DialogBox.PADDING
+		self:removeChild(self.clickToContinue)
+		self:removeChild(self.pressToContinue)
+
 		local w, h = self:getSize()
+		local gridLayout = GamepadGridLayout()
+		gridLayout:setSize(w - self.PADDING * 2, 0)
+		gridLayout:setPosition(self.PADDING, 0)
+		gridLayout:setPadding(0, self.PADDING)
+		gridLayout:setUniformSize(true, w - self.PADDING * 2, self.OPTION_HEIGHT)
+		gridLayout:setWrapContents(true)
+
 		for i = 1, #state.options do
 			local option = Button()
+			option:setStyle(DialogBox.OPTION_BUTTON_STYLE, ButtonStyle)
 			option:setText(DialogBox.concatMessage({ state.options[i] }))
-			option:setSize(w - DialogBox.PADDING * 2, 32)
-			option:setPosition(DialogBox.PADDING, y)
-			option.onClick:register(DialogBox.select, self, i)
-			self:addChild(option)
-
-			y = y + DialogBox.PADDING + 32
-
-			table.insert(self.options, option)
+			option.onClick:register(DialogBox._onClickOptionButton, self, i)
+			gridLayout:addChild(option)
 		end
 
-		self:removeChild(self.nextButton)
+		self:addChild(gridLayout)
+		self:focusChild(gridLayout, "select")
+
+		self.gridLayout = gridLayout
 	end
 
 	if not state.content then
 		self:removeChild(self.speakerIcon)
 		self:removeChild(self.speakerIconBackground)
 	elseif not state.input then
-		self.removeChild(self.inputBox)
+		self:removeChild(self.inputBox)
 	end
 
 	if state.options then

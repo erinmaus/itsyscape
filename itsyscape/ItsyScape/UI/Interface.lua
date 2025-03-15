@@ -75,7 +75,7 @@ end
 
 function Interface:focusChild(widget, reason)
 	local inputProvider = self:getView():getInputProvider()
-	inputProvider:setFocusedWidget(widget, reason)
+	inputProvider:setFocusedWidget(widget, reason or "select")
 end
 
 -- Utility to poke the correct Interface via the UI model.
