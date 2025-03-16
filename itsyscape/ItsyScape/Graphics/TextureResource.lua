@@ -174,7 +174,7 @@ function TextureResource:loadFromFile(filename, resourceManager)
 			perPassImage:setWrap("repeat")
 
 			if passID == RendererPass.PASS_OUTLINE then
-				--perPassImage = self:_generateOutlineImage(perPassImage)
+				perPassImage = self:_generateOutlineImage(perPassImage)
 			end
 
 			self:getHandle():setPerPassTexture(passID, perPassImage)

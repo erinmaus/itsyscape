@@ -15,17 +15,12 @@ local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
 
 local NewGame = Class(MapScript)
-NewGame.SISTINE_LOCATION = Vector(-64, -16, -64)
 
 function NewGame:onLoad(...)
 	MapScript.onLoad(self, ...)
 
+	self:addBehavior(DisabledBehavior)
 	self:silence("playerEnter", MapScript.showPlayerMapInfo)
-
-	-- Utility.Map.spawnMap(
-	-- 	self,
-	-- 	"IsabelleIsland_FoggyForest2",
-	-- 	NewGame.SISTINE_LOCATION)
 end
 
 function NewGame:onPlayerEnter(player)

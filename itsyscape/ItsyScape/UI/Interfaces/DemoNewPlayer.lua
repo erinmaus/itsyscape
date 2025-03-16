@@ -20,6 +20,8 @@ local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
+local Label = require "ItsyScape.UI.Label"
+local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
@@ -41,17 +43,48 @@ DemoNewPlayer.BUTTON_STYLE = {
 	inactive = "Resources/Game/UI/Buttons/Dialog-Default.png"
 }
 
+DemoNewPlayer.TITLE_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+	fontSize = 48,
+	color = { 1, 1, 1, 1 },
+	textShadow = true,
+	align = "center"
+}
+
+DemoNewPlayer.SUMMARY_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/Serif/Regular.ttf",
+	fontSize = 32,
+	color = { 1, 1, 1, 1 },
+	textShadow = true,
+	align = "center"
+}
+
 function DemoNewPlayer:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	local width, height = itsyrealm.graphics.getScaledMode()
 	self:setSize(width, height)
 
+	local titleLabel = Label()
+	titleLabel:setText("Choose your class")
+	titleLabel:setStyle(self.TITLE_LABEL_STYLE, LabelStyle)
+	titleLabel:setPosition(0, self.PADDING)
+	self:addChild(titleLabel)
+
+	local descriptionLabel = Label()
+	descriptionLabel:setText("You can change your class at any point in the future.\n(You can even change your class in the middle of a fight!)")
+	descriptionLabel:setStyle(self.SUMMARY_LABEL_STYLE, LabelStyle)
+	descriptionLabel:setPosition(0, self.PADDING * 2 + self.TITLE_LABEL_STYLE.fontSize * 2)
+	self:addChild(descriptionLabel)
+
 	self.layout = GamepadGridLayout()
 	self.layout:setSize(width, DemoNewPlayer.BUTTON_HEIGHT)
 	self.layout:setUniformSize(true, self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
 	self.layout:setPadding(self.PADDING, 0)
 	self:addChild(self.layout)
+
+	self.toolTip = GamepadToolTip()
+	self.toolTip:setSize(self.BUTTON_WIDTH, GamepadToolTip.BUTTON_SIZE)
 
 	self.currentFocusIndex = 1
 
@@ -77,6 +110,24 @@ function DemoNewPlayer:_onFocusPlayer(index)
 			attack = { priority = 10, animation = class.info.animations.attack }
 		}
 	})
+
+	self:addChild(self.toolTip)
+
+	local name = class.playerStorage:getRoot():getSection("Player"):getSection("Info"):get("name")
+	if name then
+		self.toolTip:setText(string.format("Choose %s", name))
+	else
+		self.toolTip:setText("Choose")
+	end
+	self.toolTip:update(0)
+
+	local toolTipWidth, toolTipHeight = self.toolTip:getSize()
+	local buttonX, buttonY = class.button:getAbsolutePosition()
+	local buttonWidth, buttonHeight = class.button:getSize()
+
+	self.toolTip:setPosition(
+		(buttonX + buttonWidth / 2) - toolTipWidth / 2,
+		buttonY + buttonHeight + self.PADDING)
 
 	class.pendingAnimationTime = self.MAX_ANIMATION_TIME
 end
@@ -158,7 +209,7 @@ function DemoNewPlayer:addClass(playerStorage, otherStorage, info)
 	local width, height = self:getSize()
 	self.layout:setPosition(
 		width / 2 - (self.layout:getNumChildren() * (self.PADDING + self.BUTTON_WIDTH) + self.PADDING) / 2,
-		height / 2 - self.BUTTON_HEIGHT / 2)
+		height / 2 + height / 8 - self.BUTTON_HEIGHT / 2)
 
 	self:focusChild(self.layout)
 end
@@ -183,7 +234,7 @@ function DemoNewPlayer:updateClass(class, delta)
 end
 
 function DemoNewPlayer:update(delta)
-	Interface.update(self, self.delta)
+	Interface.update(self, delta)
 
 	for _, class in ipairs(self.classes) do
 		self:updateClass(class, delta)

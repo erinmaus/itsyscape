@@ -798,6 +798,7 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled, pa
 		parentNode = parentNode or self.scene
 
 		if disabled and node:getParent() then
+			parentNode = nil
 			node:setParent(nil)
 		elseif not disabled and not node:getParent() and not self.skyboxes[node] then
 			node:setParent(parentNode)
