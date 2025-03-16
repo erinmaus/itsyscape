@@ -30,6 +30,7 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local GyroButtons = require "ItsyScape.UI.GyroButtons"
@@ -441,18 +442,7 @@ function DemoApplication:_newDemoPlayer(_, buttonIndex)
 		return
 	end
 
-	local filename
-	do
-		local index = 1
-		while true do
-			filename = string.format("Player/Demo%d.dat", index)
-			if not love.filesystem.getInfo(filename) then
-				break
-			end
-
-			index = index + 1
-		end
-	end
+	local filename = "Player/Demo.dat"
 
 	local storage = PlayerStorage()
 	storage:getRoot():set("filename", filename)
@@ -465,6 +455,35 @@ function DemoApplication:_newDemoPlayer(_, buttonIndex)
 	self:closeTitleScreen()
 end
 
+function DemoApplication:_loadDemoPlayer()
+	if buttonIndex ~= 1 then
+		return
+	end
+
+	local filename = "Player/Demo.dat"
+	local data = love.filesystem.read(filename)
+
+	local storage = PlayerStorage()
+	storage:deserialize(data)
+
+	self:setPlayerFilename(filename)
+
+	local player = self:getGame():getPlayer()
+	player:spawn(storage, not not data)
+
+	self:closeTitleScreen()
+end
+
+function DemoApplication:_focusDemoButton(button)
+	local child = button:getChildAt(1)
+	child:setButtonID("a")
+end
+
+function DemoApplication:_blurDemoButton(button)
+	local child = button:getChildAt(1)
+	child:setButtonID("none")
+end
+
 function DemoApplication:openDemoMainMenu()
 	local w, h = itsyrealm.graphics.getScaledMode()
 
@@ -473,24 +492,57 @@ function DemoApplication:openDemoMainMenu()
 
 	self.mainMenu = mainMenu
 
+	local gridLayout = GamepadGridLayout()
+	gridLayout:setSize(256, 0)
+	gridLayout:setUniformSize(true, 256, 64)
+	gridLayout:setWrapContents(true)
+	gridLayout:setPadding(0, 8)
+
+	local resumeButton = Button()
+	resumeButton:setSize(256, 64)
+	resumeButton.onClick:register(self._loadDemoPlayer, self)
+	resumeButton.onFocus:register(self._focusDemoButton, self)
+	resumeButton.onBlur:register(self._blurDemoButton, self)
+
+	local resumeText = GamepadToolTip()
+	resumeText:setHasBackground(false)
+	resumeText:setRowSize(256, 48)
+	resumeText:setText("Resume")
+	resumeText:setButtonID("none")
+	resumeButton:addChild(resumeText)
+
 	local playButton = Button()
 	playButton:setSize(256, 64)
-	playButton:setPosition(w / 2 - 64, h - 64 - 32)
 	playButton.onClick:register(self._newDemoPlayer, self)
+	playButton.onFocus:register(self._focusDemoButton, self)
+	playButton.onBlur:register(self._blurDemoButton, self)
 
-	local text = GamepadToolTip()
-	text:setHasBackground(false)
-	text:setRowSize(256, 48)
-	text:setText("Play Demo")
-	playButton:addChild(text)
+	local playText = GamepadToolTip()
+	playText:setHasBackground(false)
+	playText:setRowSize(256, 48)
+	playText:setText("New Game")
+	playText:setButtonID("none")
+	playButton:addChild(playText)
 
-	self.mainMenu:addChild(playButton)
+	if love.filesystem.getInfo("Player/Demo.dat") then
+		gridLayout:addChild(resumeButton)
+	end
+	gridLayout:addChild(playButton)
+
+	self.mainMenu:addChild(gridLayout)
 	self:getUIView():getRoot():addChild(self.mainMenu)
-	self:getUIView():getInputProvider():setFocusedWidget(playButton)
+	self:getUIView():getInputProvider():setFocusedWidget(gridLayout)
 
-	playButton:update(0)
-	local textWidth, textHeight = text:getSize()
-	text:setPosition(128 - textWidth / 2, 32 - textHeight / 2)
+	local gridWidth, gridHeight = gridLayout:getSize()
+	gridLayout:setPosition(w / 2 - gridWidth / 2, h - gridHeight - 32)
+
+	gridLayout:update(0)
+
+	local playTextWidth, playTextHeight = playText:getSize()
+	playText:setPosition(128 - playTextWidth / 2, 32 - playTextHeight / 2)
+
+	local resumeTextWidth, resumeTextHeight = resumeText:getSize()
+	resumeText:setPosition(128 - resumeTextWidth / 2, 32 - resumeTextHeight / 2)
 
 	if self.titleScreen then
 		self.titleScreen:enableLogo()
