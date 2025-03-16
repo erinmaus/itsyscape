@@ -335,6 +335,7 @@ function CharacterCustomizationController:submit(e)
 		})
 	end
 
+	love.filesystem.write("Demo.dat", Log.dump(self:getDirector():getPlayerStorage(peep):serialize()))
 
 	if self.closeCallback then
 		self.closeCallback()

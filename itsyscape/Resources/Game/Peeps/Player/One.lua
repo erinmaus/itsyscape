@@ -159,20 +159,7 @@ function One:assign(director, key, ...)
 
 	local storage = director:getPlayerStorage(self):getRoot()
 	if storage:get("filename") and storage:hasSection("Location") then
-		local name = storage:getSection("Player"):getSection("Info"):get("name")
-		self:setName(name or self:getName())
-
-		local gender = self:getBehavior(GenderBehavior)
-		if storage:getSection("Player"):getSection("Info"):hasSection("Gender") then
-			local g = storage:getSection("Player"):getSection("Info"):getSection("Gender")
-			gender.gender = g:get("gender")
-			gender.description = g:get("description") or "Non-Binary"
-			gender.pronounsPlural = g:get("plural")
-			gender.pronouns[GenderBehavior.PRONOUN_SUBJECT] = g:get("subject")
-			gender.pronouns[GenderBehavior.PRONOUN_OBJECT] = g:get("object")
-			gender.pronouns[GenderBehavior.PRONOUN_POSSESSIVE] = g:get("possessive")
-			gender.pronouns[GenderBehavior.FORMAL_ADDRESS] = g:get("formal")
-		end
+		self:applyGender()
 
 		stats.stats:load(Utility.Peep.getStorage(self))
 
@@ -335,18 +322,13 @@ One.SKINS = {
 	}
 }
 
-function One:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
+local function roll(t)
+	local index = love.math.random(1, #t)
+	return t[index]
+end
 
-	local function roll(t)
-		local index = love.math.random(1, #t)
-		return t[index]
-	end
-
-	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
+function One:applySkins()
+	local director = self:getDirector()
 
 	local SLOTS = {
 		'hair',
@@ -400,6 +382,36 @@ function One:ready(director, game)
 			})
 		end
 	end
+end
+
+function One:applyGender()
+	local director = self:getDirector()
+	local storage = director:getPlayerStorage(self):getRoot()
+
+	local name = storage:getSection("Player"):getSection("Info"):get("name")
+	self:setName(name or self:getName())
+
+	local gender = self:getBehavior(GenderBehavior)
+	if storage:getSection("Player"):getSection("Info"):hasSection("Gender") then
+		local g = storage:getSection("Player"):getSection("Info"):getSection("Gender")
+		gender.gender = g:get("gender")
+		gender.description = g:get("description") or "Non-Binary"
+		gender.pronounsPlural = g:get("plural")
+		gender.pronouns[GenderBehavior.PRONOUN_SUBJECT] = g:get("subject")
+		gender.pronouns[GenderBehavior.PRONOUN_OBJECT] = g:get("object")
+		gender.pronouns[GenderBehavior.PRONOUN_POSSESSIVE] = g:get("possessive")
+		gender.pronouns[GenderBehavior.FORMAL_ADDRESS] = g:get("formal")
+	end
+end
+
+function One:ready(director, game)
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+	end
+
+	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
+	self:applySkins()
 
 	self:getState():addProvider("KeyItem", KeyItemStateProvider(self))
 	self:getState():addProvider("Boss", BossStateProvider(self))

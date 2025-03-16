@@ -154,10 +154,18 @@ function LocalPlayer:spawn(storage, newGame, password)
 			self.isPlayable = not root:hasSection("Location") or not root:getSection("Location"):get("isTitleScreen")
 
 			if newGame then
-				self.stage:movePeep(
-					actor:getPeep(),
-					"NewGame",
-					"Anchor_Spawn")
+				if _ITSYREALM_DEMO then
+					self.stage:movePeep(
+						actor:getPeep(),
+						"NewDemo",
+						"Anchor_Spawn")
+				else
+					self.stage:movePeep(
+						actor:getPeep(),
+						"NewGame",
+						"Anchor_Spawn")
+				end
+
 				actor:getPeep():pushPoke('bootstrapComplete')
 				Analytics:startGame(actor:getPeep())
 			else

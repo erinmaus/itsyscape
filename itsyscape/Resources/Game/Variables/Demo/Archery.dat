@@ -1,0 +1,393 @@
+{
+  sections = {
+    Clock = {
+      sections = {},
+      values = {}
+    },
+    CombatHUD = {
+      sections = {
+        Config = {
+          sections = {},
+          values = {}
+        },
+        Equipment = {
+          sections = {
+            {
+              sections = {},
+              values = {
+                name = "Gear"
+              }
+            }
+          },
+          values = {}
+        }
+      },
+      values = {}
+    },
+    Dreams = {
+      sections = {},
+      values = {}
+    },
+    KeyItems = {
+      sections = {},
+      values = {}
+    },
+    Nominomicon = {
+      sections = {},
+      values = {}
+    },
+    Peep = {
+      sections = {
+        Chat = {
+          sections = {},
+          values = {}
+        },
+        Inventory = {
+          sections = {
+            Bank = {
+              sections = {},
+              values = {}
+            },
+            Equipment = {
+              sections = {},
+              values = {}
+            },
+            Player = {
+              sections = {},
+              values = {}
+            }
+          },
+          values = {}
+        }
+      },
+      values = {}
+    },
+    Player = {
+      sections = {
+        Info = {
+          sections = {
+            Gender = {
+              sections = {},
+              values = {
+                description = "Non-Binary",
+                formal = "patrician",
+                gender = "x",
+                object = "them",
+                plural = true,
+                possessive = "their",
+                subject = "they"
+              }
+            }
+          },
+          values = {
+            name = "Ash"
+          }
+        },
+        SailingItems = {
+          sections = {},
+          values = {}
+        },
+        Skin = {
+          sections = {
+            body = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.37929411764705878,
+                        0.4282352941176471,
+                        0.18352941176470589,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.46274509803921571,
+                        0.32156862745098036,
+                        0.23529411764705876,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.5215686274509802,
+                        0.3529411764705882,
+                        0.84705882352941164,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.20000000000000001,
+                        0.20000000000000001,
+                        0.20000000000000001,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        1,
+                        1,
+                        1,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Shirts/Hunter.lua",
+                name = "Witch (huntress)",
+                priority = 0,
+                slot = 3,
+                slotName = "body",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            eyes = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.51372549019607838,
+                        0.34509803921568633,
+                        0.76470588235294112,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        1,
+                        1,
+                        1,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0,
+                        0,
+                        0,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.52156862745098043,
+                        0.35294117647058826,
+                        0.84705882352941175,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0,
+                        0,
+                        0,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        1,
+                        1,
+                        1,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Eyes/Eyes.lua",
+                name = "Eyes",
+                priority = 1/0 --[[math.huge]],
+                slot = 1,
+                slotName = "eyes",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            feet = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.30196078431372547,
+                        0.30196078431372547,
+                        0.30196078431372547,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.80000000000000004,
+                        0.80000000000000004,
+                        0.80000000000000004,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Shoes/HunterBoots.lua",
+                name = "Hunter's boots",
+                priority = 0,
+                slot = 5,
+                slotName = "feet",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            hair = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.51372549019607849,
+                        0.34509803921568638,
+                        0.76470588235294112,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.42352941176470588,
+                        0.27058823529411763,
+                        0.15294117647058825,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Hair/Curly.lua",
+                name = "Curly",
+                priority = 10,
+                slot = 1,
+                slotName = "hair",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            hands = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.30196078431372547,
+                        0.30196078431372547,
+                        0.30196078431372547,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.37929411764705878,
+                        0.4282352941176471,
+                        0.18352941176470589,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.30196078431372547,
+                        0.30196078431372547,
+                        0.30196078431372547,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        1,
+                        0.80000000000000004,
+                        0,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Hands/Gloves.lua",
+                name = "Gloves",
+                priority = 0,
+                slot = 6,
+                slotName = "hands",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            head = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.77254901960784306,
+                        0.59999999999999987,
+                        0.37254901960784309,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.32549019607843138,
+                        0.36470588235294116,
+                        0.42352941176470588,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Head/Humanlike.lua",
+                name = "Human/humanlike head",
+                priority = 0,
+                slot = 1,
+                slotName = "head",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            }
+          },
+          values = {}
+        }
+      },
+      values = {}
+    }
+  },
+  values = {
+    filename = "Player/Default43.dat"
+  }
+}

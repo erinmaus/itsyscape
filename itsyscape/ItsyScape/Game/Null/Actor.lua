@@ -8,8 +8,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local CacheRef = require "ItsyScape.Game.CacheRef"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Actor = require "ItsyScape.Game.Model.Actor"
+local Color = require "ItsyScape.Graphics.Color"
 
 local NullActor = Class(Actor)
 
@@ -89,8 +91,8 @@ function NullActor:getMaximumHitpoints()
 	return 100
 end
 
-function NullActor:playAnimation(slot, priority, animation, force)
-	self.onAnimationPlayed(self, slot, priority, animation)
+function NullActor:playAnimation(slot, priority, animation, force, time)
+	self.onAnimationPlayed(self, slot, priority, animation, force, time)
 end
 
 function NullActor:setBody(body)
@@ -103,6 +105,57 @@ end
 
 function NullActor:unsetSkin(slot, priority, skin)
 	self.onSkinRemoved(self, slot, priority, skin)
+end
+
+function NullActor:setAppearance(t)
+	t = t or {}
+
+	if t.body then
+		self:setBody(CacheRef("ItsyScape.Game.Body", string.format("Resources/Game/Bodies/%s.lskel", t.body)))
+	end
+
+	for slot, skins in pairs(t.skins or {}) do
+		for priority, skin in ipairs(skins) do
+			local config = {}
+			for _, color in ipairs(skin.colors or {}) do
+				if type(color) == "string" then
+					table.insert(config, { Color.fromHexString(color):get() })
+				elseif Class.isCompatibleType(color, Color) then
+					table.insert(config, { color:get() })
+				else
+					table.insert(config, { unpack(color) })
+				end
+			end
+
+			self:setSkin(
+				slot,
+				skin.priority or priority,
+				CacheRef("ItsyScape.Game.Skin.ModelSkin", string.format("Resources/Game/Skins/%s", skin.skin)),
+				config)
+		end
+	end
+
+	for slot, animation in pairs(t.animations or {}) do
+		self:playAnimation(
+			slot,
+			animation.priority or 0,
+			CacheRef("ItsyScape.Graphics.AnimationResource", string.format("Resources/Game/Animations/%s/Script.lua", animation.animation)),
+			not not animation.force,
+			animation.time or 0)
+	end
+end
+
+function NullActor:fromStorage(playerStorage)
+	self:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
+
+	local skinStorage = playerStorage:getRoot():getSection("Player"):get("Skin"):get()
+	for _, skin in pairs(skinStorage) do
+		self:setSkin(
+			skin.slot,
+			skin.priority,
+			CacheRef(skin.type, skin.filename),
+			skin.config)
+	end
 end
 
 function NullActor:getSkin(slot)

@@ -946,7 +946,7 @@ function CharacterCustomization:new(id, index, ui)
 	confirmButton:setStyle(ButtonStyle(self.CONFIRM_BUTTON_STYLE, self:getView():getResources()))
 	confirmButton:setPosition(self.LEFT_COLUMN_WIDTH - width - self.PADDING, h - self.BUTTON_SIZE - self.PADDING)
 	confirmButton.onClick:register(function()
-		--self:submit()
+		self:submit()
 	end)
 	self:addChild(confirmButton)
 

@@ -12,11 +12,28 @@ require "love.thread"
 require "love.timer"
 
 local version = love.filesystem.read("version.meta")
-_ITSYREALM_VERSION = version or "mainline"
-_ITSYREALM_VERSION = _ITSYREALM_VERSION:gsub("%s*(%S*)%s*", "%1")
-_ITSYREALM_MAJOR   = tonumber(_ITSYREALM_VERSION:match("^(%d+)%.%d+%.%d+")) or 0
-_ITSYREALM_MINOR   = tonumber(_ITSYREALM_VERSION:match("^%d+%.(%d+)%.%d+")) or 0
-_ITSYREALM_BUILD   = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.(%d+)")) or 0
+_ITSYREALM_VERSION  = version or "mainline"
+_ITSYREALM_VERSION  = _ITSYREALM_VERSION:gsub("%s*(%S*)%s*", "%1")
+_ITSYREALM_MAJOR    = tonumber(_ITSYREALM_VERSION:match("^(%d+)%.%d+%.%d+%.%d+")) or 0
+_ITSYREALM_MINOR    = tonumber(_ITSYREALM_VERSION:match("^%d+%.(%d+)%.%d+%.%d+")) or 0
+_ITSYREALM_BUILD    = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.(%d+)%.%d+")) or 0
+_ITSYREALM_REVISION = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.%d+%.(%d+)")) or 0
+_ITSYREALM_HASH     = _ITSYREALM_VERSION:match("^%d+%.%d+%.%d+%.%d+-(%w+)")
+_ITSYREALM_DEMO     = not not _ITSYREALM_VERSION:match("-demo$")
+_ITSYREALM_PROD     = not not _ITSYREALM_VERSION:match("-production$")
+_ITSYREALM_DEBUG    = version == "mainline"
+
+_ITSYREALM_META = {
+	version = _ITSYREALM_VERSION,
+	major = _ITSYREALM_MAJOR,
+	minor = _ITSYREALM_MINOR,
+	build = _ITSYREALM_BUILD,
+	revision = _ITSYREALM_REVISION,
+	hash = _ITSYREALM_HASH,
+	demo = _ITSYREALM_DEMO,
+	prod = _ITSYREALM_PROD,
+	debug = _ITSYREALM_DEBUG
+}
 
 math.randomseed(os.time())
 
@@ -158,6 +175,8 @@ if _LOG_SUFFIX then
 else
 	Log.engine("ItsyRealm version '%s' bootstrapped.", _ITSYREALM_VERSION)
 end
+
+Log.debug("ItsyRealm meta: %s", Log.dump(_ITSYREALM_META))
 
 if love.system.getOS() == "OS X" and jit and jit.arch == "arm64" then
 	Log.info("Running on macOS (arch = '%s'), disabling JIT.", jit and jit.arch or "???")

@@ -690,7 +690,10 @@ function ActorView:_loadAnimation(a, definition, slot, animation, priority, time
 
 	self.animations[slot] = a
 	self:sortAnimations()
-	self:updateAnimations(0)
+
+	if not self:getIsImmediate() then
+		self:updateAnimations(0)
+	end
 end
 
 function ActorView:_stopAnimation(slot)
@@ -701,7 +704,10 @@ function ActorView:_stopAnimation(slot)
 
 	self.animations[slot] = nil
 	self:sortAnimations()
-	self:updateAnimations(0)
+
+	if not self:getIsImmediate() then
+		self:updateAnimations(0)
+	end
 end
 
 function ActorView:playAnimation(slot, animation, priority, time)

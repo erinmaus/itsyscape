@@ -429,6 +429,80 @@ function DemoApplication:closeMainMenu()
 end
 
 function DemoApplication:openMainMenu()
+	if _ITSYREALM_DEMO then
+		self:openDemoMainMenu()
+	else
+		self:openFullMainMenu()
+	end
+end
+
+function DemoApplication:_newDemoPlayer(_, buttonIndex)
+	if buttonIndex ~= 1 then
+		return
+	end
+
+	local filename
+	do
+		local index = 1
+		while true do
+			filename = string.format("Player/Demo%d.dat", index)
+			if not love.filesystem.getInfo(filename) then
+				break
+			end
+
+			index = index + 1
+		end
+	end
+
+	local storage = PlayerStorage()
+	storage:getRoot():set("filename", filename)
+
+	self:setPlayerFilename(filename)
+
+	local player = self:getGame():getPlayer()
+	player:spawn(storage, true)
+
+	self:closeTitleScreen()
+end
+
+function DemoApplication:openDemoMainMenu()
+	local w, h = itsyrealm.graphics.getScaledMode()
+
+	local mainMenu = Widget()
+	mainMenu:setSize(w, h)
+
+	self.mainMenu = mainMenu
+
+	local playButton = Button()
+	playButton:setSize(256, 64)
+	playButton:setPosition(w / 2 - 64, h - 64 - 32)
+	playButton.onClick:register(self._newDemoPlayer, self)
+
+	local text = GamepadToolTip()
+	text:setHasBackground(false)
+	text:setRowSize(256, 48)
+	text:setText("Play Demo")
+	playButton:addChild(text)
+
+	self.mainMenu:addChild(playButton)
+	self:getUIView():getRoot():addChild(self.mainMenu)
+	self:getUIView():getInputProvider():setFocusedWidget(playButton)
+
+	playButton:update(0)
+	local textWidth, textHeight = text:getSize()
+	text:setPosition(128 - textWidth / 2, 32 - textHeight / 2)
+
+	if self.titleScreen then
+		self.titleScreen:enableLogo()
+	end
+
+	self:setConf({
+		_DEBUG = _DEBUG or (_CONF and _CONF.debug),
+		_CONF = _CONF
+	})
+end
+
+function DemoApplication:openFullMainMenu()
 	local mainMenu = Widget()
 	mainMenu:setSize(love.graphics.getScaledMode())
 
