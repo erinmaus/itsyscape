@@ -267,6 +267,8 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Character"
+
 	ActionType "Talk"
 	ActionType "Yell"
 	ActionType "Pet"
@@ -280,6 +282,12 @@ Game "ItsyScape"
 	Meta "TalkDialog" {
 		Script = Meta.TYPE_TEXT,
 		Language = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "TalkCharacter" {
+		Character = Meta.TYPE_RESOURCE,
+		Main = Meta.TYPE_STRING,
 		Action = Meta.TYPE_ACTION
 	}
 	

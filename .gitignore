@@ -17,3 +17,4 @@ itsyrealm.love
 cmake*
 itsyscape/version.meta
 itsyscape/.tone
+itsyscape/Resources/Game/Dialog/*/Dialog.json

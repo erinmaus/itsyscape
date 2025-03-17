@@ -1191,7 +1191,15 @@ Utility.Text.PRONOUN_SUBJECT    = GenderBehavior.PRONOUN_SUBJECT
 Utility.Text.PRONOUN_OBJECT     = GenderBehavior.PRONOUN_OBJECT
 Utility.Text.PRONOUN_POSSESSIVE = GenderBehavior.PRONOUN_POSSESSIVE
 Utility.Text.FORMAL_ADDRESS     = GenderBehavior.FORMAL_ADDRESS
-Utility.Text.DEFAULT_PRONOUNS   = {
+
+Utility.Text.NAMED_PRONOUN = {
+	subject = Utility.Text.PRONOUN_SUBJECT,
+	object = Utility.Text.PRONOUN_OBJECT,
+	possessive = Utility.Text.PRONOUN_POSSESSIVE,
+	formal = Utility.Text.FORMAL_ADDRESS,
+}
+
+Utility.Text.DEFAULT_PRONOUNS = {
 	["en-US"] = {
 		["x"] = {
 			"they",
@@ -1374,174 +1382,297 @@ function Utility.Text.parse(text, rootTag)
 	return rootElement
 end
 
-function Utility.Text.bind(peep, language)
-	local TIME_FORMAT = {
-		year = function(yearMonthDay)
+Utility.Text.TIME_FORMAT = {
+	year = function(yearMonthDay)
+		return tostring(yearMonthDay.year)
+	end,
+
+	yearOptionalShortAge = function(yearMonthDay)
+		if yearMonthDay.age ~= Utility.Time.AGE_AFTER_RITUAL then
+			return string.format("%d %s", yearMonthDay.year, Utility.Time.SHORT_AGE[yearMonthDay.age])
+		else
 			return tostring(yearMonthDay.year)
-		end,
-
-		yearOptionalShortAge = function(yearMonthDay)
-			if yearMonthDay.age ~= Utility.Time.AGE_AFTER_RITUAL then
-				return string.format("%d %s", yearMonthDay.year, Utility.Time.SHORT_AGE[yearMonthDay.age])
-			else
-				return tostring(yearMonthDay.year)
-			end
-		end,
-
-		yearOptionalLongAge = function(yearMonthDay)
-			if yearMonthDay.age ~= Utility.Time.AGE_AFTER_RITUAL then
-				return string.format("%d %s", yearMonthDay.year, yearMonthDay.age)
-			else
-				return tostring(yearMonthDay.year)
-			end
-		end,
-
-		age = function(yearMonthDay)
-			return Utility.Time.SHORT_AGE[yearMonthDay.age]
-		end,
-
-		longAge = function(yearMonthDay)
-			return yearMonthDay.age
-		end,
-
-		day = function(yearMonthDay)
-			return yearMonthDay.day
-		end,
-
-		dayWithSpacePadding = function(yearMonthDay)
-			return string.format("% 2d", yearMonthDay.day)
-		end,
-
-		dayWithNumberPadding = function(yearMonthDay)
-			return string.format("%02d", yearMonthDay.day)
-		end,
-
-		dayOfWeek = function(yearMonthDay)
-			return yearMonthDay.dayOfWeek
-		end,
-
-		dayOfWeekName = function(yearMonthDay)
-			return yearMonthDay.dayOfWeekName
-		end,
-
-		month = function(yearMonthDay)
-			return yearMonthDay.month
-		end,
-
-		monthName = function(yearMonthDay)
-			return Utility.Time.MONTHS[yearMonthDay.month]
 		end
-	}
+	end,
 
-	local text = {}
-	do
-		function text.get_player_subject_pronoun(upperCase)
-			return Utility.Text.getPronoun(peep, Utility.Text.PRONOUN_SUBJECT, language, upperCase)
+	yearOptionalLongAge = function(yearMonthDay)
+		if yearMonthDay.age ~= Utility.Time.AGE_AFTER_RITUAL then
+			return string.format("%d %s", yearMonthDay.year, yearMonthDay.age)
+		else
+			return tostring(yearMonthDay.year)
 		end
+	end,
 
-		function text.get_player_subject_pronoun(upperCase)
-			return Utility.Text.getPronoun(peep, Utility.Text.PRONOUN_SUBJECT, language, upperCase)
-		end
+	age = function(yearMonthDay)
+		return Utility.Time.SHORT_AGE[yearMonthDay.age]
+	end,
 
-		function text.get_player_possessive_pronoun(upperCase)
-			return Utility.Text.getPronoun(peep, Utility.Text.PRONOUN_POSSESSIVE, language, upperCase)
-		end
+	longAge = function(yearMonthDay)
+		return yearMonthDay.age
+	end,
 
-		function text.get_player_formal_address(upperCase)
-			return Utility.Text.getPronoun(peep, Utility.Text.FORMAL_ADDRESS, language, upperCase)
-		end
+	day = function(yearMonthDay)
+		return yearMonthDay.day
+	end,
 
-		function text.get_english_present_be(upperCase)
-			return Utility.Text.getEnglishBe(peep, "present", upperCase)
-		end
+	dayWithSpacePadding = function(yearMonthDay)
+		return string.format("% 2d", yearMonthDay.day)
+	end,
 
-		function text.get_english_past_be(upperCase)
-			return Utility.Text.getEnglishBe(peep, "past", upperCase)
-		end
+	dayWithNumberPadding = function(yearMonthDay)
+		return string.format("%02d", yearMonthDay.day)
+	end,
 
-		function text.get_english_future_be(upperCase)
-			return Utility.Text.getEnglishBe(peep, "future", upperCase)
-		end
+	dayOfWeek = function(yearMonthDay)
+		return yearMonthDay.dayOfWeek
+	end,
 
-		function text.get_relative_date_from_start(dayOffset, monthOffset, yearOffset, format)
-			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
-			local startTime = Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
-			return text.get_relative_date_from_time(dayOffset, monthOffset, yearOffset, format, startTime)
-		end
+	dayOfWeekName = function(yearMonthDay)
+		return yearMonthDay.dayOfWeekName
+	end,
 
-		function text.get_relative_date_from_now(dayOffset, monthOffset, yearOffset, format)
-			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
-			local currentTime = Utility.Time.getAndUpdateTime(rootStorage)
-			return text.get_relative_date_from_time(dayOffset, monthOffset, yearOffset, format, currentTime)
-		end
+	month = function(yearMonthDay)
+		return yearMonthDay.month
+	end,
 
-		function text.get_relative_date_from_birthday(dayOffset, monthOffset, yearOffset, format)
-			local currentTime = Utility.Time.BIRTHDAY_TIME
-			return text.get_relative_date_from_time(dayOffset, monthOffset, yearOffset, format, currentTime)
-		end
+	monthName = function(yearMonthDay)
+		return Utility.Time.MONTHS[yearMonthDay.month]
+	end
+}
 
-		function text.get_relative_date_from_time(dayOffset, monthOffset, yearOffset, format, currentTime)
-			local yearMonthDay = Utility.Time.offsetIngameTime(currentTime or Utility.Time.BIRTHDAY_TIME, dayOffset, monthOffset, yearOffset)
-			local newTime = Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+Utility.Text.Dialog = {}
 
-			return text.format_date(format, newTime)
-		end
-
-		function text.format_date(format, currentTime)
-			local format = format or "%monthName %day, %yearOptionalShortAge"
-			local yearMonthDay = Utility.Time.getIngameYearMonthDay(currentTime or Utility.Time.BIRTHDAY_TIME)
-
-			return format:gsub("%%(%w+)", function(key)
-				local func = TIME_FORMAT[key]
-				if not func then
-					error(string.format("time format specifier '%s' not valid", key))
-				end
-
-				return func(yearMonthDay)
-			end)
-		end
-
-		function text.get_start_time()
-			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
-			return Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
-		end
-
-		function text.get_current_time()
-			local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
-			return Utility.Time.getAndUpdateTime(rootStorage)
-		end
-
-		function text.get_birthday_time()
-			return Utility.Time.BIRTHDAY_TIME
-		end
-
-		function text.get_date_component(currentTime, component)
-			return Utility.Time.getIngameYearMonthDay(currentTime)[component]
-		end
-
-		function text.to_current_time(year, month, day)
-			return Utility.Time.toCurrentTime(year, month, day)
-		end
-
-		function text.offset_current_time(currentTime, dayOffset, monthOffset, yearOffset)
-			local yearMonthDay = Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, yearOffset)
-			return Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
-		end
-
-		function text.get_num_days_in_month(month)
-			return Utility.Time.DAYS_IN_INGAME_MONTH[month]
-		end
-
-		function text.get_month_name(month)
-			return Utility.Time.MONTHS[month]
-		end
-
-		function text.get_day_name(day)
-			return Utility.Time.DAYS[day]
-		end
+local function _listToFlags(dialog, list)
+	if type(list) ~= "table" then
+		return {}
 	end
 
-	return text
+	local flags = {}
+	for k, v in list:values() do
+		local flag = v:getValueName():gsub("_", "-")
+		table.insert(flags, flag)
+	end
+
+	return flags
+end
+
+function Utility.Text.Dialog.ir_state_has(dialog, characterName, resourceType, resource, count, flags)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return peep:getState():has(resourceType, resource, count, _listToFlags(dialog, flags))
+end
+
+function Utility.Text.Dialog.ir_state_count(dialog, characterName, resourceType, resource, flags)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return peep:getState():count(resourceType, resource, _listToFlags(dialog, flags))
+end
+
+function Utility.Text.Dialog.ir_state_give(dialog, characterName, resourceType, resource, count, flags)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return peep:getState():give(resourceType, resource, count, _listToFlags(dialog, flags))
+end
+
+function Utility.Text.Dialog.ir_state_take(dialog, characterName, resourceType, resource, count, flags)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return peep:getState():take(resourceType, resource, count, _listToFlags(dialog, flags))
+end
+
+function Utility.Text.Dialog.ir_has_started_quest(dialog, characterName, questName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return Utility.Quest.didStart(questName, peep)
+end
+
+function Utility.Text.Dialog.ir_is_next_quest_step(dialog, characterName, questName, keyITemID)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return Utility.Quest.isNextStep(questName, keyItemID, peep)
+end
+
+function Utility.Text.Dialog.ir_get_pronoun(dialog, characterName, pronounType, upperCase)
+	local index = Utility.Text.NAMED_PRONOUN[pronounType]
+	local default = Utility.Text.DEFAULT_PRONOUNS["en-US"]["x"][index] or ""
+
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return default
+	end
+
+	return Utility.Text.getPronoun(peep, index, "en-US", false)
+end
+
+function Utility.Text.Dialog.ir_is_pronoun_plural(dialog, characterName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return true
+	end
+
+	local gender = peep:getBehavior(GenderBehavior)
+	if gender then
+		return gender.pronounsPlural
+	end
+
+	return true
+end
+
+function Utility.Text.Dialog.ir_get_pronoun_lowercase(dialog, characterName, pronounType)
+	return Utility.Text.Dialog.ir_get_pronoun(dialog, characterName, pronounType, false)
+end
+
+function Utility.Text.Dialog.ir_get_pronoun_uppercase(dialog, upperCase)
+	return Utility.Text.Dialog.ir_get_pronoun(dialog, characterName, pronounType, true)
+end
+
+function Utility.Text.Dialog.ir_get_english_be(characterName, tense, upperCase)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return Utility.Text.BE[true][tense] or ""
+	end
+
+	return Utility.Text.getEnglishBe(peep, tense, upperCase)
+end
+
+function Utility.Text.Dialog.ir_get_english_be_lowercase(dialog, tense)
+	return Utility.Text.getEnglishBe(peep, tense, false)
+end
+
+function Utility.Text.Dialog.ir_get_english_be_uppercase(dialog, tense)
+	return Utility.Text.getEnglishBe(peep, tense, true)
+end
+
+function Utility.Text.Dialog.ir_get_relative_date_from_start(dialog, dayOffset, monthOffset, yearOffset, format)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	local startTime = Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
+	return Utility.Text.Dialog.ir_get_relative_date_from_time(dialog, dayOffset, monthOffset, yearOffset, format, startTime)
+end
+
+function Utility.Text.Dialog.ir_get_relative_date_from_now(dialog, dayOffset, monthOffset, yearOffset, format)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	local currentTime = Utility.Time.getAndUpdateTime(rootStorage)
+	return Utility.Text.Dialog.ir_get_relative_date_from_time(dialog, dayOffset, monthOffset, yearOffset, format, currentTime)
+end
+
+function Utility.Text.Dialog.ir_get_relative_date_from_birthday(dialog, dayOffset, monthOffset, yearOffset, format)
+	local currentTime = Utility.Time.BIRTHDAY_TIME
+	return Utility.Text.Dialog.ir_get_relative_date_from_time(dialog, dayOffset, monthOffset, yearOffset, format, currentTime)
+end
+
+function Utility.Text.Dialog.ir_get_relative_date_from_time(dialog, dayOffset, monthOffset, yearOffset, format, currentTime)
+	local yearMonthDay = Utility.Time.offsetIngameTime(currentTime or Utility.Time.BIRTHDAY_TIME, dayOffset, monthOffset, yearOffset)
+	local newTime = Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+
+	return Utility.Text.Dialog.ir_format_date(dialog, format, newTime)
+end
+
+function Utility.Text.Dialog.ir_format_date(dialog, format, currentTime)
+	local format = format or "%monthName %day, %yearOptionalShortAge"
+	local yearMonthDay = Utility.Time.getIngameYearMonthDay(currentTime or Utility.Time.BIRTHDAY_TIME)
+
+	return format:gsub("%%(%w+)", function(key)
+		local func = Utility.Text.TIME_FORMAT[key]
+		if not func then
+			error(string.format("time format specifier '%s' not valid", key))
+		end
+
+		return func(yearMonthDay)
+	end)
+end
+
+function Utility.Text.Dialog.ir_get_start_time(dialog)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	return Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
+end
+
+function Utility.Text.Dialog.ir_get_current_time(dialog)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	return Utility.Time.getAndUpdateTime(rootStorage)
+end
+
+function Utility.Text.Dialog.ir_get_birthday_time(dialog)
+	return Utility.Time.BIRTHDAY_TIME
+end
+
+function Utility.Text.Dialog.ir_get_date_component(dialog, currentTime, component)
+	return Utility.Time.getIngameYearMonthDay(currentTime)[component]
+end
+
+function Utility.Text.Dialog.ir_to_current_time(dialog, year, month, day)
+	return Utility.Time.toCurrentTime(year, month, day)
+end
+
+function Utility.Text.Dialog.ir_offset_current_time(dialog, currentTime, dayOffset, monthOffset, yearOffset)
+	local yearMonthDay = Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, yearOffset)
+	return Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+end
+
+function Utility.Text.Dialog.ir_get_num_days_in_month(dialog, month)
+	return Utility.Time.DAYS_IN_INGAME_MONTH[month]
+end
+
+function Utility.Text.Dialog.ir_get_month_name(dialog, month)
+	return Utility.Time.MONTHS[month]
+end
+
+function Utility.Text.Dialog.ir_get_day_name(dialog, day)
+	return Utility.Time.DAYS[day]
+end
+
+function Utility.Text.Dialog.ir_yell(dialog, message)
+	return message:upper()
+end
+
+function Utility.Text.Dialog.ir_play_animation(dialog, characterName, animationSlot, animationPriority, animationName, animationForced, animationTime)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return false
+	end
+
+	local filename = string.format("Resources/Game/Animations/%s/Script.lua", animationName)
+	if not filename then
+		return false
+	end
+
+	actor:playAnimation(
+		animationSlot,
+		animationPriority,
+		CacheRef("ItsyScape.Graphics.AnimationResource", filename),
+		animationForced,
+		animationTime)
+
+	return true
+end
+
+function Utility.Text.bind(dialog, language)
+	for k, v in pairs(Utility.Text.Dialog) do
+		dialog:bindExternalFunction(k, v, dialog)
+	end
 end
 
 function Utility.Text.getPronouns(peep)

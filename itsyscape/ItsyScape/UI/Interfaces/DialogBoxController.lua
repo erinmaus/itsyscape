@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Dialog = require "ItsyScape.Game.Dialog.Dialog"
+local InkDialog = require "ItsyScape.Game.Dialog.InkDialog"
 local InputPacket = require "ItsyScape.Game.Dialog.InputPacket"
 local MessagePacket = require "ItsyScape.Game.Dialog.MessagePacket"
 local SelectPacket = require "ItsyScape.Game.Dialog.SelectPacket"
@@ -39,11 +40,25 @@ function DialogBoxController:new(peep, director, action, target)
 		-- TODO: respect language
 		local gameDB = director:getGameDB()
 		local dialogRecord = gameDB:getRecord("TalkDialog", { Action = self.action:getAction(), Language = "en-US" })
-		if dialogRecord then
-			local filename = dialogRecord:get("Script")
-			if filename then
-				self.dialog = Dialog(filename)
+		local characterRecord = gameDB:getRecord("TalkCharacter", { Action = self.action:getAction() })
 
+		if dialogRecord or characterRecord then
+			if dialogRecord then
+				local filename = dialogRecord:get("Script")
+				self.dialog = Dialog(filename)
+			elseif characterRecord then
+				local filename = string.format(
+					"Resources/Game/Dialog/%s/Dialog.json",
+					characterRecord:get("Character").name)
+				self.dialog = InkDialog(filename)
+				Utility.Text.bind(self.dialog, "en-US")
+
+				if characterRecord:get("Main") ~= "" then
+					self.dialog:jump(characterRecord:get("Main"))
+				end
+			end
+
+			if self.dialog then
 				self.dialog:setTarget(peep)
 				self.dialog:setSpeaker("_SELF", self.target)
 				self.dialog:setDirector(director)

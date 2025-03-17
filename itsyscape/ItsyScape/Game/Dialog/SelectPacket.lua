@@ -11,8 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Packet = require "ItsyScape.Game.Dialog.Packet"
 
 local SelectPacket = Class(Packet)
-function SelectPacket:new(executor, options)
-	Packet.new(self, executor)
+function SelectPacket:new(dialog, options)
+	Packet.new(self, dialog)
 	self.options = options
 end
 
@@ -25,7 +25,7 @@ function SelectPacket:getOptionAtIndex(index)
 end
 
 function SelectPacket:step(index)
-	return self:getDialog():next(self.options[index])
+	return self:getDialog():next(index)
 end
 
 return SelectPacket

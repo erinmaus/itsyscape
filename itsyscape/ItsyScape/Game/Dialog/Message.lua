@@ -44,6 +44,10 @@ function Message:inflate(g)
 		local current = 1
 		repeat
 			local colorStart, colorEnd, color, text = m:find("%%(%w+)(%b{})", current)
+			if not colorStart and colorEnd then
+				colorStart, colorEnd, color, text = m:find("%%(%w+)(%b())", current)
+			end
+
 			if colorStart and colorEnd then
 				if colorStart ~= current then
 					table.insert(c, Message.DEFAULT_COLOR)

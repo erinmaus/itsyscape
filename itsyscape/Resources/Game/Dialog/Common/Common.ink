@@ -9,8 +9,9 @@ CONST PRONOUN_POSSESSIVE = "possessive"
 CONST PRONOUN_SUBJECT = "subject"
 
 CONST X_MX = "formal"
-CONST X_THEY = "subjecct"
+CONST X_THEY = "subject"
 CONST X_THEM = "object"
+CONST X_THEIR = "possessive"
 
 CONST RESOURCE_KEY_ITEM = "KeyItem"
 CONST RESOURCE_ITEM = "Item"
@@ -50,16 +51,12 @@ EXTERNAL ir_state_take(characterName, resourceType, resource, count, flags)
 
 EXTERNAL ir_has_started_quest(characterName, questName)
 EXTERNAL ir_is_next_quest_step(characterName, questName, keyItemID)
-EXTERNAL ir_is_current_quest_step(characterName, questName, keyItemID)
 
 == function player_has_started_quest(questName) ==
 ~ return ir_has_started_quest(C_PLAYER, questName)
 
 == function player_is_next_quest_step(questName, keyItemID) ==
 ~ return ir_is_next_quest_step(C_PLAYER, questName, keyItemID)
-
-== function player_is_current_quest_step(questName, keyItemID) ==
-~ return ir_is_current_quest_step(C_PLAYER, questName, keyItemID)
 
 EXTERNAL ir_yell(phrase)
 
@@ -69,6 +66,8 @@ EXTERNAL ir_yell(phrase)
 EXTERNAL ir_get_pronoun_lowercase(characterName, pronounType)
 EXTERNAL ir_get_pronoun_uppercase(characterName, pronounType)
 EXTERNAL ir_is_pronoun_plural(characterName)
+EXTERNAL ir_get_english_be_lowercase(characterName, tense)
+EXTERNAL ir_get_english_be_uppercase(characterName, tense)
 
 == function player_get_pronoun_lowercase(pronounType) ==
 ~ return ir_get_pronoun_lowercase(C_PLAYER, pronounType)

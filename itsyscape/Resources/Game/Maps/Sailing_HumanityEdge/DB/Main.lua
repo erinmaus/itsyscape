@@ -123,3 +123,39 @@ do
 		Resource = M["Anchor_Spawn"]
 	}
 end
+
+M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 4,
+		PositionZ = 105,
+		Direction = -1,
+		Name = "Orlando",
+		Map = M._MAP,
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		MapObject = M["Orlando"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "Orlando",
+		Main = "quest_tutorial_main",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["Orlando"] {
+		TalkAction
+	}
+end
