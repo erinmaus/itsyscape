@@ -13,6 +13,7 @@ local Class = require "ItsyScape.Common.Class"
 local InputPacket = require "ItsyScape.Game.Dialog.InputPacket"
 local Message = require "ItsyScape.Game.Dialog.Message"
 local MessagePacket = require "ItsyScape.Game.Dialog.MessagePacket"
+local SelectPacket = require "ItsyScape.Game.Dialog.SelectPacket"
 local SpeakerPacket = require "ItsyScape.Game.Dialog.SpeakerPacket"
 
 local InkDialog = Class()
@@ -115,16 +116,13 @@ function InkDialog:processTags(tags)
 end
 
 function InkDialog:next(choiceIndex)
-	print("NEXT")
 	if #self.pendingPackets > 0 then
-		print("return packeet")
-		local r = table.remove(self.pendingPackets, 1)
-		print("r", r:getDebugInfo().shortName)
-		return r
+		return table.remove(self.pendingPackets, 1)
 	end
 
 	if choiceIndex then
 		self.choices:getChoice(choiceIndex):choose()
+		table.insert(self.pendingPackets, 1, SpeakerPacket(self, "_TARGET"))
 	end
 
 	if not self.story:canContinue() then
@@ -144,7 +142,7 @@ function InkDialog:next(choiceIndex)
 		local options = {}
 
 		for i = 1, self.choices:getChoiceCount() do
-			table.insert(options, Message(self.choices:getChoice(choiceIndex):getText()))
+			table.insert(options, Message(self.choices:getChoice(i):getText()))
 		end
 
 		table.insert(self.pendingPackets, SelectPacket(self, options))

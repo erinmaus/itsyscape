@@ -1,7 +1,6 @@
 INCLUDE ./Common.ink
 INCLUDE ../Common/Common.ink
 
-VAR quest_tutorial_main_started_said_something = false
 VAR quest_tutorial_main_started_got_up = false
 VAR quest_tutorial_main_started_asked_where_am_i = false
 VAR quest_tutorial_main_started_asked_what_is_going_on = false
@@ -14,24 +13,26 @@ VAR quest_tutorial_main_started_asked_what_is_going_on = false
 == quest_tutorial_main_started ==
 # speaker={C_ORLANDO}
 OI! {yell(player_name)}! ARE YOU OK?!
-HELP! {yell(player_get_pronoun_uppercase(X_THEY))} ARE IN TROUBLE!
+HELP! {yell(player_get_pronoun_uppercase(X_THEY))} {yell(player_get_english_be_uppercase(X_ARE))} IN TROUBLE!
 
 # speaker={C_PLAYER}
 ...
 
-# speaker={C_ORLANDO}
 ~ player_play_animation("Human_Dazed")
 ~ play_animation(C_ORLANDO, "Human_ActionShake_1")
 
+# speaker={C_ORLANDO}
 {yell(player_name)}! TALK TO ME!
 
 -> loop
 
 = loop
-# speaker={C_PLAYER}
-+ {!quest_tutorial_main_started_said_something} [...] -> dot_dot_dot
-+ [Where am I?] -> where_am_i
-+ [What's going on?] -> what_is_going_on
++ {!quest_tutorial_main_started_got_up} [...]
+  -> dot_dot_dot
++ [Where am I?]
+  -> where_am_i
++ [What's going on?]
+  -> what_is_going_on
 
 = dot_dot_dot
 ~ player_play_animation("Human_Dazed")
@@ -56,9 +57,10 @@ Eugh... Where am I?
 # speaker={C_ORLANDO}
 We're at %location(Humanity's Edge), the last human outpost before %person(Yendor's) city-state, %location(R'lyeh)!
 
-# speaker={C_PLAYER}
-+ %person(Yendor?) %location(R'lyeh?)[] Who's %person(Yendor)? And what's %location(R'lyeh)? -> yendor_more_info
-+ Got it[.] Humanity's Edge, eh... -> loop
++ [%person(Yendor?) %location(R'lyeh?)] Who's %person(Yendor)? And what's %location(R'lyeh)?
+  -> yendor_more_info
++ Got it[.] Humanity's Edge, eh...
+  -> loop
 
 = yendor_more_info
 
@@ -108,7 +110,7 @@ And if it can kill Cthulhu... We can push into %location(R'lyeh) and show them Y
 ~ player_play_animation("Human_Resurrect_1")
 
 # speaker={C_ORLANDO}
-THANK THE GODS YOU'RE ALIVE, ${yell(player_name)}! Looks like that lightning strike knocked you right out!
+THANK THE GODS YOU'RE ALIVE, {yell(player_name)}! Looks like that lightning strike knocked you right out!
 
 -> got_up
 

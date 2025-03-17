@@ -1750,7 +1750,6 @@ function LocalStage:updateMapPositions()
 				}
 
 				if didMove then
-					print(">>> layer", layer, mapScript:getName(), disabled)
 					self.onMapMoved(self, layer, position, rotation, scale, origin, disabled, parentLayer)
 				end
 			end

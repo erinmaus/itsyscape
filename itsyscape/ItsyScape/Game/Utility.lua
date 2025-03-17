@@ -1540,11 +1540,11 @@ function Utility.Text.Dialog.ir_get_pronoun_lowercase(dialog, characterName, pro
 	return Utility.Text.Dialog.ir_get_pronoun(dialog, characterName, pronounType, false)
 end
 
-function Utility.Text.Dialog.ir_get_pronoun_uppercase(dialog, upperCase)
+function Utility.Text.Dialog.ir_get_pronoun_uppercase(dialog, characterName, pronounType)
 	return Utility.Text.Dialog.ir_get_pronoun(dialog, characterName, pronounType, true)
 end
 
-function Utility.Text.Dialog.ir_get_english_be(characterName, tense, upperCase)
+function Utility.Text.Dialog.ir_get_english_be(dialog, characterName, tense, upperCase)
 	local peep = dialog:getSpeaker(characterName)
 	if not peep then
 		return Utility.Text.BE[true][tense] or ""
@@ -1553,12 +1553,12 @@ function Utility.Text.Dialog.ir_get_english_be(characterName, tense, upperCase)
 	return Utility.Text.getEnglishBe(peep, tense, upperCase)
 end
 
-function Utility.Text.Dialog.ir_get_english_be_lowercase(dialog, tense)
-	return Utility.Text.getEnglishBe(peep, tense, false)
+function Utility.Text.Dialog.ir_get_english_be_lowercase(dialog, characterName, tense)
+	return Utility.Text.Dialog.ir_get_english_be(dialog, characterName, tense, false)
 end
 
-function Utility.Text.Dialog.ir_get_english_be_uppercase(dialog, tense)
-	return Utility.Text.getEnglishBe(peep, tense, true)
+function Utility.Text.Dialog.ir_get_english_be_uppercase(dialog, characterName, tense)
+	return Utility.Text.Dialog.ir_get_english_be(dialog, characterName, tense, true)
 end
 
 function Utility.Text.Dialog.ir_get_relative_date_from_start(dialog, dayOffset, monthOffset, yearOffset, format)
@@ -1655,7 +1655,7 @@ function Utility.Text.Dialog.ir_play_animation(dialog, characterName, animationS
 	end
 
 	local filename = string.format("Resources/Game/Animations/%s/Script.lua", animationName)
-	if not filename then
+	if not love.filesystem.getInfo(filename) then
 		return false
 	end
 

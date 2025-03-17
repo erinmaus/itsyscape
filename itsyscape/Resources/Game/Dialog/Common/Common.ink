@@ -13,6 +13,14 @@ CONST X_THEY = "subject"
 CONST X_THEM = "object"
 CONST X_THEIR = "possessive"
 
+CONST X_ARE = "present"
+CONST X_WAS = "past"
+CONST X_WILL_BE = "future"
+
+CONST TENSE_PRESENT = "present"
+CONST TENSE_PAST = "past"
+CONST TENSE_FUTURE = "will be"
+
 CONST RESOURCE_KEY_ITEM = "KeyItem"
 CONST RESOURCE_ITEM = "Item"
 
@@ -77,6 +85,12 @@ EXTERNAL ir_get_english_be_uppercase(characterName, tense)
 
 == function player_is_pronoun_plural() ==
 ~ return ir_is_pronoun_plural(C_PLAYER)
+
+== function player_get_english_be_lowercase(tense) ==
+~ return ir_get_english_be_lowercase(C_PLAYER, tense)
+
+== function player_get_english_be_uppercase(tense) ==
+~ return ir_get_english_be_uppercase(C_PLAYER, tense)
 
 EXTERNAL ir_play_animation(characterName, animationSlot, animationPriority, animationName, animationForced, animationTime)
 
