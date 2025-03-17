@@ -30,7 +30,7 @@ endif
 	cd build && unzip -o ${INKLECATE_ARCHIVE}
 	touch ./build/${INKLECATE_BIN}
 
-$(DIALOG_DEPS): ./build/%.ink.dep: ./itsyscape/Resources/Game/Dialog/%/Dialog.ink | ./build
+$(DIALOG_DEPS): ./build/%.ink.dep: ./itsyscape/Resources/Game/Dialog/%/Dialog.ink ./cicd/common/make_ink_deps.lua | ./build
 	$(LUAJIT) ./cicd/common/make_ink_deps.lua "$<" "$@"
 
 ./itsyscape/Resources/Game/Dialog/%/Dialog.json: ./itsyscape/Resources/Game/Dialog/%/Dialog.ink ./build/%.ink.dep ./build/${INKLECATE_BIN}
@@ -38,7 +38,7 @@ $(DIALOG_DEPS): ./build/%.ink.dep: ./itsyscape/Resources/Game/Dialog/%/Dialog.in
 
 .PHONY: all clean
 all: $(DIALOG_OUTPUTS)
-	echo $(DIALOG_DEPS)
 
 clean:
-	
+	rm $(DIALOG_OUTPUTS)
+	rm -r ./build

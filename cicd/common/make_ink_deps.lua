@@ -28,6 +28,7 @@ end
 
 table.remove(dependencies, 1)
 
+local dependency = input:gsub("%.(.+)$", ".json")
 local outputFile = io.open(output, "w+")
-outputFile:write(string.format("./%s: %s\n", input, table.concat(dependencies, " ")))
+outputFile:write(string.format("./%s: %s\n", dependency, table.concat(dependencies, " ")))
 outputFile:close()
