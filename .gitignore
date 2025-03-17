@@ -1,5 +1,6 @@
 .DS_Store
 razmatazz/
+build/
 workspace/
 /tools
 design/
