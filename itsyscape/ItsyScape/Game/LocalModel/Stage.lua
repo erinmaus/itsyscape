@@ -507,7 +507,7 @@ function LocalStage:removeProp(prop)
 	end
 end
 
-function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer)
+function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer, playerPeep)
 	layer = layer or 1
 
 	local gameDB = self.game:getGameDB()
@@ -518,9 +518,14 @@ function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer)
 		Resource = resource
 	})
 
+	local isInstanced = object and gameDB:getRecord("MapObjectGroup", {
+		IsInstanced = 1,
+		MapObject = resource
+	})
+
 	local actorInstance, propInstance
 
-	if object then
+	if object and (not isInstanced or playerPeep) then
 		local x = object:get("PositionX") or 0
 		local y = object:get("PositionY") or 0
 		local z = object:get("PositionZ") or 0
@@ -580,6 +585,14 @@ function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer)
 						local s, b = peep:addBehavior(MapResourceReferenceBehavior)
 						if s then
 							b.map = object:get("Map")
+						end
+
+						if isInstanced and playerPeep then
+							local playerID = playerPeep:hasBehavior(PlayerBehavior) and playerPeep:getBehavior(PlayerBehavior).playerID
+							if playerID then
+								local _, instancedBehavior = peep:addBehavior(InstancedBehavior)
+								instancedBehavior.playerID = playerID
+							end
 						end
 					end
 				end
@@ -646,6 +659,14 @@ function LocalStage:instantiateMapObject(resource, layer, layerName, isLayer)
 						local s, b = peep:addBehavior(MapResourceReferenceBehavior)
 						if s then
 							b.map = object:get("Map")
+						end
+
+						if isInstanced and playerPeep then
+							local playerID = playerPeep:hasBehavior(PlayerBehavior) and playerPeep:getBehavior(PlayerBehavior).playerID
+							if playerID then
+								local _, instancedBehavior = peep:addBehavior(InstancedBehavior)
+								instancedBehavior.playerID = playerID
+							end
 						end
 					end
 				end

@@ -203,6 +203,7 @@ Game "ItsyScape"
 	Meta "MapObjectGroup" {
 		MapObjectGroup = Meta.TYPE_TEXT,
 		Map = Meta.TYPE_RESOURCE,
+		IsInstanced = Meta.TYPE_INTEGER,
 		MapObject = Meta.TYPE_RESOURCE
 	}
 
@@ -1253,18 +1254,32 @@ end
 function ItsyScape.Utility.QuestStepDescription(keyItem)
 	local KeyItem = ItsyScape.Resource.KeyItem(keyItem)
 	return function(t)
-		assert(type(t) == 'table', "missing description")
-		assert(type(t.before) == 'string', "missing before description")
-		assert(type(t.after) == 'string', "missing after description")
+		assert(type(t) == "table", "missing description")
+		assert(type(t.before) == "string" or type(t.before) == "table", "missing before description")
+		assert(type(t.after) == "string" or type(t.after) == "table", "missing after description")
+
+		local before
+		if type(t.before) == "table" then
+			before = table.concat(t.before, " ")
+		else
+			before = t.before
+		end
+
+		local after
+		if type(t.after) == "table" then
+			after = table.concat(t.after, " ")
+		else
+			after = t.after
+		end
 
 		ItsyScape.Meta.ResourceDescription {
-			Value = t.before,
+			Value = before,
 			Language = t.language or "en-US",
 			Resource = KeyItem
 		}
 
 		ItsyScape.Meta.ResourceDescription {
-			Value = t.after,
+			Value = after,
 			Language = t.language or "en-US",
 			Resource = KeyItem
 		}
@@ -1578,6 +1593,7 @@ include "Resources/Game/DB/Maps/EmptyRuins.lua"
 include "Resources/Game/DB/Maps/Yendorian.lua"
 
 -- Quests
+include "Resources/Game/DB/Quests/Tutorial/Quest.lua"
 include "Resources/Game/DB/Quests/IslandsOfMadness/Quest.lua"
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 include "Resources/Game/DB/Quests/RavensEye/Quest.lua"

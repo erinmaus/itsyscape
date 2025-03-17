@@ -153,7 +153,7 @@ function DemoNewPlayerController:newPlayer(e)
 
 	if stats then
 		for skill in stats:iterate() do
-			skill:setXP(Curve:compute(self.LEVEL), true)
+			skill:setXP(Curve.XP_CURVE:compute(self.LEVEL), true)
 		end
 	end
 

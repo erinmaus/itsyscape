@@ -536,38 +536,7 @@ end
 
 function CutsceneEntity:dialog(name, target)
 	return function()
-		local gameDB = self.peep:getDirector():getGameDB()
-
-		local map = Utility.Peep.getMapResource(self.peep)
-		local namedMapAction = gameDB:getRecord("NamedMapAction", {
-			Name = name,
-			Map = map
-		})
-
-		local mapObject = target and Utility.Peep.getMapObject(target:getPeep())
-		local namedMapObjectAction = mapObject and gameDB:getRecord("NamedPeepAction", {
-			Name = name,
-			Peep = mapObject
-		})
-
-		local resource = target and Utility.Peep.getResource(target:getPeep())
-		local namedResourceAction = resource and gameDB:getRecord("NamedPeepAction", {
-			Name = name,
-			Peep = resource
-		})
-
-		local namedAction = namedMapObjectAction or namedResourceAction or namedMapAction
-		if not namedAction then
-			Log.warn("Couldn't get named action '%s' from map, resource, or map object for peep '%s'!", name, self.peep:getName())
-		end
-
-		local action = Utility.getAction(self.game, namedAction:get("Action"), false, false)
-		if not action then
-			Log.warn("Couldn't get named action '%s' for peep '%s' on map '%s'!", name, self.peep:getName(), map and map.name or "???")
-		end
-
-		Log.info("Got named action '%s' for peep '%s' on map '%s'.", name, self.peep:getName(), map and map.name or "???")
-		Utility.UI.openInterface(self.peep, "DialogBox", true, action.instance, target and target:getPeep() or self.peep)
+		Utility.Peep.dialog(self.peep, name, target and target:getPeep())
 
 		while Utility.UI.isOpen(self.peep, "DialogBox") do
 			coroutine.yield()

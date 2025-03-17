@@ -56,27 +56,48 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 -- any resources.
 local Utility = {}
 
-function _doMove(stage, player, path, anchor, raid)
+function _doMove(stage, player, path, anchor, raid, callback)
+	if callback then
+		callback("waited")
+	end
+
 	local instance = stage:movePeep(player, path, anchor)
 
 	if instance ~= path and raid then
 		raid:addInstance(instance)
 	end
+
+	if callback then
+		callback("move")
+	end
 end
 
-function Utility.move(player, path, anchor, raid)
+-- callback lifecycle:
+--   - "wait"   -> begin waiting before move
+--   - "waited" -> finished waiting before move
+--   - "move"   -> peep moved
+--   - "ready"  -> player can move again
+function Utility.move(player, path, anchor, raid, callback)
 	local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 
-	local move = CallbackCommand(_doMove, player:getDirector():getGameInstance():getStage(), player, path, anchor, raid)
+	local move = CallbackCommand(_doMove, player:getDirector():getGameInstance():getStage(), player, path, anchor, raid, callback)
 	local wait = WaitCommand(0.5, false)
 	local command = CompositeCommand(true, wait, move)
 
 	if not player:getCommandQueue():interrupt(command) then
+		if callback then
+			callback("cancel")
+		end
+
 		Log.info("Couldn't interrupt command queue for player '%s'; cannot move.", player:getName())
 		return false
+	end
+
+	if callback then
+		callback("wait")
 	end
 
 	player:addBehavior(DisabledBehavior)
@@ -90,6 +111,9 @@ function Utility.move(player, path, anchor, raid)
 
 	Utility.UI.openInterface(player, "CutsceneTransition", false, nil, function()
 		player:removeBehavior(DisabledBehavior)
+		if callback then
+			callback("ready")
+		end
 	end)
 
 	return true
@@ -2489,6 +2513,53 @@ function Utility.Map.getRandomPosition(map, position, distance, checkLineOfSight
 end
 
 Utility.Peep = {}
+
+function Utility.Peep.dialog(peep, obj, target)
+	local map = Utility.Peep.getMapResource(peep)
+
+	local namedAction
+	if type(obj) == "string" then
+		local gameDB = peep:getDirector():getGameDB()
+
+		local namedMapAction = gameDB:getRecord("NamedMapAction", {
+			Name = obj,
+			Map = map
+		})
+
+		local mapObject = target and Utility.Peep.getMapObject(target:getPeep())
+		local namedMapObjectAction = mapObject and gameDB:getRecord("NamedPeepAction", {
+			Name = obj,
+			Peep = mapObject
+		})
+
+		local resource = target and Utility.Peep.getResource(target:getPeep())
+		local namedResourceAction = resource and gameDB:getRecord("NamedPeepAction", {
+			Name = obj,
+			Peep = resource
+		})
+
+		namedAction = namedMapObjectAction or namedResourceAction or namedMapAction
+		if not namedAction then
+			Log.warn("Couldn't get named action '%s' from map, resource, or map object for peep '%s'!", name, peep:getName())
+			return false
+		end
+
+		namedAction = namedAction:get("Action")
+	elseif Class.isCompatibleType(obj, require "ItsyScape.Peep.Action") then
+		namedAction = obj:getAction()
+	else
+		namedAction = obj
+	end
+
+	local action = Utility.getAction(peep:getDirector():getGameInstance(), namedAction, false, false)
+	if not action then
+		Log.warn("Couldn't get named action '%s' for peep '%s' on map '%s'!", name, peep:getName(), map and map.name or "???")
+		return false
+	end
+
+	Utility.UI.openInterface(peep, "DialogBox", true, action.instance, target or peep)
+	return true
+end
 
 function Utility.Peep.talk(peep, message, ...)
 	Utility.Peep.message(peep, "Message", message, ...)

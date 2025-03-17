@@ -1,0 +1,87 @@
+VAR player_name = "Wren"
+
+CONST CHARACTER_PLAYER = "_TARGET"
+CONST PRONOUN_FORMAL = "formal"
+CONST PRONOUN_GENDER = "gender"
+CONST PRONOUN_OBJECT = "object"
+CONST PRONOUN_POSSESSIVE = "possessive"
+CONST PRONOUN_SUBJECT = "subject"
+
+CONST X_MX = "formal"
+CONST X_THEY = "subjecct"
+CONST X_THEM = "object"
+
+CONST RESOURCE_KEY_ITEM = "KeyItem"
+CONST RESOURCE_ITEM = "Item"
+
+LIST ir_state_flags = none
+LIST ir_skill_state_flags = skill_unboosted, skill_as_level
+LIST ir_item_state_flags = item_inventory, item_ignore, item_noted, item_drop, item_force_drop, item_bank, item_equipment, item_equipment_slot
+
+EXTERNAL ir_state_has(characterName, resourceType, resource, count, flags)
+EXTERNAL ir_state_count(characterName, resourceType, resource, flags)
+EXTERNAL ir_state_give(characterName, resourceType, resource, count, flags)
+EXTERNAL ir_state_take(characterName, resourceType, resource, count, flags)
+
+== function player_has_key_item(keyItemID) ==
+~ return ir_state_has(CHARACTER_PLAYER, RESOURCE_KEY_ITEM, keyItemID, 1, ir_state_flags.none)
+
+== function player_give_key_item(keyItemID) ==
+~ return ir_state_give(CHARACTER_PLAYER, RESOURCE_KEY_ITEM, keyItemID, 1, ir_state_flags.none)
+
+== function player_take_item(itemID, count) ==
+~ return ir_state_take(CHARACTER_PLAYER, RESOURCE_ITEM, itemID, count, (ir_item_state_flags.item_inventory, ir_item_state_flags.item_bank))
+
+== function player_give_item(itemID, count) ==
+~ return ir_state_give(CHARACTER_PLAYER, RESOURCE_ITEM, itemID, count, ir_item_state_flags.item_inventory)
+
+== function player_give_or_drop_item(itemID, count) ==
+~ return ir_state_give(CHARACTER_PLAYER, RESOURCE_ITEM, itemID, count, (ir_item_state_flags.item_inventory, ir_item_state_flags.item_drop))
+
+== function player_give_bank_item(itemID, count) ==
+~ return ir_state_give(CHARACTER_PLAYER, RESOURCE_ITEM, itemID, count, ir_item_state_flags.item_bank)
+
+== function player_has_item(itemID, count) ==
+~ return ir_state_has(CHARACTER_PLAYER, RESOURCE_ITEM, itemID, count, ir_item_state_flags.item_inventory)
+
+== function player_has_item_or_in_bank(itemID, count) ==
+~ return ir_state_has(CHARACTER_PLAYER, RESOURCE_ITEM, itemID, count, (ir_item_state_flags.item_inventory, ir_item_state_flags.item_bank))
+
+EXTERNAL ir_has_started_quest(characterName, questName)
+EXTERNAL ir_is_next_quest_step(characterName, questName, keyItemID)
+EXTERNAL ir_is_current_quest_step(characterName, questName, keyItemID)
+
+== function player_has_started_quest(questName) ==
+~ return ir_has_started_quest(CHARACTER_PLAYER, questName)
+
+== function player_is_next_quest_step(questName, keyItemID) ==
+~ return ir_is_next_quest_step(CHARACTER_PLAYER, questName, keyItemID)
+
+== function player_is_current_quest_step(questName, keyItemID) ==
+~ return ir_is_current_quest_step(CHARACTER_PLAYER, questName, keyItemID)
+
+EXTERNAL ir_yell(phrase)
+
+== function yell(phrase) ==
+~ return ir_yell(phrase)
+
+EXTERNAL ir_get_pronoun_lowercase(characterName, pronounType)
+EXTERNAL ir_get_pronoun_uppercase(characterName, pronounType)
+EXTERNAL ir_is_pronoun_plural(characterName)
+
+== function player_get_pronoun_lowercase(pronounType) ==
+~ return ir_get_pronoun_lowercase(CHARACTER_PLAYER, pronounType)
+
+== function player_get_pronoun_uppercase(pronounType) ==
+~ return ir_get_pronoun_uppercase(CHARACTER_PLAYER, pronounType)
+
+== function player_is_pronoun_plural() ==
+~ return ir_is_pronoun_plural(CHARACTER_PLAYER)
+
+EXTERNAL ir_play_animation(characterName, animationSlot, animationPriority, animationName, animationForced, animationTime)
+
+== function play_animation(characterName, animationName) ==
+~ return ir_play_animation(characterName, "x-dialog", 100, animationName, true, 0)
+
+== function player_play_animation(animationName) ==
+~ return play_animation(CHARACTER_PLAYER, animationName)

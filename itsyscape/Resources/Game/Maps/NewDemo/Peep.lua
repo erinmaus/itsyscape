@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
@@ -34,12 +35,14 @@ function NewGame:onPlayerEnter(player)
 
 	Utility.UI.closeAll(playerPeep)
 	Utility.UI.openInterface(playerPeep, "DemoNewPlayer", true, function()
-		self:movePeep()
+		Utility.move(playerPeep, "Sailing_HumanityEdge", "Anchor_Spawn")
 	end)
 end
 
 function NewGame:onPlayerLeave(player)
-	player:changeCamera("Default")
+	if player then
+		player:changeCamera("Default")
+	end
 end
 
 return NewGame
