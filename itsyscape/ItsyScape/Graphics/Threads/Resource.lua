@@ -37,10 +37,12 @@ while true do
 					local hasCache = love.filesystem.getInfo(cacheFilename)
 					if hasCache then
 						l = { id = request.id, table = love.filesystem.read(cacheFilename) }
+						Log.engine("Loaded cache file '%s'.", cacheFilename)
 					else
 						local file = love.filesystem.read(request.filename)
 						s, e = loadstring("return " .. (file or "nil"))
 						l = { id = request.id, table = buffer.encode(assert(setfenv(s, {}))() or {}) }
+						Log.engine("Loaded Lua file '%s'.", cacheFilename)
 					end
 				end
 

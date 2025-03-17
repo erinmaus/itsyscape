@@ -557,6 +557,62 @@ function Utility.spawnMapAtPosition(peep, resource, x, y, z, args)
 	return nil, nil
 end
 
+function Utility.spawnInstancedMapGroup(playerPeep, groupName)
+	local stage = playerPeep:getDirector():getGameInstance():getStage()
+	local gameDB = playerPeep:getDirector():getGameDB()
+
+	local instance = Utility.Peep.getInstance(playerPeep)
+	local instanceMapGroup = instance:getMapGroup(Utility.Peep.getLayer(playerPeep))
+	local layerName = stage:buildLayerNameFromInstanceIDAndFilename(instance:getID(), instance:getFilename())
+
+	local mapResource = Utility.Peep.getMapResource(playerPeep)
+	if not mapResource then
+		return false
+	end
+
+	local mapObjectGroupRecords = gameDB:getRecords("MapObjectGroup", {
+		IsInstanced = 1,
+		MapObjectGroup = groupName,
+		Map = mapResource
+	})
+
+	local results = {}
+	local namedPeeps = {}
+	for _, mapObjectGroup in ipairs(mapObjectGroupRecords) do
+		local mapObject = mapObjectGroup:get("MapObject")
+		local mapObjectLocation = gameDB:getRecord("MapObjectLocation", {
+			MapObject = mapObject
+		})
+
+		if mapObjectLocation then
+			local localLayer = math.max(mapObjectLocation:get("Layer"), 1)
+			local globalLayer = instance:getGlobalLayerFromLocalLayer(instanceMapGroup, localLayer)
+			local actor, prop = stage:instantiateMapObject(
+				mapObject,
+				globalLayer,
+				layerName,
+				false,
+				playerPeep)
+
+			assert(not (actor and prop), "single map object location spawned an actor and prop")
+
+			if actor then
+				table.insert(results, actor:getPeep())
+			end
+
+			if prop then
+				table.insert(results, prop:getPeep())
+			end
+
+			if actor or prop then
+				namedPeeps[mapObjectLocation:get("Name")] = (actor or prop):getPeep()
+			end
+		end
+	end
+
+	return results, namedPeeps
+end
+
 function Utility.performAction(game, resource, id, scope, ...)
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()

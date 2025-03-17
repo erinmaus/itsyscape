@@ -65,10 +65,13 @@ We're at %location(Humanity's Edge), the last human outpost before %person(Yendo
 = yendor_more_info
 
 # speaker={C_ORLANDO}
-%person(Yendor)... She's... Well, Yendor is an %hint(Old One). I'd... rather not say much about Her this close to R'lyeh...
+How do you... not know this?
 
 # speaker={C_ORLANDO}
-And what's %location(R'lyeh)... Not much is known. It's suicide to sail into those waters.
+%person(Yendor)... She's... Well, Yendor is an %hint(Old One). I'd... rather not say much about Her this close to %location(R'lyeh)...
+
+# speaker={C_ORLANDO}
+And what's %location(R'lyeh)... Not much is known. It's suicide to sail those waters.
 
 # speaker={C_ORLANDO}
 All we know is there's a HUH-UGE city under those bloody waves. No human has ever survived to tell the tale.
@@ -83,19 +86,19 @@ All we know is there's a HUH-UGE city under those bloody waves. No human has eve
 Ugh... What's going on?
 
 # speaker={C_ORLANDO}
-Woah, you're not with it! We're finishing that %hint(hellfire harpoon and launcher you designed)!
+Woah, you're not with it, are you?! We're finishing that %hint(hellfire harpoon and launcher you designed)!
 
 # speaker={C_PLAYER}
 ...Hellfire harpoon?
 
 # speaker={C_ORLANDO}
-Woah! Are you sure you don't got amnesia?!
+Are you sure you don't got amnesia?!
 
 # speaker={C_ORLANDO}
 The hellfire harpoon is a way to kill %person(Cthulhu)! The science checks out! Well, so says %person(my sis and her friends)... and they're all pretty smart, too!
 
 # speaker={C_ORLANDO}
-And if it can kill Cthulhu... We can push into %location(R'lyeh) and show them Yendorians us humans aren't to be underestimated!
+And if it can kill %person(Cthulhu)... We can push into %location(R'lyeh) and show them Yendorians us humans aren't to be underestimated!
 
 -> loop
 

@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
+local Resource = require "ItsyScape.Graphics.Resource"
 local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 
@@ -17,6 +18,8 @@ LargeTileSet = Class()
 
 LargeTileSet.ATLAS_SIZE = 1024
 LargeTileSet.TILE_SIZE  = 128
+LargeTileSet.SCALED_TILE_SIZE = 64
+LargeTileSet.CACHED_MAP_SIZE = 128
 
 function LargeTileSet:new(tileSet)
 	if not Class.isCompatibleType(tileSet, MultiTileSet) then
@@ -108,11 +111,13 @@ function LargeTileSet:resize(map)
 	local d = self.tileSet:getNumTileSets()
 	local layers = (w * h) * self.numLargeTiles + d
 
+	local atlasSize = math.floor(self.SCALED_TILE_SIZE / self.TILE_SIZE * self.ATLAS_SIZE)
+
 	if layers ~= self.layers then
 		self.layers = layers
-		self.diffuseCanvas = love.graphics.newCanvas(self.ATLAS_SIZE, self.ATLAS_SIZE, self.layers, { type = "array" })
-		self.specularCanvas = love.graphics.newCanvas(self.ATLAS_SIZE, self.ATLAS_SIZE, self.layers, { type = "array" })
-		self.outlineCanvas = love.graphics.newCanvas(self.ATLAS_SIZE, self.ATLAS_SIZE, self.layers, { type = "array" })
+		self.diffuseCanvas = love.graphics.newCanvas(atlasSize, atlasSize, self.layers, { type = "array" })
+		self.specularCanvas = love.graphics.newCanvas(atlasSize, atlasSize, self.layers, { type = "array" })
+		self.outlineCanvas = love.graphics.newCanvas(atlasSize, atlasSize, self.layers, { type = "array" })
 
 		self.diffuseTexture = LayerTextureResource(self.diffuseCanvas)
 		self.diffuseTexture:getHandle():setPerPassTexture(RendererPass.PASS_OUTLINE, self.outlineCanvas)
@@ -124,12 +129,33 @@ function LargeTileSet:resize(map)
 	self.numLayersPerLargeTile = w * h
 end
 
+function LargeTileSet:getLargeTilesCount()
+	return self.numLargeTiles
+end
+
+function LargeTileSet:getLargeTile(index)
+	local tile = self.largeTiles[index]
+	if tile then
+		return tile.name, tile.tileSetID
+	end
+
+	return nil, nil
+end
+
+function LargeTileSet:getLargeTileSize()
+	return self.numLargeTilesWidth, self.numLargeTilesHeight
+end
+
 function LargeTileSet:getDiffuseTexture()
 	return self.diffuseTexture
 end
 
 function LargeTileSet:getSpecularTexture()
 	return self.specularTexture
+end
+
+function LargeTileSet:getIsCacheEnabled()
+	return not Class.isCompatibleType(_APP, require "ItsyScape.BuildLargeTileSetsApplication")
 end
 
 function LargeTileSet:emitAll(map)
@@ -141,11 +167,13 @@ function LargeTileSet:emitAll(map)
 	local diffuseCanvas = self.diffuseCanvas
 	local specularCanvas = self.specularCanvas
 	local outlineCanvas = self.outlineCanvas
+	local scaleMultiplier = self.SCALED_TILE_SIZE / self.TILE_SIZE
 
 	love.graphics.push("all")
 	for i = 1, texture:getLayerCount() do
 		love.graphics.setCanvas(diffuseCanvas, i)
 		love.graphics.origin()
+		love.graphics.scale(scaleMultiplier, scaleMultiplier)
 		love.graphics.drawLayer(texture, i)
 	end
 	love.graphics.pop()
@@ -163,43 +191,95 @@ function LargeTileSet:emitAll(map)
 
 	local numTilesPerAxis = self.ATLAS_SIZE / self.TILE_SIZE
 	for largeTileIndex, largeTileInfo in ipairs(self.largeTiles) do
-		self:_emit("cache", map, largeTileInfo.tileSetID, largeTileInfo.name, 1, 1, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
+		local baseDirectory = string.format("Resources/Game/TileSets/%s/Cache", largeTileInfo.tileSetID)
 
-		for offsetAtlasI = 1, self.numLargeTilesWidth do
-			for offsetAtlasJ = 1, self.numLargeTilesHeight do
+		if self:getIsCacheEnabled() and love.filesystem.getInfo(baseDirectory) then
+			for offsetAtlasI = 1, self.numLargeTilesWidth do
+				for offsetAtlasJ = 1, self.numLargeTilesHeight do
+					local absoluteI = (offsetAtlasI - 1) * numTilesPerAxis + 1
+					local absoluteJ = (offsetAtlasJ - 1) * numTilesPerAxis + 1
 
-				local absoluteI = (offsetAtlasI - 1) * numTilesPerAxis + 1
-				local absoluteJ = (offsetAtlasJ - 1) * numTilesPerAxis + 1
+					if absoluteI <= map:getWidth() and absoluteJ <= map:getHeight() then
+						local layer = self:getTextureCoordinates(largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ)
 
-				if absoluteI <= map:getWidth() and absoluteJ <= map:getHeight() then
-					local layer = self:getTextureCoordinates(largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ)
+						if layer then
+							love.graphics.push("all")
+							love.graphics.setBlendMode("alpha", "alphamultiply")
 
-					if layer then
-						love.graphics.push("all")
-						love.graphics.setBlendMode("alpha", "alphamultiply")
+							love.graphics.origin()
+							love.graphics.setCanvas(diffuseCanvas, layer)
 
-						love.graphics.origin()
-						love.graphics.translate(
-							-((offsetAtlasI - 1) * self.ATLAS_SIZE),
-							-((offsetAtlasJ - 1) * self.ATLAS_SIZE))
+							local diffuseImageData = Resource.readImageData(string.format("%s/%s_%03dx%03d.png", baseDirectory, largeTileInfo.name, offsetAtlasI, offsetAtlasJ))
+							local diffuseImage = love.graphics.newImage(diffuseImageData)
+							local specularImageData = Resource.readImageData(string.format("%s/%s_%03dx%03d@Specular.png", baseDirectory, largeTileInfo.name, offsetAtlasI, offsetAtlasJ))
+							local specularImage = love.graphics.newImage(specularImageData)
+							local outlineImageData = Resource.readImageData(string.format("%s/%s_%03dx%03d@Outline.png", baseDirectory, largeTileInfo.name, offsetAtlasI, offsetAtlasJ))
+							local outlineImage = love.graphics.newImage(outlineImageData)
 
-						love.graphics.setCanvas(diffuseCanvas, layer)
-						love.graphics.clear(0, 0, 0, 1)
-						self:_emit("diffuse", map, largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
+							love.graphics.setCanvas(diffuseCanvas, layer)
+							love.graphics.draw(diffuseImage)
 
-						love.graphics.setCanvas(specularCanvas, layer)
-						love.graphics.clear(0, 0, 0, 0)
-						self:_emit("specular", map, largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
+							love.graphics.setCanvas(specularCanvas, layer)
+							love.graphics.draw(specularImage)
 
-						love.graphics.setCanvas(outlineCanvas, layer)
-						love.graphics.clear(1, 1, 1, 0)
-						self:_emit("outline", map, largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
+							love.graphics.setCanvas(outlineCanvas, layer)
+							love.graphics.draw(outlineImage)
 
-						love.graphics.pop()
+							love.graphics.pop()
+
+							diffuseImageData:release()
+							diffuseImage:release()
+							specularImageData:release()
+							specularImage:release()
+							outlineImageData:release()
+							outlineImage:release()
+
+							if coroutine.running() then
+								coroutine.yield()
+							end
+						end
 					end
+				end
+			end
+		else
+			self:_emit("cache", map, largeTileInfo.tileSetID, largeTileInfo.name, 1, 1, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
 
-					if coroutine.running() then
-						coroutine.yield()
+			for offsetAtlasI = 1, self.numLargeTilesWidth do
+				for offsetAtlasJ = 1, self.numLargeTilesHeight do
+					local absoluteI = (offsetAtlasI - 1) * numTilesPerAxis + 1
+					local absoluteJ = (offsetAtlasJ - 1) * numTilesPerAxis + 1
+
+					if absoluteI <= map:getWidth() and absoluteJ <= map:getHeight() then
+						local layer = self:getTextureCoordinates(largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ)
+
+						if layer then
+							love.graphics.push("all")
+							love.graphics.setBlendMode("alpha", "alphamultiply")
+
+							love.graphics.origin()
+							love.graphics.scale(scaleMultiplier, scaleMultiplier)
+							love.graphics.translate(
+								-((offsetAtlasI - 1) * self.ATLAS_SIZE),
+								-((offsetAtlasJ - 1) * self.ATLAS_SIZE))
+
+							love.graphics.setCanvas(diffuseCanvas, layer)
+							love.graphics.clear(0, 0, 0, 1)
+							self:_emit("diffuse", map, largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
+
+							love.graphics.setCanvas(specularCanvas, layer)
+							love.graphics.clear(0, 0, 0, 0)
+							self:_emit("specular", map, largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
+
+							love.graphics.setCanvas(outlineCanvas, layer)
+							love.graphics.clear(1, 1, 1, 0)
+							self:_emit("outline", map, largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
+
+							love.graphics.pop()
+						end
+
+						if coroutine.running() then
+							coroutine.yield()
+						end
 					end
 				end
 			end

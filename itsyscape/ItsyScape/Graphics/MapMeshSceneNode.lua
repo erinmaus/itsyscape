@@ -81,7 +81,7 @@ function MapMeshSceneNode:draw(renderer, delta)
 	if shader:hasUniform("scape_DiffuseTexture") and
 	   diffuse and diffuse:getIsReady()
 	then
-		diffuse:getHandle():getPerPassTexture(renderer:getCurrentPass():getID()):setFilter('nearest', 'nearest')
+		diffuse:getHandle():getPerPassTexture(renderer:getCurrentPass():getID()):setFilter('linear', 'linear')
 		shader:send("scape_DiffuseTexture", diffuse:getHandle():getPerPassTexture(renderer:getCurrentPass():getID()))
 	end
 
@@ -89,7 +89,7 @@ function MapMeshSceneNode:draw(renderer, delta)
 	if shader:hasUniform("scape_MaskTexture") and
 	   mask and mask:getIsReady()
 	then
-		mask:getResource():setFilter('nearest', 'nearest')
+		mask:getResource():setFilter('linear', 'linear')
 		shader:send("scape_MaskTexture", mask:getResource())
 	end
 
@@ -97,7 +97,7 @@ function MapMeshSceneNode:draw(renderer, delta)
 	if shader:hasUniform("scape_SpecularTexture") and
 	   specular and specular:getIsReady()
 	then
-		specular:getResource():setFilter('nearest', 'nearest')
+		specular:getResource():setFilter('linear', 'linear')
 		shader:send("scape_SpecularTexture", specular:getResource())
 	end
 

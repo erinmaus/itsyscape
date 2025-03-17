@@ -1152,7 +1152,7 @@ end
 function GameView:getMapTileSet(layer)
 	local m = self.mapMeshes[layer]
 	if m then
-		return m.tileSet, m.tileSetID
+		return m.tileSet, m.tileSetID, m.largeTileSet
 	end
 end
 

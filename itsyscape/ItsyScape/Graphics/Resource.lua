@@ -92,6 +92,10 @@ function Resource.readFile(filename)
 	end
 end
 
+function Resource.readImageData(filename)
+	return love.image.newImageData(love.data.newByteData(Resource.readFile(filename)))
+end
+
 function Resource.readLua(filename)
 	if coroutine.running() then
 		local id = Resource._queue("lua", filename)
