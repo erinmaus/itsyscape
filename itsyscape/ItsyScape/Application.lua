@@ -857,7 +857,7 @@ end
 
 function Application:quit(isError)
 	if self.multiThreaded then
-		Resource.quit()
+		self.gameView:getResourceManager():quit()
 
 		self:getGame():quit()
 		self.remoteGameManager:pushTick()

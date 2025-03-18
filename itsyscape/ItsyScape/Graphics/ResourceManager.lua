@@ -14,9 +14,11 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
-ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 60
+ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 20
 ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
 ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = _DEBUG == "plus" and 1 or 1 / 1000
+
+ResourceManager.FILE_IO_THREADS = 4
 
 ResourceManager.View = Class()
 
@@ -89,7 +91,6 @@ function ResourceManager.View:queueEvent(callback, ...)
 	local index = self.pendingIndex
 
 	self.pending[index] = { callback = Function(callback, ...), ready = true }
---	self.pending[index] = { callback = callback.bind(callback, ...), ready = true }
 end
 
 function ResourceManager.View:queueAsyncEvent(...)
@@ -116,8 +117,19 @@ function ResourceManager:new()
 	self.onFinish = Callback(false)
 	self.wasPending = false
 
-	self.fileIOThread = love.thread.newThread("ItsyScape/Graphics/Threads/Resource.lua")
-	self.fileIOThread:start()
+	self.fileIOThreads = {}
+	for i = 1, self.FILE_IO_THREADS do
+		local fileIOThread = love.thread.newThread("ItsyScape/Graphics/Threads/Resource.lua")
+		fileIOThread:start(i)
+
+		table.insert(self.fileIOThreads, fileIOThread)
+	end
+end
+
+function ResourceManager:quit()
+	for i = 1, self.FILE_IO_THREADS do
+		Resource.quit()
+	end
 end
 
 function ResourceManager:clear()
@@ -309,16 +321,27 @@ function ResourceManager:_load(resourceType, filename, ...)
 		filename = newFilename
 	end
 
+	if coroutine.running() then
+		coroutine.yield()
+	end
+
 	local resourcesOfType = self.resources[resourceType] or setmetatable({}, { __mode = 'v' })
-	if resourcesOfType[filename] then
+	if resourcesOfType[filename] and (coroutine.running() or resourcesOfType[filename] ~= true) then
+		while resourcesOfType[filename] == true do
+			Log.debug("Resource '%s' (%s) still loading elsewhere...", filename, resourceType._DEBUG.shortName)
+			coroutine.yield()
+		end
+
 		Log.debug("Resource '%s' (%s) cached.", filename, resourceType._DEBUG.shortName)
 	else
 		local before = love.timer.getTime()
 		do
 			local resource = resourceType()
+			resourcesOfType[filename] = true
+			self.resources[resourceType] = resourcesOfType
+
 			resource:loadFromFile(filename, self, ...)
 			resourcesOfType[filename] = resource
-			self.resources[resourceType] = resourcesOfType
 		end
 		local after = love.timer.getTime()
 

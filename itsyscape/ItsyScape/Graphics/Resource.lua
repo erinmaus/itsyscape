@@ -93,7 +93,14 @@ function Resource.readFile(filename)
 end
 
 function Resource.readImageData(filename)
-	return love.image.newImageData(love.data.newByteData(Resource.readFile(filename)))
+	if coroutine.running() then
+		local id = Resource._queue("image", filename)
+		local resource = Resource._poll(id, filename)
+
+		return resource.value
+	else
+		return love.filesystem.read(filename)
+	end
 end
 
 function Resource.readLua(filename)
@@ -112,6 +119,51 @@ function Resource.readLua(filename)
 		local s = "return " .. source
 		return assert(setfenv(loadstring(s), {}))()
 	end
+end
+
+local TYPES = {
+	file = true,
+	image = true,
+	lua = true
+}
+
+function Resource.many(t)
+	assert(coroutine.running(), "Resource.many is only async")
+
+	local result = {}
+
+	for i = 1, #t, 2 do
+		local fileType, filename = t[i], t[i + 1]
+		assert(TYPES[fileType], "resource file type not found")
+
+		table.insert(result, Resource._queue(fileType, filename))
+	end
+
+	local count = 0
+	while count < #result do
+		for index, id in ipairs(result) do
+			if type(id) == "number" then
+				local file = Resource._pending[id]
+				if file then
+					Resource._pending[id] = nil
+
+					if file.type == "image" then
+						result[index] = file.value
+					elseif file.type == "file" then
+						result[index] = file.value
+					elseif file.type == "lua" then
+						result[index] = buffer.decode(resource.table)
+					end
+
+					count = count + 1
+				end
+			end
+		end
+
+		coroutine.yield()
+	end
+
+	return result
 end
 
 function Resource.quit()

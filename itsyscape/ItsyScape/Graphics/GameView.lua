@@ -682,7 +682,6 @@ function GameView:updateMap(map, layer)
 			if m.map ~= map then
 				if m.map and (m.map:getWidth() ~= map:getWidth() or m.map:getHeight() ~= map:getHeight()) then
 					m.largeTileSet:resize(map)
-
 					self.resourceManager:queueAsyncEvent(function()
 						m.largeTileSet:emitAll(map)
 					end)
