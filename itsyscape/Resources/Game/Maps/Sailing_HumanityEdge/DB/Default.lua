@@ -74,6 +74,30 @@ do
 	}
 end
 
+M["Art_Rage_Fire4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 77.000000,
+		PositionY = 4.000000,
+		PositionZ = 111.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 4.828099,
+		ScaleY = 4.828099,
+		ScaleZ = 4.828099,
+		Name = "Art_Rage_Fire4",
+		Map = M._MAP,
+		Resource = M["Art_Rage_Fire4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
+		MapObject = M["Art_Rage_Fire4"]
+	}
+end
+
 M["Barrel_Default2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -479,6 +503,30 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Crate_Default1",
 		MapObject = M["Crate_Default13"]
+	}
+end
+
+M["Crate_Default14"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 77.887169,
+		PositionY = 4.000000,
+		PositionZ = 111.312500,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.500000,
+		ScaleY = 1.500000,
+		ScaleZ = 1.500000,
+		Name = "Crate_Default14",
+		Map = M._MAP,
+		Resource = M["Crate_Default14"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_Default14"]
 	}
 end
 
@@ -1343,6 +1391,30 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "ShadowTree_Jungle2",
 		MapObject = M["ShadowTree_Jungle22"]
+	}
+end
+
+M["ShadowVolume1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 95.875000,
+		PositionY = 2.500000,
+		PositionZ = 95.781250,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 17.002856,
+		ScaleY = 17.002856,
+		ScaleZ = 17.002856,
+		Name = "ShadowVolume1",
+		Map = M._MAP,
+		Resource = M["ShadowVolume1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ShadowVolume",
+		MapObject = M["ShadowVolume1"]
 	}
 end
 

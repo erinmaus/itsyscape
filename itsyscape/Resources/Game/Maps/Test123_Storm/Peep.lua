@@ -30,7 +30,7 @@ function TestMap:new(...)
 	local skyColor = Color.fromHexString("111111", 0.3)
 	local worldColor = Color.fromHexString("2d2d55", 1)
 
-	local lightColor = Color.fromHexString("255938")
+	local lightColor = Color.fromHexString("28613d")
 	sky.sunColor = lightColor
 	sky.moonColor = lightColor
 

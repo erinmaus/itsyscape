@@ -347,7 +347,9 @@ function FireView:flicker()
 		local flickerWidth = self.MAX_FLICKER_TIME - self.MIN_FLICKER_TIME
 		self.flickerTime = math.random() * flickerWidth + self.MIN_FLICKER_TIME
 
-		local scale = 1.0 + (self:getProp():getScale():getLength() - math.sqrt(3))
+		local min, max = self:getProp():getBounds()
+		local size = max - min
+		local scale = 1.0 + size:getLength()
 		local attenuationWidth = self.MAX_ATTENUATION - self.MIN_ATTENUATION
 		local attenuation = love.math.random() * attenuationWidth + self.MAX_ATTENUATION
 		self.light:setAttenuation(attenuation)
