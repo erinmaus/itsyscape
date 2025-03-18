@@ -92,10 +92,23 @@ EXTERNAL ir_get_english_be_uppercase(characterName, tense)
 == function player_get_english_be_uppercase(tense) ==
 ~ return ir_get_english_be_uppercase(C_PLAYER, tense)
 
+EXTERNAL ir_get_infinite()
 EXTERNAL ir_play_animation(characterName, animationSlot, animationPriority, animationName, animationForced, animationTime)
+
+== function play_sound(characterName, animationName) ==
+~ return ir_play_animation(characterName, "x-dialog-sfx", 100, animationName, true, 0)
 
 == function play_animation(characterName, animationName) ==
 ~ return ir_play_animation(characterName, "x-dialog", 100, animationName, true, 0)
 
+== function finish_animation(characterName, animationName) ==
+~ return ir_play_animation(characterName, "x-dialog", 100, animationName, true, ir_get_infinite())
+
 == function player_play_animation(animationName) ==
 ~ return play_animation(C_PLAYER, animationName)
+
+== function player_play_sound(animationName) ==
+~ return play_sound(C_PLAYER, animationName)
+
+== function player_finish_animation(animationName) ==
+~ return finish_animation(C_PLAYER, animationName)

@@ -33,7 +33,7 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local DialogBox = Class(Interface)
 DialogBox.PADDING = 16
 DialogBox.WIDTH = 960
-DialogBox.HEIGHT = 240
+DialogBox.HEIGHT = 272
 DialogBox.OPTION_HEIGHT = 48
 
 DialogBox.OPTION_BUTTON_STYLE = {
@@ -73,7 +73,7 @@ function DialogBox:new(id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
 	self:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
-	self:setPosition(w / 2 - DialogBox.WIDTH / 2, h - DialogBox.HEIGHT)
+	self:setPosition(w / 2 - DialogBox.WIDTH / 2, h - DialogBox.HEIGHT - DialogBox.PADDING)
 
 	self.panel = Panel()
 	self.panel:setStyle({

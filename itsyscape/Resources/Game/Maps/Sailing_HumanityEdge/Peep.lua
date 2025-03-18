@@ -14,6 +14,7 @@ local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Color = require "ItsyScape.Graphics.Color"
 local Probe = require "ItsyScape.Peep.Probe"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 
 local Island = Class(MapScript)
@@ -40,14 +41,52 @@ function Island:onLoad(...)
 	})
 end
 
+function Island:onFinishPreparingTutorial(playerPeep)
+	if not Utility.Quest.didStart("Tutorial", playerPeep) then
+		local success, dialog = Utility.Peep.dialog(playerPeep, "Talk", "Orlando")
+
+		if success then
+			Utility.Peep.disable(playerPeep)
+
+			dialog.onClose:register(function()
+				Utility.Peep.enable(playerPeep)
+			end)
+		end
+	end
+end
+
+function Island:prepareTutorial(playerPeep)
+	if not playerPeep then
+		return
+	end
+
+	if Utility.Quest.didComplete("Tutorial", playerPeep) then
+		return
+	end
+
+	Utility.spawnInstancedMapGroup(playerPeep, "Team")
+
+	local cutsceneTransition = Utility.UI.getOpenInterface(playerPeep, "CutsceneTransition")
+	if cutsceneTransition and not cutsceneTransition:getIsClosing() then
+		cutsceneTransition.onBeginClosing:register(self.onFinishPreparingTutorial, self, playerPeep)
+	else
+		self:pushPoke("finishPreparingTutorial", playerPeep)
+	end
+end
+
 function Island:onPlayerEnter(player)
 	player:pokeCamera("unlockPosition")
+
+	local playerPeep = player:getActor():getPeep()
+	self:prepareTutorial(playerPeep)
 end
 
 function Island:onPlayerLeave(player)
-	if player then
-		player:pokeCamera("lockPosition")
+	if not player then
+		return
 	end
+
+	player:pokeCamera("lockPosition")
 end
 
 return Island

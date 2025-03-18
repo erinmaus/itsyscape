@@ -58,7 +58,7 @@ local Utility = {}
 
 function _doMove(stage, player, path, anchor, raid, callback)
 	if callback then
-		callback("waited")
+		callback("waited", player)
 	end
 
 	local instance = stage:movePeep(player, path, anchor)
@@ -68,7 +68,7 @@ function _doMove(stage, player, path, anchor, raid, callback)
 	end
 
 	if callback then
-		callback("move")
+		callback("move", player, instance)
 	end
 end
 
@@ -81,7 +81,6 @@ function Utility.move(player, path, anchor, raid, callback)
 	local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
-	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 
 	local move = CallbackCommand(_doMove, player:getDirector():getGameInstance():getStage(), player, path, anchor, raid, callback)
 	local wait = WaitCommand(0.5, false)
@@ -89,7 +88,7 @@ function Utility.move(player, path, anchor, raid, callback)
 
 	if not player:getCommandQueue():interrupt(command) then
 		if callback then
-			callback("cancel")
+			callback("cancel", player)
 		end
 
 		Log.info("Couldn't interrupt command queue for player '%s'; cannot move.", player:getName())
@@ -97,10 +96,10 @@ function Utility.move(player, path, anchor, raid, callback)
 	end
 
 	if callback then
-		callback("wait")
+		callback("wait", player)
 	end
 
-	player:addBehavior(DisabledBehavior)
+	Utility.Peep.disable(player)
 	player:removeBehavior(TargetTileBehavior)
 
 	local movement = player:getBehavior(MovementBehavior)
@@ -110,9 +109,10 @@ function Utility.move(player, path, anchor, raid, callback)
 	end
 
 	Utility.UI.openInterface(player, "CutsceneTransition", false, nil, function()
-		player:removeBehavior(DisabledBehavior)
+		Utility.Peep.enable(player)
+
 		if callback then
-			callback("ready")
+			callback("ready", player)
 		end
 	end)
 
@@ -581,7 +581,7 @@ function Utility.spawnInstancedMapGroup(playerPeep, groupName)
 	for _, mapObjectGroup in ipairs(mapObjectGroupRecords) do
 		local mapObject = mapObjectGroup:get("MapObject")
 		local mapObjectLocation = gameDB:getRecord("MapObjectLocation", {
-			MapObject = mapObject
+			Resource = mapObject
 		})
 
 		if mapObjectLocation then
@@ -594,7 +594,7 @@ function Utility.spawnInstancedMapGroup(playerPeep, groupName)
 				false,
 				playerPeep)
 
-			assert(not (actor and prop), "single map object location spawned an actor and prop")
+			assert(not (actor and prop), "single map object location spawned both an actor and prop")
 
 			if actor then
 				table.insert(results, actor:getPeep())
@@ -1698,6 +1698,10 @@ function Utility.Text.Dialog.ir_yell(dialog, message)
 	return message:upper()
 end
 
+function Utility.Text.Dialog.ir_get_infinite()
+	return math.huge
+end
+
 function Utility.Text.Dialog.ir_play_animation(dialog, characterName, animationSlot, animationPriority, animationName, animationForced, animationTime)
 	local peep = dialog:getSpeaker(characterName)
 	if not peep then
@@ -1882,7 +1886,7 @@ function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
 			local _, n, controller = ui:openBlockingInterface(peep, interfaceID, ...)
 			return n ~= nil, n, controller
 		else
-			local _, n, controller= ui:open(peep, interfaceID, ...)
+			local _, n, controller = ui:open(peep, interfaceID, ...)
 			return n ~= nil, n, controller
 		end
 	end
@@ -1901,6 +1905,15 @@ function Utility.UI.isOpen(peep, interfaceID, interfaceIndex)
 end
 
 function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
+	if not interfaceIndex then
+		local isOpen, i = Utility.UI.isOpen(peep, interfaceID)
+		if not isOpen then
+			return nil
+		end
+
+		interfaceIndex = i
+	end
+
 	local ui = peep:getDirector():getGameInstance():getUI()
 	return ui:get(interfaceID, interfaceIndex)
 end
@@ -2701,8 +2714,56 @@ end
 
 Utility.Peep = {}
 
+function Utility.Peep.disable(peep)
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+
+	local disabled = peep:getBehavior(DisabledBehavior)
+	if not disabled then
+		peep:addBehavior(DisabledBehavior)
+		return true
+	end
+
+	disabled.index = disabled.index + 1
+	return false
+end
+
+function Utility.Peep.enable(peep)
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+
+	local disabled = peep:getBehavior(DisabledBehavior)
+	if not disabled then
+		return true
+	end
+
+	disabled.index = disabled.index - 1
+
+	if disabled.index <= 0 then
+		peep:removeBehavior(DisabledBehavior)
+		return true
+	end
+
+	return false
+end
+
 function Utility.Peep.dialog(peep, obj, target)
 	local map = Utility.Peep.getMapResource(peep)
+
+	if type(target) == "string" then
+		local Probe = require "ItsyScape.Peep.Probe"
+
+		local hit = peep:getDirector():probe(
+			peep:getLayerName(),
+			Probe.namedMapObject(target),
+			Probe.instance(Utility.Peep.getPlayerModel(peep)))[1]
+
+		if not hit then
+			hit = peep:getDirector():probe(
+				peep:getLayerName(),
+				Probe.namedMapObject(target))
+		end
+
+		target = hit
+	end
 
 	local namedAction
 	if type(obj) == "string" then
@@ -2713,13 +2774,13 @@ function Utility.Peep.dialog(peep, obj, target)
 			Map = map
 		})
 
-		local mapObject = target and Utility.Peep.getMapObject(target:getPeep())
+		local mapObject = target and Utility.Peep.getMapObject(target)
 		local namedMapObjectAction = mapObject and gameDB:getRecord("NamedPeepAction", {
 			Name = obj,
 			Peep = mapObject
 		})
 
-		local resource = target and Utility.Peep.getResource(target:getPeep())
+		local resource = target and Utility.Peep.getResource(target)
 		local namedResourceAction = resource and gameDB:getRecord("NamedPeepAction", {
 			Name = obj,
 			Peep = resource
@@ -2744,8 +2805,8 @@ function Utility.Peep.dialog(peep, obj, target)
 		return false
 	end
 
-	Utility.UI.openInterface(peep, "DialogBox", true, action.instance, target or peep)
-	return true
+	local success, _, dialog = Utility.UI.openInterface(peep, "DialogBox", true, action.instance, target or peep)
+	return success, dialog
 end
 
 function Utility.Peep.talk(peep, message, ...)

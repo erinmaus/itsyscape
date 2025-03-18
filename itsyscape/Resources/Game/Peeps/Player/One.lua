@@ -482,7 +482,7 @@ function One:onDie(p)
 	Utility.save(self, false, true, "Aaah!")
 
 	self.deadTimer = 5
-	self:addBehavior(DisabledBehavior)
+	Utility.Peep.disable(self)
 
 	Analytics:died(self, p and p:getAggressor())
 end
@@ -553,7 +553,7 @@ function One:update(...)
 		if self.rezzTimer > 0 then
 			self.rezzTimer = self.rezzTimer - delta
 			if self.rezzTimer < 0 then
-				self:removeBehavior(DisabledBehavior)
+				Utility.Peep.enable(self)
 				self.rezzTimer = math.huge
 				combatStatus.dead = false
 			end

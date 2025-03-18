@@ -17,7 +17,7 @@ local DisabledBehavior = Behavior("Disabled")
 function DisabledBehavior:new()
 	Behavior.Type.new(self)
 
-	-- Nothing.
+	self.index = 1
 end
 
 return DisabledBehavior

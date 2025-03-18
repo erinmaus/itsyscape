@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Dialog = require "ItsyScape.Game.Dialog.Dialog"
@@ -30,6 +31,7 @@ function DialogBoxController:new(peep, director, action, target)
 	self.action = action
 	self.target = target
 	self.hidRibbonTab = false
+	self.talkCharacter = false
 
 	if target then
 		target:poke('talkingStart')
@@ -47,10 +49,14 @@ function DialogBoxController:new(peep, director, action, target)
 				local filename = dialogRecord:get("Script")
 				self.dialog = Dialog(filename)
 			elseif characterRecord then
+				self.talkCharacter = characterRecord:get("Character")
+
 				local filename = string.format(
 					"Resources/Game/Dialog/%s/Dialog.json",
 					characterRecord:get("Character").name)
-				self.dialog = InkDialog(filename)
+				self.dialog = InkDialog(filename, self:getVariables())
+				self.dialog.onSetVariable:register(self.saveVariable, self)
+
 				Utility.Text.bind(self.dialog, "en-US")
 
 				if characterRecord:get("Main") ~= "" then
@@ -108,6 +114,34 @@ function DialogBoxController:new(peep, director, action, target)
 	end
 
 	self.needsPump = true
+
+	self.onClose = Callback()
+end
+
+function DialogBoxController:getStorage()
+	return self:getDirector():getPlayerStorage(self:getPeep()):getRoot():getSection("Player"):getSection("Dialog")
+end
+
+function DialogBoxController:saveVariable(_, name, value)
+	if not self.talkCharacter then
+		return
+	end
+
+	local storage = self:getStorage()
+	local characterDialogStorage = storage:getSection(self.talkCharacter.name)
+
+	storage:unset(name)
+	storage:set(name, value)
+end
+
+function DialogBoxController:getVariables()
+	if not self.talkCharacter then
+		return {}
+	end
+
+	local storage = self:getStorage()
+	local characterDialogStorage = storage:getSection(self.talkCharacter.name)
+	return characterDialogStorage:get()
 end
 
 function DialogBoxController:poke(actionID, actionIndex, e)
@@ -250,6 +284,8 @@ function DialogBoxController:pull()
 end
 
 function DialogBoxController:close()
+	self:onClose()
+
 	if self.target then
 		self.target:poke('talkingStop')
 	end

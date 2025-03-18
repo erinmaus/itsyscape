@@ -73,6 +73,8 @@ function ActorView.Animatable:playSound(filename, attenuation)
 
 		if attenuation then
 			sound:setAttenuationDistances(unpack(attenuation))
+		else
+			sound:setAttenuationDistances(1, 2)
 		end
 	end
 
@@ -685,6 +687,10 @@ function ActorView:_loadAnimation(a, definition, slot, animation, priority, time
 		a.priority = priority or -math.huge
 		a.id = self.animatable:addPlayingAnimation(a.instance, a.time)
 
+		if animation.time == math.huge then
+			animation.time = animation.definition:getDuration(true)
+		end
+
 		self.animatable:removePlayingAnimation(oldID)
 	end
 
@@ -1292,6 +1298,10 @@ function ActorView:nextAnimation(animation)
 	animation.priority = animation.next.priority or -math.huge
 	animation.next = nil
 	animation.id = self.animatable:addPlayingAnimation(animation.instance, animation.time)
+
+	if animation.time == math.huge then
+		animation.time = animation.definition:getDuration(true)
+	end
 
 	self.animatable:removePlayingAnimation(oldID)
 

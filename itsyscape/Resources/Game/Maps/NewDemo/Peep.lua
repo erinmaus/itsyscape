@@ -13,7 +13,6 @@ local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
-local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
 
 local NewGame = Class(MapScript)
 
@@ -26,7 +25,7 @@ end
 
 function NewGame:onPlayerEnter(player)
 	local playerPeep = player:getActor():getPeep()
-	playerPeep:addBehavior(DisabledBehavior)
+	Utility.Peep.disable(playerPeep)
 
 	player:changeCamera("StandardCutscene")
 	player:pokeCamera("targetActor", player:getActor():getID())
@@ -35,6 +34,7 @@ function NewGame:onPlayerEnter(player)
 
 	Utility.UI.closeAll(playerPeep)
 	Utility.UI.openInterface(playerPeep, "DemoNewPlayer", true, function()
+		Utility.Peep.enable(playerPeep)
 		Utility.move(playerPeep, "Sailing_HumanityEdge", "Anchor_Spawn")
 	end)
 end

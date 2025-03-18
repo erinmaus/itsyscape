@@ -320,7 +320,7 @@ end
 function DemoApplication:initialize()
 	Application.initialize(self)
 
-	love.audio.setDistanceModel('linear')
+	love.audio.setDistanceModel('linearclamped')
 
 	self.pendingTitleScreenOpen = true
 end

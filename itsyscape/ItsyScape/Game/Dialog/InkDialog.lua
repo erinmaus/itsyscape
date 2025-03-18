@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local json = require "json"
 local Nomicon = require "nomicon"
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local InputPacket = require "ItsyScape.Game.Dialog.InputPacket"
 local Message = require "ItsyScape.Game.Dialog.Message"
@@ -37,6 +38,8 @@ function InkDialog:new(filename, variables)
 	self.pendingPackets = {}
 
 	self.director = false
+
+	self.onSetVariable = Callback()
 end
 
 function InkDialog:jump(knot)
@@ -76,6 +79,8 @@ function InkDialog:_setVariable(variableName, value)
 	else
 		self.variables[variableName] = value
 	end
+
+	self:onSetVariable(variableName, self.variables[variableName])
 end
 
 function InkDialog:getSpeaker(name)
@@ -126,6 +131,7 @@ function InkDialog:next(choiceIndex)
 	end
 
 	if not self.story:canContinue() then
+		print("STORY OVER")
 		return false
 	end
 
@@ -135,8 +141,10 @@ function InkDialog:next(choiceIndex)
 		self:processTags(tags)
 	end
 
-	local message = Message(text)
-	table.insert(self.pendingPackets, MessagePacket(self, { message }))
+	if not text:match("^%s*$") then
+		local message = Message(text)
+		table.insert(self.pendingPackets, MessagePacket(self, { message }))
+	end
 
 	if self.choices:hasChoices() then
 		local options = {}

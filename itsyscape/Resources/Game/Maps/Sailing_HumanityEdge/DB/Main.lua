@@ -116,7 +116,7 @@ M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 77,
-		PositionY = 4,
+	PositionY = 4,
 		PositionZ = 105,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
@@ -126,6 +126,13 @@ end
 
 M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
 do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Team",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Orlando"]
+	}
+
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 79,
 		PositionY = 4,
@@ -155,7 +162,14 @@ do
 		Action = TalkAction
 	}
 
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "Talk",
+		Action = TalkAction,
+		Peep = M["Orlando"]
+	}
+
 	M["Orlando"] {
 		TalkAction
 	}
+
 end

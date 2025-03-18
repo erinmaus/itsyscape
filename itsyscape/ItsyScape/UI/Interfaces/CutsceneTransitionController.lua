@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Controller = require "ItsyScape.UI.Controller"
 
@@ -20,7 +21,11 @@ function CutsceneTransitionController:new(peep, director, minDuration, callback)
 	}
 
 	self.isClosing = false
-	self.callback = callback
+
+	self.onBeginClosing = Callback()
+	self.onFinishClosing = Callback()
+
+	self.onFinishClosing:register(callback)
 end
 
 function CutsceneTransitionController:getIsClosing()
@@ -38,12 +43,11 @@ end
 function CutsceneTransitionController:poke(actionID, actionIndex, e)
 	if actionID == "close" then
 		if self.isClosing then
-			if self.callback then
-				self.callback()
-			end
+			self:onFinishClosing()
 
 			self:getGame():getUI():closeInstance(self)
 		else
+			self:onBeginClosing()
 			self.isClosing = true
 		end
 	else

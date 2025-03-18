@@ -8,7 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Callback = require "ItsyScape.Common.Callback"
+local Function = require "ItsyScape.Common.Function"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -21,7 +21,7 @@ local Mapp = require "ItsyScape.GameDB.Mapp"
 local Probe = {}
 
 function Probe.bind(...)
-	return Callback.bind(...)
+	return Function(...)
 end
 
 local _none = function()
@@ -56,7 +56,7 @@ function Probe.distance(p, distance)
 
 	position = position * Vector.PLANE_XZ
 
-	return Callback.bind(_distance, position, distance)
+	return Function(_distance, position, distance)
 end
 
 
@@ -70,7 +70,7 @@ local _near = function(peep, distance, other)
 end
 
 function Probe.near(peep, distance)
-	return Callback.bind(_near, peep, distance)
+	return Function(_near, peep, distance)
 end
 
 local _resource = function(resourceType, resourceName, peep)
@@ -91,7 +91,7 @@ local _resource = function(resourceType, resourceName, peep)
 end
 
 function Probe.resource(resourceType, resourceName)
-	return Callback.bind(_resource, resourceType, resourceName)
+	return Function(_resource, resourceType, resourceName)
 end
 
 local _mapObject = function(obj, peep)
@@ -104,7 +104,7 @@ local _mapObject = function(obj, peep)
 end
 
 function Probe.mapObject(obj)
-	return Callback.bind(_mapObject, obj)
+	return Function(_mapObject, obj)
 end
 
 local _namedMapObject = function(name, peep)
@@ -125,7 +125,7 @@ local _namedMapObject = function(name, peep)
 end
 
 function Probe.namedMapObject(name)
-	return Callback.bind(_namedMapObject, name)
+	return Function(_namedMapObject, name)
 end
 
 local _instance = function(player, any, peep)
@@ -138,7 +138,7 @@ local _instance = function(player, any, peep)
 end
 
 function Probe.instance(player, any)
-	return Callback.bind(_instance, player, any)
+	return Function(_instance, player, any)
 end
 
 local _player = function(peep)
@@ -155,7 +155,7 @@ local _follower = function(player, peep)
 end
 
 function Probe.follower(player)
-	return Callback.bind(_follower, player, peep)
+	return Function(_follower, player, peep)
 end
 
 local _crew = function(ship, peep)
@@ -164,7 +164,7 @@ local _crew = function(ship, peep)
 end
 
 function Probe.crew(ship)
-	return Callback.bind(_crew, ship)
+	return Function(_crew, ship)
 end
 
 local _mapObjectGroup = function(name, peep)
@@ -186,7 +186,7 @@ local _mapObjectGroup = function(name, peep)
 end
 
 function Probe.mapObjectGroup(name)
-	return Callback.bind(_mapObjectGroup, name)
+	return Function(_mapObjectGroup, name)
 end
 
 local _attackable = function(peep)
@@ -223,7 +223,7 @@ local _actionOutput = function(actionType, outputName, outputType, peep)
 end
 
 function Probe.actionOutput(actionType, outputName, outputType)
-	return Callback.bind(_actionOutput, actionType, outputName, outputType)
+	return Function(_actionOutput, actionType, outputName, outputType)
 end
 
 local _layer = function(layer, peep)
@@ -232,7 +232,7 @@ local _layer = function(layer, peep)
 end
 
 function Probe.layer(layer)
-	return Callback.bind(_layer, layer)
+	return Function(_layer, layer)
 end
 
 local _component = function(ComponentType, peep)
@@ -240,7 +240,7 @@ local _component = function(ComponentType, peep)
 end
 
 function Probe.component(ComponentType)
-	return Callback.bind(_component, ComponentType)
+	return Function(_component, ComponentType)
 end
 
 return Probe
