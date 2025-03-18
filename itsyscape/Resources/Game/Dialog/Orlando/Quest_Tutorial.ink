@@ -65,7 +65,7 @@ Oof... What happened?
 -> quest_tutorial_main_started_get_up ->
 
 # speaker={C_ORLANDO}
-I was coming to grab to you when a lightning strike hit a create of gunpowder and caused an explosion! You were knocked into tomorrow.
+I was coming to grab to you when a lightning strike hit a crate of gunpowder and caused an explosion! You were knocked into tomorrow.
 
 # speaker={C_ORLANDO}
 But thank the gods you survived! We'd be toast without your smarts and skills!
