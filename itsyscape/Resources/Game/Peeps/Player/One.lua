@@ -587,14 +587,12 @@ function One:update(...)
 			stage:movePeep(
 				self,
 				mapName,
-				Vector(spawn:get("x"), spawn:get("y"), spawn:get("z")),
-				true)
+				Vector(spawn:get("x"), spawn:get("y"), spawn:get("z")))
 		else
 			stage:movePeep(
 				self,
 				"NewGame",
-				"Anchor_Spawn",
-				true)
+				"Anchor_Spawn")
 		end
 
 		self:poke('resurrect', {})

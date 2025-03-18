@@ -41,21 +41,32 @@ function Island:onLoad(...)
 	})
 end
 
+function Island:_dropPlayerInventory(playerPeep)
+	local stage = playerPeep:getDirector():getGameInstance():getStage()
+
+	local itemsToDrop = Utility.Peep.getInventory(playerPeep)
+	for _, item in ipairs(itemsToDrop) do
+		stage:dropItem(item)
+	end
+end
+
 function Island:onFinishPreparingTutorial(playerPeep)
 	if not Utility.Quest.didStart("Tutorial", playerPeep) then
-		local success, dialog = Utility.Peep.dialog(playerPeep, "Talk", "Orlando")
+		self:_dropPlayerInventory(playerPeep)
 
+		local success, dialog = Utility.Peep.dialog(playerPeep, "Talk", "Orlando")
 		if success then
 			Utility.Peep.disable(playerPeep)
 
 			dialog.onClose:register(function()
+				Utility.UI.openGroup(playerPeep, "WORLD")
 				Utility.Peep.enable(playerPeep)
 			end)
 		end
 	end
 end
 
-function Island:prepareTutorial(playerPeep)
+function Island:prepareTutorial(playerPeep, arguments)
 	if not playerPeep then
 		return
 	end
@@ -66,6 +77,10 @@ function Island:prepareTutorial(playerPeep)
 
 	Utility.spawnInstancedMapGroup(playerPeep, "Team")
 
+	if arguments and arguments.class then
+		Utility.Text.setDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class", arguments.class)
+	end
+
 	local cutsceneTransition = Utility.UI.getOpenInterface(playerPeep, "CutsceneTransition")
 	if cutsceneTransition and not cutsceneTransition:getIsClosing() then
 		cutsceneTransition.onBeginClosing:register(self.onFinishPreparingTutorial, self, playerPeep)
@@ -74,11 +89,11 @@ function Island:prepareTutorial(playerPeep)
 	end
 end
 
-function Island:onPlayerEnter(player)
+function Island:onPlayerEnter(player, arguments)
 	player:pokeCamera("unlockPosition")
 
 	local playerPeep = player:getActor():getPeep()
-	self:prepareTutorial(playerPeep)
+	self:prepareTutorial(playerPeep, arguments)
 end
 
 function Island:onPlayerLeave(player)

@@ -190,8 +190,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 							Vector(
 								location:get("x"),
 								location:get("y"),
-								location:get("z")),
-							true)
+								location:get("z")))
 
 						local statusStorage = root:getSection("Status")
 						local status = actor:getPeep():getBehavior(CombatStatusBehavior)

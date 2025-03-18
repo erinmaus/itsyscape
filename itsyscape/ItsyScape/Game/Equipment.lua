@@ -30,7 +30,7 @@ Equipment.AMMO_BOLT       = 2
 Equipment.AMMO_BULLET     = 3
 Equipment.AMMO_THROWN     = 4
 Equipment.AMMO_CANNONBALL = 5
-Equipment.AMMO_ANY        = math.huge
+Equipment.AMMO_ANY        = -1
 
 Equipment.PLAYER_SLOT_RIGHT_HAND = 20
 Equipment.PLAYER_SLOT_LEFT_HAND  = 21

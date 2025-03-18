@@ -132,18 +132,31 @@ function DialogBoxController:saveVariable(_, name, value)
 	local storage = self:getStorage()
 	local characterDialogStorage = storage:getSection(self.talkCharacter.name)
 
-	storage:unset(name)
-	storage:set(name, value)
+	characterDialogStorage:unset(name)
+	characterDialogStorage:set(name, value)
+end
+
+function DialogBoxController:getDefaultVariables()
+	return {
+		player_name = string.format("%%person(%s)", self:getPeep():getName())
+	}
 end
 
 function DialogBoxController:getVariables()
+	local args = self:getDefaultVariables()
+
 	if not self.talkCharacter then
-		return {}
+		return args
 	end
 
 	local storage = self:getStorage()
 	local characterDialogStorage = storage:getSection(self.talkCharacter.name)
-	return characterDialogStorage:get()
+
+	local result = characterDialogStorage:get()
+	for k, v in pairs(args) do
+		result[k] = v
+	end
+	return result
 end
 
 function DialogBoxController:poke(actionID, actionIndex, e)

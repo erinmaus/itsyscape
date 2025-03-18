@@ -33,9 +33,13 @@ function NewGame:onPlayerEnter(player)
 	player:pokeCamera("verticalRotate", -math.pi / 8, 0)
 
 	Utility.UI.closeAll(playerPeep)
-	Utility.UI.openInterface(playerPeep, "DemoNewPlayer", true, function()
+	Utility.UI.openInterface(playerPeep, "DemoNewPlayer", true, function(_, style)
 		Utility.Peep.enable(playerPeep)
-		Utility.move(playerPeep, "Sailing_HumanityEdge", "Anchor_Spawn")
+		Utility.move(playerPeep, "Sailing_HumanityEdge", "Anchor_Spawn", nil, {
+			instancePlayerArguments = {
+				class = style
+			}
+		})
 	end)
 end
 

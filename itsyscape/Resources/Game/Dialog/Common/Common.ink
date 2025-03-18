@@ -1,3 +1,5 @@
+INCLUDE ../Common/Equipment.ink
+
 VAR player_name = "%person(Wren)"
 
 CONST C_PLAYER = "_TARGET"

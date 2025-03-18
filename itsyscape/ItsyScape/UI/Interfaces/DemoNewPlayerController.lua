@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
@@ -82,7 +83,8 @@ function DemoNewPlayerController:new(peep, director, onClose)
 	Controller.new(self, peep, director)
 
 	self.isReady = false
-	self.onClose = onClose
+	self.onClose = Callback()
+	self.onClose:register(onClose)
 
 	self:pullClasses()
 end
@@ -165,7 +167,14 @@ function DemoNewPlayerController:newPlayer(e)
 		status.maximumPrayer = self.LEVEL
 	end
 
-	self:onClose()
+	for i = 1, #self.INVENTORY_ALL do
+		local item = self.INVENTORY_ALL[i]
+		peep:getState():give("Item", item, 1, { ['item-inventory'] = true })
+	end
+
+	peep:getState():give("Item", class.info.weapon, 1, { ['item-inventory'] = true })
+
+	self:onClose(class.info.style)
 	self:getGame():getUI():closeInstance(self)
 end
 

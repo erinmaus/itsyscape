@@ -56,12 +56,12 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 -- any resources.
 local Utility = {}
 
-function _doMove(stage, player, path, anchor, raid, callback)
+function _doMove(stage, player, path, anchor, raid, e, callback)
 	if callback then
 		callback("waited", player)
 	end
 
-	local instance = stage:movePeep(player, path, anchor)
+	local instance = stage:movePeep(player, path, anchor, e)
 
 	if instance ~= path and raid then
 		raid:addInstance(instance)
@@ -77,12 +77,12 @@ end
 --   - "waited" -> finished waiting before move
 --   - "move"   -> peep moved
 --   - "ready"  -> player can move again
-function Utility.move(player, path, anchor, raid, callback)
+function Utility.move(player, path, anchor, raid, e, callback)
 	local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 
-	local move = CallbackCommand(_doMove, player:getDirector():getGameInstance():getStage(), player, path, anchor, raid, callback)
+	local move = CallbackCommand(_doMove, player:getDirector():getGameInstance():getStage(), player, path, anchor, raid, e, callback)
 	local wait = WaitCommand(0.5, false)
 	local command = CompositeCommand(true, wait, move)
 
@@ -1733,6 +1733,26 @@ function Utility.Text.bind(dialog, language)
 	for k, v in pairs(Utility.Text.Dialog) do
 		dialog:bindExternalFunction(k, v, dialog)
 	end
+end
+
+function Utility.Text.setDialogVariable(playerPeep, character, variableName, variableValue)
+	local director = playerPeep:getDirector()
+
+	if type(character) == "string" then
+		character = director:getGameDB():getResource(character, "Character")
+	end
+
+	if not character then
+		return false
+	end
+
+	local dialogStorage = director:getPlayerStorage(playerPeep):getRoot():getSection("Player"):getSection("Dialog")
+	local characterDialogStorage = dialogStorage:getSection(character.name)
+
+	characterDialogStorage:unset(variableName)
+	characterDialogStorage:set(variableName, variableValue)
+
+	return true
 end
 
 function Utility.Text.getPronouns(peep)
@@ -3443,6 +3463,29 @@ function Utility.Peep.getStorage(peep, instancedPlayer)
 	Log.warn("Failed to get storage for Peep '%s' (%d).", peep:getName(), peep:getTally())
 
 	return nil
+end
+
+function Utility.Peep.getInventory(peep)
+	local inventory = peep:getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+
+	if not inventory then
+		return nil
+	end
+
+	local broker = inventory:getBroker()
+	if not broker then
+		return nil
+	end
+
+	local result = {}
+	for key in broker:keys(inventory) do
+		for item in broker:iterateItemsByKey(inventory, key) do
+			table.insert(result, item)
+		end
+	end
+
+	return result
 end
 
 function Utility.Peep.getEquippedItem(peep, slot)

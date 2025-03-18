@@ -1,14 +1,25 @@
 INCLUDE ./Common.ink
 INCLUDE ../Common/Common.ink
 
+VAR quest_tutorial_main_starting_player_class = WEAPON_STYLE_NONE
 VAR quest_tutorial_main_started_got_up = false
 VAR quest_tutorial_main_started_asked_what_happened = false
 VAR quest_tutorial_main_started_asked_where_am_i = false
 VAR quest_tutorial_main_started_asked_what_is_going_on = false
 
+== function quest_tutorial_get_class_name() ==
+{
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: wizard
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: archer
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: warrior
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_SAILING: sailor
+  else: loaf
+}
+
 == quest_tutorial_main ==
 {
     - !player_has_started_quest("Tutorial"): -> quest_tutorial_main_started
+    - !player_is_next_quest_step("Tutorial", "Tutorial_GatheredItems"): -> quest_tutorial_main_gather_items
 }
 
 == quest_tutorial_main_started ==
@@ -69,6 +80,9 @@ I was coming to grab to you when a lightning strike hit a crate of gunpowder and
 
 # speaker={C_ORLANDO}
 But thank the gods you survived! We'd be toast without your smarts and skills!
+
+# speaker={C_ORLANDO}
+After all, %hint(you're the only engineer AND {quest_tutorial_get_class_name()}) on the team!
 
 + [I have more questions.]
   -> loop
@@ -140,7 +154,8 @@ And if it can kill %person(Cthulhu)... We can push into %location(R'lyeh) and sh
 # speaker={C_PLAYER}
 Let's get going, then!
 
--> END
+~ player_give_key_item("Tutorial_Start")
+-> quest_tutorial_main
 
 == quest_tutorial_main_started_get_up ==
 {
@@ -160,3 +175,7 @@ THANK THE GODS YOU'RE ALIVE, {yell(player_name)}! Looks like that lightning stri
 = got_up
 
 ->->
+
+== quest_tutorial_main_gather_items ==
+
+# speaker={C_ORLANDO}

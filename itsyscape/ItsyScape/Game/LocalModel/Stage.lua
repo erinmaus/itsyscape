@@ -934,18 +934,24 @@ function LocalStage:removePlayer(player)
 	return false
 end
 
-function LocalStage:movePeep(peep, path, anchor)
+function LocalStage:movePeep(peep, path, anchor, e)
 	local filename, arguments, instance
 	if type(path) == 'string' then
 		filename = self:getFilenameFromPath(path)
 		arguments = self:getArgumentsFromPath(path)
 
+		if e and e.path then
+			for k, v in pairs(e.path) do
+				arguments[k] = v
+			end
+		end
+
 		Log.info("Moving peep '%s' to map '%s'.", peep:getName(), filename)
 
-		if self:isPathLocal(path) then
+		if self:isPathLocal(path) and next(arguments) == nil then
 			instance = self:newLocalInstance(filename, arguments)
 			Log.info("Path is local; created new instance %s (%d).", instance:getFilename(), instance:getID())
-		elseif self:isPathGlobal(path) then
+		elseif self:isPathGlobal(path) or next(arguments) ~= nil then
 			instance = self:getGlobalInstanceByFilename(filename)
 			if not instance then
 				instance = self:newGlobalInstance(filename)
@@ -980,10 +986,11 @@ function LocalStage:movePeep(peep, path, anchor)
 		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).playerID)
 		player:saveLocation()
 
-		local previousInstance = self:getPeepInstance(peep)
-		if previousInstance then
-			previousInstance:removePlayer(player)
-		end
+		-- TODO: is this needed?
+		-- local previousInstance = self:getPeepInstance(peep)
+		-- if previousInstance then
+		-- 	previousInstance:removePlayer(player, { arguments = e and e.previousPlayerArguments })
+		-- end
 	end
 
 	do
@@ -1099,14 +1106,14 @@ function LocalStage:movePeep(peep, path, anchor)
 
 			local previousInstance = self:getInstanceByFilenameAndID(filename, id)
 			if previousInstance then
-				previousInstance:removePlayer(player)
+				previousInstance:removePlayer(player, { arguments = e and e.previousInstancePlayerArguments })
 			else
 				Log.engine(
 					"Player '%s' (player ID = %d, actor ID = %d) was not in instance.",
 					(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID(), (player:getActor() and player:getActor():getID()) or -1)
 			end
 
-			instance:addPlayer(player, { isOrphan = oldLayerName == "::orphan" })
+			instance:addPlayer(player, { isOrphan = oldLayerName == "::orphan", arguments = e and e.instancePlayerArguments })
 			player:setInstance(oldLayerName, newLayerName, instance)
 			peep:poke('moveInstance', previousInstance, instance)
 

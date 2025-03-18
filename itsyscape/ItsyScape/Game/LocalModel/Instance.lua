@@ -261,6 +261,7 @@ function Instance:new(id, filename, stage)
 
 	self.players = {}
 	self.playersByID = {}
+	self.playerArguments = {}
 	self.orphans = {}
 
 	self.maps = {}
@@ -1026,12 +1027,18 @@ function Instance:hasPlayer(player)
 	return self.playersByID[player:getID()] ~= nil
 end
 
+function Instance:getPlayerArguments(player)
+	return self:hasPlayer() and self.playerArguments[player:getID()]
+end
+
 function Instance:addPlayer(player, e)
 	if not self:hasPlayer(player) then
 		Log.info("Adding player '%s' (%d) to instance %s (%d).", (player:getActor() and player:getActor():getName()) or "<pending>", player:getID(), self:getFilename(), self:getID())
 
 		table.insert(self.players, player)
 		self.playersByID[player:getID()] = player
+		self.playerArguments[player:getID()] = e.arguments or {}
+
 		self:_addPlayerToInstance(player, e)
 
 		if not self.partyLeader then
@@ -1045,8 +1052,10 @@ function Instance:addPlayer(player, e)
 	return false
 end
 
-function Instance:removePlayer(player)
+function Instance:removePlayer(player, e)
 	self.playersByID[player:getID()] = nil
+	self.playerArguments[player:getID()] = nil
+
 	for i = 1, #self.players do
 		if self.players[i]:getID() == player:getID() then
 			Log.info("Removing player '%s' (%d) from instance %s (%d).", (player:getActor() and player:getActor():getName()) or "<pending>", player:getID(), self:getFilename(), self:getID())
@@ -1057,7 +1066,7 @@ function Instance:removePlayer(player)
 				self.partyLeader = nil
 			end
 
-			self:_removePlayerFromInstance(player)
+			self:_removePlayerFromInstance(player, e)
 
 			return true
 		end
@@ -1129,7 +1138,7 @@ function Instance:_addPlayerToInstance(player, e)
 			local mapScript = self:getMapScriptByLayer(layer)
 			if mapScript then
 				local function onPlayerEnter()
-					mapScript:pushPoke('playerEnter', player)
+					mapScript:pushPoke('playerEnter', player, e and e.arguments or {})
 					mapScript:silence('finalize', onPlayerEnter)
 				end
 
@@ -1249,7 +1258,7 @@ function Instance:_clearInstancedMaps(player)
 	end
 end
 
-function Instance:_removePlayerFromInstance(player)
+function Instance:_removePlayerFromInstance(player, e)
 	self.orphans[player] = nil
 
 	for i = 1, #self.layers do
@@ -1258,7 +1267,7 @@ function Instance:_removePlayerFromInstance(player)
 			local mapScript = self:getMapScriptByLayer(layer)
 			if mapScript then
 				local function onPlayerLeave()
-					mapScript:pushPoke('playerLeave', player)
+					mapScript:pushPoke('playerLeave', player, e and e.arguments or {})
 					mapScript:silence('finalize', onPlayerLeave)
 				end
 
