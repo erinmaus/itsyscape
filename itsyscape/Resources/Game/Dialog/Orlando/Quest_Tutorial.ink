@@ -13,7 +13,7 @@ VAR quest_tutorial_main_started_asked_what_is_going_on = false
   - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: archer
   - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: warrior
   - quest_tutorial_main_starting_player_class == WEAPON_STYLE_SAILING: sailor
-  else: loaf
+  - else: loaf
 }
 
 == quest_tutorial_main ==
@@ -179,3 +179,4 @@ THANK THE GODS YOU'RE ALIVE, {yell(player_name)}! Looks like that lightning stri
 == quest_tutorial_main_gather_items ==
 
 # speaker={C_ORLANDO}
+... TODO!
