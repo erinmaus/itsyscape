@@ -16,12 +16,15 @@ VAR quest_tutorial_main_started_asked_what_is_going_on = false
 ~ player_play_sound("SFX_LightningExplosion")
 
 # speaker={C_ORLANDO}
+# background=000000
 WHAT WAS THAT?!
 
 # speaker={C_ORLANDO}
+# background=000000
 OI! {yell(player_name)}! ARE YOU OK?! HELP! {yell(player_get_pronoun_uppercase(X_THEY))} {yell(player_get_english_be_uppercase(X_ARE))} IN TROUBLE!
 
 # speaker={C_PLAYER}
+# background=none
 ...
 
 ~ player_play_animation("Human_Dazed")

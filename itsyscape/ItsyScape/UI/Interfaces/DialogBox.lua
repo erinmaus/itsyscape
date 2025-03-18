@@ -35,6 +35,7 @@ DialogBox.PADDING = 16
 DialogBox.WIDTH = 960
 DialogBox.HEIGHT = 272
 DialogBox.OPTION_HEIGHT = 48
+DialogBox.BACKGROUND_FADE_TIME = 0.25
 
 DialogBox.OPTION_BUTTON_STYLE = {
 	inactive = "Resources/Game/UI/Buttons/Button-Default.png",
@@ -72,6 +73,11 @@ function DialogBox:new(id, index, ui)
 	self:setData(GamepadSink, GamepadSink({ isBlocking = true }))
 
 	local w, h = love.graphics.getScaledMode()
+
+	self.background = Panel()
+	self.background:setSize(w, h)
+	self.background:setZDepth(4000)
+
 	self:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
 	self:setPosition(w / 2 - DialogBox.WIDTH / 2, h - DialogBox.HEIGHT - DialogBox.PADDING)
 
@@ -178,7 +184,18 @@ function DialogBox:new(id, index, ui)
 	self.keybind = Keybinds['PLAYER_1_CONTINUE']
 	self.isKeybindDown = self.keybind:isDown()
 
+	self.currentColor = Color(0, 0, 0, 0)
+	self.colorTime = 0
+
+	self.onClose:register(self.close, self)
+
 	self:next()
+end
+
+function DialogBox:close()
+	if self.background:getParent() then
+		self.background:getParent():removeChild(self.background)
+	end
 end
 
 function DialogBox:getOverflow()
@@ -292,6 +309,27 @@ function DialogBox:next(state)
 		self.speakerLabel:setText(state.speaker)
 	end
 
+	if state.background then
+		local isDifferent
+		if self.targetColor then
+			local r, g, b, a = unpack(state.background)
+			local c = self.targetColor
+			isDifferent = c.r ~= r or c.g ~= g or c.b ~= b or c.a ~= a
+		elseif not self.targetColor then
+			isDifferent = true
+		end
+
+		if isDifferent then
+			self.currentColor = self.currentColor:lerp(self.targetColor or Color(0, 0, 0, 0), math.clamp(self.colorTime / self.BACKGROUND_FADE_TIME))
+			self.targetColor = Color(unpack(state.background))
+			self.colorTime = 0
+		end
+	elseif self.targetColor then
+		self.currentColor = self.currentColor:lerp(self.targetColor, math.clamp(self.colorTime / self.BACKGROUND_FADE_TIME))
+		self.targetColor = nil
+		self.colorTime = 0
+	end
+
 	self.actorView = nil
 	if state.actor then
 		local game = self:getView():getGame()
@@ -325,8 +363,8 @@ function DialogBox:next(state)
 	end
 end
 
-function DialogBox:update(...)
-	Interface.update(self, ...)
+function DialogBox:update(delta)
+	Interface.update(self, delta)
 
 	local gameCamera = self:getView():getGameView():getRenderer():getCamera()
 	self.camera:setHorizontalRotation(gameCamera:getHorizontalRotation())
@@ -375,6 +413,20 @@ function DialogBox:update(...)
 	else
 		offset = Vector.ZERO
 		zoom = 1
+	end
+
+	self.colorTime = self.colorTime + delta
+	local panelColor = self.currentColor:lerp(self.targetColor or Color(0, 0, 0, 0), math.clamp(self.colorTime / self.BACKGROUND_FADE_TIME))
+	if panelColor.a > 0 then
+		self.background:setStyle({ image = false, color = { panelColor:get() } }, PanelStyle)
+
+		if self.background:getParent() ~= self:getView():getRoot() then
+			self:getView():getRoot():addChild(self.background)
+		end
+	else
+		if self.background:getParent() == self:getView():getRoot() then
+			self:getView():getRoot():removeChild(self.background)
+		end
 	end
 
 	local x, y, z = transform:transformPoint(offset:get())

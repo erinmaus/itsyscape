@@ -10,12 +10,14 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local BackgroundPacket = require "ItsyScape.Game.Dialog.BackgroundPacket"
 local Dialog = require "ItsyScape.Game.Dialog.Dialog"
 local InkDialog = require "ItsyScape.Game.Dialog.InkDialog"
 local InputPacket = require "ItsyScape.Game.Dialog.InputPacket"
 local MessagePacket = require "ItsyScape.Game.Dialog.MessagePacket"
 local SelectPacket = require "ItsyScape.Game.Dialog.SelectPacket"
 local SpeakerPacket = require "ItsyScape.Game.Dialog.SpeakerPacket"
+local Color = require "ItsyScape.Graphics.Color"
 local Probe = require "ItsyScape.Peep.Probe"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
@@ -195,6 +197,7 @@ function DialogBoxController:pump(e, ...)
 				speaker = self.state.speaker,
 				actor = self.state.actor,
 				prop = self.state.prop,
+				background = self.state.background,
 				input = self.currentPacket:getQuestion():inflate()
 			}
 		elseif self.currentPacket:isType(MessagePacket) then
@@ -202,6 +205,7 @@ function DialogBoxController:pump(e, ...)
 				speaker = self.state.speaker or "",
 				actor = self.state.actor,
 				prop = self.state.prop,
+				background = self.state.background,
 				content = { self.currentPacket:getMessage()[1]:inflate() }
 			}
 		elseif self.currentPacket:isType(SelectPacket) then
@@ -214,6 +218,7 @@ function DialogBoxController:pump(e, ...)
 				speaker = self.state.speaker or "",
 				actor = self.state.actor,
 				prop = self.state.prop,
+				background = self.state.background,
 				options = options
 			}
 		elseif self.currentPacket:isType(SpeakerPacket) then
@@ -253,6 +258,15 @@ function DialogBoxController:pump(e, ...)
 			end
 
 			-- Pump again. We want a Packet that requires us to wait.
+			self:pump()
+		elseif self.currentPacket:isType(BackgroundPacket) then
+			local background = self.currentPacket:getBackground()
+			if background:lower() == "none" then
+				self.state.background = nil
+			else
+				self.state.background = { Color.fromHexString(background):get() }
+			end
+
 			self:pump()
 		end
 

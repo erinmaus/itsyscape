@@ -11,6 +11,7 @@ local json = require "json"
 local Nomicon = require "nomicon"
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local BackgroundPacket = require "ItsyScape.Game.Dialog.BackgroundPacket"
 local InputPacket = require "ItsyScape.Game.Dialog.InputPacket"
 local Message = require "ItsyScape.Game.Dialog.Message"
 local MessagePacket = require "ItsyScape.Game.Dialog.MessagePacket"
@@ -116,6 +117,8 @@ function InkDialog:processTags(tags)
 		local tagType, tagValue = tag:match("([%w_]+)%s*=%s*(.*)")
 		if tagType == "speaker" then
 			table.insert(self.pendingPackets, SpeakerPacket(self, tagValue))
+		elseif tagType == "background" then
+			table.insert(self.pendingPackets, BackgroundPacket(self, tagValue))
 		end
 	end
 end
