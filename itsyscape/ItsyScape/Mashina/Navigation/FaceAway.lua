@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Navigation/Face.lua
+-- ItsyScape/Mashina/Navigation/FaceAway.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,12 +12,12 @@ local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
-local Face = B.Node("Face")
-Face.SOURCE = B.Reference()
-Face.TARGET = B.Reference()
-Face.DIRECTION = B.Reference()
+local FaceAway = B.Node("FaceAway")
+FaceAway.SOURCE = B.Reference()
+FaceAway.TARGET = B.Reference()
+FaceAway.DIRECTION = B.Reference()
 
-function Face:update(mashina, state, executor)
+function FaceAway:update(mashina, state, executor)
 	local source = state[self.SOURCE] or mashina
 
 	local direction = state[self.DIRECTION]
@@ -26,8 +26,8 @@ function Face:update(mashina, state, executor)
 	if not target then
 		local movement = mashina:getBehavior(MovementBehavior)
 		if movement then
-			movement.facing = direction or movement.facing
-			movement.targetFacing = direction or movement.facing
+			movement.facing = -(direction or movement.facing)
+			movement.targetFacing = -(direction or movement.facing)
 
 			return B.Status.Success
 		end
@@ -36,11 +36,11 @@ function Face:update(mashina, state, executor)
 	end
 
 	if source:getLayerName() == target:getLayerName() then
-		Utility.Peep.face(source, target)
+		Utility.Peep.faceAway(source, target)
 		return B.Status.Success
 	end
 
 	return B.Status.Failure
 end
 
-return Face
+return FaceAway

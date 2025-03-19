@@ -202,4 +202,9 @@ do
 		TalkAction
 	}
 
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-look-away-from-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_LookAwayLogic.lua",
+		Resource = M["Orlando"]
+	}
 end

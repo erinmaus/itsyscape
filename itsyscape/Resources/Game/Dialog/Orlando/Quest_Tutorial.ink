@@ -6,6 +6,7 @@ VAR quest_tutorial_main_started_got_up = false
 VAR quest_tutorial_main_started_asked_what_happened = false
 VAR quest_tutorial_main_started_asked_where_am_i = false
 VAR quest_tutorial_main_started_asked_what_is_going_on = false
+VAR quest_tutorial_main_equipped_items_thought = false
 
 == function quest_tutorial_get_class_name() ==
 {
@@ -19,7 +20,8 @@ VAR quest_tutorial_main_started_asked_what_is_going_on = false
 == quest_tutorial_main ==
 {
     - !player_has_started_quest("Tutorial"): -> quest_tutorial_main_started
-    - !player_is_next_quest_step("Tutorial", "Tutorial_GatheredItems"): -> quest_tutorial_main_gather_items
+    - player_is_next_quest_step("Tutorial", "Tutorial_GatheredItems"): -> quest_tutorial_main_gather_items
+    - player_is_next_quest_step("Tutorial", "Tutorial_EquippedItems"): -> quest_tutorial_main_equipped_items
 }
 
 == quest_tutorial_main_started ==
@@ -181,20 +183,47 @@ THANK THE GODS YOU'RE ALIVE, {yell(player_name)}! Looks like that lightning stri
 # speaker={C_ORLANDO}
 The explosion knocked your inventory on to the ground! Let's pick it all up!
 
-# speaker={C_ORLANDO}
-Oh! And it would be rude not to ask! Do you want help?
+-> DONE
+
+== quest_tutorial_main_equipped_items ==
+
+{
+  - quest_tutorial_main_equipped_items_thought: -> ask_for_help
+  - else: -> have_thought
+}
+
+= have_thought
+
+~ quest_tutorial_main_equipped_items_thought = true
 
 # speaker={C_PLAYER}
-* Yes[!], that would be great!
-  -> help_player
-* No[], I can pick up items on my own!
-  -> DONE
-
-= help_player
+Great, now that I have picked everything up, I should probably equip the amor and weapons...
 
 # speaker={C_ORLANDO}
-Awesome! Let me help!
+Eek! I'll look away!
 
-~ player_poke_map("showPickUpItemsTutorial")
+~ face_away_from_peep(C_ORLANDO, C_PLAYER)
+~ set_peep_mashina_state(C_ORLANDO, "tutorial-look-away-from-player")
+
+-> DONE
+
+= ask_for_help
+
+~ face_away_from_peep(C_ORLANDO, C_PLAYER)
+~ set_peep_mashina_state(C_ORLANDO, "tutorial-look-away-from-player")
+
+# speaker={C_PLAYER}
+* [Ask %person(Orlando) for help.] Hey, %person(Orlando), can... you help me?
+  -> get_help
+* [Equip the items on your own.] (I'll figure this out...)
+  -> DONE
+
+= get_help
+
+# speaker={C_PLAYER}
+Um, actually, %person(Orlando), can you help me?
+
+# speaker={C_ORLANDO}
+Gotcha!
 
 -> DONE

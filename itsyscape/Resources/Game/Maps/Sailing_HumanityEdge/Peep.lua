@@ -141,7 +141,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 		Utility.Text.setDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class", arguments.class)
 	end
 
-	if not Utility.Quest.didStep("Tutorial", "Tutorial_EquipItems", playerPeep) then
+	if not Utility.Quest.didStep("Tutorial", "Tutorial_GatheredItems", playerPeep) then
 		self:_dropPlayerInventory(playerPeep)
 	end
 

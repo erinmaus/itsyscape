@@ -65,6 +65,9 @@ EXTERNAL ir_is_next_quest_step(characterName, questName, keyItemID)
 == function player_has_started_quest(questName) ==
 ~ return ir_has_started_quest(C_PLAYER, questName)
 
+== function player_did_quest_step(questName, keyItemID) ==
+~ return player_has_key_item(keyItemID)
+
 == function player_is_next_quest_step(questName, keyItemID) ==
 ~ return ir_is_next_quest_step(C_PLAYER, questName, keyItemID)
 
@@ -121,8 +124,41 @@ EXTERNAL ir_push_poke_map(characterName, pokeName, time)
 EXTERNAL ir_poke_peep(characterName, pokeName)
 EXTERNAL ir_push_poke_peep(characterName, pokeName, time)
 
+== function poke_peep(characterName, pokeName) ==
+~ return ir_poke_peep(characterName, pokeName)
+
 == function player_poke_map(pokeName) ==
 ~ return ir_poke_map(C_PLAYER, pokeName)
 
 == function player_poke(pokeName) ==
 ~ return ir_poke_peep(C_PLAYER, pokeName)
+
+EXTERNAL ir_move_peep_to_anchor(characterName, anchorName)
+EXTERNAL ir_orientate_peep_to_anchor(characterName, anchorName)
+EXTERNAL ir_face(characterName, otherCharacterName)
+EXTERNAL ir_face_away(characterName, otherCharacterName)
+
+== function move_peep(characterName, anchorName) ==
+~ return ir_move_peep_to_anchor(characterName, anchorName)
+
+== function orientate_peep(characterName, anchorName) ==
+~ return ir_orientate_peep_to_anchor(characterName, anchorName)
+
+== function move_and_orientate_peep(characterName, anchorName) ==
+~ temp moved = ir_move_peep_to_anchor(characterName, anchorName)
+~ temp orientated = ir_orientate_peep_to_anchor(characterName, anchorName)
+~ return moved && orientated
+
+== function face_peep(characterName, otherCharacterName) ==
+~ return ir_face(characterName, otherCharacterName)
+
+== function face_away_from_peep(characterName, otherCharacterName) ==
+~ return ir_face_away(characterName, otherCharacterName)
+
+EXTERNAL ir_set_peep_mashina_state(characterName, state)
+
+== function set_peep_mashina_state(characterName, state) ==
+~ return ir_set_peep_mashina_state(characterName, state)
+
+== function unset_peep_mashina_state(characterName) ==
+~ return ir_set_peep_mashina_state(characterName, false)

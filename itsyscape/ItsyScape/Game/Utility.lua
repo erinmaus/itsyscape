@@ -184,6 +184,19 @@ function Utility.save(player, saveLocation, talk, ...)
 	return false
 end
 
+function Utility.moveToAnchor(peep, map, anchor)
+	if not peep then
+		return nil
+	end
+
+	local game = peep:getDirector():getGameInstance()
+	local x, y, z, localLayer = Utility.Map.getAnchorPosition(game, map, anchor)
+	Utility.Peep.setPosition(peep, Vector(x, y, z))
+	Utility.Peep.setLocalLayer(peep, localLayer)
+
+	return peep
+end
+
 function Utility.orientateToAnchor(peep, map, anchor)
 	if peep then
 		local game = peep:getDirector():getGameInstance()
@@ -1557,7 +1570,7 @@ function Utility.Text.Dialog.ir_has_started_quest(dialog, characterName, questNa
 	return Utility.Quest.didStart(questName, peep)
 end
 
-function Utility.Text.Dialog.ir_is_next_quest_step(dialog, characterName, questName, keyITemID)
+function Utility.Text.Dialog.ir_is_next_quest_step(dialog, characterName, questName, keyItemID)
 	local peep = dialog:getSpeaker(characterName)
 	if not peep then
 		return false
@@ -1781,6 +1794,57 @@ function Utility.Text.Dialog.ir_push_poke_peep(dialog, characterName, pokeName, 
 	else
 		peep:pushPoke(time, pokeName, dialog:getSpeaker("_TARGET"))
 	end
+end
+
+function Utility.Text.Dialog.ir_move_peep_to_anchor(dialog, characterName, anchorName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	Utility.moveToAnchor(peep, Utility.Peep.getMapResource(peep), anchorName)
+	return true
+end
+
+function Utility.Text.Dialog.ir_orientate_peep_to_anchor(dialog, characterName, anchorName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	Utility.orientateToAnchor(peep, Utility.Peep.getMapResource(peep), anchorName)
+	return true
+end
+
+function Utility.Text.Dialog.ir_face(dialog, selfCharacterName, targetCharacterName)
+	local selfPeep = dialog:getSpeaker(selfCharacterName)
+	local targetPeep = dialog:getSpeaker(targetCharacterName)
+	if not (targetPeep and selfPeep) then
+		return false
+	end
+
+	Utility.Peep.face(selfPeep, targetPeep)
+	return true
+end
+
+function Utility.Text.Dialog.ir_face_away(dialog, selfCharacterName, targetCharacterName)
+	local selfPeep = dialog:getSpeaker(selfCharacterName)
+	local targetPeep = dialog:getSpeaker(targetCharacterName)
+	if not (targetPeep and selfPeep) then
+		return false
+	end
+
+	Utility.Peep.faceAway(selfPeep, targetPeep)
+	return true
+end
+
+function Utility.Text.Dialog.ir_set_peep_mashina_state(dialog, characterName, state)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return Utility.Peep.setMashinaState(peep, state)
 end
 
 function Utility.Text.bind(dialog, language)
@@ -4104,8 +4168,8 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 end
 
 function Utility.Peep.face(peep, target)
-	local peepPosition = Utility.Peep.getPosition(peep)
-	local targetPosition = Utility.Peep.getPosition(target)
+	local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+	local targetPosition = Utility.Peep.getAbsolutePosition(target)
 
 	local dx = targetPosition.x - peepPosition.x
 
@@ -4114,6 +4178,22 @@ function Utility.Peep.face(peep, target)
 		if dx < 0 then
 			movement.targetFacing = MovementBehavior.FACING_LEFT
 		elseif dx > 0 then
+			movement.targetFacing = MovementBehavior.FACING_RIGHT
+		end
+	end
+end
+
+function Utility.Peep.faceAway(peep, target)
+	local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+	local targetPosition = Utility.Peep.getAbsolutePosition(target)
+
+	local dx = targetPosition.x - peepPosition.x
+
+	local movement = peep:getBehavior(MovementBehavior)
+	if movement then
+		if dx > 0 then
+			movement.targetFacing = MovementBehavior.FACING_LEFT
+		elseif dx < 0 then
 			movement.targetFacing = MovementBehavior.FACING_RIGHT
 		end
 	end
@@ -4585,8 +4665,12 @@ end
 function Utility.Peep.setMashinaState(peep, state)
 	local mashina = peep:getBehavior(MashinaBehavior)
 	if mashina then
+		print(">>>", peep:getName(), ">>> state", state)
 		mashina.currentState = state or false
+		return not not mashina.states[state] or state == false
 	end
+
+	return false
 end
 
 Utility.Peep.Inventory = {}
