@@ -76,7 +76,7 @@ function DialogBox:new(id, index, ui)
 
 	self.background = Panel()
 	self.background:setSize(w, h)
-	self.background:setZDepth(4000)
+	self.background:setZDepth(9000)
 
 	self:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
 	self:setPosition(w / 2 - DialogBox.WIDTH / 2, h - DialogBox.HEIGHT - DialogBox.PADDING)

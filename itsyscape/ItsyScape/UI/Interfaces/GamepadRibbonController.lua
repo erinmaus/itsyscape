@@ -418,6 +418,7 @@ function GamepadRibbonController:pokeInventoryItem(e)
 		return
 	end
 
+	local item
 	for i in broker:iterateItemsByKey(inventory, e.index) do
 		item = i
 		break
@@ -455,6 +456,7 @@ function GamepadRibbonController:pokeEquipmentItem(e)
 		return items
 	end
 
+	local item
 	for i in broker:iterateItemsByKey(equipment, e.index) do
 		item = i
 		break
