@@ -114,3 +114,15 @@ EXTERNAL ir_play_animation(characterName, animationSlot, animationPriority, anim
 
 == function player_finish_animation(animationName) ==
 ~ return finish_animation(C_PLAYER, animationName)
+
+EXTERNAL ir_poke_map(characterName, pokeName)
+EXTERNAL ir_push_poke_map(characterName, pokeName, time)
+
+EXTERNAL ir_poke_peep(characterName, pokeName)
+EXTERNAL ir_push_poke_peep(characterName, pokeName, time)
+
+== function player_poke_map(pokeName) ==
+~ return ir_poke_map(C_PLAYER, pokeName)
+
+== function player_poke(pokeName) ==
+~ return ir_poke_peep(C_PLAYER, pokeName)

@@ -1729,6 +1729,60 @@ function Utility.Text.Dialog.ir_play_animation(dialog, characterName, animationS
 	return true
 end
 
+function Utility.Text.Dialog.ir_poke_map(dialog, characterName, pokeName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	local mapScript = Utility.Peep.getMapScript(peep)
+	if not mapScript then
+		return false
+	end
+
+	mapScript:poke(pokeName, dialog:getSpeaker("_TARGET"), peep)
+end
+
+function Utility.Text.Dialog.ir_push_poke_map(dialog, characterName, pokeName, time)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	local mapScript = Utility.Peep.getMapScript(peep)
+	if not mapScript then
+		return false
+	end
+
+	mapScript:pushPoke(time, pokeName, dialog:getSpeaker("_TARGET"), peep)
+end
+
+function Utility.Text.Dialog.ir_poke_peep(dialog, characterName, pokeName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	if characterName == "_TARGET" then
+		peep:poke(pokeName)
+	else
+		peep:poke(pokeName, dialog:getSpeaker("_TARGET"))
+	end
+end
+
+function Utility.Text.Dialog.ir_push_poke_peep(dialog, characterName, pokeName, time)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	if characterName == "_TARGET" then
+		peep:pushPoke(time, pokeName)
+	else
+		peep:pushPoke(time, pokeName, dialog:getSpeaker("_TARGET"))
+	end
+end
+
 function Utility.Text.bind(dialog, language)
 	for k, v in pairs(Utility.Text.Dialog) do
 		dialog:bindExternalFunction(k, v, dialog)
@@ -1753,6 +1807,23 @@ function Utility.Text.setDialogVariable(playerPeep, character, variableName, var
 	characterDialogStorage:set(variableName, variableValue)
 
 	return true
+end
+
+function Utility.Text.getDialogVariable(playerPeep, character, variableName)
+	local director = playerPeep:getDirector()
+
+	if type(character) == "string" then
+		character = director:getGameDB():getResource(character, "Character")
+	end
+
+	if not character then
+		return nil
+	end
+
+	local dialogStorage = director:getPlayerStorage(playerPeep):getRoot():getSection("Player"):getSection("Dialog")
+	local characterDialogStorage = dialogStorage:getSection(character.name)
+
+	return characterDialogStorage:get(variableName)
 end
 
 function Utility.Text.getPronouns(peep)
@@ -2779,7 +2850,7 @@ function Utility.Peep.dialog(peep, obj, target)
 		if not hit then
 			hit = peep:getDirector():probe(
 				peep:getLayerName(),
-				Probe.namedMapObject(target))
+				Probe.namedMapObject(target))[1]
 		end
 
 		target = hit
@@ -4314,10 +4385,12 @@ function Utility.Peep.setMapResource(peep, map)
 end
 
 function Utility.Peep.getMapScript(peep)
-	local instance = peep:getDirector():getGameInstance():getStage():getPeepInstance(peep)
-	if instance then
-		return instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
-	end
+	local instance = Utility.Peep.getInstance(peep)
+	local mapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
+	local groupBaseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup)
+	local mapScript = instance:getMapScriptByLayer(groupBaseLayer)
+
+	return mapScript
 end
 
 function Utility.Peep.setNameMagically(peep)
@@ -6325,6 +6398,10 @@ function Utility.Quest.didComplete(quest, peep)
 	end
 
 	return peep:getState():has("Quest", quest)
+end
+
+function Utility.Quest.didStep(quest, step, peep)
+	return peep:getState():has("KeyItem", step)
 end
 
 function Utility.Quest.didStart(quest, peep)

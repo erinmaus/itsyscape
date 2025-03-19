@@ -36,7 +36,7 @@ function TargetHint:new(...)
 		end)
 	resources:queueEvent(
 		function()
-			self.background = patchy.load("Resources/Renderers/Widget/Panel/Hint.9.png")
+			self.background = patchy.load("Resources/Game/UI/Panels/ToolTip.png")
 		end)
 	resources:queueEvent(function()
 		self.ready = true

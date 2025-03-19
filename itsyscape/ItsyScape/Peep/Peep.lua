@@ -168,7 +168,7 @@ end
 
 -- Pokes a peep the next update.
 function Peep:pushPoke(a, b, ...)
-	if type(a) == 'number' then
+	if type(a) == 'number' and a > 0 then
 		table.insert(self.pendingPokes, {
 			time = love.timer.getTime() + a,
 			callback = b,

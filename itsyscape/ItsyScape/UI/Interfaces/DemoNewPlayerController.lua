@@ -21,17 +21,6 @@ local Controller = require "ItsyScape.UI.Controller"
 
 local DemoNewPlayerController = Class(Controller)
 
-DemoNewPlayerController.INVENTORY_ALL = {
-	"IsabelliumGloves",
-	"IsabelliumBoots",
-	"IsabelliumHelmet",
-	"IsabelliumPlatebody",
-	"CookedLightningStormfish",
-	"CookedLightningStormfish",
-	"CookedLightningStormfish",
-	"CookedLightningStormfish"
-}
-
 DemoNewPlayerController.LEVEL = 50
 
 DemoNewPlayerController.CLASSES = {
@@ -166,13 +155,6 @@ function DemoNewPlayerController:newPlayer(e)
 		status.currentPrayer = self.LEVEL
 		status.maximumPrayer = self.LEVEL
 	end
-
-	for i = 1, #self.INVENTORY_ALL do
-		local item = self.INVENTORY_ALL[i]
-		peep:getState():give("Item", item, 1, { ['item-inventory'] = true })
-	end
-
-	peep:getState():give("Item", class.info.weapon, 1, { ['item-inventory'] = true })
 
 	self:onClose(class.info.style)
 	self:getGame():getUI():closeInstance(self)

@@ -116,7 +116,7 @@ M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 77,
-	PositionY = 4,
+		PositionY = 4,
 		PositionZ = 105,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
@@ -124,10 +124,40 @@ do
 	}
 end
 
+M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_DroppedItems",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Tutorial_DroppedItemsAnchor"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 77,
+		PositionY = 4,
+		PositionZ = 105,
+		Name = "Tutorial_DroppedItemsAnchor",
+		Map = M._MAP,
+		Resource = M["Tutorial_DroppedItemsAnchor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Peep "Anchor_Default",
+		MapObject = M["Tutorial_DroppedItemsAnchor"]
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Tutorial_DroppedItemsAnchor"],
+		KeyItem = ItsyScape.Resource.KeyItem "Tutorial_GatheredItems"
+	}
+end
+
 M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Team",
+		MapObjectGroup = "Tutorial_Team",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Orlando"]

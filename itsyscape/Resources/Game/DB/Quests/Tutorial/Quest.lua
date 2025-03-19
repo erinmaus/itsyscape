@@ -40,7 +40,7 @@ Description "Tutorial_Start" {
 
 Description "Tutorial_GatheredItems" {
 	before = "The shock of the lightning strike knocked all your items from your inventory. Go pick them up!",
-	after = "Orlando helped you pick up all the items you dropped."
+	after = "Orlando helped you pick up all the items you dropped after the lightning strike."
 }
 
 Description "Tutorial_EquippedItems" {

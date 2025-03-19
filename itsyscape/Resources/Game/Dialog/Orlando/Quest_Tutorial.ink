@@ -182,3 +182,19 @@ THANK THE GODS YOU'RE ALIVE, {yell(player_name)}! Looks like that lightning stri
 The explosion knocked your inventory on to the ground! Let's pick it all up!
 
 # speaker={C_ORLANDO}
+Oh! And it would be rude not to ask! Do you want help?
+
+# speaker={C_PLAYER}
+* Yes[!], that would be great!
+  -> help_player
+* No[], I can pick up items on my own!
+  -> DONE
+
+= help_player
+
+# speaker={C_ORLANDO}
+Awesome! Let me help!
+
+~ player_poke_map("showPickUpItemsTutorial")
+
+-> DONE
