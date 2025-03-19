@@ -26,7 +26,7 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local QuestProgressNotification = Class(Interface)
 QuestProgressNotification.WIDTH = 320
-QuestProgressNotification.HEIGHT = 240
+QuestProgressNotification.HEIGHT = 300
 QuestProgressNotification.PADDING = 8
 QuestProgressNotification.ICON_SIZE = 48
 QuestProgressNotification.BUTTON_SIZE = 48
@@ -40,16 +40,24 @@ function QuestProgressNotification:new(id, index, ui)
 	self:updatePosition()
 	self:setSize(QuestProgressNotification.WIDTH, QuestProgressNotification.HEIGHT)
 
-	local panel = Panel()
-	panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/Group.9.png"
+	local titlePanel = Panel()
+	titlePanel:setStyle({
+		image = "Resources/Game/UI/Panels/WindowTitle.png"
+	}, PanelStyle)
+	titlePanel:setSize(self.WIDTH, self.ICON_SIZE + self.PADDING * 2)
+	self:addChild(titlePanel)
+
+	local contentPanel = Panel()
+	contentPanel:setStyle(PanelStyle({
+		image = "Resources/Game/UI/Panels/WindowContent.png"
 	}, self:getView():getResources()))
-	panel:setSize(self:getSize())
-	self:addChild(panel)
+	contentPanel:setSize(self.WIDTH, self.HEIGHT - self.ICON_SIZE - self.PADDING * 2)
+	contentPanel:setPosition(0, self.ICON_SIZE + self.PADDING * 2)
+	self:addChild(contentPanel)
 
 	self.closeButton = Button()
 	self.closeButton:setSize(QuestProgressNotification.BUTTON_SIZE, QuestProgressNotification.BUTTON_SIZE)
-	self.closeButton:setPosition(QuestProgressNotification.WIDTH - QuestProgressNotification.BUTTON_SIZE, 0)
+	self.closeButton:setPosition(QuestProgressNotification.WIDTH - QuestProgressNotification.BUTTON_SIZE - QuestProgressNotification.PADDING, QuestProgressNotification.PADDING)
 	self.closeButton:setText("X")
 	self.closeButton.onClick:register(function()
 		self:sendPoke("close", nil, {})
@@ -57,40 +65,37 @@ function QuestProgressNotification:new(id, index, ui)
 	self:addChild(self.closeButton)
 
 	local icon = Icon()
-	icon:setPosition(
-		QuestProgressNotification.WIDTH / 2 - QuestProgressNotification.ICON_SIZE / 2,
-		QuestProgressNotification.PADDING)
-	icon:setSize(
-		QuestProgressNotification.ICON_SIZE,
-		QuestProgressNotification.ICON_SIZE)
+	icon:setPosition(QuestProgressNotification.PADDING, QuestProgressNotification.PADDING)
+	icon:setSize(QuestProgressNotification.ICON_SIZE, QuestProgressNotification.ICON_SIZE)
 	icon:setIcon("Resources/Game/UI/Icons/Things/Compass.png")
-	self:addChild(icon)
+	titlePanel:addChild(icon)
 
 	self.title = Label()
-	self.title:setStyle(LabelStyle({
+	self.title:setStyle({
 		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-		fontSize = 22,
+		color = { 1, 1, 1, 1 },
+		fontSize = QuestProgressNotification.ICON_SIZE / 2 - 2,
 		textShadow = true,
-		width = QuestProgressNotification.WIDTH,
-		align = 'center'
-	}, self:getView():getResources()))
+		spaceLines = true
+	}, LabelStyle)
 	self.title:setPosition(
-		0,
-		QuestProgressNotification.ICON_SIZE + QuestProgressNotification.PADDING * 2)
-	self:addChild(self.title)
+		QuestProgressNotification.ICON_SIZE + QuestProgressNotification.PADDING * 2,
+		QuestProgressNotification.PADDING)
+	self.title:setSize(
+		QuestProgressNotification.WIDTH - QuestProgressNotification.ICON_SIZE * 2 - QuestProgressNotification.PADDING * 4,
+		QuestProgressNotification.ICON_SIZE)
+	titlePanel:addChild(self.title)
+
+	local contentWidth, contentHeight = contentPanel:getSize()
 
 	self.infoPanel = ScrollablePanel(GridLayout)
-	self.infoPanel:setSize(
-		QuestProgressNotification.WIDTH - QuestProgressNotification.PADDING * 2,
-		QuestProgressNotification.HEIGHT - QuestProgressNotification.PADDING * 3 - QuestProgressNotification.ICON_SIZE - 24)
+	self.infoPanel:setSize(contentWidth - self.PADDING * 2, contentHeight - self.PADDING * 2)
+	self.infoPanel:setPosition(QuestProgressNotification.PADDING, QuestProgressNotification.PADDING)
 	self.infoPanel:getInnerPanel():setWrapContents(true)
 	self.infoPanel:getInnerPanel():setPadding(0, 0)
 	self.infoPanel:getInnerPanel():setUniformSize(true, 1, 0)
 	self.infoPanel:setFloatyScrollBars(false)
-	self.infoPanel:setPosition(
-		QuestProgressNotification.PADDING,
-		QuestProgressNotification.PADDING * 3 + QuestProgressNotification.ICON_SIZE + 24)
-	self:addChild(self.infoPanel)
+	contentPanel:addChild(self.infoPanel)
 
 	self.guideLabel = RichTextLabel()
 	self.guideLabel:setSize(
@@ -147,10 +152,16 @@ function QuestProgressNotification:update(delta)
 
 	self:updatePosition()
 
-	if self:getState().id == "PreTutorial" then
+	if self:getState().id == "Tutorial" then
 		self:removeChild(self.closeButton)
+		self.title:setSize(
+			QuestProgressNotification.WIDTH - QuestProgressNotification.ICON_SIZE - QuestProgressNotification.PADDING * 3,
+			QuestProgressNotification.ICON_SIZE)
 	elseif not self.closeButton:getParent() then
 		self:addChild(self.closeButton)
+		self.title:setSize(
+			QuestProgressNotification.WIDTH - QuestProgressNotification.ICON_SIZE * 2 - QuestProgressNotification.PADDING * 4,
+			QuestProgressNotification.ICON_SIZE)
 	end
 
 	if self.scrollTime then

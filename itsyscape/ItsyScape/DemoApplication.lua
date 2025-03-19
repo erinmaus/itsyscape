@@ -455,7 +455,7 @@ function DemoApplication:_newDemoPlayer(_, buttonIndex)
 	self:closeTitleScreen()
 end
 
-function DemoApplication:_loadDemoPlayer()
+function DemoApplication:_loadDemoPlayer(_, buttonIndex)
 	if buttonIndex ~= 1 then
 		return
 	end
@@ -469,7 +469,7 @@ function DemoApplication:_loadDemoPlayer()
 	self:setPlayerFilename(filename)
 
 	local player = self:getGame():getPlayer()
-	player:spawn(storage, not not data)
+	player:spawn(storage, not data)
 
 	self:closeTitleScreen()
 end

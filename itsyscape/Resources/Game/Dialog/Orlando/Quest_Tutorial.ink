@@ -179,4 +179,6 @@ THANK THE GODS YOU'RE ALIVE, {yell(player_name)}! Looks like that lightning stri
 == quest_tutorial_main_gather_items ==
 
 # speaker={C_ORLANDO}
-... TODO!
+The explosion knocked your inventory on to the ground! Let's pick it all up!
+
+# speaker={C_ORLANDO}

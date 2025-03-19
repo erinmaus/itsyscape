@@ -110,7 +110,13 @@ function LabelStyle:draw(widget, state)
 			local commonAlign = #wrappedText == 1 and self.align or "justify"
 			local finalAlign = self.align
 
-			local newLineHeight = math.min(height / #wrappedText, font:getHeight() * 1.5)
+			local newLineHeight
+			if #wrappedText == 1 then
+				newLineHeight = font:getHeight()
+			else
+				newLineHeight = math.min(height / #wrappedText, font:getHeight() * 1.5)
+			end
+
 			local yOffset = (newLineHeight - font:getHeight()) / 2
 
 			local wordX = 0
