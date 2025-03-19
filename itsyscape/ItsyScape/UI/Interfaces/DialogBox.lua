@@ -123,7 +123,7 @@ function DialogBox:new(id, index, ui)
 	self.messageLabel:setSize(
 		DialogBox.WIDTH - DialogBox.PADDING * 3 - DialogBox.HEIGHT,
 		DialogBox.HEIGHT - DialogBox.PADDING * 2 - 24)
-	self.messageLabel:setIsClickThrough(true)
+	self.messageLabel:setIsSelfClickThrough(true)
 	self.dialogButton:addChild(self.messageLabel)
 
 	self.clickToContinue = Label()
@@ -137,7 +137,7 @@ function DialogBox:new(id, index, ui)
 	self.clickToContinue:setPosition(
 		self.messageLabel:getPosition(),
 		DialogBox.HEIGHT - 24 - DialogBox.PADDING * 2)
-	self.clickToContinue:setIsClickThrough(true)
+	self.clickToContinue:setIsSelfClickThrough(true)
 
 	self.pressToContinue = GamepadToolTip()
 	self.pressToContinue:setHasBackground(false)
@@ -145,7 +145,7 @@ function DialogBox:new(id, index, ui)
 	self.pressToContinue:setPosition(
 		DialogBox.WIDTH / 2 - GamepadToolTip.MAX_WIDTH / 2,
 		DialogBox.HEIGHT - GamepadToolTip.BUTTON_SIZE - DialogBox.PADDING)
-	self.pressToContinue:setIsClickThrough(true)
+	self.pressToContinue:setIsSelfClickThrough(true)
 
 	self.inputBox = TextInput()
 	self.inputBox:setSize(DialogBox.WIDTH - DialogBox.PADDING * 2, 32)

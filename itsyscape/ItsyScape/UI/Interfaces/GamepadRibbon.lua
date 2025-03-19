@@ -231,6 +231,8 @@ function GamepadRibbon:toggle()
 
 	local inputProvider = self:getInputProvider()
 	if self.isShowing then
+		self:sendPoke("open", nil, {})
+
 		self:addChild(self.container)
 
 		local child = self.contentLayout:getChildAt(1)
@@ -238,6 +240,8 @@ function GamepadRibbon:toggle()
 			inputProvider:setFocusedWidget(child, "select")
 		end
 	else
+		self:sendPoke("close", nil, {})
+
 		local focusedWidget = inputProvider:getFocusedWidget()
 		if focusedWidget and focusedWidget:hasParent(self) then
 			inputProvider:setFocusedWidget(nil, "close")
@@ -245,6 +249,7 @@ function GamepadRibbon:toggle()
 
 		self:removeChild(self.container)
 	end
+
 
 	self.isDirty = true
 end

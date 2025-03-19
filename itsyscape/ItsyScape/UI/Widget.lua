@@ -57,7 +57,8 @@ function Widget:new()
 	self.childProperties = {}
 	self.data = {}
 	self.toolTip = false
-	self.isClickThrough = false
+	self.isSelfClickThrough = false
+	self.areChildrenClickThrough = false
 	self.isVisible = true
 end
 
@@ -481,12 +482,33 @@ function Widget:getIsDraggable()
 	return false
 end
 
-function Widget:getIsClickThrough()
-	return self.isClickThrough or (self:getParent() and self:getParent():getIsClickThrough())
+function Widget:_getIsParentChildrenClickThrough()
+	local parent = self:getParent()
+	if not parent then
+		return false
+	end
+
+	return parent:getAreChildrenClickThrough() or parent:_getIsParentChildrenClickThrough()
 end
 
-function Widget:setIsClickThrough(value)
-	self.isClickThrough = value or false
+function Widget:getIsClickThrough()
+	return self.isSelfClickThrough or self:_getIsParentChildrenClickThrough()
+end
+
+function Widget:setIsSelfClickThrough(value)
+	self.isSelfClickThrough = value or false
+end
+
+function Widget:getIsSelfClickThrough(value)
+	self.isSelfClickThrough = value or false
+end
+
+function Widget:setAreChildrenClickThrough(value)
+	self.areChildrenClickThrough = value or false
+end
+
+function Widget:getAreChildrenClickThrough(value)
+	self.areChildrenClickThrough = value or false
 end
 
 function Widget:performLayout()

@@ -325,7 +325,7 @@ function WidgetInputProvider:joystickRemove(joystick)
 	if self.currentJoystick then
 		local _, currentID = self.currentJoystick:getID()
 		if currentID == id then
-			self.currentJoystick = nil
+			self.currentJoystick = false
 		end
 	end
 

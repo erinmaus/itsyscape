@@ -220,10 +220,9 @@ Eek! I'll look away!
 
 = get_help
 
-# speaker={C_PLAYER}
-Um, actually, %person(Orlando), can you help me?
-
 # speaker={C_ORLANDO}
 Gotcha!
+
+~ player_poke_map("showEquipItemsTutorial")
 
 -> DONE

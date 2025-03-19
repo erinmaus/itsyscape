@@ -29,7 +29,7 @@ function Particles:new()
 	self.tintColor = Color()
 
 	self.overflow = true
-	self:setIsClickThrough(true)
+	self:setIsSelfClickThrough(true)
 end
 
 function Particles:setOverflow(value)

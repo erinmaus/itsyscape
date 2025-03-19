@@ -27,7 +27,7 @@ function InkDialog:new(filename, variables)
 
 	local dialog = json.decode(data)
 	self.story = Nomicon.Story(dialog)
-	self.story:listenForGlobalVariable("*", self._setVariable, false, self)
+	self.story:listenForGlobalVariable("*", self._setVariable, true, self)
 	self.choices = Nomicon.ChoiceList(self.story)
 	self.speakers = {}
 

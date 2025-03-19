@@ -37,7 +37,7 @@ function ReadBook:new(...)
 	local panel = Panel()
 	panel:setStyle(PanelStyle({ color = { Color.fromHexString("#ffffff"):get() } }))
 	panel:setSize(width, height)
-	panel:setIsClickThrough(true)
+	panel:setIsSelfClickThrough(true)
 	self:addChild(panel)
 	
 
@@ -67,8 +67,8 @@ function ReadBook:new(...)
 	self.bookSceneSnippet:setParentNode(parentSceneNode)
 	self.bookSceneSnippet:setChildNode(self.book:getSceneNode())
 
-	self:setIsClickThrough(true)
-	self.bookSceneSnippet:setIsClickThrough()
+	self:setIsSelfClickThrough(true)
+	self.bookSceneSnippet:setIsSelfClickThrough()
 
 	local label = Label()
 	label:setText("Book Is Open")

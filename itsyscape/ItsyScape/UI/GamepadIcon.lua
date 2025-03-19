@@ -30,6 +30,7 @@ function GamepadIcon:new()
 	self.outline = false
 	self.useDefaultColor = true
 	self.hasDropShadow = false
+	self.controller = false
 	self.color = Color()
 
 	self:setSize(GamepadIcon.DEFAULT_SIZE, GamepadIcon.DEFAULT_SIZE)
@@ -132,6 +133,14 @@ end
 
 function GamepadIcon:getHasDropShadow()
 	return self.hasDropShadow
+end
+
+function GamepadIcon:setController(value)
+	self.controller = value or false
+end
+
+function GamepadIcon:getController()
+	return self.controller
 end
 
 function GamepadIcon:update(delta)

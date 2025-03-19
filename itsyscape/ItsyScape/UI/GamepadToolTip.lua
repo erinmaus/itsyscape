@@ -58,6 +58,9 @@ function GamepadToolTip:new()
 	}, PanelStyle)
 
 	self.keybind = false
+
+	self:setIsSelfClickThrough(true)
+	self:setAreChildrenClickThrough(true)
 end
 
 function GamepadToolTip:setRowSize(width, height)
@@ -79,6 +82,10 @@ end
 
 function GamepadToolTip:setButtonID(id)
 	self.gamepadIcon:setButtonID(id)
+end
+
+function GamepadToolTip:getButtonID()
+	return self.gamepadIcon:getButtonID()
 end
 
 function GamepadToolTip:getGamepadIcon()
@@ -133,16 +140,48 @@ function GamepadToolTip:performLayout()
 	local labelStyle = self.label:getStyle()
 
 	local text = self:getText()
-	local width, lines = labelStyle.font:getWrap(
-		text,
-		self.maxWidth - self.buttonSize - self.PADDING * 4)
 
-	local height = #lines * labelStyle.font:getHeight()
+	local width, numLines
+	if self.maxWidth == math.huge then
+		local t
+		if type(text) == "table" then
+			t = {}
+
+			for i = 2, #text, 2 do
+				table.insert(t, text[i])
+			end
+
+			t = table.concat(t, "")
+		else
+			t = tostring(text)
+		end
+
+		width = labelStyle.font:getWidth(t)
+		numLines = (select(2, t:gsub("\n", "")) or 0) + 1
+	else
+		local w, l = labelStyle.font:getWrap(
+			text,
+			self.maxWidth - self.buttonSize - self.PADDING * 4)
+
+		width = w
+		numLines = #l
+	end
+
+	local height = numLines * labelStyle.font:getHeight()
 
 	self.label:setSize(width, height)
-	self:setSize(
-		math.min(width + self.buttonSize + self.PADDING * 4, self.maxWidth),
-		math.max(height + self.PADDING * 2, self.BUTTON_SIZE + self.PADDING * 2))
+
+	if self:getButtonID() == "none" then
+		self.label:setPosition(self.PADDING * 2, self.PADDING)
+		self:setSize(
+			math.min(width + self.PADDING * 4, self.maxWidth),
+			math.max(height + self.PADDING * 2, self.BUTTON_SIZE + self.PADDING * 2))
+	else
+		self.label:setPosition(self.buttonSize + self.PADDING * 2, self.PADDING)
+		self:setSize(
+			math.min(width + self.buttonSize + self.PADDING * 4, self.maxWidth),
+			math.max(height + self.PADDING * 2, self.BUTTON_SIZE + self.PADDING * 2))
+	end
 end
 
 function GamepadToolTip:setText(value)

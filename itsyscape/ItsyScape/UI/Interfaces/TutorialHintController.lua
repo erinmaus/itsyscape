@@ -14,28 +14,65 @@ local Controller = require "ItsyScape.UI.Controller"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local TutorialHintController = Class(Controller)
+
 TutorialHintController.STYLE = {
-	['none'] = 'none',
-	['circle'] = 'circle',
-	['rectangle'] = 'rectangle'
+	none = "none",
+	circle = "circle",
+	rectangle = "rectangle"
 }
+
 TutorialHintController.POSITION = {
-	['up'] = 'up',
-	['down'] = 'down',
-	['left'] = 'left',
-	['right'] = 'right',
-	['center'] = 'center'
+	up = "up",
+	down = "down",
+	left = "left",
+	right = "right",
+	center = "center"
 }
 
 function TutorialHintController:new(peep, director, id, message, openCallback, e, nextCallback)
+	e = e or {}
+
 	Controller.new(self, peep, director)
 
-	e = e or {}
+	if type(message) ~= "table" then
+		message = {
+			standard = {
+				button = "mouse",
+				controller = "KeyboardMouse",
+				label = message
+			}
+		}
+	end
+
+	if type(id) ~= "table" then
+		id = {
+			standard = id
+		}
+	end
+
+	local position = e.position
+	if type(position) ~= "table" then
+		position = {
+			standard = TutorialHintController.POSITION[position or "up"] or "up"
+		}
+	end
+
+	local style = e.style
+	if type(style) ~= "table" then
+		local s = TutorialHintController.STYLE[style or "rectangle"] or "rectangle"
+
+		style = {
+			standard = s,
+			gamepad = s,
+			mobile = s
+		}
+	end
+
 	self.state = {
 		message = message,
 		id = id,
-		style = TutorialHintController.STYLE[e.style or 'rectangle'] or 'rectangle',
-		position = TutorialHintController.POSITION[e.position or 'up'] or 'up'
+		style = style,
+		position = position
 	}
 
 	self.openCallback = openCallback or function() return true end

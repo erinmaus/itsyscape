@@ -26,12 +26,14 @@ function GenericNotification:new(id, index, ui)
 	local w, h = love.graphics.getScaledMode()
 	local x, y = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 
+	self:setIsSelfClickThrough(true)
+	self:setAreChildrenClickThrough(true)
+
 	self.panel = Panel()
 	self.panel:setStyle(PanelStyle({
 		image = "Resources/Renderers/Widget/Panel/GenericNotification.9.png"
 	}, self:getView():getResources()))
 	self.panel:setSize(self:getSize())
-	self.panel:setIsClickThrough(true)
 	self:addChild(self.panel)
 
 	local state = self:getState()
@@ -46,7 +48,7 @@ function GenericNotification:new(id, index, ui)
 	}, self:getView():getResources()))
 	self.text:setPosition(GenericNotification.PADDING, GenericNotification.PADDING)
 	self.text:setText(state.message)
-	self.text:setIsClickThrough(true)
+	self.text:setIsSelfClickThrough(true)
 	self:addChild(self.text)
 
 	self.message = state.message
@@ -64,7 +66,7 @@ function GenericNotification:new(id, index, ui)
 	self:push()
 
 	self:setZDepth(500)
-	self:setIsClickThrough(true)
+	self:setIsSelfClickThrough(true)
 end
 
 function GenericNotification:push()

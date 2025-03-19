@@ -75,6 +75,8 @@ function GamepadRibbonController:new(peep, director)
 	self.currentInventoryProbeItem = false
 	self.currentEquipmentProbeIndex = false
 	self.currentEquipmentProbeItem = false
+
+	self.isOpen = false
 end
 
 function GamepadRibbonController:getProbedInventoryItem()
@@ -83,6 +85,10 @@ end
 
 function GamepadRibbonController:getProbedEquipmentItem()
 	return self.currentEquipmentProbeItem, self.currentEquipmentProbeIndex
+end
+
+function GamepadRibbonController:getIsOpen()
+	return self.isOpen
 end
 
 function GamepadRibbonController:pull()
@@ -105,9 +111,21 @@ function GamepadRibbonController:openTab(e)
 	self.currentTab = e.tab
 end
 
+function GamepadRibbonController:openRibbon()
+	self.isOpen = true
+end
+
+function GamepadRibbonController:closeRibbon()
+	self.isOpen = false
+end
+
 function GamepadRibbonController:poke(actionID, actionIndex, e)
 	if actionID == "openTab" then
 		self:openTab(e)
+	elseif actionID == "open" then
+		self:openRibbon(e)
+	elseif actionID == "close" then
+		self:closeRibbon(e)
 	elseif actionID == "selectSkill" then
 		self:selectSkillGuide(e)
 	elseif actionID == "selectSkillAction" then

@@ -17,6 +17,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
+local TutorialCommon = require "Resources.Game.Peeps.Tutorial.Common"
 
 local Island = Class(MapScript)
 
@@ -171,6 +172,11 @@ function Island:onPlayerLeave(player)
 	end
 
 	player:pokeCamera("lockPosition")
+end
+
+function Island:onShowEquipItemsTutorial(playerPeep)
+	print(">>> playerPeep", playerPeep, playerPeep and playerPeep:getName())
+	TutorialCommon.startEquipTutorial(playerPeep)
 end
 
 function Island:updateTutorialGatherItemStep(playerPeep)

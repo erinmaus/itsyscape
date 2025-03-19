@@ -46,7 +46,7 @@ function GamepadIconRenderer:new(resources)
 end
 
 function GamepadIconRenderer:_buildNames(joystickName, icon)
-	local controller = GamepadIcon.CONTROLLERS[joystickName] or GamepadIcon.CONTROLLERS["Default"]
+	local controller = icon:getController() or GamepadIcon.CONTROLLERS[joystickName] or GamepadIcon.CONTROLLERS["Default"]
 	local prefix = string.format("Resources/Game/UI/Icons/Controllers/DB/%s", controller)
 
 	local id = icon:getCurrentButtonID()
@@ -65,12 +65,15 @@ function GamepadIconRenderer:_buildNames(joystickName, icon)
 		suffixes = {
 			string.format("%s_%s_%s", controller, button, action),
 			string.format("%s_%s_outline", controller, button),
+			string.format("%s_outline", button),
 			string.format("%s_%s", controller, button),
+			string.format("%s", button),
 		}
 	else
 		suffixes = {
 			string.format("%s_%s_%s", controller, button, action),
 			string.format("%s_%s", controller, button),
+			string.format("%s", button),
 		}
 	end
 
@@ -107,6 +110,7 @@ function GamepadIconRenderer:_getIcon(joystickName, icon)
 				value = false
 			end
 		end
+
 
 		self.icons[path] = value
 		if value then

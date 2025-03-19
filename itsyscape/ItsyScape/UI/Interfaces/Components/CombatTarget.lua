@@ -43,7 +43,7 @@ function CombatTarget:new(align, resources)
 	}, resources))
 	self:addChild(self.titleLabel)
 
-	self:setIsClickThrough(true)
+	self:setIsSelfClickThrough(true)
 end
 
 function CombatTarget:getRowSize()
