@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Color = require "ItsyScape.Graphics.Color"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local Probe = require "ItsyScape.Peep.Probe"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
@@ -101,7 +102,7 @@ function Island:_dropPlayerInventory(playerPeep, class)
 	end
 end
 
-function Island:talkToPeep(playerPeep, otherPeepName, callback)
+function Island:_doTalkToPeep(playerPeep, otherPeepName, callback)
 	local success, dialog = Utility.Peep.dialog(playerPeep, "Talk", otherPeepName)
 	if success then
 		Utility.Peep.disable(playerPeep)
@@ -113,14 +114,41 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback)
 		dialog.onClose:register(function()
 			Utility.Peep.enable(playerPeep)
 		end)
+	else
+		callback()
 	end
+
+	return success
+end
+
+function Island:talkToPeep(playerPeep, otherPeepName, callback)
+	local otherPeep = playerPeep:getDirector():probe(
+		playerPeep:getLayerName(),
+		Probe.namedMapObject(otherPeepName),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+	if otherPeep then
+		Utility.Peep.setMashinaState(otherPeep, false)
+
+		local i, j, k = Utility.Peep.getTile(playerPeep)
+		if Utility.Peep.walk(otherPeep, i, j, k, 3, { asCloseAsPossible = false }) then
+			otherPeep:getCommandQueue():push(CallbackCommand(self._doTalkToPeep, self, playerPeep, otherPeepName, callback))
+			return true
+		end
+	end
+
+	return self:_doTalkToPeep(playerPeep, otherPeepName, callback)
 end
 
 function Island:onFinishPreparingTutorial(playerPeep)
-	if not Utility.Quest.didStep("Tutorial", "Tutorial_EquipItems", playerPeep) then
+	if not Utility.Quest.didStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
 		self:talkToPeep(playerPeep, "Orlando", function()
-			Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_DroppedItems")
+			if not Utility.Quest.didStep("Tutorial", "Tutorial_GatheredItems", playerPeep) then
+				Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_DroppedItems")
+			end
+
 			Utility.UI.openGroup(playerPeep, "WORLD")
+			TutorialCommon.showBasicControlsHint(playerPeep)
 		end)
 	end
 end
@@ -182,30 +210,23 @@ function Island:onShowEquipItemsTutorial(playerPeep)
 	TutorialCommon.startEquipTutorial(playerPeep)
 end
 
-function Island:updateTutorialGatherItemStep(playerPeep)
-	local stage = self:getDirector():getGameInstance():getStage()
-	local broker = self:getDirector():getItemBroker()
-
-	local layer = Utility.Peep.getLayer(playerPeep)
-	local ground = stage:getGround(layer)
-	if not ground then
-		Log.warnOnce("Cannot update gather item step; no ground for layer '%d' (player = '%s').", layer, playerPeep:getName())
-		return
-	end
-
-	local inventory = Utility.Peep.getInventory(ground)
-	local playerPeepHasItemOnGround = false
-	for _, item in ipairs(inventory) do
-		local owner = broker:getItemTag(item, "owner")
-		if owner == playerPeep then
-			playerPeepHasItemOnGround = true
-			break
-		end
-	end
-
+function Island:updateTutorialGatherItemsStep(playerPeep)
+	local playerPeepHasItemOnGround = TutorialCommon.hasPeepDroppedItems(playerPeep)
 	if not playerPeepHasItemOnGround then
+		Utility.Peep.poofInstancedMapGroup(playerPeep, "Tutorial_DroppedItems")
+
 		playerPeep:getState():give("KeyItem", "Tutorial_GatheredItems")
 		self:talkToPeep(playerPeep, "Orlando")
+	end
+end
+
+function Island:updateTutorialEquipItemsStep(playerPeep)
+	local hasEquippedIsabellium = TutorialCommon.hasPeepEquippedFullIsabellium(playerPeep)
+	if hasEquippedIsabellium then
+		playerPeep:getState():give("KeyItem", "Tutorial_EquippedItems")
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Common.showMovementControlsHint(playerPeep)
+		end)
 	end
 end
 
@@ -213,7 +234,9 @@ function Island:updateTutorialPlayer(playerPeep)
 	local stage = self:getDirector():getGameInstance():getStage()
 
 	if Utility.Quest.isNextStep("Tutorial", "Tutorial_GatheredItems", playerPeep) then
-		self:updateTutorialGatherItemStep(playerPeep)
+		self:updateTutorialGatherItemsStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
+		self:updateTutorialEquipItemsStep(playerPeep)
 	end
 end
 

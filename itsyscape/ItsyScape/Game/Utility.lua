@@ -1976,6 +1976,15 @@ Utility.UI.Groups = {
 }
 
 function Utility.UI.openGroup(peep, group)
+	if type(group) == "string" then
+		if not Utility.UI.Groups[group] then
+			Log.error("Built-in UI group '%s' not found; cannot open for peep '%s'.", group, peep:getName())
+			return
+		end
+
+		group = Utility.UI.Groups[group]
+	end
+
 	for i = 1, #group do
 		local interfaceID = group[i]
 
@@ -4527,6 +4536,20 @@ function Utility.Peep.setNameMagically(peep)
 		peep:setName(name)
 	elseif resource then
 		peep:setName("*" .. resource.name)
+	end
+end
+
+function Utility.Peep.poofInstancedMapGroup(playerPeep, mapObjectGroup)
+	local Probe = require "ItsyScape.Peep.Probe"
+
+	local director = playerPeep:getDirector()
+	local hits = director:probe(
+		playerPeep:getLayerName(),
+		Probe.mapObjectGroup(mapObjectGroup),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))
+
+	for _, hit in ipairs(hits) do
+		Utility.Peep.poof(hit)
 	end
 end
 

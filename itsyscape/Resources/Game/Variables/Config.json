@@ -4,6 +4,7 @@
 	},
 
 	"colors": {
+		"ui.text": "ffffff",
 		"ui.combat.bar.text": "ffffff",
 		"ui.combat.bar.textShadow": "000000",
 		"ui.combat.health.damage": "8c2726",

@@ -207,4 +207,10 @@ do
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_LookAwayLogic.lua",
 		Resource = M["Orlando"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-follow-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FollowLogic.lua",
+		Resource = M["Orlando"]
+	}
 end

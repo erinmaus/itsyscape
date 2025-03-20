@@ -129,10 +129,31 @@ function TutorialHint:place(widget)
 		self:addChild(self.toolTip)
 	end
 
+	self.toolTip:setKeybind(state.message.keybind)
+
 	local icon = self.toolTip:getGamepadIcon()
 	icon:setController(state.message.controller)
-	icon:setButtonID(state.message.button)
+
+	if type(state.message.button) == "table" then
+		icon:setButtonIDs(unpack(state.message.button))
+	else
+		icon:setButtonID(state.message.button)
+	end
+
+	if type(state.message.action) == "table" then
+		icon:setButtonActions(unpack(state.message.action))
+	else
+		icon:setButtonAction(state.message.action)
+	end
+
+	if type(state.message.speed) == "number" then
+		icon:setSpeed(state.message.speed)
+	else
+		icon:setSpeed(icon.DEFAULT_SPEED)
+	end
+
 	self.toolTip:setText(state.message.label)
+	self.toolTip:update(0)
 
 	local toolTipWidth, toolTipHeight = self.toolTip:getSize()
 

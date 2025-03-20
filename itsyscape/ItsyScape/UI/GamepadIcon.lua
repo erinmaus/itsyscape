@@ -13,6 +13,7 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local GamepadIcon = Class(Widget)
 GamepadIcon.DEFAULT_SIZE = 48
+GamepadIcon.DEFAULT_SPEED = 0.5
 
 GamepadIcon.CONTROLLERS = {
 	["Default"] = "SteamDeck",
@@ -26,7 +27,7 @@ function GamepadIcon:new()
 	self.buttonIDs = {}
 	self.buttonActions = {}
 	self.time = 0
-	self.speed = 0.5
+	self.speed = self.DEFAULT_SPEED
 	self.outline = false
 	self.useDefaultColor = true
 	self.hasDropShadow = false
@@ -48,17 +49,34 @@ function GamepadIcon:_getAtTime(array, time)
 	end
 
 	local index = math.wrapIndex(math.floor((time * multiplier) + 1), 0, math.max(#array, 1))
+
 	return array[index]
 end
 
 function GamepadIcon:setButtonID(id)
-	self.buttonIDs = { id }
-	self.time = 0
+	self:setButtonIDs(id)
 end
 
 function GamepadIcon:setButtonIDs(...)
-	self.buttonIDs = { ... }
-	self.time = 0
+	local newButtons = { ... }
+	local isDifferent = false
+	if #self.buttonIDs == #newButtons then
+		for i, buttonID in ipairs(self.buttonIDs) do
+			local newButtonID = newButtons[i]
+
+			if buttonID ~= newButtonID then
+				isDifferent = true
+				break
+			end
+		end
+	else
+		isDifferent = true
+	end
+
+	if isDifferent then
+		self.buttonIDs = newButtons
+		self.time = 0
+	end
 end
 
 function GamepadIcon:getButtonID()
@@ -82,13 +100,29 @@ function GamepadIcon:getButtonAction()
 end
 
 function GamepadIcon:setButtonAction(action)
-	self.buttonActions = { actions }
-	self.time = 0
+	self:setButtonActions(action)
 end
 
 function GamepadIcon:setButtonActions(...)
-	self.buttonActions = { actions }
-	self.time = 0
+	local newActions = { ... }
+	local isDifferent = false
+	if #self.buttonActions == #newActions then
+		for i, buttonAction in ipairs(self.buttonActions) do
+			local newButtonAction = newActions[i]
+
+			if buttonAction ~= newButtonAction then
+				isDifferent = true
+				break
+			end
+		end
+	else
+		isDifferent = true
+	end
+
+	if isDifferent then
+		self.buttonActions = { ... }
+		self.time = 0
+	end
 end
 
 function GamepadIcon:getButtonAction()
@@ -141,6 +175,17 @@ end
 
 function GamepadIcon:getController()
 	return self.controller
+end
+
+function GamepadIcon:setSpeed(value)
+	value = value or self.DEFAULT_SPEED
+
+	if self.speed ~= value then
+		-- Scale current time to new speed.
+		self.time = self.time / self.speed * value
+
+		self.speed = value
+	end
 end
 
 function GamepadIcon:update(delta)

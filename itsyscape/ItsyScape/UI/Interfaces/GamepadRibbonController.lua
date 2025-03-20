@@ -45,6 +45,8 @@ GamepadRibbonController.SKILL_GUIDE_ACTION_ICON_RESOURCE_TYPES = {
 function GamepadRibbonController:new(peep, director)
 	Controller.new(self, peep, director)
 
+	self.hideLock = 0
+
 	self.currentTab = false
 	self.currentSkill = false
 
@@ -116,19 +118,50 @@ function GamepadRibbonController:openTab(e)
 	self.currentTab = e.tab
 end
 
-function GamepadRibbonController:openRibbon()
+function GamepadRibbonController:hide(e)
+	assert(Class.isCompatibleType(e.interface, Controller), "hide is controller-to-controller and must provide the interface requesting the hide")
+
+	self.hideLock = self.hideLock + 1
+	self:send("hide")
+end
+
+function GamepadRibbonController:show(e)
+	assert(Class.isCompatibleType(e.interface, Controller), "show is controller-to-controller and must provide the interface requesting the hide")
+	assert(self.hideLock >= 1, "unbalanced hide/show")
+
+	self.hideLock = self.hideLock - 1
+	if self.hideLock == 0 then
+		self:send("show")
+	end
+end
+
+function GamepadRibbonController:openRibbon(e)
 	self:getGame():getUI():interrupt(self:getPeep())
+
+	if Class.isCompatibleType(e.interface, Controller) and not self.isOpen then
+		print("TOGGLE (open)")
+		self:send("toggle")
+	end
 
 	self.isOpen = true
 end
 
-function GamepadRibbonController:closeRibbon()
+function GamepadRibbonController:closeRibbon(e)
+	if Class.isCompatibleType(e.interface, Controller) and self.isOpen then
+		print("TOGGLE (close)")
+		self:send("toggle")
+	end
+
 	self.isOpen = false
 end
 
 function GamepadRibbonController:poke(actionID, actionIndex, e)
 	if actionID == "openTab" then
 		self:openTab(e)
+	elseif actionID == "hide" then
+		self:hide(e)
+	elseif actionID == "show" then
+		self:show(e)
 	elseif actionID == "open" then
 		self:openRibbon(e)
 	elseif actionID == "close" then

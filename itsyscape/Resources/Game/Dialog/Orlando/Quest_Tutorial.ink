@@ -2,6 +2,8 @@ INCLUDE ./Common.ink
 INCLUDE ../Common/Common.ink
 
 VAR quest_tutorial_main_starting_player_class = WEAPON_STYLE_NONE
+VAR quest_tutorial_main_player_has_no_idea_what_to_do = false
+VAR quest_tutorial_main_player_is_scouting = false
 VAR quest_tutorial_main_started_got_up = false
 VAR quest_tutorial_main_started_asked_what_happened = false
 VAR quest_tutorial_main_started_asked_where_am_i = false
@@ -22,6 +24,7 @@ VAR quest_tutorial_main_equipped_items_thought = false
     - !player_has_started_quest("Tutorial"): -> quest_tutorial_main_started
     - player_is_next_quest_step("Tutorial", "Tutorial_GatheredItems"): -> quest_tutorial_main_gather_items
     - player_is_next_quest_step("Tutorial", "Tutorial_EquippedItems"): -> quest_tutorial_main_equipped_items
+    - player_is_next_quest_step("Tutorial", "Tutorial_Scout"): -> quest_tutorial_main_scout
 }
 
 == quest_tutorial_main_started ==
@@ -230,5 +233,80 @@ Gotcha!
 %empty()
 
 ~ player_poke_map("showEquipItemsTutorial")
+
+-> DONE
+
+== quest_tutorial_main_scout ==
+
+{quest_tutorial_main_player_is_scouting: -> scout}
+
+# speaker={C_ORLANDO}
+You look terrifying! Now that you're all geared up, we can pick up where we left off!
+
+# speaker={C_PLAYER}
+
+* Uhhhh...[] And that was?
+  -> and_that_was
+* [I know exactly what you're talking about!] Yep, let's, uh, go, um, do the thing!
+  -> player_knows_exactly
+
+= and_that_was
+
+# speaker={C_ORLANDO}
+"Uhhhh...?" We're definitely gonna need to check your head when we get back to %location(Isabelle Island)!
+
+# speaker={C_ORLANDO}
+Anyway... We were supposed to %hint(scout ahead and keep an eye out for any threats, like Yendorians... or pirates.).
+
+-> follow
+
+= player_knows_exactly
+
+~ quest_tutorial_main_player_has_no_idea_what_to_do = true
+
+# speaker={C_ORLANDO}
+"Do the thing?!" You're a laugh! Glad you're with it now though!
+
+# speaker={C_PLAYER}
+Yes... I'm totally with, er, "it" now!
+
+-> follow
+
+= follow
+
+# speaker={C_ORLANDO}
+I'll follow you! Let's go!
+
+%empty()
+
+~ quest_tutorial_main_player_is_scouting = true
+~ set_peep_mashina_state(C_ORLANDO, "tutorial-follow-player")
+
+-> DONE
+
+= give_player_a_second_chance
+
+# speaker={C_ORLANDO}
+Don't be so dramatic, you're good! We're scouting for any intrusions from Yendorians or pirates.
+
+# speaker={C_ORLANDO}
+Let's head further into the island!
+
+~ quest_tutorial_main_player_has_no_idea_what_to_do = false
+
+-> DONE
+
+= scout
+
+# speaker={C_ORLANDO}
+{
+  - quest_tutorial_main_player_has_no_idea_what_to_do: Come on! I'll follow you.
+  - else: Let's scout for Yendorians and pirates! I'll follow you.
+}
+
+# speaker={C_PLAYER}
++ {quest_tutorial_main_player_has_no_idea_what_to_do} I actually have no idea what we're doing![] I lied! Please help me!
+  -> give_player_a_second_chance
++ {quest_tutorial_main_player_has_no_idea_what_to_do} [(Keep acting like you know what you're doing.)] (I hope I can figure out what I'm supposed to be doing...)
 
 -> DONE

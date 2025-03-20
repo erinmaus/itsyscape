@@ -19,6 +19,114 @@ local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local Common = {}
 
 Common.HINT_WAIT_TIME = 4
+Common.HINT_WAIT_SHUFFLE_TIME = 2
+
+Common.WAIT_OPEN_FUNCTION = function(target, state)
+	state.time = nil
+
+	return function()
+		state.time = state.time or (love.timer.getTime() + Common.HINT_WAIT_TIME)
+		return love.timer.getTime() > state.time
+	end
+end
+
+Common.CONTROLS_MOVE_HINT = {
+	position = "center",
+	id = "root",
+	message = {
+		gamepad = {
+			button = "leftstick",
+			action = { "left", "up", "right", "down"},
+			speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
+			label = "Left stick to move"
+		},
+		standard = {
+			button = { "keyboard_w", "keyboard_a", "keyboard_s", "keyboard_d" },
+			controller = "KeyboardMouse",
+			label = "WASD to move"
+		},
+		mobile = {
+			button = "tap",
+			controller = "Touch",
+			label = "Tap to move"
+		}
+	},
+	open = Common.WAIT_OPEN_FUNCTION
+}
+
+Common.CONTROLS_CAMERA_HINT = {
+	position = "center",
+	id = "root",
+	message = {
+		gamepad = {
+			button = "rightstick",
+			action = { "left", "up", "right", "down "},
+			speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
+			label = "Right stick to move camera"
+		},
+		standard = {
+			button = { "mouse_middle", "keyboard_arrows" },
+			controller = "KeyboardMouse",
+			speed = Common.HINT_WAIT_SHUFFLE_TIME / 2,
+			label = "Middle mouse button or arrow keys to move camera"
+		},
+		mobile = {
+			button = "tap",
+			controller = "Touch",
+			label = "Tap and hold to move camera"
+		}
+	},
+	open = Common.WAIT_OPEN_FUNCTION
+}
+
+Common.CONTROLS_INTERACT_HINT = {
+	position = "center",
+	id = "root",
+	message = {
+		gamepad = {
+			button = { "a", "x" },
+			speed = Common.HINT_WAIT_TIME / 2,
+			label = {
+				a = { "ui.text", "To perform action" },
+				x = { "ui.text", "To switch target" }
+			}
+		},
+		standard = {
+			button = "mouse_left",
+			controller = "KeyboardMouse",
+			label = "To interact"
+		},
+		mobile = {
+			button = "tap",
+			controller = "Touch",
+			label = "Tap to interact"
+		}
+	},
+	open = Common.WAIT_OPEN_FUNCTION
+}
+
+Common.CONTROLS_POKE_HINT = {
+	position = "center",
+	id = "root",
+	message = {
+		gamepad = {
+			button = "y",
+			label = "To see more options"
+		},
+		standard = {
+			button = "mouse_right",
+			controller = "KeyboardMouse",
+			speed = Common.HINT_WAIT_SHUFFLE_TIME / 2,
+			label = "To see more options"
+		},
+		mobile = {
+			button = "tap",
+			controller = "Touch",
+			label = "Long tap to see more options"
+		}
+	},
+	open = Common.WAIT_OPEN_FUNCTION
+}
 
 Common.EQUIP_HINT = {
 	position = "center",
@@ -263,45 +371,13 @@ Common.EQUIP_GEAR = {
 			Utility.Peep.enable(target)
 
 			return function()
-				local director = target:getDirector()
-				local stage = director:getGameInstance():getStage()
-				local broker = director:getItemBroker()
-
-				local ground = stage:getGround(Utility.Peep.getLayer(target))
-				local items = ground and Utility.Peep.getInventory(ground)
-
-				local hasIsabelliumItemOnGround = false
-				if items then
-					for _, item in ipairs(items) do
-						local owner = broker:getItemTag(item, "owner")
-						if owner == target and item:getID():match("^Isabellium") then
-							hasIsabelliumItemOnGround = true
-							break
-						end
-					end
-				end
-
-				local equippedItems = {
-					Utility.Peep.getEquippedItem(target, Equipment.PLAYER_SLOT_HEAD) or false,
-					Utility.Peep.getEquippedItem(target, Equipment.PLAYER_SLOT_BODY) or false,
-					Utility.Peep.getEquippedItem(target, Equipment.PLAYER_SLOT_FEET) or false,
-					Utility.Peep.getEquippedItem(target, Equipment.PLAYER_SLOT_HANDS) or false,
-					Utility.Peep.getEquippedItem(target, Equipment.PLAYER_SLOT_TWO_HANDED) or false,
-				}
-
-				local hasEquippedFullIsabellium = true
-				for _, item in ipairs(equippedItems) do
-					if not item or not item:getID():match("^Isabellium") then
-						hasEquippedFullIsabellium = false
-						break
-					end
-				end
+				local hasIsabelliumItemOnGround = Common.hasPeepDroppedIsabellium(target)
+				local hasEquippedFullIsabellium = Common.hasPeepEquippedFullIsabellium(target)
 
 				state.hasEquippedFullIsabellium = hasEquippedFullIsabellium
 				state.hasIsabelliumItemOnGround = hasIsabelliumItemOnGround
 				state.time = state.time or (love.timer.getTime() + Common.HINT_WAIT_TIME)
 
-				print("hasEquippedFullIsabellium", hasEquippedFullIsabellium, "not hasIsabelliumItemOnGround", not hasIsabelliumItemOnGround, "currentTime > startTime", love.timer.getTime() > state.time)
 				return hasEquippedFullIsabellium or not hasIsabelliumItemOnGround or love.timer.getTime() > state.time
 			end
 		end
@@ -325,14 +401,7 @@ Common.EQUIP_GEAR = {
 		},
 		open = function(target, state)
 			return function()
-				local inventory = Utility.Peep.getInventory(target)
-
-				local hasIsabelliumItem = false
-				for _, item in ipairs(inventory) do
-					if item:getID():match("^Isabellium") then
-						hasIsabelliumItem = true
-					end
-				end
+				local hasIsabelliumItem = Common.peepHasIsabelliumInInventory(target)
 
 				state.time = state.time or (love.timer.getTime() + Common.HINT_WAIT_TIME)
 				return state.hasEquippedFullIsabellium or not hasIsabelliumItem or love.timer.getTime() > state.time
@@ -386,6 +455,81 @@ function Common.showEquipHint(playerPeep, done)
 		Common.EQUIP_HINT.open(playerPeep, state),
 		{ position = Common.EQUIP_HINT.position, style = Common.EQUIP_HINT.style },
 		done)
+end
+
+function Common.showBasicControlsHint(playerPeep, done)
+	local hints = {
+		Common.CONTROLS_MOVE_HINT,
+		Common.CONTROLS_INTERACT_HINT
+	}
+
+	Utility.UI.tutorial(playerPeep, hints, done)
+	Utility.Peep.enable(playerPeep)
+end
+
+function Common.showMovementControlsHint(playerPeep, done)
+	local hints = {
+		Common.CONTROLS_MOVE_HINT,
+		Common.CONTROLS_CAMERA_HINT
+	}
+
+	Utility.UI.tutorial(playerPeep, hints, done)
+	Utility.Peep.enable(playerPeep)
+end
+
+function Common.peepHasIsabelliumInInventory(playerPeep)
+	local inventory = Utility.Peep.getInventory(playerPeep)
+	for _, item in ipairs(inventory) do
+		if item:getID():match("^Isabellium") then
+			return true
+		end
+	end
+
+	return false
+end
+
+function Common.hasPeepEquippedFullIsabellium(playerPeep)
+	local equippedItems = {
+		Utility.Peep.getEquippedItem(playerPeep, Equipment.PLAYER_SLOT_HEAD) or false,
+		Utility.Peep.getEquippedItem(playerPeep, Equipment.PLAYER_SLOT_BODY) or false,
+		Utility.Peep.getEquippedItem(playerPeep, Equipment.PLAYER_SLOT_FEET) or false,
+		Utility.Peep.getEquippedItem(playerPeep, Equipment.PLAYER_SLOT_HANDS) or false,
+		Utility.Peep.getEquippedItem(playerPeep, Equipment.PLAYER_SLOT_TWO_HANDED) or false,
+	}
+
+	for _, item in ipairs(equippedItems) do
+		if not item or not item:getID():match("^Isabellium") then
+			return false
+		end
+	end
+
+	return true
+end
+
+function Common.hasPeepDroppedItems(playerPeep, pattern)
+	local stage = playerPeep:getDirector():getGameInstance():getStage()
+	local broker = playerPeep:getDirector():getItemBroker()
+
+	local layer = Utility.Peep.getLayer(playerPeep)
+	local ground = stage:getGround(layer)
+	if not ground then
+		Log.warnOnce("Cannot update gather item step; no ground for layer '%d' (player = '%s').", layer, playerPeep:getName())
+		return
+	end
+
+	local inventory = Utility.Peep.getInventory(ground)
+	for _, item in ipairs(inventory) do
+		local owner = broker:getItemTag(item, "owner")
+		if owner == playerPeep and (not pattern or item:getID():match(pattern)) then
+			return true
+		end
+	end
+
+	return false
+end
+
+function Common.hasPeepDroppedIsabellium(playerPeep)
+	return Common.hasPeepDroppedItems(playerPeep, "^Isabellium")
 end
 
 return Common

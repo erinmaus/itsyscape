@@ -16,13 +16,13 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Anchor",
+	Value = "Hint",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Anchor_Default"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A dummy prop.",
+	Value = "A dummy prop for hints.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Anchor_Default"
 }

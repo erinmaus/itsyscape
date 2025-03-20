@@ -13,29 +13,31 @@ local Mashina = require "ItsyScape.Mashina"
 
 local PLAYER = B.Reference("Tutorial_Orlando_FollowLogic", "PLAYER")
 
-local Tree = BTreeBuilder().Node() {
+local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Peep.GetPlayer {
 			[PLAYER] = B.Output.player
 		},
 
-		Mashina.Try {
+		Mashina.Success {
 			Mashina.Sequence {
 				Mashina.Invert {
-					Mashina.Player.IsNextQuestStep {
-						player = PLAYER,
-						quest = "Tutorial",
-						step = "Tutorial_EquippedItems"
+					Mashina.Navigation.TargetMoved {
+						peep = PLAYER
+					}
+				},
+
+				Mashina.Step {
+					Mashina.Navigation.WalkToPeep {
+						peep = PLAYER,
+						distance = 4.5,
+						as_close_as_possible = false
+					},
+
+					Mashina.Repeat {
+						Mashina.Peep.Wait
 					}
 				}
-
-				Mashina.Peep.SetState {
-					state = false
-				}
-			},
-
-			Mashina.Peep.FaceAway {
-				target = PLAYER
 			}
 		}
 	}

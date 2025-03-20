@@ -106,6 +106,8 @@ function GamepadRibbon:new(id, index, ui)
 
 	self:setData(GamepadSink, GamepadSink())
 
+	self.isShowing = false
+	self.isHiding = false
 	self.currentTabName = false
 	self.tabButtons = {}
 	self.tabFuncs = {}
@@ -231,13 +233,19 @@ function GamepadRibbon:gamepadRelease(joystick, button)
 	end
 end
 
-function GamepadRibbon:toggle()
-	self.isShowing = not self.isShowing
+function GamepadRibbon:hide()
+	self.isHiding = true
+	self:_openOrClose()
+end
 
+function GamepadRibbon:show()
+	self.isHiding = false
+	self:_openOrClose()
+end
+
+function GamepadRibbon:_openOrClose()
 	local inputProvider = self:getInputProvider()
-	if self.isShowing then
-		self:sendPoke("open", nil, {})
-
+	if self.isShowing and not self.isHiding then
 		self:addChild(self.container)
 
 		local child = self.contentLayout:getChildAt(1)
@@ -245,8 +253,6 @@ function GamepadRibbon:toggle()
 			inputProvider:setFocusedWidget(child, "select")
 		end
 	else
-		self:sendPoke("close", nil, {})
-
 		local focusedWidget = inputProvider:getFocusedWidget()
 		if focusedWidget and focusedWidget:hasParent(self) then
 			inputProvider:setFocusedWidget(nil, "close")
@@ -254,7 +260,21 @@ function GamepadRibbon:toggle()
 
 		self:removeChild(self.container)
 	end
+end
 
+function GamepadRibbon:toggle()
+	if self.isHiding then
+		return
+	end
+
+	self.isShowing = not self.isShowing
+	if self.isShowing then
+		self:sendPoke("open", nil, {})
+	else
+		self:sendPoke("close", nil, {})
+	end
+
+	self:_openOrClose()
 
 	self.isDirty = true
 end

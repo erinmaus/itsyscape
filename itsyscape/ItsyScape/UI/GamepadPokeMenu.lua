@@ -50,7 +50,7 @@ function GamepadPokeMenu:new(view, actions)
 	local miscColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.misc"))
 
 	self.gridLayout = GamepadGridLayout()
-	self.gridLayout.onWrapFocus:register(self._onWrapFocus, self)
+	self.gridLayout:setWrapFocus(true)
 	self.gridLayout:setWrapContents(true)
 	self:addChild(self.gridLayout)
 
@@ -138,23 +138,6 @@ function GamepadPokeMenu:new(view, actions)
 	self.onClose = Callback()
 
 	self:setZDepth(10000)
-end
-
-function GamepadPokeMenu:_onWrapFocus(_, widget, directionX, directionY)
-	if not widget then
-		return
-	end
-
-	local inputProvider = self:getInputProvider()
-	if not inputProvider then
-		return
-	end
-
-	if directionY == 0 then
-		return
-	end
-
-	inputProvider:setFocusedWidget(widget, "select")
 end
 
 function GamepadPokeMenu:focus(reason)

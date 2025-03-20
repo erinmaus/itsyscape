@@ -28,6 +28,8 @@ Quest "Tutorial" {
 	Step "Tutorial_Start",
 	Step "Tutorial_GatheredItems",
 	Step "Tutorial_EquippedItems",
+	Step "Tutorial_Scout",
+	Step "Tutorial_DefeatYendorianScout",
 	Step "Tutorial_Finished"
 }
 
@@ -46,6 +48,16 @@ Description "Tutorial_GatheredItems" {
 Description "Tutorial_EquippedItems" {
 	before = "Some of the dropped items were equipment. You should probably gear back up!",
 	after = "Some of the dropped items were equipment, so you equipped them to gear back up for the fights ahead."
+}
+
+Description "Tutorial_Scout" {
+	before = "Go forth and explore.",
+	after = "After exploring the island, you and Orlando discovered a Yendorian scout."
+}
+
+Description "Tutorial_DefeatYendorianScout" {
+	before = "Defeat the Yendorian scout before it spills the beans!",
+	after = "Oh no! Despite defeating the Yendorian scout, in his last moments he sent up a flare alerting the Yendorian party further ahead."
 }
 
 Description "Tutorial_Finished" {

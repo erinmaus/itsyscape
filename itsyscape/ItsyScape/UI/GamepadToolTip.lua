@@ -33,6 +33,8 @@ function GamepadToolTip:new()
 	self.buttonSize = self.BUTTON_SIZE
 	self.maxWidth = self.MAX_WIDTH
 
+	self.previousID = "none"
+
 	self.gamepadIcon = GamepadIcon()
 	self.gamepadIcon:setPosition(self.PADDING, self.PADDING)
 	self.gamepadIcon:setButtonID("a")
@@ -84,8 +86,12 @@ function GamepadToolTip:setButtonID(id)
 	self.gamepadIcon:setButtonID(id)
 end
 
+function GamepadToolTip:setButtonIDs(...)
+	self.gamepadIcon:setButtonIDs(...)
+end
+
 function GamepadToolTip:getButtonID()
-	return self.gamepadIcon:getButtonID()
+	return self.gamepadIcon:getCurrentButtonID()
 end
 
 function GamepadToolTip:getGamepadIcon()
@@ -138,6 +144,7 @@ function GamepadToolTip:performLayout()
 	end
 
 	local labelStyle = self.label:getStyle()
+	local buttonID = self:getButtonID()
 
 	local text = self:getText()
 
@@ -147,8 +154,8 @@ function GamepadToolTip:performLayout()
 		if type(text) == "table" then
 			t = {}
 
-			for i = 2, #text, 2 do
-				table.insert(t, text[i])
+			for i = 2, #(text[buttonID] or text), 2 do
+				table.insert(t, (text[buttonID] or text)[i])
 			end
 
 			t = table.concat(t, "")
@@ -168,8 +175,13 @@ function GamepadToolTip:performLayout()
 	end
 
 	local height = numLines * labelStyle.font:getHeight()
-
 	self.label:setSize(width, height)
+
+	if type(text) == "table" then
+		self.label:setText(text[buttonID] or text)
+	else
+		self.label:setText(text)
+	end
 
 	if self:getButtonID() == "none" then
 		self.label:setPosition(self.PADDING * 2, self.PADDING)
@@ -186,8 +198,6 @@ end
 
 function GamepadToolTip:setText(value)
 	Panel.setText(self, value)
-
-	self.label:setText(value)
 	self:performLayout()
 end
 
@@ -201,6 +211,12 @@ function GamepadToolTip:update(delta)
 		if buttonID then
 			self:setButtonID(buttonID)
 		end
+	end
+
+	if self.previousID ~= self:getButtonID() then
+		print(">>> new button", self:getButtonID())
+		self.previousID = self:getButtonID()
+		self:performLayout()
 	end
 end
 

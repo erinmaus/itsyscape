@@ -474,14 +474,26 @@ function DemoApplication:_loadDemoPlayer(_, buttonIndex)
 	self:closeTitleScreen()
 end
 
+function DemoApplication:_layoutDemoButton(button)
+	local child = button:getChildAt(1)
+	child:update(0)
+
+	local childWidth, childHeight = child:getSize()
+	local buttonWidth, buttonHeight = button:getSize()
+
+	child:setPosition(buttonWidth / 2 - childWidth / 2, buttonHeight / 2 - childHeight / 2)
+end
+
 function DemoApplication:_focusDemoButton(button)
 	local child = button:getChildAt(1)
 	child:setButtonID("a")
+	self:_layoutDemoButton(button)
 end
 
 function DemoApplication:_blurDemoButton(button)
 	local child = button:getChildAt(1)
 	child:setButtonID("none")
+	self:_layoutDemoButton(button)
 end
 
 function DemoApplication:openDemoMainMenu()
@@ -497,6 +509,7 @@ function DemoApplication:openDemoMainMenu()
 	gridLayout:setUniformSize(true, 256, 64)
 	gridLayout:setWrapContents(true)
 	gridLayout:setPadding(0, 8)
+	gridLayout:setWrapFocus(true)
 
 	local resumeButton = Button()
 	resumeButton:setSize(256, 64)

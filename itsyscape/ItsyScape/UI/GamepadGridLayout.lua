@@ -21,12 +21,21 @@ function GamepadGridLayout:new()
 	GridLayout.new(self)
 
 	self.onWrapFocus = Callback()
+	self.wrapFocus = false
 
 	self.onBlurChild:register(self._blurChild)
 	self.onFocusChild:register(self._focusChild)
 	self:setData(GamepadSink, GamepadSink())
 
 	self.currentFocusedWidget = false
+end
+
+function GamepadGridLayout:setWrapFocus(value)
+	self.wrapFocus = value or false
+end
+
+function GamepadGridLayout:getWrapFocus()
+	return self.wrapFocus
 end
 
 function GamepadGridLayout:getIsFocusable()
@@ -130,6 +139,10 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 	if focusableWidget then
 		inputProvider:setFocusedWidget(focusableWidget, "select")
 	elseif oppositeFocusableWidget then
+		if self.wrapFocus then
+			inputProvider:setFocusedWidget(oppositeFocusableWidget, "select")
+		end
+
 		self:onWrapFocus(oppositeFocusableWidget, directionX, directionY)
 	else
 		self:onWrapFocus(nil, directionX, directionY)
