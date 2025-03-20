@@ -1336,7 +1336,7 @@ function UIView:probe(actions, x, y, centerX, centerY)
 	do
 		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		local menuWidth, menuHeight = self.pendingPokeMenu:getSize()
-		local mouseX, mouseY = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+		local mouseX, mouseY = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 		mouseX = x or mouseX
 		mouseY = y or mouseY
 

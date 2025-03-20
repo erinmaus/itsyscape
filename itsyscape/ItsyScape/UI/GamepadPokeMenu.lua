@@ -91,7 +91,7 @@ function GamepadPokeMenu:new(view, actions)
 		end
 
 		local button = Button()
-		button:setID(string.format("GamepadPokeMenu-%s-%s", action.verb, action.object))
+		button:setID(string.format("PokeMenu-%s-%s", action.verb, action.object))
 		button:setText(buttonText)
 		button:setStyle(buttonStyle)
 		button.onClick:register(function()

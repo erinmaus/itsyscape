@@ -68,7 +68,7 @@ function TutorialHintController:new(peep, director, id, message, openCallback, e
 		}
 	end
 
-	self.state = {
+	self.inputs = {
 		message = message,
 		id = id,
 		style = style,
@@ -83,8 +83,17 @@ function TutorialHintController:poke(actionID, actionIndex, e)
 	Controller.poke(self, actionID, actionIndex, e)
 end
 
+function TutorialHintController.get(f)
+	return Class.isCallable(f) and f() or f
+end
+
 function TutorialHintController:pull()
-	return self.state
+	return {
+		message = TutorialHintController.get(self.inputs.message),
+		id = TutorialHintController.get(self.inputs.id),
+		style = TutorialHintController.get(self.inputs.style),
+		position = TutorialHintController.get(self.inputs.position)
+	}
 end
 
 function TutorialHintController:update(delta)

@@ -359,7 +359,7 @@ function Bank:withdrawX(index)
 		Bank.WITHDRAW_X_WINDOW_WIDTH,
 		Bank.WITHDRAW_X_WINDOW_HEIGHT)
 
-	local x, y = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+	local x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 	x = x - Bank.WITHDRAW_X_WINDOW_WIDTH / 2
 	y = y - Bank.WITHDRAW_X_WINDOW_HEIGHT / 2
 
@@ -757,7 +757,7 @@ function Bank:examine(icon, source, index)
 end
 
 function Bank:getRightHandItem(layout, source)
-	local x, y = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+	local x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 
 	if source ~= 'items' then
 		return nil

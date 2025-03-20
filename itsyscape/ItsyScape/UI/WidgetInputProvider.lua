@@ -159,7 +159,7 @@ function WidgetInputProvider:getFocusableWidgets(widget, result)
 end
 
 function WidgetInputProvider:isBlocking(x, y)
-	x, y = love.graphics.getScaledPoint(x, y)
+	x, y = itsyrealm.graphics.getScaledPoint(x, y)
 
 	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, function(w)
 		return not w:getIsClickThrough()
@@ -210,7 +210,7 @@ local function clickableWidgetFilter(w)
 end
 
 function WidgetInputProvider:mousePress(x, y, button)
-	x, y = love.graphics.getScaledPoint(x, y)
+	x, y = itsyrealm.graphics.getScaledPoint(x, y)
 
 	local clickedWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, clickedWidgetFilter, true)
 	local clickableWidget = self:getWidgetUnderPoint(x, y, nil, nil, nil, clickableWidgetFilter, true)
@@ -235,7 +235,7 @@ function WidgetInputProvider:mousePress(x, y, button)
 end
 
 function WidgetInputProvider:mouseRelease(x, y, button)
-	x, y = love.graphics.getScaledPoint(x, y)
+	x, y = itsyrealm.graphics.getScaledPoint(x, y)
 
 	local widget = self:getWidgetUnderPoint(x, y, nil, nil, nil, clickableWidgetFilter, true)
 	if widget then
@@ -249,7 +249,7 @@ function WidgetInputProvider:mouseRelease(x, y, button)
 end
 
 function WidgetInputProvider:mouseMove(x, y, dx, dy)
-	x, y = love.graphics.getScaledPoint(x, y)
+	x, y = itsyrealm.graphics.getScaledPoint(x, y)
 
 	local top = self:getWidgetUnderPoint(x, y, nil, nil, nil, focusableWidgetFilter, true)
 
@@ -288,7 +288,7 @@ function WidgetInputProvider:mouseMove(x, y, dx, dy)
 end
 
 function WidgetInputProvider:mouseScroll(x, y)
-	local mouseX, mouseY = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+	local mouseX, mouseY = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 	local widgets = self:getWidgetsUnderPoint(mouseX, mouseY, nil, nil, nil, true)
 
 	for _, widget in ipairs(widgets) do

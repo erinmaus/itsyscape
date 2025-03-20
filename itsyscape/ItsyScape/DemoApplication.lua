@@ -1251,8 +1251,8 @@ function DemoApplication:updateMobileMouse()
 			isMoving = touch.isMoving or totalMovement > DemoApplication.TOUCH_STILL_MAX
 			touch.isMoving = isMoving
 
-			local sx, sy = love.graphics.getScaledPoint(touch.startX, touch.startY)
-			local cx, cy = love.graphics.getScaledPoint(touch.currentX, touch.currentY)
+			local sx, sy = itsyrealm.graphics.getScaledPoint(touch.startX, touch.startY)
+			local cx, cy = itsyrealm.graphics.getScaledPoint(touch.currentX, touch.currentY)
 
 			local startingWidget = self:getUIView():getInputProvider():getWidgetUnderPoint(
 				sx,

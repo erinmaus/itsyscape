@@ -26,7 +26,7 @@ function Notification:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
-	local x, y = love.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+	local x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 
 	self.panel = Panel()
 	self.panel:setStyle(PanelStyle({
