@@ -139,7 +139,6 @@ function GamepadRibbonController:openRibbon(e)
 	self:getGame():getUI():interrupt(self:getPeep())
 
 	if Class.isCompatibleType(e.interface, Controller) and not self.isOpen then
-		print("TOGGLE (open)")
 		self:send("toggle")
 	end
 
@@ -148,7 +147,6 @@ end
 
 function GamepadRibbonController:closeRibbon(e)
 	if Class.isCompatibleType(e.interface, Controller) and self.isOpen then
-		print("TOGGLE (close)")
 		self:send("toggle")
 	end
 

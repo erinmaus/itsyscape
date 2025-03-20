@@ -51,7 +51,6 @@ function BuildLargeTileSetsApplication:saveLargeTileSet(tileSetID, largeTileSet)
 	local specular = largeTileSet:getDiffuseTexture():getResource()
 
 	local w, h = largeTileSet:getLargeTileSize()
-	print("w", w, "h", h)
 	local tilesCount = largeTileSet:getLargeTilesCount()
 
 	for layer = 1, tilesCount do
@@ -72,8 +71,6 @@ function BuildLargeTileSetsApplication:saveLargeTileSet(tileSetID, largeTileSet)
 end
 
 function BuildLargeTileSetsApplication:buildLargeTileSet(layer, tileSetID)
-	print(">>> tileSetID", layer, tileSetID)
-
 	local game = self:getGame()
 	local stage = game:getStage()
 

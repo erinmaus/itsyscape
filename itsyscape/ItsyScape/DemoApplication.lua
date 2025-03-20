@@ -964,7 +964,7 @@ function DemoApplication:gamepadRelease(joystick, button)
 
 	if not focusedWidget then
 		if button == cycleTargetButton then
-			self:nextShimmer(false)
+			self:nextShimmer()
 		elseif button == gamepadProbe then
 			self:probeCurrentShimmer(false)
 		elseif button == gamepadAction then
@@ -1889,13 +1889,12 @@ function DemoApplication:updatePositionProbe()
 		end
 
 		if not hasPendingObject then
-			print(">>>> trying to replace lost candidate...")
-			self:nextShimmer(true)
+			self:nextShimmer()
 		end
 	end
 end
 
-function DemoApplication:nextShimmer(lostCandidate)
+function DemoApplication:nextShimmer()
 	local currentIndex
 
 	local shimmerCandidates = {}

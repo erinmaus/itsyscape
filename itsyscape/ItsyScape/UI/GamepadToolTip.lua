@@ -214,7 +214,6 @@ function GamepadToolTip:update(delta)
 	end
 
 	if self.previousID ~= self:getButtonID() then
-		print(">>> new button", self:getButtonID())
 		self.previousID = self:getButtonID()
 		self:performLayout()
 	end

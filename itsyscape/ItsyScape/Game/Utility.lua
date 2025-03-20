@@ -4713,7 +4713,6 @@ end
 function Utility.Peep.setMashinaState(peep, state)
 	local mashina = peep:getBehavior(MashinaBehavior)
 	if mashina then
-		print(">>>", peep:getName(), ">>> state", state)
 		mashina.currentState = state or false
 		return not not mashina.states[state] or state == false
 	end

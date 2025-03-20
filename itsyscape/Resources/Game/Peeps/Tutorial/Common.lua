@@ -26,7 +26,7 @@ Common.WAIT_OPEN_FUNCTION = function(target, state)
 
 	return function()
 		state.time = state.time or (love.timer.getTime() + Common.HINT_WAIT_TIME)
-		return love.timer.getTime() > state.time or not (state.ui and Utility.UI.isOpen(target, state.ui))
+		return love.timer.getTime() > state.time or (state.ui and not Utility.UI.isOpen(target, state.ui))
 	end
 end
 
@@ -60,7 +60,7 @@ Common.CONTROLS_UI_MOVE_DIALOG = {
 	message = {
 		gamepad = {
 			button = "rightstick",
-			action = { "none", "verticxal" },
+			action = { "none", "vertical" },
 			speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
 			label = "Right stick to select"
 		},
@@ -499,6 +499,7 @@ end
 function Common.startEquipTutorial(playerPeep, done)
 	Common.startRibbonTutorial(playerPeep, Common.EQUIP_GEAR[1].open(playerPeep, {}))
 	Utility.UI.tutorial(playerPeep, Common.EQUIP_GEAR, done)
+	Utility.Peep.enable(playerPeep)
 end
 
 function Common.showEquipHint(playerPeep, done)
@@ -508,7 +509,7 @@ function Common.showEquipHint(playerPeep, done)
 		false,
 		Common.EQUIP_HINT.id,
 		Common.EQUIP_HINT.message,
-		Common.EQUIP_HINT.open(playerPeep, state),
+		Common.EQUIP_HINT.open(playerPeep, {}),
 		{ position = Common.EQUIP_HINT.position, style = Common.EQUIP_HINT.style },
 		done)
 end

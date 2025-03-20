@@ -17,7 +17,7 @@ local Interface = require "ItsyScape.UI.Interface"
 local TutorialHint = Class(Interface)
 TutorialHint.PADDING = 8
 TutorialHint.Z_DEPTH = 8000
-TutorialHint.TOOL_TIP_HEIGHT = 32
+TutorialHint.TOOL_TIP_HEIGHT = 48
 
 TutorialHint.Circle = Class(Drawable)
 function TutorialHint.Circle:new()
@@ -159,8 +159,13 @@ function TutorialHint:place(widget)
 
 	local x, y
 	if state.position == "center" then
-		x = (targetX + targetWidth / 2) - toolTipWidth / 2
-		y = (targetY + targetHeight / 2) - toolTipHeight / 2
+		if widget == self:getView():getRoot() then
+			x = (targetX + targetWidth / 2) - toolTipWidth / 2
+			y = (targetY + targetHeight / 2) - targetHeight / 4 - toolTipHeight / 2
+		else
+			x = (targetX + targetWidth / 2) - toolTipWidth / 2
+			y = (targetY + targetHeight / 2) - toolTipHeight / 2
+		end
 	else
 		if state.position == "up" then
 			x = (targetX + targetWidth / 2) - toolTipWidth / 2

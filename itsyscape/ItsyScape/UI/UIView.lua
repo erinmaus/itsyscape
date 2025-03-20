@@ -1322,7 +1322,6 @@ function UIView:examine(a, b, w)
 	end
 
 	if w then
-		print(">>> onLayout")
 		toolTip.onLayout:register(self._layoutToolTip, self, w)
 	end
 

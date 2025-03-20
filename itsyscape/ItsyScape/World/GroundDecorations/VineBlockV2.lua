@@ -164,8 +164,6 @@ function VineBlock:emit(drawType, tileSet, map, i, j, tileSetTile, mapTile)
 				local absoluteY = map:getInterpolatedHeight(absoluteX, absoluteZ)
 				local feature = self.FEATURES[self._features:index(g.feature, #self.FEATURES)]
 
-				--print(">>> vine!", feature, absoluteX, absoluteY, absoluteZ)
-
 				self:addFeature(
 					feature,
 					Vector(absoluteX, absoluteY, absoluteZ),
