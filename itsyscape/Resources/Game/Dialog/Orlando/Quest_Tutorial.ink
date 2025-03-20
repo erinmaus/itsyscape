@@ -205,6 +205,10 @@ Eek! I'll look away!
 ~ face_away_from_peep(C_ORLANDO, C_PLAYER)
 ~ set_peep_mashina_state(C_ORLANDO, "tutorial-look-away-from-player")
 
+%empty()
+
+~ player_poke_map("showEquipItemsTutorial")
+
 -> DONE
 
 = ask_for_help
@@ -222,6 +226,8 @@ Eek! I'll look away!
 
 # speaker={C_ORLANDO}
 Gotcha!
+
+%empty()
 
 ~ player_poke_map("showEquipItemsTutorial")
 

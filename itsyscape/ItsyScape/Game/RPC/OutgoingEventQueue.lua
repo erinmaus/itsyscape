@@ -55,7 +55,7 @@ function OutgoingEventQueue:_newEvent()
 		self.queue[self.n] = e
 	else
 		e = self.queue[self.n]
-		s = e.__serialized
+		local s = e.__serialized
 		table.clear(e)
 		table.clear(s)
 

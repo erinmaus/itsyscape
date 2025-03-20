@@ -52,6 +52,8 @@ function InventoryGamepadContentTab:new(interface)
 	self.layout.onWrapFocus:register(self._onLayoutWrapFocus, self)
 	self:addChild(self.layout)
 
+	self.layout:setID("PlayerInventory")
+
 	self.swapIcon = ItemIcon()
 	self.swapIcon:setSize(self.ICON_SIZE, self.ICON_SIZE)
 	self.swapIcon:setIsActive(true)

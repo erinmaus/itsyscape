@@ -26,16 +26,18 @@ GamepadIconRenderer.GAMEPAD_BUTTON = {
 	["dp"] = "dpad_none",
 	["leftstick"] = "stick_l",
 	["rightstick"] = "stick_r",
-	["rightshoulder"] = "r1",
-	["leftshoulder"] = "l1",
-	["triggerright"] = "r2",
-	["triggerleft"] = "l2"
+	["rightshoulder"] = "button_r1",
+	["leftshoulder"] = "button_l1",
+	["triggerright"] = "button_r2",
+	["triggerleft"] = "button_l2"
 }
 
 GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE = {
 	["PlayStation"] = {
 		["start"] = "button_options",
 		["back"] = "button_create",
+		["rightshoulder"] = "trigger_r1",
+		["leftshoulder"] = "trigger_l1",
 	}
 }
 
@@ -108,6 +110,12 @@ function GamepadIconRenderer:_getIcon(joystickName, icon)
 				end
 			else
 				value = false
+			end
+
+			if value == false then
+				Log.info("Couldn't load gamepad icon '%s'.", path)
+			else
+				Log.info("Loaded gamepad icon '%s'.", path)
 			end
 		end
 

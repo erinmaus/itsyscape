@@ -27,7 +27,7 @@ function InkDialog:new(filename, variables)
 
 	local dialog = json.decode(data)
 	self.story = Nomicon.Story(dialog)
-	self.story:listenForGlobalVariable("*", self._setVariable, true, self)
+	self.story:listenForGlobalVariable("*", self._setVariable, false, self)
 	self.choices = Nomicon.ChoiceList(self.story)
 	self.speakers = {}
 
@@ -78,7 +78,7 @@ function InkDialog:_setVariable(variableName, value)
 
 		self.variables[variableName] = result
 	else
-		self.variables[variableName] = value
+		self.variables[variableName] = value:getValue()
 	end
 
 	self:onSetVariable(variableName, self.variables[variableName])
@@ -134,7 +134,6 @@ function InkDialog:next(choiceIndex)
 	end
 
 	if not self.story:canContinue() then
-		print("STORY OVER")
 		return false
 	end
 
@@ -144,7 +143,7 @@ function InkDialog:next(choiceIndex)
 		self:processTags(tags)
 	end
 
-	if not text:match("^%s*$") then
+	if not text:match("^%s*$") and not text:match("%s*%%empty%b()%s*") then
 		local message = Message(text)
 		table.insert(self.pendingPackets, MessagePacket(self, { message }))
 	end

@@ -40,21 +40,26 @@ function GamepadRibbon.Container:getOverflow()
 	return true
 end
 
+GamepadRibbon.TAB_PLAYER_INVENTORY = "PlayerInventory"
+GamepadRibbon.TAB_PLAYER_EQUIPMENT = "PlayerEquipment"
+GamepadRibbon.TAB_PLAYER_SKILLS    = "PlayerSkills"
+GamepadRibbon.TAB_SETTINGS         = "Settings"
+
 GamepadRibbon.TOOL_TIPS = {
-	["inventory"] = {
+	[GamepadRibbon.TAB_PLAYER_INVENTORY] = {
 		ToolTip.Header("Inventory"),
 		ToolTip.Text("See the items you are currently carrying.")
 	},
-	["equipment"] = {
+	[GamepadRibbon.TAB_PLAYER_EQUIPMENT] = {
 		ToolTip.Header("Equipment"),
 		ToolTip.Text("View, interact with, and remove your equipment."),
 		ToolTip.Text("You can also see your equipment bonuses.")
 	},
-	["skills"] = {
+	[GamepadRibbon.TAB_PLAYER_SKILLS] = {
 		ToolTip.Header("Skills"),
 		ToolTip.Text("View your skills and see helpful skill guides.")
 	},
-	["settings"] = {
+	[GamepadRibbon.TAB_SETTINGS] = {
 		ToolTip.Header("Settings"),
 		ToolTip.Text("Show settings and quit the game.")
 	}
@@ -259,7 +264,7 @@ function GamepadRibbon:getIsShowing()
 end
 
 function GamepadRibbon:attach(reason)
-	self:openTab("inventory")
+	self:openTab(self.TAB_PLAYER_INVENTORY)
 	self:focusChild(self.inventoryTabContent, "select")
 end
 
@@ -438,7 +443,7 @@ function GamepadRibbon:_updateInventoryTab()
 		otherItem = state.equipment.items[slot]
 	end
 
-	if self.currentTabName == "inventory" then
+	if self.currentTabName == self.TAB_PLAYER_INVENTORY then
 		self.itemInfoContent:refresh({ item = item, otherItem = otherItem })
 	end
 end
@@ -450,7 +455,7 @@ function GamepadRibbon:_initInventoryTab()
 	self.itemInfoContent = ItemInfoGamepadContentTab(self)
 
 	self:_addTab(
-		"inventory",
+		self.TAB_PLAYER_INVENTORY,
 		"Resources/Game/UI/Icons/Common/Inventory.png",
 		self._openInventoryTab)
 end
@@ -476,7 +481,7 @@ function GamepadRibbon:_updateEquipmentTab()
 	local slot = self.equipmentTabContent:getCurrentEquipmentSlot()
 	local item = self.equipmentTabContent:getEquipmentItem(slot)
 
-	if self.currentTabName == "equipment" then
+	if self.currentTabName == self.TAB_PLAYER_EQUIPMENT then
 		self.itemInfoContent:refresh({ item = item })
 	end
 end
@@ -486,17 +491,17 @@ function GamepadRibbon:_initEquipmentTab()
 	self.equipmentTabContent.onWrapFocus:register(self._onContentWrapFocus, self)
 
 	self:_addTab(
-		"equipment",
+		self.TAB_PLAYER_EQUIPMENT,
 		"Resources/Game/UI/Icons/Common/Equipment.png",
 		self._openEquipmentTab)
 end
 
 function GamepadRibbon:_initSkillTab()
-	self:_addTab("skills", "Resources/Game/UI/Icons/Common/Skills.png")
+	self:_addTab(self.TAB_PLAYER_SKILLS, "Resources/Game/UI/Icons/Common/Skills.png")
 end
 
 function GamepadRibbon:_initSettingsTab()
-	self:_addTab("settings", "Resources/Game/UI/Icons/Concepts/Settings.png")
+	self:_addTab(self.TAB_SETTINGS, "Resources/Game/UI/Icons/Concepts/Settings.png")
 end
 
 function GamepadRibbon:_onSelectTab(tab, button, buttonIndex)
@@ -509,7 +514,7 @@ end
 
 function GamepadRibbon:_addTab(tab, iconFilename, openFunc)
 	local button = Button()
-	button:setID(string.format("Ribbon-%s", tab))
+	button:setID(string.format("GamepadRibbon-%s", tab))
 	button:setStyle(ButtonStyle(self.INACTIVE_TAB_BUTTON_STYLE, self:getView():getResources()))
 	button:setToolTip(unpack(self.TOOL_TIPS[tab] or {}))
 	button.onClick:register(self._onSelectTab, self, tab)

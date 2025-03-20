@@ -34,49 +34,17 @@ function TutorialHintController:new(peep, director, id, message, openCallback, e
 
 	Controller.new(self, peep, director)
 
-	if type(message) ~= "table" then
-		message = {
-			standard = {
-				button = "mouse",
-				controller = "KeyboardMouse",
-				label = message
-			}
-		}
-	end
-
-	if type(id) ~= "table" then
-		id = {
-			standard = id
-		}
-	end
-
-	local position = e.position
-	if type(position) ~= "table" then
-		position = {
-			standard = TutorialHintController.POSITION[position or "up"] or "up"
-		}
-	end
-
-	local style = e.style
-	if type(style) ~= "table" then
-		local s = TutorialHintController.STYLE[style or "rectangle"] or "rectangle"
-
-		style = {
-			standard = s,
-			gamepad = s,
-			mobile = s
-		}
-	end
-
 	self.inputs = {
 		message = message,
 		id = id,
-		style = style,
-		position = position
+		style = e.style,
+		position = e.position
 	}
 
 	self.openCallback = openCallback or function() return true end
 	self.nextCallback = nextCallback
+
+	self:updateState()
 end
 
 function TutorialHintController:poke(actionID, actionIndex, e)
@@ -87,23 +55,83 @@ function TutorialHintController.get(f)
 	return Class.isCallable(f) and f() or f
 end
 
-function TutorialHintController:pull()
+function TutorialHintController:build()
 	return {
-		message = TutorialHintController.get(self.inputs.message),
 		id = TutorialHintController.get(self.inputs.id),
+		message = TutorialHintController.get(self.inputs.message),
 		style = TutorialHintController.get(self.inputs.style),
 		position = TutorialHintController.get(self.inputs.position)
 	}
 end
 
-function TutorialHintController:update(delta)
-	local result = self.openCallback(
+function TutorialHintController:updateState()
+	local state = self:build()
+
+	if type(state.message) ~= "table" and state.message then
+		state.message = {
+			gamepad = {
+				button = "mouse",
+				controller = "KeyboardMouse",
+				label = state.message
+			},
+			standard = {
+				button = "mouse",
+				controller = "KeyboardMouse",
+				label = state.message
+			},
+			mobile = {
+				button = "tap",
+				controller = "Touch",
+				label = state.message
+			}
+		}
+	end
+
+	if type(state.id) ~= "table" then
+		state.id = {
+			gamepad = state.id,
+			standard = state.id,
+			mobile = state.id
+		}
+	end
+
+	if type(state.position) ~= "table" then
+		local position = TutorialHintController.POSITION[state.position or "up"] or "up"
+
+		state.position = {
+			gamepad = position,
+			standard = position,
+			mobile = position
+		}
+	end
+
+	if type(state.style) ~= "table" then
+		local style = TutorialHintController.STYLE[state.style or "rectangle"] or "rectangle"
+
+		state.style = {
+			standard = style,
+			gamepad = style,
+			mobile = style
+		}
+	end
+
+	state.didPerformAction = self.openCallback(
 		self:getPeep(),
 		self:getDirector(),
 		self:getGame():getUI(),
-		self.state)
+		self.inputState)
 
-	if result then
+	self.state = state
+end
+
+function TutorialHintController:pull()
+	return self.state
+end
+
+function TutorialHintController:update(delta)
+	self:updateState()
+
+	if self.state.didPerformAction then
 		if self.nextCallback then
 			self.nextCallback()
 		end

@@ -467,9 +467,9 @@ function PlayerInventory:update()
 
 	for i = 1, self.numItems do
 		if items[i] then
-			self.buttons[i]:setID("Inventory-" .. items[i].id)
+			self.buttons[i]:setID("Inventory-Item-" .. items[i].id)
 		else
-			self.buttons[i]:setID(nil)
+			self.buttons[i]:setID("Inventory-Item-Null")
 		end
 	end
 end

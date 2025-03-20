@@ -17,7 +17,7 @@ local Interface = require "ItsyScape.UI.Interface"
 local TutorialHint = Class(Interface)
 TutorialHint.PADDING = 8
 TutorialHint.Z_DEPTH = 8000
-TutorialHint.TOOL_TIP_HEIGHT = 40
+TutorialHint.TOOL_TIP_HEIGHT = 32
 
 TutorialHint.Circle = Class(Drawable)
 function TutorialHint.Circle:new()
@@ -87,7 +87,8 @@ function TutorialHint:getInputState()
 		id = state.id[mode] == nil and state.id.standard or state.id[mode],
 		style = state.style[mode] == nil and state.style.standard or state.style[mode],
 		position = state.position[mode] == nil and state.position.standard or state.position[mode],
-		message = state.message[mode] == nil and state.message.standard or state.message[mode]
+		message = state.message[mode] == nil and state.message.standard or state.message[mode],
+		didPerformAction = state.didPerformAction
 	}
 end
 
@@ -213,9 +214,13 @@ function TutorialHint:update(...)
 		end
 	end
 
-	if (not widget or state.message == false) and self.targetWidget and self.targetWidget:getParent() == self then
+	if (not widget or state.message == false or state.didPerformAction) and self.targetWidget and self.targetWidget:getParent() == self then
 		self:removeChild(self.targetWidget)
 		self.targetWidget = nil
+	end
+
+	if state.didPerformAction and self.toolTip:getParent() == self then
+		self:removeChild(self.toolTip)
 	end
 end
 

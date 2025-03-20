@@ -2076,18 +2076,44 @@ end
 function Utility.UI.tutorial(target, tips, done)
 	Utility.Peep.disable(target)
 
+	local state = {}
+
 	local index = 0
 	local function after()
 		index = index + 1
 		if index <= #tips then
+			if Class.isCallable(tips[index].init) then
+				tips[index].init(target, index)
+			end
+
+			local id = tips[index].id
+			if Class.isCallable(id) then
+				id = id(target, state)
+			end
+
+			local message = tips[index].message
+			if Class.isCallable(message) then
+				message = message(target, state)
+			end
+
+			local position = tips[index].position
+			if Class.isCallable(position) then
+				position = position(target, state)
+			end
+
+			local style = tips[index].style
+			if Class.isCallable(style) then
+				style = style(target, state)
+			end
+
 			Utility.UI.openInterface(
 				target,
 				"TutorialHint",
 				false,
-				tips[index].id,
-				tips[index].message,
-				tips[index].open(target, {}),
-				{ position = tips[index].position, style = tips[index].style },
+				id,
+				message,
+				tips[index].open(target, state),
+				{ position = position, style = style },
 				after)
 		else
 			Utility.Peep.enable(target)

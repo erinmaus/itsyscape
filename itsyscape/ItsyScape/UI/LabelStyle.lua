@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local utf8 = require "utf8"
 local Class = require "ItsyScape.Common.Class"
+local Config = require "ItsyScape.Game.Config"
 local Color = require "ItsyScape.Graphics.Color"
 local TextInput = require "ItsyScape.UI.TextInput"
 local WidgetStyle = require "ItsyScape.UI.WidgetStyle"
@@ -39,13 +40,13 @@ function LabelStyle:new(t, resources)
 	self.spaceLines = t.spaceLines or false
 	self.minJustifyLineWidthPercent = t.minJustifyLineWidthPercent or 0.75
 
-	self.align = t.align or 'left'
+	self.align = t.align or "left"
 end
 
 function LabelStyle:draw(widget, state)
 	local text = widget:get("text", state, "")
 
-	if type(text) ~= 'string' and type(text) ~= 'table' then
+	if type(text) ~= "string" and type(text) ~= "table" then
 		text = tostring(text)
 	end
 
@@ -65,10 +66,28 @@ function LabelStyle:draw(widget, state)
 			end
 		end
 
+		if type(text) == "table" then
+			local result = {}
+
+			for i = 1, #text, 2 do
+				if type(text[i]) == "string" then
+					table.insert(result, {
+						Color.fromHexString(Config.get("Config", "COLOR", "color", text[i]) or text[i]):get()
+					})
+				else
+					table.insert(result, text[i])
+				end
+
+				table.insert(result, text[i + 1])
+			end
+
+			text = result
+		end
+
 		local x, y = 0, 0
 		if width == 0 then
 			local r
-			if type(text) == 'table' then
+			if type(text) == "table" then
 				for i = 2, #text, 2 do
 					r = (r or "") .. text[i]
 				end
@@ -76,7 +95,7 @@ function LabelStyle:draw(widget, state)
 
 			width = font:getWidth(r or text)
 
-			if self.align == 'center' then
+			if self.align == "center" then
 				x = -width / 2
 			end
 		end

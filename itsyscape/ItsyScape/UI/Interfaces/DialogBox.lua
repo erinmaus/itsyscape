@@ -126,19 +126,6 @@ function DialogBox:new(id, index, ui)
 	self.messageLabel:setIsSelfClickThrough(true)
 	self.dialogButton:addChild(self.messageLabel)
 
-	self.clickToContinue = Label()
-	self.clickToContinue:setText("Click to continue")
-	self.clickToContinue:setStyle({
-		align = 'center',
-		textShadow = true,
-		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = _MOBILE and 28 or 24
-	}, LabelStyle)
-	self.clickToContinue:setPosition(
-		self.messageLabel:getPosition(),
-		DialogBox.HEIGHT - 24 - DialogBox.PADDING * 2)
-	self.clickToContinue:setIsSelfClickThrough(true)
-
 	self.pressToContinue = GamepadToolTip()
 	self.pressToContinue:setHasBackground(false)
 	self.pressToContinue:setText("Continue")
@@ -238,23 +225,25 @@ function DialogBox:next(state)
 		self.messageLabel:setText(DialogBox.concatMessage(state.content))
 
 		self:addChild(self.dialogButton)
+		self:addChild(self.pressToContinue)
 
 		local inputProvider = self:getInputProvider()
 		if inputProvider and inputProvider:getCurrentJoystick() then
-			self:removeChild(self.clickToContinue)
-			self:addChild(self.pressToContinue)
-
-			self.pressToContinue:update(0)
-			local x = self.messageLabel:getPosition()
-			local labelWidth, labelHeight = self.messageLabel:getSize()
-			local toolTipWidth, toolTipHeight = self.pressToContinue:getSize()
-			self.pressToContinue:setPosition(
-				x + labelWidth / 2 - toolTipWidth / 2,
-				self.HEIGHT - toolTipHeight - self.PADDING)
+			self.pressToContinue:getGamepadIcon():setController(false)
+			self.pressToContinue:setKeybind("gamepadPrimaryAction")
 		else
-			self:removeChild(self.pressToContinue)
-			self:addChild(self.clickToContinue)
+			self.pressToContinue:getGamepadIcon():setController("KeyboardMouse")
+			self.pressToContinue:setButtonID("mouse_left")
 		end
+
+		self.pressToContinue:update(0)
+		local x = self.messageLabel:getPosition()
+		local labelWidth, labelHeight = self.messageLabel:getSize()
+		local toolTipWidth, toolTipHeight = self.pressToContinue:getSize()
+		self.pressToContinue:setPosition(
+			x + labelWidth / 2 - toolTipWidth / 2,
+			self.HEIGHT - toolTipHeight - self.PADDING)
+
 
 		self:focusChild(self.dialogButton)
 	elseif state.input then
@@ -269,7 +258,6 @@ function DialogBox:next(state)
 		self.messageLabel:setText("")
 		self:removeChild(self.dialogButton)
 		self:removeChild(self.inputBox)
-		self:removeChild(self.clickToContinue)
 		self:removeChild(self.pressToContinue)
 
 		local w, h = self:getSize()

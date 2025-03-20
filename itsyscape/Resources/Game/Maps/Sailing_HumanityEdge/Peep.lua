@@ -174,8 +174,11 @@ function Island:onPlayerLeave(player)
 	player:pokeCamera("lockPosition")
 end
 
+function Island:onShowEquipItemsHint(playerPeep)
+	TutorialCommon.showEquipHint(playerPeep)
+end
+
 function Island:onShowEquipItemsTutorial(playerPeep)
-	print(">>> playerPeep", playerPeep, playerPeep and playerPeep:getName())
 	TutorialCommon.startEquipTutorial(playerPeep)
 end
 

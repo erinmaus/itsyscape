@@ -20,11 +20,16 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local GamepadRibbonController = Class(Controller)
 
+GamepadRibbonController.TAB_PLAYER_INVENTORY = "PlayerInventory"
+GamepadRibbonController.TAB_PLAYER_EQUIPMENT = "PlayerEquipment"
+GamepadRibbonController.TAB_PLAYER_SKILLS    = "PlayerSkills"
+GamepadRibbonController.TAB_SETTINGS         = "Settings"
+
 GamepadRibbonController.TABS = {
-	"inventory",
-	"equipment",
-	"skills",
-	"settings"
+	[GamepadRibbonController.TAB_PLAYER_INVENTORY] = true,
+	[GamepadRibbonController.TAB_PLAYER_EQUIPMENT] = true,
+	[GamepadRibbonController.TAB_PLAYER_SKILLS] = true,
+	[GamepadRibbonController.TAB_SETTINGS] = true
 }
 
 GamepadRibbonController.SKILL_GUIDE_ACTION_ICON_RESOURCE_TYPES = {
@@ -91,6 +96,10 @@ function GamepadRibbonController:getIsOpen()
 	return self.isOpen
 end
 
+function GamepadRibbonController:getCurrentTab()
+	return self.currentTab
+end
+
 function GamepadRibbonController:pull()
 	return {
 		inventory = { items = self:pullInventory(), count = self:getInventorySpace() },
@@ -98,10 +107,6 @@ function GamepadRibbonController:pull()
 		skills = self:pullSkills(),
 		stats = self:pullEquipmentStats()
 	}
-end
-
-function GamepadRibbonController:getCurrentTab()
-	return self.currentTab
 end
 
 function GamepadRibbonController:openTab(e)
@@ -112,6 +117,8 @@ function GamepadRibbonController:openTab(e)
 end
 
 function GamepadRibbonController:openRibbon()
+	self:getGame():getUI():interrupt(self:getPeep())
+
 	self.isOpen = true
 end
 

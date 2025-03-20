@@ -13,6 +13,10 @@ Class.ABSTRACT = function()
 	error("method is abstract", 2)
 end
 
+function Class.isCallable(obj)
+	return type(obj) == "function" or (not not getmetatable(obj) and not not getmetatable(obj).__call)
+end
+
 -- Returns true if a is a Class instance, false otherwise.
 function Class.isClass(a)
 	return Class.getType(a) ~= nil
