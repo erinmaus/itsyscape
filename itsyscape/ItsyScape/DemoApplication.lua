@@ -95,12 +95,12 @@ function DemoApplication:new()
 	self.shimmerToolTip:setZDepth(-900)
 
 	self._sortShimmerObjects = function(a, b)
-		if a.type ~= b.type then
-			if a.type == "item" then
+		if a.objectType ~= b.objectType then
+			if a.objectType == "item" then
 				return false
 			end
 
-			if b.type == "item" then
+			if b.objectType == "item" then
 				return true
 			end
 		end
@@ -964,7 +964,7 @@ function DemoApplication:gamepadRelease(joystick, button)
 
 	if not focusedWidget then
 		if button == cycleTargetButton then
-			self:nextShimmer()
+			self:nextShimmer(false)
 		elseif button == gamepadProbe then
 			self:probeCurrentShimmer(false)
 		elseif button == gamepadAction then
@@ -1889,12 +1889,13 @@ function DemoApplication:updatePositionProbe()
 		end
 
 		if not hasPendingObject then
-			self:nextShimmer()
+			print(">>>> trying to replace lost candidate...")
+			self:nextShimmer(true)
 		end
 	end
 end
 
-function DemoApplication:nextShimmer()
+function DemoApplication:nextShimmer(lostCandidate)
 	local currentIndex
 
 	local shimmerCandidates = {}
@@ -1916,11 +1917,13 @@ function DemoApplication:nextShimmer()
 
 	if not currentIndex and #shimmerCandidates > 0 then
 		if self.pendingObjectType == "item" then
-			for i, shimmerCandidate in ipairs(shimmerCandidates) do
+			for i = #shimmerCandidates, 1, -1 do
+				local shimmerCandidate = shimmerCandidates[i]
+
 				if shimmerCandidate.objectType == "item" then
 					self.pendingObjectID = shimmerCandidate.objectID
 					self.pendingObjectType = shimmerCandidate.objectType
-					break
+					return
 				end
 			end
 		end
@@ -1936,22 +1939,7 @@ function DemoApplication:nextShimmer()
 		return
 	end
 
-	local nextIndex
-	if self.pendingObjectType == "item" then
-		local nextItemIndex
-		for i = 1, #shimmerCandidates - 1 do
-			nextItemIndex = math.wrapIndex(currentIndex, i, #shimmerCandidates)
-			if shimmerCandidates[nextItemIndex].type == "item" then
-				break
-			end
-		end
-
-		if nextItemIndex then
-			nextIndex = nextItemIndex
-		end
-	end
-
-	nextIndex = nextIndex or math.wrapIndex(currentIndex, 1, #shimmerCandidates)
+	local nextIndex = math.wrapIndex(currentIndex, 1, #shimmerCandidates)
 	local candidate = shimmerCandidates[nextIndex]
 	if candidate then
 		self.pendingObjectID = candidate.objectID

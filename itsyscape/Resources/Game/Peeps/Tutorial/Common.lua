@@ -26,9 +26,57 @@ Common.WAIT_OPEN_FUNCTION = function(target, state)
 
 	return function()
 		state.time = state.time or (love.timer.getTime() + Common.HINT_WAIT_TIME)
-		return love.timer.getTime() > state.time
+		return love.timer.getTime() > state.time or not (state.ui and Utility.UI.isOpen(target, state.ui))
 	end
 end
+
+Common.CONTROLS_UI_MOVE_CLASSES = {
+	position = "up",
+	id = "NewPlayer-Classes",
+	message = {
+		gamepad = {
+			button = "rightstick",
+			action = { "none", "horizontal" },
+			speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
+			label = "Right stick to select"
+		},
+		standard = {
+			button = "mouse_left",
+			controller = "KeyboardMouse",
+			label = "Left click to select"
+		},
+		mobile = {
+			button = "tap",
+			controller = "Touch",
+			label = "Tap to select"
+		}
+	},
+	open = Common.WAIT_OPEN_FUNCTION
+}
+
+Common.CONTROLS_UI_MOVE_DIALOG = {
+	position = "up",
+	id = "DialogBox",
+	message = {
+		gamepad = {
+			button = "rightstick",
+			action = { "none", "verticxal" },
+			speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
+			label = "Right stick to select"
+		},
+		standard = {
+			button = "mouse_left",
+			controller = "KeyboardMouse",
+			label = "Left click to select"
+		},
+		mobile = {
+			button = "tap",
+			controller = "Touch",
+			label = "Tap to select"
+		}
+	},
+	open = Common.WAIT_OPEN_FUNCTION
+}
 
 Common.CONTROLS_MOVE_HINT = {
 	position = "center",
@@ -60,7 +108,7 @@ Common.CONTROLS_CAMERA_HINT = {
 	message = {
 		gamepad = {
 			button = "rightstick",
-			action = { "left", "up", "right", "down "},
+			action = { "left", "up", "right", "down"},
 			speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
 			label = "Right stick to move camera"
 		},
@@ -409,6 +457,14 @@ Common.EQUIP_GEAR = {
 		end
 	},
 }
+
+function Common.showNewPlayerUIHint(playerPeep, done)
+	Utility.UI.tutorial(playerPeep, { Common.CONTROLS_UI_MOVE_CLASSES }, done, { ui = "DemoNewPlayer" })
+end
+
+function Common.showDialogUIHint(playerPeep, done)
+	Utility.UI.tutorial(playerPeep, { Common.CONTROLS_UI_MOVE_DIALOG }, done, { ui = "DialogBox" })
+end
 
 function Common.startRibbonTutorial(playerPeep, open)
 	local state = {}

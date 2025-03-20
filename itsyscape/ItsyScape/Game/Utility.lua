@@ -2082,10 +2082,10 @@ function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
 	return ui:get(interfaceID, interfaceIndex)
 end
 
-function Utility.UI.tutorial(target, tips, done)
+function Utility.UI.tutorial(target, tips, done, state)
 	Utility.Peep.disable(target)
 
-	local state = {}
+	state = state or {}
 
 	local index = 0
 	local function after()

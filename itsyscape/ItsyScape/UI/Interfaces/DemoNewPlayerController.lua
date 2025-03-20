@@ -18,6 +18,7 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local Controller = require "ItsyScape.UI.Controller"
+local TutorialCommon = require "Resources.Game.Peeps.Tutorial.Common"
 
 local DemoNewPlayerController = Class(Controller)
 
@@ -76,6 +77,8 @@ function DemoNewPlayerController:new(peep, director, onClose)
 	self.onClose:register(onClose)
 
 	self:pullClasses()
+
+	TutorialCommon.showNewPlayerUIHint(peep)
 end
 
 function DemoNewPlayerController:pullClasses()

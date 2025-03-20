@@ -202,6 +202,10 @@ function Island:onPlayerLeave(player)
 	player:pokeCamera("lockPosition")
 end
 
+function Island:onShowDialogUIHint(playerPeep)
+	TutorialCommon.showDialogUIHint(playerPeep)
+end
+
 function Island:onShowEquipItemsHint(playerPeep)
 	TutorialCommon.showEquipHint(playerPeep)
 end
@@ -225,7 +229,7 @@ function Island:updateTutorialEquipItemsStep(playerPeep)
 	if hasEquippedIsabellium then
 		playerPeep:getState():give("KeyItem", "Tutorial_EquippedItems")
 		self:talkToPeep(playerPeep, "Orlando", function()
-			Common.showMovementControlsHint(playerPeep)
+			TutorialCommon.showMovementControlsHint(playerPeep)
 		end)
 	end
 end

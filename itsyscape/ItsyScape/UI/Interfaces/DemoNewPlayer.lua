@@ -78,6 +78,7 @@ function DemoNewPlayer:new(id, index, ui)
 	self:addChild(descriptionLabel)
 
 	self.layout = GamepadGridLayout()
+	self.layout:setID("NewPlayer-Classes")
 	self.layout:setSize(width, DemoNewPlayer.BUTTON_HEIGHT)
 	self.layout:setUniformSize(true, self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
 	self.layout:setPadding(self.PADDING, 0)
@@ -207,9 +208,13 @@ function DemoNewPlayer:addClass(playerStorage, otherStorage, info)
 	})
 
 	local width, height = self:getSize()
+	self.layout:setSize(
+		self.layout:getNumChildren() * (self.PADDING + self.BUTTON_WIDTH) + self.PADDING,
+		self.BUTTON_HEIGHT)
 	self.layout:setPosition(
 		width / 2 - (self.layout:getNumChildren() * (self.PADDING + self.BUTTON_WIDTH) + self.PADDING) / 2,
 		height / 2 + height / 8 - self.BUTTON_HEIGHT / 2)
+	self.layout:performLayout()
 
 	self:focusChild(self.layout)
 end

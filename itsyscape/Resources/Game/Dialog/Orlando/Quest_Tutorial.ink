@@ -43,11 +43,19 @@ OI! {yell(player_name)}! ARE YOU OK?! HELP! {yell(player_get_pronoun_uppercase(X
 # background=none
 ...
 
+%empty()
+
 ~ player_play_animation("Human_Dazed")
 ~ play_animation(C_ORLANDO, "Human_ActionShake_1")
 
 # speaker={C_ORLANDO}
 {yell(player_name)}! TALK TO ME!
+
+~ quest_tutorial_main_started_got_up = false
+
+%empty()
+
+~ player_poke_map("showDialogUIHint")
 
 -> loop
 
@@ -84,10 +92,10 @@ Oof... What happened?
 I was coming to grab to you when a lightning strike hit a crate of gunpowder and caused an explosion! You were knocked into tomorrow.
 
 # speaker={C_ORLANDO}
-But thank the gods you survived! We'd be toast without your smarts and skills!
+But you survived! We'd be toast without your smarts and skills! After all, %hint(you're the only engineer AND {quest_tutorial_get_class_name()}) on the team!
 
 # speaker={C_ORLANDO}
-After all, %hint(you're the only engineer AND {quest_tutorial_get_class_name()}) on the team!
+Um, and, uh, I mean, it would be worse for you, though, because, you know, you'd be dead...!
 
 + [I have more questions.]
   -> loop
@@ -256,7 +264,7 @@ You look terrifying! Now that you're all geared up, we can pick up where we left
 "Uhhhh...?" We're definitely gonna need to check your head when we get back to %location(Isabelle Island)!
 
 # speaker={C_ORLANDO}
-Anyway... We were supposed to %hint(scout ahead and keep an eye out for any threats, like Yendorians... or pirates.).
+Anyway... We were supposed to %hint(scout ahead and keep an eye out for any threats), like pirates... or Yendorians!
 
 -> follow
 
