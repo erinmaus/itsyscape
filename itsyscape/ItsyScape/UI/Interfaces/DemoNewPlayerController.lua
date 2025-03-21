@@ -22,7 +22,7 @@ local TutorialCommon = require "Resources.Game.Peeps.Tutorial.Common"
 
 local DemoNewPlayerController = Class(Controller)
 
-DemoNewPlayerController.LEVEL = 50
+DemoNewPlayerController.LEVEL = 60
 
 DemoNewPlayerController.CLASSES = {
 	{

@@ -304,3 +304,68 @@ ItsyScape.Meta.PeepMashinaState {
 	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
+
+do
+	local Scout = ItsyScape.Resource.Peep "Yendorian_Scout" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Eldritch",
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Yendorian.ScoutYendorian",
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yendorian scout",
+		Language = "en-US",
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Where there's a Yendorian scout, there's Yendorian troops not too far away.",
+		Language = "en-US",
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(55),
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(55),
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(30),
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = -1000,
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
+		StrengthMelee = 0,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Scout
+	}
+end
+

@@ -5586,6 +5586,32 @@ function Utility.Peep.Dummy:onFinalize()
 end
 
 Utility.Peep.Creep = {}
+
+function Utility.Peep.Creep.addAnimation(peep, name, animation)
+	Utility.Peep.Human.addAnimation(peep, name, animation)
+end
+
+function Utility.Peep.Creep.applySkin(...)
+	Utility.Peep.Human.applySkin(...)
+end
+
+function Utility.Peep.Creep.setBody(peep, body)
+	local filename = string.format("Resources/Game/Bodies/%s.lskel", body)
+	if not love.filesystem.getInfo(filename) then
+		Log.error("Cannot set body '%s' for peep '%s': file '%s' not found!", body, peep:getName(), filename)
+		return false
+	end
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return false
+	end
+
+	actor:setBody(CacheRef("ItsyScape.Game.Body", filename))
+end
+
 function Utility.Peep.Creep:applySkins()
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
@@ -5660,6 +5686,16 @@ Utility.Peep.Human.Palette = {
 	ACCENT_GREEN = Color.fromHexString("8dd35f"),
 	ACCENT_PINK = Color.fromHexString("ff2a7f"),
 }
+
+function Utility.Peep.Human:addAnimation(name, animation)
+	local filename = string.format("Resources/Game/Animations/%s/Script.lua", animation)
+	if not love.filesystem.getInfo(filename) then
+		Log.error("Cannot add animation '%s' as resource '%s' for peep '%s': file '%s' not found!", animation, name, peep:getName(), filename)
+		return false
+	end
+
+	self:addResource("ItsyScape.Graphics.AnimationResource", filename)
+end
 
 function Utility.Peep.Human:applySkin(slot, priority, relativeFilename, colorConfig)
 	colorConfig = colorConfig or {}

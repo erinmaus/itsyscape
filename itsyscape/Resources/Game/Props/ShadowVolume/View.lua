@@ -8,7 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local color = require "ItsyScape.Graphics.color"
+local Color = require "ItsyScape.Graphics.Color"
 local PropView = require "ItsyScape.Graphics.PropView"
 local DebugCubeSceneNode = require "ItsyScape.Graphics.DebugCubeSceneNode"
 
@@ -26,6 +26,7 @@ function ShadowVolume:load()
 	if not (_APP and _APP:getType() == require "ItsyScape.Editor.MapEditorApplication") then
 		self.cube:getMaterial():setIsStencilWriteEnabled(true)
 	else
+		self.cube:getMaterial():setIsTranslucent(true)
 		self.cube:getMaterial():setColor(Color(1, 1, 1, 0.2))
 	end
 end

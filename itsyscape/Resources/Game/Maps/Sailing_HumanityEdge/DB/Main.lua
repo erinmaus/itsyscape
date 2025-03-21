@@ -115,9 +115,9 @@ end
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 77,
-		PositionY = 4,
-		PositionZ = 105,
+		PositionX = 141,
+		PositionY = 3,
+		PositionZ = 173,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
@@ -134,9 +134,9 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 77,
-		PositionY = 4,
-		PositionZ = 105,
+		PositionX = 141,
+		PositionY = 3,
+		PositionZ = 173,
 		Name = "Tutorial_DroppedItemsAnchor",
 		Map = M._MAP,
 		Resource = M["Tutorial_DroppedItemsAnchor"]
@@ -164,10 +164,10 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 79,
-		PositionY = 4,
-		PositionZ = 105,
-		Direction = -1,
+		PositionX = 139,
+		PositionY = 3,
+		PositionZ = 173,
+		Direction = 1,
 		Name = "Orlando",
 		Map = M._MAP,
 		Resource = M["Orlando"]
@@ -212,5 +212,30 @@ do
 		State = "tutorial-follow-player",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FollowLogic.lua",
 		Resource = M["Orlando"]
+	}
+end
+
+M["ScoutYendorian"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Yendorians",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["ScoutYendorian"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43,
+		PositionY = 4,
+		PositionZ = 85,
+		Direction = 1,
+		Name = "ScoutYendorian",
+		Map = M._MAP,
+		Resource = M["ScoutYendorian"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Scout",
+		MapObject = M["ScoutYendorian"]
 	}
 end

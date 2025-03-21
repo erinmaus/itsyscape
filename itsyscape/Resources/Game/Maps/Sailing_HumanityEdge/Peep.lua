@@ -50,7 +50,7 @@ Island.CLASS_INVENTORY = {
 function Island:new(resource, name, ...)
 	MapScript.new(self, resource, name or "Sailing_HumanityEdge", ...)
 
-	self:addBehavior(OceanBehavior)
+	local _, ocean = self:addBehavior(OceanBehavior)
 	self:silence("playerEnter", MapScript.showPlayerMapInfo)
 
 	self.playersInTutorial = {}

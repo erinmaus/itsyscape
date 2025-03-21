@@ -20,10 +20,10 @@ function OceanBehavior:new()
 	self.weatherBobScale = 1
 	self.weatherRockRange = 0
 	self.weatherRockMultiplier = math.pi / 4
-	self.depth = 1.5
+	self.depth = 3.25
 
 	-- Visual properties.
-	self.offset = 4
+	self.offset = 1.5
 	self.positionTimeScale = 4
 	self.textureTimeScale = Vector(math.pi / 4, 1 / 2, 0)
 	self.windSpeedMultiplier = 1

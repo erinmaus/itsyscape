@@ -2376,22 +2376,23 @@ end
 function MapEditorApplication:brush(delta)
 	local isClamped = love.keyboard.isDown("lctrl") or love.keyboard.isDown("lctrl")
 	local map = self:getGame():getStage():getMap(self.currentLayer)
-	local motion = isClamped and self.paintingMotion or self:getBrushMotion()
+	local motion = not isClamped and self.paintingMotion or self:getBrushMotion()
 
 	local tile, i, j = motion:getTile()
 	if not tile then
 		return
 	end
 
-	local corner = tile:findNearestCorner(motion:getPosition(), i, j, map:getCellSize())
-	for _, c in ipairs(Tile.CORNERS) do
-		if c.name == corner then
-			i = i + (c.offsetX + 1)
-			j = j + (c.offsetY + 1)
-		end
-	end
+	-- local corner = tile:findNearestCorner(motion:getPosition(), i, j, map:getCellSize())
+	-- for _, c in ipairs(Tile.CORNERS) do
+	-- 	if c.name == corner then
+	-- 		i = i + (c.offsetX + 1)
+	-- 		j = j + (c.offsetY + 1)
+	-- 	end
+	-- end
 
 	local tileElevation = map:getTile(i, j).topLeft
+	print("TILE", i, j, "elev", tileElevation)
 
 	local brushToolSize = math.floor(self.brushToolPanel:getToolSize() / 2) + 1
 	local startI = math.max(i - brushToolSize, 1)
@@ -2410,7 +2411,9 @@ function MapEditorApplication:brush(delta)
 				local currentTile = map:getTile(currentI, currentJ)
 				local currentElevation = currentTile.topLeft
 
-				local isClamped = love.keyboard.isDown("lctrl") or love.keyboard.isDown("lctrl")
+				local isClamped = not (love.keyboard.isDown("lctrl") or love.keyboard.isDown("lctrl"))
+				local isHigher = currentTile.topLeft > tileElevation and currentTile.topRight > tileElevation and
+				                 currentTile.bottomLeft > tileElevation and currentTile.bottomRight > tileElevation
 				if isClamped then
 					if offset < 0 and currentElevation > tileElevation then
 						currentElevation = math.max(currentElevation + offset, tileElevation)
@@ -2421,13 +2424,18 @@ function MapEditorApplication:brush(delta)
 					currentElevation = currentElevation + offset
 				end
 
-				for offsetI = -1, 0 do
-					for offsetJ = -1, 0 do
-						local cornerI = math.abs(offsetI) + 1
-						local cornerJ = math.abs(offsetJ) + 1
+				if not isHigher then
+					for offsetI = -1, 0 do
+						for offsetJ = -1, 0 do
+							local cornerI = math.abs(offsetI) + 1
+							local cornerJ = math.abs(offsetJ) + 1
 
-						local otherTile = map:getTile(currentI + offsetI, currentJ + offsetJ)
-						otherTile:setCorner(cornerI, cornerJ, currentElevation, false)
+							local otherTile = map:getTile(currentI + offsetI, currentJ + offsetJ)
+							local cornerElevation = otherTile:getCorner(cornerI, cornerJ)
+							if tileElevation >= cornerElevation then
+								otherTile:setCorner(cornerI, cornerJ, currentElevation, false)
+							end
+						end
 					end
 				end
 			end
