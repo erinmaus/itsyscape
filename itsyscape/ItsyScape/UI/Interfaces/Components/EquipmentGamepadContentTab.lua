@@ -212,8 +212,13 @@ function EquipmentGamepadContentTab:_updateToolTip()
 	end
 end
 
-function EquipmentGamepadContentTab:pokeEquipmentItem(index, actionID)
-	self:getInterface():sendPoke("pokeEquipmentItem", nil, { index = Equipment.SLOTS[index], id = actionID })
+function EquipmentGamepadContentTab:pokeEquipmentItem(index, action)
+	local slot = Equipment.SLOTS[index]
+	self:getInterface():sendPoke("pokeEquipmentItem", nil, { index = slot, id = action.id })
+
+	local state = self:getState()
+	local item = state.items and state.items[index]
+	self:getUIView():playItemSoundEffect(item, action)
 end
 
 function EquipmentGamepadContentTab:probeEquipmentItem(index)
@@ -268,7 +273,7 @@ function EquipmentGamepadContentTab:activate(index, button)
 	if #item.actions == 0 then
 		self:probe(index, button)
 	else
-		self:pokeEquipmentItem(index, item.actions[1].id)
+		self:pokeEquipmentItem(index, item.actions[1])
 	end
 end
 
@@ -292,7 +297,7 @@ function EquipmentGamepadContentTab:probe(index, button)
 			verb = action.verb,
 			object = object,
 			objectType = "item",
-			callback = Function(self.pokeEquipmentItem, self, index, action.id)
+			callback = Function(self.pokeEquipmentItem, self, index, action)
 		})
 	end
 

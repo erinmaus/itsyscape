@@ -1,0 +1,166 @@
+{
+	"$paths": {
+		"ROOTS": ["$category", "roots"],
+		"SFX": ["$category", "sfx"],
+		"MIN_PITCH": ["$category", "minPitch"],
+		"MAX_PITCH": ["$category", "minPitch"],
+	},
+
+	"item": {
+		"roots": [
+			"Resources/Game/UI/SFX/Items"			
+		],
+
+		"minPitch": 0.8,
+		"maxPitch": 1.0,
+
+		"sfx": [
+			{
+				"filename": "Legendary.wav",
+				"match": [
+					[
+						{ "actionType": "Take" },
+						{ "lootCategoryID": "Legendary" }
+					],
+					[
+						{ "actionType": "Drop" },
+						{ "lootCategoryID": "Legendary" }
+					],
+					[
+						{ "actionType": "Equip" },
+						{ "equipmentSlots": [ "NECK", "FINGER", "POCKET" ] },
+						{ "lootCategoryID": "Legendary" }
+					],
+					[
+						{ "actionType": "Dequip" },
+						{ "equipmentSlots": [ "NECK", "FINGER", "POCKET" ] },
+						{ "lootCategoryID": "Legendary" }
+					]
+				]
+			},
+			{
+				"filename": "Jewelry.wav",
+				"match": [
+					[ { "resourceID": "Amulet", "pattern": true } ],
+					[ { "resourceID": "Ring", "pattern": true } ],
+				]
+			},
+			{
+				"filename": "ClothArmor.wav",
+				"match": [
+					[
+						{ "requirementResourceID": "Magic", "requirementResourceType": "Skill" },
+						{ "equipmentSlots": [ "HEAD", "BODY", "LEGS", "FEET", "HANDS" ] }
+					],
+					[
+						{ "requirementResourceID": "Wisdom", "requirementResourceType": "Skill" },
+						{ "equipmentSlots": [ "HEAD", "BODY", "LEGS", "FEET", "HANDS" ] }
+					]
+				]
+			},
+			{
+				"filename": "LeatherArmor.wav",
+				"match": [
+					[
+						{ "requirementResourceID": "Archery", "requirementResourceType": "Skill" },
+						{ "equipmentSlots": [ "HEAD", "BODY", "LEGS", "FEET", "HANDS" ] }
+					],
+					[
+						{ "requirementResourceID": "Dexterity", "requirementResourceType": "Skill" },
+						{ "equipmentSlots": [ "HEAD", "BODY", "LEGS", "FEET", "HANDS" ] }
+					]
+				]
+			},
+			{
+				"filename": "MetalArmor.wav",
+				"match": [
+					[
+						{ "requirementResourceID": "Attack", "requirementResourceType": "Skill" },
+						{ "equipmentSlots": [ "HEAD", "BODY", "LEGS", "FEET", "HANDS" ] }
+					],
+					[
+						{ "requirementResourceID": "Strength", "requirementResourceType": "Skill" },
+						{ "equipmentSlots": [ "HEAD", "BODY", "LEGS", "FEET", "HANDS" ] }
+					]
+				]
+			},
+			{
+				"filename": "ArcheryWeapon.wav",
+				"match": [
+					[
+						{ "maxEquipmentStat": "AccuracyRanged" },
+						{ "equipmentSlots": [ "RIGHT_HAND", "TWO_HANDED" ] }
+					],
+					[
+						{ "maxEquipmentStat": "StrengthRanged" },
+						{ "equipmentSlots": [ "RIGHT_HAND", "TWO_HANDED" ] }
+					]
+				]
+			},
+			{
+				"filename": "MagicWeapon.wav",
+				"match": [
+					[
+						{ "maxEquipmentStat": "AccuracyMagic" },
+						{ "equipmentSlots": [ "RIGHT_HAND", "TWO_HANDED" ] }
+					],
+					[
+						{ "maxEquipmentStat": "StrengthMagic" },
+						{ "equipmentSlots": [ "RIGHT_HAND", "TWO_HANDED" ] }
+					]
+				]
+			},
+			{
+				"filename": "SlashWeapon.wav",
+				"match": [
+					[
+						{ "maxEquipmentStat": "AccuracySlash" },
+						{ "equipmentSlots": [ "RIGHT_HAND", "TWO_HANDED" ] }
+					]
+				]
+			},
+			{
+				"filename": "CrushWeapon.wav",
+				"match": [
+					[
+						{ "maxEquipmentStat": "AccuracyCrush" },
+						{ "equipmentSlots": [ "RIGHT_HAND", "TWO_HANDED" ] }
+					]
+				]
+			},
+			{
+				"filename": "StabWeapon.wav",
+				"match": [
+					[
+						{ "maxEquipmentStat": "AccuracyStab" },
+						{ "equipmentSlots": [ "RIGHT_HAND", "TWO_HANDED" ] }
+					]
+				]
+			},
+			{
+				"filename": "CrushWeapon.wav",
+				"match": [
+					[
+						{ "maxEquipmentStat": "StrengthMelee" },
+						{ "equipmentSlots": [ "RIGHT_HAND", "TWO_HANDED" ] }
+					]
+				]
+			},
+			{
+				"filename": "Eat.wav",
+				"match": [
+					[ { "actionType": "Eat" } ]
+				]
+			},
+			{
+				"filename": "Coins.wav",
+				"match": [
+					[ { "resourceID": "Coins" } ]
+				]
+			},
+			{
+				"filename": "General.wav"
+			}
+		]
+	}
+}

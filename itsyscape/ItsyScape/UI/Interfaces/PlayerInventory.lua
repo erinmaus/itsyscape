@@ -399,6 +399,7 @@ function PlayerInventory:probe(button)
 				object = object,
 				callback = function()
 					self:sendPoke("poke", nil, { index = index, id = item.actions[i].id })
+					self:getView():playItemSoundEffect(item, item.actions[i])
 				end
 			})
 		end
@@ -427,6 +428,7 @@ function PlayerInventory:probe(button)
 			object = object,
 			callback = function()
 				self:sendPoke("drop", nil, { index = index })
+				self:getView():playItemSoundEffect(item, { id = -1, type = "Drop" })
 			end
 		})
 
@@ -455,6 +457,7 @@ function PlayerInventory:activate(button)
 			local action = item.actions[1]
 			if action then
 				self:sendPoke("poke", nil, { index = index, id = action.id })
+				self:getView():playItemSoundEffect(item, action)
 			else
 				self:useItem(button, button:getData('icon'):getData('index'))
 			end

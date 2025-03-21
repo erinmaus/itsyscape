@@ -2184,6 +2184,35 @@ end
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 
+function Utility.Item._pullActions(game, item, scope)
+	if item:isNoted() then
+		return {}
+	end
+
+	local result = {}
+
+	local gameDB = game:getGameDB()
+	local itemResource = gameDB:getResource(item:getID(), "Item")
+	if itemResource then
+		table.insert(result, Utility.getActions(game, itemResource, scope, true))
+	end
+
+	return result
+end
+
+function Utility.Item.pull(peep, item, scope)
+	return {
+		id = item:getID(),
+		count = item:getCount(),
+		noted = item:isNoted(),
+		name = Utility.Item.getInstanceName(item),
+		description = Utility.Item.getInstanceDescription(item),
+		stats = Utility.Item.getInstanceStats(item, peep),
+		slot = Utility.Item.getSlot(item),
+		actions = Utility.Item._pullActions(peep:getDirector():getGameInstance(), item, scope)
+	}
+end
+
 function Utility.Item.getStorage(peep, tag, clear, player)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
@@ -2205,7 +2234,8 @@ end
 -- 'lang' defaults to "en-US".
 --
 -- Values
---  * Under 100,000 remain as-is.
+--  * Under 10,000 remain as-is.
+--  * Up to 100,000 (exclusive) is divided by 10,000 and suffixed is with a 'k' specifier.
 --  * Up to a million are divided by 100,000 and suffixed with a 'k' specifier.
 --  * Up to a billion are divided by the same and suffixed with an 'm' specifier.
 --  * Up to a trillion are divided by the same and suffixed with an 'b' specifier.

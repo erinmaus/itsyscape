@@ -8,7 +8,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Config = require "ItsyScape.Game.Config"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Mapp = require "ItsyScape.GameDB.Mapp"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Atlas = require "ItsyScape.UI.Atlas"
@@ -1258,6 +1261,197 @@ function UIView:_layoutToolTip(widget, toolTip)
 	local widgetWidth, widgetHeight = widget:getSize()
 	local toolTipWidth, toolTipHeight = toolTip:getSize()
 	toolTip:setPosition(absoluteX - toolTipWidth / 2, absoluteY + widgetHeight / 2)
+end
+
+local function _sortItemStats(a, b)
+	return a.value > b.value
+end
+
+local function _match(a, b, pattern)
+	if pattern or pattern == nil then
+		return a:match(b)
+	end
+
+	return a == b
+end
+
+function UIView:_getItemSoundEffectFilename(itemState, itemActionState)
+	local soundEffects = Config.get("SoundEffects", "SFX", "category", "item", "_", {})
+
+	if not (itemState and itemActionState) then
+		return nil
+	end
+
+	local gameDB = self.game:getGameDB()
+	local itemRecord = gameDB:getResource(itemState.id, "Item")
+	local lootCategoryID = itemRecord and gameDB:getRecord("LootCategory", { Item = itemRecord })
+	lootCategoryID = lootCategoryID and lootCategoryID:get("Category").name
+	local equipRecord = itemRecord and gameDB:getRecord("Equipment", { Resource = itemRecord })
+	local equipSlot = equipRecord and equipRecord:get("EquipSlot")
+
+	local equipmentStats = {}
+	if itemState.stats then
+		for _, stat in ipairs(itemState.stats) do
+			table.insert(equipmentStats, stat)
+		end
+	elseif equipRecord then
+		for _, statName in ipairs(Equipment.STATS) do
+			table.insert(equipmentStats, { name = statName, value = equipRecord:get(statName) or 0 })
+		end
+	end
+
+	local actionConstraints
+	do
+		local action = Mapp.Action()
+		if itemActionState.id >= 1 and gameDB:getBrochure():tryGetAction(Mapp.ID(itemActionState.id), action) then
+			actionConstraints = Utility.getActionConstraints(self.game, action)
+		else
+			actionConstraints = { requirements = {}, inputs = {}, outputs = {} }
+		end
+	end
+
+
+	local soundEffectFilename
+	for _, soundEffect in ipairs(soundEffects) do
+		if not soundEffect.match or #soundEffect.match == 0 then
+			soundEffectFilename = soundEffect.filename
+			break
+		end
+
+		for _, match in ipairs(soundEffect.match) do
+			local hasAllRequirements = true
+
+			for _, requirement in ipairs(match) do
+				if requirement.resourceID then
+					if not _match(itemState.id, requirement.resourceID, requirement.pattern) then
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.actionType then
+					if not _match(itemActionState.type, requirement.actionType, requirement.pattern) then
+						print(soundEffect.filename, "cur", itemActionState.type, "desired", requirement.actionType)
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.lootCategoryID then
+					if not lootCategoryID or not _match(lootCategoryID, requirement.lootCategoryID, requirement.pattern) then
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.requirementResourceID or requirement.requirementResourceType then
+					local hasConstraint = false
+					for _, requirementConstraint in ipairs(actionConstraints.requirements) do
+						if (not requirement.requirementResourceID or _match(requirementConstraint.resource, requirement.requirementResourceID, requirement.pattern)) and
+						   (not requirement.requirementResourceType or _match(requirementConstraint.type, requirement.requirementResourceType, requirement.pattern))
+						then
+							hasConstraint = true
+							break
+						end
+					end
+
+					if not hasConstraint then
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.equipmentSlots then
+					local hasSlot = false
+					for _, requiredSlot in ipairs(requirement.equipmentSlots) do
+						local requiredSlotIndex
+						do
+							local requiredSlotFullName = string.format("PLAYER_SLOT_%s", requiredSlot)
+							for i, slot in pairs(Equipment.PLAYER_SLOT_NAMES) do
+								if slot == requiredSlotFullName then
+									requiredSlotIndex = i
+									break
+								end
+							end
+						end
+
+						if requiredSlotIndex and requiredSlotIndex == equipSlot then
+							hasSlot = true
+							break
+						end
+					end
+
+					if not hasSlot then
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.maxEquipmentStat then
+					local hasStat = false
+
+					for i = 1, #equipmentStats do
+						if i > 1 and equipmentStats[i - 1].value > equipmentStats[i].value then
+							break
+						end
+
+						if equipmentStats[i].name == requirement.maxEquipmentStat then
+							hasStat = true
+							break
+						end
+					end
+
+					if not hasStat then
+						hasAllRequirements = false
+						break
+					end
+				end
+			end
+
+			if hasAllRequirements then
+				soundEffectFilename = soundEffect.filename
+				break
+			end
+		end
+
+		if soundEffectFilename then
+			break
+		end
+	end
+
+	return soundEffectFilename
+end
+
+function UIView:playItemSoundEffect(itemState, itemActionState)
+	local soundEffects = Config.get("SoundEffects", "SFX", "category", "item", "_", {})
+	local roots = Config.get("SoundEffects", "ROOTS", "category", "item", "_", {})
+	local minPitch = Config.get("SoundEffects", "MIN_PITCH", "category", "item", "_", 0.8)
+	local maxPitch = Config.get("SoundEffects", "MIN_PITCH", "category", "item", "_", 1.0)
+
+	local soundEffectFilename = self:_getItemSoundEffectFilename(itemState, itemActionState)
+	if not soundEffectFilename then
+		soundEffectFilename = soundEffects[#soundEffects] and soundEffects[#soundEffects].filename
+	end	
+
+	if soundEffectFilename then
+		for _, root in ipairs(roots) do
+			local filename = string.format("%s/%s", root, soundEffectFilename)
+
+			if love.filesystem.getInfo(filename) then
+				print("got", filename)
+				local sound = love.audio.newSource(filename, "static")
+				sound:setVolume((_CONF.soundEffectsVolume or 1) * (_CONF.volume or 1))
+				sound:setPitch(love.math.random() * (maxPitch - minPitch) + minPitch)
+				sound:play()
+				
+				return true
+			else
+				print("did not get", filename)
+			end
+		end
+	end
+
+	return false
 end
 
 function UIView:examine(a, b, w)

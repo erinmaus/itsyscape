@@ -21,6 +21,7 @@ function Player:new()
 	self.onSave = Callback(false)
 	self.onLeave = Callback(false)
 	self.onMove = Callback(false)
+	self.onTakeItem = Callback(false)
 end
 
 -- Gets the Actor this Player is represented by.

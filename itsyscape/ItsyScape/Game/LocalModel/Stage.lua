@@ -17,6 +17,7 @@ local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local Instance = require "ItsyScape.Game.LocalModel.Instance"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Stage = require "ItsyScape.Game.Model.Stage"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -1475,14 +1476,15 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 		return
 	end
 
-	local inventory = self.grounds[layer]:getBehavior(InventoryBehavior).inventory
+	local groundInventory = self.grounds[layer]:getBehavior(InventoryBehavior)
+	groundInventory = groundInventory and groundInventory.inventory
 
-	if inventory then
+	if groundInventory then
 		local key = GroundInventoryProvider.Key(i, j, layer)
 		local broker = self.game:getDirector():getItemBroker()
 
 		local targetItem
-		for item in broker:iterateItemsByKey(inventory, key) do
+		for item in broker:iterateItemsByKey(groundInventory, key) do
 			if broker:getItemRef(item) == ref then
 				targetItem = item
 				break
@@ -1502,15 +1504,16 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 						return false
 					end
 
-					if broker:getItemProvider(targetItem) ~= inventory then
+					if broker:getItemProvider(targetItem) ~= groundInventory then
 						return false
 					end
 
 					return true
 				end
 
-				local playerInventory = player:getActor():getPeep():getBehavior(
-					InventoryBehavior).inventory
+				local peep = player:getActor():getPeep()
+				local playerInventory = peep:getBehavior(InventoryBehavior)
+				playerInventory = playerInventory and playerInventory.inventory
 				if playerInventory then
 					Log.info(
 						"Player '%s' taking item '%s' (%d) at (%d, %d; %d)",
@@ -1527,7 +1530,14 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 						'take',
 						true)
 
-					queue:interrupt(CompositeCommand(condition, walkStep, takeStep))
+					if peep:hasBehavior(PlayerBehavior) then
+						local playerModel = Utility.Peep.getPlayerModel(peep)
+						local notifyStep = CallbackCommand(playerModel.onTakeItem, playerModel, Utility.Item.pull(peep, targetItem))
+						queue:interrupt(CompositeCommand(condition, walkStep, takeStep, notifyStep))
+					else
+						queue:interrupt(CompositeCommand(condition, walkStep, takeStep))
+					end
+
 				else
 					Log.info("Player '%s' does not have inventory.", player:getActor():getName())
 				end

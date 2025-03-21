@@ -17,13 +17,15 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local KeyItemStateProvider = Class(StateProvider)
 
 function KeyItemStateProvider:new(peep)
-	local director = peep:getDirector()
-	local storage = director:getPlayerStorage(peep)
-
-	self.storage = storage:getRoot():getSection("KeyItems")
 	self.peep = peep
 
-	QuestProgressNotificationController.updateCache(director:getGameDB())
+	QuestProgressNotificationController.updateCache(self.peep:getDirector():getGameDB())
+end
+
+function KeyItemStateProvider:getStorage()
+	local director = self.peep:getDirector()
+	local storage = director:getPlayerStorage(self.peep)
+	return storage:getRoot():getSection("KeyItems")
 end
 
 function KeyItemStateProvider:getPriority()
@@ -60,7 +62,7 @@ function KeyItemStateProvider:take(name, count, flags)
 		return false
 	end
 
-	self.storage:set(name, nil)
+	self:getStorage():set(name, nil)
 	return true
 end
 
@@ -71,9 +73,9 @@ function KeyItemStateProvider:give(name, count, flags)
 		return false 
 	end
 
-	local hadKeyItem = self.storage:get(name)
-
-	self.storage:set(name, true)
+	local storage = self:getStorage()
+	local hadKeyItem = storage:get(name)
+	storage:set(name, true)
 
 	if not hadKeyItem and self.peep:hasBehavior(PlayerBehavior) then
 		self.peep:poke("gotKeyItem", name)
@@ -104,7 +106,7 @@ function KeyItemStateProvider:give(name, count, flags)
 end
 
 function KeyItemStateProvider:count(name, flags)
-	if self.storage:get(name) == true then
+	if self:getStorage():get(name) == true then
 		return math.huge
 	else
 		return 0

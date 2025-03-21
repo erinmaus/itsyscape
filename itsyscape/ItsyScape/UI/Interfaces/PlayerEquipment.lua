@@ -225,6 +225,7 @@ function PlayerEquipment:probe(button)
 				object = object,
 				callback = function()
 					self:sendPoke("poke", nil, { index = index, id = item.actions[i].id })
+					self:getView():playItemSoundEffect(item, actions[i].id)
 				end
 			})
 		end
@@ -250,6 +251,7 @@ function PlayerEquipment:activate(button)
 		local action = item.actions[1]
 		if action then
 			self:sendPoke("poke", nil, { index = index, id = action.id })
+			self:getView():playItemSoundEffect(item, action)
 		end
 	end
 end

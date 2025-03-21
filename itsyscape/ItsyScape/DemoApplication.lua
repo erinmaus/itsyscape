@@ -183,6 +183,7 @@ function DemoApplication:new()
 		player.onSave:register(self.savePlayer, self)
 		player.onMove:register(self.setMapName, self)
 		player.onMove:register(self.clearResourceManagerCache, self)
+		player.onTakeItem:register(self.playItemSoundEffect, self)
 
 		if _MOBILE then
 			player.onMove:register(self.requestSave, self)
@@ -303,6 +304,10 @@ end
 
 function DemoApplication:clearResourceManagerCache()
 	self:getGameView():getResourceManager():clear()
+end
+
+function DemoApplication:playItemSoundEffect(player, item)
+	self:getUIView():playItemSoundEffect(item, { id = -1, type = "Take" })
 end
 
 function DemoApplication:quitPlayer()

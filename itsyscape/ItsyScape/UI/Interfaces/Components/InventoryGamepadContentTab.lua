@@ -202,14 +202,21 @@ function InventoryGamepadContentTab:updateNumItems(count)
 	self.numItems = count
 end
 
-function InventoryGamepadContentTab:pokeInventoryItem(index, actionID)
-	self:getInterface():sendPoke("pokeInventoryItem", nil, { index = index, id = actionID })
+function InventoryGamepadContentTab:pokeInventoryItem(index, action)
+	self:getInterface():sendPoke("pokeInventoryItem", nil, { index = index, id = action.id })
+
+	local state = self:getState()
+	local item = state.items and state.items[index]
+	self:getUIView():playItemSoundEffect(item, action)
 end
 
 function InventoryGamepadContentTab:swapInventoryItem(a, b)
 	self:getInterface():sendPoke("swapInventoryItems", nil, { a = a, b = b })
 
 	local state = self:getState()
+	self:getUIView():playItemSoundEffect(state.items and state.items[a], { id = -1, type = "Swap" })
+	self:getUIView():playItemSoundEffect(state.items and state.items[b], { id = -1, type = "Swap" })
+
 	if state.items then
 		state.items[a], state.items[b] = state.items[b], state.items[a]
 	end
@@ -219,10 +226,15 @@ end
 
 function InventoryGamepadContentTab:dropInventoryItem(index)
 	self:getInterface():sendPoke("dropInventoryItem", nil, { index = index })
+
+	local state = self:getState()
+	local item = state.items and state.items[index]
+	self:getUIView():playItemSoundEffect(item, { id = -1, type = "Drop" })
 end
 
 function InventoryGamepadContentTab:probeInventoryItem(index)
 	self:getInterface():sendPoke("probeInventoryItem", nil, { index = index })
+	self:getUIView():playItemSoundEffect()
 end
 
 function InventoryGamepadContentTab:_onInventoryItemGamepadRelease(index, _, joystick, button)
@@ -372,7 +384,7 @@ function InventoryGamepadContentTab:activate(index, button)
 	if #item.actions == 0 then
 		self:probe(index, button)
 	else
-		self:pokeInventoryItem(index, item.actions[1].id)
+		self:pokeInventoryItem(index, item.actions[1])
 	end
 end
 
@@ -413,7 +425,7 @@ function InventoryGamepadContentTab:probe(index, button)
 				verb = action.verb,
 				object = object,
 				objectType = "item",
-				callback = Function(self.pokeInventoryItem, self, index, action.id)
+				callback = Function(self.pokeInventoryItem, self, index, action)
 			})
 		end
 
