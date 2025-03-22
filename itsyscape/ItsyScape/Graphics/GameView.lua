@@ -688,10 +688,11 @@ function GameView:updateMap(map, layer)
 				end 
 
 				m.map = map
-				if m.islandProcessor then
-					m.islandProcessor = MapMeshIslandProcessor(m.map, m.tileSet)
-				end
 			end
+		end
+
+		if m.islandProcessor then
+			m.islandProcessor = MapMeshIslandProcessor(m.map, m.tileSet)
 		end
 
 		if not (m.meta and m.meta.skybox) then

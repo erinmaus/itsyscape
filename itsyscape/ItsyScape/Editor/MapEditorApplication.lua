@@ -1999,7 +1999,7 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 
 			local realLayer = layer + (baseLayer or 0)
 			stage:newMap(
-				map:getWidth(), map:getHeight(), layerMeta.tileSetID, layerMeta.maskID, realLayer)
+				map:getWidth(), map:getHeight(), layerMeta.tileSetID, layerMeta.maskID, realLayer, layerMeta)
 			stage:updateMap(realLayer, map)
 
 			if not baseLayer then

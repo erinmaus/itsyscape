@@ -716,7 +716,7 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID, meta)
 	end
 end
 
-function LocalStage:newMap(width, height, tileSetID, maskID, layer)
+function LocalStage:newMap(width, height, tileSetID, maskID, layer, meta)
 	local map = Map(width, height, Stage.CELL_SIZE)
 
 	for i = 1, map:getWidth() do
@@ -726,7 +726,7 @@ function LocalStage:newMap(width, height, tileSetID, maskID, layer)
 	end
 
 	self.game:getDirector():setMap(layer, map)
-	self.onLoadMap(self, map, layer, tileSetID, maskID)
+	self.onLoadMap(self, map, layer, tileSetID, maskID, meta)
 
 	self:updateMap(layer, map)
 

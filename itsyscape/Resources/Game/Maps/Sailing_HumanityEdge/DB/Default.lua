@@ -314,6 +314,78 @@ do
 	}
 end
 
+M["LightningStormfish_Default1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 62.843750,
+		PositionY = 2.25,
+		PositionZ = 139.281250,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "LightningStormfish_Default1",
+		Map = M._MAP,
+		Resource = M["LightningStormfish_Default1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "LightningStormfish_Default",
+		MapObject = M["LightningStormfish_Default1"]
+	}
+end
+
+M["LightningStormfish_Default2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 62.093750,
+		PositionY = 2.25,
+		PositionZ = 142.281250,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "LightningStormfish_Default2",
+		Map = M._MAP,
+		Resource = M["LightningStormfish_Default2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "LightningStormfish_Default",
+		MapObject = M["LightningStormfish_Default2"]
+	}
+end
+
+M["LightningStormfish_Default3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 64.375000,
+		PositionY = 2.25,
+		PositionZ = 141.468750,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "LightningStormfish_Default3",
+		Map = M._MAP,
+		Resource = M["LightningStormfish_Default3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "LightningStormfish_Default",
+		MapObject = M["LightningStormfish_Default3"]
+	}
+end
+
 M["ShadowVolume1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
