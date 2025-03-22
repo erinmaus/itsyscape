@@ -35,10 +35,10 @@ Common.CONTROLS_UI_MOVE_CLASSES = {
 	id = "NewPlayer-Classes",
 	message = {
 		gamepad = {
-			button = "rightstick",
+			button = "leftstick",
 			action = { "none", "horizontal" },
 			speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
-			label = "Right stick to select"
+			label = "Left stick to select"
 		},
 		standard = {
 			button = "mouse_left",
@@ -59,10 +59,10 @@ Common.CONTROLS_UI_MOVE_DIALOG = {
 	id = "DialogBox",
 	message = {
 		gamepad = {
-			button = "rightstick",
+			button = "leftstick",
 			action = { "none", "vertical" },
 			speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
-			label = "Right stick to select"
+			label = "Left stick to select"
 		},
 		standard = {
 			button = "mouse_left",
@@ -113,7 +113,7 @@ Common.CONTROLS_CAMERA_HINT = {
 			label = "Right stick to move camera"
 		},
 		standard = {
-			button = { "mouse_middle", "keyboard_arrows" },
+			button = { "mouse_scroll", "keyboard_arrows" },
 			controller = "KeyboardMouse",
 			speed = Common.HINT_WAIT_SHUFFLE_TIME / 2,
 			label = "Middle mouse button or arrow keys to move camera"

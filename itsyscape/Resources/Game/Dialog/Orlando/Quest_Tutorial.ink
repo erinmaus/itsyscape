@@ -62,13 +62,13 @@ OI! {yell(player_name)}! ARE YOU OK?! HELP! {yell(player_get_pronoun_uppercase(X
 = loop
 + {!quest_tutorial_main_started_got_up} [...]
   -> dot_dot_dot
-+ [What happened?]
+* [What happened?]
   -> what_happened
-+ [Where am I?]
+* [Where am I?]
   -> where_am_i
-+ [What's going on?]
+* [What's going on?]
   -> what_is_going_on
-+ {quest_tutorial_main_started_asked_what_happened && quest_tutorial_main_started_asked_where_am_i && quest_tutorial_main_started_asked_what_is_going_on} [Let's get going.]
+* {quest_tutorial_main_started_asked_what_happened && quest_tutorial_main_started_asked_where_am_i && quest_tutorial_main_started_asked_what_is_going_on} [Let's get going.]
   -> let_us_get_going
 
 = dot_dot_dot
@@ -116,9 +116,9 @@ Eugh... Where am I?
 # speaker={C_ORLANDO}
 We're at %location(Humanity's Edge), the last human outpost before %person(Yendor's) city-state, %location(R'lyeh)!
 
-+ [%person(Yendor?) %location(R'lyeh?)] Who's %person(Yendor)? And what's %location(R'lyeh)?
+* [%person(Yendor?) %location(R'lyeh?)] Who's %person(Yendor)? And what's %location(R'lyeh)?
   -> yendor_more_info
-+ Got it[.] Humanity's Edge, eh...
+* Got it[.] Humanity's Edge, eh...
   -> loop
 
 = yendor_more_info

@@ -405,7 +405,7 @@ function DefaultCameraController:gamepadAxis(uiActive, axis, value)
 		self.gamepadY = value * yAxisMultiplier
 	end
 
-	self.canControlCameraWithGamepad = not uiActive
+	self.canControlCameraWithGamepad = true
 end
 
 function DefaultCameraController:getIsMouseCaptured()

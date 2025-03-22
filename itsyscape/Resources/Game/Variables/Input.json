@@ -15,10 +15,8 @@
 
 	"keybinds": {
 		"ui": {
-			"xAxis": "rightx",
-			"yAxis": "righty",
-			"alternateXAxis": "leftx",
-			"alternateYAxis": "lefty",
+			"xAxis": "leftx",
+			"yAxis": "lefty",
 
 			"axisSensitivity": 0.6,
 			"radialDrag": 1,

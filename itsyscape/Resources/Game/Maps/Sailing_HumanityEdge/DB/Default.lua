@@ -314,4 +314,28 @@ do
 	}
 end
 
+M["ShadowVolume1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155.000000,
+		PositionY = 0.000000,
+		PositionZ = 159.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 15.610787,
+		ScaleY = 5.222137,
+		ScaleZ = 16.067814,
+		Name = "ShadowVolume1",
+		Map = M._MAP,
+		Resource = M["ShadowVolume1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ShadowVolume",
+		MapObject = M["ShadowVolume1"]
+	}
+end
+
 return M

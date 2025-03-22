@@ -14,6 +14,7 @@ local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Widget = require "ItsyScape.UI.Widget"
 
@@ -22,6 +23,8 @@ GamepadPokeMenu.PADDING = 8
 
 function GamepadPokeMenu:new(view, actions)
 	Widget.new(self)
+
+	self:setData(GamepadSink, GamepadSink())
 
 	self.uiView = view
 

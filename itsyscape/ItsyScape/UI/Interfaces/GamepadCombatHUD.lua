@@ -172,7 +172,7 @@ function GamepadCombatHUD:new(...)
 
 	BaseCombatHUD.new(self, ...)
 
-	self:setData(GamepadSink, GamepadSink({ isBlocking = false }))
+	self:setData(GamepadSink, GamepadSink())
 
 	self:_initCommon()
 end
