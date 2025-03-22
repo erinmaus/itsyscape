@@ -23,10 +23,9 @@ function WalkToPeep:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local s
 	if not self.walkID then
 		local i, j, k = Utility.Peep.getTile(peep)
-		local callback, id = Utility.Peep.queueWalk(i, j, k, state[self.DISTANCE], {
+		local callback, id = Utility.Peep.queueWalk(mashina, i, j, k, state[self.DISTANCE], {
 			asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE]
 		})
 

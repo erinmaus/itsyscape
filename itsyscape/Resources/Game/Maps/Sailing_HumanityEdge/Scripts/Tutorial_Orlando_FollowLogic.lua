@@ -30,7 +30,7 @@ local Tree = BTreeBuilder.Node() {
 				Mashina.Step {
 					Mashina.Navigation.WalkToPeep {
 						peep = PLAYER,
-						distance = 4.5,
+						distance = 2.5,
 						as_close_as_possible = false
 					},
 

@@ -312,6 +312,8 @@ Let's head further into the island!
   - else: Let's scout for Yendorians and pirates! I'll follow you.
 }
 
+~ set_peep_mashina_state(C_ORLANDO, "tutorial-follow-player")
+
 # speaker={C_PLAYER}
 + {quest_tutorial_main_player_has_no_idea_what_to_do} I actually have no idea what we're doing![] I lied! Please help me!
   -> give_player_a_second_chance
