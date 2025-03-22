@@ -914,6 +914,14 @@ end
 
 Sailing.Ocean = {}
 
+function Sailing.Ocean.hasOcean(peep)
+	local instance = Utility.Peep.getInstance(peep)
+	local mapScript = instance:getBaseMapScript()
+	local ocean = mapScript and mapScript:hasBehavior(OceanBehavior)
+
+	return not not ocean
+end
+
 function Sailing.Ocean.getPositionRotation(peep)
 	local game = peep:getDirector():getGameInstance()
 

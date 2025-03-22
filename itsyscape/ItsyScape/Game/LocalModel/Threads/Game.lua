@@ -19,6 +19,7 @@ local buffer = require "string.buffer"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local AnalyticsClient = require "ItsyScape.Analytics.AnalyticsClient"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
+local Config = require "ItsyScape.Game.Config"
 local Utility = require "ItsyScape.Game.Utility"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
 local ChannelRPCService = require "ItsyScape.Game.RPC.ChannelRPCService"
@@ -101,6 +102,7 @@ local function tick()
 
 		measure("GameCleanup")
 
+		Config.update()
 		Analytics:update()
 	end
 	measure("End")

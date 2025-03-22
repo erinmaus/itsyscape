@@ -333,8 +333,8 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	local isTopPassable, isBottomPassable
 	if di < 0 and i > 1 then
 		local left = self:getTile(i - 1, j)
-		if (left.topRight <= tile.topLeft or
-		    left.bottomRight <= tile.bottomLeft) and
+		if (left.topRight == tile.topLeft or
+		    left.bottomRight == tile.bottomLeft) and
 		   (isPassableFunc and isPassableFunc(self, i, j, i - 1, j) or (left:getIsPassable() or (left:hasFlag("shoot") and shoot))) and
 		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left"))
 		then
@@ -352,8 +352,8 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 
 	if di > 0 and i < self:getWidth() then
 		local right = self:getTile(i + 1, j)
-		if (right.topLeft <= tile.topRight or
-		    right.bottomLeft <= tile.bottomRight) and
+		if (right.topLeft == tile.topRight or
+		    right.bottomLeft == tile.bottomRight) and
 		   (right:getIsPassable() or (right:hasFlag("shoot") and shoot)) and
 		   (not right:hasFlag("wall-left") and not tile:hasFlag("wall-right"))
 		then
@@ -371,8 +371,8 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 
 	if dj < 0 and j > 1 then
 		local top = self:getTile(i, j - 1)
-		if (top.bottomLeft <= tile.topLeft or
-		    top.bottomRight <= tile.topRight) and
+		if (top.bottomLeft == tile.topLeft or
+		    top.bottomRight == tile.topRight) and
 		   (top:getIsPassable() or (top:hasFlag("shoot") and shoot)) and
 		   (not top:hasFlag("wall-bottom") and not tile:hasFlag("wall-top"))
 		then
@@ -390,8 +390,8 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 
 	if dj > 0 and j < self:getHeight() then
 		local bottom = self:getTile(i, j + 1)
-		if (bottom.topLeft <= tile.bottomLeft or
-		    bottom.topRight <= tile.bottomRight) and
+		if (bottom.topLeft == tile.bottomLeft or
+		    bottom.topRight == tile.bottomRight) and
 		   (bottom:getIsPassable() or (bottom:hasFlag("shoot") and shoot)) and
 		   (not bottom:hasFlag("wall-top") and not tile:hasFlag("wall-bottom"))
 		then
@@ -417,7 +417,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	if math.abs(di) + math.abs(dj) > 1 then
 		if di < 0 and dj < 0 and i > 1 and j > 1 then
 			local topLeft = self:getTile(i - 1, j - 1)
-			if topLeft.bottomRight <= tile.topLeft and
+			if topLeft.bottomRight == tile.topLeft and
 			   (topLeft:getIsPassable({ 'impassable' }) or (topLeft:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -442,7 +442,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 
 		if di < 0 and dj > 1 and i > 1 and j < self:getHeight() then
 			local bottomLeft = self:getTile(i - 1, j + 1)
-			if bottomLeft.topRight <= tile.bottomLeft and
+			if bottomLeft.topRight == tile.bottomLeft and
 			   (bottomLeft:getIsPassable({ 'impassable' }) or (bottomLeft:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -467,7 +467,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 
 		if di > 0 and dj < 0 and i < self:getWidth() and j > 1 then
 			local topRight = self:getTile(i + 1, j - 1)
-			if topRight.bottomLeft <= tile.topRight and
+			if topRight.bottomLeft == tile.topRight and
 			   (topRight:getIsPassable({ 'impassable' }) or (topRight:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -492,7 +492,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 
 		if di > 0 and dj > 0 and i < self:getWidth() and j < self:getHeight() then
 			local bottomRight = self:getTile(i + 1, j + 1)
-			if bottomRight.topLeft <= tile.bottomRight and
+			if bottomRight.topLeft == tile.bottomRight and
 			   (bottomRight:getIsPassable({ 'impassable' }) or (bottomRight:hasFlag("shoot") and shoot))
 			then
 				if isDebug then

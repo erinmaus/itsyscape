@@ -1,6 +1,11 @@
 {
 	"$paths": {
-		"COLOR": ["colors", "$color"]
+		"COLOR": ["colors", "$color"],
+		"ENGINE": ["engine", "$var"]
+	},
+
+	"engine": {
+		"walkQueueTimeMS": 50
 	},
 
 	"colors": {

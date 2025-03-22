@@ -162,8 +162,8 @@ function SmartPathFinder:getNeighbors(edge, goal)
 	local isTopPassable, isBottomPassable
 	if i > 1 then
 		local left = self.map:getTile(i - 1, j)
-		if (left.topRight <= tile.topLeft or
-		    left.bottomRight <= tile.bottomLeft) and
+		if (left.topRight == tile.topLeft or
+		    left.bottomRight == tile.bottomLeft) and
 		   not left:hasFlag('impassable') and
 		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left")) and
 		   (not left:hasFlag('door') or (edge.action and edge.action:is("open")))
@@ -182,8 +182,8 @@ function SmartPathFinder:getNeighbors(edge, goal)
 
 	if i < self.map:getWidth() then
 		local right = self.map:getTile(i + 1, j)
-		if (right.topLeft <= tile.topRight or
-		    right.bottomLeft <= tile.bottomRight) and
+		if (right.topLeft == tile.topRight or
+		    right.bottomLeft == tile.bottomRight) and
 		   not right:hasFlag('impassable') and
 		   (not right:hasFlag("wall-left") and not tile:hasFlag("wall-right")) and
 		   (not right:hasFlag('door') or (edge.action and edge.action:is("open")))
@@ -202,8 +202,8 @@ function SmartPathFinder:getNeighbors(edge, goal)
 
 	if j > 1 then
 		local top = self.map:getTile(i, j - 1)
-		if (top.bottomLeft <= tile.topLeft or
-		    top.bottomRight <= tile.topRight) and
+		if (top.bottomLeft == tile.topLeft or
+		    top.bottomRight == tile.topRight) and
 		   not top:hasFlag('impassable') and
 		   (not top:hasFlag("wall-bottom") and not tile:hasFlag("wall-top")) and
 		   (not top:hasFlag('door') or (edge.action and edge.action:is("open")))
@@ -222,8 +222,8 @@ function SmartPathFinder:getNeighbors(edge, goal)
 
 	if j < self.map:getHeight() then
 		local bottom = self.map:getTile(i, j + 1)
-		if (bottom.topLeft <= tile.bottomLeft or
-		    bottom.topRight <= tile.bottomRight) and
+		if (bottom.topLeft == tile.bottomLeft or
+		    bottom.topRight == tile.bottomRight) and
 		   not bottom:hasFlag('impassable') and
 		   (not bottom:hasFlag("wall-top") and not tile:hasFlag("wall-bottom")) and
 		   (not bottom:hasFlag('door') or (edge.action and edge.action:is("open")))
@@ -243,7 +243,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 	if isTopPassable and isLeftPassable and isRightPassable and isTopPassable then
 		if i > 1 and j > 1 then
 			local topLeft = self.map:getTile(i - 1, j - 1)
-			if topLeft.bottomRight <= tile.topLeft and
+			if topLeft.bottomRight == tile.topLeft and
 			   not topLeft:hasFlag('impassable') and
 			   not topLeft:hasFlag('door')
 			then
@@ -253,7 +253,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 
 		if i > 1 and j < self.map:getHeight() and isRightPassable and isBottomPassable and isRightPassable then
 			local bottomLeft = self.map:getTile(i - 1, j + 1)
-			if bottomLeft.topRight <= tile.bottomLeft and
+			if bottomLeft.topRight == tile.bottomLeft and
 			   not bottomLeft:hasFlag('impassable') and
 			   not bottomLeft:hasFlag('door')
 			then
@@ -263,7 +263,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 
 		if i < self.map:getWidth() and j > 1 then
 			local topRight = self.map:getTile(i + 1, j - 1)
-			if topRight.bottomLeft <= tile.topRight and
+			if topRight.bottomLeft == tile.topRight and
 			   not topRight:hasFlag('impassable') and
 			   not topRight:hasFlag('door')
 			then
@@ -273,7 +273,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 
 		if i < self.map:getWidth() and j < self.map:getHeight() and isRightPassable and isBottomPassable and isRightPassable then
 			local bottomRight = self.map:getTile(i + 1, j + 1)
-			if bottomRight.topLeft <= tile.bottomRight and
+			if bottomRight.topLeft == tile.bottomRight and
 			   not bottomRight:hasFlag('impassable') and
 			   not bottomRight:hasFlag('door')
 			then
@@ -353,4 +353,5 @@ function SmartPathFinder:getParent(edge)
 	return edge.parent
 end
 
-return SmartPathFinder
+--return SmartPathFinder
+return require "ItsyScape.World.LinkedSmartPathFinder"

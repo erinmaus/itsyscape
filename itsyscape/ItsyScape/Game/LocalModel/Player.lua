@@ -543,10 +543,22 @@ function LocalPlayer:updateDiscord()
 	self.line2 = line2
 end
 
+function LocalPlayer:_finishWalk()
+	self.pendingWalkID = nil
+end
+
 -- Moves the player to the specified position on the map via walking.
 function LocalPlayer:walk(i, j, k)
+	if self.pendingWalkID then
+		Utility.Peep.cancelWalk(self.pendingWalkID)
+		self.pendingWalkID = nil
+	end
+
 	local peep = self.actor:getPeep()
-	return Utility.Peep.walk(peep, i, j, k, math.huge, { asCloseAsPossible = true })
+	local callback, id = Utility.Peep.queueWalk(peep, i, j, k, math.huge, { asCloseAsPossible = true })
+
+	self.pendingWalkID = id
+	callback:register(self._finishWalk, self)
 end
 
 function LocalPlayer:changeCamera(cameraType)

@@ -248,6 +248,7 @@ end
 
 function LocalGame:update(delta)
 	self.stage:update(delta)
+	Utility.Peep.updateWalks()
 end
 
 function LocalGame:cleanup()

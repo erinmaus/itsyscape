@@ -445,19 +445,23 @@ function Application:probeActions(actions, performDefault, callback)
 					Log.warn("couldn't perform action: %s", r)
 				end
 
-				return
+				return true
 			end
 		end
 	end
 
 	if numPrimaryActions <= 1 and not hasWalk then
-		return
+		return false
 	end
+
+	return true
 end
 
 function Application:_probe(probe, performDefault, callback)
 	if performDefault then
-		self:probeActions(probe:toArray(), performDefault)
+		if self:probeActions(probe:toArray(), performDefault) then
+			return
+		end
 	end
 
 	if callback then

@@ -28,6 +28,10 @@ function FishView:new(prop, gameView)
 	self.time = math.random() * self.START_OFFSET
 end
 
+function FishView:getIsStatic()
+	return false
+end
+
 function FishView:getTextureFilename()
 	return Class.ABSTRACT()
 end
@@ -98,33 +102,33 @@ end
 function FishView:update(delta)
 	PropView.update(self, delta)
 
-	local state = self:getProp():getState()
-	local scale = state.size or 1
+	-- local state = self:getProp():getState()
+	-- local scale = state.size or 1
 
-	self.time = self.time + delta
+	-- self.time = self.time + delta
 
-	local rotation
-	do
-		local xWobble = math.sin(self.time * math.pi * 2) * math.pi / 4
-		local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, xWobble)
-		local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, self.time * math.pi / 2)
+	-- local rotation
+	-- do
+	-- 	local xWobble = math.sin(self.time * math.pi * 2) * math.pi / 4
+	-- 	local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, xWobble)
+	-- 	local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, self.time * math.pi / 2)
 
-		rotation = yRotation * xRotation
-	end
+	-- 	rotation = yRotation * xRotation
+	-- end
 
-	local translation
-	do
-		local x = math.sin(self.time * math.pi / 2) * scale * self.RADIUS - 1
-		local z = math.cos(self.time * math.pi / 2) * scale * self.RADIUS - 1
-		translation = Vector(x, 0, z)
-	end
+	-- local translation
+	-- do
+	-- 	local x = math.sin(self.time * math.pi / 2) * scale * self.RADIUS - 1
+	-- 	local z = math.cos(self.time * math.pi / 2) * scale * self.RADIUS - 1
+	-- 	translation = Vector(x, 0, z)
+	-- end
 
-	local scale = Vector.ONE * scale
+	-- local scale = Vector.ONE * scale
 
-	local root = self.decoration
-	root:getTransform():setLocalTranslation(translation)
-	root:getTransform():setLocalRotation(rotation)
-	root:getTransform():setLocalScale(scale)
+	-- local root = self.decoration
+	-- root:getTransform():setLocalTranslation(translation)
+	-- root:getTransform():setLocalRotation(rotation)
+	-- root:getTransform():setLocalScale(scale)
 end
 
 return FishView

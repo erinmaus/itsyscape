@@ -7,12 +7,14 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local CommonMath = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
+local Config = require "ItsyScape.Game.Config"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
 local CurveConfig = require "ItsyScape.Game.CurveConfig"
@@ -4043,6 +4045,65 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 	end
 
 	return false, r
+end
+
+Utility.Peep.WALK_QUEUE = { n = 0, pending = {} }
+
+function Utility.Peep.cancelWalk(n)
+	for i, pending in ipairs(Utility.Peep.WALK_QUEUE.pending) do
+		if pending.n == id then
+			table.remove(Utility.Peep.WALK_QUEUE.pending, i)
+			break
+		end
+	end
+end
+
+function Utility.Peep.updateWalks(time)
+	local walkQueueTimeMS = Config.get("Config", "ENGINE", "var", "walkQueueTimeMS", "_", 10)
+	local targetTime = love.timer.getTime() + (time or (walkQueueTimeMS / 1000))
+
+	local queue = Utility.Peep.WALK_QUEUE.pending
+	while love.timer.getTime() < targetTime and #queue > 0 do
+		for i = #queue, 1, -1 do
+			local pending = queue[i]
+
+			if pending.s == nil then
+				pending.s = pending.update()
+			end
+
+			if pending.s ~= nil then
+				pending.callback(s)
+				table.remove(queue, i)
+			end
+		end
+	end
+end
+
+function Utility.Peep.queueWalk(peep, i, j, k, distance, t, ...)
+	local callback = Callback(false)
+
+	t = t or { asCloseAsPossible = true }
+	local y = {}
+	do
+		for k, v in pairs(t) do
+			y[k] = v
+		end
+
+		y.yield = true
+	end
+
+	Utility.Peep.WALK_QUEUE.n = Utility.Peep.WALK_QUEUE.n + 1
+	local walkCoroutine = coroutine.wrap(Utility.Peep.walk)
+	local pending = {
+		n = Utility.Peep.WALK_QUEUE.n,
+		callback = callback,
+		update = walkCoroutine
+	}
+
+	pending.s = walkCoroutine(peep, i, j, k, distance, y, ...)
+
+	table.insert(Utility.Peep.WALK_QUEUE.pending, pending)
+	return callback, pending.n
 end
 
 function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)

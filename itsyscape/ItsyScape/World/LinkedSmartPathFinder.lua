@@ -7,7 +7,6 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
@@ -45,25 +44,29 @@ function LinkedSmartPathFinder:new(map, peep, t)
 	self.edgeID = 0
 end
 
+local ID = {}
+
 function LinkedSmartPathFinder:makeID(...)
 	local current = self.edgeIDs
 
 	for i = 1, select("#", ...) do
 		local partialID = select(i, ...)
 
-		local t = t[partialID]
+		local t = current[partialID]
 		if not t then
 			t = {}
-			self.edgeIDs[partialID] = t
+			current[partialID] = t
 		end
+
+		current = t
 	end
 
-	if not current.id then
+	if not current[ID] then
 		self.edgeID = self.edgeID + 1
-		current.id = self.edgeID
+		current[ID] = self.edgeID
 	end
 
-	return current.id
+	return current[ID]
 end
 
 function LinkedSmartPathFinder:getMap()
@@ -96,14 +99,15 @@ function LinkedSmartPathFinder:makeEdge(i, j, parent, goal)
 	-- where DD = diagonal distance and MD = Manhattan distance
 
 	local edge = {
-		nodeID = j * self.map:getWidth() + i,
+		--nodeID = j * self.map:getWidth() + i,
+		nodeID = self:makeID(i, j, "tile"),
 		i = i,
 		j = j,
 		parent = parent
 	}
 
 	edge.cost = 1 + parent.cost
-	edge.score = edge.cost + d
+	edge.score = parent.score + d
 
 	return edge
 end
@@ -112,7 +116,7 @@ function LinkedSmartPathFinder:makeActionEdge(i, j, parent, goal, prop, action)
 	local edge = self:makeEdge(i, j, parent, goal)
 	edge.prop = prop
 	edge.action = action
-	edge.nodeID = prop
+	edge.nodeID = self:makeID(i, j, prop)
 
 	return edge
 end
@@ -183,8 +187,8 @@ function LinkedSmartPathFinder:getNeighbors(edge, goal)
 	local isTopPassable, isBottomPassable
 	if i > 1 then
 		local left = self.map:getTile(i - 1, j)
-		if (left.topRight <= tile.topLeft or
-		    left.bottomRight <= tile.bottomLeft) and
+		if (left.topRight == tile.topLeft or
+		    left.bottomRight == tile.bottomLeft) and
 		   not left:hasFlag('impassable') and
 		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left")) and
 		   (not left:hasFlag('door') or (edge.action and edge.action:is("open")))
@@ -203,8 +207,8 @@ function LinkedSmartPathFinder:getNeighbors(edge, goal)
 
 	if i < self.map:getWidth() then
 		local right = self.map:getTile(i + 1, j)
-		if (right.topLeft <= tile.topRight or
-		    right.bottomLeft <= tile.bottomRight) and
+		if (right.topLeft == tile.topRight or
+		    right.bottomLeft == tile.bottomRight) and
 		   not right:hasFlag('impassable') and
 		   (not right:hasFlag("wall-left") and not tile:hasFlag("wall-right")) and
 		   (not right:hasFlag('door') or (edge.action and edge.action:is("open")))
@@ -223,8 +227,8 @@ function LinkedSmartPathFinder:getNeighbors(edge, goal)
 
 	if j > 1 then
 		local top = self.map:getTile(i, j - 1)
-		if (top.bottomLeft <= tile.topLeft or
-		    top.bottomRight <= tile.topRight) and
+		if (top.bottomLeft == tile.topLeft or
+		    top.bottomRight == tile.topRight) and
 		   not top:hasFlag('impassable') and
 		   (not top:hasFlag("wall-bottom") and not tile:hasFlag("wall-top")) and
 		   (not top:hasFlag('door') or (edge.action and edge.action:is("open")))
@@ -243,8 +247,8 @@ function LinkedSmartPathFinder:getNeighbors(edge, goal)
 
 	if j < self.map:getHeight() then
 		local bottom = self.map:getTile(i, j + 1)
-		if (bottom.topLeft <= tile.bottomLeft or
-		    bottom.topRight <= tile.bottomRight) and
+		if (bottom.topLeft == tile.bottomLeft or
+		    bottom.topRight == tile.bottomRight) and
 		   not bottom:hasFlag('impassable') and
 		   (not bottom:hasFlag("wall-top") and not tile:hasFlag("wall-bottom")) and
 		   (not bottom:hasFlag('door') or (edge.action and edge.action:is("open")))
@@ -264,7 +268,7 @@ function LinkedSmartPathFinder:getNeighbors(edge, goal)
 	if isTopPassable and isLeftPassable and isRightPassable and isTopPassable then
 		if i > 1 and j > 1 then
 			local topLeft = self.map:getTile(i - 1, j - 1)
-			if topLeft.bottomRight <= tile.topLeft and
+			if topLeft.bottomRight == tile.topLeft and
 			   not topLeft:hasFlag('impassable') and
 			   not topLeft:hasFlag('door')
 			then
@@ -274,7 +278,7 @@ function LinkedSmartPathFinder:getNeighbors(edge, goal)
 
 		if i > 1 and j < self.map:getHeight() and isRightPassable and isBottomPassable and isRightPassable then
 			local bottomLeft = self.map:getTile(i - 1, j + 1)
-			if bottomLeft.topRight <= tile.bottomLeft and
+			if bottomLeft.topRight == tile.bottomLeft and
 			   not bottomLeft:hasFlag('impassable') and
 			   not bottomLeft:hasFlag('door')
 			then
@@ -284,7 +288,7 @@ function LinkedSmartPathFinder:getNeighbors(edge, goal)
 
 		if i < self.map:getWidth() and j > 1 then
 			local topRight = self.map:getTile(i + 1, j - 1)
-			if topRight.bottomLeft <= tile.topRight and
+			if topRight.bottomLeft == tile.topRight and
 			   not topRight:hasFlag('impassable') and
 			   not topRight:hasFlag('door')
 			then
@@ -294,7 +298,7 @@ function LinkedSmartPathFinder:getNeighbors(edge, goal)
 
 		if i < self.map:getWidth() and j < self.map:getHeight() and isRightPassable and isBottomPassable and isRightPassable then
 			local bottomRight = self.map:getTile(i + 1, j + 1)
-			if bottomRight.topLeft <= tile.bottomRight and
+			if bottomRight.topLeft == tile.bottomRight and
 			   not bottomRight:hasFlag('impassable') and
 			   not bottomRight:hasFlag('door')
 			then
@@ -311,23 +315,25 @@ function LinkedSmartPathFinder:getNeighbors(edge, goal)
 end
 
 function LinkedSmartPathFinder:getID(edge)
-	local parentID = edge.parent and edge.parent.nodeID or 0
+	return edge.nodeID
 
-	local parents = self.edgeIDs[parentID]
-	if not parents then
-		parents = {}
-		self.edgeIDs[parentID] = parents
-	end
+	-- local parentID = edge.parent and edge.parent.nodeID or 0
 
-	local id = parents[edge.nodeID]
-	if not id then
-		self.edgeID = self.edgeID + 1
-		id = self.edgeID
+	-- local parents = self.edgeIDs[parentID]
+	-- if not parents then
+	-- 	parents = {}
+	-- 	self.edgeIDs[parentID] = parents
+	-- end
 
-		parents[edge.nodeID] = id
-	end
+	-- local id = parents[edge.nodeID]
+	-- if not id then
+	-- 	self.edgeID = self.edgeID + 1
+	-- 	id = self.edgeID
 
-	return id
+	-- 	parents[edge.nodeID] = id
+	-- end
+
+--	return id
 end
 
 function LinkedSmartPathFinder:getCost(edge)
@@ -340,7 +346,8 @@ end
 
 function LinkedSmartPathFinder:getEdge(location)
 	return {
-		nodeID = location.j * self.map:getWidth() + location.i,
+		--nodeID = location.j * self.map:getWidth() + location.i,
+		nodeID = self:makeID(location.i, location.j, "tile"),
 		i = location.i,
 		j = location.j,
 		cost = 1,
