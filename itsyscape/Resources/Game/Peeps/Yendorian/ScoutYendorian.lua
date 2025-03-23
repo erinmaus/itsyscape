@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local BaseYendorian = require "Resources.Game.Peeps.Yendorian.BaseYendorian"
 
 local ScoutYendorian = Class(BaseYendorian)
@@ -37,6 +38,17 @@ function ScoutYendorian:ready(director, game)
 		"Yendorian_Attack_Swordfish")
 
 	Utility.Peep.equipXWeapon(self, "YendorianSwordfish")
+end
+
+function ScoutYendorian:update(director, game)
+	BaseYendorian.update(self, director, game)
+
+	if Utility.Peep.face3D(self) then
+		local rotation = self:getBehavior(RotationBehavior)
+		if rotation.rotation then
+			rotation.rotation = rotation.rotation * Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi / 3)
+		end
+	end
 end
 
 return ScoutYendorian

@@ -356,6 +356,11 @@ do
 		Resource = Scout
 	}
 
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 150,
+		Resource = Scout
+	}
+
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = -1000,
 		DefenseStab = -1000,

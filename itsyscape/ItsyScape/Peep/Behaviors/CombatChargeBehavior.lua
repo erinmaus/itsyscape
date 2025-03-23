@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Player/Disable.lua
+-- ItsyScape/Peep/Behaviors/CombatChargeBehavior.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -7,18 +7,17 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local B = require "B"
-local Utility = require "ItsyScape.Game.Utility"
-local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local Behavior = require "ItsyScape.Peep.Behavior"
 
-local Disable = B.Node("Disable")
-Disable.PLAYER = B.Reference()
+local CombatChargeBehavior = Behavior("CombatCharge")
 
-function Disable:update(mashina, state, executor)
-	local player = state[self.PLAYER]
-	Utility.Peep.disable(player)
+function CombatChargeBehavior:new()
+	Behavior.Type.new(self)
 
-	return B.Status.Success
+	self.i = 0
+	self.j = 0
+	self.k = 0
+	self.currentWalkID = false
 end
 
-return Disable
+return CombatChargeBehavior

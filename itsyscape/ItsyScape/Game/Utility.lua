@@ -573,6 +573,8 @@ function Utility.spawnMapAtPosition(peep, resource, x, y, z, args)
 end
 
 function Utility.spawnInstancedMapGroup(playerPeep, groupName)
+	local Probe = require "ItsyScape.Peep.Probe"
+
 	local stage = playerPeep:getDirector():getGameInstance():getStage()
 	local gameDB = playerPeep:getDirector():getGameDB()
 
@@ -599,7 +601,12 @@ function Utility.spawnInstancedMapGroup(playerPeep, groupName)
 			Resource = mapObject
 		})
 
-		if mapObjectLocation then
+		local exists = #playerPeep:getDirector():probe(
+			playerPeep:getLayerName(),
+			Probe.mapObject(mapObject),
+			Probe.instance(Utility.Peep.getPlayerModel(playerPeep))) >= 1
+
+		if mapObjectLocation and not exists then
 			local localLayer = math.max(mapObjectLocation:get("Layer"), 1)
 			local globalLayer = instance:getGlobalLayerFromLocalLayer(instanceMapGroup, localLayer)
 			local actor, prop = stage:instantiateMapObject(
@@ -2940,9 +2947,11 @@ function Utility.Peep.disable(peep)
 
 	local disabled = peep:getBehavior(DisabledBehavior)
 	if not disabled then
+		peep:removeBehavior(TargetTileBehavior)
 		peep:addBehavior(DisabledBehavior)
 		return true
 	end
+
 
 	disabled.index = disabled.index + 1
 	return false
@@ -3408,6 +3417,27 @@ function Utility.Peep.setPosition(peep, position, lerp)
 	end
 end
 
+function Utility.Peep.teleportCompanion(peep, targetPeep)
+	local i, j, k = Utility.Peep.getTile(targetPeep)
+	local map = Utility.Peep.getMap(targetPeep)
+
+	if map:canMove(i, j, 1, 0) then
+		Utility.Peep.setPosition(peep, map:getTileCenter(i + 1, j))
+		return true
+	elseif map:canMove(i, j, -1, 0) then
+		Utility.Peep.setPosition(peep, map:getTileCenter(i - 1, j))
+		return true
+	elseif map:canMove(i, j, 0, -1) then
+		Utility.Peep.setPosition(peep, map:getTileCenter(i, j - 1))
+		return true
+	elseif map:canMove(i, j, 0, 1) then
+		Utility.Peep.setPosition(peep, map:getTileCenter(i, j + 1))
+		return true
+	end
+
+	return false
+end
+
 function Utility.Peep.getScale(peep)
 	local scale = peep:getBehavior(ScaleBehavior)
 	if scale then
@@ -3462,6 +3492,29 @@ function Utility.Peep.getAbsolutePosition(peep)
 	else
 		return position
 	end
+end
+
+function Utility.Peep.getAbsoluteDistance(sourcePeep, targetPeep)
+	local sourcePeepPosition = Utility.Peep.getAbsolutePosition(sourcePeep)
+	local sourcePeepSize = Utility.Peep.getSize(sourcePeep)
+	local sourcePeepHalfSize = sourcePeepSize / 2
+	local sourcePeepMin, sourcePeepMax = sourcePeepPosition - sourcePeepHalfSize, sourcePeepPosition + sourcePeepHalfSize
+
+	local targetPeepPosition = Utility.Peep.getAbsolutePosition(targetPeep)
+	local targetPeepSize = Utility.Peep.getSize(targetPeep)
+	local targetPeepHalfSize = targetPeepSize / 2
+	local targetPeepMin, targetPeepMax = targetPeepPosition - targetPeepHalfSize, targetPeepPosition + targetPeepHalfSize
+
+	local u = (sourcePeepMin - targetPeepMax):max(Vector.ZERO)
+	local v = (targetPeepMin - sourcePeepMin):max(Vector.ZERO)
+	local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
+
+	if squaredDistance > 0 then
+		return math.sqrt(squaredDistance)
+	end
+
+	-- Overlapping.
+	return 0
 end
 
 function Utility.Peep.getSize(peep)
@@ -4072,7 +4125,7 @@ function Utility.Peep.updateWalks(time)
 			end
 
 			if pending.s ~= nil then
-				pending.callback(s)
+				pending.callback(pending.s)
 				table.remove(queue, i)
 			end
 		end
@@ -4188,7 +4241,7 @@ function Utility.Peep.getTile(peep)
 	return i, j, k, tile
 end
 
-function Utility.Peep.isInPassage(peep, passage)
+function Utility.Peep.getPassages(peep)
 	local position = Utility.Peep.getPosition(peep)
 	local mapResource = Utility.Peep.getMapResource(peep)
 
@@ -4196,23 +4249,36 @@ function Utility.Peep.isInPassage(peep, passage)
 	local passages = gameDB:getRecords("MapObjectRectanglePassage", {
 		Map = mapResource
 	})
-	for i = 1, #passages do
-		local x1, z1 = passages[i]:get("X1"), passages[i]:get("Z1")
-		local x2, z2 = passages[i]:get("X2"), passages[i]:get("Z2")
+
+	local result = {}
+	for _, passage in ipairs(passages) do
+		local x1, z1 = passage:get("X1"), passage:get("Z1")
+		local x2, z2 = passage:get("X2"), passage:get("Z2")
 		if position.x >= x1 and position.x <= x2 and
 		   position.z >= z1 and position.z <= z2
 		then
 			local mapObject = gameDB:getRecord("MapObjectReference", {
 				Map = mapResource,
-				Resource = passages[i]:get("Resource")
+				Resource = passage:get("Resource")
 			})
 
-			if mapObject:get("Name") == passage then
-				return true
+			local currentPassageName = mapObject and mapObject:get("Name")
+			if currentPassageName then
+				table.insert(result, currentPassageName)
 			end
 		end
 	end
 
+	return result
+end
+
+function Utility.Peep.isInPassage(peep, passage)
+	local passages = Utility.Peep.getPassages(peep)
+	for _, p in ipairs(passages) do
+		if p == passage then
+			return true
+		end
+	end
 	return false
 end
 
@@ -4420,6 +4486,8 @@ function Utility.Peep.face3D(self)
 end
 
 function Utility.Peep.attack(peep, other, distance)
+	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
+
 	do
 		local status = peep:getBehavior(CombatStatusBehavior)
 		if not status then
@@ -4433,7 +4501,7 @@ function Utility.Peep.attack(peep, other, distance)
 
 	local actor = other:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
-		if peep:getCommandQueue():interrupt(AttackCommand()) then
+		if peep:getCommandQueue(CombatCortex.QUEUE):interrupt(AttackCommand()) then
 			local _, target = peep:addBehavior(CombatTargetBehavior)
 			target.actor = actor.actor
 		end
@@ -5004,6 +5072,8 @@ function Utility.Peep.Attackable:bossReceiveAttack(p)
 end
 
 function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
+	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
+
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if not combat or combat.dead then
 		return
@@ -5030,7 +5100,7 @@ function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
 	if not target and p:getAggressor() then
 		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
-			if self:getCommandQueue():interrupt(AttackCommand()) then
+			if self:getCommandQueue(CombatCortex.QUEUE):interrupt(AttackCommand()) then
 				local _, target = self:addBehavior(CombatTargetBehavior)
 				target.actor = actor.actor
 
@@ -5187,7 +5257,7 @@ function Utility.Peep.Attackable:onMiss(p)
 end
 
 function Utility.Peep.Attackable:onDie(p)
-	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
+	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 	self:getCommandQueue():clear()
 	self:getCommandQueue(CombatCortex.QUEUE):clear()
 	self:removeBehavior(CombatTargetBehavior)
@@ -5755,7 +5825,8 @@ function Utility.Peep.Human:addAnimation(name, animation)
 		return false
 	end
 
-	self:addResource("ItsyScape.Graphics.AnimationResource", filename)
+	local animation = CacheRef("ItsyScape.Graphics.AnimationResource", filename)
+	self:addResource(name, animation)
 end
 
 function Utility.Peep.Human:applySkin(slot, priority, relativeFilename, colorConfig)

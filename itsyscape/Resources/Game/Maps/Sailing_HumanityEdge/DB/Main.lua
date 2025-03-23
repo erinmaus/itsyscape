@@ -118,6 +118,7 @@ do
 		PositionX = 141,
 		PositionY = 3,
 		PositionZ = 173,
+		Direction = -1,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
@@ -174,7 +175,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Orlando",
+		Peep = ItsyScape.Resource.Peep "Orlando",
 		MapObject = M["Orlando"]
 	}
 
@@ -215,27 +216,47 @@ do
 	}
 end
 
-M["ScoutYendorian"] = ItsyScape.Resource.MapObject.Unique()
+M["YendorianScout"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Yendorians",
+		MapObjectGroup = "Tutorial_YendorianScout",
 		Map = M._MAP,
 		IsInstanced = 1,
-		MapObject = M["ScoutYendorian"]
+		MapObject = M["YendorianScout"]
 	}
 
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 43,
-		PositionY = 4,
-		PositionZ = 85,
+		PositionX = 25,
+		PositionY = 3,
+		PositionZ = 163,
 		Direction = 1,
-		Name = "ScoutYendorian",
+		Name = "YendorianScout",
 		Map = M._MAP,
-		Resource = M["ScoutYendorian"]
+		Resource = M["YendorianScout"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Yendorian_Scout",
-		MapObject = M["ScoutYendorian"]
+		MapObject = M["YendorianScout"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+end
+
+M["Passage_Scout"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_Scout",
+		Map = M._MAP,
+		Resource = M["Passage_Scout"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 40,
+		Z1 = 164,
+		X2 = 50,
+		Z2 = 187,
+		Map = M._MAP,
+		Resource = M["Passage_Scout"]
 	}
 end

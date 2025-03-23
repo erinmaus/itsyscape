@@ -99,7 +99,6 @@ function LinkedSmartPathFinder:makeEdge(i, j, parent, goal)
 	-- where DD = diagonal distance and MD = Manhattan distance
 
 	local edge = {
-		--nodeID = j * self.map:getWidth() + i,
 		nodeID = self:makeID(i, j, "tile"),
 		i = i,
 		j = j,
@@ -316,24 +315,6 @@ end
 
 function LinkedSmartPathFinder:getID(edge)
 	return edge.nodeID
-
-	-- local parentID = edge.parent and edge.parent.nodeID or 0
-
-	-- local parents = self.edgeIDs[parentID]
-	-- if not parents then
-	-- 	parents = {}
-	-- 	self.edgeIDs[parentID] = parents
-	-- end
-
-	-- local id = parents[edge.nodeID]
-	-- if not id then
-	-- 	self.edgeID = self.edgeID + 1
-	-- 	id = self.edgeID
-
-	-- 	parents[edge.nodeID] = id
-	-- end
-
---	return id
 end
 
 function LinkedSmartPathFinder:getCost(edge)
@@ -346,7 +327,6 @@ end
 
 function LinkedSmartPathFinder:getEdge(location)
 	return {
-		--nodeID = location.j * self.map:getWidth() + location.i,
 		nodeID = self:makeID(location.i, location.j, "tile"),
 		i = location.i,
 		j = location.j,

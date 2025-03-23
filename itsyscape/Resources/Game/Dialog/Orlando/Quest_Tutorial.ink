@@ -24,7 +24,8 @@ VAR quest_tutorial_main_equipped_items_thought = false
     - !player_has_started_quest("Tutorial"): -> quest_tutorial_main_started
     - player_is_next_quest_step("Tutorial", "Tutorial_GatheredItems"): -> quest_tutorial_main_gather_items
     - player_is_next_quest_step("Tutorial", "Tutorial_EquippedItems"): -> quest_tutorial_main_equipped_items
-    - player_is_next_quest_step("Tutorial", "Tutorial_Scout"): -> quest_tutorial_main_scout
+    - player_is_next_quest_step("Tutorial", "Tutorial_FindScout"): -> quest_tutorial_main_scout
+    - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedScout"): -> quest_tutorial_main_defeat_scout
 }
 
 == quest_tutorial_main_started ==
@@ -318,5 +319,25 @@ Let's head further into the island!
 + {quest_tutorial_main_player_has_no_idea_what_to_do} I actually have no idea what we're doing![] I lied! Please help me!
   -> give_player_a_second_chance
 + {quest_tutorial_main_player_has_no_idea_what_to_do} [(Keep acting like you know what you're doing.)] (I hope I can figure out what I'm supposed to be doing...)
+
+-> DONE
+
+== quest_tutorial_main_defeat_scout ==
+# speaker={C_ORLANDO}
+Look ahead! There's a Yendorian scout! %hint(He's not seen us yet...)
+
+# speaker={C_PLAYER}
+* What should we do?[] He looks pretty strong...
+  -> what_to_do
+* Let's deal with him![] We can't let him alert the others!
+  -> deal_with_him
+
+= what_to_do
+#speaker={C_ORLANDO}
+Don't let his high combat level fool you! He's just scout. Let's kill this guy!
+
+= deal_with_him
+#speaker={C_ORLANDO}
+I agree!
 
 -> DONE

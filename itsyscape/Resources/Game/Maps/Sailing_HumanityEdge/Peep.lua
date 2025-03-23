@@ -83,7 +83,7 @@ function Island:_giveItems(playerPeep, items)
 
 	local playerPeepState = playerPeep:getState()
 	for _, item in ipairs(items) do
-		if not playerPeepState:has("Item", item, 1) then
+		if not playerPeepState:has("Item", item, 1, hasFlags) then
 			playerPeepState:give("Item", item, 1, giveFlags)
 		end
 	end
@@ -115,7 +115,9 @@ function Island:_doTalkToPeep(playerPeep, otherPeepName, callback)
 			Utility.Peep.enable(playerPeep)
 		end)
 	else
-		callback()
+		if callback then
+			callback()
+		end
 	end
 
 	return success
@@ -140,6 +142,10 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback)
 	return self:_doTalkToPeep(playerPeep, otherPeepName, callback)
 end
 
+function Island:onInitScoutTutorial(playerPeep)
+	TutorialCommon.listenForAttack(playerPeep)
+end
+
 function Island:onFinishPreparingTutorial(playerPeep)
 	if not Utility.Quest.didStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
 		self:talkToPeep(playerPeep, "Orlando", function()
@@ -151,6 +157,33 @@ function Island:onFinishPreparingTutorial(playerPeep)
 			TutorialCommon.showBasicControlsHint(playerPeep)
 		end)
 	end
+
+	if not Utility.Quest.didStep("Tutorial", "Tutorial_DefeatedScout", playerPeep) then
+		Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_YendorianScout")
+		self:pushPoke("initScoutTutorial", playerPeep)
+	end
+end
+
+function Island:onFinishPreparingTeam(playerPeep)
+	if not Utility.Quest.didStart("Tutorial", playerPeep) then
+		return
+	end
+
+	local orlando = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("Orlando"),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+	if orlando then
+		Utility.Peep.teleportCompanion(orlando, playerPeep)
+		Utility.Peep.face(orlando, playerPeep)
+		Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
+	end
+end
+
+function Island:transitionTutorial(playerPeep, keyItemID)
+	playerPeep:getState():give("KeyItem", keyItemID)
+	self:poke("finishPreparingTutorial", playerPeep)
 end
 
 function Island:prepareTutorial(playerPeep, arguments)
@@ -165,6 +198,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 	self.playersInTutorial[playerPeep] = true
 
 	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Team")
+	self:pushPoke("finishPreparingTeam", playerPeep)
 
 	if arguments and arguments.class then
 		Utility.Text.setDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class", arguments.class)
@@ -219,7 +253,7 @@ function Island:updateTutorialGatherItemsStep(playerPeep)
 	if not playerPeepHasItemOnGround then
 		Utility.Peep.poofInstancedMapGroup(playerPeep, "Tutorial_DroppedItems")
 
-		playerPeep:getState():give("KeyItem", "Tutorial_GatheredItems")
+		self:transitionTutorial("Tutorial_GatheredItems")
 		self:talkToPeep(playerPeep, "Orlando")
 	end
 end
@@ -227,10 +261,32 @@ end
 function Island:updateTutorialEquipItemsStep(playerPeep)
 	local hasEquippedIsabellium = TutorialCommon.hasPeepEquippedFullIsabellium(playerPeep)
 	if hasEquippedIsabellium then
-		playerPeep:getState():give("KeyItem", "Tutorial_EquippedItems")
+		self:transitionTutorial("Tutorial_EquippedItems")
 		self:talkToPeep(playerPeep, "Orlando", function()
 			TutorialCommon.showMovementControlsHint(playerPeep)
 		end)
+	end
+end
+
+function Island:updateTutorialFindScoutStep(playerPeep)
+	if Utility.Peep.isInPassage(playerPeep, "Passage_Scout") then
+		self:transitionTutorial(playerPeep, "Tutorial_FindScout")
+
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.enable(playerPeep)
+		end)
+	end
+end
+
+function Island:updateTutorialEncounterScoutStep(playerPeep)
+	local scout = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject("YendorianScout"),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+	if scout and not Utility.Peep.canAttack(scout) then
+		self:transitionTutorial(playerPeep, "Tutorial_DefeatedScout")
 	end
 end
 
@@ -241,6 +297,10 @@ function Island:updateTutorialPlayer(playerPeep)
 		self:updateTutorialGatherItemsStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
 		self:updateTutorialEquipItemsStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FindScout", playerPeep) then
+		self:updateTutorialFindScoutStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedScout", playerPeep) then
+		self:updateTutorialEncounterScoutStep(playerPeep)
 	end
 end
 

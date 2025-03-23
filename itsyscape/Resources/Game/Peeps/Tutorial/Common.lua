@@ -589,4 +589,108 @@ function Common.hasPeepDroppedIsabellium(playerPeep)
 	return Common.hasPeepDroppedItems(playerPeep, "^Isabellium")
 end
 
+function Common.listenForAttack(playerPeep, done)
+	local director = playerPeep:getDirector()
+
+	local scout = director:probe(
+		playerPeep:getLayerName(),
+		Probe.namedMapObject("YendorianScout"),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+	local orlando = director:probe(
+		playerPeep:getLayerName(),
+		Probe.namedMapObject("Orlando"),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+	local scoutTarget
+	if scout then
+		local position = Utility.Peep.getPosition(scout)
+		scoutTarget = Utility.spawnPropAtPosition(scout, "Target_Default", position.x, position.y, position.z)
+		scoutTarget = scoutTarget and scoutTarget:getPeep()
+
+		if scoutTarget then
+			scoutTarget:setTarget(scout, "Attack the scout!")
+		end
+
+		local function postReceiveAttack()
+			if orlando and not orlando:hasBehavior(CombatTargetBehavior) then
+				Utility.Peep.attack(orlando, scout, math.huge)
+				Utility.Peep.setMashinaState(orlando, "tutorial-attack-general")
+			end
+
+			scout:silence("postReceiveAttack", postReceiveAttack)
+		end
+
+		scout:listen("postReceiveAttack", postReceiveAttack)
+	end
+
+	local numTimesAttacked = 0
+	local previousTarget = nil
+
+	local SPAM_MESSAGE_THRESHOLD = 3
+
+	local notifiedPlayer = false
+
+	local silence
+
+	local function die()
+		previousTarget:silence("die", die)
+
+		playerPeep:getState():give("KeyItem", "Tutorial_DefeatedScout")
+		silence()
+
+		if done then
+			done()
+		end
+	end
+
+	local function performAttackAction(_, e)
+		if e.action:is("Attack") then
+			if numTimesAttacked == 0 then
+				Utility.Peep.notify(playerPeep, "You'll automatically deal blows until one of you is slain.")
+			end
+
+			numTimesAttacked = numTimesAttacked + 1
+
+			if numTimesAttacked > SPAM_MESSAGE_THRESHOLD then
+				numTimesAttacked = 1
+
+				Utility.Peep.notify(playerPeep, "You don't need to keep engaging! That's not going to work!", notifiedPlayer)
+				notifiedPlayer = true
+			end
+		end
+	end
+
+	local function performInitiateAttack()
+		if scoutTarget then
+			Utility.Peep.poof(scoutTarget)
+		end
+
+		local currentTarget = playerPeep:getBehavior(CombatTargetBehavior)
+		currentTarget = currentTarget and currentTarget.actor and currentTarget.actor:getPeep()
+
+		if previousTarget ~= currentTarget then
+			if previousTarget then
+				previousTarget:silence("die", die)
+			end
+
+			if currentTarget then
+				currentTarget:listen("die", die)
+			end
+
+			previousTarget = currentTarget
+			numTimesAttacked = 1
+		end
+	end
+
+	silence = function()
+		playerPeep:silence("actionPerformed", performAttackAction)
+		playerPeep:silence("initiateAttack", performInitiateAttack)
+		playerPeep:silence("move", silence)
+	end
+
+	playerPeep:listen("actionPerformed", performAttackAction)
+	playerPeep:listen("initiateAttack", performInitiateAttack)
+end
+
 return Common

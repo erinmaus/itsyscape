@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Command = require "ItsyScape.Peep.Command"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
 
 local AttackCommand = Class(Command)
 
@@ -25,6 +26,7 @@ end
 
 function AttackCommand:onInterrupt(peep)
 	peep:removeBehavior(CombatTargetBehavior)
+	peep:removeBehavior(CombatChargeBehavior)
 end
 
 function AttackCommand:update(delta, peep)

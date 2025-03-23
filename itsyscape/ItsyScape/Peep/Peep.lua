@@ -168,16 +168,21 @@ end
 
 -- Pokes a peep the next update.
 function Peep:pushPoke(a, b, ...)
-	if type(a) == 'number' and a > 0 then
+	if type(a) == "number" and a > 0 then
 		table.insert(self.pendingPokes, {
 			time = love.timer.getTime() + a,
 			callback = b,
-			arguments = { n = select('#', ...), ... }
+			arguments = { n = select("#", ...), ... }
 		})
-	elseif type(a) == 'string' then
+	elseif type(a) == "string" then
 		table.insert(self.pendingPokes, {
 			callback = a,
-			arguments = { n = select('#', b, ...), b, ... }
+			arguments = { n = select("#", b, ...), b, ... }
+		})
+	elseif Classs.isCallable(a) then
+		table.insert(self.pendingPokes, {
+			callback = a,
+			arguments = { n = select("#", b, ...), b, ... }
 		})
 	end
 end
@@ -553,7 +558,12 @@ function Peep:update(director, game)
 	while index <= count do
 		local poke = self.pendingPokes[index]
 		if not poke.time or poke.time <= love.timer.getTime() then
-			self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
+			if type(poke.callback) == "string" then
+				self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
+			elseif Class.isCallable(poke.callback) then
+				poke.callback(peep, unpack(poke.arguments, 1, poke.arguments.n))
+			end
+
 			table.remove(self.pendingPokes, index)
 			count = count - 1
 		else
