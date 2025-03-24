@@ -216,6 +216,97 @@ do
 	}
 end
 
+M["KnightCommander"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Team",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 99,
+		PositionY = 3,
+		PositionZ = 161,
+		Direction = 1,
+		Name = "KnightCommander",
+		Map = M._MAP,
+		Resource = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Knight",
+		MapObject = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier-Rock knight commander",
+		Language = "en-US",
+		Resource = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Being a Vizier-Rock knight is the goal of any knight of the Realm, but to be a commander of the Vizier-Rock knights is an accomplishment that raises families to nobility.",
+		Language = "en-US",
+		Resource = M["KnightCommander"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "VizierRockKnight",
+		Main = "quest_tutorial_main",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["KnightCommander"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "Talk",
+		Action = TalkAction,
+		Peep = M["KnightCommander"]
+	}
+
+	M["KnightCommander"] {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-follow-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_FollowLogic.lua",
+		Resource = M["KnightCommander"]
+	}
+end
+
+M["Passage_KnightCommander"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_KnightCommander",
+		Map = M._MAP,
+		Resource = M["Passage_KnightCommander"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 94,
+		Z1 = 160,
+		X2 = 102,
+		Z2 = 170,
+		Map = M._MAP,
+		Resource = M["Passage_KnightCommander"]
+	}
+end
+
 M["YendorianScout"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {

@@ -34,7 +34,7 @@ VAR quest_tutorial_main_equipped_items_thought = false
 
 # speaker={C_ORLANDO}
 # background=000000
-WHAT WAS THAT?!
+EEEEEK! WHAT WAS THAT?!
 
 # speaker={C_ORLANDO}
 # background=000000

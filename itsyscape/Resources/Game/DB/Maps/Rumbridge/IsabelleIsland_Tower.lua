@@ -9,6 +9,108 @@
 --------------------------------------------------------------------------------
 
 do
+	local Knight = ItsyScape.Resource.Peep "IsabelleIsland_Knight"
+
+	ItsyScape.Resource.Peep "IsabelleIsland_Knight" {
+		ItsyScape.Action.InvisibleAttack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.Guard",
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier Rock knight",
+		Language = "en-US",
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A knight from Vizier's Rock belonging to Vizier-King Yohn's personal guard. Lady Isabelle is obviously well connected.",
+		Language = "en-US",
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 350,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantPlatebody",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantBoots",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantGloves",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantHelmet",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AdamantLongsword",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantShield",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GoldenRing",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GoldenAmulet",
+		Count = 1,
+		Resource = Knight
+	}
+end
+
+do
 	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice" {

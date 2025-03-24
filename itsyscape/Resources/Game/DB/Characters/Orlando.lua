@@ -18,7 +18,7 @@ do
 
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
-		Value = "Knighted on the behest of his sister and Vizier-King Yohn's friend, Isabelle. Ser Orlando is a hopeless romantic that never waivers from the morals of knighthood.",
+		Value = "Knighted on the behest of his sister and Vizier-King Yohn's friend, Lady Isabelle. Ser Orlando is a hopeless romantic that never waivers from the morals of knighthood.",
 		Resource = Character
 	}
 end

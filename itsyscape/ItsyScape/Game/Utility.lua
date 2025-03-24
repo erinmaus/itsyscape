@@ -2942,6 +2942,16 @@ end
 
 Utility.Peep = {}
 
+function Utility.Peep.isEnabled(peep)
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+	return not peep:hasBehavior(DisabledBehavior)
+end
+
+function Utility.Peep.isDisabled(peep)
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+	return peep:hasBehavior(DisabledBehavior)
+end
+
 function Utility.Peep.disable(peep)
 	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 
@@ -3421,17 +3431,21 @@ function Utility.Peep.teleportCompanion(peep, targetPeep)
 	local i, j, k = Utility.Peep.getTile(targetPeep)
 	local map = Utility.Peep.getMap(targetPeep)
 
+	local offsetX = (love.math.random() - 0.5) * 2 * (map:getCellSize() / 2)
+	local offsetZ = (love.math.random() - 0.5) * 2 * (map:getCellSize() / 2)
+	local offset = Vector(offsetX, 0, offsetZ)
+
 	if map:canMove(i, j, 1, 0) then
-		Utility.Peep.setPosition(peep, map:getTileCenter(i + 1, j))
+		Utility.Peep.setPosition(peep, map:getTileCenter(i + 1, j) + offset)
 		return true
 	elseif map:canMove(i, j, -1, 0) then
-		Utility.Peep.setPosition(peep, map:getTileCenter(i - 1, j))
+		Utility.Peep.setPosition(peep, map:getTileCenter(i - 1, j) + offset)
 		return true
 	elseif map:canMove(i, j, 0, -1) then
-		Utility.Peep.setPosition(peep, map:getTileCenter(i, j - 1))
+		Utility.Peep.setPosition(peep, map:getTileCenter(i, j - 1) + offset)
 		return true
 	elseif map:canMove(i, j, 0, 1) then
-		Utility.Peep.setPosition(peep, map:getTileCenter(i, j + 1))
+		Utility.Peep.setPosition(peep, map:getTileCenter(i, j + 1) + offset)
 		return true
 	end
 

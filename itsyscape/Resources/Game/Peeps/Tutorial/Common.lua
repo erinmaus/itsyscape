@@ -602,6 +602,11 @@ function Common.listenForAttack(playerPeep, done)
 		Probe.namedMapObject("Orlando"),
 		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
 
+	local knightCommander = director:probe(
+		playerPeep:getLayerName(),
+		Probe.namedMapObject("KnightCommander"),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
 	local scoutTarget
 	if scout then
 		local position = Utility.Peep.getPosition(scout)
@@ -615,6 +620,8 @@ function Common.listenForAttack(playerPeep, done)
 		local function postReceiveAttack()
 			if orlando and not orlando:hasBehavior(CombatTargetBehavior) then
 				Utility.Peep.attack(orlando, scout, math.huge)
+				Utility.Peep.setMashinaState(orlando, "tutorial-attack-general")
+				Utility.Peep.attack(knightCommander, scout, math.huge)
 				Utility.Peep.setMashinaState(orlando, "tutorial-attack-general")
 			end
 

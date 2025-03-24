@@ -129,17 +129,26 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback)
 		Probe.namedMapObject(otherPeepName),
 		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
 
+	local wrappedCallback
+	if callback then
+		wrappedCallback = function()
+			callback(playerPeep, otherPeep)
+		end
+
+		print("???? has otherPeep", otherPeep ~= nil)
+	end
+
 	if otherPeep then
 		Utility.Peep.setMashinaState(otherPeep, false)
 
 		local i, j, k = Utility.Peep.getTile(playerPeep)
 		if Utility.Peep.walk(otherPeep, i, j, k, 3, { asCloseAsPossible = false }) then
-			otherPeep:getCommandQueue():push(CallbackCommand(self._doTalkToPeep, self, playerPeep, otherPeepName, callback))
+			otherPeep:getCommandQueue():push(CallbackCommand(self._doTalkToPeep, self, playerPeep, otherPeepName, wrappedCallback))
 			return true
 		end
 	end
 
-	return self:_doTalkToPeep(playerPeep, otherPeepName, callback)
+	return self:_doTalkToPeep(playerPeep, otherPeepName, wrappedCallback)
 end
 
 function Island:onInitScoutTutorial(playerPeep)
@@ -164,21 +173,29 @@ function Island:onFinishPreparingTutorial(playerPeep)
 	end
 end
 
+function Island:teleportCompanion(playerPeep, namedMapObject)
+	local peep = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject(namedMapObject),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+	if peep then
+		Utility.Peep.teleportCompanion(peep, playerPeep)
+		Utility.Peep.face(peep, playerPeep)
+		Utility.Peep.setMashinaState(peep, "tutorial-follow-player")
+	end
+end
+
 function Island:onFinishPreparingTeam(playerPeep)
 	if not Utility.Quest.didStart("Tutorial", playerPeep) then
 		return
 	end
 
-	local orlando = self:getDirector():probe(
-		self:getLayerName(),
-		Probe.namedMapObject("Orlando"),
-		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
-
-	if orlando then
-		Utility.Peep.teleportCompanion(orlando, playerPeep)
-		Utility.Peep.face(orlando, playerPeep)
-		Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
+	if Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") == true then
+		self:teleportCompanion(playerPeep, "KnightCommander")
 	end
+
+	self:teleportCompanion(playerPeep, "Orlando")
 end
 
 function Island:transitionTutorial(playerPeep, keyItemID)
@@ -269,12 +286,24 @@ function Island:updateTutorialEquipItemsStep(playerPeep)
 end
 
 function Island:updateTutorialFindScoutStep(playerPeep)
+	if Utility.Peep.isInPassage(playerPeep, "Passage_KnightCommander") and
+	   Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") ~= true and
+	   Utility.Peep.isEnabled(playerPeep)
+	then
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "KnightCommander", function(playerPeep, knightCommander)
+			Utility.Peep.enable(playerPeep)
+			Utility.Peep.setMashinaState(knightCommander, "tutorial-follow-player")
+		end)
+	end
+
 	if Utility.Peep.isInPassage(playerPeep, "Passage_Scout") then
 		self:transitionTutorial(playerPeep, "Tutorial_FindScout")
 
 		Utility.Peep.disable(playerPeep)
-		self:talkToPeep(playerPeep, "Orlando", function()
+		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
 			Utility.Peep.enable(playerPeep)
+			Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
 		end)
 	end
 end

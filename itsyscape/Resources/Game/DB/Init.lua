@@ -1496,6 +1496,7 @@ include "Resources/Game/DB/Peeps/ExperimentX.lua"
 
 -- Characters
 include "Resources/Game/DB/Characters/Orlando.lua"
+include "Resources/Game/DB/Characters/VizierRockKnight.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
