@@ -39,6 +39,10 @@ local function probeFilterNPCs(mashina, includeNPCs, p)
 		if p:hasBehavior(PlayerBehavior) and p ~= mashina then
 			return true
 		end
+
+		if p:hasBehavior(FollowerBehavior) and p ~= mashina then
+			return true
+		end
 	else
 		return p ~= mashina
 	end
@@ -86,7 +90,7 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 	local p = director:probe(
 		mashina:getLayerName(),
 		Probe.attackable(),
-		Probe.distance(mashina, distance / 2),
+		Probe.distance(mashina, distance),
 		Probe.bind(probeIsAlive, state[self.INCLUDE_DEAD]),
 		Probe.bind(probeFilterNPCs, mashina, includeNPCs),
 		Probe.bind(probeFilterLineOfSight, mashina, sameLayer, state[self.LINE_OF_SIGHT]),

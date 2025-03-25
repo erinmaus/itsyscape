@@ -1862,6 +1862,8 @@ function DemoApplication:updatePositionProbe()
 			}
 
 			table.insert(self.shimmeringObjects, currentShimmeringObject)
+		elseif currentShimmeringObject.isPending then
+			table.clear(currentShimmeringObject.actions)
 		end
 
 		if not currentShimmeringObject.isActive then

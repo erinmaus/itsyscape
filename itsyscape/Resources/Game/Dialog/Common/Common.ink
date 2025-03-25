@@ -141,8 +141,14 @@ EXTERNAL ir_face_away(characterName, otherCharacterName)
 == function move_peep(characterName, anchorName) ==
 ~ return ir_move_peep_to_anchor(characterName, anchorName)
 
+== function player_move(anchorName) ==
+~ return ir_move_peep_to_anchor(C_PLAYER, anchorName)
+
 == function orientate_peep(characterName, anchorName) ==
 ~ return ir_orientate_peep_to_anchor(characterName, anchorName)
+
+== function player_orientate(anchorName) ==
+~ return ir_orientate_peep_to_anchor(C_PLAYER, anchorName)
 
 == function move_and_orientate_peep(characterName, anchorName) ==
 ~ temp moved = ir_move_peep_to_anchor(characterName, anchorName)
@@ -162,3 +168,13 @@ EXTERNAL ir_set_peep_mashina_state(characterName, state)
 
 == function unset_peep_mashina_state(characterName) ==
 ~ return ir_set_peep_mashina_state(characterName, false)
+
+EXTERNAL ir_set_external_dialog_variable(characterName, variableName, variableValue)
+EXTERNAL ir_get_external_dialog_variable(characterName, variableName)
+
+== function set_external_dialog_variable(characterName, variableName, variableValue) ==
+~ return ir_set_external_dialog_variable(characterName, variableName, variableValue)
+
+== function get_external_dialog_variable(characterName, variableName) ==
+~ return ir_get_external_dialog_variable(characterName, variableName)
+

@@ -30,6 +30,8 @@ Quest "Tutorial" {
 	Step "Tutorial_EquippedItems",
 	Step "Tutorial_FindScout",
 	Step "Tutorial_DefeatedScout",
+	Step "Tutorial_FindYenderhounds",
+	Step "Tutorial_DefeatedYenderhounds",
 	Step "Tutorial_Finished"
 }
 
@@ -56,8 +58,19 @@ Description "Tutorial_FindScout" {
 }
 
 Description "Tutorial_DefeatedScout" {
-	before = "Defeat the Yendorian scout before it spills the beans!",
+	before = "Defeat the Yendorian scout before it alerts the others!",
 	after = "Oh no! Despite defeating the Yendorian scout, in his last moments he sent up a flare alerting the Yendorian party further ahead."
+}
+
+Description "Tutorial_FindYenderhounds" {
+	before = "Push ahead to the peak of the island and scout out the enemy's numbers.",
+	after = "A pack of Yenderhounds ambushed your party while heading to the island's peak."
+}
+
+
+Description "Tutorial_DefeatedYenderhounds" {
+	before = "Defeat the Yenderhounds!",
+	after = "With pretty significant damage, your party defeated the ferocious Yenderhounds."
 }
 
 Description "Tutorial_Finished" {

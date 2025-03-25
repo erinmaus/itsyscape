@@ -1856,6 +1856,30 @@ function Utility.Text.Dialog.ir_set_peep_mashina_state(dialog, characterName, st
 	return Utility.Peep.setMashinaState(peep, state)
 end
 
+function Utility.Text.Dialog.ir_set_external_dialog_variable(dialog, characterName, variableName, variableValue)
+	local playerPeep = dialog:getSpeaker("_TARGET")
+	if not playerPeep then
+		return false
+	end
+
+	Utility.Text.setDialogVariable(playerPeep, characterName, variableName, variableValue)
+	return true
+end
+
+function Utility.Text.Dialog.ir_get_external_dialog_variable(dialog, characterName, variableName)
+	local playerPeep = dialog:getSpeaker("_TARGET")
+	if not playerPeep then
+		return ""
+	end
+
+	local result = Utility.Text.getDialogVariable(playerPeep, characterName, variableName)
+	if result == nil then
+		return ""
+	end
+
+	return result
+end
+
 function Utility.Text.bind(dialog, language)
 	for k, v in pairs(Utility.Text.Dialog) do
 		dialog:bindExternalFunction(k, v, dialog)
@@ -2985,7 +3009,7 @@ function Utility.Peep.enable(peep)
 	return false
 end
 
-function Utility.Peep.dialog(peep, obj, target)
+function Utility.Peep.dialog(peep, obj, target, overrideEntryPoint)
 	local map = Utility.Peep.getMapResource(peep)
 
 	if type(target) == "string" then
@@ -3045,7 +3069,7 @@ function Utility.Peep.dialog(peep, obj, target)
 		return false
 	end
 
-	local success, _, dialog = Utility.UI.openInterface(peep, "DialogBox", true, action.instance, target or peep)
+	local success, _, dialog = Utility.UI.openInterface(peep, "DialogBox", true, action.instance, target or peep, overrideEntryPoint)
 	return success, dialog
 end
 

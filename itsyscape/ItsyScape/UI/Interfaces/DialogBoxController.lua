@@ -25,7 +25,7 @@ local Controller = require "ItsyScape.UI.Controller"
 
 local DialogBoxController = Class(Controller)
 
-function DialogBoxController:new(peep, director, action, target)
+function DialogBoxController:new(peep, director, action, target, overrideEntryPoint)
 	Controller.new(self, peep, director)
 
 	Analytics:talkedToNPC(peep, target, action)
@@ -49,7 +49,11 @@ function DialogBoxController:new(peep, director, action, target)
 		if dialogRecord or characterRecord then
 			if dialogRecord then
 				local filename = dialogRecord:get("Script")
-				self.dialog = Dialog(filename)
+				if overrideEntryPoint and overrideEntryPoint ~= "" then
+					self.dialog = Dialog(overrideEntryPoint)
+				else
+					self.dialog = Dialog(filename)
+				end
 			elseif characterRecord then
 				self.talkCharacter = characterRecord:get("Character")
 
@@ -61,7 +65,9 @@ function DialogBoxController:new(peep, director, action, target)
 
 				Utility.Text.bind(self.dialog, "en-US")
 
-				if characterRecord:get("Main") ~= "" then
+				if overrideEntryPoint and overrideEntryPoint ~= "" then
+					self.dialog:jump(overrideEntryPoint)
+				elseif characterRecord:get("Main") ~= "" then
 					self.dialog:jump(characterRecord:get("Main"))
 				end
 			end

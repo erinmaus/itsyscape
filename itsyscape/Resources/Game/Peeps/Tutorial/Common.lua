@@ -621,8 +621,11 @@ function Common.listenForAttack(playerPeep, done)
 			if orlando and not orlando:hasBehavior(CombatTargetBehavior) then
 				Utility.Peep.attack(orlando, scout, math.huge)
 				Utility.Peep.setMashinaState(orlando, "tutorial-attack-general")
+			end
+
+			if knightCommander and not knightCommander:hasBehavior(CombatTargetBehavior) then
 				Utility.Peep.attack(knightCommander, scout, math.huge)
-				Utility.Peep.setMashinaState(orlando, "tutorial-attack-general")
+				Utility.Peep.setMashinaState(knightCommander, "tutorial-attack-general")
 			end
 
 			scout:silence("postReceiveAttack", postReceiveAttack)
@@ -643,11 +646,23 @@ function Common.listenForAttack(playerPeep, done)
 	local function die()
 		previousTarget:silence("die", die)
 
-		playerPeep:getState():give("KeyItem", "Tutorial_DefeatedScout")
 		silence()
 
 		if done then
 			done()
+		end
+
+		if orlando then
+			Utility.Peep.setMashinaState(knightCommander, "tutorial-follow-player")
+		end
+
+		if knightCommander then
+			Utility.Peep.setMashinaState(knightCommander, "tutorial-follow-player")
+		end
+
+		local mapScript = Utility.Peep.getMapScript(playerPeep)
+		if mapScript then
+			mapScript:pushPoke("finishPreparingTutorial", playerPeep)
 		end
 	end
 

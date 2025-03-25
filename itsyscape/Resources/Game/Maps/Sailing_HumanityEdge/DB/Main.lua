@@ -155,6 +155,24 @@ do
 	}
 end
 
+M["Passage_TutorialStart"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_TutorialStart",
+		Map = M._MAP,
+		Resource = M["Passage_TutorialStart"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 133,
+		Z1 = 165,
+		X2 = 145,
+		Z2 = 177,
+		Map = M._MAP,
+		Resource = M["Passage_TutorialStart"]
+	}
+end
+
 M["Orlando"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
@@ -177,42 +195,6 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Orlando",
 		MapObject = M["Orlando"]
-	}
-
-	local TalkAction = ItsyScape.Action.Talk()
-
-	ItsyScape.Meta.TalkCharacter {
-		Character = ItsyScape.Resource.Character "Orlando",
-		Main = "quest_tutorial_main",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Orlando"],
-		Name = "Orlando",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.NamedPeepAction {
-		Name = "Talk",
-		Action = TalkAction,
-		Peep = M["Orlando"]
-	}
-
-	M["Orlando"] {
-		TalkAction
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "tutorial-look-away-from-player",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_LookAwayLogic.lua",
-		Resource = M["Orlando"]
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "tutorial-follow-player",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FollowLogic.lua",
-		Resource = M["Orlando"]
 	}
 end
 
@@ -241,50 +223,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Vizier-Rock knight commander",
+		Value = "Ser Commander",
 		Language = "en-US",
 		Resource = M["KnightCommander"]
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Being a Vizier-Rock knight is the goal of any knight of the Realm, but to be a commander of the Vizier-Rock knights is an accomplishment that raises families to nobility.",
+		Value = "Being a Vizier-Rock knight is the goal of any knight of the Realm, but to be a commander of the Vizier-Rock knights is an accomplishment that raises families to nobility. Too bad humility isn't a part of the job.",
 		Language = "en-US",
-		Resource = M["KnightCommander"]
-	}
-
-	local TalkAction = ItsyScape.Action.Talk()
-
-	ItsyScape.Meta.TalkCharacter {
-		Character = ItsyScape.Resource.Character "VizierRockKnight",
-		Main = "quest_tutorial_main",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["KnightCommander"],
-		Name = "VizierRockKnight",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["Orlando"],
-		Name = "Orlando",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.NamedPeepAction {
-		Name = "Talk",
-		Action = TalkAction,
-		Peep = M["KnightCommander"]
-	}
-
-	M["KnightCommander"] {
-		TalkAction
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "tutorial-follow-player",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_FollowLogic.lua",
 		Resource = M["KnightCommander"]
 	}
 end
@@ -349,5 +295,89 @@ do
 		Z2 = 187,
 		Map = M._MAP,
 		Resource = M["Passage_Scout"]
+	}
+end
+
+-- Orlando talk action.
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "Orlando",
+		Main = "quest_tutorial_main",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["KnightCommander"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "Talk",
+		Action = TalkAction,
+		Peep = M["Orlando"]
+	}
+
+	M["Orlando"] {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-look-away-from-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_LookAwayLogic.lua",
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-follow-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FollowLogic.lua",
+		Resource = M["Orlando"]
+	}
+end
+
+-- Ser Commander talk action.
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "VizierRockKnight",
+		Main = "quest_tutorial_main",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["KnightCommander"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "Talk",
+		Action = TalkAction,
+		Peep = M["KnightCommander"]
+	}
+
+	M["KnightCommander"] {
+		TalkAction
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-follow-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_FollowLogic.lua",
+		Resource = M["KnightCommander"]
 	}
 end

@@ -1,5 +1,6 @@
 INCLUDE ./Common.ink
 INCLUDE ../Common/Common.ink
+INCLUDE ../VizierRockKnight/Common.ink
 
 VAR quest_tutorial_main_starting_player_class = WEAPON_STYLE_NONE
 VAR quest_tutorial_main_player_has_no_idea_what_to_do = false
@@ -9,6 +10,11 @@ VAR quest_tutorial_main_started_asked_what_happened = false
 VAR quest_tutorial_main_started_asked_where_am_i = false
 VAR quest_tutorial_main_started_asked_what_is_going_on = false
 VAR quest_tutorial_main_equipped_items_thought = false
+VAR quest_tutorial_main_talked_about_flare = false
+
+VAR quest_tutorial_main_defused_scout_argument = false
+VAR quest_tutorial_main_inflamed_scout_argument = false
+VAR quest_tutorial_main_ignored_scout_argument = false
 
 == function quest_tutorial_get_class_name() ==
 {
@@ -19,6 +25,24 @@ VAR quest_tutorial_main_equipped_items_thought = false
   - else: loaf
 }
 
+== quest_tutorial_main_start_out_of_bounds ==
+# speaker={C_ORLANDO}
+# background=000000
+Oi! Don't get ahead of yourself, {player_name}! Get back here.
+
+# speaker={C_PLAYER}
+# background=000000
+Very well...
+
+%empty()
+
+~ player_move("Anchor_Spawn")
+
+# speaker={C_ORLANDO}
+Uh, where were we...
+
+-> quest_tutorial_main
+
 == quest_tutorial_main ==
 {
     - !player_has_started_quest("Tutorial"): -> quest_tutorial_main_started
@@ -26,6 +50,7 @@ VAR quest_tutorial_main_equipped_items_thought = false
     - player_is_next_quest_step("Tutorial", "Tutorial_EquippedItems"): -> quest_tutorial_main_equipped_items
     - player_is_next_quest_step("Tutorial", "Tutorial_FindScout"): -> quest_tutorial_main_scout
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedScout"): -> quest_tutorial_main_defeat_scout
+    - player_is_next_quest_step("Tutorial", "Tutorial_FindYenderhounds"): -> quest_tutorial_main_yenderhounds
 }
 
 == quest_tutorial_main_started ==
@@ -209,7 +234,7 @@ The explosion knocked your inventory on to the ground! Let's pick it all up!
 ~ quest_tutorial_main_equipped_items_thought = true
 
 # speaker={C_PLAYER}
-Great, now that I have picked everything up, I should probably equip the amor and weapons...
+Great, now that I have picked everything up, I should probably equip the armor and weapons...
 
 # speaker={C_ORLANDO}
 Eek! I'll look away!
@@ -336,8 +361,146 @@ Look ahead! There's a Yendorian scout! %hint(He's not seen us yet...)
 #speaker={C_ORLANDO}
 Don't let his high combat level fool you! He's just scout. Let's kill this guy!
 
+-> DONE
+
 = deal_with_him
 #speaker={C_ORLANDO}
 I agree!
+
+-> DONE
+
+== quest_tutorial_main_scout_argument ==
+
+# speaker={C_ORLANDO}
+We're too slow! He sent up a flare!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Gods damn him... Hope he learns to love his %hint(afterlife of eternal drowning). Let us push forward and discover the Yendorians' numbers.
+
+# speaker={C_ORLANDO}
+%person(Ser Commander), do I have to remind you you're not in charge?
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Understood. Grant us your wisdom, Your Hungriness.
+
+# speaker={C_ORLANDO}
+Bite your tongue or I will have you reprimanded. %person(Lady Isabelle) won't take kindly to your jabs. She...
+
+# speaker={C_PLAYER}
+* [Course-correct the banter] You're both being belligerent! Can we focus on the task at hand?
+  -> course_correct
+* [Add fuel to the fire]
+  -> shut_them_up
+* [Listen for the tea] (Let's see what happens...)
+  -> listen
+
+= course_correct
+
+~ quest_tutorial_main_defused_scout_argument = true
+
+# speaker={C_ORLANDO}
+{
+  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_defused_situation"): ...I agree. %person(ir_get_pronoun_uppercase(X_MX)) {player_name}, you're more diplomatic than I remembered.
+  - else: ...I agree, %person(ir_get_pronoun_uppercase(X_MX)) {player_name}.
+}
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Bah! {player_name} is right.
+
+# speaker={C_PLAYER}
+Good. If that's the end of your grievances, then let us continue.
+
+-> continue
+
+= shut_them_up
+
+~ quest_tutorial_main_inflamed_scout_argument = true
+
+# speaker={C_ORLANDO}
+...controls more than...
+
+# speaker={C_PLAYER}
+You blabbering babies, if you want to fight with words then go write poetry!
+
+# speaker={C_PLAYER}
+Otherwise, settle this with swords!
+
+# speaker={C_ORLANDO}
+...
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...
+
+# speaker={C_PLAYER}
+Oh, now you're both speechless? Good! Let us focus on the task at hand.
+
+-> continue
+
+= listen
+
+~ quest_tutorial_main_ignored_scout_argument = true
+
+# speaker={C_ORLANDO}
+...controls %hint(more than) %person(Vizier-King Yohn's) %hint(purse). Or do have to remind you of %person(Lady Isabelle's) power?
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...
+
+# speaker={C_ORLANDO}
+I thought so.
+
+# speaker={C_PLAYER}
+(Who is this %person(Lady Isabelle)..? Curses! Why can't I remember anything?!)
+
+# speaker={C_ORLANDO}
+...looks like %person({ir_get_pronoun_uppercase(X_MX)}) {player_name} is tired of us fighting.
+
+-> continue
+
+= continue
+
+# speaker={C_ORLANDO}
+So! There's a peak some ways ahead that'll give us a great vantage point.
+
+# speaker={C_ORLANDO}
+
+I'm unsure if the Yendorians are aware of how to reach it; my gut...
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+(Ha...)
+
+# speaker={C_ORLANDO}
+Fine! My INSTINCT is they aren't, for the scout wouldn't have come this far otherwise. After all, Yendorians are a seafolk; they loathe the land
+
+# sepaker={C_ORLANDO}
+Much rather, the scout must have swam around and made landfall at the sight of the camp.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+For once, you make some sense.
+
+# speaker={C_ORLANDO}
+I swear to the gods...!
+
+# speaker={C_PLAYER}
+{
+  - quest_tutorial_main_inflamed_scout_argument: ...must I get your mothers?
+  - else: Ahem!
+}
+
+# speaker={C_ORLANDO}
+{
+  - quest_tutorial_main_inflamed_scout_argument: FINE! {player_name}, you can take the charge.
+  - else: ...let's go, {player_name} and %person(Ser Commander).
+}
+
+-> DONE
+
+== quest_tutorial_main_yenderhounds ==
+
+# speaker={C_ORLANDO}
+We need to ascend the island's peak to learn the Yendorians' number.
 
 -> DONE

@@ -31,7 +31,7 @@ VAR quest_tutorial_main_knight_commander_ignored_situation = false
 == quest_tutorial_main_knight_commander_intro ==
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-Halt! %person(Ser Orlando) and %person({player_get_pronoun_lowercase(X_MX)}) {player_name}, what on Bastiel's Realm took you so long?
+Halt! %person(Ser Orlando) and %person({player_get_pronoun_uppercase(X_MX)}) {player_name}, what on %person(Bastiel's) Realm took you so long?
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 Did you get lost dreaming of your next meal, %person(Ser Orlando)? Or did %hint(the bookworm) get lost in the pages of {player_get_pronoun_lowercase(X_THEIR)} journal, hmm, {player_name}?
@@ -43,7 +43,7 @@ That lightning strike hit {player_name} and knocked {player_get_pronoun_lowercas
 If you weren't so busy being a pretentious donkey, then maybe you would've noticed.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-How dare you! You're nothing compared to %person(Vizier-King Yohn's) personal guard, you dainty girl!
+How dare you! You're nothing compared to %person(Vizier-King Yohn's) personal guard, you dainty little boy!
 
 # speaker={C_ORLANDO}
 OH! Bold of you to say that...
@@ -73,7 +73,7 @@ OH! Bold of you to say that...
 ~ play_animation(C_VIZIER_ROCK_KNIGHT, "Human_AttackLongswordSlash_1")
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-How DARE you talk to a KNIGHT COMMANDER like that, you worthless--
+How DARE you talk to a %person(SER COMMANDER) like that, you worthless--
 
 %empty()
 ~ play_animation(C_ORLANDO, "Human_AttackZweihanderSlash_1")

@@ -16,34 +16,33 @@ local Color = require "ItsyScape.Graphics.Color"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local Probe = require "ItsyScape.Peep.Probe"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
-local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local TutorialCommon = require "Resources.Game.Peeps.Tutorial.Common"
 
 local Island = Class(MapScript)
 
 Island.ALL_INVENTORY = {
-	"IsabelliumGloves",
-	"IsabelliumBoots",
-	"IsabelliumHelmet",
-	"IsabelliumPlatebody",
-	"CookedLightningStormfish",
-	"CookedLightningStormfish",
-	"CookedLightningStormfish",
-	"CookedLightningStormfish"
+	{ id = "IsabelliumGloves", count = 1 },
+	{ id = "IsabelliumBoots", count = 1 },
+	{ id = "IsabelliumHelmet", count = 1 },
+	{ id = "IsabelliumPlatebody", count = 1 },
+	{ id = "CookedLightningStormfish", count = 4 }
 }
 
 Island.CLASS_INVENTORY = {
 	[Weapon.STYLE_MAGIC] = {
-		"IsabelliumStaff"
+		{ id = "IsabelliumStaff", count = 1 },
+		{ id = "AirRune", count = 1 },
+		{ id = "FireRune", count = 1 }
 	},
 
 	[Weapon.STYLE_ARCHERY] = {
-		"IsabelliumLongbow"
+		{ id = "IsabelliumLongbow", count = 1 }
 	},
 
 	[Weapon.STYLE_MELEE] = {
-		"IsabelliumZweihander"
+		{ id = "IsabelliumZweihander", count = 1 }
 	}
 }
 
@@ -83,17 +82,20 @@ function Island:_giveItems(playerPeep, items)
 
 	local playerPeepState = playerPeep:getState()
 	for _, item in ipairs(items) do
-		if not playerPeepState:has("Item", item, 1, hasFlags) then
-			playerPeepState:give("Item", item, 1, giveFlags)
+		local count = playerPeepState:count("Item", item.id, hasFlags)
+		if count < item.count then
+			playerPeepState:give("Item", item.id, item.count - count, giveFlags)
 		end
 	end
 end
 
-function Island:_dropPlayerInventory(playerPeep, class)
+function Island:_giveTutorialRequiredItems(playerPeep)
 	local class = Utility.Text.getDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class")
 	self:_giveItems(playerPeep, self.ALL_INVENTORY)
 	self:_giveItems(playerPeep, self.CLASS_INVENTORY[class] or self.CLASS_INVENTORY[Weapon.STYLE_MAGIC])
+end
 
+function Island:_dropPlayerInventory(playerPeep)
 	local stage = playerPeep:getDirector():getGameInstance():getStage()
 
 	local itemsToDrop = Utility.Peep.getInventory(playerPeep)
@@ -102,8 +104,8 @@ function Island:_dropPlayerInventory(playerPeep, class)
 	end
 end
 
-function Island:_doTalkToPeep(playerPeep, otherPeepName, callback)
-	local success, dialog = Utility.Peep.dialog(playerPeep, "Talk", otherPeepName)
+function Island:_doTalkToPeep(playerPeep, otherPeepName, callback, entryPoint)
+	local success, dialog = Utility.Peep.dialog(playerPeep, "Talk", otherPeepName, entryPoint)
 	if success then
 		Utility.Peep.disable(playerPeep)
 
@@ -123,7 +125,7 @@ function Island:_doTalkToPeep(playerPeep, otherPeepName, callback)
 	return success
 end
 
-function Island:talkToPeep(playerPeep, otherPeepName, callback)
+function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint)
 	local otherPeep = playerPeep:getDirector():probe(
 		playerPeep:getLayerName(),
 		Probe.namedMapObject(otherPeepName),
@@ -134,8 +136,6 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback)
 		wrappedCallback = function()
 			callback(playerPeep, otherPeep)
 		end
-
-		print("???? has otherPeep", otherPeep ~= nil)
 	end
 
 	if otherPeep then
@@ -143,12 +143,12 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback)
 
 		local i, j, k = Utility.Peep.getTile(playerPeep)
 		if Utility.Peep.walk(otherPeep, i, j, k, 3, { asCloseAsPossible = false }) then
-			otherPeep:getCommandQueue():push(CallbackCommand(self._doTalkToPeep, self, playerPeep, otherPeepName, wrappedCallback))
+			otherPeep:getCommandQueue():push(CallbackCommand(self._doTalkToPeep, self, playerPeep, otherPeepName, wrappedCallback, entryPoint))
 			return true
 		end
 	end
 
-	return self:_doTalkToPeep(playerPeep, otherPeepName, wrappedCallback)
+	return self:_doTalkToPeep(playerPeep, otherPeepName, wrappedCallback, entryPoint)
 end
 
 function Island:onInitScoutTutorial(playerPeep)
@@ -157,6 +157,8 @@ end
 
 function Island:onFinishPreparingTutorial(playerPeep)
 	if not Utility.Quest.didStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
+		self:_giveTutorialRequiredItems(playerPeep)
+
 		self:talkToPeep(playerPeep, "Orlando", function()
 			if not Utility.Quest.didStep("Tutorial", "Tutorial_GatheredItems", playerPeep) then
 				Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_DroppedItems")
@@ -170,6 +172,34 @@ function Island:onFinishPreparingTutorial(playerPeep)
 	if not Utility.Quest.didStep("Tutorial", "Tutorial_DefeatedScout", playerPeep) then
 		Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_YendorianScout")
 		self:pushPoke("initScoutTutorial", playerPeep)
+	elseif not Utility.Quest.didStep("Tutorial", "Tutorial_DefeatedYenderhounds", playerPeep) then
+		Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Yenderhounds")
+
+		local scout = self:getDirector():probe(
+			self:getLayerName(),
+			Probe.namedMapObject("YendorianScout"),
+			Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+		if not scout then
+			Utility.Peep.disable(playerPeep)
+			self:talkToPeep(playerPeep, "Orlando", function()
+				Utility.Peep.enable(playerPeep)
+				Utility.Peep.setMashinaState(playerPeep, "tutorial-follow-player")
+			end)
+		end
+	end
+end
+
+function Island:initCompanion(playerPeep, companion)
+	local peep = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.namedMapObject(companion),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+	local player = Utility.Peep.getPlayerModel(playerPeep)
+	if peep and player then
+		local _, follower = peep:addBehavior(FollowerBehavior)
+		follower.playerID = player:getID()
 	end
 end
 
@@ -193,9 +223,11 @@ function Island:onFinishPreparingTeam(playerPeep)
 
 	if Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") == true then
 		self:teleportCompanion(playerPeep, "KnightCommander")
+		self:initCompanion(playerPeep, "KnightCommander")
 	end
 
 	self:teleportCompanion(playerPeep, "Orlando")
+	self:initCompanion(playerPeep, "Orlando")
 end
 
 function Island:transitionTutorial(playerPeep, keyItemID)
@@ -265,20 +297,44 @@ function Island:onShowEquipItemsTutorial(playerPeep)
 	TutorialCommon.startEquipTutorial(playerPeep)
 end
 
+function Island:updateTutorialItemSteps(playerPeep)
+	if not Utility.Peep.isInPassage(playerPeep, "Passage_TutorialStart") and
+	   Utility.Peep.isEnabled(playerPeep)
+	then
+		Utility.Peep.disable(playerPeep)
+
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.enable(playerPeep)
+		end, "quest_tutorial_main_start_out_of_bounds")
+
+		return false
+	end
+
+	return true
+end
+
 function Island:updateTutorialGatherItemsStep(playerPeep)
+	if not self:updateTutorialItemSteps(playerPeep) then
+		return
+	end
+
 	local playerPeepHasItemOnGround = TutorialCommon.hasPeepDroppedItems(playerPeep)
 	if not playerPeepHasItemOnGround then
 		Utility.Peep.poofInstancedMapGroup(playerPeep, "Tutorial_DroppedItems")
 
-		self:transitionTutorial("Tutorial_GatheredItems")
+		self:transitionTutorial(playerPeep, "Tutorial_GatheredItems")
 		self:talkToPeep(playerPeep, "Orlando")
 	end
 end
 
 function Island:updateTutorialEquipItemsStep(playerPeep)
+	if not self:updateTutorialItemSteps(playerPeep) then
+		return
+	end
+
 	local hasEquippedIsabellium = TutorialCommon.hasPeepEquippedFullIsabellium(playerPeep)
 	if hasEquippedIsabellium then
-		self:transitionTutorial("Tutorial_EquippedItems")
+		self:transitionTutorial(playerPeep, "Tutorial_EquippedItems")
 		self:talkToPeep(playerPeep, "Orlando", function()
 			TutorialCommon.showMovementControlsHint(playerPeep)
 		end)
@@ -314,8 +370,15 @@ function Island:updateTutorialEncounterScoutStep(playerPeep)
 		Probe.namedMapObject("YendorianScout"),
 		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
 
-	if scout and not Utility.Peep.canAttack(scout) then
-		self:transitionTutorial(playerPeep, "Tutorial_DefeatedScout")
+	if scout and not Utility.Peep.canAttack(scout) and Utility.Peep.isEnabled(playerPeep) then
+		Utility.Peep.disable(playerPeep)
+
+		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
+			Utility.Peep.enable(playerPeep)
+			Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
+
+			self:transitionTutorial(playerPeep, "Tutorial_DefeatedScout")
+		end, "quest_tutorial_main_scout_argument")
 	end
 end
 
