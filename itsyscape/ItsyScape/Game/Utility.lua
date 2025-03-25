@@ -4411,6 +4411,17 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	return false, "path not found"
 end
 
+function Utility.Peep.setFacing(peep, direction)
+	local movement = peep:getBehavior(MovementBehavior)
+	if movement then
+		if direction < 0 then
+			movement.targetFacing = MovementBehavior.FACING_LEFT
+		elseif direction > 0 then
+			movement.targetFacing = MovementBehavior.FACING_RIGHT
+		end
+	end
+end
+
 function Utility.Peep.face(peep, target)
 	local peepPosition = Utility.Peep.getAbsolutePosition(peep)
 	local targetPosition = Utility.Peep.getAbsolutePosition(target)

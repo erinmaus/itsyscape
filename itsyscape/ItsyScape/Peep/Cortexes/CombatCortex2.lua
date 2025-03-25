@@ -143,7 +143,7 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local distance = Utility.Peep.getAbsoluteDistance(selfPeep, targetPeep)
 
 	local canReachTarget = distance <= worldWeaponRange
-	local isTooFar = status and distance > status.maxChaseDistance
+	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange)
 	local isTooClose = distance < worldWeaponRange
 	return canReachTarget, isTooFar, isTooClose
 end
@@ -663,7 +663,6 @@ function CombatCortex:tickPeep(delta, peep)
 	elseif peep:hasBehavior(CombatChargeBehavior) then
 		self:cancelCharge(peep)
 	end
-
 
 	self:_makePeepFaceTarget(peep, target)
 

@@ -201,6 +201,7 @@ function Island:initCompanion(playerPeep, companion)
 
 	local player = Utility.Peep.getPlayerModel(playerPeep)
 	if peep and player then
+		print(">>> init", peep:getName())
 		local _, follower = peep:addBehavior(FollowerBehavior)
 		follower.playerID = player:getID()
 	end
@@ -262,7 +263,7 @@ function Island:saveTutorialLocation(playerPeep, anchor)
 	local spawnStorage = storage:getRoot():getSection("Spawn")
 	local locationStorage = storage:getRoot():getSection("Location")
 
-	local x, y, z = Utility.getAnchorPosition(game, mapResource, anchor)
+	local x, y, z = Utility.Map.getAnchorPosition(game, mapResource, anchor)
 
 	spawnStorage:set({
 		name = mapResource.name,
@@ -302,6 +303,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 	end
 
 	if not Utility.Quest.didStep("Tutorial", "Tutorial_GatheredItems", playerPeep) then
+		self:_giveTutorialRequiredItems(playerPeep)
 		self:_dropPlayerInventory(playerPeep)
 	end
 

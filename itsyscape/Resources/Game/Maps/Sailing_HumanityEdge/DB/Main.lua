@@ -495,7 +495,8 @@ do
 	}
 
 	M["Orlando"] {
-		TalkAction
+		TalkAction,
+		ItsyScape.Action.InvisibleAttack()
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
@@ -540,7 +541,8 @@ do
 	}
 
 	M["KnightCommander"] {
-		TalkAction
+		TalkAction,
+		ItsyScape.Action.InvisibleAttack()
 	}
 
 	ItsyScape.Meta.PeepMashinaState {

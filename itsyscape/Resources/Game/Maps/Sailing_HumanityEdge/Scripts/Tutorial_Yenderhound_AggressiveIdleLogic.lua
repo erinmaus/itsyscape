@@ -16,12 +16,10 @@ local CombatCortex2 = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 local TARGET = B.Reference("Tutorial_Yenderhound_AggressiveIdleLogic", "TARGET")
 
 local Tree = BTreeBuilder.Node() {
-	Mashina.Try {	
+	Mashina.ParallelTry {	
 		Mashina.Sequence {
 			Mashina.Peep.FindNearbyCombatTarget {
-				distance = 8,
-
-				-- We don't want to gang up on a potential target in the tutorial.
+				-- We don't want to gang up on single a potential target in the tutorial.
 				filter = function(peep)
 					local hits = peep:getDirector():probe(
 						peep:getLayerName(),
@@ -33,26 +31,27 @@ local Tree = BTreeBuilder.Node() {
 				[TARGET] = B.Output.RESULT
 			},
 
-			Mashina.Peep.Interrupt {
-				queue = CombatCortex2.QUEUE
-			},
+			Mashina.Step {
+				-- Mashina.Peep.PlayAnimation {
+				-- 	animation = "Dog_Bark"
+				-- },
 
-			-- Mashina.Peep.PlayAnimation {
-			-- 	animation = "Dog_Bark"
-			-- },
+				Mashina.Peep.Talk {
+					message = "Woof! Woof!",
+					log = false
+				},
 
-			Mashina.Peep.EngageCombatTarget {
-				peep = TARGET
-			},
+				Mashina.Repeat {
+					Mashina.Peep.Interrupt {
+						queue = CombatCortex2.QUEUE
+					},
 
-			Mashina.Peep.SetState {
-				state = "attack"
-			}
-		},
-
-		Mashina.Sequence {
-			Mashina.Check {
-				condition = TARGET
+					Mashina.Invert {
+						Mashina.Peep.TimeOut {
+							duration = 1.5
+						}
+					}
+				}
 			},
 
 			Mashina.Peep.EngageCombatTarget {

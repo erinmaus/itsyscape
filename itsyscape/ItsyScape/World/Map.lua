@@ -334,7 +334,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	if di < 0 and i > 1 then
 		local left = self:getTile(i - 1, j)
 		if ((left.topRight == tile.topLeft or left.bottomRight == tile.bottomLeft) or
-			(shoot and left.topRight <= tile.topLeft and right.bottomRight <= tile.bottomLeft)) and
+			(shoot and left.topRight <= tile.topLeft and left.bottomRight <= tile.bottomLeft)) and
 		   (isPassableFunc and isPassableFunc(self, i, j, i - 1, j) or (left:getIsPassable() or (left:hasFlag("shoot") and shoot))) and
 		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left"))
 		then

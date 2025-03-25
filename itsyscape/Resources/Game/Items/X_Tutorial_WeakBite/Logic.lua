@@ -20,8 +20,9 @@ function WeakBite:getAttackRange(peep)
 end
 
 function WeakBite:previewDamageRoll(roll)
-	local target = roll:getTarget()
+	MeleeWeapon.previewDamageRoll(self, roll)
 
+	local target = roll:getTarget()
 	local status = target and target:getBehavior(CombatStatusBehavior)
 	if status then
 		roll:setMinHit(0)

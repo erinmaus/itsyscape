@@ -1057,6 +1057,9 @@ function LocalStage:movePeep(peep, path, anchor, e)
 			if mapObject then
 				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
 				Utility.Peep.setPosition(peep, Vector(x, y, z))
+
+				local direction = mapObject:get("Direction")
+				Utility.Peep.setFacing(peep, direction)
 				
 				local localLayer = math.max(mapObject:get("Layer"), 1)
 				local mapGroup = instance:getMapGroup(instance:getBaseLayer())
