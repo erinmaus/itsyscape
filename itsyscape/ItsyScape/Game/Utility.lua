@@ -2750,6 +2750,21 @@ function Utility.Map.getMapObject(game, map, name)
 	return nil
 end
 
+function Utility.Map.hasAnchor(game, map, anchor)
+	local gameDB = game:getGameDB()
+
+	if type(map) == 'string' then
+		map = gameDB:getResource(map, "Map")
+	end
+
+	local mapObject = gameDB:getRecord("MapObjectLocation", {
+		Name = anchor,
+		Map = map
+	})
+
+	return mapObject ~= nil
+end
+
 function Utility.Map.getAnchorPosition(game, map, anchor)
 	local gameDB = game:getGameDB()
 
@@ -3882,20 +3897,20 @@ end
 function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	local Equipment = require "ItsyScape.Game.Equipment"
 
+	if includeXWeapon then
+		local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
+		local xWeapon = peep:getBehavior(WeaponBehavior)
+		if xWeapon and xWeapon.weapon then
+			return xWeapon.weapon
+		end
+	end
+
 	local weapon = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
 		Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_TWO_HANDED)
 	if weapon then
 		local logic = peep:getDirector():getItemManager():getLogic(weapon:getID())
 		if logic then
 			return logic, weapon
-		end
-	end
-
-	if includeXWeapon then
-		local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
-		local xWeapon = peep:getBehavior(WeaponBehavior)
-		if xWeapon and xWeapon.weapon then
-			return xWeapon.weapon
 		end
 	end
 

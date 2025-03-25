@@ -25,29 +25,52 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "An extreme dangerous hound. Its bite can puncture even the strongest metals.",
+		Value = "A ferocious hound. Its bite can puncture even the strongest metals like paper.",
 		Language = "en-US",
 		Resource = Yenderhound
 	}
 
-	ItsyScape.Meta.Yenderhound {
+	ItsyScape.Meta.Dummy {
 		Tier = 50,
-		Hitpoints = 500,
+		Hitpoints = 100,
 
 		Weapon = "ItsyDagger",
 
 		Resource = Yenderhound
 	}
 
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(55),
+		Resource = Yenderhound
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(65),
+		Resource = Yenderhound
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(30),
+		Resource = Yenderhound
+	}
+
 	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(65, 1),
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 1),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(25, 1),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1),
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25, 1),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 1),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Yenderhound
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Dog/Dog_AggressiveIdleLogic.lua",
+		IsDefault = 1,
 		Resource = Yenderhound
 	}
 end

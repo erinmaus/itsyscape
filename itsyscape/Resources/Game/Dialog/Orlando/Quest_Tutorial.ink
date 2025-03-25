@@ -48,9 +48,10 @@ Uh, where were we...
     - !player_has_started_quest("Tutorial"): -> quest_tutorial_main_started
     - player_is_next_quest_step("Tutorial", "Tutorial_GatheredItems"): -> quest_tutorial_main_gather_items
     - player_is_next_quest_step("Tutorial", "Tutorial_EquippedItems"): -> quest_tutorial_main_equipped_items
-    - player_is_next_quest_step("Tutorial", "Tutorial_FindScout"): -> quest_tutorial_main_scout
+    - player_is_next_quest_step("Tutorial", "Tutorial_FoundScout"): -> quest_tutorial_main_scout
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedScout"): -> quest_tutorial_main_defeat_scout
-    - player_is_next_quest_step("Tutorial", "Tutorial_FindYenderhounds"): -> quest_tutorial_main_yenderhounds
+    - player_is_next_quest_step("Tutorial", "Tutorial_FoundYenderhounds"): -> quest_tutorial_main_yenderhounds
+    - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
 }
 
 == quest_tutorial_main_started ==
@@ -456,7 +457,7 @@ I thought so.
 (Who is this %person(Lady Isabelle)..? Curses! Why can't I remember anything?!)
 
 # speaker={C_ORLANDO}
-...looks like %person({ir_get_pronoun_uppercase(X_MX)}) {player_name} is tired of us fighting.
+...looks like %person({player_get_pronoun_uppercase(X_MX)}) {player_name} is tired of us fighting.
 
 -> continue
 
@@ -502,5 +503,10 @@ I swear to the gods...!
 
 # speaker={C_ORLANDO}
 We need to ascend the island's peak to learn the Yendorians' number.
+
+== quest_tutorial_main_defeat_yenderhounds ==
+
+# speaker={C_ORLANDO}
+It's no time to talk! Kill the Yenderhounds!
 
 -> DONE

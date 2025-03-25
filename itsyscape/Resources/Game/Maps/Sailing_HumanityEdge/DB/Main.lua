@@ -125,6 +125,54 @@ do
 	}
 end
 
+M["Anchor_MeetKnightCommander"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 99,
+		PositionY = 3,
+		PositionZ = 167,
+		Name = "Anchor_MeetKnightCommander",
+		Map = M._MAP,
+		Resource = M["Anchor_MeetKnightCommander"]
+	}
+end
+
+M["Anchor_EncounterYendorianScout"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 61,
+		PositionY = 3,
+		PositionZ = 177,
+		Name = "Anchor_EncounterYendorianScout",
+		Map = M._MAP,
+		Resource = M["Anchor_EncounterYendorianScout"]
+	}
+end
+
+M["Anchor_DefeatYendorianScout"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 3,
+		PositionZ = 163,
+		Name = "Anchor_DefeatYendorianScout",
+		Map = M._MAP,
+		Resource = M["Anchor_DefeatYendorianScout"]
+	}
+end
+
+M["Anchor_EncounterYenderhounds"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45,
+		PositionY = 6,
+		PositionZ = 167,
+		Name = "Anchor_EncounterYenderhounds",
+		Map = M._MAP,
+		Resource = M["Anchor_EncounterYenderhounds"]
+	}
+end
+
 M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
@@ -295,6 +343,126 @@ do
 		Z2 = 187,
 		Map = M._MAP,
 		Resource = M["Passage_Scout"]
+	}
+end
+
+M["Yenderhound1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Yenderhounds",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Yenderhound1"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 73,
+		PositionY = 5,
+		PositionZ = 161,
+		Direction = 1,
+		Name = "Yenderhound1",
+		Map = M._MAP,
+		Resource = M["Yenderhound1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yenderhound",
+		MapObject = M["Yenderhound1"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AggressiveIdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Yenderhound1"]
+	}
+end
+
+M["Yenderhound2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Yenderhounds",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Yenderhound2"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 5,
+		PositionZ = 157,
+		Direction = 1,
+		Name = "Yenderhound2",
+		Map = M._MAP,
+		Resource = M["Yenderhound2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yenderhound",
+		MapObject = M["Yenderhound2"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AggressiveIdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Yenderhound2"]
+	}
+end
+
+M["Yenderhound3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Yenderhounds",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Yenderhound3"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 5,
+		PositionZ = 153,
+		Direction = 1,
+		Name = "Yenderhound3",
+		Map = M._MAP,
+		Resource = M["Yenderhound3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yenderhound",
+		MapObject = M["Yenderhound3"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AggressiveIdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Yenderhound3"]
+	}
+end
+
+M["Passage_Yenderhounds"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_Yenderhounds",
+		Map = M._MAP,
+		Resource = M["Passage_Yenderhounds"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 50,
+		Z1 = 154,
+		X2 = 56,
+		Z2 = 162,
+		Map = M._MAP,
+		Resource = M["Passage_Yenderhounds"]
 	}
 end
 

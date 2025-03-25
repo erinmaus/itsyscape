@@ -144,7 +144,7 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 
 	local canReachTarget = distance <= worldWeaponRange
 	local isTooFar = status and distance > status.maxChaseDistance
-	local isTooClose = distance + self.TILE_TO_WORLD < worldWeaponRange
+	local isTooClose = distance < worldWeaponRange
 	return canReachTarget, isTooFar, isTooClose
 end
 
@@ -595,7 +595,7 @@ function CombatCortex:strafePeep(peep)
 	local bestI, bestJ, bestIsPassable
 
 	local map = Utility.Peep.getMap(peep)
-	local tiles = math.ceil(strafeDistance / map:getCellSize())
+	local tiles = math.max(math.floor(strafeDistance / map:getCellSize()), 1)
 
 	for _, direction in ipairs(self.STRAFE_DIRECTIONS) do
 		local directionI, directionJ = unpack(direction)

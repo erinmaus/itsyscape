@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Peeps/Dog/Dog_AggressiveIdleLogic.lua
+-- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AggressiveIdleLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,13 +13,15 @@ local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatCortex2 = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 
-local TARGET = B.Reference("Dog_AggressiveIdleLogic", "TARGET")
+local TARGET = B.Reference("Tutorial_Yenderhound_AggressiveIdleLogic", "TARGET")
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Try {	
 		Mashina.Sequence {
 			Mashina.Peep.FindNearbyCombatTarget {
 				distance = 8,
+
+				-- We don't want to gang up on a potential target in the tutorial.
 				filter = function(peep)
 					local hits = peep:getDirector():probe(
 						peep:getLayerName(),
@@ -27,6 +29,7 @@ local Tree = BTreeBuilder.Node() {
 
 					return #hits == 0
 				end,
+
 				[TARGET] = B.Output.RESULT
 			},
 

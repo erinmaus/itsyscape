@@ -11,6 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Function = require "ItsyScape.Common.Function"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
@@ -195,6 +197,15 @@ end
 
 function Probe.attackable()
 	return _attackable
+end
+
+local _hasTarget = function(target, peep)
+	local currentTarget = peep:getBehavior(CombatTargetBehavior)
+	return currentTarget and currentTarget.actor and currentTarget.actor:getPeep() == target
+end
+
+function Probe.hasTarget(target)
+	return Function(_hasTarget, target)
 end
 
 local _actionOutput = function(actionType, outputName, outputType, peep)

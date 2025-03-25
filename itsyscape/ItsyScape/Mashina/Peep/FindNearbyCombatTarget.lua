@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local FindNearbyCombatTarget = B.Node("FindNearbyCombatTarget")

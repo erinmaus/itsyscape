@@ -156,6 +156,8 @@ function Island:onInitScoutTutorial(playerPeep)
 end
 
 function Island:onFinishPreparingTutorial(playerPeep)
+	self.playersInTutorial[playerPeep] = true
+
 	if not Utility.Quest.didStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
 		self:_giveTutorialRequiredItems(playerPeep)
 
@@ -174,6 +176,7 @@ function Island:onFinishPreparingTutorial(playerPeep)
 		self:pushPoke("initScoutTutorial", playerPeep)
 	elseif not Utility.Quest.didStep("Tutorial", "Tutorial_DefeatedYenderhounds", playerPeep) then
 		Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Yenderhounds")
+		self:pushPoke("finishPreparingYenderhounds", playerPeep)
 
 		local scout = self:getDirector():probe(
 			self:getLayerName(),
@@ -182,9 +185,9 @@ function Island:onFinishPreparingTutorial(playerPeep)
 
 		if not scout then
 			Utility.Peep.disable(playerPeep)
-			self:talkToPeep(playerPeep, "Orlando", function()
+			self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
 				Utility.Peep.enable(playerPeep)
-				Utility.Peep.setMashinaState(playerPeep, "tutorial-follow-player")
+				Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
 			end)
 		end
 	end
@@ -230,9 +233,52 @@ function Island:onFinishPreparingTeam(playerPeep)
 	self:initCompanion(playerPeep, "Orlando")
 end
 
+function Island:onFinishPreparingYenderhounds(playerPeep)
+	local hounds = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Peep", "Yenderhound"),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))
+
+	for _, hound in ipairs(hounds) do
+		Utility.Peep.equipXWeapon(hound, "Tutorial_WeakBite")
+	end
+end
+
 function Island:transitionTutorial(playerPeep, keyItemID)
 	playerPeep:getState():give("KeyItem", keyItemID)
 	self:poke("finishPreparingTutorial", playerPeep)
+end
+
+function Island:saveTutorialLocation(playerPeep, anchor)
+	local director = self:getDirector()
+	local game = director:getGameInstance()
+	local mapResource = Utility.Peep.getMapResource(playerPeep)
+
+	if not Utility.Map.hasAnchor(game, mapResource, anchor) then
+		anchor = "Anchor_Spawn"
+	end
+
+	local storage = director:getPlayerStorage(playerPeep)
+	local spawnStorage = storage:getRoot():getSection("Spawn")
+	local locationStorage = storage:getRoot():getSection("Location")
+
+	local x, y, z = Utility.getAnchorPosition(game, mapResource, anchor)
+
+	spawnStorage:set({
+		name = mapResource.name,
+		instance = false,
+		x = x,
+		y = y,
+		z = z
+	})
+
+	locationStorage:set({
+		name = mapResource.name,
+		instance = false,
+		x = x,
+		y = y,
+		z = z
+	})
 end
 
 function Island:prepareTutorial(playerPeep, arguments)
@@ -244,7 +290,9 @@ function Island:prepareTutorial(playerPeep, arguments)
 		return
 	end
 
-	self.playersInTutorial[playerPeep] = true
+	if not Utility.Quest.didStart("Tutorial", playerPeep) then
+		self:saveTutorialLocation(playerPeep, "Anchor_Spawn")
+	end
 
 	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Team")
 	self:pushPoke("finishPreparingTeam", playerPeep)
@@ -354,7 +402,8 @@ function Island:updateTutorialFindScoutStep(playerPeep)
 	end
 
 	if Utility.Peep.isInPassage(playerPeep, "Passage_Scout") then
-		self:transitionTutorial(playerPeep, "Tutorial_FindScout")
+		self:transitionTutorial(playerPeep, "Tutorial_FoundScout")
+		self:saveTutorialLocation(playerPeep, "Anchor_EncounterYendorianScout")
 
 		Utility.Peep.disable(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
@@ -378,7 +427,47 @@ function Island:updateTutorialEncounterScoutStep(playerPeep)
 			Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
 
 			self:transitionTutorial(playerPeep, "Tutorial_DefeatedScout")
+			self:saveTutorialLocation(playerPeep, "Anchor_DefeatYendorianScout")
 		end, "quest_tutorial_main_scout_argument")
+	end
+end
+
+function Island:updateTutorialFindYenderhoundsStep(playerPeep)
+	if Utility.Peep.isInPassage(playerPeep, "Passage_Yenderhounds") then
+		self:transitionTutorial(playerPeep, "Tutorial_FoundYenderhounds")
+
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
+			local hounds = self:getDirector():probe(
+				self:getLayerName(),
+				Probe.resource("Yenderhound"),
+				Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))
+
+			local knightCommander = self:getDirector():probe(
+				self:getLayerName(),
+				Probe.namedMapObject("KnightCommander"),
+				Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+			local squad = {
+				playerPeep,
+				orlando,
+				knightCommander
+			}
+
+			Utility.Peep.enable(playerPeep)
+
+			for i = 1, math.min(#hounds, #squad) do
+				local squadMember = squad[i]
+				local hound = hound[i]
+
+				Utility.Peep.attack(hound, squadMember, math.huge)
+			end
+
+			Utility.Peep.setMashinaState(orlando, "tutorial-general-attack")
+			Utility.Peep.setMashinaState(knightCommander, "tutorial-general-attack")
+
+			self:saveTutorialLocation(playerPeep, "Anchor_EncounterYenderhounds")
+		end)
 	end
 end
 
@@ -389,10 +478,12 @@ function Island:updateTutorialPlayer(playerPeep)
 		self:updateTutorialGatherItemsStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
 		self:updateTutorialEquipItemsStep(playerPeep)
-	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FindScout", playerPeep) then
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundScout", playerPeep) then
 		self:updateTutorialFindScoutStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedScout", playerPeep) then
 		self:updateTutorialEncounterScoutStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundYenderhounds", playerPeep) then
+		self:updateTutorialFindYenderhoundsStep(playerPeep)
 	end
 end
 

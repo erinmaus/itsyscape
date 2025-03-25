@@ -1476,6 +1476,7 @@ include "Resources/Game/DB/Creeps/BarrelMimic.lua"
 include "Resources/Game/DB/Creeps/CrateMimic.lua"
 include "Resources/Game/DB/Creeps/Mantok.lua"
 include "Resources/Game/DB/Creeps/Dummy.lua"
+include "Resources/Game/DB/Creeps/Yenderhounds.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
