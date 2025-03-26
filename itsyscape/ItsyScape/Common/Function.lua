@@ -26,6 +26,21 @@ function Function:rebind(func, ...)
 	end
 end
 
+local function _coroutine(func, ...)
+	if coroutine.running() then
+		coroutine.yield()
+	end
+
+	return func(...)
+end
+
+function Function:coroutine(...)
+	local c = coroutine.create(_coroutine)
+	coroutine.resume(c, self, ...)
+
+	return c
+end
+
 function Metatable:__call(...)
 	local n = select("#", ...)
 	for i = 1, n do

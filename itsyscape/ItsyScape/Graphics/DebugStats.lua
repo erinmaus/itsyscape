@@ -19,6 +19,7 @@ function DebugStats.GlobalDebugStats:process(node, func, ...)
 end
 
 function DebugStats:new()
+	self.previousDebug = false
 	self.debugStats = {}
 end
 
@@ -32,6 +33,11 @@ function DebugStats:measure(node, ...)
 		nodeName = node
 	else
 		nodeName = node:getDebugInfo().shortName
+	end
+
+	if self.previousDebug ~= _DEBUG then
+		self.debugStats[nodeName] = nil
+		self.previousDebug = _DEBUG
 	end
 
 	local beforeStat = collectgarbage("count")

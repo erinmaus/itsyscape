@@ -14,7 +14,7 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
-ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 10
+ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 30
 ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
 ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = _DEBUG == "plus" and 1 or 1 / 1000
 
@@ -59,6 +59,11 @@ function ResourceManager.View:_poll()
 	self.isDone = true
 end
 
+function ResourceManager.View:_done(index, resource)
+	self.pending[index].ready = true
+	self.pending[index].resource = resource
+end
+
 function ResourceManager.View:queue(resourceType, filename, callback, ...)
 	self.pendingIndex = self.pendingIndex + 1
 	local index = self.pendingIndex
@@ -68,10 +73,8 @@ function ResourceManager.View:queue(resourceType, filename, callback, ...)
 	self.resourceManager:queueAsync(
 		resourceType,
 		filename,
-		function(resource)
-			self.pending[index].ready = true
-			self.pending[index].resource = resource
-		end, ...)
+		Function(self._done, self, index),
+		...)
 end
 
 function ResourceManager.View:queueAsync(...)
@@ -391,38 +394,42 @@ function ResourceManager:loadCacheRef(ref, ...)
 	return self:_blockingLoad(ref:getResourceType(), ref:getFilename(), ...)
 end
 
+function ResourceManager._wrappedCallback(pending)
+	while not pending.done do
+		coroutine.yield()
+	end
+
+	if pending.callback then
+		pending.callback(pending.resource)
+	end
+end
+
+local function _wrappedCallback(pending, callback)
+	while not pending.done do
+		coroutine.yield()
+	end
+
+	if callback then
+		local s, r = xpcall(callback, debug.traceback, pending.resource)
+		if not s then
+			Log.warn("Failed to load resource '%s': %s", pending.filename, r)
+		end
+	end
+end
+
 function ResourceManager:_queue(resourceType, filename, async, callback, ...)
 	if not Class.isDerived(resourceType, Resource) then
 		error("expected Resource-derived type")
 	end
 
-	local load = Callback.bind(self._load, self, resourceType, filename, ...)
-	local l = function()
-		return load()
-	end
+	local load = Function(self._load, self, resourceType, filename, ...)
 
-	local pending = { callback = coroutine.create(l), filename = filename }
-
-	local c = function()
-		function wrappedCallback()
-			while not pending.done do
-				coroutine.yield()
-			end
-
-			if callback then
-				callback(pending.resource)
-			end
-		end
-
-		local s, r = xpcall(wrappedCallback, debug.traceback)
-		if not s then
-			Log.warn("failed to load resource '%s': %s", filename, r)
-		end
-	end
+	local pending = { callback = load:coroutine(), filename = filename }
+	local c = Function(_wrappedCallback, pending, callback):coroutine()
 
 	table.insert(self.pendingResources, pending)
 
-	local e = { filename = filename, callback = coroutine.create(c), traceback = _DEBUG and debug.traceback(nil, 2) }
+	local e = { filename = filename, callback = c, traceback = _DEBUG and debug.traceback(nil, 2) }
 	if async then
 		table.insert(self.pendingAsyncEvents, e)
 	else
@@ -446,21 +453,22 @@ function ResourceManager:queueAsyncCacheRef(ref, callback, ...)
 	self:queueAsync(ref:getResourceType(), ref:getFilename(), callback, ...)
 end
 
--- Queues a callback. No resource loading is performed.
-function ResourceManager:_queueEvent(async, callback, ...)
-	callback = Callback.bind(callback, ...)
-	local traceback = _DEBUG and debug.traceback()
-	local c = function()
-		local s, r = xpcall(callback, debug.traceback)
-		if not s then
-			Log.warn("Failed to run callback: %s", r)
-			if traceback then
-				Log.info(traceback)
-			end
+local function _wrappedEvent(callback, traceback, ...)
+	local s, r = xpcall(callback, debug.traceback, ...)
+	if not s then
+		Log.warn("Failed to run callback: %s", r)
+		if traceback then
+			Log.info(traceback)
 		end
 	end
+end
 
-	local e = { callback = coroutine.create(c), traceback = _DEBUG and debug.traceback(nil, 2) }
+-- Queues a callback. No resource loading is performed.
+function ResourceManager:_queueEvent(async, callback, ...)
+	local traceback = _DEBUG and debug.traceback(nil, 2)
+	local c = Function(_wrappedEvent, callback, traceback, ...):coroutine()
+
+	local e = { callback = c, traceback = _DEBUG and debug.traceback(nil, 2) }
 	if async then
 		table.insert(self.pendingAsyncEvents, e)
 	else

@@ -543,20 +543,20 @@ function Application:update(delta)
 			self.previousTickTime = love.timer.getTime()
 		end
 
-		self:measure('game:update()', function() self.localGame:update(delta) end)
+		self:measure('game:update()', self.localGame.update, self.localGame, delta)
 	else
 		self:processAdminEvents()
 
-		self:measure('remoteGameManager:receive()', function() self.remoteGameManager:receive() end)
+		self:measure('remoteGameManager:receive()', self.remoteGameManager.receive, self.remoteGameManager)
 	end
 
 	if not _CONF.server then
 		if self.show3D then
-			self:measure('gameView:update()', function() self.gameView:update(delta) end)
+			self:measure('gameView:update()', self.gameView.update, self.gameView, delta)
 		end
 
 		if self.showUI then
-			self:measure('uiView:update()', function() self.uiView:update(delta) end)
+			self:measure('uiView:update()', self.uiView.update, self.uiView, delta)
 		end
 	end
 
@@ -619,20 +619,20 @@ end
 function Application:tickSingleThread()
 	self:doCommonTick()
 
-	self:measure('gameView:preTick()', function() self.gameView:preTick(self:getPreviousFrameDelta()) end)
-	self:measure('uiView:tick()', function() self.uiView:tick() end)
-	self:measure('game:tick()', function() self.localGame:tick() end)
-	self:measure('gameView:postTick()', function() self.gameView:postTick(self:getPreviousFrameDelta()) end)
+	self:measure('gameView:preTick()', self.gameView.preTick, self.gameView, self:getPreviousFrameDelta())
+	self:measure('uiView:tick()', self.uiView.tick, self.uiView)
+	self:measure('game:tick()', self.localGame.tick, self.localGame)
+	self:measure('gameView:postTick()', self.gameView, self.gameView, self:getPreviousFrameDelta())
 end
 
 function Application:preTickMultiThread()
 	self:doCommonTick()
 
 	if self.show3D then
-		self:measure('gameView:preTick()', function() self.gameView:preTick(self:getPreviousFrameDelta()) end)
+		self:measure('gameView:preTick()', self.gameView.preTick, self.gameView, self:getPreviousFrameDelta())
 	end
 
-	self:measure('uiView:tick()', function() self.uiView:tick() end)
+	self:measure('uiView:tick()', self.uiView.tick, self.uiView)
 
 	self.remoteGameManager:pushTick()
 	self.previousTickTime = love.timer.getTime()
@@ -643,7 +643,7 @@ function Application:preTickMultiThread()
 end
 
 function Application:postTickMultiThread()
-	self:measure('gameView:postTick()', function() self.gameView:postTick(self:getPreviousFrameDelta()) end)
+	self:measure('gameView:postTick()', self.gameView.postTick, self.gameView, self:getPreviousFrameDelta())
 end
 
 function Application:tickServer()
@@ -1078,10 +1078,8 @@ function Application:drawFPS()
 end
 
 local MEASURE_ROOT_FUNCS = {
-	"gameView:update()",
-	"uiView:update()",
-	"remoteGameManager:receive()",
-	"draw",
+	"app:update()",
+	"app:draw()",
 	"love.graphics.present()"
 }
 

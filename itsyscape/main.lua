@@ -540,13 +540,25 @@ function love.run()
 		if love.timer then dt = love.timer.step() end
 
 		-- Call update and draw
-		if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
+		if love.update then
+			if _APP then
+				_APP:measure("love.update()", love.update, dt)
+			else
+				love.update(dt)
+			end
+		end
 
 		if love.graphics and love.graphics.isActive() then
 			love.graphics.origin()
 			love.graphics.clear(love.graphics.getBackgroundColor())
 
-			if love.draw then love.draw() end
+			if love.draw then
+				if _APP then
+					_APP:measure("love.draw()", love.draw)
+				else
+					love.draw()
+				end
+			end
 
 			if _APP then
 				_APP:measure("love.graphics.present()", love.graphics.present)
