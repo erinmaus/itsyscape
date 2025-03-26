@@ -1166,8 +1166,26 @@ function Application:drawDebug()
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.printf(
 		r,
+		-2,
+		-2,
+		width,
+		'right')
+	love.graphics.printf(
+		r,
+		-2,
+		2,
+		width,
+		'right')
+	love.graphics.printf(
+		r,
 		2,
 		2,
+		width,
+		'right')
+	love.graphics.printf(
+		r,
+		2,
+		-2,
 		width,
 		'right')
 

@@ -151,6 +151,10 @@ end
 function StandardZealBar:update(delta)
 	Drawable.update(self, delta)
 
+	if true then
+		return false
+	end
+
 	local width, height = self:getSize()
 	local relativeZeal = self:_calculateRelativeValue(self.currentZeal, self.maximumZeal)
 

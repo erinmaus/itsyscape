@@ -67,7 +67,10 @@ end
 function ActorView.Animatable:playSound(filename, attenuation)
 	local sound = self.sounds[filename]
 	if not sound then
+		local b = love.timer.getTime()
 		sound = love.audio.newSource(filename, 'static')
+		local a = love.timer.getTime()
+
 		self.sounds[filename] = sound
 		sound:setVolume((_CONF.soundEffectsVolume or 1) * (_CONF.volume or 1))
 

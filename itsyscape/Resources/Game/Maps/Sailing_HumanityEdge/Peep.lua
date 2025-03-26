@@ -126,10 +126,7 @@ function Island:_doTalkToPeep(playerPeep, otherPeepName, callback, entryPoint)
 end
 
 function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint)
-	local otherPeep = playerPeep:getDirector():probe(
-		playerPeep:getLayerName(),
-		Probe.namedMapObject(otherPeepName),
-		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+	local otherPeep = self:getCompanion(playerPeep, otherPeepName)
 
 	local wrappedCallback
 	if callback then
@@ -193,25 +190,25 @@ function Island:onFinishPreparingTutorial(playerPeep)
 	end
 end
 
-function Island:initCompanion(playerPeep, companion)
-	local peep = self:getDirector():probe(
+function Island:getCompanion(playerPeep, namedMapObject)
+	return self:getDirector():probe(
 		self:getLayerName(),
-		Probe.namedMapObject(companion),
+		Probe.namedMapObject(namedMapObject),
 		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+end
+
+function Island:initCompanion(playerPeep, companion)
+	local peep = self:getCompanion(playerPeep, companion)
 
 	local player = Utility.Peep.getPlayerModel(playerPeep)
 	if peep and player then
-		print(">>> init", peep:getName())
 		local _, follower = peep:addBehavior(FollowerBehavior)
 		follower.playerID = player:getID()
 	end
 end
 
-function Island:teleportCompanion(playerPeep, namedMapObject)
-	local peep = self:getDirector():probe(
-		self:getLayerName(),
-		Probe.namedMapObject(namedMapObject),
-		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+function Island:teleportCompanion(playerPeep, companion)
+	local peep = self:getCompanion(playerPeep, companion)
 
 	if peep then
 		Utility.Peep.teleportCompanion(peep, playerPeep)
@@ -440,35 +437,32 @@ function Island:updateTutorialFindYenderhoundsStep(playerPeep)
 
 		Utility.Peep.disable(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
-			local hounds = self:getDirector():probe(
-				self:getLayerName(),
-				Probe.resource("Yenderhound"),
-				Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))
-
-			local knightCommander = self:getDirector():probe(
-				self:getLayerName(),
-				Probe.namedMapObject("KnightCommander"),
-				Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
-
-			local squad = {
-				playerPeep,
-				orlando,
-				knightCommander
-			}
 
 			Utility.Peep.enable(playerPeep)
-
-			for i = 1, math.min(#hounds, #squad) do
-				local squadMember = squad[i]
-				local hound = hound[i]
-
-				Utility.Peep.attack(hound, squadMember, math.huge)
-			end
-
-			Utility.Peep.setMashinaState(orlando, "tutorial-general-attack")
-			Utility.Peep.setMashinaState(knightCommander, "tutorial-general-attack")
-
 			self:saveTutorialLocation(playerPeep, "Anchor_EncounterYenderhounds")
+		end)
+	end
+end
+
+function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
+	local hounds = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Peep", "Yenderhound"),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))
+
+	local isAlive = false
+	for _, hound in ipairs(hounds) do
+		if Utility.Peep.canAttack(hound) then
+			isAlive = true
+			break
+		end
+	end
+
+	if not isAlive and Utility.Peep.isEnabled(playerPeep) then
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
+			Utility.Peep.enable(playerPeep)
+			self:transitionTutorial(playerPeep, "Tutorial_DefeatedYenderhounds")
 		end)
 	end
 end
@@ -486,6 +480,8 @@ function Island:updateTutorialPlayer(playerPeep)
 		self:updateTutorialEncounterScoutStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundYenderhounds", playerPeep) then
 		self:updateTutorialFindYenderhoundsStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedYenderhounds", playerPeep) then
+		self:updateTutorialEncounterYenderhoundsStep(playerPeep)
 	end
 end
 
