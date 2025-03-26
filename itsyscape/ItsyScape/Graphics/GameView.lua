@@ -405,8 +405,6 @@ end
 function GameView:addMap(map, layer, tileSetID, mask, meta)
 	meta = meta or {}
 
-	Log.info(">>> map %s %s %d", map, "layer", layer)
-
 	local filename = false
 	if type(map) == 'string' then
 		filename = map
