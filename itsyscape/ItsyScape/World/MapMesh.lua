@@ -85,6 +85,10 @@ function MapMesh:getBounds()
 	return self.min, self.max
 end
 
+function MapMesh:getVertices()
+	return self.vertices
+end
+
 -- Frees underlying resources.
 --
 -- Drawing is prohibited.

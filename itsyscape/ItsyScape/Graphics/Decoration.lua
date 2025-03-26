@@ -170,7 +170,7 @@ function Decoration:loadFromTable(t)
 		for key, value in pairs(t.uniforms) do
 			if type(value) == "table" and #value >= 1 then
 				self.uniforms[key] = { unpack(value) }
-			elseif type(value) == "number" then
+			elseif type(value) ~= "table" then
 				self.uniforms[key] = value
 			end
 		end
@@ -309,12 +309,20 @@ function Decoration:getIsWall()
 	return self.isWall
 end
 
+function Decoration:setIsWall(value)
+	self.isWall = value or false
+end
+
 function Decoration:getTileSetID()
 	return self.tileSetID
 end
 
 function Decoration:getUniform(key)
 	return self.uniforms[key]
+end
+
+function Decoration:setUniform(key, value)
+	self.uniforms[key] = value
 end
 
 function Decoration:iterate()

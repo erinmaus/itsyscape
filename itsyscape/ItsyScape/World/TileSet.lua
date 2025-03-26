@@ -111,6 +111,10 @@ function TileSet:hasTile(index)
 	return self.tiles[index] ~= nil
 end
 
+function TileSet:getNumTiles()
+	return #self.tiles
+end
+
 -- Sets a tile property for the tile at the index.
 --
 -- If no tile exists at the index, one is created.

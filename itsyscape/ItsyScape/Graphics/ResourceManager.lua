@@ -14,7 +14,7 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
-ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 20
+ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 10
 ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
 ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = _DEBUG == "plus" and 1 or 1 / 1000
 
@@ -236,6 +236,7 @@ function ResourceManager:update()
 			currentTime = love.timer.getTime()
 		end
 	end
+
 
 	currentTime = love.timer.getTime()
 	local pendingSyncEventBreakTime = currentTime + self.frameDuration

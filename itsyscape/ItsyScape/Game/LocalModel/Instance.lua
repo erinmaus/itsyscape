@@ -1442,14 +1442,14 @@ function Instance:loadPlayer(localGameManager, player)
 				0,
 				"onLoadMap",
 				nil,
-				map, layer, self.maps[layer]:getTileSetID(), self.maps[layer]:getMaskID(), self.maps[layer]:getMeta())
+				self.maps[layer]:getMap(), layer, self.maps[layer]:getTileSetID(), self.maps[layer]:getMaskID(), self.maps[layer]:getMeta())
 			localGameManager:assignTargetToLastPush(player)
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onMapModified",
 				nil,
-				map, layer)
+				self.maps[layer]:getMap(), layer)
 			localGameManager:assignTargetToLastPush(player)
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",

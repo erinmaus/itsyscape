@@ -405,10 +405,18 @@ end
 function GameView:addMap(map, layer, tileSetID, mask, meta)
 	meta = meta or {}
 
+	Log.info(">>> map %s %s %d", map, "layer", layer)
+
 	local filename = false
 	if type(map) == 'string' then
 		filename = map
 		map = Map.loadFromFile(map)
+	end
+
+	local mapResourceName, localLayer
+	if filename then
+		mapResourceName, localLayer = filename:match("Resources/Game/Maps/([^/]+)/(%d+).lmap")
+		localLayer = localLayer and tonumber(localLayer)
 	end
 
 	local tileSet, texture
@@ -496,6 +504,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		texture = texture,
 		tileSetID = tileSetID or "GrassyPlain",
 		filename = filename,
+		resource = mapResourceName,
+		localLayer = localLayer or 1,
 		map = map,
 		node = node,
 		parts = {},
@@ -511,6 +521,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		bumpCanvas = bumpCanvas,
 		wallHackDecorations = setmetatable({}, { __mode = "k" }),
 		decorationTextures = setmetatable({}, { __mode = "v" }),
+		staticGroundDecorations = {},
+		dynamicGroundDecorations = {}
 	}
 
 	m.weatherMap:addMap(m.map)
@@ -562,7 +574,12 @@ function GameView:updateGroundDecorations(m)
 		Log.info("Map editor: not updating ground decorations.")
 		return
 	end
-
+	
+	if m.meta and m.meta.disableGroundDecorations then
+		Log.info("Not updating ground decorations; explicitly disabled.")
+		return
+	end
+		
 	local tileSetIDs
 	if type(m.tileSetID) == 'string' then
 		if m.filename and self:_getIsMapEditor() then
@@ -578,61 +595,115 @@ function GameView:updateGroundDecorations(m)
 		tileSetIDs = m.tileSetID
 	end
 
-	for i = 1, #tileSetIDs do
-		local tileSetID = tileSetIDs[i] or "GrassyPlain"
+	local function updateDecorationMaterial(d, group)
+		d.sceneNode:getMaterial():setOutlineThreshold(0.5)
+		d.sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
+		d.sceneNode:getMaterial():setIsShadowCaster(false)
 
-		local groundDecorationsFilename = string.format(
-			"Resources/Game/TileSets/%s/Ground.lua",
-			tileSetID)
-		local groundExists = love.filesystem.getInfo(groundDecorationsFilename)
+		local group = d.decoration:getUniform("_x_Group")
 
-		if groundExists then
-			local chunk = love.filesystem.load(groundDecorationsFilename)
+		if group == Block.GROUP_SHINY then
+			d.sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
+			d.sceneNode:getMaterial():setReflectionPower(1.0)
+			d.sceneNode:getMaterial():setReflectionDistance(0.75)
+			d.sceneNode:getMaterial():setRoughness(0.5)
+		elseif group == Block.GROUP_BENDY then
+			local newTexture = m.decorationTextures[d.texture:getID()]
+			if not newTexture then
+				newTexture = TextureResource(d.texture:getResource())
+				newTexture:getHandle():setBoundTexture("Specular", d.texture:getHandle():getBoundTexture("Specular"))
+				newTexture:getHandle():setBoundTexture("Heightmap", d.texture:getHandle():getBoundTexture("Heightmap"))
+				m.decorationTextures[d.texture:getID()] = newTexture
+			end
 
-			local GroundType = chunk()
-			if GroundType then
-				local ground = GroundType()
-				self.resourceManager:queueAsyncEvent(function()
-					ground:emitAll(m.tileSet, m.map)
+			d.texture = newTexture
+			d.sceneNode:getMaterial():setTextures(newTexture)
+			if d.alphaSceneNode then
+				d.alphaSceneNode:getMaterial():setTextures(newTexture)
+			end
 
-					for i = 1, ground:getDecorationCount() do
-						local decoration, group = ground:getDecorationAtIndex(i)
-						local groupName = string.format("_x_GroundDecorations_%d_%s", i, tileSetID)
-						self:decorate(groupName, decoration, m.layer, function(d)
-							d.sceneNode:getMaterial():setOutlineThreshold(0.5)
-							d.sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
-							d.sceneNode:getMaterial():setIsShadowCaster(false)
+			local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
+			d.sceneNode:getMaterial():setShader(shader)
+			self:_updateWind(m.layer, d.sceneNode)
+		end
 
-							if group == Block.GROUP_SHINY then
-								d.sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
-								d.sceneNode:getMaterial():setReflectionPower(1.0)
-								d.sceneNode:getMaterial():setReflectionDistance(0.75)
-								d.sceneNode:getMaterial():setRoughness(0.5)
-							elseif group == Block.GROUP_BENDY then
-								local newTexture = m.decorationTextures[d.texture:getID()]
-								if not newTexture then
-									newTexture = TextureResource(d.texture:getResource())
-									newTexture:getHandle():setBoundTexture("Specular", d.texture:getHandle():getBoundTexture("Specular"))
-									newTexture:getHandle():setBoundTexture("Heightmap", d.texture:getHandle():getBoundTexture("Heightmap"))
-									m.decorationTextures[d.texture:getID()] = newTexture
-								end
+		if group ~= Block.GROUP_STATIC then
+			table.insert(m.dynamicGroundDecorations, d)
+		else
+			table.insert(m.staticGroundDecorations, d)
+		end
+		
+		d.isGroundDecoration = true
 
-								d.texture = newTexture
-								d.sceneNode:getMaterial():setTextures(newTexture)
-								if d.alphaSceneNode then
-									d.alphaSceneNode:getMaterial():setTextures(newTexture)
-								end
-	
-								local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
-								d.sceneNode:getMaterial():setShader(shader)
-								self:_updateWind(m.layer, d.sceneNode)
-							end
+		m.wallHackDecorations[d.sceneNode] = true
+		m.wallHackDirty = true
+	end
 
-							m.wallHackDecorations[d.sceneNode] = true
-							m.wallHackDirty = true
-						end)
+	local cachedGroundDecorationDirectory = m.resource and string.format("Resources/Game/Maps/%s/GroundDecorationsCache", m.resource)
+	if cachedGroundDecorationDirectory and love.filesystem.getInfo(cachedGroundDecorationDirectory) and not (m.meta and m.meta.disableCaching) then
+		local cachedGroundDecorations = love.filesystem.getDirectoryItems(cachedGroundDecorationDirectory)
+		table.sort(cachedGroundDecorations)
+
+		self.resourceManager:queueAsyncEvent(function()
+			for _, filename in ipairs(cachedGroundDecorations) do
+				local index, tileSetID, layer = filename:match("_x_GroundDecorations_(%d+)_(.+)@(%d+).ldeco.cache")
+
+				local hasTileSetID = false
+				if tileSetID then
+					for _, otherTileSetID in ipairs(tileSetIDs) do
+						if tileSetID == otherTileSetID then
+							hasTileSetID = true
+							break
+						end
 					end
-				end)
+				end
+
+				layer = layer and tonumber(layer)
+				index = index and tonumber(index)
+
+				if index and layer and tileSetID and layer == m.localLayer then
+					local fullFilename = string.format("%s/%s", cachedGroundDecorationDirectory, filename)
+					local decoration = Decoration(buffer.decode(love.filesystem.read(fullFilename)))
+
+					local group = decoration:getUniform("_x_Group")
+					decoration:setIsWall(group == Block.GROUP_STATIC)
+
+					local groupName = string.format("_x_GroundDecorations_%d_%s@%d", index, tileSetID, layer)
+					self:decorate(groupName, decoration, m.layer, updateDecorationMaterial)
+				end
+			end
+		end)
+	else
+		Log.info("No cached ground decorations for '%s' on layer %d.", m.filename or "<dynamic map>", m.layer)
+
+		for i = 1, #tileSetIDs do
+			local tileSetID = tileSetIDs[i] or "GrassyPlain"
+
+			local groundDecorationsFilename = string.format(
+				"Resources/Game/TileSets/%s/Ground.lua",
+				tileSetID)
+			local groundExists = love.filesystem.getInfo(groundDecorationsFilename)
+
+			if groundExists then
+				local chunk = love.filesystem.load(groundDecorationsFilename)
+
+				local GroundType = chunk()
+				if GroundType then
+					local ground = GroundType()
+					self.resourceManager:queueAsyncEvent(function()
+						ground:emitAll(m.tileSet, m.map)
+
+						for i = 1, ground:getDecorationCount() do
+							local decoration, group = ground:getDecorationAtIndex(i)
+							local groupName = string.format("_x_GroundDecorations_%d_%s@%d", i, tileSetID, m.layer)
+
+							decoration:setUniform("_x_Group", group)
+							decoration:setIsWall(group == Block.GROUP_STATIC)
+
+							self:decorate(groupName, decoration, m.layer, updateDecorationMaterial)
+						end
+					end)
+				end
 			end
 		end
 	end
@@ -677,6 +748,13 @@ function GameView:updateMap(map, layer)
 				end
 			else
 				m.filename = nil
+			end
+
+			if m.lastFilename and m.lastFilename == m.filename then
+				Log.info("Map loaded from file; cannot change, aborting update.")
+				return
+			else
+				m.lastFilename = m.filename
 			end
 
 			if m.map ~= map then
@@ -728,15 +806,27 @@ function GameView:updateMap(map, layer)
 		end
 
 		local function _update()
-			node:fromMap(
-				m.map,
-				m.tileSet,
-				1, 1,
-				m.map:getWidth(),
-				m.map:getHeight(),
-				m.mapMeshMasks,
-				m.islandProcessor,
-				m.largeTileSet)
+			local vertices
+			if m.filename ~= nil and m.meta and not m.meta.disableCaching then
+				local filename = string.format("%s.mapmesh", m.filename)
+				if love.filesystem.getInfo(filename) then
+					vertices = buffer.decode(love.filesystem.read(filename))
+				end
+			end
+
+			if vertices then
+				node:fromVertices(vertices.data, Vector(unpack(vertices.min)), Vector(unpack(vertices.max)))
+			else
+				node:fromMap(
+					m.map,
+					m.tileSet,
+					1, 1,
+					m.map:getWidth(),
+					m.map:getHeight(),
+					m.mapMeshMasks,
+					m.islandProcessor,
+					m.largeTileSet)
+			end
 
 			m.node:setBounds(node:getBounds())
 
@@ -954,7 +1044,35 @@ function GameView:_updatePlayerMapNode()
 		return
 	end
 
-	local _, playerI, playerJ = m.map:getTileAt(self.camera:getPosition().x, self.camera:getPosition().y)
+	local distanceSquared = (self.camera:getDistance() * 2) ^ 2
+	local position = self.camera:getPosition()
+	local playerMin = position - Vector.PLANE_XZ
+	local playerMax = position + Vector.PLANE_XZ
+	for _, d in ipairs(m.dynamicGroundDecorations) do
+		local decorationMin, decorationMax = d.sceneNode:getBounds()
+		local u = (playerMin - decorationMax):max(Vector.ZERO)
+		local v = (decorationMin - playerMin):max(Vector.ZERO)
+		local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
+
+		if squaredDistance < distanceSquared then
+			if d.sceneNode:getParent()  ~= m.node then
+				Log.info("Showing ground decoration '%s'.", d.name)
+				d.sceneNode:setParent(m.node)
+			end
+
+			if d.alphaSceneNode and d.alphaSceneNode:getParent()  ~= m.node then
+				d.alphaSceneNode:setParent(m.node)
+			end
+		else
+			if d.sceneNode:getParent() == m.node then
+				Log.info("Hiding ground decoration '%s'.", d.name)
+
+				d.sceneNode:setParent(nil)
+			end
+		end
+	end
+
+	local _, playerI, playerJ = m.map:getTileAt(self.camera:getPosition().x, self.camera:getPosition().z)
 
 	local eye = self.camera:getEye()
 	local _, eyeI, eyeJ = m.map:getTileAt(eye.x, eye.z)
@@ -1044,30 +1162,6 @@ function GameView:_updatePlayerMapNode()
 		node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", near)
 	end
 
-	-- for _, node in pairs(m.bendyDecorations) do
-	-- 	local min, max = node:getBounds()
-	-- 	local center = min + (max - min)
-	-- 	local distance = ((center - self.camera:getPosition()) * Vector.PLANE_XZ):getLength()
-	-- 	local halfDistance = 16
-		
-	-- 	if distance > halfDistance then
-	-- 		local delta = (distance - halfDistance) / halfDistance
-
-	-- 		if delta >= 1.0 then
-	-- 			node:setParent(nil)
-	-- 		else
-	-- 			if node:getParent() ~= m.node then
-	-- 				node:setParent(m.node)
-	-- 			end
-
-	-- 			node:getMaterial():setIsTranslucent(true)
-	-- 			node:getMaterial():setColor(Color(1, 1, 1, 1 - delta))
-	-- 		end
-	-- 	elseif node:getParent() ~= m.node then
-	-- 		node:setParent(m.node)
-	-- 	end
-	-- end
-
 	if self.previousPlayerLayer and self.previousPlayerLayer ~= layer then
 		local otherM = self.previousPlayerLayer and self.mapMeshes[self.previousPlayerLayer]
 		if otherM then
@@ -1146,6 +1240,13 @@ function GameView:getMapSceneNode(layer)
 	local m = self.mapMeshes[layer]
 	if m then
 		return m.node
+	end
+end
+
+function GameView:getMapMeshSceneNodes(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return unpack(m.parts)
 	end
 end
 
@@ -1328,11 +1429,31 @@ function GameView:getItem(ref)
 end
 
 function GameView:decorate(group, decoration, layer, callback)
+	local m = self.mapMeshes[layer]
+	if not m then
+		return
+	end
+
 	local groupName = group .. '#' .. tostring(layer)
 	if self.decorations[groupName] and
 	   self.decorations[groupName].sceneNode
 	then
 		local d = self.decorations[groupName]
+
+		if d.isGroundDecoration then
+			local groundDecorations
+			if d.decoration:getUniform("_x_Group") == Block.GROUP_STATIC then
+				groundDecorations = m.staticGroundDecorations
+			else
+				groundDecorations = m.dynamicGroundDecorations
+			end
+
+			for i = #groundDecorations, 1, -1 do
+				if groundDecorations[i] == d then
+					table.remove(groundDecorations, i)
+				end
+			end
+		end
 
 		d.sceneNode:setParent(nil)
 		if d.alphaSceneNode then
@@ -1342,7 +1463,6 @@ function GameView:decorate(group, decoration, layer, callback)
 		self.decorations[groupName] = nil
 	end
 
-	local m = self.mapMeshes[layer]
 	local map = self:getMapSceneNode(layer)
 	if not map then
 		map = self.scene
@@ -2010,7 +2130,7 @@ function GameView:draw(delta, width, height)
 		local info = self.skyboxes[skybox]
 		
 		self.renderer:setClearColor(Color(0, 0, 0, 0))
-		self.renderer:draw(skybox, delta, width, height, { self.toneMapPostProcessPass, self.skyboxOutlinePostProcessPass })
+		self.renderer:draw(skybox, delta, width, height)
 		self.renderer:present(false)
 	end
 

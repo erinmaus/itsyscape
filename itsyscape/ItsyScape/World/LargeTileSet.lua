@@ -66,8 +66,12 @@ function LargeTileSet:_registerLargeTileSetDescriptions()
 	for index, tileSet in ipairs(self.tileSets) do
 		local tileSetID = self.tileSet:getTileSetID(index)
 
-		for name, tile in pairs(tileSet) do
-			self:registerTile(tileSetID, name, tile)
+		local singleTileSet = self.tileSet:getTileSetByIndex(index)
+		for i = 1, singleTileSet:getNumTiles() do
+			local name = singleTileSet:getTileProperty(i, "name")
+			if tileSet[name] then
+				self:registerTile(tileSetID, name, tileSet[name])
+			end
 		end
 	end
 end
@@ -156,6 +160,12 @@ end
 
 function LargeTileSet:getIsCacheEnabled()
 	return not Class.isCompatibleType(_APP, require "ItsyScape.BuildLargeTileSetsApplication")
+end
+
+function LargeTileSet:release()
+	self.diffuseCanvas:release()
+	self.specularCanvas:release()
+	self.outlineCanvas:release()
 end
 
 function LargeTileSet:emitAll(map)
@@ -257,10 +267,6 @@ function LargeTileSet:emitAll(map)
 							outlineImage:release()
 
 							currentIndex = currentIndex + 3
-
-							if coroutine.running() then
-								coroutine.yield()
-							end
 						end
 					end
 				end

@@ -35,9 +35,45 @@ function MapMeshSceneNode:new()
 	self:getMaterial():setOutlineColor(Color(0.7))
 end
 
+function MapMeshSceneNode:fromVertices(vertices, min, max)
+	self:getMaterial():setShader(MapMeshSceneNode.MULTITEXTURE_SHADER)
+
+	if self.isOwner and self.mapMesh then
+		self.mapMesh:release()
+		self.mapMesh = false
+		self.isOwner = false
+	end
+
+	if self.vertexMesh then
+		self.vertexMesh:release()
+		self.vertexMesh = false
+	end
+
+	self.vertexMesh = love.graphics.newMesh(MapMesh.FORMAT, vertices, "triangles", "static")
+	for i = 1, #MapMesh.FORMAT do
+		self.vertexMesh:setAttributeEnabled(MapMesh.FORMAT[i][1], true)
+	end
+
+	self.vertices = vertices
+	self:setBounds(min, max)
+end
+
+function MapMeshSceneNode:toVertices()
+	if self.vertices then
+		return self.vertices, self:getBounds()
+	end
+
+	return nil, self:getBounds()
+end
+
 function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor, largeTileSet)
 	if self.isOwner and self.mapMesh then
 		self.mapMesh:release()
+	end
+
+	if self.vertexMesh then
+		self.vertexMesh:release()
+		self.vertexMesh = false
 	end
 
 	if Class.isCompatibleType(tileSet, MultiTileSet) or largeTileSet then
@@ -48,6 +84,7 @@ function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcesso
 
 	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1), mask, islandProcessor, largeTileSet)
 	self.isOwner = true
+	self.vertices = self.mapMesh:getVertices()
 
 	self:setBounds(self.mapMesh:getBounds())
 end
@@ -103,6 +140,8 @@ function MapMeshSceneNode:draw(renderer, delta)
 
 	if self.mapMesh then
 		self.mapMesh:draw()
+	elseif self.vertexMesh then
+		love.graphics.draw(self.vertexMesh)
 	end
 end
 
