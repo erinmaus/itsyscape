@@ -35,9 +35,10 @@ function SceneSnippetRenderer:add(widget)
 
 	local outlinePostProcessPass = OutlinePostProcessPass(renderer)
 	outlinePostProcessPass:load(self.gameView:getResourceManager())
-	outlinePostProcessPass:setMinOutlineThickness(12)
-	outlinePostProcessPass:setMaxOutlineThickness(12)
+	outlinePostProcessPass:setMinOutlineThickness(1)
+	outlinePostProcessPass:setMaxOutlineThickness(1)
 	outlinePostProcessPass:setMinOutlineDepthAlpha(1.0)
+	outlinePostProcessPass:setOutlineThicknessNoiseJitter(1)
 
 	self.renderers[widget] = renderer
 	self.outlinePostProcessPasses[widget] = { outlinePostProcessPass }

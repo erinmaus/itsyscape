@@ -35,15 +35,15 @@ function OutlinePostProcessPass:new(...)
 	self.depthStep = 0
 	self.normalStep = 0.3
 	self.minOutlineThickness = 0.25
-	self.maxOutlineThickness = 0.5
-	self.nearOutlineDistance = 15
-	self.farOutlineDistance = 32
+	self.maxOutlineThickness = 1.5
+	self.nearOutlineDistance = 2.5
+	self.farOutlineDistance = 15
 	self.minOutlineDepthAlpha = 0.5
-	self.maxOutlineDepthAlpha = 0.9
+	self.maxOutlineDepthAlpha = 1
 	self.outlineFadeDepth = 20
 	self.outlineTurbulence = 0.25
 	self.outlineThicknessNoiseScale = Vector(1.79836848):keep()
-	self.outlineThicknessNoiseJitter = 2
+	self.outlineThicknessNoiseJitter = 3
 	self.startTime = love.timer.getTime()
 
 	local translucentTextureImageData = love.image.newImageData(1, 1)
@@ -144,7 +144,7 @@ function OutlinePostProcessPass:getOutlineTurbulence()
 	return self.outlineTurbulence
 end
 
-function OutlinePostProcessPass:getOutlineThicknessNoiseScale(value)
+function OutlinePostProcessPass:setOutlineThicknessNoiseScale(value)
 	self.outlineThicknessNoiseScale = value:keep(self.outlineThicknessNoiseScale)
 end
 
@@ -152,7 +152,7 @@ function OutlinePostProcessPass:getOutlineThicknessNoiseScale()
 	return self.outlineThicknessNoiseScale
 end
 
-function OutlinePostProcessPass:getOutlineThicknessNoiseJitter(value)
+function OutlinePostProcessPass:setOutlineThicknessNoiseJitter(value)
 	self.outlineThicknessNoiseJitter = value
 end
 
@@ -303,8 +303,6 @@ function OutlinePostProcessPass:_composeOutline(width, height)
 		"scape_MaxOutlineDepthAlpha", self.maxOutlineDepthAlpha,
 		"scape_OutlineFadeDepth", self.outlineFadeDepth,
 		"scape_OutlineThicknessNoiseScale", { self.outlineThicknessNoiseScale:get() },
-		--"scape_OutlineThicknessNoiseScale", { t, t, t },
-		--"scape_OutlineThicknessNoiseJitter", s, --self.outlineThicknessNoiseJitter,
 		"scape_OutlineThicknessNoiseJitter", self.outlineThicknessNoiseJitter,
 		"scape_InverseProjectionMatrix", inverseProjection,
 		"scape_InverseViewMatrix", inverseView,

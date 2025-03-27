@@ -22,7 +22,7 @@ function SceneSnippet:new()
 	self.isFullLit = false
 	self.alwaysRender = false
 	self.isFocusable = false
-	self.dpiScale = 2
+	self.dpiScale = 1
 end
 
 function SceneSnippet:getRoot()
