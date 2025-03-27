@@ -42,8 +42,8 @@ function OutlinePostProcessPass:new(...)
 	self.maxOutlineDepthAlpha = 0.9
 	self.outlineFadeDepth = 20
 	self.outlineTurbulence = 0.25
-	self.outlineThicknessNoiseScale = Vector(7.79836848):keep()
-	self.outlineThicknessNoiseJitter = 1.5
+	self.outlineThicknessNoiseScale = Vector(1.79836848):keep()
+	self.outlineThicknessNoiseJitter = 1
 	self.startTime = love.timer.getTime()
 
 	local translucentTextureImageData = love.image.newImageData(1, 1)
@@ -283,6 +283,10 @@ function OutlinePostProcessPass:_composeOutline(width, height)
 	local projection, view = camera:getTransforms()
 	local inverseProjection, inverseView = projection:inverse(), view:inverse()
 
+	local x, y = love.mouse.getPosition()
+	local t = y / love.graphics.getHeight() * 120
+	local s = x / love.graphics.getWidth() * 4
+
 	self:bindShader(
 		self.composeOutlineShader,
 		"scape_DepthTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX),
@@ -299,6 +303,8 @@ function OutlinePostProcessPass:_composeOutline(width, height)
 		"scape_MaxOutlineDepthAlpha", self.maxOutlineDepthAlpha,
 		"scape_OutlineFadeDepth", self.outlineFadeDepth,
 		"scape_OutlineThicknessNoiseScale", { self.outlineThicknessNoiseScale:get() },
+		--"scape_OutlineThicknessNoiseScale", { t, t, t },
+		--"scape_OutlineThicknessNoiseJitter", s, --self.outlineThicknessNoiseJitter,
 		"scape_OutlineThicknessNoiseJitter", self.outlineThicknessNoiseJitter,
 		"scape_InverseProjectionMatrix", inverseProjection,
 		"scape_InverseViewMatrix", inverseView,

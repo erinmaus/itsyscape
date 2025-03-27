@@ -31,7 +31,10 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	alphaMultiplier = mix(scape_MinOutlineDepthAlpha, scape_MaxOutlineDepthAlpha, alphaMultiplier);
 
 	vec3 worldPosition = worldPositionFromGBufferDepth(depthSample, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
-	float offset = clamp(snoise(vec4(worldPosition * scape_OutlineThicknessNoiseScale, floor(scape_Time * 8) / 8 * 2)), -1, 1) * scape_OutlineThicknessNoiseJitter;
+	float offset = snoise(vec4(worldPosition * scape_OutlineThicknessNoiseScale, floor(scape_Time * 8.0) / 8.0 * 2.0));//, floor(scape_Time * 8) / 8 * 2)), -1, 1) * scape_OutlineThicknessNoiseJitter;
+	offset += 1.0;
+	offset /= 2.0;
+	offset *= scape_OutlineThicknessNoiseJitter;
 
 	vec4 outlineColor;
 	if (offset <= 0)
