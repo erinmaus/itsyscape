@@ -1,7 +1,9 @@
 #define MAX_JUMP_DISTANCE 64
 
+#include "Resources/Shaders/GBuffer.common.glsl"
 #include "Resources/Shaders/Depth.common.glsl"
 #include "Resources/Shaders/Dilate.common.glsl"
+#include "Resources/Shaders/Noise.common.glsl"
 
 uniform sampler2D scape_DepthTexture;
 uniform vec2 scape_TexelSize;
@@ -13,19 +15,40 @@ uniform float scape_MaxOutlineThickness;
 uniform float scape_MinOutlineDepthAlpha;
 uniform float scape_MaxOutlineDepthAlpha;
 uniform float scape_OutlineFadeDepth;
+uniform float scape_Time;
+uniform mat4 scape_InverseProjectionMatrix;
+uniform mat4 scape_InverseViewMatrix;
+uniform vec3 scape_OutlineThicknessNoiseScale;
+uniform float scape_OutlineThicknessNoiseJitter;
 
 vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
-	float depth = linearDepth(Texel(scape_DepthTexture, textureCoordinate).r);
+	float depthSample = Texel(scape_DepthTexture, textureCoordinate).r;
+	float depth = linearDepth(depthSample);
 	float remappedDepth = smoothstep(scape_NearOutlineDistance, scape_FarOutlineDistance, depth);
 	float thickness = mix(scape_MinOutlineThickness, scape_MaxOutlineThickness, 1.0 - remappedDepth);
 	float alphaMultiplier = 1.0 - smoothstep(scape_FarOutlineDistance, scape_FarOutlineDistance + scape_OutlineFadeDepth, depth);
 	alphaMultiplier = mix(scape_MinOutlineDepthAlpha, scape_MaxOutlineDepthAlpha, alphaMultiplier);
 
-	vec4 outlineColor = dilateMin(thickness, image, textureCoordinate, scape_TexelSize, vec4(1.0));
+	vec3 worldPosition = worldPositionFromGBufferDepth(depthSample, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
+	float offset = clamp(snoise(vec4(worldPosition * scape_OutlineThicknessNoiseScale, floor(scape_Time * 8) / 8 * 2)), -1, 1) * scape_OutlineThicknessNoiseJitter;
+
+	vec4 outlineColor;
+	if (offset <= 0)
+	{
+		outlineColor = dilateMax(thickness + abs(offset), image, textureCoordinate, scape_TexelScale, vec4(0.0));
+	}
+	else
+	{
+		outlineColor = dilateMin(thickness + abs(offset), image, textureCoordinate, scape_TexelSize, vec4(1.0));
+	}
+
+	//vec4 outlineColor = dilateMin(thickness, image, textureCoordinate, scape_TexelSize, vec4(1.0));
 	vec4 result;
 	result.rgb = mix(vec3(1.0), outlineColor.rgb, alphaMultiplier);
 	result.a = 1.0;
 
+	//return vec4(vec3((offset + 1.0) / 2), 1.0);
 	return result;
+	//return vec4((vec3(snoise(vec3(textureCoordinate, Texel(scape_DepthTexture, textureCoordinate).r) * vec2(131.79836848))) + vec3(1.0)) / vec3(2.0), 1.0);
 }

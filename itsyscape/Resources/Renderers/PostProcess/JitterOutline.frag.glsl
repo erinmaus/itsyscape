@@ -13,17 +13,19 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	noise *= scape_OutlineTurbulence * scape_NoiseTexelSize;
 	noise = floor(noise * scape_TextureSize) / scape_TextureSize;
 
-	vec4 sample = Texel(image, textureCoordinate + noise);
+	vec4 outlineSample = Texel(image, textureCoordinate + noise);
 
 	vec4 result;
-	if (sample.r == sample.g && sample.r == sample.b)
+	if (outlineSample.r == outlineSample.g && outlineSample.r == outlineSample.b)
 	{
-		result.rgb = vec3(0.0);
-		result.a = (1.0 - sample.r) * sample.a;
+		//result.rgb = vec3(0.0);
+		//result.a = (1.0 - outlineSample.r) * outlineSample.a;
+		result.rgb = outlineSample.rgb;
+		result.a = 1.0;
 	}
 	else
 	{
-		result = sample;
+		result = outlineSample;
 	}
 
 	return result;

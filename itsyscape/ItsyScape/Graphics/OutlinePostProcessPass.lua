@@ -42,6 +42,9 @@ function OutlinePostProcessPass:new(...)
 	self.maxOutlineDepthAlpha = 0.9
 	self.outlineFadeDepth = 20
 	self.outlineTurbulence = 0.25
+	self.outlineThicknessNoiseScale = Vector(7.79836848):keep()
+	self.outlineThicknessNoiseJitter = 1.5
+	self.startTime = love.timer.getTime()
 
 	local translucentTextureImageData = love.image.newImageData(1, 1)
 	translucentTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
@@ -139,6 +142,22 @@ end
 
 function OutlinePostProcessPass:getOutlineTurbulence()
 	return self.outlineTurbulence
+end
+
+function OutlinePostProcessPass:getOutlineThicknessNoiseScale(value)
+	self.outlineThicknessNoiseScale = value:keep(self.outlineThicknessNoiseScale)
+end
+
+function OutlinePostProcessPass:getOutlineThicknessNoiseScale()
+	return self.outlineThicknessNoiseScale
+end
+
+function OutlinePostProcessPass:getOutlineThicknessNoiseJitter(value)
+	self.outlineThicknessNoiseJitter = value
+end
+
+function OutlinePostProcessPass:getOutlineThicknessNoiseJitter()
+	return self.outlineThicknessNoiseJitter
 end
 
 function OutlinePostProcessPass:setShimmerTexture(value)
@@ -260,6 +279,10 @@ function OutlinePostProcessPass:_composeOutline(width, height)
 	love.graphics.clear(0, 0, 0, 0)
 	love.graphics.setBlendMode("alpha")
 
+	local camera = self:getRenderer():getCamera()
+	local projection, view = camera:getTransforms()
+	local inverseProjection, inverseView = projection:inverse(), view:inverse()
+
 	self:bindShader(
 		self.composeOutlineShader,
 		"scape_DepthTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX),
@@ -274,7 +297,12 @@ function OutlinePostProcessPass:_composeOutline(width, height)
 		"scape_FarOutlineDistance", self.farOutlineDistance,
 		"scape_MinOutlineDepthAlpha", self.minOutlineDepthAlpha,
 		"scape_MaxOutlineDepthAlpha", self.maxOutlineDepthAlpha,
-		"scape_OutlineFadeDepth", self.outlineFadeDepth)
+		"scape_OutlineFadeDepth", self.outlineFadeDepth,
+		"scape_OutlineThicknessNoiseScale", { self.outlineThicknessNoiseScale:get() },
+		"scape_OutlineThicknessNoiseJitter", self.outlineThicknessNoiseJitter,
+		"scape_InverseProjectionMatrix", inverseProjection,
+		"scape_InverseViewMatrix", inverseView,
+		"scape_Time", love.timer.getTime() - self.startTime)
 
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.draw(self.outlineBuffer:getCanvas(2))

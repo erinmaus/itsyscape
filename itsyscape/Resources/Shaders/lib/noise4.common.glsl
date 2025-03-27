@@ -10,31 +10,31 @@
 //               https://github.com/stegu/webgl-noise
 // 
 
-vec4 mod289(vec4 x) {
+vec4 _snoise4_mod289(vec4 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0; }
 
-float mod289(float x) {
+float _snoise4_mod289(float x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0; }
 
-vec4 permute(vec4 x) {
-     return mod289(((x*34.0)+10.0)*x);
+vec4 _snoise4_permute(vec4 x) {
+     return _snoise4_mod289(((x*34.0)+10.0)*x);
 }
 
-float permute(float x) {
-     return mod289(((x*34.0)+10.0)*x);
+float _snoise4_permute(float x) {
+     return _snoise4_mod289(((x*34.0)+10.0)*x);
 }
 
-vec4 taylorInvSqrt(vec4 r)
+vec4 _snoise4_taylorInvSqrt(vec4 r)
 {
   return 1.79284291400159 - 0.85373472095314 * r;
 }
 
-float taylorInvSqrt(float r)
+float _snoise4_taylorInvSqrt(float r)
 {
   return 1.79284291400159 - 0.85373472095314 * r;
 }
 
-vec4 grad4(float j, vec4 ip)
+vec4 _snoise4_grad4(float j, vec4 ip)
   {
   const vec4 ones = vec4(1.0, 1.0, 1.0, -1.0);
   vec4 p,s;
@@ -48,7 +48,7 @@ vec4 grad4(float j, vec4 ip)
   }
 						
 // (sqrt(5) - 1)/4 = F4, used once below
-#define F4 0.309016994374947451
+#define _SNOISE4_F4 0.309016994374947451
 
 float snoise(vec4 v)
   {
@@ -58,7 +58,7 @@ float snoise(vec4 v)
                        -0.447213595499958); // -1 + 4 * G4
 
 // First corner
-  vec4 i  = floor(v + dot(v, vec4(F4)) );
+  vec4 i  = floor(v + dot(v, vec4(_SNOISE4_F4)) );
   vec4 x0 = v -   i + dot(i, C.xxxx);
 
 // Other corners
@@ -92,9 +92,9 @@ float snoise(vec4 v)
   vec4 x4 = x0 + C.wwww;
 
 // Permutations
-  i = mod289(i); 
-  float j0 = permute( permute( permute( permute(i.w) + i.z) + i.y) + i.x);
-  vec4 j1 = permute( permute( permute( permute (
+  i = _snoise4_mod289(i); 
+  float j0 = _snoise4_permute( _snoise4_permute( _snoise4_permute( _snoise4_permute(i.w) + i.z) + i.y) + i.x);
+  vec4 j1 = _snoise4_permute( _snoise4_permute( _snoise4_permute( _snoise4_permute (
              i.w + vec4(i1.w, i2.w, i3.w, 1.0 ))
            + i.z + vec4(i1.z, i2.z, i3.z, 1.0 ))
            + i.y + vec4(i1.y, i2.y, i3.y, 1.0 ))
@@ -104,19 +104,19 @@ float snoise(vec4 v)
 // 7*7*6 = 294, which is close to the ring size 17*17 = 289.
   vec4 ip = vec4(1.0/294.0, 1.0/49.0, 1.0/7.0, 0.0) ;
 
-  vec4 p0 = grad4(j0,   ip);
-  vec4 p1 = grad4(j1.x, ip);
-  vec4 p2 = grad4(j1.y, ip);
-  vec4 p3 = grad4(j1.z, ip);
-  vec4 p4 = grad4(j1.w, ip);
+  vec4 p0 = _snoise4_grad4(j0,   ip);
+  vec4 p1 = _snoise4_grad4(j1.x, ip);
+  vec4 p2 = _snoise4_grad4(j1.y, ip);
+  vec4 p3 = _snoise4_grad4(j1.z, ip);
+  vec4 p4 = _snoise4_grad4(j1.w, ip);
 
 // Normalise gradients
-  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+  vec4 norm = _snoise4_taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
   p0 *= norm.x;
   p1 *= norm.y;
   p2 *= norm.z;
   p3 *= norm.w;
-  p4 *= taylorInvSqrt(dot(p4,p4));
+  p4 *= _snoise4_taylorInvSqrt(dot(p4,p4));
 
 // Mix contributions from the five corners
   vec3 m0 = max(0.6 - vec3(dot(x0,x0), dot(x1,x1), dot(x2,x2)), 0.0);
