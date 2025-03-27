@@ -808,23 +808,27 @@ function GameView:updateMap(map, layer)
 			for _, part in ipairs(m.parts) do
 				local material = part:getMaterial()
 				if metaMaterial.isReflectiveOrRefractive then
-					print(">>> part is reflective")
 					material:setIsReflectiveOrRefractive(true)
+				else
+					material:setIsReflectiveOrRefractive(false)
 				end
 
 				if metaMaterial.reflectionPower then
-					print(">>> reflection power", metaMaterial.reflectionPower)
-					material:setRoughness(metaMaterial.reflectionPower)
+					material:setReflectionPower(metaMaterial.reflectionPower)
+				else
+					material:setReflectionPower(0)
 				end
 
 				if metaMaterial.reflectionRoughness then
-					print(">>> part is rough", metaMaterial.reflectionRoughness)
 					material:setRoughness(metaMaterial.reflectionRoughness)
+				elseif material.isReflectiveOrRefractive then
+					material:setRoughness(0)
 				end
 
 				if metaMaterial.reflectionDistance then
-					print(">>> distance", metaMaterial.reflectionDistance)
 					material:setReflectionDistance(metaMaterial.reflectionDistance)
+				elseif material.setIsReflectiveOrRefractive then
+					material:setReflectionDistance(1)
 				end
 			end
 		end
