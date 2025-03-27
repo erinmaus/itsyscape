@@ -135,13 +135,13 @@ function DebugStats:dumpStatsToCSV(topic)
 	end
 
 	local stringifiedStats = {}
-	table.insert(stringifiedStats, "Node, Min Time (ms), Max Time (ms), Min Memory (kbs), Max Memory (kbs), Total Time (secs), Total Memory (kbs), Total Samples, Total Memory Samples, Avg Time (ms), Avg Mem (kb), Avg Mem (kb/s)")
+	table.insert(stringifiedStats, "Node, Min Time (ms), Max Time (ms), Min Memory (kbs), Max Memory (kbs), Total Time (secs), Total Memory (kbs), Total Samples, Total Memory Samples, Avg Time (ms), Avg Mem (kb), Avg Mem (30 FPS), Avg Mem (60 FPS)")
 
 	for i = 1, #sortedDebugStats do
 		local stats = sortedDebugStats[i].stats
 		local nodeName = sortedDebugStats[i].nodeName
 		local f = string.format(
-			"%s, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+			"%s, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
 			nodeName,
 			stats.minTime * 1000,
 			stats.maxTime * 1000,
@@ -153,7 +153,8 @@ function DebugStats:dumpStatsToCSV(topic)
 			#stats.samples,
 			(stats.currentTimeTotal / stats.sampleCount) * 1000,
 			stats.currentMemoryTotal / math.max(#stats.samples, 1),
-			stats.currentMemoryTime > 0 and (stats.currentMemoryTotal / stats.currentMemoryTime) or 0)
+			stats.currentMemoryTotal / math.max(#stats.samples, 1) * 30,
+			stats.currentMemoryTotal / math.max(#stats.samples, 1) * 60)
 		table.insert(stringifiedStats, f)
 	end
 

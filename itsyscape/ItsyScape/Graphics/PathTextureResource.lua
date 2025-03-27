@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 local PathTexture = require "ItsyScape.Graphics.PathTexture"
+local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local PathTextureResource = Resource()
@@ -42,6 +43,10 @@ function PathTextureResource:loadFromFile(filename, resourceManager)
 		if perPassTextureFilename ~= modifiedFilename and love.filesystem.getInfo(perPassTextureFilename) then
 			local perPassImage = love.graphics.newImage(perPassTextureFilename)
 			perPassImage:setFilter("linear", "linear")
+
+			if passID == RendererPass.PASS_OUTLINE then
+				perPassImage = TextureResource.generateOutlineImage(perPassImage)
+			end
 
 			self.perPassTextures[passID] = perPassImage
 		end

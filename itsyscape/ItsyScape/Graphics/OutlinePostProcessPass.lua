@@ -34,15 +34,14 @@ function OutlinePostProcessPass:new(...)
 	self.isEnabled = true
 	self.depthStep = 0
 	self.normalStep = 0.3
-	self.minOutlineThickness = 3
-	self.maxOutlineThickness = 7
-	self.nearOutlineDistance = 20
+	self.minOutlineThickness = 1
+	self.maxOutlineThickness = 2
+	self.nearOutlineDistance = 15
 	self.farOutlineDistance = 32
 	self.minOutlineDepthAlpha = 0.5
-	self.maxOutlineDepthAlpha = 1.0
+	self.maxOutlineDepthAlpha = 0.9
 	self.outlineFadeDepth = 20
 	self.outlineTurbulence = 0.25
-	self.distanceBufferScale = 1
 
 	local translucentTextureImageData = love.image.newImageData(1, 1)
 	translucentTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
@@ -130,6 +129,7 @@ function OutlinePostProcessPass:setOutlineFadeDepth(value)
 end
 
 function OutlinePostProcessPass:getOutlineFadeDepth()
+functicomposeDilatelinePostProcessPass:getOutlineFadeDepth()
 	return self.outlineFadeDepth
 end
 
@@ -139,14 +139,6 @@ end
 
 function OutlinePostProcessPass:getOutlineTurbulence()
 	return self.outlineTurbulence
-end
-
-function OutlinePostProcessPass:setDistanceBufferScale(value)
-	self.distanceBufferScale = value
-end
-
-function OutlinePostProcessPass:getDistanceBufferScale()
-	return self.distanceBufferScale
 end
 
 function OutlinePostProcessPass:setShimmerTexture(value)
@@ -171,16 +163,13 @@ function OutlinePostProcessPass:load(resources)
 	self.depthOutlineShader = self:loadPostProcessShader("DepthOutline")
 	self.customOutlineShader = self:loadPostProcessShader("CustomOutline")
 	self.alphaOutlineShader = self:loadPostProcessShader("AlphaOutline")
-	self.initializeJumpFloodShader = self:loadPostProcessShader("InitJumpFlood")
-	self.jumpFloodShader = self:loadPostProcessShader("JumpFlood")
 	self.composeOutlineShader = self:loadPostProcessShader("ComposeOutline")
 	self.jitterOutlineShader = self:loadPostProcessShader("JitterOutline")
 	self.dilateShader = self:loadPostProcessShader("Dilate")
 	self.composeDilateShader = self:loadPostProcessShader("ComposeDilate")
 
 	self.outlineBuffer = NGBuffer("rgba8", "rgba8")
-	self.distanceBuffer = NGBuffer("rgba8", "rgba8")
-	self.dilateBuffer = NGBuffer("rgba8")
+	self.dilateBuffer = NGBuffer("rgba8", "rgba8")
 end
 
 function OutlinePostProcessPass:_drawDepthOutline(width, height)
@@ -194,7 +183,7 @@ function OutlinePostProcessPass:_drawDepthOutline(width, height)
 		"scape_Far", camera:getFar(),
 		"scape_TexelSize", { 1 / width, 1 / height },
 		"scape_NormalTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_INDEX),
-		"scape_OutlineTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.SPECULAR_OUTLINE_INDEX),
+		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.SPECULAR_OUTLINE_INDEX),
 		"scape_DepthStep", self.depthStep,
 		"scape_NormalStep", self.normalStep)
 
@@ -262,46 +251,7 @@ function OutlinePostProcessPass:_generateOutlines(width, height)
 	self:_drawParticleOutlines(width, height)
 end
 
-function OutlinePostProcessPass:_jumpFlood(width, height)
-	love.graphics.setBlendMode("replace", "premultiplied")
-	love.graphics.setDepthMode("always", false)
-
-	local currentOutlineBuffer = self.distanceBuffer:getCanvas(1)
-	local nextOutlineBuffer = self.distanceBuffer:getCanvas(2)
-
-	self:bindShader(
-		self.initializeJumpFloodShader,
-		"scape_TextureSize", { self.distanceBuffer:getWidth(), self.distanceBuffer:getHeight() })
-
-	love.graphics.setCanvas(currentOutlineBuffer)
-	love.graphics.clear(0, 0, 0, 1)
-	love.graphics.draw(self.outlineBuffer:getCanvas(2), 0, 0, 0, self.distanceBufferScale, self.distanceBufferScale)
-
-	self:bindShader(
-		self.jumpFloodShader,
-		"scape_TextureSize", { self.distanceBuffer:getWidth(), self.distanceBuffer:getHeight() },
-		"scape_MaxDistance", math.huge)
-	
-	local currentDistanceX, currentDistanceY
-	repeat
-		self:bindShader(
-			self.jumpFloodShader,
-			"scape_JumpDistance", { (currentDistanceX or 1) / self.distanceBuffer:getWidth(), (currentDistanceY or 1) / self.distanceBuffer:getHeight() })
-
-		love.graphics.setCanvas(nextOutlineBuffer)
-		love.graphics.clear(0, 0, 0, 1)
-
-		love.graphics.draw(currentOutlineBuffer)
-
-		currentDistanceX = math.max((currentDistanceX or self.distanceBuffer:getWidth()) / 2, 1)
-		currentDistanceY = math.max((currentDistanceY or self.distanceBuffer:getHeight()) / 2, 1)
-		currentOutlineBuffer, nextOutlineBuffer = nextOutlineBuffer, currentOutlineBuffer
-	until currentDistanceX <= 1 and currentDistanceY <= 1
-
-	return currentOutlineBuffer
-end
-
-function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, height)
+function OutlinePostProcessPass:_composeOutline(width, height)
 	local camera = self:getRenderer():getCamera()
 	local deferredRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_DEFERRED)
 	local alphaMaskRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_ALPHA_MASK)
@@ -313,13 +263,11 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 	self:bindShader(
 		self.composeOutlineShader,
 		"scape_DepthTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX),
-		"scape_OutlineTexture", self.outlineBuffer:getCanvas(2),
 		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.SPECULAR_OUTLINE_INDEX),
 		"scape_ShimmerTexture", self.translucentTexture,
 		"scape_Near", camera:getNear(),
 		"scape_Far", camera:getFar(),
 		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_TexelScale", { 1 / self.distanceBufferScale, 1 / self.distanceBufferScale },
 		"scape_MinOutlineThickness", self.minOutlineThickness,
 		"scape_MaxOutlineThickness", self.maxOutlineThickness,
 		"scape_NearOutlineDistance", self.nearOutlineDistance,
@@ -329,7 +277,7 @@ function OutlinePostProcessPass:_composeOutline(currentOutlineBuffer, width, hei
 		"scape_OutlineFadeDepth", self.outlineFadeDepth)
 
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.draw(currentOutlineBuffer, 0, 0, 0, 1 / self.distanceBufferScale, 1 / self.distanceBufferScale)
+	love.graphics.draw(self.outlineBuffer:getCanvas(2))
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
@@ -351,25 +299,6 @@ function OutlinePostProcessPass:_updateNoise(width, height)
 
 	self.noiseWidth = noiseWidth
 	self.noiseHeight = noiseHeight
-end
-
-function OutlinePostProcessPass:_dilate(width, height)
-	love.graphics.setCanvas(self.dilateBuffer:getCanvas(1))
-	love.graphics.clear(0, 0, 0, 0)
-
-	love.graphics.setBlendMode("alpha")
-	love.graphics.setDepthMode("always", false)
-	love.graphics.setColorMask(true, true, true, true)
-
-	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
-	local highlightTexture = shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX)
-
-	self:bindShader(
-		self.dilateShader,
-		"scape_TexelSize", { 1 / highlightTexture:getWidth(), 1 / highlightTexture:getHeight() },
-		"scape_KernelRadius", self.shimmerRadius)
-
-	love.graphics.draw(highlightTexture)
 end
 
 function OutlinePostProcessPass:_finish(width, height)
@@ -397,6 +326,25 @@ function OutlinePostProcessPass:_finish(width, height)
 	love.graphics.draw(shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX))
 end
 
+function OutlinePostProcessPass:_dilate(width, height)
+	love.graphics.setCanvas(self.dilateBuffer:getCanvas(1))
+	love.graphics.clear(0, 0, 0, 0)
+
+	love.graphics.setBlendMode("alpha")
+	love.graphics.setDepthMode("always", false)
+	love.graphics.setColorMask(true, true, true, true)
+
+	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
+	local highlightTexture = shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX)
+
+	self:bindShader(
+		self.dilateShader,
+		"scape_TexelSize", { 1 / highlightTexture:getWidth(), 1 / highlightTexture:getHeight() },
+		"scape_KernelRadius", self.shimmerRadius)
+
+	love.graphics.draw(highlightTexture)
+end
+
 function OutlinePostProcessPass:draw(width, height)
 	PostProcessPass.draw(self, width, height)
 
@@ -409,17 +357,11 @@ function OutlinePostProcessPass:draw(width, height)
 	self.outlineBuffer:getCanvas(2):setFilter("linear", "linear")
 
 	self.dilateBuffer:resize(width, height)
-	self.dilateBuffer:getCanvas(1):setFilter("linear", "linear")
-
-	self.distanceBuffer:resize(math.floor(width * self.distanceBufferScale), math.floor(height * self.distanceBufferScale))
-	self.distanceBuffer:getCanvas(1):setFilter("nearest", "nearest")
-	self.distanceBuffer:getCanvas(2):setFilter("nearest", "nearest")
 
 	love.graphics.setColor(1, 1, 1, 1)
 
 	self:_generateOutlines(width, height)
-	local currentOutlineBuffer = self:_jumpFlood(width, height)
-	self:_composeOutline(currentOutlineBuffer, width, height)
+	self:_composeOutline(width, height)
 	self:_updateNoise(width, height)
 	self:_dilate(width, height)
 	self:_finish(width, height)

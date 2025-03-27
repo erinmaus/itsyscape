@@ -189,16 +189,17 @@ local gcStops = 0
 function collectgarbage(opt, arg)
 	if opt == "stop" then
 		if gcStops == 0 then
-			local result = _collectgarbage("stop")
+			print(">>>>> STOPPING GC")
+			_collectgarbage("stop")
 		end
 
 		gcStops = gcStops + 1
-
-		return result
 	elseif opt == "restart" then
+		assert(gcStops >= 1)
 		gcStops = math.max(gcStops - 1, 0)
 
 		if gcStops == 0 then
+			print(">>>>> RESUMING GC")
 			return _collectgarbage("restart")
 		end
 	else

@@ -152,9 +152,9 @@ end
 
 function GameView:initRenderer(conf)
 	self.renderer = Renderer({
-		shadows = conf and conf.shadows,
-		outlines = conf and conf.outlines,
-		reflections = conf and conf.reflections
+		shadows = false,--conf and conf.shadows,
+		outlines = true,--conf and conf.outlines,
+		reflections = false,--conf and conf.reflections
 	})
 	self.renderer:setCamera(self.camera)
 
@@ -2133,7 +2133,8 @@ function GameView:draw(delta, width, height)
 	end
 
 	self.renderer:setClearColor(Color(0, 0, 0, 0))
-	self.renderer:draw(self.scene, delta, width, height, { self.ssrPostProcessPass, self.toneMapPostProcessPass, self.sceneOutlinePostProcessPass })
+	--self.renderer:draw(self.scene, delta, width, height)
+	self.renderer:draw(self.scene, delta, width, height, { self.sceneOutlinePostProcessPass })
 	self.renderer:present(true)
 end
 

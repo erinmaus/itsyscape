@@ -4,13 +4,13 @@ uniform vec2 scape_TexelSize;
 uniform float scape_DepthStep;
 uniform float scape_NormalStep;
 uniform sampler2D scape_NormalTexture;
-uniform sampler2D scape_OutlineTexture;
+uniform sampler2D scape_OutlineColorTexture;
 
 vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordinates)
 {
 	float depthSample = Texel(image, textureCoordinate).r;
 	float linearDepth = linearDepth(depthSample);
-	vec4 outlineSample = Texel(scape_OutlineTexture, textureCoordinate);
+	vec4 outlineSample = Texel(scape_OutlineColorTexture, textureCoordinate);
 	float outlineThreshold = (outlineSample.z - 0.5) * 2.0;
 	vec3 outlineColor = vec3(outlineSample.y);
 

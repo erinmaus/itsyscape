@@ -53,7 +53,7 @@ function ChannelRPCService:_pop()
 	return nil
 end
 
-function ChannelRPCService:receive()
+function ChannelRPCService:receive(c)
 	local result = self:_pop()
 	if not result then
 		local e

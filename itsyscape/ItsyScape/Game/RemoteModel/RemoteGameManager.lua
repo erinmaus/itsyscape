@@ -158,7 +158,7 @@ function RemoteGameManager:receive()
 						end
 					end
 				else
-					self:tick()
+					self:getDebugStats():measure("RemoteGameManager::tick", self.tick, self)
 					break
 				end
 			end

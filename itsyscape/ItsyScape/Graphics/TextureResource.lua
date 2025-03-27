@@ -32,13 +32,15 @@ if love.graphics then
 					float subSampleLength = length(subSample);
 					if (subSample.a > 0.5 && (subSampleLength < currentSampleLength || subSample.a > currentSample.a))
 					{
-						currentSample = subSample;
+						currentSample.rgb = subSample.rgb;
+						currentSample.a = max(subSample.a, currentSample.a);
 						currentSampleLength = subSampleLength;
 					}
 				}
 			}
 
-			return vec4(currentSample.r, currentSample.g, currentSample.b, step(0.5, currentSample.a));
+			currentSample.a = step(0.3, currentSample.a);
+			return vec4(currentSample.r, currentSample.g, currentSample.b, currentSample.a);
 		}
 	]])
 end
@@ -93,7 +95,7 @@ function TextureResource:release()
 	self:getHandle():setTexture()
 end
 
-function TextureResource:_generateOutlineImage(image)
+function TextureResource.generateOutlineImage(image)
 	local width = image:getWidth()
 	local height = image:getHeight()
 
@@ -101,13 +103,15 @@ function TextureResource:_generateOutlineImage(image)
 	local previousHeight = height
 	local previousImage = image
 
-	local widthBreakpoint = math.max(image:getWidth() / 8, 256)
-	local heightBreakpoint = math.max(image:getHeight() / 8, 256)
+	--local widthBreakpoint = math.max(image:getWidth() / 8, 256)
+	--local heightBreakpoint = math.max(image:getHeight() / 8, 256)
+	local widthBreakpoint = 0
+	local heightBreakpoint = 0
 
 	love.graphics.push("all")
 	
 	love.graphics.setBlendMode("replace", "premultiplied")
-	love.graphics.setShader(self.OUTLINE_MIPMAP_SHADER)
+	love.graphics.setShader(TextureResource.OUTLINE_MIPMAP_SHADER)
 	local mipmaps = {}
 	repeat
 		local canvas = love.graphics.newCanvas(width, height)
@@ -115,8 +119,8 @@ function TextureResource:_generateOutlineImage(image)
 		local blockHeight = previousHeight / height
 		local texelScaleX = 1.0 / previousWidth
 		local texelScaleY = 1.0 / previousHeight
-		self.OUTLINE_MIPMAP_SHADER:send("scape_MipmapTexelScale", { texelScaleX, texelScaleY })
-		self.OUTLINE_MIPMAP_SHADER:send("scape_MipmapBlockSize", { blockWidth * texelScaleX, blockHeight * texelScaleY })
+		TextureResource.OUTLINE_MIPMAP_SHADER:send("scape_MipmapTexelScale", { texelScaleX, texelScaleY })
+		TextureResource.OUTLINE_MIPMAP_SHADER:send("scape_MipmapBlockSize", { blockWidth * texelScaleX, blockHeight * texelScaleY })
 
 		if width < widthBreakpoint or height < heightBreakpoint then
 			previousImage:setFilter("linear", "linear")
@@ -174,7 +178,7 @@ function TextureResource:loadFromFile(filename, resourceManager)
 			perPassImage:setWrap("repeat")
 
 			if passID == RendererPass.PASS_OUTLINE then
-				perPassImage = self:_generateOutlineImage(perPassImage)
+				perPassImage = TextureResource.generateOutlineImage(perPassImage)
 			end
 
 			self:getHandle():setPerPassTexture(passID, perPassImage)
