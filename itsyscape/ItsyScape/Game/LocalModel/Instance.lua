@@ -1267,7 +1267,7 @@ function Instance:_removePlayerFromInstance(player, e)
 			local mapScript = self:getMapScriptByLayer(layer)
 			if mapScript then
 				local function onPlayerLeave()
-					mapScript:pushPoke('playerLeave', player, e and e.arguments or {})
+					mapScript:poke('playerLeave', player, e and e.arguments or {})
 					mapScript:silence('finalize', onPlayerLeave)
 				end
 

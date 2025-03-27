@@ -268,17 +268,16 @@ function LocalGame:quit()
 	Log.info("Quitting game...")
 
 	self:leave()
+	self:tick()
 
 	for i = 1, #self.players do
 		local player = self.players[i]
-
 		Log.info(
 			"Poofing player '%s (%d).",
 			player:getActor() and player:getActor():getName(),
 			player:getID())
 		player:poof()
 	end
-
 	self:tick()
 
 	self.director:quit()
