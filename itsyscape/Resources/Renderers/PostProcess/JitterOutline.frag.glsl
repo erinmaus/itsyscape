@@ -18,10 +18,8 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	vec4 result;
 	if (outlineSample.r == outlineSample.g && outlineSample.r == outlineSample.b)
 	{
-		//result.rgb = vec3(0.0);
-		//result.a = (1.0 - outlineSample.r) * outlineSample.a;
-		result.rgb = outlineSample.rgb;
-		result.a = 1.0;
+		result.rgb = vec3(0.0);
+		result.a = (1.0 - outlineSample.r) * outlineSample.a;
 	}
 	else
 	{

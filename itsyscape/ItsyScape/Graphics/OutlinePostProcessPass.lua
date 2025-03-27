@@ -34,8 +34,8 @@ function OutlinePostProcessPass:new(...)
 	self.isEnabled = true
 	self.depthStep = 0
 	self.normalStep = 0.3
-	self.minOutlineThickness = 1
-	self.maxOutlineThickness = 2
+	self.minOutlineThickness = 0.25
+	self.maxOutlineThickness = 0.5
 	self.nearOutlineDistance = 15
 	self.farOutlineDistance = 32
 	self.minOutlineDepthAlpha = 0.5
@@ -43,7 +43,7 @@ function OutlinePostProcessPass:new(...)
 	self.outlineFadeDepth = 20
 	self.outlineTurbulence = 0.25
 	self.outlineThicknessNoiseScale = Vector(1.79836848):keep()
-	self.outlineThicknessNoiseJitter = 1
+	self.outlineThicknessNoiseJitter = 2
 	self.startTime = love.timer.getTime()
 
 	local translucentTextureImageData = love.image.newImageData(1, 1)

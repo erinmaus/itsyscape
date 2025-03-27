@@ -31,27 +31,16 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	alphaMultiplier = mix(scape_MinOutlineDepthAlpha, scape_MaxOutlineDepthAlpha, alphaMultiplier);
 
 	vec3 worldPosition = worldPositionFromGBufferDepth(depthSample, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
-	float offset = snoise(vec4(worldPosition * scape_OutlineThicknessNoiseScale, floor(scape_Time * 8.0) / 8.0 * 2.0));//, floor(scape_Time * 8) / 8 * 2)), -1, 1) * scape_OutlineThicknessNoiseJitter;
+	float offset = snoise(vec4(worldPosition * scape_OutlineThicknessNoiseScale, floor(scape_Time * 8.0) / 8.0));
 	offset += 1.0;
 	offset /= 2.0;
 	offset *= scape_OutlineThicknessNoiseJitter;
 
-	vec4 outlineColor;
-	if (offset <= 0)
-	{
-		outlineColor = dilateMax(thickness + abs(offset), image, textureCoordinate, scape_TexelScale, vec4(0.0));
-	}
-	else
-	{
-		outlineColor = dilateMin(thickness + abs(offset), image, textureCoordinate, scape_TexelSize, vec4(1.0));
-	}
+	vec4 outlineColor = dilateMin(thickness + abs(offset), image, textureCoordinate, scape_TexelSize, vec4(1.0));
 
-	//vec4 outlineColor = dilateMin(thickness, image, textureCoordinate, scape_TexelSize, vec4(1.0));
 	vec4 result;
 	result.rgb = mix(vec3(1.0), outlineColor.rgb, alphaMultiplier);
 	result.a = 1.0;
 
-	//return vec4(vec3((offset + 1.0) / 2), 1.0);
 	return result;
-	//return vec4((vec3(snoise(vec3(textureCoordinate, Texel(scape_DepthTexture, textureCoordinate).r) * vec2(131.79836848))) + vec3(1.0)) / vec3(2.0), 1.0);
 }
