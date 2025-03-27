@@ -6,5 +6,10 @@
 		{
 			default = true,
 		},
+		material = {
+			isReflectiveOrRefractive = true,
+			reflectionPower = 1,
+			reflectionRoughness = 1
+		}
 	},
 }

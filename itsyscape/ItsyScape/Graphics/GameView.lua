@@ -152,9 +152,9 @@ end
 
 function GameView:initRenderer(conf)
 	self.renderer = Renderer({
-		shadows = false,--conf and conf.shadows,
-		outlines = true,--conf and conf.outlines,
-		reflections = false,--conf and conf.reflections
+		shadows = conf and conf.shadows,
+		outlines = conf and conf.outlines,
+		reflections = conf and conf.reflections
 	})
 	self.renderer:setCamera(self.camera)
 
@@ -170,8 +170,8 @@ function GameView:initRenderer(conf)
 
 	self.skyboxOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
 	self.skyboxOutlinePostProcessPass:load(self.resourceManager)
-	self.skyboxOutlinePostProcessPass:setMinOutlineThickness(3)
-	self.skyboxOutlinePostProcessPass:setMaxOutlineThickness(3)
+	self.skyboxOutlinePostProcessPass:setMinOutlineThickness(1)
+	self.skyboxOutlinePostProcessPass:setMaxOutlineThickness(1)
 	self.skyboxOutlinePostProcessPass:setNearOutlineDistance(0)
 	self.skyboxOutlinePostProcessPass:setFarOutlineDistance(1000)
 	self.skyboxOutlinePostProcessPass:setMinOutlineDepthAlpha(1)
@@ -801,6 +801,32 @@ function GameView:updateMap(map, layer)
 			alphaNode:setParent(m.node)
 
 			table.insert(m.parts, alphaNode)
+		end
+
+		if m.meta and m.meta.material then
+			local metaMaterial = m.meta.material
+			for _, part in ipairs(m.parts) do
+				local material = part:getMaterial()
+				if metaMaterial.isReflectiveOrRefractive then
+					print(">>> part is reflective")
+					material:setIsReflectiveOrRefractive(true)
+				end
+
+				if metaMaterial.reflectionPower then
+					print(">>> reflection power", metaMaterial.reflectionPower)
+					material:setRoughness(metaMaterial.reflectionPower)
+				end
+
+				if metaMaterial.reflectionRoughness then
+					print(">>> part is rough", metaMaterial.reflectionRoughness)
+					material:setRoughness(metaMaterial.reflectionRoughness)
+				end
+
+				if metaMaterial.reflectionDistance then
+					print(">>> distance", metaMaterial.reflectionDistance)
+					material:setReflectionDistance(metaMaterial.reflectionDistance)
+				end
+			end
 		end
 
 		local function _update()
@@ -2128,13 +2154,13 @@ function GameView:draw(delta, width, height)
 		local info = self.skyboxes[skybox]
 		
 		self.renderer:setClearColor(Color(0, 0, 0, 0))
-		self.renderer:draw(skybox, delta, width, height)
+		self.renderer:draw(skybox, delta, width, height, { self.sceneOutlinePostProcessPass })
 		self.renderer:present(false)
 	end
 
 	self.renderer:setClearColor(Color(0, 0, 0, 0))
 	--self.renderer:draw(self.scene, delta, width, height)
-	self.renderer:draw(self.scene, delta, width, height, { self.sceneOutlinePostProcessPass })
+	self.renderer:draw(self.scene, delta, width, height, { self.ssrPostProcessPass, self.toneMapPostProcessPass, self.sceneOutlinePostProcessPass })
 	self.renderer:present(true)
 end
 
