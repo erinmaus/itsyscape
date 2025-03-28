@@ -107,6 +107,14 @@ function Vector:transform(transform)
 	return Vector(transform:transformPoint(self.x, self.y, self.z))
 end
 
+function Vector:inverseTransform(transform)
+	if not transform then
+		return self
+	end
+
+	return Vector(transform:inverseTransformPoint(self.x, self.y, self.z))
+end
+
 function Vector.transformBounds(min, max, transform)
 	min:compatible(max)
 

@@ -17,7 +17,7 @@ local Controller = require "ItsyScape.UI.Controller"
 
 local CannonController = Class(Controller)
 
-CannonController.CAMERA_OFFSET   = Vector(0, 8, 2)
+CannonController.CAMERA_OFFSET   = Vector(0, 4, 2)
 CannonController.CAMERA_DISTANCE = 20
 CannonController.CAMERA_ROTATION = Quaternion.Y_180 * Quaternion.X_180 * Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 16)
 

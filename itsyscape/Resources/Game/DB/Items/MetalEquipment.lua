@@ -56,7 +56,7 @@ local METALS = {
 
 local ITEMS = {
 	["Gloves"] = {
-		skills = { "Defense", "Strength" },
+		skills = { "Defense" },
 		niceName = "%s gloves",
 		slot = "Gloves",
 		bars = 1,
@@ -65,7 +65,7 @@ local ITEMS = {
 	},
 
 	["Boots"] = {
-		skills = { "Defense", "Strength" },
+		skills = { "Defense" },
 		niceName = "%s boots",
 		slot = "Boots",
 		bars = 1,
@@ -74,7 +74,7 @@ local ITEMS = {
 	},
 
 	["Helmet"] = {
-		skills = { "Defense", "Strength" },
+		skills = { "Defense" },
 		niceName = "%s full helmet",
 		slot = "Helmet",
 		bars = 2,
@@ -83,7 +83,7 @@ local ITEMS = {
 	},
 
 	["Platebody"] = {
-		skills = { "Defense", "Strength" },
+		skills = { "Defense" },
 		niceName = "%s platebody",
 		slot = "Body",
 		bars = 5,
@@ -92,7 +92,7 @@ local ITEMS = {
 	},
 
 	["Shield"] = {
-		skills = { "Defense", "Strength" },
+		skills = { "Defense" },
 		niceName = "%s shield",
 		slot = "Shield",
 		bars = 3,

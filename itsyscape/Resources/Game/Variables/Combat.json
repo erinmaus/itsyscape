@@ -6,7 +6,7 @@
 
 	"zealCost": {
 		"tier1": {
-			"baseCost": 0.05,
+			"baseCost": 0.15,
 			"maxCostReduction": 0.05
 		},
 

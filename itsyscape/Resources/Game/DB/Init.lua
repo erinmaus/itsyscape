@@ -1573,6 +1573,7 @@ include "Resources/Game/DB/Props/Target.lua"
 include "Resources/Game/DB/Props/Sky.lua"
 include "Resources/Game/DB/Props/Jungle.lua"
 include "Resources/Game/DB/Props/Anchor.lua"
+include "Resources/Game/DB/Props/Firefly.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"

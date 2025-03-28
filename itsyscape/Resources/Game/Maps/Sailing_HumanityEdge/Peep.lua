@@ -83,7 +83,7 @@ function Island:_giveItems(playerPeep, items)
 	local playerPeepState = playerPeep:getState()
 	for _, item in ipairs(items) do
 		local count = playerPeepState:count("Item", item.id, hasFlags)
-		if count < item.count then
+		if count <= item.count then
 			playerPeepState:give("Item", item.id, item.count - count, giveFlags)
 		end
 	end
@@ -128,11 +128,12 @@ end
 function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint)
 	local otherPeep = self:getCompanion(playerPeep, otherPeepName)
 
-	local wrappedCallback
-	if callback then
-		wrappedCallback = function()
+	local function wrappedCallback()
+		if callback then
 			callback(playerPeep, otherPeep)
 		end
+
+		Utility.Peep.setMashinaState(otherPeep, "tutorial-follow-player")
 	end
 
 	if otherPeep then
@@ -184,7 +185,6 @@ function Island:onFinishPreparingTutorial(playerPeep)
 			Utility.Peep.disable(playerPeep)
 			self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
 				Utility.Peep.enable(playerPeep)
-				Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
 			end)
 		end
 	end
@@ -394,9 +394,8 @@ function Island:updateTutorialFindScoutStep(playerPeep)
 	   Utility.Peep.isEnabled(playerPeep)
 	then
 		Utility.Peep.disable(playerPeep)
-		self:talkToPeep(playerPeep, "KnightCommander", function(playerPeep, knightCommander)
+		self:talkToPeep(playerPeep, "KnightCommander", function()
 			Utility.Peep.enable(playerPeep)
-			Utility.Peep.setMashinaState(knightCommander, "tutorial-follow-player")
 		end)
 	end
 
@@ -405,9 +404,8 @@ function Island:updateTutorialFindScoutStep(playerPeep)
 		self:saveTutorialLocation(playerPeep, "Anchor_EncounterYendorianScout")
 
 		Utility.Peep.disable(playerPeep)
-		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
+		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.enable(playerPeep)
-			Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
 		end)
 	end
 end
@@ -423,7 +421,6 @@ function Island:updateTutorialEncounterScoutStep(playerPeep)
 
 		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
 			Utility.Peep.enable(playerPeep)
-			Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
 
 			self:transitionTutorial(playerPeep, "Tutorial_DefeatedScout")
 			self:saveTutorialLocation(playerPeep, "Anchor_DefeatYendorianScout")
@@ -436,8 +433,7 @@ function Island:updateTutorialFindYenderhoundsStep(playerPeep)
 		self:transitionTutorial(playerPeep, "Tutorial_FoundYenderhounds")
 
 		Utility.Peep.disable(playerPeep)
-		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
-
+		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.enable(playerPeep)
 			self:saveTutorialLocation(playerPeep, "Anchor_EncounterYenderhounds")
 		end)
@@ -460,7 +456,7 @@ function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
 
 	if not isAlive and Utility.Peep.isEnabled(playerPeep) then
 		Utility.Peep.disable(playerPeep)
-		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
+		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.enable(playerPeep)
 			self:transitionTutorial(playerPeep, "Tutorial_DefeatedYenderhounds")
 		end)
