@@ -4933,6 +4933,11 @@ function Utility.Peep.makeMashina(peep)
 	peep:listen('ready', Utility.Peep.Mashina.onReady)
 end
 
+function Utility.Peep.getMashinaState(peep)
+	local mashina = peep:getBehavior(MashinaBehavior)
+	return mashina and mashina.currentState or false
+end
+
 function Utility.Peep.setMashinaState(peep, state)
 	local mashina = peep:getBehavior(MashinaBehavior)
 	if mashina then

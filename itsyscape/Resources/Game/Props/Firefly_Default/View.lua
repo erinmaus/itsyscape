@@ -18,7 +18,7 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
 local Firefly = Class(PropView)
 
-Firefly.NUM_FIREFLIES = 6
+Firefly.NUM_FIREFLIES = 12
 
 Firefly.FIREFLY_MIN_SIZE = 0.05
 Firefly.FIREFLY_MAX_SIZE = 0.075
@@ -152,10 +152,12 @@ function Firefly:resetFirefly(firefly)
 			self:_random(self.FIREFLY_MIN_WANDER_RADIUS, self.FIREFLY_MAX_WANDER_RADIUS)):keep()
 
 		firefly.scene.mesh:getTransform():setLocalScale(Vector(self:_random(self.FIREFLY_MIN_SIZE, self.FIREFLY_MAX_SIZE)))
-		firefly.scene.mesh:tick()
 
 		firefly.color = self.COLORS[love.math.random(#self.COLORS)]
 		firefly.attenuation = self:_random(self.FIREFLY_MIN_ATTENUATION, self.FIREFLY_MAX_ATTENUATION)
+
+		self:updateFirefly(firefly, 0)
+		firefly.scene.mesh:tick()
 	else
 		firefly.dead = true
 		firefly.age = love.math.random() * self.FIREFLY_MIN_AGE
@@ -229,7 +231,6 @@ function Firefly:update(delta)
 	for _, firefly in ipairs(self.fireflies) do
 		if not self:updateFirefly(firefly, delta) then
 			self:resetFirefly(firefly)
-			self:updateFirefly(firefly, 0)
 		end
 	end
 end

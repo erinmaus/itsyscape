@@ -80,10 +80,17 @@ function Island:_giveItems(playerPeep, items)
 		["item-inventory"] = true
 	}
 
+	local hasItemsOnGround, groundInventory = TutorialCommon.hasPeepDroppedItems(playerPeep)
 	local playerPeepState = playerPeep:getState()
 	for _, item in ipairs(items) do
 		local count = playerPeepState:count("Item", item.id, hasFlags)
-		if count <= item.count then
+		for _, groundItem in ipairs(groundInventory) do
+			if groundItem:getID() == item.id then
+				count = count + groundItem:getCount()
+			end
+		end
+
+		if count < item.count then
 			playerPeepState:give("Item", item.id, item.count - count, giveFlags)
 		end
 	end
@@ -129,11 +136,14 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint)
 	local otherPeep = self:getCompanion(playerPeep, otherPeepName)
 
 	local function wrappedCallback()
+		local mashinaState = Utility.Peep.getMashinaState(otherPeep)
+		if not mashinaState then
+			Utility.Peep.setMashinaState(otherPeep, "tutorial-follow-player")
+		end
+
 		if callback then
 			callback(playerPeep, otherPeep)
 		end
-
-		Utility.Peep.setMashinaState(otherPeep, "tutorial-follow-player")
 	end
 
 	if otherPeep then
@@ -159,13 +169,15 @@ function Island:onFinishPreparingTutorial(playerPeep)
 	if not Utility.Quest.didStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
 		self:_giveTutorialRequiredItems(playerPeep)
 
-		self:talkToPeep(playerPeep, "Orlando", function()
+		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
 			if not Utility.Quest.didStep("Tutorial", "Tutorial_GatheredItems", playerPeep) then
 				Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_DroppedItems")
 			end
 
 			Utility.UI.openGroup(playerPeep, "WORLD")
 			TutorialCommon.showBasicControlsHint(playerPeep)
+
+			Utility.Peep.setMashinaState(orlando, "tutorial-look-away-from-player")
 		end)
 	end
 
@@ -218,17 +230,18 @@ function Island:teleportCompanion(playerPeep, companion)
 end
 
 function Island:onFinishPreparingTeam(playerPeep)
+	self:initCompanion(playerPeep, "KnightCommander")
+	self:initCompanion(playerPeep, "Orlando")
+
 	if not Utility.Quest.didStart("Tutorial", playerPeep) then
 		return
 	end
 
 	if Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") == true then
 		self:teleportCompanion(playerPeep, "KnightCommander")
-		self:initCompanion(playerPeep, "KnightCommander")
 	end
 
 	self:teleportCompanion(playerPeep, "Orlando")
-	self:initCompanion(playerPeep, "Orlando")
 end
 
 function Island:onFinishPreparingYenderhounds(playerPeep)

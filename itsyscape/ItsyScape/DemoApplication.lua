@@ -2115,6 +2115,8 @@ function DemoApplication:isInterfaceBlockingGamepadMovement()
 
 	local interfaceParent = focusedWidget:getParentOfType(Interface)
 	local gamepadSink = interfaceParent and interfaceParent:getData(GamepadSink)
+	gamepadSink = gamepadSink or focusedWidget:getParentData(GamepadSink)
+
 	return gamepadSink and gamepadSink:getIsBlocking()
 end
 

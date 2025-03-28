@@ -575,14 +575,17 @@ function Common.hasPeepDroppedItems(playerPeep, pattern)
 	end
 
 	local inventory = Utility.Peep.getInventory(ground)
+	local filteredInventory = {}
+	local hasDroppedItem = false
 	for _, item in ipairs(inventory) do
 		local owner = broker:getItemTag(item, "owner")
 		if owner == playerPeep and (not pattern or item:getID():match(pattern)) then
-			return true
+			table.insert(filteredInventory, item)
+			hasDroppedItem = true
 		end
 	end
 
-	return false
+	return hasDroppedItem, filteredInventory
 end
 
 function Common.hasPeepDroppedIsabellium(playerPeep)

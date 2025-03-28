@@ -395,6 +395,12 @@ do
 		IsDefault = 1,
 		Resource = M["Yenderhound1"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AttackLogic.lua",
+		Resource = M["Yenderhound1"]
+	}
 end
 
 M["Yenderhound2"] = ItsyScape.Resource.MapObject.Unique()
@@ -429,6 +435,12 @@ do
 		IsDefault = 1,
 		Resource = M["Yenderhound2"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AttackLogic.lua",
+		Resource = M["Yenderhound1"]
+	}
 end
 
 M["Yenderhound3"] = ItsyScape.Resource.MapObject.Unique()
@@ -462,6 +474,12 @@ do
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AggressiveIdleLogic.lua",
 		IsDefault = 1,
 		Resource = M["Yenderhound3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AttackLogic.lua",
+		Resource = M["Yenderhound1"]
 	}
 end
 

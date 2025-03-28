@@ -16,7 +16,7 @@ local CombatCortex2 = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 local TARGET = B.Reference("Tutorial_Yenderhound_AggressiveIdleLogic", "TARGET")
 
 local Tree = BTreeBuilder.Node() {
-	Mashina.ParallelTry {	
+	Mashina.ParallelTry {
 		Mashina.Sequence {
 			Mashina.Peep.FindNearbyCombatTarget {
 				-- We don't want to gang up on single a potential target in the tutorial.
@@ -28,7 +28,7 @@ local Tree = BTreeBuilder.Node() {
 					return #hits == 0
 				end,
 
-				[TARGET] = B.Output.RESULT
+				[TARGET] = B.Output.result
 			},
 
 			Mashina.Step {

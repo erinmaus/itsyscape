@@ -40,7 +40,9 @@ namespace nbunny
 		std::vector<SceneNode*> drawable_scene_nodes;
 		std::vector<SceneNode*> stencil_masked_drawable_scene_nodes;
 		std::vector<SceneNode*> stencil_write_drawable_scene_nodes;
-		std::vector<LightSceneNode*> light_scene_nodes;
+		std::vector<PointLightSceneNode*> point_light_scene_nodes;
+		std::vector<AmbientLightSceneNode*> ambient_light_scene_nodes;
+		std::vector<DirectionalLightSceneNode*> directional_light_scene_nodes;
 		std::vector<FogSceneNode*> fog_scene_nodes;
 
 		void walk_all_nodes(SceneNode& node, float delta);
@@ -49,6 +51,11 @@ namespace nbunny
 		void draw_ambient_light(lua_State* L, LightSceneNode& node, float delta);
 		void draw_directional_light(lua_State* L, LightSceneNode& node, float delta);
 		void draw_point_light(lua_State* L, LightSceneNode& node, float delta);
+
+		void draw_ambient_lights(lua_State* L, float delta);
+		void draw_directional_lights(lua_State* L, float delta);
+		void draw_point_lights(lua_State* L, float delta);
+
 		void draw_fog(lua_State* L, FogSceneNode& node, float delta);
 
 		void draw_nodes(lua_State* L, float delta, const std::vector<SceneNode*>& nodes);
@@ -76,14 +83,17 @@ namespace nbunny
 
 		enum
 		{
-			BUILTIN_SHADER_DEFAULT           = -1,
-			BUILTIN_SHADER_AMBIENT_LIGHT     = -2,
-			BUILTIN_SHADER_DIRECTIONAL_LIGHT = -3,
-			BUILTIN_SHADER_POINT_LIGHT       = -4,
-			BUILTIN_SHADER_FOG               = -5,
-			BUILTIN_SHADER_DEPTH_COPY        = -6,
-			BUILTIN_SHADER_SHADOW            = -7,
-			BUILTIN_SHADER_MIX_LIGHTS        = -8
+			BUILTIN_SHADER_DEFAULT                 = -1,
+			BUILTIN_SHADER_AMBIENT_LIGHT           = -2,
+			BUILTIN_SHADER_DIRECTIONAL_LIGHT       = -3,
+			BUILTIN_SHADER_POINT_LIGHT             = -4,
+			BUILTIN_SHADER_FOG                     = -5,
+			BUILTIN_SHADER_DEPTH_COPY              = -6,
+			BUILTIN_SHADER_SHADOW                  = -7,
+			BUILTIN_SHADER_MULTI_AMBIENT_LIGHT     = -9,
+			BUILTIN_SHADER_MULTI_DIRECTIONAL_LIGHT = -10,
+			BUILTIN_SHADER_MULTI_POINT_LIGHT       = -11,
+			BUILTIN_SHADER_MIX_LIGHTS              = -12
 		};
 
 		DeferredRendererPass(const std::shared_ptr<ShadowRendererPass>& shadow_pass);

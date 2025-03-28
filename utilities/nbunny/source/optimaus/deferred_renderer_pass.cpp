@@ -8,6 +8,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <array>
 #include "common/Matrix.h"
 #include "common/Module.h"
 #include "common/pixelformat.h"
@@ -19,14 +20,18 @@
 #include "modules/graphics/opengl/OpenGL.h"
 #include "nbunny/optimaus/deferred_renderer_pass.hpp"
 
-static const std::string SHADER_DEFAULT           = "Default";
-static const std::string SHADER_AMBIENT_LIGHT     = "AmbientLight";
-static const std::string SHADER_DIRECTIONAL_LIGHT = "DirectionalLight";
-static const std::string SHADER_POINT_LIGHT       = "PointLight";
-static const std::string SHADER_FOG               = "Fog";
-static const std::string SHADER_COPY_DEPTH        = "CopyDepth";
-static const std::string SHADER_SHADOW            = "Shadow";
-static const std::string SHADER_MIX_LIGHTS        = "MixLights";
+static const int MAX_NUM_LIGHTS = 64;
+static const std::string SHADER_DEFAULT                 = "Default";
+static const std::string SHADER_AMBIENT_LIGHT           = "AmbientLight";
+static const std::string SHADER_MULTI_AMBIENT_LIGHT     = "MultiAmbientLight";
+static const std::string SHADER_DIRECTIONAL_LIGHT       = "DirectionalLight";
+static const std::string SHADER_MULTI_DIRECTIONAL_LIGHT = "MultiDirectionalLight";
+static const std::string SHADER_POINT_LIGHT             = "PointLight";
+static const std::string SHADER_MULTI_POINT_LIGHT       = "MultiPointLight";
+static const std::string SHADER_FOG                     = "Fog";
+static const std::string SHADER_COPY_DEPTH              = "CopyDepth";
+static const std::string SHADER_SHADOW                  = "Shadow";
+static const std::string SHADER_MIX_LIGHTS              = "MixLights";
 
 nbunny::DeferredRendererPass::DeferredRendererPass(const std::shared_ptr<ShadowRendererPass>& shadow_pass) :
 	RendererPass(RENDERER_PASS_DEFERRED),
@@ -76,7 +81,9 @@ void nbunny::DeferredRendererPass::walk_visible_lights()
 {
 	const auto& all_scene_nodes = get_renderer()->get_all_scene_nodes();
 
-	light_scene_nodes.clear();
+	ambient_light_scene_nodes.clear();
+	directional_light_scene_nodes.clear();
+	point_light_scene_nodes.clear();
 	fog_scene_nodes.clear();
 
 	for (auto node: all_scene_nodes)
@@ -86,7 +93,18 @@ void nbunny::DeferredRendererPass::walk_visible_lights()
 			node_type == DirectionalLightSceneNode::type_pointer ||
 			node_type == PointLightSceneNode::type_pointer)
 		{
-			light_scene_nodes.push_back(reinterpret_cast<LightSceneNode*>(node));
+			if (node_type == AmbientLightSceneNode::type_pointer)
+			{
+				ambient_light_scene_nodes.push_back(reinterpret_cast<AmbientLightSceneNode*>(node));
+			}
+			else if (node_type == DirectionalLightSceneNode::type_pointer)
+			{
+				directional_light_scene_nodes.push_back(reinterpret_cast<DirectionalLightSceneNode*>(node));
+			}
+			else if (node_type == PointLightSceneNode::type_pointer)
+			{
+				point_light_scene_nodes.push_back(reinterpret_cast<PointLightSceneNode*>(node));
+			}
 		}
 		else if (node_type == FogSceneNode::type_pointer)
 		{
@@ -117,6 +135,42 @@ void nbunny::DeferredRendererPass::draw_ambient_light(lua_State* L, LightSceneNo
 	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
 	shader_cache.update_uniform(shader, "scape_LightAmbientCoefficient", &light.ambient_coefficient, sizeof(float));
 	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light.color), sizeof(glm::vec3));
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+}
+
+void nbunny::DeferredRendererPass::draw_ambient_lights(lua_State* L, float delta)
+{
+	auto& shader_cache = get_renderer()->get_shader_cache();
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_MULTI_AMBIENT_LIGHT, SHADER_MULTI_AMBIENT_LIGHT);
+	get_renderer()->set_current_shader(shader);
+
+	std::array<glm::vec3, MAX_NUM_LIGHTS> light_colors; 
+	std::array<float, MAX_NUM_LIGHTS> ambient_coefficients;
+
+	int index = 0;
+	for (auto& ambient_light: ambient_light_scene_nodes)
+	{
+		if (index >= MAX_NUM_LIGHTS)
+		{
+			break;
+		}
+
+		Light light;
+		ambient_light->to_light(light, delta);
+
+		light_colors.at(index) = light.color;
+		ambient_coefficients.at(index) = light.ambient_coefficient;
+		++index;
+
+		this->ambient_light += light.ambient_coefficient;
+	}
+
+	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
+	shader_cache.update_uniform(shader, "scape_LightAmbientCoefficient", &ambient_coefficients[0], sizeof(float) * index);
+	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light_colors[0]), sizeof(glm::vec3) * index);
+	shader_cache.update_uniform(shader, "scape_NumLights", &index, sizeof(int));
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
@@ -154,6 +208,55 @@ void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSce
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
 }
 
+void nbunny::DeferredRendererPass::draw_directional_lights(lua_State* L, float delta)
+{
+	auto& shader_cache = get_renderer()->get_shader_cache();
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_MULTI_DIRECTIONAL_LIGHT, SHADER_MULTI_DIRECTIONAL_LIGHT);
+	get_renderer()->set_current_shader(shader);
+
+	std::array<glm::vec3, MAX_NUM_LIGHTS> light_colors;
+	std::array<glm::vec3, MAX_NUM_LIGHTS> light_directions;
+
+	int index = 0;
+	for (auto& directional_light: directional_light_scene_nodes)
+	{
+		if (index >= MAX_NUM_LIGHTS)
+		{
+			break;
+		}
+
+		Light light;
+		directional_light->to_light(light, delta);
+
+		light_colors.at(index) = light.color;
+		light_directions.at(index) = glm::vec3(light.position);
+		++index;
+	}
+
+	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light_colors[0]), sizeof(glm::vec3) * index);
+	shader_cache.update_uniform(shader, "scape_LightDirection", glm::value_ptr(light_directions[0]), sizeof(glm::vec3) * index);
+	shader_cache.update_uniform(shader, "scape_NumLights", &index, sizeof(int));
+
+	shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
+	shader_cache.update_uniform(shader, "scape_NormalTexture", g_buffer.get_canvas(NORMAL_INDEX));
+	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
+
+	auto camera_target = get_renderer()->get_camera().get_target_position();
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_target), sizeof(glm::vec3));
+
+	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_target), sizeof(glm::vec3));
+
+	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
+	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
+
+	auto inverse_view_matrix = glm::inverse(get_renderer()->get_camera().get_view());
+	shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+}
+
 void nbunny::DeferredRendererPass::draw_point_light(lua_State* L, LightSceneNode& node, float delta)
 {
 	auto shader = get_builtin_shader(L, BUILTIN_SHADER_POINT_LIGHT, SHADER_POINT_LIGHT);
@@ -170,6 +273,53 @@ void nbunny::DeferredRendererPass::draw_point_light(lua_State* L, LightSceneNode
 	shader_cache.update_uniform(shader, "scape_LightPosition", glm::value_ptr(light.position), sizeof(glm::vec3));
 	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light.color), sizeof(glm::vec3));
 	shader_cache.update_uniform(shader, "scape_LightAttenuation", &light.attenuation, sizeof(float));
+
+	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
+	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
+
+	auto inverse_view_matrix = glm::inverse(get_renderer()->get_camera().get_view());
+	shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+}
+
+void nbunny::DeferredRendererPass::draw_point_lights(lua_State* L, float delta)
+{
+	auto& shader_cache = get_renderer()->get_shader_cache();
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_MULTI_POINT_LIGHT, SHADER_MULTI_POINT_LIGHT);
+	get_renderer()->set_current_shader(shader);
+
+	std::array<glm::vec3, MAX_NUM_LIGHTS> light_colors;
+	std::array<glm::vec3, MAX_NUM_LIGHTS> light_positions;
+	std::array<float, MAX_NUM_LIGHTS> light_attenuations;
+
+	int index = 0;
+	for (auto& point_light: point_light_scene_nodes)
+	{
+		if (index >= MAX_NUM_LIGHTS)
+		{
+			break;
+		}
+
+		Light light;
+		point_light->to_light(light, delta);
+
+		light_colors.at(index) = light.color;
+		light_positions.at(index) = glm::vec3(light.position);
+		light_attenuations.at(index) = light.attenuation;
+
+		++index;
+	}
+	
+	shader_cache.update_uniform(shader, "scape_LightPosition", glm::value_ptr(light_positions[0]), sizeof(glm::vec3) * index);
+	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light_colors[0]), sizeof(glm::vec3) * index);
+	shader_cache.update_uniform(shader, "scape_LightAttenuation", &light_attenuations[0], sizeof(float) * index);
+	shader_cache.update_uniform(shader, "scape_NumLights", &index, sizeof(int));
+
+	shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
+	shader_cache.update_uniform(shader, "scape_NormalTexture", g_buffer.get_canvas(NORMAL_INDEX));
+	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
 
 	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
 	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
@@ -445,7 +595,7 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 	graphics->origin();
 	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
 
-	if (light_scene_nodes.empty())
+	if (directional_light_scene_nodes.empty() && ambient_light_scene_nodes.empty() && point_light_scene_nodes.empty())
 	{
 		AmbientLightSceneNode full_lit_node(0);
 		full_lit_node.set_current_ambience(1.0f);
@@ -455,23 +605,27 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 	}
 
 	ambient_light = 0.0f;
-	for (auto light: light_scene_nodes)
-	{
-		const auto& light_type = light->get_type();
 
-		if (light_type == AmbientLightSceneNode::type_pointer)
-		{
-			draw_ambient_light(L, *light, delta);
-		}
-		else if (light_type == DirectionalLightSceneNode::type_pointer)
-		{
-			draw_directional_light(L, *light, delta);
-		}
-		else if (light_type == PointLightSceneNode::type_pointer)
-		{
-			draw_point_light(L, *light, delta);
-		}
-	}
+	draw_directional_lights(L, delta);
+	draw_ambient_lights(L, delta);
+	draw_point_lights(L, delta);
+	// for (auto light: light_scene_nodes)
+	// {
+	// 	const auto& light_type = light->get_type();
+
+	// 	if (light_type == AmbientLightSceneNode::type_pointer)
+	// 	{
+	// 		draw_ambient_light(L, *light, delta);
+	// 	}
+	// 	else if (light_type == DirectionalLightSceneNode::type_pointer)
+	// 	{
+	// 		draw_directional_light(L, *light, delta);
+	// 	}
+	// 	else if (light_type == PointLightSceneNode::type_pointer)
+	// 	{
+	// 		draw_point_light(L, *light, delta);
+	// 	}
+	// }
 
 	// We want to ensure all draws have been submitted before restoring
 	// the blend state.
