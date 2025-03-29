@@ -3,18 +3,25 @@ INCLUDE ../Common/Common.ink
 INCLUDE ../VizierRockKnight/Common.ink
 
 VAR quest_tutorial_main_starting_player_class = WEAPON_STYLE_NONE
-VAR quest_tutorial_main_player_has_no_idea_what_to_do = false
-VAR quest_tutorial_main_player_is_scouting = false
+
+// Initial conversation.
 VAR quest_tutorial_main_started_got_up = false
 VAR quest_tutorial_main_started_asked_what_happened = false
 VAR quest_tutorial_main_started_asked_where_am_i = false
 VAR quest_tutorial_main_started_asked_what_is_going_on = false
 VAR quest_tutorial_main_equipped_items_thought = false
-VAR quest_tutorial_main_talked_about_flare = false
 
+// Scout fight.
+VAR quest_tutorial_main_player_talked_about_seeing_ser_commander = false
+VAR quest_tutorial_main_player_is_scouting = false
+VAR quest_tutorial_main_player_found_yendorian_scout = false
+VAR quest_tutorial_main_talked_about_flare = false
 VAR quest_tutorial_main_defused_scout_argument = false
 VAR quest_tutorial_main_inflamed_scout_argument = false
 VAR quest_tutorial_main_ignored_scout_argument = false
+
+// Yenderhound stuff.
+VAR quest_tutorial_main_player_found_yendorhounds = false
 
 == function quest_tutorial_get_class_name() ==
 {
@@ -24,6 +31,9 @@ VAR quest_tutorial_main_ignored_scout_argument = false
   - quest_tutorial_main_starting_player_class == WEAPON_STYLE_SAILING: sailor
   - else: loaf
 }
+
+== function quest_tutorial_did_exhaust_options() ==
+~ return quest_tutorial_main_started_asked_what_happened && quest_tutorial_main_started_asked_where_am_i && quest_tutorial_main_started_asked_what_is_going_on
 
 == quest_tutorial_main_start_out_of_bounds ==
 # speaker={C_ORLANDO}
@@ -39,7 +49,11 @@ Very well...
 ~ player_move("Anchor_Spawn")
 
 # speaker={C_ORLANDO}
-Uh, where were we...
+Uh, so, let's see, where were we...
+
+%empty()
+
+# background=none
 
 -> quest_tutorial_main
 
@@ -50,8 +64,9 @@ Uh, where were we...
     - player_is_next_quest_step("Tutorial", "Tutorial_EquippedItems"): -> quest_tutorial_main_equipped_items
     - player_is_next_quest_step("Tutorial", "Tutorial_FoundScout"): -> quest_tutorial_main_scout
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedScout"): -> quest_tutorial_main_defeat_scout
-    - player_is_next_quest_step("Tutorial", "Tutorial_FoundYenderhounds"): -> quest_tutorial_main_yenderhounds
+    - player_is_next_quest_step("Tutorial", "Tutorial_FoundYenderhounds"): -> quest_tutorial_main_find_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
+    - else: Good job, bub!
 }
 
 == quest_tutorial_main_started ==
@@ -60,7 +75,7 @@ Uh, where were we...
 
 # speaker={C_ORLANDO}
 # background=000000
-EEEEEK! WHAT WAS THAT?!
+AAAAAAAAH! WHAT WAS THAT?!
 
 # speaker={C_ORLANDO}
 # background=000000
@@ -87,6 +102,7 @@ OI! {yell(player_name)}! ARE YOU OK?! HELP! {yell(player_get_pronoun_uppercase(X
 -> loop
 
 = loop
+
 + {!quest_tutorial_main_started_got_up} [...]
   -> dot_dot_dot
 * [What happened?]
@@ -95,8 +111,9 @@ OI! {yell(player_name)}! ARE YOU OK?! HELP! {yell(player_get_pronoun_uppercase(X
   -> where_am_i
 * [What's going on?]
   -> what_is_going_on
-* {quest_tutorial_main_started_asked_what_happened && quest_tutorial_main_started_asked_where_am_i && quest_tutorial_main_started_asked_what_is_going_on} [Let's get going.]
+* {!quest_tutorial_did_exhaust_options()} [Nevermind. Let's get going.]
   -> let_us_get_going
+* -> let_us_get_going
 
 = dot_dot_dot
 ~ player_play_animation("Human_Dazed")
@@ -111,56 +128,61 @@ OI! {yell(player_name)}! ARE YOU OK?! HELP! {yell(player_get_pronoun_uppercase(X
 ~ quest_tutorial_main_started_asked_what_happened = true
 
 # speaker={C_PLAYER}
-Oof... What happened?
+Ugh... So what in the Realm happened?
 
 -> quest_tutorial_main_started_get_up ->
 
 # speaker={C_ORLANDO}
-I was coming to grab to you when a lightning strike hit a crate of gunpowder and caused an explosion! You were knocked into tomorrow.
+I was on my way to get you when a freak lightning bolt hit the gunpowder barrels and then BOOM! 
 
 # speaker={C_ORLANDO}
-But you survived! We'd be toast without your smarts and skills! After all, %hint(you're the only engineer AND {quest_tutorial_get_class_name()}) on the team!
+But gods! You survived! Though... You look like you were knocked into next year...
 
 # speaker={C_ORLANDO}
-Um, and, uh, I mean, it would be worse for you, though, because, you know, you'd be dead...!
+We'd be fresh meat for Yendorians out here with your smarts and skills! You're the only %hint(engineer and {quest_tutorial_get_class_name()}) here!
 
-+ [I have more questions.]
-  -> loop
-+ [Let's get going.]
-  -> let_us_get_going
+# speaker={C_ORLANDO}
+OH! And, um, I mean, actually, it would be worse for you, of course, because, like, y'know, you'd be... dead...
+
+-> loop
 
 = where_am_i
 ~ quest_tutorial_main_started_asked_where_am_i = true
 
 # speaker={C_PLAYER}
-Eugh... Where am I?
+Eh... Where am I?
 
 -> quest_tutorial_main_started_get_up ->
 
 # speaker={C_ORLANDO}
-{Woah! You're definitely not with it!|Dang, you already asked that!|Woah, you must have amnesia!}
+We're gonna need to get you checked out as asoon as we get back to %location(Isabelle Island)...
 
 # speaker={C_ORLANDO}
-We're at %location(Humanity's Edge), the last human outpost before %person(Yendor's) city-state, %location(R'lyeh)!
+But... Right now we're pretty far from anywheres. We're at %location(Humanity's Edge). The last island of the %location(Realm) before %person(Yendor's) dead city, %location(R'lyeh)...
 
-* [%person(Yendor?) %location(R'lyeh?)] Who's %person(Yendor)? And what's %location(R'lyeh)?
-  -> yendor_more_info
-* Got it[.] Humanity's Edge, eh...
-  -> loop
-
-= yendor_more_info
+# speaker={C_PLAYER}
+Uh... Who is %person(Yendor)? And what is %location(R'lyeh)?
 
 # speaker={C_ORLANDO}
-How do you... not know this?
+Have you lost your mind?! You're worse off than I thought!
 
 # speaker={C_ORLANDO}
-%person(Yendor)... She's... Well, Yendor is an %hint(Old One). I'd... rather not say much about Her this close to %location(R'lyeh)...
+Well, everyone knows about %person(Yendor), She's... %hint(an Old One). The god of death. I'd rather not say much else this close to %location(R'lyeh)...
+
+# speaker={C_PLAYER}
+{quest_tutorial_main_started_asked_what_is_going_on: A god... So She could be killed by the hellfire harpoon?}
 
 # speaker={C_ORLANDO}
-And what's %location(R'lyeh)... Not much is known. It's suicide to sail those waters.
+{quest_tutorial_main_started_asked_what_is_going_on: Yes, exactly! You're getting it!}
 
 # speaker={C_ORLANDO}
-All we know is there's a HUH-UGE city under those bloody waves. No human has ever survived to tell the tale.
+And R'lyeh, well, that's it. We don't what what R'lyeh is. No human has sailed further south than %location(Humanity's Edge) and survived.
+
+# speaker={C_ORLANDO}
+Not even the %hint(Black Tentacles) are that crazy.
+
+# speaker={C_ORLANDO}
+%person(Yendor's) zealots say there's a huge city under those bloody waves... Larger than the Realm itself.
 
 -> loop
 
@@ -168,33 +190,65 @@ All we know is there's a HUH-UGE city under those bloody waves. No human has eve
 ~ quest_tutorial_main_started_asked_what_is_going_on = true
 
 # speaker={C_PLAYER}
-Ugh... What's going on?
+Um... So what's going on?
 
 -> quest_tutorial_main_started_get_up ->
 
 # speaker={C_ORLANDO}
-Woah, you're not with it, are you?! We're finishing that %hint(hellfire harpoon and launcher you designed)!
+What the hells? Are you sure you don't got amnesia?
+
+# speaker={C_ORLANDO}
+We're building %hint(Hellfire harpoons)! And a harpoon launcher capable of shooting them!
 
 # speaker={C_PLAYER}
-...Hellfire harpoon?
+That's right... The hellfire harpoon. The schematics... I know them by heart.
 
 # speaker={C_ORLANDO}
-Are you sure you don't got amnesia?!
+Seems you're getting some sense of things back!
+
+# speaker={C_PLAYER}
+The hellfire harpoon... It can kill gods right? {quest_tutorial_main_started_asked_where_am_i: Like %person(Yendor)}?
 
 # speaker={C_ORLANDO}
-The hellfire harpoon is a way to kill %person(Cthulhu)! The science checks out! Well, so says %person(my sis and her friends)... and they're all pretty smart, too!
+Yes! Exactly! We're building it out here for secrecy, and, well, because if we mess up...
 
 # speaker={C_ORLANDO}
-And if it can kill %person(Cthulhu)... We can push into %location(R'lyeh) and show them Yendorians us humans aren't to be underestimated!
+According to my sis... Uh! I mean! %person(Lady Isabelle)! If the calculations are a little off, the results could be apocalyp-tickle!
+
+# speaker={C_PLAYER}
+"Apocalyp-tickle?" ... Do you mean "apocalyptical...?"
+
+# speaker={C_ORLANDO}
+Uh... Yes... I... do... That's what I meant!
+
+# speaker={C_PLAYER}
+But yes, you're right. We'll be ash in a mile-wide crater if the chain reaction isn't exactly as I calculated...
 
 -> loop
 
 = let_us_get_going
 
 # speaker={C_PLAYER}
-Let's get going, then!
+Eh, well, no time to waste. Let's get going!
 
 ~ player_give_key_item("Tutorial_Start")
+
+{quest_tutorial_did_exhaust_options(): -> quest_tutorial_main_gather_items}
+
+# speaker={C_ORLANDO}
+Are you sure you're ready? You don't got any more questions?
+
+# speaker={C_PLAYER}
+* Yes, I'm absolutely sure.
+  -> confirm_let_us_get_going
+* Um, actually, no... Let me ask another question.
+  -> loop
+
+= confirm_let_us_get_going
+
+# speaker={C_ORLANDO}
+If you say so!
+
 -> quest_tutorial_main
 
 == quest_tutorial_main_started_get_up ==
@@ -207,8 +261,11 @@ Let's get going, then!
 ~ quest_tutorial_main_started_got_up = true
 ~ player_play_animation("Human_Resurrect_1")
 
+# speaker={C_PLAYER}
+Ouch... My head...
+
 # speaker={C_ORLANDO}
-THANK THE GODS YOU'RE ALIVE, {yell(player_name)}! Looks like that lightning strike knocked you right out!
+THANK THE GODS YOU'RE ALIVE, {yell(player_name)}!
 
 -> got_up
 
@@ -218,8 +275,13 @@ THANK THE GODS YOU'RE ALIVE, {yell(player_name)}! Looks like that lightning stri
 
 == quest_tutorial_main_gather_items ==
 
+~ player_give_key_item("Tutorial_Start")
+
 # speaker={C_ORLANDO}
-The explosion knocked your inventory on to the ground! Let's pick it all up!
+Looks like you dropped all your stuff to the ground when you got hit!
+
+# speaker={C_ORLANDO}
+Let's pick it at all up, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}.
 
 -> DONE
 
@@ -235,7 +297,7 @@ The explosion knocked your inventory on to the ground! Let's pick it all up!
 ~ quest_tutorial_main_equipped_items_thought = true
 
 # speaker={C_PLAYER}
-Great, now that I have picked everything up, I should probably equip the armor and weapons...
+Great, that's everything... Let me gear up and equip the armor and weapon.
 
 # speaker={C_ORLANDO}
 Eek! I'll look away!
@@ -255,15 +317,15 @@ Eek! I'll look away!
 ~ set_peep_mashina_state(C_ORLANDO, "tutorial-look-away-from-player")
 
 # speaker={C_PLAYER}
-* [Ask %person(Orlando) for help.] Hey, %person(Orlando), can... you help me?
+* [(Ask %person(Ser Orlando) for help.)] Actually, %person(Ser Orlando), can you help me?
   -> get_help
-* [Equip the items on your own.] (I'll figure this out...)
+* [(Equip the gear on your own.)] (I'll figure this out...)
   -> DONE
 
 = get_help
 
 # speaker={C_ORLANDO}
-Gotcha!
+Um.... Sure, ok, I'll... uh.... try! This might be kinda difficult with me looking away and all...
 
 %empty()
 
@@ -273,100 +335,72 @@ Gotcha!
 
 == quest_tutorial_main_scout ==
 
-{quest_tutorial_main_player_is_scouting: -> scout}
+{
+  - !get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_tagged_along"): -> see_ser_commander
+  - quest_tutorial_main_player_talked_about_seeing_ser_commander: -> scout
+}
 
 # speaker={C_ORLANDO}
-You look terrifying! Now that you're all geared up, we can pick up where we left off!
-
-# speaker={C_PLAYER}
-
-* Uhhhh...[] And that was?
-  -> and_that_was
-* [I know exactly what you're talking about!] Yep, let's, uh, go, um, do the thing!
-  -> player_knows_exactly
-
-= and_that_was
+That's the %person({player_get_pronoun_uppercase(X_MX)}) {player_name}. You look terrifying!
 
 # speaker={C_ORLANDO}
-"Uhhhh...?" We're definitely gonna need to check your head when we get back to %location(Isabelle Island)!
+Now that you're all geared up, we can pick up where we left off.
 
 # speaker={C_ORLANDO}
-Anyway... We were supposed to %hint(scout ahead and keep an eye out for any threats), like pirates... or Yendorians!
+Let's go meet with the %person(Ser Commander) at the entrance of the camp and scout for pesky pirates... or worse, Yendorians!
 
--> follow
-
-= player_knows_exactly
-
-~ quest_tutorial_main_player_has_no_idea_what_to_do = true
-
-# speaker={C_ORLANDO}
-"Do the thing?!" You're a laugh! Glad you're with it now though!
-
-# speaker={C_PLAYER}
-Yes... I'm totally with, er, "it" now!
-
--> follow
-
-= follow
-
-# speaker={C_ORLANDO}
-I'll follow you! Let's go!
-
-%empty()
-
-~ quest_tutorial_main_player_is_scouting = true
-~ set_peep_mashina_state(C_ORLANDO, "tutorial-follow-player")
+~ quest_tutorial_main_player_talked_about_seeing_ser_commander = true
 
 -> DONE
 
-= give_player_a_second_chance
-
-# speaker={C_ORLANDO}
-Don't be so dramatic, you're good! We're scouting for any intrusions from Yendorians or pirates.
-
-# speaker={C_ORLANDO}
-Let's head further into the island!
-
-~ quest_tutorial_main_player_has_no_idea_what_to_do = false
+= see_ser_commander
+Let's go meet with the %person(Ser Commander) at the entrance of the camp!
 
 -> DONE
 
 = scout
 
 # speaker={C_ORLANDO}
-{
-  - quest_tutorial_main_player_has_no_idea_what_to_do: Come on! I'll follow you.
-  - else: Let's scout for Yendorians and pirates! I'll follow you.
-}
-
-~ set_peep_mashina_state(C_ORLANDO, "tutorial-follow-player")
-
-# speaker={C_PLAYER}
-+ {quest_tutorial_main_player_has_no_idea_what_to_do} I actually have no idea what we're doing![] I lied! Please help me!
-  -> give_player_a_second_chance
-+ {quest_tutorial_main_player_has_no_idea_what_to_do} [(Keep acting like you know what you're doing.)] (I hope I can figure out what I'm supposed to be doing...)
+Let's look for foes! Also, let's pray we don't find any!
 
 -> DONE
 
 == quest_tutorial_main_defeat_scout ==
+
+{quest_tutorial_main_player_found_yendorian_scout: -> defeat_scout_short}
+
 # speaker={C_ORLANDO}
-Look ahead! There's a Yendorian scout! %hint(He's not seen us yet...)
+Look ahead! There's a scout! AND IT'S A YENDORIAN! Why couldn't it be a pirate?!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Silence, boy!
+
+# speaker={C_ORLANDO}
+...I'll let that slide. We'll need to take him out before he can signal the others.
 
 # speaker={C_PLAYER}
-* What should we do?[] He looks pretty strong...
-  -> what_to_do
-* Let's deal with him![] We can't let him alert the others!
-  -> deal_with_him
+And how do we do that?
 
-= what_to_do
-#speaker={C_ORLANDO}
-Don't let his high combat level fool you! He's just scout. Let's kill this guy!
+# speaker={C_VIZIER_ROCK_KNIGHT}
+You tell us, bookworm.
+
+# speaker={C_PLAYER}
+...
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+We have to slay him.
+
+# speaker={C_ORLANDO}
+Well, to put it... more nicer, we need to kill him before he alerts the others. Let's go!
+
+~ quest_tutorial_main_player_found_yendorian_scout = true
 
 -> DONE
 
-= deal_with_him
-#speaker={C_ORLANDO}
-I agree!
+= defeat_scout_short
+
+# speaker={C_ORLANDO}
+Let's kill that guy!
 
 -> DONE
 
@@ -379,7 +413,7 @@ We're too slow! He sent up a flare!
 Gods damn him... Hope he learns to love his %hint(afterlife of eternal drowning). Let us push forward and discover the Yendorians' numbers.
 
 # speaker={C_ORLANDO}
-%person(Ser Commander), do I have to remind you you're not in charge?
+%person(Ser Commander), do I need to remind you? Y'know, remind you that you're... not in charge?
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 ...
@@ -388,31 +422,34 @@ Gods damn him... Hope he learns to love his %hint(afterlife of eternal drowning)
 Understood. Grant us your wisdom, Your Hungriness.
 
 # speaker={C_ORLANDO}
-Bite your tongue or I will have you reprimanded. %person(Lady Isabelle) won't take kindly to your jabs. She...
+Keep your jabs to yourself I will have you reprimanded. %person(Lady Isabelle) won't take kindly to this abuse. She...
 
 # speaker={C_PLAYER}
-* [Course-correct the banter] You're both being belligerent! Can we focus on the task at hand?
+* [(Course-correct the banter.)] You're both being belligerent! Can we focus on the task at hand?
   -> course_correct
-* [Add fuel to the fire]
+* [(Add fuel to the fire.)]
   -> shut_them_up
-* [Listen for the tea] (Let's see what happens...)
+* [(Listen for the tea.)] (Let's see what happens...)
   -> listen
 
 = course_correct
 
 ~ quest_tutorial_main_defused_scout_argument = true
+{get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_defused_situation"): -> course_correct_two_in_a_row}
 
 # speaker={C_ORLANDO}
-{
-  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_defused_situation"): ...I agree. %person(ir_get_pronoun_uppercase(X_MX)) {player_name}, you're more diplomatic than I remembered.
-  - else: ...I agree, %person(ir_get_pronoun_uppercase(X_MX)) {player_name}.
-}
+...I agree, %person(player_get_pronoun_uppercase(X_MX)) {player_name}.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-Bah! {player_name} is right.
+Bah! {player_get_pronoun_uppercase(X_THEY)} are right.
 
-# speaker={C_PLAYER}
-Good. If that's the end of your grievances, then let us continue.
+= course_correct_two_in_a_row
+
+# speaker={C_ORLANDO}
+...I agree. %person(player_get_pronoun_uppercase(X_MX)) {player_name}, you're more diplomatic than I remembered.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Bah! {player_get_pronoun_uppercase(X_THEY)} are right. Maybe they're more than just a bookworm...
 
 -> continue
 
@@ -429,14 +466,32 @@ You blabbering babies, if you want to fight with words then go write poetry!
 # speaker={C_PLAYER}
 Otherwise, settle this with swords!
 
-# speaker={C_ORLANDO}
-...
+{get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_inflamed_situation"): -> shut_them_up_two_in_a_row}
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 ...
 
+# speaker={C_ORLANDO}
+...
+
 # speaker={C_PLAYER}
-Oh, now you're both speechless? Good! Let us focus on the task at hand.
+Oh, now you're both speechless? Good! Let's focus on the task at hand.
+
+-> continue
+
+= shut_them_up_two_in_a_row
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...feisty, are we? You've got a sharp wit about yourself.
+
+# speaker={C_ORLANDO}
+%person(player_get_pronoun_uppercase(X_MX)) {player_name}, you're.... right, I s'pose. Sorry, %person(Ser Commander).
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+And... apologies for my conduct, %person(Ser Orlando).
+
+# speaker={C_PLAYER}
+Oh, wonderful! Now that you've both made up and hugged, let's focus on the task at hand.
 
 -> continue
 
@@ -445,19 +500,47 @@ Oh, now you're both speechless? Good! Let us focus on the task at hand.
 ~ quest_tutorial_main_ignored_scout_argument = true
 
 # speaker={C_ORLANDO}
-...controls %hint(more than) %person(Vizier-King Yohn's) %hint(purse). Or do have to remind you of %person(Lady Isabelle's) power?
+...controls %hint(more than) %person(Vizier-King Yohn's) %hint(purse). Or do have to remind you how much the Vizier-King owes her?
+
+# speaker={C_ORLANDO}
+Or how much the Realm owes her?
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 ...
 
 # speaker={C_ORLANDO}
-I thought so.
+Like I thought.
 
 # speaker={C_PLAYER}
 (Who is this %person(Lady Isabelle)..? Curses! Why can't I remember anything?!)
 
+{get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_ignored_situation"): -> listen_two_in_a_row}
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Very well. Unfortunately, with the threat of Yendorians, we will have to work together.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Let us keep the jests and jabs to ourselves and make peace for the time being.
+
 # speaker={C_ORLANDO}
-...looks like %person({player_get_pronoun_uppercase(X_MX)}) {player_name} is tired of us fighting.
+...yes. You're right. Let me see where I was... That's right!
+
+= listen_two_in_a_row
+
+# speaker={C_ORLANDO}
+...%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, are you ok? You've been quiet.
+
+# speaker={C_PLAYER}
+In my professional opinion, you both should make amends and move on.
+
+# speaker={C_ORLANDO}
+Ugh... okay! I'm sorry, %person(Ser Commander). Let's just drop it.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Very well. I agree. Apologies for my conduct, as well, %person(Ser Orlando).
+
+# speaker={C_PLAYER}
+So... What was your plan, %person(Ser Orlando)?
 
 -> continue
 
@@ -467,42 +550,44 @@ I thought so.
 So! There's a peak some ways ahead that'll give us a great vantage point.
 
 # speaker={C_ORLANDO}
+I doubt the Yendorians have reached it.
 
-I'm unsure if the Yendorians are aware of how to reach it; my gut...
+# speaker={C_ORLANDO}
+The scout probably swam around the island and made landfall after hearing our camp.
+
+# speaker={C_ORLANDO}
+Probably half the ocean heard that gunpowder boom...
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-(Ha...)
-
-# speaker={C_ORLANDO}
-Fine! My INSTINCT is they aren't, for the scout wouldn't have come this far otherwise. After all, Yendorians are a seafolk; they loathe the land
-
-# sepaker={C_ORLANDO}
-Much rather, the scout must have swam around and made landfall at the sight of the camp.
+For once, you make a smidgen of sense, %person(Ser Orlando).
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-For once, you make some sense.
+Yendorians are a sea folk by nature; they loathe land, and they hate heights more.
 
 # speaker={C_ORLANDO}
-I swear to the gods...!
-
-# speaker={C_PLAYER}
-{
-  - quest_tutorial_main_inflamed_scout_argument: ...must I get your mothers?
-  - else: Ahem!
-}
-
-# speaker={C_ORLANDO}
-{
-  - quest_tutorial_main_inflamed_scout_argument: FINE! {player_name}, you can take the charge.
-  - else: ...let's go, {player_name} and %person(Ser Commander).
-}
+Exactly! We should get to that peak. We'll be able to see for miles. Let's go!
 
 -> DONE
 
-== quest_tutorial_main_yenderhounds ==
+== quest_tutorial_main_find_yenderhounds ==
 
 # speaker={C_ORLANDO}
-We need to ascend the island's peak to learn the Yendorians' number.
+We need to climb the island's peak to learn how many Yendorians there are.
+
+-> DONE
+
+= spotted
+
+# speaker={C_ORLANDO}
+Look! Some Yenderhounds! They must belong to the scout...
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Gods... It's a pack of them. I hope you're all prepared.
+
+# speaker={C_ORLANDO}
+We must kill them now. If they make their way to the camp... I don't wanna think about it!
+
+-> DONE
 
 == quest_tutorial_main_defeat_yenderhounds ==
 
@@ -510,3 +595,12 @@ We need to ascend the island's peak to learn the Yendorians' number.
 It's no time to talk! Kill the Yenderhounds!
 
 -> DONE
+
+= defeated
+
+# speaker={C_ORLANDO}
+Good job, everyone!
+
+-> DONE
+
+// todo dialogue about getting a beating

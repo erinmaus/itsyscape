@@ -449,7 +449,7 @@ function Island:updateTutorialFindYenderhoundsStep(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.enable(playerPeep)
 			self:saveTutorialLocation(playerPeep, "Anchor_EncounterYenderhounds")
-		end)
+		end, "quest_tutorial_main_find_yenderhounds.spotted")
 	end
 end
 
@@ -472,7 +472,7 @@ function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.enable(playerPeep)
 			self:transitionTutorial(playerPeep, "Tutorial_DefeatedYenderhounds")
-		end)
+		end, "quest_tutorial_main_defeat_yenderhounds.defeated")
 	end
 end
 
