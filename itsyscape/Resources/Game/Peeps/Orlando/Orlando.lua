@@ -44,8 +44,8 @@ function Orlando:ready(director, game)
 		"PlayerKit2/Eyes/Eyes.lua",
 		{ Player.Palette.HAIR_RED, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
 	self:applySkin(
-		Equipment.PLAYER_SLOT_TWO_HANDED,
-		Equipment.SKIN_PRIORITY_BASE,
+		Equipment.PLAYER_SLOT_RIGHT_HAND,
+		Equipment.SKIN_PRIORITY_EQUIPMENT,
 		"Isabellium/IsabelliumZweihander.lua")
 
 	Utility.Peep.equipXWeapon(self, "IsabelliumZweihander")
@@ -53,6 +53,7 @@ function Orlando:ready(director, game)
 	local inventory = InfiniteInventoryStateProvider(self)
 	inventory:add("IsabelleIsland_AbandonedMine_WroughtBronzeKey")
 	inventory:add("IsabelleIsland_AbandonedMine_ReinforcedBronzeKey")
+	inventory:add("WaterWorm")
 
 	self:getState():addProvider("Item", inventory)
 end

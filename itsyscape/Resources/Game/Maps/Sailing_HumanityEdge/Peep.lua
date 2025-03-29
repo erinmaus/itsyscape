@@ -15,6 +15,7 @@ local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Color = require "ItsyScape.Graphics.Color"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local Probe = require "ItsyScape.Peep.Probe"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
@@ -44,6 +45,11 @@ Island.CLASS_INVENTORY = {
 	[Weapon.STYLE_MELEE] = {
 		{ id = "IsabelliumZweihander", count = 1 }
 	}
+}
+
+Island.FISHING_INVENTORY = {
+	{ id = "SpindlyFishingRod", count = 1 },
+	{ id = "WaterWorm", count = 150 }
 }
 
 function Island:new(resource, name, ...)
@@ -77,7 +83,8 @@ function Island:_giveItems(playerPeep, items)
 	}
 
 	local giveFlags = {
-		["item-inventory"] = true
+		["item-inventory"] = true,
+		["item-drop-excess"] = true
 	}
 
 	local hasItemsOnGround, groundInventory = TutorialCommon.hasPeepDroppedItems(playerPeep)
@@ -100,6 +107,10 @@ function Island:_giveTutorialRequiredItems(playerPeep)
 	local class = Utility.Text.getDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class")
 	self:_giveItems(playerPeep, self.ALL_INVENTORY)
 	self:_giveItems(playerPeep, self.CLASS_INVENTORY[class] or self.CLASS_INVENTORY[Weapon.STYLE_MAGIC])
+
+	if Utility.Quest.didStep("Tutorial", "Tutorial_DefeatedYenderhounds", playerPeep) then
+		self:_giveItems(playerPeep, self.FISHING_INVENTORY)
+	end
 end
 
 function Island:_dropPlayerInventory(playerPeep)
@@ -312,8 +323,8 @@ function Island:prepareTutorial(playerPeep, arguments)
 		Utility.Text.setDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class", arguments.class)
 	end
 
+	self:_giveTutorialRequiredItems(playerPeep)
 	if not Utility.Quest.didStep("Tutorial", "Tutorial_GatheredItems", playerPeep) then
-		self:_giveTutorialRequiredItems(playerPeep)
 		self:_dropPlayerInventory(playerPeep)
 	end
 
@@ -469,11 +480,30 @@ function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
 
 	if not isAlive and Utility.Peep.isEnabled(playerPeep) then
 		Utility.Peep.disable(playerPeep)
+
+		local stormfish = playerPeep:getState():count("Item", "LightningStormfish", { ["item-inventory"] = true })
+		local status = playerPeep:getBehavior(CombatStatusBehavior)
+		local hitpointsRatio = status and (status.currentHitpoints / status.maximumHitpoints)
+
+		local stitch
+		if stormfish >= 3 and hitpointsRatio > 0.75 then
+			stitch = "good_scenario"
+		elseif stormfish <= 1 and hitpointsRatio < 0.25 then
+			stitch = "worst_scenario"
+		else
+			stich = "bad_scenario"
+		end
+
+		local knot = string.format("quest_tutorial_main_defeat_yenderhounds.%s", stitch)
 		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.enable(playerPeep)
 			self:transitionTutorial(playerPeep, "Tutorial_DefeatedYenderhounds")
-		end, "quest_tutorial_main_defeat_yenderhounds.defeated")
+		end, knot)
 	end
+end
+
+function Island:onGiveTutorialFishingGear(playerPeep)
+	self:_giveItems(playerPeep, self.FISHING_INVENTORY)
 end
 
 function Island:updateTutorialPlayer(playerPeep)

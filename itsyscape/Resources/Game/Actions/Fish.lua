@@ -34,6 +34,7 @@ function Fish:getFailureReason(state, player)
 	local reason = Make.getFailureReason(self, state, player)
 
 	if not self:requiresSpecificTool("fishing-rod") then
+		print("NEEDS FISHING ROD")
 		table.insert(reason.requirements, {
 			type = "Item",
 			resource = "WimpyFishingRod",

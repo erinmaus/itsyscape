@@ -262,6 +262,12 @@ do
 		MapObject = M["Orlando"]
 	}
 
+	ItsyScape.Meta.PeepInventoryItem {
+		Item = ItsyScape.Resource.Item "TerrifyingFishingRod",
+		Count = 1,
+		Resource = M["Orlando"]
+	}
+
 	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-look-away-from-player",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_LookAwayLogic.lua",
@@ -270,13 +276,19 @@ do
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-follow-player",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_FollowLogic.lua",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FollowLogic.lua",
 		Resource = M["Orlando"]
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-general-attack",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-fish",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FishLogic.lua",
 		Resource = M["Orlando"]
 	}
 end
@@ -319,7 +331,7 @@ do
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-follow-player",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_FollowLogic.lua",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_FollowLogic.lua",
 		Resource = M["KnightCommander"]
 	}
 

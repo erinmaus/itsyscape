@@ -36,6 +36,8 @@ function Notification:new(id, index, ui)
 
 	local state = self:getState()
 
+	print("DUH", Log.dump(state))
+
 	local requirements = ConstraintsPanel(self:getView())
 	requirements:setText("Requirements")
 	requirements:setData("skillAsLevel", true)

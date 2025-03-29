@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_FollowLogic.lua
+-- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FollowLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,8 +11,8 @@ local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 
-local PLAYER = B.Reference("Tutorial_FollowLogic", "PLAYER")
-local PLAYER_TARGET = B.Reference("Tutorial_FollowLogic", "PLAYER_TARGET")
+local PLAYER = B.Reference("Tutorial_Orlando_FollowLogic", "PLAYER")
+local PLAYER_TARGET = B.Reference("Tutorial_Orlando_FollowLogic", "PLAYER_TARGET")
 
 local FollowPlayer = Mashina.Success {
 	Mashina.Sequence {

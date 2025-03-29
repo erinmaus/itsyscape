@@ -178,20 +178,35 @@ function Make:gather(state, player, prop, toolType, skill)
 			local progress = prop:getBehavior(PropResourceHealthBehavior)
 			if progress and progress.currentProgress < progress.maxProgress then
 				local i, j, k = Utility.Peep.getTileAnchor(prop)
-				local walk = Utility.Peep.getWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
-				local face = CallbackCommand(Utility.Peep.face, player, prop)
-				local perform = CallbackCommand(Action.perform, self, state, player)
+				local walk = Utility.Peep.queueWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
 
-				if not walk then
-					return self:failWithMessage(player, "ActionFail_Walk")
-				end
+				local done = false
+				walk:register(function(s)
+					done = true
 
-				local callback = Callback.bind(self.finishGather, self, state, player, prop)
-				local gatherCommand = GatherResourceCommand(prop, bestTool, callback, { skill = skill, skin = skin, action = self })
-				local queue = player:getCommandQueue()
-				queue:interrupt(CompositeCommand(nil, walk, face, perform, gatherCommand))
+					if not s then
+						return self:failWithMessage(player, "ActionFail_Walk")
+					end
 
-				return true
+					local face = CallbackCommand(Utility.Peep.face, player, prop)
+					local perform = CallbackCommand(Action.perform, self, state, player)
+
+					local callback = Callback.bind(self.finishGather, self, state, player, prop)
+					local gatherCommand = GatherResourceCommand(prop, bestTool, callback, { skill = skill, skin = skin, action = self })
+					local queue = player:getCommandQueue()
+					if not queue:push(CompositeCommand(nil, face, perform, gatherCommand)) then
+						self:fail(state, player)
+					end
+				end)
+
+				return player:getCommandQueue():interrupt(
+					CompositeCommand(
+						function()
+							print("????", done)
+							return not done
+						end,
+						WaitCommand(math.huge))
+					)
 			else
 				Log.info("Resource '%s' depleted.", prop:getName())
 			end
@@ -220,6 +235,8 @@ function Make:requiresSpecificTool(toolType)
 			end
 		end
 	end
+
+	return false
 end
 
 function Make:getDynamicCount(state, player, flags)

@@ -18,9 +18,12 @@ NotificationController.STEP = 1
 function NotificationController:new(peep, director, constraints)
 	Controller.new(self, peep, director)
 
-	self.constraints = {}
-	self.constraints.inputs = self.constraints.inputs or {}
-	self.constraints.requirements = self.constraints.requirements or {}
+	constraints = constraints or {}
+	self.constraints = constraints
+	self.state = {
+		inputs = constraints.inputs or {},
+		requirements = constraints.requirements or {},
+	}
 
 	local count = #self.constraints.inputs + #self.constraints.requirements
 	if count == 0 then
@@ -31,7 +34,7 @@ function NotificationController:new(peep, director, constraints)
 end
 
 function NotificationController:pull()
-	return self.constraints
+	return self.state
 end
 
 function NotificationController:update(delta)

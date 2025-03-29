@@ -19,6 +19,19 @@ function WeakBite:getAttackRange(peep)
 	return 2
 end
 
+function WeakBite:previewAttackRoll(roll)
+	MeleeWeapon.previewAttackRoll(self, roll)
+
+	local target = roll:getTarget()
+	local status = target and target:getBehavior(CombatStatusBehavior)
+	if status then
+		local hitpointsRatio = status.currentHitpoints / status.maximumHitpoints
+		if hitpointsRatio > 0.5 then
+			roll:setAlwaysHits(false)
+		end
+	end
+end
+
 function WeakBite:previewDamageRoll(roll)
 	MeleeWeapon.previewDamageRoll(self, roll)
 

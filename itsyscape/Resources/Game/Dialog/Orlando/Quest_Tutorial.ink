@@ -66,6 +66,7 @@ Uh, so, let's see, where were we...
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedScout"): -> quest_tutorial_main_defeat_scout
     - player_is_next_quest_step("Tutorial", "Tutorial_FoundYenderhounds"): -> quest_tutorial_main_find_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
+    - player_is_next_quest_step("Tutorial", "Tutorial_FishedLightningStormfish"): -> quest_tutorial_main_fish
     - else: Good job, bub!
 }
 
@@ -438,7 +439,7 @@ Keep your jabs to yourself I will have you reprimanded. %person(Lady Isabelle) w
 {get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_defused_situation"): -> course_correct_two_in_a_row}
 
 # speaker={C_ORLANDO}
-...I agree, %person(player_get_pronoun_uppercase(X_MX)) {player_name}.
+...I agree, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 Bah! {player_get_pronoun_uppercase(X_THEY)} are right.
@@ -596,11 +597,138 @@ It's no time to talk! Kill the Yenderhounds!
 
 -> DONE
 
-= defeated
+= worst_scenario
+
+-> victory_intro ->
+
+# speaker={C_PLAYER}
+Huff... Huff... I... can see the light...
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Gods, bookworm! You are just seeing the fireflies, I fear. Pull yourself together.
+
+# speaker={C_ORLANDO}
+You took a beating! And you don't have any food to heal yourself.
+
+-> victory_outro
+
+= bad_scenario
+
+-> victory_intro ->
+
+# speaker={C_PLAYER}
+Ugh... Ouch... I'm in so much pain!
+
+# speaker={C_ORLANDO}
+Those Yenderhounds were vicious! You need to heal up.
+
+-> victory_outro
+
+= good_scenario
+
+-> victory_intro ->
+
+# speaker={C_PLAYER}
+That was bad...
+
+# speaker={C_ORLANDO}
+It's amazing you weren't hurt that badly!
+
+-> victory_outro
+
+= victory_intro
 
 # speaker={C_ORLANDO}
 Good job, everyone!
 
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Verily. Those mutts spread us thin by attacking each of us individually.
+
+->->
+
+= victory_outro
+
+# speaker={C_ORLANDO}
+I'm fresh out food...! We gotta re-supply. Thanks-fully there's a fishing spot nearby.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+%item(Lightning stormfish)? You expect me to eat some godsforsaken R'lyhen bottomfeeder?
+
+# speaker={C_ORLANDO}
+...
+
+# speaker={C_ORLANDO}
+I didn't say that. Me and %person({player_get_pronoun_uppercase(X_MX)}) {player_name} will resupply.
+
+# speaker={C_ORLANDO}
+You can just stand there and look stupid.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...
+
+# speaker={C_PLAYER}
+We don't have fishing gear though... And where can we even cook the fish out here?
+
+# speaker={C_ORLANDO}
+I got ya! A knight like me is always prepared!
+
+%empty()
+
+~ play_animation(C_ORLANDO, "Human_ActionGive_1")
+~ player_poke_map("giveTutorialFishingGear")
+
+# speaker={C_ORLANDO}
+(Ser Orlando hands you an %item(adamant fishing) rod and some %item(water worms).)
+
+# speaker={C_ORLANDO}
+I will get the fire started! If you run out of %item(water worms), I'll give you more.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Going on a fishing trip when a Yendorian squad, or worse, could be marching on the camp as we speak?
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Reckless!
+
+# speaker={C_ORLANDO}
+Let me make this clear, %person(Ser Commander). I'm in charge. You're not.
+
+# speaker={C_ORLANDO}
+You will stand guard. We will make this quick. I'd rather us take a minute to stock back up and not die in vain.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Hmmph!
+
+# speaker={C_ORLANDO}
+%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, let me know when you've fished at least five stormfish.
+
+# speaker={C_PLAYER}
+Sure thing!
+
+-> quest_tutorial_main_fish
+
+== quest_tutorial_main_fish ==
+
+* [(Ask for help on how to fish.)]
+  -> ask_for_help
+* [(Go fishing!)]
+  -> go_fishing
+
+= ask_for_help
+
+# speaker={C_PLAYER}
+I can't remember the last time I fished... Can you help me?
+
+# speaker={C_ORLANDO}
+Sure thing!
+
+%empty()
+
+~ set_peep_mashina_state(C_ORLANDO, "tutorial-fish")
+~ player_poke_map("showFishUIHint")
+
 -> DONE
 
-// todo dialogue about getting a beating
+= go_fishing
+(Let me go fish up some %item(lightning stormfish)!)
+
+-> DONE

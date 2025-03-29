@@ -32,6 +32,7 @@ Quest "Tutorial" {
 	Step "Tutorial_DefeatedScout",
 	Step "Tutorial_FoundYenderhounds",
 	Step "Tutorial_DefeatedYenderhounds",
+	Step "Tutorial_FishedLightningStormfish",
 	Step "Tutorial_Finished"
 }
 
