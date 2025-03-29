@@ -293,12 +293,13 @@ function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 	end
 
 	local didUsePower = power:perform(selfPeep, targetPeep)
+	selfPeep:removeBehavior(PendingPowerBehavior)
+
 	if not didUsePower then
 		return false
 	end
 
 	power:activate(selfPeep, targetPeep)
-	selfPeep:removeBehavior(PendingPowerBehavior)
 
 	selfPeep:poke("zeal", ZealPoke.onUsePower({
 		power = power,
@@ -488,7 +489,7 @@ local BASE_STANCE_SWITCH_ZEAL_LOSS_COOLDOWN_SECONDS = Variables.Path("baseStance
 function CombatCortex:updatePeepStance(delta, peep)
 	local stance = peep:getBehavior(StanceBehavior)
 	stance = stance and stance.stance
-	stance = stance or Weapon.STANCE_CONTROLLED
+	stance = stance or Weapon.STANCE_NONE
 
 	local currentStanceInfo = self.currentStance[peep]
 	if not currentStanceInfo then

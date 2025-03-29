@@ -261,6 +261,24 @@ do
 		Peep = ItsyScape.Resource.Peep "Orlando",
 		MapObject = M["Orlando"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-look-away-from-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_LookAwayLogic.lua",
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-follow-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_FollowLogic.lua",
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-general-attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["Orlando"]
+	}
 end
 
 M["KnightCommander"] = ItsyScape.Resource.MapObject.Unique()
@@ -296,6 +314,18 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Being a Vizier-Rock knight is the goal of any knight of the Realm, but to be a commander of the Vizier-Rock knights is an accomplishment that raises families to nobility. Too bad humility isn't a part of the job.",
 		Language = "en-US",
+		Resource = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-follow-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_FollowLogic.lua",
+		Resource = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-general-attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
 		Resource = M["KnightCommander"]
 	}
 end
@@ -533,18 +563,6 @@ do
 		TalkAction,
 		ItsyScape.Action.InvisibleAttack()
 	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "tutorial-look-away-from-player",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_LookAwayLogic.lua",
-		Resource = M["Orlando"]
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "tutorial-follow-player",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FollowLogic.lua",
-		Resource = M["Orlando"]
-	}
 end
 
 -- Ser Commander talk action.
@@ -578,11 +596,5 @@ do
 	M["KnightCommander"] {
 		TalkAction,
 		ItsyScape.Action.InvisibleAttack()
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "tutorial-follow-player",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_FollowLogic.lua",
-		Resource = M["KnightCommander"]
 	}
 end

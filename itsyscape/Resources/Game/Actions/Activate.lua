@@ -9,7 +9,9 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Action = require "ItsyScape.Peep.Action"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local Activate = Class(Action)
 Activate.SCOPES = { ['self'] = true }
@@ -33,29 +35,26 @@ function Activate:perform(state, player, target)
 		return false
 	end
 
-	local s = Utility.Peep.getEquippedShield(player, true)
-	if self:getIsDefensive() and not Utility.Peep.getEquippedShield(player, true) then
+	local stance = player:getBehavior(StanceBehavior)
+	stance = stance and stance.stance
+
+	if not stance then
 		return false
+	end
+
+	local canUsePower
+	do
+		local isDefensive = self:getIsDefensive()
+		if isDefensive and not (stance == Weapon.STANCE_CONTROLLED or stance == Weapon.STANCE_DEFENSIVE) then
+			return self:failWithMessage(player, "ActionFail_Power_RequireDefensiveStance")
+		elseif not isDefensive and not (stance == Weapon.STANCE_CONTROLLED or stance == Weapon.STANCE_AGGRESSIVE) then
+			return self:failWithMessage(player, "ActionFail_Power_RequireOffensiveStance")
+		end
 	end
 
 	self:transfer(state, player)
 
 	return true
-end
-
-function Activate:getFailureReason(state, player)
-	local reason = Action.getFailureReason(self, state, player)
-
-	if self:getIsDefensive() then
-		table.insert(reason.requirements, {
-			type = "Item",
-			resource = "BronzeShield",
-			name = "Shield",
-			count = 1
-		})
-	end
-
-	return reason
 end
 
 return Activate

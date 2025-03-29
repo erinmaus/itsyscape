@@ -579,7 +579,7 @@ We need to climb the island's peak to learn how many Yendorians there are.
 = spotted
 
 # speaker={C_ORLANDO}
-Look! Some Yenderhounds! They must belong to the scout...
+Look! Some Yenderhounds!
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 Gods... It's a pack of them. I hope you're all prepared.

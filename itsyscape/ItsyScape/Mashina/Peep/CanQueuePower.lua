@@ -9,8 +9,7 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
-local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
-local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local CanQueuePower = B.Node("CanQueuePower")
 CanQueuePower.POWER = B.Reference()
@@ -24,12 +23,23 @@ function CanQueuePower:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local coolDown = mashina:getBehavior(PowerCoolDownBehavior)
-	if coolDown then
-		local time = coolDown.powers[powerResource.id.value]
-		if time and time > love.timer.getTime() then
-			return B.Status.Failure
-		end
+	local PowerType = Utility.Peep.getPowerType(powerResource, gameDB)
+	if not PowerType then
+		return B.Status.Failure
+	end
+
+	local status = mashina:getBehavior(CombatStatusBehavior)
+	if not status then
+		return B.Status.Failure
+	end
+
+	local zeal = math.floor(status.currentZeal * 100)
+
+	local power = PowerType(mashina:getDirector():getGameInstance(), powerResource)
+	local zealCost = math.floor(power:getCost(mashina) * 100)
+
+	if zealCost > zeal then
+		return B.Status.Failure
 	end
 
 	return B.Status.Success

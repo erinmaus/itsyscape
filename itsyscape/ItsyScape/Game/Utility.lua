@@ -6119,6 +6119,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCraft_1/Script.lua")
 	peep:addResource("animation-action-craft", actionCraft)
+	local actionEat = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionEat_1/Script.lua")
+	peep:addResource("animation-action-enchant", actionEat)
 	local actionEnchant = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionEnchant_1/Script.lua")

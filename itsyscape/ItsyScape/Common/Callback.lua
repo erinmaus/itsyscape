@@ -25,7 +25,23 @@ end
 function Callback:new(doesReturn)
 	self.handlers = {}
 	self.wrappedHandlers = {}
+	self.pendingRemoval = {}
 	self.doesReturn = doesReturn == nil and true or doesReturn
+end
+
+function Callback:_clean()
+	for _, handler in ipairs(self.pendingRemoval) do
+		local wrappedHandler = self.handlers[handler]
+		self.handlers[handler] = nil
+
+		for i = #self.wrappedHandlers, 1, -1 do
+			if self.wrappedHandlers[i] == wrappedHandler then
+				table.remove(self.wrappedHandlers, i)
+			end
+		end
+	end
+
+	table.clear(self.pendingRemoval)
 end
 
 -- local function concatArgs(prefixArgs, postfixArgs)
@@ -51,6 +67,8 @@ end
 --
 -- There is no guarantee to the order the handlers are called.
 function Callback:invoke(...)
+	self:_clean()
+
 	--local postfixArgs = { n = select('#', ...), ... }
 	local results = { n = 0 }
 
@@ -116,14 +134,7 @@ end
 -- Unregisters a handler.
 function Callback:unregister(handler)
 	if handler and self.handlers[handler] then
-		local wrappedHandler = self.handlers[handler]
-		self.handlers[handler] = nil
-
-		for i = #self.wrappedHandlers, 1, -1 do
-			if self.wrappedHandlers[i] == wrappedHandler then
-				table.remove(self.wrappedHandlers, i)
-			end
-		end
+		table.insert(self.pendingRemoval, handler)
 	end
 end
 

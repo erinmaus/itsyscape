@@ -69,6 +69,14 @@ function CombatPower:new(...)
 	end
 end
 
+function CombatPower:getIsOffensive()
+	return not self:getAction():getIsDefensive()
+end
+
+function CombatPower:getIsDefensive()
+	return self:getAction():getIsDefensive()
+end
+
 function CombatPower:setCost(stat, base, reduction, min, max)
 	self.governingStat = stat or false
 	self.baseCost = base or self.baseCost

@@ -592,6 +592,68 @@ function Common.hasPeepDroppedIsabellium(playerPeep)
 	return Common.hasPeepDroppedItems(playerPeep, "^Isabellium")
 end
 
+function Common._attackTutorialPerformAttackAction(state, _, e)
+	if e.action:is("Attack") then
+		if state.numTimesAttacked == 0 then
+			Utility.Peep.notify(state.player, "You'll automatically deal blows until one of you is slain.")
+		end
+
+		state.numTimesAttacked = state.numTimesAttacked + 1
+
+		if state.numTimesAttacked > state.spamMessageThreshold then
+			state.numTimesAttacked = 1
+
+			Utility.Peep.notify(state.player, "You don't need to keep engaging! That's not going to work!", state.notifiedPlayer)
+			state.notifiedPlayer = true
+		end
+	end
+end
+
+function Common._attackTutorialPerformInitiateAttack(state)
+	if state.scoutTarget then
+		Utility.Peep.poof(state.scoutTarget)
+	end
+
+	local currentTarget = state.player:getBehavior(CombatTargetBehavior)
+	currentTarget = currentTarget and currentTarget.actor and currentTarget.actor:getPeep()
+
+	if state.previousTarget ~= currentTarget then
+		if state.previousTarget then
+			state.previousTarget:silence("die", Common._attackTutorialDie)
+		end
+
+		if currentTarget then
+			currentTarget:listen("die", Common._attackTutorialDie, state)
+		end
+
+		state.previousTarget = currentTarget
+		state.numTimesAttacked = 1
+	end
+end
+
+function Common._attackTutorialSilence(state)
+	state.player:silence("actionPerformed", Common._attackTutorialPerformAttackAction)
+	state.player:silence("initiateAttack", Common._attackTutorialPerformInitiateAttack)
+	state.player:silence("move", Common._attackTutorialSilence)
+end
+
+function Common._attackTutorialDie(state)
+	if state.previousTarget then
+		state.previousTarget:silence("die", Common._attackTutorialDie)
+	end
+
+	Common._attackTutorialSilence(state)
+
+	if state.done then
+		state.done()
+	end
+
+	local mapScript = Utility.Peep.getMapScript(state.player)
+	if mapScript then
+		mapScript:pushPoke("finishPreparingTutorial", state.player)
+	end
+end
+
 function Common.listenForAttack(playerPeep, done)
 	local director = playerPeep:getDirector()
 
@@ -610,6 +672,18 @@ function Common.listenForAttack(playerPeep, done)
 		Probe.namedMapObject("KnightCommander"),
 		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
 
+	local state = {
+		player = playerPeep,
+		scout = scout,
+		orlando = orlando,
+		knightCommander = knightCommander,
+		numTimesAttacked = 0,
+		previousTarget = false,
+		spamMessageThreshold = 3,
+		notifiedPlayer = false,
+		done = done
+	}
+
 	local scoutTarget
 	if scout then
 		local position = Utility.Peep.getPosition(scout)
@@ -620,102 +694,12 @@ function Common.listenForAttack(playerPeep, done)
 			scoutTarget:setTarget(scout, "Attack the scout!")
 		end
 
-		local function postReceiveAttack()
-			if orlando and not orlando:hasBehavior(CombatTargetBehavior) then
-				Utility.Peep.attack(orlando, scout, math.huge)
-				Utility.Peep.setMashinaState(orlando, "tutorial-attack-general")
-			end
-
-			if knightCommander and not knightCommander:hasBehavior(CombatTargetBehavior) then
-				Utility.Peep.attack(knightCommander, scout, math.huge)
-				Utility.Peep.setMashinaState(knightCommander, "tutorial-attack-general")
-			end
-
-			scout:silence("postReceiveAttack", postReceiveAttack)
-		end
-
-		scout:listen("postReceiveAttack", postReceiveAttack)
+		state.scoutTarget = scoutTarget
 	end
 
-	local numTimesAttacked = 0
-	local previousTarget = nil
-
-	local SPAM_MESSAGE_THRESHOLD = 3
-
-	local notifiedPlayer = false
-
-	local silence
-
-	local function die()
-		previousTarget:silence("die", die)
-
-		silence()
-
-		if done then
-			done()
-		end
-
-		if orlando then
-			Utility.Peep.setMashinaState(knightCommander, "tutorial-follow-player")
-		end
-
-		if knightCommander then
-			Utility.Peep.setMashinaState(knightCommander, "tutorial-follow-player")
-		end
-
-		local mapScript = Utility.Peep.getMapScript(playerPeep)
-		if mapScript then
-			mapScript:pushPoke("finishPreparingTutorial", playerPeep)
-		end
-	end
-
-	local function performAttackAction(_, e)
-		if e.action:is("Attack") then
-			if numTimesAttacked == 0 then
-				Utility.Peep.notify(playerPeep, "You'll automatically deal blows until one of you is slain.")
-			end
-
-			numTimesAttacked = numTimesAttacked + 1
-
-			if numTimesAttacked > SPAM_MESSAGE_THRESHOLD then
-				numTimesAttacked = 1
-
-				Utility.Peep.notify(playerPeep, "You don't need to keep engaging! That's not going to work!", notifiedPlayer)
-				notifiedPlayer = true
-			end
-		end
-	end
-
-	local function performInitiateAttack()
-		if scoutTarget then
-			Utility.Peep.poof(scoutTarget)
-		end
-
-		local currentTarget = playerPeep:getBehavior(CombatTargetBehavior)
-		currentTarget = currentTarget and currentTarget.actor and currentTarget.actor:getPeep()
-
-		if previousTarget ~= currentTarget then
-			if previousTarget then
-				previousTarget:silence("die", die)
-			end
-
-			if currentTarget then
-				currentTarget:listen("die", die)
-			end
-
-			previousTarget = currentTarget
-			numTimesAttacked = 1
-		end
-	end
-
-	silence = function()
-		playerPeep:silence("actionPerformed", performAttackAction)
-		playerPeep:silence("initiateAttack", performInitiateAttack)
-		playerPeep:silence("move", silence)
-	end
-
-	playerPeep:listen("actionPerformed", performAttackAction)
-	playerPeep:listen("initiateAttack", performInitiateAttack)
+	playerPeep:listen("actionPerformed", Common._attackTutorialPerformAttackAction, state)
+	playerPeep:listen("initiateAttack", Common._attackTutorialPerformInitiateAttack, state)
+	playerPeep:listen("move", Common._attackTutorialSilence, state)
 end
 
 return Common

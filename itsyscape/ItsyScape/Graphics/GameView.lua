@@ -1084,7 +1084,6 @@ function GameView:_updatePlayerMapNode()
 
 		if squaredDistance < distanceSquared then
 			if d.sceneNode:getParent()  ~= m.node then
-				Log.info("Showing ground decoration '%s'.", d.name)
 				d.sceneNode:setParent(m.node)
 			end
 
@@ -1093,8 +1092,6 @@ function GameView:_updatePlayerMapNode()
 			end
 		else
 			if d.sceneNode:getParent() == m.node then
-				Log.info("Hiding ground decoration '%s'.", d.name)
-
 				d.sceneNode:setParent(nil)
 			end
 		end

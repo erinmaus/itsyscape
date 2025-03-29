@@ -1520,6 +1520,7 @@ include "Resources/Game/DB/Spells/ModernCombat.lua"
 include "Resources/Game/DB/Prayers/Murmurs.lua"
 
 -- Powers
+include "Resources/Game/DB/Powers/Common.lua"
 include "Resources/Game/DB/Powers/Magic.lua"
 include "Resources/Game/DB/Powers/Archery.lua"
 include "Resources/Game/DB/Powers/Melee.lua"
