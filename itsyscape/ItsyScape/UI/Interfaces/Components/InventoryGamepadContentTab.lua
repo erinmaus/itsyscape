@@ -404,51 +404,63 @@ function InventoryGamepadContentTab:probe(index, button)
 	local actions = {}
 	if self.currentSwapIndex then
 		table.insert(actions, {
-			id = "Swap",
+			id = -1,
+			type = action.type,
 			verb = "Swap",
 			object = object,
+			objectID = item.id,
 			objectType = "item",
 			callback = Function(self.endSwap, self, index)
 		})
 
 		table.insert(actions, {
-			id = "Examine",
+			id = -2,
 			verb = "Examine",
+			type = action.type,
 			object = object,
+			objectID = item.id,
 			objectType = "item",
 			callback = Function(self.examine, self, item)
 		})
 	else
 		for _, action in ipairs(item.actions) do
 			table.insert(actions, {
-				id = action.type,
+				id = action.id,
+				type = action.type,
 				verb = action.verb,
 				object = object,
+				objectID = item.id,
 				objectType = "item",
 				callback = Function(self.pokeInventoryItem, self, index, action)
 			})
 		end
 
 		table.insert(actions, {
-			id = "Swap",
+			id = -1,
 			verb = "Swap",
+			type = "Swap",
 			object = object,
+			objectID = item.id,
 			objectType = "item",
 			callback = Function(self.beginSwap, self, index)
 		})
 
 		table.insert(actions, {
-			id = "Examine",
+			id = -2,
 			verb = "Examine",
+			type = "Examine",
 			object = object,
+			objectID = item.id,
 			objectType = "item",
 			callback = Function(self.examine, self, item, button)
 		})
 
 		table.insert(actions, {
-			id = "Drop",
+			id = -3,
 			verb = "Drop",
+			type = "Drop",
 			object = object,
+			objectID = item.id,
 			objectType = "item",
 			callback = Function(self.dropInventoryItem, self, index)
 		})

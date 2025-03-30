@@ -394,9 +394,12 @@ function PlayerInventory:probe(button)
 		local actions = {}
 		for i = 1, #item.actions do
 			table.insert(actions, {
-				id = item.actions[i].type,
+				id = item.actions[i].id,
+				type = item.actions[i].type,
 				verb = item.actions[i].verb,
 				object = object,
+				objectID = item.id,
+				objectType = "item",
 				callback = function()
 					self:sendPoke("poke", nil, { index = index, id = item.actions[i].id })
 					self:getView():playItemSoundEffect(item, item.actions[i])
@@ -406,8 +409,11 @@ function PlayerInventory:probe(button)
 
 		table.insert(actions, {
 			id = "Use",
+			type = "Use",
 			verb = "Use", -- TODO: [LANG]
 			object = object,
+			objectID = item.id,
+			objectType = "item",
 			callback = function()
 				self:useItem(button, index)
 			end
@@ -415,8 +421,11 @@ function PlayerInventory:probe(button)
 
 		table.insert(actions, {
 			id = "Examine",
+			type = "Examine",
 			verb = "Examine", -- TODO: [LANG]
 			object = object,
+			objectID = item.id,
+			objectType = "item",
 			callback = function()
 				self:getView():examine(self:getItemExamine(item))
 			end
@@ -424,8 +433,11 @@ function PlayerInventory:probe(button)
 
 		table.insert(actions, {
 			id = "Drop",
+			type = "Drop",
 			verb = "Drop", -- TODO: [LANG]
 			object = object,
+			objectID = item.id,
+			objectType = "item",
 			callback = function()
 				self:sendPoke("drop", nil, { index = index })
 				self:getView():playItemSoundEffect(item, { id = -1, type = "Drop" })

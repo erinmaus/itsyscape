@@ -293,18 +293,22 @@ function EquipmentGamepadContentTab:probe(index, button)
 	local actions = {}
 	for _, action in ipairs(item.actions) do
 		table.insert(actions, {
-			id = action.type,
+			id = action.id,
+			type = action.type,
 			verb = action.verb,
 			object = object,
+			objectID = item.id,
 			objectType = "item",
 			callback = Function(self.pokeEquipmentItem, self, index, action)
 		})
 	end
 
 	table.insert(actions, {
-		id = "Examine",
+		id = -1,
+		type = "Examine",
 		verb = "Examine",
 		object = object,
+		objectID = item.id,
 		objectType = "item",
 		callback = Function(self.examine, self, item, button)
 	})

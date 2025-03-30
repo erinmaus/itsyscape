@@ -94,10 +94,14 @@ function GamepadPokeMenu:new(view, actions)
 		end
 
 		local button = Button()
-		button:setID(string.format("PokeMenu-%s-%s", action.verb, action.object))
+		button:setID(string.format("PokeMenu-%s-%s", action.type or action.verb, action.objectID or action.object))
 		button:setText(buttonText)
 		button:setStyle(buttonStyle)
-		button.onClick:register(function()
+		button.onClick:register(function(_, buttonIndex)
+			if buttonIndex ~= 1 then
+				return
+			end
+
 			local s, r = pcall(action.callback)
 			if not s then
 				io.stderr:write("error: ", r, "\n")
@@ -140,7 +144,7 @@ function GamepadPokeMenu:new(view, actions)
 
 	self.onClose = Callback()
 
-	self:setZDepth(10000)
+	self:setZDepth(7000)
 end
 
 function GamepadPokeMenu:focus(reason)

@@ -220,9 +220,12 @@ function PlayerEquipment:probe(button)
 		local actions = {}
 		for i = 1, #item.actions do
 			table.insert(actions, {
-				id = item.actions[i].type,
+				id = item.actions[i].id,
+				type = item.actions[i].type,
 				verb = item.actions[i].verb,
 				object = object,
+				objectID = item.id,
+				objectType = "item",
 				callback = function()
 					self:sendPoke("poke", nil, { index = index, id = item.actions[i].id })
 					self:getView():playItemSoundEffect(item, actions[i].id)
@@ -231,9 +234,12 @@ function PlayerEquipment:probe(button)
 		end
 
 		table.insert(actions, {
-			id = "Examine",
+			id = -1,
+			type = "Examine",
 			verb = "Examine", -- TODO: [LANG]
 			object = object,
+			objectID = item.id,
+			objectType = "item",
 			callback = function()
 				self:getView():examine(self:getItemExamine(item))
 			end
