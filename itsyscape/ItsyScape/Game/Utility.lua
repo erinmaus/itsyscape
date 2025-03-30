@@ -1528,7 +1528,7 @@ local function _listToFlags(dialog, list)
 	local flags = {}
 	for k, v in list:values() do
 		local flag = v:getValueName():gsub("_", "-")
-		table.insert(flags, flag)
+		flags[flag] = true
 	end
 
 	return flags
@@ -3464,6 +3464,11 @@ function Utility.Peep.setPosition(peep, position, lerp)
 			actor:onTeleport(position, p.layer)
 		end
 	end
+end
+
+function Utility.Peep.makeInstanced(peep, playerPeep)
+	local _, instance = peep:addBehavior(InstancedBehavior)
+	instance.playerID = Utility.Peep.getPlayerModel(playerPeep):getID()
 end
 
 function Utility.Peep.teleportCompanion(peep, targetPeep)
