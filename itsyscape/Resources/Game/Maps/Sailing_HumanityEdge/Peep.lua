@@ -493,7 +493,7 @@ function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
 	if not isAlive and Utility.Peep.isEnabled(playerPeep) then
 		Utility.Peep.disable(playerPeep)
 
-		local stormfish = playerPeep:getState():count("Item", "LightningStormfish", { ["item-inventory"] = true })
+		local stormfish = playerPeep:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
 		local status = playerPeep:getBehavior(CombatStatusBehavior)
 		local hitpointsRatio = status and (status.currentHitpoints / status.maximumHitpoints)
 
@@ -503,7 +503,7 @@ function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
 		elseif stormfish <= 1 and hitpointsRatio < 0.25 then
 			stitch = "worst_scenario"
 		else
-			stich = "bad_scenario"
+			stitch = "bad_scenario"
 		end
 
 		local knot = string.format("quest_tutorial_main_defeat_yenderhounds.%s", stitch)
