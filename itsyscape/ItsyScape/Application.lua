@@ -450,11 +450,7 @@ function Application:probeActions(actions, performDefault, callback)
 		end
 	end
 
-	if numPrimaryActions <= 1 and not hasWalk then
-		return false
-	end
-
-	return true
+	return false
 end
 
 function Application:_probe(probe, performDefault, callback)
