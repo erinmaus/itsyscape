@@ -239,15 +239,15 @@ function GameView:attach(game)
 	end
 	stage.onPropRemoved:register(self._onPropRemoved)
 
-	self._onDropItem = function(_, ref, item, tile, position)
+	self._onDropItem = function(_, ref, item, tile, position, source)
 		Log.info("Dropped item '%s' (ref = %d, count = %d) at (%d, %d) on layer %d.", item.id, ref, item.count, tile.i, tile.j, tile.layer)
-		self:spawnItem(item, tile, position)
+		self:spawnItem(item, tile, position, source)
 	end
 	stage.onDropItem:register(self._onDropItem)
 
-	self._onTakeItem = function(_, ref, item)
+	self._onTakeItem = function(_, ref, item, source)
 		Log.info("Item '%s' (ref = %d, count = %d) taken.", item.id, ref, item.count)
-		self:poofItem(item)
+		self:poofItem(item, source)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
 
@@ -1437,6 +1437,8 @@ function GameView:spawnItem(item, tile, position)
 	itemNode:getTransform():translate(position)
 	itemNode:setParent(map)
 
+	_APP:getUIView():playItemSoundEffect(item, { id = -1, type = "Drop" })
+
 	self.items[item.ref] = itemNode
 end
 
@@ -1447,6 +1449,8 @@ function GameView:poofItem(item)
 
 		self.items[item.ref] = nil
 	end
+
+	_APP:getUIView():playItemSoundEffect(item, { id = -1, type = "Take" })
 end
 
 function GameView:getItem(ref)

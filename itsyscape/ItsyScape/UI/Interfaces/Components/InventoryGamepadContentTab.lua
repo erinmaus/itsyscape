@@ -226,15 +226,14 @@ end
 
 function InventoryGamepadContentTab:dropInventoryItem(index)
 	self:getInterface():sendPoke("dropInventoryItem", nil, { index = index })
-
-	local state = self:getState()
-	local item = state.items and state.items[index]
-	self:getUIView():playItemSoundEffect(item, { id = -1, type = "Drop" })
 end
 
 function InventoryGamepadContentTab:probeInventoryItem(index)
 	self:getInterface():sendPoke("probeInventoryItem", nil, { index = index })
-	self:getUIView():playItemSoundEffect()
+
+	local state = self:getState()
+	local item = state.items and state.items[index]
+	self:getUIView():playItemSoundEffect(item, { id = -1, type = "Probe" })
 end
 
 function InventoryGamepadContentTab:_onInventoryItemGamepadRelease(index, _, joystick, button)

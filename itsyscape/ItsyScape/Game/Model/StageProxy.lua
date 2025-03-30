@@ -144,24 +144,28 @@ StageProxy.dropItem = Event.Set(
 	Event.Argument("item"),
 	Event.Argument("tile"),
 	Event.Argument("position"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer"),
+	Event.Argument("source"))
 StageProxy.dropItem:link(
 	"onDropItem",
 	Event.Argument("ref"),
 	Event.Argument("item"),
 	Event.Argument("tile"),
 	Event.Argument("position"),
-	Event.Argument("layer"))
+	Event.Argument("layer"),
+	Event.Argument("source"))
 StageProxy.takeItem = Event.Unset(
 	StageProxy.ITEM,
 	Event.KeyArgument("ref"),
 	Event.Argument("item"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer"),
+	Event.Argument("source"))
 StageProxy.takeItem:link(
 	"onTakeItem",
 	Event.Argument("ref"),
 	Event.Argument("item"),
-	Event.Argument("layer"))
+	Event.Argument("layer"),
+	Event.Argument("source"))
 
 StageProxy.DECORATION = "decoration"
 StageProxy.decorate = Event.Set(

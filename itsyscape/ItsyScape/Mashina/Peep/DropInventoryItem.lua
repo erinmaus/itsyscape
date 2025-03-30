@@ -40,6 +40,10 @@ function DropInventoryItem:update(mashina, state, executor)
 		end
 	end
 
+	if currentCount == 0 then
+		return B.Status.Failure
+	end
+
 	return B.Status.Success
 end
 

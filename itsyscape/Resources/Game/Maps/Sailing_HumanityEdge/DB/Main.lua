@@ -190,6 +190,30 @@ do
 	}
 end
 
+M["Anchor_KnightCommander_StandGuard_Fish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 5,
+		PositionZ = 165,
+		Name = "Anchor_KnightCommander_StandGuard_Fish",
+		Map = M._MAP,
+		Resource = M["Anchor_KnightCommander_StandGuard_Fish"]
+	}
+end
+
+M["Anchor_Orlando_PostFish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 64,
+		PositionY = 4.5,
+		PositionZ = 149,
+		Name = "Anchor_Orlando_PostFish",
+		Map = M._MAP,
+		Resource = M["Anchor_Orlando_PostFish"]
+	}
+end
+
 M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
@@ -580,18 +604,6 @@ do
 	M["Orlando"] {
 		TalkAction,
 		ItsyScape.Action.InvisibleAttack()
-	}
-end
-
-M["Anchor_KnightCommander_StandGuard_Fish"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 65,
-		PositionY = 5,
-		PositionZ = 165,
-		Name = "Anchor_KnightCommander_StandGuard_Fish",
-		Map = M._MAP,
-		Resource = M["Anchor_KnightCommander_StandGuard_Fish"]
 	}
 end
 

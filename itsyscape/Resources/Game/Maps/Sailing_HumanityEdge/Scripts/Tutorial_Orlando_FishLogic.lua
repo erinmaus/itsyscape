@@ -25,10 +25,25 @@ local Tree = BTreeBuilder.Node() {
 
 				Mashina.Peep.Wait,
 
-				Mashina.Peep.DropInventoryItem {
-					item = function(item)
-						return not ITEMS_TO_KEEP[item:getID()]
-					end
+				Mashina.Navigation.WalkToAnchor {
+					anchor = "Anchor_Orlando_PostFish"
+				},
+
+				Mashina.Peep.Wait,
+
+				Mashina.Repeat {
+					Mashina.Step {
+						Mashina.Peep.DropInventoryItem {
+							count = 1,
+							item = function(item)
+								return not ITEMS_TO_KEEP[item:getID()]
+							end
+						},
+
+						Mashina.Peep.TimeOut {
+							duration = 1
+						}
+					}
 				}
 			}
 		},

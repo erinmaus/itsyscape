@@ -27,9 +27,6 @@ PlayerProxy.onLeave:link("onLeave")
 PlayerProxy.onMove = Event.ServerToClientRPC()
 PlayerProxy.onMove:link("onMove")
 
-PlayerProxy.onTakeItem = Event.ServerToClientRPC()
-PlayerProxy.onTakeItem:link("onTakeItem")
-
 PlayerProxy.getActor = Property()
 PlayerProxy.isReady = Property()
 

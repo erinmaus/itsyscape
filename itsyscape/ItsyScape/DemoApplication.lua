@@ -183,7 +183,6 @@ function DemoApplication:new()
 		player.onSave:register(self.savePlayer, self)
 		player.onMove:register(self.setMapName, self)
 		player.onMove:register(self.clearResourceManagerCache, self)
-		player.onTakeItem:register(self.playItemSoundEffect, self)
 
 		if _MOBILE then
 			player.onMove:register(self.requestSave, self)

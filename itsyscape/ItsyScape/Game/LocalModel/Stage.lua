@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
 local GroundInventoryProvider = require "ItsyScape.Game.GroundInventoryProvider"
+local InventoryProvider = require "ItsyScape.Game.InventoryProvider"
 local TransferItemCommand = require "ItsyScape.Game.TransferItemCommand"
 local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local Instance = require "ItsyScape.Game.LocalModel.Instance"
@@ -301,20 +302,20 @@ function LocalStage:spawnGround(filename, layer)
 	inventory.onDropItem:register(self.notifyDropItem, self, layer)
 end 
 
-function LocalStage:notifyTakeItem(layer, item, key)
+function LocalStage:notifyTakeItem(layer, item, key, _, peep)
 	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
-	Log.engine(
-		"Item '%s' (ref = %d, count = %d, noted = %s) taken from layer %d.",
-		item:getID(), ref, item:getCount(), ((item:isNoted() and "yes") or "no"), layer)
+	Log.info(
+		"Item '%s' (ref = %d, count = %d, noted = %s) taken from layer %d by peep '%s'.",
+		item:getID(), ref, item:getCount(), ((item:isNoted() and "yes") or "no"), layer, peep and peep:getName() or "???")
 
 	self.onTakeItem(
 		self,
 		ref,
-		{ ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() },
+		Utility.Item.pull(peep, item, "world"),
 		layer)
 end
 
-function LocalStage:notifyDropItem(layer, item, key, source)
+function LocalStage:notifyDropItem(layer, item, key, _, _, peep)
 	local ref = self.game:getDirector():getItemBroker():getItemRef(item)
 
 	local position
@@ -328,20 +329,29 @@ function LocalStage:notifyDropItem(layer, item, key, source)
 		position = tileCenter + Vector(x, 0, z)
 	end
 
-	Log.engine(
-		"Item '%s' (ref = %d, count = %d, noted = %s) dropped at (%d, %d -> %f, %f, %f) on layer %d.",
+	local actorOrProp
+	if peep then
+		local actor = peep:getBehavior(ActorReferenceBehavior)
+		local prop = peep:getBehavior(PropReferenceBehavior)
+		actorOrProp = (actor and actor.actor) or (prop and prop.prop)
+	end
+
+	Log.info(
+		"Item '%s' (ref = %d, count = %d, noted = %s) dropped at (%d, %d -> %f, %f, %f) on layer %d by peep '%s'.",
 		item:getID(), ref, item:getCount(), ((item:isNoted() and "yes") or "no"),
 		key.i, key.j,
 		position.x, position.y, position.z,
-		layer)
+		layer,
+		peep and peep:getName() or "???")
 
 	self.onDropItem(
 		self,
 		ref,
-		{ ref = ref, id = item:getID(), noted = item:isNoted(), count = item:getCount() },
+		Utility.Item.pull(peep, item, "world"),
 		{ i = key.i, j = key.j, layer = key.layer },
 		position,
-		layer)
+		layer,
+		actorOrProp)
 end
 
 function LocalStage:lookupPropAlias(resourceID)
@@ -1535,7 +1545,6 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 
 					if peep:hasBehavior(PlayerBehavior) then
 						local playerModel = Utility.Peep.getPlayerModel(peep)
-						local notifyStep = CallbackCommand(playerModel.onTakeItem, playerModel, Utility.Item.pull(peep, targetItem))
 						queue:interrupt(CompositeCommand(condition, walkStep, takeStep, notifyStep))
 					else
 						queue:interrupt(CompositeCommand(condition, walkStep, takeStep))

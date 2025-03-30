@@ -2235,6 +2235,7 @@ end
 
 function Utility.Item.pull(peep, item, scope)
 	return {
+		ref = item:getRef(),
 		id = item:getID(),
 		count = item:getCount(),
 		noted = item:isNoted(),
@@ -2242,7 +2243,7 @@ function Utility.Item.pull(peep, item, scope)
 		description = Utility.Item.getInstanceDescription(item),
 		stats = Utility.Item.getInstanceStats(item, peep),
 		slot = Utility.Item.getSlot(item),
-		actions = Utility.Item._pullActions(peep:getDirector():getGameInstance(), item, scope)
+		actions = peep and Utility.Item._pullActions(peep:getDirector():getGameInstance(), item, scope) or {}
 	}
 end
 
@@ -2480,7 +2481,7 @@ function Utility.Item.getInstanceStats(item, peep)
 	local calculatedStats
 	do
 		local logic = item:getManager():getLogic(item:getID())
-		if logic and Class.isCompatibleType(logic, require "ItsyScape.Game.Equipment") then
+		if peep and logic and Class.isCompatibleType(logic, require "ItsyScape.Game.Equipment") then
 			calculatedStats = logic:getCalculatedBonuses(peep, item)
 		else
 			calculatedStats = {}
