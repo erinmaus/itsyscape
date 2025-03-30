@@ -340,6 +340,12 @@ do
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
 		Resource = M["KnightCommander"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-stand-guard",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_StandGuardLogic.lua",
+		Resource = M["KnightCommander"]
+	}
 end
 
 M["Passage_KnightCommander"] = ItsyScape.Resource.MapObject.Unique()
@@ -574,6 +580,18 @@ do
 	M["Orlando"] {
 		TalkAction,
 		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+M["Anchor_KnightCommander_StandGuard_Fish"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 5,
+		PositionZ = 165,
+		Name = "Anchor_KnightCommander_StandGuard_Fish",
+		Map = M._MAP,
+		Resource = M["Anchor_KnightCommander_StandGuard_Fish"]
 	}
 end
 

@@ -202,7 +202,6 @@ function Make:gather(state, player, prop, toolType, skill)
 				return player:getCommandQueue():interrupt(
 					CompositeCommand(
 						function()
-							print("????", done)
 							return not done
 						end,
 						WaitCommand(math.huge))

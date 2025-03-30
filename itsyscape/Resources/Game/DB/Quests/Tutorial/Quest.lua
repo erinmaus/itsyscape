@@ -33,6 +33,9 @@ Quest "Tutorial" {
 	Step "Tutorial_FoundYenderhounds",
 	Step "Tutorial_DefeatedYenderhounds",
 	Step "Tutorial_FishedLightningStormfish",
+	Step "Tutorial_CookedLightningStormfish",
+	Step "Tutorial_Combat",
+	Step "Tutorial_FoundYendorianSquad",
 	Step "Tutorial_Finished"
 }
 
@@ -68,10 +71,29 @@ Description "Tutorial_FoundYenderhounds" {
 	after = "A pack of Yenderhounds ambushed your party while heading to the island's peak."
 }
 
-
 Description "Tutorial_DefeatedYenderhounds" {
 	before = "Defeat the Yenderhounds!",
 	after = "With pretty significant damage, your party defeated the ferocious Yenderhounds."
+}
+
+Description "Tutorial_FishedLightningStormfish" {
+	before = "The Yenderhounds wiped a portion of your party's food supplies, so you need to fish up some more.",
+	after = "To replenish your party's food supplies, you fished up five lightning stormfish. Now to cook 'em!"
+}
+
+Description "Tutorial_CookedLightningStormfish" {
+	before = "The lightning stormfish need to be cooked on the campfire Ser Orlando started.",
+	after = "You cooked the lightning stormfihs on the campfire Ser Orlando started."
+}
+
+Description "Tutorial_Combat" {
+	before = "After being uncertain of the foes ahead, Ser Orlando suggested you practice combat with him to regain your confidence.",
+	after = "After practicing with Ser Orlando, you regained your confidence and can take on whatever is coming ahead!"
+}
+
+Description "Tutorial_FoundYendorianSquad" {
+	before = "You're close to the island's peak! Push ahead and discover the Yendorians number.",
+	after = "A Yendorian squad alerted by the flare was guarding the peak! They must mean business! Defeat them... or die trying!"
 }
 
 Description "Tutorial_Finished" {

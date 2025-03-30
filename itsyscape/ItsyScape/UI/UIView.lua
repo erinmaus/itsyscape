@@ -1332,7 +1332,6 @@ function UIView:_getItemSoundEffectFilename(itemState, itemActionState)
 
 				if requirement.actionType then
 					if not _match(itemActionState.type, requirement.actionType, requirement.pattern) then
-						print(soundEffect.filename, "cur", itemActionState.type, "desired", requirement.actionType)
 						hasAllRequirements = false
 						break
 					end
@@ -1439,15 +1438,12 @@ function UIView:playItemSoundEffect(itemState, itemActionState)
 			local filename = string.format("%s/%s", root, soundEffectFilename)
 
 			if love.filesystem.getInfo(filename) then
-				print("got", filename)
 				local sound = love.audio.newSource(filename, "static")
 				sound:setVolume((_CONF.soundEffectsVolume or 1) * (_CONF.volume or 1))
 				sound:setPitch(love.math.random() * (maxPitch - minPitch) + minPitch)
 				sound:play()
 				
 				return true
-			else
-				print("did not get", filename)
 			end
 		end
 	end

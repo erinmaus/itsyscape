@@ -447,7 +447,7 @@ Bah! {player_get_pronoun_uppercase(X_THEY)} are right.
 = course_correct_two_in_a_row
 
 # speaker={C_ORLANDO}
-...I agree. %person(player_get_pronoun_uppercase(X_MX)) {player_name}, you're more diplomatic than I remembered.
+...I agree. %person({player_get_pronoun_uppercase(X_MX)}) {player_name}, you're more diplomatic than I remembered.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 Bah! {player_get_pronoun_uppercase(X_THEY)} are right. Maybe they're more than just a bookworm...
@@ -486,7 +486,7 @@ Oh, now you're both speechless? Good! Let's focus on the task at hand.
 ...feisty, are we? You've got a sharp wit about yourself.
 
 # speaker={C_ORLANDO}
-%person(player_get_pronoun_uppercase(X_MX)) {player_name}, you're.... right, I s'pose. Sorry, %person(Ser Commander).
+%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, you're.... right, I s'pose. Sorry, %person(Ser Commander).
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 And... apologies for my conduct, %person(Ser Orlando).
@@ -676,6 +676,7 @@ I got ya! A knight like me is always prepared!
 
 ~ play_animation(C_ORLANDO, "Human_ActionGive_1")
 ~ player_poke_map("giveTutorialFishingGear")
+~ set_peep_mashina_state(C_VIZIER_ROCK_KNIGHT, "tutorial-stand-guard")
 
 # speaker={C_ORLANDO}
 (Ser Orlando hands you an %item(adamant fishing) rod and some %item(water worms).)

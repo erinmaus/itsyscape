@@ -162,7 +162,7 @@ function Widget:getParentData(key)
 	repeat
 		data = current:getData(key)
 		current = current:getParent()
-	until data ~= nil or current == nil
+	until data ~= nil or not current
 
 	return data
 end

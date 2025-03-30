@@ -1597,7 +1597,7 @@ function Utility.Text.Dialog.ir_get_pronoun(dialog, characterName, pronounType, 
 		return default
 	end
 
-	return Utility.Text.getPronoun(peep, index, "en-US", false)
+	return Utility.Text.getPronoun(peep, index, "en-US", upperCase)
 end
 
 function Utility.Text.Dialog.ir_is_pronoun_plural(dialog, characterName)

@@ -146,6 +146,30 @@ do
 	}
 end
 
+M["CoconutTree_Default2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75.000000,
+		PositionY = 5.000000,
+		PositionZ = 151.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CoconutTree_Default2",
+		Map = M._MAP,
+		Resource = M["CoconutTree_Default2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CoconutTree_Default",
+		MapObject = M["CoconutTree_Default2"]
+	}
+end
+
 M["Crate_Default11"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -318,7 +342,7 @@ M["LightningStormfish_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 62.843750,
-		PositionY = 2.25,
+		PositionY = 2.250000,
 		PositionZ = 139.281250,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
@@ -342,7 +366,7 @@ M["LightningStormfish_Default2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 62.093750,
-		PositionY = 2.25,
+		PositionY = 2.250000,
 		PositionZ = 142.281250,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
@@ -366,7 +390,7 @@ M["LightningStormfish_Default3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 64.375000,
-		PositionY = 2.25,
+		PositionY = 2.250000,
 		PositionZ = 141.468750,
 		RotationX = 0.000000,
 		RotationY = 0.000000,

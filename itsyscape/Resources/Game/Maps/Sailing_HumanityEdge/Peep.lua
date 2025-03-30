@@ -250,6 +250,12 @@ function Island:onFinishPreparingTeam(playerPeep)
 
 	if Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") == true then
 		self:teleportCompanion(playerPeep, "KnightCommander")
+
+		if Utility.Quest.isNextStep("Tutorial", "Tutorial_FishedLightningStormfish", playerPeep) or
+		   Utility.Quest.isNextStep("Tutorial", "Tutorial_CookedLightningStormfish", playerPeep)
+		then
+			Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), "tutorial-stand-guard")
+		end
 	end
 
 	self:teleportCompanion(playerPeep, "Orlando")

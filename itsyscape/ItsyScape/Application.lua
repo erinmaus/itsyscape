@@ -618,7 +618,7 @@ function Application:tickSingleThread()
 	self:measure('gameView:preTick()', self.gameView.preTick, self.gameView, self:getPreviousFrameDelta())
 	self:measure('uiView:tick()', self.uiView.tick, self.uiView)
 	self:measure('game:tick()', self.localGame.tick, self.localGame)
-	self:measure('gameView:postTick()', self.gameView, self.gameView, self:getPreviousFrameDelta())
+	self:measure('gameView:postTick()', self.gameView.postTick, self.gameView, self:getPreviousFrameDelta())
 end
 
 function Application:preTickMultiThread()
