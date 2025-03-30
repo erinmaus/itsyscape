@@ -1880,8 +1880,19 @@ function Utility.Text.Dialog.ir_get_external_dialog_variable(dialog, characterNa
 	return result
 end
 
-function Utility.Text.bind(dialog, language)
-	for k, v in pairs(Utility.Text.Dialog) do
+function Utility.Text.Dialog.ir_is_in_passage(dialog, characterName, passageName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return Utility.Peep.isInPassage(peep, passageName)
+end
+
+function Utility.Text.bind(dialog, common, language)
+	common = common or Utility.Text.Dialog
+
+	for k, v in pairs(common) do
 		dialog:bindExternalFunction(k, v, dialog)
 	end
 end

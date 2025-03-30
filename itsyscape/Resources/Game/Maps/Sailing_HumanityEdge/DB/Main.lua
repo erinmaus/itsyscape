@@ -453,6 +453,60 @@ do
 	}
 end
 
+M["Passage_FishingArea"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_FishingArea",
+		Map = M._MAP,
+		Resource = M["Passage_FishingArea"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 50,
+		Z1 = 136,
+		X2 = 72,
+		Z2 = 168,
+		Map = M._MAP,
+		Resource = M["Passage_FishingArea"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 56,
+		Z1 = 134,
+		X2 = 70,
+		Z2 = 136,
+		Map = M._MAP,
+		Resource = M["Passage_FishingArea"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 58,
+		Z1 = 132,
+		X2 = 68,
+		Z2 = 134,
+		Map = M._MAP,
+		Resource = M["Passage_FishingArea"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 72,
+		Z1 = 144,
+		X2 = 76,
+		Z2 = 162,
+		Map = M._MAP,
+		Resource = M["Passage_FishingArea"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 76,
+		Z1 = 146,
+		X2 = 76,
+		Z2 = 164,
+		Map = M._MAP,
+		Resource = M["Passage_FishingArea"]
+	}
+end
+
 M["Yenderhound1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {

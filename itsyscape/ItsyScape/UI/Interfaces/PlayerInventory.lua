@@ -440,7 +440,6 @@ function PlayerInventory:probe(button)
 			objectType = "item",
 			callback = function()
 				self:sendPoke("drop", nil, { index = index })
-				self:getView():playItemSoundEffect(item, { id = -1, type = "Drop" })
 			end
 		})
 

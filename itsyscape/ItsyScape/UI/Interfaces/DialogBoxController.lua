@@ -57,13 +57,25 @@ function DialogBoxController:new(peep, director, action, target, overrideEntryPo
 			elseif characterRecord then
 				self.talkCharacter = characterRecord:get("Character")
 
-				local filename = string.format(
-					"Resources/Game/Dialog/%s/Dialog.json",
-					characterRecord:get("Character").name)
+				local characterName = self.talkCharacter.name
+				local filename = string.format("Resources/Game/Dialog/%s/Dialog.json", characterName)
 				self.dialog = InkDialog(filename, self:getVariables())
 				self.dialog.onSetVariable:register(self.saveVariable, self)
 
-				Utility.Text.bind(self.dialog, "en-US")
+				Utility.Text.bind(self.dialog, nil, "en-US")
+
+				local commonPath = string.format("Resources.Game.Dialog.%s.Common", characterName)
+				local s, r = pcall(require, commonPath)
+				print(">>> s", s, "r", Log.dump(r))
+				if s then
+					Utility.Text.bind(self.dialog, r, "en-US")
+				else
+					if love.filesystem.getInfo(string.format("Resources/Game/Dialog/%s/Common.lua", characterName)) or
+					   love.filesystem.getInfo(string.format("Resources/Game/Dialog/%s/Common/init.lua", characterName))
+				   	then
+				   		Log.warn("Couldn't load common dialog '%s' for '%s': %s", commonPath, characterName, r)
+				   	end
+				end
 
 				if overrideEntryPoint and overrideEntryPoint ~= "" then
 					self.dialog:jump(overrideEntryPoint)

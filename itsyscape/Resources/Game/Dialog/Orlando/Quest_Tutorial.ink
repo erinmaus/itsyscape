@@ -2,6 +2,8 @@ INCLUDE ./Common.ink
 INCLUDE ../Common/Common.ink
 INCLUDE ../VizierRockKnight/Common.ink
 
+EXTERNAL orlando_has_lit_coconut_fire()
+
 VAR quest_tutorial_main_starting_player_class = WEAPON_STYLE_NONE
 
 // Initial conversation.
@@ -55,9 +57,18 @@ Uh, so, let's see, where were we...
 
 # background=none
 
--> quest_tutorial_main
+-> quest_tutorial_main.table_of_contents
 
 == quest_tutorial_main ==
+
+# speaker={C_PLAYER}
+~ temp in_fishing_area = player_is_in_passage("Passage_FishingArea") 
+* {in_fishing_area} [(Ask about fishing).] %person(Ser Orlando), I have a question about fishing...
+  -> quest_tutorial_main_fish
+* {in_fishing_area} [(Talk about something else.)] -> table_of_contents
+* -> table_of_contents
+
+= table_of_contents
 {
     - !player_has_started_quest("Tutorial"): -> quest_tutorial_main_started
     - player_is_next_quest_step("Tutorial", "Tutorial_GatheredItems"): -> quest_tutorial_main_gather_items
@@ -67,7 +78,7 @@ Uh, so, let's see, where were we...
     - player_is_next_quest_step("Tutorial", "Tutorial_FoundYenderhounds"): -> quest_tutorial_main_find_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_FishedLightningStormfish"): -> quest_tutorial_main_fish
-    - else: Good job, bub!
+    - else: Good job, bub! #speaker={C_ORLANDO}
 }
 
 == quest_tutorial_main_started ==
@@ -112,7 +123,7 @@ OI! {yell(player_name)}! ARE YOU OK?! HELP! {yell(player_get_pronoun_uppercase(X
   -> where_am_i
 * [What's going on?]
   -> what_is_going_on
-* {!quest_tutorial_did_exhaust_options()} [Nevermind. Let's get going.]
+* {quest_tutorial_main_started_got_up && !quest_tutorial_did_exhaust_options()} [Nevermind. Let's get going.]
   -> let_us_get_going
 * -> let_us_get_going
 
@@ -757,12 +768,16 @@ Sure thing! Lemme know when you got some space in your bag.
 
 = loop
 
+~ temp can_light_fire = player_did_quest_step("Tutorial", "Tutorial_FishedLightningStormfish") && not orlando_has_lit_coconut_fire()
+
 * [(Ask for help on how to fish.)]
   -> ask_for_help
 * [(Go fishing!)]
   -> go_fishing
 * [(Ask for help dropping items.)] %person(Ser Orlando), I want to clear some junk out of my bag. Can you help me?
   -> give_drop_item_tutorial
+* {can_light_fire} [(Ask %person(Ser Orlando) to light a fire.)] %person(Ser Orlando), I need a fire to cook on. Can you help me?
+  -> light_fire
 
 = ask_for_help
 
@@ -797,5 +812,16 @@ Like I said, a knight like me is always prepared! I'll chop down a tree and ligh
 
 # speaker={C_ORLANDO}
 Then we can cook the %item(stormfish) easy-peasy. Fish isn't hard to cook. Some heat, some time, and... done!
+
+-> DONE
+
+= light_fire
+
+# speaker={C_ORLANDO}
+Sure thing! Lemme get on that.
+
+%empty()
+
+~ set_peep_mashina_state(C_ORLANDO, "tutorial-chop")
 
 -> DONE

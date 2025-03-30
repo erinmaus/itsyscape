@@ -178,3 +178,10 @@ EXTERNAL ir_get_external_dialog_variable(characterName, variableName)
 == function get_external_dialog_variable(characterName, variableName) ==
 ~ return ir_get_external_dialog_variable(characterName, variableName)
 
+EXTERNAL ir_is_in_passage(characterName, passageName)
+
+== function player_is_in_passage(passageName) ==
+~ return ir_is_in_passage(C_PLAYER, passageName)
+
+== function peep_is_in_passage(characterName, passageName) ==
+~ return ir_is_in_passage(characterName, passageName)

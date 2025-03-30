@@ -254,4 +254,12 @@ function Probe.component(ComponentType)
 	return Function(_component, ComponentType)
 end
 
+local _passage = function(passageName, peep)
+	return Utility.Peep.isInPassage(peep, passageName)
+end
+
+function Probe.passage(passageName)
+	return Function(_passage, passageName)
+end
+
 return Probe
