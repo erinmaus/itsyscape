@@ -1719,7 +1719,7 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 
 		local propView = gameView:getProp(object)
 		if propView then
-			local position = Vector.ZERO:transform(propView:getRoot():getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta()))
+			local position = Vector.ZERO:transform(propView:getRoot():getTransform():getGlobalDeltaTransform(self:getFrameDelta()))
 			local size = max - min
 			local halfSize = size / 2
 			min, max = position, position + Vector(halfSize.x, size.y, halfSize.z)
@@ -1731,7 +1731,7 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 
 		local actorView = gameView:getActor(object)
 		if actorView then
-			local position = Vector.ZERO:transform(actorView:getSceneNode():getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta()))
+			local position = Vector.ZERO:transform(actorView:getSceneNode():getTransform():getGlobalDeltaTransform(self:getFrameDelta()))
 			local size = max - min
 			local halfSize = size / 2
 			min, max = position, position + Vector(halfSize.x, size.y, halfSize.z)
@@ -1747,7 +1747,7 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 
 		if layer then
 			local node = gameView:getMapSceneNode(layer)
-			local transform = node and node:getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta())
+			local transform = node and node:getTransform():getGlobalDeltaTransform(self:getFrameDelta())
 			if transform then
 				min, max = Vector.transformBounds(min, max, transform)
 			end
