@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FishLogic.lua
+-- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_ChopLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -10,6 +10,9 @@
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
+local Probe = require "ItsyScape.Peep.Probe"
+
+local TARGET_FIRE = B.Reference("Tutorial_Orlando_ChopLogic", "TARGET_FIRE")
 
 local ITEMS_TO_KEEP = {
 	["TerrifyingFishingRod"] = true,
@@ -21,17 +24,38 @@ local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		Mashina.Success {
 			Mashina.Step {
-				Mashina.Skills.Fishing.FishNearbyFish {
-					resource = "LightningStormfish"
+				Mashina.Skills.GatherNearbyResource {
+					action = "Chop",
+					resource = "CoconutLogs"
 				},
 
 				Mashina.Peep.Wait,
 
-				Mashina.Navigation.WalkToAnchor {
-					anchor = "Anchor_Orlando_PostFish"
+				Mashina.Peep.TimeOut {
+					duration = 1
+				},
+
+				Mashina.Peep.PokeInventoryItem {
+					action  = "Light",
+					item = "CoconutLogs"
 				},
 
 				Mashina.Peep.Wait,
+
+				Mashina.Peep.FindNearbyPeep {
+					filter = Probe.resource("Prop", "CoconutFire"),
+					[TARGET_FIRE] = B.Output.result
+				},
+
+				Mashina.Peep.PokeOther {
+					peep = TARGET_FIRE,
+					event = "tweakDuration",
+					poke = math.huge
+				},
+
+				Mashina.Peep.TimeOut {
+					duration = 1
+				},
 
 				Mashina.Repeat {
 					Mashina.Step {

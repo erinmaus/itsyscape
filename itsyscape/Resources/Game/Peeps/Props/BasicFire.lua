@@ -30,6 +30,10 @@ function BasicFire:getDuration()
 	return self.duration
 end
 
+function BasicFire:onTweakDuration(duration)
+	self.duration = duration or self.duration
+end
+
 function BasicFire:onSpawnedByAction(instigator)
 	local resource = Utility.Peep.getResource(self)
 	if resource then

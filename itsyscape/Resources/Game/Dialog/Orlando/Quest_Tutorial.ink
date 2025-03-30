@@ -783,3 +783,19 @@ Sure thing!
 (Let me go fish up some %item(lightning stormfish)!)
 
 -> DONE
+
+= done_fishing
+
+# speaker={C_ORLANDO}
+Looks like you've fished up five %item(lightning stormfish)!
+
+# speaker={C_PLAYER}
+I did, but... How do we cook them?
+
+# speaker={C_ORLANDO}
+Like I said, a knight like me is always prepared! I'll chop down a tree and light a fire.
+
+# speaker={C_ORLANDO}
+Then we can cook the %item(stormfish) easy-peasy. Fish isn't hard to cook. Some heat, some time, and... done!
+
+-> DONE

@@ -259,6 +259,9 @@ function Island:onFinishPreparingTeam(playerPeep)
 	end
 
 	self:teleportCompanion(playerPeep, "Orlando")
+	if Utility.Quest.isNextStep("Tutorial", "Tutorial_CookedLightningStormfish", playerPeep) then
+		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), "tutorial-chop")
+	end
 end
 
 function Island:onFinishPreparingYenderhounds(playerPeep)
@@ -520,6 +523,22 @@ function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
 	end
 end
 
+function Island:updateTutorialFishStormfishStep(playerPeep)
+	local count = playerPeep:getState():count("Item", "LightningStormfish", { ["item-inventory"] = true })
+
+	if count >= 5 and Utility.Peep.isEnabled(playerPeep) then
+		Utility.Peep.disable(playerPeep)
+
+		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
+			Utility.Peep.enable(playerPeep)
+
+			Utility.Peep.setMashinaState(orlando, "tutorial-chop")
+
+			self:transitionTutorial(playerPeep, "Tutorial_FishedLightningStormfish")
+		end, "quest_tutorial_main_fish.done_fishing")
+	end
+end
+
 function Island:onGiveTutorialFishingGear(playerPeep)
 	self:_giveItems(playerPeep, self.FISHING_INVENTORY)
 end
@@ -539,6 +558,8 @@ function Island:updateTutorialPlayer(playerPeep)
 		self:updateTutorialFindYenderhoundsStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedYenderhounds", playerPeep) then
 		self:updateTutorialEncounterYenderhoundsStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FishedLightningStormfish", playerPeep) then
+		self:updateTutorialFishStormfishStep(playerPeep)
 	end
 end
 

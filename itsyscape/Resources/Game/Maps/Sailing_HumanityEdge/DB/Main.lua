@@ -292,6 +292,18 @@ do
 		Resource = M["Orlando"]
 	}
 
+	ItsyScape.Meta.PeepInventoryItem {
+		Item = ItsyScape.Resource.Item "ItsyHatchet",
+		Count = 1,
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepInventoryItem {
+		Item = ItsyScape.Resource.Item "Tinderbox",
+		Count = 1,
+		Resource = M["Orlando"]
+	}
+
 	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-look-away-from-player",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_LookAwayLogic.lua",
@@ -313,6 +325,12 @@ do
 	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-fish",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FishLogic.lua",
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-chop",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_ChopLogic.lua",
 		Resource = M["Orlando"]
 	}
 end
