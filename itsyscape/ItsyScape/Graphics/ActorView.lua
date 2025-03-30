@@ -956,7 +956,7 @@ function ActorView:applySkin(slot, slotNodes)
 	self.currentApplySkin = self.currentApplySkin + 1
 
 	local resourceManager = self.game:getResourceManager()
-	resourceManager:queueAsyncEvent(self._doApplySkin, self, copySlotNodes, slot, slotNodes.generation)
+	resourceManager:queueEvent(self._doApplySkin, self, copySlotNodes, slot, slotNodes.generation)
 end
 
 function ActorView:transmogrify(body)
