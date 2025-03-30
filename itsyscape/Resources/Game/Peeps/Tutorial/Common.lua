@@ -13,8 +13,8 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
-local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local Common = {}
 
@@ -700,6 +700,386 @@ function Common.listenForAttack(playerPeep, done)
 	playerPeep:listen("actionPerformed", Common._attackTutorialPerformAttackAction, state)
 	playerPeep:listen("initiateAttack", Common._attackTutorialPerformInitiateAttack, state)
 	playerPeep:listen("move", Common._attackTutorialSilence, state)
+end
+
+function Common._fishTutorialPerformFishAction(state, _, e)
+	if e.action:is("Fish") then
+		Utility.Peep.poof(state.fishTarget)
+
+		if state.numTimesFished == 0 then
+			Utility.Peep.notify(state.player, "You'll automatically fish until you catch the fish or run out of bait.")
+		end
+
+		state.numTimesFished = state.numTimesFished + 1
+
+		if state.numTimesFished > state.spamMessageThreshold then
+			state.numTimesAttacked = 1
+
+			Utility.Peep.notify(state.player, "You don't need to keep trying to fish! That won't work!", state.notifiedPlayer)
+			state.notifiedPlayer = true
+		end
+	end
+end
+
+function Common._fishTutorialSilence(state)
+	state.player:silence("actionPerformed", Common._fishTutorialPerformFishAction)
+	state.player:silence("resourceObtained", Common._fishTutorialSilence)
+	state.player:silence("move", Common._fishTutorialSilence)
+end
+
+
+function Common.listenForFish(playerPeep, done)
+	local director = playerPeep:getDirector()
+
+	local fish = director:probe(
+		playerPeep:getLayerName(),
+		Probe.resource("Prop", "LightningStormfish_Default"))
+
+	local fishTargets = director:probe(
+		playerPeep:getLayerName(),
+		Probe.resource("Prop", "Target_Default"),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))
+
+	for _, target in ipairs(fishTargets) do
+		Utility.Peep.poof(target)
+	end
+
+	local specificFish
+	for _, f in ipairs(fish) do
+		local health = f:getBehavior(PropResourceHealthBehavior)
+		if health and health.currentProgress < health.maxProgress then
+			specificFish = f
+			break
+		end
+	end
+
+	-- Fallback if all stormfish are somehow fished.
+	specificFish = f or fish[love.math.random(#fish)]
+
+	local state = {
+		player = playerPeep,
+		fish = specificFish,
+		numTimesFished = 0,
+		spamMessageThreshold = 3,
+		notifiedPlayer = false,
+		done = done
+	}
+
+	local fishTarget
+	if fish then
+		local position = Utility.Peep.getPosition(specificFish)
+		fishTarget = Utility.spawnPropAtPosition(specificFish, "Target_Default", position.x, position.y, position.z)
+		fishTarget = fishTarget and fishTarget:getPeep()
+		Utility.Peep.makeInstanced(fishTarget, playerPeep)
+
+		if fishTarget then
+			fishTarget:setTarget(specificFish, "Use your fishing rod and bait to catch the fish.")
+		end
+
+		state.fishTarget = fishTarget
+	end
+
+	playerPeep:listen("actionPerformed", Common._fishTutorialPerformFishAction, state)
+	playerPeep:listen("resourceObtained", Common._fishTutorialSilence, state)
+	playerPeep:listen("move", Common._fishTutorialSilence, state)
+end
+
+Common.FIRST_GOOD_ITEMS = {
+	"^Isabellium",
+	"Rune$",
+	"Stormfish$",
+	"^WaterWorm$",
+	"FishingRod$"
+}
+
+Common.SECOND_GOOD_ITEMS = {
+	"^Isabellium",
+	"Rune$",
+	"^WaterWorm$",
+	"FishingRod$",
+	"^CookedLightningStormfish$",
+}
+
+Common.THIRD_GOOD_ITEMS = {
+	"^Isabellium",
+	"Rune$",
+	"^WaterWorm$",
+	"FishingRod$"
+}
+
+function Common.isJunkItem(item, goodItemIDs)
+	local isJunkItem = true
+	for _, otherItemID in ipairs(goodItemIDs) do
+		if item:getID():match(otherItemID) then
+			isJunkItem = false
+			break
+		end
+	end
+
+	return isJunkItem and item or nil
+end
+
+Common.DROP_ITEMS_TUTORIAL = {
+	{
+		position = {
+			gamepad = "center",
+			standard = "up",
+			mobile = "up"
+		},
+		id = {
+			gamepad = "root",
+			standard = "Ribbon-PlayerInventory",
+			mobile = "Ribbon-PlayerInventory"
+		},
+		message = {
+			gamepad = {
+				button = "start",
+				label = "Open ribbon"
+			},
+			standard = {
+				button = "mouse_left",
+				controller = "KeyboardMouse",
+				label = "Open inventory tab"
+			},
+			mobile = {
+				button = "tap",
+				controller = "Touch",
+				label = "Open inventory tab"
+			}
+		},
+		open = function(target, state)
+			return function()
+				local gamepadRibbonInterface = Utility.UI.getOpenInterface(target, "GamepadRibbon")
+				local isGamepadRibbonOpen = gamepadRibbonInterface and gamepadRibbonInterface:getIsOpen()
+				local isMouseRibbonOpen = Utility.UI.isOpen(target, "PlayerInventory")
+
+				state.wasGamepadRibbonOpen = isGamepadRibbonOpen
+				state.wasMouseRibbonOpen = isMouseRibbonOpen
+
+				return isGamepadRibbonOpen or isMouseRibbonOpen
+			end
+		end
+	},
+	{
+		id = function(target, state)
+			return function()
+				local gamepadRibbonInterface = Utility.UI.getOpenInterface(target, "GamepadRibbon")
+				local isGamepadRibbonOpen = gamepadRibbonInterface and gamepadRibbonInterface:getIsOpen()
+				local isMouseRibbonOpen = Utility.UI.isOpen(target, "PlayerInventory")
+
+				if not (isGamepadRibbonOpen or isMouseRibbonOpen) then
+					return {
+						gamepad = "root",
+						standard = "Ribbon-PlayerInventory",
+						mobile = "Ribbon-PlayerInventory"
+					}
+				end
+
+				if isGamepadRibbonOpen and gamepadRibbonInterface:getCurrentTab() ~= gamepadRibbonInterface.TAB_PLAYER_INVENTORY then
+					return "GamepadRibbon-PlayerInventory"
+				end
+
+				local inventory = Utility.Peep.getInventory(target)
+
+				local firstJunkItem, secondJunkItem, thirdJunkItem
+				for _, item in ipairs(inventory) do
+					firstJunkItem = firstJunkItem or Common.isJunkItem(item, Common.FIRST_GOOD_ITEMS)
+					secondJunkItem = secondJunkItem or Common.isJunkItem(item, Common.SECOND_GOOD_ITEMS)
+					thirdJunkItem = thirdJunkItem or Common.isJunkItem(item, Common.THIRD_GOOD_ITEMS)
+				end
+
+				local junkItem = firstJunkItem or secondJunkItem or thirdJunkItem
+				if not junkItem then
+					junkItem = inventory[#inventory]
+				end
+
+				state.currentJunkItem = junkItem
+				local id = junkItem and string.format("Inventory-Item-%s", junkItem:getID()) or false
+
+				return {
+					gamepad = id,
+					standard = id,
+					mobile = id
+				}
+			end
+		end,
+		message = function(target, state)
+			return function()
+				local gamepadRibbonInterface = Utility.UI.getOpenInterface(target, "GamepadRibbon")
+				local isGamepadRibbonOpen = gamepadRibbonInterface and gamepadRibbonInterface:getIsOpen()
+				local isMouseRibbonOpen = Utility.UI.isOpen(target, "PlayerInventory")
+
+				if not (isGamepadRibbonOpen or isMouseRibbonOpen) or (isGamepadRibbonOpen and gamepadRibbonInterface:getCurrentTab() ~= gamepadRibbonInterface.TAB_PLAYER_INVENTORY) then
+					return {
+						gamepad = {
+							button = "leftshoulder",
+							label = "Open inventory"
+						},
+
+						standard = {
+							button = "mouse_left",
+							controller = "KeyboardMouse",
+							label = "Open inventory tab"
+						},
+
+						mobile = {
+							button = "tap",
+							controller = "Touch",
+							label = "Open inventory tab"
+						}
+					}
+				end
+
+				local text
+				if state.currentJunkItem then
+					text = {
+						{ 1, 1, 1, 1},
+						"Drop",
+						{ 1, 1, 1, 1},
+						" ",
+						"ui.poke.item",
+						Utility.Item.getInstanceName(state.currentJunkItem)
+					}
+				else
+					text = "Drop"
+				end
+
+				return {
+					gamepad = {
+						button = "y",
+						label = text
+					},
+
+					standard = {
+						button = "mouse_right",
+						controller = "KeyboardMouse",
+						label = text
+					},
+
+					mobile = {
+						button = "tap",
+						controller = "Long touch",
+						label = text
+					}
+				}
+			end
+		end,
+		position = function(target, state)
+			local gamepadRibbonInterface = Utility.UI.getOpenInterface(target, "GamepadRibbon")
+			local isGamepadRibbonOpen = gamepadRibbonInterface and gamepadRibbonInterface:getIsOpen()
+			local isMouseRibbonOpen = Utility.UI.isOpen(target, "PlayerInventory")
+
+			if not (isGamepadRibbonOpen or isMouseRibbonOpen) then
+				return {
+					gamepad = "center",
+					standard = "up",
+					mobile = "up"
+				}
+			end
+
+			return "up"
+		end,
+		open = function(target, state)
+			return function()
+				local gamepadRibbonInterface = Utility.UI.getOpenInterface(target, "GamepadRibbon")
+				local isGamepadRibbonOpen = gamepadRibbonInterface and gamepadRibbonInterface:getIsOpen()
+				local mouseRibbonInterface = Utility.UI.getOpenInterface(target, "PlayerInventory")
+				local isMouseRibbonOpen = not not mouseRibbonInterface
+
+				if not (isMouseRibbonOpen or isGamepadRibbonOpen) then
+					return true
+				end
+
+				if isGamepadRibbonOpen and gamepadRibbonInterface:getProbedInventoryItem() then
+					return true
+				end
+
+				if isMouseRibbonOpen and mouseRibbonInterface:getProbedInventoryItem() then
+					return true
+				end
+
+				return false
+			end
+		end
+	},
+	{
+		position =  "up",
+		id = function(target, state)
+			return function()
+				local gamepadRibbonInterface = Utility.UI.getOpenInterface(target, "GamepadRibbon")
+				local isGamepadRibbonOpen = gamepadRibbonInterface and gamepadRibbonInterface:getIsOpen()
+				local mouseRibbonInterface = Utility.UI.getOpenInterface(target, "PlayerInventory")
+				local isMouseRibbonOpen = not not mouseRibbonInterface
+
+				if not (isMouseRibbonOpen or isGamepadRibbonOpen) then
+					return false
+				end
+
+				local probedGamepadItem = isGamepadRibbonOpen and gamepadRibbonInterface:getProbedInventoryItem()
+				local probedMouseItem = isMouseRibbonOpen and mouseRibbonInterface:getProbedInventoryItem()
+				local probedItem = probedMouseItem or probedGamepadItem
+
+				if not probedItem then
+					return {
+						gamepad = false,
+						standard = false,
+						touch = false
+					}
+				end
+
+				local id = string.format("PokeMenu-Drop-%s", probedItem:getID())
+				return {
+					gamepad = id,
+					standard = id,
+					touch = id
+				}
+			end
+		end,
+		message = {
+			gamepad = {
+				button = "a",
+				label = "Drop",
+			},
+			standard = {
+				button = "mouse_left",
+				controller = "KeyboardMouse",
+				label = "Drop",
+			},
+			{
+				button = "tap",
+				controller = "Touch",
+				label = "Drop",
+			}
+		},
+		open = function(target, state)
+			Utility.Peep.enable(target)
+
+			return function()
+				local gamepadRibbonInterface = Utility.UI.getOpenInterface(target, "GamepadRibbon")
+				local isGamepadRibbonOpen = gamepadRibbonInterface and gamepadRibbonInterface:getIsOpen()
+				local mouseRibbonInterface = Utility.UI.getOpenInterface(target, "PlayerInventory")
+				local isMouseRibbonOpen = not not mouseRibbonInterface
+
+				if not (isMouseRibbonOpen or isGamepadRibbonOpen) then
+					return true
+				end
+
+				if isGamepadRibbonOpen and not gamepadRibbonInterface:getProbedInventoryItem() then
+					return true
+				end
+
+				if isMouseRibbonOpen and not mouseRibbonInterface:getProbedInventoryItem() then
+					return true
+				end
+
+				return false
+			end
+		end
+	}
+}
+
+function Common.showDropItemTutorial(playerPeep, done)
+	Utility.UI.tutorial(playerPeep, Common.DROP_ITEMS_TUTORIAL, done)
 end
 
 return Common

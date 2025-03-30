@@ -368,6 +368,18 @@ function Island:onShowEquipItemsTutorial(playerPeep)
 	TutorialCommon.startEquipTutorial(playerPeep)
 end
 
+function Island:onShowDropItemTutorial(playerPeep)
+	TutorialCommon.showDropItemTutorial(playerPeep)
+end
+
+function Island:onShowDropItemTutorial(playerPeep)
+	TutorialCommon.showDropItemTutorial(playerPeep)
+end
+
+function Island:onShowFishTutorial(playerPeep)
+	TutorialCommon.listenForFish(playerPeep)
+end
+
 function Island:updateTutorialItemSteps(playerPeep)
 	if not Utility.Peep.isInPassage(playerPeep, "Passage_TutorialStart") and
 	   Utility.Peep.isEnabled(playerPeep)

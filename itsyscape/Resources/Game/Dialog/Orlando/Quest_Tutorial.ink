@@ -708,10 +708,60 @@ Sure thing!
 
 == quest_tutorial_main_fish ==
 
+{
+  - not player_has_item("WaterWorm", 50): -> give_bait
+  - else: -> loop
+}
+
+= give_bait
+
+# speaker={C_ORLANDO}
+Looks like you've run low on bait!
+
+%empty()
+
+{not player_give_item("WaterWorm", 150): -> drop_items}
+~ play_animation(C_ORLANDO, "Human_ActionGive_1")
+
+-> loop
+
+= drop_items
+
+# speaker={C_ORLANDO}
+...but it looks like your bag is full! Do you need help making room?
+
+# speaker={C_PLAYER}
+* Yes[.], I have no idea what I'm doing!
+  -> give_drop_item_tutorial
+* No[.], I'll make room myself!
+  -> do_not_give_drop_item_tutorial
+
+= give_drop_item_tutorial
+
+# speaker={C_ORLANDO}
+Got you! First things first...
+
+%empty()
+
+~ player_poke_map("showDropItemTutorial")
+
+-> DONE
+
+= do_not_give_drop_item_tutorial
+
+# speaker={C_ORLANDO}
+Sure thing! Lemme know when you got some space in your bag.
+
+-> loop
+
+= loop
+
 * [(Ask for help on how to fish.)]
   -> ask_for_help
 * [(Go fishing!)]
   -> go_fishing
+* [(Ask for help dropping items.)] %person(Ser Orlando), I want to clear some junk out of my bag. Can you help me?
+  -> give_drop_item_tutorial
 
 = ask_for_help
 
@@ -724,7 +774,7 @@ Sure thing!
 %empty()
 
 ~ set_peep_mashina_state(C_ORLANDO, "tutorial-fish")
-~ player_poke_map("showFishUIHint")
+~ player_poke_map("showFishTutorial")
 
 -> DONE
 

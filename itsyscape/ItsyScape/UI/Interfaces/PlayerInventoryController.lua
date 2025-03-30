@@ -134,9 +134,14 @@ function PlayerInventoryController:pokeItem(e)
 	end
 end
 
+function PlayerInventoryController:getProbedInventoryItem()
+	return self.currentInventoryProbeItem, self.currentInventoryProbeIndex
+end
+
 function PlayerInventoryController:probeItem(e)
 	if not e.index then
-		self.lastProbedItem = nil
+		self.currentInventoryProbeIndex = false
+		self.currentInventoryProbeItem = false
 		return
 	end
 
@@ -155,7 +160,8 @@ function PlayerInventoryController:probeItem(e)
 		end
 	end
 
-	self.lastProbedItem = item
+	self.currentInventoryProbeItem = item or false
+	self.currentInventoryProbeIndex = item and e.index or false
 end
 
 function PlayerInventoryController:useItem(e)

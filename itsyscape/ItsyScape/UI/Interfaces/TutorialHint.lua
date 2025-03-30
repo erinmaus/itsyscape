@@ -182,7 +182,7 @@ function TutorialHint:place(widget)
 		end
 
 		if x and y then
-			local screenWidth, screenHeight = love.graphics.getScaledMode()
+			local screenWidth, screenHeight = itsyrealm.graphics.getScaledMode()
 			x = math.min(math.max(x, 0), screenWidth - toolTipWidth)
 			y = math.min(math.max(y, 0), screenHeight - toolTipHeight)
 		end
