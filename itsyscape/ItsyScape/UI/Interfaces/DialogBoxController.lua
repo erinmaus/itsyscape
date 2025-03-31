@@ -66,7 +66,6 @@ function DialogBoxController:new(peep, director, action, target, overrideEntryPo
 
 				local commonPath = string.format("Resources.Game.Dialog.%s.Common", characterName)
 				local s, r = pcall(require, commonPath)
-				print(">>> s", s, "r", Log.dump(r))
 				if s then
 					Utility.Text.bind(self.dialog, r, "en-US")
 				else

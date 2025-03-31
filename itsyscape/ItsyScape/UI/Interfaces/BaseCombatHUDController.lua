@@ -66,6 +66,7 @@ function BaseCombatHUDController:new(peep, director)
 	self:bindToPlayer(peep)
 	self.isDirty = true
 	self.needsRefresh = false
+	self.isOpen = false
 
 	self.spells = {}
 	self.castableSpells = {}
@@ -144,6 +145,10 @@ function BaseCombatHUDController:poke(actionID, actionIndex, e)
 		self:eat(e)
 	elseif actionID == "changeStance" then
 		self:changeStance(e)
+	elseif actionID == "show"then
+		self:show(e)
+	elseif actionID == "hide" then
+		self:hide(e)
 	elseif actionID == "setConfig" then
 		self:setConfig(e)
 	else
@@ -395,6 +400,18 @@ function BaseCombatHUDController:setConfig(e)
 	configStorage:set({
 		config = e.config
 	})
+end
+
+function BaseCombatHUDController:getIsOpen()
+	return self.isShowing
+end
+
+function BaseCombatHUDController:show(e)
+	self.isShowing = true
+end
+
+function BaseCombatHUDController:hide(e)
+	self.isShowing = false
 end
 
 function BaseCombatHUDController:pull()

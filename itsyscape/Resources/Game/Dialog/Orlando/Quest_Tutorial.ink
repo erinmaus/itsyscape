@@ -78,6 +78,7 @@ Uh, so, let's see, where were we...
     - player_is_next_quest_step("Tutorial", "Tutorial_FoundYenderhounds"): -> quest_tutorial_main_find_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_FishedLightningStormfish"): -> quest_tutorial_main_fish
+    - player_is_next_quest_step("Tutorial", "Tutorial_Combat"): -> quest_tutorial_combat
     - else: Good job, bub! #speaker={C_ORLANDO}
 }
 
@@ -772,7 +773,7 @@ Sure thing! Lemme know when you got some space in your bag.
 
 * [(Ask for help on how to fish.)]
   -> ask_for_help
-* [(Go fishing!)]
+* {!can_light_fire} [(Go fishing!)]
   -> go_fishing
 * [(Ask for help dropping items.)] %person(Ser Orlando), I want to clear some junk out of my bag. Can you help me?
   -> give_drop_item_tutorial
@@ -823,5 +824,28 @@ Sure thing! Lemme get on that.
 %empty()
 
 ~ set_peep_mashina_state(C_ORLANDO, "tutorial-chop")
+
+-> DONE
+
+== quest_tutorial_combat ==
+
+# speaker={C_ORLANDO}
+bla bla bla
+
+= start
+
+# speaker={C_ORLANDO}
+TBD da start
+
+%empty()
+
+~ player_poke_map("placeTutorialDummy")
+
+-> DONE
+
+= attack_dummy
+
+# speaker={C_ORLANDO}
+TBD
 
 -> DONE

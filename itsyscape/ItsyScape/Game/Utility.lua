@@ -4097,11 +4097,15 @@ function Utility.Peep.toggleEffect(peep, resource, onOrOff, ...)
 	local e = peep:getEffect(EffectType)
 	if e and onOrOff ~= true then
 		peep:removeEffect(e)
+		return true
 	elseif not e and onOrOff ~= false then
 		local effectInstance = EffectType(...)
 		effectInstance:setResource(resource)
 		peep:addEffect(effectInstance)
+		return true
 	end
+
+	return false
 end
 
 function Utility.Peep.getPowerType(resource, gameDB)
@@ -4145,6 +4149,32 @@ function Utility.Peep.isAttackable(peep)
 	local mapObject = Utility.Peep.getMapObject(peep)
 
 	return _isAttackable(peep, resource) or _isAttackable(peep, mapObject) or peep:hasBehavior(PlayerBehavior)
+end
+
+function Utility.Peep.playAnimation(peep, animationSlot, animationPriority, animationName, animationForced, animationTime)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return false
+	end
+
+	local filename = string.format("Resources/Game/Animations/%s/Script.lua", animationName)
+	if not love.filesystem.getInfo(filename) then
+		if love.filesystem.getInfo(animationName) then
+			filename = animationName
+		else
+			return false
+		end
+	end
+
+	actor:playAnimation(
+		animationSlot,
+		animationPriority,
+		CacheRef("ItsyScape.Graphics.AnimationResource", filename),
+		animationForced,
+		animationTime)
+
+	return true
 end
 
 -- Makes the peep walk to the tile (i, j, k).
@@ -4213,6 +4243,14 @@ function Utility.Peep.queueWalk(peep, i, j, k, distance, t, ...)
 		end
 
 		y.yield = true
+	end
+
+	if t.isPosition then
+		local map = peep:getDirector():getGameInstance():getStage():getMap(k or Utility.Peep.getLayer(peep))
+		local _, s, t = map:getTileAt(i, j)
+
+		i = s
+		j = t
 	end
 
 	Utility.Peep.WALK_QUEUE.n = Utility.Peep.WALK_QUEUE.n + 1

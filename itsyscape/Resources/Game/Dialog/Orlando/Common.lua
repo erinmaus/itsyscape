@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 
 local Common = {}
@@ -24,6 +25,29 @@ function Common.orlando_has_lit_coconut_fire(dialog)
 		Probe.resource("Prop", "CoconutFire"))
 
 	return #coconutFires >= 1
+end
+
+local DUMMY_RESOURCES = {
+	[Weapon.STYLE_MAGIC] = "TutorialDummy_Wizard",
+	[Weapon.STYLE_ARCHERY] = "TutorialDummy_Archery",
+	[Weapon.STYLE_MELEE] = "TutorialDummy_Warrior"
+}
+
+function Common.orlando_has_dropped_dummy(dialog)
+	local peep = dialog:getSpeaker("_TARGET")
+	if not peep then
+		return false
+	end
+
+	local class = Utility.Text.getDialogVariable(peep, "Orlando", "quest_tutorial_main_starting_player_class")
+	local dummyResourceID = DUMMY_RESOURCES[class] or DUMMY_RESOURCES[Weapon.STYLE_MAGIC]
+
+	local dummies = peep:getDirector():probe(
+		peep:getLayerName(),
+		Probe.resource("Peep", dummyResourceID),
+		Probe.instance(Utility.Peep.getPlayerModel(peep)))
+
+	return #dummies >= 1
 end
 
 return Common

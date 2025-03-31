@@ -104,3 +104,109 @@ Description "Tutorial_Finished" {
 		"Quest complete!"
 	}
 }
+
+do
+	local Dummy = ItsyScape.Resource.Peep "TutorialDummy_Wizard" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "ItsyScape.Peep.Peeps.Player",
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dummy wizard",
+		Language = "en-US",
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A dummy that can cast spells.",
+		Language = "en-US",
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.Dummy {
+		Tier = 50,
+		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MAGIC,
+		Hitpoints = 150,
+
+		ChaseDistance = math.huge,
+
+		Weapon = "IsabelliumStaff",
+
+		Resource = Dummy
+	}
+end
+
+do
+	local Dummy = ItsyScape.Resource.Peep "TutorialDummy_Warrior" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "ItsyScape.Peep.Peeps.Player",
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dummy warrior",
+		Language = "en-US",
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A dummy that can slash a sword.",
+		Language = "en-US",
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.Dummy {
+		Tier = 50,
+		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MELEE,
+		Hitpoints = 150,
+
+		ChaseDistance = math.huge,
+
+		Weapon = "IsabelliumZweihander",
+
+		Resource = Dummy
+	}
+end
+
+do
+	local Dummy = ItsyScape.Resource.Peep "TutorialDummy_Archer" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "ItsyScape.Peep.Peeps.Player",
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dummy archer",
+		Language = "en-US",
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A dummy that can shoot arrows.",
+		Language = "en-US",
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.Dummy {
+		Tier = 50,
+		CombatStyle = ItsyScape.Utility.Weapon.STYLE_ARCHERY,
+		Hitpoints = 150,
+
+		ChaseDistance = math.huge,
+
+		Weapon = "IsabelliumLongbow",
+
+		Resource = Dummy
+	}
+end
+

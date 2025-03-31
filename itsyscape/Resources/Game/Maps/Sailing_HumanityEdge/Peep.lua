@@ -47,6 +47,12 @@ Island.CLASS_INVENTORY = {
 	}
 }
 
+Island.CLASS_DUMMY = {
+	[Weapon.STYLE_MAGIC] = "TutorialDummy_Wizard", 
+	[Weapon.STYLE_ARCHERY] = "TutorialDummy_Archer", 
+	[Weapon.STYLE_MELEE] = "TutorialDummy_Melee", 
+}
+
 Island.FISHING_INVENTORY = {
 	{ id = "SpindlyFishingRod", count = 1 },
 	{ id = "WaterWorm", count = 150 }
@@ -210,6 +216,12 @@ function Island:onFinishPreparingTutorial(playerPeep)
 				Utility.Peep.enable(playerPeep)
 			end)
 		end
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_Combat", playerPeep) then
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
+			Utility.Peep.enable(playerPeep)
+			Utility.Peep.setMashinaState(orlando, false)
+		end, "quest_tutorial_combat.start")
 	end
 end
 
@@ -389,6 +401,10 @@ function Island:onShowFishTutorial(playerPeep)
 	TutorialCommon.listenForFish(playerPeep)
 end
 
+function Island:onShowYieldHint(playerPeep)
+	TutorialCommon.showYieldHint(playerPeep)
+end
+
 function Island:updateTutorialItemSteps(playerPeep)
 	if not Utility.Peep.isInPassage(playerPeep, "Passage_TutorialStart") and
 	   Utility.Peep.isEnabled(playerPeep)
@@ -537,6 +553,80 @@ function Island:updateTutorialFishStormfishStep(playerPeep)
 			self:transitionTutorial(playerPeep, "Tutorial_FishedLightningStormfish")
 		end, "quest_tutorial_main_fish.done_fishing")
 	end
+end
+
+function Island:updateTutorialCookStormfishStep(playerPeep)
+	local count = playerPeep:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
+
+	local _, groundFish = TutorialCommon.hasPeepDroppedItems(playerPeep, "^CookedLightningStormfish$")
+	count = count + #groundFish
+
+	if count >= 5 and Utility.Peep.isEnabled(playerPeep) then
+		Utility.Peep.disable(playerPeep)
+
+		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
+			Utility.Peep.enable(playerPeep)
+
+			self:transitionTutorial(playerPeep, "Tutorial_CookedLightningStormfish")
+		end, "quest_tutorial_cook_fish.done_cooking")
+	end
+end
+
+function Island:onPlaceTutorialDummy(playerPeep)
+	local class = Utility.Text.getDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class")
+
+	local orlando = self:getCompanion(playerPeep, "Orlando")
+	Utility.Peep.setMashinaState(orlando, false)
+
+	local x, y, z = Utility.Map.getAnchorPosition(
+		self:getDirector():getGameInstance(),
+		Utility.Peep.getMapResource(self),
+		"Anchor_Orlando_PlaceDummy")
+
+	local orlandoWalk = Utility.Peep.queueWalk(
+		orlando,
+		x, z, Utility.Peep.getLayer(playerPeep),
+		0,
+		{ asCloseAsPossible = true, isPosition = true })
+
+	orlandoWalk:register(function(s)
+		orlando:getCommandQueue():push(CallbackCommand(function()
+			Utility.Peep.setFacing(orlando, 1)
+			Utility.Peep.playAnimation(
+				orlando,
+				"x-tutorial",
+				100,
+				"Human_ActionGive_1")
+
+			local dummyPeepID = self.CLASS_DUMMY[class] or self.CLASS_DUMMY[Weapon.STYLE_MAGIC]
+			local dummyActor = Utility.spawnActorAtPosition(orlando, dummyPeepID, x, y, z)
+			local dummyPeep = dummyActor:getPeep()
+
+			Utility.Peep.makeInstanced(dummyPeep, playerPeep)
+			Utility.Peep.teleportCompanion(dummyPeep, orlando)
+			Utility.Peep.setFacing(dummyPeep, -1)
+
+			Utility.Peep.disable(playerPeep)
+			self:talkToPeep(playerPeep, "Orlando", function()
+				Utility.Peep.enable(playerPeep)
+				Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
+			end, "quest_tutorial_combat.attack_dummy")
+		end))
+	end)
+
+	Utility.Peep.disable(playerPeep)
+	local playerWalk = Utility.Peep.queueWalk(
+		playerPeep,
+		x, z, Utility.Peep.getLayer(playerPeep),
+		2.5,
+		{ asCloseAsPossible = false, isPosition = true, isCutscene = true })
+	playerWalk:register(function(s)
+		if s then
+			playerPeep:getCommandQueue():push(CallbackCommand(Utility.Peep.enable, playerPeep))
+		else
+			Utility.Peep.enable(playerPeep)
+		end
+	end)
 end
 
 function Island:onGiveTutorialFishingGear(playerPeep)

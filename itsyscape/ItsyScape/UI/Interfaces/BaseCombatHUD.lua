@@ -683,6 +683,8 @@ function BaseCombatHUD:show()
 	self:openMenu()
 	self.isShowing = true
 
+	self:sendPoke("show", nil, {})
+
 	return true
 end
 
@@ -692,8 +694,10 @@ function BaseCombatHUD:hide()
 	end
 
 	self:closeMenu()
-
 	self.isShowing = false
+
+	self:sendPoke("hide", nil, {})
+
 	return true
 end
 

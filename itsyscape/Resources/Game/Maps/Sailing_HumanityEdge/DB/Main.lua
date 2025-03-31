@@ -214,6 +214,18 @@ do
 	}
 end
 
+M["Anchor_Orlando_PlaceDummy"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 5,
+		PositionZ = 159,
+		Name = "Anchor_Orlando_PlaceDummy",
+		Map = M._MAP,
+		Resource = M["Anchor_Orlando_PlaceDummy"]
+	}
+end
+
 M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {

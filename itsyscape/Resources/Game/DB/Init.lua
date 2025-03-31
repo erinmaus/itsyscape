@@ -60,6 +60,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepActiveSpell" {
+		Spell = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PeepMashinaState" {
 		State = Meta.TYPE_TEXT,
 		Tree = Meta.TYPE_TEXT,
@@ -1529,6 +1534,7 @@ include "Resources/Game/DB/Powers/Defense.lua"
 -- Misc gameplay things
 include "Resources/Game/DB/Effects/Immunities.lua"
 include "Resources/Game/DB/Effects/Misc.lua"
+include "Resources/Game/DB/Effects/Tutorial.lua"
 
 -- Props
 do

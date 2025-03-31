@@ -571,7 +571,7 @@ function Common.hasPeepDroppedItems(playerPeep, pattern)
 	local ground = stage:getGround(layer)
 	if not ground then
 		Log.warnOnce("Cannot update gather item step; no ground for layer '%d' (player = '%s').", layer, playerPeep:getName())
-		return
+		return false, {}
 	end
 
 	local inventory = Utility.Peep.getInventory(ground)
@@ -1080,6 +1080,123 @@ Common.DROP_ITEMS_TUTORIAL = {
 
 function Common.showDropItemTutorial(playerPeep, done)
 	Utility.UI.tutorial(playerPeep, Common.DROP_ITEMS_TUTORIAL, done)
+end
+
+Common.YIELD_HINT = {
+	{
+		position = {
+			gamepad = "center",
+			standard = "center",
+			mobile = "center"
+		},
+		id = {
+			gamepad = "root",
+			standard = "root",
+			mobile = "root"
+		},
+		message = {
+			gamepad = {
+				button = "rightshoulder",
+				label = "Open combat ring"
+			},
+			standard = {
+				button = "keyboard_tab",
+				controller = "KeyboardMouse",
+				label = "Open combat ring"
+			},
+			mobile = {
+				button = "tap",
+				controller = "Touch",
+				label = "Open combat ring"
+			}
+		},
+		open = function(target, state)
+			return function()
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+
+				local isOpen = (gamepadCombatHUD or gamepadCombatHUD:getIsOpen()) or
+				               (proCombatHUD or proCombatHUD:getIsOpen())
+
+				return isOpen
+			end
+		end
+	},
+	{
+		position = "up",
+		id = function(target, state)
+			return function()
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+
+				if gamepadCombatHUD and gamepadCombatHUD:getIsOpen() then
+					return {
+						gamepad = "BaseCombatHUD-flee",
+						standard = "BaseCombatHUD-flee",
+						touch = "BaseCombatHUD-flee"
+					}
+				end
+
+				return {
+					gamepad = false,
+					controller = false,
+					mouse = false
+				}
+			end
+		end,
+		message = {
+			gamepad = {
+				button = "a",
+				label = {
+					{ 1, 1, 1, 1 },
+					"Yield against",
+					{ 1, 1, 1, 1 },
+					" ",
+					"ui.poke.actor",
+					"Ser Orlando"
+				}
+			},
+			standard = {
+				button = "mouse_left",
+				controller = "KeyboardMouse",
+				label = {
+					{ 1, 1, 1, 1 },
+					"Yield against",
+					{ 1, 1, 1, 1 },
+					" ",
+					"ui.poke.actor",
+					"Ser Orlando"
+				}
+			},
+			standard = {
+				button = "tap",
+				controller = "Touch",
+				label = {
+					{ 1, 1, 1, 1 },
+					"Yield against",
+					{ 1, 1, 1, 1 },
+					" ",
+					"ui.poke.actor",
+					"Ser Orlando"
+				}
+			}
+		},
+		open = function(target, state)
+			return function()
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+
+				local isOpen = (gamepadCombatHUD or gamepadCombatHUD:getIsOpen()) or
+				               (proCombatHUD or proCombatHUD:getIsOpen())
+
+				return isOpen and not target:hasBehavior(CombatTargetBehavior)
+			end
+		end	
+	}
+}
+
+function Common.showYieldHint(playerPeep, done)
+	Utility.UI.tutorial(playerPeep, Common.YIELD_HINT, done)
 end
 
 return Common
