@@ -308,13 +308,6 @@ function DialogBoxController:pump(e, ...)
 				"hide",
 				nil,
 				{ interface = self })
-			Utility.UI.broadcast(
-				self:getDirector():getGameInstance():getUI(),
-				self:getPeep(),
-				"GamepadRibbon",
-				"close",
-				nil,
-				{ interface = self })
 			self.hidRibbonTab = true
 		end
 	else

@@ -13,7 +13,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 
 local Common = {}
 
-function Common.orlando_has_lit_coconut_fire(dialog)
+function Common.quest_tutorial_orlando_has_lit_coconut_fire(dialog)
 	local peep = dialog:getSpeaker("_TARGET")
 	if not peep then
 		return false
@@ -33,7 +33,7 @@ local DUMMY_RESOURCES = {
 	[Weapon.STYLE_MELEE] = "TutorialDummy_Warrior"
 }
 
-function Common.orlando_has_dropped_dummy(dialog)
+function Common.quest_tutorial_orlando_has_dropped_dummy(dialog)
 	local peep = dialog:getSpeaker("_TARGET")
 	if not peep then
 		return false
@@ -47,7 +47,15 @@ function Common.orlando_has_dropped_dummy(dialog)
 		Probe.resource("Peep", dummyResourceID),
 		Probe.instance(Utility.Peep.getPlayerModel(peep)))
 
-	return #dummies >= 1
+	local canAttackDummy = false
+	for _, dummy in ipairs(dummies) do
+		if Utility.Peep.canAttack(dummy) then
+			canAttackDummy = true
+			break
+		end
+	end
+
+	return canAttackDummy
 end
 
 return Common

@@ -405,6 +405,10 @@ function Island:onShowYieldHint(playerPeep)
 	TutorialCommon.showYieldHint(playerPeep)
 end
 
+function Island:onShowEatHint(playerPeep)
+	TutorialCommon.showEatHint(playerPeep)
+end
+
 function Island:updateTutorialItemSteps(playerPeep)
 	if not Utility.Peep.isInPassage(playerPeep, "Passage_TutorialStart") and
 	   Utility.Peep.isEnabled(playerPeep)
@@ -605,6 +609,7 @@ function Island:onPlaceTutorialDummy(playerPeep)
 			Utility.Peep.makeInstanced(dummyPeep, playerPeep)
 			Utility.Peep.teleportCompanion(dummyPeep, orlando)
 			Utility.Peep.setFacing(dummyPeep, -1)
+			Utility.Peep.setMashinaState(dummyPeep, "tutorial-yield")
 
 			Utility.Peep.disable(playerPeep)
 			self:talkToPeep(playerPeep, "Orlando", function()

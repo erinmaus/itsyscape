@@ -306,8 +306,8 @@ function SpiralLayout:performLayout()
 		local y = math.sin(angle) * radius
 
 		local w, h = widget:getSize()
-		x = x - w / 2
-		y = y - h / 2
+		x = x + w / 2
+		y = y + h / 2
 
 		widget:setPosition(x, y)
 

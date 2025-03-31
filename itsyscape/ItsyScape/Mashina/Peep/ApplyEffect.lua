@@ -21,7 +21,7 @@ function ApplyEffect:update(mashina, state, executor)
 	local effect = state[self.EFFECT]
 	local singular = state[self.SINGULAR]
 
-	local success, effect = Utility.Peep.applyEffect(target, effect, singular) then
+	local success, effect = Utility.Peep.applyEffect(target, effect, singular)
 	if success then
 		state[self.RESULT] = effect
 		return B.Status.Success

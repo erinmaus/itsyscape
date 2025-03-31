@@ -11,6 +11,7 @@ local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local PLAYER = B.Reference("Tutorial_AttackCommon", "PLAYER")
 local PLAYER_TARGET = B.Reference("Tutorial_AttackCommon", "PLAYER_TARGET")

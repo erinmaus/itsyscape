@@ -391,12 +391,22 @@ function GamepadCombatHUD:show()
 	end
 end
 
-function GamepadCombatHUD:toggle()
-	if self:getIsShowing() then
+function GamepadCombatHUD:toggle(open)
+	open = open == nil and not self:getIsShowing() or open
+
+	if not open and self:getIsShowing() then
 		self:clear()
 		self:hide()
-	else
+	elseif open and not self:getIsShowing() then
 		self:show()
+	end
+end
+
+function GamepadCombatHUD:flee()
+	local didFlee = BaseCombatHUD.flee(self)
+
+	if didFlee and self:getIsShowing() then
+		self:toggle()
 	end
 end
 
@@ -568,6 +578,9 @@ end
 
 function GamepadCombatHUD:newSpiralMenu(name)
 	local spiralMenu = SpiralLayout()
+	spiralMenu:setSize(
+		self.SPIRAL_OUTER_RADIUS * 2 + self.SELECTED_BUTTON_SIZE,
+		self.SPIRAL_OUTER_RADIUS * 2 + self.SELECTED_BUTTON_SIZE)
 	spiralMenu:setData("name", name)
 	spiralMenu:setRadius(self.SPIRAL_INNER_RADIUS, self.SPIRAL_OUTER_RADIUS)
 
@@ -578,8 +591,8 @@ function GamepadCombatHUD:newSpiralMenu(name)
 		self.SPIRAL_INNER_PANEL_RADIUS * 2,
 		self.SPIRAL_INNER_PANEL_RADIUS * 2)
 	spiralMenu:getInnerPanel():setPosition(
-		-self.SPIRAL_INNER_PANEL_RADIUS,
-		-self.SPIRAL_INNER_PANEL_RADIUS)
+		-self.SPIRAL_OUTER_RADIUS / 2,
+		-self.SPIRAL_OUTER_RADIUS / 2)
 	spiralMenu:getInnerPanel():addChild(circlePanel)
 
 	spiralMenu.onGamepadRelease:register(self.onSpiralMenuGamepadButtonRelease, self, name)
@@ -724,6 +737,7 @@ end
 
 function GamepadCombatHUD:newMenu()
 	local menu = self:newSpiralMenu("main")
+	menu:getInnerPanel():setID("GamepadCombatHUD-Menu")
 	menu.onChildVisible:register(self._onMenuOptionVisible, self)
 	menu.onChildSelected:register(self._onMenuOptionSelected, self)
 

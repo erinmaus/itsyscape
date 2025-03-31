@@ -82,6 +82,8 @@ function BaseCombatHUDController:new(peep, director)
 	self.powers = {}
 	self:_pullPowers()
 
+	self.currentOpenedThingies = {}
+
 	self.updateDebugStats = UpdateDebugStats()
 
 	self:update(0)
@@ -149,6 +151,14 @@ function BaseCombatHUDController:poke(actionID, actionIndex, e)
 		self:show(e)
 	elseif actionID == "hide" then
 		self:hide(e)
+	elseif actionID == "openThingies"then
+		self:openThingies(e)
+	elseif actionID == "closeThingies"then
+		self:closeThingies(e)
+	elseif actionID == "open" then
+		self:toggle(e, true)
+	elseif actionID == "close" then
+		self:toggle(e, false)
 	elseif actionID == "setConfig" then
 		self:setConfig(e)
 	else
@@ -412,6 +422,27 @@ end
 
 function BaseCombatHUDController:hide(e)
 	self.isShowing = false
+end
+
+function BaseCombatHUDController:getIsThingiesOpen(name)
+	return not not self.currentOpenedThingies[name]
+end
+
+function BaseCombatHUDController:openThingies(e)
+	assert(type(e.name) == "string", "thingies name must be string")
+
+	self.currentOpenedThingies[e.name] = true
+end
+
+function BaseCombatHUDController:closeThingies(e)
+	assert(type(e.name) == "string", "thingies name must be string")
+
+	self.currentOpenedThingies[e.name] = nil
+end
+
+function BaseCombatHUDController:toggle(e, open)
+	assert(Class.isCompatibleType(e.interface, Controller), "toggle is controller-to-controller and must provide the interface requesting the hide")
+	self:send("toggle", open)
 end
 
 function BaseCombatHUDController:pull()

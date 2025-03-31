@@ -2,7 +2,8 @@ INCLUDE ./Common.ink
 INCLUDE ../Common/Common.ink
 INCLUDE ../VizierRockKnight/Common.ink
 
-EXTERNAL orlando_has_lit_coconut_fire()
+EXTERNAL quest_tutorial_orlando_has_lit_coconut_fire()
+EXTERNAL quest_tutorial_orlando_has_dropped_dummy()
 
 VAR quest_tutorial_main_starting_player_class = WEAPON_STYLE_NONE
 
@@ -719,29 +720,10 @@ Sure thing!
 
 -> quest_tutorial_main_fish
 
-== quest_tutorial_main_fish ==
-
-{
-  - not player_has_item("WaterWorm", 50): -> give_bait
-  - else: -> loop
-}
-
-= give_bait
+== quest_tutorial_drop_items ==
 
 # speaker={C_ORLANDO}
-Looks like you've run low on bait!
-
-%empty()
-
-{not player_give_item("WaterWorm", 150): -> drop_items}
-~ play_animation(C_ORLANDO, "Human_ActionGive_1")
-
--> loop
-
-= drop_items
-
-# speaker={C_ORLANDO}
-...but it looks like your bag is full! Do you need help making room?
+...but it your bag is full! Do you need help making room?
 
 # speaker={C_PLAYER}
 * Yes[.], I have no idea what I'm doing!
@@ -765,18 +747,37 @@ Got you! First things first...
 # speaker={C_ORLANDO}
 Sure thing! Lemme know when you got some space in your bag.
 
+->->
+
+== quest_tutorial_main_fish ==
+
+{
+  - not player_has_item("WaterWorm", 50): -> give_bait
+  - else: -> loop
+}
+
+= give_bait
+
+# speaker={C_ORLANDO}
+Looks like you're low on bait.
+
+%empty()
+
+{not player_give_item("WaterWorm", 150): -> quest_tutorial_drop_items ->}
+~ play_animation(C_ORLANDO, "Human_ActionGive_1")
+
 -> loop
 
 = loop
 
-~ temp can_light_fire = player_did_quest_step("Tutorial", "Tutorial_FishedLightningStormfish") && not orlando_has_lit_coconut_fire()
+~ temp can_light_fire = player_did_quest_step("Tutorial", "Tutorial_FishedLightningStormfish") && not quest_tutorial_orlando_has_lit_coconut_fire()
 
 * [(Ask for help on how to fish.)]
   -> ask_for_help
 * {!can_light_fire} [(Go fishing!)]
   -> go_fishing
 * [(Ask for help dropping items.)] %person(Ser Orlando), I want to clear some junk out of my bag. Can you help me?
-  -> give_drop_item_tutorial
+  -> quest_tutorial_drop_items
 * {can_light_fire} [(Ask %person(Ser Orlando) to light a fire.)] %person(Ser Orlando), I need a fire to cook on. Can you help me?
   -> light_fire
 
@@ -832,6 +833,11 @@ Sure thing! Lemme get on that.
 # speaker={C_ORLANDO}
 bla bla bla
 
+# speaker={C_PLAYER}
+* {not quest_tutorial_orlando_has_dropped_dummy()} can u drop a dummy pls
+  -> drop_new_dummy
+* -> DONE
+
 = start
 
 # speaker={C_ORLANDO}
@@ -843,9 +849,91 @@ TBD da start
 
 -> DONE
 
+= drop_new_dummy
+
+# speaker={C_ORLANDO}
+sure bruh
+
+%empty()
+
+~ player_poke_map("placeTutorialDummy")
+
+-> DONE
+
 = attack_dummy
 
 # speaker={C_ORLANDO}
-TBD
+attack the dummy, goober
+
+-> DONE
+
+= yield
+
+# speaker={C_ORLANDO}
+yield to the dummy ok???
+
+-> DONE
+
+= did_not_yield
+
+# speaker={C_ORLANDO}
+wtfbbq goober seriously yield to the gd dummy ok
+
+-> DONE
+
+= did_yield
+
+# speaker={C_ORLANDO}
+good job yielding bruh
+
+-> DONE
+
+= did_not_eat
+
+{
+  - not player_has_item("CookedLightningStormfish", 1): -> did_not_eat_needs_food
+  - else: -> did_not_eat_has_food
+}
+
+= did_not_eat_needs_food
+
+# speaker={C_ORLANDO}
+why didn't you say you don't good food earlier bruh i gotchu
+
+%empty()
+
+~ play_animation(C_ORLANDO, "Human_ActionGive_1")
+
+{not player_give_item("CookedLightningStormfish", 1): -> quest_tutorial_drop_items ->}
+
+-> DONE
+
+= eat
+
+# speaker={C_ORLANDO}
+go eat!!!
+
+{not player_has_item("CookedLightningStormfish", 1): -> did_not_eat_needs_food}
+
+-> DONE
+
+= did_not_eat_has_food
+
+# speaker={C_ORLANDO}
+why are you not eating bruh
+
+-> DONE
+
+= did_eat
+
+# speaker={C_ORLANDO}
+good job eating bruh
+
+-> DONE
+
+= yield_during_eat
+
+# speaker={C_ORLANDO}
+bruh why'd you yield just try again ok bruh attack the dummy when u ready ok bruh
 
 -> DONE

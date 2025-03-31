@@ -105,6 +105,8 @@ function One:new(...)
 	self:addPoke('endGame')
 	self:addPoke('moveInstance')
 	self:addPoke('fall')
+	self:addPoke('openInterface')
+	self:addPoke('closeInterface')
 end
 
 function One:onChangeWardrobe(e)
@@ -630,6 +632,29 @@ function One:onActionPerformed(e)
 	end
 
 	self.lastActionPerformed = e.action
+end
+
+function One:onOpenInterface(interfaceID, interfaceIndex, blocking)
+	if not blocking then
+		return
+	end
+
+	print("hiding", interfaceID, interfaceIndex)
+	local interface = Utility.UI.getOpenInterface(self, interfaceID, interfaceIndex)
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self,
+		"GamepadRibbon",
+		"close",
+		nil,
+		{ interface = interface })
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self,
+		"GamepadCombatHUD",
+		"close",
+		nil,
+		{ interface = interface })
 end
 
 function One:interruptUI()

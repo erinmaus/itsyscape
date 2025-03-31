@@ -21,12 +21,24 @@ local Common = {}
 Common.HINT_WAIT_TIME = 4
 Common.HINT_WAIT_SHUFFLE_TIME = 2
 
-Common.WAIT_OPEN_FUNCTION = function(target, state)
-	state.time = nil
+Common.WAIT_OPEN_FUNCTION = function(t, f)
+	t = t or Common.HINT_WAIT_TIME
 
-	return function()
-		state.time = state.time or (love.timer.getTime() + Common.HINT_WAIT_TIME)
-		return love.timer.getTime() > state.time or (state.ui and not Utility.UI.isOpen(target, state.ui))
+	return function(target, state)
+		state.time = nil
+
+		if f then
+			f = f(target, state)
+		end
+
+		return function()
+			if f and f() then
+				return true
+			end
+
+			state.time = state.time or (love.timer.getTime() + t)
+			return love.timer.getTime() > state.time or (state.ui and not Utility.UI.isOpen(target, state.ui))
+		end
 	end
 end
 
@@ -51,7 +63,7 @@ Common.CONTROLS_UI_MOVE_CLASSES = {
 			label = "Tap to select"
 		}
 	},
-	open = Common.WAIT_OPEN_FUNCTION
+	open = Common.WAIT_OPEN_FUNCTION()
 }
 
 Common.CONTROLS_UI_MOVE_DIALOG = {
@@ -75,7 +87,7 @@ Common.CONTROLS_UI_MOVE_DIALOG = {
 			label = "Tap to select"
 		}
 	},
-	open = Common.WAIT_OPEN_FUNCTION
+	open = Common.WAIT_OPEN_FUNCTION()
 }
 
 Common.CONTROLS_MOVE_HINT = {
@@ -99,7 +111,7 @@ Common.CONTROLS_MOVE_HINT = {
 			label = "Tap to move"
 		}
 	},
-	open = Common.WAIT_OPEN_FUNCTION
+	open = Common.WAIT_OPEN_FUNCTION()
 }
 
 Common.CONTROLS_CAMERA_HINT = {
@@ -124,7 +136,7 @@ Common.CONTROLS_CAMERA_HINT = {
 			label = "Tap and hold to move camera"
 		}
 	},
-	open = Common.WAIT_OPEN_FUNCTION
+	open = Common.WAIT_OPEN_FUNCTION()
 }
 
 Common.CONTROLS_INTERACT_HINT = {
@@ -150,7 +162,7 @@ Common.CONTROLS_INTERACT_HINT = {
 			label = "Tap to interact"
 		}
 	},
-	open = Common.WAIT_OPEN_FUNCTION
+	open = Common.WAIT_OPEN_FUNCTION()
 }
 
 Common.CONTROLS_POKE_HINT = {
@@ -173,7 +185,7 @@ Common.CONTROLS_POKE_HINT = {
 			label = "Long tap to see more options"
 		}
 	},
-	open = Common.WAIT_OPEN_FUNCTION
+	open = Common.WAIT_OPEN_FUNCTION()
 }
 
 Common.EQUIP_HINT = {
@@ -1115,12 +1127,37 @@ Common.YIELD_HINT = {
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
 				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
 
-				local isOpen = (gamepadCombatHUD or gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD or proCombatHUD:getIsOpen())
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
+				               (proCombatHUD and proCombatHUD:getIsOpen())
 
 				return isOpen
 			end
 		end
+	},
+	{
+		position = {
+			gamepad = "up"
+		},
+		style = {
+			gamepad = "circle"
+		},
+		id = {
+			gamepad = "GamepadCombatHUD-Menu"
+		},
+		message = {
+			gamepad = {
+				button = "leftstick",
+				action = { "left", "up", "right", "down"},
+				speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
+				label = "Rotate left stick to select"
+			}
+		},
+		open = Common.WAIT_OPEN_FUNCTION(nil, function(target, state)
+			return function()
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				return not (gamepadCombatHUD and gamepadCombatHUD:getIsOpen())
+			end
+		end)
 	},
 	{
 		position = "up",
@@ -1153,7 +1190,7 @@ Common.YIELD_HINT = {
 					{ 1, 1, 1, 1 },
 					" ",
 					"ui.poke.actor",
-					"Ser Orlando"
+					"Dummy"
 				}
 			},
 			standard = {
@@ -1165,7 +1202,7 @@ Common.YIELD_HINT = {
 					{ 1, 1, 1, 1 },
 					" ",
 					"ui.poke.actor",
-					"Ser Orlando"
+					"Dummy"
 				}
 			},
 			standard = {
@@ -1177,7 +1214,7 @@ Common.YIELD_HINT = {
 					{ 1, 1, 1, 1 },
 					" ",
 					"ui.poke.actor",
-					"Ser Orlando"
+					"Dummy"
 				}
 			}
 		},
@@ -1186,10 +1223,10 @@ Common.YIELD_HINT = {
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
 				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
 
-				local isOpen = (gamepadCombatHUD or gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD or proCombatHUD:getIsOpen())
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
+				               (proCombatHUD and proCombatHUD:getIsOpen())
 
-				return isOpen and not target:hasBehavior(CombatTargetBehavior)
+				return not (isOpen and target:hasBehavior(CombatTargetBehavior))
 			end
 		end	
 	}
@@ -1197,6 +1234,155 @@ Common.YIELD_HINT = {
 
 function Common.showYieldHint(playerPeep, done)
 	Utility.UI.tutorial(playerPeep, Common.YIELD_HINT, done)
+	Utility.Peep.enable(playerPeep)
+end
+
+Common.EAT_HINT = {
+	{
+		position = {
+			gamepad = "center",
+			standard = "center",
+			mobile = "center"
+		},
+		id = {
+			gamepad = "root",
+			standard = "root",
+			mobile = "root"
+		},
+		message = {
+			gamepad = {
+				button = "rightshoulder",
+				label = "Open combat ring"
+			},
+			standard = {
+				button = "keyboard_tab",
+				controller = "KeyboardMouse",
+				label = "Open combat ring"
+			},
+			mobile = {
+				button = "tap",
+				controller = "Touch",
+				label = "Open combat ring"
+			}
+		},
+		open = function(target, state)
+			return function()
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
+				               (proCombatHUD and proCombatHUD:getIsOpen())
+
+				return isOpen
+			end
+		end
+	},
+	{
+		position = "up",
+		id = function(target, state)
+			return function()
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+
+				if gamepadCombatHUD and gamepadCombatHUD:getIsOpen() then
+					return {
+						gamepad = "BaseCombatHUD-food",
+						standard = "BaseCombatHUD-food",
+						touch = "BaseCombatHUD-food"
+					}
+				end
+
+				return {
+					gamepad = false,
+					controller = false,
+					mouse = false
+				}
+			end
+		end,
+		message = {
+			gamepad = {
+				button = "a",
+				label = "Open food ring"
+			},
+			standard = {
+				button = "mouse_left",
+				controller = "KeyboardMouse",
+				label = "Open food ring"
+			},
+			standard = {
+				button = "tap",
+				controller = "Touch",
+				label = "Open food ring"
+			}
+		},
+		open = function(target, state)
+			return function()
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
+				               (proCombatHUD and proCombatHUD:getIsOpen())
+
+				return not (isOpen and target:hasBehavior(CombatTargetBehavior))
+			end
+		end	
+	},
+	{
+		position = "up",
+		id = function(target, state)
+			return function()
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+
+				if gamepadCombatHUD and gamepadCombatHUD:getIsOpen() then
+					return {
+						gamepad = "BaseCombatHUD-Food-CookedLightningStormfish",
+						standard = "BaseCombatHUD-Food-CookedLightningStormfish",
+						touch = "BaseCombatHUD-Food-CookedLightningStormfish"
+					}
+				end
+
+				return {
+					gamepad = false,
+					controller = false,
+					mouse = false
+				}
+			end
+		end,
+		message = {
+			gamepad = {
+				button = "a",
+				label = {
+					{ 1, 1, 1, 1 },
+					"Eat",
+					{ 1, 1, 1, 1 },
+					" ",
+					"ui.poke.item",
+					"Cooked lightning stormfish"
+				}
+			}
+		},
+		open = function(target, state)
+			state.initialFoodCount = target:getState():count("Item", "CookedLightningStormfish")
+
+			return function()
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+
+				if not (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) then
+					return true
+				end
+
+				local currentFoodCount = target:getState():count("Item", "CookedLightningStormfish")
+				return state.initialFoodCount == 0 or currentFoodCount < state.initialFoodCount
+			end
+		end	
+	}
+}
+
+function Common.showEatHint(playerPeep, done)
+	Utility.UI.tutorial(playerPeep, Common.EAT_HINT, done)
+	Utility.Peep.enable(playerPeep)
 end
 
 return Common

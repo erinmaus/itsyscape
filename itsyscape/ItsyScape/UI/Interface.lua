@@ -19,10 +19,11 @@ local Interface = Class(Widget)
 function Interface:new(id, index, view)
 	Widget.new(self)
 
-	self.id = id
 	self.index = index
 	self.view = view
 	self.onClose = Callback()
+
+	self:setID(id)
 end
 
 function Interface:attach()
@@ -37,11 +38,6 @@ end
 -- Gets the UI view this interface belongs to.
 function Interface:getView()
 	return self.view
-end
-
--- Gets the interface ID.
-function Interface:getID()
-	return self.id
 end
 
 -- Gets the index of the interface.

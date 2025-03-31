@@ -115,7 +115,7 @@ function TutorialHintController:updateState()
 		}
 	end
 
-	state.didPerformAction = self.openCallback(
+	state.didPerformAction = not not self.openCallback(
 		self:getPeep(),
 		self:getDirector(),
 		self:getGame():getUI(),

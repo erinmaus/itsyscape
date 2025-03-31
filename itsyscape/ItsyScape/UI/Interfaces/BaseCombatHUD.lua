@@ -76,8 +76,8 @@ BaseCombatHUD.THINGIES_DESCRIPTIONS = {
 		description = "Quickly change equipment."
 	},
 	[BaseCombatHUD.THINGIES_FLEE] = {
-		name = "Flee",
-		description = "Dis-engage from combat with your foe."
+		name = "Yield",
+		description = "Yield to your foe. Stops attacking."
 	}
 }
 
@@ -260,6 +260,7 @@ function BaseCombatHUD:openThingies(name, targetWidget)
 
 	if not self:isThingiesOpen() then
 		self.openedThingies[name] = true
+		self:sendPoke("openThingies", nil, { name = name })
 		return true
 	end
 
@@ -282,6 +283,7 @@ function BaseCombatHUD:closeThingies(name)
 
 	thingies.widget:getParent():removeChild(thingies.widget)
 	self.openedThingies[name] = nil
+	self:sendPoke("closeThingies", nil, { name = name })
 
 	return true
 end
@@ -293,7 +295,21 @@ function BaseCombatHUD:focusThingies(name)
 	end
 end
 
+function BaseCombatHUD:flee()
+	local player = self:getView():getGame():getPlayer()
+	if player:getIsEngaged() then
+		player:flee()
+		return true
+	end
+
+	return false
+end
+
 function BaseCombatHUD:selectThingies(name, target)
+	if name == BaseCombatHUD.THINGIES_FLEE then	
+		return self:flee()
+	end
+
 	target = target or self:getThingiesButton(name)
 
 	if self:isThingiesOpen(name) then
@@ -509,8 +525,6 @@ function BaseCombatHUD:_updateFoodThingies()
 	end
 end
 
-
-
 function BaseCombatHUD:newStanceThingies(name)
 	return Class.ABSTRACT()
 end
@@ -703,6 +717,10 @@ end
 
 function BaseCombatHUD:getIsShowing()
 	return self.isShowing
+end
+
+function BaseCombatHUD:toggle(openOrClose)
+	Class.ABSTRACT()
 end
 
 function BaseCombatHUD:update(delta)

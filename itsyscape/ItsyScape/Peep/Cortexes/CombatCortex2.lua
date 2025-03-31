@@ -710,13 +710,17 @@ end
 
 function CombatCortex:tick(delta)
 	for peep in self:iterate() do
-		self:updatePeepTarget(delta, peep)
-		self:updatePeepStance(delta, peep)
-		self:updatePeepCooldown(delta, peep)
+		if Utility.Peep.isEnabled(peep) then
+			self:updatePeepTarget(delta, peep)
+			self:updatePeepStance(delta, peep)
+			self:updatePeepCooldown(delta, peep)
+		end
 	end
 
 	for peep in self:iterate() do
-		self:tickPeep(delta, peep)
+		if Utility.Peep.isEnabled(peep) then
+			self:tickPeep(delta, peep)
+		end
 	end
 end
 

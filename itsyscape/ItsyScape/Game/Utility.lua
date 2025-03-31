@@ -4105,6 +4105,10 @@ function Utility.Peep.toggleEffect(peep, resource, onOrOff, ...)
 		return true
 	end
 
+	if e and onOrOff or (not e and not onOrOff) then
+		return true
+	end
+
 	return false
 end
 

@@ -12,7 +12,6 @@ local BTreeBuilder = require "B.TreeBuilder"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
-local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
 local TARGET = B.Reference("Tutorial_Orlando_GeneralAttackLogic", "TARGET")
