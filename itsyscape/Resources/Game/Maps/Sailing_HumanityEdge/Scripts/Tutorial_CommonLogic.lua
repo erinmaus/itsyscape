@@ -7,13 +7,49 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local B = require "B"
+local Utility = require "ItsyScape.Game.Utility"
 local Mashina = require "ItsyScape.Mashina"
+local Probe = require "ItsyScape.Peep.Probe"
 
 local PLAYER = B.Reference("Tutorial_AttackCommon", "PLAYER")
+local PLAYER_TARGET = B.Reference("Tutorial_AttackCommon", "PLAYER_TARGET")
+
+local AttackPlayerTarget = Mashina.Step {
+	Mashina.Invert {
+		Mashina.Player.IsNextQuestStep {
+			player = PLAYER,
+			quest = "Tutorial",
+			step = "Tutorial_Combat"
+		}
+	},
+
+	Mashina.Peep.DidAttack {
+		peep = PLAYER,
+		[PLAYER_TARGET] = B.Output.target
+	},
+
+	Mashina.Peep.EngageCombatTarget {
+		peep = PLAYER_TARGET
+	},
+
+	Mashina.Peep.Wait
+}
+
+local IsAttacking = Mashina.Sequence {
+	Mashina.ParallelTry {
+		Mashina.Peep.DidAttack,
+		Mashina.Peep.WasAttacked,
+		Mashina.Peep.HasCombatTarget
+	},
+
+	Mashina.Peep.SetState {
+		state = "tutorial-general-attack"
+	}
+}
 
 local HEAL_HITPOINTS = 20
-
-local HandleHealing = Mashina.Step {
+local Heal = Mashina.Step {
 	Mashina.Peep.WasAttacked,
 
 	Mashina.Sequence {
@@ -52,7 +88,7 @@ local GetOrlando = Mashina.Sequence {
 
 	Mashina.Peep.FindNearbyPeep {
 		filter = function(peep, _, state)
-			local isInInstance = Probe.instance(Utility.Peep.getPlayerModel(state[GET_ORLANDO_PLAYER]))(peep)
+			local isInInstance = Probe.instance(Utility.Peep.getPlayerModel(state[PLAYER]))(peep)
 			local isOrlando = Probe.namedMapObject("Orlando")(peep)
 
 			return isOrlando and isInInstance
@@ -64,9 +100,13 @@ local GetOrlando = Mashina.Sequence {
 
 return {
 	PLAYER = PLAYER,
+	PLAYER_TARGET = PLAYER_TARGET,
+
+	AttackPlayerTarget = AttackPlayerTarget,
+	IsAttacking = IsAttacking,
 
 	HEAL_HITPOINTS = HEAL_HITPOINTS,
-	HandleHealing = HandleHealing
+	Heal = Heal,
 
 	ORLANDO = ORLANDO,
 	GetOrlando = GetOrlando

@@ -13,10 +13,9 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
 local TARGET = B.Reference("Tutorial_Orlando_GeneralAttackLogic", "TARGET")
-
-local HEAL_HITPOINTS = 20
 
 local DidKillTarget = Mashina.Sequence {
 	Mashina.Invert {
@@ -70,31 +69,7 @@ local HandleDefense = Mashina.Step {
 	Mashina.Peep.WasAttacked,
 
 	Mashina.Try {
-		Mashina.Sequence {
-			Mashina.Check {
-				condition = function(mashina)
-					local status = mashina:getBehavior(CombatStatusBehavior)
-					if not status then
-						return false
-					end
-
-					local hitpoints = status.currentHitpoints
-					local maximumHitpoints = status.maximumHitpoints
-					local thresholdHitpoints = math.max(maximumHitpoints - HEAL_HITPOINTS, math.ceil(maximumHitpoints / 2))
-
-					return hitpoints < thresholdHitpoints
-				end
-			},
-
-			Mashina.Peep.PlayAnimation {
-				animation = "Human_ActionEat_1",
-				priority = 1001
-			},
-
-			Mashina.Peep.Heal {
-				hitpoints = HEAL_HITPOINTS
-			}
-		},
+		CommonLogic.Heal,
 
 		Mashina.Sequence {
 			Mashina.Peep.CanQueuePower {

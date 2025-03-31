@@ -21,7 +21,7 @@ function IsNextQuestStep:update(mashina, state, executor)
 	if Utility.Quest.isNextStep(
 		state[self.QUEST],
 		state[self.STEP],
-		state[self.PLAYER])
+		state[self.PLAYER] or Utility.Peep.getPlayer(mashina))
 	then
 		return B.Status.Success
 	end

@@ -10,21 +10,19 @@
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
-
-local PLAYER = B.Reference("Tutorial_Orlando_FollowLogic", "PLAYER")
-local PLAYER_TARGET = B.Reference("Tutorial_Orlando_FollowLogic", "PLAYER_TARGET")
+local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
 local FollowPlayer = Mashina.Success {
 	Mashina.Sequence {
 		Mashina.Invert {
 			Mashina.Navigation.TargetMoved {
-				peep = PLAYER
+				peep = CommonLogic.PLAYER
 			}
 		},
 
 		Mashina.Step {
 			Mashina.Navigation.WalkToPeep {
-				peep = PLAYER,
+				peep = CommonLogic.PLAYER,
 				distance = 2.5,
 				as_close_as_possible = false
 			},
@@ -36,38 +34,15 @@ local FollowPlayer = Mashina.Success {
 	}
 }
 
-local IsAttacking = Mashina.Sequence {
-	Mashina.ParallelTry {
-		Mashina.Peep.DidAttack,
-		Mashina.Peep.WasAttacked,
-		Mashina.Peep.HasCombatTarget
-	},
-
-	Mashina.Peep.SetState {
-		state = "tutorial-general-attack"
-	}
-}
-
-local IsPlayerAttacking = Mashina.Sequence {
-	Mashina.Peep.DidAttack {
-		peep = PLAYER,
-		[PLAYER_TARGET] = B.Output.target
-	},
-
-	Mashina.Peep.EngageCombatTarget {
-		peep = PLAYER_TARGET
-	}
-}
-
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Peep.GetPlayer {
-			[PLAYER] = B.Output.player
+			[CommonLogic.PLAYER] = B.Output.player
 		},
 
 		Mashina.ParallelTry {
-			IsAttacking,
-			IsPlayerAttacking,
+			CommonLogic.IsAttacking,
+			CommonLogic.AttackPlayerTarget,
 			FollowPlayer
 		}		
 	}

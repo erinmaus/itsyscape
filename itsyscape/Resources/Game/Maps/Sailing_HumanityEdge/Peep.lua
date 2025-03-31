@@ -611,6 +611,10 @@ function Island:onPlaceTutorialDummy(playerPeep)
 				Utility.Peep.enable(playerPeep)
 				Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
 			end, "quest_tutorial_combat.attack_dummy")
+
+			Utility.Peep.setMashinaState(
+				self:getCompanion(playerPeep, "KnightCommander"),
+				"tutorial-follow-player")
 		end))
 	end)
 
@@ -650,6 +654,8 @@ function Island:updateTutorialPlayer(playerPeep)
 		self:updateTutorialEncounterYenderhoundsStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FishedLightningStormfish", playerPeep) then
 		self:updateTutorialFishStormfishStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_CookedLightningStormfish", playerPeep) then
+		self:updateTutorialCookStormfishStep(playerPeep)
 	end
 end
 

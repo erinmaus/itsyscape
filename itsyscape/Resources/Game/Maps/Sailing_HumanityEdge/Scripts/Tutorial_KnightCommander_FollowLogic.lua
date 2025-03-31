@@ -11,7 +11,7 @@ local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Utility = require "ItsyScape.Game.Utility"
 local Mashina = require "ItsyScape.Mashina"
-local Probe = require "ItsyScape.Peep.Probe"
+local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
 local PLAYER = B.Reference("Tutorial_KnightCommander_FollowLogic", "PLAYER")
 local ORLANDO = B.Reference("Tutorial_KnightCommander_FollowLogic", "ORLANDO")
@@ -21,13 +21,13 @@ local FollowOrlando = Mashina.Success {
 	Mashina.Sequence {
 		Mashina.Invert {
 			Mashina.Navigation.TargetMoved {
-				peep = ORLANDO
+				peep = CommonLogic.ORLANDO
 			}
 		},
 
 		Mashina.Step {
 			Mashina.Navigation.WalkToPeep {
-				peep = ORLANDO,
+				peep = CommonLogic.ORLANDO,
 				distance = 2.5,
 				as_close_as_possible = false
 			},
@@ -39,49 +39,17 @@ local FollowOrlando = Mashina.Success {
 	}
 }
 
-local IsAttacking = Mashina.Sequence {
-	Mashina.ParallelTry {
-		Mashina.Peep.DidAttack,
-		Mashina.Peep.WasAttacked,
-		Mashina.Peep.HasCombatTarget
-	},
-
-	Mashina.Peep.SetState {
-		state = "tutorial-general-attack"
-	}
-}
-
-local IsPlayerAttacking = Mashina.Sequence {
-	Mashina.Peep.DidAttack {
-		peep = PLAYER,
-		[PLAYER_TARGET] = B.Output.target
-	},
-
-	Mashina.Peep.EngageCombatTarget {
-		peep = PLAYER_TARGET
-	}
-}
-
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Peep.GetPlayer {
-			[PLAYER] = B.Output.player
+			[CommonLogic.PLAYER] = B.Output.player
 		},
 
-		Mashina.Peep.FindNearbyPeep {
-			filter = function(peep, _, state)
-				local isInInstance = Probe.instance(Utility.Peep.getPlayerModel(state[PLAYER]))(peep)
-				local isOrlando = Probe.namedMapObject("Orlando")(peep)
-
-				return isOrlando and isInInstance
-			end,
-
-			[ORLANDO] = B.Output.result
-		},
+		CommonLogic.GetOrlando,
 
 		Mashina.ParallelTry {
-			IsAttacking,
-			IsPlayerAttacking,
+			CommonLogic.IsAttacking,
+			CommonLogic.AttackPlayerTarget,
 			FollowOrlando
 		}		
 	}

@@ -13,7 +13,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
-local AttackCommon = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_AttackCommon"
+local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
 local PLAYER = B.Reference("Tutorial_Orlando_FleeLogic", "PLAYER")
 
@@ -27,10 +27,10 @@ local HandleOffense = Mashina.Step {
 	Mashina.Peep.DidAttack,
 	Mashina.Peep.DidAttack,
 
-	AttackCommon.GetOrlando,
+	CommonLogic.GetOrlando,
 
 	Mashina.Peep.Talk {
-		peep = AttackCommon.ORLANDO,
+		peep = CommonLogic.ORLANDO,
 		message = "The dummy will hold back. Now yield!"
 	},
 
@@ -57,7 +57,7 @@ local HandleOffense = Mashina.Step {
 
 local AttackOrDefend = Mashina.ParallelTry {
 	HandleDefense,
-	AttackCommon.HandleHealing,
+	CommonLogic.HandleHealing,
 	HandleOffense
 }
 
