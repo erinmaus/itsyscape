@@ -1,4 +1,25 @@
 {
+	"$paths": {
+		"TICK_DURATION_SECONDS": ["loop", "tickDurationSeconds"],
+		"TICKS_PER_SECOND": ["loop", "ticksPerSecond"],
+		"BASE_ZEAL_COST": ["zealCost", "$tier", "baseCost"],
+		"MIN_ZEAL_COST": ["zealCost", "$tier", "minCost"],
+		"MAX_ZEAL_COST": ["zealCost", "$tier", "maxCost"],
+		"MAX_ZEAL_COST_REDUCTION": ["zealCost", "$tier", "maxCostReduction"],
+		"STANCE_SWITCH_ZEAL_COST": ["baseStanceSwitchZealCost"],
+		"STANCE_SWITCH_ZEAL_COST_COOLDOWN_SECONDS": ["baseStanceSwitchZealCostCooldownSeconds"],
+		"TARGET_SWITCH_ZEAL_COST": ["baseTargetSwitchZealCost"],
+		"TARGET_SWITCH_ZEAL_COST_COOLDOWN_SECONDS": ["baseTargetSwitchZealCostCooldownSeconds"],
+		"NO_TARGET_ZEAL_DRAIN_START_SECONDS": ["noTargetZealDrainStartSeconds"],
+		"NO_TARGET_ZEAL_DRAIN_RATE_PER_SECOND": ["noTargetZealDrainRatePerSecond"],
+		"PROWESS_FLUX_CONTROLLED_INTERVALS": ["prowessFluxControlledIntervals"],
+		"PROWESS_FLUX_DAMAGE_INTERVALS": ["prowessFluxDamageIntervals"],
+		"ZEAL_INTERVAL_SECONDS": ["zealIntervalSeconds"],
+		"CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP": ["criticalFluxZealMultiplierStep"],
+		"CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER": ["criticalFluxZealMaxMultiplier"],
+		"CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER": ["criticalFluxZealMinMultiplier"]
+	},
+
 	"loop": {
 		"ticksPerSecond": 5,
 		"tickDurationSeconds": 0.2
@@ -6,34 +27,42 @@
 
 	"zealCost": {
 		"tier1": {
+			"minCost": 0.05,
+			"maxCost": 1.0,
 			"baseCost": 0.15,
 			"maxCostReduction": 0.05
 		},
 
 		"tier2": {
+			"minCost": 0.05,
+			"maxCost": 1.0,
 			"baseCost": 0.25,
 			"maxCostReduction": 0.05
 		},
 
 		"tier3": {
+			"minCost": 0.1,
+			"maxCost": 1.0,
 			"baseCost": 0.5,
 			"maxCostReduction": 0.1
 		},
 		
 		"tier4": {
+			"minCost": 0.2,
+			"maxCost": 1.0,
 			"baseCost": 1.0,
 			"maxCostReduction": 0.2
 		}
 	},
 
-	"baseTargetSwitchZealLoss": 0.1,
-	"baseTargetSwitchZealLossCooldownSeconds": 1,
+	"baseTargetSwitchZealCost": 0.1,
+	"baseTargetSwitchZealCostCooldownSeconds": 1,
 
 	"noTargetZealDrainStartSeconds": 10,
 	"noTargetZealDrainRatePerSecond": 0.1,
 
-	"baseStanceSwitchZealLoss": 0.05,
-	"baseStanceSwitchZealLossCooldownSeconds": 1,
+	"baseStanceSwitchZealCost": 0.05,
+	"baseStanceSwitchZealCostCooldownSeconds": 1,
 
 	"zealIntervalSeconds": 5,
 
@@ -80,7 +109,7 @@
 		}
 	],
 
-	"prowessFluxControlledInterval": [
+	"prowessFluxControlledIntervals": [
 		{
 			"averageLevel": 1,
 			"zeal": 0.02

@@ -17,7 +17,7 @@ local Widget = require "ItsyScape.UI.Widget"
 local Particles = require "ItsyScape.UI.Particles"
 local StandardBarLabel = require "ItsyScape.UI.Interfaces.Components.StandardBarLabel"
 
-StandardHealthBar = Class(Drawable)
+local StandardHealthBar = Class(Drawable)
 
 local CONFIG = Variables.load("Resources/Game/Variables/Config.json")
 local COLOR_PATH = Variables.Path("colors", Variables.PathParameter("color"))

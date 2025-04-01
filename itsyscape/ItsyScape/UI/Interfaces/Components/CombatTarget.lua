@@ -61,6 +61,14 @@ function CombatTarget:getOverflow()
 	return true
 end
 
+function CombatTarget:getHealthBar()
+	return self.healthBar
+end
+
+function CombatTarget:getZealBar()
+	return self.zealBar
+end
+
 function CombatTarget:performLayout()
 	self.titleLabel:setPosition(0, 0)
 	self.titleLabel:setSize(self.rowWidth, self.titleHeight)

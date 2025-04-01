@@ -981,7 +981,7 @@ function BaseCombatHUDController:getEquipment()
 	return result
 end
 
-function BaseCombatHUDController:_getTurnOrder(peep)
+function BaseCombatHUDController:_getTurnOrder(peep, time)
 	local baseTime = love.timer.getTime()
 
 	local actorReference = peep:getBehavior(ActorReferenceBehavior)
@@ -991,7 +991,19 @@ function BaseCombatHUDController:_getTurnOrder(peep)
 	cooldown = cooldown and cooldown.cooldown or 0
 
 	local pendingPower = peep:getBehavior(PendingPowerBehavior)
+	local pendingPowerTurns = pendingPower and pendingPower.turns or math.huge
 	pendingPower = pendingPower and pendingPower.power
+
+	local canUsePower = false
+	if pendingPower then
+		local status = peep:getBehavior(CombatStatusBehavior)
+		local currentZeal = status and math.floor(status.currentZeal * 100) or 0
+		local zealCost = pendingPower and math.floor(pendingPower:getCost(peep) * 100) or 100
+
+		if zealCost <= currentZeal then
+			canUsePower = true
+		end
+	end
 
 	local pendingPowerCooldown
 	if pendingPower then
@@ -1017,14 +1029,14 @@ function BaseCombatHUDController:_getTurnOrder(peep)
 	end
 
 	local result = {}
-	local currentTime = cooldown
+	local currentTime = cooldown - time
 	for i = 1, self.MAX_TURN_ORDER do
 		local turn = {
 			id = actorID or 0,
-			time = currentTime + baseTime
+			time = math.floor((currentTime + baseTime) * 10) / 10
 		}
 
-		if pendingPower and currentTime >= pendingPowerCooldown then
+		if pendingPower and canUsePower and i == pendingPowerTurns + 1 then
 			turn.power = self:_pullPower(peep, pendingPower:getResource())
 		end
 
@@ -1053,8 +1065,9 @@ function BaseCombatHUDController:updateTurnOrder()
 		return
 	end
 
-	local playerTurns = self:_getTurnOrder(playerPeep)
-	local targetTurns = self:_getTurnOrder(targetPeep)
+	local time = love.timer.getTime()
+	local playerTurns = self:_getTurnOrder(playerPeep, time)
+	local targetTurns = self:_getTurnOrder(targetPeep, time)
 
 	local workingTurns = {}
 	do
@@ -1074,13 +1087,15 @@ function BaseCombatHUDController:updateTurnOrder()
 		local turn = {}
 
 		local currentTime = workingTurns[currentIndex].time
-		while workingTurns[currentIndex].time == currentTime do
+		while currentIndex <= #workingTurns and workingTurns[currentIndex].time == currentTime do
 			table.insert(turn, workingTurns[currentIndex])
 			currentIndex = currentIndex + 1
 		end
 
 		table.insert(self.turns, turn)
 	end
+
+	print(">>>> dump", Log.dump(self.turns))
 end
 
 function BaseCombatHUDController:updateState()

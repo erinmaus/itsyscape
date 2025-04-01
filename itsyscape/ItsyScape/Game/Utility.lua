@@ -23,6 +23,7 @@ local Stats = require "ItsyScape.Game.Stats"
 local Color = require "ItsyScape.Graphics.Color"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -5199,82 +5200,6 @@ function Utility.Peep.Attackable:bossReceiveAttack(p)
 		self)
 end
 
-function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
-	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
-
-	local combat = self:getBehavior(CombatStatusBehavior)
-	if not combat or combat.dead then
-		return
-	end
-	
-	local isAttackable = Utility.Peep.isAttackable(self)
-	local isPlayerAggressor = p:getAggressor() and p:getAggressor():hasBehavior(PlayerBehavior)
-	if not isAttackable and isPlayerAggressor then
-		return
-	end
-
-	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
-
-	local attack = AttackPoke({
-		attackType = p:getAttackType(),
-		weaponType = p:getWeaponType(),
-		damageType = p:getDamageType(),
-		damage = damage,
-		aggressor = p:getAggressor(),
-		delay = p:getDelay()
-	})
-
-	local target = self:getBehavior(CombatTargetBehavior)
-	if not target and p:getAggressor() then
-		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			if self:getCommandQueue(CombatCortex.QUEUE):interrupt(AttackCommand()) then
-				local _, target = self:addBehavior(CombatTargetBehavior)
-				target.actor = actor.actor
-
-				local mashina = self:getBehavior(MashinaBehavior)
-				if mashina then
-					if mashina.currentState == 'idle' or not mashina.currentState then
-						if mashina.states['begin-attack'] then
-							mashina.currentState = 'begin-attack'
-						elseif mashina.states['attack'] then
-							mashina.currentState = 'attack'
-						else
-							mashina.currentState = false
-						end
-
-						self:poke('firstStrike', attack)
-					end
-				end
-			end
-		end
-	end
-
-	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
-	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
-	local UninterrupibleCallbackCommand = require "ItsyScape.Peep.UninterrupibleCallbackCommand"
-
-	if damage > 0 then
-		if p:getDelay() > 0 then
-			local queue = self:getParallelCommandQueue('hit')
-			local a = WaitCommand(p:getDelay(), false)
-			local b = UninterrupibleCallbackCommand(function() self:poke('hit', attack) end)
-			queue:push(CompositeCommand(true, a, b))
-		else
-			self:poke('hit', attack)
-		end
-	else
-		if p:getDelay() > 0 then
-			local queue = self:getParallelCommandQueue('hit')
-			local a = WaitCommand(p:getDelay(), false)
-			local b = UninterrupibleCallbackCommand(function() self:poke('miss', attack) end)
-			queue:push(CompositeCommand(true, a, b))
-		else
-			self:poke('miss', attack)
-		end
-	end
-end
-
 function Utility.Peep.Attackable:onReceiveAttack(p)
 	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
@@ -5324,6 +5249,8 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 	end
 end
 
+Utility.Peep.Attackable.aggressiveOnReceiveAttack = Utility.Peep.Attackable.onReceiveAttack
+
 function Utility.Peep.Attackable:onHeal(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if combat and combat.currentHitpoints >= 0 then
@@ -5339,10 +5266,8 @@ function Utility.Peep.Attackable:onHeal(p)
 end
 
 function Utility.Peep.Attackable:onZeal(p)
-	local zeal = p:getZeal()
-
 	for effect in self:getEffects(require "ItsyScape.Peep.Effects.ZealEffect") do
-		zeal = effect:modifyZealEvent(p, zeal)
+		effect:modifyZealEvent(p, self)
 	end
 
 	local status = self:getBehavior(CombatStatusBehavior)
@@ -5350,13 +5275,16 @@ function Utility.Peep.Attackable:onZeal(p)
 		return
 	end
 
+	local zeal = p:getEffectiveZeal()
 	local currentZeal = status.currentZeal + zeal
+	local multiplier, offset = 1, 0
 	for effect in self:getEffects(require "ItsyScape.Peep.Effects.ZealEffect") do
-		currentZeal = effect:modifyZeal(p, currentZeal)
+		local m, o = effect:modifyZeal(p, self)
+		multiplier = multiplier + m
+		offset = offset + o
 	end
 
-
-	status.currentZeal = math.clamp(currentZeal, 0, status.maximumZeal)
+	status.currentZeal = math.clamp(currentZeal * multiplier + offset, 0, status.maximumZeal)
 end
 
 function Utility.Peep.Attackable:onHit(p)
@@ -5579,6 +5507,7 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:listen("postReady", Utility.Peep.Attackable.onPostReady)
 
 	if retaliate then
+		peep:addBehavior(AggressiveBehavior)
 		peep:listen("receiveAttack", Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	else
 		peep:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)

@@ -11,16 +11,17 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local CombatPower = require "ItsyScape.Game.CombatPower"
+local Config = require "ItsyScape.Game.Config"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
-local Variables = require "ItsyScape.Game.Variables"
 local ZealPoke = require "ItsyScape.Game.ZealPoke"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
@@ -30,6 +31,7 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
 
@@ -49,12 +51,11 @@ function CombatCortex:new()
 
 	self:require(CombatStatusBehavior)
 
-	self.config = Variables("Resources/Game/Variables/Combat.json")
-
 	self.defaultWeapon = Weapon()
 	self.currentTime = 0
 
 	self.currentTarget = {}
+	self.nextTarget = {}
 	self.currentStance = {}
 	self.currentRoll = {}
 end
@@ -80,14 +81,16 @@ function CombatCortex:addPeep(peep)
 		rollInfo.rolledDamage = true
 	end
 
-	function rollInfo.onInitiateAttack(_, attack)
+	function rollInfo.onInitiateAttack(_, attack, target)
 		rollInfo.damageAttackPoke = attack
+		rollInfo.attackTarget = target 
 		rollInfo.damageDealt = attack:getDamage()
 		rollInfo.initiateAttack = true
 	end
 
-	function rollInfo.onReceiveAttack(_, attack)
+	function rollInfo.onReceiveAttack(_, attack, peep)
 		rollInfo.defendAttackPoke = attack
+		rollInfo.defendAggressor = peep
 		rollInfo.damageReceived = attack:getDamage()
 		rollInfo.receiveAttack = true
 	end
@@ -207,10 +210,6 @@ function CombatCortex:_isPeepWithinRange(selfPeep, targetPeep)
 	return true, isTooFar, isTooClose
 end
 
-local BASE_TARGET_SWITCH_ZEAL_LOSS = Variables.Path("baseTargetSwitchZealLoss")
-local BASE_TARGET_SWITCH_ZEAL_LOSS_COOLDOWN_SECONDS = Variables.Path("baseTargetSwitchZealLossCooldownSeconds")
-local BASE_NO_TARGET_ZEAL_DRAIN_START_SECONDS = Variables.Path("noTargetZealDrainStartSeconds")
-local BASE_NO_TARGET_ZEAL_DRAIN_RATE_PER_SECOND = Variables.Path("noTargetZealDrainRatePerSecond")
 function CombatCortex:updatePeepTarget(delta, peep)
 	local combatTarget = self:_getPeepTarget(peep)
 
@@ -221,7 +220,7 @@ function CombatCortex:updatePeepTarget(delta, peep)
 
 		function currentTargetInfo.onDie(peep)
 			currentTargetInfo.target = nil
-			currentTargetInfo.cooldown = self.config:get(BASE_NO_TARGET_ZEAL_DRAIN_START_SECONDS)
+			currentTargetInfo.cooldown = Config.get("Combat", "NO_TARGET_ZEAL_DRAIN_START_SECONDS", "_", 0)
 
 			peep:silence("die", currentTargetInfo.onDie)
 		end
@@ -239,10 +238,10 @@ function CombatCortex:updatePeepTarget(delta, peep)
 		peep:poke("zeal", ZealPoke.onTargetSwitch({
 			previousTarget = currentTargetInfo.target,
 			currentTarget = combatTarget,
-			zeal = -self.config:get(BASE_TARGET_SWITCH_ZEAL_LOSS)
+			zeal = -Config.get("Combat", "TARGET_SWITCH_ZEAL_COST", "_", 0)
 		}))
 
-		currentTargetInfo.cooldown = self.config:get(BASE_TARGET_SWITCH_ZEAL_LOSS_COOLDOWN_SECONDS)
+		currentTargetInfo.cooldown = Config.get("Combat", "TARGET_SWITCH_ZEAL_COST_COOLDOWN_SECONDS", "_", 0)
 		currentTargetInfo.target:silence("die", currentTargetInfo.onDie)
 	end
 
@@ -254,21 +253,50 @@ function CombatCortex:updatePeepTarget(delta, peep)
 
 	-- Target lost (dis-engaged from combat). Begin zeal drain cooldown.
 	if hasPreviousCombatTarget and not hasCurrentCombatTarget then
-		currentTargetInfo.cooldown = self.config:get(BASE_NO_TARGET_ZEAL_DRAIN_START_SECONDS)
+		currentTargetInfo.cooldown = Config.get("Combat", "NO_TARGET_ZEAL_DRAIN_START_SECONDS", "_", 0)
 	end
 
 	-- No target and drain cooldown over. Drain zeal.
 	if not hasCurrentCombatTarget and isCooldownOver then
-		local lossRatePerSecond = self.config:get(BASE_NO_TARGET_ZEAL_DRAIN_RATE_PER_SECOND)
+		local lossRatePerSecond = Config.get("Combat", "NO_TARGET_ZEAL_DRAIN_RATE_PER_SECOND", "_", 0)
 		peep:poke("zeal", ZealPoke.onTargetLost({ zeal = -(delta * lossRatePerSecond) }))
 	end
 end
 
+function CombatCortex:_tickPower(selfPeep)
+	local pendingPower = selfPeep:getBehavior(PendingPowerBehavior)
+	local power = pendingPower and pendingPower.power
+
+	if not power then
+		return false
+	end
+
+	local status = selfPeep:getBehavior(CombatStatusBehavior)
+	if not status then
+		return false
+	end
+
+	local currentZeal = math.floor(status.currentZeal * 100)
+	local zealCost = math.floor(power:getCost(selfPeep) * 100)
+
+	if zealCost > currentZeal then
+		return false
+	end
+
+	pendingPower.turns = math.max(pendingPower.turns - 1, 0)
+	return pendingPower.turns == 0
+end
+
 function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 	local power = selfPeep:getBehavior(PendingPowerBehavior)
+	local turns = power and power.turns or 0
 	power = power and power.power
 
 	if not power then
+		return false
+	end
+
+	if turns > 0 then
 		return false
 	end
 
@@ -284,7 +312,7 @@ function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 	local currentZeal = math.floor(status.currentZeal * 100)
 	local zealCost = math.floor(power:getCost(selfPeep) * 100)
 
-	if zealCost >= currentZeal then
+	if zealCost > currentZeal then
 		return false
 	end
 
@@ -338,11 +366,11 @@ function CombatCortex:_makePeepFaceTarget(selfPeep, targetPeep)
 	end
 end
 
-local PROWESS_FLUX_CONTROLLED_INTERVAL = Variables.Path("prowessFluxControlledInterval")
-local PROWESS_FLUX_DAMAGE_INTERVALS = Variables.Path("prowessFluxDamageIntervals")
-
 function CombatCortex:_getDamageZeal(damage, maxHit)
-	local prowess = self.config:get(PROWESS_FLUX_DAMAGE_INTERVALS)
+	local prowess = Config.get("Combat", "PROWESS_FLUX_DAMAGE_INTERVALS")
+	if not prowess then
+		return 0
+	end
 
 	local currentIndex
 	for i = 1, #prowess do
@@ -375,9 +403,8 @@ function CombatCortex:_getDamageZeal(damage, maxHit)
 	return zeal
 end
 
-local ZEAL_INTERVAL_SECONDS = Variables.Path("zealIntervalSeconds")
 function CombatCortex:_scaleZealByWeaponSpeed(zeal, weaponSpeed)
-	local zealInterval = self.config:get(ZEAL_INTERVAL_SECONDS)
+	local zealInterval = Config.get("Combat", "ZEAL_INTERVAL_SECONDS")
 	local relativeWeaponZealInteral = weaponSpeed / zealInterval
 	return zeal * relativeWeaponZealInteral
 end
@@ -385,7 +412,10 @@ end
 function CombatCortex:_getLevelZeal(averageLevel)
 	averageLevel = math.ceil(averageLevel)
 
-	local prowess = self.config:get(PROWESS_FLUX_CONTROLLED_INTERVAL)
+	local prowess = Config.get("Combat", "PROWESS_FLUX_CONTROLLED_INTERVALS")
+	if not prowess then
+		return 0
+	end
 
 	local currentIndex
 	for i = 1, #prowess do
@@ -414,10 +444,6 @@ function CombatCortex:_getLevelZeal(averageLevel)
 	return zeal
 end
 
-local CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP = Variables.Path("criticalFluxZealMultiplierStep")
-local CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER = Variables.Path("criticalFluxZealMaxMultiplier")
-local CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER = Variables.Path("criticalFluxZealMinMultiplier")
-
 function CombatCortex:_givePeepZeal(peep, target)
 	local rollInfo = self.currentRoll[peep]
 
@@ -425,9 +451,9 @@ function CombatCortex:_givePeepZeal(peep, target)
 		return
 	end
 
-	local minCriticalMultiplier = self.config:get(CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER)
-	local maxCriticalMultiplier = self.config:get(CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER)
-	local criticalMultiplierStep = self.config:get(CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP)
+	local minCriticalMultiplier = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER")
+	local maxCriticalMultiplier = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER")
+	local criticalMultiplierStep = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP")
 
 	local criticalMultiplier = 1 + (((rollInfo.accuracyBonus * 3) / rollInfo.defenseBonus - 1) * criticalMultiplierStep)
 	criticalMultiplier = math.clamp(criticalMultiplier, minCriticalMultiplier, maxCriticalMultiplier)
@@ -469,9 +495,9 @@ function CombatCortex:_giveTargetZeal(selfPeep, targetPeep)
 		return
 	end
 
-	local minCriticalMultiplier = self.config:get(CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER)
-	local maxCriticalMultiplier = self.config:get(CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER)
-	local criticalMultiplierStep = self.config:get(CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP)
+	local minCriticalMultiplier = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER")
+	local maxCriticalMultiplier = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER")
+	local criticalMultiplierStep = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP")
 
 	local criticalMultiplier = 1 + ((roll.defenseBonus / (roll.accuracyBonus * 3) - 1) * criticalMultiplierStep)
 	criticalMultiplier = math.clamp(criticalMultiplier, minCriticalMultiplier, maxCriticalMultiplier)
@@ -489,8 +515,83 @@ function CombatCortex:_giveTargetZeal(selfPeep, targetPeep)
 	end
 end
 
-local BASE_STANCE_SWITCH_ZEAL_LOSS = Variables.Path("baseStanceSwitchZealLoss")
-local BASE_STANCE_SWITCH_ZEAL_LOSS_COOLDOWN_SECONDS = Variables.Path("baseStanceSwitchZealLossCooldownSeconds")
+function CombatCortex:_updateAggressiveTarget(peep)
+	local rollInfo = self.currentRoll[peep]
+
+	if not rollInfo.initiateAttack then
+		return false
+	end
+
+	local poke = rollInfo.damageAttackPoke
+	if not poke then
+		return false
+	end
+
+	local target = rollInfo.attackTarget
+	if not target or target:hasBehavior(CombatTargetBehavior) then
+		return false
+	end
+
+	local aggressive = target:getBehavior(AggressiveBehavior)
+	if not aggressive then
+		return false
+	end
+
+	if aggressive.penidngTarget == peep then
+		return false
+	end
+
+	local minTime = math.max(math.min(aggressive.maxResponseTime, aggressive.minResponseTime), 0)
+	local maxTime = math.max(math.max(aggressive.minResponseTime, aggressive.maxResponseTime), 0)
+
+	local timeMultiplier = 1
+	local timeOffset = 0
+
+	for effect in target:getEffects(CombatEffect) do
+		local m, o = effect:applyToSelfResponseTime(timeMultiplier)
+		timeMultiplier = timeMultiplier + m
+		timeOffset = timeMultiplier + o
+	end
+
+	for effect in peep:getEffects(CombatEffect) do
+		local m, o = effect:applyToTargetResponseTime(timeMultiplier)
+		timeMultiplier = timeMultiplier + m
+		timeOffset = timeMultiplier + o
+	end
+
+	local cooldown = love.math.random() * (maxTime - minTime) + minTime
+	cooldown = math.max(cooldown * timeMultiplier + timeOffset, 0)
+
+	local tickDurationSeconds = Config.get("Combat", "TICK_DURATION_SECONDS", "_", 0)
+	if tickDurationSeconds > 0 then
+		cooldown = math.floor(cooldown / tickDurationSeconds) * tickDurationSeconds
+	end
+
+	aggressive.pendingResponseTime = cooldown
+	aggressive.pendingTarget = peep
+
+	Log.info("Target '%s' is aggressive and will retaliate against '%s' in %.2f seconds (min = %.2f seconds, max = %.2fseconds.", target:getName(), peep:getName(), cooldown, minTime, maxTime)
+end
+
+function CombatCortex:updateAggressivePeep(delta, peep)
+	local aggressive = peep:getBehavior(AggressiveBehavior)
+	if not aggressive then
+		return
+	end
+
+	if not aggressive.pendingTarget then
+		return
+	end
+
+	aggressive.pendingResponseTime = math.max(aggressive.pendingResponseTime - delta, 0)
+	if aggressive.pendingResponseTime > 0 then
+		return
+	end
+
+	Utility.Peep.attack(peep, aggressive.pendingTarget)
+	aggressive.penidngTarget = false
+end
+
 function CombatCortex:updatePeepStance(delta, peep)
 	local stance = peep:getBehavior(StanceBehavior)
 	stance = stance and stance.stance
@@ -512,10 +613,10 @@ function CombatCortex:updatePeepStance(delta, peep)
 		peep:poke("zeal", ZealPoke.onStanceSwitch({
 			previousStance = currentStanceInfo.stance,
 			currentStance = stance,
-			zeal = -self.config:get(BASE_STANCE_SWITCH_ZEAL_LOSS), 
+			zeal = -Config.get("Combat", "STANCE_SWITCH_ZEAL_COST", "_", 0),
 		}))
 
-		currentStanceInfo.cooldown = self.config:get(BASE_STANCE_SWITCH_ZEAL_LOSS_COOLDOWN_SECONDS)
+		currentStanceInfo.cooldown = Config.get("Combat", "BASE_TARGET_SWITCH_ZEAL_COST_COOLDOWN_SECONDS", "_", 0)
 	end
 
 	if isStanceDifferent then
@@ -693,6 +794,8 @@ function CombatCortex:tickPeep(delta, peep)
 	rollInfo.hit = false
 
 	local success = weapon:perform(peep, target)
+	self:_updateAggressiveTarget(peep)
+
 	if not success then
 		return
 	end
@@ -706,6 +809,8 @@ function CombatCortex:tickPeep(delta, peep)
 		local stage = self:getDirector():getGameInstance():getStage()
 		stage:fireProjectile(projectile, peep, target)
 	end
+
+	self:_tickPower(peep)
 end
 
 function CombatCortex:tick(delta)
@@ -714,6 +819,7 @@ function CombatCortex:tick(delta)
 			self:updatePeepTarget(delta, peep)
 			self:updatePeepStance(delta, peep)
 			self:updatePeepCooldown(delta, peep)
+			self:updateAggressivePeep(delta, peep)
 		end
 	end
 
@@ -724,9 +830,8 @@ function CombatCortex:tick(delta)
 	end
 end
 
-local TICK_DURATION_SECONDS = Variables.Path("loop", "tickDurationSeconds")
 function CombatCortex:update(delta)
-	local tickDurationSeconds = self.config:get(TICK_DURATION_SECONDS)
+	local tickDurationSeconds = Config.get("Combat", "TICK_DURATION_SECONDS")
 
 	self.currentTime = self.currentTime + delta
 	while self.currentTime > tickDurationSeconds do

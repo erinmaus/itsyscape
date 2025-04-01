@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Peep/Behaviors/PendingPowerBehavior.lua
+-- ItsyScape/Peep/Behaviors/AggressiveBehavior.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,17 +11,17 @@
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Behavior = require "ItsyScape.Peep.Behavior"
 
--- Specifies equipment bonuses directly.
-local PendingPowerBehavior = Behavior("PendingPowerBehavior")
+-- Specifies a peep is human.
+local AggressiveBehavior = Behavior("Aggressive")
 
--- Constructs a PendingPowerBehavior.
---
--- 'power' is a Power-instance.
-function PendingPowerBehavior:new()
+function AggressiveBehavior:new()
 	Behavior.Type.new(self)
 
-	self.power = false
-	self.turns = 0
+	self.minResponseTime = 0.4
+	self.maxResponseTime = 0.8
+
+	self.pendingResponseTime = 0
+	self.pendingTarget = false
 end
 
-return PendingPowerBehavior
+return AggressiveBehavior

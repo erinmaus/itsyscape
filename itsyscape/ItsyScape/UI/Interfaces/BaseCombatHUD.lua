@@ -649,10 +649,34 @@ end
 
 function BaseCombatHUD:togglePlayerInfo(enabled)
 	self:_toggleInfo(enabled, self.playerInfo)
+
+	local zealBar = self.playerInfo:getZealBar()
+	if zealBar then
+		zealBar:setID("BaseCombatHUD-ZealBar-Player")
+	end
+
+	local healthBar = self.playerInfo:getHealthBar()
+	if healthBar then
+		healthBar:setID("BaseCombatHUD-HealthBar-Player")
+	end
 end
 
 function BaseCombatHUD:toggleTargetInfo(enabled)
 	self:_toggleInfo(enabled, self.targetInfo)
+
+	local zealBar = self.playerInfo:getZealBar()
+	if zealBar then
+		zealBar:setID("BaseCombatHUD-ZealBar-Target")
+	end
+
+	local healthBar = self.playerInfo:getHealthBar()
+	if healthBar then
+		healthBar:setID("BaseCombatHUD-HealthBar-Target")
+	end
+end
+
+function BaseCombatHUD:toggleTurnOrder(enabled)
+	self:_toggleInfo(enabled, self.turnOrder)
 end
 
 function BaseCombatHUD:getMenu()

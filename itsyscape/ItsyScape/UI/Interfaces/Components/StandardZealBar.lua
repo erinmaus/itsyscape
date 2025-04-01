@@ -18,7 +18,7 @@ local Widget = require "ItsyScape.UI.Widget"
 local Particles = require "ItsyScape.UI.Particles"
 local StandardBarLabel = require "ItsyScape.UI.Interfaces.Components.StandardBarLabel"
 
-StandardZealBar = Class(Drawable)
+local StandardZealBar = Class(Drawable)
 
 local CONFIG = Variables.load("Resources/Game/Variables/Config.json")
 local COLOR_PATH = Variables.Path("colors", Variables.PathParameter("color"))
@@ -150,10 +150,6 @@ end
 
 function StandardZealBar:update(delta)
 	Drawable.update(self, delta)
-
-	if true then
-		return false
-	end
 
 	local width, height = self:getSize()
 	local relativeZeal = self:_calculateRelativeValue(self.currentZeal, self.maximumZeal)

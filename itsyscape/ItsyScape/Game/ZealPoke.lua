@@ -21,6 +21,8 @@ ZealPoke.TYPE_DEFEND        = "DEFEND"
 function ZealPoke:new(zealPokeType)
 	self.type = zealPokeType
 	self.zeal = 0
+	self.multiplier = 1
+	self.offset = 0
 end
 
 function ZealPoke:getType()
@@ -29,6 +31,18 @@ end
 
 function ZealPoke:getZeal()
 	return self.zeal
+end
+
+function ZealPoke:getEffectiveZeal()
+	return math.clamp(self.zeal * self.multiplier + self.offset, 0, 1)
+end
+
+function ZealPoke:addMultiplier(value)
+	self.multiplier = self.multiplier + value
+end
+
+function ZealPoke:addOffset(value)
+	self.offset = self.offset + value
 end
 
 function ZealPoke.onTargetSwitch(t)

@@ -12,16 +12,18 @@ local Effect = require "ItsyScape.Peep.Effect"
 
 local ZealEffect = Class(Effect)
 
-function ZealEffect:modifyTierCost(tier, cost)
-	return cost
+-- Should return (multiplier, offset)
+function ZealEffect:modifyTierCost(tier)
+	return 0, 0
 end
 
-function ZealEffect:modifyZealEvent(zealPoke, zeal)
-	return zeal
+function ZealEffect:modifyZealEvent(zealPoke, peep)
+	-- Nothing.
 end
 
-function ZealEffect:modifyZeal(zeal)
-	return zeal
+-- Should return (multiplier, offset)
+function ZealEffect:modifyZeal()
+	return 0, 0
 end
 
 return ZealEffect

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Config = require "ItsyScape.Game.Config"
 local Power = require "ItsyScape.Game.Power"
 local Utility = require "ItsyScape.Game.Utility"
 local Variables = require "ItsyScape.Game.Variables"
@@ -57,8 +58,8 @@ function CombatPower:new(...)
 
 		local tierName = self.TIER_NAMES[tier:get("Tier")] or "tier1"
 
-		local baseCost = CONFIG:get(BASE_COST_PATH, "tier", tierName)
-		local maxCostReduction = CONFIG:get(MAX_COST_REDUCTION_PATH, "tier", tierName)
+		local baseCost = Config.get("Combat", "BASE_ZEAL_COST", "tier", tierName, "_", 1)
+		local maxCostReduction = Config.get("Combat", "MAX_ZEAL_COST_REDUCTION", "tier", tierName, "_", 0)
 
 		self:setCost(
 			cost:get("Skill").name,
@@ -137,10 +138,17 @@ function CombatPower:getCost(peep)
 		cost = cost or 1
 	end
 
+	local multiplier, offset = 1, 0
 	for effect in peep:getEffects(ZealEffect) do
-		cost = effect:modifyTierCost(self.tier, cost)
+		local m, o = effect:modifyTierCost(self.tier)
+		multiplier = multiplier + m
+		offset = offset + o
 	end
 
+	local minCost = Config.get("Combat", "MIN_ZEAL_COST", "tier", tierName, "_", 0)
+	local maxCost = Config.get("Combat", "MAX_ZEAL_COST", "tier", tierName, "_", 1)
+
+	cost = math.clamp(cost * multiplier + offset, minCost, maxCost)
 	return cost
 end
 

@@ -1323,7 +1323,9 @@ Common.EAT_HINT = {
 				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
 				               (proCombatHUD and proCombatHUD:getIsOpen())
 
-				return not (isOpen and target:hasBehavior(CombatTargetBehavior))
+				local isThingiesOpen = gamepadCombatHUD and gamepadCombatHUD:getIsThingiesOpen("food")
+
+				return not isOpen or isThingiesOpen
 			end
 		end	
 	},
@@ -1363,7 +1365,7 @@ Common.EAT_HINT = {
 			}
 		},
 		open = function(target, state)
-			state.initialFoodCount = target:getState():count("Item", "CookedLightningStormfish")
+			state.initialFoodCount = target:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
 
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
@@ -1373,7 +1375,11 @@ Common.EAT_HINT = {
 					return true
 				end
 
-				local currentFoodCount = target:getState():count("Item", "CookedLightningStormfish")
+				if not (gamepadCombatHUD and gamepadCombatHUD:getIsThingiesOpen("food")) then
+					return true
+				end
+
+				local currentFoodCount = target:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
 				return state.initialFoodCount == 0 or currentFoodCount < state.initialFoodCount
 			end
 		end	
