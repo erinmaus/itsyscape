@@ -782,7 +782,7 @@ function BaseCombatHUD:updateTurnOrder()
 		if actorView then
 			local pendingActorInfo = self.pendingSprites[id]
 
-			if pendingActorInfo and pendingActorInfo.power and actorInfo.power and pendingActorInfo.id ~= actorInfo.power.id then
+			if pendingActorInfo and pendingActorInfo.power and actorInfo.power and pendingActorInfo.power.id ~= actorInfo.power.id then
 				if pendingActorInfo.powerSprite then
 					pendingActorInfo.powerSprite:reset()
 				end

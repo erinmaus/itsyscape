@@ -451,7 +451,7 @@ end
 function CombatCortex:_givePeepZeal(peep, target)
 	local rollInfo = self.currentRoll[peep]
 
-	if not (rollInfo.initiateAttack and rollInfo.rolledAttack and rollInfo.rolledDamage) then
+	if not rollInfo.initiateAttack then
 		return
 	end
 
@@ -463,8 +463,9 @@ function CombatCortex:_givePeepZeal(peep, target)
 	criticalMultiplier = math.clamp(criticalMultiplier, minCriticalMultiplier, maxCriticalMultiplier)
 
 	local currentStanceInfo = self.currentStance[peep]
-	if currentStanceInfo.stance == Weapon.STANCE_CONTROLLED then
-		local averageLevel = (rollInfo.damageSkillLevel + rollInfo.attackSkillLevel)
+	if currentStanceInfo.stance == Weapon.STANCE_CONTROLLED and rollInfo.rolledAttack then
+		--local averageLevel = ((rollInfo.damageSkillLevel or 0) + rollInfo.attackSkillLevel) / 2
+		local averageLevel = ((rollInfo.damageSkillLevel or 0) + rollInfo.attackSkillLevel) + 50
 		local zeal = self:_getLevelZeal(averageLevel)
 
 		local weapon = self:_getPeepWeapon(peep)
@@ -476,7 +477,7 @@ function CombatCortex:_givePeepZeal(peep, target)
 			attack = rollInfo.damageAttackPoke,
 			zeal = zeal
 		}))
-	elseif currentStanceInfo.stance == Weapon.STANCE_AGGRESSIVE then
+	elseif currentStanceInfo.stance == Weapon.STANCE_AGGRESSIVE and rollInfo.rolledDamage then
 		local zeal = self:_getDamageZeal(rollInfo.damageDealt, rollInfo.baseHit)
 
 		local weapon = self:_getPeepWeapon(peep)
@@ -620,7 +621,7 @@ function CombatCortex:updatePeepStance(delta, peep)
 			zeal = -Config.get("Combat", "STANCE_SWITCH_ZEAL_COST", "_", 0),
 		}))
 
-		currentStanceInfo.cooldown = Config.get("Combat", "BASE_TARGET_SWITCH_ZEAL_COST_COOLDOWN_SECONDS", "_", 0)
+		currentStanceInfo.cooldown = Config.get("Combat", "TARGET_SWITCH_ZEAL_COST_COOLDOWN_SECONDS", "_", 0)
 	end
 
 	if isStanceDifferent then

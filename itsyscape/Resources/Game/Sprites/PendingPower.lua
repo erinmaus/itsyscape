@@ -43,6 +43,7 @@ function PendingPower:new(...)
 	self.interval = false
 	self.previousTime = false
 	self.currentTime = false
+	self.maxDelta = false
 	self.done = false
 	self.fadeInTime = 0
 	self.fadeOutTime = 0
@@ -70,11 +71,13 @@ function PendingPower:updateDuration(turns, time, interval)
 end
 
 function PendingPower:reset()
+	self.previousDelta = false
 	self.pendingTurns = false
 	self.currentTurn = false
 	self.interval = false
 	self.previousTime = false
 	self.currentTime = false
+	self.maxDelta = false
 
 	if self.done then
 		self.fadeInTime = self.FADE_DURATION - self.fadeOutTime
@@ -117,10 +120,12 @@ function PendingPower:draw(position, time)
 	local y = position.y - self.HEIGHT - self.OFFSET
 
 	local frameDelta = _APP:getFrameDelta()
+	local duration = (self.interval or 1) * ((self.pendingTurns or 1) + 1)
 	local time = math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, frameDelta)
-	time = time + ((self.currentTurn or 1) - 1) * (self.interval or 1)
-	local duration = (self.interval or 1) * (self.pendingTurns or 1)
+	time = time + (self.currentTurn or 1) * (self.interval or 1)
 	local delta = math.clamp(time / math.max(duration - 0.2, 0.2))
+	delta = math.max(delta, self.maxDelta or delta)
+	self.maxDelta = delta
 
 	love.graphics.setColor(barColor:get())
 	love.graphics.rectangle("fill", x, y, self.WIDTH, self.HEIGHT, 4)

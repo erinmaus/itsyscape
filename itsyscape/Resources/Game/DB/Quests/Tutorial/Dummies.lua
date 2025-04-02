@@ -33,12 +33,30 @@ do
 	ItsyScape.Meta.Dummy {
 		Tier = 50,
 		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MAGIC,
-		Hitpoints = 150,
+		Hitpoints = 250,
 
 		ChaseDistance = math.huge,
 
 		Weapon = "IsabelliumStaff",
 
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = Dummy
 	}
 end
@@ -68,12 +86,30 @@ do
 	ItsyScape.Meta.Dummy {
 		Tier = 50,
 		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MELEE,
-		Hitpoints = 150,
+		Hitpoints = 250,
 
 		ChaseDistance = math.huge,
 
 		Weapon = "IsabelliumZweihander",
 
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(99),
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(99),
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = Dummy
 	}
 end
@@ -103,12 +139,30 @@ do
 	ItsyScape.Meta.Dummy {
 		Tier = 50,
 		CombatStyle = ItsyScape.Utility.Weapon.STYLE_ARCHERY,
-		Hitpoints = 150,
+		Hitpoints = 250,
 
 		ChaseDistance = math.huge,
 
 		Weapon = "IsabelliumLongbow",
 
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Dummy
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = Dummy
 	}
 end

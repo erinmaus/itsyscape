@@ -26,106 +26,123 @@ local DidKillTarget = Mashina.Sequence {
 	}
 }
 
-local HandleOffense = Mashina.Step {
-	Mashina.Peep.DidAttack,
-
-	Mashina.RandomTry {
-		Mashina.Sequence {
-			Mashina.Peep.CanQueuePower {
-				power = "Tornado"
-			},
-
-			Mashina.Peep.QueuePower {
-				power = "Tornado",
-				turns = 1
-			}
+local HandleDefense = Mashina.RandomTry {
+	Mashina.Sequence {
+		Mashina.Peep.CanQueuePower {
+			power = "Riposte"
 		},
 
-		Mashina.Sequence {
-			Mashina.Peep.CanQueuePower {
-				power = "Decapitate"
-			},
-
-			Mashina.Peep.QueuePower {
-				power = "Decapitate",
-				turns = 1
-			}
+		Mashina.RandomCheck {
+			chance = 0.5
 		},
 
-		Mashina.Sequence {
-			Mashina.Peep.CanQueuePower {
-				power = "Earthquake"
-			},
-
-			Mashina.Peep.QueuePower {
-				power = "Earthquake",
-				turns = 1
-			}
+		Mashina.Peep.QueuePower {
+			power = "Riposte"
 		}
 	},
 
-	Mashina.Peep.DidAttack
+	Mashina.Sequence {
+		Mashina.Peep.CanQueuePower {
+			power = "Parry"
+		},
+
+		Mashina.RandomCheck {
+			chance = 0.5
+		},
+
+		Mashina.Peep.QueuePower {
+			power = "Parry"
+		}
+	},
+
+	Mashina.Sequence {
+		Mashina.Peep.CanQueuePower {
+			power = "Deflect"
+		},
+
+		Mashina.RandomCheck {
+			chance = 0.5
+		},
+
+		Mashina.Peep.QueuePower {
+			power = "Deflect"
+		}
+	}
 }
 
-local HandleDefense = Mashina.Step {
-	Mashina.Peep.WasAttacked,
-
-	Mashina.Try {
-		CommonLogic.Heal,
-
-		Mashina.Sequence {
-			Mashina.Peep.CanQueuePower {
-				power = "Riposte"
-			},
-
-			Mashina.RandomCheck {
-				chance = 0.25
-			},
-
-			Mashina.Peep.QueuePower {
-				power = "Riposte",
-				turns = 1
-			}
+local HandleOffense = Mashina.RandomTry {
+	Mashina.Sequence {
+		Mashina.Peep.CanQueuePower {
+			power = "Tornado"
 		},
 
-		Mashina.Sequence {
-			Mashina.Peep.CanQueuePower {
-				power = "Parry"
-			},
-
-			Mashina.RandomCheck {
-				chance = 0.25
-			},
-
-			Mashina.Peep.QueuePower {
-				power = "Parry",
-				turns = 1
-			}
+		Mashina.RandomCheck {
+			chance = 0.5
 		},
 
-		Mashina.Sequence {
-			Mashina.Peep.CanQueuePower {
-				power = "Deflect"
-			},
- 
-			Mashina.RandomCheck {
-				chance = 0.25
-			},
-
-			Mashina.Peep.QueuePower {
-				power = "Deflect",
-				turns = 1
-			}
+		Mashina.Peep.QueuePower {
+			power = "Tornado"
 		}
 	},
 
-	Mashina.Peep.WasAttacked
+	Mashina.Sequence {
+		Mashina.Peep.CanQueuePower {
+			power = "Decapitate"
+		},
+
+		Mashina.RandomCheck {
+			chance = 0.5
+		},
+
+		Mashina.Peep.QueuePower {
+			power = "Decapitate"
+		}
+	},
+
+	Mashina.Sequence {
+		Mashina.Peep.CanQueuePower {
+			power = "Earthquake"
+		},
+
+		Mashina.RandomCheck {
+			chance = 0.5
+		},
+
+		Mashina.Peep.QueuePower {
+			power = "Earthquake"
+		}
+	}
+}
+
+local HandlePowers = Mashina.Step {
+	Mashina.Peep.DidAttack,
+
+	Mashina.ParallelTry {
+		Mashina.Sequence {
+			Mashina.Peep.OnPoke {
+				event = "heal"
+			},
+
+			HandleDefense
+		},
+
+		HandleOffense
+	},
+
+	Mashina.Peep.OnPoke {
+		event = "powerActivated"
+	}
+}
+
+local HandleHealing = Mashina.Step {
+	Mashina.Peep.WasAttacked,
+	CommonLogic.Heal
 }
 
 local AttackOrDefend = Mashina.ParallelTry {
 	DidKillTarget,
-	HandleDefense,
-	HandleOffense
+	HandlePowers,
+	HandleHealing
 }
 
 local Tree = BTreeBuilder.Node() {

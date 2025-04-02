@@ -103,20 +103,26 @@ do
 	}
 end
 
-M["Wizard"] = ItsyScape.Resource.MapObject.Unique()
+M["Warrior"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 16,
 		PositionY = 0,
 		PositionZ = 1,
-		Name = "Wizard",
+		Name = "Warrior",
 		Map = M._MAP,
-		Resource = M["Wizard"]
+		Resource = M["Warrior"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Dummy_Wizard",
-		MapObject = M["Wizard"]
+		Peep = ItsyScape.Resource.Peep "TutorialDummy_Warrior",
+		MapObject = M["Warrior"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["Warrior"]
 	}
 end
 

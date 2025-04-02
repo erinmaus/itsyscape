@@ -92,6 +92,8 @@ function PendingAttack:draw(position, time)
 
 	love.graphics.setColor(progressColor:get())
 	love.graphics.rectangle("fill", x, y, math.floor(self.WIDTH * delta), self.HEIGHT, math.min(2, self.WIDTH * delta / 2))
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 return PendingAttack

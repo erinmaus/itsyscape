@@ -34,7 +34,7 @@ function ZealPoke:getZeal()
 end
 
 function ZealPoke:getEffectiveZeal()
-	return math.clamp(self.zeal * self.multiplier + self.offset, 0, 1)
+	return math.clamp(self.zeal * self.multiplier + self.offset, -1, 1)
 end
 
 function ZealPoke:addMultiplier(value)
