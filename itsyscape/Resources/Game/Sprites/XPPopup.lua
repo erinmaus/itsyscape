@@ -65,7 +65,7 @@ function XPPopup:draw(position, time)
 	local text = "+" .. tostring(math.floor(self.xp + 0.5))
 	local width = font:getWidth(text)
 
-	local alpha = 1 - (math.max(time - 0.5, 0) / XPPopup.DURATION)
+	local alpha = 1 - math.clamp(math.max(time - 0.5, 0) / XPPopup.DURATION)
 	local offset = -(time / XPPopup.DURATION) * XPPopup.FLOAT_HEIGHT
 
 	love.graphics.setColor(1, 1, 1, alpha)

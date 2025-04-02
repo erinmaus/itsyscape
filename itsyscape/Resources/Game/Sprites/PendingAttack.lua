@@ -19,6 +19,7 @@ local PendingAttack = Class(Sprite)
 PendingAttack.FADE_DURATION = 0.2
 PendingAttack.WIDTH = 120
 PendingAttack.HEIGHT = 8
+PendingAttack.DROP_SHADOW = 4
 
 function PendingAttack:new(...)
 	Sprite.new(self, ...)
@@ -80,12 +81,19 @@ function PendingAttack:draw(position, time)
 	local progressColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.pendingAttackTime"), alpha)
 
 	local x = position.x - self.WIDTH / 2
-	local y = position.y + 2
+	local y = position.y + 6
 
 	local frameDelta = _APP:getFrameDelta()
 	local time = math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, frameDelta)
 	local duration = math.lerp(self.previousDuration or self.currentDuration or 1, self.currentDuration or 1, frameDelta)
 	local delta = math.clamp(time / math.max(duration - 0.2, 0.2))
+
+	love.graphics.setColor(0, 0, 0, alpha)
+	love.graphics.rectangle(
+		"fill",
+		x + self.DROP_SHADOW, y + self.DROP_SHADOW,
+		self.WIDTH,
+		self.HEIGHT, 2)
 
 	love.graphics.setColor(barColor:get())
 	love.graphics.rectangle("fill", x, y, self.WIDTH, self.HEIGHT, 2)
@@ -93,6 +101,12 @@ function PendingAttack:draw(position, time)
 	love.graphics.setColor(progressColor:get())
 	love.graphics.rectangle("fill", x, y, math.floor(self.WIDTH * delta), self.HEIGHT, math.min(2, self.WIDTH * delta / 2))
 
+	love.graphics.setColor(0, 0, 0, alpha * 0.5)
+
+	love.graphics.setLineWidth(2)
+	love.graphics.rectangle("line", x, y, self.WIDTH, self.HEIGHT, 2)
+
+	love.graphics.setLineWidth(1)
 	love.graphics.setColor(1, 1, 1, 1)
 end
 

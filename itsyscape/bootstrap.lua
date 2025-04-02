@@ -156,7 +156,7 @@ do
 	end
 
 	math.wrap = function(value, min, max)
-		return min + ((value - min) % (max - min))
+		return min + ((value - min) % (max - min + 1))
 	end
 
 	local utf8 = require "utf8"

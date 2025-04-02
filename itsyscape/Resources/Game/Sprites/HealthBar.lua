@@ -15,8 +15,9 @@ local FontResource = require "ItsyScape.Graphics.FontResource"
 
 local HealthBar = Class(Sprite)
 HealthBar.WIDTH = 120
-HealthBar.GOAL_HEIGHT     = 16
-HealthBar.PROGRESS_HEIGHT = 18
+HealthBar.HEIGHT          = 8
+HealthBar.PROGRESS_HEIGHT = 8
+HealthBar.DROP_SHADOW     = 4
 
 function HealthBar:new(...)
 	Sprite.new(self, ...)
@@ -33,43 +34,53 @@ function HealthBar:isDone(time)
 end
 
 function HealthBar:draw(position, time)
-	local x = position.x - HealthBar.WIDTH / 2
-	local y = position.y - HealthBar.GOAL_HEIGHT
+	local alpha = 1 - math.clamp(math.max((time - 5.5) / 0.5))
 
-	local alpha = 1 - math.max((time - 5.5) / 0.5)
+	local x = position.x - self.WIDTH / 2
+	local y = position.y - self.HEIGHT
+
 	local damageColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.health.damage"), alpha)
 	local hitpointsColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.health.hitpoints"), alpha)
 
 	love.graphics.setColor(0, 0, 0, alpha)
-	love.graphics.rectangle('fill', x + 1, y + 1, HealthBar.WIDTH, HealthBar.GOAL_HEIGHT)
+		love.graphics.rectangle(
+			"fill",
+			x + self.DROP_SHADOW, y + self.DROP_SHADOW,
+			self.WIDTH,
+			self.HEIGHT, 2)
 
 	love.graphics.setColor(hitpointsColor:get())
-	love.graphics.rectangle('fill', x, y, HealthBar.WIDTH, HealthBar.GOAL_HEIGHT, 4)
+	love.graphics.rectangle("fill", x, y, self.WIDTH, self.HEIGHT, 2)
 
 	if self.actor:getCurrentHitpoints() < self.actor:getMaximumHitpoints() then
 		local percent = self.actor:getCurrentHitpoints() / self.actor:getMaximumHitpoints()
-		local w = HealthBar.WIDTH * (1 - percent)
+		local w = math.min(self.WIDTH * (1 - percent), math.floor(self.WIDTH * 0.99))
 		if self.actor:getCurrentHitpoints() > 0 then
-			w = math.min(math.max(w, 1), HealthBar.WIDTH - 1)
+			w = math.min(math.max(w, 1), self.WIDTH - 1)
 		end
 
 		love.graphics.setColor(damageColor:get())
 		love.graphics.rectangle(
-			'fill',
-			x + HealthBar.WIDTH - w,
-			y - (HealthBar.PROGRESS_HEIGHT - HealthBar.GOAL_HEIGHT),
+			"fill",
+			x + self.WIDTH - w,
+			y - (self.PROGRESS_HEIGHT - self.HEIGHT),
 			w,
-			HealthBar.PROGRESS_HEIGHT,
-			4)
+			self.PROGRESS_HEIGHT,
+			math.min(2, w / 2))
 
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.rectangle(
-			'fill',
-			x + HealthBar.WIDTH - w - 2,
-			y - (HealthBar.PROGRESS_HEIGHT - HealthBar.GOAL_HEIGHT),
+			"fill",
+			x + self.WIDTH - w - 2,
+			y - (self.PROGRESS_HEIGHT - self.HEIGHT),
 			2,
-			HealthBar.PROGRESS_HEIGHT)
+			self.PROGRESS_HEIGHT)
 	end
+
+	love.graphics.setColor(0, 0, 0, alpha * 0.5)
+	love.graphics.setLineWidth(2)
+	love.graphics.rectangle("line", x, y, self.WIDTH, self.HEIGHT, 2)
+	love.graphics.setLineWidth(1)
 
 	love.graphics.setColor(1, 1, 1, 1)
 end

@@ -78,7 +78,7 @@ function GameView:new(game, camera)
 	self.decorations = {}
 
 	self.resourceManager = ResourceManager()
-	self.spriteManager = SpriteManager(self.resourceManager)
+	self.spriteManager = SpriteManager(self, self.resourceManager)
 
 	self:initRenderer(_CONF)
 

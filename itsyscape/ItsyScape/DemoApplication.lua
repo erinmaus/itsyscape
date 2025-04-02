@@ -1721,7 +1721,7 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 			local position = Vector.ZERO:transform(propView:getRoot():getTransform():getGlobalDeltaTransform(self:getFrameDelta()))
 			local size = max - min
 			local halfSize = size / 2
-			min, max = position, position + Vector(halfSize.x, size.y, halfSize.z)
+			min, max = position - halfSize, position + Vector(halfSize.x, 1.5, halfSize.z)
 		end
 	elseif Class.isCompatibleType(object, Actor) then
 		local i, j, k = object:getTile()
@@ -1733,7 +1733,7 @@ function DemoApplication:_getObjectUIPosition(object, y, padding)
 			local position = Vector.ZERO:transform(actorView:getSceneNode():getTransform():getGlobalDeltaTransform(self:getFrameDelta()))
 			local size = max - min
 			local halfSize = size / 2
-			min, max = position, position + Vector(halfSize.x, size.y, halfSize.z)
+			min, max = position - halfSize, position + Vector(halfSize.x, 1.5, halfSize.z)
 		end
 	elseif Class.isCompatibleType(object, Vector) then
 		min = object

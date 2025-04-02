@@ -12,8 +12,9 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 
 local SpriteManager = Class()
 
-function SpriteManager:new(resourceManager)
-	self.resourceManager = resourceManager
+function SpriteManager:new(gameView)
+	self.gameView = gameView
+	self.resourceManager = gameView:getResourceManager()
 	self.sprites = {}
 	self.times = {}
 
@@ -28,6 +29,10 @@ function SpriteManager:clear()
 	table.clear(self.sprites)
 	table.clear(self.nodes)
 	table.clear(self.times)
+end
+
+function SpriteManager:getGameView()
+	return self.gameView
 end
 
 function SpriteManager:getResources()

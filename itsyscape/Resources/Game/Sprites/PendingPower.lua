@@ -18,8 +18,9 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local PendingPower = Class(Sprite)
 PendingPower.FADE_DURATION = 0.2
 PendingPower.WIDTH = 120
-PendingPower.HEIGHT = 16
-PendingPower.OFFSET = 22
+PendingPower.HEIGHT = 8
+PendingPower.OFFSET = 14
+PendingPower.DROP_SHADOW = 4
 
 function PendingPower:new(...)
 	Sprite.new(self, ...)
@@ -114,7 +115,7 @@ function PendingPower:draw(position, time)
 	end
 
 	local barColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.zeal.remainder"), alpha)
-	local progressColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.zeal.tier1Fire"), alpha)
+	local progressColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.zeal.tier2Fire"), alpha)
 
 	local x = position.x - self.WIDTH / 2
 	local y = position.y - self.HEIGHT - self.OFFSET
@@ -127,11 +128,31 @@ function PendingPower:draw(position, time)
 	delta = math.max(delta, self.maxDelta or delta)
 	self.maxDelta = delta
 
+	love.graphics.setColor(0, 0, 0, alpha)
+	love.graphics.rectangle(
+		"fill",
+		x + self.DROP_SHADOW, y + self.DROP_SHADOW,
+		self.WIDTH,
+		self.HEIGHT, 2)
+
 	love.graphics.setColor(barColor:get())
-	love.graphics.rectangle("fill", x, y, self.WIDTH, self.HEIGHT, 4)
+	love.graphics.rectangle("fill", x, y, self.WIDTH, self.HEIGHT, 2)
 
 	love.graphics.setColor(progressColor:get())
-	love.graphics.rectangle("fill", x, y, math.floor(self.WIDTH * delta), self.HEIGHT, math.min(4, self.WIDTH * delta / 2))
+	love.graphics.rectangle("fill", x, y, math.floor(self.WIDTH * delta), self.HEIGHT, math.min(2, self.WIDTH * delta / 2))
+
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.rectangle(
+		"fill",
+		x + math.floor(self.WIDTH * delta) - 1,
+		y,
+		2,
+		self.HEIGHT)
+
+	love.graphics.setColor(0, 0, 0, alpha * 0.5)
+	love.graphics.setLineWidth(2)
+	love.graphics.rectangle("line", x, y, self.WIDTH, self.HEIGHT, 2)
+	love.graphics.setLineWidth(1)
 
 	local iconDelta = math.abs(math.sin(love.timer.getTime() * math.pi))
 	local iconAlpha = iconDelta * 0.5 + 0.5
@@ -140,7 +161,8 @@ function PendingPower:draw(position, time)
 	local textColor = textColorFrom:lerp(textColorTo, iconDelta)
 
 	local oldFont = love.graphics.getFont()
-	love.graphics.setFont(self.font:getResource())
+	local font = self.font:getResource()
+	love.graphics.setFont(font)
 
 	local icon = self.warningIcon:getResource()
 	local iconWidth = icon:getWidth() * 0.75
