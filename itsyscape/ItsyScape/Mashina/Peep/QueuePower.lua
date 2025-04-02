@@ -14,10 +14,12 @@ local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehav
 
 local QueuePower = B.Node("QueuePower")
 QueuePower.POWER = B.Reference()
+QueuePower.TURNS = B.Reference()
 
 function QueuePower:update(mashina, state, executor)
 	local gameDB = mashina:getDirector():getGameDB()
 	local powerResource = gameDB:getResource(state[self.POWER], "Power")
+	local turns = state[self.TURNS] or 0
 
 	if not powerResource then
 		Log.warn("Unknown power: %s.", tostring(state[self.POWER]))
@@ -36,6 +38,7 @@ function QueuePower:update(mashina, state, executor)
 
 		local _, b = mashina:addBehavior(PendingPowerBehavior)
 		b.power = power
+		b.turns = turns
 	end
 
 	return B.Status.Success

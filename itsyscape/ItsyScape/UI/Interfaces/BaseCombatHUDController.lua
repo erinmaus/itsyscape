@@ -185,6 +185,9 @@ function BaseCombatHUDController:activate(powers, e)
 
 					local _, b = peep:addBehavior(PendingPowerBehavior)
 					b.power = power
+
+					-- TEMP
+					b.turns = 1
 				end
 			end
 		end
@@ -987,7 +990,7 @@ function BaseCombatHUDController:_getTurnOrder(peep, time)
 	local tickDurationSeconds = Config.get("Combat", "TICK_DURATION_SECONDS")
 
 	local result = {}
-	local currentTime = math.max(baseWeaponCooldown, cooldown or baseWeaponCooldown) - (self:getGame():getCurrentTime() - cooldownTime)
+	local currentTime = self:getGame():getCurrentTime() - cooldownTime
 	for i = 1, self.MAX_TURN_ORDER do
 		local turn = {
 			id = actorID or 0,

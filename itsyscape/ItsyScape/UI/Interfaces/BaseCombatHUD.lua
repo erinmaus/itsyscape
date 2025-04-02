@@ -16,7 +16,6 @@ local Drawable = require "ItsyScape.UI.Drawable"
 local Widget = require "ItsyScape.UI.Widget"
 local Particles = require "ItsyScape.UI.Particles"
 local CombatTarget = require "ItsyScape.UI.Interfaces.Components.CombatTarget"
-local StandardTurnOrder = require "ItsyScape.UI.Interfaces.Components.StandardTurnOrder"
 
 local BaseCombatHUD = Class(Interface)
 BaseCombatHUD.PADDING = 8
@@ -90,8 +89,6 @@ function BaseCombatHUD:new(...)
 	self.targetInfo = CombatTarget("right", self:getView():getResources())
 	self.targetInfo:setZDepth(0.5)
 
-	self.turnOrder = StandardTurnOrder()
-
 	self.thingies = {}
 	self.thingiesButtons = {}
 	self.openedThingies = {}
@@ -102,7 +99,8 @@ function BaseCombatHUD:new(...)
 	self.currentCombatStyle = false
 	self.currentStance = false
 	self.currentSpellID = false
-	self.currentTargetID = false
+
+	self.pendingSprites = {}
 
 	self.wasRefreshed = false
 
@@ -642,12 +640,6 @@ function BaseCombatHUD:performLayout()
 	local targetWidth = self.playerInfo:getRowSize()
 	local _, targetHeight = self.targetInfo:getSize()
 	self.targetInfo:setPosition(w / 2 + self.PADDING / 2, 0)
-
-	local totalWidth = playerWidth + targetWidth + self.PADDING
-	self.turnOrder:setSize(totalWidth, 48)
-	self.turnOrder:setPosition(
-		w / 2 - totalWidth / 2,
-		math.max(playerHeight, targetHeight))
 end
 
 function BaseCombatHUD:_toggleInfo(enabled, info)
@@ -684,10 +676,6 @@ function BaseCombatHUD:toggleTargetInfo(enabled)
 	if healthBar then
 		healthBar:setID("BaseCombatHUD-HealthBar-Target")
 	end
-end
-
-function BaseCombatHUD:toggleTurnOrder(enabled)
-	self:_toggleInfo(enabled, self.turnOrder)
 end
 
 function BaseCombatHUD:getMenu()
@@ -758,11 +746,94 @@ function BaseCombatHUD:toggle(openOrClose)
 	Class.ABSTRACT()
 end
 
+function BaseCombatHUD:updateTurnOrder()
+	local gameView = self:getView():getGameView()
+
+	local state = self:getState()
+	local playerActorID = state.player.actorID
+	local turns = state.turns
+
+	local actors = {}
+	for _, turn in ipairs(turns) do
+		for _, t in ipairs(turn) do
+			local actorInfo = actors[t.id]
+			if not actorInfo then
+				actorInfo = {
+					turns = 1,
+					id = t.id,
+					name = t.name,
+					time = t.time,
+					duration = t.duration,
+					interval = t.duration,
+					power = t.power
+				}
+
+				actors[t.id] = actorInfo
+			elseif not actorInfo.power then
+				actorInfo.turns = actorInfo.turns + 1
+				actorInfo.duration = actorInfo.duration + t.duration
+				actorInfo.power = t.power
+			end
+		end
+	end
+
+	for id, actorInfo in pairs(actors) do
+		local actorView = gameView:getActor(gameView:getActorByID(id))
+		if actorView then
+			local pendingActorInfo = self.pendingSprites[id]
+
+			if pendingActorInfo and pendingActorInfo.power and actorInfo.power and pendingActorInfo.id ~= actorInfo.power.id then
+				if pendingActorInfo.powerSprite then
+					pendingActorInfo.powerSprite:reset()
+				end
+			end
+
+			if not pendingActorInfo then
+				actorInfo.attackSprite = gameView:getSpriteManager():add(
+					"PendingAttack",
+					actorView:getSceneNode(),
+					Vector(0, 2, 0))
+			else
+				actorInfo.powerSprite = pendingActorInfo.powerSprite
+				actorInfo.attackSprite = pendingActorInfo.attackSprite
+			end
+
+			if actorInfo.power and not actorInfo.powerSprite and id ~= playerActorID then				
+				actorInfo.powerSprite = gameView:getSpriteManager():add(
+					"PendingPower",
+					actorView:getSceneNode(),
+					Vector(0, 2, 0))
+			elseif not actorInfo.power and actorInfo.powerSprite then
+				actorInfo.powerSprite:finish()
+				actorInfo.powerSprite = nil
+			end
+
+			actorInfo.attackSprite:updateDuration(actorInfo.time, actorInfo.interval)
+			if actorInfo.powerSprite then
+				actorInfo.powerSprite:updateDuration(actorInfo.turns, actorInfo.time, actorInfo.interval)
+			end
+
+			self.pendingSprites[id] = actorInfo
+		end
+	end
+
+	for id, actorInfo in pairs(self.pendingSprites) do
+		if not actors[id] then
+			if actorInfo.powerSprite then
+				actorInfo.powerSprite:finish()
+			end
+
+			actorInfo.attackSprite:finish()
+
+			self.pendingSprites[id] = nil
+		end
+	end
+end
+
 function BaseCombatHUD:tick()
 	Interface.tick(self)
 
-	local state = self:getState()
-	self.turnOrder:updateTurnOrder(state.turns)
+	self:updateTurnOrder()
 end
 
 function BaseCombatHUD:update(delta)
@@ -795,13 +866,6 @@ function BaseCombatHUD:update(delta)
 
 	self:togglePlayerInfo(showPlayer)
 	self:toggleTargetInfo(showTarget)
-
-	if not showTarget or self.currentTargetID ~= playerState.targetID then
-		self.currentTargetID = playerState.targetID or false
-		self.turnOrder:resetTurnOrder()
-	end
-
-	self:toggleTurnOrder(showTarget)
 
 	self:updateThingies()
 end

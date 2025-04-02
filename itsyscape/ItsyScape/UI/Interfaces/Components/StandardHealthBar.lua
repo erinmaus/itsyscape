@@ -219,7 +219,7 @@ function StandardHealthBar:draw(resources, state)
 	itsyrealm.graphics.rectangle("fill", 0, 0, width, height, height / 4, height / 4)
 
 	love.graphics.setColor(damageColor:get())
-	itsyrealm.graphics.rectangle("fill", width - damageWidth, 0, damageWidth, height, height / 4, height / 4)
+	itsyrealm.graphics.rectangle("fill", width - damageWidth, 0, damageWidth, height, math.min(height / 4, damageWidth / 2), math.min(height / 4, damageWidth / 2))
 
 	itsyrealm.graphics.applyPseudoScissor()
 	for _, bloodSplat in ipairs(self.bloodSplats) do

@@ -36,7 +36,8 @@ local HandleOffense = Mashina.Step {
 			},
 
 			Mashina.Peep.QueuePower {
-				power = "Tornado"
+				power = "Tornado",
+				turns = 1
 			}
 		},
 
@@ -46,7 +47,8 @@ local HandleOffense = Mashina.Step {
 			},
 
 			Mashina.Peep.QueuePower {
-				power = "Decapitate"
+				power = "Decapitate",
+				turns = 1
 			}
 		},
 
@@ -56,7 +58,8 @@ local HandleOffense = Mashina.Step {
 			},
 
 			Mashina.Peep.QueuePower {
-				power = "Earthquake"
+				power = "Earthquake",
+				turns = 1
 			}
 		}
 	},
@@ -80,7 +83,8 @@ local HandleDefense = Mashina.Step {
 			},
 
 			Mashina.Peep.QueuePower {
-				power = "Riposte"
+				power = "Riposte",
+				turns = 1
 			}
 		},
 
@@ -94,7 +98,8 @@ local HandleDefense = Mashina.Step {
 			},
 
 			Mashina.Peep.QueuePower {
-				power = "Parry"
+				power = "Parry",
+				turns = 1
 			}
 		},
 
@@ -108,7 +113,8 @@ local HandleDefense = Mashina.Step {
 			},
 
 			Mashina.Peep.QueuePower {
-				power = "Deflect"
+				power = "Deflect",
+				turns = 1
 			}
 		}
 	},

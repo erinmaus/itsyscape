@@ -282,8 +282,13 @@ function CombatCortex:_tickPower(selfPeep)
 		return false
 	end
 
-	pendingPower.turns = math.max(pendingPower.turns - 1, 0)
-	return pendingPower.turns == 0
+	if pendingPower.turns > 0 then
+		pendingPower.turns = math.max(pendingPower.turns - 1, 0)
+		return false
+	end
+
+
+	return true
 end
 
 function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)

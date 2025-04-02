@@ -45,6 +45,10 @@ function Sprite:isDone(time)
 	return true
 end
 
+function Sprite:update(delta)
+	-- Nothing.
+end
+
 function Sprite:draw(position, time)
 	-- Nothing.
 end

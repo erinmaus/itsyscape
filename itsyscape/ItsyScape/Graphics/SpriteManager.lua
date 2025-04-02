@@ -103,6 +103,8 @@ function SpriteManager:update(delta)
 			self:poof(sprite)
 			sprite:poof()
 		else
+			sprite:update(delta)
+
 			index = index + 1
 			time = time + delta
 			self.times[sprite] = time
