@@ -464,8 +464,7 @@ function CombatCortex:_givePeepZeal(peep, target)
 
 	local currentStanceInfo = self.currentStance[peep]
 	if currentStanceInfo.stance == Weapon.STANCE_CONTROLLED and rollInfo.rolledAttack then
-		--local averageLevel = ((rollInfo.damageSkillLevel or 0) + rollInfo.attackSkillLevel) / 2
-		local averageLevel = ((rollInfo.damageSkillLevel or 0) + rollInfo.attackSkillLevel) + 50
+		local averageLevel = ((rollInfo.damageSkillLevel or 1) + rollInfo.attackSkillLevel) / 2
 		local zeal = self:_getLevelZeal(averageLevel)
 
 		local weapon = self:_getPeepWeapon(peep)

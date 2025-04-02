@@ -18,8 +18,8 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local PendingPower = Class(Sprite)
 PendingPower.FADE_DURATION = 0.2
 PendingPower.WIDTH = 120
-PendingPower.HEIGHT = 24
-PendingPower.OFFSET = 26
+PendingPower.HEIGHT = 16
+PendingPower.OFFSET = 22
 
 function PendingPower:new(...)
 	Sprite.new(self, ...)
@@ -27,13 +27,13 @@ function PendingPower:new(...)
 	local resources = self:getSpriteManager():getResources()
 	resources:queue(
 		FontResource,
-		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@24",
+		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@22",
 		function(font)
 			self.font = font
 		end)
 	resources:queue(
 		TextureResource,
-		"Resources/Game/UI/Icons/Concepts/Warning.png",
+		"Resources/Game/UI/Icons/Concepts/Powers.png",
 		function(icon)
 			self.warningIcon = icon
 		end)
@@ -133,26 +133,32 @@ function PendingPower:draw(position, time)
 	love.graphics.setColor(progressColor:get())
 	love.graphics.rectangle("fill", x, y, math.floor(self.WIDTH * delta), self.HEIGHT, math.min(4, self.WIDTH * delta / 2))
 
-	local iconAlpha = math.abs(math.sin(love.timer.getTime() * math.pi)) * 0.5 + 0.5
-	local textColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.warning"), alpha * iconAlpha)
+	local iconDelta = math.abs(math.sin(love.timer.getTime() * math.pi))
+	local iconAlpha = iconDelta * 0.5 + 0.5
+	local textColorFrom = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.specialWarningFrom"), alpha)
+	local textColorTo = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.specialWarningTo"), alpha)
+	local textColor = textColorFrom:lerp(textColorTo, iconDelta)
 
 	local oldFont = love.graphics.getFont()
 	love.graphics.setFont(self.font:getResource())
 
-	local textX, textY = x, y - self.HEIGHT - math.max(self.font:getResource():getHeight() - self.HEIGHT, 0)
+	local icon = self.warningIcon:getResource()
+	local iconWidth = icon:getWidth() * 0.75
+	local iconHeight = icon:getWidth() * 0.75
+	local textWidth = self.WIDTH - iconWidth - 2
+	local textX, textY = x + iconWidth + 2, y - self.HEIGHT - math.max(math.max(iconHeight, self.font:getResource():getHeight()) - self.HEIGHT, 0)
 
-	love.graphics.setColor(0, 0, 0, iconAlpha * alpha)
-	love.graphics.printf("SPECIAL", textX - 2, textY - 2, self.WIDTH, "center")
-	love.graphics.printf("SPECIAL", textX + 2, textY - 2, self.WIDTH, "center")
-	love.graphics.printf("SPECIAL", textX + 2, textY + 2, self.WIDTH, "center")
-	love.graphics.printf("SPECIAL", textX - 2, textY + 2, self.WIDTH, "center")
+	love.graphics.setColor(0, 0, 0, alpha)
+	love.graphics.printf("SPECIAL", textX - 2, textY - 2, textWidth, "center")
+	love.graphics.printf("SPECIAL", textX + 2, textY - 2, textWidth, "center")
+	love.graphics.printf("SPECIAL", textX + 2, textY + 2, textWidth, "center")
+	love.graphics.printf("SPECIAL", textX - 2, textY + 2, textWidth, "center")
 
 	love.graphics.setColor(textColor:get())
-	love.graphics.printf("SPECIAL", textX, textY, self.WIDTH, "center")
+	love.graphics.printf("SPECIAL", textX, textY, textWidth, "center")
 
-	local icon = self.warningIcon:getResource()
 	love.graphics.setColor(1, 1, 1, iconAlpha * alpha)
-	love.graphics.draw(icon, x - icon:getWidth() - 8, textY + 2)
+	love.graphics.draw(icon, x, textY, 0, 0.75, 0.75)
 
 	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setFont(oldFont)

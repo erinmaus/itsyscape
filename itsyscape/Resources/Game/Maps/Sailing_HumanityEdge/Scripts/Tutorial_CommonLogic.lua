@@ -71,7 +71,7 @@ local Heal = Mashina.Step {
 
 		Mashina.Peep.PlayAnimation {
 			animation = "Human_ActionEat_1",
-			priority = 1001
+			priority = 500
 		},
 
 		Mashina.Peep.Heal {

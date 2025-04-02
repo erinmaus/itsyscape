@@ -37,7 +37,8 @@ local HandleDefense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Riposte"
+			power = "Riposte",
+			turns = 2
 		}
 	},
 
@@ -51,7 +52,8 @@ local HandleDefense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Parry"
+			power = "Parry",
+			turns = 2
 		}
 	},
 
@@ -65,7 +67,8 @@ local HandleDefense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Deflect"
+			power = "Deflect",
+			turns = 2
 		}
 	}
 }
@@ -81,7 +84,8 @@ local HandleOffense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Tornado"
+			power = "Tornado",
+			turns = 1
 		}
 	},
 
@@ -95,7 +99,8 @@ local HandleOffense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Decapitate"
+			power = "Decapitate",
+			turns = 1
 		}
 	},
 
@@ -109,7 +114,8 @@ local HandleOffense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Earthquake"
+			power = "Earthquake",
+			turns = 1
 		}
 	}
 }
@@ -142,7 +148,9 @@ local HandleHealing = Mashina.Step {
 local AttackOrDefend = Mashina.ParallelTry {
 	DidKillTarget,
 	HandlePowers,
-	HandleHealing
+	Mashina.Failure {
+		HandleHealing
+	}
 }
 
 local Tree = BTreeBuilder.Node() {

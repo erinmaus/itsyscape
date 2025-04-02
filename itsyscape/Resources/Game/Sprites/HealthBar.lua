@@ -15,8 +15,8 @@ local FontResource = require "ItsyScape.Graphics.FontResource"
 
 local HealthBar = Class(Sprite)
 HealthBar.WIDTH = 120
-HealthBar.GOAL_HEIGHT     = 24
-HealthBar.PROGRESS_HEIGHT = 28
+HealthBar.GOAL_HEIGHT     = 16
+HealthBar.PROGRESS_HEIGHT = 18
 
 function HealthBar:new(...)
 	Sprite.new(self, ...)
