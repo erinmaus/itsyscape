@@ -23,6 +23,7 @@ StandardTurnOrder.FONT_SIZE = 22
 StandardTurnOrder.COMPLETED_TURN_TRANSITION_TIME_SECONDS = 0.2
 StandardTurnOrder.TEXT_PADDING = 22
 StandardTurnOrder.DEFAULT_NUM_SECONDS = 10
+StandardTurnOrder.NEXT_ATTACK_WINDOW = 1
 
 function StandardTurnOrder:new()
 	Drawable.new(self)
@@ -69,7 +70,8 @@ function StandardTurnOrder:updateTurnOrder(turnOrder)
 				name = t.name,
 				time = t.time,
 				tickTime = t.tickTime,
-				duration = t.duration
+				duration = t.duration,
+				power = not not t.power
 			})
 		end
 		table.insert(self.currentTurnOrder, c)
@@ -89,6 +91,7 @@ function StandardTurnOrder:loadAssets(resources)
 	self.playerTurnImage = self.playerTurnImage or resources:load(patchy.load, "Resources/Game/UI/Panels/PlayerTurnOrder.png")
 	self.targetTurnImage = self.targetTurnImage or resources:load(patchy.load, "Resources/Game/UI/Panels/TargetTurnOrder.png")
 	self.turnOrderProgressImage = self.turnOrderProgressImage or resources:load(patchy.load, "Resources/Game/UI/Panels/TurnOrderProgressBar.png")
+	self.warningIcon = self.warningIcon or resources:load(love.graphics.newImage, "Resources/Game/UI/Icons/Concepts/Warning.png")
 	self.font = self.font or resources:load(
 		love.graphics.newFont,
 		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
@@ -115,68 +118,14 @@ function StandardTurnOrder:drawTurn(currentTurn, previousTurn, w, h, delta)
 		if time <= 1 then
 			local delta = time / self.numSeconds
 
-			local alpha
-			if time < 0 then
-				alpha = 1 - math.clamp(math.abs(time) / 0.5)
-			else
-				alpha = 1 - (math.max(time - 0.5, 0) / 0.5)
-			end
-			alpha = Tween.sineEaseInOut(alpha)
-
-			local mu = Tween.expEaseInOut(math.min(time / 0.5, 1))
-
 			local x = delta * w
 
-			local animatedDecorationColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.animatedDecoration"), alpha)
-			local fudge = self.radiusFudge * mu
-
-			love.graphics.setColor(0, 0, 0, alpha)
-
-			local shadowLineThickness = math.max(self.outerRadiusThickness / 2, 2)
-			love.graphics.setLineWidth(shadowLineThickness)
-			itsyrealm.graphics.line(
-				x - fudge + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
-				shadowLineThickness / 2,
-				x - fudge + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
-				h + shadowLineThickness / 2)
-			itsyrealm.graphics.line(
-				x - fudge - self.outerRadiusThickness / 2 + shadowLineThickness / 2,
-				h + shadowLineThickness / 2,
-				x - fudge + self.outerRadiusThickness,
-				h + shadowLineThickness / 2)
-			itsyrealm.graphics.line(
-				x + fudge + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
-				shadowLineThickness / 2,
-				x + fudge + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
-				h + shadowLineThickness / 2)
-			itsyrealm.graphics.line(
-				x + fudge - self.outerRadiusThickness / 2 + shadowLineThickness / 2,
-				h + shadowLineThickness / 2,
-				x + fudge + self.outerRadiusThickness,
-				h + shadowLineThickness / 2)
-
-			love.graphics.setLineWidth(self.innerRadiusThickness)
-			itsyrealm.graphics.line(
-				x + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
-				shadowLineThickness / 2,
-				x + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
-				h + shadowLineThickness / 2)
-			itsyrealm.graphics.line(
-				x - self.outerRadiusThickness / 2 + shadowLineThickness / 2,
-				h + shadowLineThickness / 2,
-				x + self.outerRadiusThickness,
-				h + shadowLineThickness / 2)
-
-			love.graphics.setColor(animatedDecorationColor:get())
-
-			love.graphics.setLineWidth(self.outerRadiusThickness)
-			itsyrealm.graphics.line(x - fudge + 1, 1, x - fudge + 1, h + 1)
-			itsyrealm.graphics.line(x + fudge + 1, 1, x + fudge + 1, h + 1)
-
-			love.graphics.setLineWidth(self.innerRadiusThickness)
-			itsyrealm.graphics.line(x + 1, 1, x + 1, h + 1)
-
-			love.graphics.setColor(1, 1, 1, 1)
+			local y
+			if t.id == playerActorID then
+				y = h * 0.25
+			else
+				y = h * 0.75
+			end
 		end
 	end
 
@@ -206,9 +155,9 @@ function StandardTurnOrder:drawTurn(currentTurn, previousTurn, w, h, delta)
 
 			local y
 			if t.id == playerActorID then
-				y = height * 0.25
+				y = h * 0.25
 			else
-				y = height * 0.75
+				y = h * 0.75
 			end
 
 			local labelWidth = self.font:getWidth(t.name)
@@ -235,6 +184,83 @@ function StandardTurnOrder:drawTurn(currentTurn, previousTurn, w, h, delta)
 
 			love.graphics.setColor(textColor:get())
 			itsyrealm.graphics.print(t.name, labelX, labelY)
+
+			if t.power then
+				love.graphics.setColor(1, 1, 1, math.lerp(0.5, 1, math.abs(math.sin(time * math.pi))))
+
+				local scale = labelHeight / self.warningIcon:getHeight()
+				itsyrealm.graphics.draw(
+					self.warningIcon,
+					labelX + labelWidth + 4,
+					labelY,
+					0,
+					scale, scale)
+			end
+
+			if time <= self.NEXT_ATTACK_WINDOW then
+				local halfWindow = self.NEXT_ATTACK_WINDOW / 2
+
+				local alpha
+				if time < 0 then
+					alpha = 1 - math.clamp(math.abs(time) / halfWindow)
+				else
+					alpha = 1 - (math.max(time - halfWindow, 0) / halfWindow)
+				end
+				alpha = Tween.sineEaseInOut(alpha)
+
+				local mu = Tween.expEaseInOut(math.min(time / halfWindow, 1))
+
+				local animatedDecorationColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.animatedDecoration"), alpha)
+				local fudge = self.radiusFudge * mu
+
+				love.graphics.setColor(0, 0, 0, alpha)
+
+				local shadowLineThickness = math.max(self.outerRadiusThickness / 2, 2)
+				love.graphics.setLineWidth(shadowLineThickness)
+				itsyrealm.graphics.line(
+					x - fudge + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
+					labelY + shadowLineThickness / 2,
+					x - fudge + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
+					labelY + labelHeight + shadowLineThickness / 2)
+				itsyrealm.graphics.line(
+					x - fudge - self.outerRadiusThickness / 2 + shadowLineThickness / 2,
+					labelY + labelHeight + shadowLineThickness / 2,
+					x - fudge + self.outerRadiusThickness,
+					labelY + labelHeight + shadowLineThickness / 2)
+				itsyrealm.graphics.line(
+					x + fudge + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
+					labelY + shadowLineThickness / 2,
+					x + fudge + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
+					labelY + labelHeight + shadowLineThickness / 2)
+				itsyrealm.graphics.line(
+					x + fudge - self.outerRadiusThickness / 2 + shadowLineThickness / 2,
+					labelY + labelHeight + shadowLineThickness / 2,
+					x + fudge + self.outerRadiusThickness,
+					labelY + labelHeight + shadowLineThickness / 2)
+
+				love.graphics.setLineWidth(self.innerRadiusThickness)
+				itsyrealm.graphics.line(
+					x + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
+					labelY + shadowLineThickness / 2,
+					x + self.outerRadiusThickness / 2 + shadowLineThickness / 2,
+					labelY + labelHeight + shadowLineThickness / 2)
+				itsyrealm.graphics.line(
+					x - self.outerRadiusThickness / 2 + shadowLineThickness / 2,
+					labelY + labelHeight + shadowLineThickness / 2,
+					x + self.outerRadiusThickness,
+					labelY + labelHeight + shadowLineThickness / 2)
+
+				love.graphics.setColor(animatedDecorationColor:get())
+
+				love.graphics.setLineWidth(self.outerRadiusThickness)
+				itsyrealm.graphics.line(x - fudge + 1, labelY + 1, x - fudge + 1, labelY + labelHeight + 1)
+				itsyrealm.graphics.line(x + fudge + 1, labelY + 1, x + fudge + 1, labelY + labelHeight + 1)
+
+				love.graphics.setLineWidth(self.innerRadiusThickness)
+				itsyrealm.graphics.line(x + 1, labelY + 1, x + 1, labelY + labelHeight + 1)
+
+				love.graphics.setColor(1, 1, 1, 1)
+			end
 		end
 	end
 
