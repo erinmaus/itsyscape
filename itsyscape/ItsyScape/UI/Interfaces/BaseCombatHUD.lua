@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- ItsyScape/UI/Interfaces/BaseCombatHUD.lua
 --
@@ -17,6 +16,7 @@ local Drawable = require "ItsyScape.UI.Drawable"
 local Widget = require "ItsyScape.UI.Widget"
 local Particles = require "ItsyScape.UI.Particles"
 local CombatTarget = require "ItsyScape.UI.Interfaces.Components.CombatTarget"
+local StandardTurnOrder = require "ItsyScape.UI.Interfaces.Components.StandardTurnOrder"
 
 local BaseCombatHUD = Class(Interface)
 BaseCombatHUD.PADDING = 8
@@ -90,6 +90,8 @@ function BaseCombatHUD:new(...)
 	self.targetInfo = CombatTarget("right", self:getView():getResources())
 	self.targetInfo:setZDepth(0.5)
 
+	self.turnOrder = StandardTurnOrder()
+
 	self.thingies = {}
 	self.thingiesButtons = {}
 	self.openedThingies = {}
@@ -100,6 +102,7 @@ function BaseCombatHUD:new(...)
 	self.currentCombatStyle = false
 	self.currentStance = false
 	self.currentSpellID = false
+	self.currentTargetID = false
 
 	self.wasRefreshed = false
 
@@ -633,10 +636,18 @@ function BaseCombatHUD:performLayout()
 	local w, h = itsyrealm.graphics.getScaledMode()
 
 	local playerWidth = self.playerInfo:getRowSize()
+	local _, playerHeight = self.playerInfo:getSize()
 	self.playerInfo:setPosition(w / 2 - playerWidth - self.PADDING / 2, 0)
 
 	local targetWidth = self.playerInfo:getRowSize()
+	local _, targetHeight = self.targetInfo:getSize()
 	self.targetInfo:setPosition(w / 2 + self.PADDING / 2, 0)
+
+	local totalWidth = playerWidth + targetWidth + self.PADDING
+	self.turnOrder:setSize(totalWidth, 48)
+	self.turnOrder:setPosition(
+		w / 2 - totalWidth / 2,
+		math.max(playerHeight, targetHeight))
 end
 
 function BaseCombatHUD:_toggleInfo(enabled, info)
@@ -747,6 +758,13 @@ function BaseCombatHUD:toggle(openOrClose)
 	Class.ABSTRACT()
 end
 
+function BaseCombatHUD:tick()
+	Interface.tick(self)
+
+	local state = self:getState()
+	self.turnOrder:updateTurnOrder(state.turns)
+end
+
 function BaseCombatHUD:update(delta)
 	Interface.update(self, delta)
 
@@ -760,12 +778,12 @@ function BaseCombatHUD:update(delta)
 	local showTarget = false
 
 	local state = self:getState()
+	local playerState = state.player
+
 	if #state.combatants > 1 then
 		showPlayer = true
 
-		local playerState = state.player
 		self.playerInfo:updateTarget(playerState)
-
 		for _, combatantState in ipairs(state.combatants) do
 			if combatantState.actorID == playerState.targetID then
 				showTarget = true
@@ -777,6 +795,13 @@ function BaseCombatHUD:update(delta)
 
 	self:togglePlayerInfo(showPlayer)
 	self:toggleTargetInfo(showTarget)
+
+	if not showTarget or self.currentTargetID ~= playerState.targetID then
+		self.currentTargetID = playerState.targetID or false
+		self.turnOrder:resetTurnOrder()
+	end
+
+	self:toggleTurnOrder(showTarget)
 
 	self:updateThingies()
 end

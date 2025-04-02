@@ -145,8 +145,7 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local status = selfPeep:getBehavior(CombatStatusBehavior)
 
 	local map = Utility.Peep.getMap(selfPeep)
-	local worldWeaponRange = self.TILE_TO_WORLD * weaponRange
-	local halfTile = self.TILE_TO_WORLD / 2
+	local worldWeaponRange = self.TILE_TO_WORLD * (weaponRange + 1)
 
 	local distance = Utility.Peep.getAbsoluteDistance(selfPeep, targetPeep)
 
@@ -683,12 +682,12 @@ function CombatCortex:strafePeep(peep)
 		return
 	end
 
-	local equippedWeapon = self:_getPeepWeapon(peep)
-	local weaponRange = equippedWeapon:getAttackRange(peep)
-	weaponRange = self.TILE_TO_WORLD * weaponRange
+	local peepSize = Utility.Peep.getSize(peep)
+	local targetSize = Utility.Peep.getSize(target)
+	local size = math.max(peepSize.x, peepSize.z) + math.max(targetSize.x, targetSize.z)
 
 	local distance = Utility.Peep.getAbsoluteDistance(peep, target)
-	local strafeDistance = math.max(weaponRange - distance, 0)
+	local strafeDistance = math.max(size - distance, 0)
 
 	if strafeDistance == 0 then
 		peep:removeBehavior(CombatChargeBehavior)

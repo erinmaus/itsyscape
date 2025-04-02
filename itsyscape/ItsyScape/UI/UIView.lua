@@ -194,6 +194,7 @@ function itsyrealm.graphics.impl.captureRenderState()
 	renderState.font = love.graphics.getFont()
 	renderState.lineHeight = love.graphics.getFont():getLineHeight()
 	renderState.lineWidth = love.graphics.getLineWidth()
+	renderState.lineStyle = love.graphics.getLineStyle()
 	renderState.transform = transform
 
 	return renderState
@@ -202,6 +203,7 @@ end
 function itsyrealm.graphics.impl.setRenderState(renderState)
 	love.graphics.setColor(renderState.color)
 	love.graphics.setLineWidth(renderState.lineWidth)
+	love.graphics.setLineStyle(renderState.lineStyle)
 	love.graphics.origin()
 	love.graphics.applyTransform(renderState.transform)
 end

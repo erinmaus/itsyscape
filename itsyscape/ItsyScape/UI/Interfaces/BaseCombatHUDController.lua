@@ -11,6 +11,7 @@ local sort = require "batteries.sort"
 local Class = require "ItsyScape.Common.Class"
 local CombatPower = require "ItsyScape.Game.CombatPower"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
+local Config = require "ItsyScape.Game.Config"
 local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
 local ItemInstance = require "ItsyScape.Game.ItemInstance"
@@ -23,6 +24,7 @@ local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Controller = require "ItsyScape.UI.Controller"
 local Effect = require "ItsyScape.Peep.Effect"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
+local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
@@ -43,7 +45,7 @@ function UpdateDebugStats:process(func, node, ...)
 	return node[func](node, ...)
 end
 
-BaseCombatHUDController.MAX_TURN_ORDER = 5
+BaseCombatHUDController.MAX_TURN_ORDER = 6
 
 BaseCombatHUDController.COMBAT_SKILLS = {
 	"Constitution",
@@ -625,38 +627,6 @@ function BaseCombatHUDController:getPendingPowerID()
 	return nil
 end
 
-function BaseCombatHUDController:getPowerType(id)
-
-end
-
-function BaseCombatHUDController:updatePowersState(powers)
-	local peep = self:getPeep()
-	local gameDB = self:getDirector():getGameDB()
-
-	local b = peep:getBehavior(PowerCoolDownBehavior)
-	if not b then
-		peep:addBehavior(PowerCoolDownBehavior)
-		b = peep:getBehavior(PowerCoolDownBehavior)
-	end
-
-	if b then
-		local time = love.timer.getTime()
-		for i = 1, #powers do
-			local p = powers[i]
-
-			local resource = gameDB:getResource(p.id, "Power")
-			if b.powers[resource.id.value] then
-				local coolDown = b.powers[resource.id.value] - time
-				if coolDown > 0 then
-					p.coolDown = math.floor(coolDown)
-				else
-					p.coolDown = 0
-				end
-			end
-		end
-	end
-end
-
 function BaseCombatHUDController:updateActiveSpell()
 	local activeSpellID
 	do
@@ -982,13 +952,12 @@ function BaseCombatHUDController:getEquipment()
 end
 
 function BaseCombatHUDController:_getTurnOrder(peep, time)
-	local baseTime = love.timer.getTime()
-
 	local actorReference = peep:getBehavior(ActorReferenceBehavior)
 	local actorID = actorReference and actorReference.actor and actorReference.actor:getID()
 
 	local cooldown = peep:getBehavior(AttackCooldownBehavior)
-	cooldown = cooldown and cooldown.cooldown or 0
+	local cooldownTime = cooldown and cooldown.ticks or self:getGame():getCurrentTime()
+	local cooldown = cooldown and cooldown.cooldown
 
 	local pendingPower = peep:getBehavior(PendingPowerBehavior)
 	local pendingPowerTurns = pendingPower and pendingPower.turns or math.huge
@@ -1005,19 +974,6 @@ function BaseCombatHUDController:_getTurnOrder(peep, time)
 		end
 	end
 
-	local pendingPowerCooldown
-	if pendingPower then
-		local p = peep:getBehavior(PowerCoolDownBehavior)
-		if p then
-			local resource = pendingPower:getResource()
-			local c = p.powers[resource.id.value]
-			if c then
-				pendingPowerCooldown = c - baseTime
-			end
-		end
-	end
-	pendingPowerCooldown = pendingPowerCooldown or 0
-
 	local equippedWeapon = Utility.Peep.getEquippedWeapon(peep, true) or Weapon()
 
 	local baseWeaponCooldown
@@ -1028,12 +984,17 @@ function BaseCombatHUDController:_getTurnOrder(peep, time)
 		baseWeaponCooldown = equippedWeapon:getCooldown(peep, target)
 	end
 
+	local tickDurationSeconds = Config.get("Combat", "TICK_DURATION_SECONDS")
+
 	local result = {}
-	local currentTime = cooldown - time
+	local currentTime = math.max(baseWeaponCooldown, cooldown or baseWeaponCooldown) - (self:getGame():getCurrentTime() - cooldownTime)
 	for i = 1, self.MAX_TURN_ORDER do
 		local turn = {
 			id = actorID or 0,
-			time = math.floor((currentTime + baseTime) * 10) / 10
+			name = peep:getName(),
+			time = currentTime,
+			tickTime = math.floor(currentTime / tickDurationSeconds) * tickDurationSeconds,
+			duration = baseWeaponCooldown
 		}
 
 		if pendingPower and canUsePower and i == pendingPowerTurns + 1 then
@@ -1048,11 +1009,11 @@ function BaseCombatHUDController:_getTurnOrder(peep, time)
 end
 
 local function _sortTurn(a, b)
-	if a.time == b.time then
+	if a.tickTime == b.tickTime then
 		return a.id < b.id
 	end
 
-	return a.time < b.time
+	return a.tickTime < b.tickTime
 end
 
 function BaseCombatHUDController:updateTurnOrder()
@@ -1062,6 +1023,11 @@ function BaseCombatHUDController:updateTurnOrder()
 
 	table.clear(self.turns)
 	if not targetPeep then
+		return
+	end
+
+	local aggressive = targetPeep:getBehavior(AggressiveBehavior)
+	if aggressive and aggressive.pendingResponseTime > 0 then
 		return
 	end
 
@@ -1086,8 +1052,8 @@ function BaseCombatHUDController:updateTurnOrder()
 	while #self.turns < self.MAX_TURN_ORDER and currentIndex <= #workingTurns do
 		local turn = {}
 
-		local currentTime = workingTurns[currentIndex].time
-		while currentIndex <= #workingTurns and workingTurns[currentIndex].time == currentTime do
+		local currentTime = workingTurns[currentIndex].tickTime
+		while currentIndex <= #workingTurns and workingTurns[currentIndex].tickTime == currentTime do
 			table.insert(turn, workingTurns[currentIndex])
 			currentIndex = currentIndex + 1
 		end
@@ -1095,7 +1061,7 @@ function BaseCombatHUDController:updateTurnOrder()
 		table.insert(self.turns, turn)
 	end
 
-	print(">>>> dump", Log.dump(self.turns))
+	self.turns.time = time
 end
 
 function BaseCombatHUDController:updateState()
@@ -1141,9 +1107,6 @@ function BaseCombatHUDController:updateState()
 			result.player = r
 		end
 	end
-
-	self:updatePowersState(result.powers.offensive)
-	self:updatePowersState(result.powers.defensive)
 
 	self.state = result
 end

@@ -85,8 +85,8 @@ end
 
 function AirStrike:tick()
 	if not self.spawnPosition then
-		self.hitPosition = self:getTargetPosition(self:getDestination())
-		self.spawnPosition = self:getTargetPosition(self:getSource())
+		self.hitPosition = self:getTargetPosition(self:getDestination()):keep()
+		self.spawnPosition = self:getTargetPosition(self:getSource()):keep()
 
 		self:generatePath(self.spawnPosition, self.hitPosition)
 

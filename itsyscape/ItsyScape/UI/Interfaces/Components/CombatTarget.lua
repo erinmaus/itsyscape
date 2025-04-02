@@ -44,6 +44,9 @@ function CombatTarget:new(align, resources)
 	self:addChild(self.titleLabel)
 
 	self:setIsSelfClickThrough(true)
+	self:setSize(
+		self.rowWidth,
+		self.titleHeight + self.healthHeight + self.zealHeight + self.padding * 3)
 end
 
 function CombatTarget:getRowSize()
@@ -53,6 +56,10 @@ end
 function CombatTarget:setRowSize(w, h)
 	self.rowWidth = w or self.rowWidth
 	self.rowHeight = h or self.rowHeight
+
+	self:setSize(
+		self.rowWidth,
+		self.titleHeight + self.healthHeight + self.zealHeight + self.padding * 3)
 
 	self:performLayout()
 end

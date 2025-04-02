@@ -76,8 +76,6 @@ function ActorView.Animatable:playSound(filename, attenuation)
 
 		if attenuation then
 			sound:setAttenuationDistances(unpack(attenuation))
-		else
-			sound:setAttenuationDistances(1, 2)
 		end
 	end
 
