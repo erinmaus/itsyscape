@@ -211,7 +211,7 @@ function StandardZealBar:draw(resources, state)
 	love.graphics.push("all")
 
 	love.graphics.setColor(remainderColor:get())
-	itsyrealm.graphics.rectangle("fill", 0, 0, width, height, height / 4, height / 4)
+	itsyrealm.graphics.rectangle("fill", 0, 0, width, height, 4, 4)
 
 	love.graphics.pop()
 end

@@ -134,17 +134,15 @@ function SpriteManager:draw(scene, camera, delta)
 	local realWidth, realHeight = love.window.getMode()
 	local scaledWidth, scaledHeight, scaleX, scaleY, paddingX, paddingY = love.graphics.getScaledMode()
 
-	-- I messed something up with the fork in love.window.getMode that screws up
-	-- the camera:apply() call (if camera:apply() is called BEFORE getMode)
-	camera:apply()
-
 	local positions = {}
 	for i = 1, #self.sprites do
 		local sprite = self.sprites[i]
 		local transform = sprite:getSceneNode():getTransform():getGlobalDeltaTransform(delta)
 		local position = Vector(transform:transformPoint(0, 0, 0)) + sprite:getOffset()
 
-		local x, y, z = love.graphics.project(position:get())
+		local camera = self.gameView:getCamera()
+
+		local x, y, z = camera:project(position):get()
 		x = x / realWidth * scaledWidth
 		y = y / realHeight * scaledHeight
 

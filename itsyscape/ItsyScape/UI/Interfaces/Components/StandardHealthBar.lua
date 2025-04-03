@@ -216,10 +216,13 @@ function StandardHealthBar:draw(resources, state)
 
 	love.graphics.push("all")
 	love.graphics.setColor(hitpointsColor:get())
-	itsyrealm.graphics.rectangle("fill", 0, 0, width, height, height / 4, height / 4)
+	itsyrealm.graphics.rectangle("fill", 0, 0, width, height, 4, 4)
 
-	love.graphics.setColor(damageColor:get())
-	itsyrealm.graphics.rectangle("fill", width - damageWidth, 0, damageWidth, height, math.min(height / 4, damageWidth / 2), math.min(height / 4, damageWidth / 2))
+	if damageWidth > 0 then
+		damageWidth = math.max(damageWidth, 8)
+		love.graphics.setColor(damageColor:get())
+		itsyrealm.graphics.rectangle("fill", width - damageWidth, 0, damageWidth, height, 4, 4)
+	end
 
 	itsyrealm.graphics.applyPseudoScissor()
 	for _, bloodSplat in ipairs(self.bloodSplats) do

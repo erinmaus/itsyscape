@@ -45,7 +45,7 @@ function UpdateDebugStats:process(func, node, ...)
 	return node[func](node, ...)
 end
 
-BaseCombatHUDController.MAX_TURN_ORDER = 6
+BaseCombatHUDController.MAX_TURN_ORDER = 10
 
 BaseCombatHUDController.COMBAT_SKILLS = {
 	"Constitution",

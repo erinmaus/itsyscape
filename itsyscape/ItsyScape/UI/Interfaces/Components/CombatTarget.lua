@@ -28,7 +28,7 @@ function CombatTarget:new(align, resources)
 
 	self.rowWidth = 400
 	self.titleHeight = 48
-	self.healthHeight = 48
+	self.healthHeight = 32
 	self.zealHeight = 32
 	self.padding = 4
 	self.align = align
