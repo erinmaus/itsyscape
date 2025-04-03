@@ -939,26 +939,43 @@ bruh why'd you yield just try again ok bruh attack the dummy when u ready ok bru
 -> DONE
 
 = can_use_rite
+
+# speaker={C_ORLANDO}
 bruh use a rite k
+
 -> DONE
 
 = preemptively_used_rite
+
+# speaker={C_ORLANDO}
 good job using a rite
+
 -> DONE
 
 = correct_rite
+
+# speaker={C_ORLANDO}
 correct!
+
 -> DONE
 
 = incorrect_rite
+
+# speaker={C_ORLANDO}
 INCORRECT!
+
 -> DONE
 
 = did_not_use_rite
+
+# speaker={C_ORLANDO}
 come on bruh use a right
+
 -> DONE
 
 = attack_dummy_again
+
+# speaker={C_ORLANDO}
 dude attack the dummy ok
 
 -> DONE
