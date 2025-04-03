@@ -12,6 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local CanQueuePower = B.Node("CanQueuePower")
+CanQueuePower.PEEP = B.Reference()
 CanQueuePower.POWER = B.Reference()
 
 function CanQueuePower:update(mashina, state, executor)
@@ -28,15 +29,17 @@ function CanQueuePower:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local status = mashina:getBehavior(CombatStatusBehavior)
+	local peep = state[self.PEEP] or mashina
+
+	local status = peep:getBehavior(CombatStatusBehavior)
 	if not status then
 		return B.Status.Failure
 	end
 
 	local zeal = math.floor(status.currentZeal * 100)
 
-	local power = PowerType(mashina:getDirector():getGameInstance(), powerResource)
-	local zealCost = math.floor(power:getCost(mashina) * 100)
+	local power = PowerType(peep:getDirector():getGameInstance(), powerResource)
+	local zealCost = math.floor(power:getCost(peep) * 100)
 
 	if zealCost > zeal then
 		return B.Status.Failure

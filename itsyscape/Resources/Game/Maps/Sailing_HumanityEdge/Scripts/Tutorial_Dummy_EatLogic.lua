@@ -145,38 +145,6 @@ local AttackOrDefend = Mashina.ParallelTry {
 	HandleOffense
 }
 
-local Disengage = Mashina.Step {
-	Mashina.Peep.HasCombatTarget {
-		peep = CommonLogic.PLAYER
-	},
-
-	Mashina.Repeat {
-		Mashina.Peep.HasCombatTarget {
-			peep = CommonLogic.PLAYER
-		}
-	},
-
-	Mashina.Success {
-		Mashina.Peep.DisengageCombatTarget
-	},
-
-	CommonLogic.GetOrlando,
-
-	Mashina.Player.Disable {
-		player = CommonLogic.PLAYER
-	},
-
-	Mashina.Player.Dialog {
-		peep = CommonLogic.ORLANDO,
-		player = CommonLogic.PLAYER,
-		main = "quest_tutorial_combat.yield_during_eat"
-	},
-
-	Mashina.Player.Enable {
-		player = CommonLogic.PLAYER
-	},
-}
-
 local Tree = BTreeBuilder.Node() {
 	Mashina.Sequence {
 		Mashina.Peep.GetPlayer {
@@ -190,7 +158,10 @@ local Tree = BTreeBuilder.Node() {
 		Mashina.Repeat {
 			Mashina.Success {
 				Mashina.ParallelTry {
-					Disengage,
+					Mashina.Failure {
+						CommonLogic.DidYieldDuringCombatTutorial
+					},
+
 					AttackOrDefend
 				}
 			}

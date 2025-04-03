@@ -257,6 +257,30 @@ function Weapon.DamageRoll:setDamageMultiplier(value)
 	end
 end
 
+function Weapon.DamageRoll:setHitReduction(value)
+	self.hitReduction = value or 0
+end
+
+function Weapon.DamageRoll:getHitReduction()
+	return self.hitReduction
+end
+
+function Weapon.DamageRoll:setMaxHitBoost(value)
+	self.maxHitBoost = value or 0
+end
+
+function Weapon.DamageRoll:getMaxHitBoost()
+	return self.maxHitBoost
+end
+
+function Weapon.DamageRoll:setMinHitBoost(value)
+	self.minHitBoost = value or 0
+end
+
+function Weapon.DamageRoll:getMinHitBoost()
+	return self.minHitBoost
+end
+
 function Weapon.DamageRoll:roll()
 	local minHit = math.max(self:getMinHit() - self.hitReduction, 0)
 	local maxHit = math.max(self:getMaxHit() - self.hitReduction + self.maxHitBoost, 0)
@@ -268,6 +292,8 @@ function Weapon.DamageRoll:roll()
 
 	minHit = math.min(minHit, maxHit)
 	maxHit = math.max(minHit, maxHit)
+
+	print(">>> minHit, maxHit", minHit, maxHit)
 
 	return math.ceil(love.math.random(minHit, maxHit) * self.damageMultiplier)
 end

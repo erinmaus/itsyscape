@@ -33,7 +33,7 @@ do
 	ItsyScape.Meta.Dummy {
 		Tier = 50,
 		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MAGIC,
-		Hitpoints = 500,
+		Hitpoints = 200,
 
 		ChaseDistance = math.huge,
 
@@ -86,7 +86,7 @@ do
 	ItsyScape.Meta.Dummy {
 		Tier = 50,
 		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MELEE,
-		Hitpoints = 500,
+		Hitpoints = 200,
 
 		ChaseDistance = math.huge,
 
@@ -97,13 +97,13 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(99),
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = Dummy
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
-		Value = ItsyScape.Utility.xpForLevel(99),
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = Dummy
 	}
 
@@ -139,7 +139,7 @@ do
 	ItsyScape.Meta.Dummy {
 		Tier = 50,
 		CombatStyle = ItsyScape.Utility.Weapon.STYLE_ARCHERY,
-		Hitpoints = 500,
+		Hitpoints = 200,
 
 		ChaseDistance = math.huge,
 
@@ -175,7 +175,8 @@ local DUMMIES = {
 
 local STATES = {
 	{ name = "tutorial-yield", filename = "Tutorial_Dummy_YieldLogic" },
-	{ name = "tutorial-eat", filename = "Tutorial_Dummy_EatLogic" }
+	{ name = "tutorial-eat", filename = "Tutorial_Dummy_EatLogic" },
+	{ name = "tutorial-rites", filename = "Tutorial_Dummy_RiteLogic" },
 }
 
 for _, dummy in ipairs(DUMMIES) do

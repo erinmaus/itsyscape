@@ -99,6 +99,38 @@ local GetOrlando = Mashina.Sequence {
 	},
 }
 
+local DidYieldDuringCombatTutorial = Mashina.Step {
+	Mashina.Peep.HasCombatTarget {
+		peep = PLAYER
+	},
+
+	Mashina.Repeat {
+		Mashina.Peep.HasCombatTarget {
+			peep = PLAYER
+		}
+	},
+
+	Mashina.Success {
+		Mashina.Peep.DisengageCombatTarget
+	},
+
+	GetOrlando,
+
+	Mashina.Player.Disable {
+		player = PLAYER
+	},
+
+	Mashina.Player.Dialog {
+		peep = ORLANDO,
+		player = PLAYER,
+		main = "quest_tutorial_combat.incorrect_yield"
+	},
+
+	Mashina.Player.Enable {
+		player = PLAYER
+	},
+}
+
 return {
 	PLAYER = PLAYER,
 	PLAYER_TARGET = PLAYER_TARGET,
@@ -110,5 +142,7 @@ return {
 	Heal = Heal,
 
 	ORLANDO = ORLANDO,
-	GetOrlando = GetOrlando
+	GetOrlando = GetOrlando,
+
+	DidYieldDuringCombatTutorial = DidYieldDuringCombatTutorial
 }

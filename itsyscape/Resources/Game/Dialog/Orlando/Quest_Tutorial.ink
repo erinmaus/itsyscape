@@ -931,9 +931,34 @@ good job eating bruh
 
 -> DONE
 
-= yield_during_eat
+= incorrect_yield
 
 # speaker={C_ORLANDO}
 bruh why'd you yield just try again ok bruh attack the dummy when u ready ok bruh
+
+-> DONE
+
+= can_use_rite
+bruh use a rite k
+-> DONE
+
+= preemptively_used_rite
+good job using a rite
+-> DONE
+
+= correct_rite
+correct!
+-> DONE
+
+= incorrect_rite
+INCORRECT!
+-> DONE
+
+= did_not_use_rite
+come on bruh use a right
+-> DONE
+
+= attack_dummy_again
+dude attack the dummy ok
 
 -> DONE

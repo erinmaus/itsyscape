@@ -44,7 +44,7 @@ function OnPoke:update(mashina, state, executor)
 		local status = self.status
 		self.status = nil
 
-		return self.status or B.Status.Success
+		return status or B.Status.Success
 	end
 
 	return B.Status.Working

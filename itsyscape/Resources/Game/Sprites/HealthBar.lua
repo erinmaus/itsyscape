@@ -54,9 +54,9 @@ function HealthBar:draw(position, time)
 
 	if self.actor:getCurrentHitpoints() < self.actor:getMaximumHitpoints() then
 		local percent = self.actor:getCurrentHitpoints() / self.actor:getMaximumHitpoints()
-		local w = math.min(self.WIDTH * (1 - percent), math.floor(self.WIDTH * 0.99))
+		local w = math.min(self.WIDTH * (1 - percent), math.floor(self.WIDTH * 0.95))
 		if self.actor:getCurrentHitpoints() > 0 then
-			w = math.min(math.max(w, 1), self.WIDTH - 1)
+			w = math.min(math.max(w, math.floor(self.WIDTH * 0.1)), math.floor(self.WIDTH * 0.95))
 		end
 
 		love.graphics.setColor(damageColor:get())

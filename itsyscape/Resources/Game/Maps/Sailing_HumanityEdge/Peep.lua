@@ -353,7 +353,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 	if cutsceneTransition and not cutsceneTransition:getIsClosing() then
 		cutsceneTransition.onBeginClosing:register(self.onFinishPreparingTutorial, self, playerPeep)
 	else
-		self:poke("finishPreparingTutorial", playerPeep)
+		self:pushPoke("finishPreparingTutorial", playerPeep)
 	end
 end
 
@@ -609,7 +609,7 @@ function Island:onPlaceTutorialDummy(playerPeep)
 			Utility.Peep.makeInstanced(dummyPeep, playerPeep)
 			Utility.Peep.teleportCompanion(dummyPeep, orlando)
 			Utility.Peep.setFacing(dummyPeep, -1)
-			Utility.Peep.setMashinaState(dummyPeep, "tutorial-yield")
+			Utility.Peep.setMashinaState(dummyPeep, "tutorial-rites")
 
 			Utility.Peep.disable(playerPeep)
 			self:talkToPeep(playerPeep, "Orlando", function()
