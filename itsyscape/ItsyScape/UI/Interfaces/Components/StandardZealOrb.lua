@@ -280,9 +280,11 @@ function StandardZealOrb:drawBorder()
 
 	local width, height = self:getSize()
 	local radius = math.min(width, height) / 2
+	love.graphics.push("all")
 	love.graphics.setColor(borderColor:get())
 	love.graphics.setLineWidth(self.BORDER_THICKNESS)
 	itsyrealm.graphics.circle("line", width / 2, height / 2, radius - self.BORDER_THICKNESS / 2)
+	love.graphics.pop()
 end
 
 function StandardZealOrb:draw(resources, state)
@@ -294,6 +296,8 @@ function StandardZealOrb:draw(resources, state)
 
 	love.graphics.setColor(color:get())
 	itsyrealm.graphics.circle("fill", width / 2, height / 2, radius)
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 return StandardZealOrb

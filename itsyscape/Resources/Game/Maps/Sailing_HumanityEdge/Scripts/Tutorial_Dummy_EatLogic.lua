@@ -133,7 +133,7 @@ local HandleOffense = Mashina.Step {
 	},
 
 	Mashina.Peep.SetState {
-		state = false
+		state = "tutorial-rites"
 	}
 }
 

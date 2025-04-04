@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
-local Effect = require "ItsyScape.Peep.Effect"
+local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 
 -- Damage taken over the next 10 seconds heals you 150%-300%.
 local Absorb = Class(Effect)
@@ -29,32 +29,19 @@ function Absorb:new(activator)
 end
 
 function Absorb:getDescription()
-	return string.format("%d HP", math.floor(self.damage * self.damageMultiplier + 0.5))
+	return string.format("%d%%", math.floor(self.damageMultiplier * 100))
 end
 
 function Absorb:getBuffType()
 	return Effect.BUFF_TYPE_POSITIVE
 end
 
-function Absorb:enchant(peep)
-	Effect.enchant(self, peep)
-
-	self._onHit = function(_, p)
-		self.damage = self.damage + p:getDamage()
-	end
-
-	peep:listen('hit', self._onHit)
+function Absorb:applyTargetToAttack(attackRoll)
+	attackRoll:setAlwaysHits(true)
 end
 
-function Absorb:sizzle()
-	self:getPeep():silence('hit', self._onHit)
-
-	self:getPeep():poke('heal', {
-		hitPoints = math.floor(self.damage * self.damageMultiplier + 0.5),
-		zealous = true
-	})
-
-	Effect.sizzle(self)
+function Absorb:applyTargetToDamage(roll)
+	roll:setDamageMultiplier(-self.damageMultiplier)
 end
 
 return Absorb

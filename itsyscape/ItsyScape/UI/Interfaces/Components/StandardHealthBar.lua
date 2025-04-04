@@ -229,7 +229,6 @@ function StandardHealthBar:draw(resources, state)
 		itsyrealm.graphics.rectangle("fill", width - damageWidth, 0, damageWidth, height, 4, 4)
 	end
 
-	
 	itsyrealm.graphics.pushCallback(self._stencil)
 	itsyrealm.graphics.pushCallback(love.graphics.setStencilTest, "greater", 0)
 

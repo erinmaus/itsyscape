@@ -8,6 +8,69 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Power "Parry" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForResource(5)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Strength",
+			Count = ItsyScape.Utility.xpForResource(5)
+		}
+	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	Resource = ItsyScape.Resource.Power "Parry"
+}
+
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Parry"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
+	MinLevel = 1,
+	MaxLevel = 50,
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Resource = ItsyScape.Resource.Power "Parry"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Parry",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Parry"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Parries your foe's next attack, preventing damage. As well, prevents the foe's next special attack.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Parry"
+}
+
+ItsyScape.Resource.Effect "Power_Parry" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Parry",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Parry"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "You are ready to parry the next attack.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_Parry"
+}
+
 ItsyScape.Resource.Power "Backstab" {
 	ItsyScape.Action.Activate() {
 		Requirement {
@@ -46,7 +109,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "If the opponent is not in combat, deals 100-300% damage based on your Strength level.",
+	Value = "If the target is not attacking you, deals increased damage.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Backstab"
 }
@@ -89,7 +152,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Enrages the opponent, halving their attack roll but increasing their damage by 50%. Also draws the attention of mobs focused on other peeps.",
+	Value = "Enrages the opponent, halving their attack roll. Also draws the attention of mobs focused on other peeps.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Taunt"
 }
@@ -105,75 +168,9 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Enraged, your attack roll is halved but your damage is increased by 50%.",
+	Value = "Enraged, your attack roll is halved.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Taunt"
-}
-
-ItsyScape.Resource.Power "Parry" {
-	ItsyScape.Action.Activate() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Attack",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Attack",
-			Count = ItsyScape.Utility.xpForResource(5)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Strength",
-			Count = ItsyScape.Utility.xpForResource(5)
-		}
-	}
-}
-
-ItsyScape.Meta.PowerSpec {
-	IsInstant = 1,
-	IsQuick = 1,
-	NoTarget = 1,
-	Resource = ItsyScape.Resource.Power "Parry"
-}
-
-ItsyScape.Meta.CombatPowerTier {
-	Tier = 1,
-	Resource = ItsyScape.Resource.Power "Parry"
-}
-
-ItsyScape.Meta.CombatPowerZealCost {
-	MinLevel = 1,
-	MaxLevel = 50,
-	Skill = ItsyScape.Resource.Skill "Attack",
-	Resource = ItsyScape.Resource.Power "Parry"
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Parry",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "Parry"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Parries the next melee attack.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "Parry"
-}
-
-ItsyScape.Resource.Effect "Power_Parry" {
-	-- Nothing.
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Parry",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "Power_Parry"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "You are ready to parry the next attack.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "Power_Parry"
 }
 
 ItsyScape.Resource.Power "Tornado" {
@@ -239,7 +236,7 @@ ItsyScape.Resource.Power "Decapitate" {
 }
 
 ItsyScape.Meta.CombatPowerTier {
-	Tier = 2,
+	Tier = 3,
 	Resource = ItsyScape.Resource.Power "Decapitate"
 }
 
@@ -257,7 +254,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Attempt to cut off the foe's head. Less accurate attack, but damage ranges from 200% - 400% upon a successful blow. This attack deals an extra 100% damage to undead.",
+	Value = "Attempt to cut off the foe's head. Less accurate attack, but can deal massive damage. Increased effectiveness against the undead.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Decapitate"
 }
@@ -307,7 +304,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Counter the next attack.",
+	Value = "Counter the next attack, reflecting some of the damage to your foe. As well, uses your foe's next special attack against them if timed correctly.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Riposte"
 }
@@ -416,7 +413,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Wait for an opening to counter the enemy's attack. The next opponent's next successful attack will result in punishing them for 200-400% damage based on Strength level. Pierces most defenses and buffs.",
+	Value = "Wait for an opening to counter the enemy's attack. The next opponent's next successful attack will result in punishing them. Pierces most defenses and buffs.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Counter"
 }

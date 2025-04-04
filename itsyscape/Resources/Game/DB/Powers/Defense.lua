@@ -8,6 +8,44 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Power "Bash" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(1)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForResource(1)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Bash"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
+	MinLevel = 10,
+	MaxLevel = 60,
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Resource = ItsyScape.Resource.Power "Bash"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Bash",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Bash"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Bash your foe, stunning them. If you're wielding a shield, damage is inceased. Prevents the foe's next special attack.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Bash"
+}
+
 ItsyScape.Resource.Power "Prepare" {
 	ItsyScape.Action.Activate() {
 		Requirement {
@@ -91,7 +129,7 @@ ItsyScape.Meta.PowerSpec {
 }
 
 ItsyScape.Meta.CombatPowerTier {
-	Tier = 1,
+	Tier = 3,
 	Resource = ItsyScape.Resource.Power "Absorb"
 }
 
@@ -113,7 +151,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Absorb damage, healing 150-300% of damage received after the effect ends.",
+	Value = "Absorb damage, healing 150-300% of damage received.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Absorb"
 }
@@ -125,70 +163,9 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Absorb damage, healing 150-300% of damage received based on your defense level.",
+	Value = "Absorbs damage. Instead of an attack hurting you, it will heal you.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Absorb"
-}
-
-ItsyScape.Resource.Power "IronSkin" {
-	ItsyScape.Action.Activate() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Defense",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Defense",
-			Count = ItsyScape.Utility.xpForResource(5)
-		}
-	}
-}
-
-ItsyScape.Meta.PowerSpec {
-	IsInstant = 1,
-	IsQuick = 1,
-	NoTarget = 1,
-	Resource = ItsyScape.Resource.Power "IronSkin"
-}
-
-ItsyScape.Meta.CombatPowerTier {
-	Tier = 2,
-	Resource = ItsyScape.Resource.Power "IronSkin"
-}
-
-ItsyScape.Meta.CombatPowerZealCost {
-	MinLevel = 1,
-	MaxLevel = 50,
-	Skill = ItsyScape.Resource.Skill "Defense",
-	Resource = ItsyScape.Resource.Power "IronSkin"
-}
-
-ItsyScape.Resource.Effect "Power_IronSkin" {
-	-- Nothing.
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Iron Skin",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "Power_IronSkin"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Block all incoming damage, but reduces damage dealt by 100%-50%.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "Power_IronSkin"
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Iron Skin",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "IronSkin"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Block all incoming damage, but reduce damage dealt by 100%-50% based on your Defense level.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "IronSkin"
 }
 
 ItsyScape.Resource.Power "Freedom" {
@@ -269,9 +246,70 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Bash opponent with your shield, stunning them for 10-20 seconds based on your Defense level.",
+	Value = "Bash your foe, stunning them. If you're wielding a shield, damage is inceased. Prevents the foe's next special attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Bash"
+}
+
+ItsyScape.Resource.Power "IronSkin" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForLevel(10)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Defense",
+			Count = ItsyScape.Utility.xpForResource(15)
+		}
+	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	IsInstant = 1,
+	IsQuick = 1,
+	NoTarget = 1,
+	Resource = ItsyScape.Resource.Power "IronSkin"
+}
+
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "IronSkin"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
+	MinLevel = 1,
+	MaxLevel = 50,
+	Skill = ItsyScape.Resource.Skill "Defense",
+	Resource = ItsyScape.Resource.Power "IronSkin"
+}
+
+ItsyScape.Resource.Effect "Power_IronSkin" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Iron Skin",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_IronSkin"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Block all incoming damage, but reduces damage dealt.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_IronSkin"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Iron Skin",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "IronSkin"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Block all incoming damage, but reduce damage dealt by 100%-50% based on your Defense level.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "IronSkin"
 }
 
 ItsyScape.Resource.Power "Deflect" {

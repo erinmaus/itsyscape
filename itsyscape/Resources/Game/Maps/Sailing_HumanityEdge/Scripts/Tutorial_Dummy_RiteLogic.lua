@@ -67,6 +67,17 @@ local UseRite = Mashina.Step {
 
 local CanUseRite = Mashina.Try {
 	Mashina.Sequence {
+		Mashina.Peep.IsStance {
+			stance = Weapon.STANCE_DEFENSIVE
+		},
+
+		Mashina.Peep.CanQueuePower {
+			peep = CommonLogic.PLAYER,
+			power = "Bash"
+		}
+	},
+
+	Mashina.Sequence {
 		Mashina.Peep.IsCombatStyle {
 			style = Weapon.STYLE_MAGIC
 		},
@@ -123,6 +134,11 @@ local CanUseRiteDialog = Mashina.Step {
 	Mashina.Player.Enable {
 		player = CommonLogic.PLAYER
 	},
+
+	Mashina.Peep.PokeMap {
+		event = "showOffensiveRiteHint",
+		poke = CommonLogic.PLAYER
+	}
 }
 
 local DidUseRiteBefore = Mashina.Peep.OnPoke {
@@ -206,24 +222,6 @@ local DidUseIncorrectRite = Mashina.Step {
 	}
 }
 
-local ShowDefensiveRiteHint = Mashina.Sequence {
-	Mashina.Peep.IsStance {
-		stance = Weapon.STANCE_DEFENSIVE
-	},
-
-	Mashina.Peep.PokeMap {
-		event = "showDefensiveRiteHint",
-		poke = CommonLogic.PLAYER
-	}
-}
-
-local ShowOffensiveRiteHint = Mashina.Sequence {
-	Mashina.Peep.PokeMap {
-		event = "showOffensiveRiteHint",
-		poke = CommonLogic.PLAYER
-	}
-}
-
 local WasAttackedWithoutQueuedPower = Mashina.Sequence {
 	Mashina.Invert {
 		Mashina.Peep.HasQueuedPower {
@@ -260,6 +258,11 @@ local IgnoredInstructions = Mashina.Step {
 
 	Mashina.Player.Enable {
 		player = CommonLogic.PLAYER
+	},
+
+	Mashina.Peep.PokeMap {
+		event = "showOffensiveRiteHint",
+		poke = CommonLogic.PLAYER
 	}
 }
 
