@@ -21,7 +21,7 @@ local StandardBarLabel = require "ItsyScape.UI.Interfaces.Components.StandardBar
 
 local StandardZealOrb = Class(Drawable)
 StandardZealOrb.BORDER_ALPHA = 0.75
-StandardZealOrb.BORDER_THICKNESS = 8
+StandardZealOrb.BORDER_THICKNESS = 4
 
 function StandardZealOrb:new()
 	Drawable.new(self)
@@ -73,11 +73,11 @@ function StandardZealOrb:new()
 		Direction = { math.rad(0) },
 		Spread = { math.rad(90) },
 		LinearAcceleration = { 0, -48, 0, -64 },
-		ParticleLifetime = { 0.4, 0.7 },
+		ParticleLifetime = { 0.3, 0.6 },
 		Sizes = { 0.3, 0.2 },
 		Spin = { math.pi, math.pi * 1.5 },
 		SpinVariation = { 1 },
-		Speed = { -2, -6 },
+		Speed = { -1, -4 },
 		Colors = {
 			{ 1, 0.7, 0.7, 0 },
 			{ 1, 0.9, 0.9, 0.8 },
@@ -113,6 +113,13 @@ function StandardZealOrb:new()
 	self.isFadingIn = false
 
 	self.isReady = false
+
+	self._stencil = function()
+		local width, height = self:getSize()
+		local radius = math.min(width, height) / 2
+
+		love.graphics.circle("fill", width / 2, height / 2, radius)
+	end
 end
 
 function StandardZealOrb:getOverflow()
@@ -229,13 +236,6 @@ function StandardZealOrb:update(delta)
 end
 
 function StandardZealOrb:_drawCircle()
-	self._stencil = self._stencil or function()
-		local width, height = self:getSize()
-		local radius = math.min(width, height) / 2
-
-		love.graphics.circle("fill", width / 2, height / 2, radius)
-	end
-
 	love.graphics.stencil(self._stencil)
 	love.graphics.setStencilTest("greater", 0)
 end
@@ -290,7 +290,7 @@ function StandardZealOrb:draw(resources, state)
 
 	local width, height = self:getSize()
 	local radius = math.min(width, height) / 2
-	local color = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.zeal.remainder"))
+	local color = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.zeal.background"), 0.5)
 
 	love.graphics.setColor(color:get())
 	itsyrealm.graphics.circle("fill", width / 2, height / 2, radius)

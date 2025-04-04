@@ -9,18 +9,16 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local Color = require "ItsyScape.Graphics.Color"
+local Config = require "ItsyScape.Game.Config"
 local Utility = require "ItsyScape.Game.Utility"
-local Variables = require "ItsyScape.Game.Variables"
+local Color = require "ItsyScape.Graphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 local Widget = require "ItsyScape.UI.Widget"
 local Particles = require "ItsyScape.UI.Particles"
 local StandardBarLabel = require "ItsyScape.UI.Interfaces.Components.StandardBarLabel"
 
 local StandardHealthBar = Class(Drawable)
-
-local CONFIG = Variables.load("Resources/Game/Variables/Config.json")
-local COLOR_PATH = Variables.Path("colors", Variables.PathParameter("color"))
+StandardHealthBar.BORDER_THICKNESS = 4
 
 function StandardHealthBar:new()
 	Drawable.new(self)
@@ -61,6 +59,10 @@ function StandardHealthBar:new()
 	self.currentRelativeValue = 100
 
 	self.isReady = false
+
+	self._stencil = function()
+		itsyrealm.graphics.rectangle("fill", 4, 4, width, height, 4, 4)
+	end
 end
 
 function StandardHealthBar:_random()
@@ -209,12 +211,15 @@ function StandardHealthBar:draw(resources, state)
 	local width, height = self:getSize()
 	local scale = height / self.bloodSplatImage:getHeight()
 
-	local damageColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", "ui.combat.health.damage"))
-	local hitpointsColor = Color.fromHexString(CONFIG:get(COLOR_PATH, "color", "ui.combat.health.hitpoints"))
+	local damageColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.health.damage"))
+	local hitpointsColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.health.hitpoints"))
 
 	local damageWidth = (1 - (self.currentRelativeValue / 100)) * width
 
 	love.graphics.push("all")
+	love.graphics.setColor(0, 0, 0, 1)
+	itsyrealm.graphics.rectangle("fill", 4, 4, width, height, 4, 4)
+
 	love.graphics.setColor(hitpointsColor:get())
 	itsyrealm.graphics.rectangle("fill", 0, 0, width, height, 4, 4)
 
@@ -224,7 +229,10 @@ function StandardHealthBar:draw(resources, state)
 		itsyrealm.graphics.rectangle("fill", width - damageWidth, 0, damageWidth, height, 4, 4)
 	end
 
-	itsyrealm.graphics.applyPseudoScissor()
+	
+	itsyrealm.graphics.pushCallback(self._stencil)
+	itsyrealm.graphics.pushCallback(love.graphics.setStencilTest, "greater", 0)
+
 	for _, bloodSplat in ipairs(self.bloodSplats) do
 		local color = damageColor:shiftHSL(bloodSplat.hueShift, nil, bloodSplat.lightnessShift)
 		color.a = bloodSplat.alpha
@@ -246,7 +254,12 @@ function StandardHealthBar:draw(resources, state)
 		itsyrealm.graphics.draw(self.bloodSplatImage, x, y, bloodSplat.rotation, localScale, localScale, imageWidth / 2, imageHeight / 2)
 	end
 
-	itsyrealm.graphics.resetPseudoScissor()
+	itsyrealm.graphics.pushCallback(love.graphics.setStencilTest)
+
+	love.graphics.setLineWidth(self.BORDER_THICKNESS)
+	love.graphics.setColor(0, 0, 0, 0.5)
+	itsyrealm.graphics.rectangle("line", 1, 1, width - 2, height - 2, 4, 4)
+
 	love.graphics.pop()
 end
 
