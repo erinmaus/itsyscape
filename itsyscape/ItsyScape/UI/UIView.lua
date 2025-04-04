@@ -360,6 +360,14 @@ function itsyrealm.graphics.impl.draw(renderState, image, ...)
 	love.graphics.drawLayer(atlas, layer, atlasQuad, ...)
 end
 
+function itsyrealm.graphics.impl.drawCallback(renderState, func, ...)
+	love.graphics.setColor(renderState.color)
+	love.graphics.setBlendMode("alpha")
+	love.graphics.origin()
+	love.graphics.applyTransform(renderState.transform)
+	func(...)
+end
+
 function itsyrealm.graphics.impl.uncachedDraw(renderState, image, ...)
 	love.graphics.setColor(renderState.color)
 	love.graphics.setBlendMode("alpha")
@@ -993,6 +1001,14 @@ function itsyrealm.graphics.polygon(...)
 		itsyrealm.graphics.impl.captureRenderState())
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.polygon, ...)
+end
+
+function itsyrealm.graphics.pushCallback(func, ...)
+	itsyrealm.graphics.impl.pushSize()
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.drawCallback,
+		itsyrealm.graphics.impl.captureRenderState(),
+		func, ...)
 end
 
 function itsyrealm.graphics.uncachedDraw(...)

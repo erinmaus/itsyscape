@@ -37,8 +37,7 @@ local HandleDefense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Riposte",
-			turns = 2
+			power = "Riposte"
 		}
 	},
 
@@ -52,8 +51,7 @@ local HandleDefense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Parry",
-			turns = 2
+			power = "Parry"
 		}
 	},
 
@@ -67,8 +65,7 @@ local HandleDefense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Deflect",
-			turns = 2
+			power = "Deflect"
 		}
 	}
 }
@@ -84,8 +81,7 @@ local HandleOffense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Tornado",
-			turns = 1
+			power = "Tornado"
 		}
 	},
 
@@ -99,8 +95,7 @@ local HandleOffense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Decapitate",
-			turns = 1
+			power = "Decapitate"
 		}
 	},
 
@@ -114,8 +109,7 @@ local HandleOffense = Mashina.RandomTry {
 		},
 
 		Mashina.Peep.QueuePower {
-			power = "Earthquake",
-			turns = 1
+			power = "Earthquake"
 		}
 	}
 }

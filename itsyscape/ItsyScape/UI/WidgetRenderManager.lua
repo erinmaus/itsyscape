@@ -329,14 +329,18 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		end
 
 		if (w > 0 and h > 0) or widget:getOverflow() then
+			widget:beforeDraw()
 			self.debugStats:measure(renderer, widget, state)
+			widget:afterDraw()
 		end
 	end
 
 	local scrollX, scrollY = widget:getScroll()
 	itsyrealm.graphics.translate(-scrollX, -scrollY)
 
+	widget:beforeDrawChildren()
 	self:drawChildren(widget, state, cursor)
+	widget:afterDrawChildren()
 
 	if not widget:getOverflow() and pushedScissor then
 		local w, h = widget:getSize()

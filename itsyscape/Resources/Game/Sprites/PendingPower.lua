@@ -25,20 +25,6 @@ PendingPower.DROP_SHADOW = 4
 function PendingPower:new(...)
 	Sprite.new(self, ...)
 
-	local resources = self:getSpriteManager():getResources()
-	resources:queue(
-		FontResource,
-		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@22",
-		function(font)
-			self.font = font
-		end)
-	resources:queue(
-		TextureResource,
-		"Resources/Game/UI/Icons/Concepts/Powers.png",
-		function(icon)
-			self.warningIcon = icon
-		end)
-
 	self.pendingTurns = false
 	self.currentTurn = false
 	self.interval = false
@@ -93,9 +79,7 @@ function PendingPower:finish()
 end
 
 function PendingPower:update(delta)
-	if self.warningIcon and self.font then
-		self.fadeInTime = math.min(self.fadeInTime + delta, self.FADE_DURATION)
-	end
+	self.fadeInTime = math.min(self.fadeInTime + delta, self.FADE_DURATION)
 
 	if self.done then
 		self.fadeOutTime = math.min(self.fadeOutTime + delta, self.FADE_DURATION)
@@ -103,10 +87,6 @@ function PendingPower:update(delta)
 end
 
 function PendingPower:draw(position, time)
-	if not self.warningIcon or not self.font then
-		return
-	end
-
 	local alpha
 	if self.done then
 		alpha = 1 - math.clamp(self.fadeOutTime / self.FADE_DURATION)
@@ -149,41 +129,17 @@ function PendingPower:draw(position, time)
 		2,
 		self.HEIGHT)
 
-	local iconDelta = math.abs(math.sin(love.timer.getTime() * math.pi))
-	local iconAlpha = iconDelta * 0.5 + 0.5
+	local textDelta = math.abs(math.sin(love.timer.getTime() * math.pi))
 	local textColorFrom = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.specialWarningFrom"), alpha)
 	local textColorTo = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.specialWarningTo"), alpha)
-	local textColor = textColorFrom:lerp(textColorTo, iconDelta)
+	local textColor = textColorFrom:lerp(textColorTo, textDelta)
 
 	love.graphics.setColor(textColor:get())
 	love.graphics.setLineWidth(2)
 	love.graphics.rectangle("line", x, y, self.WIDTH, self.HEIGHT, 2)
 	love.graphics.setLineWidth(1)
 
-	-- local oldFont = love.graphics.getFont()
-	-- local font = self.font:getResource()
-	-- love.graphics.setFont(font)
-
-	-- local icon = self.warningIcon:getResource()
-	-- local iconWidth = icon:getWidth() * 0.75
-	-- local iconHeight = icon:getWidth() * 0.75
-	-- local textWidth = self.WIDTH - iconWidth - 2
-	-- local textX, textY = x + iconWidth + 2, y - self.HEIGHT - math.max(math.max(iconHeight, self.font:getResource():getHeight()) - self.HEIGHT, 0)
-
-	-- love.graphics.setColor(0, 0, 0, alpha)
-	-- love.graphics.printf("SPECIAL", textX - 2, textY - 2, textWidth, "center")
-	-- love.graphics.printf("SPECIAL", textX + 2, textY - 2, textWidth, "center")
-	-- love.graphics.printf("SPECIAL", textX + 2, textY + 2, textWidth, "center")
-	-- love.graphics.printf("SPECIAL", textX - 2, textY + 2, textWidth, "center")
-
-	-- love.graphics.setColor(textColor:get())
-	-- love.graphics.printf("SPECIAL", textX, textY, textWidth, "center")
-
-	-- love.graphics.setColor(1, 1, 1, iconAlpha * alpha)
-	-- love.graphics.draw(icon, x, textY, 0, 0.75, 0.75)
-
 	love.graphics.setColor(1, 1, 1, 1)
-	--love.graphics.setFont(oldFont)
 end
 
 return PendingPower

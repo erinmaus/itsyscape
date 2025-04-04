@@ -16,7 +16,7 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Widget = require "ItsyScape.UI.Widget"
 local StandardHealthBar = require "ItsyScape.UI.Interfaces.Components.StandardHealthBar"
-local StandardZealBar = require "ItsyScape.UI.Interfaces.Components.StandardZealBar"
+local StandardZealOrb = require "ItsyScape.UI.Interfaces.Components.StandardZealOrb"
 local Particles = require "ItsyScape.UI.Particles"
 
 local CombatTarget = Class(Widget)
@@ -29,7 +29,7 @@ function CombatTarget:new(align, resources)
 	self.rowWidth = 400
 	self.titleHeight = 48
 	self.healthHeight = 32
-	self.zealHeight = 32
+	self.zealHeight = 96
 	self.padding = 4
 	self.align = align
 
@@ -46,7 +46,7 @@ function CombatTarget:new(align, resources)
 	self:setIsSelfClickThrough(true)
 	self:setSize(
 		self.rowWidth,
-		self.titleHeight + self.healthHeight + self.zealHeight + self.padding * 3)
+		self.titleHeight + math.max(self.healthHeight, self.zealHeight) + self.padding * 3)
 end
 
 function CombatTarget:getRowSize()
@@ -59,7 +59,7 @@ function CombatTarget:setRowSize(w, h)
 
 	self:setSize(
 		self.rowWidth,
-		self.titleHeight + self.healthHeight + self.zealHeight + self.padding * 3)
+		self.titleHeight + math.max(self.healthHeight, self.zealHeight) + self.padding * 3)
 
 	self:performLayout()
 end
@@ -72,8 +72,8 @@ function CombatTarget:getHealthBar()
 	return self.healthBar
 end
 
-function CombatTarget:getZealBar()
-	return self.zealBar
+function CombatTarget:getZealOrb()
+	return self.zealOrb
 end
 
 function CombatTarget:performLayout()
@@ -85,14 +85,18 @@ function CombatTarget:performLayout()
 		self.healthBar:setPosition(0, self.titleHeight)
 	end
 
-	if self.zealBar then
-		self.zealBar:setSize(self.rowWidth, self.zealHeight)
-		self.zealBar:setPosition(0, self.titleHeight + self.healthHeight + self.padding)
+	if self.zealOrb then
+		self.zealOrb:setSize(self.zealHeight, self.zealHeight)
+
+		if self.align == self.ALIGN_LEFT then
+			self.zealOrb:setPosition(-self.zealHeight - self.padding, self.titleHeight)
+		elseif self.align == self.ALIGN_RIGHT then
+			self.zealOrb:setPosition(self.rowWidth + self.padding * 2, self.titleHeight)
+		end
 	end
 end
 
 function CombatTarget:updateTarget(targetInfo)
-	local isHealthBarNew = false
 	local healthBarType = targetInfo.meta.healthBarTypeName and require(targetInfo.meta.healthBarTypeName) or StandardHealthBar
 	if self.healthBarType ~= healthBarType then
 		if self.healthBar then
@@ -102,27 +106,24 @@ function CombatTarget:updateTarget(targetInfo)
 		self.healthBarType = healthBarType
 		self.healthBar = healthBarType()
 		self:addChild(self.healthBar)
-		isHealthBarNew = true
 	end
 
-	local isZealBarNew = false
-	local zealBarType = targetInfo.meta.zealBarTypeName and require(targetInfo.meta.zealBarTypeName) or StandardZealBar
-	if self.zealBarType ~= zealBarType then
-		if self.zealBar then
-			self:removeChild(self.zealBar)
+	local zealOrbType = targetInfo.meta.zealOrbTypeName and require(targetInfo.meta.zealOrbTypeName) or StandardZealOrb
+	if self.zealOrbType ~= zealOrbType then
+		if self.zealOrb then
+			self:removeChild(self.zealOrb)
 		end
 
-		self.zealBarType = zealBarType
-		self.zealBar = zealBarType()
-		self:addChild(self.zealBar)
-		isZealBarNew = true
+		self.zealOrbType = zealOrbType
+		self.zealOrb = zealOrbType()
+		self:addChild(self.zealOrb)
 	end
 
 	self:performLayout()
 
 	self.healthBar:updateHealth(targetInfo.stats.hitpoints.current, targetInfo.stats.hitpoints.max)
-	self.zealBar:updateZeal(targetInfo.stats.zeal.current, targetInfo.stats.zeal.max)
-	self.zealBar:updateZealTier(targetInfo.stats.zeal.tier)
+	self.zealOrb:updateZeal(targetInfo.stats.zeal.current, targetInfo.stats.zeal.max)
+	self.zealOrb:updateZealTier(targetInfo.stats.zeal.tier)
 	self.titleLabel:setText((targetInfo.name or ""):gsub(Utility.Text.INFINITY, "infinite"))
 end
 

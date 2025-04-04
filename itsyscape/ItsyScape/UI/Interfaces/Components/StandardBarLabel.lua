@@ -25,6 +25,23 @@ function StandardBarLabel:new()
 	Drawable.new(self)
 
 	self.padding = 4
+	self.align = false
+end
+
+function StandardBarLabel:setPadding(value)
+	self.padding = value or self.padding
+end
+
+function StandardBarLabel:getPadding()
+	return self.padding
+end
+
+function StandardBarLabel:setAlign(value)
+	self.align = value or false
+end
+
+function StandardBarLabel:getAlign()
+	return self.align
 end
 
 function StandardBarLabel:loadDynamic(resources)
@@ -42,7 +59,7 @@ end
 function StandardBarLabel:draw(resources, state)
 	self:loadDynamic(resources)
 
-	local _, height = (self:getParent() or self):getSize()
+	local width, height = (self:getParent() or self):getSize()
 
 	love.graphics.push("all")
 
@@ -54,11 +71,19 @@ function StandardBarLabel:draw(resources, state)
 
 	love.graphics.setFont(self.font)
 
-	love.graphics.setColor(textShadowColor:get())
-	itsyrealm.graphics.print(self:getText(), self.padding + 2, textY + 2)
+	if self.align then
+		love.graphics.setColor(textShadowColor:get())
+		itsyrealm.graphics.printf(self:getText(), 2, textY + 2, width, self.align)
 
-	love.graphics.setColor(textColor:get())
-	itsyrealm.graphics.print(self:getText(), self.padding, textY)
+		love.graphics.setColor(textColor:get())
+		itsyrealm.graphics.printf(self:getText(), 0, textY, width, self.align)
+	else
+		love.graphics.setColor(textShadowColor:get())
+		itsyrealm.graphics.print(self:getText(), self.padding + 2, textY + 2)
+
+		love.graphics.setColor(textColor:get())
+		itsyrealm.graphics.print(self:getText(), self.padding, textY)
+	end
 
 	love.graphics.pop()
 end

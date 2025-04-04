@@ -653,9 +653,9 @@ end
 function BaseCombatHUD:togglePlayerInfo(enabled)
 	self:_toggleInfo(enabled, self.playerInfo)
 
-	local zealBar = self.playerInfo:getZealBar()
-	if zealBar then
-		zealBar:setID("BaseCombatHUD-ZealBar-Player")
+	local zealOrb = self.playerInfo:getZealOrb()
+	if zealOrb then
+		zealOrb:setID("BaseCombatHUD-ZealOrb-Player")
 	end
 
 	local healthBar = self.playerInfo:getHealthBar()
@@ -667,9 +667,9 @@ end
 function BaseCombatHUD:toggleTargetInfo(enabled)
 	self:_toggleInfo(enabled, self.targetInfo)
 
-	local zealBar = self.playerInfo:getZealBar()
-	if zealBar then
-		zealBar:setID("BaseCombatHUD-ZealBar-Target")
+	local zealOrb = self.playerInfo:getZealOrb()
+	if zealOrb then
+		zealOrb:setID("BaseCombatHUD-ZealOrb-Target")
 	end
 
 	local healthBar = self.playerInfo:getHealthBar()

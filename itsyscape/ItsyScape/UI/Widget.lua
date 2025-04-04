@@ -702,4 +702,20 @@ function Widget:update(...)
 	end
 end
 
+function Widget:beforeDraw()
+	-- Nothing.
+end
+
+function Widget:afterDraw()
+	-- Nothing.
+end
+
+function Widget:beforeDrawChildren()
+	-- Nothing.
+end
+
+function Widget:afterDrawChildren()
+	-- Nothing.
+end
+
 return Widget
