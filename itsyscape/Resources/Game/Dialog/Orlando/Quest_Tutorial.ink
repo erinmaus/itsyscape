@@ -26,6 +26,9 @@ VAR quest_tutorial_main_ignored_scout_argument = false
 // Yenderhound stuff.
 VAR quest_tutorial_main_player_found_yendorhounds = false
 
+// Dummy stuff.
+VAR quest_tutorial_main_did_place_dummy = false
+
 == function quest_tutorial_get_class_name() ==
 {
   - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: wizard
@@ -841,50 +844,119 @@ bla bla bla
 = start
 
 # speaker={C_ORLANDO}
-TBD da start
+%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, I'm a li'l worried about you.
+
+# speaker={C_ORLANDO}
+You're not fighting like the {quest_tutorial_get_class_name()} I knew...
+
+# speaker={C_ORLANDO}
+...are you okay?
+
+# speaker={C_PLAYER}
+* I'm still a bit out of it...[] Can you help me get back up to speed?
+  -> start_still_out_of_it
+* No, I'm totally fine!
+  // -> start_totally_fine
+  -> DONE
+
+= start_still_out_of_it
+
+# speaker={C_ORLANDO}
+EEEEEEEEEEEEEEEEEEEEEEE!
+
+# speaker={C_ORLANDO}
+I thought you'd never ask!
+
+# speaker={C_ORLANDO}
+Like I said, I'm always prepared!
 
 %empty()
-
 ~ player_poke_map("placeTutorialDummy")
+
+-> DONE
+
+= place_dummy
+
+{
+  - not quest_tutorial_main_did_place_dummy: -> drop_first_dummy
+  - else: -> drop_n_dummy
+}
+
+= drop_first_dummy
+
+# speaker={C_ORLANDO}
+There we go!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+I cannot stay silent any longer... You have a dummy on you?!
+
+# speaker={C_ORLANDO}
+I... have my reasons.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Of course you do. Of course.
+
+# speaker={C_ORLANDO}
+Anyway... I'll remind you how to fight like a real hero again!
+
+# speaker={C_ORLANDO}
+So whenever you're ready, attack the dummy!
+
+# speaker={C_ORLANDO}
+The dummy can't kill you... Uh, I think it can't, at least... So... you (...probably...) don't gotta worry about that!
+
+%empty()
+~ quest_tutorial_main_did_place_dummy = true
+
+-> DONE
+
+= drop_n_dummy
+
+# speaker={C_ORLANDO}
+Whenever you're ready, attack the dummy!
+
+# speaker={C_ORLANDO}
+The dummy can't kill you! So you don't gotta worry about that!
 
 -> DONE
 
 = drop_new_dummy
 
 # speaker={C_ORLANDO}
-sure bruh
+Lemme go drop another dummy!
 
 %empty()
-
 ~ player_poke_map("placeTutorialDummy")
-
--> DONE
-
-= attack_dummy
-
-# speaker={C_ORLANDO}
-attack the dummy, goober
 
 -> DONE
 
 = yield
 
 # speaker={C_ORLANDO}
-yield to the dummy ok???
+Ok, first up, yielding!
+
+# speaker={C_ORLANDO}
+To stop fighting your foe, yield! Then you can just run away!
+
+# speaker={C_ORLANDO}
+The dummy will hold back. Now yield!
 
 -> DONE
 
 = did_not_yield
 
 # speaker={C_ORLANDO}
-wtfbbq goober seriously yield to the gd dummy ok
+C'mon, stop attacking the dummy and yield!
 
 -> DONE
 
 = did_yield
 
 # speaker={C_ORLANDO}
-good job yielding bruh
+Great! If you're ever confused and need help, yield and I'll jump in and help.
+
+# speaker={C_ORLANDO}
+Next up, let's focus on healing... This might hurt a bit!
 
 -> DONE
 
@@ -898,12 +970,14 @@ good job yielding bruh
 = did_not_eat_needs_food
 
 # speaker={C_ORLANDO}
-why didn't you say you don't good food earlier bruh i gotchu
+Woah, how'd you run out of food already?!
+
+# speaker={C_ORLANDO}
+I gotchu! Here's a %item(cooked lightning stormfish).
 
 %empty()
 
 ~ play_animation(C_ORLANDO, "Human_ActionGive_1")
-
 {not player_give_item("CookedLightningStormfish", 1): -> quest_tutorial_drop_items ->}
 
 -> DONE
@@ -911,7 +985,10 @@ why didn't you say you don't good food earlier bruh i gotchu
 = eat
 
 # speaker={C_ORLANDO}
-go eat!!!
+Dummy, yield!
+
+# speaker={C_ORLANDO}
+Looks like you've taken a beating! Time to heal!
 
 {not player_has_item("CookedLightningStormfish", 1): -> did_not_eat_needs_food}
 
@@ -920,21 +997,30 @@ go eat!!!
 = did_not_eat_has_food
 
 # speaker={C_ORLANDO}
-why are you not eating bruh
+You need to heal! You've taken a beating...
+
+# speaker={C_ORLANDO}
+Let's try again...
 
 -> DONE
 
 = did_eat
 
 # speaker={C_ORLANDO}
-good job eating bruh
+Good job eating! Easy foods like fish heal, while foods that need recipes can heal and also buff your stats!
+
+# speaker={C_ORLANDO}
+Cooking is amazing! It turns boring old plants and animals into pieces of art!
+
+# speaker={C_ORLANDO}
+Next up, we'll look at rites!
 
 -> DONE
 
 = incorrect_yield
 
 # speaker={C_ORLANDO}
-bruh why'd you yield just try again ok bruh attack the dummy when u ready ok bruh
+Are you okay? Take a break and attack the dummy when you're ready!
 
 -> DONE
 

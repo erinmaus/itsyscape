@@ -162,7 +162,13 @@ local Tree = BTreeBuilder.Node() {
 						CommonLogic.DidYieldDuringCombatTutorial
 					},
 
-					AttackOrDefend
+					Mashina.Try {
+						Mashina.Failure {
+							CommonLogic.IsYielding
+						},
+
+						AttackOrDefend
+					}
 				}
 			}
 		}

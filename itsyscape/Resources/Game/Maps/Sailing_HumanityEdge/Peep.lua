@@ -619,7 +619,7 @@ function Island:onPlaceTutorialDummy(playerPeep)
 			self:talkToPeep(playerPeep, "Orlando", function()
 				Utility.Peep.enable(playerPeep)
 				Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
-			end, "quest_tutorial_combat.attack_dummy")
+			end, "quest_tutorial_combat.place_dummy")
 
 			Utility.Peep.setMashinaState(
 				self:getCompanion(playerPeep, "KnightCommander"),

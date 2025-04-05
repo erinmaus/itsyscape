@@ -179,9 +179,9 @@ function LocalPlayer:spawn(storage, newGame, password)
 							mapName = location:get("name")
 						end
 
-						actor:getPeep():addBehavior(DisabledBehavior)
+						Utility.Peep.disable(actor:getPeep())
 						Utility.UI.openInterface(actor:getPeep(), "CutsceneTransition", false, nil, function()
-							actor:getPeep():removeBehavior(DisabledBehavior)
+							Utility.Peep.enable(actor:getPeep())
 						end)
 
 						self.stage:movePeep(

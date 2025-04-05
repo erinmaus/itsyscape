@@ -22,7 +22,7 @@ function ApplyEffect:update(mashina, state, executor)
 	local singular = state[self.SINGULAR]
 
 	local success, effect = Utility.Peep.applyEffect(target, effect, singular)
-	if success then
+	if success or effect then
 		state[self.RESULT] = effect
 		return B.Status.Success
 	end

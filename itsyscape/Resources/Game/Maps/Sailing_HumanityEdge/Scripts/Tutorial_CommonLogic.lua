@@ -13,8 +13,8 @@ local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
-local PLAYER = B.Reference("Tutorial_AttackCommon", "PLAYER")
-local PLAYER_TARGET = B.Reference("Tutorial_AttackCommon", "PLAYER_TARGET")
+local PLAYER = B.Reference("Tutorial_CommonLogic", "PLAYER")
+local PLAYER_TARGET = B.Reference("Tutorial_CommonLogic", "PLAYER_TARGET")
 
 local AttackPlayerTarget = Mashina.Step {
 	Mashina.Invert {
@@ -80,7 +80,7 @@ local Heal = Mashina.Step {
 	}
 }
 
-local ORLANDO = B.Reference("Tutorial_AttackCommon", "ORLANDO")
+local ORLANDO = B.Reference("Tutorial_CommonLogic", "ORLANDO")
 
 local GetOrlando = Mashina.Sequence {
 	Mashina.Peep.GetPlayer {
@@ -98,6 +98,8 @@ local GetOrlando = Mashina.Sequence {
 		[ORLANDO] = B.Output.result
 	},
 }
+
+local DID_YIELD = B.Reference("Tutorial_CommonLogic", "DID_YIELD")
 
 local DidYieldDuringCombatTutorial = Mashina.Step {
 	Mashina.Peep.HasCombatTarget {
@@ -129,6 +131,39 @@ local DidYieldDuringCombatTutorial = Mashina.Step {
 	Mashina.Player.Enable {
 		player = PLAYER
 	},
+
+	Mashina.Set {
+		value = true,
+		[DID_YIELD] = B.Output.result
+	}
+}
+
+local IsYielding = Mashina.Sequence {
+	Mashina.Check {
+		condition = DID_YIELD
+	},
+
+	Mashina.Repeat {
+		Mashina.Invert {
+			Mashina.Sequence {
+				Mashina.Peep.HasCombatTarget {
+					peep = PLAYER,
+					[PLAYER_TARGET] = B.Output.target					
+				},
+
+				Mashina.Check {
+					condition = function(mashina, state)
+						return state[PLAYER_TARGET] == mashina
+					end
+				}
+			}
+		}
+	},
+
+	Mashina.Set {
+		value = false,
+		[DID_YIELD] = B.Output.result
+	}
 }
 
 return {
@@ -144,5 +179,7 @@ return {
 	ORLANDO = ORLANDO,
 	GetOrlando = GetOrlando,
 
-	DidYieldDuringCombatTutorial = DidYieldDuringCombatTutorial
+	DID_YIELD = DID_YIELD,
+	DidYieldDuringCombatTutorial = DidYieldDuringCombatTutorial,
+	IsYielding = IsYielding
 }
