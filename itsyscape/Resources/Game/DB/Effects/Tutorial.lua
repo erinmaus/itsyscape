@@ -8,6 +8,22 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Effect "Tutorial_AlwaysHit" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Always hit (tutorial)",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Tutorial_AlwaysHit"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The attacker always hits.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Tutorial_AlwaysHit"
+}
+
 ItsyScape.Resource.Effect "Tutorial_NoDamage" {
 	-- Nothing.
 }

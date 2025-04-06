@@ -1891,6 +1891,23 @@ function Utility.Text.Dialog.ir_is_in_passage(dialog, characterName, passageName
 	return Utility.Peep.isInPassage(peep, passageName)
 end
 
+function Utility.Text.Dialog.ir_get_stance(dialog, characterName)
+	local Weapon = require "ItsyScape.Game.Weapon"
+
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return Weapon.STANCE_NONE
+	end
+
+	local stance = peep:getBehavior(StanceBehavior)
+	if not stance then
+		return Weapon.STANCE_NONE
+	end
+
+	return stance.stance
+end
+
+
 function Utility.Text.bind(dialog, common, language)
 	common = common or Utility.Text.Dialog
 

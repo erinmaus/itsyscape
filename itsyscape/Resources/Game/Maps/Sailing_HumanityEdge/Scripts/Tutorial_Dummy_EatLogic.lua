@@ -26,6 +26,11 @@ local HandleOffense = Mashina.Step {
 		singular = true
 	},
 
+	Mashina.Peep.ApplyEffect {
+		effect = "Tutorial_AlwaysHit",
+		singular = true
+	},
+
 	Mashina.Peep.EngageCombatTarget {
 		peep = CommonLogic.PLAYER
 	},
@@ -33,6 +38,11 @@ local HandleOffense = Mashina.Step {
 	Mashina.Peep.DidAttack,
 	Mashina.Peep.DidAttack,
 	Mashina.Peep.DidAttack,
+
+	Mashina.Peep.RemoveEffect {
+		effect = "Tutorial_AlwaysHit",
+		singular = true
+	},
 
 	Mashina.Peep.RemoveEffect {
 		effect = "Tutorial_NoKill",

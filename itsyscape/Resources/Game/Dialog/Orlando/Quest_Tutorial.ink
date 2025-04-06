@@ -38,6 +38,14 @@ VAR quest_tutorial_main_did_place_dummy = false
   - else: loaf
 }
 
+== function quest_tutorial_get_offensive_power_name() ==
+{
+  - player_get_stance() == STANCE_DEFENSIVE: Bash
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: Corrupt
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: Snipe
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: Tornado
+}
+
 == function quest_tutorial_did_exhaust_options() ==
 ~ return quest_tutorial_main_started_asked_what_happened && quest_tutorial_main_started_asked_where_am_i && quest_tutorial_main_started_asked_what_is_going_on
 
@@ -517,7 +525,7 @@ Oh, wonderful! Now that you've both made up and hugged, let's focus on the task 
 ~ quest_tutorial_main_ignored_scout_argument = true
 
 # speaker={C_ORLANDO}
-...controls %hint(more than) %person(Vizier-King Yohn's) %hint(purse). Or do have to remind you how much the Vizier-King owes her?
+...controls %hint(more than) %person(Vizier-King Yohn's) %hint(purse). Or do I got to remind you how much the Vizier-King owes her?
 
 # speaker={C_ORLANDO}
 Or how much the Realm owes her?
@@ -1027,41 +1035,154 @@ Are you okay? Take a break and attack the dummy when you're ready!
 = can_use_rite
 
 # speaker={C_ORLANDO}
-bruh use a rite k
-
--> DONE
-
-= preemptively_used_rite
+Wow! Did you see that? The dummy used a rite of malice!
 
 # speaker={C_ORLANDO}
-good job using a rite
+Rites of malice deal more damage and rites of bulwark lower damage! They also got a bunch of other cool effects!
+
+# speaker={C_ORLANDO}
+You can dodge attacks, slow down your foe, get them stuck, lower their stats, and a ton of other stuff.
+
+# speaker={C_ORLANDO}
+Since rites are kinda, uh, emotional... they require a certain amount of zeal.
+
+= can_use_rite_loop
+
+# speaker={C_PLAYER}
+
+* Uh, what is zeal?
+  -> what_is_zeal
+* Rites are emotional?
+  -> what_are_rites
+* [(Continue listening to %person(Ser Orlando).)]
+  -> can_use_rite_post_loop
+
+= can_use_rite_post_loop
+
+# speaker={C_ORLANDO}
+You get zeal from fighting good. The better you're doing, the more zeal you'll get!
+
+# speaker={C_ORLANDO}
+And after you use a rite, it needs to recharge. So you can't use the same rite back-to-back!
+
+# speaker={C_ORLANDO}
+The cooler, uh, ... I mean stronger the rite, the more zeal it takes and the longer it recharges!
+
+# speaker={C_ORLANDO}
+Lemme show you a cool rite...
+
+{
+  - player_get_stance() == STANCE_DEFENSIVE: -> use_bash
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: -> use_corrupt
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: -> use_snipe
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: -> use_tornado
+}
+
+= use_bash
+
+# speaker={C_ORLANDO}
+I'll show you how to use %hint(Bash) since you're using a %hint(defensive stance)! Bash flips the idea of defense on its head and deals damage.
 
 -> DONE
+
+= use_corrupt
+
+# speaker={C_ORLANDO}
+I'll show you how to use %hint(Corrupt) since you're a wizard, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}! That one's pretty powerful, it deals lots of damage over time, not all at once!
+
+-> DONE
+
+= use_snipe
+
+# speaker={C_ORLANDO}
+I'll show you how to use %hint(Snipe)! It never misses and deals extra damage, but your next attack will be slower!
+
+-> DONE
+
+= use_tornado
+
+# speaker={C_ORLANDO}
+I'll show you how to use %hint(Tornado)! It's my fave! You spin in a big circle and hit everyone around you. Good if you got ganged up on!
+
+-> DONE
+
+# speaker={C_ORLANDO}
+= what_is_zeal
+
+# speaker={C_ORLANDO}
+Zeal means something different for everyone! For me, it's my braveness level. The braver I'm being, the faster I get zeal!
+
+# speaker={C_ORLANDO}
+For you, it might be how smitey you're feeling if you're religious. Or hecks, maybe you're a hippy and it's how peaceful you're feeling.
+
+# speaker={C_ORLANDO}
+Think about what zeal is to you... You might not know right now and that's okay! Some peeps take forever to figure it out.
+
+-> can_use_rite_loop
+
+= what_are_rites
+
+# speaker={C_ORLANDO}
+Rites require a certain connection with your inside self. Like one of those voices in your head!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+"One of those voices"? Hmm...
+
+# speaker={C_ORLANDO}
+Oh, sorry %person(Ser Commander), I forgot, you probably only got one inner voice and it's a squealing donkey!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+... and your inner voices are what, a drove of squealing pigs?
+
+# speaker={C_PLAYER}
+{
+  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_defused_situation") && quest_tutorial_main_defused_scout_argument: Let's put a cork in it.
+  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_inflamed_situation") && quest_tutorial_main_inflamed_scout_argument: How about you both stop acting like a couple of farm animals and get back on topic?
+  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_ignored_situation") && quest_tutorial_main_ignored_scout_argument: ...
+  - else: Ahem?
+}
+
+# speaker={C_ORLANDO}
+Um... sorries.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Apologies, %person({player_get_pronoun_uppercase(X_MX)}).
+
+# speaker={C_ORLANDO}
+Anyways, increasing your combat skills isn't just about how tough you are. You gotta connect with your inside self!
+
+-> can_use_rite_loop
 
 = correct_rite
 
 # speaker={C_ORLANDO}
-correct!
+Good job! You aced it!
+
+# speaker={C_ORLANDO}
+Now let's try and dodge the dummy's rite...
 
 -> DONE
 
 = incorrect_rite
 
 # speaker={C_ORLANDO}
-INCORRECT!
+Wow! Improvising, huh?! That was SO COOL... But you need to use %hint{quest_tutorial_get_offensive_power_name()}!
+
+# speaker={C_ORLANDO}
+Try again!
 
 -> DONE
 
 = did_not_use_rite
 
 # speaker={C_ORLANDO}
-come on bruh use a right
+It's okay, take your time! Use %hint{quest_tutorial_get_offensive_power_name()} when you're ready!
 
 -> DONE
 
 = attack_dummy_again
 
 # speaker={C_ORLANDO}
-dude attack the dummy ok
+Go on and attack the dummy!
 
 -> DONE

@@ -26,6 +26,11 @@ CONST TENSE_FUTURE = "will be"
 CONST RESOURCE_KEY_ITEM = "KeyItem"
 CONST RESOURCE_ITEM = "Item"
 
+CONST STANCE_NONE = 0
+CONST STANCE_AGGRESSIVE = 1
+CONST STANCE_CONTROLLED = 2
+CONST STANCE_DEFENSIVE = 3
+
 LIST ir_state_flags = none
 LIST ir_skill_state_flags = skill_unboosted, skill_as_level
 LIST ir_item_state_flags = item_inventory, item_ignore, item_noted, item_drop, item_force_drop, item_bank, item_equipment, item_equipment_slot
@@ -185,3 +190,11 @@ EXTERNAL ir_is_in_passage(characterName, passageName)
 
 == function peep_is_in_passage(characterName, passageName) ==
 ~ return ir_is_in_passage(characterName, passageName)
+
+EXTERNAL ir_get_stance(characterName)
+
+== function player_get_stance() ==
+~ return ir_get_stance(C_PLAYER)
+
+== function get_peep_stance(characterName) ==
+~ return ir_get_stance(characterName)
