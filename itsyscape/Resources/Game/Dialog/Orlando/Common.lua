@@ -47,6 +47,8 @@ function Common.quest_tutorial_orlando_has_dropped_dummy(dialog)
 		Probe.resource("Peep", dummyResourceID),
 		Probe.instance(Utility.Peep.getPlayerModel(peep)))
 
+	print(">>> got", #dummies, "dummies", dummyResourceID)
+
 	local canAttackDummy = false
 	for _, dummy in ipairs(dummies) do
 		if Utility.Peep.canAttack(dummy) then

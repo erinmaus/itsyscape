@@ -226,6 +226,45 @@ do
 	}
 end
 
+M["Anchor_Orlando_Duel"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 67,
+		PositionY = 5,
+		PositionZ = 161,
+		Direction = -1,
+		Name = "Anchor_Orlando_Duel",
+		Map = M._MAP,
+		Resource = M["Anchor_Orlando_Duel"]
+	}
+end
+
+M["Anchor_KnightCommander_Duel"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 5,
+		PositionZ = 157,
+		Direction = -1,
+		Name = "Anchor_KnightCommander_Duel",
+		Map = M._MAP,
+		Resource = M["Anchor_KnightCommander_Duel"]
+	}
+end
+
+M["Anchor_Player_Duel"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 63,
+		PositionY = 5,
+		PositionZ = 161,
+		Direction = 1,
+		Name = "Anchor_Player_Duel",
+		Map = M._MAP,
+		Resource = M["Anchor_Player_Duel"]
+	}
+end
+
 M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {

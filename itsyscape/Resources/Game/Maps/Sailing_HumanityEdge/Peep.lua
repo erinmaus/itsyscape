@@ -14,7 +14,9 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Color = require "ItsyScape.Graphics.Color"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Probe = require "ItsyScape.Peep.Probe"
+local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
@@ -128,7 +130,7 @@ function Island:_dropPlayerInventory(playerPeep)
 	end
 end
 
-function Island:_doTalkToPeep(playerPeep, otherPeepName, callback, entryPoint)
+function Island:doTalkToPeep(playerPeep, otherPeepName, callback, entryPoint)
 	local success, dialog = Utility.Peep.dialog(playerPeep, "Talk", otherPeepName, entryPoint)
 	if success then
 		Utility.Peep.disable(playerPeep)
@@ -168,12 +170,12 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint)
 
 		local i, j, k = Utility.Peep.getTile(playerPeep)
 		if Utility.Peep.walk(otherPeep, i, j, k, 3, { asCloseAsPossible = false }) then
-			otherPeep:getCommandQueue():push(CallbackCommand(self._doTalkToPeep, self, playerPeep, otherPeepName, wrappedCallback, entryPoint))
+			otherPeep:getCommandQueue():push(CallbackCommand(self.doTalkToPeep, self, playerPeep, otherPeepName, wrappedCallback, entryPoint))
 			return true
 		end
 	end
 
-	return self:_doTalkToPeep(playerPeep, otherPeepName, wrappedCallback, entryPoint)
+	return self:doTalkToPeep(playerPeep, otherPeepName, wrappedCallback, entryPoint)
 end
 
 function Island:onInitScoutTutorial(playerPeep)
@@ -581,6 +583,89 @@ function Island:updateTutorialCookStormfishStep(playerPeep)
 
 			self:transitionTutorial(playerPeep, "Tutorial_CookedLightningStormfish")
 		end, "quest_tutorial_cook_fish.done_cooking")
+	end
+end
+
+function Island:onPrepareDuel(playerPeep)
+	local orlando = self:getCompanion(playerPeep, "Orlando")
+	Utility.Peep.setMashinaState(orlando, "tutorial-duel")
+
+	local isOrlandoPending = true
+	do
+		local x, y, z = Utility.Map.getAnchorPosition(
+			self:getDirector():getGameInstance(),
+			Utility.Peep.getMapResource(self),
+			"Anchor_Orlando_Duel")
+
+		local w = Utility.Peep.queueWalk(
+			orlando,
+			x, z, Utility.Peep.getLayer(playerPeep),
+			0,
+			{ asCloseAsPossible = true, isPosition = true })
+
+		w:register(function()
+			isOrlandoPending = false
+		end)
+	end
+
+	local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
+	Utility.Peep.setMashinaState(knightCommander, "tutorial-duel")
+
+	local isKnightCommanderPending = true
+	do
+		local x, y, z = Utility.Map.getAnchorPosition(
+			self:getDirector():getGameInstance(),
+			Utility.Peep.getMapResource(self),
+			"Anchor_KnightCommander_Duel")
+
+		local w = Utility.Peep.queueWalk(
+			knightCommander,
+			x, z, Utility.Peep.getLayer(playerPeep),
+			0,
+			{ asCloseAsPossible = true, isPosition = true })
+		w:register(function()
+			isKnightCommanderPending = false
+		end)
+	end
+
+	do
+		Utility.Peep.disable(playerPeep)
+
+		local x, y, z = Utility.Map.getAnchorPosition(
+			self:getDirector():getGameInstance(),
+			Utility.Peep.getMapResource(self),
+			"Anchor_Player_Duel")
+
+		local playerWalk = Utility.Peep.queueWalk(
+			playerPeep,
+			x, z, Utility.Peep.getLayer(playerPeep),
+			0,
+			{ asCloseAsPossible = true, isPosition = true, isCutscene = true })
+
+		playerWalk:register(function(s)
+			if s then
+				local condition = function()
+					if isOrlandoPending or orlando:getCommandQueue():getIsPending() then
+						return true
+					end
+
+					if isKnightCommanderPending or knightCommander:getCommandQueue():getIsPending() then
+						return true
+					end
+
+					return false
+				end
+
+				playerPeep:getCommandQueue():push(CompositeCommand(condition), WaitCommand(math.huge))
+				playerPeep:getCommandQueue():push(CallbackCommand(function()
+					self:doTalkToPeep(playerPeep, "Orlando", function()
+						Utility.Peep.enable(playerPeep)
+					end, "quest_tutorial_duel.begin")
+				end))
+			else
+				Utility.Peep.enable(playerPeep)
+			end
+		end)
 	end
 end
 

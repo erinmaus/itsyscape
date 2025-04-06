@@ -850,6 +850,47 @@ Sure thing! Lemme get on that.
 
 -> DONE
 
+== quest_tutorial_duel ==
+
+# speaker={C_ORLANDO}
+The rules are simple! We fight honorably until the other peep yields.
+
+# speaker={C_ORLANDO}
+When the other peep yields, you gotta yield too. Don't keep fighting!
+
+# speaker={C_ORLANDO}
+%person(Ser Commander) will judge the fight.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Very well. If any of you break the rules, I will step in. And you do not want me to step in, given how... annoyed I am.
+
+# speaker={C_ORLANDO}
+Heard loud and clear!
+
+# speaker={C_ORLANDO}
+%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, you can deal the first strike since I challenged you.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+To your places!
+
+%empty()
+~ player_poke_map("prepareDuel")
+
+-> DONE
+
+= begin
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+May %person(Bastiel) watch over this fight and grant the most heroic and chivalrous of you victory.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Ready...
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+DUEL!
+
+-> DONE
+
 == quest_tutorial_combat ==
 
 # speaker={C_ORLANDO}
@@ -875,8 +916,7 @@ You're not fighting like the {quest_tutorial_get_class_name()} I knew...
 * I'm still a bit out of it...[] Can you help me get back up to speed?
   -> start_still_out_of_it
 * No, I'm totally fine!
-  // -> start_totally_fine
-  -> DONE
+  -> start_totally_fine
 
 = start_still_out_of_it
 
@@ -893,6 +933,27 @@ Like I said, I'm always prepared!
 ~ player_poke_map("placeTutorialDummy")
 
 -> DONE
+
+= start_totally_fine
+
+# speaker={C_ORLANDO}
+Okay... You sure? So... If we had a mock duel you'd be able to beat me?
+
+# speaker={C_PLAYER}
+* Yes![] Definitely! You stand no chance!
+  -> totally_fine_let_us_duel
+* No![] You're right, I need help.
+  -> start_still_out_of_it
+
+= totally_fine_let_us_duel
+
+# speaker={C_ORLANDO}
+EEEEEEEEEEEEEEEEEEEEEEE!
+
+# speaker={C_ORLANDO}
+Confident! Just like the %person({player_get_pronoun_uppercase(X_MX)}) {player_name} I know!
+
+-> quest_tutorial_duel
 
 = place_dummy
 
