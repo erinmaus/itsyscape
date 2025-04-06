@@ -588,7 +588,7 @@ end
 
 function Island:onPrepareDuel(playerPeep)
 	local orlando = self:getCompanion(playerPeep, "Orlando")
-	Utility.Peep.setMashinaState(orlando, "tutorial-duel")
+	Utility.Peep.setMashinaState(orlando, false)
 
 	local isOrlandoPending = true
 	do
@@ -609,7 +609,7 @@ function Island:onPrepareDuel(playerPeep)
 	end
 
 	local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
-	Utility.Peep.setMashinaState(knightCommander, "tutorial-duel")
+	Utility.Peep.setMashinaState(knightCommander, false)
 
 	local isKnightCommanderPending = true
 	do
@@ -660,6 +660,14 @@ function Island:onPrepareDuel(playerPeep)
 				playerPeep:getCommandQueue():push(CallbackCommand(function()
 					self:doTalkToPeep(playerPeep, "Orlando", function()
 						Utility.Peep.enable(playerPeep)
+
+						local attackableOrlandoResource = self:getDirector():getGameDB():getResource("Orlando_Attackable", "Peep")
+						if attackableOrlandoResource then
+							Utility.Peep.setResource(orlando, attackableOrlandoResource)
+						end
+
+						Utility.Peep.setMashinaState(orlando, "tutorial-duel")
+						Utility.Peep.setMashinaState(knightCommander, "tutorial-duel")
 					end, "quest_tutorial_duel.begin")
 				end))
 			else
@@ -667,6 +675,33 @@ function Island:onPrepareDuel(playerPeep)
 			end
 		end)
 	end
+end
+
+function Island:onPlayerFinishDuel(playerPeep)
+	local orlando = self:getCompanion(playerPeep, "Orlando")
+	local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
+
+	local regularOrlandoResource = self:getDirector():getGameDB():getResource("Orlando", "Peep")
+	if regularOrlandoResource then
+		Utility.Peep.setResource(orlando, regularOrlandoResource)
+	end
+
+	Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
+	Utility.Peep.setMashinaState(knightCommander, "tutorial-follow-player")
+
+	Utility.Peep.toggleEffect(playerPeep, "Tutorial_NoKill", false)
+
+	local orlandoStatus = orlando:getBehavior(CombatStatusBehavior)
+	if orlandoStatus.currentHitpoints < orlandoStatus.maximumHitpoints then
+		orlando:poke("heal", {
+			hitPoints = orlandoStatus.maximumHitpoints - orlandoStatus.currentHitpoints
+		})
+	end
+
+	self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
+		Utility.Peep.enable(playerPeep)
+		self:transitionTutorial(playerPeep, "Tutorial_Combat")
+	end, "quest_tutorial_combat.finished")
 end
 
 function Island:onPlaceTutorialDummy(playerPeep)

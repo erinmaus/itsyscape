@@ -181,6 +181,11 @@ local STATES = {
 }
 
 for _, dummy in ipairs(DUMMIES) do
+	ItsyScape.Meta.PeepCharacter {
+		Peep = ItsyScape.Resource.Peep(dummy),
+		Character = ItsyScape.Resource.Character "Dummy"
+	}
+
 	for _, state in ipairs(STATES) do
 		ItsyScape.Meta.PeepMashinaState {
 			State = state.name,

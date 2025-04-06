@@ -129,8 +129,12 @@ local HandlePowers = Mashina.Step {
 		HandleOffense
 	},
 
-	Mashina.Peep.OnPoke {
-		event = "powerActivated"
+	Mashina.Sequence {
+		Mashina.Peep.HasQueuedPower,
+
+		Mashina.Peep.OnPoke {
+			event = "powerActivated"
+		}
 	}
 }
 

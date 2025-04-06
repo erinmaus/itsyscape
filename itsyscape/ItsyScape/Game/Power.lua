@@ -25,8 +25,8 @@ function Power:new(game, resource, ...)
 	})
 
 	if spec then
-		self.isInstant = spec:get("IsInsant") ~= 0
-		self.isQuick = spec:get("IsQuick") ~= 0
+		self.isInstant = false
+		self.isQuick = false
 		self.requiresTarget = spec:get("NoTarget") == 0
 	end
 

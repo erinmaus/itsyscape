@@ -24,6 +24,7 @@ local Color = require "ItsyScape.Graphics.Color"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
+local CharacterBehavior = require "ItsyScape.Peep.Behaviors.CharacterBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -51,6 +52,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
 local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 
@@ -4148,6 +4150,70 @@ function Utility.Peep.canAttack(peep)
 	return status.currentHitpoints > 0 and not status.dead
 end
 
+function _canPeepAttack(peep, teams, otherTeams, matchup)
+	local character = Utility.Peep.getCharacter(peep)
+	if not character then
+		return true
+	end
+
+	local override = teams.override[character.name]
+	if override == TeamsBehavior.ENEMY then
+		return override
+	end
+
+	if #teams == 0 or #otherTeams == 0 then
+		return true
+	end
+
+	for _, team in ipairs(teams.teams) do
+		for _, otherTeam in ipairs(otherTeams.teams) do
+			local status = matchup[team] and matchup[team][otherTeam]
+			if status == TeamsBehavior.ENEMY then
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+function Utility.Peep.canPeepAttackTarget(peep, target)
+	if not (Utility.Peep.isAttackable(peep) and Utility.Peep.canAttack(peep)) then
+		return false
+	end
+
+	if not (Utility.Peep.isAttackable(target) and Utility.Peep.canAttack(target)) then
+		return false
+	end
+
+	local player = Utility.Peep.getPlayer(peep)
+
+	local teams = player:getBehavior(TeamsBehavior)
+	if not teams then
+		return true
+	end
+
+	local peepTeams = peep:getBehavior(TeamBehavior)
+	local targetTeams = peep:getBehavior(TeamBehavior)
+
+	local peepCharacter = Utility.Peep.getCharacter(peep)
+	local targetCharacter = Utility.Peep.getCharacter(target)
+
+	if not (peepCharacter and targetCharacter) then
+		return true
+	end
+
+	local peepVsTarget = teams.characters[peepCharacter] and teams.characters[peepCharacter][targetCharacter]
+	local targetVsPeep = teams.characters[targetCharacter] and teams.characters[targetCharacter][peepCharacter]
+
+	if peepVsTarget == TeamsBehavior.ENEMY or targetVsPeep == TeamsBehavior.ENEMY then
+		return true
+	end
+
+	return _canPeepAttack(peep, peepTeams, targetTeams, matchup) or
+	       _canPeepAttack(target, targetTeams, peepTeams, matchup)
+end
+
 local function _isAttackable(peep, r)
 	if not r then
 		return false
@@ -4164,6 +4230,10 @@ local function _isAttackable(peep, r)
 end
 
 function Utility.Peep.isAttackable(peep)
+	if peep:hasBehavior(PlayerBehavior) then
+		return true
+	end
+
 	local resource = Utility.Peep.getResource(peep)
 	local mapObject = Utility.Peep.getMapObject(peep)
 
@@ -4664,6 +4734,11 @@ function Utility.Peep.attack(peep, other, distance)
 	end
 
 	return true
+end
+
+function Utility.Peep.getCharacter(peep)
+	local character = peep:getBehavior(CharacterBehavior)
+	return character and character.character
 end
 
 function Utility.Peep.getResource(peep)
@@ -6322,6 +6397,69 @@ function Utility.Peep.makeHuman(peep)
 	peep:addResource("animation-jump", jumpAnimation)
 
 	peep:listen('finalize', Utility.Peep.Human.onFinalize)
+end
+
+Utility.Peep.Character = {}
+
+local function _tryMakeCharacter(peep, resource)
+	if not resource then
+		return false
+	end
+
+	local gameDB = peep:getDirector():getGameDB()
+	local character = gameDB:getRecord("PeepCharacter", {
+		Peep = resource
+	})
+
+	if character then
+		local _, c = peep:addBehavior(CharacterBehavior)
+		c.character = character:get("Character")
+
+		return true
+	end
+
+	return false
+end
+
+function Utility.Peep.Character:onFinalize()
+	local resource = Utility.Peep.getResource(self)
+	local mapObject = Utility.Peep.getMapObject(self)
+
+	if not (_tryMakeCharacter(self, mapObject) or _tryMakeCharacter(self, resource)) then
+		return
+	end
+
+	local character = Utility.Peep.getCharacter(self)
+	local teamRecords = character and self:getDirector():getGameDB():getRecords("CharacterTeam", {
+		Character = character
+	})
+
+	if not teamRecords then
+		return
+	end
+
+	local _, teams = self:addBehavior(TeamBehavior)
+	for _, teamRecord in ipairs(teamRecords) do
+		local team = teamRecord:get("Team").name
+
+		local hasTeam = false
+		for _, otherTeam in ipairs(teams.teams) do
+			if otherTeam == team then
+				hasTeam = true
+				break
+			end
+		end
+
+		if not hasTeam then
+			Log.info("Peep '%s' (character = '%s') is on team '%s'.", self:getName(), character.name, team)
+			table.insert(teams.teams, team)
+		end
+	end
+end
+
+function Utility.Peep.makeCharacter(peep)
+	peep:addBehavior(TeamBehavior)
+	peep:listen('finalize', Utility.Peep.Character.onFinalize)
 end
 
 Utility.Boss = {}

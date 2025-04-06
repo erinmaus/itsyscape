@@ -191,12 +191,16 @@ function Probe.mapObjectGroup(name)
 	return Function(_mapObjectGroup, name)
 end
 
-local _attackable = function(peep)
-	return Utility.Peep.isAttackable(peep)
+local _attackable = function(aggressor, peep)
+	if not aggressor then
+		return Utility.Peep.isAttackable(peep)
+	else
+		return Utility.Peep.canPeepAttackTarget(aggressor, peep)
+	end
 end
 
-function Probe.attackable()
-	return _attackable
+function Probe.attackable(peep)
+	return Function(_attackable, peep)
 end
 
 local _hasTarget = function(target, peep)

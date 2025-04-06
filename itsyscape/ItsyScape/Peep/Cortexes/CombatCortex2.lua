@@ -128,8 +128,7 @@ function CombatCortex:_getPeepTarget(peep)
 end
 
 function CombatCortex:_canPeepAttackTarget(selfPeep, targetPeep)
-	return Utility.Peep.isAttackable(targetPeep) and
-	       Utility.Peep.canAttack(targetPeep)
+	return Utility.Peep.canPeepAttackTarget(selfPeep, targetPeep)
 end
 
 function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
@@ -825,6 +824,7 @@ function CombatCortex:tickPeep(delta, peep)
 	local isWithinRange, isTooFar, isTooClose = self:_isPeepWithinRange(peep, target)
 	local isAttackable = self:_canPeepAttackTarget(peep, target)
 	if not isAttackable or isTooFar then
+		peep:getCommandQueue(CombatCortex.QUEUE):interrupt()
 		peep:removeBehavior(CombatTargetBehavior)
 		return
 	elseif not isWithinRange then

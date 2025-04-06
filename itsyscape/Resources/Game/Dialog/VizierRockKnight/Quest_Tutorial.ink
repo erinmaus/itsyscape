@@ -6,6 +6,7 @@ VAR quest_tutorial_main_knight_commander_tagged_along = false
 VAR quest_tutorial_main_knight_commander_defused_situation = false
 VAR quest_tutorial_main_knight_commander_inflamed_situation = false
 VAR quest_tutorial_main_knight_commander_ignored_situation = false
+VAR quest_tutorial_main_knight_commander_did_not_yield = false
 
 == quest_tutorial_main ==
 {
@@ -113,3 +114,27 @@ I loathe to speak it, but you're right, %person(Ser Orlando). Very well. Let us 
 ~ set_peep_mashina_state(C_VIZIER_ROCK_KNIGHT, "tutorial-follow-player")
 
 -> DONE
+
+== quest_tutorial_duel ==
+
+= punish_player
+~ quest_tutorial_main_knight_commander_did_not_yield = true
+~ play_animation(C_VIZIER_ROCK_KNIGHT, "Human_AttackZweihanderSlash_Tornado")
+~ player_play_animation("Human_Trip_1")
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+VILLIAN {player_name}! %person(SER ORLANDO) YIELDED, SO YIELD YOURSELF!
+
+# speaker={C_PLAYER}
+...whoops.
+
+# speaker={C_ORLANDO}
+%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, that... wasn't like you.
+
+# speaker={C_ORLANDO}
+I guess you got caught up in the heat of the fight...
+
+# speaker={C_ORLANDO}
+We can talk about this later. We need to get going.
+
+~ player_poke_map("playerFinishDuel")

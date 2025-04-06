@@ -50,7 +50,7 @@ function BasicCannonball:_tryHit()
 
 	local position = Utility.Peep.getAbsolutePosition(self)
 	local hits = director:probe(self:getLayerName(),
-		Probe.attackable(),
+		Probe.attackable(self.currentPeep),
 		function(p)
 			if p:hasBehavior(DisabledBehavior) then
 				return false

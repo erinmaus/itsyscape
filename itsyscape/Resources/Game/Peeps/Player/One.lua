@@ -31,6 +31,7 @@ local Color = require "ItsyScape.Graphics.Color"
 local Peep = require "ItsyScape.Peep.Peep"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CharacterBehavior = require "ItsyScape.Peep.Behaviors.CharacterBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -45,6 +46,8 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
+local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 
 local One = Class(Peep)
 One.PENDING_ANALYTIC_LEVEL_UP_PERIOD_SECONDS = 5
@@ -65,6 +68,8 @@ function One:new(...)
 	self:addBehavior(StanceBehavior)
 	self:addBehavior(StatsBehavior)
 	self:addBehavior(CombatStatusBehavior)
+	self:addBehavior(TeamBehavior)
+	self:addBehavior(TeamsBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 2, 1)
@@ -406,11 +411,55 @@ function One:applyGender()
 	end
 end
 
+function One:initTeams()
+	local teams = self:getBehavior(TeamsBehavior)
+
+	-- TODO pull this from player storage and init to default
+	teams.teams = {
+		Player = {
+			Humanity = TeamsBehavior.ALLY,
+			Yendorians = TeamsBehavior.ENEMY,
+			Dummies = TeamsBehavior.ENEMY,
+			BlackTentacles = TeamsBehavior.ENEMY
+		},
+
+		Humanity = {
+			Player = TeamsBehavior.ALLY,
+			Yendorians = TeamsBehavior.ENEMY,
+			Dummies = TeamsBehavior.ENEMY,
+			BlackTentacles = TeamsBehavior.NEUTRAL
+		},
+
+		Dummies = {
+			Player = TeamsBehavior.NEUTRAL,
+			Humanity = TeamsBehavior.NEUTRAL,
+			Yendorians = TeamsBehavior.NEUTRAL,
+			BlackTentacles = TeamsBehavior.NEUTRAL
+		},
+
+		Yendorians = {
+			Player = TeamsBehavior.ENEMY,
+			Humanity = TeamsBehavior.ENEMY,
+			Dummies = TeamsBehavior.ENEMY,
+			BlackTentacles = TeamsBehavior.ENEMY
+		}
+	}
+
+	local team = self:getBehavior(TeamBehavior)
+	team.teams = {
+		"Player",
+		"Humanity"
+	}
+end
+
 function One:ready(director, game)
 	local actor = self:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		actor = actor.actor
 	end
+
+	local _, character = self:addBehavior(CharacterBehavior)
+	character.character = director:getGameDB():getResource("Player", "Character")
 
 	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
 	self:applySkins()

@@ -384,6 +384,12 @@ do
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_ChopLogic.lua",
 		Resource = M["Orlando"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-duel",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_DuelLogic.lua",
+		Resource = M["Orlando"]
+	}
 end
 
 M["KnightCommander"] = ItsyScape.Resource.MapObject.Unique()
@@ -437,6 +443,12 @@ do
 	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-stand-guard",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_StandGuardLogic.lua",
+		Resource = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-duel",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_DuelLogic.lua",
 		Resource = M["KnightCommander"]
 	}
 end

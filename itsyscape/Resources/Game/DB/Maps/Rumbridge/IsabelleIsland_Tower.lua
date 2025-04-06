@@ -15,6 +15,11 @@ do
 		ItsyScape.Action.InvisibleAttack()
 	}
 
+	ItsyScape.Meta.PeepCharacter {
+		Peep = Knight,
+		Character = ItsyScape.Resource.Character "VizierRockKnight"
+	}
+
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.ViziersRock.Guard",
 		Resource = Knight

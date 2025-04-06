@@ -39,7 +39,7 @@ function Tornado:hitSurroundingPeeps(peep, target)
 
 	local hits = peep:getDirector():probe(
 		peep:getLayerName(),
-		Probe.attackable(),
+		Probe.attackable(peep),
 		function(p)
 			if peep == p or target == p then
 				return false

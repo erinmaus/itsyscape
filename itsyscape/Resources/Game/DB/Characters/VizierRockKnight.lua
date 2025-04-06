@@ -12,7 +12,7 @@ do
 
 	ItsyScape.Meta.ResourceName {
 		Language = "en-US",
-		Value = "Vizier Rock knights",
+		Value = "Vizier's Rock knights",
 		Resource = Character
 	}
 
@@ -20,5 +20,10 @@ do
 		Language = "en-US",
 		Value = "Ferocious knights in service to Vizier-King Yohn. They will give their lives for the Vizier-King without hesitation.",
 		Resource = Character
+	}
+
+	ItsyScape.Meta.CharacterTeam {
+		Character = Character,
+		Team = ItsyScape.Resource.Team "Humanity"
 	}
 end

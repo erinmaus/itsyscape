@@ -12,6 +12,11 @@ ItsyScape.Resource.Peep "Yendorian_Base" {
 	-- Nothing.
 }
 
+ItsyScape.Meta.PeepCharacter {
+	Peep = ItsyScape.Resource.Peep "Yendorian_Base",
+	Character = ItsyScape.Resource.Character "Yendorian"
+}
+
 ItsyScape.Meta.ResourceTag {
 	Value = "Eldritch",
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
@@ -99,6 +104,11 @@ ItsyScape.Resource.Peep "Yendorian_Ballista" {
 	ItsyScape.Action.Attack()
 }
 
+ItsyScape.Meta.PeepCharacter {
+	Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
+	Character = ItsyScape.Resource.Character "Yendorian"
+}
+
 ItsyScape.Meta.ResourceTag {
 	Value = "Eldritch",
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
@@ -169,6 +179,11 @@ ItsyScape.Resource.Peep "Yendorian_Mast" {
 	ItsyScape.Action.Attack()
 }
 
+ItsyScape.Meta.PeepCharacter {
+	Peep = ItsyScape.Resource.Peep "Yendorian_Mast",
+	Character = ItsyScape.Resource.Character "Yendorian"
+}
+
 ItsyScape.Meta.ResourceTag {
 	Value = "Eldritch",
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
@@ -233,6 +248,11 @@ ItsyScape.Meta.PeepMashinaState {
 	Tree = "Resources/Game/Peeps/Yendorian/GenericYendorian_IdleLogic.lua",
 	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepCharacter {
+	Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
+	Character = ItsyScape.Resource.Character "Yendorian"
 }
 
 ItsyScape.Resource.Peep "Yendorian_Swordfish" {
@@ -308,6 +328,11 @@ ItsyScape.Meta.PeepMashinaState {
 do
 	local Scout = ItsyScape.Resource.Peep "Yendorian_Scout" {
 		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepCharacter {
+		Peep = Scout,
+		Character = ItsyScape.Resource.Character "Yendorian"
 	}
 
 	ItsyScape.Meta.ResourceTag {

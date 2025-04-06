@@ -273,6 +273,17 @@ Game "ItsyScape"
 	}
 
 	ResourceType "Character"
+	ResourceType "Team"
+
+	Meta "PeepCharacter" {
+		Peep = Meta.TYPE_RESOURCE,
+		Character = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CharacterTeam" {
+		Character = Meta.TYPE_RESOURCE,
+		Team = Meta.TYPE_RESOURCE
+	}
 
 	ActionType "Talk"
 	ActionType "Yell"
@@ -1501,8 +1512,11 @@ include "Resources/Game/DB/Peeps/Disemboweled.lua"
 include "Resources/Game/DB/Peeps/ExperimentX.lua"
 
 -- Characters
+include "Resources/Game/DB/Characters/Teams.lua"
+include "Resources/Game/DB/Characters/Player.lua"
 include "Resources/Game/DB/Characters/Orlando.lua"
 include "Resources/Game/DB/Characters/VizierRockKnight.lua"
+include "Resources/Game/DB/Characters/Dummy.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"

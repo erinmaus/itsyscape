@@ -178,7 +178,12 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 do
-	local Guard = ItsyScape.Resource.Peep "Knight_ViziersRock"
+	local Knight = ItsyScape.Resource.Peep "Knight_ViziersRock"
+
+	ItsyScape.Meta.PeepCharacter {
+		Peep = Knight,
+		Character = ItsyScape.Resource.Character "VizierRockKnight"
+	}
 
 	ItsyScape.Resource.Peep "Knight_ViziersRock" {
 		ItsyScape.Action.Attack(),
@@ -200,110 +205,110 @@ do
 
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.ViziersRock.Guard",
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.ResourceName {
 		Value = "Vizier Rock knight",
 		Language = "en-US",
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "Belongs to the Vizier-King Yohn's personal guard. They're one of the most skilled warriors in the Realm.",
 		Language = "en-US",
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
 		Value = ItsyScape.Utility.xpForLevel(45),
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
 		Value = ItsyScape.Utility.xpForLevel(45),
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Defense",
 		Value = ItsyScape.Utility.xpForLevel(45),
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Faith",
 		Value = ItsyScape.Utility.xpForLevel(45),
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
 		Value = ItsyScape.Utility.xpForLevel(350),
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "TrimmedAdamantPlatebody",
 		Count = 1,
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "TrimmedAdamantBoots",
 		Count = 1,
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "TrimmedAdamantGloves",
 		Count = 1,
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "TrimmedAdamantHelmet",
 		Count = 1,
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "AdamantLongsword",
 		Count = 1,
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "TrimmedAdamantShield",
 		Count = 1,
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "GoldenRing",
 		Count = 1,
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "GoldenAmulet",
 		Count = 1,
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "idle",
 		Tree = "Resources/Game/Peeps/ViziersRock/Knight_IdleLogic.lua",
 		IsDefault = 1,
-		Resource = Guard
+		Resource = Knight
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "attack",
 		Tree = "Resources/Game/Peeps/ViziersRock/Knight_AttackLogic.lua",
-		Resource = Guard
+		Resource = Knight
 	}
 
 	local DropTable = ItsyScape.Resource.DropTable "Knight_ViziersRock_Primary"

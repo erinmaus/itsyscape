@@ -30,6 +30,7 @@ VAR quest_tutorial_main_player_found_yendorhounds = false
 VAR quest_tutorial_main_did_place_dummy = false
 
 == function quest_tutorial_get_class_name() ==
+<>
 {
   - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: wizard
   - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: archer
@@ -39,6 +40,7 @@ VAR quest_tutorial_main_did_place_dummy = false
 }
 
 == function quest_tutorial_get_offensive_power_name() ==
+<>
 {
   - player_get_stance() == STANCE_DEFENSIVE: Bash
   - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: Corrupt
@@ -888,6 +890,59 @@ Ready...
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 DUEL!
+
+-> DONE
+
+= orlando_yielded
+
+# speaker={C_ORLANDO}
+I yield, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+%person({player_get_pronoun_uppercase(X_MX)}) {player_name} defeats %person(Ser Orlando) handedly!
+
+-> DONE
+
+= player_yielded
+
+# speaker={C_PLAYER}
+I yield, %person(Ser Orlando)!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+%person(Ser Orlando) defeats %person({player_get_pronoun_uppercase(X_MX)}) {player_name} handedly! Hmmph...
+
+# speaker={C_ORLANDO}
+Wow! That was a good fight! I didn't expect to beat you...
+
+%empty()
+
+~ player_poke_map("playerFinishDuel")
+
+-> DONE
+
+= player_should_yield
+
+# speaker={C_ORLANDO}
+Not to arrogant, but I think you should yield %person({player_get_pronoun_uppercase(X_MX)}) {player_name}...!
+
+# speaker={C_ORLANDO}
+You don't wanna die, do you?!
+
+-> DONE
+
+= finished
+
+# speaker={C_ORLANDO}
+If you want to duel again, just talk to me.
+
+# speaker={C_ORLANDO}
+But if you're comfy... uh, I mean, um,  confident... enough, we can get going.
+
+# speaker={C_ORLANDO}
+The peak isn't much further ahead. Let's go!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Finally. Gods forgive me for my thoughts...
 
 -> DONE
 

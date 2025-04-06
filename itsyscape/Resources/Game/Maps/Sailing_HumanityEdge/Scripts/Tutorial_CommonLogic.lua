@@ -88,6 +88,8 @@ local GetOrlando = Mashina.Sequence {
 	},
 
 	Mashina.Peep.FindNearbyPeep {
+		include_self = true,
+
 		filter = function(peep, _, state)
 			local isInInstance = Probe.instance(Utility.Peep.getPlayerModel(state[PLAYER]))(peep)
 			local isOrlando = Probe.namedMapObject("Orlando")(peep)
@@ -96,6 +98,25 @@ local GetOrlando = Mashina.Sequence {
 		end,
 
 		[ORLANDO] = B.Output.result
+	},
+}
+
+local KNIGHT_COMMANDER = B.Reference("Tutorial_CommonLogic", "KNIGHT_COMMANDER")
+
+local GetKnightCommander = Mashina.Sequence {
+	Mashina.Peep.GetPlayer {
+		[PLAYER] = B.Output.player
+	},
+
+	Mashina.Peep.FindNearbyPeep {
+		filter = function(peep, _, state)
+			local isInInstance = Probe.instance(Utility.Peep.getPlayerModel(state[PLAYER]))(peep)
+			local isOrlando = Probe.namedMapObject("KnightCommander")(peep)
+
+			return isOrlando and isInInstance
+		end,
+
+		[KNIGHT_COMMANDER] = B.Output.result
 	},
 }
 
@@ -178,6 +199,9 @@ return {
 
 	ORLANDO = ORLANDO,
 	GetOrlando = GetOrlando,
+
+	KNIGHT_COMMANDER = KNIGHT_COMMANDER,
+	GetKnightCommander = GetKnightCommander,
 
 	DID_YIELD = DID_YIELD,
 	DidYieldDuringCombatTutorial = DidYieldDuringCombatTutorial,

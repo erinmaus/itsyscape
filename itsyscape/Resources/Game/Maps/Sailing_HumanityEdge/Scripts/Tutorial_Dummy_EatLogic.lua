@@ -18,7 +18,6 @@ local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tu
 local HandleOffense = Mashina.Step {
 	Mashina.Peep.RemoveEffect {
 		effect = "Tutorial_NoDamage",
-		singular = true
 	},
 
 	Mashina.Peep.ApplyEffect {
@@ -41,12 +40,10 @@ local HandleOffense = Mashina.Step {
 
 	Mashina.Peep.RemoveEffect {
 		effect = "Tutorial_AlwaysHit",
-		singular = true
 	},
 
 	Mashina.Peep.RemoveEffect {
 		effect = "Tutorial_NoKill",
-		singular = true
 	},
 
 	Mashina.Peep.ApplyEffect {

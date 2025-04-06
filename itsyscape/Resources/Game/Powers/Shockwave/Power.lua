@@ -9,8 +9,9 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CombatPower = require "ItsyScape.Game.CombatPower"
-local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local Utility = require "ItsyScape.Game.Utility"
+local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 
 local Shockwave = Class(CombatPower)
 
@@ -28,13 +29,20 @@ function Shockwave:activate(activator, target)
 
 	if target and target:hasBehavior(PendingPowerBehavior) then
 		local pendingPower = target:getBehavior(PendingPowerBehavior)
+		if pendingPower.power then
+			local pendingPowerID = pendingPower.power:getResource().name
 
-		Log.info("Shockwave (fired by '%s') negated pending power '%s' on target '%s'.",
-			activator:getName(),
-			pendingPower.power:getResource().name,
-			target:getName())
+			Log.info("Shockwave (activated by '%s') negated pending power '%s' on target '%s'.",
+				activator:getName(),
+				pendingPowerID,
+				target:getName())
 
-		target:removeBehavior(PendingPowerBehavior)
+			local rechargeCost = pendingPower.power:getCost(target)
+			local _, recharge = target:addBehavior(PowerRechargeBehavior)
+			recharge.powers[pendingPowerID] = math.max(recharge.powers[pendingPowerID] or 0, rechargeCost)
+
+			target:removeBehavior(PendingPowerBehavior)
+		end
 	end
 end
 

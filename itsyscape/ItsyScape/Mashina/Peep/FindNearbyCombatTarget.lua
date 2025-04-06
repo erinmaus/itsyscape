@@ -90,7 +90,7 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 
 	local p = director:probe(
 		mashina:getLayerName(),
-		Probe.attackable(),
+		Probe.attackable(mashina),
 		Probe.distance(mashina, distance),
 		Probe.bind(probeIsAlive, state[self.INCLUDE_DEAD]),
 		Probe.bind(probeFilterNPCs, mashina, includeNPCs),

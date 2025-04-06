@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Player = require "ItsyScape.Peep.Peeps.Player"
 local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local Orlando = Class(Player)
@@ -23,6 +24,10 @@ function Orlando:new(resource, name, ...)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge
+
+	local aggressive = self:getBehavior(AggressiveBehavior)
+	aggressive.minResponseTime = 0.2
+	aggressive.maxResponseTime = 0.4
 end
 
 function Orlando:ready(director, game)

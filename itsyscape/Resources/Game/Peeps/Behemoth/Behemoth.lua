@@ -401,7 +401,7 @@ function Behemoth:onSplodeBarrel(barrel)
 
 	local hits = self:getDirector():probe(
 			self:getLayerName(),
-			Probe.attackable(),
+			Probe.attackable(self),
 			Probe.distance(barrel, 8))
 
 	local weapon = Utility.Peep.getXWeapon(self:getDirector():getGameInstance(), "Behemoth_Splode")
