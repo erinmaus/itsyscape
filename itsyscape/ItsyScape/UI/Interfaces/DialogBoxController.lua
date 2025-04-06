@@ -183,6 +183,10 @@ function DialogBoxController:poke(actionID, actionIndex, e)
 		self:next(e)
 	elseif actionID == "submit" then
 		self:submit(e)
+	elseif actionID == "close" then
+		if Utility.Peep.isEnabled(self:getPeep()) then
+			self:getGame():getUI():closeInstance(self)
+		end
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -321,6 +325,8 @@ function DialogBoxController:pump(e, ...)
 	then
 		self.needsPump = true
 	end
+
+	self.state.canClose = Utility.Peep.isEnabled(self:getPeep())
 end
 
 function DialogBoxController:pull()

@@ -2146,8 +2146,6 @@ function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
 end
 
 function Utility.UI.tutorial(target, tips, done, state)
-	Utility.Peep.disable(target)
-
 	state = state or {}
 
 	local index = 0
@@ -2188,8 +2186,6 @@ function Utility.UI.tutorial(target, tips, done, state)
 				{ position = position, style = style },
 				after)
 		else
-			Utility.Peep.enable(target)
-
 			if done then
 				done()
 			end

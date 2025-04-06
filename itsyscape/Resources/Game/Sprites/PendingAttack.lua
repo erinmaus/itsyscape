@@ -20,6 +20,7 @@ PendingAttack.FADE_DURATION = 0.2
 PendingAttack.WIDTH = 120
 PendingAttack.HEIGHT = 8
 PendingAttack.DROP_SHADOW = 4
+PendingAttack.STACKS = false
 
 function PendingAttack:new(...)
 	Sprite.new(self, ...)

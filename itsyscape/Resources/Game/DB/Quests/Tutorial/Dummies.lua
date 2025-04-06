@@ -177,6 +177,7 @@ local STATES = {
 	{ name = "tutorial-yield", filename = "Tutorial_Dummy_YieldLogic" },
 	{ name = "tutorial-eat", filename = "Tutorial_Dummy_EatLogic" },
 	{ name = "tutorial-rites", filename = "Tutorial_Dummy_RiteLogic" },
+	{ name = "tutorial-deflect", filename = "Tutorial_Dummy_DeflectLogic" },
 }
 
 for _, dummy in ipairs(DUMMIES) do

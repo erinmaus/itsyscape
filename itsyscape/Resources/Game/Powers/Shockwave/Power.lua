@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local CombatPower = require "ItsyScape.Game.CombatPower"
+local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local Utility = require "ItsyScape.Game.Utility"
 
 local Shockwave = Class(CombatPower)
@@ -17,6 +18,24 @@ function Shockwave:new(...)
 	CombatPower.new(self, ...)
 
 	self:setXWeaponID("Power_Shockwave")
+end
+
+function Shockwave:activate(activator, target)
+	CombatPower.activate(self, activator, target)
+
+	local stage = activator:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("ShockwaveSplosion", activator, target)
+
+	if target and target:hasBehavior(PendingPowerBehavior) then
+		local pendingPower = target:getBehavior(PendingPowerBehavior)
+
+		Log.info("Shockwave (fired by '%s') negated pending power '%s' on target '%s'.",
+			activator:getName(),
+			pendingPower.power:getResource().name,
+			target:getName())
+
+		target:removeBehavior(PendingPowerBehavior)
+	end
 end
 
 return Shockwave

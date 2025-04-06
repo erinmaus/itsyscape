@@ -844,6 +844,10 @@ function CombatCortex:tickPeep(delta, peep)
 
 	self:_makePeepFaceTarget(peep, target)
 
+	if Utility.Peep.isDisabled(target) then
+		return
+	end
+
 	local didUsePower, powerXWeapon = self:_tryUsePower(peep, target, equippedWeapon)
 	local weapon = powerXWeapon or equippedWeapon
 	if not (weapon and Class.isCompatibleType(weapon, Weapon)) then

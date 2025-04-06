@@ -25,6 +25,17 @@ end
 function Confuse:activate(activator, target)
 	CombatPower.activate(self, activator, target)
 	Utility.Peep.applyEffect(target, self.effectResource, true, activator)
+
+	if target and target:hasBehavior(PendingPowerBehavior) then
+		local pendingPower = target:getBehavior(PendingPowerBehavior)
+
+		Log.info("Confuse (fired by '%s') negated pending power '%s' on target '%s'.",
+			activator:getName(),
+			pendingPower.power:getResource().name,
+			target:getName())
+
+		target:removeBehavior(PendingPowerBehavior)
+	end
 end
 
 return Confuse

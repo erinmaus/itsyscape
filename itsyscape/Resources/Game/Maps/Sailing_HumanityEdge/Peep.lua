@@ -413,6 +413,10 @@ function Island:onShowOffensiveRiteHint(playerPeep)
 	TutorialCommon.showAttackHint(playerPeep)
 end
 
+function Island:onShowDeflectHint(playerPeep)
+	TutorialCommon.showDeflectHint(playerPeep)
+end
+
 function Island:updateTutorialItemSteps(playerPeep)
 	if not Utility.Peep.isInPassage(playerPeep, "Passage_TutorialStart") and
 	   Utility.Peep.isEnabled(playerPeep)

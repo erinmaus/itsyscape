@@ -46,6 +46,14 @@ VAR quest_tutorial_main_did_place_dummy = false
   - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: Tornado
 }
 
+== function quest_tutorial_get_defensive_power_name() ==
+{
+  - player_get_stance() == STANCE_DEFENSIVE: Bash
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: Confuse
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: Shockwave
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: Parry
+}
+
 == function quest_tutorial_did_exhaust_options() ==
 ~ return quest_tutorial_main_started_asked_what_happened && quest_tutorial_main_started_asked_where_am_i && quest_tutorial_main_started_asked_what_is_going_on
 
@@ -77,7 +85,10 @@ Uh, so, let's see, where were we...
 ~ temp in_fishing_area = player_is_in_passage("Passage_FishingArea") 
 * {in_fishing_area} [(Ask about fishing).] %person(Ser Orlando), I have a question about fishing...
   -> quest_tutorial_main_fish
-* {in_fishing_area} [(Talk about something else.)] -> table_of_contents
+* {in_fishing_area} [(Talk about something else.)]
+  -> table_of_contents
+* {in_fishing_area} [(Don't say anything.)]
+  -> DONE
 * -> table_of_contents
 
 = table_of_contents
@@ -1179,6 +1190,109 @@ Try again!
 
 # speaker={C_ORLANDO}
 It's okay, take your time! Use %hint{quest_tutorial_get_offensive_power_name()} when you're ready!
+
+-> DONE
+
+= can_deflect
+
+# speaker={C_ORLANDO}
+Look! The dummy is preparing to use a rite!
+
+# speaker={C_ORLANDO}
+But don't worry, it won't actually use the rite until I tell it to!
+
+-> deflect_switch
+
+= deflect_switch
+
+# speaker={C_ORLANDO}
+
+{
+  - player_get_stance() == STANCE_DEFENSIVE: -> use_bash_again
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: -> use_confuse
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: -> use_shockwave
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: -> use_parry
+}
+
+= use_bash_again 
+
+# speaker={C_ORLANDO}
+You gotta use %hint(Bash) again since you're using a %hint(defensive stance)!
+
+# speaker={C_ORLANDO}
+Do you want me to show you how to use %hint(Bash) again?
+
+-> help_using_defensive_rite
+
+= use_confuse
+
+# speaker={C_ORLANDO}
+This time, you need to use %hint(Confuse)! This will stop your foe from using their next rite or special attack. It also lowers their accuracy!
+
+# speaker={C_ORLANDO}
+Do you want me to show you how to use %hint(Confuse)?
+
+-> help_using_defensive_rite
+
+= use_shockwave
+
+# speaker={C_ORLANDO}
+This time, you need to use %hint(Shockwave)! This will stop your foe from using their next rite or special attack. It also stuns them!
+
+# speaker={C_ORLANDO}
+Do you want me to show you how to use %hint(Shockwave)?
+
+-> help_using_defensive_rite
+
+= use_parry
+
+# speaker={C_ORLANDO}
+This time, you need to use %hint(Parry)! This one is SO COOL! It will stop your foe from using their next rite or special attack. It also prevents your foe's next attack from hurting you!
+
+# speaker={C_ORLANDO}
+Do you want me to show you how to use %hint(Parry)?
+
+-> help_using_defensive_rite
+
+= help_using_defensive_rite
+
+# speaker={C_PLAYER}
+* Yes![] I need help!
+  -> show_how_to_use_defensive_rite
+* No![] I got this!
+  -> DONE
+
+= show_how_to_use_defensive_rite
+
+# speaker={C_ORLANDO}
+Okay, great! First things first...
+
+%empty()
+~ player_poke_map("showDeflectHint")
+
+-> DONE
+
+= did_not_deflect
+
+# speaker={C_ORLANDO}
+C'mon, you need to use a rite to counter the dummy!
+
+-> deflect_switch
+
+= correct_deflect
+
+# speaker={C_ORLANDO}
+That... was... AWESOME! You aced it!
+
+-> DONE
+
+= incorrect_deflect
+
+# speaker={C_ORLANDO}
+Uh, that was cool and all, but... That's not the right rite! You need to use %hint({quest_tutorial_get_defensive_power_name()})!
+
+# speaker={C_ORLANDO}
+Let's try again!
 
 -> DONE
 

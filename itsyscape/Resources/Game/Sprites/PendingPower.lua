@@ -21,6 +21,7 @@ PendingPower.WIDTH = 120
 PendingPower.HEIGHT = 8
 PendingPower.OFFSET = 14
 PendingPower.DROP_SHADOW = 4
+PendingPower.STACKS = false
 
 function PendingPower:new(...)
 	Sprite.new(self, ...)

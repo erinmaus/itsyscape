@@ -111,8 +111,11 @@ function SpriteManager:update(delta)
 			sprite:update(delta)
 
 			index = index + 1
-			time = time + delta
-			self.times[sprite] = time
+
+			-- 'update' may call 'reset' on the sprite which will
+			-- cause the cachedf 'time' value at the beginning to
+			-- be inaccurate
+			self.times[sprite] = self.times[sprite] + delta
 		end
 	end
 end

@@ -66,8 +66,8 @@ function GamepadToolTip:new()
 end
 
 function GamepadToolTip:setRowSize(width, height)
-	self.maxWidth = width
-	self.buttonSize = height
+	self.maxWidth = width or self.maxWidth
+	self.buttonSize = height or self.buttonSize
 end
 
 function GamepadToolTip:getRowSize()

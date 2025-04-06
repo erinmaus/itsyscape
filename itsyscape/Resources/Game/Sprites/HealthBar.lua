@@ -19,6 +19,8 @@ HealthBar.HEIGHT          = 8
 HealthBar.PROGRESS_HEIGHT = 8
 HealthBar.DROP_SHADOW     = 4
 
+HealthBar.STACKS = false
+
 function HealthBar:new(...)
 	Sprite.new(self, ...)
 end
@@ -43,11 +45,11 @@ function HealthBar:draw(position, time)
 	local hitpointsColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.health.hitpoints"), alpha)
 
 	love.graphics.setColor(0, 0, 0, alpha)
-		love.graphics.rectangle(
-			"fill",
-			x + self.DROP_SHADOW, y + self.DROP_SHADOW,
-			self.WIDTH,
-			self.HEIGHT, 2)
+	love.graphics.rectangle(
+		"fill",
+		x + self.DROP_SHADOW, y + self.DROP_SHADOW,
+		self.WIDTH,
+		self.HEIGHT, 2)
 
 	love.graphics.setColor(hitpointsColor:get())
 	love.graphics.rectangle("fill", x, y, self.WIDTH, self.HEIGHT, 2)

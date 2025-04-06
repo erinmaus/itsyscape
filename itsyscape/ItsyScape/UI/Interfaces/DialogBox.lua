@@ -133,6 +133,13 @@ function DialogBox:new(id, index, ui)
 		DialogBox.WIDTH / 2 - GamepadToolTip.MAX_WIDTH / 2,
 		DialogBox.HEIGHT - GamepadToolTip.BUTTON_SIZE - DialogBox.PADDING)
 	self.pressToContinue:setIsSelfClickThrough(true)
+	self:addChild(self.pressToContinue)
+
+	self.stopTalking = GamepadToolTip()
+	self.stopTalking:setRowSize(math.huge)
+	self.stopTalking:setHasBackground(false)
+	self.stopTalking:setText("Stop talking")
+	self.stopTalking:setIsSelfClickThrough(true)
 
 	self.inputBox = TextInput()
 	self.inputBox:setSize(DialogBox.WIDTH - DialogBox.PADDING * 2, 32)
@@ -176,10 +183,31 @@ function DialogBox:new(id, index, ui)
 
 	self.onClose:register(self.close, self)
 
+	self._onRootGamepadRelease = function(_, joystick, button)
+		local inputProvider = self:getInputProvider()
+		if inputProvider and inputProvider:isCurrentJoystick(joystick) then
+			if button == inputProvider:getKeybind("gamepadBack") then
+				self:sendPoke("close", nil, {})
+			end
+		end
+	end
+
+	self._onRootKeyDown = function(_, _, scan)
+		if scan == "escape" then
+			self:sendPoke("close", nil, {})
+		end
+	end
+
+	self:getView():getRoot().onGamepadRelease:register(self._onRootGamepadRelease)
+	self:getView():getRoot().onKeyDown:register(self._onRootKeyDown)
+
 	self:next()
 end
 
 function DialogBox:close()
+	self:getView():getRoot().onGamepadRelease:unregister(self._onRootGamepadRelease)
+	self:getView():getRoot().onKeyDown:unregister(self._onRootKeyDown)
+
 	if self.background:getParent() then
 		self.background:getParent():removeChild(self.background)
 	end
@@ -432,6 +460,32 @@ function DialogBox:update(delta)
 		end
 	end
 	self.isKeybindDown = isKeybindDown
+
+	local state = self:getState()
+	if state.canClose then
+		if self.stopTalking:getParent() ~= self then
+			self:addChild(self.stopTalking)
+		end
+
+		local inputProvider = self:getInputProvider()
+		if inputProvider and inputProvider:getCurrentJoystick() then
+			self.stopTalking:getGamepadIcon():setController(false)
+			self.stopTalking:setKeybind("gamepadBack")
+		else
+			self.stopTalking:getGamepadIcon():setController("KeyboardMouse")
+			self.stopTalking:setButtonID("keyboard_esc")
+		end
+		self.stopTalking:performLayout()
+
+		local toolTipWidth, toolTipHeight = self.stopTalking:getSize()
+		self.stopTalking:setPosition(
+			DialogBox.WIDTH - toolTipWidth - self.PADDING,
+			-toolTipHeight)
+	else
+		if self.stopTalking:getParent() == self then
+			self:removeChild(Self.stopTalking)
+		end
+	end
 end
 
 return DialogBox

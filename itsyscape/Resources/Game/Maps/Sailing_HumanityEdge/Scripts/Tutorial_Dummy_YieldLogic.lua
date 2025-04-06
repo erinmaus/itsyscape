@@ -29,8 +29,6 @@ local HandleOffense = Mashina.Step {
 		Mashina.Peep.DisengageCombatTarget
 	},
 
-	CommonLogic.GetOrlando,
-
 	Mashina.Player.Disable {
 		player = CommonLogic.PLAYER
 	},
@@ -136,6 +134,8 @@ local Tree = BTreeBuilder.Node() {
 		Mashina.Peep.GetPlayer {
 			[CommonLogic.PLAYER] = B.Output.player
 		},
+
+		CommonLogic.GetOrlando,
 
 		Mashina.Peep.SetStance {
 			stance = Weapon.STANCE_CONTROLLED

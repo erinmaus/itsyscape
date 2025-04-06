@@ -36,8 +36,11 @@ function QueuePower:update(mashina, state, executor)
 
 		power = PowerType(mashina:getDirector():getGameInstance(), powerResource)
 
-		Log.info("Peep '%s' queued power '%s'.", mashina:getName(), powerResource.name)
 		local _, b = mashina:addBehavior(PendingPowerBehavior)
+		if not b.power or b.power:getResource().name ~= powerResource.name then
+			Log.info("Peep '%s' queued power '%s' in %d turns.", mashina:getName(), powerResource.name, turns)
+		end
+
 		b.power = power
 		b.turns = turns
 	end

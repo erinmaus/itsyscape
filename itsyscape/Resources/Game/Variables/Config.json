@@ -29,6 +29,8 @@
 		"ui.combat.warning": "faa92b",
 		"ui.combat.specialWarningFrom": "8d5fd3",
 		"ui.combat.specialWarningTo": "faa92b",
+		"ui.resource.remainder": "1f5173",
+		"ui.resource.progress": "8c2726",
 		"ui.stat.better": "00ff00",
 		"ui.stat.worse": "ff0000",
 		"ui.stat.neutral": "ffffff",

@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 
 local Sprite = Class()
+Sprite.STACKS = true
 
 function Sprite:new(spriteManager, node, offset)
 	self.spriteManager = spriteManager

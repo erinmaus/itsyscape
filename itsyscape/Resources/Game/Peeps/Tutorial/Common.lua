@@ -13,6 +13,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
@@ -511,7 +512,6 @@ end
 function Common.startEquipTutorial(playerPeep, done)
 	Common.startRibbonTutorial(playerPeep, Common.EQUIP_GEAR[1].open(playerPeep, {}))
 	Utility.UI.tutorial(playerPeep, Common.EQUIP_GEAR, done)
-	Utility.Peep.enable(playerPeep)
 end
 
 function Common.showEquipHint(playerPeep, done)
@@ -533,7 +533,6 @@ function Common.showBasicControlsHint(playerPeep, done)
 	}
 
 	Utility.UI.tutorial(playerPeep, hints, done)
-	Utility.Peep.enable(playerPeep)
 end
 
 function Common.showMovementControlsHint(playerPeep, done)
@@ -543,7 +542,6 @@ function Common.showMovementControlsHint(playerPeep, done)
 	}
 
 	Utility.UI.tutorial(playerPeep, hints, done)
-	Utility.Peep.enable(playerPeep)
 end
 
 function Common.peepHasIsabelliumInInventory(playerPeep)
@@ -1234,7 +1232,6 @@ Common.YIELD_HINT = {
 
 function Common.showYieldHint(playerPeep, done)
 	Utility.UI.tutorial(playerPeep, Common.YIELD_HINT, done)
-	Utility.Peep.enable(playerPeep)
 end
 
 Common.EAT_HINT = {
@@ -1388,7 +1385,6 @@ Common.EAT_HINT = {
 
 function Common.showEatHint(playerPeep, done)
 	Utility.UI.tutorial(playerPeep, Common.EAT_HINT, done)
-	Utility.Peep.enable(playerPeep)
 end
 
 Common.ATTACK_HINT = {
@@ -1622,7 +1618,6 @@ Common.ATTACK_HINT = {
 
 function Common.showAttackHint(playerPeep, done)
 	Utility.UI.tutorial(playerPeep, Common.ATTACK_HINT, done)
-	Utility.Peep.enable(playerPeep)
 end
 
 Common.DEFLECT_HINT = {
@@ -1671,14 +1666,24 @@ Common.DEFLECT_HINT = {
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
 				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local stance = target:getBehavior(StanceBehavior)
 
 				if gamepadCombatHUD and gamepadCombatHUD:getIsOpen() then
-					return {
-						gamepad = "BaseCombatHUD-offense",
-						standard = "BaseCombatHUD-offense",
-						touch = "BaseCombatHUD-offense"
-					}
+					if stance and stance.stance == Weapon.STANCE_DEFENSIVE then
+						return {
+							gamepad = "BaseCombatHUD-defense",
+							standard = "BaseCombatHUD-defense",
+							touch = "BaseCombatHUD-defense"
+						}
+					else
+						return {
+							gamepad = "BaseCombatHUD-offense",
+							standard = "BaseCombatHUD-offense",
+							touch = "BaseCombatHUD-offense"
+						}
+					end
 				end
+
 
 				return {
 					gamepad = false,
@@ -1687,22 +1692,55 @@ Common.DEFLECT_HINT = {
 				}
 			end
 		end,
-		message = {
-			gamepad = {
-				button = "a",
-				label = "Open rites of malice"
-			},
-			standard = {
-				button = "mouse_left",
-				controller = "KeyboardMouse",
-				label = "Open rites of malice"
-			},
-			standard = {
-				button = "tap",
-				controller = "Touch",
-				label = "Open rites of malice"
-			}
-		},
+		message = function(target, state)
+			return function()
+				local ritesName
+				local stance = target:getBehavior(StanceBehavior)
+				if stance and stance.stance == Weapon.STANCE_DEFENSIVE then
+					ritesName = "rites of bulwark"
+				else
+					ritesName = "rites of malice"
+				end
+
+				return {
+					gamepad = {
+						button = "a",
+						label = {
+							{ 1, 1, 1, 1 },
+							"Open",
+							{ 1, 1, 1, 1 },
+							" ",
+							"ui.poke.misc",
+							ritesName
+						}
+					},
+					standard = {
+						button = "mouse_left",
+						controller = "KeyboardMouse",
+						label = {
+							{ 1, 1, 1, 1 },
+							"Open",
+							{ 1, 1, 1, 1 },
+							" ",
+							"ui.poke.misc",
+							ritesName
+						}
+					},
+					standard = {
+						button = "tap",
+						controller = "Touch",
+						label = {
+							{ 1, 1, 1, 1 },
+							"Open",
+							{ 1, 1, 1, 1 },
+							" ",
+							"ui.poke.misc",
+							ritesName
+						}
+					}
+				}
+			end
+		end,
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
@@ -1766,9 +1804,12 @@ Common.DEFLECT_HINT = {
 			return function()
 				local weapon = Utility.Peep.getEquippedWeapon(target)
 				local style = weapon and weapon:getStyle() or Weapon.STYLE_MELEE
+				local stance = target:getBehavior(StanceBehavior)
 
 				local powerID
-				if style == Weapon.STYLE_MAGIC then
+				if stance and stance.stance == Weapon.STANCE_DEFENSIVE then
+					powerID = "Bash"
+				elseif style == Weapon.STYLE_MAGIC then
 					powerID = "Confuse"
 				elseif style == Weapon.STYLE_ARCHERY then
 					powerID = "Shockwave"
@@ -1796,15 +1837,20 @@ Common.DEFLECT_HINT = {
 		end,
 		open = function(target, state)
 			return function()
-				return target:hasBehavior(PendingPowerBehavior)
+				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
+				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
+				               (proCombatHUD and proCombatHUD:getIsOpen())
+
+				return not isOpen or target:hasBehavior(PendingPowerBehavior)
 			end
-		end	
+		end
 	}
 }
 
 function Common.showDeflectHint(playerPeep, done)
 	Utility.UI.tutorial(playerPeep, Common.DEFLECT_HINT, done)
-	Utility.Peep.enable(playerPeep)
 end
 
 return Common

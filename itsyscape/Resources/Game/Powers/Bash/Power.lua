@@ -13,10 +13,24 @@ local Utility = require "ItsyScape.Game.Utility"
 
 local Bash = Class(CombatPower)
 
-function Bash:activate(activator, target)
-	CombatPower.activate(self, activator, target)
-
+function Bash:new(...)
+	CombatPower.new(self, ...)
 	self:setXWeaponID("Power_Bash")
+end
+
+function Bash:activate(activator, target)
+	CombatPower.activate(activator, target)
+
+	if target and target:hasBehavior(PendingPowerBehavior) then
+		local pendingPower = target:getBehavior(PendingPowerBehavior)
+
+		Log.info("Bash (fired by '%s') negated pending power '%s' on target '%s'.",
+			activator:getName(),
+			pendingPower.power:getResource().name,
+			target:getName())
+
+		target:removeBehavior(PendingPowerBehavior)
+	end
 end
 
 return Bash
