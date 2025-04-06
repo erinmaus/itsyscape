@@ -976,6 +976,15 @@ function DemoApplication:gamepadRelease(joystick, button)
 		end
 	end
 
+	if focusedWidget and self:isInterfaceBlockingGamepadMovement() then
+		local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
+		local ribbon = self:getUIView():getInterface("GamepadRibbon")
+
+		if not (focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon)) then
+			return
+		end
+	end
+
 	if button == inputProvider:getKeybind("gamepadOpenCombatRing") then
 		self:toggleUI("GamepadCombatHUD")
 	elseif button == inputProvider:getKeybind("gamepadOpenRibbon") then

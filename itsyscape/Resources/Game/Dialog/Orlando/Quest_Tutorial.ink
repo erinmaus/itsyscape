@@ -1046,6 +1046,8 @@ You can dodge attacks, slow down your foe, get them stuck, lower their stats, an
 # speaker={C_ORLANDO}
 Since rites are kinda, uh, emotional... they require a certain amount of zeal.
 
+-> can_use_rite_loop
+
 = can_use_rite_loop
 
 # speaker={C_PLAYER}

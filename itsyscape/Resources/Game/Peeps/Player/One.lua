@@ -639,7 +639,6 @@ function One:onOpenInterface(interfaceID, interfaceIndex, blocking)
 		return
 	end
 
-	print("hiding", interfaceID, interfaceIndex)
 	local interface = Utility.UI.getOpenInterface(self, interfaceID, interfaceIndex)
 	Utility.UI.broadcast(
 		self:getDirector():getGameInstance():getUI(),
