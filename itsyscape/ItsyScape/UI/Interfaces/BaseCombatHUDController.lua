@@ -32,7 +32,7 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
-local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
+local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ZealEffect = require "ItsyScape.Peep.Effects.ZealEffect"
@@ -185,9 +185,6 @@ function BaseCombatHUDController:activate(powers, e)
 
 					local _, b = peep:addBehavior(PendingPowerBehavior)
 					b.power = power
-
-					-- TEMP
-					b.turns = 1
 				end
 			end
 		end
@@ -1255,6 +1252,22 @@ function BaseCombatHUDController:updateStyle()
 	self.stance = stance and stance.stance or Weapon.STANCE_NONE
 end
 
+function BaseCombatHUDController:_updatePowersRecharge(powers)
+	local recharge = self:getPeep():getBehavior(PowerRechargeBehavior)
+	if not recharge then
+		return
+	end
+
+	for _, power in ipairs(powers) do
+		power.pending = recharge.powers[power.id] or 0
+	end
+end
+
+function BaseCombatHUDController:updatePowersRecharge()
+	self:_updatePowersRecharge(self.currentOffensivePowers)
+	self:_updatePowersRecharge(self.currentDefensivePowers)
+end
+
 function BaseCombatHUDController:updatePowers()
 	local offensivePowers, defensivePowers = self:getAvailablePowers()
 
@@ -1416,6 +1429,7 @@ function BaseCombatHUDController:update(delta)
 		self.updateDebugStats:measure("sendRefresh", self)
 	end
 
+	self.updateDebugStats:measure("updatePowersRecharge", self)
 	self.updateDebugStats:measure("updateState", self)
 end
 

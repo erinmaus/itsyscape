@@ -43,6 +43,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
@@ -4098,16 +4099,16 @@ function Utility.Peep.toggleEffect(peep, resource, onOrOff, ...)
 	local e = peep:getEffect(EffectType)
 	if e and onOrOff ~= true then
 		peep:removeEffect(e)
-		return true
+		return true, e
 	elseif not e and onOrOff ~= false then
 		local effectInstance = EffectType(...)
 		effectInstance:setResource(resource)
 		peep:addEffect(effectInstance)
-		return true
+		return true, effectInstance
 	end
 
 	if e and onOrOff or (not e and not onOrOff) then
-		return true
+		return true, e
 	end
 
 	return false
@@ -5270,6 +5271,27 @@ function Utility.Peep.Attackable:onZeal(p)
 		effect:modifyZealEvent(p, self)
 	end
 
+	local pendingPowers = self:getBehavior(PowerRechargeBehavior)
+	if pendingPowers then
+		for powerID, powerZeal in pairs(pendingPowers.powers) do
+			local multiplier, offset = 1, 0
+			for effect in self:getEffects(require "ItsyScape.Peep.Effects.ZealEffect") do
+				local m, o = effect:modifyActiveRecharge(p, powerID)
+				multiplier = multiplier + m
+				offset = offset + o
+			end
+
+			local recharge = math.clamp(p:getEffectiveZeal() * multiplier + offset, 0.01, 1)
+			powerZeal = powerZeal - recharge
+
+			if powerZeal <= 0 then
+				pendingPowers.powers[powerID] = nil
+			else
+				pendingPowers.powers[powerID] = powerZeal
+			end
+		end
+	end
+
 	local status = self:getBehavior(CombatStatusBehavior)
 	if not status then
 		return
@@ -5495,6 +5517,7 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	end
 
 	peep:addBehavior(CombatStatusBehavior)
+	peep:addBehavior(PowerRechargeBehavior)
 
 	peep:addPoke("initiateAttack")
 	peep:listen("initiateAttack", Utility.Peep.Attackable.onInitiateAttack)

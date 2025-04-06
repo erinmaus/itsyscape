@@ -28,12 +28,14 @@ local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehav
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
+local ZealEffect = require "ItsyScape.Peep.Effects.ZealEffect"
 
 local CombatCortex = Class(Cortex)
 CombatCortex.QUEUE = {}
@@ -209,6 +211,34 @@ function CombatCortex:_isPeepWithinRange(selfPeep, targetPeep)
 	return true, isTooFar, isTooClose
 end
 
+function CombatCortex:updatePeepRecharge(delta, peep)
+	local interval = Config.get("Combat", "POWER_ZEAL_RECHARGE_INTERVAL_SECONDS")
+	local zealPerInterval = Config.get("Combat", "POWER_ZEAL_RECHARGE_PER_INTERVAL")
+	local rechargePerInterval = delta / interval * zealPerInterval
+
+	local pendingPowers = peep:getBehavior(PowerRechargeBehavior)
+	if pendingPowers then
+		for powerID, powerZeal in pairs(pendingPowers.powers) do
+			local multiplier, offset = 1, 0
+			for effect in peep:getEffects(ZealEffect) do
+				local m, o = effect:modifyPassiveRecharge(p, powerID)
+				multiplier = multiplier + m
+				offset = offset + o
+			end
+
+			local recharge = math.max(rechargePerInterval * multiplier + offset, 0)
+			powerZeal = powerZeal - recharge
+
+
+			if powerZeal <= 0 then
+				pendingPowers.powers[powerID] = nil
+			else
+				pendingPowers.powers[powerID] = powerZeal
+			end
+		end
+	end
+end
+
 function CombatCortex:updatePeepTarget(delta, peep)
 	local combatTarget = self:_getPeepTarget(peep)
 
@@ -329,6 +359,20 @@ function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 		return false
 	end
 
+	local isRecharging
+	do
+		local recharge = selfPeep:getBehavior(PowerRechargeBehavior)
+		if recharge and (recharge.powers[power:getResource().name] or 0) > 0 then
+			isRecharging = true
+		else
+			isRecharging = false
+		end
+	end
+
+	if isRecharging then
+		return false
+	end
+
 	local didUsePower = power:perform(selfPeep, targetPeep)
 	selfPeep:removeBehavior(PendingPowerBehavior)
 
@@ -338,10 +382,14 @@ function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 
 	power:activate(selfPeep, targetPeep)
 
+	local cost = zealCost / 100
 	selfPeep:poke("zeal", ZealPoke.onUsePower({
 		power = power,
-		zeal = -(zealCost / 100)
+		zeal = -cost
 	}))
+
+	local _, recharge = selfPeep:addBehavior(PowerRechargeBehavior)
+	recharge.powers[power:getResource().name] = cost
 
 	if not power:getIsQuick() and power:getRequiresTarget() then
 		equippedWeapon:applyCooldown(selfPeep, targetPeep)
@@ -402,8 +450,6 @@ function CombatCortex:_getDamageZeal(damage, maxHit, stance)
 	if stance == Weapon.STANCE_DEFENSIVE then
 		delta = 1 - math.clamp(delta)
 	end
-
-	print(">>> delta", delta, stance == Weapon.STANCE_DEFENSIVE)
 
 	local upper = math.lerp(prowess[currentIndex].upper, prowess[nextIndex].upper, mu)
 	local lower = math.lerp(prowess[currentIndex].upper, prowess[nextIndex].upper, mu)
@@ -838,6 +884,7 @@ end
 function CombatCortex:tick(delta)
 	for peep in self:iterate() do
 		if Utility.Peep.isEnabled(peep) then
+			self:updatePeepRecharge(delta, peep)
 			self:updatePeepTarget(delta, peep)
 			self:updatePeepStance(delta, peep)
 			self:updatePeepCooldown(delta, peep)

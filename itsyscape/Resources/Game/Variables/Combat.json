@@ -17,7 +17,9 @@
 		"ZEAL_INTERVAL_SECONDS": ["zealIntervalSeconds"],
 		"CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP": ["criticalFluxZealMultiplierStep"],
 		"CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER": ["criticalFluxZealMaxMultiplier"],
-		"CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER": ["criticalFluxZealMinMultiplier"]
+		"CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER": ["criticalFluxZealMinMultiplier"],
+		"POWER_ZEAL_RECHARGE_INTERVAL_SECONDS": ["powerZealRechargeIntervalSeconds"],
+		"POWER_ZEAL_RECHARGE_PER_INTERVAL": ["powerZealRechargePerInterval"]
 	},
 
 	"loop": {
@@ -65,6 +67,9 @@
 	"baseStanceSwitchZealCostCooldownSeconds": 1,
 
 	"zealIntervalSeconds": 5,
+
+	"powerZealRechargeIntervalSeconds": 1,
+	"powerZealRechargePerInterval": 0.01,
 
 	"prowessFluxDamageIntervals": [
 		{

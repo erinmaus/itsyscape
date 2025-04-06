@@ -26,4 +26,14 @@ function ZealEffect:modifyZeal()
 	return 0, 0
 end
 
+-- Should return (multiplier, offset)
+function ZealEffect:modifyActiveRecharge(zealPoke, powerID)
+	return 0, 0
+end
+
+-- Should return (multiplier, offset)
+function ZealEffect:modifyPassiveRecharge(zealPoke, powerID)
+	return 0, 0
+end
+
 return ZealEffect

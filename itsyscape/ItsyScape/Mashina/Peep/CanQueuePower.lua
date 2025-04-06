@@ -10,6 +10,7 @@
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 
 local CanQueuePower = B.Node("CanQueuePower")
 CanQueuePower.PEEP = B.Reference()
@@ -33,6 +34,20 @@ function CanQueuePower:update(mashina, state, executor)
 
 	local status = peep:getBehavior(CombatStatusBehavior)
 	if not status then
+		return B.Status.Failure
+	end
+
+	local isRecharging
+	do
+		local recharge = peep:getBehavior(PowerRechargeBehavior)
+		if recharge and (recharge.powers[powerResource.name] or 0) > 0 then
+			isRecharging = true
+		else
+			isRecharging = false
+		end
+	end
+
+	if isRecharging then
 		return B.Status.Failure
 	end
 

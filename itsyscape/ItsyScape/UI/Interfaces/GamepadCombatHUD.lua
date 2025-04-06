@@ -28,6 +28,7 @@ local Widget = require "ItsyScape.UI.Widget"
 local BaseCombatHUD = require "ItsyScape.UI.Interfaces.BaseCombatHUD"
 local GamepadCirclePanel = require "ItsyScape.UI.Interfaces.Components.GamepadCirclePanel"
 local PendingPowerIcon = require "ItsyScape.UI.Interfaces.Components.PendingPowerIcon"
+local RechargingPowerBar = require "ItsyScape.UI.Interfaces.Components.RechargingPowerBar"
 
 local GamepadCombatHUD = Class(BaseCombatHUD)
 
@@ -787,7 +788,12 @@ function GamepadCombatHUD:updateMenuButton(name, button)
 end
 
 function GamepadCombatHUD:newPowerButton()
-	return self:newSpiralButton()
+	local button = self:newSpiralButton()
+
+	local rechargeBar = RechargingPowerBar()
+	button:setData("recharge", rechargeBar)
+
+	return button
 end
 
 function GamepadCombatHUD:updatePowerButton(button, powerState, isPending)
@@ -804,6 +810,17 @@ function GamepadCombatHUD:updatePowerButton(button, powerState, isPending)
 		self.pendingPowerIcon:setSize(icon:getSize())
 	elseif self.pendingPowerIcon:getParent() == button then
 		button:removeChild(self.pendingPowerIcon)
+	end
+
+	local rechargeBar = button:getData("recharge")
+	rechargeBar:updateRecharge(powerState.pending, powerState.zeal)
+
+	local buttonWidth, buttonHeight = button:getSize()
+	rechargeBar:setPosition(self.PADDING, buttonHeight - 8 - self.PADDING)
+	rechargeBar:setSize(buttonWidth - self.PADDING * 2, 8)
+
+	if rechargeBar:getParent() ~= button then
+		button:addChild(rechargeBar)
 	end
 end
 
