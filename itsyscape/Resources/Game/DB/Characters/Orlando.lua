@@ -83,73 +83,73 @@ ItsyScape.Meta.PeepHealth {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Attack",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Archery",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Defense",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Faith",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Magic",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Fishing",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Cooking",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Woodcutting",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Firemaking",
-	Value = ItsyScape.Utility.xpForLevel(60),
+	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }
 

@@ -389,22 +389,46 @@ local DidPlayerYield = Mashina.Step {
 		}
 	},
 
-	Mashina.Success {
-		Mashina.Peep.DisengageCombatTarget
-	},
+	Mashina.Try {
+		Mashina.Step {
+			Mashina.Check {
+				condition = DID_YIELD
+			},
 
-	Mashina.Player.Disable {
-		player = CommonLogic.PLAYER
-	},
+			Mashina.Player.Disable {
+				player = CommonLogic.PLAYER
+			},
 
-	Mashina.Player.Dialog {
-		peep = CommonLogic.ORLANDO,
-		player = CommonLogic.PLAYER,
-		main = "quest_tutorial_duel.player_yielded"
-	},
+			Mashina.Player.Dialog {
+				peep = CommonLogic.ORLANDO,
+				player = CommonLogic.PLAYER,
+				main = "quest_tutorial_duel.player_yielded_after_orlando"
+			},
 
-	Mashina.Player.Enable {
-		player = CommonLogic.PLAYER
+			Mashina.Player.Enable {
+				player = CommonLogic.PLAYER
+			}
+		},
+
+		Mashina.Step {
+			Mashina.Success {
+				Mashina.Peep.DisengageCombatTarget
+			},
+
+			Mashina.Player.Disable {
+				player = CommonLogic.PLAYER
+			},
+
+			Mashina.Player.Dialog {
+				peep = CommonLogic.ORLANDO,
+				player = CommonLogic.PLAYER,
+				main = "quest_tutorial_duel.player_yielded"
+			},
+
+			Mashina.Player.Enable {
+				player = CommonLogic.PLAYER
+			}
+		}
 	}
 }
 

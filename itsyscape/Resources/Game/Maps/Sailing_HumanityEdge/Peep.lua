@@ -715,7 +715,7 @@ function Island:onPlayerFinishDuel(playerPeep)
 	self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
 		Utility.Peep.enable(playerPeep)
 		self:transitionTutorial(playerPeep, "Tutorial_Combat")
-	end, "quest_tutorial_combat.finished")
+	end, "quest_tutorial_duel.finished")
 end
 
 function Island:onPlaceTutorialDummy(playerPeep)

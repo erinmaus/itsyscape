@@ -85,8 +85,11 @@ Uh, so, let's see, where were we...
 
 # speaker={C_PLAYER}
 ~ temp in_fishing_area = player_is_in_passage("Passage_FishingArea") 
+~ temp did_duel = player_did_quest_step("Tutorial", "Tutorial_Combat")
 * {in_fishing_area} [(Ask about fishing).] %person(Ser Orlando), I have a question about fishing...
   -> quest_tutorial_main_fish
+* {in_fishing_area && did_duel} [(Ask about dueling).] %person(Ser Orlando), I have a question about dueling...
+  -> quest_tutorial_main_duel
 * {in_fishing_area} [(Talk about something else.)]
   -> table_of_contents
 * {in_fishing_area} [(Don't say anything.)]
@@ -852,6 +855,50 @@ Sure thing! Lemme get on that.
 
 -> DONE
 
+== quest_tutorial_main_duel ==
+
+= loop
+
+~ temp can_place_dummy = not quest_tutorial_orlando_has_dropped_dummy()
+
+# speaker={C_PLAYER}
+
+* [(Ask to duel again.)] %person(Ser Orlando), would you like to duel again?
+  -> ask_to_duel
+* {!can_place_dummy} [(Ask for practice with the dummy.)] %person(Ser Orlando), can I practice with the dummy?
+  -> ask_to_practice
+
+= ask_to_duel
+
+# speaker={C_ORLANDO}
+Sure thing! %person(Ser Commander)!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...oh my gods. Are you serious?
+
+# speaker={C_ORLANDO}
+Yep! I am!
+
+%empty()
+~ player_poke_map("prepareDuel")
+
+= ask_to_practice
+
+# speaker={C_ORLANDO}
+I got you, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}!
+
+%empty()
+~ player_poke_map("placeTutorialDummy")
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...oh my gods. Are you serious?
+
+# speaker={C_ORLANDO}
+Yep! I am!
+
+%empty()
+~ player_poke_map("prepareDuel")
+
 == quest_tutorial_duel ==
 
 # speaker={C_ORLANDO}
@@ -920,6 +967,19 @@ Wow! That was a good fight! I didn't expect to beat you...
 
 -> DONE
 
+= player_yielded_after_orlando
+
+# speaker={C_PLAYER}
+Good fight, %person(Ser Orlando)!
+
+# speaker={C_ORLANDO}
+Wow! That was good! Guess I need more practice... Another day!
+
+%empty()
+~ player_poke_map("playerFinishDuel")
+
+-> DONE
+
 = player_should_yield
 
 # speaker={C_ORLANDO}
@@ -942,7 +1002,10 @@ But if you're comfy... uh, I mean, um,  confident... enough, we can get going.
 The peak isn't much further ahead. Let's go!
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-Finally. Gods forgive me for my thoughts...
+Finally. We're going again. Thank the gods.
+
+# speaker={C_ORLANDO}
+I'll just pretend I didn't hear that, %person(Ser Commander).
 
 -> DONE
 
