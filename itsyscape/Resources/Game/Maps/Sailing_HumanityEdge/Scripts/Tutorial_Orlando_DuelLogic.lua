@@ -13,10 +13,26 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 local Effect = require "ItsyScape.Peep.Effect"
 local Probe = require "ItsyScape.Peep.Probe"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
 local MAX_NUM_HEALS = 4
 local NUM_HEALS = B.Reference("Tutorial_Orlando_DuelLogic", "NUM_HEALS")
+
+local IsInHealRange = Mashina.Check {
+	condition = function(mashina)
+		local status = mashina:getBehavior(CombatStatusBehavior)
+		if not status then
+			return false
+		end
+
+		local hitpoints = status.currentHitpoints
+		local maximumHitpoints = status.maximumHitpoints
+		local thresholdHitpoints = math.max(maximumHitpoints - CommonLogic.HEAL_HITPOINTS, math.ceil(maximumHitpoints / 2))
+
+		return hitpoints < thresholdHitpoints
+	end
+}
 
 local IsInPeril = Mashina.Check {
 	condition = function(mashina)
@@ -27,7 +43,7 @@ local IsInPeril = Mashina.Check {
 
 		local hitpoints = status.currentHitpoints
 		local maximumHitpoints = status.maximumHitpoints
-		local thresholdHitpoints = math.ceil(maximumHitpoints / 2)
+		local thresholdHitpoints = math.ceil(maximumHitpoints / 3)
 
 		return hitpoints < thresholdHitpoints
 	end
@@ -39,10 +55,10 @@ local HandleDefense = Mashina.Step {
 	Mashina.Peep.WasAttacked,
 
 	Mashina.Step {
-		IsInPeril,
-
 		Mashina.ParallelTry {
-			Mashina.Sequence {
+			Mashina.Step {
+				IsInHealRange,
+
 				Mashina.Compare.LessThan {
 					left = NUM_HEALS,
 					right = MAX_NUM_HEALS
@@ -60,14 +76,22 @@ local HandleDefense = Mashina.Step {
 				},
 
 				Mashina.Peep.Heal {
-					hitpoints = HEAL_HITPOINTS
+					hitpoints = CommonLogic.HEAL_HITPOINTS
 				}
 			},
 
 			Mashina.Step {
+				IsInPeril,
+
 				Mashina.Invert {
 					Mashina.Check {
 						condition = DID_YIELD
+					}
+				},
+
+				Mashina.Invert {
+					Mashina.Player.IsInterfaceOpen {
+						interface = "DialogBox"
 					}
 				},
 
@@ -82,7 +106,7 @@ local HandleDefense = Mashina.Step {
 				Mashina.Player.Dialog {
 					peep = CommonLogic.ORLANDO,
 					player = CommonLogic.PLAYER,
-					main = "quest_tutorial_combat.orlando_yielded"
+					main = "quest_tutorial_duel.orlando_yielded"
 				},
 
 				Mashina.Player.Enable {
@@ -266,7 +290,7 @@ local IsPlayerInPeril = Mashina.Check {
 
 		local foodCount = peep:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
 		local hitpoints = status.currentHitpoints
-		local halfHitpoints = math.floor(status.maximumHitpoints / 2)
+		local halfHitpoints = math.ceil(status.maximumHitpoints / 2)
 
 		return foodCount == 0 and hitpoints < halfHitpoints
 	end
@@ -283,6 +307,12 @@ local PlayerShouldYield = Mashina.Step {
 		}
 	},
 
+	Mashina.Invert {
+		Mashina.Player.IsInterfaceOpen {
+			interface = "DialogBox"
+		}
+	},
+
 	Mashina.Success {
 		Mashina.Peep.DisengageCombatTarget
 	},
@@ -294,7 +324,7 @@ local PlayerShouldYield = Mashina.Step {
 	Mashina.Player.Dialog {
 		peep = CommonLogic.ORLANDO,
 		player = CommonLogic.PLAYER,
-		main = "quest_tutorial_combat.player_should_yield"
+		main = "quest_tutorial_duel.player_should_yield"
 	},
 
 	Mashina.Player.Enable {
@@ -329,7 +359,19 @@ local HandleRites = Mashina.Step {
 	}
 }
 
+local DisengageIfYielded = Mashina.Sequence {
+	Mashina.Check {
+		condition = DID_YIELD
+	},
+
+	Mashina.Peep.DisengageCombatTarget
+}
+
 local AttackOrDefend = Mashina.ParallelTry {
+	Mashina.Failure {
+		DisengageIfYielded
+	},
+
 	HandleRites,
 	Mashina.Failure {
 		HandleDefense

@@ -44,6 +44,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
@@ -53,6 +54,7 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
+local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 
@@ -1125,6 +1127,36 @@ end
 
 -- Contains utility methods that deal with combat.
 Utility.Combat = {}
+
+function Utility.Combat.deflectPendingPower(power, activator, target)
+	local ZealPoke = require "ItsyScape.Game.ZealPoke"
+
+	if target and target:hasBehavior(PendingPowerBehavior) then
+		local pendingPower = target:getBehavior(PendingPowerBehavior)
+		if pendingPower.power then
+			local pendingPowerID = pendingPower.power:getResource().name
+
+			Log.info("%s (activated by '%s') negated pending power '%s' on target '%s'.",
+				power:getResource().name,
+				activator:getName(),
+				pendingPowerID,
+				target:getName())
+
+			local rechargeCost = pendingPower.power:getCost(target)
+			local _, recharge = target:addBehavior(PowerRechargeBehavior)
+			recharge.powers[pendingPowerID] = math.max(recharge.powers[pendingPowerID] or 0, rechargeCost)
+
+			target:poke("zeal", ZealPoke.onLosePower({
+				power = pendingPower.power,
+				zeal = -rechargeCost
+			}))
+
+			target:removeBehavior(PendingPowerBehavior)
+
+			return pendingPower.power
+		end
+	end
+end
 
 function Utility.Combat.getCombatLevel(peep)
 	local stats = peep:getBehavior(StatsBehavior)
@@ -4150,18 +4182,24 @@ function Utility.Peep.canAttack(peep)
 	return status.currentHitpoints > 0 and not status.dead
 end
 
-function _canPeepAttack(peep, teams, otherTeams, matchup)
-	local character = Utility.Peep.getCharacter(peep)
-	if not character then
+function _canPeepAttack(peep, target, teams, otherTeams, matchup)
+	local targetCharacter = Utility.Peep.getCharacter(target)
+	if not targetCharacter then
 		return true
 	end
 
-	local override = teams.override[character.name]
-	if override == TeamsBehavior.ENEMY then
-		return override
+	local override = teams.override[targetCharacter.name]
+	if override then
+		if override == TeamsBehavior.ENEMY then
+			-- Forced enemy.
+			return true
+		elseif override == TeamsBehavior.ALLY and otherTeams.override[targetCharacter.name] ~= TeamsBehavior.ENEMY then
+			-- Forced ally.
+			return false
+		end
 	end
 
-	if #teams == 0 or #otherTeams == 0 then
+	if #teams.teams == 0 or #otherTeams.teams == 0 then
 		return true
 	end
 
@@ -4194,7 +4232,7 @@ function Utility.Peep.canPeepAttackTarget(peep, target)
 	end
 
 	local peepTeams = peep:getBehavior(TeamBehavior)
-	local targetTeams = peep:getBehavior(TeamBehavior)
+	local targetTeams = target:getBehavior(TeamBehavior)
 
 	local peepCharacter = Utility.Peep.getCharacter(peep)
 	local targetCharacter = Utility.Peep.getCharacter(target)
@@ -4210,8 +4248,8 @@ function Utility.Peep.canPeepAttackTarget(peep, target)
 		return true
 	end
 
-	return _canPeepAttack(peep, peepTeams, targetTeams, matchup) or
-	       _canPeepAttack(target, targetTeams, peepTeams, matchup)
+	return _canPeepAttack(peep, target, peepTeams, targetTeams, teams.teams) or
+	       _canPeepAttack(target, peep, targetTeams, peepTeams, teams.teams)
 end
 
 local function _isAttackable(peep, r)

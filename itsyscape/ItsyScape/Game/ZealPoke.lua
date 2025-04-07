@@ -7,7 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local Class = require ("ItsyScape.Common.Class")
+local Class = require "ItsyScape.Common.Class"
 
 local ZealPoke = Class()
 
@@ -15,6 +15,7 @@ ZealPoke.TYPE_TARGET_SWITCH = "TARGET_SWITCH"
 ZealPoke.TYPE_TARGET_LOST   = "TARGET_LOST"
 ZealPoke.TYPE_STANCE_SWITCH = "STANCE_SWITCH"
 ZealPoke.TYPE_USE_POWER     = "USE_POWER"
+ZealPoke.TYPE_LOST_POWER    = "LOST_POWER"
 ZealPoke.TYPE_ATTACK        = "ATTACK"
 ZealPoke.TYPE_DEFEND        = "DEFEND"
 
@@ -94,6 +95,16 @@ function ZealPoke.onUsePower(t)
 	assert(type(t) == "table")
 
 	local event = ZealPoke(ZealPoke.TYPE_USE_POWER)
+	event.power = t.power or false
+	event.zeal = t.zeal or 0
+
+	return event
+end
+
+function ZealPoke.onLosePower(t)
+	assert(type(t) == "table")
+
+	local event = ZealPoke(ZealPoke.TYPE_LOSE_POWER)
 	event.power = t.power or false
 	event.zeal = t.zeal or 0
 

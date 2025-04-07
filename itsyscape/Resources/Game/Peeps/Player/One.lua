@@ -419,18 +419,18 @@ function One:initTeams()
 		Player = {
 			Humanity = TeamsBehavior.ALLY,
 			Yendorians = TeamsBehavior.ENEMY,
-			Dummies = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
 			BlackTentacles = TeamsBehavior.ENEMY
 		},
 
 		Humanity = {
 			Player = TeamsBehavior.ALLY,
 			Yendorians = TeamsBehavior.ENEMY,
-			Dummies = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
 			BlackTentacles = TeamsBehavior.NEUTRAL
 		},
 
-		Dummies = {
+		Dummy = {
 			Player = TeamsBehavior.NEUTRAL,
 			Humanity = TeamsBehavior.NEUTRAL,
 			Yendorians = TeamsBehavior.NEUTRAL,
@@ -440,7 +440,7 @@ function One:initTeams()
 		Yendorians = {
 			Player = TeamsBehavior.ENEMY,
 			Humanity = TeamsBehavior.ENEMY,
-			Dummies = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
 			BlackTentacles = TeamsBehavior.ENEMY
 		}
 	}
@@ -460,6 +460,7 @@ function One:ready(director, game)
 
 	local _, character = self:addBehavior(CharacterBehavior)
 	character.character = director:getGameDB():getResource("Player", "Character")
+	self:initTeams()
 
 	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
 	self:applySkins()

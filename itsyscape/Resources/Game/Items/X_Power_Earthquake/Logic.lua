@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local ProxyXWeapon = require "ItsyScape.Game.ProxyXWeapon"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Earthquake = Class(ProxyXWeapon)

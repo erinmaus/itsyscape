@@ -9,14 +9,15 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
+local Effect = require "ItsyScape.Peep.Effects.Effect"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 
 -- Damage taken over the next 10 seconds heals you 150%-300%.
-local Absorb = Class(Effect)
+local Absorb = Class(CombatEffect)
 Absorb.DURATION = 10
 
 function Absorb:new(activator)
-	Effect.new(self)
+	CombatEffect.new(self)
 
 	self.damage = 0
 

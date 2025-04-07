@@ -836,6 +836,15 @@ function BaseCombatHUD:tick()
 	self:updateTurnOrder()
 end
 
+function BaseCombatHUD:_updateDebug()
+	local isDebugKeydown = love.keyboard.isDown("f7")
+	if self.wasDebugKeydown ~= isDebugKeydown and isDebugKeydown then
+		Log.info("Combat state: %s", Log.dump(self:getState()))
+	end
+
+	self.wasDebugKeydown = isDebugKeydown
+end
+
 function BaseCombatHUD:update(delta)
 	Interface.update(self, delta)
 
@@ -862,6 +871,10 @@ function BaseCombatHUD:update(delta)
 				break
 			end
 		end
+	end
+
+	if _DEBUG then
+		self:_updateDebug()
 	end
 
 	self:togglePlayerInfo(showPlayer)

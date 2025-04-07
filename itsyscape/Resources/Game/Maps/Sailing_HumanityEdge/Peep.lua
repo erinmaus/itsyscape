@@ -20,6 +20,8 @@ local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
+local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local TutorialCommon = require "Resources.Game.Peeps.Tutorial.Common"
 
@@ -666,6 +668,12 @@ function Island:onPrepareDuel(playerPeep)
 							Utility.Peep.setResource(orlando, attackableOrlandoResource)
 						end
 
+						local playerCharacter = Utility.Peep.getCharacter(playerPeep)
+						if playerCharacter then
+							local team = orlando:getBehavior(TeamBehavior)
+							team.override[playerCharacter.name] = TeamsBehavior.ENEMY
+						end
+
 						Utility.Peep.setMashinaState(orlando, "tutorial-duel")
 						Utility.Peep.setMashinaState(knightCommander, "tutorial-duel")
 					end, "quest_tutorial_duel.begin")
@@ -684,6 +692,12 @@ function Island:onPlayerFinishDuel(playerPeep)
 	local regularOrlandoResource = self:getDirector():getGameDB():getResource("Orlando", "Peep")
 	if regularOrlandoResource then
 		Utility.Peep.setResource(orlando, regularOrlandoResource)
+	end
+
+	local playerCharacter = Utility.Peep.getCharacter(playerPeep)
+	if playerCharacter then
+		local team = orlando:getBehavior(TeamBehavior)
+		team.override[playerCharacter.name] = nil
 	end
 
 	Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")

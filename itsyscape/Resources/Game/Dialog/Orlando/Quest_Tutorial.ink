@@ -923,7 +923,7 @@ Wow! That was a good fight! I didn't expect to beat you...
 = player_should_yield
 
 # speaker={C_ORLANDO}
-Not to arrogant, but I think you should yield %person({player_get_pronoun_uppercase(X_MX)}) {player_name}...!
+Not to sound arrogant, but I think you should yield %person({player_get_pronoun_uppercase(X_MX)}) {player_name}...!
 
 # speaker={C_ORLANDO}
 You don't wanna die, do you?!
