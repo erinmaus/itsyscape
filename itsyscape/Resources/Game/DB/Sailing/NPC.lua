@@ -18,6 +18,11 @@ local ITEMS = {
 				id = "Itsy_Gilded",
 				name = "Gilded itsy cannon",
 				description = "The fanciest itsy cannon you'll ever find."
+			},
+			{
+				id = "BloodMithril",
+				name = "Blood mithril cannon",
+				description = "The lightest metal in the Realm infused with blackmelt to survive the corrosive effects of sea water to make an extremely threatening cannon."
 			}
 		}
 	},
@@ -62,6 +67,11 @@ local ITEMS = {
 				id = "Galleon_Wood",
 				name = "Wooden galleon hull",
 				description = "A massive hull made from strong wood.",
+			},
+			{
+				id = "Galleon_BloodMithril",
+				name = "Blood mithril galleon hull",
+				description = "A massive hull made from the only seaworthy metal in the Realm.",
 			}
 		}
 	},
@@ -82,6 +92,11 @@ local ITEMS = {
 				id = "ExquisiteMahogany",
 				name = "Exquisite mahogany mast",
 				description = "A strong mast made from mahogany."
+			},
+			{
+				id = "BloodMithril",
+				name = "Blood mithril mast",
+				description = "This mast is nigh unbreakable by cannonfire.",
 			}
 		}
 	},
@@ -93,6 +108,11 @@ local ITEMS = {
 				id = "Galleon_ExquisiteFiligree",
 				name = "Exquisite mahogany filigree",
 				description = "Mahogany rails adorned with wooden filigree."
+			},
+			{
+				id = "Galleon_BloodMithril",
+				name = "Exquisite mahogany filigree",
+				description = "Brutal blood mithril. Keeps you from falling overboard..."
 			}
 		}
 	},
@@ -113,6 +133,11 @@ local ITEMS = {
 				id = "VelvetDragon",
 				name = "Velvet dragon sails",
 				description = "Sails made from an enchanted velvet featuring a mysterious dragon skull."
+			},
+			{
+				id = "DeadPrincess",
+				name = "Dead Princess sails",
+				description = "Crown of thorns around tentacles, symbolizing the crew's kurse to hunt Cthulhu to the ends of the Realm."
 			}
 		}
 	},
@@ -124,6 +149,11 @@ local ITEMS = {
 				id = "Galleon_ExquisiteFiligree",
 				name = "Exquisite filigree window",
 				description = "Windows trimmed with mahogany and wooden filigree."
+			},
+			{
+				id = "Galleon_BloodMithril",
+				name = "Blood mithril window",
+				description = "Windows trimmed with blood mithril."
 			}
 		}
 	}

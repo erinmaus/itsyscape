@@ -31,8 +31,6 @@ function ShipMapScript:new(resource, name, ...)
 
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(RotationBehavior)
-
-	self:addBehavior(BossStatsBehavior)
 	self:addBehavior(ShipMovementBehavior)
 	local _, stats = self:addBehavior(ShipStatsBehavior)
 	stats.bonuses[ShipStatsBehavior.STAT_SPEED] = 400

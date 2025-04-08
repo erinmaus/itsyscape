@@ -21,16 +21,18 @@ function TestMap:new(...)
 
 	local _, sky = self:addBehavior(SkyBehavior)
 
+	sky.fogNearDistance = 100
+	sky.fogFarDistance = 200
 	sky.hasFog = true
-	sky.fogFollowTarget = true
+	sky.fogFollowTarget = false
 
 	sky.sunPropType = false
 	sky.moonPropType = false
 
 	local skyColor = Color.fromHexString("111111", 0.3)
-	local worldColor = Color.fromHexString("2d2d55", 1)
+	local worldColor = Color.fromHexString("2d2d55", 1):shiftHSL(0, 0, 0.1)
 
-	local lightColor = Color.fromHexString("28613d")
+	local lightColor = Color.fromHexString("28613d"):shiftHSL(0, 0, 0.2)
 	sky.sunColor = lightColor
 	sky.moonColor = lightColor
 

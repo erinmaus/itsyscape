@@ -562,13 +562,7 @@ function Utility.spawnMapAtPosition(peep, resource, x, y, z, args)
 
 	if mapScript then
 		mapScript:listen('finalize', function()
-			Utility.orientateToAnchor(mapScript, map, anchor)
-
-			local position = mapScript:getBehavior(PositionBehavior)
-			if Class.isCompatibleType(mapScript, require "Resources.Game.Peeps.Maps.ShipMapPeep") then
-				position.offset = Vector(0, position.position.y, 0)
-				position.position = Vector(position.position.x, 0, position.position.z)
-			end
+			Utility.Peep.setPosition(mapScript, Vector(x, y, z))
 		end)
 
 		return mapScript, layer

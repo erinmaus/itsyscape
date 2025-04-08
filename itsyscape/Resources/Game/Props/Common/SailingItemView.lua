@@ -170,7 +170,7 @@ function SailingItemView:loadAttachments(parentNode, attachments)
 					decoration:setParent(parentNode)
 
 					if attachment.enableWallHack then
-						material:setShader(wallDecorationShader)
+						material:setShader(otherShader or wallDecorationShader)
 						material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 3.5, 3.5, 6, 0.25)
 						material:send(material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
 					else

@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
@@ -359,6 +360,22 @@ function Island:prepareTutorial(playerPeep, arguments)
 	else
 		self:pushPoke("finishPreparingTutorial", playerPeep)
 	end
+
+	local ship, layer = Utility.spawnMapAtPosition(self, "Test_Ship", 192, 0, 0, {
+		isInstancedToPlayer = true,
+		player = Utility.Peep.getPlayerModel(playerPeep)
+	})
+
+	ship:listen("finalize", function()
+		ship:getBehavior("ShipMovement").rotation = Quaternion.IDENTITY:slerp(-Quaternion.Y_90, 0.3)
+	end)
+
+	Utility.Peep.setLayer(ship, self:getLayer())
+
+	local deadPrincess = Sailing.Ship.getNPCCustomizations(
+		self:getDirector():getGameInstance(),
+		"NPC_BlackTentacles_DeadPrincess")
+	ship:pushPoke("customize", deadPrincess)
 end
 
 function Island:onPlayerEnter(player, arguments)

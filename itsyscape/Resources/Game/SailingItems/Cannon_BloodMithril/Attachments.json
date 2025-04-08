@@ -1,0 +1,61 @@
+{
+	"BARREL_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Cannon_BloodMithril/Model.lstatic",
+			"group": "cannon.barrel",
+			"texture": "Resources/Game/SailingItems/Cannon_BloodMithril/Texture_Triplanar.png",
+			"shader": "Resources/Shaders/SpecularTriplanar",
+			"uniforms": [
+				["float", "scape_TriplanarScale", 3]
+			],
+			"color": "540024",
+			"outlineThreshold": -0.0001
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Cannon_BloodMithril/Model.lstatic",
+			"group": "cannon.barrel.gilded",
+			"texture": "Resources/Game/SailingItems/Cannon_BloodMithril/Texture_Triplanar.png",
+			"shader": "Resources/Shaders/SpecularTriplanar",
+			"uniforms": [
+				["float", "scape_TriplanarScale", 3]
+			],
+			"colorIndex": 2,
+			"outlineThreshold": -0.0001
+		}
+	],
+	"BOLT_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Cannon_BloodMithril/Model.lstatic",
+			"group": "cannon.bolt",
+			"texture": "Resources/Game/SailingItems/Cannon_BloodMithril/Texture_Triplanar.png",
+			"shader": "Resources/Shaders/SpecularTriplanar",
+			"uniforms": [
+				["float", "scape_TriplanarScale", 3]
+			],
+			"color": "540024",
+			"outlineThreshold": -0.001
+		}
+	],
+	"WHEELS_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Cannon_BloodMithril/Model.lstatic",
+			"group": "cannon.wheels",
+			"texture": "Resources/Game/SailingItems/Cannon_BloodMithril/Texture_Triplanar.png",
+			"shader": "Resources/Shaders/SpecularTriplanar",
+			"uniforms": [
+				["float", "scape_TriplanarScale", 3]
+			],
+			"color": "540024",
+			"outlineThreshold": 0.05
+		}
+	],
+	"STATIC_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Cannon_BloodMithril/Model.lstatic",
+			"group": "cannon.stock",
+			"texture": "Resources/Game/SailingItems/Cannon_BloodMithril/Texture_Stock.png",
+			"colorIndex": 1,
+			"outlineThreshold": 0.05
+		}
+	]
+}
