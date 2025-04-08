@@ -76,6 +76,12 @@ ItsyScape.Meta.PeepEquipmentItem {
 	Resource = Orlando
 }
 
+ItsyScape.Meta.PeepEquipmentItem {
+	Item = ItsyScape.Resource.Item "LitBullseyeLantern",
+	Count = 1,
+	Resource = Orlando
+}
+
 ItsyScape.Meta.PeepHealth {
 	Hitpoints = 99,
 	Resource = Orlando

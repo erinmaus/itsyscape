@@ -30,6 +30,12 @@ do
 		Resource = CapnRaven
 	}
 
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "LitBullseyeLantern",
+		Count = 1,
+		Resource = CapnRaven
+	}
+
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Sailing",
 		Value = ItsyScape.Utility.xpForLevel(99),
