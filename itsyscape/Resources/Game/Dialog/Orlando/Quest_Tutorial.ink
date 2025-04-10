@@ -75,9 +75,8 @@ Very well...
 # speaker={C_ORLANDO}
 Uh, so, let's see, where were we...
 
-%empty()
-
 # background=none
+%empty()
 
 -> quest_tutorial_main.table_of_contents
 
@@ -166,12 +165,11 @@ OI! {yell(player_name)}! ARE YOU OK?! HELP! {yell(player_get_pronoun_uppercase(X
 -> loop
 
 = what_happened
+-> quest_tutorial_main_started_get_up ->
 ~ quest_tutorial_main_started_asked_what_happened = true
 
 # speaker={C_PLAYER}
 Ugh... So what in the Realm happened?
-
--> quest_tutorial_main_started_get_up ->
 
 # speaker={C_ORLANDO}
 I was on my way to get you when a freak lightning bolt hit the gunpowder barrels and then BOOM! 
@@ -188,12 +186,11 @@ OH! And, um, I mean, actually, it would be worse for you, of course, because, li
 -> loop
 
 = where_am_i
+-> quest_tutorial_main_started_get_up ->
 ~ quest_tutorial_main_started_asked_where_am_i = true
 
 # speaker={C_PLAYER}
 Eh... Where am I?
-
--> quest_tutorial_main_started_get_up ->
 
 # speaker={C_ORLANDO}
 We're gonna need to get you checked out as asoon as we get back to %location(Isabelle Island)...
@@ -228,12 +225,12 @@ Not even the %hint(Black Tentacles) are that crazy.
 -> loop
 
 = what_is_going_on
+-> quest_tutorial_main_started_get_up ->
+
 ~ quest_tutorial_main_started_asked_what_is_going_on = true
 
 # speaker={C_PLAYER}
 Um... So what's going on?
-
--> quest_tutorial_main_started_get_up ->
 
 # speaker={C_ORLANDO}
 What the hells? Are you sure you don't got amnesia?
@@ -358,6 +355,7 @@ Eek! I'll look away!
 ~ set_peep_mashina_state(C_ORLANDO, "tutorial-look-away-from-player")
 
 # speaker={C_PLAYER}
+# background=none
 * [(Ask %person(Ser Orlando) for help.)] Actually, %person(Ser Orlando), can you help me?
   -> get_help
 * [(Equip the gear on your own.)] (I'll figure this out...)
@@ -882,6 +880,8 @@ Yep! I am!
 %empty()
 ~ player_poke_map("prepareDuel")
 
+-> DONE
+
 = ask_to_practice
 
 # speaker={C_ORLANDO}
@@ -898,6 +898,8 @@ Yep! I am!
 
 %empty()
 ~ player_poke_map("prepareDuel")
+
+-> DONE
 
 == quest_tutorial_duel ==
 

@@ -27,7 +27,7 @@ function WeakBite:previewAttackRoll(roll)
 	if status then
 		local hitpointsRatio = status.currentHitpoints / status.maximumHitpoints
 		if hitpointsRatio > 0.5 then
-			roll:setAlwaysHits(false)
+			roll:setAlwaysHits(true)
 		end
 	end
 end
@@ -38,8 +38,14 @@ function WeakBite:previewDamageRoll(roll)
 	local target = roll:getTarget()
 	local status = target and target:getBehavior(CombatStatusBehavior)
 	if status then
-		roll:setMinHit(0)
-		roll:setMaxHit(math.min(math.max(status.currentHitpoints - 1, 0), roll:getMaxHit()))
+		roll:setMinHit(math.min(math.max(status.currentHitpoints - 1, 0), roll:getMinHit() - roll:getMaxHitBoost()))
+		roll:setMaxHit(math.min(math.max(status.currentHitpoints - 1, 0), roll:getMaxHit() - roll:getMinHitBoost()))
+
+		if roll:getMaxHit() == 0 then
+			roll:setMaxHitBoost(0)
+			roll:setMinHitBoost(0)
+			roll:setDamageMultiplier(0)
+		end
 	end
 end
 

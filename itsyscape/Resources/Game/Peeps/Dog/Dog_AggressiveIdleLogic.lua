@@ -34,9 +34,9 @@ local Tree = BTreeBuilder.Node() {
 				queue = CombatCortex2.QUEUE
 			},
 
-			-- Mashina.Peep.PlayAnimation {
-			-- 	animation = "Dog_Bark"
-			-- },
+			Mashina.Peep.PlayAnimation {
+				animation = "Dog_Bark"
+			},
 
 			Mashina.Peep.EngageCombatTarget {
 				peep = TARGET

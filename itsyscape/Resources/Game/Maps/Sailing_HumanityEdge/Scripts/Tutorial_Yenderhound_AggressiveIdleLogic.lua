@@ -32,9 +32,9 @@ local Tree = BTreeBuilder.Node() {
 			},
 
 			Mashina.Step {
-				-- Mashina.Peep.PlayAnimation {
-				-- 	animation = "Dog_Bark"
-				-- },
+				Mashina.Peep.PlayAnimation {
+					animation = "Dog_Bark"
+				},
 
 				Mashina.Peep.Talk {
 					message = "Woof! Woof!",
@@ -42,8 +42,8 @@ local Tree = BTreeBuilder.Node() {
 				},
 
 				Mashina.Repeat {
-					Mashina.Peep.Interrupt {
-						queue = CombatCortex2.QUEUE
+					Mashina.Success {
+						Mashina.Peep.DisengageCombatTarget
 					},
 
 					Mashina.Invert {

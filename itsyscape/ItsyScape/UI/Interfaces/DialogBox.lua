@@ -483,7 +483,7 @@ function DialogBox:update(delta)
 			-toolTipHeight)
 	else
 		if self.stopTalking:getParent() == self then
-			self:removeChild(Self.stopTalking)
+			self:removeChild(self.stopTalking)
 		end
 	end
 end

@@ -42,3 +42,32 @@ do
 		Resource = CapnRaven
 	}
 end
+
+do
+	local Keelhauler = ItsyScape.Resource.Peep "Keelhauler" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "ItsyScape.Peep.Peeps.Player",
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Keelhauler",
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.Dummy {
+		Tier = 50,
+		Hitpoints = 1000,
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "An abomination, the keelhauler is the embodiment of those who were executed at sea for mutiny.",
+		Resource = Keelhauler
+	}
+end

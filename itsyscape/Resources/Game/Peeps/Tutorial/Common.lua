@@ -429,8 +429,6 @@ Common.EQUIP_GEAR = {
 			}
 		},
 		open = function(target, state)
-			Utility.Peep.enable(target)
-
 			return function()
 				local hasIsabelliumItemOnGround = Common.hasPeepDroppedIsabellium(target)
 				local hasEquippedFullIsabellium = Common.hasPeepEquippedFullIsabellium(target)
@@ -1062,8 +1060,6 @@ Common.DROP_ITEMS_TUTORIAL = {
 			}
 		},
 		open = function(target, state)
-			Utility.Peep.enable(target)
-
 			return function()
 				local gamepadRibbonInterface = Utility.UI.getOpenInterface(target, "GamepadRibbon")
 				local isGamepadRibbonOpen = gamepadRibbonInterface and gamepadRibbonInterface:getIsOpen()

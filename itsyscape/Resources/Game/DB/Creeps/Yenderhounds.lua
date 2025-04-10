@@ -14,7 +14,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "ItsyScape.Peep.Peeps.Player",
+		Value = "Resources.Game.Peeps.Dog.Yenderhound",
 		Resource = Yenderhound
 	}
 
@@ -30,12 +30,8 @@ do
 		Resource = Yenderhound
 	}
 
-	ItsyScape.Meta.Dummy {
-		Tier = 50,
+	ItsyScape.Meta.PeepHealth {
 		Hitpoints = 100,
-
-		Weapon = "ItsyDagger",
-
 		Resource = Yenderhound
 	}
 
@@ -58,11 +54,13 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
+		AccuracyStab = ItsyScape.Utility.styleBonusForItem(70, 1),
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 1),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(25, 1),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1),
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25, 1),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(25, 1),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(35),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Yenderhound
 	}

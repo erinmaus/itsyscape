@@ -265,6 +265,18 @@ do
 	}
 end
 
+M["Anchor_Peak"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 131,
+		PositionY = 16,
+		PositionZ = 79,
+		Name = "Anchor_Peak",
+		Map = M._MAP,
+		Resource = M["Anchor_Peak"]
+	}
+end
+
 M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
@@ -687,6 +699,60 @@ do
 		State = "attack",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AttackLogic.lua",
 		Resource = M["Yenderhound1"]
+	}
+end
+
+M["Passage_Peak"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_Peak",
+		Map = M._MAP,
+		Resource = M["Passage_Peak"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 128,
+		Z1 = 76,
+		X2 = 134,
+		Z2 = 83,
+		Map = M._MAP,
+		Resource = M["Passage_Peak"]
+	}
+end
+
+M["Passage_PeakEntrance"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_PeakEntrance",
+		Map = M._MAP,
+		Resource = M["Passage_PeakEntrance"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 148,
+		Z1 = 106,
+		X2 = 154,
+		Z2 = 112,
+		Map = M._MAP,
+		Resource = M["Passage_PeakEntrance"]
+	}
+end
+
+M["Passage_PeakBlocker"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_PeakBlocker",
+		Map = M._MAP,
+		Resource = M["Passage_PeakBlocker"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 141,
+		Z1 = 110,
+		X2 = 145,
+		Z2 = 114,
+		Map = M._MAP,
+		Resource = M["Passage_PeakBlocker"]
 	}
 end
 
