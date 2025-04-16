@@ -49,7 +49,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepID {
-		Value = "ItsyScape.Peep.Peeps.Player",
+		Value = "Resources.Game.Peeps.Keelhauler.Keelhauler",
 		Resource = Keelhauler
 	}
 
@@ -59,15 +59,14 @@ do
 		Resource = Keelhauler
 	}
 
-	ItsyScape.Meta.Dummy {
-		Tier = 50,
+	ItsyScape.Meta.PeepHealth {
 		Hitpoints = 1000,
 		Resource = Keelhauler
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
-		Value = "An abomination, the keelhauler is the embodiment of those who were executed at sea for mutiny.",
+		Value = "No one knows what the Keelhauler is. The remnants of an ancient civilization on the edge of R'lyeh, this magical, mechanical monster follows the commands of whoever possesses its heart... if you can call it a heart.",
 		Resource = Keelhauler
 	}
 end

@@ -105,24 +105,24 @@ end
 
 M["Warrior"] = ItsyScape.Resource.MapObject.Unique()
 do
+	local rotation = ItsyScape.Utility.Quaternion.fromAxisAngle(ItsyScape.Utility.Vector.UNIT_Y, math.pi / 6)
+
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 16,
 		PositionY = 0,
-		PositionZ = 1,
+		PositionZ = 16,
+		-- RotationX = rotation.x,
+		-- RotationY = rotation.y,
+		-- RotationZ = rotation.z,
+		-- RotationW = rotation.w,
 		Name = "Warrior",
 		Map = M._MAP,
 		Resource = M["Warrior"]
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "TutorialDummy_Warrior",
+		Peep = ItsyScape.Resource.Peep "Keelhauler",
 		MapObject = M["Warrior"]
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "attack",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
-		Resource = M["Warrior"]
 	}
 end
 

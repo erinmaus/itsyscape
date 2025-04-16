@@ -29,11 +29,17 @@ vec4 effect(
 {
 	float depth = Texel(scape_DepthTexture, textureCoordinate).r;
 	vec3 position = worldPositionFromGBufferDepth(depth, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
-	float alpha = Texel(scape_SpecularOutlineTexture, textureCoordinate).a;
+	vec4 specularSample = Texel(scape_SpecularOutlineTexture, textureCoordinate);
+	float specular = specularSample.r;
+	float alpha = specularSample.a;
 
 	vec3 lightSurfaceDifference = scape_LightPosition - position;
+	vec3 lightToSurface = normalize(lightSurfaceDifference);
+	vec3 cameraToTarget = normalize(scape_CameraEye - scape_CameraTarget);
 	float attenuation = clamp(1.0 - length(lightSurfaceDifference) / scape_LightAttenuation, 0.0, 1.0);
+	float exponent = pow(abs(dot(normal, lightToSurface)), 3.0);
+	float specularCoefficient = (pow(5.0, exponent * pow(specular, 2.5)) - 1.0) / 4.0;
 
-	vec3 result = attenuation * attenuation * scape_LightColor;
+	vec3 result = attenuation * attenuation * scape_LightColor + vec3(specularCoefficient) * vec3(pow(length(scape_LightColor), 1.5));
 	return vec4(result, alpha);
 }

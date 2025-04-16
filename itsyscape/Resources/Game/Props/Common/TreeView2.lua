@@ -47,7 +47,7 @@ end
 function TreeView:getResourcePath(Type, resource)
 	if Type == TextureResource then
 		return string.format("%s/%s", self:getBaseTextureFilename(), resource)
-	elseif Type == ModelResource or Type == SkeletonResource then
+	elseif Type == ModelResource or Type == SkeletonResource or Type == SkeletonAnimationResource then
 		return string.format("%s/%s", self:getBaseModelFilename(), resource)
 	else
 		error("unknown type")
@@ -110,6 +110,13 @@ function TreeView:load()
 					self.leavesModel = model
 				end,
 				self.skeleton:getResource())
+			resources:queue(
+				SkeletonAnimationResource,
+				self:getResourcePath(SkeletonAnimationResource, "Pose.lanim"),
+				function(animation)
+					self.poseAnimation = animation
+				end,
+				skeleton:getResource())
 			resources:queueEvent(function()
 				self.treeNode:setModel(self.treeModel)
 				self.treeNode:getMaterial():setShader(self.treeShader)
@@ -250,28 +257,37 @@ function TreeView:update(delta)
 
 		self.transforms:reset()
 
+		self.poseAnimation:getResource():computeFilteredTransforms(0, self.transforms)
+
+		local globalRotation
 		do
-			local transform = self._transform
-			transform:reset()
+			local currentRotation = Quaternion.IDENTITY
+			local previousRotation = Quaternion.IDENTITY
 
-			transform:applyQuaternion(Quaternion.X_90:get())
+			local currentNode = self:getRoot()
+			while currentNode do
+				currentRotation = currentRotation * currentNode:getTransform():getLocalRotation()
 
-			self.transforms:setTransform(
-				self.skeleton:getResource():getBoneIndex("root"),
-				transform)
+				local _, r = currentNode:getTransform():getPreviousTransform()
+				previousRotation = previousRotation * r
+
+				currentNode = currentNode:getParent()
+			end
+
+			globalRotation = previousRotation:slerp(currentRotation, _APP and _APP:getFrameDelta() or 1)
 		end
 
 		local r = self:getProp():getState().resource
 		if self.isDepleted and r and r.felledPosition then
 			local targetRotation = Quaternion.lookAt(Vector(unpack(r.felledPosition)) * Vector.PLANE_XZ, self:getProp():getPosition() * Vector.PLANE_XZ, Vector.UNIT_Y)
-			local currentRotation = Quaternion.IDENTITY:slerp(targetRotation, Tween.sineEaseOut(delta))
+			local currentRotation = globalRotation:slerp(targetRotation, Tween.sineEaseOut(delta))
 
 			local transform = self._transform
 			transform:reset()
 
 			transform:applyQuaternion(currentRotation:get())
 
-			self.transforms:setTransform(
+			self.transforms:applyTransform(
 				self.skeleton:getResource():getBoneIndex("tree"),
 				transform)
 		else
@@ -281,7 +297,7 @@ function TreeView:update(delta)
 			local scale = Tween.sineEaseOut(delta)
 			transform:scale(scale, scale, scale)
 
-			self.transforms:setTransform(
+			self.transforms:applyTransform(
 				self.skeleton:getResource():getBoneIndex("tree"),
 				transform)
 		end

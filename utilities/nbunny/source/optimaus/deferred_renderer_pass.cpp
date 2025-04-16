@@ -190,13 +190,13 @@ void nbunny::DeferredRendererPass::draw_directional_light(lua_State* L, LightSce
 	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
 
 	shader_cache.update_uniform(shader, "scape_LightDirection", glm::value_ptr(light.position), sizeof(glm::vec3));
-	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light.color), sizeof(glm::vec3));\
+	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light.color), sizeof(glm::vec3));
 
 	auto camera_target = get_renderer()->get_camera().get_target_position();
-	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_target), sizeof(glm::vec3));
+	shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec3));
 
-	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
-	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_target), sizeof(glm::vec3));
+	auto camera_eye = get_renderer()->get_camera().get_eye_position();
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
 
 	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
 	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
@@ -242,10 +242,10 @@ void nbunny::DeferredRendererPass::draw_directional_lights(lua_State* L, float d
 	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
 
 	auto camera_target = get_renderer()->get_camera().get_target_position();
-	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_target), sizeof(glm::vec3));
+	shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec3));
 
-	auto camera_eye_uniform = shader->getUniformInfo("scape_CameraEye");
-	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_target), sizeof(glm::vec3));
+	auto camera_eye = get_renderer()->get_camera().get_eye_position();
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
 
 	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
 	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
@@ -316,6 +316,12 @@ void nbunny::DeferredRendererPass::draw_point_lights(lua_State* L, float delta)
 	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light_colors[0]), sizeof(glm::vec3) * index);
 	shader_cache.update_uniform(shader, "scape_LightAttenuation", &light_attenuations[0], sizeof(float) * index);
 	shader_cache.update_uniform(shader, "scape_NumLights", &index, sizeof(int));
+
+	auto camera_target = get_renderer()->get_camera().get_target_position();
+	shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec3));
+
+	auto camera_eye = get_renderer()->get_camera().get_eye_position();
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
 
 	shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
 	shader_cache.update_uniform(shader, "scape_NormalTexture", g_buffer.get_canvas(NORMAL_INDEX));
@@ -609,23 +615,6 @@ void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 	draw_directional_lights(L, delta);
 	draw_ambient_lights(L, delta);
 	draw_point_lights(L, delta);
-	// for (auto light: light_scene_nodes)
-	// {
-	// 	const auto& light_type = light->get_type();
-
-	// 	if (light_type == AmbientLightSceneNode::type_pointer)
-	// 	{
-	// 		draw_ambient_light(L, *light, delta);
-	// 	}
-	// 	else if (light_type == DirectionalLightSceneNode::type_pointer)
-	// 	{
-	// 		draw_directional_light(L, *light, delta);
-	// 	}
-	// 	else if (light_type == PointLightSceneNode::type_pointer)
-	// 	{
-	// 		draw_point_light(L, *light, delta);
-	// 	}
-	// }
 
 	// We want to ensure all draws have been submitted before restoring
 	// the blend state.

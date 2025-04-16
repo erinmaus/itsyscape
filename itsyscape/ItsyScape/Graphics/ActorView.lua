@@ -706,6 +706,7 @@ end
 function ActorView:_stopAnimation(slot)
 	local animation = self.animations[slot]
 	if animation then
+		print(">>> stopping", animation.cacheRef.filename)
 		self.animatable:removePlayingAnimation(animation.id)
 	end
 

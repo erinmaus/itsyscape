@@ -136,6 +136,18 @@ local LOGS = {
 		secondaries = {
 			"Branch"
 		}
+	},
+
+	["Balsa"] = {
+		tier = 45,
+		weight = 1,
+		health = 50,
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Branch",
+			"GreenLeaf",
+			"PurpleLeaf"
+		}
 	}
 }
 
@@ -991,6 +1003,42 @@ ItsyScape.Resource.Item "FossilizedOakBranch" {
 			Count = ItsyScape.Utility.xpForResource(25)
 		}
 	}
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strong and soft logs that also don't weigh much.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A common tropical tree found on islands near the edge of the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "BalsaTree_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Green balsa leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaGreenLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A single green leaf from a balsa tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaGreenLeaf"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Purple balsa leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaPurpleLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A single purple leaf from a balsa tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaPurpleLeaf"
 }
 
 ItsyScape.Resource.Prop "Charcoal" {
