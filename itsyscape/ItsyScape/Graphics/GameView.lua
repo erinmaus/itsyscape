@@ -1661,6 +1661,7 @@ function GameView:flood(key, water, layer)
 	end
 
 	if water.reflectionDistance then
+		node:getMaterial():setIsReflectiveOrRefractive(true)
 		node:getMaterial():setReflectionDistance(water.reflectionDistance)
 	end
 

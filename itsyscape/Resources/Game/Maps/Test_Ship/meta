@@ -14,12 +14,6 @@
 				0,
 				-8,
 			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 			rotation =
 			{
 				0,
@@ -27,17 +21,23 @@
 				0,
 				1,
 			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 		},
-		tileSetID = "YendorianJungle",
 		wallHack =
 		{
-			left = 3.500000,
 			near = 6,
-			bottom = 0.50000,
-			top = 5,
-			enabled = true,
 			right = 3.500000,
+			bottom = 0.500000,
+			enabled = true,
+			top = 5,
+			left = 3.500000,
 		},
+		tileSetID = "YendorianJungle",
 	},
 	{
 		transform =
@@ -54,12 +54,6 @@
 				4,
 				0,
 			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 			rotation =
 			{
 				0,
@@ -67,17 +61,23 @@
 				0,
 				1,
 			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 		},
-		tileSetID = "YendorianJungle",
 		wallHack =
 		{
-			left = 3.500000,
 			near = 6,
-			bottom = 0.50000,
-			top = 5,
-			enabled = true,
 			right = 3.500000,
+			bottom = 0.500000,
+			enabled = true,
+			top = 5,
+			left = 3.500000,
 		},
+		tileSetID = "YendorianJungle",
 	},
 	{
 		transform =
@@ -94,12 +94,6 @@
 				-4.500000,
 				0,
 			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 			rotation =
 			{
 				0,
@@ -107,16 +101,22 @@
 				0,
 				1,
 			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 		},
-		tileSetID = "YendorianJungle",
 		wallHack =
 		{
-			left = 3.500000,
 			near = 6,
-			bottom = 0.50000,
-			top = 5,
-			enabled = true,
 			right = 3.500000,
+			bottom = 0.500000,
+			enabled = true,
+			top = 5,
+			left = 3.500000,
 		},
+		tileSetID = "YendorianJungle",
 	},
 }

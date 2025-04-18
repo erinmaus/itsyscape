@@ -7,6 +7,6 @@
 	height = 64,
 	y = 2.75,
 	yOffset = 0.0125,
-	reflectionDistance = 1.0,
-	alpha = 0.85
+	reflectionDistance = 1,
+	alpha = 0.75
 }

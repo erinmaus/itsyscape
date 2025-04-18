@@ -8,10 +8,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 
 local ActorDirectionUpdateCortex = Class(Cortex)
 
@@ -22,6 +24,7 @@ function ActorDirectionUpdateCortex:new()
 	self:require(MovementBehavior)
 
 	self.directions = setmetatable({}, { __mode = 'k' })
+	self.rotations = setmetatable({}, { __mode = 'k' })
 end
 
 function ActorDirectionUpdateCortex:update(delta)
@@ -39,9 +42,12 @@ function ActorDirectionUpdateCortex:update(delta)
 				direction = Vector.UNIT_X * facing
 			end
 
-			if direction ~= self.directions[actor] then
+			local rotation = peep:getBehavior(RotationBehavior)
+
+			if direction ~= self.directions[actor] or (rotation and rotation.rotation ~= self.rotations[actor]) then
 				actor:setDirection(direction)
 				self.directions[actor] = direction
+				self.rotations[actor] = rotation and Quaternion(rotation.rotation:get())
 			end
 		end
 	end

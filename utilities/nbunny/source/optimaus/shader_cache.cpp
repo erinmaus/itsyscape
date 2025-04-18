@@ -229,8 +229,12 @@ void nbunny::ShaderCache::update_uniform(
 		auto uniform = shader->getUniformInfo(uniform_name);
 		if (uniform)
 		{
-			texture_uniforms.insert_or_assign(uniform_name, texture);
-			shader->sendTextures(uniform, &texture, 1);
+			try {
+				shader->sendTextures(uniform, &texture, 1);
+				texture_uniforms.insert_or_assign(uniform_name, texture);
+			} catch(...) {
+				// Nothing. Just let graphics glitch happen from texture mismatches.
+			}
 		}
 	}
 }

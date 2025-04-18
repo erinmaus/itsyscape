@@ -3619,7 +3619,7 @@ function Utility.Peep.getAbsoluteDistance(sourcePeep, targetPeep)
 	local targetPeepMin, targetPeepMax = targetPeepPosition - targetPeepHalfSize, targetPeepPosition + targetPeepHalfSize
 
 	local u = (sourcePeepMin - targetPeepMax):max(Vector.ZERO)
-	local v = (targetPeepMin - sourcePeepMin):max(Vector.ZERO)
+	local v = (targetPeepMin - sourcePeepMax):max(Vector.ZERO)
 	local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
 
 	if squaredDistance > 0 then
@@ -4640,7 +4640,7 @@ function Utility.Peep.lookAt(self, target, delta)
 			peepPosition = target
 		elseif Class.isCompatibleType(target, Ray) then
 			peepPosition = target.origin
-		elseif Class.isCompatibleType(target, Peep) then
+		elseif Class.isCompatibleType(target, require "ItsyScape.Peep.Peep") then
 			peepPosition = Utility.Peep.getAbsolutePosition(target)
 		else
 			return

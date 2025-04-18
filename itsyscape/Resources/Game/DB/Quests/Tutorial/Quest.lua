@@ -37,7 +37,9 @@ Quest "Tutorial" {
 	Step "Tutorial_FishedLightningStormfish",
 	Step "Tutorial_CookedLightningStormfish",
 	Step "Tutorial_Combat",
-	Step "Tutorial_FoundYendorianSquad",
+	Step "Tutorial_FoundPeak",
+	Step "Tutorial_FoundYendorians",
+	Step "Tutorial_DefeatedKeelhauler",
 	Step "Tutorial_Finished"
 }
 
@@ -93,9 +95,19 @@ Description "Tutorial_Combat" {
 	after = "After practicing with Ser Orlando, you regained your confidence and can take on whatever is coming ahead!"
 }
 
-Description "Tutorial_FoundYendorianSquad" {
+Description "Tutorial_FoundPeak" {
 	before = "You're close to the island's peak! Push ahead and discover the Yendorians number.",
-	after = "A Yendorian squad alerted by the flare was guarding the peak! They must mean business! Defeat them... or die trying!"
+	after = "You reached the peak of the island after a dangerous journey."
+}
+
+Description "Tutorial_FoundYendorians" {
+	before = "You reached the island's peak! Ascend and discover the Yendorians number.",
+	after = "Reaching the peak of the island, you discover the Yendorians and the Black Tentacles fighting! A quick cannon shot knocked you and Ser Orlando down into the fray."
+}
+
+Description "Tutorial_DefeatedKeelhauler" {
+	before = "Defeat the Black Tentacles!",
+	after = "The Black Tentacles unleashed the Keelhauler as a last resort, but you and Ser Orlando bested the ancient golem."
 }
 
 Description "Tutorial_Finished" {

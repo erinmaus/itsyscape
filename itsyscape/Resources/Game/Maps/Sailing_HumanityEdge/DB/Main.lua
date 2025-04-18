@@ -720,6 +720,18 @@ do
 	}
 end
 
+M["Anchor_PeakEntrance"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 151,
+		PositionY = 10,
+		PositionZ = 109,
+		Name = "Anchor_PeakEntrance",
+		Map = M._MAP,
+		Resource = M["Anchor_PeakEntrance"]
+	}
+end
+
 M["Passage_PeakEntrance"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {
@@ -771,6 +783,58 @@ do
 		Z2 = 162,
 		Map = M._MAP,
 		Resource = M["Passage_Yenderhounds"]
+	}
+end
+
+M["CapnRaven"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Team",
+		--MapObjectGroup = "Tutorial_Pirates",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 171,
+		PositionY = 3,
+		PositionZ = 33,
+		Direction = 1,
+		Name = "CapnRaven",
+		Map = M._MAP,
+		Resource = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CapnRaven",
+		MapObject = M["CapnRaven"]
+	}
+end
+
+M["Keelhauler"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Team",
+		--MapObjectGroup = "Tutorial_Pirates",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Keelhauler"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 167,
+		PositionY = 3,
+		PositionZ = 29,
+		Direction = 1,
+		Name = "Keelhauler",
+		Map = M._MAP,
+		Resource = M["Keelhauler"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Keelhauler",
+		MapObject = M["Keelhauler"]
 	}
 end
 

@@ -605,6 +605,44 @@ function Island:updateTutorialCookStormfishStep(playerPeep)
 	end
 end
 
+function Island:updateTutorialFindPeakStep(playerPeep)
+	if Utility.Peep.isInPassage(playerPeep, "Passage_PeakEntrance") and
+	   Utility.Peep.isEnabled(playerPeep)
+	then
+		Utility.Peep.disable(playerPeep)
+
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.enable(playerPeep)
+
+			self:transitionTutorial(playerPeep, "Tutorial_FoundPeak")
+			self:saveTutorialLocation(playerPeep, "Anchor_PeakEntrance")
+		end, "quest_tutorial_main_found_peak")
+	end
+end
+
+function Island:updateTutorialFindYendoriansStep(playerPeep)
+	if Utility.Peep.isInPassage(playerPeep, "Passage_PeakBlocker") and
+	   Utility.Peep.isEnabled(playerPeep)
+	then
+		Utility.Peep.disable(playerPeep)
+
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.enable(playerPeep)
+		end, "quest_tutorial_peak_out_of_bounds")
+	end
+
+	if Utility.Peep.isInPassage(playerPeep, "Passage_Peak") and
+	   Utility.Peep.isEnabled(playerPeep)
+	then
+		Utility.Peep.disable(playerPeep)
+
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.enable(playerPeep)
+			self:transitionTutorial(playerPeep, "Tutorial_FoundYendorians")
+		end, "quest_tutorial_reached_peak")
+	end
+end
+
 function Island:onPrepareDuel(playerPeep)
 	local orlando = self:getCompanion(playerPeep, "Orlando")
 	Utility.Peep.setMashinaState(orlando, false)
@@ -820,6 +858,10 @@ function Island:updateTutorialPlayer(playerPeep)
 		self:updateTutorialFishStormfishStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_CookedLightningStormfish", playerPeep) then
 		self:updateTutorialCookStormfishStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundPeak", playerPeep) then
+		self:updateTutorialFindPeakStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundYendorians", playerPeep) then
+		self:updateTutorialFindYendoriansStep(playerPeep)
 	end
 end
 

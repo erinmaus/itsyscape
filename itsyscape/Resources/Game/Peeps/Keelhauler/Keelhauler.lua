@@ -20,12 +20,15 @@ function Keelhauler:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Keelhauler', ...)
 
 	self:addBehavior(RotationBehavior)
+
+	Utility.Peep.setSize(self, Vector(8, 10, 12.5))
 end
 
 function Keelhauler:ready(director, game)
 	Utility.Peep.Creep.setBody(self, "Keelhauler")
 	Utility.Peep.Creep.addAnimation(self, "animation-idle", "Keelhauler_Idle")
 	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Idle")
+	Utility.Peep.Creep.addAnimation(self, "animation-attack", "Keelhauler_Attack")
 	Utility.Peep.Creep.applySkin(
 		self,
 		"x-accents",
@@ -57,7 +60,15 @@ function Keelhauler:ready(director, game)
 		Equipment.SKIN_PRIORITY_BASE,
 		"Keelhauler/Feathers_Bendy.lua")
 
+	Utility.Peep.equipXWeapon(self, "Keelhauler_FireBreathe")
+
 	Creep.ready(self, director, game)
+end
+
+function Keelhauler:update(...)
+	Creep.update(self, ...)
+
+	Utility.Peep.face3D(self)
 end
 
 return Keelhauler

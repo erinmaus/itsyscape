@@ -80,6 +80,24 @@ Uh, so, let's see, where were we...
 
 -> quest_tutorial_main.table_of_contents
 
+== quest_tutorial_peak_out_of_bounds ==
+# speaker={C_ORLANDO}
+# background=000000
+Oi! It's too dangerous to keep going! We gotta see how many Yendorians are out there! Get back here.
+
+# speaker={C_PLAYER}
+# background=000000
+Okay...
+
+%empty()
+
+~ player_move("Anchor_PeakEntrance")
+
+# background=none
+%empty()
+
+-> quest_tutorial_main.table_of_contents
+
 == quest_tutorial_main ==
 
 # speaker={C_PLAYER}
@@ -400,7 +418,7 @@ Let's go meet with the %person(Ser Commander) at the entrance of the camp!
 = scout
 
 # speaker={C_ORLANDO}
-Let's look for foes! Also, let's pray we don't find any!
+Let's look for foes! And let's pray we don't find any!
 
 -> DONE
 
@@ -1481,5 +1499,19 @@ Let's try again!
 
 # speaker={C_ORLANDO}
 Go on and attack the dummy!
+
+-> DONE
+
+== quest_tutorial_main_found_peak ==
+
+# speaker={C_ORLANDO}
+TBD FOUND PEAK
+
+-> DONE
+
+== quest_tutorial_reached_peak ==
+
+# speaker={C_ORLANDO}
+TBD REACHED PEAK
 
 -> DONE

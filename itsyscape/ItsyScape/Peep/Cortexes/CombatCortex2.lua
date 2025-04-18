@@ -152,7 +152,7 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 
 	local canReachTarget = distance <= worldWeaponRange
 	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange)
-	local isTooClose = distance < selfSize + targetSize
+	local isTooClose = distance <= 0
 	return canReachTarget, isTooFar, isTooClose
 end
 
@@ -603,7 +603,7 @@ function CombatCortex:_updateAggressiveTarget(peep)
 		return false
 	end
 
-	if aggressive.pendingTarget == peep then
+	if aggressive.pendingTarget then
 		return false
 	end
 
