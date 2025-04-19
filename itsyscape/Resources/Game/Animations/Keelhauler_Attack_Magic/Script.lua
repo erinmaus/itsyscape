@@ -1,4 +1,4 @@
-Animation "Keelhauler Attack" {
+Animation "Keelhauler Attack (Magic)" {
 	Channel {
 		Particles {
 			duration = 1.5,
@@ -8,7 +8,7 @@ Animation "Keelhauler Attack" {
 
 			system = {
 				numParticles = 500,
-				texture = "Resources/Game/Animations/Svalbard_Attack_Magic/Particle.png",
+				texture = "Resources/Game/Animations/Keelhauler_Attack_Magic/Particle.png",
 				columns = 4,
 
 				emitters = {
@@ -70,6 +70,6 @@ Animation "Keelhauler Attack" {
 	},
 
 	Target {
-		PlayAnimation "Resources/Game/Animations/Keelhauler_Attack/Animation.lanim"
+		PlayAnimation "Resources/Game/Animations/Keelhauler_Attack_Magic/Animation.lanim"
 	}
 }

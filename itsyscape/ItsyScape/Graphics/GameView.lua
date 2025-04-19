@@ -1072,17 +1072,21 @@ function GameView:_updatePlayerMapNode()
 		return
 	end
 
+	local delta = _APP:getFrameDelta()
+
 	local distanceSquared = (self.camera:getDistance() * 2) ^ 2
 	local position = self.camera:getPosition()
 	local playerMin = position - Vector.PLANE_XZ
 	local playerMax = position + Vector.PLANE_XZ
 	for _, d in ipairs(m.dynamicGroundDecorations) do
 		local decorationMin, decorationMax = d.sceneNode:getBounds()
+		decorationMin, decorationMax = Vector.transformBounds(decorationMin, decorationMax, m.node:getTransform():getGlobalDeltaTransform(delta))
+
 		local u = (playerMin - decorationMax):max(Vector.ZERO)
-		local v = (decorationMin - playerMin):max(Vector.ZERO)
+		local v = (decorationMin - playerMax):max(Vector.ZERO)
 		local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
 
-		if squaredDistance < distanceSquared then
+		if squaredDistance <= distanceSquared then
 			if d.sceneNode:getParent()  ~= m.node then
 				d.sceneNode:setParent(m.node)
 			end

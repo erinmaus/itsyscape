@@ -74,7 +74,7 @@ function ParticlesInstance:play(animatable, time)
 
 				if direction:getLength() > 0 then
 					local _, q = MathCommon.decomposeTransform(otherTransform)
-					self.sceneNode:updateLocalDirection(q:getNormal():transformVector(direction))
+					self.sceneNode:updateLocalDirection(q:getNormal():transformVector(direction:getNormal()))
 				end
 			end)
 		end

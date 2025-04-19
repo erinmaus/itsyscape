@@ -68,13 +68,13 @@ function Ocean:onLoad(...)
 
 		Utility.Peep.setPosition(mapScript, Vector(-32, 0, -32))
 
-		stage:forecast(layer, "IsabelleIsland_FarOcean2_HeavyRain", "Rain", {
-			wind = { -15, 0, 0 },
-			gravity = { 0, -50, 0 },
-			heaviness = 1 / 2,
-			color = { Color.fromHexString("aaeeff", 0.8):get() },
-			size = 1 / 32
-		})
+		-- stage:forecast(layer, "IsabelleIsland_FarOcean2_HeavyRain", "Rain", {
+		-- 	wind = { -15, 0, 0 },
+		-- 	gravity = { 0, -50, 0 },
+		-- 	heaviness = 1 / 2,
+		-- 	color = { Color.fromHexString("aaeeff", 0.8):get() },
+		-- 	size = 1 / 32
+		-- })
 	end
 end
 
