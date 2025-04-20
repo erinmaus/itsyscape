@@ -442,6 +442,13 @@ function One:initTeams()
 			Humanity = TeamsBehavior.ENEMY,
 			Dummy = TeamsBehavior.ENEMY,
 			BlackTentacles = TeamsBehavior.ENEMY
+		},
+
+		BlackTentacles = {
+			Player = TeamsBehavior.ENEMY,
+			Yendorians = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
+			Humanity = TeamsBehavior.NEUTRAL
 		}
 	}
 

@@ -41,6 +41,80 @@ do
 		Value = ItsyScape.Utility.xpForLevel(99),
 		Resource = CapnRaven
 	}
+
+	ItsyScape.Meta.PeepCharacter {
+		Peep = CapnRaven,
+		Character = ItsyScape.Resource.Character "CapnRaven"
+	}
+end
+
+do
+	local Pirate = ItsyScape.Resource.Peep "Pirate_BlackTentacle" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Pirate.BasePirate",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Black Tentacle pirate",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "One of the fiercest pirates to sail the seas.",
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 250,
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Sailing",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = Pirate
+	}
+
+	ItsyScape.Meta.PeepCharacter {
+		Peep = Pirate,
+		Character = ItsyScape.Resource.Character "BlackTentaclesPirate"
+	}
 end
 
 do
@@ -68,5 +142,10 @@ do
 		Language = "en-US",
 		Value = "No one knows what the Keelhauler is. The remnants of an ancient civilization on the edge of R'lyeh, this magical, mechanical monster follows the commands of whoever possesses its heart... if you can call it a heart.",
 		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.PeepCharacter {
+		Peep = Keelhauler,
+		Character = ItsyScape.Resource.Character "BlackTentaclesPirate"
 	}
 end

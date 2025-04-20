@@ -28,8 +28,8 @@ function NoKill:applySelfToDamage(roll)
 	local target = roll:getTarget()
 	local status = target and target:getBehavior(CombatStatusBehavior)
 	if status then
-		roll:setMinHit(math.min(math.max(status.currentHitpoints - 1, 0), roll:getMinHit() - roll:getMaxHitBoost()))
-		roll:setMaxHit(math.min(math.max(status.currentHitpoints - 1, 0), roll:getMaxHit() - roll:getMinHitBoost()))
+		roll:setMinHit(math.min(math.max(status.currentHitpoints - roll:getMinHitBoost(), 0), roll:getMinHit()))
+		roll:setMaxHit(math.min(math.max(status.currentHitpoints - roll:getMaxHitBoost(), 0), roll:getMaxHit()))
 
 		if roll:getMaxHit() == 0 then
 			roll:setMaxHitBoost(0)

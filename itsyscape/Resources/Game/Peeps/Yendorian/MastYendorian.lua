@@ -47,8 +47,6 @@ function MastYendorian:ready(director, game)
 
 	local status = self:getBehavior(CombatStatusBehavior)
 	if status then
-		status.maximumHitpoints = 750
-		status.currentHitpoints = 750
 		status.maxChaseDistance = math.huge
 	end
 

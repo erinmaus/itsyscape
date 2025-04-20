@@ -89,10 +89,10 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.Equipment {
 	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(55, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 1),
 	Prayer = 55,
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
@@ -149,13 +149,18 @@ ItsyScape.Meta.PeepStat {
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
+ItsyScape.Meta.PeepHealth {
+	Hitpoints = 400,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
+}
+
 ItsyScape.Meta.Equipment {
 	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55, 1),
 	DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 1),
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(40, 1),
 	Prayer = 55,
 	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
@@ -224,12 +229,17 @@ ItsyScape.Meta.PeepStat {
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
+ItsyScape.Meta.PeepHealth {
+	Hitpoints = 400,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
 ItsyScape.Meta.Equipment {
 	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(55, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 1),
 	Prayer = 55,
 	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(60),
@@ -299,13 +309,18 @@ ItsyScape.Meta.PeepStat {
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 
+ItsyScape.Meta.PeepHealth {
+	Hitpoints = 400,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
 ItsyScape.Meta.Equipment {
 	AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(55, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1),
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(40, 1),
 	Prayer = 55,
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,

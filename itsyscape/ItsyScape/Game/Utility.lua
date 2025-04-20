@@ -4186,27 +4186,27 @@ function _canPeepAttack(peep, target, teams, otherTeams, matchup)
 	if override then
 		if override == TeamsBehavior.ENEMY then
 			-- Forced enemy.
-			return true
+			return true, true
 		elseif override == TeamsBehavior.ALLY and otherTeams.override[targetCharacter.name] ~= TeamsBehavior.ENEMY then
 			-- Forced ally.
-			return false
+			return false, true
 		end
 	end
 
 	if #teams.teams == 0 or #otherTeams.teams == 0 then
-		return true
+		return true, false
 	end
 
 	for _, team in ipairs(teams.teams) do
 		for _, otherTeam in ipairs(otherTeams.teams) do
 			local status = matchup[team] and matchup[team][otherTeam]
 			if status == TeamsBehavior.ENEMY then
-				return true
+				return true, false
 			end
 		end
 	end
 
-	return false
+	return false, false
 end
 
 function Utility.Peep.canPeepAttackTarget(peep, target)
@@ -4242,8 +4242,12 @@ function Utility.Peep.canPeepAttackTarget(peep, target)
 		return true
 	end
 
-	return _canPeepAttack(peep, target, peepTeams, targetTeams, teams.teams) or
-	       _canPeepAttack(target, peep, targetTeams, peepTeams, teams.teams)
+	local canAttack, isForced = _canPeepAttack(peep, target, peepTeams, targetTeams, teams.teams)
+	if isForced then
+		return canAttack
+	end
+
+	return canAttack or _canPeepAttack(target, peep, targetTeams, peepTeams, teams.teams)
 end
 
 local function _isAttackable(peep, r)

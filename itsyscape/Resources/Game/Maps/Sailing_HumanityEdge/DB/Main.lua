@@ -277,6 +277,540 @@ do
 	}
 end
 
+M["Battle1_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Battle",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Battle1_Pirate1"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 153,
+		PositionY = 3,
+		PositionZ = 17,
+		Direction = 1,
+		Name = "Battle1_Pirate1",
+		Map = M._MAP,
+		Resource = M["Battle1_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["Battle1_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyMusket",
+		Count = 1,
+		Resource = M["Battle1_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyBullet",
+		Count = 10000,
+		Resource = M["Battle1_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle1_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_AttackLogic.lua",
+		Resource = M["Battle1_Pirate1"]
+	}
+
+	M["Battle1_Pirate1"] {
+		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+M["Battle1_Pirate2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Battle",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Battle1_Pirate2"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155,
+		PositionY = 3,
+		PositionZ = 17,
+		Direction = 1,
+		Name = "Battle1_Pirate2",
+		Map = M._MAP,
+		Resource = M["Battle1_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["Battle1_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyPistol",
+		Count = 1,
+		Resource = M["Battle1_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyBullet",
+		Count = 10000,
+		Resource = M["Battle1_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle1_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_AttackLogic.lua",
+		Resource = M["Battle1_Pirate2"]
+	}
+
+	M["Battle1_Pirate2"] {
+		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+M["Battle1_Yendorian"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Battle",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Battle1_Yendorian"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155,
+		PositionY = 3,
+		PositionZ = 17,
+		Direction = 1,
+		Name = "Battle1_Yendorian",
+		Map = M._MAP,
+		Resource = M["Battle1_Yendorian"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
+		MapObject = M["Battle1_Yendorian"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_AttackLogic.lua",
+		Resource = M["Battle1_Yendorian"]
+	}
+end
+
+M["Battle2_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Battle",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Battle2_Pirate1"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155,
+		PositionY = 3,
+		PositionZ = 25,
+		Direction = 1,
+		Name = "Battle2_Pirate1",
+		Map = M._MAP,
+		Resource = M["Battle2_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["Battle2_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyBlunderbuss",
+		Count = 1,
+		Resource = M["Battle2_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyBullet",
+		Count = 10000,
+		Resource = M["Battle2_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle2_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_AttackLogic.lua",
+		Resource = M["Battle2_Pirate1"]
+	}
+
+	M["Battle2_Pirate1"] {
+		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+M["Battle2_Pirate2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Battle",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Battle2_Pirate2"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 153,
+		PositionY = 3,
+		PositionZ = 25,
+		Direction = 1,
+		Name = "Battle2_Pirate2",
+		Map = M._MAP,
+		Resource = M["Battle2_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyMusket",
+		Count = 1,
+		Resource = M["Battle2_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyBullet",
+		Count = 10000,
+		Resource = M["Battle2_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["Battle2_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle2_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_AttackLogic.lua",
+		Resource = M["Battle2_Pirate2"]
+	}
+
+	M["Battle2_Pirate2"] {
+		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+M["Battle2_Yendorian"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Battle",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Battle2_Yendorian"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 157,
+		PositionY = 3,
+		PositionZ = 25,
+		Direction = 1,
+		Name = "Battle2_Yendorian",
+		Map = M._MAP,
+		Resource = M["Battle2_Yendorian"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Mast",
+		MapObject = M["Battle2_Yendorian"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle2_Yendorian"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_AttackLogic.lua",
+		Resource = M["Battle2_Yendorian"]
+	}
+end
+
+M["Battle3_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Battle",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Battle3_Pirate1"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 163,
+		PositionY = 3,
+		PositionZ = 47,
+		Name = "Battle3_Pirate1",
+		Map = M._MAP,
+		Resource = M["Battle3_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["Battle3_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyBlunderbuss",
+		Count = 1,
+		Resource = M["Battle3_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyBullet",
+		Count = 10000,
+		Resource = M["Battle3_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle3_Pirate1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_AttackLogic.lua",
+		Resource = M["Battle3_Pirate1"]
+	}
+
+	M["Battle3_Pirate1"] {
+		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+M["Battle3_Pirate2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Battle",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Battle3_Pirate2"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 175,
+		PositionY = 3,
+		PositionZ = 47,
+		Name = "Battle3_Pirate2",
+		Map = M._MAP,
+		Resource = M["Battle3_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyMusket",
+		Count = 1,
+		Resource = M["Battle3_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyBullet",
+		Count = 10000,
+		Resource = M["Battle3_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["Battle3_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle3_Pirate2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_AttackLogic.lua",
+		Resource = M["Battle3_Pirate2"]
+	}
+
+	M["Battle3_Pirate2"] {
+		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+M["Battle3_Yendorian"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Battle",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Battle3_Yendorian"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 169,
+		PositionY = 3,
+		PositionZ = 47,
+		Name = "Battle3_Yendorian",
+		Map = M._MAP,
+		Resource = M["Battle3_Yendorian"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Mast",
+		MapObject = M["Battle3_Yendorian"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle3_Yendorian"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_AttackLogic.lua",
+		Resource = M["Battle3_Yendorian"]
+	}
+end
+
+M["Keelhauler"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Pirates",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Keelhauler"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 167,
+		PositionY = 3,
+		PositionZ = 29,
+		Direction = 1,
+		Name = "Keelhauler",
+		Map = M._MAP,
+		Resource = M["Keelhauler"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Keelhauler",
+		MapObject = M["Keelhauler"]
+	}
+end
+
+M["CapnRaven"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Pirates",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 171,
+		PositionY = 3,
+		PositionZ = 31,
+		Direction = 1,
+		Name = "CapnRaven",
+		Map = M._MAP,
+		Resource = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CapnRaven",
+		MapObject = M["CapnRaven"]
+	}
+end
+
+M["CapnRaven_PirateBodyGuard1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Pirates",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["CapnRaven_PirateBodyGuard1"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 169,
+		PositionY = 3,
+		PositionZ = 31,
+		Direction = -1,
+		Name = "CapnRaven_PirateBodyGuard1",
+		Map = M._MAP,
+		Resource = M["CapnRaven_PirateBodyGuard1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["CapnRaven_PirateBodyGuard1"]
+	}
+end
+
+M["CapnRaven_PirateBodyGuard2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Pirates",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["CapnRaven_PirateBodyGuard2"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 173,
+		PositionY = 3,
+		PositionZ = 31,
+		Direction = 1,
+		Name = "CapnRaven_PirateBodyGuard2",
+		Map = M._MAP,
+		Resource = M["CapnRaven_PirateBodyGuard2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["CapnRaven_PirateBodyGuard2"]
+	}
+end
+
 M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
@@ -783,58 +1317,6 @@ do
 		Z2 = 162,
 		Map = M._MAP,
 		Resource = M["Passage_Yenderhounds"]
-	}
-end
-
-M["CapnRaven"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Team",
-		--MapObjectGroup = "Tutorial_Pirates",
-		Map = M._MAP,
-		IsInstanced = 1,
-		MapObject = M["CapnRaven"]
-	}
-
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 171,
-		PositionY = 3,
-		PositionZ = 33,
-		Direction = 1,
-		Name = "CapnRaven",
-		Map = M._MAP,
-		Resource = M["CapnRaven"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "CapnRaven",
-		MapObject = M["CapnRaven"]
-	}
-end
-
-M["Keelhauler"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Team",
-		--MapObjectGroup = "Tutorial_Pirates",
-		Map = M._MAP,
-		IsInstanced = 1,
-		MapObject = M["Keelhauler"]
-	}
-
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 167,
-		PositionY = 3,
-		PositionZ = 29,
-		Direction = 1,
-		Name = "Keelhauler",
-		Map = M._MAP,
-		Resource = M["Keelhauler"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Keelhauler",
-		MapObject = M["Keelhauler"]
 	}
 end
 

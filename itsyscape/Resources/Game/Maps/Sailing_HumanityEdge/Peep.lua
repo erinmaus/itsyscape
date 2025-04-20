@@ -227,6 +227,24 @@ function Island:onFinishPreparingTutorial(playerPeep)
 			Utility.Peep.enable(playerPeep)
 			Utility.Peep.setMashinaState(orlando, false)
 		end, "quest_tutorial_combat.start")
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundPeak", playerPeep) or
+	       Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundYendorians", playerPeep) or
+	       Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedKeelhauler", playerPeep)
+	then
+		Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Pirates")
+		local peeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Battle")
+		for _, peep in ipairs(peeps) do
+			local team = peep:getBehavior(TeamBehavior)
+
+			local playerPeepCharacter = Utility.Peep.getCharacter(playerPeep)
+			team.override[playerPeepCharacter.name] = TeamsBehavior.ALLY
+
+			local orlandoCharacter = Utility.Peep.getCharacter(self:getCompanion(playerPeep, "Orlando"))
+			team.override[orlandoCharacter.name] = TeamsBehavior.ALLY
+
+			local knightCommanderCharacter = Utility.Peep.getCharacter(self:getCompanion(playerPeep, "KnightCommander"))
+			team.override[knightCommanderCharacter.name] = TeamsBehavior.ALLY
+		end
 	end
 end
 
