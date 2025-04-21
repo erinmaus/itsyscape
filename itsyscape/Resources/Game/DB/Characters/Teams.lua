@@ -86,3 +86,19 @@ do
 		Resource = BlackTentacles
 	}
 end
+
+do
+	local Heroes = ItsyScape.Resource.Team "Heroes"
+
+	ItsyScape.Meta.ResourceName {
+		Language = "en-US",
+		Value = "Heroes",
+		Resource = Heroes
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Language = "en-US",
+		Value = "TBD",
+		Resource = Heroes
+	}
+end

@@ -420,41 +420,55 @@ function One:initTeams()
 			Humanity = TeamsBehavior.ALLY,
 			Yendorians = TeamsBehavior.ENEMY,
 			Dummy = TeamsBehavior.ENEMY,
-			BlackTentacles = TeamsBehavior.ENEMY
+			BlackTentacles = TeamsBehavior.ENEMY,
+			Heroes = TeamBehavior.NEUTRAL
 		},
 
 		Humanity = {
 			Player = TeamsBehavior.ALLY,
 			Yendorians = TeamsBehavior.ENEMY,
 			Dummy = TeamsBehavior.ENEMY,
-			BlackTentacles = TeamsBehavior.NEUTRAL
+			BlackTentacles = TeamsBehavior.NEUTRAL,
+			Heroes = TeamBehavior.ALLY
 		},
 
 		Dummy = {
 			Player = TeamsBehavior.NEUTRAL,
 			Humanity = TeamsBehavior.NEUTRAL,
 			Yendorians = TeamsBehavior.NEUTRAL,
-			BlackTentacles = TeamsBehavior.NEUTRAL
+			BlackTentacles = TeamsBehavior.NEUTRAL,
+			Heroes = TeamBehavior.NEUTRAL
 		},
 
 		Yendorians = {
 			Player = TeamsBehavior.ENEMY,
 			Humanity = TeamsBehavior.ENEMY,
 			Dummy = TeamsBehavior.ENEMY,
-			BlackTentacles = TeamsBehavior.ENEMY
+			BlackTentacles = TeamsBehavior.ENEMY,
+			Heroes = TeamBehavior.ENEMY
 		},
 
 		BlackTentacles = {
 			Player = TeamsBehavior.ENEMY,
 			Yendorians = TeamsBehavior.ENEMY,
 			Dummy = TeamsBehavior.ENEMY,
-			Humanity = TeamsBehavior.NEUTRAL
+			Humanity = TeamsBehavior.NEUTRAL,
+			Heroes = TeamBehavior.ENEMY
+		},
+
+		Heroes = {
+			Player = TeamsBehavior.NEUTRAL,
+			Humanity = TeamsBehavior.ALLY,
+			Yendorians = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
+			BlackTentacles = TeamsBehavior.ENEMY
 		}
 	}
 
 	local team = self:getBehavior(TeamBehavior)
 	team.teams = {
 		"Player",
+		"Heroes",
 		"Humanity"
 	}
 end

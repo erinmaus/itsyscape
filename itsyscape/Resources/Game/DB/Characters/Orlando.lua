@@ -26,6 +26,11 @@ ItsyScape.Meta.CharacterTeam {
 	Team = ItsyScape.Resource.Team "Humanity"
 }
 
+ItsyScape.Meta.CharacterTeam {
+	Character = Character,
+	Team = ItsyScape.Resource.Team "Heroes"
+}
+
 local Orlando = ItsyScape.Resource.Peep "Orlando" {
 	ItsyScape.Action.InvisibleAttack()
 }

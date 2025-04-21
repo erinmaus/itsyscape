@@ -4750,6 +4750,10 @@ function Utility.Peep.attack(peep, other, distance)
 		end
 	end
 
+	if not Utility.Peep.canPeepAttackTarget(peep, other) then
+		return false
+	end
+
 	local actor = other:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
 		if peep:getCommandQueue(CombatCortex.QUEUE):interrupt(AttackCommand()) then

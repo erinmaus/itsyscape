@@ -1512,6 +1512,12 @@ TBD FOUND PEAK
 == quest_tutorial_reached_peak ==
 
 # speaker={C_ORLANDO}
+# background=000000
 TBD REACHED PEAK
+
+# background=none
+%empty()
+
+~ player_poke_map("tutorialReachPeak")
 
 -> DONE

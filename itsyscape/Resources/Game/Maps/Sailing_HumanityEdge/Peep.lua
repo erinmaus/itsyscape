@@ -240,7 +240,6 @@ function Island:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
 					local stage = peep:getDirector():getGameInstance():getStage()
 
 					for _, item in ipairs(items) do
-						print(">>> dropping", item:getID())
 						stage:dropItem(item, item:getCount(), peep)
 					end
 				end)
@@ -310,6 +309,10 @@ function Island:onFinishPreparingTutorial(playerPeep)
 
 			local knightCommanderCharacter = Utility.Peep.getCharacter(self:getCompanion(playerPeep, "KnightCommander"))
 			team.override[knightCommanderCharacter.name] = TeamsBehavior.ALLY
+		end
+
+		if Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedKeelhauler", playerPeep) then
+			self:pushPoke("tutorialReachPeak", playerPeep)
 		end
 	end
 end
@@ -520,6 +523,26 @@ end
 
 function Island:onShowDeflectHint(playerPeep)
 	TutorialCommon.showDeflectHint(playerPeep)
+end
+
+function Island:onTutorialReachPeak(playerPeep)
+	Utility.moveToAnchor(playerPeep, Utility.Peep.getMapResource(playerPeep), "Anchor_VsPirates")
+	Utility.Peep.teleportCompanion(self:getCompanion(playerPeep, "Orlando"), playerPeep)
+
+	self:saveTutorialLocation(playerPeep, "Anchor_VsPirates")
+
+	Utility.Peep.disable(playerPeep)
+	self:talkToPeep(playerPeep, "CapnRaven", function()
+		Utility.Peep.enable(playerPeep)
+
+		local pirate1 = self:getCompanion(playerPeep, "CapnRaven_PirateBodyGuard1")
+		local pirate2 = self:getCompanion(playerPeep, "CapnRaven_PirateBodyGuard2")
+		local orlando = self:getCompanion(playerPeep, "Orlando")
+
+		local s = Utility.Peep.attack(pirate1, orlando)
+		print(">>> s", s)
+		Utility.Peep.attack(pirate2, playerPeep)
+	end, "quest_tutorial_initial_encounter")
 end
 
 function Island:updateTutorialItemSteps(playerPeep)

@@ -691,7 +691,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Yendorian_Mast",
+		Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
 		MapObject = M["Battle3_Yendorian"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
@@ -733,6 +733,18 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Keelhauler",
 		MapObject = M["Keelhauler"]
+	}
+end
+
+M["Anchor_VsPirates"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 171,
+		PositionY = 3,
+		PositionZ = 35,
+		Name = "Anchor_VsPirates",
+		Map = M._MAP,
+		Resource = M["Anchor_VsPirates"]
 	}
 end
 
@@ -782,7 +794,15 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
-		MapObject = M["CapnRaven_PirateBodyGuard1"]
+		MapObject = M["CapnRaven_PirateBodyGuard1"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyLongsword",
+		Count = 1,
+		Resource = M["CapnRaven_PirateBodyGuard1"]
 	}
 
 	M["CapnRaven_PirateBodyGuard1"] {
@@ -811,7 +831,15 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
-		MapObject = M["CapnRaven_PirateBodyGuard2"]
+		MapObject = M["CapnRaven_PirateBodyGuard2"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "ItsyLongsword",
+		Count = 1,
+		Resource = M["CapnRaven_PirateBodyGuard2"]
 	}
 
 	M["CapnRaven_PirateBodyGuard2"] {
@@ -1339,6 +1367,12 @@ do
 	}
 
 	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["CapnRaven"],
+		Name = "CapnRaven",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
 		Resource = M["Orlando"],
 		Name = "Orlando",
 		Action = TalkAction
@@ -1393,5 +1427,38 @@ do
 	M["KnightCommander"] {
 		TalkAction,
 		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+-- Cap'n Raven talk action.
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "CapnRaven",
+		Main = "quest_tutorial_main",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["CapnRaven"],
+		Name = "CapnRaven",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "Talk",
+		Action = TalkAction,
+		Peep = M["CapnRaven"]
+	}
+
+	M["CapnRaven"] {
+		TalkAction
 	}
 end

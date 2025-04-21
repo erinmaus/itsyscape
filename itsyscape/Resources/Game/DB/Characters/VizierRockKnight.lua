@@ -26,4 +26,9 @@ do
 		Character = Character,
 		Team = ItsyScape.Resource.Team "Humanity"
 	}
+
+	ItsyScape.Meta.CharacterTeam {
+		Character = Character,
+		Team = ItsyScape.Resource.Team "Heroes"
+	}
 end
