@@ -2604,10 +2604,15 @@ function Utility.Item.groupStats(stats)
 	}
 end
 
-function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
+function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted, userdata)
 	local flags = { ['item-inventory'] = true }
+
 	if noted then
 		flags['item-noted'] = true
+	end
+
+	if userdata then
+		flags['item-userdata'] = userdata
 	end
 
 	return peep:getState():give("Item", item, quantity, flags)
@@ -2630,6 +2635,8 @@ function Utility.Item.getItemsInPeepInventory(peep, itemID)
 		if type(itemID) == "string" and item:getID() == itemID then
 			table.insert(result, item)
 		elseif type(itemID) == "table" or type(itemID) == "function" and itemID(item) then
+			table.insert(result, item)
+		elseif itemID == nil then
 			table.insert(result, item)
 		end
 	end

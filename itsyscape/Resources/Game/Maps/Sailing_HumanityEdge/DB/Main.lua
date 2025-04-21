@@ -784,6 +784,10 @@ do
 		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
 		MapObject = M["CapnRaven_PirateBodyGuard1"]
 	}
+
+	M["CapnRaven_PirateBodyGuard1"] {
+		ItsyScape.Action.Attack()
+	}
 end
 
 M["CapnRaven_PirateBodyGuard2"] = ItsyScape.Resource.MapObject.Unique()
@@ -808,6 +812,10 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
 		MapObject = M["CapnRaven_PirateBodyGuard2"]
+	}
+
+	M["CapnRaven_PirateBodyGuard2"] {
+		ItsyScape.Action.Attack()
 	}
 end
 

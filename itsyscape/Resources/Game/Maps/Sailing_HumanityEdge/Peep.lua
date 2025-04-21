@@ -185,6 +185,70 @@ function Island:onInitScoutTutorial(playerPeep)
 	TutorialCommon.listenForAttack(playerPeep)
 end
 
+function Island:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
+	local class = Utility.Text.getDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class")
+
+	local statBoost1, statBoost2, statBoostSalt
+	if class == Weapon.STYLE_ARCHERY then
+		statBoost1 = "Archery"
+		statBoost2 = "Dexterity"
+		statBoostSalt = "DexterousSeaSalt"
+	elseif class == Weapon.STYLE_MELEE then
+		statBoost1 = "Attack"
+		statBoost2 = "Strength"
+		statBoostSalt = "WarriorSeaSalt"
+	else
+		statBoost1 = "Magic"
+		statBoost2 = "Wisdom"
+		statBoostSalt = "SageSeaSalt"
+	end
+
+	local userdata = {
+		ItemIngredientsUserdata = {
+			{ value = 1, resource = "AllPurposeFlour" },
+			{ value = 1, resource = "Butter" },
+			{ value = 1, resource = statBoostSalt },
+			{ value = 1, resource = "Shrimp" },
+			{ value = 1, resource = "SeaBass" },
+			{ value = 1, resource = "BlackmeltBass" }
+		},
+
+		ItemHealingUserdata = {
+			hitpoints = 34
+		},
+
+		ItemStatBoostUserdata = {
+			[statBoost1] = 7,
+			[statBoost2] = 7
+		}
+	}
+
+	for _, ingredient in ipairs(userdata.ItemIngredientsUserdata) do
+		local resource = self:getDirector():getGameDB():getResource(ingredient.resource, "Item")
+		local name = Utility.getName(resource, self:getDirector():getGameDB())
+		ingredient.name = name or ("*" .. resource.name)
+	end
+
+	for _, peep in ipairs(piratePeeps) do
+		local resource = Utility.Peep.getResource(peep)
+		if resource.name == "Pirate_BlackTentacle" then
+			peep:listen("finalize", function()
+				Utility.Item.spawnInPeepInventory(peep, "FishPie", 3, false, userdata)
+
+				peep:listen("die", function()
+					local items = Utility.Item.getItemsInPeepInventory(peep)
+					local stage = peep:getDirector():getGameInstance():getStage()
+
+					for _, item in ipairs(items) do
+						print(">>> dropping", item:getID())
+						stage:dropItem(item, item:getCount(), peep)
+					end
+				end)
+			end)
+		end
+	end
+end
+
 function Island:onFinishPreparingTutorial(playerPeep)
 	self.playersInTutorial[playerPeep] = true
 
@@ -231,9 +295,11 @@ function Island:onFinishPreparingTutorial(playerPeep)
 	       Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundYendorians", playerPeep) or
 	       Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedKeelhauler", playerPeep)
 	then
-		Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Pirates")
-		local peeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Battle")
-		for _, peep in ipairs(peeps) do
+		local piratePeeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Pirates")
+		self:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
+
+		local battlePeeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Battle")
+		for _, peep in ipairs(battlePeeps) do
 			local team = peep:getBehavior(TeamBehavior)
 
 			local playerPeepCharacter = Utility.Peep.getCharacter(playerPeep)

@@ -1308,7 +1308,7 @@ function BaseCombatHUDController:tryPullFood(key, item)
 
 	local healingUserdata = item:getUserdata("ItemHealingUserdata")
 	if healingUserdata then
-		health = health + self:getHitpoints()
+		health = health + healingUserdata:getHitpoints()
 	end
 
 	local result = {}
