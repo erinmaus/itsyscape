@@ -12,6 +12,7 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PathFinder = require "ItsyScape.World.PathFinder"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 local PokePropPathNode = require "ItsyScape.World.PokePropPathNode"
@@ -157,6 +158,9 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		end
 	end
 
+	local movement = self.peep:getBehavior(MovementBehavior)
+	local ghost = movement and movement.ghost
+
 	local neighbors = {}
 	local isLeftPassable, isRightPassable
 	local isTopPassable, isBottomPassable
@@ -164,7 +168,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		local left = self.map:getTile(i - 1, j)
 		if (left.topRight == tile.topLeft or
 		    left.bottomRight == tile.bottomLeft) and
-		   not left:hasFlag('impassable') and
+		   (not left:hasFlag('impassable') or ghost) and
 		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left")) and
 		   (not left:hasFlag('door') or (edge.action and edge.action:is("open")))
 		then
@@ -184,7 +188,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		local right = self.map:getTile(i + 1, j)
 		if (right.topLeft == tile.topRight or
 		    right.bottomLeft == tile.bottomRight) and
-		   not right:hasFlag('impassable') and
+		   (not right:hasFlag('impassable') or ghost) and
 		   (not right:hasFlag("wall-left") and not tile:hasFlag("wall-right")) and
 		   (not right:hasFlag('door') or (edge.action and edge.action:is("open")))
 		then
@@ -204,7 +208,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		local top = self.map:getTile(i, j - 1)
 		if (top.bottomLeft == tile.topLeft or
 		    top.bottomRight == tile.topRight) and
-		   not top:hasFlag('impassable') and
+		   (not top:hasFlag('impassable') or ghost) and
 		   (not top:hasFlag("wall-bottom") and not tile:hasFlag("wall-top")) and
 		   (not top:hasFlag('door') or (edge.action and edge.action:is("open")))
 		then
@@ -224,7 +228,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		local bottom = self.map:getTile(i, j + 1)
 		if (bottom.topLeft == tile.bottomLeft or
 		    bottom.topRight == tile.bottomRight) and
-		   not bottom:hasFlag('impassable') and
+		   (not bottom:hasFlag('impassable') or ghost) and
 		   (not bottom:hasFlag("wall-top") and not tile:hasFlag("wall-bottom")) and
 		   (not bottom:hasFlag('door') or (edge.action and edge.action:is("open")))
 		then
@@ -244,7 +248,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		if i > 1 and j > 1 then
 			local topLeft = self.map:getTile(i - 1, j - 1)
 			if topLeft.bottomRight == tile.topLeft and
-			   not topLeft:hasFlag('impassable') and
+			   (not topLeft:hasFlag('impassable') or ghost) and
 			   not topLeft:hasFlag('door')
 			then
 				table.insert(neighbors, self:makeEdge(i - 1, j - 1, edge, goal))
@@ -254,7 +258,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		if i > 1 and j < self.map:getHeight() and isRightPassable and isBottomPassable and isRightPassable then
 			local bottomLeft = self.map:getTile(i - 1, j + 1)
 			if bottomLeft.topRight == tile.bottomLeft and
-			   not bottomLeft:hasFlag('impassable') and
+			   (not bottomLeft:hasFlag('impassable') or ghost) and
 			   not bottomLeft:hasFlag('door')
 			then
 				table.insert(neighbors, self:makeEdge(i - 1, j + 1, edge, goal))
@@ -264,7 +268,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		if i < self.map:getWidth() and j > 1 then
 			local topRight = self.map:getTile(i + 1, j - 1)
 			if topRight.bottomLeft == tile.topRight and
-			   not topRight:hasFlag('impassable') and
+			   (not topRight:hasFlag('impassable') or ghost) and
 			   not topRight:hasFlag('door')
 			then
 				table.insert(neighbors, self:makeEdge(i + 1, j - 1, edge, goal))
@@ -274,7 +278,7 @@ function SmartPathFinder:getNeighbors(edge, goal)
 		if i < self.map:getWidth() and j < self.map:getHeight() and isRightPassable and isBottomPassable and isRightPassable then
 			local bottomRight = self.map:getTile(i + 1, j + 1)
 			if bottomRight.topLeft == tile.bottomRight and
-			   not bottomRight:hasFlag('impassable') and
+			   (not bottomRight:hasFlag('impassable') or ghost) and
 			   not bottomRight:hasFlag('door')
 			then
 				table.insert(neighbors, self:makeEdge(i + 1, j + 1, edge, goal))

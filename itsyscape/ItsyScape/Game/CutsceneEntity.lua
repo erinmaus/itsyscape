@@ -190,7 +190,7 @@ function CutsceneEntity:lookAt(target, duration)
 	end
 end
 
-function CutsceneEntity:walkTo(anchor, distance)
+function CutsceneEntity:walkTo(anchor, distance, ghost)
 	distance = distance or 0
 
 	return function()
@@ -199,7 +199,25 @@ function CutsceneEntity:walkTo(anchor, distance)
 		local map = Utility.Peep.getMap(self.peep)
 		local _, anchorI, anchorJ = map:getTileAt(anchorX, anchorZ)
 
-		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep), distance, { isCutscene = true })
+		local movement = self.peep:getBehavior(MovementBehavior)
+		local oldGhost = movement and movement.ghost
+		if movement and ghost then
+			movement.ghost = true
+		end
+
+		local callback = Utility.Peep.queueWalk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep), distance, { isCutscene = true })
+
+		local isDone = false
+		local success
+		callback:register(function(s)
+			isDone = true
+			success = success
+		end)
+
+		repeat
+			coroutine.yield()
+		until isDone
+
 		if success then
 			local peepI, peepJ, peepDistance
 			repeat
@@ -208,6 +226,10 @@ function CutsceneEntity:walkTo(anchor, distance)
 
 				peepDistance = (Utility.Peep.getPosition(self.peep) * Vector.PLANE_XZ - Vector(anchorX, 0, anchorZ)):getLength()
 			until (peepI == anchorI and peepJ == anchorJ) or (distance and peepDistance <= distance)
+		end
+
+		if movement and ghost then
+			movement.ghost = oldGhost
 		end
 	end
 end

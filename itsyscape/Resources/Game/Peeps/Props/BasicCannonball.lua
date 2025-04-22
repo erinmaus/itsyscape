@@ -8,11 +8,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local ShipWeapon = require "ItsyScape.Game.ShipWeapon"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local Sailing = require "ItsyScape.Game.Skills.Sailing"
+local ShipWeapon = require "ItsyScape.Game.ShipWeapon"
 local Utility = require "ItsyScape.Game.Utility"
+local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
@@ -43,28 +44,31 @@ function BasicCannonball:onLaunch(peep, cannon, path, duration)
 	self.currentHits = {}
 end
 
-function BasicCannonball:_tryHit()
+function BasicCannonball:_tryHit(currentIndex, nextIndex)
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
 	local stage = director:getGameInstance():getStage()
 
-	local position = Utility.Peep.getAbsolutePosition(self)
+	local a = self.currentPath[currentIndex].position
+	local b = self.currentPath[nextIndex].position
+	local distance = a:distance(b)
+	local ray = Ray(a, a:direction(b))
+
 	local hits = director:probe(self:getLayerName(),
 		Probe.attackable(self.currentPeep),
 		function(p)
-			if p:hasBehavior(DisabledBehavior) then
+			if Utility.Peep.isDisabled(p) then
 				return false
 			end
 
 			local peepPosition = Utility.Peep.getAbsolutePosition(p)
 			local peepSize = Utility.Peep.getSize(p)
 		
-			local min = Vector(-peepSize.x / 2, 0, -peepSize.z / 2)
-			local max = Vector(peepSize.x / 2, peepSize.y, peepSize.z / 2)
+			local min = Vector(-peepSize.x / 2, 0, -peepSize.z / 2) + peepPosition
+			local max = Vector(peepSize.x / 2, peepSize.y, peepSize.z / 2) + peepPosition
 
-			local relativePosition = position - peepPosition
-			return relativePosition.x >= min.x and relativePosition.y >= min.y and relativePosition.z >= min.z and
-			       relativePosition.x <= max.x and relativePosition.y <= max.y and relativePosition.z <= max.z
+			local s, _, t = ray:hitBounds(min, max, nil, 0.5)
+			return s and t <= distance
 		end)
 
 	if #hits == 0 then
@@ -108,7 +112,7 @@ function BasicCannonball:_tryHit()
 			})
 
 			hit:poke("receiveAttack", poke, self.currentPeep)
-			Log.info("Dealt %d damage against peep '%s'!", damage, hit:getName())
+			Log.info("%s dealt %d damage against peep '%s'!", self:getName(), damage, hit:getName())
 		end
 	end
 
@@ -140,15 +144,35 @@ function BasicCannonball:update(director, game)
 	local position = currentPath.position:lerp(nextPath.position, math.clamp(stepDelta))
 	Utility.Peep.setPosition(self, position)
 
+	local instance = Utility.Peep.getInstance(self)
+	for _, layer in instance:iterateLayers() do
+		local mapScript = instance:getMapScriptByLayer(layer)
+		local map = Utility.Peep.getMap(mapScript)
+
+		local transform = Utility.Peep.getMapTransform(mapScript)
+		local relativePosition = position:inverseTransform(transform)
+		if relativePosition.x >= 0 and relativePosition.x <= map:getWidth() * map:getCellSize() and
+		   relativePosition.z >= 0 and relativePosition.z <= map:getHeight() * map:getCellSize()
+		then
+			local y = map:getInterpolatedHeight(relativePosition.x, relativePosition.z)
+			if relativePosition.y <= y then
+				local stage = game:getStage()
+				stage:fireProjectile("CannonSplosion", Vector.ZERO, Utility.Peep.getAbsolutePosition(self) + Vector(0, 2, 0), Utility.Peep.getLayer(self))
+				Utility.Peep.poof(self)
+				return
+			end
+		end
+	end
+
 	local waterPosition = Sailing.Ocean.getPositionRotation(self)
 	if position.y < waterPosition.y - self.MAX_WATER_DEPTH then
 		local stage = game:getStage()
 		stage:fireProjectile("CannonballSplash", Vector.ZERO, Utility.Peep.getAbsolutePosition(self) + Vector(0, 2, 0), Utility.Peep.getLayer(self))
-
 		Utility.Peep.poof(self)
-	else
-		self:_tryHit()
+		return
 	end
+
+	self:_tryHit(currentIndex, nextIndex)
 end
 
 function BasicCannonball:getPropState()

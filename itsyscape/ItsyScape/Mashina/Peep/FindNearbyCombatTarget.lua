@@ -81,7 +81,7 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 	sameLayer = sameLayer == nil and true or sameLayer
 
 	local status = mashina:getBehavior(CombatStatusBehavior)
-	local distance = math.min(state[self.DISTANCE] or math.huge, status and status.maxChaseDistance or math.huge)
+	local distance = state[self.DISTANCE] or (status and status.maxChaseDistance) or math.huge
 
 	local weapon = Utility.Peep.getEquippedWeapon(mashina, true)
 	if weapon and Class.isCompatibleType(weapon, Weapon) then

@@ -711,20 +711,101 @@ do
 	}
 end
 
+M["Battle_ShipPirate1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Battle_ShipPirate1",
+		Map = M._MAP,
+		Resource = M["Battle_ShipPirate1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["Battle_ShipPirate1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "gun-yendorians",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Gunner_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle_ShipPirate1"]
+	}
+
+	M["Battle_ShipPirate1"] {
+		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+M["Battle_ShipPirate2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Battle_ShipPirate2",
+		Map = M._MAP,
+		Resource = M["Battle_ShipPirate2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Pirate_BlackTentacle",
+		MapObject = M["Battle_ShipPirate2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "gun-yendorians",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Gunner_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Battle_ShipPirate2"]
+	}
+
+	M["Battle_ShipPirate2"] {
+		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+M["Anchor_Dolly_KeelhaulerSpawn_Start"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 159,
+		PositionY = 7,
+		PositionZ = 55,
+		Direction = 1,
+		Name = "Anchor_Dolly_KeelhaulerSpawn_Start",
+		Map = M._MAP,
+		Resource = M["Anchor_Dolly_KeelhaulerSpawn_Start"]
+	}
+end
+
+M["Anchor_Dolly_KeelhaulerSpawn_Done"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 159,
+		PositionY = 3,
+		PositionZ = 55,
+		Direction = 1,
+		Name = "Anchor_Dolly_KeelhaulerSpawn_Done",
+		Map = M._MAP,
+		Resource = M["Anchor_Dolly_KeelhaulerSpawn_Done"]
+	}
+end
+
 M["Keelhauler"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Pirates",
+		MapObjectGroup = "Tutorial_Keelhauler",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Keelhauler"]
 	}
 
+	local rotation = ItsyScape.Utility.Quaternion.Y_90:slerp(ItsyScape.Utility.Quaternion.Y_180, 0.5):getNormal()
+
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 167,
+		PositionX = 159,
 		PositionY = 3,
-		PositionZ = 29,
-		Direction = 1,
+		PositionZ = 55,
+		RotationX = rotation.x,
+		RotationY = rotation.y,
+		RotationZ = rotation.z,
+		RotationW = rotation.w,
 		Name = "Keelhauler",
 		Map = M._MAP,
 		Resource = M["Keelhauler"]
@@ -892,6 +973,27 @@ do
 		Z2 = 177,
 		Map = M._MAP,
 		Resource = M["Passage_TutorialStart"]
+	}
+end
+
+M["CameraDolly"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Cutscene",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["CameraDolly"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		Name = "CameraDolly",
+		Map = M._MAP,
+		Resource = M["CameraDolly"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CameraDolly",
+		MapObject = M["CameraDolly"]
 	}
 end
 
@@ -1460,5 +1562,21 @@ do
 
 	M["CapnRaven"] {
 		TalkAction
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_HumanityEdge_SummonKeelhauler"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CapnRaven",
+		Cutscene = Cutscene,
+		Resource = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CameraDolly",
+		Cutscene = Cutscene,
+		Resource = M["CameraDolly"]
 	}
 end

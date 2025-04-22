@@ -32,3 +32,10 @@ TBD BANTER (MET)
 TBD BANTER RESPONSE (MET)
 
 -> DONE
+
+== quest_tutorial_summon_keelhauler ==
+
+# speaker=C{C_CAPN_RAVEN}
+HOPE YOU LIKE THIS
+
+-> DONE

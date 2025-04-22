@@ -212,6 +212,27 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 do
+	local CannonPath = ItsyScape.Resource.Prop "CannonPath"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cannon path",
+		Language = "en-US",
+		Resource = CannonPath
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Shows the path a cannonball will take.",
+		Language = "en-US",
+		Resource = CannonPath
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicCannonPath",
+		Resource = CannonPath
+	}
+end
+
+do
 	local CannonballItem = ItsyScape.Resource.Item "ItsyCannonball"
 	local CannonballProp = ItsyScape.Resource.Prop "Cannonball_Itsy"
 	local CannonballSailingItem = ItsyScape.Resource.SailingItem "Cannonball_Itsy"
@@ -223,7 +244,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "A high-quality, incredibly heavy cannonball. This ball brings death and destruction too anything in its path.",
+		Value = "A high-quality, incredibly heavy cannonball. This ball brings death and destruction to anything in its path.",
 		Language = "en-US",
 		Resource = CannonballItem
 	}

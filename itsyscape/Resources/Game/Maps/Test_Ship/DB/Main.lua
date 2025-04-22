@@ -308,6 +308,19 @@ do
 	}
 end
 
+M["Anchor_Starboard_Cannon1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 0,
+		PositionZ = 3,
+		Layer = 1,
+		Name = "Anchor_Starboard_Cannon1",
+		Map = M._MAP,
+		Resource = M["Anchor_Starboard_Cannon1"]
+	}
+end
+
 M["Hotspot_Starboard_Cannon1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -329,6 +342,19 @@ do
 		Index = 1,
 		MapObject = M["Hotspot_Starboard_Cannon1"],
 		Map = M._MAP
+	}
+end
+
+M["Anchor_Starboard_Cannon2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 0,
+		PositionZ = 3,
+		Layer = 1,
+		Name = "Anchor_Starboard_Cannon2",
+		Map = M._MAP,
+		Resource = M["Anchor_Starboard_Cannon2"]
 	}
 end
 
@@ -356,6 +382,19 @@ do
 	}
 end
 
+M["Anchor_Port_Cannon1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 0,
+		PositionZ = 13,
+		Layer = 1,
+		Name = "Anchor_Port_Cannon1",
+		Map = M._MAP,
+		Resource = M["Anchor_Port_Cannon1"]
+	}
+end
+
 M["Hotspot_Port_Cannon1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -373,6 +412,19 @@ do
 		Index = 3,
 		MapObject = M["Hotspot_Port_Cannon1"],
 		Map = M._MAP
+	}
+end
+
+M["Anchor_Port_Cannon2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 0,
+		PositionZ = 13,
+		Layer = 1,
+		Name = "Anchor_Port_Cannon2",
+		Map = M._MAP,
+		Resource = M["Anchor_Port_Cannon2"]
 	}
 end
 

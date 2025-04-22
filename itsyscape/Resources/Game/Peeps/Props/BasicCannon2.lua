@@ -23,11 +23,11 @@ BasicCannon.DEFAULT_ROTATION = Quaternion.fromAxisAngle(Vector.UNIT_X, math.rad(
 BasicCannon.DEFAULT_POSITION = Vector(0, 1.4, 1.5)
 BasicCannon.MUZZLE_POSITION  = Vector(0, 0, 3)
 
-BasicCannon.DEFAULT_MIN_X = math.rad(-30)
-BasicCannon.DEFAULT_MAX_X = math.rad(30)
+BasicCannon.DEFAULT_MIN_X = math.rad(-45)
+BasicCannon.DEFAULT_MAX_X = math.rad(45)
 
-BasicCannon.DEFAULT_MIN_Y = math.rad(-30)
-BasicCannon.DEFAULT_MAX_Y = math.rad(30)
+BasicCannon.DEFAULT_MIN_Y = math.rad(-45)
+BasicCannon.DEFAULT_MAX_Y = math.rad(45)
 
 function BasicCannon:new(...)
 	BasicSailingItem.new(self, ...)

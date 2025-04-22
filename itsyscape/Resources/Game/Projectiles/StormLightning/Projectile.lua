@@ -81,7 +81,7 @@ function Lightning:generatePath(spawn, hit)
 			currentPoint = currentPoint + offset
 		end
 
-		table.insert(self.fullPath, currentPoint)
+		table.insert(self.fullPath, currentPoint:keep())
 		delta = delta + mu
 	end
 end

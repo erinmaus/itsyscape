@@ -57,8 +57,8 @@ end
 function ActorView.Animatable:setColor(value)
 	for _, slot in pairs(self.actor.skins) do
 		for i = 1, #slot do
-			if slot[i].sceneNode then
-				slot[i].sceneNode:getMaterial():setColor(value)
+			if slot[i].model then
+				slot[i].model:getMaterial():setColor(value)
 			end
 		end
 	end
@@ -706,7 +706,6 @@ end
 function ActorView:_stopAnimation(slot)
 	local animation = self.animations[slot]
 	if animation then
-		print(">>> stopping", animation.cacheRef.filename)
 		self.animatable:removePlayingAnimation(animation.id)
 	end
 

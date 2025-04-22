@@ -185,6 +185,47 @@ function Island:onInitScoutTutorial(playerPeep)
 	TutorialCommon.listenForAttack(playerPeep)
 end
 
+function Island:onPlaySummonKeelhaulerCutscene(playerPeep)
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:playMusic(self:getLayer(), "main", "BossFight1")
+
+	Utility.Peep.disable(playerPeep)
+
+	self:talkToPeep(playerPeep, "CapnRaven", function()
+		Utility.UI.closeAll(playerPeep)
+		local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_SummonKeelhauler", "StandardCutscene", playerPeep)
+		cutscene:listen('done', self.onFinishCutscene, self, playerPeep)
+	end, "quest_tutorial_summon_keelhauler")
+end
+
+function Island:onSummonKeelhauler(playerPeep)
+	local peeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Keelhauler")
+
+	for _, peep in ipairs(peeps) do
+		local resource = Utility.Peep.getResource(peep)
+		if resource and resource.name == "Keelhauler" then
+			peep:listen("finalize", function()
+				Utility.Peep.playAnimation(peep, "x-cutscene", 100, "Keelhauler_Summon")
+			end)
+		end
+	end
+end
+
+function Island:onAttackKeelhauler(playerPeep)
+	local keelhauler = self:getCompanion(playerPeep, "Keelhauler")
+	local orlando = self:getCompanion(playerPeep, "Orlando")
+
+	Utility.Peep.attack(keelhauler, orlando, math.huge)
+end
+
+function Island:onFinishCutscene(playerPeep)
+	Utility.Peep.enable(playerPeep)
+
+	Utility.UI.openGroup(
+		playerPeep,
+		Utility.UI.Groups.WORLD)
+end
+
 function Island:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
 	local class = Utility.Text.getDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class")
 
@@ -229,13 +270,23 @@ function Island:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
 		ingredient.name = name or ("*" .. resource.name)
 	end
 
+	local numPirates = 0
+	local deadNumPirates = 0
+
 	for _, peep in ipairs(piratePeeps) do
 		local resource = Utility.Peep.getResource(peep)
 		if resource.name == "Pirate_BlackTentacle" then
+			numPirates = numPirates + 1
+
 			peep:listen("finalize", function()
 				Utility.Item.spawnInPeepInventory(peep, "FishPie", 3, false, userdata)
 
 				peep:listen("die", function()
+					deadNumPirates = deadNumPirates + 1
+					if deadNumPirates >= numPirates then
+						self:pushPoke("playSummonKeelhaulerCutscene", playerPeep)
+					end
+
 					local items = Utility.Item.getItemsInPeepInventory(peep)
 					local stage = peep:getDirector():getGameInstance():getStage()
 
@@ -244,6 +295,40 @@ function Island:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
 					end
 				end)
 			end)
+		end
+	end
+end
+
+function Island:prepareTutorialPirateShipPeeps(playerPeep)
+	local deadPrincess = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Map", "Test_Ship"),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+
+	if not deadPrincess then
+		Log.warn("Couldn't prep pirate ship peeps.")
+		return
+	end
+
+	local PIRATES = {
+		"Battle_ShipPirate1",
+		"Battle_ShipPirate2"
+	}
+
+	local ANCHORS = {
+		"Anchor_Port_Cannon1",
+		"Anchor_Port_Cannon2"
+	}
+
+	for index, pirateMapObjectName in ipairs(PIRATES) do
+		local pirate = self:getCompanion(playerPeep, pirateMapObjectName)
+		if not pirate then
+			local mapObject = self:getDirector():getGameDB():getRecord("MapObjectReference", {
+				Name = pirateMapObjectName,
+				Map = Utility.Peep.getMapResource(self)
+			})
+
+			Utility.spawnInstancedMapObjectAtAnchor(deadPrincess, playerPeep, mapObject:get("Resource"), ANCHORS[index])
 		end
 	end
 end
@@ -296,6 +381,7 @@ function Island:onFinishPreparingTutorial(playerPeep)
 	then
 		local piratePeeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Pirates")
 		self:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
+		self:prepareTutorialPirateShipPeeps(playerPeep)
 
 		local battlePeeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Battle")
 		for _, peep in ipairs(battlePeeps) do
@@ -430,6 +516,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 	end
 
 	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Team")
+	Utility.spawnInstancedMapGroup(playerPeep, "Cutscene")
 	self:pushPoke("finishPreparingTeam", playerPeep)
 
 	if arguments and arguments.class then
@@ -539,9 +626,8 @@ function Island:onTutorialReachPeak(playerPeep)
 		local pirate2 = self:getCompanion(playerPeep, "CapnRaven_PirateBodyGuard2")
 		local orlando = self:getCompanion(playerPeep, "Orlando")
 
-		local s = Utility.Peep.attack(pirate1, orlando)
-		print(">>> s", s)
-		Utility.Peep.attack(pirate2, playerPeep)
+		Utility.Peep.attack(pirate1, orlando)
+		--Utility.Peep.attack(pirate2, playerPeep)
 	end, "quest_tutorial_initial_encounter")
 end
 

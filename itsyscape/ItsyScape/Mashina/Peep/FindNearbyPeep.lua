@@ -51,9 +51,9 @@ function FindNearbyPeep:update(mashina, state, executor)
 		table.sort(
 			p,
 			function(a, b)
-				local p = Utility.Peep.getPosition(mashina)
-				local aP = Utility.Peep.getPosition(a)
-				local bP = Utility.Peep.getPosition(b)
+				local p = Utility.Peep.getAbsolutePosition(mashina)
+				local aP = Utility.Peep.getAbsolutePosition(a)
+				local bP = Utility.Peep.getAbsolutePosition(b)
 
 				local aDistance = (aP - p):getLength()
 				local bDistance = (bP - p):getLength()

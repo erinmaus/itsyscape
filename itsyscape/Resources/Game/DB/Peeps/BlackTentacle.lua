@@ -101,7 +101,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 100,
+		Hitpoints = 1,
 		Resource = Pirate
 	}
 

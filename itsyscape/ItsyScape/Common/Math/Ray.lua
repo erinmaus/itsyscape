@@ -188,7 +188,7 @@ function BaseRay:hitBounds(min, max, transform, radius)
 	tMax = math.min(tMax, math.max(tz1, tz2))
 
 	if tMax + radius >= tMin and tMin >= -radius then
-		return true, r.origin + r.direction * tMin
+		return true, r.origin + r.direction * tMin, tMin
 	else
 		return false
 	end
