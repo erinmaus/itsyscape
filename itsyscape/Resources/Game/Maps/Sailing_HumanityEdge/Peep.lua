@@ -189,10 +189,10 @@ function Island:onPlaySummonKeelhaulerCutscene(playerPeep)
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:playMusic(self:getLayer(), "main", "BossFight1")
 
+	Utility.UI.closeAll(playerPeep)
 	Utility.Peep.disable(playerPeep)
 
 	self:talkToPeep(playerPeep, "CapnRaven", function()
-		Utility.UI.closeAll(playerPeep)
 		local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_SummonKeelhauler", "StandardCutscene", playerPeep)
 		cutscene:listen('done', self.onFinishCutscene, self, playerPeep)
 	end, "quest_tutorial_summon_keelhauler")
@@ -627,7 +627,7 @@ function Island:onTutorialReachPeak(playerPeep)
 		local orlando = self:getCompanion(playerPeep, "Orlando")
 
 		Utility.Peep.attack(pirate1, orlando)
-		--Utility.Peep.attack(pirate2, playerPeep)
+		Utility.Peep.attack(pirate2, playerPeep)
 	end, "quest_tutorial_initial_encounter")
 end
 
