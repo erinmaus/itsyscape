@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Failure.lua
+-- ItsyScape/Mashina/Drop.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,9 +9,9 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 
-local Failure = B.Node("Failure")
+local Drop = B.Node("Drop")
 
-function Failure:update(mashina, state, executor)
+function Drop:update(mashina, state, executor)
 	local child = self.tree:children(self.node)
 	if child then
 		local r = executor:update(child)
@@ -19,11 +19,11 @@ function Failure:update(mashina, state, executor)
 			return B.Status.Working
 		else
 			executor:drop()
-			return B.Status.Failure
+			return r
 		end
 	end
 
-	return B.Status.Failure
+	return B.Status.Success
 end
 
-return Failure
+return Drop

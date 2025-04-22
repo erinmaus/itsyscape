@@ -82,11 +82,6 @@ function FireCannon:update(mashina, state, executor)
 		Log.info("Target '%s' is in range for '%s' to shoot with '%s' cannon; firing!", target:getName(), peep:getName(), cannon:getName())
 		cannon:poke("fire", peep, "ItsyCannonball", cannonballPath, cannonPathDuration)
 
-		if self.cannonPath then
-			Utility.Peep.poof(self.cannonPath)
-			self.cannonPath = nil
-		end
-
 		return B.Status.Success
 	end
 

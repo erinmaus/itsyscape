@@ -19,42 +19,49 @@ local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local TARGET = B.Reference("Tutorial_Gunner_IdleLogic", "TARGET")
 local CANNON = B.Reference("Tutorial_Gunner_IdleLogic", "CANNON")
 
+local FireCannon = Mashina.Step {
+	Mashina.Peep.FindNearbyCombatTarget {
+		include_npcs = true,
+		same_layer = false,
+		distance = math.huge,
+
+		filter = function(peep)
+			return not (peep:hasBehavior(PlayerBehavior) or peep:hasBehavior(FollowerBehavior))
+		end,
+
+		[TARGET] = B.Output.result
+	},
+
+	Mashina.Peep.FindNearbyPeep {
+		filter = function(p)
+			return Class.hasInterface(p, ICannon)
+		end,
+
+		[CANNON] = B.Output.result
+	},
+
+	Mashina.Sailing.FireCannon {
+		target = TARGET,
+		cannon = CANNON
+	},
+
+	Mashina.Peep.TimeOut {
+		duration = 3,
+	}
+}
+
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
-		Mashina.Success {
-			Mashina.Step {
-				Mashina.Peep.FindNearbyCombatTarget {
-					include_npcs = false,
-					same_layer = false,
-					distance = math.huge,
-					[TARGET] = B.Output.result
-				},
-
-				-- Mashina.Peep.Talk {
-				-- 	message = "got target"
-				-- },
-
-				Mashina.Peep.FindNearbyPeep {
-					filter = function(p)
-						return Class.hasInterface(p, ICannon)
-					end,
-
-					[CANNON] = B.Output.result
-				},
-
-				-- Mashina.Peep.Talk {
-				-- 	message = "got cannon"
-				-- },
-
-				Mashina.Sailing.FireCannon {
-					target = TARGET,
-					cannon = CANNON
-				},
-
-				Mashina.Peep.TimeOut {
-					min_duration = 10,
-					max_duration = 15
+		Mashina.Step {
+			Mashina.Success {
+				Mashina.Drop {
+					FireCannon
 				}
+			},
+
+			Mashina.Peep.TimeOut {
+				min_duration = 5,
+				max_duration = 8
 			}
 		}
 	}

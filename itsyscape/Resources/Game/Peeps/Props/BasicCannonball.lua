@@ -144,6 +144,8 @@ function BasicCannonball:update(director, game)
 	local position = currentPath.position:lerp(nextPath.position, math.clamp(stepDelta))
 	Utility.Peep.setPosition(self, position)
 
+	self:_tryHit(currentIndex, nextIndex)
+
 	local instance = Utility.Peep.getInstance(self)
 	for _, layer in instance:iterateLayers() do
 		local mapScript = instance:getMapScriptByLayer(layer)
@@ -171,8 +173,6 @@ function BasicCannonball:update(director, game)
 		Utility.Peep.poof(self)
 		return
 	end
-
-	self:_tryHit(currentIndex, nextIndex)
 end
 
 function BasicCannonball:getPropState()
