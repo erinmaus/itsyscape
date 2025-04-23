@@ -23,17 +23,19 @@ local Tree = BTreeBuilder.Node() {
 			CommonAttackLogic.SwitchToWeakStyle,
 			CommonAttackLogic.SwitchTargets,
 
-			Mashina.Step {
-				Mashina.Repeat {
-					Mashina.Invert {
-						Mashina.Peep.HasZeal {
-							zeal = 0.5
+			Mashina.Success {
+				Mashina.Step {
+					Mashina.Repeat {
+						Mashina.Invert {
+							Mashina.Peep.HasZeal {
+								zeal = 0.5
+							}
 						}
-					}
-				},
+					},
 
-				Mashina.Peep.SetState {
-					state = "attack-phase-3"
+					Mashina.Peep.SetState {
+						state = "attack-phase-3"
+					}
 				}
 			}
 		}

@@ -109,7 +109,9 @@ local Tree = BTreeBuilder.Node() {
 				Mashina.ParallelSequence {
 					CommonAttackLogic.SwitchToWeakStyle,
 					CommonAttackLogic.SwitchTargets,
-					Attack
+					Mashina.Success {
+						Attack
+					}
 				}
 			}
 		}

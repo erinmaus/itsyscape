@@ -61,9 +61,6 @@ function Keelhauler:ready(director, game)
 
 	Utility.Peep.equipXWeapon(self, "Keelhauler_MudSplash")
 
-	local status = self:getBehavior("CombatStatus")
-	status.currentZeal = 1
-
 	Creep.ready(self, director, game)
 end
 
