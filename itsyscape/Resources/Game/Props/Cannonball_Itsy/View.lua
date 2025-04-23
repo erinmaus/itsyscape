@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView"
@@ -41,6 +42,8 @@ function Cannonball:load()
 			material:setShader(shader)
 			material:send(material.UNIFORM_FLOAT, "scape_TriplanarScale", 3)
 			material:setColor(Color.fromHexString("22b1d4"))
+
+			self:getModelNode():getTransform():setLocalScale(Vector(2))
 		end)
 end
 
