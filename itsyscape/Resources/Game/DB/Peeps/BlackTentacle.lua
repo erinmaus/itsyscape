@@ -151,13 +151,13 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(40),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = Keelhauler
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
-		Value = ItsyScape.Utility.xpForLevel(40),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = Keelhauler
 	}
 
@@ -169,25 +169,41 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Archery",
-		Value = ItsyScape.Utility.xpForLevel(40),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = Keelhauler
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Dexterity",
-		Value = ItsyScape.Utility.xpForLevel(40),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = Keelhauler
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Magic",
-		Value = ItsyScape.Utility.xpForLevel(40),
+		Value = ItsyScape.Utility.xpForLevel(55),
 		Resource = Keelhauler
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Wisdom",
-		Value = ItsyScape.Utility.xpForLevel(40),
+		Value = ItsyScape.Utility.xpForLevel(55),
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(45, 1),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(45, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(45, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 1.2),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 1.2),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.2),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30, 1.2),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30, 1.2),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(25),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(25),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(25),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Keelhauler
 	}
 
@@ -210,7 +226,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Keelhauler's lightning strike",
+		Value = "Stunning Strike",
 		Language = "en-US",
 		Resource = LightningStrike
 	}
@@ -240,7 +256,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Keelhauler's laser",
+		Value = "Ancient Laser",
 		Language = "en-US",
 		Resource = Laser
 	}

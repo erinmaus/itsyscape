@@ -16,6 +16,10 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local PLAYER = B.Reference("Tutorial_CommonLogic", "PLAYER")
 local PLAYER_TARGET = B.Reference("Tutorial_CommonLogic", "PLAYER_TARGET")
 
+local GetPlayer = Mashina.Peep.GetPlayer {
+	[PLAYER] = B.Output.player
+}
+
 local AttackPlayerTarget = Mashina.Step {
 	Mashina.Invert {
 		Mashina.Player.IsNextQuestStep {
@@ -190,6 +194,8 @@ local IsYielding = Mashina.Sequence {
 return {
 	PLAYER = PLAYER,
 	PLAYER_TARGET = PLAYER_TARGET,
+
+	GetPlayer = GetPlayer,
 
 	AttackPlayerTarget = AttackPlayerTarget,
 	IsAttacking = IsAttacking,

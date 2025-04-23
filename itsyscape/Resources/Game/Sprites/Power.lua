@@ -41,6 +41,10 @@ function Power:spawn(power, powerName)
 	local resources = self:getSpriteManager():getResources()
 	local filename = string.format("Resources/Game/Powers/%s/Icon.png", power)
 
+	if not love.filesystem.getInfo(filename) then
+		filename = "Resources/Game/UI/Icons/Concepts/Powers.png"
+	end
+
 	resources:queue(
 		TextureResource,
 		filename,

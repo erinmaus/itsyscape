@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_AttackLogic.lua
+-- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Keelhauler_Phase3AttackLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,8 +12,9 @@ local BTreeBuilder = require "B.TreeBuilder"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
+local CommonAttackLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_Keelhauler_CommonAttackLogic"
 
-local QueueLightningStrike = Mashina.Step {
+local QueueLightningStrike = Mashina.Sequence {
 	Mashina.Peep.CanQueuePower {
 		power = "Keelhauler_LightningStrike"
 	},
@@ -24,7 +25,7 @@ local QueueLightningStrike = Mashina.Step {
 	}
 }
 
-local QueueLaser = Mashina.Step {
+local QueueLaser = Mashina.Sequence {
 	Mashina.Peep.CanQueuePower {
 		power = "Keelhauler_Laser"
 	},
@@ -36,8 +37,10 @@ local QueueLaser = Mashina.Step {
 }
 
 local DeflectLaser = Mashina.Step {
-	Mashina.Peep.OnPoke {
-		event = "powerDeflected",
+	Mashina.Invert {
+		Mashina.Peep.DidUsePower {
+			power = "Keelhauler_Laser"
+		}
 	},
 
 	CommonLogic.GetOrlando,
@@ -58,8 +61,10 @@ local DeflectLaser = Mashina.Step {
 }
 
 local DeflectLightningStrike = Mashina.Step {
-	Mashina.Peep.OnPoke {
-		event = "powerDeflected"
+	Mashina.Invert {
+		Mashina.Peep.DidUsePower {
+			power = "Keelhauler_LightningStrike"
+		}
 	},
 
 	QueueLaser,
@@ -67,8 +72,8 @@ local DeflectLightningStrike = Mashina.Step {
 	Mashina.ParallelTry {
 		DeflectLaser,
 
-		Mashina.Peep.OnPoke {
-			event = "powerActivated"
+		Mashina.Peep.DidUsePower {
+			power = "Keelhauler_Laser"
 		}
 	}
 }
@@ -83,8 +88,12 @@ local Attack = Mashina.Step {
 	Mashina.ParallelTry {
 		DeflectLightningStrike,
 
-		Mashina.Peep.OnPoke {
-			event = "powerActivated"
+		Mashina.Peep.DidUsePower {
+			power = "Keelhauler_LightningStrike"
+		},
+
+		Mashina.Peep.DidUsePower {
+			power = "Keelhauler_Laser"
 		}
 	}
 }
@@ -97,7 +106,11 @@ local Tree = BTreeBuilder.Node() {
 
 		Mashina.Repeat {
 			Mashina.Success {
-				Attack
+				Mashina.ParallelSequence {
+					CommonAttackLogic.SwitchToWeakStyle,
+					CommonAttackLogic.SwitchTargets,
+					Attack
+				}
 			}
 		}
 	}

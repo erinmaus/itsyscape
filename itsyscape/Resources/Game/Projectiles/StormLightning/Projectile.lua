@@ -27,6 +27,7 @@ Lightning.MAX_SEGMENT_LENGTH = 70 / 1000
 Lightning.MIN_SEGMENT_LENGTH = 40 / 1000
 Lightning.MAX_JITTER_DISTANCE = 2.5
 Lightning.COLOR = Color.fromHexString("00ff00", 1)
+Lightning.CLAMP_BOTTOM = true
 
 function Lightning:load()
 	Projectile.load(self)
@@ -39,7 +40,7 @@ function Lightning:load()
 
 	self.lightningBeam = LightBeamSceneNode()
 	self.lightningBeam:setParent(root)
-	self.lightningBeam:setBeamSize(0.5)
+	self.lightningBeam:setBeamSize(1)
 	self.lightningBeam:getMaterial():setIsFullLit(true)
 	self.lightningBeam:getMaterial():setIsTranslucent(true)
 	self.lightningBeam:getMaterial():setColor(Lightning.COLOR)
@@ -87,7 +88,7 @@ function Lightning:generatePath(spawn, hit)
 end
 
 function Lightning:updatePath()
-	local numSegments = math.min(math.floor(#self.fullPath * self:getDelta()) + 1, #self.fullPath)
+	local numSegments = math.min(math.floor(#self.fullPath * self:getDelta() + 10), #self.fullPath)
 
 	for i = self.previousNumSegments + 1, numSegments do
 		local a = self.fullPath[i - 1]

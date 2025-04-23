@@ -63,7 +63,7 @@ function MantokBeam:generatePath(ray, length)
 		local delta = currentDistance / length
 
 		local position = ray:project(currentDistance)
-		table.insert(self.fullBeamPath, position)
+		table.insert(self.fullBeamPath, position:keep())
 
 		currentDistance = currentDistance + self.SEGMENT_LENGTH
 	end

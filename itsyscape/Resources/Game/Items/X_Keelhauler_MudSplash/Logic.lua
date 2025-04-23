@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/X_Keelhauler_FireBreathe/Logic.lua
+-- Resources/Game/Items/X_Keelhauler_MudSplash/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,34 +8,36 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
+local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
 local Utility = require "ItsyScape.Game.Utility"
-local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
-local FireBreathe = Class(MagicWeapon)
+local MudSplash = Class(RangedWeapon)
+MudSplash.AMMO = Equipment.AMMO_NONE
 
-function FireBreathe:getBonusForStance(peep)
-	return Weapon.BONUS_MAGIC
+function MudSplash:getBonusForStance(peep)
+	return Weapon.BONUS_ARCHERY
 end
 
-function FireBreathe:getAttackRange()
-	return 8
+function MudSplash:getAttackRange()
+	return 6
 end
 
-function FireBreathe:getWeaponType()
+function MudSplash:getWeaponType()
 	return 'unarmed'
 end
 
-function FireBreathe:onEquip(peep)
+function MudSplash:onEquip(peep)
 	local resource = Utility.Peep.getResource(peep)
 	if resource and resource.name == "Keelhauler" then
-		Utility.Peep.Creep.addAnimation(peep, "animation-attack", "Keelhauler_Attack_Magic")
+		Utility.Peep.Creep.addAnimation(peep, "animation-attack", "Keelhauler_Attack_Archery")
 	end
 end
 
-function FireBreathe:getCooldown(peep)
+function MudSplash:getCooldown(peep)
 	local stance = peep:getBehavior(StanceBehavior)
 	if stance and stance.stance == Weapon.STANCE_AGGRESSIVE then
 		return 6
@@ -44,4 +46,4 @@ function FireBreathe:getCooldown(peep)
 	end
 end
 
-return FireBreathe
+return MudSplash

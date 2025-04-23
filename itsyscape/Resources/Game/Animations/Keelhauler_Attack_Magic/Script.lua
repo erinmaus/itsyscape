@@ -1,5 +1,9 @@
 Animation "Keelhauler Attack (Magic)" {
 	Channel {
+		PlaySound "Resources/Game/Animations/Keelhauler_Attack_Archery/Sound.wav",
+	},
+
+	Channel {
 		Particles {
 			duration = 1.5,
 			attach = "head",

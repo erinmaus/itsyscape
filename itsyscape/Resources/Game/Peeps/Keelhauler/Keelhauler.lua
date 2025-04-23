@@ -28,7 +28,6 @@ function Keelhauler:ready(director, game)
 	Utility.Peep.Creep.setBody(self, "Keelhauler")
 	Utility.Peep.Creep.addAnimation(self, "animation-idle", "Keelhauler_Idle")
 	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Idle")
-	Utility.Peep.Creep.addAnimation(self, "animation-attack", "Keelhauler_Attack_Magic")
 	Utility.Peep.Creep.applySkin(
 		self,
 		"x-accents",
@@ -60,9 +59,9 @@ function Keelhauler:ready(director, game)
 		Equipment.SKIN_PRIORITY_BASE,
 		"Keelhauler/Feathers_Bendy.lua")
 
-	Utility.Peep.equipXWeapon(self, "Keelhauler_FireBreathe")
+	Utility.Peep.equipXWeapon(self, "Keelhauler_MudSplash")
 
-	local status = self:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
+	local status = self:getBehavior("CombatStatus")
 	status.currentZeal = 1
 
 	Creep.ready(self, director, game)

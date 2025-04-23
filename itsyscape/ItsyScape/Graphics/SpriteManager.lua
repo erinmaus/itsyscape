@@ -50,9 +50,11 @@ function SpriteManager:add(spriteID, node, offset, ...)
 	end
 
 	local numNodesOfType = 0
-	for i = 1, #nodes do
-		if nodes[i].id == spriteID then
-			numNodesOfType = numNodesOfType + 1
+	if not Type.STACKS then
+		for i = 1, #nodes do
+			if nodes[i].id == spriteID then
+				numNodesOfType = numNodesOfType + 1
+			end
 		end
 	end
 

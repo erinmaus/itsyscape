@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Pirate_AttackLogic.lua
+-- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Keelhauler_Phase2AttackLogi.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,6 +11,7 @@ local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
+local CommonAttackLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_Keelhauler_CommonAttackLogic"
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Sequence {
@@ -18,17 +19,22 @@ local Tree = BTreeBuilder.Node() {
 			stance = Weapon.STANCE_CONTROLLED
 		},
 
-		Mashina.Step {
-			Mashina.Repeat {
-				Mashina.Invert {
-					Mashina.Peep.HasZeal {
-						zeal = 0.5
-					}
-				}
-			},
+		Mashina.ParallelSequence {
+			CommonAttackLogic.SwitchToWeakStyle,
+			CommonAttackLogic.SwitchTargets,
 
-			Mashina.Peep.SetState {
-				state = "attack-phase-3"
+			Mashina.Step {
+				Mashina.Repeat {
+					Mashina.Invert {
+						Mashina.Peep.HasZeal {
+							zeal = 0.5
+						}
+					}
+				},
+
+				Mashina.Peep.SetState {
+					state = "attack-phase-3"
+				}
 			}
 		}
 	}

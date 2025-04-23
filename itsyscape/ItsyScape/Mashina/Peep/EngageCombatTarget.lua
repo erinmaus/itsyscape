@@ -25,11 +25,11 @@ function EngageCombatTarget:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	if not Utility.Peep.isAttackable(peep) then
+	local aggressor = state[self.AGGRESSOR] or mashina
+
+	if not Utility.Peep.canPeepAttackTarget(aggressor, peep) then
 		return B.Status.Failure
 	end
-
-	local aggressor = state[self.AGGRESSOR] or mashina
 
 	Utility.Peep.attack(aggressor, peep)
 

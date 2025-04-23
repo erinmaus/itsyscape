@@ -34,7 +34,7 @@ function OnPoke:update(mashina, state, executor)
 	end
 
 	if self.didFire then
-		state[self.RESULT] = result
+		state[self.RESULT] = self.result
 		state[self.RESULTS] = self.results
 
 		self.didFire = false
@@ -72,8 +72,10 @@ function OnPoke:silence()
 
 	self.event = nil
 	self.target = nil
-	self.callack = nil
+	self.callback = nil
 	self.wrappedCallback = nil
+	self.result = nil
+	self.results = nil
 end
 
 function OnPoke:removed()

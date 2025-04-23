@@ -4073,7 +4073,6 @@ function Utility.Peep.equipXWeapon(peep, id)
 			xWeapon:onEquip(peep)
 		end
 	end
-
 end
 
 function Utility.Peep.equipXShield(peep, id)

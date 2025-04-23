@@ -2,6 +2,12 @@ Animation "Keelhauler Attack (Archery)" {
 	Channel {
 		Wait(1),
 
+		PlaySound "Resources/Game/Animations/Keelhauler_Attack_Archery/Sound.wav",
+	},
+
+	Channel {
+		Wait(1),
+
 		Particles {
 			duration = 1.5,
 			attach = "toes.front.l",
