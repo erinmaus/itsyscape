@@ -137,8 +137,8 @@ end
 
 function MantokBeam:tick()
 	if not self.spawnPosition then
-		self.spawnPosition = self:getTargetPosition(self:getSource())
-		self.hitPosition = self:getTargetPosition(self:getDestination())
+		self.spawnPosition = self:getTargetPosition(self:getSource()):keep()
+		self.hitPosition = self:getTargetPosition(self:getDestination()):keep()
 
 		local difference = self.hitPosition - self.spawnPosition
 		local differenceLength = difference:getLength()

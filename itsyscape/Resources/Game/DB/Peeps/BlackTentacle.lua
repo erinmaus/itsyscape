@@ -148,4 +148,106 @@ do
 		Peep = Keelhauler,
 		Character = ItsyScape.Resource.Character "BlackTentaclesPirate"
 	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(30),
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = Keelhauler
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = Keelhauler
+	}
+
+	local LightningStrike = ItsyScape.Resource.Power "Keelhauler_LightningStrike" {
+		ItsyScape.Action.Activate()
+	}
+
+	ItsyScape.Meta.PowerSpec {
+		Resource = LightningStrike
+	}
+
+	ItsyScape.Meta.CombatPowerTier {
+		Tier = 2,
+		Resource = LightningStrike
+	}
+
+	ItsyScape.Meta.CombatPowerZealCost {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Resource = LightningStrike
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Keelhauler's lightning strike",
+		Language = "en-US",
+		Resource = LightningStrike
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Summon a powerful bolt of lightning to stun your foe.",
+		Language = "en-US",
+		Resource = LightningStrike
+	}
+
+	local Laser = ItsyScape.Resource.Power "Keelhauler_Laser" {
+		ItsyScape.Action.Activate()
+	}
+
+	ItsyScape.Meta.PowerSpec {
+		Resource = Laser
+	}
+
+	ItsyScape.Meta.CombatPowerTier {
+		Tier = 1,
+		Resource = Laser
+	}
+
+	ItsyScape.Meta.CombatPowerZealCost {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Resource = Laser
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Keelhauler's laser",
+		Language = "en-US",
+		Resource = Laser
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Blast your foe with a powerful bolt of light.",
+		Language = "en-US",
+		Resource = Laser
+	}
 end

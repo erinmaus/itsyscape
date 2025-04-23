@@ -575,13 +575,13 @@ function Weapon:onAttackHit(peep, target)
 		peep:poke('initiateAttack', attack, target)
 	end
 
-	self:dealtDamage(peep, target, attack)
+	self:dealtDamage(peep, target, attack, roll)
 	self:applyCooldown(peep, target)
 
 	return attack
 end
 
-function Weapon:dealtDamage(peep, target, attack)
+function Weapon:dealtDamage(peep, target, attack, roll)
 	-- Nothing.
 end
 

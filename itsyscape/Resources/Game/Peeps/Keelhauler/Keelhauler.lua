@@ -62,6 +62,9 @@ function Keelhauler:ready(director, game)
 
 	Utility.Peep.equipXWeapon(self, "Keelhauler_FireBreathe")
 
+	local status = self:getBehavior(require "ItsyScape.Peep.Behaviors.CombatStatusBehavior")
+	status.currentZeal = 1
+
 	Creep.ready(self, director, game)
 end
 

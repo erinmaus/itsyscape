@@ -48,7 +48,9 @@ function Power:spawn(power, powerName)
 			self.icon = icon
 		end)
 	resources:queueEvent(function()
-		self.ready = true
+		if self.icon and self.icon:getIsReady() then
+			self.ready = true
+		end
 	end)
 
 	-- We want the localized name, not the internal ID.

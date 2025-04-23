@@ -29,6 +29,9 @@ VAR quest_tutorial_main_player_found_yendorhounds = false
 // Dummy stuff.
 VAR quest_tutorial_main_did_place_dummy = false
 
+// Keelhauler stuff.
+VAR quest_tutorial_main_keelhauler_double_deflect = false
+
 == function quest_tutorial_get_class_name() ==
 <>
 {
@@ -1519,5 +1522,16 @@ TBD REACHED PEAK
 %empty()
 
 ~ player_poke_map("tutorialReachPeak")
+
+-> DONE
+
+== quest_tutorial_fight_keelhauler ==
+
+= deflected_both_attacks
+
+{quest_tutorial_main_keelhauler_double_deflect: -> DONE}
+
+# speaker={C_ORLANDO}
+TBD GOOD JOB W/ DOUBLE DEFLECT
 
 -> DONE

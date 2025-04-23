@@ -1145,6 +1145,12 @@ function Utility.Combat.deflectPendingPower(power, activator, target)
 				zeal = -rechargeCost
 			}))
 
+			target:poke("powerDeflected", {
+				activator = activator,
+				power = pendingPower.power,
+				action = pendingPower.power:getAction()
+			})
+
 			target:removeBehavior(PendingPowerBehavior)
 
 			return pendingPower.power
@@ -5685,6 +5691,7 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	peep:listen("resurrect", Utility.Peep.Attackable.onResurrect)
 	peep:addPoke("powerApplied")
 	peep:addPoke("powerActivated")
+	peep:addPoke("powerDeflected")
 	peep:addPoke("zeal")
 	peep:listen("zeal", Utility.Peep.Attackable.onZeal)
 end

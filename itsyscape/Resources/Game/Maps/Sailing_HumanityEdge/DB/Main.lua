@@ -815,6 +815,18 @@ do
 		Peep = ItsyScape.Resource.Peep "Keelhauler",
 		MapObject = M["Keelhauler"]
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack-phase-2",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Keelhauler_Phase2AttackLogic.lua",
+		Resource = M["Keelhauler"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack-phase-3",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Keelhauler_Phase3AttackLogic.lua",
+		Resource = M["Keelhauler"]
+	}
 end
 
 M["Anchor_VsPirates"] = ItsyScape.Resource.MapObject.Unique()
