@@ -252,6 +252,7 @@ local CURRENT_ACCELERATION = B.Reference("Tutorial_Keelhauler_CommonAttackLogic"
 
 local CHARGE_DISTANCE_MOVED = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CHARGE_DISTANCE_MOVED")
 local CHARGE_HITS = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CHARGE_HITS")
+local CHARGE_HIT = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CHARGE_HIT")
 
 local CURRENT_POSITION = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CURRENT_POSITION")
 local PREVIOUS_POSITION = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "PREVIOUS_POSITION")
@@ -404,18 +405,30 @@ local Charge = Mashina.Step {
 						},
 
 						Stun
+					}
+				}
+			},
+
+			Mashina.Step {
+				Mashina.Peep.OnPoke {
+					event = "dashHit",
+					callback = function(_, _, _, _, peep)
+						return peep
+					end,
+					[CHARGE_HITS] = B.Output.results
+				},
+
+				Mashina.Loop {
+					items = CHARGE_HITS,
+
+					Mashina.GetLoopResult {
+						[CHARGE_HIT] = B.Output.result
 					},
 
-					-- Mashina.Step {
-					-- 	Mashina.Peep.OnPoke {
-					-- 		event = "dashHit",
-					-- 		[CHARGE_HITS] = B.Output.results
-					-- 	},
-
-					-- 	Mashina.Peep.Talk {
-					-- 		message = "hit"
-					-- 	}
-					-- }
+					Mashina.Peep.AttackWithXWeapon {
+						target = CHARGE_HIT,
+						x_weapon = "Keelhauler_Dash"
+					}
 				}
 			},
 

@@ -92,6 +92,7 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 		mashina:getLayerName(),
 		Probe.attackable(mashina),
 		Probe.distance(mashina, distance),
+		mashina:hasBehavior(InstancedBehavior) and Probe.instance(Utility.Peep.getPlayerModel(mashina)) or Probe.any(),
 		Probe.bind(probeIsAlive, state[self.INCLUDE_DEAD]),
 		Probe.bind(probeFilterNPCs, mashina, includeNPCs),
 		Probe.bind(probeFilterLineOfSight, mashina, sameLayer, state[self.LINE_OF_SIGHT]),

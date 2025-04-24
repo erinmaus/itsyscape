@@ -38,6 +38,7 @@ function Keelhauler:new(resource, name, ...)
 	movement.maxAcceleration = self.MAX_ACCELERATION
 
 	self.isDashing = false
+	self.hits = {}
 end
 
 function Keelhauler:ready(director, game)
@@ -82,6 +83,7 @@ end
 
 function Keelhauler:onDashStart()
 	self.isDashing = true
+	self.hits = {}
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = self.RUN_SPEED
@@ -102,13 +104,19 @@ function Keelhauler:updateDash()
 	local hits = self:getDirector():probe(
 		self:getLayerName(),
 		self:hasBehavior(InstancedBehavior) and Probe.instance(Utility.Peep.getPlayerModel(self)) or Probe.any(),
+		Probe.attackable(self),
+		Probe.except(self),
 		function(p)
 			local distance = Utility.Peep.getAbsoluteDistance(self, p)
 			return distance <= 0
 		end)
 
 	for _, hit in ipairs(hits) do
-		self:poke("dashHit", hit)
+		if not self.hits[hit] then
+			print(">>> hit", hit:getName())
+			self:poke("dashHit", hit)
+			self.hits[hit] = true
+		end
 	end
 end
 

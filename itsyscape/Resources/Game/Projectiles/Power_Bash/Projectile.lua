@@ -16,14 +16,14 @@ local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local Bash = Class(Projectile)
 
 Bash.PARTICLE_SYSTEM = {
-	numParticles = 50,
+	numParticles = 100
 	texture = "Resources/Game/Projectiles/Power_Bash/Particle.png",
 
 	emitters = {
 		{
 			type = "RadialEmitter",
 			radius = { 0 },
-			speed = { 2, 3 },
+			speed = { 4, 5 },
 			acceleration = { 0, 0 }
 		},
 		{
@@ -63,12 +63,12 @@ Bash.PARTICLE_SYSTEM = {
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
 		count = { 10, 15 },
-		delay = { 0.125 },
-		duration = { 1 }
+		delay = { 1 / 30 },
+		duration = { 1.5 }
 	}
 }
 
-Bash.DURATION = 1.5
+Bash.DURATION = 2.5
 
 function Bash:load()
 	Projectile.load(self)

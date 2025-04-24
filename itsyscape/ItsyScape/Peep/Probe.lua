@@ -42,6 +42,14 @@ function Probe.any()
 	return _any
 end
 
+local _except = function(self, other)
+	return other ~= self
+end
+
+function Probe.except(self)
+	return Function(_except, self)
+end
+
 local _distance = function(position, distance, other)
 	local otherPosition = Utility.Peep.getAbsolutePosition(other) * Vector.PLANE_XZ
 	local otherDistance = (position - otherPosition):getLength()
@@ -136,7 +144,7 @@ local _instance = function(player, any, peep)
 		return true
 	end
 
-	return instance and instance.playerID == player:getID()
+	return (instance and instance.playerID == player:getID()) or (peep:hasBehavior(PlayerBehavior) and peep:getBehavior(PlayerBehavior).playerID == player:getID())
 end
 
 function Probe.instance(player, any)

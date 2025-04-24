@@ -105,6 +105,20 @@ function BaseCombatHUD:new(...)
 	self.wasRefreshed = false
 
 	self:performLayout()
+
+	self.onClose:register(self.flushSprites, self)
+end
+
+function BaseCombatHUD:flushSprites()
+	for _, pendingActorInfo in pairs(self.pendingSprites) do
+		if pendingActorInfo.powerSprite then
+			pendingActorInfo.powerSprite:finish()
+		end
+
+		if pendingActorInfo.attackSprite then
+			pendingActorInfo.attackSprite:finish()
+		end
+	end
 end
 
 function BaseCombatHUD:onSelectPendingPower(powerType, pendingPowerID)
