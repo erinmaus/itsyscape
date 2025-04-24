@@ -216,7 +216,7 @@ function Island:onAttackKeelhauler(playerPeep)
 	local orlando = self:getCompanion(playerPeep, "Orlando")
 
 	Utility.Peep.attack(keelhauler, orlando, math.huge)
-	Utility.Peep.setMashinaState(keelhauler, "attack-phase-2")
+	Utility.Peep.setMashinaState(keelhauler, "attack-phase-5")
 end
 
 function Island:onFinishCutscene(playerPeep)

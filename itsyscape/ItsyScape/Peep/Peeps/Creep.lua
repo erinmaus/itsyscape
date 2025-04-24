@@ -63,6 +63,7 @@ function Creep:new(resource, ...)
 	movement.stoppingForce = 4
 
 	self:addPoke("fall")
+	self:addPoke("movedOutOfBounds")
 
 	Utility.Peep.setResource(self, resource)
 

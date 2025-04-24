@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
@@ -17,7 +18,7 @@ local CURRENT_TARGET = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CUR
 
 local Roar = Mashina.Step {
 	Mashina.Peep.PlayAnimation {
-		animation = "Keelhauler_Summon" -- TODO ROAR
+		animation = "Keelhauler_Roar"
 	},
 
 	Mashina.Repeat {
@@ -122,10 +123,10 @@ local SwitchToStrongStyle = Mashina.Success {
 	Mashina.Sequence {
 		Mashina.Success {
 			Mashina.Sequence {
-				Mashina.HasCombatTarget,
+				Mashina.Peep.HasCombatTarget,
 
-				Mashina.HasCombatTarget {
-					[CURRENT_TARGET] = B.Output.result
+				Mashina.Peep.HasCombatTarget {
+					[CURRENT_TARGET] = B.Output.target
 				}
 			}
 		},
@@ -215,27 +216,224 @@ local WaitOnTarget = Mashina.Repeat {
 	Mashina.Step {
 		Mashina.Peep.DidAttack,
 		Mashina.Peep.DidAttack,
+		Mashina.Peep.DidAttack,
 
 		Mashina.Invert {
 			Mashina.RandomCheck {
-				chance = 1 / 3
+				chance = 0.5
 			}
 		}
 	}
 }
 
-local SwitchTargets = Mashina.Repeat {
-	Mashina.Step {
-		SwitchToOrlando,
-		WaitOnTarget,
+local IS_DASHING = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "IS_DASHING")
 
-		SwitchToPlayer,
-		WaitOnTarget
+local SwitchTargets = Mashina.Repeat {
+	Mashina.ParallelTry {
+		Mashina.Check {
+			condition = IS_DASHING
+		},
+
+		Mashina.Step {
+			SwitchToOrlando,
+			WaitOnTarget,
+
+			SwitchToPlayer,
+			WaitOnTarget
+		}
+	}
+}
+
+local ACCELERATION_MAGNITUDE = 24
+local MAX_DISTANCE = 15
+
+local CURRENT_DIRECTION = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CURRENT_DIRECTION")
+local CURRENT_ACCELERATION = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CURRENT_ACCELERATION")
+
+local CHARGE_DISTANCE_MOVED = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CHARGE_DISTANCE_MOVED")
+local CHARGE_HITS = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CHARGE_HITS")
+
+local CURRENT_POSITION = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "CURRENT_POSITION")
+local PREVIOUS_POSITION = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "PREVIOUS_POSITION")
+
+local BeginCharge = Mashina.Step {
+	Mashina.Sequence {
+		Mashina.Peep.HasCombatTarget,
+
+		Mashina.Peep.HasCombatTarget {
+			[CURRENT_TARGET] = B.Output.target
+		}
+	},
+
+	Mashina.Set {
+		value = true,
+		[IS_DASHING] = B.Output.result,
+	},
+
+	Mashina.Set {
+		value = Vector(math.huge),
+		[PREVIOUS_POSITION] = B.Output.result
+	},
+
+	Mashina.Sequence {
+		Mashina.Success {
+			Mashina.Peep.DisengageCombatTarget,
+		},
+
+		Mashina.Step {
+			Mashina.Navigation.Direction {
+				target = CURRENT_TARGET,
+				[CURRENT_DIRECTION] = B.Output.result
+			},
+
+			Mashina.Peep.PlayAnimation {
+				animation = "Keelhauler_Charge",
+				slot = "x-keelhauler-charge",
+				priority = 500
+			},
+
+			Mashina.Peep.TimeOut {
+				duration = 4
+			}
+		}
+	}
+}
+
+local EndCharge = Mashina.Sequence {
+	Mashina.Set {
+		value = false,
+		[IS_DASHING] = B.Output.result,
+	},
+
+	Mashina.Peep.PokeSelf {
+		event = "dashEnd"
+	},
+
+	Mashina.Set {
+		value = 0,
+		[CHARGE_DISTANCE_MOVED] = B.Output.result
+	},
+
+	Mashina.Peep.StopAnimation {
+		slot = "x-keelhauler-charge"
+	},
+
+	Mashina.Peep.StopAnimation {
+		slot = "x-keelhauler-stun"
+	}
+}
+
+local Stun = Mashina.Step {
+	Mashina.Peep.PlayAnimation {
+		animation = "Keelhauler_Stun",
+		slot = "x-keelhauler-stun",
+		priority = 500
+	},
+
+	Mashina.Repeat {
+		Mashina.Navigation.Move {
+			acceleration = Vector.ZERO,
+			velocity = Vector.ZERO
+		},
+
+		Mashina.Success {
+			Mashina.Peep.DisengageCombatTarget
+		},
+
+		Mashina.Invert {
+			Mashina.Peep.TimeOut {
+				duration = 4
+			}
+		}
+	},
+}
+
+local Charge = Mashina.Step {
+	Mashina.Peep.StopAnimation {
+		slot = "x-keelhauler-charge"
+	},
+
+	Mashina.Peep.PokeSelf {
+		event = "dashStart",
+	},
+
+	Mashina.Multiply {
+		left = CURRENT_DIRECTION,
+		right = ACCELERATION_MAGNITUDE,
+		[CURRENT_ACCELERATION] = B.Output.result
+	},
+
+	Mashina.Repeat {
+		Mashina.Navigation.Move {
+			acceleration = CURRENT_ACCELERATION
+		},
+
+		Mashina.Success {
+			Mashina.Peep.DisengageCombatTarget
+		},
+
+		Mashina.Navigation.DistanceMoved {
+			[CHARGE_DISTANCE_MOVED] = B.Output.result
+		},
+
+		Mashina.Navigation.GetPosition {
+			[CURRENT_POSITION] = B.Output.result,
+		},
+
+		Mashina.ParallelSequence {
+			Mashina.Invert {
+				Mashina.ParallelTry {
+					Mashina.Sequence {
+						Mashina.Compare.GreaterThanEqual {
+							left = CHARGE_DISTANCE_MOVED,
+							right = MAX_DISTANCE
+						},
+
+						Stun
+					},
+
+					Mashina.Step {
+						Mashina.Compare.LessThan {
+							left = CHARGE_DISTANCE_MOVED,
+							right = MAX_DISTANCE
+						},
+
+						Mashina.Compare.Equal {
+							left = CURRENT_POSITION,
+							right = PREVIOUS_POSITION
+						},
+
+						Stun
+					},
+
+					-- Mashina.Step {
+					-- 	Mashina.Peep.OnPoke {
+					-- 		event = "dashHit",
+					-- 		[CHARGE_HITS] = B.Output.results
+					-- 	},
+
+					-- 	Mashina.Peep.Talk {
+					-- 		message = "hit"
+					-- 	}
+					-- }
+				}
+			},
+
+			Mashina.Set {
+				value = CURRENT_POSITION,
+				[PREVIOUS_POSITION] = B.Output.result
+			}
+		}
 	}
 }
 
 return {
 	SwitchToWeakStyle = SwitchToWeakStyle,
 	SwitchToStrongStyle = SwitchToStrongStyle,
-	SwitchTargets = SwitchTargets
+	SwitchTargets = SwitchTargets,
+
+	IS_DASHING = IS_DASHING,
+	BeginCharge = BeginCharge,
+	EndCharge = EndCharge,
+	Charge = Charge
 }

@@ -11,10 +11,16 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 
 local Keelhauler = Class(Creep)
+Keelhauler.WALK_SPEED = 2
+Keelhauler.RUN_SPEED = 16
+Keelhauler.MAX_ACCELERATION = 24
 
 function Keelhauler:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Keelhauler', ...)
@@ -22,12 +28,22 @@ function Keelhauler:new(resource, name, ...)
 	self:addBehavior(RotationBehavior)
 
 	Utility.Peep.setSize(self, Vector(8, 10, 12.5))
+
+	self:addPoke("dashStart")
+	self:addPoke("dashEnd")
+	self:addPoke("dashHit")
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.maxSpeed = self.WALK_SPEED
+	movement.maxAcceleration = self.MAX_ACCELERATION
+
+	self.isDashing = false
 end
 
 function Keelhauler:ready(director, game)
 	Utility.Peep.Creep.setBody(self, "Keelhauler")
 	Utility.Peep.Creep.addAnimation(self, "animation-idle", "Keelhauler_Idle")
-	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Idle")
+	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Walk")
 	Utility.Peep.Creep.applySkin(
 		self,
 		"x-accents",
@@ -64,10 +80,46 @@ function Keelhauler:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
+function Keelhauler:onDashStart()
+	self.isDashing = true
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.maxSpeed = self.RUN_SPEED
+
+	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Run")
+end
+
+function Keelhauler:onDashEnd()
+	self.isDashing = false
+
+	local movement = self:getBehavior(MovementBehavior)
+	movement.maxSpeed = self.WALK_SPEED
+
+	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Run")
+end
+
+function Keelhauler:updateDash()
+	local hits = self:getDirector():probe(
+		self:getLayerName(),
+		self:hasBehavior(InstancedBehavior) and Probe.instance(Utility.Peep.getPlayerModel(self)) or Probe.any(),
+		function(p)
+			local distance = Utility.Peep.getAbsoluteDistance(self, p)
+			return distance <= 0
+		end)
+
+	for _, hit in ipairs(hits) do
+		self:poke("dashHit", hit)
+	end
+end
+
 function Keelhauler:update(...)
 	Creep.update(self, ...)
 
 	Utility.Peep.face3D(self)
+
+	if self.isDashing then
+		self:updateDash()
+	end
 end
 
 return Keelhauler

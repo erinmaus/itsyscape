@@ -88,7 +88,7 @@ function Lightning:generatePath(spawn, hit)
 end
 
 function Lightning:updatePath()
-	local numSegments = math.min(math.floor(#self.fullPath * self:getDelta() + 10), #self.fullPath)
+	local numSegments = math.min(math.floor(#self.fullPath * (self:getDelta() * 2)), #self.fullPath)
 
 	for i = self.previousNumSegments + 1, numSegments do
 		local a = self.fullPath[i - 1]

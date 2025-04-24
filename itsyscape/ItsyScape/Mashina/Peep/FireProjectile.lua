@@ -25,7 +25,7 @@ FireProjectile.LAYER = B.Reference()
 function FireProjectile:update(mashina, state, executor)
 	local projectile = state[self.PROJECTILE]
 	local source = state[self.SOURCE] or mashina
-	local destination = state[self.DESTINATION] or Vector.ZERO
+	local destination = state[self.DESTINATION] or mashina
 	local offset = state[self.OFFSET] or Vector.ZERO
 	local layer = state[self.LAYER] or nil
 
