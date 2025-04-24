@@ -16,7 +16,7 @@ local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local Splosion = Class(Projectile)
 
 Splosion.PARTICLE_SYSTEM = {
-	numParticles = 50,
+	numParticles = 100,
 	texture = "Resources/Game/Projectiles/ShockwaveSplosion/Particle.png",
 	columns = 4,
 
@@ -24,7 +24,8 @@ Splosion.PARTICLE_SYSTEM = {
 		{
 			type = "RadialEmitter",
 			radius = { 0 },
-			speed = { 4, 5 },
+			yRange = { 0, 0 },
+			speed = { 7, 7.5 },
 			acceleration = { 0, 0 }
 		},
 		{
@@ -39,7 +40,7 @@ Splosion.PARTICLE_SYSTEM = {
 		},
 		{
 			type = "RandomLifetimeEmitter",
-			age = { 1, 1.5 }
+			age = { 1.25, 1.5 }
 		},
 		{
 			type = "RandomScaleEmitter",
@@ -66,13 +67,13 @@ Splosion.PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 30, 50 },
-		delay = { 0.125 },
-		duration = { 1 }
+		count = { 50, 75 },
+		delay = { 0.25 },
+		duration = { 1.5 }
 	}
 }
 
-Splosion.DURATION = 1.5
+Splosion.DURATION = 3
 
 function Splosion:load()
 	Projectile.load(self)
@@ -91,7 +92,7 @@ end
 
 function Splosion:tick()
 	if not self.spawnPosition then
-		self.spawnPosition = self:getTargetPosition(self:getDestination())
+		self.spawnPosition = self:getTargetPosition(self:getDestination()):keep()
 	end
 end
 
