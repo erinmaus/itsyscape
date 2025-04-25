@@ -40,8 +40,26 @@ local FireCannon = Mashina.Step {
 		[CANNON] = B.Output.result
 	},
 
-	Mashina.Sailing.FireCannon {
+	Mashina.Sailing.AimCannon {
 		target = TARGET,
+		cannon = CANNON
+	},
+
+	Mashina.Repeat {
+		Mashina.Sailing.AimCannon {
+			target = TARGET,
+			cannon = CANNON,
+			steady = true
+		},
+
+		Mashina.Invert {
+			Mashina.Peep.TimeOut {
+				duration = 2
+			}
+		}
+	},
+
+	Mashina.Sailing.FireCannon {
 		cannon = CANNON
 	},
 

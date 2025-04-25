@@ -72,40 +72,25 @@ function Common.quest_tutorial_orlando_strafe_target(dialog, distance)
 		return false
 	end
 
-	local target = orlando:getBehavior(CombatTargetBehavior)
-	if not (target and target.actor and target.actor:getPeep()) then
-		return false
-	end
-	target = target.actor:getPeep()
-
-	local orlandoPosition = Utility.Peep.getPosition(orlando) * Vector.PLANE_XZ
-	local targetPosition = Utility.Peep.getPosition(target) * Vector.PLANE_XZ
-	local direction = Quaternion.Y_90:transformVector(orlandoPosition:direction(targetPosition)):getNormal()
-
-	local position = orlandoPosition + direction * distance
-	local k = Utility.Peep.getLayer(orlando)
-
-	orlando:getCommandQueue(CombatCortex.QUEUE):interrupt()
-	orlando:removeBehavior(CombatTargetBehavior)
-
-	local aggressive = orlando:getBehavior(AggressiveBehavior)
-	if aggressive then
-		aggressive.pendingTarget = false
-		aggressive.pendingResponseTime = 0
-	end
-
-
-	local callback = Utility.Peep.queueWalk(orlando, position.x, position.z, k, math.huge, { asCloseAsPossible = true, isPosition = true })
-	callback:register(function(s)
-		Utility.Peep.setMashinaState(orlando, false)
-
+	local oldState = Utility.Peep.getMashinaState(orlando)
+	local s = Utility.Combat.strafe(orlando, nil, distance, nil, function(_, target, s)
 		if s then
 			local wait = WaitCommand(0.5)
+			local state = CallbackCommand(Utility.Peep.setMashinaState, orlando, oldState)
 			local attack = CallbackCommand(Utility.Peep.attack, orlando, target)
 
-			orlando:getCommandQueue():push(CompositeCommand(true, wait, attack))
+			orlando:getCommandQueue():push(CompositeCommand(true, wait, state, attack))
+		else
+			Utility.Peep.setMashinaState(orlando, oldState)
+			Utility.Peep.attack(orlando, target)
 		end
 	end)
+
+	if s then
+		Utility.Combat.disengage(orlando)
+		Utility.Peep.setMashinaState(orlando, false)
+	end
+
 	return true
 end
 

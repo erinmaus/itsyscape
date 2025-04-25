@@ -216,7 +216,9 @@ function Island:onAttackKeelhauler(playerPeep)
 	local orlando = self:getCompanion(playerPeep, "Orlando")
 
 	Utility.Peep.attack(keelhauler, orlando, math.huge)
-	Utility.Peep.setMashinaState(keelhauler, "attack-phase-4")
+	Utility.Peep.applyCooldown(keelhauler)
+
+	Utility.Peep.setMashinaState(keelhauler, "attack-phase-2")
 end
 
 function Island:onFinishCutscene(playerPeep)
@@ -968,12 +970,15 @@ function Island:onPlayerFinishDuel(playerPeep)
 end
 
 function Island:onGunnersEngagePlayer(playerPeep)
+	Utility.Peep.disable(playerPeep)
 	self:doTalkToPeep(playerPeep, "CapnRaven", function()
 		local pirate1 = self:getCompanion(playerPeep, "Battle_ShipPirate1")
 		Utility.Peep.setMashinaState(pirate1, "gun-player")
 
 		local pirate2 = self:getCompanion(playerPeep, "Battle_ShipPirate2")
 		Utility.Peep.setMashinaState(pirate2, "gun-player")
+
+		Utility.Peep.enable(playerPeep)
 	end, "quest_tutorial_fight_keelhauler.enter_phase_4")
 end
 

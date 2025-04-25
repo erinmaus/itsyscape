@@ -41,6 +41,12 @@ function Move:update(mashina, state, executor)
 
 	peep:removeBehavior(TargetTileBehavior)
 
+	if (velocity and velocity:getLength() > 0) or (acceleration and acceleration:getLength() > 0) then
+		movement.isStopping = false
+	else
+		movement.isStopping = true
+	end
+
 	return B.Status.Success
 end
 

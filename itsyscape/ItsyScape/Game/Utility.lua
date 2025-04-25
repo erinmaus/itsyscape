@@ -23,8 +23,10 @@ local Stats = require "ItsyScape.Game.Stats"
 local Color = require "ItsyScape.Graphics.Color"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CharacterBehavior = require "ItsyScape.Peep.Behaviors.CharacterBehavior"
+local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -1121,6 +1123,66 @@ end
 
 -- Contains utility methods that deal with combat.
 Utility.Combat = {}
+
+Utility.Combat.DEFAULT_STRAFE_ROTATIONS = {
+	Quaternion.Y_90,
+	Quaternion.Y_270
+}
+
+function Utility.Combat.disengage(peep)
+	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
+
+	local charge = peep:getBehavior(CombatChargeBehavior)
+	if charge then
+		Utility.Peep.cancelWalk(charge.currentWalkID)
+
+		peep:removeBehavior(CombatChargeBehavior)
+		peep:removeBehavior(TargetTileBehavior)
+	end
+
+	peep:getCommandQueue(CombatCortex.QUEUE):interrupt()
+	peep:removeBehavior(CombatTargetBehavior)
+
+	local aggressive = peep:getBehavior(AggressiveBehavior)
+	if aggressive then
+		aggressive.pendingTarget = false
+		aggressive.pendingResponseTime = 0
+	end
+end
+
+function Utility.Combat.strafe(peep, target, distance, rotations, onStrafe)
+	if not target then
+		local possibleTarget = peep:getBehavior(CombatTargetBehavior)
+		if not (possibleTarget and possibleTarget.actor and possibleTarget.actor:getPeep()) then
+			return false
+		end
+		target = possibleTarget.actor:getPeep()
+	end
+
+	rotations = rotations or Utility.Combat.DEFAULT_STRAFE_ROTATIONS
+	local rotation = rotations[love.math.random(#rotations)]
+
+	local peepPosition = Utility.Peep.getPosition(peep) * Vector.PLANE_XZ
+	local direction
+	if Class.isCompatibleType(target, Vector) then
+		direction = rotation:transformVector(target):getNormal()
+	else
+		local targetPosition = Utility.Peep.getPosition(target) * Vector.PLANE_XZ
+		direction = rotation:transformVector(peepPosition:direction(targetPosition)):getNormal()
+	end
+
+	local position = peepPosition + direction * distance
+	local k = Utility.Peep.getLayer(peep)
+
+	local callback, n = Utility.Peep.queueWalk(peep, position.x, position.z, k, math.huge, { asCloseAsPossible = true, isPosition = true })
+	callback:register(function(s)
+		if onStrafe then
+			onStrafe(peep, target, s)
+		end
+	end)
+
+	return true, n
+end
 
 function Utility.Combat.deflectPendingPower(power, activator, target)
 	local ZealPoke = require "ItsyScape.Game.ZealPoke"
@@ -4739,6 +4801,19 @@ function Utility.Peep.face3D(self)
 	end
 
 	return false
+end
+
+function Utility.Peep.applyCooldown(peep, time)
+	if not time then
+		local weapon = Utility.Peep.getEquippedWeapon(peep, true)
+		if weapon and Class.isCompatibleType(weapon, require "ItsyScape.Game.Weapon") then
+			time = weapon:getCooldown(peep)
+		end
+	end
+
+	local _, cooldown = peep:addBehavior(AttackCooldownBehavior)
+	cooldown.cooldown = math.max(cooldown.cooldown, time)
+	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTick()
 end
 
 function Utility.Peep.attack(peep, other, distance)

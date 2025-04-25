@@ -11,6 +11,7 @@ local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 local CommonAttackLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_Keelhauler_CommonAttackLogic"
 
@@ -100,21 +101,20 @@ local Attack = Mashina.Step {
 
 local AdvancePhase = Mashina.Success {
 	Mashina.Step {
-		-- Mashina.Check {
-		-- 	condition = function(mashina)
-		-- 		local status = mashina:getBehavior(CombatStatusBehavior)
-		-- 		local targetHitpoints = status and math.floor(status.maximumHitpoints * 0.25 + 0.5)
+		Mashina.Check {
+			condition = function(mashina)
+				local status = mashina:getBehavior(CombatStatusBehavior)
+				local targetHitpoints = status and math.floor(status.maximumHitpoints * 0.5 + 0.5)
 
-		-- 		return status and status.currentHitpoints < targetHitpoints
-		-- 	end
-		-- },
+				return status and status.currentHitpoints < targetHitpoints
+			end
+		},
 
 		Mashina.Try {
 			Mashina.Step {
 				CommonAttackLogic.SwitchToOrlando,
 				CommonAttackLogic.SwitchToStrongStyle,
 				Mashina.Peep.DidAttack,
-
 
 				CommonAttackLogic.BeginCharge,
 

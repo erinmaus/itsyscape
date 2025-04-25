@@ -1474,28 +1474,34 @@ function Instance:loadPlayer(localGameManager, player)
 				"Actor '%s' (%d) is not visible to player, no need to re-create.",
 				actor:getName(), actor:getID())
 		else
-			localGameManager:pushCreate(
-				"ItsyScape.Game.Model.Actor",
-				actor:getID())
-			localGameManager:assignTargetToLastPush(player)
-
 			local instance = localGameManager:getInstance(
 				"ItsyScape.Game.Model.Actor",
 				actor:getID())
-			for _, property in instance:iterateProperties() do
-				instance:updateProperty(property, true)
+
+			if instance then
+				localGameManager:pushCreate(
+					"ItsyScape.Game.Model.Actor",
+					actor:getID())
 				localGameManager:assignTargetToLastPush(player)
+
+				local instance = localGameManager:getInstance(
+					"ItsyScape.Game.Model.Actor",
+					actor:getID())
+				for _, property in instance:iterateProperties() do
+					instance:updateProperty(property, true)
+					localGameManager:assignTargetToLastPush(player)
+				end
+
+				localGameManager:pushCallback(
+					"ItsyScape.Game.Model.Stage",
+					0,
+					"onActorSpawned",
+					nil,
+					actor:getPeepID(), actor)
+				localGameManager:assignTargetToLastPush(player)
+
+				self:loadActor(localGameManager, player, actor)
 			end
-
-			localGameManager:pushCallback(
-				"ItsyScape.Game.Model.Stage",
-				0,
-				"onActorSpawned",
-				nil,
-				actor:getPeepID(), actor)
-			localGameManager:assignTargetToLastPush(player)
-
-			self:loadActor(localGameManager, player, actor)
 		end
 	end
 
@@ -1507,28 +1513,31 @@ function Instance:loadPlayer(localGameManager, player)
 				"Prop '%s' (%d) is not visible to player, no need to re-create.",
 				prop:getName(), prop:getID())
 		else
-			localGameManager:pushCreate(
-				"ItsyScape.Game.Model.Prop",
-				prop:getID())
-			localGameManager:assignTargetToLastPush(player)
-
 			local instance = localGameManager:getInstance(
 				"ItsyScape.Game.Model.Prop",
 				prop:getID())
-			for _, property in instance:iterateProperties() do
-				instance:updateProperty(property, true)
+
+			if instance then
+				localGameManager:pushCreate(
+					"ItsyScape.Game.Model.Prop",
+					prop:getID())
 				localGameManager:assignTargetToLastPush(player)
+
+				for _, property in instance:iterateProperties() do
+					instance:updateProperty(property, true)
+					localGameManager:assignTargetToLastPush(player)
+				end
+
+				localGameManager:pushCallback(
+					"ItsyScape.Game.Model.Stage",
+					0,
+					"onPropPlaced",
+					nil,
+					self.stage:lookupPropAlias(prop:getPeepID()), prop)
+				localGameManager:assignTargetToLastPush(player)
+
+				self:loadProp(localGameManager, player, prop)
 			end
-
-			localGameManager:pushCallback(
-				"ItsyScape.Game.Model.Stage",
-				0,
-				"onPropPlaced",
-				nil,
-				self.stage:lookupPropAlias(prop:getPeepID()), prop)
-			localGameManager:assignTargetToLastPush(player)
-
-			self:loadProp(localGameManager, player, prop)
 		end
 
 		Log.engine("Restored prop '%s' (%s).", prop:getName(), prop:getPeepID())

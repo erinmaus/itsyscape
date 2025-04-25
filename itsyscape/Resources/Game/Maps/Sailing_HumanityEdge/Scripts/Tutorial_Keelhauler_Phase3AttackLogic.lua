@@ -15,6 +15,8 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 local CommonAttackLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_Keelhauler_CommonAttackLogic"
 
+local DEFLECTED_BOTH_ATTACKS = B.Reference("Tutorial_Keelhauler_Phase3AttackLogic", "DEFLECTED_BOTH_ATTACKS")
+
 local QueueLightningStrike = Mashina.Sequence {
 	Mashina.Peep.CanQueuePower {
 		power = "Keelhauler_LightningStrike"
@@ -44,6 +46,12 @@ local DeflectLaser = Mashina.Step {
 		}
 	},
 
+	Mashina.Invert {
+		Mashina.Check {
+			condition = DEFLECTED_BOTH_ATTACKS
+		}
+	},
+
 	CommonLogic.GetOrlando,
 
 	Mashina.Player.Disable {
@@ -58,6 +66,11 @@ local DeflectLaser = Mashina.Step {
 
 	Mashina.Player.Enable {
 		player = CommonLogic.PLAYER
+	},
+
+	Mashina.Set {
+		value = true,
+		[DEFLECTED_BOTH_ATTACKS] = B.Output.result
 	}
 }
 
@@ -104,14 +117,17 @@ local AdvancePhase = Mashina.Success {
 		Mashina.Check {
 			condition = function(mashina)
 				local status = mashina:getBehavior(CombatStatusBehavior)
-				local targetHitpoints = status and math.floor(status.maximumHitpoints * 0.5 + 0.5)
+				local targetHitpoints = status and math.floor(status.maximumHitpoints * 0.75 + 0.5)
 
 				return status and status.currentHitpoints < targetHitpoints
 			end
 		},
 
+		CommonLogic.GetPlayer,
+
 		Mashina.Peep.PokeMap {
-			event = "gunnersEngagePlayer"
+			event = "gunnersEngagePlayer",
+			poke = CommonLogic.PLAYER
 		},
 
 		Mashina.Peep.SetState {

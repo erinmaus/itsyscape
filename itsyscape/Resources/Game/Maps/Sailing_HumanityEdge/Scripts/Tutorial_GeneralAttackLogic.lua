@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_GeneralAttackLogic.lua
+-- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,16 +9,23 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
-local TARGET = B.Reference("Tutorial_Orlando_GeneralAttackLogic", "TARGET")
+local CURRENT_TARGET = B.Reference("Tutorial_GeneralAttackLogic", "CURRENT_TARGET")
 
 local DidKillTarget = Mashina.Sequence {
 	Mashina.Invert {
 		Mashina.Peep.HasCombatTarget,
+	},
+
+	Mashina.Invert {
+		Mashina.Check {
+			condition = CURRENT_TARGET
+		}
 	},
 
 	Mashina.Peep.SetState {
@@ -115,8 +122,6 @@ local HandleOffense = Mashina.RandomTry {
 }
 
 local HandlePowers = Mashina.Step {
-	Mashina.Peep.DidAttack,
-
 	Mashina.ParallelTry {
 		Mashina.Sequence {
 			Mashina.Peep.OnPoke {
@@ -126,7 +131,15 @@ local HandlePowers = Mashina.Step {
 			HandleDefense
 		},
 
-		HandleOffense
+		Mashina.Sequence {
+			Mashina.Peep.DidAttack,
+
+			Mashina.Peep.HasZeal {
+				zeal = 0.5
+			},
+
+			HandleOffense
+		}
 	},
 
 	Mashina.Sequence {
@@ -138,16 +151,108 @@ local HandlePowers = Mashina.Step {
 	}
 }
 
-local HandleHealing = Mashina.Step {
-	Mashina.Peep.WasAttacked,
-	CommonLogic.Heal
+local HandleKeelhaulerCharge = Mashina.Step {
+	Mashina.Peep.OnEvent {
+		event = "tutorialKeelhaulerCharge"
+	},
+
+	Mashina.Success {
+		Mashina.Sequence {
+			Mashina.Peep.HasCombatTarget,
+
+			Mashina.Peep.HasCombatTarget {
+				[CURRENT_TARGET] = B.Output.target
+			}
+		}
+	},
+
+	Mashina.Sequence {
+		Mashina.Success {
+			Mashina.Peep.DisengageCombatTarget
+		},
+
+		Mashina.Step {
+			Mashina.Try {
+				Mashina.Peep.Strafe {
+					distance = 10
+				},
+
+				Mashina.Failure {
+					Mashina.Set {
+						value = nil,
+						[CURRENT_TARGET] = B.Output.result
+					}
+				}
+			},
+
+			Mashina.Peep.Wait,
+
+			Mashina.Success {
+				Mashina.Peep.EngageCombatTarget {
+					peep = CURRENT_TARGET
+				}
+			}
+		}
+	}
+}
+
+local HandleGunner = Mashina.Step {
+	Mashina.Peep.OnEvent {
+		event = "tutorialGunnerAimCannon"
+	},
+
+	Mashina.Success {
+		Mashina.Sequence {
+			Mashina.Peep.HasCombatTarget,
+
+			Mashina.Peep.HasCombatTarget {
+				[CURRENT_TARGET] = B.Output.target
+			}
+		}
+	},
+
+	Mashina.Sequence {
+		Mashina.Success {
+			Mashina.Peep.DisengageCombatTarget
+		},
+
+		Mashina.Step {
+			Mashina.Try {
+				Mashina.Peep.Strafe {
+					target = Vector.UNIT_Z,
+					distance = 10
+				},
+
+				Mashina.Failure {
+					Mashina.Set {
+						value = nil,
+						[CURRENT_TARGET] = B.Output.result
+					}
+				}
+			},
+
+			Mashina.Peep.Wait,
+
+			Mashina.Peep.TimeOut {
+				duration = 1
+			},
+
+			Mashina.Success {
+				Mashina.Peep.EngageCombatTarget {
+					peep = CURRENT_TARGET
+				}
+			}
+		}
+	}
 }
 
 local AttackOrDefend = Mashina.ParallelTry {
+	HandleGunner,
+	HandleKeelhaulerCharge,
 	DidKillTarget,
 	HandlePowers,
 	Mashina.Failure {
-		HandleHealing
+		CommonLogic.Heal
 	}
 }
 

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/Mashina/Peep/OnPoke.lua
+-- ItsyScape/Mashina/Peep/OnEvent.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,16 +11,16 @@ local B = require "B"
 local Function = require "ItsyScape.Common.Function"
 local Utility = require "ItsyScape.Game.Utility"
 
-local OnPoke = B.Node("OnPoke")
-OnPoke.TARGET = B.Reference()
-OnPoke.EVENT = B.Reference()
-OnPoke.CALLBACK = B.Reference()
-OnPoke.RESULT = B.Reference()
-OnPoke.RESULTS = B.Reference()
+local OnEvent = B.Node("OnEvent")
+OnEvent.TARGET = B.Reference()
+OnEvent.EVENT = B.Reference()
+OnEvent.CALLBACK = B.Reference()
+OnEvent.RESULT = B.Reference()
+OnEvent.RESULTS = B.Reference()
 
 local _emptyCallback = function() end
 
-function OnPoke:update(mashina, state, executor)
+function OnEvent:update(mashina, state, executor)
 	local event = state[self.EVENT]
 	local target = state[self.TARGET] or mashina
 	local callback = state[self.CALLBACK] or _emptyCallback
@@ -32,7 +32,7 @@ function OnPoke:update(mashina, state, executor)
 		self.target = target
 		self.callback = callback
 		self.wrappedCallback = Function(self.onFire, self, mashina, state, executor)
-		self.target:listen(self.event, self.wrappedCallback)
+		self.target:listen("event", self.wrappedCallback)
 	end
 
 	if self.didFire then
@@ -52,9 +52,12 @@ function OnPoke:update(mashina, state, executor)
 	return B.Status.Working
 end
 
-function OnPoke:onFire(mashina, state, executor, ...)
-	local result, status = self.callback(mashina, state, executor, ...)
+function OnEvent:onFire(mashina, state, executor, peep, event, ...)
+	if event ~= self.event then
+		return
+	end
 
+	local result, status = self.callback(mashina, state, executor, ...)
 	if status == nil then
 		status = B.Status.Success
 	end
@@ -67,9 +70,9 @@ function OnPoke:onFire(mashina, state, executor, ...)
 	self.didFire = true
 end
 
-function OnPoke:silence()
-	if self.event and self.target and self.wrappedCallback then
-		self.target:silence(self.event, self.wrappedCallback)
+function OnEvent:silence()
+	if self.target and self.wrappedCallback then
+		self.target:silence("event", self.wrappedCallback)
 	end
 
 	self.event = nil
@@ -80,12 +83,12 @@ function OnPoke:silence()
 	self.results = nil
 end
 
-function OnPoke:removed()
+function OnEvent:removed()
 	self:silence()
 end
 
-function OnPoke:deactivated()
+function OnEvent:deactivated()
 	self:silence()
 end
 
-return OnPoke
+return OnEvent

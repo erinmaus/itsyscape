@@ -212,17 +212,13 @@ local SwitchToOrlando = Mashina.Sequence {
 	}
 }
 
-local WaitOnTarget = Mashina.Repeat {
-	Mashina.Step {
-		Mashina.Peep.DidAttack,
-		Mashina.Peep.DidAttack,
-		Mashina.Peep.DidAttack,
+local WaitOnTarget = Mashina.Step {
+	Mashina.Peep.DidAttack,
+	Mashina.Peep.DidAttack,
+	Mashina.Peep.DidAttack,
 
-		Mashina.Invert {
-			Mashina.RandomCheck {
-				chance = 0.5
-			}
-		}
+	Mashina.Peep.TimeOut {
+		duration = 2
 	}
 }
 
@@ -230,6 +226,8 @@ local IS_DASHING = B.Reference("Tutorial_Keelhauler_CommonAttackLogic", "IS_DASH
 
 local SwitchTargets = Mashina.Repeat {
 	Mashina.ParallelTry {
+		drop = false,
+
 		Mashina.Check {
 			condition = IS_DASHING
 		},
@@ -321,6 +319,11 @@ local EndCharge = Mashina.Sequence {
 
 	Mashina.Peep.StopAnimation {
 		slot = "x-keelhauler-stun"
+	},
+
+	Mashina.Navigation.Move {
+		acceleration = Vector.ZERO,
+		velocity = Vector.ZERO
 	}
 }
 
@@ -329,6 +332,10 @@ local Stun = Mashina.Step {
 		animation = "Keelhauler_Stun",
 		slot = "x-keelhauler-stun",
 		priority = 500
+	},
+
+	Mashina.Peep.PokeSelf {
+		event = "dashEnd"
 	},
 
 	Mashina.Repeat {
@@ -350,6 +357,11 @@ local Stun = Mashina.Step {
 }
 
 local Charge = Mashina.Step {
+	Mashina.Peep.Event {
+		peep = CURRENT_TARGET,
+		event = "tutorialKeelhaulerCharge"
+	},
+
 	Mashina.Peep.TimeOut {
 		duration = 2
 	},

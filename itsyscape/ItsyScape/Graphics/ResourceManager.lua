@@ -16,7 +16,7 @@ local Resource = require "ItsyScape.Graphics.Resource"
 local ResourceManager = Class()
 ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 30
 ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
-ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = _DEBUG == "plus" and 1 or 1 / 1000
+ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = _DEBUG == "plus" and 1 or 2 / 1000
 
 ResourceManager.FILE_IO_THREADS = 4
 
@@ -198,8 +198,9 @@ function ResourceManager:update()
 		end
 	end
 
+	local step = self.frameDuration / 2
 	local currentTime = love.timer.getTime()
-	local pendingAsyncEventBreakTime = currentTime + self.frameDuration
+	local pendingAsyncEventBreakTime = currentTime + step
 
 	do
 		local index = 1
@@ -242,10 +243,11 @@ function ResourceManager:update()
 
 
 	currentTime = love.timer.getTime()
-	local pendingSyncEventBreakTime = currentTime + self.frameDuration
+	local pendingSyncEventBreakTime = currentTime + step
 
 	local count = 0
 	local elapsedTimeForSingleResource = 0
+	local c = 0
 	repeat
 		local top = self.pendingSyncEvents[1]
 		if not top then
@@ -264,7 +266,7 @@ function ResourceManager:update()
 			top.totalTime = (top.totalTime or 0) + (after - before) * 1000
 			top.memory = (top.memory or 0) + (memoryAfter - memoryBefore)
 
-			elapsedTimeForSingleResource = after - before
+			elapsedTimeForSingleResource = elapsedTimeForSingleResource + (after - before)
 
 			if not success then
 				Log.warn("Error running coroutine: %s", error)
@@ -286,7 +288,9 @@ function ResourceManager:update()
 		end
 
 		currentTime = love.timer.getTime()
-	until currentTime > pendingSyncEventBreakTime and elapsedTimeForSingleResource < ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE
+
+		c = c + 1
+	until currentTime > pendingSyncEventBreakTime or elapsedTimeForSingleResource > ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE
 
 	if currentTime and currentTime > pendingSyncEventBreakTime + self.frameDuration then
 		Log.info('Resource loading spilled %d ms.', math.floor((currentTime - pendingSyncEventBreakTime) * 1000))

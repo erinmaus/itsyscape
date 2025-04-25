@@ -36,6 +36,8 @@ function BasicCannon:new(...)
 	self:addPoke("fire")
 
 	self.currentRotation = self.DEFAULT_ROTATION
+	self.currentX = 0.5
+	self.currentY = 0.5
 end
 
 function BasicCannon:_getRotation()
@@ -81,6 +83,23 @@ function BasicCannon:previewTilt(x, y)
 		math.lerp(minX, maxX, x),
 		math.lerp(minY, maxY, y),
 		0)
+
+	self.currentX = x
+	self.currentY = y
+end
+
+function BasicCannon:getCurrentX()
+	return self.currentX
+end
+
+function BasicCannon:getCurrentY()
+	return self.currentY
+end
+
+function BasicCannon:ready(director, game)
+	BasicSailingItem.ready(self, director, game)
+
+	self:poke("tilt", 0.5, 0.5)
 end
 
 function BasicCannon:onFire(peep, ammo, path, duration)

@@ -55,32 +55,28 @@ local IsAttacking = Mashina.Sequence {
 
 local HEAL_HITPOINTS = 20
 local Heal = Mashina.Step {
-	Mashina.Peep.WasAttacked,
-
-	Mashina.Sequence {
-		Mashina.Check {
-			condition = function(mashina)
-				local status = mashina:getBehavior(CombatStatusBehavior)
-				if not status then
-					return false
-				end
-
-				local hitpoints = status.currentHitpoints
-				local maximumHitpoints = status.maximumHitpoints
-				local thresholdHitpoints = math.max(maximumHitpoints - HEAL_HITPOINTS, math.ceil(maximumHitpoints / 2))
-
-				return hitpoints < thresholdHitpoints
+	Mashina.Check {
+		condition = function(mashina)
+			local status = mashina:getBehavior(CombatStatusBehavior)
+			if not status then
+				return false
 			end
-		},
 
-		Mashina.Peep.PlayAnimation {
-			animation = "Human_ActionEat_1",
-			priority = 500
-		},
+			local hitpoints = status.currentHitpoints
+			local maximumHitpoints = status.maximumHitpoints
+			local thresholdHitpoints = math.max(maximumHitpoints - HEAL_HITPOINTS, math.ceil(maximumHitpoints / 2))
 
-		Mashina.Peep.Heal {
-			hitpoints = HEAL_HITPOINTS
-		}
+			return hitpoints < thresholdHitpoints
+		end
+	},
+
+	Mashina.Peep.PlayAnimation {
+		animation = "Human_ActionEat_1",
+		priority = 500
+	},
+
+	Mashina.Peep.Heal {
+		hitpoints = HEAL_HITPOINTS
 	}
 }
 

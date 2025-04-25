@@ -62,8 +62,8 @@ end
 
 function Earthquake:tick()
 	if not self.destinationPosition or not self.sourcePosition or not self.size then
-		self.destinationPosition = self:getTargetPosition(self:getDestination())
-		self.sourcePosition = self:getTargetPosition(self:getSource())
+		self.destinationPosition = self:getTargetPosition(self:getDestination()):keep()
+		self.sourcePosition = self:getTargetPosition(self:getSource()):keep()
 
 		local min, max = self:getDestination():getBounds()
 		local x = max.x - min.z

@@ -10,9 +10,12 @@
 local B = require "B"
 
 local ParallelTry = B.Node("ParallelTry")
+ParallelTry.DROP = B.Reference()
 
 function ParallelTry:update(mashina, state, executor)
 	local working = false
+	local drop = state[self.DROP]
+	drop = drop == nil and true or drop
 
 	local index = 1
 	local children = { self.tree:children(self.node) }
@@ -22,7 +25,10 @@ function ParallelTry:update(mashina, state, executor)
 			if r == B.Status.Working then
 				working = true
 			elseif r == B.Status.Success then
-				executor:drop()
+				if drop then
+					executor:drop()
+				end
+
 				return B.Status.Success
 			else
 				index = index + 1
