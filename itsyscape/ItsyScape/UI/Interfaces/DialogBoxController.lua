@@ -94,7 +94,7 @@ function DialogBoxController:new(peep, director, action, target, overrideEntryPo
 					local peeps = director:probe(
 						peep:getLayerName(),
 						Probe.mapObject(speaker:get("Resource")),
-						Probe.layer(Utility.Peep.getLayer(peep)))
+						Probe.instance(Utility.Peep.getPlayerModel(peep), true))
 
 					local s = peeps[1]
 					if not s then
@@ -104,7 +104,7 @@ function DialogBoxController:new(peep, director, action, target, overrideEntryPo
 						peeps = director:probe(
 							peep:getLayerName(),
 							Probe.resource(r),
-							Probe.layer(Utility.Peep.getLayer(peep)))
+							Probe.instance(Utility.Peep.getPlayerModel(peep), true))
 						s = peeps[1]
 
 						if not s then

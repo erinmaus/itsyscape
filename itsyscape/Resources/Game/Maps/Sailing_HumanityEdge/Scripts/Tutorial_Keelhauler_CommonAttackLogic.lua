@@ -291,12 +291,12 @@ local BeginCharge = Mashina.Step {
 				animation = "Keelhauler_Charge",
 				slot = "x-keelhauler-charge",
 				priority = 500
-			},
-
-			Mashina.Peep.TimeOut {
-				duration = 4
 			}
 		}
+	},
+
+	Mashina.Peep.TimeOut {
+		duration = 2
 	}
 }
 
@@ -346,10 +346,14 @@ local Stun = Mashina.Step {
 				duration = 4
 			}
 		}
-	},
+	}
 }
 
 local Charge = Mashina.Step {
+	Mashina.Peep.TimeOut {
+		duration = 2
+	},
+
 	Mashina.Peep.StopAnimation {
 		slot = "x-keelhauler-charge"
 	},
@@ -443,6 +447,8 @@ local Charge = Mashina.Step {
 return {
 	SwitchToWeakStyle = SwitchToWeakStyle,
 	SwitchToStrongStyle = SwitchToStrongStyle,
+	SwitchToOrlando = SwitchToOrlando,
+	SwitchToPlayer = SwitchToPlayer,
 	SwitchTargets = SwitchTargets,
 
 	IS_DASHING = IS_DASHING,

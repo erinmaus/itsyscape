@@ -4,6 +4,7 @@ INCLUDE ../VizierRockKnight/Common.ink
 
 EXTERNAL quest_tutorial_orlando_has_lit_coconut_fire()
 EXTERNAL quest_tutorial_orlando_has_dropped_dummy()
+EXTERNAL quest_tutorial_orlando_strafe_target(distance)
 
 VAR quest_tutorial_main_starting_player_class = WEAPON_STYLE_NONE
 
@@ -127,6 +128,7 @@ Okay...
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_FishedLightningStormfish"): -> quest_tutorial_main_fish
     - player_is_next_quest_step("Tutorial", "Tutorial_Combat"): -> quest_tutorial_combat
+    - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedKeelhauler"): -> quest_tutorial_fight_keelhauler
     - else: Good job, bub! #speaker={C_ORLANDO}
 }
 
@@ -1527,11 +1529,28 @@ TBD REACHED PEAK
 
 == quest_tutorial_fight_keelhauler ==
 
+# speaker={C_ORLANDO}
+Uh, sorry! But, um... THERE'S NO TIME TO TALK! We gotta take out the goons!
+
+-> DONE
+
+= dodge_charge
+
+# speaker={C_ORLANDO}
+OI! Watch out, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}! Looks like the %person(Keelhauler) is getting ready to charge at us!
+
+%empty()
+
+~ quest_tutorial_orlando_strafe_target(10)
+
+-> DONE
+
 = deflected_both_attacks
 
 {quest_tutorial_main_keelhauler_double_deflect: -> DONE}
 
 # speaker={C_ORLANDO}
-TBD GOOD JOB W/ DOUBLE DEFLECT
+OI! That was AWESOME! You stopped the %person(Keelhauler) from using its second special attack!
 
+~ quest_tutorial_main_keelhauler_double_deflect = true
 -> DONE

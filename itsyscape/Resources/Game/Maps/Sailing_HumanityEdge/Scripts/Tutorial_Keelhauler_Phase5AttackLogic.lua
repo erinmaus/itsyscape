@@ -85,11 +85,11 @@ local Dash = Mashina.Sequence {
 		Mashina.Peep.DidAttack,
 		Mashina.Peep.DidAttack,
 
-		-- Mashina.Invert {
-		-- 	Mashina.RandomCheck {
-		-- 		chance = 0.5
-		-- 	}
-		-- },
+		Mashina.Invert {
+			Mashina.RandomCheck {
+				chance = 0.5
+			}
+		},
 
 		Mashina.Try {
 			Mashina.Step {

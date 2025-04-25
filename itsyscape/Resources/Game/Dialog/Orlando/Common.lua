@@ -7,9 +7,17 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Probe = require "ItsyScape.Peep.Probe"
+local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
+local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 
 local Common = {}
 
@@ -47,8 +55,6 @@ function Common.quest_tutorial_orlando_has_dropped_dummy(dialog)
 		Probe.resource("Peep", dummyResourceID),
 		Probe.instance(Utility.Peep.getPlayerModel(peep)))
 
-	print(">>> got", #dummies, "dummies", dummyResourceID)
-
 	local canAttackDummy = false
 	for _, dummy in ipairs(dummies) do
 		if Utility.Peep.canAttack(dummy) then
@@ -58,6 +64,49 @@ function Common.quest_tutorial_orlando_has_dropped_dummy(dialog)
 	end
 
 	return canAttackDummy
+end
+
+function Common.quest_tutorial_orlando_strafe_target(dialog, distance)
+	local orlando = dialog:getSpeaker("Orlando")
+	if not orlando then
+		return false
+	end
+
+	local target = orlando:getBehavior(CombatTargetBehavior)
+	if not (target and target.actor and target.actor:getPeep()) then
+		return false
+	end
+	target = target.actor:getPeep()
+
+	local orlandoPosition = Utility.Peep.getPosition(orlando) * Vector.PLANE_XZ
+	local targetPosition = Utility.Peep.getPosition(target) * Vector.PLANE_XZ
+	local direction = Quaternion.Y_90:transformVector(orlandoPosition:direction(targetPosition)):getNormal()
+
+	local position = orlandoPosition + direction * distance
+	local k = Utility.Peep.getLayer(orlando)
+
+	orlando:getCommandQueue(CombatCortex.QUEUE):interrupt()
+	orlando:removeBehavior(CombatTargetBehavior)
+
+	local aggressive = orlando:getBehavior(AggressiveBehavior)
+	if aggressive then
+		aggressive.pendingTarget = false
+		aggressive.pendingResponseTime = 0
+	end
+
+
+	local callback = Utility.Peep.queueWalk(orlando, position.x, position.z, k, math.huge, { asCloseAsPossible = true, isPosition = true })
+	callback:register(function(s)
+		Utility.Peep.setMashinaState(orlando, false)
+
+		if s then
+			local wait = WaitCommand(0.5)
+			local attack = CallbackCommand(Utility.Peep.attack, orlando, target)
+
+			orlando:getCommandQueue():push(CompositeCommand(true, wait, attack))
+		end
+	end)
+	return true
 end
 
 return Common

@@ -113,7 +113,6 @@ function Keelhauler:updateDash()
 
 	for _, hit in ipairs(hits) do
 		if not self.hits[hit] then
-			print(">>> hit", hit:getName())
 			self:poke("dashHit", hit)
 			self.hits[hit] = true
 		end

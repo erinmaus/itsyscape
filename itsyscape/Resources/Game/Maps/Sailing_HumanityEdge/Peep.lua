@@ -192,7 +192,7 @@ function Island:onPlaySummonKeelhaulerCutscene(playerPeep)
 	Utility.UI.closeAll(playerPeep)
 	Utility.Peep.disable(playerPeep)
 
-	self:talkToPeep(playerPeep, "CapnRaven", function()
+	self:doTalkToPeep(playerPeep, "CapnRaven", function()
 		local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_SummonKeelhauler", "StandardCutscene", playerPeep)
 		cutscene:listen('done', self.onFinishCutscene, self, playerPeep)
 	end, "quest_tutorial_summon_keelhauler")
@@ -216,7 +216,7 @@ function Island:onAttackKeelhauler(playerPeep)
 	local orlando = self:getCompanion(playerPeep, "Orlando")
 
 	Utility.Peep.attack(keelhauler, orlando, math.huge)
-	Utility.Peep.setMashinaState(keelhauler, "attack-phase-5")
+	Utility.Peep.setMashinaState(keelhauler, "attack-phase-4")
 end
 
 function Island:onFinishCutscene(playerPeep)
@@ -965,6 +965,16 @@ function Island:onPlayerFinishDuel(playerPeep)
 		Utility.Peep.enable(playerPeep)
 		self:transitionTutorial(playerPeep, "Tutorial_Combat")
 	end, "quest_tutorial_duel.finished")
+end
+
+function Island:onGunnersEngagePlayer(playerPeep)
+	self:doTalkToPeep(playerPeep, "CapnRaven", function()
+		local pirate1 = self:getCompanion(playerPeep, "Battle_ShipPirate1")
+		Utility.Peep.setMashinaState(pirate1, "gun-player")
+
+		local pirate2 = self:getCompanion(playerPeep, "Battle_ShipPirate2")
+		Utility.Peep.setMashinaState(pirate2, "gun-player")
+	end, "quest_tutorial_fight_keelhauler.enter_phase_4")
 end
 
 function Island:onPlaceTutorialDummy(playerPeep)

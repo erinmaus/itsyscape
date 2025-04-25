@@ -731,6 +731,12 @@ do
 		Resource = M["Battle_ShipPirate1"]
 	}
 
+	ItsyScape.Meta.PeepMashinaState {
+		State = "gun-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Gunner_Phase4Logic.lua",
+		Resource = M["Battle_ShipPirate1"]
+	}
+
 	M["Battle_ShipPirate1"] {
 		ItsyScape.Action.InvisibleAttack()
 	}
@@ -753,6 +759,12 @@ do
 		State = "gun-yendorians",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Gunner_IdleLogic.lua",
 		IsDefault = 1,
+		Resource = M["Battle_ShipPirate2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "gun-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Gunner_Phase4Logic.lua",
 		Resource = M["Battle_ShipPirate2"]
 	}
 
@@ -825,6 +837,12 @@ do
 	ItsyScape.Meta.PeepMashinaState {
 		State = "attack-phase-3",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Keelhauler_Phase3AttackLogic.lua",
+		Resource = M["Keelhauler"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack-phase-4",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Keelhauler_Phase4AttackLogic.lua",
 		Resource = M["Keelhauler"]
 	}
 
@@ -1569,6 +1587,12 @@ do
 	ItsyScape.Meta.TalkSpeaker {
 		Resource = M["Orlando"],
 		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Battle_ShipPirate1"],
+		Name = "X_Pirate",
 		Action = TalkAction
 	}
 
