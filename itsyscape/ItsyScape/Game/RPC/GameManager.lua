@@ -401,7 +401,7 @@ function GameManager:receive()
 end
 
 function GameManager:update()
-	for i = 1, #self.instances do
+	for i = #self.instances, 1, -1 do
 		self.instances[i]:update()
 	end
 end

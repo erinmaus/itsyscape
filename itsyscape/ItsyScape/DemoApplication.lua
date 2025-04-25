@@ -89,10 +89,12 @@ function DemoApplication:new()
 	self.shimmeringObjects = {}
 	self.pendingObjectID = false
 	self.pendingObjectType = false
-	self.shimmerLabel = Label()
-	self.shimmerLabel:setZDepth(-1000)
-	self.shimmerToolTip = GamepadToolTip()
-	self.shimmerToolTip:setZDepth(-900)
+	self.currentShimmerToolTip = GamepadToolTip()
+	self.currentShimmerToolTip:setZDepth(-900)
+	self.currentShimmerToolTip:setRowSize(math.huge)
+	self.nextShimmerToolTip = GamepadToolTip()
+	self.nextShimmerToolTip:setZDepth(-900)
+	self.nextShimmerToolTip:setRowSize(math.huge)
 
 	self._sortShimmerObjects = function(a, b)
 		if a.objectType ~= b.objectType then
@@ -1909,7 +1911,7 @@ function DemoApplication:updatePositionProbe()
 	end
 end
 
-function DemoApplication:nextShimmer()
+function DemoApplication:getNextShimmer(pendingObjectID, pendingObjectType)
 	local currentIndex
 
 	local shimmerCandidates = {}
@@ -1923,7 +1925,7 @@ function DemoApplication:nextShimmer()
 
 		if not isOnlyExaminable and shimmeringObject.isActive then
 			table.insert(shimmerCandidates, shimmeringObject)
-			if self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType then
+			if pendingObjectID == shimmeringObject.objectID and pendingObjectType == shimmeringObject.objectType then
 				currentIndex = #shimmerCandidates
 			end
 		end
@@ -1935,30 +1937,28 @@ function DemoApplication:nextShimmer()
 				local shimmerCandidate = shimmerCandidates[i]
 
 				if shimmerCandidate.objectType == "item" then
-					self.pendingObjectID = shimmerCandidate.objectID
-					self.pendingObjectType = shimmerCandidate.objectType
-					return
+					return shimmerCandidate.objectID, shimmerCandidate.objectType
 				end
 			end
 		end
 
-		self.pendingObjectID = shimmerCandidates[1].objectID
-		self.pendingObjectType = shimmerCandidates[1].objectType
-		return
+		return shimmerCandidates[1].objectID, shimmerCandidates[1].objectType
 	end
 
 	if #shimmerCandidates == 0 then
-		self.pendingObjectID = false
-		self.pendingObjectType = false
-		return
+		return false, false
 	end
 
 	local nextIndex = math.wrapIndex(currentIndex, 1, #shimmerCandidates)
 	local candidate = shimmerCandidates[nextIndex]
 	if candidate then
-		self.pendingObjectID = candidate.objectID
-		self.pendingObjectType = candidate.objectType
+		return candidate.objectID, candidate.objectType
 	end
+end
+
+function DemoApplication:nextShimmer()
+	self.pendingObjectID, self.pendingObjectType = self:getNextShimmer(self.pendingObjectID, self.pendingObjectType)
+	self.nextObjectID, self.nextObjectType = self:getNextShimmer(self.pendingObjectID, self.pendingObjectType)
 end
 
 local function _sortActions(a, b)
@@ -2010,6 +2010,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 	local unselected = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.unselected"))
 
 	local hasActive = false
+	local hasNext = false
 	for i = #self.shimmeringObjects, 1, -1 do
 		local shimmeringObject = self.shimmeringObjects[i]
 
@@ -2044,9 +2045,11 @@ function DemoApplication:updateNearbyShimmer(delta)
 		if isShimmering and not (self.pendingObjectID and self.pendingObjectType) and shimmeringObject.isActive then
 			self.pendingObjectID = shimmeringObject.objectID
 			self.pendingObjectType = shimmeringObject.objectType
+			self.nextObjectID, self.nextObjectType = self:getNextShimmer(self.pendingObjectID, self.pendingObjectType)
 		end
 
 		local isActive = self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType
+		local isNext = self.nextObjectID == shimmeringObject.objectID and self.nextObjectType == shimmeringObject.objectType
 
 		local color
 		if isActive then
@@ -2056,33 +2059,66 @@ function DemoApplication:updateNearbyShimmer(delta)
 				color = Color(interactive:get())
 			end
 
+			local toolTipTextColor
+			if shimmeringObject.objectType == "actor" then
+				toolTipTextColor = "ui.poke.actor"
+			elseif shimmeringObject.objectType == "prop" then
+				toolTipTextColor = "ui.poke.prop"
+			elseif shimmeringObject.objectType == "item" then
+				toolTipTextColor = "ui.poke.item"
+			else
+				toolTipTextColor = "ui.poke.misc"
+			end
+
 			if node then
-				self.shimmerLabel:setStyle(LabelStyle(DemoApplication.SHIMMER_CURRENT_OBJECT_LABEL_STYLE(color), self:getUIView():getResources()))
-				self.shimmerLabel:setText(shimmeringObject.object)
-				local width = self.shimmerLabel:getStyle().font:getWidth(shimmeringObject.object)
-
-				local labelX, labelY = self:_getObjectUIPosition(object, 1, self.shimmerLabel:getStyle().font:getHeight())
-				self.shimmerLabel:setPosition(labelX - width / 2, labelY)
-				self.shimmerLabel:setSize(
-					self.shimmerLabel:getStyle().font:getWidth(shimmeringObject.object),
-					self.shimmerLabel:getStyle().font:getHeight())
-
 				local action = self:getShimmerActions(shimmeringObject)[1]
 				if action then
 					local toolTipX, toolTipY = self:_getObjectUIPosition(object, 0)
-					self.shimmerToolTip:setPosition(toolTipX, toolTipY)
-					self.shimmerToolTip:setText(action.verb)
-					self:getUIView():getRoot():addChild(self.shimmerToolTip)
+					self.currentShimmerToolTip:setPosition(toolTipX, toolTipY)
+					self.currentShimmerToolTip:setText(
+						{
+							"ui.text",
+							action.verb,
+							"ui.text",
+							" ",
+							toolTipTextColor,
+							shimmeringObject.object
+						})
+					self:getUIView():getRoot():addChild(self.currentShimmerToolTip)
 				else
-					self:getUIView():getRoot():removeChild(self.shimmerToolTip)
+					self:getUIView():getRoot():removeChild(self.currentShimmerToolTip)
 				end
-
-				self:getUIView():getRoot():addChild(self.shimmerLabel)
 
 				hasActive = true
 			end
 		else
 			color = Color(unselected:get())
+		end
+
+		if isNext then
+			hasNext = true
+
+			local toolTipTextColor
+			if shimmeringObject.objectType == "actor" then
+				toolTipTextColor = "ui.poke.actor"
+			elseif shimmeringObject.objectType == "prop" then
+				toolTipTextColor = "ui.poke.prop"
+			elseif shimmeringObject.objectType == "item" then
+				toolTipTextColor = "ui.poke.item"
+			else
+				toolTipTextColor = "ui.poke.misc"
+			end
+
+			self.nextShimmerToolTip:setText({
+				"ui.text",
+				"Switch",
+				"ui.text",
+				" ",
+				toolTipTextColor,
+				shimmeringObject.object
+			})
+
+			self.nextShimmerToolTip:setButtonID("x")
 		end
 
 		if not shimmeringObject.isActive and shimmeringObject.time == DemoApplication.SHIMMER_DURATION then
@@ -2108,8 +2144,19 @@ function DemoApplication:updateNearbyShimmer(delta)
 	end
 
 	if not hasActive then
-		self:getUIView():getRoot():removeChild(self.shimmerLabel)
-		self:getUIView():getRoot():removeChild(self.shimmerToolTip)
+		self:getUIView():getRoot():removeChild(self.currentShimmerToolTip)
+		self:getUIView():getRoot():removeChild(self.nextShimmerToolTip)
+	else
+		if hasNext then
+			self:getUIView():getRoot():addChild(self.nextShimmerToolTip)
+
+			local currentX, currentY = self.currentShimmerToolTip:getPosition()
+			local currentWidth, currentHeight = self.currentShimmerToolTip:getSize()
+
+			self.nextShimmerToolTip:setPosition(currentX, currentY + currentHeight + 4)
+		else
+			self:getUIView():getRoot():removeChild(self.nextShimmerToolTip)
+		end
 	end
 end
 
