@@ -75,6 +75,31 @@ function GamepadGridLayout:_focusChild(widget)
 	end
 
 	self.currentFocusedWidget = previousParent
+	self:_tryScroll(self.currentFocusedWidget)
+end
+
+function GamepadGridLayout:_tryScroll(widget)
+	local parent = self:getParent()
+	if not parent then
+		return
+	end
+
+	local parentWidth, parentHeight = parent:getSize()
+	local scrollX, scrollY = self:getScroll()
+	local scrollSizeX, scrollSizeY = parent:getScrollSize()
+
+	local x, y = widget:getPosition()
+	local width, height = widget:getSize()
+
+	if scrollSizeX > parentWidth then
+		scrollX = math.clamp(scrollX, x + width - parentWidth, x)
+	end
+
+	if scrollSizeY > parentHeight then
+		scrollY = math.clamp(scrollY, y + height - parentHeight, y)
+	end
+
+	self:setScroll(scrollX, scrollY)
 end
 
 function GamepadGridLayout:gamepadDirection(directionX, directionY)

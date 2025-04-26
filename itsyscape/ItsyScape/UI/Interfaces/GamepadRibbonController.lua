@@ -32,6 +32,30 @@ GamepadRibbonController.TABS = {
 	[GamepadRibbonController.TAB_SETTINGS] = true
 }
 
+GamepadRibbonController.SKILLS_SORT_ORDER = {
+	"Constitution",
+	"Magic",
+	"Wisdom",
+	"Attack",
+	"Strength",
+	"Archery",
+	"Dexterity",
+	"Defense",
+	"Faith",
+	"Mining",
+	"Woodcutting",
+	"Fishing",
+	"Foraging",
+	"Smithing",
+	"Crafting",
+	"Cooking",
+	"Engineering",
+	"Firemaking",
+	"Sailing",
+	"Antilogika",
+	"Necromancy"
+}
+
 GamepadRibbonController.SKILL_GUIDE_ACTION_ICON_RESOURCE_TYPES = {
 	prop = true,
 	sailingcrew = true,
@@ -703,15 +727,33 @@ function GamepadRibbonController:pullEquipment()
 	return items
 end
 
+local function _sortSkills(a, b)
+	local aIndex, bIndex
+
+	for i, skill in ipairs(GamepadRibbonController.SKILLS_SORT_ORDER) do
+		if a.id == skill then
+			aIndex = i
+		end
+
+		if b.id == skill then
+			bIndex = i
+		end
+	end
+
+	return aIndex < bIndex
+end
+
 function GamepadRibbonController:pullSkills()
 	local result = { skills = {}, totalLevel = 0, combatLevel = Utility.Combat.getCombatLevel(self:getPeep()) }
 
 	local skills = self:getPeep():getBehavior(StatsBehavior)
-	skills = skills and skills.skills
+	skills = skills and skills.stats
 
 	if not skills then
 		return result
 	end
+
+	local gameDB = self:getDirector():getGameDB()
 
 	for skill in skills:iterate() do
 		local s = gameDB:getResource(skill:getName(), "Skill")
@@ -719,6 +761,7 @@ function GamepadRibbonController:pullSkills()
 		result.totalLevel = result.totalLevel + skill:getBaseLevel()
 
 		table.insert(result.skills, {
+			id = skill:getName(),
 			name = Utility.getName(s, gameDB),
 			description = Utility.getDescription(s, gameDB),
 			xp = skill:getXP(),
@@ -727,6 +770,10 @@ function GamepadRibbonController:pullSkills()
 			xpNextLevel = math.max(Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - skill:getXP(), 0)
 		})
 	end
+
+	table.sort(result.skills, _sortSkills)
+
+	return result
 end
 
 function GamepadRibbonController:pullEquipmentStats()

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/UI/Interfaces/InventoryGamepadContentTab.lua
+-- ItsyScape/UI/Interfaces/Components/InventoryGamepadContentTab.lua
 --
 -- This file is a part of ItsyScape.
 --

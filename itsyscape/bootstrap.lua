@@ -113,6 +113,7 @@ do
 	table.clear = require "table.clear"
 
 	math.clamp = function(a, min, max)
+		min, max = math.min(min or 0, max or 1), math.max(min or 0, max or 1)
 		return math.max(math.min(a, max or 1), min or 0)
 	end
 
