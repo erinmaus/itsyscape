@@ -31,6 +31,7 @@ local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadCon
 local EquipmentGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.EquipmentGamepadContentTab"
 local InventoryGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.InventoryGamepadContentTab"
 local ItemInfoGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.ItemInfoGamepadContentTab"
+local SkillInfoContentTab = require "ItsyScape.UI.Interfaces.Components.SkillInfoContentTab"
 local SkillsGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.SkillsGamepadContentTab"
 
 local GamepadRibbon = Class(Interface)
@@ -520,6 +521,7 @@ end
 function GamepadRibbon:_initSkillTab()
 	self.skillsTabContent = SkillsGamepadContentTab(self)
 	self.skillsTabContent.onWrapFocus:register(self._onContentWrapFocus, self)
+	self.skillInfoTabContent = SkillInfoContentTab(self)
 
 	self:_addTab(
 		self.TAB_PLAYER_SKILLS,
@@ -529,6 +531,7 @@ end
 
 function GamepadRibbon:_openSkillTab()
 	self.contentLayout:addChild(self.skillsTabContent)
+	self.contentLayout:addChild(self.skillInfoTabContent)
 	self:_updateSkillTab()
 
 	self.titleLabel:setText("Skills")
@@ -540,12 +543,8 @@ function GamepadRibbon:_updateSkillTab()
 
 	self.skillsTabContent:refresh(state.skills)
 
-	-- local slot = self.equipmentTabContent:getCurrentEquipmentSlot()
-	-- local item = self.equipmentTabContent:getEquipmentItem(slot)
-
-	-- if self.currentTabName == self.TAB_PLAYER_EQUIPMENT then
-	-- 	self.itemInfoContent:refresh({ item = item })
-	-- end
+	local index = self.skillsTabContent:getCurrentSkillIndex()
+	self.skillInfoTabContent:refresh(state.skills.skills[index])
 end
 
 function GamepadRibbon:_initSettingsTab()

@@ -767,7 +767,9 @@ function GamepadRibbonController:pullSkills()
 			xp = skill:getXP(),
 			workingLevel = skill:getWorkingLevel(),
 			baseLevel = skill:getBaseLevel(),
-			xpNextLevel = math.max(Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - skill:getXP(), 0)
+			xpNextLevel = math.max(Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - skill:getXP(), 0),
+			xpPastCurrentLevel = skill:getXP() - Curve.XP_CURVE:compute(skill:getBaseLevel()),
+			nextLevelXP = Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - Curve.XP_CURVE:compute(skill:getBaseLevel())
 		})
 	end
 
