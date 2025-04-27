@@ -61,9 +61,6 @@ function SkyBehavior:new()
 	self.fogFarDistance = 100
 	self.fogFollowTarget = false
 
-	self.sunColor = Color.fromHexString("ffffff")
-	self.moonColor = Color.fromHexString("ffffff")
-
 	self.windDirection = Vector(1, 0, 0):getNormal()
 	self.windSpeed = 0.25
 

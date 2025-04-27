@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
@@ -83,6 +84,7 @@ function Moon:load()
 
 	self.moonExterior = DecorationSceneNode()
 	self.moonExterior:setParent(root)
+	self.moonExterior:getTransform():setLocalRotation(Quaternion.Y_180)
 
 	self.moonInterior = DecorationSceneNode()
 	self.moonInterior:setParent(root)
