@@ -355,8 +355,7 @@ for name, log in spairs(LOGS) do
 
 		local CookAction = ItsyScape.Action.OpenCraftWindow()
 		ItsyScape.Meta.DelegatedActionTarget {
-			CategoryKey = "CookingMethod",
-			CategoryValue = "Fire",
+			CategoryKey = "CookingMethodFire",
 			Action = CookAction
 		}
 

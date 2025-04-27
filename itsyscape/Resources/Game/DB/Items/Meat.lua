@@ -111,14 +111,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
+		Key = "CookingMethodFire",
 		Value = "Fire",
 		Resource = ItsyScape.Resource.Item "CookedBeef"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Meat",
 		Resource = ItsyScape.Resource.Item "CookedBeef"
 	}
 
@@ -272,14 +272,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
+		Key = "CookingMethodFire",
 		Value = "Fire",
 		Resource = ItsyScape.Resource.Item "CookedPork"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Meat",
 		Resource = ItsyScape.Resource.Item "CookedPork"
 	}
 

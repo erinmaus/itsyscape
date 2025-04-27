@@ -41,6 +41,8 @@ function LabelStyle:new(t, resources)
 	self.minJustifyLineWidthPercent = t.minJustifyLineWidthPercent or 0.75
 
 	self.align = t.align or "left"
+	self.shrink = t.shrink or false
+	self.center = t.center or false
 end
 
 function LabelStyle:draw(widget, state)
@@ -98,6 +100,11 @@ function LabelStyle:draw(widget, state)
 			if self.align == "center" then
 				x = -width / 2
 			end
+		end
+
+		if self.center then
+			local _, numLines = font:getWrap(text, width)
+			y = y + (height - (#numLines * (font:getHeight() * font:getLineHeight()))) / 2
 		end
 
 		local maxWidth = self.width or width
@@ -182,11 +189,11 @@ function LabelStyle:draw(widget, state)
 
 					if self.textShadow then
 						love.graphics.setColor(0, 0, 0, self.color.a)
-						itsyrealm.graphics.print(word, x + wordX + 1, y + wordY + 1)
+						itsyrealm.graphics.print(word, math.floor(x + wordX + 2), math.floor(y + wordY + 2))
 					end
 
 					love.graphics.setColor(self.color:get())
-					itsyrealm.graphics.print(word, x + wordX, y + wordY)
+					itsyrealm.graphics.print(word, math.floor(x + wordX), math.floor(y + wordY))
 
 					wordX = wordX + font:getWidth(w) + spaceLength
 				end
@@ -195,13 +202,52 @@ function LabelStyle:draw(widget, state)
 				wordX = 0
 			end
 		else
-			if self.textShadow then
-				love.graphics.setColor(0, 0, 0, self.color.a)
-				itsyrealm.graphics.printf(text, x + 2, y + 2, maxWidth, self.align)
-			end
+			if self.shrink then
+				local t
 
-			love.graphics.setColor(self.color:get())
-			itsyrealm.graphics.printf(text, x, y, maxWidth, self.align)
+				if type(text) == "string" then
+					t = text
+				else
+					t = {}
+					for i = 2, #t, 2 do
+						table.insert(t, t[i])
+					end
+
+					t = table.concat(t)
+				end
+
+				local textWidth = self.font:getWidth(t)
+				local selfWidth, selfHeight = widget:getSize()
+				if selfWidth == 0 and widget:getParent() then
+					selfWidth, selfHeight = widget:getParent():getSize()
+				end
+
+				local scale
+				if selfWidth > 0 then
+					scale = selfWidth / textWidth
+				else
+					scale = 1
+				end
+
+				local ox = textWidth / 2
+				local oy = self.font:getHeight() / 2
+
+				if self.textShadow then
+					love.graphics.setColor(0, 0, 0, self.color.a)
+					itsyrealm.graphics.print(text, x + selfWidth / 2 + 2, y + selfHeight / 2 + 2, 0, scale, scale, ox, oy)
+				end
+
+				love.graphics.setColor(self.color:get())
+				itsyrealm.graphics.print(text, x + selfWidth / 2, y + selfHeight / 2, 0, scale, scale, ox, oy)
+			else
+				if self.textShadow then
+					love.graphics.setColor(0, 0, 0, self.color.a)
+					itsyrealm.graphics.printf(text, x + 2, y + 2, maxWidth, self.align)
+				end
+
+				love.graphics.setColor(self.color:get())
+				itsyrealm.graphics.printf(text, x, y, maxWidth, self.align)
+			end
 		end
 
 		love.graphics.setFont(previousFont)

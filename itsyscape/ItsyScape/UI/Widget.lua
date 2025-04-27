@@ -191,7 +191,7 @@ function Widget:find(id, after, e)
 			end
 		end
 
-		local result = self.children:find(id, after, e)
+		local result = self.children[i]:find(id, after, e)
 		if result then
 			return result
 		end

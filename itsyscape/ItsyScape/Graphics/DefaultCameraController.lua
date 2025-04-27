@@ -16,6 +16,7 @@ local Config = require "ItsyScape.Game.Config"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Keybinds = require "ItsyScape.UI.Keybinds"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
 
 local DefaultCameraController = Class(CameraController)
 DefaultCameraController.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
@@ -418,9 +419,17 @@ function DefaultCameraController:updateControls(delta)
 	end
 
 	local focusedWidget = self:getApp():getUIView():getInputProvider():getFocusedWidget()
-	if focusedWidget and focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput") then
-		self.isPanning = false
-		return
+	if focusedWidget then
+		if focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput") then
+			self.isPanning = false
+			return
+		end
+
+		local gamepadSink = focusedWidget:getParentData(GamepadSink)
+		if Class.isCompatibleType(gamepadSink, GamepadSink) and gamepadSink:getIsBlockingCamera() then
+			self.isPanning = false
+			return
+		end
 	end
 
 	local upPressed = Keybinds['CAMERA_UP']:isDown()

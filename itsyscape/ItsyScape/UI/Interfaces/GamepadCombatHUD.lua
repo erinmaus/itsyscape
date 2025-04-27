@@ -584,6 +584,7 @@ function GamepadCombatHUD:newSpiralMenu(name)
 		self.SPIRAL_OUTER_RADIUS * 2 + self.SELECTED_BUTTON_SIZE)
 	spiralMenu:setData("name", name)
 	spiralMenu:setRadius(self.SPIRAL_INNER_RADIUS, self.SPIRAL_OUTER_RADIUS)
+	spiralMenu:setData(GamepadSink, GamepadSink({ isBlockingCamera = false }))
 
 	local circlePanel = GamepadCirclePanel()
 	circlePanel:enable()

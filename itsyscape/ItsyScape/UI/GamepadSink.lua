@@ -12,13 +12,15 @@ local Class = require "ItsyScape.Common.Class"
 local GamepadSink = Class()
 
 GamepadSink.DEFAULT_OPTIONS = {
-	isBlocking = true
+	isBlocking = true,
+	isBlockingCamera = true
 }
 
 function GamepadSink:new(t)
 	t = t or self.DEFAULT_OPTIONS
 
 	self.isBlocking = t.isBlocking == nil and self.DEFAULT_OPTIONS.isBlocking or t.isBlocking
+	self.isBlockingCamera = t.isBlockingCamera == nil and self.DEFAULT_OPTIONS.isBlockingCamera or t.isBlockingCamera
 end
 
 function GamepadSink:setIsBlocking(value)
@@ -27,6 +29,14 @@ end
 
 function GamepadSink:getIsBlocking()
 	return self.isBlocking
+end
+
+function GamepadSink:setIsBlockingCamera(value)
+	self.isBlockingCamera = not not value
+end
+
+function GamepadSink:getIsBlockingCamera()
+	return self.isBlockingCamera
 end
 
 return GamepadSink

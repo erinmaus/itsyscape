@@ -135,6 +135,7 @@ local graphicsState = {
 	transforms = {},
 	renderStates = {},
 	pseudoScissor = {},
+	appliedPseudoScissor = { n = 0 },
 	sizes = {},
 	drawQueue = { n = 0 },
 	oldSizes = {},
@@ -159,6 +160,7 @@ do
 
 	local w, h = love.window.getMode()
 	table.insert(graphicsState.pseudoScissor, { 0, 0, w, h })
+	table.insert(graphicsState.appliedPseudoScissor, { 0, 0, w, h })
 end
 
 function itsyrealm.mouse.getPosition()
@@ -778,6 +780,7 @@ end
 function itsyrealm.graphics.clearPseudoScissor()
 	local w, h = love.window.getMode()
 	graphicsState.pseudoScissor = { { 0, 0, w, h } }
+	graphicsState.appliedPseudoScissor = { n = 0, { 0, 0, w, h } }
 end
 
 function itsyrealm.graphics.pushInterface(width, height)
@@ -855,11 +858,23 @@ function itsyrealm.graphics.impl.push(command, ...)
 end
 
 function itsyrealm.graphics.resetPseudoScissor()
-	local w, h = love.window.getMode()
-	itsyrealm.graphics.impl.pushSize()
-	itsyrealm.graphics.impl.push(
-		itsyrealm.graphics.impl.setScissor,
-		0, 0, w, h)
+	graphicsState.appliedPseudoScissor.n = graphicsState.appliedPseudoScissor.n - 1
+	assert(graphicsState.appliedPseudoScissor.n >= 0, "unbalanced pseudo scissor stack")
+
+	table.remove(graphicsState.appliedPseudoScissor)
+
+	if graphicsState.appliedPseudoScissor.n > 0 then
+		itsyrealm.graphics.impl.pushSize()
+		itsyrealm.graphics.impl.push(
+			itsyrealm.graphics.impl.setScissor,
+			unpack(graphicsState.appliedPseudoScissor[#graphicsState.appliedPseudoScissor]))
+	else
+		local w, h = love.window.getMode()
+		itsyrealm.graphics.impl.pushSize()
+		itsyrealm.graphics.impl.push(
+			itsyrealm.graphics.impl.setScissor,
+			0, 0, w, h)
+	end
 end
 
 function itsyrealm.graphics.intersectPseudoScissor(x, y, w, h)
@@ -889,6 +904,10 @@ end
 
 function itsyrealm.graphics.applyPseudoScissor()
 	local x, y, w, h = unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+
+	table.insert(graphicsState.appliedPseudoScissor, graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+	graphicsState.appliedPseudoScissor.n = graphicsState.appliedPseudoScissor.n + 1
+
 	itsyrealm.graphics.impl.pushSize()
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.setScissor,
@@ -897,6 +916,10 @@ end
 
 function itsyrealm.graphics.getPseudoScissor()
 	return unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+end
+
+function itsyrealm.graphics.getPseudoScissorN()
+	return #graphicsState.pseudoScissor
 end
 
 function itsyrealm.graphics.drawItem(handle, width, height, icon, itemID, count, color, note, disabled, active)

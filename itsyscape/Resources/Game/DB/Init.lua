@@ -433,6 +433,7 @@ Game "ItsyScape"
 	}
 
 	Meta "ResourceCategoryGroup" {
+		Icon = Meta.TYPE_RESOURCE,
 		Key = Meta.TYPE_TEXT,
 		Value = Meta.TYPE_TEXT,
 		Language = Meta.TYPE_TEXT,
