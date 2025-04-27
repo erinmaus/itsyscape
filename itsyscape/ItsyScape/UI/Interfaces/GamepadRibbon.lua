@@ -364,18 +364,21 @@ function GamepadRibbon:performLayout()
 	local ribbonKeybindWidth, ribbonKeybindHeight = self.ribbonKeybindInfo:getSize()
 	local secondaryKeybindWidth, secondaryKeybindHeight = self.secondaryKeybindInfo:getSize()
 	local tertiaryKeybindWidth, tertiaryKeybindHeight = self.tertiaryKeybindInfo:getSize()
-	local width = math.max(secondaryKeybindWidth, tertiaryKeybindWidth)
+	local maxKeybindWidth = math.max(
+		self.secondaryKeybindInfo:getParent() and secondaryKeybindWidth or 0,
+		self.tertiaryKeybindInfo:getParent() and tertiaryKeybindWidth or 0,
+		ribbonKeybindWidth)
 
 	self.ribbonKeybindInfo:setPosition(
-		self.TAB_CONTAINER_WIDTH - width - self.PADDING,
+		self.TAB_CONTAINER_WIDTH - maxKeybindWidth - self.PADDING,
 		0)
 
 	self.secondaryKeybindInfo:setPosition(
-		self.TAB_CONTAINER_WIDTH - width - self.PADDING,
+		self.TAB_CONTAINER_WIDTH - maxKeybindWidth - self.PADDING,
 		ribbonKeybindHeight)
 
 	self.tertiaryKeybindInfo:setPosition(
-		self.TAB_CONTAINER_WIDTH - width - self.PADDING,
+		self.TAB_CONTAINER_WIDTH - maxKeybindWidth - self.PADDING,
 		ribbonKeybindHeight + secondaryKeybindHeight)
 end
 
@@ -412,11 +415,12 @@ end
 function GamepadRibbon:_setKeybindInfo(secondary, tertiary)
 	if secondary then
 		self.secondaryKeybindInfo:setText(secondary)
-		self.secondaryKeybindInfo:performLayout()
 
 		if self.secondaryKeybindInfo:getParent() ~= self.container then
 			self.container:addChild(self.secondaryKeybindInfo)
 		end
+
+		self.secondaryKeybindInfo:performLayout()
 	else
 		if self.secondaryKeybindInfo:getParent() == self.container then
 			self.container:removeChild(self.secondaryKeybindInfo)
@@ -425,11 +429,12 @@ function GamepadRibbon:_setKeybindInfo(secondary, tertiary)
 
 	if tertiary then
 		self.tertiaryKeybindInfo:setText(tertiary)
-		self.tertiaryKeybindInfo:performLayout()
 
 		if self.tertiaryKeybindInfo:getParent() ~= self.container then
 			self.container:addChild(self.tertiaryKeybindInfo)
 		end
+
+		self.tertiaryKeybindInfo:performLayout()
 	else
 		if self.tertiaryKeybindInfo:getParent() == self.container then
 			self.container:removeChild(self.tertiaryKeybindInfo)

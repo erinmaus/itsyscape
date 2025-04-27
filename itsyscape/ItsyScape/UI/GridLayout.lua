@@ -142,7 +142,7 @@ function GridLayout:layoutChild(child)
 	local x = self.currentX or edgePaddingX
 	local y = self.currentY or edgePaddingY
 	if self.currentX then
-		if x + childWidth + self.paddingX > width then
+		if x + childWidth > width then
 			self.currentX = childWidth + self.paddingX + edgePaddingX
 			x = edgePaddingX
 

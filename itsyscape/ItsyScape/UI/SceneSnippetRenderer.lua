@@ -90,6 +90,12 @@ function SceneSnippetRenderer:draw(widget)
 				widget:getChildNode():setParent(widget:getParentNode())
 			end
 
+			local oldShimmer
+			if widget:getChildNode() then
+				oldShimmer = widget:getChildNode():getMaterial():getIsShimmerEnabled()
+				widget:getChildNode():getMaterial():setIsShimmerEnabled(false)
+			end
+
 			local w, h = widget:getSize()
 			w = w * widget:getDPIScale()
 			h = h * widget:getDPIScale()
@@ -102,6 +108,10 @@ function SceneSnippetRenderer:draw(widget)
 
 			if oldParent then
 				widget:getChildNode():setParent(oldParent)
+			end
+
+			if oldShimmer ~= nil then
+				widget:getChildNode():getMaterial():setIsShimmerEnabled(oldShimmer)
 			end
 
 			self.renders[widget] = true

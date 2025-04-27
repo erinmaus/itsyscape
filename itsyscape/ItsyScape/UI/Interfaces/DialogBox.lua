@@ -419,7 +419,7 @@ function DialogBox:update(delta)
 		end
 		self.speakerIcon:getParentNode():getTransform():setLocalRotation(rotation:getNormal())
 
-		local otherTransform = self.speakerIcon:getParentNode():getTransform():getGlobalTransform()
+		local otherTransform = self.speakerIcon:getParentNode():getTransform():getGlobalTransform(_APP:getFrameDelta())
 		otherTransform:apply(transform)
 
 		transform = otherTransform

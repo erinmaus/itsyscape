@@ -17,6 +17,8 @@
 		"ui": {
 			"xAxis": "leftx",
 			"yAxis": "lefty",
+			"scrollXAxis": "rightx",
+			"scrollYAxis": "righty",
 
 			"axisSensitivity": 0.6,
 			"radialDrag": 1,

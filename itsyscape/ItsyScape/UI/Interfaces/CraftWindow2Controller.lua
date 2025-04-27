@@ -11,6 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Curve = require "ItsyScape.Game.Curve"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 
 local CraftWindowController = Class(Controller)
 
@@ -61,7 +63,36 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 	table.insert(groups, { value = "Misc", literal = "Misc", itemIcon = false })
 	groupIndices["Misc"] = #groups
 
-	self.state = { groups = groups }
+	local verb = "Craft"
+	if actionTypeFilter ~= "" then
+		local verbRecord = gameDB:getRecord("ActionTypeVerb", {
+			Language = "en-US",
+			Type = actionTypeFilter
+		})
+
+		verb = verbRecord and verbRecord:get("Value") or verb
+	end
+
+	local target
+	if prop and prop:hasBehavior(PropReferenceBehavior) then
+		target = { type = "prop", id = prop:getBehavior(PropReferenceBehavior).prop:getID() }
+	elseif prop and prop:hasBehavior(ActorReferenceBehavior) then
+		target = { type = "actor", id = prop:getBehavior(ActorReferenceBehavior).actor:getID() }
+	else
+		target = { type = "none", id = false }
+	end
+
+	self.state = {
+		action = {
+			verb = verb,
+			categoryKey = categoryKey,
+			categoryValue = categoryValue
+		},
+
+		target = target,
+
+		groups = groups
+	}
 	self.actionsByID = {}
 	self.prop = prop
 

@@ -187,9 +187,9 @@ end
 function CraftItemsContentTab:refresh(state)
 	GamepadContentTab.refresh(self, state)
 
-	self:populate(#state)
+	self:populate(#state.group)
 
-	for index, resource in ipairs(state) do
+	for index, resource in ipairs(state.group) do
 		local button = self.layout:getChildAt(index)
 
 		local icon = button:getData("icon")
@@ -199,6 +199,11 @@ function CraftItemsContentTab:refresh(state)
 
 		local name = button:getData("name")
 		name:setText(resource.item.name)
+	end
+
+	if self.currentCategoryIndex ~= state.index then
+		self.layout:setScroll(0, 0)
+		self.currentCategoryIndex = state.index
 	end
 end
 

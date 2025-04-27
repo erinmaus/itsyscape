@@ -144,6 +144,10 @@ function CraftInfoContentTab:new(interface)
 	self.layout:setID("CraftItemInfo")
 end
 
+function CraftInfoContentTab:gamepadScroll(x, y)
+	self.constraintsPanel:mouseScroll(x, y)
+end
+
 function CraftInfoContentTab:refresh(state)
 	GamepadContentTab.refresh(self, state)
 
