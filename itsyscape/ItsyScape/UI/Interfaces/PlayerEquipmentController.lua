@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
+local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
@@ -53,7 +54,19 @@ function PlayerEquipmentController:pull()
 			end
 		end
 
-		result.stats = Utility.Peep.getEquipmentBonuses(self:getPeep())
+
+
+		local stats = {}
+		do
+			local bonuses = Utility.Peep.getEquipmentBonuses(self:getPeep())
+			for i = 1, #EquipmentInventoryProvider.STATS do
+				table.insert(stats, {
+					name = EquipmentInventoryProvider.STATS[i],
+					value = bonuses[EquipmentInventoryProvider.STATS[i]]
+				})
+			end
+		end
+		result.stats = stats
 	end
 
 	return result

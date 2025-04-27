@@ -59,7 +59,7 @@ function ToolTipRenderer:layout(widget)
 			if type(value) == 'string' then
 				text = value
 				shadow = false
-				color = Color(0, 0, 0, 1)
+				color = Color(1, 1, 1, 1)
 			else
 				text = value.text
 				shadow = value.shadow
@@ -101,7 +101,6 @@ function ToolTipRenderer:draw(widget, state)
 	if currentWidth == 0 and currentHeight == 0 then
 		widget:setSize(width, height)
 		widget:onLayout()
-		return
 	end
 
 	local screenWidth, screenHeight, scale = love.graphics.getScaledMode()

@@ -155,6 +155,7 @@ function PlayerStance:new(id, index, ui)
 	end
 
 	self:performLayout()
+	self:update(0)
 end
 
 function PlayerStance:performLayout()

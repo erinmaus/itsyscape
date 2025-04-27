@@ -332,7 +332,7 @@ end
 
 function EquipmentGamepadContentTab:prepareToolTip(index, button)
 	local icon = button:getData("icon")
-	self:getInterface():examineItem(icon, self:getState().items, index)
+	self:getInterface():examineItem(icon, self:getState().items, Equipment.SLOTS[index])
 end
 
 return EquipmentGamepadContentTab

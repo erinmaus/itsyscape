@@ -19,7 +19,7 @@ local PlayerTab = Class(Interface)
 PlayerTab.WIDTH = GamepadContentTab.WIDTH
 PlayerTab.HEIGHT = GamepadContentTab.HEIGHT
 PlayerTab.PANEL_STYLE = {
-	image = "Resources/Game/UI/Panels/PanelContent.png"
+	image = "Resources/Game/UI/Panels/SideRibbonContent.png"
 }
 
 function PlayerTab:new(id, index, ui)
@@ -32,6 +32,11 @@ function PlayerTab:new(id, index, ui)
 
 	self:setSize(PlayerTab.WIDTH, PlayerTab.HEIGHT)
 	self:performLayout()
+end
+
+function PlayerTab:attach()
+	Interface.attach(self)
+	self:tick()
 end
 
 function PlayerTab:performLayout()

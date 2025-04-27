@@ -69,12 +69,6 @@ function PlayerStats:onBackButtonPress()
 	self.layout:setScroll(self.skillsContent:getPosition())
 end
 
-function PlayerStats:attach()
-	PlayerTab.attach()
-
-	self:tick()
-end
-
 function PlayerStats:tick()
 	PlayerTab.tick(self)
 

@@ -262,6 +262,14 @@ function WidgetRenderManager:stop()
 end
 
 function WidgetRenderManager:draw(widget, state, cursor)
+	if self.hovered[widget] ~= nil and widget:getToolTip() then
+		if widget == self.topHovered then
+			self.hovered[widget] = { w = ToolTip(widget:getToolTip()), s = state }
+		else
+			self.hovered[widget] = nil
+		end
+	end
+
 	do
 		local _, _, w, h = itsyrealm.graphics.getPseudoScissor()
 
@@ -281,14 +289,6 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 	if widget == self.inputFocus.widget and not cursor then
 		self.inputFocus.state = state
-	end
-
-	if self.hovered[widget] ~= nil and widget:getToolTip() then
-		if widget == self.topHovered then
-			self.hovered[widget] = { w = ToolTip(widget:getToolTip()), s = state }
-		else
-			self.hovered[widget] = nil
-		end
 	end
 
 	if Class.isCompatibleType(widget, Interface) then

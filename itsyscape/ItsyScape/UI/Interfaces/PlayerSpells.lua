@@ -20,8 +20,9 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
 local PlayerSpells = Class(PlayerTab)
+PlayerSpells.PADDING = 8
 PlayerSpells.ICON_SIZE = 48
-PlayerSpells.BUTTON_PADDING = 2
+PlayerSpells.BUTTON_PADDING = 4
 
 function PlayerSpells:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
@@ -30,20 +31,13 @@ function PlayerSpells:new(id, index, ui)
 	self.numSpells = 0
 	self.onSpellsResized = Callback()
 
-	local panel = Panel()
-	panel = Panel()
-	panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/Default.9.png"
-	}, ui:getResources()))
-	panel:setSize(self:getSize())
-	self:addChild(panel)
-
 	self.layout = GridLayout()
+	self.layout:setPadding(self.PADDING, self.PADDING)
 	self.layout:setUniformSize(
 		true,
 		PlayerSpells.ICON_SIZE + PlayerSpells.BUTTON_PADDING * 2,
 		PlayerSpells.ICON_SIZE + PlayerSpells.BUTTON_PADDING * 2)
-	panel:addChild(self.layout)
+	self:addChild(self.layout)
 
 	self.layout:setSize(self:getSize())
 
