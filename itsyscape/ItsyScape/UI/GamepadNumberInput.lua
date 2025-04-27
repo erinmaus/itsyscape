@@ -48,7 +48,7 @@ function GamepadNumberInput:getNumDigits()
 end
 
 function GamepadNumberInput:setValue(value)
-	self:setText(tostring(value or "0"))
+	self:_setValueText(tostring(value or "0"))
 end
 
 function GamepadNumberInput:getValue()
@@ -73,6 +73,8 @@ function GamepadNumberInput:_tryPlaceCursor()
 		if self:getText() then
 			self:setCursor(utf8.len(self:getText()) - 1, 1)
 		end
+	elseif leftCursor >= utf8.len(self:getText()) then
+		self:setCursor(utf8.len(self:getText()) - 1, 1)
 	elseif rightCursor - leftCursor > 1 then
 		self:setCursor(leftCursor, 1)
 	end
@@ -94,6 +96,7 @@ function GamepadNumberInput:gamepadDirection(directionX, directionY)
 
 		self:typeText(tostring(digit))
 		self:setCursor(leftCursor, 1)
+		self:_setValueText(self:getText())
 	end
 
 	if directionX ~= 0 then

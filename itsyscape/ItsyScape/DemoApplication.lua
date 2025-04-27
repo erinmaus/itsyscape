@@ -1951,9 +1951,11 @@ function DemoApplication:getNextShimmer(pendingObjectID, pendingObjectType)
 
 	local nextIndex = math.wrapIndex(currentIndex, 1, #shimmerCandidates)
 	local candidate = shimmerCandidates[nextIndex]
-	if candidate then
+	if candidate and not (candidate.objectID == pendingObjectID and candidate.objectType == pendingObjectType ) then
 		return candidate.objectID, candidate.objectType
 	end
+
+	return false, false
 end
 
 function DemoApplication:nextShimmer()

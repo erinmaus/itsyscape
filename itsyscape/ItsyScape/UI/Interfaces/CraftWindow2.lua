@@ -13,7 +13,9 @@ local Config = require "ItsyScape.Game.Config"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
+local Button = require "ItsyScape.UI.Button"
 local CloseButton = require "ItsyScape.UI.CloseButton"
+local Icon = require "ItsyScape.UI.Icon"
 local Interface = require "ItsyScape.UI.Interface"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
@@ -33,6 +35,10 @@ local CraftWindow = Class(Interface)
 
 CraftWindow.TITLE_HEIGHT = 128
 CraftWindow.PADDING = 8
+
+CraftWindow.BACK_BUTTON_WIDTH = 96
+CraftWindow.BACK_BUTTON_HEIGHT = 48
+CraftWindow.BACK_BUTTON_ICON_SIZE = 24
 
 CraftWindow.CONTENT_WIDTH = GamepadContentTab.WIDTH * 2 + CraftWindow.PADDING * 3
 CraftWindow.CONTENT_HEIGHT = GamepadContentTab.HEIGHT + CraftWindow.PADDING * 2
@@ -143,6 +149,23 @@ function CraftWindow:new(id, index, ui)
 	self.closeButton.onClick:register(self.onCloseButtonClicked, self)
 	self.titlePanel:addChild(self.closeButton)
 
+	self.backButton = Button()
+	self.backButton:setSize(self.BACK_BUTTON_WIDTH, self.BACK_BUTTON_HEIGHT)
+	self.backButton:setPosition(self.WIDTH - CloseButton.DEFAULT_SIZE - self.PADDING * 2 - self.BACK_BUTTON_WIDTH, self.PADDING)
+	self.backButton.onClick:register(self.onBackButtonPress, self)
+
+	local backButtonLabel = Label()
+	backButtonLabel:setPosition(self.BACK_BUTTON_ICON_SIZE + self.PADDING * 2, self.PADDING)
+	backButtonLabel:setSize(self.BACK_BUTTON_WIDTH - self.BACK_BUTTON_ICON_SIZE + self.PADDING * 3, self.BACK_BUTTON_HEIGHT)
+	backButtonLabel:setText("Back")
+	self.backButton:addChild(backButtonLabel)
+
+	local backButtonIcon = Icon()
+	backButtonIcon:setIcon("Resources/Game/UI/Icons/Common/Back.png")
+	backButtonIcon:setSize(self.BACK_BUTTON_ICON_SIZE, self.BACK_BUTTON_ICON_SIZE)
+	backButtonIcon:setPosition(self.PADDING, (self.BACK_BUTTON_HEIGHT - self.BACK_BUTTON_ICON_SIZE) / 2)
+	self.backButton:addChild(backButtonIcon)
+
 	self.closeKeybindInfo = GamepadToolTip()
 	self.closeKeybindInfo:setHasBackground(false)
 	self.closeKeybindInfo:setKeybind("gamepadOpenRibbon")
@@ -231,6 +254,14 @@ end
 function CraftWindow:onCloseButtonClicked(_, index)
 	if index == 1 then
 		self:close()
+	end
+end
+
+function CraftWindow:onBackButtonPress()
+	if self.currentContentTarget == self.craftItemsContentTab then
+		self:setFocusedTab(self.craftCategoriesContentTab)
+	elseif self.currentContentTarget == self.makeContentTab then
+		self:setFocusedTab(self.craftItemsContentTab)
 	end
 end
 
@@ -330,6 +361,16 @@ function CraftWindow:updateControls()
 
 			if self.backKeybindInfo:getParent() then
 				self.backKeybindInfo:getParent():removeChild(self.backKeybindInfo)
+			end
+
+			if self.currentContentTarget ~= self.craftCategoriesContentTab then
+				if self.backButton:getParent() ~= self.titlePanel then
+					self.titlePanel:addChild(self.backButton)
+				end
+			else
+				if self.backButton:getParent() then
+					self.backButton:getParent():removeChild(self.backButton)
+				end
 			end
 		else
 			if self.closeKeybindInfo:getParent() ~= self.titlePanel then

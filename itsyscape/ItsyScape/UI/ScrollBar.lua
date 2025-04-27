@@ -138,7 +138,8 @@ function ScrollBar:drag(button, x, y)
 		parentScrollSizeX = parentScrollSizeX - parentWidth
 		parentScrollSizeY = parentScrollSizeY - parentHeight
 		local parentScrollX, parentScrollY = p:getScroll()
-		if self:getIsVertical() and parentScrollSizeY ~= 0 then
+		if self:getIsVertical() and parentScrollSizeY ~= 0 and self.scrollArea > 0 then
+			print(">>> scrooll area", self.scrollArea)
 			if not self.dragStart then
 				self.dragStart = (parentScrollY / parentScrollSizeY) * self.scrollArea
 			end
@@ -146,7 +147,7 @@ function ScrollBar:drag(button, x, y)
 			local s = math.max(math.min((y + self.dragStart) / self.scrollArea, 1), 0) * parentScrollSizeY
 			p:setScroll(parentScrollX, s)
 			self.onScroll(self, s / parentScrollY)
-		elseif self:getIsHorizontal() and parentScrollSizeX ~= 0 then
+		elseif self:getIsHorizontal() and parentScrollSizeX ~= 0 and self.scrollArea > 0 then
 			if not self.dragStart then
 				self.dragStart = (parentScrollX / parentScrollSizeX) * self.scrollArea
 			end
