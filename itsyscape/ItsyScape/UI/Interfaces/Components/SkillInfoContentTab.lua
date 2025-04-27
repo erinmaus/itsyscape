@@ -73,7 +73,7 @@ function SkillInfoContentTab:new(interface)
 
 	self.layout = GridLayout()
 	self.layout:setSize(self:getSize())
-	self.layout:setPadding(0, self.PADDING)
+	self.layout:setPadding(self.PADDING, self.PADDING)
 	self:addChild(self.layout)
 
 	local titleLabel = GridLayout()
@@ -96,11 +96,11 @@ function SkillInfoContentTab:new(interface)
 
 	self.skillValueLabel = Label()
 	self.skillValueLabel:setStyle(self.SKILL_VALUE_LABEL_STYLE, LabelStyle)
-	self.skillValueLabel:setSize(self.WIDTH, self.SKILL_VALUE_LABEL_STYLE.fontSize)
+	self.skillValueLabel:setSize(self.WIDTH - self.PADDING * 2, self.SKILL_VALUE_LABEL_STYLE.fontSize)
 	self.layout:addChild(self.skillValueLabel)
 
 	local skillXPContainer = Widget()
-	skillXPContainer:setSize(self.WIDTH, self.SKILL_XP_LABEL_STYLE.fontSize)
+	skillXPContainer:setSize(self.WIDTH - self.PADDING * 2, self.SKILL_XP_LABEL_STYLE.fontSize)
 	self.layout:addChild(skillXPContainer)
 
 	self.skillXPLabel = Label()
@@ -110,7 +110,7 @@ function SkillInfoContentTab:new(interface)
 	local description = Panel()
 	description:setStyle(self.GROUP_PANEL_STYLE, PanelStyle)
 	description:setSize(
-		self.WIDTH,
+		self.WIDTH - self.PADDING * 2,
 		self.DESCRIPTION_HEIGHT)
 
 	local descriptionWidth, descriptionHeight = description:getSize()
@@ -127,7 +127,7 @@ function SkillInfoContentTab:new(interface)
 	local remainderColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.resource.remainder"))
 
 	self.skillProgressBar = StatBar()
-	self.skillProgressBar:setSize(self.WIDTH, self.STAT_BAR_HEIGHT)
+	self.skillProgressBar:setSize(self.WIDTH - self.PADDING * 2, self.STAT_BAR_HEIGHT)
 	self.skillProgressBar:setColors(remainderColor, progressColor)
 	self.layout:addChild(self.skillProgressBar)
 

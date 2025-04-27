@@ -29,7 +29,7 @@ local Widget = require "ItsyScape.UI.Widget"
 local EquipmentGamepadContentTab = Class(GamepadContentTab)
 EquipmentGamepadContentTab.PADDING = 8
 EquipmentGamepadContentTab.ICON_SIZE = 48
-EquipmentGamepadContentTab.BUTTON_PADDING = 2
+EquipmentGamepadContentTab.BUTTON_PADDING = 4
 
 EquipmentGamepadContentTab.GROUP_PANEL_STYLE = {
 	image = "Resources/Game/UI/Panels/WindowGroup.png"
@@ -62,12 +62,13 @@ function EquipmentGamepadContentTab:new(interface)
 
 	local statsPanel = Panel()
 	statsPanel:setStyle(self.GROUP_PANEL_STYLE, PanelStyle)
-	statsPanel:setSize(self.WIDTH, EquipmentStatsPanel.DEFAULT_HEIGHT)
+	statsPanel:setSize(self.WIDTH - self.PADDING * 2, EquipmentStatsPanel.DEFAULT_HEIGHT)
 	local _, layoutHeight = self.layout:getSize()
-	statsPanel:setPosition(0, layoutHeight + self.PADDING / 2)
+	statsPanel:setPosition(self.PADDING, layoutHeight + self.PADDING / 2)
 	self:addChild(statsPanel)
 
-	self.stats = EquipmentStatsPanel(self:getUIView(), { width = self.WIDTH - self.PADDING * 2 })
+	self.stats = EquipmentStatsPanel(self:getUIView(), { width = self.WIDTH - self.PADDING * 4 })
+	self.stats:setPosition(self.PADDING, self.PADDING)
 	statsPanel:addChild(self.stats)
 
 	self.toolTip = GamepadToolTip()

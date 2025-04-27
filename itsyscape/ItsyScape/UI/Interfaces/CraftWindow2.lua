@@ -36,7 +36,7 @@ local CraftWindow = Class(Interface)
 CraftWindow.TITLE_HEIGHT = 128
 CraftWindow.PADDING = 8
 
-CraftWindow.BACK_BUTTON_WIDTH = 96
+CraftWindow.BACK_BUTTON_WIDTH = 104
 CraftWindow.BACK_BUTTON_HEIGHT = 48
 CraftWindow.BACK_BUTTON_ICON_SIZE = 24
 

@@ -9,23 +9,36 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
-local Utility = require "ItsyScape.Game.Utility"
 local Interface = require "ItsyScape.UI.Interface"
+local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Ribbon = require "ItsyScape.UI.Interfaces.Ribbon"
+local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 
 local PlayerTab = Class(Interface)
-PlayerTab.WIDTH = 248
-PlayerTab.HEIGHT = 428
+PlayerTab.WIDTH = GamepadContentTab.WIDTH
+PlayerTab.HEIGHT = GamepadContentTab.HEIGHT
+PlayerTab.PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/PanelContent.png"
+}
 
 function PlayerTab:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	self:setSize(PlayerTab.WIDTH, PlayerTab.HEIGHT)
+	local panel = Panel()
+	panel:setStyle(self.PANEL_STYLE, PanelStyle)
+	panel:setSize(PlayerTab.WIDTH, PlayerTab.HEIGHT)
+	self:addChild(panel)
 
+	self:setSize(PlayerTab.WIDTH, PlayerTab.HEIGHT)
+	self:performLayout()
+end
+
+function PlayerTab:performLayout()
 	local width, height = love.graphics.getScaledMode()
 	self:setPosition(
-		width - PlayerTab.WIDTH,
-		height - PlayerTab.HEIGHT - Ribbon.BUTTON_SIZE - Ribbon.PADDING * 2)
+		width - PlayerTab.WIDTH - Ribbon.BUTTON_SIZE - Ribbon.PADDING * 2,
+		height - PlayerTab.HEIGHT)
 end
 
 return PlayerTab

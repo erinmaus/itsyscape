@@ -18,6 +18,7 @@ local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
@@ -39,6 +40,8 @@ InventoryGamepadContentTab.ITEM_BUTTON_STYLE = {
 
 function InventoryGamepadContentTab:new(interface)
 	GamepadContentTab.new(self, interface)
+
+	self.onUseItem = Callback()
 
 	self.layout = GamepadGridLayout()
 	self.layout:setSize(self:getSize())
@@ -74,6 +77,10 @@ function InventoryGamepadContentTab:getCurrentInventorySlotIndex()
 end
 
 function InventoryGamepadContentTab:_updateToolTip()
+	if not Class.isCompatibleType(self:getParentData(GamepadSink), GamepadSink) then
+		return
+	end
+
 	local root = self:getUIView():getRoot()
 
 	local state = self:getState()
@@ -431,6 +438,18 @@ function InventoryGamepadContentTab:probe(index, button)
 				objectID = item.id,
 				objectType = "item",
 				callback = Function(self.pokeInventoryItem, self, index, action)
+			})
+		end
+
+		if not Class.isCompatibleType(self:getParentData(GamepadSink), GamepadSink) then
+			table.insert(actions, {
+				id = 0,
+				verb = "Use",
+				type = "Use",
+				object = object,
+				objectID = item.id,
+				objectType = "item",
+				callback = Function(self.onUseItem, self, button, index)
 			})
 		end
 

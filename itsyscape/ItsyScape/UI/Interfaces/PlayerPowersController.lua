@@ -8,7 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local CombatSpell = require "ItsyScape.Game.CombatSpell"
+local CombatPower = require "ItsyScape.Game.CombatPower"
 local Curve = require "ItsyScape.Game.Curve"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Spell = require "ItsyScape.Game.Spell"
@@ -16,8 +16,9 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Controller = require "ItsyScape.UI.Controller"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
-local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
+local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 
 local PlayerPowersController = Class(Controller)
 
@@ -47,6 +48,17 @@ function PlayerPowersController:getPendingPowerID()
 	end
 
 	return nil
+end
+
+function PlayerPowersController:_updatePowersRecharge(powers)
+	local recharge = self:getPeep():getBehavior(PowerRechargeBehavior)
+	if not recharge then
+		return
+	end
+
+	for _, power in ipairs(powers) do
+		power.pending = recharge.powers[power.id] or 0
+	end
 end
 
 function PlayerPowersController:getAvailablePowers()
@@ -91,7 +103,6 @@ function PlayerPowersController:getAvailablePowers()
 			do
 				local PowerType = Utility.Peep.getPowerType(power, gameDB)
 				instance = PowerType(self:getGame(), power)
-				coolDownDescription = string.format("Zeal: %d%%", instance:getCost(self:getPeep()) * 100)
 			end
 
 			local result = {
@@ -104,7 +115,9 @@ function PlayerPowersController:getAvailablePowers()
 					coolDownDescription
 				},
 				level = Curve.XP_CURVE:getLevel(xp),
-				enabled = instance:getAction():canPerform(self:getPeep():getState()) and instance:getAction():canTransfer(self:getPeep():getState())
+				enabled = instance:getAction():canPerform(self:getPeep():getState()) and instance:getAction():canTransfer(self:getPeep():getState()),
+				zeal = Class.isCompatibleType(instance, CombatPower) and instance:getCost(self:getPeep()) or 1,
+				tier = Class.isCompatibleType(instance, CombatPower) and instance:getTier() or 1
 			}
 
 			local skill, powers
@@ -194,12 +207,22 @@ function PlayerPowersController:updateStyle()
 end
 
 function PlayerPowersController:updateState()
+	local status = self:getPeep():getBehavior(CombatStatusBehavior)
+
 	local result = {
+		zeal = {
+			current = status and status.currentZeal or 0,
+			maximum = status and status.maximumZeal or 0,
+		},
+
 		style = self.style,
 		offensive = self.currentOffensivePowers,
 		defensive = self.currentDefensivePowers,
 		pendingID = self:getPendingPowerID()
 	}
+
+	self:_updatePowersRecharge(self.currentOffensivePowers)
+	self:_updatePowersRecharge(self.currentDefensivePowers)
 
 	self.state = result
 end

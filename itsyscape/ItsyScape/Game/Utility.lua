@@ -4293,6 +4293,9 @@ function Utility.Peep.canPeepAttackTarget(peep, target)
 	end
 
 	local player = Utility.Peep.getPlayer(peep)
+	if not player then
+		return true
+	end
 
 	local teams = player:getBehavior(TeamsBehavior)
 	if not teams then

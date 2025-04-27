@@ -42,7 +42,7 @@ function RechargingPowerBar:draw(resources, state)
 	}
 
 	local delta = 1 - self.remainder / math.max(self.cost, 0.01)
-	local lerpedIndex = math.lerp(1, #colors, delta)
+	local lerpedIndex = math.lerp(1, #colors, math.clamp(delta))
 	local index = math.floor(lerpedIndex)
 	local mu = lerpedIndex - math.floor(lerpedIndex)
 	local colorA = colors[index]

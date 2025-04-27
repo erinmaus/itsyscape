@@ -16,6 +16,46 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local PlayerStatsController = Class(Controller)
 
+PlayerStatsController.SKILLS_SORT_ORDER = {
+	"Constitution",
+	"Magic",
+	"Wisdom",
+	"Attack",
+	"Strength",
+	"Archery",
+	"Dexterity",
+	"Defense",
+	"Faith",
+	"Mining",
+	"Woodcutting",
+	"Fishing",
+	"Foraging",
+	"Smithing",
+	"Crafting",
+	"Cooking",
+	"Engineering",
+	"Firemaking",
+	"Sailing",
+	"Antilogika",
+	"Necromancy"
+}
+
+local function _sortSkills(a, b)
+	local aIndex, bIndex
+
+	for i, skill in ipairs(PlayerStatsController.SKILLS_SORT_ORDER) do
+		if a.id == skill then
+			aIndex = i
+		end
+
+		if b.id == skill then
+			bIndex = i
+		end
+	end
+
+	return aIndex < bIndex
+end
+
 function PlayerStatsController:new(peep, director)
 	Controller.new(self, peep, director)
 end
@@ -43,17 +83,22 @@ function PlayerStatsController:pull()
 			result.totalLevel = result.totalLevel + skill:getBaseLevel()
 
 			table.insert(result.skills, {
+				id = skill:getName(),
 				name = Utility.getName(s, gameDB),
 				description = Utility.getDescription(s, gameDB),
 				xp = skill:getXP(),
 				workingLevel = skill:getWorkingLevel(),
 				baseLevel = skill:getBaseLevel(),
-				xpNextLevel = math.max(Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - skill:getXP(), 0)
+				xpNextLevel = math.max(Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - skill:getXP(), 0),
+				xpPastCurrentLevel = skill:getXP() - Curve.XP_CURVE:compute(skill:getBaseLevel()),
+				nextLevelXP = Curve.XP_CURVE:compute(skill:getBaseLevel() + 1) - Curve.XP_CURVE:compute(skill:getBaseLevel())
 			})
 		end
 	else
 		Log.warnOnce("Player '%s' lost stats (has behavior = %s, has stats = %s).", self:getPeep():getName(), Log.boolean(stats), Log.boolean(stats and stats.stats))
 	end
+
+	table.sort(result.skills, _sortSkills)
 
 	return result
 end

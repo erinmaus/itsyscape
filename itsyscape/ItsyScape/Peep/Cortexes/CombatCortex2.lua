@@ -526,7 +526,7 @@ function CombatCortex:_givePeepZeal(peep, target)
 			attack = rollInfo.damageAttackPoke,
 			zeal = zeal
 		}))
-	elseif currentStanceInfo.stance == Weapon.STANCE_AGGRESSIVE and rollInfo.rolledDamage then
+	elseif currentStanceInfo.stance == Weapon.STANCE_AGGRESSIVE and rollInfo.initiateAttack then
 		local zeal = self:_getDamageZeal(rollInfo.damageDealt, rollInfo.baseHit, Weapon.STANCE_AGGRESSIVE)
 
 		local weapon = self:_getPeepWeapon(peep)
@@ -569,7 +569,7 @@ function CombatCortex:_giveTargetZeal(selfPeep, targetPeep)
 	criticalMultiplier = math.clamp(criticalMultiplier, minCriticalMultiplier, maxCriticalMultiplier)
 
 	local targetCurrentStanceInfo = self.currentStance[targetPeep]
-	if targetCurrentStanceInfo.stance == Weapon.STANCE_DEFENSIVE then
+	if targetCurrentStanceInfo.stance == Weapon.STANCE_DEFENSIVE and rollInfo.receiveAttack then
 		local zeal = self:_getDamageZeal(rollInfo.damageReceived, baseHit, Weapon.STANCE_DEFENSIVE)
 
 		targetPeep:poke("zeal", ZealPoke.onDefend({

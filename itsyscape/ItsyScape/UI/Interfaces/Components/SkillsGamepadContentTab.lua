@@ -65,6 +65,8 @@ SkillsGamepadContentTab.SKILL_VALUE_LABEL_STYLE = {
 function SkillsGamepadContentTab:new(interface)
 	GamepadContentTab.new(self, interface)
 
+	self.onSelectSkill = Callback()
+
 	self.scrollableLayout = ScrollablePanel(GamepadGridLayout)
 	self.scrollableLayout:setSize(self:getSize())
 	self.layout = self.scrollableLayout:getInnerPanel()
@@ -160,10 +162,6 @@ function SkillsGamepadContentTab:focus(reason)
 		local child = self.layout:getChildAt(self.currentSkillIndex)
 		inputProvider:setFocusedWidget(child or self.layout, reason)
 	end
-end
-
-function SkillsGamepadContentTab:openSkillGuide(skill)
-	self:getInterface():sendPoke("selectSkillGuide", nil, { skill = skill })
 end
 
 function SkillsGamepadContentTab:_addSkillButton()
@@ -267,7 +265,7 @@ function SkillsGamepadContentTab:activate(index, button, buttonIndex)
 		return
 	end
 
-	self:openSkillGuide(skill.id)
+	self:onSelectSkill(index, skill)
 end
 
 return SkillsGamepadContentTab

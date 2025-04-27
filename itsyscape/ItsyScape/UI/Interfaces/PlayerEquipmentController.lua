@@ -21,9 +21,7 @@ function PlayerEquipmentController:new(peep, director)
 end
 
 function PlayerEquipmentController:poke(actionID, actionIndex, e)
-	if actionID == "swap" then
-		self:swap(e)
-	elseif actionID == "poke" then
+	if actionID == "pokeEquipmentItem" then
 		self:pokeItem(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
@@ -69,6 +67,7 @@ function PlayerEquipmentController:pullItem(item)
 	result.name = Utility.Item.getInstanceName(item)
 	result.description = Utility.Item.getInstanceDescription(item)
 	result.stats = Utility.Item.getInstanceStats(item, self:getPeep())
+	result.slot = Utility.Item.getSlot(item)
 
 	return result
 end
