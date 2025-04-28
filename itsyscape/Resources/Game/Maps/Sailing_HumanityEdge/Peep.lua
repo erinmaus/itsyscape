@@ -19,10 +19,12 @@ local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Probe = require "ItsyScape.Peep.Probe"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
-local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
+local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
 local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local TutorialCommon = require "Resources.Game.Peeps.Tutorial.Common"
 
@@ -587,21 +589,40 @@ function Island:prepareTutorial(playerPeep, arguments)
 		self:pushPoke("finishPreparingTutorial", playerPeep)
 	end
 
-	local ship, layer = Utility.spawnMapAtPosition(self, "Test_Ship", 192, 0, 0, {
+	local pirateShip = Utility.spawnMapAtPosition(self, "Test_Ship", 192, 0, 0, {
 		isInstancedToPlayer = true,
 		player = Utility.Peep.getPlayerModel(playerPeep)
 	})
 
-	ship:listen("finalize", function()
-		ship:getBehavior("ShipMovement").rotation = Quaternion.IDENTITY:slerp(-Quaternion.Y_90, 0.3)
+	local yendorianShip = Utility.spawnMapAtPosition(self, "Test_Ship", 128, 0, -16, {
+		isInstancedToPlayer = true,
+		player = Utility.Peep.getPlayerModel(playerPeep)
+	})
+
+	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_YendorianShip")
+
+	pirateShip:listen("finalize", function()
+		pirateShip:getBehavior(ShipMovementBehavior).rotation = Quaternion.IDENTITY:slerp(-Quaternion.Y_90, 0.3):getNormal()
 	end)
 
-	Utility.Peep.setLayer(ship, self:getLayer())
+	yendorianShip:listen("finalize", function()
+		local _, offset = yendorianShip:addBehavior(MapOffsetBehavior)
+		offset.rotation = offset.rotation * Quaternion.fromEulerXYZ(-math.pi / 4, math.pi / 8, -math.pi / 6)
+		offset.offset = offset.offset + Vector(0, -4, 0)
+	end)
+
+	Utility.Peep.setLayer(pirateShip, self:getLayer())
+	Utility.Peep.setLayer(yendorianShip, self:getLayer())
 
 	local deadPrincess = Sailing.Ship.getNPCCustomizations(
 		self:getDirector():getGameInstance(),
 		"NPC_BlackTentacles_DeadPrincess")
-	ship:pushPoke("customize", deadPrincess)
+	pirateShip:pushPoke("customize", deadPrincess)
+
+	local yendorian = Sailing.Ship.getNPCCustomizations(
+		self:getDirector():getGameInstance(),
+		"NPC_Yendorian")
+	yendorianShip:pushPoke("customize", yendorian)
 end
 
 function Island:onPlayerEnter(player, arguments)

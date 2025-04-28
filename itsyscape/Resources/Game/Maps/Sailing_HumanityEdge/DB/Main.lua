@@ -112,6 +112,66 @@ do
 	}
 end
 
+M["YendorianShipFire1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 128,
+		PositionY = 0,
+		PositionZ = -16,
+		ScaleX = 48,
+		ScaleY = 48,
+		ScaleZ = 48,
+		Name = "YendorianShipFire1",
+		Map = M._MAP,
+		Resource = M["YendorianShipFire1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
+		MapObject = M["YendorianShipFire1"]
+	}
+end
+
+M["YendorianShipFire2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 112,
+		PositionY = 0,
+		PositionZ = -18,
+		ScaleX = 24,
+		ScaleY = 24,
+		ScaleZ = 24,
+		Name = "YendorianShipFire2",
+		Map = M._MAP,
+		Resource = M["YendorianShipFire2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
+		MapObject = M["YendorianShipFire2"]
+	}
+end
+
+M["YendorianShipFire3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 144,
+		PositionY = 0,
+		PositionZ = -14,
+		ScaleX = 28,
+		ScaleY = 28,
+		ScaleZ = 28,
+		Name = "YendorianShipFire3",
+		Map = M._MAP,
+		Resource = M["YendorianShipFire3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
+		MapObject = M["YendorianShipFire3"]
+	}
+end
+
 M["Fireflies"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -737,6 +797,12 @@ do
 		Resource = M["Battle_ShipPirate1"]
 	}
 
+	ItsyScape.Meta.PeepMashinaState {
+		State = "gun-player-cutscene",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Gunner_Phase4Logic.lua",
+		Resource = M["Battle_ShipPirate1"]
+	}
+
 	M["Battle_ShipPirate1"] {
 		ItsyScape.Action.InvisibleAttack()
 	}
@@ -773,16 +839,39 @@ do
 	}
 end
 
-M["Anchor_Dolly_KeelhaulerSpawn_Start"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Cutscene_Ships"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 159,
-		PositionY = 7,
-		PositionZ = 55,
-		Direction = 1,
-		Name = "Anchor_Dolly_KeelhaulerSpawn_Start",
+		PositionX = 192,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Anchor_Cutscene_Ships",
 		Map = M._MAP,
-		Resource = M["Anchor_Dolly_KeelhaulerSpawn_Start"]
+		Resource = M["Anchor_Cutscene_Ships"]
+	}
+end
+
+M["Anchor_Cutscene_Peak1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 157,
+		PositionY = 24,
+		PositionZ = 57,
+		Name = "Anchor_Cutscene_Peak1",
+		Map = M._MAP,
+		Resource = M["Anchor_Cutscene_Peak1"]
+	}
+end
+
+M["Anchor_Cutscene_Peak2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 131,
+		PositionY = 24,
+		PositionZ = 69,
+		Name = "Anchor_Cutscene_Peak2",
+		Map = M._MAP,
+		Resource = M["Anchor_Cutscene_Peak2"]
 	}
 end
 
@@ -1452,6 +1541,21 @@ do
 		State = "attack",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AttackLogic.lua",
 		Resource = M["Yenderhound1"]
+	}
+end
+
+
+
+M["Anchor_Dolly_KeelhaulerSpawn_Start"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 159,
+		PositionY = 7,
+		PositionZ = 55,
+		Direction = 1,
+		Name = "Anchor_Dolly_KeelhaulerSpawn_Start",
+		Map = M._MAP,
+		Resource = M["Anchor_Dolly_KeelhaulerSpawn_Start"]
 	}
 end
 

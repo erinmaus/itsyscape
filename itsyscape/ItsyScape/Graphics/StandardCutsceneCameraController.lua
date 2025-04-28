@@ -14,7 +14,9 @@ local CameraController = require "ItsyScape.Graphics.CameraController"
 
 local StandardCutsceneCameraController = Class(CameraController)
 StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION = -math.pi / 6
-StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION = -math.pi / 2
+StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION_OFFSET = 0
+StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION = 0
+StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION_OFFSET = -math.pi / 2
 StandardCutsceneCameraController.ZOOM = 20
 StandardCutsceneCameraController.TRANSLATION = Vector.ZERO
 
@@ -250,8 +252,8 @@ function StandardCutsceneCameraController:draw()
 	end
 
 	self:getCamera():setDistance(self.currentZoom)
-	self:getCamera():setHorizontalRotation(self.currentHorizontalRotation)
-	self:getCamera():setVerticalRotation(self.currentVerticalRotation)
+	self:getCamera():setHorizontalRotation(self.currentHorizontalRotation StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION_OFFSET)
+	self:getCamera():setVerticalRotation(self.currentVerticalRotation + StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION_OFFSET)
 	self:getCamera():setPosition(self:getTargetPosition() + self.currentTranslation + shake)
 
 	if self.mapRotationSticky and self.mapRotationSticky > 0 then

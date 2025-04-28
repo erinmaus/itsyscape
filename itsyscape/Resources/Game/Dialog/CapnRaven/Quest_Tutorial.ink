@@ -55,6 +55,20 @@ I seen 'er flag ship just to the south. Whatever yer up to out here, don't care.
 
 -> DONE
 
+= reach_peak
+
+# speaker={C_CAPN_RAVEN}
+Oi! Some landlubbers! Take 'em out, boys!
+
+-> DONE
+
+= fire_cannon
+
+# speaker=X_Pirate
+AYE, AYE, CAP'N!
+
+-> DONE
+
 == quest_tutorial_summon_keelhauler ==
 
 # speaker={C_CAPN_RAVEN}

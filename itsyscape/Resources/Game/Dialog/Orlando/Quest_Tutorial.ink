@@ -1527,6 +1527,13 @@ TBD REACHED PEAK
 
 -> DONE
 
+= found_pirates
+
+# speaker={C_ORLANDO}
+TBD DIALOG HERE (FOUND PIRATES)
+
+-> DONE
+
 == quest_tutorial_fight_keelhauler ==
 
 # speaker={C_ORLANDO}

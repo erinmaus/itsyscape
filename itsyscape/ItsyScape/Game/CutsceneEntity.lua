@@ -359,6 +359,60 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 	end
 end
 
+function CutsceneEntity:curvePositions(anchors, duration, tween)
+	return function()
+		tween = Tween[tween or 'linear'] or Tween.linear
+
+		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+		local anchorPositions = {}
+
+		for i = 1, #anchors do
+			table.insert(anchorPositions, Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchors[i])))
+		end
+
+		local curves
+		do
+			local currentPosition = Utility.Peep.getPosition(self.peep)
+
+			local x = { currentPosition.x, 0 }
+			local y = { currentPosition.y, 0 }
+			local z = { currentPosition.z, 0 }
+
+			for i = 1, #anchorPositions do
+				table.insert(x, anchorPositions[i].x)
+				table.insert(x, 0)
+
+				table.insert(y, anchorPositions[i].y)
+				table.insert(y, 0)
+
+				table.insert(z, anchorPositions[i].z)
+				table.insert(z, 0)
+			end
+
+			curves = {
+				love.math.newBezierCurve(unpack(x)),
+				love.math.newBezierCurve(unpack(y)),
+				love.math.newBezierCurve(unpack(z))
+			}
+		end
+
+		local currentTime
+		repeat
+			currentTime = (currentTime or 0) + self.game:getDelta()
+			local mu = math.clamp(currentTime / duration)
+			local delta = math.clamp(tween(mu))
+
+			local x = curve[1]:evaluate(delta)
+			local y = curve[2]:evaluate(delta)
+			local z = curve[3]:evaluate(delta)
+
+			Utility.Peep.setPosition(self.peep, Vector(x, y, z))
+
+			coroutine.yield()
+		until currentTime > duration
+	end
+end
+
 function CutsceneEntity:lerpScale(anchor, duration, tween)
 	return function()
 		local E = 0.1
@@ -571,9 +625,9 @@ function CutsceneEntity:poke(...)
 	end
 end
 
-function CutsceneEntity:dialog(name, target)
+function CutsceneEntity:dialog(name, target, overrideEntryPoint)
 	return function()
-		Utility.Peep.dialog(self.peep, name, target and target:getPeep())
+		Utility.Peep.dialog(self.peep, name, target and target:getPeep(), overrideEntryPoint)
 
 		while Utility.UI.isOpen(self.peep, "DialogBox") do
 			coroutine.yield()

@@ -1622,6 +1622,7 @@ include "Resources/Game/DB/Sailing/RandomEvents.lua"
 include "Resources/Game/DB/Sailing/NPC.lua"
 include "Resources/Game/DB/Sailing/Ships/Exquisitor.lua"
 include "Resources/Game/DB/Sailing/Ships/DeadPrincess.lua"
+include "Resources/Game/DB/Sailing/Ships/Yendorian.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
