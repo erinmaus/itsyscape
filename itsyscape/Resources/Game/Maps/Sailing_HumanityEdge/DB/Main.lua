@@ -1705,3 +1705,13 @@ do
 		Resource = M["CameraDolly"]
 	}
 end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_HumanityEdge_FoundYenderhounds"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CameraDolly",
+		Cutscene = Cutscene,
+		Resource = M["CameraDolly"]
+	}
+end

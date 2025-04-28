@@ -72,6 +72,7 @@ namespace nbunny
 		Camera get_skybox_camera(SceneNode& skybox_scene_node);
 
 		bool should_clear = false;
+		bool is_child_renderer = false;
 
 	public:
 		Renderer(int reference);
@@ -86,6 +87,9 @@ namespace nbunny
 
 		void set_clear_color(const glm::vec4& color);
 		const glm::vec4& get_clear_color() const;
+
+		void set_is_child_renderer(bool value);
+		bool get_is_child_renderer() const;
 
 		void set_camera(Camera& camera);
 		Camera& get_camera();

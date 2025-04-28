@@ -241,4 +241,12 @@ function Renderer:getTime()
 	return love.timer.getTime() - self._time
 end
 
+function Renderer:setIsChildRenderer(value)
+	return self._renderer:setIsChildRenderer(value or false)
+end
+
+function Renderer:getIsChildRenderer()
+	return self._renderer:getIsChildRenderer()
+end
+
 return Renderer

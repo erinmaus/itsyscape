@@ -104,7 +104,8 @@ Okay...
 == quest_tutorial_main ==
 
 # speaker={C_PLAYER}
-~ temp in_fishing_area = player_is_in_passage("Passage_FishingArea") 
+~ temp did_kill_yenderhounds = player_did_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds")
+~ temp in_fishing_area = player_is_in_passage("Passage_FishingArea") && did_kill_yenderhounds
 ~ temp did_duel = player_did_quest_step("Tutorial", "Tutorial_Combat")
 * {in_fishing_area} [(Ask about fishing).] %person(Ser Orlando), I have a question about fishing...
   -> quest_tutorial_main_fish

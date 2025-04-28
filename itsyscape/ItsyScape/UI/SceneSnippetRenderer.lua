@@ -32,6 +32,7 @@ function SceneSnippetRenderer:add(widget)
 	local renderer = Renderer()
 	renderer:setClearColor(Color(0, 0, 0, 0))
 	renderer:setCullEnabled(false)
+	renderer:setIsChildRenderer(true)
 
 	local outlinePostProcessPass = OutlinePostProcessPass(renderer)
 	outlinePostProcessPass:load(self.gameView:getResourceManager())
@@ -103,7 +104,7 @@ function SceneSnippetRenderer:draw(widget)
 			love.graphics.push('all')
 			love.graphics.setScissor()
 			renderer:setCamera(camera)
-			renderer:draw(widget:getRoot(), _APP:getPreviousFrameDelta(), w, h, self.outlinePostProcessPasses[widget])
+			renderer:draw(widget:getRoot(), _APP:getFrameDelta(), w, h, self.outlinePostProcessPasses[widget])
 			love.graphics.pop()
 
 			if oldParent then

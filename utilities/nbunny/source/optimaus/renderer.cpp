@@ -98,6 +98,16 @@ const glm::vec4& nbunny::Renderer::get_clear_color() const
 	return clear_color;
 }
 
+void nbunny::Renderer::set_is_child_renderer(bool value)
+{
+	is_child_renderer = value;
+}
+
+bool nbunny::Renderer::get_is_child_renderer() const
+{
+	return is_child_renderer;
+}
+
 void nbunny::Renderer::set_camera(Camera& camera)
 {
 	this->camera = &camera;
@@ -179,23 +189,26 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	all_scene_nodes.clear();
 	SceneNode::collect(node, all_scene_nodes);
 
-	for (auto pending_scene_node: all_scene_nodes)
+	if (!is_child_renderer)
 	{
-		if (pending_scene_node->get_type() == LuaSceneNode::type_pointer)
+		for (auto pending_scene_node: all_scene_nodes)
 		{
-			if (pending_scene_node->get_reference(L))
+			if (pending_scene_node->get_type() == LuaSceneNode::type_pointer)
 			{
-				lua_getfield(L, -1, "frame");
-				lua_pushvalue(L, -2);
-				lua_pushnumber(L, delta);
-				lua_call(L, 2, 0);
-			}
+				if (pending_scene_node->get_reference(L))
+				{
+					lua_getfield(L, -1, "frame");
+					lua_pushvalue(L, -2);
+					lua_pushnumber(L, delta);
+					lua_call(L, 2, 0);
+				}
 
-			lua_pop(L, 1);
-		}
-		else
-		{
-			pending_scene_node->frame(delta);
+				lua_pop(L, 1);
+			}
+			else
+			{
+				pending_scene_node->frame(delta);
+			}
 		}
 	}
 
@@ -483,6 +496,22 @@ static int nbunny_renderer_get_clear_color(lua_State* L)
 	return 4;
 }
 
+static int nbunny_renderer_set_is_child_renderer(lua_State* L)
+{
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
+	bool value = lua_toboolean(L, 2);
+	renderer->set_is_child_renderer(value);
+	return 0;
+}
+
+static int nbunny_renderer_get_is_child_renderer(lua_State* L)
+{
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
+	lua_pushboolean(L, renderer->get_is_child_renderer());
+
+	return 1;
+}
+
 static int nbunny_renderer_add_renderer_pass(lua_State* L)
 {
 	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
@@ -556,6 +585,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_renderer(lua_State* L)
 		{ "addRendererPass", &nbunny_renderer_add_renderer_pass },
 		{ "setClearColor", &nbunny_renderer_set_clear_color },
 		{ "getClearColor", &nbunny_renderer_get_clear_color },
+		{ "setIsChildRenderer", &nbunny_renderer_set_is_child_renderer },
+		{ "getIsChildRenderer", &nbunny_renderer_get_is_child_renderer },
 		{ "setCamera", &nbunny_renderer_set_camera },
 		{ "getCamera", &nbunny_renderer_get_camera },
 		{ "getCurrentShader", &nbunny_renderer_get_current_shader },

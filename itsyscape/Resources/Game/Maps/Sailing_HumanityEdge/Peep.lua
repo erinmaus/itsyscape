@@ -201,6 +201,20 @@ function Island:onPlayFoundScoutCutscene(playerPeep)
 	end)
 end
 
+function Island:onPlayFoundYenderhoundsCutscene(playerPeep)
+	Utility.Peep.disable(playerPeep)
+	Utility.UI.closeAll(playerPeep)
+
+	local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_FoundYenderhounds", "StandardCutscene", playerPeep)
+	cutscene:listen("done", self.onFinishCutscene, self, playerPeep, function()
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.enable(playerPeep)
+			self:saveTutorialLocation(playerPeep, "Anchor_EncounterYenderhounds")
+		end, "quest_tutorial_main_find_yenderhounds.spotted")
+	end)
+end
+
 function Island:onPlayFlareCutscene(playerPeep)
 	Utility.UI.closeAll(playerPeep)
 
@@ -752,11 +766,7 @@ function Island:updateTutorialFindYenderhoundsStep(playerPeep)
 	if Utility.Peep.isInPassage(playerPeep, "Passage_Yenderhounds") then
 		self:transitionTutorial(playerPeep, "Tutorial_FoundYenderhounds")
 
-		Utility.Peep.disable(playerPeep)
-		self:talkToPeep(playerPeep, "Orlando", function()
-			Utility.Peep.enable(playerPeep)
-			self:saveTutorialLocation(playerPeep, "Anchor_EncounterYenderhounds")
-		end, "quest_tutorial_main_find_yenderhounds.spotted")
+		self:poke("playFoundYenderhoundsCutscene", playerPeep)
 	end
 end
 
