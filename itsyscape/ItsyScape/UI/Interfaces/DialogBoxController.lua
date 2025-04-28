@@ -135,6 +135,7 @@ function DialogBoxController:new(peep, director, action, target, overrideEntryPo
 	self.needsPump = true
 
 	self.onClose = Callback()
+	self.isClosing = false
 end
 
 function DialogBoxController:getStorage()
@@ -334,6 +335,11 @@ function DialogBoxController:pull()
 end
 
 function DialogBoxController:close()
+	if self.isClosing then
+		return
+	end
+	self.isClosing = true
+
 	self:onClose()
 
 	if self.target then

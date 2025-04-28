@@ -36,17 +36,9 @@ local Intro = Mashina.Step {
 			target = CommonLogic.PLAYER,
 			cannon = CANNON
 		},
-	}
+	},
 
 	Mashina.Repeat {
-		Mashina.Success {
-			Mashina.Sailing.AimCannon {
-				target = TARGET,
-				cannon = CANNON,
-				steady = true
-			}
-		},
-
 		Mashina.Invert {
 			Mashina.Peep.TimeOut {
 				duration = 2
@@ -54,7 +46,7 @@ local Intro = Mashina.Step {
 		}
 	},
 
-	Mashina.Peep.FireCannon {
+	Mashina.Sailing.FireCannon {
 		cannon = CANNON
 	},
 

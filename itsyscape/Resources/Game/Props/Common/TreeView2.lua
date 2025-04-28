@@ -204,7 +204,7 @@ function TreeView:_updateNodeUniforms(node)
 	material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
 	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 	material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", 0.25)
-	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 2.0, 2.0, 2.0, 2.0)
+	material:send(material.UNIFORM_FLOAT, "scape_WallHackWindow", 4.0, 4.0, 4.0, 4.0)
 	material:send(material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
 end
 

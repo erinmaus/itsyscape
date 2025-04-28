@@ -128,8 +128,8 @@ function FireCannon:update(mashina, state, executor)
 		end
 	end
 
-	local deltaY = yError / 16
-	local deltaX = xError / 16
+	local deltaY = yError / 32
+	local deltaX = xError / 32
 
 	local targetX, targetY
 

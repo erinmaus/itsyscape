@@ -304,11 +304,9 @@ function EndlessWater:updateShips(delta)
 				scale = scale * (adjustedSize / realSize)
 
 				worldTransform:reset()
-				--worldTransform:translate(origin:get())
 				worldTransform:translate((position + origin):get())
 				worldTransform:scale(scale:get())
 				worldTransform:applyQuaternion(rotation:get())
-				--worldTransform:translate((-origin):get())
 
 				self.shaderCache:bindShader(
 					self.shipShader,
@@ -334,7 +332,6 @@ function EndlessWater:update(delta)
 	local z = (j + 0.5) * (EndlessWater.SIZE * EndlessWater.CELL_SIZE)
 
 	self.waterParent:getTransform():setLocalTranslation(Vector(position.x, 0, position.z))
-	self.waterParent:tick(1)
 
 	self:updateShips(delta)
 end

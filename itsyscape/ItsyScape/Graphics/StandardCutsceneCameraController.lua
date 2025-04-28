@@ -252,7 +252,7 @@ function StandardCutsceneCameraController:draw()
 	end
 
 	self:getCamera():setDistance(self.currentZoom)
-	self:getCamera():setHorizontalRotation(self.currentHorizontalRotation StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION_OFFSET)
+	self:getCamera():setHorizontalRotation(self.currentHorizontalRotation + StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION_OFFSET)
 	self:getCamera():setVerticalRotation(self.currentVerticalRotation + StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION_OFFSET)
 	self:getCamera():setPosition(self:getTargetPosition() + self.currentTranslation + shake)
 

@@ -799,7 +799,7 @@ do
 
 	ItsyScape.Meta.PeepMashinaState {
 		State = "gun-player-cutscene",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Gunner_Phase4Logic.lua",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Gunner_CutsceneLogic.lua",
 		Resource = M["Battle_ShipPirate1"]
 	}
 
@@ -839,24 +839,36 @@ do
 	}
 end
 
-M["Anchor_Cutscene_Ships"] = ItsyScape.Resource.MapObject.Unique()
+M["Anchor_Cutscene_Ships1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 192,
+		PositionX = 188,
 		PositionY = 0,
-		PositionZ = 0,
-		Name = "Anchor_Cutscene_Ships",
+		PositionZ = 16,
+		Name = "Anchor_Cutscene_Ships1",
 		Map = M._MAP,
-		Resource = M["Anchor_Cutscene_Ships"]
+		Resource = M["Anchor_Cutscene_Ships1"]
+	}
+end
+
+M["Anchor_Cutscene_Ships2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 128,
+		PositionY = 0,
+		PositionZ = 8,
+		Name = "Anchor_Cutscene_Ships2",
+		Map = M._MAP,
+		Resource = M["Anchor_Cutscene_Ships2"]
 	}
 end
 
 M["Anchor_Cutscene_Peak1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 157,
-		PositionY = 24,
-		PositionZ = 57,
+		PositionX = 131,
+		PositionY = 36,
+		PositionZ = 79,
 		Name = "Anchor_Cutscene_Peak1",
 		Map = M._MAP,
 		Resource = M["Anchor_Cutscene_Peak1"]
@@ -866,12 +878,24 @@ end
 M["Anchor_Cutscene_Peak2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 131,
-		PositionY = 24,
-		PositionZ = 69,
+		PositionX = 157,
+		PositionY = 48,
+		PositionZ = 57,
 		Name = "Anchor_Cutscene_Peak2",
 		Map = M._MAP,
 		Resource = M["Anchor_Cutscene_Peak2"]
+	}
+end
+
+M["Anchor_Cutscene_Peak3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 171,
+		PositionY = 3,
+		PositionZ = 35,
+		Name = "Anchor_Cutscene_Peak3",
+		Map = M._MAP,
+		Resource = M["Anchor_Cutscene_Peak3"]
 	}
 end
 
@@ -1817,5 +1841,57 @@ do
 		Name = "CameraDolly",
 		Cutscene = Cutscene,
 		Resource = M["CameraDolly"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_HumanityEdge_Peak"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CameraDolly",
+		Cutscene = Cutscene,
+		Resource = M["CameraDolly"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CapnRaven",
+		Cutscene = Cutscene,
+		Resource = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Orlando",
+		Cutscene = Cutscene,
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "KnightCommander",
+		Cutscene = Cutscene,
+		Resource = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Yendorian1",
+		Cutscene = Cutscene,
+		Resource = M["Battle1_Yendorian"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Yendorian2",
+		Cutscene = Cutscene,
+		Resource = M["Battle2_Yendorian"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Yendorian3",
+		Cutscene = Cutscene,
+		Resource = M["Battle3_Yendorian"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Pirate1",
+		Cutscene = Cutscene,
+		Resource = M["Battle_ShipPirate1"]
 	}
 end

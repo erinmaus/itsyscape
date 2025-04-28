@@ -258,16 +258,20 @@ function CutsceneEntity:teleport(anchor)
 	return function()
 		local mapResource = Utility.Peep.getMapResource(self.peep)
 
-		local anchorPosition
+		local anchorPosition, layer
 		if Class.isCompatibleType(anchor, Vector) then
 			anchorPosition = anchor
 		elseif Class.isCompatibleType(anchor, CutsceneEntity) then
 			anchorPosition = Utility.Peep.getPosition(anchor:getPeep())
+			layer = Utility.Peep.getLayer(anchor:getPeep())
 		else
 			anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 		end
 
 		Utility.Peep.setPosition(self.peep, anchorPosition)
+		if layer then
+			Utility.Peep.setLayer(self.peep, layer)
+		end
 	end
 end
 
@@ -402,9 +406,9 @@ function CutsceneEntity:curvePositions(anchors, duration, tween)
 			local mu = math.clamp(currentTime / duration)
 			local delta = math.clamp(tween(mu))
 
-			local x = curve[1]:evaluate(delta)
-			local y = curve[2]:evaluate(delta)
-			local z = curve[3]:evaluate(delta)
+			local x = curves[1]:evaluate(delta)
+			local y = curves[2]:evaluate(delta)
+			local z = curves[3]:evaluate(delta)
 
 			Utility.Peep.setPosition(self.peep, Vector(x, y, z))
 
@@ -511,7 +515,7 @@ function CutsceneEntity:stopAnimation(slot)
 	return function()
 		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
-			actor.actor:playAnimation(slot)
+			actor.actor:stopAnimation(slot)
 		end
 	end
 end

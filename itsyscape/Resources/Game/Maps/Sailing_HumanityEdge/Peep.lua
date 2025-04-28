@@ -203,20 +203,6 @@ function Island:onPlayFoundScoutCutscene(playerPeep)
 	end)
 end
 
-function Island:onPlayFoundYenderhoundsCutscene(playerPeep)
-	Utility.Peep.disable(playerPeep)
-	Utility.UI.closeAll(playerPeep)
-
-	local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_FoundYenderhounds", "StandardCutscene", playerPeep)
-	cutscene:listen("done", self.onFinishCutscene, self, playerPeep, function()
-		Utility.Peep.disable(playerPeep)
-		self:talkToPeep(playerPeep, "Orlando", function()
-			Utility.Peep.enable(playerPeep)
-			self:saveTutorialLocation(playerPeep, "Anchor_EncounterYenderhounds")
-		end, "quest_tutorial_main_find_yenderhounds.spotted")
-	end)
-end
-
 function Island:onPlayFlareCutscene(playerPeep)
 	Utility.UI.closeAll(playerPeep)
 
@@ -232,6 +218,36 @@ function Island:onPlayFlareCutscene(playerPeep)
 	end)
 end
 
+function Island:onPlayFoundYenderhoundsCutscene(playerPeep)
+	Utility.Peep.disable(playerPeep)
+	Utility.UI.closeAll(playerPeep)
+
+	local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_FoundYenderhounds", "StandardCutscene", playerPeep)
+	cutscene:listen("done", self.onFinishCutscene, self, playerPeep, function()
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.enable(playerPeep)
+			self:transitionTutorial(playerPeep, "Tutorial_FoundYenderhounds")
+			self:transitionTutorial(playerPeep, "Anchor_EncounterYenderhounds")
+		end, "quest_tutorial_reached_peak")
+	end)
+end
+
+function Island:onPlayFoundPiratesCutscene(playerPeep)
+	Utility.Peep.disable(playerPeep)
+	self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
+		Utility.UI.closeAll(playerPeep)
+
+		local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_Peak", "StandardCutscene", playerPeep)
+		cutscene:listen("done", self.onFinishCutscene, self, playerPeep, function()
+			Utility.Peep.enable(playerPeep)
+
+			self:transitionTutorial(playerPeep, "Tutorial_FoundYendorians")
+			self:saveTutorialLocation(playerPeep, "Anchor_VsPirates")
+		end, "quest_tutorial_main_scout_argument")
+	end)
+end
+
 function Island:onPlaySummonKeelhaulerCutscene(playerPeep)
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:playMusic(self:getLayer(), "main", "BossFight1")
@@ -241,7 +257,7 @@ function Island:onPlaySummonKeelhaulerCutscene(playerPeep)
 
 	self:doTalkToPeep(playerPeep, "CapnRaven", function()
 		local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_SummonKeelhauler", "StandardCutscene", playerPeep)
-		cutscene:listen("done", self.onFinishCutscene, self, playerPeep)
+		cutscene:listen("done", self.onFinishCutscene, self, playerPeep, nil)
 	end, "quest_tutorial_summon_keelhauler")
 end
 
@@ -891,12 +907,7 @@ function Island:updateTutorialFindYendoriansStep(playerPeep)
 	if Utility.Peep.isInPassage(playerPeep, "Passage_Peak") and
 	   Utility.Peep.isEnabled(playerPeep)
 	then
-		Utility.Peep.disable(playerPeep)
-
-		self:talkToPeep(playerPeep, "Orlando", function()
-			Utility.Peep.enable(playerPeep)
-			self:transitionTutorial(playerPeep, "Tutorial_FoundYendorians")
-		end, "quest_tutorial_reached_peak")
+		self:poke("playFoundPiratesCutscene", playerPeep)
 	end
 end
 
