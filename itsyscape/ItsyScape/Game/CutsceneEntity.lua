@@ -257,7 +257,16 @@ end
 function CutsceneEntity:teleport(anchor)
 	return function()
 		local mapResource = Utility.Peep.getMapResource(self.peep)
-		local anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+
+		local anchorPosition
+		if Class.isCompatibleType(anchor, Vector) then
+			anchorPosition = anchor
+		elseif Class.isCompatibleType(anchor, CutsceneEntity) then
+			anchorPosition = Utility.Peep.getPosition(anchor:getPeep())
+		else
+			anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+		end
+
 		Utility.Peep.setPosition(self.peep, anchorPosition)
 	end
 end
@@ -301,22 +310,26 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 		local mapResource = Utility.Peep.getMapResource(self.peep)
 		local anchorPosition
 		if Class.isCompatibleType(anchor, Vector) then
-			anchorPosition = anchor
+			anchorPosition = anchor + Utility.Peep.getPosition(self.peep)
+		elseif Class.isCompatibleType(anchor, CutsceneEntity) then
+			anchorPosition = Utility.Peep.getPosition(anchor:getPeep())
 		else
-			anchorPosition = Vector(
-				Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+			anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 		end
-
-		local movement = self.peep:getBehavior(MovementBehavior)
-		local previousNoClipValue = movement.noClip
-		movement.noClip = true
 
 		local peepPosition = Utility.Peep.getPosition(self.peep)
 
-		if anchorPosition.x < peepPosition.x then
-			movement.facing = MovementBehavior.FACING_LEFT
-		else
-			movement.facing = MovementBehavior.FACING_RIGHT
+		local movement = self.peep:getBehavior(MovementBehavior)
+		local previousNoClipValue
+		if movement then
+			previousNoClipValue = movement.noClip
+			movement.noClip = true
+
+			if anchorPosition.x < peepPosition.x then
+				movement.facing = MovementBehavior.FACING_LEFT
+			else
+				movement.facing = MovementBehavior.FACING_RIGHT
+			end
 		end
 
 		local currentTime
@@ -338,7 +351,9 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 				distance = (anchorPosition - newPosition):getLength()
 				coroutine.yield()
 			until distance <= E
+		end
 
+		if movement then
 			movement.noClip = previousNoClipValue
 		end
 	end

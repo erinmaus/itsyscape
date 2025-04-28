@@ -1216,6 +1216,51 @@ do
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_YendorianScout_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["YendorianScout"]
+	}
+end
+
+M["Flare"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Flare",
+		Map = M._MAP,
+		Resource = M["Flare"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Flare",
+		MapObject = M["Flare"]
+	}
+end
+
+M["Anchor_Flare"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 5,
+		PositionZ = 163,
+		Name = "Anchor_Flare",
+		Map = M._MAP,
+		Resource = M["Anchor_Flare"]
+	}
+end
+
+M["Anchor_FlareHidden"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = -1000,
+		PositionY = -1000,
+		PositionZ = -1000,
+		Name = "Anchor_FlareHidden",
+		Map = M._MAP,
+		Resource = M["Anchor_FlareHidden"]
+	}
 end
 
 M["Passage_Scout"] = ItsyScape.Resource.MapObject.Unique()
@@ -1614,6 +1659,44 @@ do
 		Name = "CapnRaven",
 		Cutscene = Cutscene,
 		Resource = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CameraDolly",
+		Cutscene = Cutscene,
+		Resource = M["CameraDolly"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_HumanityEdge_Flare"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Scout",
+		Cutscene = Cutscene,
+		Resource = M["YendorianScout"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Flare",
+		Cutscene = Cutscene,
+		Resource = M["Flare"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CameraDolly",
+		Cutscene = Cutscene,
+		Resource = M["CameraDolly"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_HumanityEdge_FoundScout"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Scout",
+		Cutscene = Cutscene,
+		Resource = M["YendorianScout"]
 	}
 
 	ItsyScape.Meta.CutsceneMapObject {

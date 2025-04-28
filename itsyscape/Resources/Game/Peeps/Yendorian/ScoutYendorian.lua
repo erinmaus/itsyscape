@@ -30,14 +30,14 @@ function ScoutYendorian:ready(director, game)
 		self,
 		Equipment.PLAYER_SLOT_TWO_HANDED,
 		Equipment.SKIN_PRIORITY_EQUIPMENT,
-		"Yendorian/Weapon_Swordfish.lua")
+		"Yendorian/Weapon_Flare.lua")
 
 	Utility.Peep.Creep.addAnimation(
 		self,
 		"animation-attack",
-		"Yendorian_Attack_Swordfish")
+		"Yendorian_Attack_Flare")
 
-	Utility.Peep.equipXWeapon(self, "YendorianSwordfish")
+	Utility.Peep.equipXWeapon(self, "YendorianFlare")
 end
 
 function ScoutYendorian:update(director, game)

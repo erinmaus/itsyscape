@@ -526,7 +526,7 @@ function CombatCortex:_givePeepZeal(peep, target)
 			attack = rollInfo.damageAttackPoke,
 			zeal = zeal
 		}))
-	elseif currentStanceInfo.stance == Weapon.STANCE_AGGRESSIVE and rollInfo.initiateAttack then
+	elseif currentStanceInfo.stance == Weapon.STANCE_AGGRESSIVE and rollInfo.rolledDamage and rollInfo.initiateAttack then
 		local zeal = self:_getDamageZeal(rollInfo.damageDealt, rollInfo.baseHit, Weapon.STANCE_AGGRESSIVE)
 
 		local weapon = self:_getPeepWeapon(peep)

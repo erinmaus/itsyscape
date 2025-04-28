@@ -185,6 +185,37 @@ function Island:onInitScoutTutorial(playerPeep)
 	TutorialCommon.listenForAttack(playerPeep)
 end
 
+function Island:onPlayFoundScoutCutscene(playerPeep)
+	Utility.Peep.disable(playerPeep)
+	Utility.UI.closeAll(playerPeep)
+
+	local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_FoundScout", "StandardCutscene", playerPeep)
+	cutscene:listen("done", self.onFinishCutscene, self, playerPeep, function()
+		self:transitionTutorial(playerPeep, "Tutorial_FoundScout")
+		self:saveTutorialLocation(playerPeep, "Anchor_EncounterYendorianScout")
+
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.enable(playerPeep)
+		end)
+	end)
+end
+
+function Island:onPlayFlareCutscene(playerPeep)
+	Utility.UI.closeAll(playerPeep)
+
+	local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_Flare", "StandardCutscene", playerPeep)
+	cutscene:listen("done", self.onFinishCutscene, self, playerPeep, function()
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
+			Utility.Peep.enable(playerPeep)
+
+			self:transitionTutorial(playerPeep, "Tutorial_DefeatedScout")
+			self:saveTutorialLocation(playerPeep, "Anchor_DefeatYendorianScout")
+		end, "quest_tutorial_main_scout_argument")
+	end)
+end
+
 function Island:onPlaySummonKeelhaulerCutscene(playerPeep)
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:playMusic(self:getLayer(), "main", "BossFight1")
@@ -194,7 +225,7 @@ function Island:onPlaySummonKeelhaulerCutscene(playerPeep)
 
 	self:doTalkToPeep(playerPeep, "CapnRaven", function()
 		local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_SummonKeelhauler", "StandardCutscene", playerPeep)
-		cutscene:listen('done', self.onFinishCutscene, self, playerPeep)
+		cutscene:listen("done", self.onFinishCutscene, self, playerPeep)
 	end, "quest_tutorial_summon_keelhauler")
 end
 
@@ -221,12 +252,16 @@ function Island:onAttackKeelhauler(playerPeep)
 	Utility.Peep.setMashinaState(keelhauler, "attack-phase-2")
 end
 
-function Island:onFinishCutscene(playerPeep)
+function Island:onFinishCutscene(playerPeep, func)
 	Utility.Peep.enable(playerPeep)
 
 	Utility.UI.openGroup(
 		playerPeep,
 		Utility.UI.Groups.WORLD)
+
+	if func then
+		func()
+	end
 end
 
 function Island:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
@@ -689,14 +724,8 @@ function Island:updateTutorialFindScoutStep(playerPeep)
 		end)
 	end
 
-	if Utility.Peep.isInPassage(playerPeep, "Passage_Scout") then
-		self:transitionTutorial(playerPeep, "Tutorial_FoundScout")
-		self:saveTutorialLocation(playerPeep, "Anchor_EncounterYendorianScout")
-
-		Utility.Peep.disable(playerPeep)
-		self:talkToPeep(playerPeep, "Orlando", function()
-			Utility.Peep.enable(playerPeep)
-		end)
+	if Utility.Peep.isInPassage(playerPeep, "Passage_Scout") and Utility.Peep.isEnabled(playerPeep) then
+		self:poke("playFoundScoutCutscene", playerPeep)
 	end
 end
 
@@ -706,15 +735,16 @@ function Island:updateTutorialEncounterScoutStep(playerPeep)
 		Probe.namedMapObject("YendorianScout"),
 		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
 
-	if scout and not Utility.Peep.canAttack(scout) and Utility.Peep.isEnabled(playerPeep) then
+	if scout and not Utility.Peep.canAttack(scout) and Utility.Peep.isEnabled(playerPeep) then		
+		local _, prop = Utility.spawnInstancedMapObjectAtAnchor(self, playerPeep, "Flare", "Anchor_Flare")
+		if not prop then
+			return
+		end
+
 		Utility.Peep.disable(playerPeep)
-
-		self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
-			Utility.Peep.enable(playerPeep)
-
-			self:transitionTutorial(playerPeep, "Tutorial_DefeatedScout")
-			self:saveTutorialLocation(playerPeep, "Anchor_DefeatYendorianScout")
-		end, "quest_tutorial_main_scout_argument")
+		prop:getPeep():listen("finalize", function()
+			self:pushPoke("playFlareCutscene", playerPeep)
+		end)
 	end
 end
 

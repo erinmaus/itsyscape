@@ -5,7 +5,7 @@
 	lights = {
 		{
 			type = 'point',
-			color = { 1, 1, 1 },
+			color = { 0.5, 0.5, 1 },
 			position = { 0, 1, 0 },
 			attenuation = 8
 		}

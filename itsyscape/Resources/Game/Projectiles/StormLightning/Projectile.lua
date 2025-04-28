@@ -118,7 +118,7 @@ end
 
 function Lightning:tick()
 	if not self.spawnPosition then
-		self.hitPosition = self:getTargetPosition(self:getDestination())
+		self.hitPosition = self:getTargetPosition(self:getDestination()):keep()
 
 		local radius = love.math.random() * (Lightning.MAX_SPAWN_RADIUS - Lightning.MIN_SPAWN_RADIUS) + Lightning.MIN_SPAWN_RADIUS
 		local angle = love.math.random() * math.pi * 2

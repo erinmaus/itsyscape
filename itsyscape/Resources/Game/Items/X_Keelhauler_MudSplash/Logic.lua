@@ -46,4 +46,8 @@ function MudSplash:getCooldown(peep)
 	end
 end
 
+function MudSplash:getProjectile()
+	return "Flare"
+end
+
 return MudSplash

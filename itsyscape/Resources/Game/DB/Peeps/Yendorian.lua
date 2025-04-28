@@ -402,13 +402,13 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracySlash = -1000,
+		AccuracyRanged = -1000,
 		DefenseStab = -1000,
 		DefenseSlash = -1000,
 		DefenseCrush = -1000,
 		DefenseMagic = -1000,
 		DefenseRanged = -1000,
-		StrengthMelee = 0,
+		StrengthRanged = 0,
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Scout
 	}

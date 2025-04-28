@@ -365,6 +365,8 @@ function Utility.spawnInstancedMapObjectAtAnchor(peep, playerPeep, mapObject, an
 	end
 
 	local actor, prop = Utility.spawnMapObjectAtAnchor(peep, mapObject, anchor, radius)
+	print("???", actor, prop)
+
 	local playerID = Utility.Peep.getPlayerModel(playerPeep):getID()
 
 	if actor then

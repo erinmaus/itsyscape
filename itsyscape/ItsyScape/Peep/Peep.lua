@@ -180,7 +180,7 @@ function Peep:pushPoke(a, b, ...)
 			callback = a,
 			arguments = { n = select("#", b, ...), b, ... }
 		})
-	elseif Classs.isCallable(a) then
+	elseif Class.isCallable(a) then
 		table.insert(self.pendingPokes, {
 			callback = a,
 			arguments = { n = select("#", b, ...), b, ... }

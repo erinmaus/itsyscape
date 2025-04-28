@@ -95,7 +95,7 @@ end
 
 function Splosion:tick()
 	if not self.spawnPosition then
-		self.spawnPosition = self:getTargetPosition(self:getDestination())
+		self.spawnPosition = self:getTargetPosition(self:getDestination()):keep()
 	end
 end
 

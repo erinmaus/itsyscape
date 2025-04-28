@@ -251,7 +251,7 @@ function StandardCutsceneCameraController:draw()
 
 	self:getCamera():setDistance(self.currentZoom)
 	self:getCamera():setHorizontalRotation(self.currentHorizontalRotation)
-	self:getCamera():setVerticalRotation(self.currentVerticalRotation - math.pi / 2)
+	self:getCamera():setVerticalRotation(self.currentVerticalRotation)
 	self:getCamera():setPosition(self:getTargetPosition() + self.currentTranslation + shake)
 
 	if self.mapRotationSticky and self.mapRotationSticky > 0 then

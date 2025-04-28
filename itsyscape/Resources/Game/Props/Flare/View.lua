@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/Art_Rage_Fire/Fire.lua
+-- Resources/Game/Props/Flare/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -16,24 +16,24 @@ local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local Fire = Class(PropView)
-Fire.MIN_FLICKER_TIME = 10 / 60
-Fire.MAX_FLICKER_TIME = 20 / 60
-Fire.MIN_ATTENUATION = 2
-Fire.MAX_ATTENUATION = 3.5
-Fire.MIN_COLOR_BRIGHTNESS = 0.9
-Fire.MAX_COLOR_BRIGHTNESS = 1.0
-Fire.COLOR = Color(1, 0.5, 0, 1)
-Fire.HEIGHT = 1
+local Flare = Class(PropView)
+Flare.MIN_FLICKER_TIME = 10 / 60
+Flare.MAX_FLICKER_TIME = 20 / 60
+Flare.MIN_ATTENUATION = 5
+Flare.MAX_ATTENUATION = 10
+Flare.MIN_COLOR_BRIGHTNESS = 0.9
+Flare.MAX_COLOR_BRIGHTNESS = 1.0
+Flare.COLOR = Color(1, 0, 0)
+Flare.OFFSET = -0.5
 
-function Fire:new(prop, gameView)
+function Flare:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
 	self.spawned = false
 	self.flickerTime = 0
 end
 
-function Fire:_updateDirection(direction, speed)
+function Flare:_updateDirection(direction, speed)
 	local position, layer = self.prop:getPosition()
 	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
 
@@ -54,67 +54,9 @@ function Fire:_updateDirection(direction, speed)
 	direction.direction[3] = normal.z
 end
 
-function Fire:_getInnerParticleDefinition()
-	self._innerParticleDefinition = self._innerParticleDefinition or {
-		numParticles = 50,
-		texture = "Resources/Game/Props/Common/Particle_Flame.png",
-		columns = 4,
-
-		emitters = {
-			{
-				type = "RadialEmitter",
-				radius = { 0, 0.15 },
-				position = { 0, 0.1, 0 },
-				yRange = { 0, 0 },
-				lifetime = { 1.25, 0.15 }
-			},
-			{
-				type = "DirectionalEmitter",
-				direction = { 0, 1, 0 },
-				speed = { 0.45, 0.45 },
-			},
-			{
-				type = "RandomColorEmitter",
-				colors = self:getInnerColors()
-			},
-			{
-				type = "RandomScaleEmitter",
-				scale = { 0.2 }
-			},
-			{
-				type = "RandomRotationEmitter",
-				rotation = { 0, 360 }
-			}
-		},
-
-		paths = {
-			{
-				type = "FadeInOutPath",
-				fadeInPercent = { 0.2 },
-				fadeOutPercent = { 0.8 },
-				tween = { 'sineEaseOut' }
-			},
-			{
-				type = "TextureIndexPath",
-				textures = { 1, 4 }
-			}
-		},
-
-		emissionStrategy = {
-			type = "RandomDelayEmissionStrategy",
-			count = { 5, 10 },
-			delay = { 1 / 10 }
-		}
-	}
-
-	self:_updateDirection(self._innerParticleDefinition.emitters[2], 0.45)
-
-	return self._innerParticleDefinition
-end
-
-function Fire:_getOuterParticleDefinition()
-	self._outerParticleDefinition = self._outerParticleDefinition or {
-		numParticles = 50,
+function Flare:_getFlareParticleDefinition()
+	self._flareDefinition = self._flareDefinition or {
+		numParticles = 200,
 		texture = "Resources/Game/Props/Common/Particle_Flame.png",
 		columns = 4,
 
@@ -122,22 +64,21 @@ function Fire:_getOuterParticleDefinition()
 			{
 				type = "RadialEmitter",
 				radius = { 0, 0.25 },
-				position = { 0, 0, 0 },
-				yRange = { 0, 0 },
-				lifetime = { 1.5, 0.4 }
-			},
-			{
-				type = "DirectionalEmitter",
-				direction = { 0, 1, 0 },
-				speed = { 0.45, 0.45 },
+				speed = { 1, 1.5 },
+				acceleration = { 0, 0 },
+				position = { 0, 1, 0 }
 			},
 			{
 				type = "RandomColorEmitter",
-				colors = self:getOuterColors()
+				colors = self:getFlareColors()
+			},
+			{
+				type = "RandomLifetimeEmitter",
+				age = { 0.5, 1 }
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.1 }
+				scale = { 0.25, 0.5 }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -148,9 +89,13 @@ function Fire:_getOuterParticleDefinition()
 		paths = {
 			{
 				type = "FadeInOutPath",
-				fadeInPercent = { 0.4 },
-				fadeOutPercent = { 0.6 },
+				fadeInPercent = { 0.05 },
+				fadeOutPercent = { 0.95 },
 				tween = { 'sineEaseOut' }
+			},
+			{
+				type = "GravityPath",
+				gravity = { 0, -5, 0 }
 			},
 			{
 				type = "TextureIndexPath",
@@ -160,19 +105,18 @@ function Fire:_getOuterParticleDefinition()
 
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
-			count = { 5, 10 },
-			delay = { 1 / 10 }
+			count = { 20, 30 },
+			delay = { 1 / 20 },
+			duration = { math.huge }
 		}
 	}
-
-	self:_updateDirection(self._outerParticleDefinition.emitters[2], 0.5)
-
-	return self._outerParticleDefinition
+ 
+	return self._flareDefinition
 end
 
-function Fire:_getSmokeParticleDefinition()
+function Flare:_getSmokeParticleDefinition()
 	self._smokeParticleDefinition = self._smokeParticleDefinition or {
-		numParticles = 25,
+		numParticles = 200,
 		texture = "Resources/Game/Props/Common/Particle_Smoke.png",
 		columns = 4,
 
@@ -182,7 +126,7 @@ function Fire:_getSmokeParticleDefinition()
 				radius = { 0, 0.125 },
 				position = { 0, 1.5, 0 },
 				yRange = { 0, 0 },
-				lifetime = { 0.5, 3 },
+				lifetime = { 4, 1.5 },
 				normal = { true }
 			},
 			{
@@ -208,9 +152,13 @@ function Fire:_getSmokeParticleDefinition()
 		paths = {
 			{
 				type = "FadeInOutPath",
-				fadeInPercent = { 0.2 },
-				fadeOutPercent = { 0.8 },
+				fadeInPercent = { 0.01 },
+				fadeOutPercent = { 0.99 },
 				tween = { 'sineEaseOut' }
+			},
+			{
+				type = "GravityPath",
+				gravity = { 0, -0.5, 0 }
 			},
 			{
 				type = "TextureIndexPath",
@@ -220,20 +168,31 @@ function Fire:_getSmokeParticleDefinition()
 
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
-			count = { 2, 5 },
-			delay = { 1 / 10 }
+			count = { 5, 10 },
+			delay = { 1 / 30 }
 		}
 	}
 
 	self:_updateDirection(self._smokeParticleDefinition.emitters[2], 0.2)
-	self._smokeParticleDefinition.emitters[1].position[1] = self._smokeParticleDefinition.emitters[2].direction[1] * self.HEIGHT
-	self._smokeParticleDefinition.emitters[1].position[2] = self._smokeParticleDefinition.emitters[2].direction[2] * self.HEIGHT
-	self._smokeParticleDefinition.emitters[1].position[3] = self._smokeParticleDefinition.emitters[2].direction[3] * self.HEIGHT
+	self._smokeParticleDefinition.emitters[2].direction[2] = -self._smokeParticleDefinition.emitters[2].direction[2]
+	self._smokeParticleDefinition.emitters[1].position[1] = self._smokeParticleDefinition.emitters[2].direction[1] * self.OFFSET
+	self._smokeParticleDefinition.emitters[1].position[2] = self._smokeParticleDefinition.emitters[2].direction[2] * self.OFFSET
+	self._smokeParticleDefinition.emitters[1].position[3] = self._smokeParticleDefinition.emitters[2].direction[3] * self.OFFSET
 
 	return self._smokeParticleDefinition
 end
 
-function Fire:getSmokeColors()
+function Flare:getFlareColors()
+	return {
+		{ Color.fromHexString("ffcc00", 0):get() },
+		{ Color.fromHexString("ff9000", 0):get() },
+		{ Color.fromHexString("c83737", 0):get() },
+		{ Color.fromHexString("c83737", 0):get() },
+		{ Color.fromHexString("c83737", 0):get() },
+	}
+end
+
+function Flare:getSmokeColors()
 	return {
 		{ 0.2, 0.2, 0.2, 0.0 },
 		{ 0.2, 0.2, 0.2, 0.0 },
@@ -243,42 +202,25 @@ function Fire:getSmokeColors()
 	}
 end
 
-function Fire:getInnerColors()
-	return {
-		{ Color.fromHexString("ffd52a"):get() },
-		{ Color.fromHexString("ffd52a"):get() },
-		{ Color.fromHexString("ffd52a"):get() },
-		{ Color.fromHexString("ffd52a"):get() },
-	}
+function Flare:getIsStatic()
+	return false
 end
 
-function Fire:getOuterColors()
-	return {
-		{ 1, 0.4, 0.0, 0.0 },
-		{ 0.9, 0.4, 0.0, 0.0 },
-		{ 1, 0.5, 0.0, 0.0 },
-		{ 0.9, 0.5, 0.0, 0.0 },
-	}
-end
-
-function Fire:load()
+function Flare:load()
 	PropView.load(self)
 
 	local resources = self:getResources()
 	local root = self:getRoot()
 
 	resources:queueEvent(function()
-		self.outerFlames = ParticleSceneNode()
-		self.outerFlames:initParticleSystemFromDef(self:_getOuterParticleDefinition(), resources)
-		self.outerFlames:setParent(root)
-
-		self.innerFlames = ParticleSceneNode()
-		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
-		self.innerFlames:setParent(root)
+		self.flare = ParticleSceneNode()
+		self.flare:initParticleSystemFromDef(self:_getFlareParticleDefinition(), resources)
+		self.flare:setParent(self:getGameView():getScene())
 
 		self.smoke = ParticleSceneNode()
 		self.smoke:initParticleSystemFromDef(self:_getSmokeParticleDefinition(), resources)
-		self.smoke:setParent(root)
+		self.smoke:setParent(self:getGameView():getScene())
+		self.smoke:getMaterial():getIsFullLit(false)
 
 		self.light = PointLightSceneNode()
 		self.light:getTransform():setLocalTranslation(Vector(0, 0.5, 0.5))
@@ -289,7 +231,17 @@ function Fire:load()
 	end)
 end
 
-function Fire:flicker()
+function Flare:remove()
+	if self.flare then
+		self.flare:setParent(false)
+	end
+
+	if self.smoke then
+		self.smoke:setParent(false)
+	end
+end
+
+function Flare:flicker()
 	if self.light then
 		local flickerWidth = self.MAX_FLICKER_TIME - self.MIN_FLICKER_TIME
 		self.flickerTime = math.random() * flickerWidth + self.MIN_FLICKER_TIME
@@ -297,7 +249,6 @@ function Fire:flicker()
 		local scale = 1.0 + (self:getProp():getScale():getLength() - math.sqrt(3))
 		local attenuationWidth = self.MAX_ATTENUATION - self.MIN_ATTENUATION
 		local attenuation = love.math.random() * attenuationWidth + self.MAX_ATTENUATION
-		attenuation = attenuation * math.max(self:getRoot():getTransform():getLocalScale():getLength() / 5, 1)
 		self.light:setAttenuation(attenuation)
 
 		local brightnessWidth = self.MAX_COLOR_BRIGHTNESS - self.MIN_COLOR_BRIGHTNESS
@@ -307,16 +258,7 @@ function Fire:flicker()
 	end
 end
 
-function Fire:tick()
-	PropView.tick(self)
-
-	local state = self:getProp():getState()
-	if state.duration and state.duration < 0.5 then
-		self.node:getTransform():setLocalScale(Vector(state.duration / 0.5))
-	end
-end
-
-function Fire:update(delta)
+function Flare:update(delta)
 	PropView.update(self, delta)
 
 	self.flickerTime = self.flickerTime - delta
@@ -328,18 +270,18 @@ function Fire:update(delta)
 	if self.spawned then
 		self.time = self.time + delta
 
-		if self.outerFlames then
-			self.outerFlames:initEmittersFromDef(self:_getOuterParticleDefinition().emitters)
-		end
+		local position = Vector.ZERO:transform(self:getRoot():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta()))
 
-		if self.innerFlames then
-			self.innerFlames:initEmittersFromDef(self:_getInnerParticleDefinition().emitters)
+		if self.flare then
+			self.flare:initEmittersFromDef(self:_getFlareParticleDefinition().emitters)
+			self.flare:updateLocalPosition(position)
 		end
 
 		if self.smoke then
 			self.smoke:initEmittersFromDef(self:_getSmokeParticleDefinition().emitters)
+			self.smoke:updateLocalPosition(position)
 		end
 	end
 end
 
-return Fire
+return Flare
