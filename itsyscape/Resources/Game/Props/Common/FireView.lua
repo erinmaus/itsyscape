@@ -75,7 +75,7 @@ function FireView:_getInnerParticleDefinition()
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.15 },
+				radius = { 0, 0.125 },
 				position = { 0, 0.1, 0 },
 				yRange = { 0, 0 },
 				lifetime = { 1.25, 0.15 }
@@ -83,7 +83,7 @@ function FireView:_getInnerParticleDefinition()
 			{
 				type = "DirectionalEmitter",
 				direction = { 0, 1, 0 },
-				speed = { 0.45, 0.45 },
+				speed = { 0.75, 1 },
 			},
 			{
 				type = "RandomColorEmitter",
@@ -91,7 +91,7 @@ function FireView:_getInnerParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.2 }
+				scale = { 0.25 }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -141,7 +141,7 @@ function FireView:_getOuterParticleDefinition()
 			{
 				type = "DirectionalEmitter",
 				direction = { 0, 1, 0 },
-				speed = { 0.45, 0.45 },
+				speed = { 0.75, 1 },
 			},
 			{
 				type = "RandomColorEmitter",
@@ -149,7 +149,7 @@ function FireView:_getOuterParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.1 }
+				scale = { 0.25 }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -192,7 +192,7 @@ function FireView:_getSmokeParticleDefinition()
 			{
 				type = "RadialEmitter",
 				radius = { 0, 0.125 },
-				position = { 0, 1.5, 0 },
+				position = { 0, 2, 0 },
 				yRange = { 0, 0 },
 				lifetime = { 0.5, 3 },
 				normal = { true }
@@ -200,7 +200,7 @@ function FireView:_getSmokeParticleDefinition()
 			{
 				type = "DirectionalEmitter",
 				direction = { 0, 1, 0 },
-				speed = { 0.45, 0.45 },
+				speed = { 0.75, 1 },
 			},
 			{
 				type = "RandomColorEmitter",
@@ -208,7 +208,7 @@ function FireView:_getSmokeParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.2, 0.3 }
+				scale = { 0.4, 0.5 }
 			},
 			{
 				type = "RandomRotationEmitter",

@@ -26,7 +26,7 @@ local Tree = BTreeBuilder.Node() {
 			Mashina.Step {
 				Mashina.Skills.GatherNearbyResource {
 					action = "Chop",
-					resource = "CoconutLogs"
+					resource = "BalsaLogs"
 				},
 
 				Mashina.Peep.Wait,
@@ -37,13 +37,13 @@ local Tree = BTreeBuilder.Node() {
 
 				Mashina.Peep.PokeInventoryItem {
 					action  = "Light",
-					item = "CoconutLogs"
+					item = "BalsaLogs"
 				},
 
 				Mashina.Peep.Wait,
 
 				Mashina.Peep.FindNearbyPeep {
-					filter = Probe.resource("Prop", "CoconutFire"),
+					filter = Probe.resource("Prop", "BalsaFire"),
 					[TARGET_FIRE] = B.Output.result
 				},
 

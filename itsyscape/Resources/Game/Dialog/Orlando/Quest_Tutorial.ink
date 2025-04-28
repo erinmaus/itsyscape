@@ -2,8 +2,9 @@ INCLUDE ./Common.ink
 INCLUDE ../Common/Common.ink
 INCLUDE ../VizierRockKnight/Common.ink
 
-EXTERNAL quest_tutorial_orlando_has_lit_coconut_fire()
-EXTERNAL quest_tutorial_orlando_has_dropped_dummy()
+EXTERNAL quest_tutorial_orlando_has_lit_fire()
+EXTERNAL quest_tutorial_orlando_all_dummies_dead()
+EXTERNAL quest_tutorial_orlando_has_dummies()
 
 VAR quest_tutorial_main_starting_player_class = WEAPON_STYLE_NONE
 
@@ -771,7 +772,7 @@ Sure thing!
 == quest_tutorial_drop_items ==
 
 # speaker={C_ORLANDO}
-...but it your bag is full! Do you need help making room?
+...but your bag is full! Do you need help making room?
 
 # speaker={C_PLAYER}
 * Yes[.], I have no idea what I'm doing!
@@ -818,14 +819,14 @@ Looks like you're low on bait.
 
 = loop
 
-~ temp can_light_fire = player_did_quest_step("Tutorial", "Tutorial_FishedLightningStormfish") && not quest_tutorial_orlando_has_lit_coconut_fire()
+~ temp can_light_fire = player_did_quest_step("Tutorial", "Tutorial_FishedLightningStormfish") && not quest_tutorial_orlando_has_lit_fire()
 
 * [(Ask for help on how to fish.)]
   -> ask_for_help
 * {!can_light_fire} [(Go fishing!)]
   -> go_fishing
 * [(Ask for help dropping items.)] %person(Ser Orlando), I want to clear some junk out of my bag. Can you help me?
-  -> quest_tutorial_drop_items
+  -> quest_tutorial_drop_items.give_drop_item_tutorial
 * {can_light_fire} [(Ask %person(Ser Orlando) to light a fire.)] %person(Ser Orlando), I need a fire to cook on. Can you help me?
   -> light_fire
 
@@ -880,13 +881,13 @@ Sure thing! Lemme get on that.
 
 = loop
 
-~ temp can_place_dummy = not quest_tutorial_orlando_has_dropped_dummy()
+~ temp can_place_dummy = quest_tutorial_orlando_all_dummies_dead()
 
 # speaker={C_PLAYER}
 
 * [(Ask to duel again.)] %person(Ser Orlando), would you like to duel again?
   -> ask_to_duel
-* {!can_place_dummy} [(Ask for practice with the dummy.)] %person(Ser Orlando), can I practice with the dummy?
+* {can_place_dummy} [(Ask for practice with the dummy.)] %person(Ser Orlando), can I practice with the dummy?
   -> ask_to_practice
 
 = ask_to_duel
@@ -921,6 +922,39 @@ Yep! I am!
 
 %empty()
 ~ player_poke_map("prepareDuel")
+
+-> DONE
+
+= ask_to_duel_after_dummy_defeated
+
+# speaker={C_ORLANDO}
+Awesome! So with the dummy knocked out, it's time to... DUEL!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...and here we go.
+
+# speaker={C_PLAYER}
+* Actually... I have something I need to do first.
+  -> pause_duel
+* Let's do this!
+  -> quest_tutorial_duel
+
+= pause_duel
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Are... you... SERIOUS?!
+
+# speaker={C_ORLANDO}
+AHEM.
+
+# speaker={C_ORLANDO}
+(%person(Ser Orlando) gives the %person(Ser Commander) a sharp glare.)
+
+# speaker={C_ORLANDO}
+Go ahead, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}. Just tell me when you wanna duel.
+
+# speaker={C_PLAYER}
+Heard loud and clear!
 
 -> DONE
 
@@ -1035,12 +1069,16 @@ I'll just pretend I didn't hear that, %person(Ser Commander).
 -> DONE
 
 == quest_tutorial_combat ==
+~ temp can_place_dummy = quest_tutorial_orlando_all_dummies_dead()
+~ temp has_placed_dummies = quest_tutorial_orlando_has_dummies()
 
 # speaker={C_ORLANDO}
-bla bla bla
+Let's teach you how to fight!
 
 # speaker={C_PLAYER}
-* {not quest_tutorial_orlando_has_dropped_dummy()} can u drop a dummy pls
+* {has_placed_dummies && can_place_dummy} Let's duel!
+  -> quest_tutorial_duel
+* {can_place_dummy} Can you drop a dummy?
   -> drop_new_dummy
 * -> DONE
 
@@ -1487,6 +1525,9 @@ C'mon, you need to use a rite to counter the dummy!
 
 # speaker={C_ORLANDO}
 That... was... AWESOME! You aced it!
+
+# speaker={C_ORLANDO}
+Now go on! Finish the dummy! 
 
 -> DONE
 

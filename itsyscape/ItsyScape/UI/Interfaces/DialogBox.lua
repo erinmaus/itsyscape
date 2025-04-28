@@ -473,7 +473,7 @@ function DialogBox:update(delta)
 			self.stopTalking:setKeybind("gamepadBack")
 		else
 			self.stopTalking:getGamepadIcon():setController("KeyboardMouse")
-			self.stopTalking:setButtonID("keyboard_esc")
+			self.stopTalking:setButtonID("keyboard_escape")
 		end
 		self.stopTalking:performLayout()
 

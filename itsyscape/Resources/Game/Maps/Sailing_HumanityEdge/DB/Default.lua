@@ -501,7 +501,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "CoconutTree_Default",
+		Prop = ItsyScape.Resource.Prop "BalsaTree_Default",
 		MapObject = M["CoconutTree_Default2"]
 	}
 end

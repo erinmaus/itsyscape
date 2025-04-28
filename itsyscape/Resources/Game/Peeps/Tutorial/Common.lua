@@ -1092,13 +1092,13 @@ Common.YIELD_HINT = {
 	{
 		position = {
 			gamepad = "center",
-			standard = "center",
-			mobile = "center"
+			standard = "left",
+			mobile = "left"
 		},
 		id = {
 			gamepad = "root",
-			standard = "root",
-			mobile = "root"
+			standard = "Ribbon-PlayerStance",
+			mobile = "Ribbon-PlayerStance"
 		},
 		message = {
 			gamepad = {
@@ -1106,23 +1106,23 @@ Common.YIELD_HINT = {
 				label = "Open combat ring"
 			},
 			standard = {
-				button = "keyboard_tab",
+				button = "mouse_left",
 				controller = "KeyboardMouse",
-				label = "Open combat ring"
+				label = "Open stance tab"
 			},
 			mobile = {
 				button = "tap",
 				controller = "Touch",
-				label = "Open combat ring"
+				label = "Open stance tab"
 			}
 		},
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerStance = Utility.UI.getOpenInterface(target, "PlayerStance")
 
 				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
+				               playerStance
 
 				return isOpen
 			end
@@ -1159,12 +1159,13 @@ Common.YIELD_HINT = {
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
 				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerStance = Utility.UI.getOpenInterface(target, "PlayerStance")
 
-				if gamepadCombatHUD and gamepadCombatHUD:getIsOpen() then
+				if gamepadCombatHUD and gamepadCombatHUD:getIsOpen() or playerStance then
 					return {
 						gamepad = "BaseCombatHUD-flee",
-						standard = "BaseCombatHUD-flee",
-						touch = "BaseCombatHUD-flee"
+						standard = "PlayerStance-Yield",
+						touch = "PlayerStance-Yield"
 					}
 				end
 
@@ -1215,10 +1216,10 @@ Common.YIELD_HINT = {
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerStance = Utility.UI.getOpenInterface(target, "PlayerStance")
 
 				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
+				               playerStance
 
 				return not (isOpen and target:hasBehavior(CombatTargetBehavior))
 			end
@@ -1227,6 +1228,7 @@ Common.YIELD_HINT = {
 }
 
 function Common.showYieldHint(playerPeep, done)
+	Common.startRibbonTutorial(playerPeep, Common.YIELD_HINT[1].open(playerPeep, {}))
 	Utility.UI.tutorial(playerPeep, Common.YIELD_HINT, done)
 end
 
@@ -1234,13 +1236,13 @@ Common.EAT_HINT = {
 	{
 		position = {
 			gamepad = "center",
-			standard = "center",
-			mobile = "center"
+			standard = "left",
+			mobile = "left"
 		},
 		id = {
 			gamepad = "root",
-			standard = "root",
-			mobile = "root"
+			standard = "Ribbon-PlayerInventory",
+			mobile = "Ribbon-PlayerInventory"
 		},
 		message = {
 			gamepad = {
@@ -1248,23 +1250,23 @@ Common.EAT_HINT = {
 				label = "Open combat ring"
 			},
 			standard = {
-				button = "keyboard_tab",
+				button = "mouse_left",
 				controller = "KeyboardMouse",
-				label = "Open combat ring"
+				label = "Open inventory tab"
 			},
 			mobile = {
 				button = "tap",
 				controller = "Touch",
-				label = "Open combat ring"
+				label = "Open inventory tab"
 			}
 		},
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerInventory = Utility.UI.isOpen(target, "PlayerInventory")
 
 				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
+				               playerInventory
 
 				return isOpen
 			end
@@ -1275,8 +1277,6 @@ Common.EAT_HINT = {
 		id = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
-
 				if gamepadCombatHUD and gamepadCombatHUD:getIsOpen() then
 					return {
 						gamepad = "BaseCombatHUD-food",
@@ -1287,8 +1287,8 @@ Common.EAT_HINT = {
 
 				return {
 					gamepad = false,
-					controller = false,
-					mouse = false
+					standard = false,
+					touch = false
 				}
 			end
 		end,
@@ -1297,25 +1297,14 @@ Common.EAT_HINT = {
 				button = "a",
 				label = "Open food ring"
 			},
-			standard = {
-				button = "mouse_left",
-				controller = "KeyboardMouse",
-				label = "Open food ring"
-			},
-			standard = {
-				button = "tap",
-				controller = "Touch",
-				label = "Open food ring"
-			}
+			standard = false,
+			touch = false
 		},
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
 
-				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
-
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen())
 				local isThingiesOpen = gamepadCombatHUD and gamepadCombatHUD:getIsThingiesOpen("food")
 
 				return not isOpen or isThingiesOpen
@@ -1327,13 +1316,21 @@ Common.EAT_HINT = {
 		id = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerInventory = Utility.UI.isOpen(target, "PlayerInventory")
 
 				if gamepadCombatHUD and gamepadCombatHUD:getIsOpen() then
 					return {
 						gamepad = "BaseCombatHUD-Food-CookedLightningStormfish",
 						standard = "BaseCombatHUD-Food-CookedLightningStormfish",
 						touch = "BaseCombatHUD-Food-CookedLightningStormfish"
+					}
+				end
+
+				if playerInventory then
+					return {
+						gamepad = "Inventory-Item-CookedLightningStormfish",
+						standard = "Inventory-Item-CookedLightningStormfish",
+						touch = "Inventory-Item-CookedLightningStormfish"
 					}
 				end
 
@@ -1355,6 +1352,30 @@ Common.EAT_HINT = {
 					"ui.poke.item",
 					"Cooked lightning stormfish"
 				}
+			},
+			standard = {
+				button = "mouse_left",
+				controller = "KeyboardMouse",
+				label = {
+					{ 1, 1, 1, 1 },
+					"Eat",
+					{ 1, 1, 1, 1 },
+					" ",
+					"ui.poke.item",
+					"Cooked lightning stormfish"
+				}
+			},
+			standard = {
+				button = "tap",
+				controller = "Touch",
+				label = {
+					{ 1, 1, 1, 1 },
+					"Eat",
+					{ 1, 1, 1, 1 },
+					" ",
+					"ui.poke.item",
+					"Cooked lightning stormfish"
+				}
 			}
 		},
 		open = function(target, state)
@@ -1363,27 +1384,24 @@ Common.EAT_HINT = {
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
 				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerInventory = Utility.UI.isOpen(target, "PlayerInventory")				
 
-				if not (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) then
-					return true
-				end
-
-				if not (gamepadCombatHUD and gamepadCombatHUD:getIsThingiesOpen("food")) then
-					return true
-				end
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or playerInventory
+				local isThingiesOpen = gamepadCombatHUD and gamepadCombatHUD:getIsThingiesOpen("food") or playerInventory
 
 				local currentFoodCount = target:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
-				return state.initialFoodCount == 0 or currentFoodCount < state.initialFoodCount
+				return not isOpen or not isThingiesOpen or state.initialFoodCount == 0 or currentFoodCount < state.initialFoodCount
 			end
 		end	
 	}
 }
 
 function Common.showEatHint(playerPeep, done)
+	Common.startRibbonTutorial(playerPeep, Common.EQUIP_GEAR[1].open(playerPeep, {}))
 	Utility.UI.tutorial(playerPeep, Common.EAT_HINT, done)
 end
 
-Common.ATTACK_HINT = {
+Common.ZEAL_HINT = {
 	{
 		position = {
 			gamepad = "center",
@@ -1393,7 +1411,62 @@ Common.ATTACK_HINT = {
 		id = {
 			gamepad = "root",
 			standard = "root",
-			mobile = "root"
+			mobile = "root",
+		},
+		message = "Look at the top of the screen.",
+		open = Common.WAIT_OPEN_FUNCTION()
+	}
+}
+
+Common.ATTACK_HINT = {
+	{
+		position = {
+			gamepad = "right",
+			standard = "right",
+			mobile = "right"
+		},
+		id = {
+			gamepad = "BaseCombatHUD-ZealOrb-Player",
+			standard = "BaseCombatHUD-ZealOrb-Player",
+			mobile = "BaseCombatHUD-ZealOrb-Player",
+		},
+		message = {
+			gamepad = {
+				button = "none",
+				label = "This is your current zeal.",
+			},
+			standard = {
+				button = "none",
+				label = "This is your current zeal.",
+			},
+			touch = {
+				button = "none",
+				label = "This is your current zeal.",
+			}
+		},
+		open = Common.WAIT_OPEN_FUNCTION()
+	},
+	{
+		position = "center",
+		id = "root",
+		message = "",
+		open = function(target)
+			return function()
+				Common.startRibbonTutorial(target, Common.ATTACK_HINT[3].open(target, {}))
+				return true
+			end
+		end
+	},
+	{
+		position = {
+			gamepad = "center",
+			standard = "left",
+			mobile = "left"
+		},
+		id = {
+			gamepad = "root",
+			standard = "Ribbon-PlayerPowers",
+			mobile = "Ribbon-PlayerPowers"
 		},
 		message = {
 			gamepad = {
@@ -1401,23 +1474,23 @@ Common.ATTACK_HINT = {
 				label = "Open combat ring"
 			},
 			standard = {
-				button = "keyboard_tab",
+				button = "mouse_left",
 				controller = "KeyboardMouse",
-				label = "Open combat ring"
+				label = "Open rites tab"
 			},
 			mobile = {
 				button = "tap",
 				controller = "Touch",
-				label = "Open combat ring"
+				label = "Open rites tab"
 			}
 		},
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerPowers = Utility.UI.getOpenInterface(target, "PlayerPowers")
 
 				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
+				               playerPowers
 
 				return isOpen
 			end
@@ -1428,7 +1501,6 @@ Common.ATTACK_HINT = {
 		id = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
 				local stance = target:getBehavior(StanceBehavior)
 
 				if gamepadCombatHUD and gamepadCombatHUD:getIsOpen() then
@@ -1506,13 +1578,12 @@ Common.ATTACK_HINT = {
 		end,
 		open = function(target, state)
 			return function()
+				print("??????")
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
 
-				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
-
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen())
 				local isThingiesOpen = gamepadCombatHUD and gamepadCombatHUD:getIsThingiesOpen("offense")
+				isThingiesOpen = isThingiesOpen
 
 				return not isOpen or isThingiesOpen
 			end
@@ -1522,10 +1593,15 @@ Common.ATTACK_HINT = {
 		position = "up",
 		id = function(target, state)
 			return function()
+				print("!!!!")
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerPowers = Utility.UI.getOpenInterface(target, "PlayerPowers")
 
-				if not (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) then 
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
+				                 playerPowers
+
+				if not isOpen then
+					print("NOT OPEN")
 					return {
 						gamepad = false,
 						controller = false,
@@ -1533,29 +1609,44 @@ Common.ATTACK_HINT = {
 					}
 				end
 
+				local prefix
+				if playerPowers then
+					prefix = "PlayerPowers"
+				else
+					prefix = "BaseCombatHUD"
+				end
+
 				local weapon = Utility.Peep.getEquippedWeapon(target)
 				local style = weapon and weapon:getStyle() or Weapon.STYLE_MELEE
+				local stance = target:getBehavior(StanceBehavior)
 
-				if style == Weapon.STYLE_MAGIC then
+				if stance and stance.stance == Weapon.STANCE_DEFENSIVE then
 					return {
-						gamepad = "BaseCombatHUD-Power-Corrupt",
-						standard = "BaseCombatHUD-Power-Corrupt",
-						touch = "BaseCombatHUD-Power-Corrupt",
+						gamepad = string.format("%s-Power-Bash", prefix),
+						standard = string.format("%s-Power-Bash", prefix),
+						touch = string.format("%s-Power-Bash", prefix),
+					}
+				elseif style == Weapon.STYLE_MAGIC then
+					return {
+						gamepad = string.format("%s-Power-Corrupt", prefix),
+						standard = string.format("%s-Power-Corrupt", prefix),
+						touch = string.format("%s-Power-Corrupt", prefix),
 					}
 				elseif style == Weapon.STYLE_ARCHERY then
 					return {
-						gamepad = "BaseCombatHUD-Power-Snipe",
-						standard = "BaseCombatHUD-Power-Snipe",
-						touch = "BaseCombatHUD-Power-Snipe",
+						gamepad = string.format("%s-Power-Snipe", prefix),
+						standard = string.format("%s-Power-Snipe", prefix),
+						touch = string.format("%s-Power-Snipe", prefix),
 					}
 				elseif style == Weapon.STYLE_MELEE then
 					return {
-						gamepad = "BaseCombatHUD-Power-Tornado",
-						standard = "BaseCombatHUD-Power-Tornado",
-						touch = "BaseCombatHUD-Power-Tornado",
+						gamepad = string.format("%s-Power-Tornado", prefix),
+						standard = string.format("%s-Power-Tornado", prefix),
+						touch = string.format("%s-Power-Tornado", prefix),
 					}
 				end
 
+				print("BAD!!!!!!!!!!")
 				return {
 					gamepad = false,
 					controller = false,
@@ -1594,6 +1685,30 @@ Common.ATTACK_HINT = {
 							"ui.poke.misc",
 							powerName or powerID
 						}
+					},
+					standard = {
+						button = "mouse_left",
+						controller = "KeyboardMouse",
+						label = {
+							{ 1, 1, 1, 1 },
+							"Activate",
+							{ 1, 1, 1, 1 },
+							" ",
+							"ui.poke.misc",
+							powerName or powerID
+						}
+					},
+					touch = {
+						button = "tap",
+						controller = "Touch",
+						label = {
+							{ 1, 1, 1, 1 },
+							"Activate",
+							{ 1, 1, 1, 1 },
+							" ",
+							"ui.poke.misc",
+							powerName or powerID
+						}
 					}
 				}
 			end
@@ -1601,10 +1716,10 @@ Common.ATTACK_HINT = {
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerPowers = Utility.UI.getOpenInterface(target, "PlayerPowers")
 
 				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
+				               playerPowers
 
 				return not isOpen or target:hasBehavior(PendingPowerBehavior)
 			end
@@ -1613,6 +1728,7 @@ Common.ATTACK_HINT = {
 }
 
 function Common.showAttackHint(playerPeep, done)
+	Utility.UI.tutorial(playerPeep, Common.ZEAL_HINT, done)
 	Utility.UI.tutorial(playerPeep, Common.ATTACK_HINT, done)
 end
 
@@ -1620,13 +1736,13 @@ Common.DEFLECT_HINT = {
 	{
 		position = {
 			gamepad = "center",
-			standard = "center",
-			mobile = "center"
+			standard = "left",
+			mobile = "left"
 		},
 		id = {
 			gamepad = "root",
-			standard = "root",
-			mobile = "root"
+			standard = "Ribbon-PlayerPowers",
+			mobile = "Ribbon-PlayerPowers"
 		},
 		message = {
 			gamepad = {
@@ -1634,23 +1750,23 @@ Common.DEFLECT_HINT = {
 				label = "Open combat ring"
 			},
 			standard = {
-				button = "keyboard_tab",
+				button = "mouse_left",
 				controller = "KeyboardMouse",
-				label = "Open combat ring"
+				label = "Open rites tab"
 			},
 			mobile = {
 				button = "tap",
 				controller = "Touch",
-				label = "Open combat ring"
+				label = "Open rites tab"
 			}
 		},
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerPowers = Utility.UI.getOpenInterface(target, "PlayerPowers")
 
 				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
+				               playerPowers
 
 				return isOpen
 			end
@@ -1740,11 +1856,8 @@ Common.DEFLECT_HINT = {
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
 
-				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
-
+				local isOpen = gamepadCombatHUD and gamepadCombatHUD:getIsOpen()
 				local isThingiesOpen = gamepadCombatHUD and gamepadCombatHUD:getIsThingiesOpen("offense")
 
 				return not isOpen or isThingiesOpen
@@ -1756,9 +1869,11 @@ Common.DEFLECT_HINT = {
 		id = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerPowers = Utility.UI.getOpenInterface(target, "PlayerPowers")
 
-				if not (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) then 
+				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or playerPowers
+
+				if not isOpen then 
 					return {
 						gamepad = false,
 						controller = false,
@@ -1768,24 +1883,38 @@ Common.DEFLECT_HINT = {
 
 				local weapon = Utility.Peep.getEquippedWeapon(target)
 				local style = weapon and weapon:getStyle() or Weapon.STYLE_MELEE
+				local stance = target:getBehavior(StanceBehavior)
 
-				if style == Weapon.STYLE_MAGIC then
+				local prefix
+				if playerPowers then
+					prefix = "PlayerPowers"
+				else
+					prefix = "BaseCombatHUD"
+				end
+
+				if stance and stance.stance == Weapon.STANCE_DEFENSIVE then
 					return {
-						gamepad = "BaseCombatHUD-Power-Confuse",
-						standard = "BaseCombatHUD-Power-Confuse",
-						touch = "BaseCombatHUD-Power-Confuse",
+						gamepad = string.format("%s-Power-Bash", prefix),
+						standard = string.format("%s-Power-Bash", prefix),
+						touch = string.format("%s-Power-Bash", prefix),
+					}
+				elseif style == Weapon.STYLE_MAGIC then
+					return {
+						gamepad = string.format("%s-Power-Confuse", prefix),
+						standard = string.format("%s-Power-Confuse", prefix),
+						touch = string.format("%s-Power-Confuse", prefix),
 					}
 				elseif style == Weapon.STYLE_ARCHERY then
 					return {
-						gamepad = "BaseCombatHUD-Power-Shockwave",
-						standard = "BaseCombatHUD-Power-Shockwave",
-						touch = "BaseCombatHUD-Power-Shockwave",
+						gamepad = string.format("%s-Power-Shockwave", prefix),
+						standard = string.format("%s-Power-Shockwave", prefix),
+						touch = string.format("%s-Power-Shockwave", prefix),
 					}
 				elseif style == Weapon.STYLE_MELEE then
 					return {
-						gamepad = "BaseCombatHUD-Power-Parry",
-						standard = "BaseCombatHUD-Power-Parry",
-						touch = "BaseCombatHUD-Power-Parry",
+						gamepad = string.format("%s-Power-Parry", prefix),
+						standard = string.format("%s-Power-Parry", prefix),
+						touch = string.format("%s-Power-Parry", prefix),
 					}
 				end
 
@@ -1827,6 +1956,30 @@ Common.DEFLECT_HINT = {
 							"ui.poke.misc",
 							powerName or powerID
 						}
+					},
+					standard = {
+						button = "mouse_left",
+						controller = "KeyboardMouse",
+						label = {
+							{ 1, 1, 1, 1 },
+							"Activate",
+							{ 1, 1, 1, 1 },
+							" ",
+							"ui.poke.misc",
+							powerName or powerID
+						}
+					},
+					touch = {
+						button = "tap",
+						controller = "Touch",
+						label = {
+							{ 1, 1, 1, 1 },
+							"Activate",
+							{ 1, 1, 1, 1 },
+							" ",
+							"ui.poke.misc",
+							powerName or powerID
+						}
 					}
 				}
 			end
@@ -1834,10 +1987,10 @@ Common.DEFLECT_HINT = {
 		open = function(target, state)
 			return function()
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
-				local proCombatHUD = Utility.UI.getOpenInterface(target, "ProCombatHUD")
+				local playerPowers = Utility.UI.getOpenInterface(target, "PlayerPowers")
 
 				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen()) or
-				               (proCombatHUD and proCombatHUD:getIsOpen())
+				               playerPowers
 
 				return not isOpen or target:hasBehavior(PendingPowerBehavior)
 			end
@@ -1846,6 +1999,7 @@ Common.DEFLECT_HINT = {
 }
 
 function Common.showDeflectHint(playerPeep, done)
+	Common.startRibbonTutorial(playerPeep, Common.DEFLECT_HINT[1].open(playerPeep, {}))
 	Utility.UI.tutorial(playerPeep, Common.DEFLECT_HINT, done)
 end
 

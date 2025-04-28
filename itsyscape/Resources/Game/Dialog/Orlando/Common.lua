@@ -21,7 +21,7 @@ local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 
 local Common = {}
 
-function Common.quest_tutorial_orlando_has_lit_coconut_fire(dialog)
+function Common.quest_tutorial_orlando_has_lit_fire(dialog)
 	local peep = dialog:getSpeaker("_TARGET")
 	if not peep then
 		return false
@@ -30,18 +30,18 @@ function Common.quest_tutorial_orlando_has_lit_coconut_fire(dialog)
 	local coconutFires = peep:getDirector():probe(
 		peep:getLayerName(),
 		Probe.passage("Passage_FishingArea"),
-		Probe.resource("Prop", "CoconutFire"))
+		Probe.resource("Prop", "BalsaFire"))
 
 	return #coconutFires >= 1
 end
 
 local DUMMY_RESOURCES = {
 	[Weapon.STYLE_MAGIC] = "TutorialDummy_Wizard",
-	[Weapon.STYLE_ARCHERY] = "TutorialDummy_Archery",
+	[Weapon.STYLE_ARCHERY] = "TutorialDummy_Archer",
 	[Weapon.STYLE_MELEE] = "TutorialDummy_Warrior"
 }
 
-function Common.quest_tutorial_orlando_has_dropped_dummy(dialog)
+function Common.quest_tutorial_orlando_all_dummies_dead(dialog)
 	local peep = dialog:getSpeaker("_TARGET")
 	if not peep then
 		return false
@@ -63,7 +63,24 @@ function Common.quest_tutorial_orlando_has_dropped_dummy(dialog)
 		end
 	end
 
-	return canAttackDummy
+	return not canAttackDummy
+end
+
+function Common.quest_tutorial_orlando_has_dummies(dialog)
+	local peep = dialog:getSpeaker("_TARGET")
+	if not peep then
+		return false
+	end
+
+	local class = Utility.Text.getDialogVariable(peep, "Orlando", "quest_tutorial_main_starting_player_class")
+	local dummyResourceID = DUMMY_RESOURCES[class] or DUMMY_RESOURCES[Weapon.STYLE_MAGIC]
+
+	local dummies = peep:getDirector():probe(
+		peep:getLayerName(),
+		Probe.resource("Peep", dummyResourceID),
+		Probe.instance(Utility.Peep.getPlayerModel(peep)))
+
+	return #dummies > 0
 end
 
 function Common.quest_tutorial_orlando_strafe_target(dialog, distance)

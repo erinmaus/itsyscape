@@ -681,12 +681,12 @@ end
 function BaseCombatHUD:toggleTargetInfo(enabled)
 	self:_toggleInfo(enabled, self.targetInfo)
 
-	local zealOrb = self.playerInfo:getZealOrb()
+	local zealOrb = self.targetInfo:getZealOrb()
 	if zealOrb then
 		zealOrb:setID("BaseCombatHUD-ZealOrb-Target")
 	end
 
-	local healthBar = self.playerInfo:getHealthBar()
+	local healthBar = self.targetInfo:getHealthBar()
 	if healthBar then
 		healthBar:setID("BaseCombatHUD-HealthBar-Target")
 	end

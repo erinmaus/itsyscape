@@ -609,11 +609,12 @@ function BaseCombatHUDController:isAttacking()
 
 		local hasTarget = target and target.actor and target.actor:getPeep() == playerTarget
 		local isPlayerTarget = peep == playerTarget
+		local hasPlayerTarget = target and target.actor and target.actor:getPeep() == self:getPeep()
 		local isAlive = status and not status.dead
 		local canEngage = status and status.canEngage
 		local isPlayer = peep == self:getPeep()
 
-		return ((hasTarget or isPlayerTarget) and isAlive and canEngage) or isPlayer
+		return ((hasTarget or isPlayerTarget or hasPlayerTarget) and isAlive and canEngage) or isPlayer
 	end
 end
 

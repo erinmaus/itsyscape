@@ -192,7 +192,7 @@ function PlayerPowers:updatePowers(buttons, powers, pendingID)
 
 			local toolTip = {
 				ToolTip.Header(power.name),
-				ToolTip.Text(string.format("This rite uses %d zeal.", power.zeal * 100)),
+				ToolTip.Text(string.format("This rite uses %d%% zeal.", power.zeal * 100)),
 				unpack(power.description)
 			}
 
@@ -209,7 +209,7 @@ function PlayerPowers:updatePowers(buttons, powers, pendingID)
 
 			button:setToolTip(unpack(toolTip))
 
-			button:setID("PlayerPowers-Power" .. power.id)
+			button:setID("PlayerPowers-Power-" .. power.id)
 
 			if pendingID == power.id then
 				button:addChild(self.subPending)

@@ -274,6 +274,54 @@ do
 	}
 end
 
+M["WizardDummy"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "WizardDummy",
+		Map = M._MAP,
+		Resource = M["WizardDummy"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TutorialDummy_Wizard",
+		MapObject = M["WizardDummy"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+end
+
+M["ArcherDummy"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "ArcherDummy",
+		Map = M._MAP,
+		Resource = M["ArcherDummy"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TutorialDummy_Archer",
+		MapObject = M["ArcherDummy"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+end
+
+M["WarriorDummy"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "WarriorDummy",
+		Map = M._MAP,
+		Resource = M["WarriorDummy"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "TutorialDummy_Warrior",
+		MapObject = M["WarriorDummy"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+end
+
 M["Anchor_Orlando_PlaceDummy"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

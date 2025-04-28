@@ -54,10 +54,10 @@ Island.CLASS_INVENTORY = {
 	}
 }
 
-Island.CLASS_DUMMY = {
-	[Weapon.STYLE_MAGIC] = "TutorialDummy_Wizard", 
-	[Weapon.STYLE_ARCHERY] = "TutorialDummy_Archer", 
-	[Weapon.STYLE_MELEE] = "TutorialDummy_Melee", 
+Island.MAP_OBJECT_DUMMY = {
+	[Weapon.STYLE_MAGIC] = "WizardDummy", 
+	[Weapon.STYLE_ARCHERY] = "ArcherDummy", 
+	[Weapon.STYLE_MELEE] = "MeleeDummy", 
 }
 
 Island.FISHING_INVENTORY = {
@@ -1080,14 +1080,21 @@ function Island:onPlaceTutorialDummy(playerPeep)
 				100,
 				"Human_ActionGive_1")
 
-			local dummyPeepID = self.CLASS_DUMMY[class] or self.CLASS_DUMMY[Weapon.STYLE_MAGIC]
-			local dummyActor = Utility.spawnActorAtPosition(orlando, dummyPeepID, x, y, z)
+			local dummyMapObjectName = self.MAP_OBJECT_DUMMY[class] or self.MAP_OBJECT_DUMMY[Weapon.STYLE_MAGIC]
+			local dummyActor = Utility.spawnInstancedMapObjectAtAnchor(self, playerPeep, dummyMapObjectName, "Anchor_Orlando_PlaceDummy")
 			local dummyPeep = dummyActor:getPeep()
 
 			Utility.Peep.makeInstanced(dummyPeep, playerPeep)
 			Utility.Peep.teleportCompanion(dummyPeep, orlando)
 			Utility.Peep.setFacing(dummyPeep, -1)
 			Utility.Peep.setMashinaState(dummyPeep, "tutorial-yield")
+
+			dummyPeep:listen("die", function()
+				Utility.Peep.disable(playerPeep)
+				self:talkToPeep(playerPeep, "Orlando", function()
+					Utility.Peep.enable(playerPeep)
+				end, "quest_tutorial_main_duel.ask_to_duel_after_dummy_defeated")
+			end)
 
 			Utility.Peep.disable(playerPeep)
 			self:talkToPeep(playerPeep, "Orlando", function()

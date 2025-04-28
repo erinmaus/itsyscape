@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Props/CoconutFire/View.lua
+-- Resources/Game/Props/BalsaFire/View.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -11,22 +11,23 @@ local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
 local FireView = require "Resources.Game.Props.Common.FireView"
 
-local CoconutFireView = Class(FireView)
+local BalsaFire = Class(FireView)
+BalsaFire.COLOR = Color.fromHexString("7c6f91")
 
-function CoconutFireView:getInnerColors()
+function BalsaFire:getInnerColors()
 	return {
-		{ Color.fromHexString("d500ff", 0):get() }
+		{ Color.fromHexString("7c6f91", 0):get() }
 	}
 end
 
-function CoconutFireView:getOuterColors()
+function BalsaFire:getOuterColors()
 	return {
-		{ Color.fromHexString("ff2ab1", 0):get() }
+		{ Color.fromHexString("ff6600", 0):get() }
 	}
 end
 
-function CoconutFireView:getTextureFilename()
-	return "Resources/Game/Props/CoconutFire/Texture.png"
+function BalsaFire:getTextureFilename()
+	return "Resources/Game/Props/BalsaFire/Texture.png"
 end
 
-return CoconutFireView
+return BalsaFire

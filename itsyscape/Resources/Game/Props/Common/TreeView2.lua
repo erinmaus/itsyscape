@@ -27,7 +27,6 @@ TreeView.FELLED_SPAWN_TIME_SECONDS = 0.75
 function TreeView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
-	self.previousProgress = 0
 	self.shaken = 0
 	self.spawned = false
 	self.depleted = false
@@ -220,15 +219,6 @@ function TreeView:tick()
 				self:getRoot(),
 				Vector(0, 2, 0),
 				self:getProp())
-		end
-
-		if self.previousProgress ~= r.progress then
-			self:getResources():queueEvent(function()
-				self.currentAnimation = TreeView.ANIMATION_CHOPPED
-				self.time = 0
-			end)
-
-			self.previousProgress = r.progress
 		end
 
 		if r.depleted ~= self.isDepleted then

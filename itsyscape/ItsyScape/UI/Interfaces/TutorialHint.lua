@@ -136,8 +136,10 @@ function TutorialHint:place(widget)
 
 	if type(state.message.button) == "table" then
 		icon:setButtonIDs(unpack(state.message.button))
-	else
+	elseif state.message.button then
 		icon:setButtonID(state.message.button)
+	else
+		icon:setButtonID("")
 	end
 
 	if type(state.message.action) == "table" then
