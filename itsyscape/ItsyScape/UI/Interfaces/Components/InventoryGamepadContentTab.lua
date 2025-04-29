@@ -61,6 +61,7 @@ function InventoryGamepadContentTab:new(interface)
 	self.swapIcon:setSize(self.ICON_SIZE, self.ICON_SIZE)
 	self.swapIcon:setIsActive(true)
 	self.swapIcon:setColor(self.SWAP_ICON_COLOR)
+	self.swapIcon:setIsSelfClickThrough(true)
 	self:addChild(self.swapIcon)
 
 	self.toolTip = GamepadToolTip()

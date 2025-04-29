@@ -176,9 +176,9 @@ do
 		PositionX = 93.000000,
 		PositionY = 11.000000,
 		PositionZ = 87.000000,
-		RotationX = -0.000000,
+		RotationX = 0.000000,
 		RotationY = 0.707107,
-		RotationZ = -0.000000,
+		RotationZ = 0.000000,
 		RotationW = -0.707107,
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
@@ -344,7 +344,7 @@ do
 		PositionX = 33.000000,
 		PositionY = 3.000000,
 		PositionZ = 157.000000,
-		RotationX = -0.000000,
+		RotationX = 0.000000,
 		RotationY = -0.923880,
 		RotationZ = 0.000000,
 		RotationW = -0.382683,
@@ -464,9 +464,9 @@ do
 		PositionX = 109.000000,
 		PositionY = 11.000000,
 		PositionZ = 111.000000,
-		RotationX = -0.000000,
-		RotationY = -0.000000,
-		RotationZ = -0.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
 		RotationW = -1.000000,
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
@@ -479,6 +479,102 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "BalsaTree_Default",
 		MapObject = M["BalsaTree_Default9"]
+	}
+end
+
+M["CaesiumRock_Default1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 141.000000,
+		PositionY = 2.000000,
+		PositionZ = 163.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CaesiumRock_Default1",
+		Map = M._MAP,
+		Resource = M["CaesiumRock_Default1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CaesiumRock_Default",
+		MapObject = M["CaesiumRock_Default1"]
+	}
+end
+
+M["CaesiumRock_Default2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 145.000000,
+		PositionY = 1.000000,
+		PositionZ = 155.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CaesiumRock_Default2",
+		Map = M._MAP,
+		Resource = M["CaesiumRock_Default2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CaesiumRock_Default",
+		MapObject = M["CaesiumRock_Default2"]
+	}
+end
+
+M["CaesiumRock_Default3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 151.000000,
+		PositionY = 1.000000,
+		PositionZ = 169.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CaesiumRock_Default3",
+		Map = M._MAP,
+		Resource = M["CaesiumRock_Default3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CaesiumRock_Default",
+		MapObject = M["CaesiumRock_Default3"]
+	}
+end
+
+M["CaesiumRock_Default4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 165.000000,
+		PositionY = 1.000000,
+		PositionZ = 155.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CaesiumRock_Default4",
+		Map = M._MAP,
+		Resource = M["CaesiumRock_Default4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CaesiumRock_Default",
+		MapObject = M["CaesiumRock_Default4"]
 	}
 end
 
@@ -1319,6 +1415,150 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "ShadowVolume",
 		MapObject = M["ShadowVolume1"]
+	}
+end
+
+M["UraniumRock_Default2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 161.000000,
+		PositionY = 1.000000,
+		PositionZ = 151.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "UraniumRock_Default2",
+		Map = M._MAP,
+		Resource = M["UraniumRock_Default2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "UraniumRock_Default",
+		MapObject = M["UraniumRock_Default2"]
+	}
+end
+
+M["UraniumRock_Default3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 147.000000,
+		PositionY = 1.000000,
+		PositionZ = 165.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "UraniumRock_Default3",
+		Map = M._MAP,
+		Resource = M["UraniumRock_Default3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "UraniumRock_Default",
+		MapObject = M["UraniumRock_Default3"]
+	}
+end
+
+M["UraniumRock_Default4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 145.000000,
+		PositionY = 2.000000,
+		PositionZ = 149.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "UraniumRock_Default4",
+		Map = M._MAP,
+		Resource = M["UraniumRock_Default4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "UraniumRock_Default",
+		MapObject = M["UraniumRock_Default4"]
+	}
+end
+
+M["UraniumRock_Default5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 167.000000,
+		PositionY = 2.000000,
+		PositionZ = 167.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "UraniumRock_Default5",
+		Map = M._MAP,
+		Resource = M["UraniumRock_Default5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "UraniumRock_Default",
+		MapObject = M["UraniumRock_Default5"]
+	}
+end
+
+M["UraniumRock_Default6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 169.000000,
+		PositionY = 2.000000,
+		PositionZ = 155.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "UraniumRock_Default6",
+		Map = M._MAP,
+		Resource = M["UraniumRock_Default6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "UraniumRock_Default",
+		MapObject = M["UraniumRock_Default6"]
+	}
+end
+
+M["UraniumRock_Default7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 165.000000,
+		PositionY = 1.000000,
+		PositionZ = 163.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "UraniumRock_Default7",
+		Map = M._MAP,
+		Resource = M["UraniumRock_Default7"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "UraniumRock_Default",
+		MapObject = M["UraniumRock_Default7"]
 	}
 end
 

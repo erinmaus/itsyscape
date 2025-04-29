@@ -373,27 +373,6 @@ function SkyCortex:update(delta)
 				sunDirectionalLight:setCastsShadows(true)
 			end
 
-			local sunDirectionalLight = self:getDirector():probe(
-				peep:getLayerName(),
-				Probe.layer(baseLayer),
-				Probe.namedMapObject("Light_Sun"),
-				Probe.resource("Prop", "DirectionalLight_Default"))[1]
-
-			if sunDirectionalLight then
-				local sunMoonColors = {
-					sky.sunColor,
-					sky.moonColor
-				}
-
-				local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #sunMoonColors)
-				local currentSunColor = sunMoonColors[currentIndex]:lerp(sunMoonColors[nextIndex], delta)
-
-				local normal = self:getDirectionLightNormal(seconds)
-				sunDirectionalLight:setColor(currentSunColor * sky.currentAmbientColor.a)
-				sunDirectionalLight:setDirection(normal)
-				sunDirectionalLight:setCastsShadows(true)
-			end
-
 			local skyAmbientLight = self:getDirector():probe(
 				peep:getLayerName(),
 				Probe.layer(layer),

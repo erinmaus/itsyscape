@@ -1273,6 +1273,275 @@ do
 	}
 end
 
+M["Knight1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Team",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Knight1"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 145,
+		PositionY = 3,
+		PositionZ = 141,
+		Direction = 1,
+		Name = "Knight1",
+		Map = M._MAP,
+		Resource = M["Knight1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Knight",
+		MapObject = M["Knight1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Knight1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["Knight1"]
+	}
+end
+
+M["Knight2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Team",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Knight2"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 163,
+		PositionY = 3,
+		PositionZ = 143,
+		Direction = 1,
+		Name = "Knight2",
+		Map = M._MAP,
+		Resource = M["Knight2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Knight",
+		MapObject = M["Knight2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Knight2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["Knight2"]
+	}
+end
+
+M["Knight3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Team",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Knight3"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 131,
+		PositionY = 3,
+		PositionZ = 151,
+		Direction = 1,
+		Name = "Knight3",
+		Map = M._MAP,
+		Resource = M["Knight3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Knight",
+		MapObject = M["Knight3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Knight3"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["Knight3"]
+	}
+end
+
+M["Knight4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Team",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Knight4"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 169,
+		PositionY = 3,
+		PositionZ = 175,
+		Direction = 1,
+		Name = "Knight4",
+		Map = M._MAP,
+		Resource = M["Knight4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Knight",
+		MapObject = M["Knight4"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["Knight4"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["Knight4"]
+	}
+end
+
+M["MiningKnight1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Team",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["MiningKnight1"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155,
+		PositionY = 0,
+		PositionZ = 163,
+		Direction = 1,
+		Name = "MiningKnight1",
+		Map = M._MAP,
+		Resource = M["MiningKnight1"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Mining",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = M["MiningKnight1"]
+	}
+
+	ItsyScape.Meta.PeepInventoryItem {
+		Item = ItsyScape.Resource.Item "AdamantPickaxe",
+		Count = 1,
+		Resource = M["MiningKnight1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Knight",
+		MapObject = M["MiningKnight1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_MineLogic.lua",
+		IsDefault = 1,
+		Resource = M["MiningKnight1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["MiningKnight1"]
+	}
+end
+
+M["MiningKnight2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Team",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["MiningKnight2"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 157,
+		PositionY = 0,
+		PositionZ = 157,
+		Direction = 1,
+		Name = "MiningKnight2",
+		Map = M._MAP,
+		Resource = M["MiningKnight2"]
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Mining",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = M["MiningKnight2"]
+	}
+
+	ItsyScape.Meta.PeepInventoryItem {
+		Item = ItsyScape.Resource.Item "AdamantPickaxe",
+		Count = 1,
+		Resource = M["MiningKnight2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Knight",
+		MapObject = M["MiningKnight2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_MineLogic.lua",
+		IsDefault = 1,
+		Resource = M["MiningKnight2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["MiningKnight2"]
+	}
+end
+
+M["AzatiteMeteor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155,
+		PositionY = 0,
+		PositionZ = 159,
+		Name = "AzatiteMeteor",
+		Map = M._MAP,
+		Resource = M["AzatiteMeteor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "AzatiteMeteor_Default",
+		MapObject = M["AzatiteMeteor"]
+	}
+end
+
 M["KnightCommander"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
@@ -1293,20 +1562,8 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "IsabelleIsland_Knight",
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_KnightCommander",
 		MapObject = M["KnightCommander"]
-	}
-
-	ItsyScape.Meta.ResourceName {
-		Value = "Ser Commander",
-		Language = "en-US",
-		Resource = M["KnightCommander"]
-	}
-
-	ItsyScape.Meta.ResourceDescription {
-		Value = "Being a Vizier-Rock knight is the goal of any knight of the Realm, but to be a commander of the Vizier-Rock knights is an accomplishment that raises families to nobility. Too bad humility isn't a part of the job.",
-		Language = "en-US",
-		Resource = M["KnightCommander"]
 	}
 
 	ItsyScape.Meta.PeepMashinaState {

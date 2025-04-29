@@ -116,6 +116,107 @@ do
 end
 
 do
+	local KnightCommander = ItsyScape.Resource.Peep "IsabelleIsland_KnightCommander"
+
+	ItsyScape.Resource.Peep "IsabelleIsland_KnightCommander" {
+		ItsyScape.Action.InvisibleAttack()
+	}
+
+	ItsyScape.Meta.PeepCharacter {
+		Peep = KnightCommander,
+		Character = ItsyScape.Resource.Character "VizierRockKnight"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.SerCommander",
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Ser Commander",
+		Language = "en-US",
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Being a Vizier-Rock knight is the goal of any knight of the Realm, but to be a commander of the Vizier-Rock knights is an accomplishment that raises families to nobility. Too bad humility isn't a part of the job.",
+		Language = "en-US",
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 99,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantPlatebody",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantBoots",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantGloves",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AdamantLongsword",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantShield",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GoldenRing",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GoldenAmulet",
+		Count = 1,
+		Resource = KnightCommander
+	}
+end
+
+do
 	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice" {

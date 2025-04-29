@@ -159,6 +159,25 @@ local ORES = {
 		}
 	},
 
+	["Azatite"] = {
+		tier = 50,
+		weight = 25,
+		health = 200,
+		secondaries = {
+			"TableSalt",
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrumblySulfur",
+			"VegetableOil",
+			"PeanutOil",
+			"BlackGold",
+			"Sapphire",
+			"Emerald",
+			"Ruby",
+			"Diamond"
+		}
+	},
+
 	["Gold"] = {
 		tier = 55,
 		weight = 20,
@@ -346,6 +365,12 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "An extremely rare ore from space. Needs smelting.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "AzatiteOre"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "Needs smelting.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "ItsyOre"
@@ -412,8 +437,78 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "Contains azatite ore.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "AzatiteRock_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "Contains gold ore.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "GoldRock_Default"
 }
 
+do
+	local Meteor = ItsyScape.Resource.Prop "AzatiteMeteor_Default"
+
+	local MineAction = ItsyScape.Action.Mine() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForLevel(50)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Mining",
+			Count = ItsyScape.Utility.xpForResource(60) * 3
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "AzatiteOre",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 3.5,
+		SizeZ = 3.5,
+		MapObject = Meteor
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 0,
+		Resource = Meteor
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = MineAction
+	}
+
+	Meteor {
+		MineAction
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Azatite meteor",
+		Language = "en-US",
+		Resource = Meteor
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Only a few azatite meteors have been found throughout history. In the center of this meteor is an azatite core.",
+		Language = "en-US",
+		Resource = Meteor
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicRock",
+		Resource = Meteor
+	}
+
+	ItsyScape.Meta.GatherableProp {
+		Health = math.huge,
+		SpawnTime = math.huge,
+		Resource = Meteor
+	}
+end

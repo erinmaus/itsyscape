@@ -32,6 +32,7 @@ function GatherNearbyResource:activated(mashina, state)
 	local director = mashina:getDirector()
 	local game = director:getGameInstance()
 	local p = director:probe(mashina:getLayerName(), Probe.actionOutput(actionType, resource, "Item"))
+
 	table.sort(
 		p,
 		function(a, b)
@@ -58,8 +59,10 @@ function GatherNearbyResource:activated(mashina, state)
 						mashina,
 						best)
 
-					state[self.SUCCESS] = true
-					break
+					if s then
+						state[self.SUCCESS] = true
+						break
+					end
 				end
 			end
 		end
