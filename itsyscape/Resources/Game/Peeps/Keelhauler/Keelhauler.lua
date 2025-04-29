@@ -81,8 +81,13 @@ function Keelhauler:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
+function Keelhauler:onDashCharge()
+	self.isChargingDash = true
+end
+
 function Keelhauler:onDashStart()
 	self.isDashing = true
+	self.isChargingDash = false
 	self.hits = {}
 
 	local movement = self:getBehavior(MovementBehavior)
@@ -122,7 +127,9 @@ end
 function Keelhauler:update(...)
 	Creep.update(self, ...)
 
-	Utility.Peep.face3D(self)
+	if not self.isChargingDash then
+		Utility.Peep.face3D(self)
+	end
 
 	if self.isDashing then
 		self:updateDash()

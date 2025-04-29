@@ -216,6 +216,7 @@ local WaitOnTarget = Mashina.Step {
 	Mashina.Peep.DidAttack,
 	Mashina.Peep.DidAttack,
 	Mashina.Peep.DidAttack,
+	Mashina.Peep.DidAttack,
 
 	Mashina.Peep.TimeOut {
 		duration = 2
@@ -272,6 +273,10 @@ local BeginCharge = Mashina.Step {
 	Mashina.Set {
 		value = Vector(math.huge),
 		[PREVIOUS_POSITION] = B.Output.result
+	},
+
+	Mashina.Peep.PokeSelf {
+		event = "dashCharge"
 	},
 
 	Mashina.Sequence {

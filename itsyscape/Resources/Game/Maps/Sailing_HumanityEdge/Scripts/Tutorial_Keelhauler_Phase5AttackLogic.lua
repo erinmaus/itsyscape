@@ -98,13 +98,7 @@ local Dash = Mashina.Sequence {
 				CommonAttackLogic.EndCharge
 			},
 
-			Mashina.Sequence {
-				CommonAttackLogic.EndCharge,
-
-				Mashina.Peep.Talk {
-					message = "FAIL"
-				}
-			}
+			CommonAttackLogic.EndCharge
 		}
 	}
 }

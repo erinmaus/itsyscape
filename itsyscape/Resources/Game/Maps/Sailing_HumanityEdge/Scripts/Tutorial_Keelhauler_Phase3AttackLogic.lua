@@ -117,7 +117,7 @@ local AdvancePhase = Mashina.Success {
 		Mashina.Check {
 			condition = function(mashina)
 				local status = mashina:getBehavior(CombatStatusBehavior)
-				local targetHitpoints = status and math.floor(status.maximumHitpoints * 0.75 + 0.5)
+				local targetHitpoints = status and math.floor(status.maximumHitpoints * (2 / 3) + 0.5)
 
 				return status and status.currentHitpoints < targetHitpoints
 			end

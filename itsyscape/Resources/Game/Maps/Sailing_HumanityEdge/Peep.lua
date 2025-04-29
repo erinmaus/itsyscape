@@ -273,6 +273,7 @@ function Island:onSummonKeelhauler(playerPeep)
 		if resource and resource.name == "Keelhauler" then
 			peep:listen("finalize", function()
 				Utility.Peep.playAnimation(peep, "x-cutscene", 100, "Keelhauler_Summon")
+				Utility.Peep.applyEffect(peep, "Favored", true)
 			end)
 		end
 	end
@@ -515,7 +516,9 @@ function Island:onFinishPreparingTeam(playerPeep)
 	end
 
 	if Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") == true then
-		self:teleportCompanion(playerPeep, "KnightCommander")
+		if not Utility.Quest.didStep("Tutorial", "Tutorial_FoundPeak", playerPeep) then
+			self:teleportCompanion(playerPeep, "KnightCommander")
+		end
 
 		if Utility.Quest.isNextStep("Tutorial", "Tutorial_FishedLightningStormfish", playerPeep) or
 		   Utility.Quest.isNextStep("Tutorial", "Tutorial_CookedLightningStormfish", playerPeep)

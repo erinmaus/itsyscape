@@ -30,6 +30,10 @@ function ZealPoke:getType()
 	return self.type
 end
 
+function ZealPoke:setZeal(value)
+	self.zeal = value
+end
+
 function ZealPoke:getZeal()
 	return self.zeal
 end

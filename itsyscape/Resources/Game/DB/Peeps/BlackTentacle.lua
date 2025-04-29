@@ -101,7 +101,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 1,
+		Hitpoints = 50,
 		Resource = Pirate
 	}
 
@@ -134,7 +134,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 1500,
+		Hitpoints = 750,
 		Resource = Keelhauler
 	}
 
@@ -192,17 +192,17 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(45, 1),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(45, 1),
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(45, 1),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(55, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55, 1),
 		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 1.2),
 		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 1.2),
 		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.2),
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30, 1.2),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30, 1.2),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(25),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(25),
-		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(25),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(40),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(40),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(40),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Keelhauler
 	}
