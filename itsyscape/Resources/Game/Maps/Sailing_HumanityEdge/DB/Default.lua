@@ -1418,6 +1418,30 @@ do
 	}
 end
 
+M["ShadowVolume2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 154.669861,
+		PositionY = 0.000000,
+		PositionZ = 157.587378,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 8.320290,
+		ScaleY = 1.781250,
+		ScaleZ = 9.529104,
+		Name = "ShadowVolume2",
+		Map = M._MAP,
+		Resource = M["ShadowVolume2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ShadowVolume",
+		MapObject = M["ShadowVolume2"]
+	}
+end
+
 M["UraniumRock_Default2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

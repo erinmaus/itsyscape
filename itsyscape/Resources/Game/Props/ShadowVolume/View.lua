@@ -36,6 +36,7 @@ function ShadowVolume:load()
 		if _APP and Class.isCompatibleType(_APP, require "ItsyScape.Editor.MapEditorApplication") then
 			self.cube:getMaterial():setIsStencilWriteEnabled(false)
 			self.cube:getMaterial():setIsTranslucent(true)
+			self.cube:getMaterial():setIsCullDisabled(true)
 			self.cube:getMaterial():setColor(Color(0, 0, 0, 0.4))
 		end
 	end)

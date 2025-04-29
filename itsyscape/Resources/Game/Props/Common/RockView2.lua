@@ -87,6 +87,14 @@ function RockView:load()
 		end)
 end
 
+function RockView:getActiveNode()
+	return self.activeNode
+end
+
+function RockView:getDepletedNode()
+	return self.depletedNode
+end
+
 function RockView:remove()
 	PropView.remove(self)
 

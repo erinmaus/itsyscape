@@ -762,13 +762,13 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 	local resourceManager = self.game:getResourceManager()
 
 	for i = 1, #slotNodes do
-		if self.skins[slot] and self.skins[slot].generation ~= generation then
-			if coroutine.running() then
-				self.currentApplySkin = self.currentApplySkin - 1
-			end
+		-- if self.skins[slot] and self.skins[slot].generation ~= generation then
+		-- 	if coroutine.running() then
+		-- 		self.currentApplySkin = self.currentApplySkin - 1
+		-- 	end
 
-			return
-		end
+		-- 	return
+		-- end
 
 		local slot = slotNodes[i]
 		local skin = slot.definition
@@ -1145,7 +1145,7 @@ end
 
 function ActorView:draw()
 	if self.currentApplySkin ~= 0 then
-		return
+		--return
 	end
 
 	for _, slotNodes in pairs(self.skins) do
