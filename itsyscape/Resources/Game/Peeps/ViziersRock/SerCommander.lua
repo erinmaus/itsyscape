@@ -30,7 +30,7 @@ function SerCommander:ready(director, game)
 		Equipment.PLAYER_SLOT_HEAD,
 		Equipment.SKIN_PRIORITY_BASE,
 		"PlayerKit2/Head/Humanlike.lua",
-		{ skinColor })
+		{ Player.Palette.SKIN_LIGHT })
 	self:applySkin(
 		Equipment.PLAYER_SLOT_HEAD,
 		Equipment.SKIN_PRIORITY_ACCENT,

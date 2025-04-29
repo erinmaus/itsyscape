@@ -2085,6 +2085,163 @@ do
 	}
 end
 
+-- Knights talk actions.
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "VizierRockKnight",
+		Main = "quest_tutorial_random_knight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Knight1"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["Knight1"] {
+		TalkAction
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "VizierRockKnight",
+		Main = "quest_tutorial_random_knight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Knight2"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["Knight2"] {
+		TalkAction
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "VizierRockKnight",
+		Main = "quest_tutorial_random_knight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Knight3"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["Knight3"] {
+		TalkAction
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "VizierRockKnight",
+		Main = "quest_tutorial_random_knight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Knight4"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["Knight4"] {
+		TalkAction
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "VizierRockKnight",
+		Main = "quest_tutorial_mining_knight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["MiningKnight1"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["MiningKnight1"] {
+		TalkAction
+	}
+end
+
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "VizierRockKnight",
+		Main = "quest_tutorial_mining_knight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["MiningKnight2"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["MiningKnight2"] {
+		TalkAction
+	}
+end
+
 do
 	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_HumanityEdge_SummonKeelhauler"
 

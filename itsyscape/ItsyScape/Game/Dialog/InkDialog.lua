@@ -29,6 +29,12 @@ function InkDialog:new(filename, variables)
 	self.story = Nomicon.Story(dialog)
 	self.story:listenForGlobalVariable("*", self._setVariable, false, self)
 	self.choices = Nomicon.ChoiceList(self.story)
+
+	local rng = love.math.newRandomGenerator(os.time())
+	rng:random()
+
+	self.story:setRandomSeed(os.time())
+
 	self.speakers = {}
 
 	self.variables = {}
