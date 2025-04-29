@@ -129,6 +129,7 @@ Okay...
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_FishedLightningStormfish"): -> quest_tutorial_main_fish
     - player_is_next_quest_step("Tutorial", "Tutorial_Combat"): -> quest_tutorial_combat
+    - player_is_next_quest_step("Tutorial", "Tutorial_FoundYendorians"): -> quest_tutorial_ascend_peak
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedKeelhauler"): -> quest_tutorial_fight_keelhauler
     - else: Good job, bub! #speaker={C_ORLANDO}
 }
@@ -1559,7 +1560,7 @@ TBD FOUND PEAK
 
 # speaker={C_ORLANDO}
 # background=000000
-TBD REACHED PEAK
+Looks like we reached the peak!
 
 # background=none
 %empty()
@@ -1571,7 +1572,109 @@ TBD REACHED PEAK
 = found_pirates
 
 # speaker={C_ORLANDO}
-TBD DIALOG HERE (FOUND PIRATES)
+GODS! Yendorians AND the Black Tentacles?! This is CRAZY!
+
+* [(Ask about the Black Tentacles.)] Uh... Who are the Black Tentacles?
+  -> who_are_black_tentacles
+* [(Keep listening.)]
+  -> get_knights
+
+= get_knights
+
+# speaker={C_ORLANDO}
+Let's go get the knights from the camp! We'll need 'em all.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+On it.
+
+-> DONE
+
+= who_are_black_tentacles
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+You're joking. You've gotta be joking.
+
+# speaker={C_ORLANDO}
+Stop being mean to {player_get_pronoun_uppercase(X_THEM)}, %person(Ser Commander)!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...{player_get_pronoun_uppercase(X_THEY)} need to get {player_get_pronoun_uppercase(X_THEIR)} head looked at.
+
+# speaker={C_PLAYER}
+{
+  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_defused_situation") && quest_tutorial_main_defused_scout_argument: -> stop_bickering
+  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_inflamed_situation") && quest_tutorial_main_inflamed_scout_argument: -> argue
+  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_ignored_situation") && quest_tutorial_main_ignored_scout_argument: -> stay_silent
+  - else: Um... -> get_knights
+}
+
+= stop_bickering
+
+# speaker={C_PLAYER}
+We know. Let's just stop bickering and move on.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...
+
+# speaker={C_ORLANDO}
+%person({player_get_pronoun_uppercase(X_MX)}) {player_name} is right.
+
+-> explain_black_tentacles
+
+= argue
+
+# speaker={C_PLAYER}
+Says the guy with more concussions than brain cells.
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...
+
+# speaker={C_ORLANDO}
+C'mon %person(Ser Commander) and %person({player_get_pronoun_uppercase(X_MX)}) {player_name}! You're acting like some children! Anyway...
+
+-> explain_black_tentacles
+
+= stay_silent
+
+# speaker={C_PLAYER}
+...
+
+# speaker={C_ORLANDO}
+C'mon %person(Ser Commander), stop it. Anyway...
+
+-> explain_black_tentacles
+
+= explain_black_tentacles
+
+# speaker={C_ORLANDO}
+The Black Tentacles are the meanest pirates to sail the seas. Their captain, Raven, is legendary... for being brutal to her enemies.
+
+# speaker={C_ORLANDO}
+She wants to become the legendary Pirate Queen... And there hasn't been a Pirate King or Queen in a thousand years!
+
+# speaker={C_ORLANDO}
+I've had to fight them in the past. They just HATE %person(Lady Isabelle)! They've never gotten one up on her fleet.
+
+-> get_knights
+
+== quest_tutorial_ascend_peak ==
+
+{
+  - player_is_in_passage("Passage_Peak"): -> is_at_peak
+  - else: -> is_not_at_peak
+}
+
+= is_at_peak
+
+# speaker={C_ORLANDO}
+Looks like we made it!
+
+-> DONE
+
+= is_not_at_peak
+
+# speaker={C_ORLANDO}
+We gotta ascend the peak and see how many Yendorians there are!
 
 -> DONE
 

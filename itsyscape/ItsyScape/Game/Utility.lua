@@ -37,6 +37,7 @@ local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedIn
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
+local ImmortalBehavior = require "ItsyScape.Peep.Behaviors.ImmortalBehavior"
 local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
@@ -5544,6 +5545,9 @@ function Utility.Peep.Attackable:onHit(p)
 	end
 
 	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
+	if combat.currentHitpoints <= 0 and self:hasBehavior(ImmortalBehavior) then
+		combat.currentHitpoints = 1
+	end
 
 	if math.floor(combat.currentHitpoints) == 0 then
 		self:pushPoke('die', p)

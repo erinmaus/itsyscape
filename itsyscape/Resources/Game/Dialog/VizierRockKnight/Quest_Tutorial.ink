@@ -55,7 +55,7 @@ OH! YOU WENT THERE! Funny you say that...
 # speaker={C_PLAYER}
 * [(Defuse situation.)] Break it up! We need to get going. This is not the time to measure your swords.
   -> break_it_up
-* [(Antagonize Knight Commander.)] No wonder you don't wear a helmet when there's nothing worth protecting in that empty skull of yours?
+* [(Antagonize Knight Commander.)] No wonder you don't wear a helmet when there's nothing worth protecting in that empty skull of yours!
   -> insult_knight_commander
 * [(Stay silent.)] (Let me see how this goes...)
   -> stay_quiet

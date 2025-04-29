@@ -20,6 +20,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local ImmortalBehavior = require "ItsyScape.Peep.Behaviors.ImmortalBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
@@ -229,7 +230,7 @@ function Island:onPlayFoundYenderhoundsCutscene(playerPeep)
 			Utility.Peep.enable(playerPeep)
 			self:transitionTutorial(playerPeep, "Tutorial_FoundYenderhounds")
 			self:transitionTutorial(playerPeep, "Anchor_EncounterYenderhounds")
-		end, "quest_tutorial_reached_peak")
+		end, "quest_tutorial_main_find_yenderhounds.spotted")
 	end)
 end
 
@@ -237,6 +238,9 @@ function Island:onPlayFoundPiratesCutscene(playerPeep)
 	Utility.Peep.disable(playerPeep)
 	self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
 		Utility.UI.closeAll(playerPeep)
+
+		-- In case the player quits during the middle of the cutscene.
+		playerPeep:getState():give("KeyItem", "Tutorial_FoundYendorians")
 
 		local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_Peak", "StandardCutscene", playerPeep)
 		cutscene:listen("done", self.onFinishCutscene, self, playerPeep, function()
@@ -482,6 +486,8 @@ end
 
 function Island:initCompanion(playerPeep, companion)
 	local peep = self:getCompanion(playerPeep, companion)
+
+	peep:addBehavior(ImmortalBehavior)
 
 	local player = Utility.Peep.getPlayerModel(playerPeep)
 	if peep and player then

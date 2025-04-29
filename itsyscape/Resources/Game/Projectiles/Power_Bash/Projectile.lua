@@ -16,7 +16,7 @@ local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local Bash = Class(Projectile)
 
 Bash.PARTICLE_SYSTEM = {
-	numParticles = 100
+	numParticles = 100,
 	texture = "Resources/Game/Projectiles/Power_Bash/Particle.png",
 
 	emitters = {
