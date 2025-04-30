@@ -220,13 +220,12 @@ function SailView:updateState()
 		return
 	end
 
-	local hoisted = state.sailsHoisted or love.keyboard.isDown("p")
+	local hoisted = state.sailsHoisted
 	if self.hoisted ~= hoisted then
 		self:hoist(hoisted)
 	end
 
-	--self.power = state.windPower or 0
-	self.power = math.clamp(love.mouse.getPosition() / love.graphics.getWidth())
+	self.power = state.windPower or 0
 end
 
 function SailView:hoist(hoisted)

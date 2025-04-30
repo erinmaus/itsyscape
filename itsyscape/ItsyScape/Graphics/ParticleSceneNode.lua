@@ -25,6 +25,7 @@ function ParticleSceneNode:new()
 	self:getMaterial():setShader(ParticleSceneNode.DEFAULT_SHADER)
 	self:getMaterial():setIsTranslucent(true)
 	self:getMaterial():setIsFullLit(true)
+	self:getMaterial():setIsShadowCaster(false)
 
 	self.isReady = false
 	self._texture = false

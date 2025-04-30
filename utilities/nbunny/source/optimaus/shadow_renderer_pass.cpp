@@ -263,6 +263,11 @@ void nbunny::ShadowRendererPass::draw(lua_State* L, SceneNode& node, float delta
 
 void nbunny::ShadowRendererPass::resize(int width, int height)
 {
+	width /= 2;
+	height /= 2;
+	width = std::max(width, height);
+	height = std::max(width, height);
+
 	if (this->width == width && this->height == height)
 	{
 		return;

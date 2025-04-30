@@ -547,13 +547,8 @@ function Application:update(delta)
 	end
 
 	if not _CONF.server then
-		if self.show3D then
-			self:measure('gameView:update()', self.gameView.update, self.gameView, delta)
-		end
-
-		if self.showUI then
-			self:measure('uiView:update()', self.uiView.update, self.uiView, delta)
-		end
+		self:measure('gameView:update()', self.gameView.update, self.gameView, delta)
+		self:measure('uiView:update()', self.uiView.update, self.uiView, delta)
 	end
 
 	self.clickActionTime = self.clickActionTime - delta
@@ -1203,7 +1198,7 @@ function Application:_draw()
 
 	local delta = self:getFrameDelta()
 	do
-		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE) then
+		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE) and not love.keyboard.isDown("i") then
 			self:measure("3d renderer", self.gameView.draw, self.gameView, delta)
 		end
 
@@ -1216,7 +1211,7 @@ function Application:_draw()
 	love.graphics.origin()
 	love.graphics.ortho(width, height)
 
-	if self.showUI then
+	if self.showUI  then
 		self:measure("ui renderer", self.uiView.draw, self.uiView)
 	end
 

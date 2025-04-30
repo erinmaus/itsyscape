@@ -1074,32 +1074,32 @@ function GameView:_updatePlayerMapNode()
 
 	local delta = _APP:getFrameDelta()
 
-	local distanceSquared = (self.camera:getDistance() * 2) ^ 2
-	local position = self.camera:getPosition()
-	local playerMin = position - Vector.PLANE_XZ
-	local playerMax = position + Vector.PLANE_XZ
-	for _, d in ipairs(m.dynamicGroundDecorations) do
-		local decorationMin, decorationMax = d.sceneNode:getBounds()
-		decorationMin, decorationMax = Vector.transformBounds(decorationMin, decorationMax, m.node:getTransform():getGlobalDeltaTransform(delta))
+	-- local distanceSquared = (self.camera:getDistance() * 2) ^ 2
+	-- local position = self.camera:getPosition()
+	-- local playerMin = position - Vector.PLANE_XZ
+	-- local playerMax = position + Vector.PLANE_XZ
+	-- for _, d in ipairs(m.dynamicGroundDecorations) do
+	-- 	local decorationMin, decorationMax = d.sceneNode:getBounds()
+	-- 	decorationMin, decorationMax = Vector.transformBounds(decorationMin, decorationMax, m.node:getTransform():getGlobalDeltaTransform(delta))
 
-		local u = (playerMin - decorationMax):max(Vector.ZERO)
-		local v = (decorationMin - playerMax):max(Vector.ZERO)
-		local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
+	-- 	local u = (playerMin - decorationMax):max(Vector.ZERO)
+	-- 	local v = (decorationMin - playerMax):max(Vector.ZERO)
+	-- 	local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
 
-		if squaredDistance <= distanceSquared then
-			if d.sceneNode:getParent()  ~= m.node then
-				d.sceneNode:setParent(m.node)
-			end
+	-- 	if squaredDistance <= distanceSquared then
+	-- 		if d.sceneNode:getParent()  ~= m.node then
+	-- 			d.sceneNode:setParent(m.node)
+	-- 		end
 
-			if d.alphaSceneNode and d.alphaSceneNode:getParent()  ~= m.node then
-				d.alphaSceneNode:setParent(m.node)
-			end
-		else
-			if d.sceneNode:getParent() == m.node then
-				d.sceneNode:setParent(nil)
-			end
-		end
-	end
+	-- 		if d.alphaSceneNode and d.alphaSceneNode:getParent()  ~= m.node then
+	-- 			d.alphaSceneNode:setParent(m.node)
+	-- 		end
+	-- 	else
+	-- 		if d.sceneNode:getParent() == m.node then
+	-- 			d.sceneNode:setParent(nil)
+	-- 		end
+	-- 	end
+	-- end
 
 	local _, playerI, playerJ = m.map:getTileAt(self.camera:getPosition().x, self.camera:getPosition().z)
 
@@ -1910,8 +1910,24 @@ function GameView:updateActors(delta)
 end
 
 function GameView:updateProps(delta)
+	local p = {}
+	local z = love.timer.getTime()
 	for _, prop in pairs(self.props) do
+		-- prop:update(delta)
+		local n = prop:getDebugInfo().shortName
+		local b = love.timer.getTime()
 		self.propViewDebugStats:measure(prop, delta)
+		local a = love.timer.getTime()
+		p[n] = (p[n] or 0) + (a - b) * 1000
+	end
+	local z2 = love.timer.getTime()
+	if love.keyboard.isDown("p") then
+		local t = {}
+		for k, v in pairs(p) do
+			table.insert(t, { obj = k, time = v })
+		end
+		table.sort(t, function(a, b) return a.time < b.time end)
+	print(">>> d", "z2 - z", (z2 - z) * 1000, Log.dump(t))
 	end
 end
 

@@ -178,11 +178,7 @@ else
 end
 
 Log.debug("ItsyRealm meta: %s", Log.dump(_ITSYREALM_META))
-
-if love.system.getOS() == "OS X" and jit and jit.arch == "arm64" then
-	Log.info("Running on macOS (arch = '%s'), disabling JIT.", jit and jit.arch or "???")
-	require("jit").off()
-end
+require("jit").off()
 
 local _collectgarbage = collectgarbage
 local gcStops = 0
@@ -190,7 +186,6 @@ local gcStops = 0
 function collectgarbage(opt, arg)
 	if opt == "stop" then
 		if gcStops == 0 then
-			print(">>>>> STOPPING GC")
 			_collectgarbage("stop")
 		end
 
@@ -200,7 +195,6 @@ function collectgarbage(opt, arg)
 		gcStops = math.max(gcStops - 1, 0)
 
 		if gcStops == 0 then
-			print(">>>>> RESUMING GC")
 			return _collectgarbage("restart")
 		end
 	else

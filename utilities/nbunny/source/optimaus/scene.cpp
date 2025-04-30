@@ -823,7 +823,7 @@ void nbunny::SceneNode::sort_by_material(std::vector<SceneNode*>& nodes)
 		nodes.end(),
 		[](auto a, auto b)
 		{
-			return a->material < b->material;
+			return *a->material < *b->material;
 		}
 	);
 }

@@ -273,8 +273,6 @@ function love.keypressed(...)
 					require("jit.p").start("3lm1i1")
 				end
 			elseif love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
-				dumpNbunnyFuncCalls = true
-			else
 				local file = love.filesystem.read("settings.cfg")
 				if file then
 					local r, e = loadstring('return ' .. file)
@@ -295,6 +293,8 @@ function love.keypressed(...)
 						end
 					end
 				end
+			else
+				dumpNbunnyFuncCalls = true
 			end
 		end
 	end
@@ -567,7 +567,7 @@ function love.run()
 			end
 		end
 
-		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 1) / 1000) end
+		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 0) / 1000) end
 
 		if _DEBUG then
 			NLuaRuntime.stopMeasurements()
@@ -596,11 +596,7 @@ function love.run()
 
 					local calls = NLuaRuntime.getCalls()
 					table.sort(calls, function(a, b)
-						if a.functionName == b.functionName then
-							return a.time < b.time
-						end
-
-						return a.functionName < b.functionName
+						return a.time > b.time
 					end)
 
 					for _, call in ipairs(calls) do
