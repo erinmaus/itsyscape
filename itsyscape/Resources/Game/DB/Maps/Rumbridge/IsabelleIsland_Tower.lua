@@ -931,3 +931,93 @@ do
 		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
 	}
 end
+
+do
+	local FurnaceAction = ItsyScape.Action.OpenCraftWindow()
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Metal",
+		ActionType = "Smelt",
+		Action = FurnaceAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Smelt",
+		XProgressive = "Smelting",
+		Language = "en-US",
+		Action = FurnaceAction
+	}
+
+	ItsyScape.Resource.Prop "Furnace_Isabelle" {
+		FurnaceAction,
+		ItsyScape.Action.UseCraftWindow()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFurnace",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dragon skull furnace",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A magical furnace made from a dragon's skull with a scorching, immortal flame. A needless and cruel display of wealth.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+end
+
+do
+	local CraftAction = ItsyScape.Action.OpenCraftWindow()
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Wood",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		XProgressive = "Crafting",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Prop "WoodworkingBench_Isabelle" {
+		CraftAction,
+		ItsyScape.Action.UseCraftWindow()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFurnace",
+		Resource = ItsyScape.Resource.Prop "WoodworkingBench_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "WoodworkingBench_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite woodworking bench",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "WoodworkingBench_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A woodworking bench of incredible craftmanship, made from the finest wood money can buy.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "WoodworkingBench_Isabelle"
+	}
+end

@@ -141,7 +141,7 @@ function TextInput:keyDown(key, scan, isRepeat, ...)
 
 		if isMacOSPaste or isStandardPaste then
 			text = love.system.getClipboardText():gsub("[\n\r\t]", "")
-			self:_type(text, true)
+			self:typeText(text, true)
 		end
 	elseif key == 'left' then
 		if self.isShiftDown > 0 then

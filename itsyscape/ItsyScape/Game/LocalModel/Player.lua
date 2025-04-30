@@ -12,6 +12,7 @@ local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Player = require "ItsyScape.Game.Model.Player"
@@ -652,6 +653,22 @@ function LocalPlayer:addExclusiveChatMessage(message, color)
 			(self:getActor() and self:getActor():getName()) or "<invalid>",
 			self.id)
 	end
+end
+
+function LocalPlayer:getOffensiveRange()
+	local UNIT_RANGE = 2
+
+	if not (self.actor and self.actor:getPeep()) then
+		return UNIT_RANGE
+	end
+
+	local peep = self.actor:getPeep()
+	local weapon = Utility.Peep.getEquippedWeapon(peep, true)
+	if not Class.isCompatibleType(weapon, Weapon) then
+		return UNIT_RANGE
+	end
+
+	return weapon:getAttackRange(peep) * UNIT_RANGE
 end
 
 return LocalPlayer

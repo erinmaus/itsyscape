@@ -43,6 +43,10 @@ function Player:getTarget()
 	return Class.ABSTRACT()
 end
 
+function Player:getOffensiveRange()
+	return Class.ABSTRACT()
+end
+
 -- Moves the player to the specified position on the map via walking.
 function Player:walk(i, j, k)
 	return Class.ABSTRACT()

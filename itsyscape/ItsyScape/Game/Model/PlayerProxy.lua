@@ -33,6 +33,7 @@ PlayerProxy.isReady = Property()
 PlayerProxy.flee = Event.ClientToServerRPC()
 PlayerProxy.getIsEngaged = Property()
 PlayerProxy.getTarget = Property()
+PlayerProxy.getOffensiveRange = Property()
 
 PlayerProxy.move = Event.ClientToServerRPC(Event.Argument("x"), Event.Arguments("z"))
 PlayerProxy.walk = Event.ClientToServerRPC(

@@ -13,21 +13,35 @@ local Mashina = require "ItsyScape.Mashina"
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
-		Mashina.Success {
-			Mashina.Try {
-				Mashina.Step {
-					Mashina.Skills.GatherNearbyResource {
-						action = "Mine",
-						resource = "AzatiteOre"
-					},
+		Mashina.Step {
+			Mashina.Repeat {
+				Mashina.Skills.GatherNearbyResource {
+					action = "Mine",
+					resource = "AzatiteOre"
+				},
 
-					Mashina.Peep.Wait
+				Mashina.Invert {
+					Mashina.Peep.TimeOut {
+						min_duration = 10,
+						max_duration = 20
+					}
 				}
 			},
 
-			Mashina.Step {
-				Mashina.Navigation.Wander,
-				Mashina.Peep.Wait
+			Mashina.Repeat {
+				Mashina.ParallelSequence {
+					Mashina.Step {
+						Mashina.Navigation.Wander,
+						Mashina.Peep.Wait
+					},
+
+					Mashina.Invert {
+						Mashina.Peep.TimeOut {
+							min_duration = 10,
+							max_duration = 30
+						}
+					}
+				}
 			}
 		}
 	}

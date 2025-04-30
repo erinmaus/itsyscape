@@ -165,7 +165,8 @@ function BaseRay:hitBounds(min, max, transform, radius)
 		r = self
 	end
 
-	-- https://tavianator.com/fast-branchless-raybounding-box-intersections/
+	-- 1: https://tavianator.com/fast-branchless-raybounding-box-intersections/
+	-- 2: https://tavianator.com/2015/ray_box_nan.html
 	local inverseDirection = 1 / r.direction
 	local tMin, tMax
 
@@ -178,16 +179,16 @@ function BaseRay:hitBounds(min, max, transform, radius)
 	local ty1 = (min.y - r.origin.y) * inverseDirection.y
 	local ty2 = (max.y - r.origin.y) * inverseDirection.y
  
-	tMin = math.max(tMin, math.min(ty1, ty2))
-	tMax = math.min(tMax, math.max(ty1, ty2))
+	tMin = math.max(tMin, math.min(ty1, ty2), tMax)
+	tMax = math.min(tMax, math.max(ty1, ty2), tMin)
  
 	local tz1 = (min.z - r.origin.z) * inverseDirection.z
 	local tz2 = (max.z - r.origin.z) * inverseDirection.z
  
-	tMin = math.max(tMin, math.min(tz1, tz2))
-	tMax = math.min(tMax, math.max(tz1, tz2))
+	tMin = math.max(tMin, math.min(tz1, tz2), tMax)
+	tMax = math.min(tMax, math.max(tz1, tz2), tMin)
 
-	if tMax + radius >= tMin and tMin >= -radius then
+	if tMax + radius >= math.max(tMin, -radius) then
 		return true, r.origin + r.direction * tMin, tMin
 	else
 		return false

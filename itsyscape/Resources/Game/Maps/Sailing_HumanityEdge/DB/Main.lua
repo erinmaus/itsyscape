@@ -1972,6 +1972,60 @@ do
 	}
 end
 
+M["SeafarerGuildMaster"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 175,
+		PositionY = 3,
+		PositionZ = 175,
+		Direction = -1,
+		Name = "SeafarerGuildMaster",
+		Map = M._MAP,
+		Resource = M["SeafarerGuildMaster"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rumbridge_Port_SeafarerGuildmaster",
+		MapObject = M["SeafarerGuildMaster"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "Orlando",
+		Main = "quest_tutorial_talk_with_robert",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["SeafarerGuildMaster"],
+		Name = "SeafarerGuildMaster",
+		Action = TalkAction
+	}
+
+	M["SeafarerGuildMaster"] {
+		TalkAction
+	}
+end
+
+M["Rosalind"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 140,
+		PositionY = 3,
+		PositionZ = 140,
+		Direction = 1,
+		Name = "Rosalind",
+		Map = M._MAP,
+		Resource = M["Rosalind"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Rosalind",
+		MapObject = M["Rosalind"]
+	}
+end
+
 -- Orlando talk action.
 do
 	local TalkAction = ItsyScape.Action.Talk()
@@ -2043,6 +2097,33 @@ do
 	M["KnightCommander"] {
 		TalkAction,
 		ItsyScape.Action.InvisibleAttack()
+	}
+end
+
+-- Rosalind talk action.
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "Rosalind",
+		Main = "quest_tutorial_main",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Rosalind"],
+		Name = "Rosalind",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["Rosalind"] {
+		TalkAction
 	}
 end
 

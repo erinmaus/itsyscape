@@ -2,6 +2,30 @@ local M = {}
 
 M._MAP = ItsyScape.Resource.Map "Sailing_HumanityEdge"
 
+M["Anvil_Default21"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 136.525614,
+		PositionY = 3.000000,
+		PositionZ = 137.000000,
+		RotationX = 0.000000,
+		RotationY = 0.382683,
+		RotationZ = 0.000000,
+		RotationW = 0.923880,
+		ScaleX = 0.612056,
+		ScaleY = 0.612056,
+		ScaleZ = 0.612056,
+		Name = "Anvil_Default21",
+		Map = M._MAP,
+		Resource = M["Anvil_Default21"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Anvil_Default2",
+		MapObject = M["Anvil_Default21"]
+	}
+end
+
 M["Art_Rage_Fire1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1106,6 +1130,78 @@ do
 	}
 end
 
+M["Crate_Default110"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 143.000000,
+		PositionY = 3.000000,
+		PositionZ = 129.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Crate_Default110",
+		Map = M._MAP,
+		Resource = M["Crate_Default110"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_Default110"]
+	}
+end
+
+M["Crate_Default111"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 143.000000,
+		PositionY = 3.000000,
+		PositionZ = 131.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Crate_Default111",
+		Map = M._MAP,
+		Resource = M["Crate_Default111"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_Default111"]
+	}
+end
+
+M["Crate_Default112"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 141.000000,
+		PositionY = 3.000000,
+		PositionZ = 131.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Crate_Default112",
+		Map = M._MAP,
+		Resource = M["Crate_Default112"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_Default112"]
+	}
+end
+
 M["Crate_Default12"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1250,6 +1346,78 @@ do
 	}
 end
 
+M["Crate_Default18"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 139.000000,
+		PositionY = 3.000000,
+		PositionZ = 129.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Crate_Default18",
+		Map = M._MAP,
+		Resource = M["Crate_Default18"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_Default18"]
+	}
+end
+
+M["Crate_Default19"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 141.000000,
+		PositionY = 3.000000,
+		PositionZ = 129.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Crate_Default19",
+		Map = M._MAP,
+		Resource = M["Crate_Default19"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_Default19"]
+	}
+end
+
+M["Furnace_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 139.000000,
+		PositionY = 3.000000,
+		PositionZ = 135.000000,
+		RotationX = -0.012883,
+		RotationY = -0.382467,
+		RotationZ = -0.031103,
+		RotationW = 0.923356,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Furnace_Isabelle1",
+		Map = M._MAP,
+		Resource = M["Furnace_Isabelle1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Furnace_Isabelle",
+		MapObject = M["Furnace_Isabelle1"]
+	}
+end
+
 M["LightningStormfish_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1319,6 +1487,30 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "LightningStormfish_Default",
 		MapObject = M["LightningStormfish_Default3"]
+	}
+end
+
+M["Rowboat_Default1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 179.468700,
+		PositionY = 1,
+		PositionZ = 181.141067,
+		RotationX = 0.000000,
+		RotationY = 0.382683,
+		RotationZ = 0.000000,
+		RotationW = -0.923880,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Rowboat_Default1",
+		Map = M._MAP,
+		Resource = M["Rowboat_Default1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Rowboat_Default",
+		MapObject = M["Rowboat_Default1"]
 	}
 end
 
@@ -1405,7 +1597,7 @@ do
 		RotationZ = 0.000000,
 		RotationW = 1.000000,
 		ScaleX = 15.610787,
-		ScaleY = 5.222137,
+		ScaleY = 3.5,
 		ScaleZ = 16.067814,
 		Name = "ShadowVolume1",
 		Map = M._MAP,

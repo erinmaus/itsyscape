@@ -1578,7 +1578,6 @@ Common.ATTACK_HINT = {
 		end,
 		open = function(target, state)
 			return function()
-				print("??????")
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
 
 				local isOpen = (gamepadCombatHUD and gamepadCombatHUD:getIsOpen())
@@ -1593,7 +1592,6 @@ Common.ATTACK_HINT = {
 		position = "up",
 		id = function(target, state)
 			return function()
-				print("!!!!")
 				local gamepadCombatHUD = Utility.UI.getOpenInterface(target, "GamepadCombatHUD")
 				local playerPowers = Utility.UI.getOpenInterface(target, "PlayerPowers")
 
@@ -1601,7 +1599,6 @@ Common.ATTACK_HINT = {
 				                 playerPowers
 
 				if not isOpen then
-					print("NOT OPEN")
 					return {
 						gamepad = false,
 						controller = false,
@@ -1646,7 +1643,6 @@ Common.ATTACK_HINT = {
 					}
 				end
 
-				print("BAD!!!!!!!!!!")
 				return {
 					gamepad = false,
 					controller = false,

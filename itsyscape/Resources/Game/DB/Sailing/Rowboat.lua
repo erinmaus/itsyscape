@@ -20,7 +20,7 @@ ItsyScape.Meta.MapObjectSize {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Value = "Resources.Game.Peeps.Props.BasicRowboat",
 	Resource = ItsyScape.Resource.Prop "Rowboat_Default"
 }
 

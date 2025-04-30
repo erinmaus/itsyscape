@@ -29,12 +29,15 @@ FireView.MIN_COLOR_BRIGHTNESS = 0.9
 FireView.MAX_COLOR_BRIGHTNESS = 1.0
 FireView.COLOR = Color(1, 0.5, 0, 1)
 FireView.HEIGHT = 1
+FireView.SCALE = 1
+FireView.HAS_CUSTOM_MODEL = false
 
 function FireView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
 	self.spawned = false
 	self.flickerTime = 0
+	self.time = 0.0
 end
 
 function FireView:getTextureFilename()
@@ -281,64 +284,75 @@ function FireView:load()
 
 	self.node = ModelSceneNode()
 
-	resources:queue(
-		SkeletonResource,
-		self:getResourcePath("Fire.lskel"),
-		function(skeleton)
-			self.skeleton = skeleton
-			self.transforms = skeleton:getResource():createTransforms()
+	if not self.HAS_CUSTOM_MODEL then
+		resources:queue(
+			SkeletonResource,
+			self:getResourcePath("Fire.lskel"),
+			function(skeleton)
+				self.skeleton = skeleton
+				self.transforms = skeleton:getResource():createTransforms()
 
-			resources:queue(
-				ModelResource,
-				self:getResourcePath("Fire.lmodel"),
-				function(model)
-					self.model = model
-				end,
-				self.skeleton:getResource())
-			resources:queue(
-				SkeletonAnimationResource,
-				self:getResourcePath("Idle.lanim"),
-				function(animation)
-					self.animation = animation:getResource()
-				end,
-				skeleton:getResource())
-			resources:queueEvent(function()
-				self.node:setModel(self.model)
-				self.node:getMaterial():setTextures(self.texture)
-				self.node:setParent(root)
+				resources:queue(
+					ModelResource,
+					self:getResourcePath("Fire.lmodel"),
+					function(model)
+						self.model = model
+					end,
+					self.skeleton:getResource())
+				resources:queue(
+					SkeletonAnimationResource,
+					self:getResourcePath("Idle.lanim"),
+					function(animation)
+						self.animation = animation:getResource()
+					end,
+					skeleton:getResource())
+				resources:queueEvent(function()
+					self.node:setModel(self.model)
+					self.node:getMaterial():setTextures(self.texture)
+					self.node:setParent(root)
 
-				self.light = PointLightSceneNode()
-				self.light:getTransform():setLocalTranslation(Vector(0, 0.5, 0.5))
-				self.light:setParent(root)
+					self.animation:computeFilteredTransforms(0, self.transforms)
+					self.skeleton:getResource():applyBindPose(self.transforms)
 
-				self.animation:computeFilteredTransforms(0, self.transforms)
-				self.skeleton:getResource():applyBindPose(self.transforms)
+					self.node:setTransforms(self.transforms)
 
-				self.node:setTransforms(self.transforms)
-
-				self.time = 0.0
-				self.spawned = true
+					self.time = 0.0
+					self.spawned = true
+				end)
 			end)
-		end)
-	resources:queue(
-		TextureResource,
-		self:getTextureFilename(),
-		function(texture)
-			self.texture = texture
-		end)
+
+		resources:queue(
+			TextureResource,
+			self:getTextureFilename(),
+			function(texture)
+				self.texture = texture
+			end)
+	end
+
 	resources:queueEvent(function()
 		self.outerFlames = ParticleSceneNode()
 		self.outerFlames:initParticleSystemFromDef(self:_getOuterParticleDefinition(), resources)
-		self.outerFlames:setParent(self.node)
+		self.outerFlames:setParent(root)
+		self.outerFlames:getTransform():setLocalScale(Vector(self.SCALE))
 
 		self.innerFlames = ParticleSceneNode()
 		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
-		self.innerFlames:setParent(self.node)
+		self.innerFlames:setParent(root)
+		self.innerFlames:getTransform():setLocalScale(Vector(self.SCALE))
 
 		self.smoke = ParticleSceneNode()
 		self.smoke:getMaterial():setIsFullLit(false)
 		self.smoke:initParticleSystemFromDef(self:_getSmokeParticleDefinition(), resources)
-		self.smoke:setParent(self.node)
+		self.smoke:setParent(root)
+		self.smoke:getTransform():setLocalScale(Vector(self.SCALE))
+
+		self.light = PointLightSceneNode()
+		self.light:getTransform():setLocalTranslation(Vector(0, 0.5, 0.5))
+		self.light:setParent(root)
+
+		if self.HAS_CUSTOM_MODEL then
+			self.spawned = true
+		end
 	end)
 end
 
@@ -380,10 +394,11 @@ function FireView:update(delta)
 	end
 
 	if self.spawned then
-		self.time = self.time + delta
-
-		self.animation:computeFilteredTransforms(self.time, self.transforms)
-		self.skeleton:getResource():applyBindPose(self.transforms)
+		if not self.HAS_CUSTOM_MODEL then
+			self.time = self.time + delta
+			self.animation:computeFilteredTransforms(self.time, self.transforms)
+			self.skeleton:getResource():applyBindPose(self.transforms)
+		end
 
 		if self.outerFlames then
 			self.outerFlames:initEmittersFromDef(self:_getOuterParticleDefinition().emitters)

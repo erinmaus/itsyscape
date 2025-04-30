@@ -129,9 +129,10 @@ function Probe:setTile(i, j, layer)
 	})
 end
 
-function Probe:setCone(coneLength, coneRadius)
+function Probe:setCone(coneLength, coneRadius, attackDistance)
 	self.coneLength = coneLength
 	self.coneRadius = coneRadius
+	self.attackDistance = coneLength
 end
 
 -- Returns an iterator over the actions.
@@ -387,22 +388,24 @@ function Probe:_poke(id, target, scope)
 	self.game:getPlayer():poke(id, target, scope)
 end
 
-function Probe:_isPointInCone(point)
+function Probe:_isPointInCone(point, length)
+	length = length or self.coneLength
+
 	point = point * Vector.PLANE_XZ
 	local xzOrigin = self.ray.origin * Vector.PLANE_XZ
 	local xzDirection = (self.ray.direction * Vector.PLANE_XZ):getNormal()
 
 	local difference = point - xzOrigin
 	local distance = difference:dot(xzDirection)
-	local delta = distance / self.coneLength
-	local radius = (distance / self.coneLength) * self.coneRadius
+	local delta = distance / length
+	local radius = (distance / length) * self.coneRadius
 
 	local orthogonalDistance = (difference - xzDirection * distance):getLength()
 
 	return orthogonalDistance < radius and delta <= 1, orthogonalDistance
 end
 
-function Probe:_isInCone(min, max, transform)
+function Probe:_isInCone(min, max, transform, length)
 	if not (self.coneRadius and self.coneLength) then
 		return false
 	end
@@ -418,14 +421,14 @@ function Probe:_isInCone(min, max, transform)
 	}
 
 	for _, point in ipairs(points) do
-		local h, d = self:_isPointInCone(point)
+		local h, d = self:_isPointInCone(point, length)
 		if h and d < bestDistance then
 			best = point
 			bestDistance = d
 		end
 	end
 
-	return not not best, best
+	return not not best, best, bestDistance
 end
 
 -- Adds all actor actions, if possible.
@@ -446,13 +449,21 @@ function Probe:actors()
 			end
 		end
 
+		local actions = actor:getActions("world")
+		local hasAttackAction = false
+		for i = 1, #actions do
+			if actions[i].type == "Attack" then
+				hasAttackAction = true
+				break
+			end
+		end
+
 		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
 		if not s then
-			s, p = self:_isInCone(min, max, transform)
+			s, p = self:_isInCone(min, max, transform, hasAttackAction and self.game:getPlayer():getOffensiveRange())
 		end
 
 		if s then
-			local actions = actor:getActions("world")
 			for i = 1, #actions do
 				local action = self:addAction(
 					actions[i].id,
@@ -467,6 +478,10 @@ function Probe:actors()
 
 				self.isDirty = true
 				count = count + 1
+
+				if actions[i].id == "Attack" then
+					hasAttackAction = true
+				end
 			end
 
 			local action = self:addAction(

@@ -619,7 +619,12 @@ function Island:prepareTutorial(playerPeep, arguments)
 		player = Utility.Peep.getPlayerModel(playerPeep)
 	})
 
-	local yendorianShip = Utility.spawnMapAtPosition(self, "Test_Ship", 128, 0, -16, {
+	local isabellesShip = Utility.spawnMapAtPosition(self, "Test_Ship", 208, 0, 208, {
+		isInstancedToPlayer = true,
+		player = Utility.Peep.getPlayerModel(playerPeep)
+	})
+
+	local yendorianShip = Utility.spawnMapAtPosition(self, "Test_Ship", 192, 0, -16, {
 		isInstancedToPlayer = true,
 		player = Utility.Peep.getPlayerModel(playerPeep)
 	})
@@ -628,6 +633,10 @@ function Island:prepareTutorial(playerPeep, arguments)
 
 	pirateShip:listen("finalize", function()
 		pirateShip:getBehavior(ShipMovementBehavior).rotation = Quaternion.IDENTITY:slerp(-Quaternion.Y_90, 0.3):getNormal()
+	end)
+
+	isabellesShip:listen("finalize", function()
+		isabellesShip:getBehavior(ShipMovementBehavior).rotation = Quaternion.IDENTITY:slerp(Quaternion.Y_90, 0.5):getNormal()
 	end)
 
 	yendorianShip:listen("finalize", function()
@@ -648,6 +657,11 @@ function Island:prepareTutorial(playerPeep, arguments)
 		self:getDirector():getGameInstance(),
 		"NPC_Yendorian")
 	yendorianShip:pushPoke("customize", yendorian)
+
+	local exquisitor = Sailing.Ship.getNPCCustomizations(
+		self:getDirector():getGameInstance(),
+		"NPC_Isabelle_Exquisitor")
+	isabellesShip:pushPoke("customize", exquisitor)
 end
 
 function Island:onPlayerEnter(player, arguments)
