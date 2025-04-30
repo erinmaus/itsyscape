@@ -1910,24 +1910,8 @@ function GameView:updateActors(delta)
 end
 
 function GameView:updateProps(delta)
-	local p = {}
-	local z = love.timer.getTime()
 	for _, prop in pairs(self.props) do
-		-- prop:update(delta)
-		local n = prop:getDebugInfo().shortName
-		local b = love.timer.getTime()
 		self.propViewDebugStats:measure(prop, delta)
-		local a = love.timer.getTime()
-		p[n] = (p[n] or 0) + (a - b) * 1000
-	end
-	local z2 = love.timer.getTime()
-	if love.keyboard.isDown("p") then
-		local t = {}
-		for k, v in pairs(p) do
-			table.insert(t, { obj = k, time = v })
-		end
-		table.sort(t, function(a, b) return a.time < b.time end)
-	print(">>> d", "z2 - z", (z2 - z) * 1000, Log.dump(t))
 	end
 end
 
