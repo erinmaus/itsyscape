@@ -101,3 +101,37 @@ OI! GUNNERS! TAKE 'EM OUT! Fire at them landlubbers! NOW!
 AYE, AYE, CAP'N!
 
 -> DONE
+
+== quest_tutorial_main_defeat_keelhauler ==
+
+= intro
+
+# speaker={C_ORLANDO}
+Looks like your magical, uh, mech... thing didn't stand a chance!
+
+# speaker={C_CAPN_RAVEN}
+Aye, that might be true, but ye are outnumbered. By me count, four to one.
+
+# speaker={C_CAPN_RAVEN}
+These mates took out Yendorians... Think ye can fare much better?
+
+# speaker={C_ORLANDO}
+Uh, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}, I think we're in... itsy... uh, bit of trouble.
+
+# speaker={C_ORLANDO}
+There's no way we can defend against an entire crew by ourselves!
+
+# speaker={C_CAPN_RAVEN}
+MATES! Take 'em out! NO SURRENDER!
+
+-> DONE
+
+= vs_knights
+
+# speaker={C_CAPN_RAVEN}
+ARGH! Mates! WATCH YERSELVES! They got the king's knights!
+
+# speaker={C_ORLANDO}
+THANK THE GODS THEY MADE IT IN TIME!
+
+-> DONE

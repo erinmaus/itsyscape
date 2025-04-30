@@ -190,7 +190,7 @@ function CutsceneEntity:lookAt(target, duration)
 	end
 end
 
-function CutsceneEntity:walkTo(anchor, distance, ghost)
+function CutsceneEntity:walkTo(anchor, distance, ghost, wait)
 	distance = distance or 0
 
 	return function()
@@ -211,14 +211,14 @@ function CutsceneEntity:walkTo(anchor, distance, ghost)
 		local success
 		callback:register(function(s)
 			isDone = true
-			success = success
+			success = s
 		end)
 
 		repeat
 			coroutine.yield()
 		until isDone
 
-		if success then
+		if success and (wait or wait == nil) then
 			local peepI, peepJ, peepDistance
 			repeat
 				peepI, peepJ = Utility.Peep.getTile(self.peep)

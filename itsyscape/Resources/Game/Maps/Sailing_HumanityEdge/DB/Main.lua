@@ -388,7 +388,7 @@ end
 M["Battle1_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Battle",
+		MapObjectGroup = "Tutorial_BattlePirates",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Battle1_Pirate1"]
@@ -442,7 +442,7 @@ end
 M["Battle1_Pirate2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Battle",
+		MapObjectGroup = "Tutorial_BattlePirates",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Battle1_Pirate2"]
@@ -496,7 +496,7 @@ end
 M["Battle1_Yendorian"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Battle",
+		MapObjectGroup = "Tutorial_BattleYendorians",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Battle1_Yendorian"]
@@ -529,7 +529,7 @@ end
 M["Battle2_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Battle",
+		MapObjectGroup = "Tutorial_BattlePirates",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Battle2_Pirate1"]
@@ -583,7 +583,7 @@ end
 M["Battle2_Pirate2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Battle",
+		MapObjectGroup = "Tutorial_BattlePirates",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Battle2_Pirate2"]
@@ -637,7 +637,7 @@ end
 M["Battle2_Yendorian"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Battle",
+		MapObjectGroup = "Tutorial_BattleYendorians",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Battle2_Yendorian"]
@@ -677,7 +677,7 @@ end
 M["Battle3_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Battle",
+		MapObjectGroup = "Tutorial_BattlePirates",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Battle3_Pirate1"]
@@ -730,7 +730,7 @@ end
 M["Battle3_Pirate2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Battle",
+		MapObjectGroup = "Tutorial_BattlePirates",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Battle3_Pirate2"]
@@ -783,7 +783,7 @@ end
 M["Battle3_Yendorian"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Battle",
+		MapObjectGroup = "Tutorial_BattleYendorians",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Battle3_Yendorian"]
@@ -986,7 +986,9 @@ do
 
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Keelhauler",
-		MapObject = M["Keelhauler"]
+		MapObject = M["Keelhauler"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
@@ -1023,6 +1025,18 @@ do
 		Name = "Anchor_VsPirates",
 		Map = M._MAP,
 		Resource = M["Anchor_VsPirates"]
+	}
+end
+
+M["Anchor_KnightCommander_EngagePirates"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 123,
+		PositionY = 3,
+		PositionZ = 55,
+		Name = "Anchor_KnightCommander_EngagePirates",
+		Map = M._MAP,
+		Resource = M["Anchor_KnightCommander_EngagePirates"]
 	}
 end
 
@@ -1276,7 +1290,7 @@ end
 M["Knight1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Team",
+		MapObjectGroup = "Tutorial_TeamKnights",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Knight1"]
@@ -1314,7 +1328,7 @@ end
 M["Knight2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Team",
+		MapObjectGroup = "Tutorial_TeamKnights",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Knight2"]
@@ -1352,7 +1366,7 @@ end
 M["Knight3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Team",
+		MapObjectGroup = "Tutorial_TeamKnights",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Knight3"]
@@ -1390,7 +1404,7 @@ end
 M["Knight4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Team",
+		MapObjectGroup = "Tutorial_TeamKnights",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["Knight4"]
@@ -1428,7 +1442,7 @@ end
 M["MiningKnight1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Team",
+		MapObjectGroup = "Tutorial_TeamKnights",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["MiningKnight1"]
@@ -1478,7 +1492,7 @@ end
 M["MiningKnight2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
-		MapObjectGroup = "Tutorial_Team",
+		MapObjectGroup = "Tutorial_TeamKnights",
 		Map = M._MAP,
 		IsInstanced = 1,
 		MapObject = M["MiningKnight2"]
@@ -2054,6 +2068,12 @@ do
 		Action = TalkAction
 	}
 
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Knight1"],
+		Name = "X_OtherVizierRockKnight",
+		Action = TalkAction
+	}
+
 	ItsyScape.Meta.NamedPeepAction {
 		Name = "Talk",
 		Action = TalkAction,
@@ -2436,5 +2456,39 @@ do
 		Name = "Pirate1",
 		Cutscene = Cutscene,
 		Resource = M["Battle_ShipPirate1"]
+	}
+end
+
+do
+	local Cutscene = ItsyScape.Resource.Cutscene "Sailing_HumanityEdge_DefeatedKeelhauler"
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CameraDolly",
+		Cutscene = Cutscene,
+		Resource = M["CameraDolly"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "CapnRaven",
+		Cutscene = Cutscene,
+		Resource = M["CapnRaven"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Keelhauler",
+		Cutscene = Cutscene,
+		Resource = M["Keelhauler"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "Orlando",
+		Cutscene = Cutscene,
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.CutsceneMapObject {
+		Name = "KnightCommander",
+		Cutscene = Cutscene,
+		Resource = M["KnightCommander"]
 	}
 end

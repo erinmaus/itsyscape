@@ -275,8 +275,72 @@ function Island:onSummonKeelhauler(playerPeep)
 				Utility.Peep.playAnimation(peep, "x-cutscene", 100, "Keelhauler_Summon")
 				Utility.Peep.applyEffect(peep, "Favored", true)
 			end)
+
+			peep:listen("die", function()
+				self:poke("keelhaulerDie", playerPeep)
+			end)
 		end
 	end
+end
+
+function Island:onKnightsAttackPirates(playerPeep)
+	local knights = self:getCompanions(playerPeep, "Tutorial_TeamKnights")
+	local pirates = self:getCompanions(playerPeep, "Tutorial_BattlePirates")
+
+	local remainingPirates = {}
+	for i = 1, #knights do
+		local pirate
+		if #pirates == 0 then
+			pirate = remainingPirates[love.math.random(#remainingPirates)]
+		else
+			pirate = table.remove(pirates, love.math.random(#pirates))
+			table.insert(remainingPirates, pirate)
+		end
+
+		Utility.Peep.attack(knights[i], pirate, math.huge)
+	end
+
+	local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
+	Utility.Peep.attack(knightCommander, remainingPirates[1], math.huge)
+end
+
+function Island:onKeelhaulerDie(playerPeep)
+	local pirate1 = self:getCompanion(playerPeep, "Battle_ShipPirate1")
+	Utility.Peep.setMashinaState(pirate1, false)
+
+	local pirate2 = self:getCompanion(playerPeep, "Battle_ShipPirate2")
+	Utility.Peep.setMashinaState(pirate2, false)
+
+	local center = Vector(Utility.Map.getAnchorPosition(
+		self:getDirector():getGameInstance(),
+		Utility.Peep.getMapResource(self),
+		"Anchor_KnightCommander_EngagePirates"))
+
+	local orlando = self:getCompanion(playerPeep, "Orlando")
+	Utility.Peep.setMashinaState(orlando, false)
+
+	local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
+	Utility.Peep.setPosition(knightCommander, center)
+	Utility.Peep.setMashinaState(knightCommander, false)
+
+	local companions = self:getCompanions(playerPeep, "Tutorial_TeamKnights")
+	for i, companion in ipairs(companions) do
+		local angle = (i - 1) / #companions * math.pi * 2
+		local offset = Vector(math.cos(angle) * 8, 0, math.sin(angle) * 8)
+		Utility.Peep.setPosition(companion, center + offset)
+		Utility.Peep.setMashinaState(companion, false)
+		companion:getCommandQueue():interrupt()
+	end
+
+	Utility.Peep.disable(playerPeep)
+	local cutscene = Utility.Map.playCutscene(self, "Sailing_HumanityEdge_DefeatedKeelhauler", "StandardCutscene", playerPeep)
+	cutscene:listen("done", self.onFinishCutscene, self, playerPeep, function()
+
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.enable(playerPeep)
+		end, _ITSYREALM_DEMO and "quest_tutorial_main_finish_demo" or nil)
+	end)
 end
 
 function Island:onAttackKeelhauler(playerPeep)
@@ -458,8 +522,10 @@ function Island:onFinishPreparingTutorial(playerPeep)
 		self:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
 		self:prepareTutorialPirateShipPeeps(playerPeep)
 
-		local battlePeeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Battle")
-		for _, peep in ipairs(battlePeeps) do
+		Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_BattleYendorians")
+		local piratePeeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_BattlePirates")
+
+		for _, peep in ipairs(piratePeeps) do
 			local team = peep:getBehavior(TeamBehavior)
 
 			local playerPeepCharacter = Utility.Peep.getCharacter(playerPeep)
@@ -483,6 +549,13 @@ function Island:getCompanion(playerPeep, namedMapObject)
 		self:getLayerName(),
 		Probe.namedMapObject(namedMapObject),
 		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
+end
+
+function Island:getCompanions(playerPeep, mapObjectGroup)
+	return self:getDirector():probe(
+		self:getLayerName(),
+		Probe.mapObjectGroup(mapObjectGroup),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))
 end
 
 function Island:initCompanion(playerPeep, companion)
@@ -595,6 +668,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 	end
 
 	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Team")
+	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_TeamKnights")
 	Utility.spawnInstancedMapGroup(playerPeep, "Cutscene")
 	self:pushPoke("finishPreparingTeam", playerPeep)
 
@@ -624,7 +698,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 		player = Utility.Peep.getPlayerModel(playerPeep)
 	})
 
-	local yendorianShip = Utility.spawnMapAtPosition(self, "Test_Ship", 192, 0, -16, {
+	local yendorianShip = Utility.spawnMapAtPosition(self, "Test_Ship", 128, 0, -16, {
 		isInstancedToPlayer = true,
 		player = Utility.Peep.getPlayerModel(playerPeep)
 	})

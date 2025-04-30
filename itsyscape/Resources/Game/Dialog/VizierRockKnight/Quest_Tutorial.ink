@@ -274,12 +274,42 @@ I feel like an errand boy. This is a waste of my talents.
 Just 'cause you're a knight doesn't mean you're above hard work.
 
 # speaker={C_ORLANDO}
-Remember the Knight's Code: "I am a servant of the people."
+Remember the Knight's Code: "I am a servant to the people."
 
 # speaker={C_ORLANDO}
 You're not better than anyone else. Sometimes we gotta do things we don't wanna.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 ...sorry, Ser... You're... right.
+
+-> DONE
+
+== quest_tutorial_main_defeat_keelhauler ==
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Look! We must take these pirates out before they can cause any more trouble
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+They stand no chance against %person(Vizier-King Yohn's) greatest knights!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+We must capture %person(Cap'n Raven)... dead or alive!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Understood?
+
+# speaker=X_{C_VIZIER_ROCK_KNIGHT}
+Heard loud and clear, ser!
+
+# speaker=X_{C_VIZIER_ROCK_KNIGHT}
+AYE, SER!
+
+# speaker=X_{C_VIZIER_ROCK_KNIGHT}
+Understood, ser!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Then let's kill these pirate scum!
+
+~ player_poke_map("knightsAttackPirates")
 
 -> DONE

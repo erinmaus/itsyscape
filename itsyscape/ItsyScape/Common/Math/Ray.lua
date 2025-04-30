@@ -168,33 +168,27 @@ function BaseRay:hitBounds(min, max, transform, radius)
 	-- 1: https://tavianator.com/fast-branchless-raybounding-box-intersections/
 	-- 2: https://tavianator.com/2015/ray_box_nan.html
 	local inverseDirection = 1 / r.direction
-	local tMin, tMax = -math.huge, math.huge
+	local tMin, tMax
 
-	if r.direction.x ~= 0 then
-		local tx1 = (min.x - r.origin.x) * inverseDirection.x
-		local tx2 = (max.x - r.origin.x) * inverseDirection.x
-	 
-		tMin = math.min(tx1, tx2)
-		tMax = math.max(tx1, tx2)
-	end
+	local tx1 = (min.x - r.origin.x) * inverseDirection.x
+	local tx2 = (max.x - r.origin.x) * inverseDirection.x
+ 
+	tMin = math.min(tx1, tx2)
+	tMax = math.max(tx1, tx2)
 
-	if r.direction.y ~= 0 then
-		local ty1 = (min.y - r.origin.y) * inverseDirection.y
-		local ty2 = (max.y - r.origin.y) * inverseDirection.y
-	 
-		tMin = math.max(tMin, math.min(ty1, ty2))
-		tMax = math.min(tMax, math.max(ty1, ty2))
-	end
+	local ty1 = (min.y - r.origin.y) * inverseDirection.y
+	local ty2 = (max.y - r.origin.y) * inverseDirection.y
+ 
+	tMin = math.max(tMin, math.min(ty1, ty2, tMax))
+	tMax = math.min(tMax, math.max(ty1, ty2, tMin))
 
-	if r.direction.z ~= 0 then
-		local tz1 = (min.z - r.origin.z) * inverseDirection.z
-		local tz2 = (max.z - r.origin.z) * inverseDirection.z
-	 
-		tMin = math.max(tMin, math.min(tz1, tz2))
-		tMax = math.min(tMax, math.max(tz1, tz2))
-	end
+	local tz1 = (min.z - r.origin.z) * inverseDirection.z
+	local tz2 = (max.z - r.origin.z) * inverseDirection.z
+ 
+	tMin = math.max(tMin, math.min(tz1, tz2, tMax))
+	tMax = math.min(tMax, math.max(tz1, tz2, tMin))
 
-	if tMax + radius >= math.max(tMin, -radius) then
+	if tMax + radius > tMin and tMin >= -radius then
 		return true, r.origin + r.direction * tMin, tMin
 	else
 		return false

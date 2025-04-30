@@ -458,12 +458,13 @@ function Probe:actors()
 			end
 		end
 
+		local d = hasAttackAction and self.game:getPlayer():getOffensiveRange() or self.coneLength
 		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
 		if not s then
-			s, p = self:_isInCone(min, max, transform, hasAttackAction and self.game:getPlayer():getOffensiveRange())
+			s, p = self:_isInCone(min, max, transform, d)
 		end
 
-		if s then
+		if s and not (self.coneLength and p:distance(self.ray.origin) > d) then
 			for i = 1, #actions do
 				local action = self:addAction(
 					actions[i].id,
@@ -536,7 +537,7 @@ function Probe:props()
 			s, p = self:_isInCone(min, max, transform)
 		end
 
-		if s then
+		if s and not (self.coneLength and p:distance(self.ray.origin) > self.coneLength) then
 			local actions = prop:getActions("world")
 			for i = 1, #actions do
 				local filter = Probe.PROP_FILTERS[actions[i].type:lower()]

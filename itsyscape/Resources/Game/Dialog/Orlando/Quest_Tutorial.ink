@@ -1705,3 +1705,14 @@ OI! Watch out, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}! Look
 OI! That was AWESOME! You stopped the %person(Keelhauler) from using its second special attack!
 
 -> DONE
+
+== quest_tutorial_main_finish_demo ==
+
+# speaker={C_ORLANDO}
+Let %person(Ser Commander) and the knights to take care of the pirates. We gotta get back to camp!
+
+%empty()
+
+~ player_poke_map("finishDemo")
+
+-> DONE

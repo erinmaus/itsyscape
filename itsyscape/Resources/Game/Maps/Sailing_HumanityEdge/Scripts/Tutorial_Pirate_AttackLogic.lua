@@ -13,6 +13,8 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
+local TARGET = B.Reference("Tutorial_Pirate_AttackLogic", "TARGET")
+
 local Tree = BTreeBuilder.Node() {
 	Mashina.Sequence {
 		Mashina.Peep.SetStance {
@@ -24,7 +26,7 @@ local Tree = BTreeBuilder.Node() {
 				Mashina.ParallelTry {
 					Mashina.Sequence {
 						Mashina.Invert {
-							Mashina.Peep.HasCombatTarget,
+							Mashina.Peep.HasCombatTarget
 						},
 
 						Mashina.Peep.SetState {
@@ -32,7 +34,20 @@ local Tree = BTreeBuilder.Node() {
 						}
 					},
 
-					CommonLogic.Heal
+					Mashina.Sequence {
+						Mashina.Peep.HasCombatTarget {
+							[TARGET] = B.Output.target
+						},
+
+						Mashina.Invert {
+							Mashina.Peep.IsCharacter {
+								peep = TARGET,
+								character = "VizierRockKnight"
+							}
+						},
+
+						CommonLogic.Heal
+					}
 				}
 			}
 		}

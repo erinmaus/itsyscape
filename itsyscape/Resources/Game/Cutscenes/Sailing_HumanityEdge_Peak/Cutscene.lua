@@ -38,7 +38,7 @@ return Sequence {
 	CameraDolly:teleport(Player),
 	Camera:zoom(15),
 	Player:dialog("Talk", Orlando, "quest_tutorial_reached_peak.found_pirates"),
-	KnightCommander:walkTo("Anchor_Spawn"),
+	KnightCommander:walkTo("Anchor_Spawn", 0, false, false),
 
 	CameraDolly:teleport(CapnRaven),
 	Camera:zoom(15),
