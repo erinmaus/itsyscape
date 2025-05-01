@@ -16,7 +16,12 @@ local Tree = BTreeBuilder.Node() {
 	Mashina.Repeat {
 		Mashina.Step {
 			Mashina.Navigation.Wander,
-			Mashina.Peep.Wait
+			Mashina.Peep.Wait,
+
+			Mashina.Peep.TimeOut {
+				min_duration = 4,
+				max_duration = 6
+			}
 		}
 	}
 }
