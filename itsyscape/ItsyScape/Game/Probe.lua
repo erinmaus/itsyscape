@@ -464,7 +464,7 @@ function Probe:actors()
 			s, p = self:_isInCone(min, max, transform, d)
 		end
 
-		if s and not (self.coneLength and p:distance(self.ray.origin) > d) then
+		if s and not (self.coneLength and (p * Vector.PLANE_XZ):distance((self.ray.origin * Vector.PLANE_XZ)) > d) then
 			for i = 1, #actions do
 				local action = self:addAction(
 					actions[i].id,
