@@ -58,7 +58,7 @@ Island.CLASS_INVENTORY = {
 Island.MAP_OBJECT_DUMMY = {
 	[Weapon.STYLE_MAGIC] = "WizardDummy", 
 	[Weapon.STYLE_ARCHERY] = "ArcherDummy", 
-	[Weapon.STYLE_MELEE] = "MeleeDummy", 
+	[Weapon.STYLE_MELEE] = "WarriorDummy", 
 }
 
 Island.FISHING_INVENTORY = {

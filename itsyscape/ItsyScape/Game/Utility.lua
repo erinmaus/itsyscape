@@ -4980,7 +4980,7 @@ function Utility.Peep.getMapResource(peep)
 	local instance = Utility.Peep.getInstance(peep)
 	local mapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
 	local groupBaseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup)
-	local mapScript = instance:getMapScriptByLayer(groupBaseLayer)
+	local mapScript = instance:getMapScriptByLayer(groupBaseLayer) or instance:getBaseMapScript()
 	return Utility.Peep.getResource(mapScript)
 end
 
