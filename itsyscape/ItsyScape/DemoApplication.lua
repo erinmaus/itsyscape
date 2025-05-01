@@ -1836,9 +1836,10 @@ function DemoApplication:updatePositionProbe()
 	local direction = self.currentPlayerDirection
 
 	local probe = Probe(self:getGame(), gameView, self:getGameDB())
+	local coneLength = 10
+	local coneRadius = 6
 	probe.onExamine:register(self.examineShimmer, self)
-	probe:init(Ray(position - direction * 1.5, direction))
-	probe:setCone(4.5, 3)
+	probe:conecast(Ray(position - direction * 1.5, direction), coneLength, coneRadius)
 	probe:setTile(i, j, layer)
 	probe:run()
 

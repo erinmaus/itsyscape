@@ -93,7 +93,7 @@ namespace nbunny
         void probe(float frame_delta);
 
         int get_num_hits() const;
-        const ProbeHit& get_hit(int index) const;
+        ProbeHit get_hit(int index) const;
 	};
 }
 

@@ -27,15 +27,15 @@ bool nbunny::ray_hit_bounds(const glm::vec3& origin, const glm::vec3& direction,
     float ty2 = (max.y - origin.y) / direction.y;
 
     t_min = std::max(t_min, std::min(std::min(ty1, ty2), t_max));
-    t_max = std::min(t_max, std::min(std::min(ty1, ty2), t_min));
+    t_max = std::min(t_max, std::max(std::max(ty1, ty2), t_min));
 
     float tz1 = (min.z - origin.z) / direction.z;
     float tz2 = (max.z - origin.z) / direction.z;
 
     t_min = std::max(t_min, std::min(std::min(tz1, tz2), t_max));
-    t_max = std::min(t_max, std::min(std::min(tz1, tz2), t_min));
+    t_max = std::min(t_max, std::max(std::max(tz1, tz2), t_min));
 
-    if (t_min > t_max && t_min >= 0)
+    if (t_max > t_min && t_min >= 0)
     {
         point = origin + direction * glm::vec3(t_min);
         return true;
@@ -136,6 +136,11 @@ bool nbunny::cone_hit_bounds(const glm::vec3& cone_position, const glm::vec3& co
     return false;
 }
 
+nbunny::Probe::Probe(float cell_size) : cell_size(cell_size)
+{
+    // Nothing.
+}
+
 void nbunny::Probe::prepare(float frame_delta)
 {
     cells.clear();
@@ -144,7 +149,10 @@ void nbunny::Probe::prepare(float frame_delta)
 
     for (auto& entity: entities)
     {
-        add(entity, frame_delta);
+        if (entity.is_active)
+        {
+            add(entity, frame_delta);
+        }
     }
 }
 
@@ -179,8 +187,11 @@ void nbunny::Probe::add(ProbeEntity& entity, float frame_delta)
         {
             auto transformed_corner = glm::vec3(transform * glm::vec4(corner, 1.0));
             min = glm::min(min, corner);
-            min = glm::min(min, corner);
+            max = glm::max(max, corner);
         }
+
+        entity.transformed_min = min;
+        entity.transformed_max = max;
     }
     else
     {
@@ -188,8 +199,8 @@ void nbunny::Probe::add(ProbeEntity& entity, float frame_delta)
         entity.transformed_max = entity.max;
     }
 
-    glm::vec3 min_cell = glm::floor(entity.transformed_min / cell_size) * cell_size;
-    glm::vec3 max_cell = glm::ceil(entity.transformed_max / cell_size) * cell_size;
+    glm::vec3 min_cell = glm::floor(entity.transformed_min * cell_size) / cell_size;
+    glm::vec3 max_cell = glm::ceil(entity.transformed_max * cell_size) / cell_size;
 
     for (float x = min_cell.x; x <= max_cell.x; x += cell_size.x)
     {
@@ -197,7 +208,7 @@ void nbunny::Probe::add(ProbeEntity& entity, float frame_delta)
         {
             for (float z = min_cell.z; z <= max_cell.z; z += cell_size.z)
             {
-                auto cell = glm::floor(glm::vec3(x, y, z) / cell_size) * cell_size;
+                auto cell = glm::floor(glm::vec3(x, y, z) * cell_size) / cell_size;
 
                 auto iter = cells.find(cell);
                 if (iter == cells.end())
@@ -235,6 +246,7 @@ void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNod
 
             auto& entity = entities.at(index);
 
+            entity.is_active = true;
             entity.interface = interface;
             entity.id = id;
             entity.min = min;
@@ -245,6 +257,7 @@ void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNod
         else
         {
             ProbeEntity entity = {};
+            entity.is_active = true;
             entity.interface = interface;
             entity.id = id;
             entity.min = min;
@@ -254,6 +267,29 @@ void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNod
             entities.push_back(std::move(entity));
             entity_indices.insert_or_assign(std::make_pair(interface, id), entities.size() - 1);
         }
+    }
+}
+
+void nbunny::Probe::remove(const std::string& interface, int id)
+{
+    bool found = false;
+    int index = 0;
+
+    for (auto& entity: entities)
+    {
+        if (entity.interface == interface && entity.id == id)
+        {
+            entity.is_active = false;
+            found = true;
+            break;
+        }
+
+        ++index;
+    }
+
+    if (found)
+    {
+        free_entity_indices.push_back(index);
     }
 }
 
@@ -320,9 +356,203 @@ void nbunny::Probe::probe(float frame_delta)
 
                         hit.position = position;
                         hit.distance = distance;
+
+                        hits.push_back(hit);
                     }
                 }
             }
         }
     }
+}
+
+void nbunny::Probe::set_ray(const glm::vec3& origin, const glm::vec3& direction)
+{
+    has_ray = true;
+    ray_origin = origin;
+    ray_direction = direction;
+}
+
+void nbunny::Probe::unset_ray()
+{
+    has_ray = false;
+}
+
+void nbunny::Probe::set_cone(const glm::vec3& position, const glm::vec3& direction, float length, float radius)
+{
+    has_cone = true;
+    cone_position = position;
+    cone_direction = direction;
+    cone_length = length;
+    cone_radius = radius;
+}
+
+void nbunny::Probe::unset_cone()
+{
+    has_cone = false;
+}
+
+int nbunny::Probe::get_num_hits() const
+{
+    return (int)hits.size();
+}
+
+nbunny::ProbeHit nbunny::Probe::get_hit(int index) const
+{
+    return hits.at(index);
+}
+
+static int nbunny_probe_add_or_update(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+    const char* interface = luaL_checkstring(L, 2);
+    int id = luaL_checkinteger(L, 3);
+
+    nbunny::SceneNode* parent_scene_node = nullptr;
+    if (!lua_isnil(L, 4))
+    {
+        parent_scene_node = nbunny::lua::get<nbunny::SceneNode*>(L, 4);
+    }
+
+    float min_x = luaL_checknumber(L, 5);
+    float min_y = luaL_checknumber(L, 6);
+    float min_z = luaL_checknumber(L, 7);
+
+    float max_x = luaL_checknumber(L, 8);
+    float max_y = luaL_checknumber(L, 9);
+    float max_z = luaL_checknumber(L, 10);
+
+    probe->add_or_update(interface, id, parent_scene_node, glm::vec3(min_x, min_y, min_z), glm::vec3(max_x, max_y, max_z));
+
+    return 0;
+}
+
+static int nbunny_probe_remove(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+
+    const char* interface = luaL_checkstring(L, 2);
+    int id = luaL_checkinteger(L, 3);
+
+    probe->remove(interface, id);
+
+    return 0;
+}
+
+static int nbunny_probe_set_ray(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+
+    float origin_x = luaL_checknumber(L, 2);
+    float origin_y = luaL_checknumber(L, 3);
+    float origin_z = luaL_checknumber(L, 4);
+
+    float direction_x = luaL_checknumber(L, 5);
+    float direction_y = luaL_checknumber(L, 6);
+    float direction_z = luaL_checknumber(L, 7);
+
+    probe->set_ray(glm::vec3(origin_x, origin_y, origin_z), glm::vec3(direction_x, direction_y, direction_z));
+
+    return 0;
+}
+
+static int nbunny_probe_unset_ray(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+    probe->unset_ray();
+
+    return 0;
+}
+
+static int nbunny_probe_set_cone(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+
+    float position_x = luaL_checknumber(L, 2);
+    float position_y = luaL_checknumber(L, 3);
+    float position_z = luaL_checknumber(L, 4);
+
+    float direction_x = luaL_checknumber(L, 5);
+    float direction_y = luaL_checknumber(L, 6);
+    float direction_z = luaL_checknumber(L, 7);
+
+    float length = luaL_checknumber(L, 8);
+    float radius = luaL_checknumber(L, 9);
+
+    probe->set_cone(
+        glm::vec3(position_x, position_y, position_z),
+        glm::vec3(direction_x, direction_y, direction_z),
+        length,
+        radius);
+
+    return 0;
+}
+
+static int nbunny_probe_unset_cone(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+    probe->unset_cone();
+
+    return 0;
+}
+
+static int nbunny_probe_probe(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+    float frame_delta = luaL_checknumber(L, 2);
+    probe->probe(frame_delta);
+
+    nbunny::lua::push(L, probe->get_num_hits());
+
+    return 1;
+}
+
+static int nbunny_probe_get_num_hits(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+    nbunny::lua::push(L, probe->get_num_hits());
+    return 1;
+}
+
+static int nbunny_probe_get_hit(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+    int index = luaL_checkinteger(L, 2);
+    auto hit = probe->get_hit(index);
+
+    nbunny::lua::push(L, hit.interface);
+    nbunny::lua::push(L, hit.id);
+    nbunny::lua::push(L, hit.position.x);
+    nbunny::lua::push(L, hit.position.y);
+    nbunny::lua::push(L, hit.position.z);
+    nbunny::lua::push(L, hit.distance);
+
+    return 6;
+}
+
+static int nbunny_probe_constructor(lua_State* L)
+{
+    float cell_size = luaL_checknumber(L, 2);
+    nbunny::lua::push(L, std::make_shared<nbunny::Probe>(cell_size));
+    return 1;
+}
+
+extern "C"
+NBUNNY_EXPORT int luaopen_nbunny_optimaus_probe(lua_State* L)
+{
+    static const luaL_Reg metatable[] = {
+        { "addOrUpdate", &nbunny_probe_add_or_update },
+        { "remove", &nbunny_probe_remove },
+        { "setRay", &nbunny_probe_set_ray },
+        { "unsetRay", &nbunny_probe_unset_ray },
+        { "setCone", &nbunny_probe_set_cone },
+        { "unsetCone", &nbunny_probe_unset_cone },
+        { "probe", &nbunny_probe_probe },
+        { "getNumHits", &nbunny_probe_get_num_hits },
+        { "getHit", &nbunny_probe_get_hit },
+        { nullptr, nullptr }
+    };
+
+    nbunny::lua::register_type<nbunny::Probe>(L, &nbunny_probe_constructor, metatable);
+
+    return 1;
 }

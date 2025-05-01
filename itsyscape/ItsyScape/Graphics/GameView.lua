@@ -48,6 +48,7 @@ local WeatherMap = require "ItsyScape.World.WeatherMap"
 local Block = require "ItsyScape.World.GroundDecorations.Block"
 local SkyboxSceneNode = require "ItsyScape.Graphics.SkyboxSceneNode"
 local NShaderCache = require "nbunny.optimaus.shadercache"
+local NProbe = require "nbunny.optimaus.probe"
 
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
@@ -67,6 +68,7 @@ function GameView:new(game, camera)
 	self.views = {}
 	self.propViewDebugStats = GameView.PropViewDebugStats()
 	self.generalDebugStats = DebugStats.GlobalDebugStats()
+	self.probe = NProbe(8)
 
 	self.scene = SceneNode()
 	self.mapMeshes = {}
@@ -128,6 +130,10 @@ end
 
 function GameView:getGame()
 	return self.game
+end
+
+function GameView:getNProbe()
+	return self.probe
 end
 
 function GameView:getRenderer()
@@ -1345,6 +1351,7 @@ end
 
 function GameView:removeActor(actor)
 	if actor and self.actors[actor:getID()] then
+		self.probe:remove("ItsyScape.Game.Model.Actor", actor:getID())
 		self.actors[actor:getID()]:release()
 		self.actors[actor:getID()] = nil
 		self.views[actor] = nil
@@ -1391,6 +1398,8 @@ end
 
 function GameView:removeProp(prop)
 	if prop and self.props[prop:getID()] then
+		self.probe:remove("ItsyScape.Game.Model.Prop", prop:getID())
+
 		self.props[prop:getID()]:remove()
 		self.props[prop:getID()] = nil
 		self.views[prop] = nil
@@ -1441,7 +1450,15 @@ function GameView:spawnItem(item, tile, position)
 	itemNode:getTransform():translate(position)
 	itemNode:setParent(map)
 
-	_APP:getUIView():playItemSoundEffect(item, { id = -1, type = "Drop" })
+	self.probe:addOrUpdate(
+		"X.Item",
+		item.ref, map,
+		position.x - 0.5, position.y - 0.5, position.z - 0.5,
+		position.x + 0.5, position.y + 0.5, position.z + 0.5)
+
+	if not _APP:getUIView():getInterface("CutsceneTransition") then
+		_APP:getUIView():playItemSoundEffect(item, { id = -1, type = "Drop" })
+	end
 
 	self.items[item.ref] = itemNode
 end
@@ -1451,10 +1468,13 @@ function GameView:poofItem(item)
 	if node then
 		node:setParent(nil)
 
+		self.probe:remove("X.Item", item.ref)
 		self.items[item.ref] = nil
 	end
 
-	_APP:getUIView():playItemSoundEffect(item, { id = -1, type = "Take" })
+	if not _APP:getUIView():getInterface("CutsceneTransition") then
+		_APP:getUIView():playItemSoundEffect(item, { id = -1, type = "Take" })
+	end
 end
 
 function GameView:getItem(ref)
@@ -2201,6 +2221,20 @@ function GameView:postTick()
 					string.format("%s::%s::tick", interface, object:getPeepID()),
 					objectView.tick,
 					objectView)
+
+				if interface == "ItsyScape.Game.Model.Prop" then
+					local parentNode = objectView:getRoot():getParent()
+					local parentNodeHandle = parentNode and parentNode:getHandle() or nil
+					local id = objectView:getProp():getID()
+					local min, max = objectView:getProp():getBounds()
+					self.probe:addOrUpdate(interface, object:getID(), parentNodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
+				elseif interface == "ItsyScape.Game.Model.Actor" then
+					local parentNode = objectView:getSceneNode():getParent()
+					local parentNodeHandle = parentNode and parentNode:getHandle() or nil
+					local id = objectView:getActor():getID()
+					local min, max = objectView:getActor():getBounds()
+					self.probe:addOrUpdate(interface, object:getID(), parentNodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
+				end
 			end
 		end
 	else

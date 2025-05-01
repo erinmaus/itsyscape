@@ -96,11 +96,11 @@ function Probe:sort(a, b)
 	return a.depth < b.depth
 end
 
-function Probe:init(ray, tests, radius, layer)
-	self.pendingActionsCount = 0
-
+function Probe:raycast(ray, tests)
 	self.ray = ray:keep()
-	self.radius = radius or 0
+
+	self.isRay = true
+	self.isCone = false
 
 	table.clear(self.actions)
 	self.isDirty = false
@@ -109,7 +109,29 @@ function Probe:init(ray, tests, radius, layer)
 	self.tests = tests
 
 	self.tile = false
-	self.layer = layer or false
+	self.layer = layer
+end
+
+function Probe:conecast(ray, length, radius, tests)
+	self.ray = ray:keep()
+	self.coneLength = length
+	self.coneRadius = radius
+
+	self.isRay = false
+	self.isCone = true
+
+	table.clear(self.actions)
+	self.isDirty = false
+
+	table.clear(self.probes)
+	self.tests = tests
+
+	self.tile = false
+	self.layer = layer
+end
+
+function Probe:init(ray, tests, radius, layer)
+	self:raycast(ray, tests)
 end
 
 function Probe:setTile(i, j, layer)
@@ -127,12 +149,6 @@ function Probe:setTile(i, j, layer)
 			[Map.RAY_TEST_RESULT_J] = j
 		}
 	})
-end
-
-function Probe:setCone(coneLength, coneRadius, attackDistance)
-	self.coneLength = coneLength
-	self.coneRadius = coneRadius
-	self.attackDistance = coneLength
 end
 
 -- Returns an iterator over the actions.
@@ -210,18 +226,47 @@ function Probe:all(callback)
 	self.gameView:testMap(nil, self.ray, Function(self._all, self, callback))
 end
 
-function Probe:run(callback)
+function Probe:_run(callback)
+	self.pendingActionsCount = 0
+
+	local probe = self.gameView:getNProbe()
+
+	if self.isRay then
+		probe:setRay(self.ray.origin.x, self.ray.origin.y, self.ray.origin.z, self.ray.direction.x, self.ray.direction.y, self.ray.direction.z)
+		probe:unsetCone()
+	elseif self.isCone then
+		probe:setCone(self.ray.origin.x, self.ray.origin.y, self.ray.origin.z, self.ray.direction.x, self.ray.direction.y, self.ray.direction.z, self.coneLength, self.coneRadius)
+		probe:unsetRay()
+		return
+	else
+		return
+	end
+
 	local tests = self.tests or Probe.TESTS
 
-	for test in pairs(tests) do
-		if Probe.TESTS[test] then
-			self[test](self)
+	local hits = probe:probe(_APP:getFrameDelta())
+	for i = 1, hits do
+		local interface, id, x, y, z, distance = probe:getHit(i - 1)
+
+		if interface == "ItsyScape.Game.Model.Actor" and tests.actors then
+			local actor = self.gameView:getActorByID(id)
+			self:_actor(actor, Vector(x, y, z), distance)
+		elseif interface == "ItsyScape.Game.Model.Prop" and tests.props then
+			local prop = self.gameView:getPropByID(id)
+			self:_prop(prop, Vector(x, y, z), distance)
+		elseif interface == "X.Item" and tests.loot then
+			local item = self.game:getStage():getItem(id)
+			self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, Vector(x, y, z), distance)
 		end
 	end
 
 	if callback then
 		callback()
 	end
+end
+
+function Probe:run(callback)
+	self:_run(callback)
 end
 
 -- Returns the tile this probe hit as a tuple in the form (i, j, layer).
@@ -304,7 +349,11 @@ function Probe:_take(i, j, k, item)
 	self.game:getPlayer():takeItem(i, j, k, item.ref)
 end
 
-function Probe:_loot(item, i, j, k, position)
+function Probe:_loot(item, i, j, k, position, distance)
+	if self.isCone and distance > self.coneLength then
+		return
+	end
+
 	local name, description
 	do
 		-- TODO: [LANG]
@@ -361,95 +410,56 @@ function Probe:_loot(item, i, j, k, position)
 	self.probes["loot"] = (self.probes["loot"] or 0) + 1
 end
 
--- Adds all "Take" actions, if possible.
-function Probe:loot()
-	if self.probes["loot"] then
-		return self.probes["loot"]
-	end
-
-	for ref, item in self.game:getStage():iterateItems() do
-		local min = item.position - Vector(0.5)
-		local max = item.position + Vector(0.5)
-
-		local s, p = self.ray:hitBounds(min, max, nil, self.radius)
-		if not s then
-			s, p = self:_isInCone(min, max)
-		end
-
-		if s then
-			self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, item.position)
-		end
-	end
-
-	return self.probes["loot"] or 0
-end
-
 function Probe:_poke(id, target, scope)
 	self.game:getPlayer():poke(id, target, scope)
 end
 
-function Probe:_isPointInCone(point, length)
-	length = length or self.coneLength
+-- function Probe:_isPointInCone(point, length)
+-- 	length = length or self.coneLength
 
-	point = point * Vector.PLANE_XZ
-	local xzOrigin = self.ray.origin * Vector.PLANE_XZ
-	local xzDirection = (self.ray.direction * Vector.PLANE_XZ):getNormal()
+-- 	point = point * Vector.PLANE_XZ
+-- 	local xzOrigin = self.ray.origin * Vector.PLANE_XZ
+-- 	local xzDirection = (self.ray.direction * Vector.PLANE_XZ):getNormal()
 
-	local difference = point - xzOrigin
-	local distance = difference:dot(xzDirection)
-	local delta = distance / length
-	local radius = (distance / length) * self.coneRadius
+-- 	local difference = point - xzOrigin
+-- 	local distance = difference:dot(xzDirection)
+-- 	local delta = distance / length
+-- 	local radius = (distance / length) * self.coneRadius
 
-	local orthogonalDistance = (difference - xzDirection * distance):getLength()
+-- 	local orthogonalDistance = (difference - xzDirection * distance):getLength()
 
-	return orthogonalDistance < radius and delta <= 1, orthogonalDistance
-end
+-- 	return orthogonalDistance < radius and delta <= 1, orthogonalDistance
+-- end
 
-function Probe:_isInCone(min, max, transform, length)
-	if not (self.coneRadius and self.coneLength) then
-		return false
-	end
+-- function Probe:_isInCone(min, max, transform, length)
+-- 	if not (self.coneRadius and self.coneLength) then
+-- 		return false
+-- 	end
 
-	local best, bestDistance = false, math.huge
-	local h, d
+-- 	local best, bestDistance = false, math.huge
+-- 	local h, d
 
-	local points = {
-		MathCommon.projectPointOnLineSegment(Vector(min.x, 0, min.z):transform(transform), Vector(max.x, 0, min.z):transform(transform), self.ray.origin),
-		MathCommon.projectPointOnLineSegment(Vector(max.x, 0, min.z):transform(transform), Vector(max.x, 0, max.z):transform(transform), self.ray.origin),
-		MathCommon.projectPointOnLineSegment(Vector(max.x, 0, max.z):transform(transform), Vector(min.x, 0, max.z):transform(transform), self.ray.origin),
-		MathCommon.projectPointOnLineSegment(Vector(min.x, 0, max.z):transform(transform), Vector(min.x, 0, min.z):transform(transform), self.ray.origin)
-	}
+-- 	local points = {
+-- 		MathCommon.projectPointOnLineSegment(Vector(min.x, 0, min.z):transform(transform), Vector(max.x, 0, min.z):transform(transform), self.ray.origin),
+-- 		MathCommon.projectPointOnLineSegment(Vector(max.x, 0, min.z):transform(transform), Vector(max.x, 0, max.z):transform(transform), self.ray.origin),
+-- 		MathCommon.projectPointOnLineSegment(Vector(max.x, 0, max.z):transform(transform), Vector(min.x, 0, max.z):transform(transform), self.ray.origin),
+-- 		MathCommon.projectPointOnLineSegment(Vector(min.x, 0, max.z):transform(transform), Vector(min.x, 0, min.z):transform(transform), self.ray.origin)
+-- 	}
 
-	for _, point in ipairs(points) do
-		local h, d = self:_isPointInCone(point, length)
-		if h and d < bestDistance then
-			best = point
-			bestDistance = d
-		end
-	end
+-- 	for _, point in ipairs(points) do
+-- 		local h, d = self:_isPointInCone(point, length)
+-- 		if h and d < bestDistance then
+-- 			best = point
+-- 			bestDistance = d
+-- 		end
+-- 	end
 
-	return not not best, best, bestDistance
-end
+-- 	return not not best, best, bestDistance
+-- end
 
--- Adds all actor actions, if possible.
-function Probe:actors()
-	if self.probes["actors"] then
-		return self.probes["actors"]
-	end
-
-	local count = 0
-	for actor in self.game:getStage():iterateActors() do
-		local transform
-		local min, max = actor:getBounds()
-		do
-			local _, _, layer = actor:getTile()
-			local node = self.gameView:getMapSceneNode(layer)
-			if node then
-				transform = node:getTransform():getGlobalDeltaTransform(0)
-			end
-		end
-
-		local actions = actor:getActions("world")
+function Probe:_actor(actor, point, distance)
+	local actions = actor:getActions("world")
+	if self.isCone then
 		local hasAttackAction = false
 		for i = 1, #actions do
 			if actions[i].type == "Attack" then
@@ -458,127 +468,110 @@ function Probe:actors()
 			end
 		end
 
-		local d = hasAttackAction and self.game:getPlayer():getOffensiveRange() or self.coneLength
-		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
-		if not s then
-			s, p = self:_isInCone(min, max, transform, d)
-		end
-
-		if s and not (self.coneLength and (p * Vector.PLANE_XZ):distance((self.ray.origin * Vector.PLANE_XZ)) > d) then
-			for i = 1, #actions do
-				local action = self:addAction(
-					actions[i].id,
-					actions[i].verb,
-					actions[i].type,
-					actor:getID(),
-					"actor",
-					actor:getName(),
-					actor:getDescription(),
-					-p.z + ((i / #actions) / 100),
-					self._poke, self, actions[i].id, actor, "world")
-
-				self.isDirty = true
-				count = count + 1
-
-				if actions[i].id == "Attack" then
-					hasAttackAction = true
-				end
+		if hasAttackAction then
+			if distance > self.game:getPlayer():getOffensiveRange() then
+				return
 			end
-
-			local action = self:addAction(
-				-1,
-				"Examine",
-				"examine",
-				actor:getID(),
-				"actor",
-				actor:getName(),
-				actor:getDescription(),
-				-p.z + (((#actions + 1) / #actions) / 100),
-				self.onExamine, actor:getName(), actor:getDescription(), actor)
+		else
+			if distance > self.coneLength then
+				return
+			end
 		end
 	end
 
-	self.probes["actors"] = count
-	return count
+	for i = 1, #actions do
+		local action = self:addAction(
+			actions[i].id,
+			actions[i].verb,
+			actions[i].type,
+			actor:getID(),
+			"actor",
+			actor:getName(),
+			actor:getDescription(),
+			-point.z + ((i / #actions) / 100),
+			self._poke, self, actions[i].id, actor, "world")
+
+		self.isDirty = true
+
+		if actions[i].id == "Attack" then
+			hasAttackAction = true
+		end
+	end
+
+	local action = self:addAction(
+		-1,
+		"Examine",
+		"examine",
+		actor:getID(),
+		"actor",
+		actor:getName(),
+		actor:getDescription(),
+		-point.z + (((#actions + 1) / #actions) / 100),
+		self.onExamine, actor:getName(), actor:getDescription(), actor)
+
+	self.probes.actor = (self.probes.actor or 0) + 1
 end
 
--- Adds all prop actions, if possible.
-function Probe:props()
-	if self.probes["props"] then
-		return self.probes["props"]
-	end
+function Probe:_prop(prop, point, distance)
+	local actions = prop:getActions("world")
 
-	local player = self.game:getPlayer()
-	if not player then
-		return 0
-	end
-
-	local playerActor = player:getActor()
-	if not playerActor then
+	if self.isCone and distance > self.coneLength then
 		return
 	end
 
-	local _, _, playerLayer = playerActor:getTile()
-
-	local count = 0
-	for prop in self.game:getStage():iterateProps() do
-		local transform
-		local min, max = prop:getBounds()
-		do
-			local _, _, layer = prop:getTile()
-			local node = self.gameView:getMapSceneNode(layer)
-			if node then
-				transform = node:getTransform():getGlobalDeltaTransform(0)
-			end
-		end
-
-		local s, p = self.ray:hitBounds(min, max, transform, self.radius)
-		if not s then
-			s, p = self:_isInCone(min, max, transform)
-		end
-
-		if s and not (self.coneLength and p:distance(self.ray.origin) > self.coneLength) then
-			local actions = prop:getActions("world")
-			for i = 1, #actions do
-				local filter = Probe.PROP_FILTERS[actions[i].type:lower()]
-
-				local isHidden = propLayer ~= playerLayer
-				if filter then
-					isHidden = isHidden or filter(prop)
-				end
-
-				local action = self:addAction(
-					actions[i].id,
-					actions[i].verb,
-					actions[i].type,
-					prop:getID(),
-					"prop",
-					prop:getName(),
-					prop:getDescription(),
-					-p.z + ((i / #actions) / 100),
-					self._poke, self, actions[i].id, prop, "world")
-				action.suppress = not isHidden
-
-				self.isDirty = true
-				count = count + 1
-			end
-
-			local action = self:addAction(
-				-1,
-				"Examine",
-				"examine",
-				prop:getID(),
-				"prop",
-				prop:getName(),
-				prop:getDescription(),
-				-p.z + (((#actions + 1) / #actions) / 100),
-				self.onExamine, prop:getName(), prop:getDescription(), prop)
-			action.objectID = prop:getID()
-		end
+	local player = self.game:getPlayer()
+	local playerActor = player and player:getActor()
+	local playerLayer
+	if playerActor then
+		local i, j
+		i, j, playerLayer = playerActor:getTile()
 	end
 
-	self.probes["props"] = count
-	return count
+	local propLayer
+	do
+		local i, j
+		i, j, propLayer = prop:getTile()
+	end
+
+	if playerLayer ~= propLayer then
+		return
+	end
+
+	for i = 1, #actions do
+		local filter = Probe.PROP_FILTERS[actions[i].type:lower()]
+
+		local isHidden = propLayer ~= playerLayer
+		if filter then
+			isHidden = isHidden or filter(prop)
+		end
+
+		local action = self:addAction(
+			actions[i].id,
+			actions[i].verb,
+			actions[i].type,
+			prop:getID(),
+			"prop",
+			prop:getName(),
+			prop:getDescription(),
+			-point.z + ((i / #actions) / 100),
+			self._poke, self, actions[i].id, prop, "world")
+		action.suppress = not isHidden
+
+		self.isDirty = true
+	end
+
+	local action = self:addAction(
+		-1,
+		"Examine",
+		"examine",
+		prop:getID(),
+		"prop",
+		prop:getName(),
+		prop:getDescription(),
+		-point.z + (((#actions + 1) / #actions) / 100),
+		self.onExamine, prop:getName(), prop:getDescription(), prop)
+
+	self.probes.prop = (self.probes.prop or 0) + 1
 end
 
 return Probe
