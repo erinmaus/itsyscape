@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "csg_private.hpp"
 
 #include <glm/gtc/matrix_access.hpp>
