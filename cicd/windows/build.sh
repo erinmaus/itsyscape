@@ -12,6 +12,8 @@ export PATH=/mingw64/bin:$PATH
 export MINGW_ROOT=/mingw64
 export MAKEFLAGS="-j4"
 
+export CMAKE_POLICY_VERSION_MINIMUM=3.5
+
 mkdir -p bin
 mkdir -p build
 mkdir -p staging/ext

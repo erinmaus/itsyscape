@@ -8,13 +8,20 @@ cd itsyscape-love
 
 cp -r ../bmashina/lmashina/lua/B ./B
 cp -r ../devi/devi ./devi
-
 cp -r ../nomicon/nomicon ./nomicon
 
-mkdir -p ./Player
-cp ../Common.dat ./Player/Common.dat
-
 echo $ITSYREALM_VERSION > version.meta
+
+export LD_LIBRARY_PATH="$(pwd)/../installdir/lib/:$LD_LIBRARY_PATH"
+export PATH="$(pwd)/../installdir/bin/:$LD_LIBRARY_PATH"
+export LUA_PATH="$(pwd)/../installdir/share/luajit-2.1.0-beta3/?.lua;$(pwd)/../installdir/share/lua/5.1/?.lua;;"
+export LUA_CPATH="$(pwd)/../installdir/lib/lua/5.1/?.so;;"
+
+love --fused . --f:anonymous --main ItsyScape.BuildLargeTileSetsApplication
+LUAJIT="$(pwd)/../installdir/bin/luajit" ../../../build.sh
+
+cp -rv ~/.local/share/love/ItsyRealm/Resources/* Resources/
+
 zip -9 -qr ../itsyrealm.love .
 
 cd ..

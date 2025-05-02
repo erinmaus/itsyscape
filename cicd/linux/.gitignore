@@ -35,3 +35,6 @@ sentry-native-*/
 curl-*/
 openssl-*/
 devi/
+nomicon/
+lua-https/
+itsyscape-love/

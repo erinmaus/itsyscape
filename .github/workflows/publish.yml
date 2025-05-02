@@ -38,5 +38,4 @@ jobs:
           STEAM_CICD_USERNAME: ${{ secrets.STEAM_CICD_USERNAME }}
           STEAM_CONFIG_VDF: ${{ secrets.STEAM_CONFIG_VDF }}
         run: |
-          ./cicd/publish/upload_steam.sh itsyrealm.vdf
-          ./cicd/publish/upload_steam.sh itsyrealm_demo.vdf
+          ./cicd/publish/upload_steam.sh

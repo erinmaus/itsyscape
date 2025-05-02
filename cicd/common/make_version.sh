@@ -24,3 +24,4 @@ export ITSYRELAM_MAJOR=$(echo $latest_version | sed -n 's/\([0-9][0-9]*\).[0-9][
 export ITSYREALM_MINOR=$(echo $latest_version | sed -n 's/[0-9][0-9]*.\([0-9][0-9]*\).[0-9][0-9]*.*$/\1/p')
 export ITSYREALM_REVISION=$(echo $latest_version | sed -n 's/[0-9][0-9]*.[0-9][0-9]*.\([0-9][0-9]*\).*$/\1/p')
 export ITSYREALM_BUILD="${build_version:-0}"
+export ITSYREALM_ENVIRONMENT="${build_environment:-production}"

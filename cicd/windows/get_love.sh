@@ -26,7 +26,7 @@ cd ./megasource/libs/LuaJIT && git checkout 224129a8e64bfa219d35cd03055bf03952f1
 rm -rf ./megasource/libs/SDL2
 git clone -b SDL2 https://github.com/libsdl-org/SDL.git ./megasource/libs/SDL2
 
-RCFLAGS="--codepage=65001" cmake -G "MSYS Makefiles" -Bmegasource-build -Hmegasource -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$(pwd)/../staging" -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+RCFLAGS="--codepage=65001" cmake -G "MSYS Makefiles" -Bmegasource-build -Hmegasource -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$(pwd)/../staging"
 cmake --build megasource-build --target install -j2
 
 cp ./megasource-build/love/liblove.dll ../staging/liblove.dll
