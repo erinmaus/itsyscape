@@ -48,7 +48,7 @@ jobs:
           ditto -c -k --keepParent "cicd/macos/itsyrealm/ItsyRealm.app" "notarization.zip"
       -
         name: Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: itsyrealm_macos_prenotarization
           path: |

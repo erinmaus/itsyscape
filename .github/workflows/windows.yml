@@ -27,13 +27,13 @@ jobs:
         with:
           msystem: mingw64
           update: true
-          install: git mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake make unzip mingw-w64-x86_64-boost mingw-w64-x86_64-glm zip
+          install: git mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake make unzip mingw-w64-x86_64-boost mingw-w64-x86_64-glm zip mingw-w64-x86_64-7zip
       -
         name: Install Mesa
         run: |
           curl -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/24.2.4/mesa3d-24.2.4-release-msvc.7z
           7z x mesa.7z -o*
-          powershell.exe mesa\systemwidedeploy.cmd 1
+          powershell.exe mesa/systemwidedeploy.cmd 1
       -
         name: Build code
         run: |
