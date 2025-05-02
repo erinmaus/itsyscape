@@ -20,7 +20,7 @@ export LUA_CPATH="$(pwd)/../installdir/lib/lua/5.1/?.so;;"
 love --fused . --f:anonymous --main ItsyScape.BuildLargeTileSetsApplication
 LUAJIT="$(pwd)/../installdir/bin/luajit" ../../../build.sh
 
-cp -rv ~/.local/share/love/ItsyRealm/Resources/* Resources/
+cp -rv ~/.local/share/ItsyRealm/Resources/* Resources/
 
 zip -9 -qr ../itsyrealm.love .
 
