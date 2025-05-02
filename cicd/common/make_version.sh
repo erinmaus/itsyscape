@@ -16,11 +16,11 @@ if [ "$1" == "simple" ]; then
     printf -- "${latest_version}"
 elif [ "$1" == "build" ]; then
     printf -- "${latest_version}.${build_version}"
-else [ ! "$1" == "env" ]; then
+elif [ "$1" != "env" ]; then
     printf -- "${latest_version}.${build_version}-${commit_version}-${build_environment:-production}"
 fi
 
-export ITSYREAM_MAJOR=$(echo $latest_version | sed -n 's/\([0-9][0-9]*\).[0-9][0-9]*.[0-9][0-9]*.*$/\1/p')
-export ITSYREAM_MINOR=$(echo $latest_version | sed -n 's/[0-9][0-9]*.\([0-9][0-9]*\).[0-9][0-9]*.*$/\1/p')
-export ITSYREAM_REVISION=$(echo $latest_version | sed -n 's/[0-9][0-9]*.[0-9][0-9]*.\([0-9][0-9]*\).*$/\1/p')
-export ITSYREAM_BUILD="${build_version:-0}"
+export ITSYRELAM_MAJOR=$(echo $latest_version | sed -n 's/\([0-9][0-9]*\).[0-9][0-9]*.[0-9][0-9]*.*$/\1/p')
+export ITSYREALM_MINOR=$(echo $latest_version | sed -n 's/[0-9][0-9]*.\([0-9][0-9]*\).[0-9][0-9]*.*$/\1/p')
+export ITSYREALM_REVISION=$(echo $latest_version | sed -n 's/[0-9][0-9]*.[0-9][0-9]*.\([0-9][0-9]*\).*$/\1/p')
+export ITSYREALM_BUILD="${build_version:-0}"

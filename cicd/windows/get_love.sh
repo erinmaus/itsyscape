@@ -13,12 +13,12 @@ git clone https://github.com/erinmaus/love2d ./megasource/libs/love || true
 cp ../love.rc ./megasource/libs/love/extra/windows/love.rc.in
 
 source ../../common/make_version.sh env
-sed -i "s/LOVE_MAJOR.\*/LOVE_MAJOR ${ITSYREALM_MAJOR}/g" ./megasource/libs/love/extra/windows/love.rc.in || true
-sed -i "s/LOVE_MINOR.\*/LOVE_MINOR ${ITSYREALM_MINOR}/g" ./megasource/libs/love/extra/windows/love.rc.in || true
-sed -i "s/LOVE_REVISION.\*/LOVE_REVISION ${ITSYREALM_MINOR}/g" ./megasource/libs/love/extra/windows/love.rc.in || true
-sed -i "s/LOVE_BUILD.\*/LOVE_BUILD ${ITSYREALM_BUILD}/g" ./megasource/libs/love/extra/windows/love.rc.in || true
-sed -i "s/LOVE_VERSION_STRING.\*/LOVE_VERSION_STRING \"${ITSYREALM_MAJOR}.${ITSYREALM_MINOR}.${ITSYREALM_REVISION}\""
-iconv -f UTF-8 -t UTF16-LE ./megasource/libs/love/extra/windows/love.rc.in > ./megasource/libs/love/extra/windows/love.rc
+sed -i "s/^#define.*LOVE_MAJOR.*$/#define LOVE_MAJOR ${ITSYREALM_MAJOR:-0}/g" ./megasource/libs/love/extra/windows/love.rc.in || true
+sed -i "s/^#define.*LOVE_MINOR.*$/#define LOVE_MINOR ${ITSYREALM_MINOR:-0}/g" ./megasource/libs/love/extra/windows/love.rc.in || true
+sed -i "s/#define.*LOVE_REVISION.*$/#define LOVE_REVISION ${ITSYREALM_REVISION:-0}/g" ./megasource/libs/love/extra/windows/love.rc.in || true
+sed -i "s/#define.*LOVE_BUILD.*$/#define LOVE_BUILD ${ITSYREALM_BUILD:-0}/g" ./megasource/libs/love/extra/windows/love.rc.in || true
+sed -i "s/^#define.*LOVE_VERSION_STRING.*$/#define LOVE_VERSION_STRING \\\"${ITSYREALM_MAJOR:-0}.${ITSYREALM_MINOR:-0}.${ITSYREALM_REVISION:-0}\\\"/g" ./megasource/libs/love/extra/windows/love.rc.in || true
+cp ./megasource/libs/love/extra/windows/love.rc.in ./megasource/libs/love/extra/windows/love.rc
 
 rm -rf ./megasource/libs/LuaJIT
 git clone https://github.com/LuaJIT/LuaJIT ./megasource/libs/LuaJIT
@@ -26,7 +26,7 @@ cd ./megasource/libs/LuaJIT && git checkout 224129a8e64bfa219d35cd03055bf03952f1
 rm -rf ./megasource/libs/SDL2
 git clone -b SDL2 https://github.com/libsdl-org/SDL.git ./megasource/libs/SDL2
 
-cmake -G "MSYS Makefiles" -Bmegasource-build -Hmegasource -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$(pwd)/../staging"
+RCFLAGS="--codepage=65001" cmake -G "MSYS Makefiles" -Bmegasource-build -Hmegasource -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$(pwd)/../staging"
 cmake --build megasource-build --target install -j2
 
 cp ./megasource-build/love/liblove.dll ../staging/liblove.dll
