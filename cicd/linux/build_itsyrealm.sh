@@ -13,7 +13,7 @@ cp -r ../nomicon/nomicon ./nomicon
 echo $ITSYREALM_VERSION > version.meta
 
 export LD_LIBRARY_PATH="$(pwd)/../installdir/lib/:$LD_LIBRARY_PATH"
-export PATH="$(pwd)/../installdir/bin/:$LD_LIBRARY_PATH"
+export PATH="$(pwd)/../installdir/bin/:$PATH"
 export LUA_PATH="$(pwd)/../installdir/share/luajit-2.1.0-beta3/?.lua;$(pwd)/../installdir/share/lua/5.1/?.lua;;"
 export LUA_CPATH="$(pwd)/../installdir/lib/lua/5.1/?.so;;"
 
