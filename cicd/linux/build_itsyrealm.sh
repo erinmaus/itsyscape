@@ -9,6 +9,8 @@ cd itsyscape-love
 cp -r ../bmashina/lmashina/lua/B ./B
 cp -r ../devi/devi ./devi
 
+cp -r ../nomicon/nomicon ./nomicon
+
 mkdir -p ./Player
 cp ../Common.dat ./Player/Common.dat
 
