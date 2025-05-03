@@ -83,6 +83,7 @@ namespace nbunny
 
         void add_or_update(const std::string& interface, int id, SceneNode* parent_scene_node, const glm::vec3& min, const glm::vec3& max);
         void remove(const std::string& interface, int id);
+        void reset();
         
         void set_ray(const glm::vec3& origin, const glm::vec3& direction);
         void unset_ray();

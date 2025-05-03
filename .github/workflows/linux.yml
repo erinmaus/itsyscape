@@ -6,7 +6,7 @@ on:
       - 'master'
       - '**-ci'
     tags:
-      - '*.*.*'
+      - '*-*.*.*-*'
   workflow_dispatch: null
 
 jobs:

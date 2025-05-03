@@ -3,6 +3,12 @@
 set -xe
 
 rm -rf itsyscape-love
+
+pushd ../..
+make clean || true
+make LUAJIT="$(pwd)/cicd/linux/installdir/bin/luajit" all
+popd
+
 cp -r ../../itsyscape itsyscape-love
 cd itsyscape-love
 

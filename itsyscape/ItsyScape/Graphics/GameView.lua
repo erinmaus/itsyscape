@@ -321,6 +321,8 @@ end
 function GameView:reset()
 	Log.info("Resetting game view...")
 
+	self.probe:reset()
+
 	for _, actor in pairs(self.actors) do
 		Log.info("Poofing actor '%s' (%s).", actor:getActor():getName(), actor:getActor():getPeepID())
 		actor:release()

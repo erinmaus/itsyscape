@@ -293,6 +293,21 @@ void nbunny::Probe::remove(const std::string& interface, int id)
     }
 }
 
+void nbunny::Probe::reset()
+{
+    entities.clear();
+    entity_indices.clear();
+    free_entity_indices.clear();
+
+    cells.clear();
+    hits.clear();
+
+    checked_entities.clear();
+
+    has_ray = false;
+    has_cone = false;
+}
+
 void nbunny::Probe::probe(float frame_delta)
 {
     prepare(frame_delta);
@@ -438,6 +453,14 @@ static int nbunny_probe_remove(lua_State* L)
     return 0;
 }
 
+static int nbunny_probe_reset(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+    probe->reset();
+
+    return 0;
+}
+
 static int nbunny_probe_set_ray(lua_State* L)
 {
     auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
@@ -542,6 +565,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_probe(lua_State* L)
     static const luaL_Reg metatable[] = {
         { "addOrUpdate", &nbunny_probe_add_or_update },
         { "remove", &nbunny_probe_remove },
+        { "reset", &nbunny_probe_reset },
         { "setRay", &nbunny_probe_set_ray },
         { "unsetRay", &nbunny_probe_unset_ray },
         { "setCone", &nbunny_probe_set_cone },

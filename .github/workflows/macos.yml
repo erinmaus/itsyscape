@@ -6,7 +6,7 @@ on:
       - 'master'
       - '**-ci'
     tags:
-      - '*.*.*'
+      - '*-*.*.*-*'
   workflow_dispatch: null
 
 jobs:
@@ -20,12 +20,7 @@ jobs:
         with:
           fetch-depth: 0
       -
-        name: Build code
-        run: |
-          cd ./cicd/macos
-          ./build.sh
-      -
-        name: Codesign app bundle
+        name: Import certs
         env: 
           MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
@@ -39,11 +34,13 @@ jobs:
           security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
           security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
-          
-          find cicd/macos/itsyrealm/ItsyRealm.app/Contents/Frameworks -name '*.framework' -exec /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --timestamp  {} -v \;
-          find cicd/macos/itsyrealm/ItsyRealm.app/Contents/Frameworks -name '*.dylib' -exec /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --timestamp  {} -v \;
-          find cicd/macos/itsyrealm/ItsyRealm.app/Contents/Frameworks -name '*.so' -exec /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --timestamp  {} -v \;
-          /usr/bin/codesign --timestamp --force -s "$MACOS_CERTIFICATE_NAME" --options runtime cicd/macos/itsyrealm/ItsyRealm.app --entitlements cicd/macos/build/love2d/platform/xcode/love-macosxRelease.entitlements -v
+      -
+        name: Build code
+        env:
+          MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
+        run: |
+          cd ./cicd/macos
+          ./build.sh
 
           ditto -c -k --keepParent "cicd/macos/itsyrealm/ItsyRealm.app" "notarization.zip"
       -

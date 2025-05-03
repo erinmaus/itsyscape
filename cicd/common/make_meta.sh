@@ -3,7 +3,7 @@
 cd "$(dirname "$0")"
 
 if [ -z "$ITSYREALM_META_VERSION" ]; then
-    ITSYREALM_META_VERSION="$(./make_version.sh)-$(./make_environment.sh)"
+    ITSYREALM_META_VERSION="$(./make_version.sh)"
 fi
 
 echo "Make version.meta for ${ITSYREALM_META_VERSION}..."
