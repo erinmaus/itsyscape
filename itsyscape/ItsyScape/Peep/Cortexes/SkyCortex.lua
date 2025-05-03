@@ -355,7 +355,6 @@ function SkyCortex:update(delta)
 			if ambient then
 				ambient:setColor(sky.currentAmbientColor)
 				ambient:setAmbience(sky.currentAmbientColor.a)
-				print(">>>>> ambience", sky.currentAmbientColor:get())
 			end
 
 			local sunDirectionalLight = self:getDirector():probe(
