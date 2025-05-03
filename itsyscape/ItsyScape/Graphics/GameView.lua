@@ -2290,13 +2290,18 @@ function GameView:dirty()
 
 			map.mask = MapMeshMask.combine(unpack(mapMeshMasks))
 
-			for _, node in ipairs(map.parts) do
-				if map.mapMeshMasks then
-					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture(), map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())
-				else
-					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())
+				
+			self.resourceManager:queueAsyncEvent(function()
+				map.largeTileSet:emitAll(map.map)
+			
+				for _, node in ipairs(map.parts) do
+					if map.mapMeshMasks then
+						node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture())
+					else
+						node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture)
+					end
 				end
-			end
+			end)
 		end
 	end
 

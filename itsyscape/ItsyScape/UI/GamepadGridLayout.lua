@@ -53,7 +53,13 @@ function GamepadGridLayout:focus(reason)
 	if self.previousFocusedWidget and self.previousFocusedWidget:getParent() == self then
 		inputProvider:setFocusedWidget(self.previousFocusedWidget, reason)
 	elseif self:getNumChildren() > 0 then
-		inputProvider:setFocusedWidget(self:getChildAt(1), reason)
+		for i = 1, self:getNumChildren() do
+			local child = self:getChildAt(i)
+			if child:getIsFocusable() then
+				inputProvider:setFocusedWidget(child, reason)
+				break
+			end
+		end
 	end
 end
 
@@ -124,39 +130,41 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 	local oppositeFocusableWidgetEuclideanDistance = math.huge
 	local oppositeFocusableWidgetManhattanDistance = 0
 	for _, widget in self:iterate() do
-		local x, y = widget:getAbsolutePosition()
-		local w, h = widget:getSize()
+		if widget:getIsFocusable() then
+			local x, y = widget:getAbsolutePosition()
+			local w, h = widget:getSize()
 
-		local dx = (x + w / 2) - (focusedWidgetX + focusedWidgetWidth / 2)
-		local dy = (y + h / 2) - (focusedWidgetY + focusedWidgetHeight / 2)
+			local dx = (x + w / 2) - (focusedWidgetX + focusedWidgetWidth / 2)
+			local dy = (y + h / 2) - (focusedWidgetY + focusedWidgetHeight / 2)
 
-		if ((directionX ~= 0 and math.zerosign(dx) == directionX) or
-		    (directionY ~= 0 and math.zerosign(dy) == directionY)) and
-		   self.currentFocusedWidget ~= widget
-		then
-			local distance = math.sqrt(dx ^ 2 + dy ^ 2)
+			if ((directionX ~= 0 and math.zerosign(dx) == directionX) or
+			    (directionY ~= 0 and math.zerosign(dy) == directionY)) and
+			   self.currentFocusedWidget ~= widget
+			then
+				local distance = math.sqrt(dx ^ 2 + dy ^ 2)
 
-			if distance < focusableWidgetDistance then
-				focusableWidgetDistance = distance
-				focusableWidget = widget
+				if distance < focusableWidgetDistance then
+					focusableWidgetDistance = distance
+					focusableWidget = widget
+				end
 			end
-		end
 
-		if ((directionX ~= 0 and math.zerosign(dx) == -directionX) or
-		    (directionY ~= 0 and math.zerosign(dy) == -directionY)) and
-		   self.currentFocusedWidget ~= widget
-		then
-			dx = math.floor(dx)
-			dy = math.floor(dy)
+			if ((directionX ~= 0 and math.zerosign(dx) == -directionX) or
+			    (directionY ~= 0 and math.zerosign(dy) == -directionY)) and
+			   self.currentFocusedWidget ~= widget
+			then
+				dx = math.floor(dx)
+				dy = math.floor(dy)
 
-			local euclideanDistance = math.sqrt(dx ^ 2 + dy ^ 2)
-			local manhattanDistance = math.abs(directionX * dx) + math.abs(directionY * dy)
+				local euclideanDistance = math.sqrt(dx ^ 2 + dy ^ 2)
+				local manhattanDistance = math.abs(directionX * dx) + math.abs(directionY * dy)
 
-			if manhattanDistance > oppositeFocusableWidgetManhattanDistance or
-			   (manhattanDistance == oppositeFocusableWidgetManhattanDistance and euclideanDistance < oppositeFocusableWidgetEuclideanDistance) then
-				oppositeFocusableWidgetEuclideanDistance = euclideanDistance
-				oppositeFocusableWidgetManhattanDistance = manhattanDistance
-				oppositeFocusableWidget = widget
+				if manhattanDistance > oppositeFocusableWidgetManhattanDistance or
+				   (manhattanDistance == oppositeFocusableWidgetManhattanDistance and euclideanDistance < oppositeFocusableWidgetEuclideanDistance) then
+					oppositeFocusableWidgetEuclideanDistance = euclideanDistance
+					oppositeFocusableWidgetManhattanDistance = manhattanDistance
+					oppositeFocusableWidget = widget
+				end
 			end
 		end
 	end

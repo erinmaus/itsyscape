@@ -127,11 +127,17 @@ function GamepadRibbonController:getCurrentTab()
 end
 
 function GamepadRibbonController:pull()
+	local playerStorage = Utility.Peep.getStorage(self:getPeep())
+	local clockSection = playerStorage:getSection("clock")
+	local lastSurveyTime = clockSection:get("survey") or (os.time() - Utility.Time.DAY)
+	local showSurvey = (os.time() - lastSurveyTime) >= Utility.Time.DAY
+
 	return {
 		inventory = { items = self:pullInventory(), count = self:getInventorySpace() },
 		equipment = { items = self:pullEquipment(), count = Equipment.PLAYER_SLOTS_MAX },
 		skills = self:pullSkills(),
-		stats = self:pullEquipmentStats()
+		stats = self:pullEquipmentStats(),
+		showSurvey = showSurvey
 	}
 end
 
@@ -210,6 +216,10 @@ function GamepadRibbonController:poke(actionID, actionIndex, e)
 		self:spawn(e)
 	elseif actionID == "steal" then
 		self:steal(e)
+	elseif actionID == "quit" then
+		self:quit(e)
+	elseif actionID == "rate" then
+		self:rate(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -801,6 +811,28 @@ function GamepadRibbonController:spawn(e)
 	if success then
 		Log.info("Spawned %d '%s' in the inventory of peep '%s' via skill guide debug cheat.", e.count or 1, e.itemID, self:getPeep():getName())
 	end
+end
+
+function GamepadRibbonController:quit(e)
+	local playerModel = Utility.Peep.getPlayerModel(self:getPeep())
+
+	playerModel:saveLocation()
+	Utility.save(self:getPeep())
+	playerModel:onLeave()
+end
+
+function GamepadRibbonController:rate(e)
+	if e.rating == true then
+		Analytics:rateSession(self:getPeep(), "Thumbs Up")
+	elseif e.rating == false then
+		Analytics:rateSession(self:getPeep(), "Thumbs Down")
+	else
+		Analytics:rateSession(self:getPeep(), "Skip")
+	end
+
+	local playerStorage = Utility.Peep.getStorage(self:getPeep())
+	local clockSection = playerStorage:getSection("clock")
+	clockSection:set("survey", os.time())
 end
 
 function GamepadRibbonController:steal(e)

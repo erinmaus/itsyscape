@@ -329,16 +329,9 @@ while isRunning do
 			elseif e.type == 'tryQuit' then
 				for _, player in game:iteratePlayers() do
 					if player:getID() == adminPlayerID then
-						if Utility.UI.isOpen(player:getActor():getPeep(), "ConfigWindow") then
-							outputAdminChannel:push({
-								type = 'quit'
-							})
-						else
-							Utility.UI.openInterface(
-								player:getActor():getPeep(),
-								"ConfigWindow",
-								false)
-						end
+						outputAdminChannel:push({
+							type = 'quit'
+						})
 
 						break
 					end

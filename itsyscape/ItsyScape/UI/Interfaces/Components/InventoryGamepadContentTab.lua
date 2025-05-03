@@ -412,8 +412,8 @@ function InventoryGamepadContentTab:probe(index, button)
 	if self.currentSwapIndex then
 		table.insert(actions, {
 			id = -1,
-			type = action.type,
 			verb = "Swap",
+			type = "Swap",
 			object = object,
 			objectID = item.id,
 			objectType = "item",
@@ -423,7 +423,7 @@ function InventoryGamepadContentTab:probe(index, button)
 		table.insert(actions, {
 			id = -2,
 			verb = "Examine",
-			type = action.type,
+			type = "Examine",
 			object = object,
 			objectID = item.id,
 			objectType = "item",
