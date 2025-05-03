@@ -472,6 +472,12 @@ function Island:prepareTutorialPirateShipPeeps(playerPeep)
 	end
 end
 
+function Island:onFinishDemo(playerPeep)
+	if _ITSYREALM_DEMO then
+		Utility.move(playerPeep, "FinishDemo")
+	end
+end
+
 function Island:onFinishPreparingTutorial(playerPeep)
 	self.playersInTutorial[playerPeep] = true
 
