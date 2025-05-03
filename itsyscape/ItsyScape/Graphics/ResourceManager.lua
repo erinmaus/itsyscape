@@ -158,6 +158,7 @@ function ResourceManager:update()
 		self.wasPending = true
 	end
 
+	local isEditor = _LOG_WRITE_ALL
 	do
 		local index = 1
 		while index <= #self.pendingResources do
@@ -195,6 +196,10 @@ function ResourceManager:update()
 					index = index + 1
 				end
 			end
+		end
+
+		if _LOG_WRITE_ALL then
+			Log.debug("Tried to loaded %d resource(s).", index)
 		end
 	end
 
@@ -238,6 +243,10 @@ function ResourceManager:update()
 			end
 
 			currentTime = love.timer.getTime()
+		end
+
+		if _LOG_WRITE_ALL then
+			Log.debug("Ran %d async event(s).", index)
 		end
 	end
 
@@ -291,6 +300,10 @@ function ResourceManager:update()
 
 		c = c + 1
 	until currentTime > pendingSyncEventBreakTime or elapsedTimeForSingleResource > ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE
+
+	if _LOG_WRITE_ALL and c > 0 then
+		Log.debug("Ran async event(s), %d pending; %d iterations.", c, #self.pendingSyncEvents, c)
+	end
 
 	if currentTime and currentTime > pendingSyncEventBreakTime + self.frameDuration then
 		Log.info('Resource loading spilled %d ms.', math.floor((currentTime - pendingSyncEventBreakTime) * 1000))
