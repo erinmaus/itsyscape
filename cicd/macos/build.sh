@@ -22,5 +22,6 @@ mkdir -p staging/ext
 ./get_discworld.sh
 ./get_devi.sh
 ./get_nomicon.sh
+./prepackage.sh
 ./zip_itsyrealm.sh
 ./package.sh
