@@ -360,10 +360,6 @@ end
 function DialogBoxController:update(...)
 	Controller.update(self, ...)
 
-	if not self.currentPacket then
-		self:getDirector():getGameInstance():getUI():closeInstance(self)
-	end
-
 	if self.needsPump then
 		self:getDirector():getGameInstance():getUI():sendPoke(
 			self,
@@ -371,6 +367,10 @@ function DialogBoxController:update(...)
 			nil,
 			{})
 		self.needsPump = false
+	end
+
+	if not self.currentPacket then
+		self:getDirector():getGameInstance():getUI():closeInstance(self)
 	end
 end
 

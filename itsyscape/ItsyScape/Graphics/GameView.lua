@@ -1452,7 +1452,7 @@ function GameView:spawnItem(item, tile, position)
 
 	self.probe:addOrUpdate(
 		"X.Item",
-		item.ref, map,
+		item.ref, map:getHandle(),
 		position.x - 0.5, position.y - 0.5, position.z - 0.5,
 		position.x + 0.5, position.y + 0.5, position.z + 0.5)
 
