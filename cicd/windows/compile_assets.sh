@@ -17,6 +17,6 @@ popd
 rm -rf itsyscape
 cp -r ../../../../itsyscape itsyscape
 
-LUA_CPATH="../../staging/ext/?.dll" LUA_PATH="../../staging/ext/?.lua;../../staging/ext/?/init.lua" ../../staging/lovec.exe --fused itsyscape --f:anonymous --main ItsyScape.BuildLargeTileSetsApplication
+LUA_CPATH="../../staging/ext/?.dll" LUA_PATH="../../staging/ext/?.lua;../../staging/ext/?/init.lua" ../../staging/lovec.exe --fused itsyscape --f:anonymous --debug --main ItsyScape.BuildLargeTileSetsApplication
 
 cp -r `cygpath -m $APPDATA`/ItsyRealm/Resources/* ./itsyscape/Resources
