@@ -21,5 +21,6 @@ mkdir -p staging/ext
 ./get_bmashina.sh
 ./get_discworld.sh
 ./get_devi.sh
+./get_nbunny.sh
 ./zip_itsyrealm.sh
 ./package.sh
