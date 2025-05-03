@@ -5,6 +5,7 @@ set -xe
 cd ./cicd/linux
 
 export DEBIAN_FRONTEND=noninteractive
+export CI="1"
 
 apt-get update
 
