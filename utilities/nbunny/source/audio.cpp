@@ -8,8 +8,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef false
-
 #include <algorithm>
 #include "common/math.h"
 #include "nbunny/nbunny.hpp"
@@ -410,5 +408,3 @@ NBUNNY_EXPORT int luaopen_nbunny_audio(lua_State* L)
 
 	return 1;
 }
-
-#endif
