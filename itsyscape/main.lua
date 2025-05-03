@@ -481,6 +481,7 @@ function itsyrealm.errorhandler()
 				16)
 		end
 
+		if os.get
 		love.graphics.present()
 	end
 
@@ -503,6 +504,7 @@ function itsyrealm.errorhandler()
 	end
 end
 
+local isCI = os.getenv("CI")
 function love.run()
 	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
 
@@ -548,7 +550,7 @@ function love.run()
 			end
 		end
 
-		if love.graphics and love.graphics.isActive() then
+		if love.graphics and love.graphics.isActive() and not isCI then
 			love.graphics.origin()
 			love.graphics.clear(love.graphics.getBackgroundColor())
 
