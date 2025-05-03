@@ -249,7 +249,7 @@ function ResourceManager:update()
 			currentTime = love.timer.getTime()
 
 			if _LOG_WRITE_ALL and _DEBUG then
-				Log.debug("Ran async event '%s'.")
+				Log.debug("Ran async event '%s'.", pending.callback)
 				Log.debug("Current async event stack: %s", debug.traceback(callback))
 			end
 		end

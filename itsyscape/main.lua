@@ -481,7 +481,6 @@ function itsyrealm.errorhandler()
 				16)
 		end
 
-		if os.get
 		love.graphics.present()
 	end
 
