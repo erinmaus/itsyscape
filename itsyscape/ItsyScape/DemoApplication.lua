@@ -1997,6 +1997,7 @@ function DemoApplication:probeCurrentShimmer(performDefault)
 
 	if performDefault then
 		for _, action in ipairs(actions) do
+			print("trying...", _, action.type, action.suppress)
 			if action.type:lower() ~= "examine" and not action.suppress then
 				local x, y = self:_getObjectUIPosition(object, 0.5)
 				self.clickActionTime = Application.CLICK_DURATION
@@ -2004,8 +2005,10 @@ function DemoApplication:probeCurrentShimmer(performDefault)
 
 				local s, r = pcall(action.callback)
 				if not s then
-					Log.warn("Couldn't perform action (%s): %s", Log.dump(action), r)
+					Log.warn("Couldn't perform action: %s", r)
 				end
+
+				print("success", _)
 
 				break
 			end

@@ -385,6 +385,155 @@ do
 	}
 end
 
+M["PeakYendorian1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_PeakObstacles",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["PeakYendorian1"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 119,
+		PositionY = 5,
+		PositionZ = 139,
+		Direction = 1,
+		Name = "PeakYendorian1",
+		Map = M._MAP,
+		Resource = M["PeakYendorian1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
+		MapObject = M["PeakYendorian1"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_GoodAttackLogic.lua",
+		Resource = M["PeakYendorian1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_AggressiveIdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["PeakYendorian1"]
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 200,
+		Resource = M["PeakYendorian1"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(25),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(25),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(25),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30),
+		Prayer = 55,
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["PeakYendorian1"]
+	}
+end
+
+M["PeakYendorian2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_PeakObstacles",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["PeakYendorian2"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 157,
+		PositionY = 5,
+		PositionZ = 125,
+		Direction = 1,
+		Name = "PeakYendorian2",
+		Map = M._MAP,
+		Resource = M["PeakYendorian2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
+		MapObject = M["PeakYendorian2"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_GoodAttackLogic.lua",
+		Resource = M["PeakYendorian2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_AggressiveIdleLogic.lua",
+		IsDefault = 1,
+		Resource = M["PeakYendorian2"]
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 200,
+		Resource = M["PeakYendorian2"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(30, 1),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(30),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30),
+		Prayer = 55,
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30),
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["PeakYendorian2"]
+	}
+end
+
+M["PeakYenderhound"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_PeakObstacles",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["PeakYenderhound"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 175,
+		PositionY = 9,
+		PositionZ = 113,
+		Direction = 1,
+		Name = "PeakYenderhound",
+		Map = M._MAP,
+		Resource = M["PeakYenderhound"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Yenderhound",
+		MapObject = M["PeakYenderhound"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AttackLogic.lua",
+		Resource = M["PeakYenderhound"]
+	}
+end
+
 M["Battle1_Pirate1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {
@@ -2099,6 +2248,12 @@ do
 	ItsyScape.Meta.TalkSpeaker {
 		Resource = M["KnightCommander"],
 		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Knight1"],
+		Name = "X_VizierRockKnight",
 		Action = TalkAction
 	}
 

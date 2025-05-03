@@ -442,7 +442,7 @@ function Application:probeActions(actions, performDefault, callback)
 
 				local s, r = pcall(action.callback)
 				if not s then
-					Log.warn("couldn't perform action: %s", r)
+					Log.warn("Couldn't perform action: %s", r)
 				end
 
 				return true

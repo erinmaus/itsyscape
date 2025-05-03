@@ -537,10 +537,6 @@ function Probe:_prop(prop, point, distance)
 		i, j, propLayer = prop:getTile()
 	end
 
-	if playerLayer ~= propLayer then
-		return
-	end
-
 	for i = 1, #actions do
 		local filter = Probe.PROP_FILTERS[actions[i].type:lower()]
 
@@ -559,7 +555,7 @@ function Probe:_prop(prop, point, distance)
 			prop:getDescription(),
 			-point.z + ((i / #actions) / 100),
 			self._poke, self, actions[i].id, prop, "world")
-		action.suppress = not isHidden
+		action.suppress = isHidden
 
 	end
 

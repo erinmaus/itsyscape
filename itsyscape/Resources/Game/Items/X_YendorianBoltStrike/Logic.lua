@@ -35,7 +35,7 @@ function YendorianBoltStrike:getDelay()
 end
 
 function YendorianBoltStrike:getCooldown()
-	return 1.8
+	return 5
 end
 
 return YendorianBoltStrike

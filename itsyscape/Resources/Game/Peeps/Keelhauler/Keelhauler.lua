@@ -45,6 +45,7 @@ function Keelhauler:ready(director, game)
 	Utility.Peep.Creep.setBody(self, "Keelhauler")
 	Utility.Peep.Creep.addAnimation(self, "animation-idle", "Keelhauler_Idle")
 	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Walk")
+	Utility.Peep.Creep.addAnimation(self, "animation-die", "Keelhauler_Die")
 	Utility.Peep.Creep.applySkin(
 		self,
 		"x-accents",

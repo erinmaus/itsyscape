@@ -511,6 +511,10 @@ function Island:onFinishPreparingTutorial(playerPeep)
 	       Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundYendorians", playerPeep) or
 	       Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedKeelhauler", playerPeep)
 	then
+		if Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundPeak", playerPeep) then
+			Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_PeakObstacles")
+		end
+
 		local piratePeeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Pirates")
 		self:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
 		self:prepareTutorialPirateShipPeeps(playerPeep)

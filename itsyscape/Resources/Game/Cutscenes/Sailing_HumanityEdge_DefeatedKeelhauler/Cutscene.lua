@@ -2,7 +2,7 @@ return Sequence {
 	Camera:target(Keelhauler),
 	Camera:zoom(10),
 	Camera:zoom(30, 2),
-	Keelhauler:wait(2),
+	Keelhauler:wait(5),
 
 	Camera:target(Player),
 

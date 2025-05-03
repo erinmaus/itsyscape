@@ -214,7 +214,7 @@ function DialogBoxController:submit(e)
 end
 
 function DialogBoxController:next(e)
-	if self.currentPacket:isType(MessagePacket) or self.currentPacket:isType(SelectPacket) then
+	if self.currentPacket:isType(MessagePacket) then
 		self:pump(self.currentPacket)
 	end
 end
