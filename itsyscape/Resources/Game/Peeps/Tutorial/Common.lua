@@ -281,34 +281,10 @@ Common.EQUIP_GEAR = {
 					return "GamepadRibbon-PlayerInventory"
 				end
 
-				local inventory = Utility.Peep.getInventory(target)
-
-				local firstIsabelliumItem
-				local hasCurrentIsabelliumItem = false
-				for _, item in ipairs(inventory) do
-					if not firstIsabelliumItem and item:getID():match("^Isabellium") then
-						firstIsabelliumItem = item
-					end
-
-					if state.currentIsabelliumItem and state.currentIsabelliumItem:getID() == item:getID() then
-						hasCurrentIsabelliumItem = true
-					end
-				end
-
-				local isabelliumItemID
-				if hasCurrentIsabelliumItem then
-					isabelliumItemID = state.currentIsabelliumItem:getID()
-				elseif firstIsabelliumItem then
-					isabelliumItemID = firstIsabelliumItem:getID()
-					state.currentIsabelliumItem = firstIsabelliumItem
-				end
-
-				local id = string.format("Inventory-Item-%s", isabelliumItemID)
-
 				return {
-					gamepad = id,
-					standard = id,
-					mobile = id
+					gamepad = "PlayerInventory",
+					standard = "PlayerInventory",
+					mobile = "PlayerInventory"
 				}
 			end
 		end,
@@ -339,36 +315,22 @@ Common.EQUIP_GEAR = {
 					}
 				end
 
-				local text
-				if state.currentIsabelliumItem then
-					text = {
-						{ 1, 1, 1, 1},
-						"Equip",
-						{ 1, 1, 1, 1},
-						" ",
-						"ui.poke.item",
-						Utility.Item.getInstanceName(state.currentIsabelliumItem)
-					}
-				else
-					text = "Equip"
-				end
-
 				return {
 					gamepad = {
 						button = "a",
-						label = text
+						label = "Equip item"
 					},
 
 					standard = {
 						button = "mouse_left",
 						controller = "KeyboardMouse",
-						label = text
+						label = "Equip item"
 					},
 
 					mobile = {
 						button = "tap",
 						controller = "Touch",
-						label = text
+						label = "Equip item"
 					}
 				}
 			end

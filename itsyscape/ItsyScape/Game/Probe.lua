@@ -237,7 +237,6 @@ function Probe:_run(callback)
 	elseif self.isCone then
 		probe:setCone(self.ray.origin.x, self.ray.origin.y, self.ray.origin.z, self.ray.direction.x, self.ray.direction.y, self.ray.direction.z, self.coneLength, self.coneRadius)
 		probe:unsetRay()
-		return
 	else
 		return
 	end
@@ -258,6 +257,10 @@ function Probe:_run(callback)
 			local item = self.game:getStage():getItem(id)
 			self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, Vector(x, y, z), distance)
 		end
+	end
+
+	if tests.walk then
+		self:walk()
 	end
 
 	if callback then
@@ -404,10 +407,11 @@ function Probe:_loot(item, i, j, k, position, distance)
 		"item",
 		object,
 		description,
-		-position.z,
+		-position.z + (1 / 100),
 		self.onExamine, object, description, Probe.Item(item))
 
-	self.probes["loot"] = (self.probes["loot"] or 0) + 1
+	self.probes.loot = (self.probes.loot or 0) + 1
+	self.isDirty = true
 end
 
 function Probe:_poke(id, target, scope)
@@ -491,7 +495,6 @@ function Probe:_actor(actor, point, distance)
 			-point.z + ((i / #actions) / 100),
 			self._poke, self, actions[i].id, actor, "world")
 
-		self.isDirty = true
 
 		if actions[i].id == "Attack" then
 			hasAttackAction = true
@@ -510,6 +513,7 @@ function Probe:_actor(actor, point, distance)
 		self.onExamine, actor:getName(), actor:getDescription(), actor)
 
 	self.probes.actor = (self.probes.actor or 0) + 1
+	self.isDirty = true
 end
 
 function Probe:_prop(prop, point, distance)
@@ -557,7 +561,6 @@ function Probe:_prop(prop, point, distance)
 			self._poke, self, actions[i].id, prop, "world")
 		action.suppress = not isHidden
 
-		self.isDirty = true
 	end
 
 	local action = self:addAction(
@@ -572,6 +575,7 @@ function Probe:_prop(prop, point, distance)
 		self.onExamine, prop:getName(), prop:getDescription(), prop)
 
 	self.probes.prop = (self.probes.prop or 0) + 1
+	self.isDirty = true
 end
 
 return Probe

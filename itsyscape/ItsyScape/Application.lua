@@ -85,8 +85,8 @@ local Application = Class()
 Application.CLICK_NONE = 0
 Application.CLICK_ACTION = 1
 Application.CLICK_WALK = 2
-Application.CLICK_DURATION = 0.25
-Application.CLICK_RADIUS = 32
+Application.CLICK_DURATION = 0.4
+Application.CLICK_RADIUS = 48
 Application.DEBUG_DRAW_THRESHOLD = 160
 Application.DEBUG_MEMORY_POLLS_SECONDS = 5
 Application.MAX_TICKS = 100
@@ -1218,15 +1218,16 @@ function Application:_draw()
 	if self.clickActionTime > 0 and not (_DEBUG and (love.keyboard.isDown("rshift") or love.keyboard.isDown("lshift"))) then
 		local color
 		if self.clickActionType == Application.CLICK_WALK then
-			color = Color(1, 1, 0, 0.25)
+			color = Color(1, 1, 0, 0.5)
 		else
-			color = Color(1, 0, 0, 0.25)
+			color = Color(1, 0, 0, 0.5)
 		end
 
 		local mu = Tween.powerEaseInOut(
 			self.clickActionTime / Application.CLICK_DURATION,
 			3)
 		local oldColor = { love.graphics.getColor() }
+		love.graphics.setBlendMode("add")
 		love.graphics.setColor(color:get())
 		love.graphics.circle(
 			'fill',

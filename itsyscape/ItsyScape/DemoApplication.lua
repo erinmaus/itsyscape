@@ -1832,7 +1832,7 @@ function DemoApplication:updatePositionProbe()
 	end
 
 	local i, j, layer = playerActor:getTile()
-	local position = Vector(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0):transformPoint(0, 0, 0))
+	local position = Vector.ZERO:transform(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0))
 	local direction = self.currentPlayerDirection
 
 	local probe = Probe(self:getGame(), gameView, self:getGameDB())
@@ -1995,10 +1995,23 @@ function DemoApplication:probeCurrentShimmer(performDefault)
 		return
 	end
 
-	local x, y = self:_getObjectUIPosition(object, 0)
 	if performDefault then
-		self:probeActions(actions, performDefault)
+		for _, action in ipairs(actions) do
+			if action.type:lower() ~= "examine" and not action.suppress then
+				local x, y = self:_getObjectUIPosition(object, 0.5)
+				self.clickActionTime = Application.CLICK_DURATION
+				self.clickX, self.clickY = x, y
+
+				local s, r = pcall(action.callback)
+				if not s then
+					Log.warn("Couldn't perform action (%s): %s", Log.dump(action), r)
+				end
+
+				break
+			end
+		end
 	else
+		local x, y = self:_getObjectUIPosition(object, 0.25)
 		self:getUIView():probe(actions, x, y, true, false)
 	end
 end
@@ -2283,12 +2296,15 @@ function DemoApplication:_updateToolTip(probe)
 	if action and (action.type ~= 'examine' and action.type ~= 'walk' and not action.suppress) then
 		local text = string.format("%s %s", action.verb, action.object)
 		self.showingToolTip = true
-		if (not self.lastToolTipObject or (self.lastToolTipObject.type ~= action.type or self.lastToolTipObject.id ~= action.id)) or not self.showingToolTip then
+		if (not self.lastToolTipObject or (self.lastToolTipObject.objectType ~= action.objectType or self.lastToolTipObject.objectID ~= action.objectID)) or not self.showingToolTip then
 			self.toolTip = {
 				ToolTip.Header(text),
 				ToolTip.Text(action.description)
 			}
-			self.lastToolTipObject = action
+			self.lastToolTipObject = {
+				objectType = action.objectType,
+				objectID = action.objectID
+			}
 
 			renderer:unsetToolTip(self.toolTipWidget)
 			self.toolTipWidget = nil
@@ -2296,8 +2312,6 @@ function DemoApplication:_updateToolTip(probe)
 	else
 		self:hideToolTip()
 	end
-
-	self:updatePositionProbe()
 end
 
 function DemoApplication:updateToolTip(delta)
@@ -2338,6 +2352,8 @@ function DemoApplication:updateToolTip(delta)
 			end
 		end
 	end
+
+	self:updatePositionProbe()
 end
 
 function DemoApplication:setPatchNotes(event)

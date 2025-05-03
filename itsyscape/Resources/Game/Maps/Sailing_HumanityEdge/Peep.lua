@@ -229,7 +229,7 @@ function Island:onPlayFoundYenderhoundsCutscene(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.enable(playerPeep)
 			self:transitionTutorial(playerPeep, "Tutorial_FoundYenderhounds")
-			self:transitionTutorial(playerPeep, "Anchor_EncounterYenderhounds")
+			self:saveTutorialLocation(playerPeep, "Anchor_EncounterYenderhounds")
 		end, "quest_tutorial_main_find_yenderhounds.spotted")
 	end)
 end
@@ -501,13 +501,6 @@ function Island:onFinishPreparingTutorial(playerPeep)
 			self:getLayerName(),
 			Probe.namedMapObject("YendorianScout"),
 			Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
-
-		if not scout then
-			Utility.Peep.disable(playerPeep)
-			self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
-				Utility.Peep.enable(playerPeep)
-			end)
-		end
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_Combat", playerPeep) then
 		Utility.Peep.disable(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
