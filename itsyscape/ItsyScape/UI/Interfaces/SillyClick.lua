@@ -140,9 +140,9 @@ function SillyClick:updateLabel()
 	if inputProvider:getCurrentJoystick() then
 		self.label:setText("You don't need to mash the button so much! Your peep will keep performing the action until completion or failure after a single press.")
 	elseif _MOBILE then
-		self.label:setText("You don't need to tap so much! Your peep will keep performing the action until completion or failure after a single click.")
+		self.label:setText("You don't need to tap so much! Your peep will keep performing the action until completion or failure after a single tap.")
 	else
-		self.label:setText("You don't need to click so much! Your peep will keep performing the action until completion or failure after a single tap.")
+		self.label:setText("You don't need to click so much! Your peep will keep performing the action until completion or failure after a single click.")
 	end
 end
 
