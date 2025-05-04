@@ -1,13 +1,14 @@
 {
 	{
-		autoMask = true,
 		tileSetID = "YendorianJungle",
-		wallHack = {
-			enabled = false
-		},
+		autoMask = true,
 		maskID =
 		{
 			default = true,
+		},
+		wallHack =
+		{
+			enabled = false,
 		},
 	},
 }

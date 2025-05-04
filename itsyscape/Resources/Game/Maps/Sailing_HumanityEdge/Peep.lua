@@ -806,6 +806,23 @@ function Island:onShowDeflectHint(playerPeep)
 	TutorialCommon.showDeflectHint(playerPeep)
 end
 
+function Island:updateBarrier(playerPeep, companion, passage, anchor, dialog)
+	if Utility.Peep.isInPassage(playerPeep, passage) and Utility.Peep.isEnabled(playerPeep) then
+		Utility.Peep.disable(playerPeep)
+
+		self:doTalkToPeep(playerPeep, companion, function()
+			local x, y, z = Utility.Map.getAnchorPosition(
+				self:getDirector():getGameInstance(),
+				Utility.Peep.getMapResource(self),
+				anchor)
+
+			Utility.Peep.setPosition(playerPeep, Vector(x, y, z))
+
+			Utility.Peep.enable(playerPeep)
+		end, dialog)
+	end
+end
+
 function Island:onTutorialReachPeak(playerPeep)
 	Utility.moveToAnchor(playerPeep, Utility.Peep.getMapResource(playerPeep), "Anchor_VsPirates")
 	Utility.Peep.teleportCompanion(self:getCompanion(playerPeep, "Orlando"), playerPeep)
@@ -886,6 +903,11 @@ function Island:updateTutorialFindScoutStep(playerPeep)
 end
 
 function Island:updateTutorialEncounterScoutStep(playerPeep)
+	self:updateBarrier(playerPeep, "Orlando", "Passage_Barrier1", "Anchor_Barrier1", "quest_tutorial_main_out_of_bounds")
+	if not Utility.Peep.isEnabled(playerPeep) then
+		return
+	end
+
 	local scout = self:getDirector():probe(
 		self:getLayerName(),
 		Probe.namedMapObject("YendorianScout"),
@@ -913,6 +935,11 @@ function Island:updateTutorialFindYenderhoundsStep(playerPeep)
 end
 
 function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
+	self:updateBarrier(playerPeep, "Orlando", "Passage_Barrier2", "Anchor_Barrier2", "quest_tutorial_main_out_of_bounds")
+	if not Utility.Peep.isEnabled(playerPeep) then
+		return
+	end
+
 	local hounds = self:getDirector():probe(
 		self:getLayerName(),
 		Probe.resource("Peep", "Yenderhound"),
@@ -951,6 +978,11 @@ function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
 end
 
 function Island:updateTutorialFishStormfishStep(playerPeep)
+	self:updateBarrier(playerPeep, "Orlando", "Passage_Barrier2", "Anchor_Barrier2", "quest_tutorial_main_out_of_bounds")
+	if not Utility.Peep.isEnabled(playerPeep) then
+		return
+	end
+
 	local count = playerPeep:getState():count("Item", "LightningStormfish", { ["item-inventory"] = true })
 
 	if count >= 5 and Utility.Peep.isEnabled(playerPeep) then
@@ -967,6 +999,11 @@ function Island:updateTutorialFishStormfishStep(playerPeep)
 end
 
 function Island:updateTutorialCookStormfishStep(playerPeep)
+	self:updateBarrier(playerPeep, "Orlando", "Passage_Barrier2", "Anchor_Barrier2", "quest_tutorial_main_out_of_bounds")
+	if not Utility.Peep.isEnabled(playerPeep) then
+		return
+	end
+
 	local count = playerPeep:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
 
 	local _, groundFish = TutorialCommon.hasPeepDroppedItems(playerPeep, "^CookedLightningStormfish$")
@@ -981,6 +1018,10 @@ function Island:updateTutorialCookStormfishStep(playerPeep)
 			self:transitionTutorial(playerPeep, "Tutorial_CookedLightningStormfish")
 		end, "quest_tutorial_cook_fish.done_cooking")
 	end
+end
+
+function Island:updateTutorialCombatStep(playerPeep)
+	self:updateBarrier(playerPeep, "Orlando", "Passage_Barrier2", "Anchor_Barrier2", "quest_tutorial_main_out_of_bounds")
 end
 
 function Island:updateTutorialFindPeakStep(playerPeep)
@@ -1013,6 +1054,13 @@ function Island:updateTutorialFindYendoriansStep(playerPeep)
 	   Utility.Peep.isEnabled(playerPeep)
 	then
 		self:poke("playFoundPiratesCutscene", playerPeep)
+	end
+end
+
+function Island:updateTutorialDefeatKeelhaulerStep(playerPeep)
+	self:updateBarrier(playerPeep, "Orlando", "Passage_Barrier3", "Anchor_Barrier3", "quest_tutorial_main_out_of_bounds")
+	if not Utility.Peep.isEnabled(playerPeep) then
+		return
 	end
 end
 
@@ -1251,10 +1299,14 @@ function Island:updateTutorialPlayer(playerPeep)
 		self:updateTutorialFishStormfishStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_CookedLightningStormfish", playerPeep) then
 		self:updateTutorialCookStormfishStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_Combat", playerPeep) then
+		self:updateTutorialCombatStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundPeak", playerPeep) then
 		self:updateTutorialFindPeakStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundYendorians", playerPeep) then
 		self:updateTutorialFindYendoriansStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedKeelhauler", playerPeep) then
+		self:updateTutorialDefeatKeelhaulerStep(playerPeep)
 	end
 end
 

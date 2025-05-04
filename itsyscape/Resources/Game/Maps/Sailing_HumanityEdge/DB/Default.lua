@@ -1494,7 +1494,7 @@ M["Rowboat_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 179.468700,
-		PositionY = 1,
+		PositionY = 21.500000,
 		PositionZ = 181.141067,
 		RotationX = 0.000000,
 		RotationY = 0.382683,
@@ -1597,7 +1597,7 @@ do
 		RotationZ = 0.000000,
 		RotationW = 1.000000,
 		ScaleX = 15.610787,
-		ScaleY = 3.5,
+		ScaleY = 3.500000,
 		ScaleZ = 16.067814,
 		Name = "ShadowVolume1",
 		Map = M._MAP,

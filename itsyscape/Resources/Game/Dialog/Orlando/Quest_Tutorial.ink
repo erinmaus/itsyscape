@@ -34,30 +34,28 @@ VAR quest_tutorial_main_did_place_dummy = false
 VAR quest_tutorial_main_keelhauler_double_deflect = false
 
 == function quest_tutorial_get_class_name() ==
-<>
 {
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: wizard
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: archer
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: warrior
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_SAILING: sailor
-  - else: loaf
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: ~ return "wizard"
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: ~ return "archer"
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: ~ return "warrior"
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_SAILING: ~ return "sailor"
+  - else: ~ return "loaf"
 }
 
 == function quest_tutorial_get_offensive_power_name() ==
-<>
 {
-  - player_get_stance() == STANCE_DEFENSIVE: Bash
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: Corrupt
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: Snipe
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: Tornado
+  - player_get_stance() == STANCE_DEFENSIVE: ~ return "Bash"
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: ~ return "Corrupt"
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: ~ return "Snipe"
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: ~ return "Tornado"
 }
 
 == function quest_tutorial_get_defensive_power_name() ==
 {
-  - player_get_stance() == STANCE_DEFENSIVE: Bash
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: Confuse
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: Shockwave
-  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: Parry
+  - player_get_stance() == STANCE_DEFENSIVE: ~ return "Bash"
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MAGIC: ~ return "Confuse"
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_ARCHERY: ~ return "Shockwave"
+  - quest_tutorial_main_starting_player_class == WEAPON_STYLE_MELEE: ~ return "Parry"
 }
 
 == function quest_tutorial_did_exhaust_options() ==
@@ -204,7 +202,10 @@ I was on my way to get you when a freak lightning bolt hit the gunpowder barrels
 But gods! You survived! Though... You look like you were knocked into next year...
 
 # speaker={C_ORLANDO}
-We'd be fresh meat for Yendorians out here with your smarts and skills! You're the only %hint(engineer and {quest_tutorial_get_class_name()}) here!
+We'd be fresh meat for Yendorians out here without your smarts and skills...
+
+# speaker={C_ORLANDO}
+You're the only %hint(engineer and {quest_tutorial_get_class_name()}) here!
 
 # speaker={C_ORLANDO}
 OH! And, um, I mean, actually, it would be worse for you, of course, because, like, y'know, you'd be... dead...
@@ -1730,5 +1731,26 @@ Let %person(Ser Commander) and the knights to take care of the pirates. We gotta
 %empty()
 
 ~ player_poke_map("finishDemo")
+
+-> DONE
+
+== quest_tutorial_talk_with_robert ==
+
+# speaker=SeafarerGuildMaster
+You need back on the ship?
+
+# speaker={C_ORLANDO}
+Nope, not right now!
+
+# speaker=SeafarerGuildMaster
+Aye, whenever you change yer mind, lemme know.
+
+-> DONE
+
+== quest_tutorial_main_out_of_bounds ==
+
+# speaker={C_ORLANDO}
+# background=000000
+Oi! We got stuff to do over here!
 
 -> DONE

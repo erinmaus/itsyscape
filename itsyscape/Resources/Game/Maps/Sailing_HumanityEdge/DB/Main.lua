@@ -2135,6 +2135,96 @@ do
 	}
 end
 
+M["Anchor_Barrier1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 25,
+		PositionY = 3,
+		PositionZ = 163,
+		Name = "Anchor_Barrier1",
+		Map = M._MAP,
+		Resource = M["Anchor_Barrier1"]
+	}
+end
+
+M["Passage_Barrier1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_Barrier1",
+		Map = M._MAP,
+		Resource = M["Passage_Barrier1"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 6,
+		Z1 = 142,
+		X2 = 102,
+		Z2 = 150,
+		Map = M._MAP,
+		Resource = M["Passage_Barrier1"]
+	}
+end
+
+M["Passage_Barrier2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_Barrier2",
+		Map = M._MAP,
+		Resource = M["Passage_Barrier2"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 96,
+		Z1 = 144,
+		X2 = 102,
+		Z2 = 160,
+		Map = M._MAP,
+		Resource = M["Passage_Barrier2"]
+	}
+end
+
+M["Anchor_Barrier2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 5,
+		PositionZ = 165,
+		Name = "Anchor_Barrier2",
+		Map = M._MAP,
+		Resource = M["Anchor_Barrier2"]
+	}
+end
+
+M["Passage_Barrier3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_Barrier3",
+		Map = M._MAP,
+		Resource = M["Passage_Barrier3"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 98,
+		Z1 = 28,
+		X2 = 104,
+		Z2 = 44,
+		Map = M._MAP,
+		Resource = M["Passage_Barrier3"]
+	}
+end
+
+M["Anchor_Barrier3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 117,
+		PositionY = 3,
+		PositionZ = 37,
+		Name = "Anchor_Barrier3",
+		Map = M._MAP,
+		Resource = M["Anchor_Barrier3"]
+	}
+end
+
 M["SeafarerGuildMaster"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -2150,24 +2240,6 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "Rumbridge_Port_SeafarerGuildmaster",
 		MapObject = M["SeafarerGuildMaster"]
-	}
-
-	local TalkAction = ItsyScape.Action.Talk()
-
-	ItsyScape.Meta.TalkCharacter {
-		Character = ItsyScape.Resource.Character "Orlando",
-		Main = "quest_tutorial_talk_with_robert",
-		Action = TalkAction
-	}
-
-	ItsyScape.Meta.TalkSpeaker {
-		Resource = M["SeafarerGuildMaster"],
-		Name = "SeafarerGuildMaster",
-		Action = TalkAction
-	}
-
-	M["SeafarerGuildMaster"] {
-		TalkAction
 	}
 end
 
@@ -2298,6 +2370,33 @@ do
 	}
 
 	M["Rosalind"] {
+		TalkAction
+	}
+end
+
+-- Robert talk action.
+do
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "Orlando",
+		Main = "quest_tutorial_talk_with_robert",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["SeafarerGuildMaster"],
+		Name = "SeafarerGuildMaster",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Orlando"],
+		Name = "Orlando",
+		Action = TalkAction
+	}
+
+	M["SeafarerGuildMaster"] {
 		TalkAction
 	}
 end
