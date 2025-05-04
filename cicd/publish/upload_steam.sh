@@ -2,7 +2,7 @@
 
 cd "$(dirname "$0")"
 
-source ./make_version.sh "env"
+source ../common/make_version.sh "env"
 
 if [ $ITSYREALM_ENVIRONMENT == "demo" ]; then
 	export ITSYREALM_VDF="itsyrealm_demo.vdf"
@@ -15,7 +15,7 @@ brew install --cask steamcmd
 mkdir -p "$HOME/Library/Application Support/Steam/config"
 echo "${STEAM_CONFIG_VDF}" > "$HOME/Library/Application Support/Steam/config/config.vdf"
 
-ITSYREALM_VDF="$(pwd)/$1"
+ITSYREALM_VDF="$(pwd)/$ITSYREALM_VDF"
 upload_steam () {
 	steamcmd +login ${STEAM_CICD_USERNAME} +run_app_build "$ITSYREALM_VDF" +quit
 }
