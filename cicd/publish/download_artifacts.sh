@@ -38,7 +38,7 @@ for artifact_name in "itsyrealm_windows" "itsyrealm_linux" "itsyrealm_macos"; do
 done
 
 # Requires an extra step for macOS
-ditto -x -k "./itsyrealm_macos/ItsyRealm.zip" .
+ditto -x -k "./itsyrealm_macos/ItsyRealm.zip" ./itsyrealm_macos/
 
 if [ $? -ne 0 ]; then
   echo "Could not extract ItsyRealm.app from ${artifact_name}.zip"

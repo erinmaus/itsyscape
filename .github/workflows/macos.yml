@@ -70,3 +70,4 @@ jobs:
           name: itsyrealm_macos
           path: |
             cicd/macos/itsyrealm/ItsyRealm.zip
+            cicd/macos/build/love2d/platform/xcode/love-macosxRelease.entitlements

@@ -56,6 +56,7 @@ rm love-${LOVE_BRANCH}.AppImage
 make LOVE_BRANCH=${LOVE_BRANCH}
 
 mv love-${LOVE_BRANCH}.AppImage itsyrealm.AppImage
+cp ../../ext/LICENSE.txt LICENSE.txt
 
 pwd
 ls -l

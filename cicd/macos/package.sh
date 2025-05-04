@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./codesign.sh
+./codesign.sh staging/ItsyRealm.app
 
 mkdir -p itsyrealm
 

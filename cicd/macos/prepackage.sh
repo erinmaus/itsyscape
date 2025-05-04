@@ -5,4 +5,4 @@ set -xe
 cp staging/ext/*.dylib staging/ItsyRealm.app/Contents/Frameworks
 cp staging/ext/*.so staging/ItsyRealm.app/Contents/Frameworks
 
-./codesign.sh
+./codesign.sh staging/ItsyRealm.app
