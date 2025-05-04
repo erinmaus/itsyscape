@@ -158,6 +158,7 @@ function ResourceManager:update()
 		self.wasPending = true
 	end
 
+	local isEditor = _LOG_WRITE_ALL
 	do
 		local index = 1
 		while index <= #self.pendingResources do
@@ -194,7 +195,15 @@ function ResourceManager:update()
 				else
 					index = index + 1
 				end
+
+				if _LOG_WRITE_ALL then
+					Log.debug("Tried loading resource '%s'.", pending.filename)
+				end
 			end
+		end
+
+		if _LOG_WRITE_ALL then
+			Log.debug("Tried to loaded %d resource(s).", index)
 		end
 	end
 
@@ -238,6 +247,15 @@ function ResourceManager:update()
 			end
 
 			currentTime = love.timer.getTime()
+
+			if _LOG_WRITE_ALL and _DEBUG then
+				Log.debug("Ran async event '%s'.", pending.callback)
+				Log.debug("Current async event stack: %s", debug.traceback(callback))
+			end
+		end
+
+		if _LOG_WRITE_ALL then
+			Log.debug("Ran %d async event(s).", index)
 		end
 	end
 
@@ -287,10 +305,18 @@ function ResourceManager:update()
 			elapsedTimeForSingleResource = 0
 		end
 
+		if _LOG_WRITE_ALL and _DEBUG then
+			Log.debug("Ran sync event '%s'.", top.traceback)
+		end
+
 		currentTime = love.timer.getTime()
 
 		c = c + 1
 	until currentTime > pendingSyncEventBreakTime or elapsedTimeForSingleResource > ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE
+
+	if _LOG_WRITE_ALL and c > 0 then
+		Log.debug("Ran async event(s), %d pending; %d iterations.", c, #self.pendingSyncEvents, c)
+	end
 
 	if currentTime and currentTime > pendingSyncEventBreakTime + self.frameDuration then
 		Log.info('Resource loading spilled %d ms.', math.floor((currentTime - pendingSyncEventBreakTime) * 1000))
@@ -433,7 +459,7 @@ function ResourceManager:_queue(resourceType, filename, async, callback, ...)
 
 	table.insert(self.pendingResources, pending)
 
-	local e = { filename = filename, callback = c, traceback = _DEBUG and debug.traceback(nil, 2) }
+	local e = { filename = filename, callback = c, traceback = _DEBUG and debug.traceback() }
 	if async then
 		table.insert(self.pendingAsyncEvents, e)
 	else
@@ -469,10 +495,10 @@ end
 
 -- Queues a callback. No resource loading is performed.
 function ResourceManager:_queueEvent(async, callback, ...)
-	local traceback = _DEBUG and debug.traceback(nil, 2)
+	local traceback = _DEBUG and debug.traceback()
 	local c = Function(_wrappedEvent, callback, traceback, ...):coroutine()
 
-	local e = { callback = c, traceback = _DEBUG and debug.traceback(nil, 2) }
+	local e = { callback = c, traceback = traceback }
 	if async then
 		table.insert(self.pendingAsyncEvents, e)
 	else

@@ -2,6 +2,9 @@
 	{
 		autoMask = true,
 		tileSetID = "YendorianJungle",
+		wallHack = {
+			enabled = false
+		},
 		maskID =
 		{
 			default = true,

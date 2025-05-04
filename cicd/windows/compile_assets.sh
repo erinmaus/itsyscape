@@ -7,8 +7,11 @@ cd build
 mkdir -p assets
 cd assets
 
+pushd ../../../..
+pwd
+make clean || true
+make all LUAJIT=./cicd/windows/build/LuaJIT/src/luajit 
+popd
+
+rm -rf itsyscape
 cp -r ../../../../itsyscape itsyscape
-
-../staging/lovec.exe --fused ./itsyscape /f:anonymous /main ItsyScape.BuildLargeTileSetsApplication
-
-cp -r $APPDATA/ItsyRealm/Resources/* ./itsyscape/Resources

@@ -129,9 +129,10 @@ Okay...
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_FishedLightningStormfish"): -> quest_tutorial_main_fish
     - player_is_next_quest_step("Tutorial", "Tutorial_Combat"): -> quest_tutorial_combat
+    - player_is_next_quest_step("Tutorial", "Tutorial_FoundPeak"): -> quest_tutorial_ascend_peak
     - player_is_next_quest_step("Tutorial", "Tutorial_FoundYendorians"): -> quest_tutorial_ascend_peak
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedKeelhauler"): -> quest_tutorial_fight_keelhauler
-    - else: Good job, bub! #speaker={C_ORLANDO}
+    - else: Let's get going! #speaker={C_ORLANDO}
 }
 
 == quest_tutorial_main_started ==
@@ -1008,6 +1009,9 @@ I yield, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}!
 # speaker={C_VIZIER_ROCK_KNIGHT}
 %person({player_get_pronoun_uppercase(X_MX)}) {player_name} defeats %person(Ser Orlando) handedly!
 
+# speaker={C_VIZIER_ROCK_KNIGHT}
+%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, yield now to end the duel.
+
 -> DONE
 
 = player_yielded
@@ -1552,7 +1556,19 @@ Go on and attack the dummy!
 == quest_tutorial_main_found_peak ==
 
 # speaker={C_ORLANDO}
-TBD FOUND PEAK
+Looks like we found the peak!
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+Only took an eon after you lot getting distracted.
+
+# speaker={C_ORLANDO}
+...Huh, did I hear someone? Nah, must just be the ocean...
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+...
+
+# speaker={C_ORLANDO}
+Anyway, let's get going. We're almost there.
 
 -> DONE
 

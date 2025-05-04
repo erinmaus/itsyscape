@@ -12,6 +12,8 @@ export PATH=/mingw64/bin:$PATH
 export MINGW_ROOT=/mingw64
 export MAKEFLAGS="-j4"
 
+export CMAKE_POLICY_VERSION_MINIMUM=3.5
+
 mkdir -p bin
 mkdir -p build
 mkdir -p staging/ext
@@ -25,6 +27,7 @@ mkdir -p staging/ext
 ./get_bmashina.sh
 ./get_discworld.sh
 ./get_nbunny.sh
+./get_nomicon.sh
 ./get_devi.sh
 
 cp /mingw64/bin/libgcc_s_seh-1.dll ./staging/libgcc_s_seh-1.dll

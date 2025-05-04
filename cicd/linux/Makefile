@@ -20,7 +20,7 @@ ZLIB_BRANCH := v1.2.12
 # Project versions (for downloadable tars)
 LIBOGG_VERSION := 1.3.5
 LIBVORBIS_VERSION := 1.3.7
-LIBTHEORA_VERSION := 1.2.0alpha1
+LIBTHEORA_VERSION := 1.2.0
 LIBPNG_VERSION := 1.6.37
 FT_VERSION := 2.12.1
 BZIP2_VERSION := 1.0.8
@@ -125,13 +125,6 @@ $(LIBTHEORA_FILE).tar.gz:
 
 $(LIBTHEORA_FILE)/configure: $(LIBTHEORA_FILE).tar.gz
 	tar xzf $(LIBTHEORA_FILE).tar.gz
-# Their config.guess and config.sub can't detect ARM64
-ifeq ($(ARCH),aarch64)
-	curl -o $(LIBTHEORA_FILE)/config.guess "https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD"
-	chmod u+x $(LIBTHEORA_FILE)/config.guess
-	curl -o $(LIBTHEORA_FILE)/config.sub "https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD"
-	chmod u+x $(LIBTHEORA_FILE)/config.sub
-endif
 	touch $(LIBTHEORA_FILE)/configure
 
 $(LIBTHEORA_FILE)/build/Makefile: $(LIBTHEORA_FILE)/configure installdir/lib/libogg.so

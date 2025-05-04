@@ -29,6 +29,7 @@ function RibbonController:new(peep, director)
 		["PlayerStats"] = true,
 		["PlayerSpells"] = true,
 		["PlayerPrayers"] = true,
+		["PlayerConfig"] = true,
 		["Nominomicon"] = true,
 		["ConfigWindow"] = true
 	}

@@ -11,12 +11,18 @@ local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local RendererPass = require "ItsyScape.Graphics.RendererPass"
+local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local LargeTileSet = require "ItsyScape.World.LargeTileSet"
 local Map = require "ItsyScape.World.Map"
 
 local BuildLargeTileSetsApplication = Class(EditorApplication)
 
+ResourceManager.DESKTOP_FRAME_DURATION = 5
+ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = 5
+
 function BuildLargeTileSetsApplication:new()
+	_LOG_WRITE_ALL = true
+
 	EditorApplication.new(self)
 
 	self.maps = self:getMaps()

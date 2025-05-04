@@ -60,14 +60,13 @@ local UseRite = Mashina.Step {
 		}
 	},
 
-	Mashina.Peep.OnPoke {
-		event = "powerActivated"
-	}
+	Mashina.Peep.DidUsePower
 }
 
 local CanUseRite = Mashina.Try {
 	Mashina.Sequence {
 		Mashina.Peep.IsStance {
+			target = CommonLogic.PLAYER,
 			stance = Weapon.STANCE_DEFENSIVE
 		},
 
@@ -79,6 +78,7 @@ local CanUseRite = Mashina.Try {
 
 	Mashina.Sequence {
 		Mashina.Peep.IsCombatStyle {
+			target = CommonLogic.PLAYER,
 			style = Weapon.STYLE_MAGIC
 		},
 
@@ -90,6 +90,7 @@ local CanUseRite = Mashina.Try {
 
 	Mashina.Sequence {
 		Mashina.Peep.IsCombatStyle {
+			target = CommonLogic.PLAYER,
 			style = Weapon.STYLE_ARCHERY
 		},
 
@@ -101,6 +102,7 @@ local CanUseRite = Mashina.Try {
 
 	Mashina.Sequence {
 		Mashina.Peep.IsCombatStyle {
+			target = CommonLogic.PLAYER,
 			style = Weapon.STYLE_MELEE
 		},
 

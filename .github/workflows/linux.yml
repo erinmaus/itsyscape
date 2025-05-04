@@ -6,7 +6,7 @@ on:
       - 'master'
       - '**-ci'
     tags:
-      - '*.*.*'
+      - '*-*.*.*-*'
   workflow_dispatch: null
 
 jobs:
@@ -37,13 +37,14 @@ jobs:
           sudo ./cicd/linux/init.sh
       -
         name: Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: itsyrealm_linux
           path: |
             cicd/linux/itsyrealm.AppImage
             cicd/linux/settings.cfg
             cicd/linux/itsyrealm.love
+            cicd/linux/LICENSE.txt
       -
         name: Build image and push
         uses: docker/build-push-action@v3

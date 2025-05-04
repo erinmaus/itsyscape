@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -e
 
 compile_lua_resource() {
@@ -11,7 +13,7 @@ compile_lua_resource() {
 export LUAJIT="${LUAJIT:=luajit}"
 export -f compile_lua_resource
 
-find . -name '*.lmodel' -exec sh -c 'compile_lua_resource "$0"' {} \;
-find . -name '*.lmesh' -exec sh -c 'compile_lua_resource "$0"' {} \;
-find . -name '*.lstatic' -exec sh -c 'compile_lua_resource "$0"' {} \;
-find . -name '*.lmap' -exec sh -c 'compile_lua_resource "$0"' {} \;
+find . -name '*.lmodel' -exec bash -c 'compile_lua_resource "$0"' {} \;
+find . -name '*.lmesh' -exec bash -c 'compile_lua_resource "$0"' {} \;
+find . -name '*.lstatic' -exec bash -c 'compile_lua_resource "$0"' {} \;
+find . -name '*.lmap' -exec bash -c 'compile_lua_resource "$0"' {} \;

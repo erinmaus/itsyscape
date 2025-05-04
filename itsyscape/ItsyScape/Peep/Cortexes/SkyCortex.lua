@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local socket = require "socket"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
@@ -158,6 +159,10 @@ function SkyCortex:getSkyColorIndexDelta(seconds, numColors)
 	end
 
 	return currentIndex, nextIndex, mu
+end
+
+local function _notLayer(layer, peep)
+	return Utility.Peep.getLayer(peep) ~= layer
 end
 
 function SkyCortex:update(delta)
@@ -325,7 +330,7 @@ function SkyCortex:update(delta)
 			if sky.hasFog then
 				local fog = self:getDirector():probe(
 					peep:getLayerName(),
-					Probe.layer(baseLayer),
+					Function(_notLayer, layer),
 					Probe.namedMapObject("Light_Fog"),
 					Probe.resource("Prop", "Fog_Default"))[1]
 
@@ -344,7 +349,7 @@ function SkyCortex:update(delta)
 
 			local ambient = self:getDirector():probe(
 				peep:getLayerName(),
-				Probe.layer(baseLayer),
+				Function(_notLayer, layer),
 				Probe.namedMapObject("Light_Ambient"),
 				Probe.resource("Prop", "AmbientLight_Default"))[1]
 			if ambient then
@@ -354,7 +359,7 @@ function SkyCortex:update(delta)
 
 			local sunDirectionalLight = self:getDirector():probe(
 				peep:getLayerName(),
-				Probe.layer(baseLayer),
+				Function(_notLayer, layer),
 				Probe.namedMapObject("Light_Sun"),
 				Probe.resource("Prop", "DirectionalLight_Default"))[1]
 

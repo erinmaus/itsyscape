@@ -31,7 +31,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 100,
+		Hitpoints = 60,
 		Resource = Yenderhound
 	}
 

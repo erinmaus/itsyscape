@@ -295,7 +295,7 @@ function Log.print(scope, message)
 end
 
 function Log.write(message, writeOnly)
-	if not writeOnly or (_CONF and _CONF.server) then
+	if not writeOnly or (_CONF and _CONF.server) or _LOG_WRITE_ALL then
 		io.stderr:write(message)
 	end
 

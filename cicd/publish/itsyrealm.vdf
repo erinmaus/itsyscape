@@ -21,7 +21,7 @@
 		{
 			"FileMapping"
 			{
-				"LocalPath" "ItsyRealm.app/*"
+				"LocalPath" "itsyrealm_macos/ItsyRealm.app/*"
 				"DepotPath" "ItsyRealm.app"
 				"recursive" "1"
 			}

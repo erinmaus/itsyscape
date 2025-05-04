@@ -26,7 +26,7 @@ function YendorianMast:getWeaponType()
 end
 
 function YendorianMast:getCooldown(peep)
-	return 1.8
+	return 5
 end
 
 return YendorianMast

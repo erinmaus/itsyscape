@@ -81,6 +81,10 @@ function WidgetInputProvider:getHoveredWidgets()
 end
 
 function WidgetInputProvider:setFocusedWidget(widget, reason)
+	if widget and widget:getRootParent() ~= self.root then
+		return
+	end
+
 	local current = self:getFocusedWidget()
 	if current then
 		current:blur()

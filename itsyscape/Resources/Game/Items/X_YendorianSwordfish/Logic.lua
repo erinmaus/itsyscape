@@ -23,7 +23,7 @@ function YendorianSwordfish:getBonusForStance(peep)
 end
 
 function YendorianSwordfish:getCooldown()
-	return 4
+	return 5
 end
 
 return YendorianSwordfish

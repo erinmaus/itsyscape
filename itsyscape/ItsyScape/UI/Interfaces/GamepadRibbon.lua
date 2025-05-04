@@ -27,6 +27,7 @@ local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local ConfigGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.ConfigGamepadContentTab"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 local EquipmentGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.EquipmentGamepadContentTab"
 local InventoryGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.InventoryGamepadContentTab"
@@ -552,8 +553,30 @@ function GamepadRibbon:_updateSkillTab()
 	self.skillInfoTabContent:refresh(state.skills.skills[index])
 end
 
+function GamepadRibbon:_updateSettingsTab()
+	local state = self:getState()
+
+	self.configTabContent:refresh({
+		showSurvey = state.showSurvey
+	})
+end
+
 function GamepadRibbon:_initSettingsTab()
-	self:_addTab(self.TAB_SETTINGS, "Resources/Game/UI/Icons/Concepts/Settings.png")
+	self.configTabContent = ConfigGamepadContentTab(self)
+	self.configTabContent.onWrapFocus:register(self._onContentWrapFocus, self)
+
+	self:_addTab(
+		self.TAB_SETTINGS,
+		"Resources/Game/UI/Icons/Concepts/Settings.png",
+		self._openSettingsTab)
+end
+
+function GamepadRibbon:_openSettingsTab()
+	self.contentLayout:addChild(self.configTabContent)
+	self:_updateSettingsTab()
+
+	self.titleLabel:setText("Config")
+	self:_setKeybindInfo()
 end
 
 function GamepadRibbon:_onSelectTab(tab, button, buttonIndex)
@@ -626,6 +649,7 @@ function GamepadRibbon:update(delta)
 	self:_updateInventoryTab()
 	self:_updateEquipmentTab()
 	self:_updateSkillTab()
+	self:_updateSettingsTab()
 
 	if self.isDirty then
 		self:performLayout()

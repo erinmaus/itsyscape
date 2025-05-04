@@ -44,7 +44,7 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local UIView = require "ItsyScape.UI.UIView"
 local Controls = require "ItsyScape.UI.Client.Controls"
-local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions"
+local GraphicsOptions = require "ItsyScape.UI.Client.GraphicsOptions2"
 local Screenshot = require "ItsyScape.UI.Client.Screenshot"
 local Network = require "ItsyScape.UI.Client.Network"
 local PlayerSelect = require "ItsyScape.UI.Client.PlayerSelect"
@@ -480,6 +480,22 @@ function DemoApplication:_loadDemoPlayer(_, buttonIndex)
 	self:closeTitleScreen()
 end
 
+function DemoApplication:_openGraphicsOptions(_, buttonIndex)
+	if buttonIndex ~= 1 then
+		return
+	end
+
+	self:openOptionsScreen(GraphicsOptions, function(value)
+		if value then
+			self:_updateGraphicsOptions()
+			love.audio.setVolume(_CONF.volume)
+		end
+
+		self:closeMainMenu()
+		self:openMainMenu()
+	end)
+end
+
 function DemoApplication:_layoutDemoButton(button)
 	local child = button:getChildAt(1)
 	child:update(0)
@@ -490,9 +506,22 @@ function DemoApplication:_layoutDemoButton(button)
 	child:setPosition(buttonWidth / 2 - childWidth / 2, buttonHeight / 2 - childHeight / 2)
 end
 
+function DemoApplication:_quitDemo(_, buttonIndex)
+	if buttonIndex ~= 1 then
+		return
+	end
+
+	love.event.quit()
+end
+
 function DemoApplication:_focusDemoButton(button)
 	local child = button:getChildAt(1)
-	child:setButtonID("a")
+	if self:getUIView():getInputProvider():getCurrentJoystick() then
+		child:setButtonID("a")
+	else
+		child:setButtonID("none")
+	end
+
 	self:_layoutDemoButton(button)
 end
 
@@ -543,10 +572,41 @@ function DemoApplication:openDemoMainMenu()
 	playText:setButtonID("none")
 	playButton:addChild(playText)
 
+	local settingsButton = Button()
+	settingsButton:setSize(256, 64)
+	settingsButton.onClick:register(self._openGraphicsOptions, self)
+	settingsButton.onFocus:register(self._focusDemoButton, self)
+	settingsButton.onBlur:register(self._blurDemoButton, self)
+
+	local settingsText = GamepadToolTip()
+	settingsText:setHasBackground(false)
+	settingsText:setRowSize(256, 48)
+	settingsText:setText("Settings")
+	settingsText:setButtonID("none")
+	settingsButton:addChild(settingsText)
+
+	local quitButton = Button()
+	quitButton:setSize(256, 64)
+	quitButton.onClick:register(self._quitDemo, self)
+	quitButton.onFocus:register(self._focusDemoButton, self)
+	quitButton.onBlur:register(self._blurDemoButton, self)
+
+	local quitText = GamepadToolTip()
+	quitText:setHasBackground(false)
+	quitText:setRowSize(256, 48)
+	quitText:setText("Quit")
+	quitText:setButtonID("none")
+	quitButton:addChild(quitText)
+
 	if love.filesystem.getInfo("Player/Demo.dat") then
 		gridLayout:addChild(resumeButton)
 	end
 	gridLayout:addChild(playButton)
+	gridLayout:addChild(settingsButton)
+
+	if not _MOBILE then
+		gridLayout:addChild(quitButton)
+	end
 
 	self.mainMenu:addChild(gridLayout)
 	self:getUIView():getRoot():addChild(self.mainMenu)
@@ -563,6 +623,12 @@ function DemoApplication:openDemoMainMenu()
 	local resumeTextWidth, resumeTextHeight = resumeText:getSize()
 	resumeText:setPosition(128 - resumeTextWidth / 2, 32 - resumeTextHeight / 2)
 
+	local settingsTextWidth, settingsTextHeight = settingsText:getSize()
+	settingsText:setPosition(128 - settingsTextWidth / 2, 32 - settingsTextHeight / 2)
+
+	local quitTextWidth, quitTextHeight = quitText:getSize()
+	quitText:setPosition(128 - quitTextWidth / 2, 32 - quitTextHeight / 2)
+
 	if self.titleScreen then
 		self.titleScreen:enableLogo()
 	end
@@ -571,6 +637,35 @@ function DemoApplication:openDemoMainMenu()
 		_DEBUG = _DEBUG or (_CONF and _CONF.debug),
 		_CONF = _CONF
 	})
+end
+
+function DemoApplication:_updateGraphicsOptions()
+	love.window.setMode(_CONF.width, _CONF.height, {
+		fullscreen = _CONF.fullscreen,
+		vsync = _CONF.vsync,
+		display = _CONF.display
+	})
+
+	_DEBUG = _CONF.debug
+
+	if _CONF.analytics ~= _ANALYTICS_ENABLED then
+		if _CONF.analytics then
+			Log.info("Analytics enabled.")
+		else
+			Log.info("Analytics disabled.")
+		end
+
+		self.inputAdminChannel:push({
+			type = 'analytics',
+			enable = _CONF.analytics
+		})
+
+		_ANALYTICS_ENABLED = _CONF.analytics
+	end
+	_CONF.analytics = nil
+
+	itsyrealm.graphics.dirty()
+	self:getGameView():dirty()
 end
 
 function DemoApplication:openFullMainMenu()
@@ -613,36 +708,8 @@ function DemoApplication:openFullMainMenu()
 	graphicsOptionsButton.onClick:register(function()
 		self:openOptionsScreen(GraphicsOptions, function(value)
 			if value then
-				love.window.setMode(_CONF.width, _CONF.height, {
-					fullscreen = _CONF.fullscreen,
-					vsync = _CONF.vsync,
-					display = _CONF.display
-				})
-
-				_DEBUG = _CONF.debug
-
-				if _CONF.analytics ~= _ANALYTICS_ENABLED then
-					if _CONF.analytics then
-						Log.info("Analytics enabled.")
-					else
-						Log.info("Analytics disabled.")
-					end
-
-					self.inputAdminChannel:push({
-						type = 'analytics',
-						enable = _CONF.analytics
-					})
-
-					_ANALYTICS_ENABLED = _CONF.analytics
-				end
-				_CONF.analytics = nil
-
-				itsyrealm.graphics.dirty()
-				self:getGameView():dirty()
+				self:_updateGraphicsOptions()
 			end
-
-			self:closeMainMenu()
-			self:openMainMenu()
 		end)
 	end)
 	graphicsOptionsButton:setPosition(
@@ -784,6 +851,10 @@ function DemoApplication:addPatchNotesUI()
 		self.patchNotesWindow:updatePatchNotes(self.patchNotes.patchNotes)
 	end
 
+	if _ITSYREALM_DEMO then
+		return
+	end
+
 	local updateButton = Button()
 	if not self.patchNotes then
 		updateButton:setStyle(ButtonStyle({
@@ -867,6 +938,7 @@ function DemoApplication:openOptionsScreen(Type, callback)
 	self.mainMenu:addChild(parent)
 	self.optionsScreen = parent
 
+	self:getUIView():getInputProvider():setFocusedWidget(optionsScreen, "open")
 	self.titleScreen:disableLogo()
 
 	return optionsScreen
@@ -1832,7 +1904,7 @@ function DemoApplication:updatePositionProbe()
 	end
 
 	local i, j, layer = playerActor:getTile()
-	local position = Vector(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0):transformPoint(0, 0, 0))
+	local position = Vector.ZERO:transform(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0))
 	local direction = self.currentPlayerDirection
 
 	local probe = Probe(self:getGame(), gameView, self:getGameDB())
@@ -1919,7 +1991,7 @@ function DemoApplication:getNextShimmer(pendingObjectID, pendingObjectType)
 	for i, shimmeringObject in ipairs(self.shimmeringObjects) do
 		local isOnlyExaminable = true
 		for _, action in pairs(shimmeringObject.actions) do
-			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") then
+			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") and not action.suppress then
 				isOnlyExaminable = false
 			end
 		end
@@ -1995,15 +2067,33 @@ function DemoApplication:probeCurrentShimmer(performDefault)
 		return
 	end
 
-	local x, y = self:_getObjectUIPosition(object, 0)
 	if performDefault then
-		self:probeActions(actions, performDefault)
+		for _, action in ipairs(actions) do
+			print("trying...", _, action.type, action.suppress)
+			if action.type:lower() ~= "examine" and not action.suppress then
+				local x, y = self:_getObjectUIPosition(object, 0.5)
+				self.clickActionTime = Application.CLICK_DURATION
+				self.clickX, self.clickY = x, y
+
+				local s, r = pcall(action.callback)
+				if not s then
+					Log.warn("Couldn't perform action: %s", r)
+				end
+
+				print("success", _)
+
+				break
+			end
+		end
 	else
+		local x, y = self:_getObjectUIPosition(object, 0.25)
 		self:getUIView():probe(actions, x, y, true, false)
 	end
 end
 
 function DemoApplication:updateNearbyShimmer(delta)
+	local isShimmerEnabled = not not self:getUIView():getInputProvider():getCurrentJoystick()
+
 	local playerActorID = self:getGame():getPlayer()
 	playerActorID = playerActorID and playerActorID:getActor()
 	playerActorID = playerActorID and playerActorID:getID()
@@ -2029,7 +2119,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 		local isAttackable
 		local isOnlyExaminable = true
 		for _, action in pairs(shimmeringObject.actions) do
-			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") then
+			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") and not action.suppress then
 				isOnlyExaminable = false
 			end
 
@@ -2051,7 +2141,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 			self.nextObjectID, self.nextObjectType = self:getNextShimmer(self.pendingObjectID, self.pendingObjectType)
 		end
 
-		local isActive = self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType
+		local isActive = self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType and not isOnlyExaminable
 		local isNext = self.nextObjectID == shimmeringObject.objectID and self.nextObjectType == shimmeringObject.objectType
 
 		local color
@@ -2075,7 +2165,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 
 			if node then
 				local action = self:getShimmerActions(shimmeringObject)[1]
-				if action then
+				if action and isShimmerEnabled then
 					local toolTipX, toolTipY = self:_getObjectUIPosition(object, 0)
 					self.currentShimmerToolTip:setPosition(toolTipX, toolTipY)
 					self.currentShimmerToolTip:setText(
@@ -2132,7 +2222,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 				color.a = delta
 
 				local material = node:getMaterial()
-				material:setIsShimmerEnabled(not isOnlyExaminable)
+				material:setIsShimmerEnabled(isShimmerEnabled and not isOnlyExaminable)
 				material:setShimmerColor(color)
 			end
 		end
@@ -2150,7 +2240,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 		self:getUIView():getRoot():removeChild(self.currentShimmerToolTip)
 		self:getUIView():getRoot():removeChild(self.nextShimmerToolTip)
 	else
-		if hasNext then
+		if hasNext and isShimmerEnabled then
 			self:getUIView():getRoot():addChild(self.nextShimmerToolTip)
 
 			local currentX, currentY = self.currentShimmerToolTip:getPosition()
@@ -2283,12 +2373,15 @@ function DemoApplication:_updateToolTip(probe)
 	if action and (action.type ~= 'examine' and action.type ~= 'walk' and not action.suppress) then
 		local text = string.format("%s %s", action.verb, action.object)
 		self.showingToolTip = true
-		if (not self.lastToolTipObject or (self.lastToolTipObject.type ~= action.type or self.lastToolTipObject.id ~= action.id)) or not self.showingToolTip then
+		if (not self.lastToolTipObject or (self.lastToolTipObject.objectType ~= action.objectType or self.lastToolTipObject.objectID ~= action.objectID)) or not self.showingToolTip then
 			self.toolTip = {
 				ToolTip.Header(text),
 				ToolTip.Text(action.description)
 			}
-			self.lastToolTipObject = action
+			self.lastToolTipObject = {
+				objectType = action.objectType,
+				objectID = action.objectID
+			}
 
 			renderer:unsetToolTip(self.toolTipWidget)
 			self.toolTipWidget = nil
@@ -2296,8 +2389,6 @@ function DemoApplication:_updateToolTip(probe)
 	else
 		self:hideToolTip()
 	end
-
-	self:updatePositionProbe()
 end
 
 function DemoApplication:updateToolTip(delta)
@@ -2338,6 +2429,8 @@ function DemoApplication:updateToolTip(delta)
 			end
 		end
 	end
+
+	self:updatePositionProbe()
 end
 
 function DemoApplication:setPatchNotes(event)

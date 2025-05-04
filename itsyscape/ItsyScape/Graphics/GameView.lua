@@ -321,6 +321,8 @@ end
 function GameView:reset()
 	Log.info("Resetting game view...")
 
+	self.probe:reset()
+
 	for _, actor in pairs(self.actors) do
 		Log.info("Poofing actor '%s' (%s).", actor:getActor():getName(), actor:getActor():getPeepID())
 		actor:release()
@@ -1452,7 +1454,7 @@ function GameView:spawnItem(item, tile, position)
 
 	self.probe:addOrUpdate(
 		"X.Item",
-		item.ref, map,
+		item.ref, map:getHandle(),
 		position.x - 0.5, position.y - 0.5, position.z - 0.5,
 		position.x + 0.5, position.y + 0.5, position.z + 0.5)
 
@@ -2288,13 +2290,18 @@ function GameView:dirty()
 
 			map.mask = MapMeshMask.combine(unpack(mapMeshMasks))
 
-			for _, node in ipairs(map.parts) do
-				if map.mapMeshMasks then
-					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture(), map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())
-				else
-					node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, map.largeTileSet:getSpecularTexture(), map.largeTileSet:getOutlineTexture())
+				
+			self.resourceManager:queueAsyncEvent(function()
+				map.largeTileSet:emitAll(map.map)
+			
+				for _, node in ipairs(map.parts) do
+					if map.mapMeshMasks then
+						node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture())
+					else
+						node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture)
+					end
 				end
-			end
+			end)
 		end
 	end
 

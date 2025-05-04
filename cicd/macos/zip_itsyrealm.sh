@@ -3,6 +3,11 @@
 set -xe
 
 cd ../../itsyscape
+
+pushd ..
+make LUAJIT="$(pwd)/cicd/macos/build/LuaJIT/src/luajit" all
+popd
+
 echo $ITSYREALM_VERSION > version.meta
 
 cp -r ../cicd/macos/staging/ext/B ./B
@@ -11,3 +16,4 @@ cp -r ../cicd/macos/staging/ext/nomicon ./nomicon
 zip -9 -qr ../cicd/macos/staging/ItsyRealm.app/Contents/Resources/itsyrealm.love .
 rm -r ./B
 rm -r ./devi
+rm -r ./nomicon

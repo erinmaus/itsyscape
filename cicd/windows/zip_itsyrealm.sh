@@ -5,4 +5,4 @@ set -xe
 cd build/assets/itsyscape
 
 echo $ITSYREALM_VERSION > version.meta
-zip -9 -qr ../../staging/itsyrealm.love .
+zip -9 -qr ../../../staging/itsyrealm.love .

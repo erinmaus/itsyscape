@@ -229,7 +229,7 @@ function Island:onPlayFoundYenderhoundsCutscene(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.enable(playerPeep)
 			self:transitionTutorial(playerPeep, "Tutorial_FoundYenderhounds")
-			self:transitionTutorial(playerPeep, "Anchor_EncounterYenderhounds")
+			self:saveTutorialLocation(playerPeep, "Anchor_EncounterYenderhounds")
 		end, "quest_tutorial_main_find_yenderhounds.spotted")
 	end)
 end
@@ -472,6 +472,12 @@ function Island:prepareTutorialPirateShipPeeps(playerPeep)
 	end
 end
 
+function Island:onFinishDemo(playerPeep)
+	if _ITSYREALM_DEMO then
+		Utility.move(playerPeep, "FinishDemo")
+	end
+end
+
 function Island:onFinishPreparingTutorial(playerPeep)
 	self.playersInTutorial[playerPeep] = true
 
@@ -501,13 +507,6 @@ function Island:onFinishPreparingTutorial(playerPeep)
 			self:getLayerName(),
 			Probe.namedMapObject("YendorianScout"),
 			Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))[1]
-
-		if not scout then
-			Utility.Peep.disable(playerPeep)
-			self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
-				Utility.Peep.enable(playerPeep)
-			end)
-		end
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_Combat", playerPeep) then
 		Utility.Peep.disable(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
@@ -518,6 +517,10 @@ function Island:onFinishPreparingTutorial(playerPeep)
 	       Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundYendorians", playerPeep) or
 	       Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedKeelhauler", playerPeep)
 	then
+		if Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundPeak", playerPeep) then
+			Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_PeakObstacles")
+		end
+
 		local piratePeeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Pirates")
 		self:prepareTutorialPiratePeeps(playerPeep, piratePeeps)
 		self:prepareTutorialPirateShipPeeps(playerPeep)
@@ -663,6 +666,8 @@ function Island:prepareTutorial(playerPeep, arguments)
 		return
 	end
 
+	Utility.Peep.toggleEffect(playerPeep, "Tutorial_SillyClick", true)
+
 	if not Utility.Quest.didStart("Tutorial", playerPeep) then
 		self:saveTutorialLocation(playerPeep, "Anchor_Spawn")
 	end
@@ -752,7 +757,10 @@ function Island:onPlayerLeave(player)
 
 	local playerPeep = player:getActor() and player:getActor():getPeep()
 	if playerPeep then
-		self.playersInTutorial[playerPeep] = nil
+		if self.playersInTutorial[playerPeep] then
+			self.playersInTutorial[playerPeep] = nil
+			Utility.Peep.toggleEffect(playerPeep, "Tutorial_SillyClick", false)
+		end
 	end
 
 	player:pokeCamera("lockPosition")

@@ -401,6 +401,8 @@ function BaseCombatHUDController:getConfig()
 
 	local disabled = config.disabled or {}
 	disabled["equipment"] = true
+	disabled["spells"] = true
+	disabled["prayers"] = true
 	config.disabled = disabled
 
 	return config

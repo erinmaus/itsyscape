@@ -8,6 +8,22 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Effect "Tutorial_SillyClick" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Silly click (tutorial)",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Tutorial_SillyClick"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Attempts to prevent silly clicking.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Tutorial_SillyClick"
+}
+
 ItsyScape.Resource.Effect "Tutorial_AlwaysHit" {
 	-- Nothing.
 }
