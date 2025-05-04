@@ -64,10 +64,10 @@ function SillyClick:getBuffType()
 end
 
 function SillyClick:sizzle()
-	Effect.sizzle(self)
-
 	self:getPeep():silence("actionTried", self._onActionTried)
 	self:getPeep():silence("move", self._onMove)
+
+	Effect.sizzle(self)
 end
 
 function SillyClick:enchant(peep)
