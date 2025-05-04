@@ -51,6 +51,11 @@ Probe.TESTS = {
 	["props"] = true
 }
 
+local function _emptyProp(prop)
+	local s = prop:getState()
+	return s.resource and s.resource.depleted
+end
+
 Probe.PROP_FILTERS = {
 	["open"] = function(prop)
 		return prop:getState().open
@@ -66,7 +71,11 @@ Probe.PROP_FILTERS = {
 
 	["snuff"] = function(prop)
 		return not prop:getState().lit
-	end
+	end,
+
+	["fish"] = _emptyProp,
+	["chop"] = _emptyProp,
+	["mine"] = _emptyProp
 }
 
 function Probe:new(game, gameView, gameDB)

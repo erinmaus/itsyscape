@@ -92,6 +92,7 @@ function One:new(...)
 	Utility.Peep.makeHuman(self)
 	Utility.Peep.makeAttackable(self, false)
 
+	self:addPoke('actionTried')
 	self:addPoke('actionFailed')
 	self:addPoke('initiateAttack')
 	self:addPoke('receiveAttack')

@@ -391,7 +391,7 @@ function DialogBox:update(delta)
 
 	local offset
 	local zoom
-	if self.actor or self.prop then
+	if (self.actor or self.prop) and self:getView():getGameView():getView(self.actor or self.prop) then
 		local node = self.actor or self.prop
 		local min, max, z, o = node:getBounds()
 

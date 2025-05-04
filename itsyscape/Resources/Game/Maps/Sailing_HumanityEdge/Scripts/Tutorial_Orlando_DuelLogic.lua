@@ -389,6 +389,10 @@ local DidPlayerYield = Mashina.Step {
 		}
 	},
 
+	Mashina.Peep.IsAlive {
+		peep = CommonLogic.PLAYER
+	},
+
 	Mashina.Try {
 		Mashina.Step {
 			Mashina.Check {

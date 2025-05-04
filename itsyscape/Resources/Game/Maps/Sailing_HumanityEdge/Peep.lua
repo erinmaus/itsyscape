@@ -666,6 +666,8 @@ function Island:prepareTutorial(playerPeep, arguments)
 		return
 	end
 
+	Utility.Peep.toggleEffect(playerPeep, "Tutorial_SillyClick", true)
+
 	if not Utility.Quest.didStart("Tutorial", playerPeep) then
 		self:saveTutorialLocation(playerPeep, "Anchor_Spawn")
 	end
@@ -755,7 +757,10 @@ function Island:onPlayerLeave(player)
 
 	local playerPeep = player:getActor() and player:getActor():getPeep()
 	if playerPeep then
-		self.playersInTutorial[playerPeep] = nil
+		if self.playersInTutorial[playerPeep] then
+			self.playersInTutorial[playerPeep] = nil
+			Utility.Peep.toggleEffect(playerPeep, "Tutorial_SillyClick", false)
+		end
 	end
 
 	player:pokeCamera("lockPosition")

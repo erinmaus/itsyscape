@@ -1991,7 +1991,7 @@ function DemoApplication:getNextShimmer(pendingObjectID, pendingObjectType)
 	for i, shimmeringObject in ipairs(self.shimmeringObjects) do
 		local isOnlyExaminable = true
 		for _, action in pairs(shimmeringObject.actions) do
-			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") then
+			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") and not action.suppress then
 				isOnlyExaminable = false
 			end
 		end
@@ -2119,7 +2119,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 		local isAttackable
 		local isOnlyExaminable = true
 		for _, action in pairs(shimmeringObject.actions) do
-			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") then
+			if (action.type:lower() ~= "examine" and action.type:lower() ~= "walk") and not action.suppress then
 				isOnlyExaminable = false
 			end
 
@@ -2141,7 +2141,7 @@ function DemoApplication:updateNearbyShimmer(delta)
 			self.nextObjectID, self.nextObjectType = self:getNextShimmer(self.pendingObjectID, self.pendingObjectType)
 		end
 
-		local isActive = self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType
+		local isActive = self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType and not isOnlyExaminable
 		local isNext = self.nextObjectID == shimmeringObject.objectID and self.nextObjectType == shimmeringObject.objectType
 
 		local color
