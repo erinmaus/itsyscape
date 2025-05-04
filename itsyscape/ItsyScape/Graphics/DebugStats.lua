@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 
 local DebugStats = Class()
+DebugStats._STACK = {}
 
 DebugStats.GlobalDebugStats = Class(DebugStats)
 
@@ -18,6 +19,7 @@ function DebugStats.GlobalDebugStats:process(node, func, ...)
 end
 
 function DebugStats:new()
+	self.previousDebug = false
 	self.debugStats = {}
 end
 
@@ -33,6 +35,12 @@ function DebugStats:measure(node, ...)
 		nodeName = node:getDebugInfo().shortName
 	end
 
+	if self.previousDebug ~= _DEBUG then
+		self.debugStats[nodeName] = nil
+		self.previousDebug = _DEBUG
+	end
+
+	local beforeStat = collectgarbage("count")
 	local stat = self.debugStats[nodeName] or {
 		minTime = math.huge,
 		maxTime = -math.huge,
@@ -40,8 +48,11 @@ function DebugStats:measure(node, ...)
 		maxMemory = -math.huge,
 		currentTimeTotal = 0,
 		currentMemoryTotal = 0,
-		samples = 0 
+		currentMemoryTime = 0,
+		sampleCount = 0,
+		samples = {}
 	}
+	local afterStat = collectgarbage("count")
 
 	local duration, memory, result
 	do
@@ -53,7 +64,10 @@ function DebugStats:measure(node, ...)
 			beforeMemory = collectgarbage("count")
 		end
 
+		table.insert(DebugStats._STACK, stat)
 		result = self:process(node, ...)
+		table.remove(DebugStats._STACK)
+
 		local afterTime = love.timer.getTime()
 
 		if _DEBUG == "plus" then
@@ -71,9 +85,28 @@ function DebugStats:measure(node, ...)
 	stat.maxMemory = math.max(stat.maxMemory, memory)
 	stat.currentTimeTotal = stat.currentTimeTotal + duration
 	stat.currentMemoryTotal = stat.currentMemoryTotal + memory
-	stat.samples = stat.samples + 1
+	stat.sampleCount = stat.sampleCount + 1
+
+	local beforeSample = collectgarbage("count")
+	if _DEBUG == "plus" then
+		local currentSampleTime = love.timer.getTime() - Log.START
+		local firstSampleTime = stat.samples[1] and stat.samples[1].time or 0
+
+		stat.currentMemoryTime = currentSampleTime - firstSampleTime
+
+		table.insert(stat.samples, { time = currentSampleTime, duration = duration, memory = memory })
+	end
+	local afterSample = collectgarbage("count")
 
 	self.debugStats[nodeName] = stat
+
+	if _DEBUG == "plus" then
+		for _, parent in ipairs(DebugStats._STACK) do
+			local a = afterStat - beforeStat
+			local b = beforeSample - afterSample
+			parent.currentMemoryTotal = parent.currentMemoryTotal - (a + b)
+		end
+	end
 
 	return result
 end
@@ -102,13 +135,13 @@ function DebugStats:dumpStatsToCSV(topic)
 	end
 
 	local stringifiedStats = {}
-	table.insert(stringifiedStats, "Node, Min Time (ms), Max Time (ms), Min Memory (kbs), Max Memory (kbs), Total Time (secs), Total Memory (kbs), Samples, Avg Time (ms), Avg Mem (kb)")
+	table.insert(stringifiedStats, "Node, Min Time (ms), Max Time (ms), Min Memory (kbs), Max Memory (kbs), Total Time (secs), Total Memory (kbs), Total Samples, Total Memory Samples, Avg Time (ms), Avg Mem (kb), Avg Mem (30 FPS), Avg Mem (60 FPS)")
 
 	for i = 1, #sortedDebugStats do
 		local stats = sortedDebugStats[i].stats
 		local nodeName = sortedDebugStats[i].nodeName
 		local f = string.format(
-			"%s, %f, %f, %f, %f, %f, %f, %f, %f, %f",
+			"%s, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
 			nodeName,
 			stats.minTime * 1000,
 			stats.maxTime * 1000,
@@ -116,9 +149,12 @@ function DebugStats:dumpStatsToCSV(topic)
 			stats.maxMemory,
 			stats.currentTimeTotal,
 			stats.currentMemoryTotal,
-			stats.samples,
-			(stats.currentTimeTotal / stats.samples) * 1000,
-			stats.currentMemoryTotal / stats.samples)
+			stats.sampleCount,
+			#stats.samples,
+			(stats.currentTimeTotal / stats.sampleCount) * 1000,
+			stats.currentMemoryTotal / math.max(#stats.samples, 1),
+			stats.currentMemoryTotal / math.max(#stats.samples, 1) * 30,
+			stats.currentMemoryTotal / math.max(#stats.samples, 1) * 60)
 		table.insert(stringifiedStats, f)
 	end
 
@@ -132,6 +168,29 @@ function DebugStats:dumpStatsToCSV(topic)
 		url = url:gsub("/", "\\")
 	end
 	Log.info("Dumped stats for topic '%s' to \"%s\".", topic, url)
+
+	for i = 1, #sortedDebugStats do
+		local stats = sortedDebugStats[i].stats
+		local nodeName = sortedDebugStats[i].nodeName
+
+		if #stats.samples > 0 then
+			local samplesFilename = string.format("Performance/%s %s Samples %d.csv", topic, suffix, i)
+			local stringifiedSamples = {}
+			table.insert(stringifiedSamples, "Timestamp, Node, Time (ms), Memory (kbs)")
+			for _, sample in ipairs(stats.samples) do
+				local f = string.format(
+					"%0.7f, %s, %f, %f",
+					sample.time,
+					nodeName,
+					sample.duration * 1000,
+					sample.memory)
+				table.insert(stringifiedSamples, f)
+			end
+
+			local samplesResult = table.concat(stringifiedSamples, "\n")
+			love.filesystem.write(samplesFilename, samplesResult)
+		end
+	end
 end
 
 DebugStats.GLOBAL = DebugStats.GlobalDebugStats()

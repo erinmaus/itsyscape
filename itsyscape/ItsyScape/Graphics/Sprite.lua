@@ -10,11 +10,12 @@
 local Class = require "ItsyScape.Common.Class"
 
 local Sprite = Class()
+Sprite.STACKS = true
 
 function Sprite:new(spriteManager, node, offset)
 	self.spriteManager = spriteManager
 	self.node = node
-	self.offset = offset
+	self.offset = offset:keep()
 end
 
 function Sprite:getSpriteManager()
@@ -43,6 +44,10 @@ end
 
 function Sprite:isDone(time)
 	return true
+end
+
+function Sprite:update(delta)
+	-- Nothing.
 end
 
 function Sprite:draw(position, time)

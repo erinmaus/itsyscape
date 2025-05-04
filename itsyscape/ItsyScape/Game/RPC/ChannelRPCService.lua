@@ -9,10 +9,8 @@
 --------------------------------------------------------------------------------
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local EventQueue = require "ItsyScape.Game.RPC.EventQueue"
 local RPCService = require "ItsyScape.Game.RPC.RPCService"
-local NBuffer = require "nbunny.gamemanager.buffer"
-local NEventQueue = require "nbunny.gamemanager.eventqueue"
-local NVariant = require "nbunny.gamemanager.variant"
 
 local ChannelRPCService = Class(RPCService)
 ChannelRPCService.CLIENT_ID = 0
@@ -23,9 +21,7 @@ function ChannelRPCService:new(inputChannel, outputChannel, isBlocking)
 	self.inputChannel = inputChannel
 	self.outputChannel = outputChannel
 	self.isBlocking = isBlocking or false
-
-	self.queue = NEventQueue()
-	self.event = NVariant()
+	self.queue = EventQueue.newBuffer()
 end
 
 function ChannelRPCService:sendBatch(channel, e)
@@ -33,26 +29,31 @@ function ChannelRPCService:sendBatch(channel, e)
 end
 
 function ChannelRPCService:send(channel, e)
-	self.outputChannel:push(NBuffer.create(e))
-end
-
-function ChannelRPCService:wrap()
-	self.event.clientID = ChannelRPCService.CLIENT_ID
-	return self.event
+	self.outputChannel:push(buffer.encode({ e }))
 end
 
 function ChannelRPCService:_pop()
-	if self.queue:length() > 0 then
-		self.queue:pop(self.event)
-		self.event.clientID = ChannelRPCService.CLIENT_ID
+	if #self.queue > 0 then
+		local event = self.queue:decode()
+		event.clientID = ChannelRPCService.CLIENT_ID
 
-		return self.event
+		if event.value then
+			for i = 1, event.value.n do
+				local v = event.value.arguments[i]
+				if type(v) == "table" and v.__interface and v.__id then
+					local instance = self:getGameManager():getInstance(v.__interface, v.__id)
+					event.value.arguments[i] = instance and instance:getInstance() or nil
+				end
+			end
+		end
+
+		return event
 	end
 
 	return nil
 end
 
-function ChannelRPCService:receive()
+function ChannelRPCService:receive(c)
 	local result = self:_pop()
 	if not result then
 		local e
@@ -63,9 +64,8 @@ function ChannelRPCService:receive()
 		end
 
 		if e then
-			if type(e) == "userdata" then
-				self.queue:fromBuffer(e)
-				NBuffer.free(e)
+			if type(e) == "string" then
+				self.queue:set(e)
 			end
 
 			result = self:_pop()

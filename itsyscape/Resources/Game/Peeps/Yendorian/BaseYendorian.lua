@@ -16,6 +16,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 local BaseYendorian = Class(Creep)
@@ -25,6 +26,9 @@ function BaseYendorian:new(resource, name, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1.5, 3.75, 1.5)
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	status.maxChaseDistance = 16
 end
 
 function BaseYendorian:ready(director, game)

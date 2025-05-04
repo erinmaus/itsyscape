@@ -48,9 +48,9 @@ end
 
 function MimicVomitCommon:tick()
 	if not self.spawnPosition then
-		self.spawnPosition = self:getTargetPosition(self:getSource()) + Vector(0, 2, 0)
+		self.spawnPosition = (self:getTargetPosition(self:getSource()) + Vector(0, 2, 0)):keep()
 
-		local hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 2, 0)
+		local hitPosition = (self:getTargetPosition(self:getDestination()) + Vector(0, 2, 0)):keep()
 		self.duration = math.max((self.spawnPosition - hitPosition):getLength() / self.SPEED, 0.5)
 	end
 end

@@ -136,6 +136,11 @@ for itemName, itemProps in spairs(ITEMS) do
 		Resource = Item
 	}
 
+	ItsyScape.Meta.LootCategory {
+		Item = Item,
+		Category = ItsyScape.Resource.LootCategory "Legendary"
+	}
+
 	Item {
 		EquipAction,
 		DequipAction,

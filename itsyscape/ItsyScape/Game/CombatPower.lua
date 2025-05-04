@@ -9,10 +9,33 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Config = require "ItsyScape.Game.Config"
 local Power = require "ItsyScape.Game.Power"
 local Utility = require "ItsyScape.Game.Utility"
+local Variables = require "ItsyScape.Game.Variables"
+local ZealEffect = require "ItsyScape.Peep.Effects.ZealEffect"
+
+local CONFIG = Variables.load("Resources/Game/Variables/Combat.json")
+local BASE_COST_PATH = Variables.Path("zealCost", Variables.PathParameter("tier"), "baseCost")
+local MAX_COST_REDUCTION_PATH = Variables.Path("zealCost", Variables.PathParameter("tier"), "maxCostReduction")
 
 local CombatPower = Class(Power)
+
+CombatPower.TIER_NAMES = {
+	[0] = "tier0",
+	"tier1",
+	"tier2",
+	"tier3",
+	"tier4"
+}
+
+CombatPower.NAMED_TIERS = {
+	tier0 = 0,
+	tier1 = 1,
+	tier2 = 2,
+	tier3 = 3,
+	tier4 = 4
+}
 
 function CombatPower:new(...)
 	Power.new(self, ...)
@@ -21,29 +44,43 @@ function CombatPower:new(...)
 	self.xWeaponInstance = false
 
 	self.governingStat = false
-	self.baseCoolDown = math.huge
+	self.baseCost = 1
 	self.maxReduction = 0
 	self.minLevel = 1
 	self.maxLevel = 99
+	self.tier = 1
 
 	local gameDB = self:getGame():getGameDB()
-	local coolDown = gameDB:getRecord("CombatPowerCoolDown", {
-		Resource = self:getResource()
-	})
+	local cost = gameDB:getRecord("CombatPowerZealCost", { Resource = self:getResource() })
+	local tier = gameDB:getRecord("CombatPowerTier", { Resource = self:getResource() })
+	if cost and tier then
+		self.tier = tier:get("Tier")
 
-	if coolDown then
-		self:setCoolDown(
-			coolDown:get("Skill").name,
-			coolDown:get("BaseCoolDown"),
-			coolDown:get("MaxReduction"),
-			coolDown:get("MinLevel"),
-			coolDown:get("MaxLevel"))
+		local tierName = self.TIER_NAMES[tier:get("Tier")] or "tier1"
+
+		local baseCost = Config.get("Combat", "BASE_ZEAL_COST", "tier", tierName, "_", 1)
+		local maxCostReduction = Config.get("Combat", "MAX_ZEAL_COST_REDUCTION", "tier", tierName, "_", 0)
+
+		self:setCost(
+			cost:get("Skill").name,
+			baseCost,
+			maxCostReduction,
+			cost:get("MinLevel"),
+			cost:get("MaxLevel"))
 	end
 end
 
-function CombatPower:setCoolDown(stat, base, reduction, min, max)
+function CombatPower:getIsOffensive()
+	return not self:getAction():getIsDefensive()
+end
+
+function CombatPower:getIsDefensive()
+	return self:getAction():getIsDefensive()
+end
+
+function CombatPower:setCost(stat, base, reduction, min, max)
 	self.governingStat = stat or false
-	self.baseCoolDown = base or self.baseCoolDown
+	self.baseCost = base or self.baseCost
 	self.maxReduction = reduction or self.maxReduction
 	self.minLevel = min or self.minLevel
 	self.maxLevel = max or self.maxLevel
@@ -68,27 +105,51 @@ function CombatPower:getXWeapon(peep)
 	return nil
 end
 
-function CombatPower:getCoolDown(peep)
-	if self.governingStat then
-		local stat = peep:getState():count("Skill", self.governingStat, {
-			['skill-as-level'] = true
-		})
+function CombatPower:getTier()
+	return self.tier
+end
 
-		if stat then
-			local width = self.maxLevel - self.minLevel
-			if width == 0 then
-				return self.baseCoolDown
-			end
+function CombatPower:getCost(peep)
+	if not self.governingStat then
+		return 1
+	end
 
+	local stat = peep:getState():count("Skill", self.governingStat, {
+		['skill-as-level'] = true
+	})
+
+	if not stat then
+		return 1
+	end
+
+	local cost
+	do
+		local width = self.maxLevel - self.minLevel
+		if width == 0 then
+			cost = self.baseCost
+		else
 			local difference = math.min(stat - self.minLevel, width)
 			local percent = difference / width
 			local reduction = math.floor(percent * self.maxReduction + 0.5)
 
-			return math.max(self.baseCoolDown - reduction, 1)
+			cost =  math.max(self.baseCost - reduction, 0)
 		end
+
+		cost = cost or 1
 	end
 
-	return math.huge
+	local multiplier, offset = 1, 0
+	for effect in peep:getEffects(ZealEffect) do
+		local m, o = effect:modifyTierCost(self.tier)
+		multiplier = multiplier + m
+		offset = offset + o
+	end
+
+	local minCost = Config.get("Combat", "MIN_ZEAL_COST", "tier", tierName, "_", 0)
+	local maxCost = Config.get("Combat", "MAX_ZEAL_COST", "tier", tierName, "_", 1)
+
+	cost = math.clamp(cost * multiplier + offset, minCost, maxCost)
+	return cost
 end
 
 return CombatPower

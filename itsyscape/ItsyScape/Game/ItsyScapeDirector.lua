@@ -27,7 +27,7 @@ function ItsyScapeDirector:new(game, gameDB)
 	self:addCortex(MovementCortex)
 	self:addCortex(require "ItsyScape.Peep.Cortexes.MashinaCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.MirrorCortex")
-	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatCortex")
+	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatCortex2")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.CombatXPCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.DeathCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.PrayerDrainCortex")
@@ -38,6 +38,9 @@ function ItsyScapeDirector:new(game, gameDB)
 	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorPositionUpdateCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.ActorDirectionUpdateCortex")
 	self:addCortex(require "ItsyScape.Peep.Cortexes.FollowerCortex")
+	self:addCortex(require "ItsyScape.Peep.Cortexes.CloudCortex")
+	self:addCortex(require "ItsyScape.Peep.Cortexes.SkyCortex")
+	self:addCortex(require "ItsyScape.Peep.Cortexes.OceanUpdateCortex")
 
 	self.game = game
 	self.gameDB = gameDB

@@ -10,8 +10,7 @@
 
 local CookAction1 = ItsyScape.Action.OpenCraftWindow()
 ItsyScape.Meta.DelegatedActionTarget {
-	CategoryKey = "CookingMethod",
-	CategoryValue = "Range",
+	CategoryKey = "CookingMethodRange",
 	Action = CookAction1
 }
 

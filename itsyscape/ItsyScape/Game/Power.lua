@@ -25,8 +25,8 @@ function Power:new(game, resource, ...)
 	})
 
 	if spec then
-		self.isInstant = spec:get("IsInsant") ~= 0
-		self.isQuick = spec:get("IsQuick") ~= 0
+		self.isInstant = false
+		self.isQuick = false
 		self.requiresTarget = spec:get("NoTarget") == 0
 	end
 
@@ -104,8 +104,8 @@ function Power:activate(activator, target)
 	end
 end
 
-function Power:getCoolDown(peep)
-	return math.huge
+function Power:getCost(peep)
+	return 1
 end
 
 return Power

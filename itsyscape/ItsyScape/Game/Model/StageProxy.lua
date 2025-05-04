@@ -56,7 +56,8 @@ StageProxy.moveMap = Event.Set(
 	Event.Argument("rotation"),
 	Event.Argument("scale"),
 	Event.Argument("offset"),
-	Event.Argument("disabled"))
+	Event.Argument("disabled"),
+	Event.Argument("parentLayer"))
 StageProxy.moveMap:link(
 	"onMapMoved",
 	Event.Argument("layer"),
@@ -64,13 +65,31 @@ StageProxy.moveMap:link(
 	Event.Argument("rotation"),
 	Event.Argument("scale"),
 	Event.Argument("offset"),
-	Event.Argument("disabled"))
+	Event.Argument("disabled"),
+	Event.Argument("parentLayer"))
 StageProxy.stopMoveMap = Event.Unset(
 	StageProxy.MAP_MOVE,
 	Event.KeyArgument("layer", true))
 StageProxy.stopMoveMap:link(
 	"onUnloadMap",
 	Event.Argument("layer"))
+
+-- StageProxy.MAP_LINK = "mapLink"
+-- StageProxy.linkMap = Event.Set(
+-- 	StageProxy.MAP_LINK,
+-- 	Event.KeyArgument("layer", true),
+-- 	Event.KeyArgument("otherLayer", true, true))
+-- StageProxy.linkMap:link(
+-- 	"onMapLinked",
+-- 	Event.Argument("layer"),
+-- 	Event.Argument("otherLayer"))
+-- StageProxy.stopMoveMap = Event.Unset(
+-- 	StageProxy.MAP_LINK,
+-- 	Event.KeyArgument("layer", true),
+-- 	Event.KeyArgument("otherLayer", true, true))
+-- StageProxy.stopMoveMap:link(
+-- 	"onMapUnlinked",
+-- 	Event.Argument("layer"))
 
 StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor, isMoving)
 	if isMoving then
@@ -125,24 +144,28 @@ StageProxy.dropItem = Event.Set(
 	Event.Argument("item"),
 	Event.Argument("tile"),
 	Event.Argument("position"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer"),
+	Event.Argument("source"))
 StageProxy.dropItem:link(
 	"onDropItem",
 	Event.Argument("ref"),
 	Event.Argument("item"),
 	Event.Argument("tile"),
 	Event.Argument("position"),
-	Event.Argument("layer"))
+	Event.Argument("layer"),
+	Event.Argument("source"))
 StageProxy.takeItem = Event.Unset(
 	StageProxy.ITEM,
 	Event.KeyArgument("ref"),
 	Event.Argument("item"),
-	Event.KeyArgument("layer"))
+	Event.KeyArgument("layer"),
+	Event.Argument("source"))
 StageProxy.takeItem:link(
 	"onTakeItem",
 	Event.Argument("ref"),
 	Event.Argument("item"),
-	Event.Argument("layer"))
+	Event.Argument("layer"),
+	Event.Argument("source"))
 
 StageProxy.DECORATION = "decoration"
 StageProxy.decorate = Event.Set(

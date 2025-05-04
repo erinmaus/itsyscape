@@ -18,6 +18,7 @@ function Failure:update(mashina, state, executor)
 		if r == B.Status.Working then
 			return B.Status.Working
 		else
+			executor:drop()
 			return B.Status.Failure
 		end
 	end

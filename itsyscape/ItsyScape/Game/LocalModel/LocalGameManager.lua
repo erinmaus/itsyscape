@@ -164,6 +164,14 @@ function LocalGameManager:onActorMoved(_, actor, previousLayerName, currentLayer
 					actor:getID())
 				self:assignTargetToLastPush(player)
 
+				local instance = localGameManager:getInstance(
+					"ItsyScape.Game.Model.Actor",
+					actor:getID())
+				for _, property in instance:iterateProperties() do
+					instance:updateProperty(property, true)
+					localGameManager:assignTargetToLastPush(player)
+				end
+
 				self:pushCallback(
 					"ItsyScape.Game.Model.Stage",
 					0,
@@ -203,6 +211,14 @@ function LocalGameManager:onPropMoved(_, prop, previousLayerName, currentLayerNa
 					prop:getID())
 				self:assignTargetToLastPush(player)
 
+				local instance = localGameManager:getInstance(
+					"ItsyScape.Game.Model.Prop",
+					prop:getID())
+				for _, property in instance:iterateProperties() do
+					instance:updateProperty(property, true)
+					localGameManager:assignTargetToLastPush(player)
+				end
+
 				self:pushCallback(
 					"ItsyScape.Game.Model.Stage",
 					0,
@@ -240,7 +256,7 @@ function LocalGameManager:destroyInstance(interface, id)
 end
 
 function LocalGameManager:_doSend(player, e)
-	self.pending:pull(e)
+	self.pending:pull(e.__serialized)
 end
 
 function LocalGameManager:_doFlush(player)
@@ -382,13 +398,11 @@ function LocalGameManager:sendToPlayer(player)
 							if e.callback == "onClose" and self.ui[interfaceID] and self.ui[interfaceID][interfaceIndex] then
 								self.ui[interfaceID][interfaceIndex] = nil
 							elseif e.callback == "onPush" then
-								local v = e:rawget("value")
-
 								if self.ui[interfaceID] and self.ui[interfaceID][interfaceIndex] and self.ui[interfaceID][interfaceIndex] == v then
 									isRPCMatch = false
 								else
 									local ui = self.ui[interfaceID] or {}
-									ui[interfaceIndex] = v
+									ui[interfaceIndex] = e.value
 
 									self.ui[interfaceID] = ui
 								end
@@ -462,7 +476,7 @@ function LocalGameManager:processCallback(e)
 		if not ui then
 			Log.info("UI not found trying to call RPC '%s' for player ID %d.", e.callback, e.id)
 		else
-			local interfaceID, interfaceIndex = e:get("value")
+			local interfaceID, interfaceIndex = unpack(e.value.arguments, 1, e.value.n)
 			local interface = ui:get(interfaceID, interfaceIndex)
 			if not interface then
 				Log.warn("Interface (id = '%s', index = %d) not found.", interfaceID, interfaceIndex)

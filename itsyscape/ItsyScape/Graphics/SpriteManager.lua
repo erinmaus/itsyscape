@@ -12,8 +12,9 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 
 local SpriteManager = Class()
 
-function SpriteManager:new(resourceManager)
-	self.resourceManager = resourceManager
+function SpriteManager:new(gameView)
+	self.gameView = gameView
+	self.resourceManager = gameView:getResourceManager()
 	self.sprites = {}
 	self.times = {}
 
@@ -28,6 +29,10 @@ function SpriteManager:clear()
 	table.clear(self.sprites)
 	table.clear(self.nodes)
 	table.clear(self.times)
+end
+
+function SpriteManager:getGameView()
+	return self.gameView
 end
 
 function SpriteManager:getResources()
@@ -45,9 +50,11 @@ function SpriteManager:add(spriteID, node, offset, ...)
 	end
 
 	local numNodesOfType = 0
-	for i = 1, #nodes do
-		if nodes[i].id == spriteID then
-			numNodesOfType = numNodesOfType + 1
+	if Type.STACKS then
+		for i = 1, #nodes do
+			if nodes[i].id == spriteID then
+				numNodesOfType = numNodesOfType + 1
+			end
 		end
 	end
 
@@ -103,9 +110,14 @@ function SpriteManager:update(delta)
 			self:poof(sprite)
 			sprite:poof()
 		else
+			sprite:update(delta)
+
 			index = index + 1
-			time = time + delta
-			self.times[sprite] = time
+
+			-- 'update' may call 'reset' on the sprite which will
+			-- cause the cachedf 'time' value at the beginning to
+			-- be inaccurate
+			self.times[sprite] = self.times[sprite] + delta
 		end
 	end
 end
@@ -127,17 +139,15 @@ function SpriteManager:draw(scene, camera, delta)
 	local realWidth, realHeight = love.window.getMode()
 	local scaledWidth, scaledHeight, scaleX, scaleY, paddingX, paddingY = love.graphics.getScaledMode()
 
-	-- I messed something up with the fork in love.window.getMode that screws up
-	-- the camera:apply() call (if camera:apply() is called BEFORE getMode)
-	camera:apply()
-
 	local positions = {}
 	for i = 1, #self.sprites do
 		local sprite = self.sprites[i]
 		local transform = sprite:getSceneNode():getTransform():getGlobalDeltaTransform(delta)
 		local position = Vector(transform:transformPoint(0, 0, 0)) + sprite:getOffset()
 
-		local x, y, z = love.graphics.project(position:get())
+		local camera = self.gameView:getCamera()
+
+		local x, y, z = camera:project(position):get()
 		x = x / realWidth * scaledWidth
 		y = y / realHeight * scaledHeight
 
@@ -162,7 +172,7 @@ function SpriteManager:draw(scene, camera, delta)
 		local time = self.times[sprite]
 		local position = positions[sprite]
 
-		if self:_isVisible(scene, sprite:getSceneNode()) then
+		if self:_isVisible(scene, sprite:getSceneNode()) and position.z <= 1 then
 			sprite:draw(position, time)
 		end
 	end

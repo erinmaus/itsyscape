@@ -603,6 +603,9 @@ local INTERFACE_BLACKLIST = {
 	"PlayerSpells",
 	"PlayerPrayers",
 	"PlayerPowers",
+	"PlayerConfig",
+	"GamepadRibbon",
+	"GamepadCombatHUD",
 	"DramaticText",
 	"CutsceneTransition"
 }

@@ -60,6 +60,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepActiveSpell" {
+		Spell = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PeepMashinaState" {
 		State = Meta.TYPE_TEXT,
 		Tree = Meta.TYPE_TEXT,
@@ -150,6 +155,7 @@ Game "ItsyScape"
 		Direction = Meta.TYPE_REAL,
 		Name = Meta.TYPE_TEXT,
 		Map = Meta.TYPE_RESOURCE,
+		Layer = Meta.TYPE_INTEGER,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -202,6 +208,7 @@ Game "ItsyScape"
 	Meta "MapObjectGroup" {
 		MapObjectGroup = Meta.TYPE_TEXT,
 		Map = Meta.TYPE_RESOURCE,
+		IsInstanced = Meta.TYPE_INTEGER,
 		MapObject = Meta.TYPE_RESOURCE
 	}
 
@@ -241,6 +248,12 @@ Game "ItsyScape"
 		IsInstance = Meta.TYPE_INTEGER
 	}
 
+	Meta "LocalTravelDestination" {
+		Map = Meta.TYPE_RESOURCE,
+		Anchor = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
+	}
+
 	Meta "PartyTravelDestination" {
 		Action = Meta.TYPE_ACTION,
 		Raid = Meta.TYPE_RESOURCE,
@@ -259,6 +272,19 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Character"
+	ResourceType "Team"
+
+	Meta "PeepCharacter" {
+		Peep = Meta.TYPE_RESOURCE,
+		Character = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CharacterTeam" {
+		Character = Meta.TYPE_RESOURCE,
+		Team = Meta.TYPE_RESOURCE
+	}
+
 	ActionType "Talk"
 	ActionType "Yell"
 	ActionType "Pet"
@@ -272,6 +298,12 @@ Game "ItsyScape"
 	Meta "TalkDialog" {
 		Script = Meta.TYPE_TEXT,
 		Language = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
+	}
+
+	Meta "TalkCharacter" {
+		Character = Meta.TYPE_RESOURCE,
+		Main = Meta.TYPE_STRING,
 		Action = Meta.TYPE_ACTION
 	}
 	
@@ -345,6 +377,16 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "PeepSkinColor" {
+		Priority = Meta.TYPE_REAL,
+		Slot = Meta.TYPE_INTEGER,
+		Color = Meta.TYPE_TEXT,
+		H = Meta.TYPE_REAL,
+		S = Meta.TYPE_REAL,
+		L = Meta.TYPE_REAL,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PeepBody" {
 		Type = Meta.TYPE_TEXT,
 		Filename = Meta.TYPE_TEXT,
@@ -391,6 +433,7 @@ Game "ItsyScape"
 	}
 
 	Meta "ResourceCategoryGroup" {
+		Icon = Meta.TYPE_RESOURCE,
 		Key = Meta.TYPE_TEXT,
 		Value = Meta.TYPE_TEXT,
 		Language = Meta.TYPE_TEXT,
@@ -459,6 +502,15 @@ Game "ItsyScape"
 
 	ActionType "Open"
 	ActionType "Close"
+
+	ActionType "Dresser_Search"
+
+	ItsyScape.Meta.ActionTypeVerb {
+		Value = "Search",
+		XProgressive = "Searching",
+		Language = "en-US",
+		Type = "Dresser_Search"
+	}
 
 	ActionType "Loot"
 	ActionType "Reward"
@@ -623,17 +675,6 @@ Game "ItsyScape"
 	ActionType "Dig"
 	ActionType "DigUp"
 
-	Meta "Cannon" {
-		Range = Meta.TYPE_INTEGER,
-		AmmoType = Meta.TYPE_INTEGER,
-		Resource = Meta.TYPE_RESOURCE
-	}
-
-	Meta "CannonAmmo" {
-		AmmoType = Meta.TYPE_INTEGER,
-		Resource = Meta.TYPE_RESOURCE
-	}
-
 	Meta "CookingFailedAction" {
 		Output = Meta.TYPE_ACTION,
 		Start = Meta.TYPE_INTEGER,
@@ -656,6 +697,18 @@ Game "ItsyScape"
 	Meta "CombatPowerCoolDown" {
 		BaseCoolDown = Meta.TYPE_INTEGER,
 		MaxReduction = Meta.TYPE_INTEGER,
+		MinLevel = Meta.TYPE_INTEGER,
+		MaxLevel = Meta.TYPE_INTEGER,
+		Skill = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CombatPowerTier" {
+		Tier = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CombatPowerZealCost" {
 		MinLevel = Meta.TYPE_INTEGER,
 		MaxLevel = Meta.TYPE_INTEGER,
 		Skill = Meta.TYPE_RESOURCE,
@@ -720,10 +773,63 @@ Game "ItsyScape"
 
 		}
 
+	Meta "Cannon" {
+		-- In degrees.
+		MinXRotation = Meta.TYPE_REAL,
+		MaxXRotation = Meta.TYPE_REAL,
+		MinYRotation = Meta.TYPE_REAL,
+		MaxYRotation = Meta.TYPE_REAL,
+
+		Range = Meta.TYPE_INTEGER,
+		AmmoType = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CannonballPathProperties" {
+		Speed = Meta.TYPE_REAL,
+		SpeedMultiplier = Meta.TYPE_REAL,
+		SpeedOffset = Meta.TYPE_REAL,
+
+		GravityX = Meta.TYPE_REAL,
+		GravityY = Meta.TYPE_REAL,
+		GravityZ = Meta.TYPE_REAL,
+		GravityMultiplierX = Meta.TYPE_REAL,
+		GravityMultiplierY = Meta.TYPE_REAL,
+		GravityMultiplierZ = Meta.TYPE_REAL,
+		GravityOffsetX = Meta.TYPE_REAL,
+		GravityOffsetY = Meta.TYPE_REAL,
+		GravityOffsetZ = Meta.TYPE_REAL,
+
+		Drag = Meta.TYPE_REAL,
+		DragMultiplier = Meta.TYPE_REAL,
+		DragOffset = Meta.TYPE_REAL,
+
+		Timestep = Meta.TYPE_REAL,
+		TimestepMultiplier = Meta.TYPE_REAL,
+		TimestepOffset = Meta.TYPE_REAL,
+
+		MaxSteps = Meta.TYPE_INTEGER,
+		MaxStepsMultiplier = Meta.TYPE_REAL,
+		MaxStepsOffset = Meta.TYPE_REAL,
+
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "CannonAmmo" {
+		AmmoType = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "MapShip" {
+		SizeClass = Meta.TYPE_TEXT,
+		Map = Meta.TYPE_RESOURCE
+	}
+
 	Meta "SailingItemDetails" {
 		Prop = Meta.TYPE_TEXT,
 		CanCustomizeColor = Meta.TYPE_INTEGER,
 		IsPirate = Meta.TYPE_INTEGER,
+		IsUnique = Meta.TYPE_INTEGER,
 		ItemGroup = Meta.TYPE_TEXT,
 		Resource = Meta.TYPE_RESOURCE
 	}
@@ -771,6 +877,25 @@ Game "ItsyScape"
 		Map = Meta.TYPE_RESOURCE
 	}
 
+	Meta "ItemSailingItemMapping" {
+		Item = Meta.TYPE_RESOURCE,
+		SailingItem = Meta.TYPE_RESOURCE
+	}
+
+	Meta "ShipSailingItemMapObjectHotspot" {
+		Slot = Meta.TYPE_TEXT,
+		ItemGroup = Meta.TYPE_TEXT,
+		MapObject = Meta.TYPE_RESOURCE,
+		Map = Meta.TYPE_RESOURCE
+	}
+
+	Meta "ShipSailingItemPropHotspot" {
+		Slot = Meta.TYPE_TEXT,
+		ItemGroup = Meta.TYPE_TEXT,
+		Prop = Meta.TYPE_RESOURCE,
+		SailingItem = Meta.TYPE_RESOURCE
+	}
+
 	Meta "ShipSailingItem" {
 		Red1 = Meta.TYPE_INTEGER,
 		Green1 = Meta.TYPE_INTEGER,
@@ -779,6 +904,8 @@ Game "ItsyScape"
 		Green2 = Meta.TYPE_INTEGER,
 		Blue2 = Meta.TYPE_INTEGER,
 		IsColorCustomized = Meta.TYPE_INTEGER,
+		Slot = Meta.TYPE_TEXT,
+		ItemGroup = Meta.TYPE_TEXT,
 		Ship = Meta.TYPE_RESOURCE,
 		SailingItem = Meta.TYPE_RESOURCE
 	}
@@ -878,6 +1005,10 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION
 	}
 
+	ResourceType "Book"
+	ItsyScape.Resource.Book "IsabellesJournal"
+	ItsyScape.Resource.Book "Necronomicon"
+
 do
 	local Human = ItsyScape.Resource.Peep "Human"
 
@@ -961,6 +1092,7 @@ ItsyScape.Utility.Weapon.STYLE_MELEE   = 3
 
 ItsyScape.Utility.Vector = require "ItsyScape.Common.Math.Vector"
 ItsyScape.Utility.Quaternion = require "ItsyScape.Common.Math.Quaternion"
+ItsyScape.Utility.Color = require "ItsyScape.Graphics.Color"
 
 function ItsyScape.Utility.tag(resource, value)
 	ItsyScape.Meta.ResourceTag {
@@ -1147,21 +1279,84 @@ end
 function ItsyScape.Utility.QuestStepDescription(keyItem)
 	local KeyItem = ItsyScape.Resource.KeyItem(keyItem)
 	return function(t)
-		assert(type(t) == 'table', "missing description")
-		assert(type(t.before) == 'string', "missing before description")
-		assert(type(t.after) == 'string', "missing after description")
+		assert(type(t) == "table", "missing description")
+		assert(type(t.before) == "string" or type(t.before) == "table", "missing before description")
+		assert(type(t.after) == "string" or type(t.after) == "table", "missing after description")
+
+		local before
+		if type(t.before) == "table" then
+			before = table.concat(t.before, " ")
+		else
+			before = t.before
+		end
+
+		local after
+		if type(t.after) == "table" then
+			after = table.concat(t.after, " ")
+		else
+			after = t.after
+		end
 
 		ItsyScape.Meta.ResourceDescription {
-			Value = t.before,
+			Value = before,
 			Language = t.language or "en-US",
 			Resource = KeyItem
 		}
 
 		ItsyScape.Meta.ResourceDescription {
-			Value = t.after,
+			Value = after,
 			Language = t.language or "en-US",
 			Resource = KeyItem
 		}
+	end
+end
+
+function ItsyScape.Utility.skins(resource, skins)
+	for _, skin in ipairs(skins) do
+		local slot = skin.slot
+		local priority = skin.priority
+		local filename = skin.filename
+		local resourceType = skin.type or "ItsyScape.Game.Skin.ModelSkin"
+
+		if slot and priority and filename then
+			ItsyScape.Meta.PeepSkin {
+				Type = resourceType,
+				Filename = string.format("Resources/Game/Skins/%s", filename),
+				Priority = priority,
+				Slot = slot,
+				Resource = resource
+			}
+
+			for _, c in ipairs(skin.colors or {}) do
+				if type(c) == "string" then
+					ItsyScape.Meta.PeepSkinColor {
+						Priority = priority,
+						Slot = slot,
+						Color = c,
+						Resource = resource,
+					}
+				else
+					ItsyScape.Meta.PeepSkinColor {
+						Priority = priority,
+						Slot = slot,
+						Color = c.color or "ff0000",
+						H = c.h,
+						S = c.s,
+						L = c.l,
+						Resource = resource,
+					}
+				end
+			end
+		else
+			local info = debug.getinfo(2, "Sl")
+			local message = string.format(
+				"%s:%d: Could not apply skin to resource: missing one or more fields (slot = %s, priority = %s, or filename = %s)",
+				info.source, info.currentline,
+				tostring(slot),
+				tostring(priority),
+				tostring(filename))
+			ItsyScape.Error(message)
+		end
 	end
 end
 
@@ -1226,6 +1421,7 @@ include "Resources/Game/DB/Items/Veggies.lua"
 include "Resources/Game/DB/Items/Candles.lua"
 include "Resources/Game/DB/Items/Isabellium.lua"
 include "Resources/Game/DB/Items/TreeSecondaries.lua"
+include "Resources/Game/DB/Items/EquipmentPlaceholders.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
@@ -1296,6 +1492,8 @@ include "Resources/Game/DB/Creeps/PetrifiedSpider.lua"
 include "Resources/Game/DB/Creeps/BarrelMimic.lua"
 include "Resources/Game/DB/Creeps/CrateMimic.lua"
 include "Resources/Game/DB/Creeps/Mantok.lua"
+include "Resources/Game/DB/Creeps/Dummy.lua"
+include "Resources/Game/DB/Creeps/Yenderhounds.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
@@ -1313,6 +1511,15 @@ include "Resources/Game/DB/Peeps/BlackTentacle.lua"
 include "Resources/Game/DB/Peeps/Humans.lua"
 include "Resources/Game/DB/Peeps/Disemboweled.lua"
 include "Resources/Game/DB/Peeps/ExperimentX.lua"
+
+-- Characters
+include "Resources/Game/DB/Characters/Teams.lua"
+include "Resources/Game/DB/Characters/Player.lua"
+include "Resources/Game/DB/Characters/Orlando.lua"
+include "Resources/Game/DB/Characters/VizierRockKnight.lua"
+include "Resources/Game/DB/Characters/Dummy.lua"
+include "Resources/Game/DB/Characters/BlackTentacles.lua"
+include "Resources/Game/DB/Characters/Rosalind.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
@@ -1335,6 +1542,7 @@ include "Resources/Game/DB/Spells/ModernCombat.lua"
 include "Resources/Game/DB/Prayers/Murmurs.lua"
 
 -- Powers
+include "Resources/Game/DB/Powers/Common.lua"
 include "Resources/Game/DB/Powers/Magic.lua"
 include "Resources/Game/DB/Powers/Archery.lua"
 include "Resources/Game/DB/Powers/Melee.lua"
@@ -1343,8 +1551,20 @@ include "Resources/Game/DB/Powers/Defense.lua"
 -- Misc gameplay things
 include "Resources/Game/DB/Effects/Immunities.lua"
 include "Resources/Game/DB/Effects/Misc.lua"
+include "Resources/Game/DB/Effects/Tutorial.lua"
 
 -- Props
+do
+	ItsyScape.Resource.Prop "Null" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = ItsyScape.Resource.Prop "Null"
+	}
+end
+
 include "Resources/Game/DB/Props/Anvil.lua"
 include "Resources/Game/DB/Props/Flax.lua"
 include "Resources/Game/DB/Props/Furnace.lua"
@@ -1374,6 +1594,11 @@ include "Resources/Game/DB/Props/Farm.lua"
 include "Resources/Game/DB/Props/Altars.lua"
 include "Resources/Game/DB/Props/MilkOMatic.lua"
 include "Resources/Game/DB/Props/Target.lua"
+include "Resources/Game/DB/Props/Sky.lua"
+include "Resources/Game/DB/Props/Jungle.lua"
+include "Resources/Game/DB/Props/Anchor.lua"
+include "Resources/Game/DB/Props/Firefly.lua"
+include "Resources/Game/DB/Props/Flare.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"
@@ -1395,6 +1620,10 @@ include "Resources/Game/DB/Sailing/Maps.lua"
 include "Resources/Game/DB/Sailing/Rowboat.lua"
 include "Resources/Game/DB/Sailing/KeyItems.lua"
 include "Resources/Game/DB/Sailing/RandomEvents.lua"
+include "Resources/Game/DB/Sailing/NPC.lua"
+include "Resources/Game/DB/Sailing/Ships/Exquisitor.lua"
+include "Resources/Game/DB/Sailing/Ships/DeadPrincess.lua"
+include "Resources/Game/DB/Sailing/Ships/Yendorian.lua"
 
 -- Maps
 include "Resources/Game/DB/Maps/Rumbridge.lua"
@@ -1406,6 +1635,7 @@ include "Resources/Game/DB/Maps/EmptyRuins.lua"
 include "Resources/Game/DB/Maps/Yendorian.lua"
 
 -- Quests
+include "Resources/Game/DB/Quests/Tutorial/Quest.lua"
 include "Resources/Game/DB/Quests/IslandsOfMadness/Quest.lua"
 include "Resources/Game/DB/Quests/CalmBeforeTheStorm/Quest.lua"
 include "Resources/Game/DB/Quests/RavensEye/Quest.lua"
@@ -1421,6 +1651,9 @@ include "Resources/Game/DB/SharedDropTables/Human.lua"
 
 -- Trailer
 include "Resources/Game/DB/Trailer/Trailer.lua"
+
+-- Art
+include "Resources/Game/DB/Art/Rage/Rage.lua"
 
 do
 	ActionType "Debug_Ascend"

@@ -33,7 +33,7 @@ function ConstraintsPanel:new(view, config)
 	self.view = view
 	self.config = config or {}
 
-	self.padding = ConstraintsPanel.DEFAULT_PADDING
+	self.padding = self.config.padding or ConstraintsPanel.DEFAULT_PADDING
 	self.constraints = {}
 
 	self.panel = Panel()
@@ -182,7 +182,7 @@ function ConstraintsPanel:performLayout(doLogic)
 
 	do
 		local layoutWidth, layoutHeight = self.layout:getSize()
-		self:setSize(layoutWidth, layoutHeight + self.titleHeight + self.DEFAULT_PADDING)
+		self:setSize(layoutWidth, layoutHeight + self.titleHeight + self.padding)
 		self.panel:setSize(self:getSize())
 	end
 end

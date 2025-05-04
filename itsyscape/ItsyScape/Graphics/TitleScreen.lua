@@ -65,7 +65,7 @@ function TitleScreen:load()
 		"Resources/Game/TitleScreens/Logo.png",
 		function(texture)
 			self.logo = texture
-			self.logo:getResource():setFilter('linear', 'linear')
+			self.logo:getResource():setFilter("linear", "linear")
 		end)
 
 	self.resources:queue(
@@ -107,23 +107,21 @@ function TitleScreen:drawTitle()
 	local _, _, scaleX, scaleY = love.graphics.getScaledMode()
 	local width, height = love.window.getMode()
 
-	love.graphics.setBlendMode('alpha')
+	love.graphics.setBlendMode("alpha")
 
 	local opaqueAlpha = 1 - TitleScreen._calculateAlpha(self.opaqueTime, TitleScreen.FADE_IN_DURATION_SECONDS)
 	love.graphics.setColor(0, 0, 0, opaqueAlpha)
-	love.graphics.rectangle('fill', 0, 0, width, height)
+	love.graphics.rectangle("fill", 0, 0, width, height)
 
 	if self.logo and self.showLogo then
 		love.graphics.setColor(1, 1, 1, 1)
-		local logoSlide = TitleScreen._calculateAlpha(self.logoTime, TitleScreen.SLIDE_IN_DURATION_SECONDS)
-
 		love.graphics.draw(
 			self.logo:getResource(),
-			width / 2 + self.logo:getWidth() / 4 * logoSlide,
+			width / 2,
 			height / 4,
 			0,
-			(0.5 + 0.5 * (1 - logoSlide)) * scaleX,
-			(0.5 + 0.5 * (1 - logoSlide)) * scaleY,
+			1,
+			1,
 			self.logo:getWidth() / 2,
 			self.logo:getHeight() / 2)
 	end
@@ -150,7 +148,7 @@ function TitleScreen:drawTitle()
 	if _ITSYREALM_VERSION and self.font and self.showLogo then
 		local message
 		if _DEBUG then
-			message = string.format("%s\n(%s)", _ITSYREALM_VERSION, _DEBUG == true and 'debug' or 'debug ' .. tostring(_DEBUG))
+			message = string.format("%s\n(%s)", _ITSYREALM_VERSION, _DEBUG == true and "debug" or "debug " .. tostring(_DEBUG))
 		else
 			message = _ITSYREALM_VERSION
 		end

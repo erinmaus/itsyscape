@@ -81,9 +81,9 @@ function TextButtonStyle:draw(widget)
 	do
 		local x, y = itsyrealm.graphics.getPseudoScissor()
 		itsyrealm.graphics.intersectPseudoScissor(
-			x + self.padding, y + self.padding,
-			(width - self.padding * 2) * scaleX,
-			(height - self.padding * 2) * scaleY)
+			x + self.padding * scaleX, y + self.padding * scaleY,
+			(width - self.padding * scaleX * 2) * scaleX,
+			(height - self.padding * scaleY * 2) * scaleY)
 		itsyrealm.graphics.applyPseudoScissor()
 		itsyrealm.graphics.translate(self.padding, self.padding)
 	end

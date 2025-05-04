@@ -58,6 +58,14 @@ function PlayerStorage.Section:hasSection(key)
 	return self.sections[key] ~= nil
 end
 
+function PlayerStorage.Section:unset(key)
+	self:removeSection(key)
+
+	if self.values[key] then
+		self.values[key] = nil
+	end
+end
+
 function PlayerStorage.Section:removeSection(key)
 	if type(key) == 'number' then
 		table.remove(self.array, key)

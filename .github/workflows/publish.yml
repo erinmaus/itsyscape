@@ -14,29 +14,43 @@ jobs:
         with:
           fetch-depth: 0
       -
+        name: Import certs
+        env: 
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
+          MACOS_CI_KEYCHAIN_PASSWORD: ${{ secrets.MACOS_CI_KEYCHAIN_PASSWORD }}
+        run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+          
+          security create-keychain -p "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain 
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+          security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
+      -
         name: Download artifacts
         env:
+          MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ./cicd/publish/download_artifacts.sh
-      -
-        name: Deploy ItsyRealm to Launcher
+          ./cicd/publish/repackage.sh
+      - name: Notarize app bundle
         env:
-          ITSYREALM_ADMIN_USERNAME: ${{ secrets.ITSYREALM_ADMIN_USERNAME }}
-          ITSYREALM_ADMIN_PASSWORD: ${{ secrets.ITSYREALM_ADMIN_PASSWORD }}
+          MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
+          MACOS_NOTARIZATION_TEAM_ID: ${{ secrets.MACOS_NOTARIZATION_TEAM_ID }}
+          MACOS_NOTARIZATION_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_PASSWORD }}
         run: |
-          ./cicd/publish/upload_itsyrealmcom.sh || true
-      -
-        name: Deploy ItsyRealm to itch.io
-        env:
-          BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
-        run: |
-          ./cicd/publish/upload_itchio.sh || true
+          ditto -c -k --keepParent "itsyrealm_macos/ItsyRealm.app" "notarization.zip"
+
+          xcrun notarytool store-credentials "notarytool-profile" --apple-id "$MACOS_NOTARIZATION_APPLE_ID" --team-id "$MACOS_NOTARIZATION_TEAM_ID" --password "$MACOS_NOTARIZATION_PASSWORD"
+          xcrun notarytool submit "notarization.zip" --keychain-profile "notarytool-profile" --wait
+          xcrun stapler staple "itsyrealm_macos/ItsyRealm.app"
       -
         name: Deploy ItsyRealm & ItsyRealm demo to Steam
         env:
           STEAM_CICD_USERNAME: ${{ secrets.STEAM_CICD_USERNAME }}
           STEAM_CONFIG_VDF: ${{ secrets.STEAM_CONFIG_VDF }}
         run: |
-          ./cicd/publish/upload_steam.sh itsyrealm.vdf
-          ./cicd/publish/upload_steam.sh itsyrealm_demo.vdf
+          ./cicd/publish/upload_steam.sh

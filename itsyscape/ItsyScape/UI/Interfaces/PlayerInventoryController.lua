@@ -23,21 +23,21 @@ function PlayerInventoryController:new(peep, director)
 end
 
 function PlayerInventoryController:poke(actionID, actionIndex, e)
-	if actionID == "swap" then
+	if actionID == "swapInventoryItems" then
 		self:swap(e)
-	elseif actionID == "drop" then
+	elseif actionID == "dropInventoryItem" then
 		self:drop(e)
-	elseif actionID == "poke" then
+	elseif actionID == "pokeInventoryItem" then
 		self:pokeItem(e)
-	elseif actionID == "probe" then
+	elseif actionID == "probeInventoryItem" then
 		self:probeItem(e)
-	elseif actionID == "use" then
+	elseif actionID == "useInventoryItem" then
 		self:useItem(e)
-	elseif actionID == "useItemOnItem" then
+	elseif actionID == "useInventoryItemOnItem" then
 		self:useItemOnItem(e)
-	elseif actionID == "useItemOnProp" then
+	elseif actionID == "useInventoryItemOnProp" then
 		self:useItemOnProp(e)
-	elseif actionID == "useItemOnActor" then
+	elseif actionID == "useInventoryItemOnActor" then
 		self:useItemOnActor(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
@@ -47,10 +47,12 @@ end
 function PlayerInventoryController:updateState()
 	local inventory = self:getPeep():getBehavior(InventoryBehavior)
 
-	local result = { items = {} }
+	local result = { count = 0, items = {} }
 	if inventory then
 		local broker = inventory.inventory:getBroker()
 		if broker then
+			result.count = inventory.inventory:getMaxInventorySpace()
+
 			for key in broker:keys(inventory.inventory) do
 				for item in broker:iterateItemsByKey(inventory.inventory, key) do
 					local resultItem = self:pullItem(item)
@@ -77,6 +79,7 @@ function PlayerInventoryController:pullItem(item)
 	result.name = Utility.Item.getInstanceName(item)
 	result.description = Utility.Item.getInstanceDescription(item)
 	result.stats = Utility.Item.getInstanceStats(item, self:getPeep())
+	result.slot = Utility.Item.getSlot(item)
 
 	return result
 end
@@ -134,9 +137,14 @@ function PlayerInventoryController:pokeItem(e)
 	end
 end
 
+function PlayerInventoryController:getProbedInventoryItem()
+	return self.currentInventoryProbeItem, self.currentInventoryProbeIndex
+end
+
 function PlayerInventoryController:probeItem(e)
 	if not e.index then
-		self.lastProbedItem = nil
+		self.currentInventoryProbeIndex = false
+		self.currentInventoryProbeItem = false
 		return
 	end
 
@@ -155,7 +163,8 @@ function PlayerInventoryController:probeItem(e)
 		end
 	end
 
-	self.lastProbedItem = item
+	self.currentInventoryProbeItem = item or false
+	self.currentInventoryProbeIndex = item and e.index or false
 end
 
 function PlayerInventoryController:useItem(e)
@@ -541,21 +550,6 @@ end
 
 function PlayerInventoryController:update(delta)
 	Controller.update(delta)
-
-	local inventory = self:getPeep():getBehavior(InventoryBehavior)
-	if inventory and inventory.inventory then
-		local count = inventory.inventory:getMaxInventorySpace()
-		if count >= 0 and count < math.huge then
-			if count ~= self.numItems then
-				self:getDirector():getGameInstance():getUI():sendPoke(
-					self,
-					"setNumItems",
-					nil,
-					{ count })
-				self.numItems = count
-			end
-		end
-	end
 
 	self:updateState()
 end

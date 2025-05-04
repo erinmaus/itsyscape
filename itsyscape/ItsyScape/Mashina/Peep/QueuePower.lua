@@ -14,30 +14,16 @@ local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehav
 
 local QueuePower = B.Node("QueuePower")
 QueuePower.POWER = B.Reference()
-QueuePower.CLEAR_COOL_DOWN = B.Reference()
-QueuePower.REQUIRE_NO_COOLDOWN = B.Reference()
+QueuePower.TURNS = B.Reference()
 
 function QueuePower:update(mashina, state, executor)
 	local gameDB = mashina:getDirector():getGameDB()
 	local powerResource = gameDB:getResource(state[self.POWER], "Power")
+	local turns = state[self.TURNS] or 0
 
 	if not powerResource then
 		Log.warn("Unknown power: %s.", tostring(state[self.POWER]))
 		return B.Status.Failure
-	end
-
-	local coolDown = mashina:getBehavior(PowerCoolDownBehavior)
-	if coolDown then
-		local clearCoolDown = state[self.CLEAR_COOL_DOWN] or false
-		local requireNoCooldown = state[self.REQUIRE_NO_COOLDOWN] or false
-		if clearCoolDown then
-			coolDown.powers[powerResource.id.value] = nil
-		elseif requireNoCooldown then
-			local time = coolDown.powers[powerResource.id.value]
-			if time and time > love.timer.getTime() then
-				return B.Status.Failure
-			end
-		end
 	end
 
 	local power
@@ -51,7 +37,12 @@ function QueuePower:update(mashina, state, executor)
 		power = PowerType(mashina:getDirector():getGameInstance(), powerResource)
 
 		local _, b = mashina:addBehavior(PendingPowerBehavior)
+		if not b.power or b.power:getResource().name ~= powerResource.name then
+			Log.info("Peep '%s' queued power '%s' in %d turns.", mashina:getName(), powerResource.name, turns)
+		end
+
 		b.power = power
+		b.turns = turns
 	end
 
 	return B.Status.Success

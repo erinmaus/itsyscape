@@ -39,12 +39,12 @@ function Chat:new(id, index, ui)
 	self:setPosition(0, windowHeight - Chat.HEIGHT - Chat.INPUT)
 
 	self:setSize(Chat.WIDTH, Chat.HEIGHT + Chat.INPUT)
-	self:setIsClickThrough(true)
+	self:setIsSelfClickThrough(true)
 
 	self.mainPanel = Panel()
 	self.mainPanel:setStyle(PanelStyle({ image = false }, ui:getResources()))
 	self.mainPanel:setSize(self:getSize())
-	self.mainPanel:setIsClickThrough(true)
+	self.mainPanel:setIsSelfClickThrough(true)
 
 	self.messages = {}
 
@@ -89,9 +89,9 @@ function Chat:new(id, index, ui)
 	self.chatPanel:setSize(Chat.WIDTH, Chat.HEIGHT)
 	self.chatPanel:getInnerPanel():setPadding(Chat.PADDING, Chat.PADDING)
 	self.chatPanel:getInnerPanel():setWrapContents(true)
-	self.chatPanel:getInnerPanel():setIsClickThrough(true)
-	self.chatPanel:setIsClickThrough(true)
-	self.chatPanel:getInnerPanel():setIsClickThrough(true)
+	self.chatPanel:getInnerPanel():setIsSelfClickThrough(true)
+	self.chatPanel:setIsSelfClickThrough(true)
+	self.chatPanel:getInnerPanel():setIsSelfClickThrough(true)
 	self.mainPanel:addChild(self.chatPanel)
 
 	self.chatLabelStyle = LabelStyle({
@@ -172,7 +172,7 @@ function Chat:updateChat(messages)
 		while #messages > #self.messages do
 			local label = Label()
 			label:setStyle(self.chatLabelStyle)
-			label:setIsClickThrough(true)
+			label:setIsSelfClickThrough(true)
 
 			self.chatPanel:addChild(label)
 			table.insert(self.messages, label)
@@ -242,7 +242,7 @@ function Chat:update(delta)
 		local isClickThrough = scrollHeight <= height
 
 		local scrollBar = self.chatPanel:getScrollBar()
-		scrollBar:setIsClickThrough(isClickThrough)
+		scrollBar:setIsSelfClickThrough(isClickThrough)
 	end
 end
 

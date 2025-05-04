@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local MapCurve = require "ItsyScape.World.MapCurve"
 
 -- Tile type.
 --
@@ -235,24 +236,27 @@ function Tile:clamp(s, t, value, direction, maxDistance)
 	local n = self[corner] - value
 	if math.abs(n) > maxDistance then
 		if direction < 1 then
-			self[corner] = value - maxDistance
+			self[corner] = math.floor(value - maxDistance)
 		else
-			self[corner] = value + maxDistance
+			self[corner] = math.floor(value + maxDistance)
 		end
 	end
 end
 
-function Tile:setCorner(s, t, value)
+function Tile:setCorner(s, t, value, clamp)
 	local corner = self:getCornerName(s, t)
 	local direction = self[corner] - value
 	if corner then
-		self[corner] = value
-
-		local ns = (s % 2) + 1
-		local nt = (t % 2) + 1
-		self:clamp(ns, t, value, direction, 1)
-		self:clamp(s, nt, value, direction, 1)
-		self:clamp(ns, nt, value, direction, 2)
+		if clamp or clamp == nil then
+			self[corner] = math.floor(value)
+			local ns = (s % 2) + 1
+			local nt = (t % 2) + 1
+			self:clamp(ns, t, value, direction, 1)
+			self:clamp(s, nt, value, direction, 1)
+			self:clamp(ns, nt, value, direction, 2)
+		else
+			self[corner] = value
+		end
 	end
 end
 
@@ -323,10 +327,14 @@ end
 -- Returns true and the point of collision if the ray intersects, false
 -- otherwise.
 function Tile:testRay(ray, i, j, scale)
-	local topLeft = Vector((i - 1) * scale, self.topLeft, (j - 1) * scale)
-	local topRight = Vector(i * scale, self.topRight, (j - 1) * scale)
-	local bottomLeft = Vector((i - 1) * scale, self.bottomLeft, j * scale)
-	local bottomRight = Vector(i * scale, self.bottomRight, j * scale)
+	return self:testRayWithCurves(ray, i, j, scale)
+end
+
+function Tile:testRayWithCurves(ray, i, j, scale, ...)
+	local topLeft = MapCurve.transformAll(Vector((i - 1) * scale, self.topLeft, (j - 1) * scale), nil, ...)
+	local topRight = MapCurve.transformAll(Vector(i * scale, self.topRight, (j - 1) * scale), nil, ...)
+	local bottomLeft = MapCurve.transformAll(Vector((i - 1) * scale, self.bottomLeft, j * scale), nil, ...)
+	local bottomRight = MapCurve.transformAll(Vector(i * scale, self.bottomRight, j * scale), nil, ...)
 
 	local success, point
 	do

@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local RPCState = require "ItsyScape.Game.RPC.State"
 
 local ItemInstance = Class()
 
@@ -18,6 +19,26 @@ function ItemInstance:new(id, ref, manager)
 	self.count = 1
 	self.noted = false
 	self.userdata = {}
+end
+
+function ItemInstance.isSame(a, b)
+	if a:getID() ~= b:getID() then
+		return false
+	end
+
+	if a:isStackable() ~= b:isStackable() then
+		return false
+	end
+
+	if a:isNoted() ~= b:isNoted() then
+		return false
+	end
+
+	if not RPCState.deepEquals(a:getSerializedUserdata(), b:getSerializedUserdata()) then
+		return false
+	end
+
+	return true
 end
 
 function ItemInstance:getRef()

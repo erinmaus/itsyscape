@@ -9,11 +9,11 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
-local Equipment = require "ItsyScape.Game.Equipment"
-local Utility = require "ItsyScape.Game.Utility"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local Icon = require "ItsyScape.UI.Icon"
 local Interface = require "ItsyScape.UI.Interface"
+local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
@@ -22,6 +22,7 @@ local Widget = require "ItsyScape.UI.Widget"
 local Ribbon = Class(Interface)
 Ribbon.BUTTON_SIZE = 64
 Ribbon.PADDING = 8
+Ribbon.BUTTON_PADDING = 4
 Ribbon.TOOL_TIPS = {
 	["PlayerPowers"] = {
 		ToolTip.Header("Powers"),
@@ -56,20 +57,41 @@ Ribbon.TOOL_TIPS = {
 		ToolTip.Header("Nominomicon"),
 		ToolTip.Text("View your quest progress.")
 	},
-	["ConfigWindow"] = {
+	["PlayerConfig"] = {
 		ToolTip.Header("Settings & Exit"),
 		ToolTip.Text("Show settings and an option to exit the game.")
 	}
+}
+
+Ribbon.INACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/Button-Default.png",
+	pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/Button-Hover.png",
+}
+
+Ribbon.ACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/ButtonActive-Default.png",
+	pressed = "Resources/Game/UI/Buttons/ButtonActive-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/ButtonActive-Hover.png",
+}
+
+Ribbon.PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/SideRibbon.png"
 }
 
 function Ribbon:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	self.panel = Panel()
-	self.panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/Ribbon.9.png"
-	}, ui:getResources()))
+	self.panel:setStyle(self.PANEL_STYLE, PanelStyle)
 	self:addChild(self.panel)
+
+	self.layout = GridLayout()
+	self.layout:setPadding(self.PADDING, self.PADDING)
+	self.layout:setSize(self.BUTTON_SIZE + self.PADDING * 2, 0)
+	self.layout:setUniformSize(true, self.BUTTON_SIZE, self.BUTTON_SIZE)
+	self.layout:setWrapContents(true)
+	self:addChild(self.layout)
 
 	self.icons = {}
 	self.buttons = {}
@@ -82,20 +104,26 @@ function Ribbon:new(id, index, ui)
 	self:addButton("PlayerStats", "Resources/Game/UI/Icons/Common/Skills.png")
 	self:addButton("PlayerSpells", "Resources/Game/UI/Icons/Skills/Magic.png")
 	self:addButton("PlayerPrayers", "Resources/Game/UI/Icons/Skills/Faith.png")
-	self:addButton("Nominomicon", "Resources/Game/UI/Icons/Things/Compass.png")
-	self:addButton("ConfigWindow", "Resources/Game/UI/Icons/Concepts/Settings.png")
+	self:addButton("PlayerConfig", "Resources/Game/UI/Icons/Concepts/Settings.png")
+
+	self:performLayout()
 end
 
-function Ribbon:addButton(tab, icon)
-	local width = self:getSize()
+function Ribbon:performLayout()
+	Interface.performLayout(self)
 
-	local newWidth = width + Ribbon.BUTTON_SIZE + Ribbon.PADDING * 2
-	local x = width + Ribbon.PADDING
+	self:setSize(self.layout:getSize())
+	self.panel:setSize(self.layout:getSize())
 
+	local panelWidth, panelHeight = self:getSize()
+	local screenWidth, screenHeight = itsyrealm.graphics.getScaledMode()
+	self:setPosition(screenWidth - panelWidth, screenHeight - panelHeight)
+end
+
+function Ribbon:addButton(tab, iconID)
 	local button = Button()
 	button:setID('Ribbon-' .. tab)
 	button:setPosition(x, Ribbon.PADDING)
-	button:setSize(Ribbon.BUTTON_SIZE, Ribbon.BUTTON_SIZE)
 	button.onClick:register(function()
 		if self.activeButton ~= button then
 			self:sendPoke("open", nil, { tab = tab })
@@ -108,48 +136,30 @@ function Ribbon:addButton(tab, icon)
 		button:setToolTip(unpack(self.TOOL_TIPS[tab]))
 	end
 
-	button:setStyle(ButtonStyle({
-		inactive = "Resources/Renderers/Widget/Button/Ribbon-Inactive.9.png",
-		hover = "Resources/Renderers/Widget/Button/Ribbon-Hover.9.png",
-		pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-		icon = { filename = icon, x = 0.5, y = 0.5 }
-	}, self:getView():getResources()))
+	local icon = Icon()
+	icon:setSize(
+		self.BUTTON_SIZE - self.BUTTON_PADDING * 2,
+		self.BUTTON_SIZE - self.BUTTON_PADDING * 2)
+	icon:setIcon(iconID)
+	icon:setPosition(self.BUTTON_PADDING, self.BUTTON_PADDING)
+	button:addChild(icon)
 
-	self:addChild(button)
+	button:setStyle(self.INACTIVE_BUTTON_STYLE, ButtonStyle)
 
-	self:setSize(newWidth, Ribbon.PADDING * 2 + Ribbon.BUTTON_SIZE)
-	self.panel:setSize(self:getSize())
-
-	local windowWidth, windowHeight = love.graphics.getScaledMode()
-	self:setPosition(
-		windowWidth - newWidth,
-		windowHeight - Ribbon.PADDING * 2 - Ribbon.BUTTON_SIZE)
-
-	self.icons[button] = icon
+	self.layout:addChild(button)
 	self.buttons[tab] = button
 end
 
-function Ribbon:activate(tab, isTabButton)
+function Ribbon:activate(tab)
 	if self.activeButton then
-		self.activeButton:setStyle(ButtonStyle({
-			inactive = "Resources/Renderers/Widget/Button/Ribbon-Inactive.9.png",
-			hover = "Resources/Renderers/Widget/Button/Ribbon-Hover.9.png",
-			pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-			icon = { filename = self.icons[self.activeButton], x = 0.5, y = 0.5 }
-		}, self:getView():getResources()))
+		self.activeButton:setStyle(self.INACTIVE_BUTTON_STYLE, ButtonStyle)
 	end
 
 	self.activeButton = false
 
 	local button = self.buttons[tab]
-	if button and not isTabButton then
-		button:setStyle(ButtonStyle({
-			inactive = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-			hover = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-			pressed = "Resources/Renderers/Widget/Button/Ribbon-Pressed.9.png",
-			icon = { filename = self.icons[button], x = 0.5, y = 0.5 }
-		}, self:getView():getResources()))
-
+	if button then
+		button:setStyle(self.ACTIVE_BUTTON_STYLE, ButtonStyle)
 		self.activeButton = button
 	end
 end

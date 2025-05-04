@@ -34,7 +34,7 @@ function ScrollBar:new()
 	self.scrollButton = ScrollBar.DragButton()
 
 	if _MOBILE then
-		self:setIsClickThrough(true)
+		self:setIsSelfClickThrough(true)
 	end
 
 	self.scrollArea = 0
@@ -66,15 +66,15 @@ function ScrollBar:new()
 	self:addChild(self.downButton)
 end
 
-function ScrollBar:setIsClickThrough(value)
-	self.upButton:setIsClickThrough(value)
-	self.downButton:setIsClickThrough(value)
-	self.scrollButton:setIsClickThrough(value)
-	Widget.setIsClickThrough(self, value)
+function ScrollBar:setIsSelfClickThrough(value)
+	self.upButton:setIsSelfClickThrough(value)
+	self.downButton:setIsSelfClickThrough(value)
+	self.scrollButton:setIsSelfClickThrough(value)
+	Widget.setIsSelfClickThrough(self, value)
 end
 
 function ScrollBar:mouseScroll(x, y)
-	Widget.mouseScroll(self, x, y)
+	self:onMouseScroll(x, y)
 
 	if self:getIsVertical() then
 		self:scroll(-y)
@@ -138,7 +138,7 @@ function ScrollBar:drag(button, x, y)
 		parentScrollSizeX = parentScrollSizeX - parentWidth
 		parentScrollSizeY = parentScrollSizeY - parentHeight
 		local parentScrollX, parentScrollY = p:getScroll()
-		if self:getIsVertical() and parentScrollSizeY ~= 0 then
+		if self:getIsVertical() and parentScrollSizeY ~= 0 and self.scrollArea > 0 then
 			if not self.dragStart then
 				self.dragStart = (parentScrollY / parentScrollSizeY) * self.scrollArea
 			end
@@ -146,7 +146,7 @@ function ScrollBar:drag(button, x, y)
 			local s = math.max(math.min((y + self.dragStart) / self.scrollArea, 1), 0) * parentScrollSizeY
 			p:setScroll(parentScrollX, s)
 			self.onScroll(self, s / parentScrollY)
-		elseif self:getIsHorizontal() and parentScrollSizeX ~= 0 then
+		elseif self:getIsHorizontal() and parentScrollSizeX ~= 0 and self.scrollArea > 0 then
 			if not self.dragStart then
 				self.dragStart = (parentScrollX / parentScrollSizeX) * self.scrollArea
 			end

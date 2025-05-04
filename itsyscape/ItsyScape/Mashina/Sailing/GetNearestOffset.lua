@@ -19,6 +19,7 @@ local GetNearestOffset = B.Node("GetNearestOffset")
 GetNearestOffset.TARGET = B.Reference()
 GetNearestOffset.OFFSETS = B.Reference()
 GetNearestOffset.RESULT = B.Reference()
+GetNearestOffset.WORST_RESULT = B.Reference()
 GetNearestOffset.RESULTS = B.Reference()
 
 function GetNearestOffset:update(mashina, state, executor)
@@ -43,7 +44,6 @@ function GetNearestOffset:update(mashina, state, executor)
 			table.insert(results, {
 				offset = offset,
 				position = po,
-
 			})
 		end
 	end
@@ -59,6 +59,7 @@ function GetNearestOffset:update(mashina, state, executor)
 	for i, offset in ipairs(results) do
 		results[i] = offset.offset
 	end
+
 
 	state[self.RESULT] = results[1]
 	state[self.RESULTS] = results

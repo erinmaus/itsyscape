@@ -62,15 +62,13 @@ function PlayerPrayersController:getPrayerState()
 				end
 			end
 
-			if action then
+			if action then 
 				local z = 0
-				if action then
-					for requirement in brochure:getRequirements(action:getAction()) do
-						local resource = brochure:getConstraintResource(requirement)
-						local resourceType = brochure:getResourceTypeFromResource(resource)
-						if resourceType.name == "Skill" and resource.name == "Faith" then
-							z = requirement.count
-						end
+				for requirement in brochure:getRequirements(action:getAction()) do
+					local resource = brochure:getConstraintResource(requirement)
+					local resourceType = brochure:getResourceTypeFromResource(resource)
+					if resourceType.name == "Skill" and resource.name == "Faith" then
+						z = requirement.count
 					end
 				end
 
@@ -80,7 +78,8 @@ function PlayerPrayersController:getPrayerState()
 					name = Utility.getName(resource, gameDB),
 					description = Utility.getDescription(resource, gameDB),
 					level = Curve.XP_CURVE:getLevel(z),
-					isActive = self:getPeep():getEffect(Utility.Peep.getEffectType(resource, gameDB)) ~= nil
+					isActive = self:getPeep():getEffect(Utility.Peep.getEffectType(resource, gameDB)) ~= nil,
+					enabled = action:canPerform(self:getPeep():getState(), self:getPeep())
 				})
 
 				index = index + 1
@@ -116,9 +115,8 @@ function PlayerPrayersController:update(delta)
 	Controller.update(delta)
 
 	self.state = self:getPrayerState()
-	if not self.initialized then
-		self.initialized = true
-
+	if self.numPrayers ~= #self.state.prayers then
+		self.numPrayers = #self.state.prayers
 		self:getDirector():getGameInstance():getUI():sendPoke(
 			self,
 			"setNumPrayers",

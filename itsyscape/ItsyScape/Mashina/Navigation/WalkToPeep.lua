@@ -23,22 +23,23 @@ function WalkToPeep:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local s
-	if not self.walk then
+	if not self.walkID then
 		local i, j, k = Utility.Peep.getTile(peep)
-		self.walk = coroutine.wrap(Utility.Peep.walk)
-		s = self.walk(mashina, i, j, k, state[self.DISTANCE], {
-			asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE],
-			yield = true
+		local callback, id = Utility.Peep.queueWalk(mashina, i, j, k, state[self.DISTANCE], {
+			asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE]
 		})
-	else
-		s = self.walk()
+
+		self.walkID = id
+		callback:register(function(status)
+			self.walkStatus = status
+		end)
 	end
 
-	if s ~= nil then
-		self.walk = nil
+	local status = self.walkStatus
+	if status ~= nil then
+		self.walkStatus = nil
 
-		if s then
+		if status then
 			return B.Status.Success
 		else
 			return B.Status.Failure
@@ -49,7 +50,10 @@ function WalkToPeep:update(mashina, state, executor)
 end
 
 function WalkToPeep:deactivated()
-	self.walk = nil
+	if self.walkID then
+		Utility.Peep.cancelWalk(self.walkID)
+		self.walkID = nil
+	end
 end
 
 return WalkToPeep

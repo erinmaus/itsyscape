@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local Ray = require "ItsyScape.Common.Math.Ray"
@@ -163,11 +164,15 @@ Map.RAY_TEST_RESULT_J = 4
 --
 -- If the array is empty, then no tiles were hit...
 function Map:testRay(ray)
+	return self:testRayWithCurves(ray)
+end
+
+function Map:testRayWithCurves(ray, ...)
 	local hitTiles = {}
 	for j = 1, self.height do
 		for i = 1, self.width do
 			local tile = self:getTile(i, j)
-			local success, point = tile:testRay(ray, i, j, self.cellSize)
+			local success, point = tile:testRayWithCurves(ray, i, j, self.cellSize, ...)
 			if success then
 				table.insert(hitTiles, { tile, point, i, j })
 			end
@@ -190,10 +195,10 @@ end
 
 function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 	if i1 == i2 and j1 == j2 then
-		return true
+		return true, i2, j2
 	end
 
-	local steep = math.abs(j2 - j1) > math.abs(i2 - i1);
+	local steep = math.abs(j2 - j1) > math.abs(i2 - i1)
 
 	if steep then
 		i1, j1 = j1, i1
@@ -250,7 +255,7 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 					Log.info("Cannot move to (%d, %d) from (%d, %d)!", i, j, pi, pj)
 				end
 
-				return false
+				return false, pi, pj
 			end
 
 			pi = i
@@ -262,7 +267,7 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 		Log.info("Can move from (%d, %d) to (%d, %d)!", i1, j1, i2, j2)
 	end
 
-	return true
+	return true, i2, j2
 end
 
 -- stepCallback is (map: Map, i: integer, j: integer, x: float, z: float, t: float) -> Boolean
@@ -313,7 +318,7 @@ function Map:castRay(ray, stepCallback)
 	return false
 end
 
-function Map:canMove(i, j, di, dj, shoot, isDebug)
+function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	if math.abs(di) > 1 or math.abs(dj) > 1 then
 		return false
 	end
@@ -328,9 +333,9 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 	local isTopPassable, isBottomPassable
 	if di < 0 and i > 1 then
 		local left = self:getTile(i - 1, j)
-		if (left.topRight <= tile.topLeft or
-		    left.bottomRight <= tile.bottomLeft) and
-		   (left:getIsPassable() or (left:hasFlag("shoot") and shoot)) and
+		if ((left.topRight == tile.topLeft or left.bottomRight == tile.bottomLeft) or
+			(shoot and left.topRight <= tile.topLeft and left.bottomRight <= tile.bottomLeft)) and
+		   (isPassableFunc and isPassableFunc(self, i, j, i - 1, j) or (left:getIsPassable() or (left:hasFlag("shoot") and shoot))) and
 		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left"))
 		then
 			isLeftPassable = true
@@ -347,8 +352,8 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 
 	if di > 0 and i < self:getWidth() then
 		local right = self:getTile(i + 1, j)
-		if (right.topLeft <= tile.topRight or
-		    right.bottomLeft <= tile.bottomRight) and
+		if ((right.topLeft == tile.topRight or right.bottomLeft == tile.bottomRight) or
+			(shoot and right.topLeft <= tile.topRight and right.bottomLeft <= tile.bottomRight)) and
 		   (right:getIsPassable() or (right:hasFlag("shoot") and shoot)) and
 		   (not right:hasFlag("wall-left") and not tile:hasFlag("wall-right"))
 		then
@@ -366,8 +371,8 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 
 	if dj < 0 and j > 1 then
 		local top = self:getTile(i, j - 1)
-		if (top.bottomLeft <= tile.topLeft or
-		    top.bottomRight <= tile.topRight) and
+		if ((top.bottomLeft == tile.topLeft or top.bottomRight == tile.topRight) or
+			(shoot and top.bottomLeft <= tile.topLeft and top.bottomRight <= tile.topRight)) and
 		   (top:getIsPassable() or (top:hasFlag("shoot") and shoot)) and
 		   (not top:hasFlag("wall-bottom") and not tile:hasFlag("wall-top"))
 		then
@@ -385,8 +390,8 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 
 	if dj > 0 and j < self:getHeight() then
 		local bottom = self:getTile(i, j + 1)
-		if (bottom.topLeft <= tile.bottomLeft or
-		    bottom.topRight <= tile.bottomRight) and
+		if ((bottom.topLeft == tile.bottomLeft or bottom.topRight == tile.bottomRight) or
+			(shoot and bottom.topLeft <= tile.bottomLeft and bottom.topRight <= tile.bottomRight)) and
 		   (bottom:getIsPassable() or (bottom:hasFlag("shoot") and shoot)) and
 		   (not bottom:hasFlag("wall-top") and not tile:hasFlag("wall-bottom"))
 		then
@@ -412,7 +417,7 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 	if math.abs(di) + math.abs(dj) > 1 then
 		if di < 0 and dj < 0 and i > 1 and j > 1 then
 			local topLeft = self:getTile(i - 1, j - 1)
-			if topLeft.bottomRight <= tile.topLeft and
+			if (topLeft.bottomRight == tile.topLeft or (shoot and topLeft.bottomRight <= tile.topLeft)) and
 			   (topLeft:getIsPassable({ 'impassable' }) or (topLeft:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -437,7 +442,7 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 
 		if di < 0 and dj > 1 and i > 1 and j < self:getHeight() then
 			local bottomLeft = self:getTile(i - 1, j + 1)
-			if bottomLeft.topRight <= tile.bottomLeft and
+			if (bottomLeft.topRight == tile.bottomLeft or (shoot and bottomLeft.topRight <= tile.bottomLeft)) and
 			   (bottomLeft:getIsPassable({ 'impassable' }) or (bottomLeft:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -462,7 +467,7 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 
 		if di > 0 and dj < 0 and i < self:getWidth() and j > 1 then
 			local topRight = self:getTile(i + 1, j - 1)
-			if topRight.bottomLeft <= tile.topRight and
+			if (topRight.bottomLeft == tile.topRight or (shoot and topRight.bottomLeft <= tile.topRight)) and
 			   (topRight:getIsPassable({ 'impassable' }) or (topRight:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -487,7 +492,7 @@ function Map:canMove(i, j, di, dj, shoot, isDebug)
 
 		if di > 0 and dj > 0 and i < self:getWidth() and j < self:getHeight() then
 			local bottomRight = self:getTile(i + 1, j + 1)
-			if bottomRight.topLeft <= tile.bottomRight and
+			if (bottomRight.topLeft == tile.bottomRight or (shoot and bottomRight.topLeft <= tile.bottomRight)) and
 			   (bottomRight:getIsPassable({ 'impassable' }) or (bottomRight:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -570,9 +575,7 @@ function Map.loadFromFile(filename)
 	local cacheFilename = filename .. ".cache"
 	local hasCache = love.filesystem.getInfo(cacheFilename)
 	if hasCache then
-		local chunk = assert(load(love.filesystem.read(cacheFilename)))
-		local t = assert(setfenv(chunk, {})())
-
+		local t = buffer.decode(love.filesystem.read(cacheFilename))
 		return Map.loadFromTable(t)
 	else
 		return Map.loadFromString(love.filesystem.read(filename))

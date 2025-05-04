@@ -28,7 +28,7 @@ function WeatherMap:new(layer, i, j, cellSize, width, height)
 	self.width = (self.realWidth - self.realI)
 	self.height = (self.realHeight - self.realJ)
 	self.cellSize = cellSize or 2
-	self.position = Vector(0, 0, 0)
+	self.position = Vector(0):keep()
 	self.isDirty = true
 
 	self._handle = NWeatherMap()

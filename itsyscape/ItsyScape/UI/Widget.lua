@@ -11,6 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Property = require "ItsyScape.UI.Property"
+local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
+local WidgetStyle = require "ItsyScape.UI.WidgetStyle"
 
 local Widget = Class()
 
@@ -22,14 +24,22 @@ function Widget:new()
 	self.onMouseMove = Callback()
 	self.onMouseScroll = Callback()
 	self.onFocus = Callback()
+	self.onFocusChild = Callback()
 	self.onBlur = Callback()
+	self.onBlurChild = Callback()
 	self.onKeyDown = Callback()
 	self.onKeyUp = Callback()
 	self.onType = Callback()
+	self.onGamepadPress = Callback()
+	self.onGamepadRelease = Callback()
+	self.onGamepadAxis = Callback()
+	self.onGamepadDirection = Callback()
 	self.onZDepthChange = Callback()
+	self.onStyleChange = Callback()
 	self.id = false
 	self.text = ""
 	self.isFocused = false
+	self.isChildFocused = false
 	self.x = 0
 	self.y = 0
 	self.width = 0
@@ -47,7 +57,50 @@ function Widget:new()
 	self.childProperties = {}
 	self.data = {}
 	self.toolTip = false
-	self.isClickThrough = false
+	self.isSelfClickThrough = false
+	self.areChildrenClickThrough = false
+	self.isVisible = true
+end
+
+function Widget:getRootParent()
+	local current = self
+	while current:getParent() do
+		current = current:getParent()
+	end
+
+	return current
+end
+
+function Widget:getInputProvider()
+	-- Cyclic dependency. RIP.
+	local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
+
+	local root = self:getRootParent()
+	if not root then
+		return
+	end
+
+
+	local inputProvider = root:getData(WidgetInputProvider)
+	if not Class.isCompatibleType(inputProvider, WidgetInputProvider) then
+		return nil
+	end
+
+	return inputProvider
+end
+
+function Widget:getResourceManager()
+	local root = self:getRootParent()
+	if not root then
+		return
+	end
+
+	local resources = root:getData(WidgetResourceManager)
+	if not Class.isCompatibleType(resources, WidgetResourceManager) then
+		return nil
+	end
+
+	return resources
 end
 
 function Widget:getID()
@@ -103,6 +156,17 @@ function Widget:getData(key)
 	return self.data[key]
 end
 
+function Widget:getParentData(key)
+	local current = self
+	local data
+	repeat
+		data = current:getData(key)
+		current = current:getParent()
+	until data ~= nil or not current
+
+	return data
+end
+
 function Widget:deserialize(t)
 	t = t or {}
 
@@ -127,7 +191,7 @@ function Widget:find(id, after, e)
 			end
 		end
 
-		local result = self.children:find(id, after, e)
+		local result = self.children[i]:find(id, after, e)
 		if result then
 			return result
 		end
@@ -246,11 +310,13 @@ function Widget:getChildAt(index)
 end
 
 function Widget:hasParent(p)
+	local previous = p
 	local current = self.parent
 	while current do
 		if current == p then
-			return true
+			return true, previous
 		else
+			previous = current
 			current = current.parent
 		end
 	end
@@ -278,6 +344,15 @@ function Widget:isSiblingOf(widget)
 	end
 
 	return false
+end
+
+function Widget:getParentOfType(Type)
+	local parent = self.parent
+	while parent and not Class.isCompatibleType(parent, Type) do
+		parent = parent.parent
+	end
+
+	return parent
 end
 
 function Widget:getParent()
@@ -355,6 +430,18 @@ function Widget:setScrollSize(w, h)
 	end
 end
 
+function Widget:setIsVisible(value)
+	self.isVisible = value == nil and true or (not not value)
+end
+
+function Widget:getIsVisible()
+	return self.isVisible
+end
+
+function Widget:isChildVisible(childWidget)
+	return childWidget:getIsVisible()
+end
+
 function Widget:getZDepth()
 	return self.zDepth
 end
@@ -395,24 +482,72 @@ function Widget:getIsDraggable()
 	return false
 end
 
-function Widget:getIsClickThrough()
-	return self.isClickThrough
+function Widget:_getIsParentChildrenClickThrough()
+	local parent = self:getParent()
+	if not parent then
+		return false
+	end
+
+	return parent:getAreChildrenClickThrough() or parent:_getIsParentChildrenClickThrough()
 end
 
-function Widget:setIsClickThrough(value)
-	self.isClickThrough = value or false
+function Widget:getIsClickThrough()
+	return self.isSelfClickThrough or self:_getIsParentChildrenClickThrough()
+end
+
+function Widget:setIsSelfClickThrough(value)
+	self.isSelfClickThrough = value or false
+end
+
+function Widget:getIsSelfClickThrough(value)
+	self.isSelfClickThrough = value or false
+end
+
+function Widget:setAreChildrenClickThrough(value)
+	self.areChildrenClickThrough = value or false
+end
+
+function Widget:getAreChildrenClickThrough(value)
+	self.areChildrenClickThrough = value or false
 end
 
 function Widget:performLayout()
 	-- Nothing.
 end
 
-function Widget:getStyle()
-	return self.style
+function Widget:updateStyle()
+	if not Class.isCompatibleType(self.style, WidgetStyle) and self.styleType then
+		local resourceManager = self:getResourceManager()
+		if not resourceManager then
+			return false
+		end
+
+		self.style = self.styleType(self.style, resourceManager)
+		self.styleType = nil
+
+		self:onStyleChange(self.style)
+
+		return true
+	end
+
+	return not not self.style
 end
 
-function Widget:setStyle(style)
+function Widget:getStyle()
+	if self:updateStyle() then
+		return self.style
+	end
+
+	return false
+end
+
+function Widget:setStyle(style, styleType)
 	self.style = style or false
+	self.styleType = styleType
+
+	if self.style and Class.isCompatibleType(self.style, WidgetStyle) then
+		self:onStyleChange(self.style)
+	end
 end
 
 function Widget:getOverflow()
@@ -429,57 +564,118 @@ function Widget:getIsFocusable()
 	return false
 end
 
+function Widget:getIsChildFocused()
+	return self.isChildFocused
+end
+
 function Widget:getIsFocused()
 	return self.isFocused
 end
 
 function Widget:mousePress(...)
-	self.onMousePress(self, ...)
+	self:onMousePress(...)
+	if self:getParent() then
+		self:getParent():mousePress(...)
+	end
 end
 
 function Widget:mouseRelease(...)
-	self.onMouseRelease(self, ...)
+	self:onMouseRelease(...)
+	if self:getParent() then
+		self:getParent():mouseRelease(...)
+	end
 end
 
 function Widget:mouseEnter(...)
-	self.onMouseEnter(self, ...)
+	self:onMouseEnter(...)
 end
 
 function Widget:mouseLeave(...)
-	self.onMouseLeave(self, ...)
+	self:onMouseLeave(...)
 end
 
 function Widget:mouseMove(...)
-	self.onMouseMove(self, ...)
+	self:onMouseMove(...)
 end
 
 function Widget:mouseScroll(...)
-	self.onMouseScroll(self, ...)
+	self:onMouseScroll(...)
+	if self:getParent() then
+		self:getParent():mouseScroll(...)
+	end
 end
 
 function Widget:focus(...)
-	self.onFocus(self, ...)
 	self.isFocused = true
+	self.onFocus(self, ...)
+
+	local parent = self:getParent()
+	while parent do
+		parent:onFocusChild(self, ...)
+		parent = parent:getParent()
+	end
 end
 
 function Widget:blur(...)
-	self.onBlur(self, ...)
 	self.isFocused = false
+	self.onBlur(self, ...)
+
+	local parent = self:getParent()
+	while parent do
+		parent:onBlurChild(self, ...)
+		parent = parent:getParent()
+	end
 end
 
 function Widget:keyDown(...)
-	self.onKeyDown(self, ...)
-	return false
+	self:onKeyDown(...)
+	if self:getParent()then
+		self:getParent():keyDown(...)
+	end
 end
 
 function Widget:keyUp(...)
-	self.onKeyUp(self, ...)
-	return false
+	self:onKeyUp(...)
+	if self:getParent()then
+		self:getParent():keyUp(...)
+	end
 end
 
 function Widget:type(...)
-	self.onType(self, ...)
+	self:onType(...)
+	if self:getParent()then
+		self:getParent():type(...)
+	end
 end
+
+function Widget:gamepadPress(...)
+	self:onGamepadPress(...)
+	if self:getParent() then
+		self:getParent():gamepadPress(...)
+	end
+end
+
+function Widget:gamepadRelease(...)
+	self:onGamepadRelease(...)
+	if self:getParent() then
+		self:getParent():gamepadRelease(...)
+	end
+end
+
+function Widget:gamepadAxis(...)
+	self:onGamepadAxis(...)
+	if self:getParent() then
+		self:getParent():gamepadAxis(...)
+	end
+end
+
+function Widget:gamepadDirection(...)
+	self:onGamepadDirection(...)
+	if self:getParent() then
+		self:getParent():gamepadDirection(...)
+	end
+end
+
 
 function Widget:update(...)
 	if _DEBUG == 'plus' then
@@ -498,7 +694,28 @@ function Widget:update(...)
 
 			count = #self.children
 		end
+
+		if self:getResourceManager() and self.styleType then
+			-- Force style update.
+			self:getStyle()
+		end
 	end
+end
+
+function Widget:beforeDraw()
+	-- Nothing.
+end
+
+function Widget:afterDraw()
+	-- Nothing.
+end
+
+function Widget:beforeDrawChildren()
+	-- Nothing.
+end
+
+function Widget:afterDrawChildren()
+	-- Nothing.
 end
 
 return Widget

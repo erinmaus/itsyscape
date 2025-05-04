@@ -41,6 +41,10 @@ function Power:spawn(power, powerName)
 	local resources = self:getSpriteManager():getResources()
 	local filename = string.format("Resources/Game/Powers/%s/Icon.png", power)
 
+	if not love.filesystem.getInfo(filename) then
+		filename = "Resources/Game/UI/Icons/Concepts/Powers.png"
+	end
+
 	resources:queue(
 		TextureResource,
 		filename,
@@ -48,7 +52,9 @@ function Power:spawn(power, powerName)
 			self.icon = icon
 		end)
 	resources:queueEvent(function()
-		self.ready = true
+		if self.icon and self.icon:getIsReady() then
+			self.ready = true
+		end
 	end)
 
 	-- We want the localized name, not the internal ID.
@@ -66,23 +72,15 @@ function Power:draw(position, time)
 
 	local randomDifference = time - (self.randomTime or 0)
 	if randomDifference > Power.RANDOM_INTERVAL or not self.randomTime then
-		self.textOffsetX = (math.random() * 2) - 1
-		--self.textOffsetX = 0
-		self.textOffsetX = self.textOffsetX * Power.MAX_OFFSET
-		--self.textOffsetX = 0
-		self.textOffsetY = (math.random() * 2) - 1
-		--self.textOffsetY = 0
+		self.textOffsetX = (love.math.random() * 2) - 1
+		self.textOffsetX = self.textOffsetX * Power.MAX_OFFSET--self.textOffsetX = 0
+		self.textOffsetY = (love.math.random() * 2) - 1
 		self.textOffsetY = self.textOffsetY * Power.MAX_OFFSET
-		--self.textOffsetY = 0
 
-		self.iconOffsetX = (math.random() * 2) - 1
-		--self.iconOffsetX = 0
+		self.iconOffsetX = (love.math.random() * 2) - 1
 		self.iconOffsetX = self.iconOffsetX * Power.MAX_OFFSET
-		--self.iconOffsetX = 0
-		self.iconOffsetY = (math.random() * 2) - 1
-		--self.iconOffsetY = 0
+		self.iconOffsetY = (love.math.random() * 2) - 1
 		self.iconOffsetY = self.iconOffsetY * Power.MAX_OFFSET
-		--self.iconOffsetY = 0
 
 		self.randomTime = time
 	end

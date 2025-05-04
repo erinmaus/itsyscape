@@ -17,7 +17,7 @@ local patchy = require "patchy"
 local RichTextLabelRenderer = Class(WidgetRenderer)
 RichTextLabelRenderer.Draw = Class()
 
-function RichTextLabelRenderer.Draw:new(renderer, blocks, resources, width)
+function RichTextLabelRenderer.Draw:new(renderer, blocks, resources, style, width)
 	self.renderer = renderer
 	self.blocks = blocks
 	self.resources = resources
@@ -26,16 +26,20 @@ function RichTextLabelRenderer.Draw:new(renderer, blocks, resources, width)
 	self.left = 0
 	self.height = 0
 	self.width = width
+	self.fonts = {
+		header = style and style.header or renderer.fonts.header,
+		text = style and style.text or renderer.fonts.text,
+	}
 	self.text = {
-		[renderer.fonts.header] = love.graphics.newText(renderer.fonts.header),
-		[renderer.fonts.text] = love.graphics.newText(renderer.fonts.text)
+		[self.fonts.header] = love.graphics.newText(self.fonts.header),
+		[self.fonts.text] = love.graphics.newText(self.fonts.text)
 	}
 end
 
 function RichTextLabelRenderer.Draw:pushText(font, text, x, y)
 	local t = self.text[font]
 	if t then
-		t:add(text, x, y)
+		t:add({ { love.graphics.getColor() }, text }, x, y)
 	end
 end
 
@@ -53,7 +57,7 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 		local snippet = text[i]
 		if type(snippet) == 'string' then
 			local words = {}
-			snippet:gsub("([^%s]*)", function(s)
+			snippet:gsub("([^%s]+)", function(s)
 				table.insert(words, s)
 			end)
 
@@ -67,7 +71,6 @@ function RichTextLabelRenderer.Draw:doDrawText(text, parent, font)
 					self.x = self.left
 
 					self.height = lineHeight
-					needsSpace = false
 				end
 
 				self:pushText(font, word, self.x, self.y)
@@ -106,7 +109,7 @@ function RichTextLabelRenderer.Draw:drawText(text, parent)
 		}
 	end
 
-	local font = self.renderer.fonts.text
+	local font = self.fonts.text
 	love.graphics.setFont(font)
 
 	self:doDrawText(text, parent, font)
@@ -120,7 +123,7 @@ function RichTextLabelRenderer.Draw:drawHeader(text, parent)
 		}
 	end
 
-	local font = self.renderer.fonts.header
+	local font = self.fonts.header
 	if text ~= self.blocks[1] then
 		self.y = self.y + font:getHeight()
 	end
@@ -143,7 +146,7 @@ function RichTextLabelRenderer.Draw:drawLink(block, parent)
 	screenX = screenX + self.x
 	screenY = screenY + self.y
 
-	local mouseX, mouseY = love.mouse.getPosition()
+	local mouseX, mouseY = itsyrealm.mouse.getPosition()
 
 	local hover
 	if mouseX > screenX and mouseX < screenX + width and
@@ -176,7 +179,7 @@ end
 function RichTextLabelRenderer.Draw:drawList(block, parent)
 	love.graphics.setColor(1, 1, 1, 1)
 
-	local font = self.renderer.fonts.text
+	local font = self.fonts.text
 
 	local bulletX = self.x
 
@@ -263,7 +266,7 @@ function RichTextLabelRenderer.Draw:drawImage(block, parent)
 			itsyrealm.graphics.uncachedDraw(image, self.x, self.y, 0, scale, scale)
 		end
 
-		self.y = self.y + image:getHeight() * scale + self.renderer.fonts.text:getHeight()
+		self.y = self.y + image:getHeight() * scale + self.fonts.text:getHeight()
 	end
 end
 
@@ -292,7 +295,7 @@ function RichTextLabelRenderer.Draw:draw()
 		self.x = self.left
 	end
 
-	self.y = self.y + self.height + self.renderer.fonts.text:getHeight()
+	self.y = self.y + self.height + self.fonts.text:getHeight()
 
 	for _, text in pairs(self.text) do
 		itsyrealm.graphics.uncachedDraw(text)
@@ -343,7 +346,7 @@ function RichTextLabelRenderer:draw(widget, state)
 	end
 
 	local w, h = widget:getSize()
-	local renderer = RichTextLabelRenderer.Draw(self, text.t, text.resources, w)
+	local renderer = RichTextLabelRenderer.Draw(self, text.t, text.resources, widget:getStyle(), w)
 	renderer:draw()
 
 	if widget:getWrapParentContents() then

@@ -12,6 +12,7 @@
 #include "common/runtime.h"
 #include "modules/graphics/Graphics.h"
 #include "nbunny/nbunny.hpp"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/l_buffer.hpp"
 
 nbunny::LBuffer::LBuffer(
@@ -81,23 +82,25 @@ love::graphics::Canvas* nbunny::LBuffer::get_depth_stencil()
 	return g_buffer.get_canvas(0);
 }
 
-void nbunny::LBuffer::use()
+void nbunny::LBuffer::use(bool use_depth)
 {
 	love::graphics::Graphics::RenderTargets render_targets;
 	render_targets.colors.emplace_back(get_color());
-	render_targets.depthStencil = love::graphics::Graphics::RenderTarget(get_depth_stencil());
+
+	if (use_depth)
+	{
+		render_targets.depthStencil = love::graphics::Graphics::RenderTarget(get_depth_stencil());
+	}
 
 	love::graphics::Graphics* instance = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	instance->setCanvas(render_targets);
 }
 
 
-nbunny::LBuffer* nbunny_l_buffer_create(
-	const std::string& color_pixel_format_name,
-	nbunny::GBuffer& g_buffer,
-	sol::this_state S)
+int nbunny_l_buffer_constructor(lua_State* L)
 {
-	lua_State* L = S;
+	auto color_pixel_format_name = nbunny::lua::get<std::string>(L, 2);
+	auto g_buffer = nbunny::lua::get<nbunny::GBuffer*>(L, 3);
 
 	love::PixelFormat color_pixel_format;
 	if (!love::getConstant(color_pixel_format_name.c_str(), color_pixel_format))
@@ -105,13 +108,53 @@ nbunny::LBuffer* nbunny_l_buffer_create(
 		love::luax_enumerror(L, "pixel format", color_pixel_format_name.c_str());
 	}
 
-	return new nbunny::LBuffer(color_pixel_format, g_buffer);
+	nbunny::lua::push(L, std::make_shared<nbunny::LBuffer>(color_pixel_format, *g_buffer));
+	return 1;
+}
+
+static int nbunny_l_buffer_get_width(lua_State* L)
+{
+	auto l_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 1);
+	nbunny::lua::push(L, l_buffer->get_width());
+	return 1;
+}
+
+static int nbunny_l_buffer_get_height(lua_State* L)
+{
+	auto l_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 1);
+	nbunny::lua::push(L, l_buffer->get_height());
+	return 1;
+}
+
+static int nbunny_l_buffer_resize(lua_State* L)
+{
+	auto l_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 1);
+	auto g_buffer = nbunny::lua::get<nbunny::GBuffer*>(L, 2);
+	
+	l_buffer->resize(*g_buffer);
+	return 0;
+}
+
+static int nbunny_l_buffer_release(lua_State* L)
+{
+	auto l_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 1);
+	l_buffer->release();
+	return 0;
+}
+
+static int nbunny_l_buffer_use(lua_State* L)
+{
+	auto l_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 1);
+	
+	l_buffer->use();
+
+	return 0;
 }
 
 static int nbunny_l_buffer_get_color(lua_State* L)
 {
-	auto& l_buffer = sol::stack::get<nbunny::LBuffer>(L, 1);
-	auto color = l_buffer.get_color();
+	auto l_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 1);
+	auto color = l_buffer->get_color();
 
 	if (color == nullptr)
 	{
@@ -127,8 +170,8 @@ static int nbunny_l_buffer_get_color(lua_State* L)
 
 static int nbunny_l_buffer_get_depth_stencil(lua_State* L)
 {
-	auto& l_buffer = sol::stack::get<nbunny::LBuffer>(L, 1);
-	auto depth_stencil = l_buffer.get_depth_stencil();
+	auto l_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 1);
+	auto depth_stencil = l_buffer->get_depth_stencil();
 
 	if (depth_stencil == nullptr)
 	{
@@ -145,18 +188,19 @@ static int nbunny_l_buffer_get_depth_stencil(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_lbuffer(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::LBuffer>("NLBuffer",
-		sol::call_constructor, sol::factories(&nbunny_l_buffer_create),
-		"getWidth", &nbunny::LBuffer::get_width,
-		"getHeight", &nbunny::LBuffer::get_height,
-		"resize", &nbunny::LBuffer::resize,
-		"release", &nbunny::LBuffer::release,
-		"getGBuffer", &nbunny::LBuffer::get_g_buffer,
-		"getColor", &nbunny_l_buffer_get_color,
-		"getDepthStencil", &nbunny_l_buffer_get_depth_stencil,
-		"use", &nbunny::LBuffer::use);
-
-	sol::stack::push(L, T);
+	static const luaL_Reg metatable[] = {
+		{ "getWidth", &nbunny_l_buffer_get_width },
+		{ "getHeight", &nbunny_l_buffer_get_height },
+		{ "resize", &nbunny_l_buffer_resize },
+		{ "release", &nbunny_l_buffer_release },
+		{ "release", &nbunny_l_buffer_release },
+		{ "getColor", &nbunny_l_buffer_get_color },
+		{ "getDepthStencil", &nbunny_l_buffer_get_depth_stencil },
+		{ "use", &nbunny_l_buffer_use },
+		{ nullptr, nullptr }
+	};
+	
+	nbunny::lua::register_type<nbunny::LBuffer>(L, &nbunny_l_buffer_constructor, metatable);
 
 	return 1;
 }

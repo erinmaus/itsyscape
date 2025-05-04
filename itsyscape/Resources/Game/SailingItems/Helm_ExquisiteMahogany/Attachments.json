@@ -1,0 +1,27 @@
+{
+	"STATIC_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Helm_ExquisiteMahogany/Model.lstatic",
+			"group": "helm.wood",
+			"texture": "Resources/Game/SailingItems/Helm_ExquisiteMahogany/Texture_Wood.png",
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Helm_ExquisiteMahogany/Model.lstatic",
+			"group": "helm.metal",
+			"texture": "Resources/Game/SailingItems/Helm_ExquisiteMahogany/Texture_Metal.png",
+			"colorIndex": 2,
+			"outlineThreshold": 0.3
+		}
+	],
+	"WHEEL_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Helm_ExquisiteMahogany/Model.lstatic",
+			"group": "helm.wheel",
+			"texture": "Resources/Game/SailingItems/Helm_ExquisiteMahogany/Texture_Wheel.png",
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		}
+	],
+}

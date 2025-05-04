@@ -16,6 +16,7 @@
 #include "modules/graphics/Graphics.h"
 #include "modules/math/MathModule.h"
 #include "modules/timer/Timer.h"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/particle.hpp"
 #include "nbunny/optimaus/renderer.hpp"
 
@@ -48,15 +49,15 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto d = table.get_or("direction", sol::table(L, sol::create));
-		direction = glm::vec3(d.get_or(1, 0.0f), d.get_or(2, 1.0f), d.get_or(3, 0.0f));
+		auto d = table.get("direction", nbunny::lua::TemporaryReference());
+		direction = glm::vec3(d.get(1, 0.0f), d.get(2, 1.0f), d.get(3, 0.0f));
 		direction = glm::normalize(direction);
 
-		auto s = table.get_or("speed", sol::table(L, sol::create));
-		min_speed = s.get_or(1, 0.0f);
-		max_speed = s.get_or(2, min_speed);
+		auto s = table.get("speed", nbunny::lua::TemporaryReference());
+		min_speed = s.get(1, 0.0f);
+		max_speed = s.get(2, min_speed);
 	}
 
 	void emit(nbunny::Particle& p)
@@ -79,6 +80,9 @@ public:
 	float x_range_center = 0.0f, x_range_width = 1.0f;
 	float y_range_center = 0.0f, y_range_width = 1.0f;
 	float z_range_center = 0.0f, z_range_width = 1.0f;
+	float min_lifetime = 0.0f, max_lifetime = 0.0f;
+	bool set_normal = false;
+	bool random_normal = false;
 
 	void update_local_position(const glm::vec3& value)
 	{
@@ -87,34 +91,41 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto p = table.get_or("position", sol::table(L, sol::create));
-		position = glm::vec3(p.get_or(1, 0.0f), p.get_or(2, 0.0f), p.get_or(3, 0.0f));
+		auto p = table.get("position", nbunny::lua::TemporaryReference());
+		position = glm::vec3(p.get(1, 0.0f), p.get(2, 0.0f), p.get(3, 0.0f));
 
-		auto s = table.get_or("speed", sol::table(L, sol::create));
-		min_speed = s.get_or(1, 0.0f);
-		max_speed = s.get_or(2, min_speed);
+		auto s = table.get("speed", nbunny::lua::TemporaryReference());
+		min_speed = s.get(1, 0.0f);
+		max_speed = s.get(2, min_speed);
 
-		auto r = table.get_or("radius", sol::table(L, sol::create));
-		min_radius = r.get_or(1, 0.0f);
-		max_radius = r.get_or(2, min_radius);
+		auto l = table.get("lifetime", nbunny::lua::TemporaryReference());
+		min_lifetime = l.get(1, 0.0f);
+		max_lifetime = l.get(2, min_lifetime);
 
-		auto a = table.get_or("acceleration", sol::table(L, sol::create));
-		min_acceleration = a.get_or(1, 0.0f);
-		max_acceleration = a.get_or(2, min_acceleration);
+		auto r = table.get("radius", nbunny::lua::TemporaryReference());
+		min_radius = r.get(1, 0.0f);
+		max_radius = r.get(2, min_radius);
 
-		auto x = table.get_or("xRange", sol::table(L, sol::create));
-		x_range_center = x.get_or(1, 0.0f);
-		x_range_width = x.get_or(2, 1.0f);
+		auto a = table.get("acceleration", nbunny::lua::TemporaryReference());
+		min_acceleration = a.get(1, 0.0f);
+		max_acceleration = a.get(2, min_acceleration);
 
-		auto y = table.get_or("yRange", sol::table(L, sol::create));
-		y_range_center = y.get_or(1, 0.0f);
-		y_range_width = y.get_or(2, 1.0f);
+		auto x = table.get("xRange", nbunny::lua::TemporaryReference());
+		x_range_center = x.get(1, 0.0f);
+		x_range_width = x.get(2, 1.0f);
 
-		auto z = table.get_or("zRange", sol::table(L, sol::create));
-		z_range_center = z.get_or(1, 0.0f);
-		z_range_width = z.get_or(2, 1.0f);
+		auto y = table.get("yRange", nbunny::lua::TemporaryReference());
+		y_range_center = y.get(1, 0.0f);
+		y_range_width = y.get(2, 1.0f);
+
+		auto z = table.get("zRange", nbunny::lua::TemporaryReference());
+		z_range_center = z.get(1, 0.0f);
+		z_range_width = z.get(2, 1.0f);
+
+		set_normal = table.get("normal", nbunny::lua::TemporaryReference()).get(1, false);
+		random_normal = table.get("randomNormal", nbunny::lua::TemporaryReference()).get(1, false);
 	}
 
 	void emit(nbunny::Particle& p)
@@ -134,6 +145,38 @@ public:
 		p.position = normal * radius + position + local_position;
 		p.velocity = normal * velocity;
 		p.acceleration = normal * acceleration;
+
+		if (min_lifetime > 0.0f && max_lifetime > 0.0f)
+		{
+			float min = std::min(min_lifetime, max_lifetime);
+			float max = std::max(min_lifetime, max_lifetime);
+
+			float delta = (radius - min_radius) / (max_radius - min_radius);
+			delta *= delta;
+
+			if (min_lifetime > max_lifetime)
+			{
+				delta = 1.0f - delta;
+			}
+
+			p.lifetime = delta * (max - min) + min;
+		}
+
+		if (set_normal)
+		{
+			if (random_normal)
+			{
+				auto n = glm::vec3(
+					rng->random() * 2 - 1,
+					rng->random() * 2 - 1,
+					rng->random() * 2 - 1);
+				p.normal = n;
+			}
+			else
+			{
+				p.normal = -normal;
+			}
+		}
 	}
 };
 
@@ -144,17 +187,17 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto c = table.get_or("colors", sol::table(L, sol::create));
-		for (auto& p: c)
+		auto c = table.get("colors", nbunny::lua::TemporaryReference());
+		for (auto i = 1; i <= c.size(); ++i)
 		{
-			sol::table color = p.second;
+			auto color = c.get(i, nbunny::lua::TemporaryReference());
 			colors.emplace_back(
-				color.get_or(1, 1.0f),
-				color.get_or(2, 1.0f),
-				color.get_or(3, 1.0f),
-				color.get_or(4, 1.0f)
+				color.get(1, 1.0f),
+				color.get(2, 1.0f),
+				color.get(3, 1.0f),
+				color.get(4, 1.0f)
 			);
 		}
 	}
@@ -180,18 +223,25 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto l = table.get_or("lifetime", table.get_or("age", sol::table(L, sol::create)));
-		min_lifetime = l.get_or(1, 1.0f);
-		max_lifetime = l.get_or(2, min_lifetime);
+		auto l = table.get("lifetime", table.get("age", nbunny::lua::TemporaryReference()));
+		min_lifetime = l.get(1, 1.0f);
+		max_lifetime = l.get(2, min_lifetime);
 	}
 
 	void emit(nbunny::Particle& p)
 	{
-		auto rng = love::math::Math::instance.getRandomGenerator();
-		float lifetime = rng->random() * (max_lifetime - min_lifetime) + min_lifetime;
-		p.lifetime = lifetime;
+		if (max_lifetime == min_lifetime || min_lifetime == std::numeric_limits<float>::infinity())
+		{
+			p.lifetime = min_lifetime;
+		}
+		else
+		{
+			auto rng = love::math::Math::instance.getRandomGenerator();
+			float lifetime = rng->random() * (max_lifetime - min_lifetime) + min_lifetime;
+			p.lifetime = lifetime;
+		}
 	}
 };
 
@@ -204,19 +254,19 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto r = table.get_or("rotation", sol::table(L, sol::create));
-		min_rotation = LOVE_TORAD(r.get_or(1, 0.0f));
-		max_rotation = LOVE_TORAD(r.get_or(2, min_rotation));
+		auto r = table.get("rotation", nbunny::lua::TemporaryReference());
+		min_rotation = LOVE_TORAD(r.get(1, 0.0f));
+		max_rotation = LOVE_TORAD(r.get(2, min_rotation));
 
-		auto a = table.get_or("acceleration", sol::table(L, sol::create));
-		min_acceleration = LOVE_TORAD(a.get_or(1, 0.0f));
-		max_acceleration = LOVE_TORAD(a.get_or(2, min_acceleration));
+		auto a = table.get("acceleration", nbunny::lua::TemporaryReference());
+		min_acceleration = LOVE_TORAD(a.get(1, 0.0f));
+		max_acceleration = LOVE_TORAD(a.get(2, min_acceleration));
 
-		auto v = table.get_or("velocity", sol::table(L, sol::create));
-		min_velocity = LOVE_TORAD(v.get_or(1, 0.0f));
-		max_velocity = LOVE_TORAD(v.get_or(2, min_velocity));
+		auto v = table.get("velocity", nbunny::lua::TemporaryReference());
+		min_velocity = LOVE_TORAD(v.get(1, 0.0f));
+		max_velocity = LOVE_TORAD(v.get(2, min_velocity));
 	}
 
 	void emit(nbunny::Particle& p)
@@ -241,19 +291,19 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto s = table.get_or("scale", sol::table(L, sol::create));
-		min_scale = s.get_or(1, 1.0f);
-		max_scale = s.get_or(2, min_scale);
+		auto s = table.get("scale", nbunny::lua::TemporaryReference());
+		min_scale = s.get(1, 1.0f);
+		max_scale = s.get(2, min_scale);
 
-		auto x = table.get_or("scaleX", sol::table(L, sol::create));
-		min_scale_x = x.get_or(1, 1.0f);
-		max_scale_x = x.get_or(2, min_scale_x);
+		auto x = table.get("scaleX", nbunny::lua::TemporaryReference());
+		min_scale_x = x.get(1, 1.0f);
+		max_scale_x = x.get(2, min_scale_x);
 
-		auto y = table.get_or("scaleY", sol::table(L, sol::create));
-		min_scale_y = y.get_or(1, 1.0f);
-		max_scale_y = y.get_or(2, min_scale_x);
+		auto y = table.get("scaleY", nbunny::lua::TemporaryReference());
+		min_scale_y = y.get(1, 1.0f);
+		max_scale_y = y.get(2, min_scale_x);
 	}
 
 	void emit(nbunny::Particle& p)
@@ -267,6 +317,29 @@ public:
 	}
 };
 
+class RandomTextureIndexEmitter : public nbunny::ParticleEmitter
+{
+public:
+	int min_texture_index = 1, max_texture_index = 1;
+
+	void from_definition(lua_State* L)
+	{
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
+
+		auto t = table.get("textures", nbunny::lua::TemporaryReference());
+		min_texture_index = t.get(1, 1);
+		max_texture_index = t.get(2, min_texture_index);
+	}
+
+	void emit(nbunny::Particle& p)
+	{
+		auto rng = love::math::Math::instance.getRandomGenerator();
+		int index = rng->rand() % (max_texture_index - min_texture_index) + min_texture_index;
+
+		p.texture_index = index - 1;
+	}
+};
+
 bool nbunny::ParticleEmissionStrategy::running() const
 {
 	return current_time < duration;
@@ -274,21 +347,32 @@ bool nbunny::ParticleEmissionStrategy::running() const
 
 int nbunny::ParticleEmissionStrategy::roll() const
 {
+	if (min_count == max_count)
+	{
+		return min_count;
+	}
+
 	auto rng = love::math::Math::instance.getRandomGenerator();
 	return rng->rand() % (max_count - min_count) + min_count;
 }
 
 void nbunny::ParticleEmissionStrategy::from_definition(lua_State* L)
 {
-	auto table = sol::stack::get<sol::table>(L, -1);
+	auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-	auto c = table.get_or("count", sol::table(L, sol::create));
-	min_count = c.get_or(1, 1.0f);
-	max_count = c.get_or(2, min_count);
+	auto c = table.get("count", nbunny::lua::TemporaryReference());
+	min_count = c.get(1, 1.0f);
+	max_count = c.get(2, min_count);
 
-	auto d = table.get_or("duration", sol::table(L, sol::create));
-	auto min_duration = d.get_or(1, 0);
-	auto max_duration = d.get_or(2, d.get_or(1, std::numeric_limits<float>::infinity()));
+	auto infinity = std::numeric_limits<float>::infinity();
+	auto d = table.get("duration", nbunny::lua::TemporaryReference());
+	auto min_duration = d.get(1, 0);
+	auto max_duration = d.get(2, d.get(1, infinity));
+
+	if (min_duration == infinity || max_duration == infinity)
+	{
+		duration = infinity;
+	}
 
 	auto rng = love::math::Math::instance.getRandomGenerator();
 	duration = rng->random() * (max_duration - min_duration) + min_duration;
@@ -310,12 +394,12 @@ public:
 	{
 		nbunny::ParticleEmissionStrategy::from_definition(L);
 
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto d = table.get_or("delay", sol::table(L, sol::create));
-		auto min_delay = d.get_or(1, 0.0f);
+		auto d = table.get("delay", nbunny::lua::TemporaryReference());
+		auto min_delay = d.get(1, 0.0f);
 
-		auto max_delay = d.get_or(2, min_delay);
+		auto max_delay = d.get(2, min_delay);
 
 		auto rng = love::math::Math::instance.getRandomGenerator();
 		delay = rng->random() * (max_delay - min_delay) + min_delay;
@@ -348,11 +432,11 @@ public:
 	{
 		nbunny::ParticleEmissionStrategy::from_definition(L);
 
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto d = table.get_or("delay", sol::table(L, sol::create));
-		min_delay = d.get_or(1, 0.0f);
-		max_delay = d.get_or(2, min_delay);
+		auto d = table.get("delay", nbunny::lua::TemporaryReference());
+		min_delay = d.get(1, 0.0f);
+		max_delay = d.get(2, min_delay);
 
 		tick();
 	}
@@ -397,10 +481,10 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		fade_in_percent = table.get_or("fadeInPercent", sol::table(L, sol::create)).get_or(1, fade_in_percent);
-		fade_out_percent = table.get_or("fadeOutPercent", sol::table(L, sol::create)).get_or(1, fade_out_percent);
+		fade_in_percent = table.get("fadeInPercent", nbunny::lua::TemporaryReference()).get(1, fade_in_percent);
+		fade_out_percent = table.get("fadeOutPercent", nbunny::lua::TemporaryReference()).get(1, fade_out_percent);
 	}
 
 	void update(nbunny::Particle& p, float delta)
@@ -423,22 +507,70 @@ public:
 	}
 };
 
+class ColorPath : public nbunny::ParticlePath
+{
+public:
+	float fade_in_percent = 0.0f, fade_out_percent = 1.0f;
+	glm::vec4 fade_in_color = glm::vec4(1.0f), fade_out_color = glm::vec4(glm::vec3(1.0f), 0.0f);
+
+	void from_definition(lua_State* L)
+	{
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
+
+		fade_in_percent = table.get("fadeInPercent", nbunny::lua::TemporaryReference()).get(1, fade_in_percent);
+		fade_out_percent = table.get("fadeOutPercent", nbunny::lua::TemporaryReference()).get(1, fade_out_percent);
+
+		auto i = table.get("fadeInColor", nbunny::lua::TemporaryReference());
+		fade_in_color = glm::vec4(i.get(1, 1.0f), i.get(2, 1.0f), i.get(3, 1.0f), i.get(4, 1.0f));
+
+		auto o = table.get("fadeOutColor", nbunny::lua::TemporaryReference());
+		fade_out_color = glm::vec4(o.get(1, 1.0f), o.get(2, 1.0f), o.get(3, 1.0f), o.get(4, 1.0f));
+	}
+
+	void update(nbunny::Particle& p, float delta)
+	{
+		float mu;
+
+		auto percent_age = p.age / p.lifetime;
+		if (percent_age <= fade_in_percent)
+		{
+			mu = sine_ease_out(percent_age / fade_in_percent);
+		}
+		else if (percent_age >= fade_out_percent)
+		{
+			auto difference = percent_age - fade_out_percent;
+			auto range = 1.0f - fade_out_percent;
+			mu = sine_ease_out(1.0f - difference / range);
+		}
+		else
+		{
+			mu = 0.0f;
+		}
+
+		p.color = glm::mix(fade_in_color, fade_out_color, mu);
+	}
+};
+
 class TwinklePath : public nbunny::ParticlePath
 {
 public:
 	float speed = 1.0f;
 	float min_alpha = 0.0f;
 	float max_alpha = 1.0f;
+	bool multiply = true;
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		speed = table.get_or("speed", 1.0f);
+		speed = table.get("speed", nbunny::lua::TemporaryReference()).get(1, 1.0f);
 
-		auto a = table.get_or("alpha", sol::table(L, sol::create));
-		min_alpha = a.get_or(1, 0.0f);
-		max_alpha = a.get_or(2, 1.0f);
+		auto a = table.get("alpha", nbunny::lua::TemporaryReference());
+		min_alpha = a.get(1, 0.0f);
+		max_alpha = a.get(2, 1.0f);
+
+		auto m = table.get("multiply", nbunny::lua::TemporaryReference());
+		multiply = m.get(1, true);
 	}
 
 	void update(nbunny::Particle& p, float delta)
@@ -446,7 +578,14 @@ public:
 		auto alpha = std::abs(std::sin(p.age * speed + p.random * LOVE_M_PI_2));
 		alpha = alpha * (max_alpha - min_alpha) + min_alpha;
 
-		p.color.a *= alpha;
+		if (multiply)
+		{
+			p.color.a *= alpha;
+		}
+		else
+		{
+			p.color.a = alpha;
+		}
 	}
 };
 
@@ -457,10 +596,10 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto g = table.get_or("gravity", sol::table(L, sol::create));
-		gravity = glm::vec3(g.get_or(1, 0.0f), g.get_or(2, -10.0f), g.get_or(3, 0.0f));
+		auto g = table.get("gravity", nbunny::lua::TemporaryReference());
+		gravity = glm::vec3(g.get(1, 0.0f), g.get(2, -10.0f), g.get(3, 0.0f));
 	}
 
 	void update(nbunny::Particle& p, float delta)
@@ -477,11 +616,11 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto g = table.get_or("position", sol::table(L, sol::create));
-		position = glm::vec3(g.get_or(1, 0.0f), g.get_or(2, -10.0f), g.get_or(3, 0.0f));
-		speed = table.get_or("speed", 10.0f);
+		auto g = table.get("position", nbunny::lua::TemporaryReference());
+		position = glm::vec3(g.get(1, 0.0f), g.get(2, -10.0f), g.get(3, 0.0f));
+		speed = table.get("speed", nbunny::lua::TemporaryReference()).get(1, 10.0f);
 	}
 
 	void update(nbunny::Particle& p, float delta)
@@ -500,14 +639,14 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		in_percent = table.get_or("inPercent", sol::table(L, sol::create)).get_or(1, in_percent);
-		out_percent = table.get_or("outPercent", sol::table(L, sol::create)).get_or(1, out_percent);
+		in_percent = table.get("inPercent", nbunny::lua::TemporaryReference()).get(1, in_percent);
+		out_percent = table.get("outPercent", nbunny::lua::TemporaryReference()).get(1, out_percent);
 
-		size = table.get_or("size", sol::table(L, sol::create)).get_or(1, 1.0f);
-		size_x = table.get_or("sizeX", sol::table(L, sol::create)).get_or(1, 1.0f);
-		size_y = table.get_or("sizeY", sol::table(L, sol::create)).get_or(1, 1.0f);
+		size = table.get("size", nbunny::lua::TemporaryReference()).get(1, 1.0f);
+		size_x = table.get("sizeX", nbunny::lua::TemporaryReference()).get(1, 1.0f);
+		size_y = table.get("sizeY", nbunny::lua::TemporaryReference()).get(1, 1.0f);
 	}
 
 	void update(nbunny::Particle& p, float delta)
@@ -539,11 +678,11 @@ public:
 
 	void from_definition(lua_State* L)
 	{
-		auto table = sol::stack::get<sol::table>(L, -1);
+		auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-		auto t = table.get_or("textures", sol::table(L, sol::create));
-		min_texture_index = t.get_or(1, 1);
-		max_texture_index = t.get_or(2, min_texture_index);
+		auto t = table.get("textures", nbunny::lua::TemporaryReference());
+		min_texture_index = t.get(1, 1);
+		max_texture_index = t.get(2, min_texture_index);
 	}
 
 	void update(nbunny::Particle& p, float delta)
@@ -559,17 +698,18 @@ nbunny::ParticleSceneNode::ParticleSceneNode(int reference) :
 	SceneNode(reference),
 	mesh_attribs({
 		{ "VertexPosition", love::graphics::vertex::DATA_FLOAT, 3 },
+		{ "ParticlePosition", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexNormal", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "VertexTexture", love::graphics::vertex::DATA_FLOAT, 2 },
 		{ "VertexColor", love::graphics::vertex::DATA_FLOAT, 4 },
 	}),
 	quad({
-		{ glm::vec3( 1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
-		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) },
-		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) }
+		{ glm::vec3( 1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f) },
+		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
+		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) },
+		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
+		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) },
+		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) }
 	})
 {
 	// Nothing.
@@ -640,7 +780,7 @@ void nbunny::ParticleSceneNode::update(float time_delta)
 
 void nbunny::ParticleSceneNode::emit(int count)
 {
-	while (count > 0)
+	while (count > 0 && particles.size() < max_num_particles)
 	{
 		Particle p;
 
@@ -679,38 +819,57 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 	return glm::slerp(previous_rotation, current_rotation, delta);
 }
 
-void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation)
+void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const glm::quat& self_rotation, const glm::mat4& view, float delta)
 {
 	vertices.clear();
 
+	auto view_world_transform = view * get_transform().get_global(delta);
+	std::stable_sort(particles.begin(), particles.end(), [&](auto& a, auto& b)
+	{
+		auto a_position = view_world_transform * glm::vec4(a.position, 1.0f);
+		auto b_position = view_world_transform * glm::vec4(b.position, 1.0f);
+
+		return a_position.z > b_position.z;
+	});
+
 	for (auto& particle: particles)
 	{
-		push_particle_quad(particle, inverse_rotation);
-	}
-
-	if (mesh)
-	{
-		mesh->release();
-		mesh = nullptr;
+		push_particle_quad(particle, inverse_rotation, self_rotation);
 	}
 
 	if (vertices.size() > 0)
 	{
-		auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-		mesh = graphics->newMesh(
-			mesh_attribs,
-			&vertices[0],
-			sizeof(Vertex) * vertices.size(),
-			love::graphics::PRIMITIVE_TRIANGLES,
-			love::graphics::vertex::USAGE_STREAM);
+		if (mesh && vertices.size() <= mesh->getVertexCount())
+		{
+			auto p = mesh->mapVertexData();
+			std::memcpy(p, &vertices[0], sizeof(Vertex) * vertices.size());
+			mesh->unmapVertexData();
 
-		for (auto& mesh_attrib: mesh_attribs) {
-			mesh->setAttributeEnabled(mesh_attrib.name, true);
+			mesh->setDrawRange(0, vertices.size());
+		}
+		else
+		{
+			if (mesh)
+			{
+				mesh->release();
+			}
+
+			auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+			mesh = graphics->newMesh(
+				mesh_attribs,
+				&vertices[0],
+				sizeof(Vertex) * vertices.size(),
+				love::graphics::PRIMITIVE_TRIANGLES,
+				love::graphics::vertex::USAGE_STREAM);
+
+			for (auto& mesh_attrib: mesh_attribs) {
+				mesh->setAttributeEnabled(mesh_attrib.name, true);
+			}
 		}
 	}
 }
 
-void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, glm::quat rotation)
+void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, const glm::quat& inverse_rotation, const glm::quat& self_rotation)
 {
 	for (auto& template_vertex: quad)
 	{
@@ -721,16 +880,18 @@ void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, glm::quat 
 			template_vertex.position.z
 		);
 		vertex.position = glm::rotate(
-			rotation * glm::angleAxis(p.rotation, glm::vec3(0.0f, 0.0f, 1.0f)),
+			inverse_rotation * glm::angleAxis(p.rotation, glm::vec3(0.0f, 0.0f, 1.0f)),
 			vertex.position
 		);
-		vertex.position += p.position;
 
+		vertex.normal = glm::normalize(glm::rotate(self_rotation, glm::normalize(p.normal)));
+		vertex.position += p.position;
+		vertex.particle_position = p.position;
 		vertex.color = p.color;
 
-		if (p.texture_index < textures.size())
+		if (!textures.empty())
 		{
-			auto texture = textures.at(p.texture_index);
+			auto texture = textures.at(p.texture_index % textures.size());
 
 			if (template_vertex.texture.x == 0)
 			{
@@ -761,14 +922,14 @@ void nbunny::ParticleSceneNode::clear()
 	particles.clear();
 }
 
-void nbunny::ParticleSceneNode::set_paths(lua_State* L, sol::table& path_definitions)
+void nbunny::ParticleSceneNode::set_paths(lua_State* L, const lua::TemporaryReference& path_definitions)
 {
 	paths.clear();
 
 	for (auto i = 1; i <= path_definitions.size(); ++i)
 	{
-		sol::table definition = path_definitions[i];
-		auto type = definition.get_or("type", std::string());
+		auto definition = path_definitions.get<lua::TemporaryReference>(i, lua::TemporaryReference());
+		auto type = definition.get("type", std::string());
 
 		std::shared_ptr<ParticlePath> path;
 		if (type == "FadeInOutPath")
@@ -787,6 +948,10 @@ void nbunny::ParticleSceneNode::set_paths(lua_State* L, sol::table& path_definit
 		{
 			path = std::make_shared<SingularityPath>();
 		}
+		else if (type == "ColorPath")
+		{
+			path = std::make_shared<ColorPath>();
+		}
 		else if (type == "SizePath")
 		{
 			path = std::make_shared<SizePath>();
@@ -798,7 +963,7 @@ void nbunny::ParticleSceneNode::set_paths(lua_State* L, sol::table& path_definit
 
 		if (path)
 		{
-			sol::stack::push(L, definition);
+			definition.push();
 			path->from_definition(L);
 			lua_pop(L, 1);
 
@@ -807,14 +972,14 @@ void nbunny::ParticleSceneNode::set_paths(lua_State* L, sol::table& path_definit
 	}
 }
 
-void nbunny::ParticleSceneNode::set_emitters(lua_State* L, sol::table& emitter_definitions)
+void nbunny::ParticleSceneNode::set_emitters(lua_State* L, const lua::TemporaryReference& emitter_definitions)
 {
 	emitters.clear();
 
 	for (auto i = 1; i <= emitter_definitions.size(); ++i)
 	{
-		sol::table definition = emitter_definitions[i];
-		auto type = definition.get_or("type", std::string());
+		auto definition = emitter_definitions.get(i, lua::TemporaryReference());
+		auto type = definition.get("type", std::string());
 
 		std::shared_ptr<ParticleEmitter> emitter;
 		if (type == "DirectionalEmitter")
@@ -841,10 +1006,14 @@ void nbunny::ParticleSceneNode::set_emitters(lua_State* L, sol::table& emitter_d
 		{
 			emitter = std::make_shared<RandomScaleEmitter>();
 		}
+		else if (type == "RandomTextureIndexEmitter")
+		{
+			emitter = std::make_shared<RandomTextureIndexEmitter>();
+		}
 
 		if (emitter)
 		{
-			sol::stack::push(L, definition);
+			definition.push();
 			emitter->from_definition(L);
 			lua_pop(L, 1);
 
@@ -853,14 +1022,14 @@ void nbunny::ParticleSceneNode::set_emitters(lua_State* L, sol::table& emitter_d
 	}
 }
 
-void nbunny::ParticleSceneNode::set_emission_strategy(lua_State* L, sol::table& emission_strategy_definition)
+void nbunny::ParticleSceneNode::set_emission_strategy(lua_State* L, const lua::TemporaryReference& emission_strategy_definition)
 {
 	if (emission_strategy)
 	{
 		emission_strategy.reset();
 	}
 
-	auto type = emission_strategy_definition.get_or("type", std::string());
+	auto type = emission_strategy_definition.get("type", std::string());
 	if (type == "BurstEmissionStrategy")
 	{
 		emission_strategy = std::make_shared<BurstEmissionStrategy>();
@@ -872,7 +1041,7 @@ void nbunny::ParticleSceneNode::set_emission_strategy(lua_State* L, sol::table& 
 
 	if (emission_strategy)
 	{
-		sol::stack::push(L, emission_strategy_definition);
+		emission_strategy_definition.push();
 		emission_strategy->from_definition(L);
 		lua_pop(L, 1);
 	}
@@ -880,10 +1049,12 @@ void nbunny::ParticleSceneNode::set_emission_strategy(lua_State* L, sol::table& 
 
 void nbunny::ParticleSceneNode::from_definition(lua_State* L)
 {
-	auto table = sol::stack::get<sol::table>(L, -1);
+	auto table = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, -1, nbunny::lua::TemporaryReference());
 
-	auto rows = table.get_or("rows", 1);
-	auto columns = table.get_or("columns", 1);
+	max_num_particles = table.get("numParticles", max_num_particles);
+
+	auto rows = table.get("rows", 1);
+	auto columns = table.get("columns", 1);
 
 	textures.clear();
 	for (auto i = 0; i < rows; ++i)
@@ -899,13 +1070,13 @@ void nbunny::ParticleSceneNode::from_definition(lua_State* L)
 		}
 	}
 
-	auto emitter_definitions = table.get_or("emitters", sol::table(L, sol::create));
+	auto emitter_definitions = table.get("emitters", nbunny::lua::TemporaryReference());
 	set_emitters(L, emitter_definitions);
 
-	auto path_definitions = table.get_or("paths", sol::table(L, sol::create));
+	auto path_definitions = table.get("paths", nbunny::lua::TemporaryReference());
 	set_paths(L, path_definitions);
 
-	auto emission_strategy_definition = table.get_or("emissionStrategy", sol::table(L, sol::create));
+	auto emission_strategy_definition = table.get("emissionStrategy", nbunny::lua::TemporaryReference());
 	set_emission_strategy(L, emission_strategy_definition);
 }
 
@@ -940,19 +1111,32 @@ bool nbunny::ParticleSceneNode::get_is_playing() const
 	return is_playing;
 }
 
-void nbunny::ParticleSceneNode::frame(float delta, float time_delta)
+void nbunny::ParticleSceneNode::frame(float delta)
 {
 	if (!is_playing)
 	{
 		return;
 	}
 
+	auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+	auto time_delta = timer_instance->getDelta();
+
 	update(time_delta);
+	is_pending = true;
 }
 
 void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 {
-	build(glm::conjugate(renderer.get_camera().get_rotation() * get_global_rotation(delta)));
+	if (is_pending)
+	{
+		auto self_rotation = get_global_rotation(delta);
+		build(
+			glm::conjugate(renderer.get_camera().get_rotation() * self_rotation),
+			self_rotation,
+			renderer.get_camera().get_view(),
+			delta);
+		is_pending = false;
+	}
 
 	if (!mesh)
 	{
@@ -965,7 +1149,7 @@ void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 	auto diffuse_texture_uniform = shader->getUniformInfo("scape_DiffuseTexture");
 	if (diffuse_texture_uniform && textures.size() >= 1)
 	{
-		auto texture = textures[0]->get_texture();
+		auto texture = textures[0]->get_per_pass_texture(renderer.get_current_pass_id());
 		if (texture)
 		{
 			shader->sendTextures(diffuse_texture_uniform, &texture, 1);
@@ -977,64 +1161,100 @@ void nbunny::ParticleSceneNode::draw(Renderer& renderer, float delta)
 	graphics->draw(mesh, matrix);
 }
 
+int nbunny_particle_scene_node_clear(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	node->clear();
+	return 0;
+}
+
+int nbunny_particle_scene_node_emit(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	auto count = luaL_checkinteger(L, 2);
+	node->emit(count);
+	return 0;
+}
+
+int nbunny_particle_scene_node_play(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	node->play();
+	return 0;
+}
+
+int nbunny_particle_scene_node_pause(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	node->pause();
+	return 0;
+}
+
+int nbunny_particle_scene_node_get_is_playing(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	nbunny::lua::push(L, node->get_is_playing());
+	return 0;
+}
+
 int nbunny_particle_scene_node_init_particle_system_from_def(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
-	node.from_definition(L);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	node->from_definition(L);
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_update_local_position(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
 	auto x = luaL_checknumber(L, 2);
 	auto y = luaL_checknumber(L, 3);
 	auto z = luaL_checknumber(L, 4);
 
-	node.update_local_position(glm::vec3(x, y, z));
+	node->update_local_position(glm::vec3(x, y, z));
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_update_local_direction(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
 	auto x = luaL_checknumber(L, 2);
 	auto y = luaL_checknumber(L, 3);
 	auto z = luaL_checknumber(L, 4);
 
-	node.update_local_direction(glm::vec3(x, y, z));
+	node->update_local_direction(glm::vec3(x, y, z));
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_init_emitters_from_def(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
-	auto def = sol::stack::get<sol::table>(L, 2);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	auto def = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, 2, nbunny::lua::TemporaryReference());
 
-	node.set_emitters(L, def);
+	node->set_emitters(L, def);
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_init_paths_from_def(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
-	auto def = sol::stack::get<sol::table>(L, 2);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	auto def = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, 2, nbunny::lua::TemporaryReference());
 
-	node.set_paths(L, def);
+	node->set_paths(L, def);
 
 	return 0;
 }
 
 int nbunny_particle_scene_node_init_emission_strategy_from_def(lua_State* L)
 {
-	auto& node = sol::stack::get<nbunny::ParticleSceneNode&>(L, 1);
-	auto def = sol::stack::get<sol::table>(L, 2);
+	auto node = nbunny::lua::get<nbunny::ParticleSceneNode*>(L, 1);
+	auto def = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, 2, nbunny::lua::TemporaryReference());
 
-	node.set_emission_strategy(L, def);
+	node->set_emission_strategy(L, def);
 
 	return 0;
 }
@@ -1042,21 +1262,22 @@ int nbunny_particle_scene_node_init_emission_strategy_from_def(lua_State* L)
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_particlescenenode(lua_State* L)
 {
-	auto T = (sol::table(nbunny::get_lua_state(L), sol::create)).new_usertype<nbunny::ParticleSceneNode>("NParticleSceneNode",
-		sol::base_classes, sol::bases<nbunny::SceneNode>(),
-		sol::call_constructor, sol::factories(&nbunny_scene_node_create<nbunny::ParticleSceneNode>),
-		"frame", &nbunny::ParticleSceneNode::frame,
-		"initParticleSystemFromDef", &nbunny_particle_scene_node_init_particle_system_from_def,
-		"clear", &nbunny::ParticleSceneNode::clear,
-		"initEmittersFromDef", &nbunny_particle_scene_node_init_emitters_from_def,
-		"initPathsFromDef", &nbunny_particle_scene_node_init_paths_from_def,
-		"initEmissionStrategyFromDef", &nbunny_particle_scene_node_init_emission_strategy_from_def,
-		"updateLocalPosition", &nbunny_particle_scene_node_update_local_position,
-		"updateLocalDirection", &nbunny_particle_scene_node_update_local_direction,
-		"pause", &nbunny::ParticleSceneNode::pause,
-		"play", &nbunny::ParticleSceneNode::play,
-		"getIsPlaying", &nbunny::ParticleSceneNode::get_is_playing);
-	sol::stack::push(L, T);
+	const luaL_Reg metatable[] = {
+		{ "initParticleSystemFromDef", &nbunny_particle_scene_node_init_particle_system_from_def },
+		{ "clear", &nbunny_particle_scene_node_clear },
+		{ "initEmittersFromDef", &nbunny_particle_scene_node_init_emitters_from_def },
+		{ "initPathsFromDef", &nbunny_particle_scene_node_init_paths_from_def },
+		{ "initEmissionStrategyFromDef", &nbunny_particle_scene_node_init_emission_strategy_from_def },
+		{ "updateLocalPosition", &nbunny_particle_scene_node_update_local_position },
+		{ "updateLocalDirection", &nbunny_particle_scene_node_update_local_direction },
+		{ "emit", &nbunny_particle_scene_node_emit },
+		{ "pause", &nbunny_particle_scene_node_pause },
+		{ "play", &nbunny_particle_scene_node_play },
+		{ "getIsPlaying", &nbunny_particle_scene_node_get_is_playing },
+		{ nullptr, nullptr }
+	};
+
+	nbunny::lua::register_child_type<nbunny::ParticleSceneNode, nbunny::SceneNode>(L, &nbunny_scene_node_constructor<nbunny::ParticleSceneNode>, metatable);
 
 	return 1;
 }

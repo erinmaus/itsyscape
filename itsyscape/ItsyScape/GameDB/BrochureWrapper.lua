@@ -177,15 +177,17 @@ function BrochureWrapper:actionDefinitions()
 end
 
 function BrochureWrapper:tryGetAction(id, action)
+	action = action or Mapp.Action()
+
 	id = id.value
 
 	local r = self.actions[id]
 	if r then
 		action.id = r.action.id
-		return true
+		return true, action
 	end
 
-	return false
+	return false, nil
 end
 
 function BrochureWrapper:getActionDefinitionFromAction(action)

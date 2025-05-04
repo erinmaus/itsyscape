@@ -9,10 +9,11 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
-local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
-local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 
 local CanQueuePower = B.Node("CanQueuePower")
+CanQueuePower.PEEP = B.Reference()
 CanQueuePower.POWER = B.Reference()
 
 function CanQueuePower:update(mashina, state, executor)
@@ -24,12 +25,39 @@ function CanQueuePower:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local coolDown = mashina:getBehavior(PowerCoolDownBehavior)
-	if coolDown then
-		local time = coolDown.powers[powerResource.id.value]
-		if time and time > love.timer.getTime() then
-			return B.Status.Failure
+	local PowerType = Utility.Peep.getPowerType(powerResource, gameDB)
+	if not PowerType then
+		return B.Status.Failure
+	end
+
+	local peep = state[self.PEEP] or mashina
+
+	local status = peep:getBehavior(CombatStatusBehavior)
+	if not status then
+		return B.Status.Failure
+	end
+
+	local isRecharging
+	do
+		local recharge = peep:getBehavior(PowerRechargeBehavior)
+		if recharge and (recharge.powers[powerResource.name] or 0) > 0 then
+			isRecharging = true
+		else
+			isRecharging = false
 		end
+	end
+
+	if isRecharging then
+		return B.Status.Failure
+	end
+
+	local zeal = math.floor(status.currentZeal * 100)
+
+	local power = PowerType(peep:getDirector():getGameInstance(), powerResource)
+	local zealCost = math.floor(power:getCost(peep) * 100)
+
+	if zealCost > zeal then
+		return B.Status.Failure
 	end
 
 	return B.Status.Success

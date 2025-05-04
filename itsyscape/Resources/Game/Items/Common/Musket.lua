@@ -53,7 +53,7 @@ function Musket:probe(ray, peep, target)
 			return false
 		end
 
-		if not Utility.Peep.isAttackable(p) then
+		if not Utility.Peep.canPeepAttackTarget(peep, p) then
 			return false
 		end
 

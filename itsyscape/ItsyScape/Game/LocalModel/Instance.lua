@@ -35,6 +35,8 @@ function Instance.Map:new(layer, map, tileSetID, maskID, meta)
 	self.maskID = maskID
 	self.meta = meta
 	self.transform = { n = 0 }
+	self.linksByMap = {}
+	self.linksByLayer = {}
 end
 
 function Instance.Map:getLayer()
@@ -66,6 +68,33 @@ end
 
 function Instance.Map:getTransform()
 	return unpack(self.transform, 1, self.transform.n)
+end
+
+function Instance.Map:addLink(otherMap)
+	if not self.linksByMap[otherMap:getLayer()] then
+		self.linksByMap[otherMap:getLayer()] = otherMap
+		table.insert(self.linksByLayer, otherMap:getLayer())
+	end
+end
+
+function Instance.Map:removeLink(otherMap)
+	if self.linksByMap[otherMap:getLayer()] then
+		self.linksByMap[otherMap:getLayer()] = nil
+
+		for i = #self.linksByLayer, 1, -1 do
+			if self.linksByLayer[i] == otherMap:getLayer() then
+				table.remove(self.linksByLayer, i)
+			end
+		end
+	end
+end
+
+function Instance.Map:getLinksByMap()
+	return self.linksByMap
+end
+
+function Instance.Map:getLinksByLayer()
+	return self.linksByLayer
 end
 
 Instance.MapScript = Class()
@@ -225,16 +254,21 @@ function Instance:new(id, filename, stage)
 	self.layersByID = {}
 	self.layersPendingRemovalByID = {}
 	self.mapScripts = {}
+	self.mapGroups = {}
+	self.layerToMapGroup = {}
+	self.currentMapGroup = 1
+	self.mapLinks = {}
 
 	self.players = {}
 	self.playersByID = {}
+	self.playerArguments = {}
 	self.orphans = {}
 
 	self.maps = {}
 
-	self.onPlayerEnter = Callback()
-	self.onPlayerLeave = Callback()
-	self.onUnload = Callback()
+	self.onPlayerEnter = Callback(false)
+	self.onPlayerLeave = Callback(false)
+	self.onUnload = Callback(false)
 
 	self._onLoadMap = function(_, map, layer, tileSetID, maskID, meta)
 		if self:hasLayer(layer, true) then
@@ -334,9 +368,60 @@ function Instance:new(id, filename, stage)
 	end
 	stage.onMapMoved:register(self._onMapMoved)
 
+	self._onMapLinked = function(_, layer, otherLayer)
+		if self:hasLayer(layer, true) and self:hasLayer(otherLayer, true) then
+			Log.engine(
+				"Linked layer %d to other layer %d in instance %s (%d).",
+				layer,
+				otherLayer,
+				self:getFilename(),
+				self:getID())
+
+			local map = self.maps[layer]
+			local otherMap = self.maps[otherLayer]
+			if map and otherMap then
+				map:addLink(otherMap)
+			end
+		else
+			Log.engine(
+				"Did not link layer %d to other layer %d in instance %s (%d); layer and/or other layer is not in instance.",
+				layer,
+				otherLayer,
+				self:getFilename(),
+				self:getID())
+		end
+	end
+	stage.onMapLinked:register(self._onMapLinked)
+
+	self._onMapUnlinked = function(_, layer, otherLayer)
+		if self:hasLayer(layer, true) and self:hasLayer(otherLayer, true) then
+			Log.engine(
+				"Unlinked layer %d to other layer %d in instance %s (%d).",
+				layer,
+				otherLayer,
+				self:getFilename(),
+				self:getID())
+
+			local map = self.maps[layer]
+			local otherMap = self.maps[otherLayer]
+			if map and otherMap then
+				map:removeLink(otherMap)
+			end
+		else
+			Log.engine(
+				"Did not unlink layer %d to other layer %d in instance %s (%d); layer and/or other layer is not in instance.",
+				layer,
+				otherLayer,
+				self:getFilename(),
+				self:getID())
+		end
+	end
+	stage.onMapUnlinked:register(self._onMapUnlinked)
+
 	self.actors = {}
 	self.actorsByID = {}
 	self.actorsPendingRemoval = {}
+	self.actorsPendingRemovalByID = {}
 
 	self._onActorSpawned = function(_, actorID, actor)
 		if self:hasActor(actor) then
@@ -367,6 +452,10 @@ function Instance:new(id, filename, stage)
 				"Pending removal of actor '%s' (resource/peep ID = %s, ID = %d) in instance %s (%d).",
 				actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
 			table.insert(self.actorsPendingRemoval, { actor = actor, ticks = isMoving and 0 or Instance.UNLOAD_TICK_DELAY })
+
+			if not isMoving then
+				self.actorsPendingRemovalByID[actor:getID()] = actor
+			end
 		else
 			Log.engine(
 				"Did not try to remove actor '%s' (resource/peep ID = %s, ID = %d) from instance %s (%d); actor not in instance.",
@@ -378,6 +467,7 @@ function Instance:new(id, filename, stage)
 	self.props = {}
 	self.propsByID = {}
 	self.propsPendingRemoval = {}
+	self.propsPendingRemovalByID = {}
 
 	self._onPropPlaced = function(_, propID, prop)
 		if self:hasProp(prop) then
@@ -408,6 +498,7 @@ function Instance:new(id, filename, stage)
 				"Pending removal of prop '%s' (resource/peep ID = %s, ID = %d) in instance %s (%d).",
 				prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
 			table.insert(self.propsPendingRemoval, { prop = prop, ticks = isMoving and 0 or Instance.UNLOAD_TICK_DELAY })
+			self.propsPendingRemovalByID[prop:getID()] = prop
 		else
 			Log.engine(
 				"Did not try to remove prop '%s' (resource/peep ID = %s, ID = %d) from instance %s (%d); prop not in instance.",
@@ -704,6 +795,8 @@ function Instance:unload()
 	self.stage.onUnloadMap:unregister(self._onUnloadMap)
 	self.stage.onMapModified:unregister(self._onMapModified)
 	self.stage.onMapMoved:unregister(self._onMapMoved)
+	self.stage.onMapLinked:unregister(self._onMapLinked)
+	self.stage.onMapUnlinked:unregister(self._onMapUnlinked)
 	self.stage.onActorSpawned:unregister(self._onActorSpawned)
 	self.stage.onActorKilled:unregister(self._onActorKilled)
 	self.stage.onPropPlaced:unregister(self._onPropPlaced)
@@ -791,11 +884,44 @@ function Instance:hasLayer(layer, player)
 	end
 end
 
-function Instance:addLayer(layer, player)
-	if not self:hasLayer(layer, true) then
+function Instance:newMapGroup()
+	local result = self.currentMapGroup
+	self.currentMapGroup = self.currentMapGroup + 1
+
+	self.mapGroups[result] = {}
+
+	return result
+end
+
+function Instance:getMapGroup(layer)
+	return self.layerToMapGroup[layer]
+end
+
+function Instance:getGlobalLayerFromLocalLayer(group, index)
+	index = index or 1
+
+	if not group then
+		return
+	end
+
+	local g = self.mapGroups[group]
+	if not g then
+		return
+	end
+
+	return g[index]
+end
+
+function Instance:addLayer(layer, group, player)
+	if not self.layersByID[layer] then
 		Log.engine("Adding layer %d to instance %s (%d).", layer, self:getFilename(), self:getID())
 		self.layersByID[layer] = (player and player:getID()) or true
 		table.insert(self.layers, layer)
+
+		if group and self.mapGroups[group] then
+			table.insert(self.mapGroups[group], layer)
+			self.layerToMapGroup[layer] = group
+		end
 	end
 end
 
@@ -813,6 +939,21 @@ function Instance:removeLayer(layer)
 
 			self:removeMapScript(layer)
 
+			local group = self.layerToMapGroup[layer]
+			if group and self.mapGroups[group] then
+				for i, l in ipairs(self.mapGroups[group]) do
+					if l == layer then
+						table.remove(self.mapGroups[group], i)
+						break
+					end
+				end
+
+				if #self.mapGroups[group] == 0 then
+					self.mapGroups[group] = nil
+				end
+			end
+
+			self.layerToMapGroup[layer] = nil
 			break
 		end
 	end
@@ -877,6 +1018,10 @@ function Instance:getMapScriptByMapFilename(filename)
 	return nil
 end
 
+function Instance:getMap(layer)
+	return self.maps[layer]
+end
+
 function Instance:iteratePlayers()
 	return ipairs(self.players)
 end
@@ -889,12 +1034,18 @@ function Instance:hasPlayer(player)
 	return self.playersByID[player:getID()] ~= nil
 end
 
+function Instance:getPlayerArguments(player)
+	return self:hasPlayer() and self.playerArguments[player:getID()]
+end
+
 function Instance:addPlayer(player, e)
 	if not self:hasPlayer(player) then
 		Log.info("Adding player '%s' (%d) to instance %s (%d).", (player:getActor() and player:getActor():getName()) or "<pending>", player:getID(), self:getFilename(), self:getID())
 
 		table.insert(self.players, player)
 		self.playersByID[player:getID()] = player
+		self.playerArguments[player:getID()] = e.arguments or {}
+
 		self:_addPlayerToInstance(player, e)
 
 		if not self.partyLeader then
@@ -908,8 +1059,10 @@ function Instance:addPlayer(player, e)
 	return false
 end
 
-function Instance:removePlayer(player)
+function Instance:removePlayer(player, e)
 	self.playersByID[player:getID()] = nil
+	self.playerArguments[player:getID()] = nil
+
 	for i = 1, #self.players do
 		if self.players[i]:getID() == player:getID() then
 			Log.info("Removing player '%s' (%d) from instance %s (%d).", (player:getActor() and player:getActor():getName()) or "<pending>", player:getID(), self:getFilename(), self:getID())
@@ -920,7 +1073,7 @@ function Instance:removePlayer(player)
 				self.partyLeader = nil
 			end
 
-			self:_removePlayerFromInstance(player)
+			self:_removePlayerFromInstance(player, e)
 
 			return true
 		end
@@ -992,7 +1145,7 @@ function Instance:_addPlayerToInstance(player, e)
 			local mapScript = self:getMapScriptByLayer(layer)
 			if mapScript then
 				local function onPlayerEnter()
-					mapScript:pushPoke('playerEnter', player)
+					mapScript:pushPoke('playerEnter', player, e and e.arguments or {})
 					mapScript:silence('finalize', onPlayerEnter)
 				end
 
@@ -1017,7 +1170,7 @@ function Instance:_clearInstancedActors(player)
 			if Utility.Peep.isInstancedToPlayer(actorPeep, player) then
 				local follower = actorPeep:getBehavior(FollowerBehavior)
 				if not follower or (not follower.followAcrossMaps and follower.playerID == player:getID()) then
-					Log.engine(
+					Log.info(
 						"Clearing instanced actor '%s' (%d) for player %s (%d).",
 						actor:getName(), actor:getID(),
 						(player:getActor() and player:getActor():getName()) or "<poofed player>", player:getID())
@@ -1112,7 +1265,7 @@ function Instance:_clearInstancedMaps(player)
 	end
 end
 
-function Instance:_removePlayerFromInstance(player)
+function Instance:_removePlayerFromInstance(player, e)
 	self.orphans[player] = nil
 
 	for i = 1, #self.layers do
@@ -1121,7 +1274,7 @@ function Instance:_removePlayerFromInstance(player)
 			local mapScript = self:getMapScriptByLayer(layer)
 			if mapScript then
 				local function onPlayerLeave()
-					mapScript:pushPoke('playerLeave', player)
+					mapScript:poke('playerLeave', player, e and e.arguments or {})
 					mapScript:silence('finalize', onPlayerLeave)
 				end
 
@@ -1296,14 +1449,14 @@ function Instance:loadPlayer(localGameManager, player)
 				0,
 				"onLoadMap",
 				nil,
-				map, layer, self.maps[layer]:getTileSetID(), self.maps[layer]:getMaskID(), self.maps[layer]:getMeta())
+				self.maps[layer]:getMap(), layer, self.maps[layer]:getTileSetID(), self.maps[layer]:getMaskID(), self.maps[layer]:getMeta())
 			localGameManager:assignTargetToLastPush(player)
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
 				0,
 				"onMapModified",
 				nil,
-				map, layer)
+				self.maps[layer]:getMap(), layer)
 			localGameManager:assignTargetToLastPush(player)
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
@@ -1327,21 +1480,39 @@ function Instance:loadPlayer(localGameManager, player)
 			Log.engine(
 				"Actor '%s' (%d) is not visible to player, no need to re-create.",
 				actor:getName(), actor:getID())
+		elseif self.actorsPendingRemovalByID[actor:getID()] then
+			Log.engine(
+				"Actor '%s' (%d) has been poofed, no need to re-create.",
+				actor:getName(), actor:getID())
 		else
-			localGameManager:pushCreate(
+			local instance = localGameManager:getInstance(
 				"ItsyScape.Game.Model.Actor",
 				actor:getID())
-			localGameManager:assignTargetToLastPush(player)
 
-			localGameManager:pushCallback(
-				"ItsyScape.Game.Model.Stage",
-				0,
-				"onActorSpawned",
-				nil,
-				actor:getPeepID(), actor)
-			localGameManager:assignTargetToLastPush(player)
+			if instance then
+				localGameManager:pushCreate(
+					"ItsyScape.Game.Model.Actor",
+					actor:getID())
+				localGameManager:assignTargetToLastPush(player)
 
-			self:loadActor(localGameManager, player, actor)
+				local instance = localGameManager:getInstance(
+					"ItsyScape.Game.Model.Actor",
+					actor:getID())
+				for _, property in instance:iterateProperties() do
+					instance:updateProperty(property, true)
+					localGameManager:assignTargetToLastPush(player)
+				end
+
+				localGameManager:pushCallback(
+					"ItsyScape.Game.Model.Stage",
+					0,
+					"onActorSpawned",
+					nil,
+					actor:getPeepID(), actor)
+				localGameManager:assignTargetToLastPush(player)
+
+				self:loadActor(localGameManager, player, actor)
+			end
 		end
 	end
 
@@ -1352,21 +1523,36 @@ function Instance:loadPlayer(localGameManager, player)
 			Log.engine(
 				"Prop '%s' (%d) is not visible to player, no need to re-create.",
 				prop:getName(), prop:getID())
+		elseif self.propsPendingRemovalByID[prop:getID()] then
+			Log.engine(
+				"Prop '%s' (%d) has been poofed, no need to re-create.",
+				prop:getName(), prop:getID())
 		else
-			localGameManager:pushCreate(
+			local instance = localGameManager:getInstance(
 				"ItsyScape.Game.Model.Prop",
 				prop:getID())
-			localGameManager:assignTargetToLastPush(player)
 
-			localGameManager:pushCallback(
-				"ItsyScape.Game.Model.Stage",
-				0,
-				"onPropPlaced",
-				nil,
-				self.stage:lookupPropAlias(prop:getPeepID()), prop)
-			localGameManager:assignTargetToLastPush(player)
+			if instance then
+				localGameManager:pushCreate(
+					"ItsyScape.Game.Model.Prop",
+					prop:getID())
+				localGameManager:assignTargetToLastPush(player)
 
-			self:loadProp(localGameManager, player, prop)
+				for _, property in instance:iterateProperties() do
+					instance:updateProperty(property, true)
+					localGameManager:assignTargetToLastPush(player)
+				end
+
+				localGameManager:pushCallback(
+					"ItsyScape.Game.Model.Stage",
+					0,
+					"onPropPlaced",
+					nil,
+					self.stage:lookupPropAlias(prop:getPeepID()), prop)
+				localGameManager:assignTargetToLastPush(player)
+
+				self:loadProp(localGameManager, player, prop)
+			end
 		end
 
 		Log.engine("Restored prop '%s' (%s).", prop:getName(), prop:getPeepID())
@@ -1471,6 +1657,14 @@ function Instance:loadPlayer(localGameManager, player)
 				player:getActor():getID())
 			localGameManager:assignTargetToLastPush(otherPlayer)
 
+			local instance = localGameManager:getInstance(
+				"ItsyScape.Game.Model.Actor",
+				player:getActor():getID())
+			for _, property in instance:iterateProperties() do
+				instance:updateProperty(property, true)
+				localGameManager:assignTargetToLastPush(otherPlayer)
+			end
+
 			localGameManager:pushCallback(
 				"ItsyScape.Game.Model.Stage",
 				0,
@@ -1512,7 +1706,7 @@ function Instance:loadActor(localGameManager, player, actor)
 					actor:getID(),
 					event:getCallbackName(),
 					nil,
-					v.value:get())
+					unpack(v.value.arguments, 1, v.value.n))
 				localGameManager:assignTargetToLastPush(player)
 
 				Log.engine("Restoring property %s via callback %s.", field:getKey(), event:getCallbackName())
@@ -1576,6 +1770,7 @@ function Instance:cleanup()
 			end
 
 			table.remove(self.actorsPendingRemoval, i)
+			self.actorsPendingRemovalByID[actor:getID()] = nil
 		end
 	end
 
@@ -1596,6 +1791,7 @@ function Instance:cleanup()
 			end
 
 			table.remove(self.propsPendingRemoval, i)
+			self.propsPendingRemovalByID[prop:getID()] = nil
 		end
 	end
 

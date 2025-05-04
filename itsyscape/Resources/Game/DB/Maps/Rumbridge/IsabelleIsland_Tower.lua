@@ -9,6 +9,214 @@
 --------------------------------------------------------------------------------
 
 do
+	local Knight = ItsyScape.Resource.Peep "IsabelleIsland_Knight"
+
+	ItsyScape.Resource.Peep "IsabelleIsland_Knight" {
+		ItsyScape.Action.InvisibleAttack()
+	}
+
+	ItsyScape.Meta.PeepCharacter {
+		Peep = Knight,
+		Character = ItsyScape.Resource.Character "VizierRockKnight"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.Guard",
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Vizier Rock knight",
+		Language = "en-US",
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A knight from Vizier's Rock belonging to Vizier-King Yohn's personal guard. Lady Isabelle is obviously well connected.",
+		Language = "en-US",
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 99,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantPlatebody",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantBoots",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantGloves",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantHelmet",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AdamantLongsword",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantShield",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GoldenRing",
+		Count = 1,
+		Resource = Knight
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GoldenAmulet",
+		Count = 1,
+		Resource = Knight
+	}
+end
+
+do
+	local KnightCommander = ItsyScape.Resource.Peep "IsabelleIsland_KnightCommander"
+
+	ItsyScape.Resource.Peep "IsabelleIsland_KnightCommander" {
+		ItsyScape.Action.InvisibleAttack()
+	}
+
+	ItsyScape.Meta.PeepCharacter {
+		Peep = KnightCommander,
+		Character = ItsyScape.Resource.Character "VizierRockKnight"
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ViziersRock.SerCommander",
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Ser Commander",
+		Language = "en-US",
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Being a Vizier-Rock knight is the goal of any knight of the Realm, but to be a commander of the Vizier-Rock knights is an accomplishment that raises families to nobility. Too bad humility isn't a part of the job.",
+		Language = "en-US",
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(45),
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 99,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantPlatebody",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantBoots",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantGloves",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "AdamantLongsword",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "TrimmedAdamantShield",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GoldenRing",
+		Count = 1,
+		Resource = KnightCommander
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "GoldenAmulet",
+		Count = 1,
+		Resource = KnightCommander
+	}
+end
+
+do
 	local TalkAction = ItsyScape.Action.Talk()
 
 	ItsyScape.Resource.Peep "IsabelleIsland_IsabelleNice" {
@@ -98,6 +306,30 @@ do
 	ItsyScape.Meta.ResourceDescription {
 		Language = "en-US",
 		Value = "But she was so nice!",
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumGloves",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumBoots",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumPlatebody",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumHelmet",
+		Count = 1,
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_IsabelleMean"
 	}
 
@@ -370,6 +602,24 @@ do
 		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
 	}
 
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumGloves",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumBoots",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
+	ItsyScape.Meta.PeepEquipmentItem {
+		Item = ItsyScape.Resource.Item "IsabelliumPlatebody",
+		Count = 1,
+		Resource = ItsyScape.Resource.Peep "IsabelleIsland_Orlando"
+	}
+
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Constitution",
 		Value = ItsyScape.Utility.xpForLevel(100),
@@ -499,5 +749,275 @@ do
 	ItsyScape.Meta.ItemValueUserdata {
 		Resource = Milk,
 		Value = ItsyScape.Utility.valueForItem(6)
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's desk",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A desk made from the remains of a young dragon... Is this just a display of Isabelle's cruelty or vanity?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Armoire_Isabelle" {
+		ItsyScape.Action.Dresser_Search()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicDresserProp",
+		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 4,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's armoire",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fancier way of saying wardrobe. Wonder what's inside..? Probably a bunch of pink dresses...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Armoire_Isabelle"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle" {
+		ItsyScape.Action.Sleep()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 3,
+		SizeZ = 3.5,
+		MapObject = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's bed",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's one expensive looking bed...",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Bed_FourPoster_Isabelle"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "ComfyChair_Isabelle" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 2,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's desk chair",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Of course Isabelle could afford such a comfy chair.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Chest_Isabelle" {
+		ItsyScape.Action.Dresser_Search()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicChest",
+		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 1.5,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle's chest",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "I bet that won't open easily... But if you do manage... there might be something valuable in there!",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Chest_Isabelle"
+	}
+end
+
+do
+	ItsyScape.Resource.Prop "Lamp_IsabelleTower" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 0.5,
+		SizeY = 0.5,
+		SizeZ = 0.5,
+		MapObject = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Lamp",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Lights the way.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
+	}
+end
+
+do
+	local FurnaceAction = ItsyScape.Action.OpenCraftWindow()
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Metal",
+		ActionType = "Smelt",
+		Action = FurnaceAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Smelt",
+		XProgressive = "Smelting",
+		Language = "en-US",
+		Action = FurnaceAction
+	}
+
+	ItsyScape.Resource.Prop "Furnace_Isabelle" {
+		FurnaceAction,
+		ItsyScape.Action.UseCraftWindow()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFurnace",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Dragon skull furnace",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A magical furnace made from a dragon's skull with a scorching, immortal flame. A needless and cruel display of wealth.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+end
+
+do
+	local CraftAction = ItsyScape.Action.OpenCraftWindow()
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Wood",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		XProgressive = "Crafting",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Prop "WoodworkingBench_Isabelle" {
+		CraftAction,
+		ItsyScape.Action.UseCraftWindow()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFurnace",
+		Resource = ItsyScape.Resource.Prop "WoodworkingBench_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "WoodworkingBench_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite woodworking bench",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "WoodworkingBench_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A woodworking bench of incredible craftmanship, made from the finest wood money can buy.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "WoodworkingBench_Isabelle"
 	}
 end

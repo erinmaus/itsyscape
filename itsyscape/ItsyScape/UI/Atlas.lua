@@ -13,13 +13,15 @@ local Atlas = Class()
 Atlas.STALE_LIMIT_SECONDS = 10
 
 Atlas.Image = Class()
-function Atlas.Image:new(texture)
+function Atlas.Image:new(texture, staleLimit)
 	self.texture = texture
 	self.x = 0
 	self.y = 0
 	self.time = itsyrealm.graphics.getTime()
+	self.staleLimit = staleLimit
 	self.layer = 0
 	self.key = false
+	self.isStale = false
 end
 
 function Atlas.Image:getWidth()
@@ -60,9 +62,13 @@ function Atlas.Image:reset(key)
 	return false
 end
 
+function Atlas.Image:forceStale()
+	self.isStale = true
+end
+
 function Atlas.Image:stale()
 	local currentTime = itsyrealm.graphics.getTime()
-	return currentTime > self.time + Atlas.STALE_LIMIT_SECONDS
+	return self.isStale or currentTime > self.time + self.staleLimit
 end
 
 function Atlas.Image:setQuad(quad)
@@ -249,21 +255,26 @@ end
 
 function Atlas.Layer:update()
 	for _, rectangle in ipairs(self.pendingUpdates) do
+		love.graphics.setColor(0, 0, 0, 0)
+		love.graphics.rectangle("fill", rectangle.i * self.cellSize, rectangle.j * self.cellSize, rectangle.width * self.cellSize, rectangle.height * self.cellSize)
+		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.draw(rectangle.image:getTexture(), rectangle.i * self.cellSize, rectangle.j * self.cellSize)
 	end
 
 	table.clear(self.pendingUpdates)
 end
 
-function Atlas:new(width, height, cellSize)
+function Atlas:new(width, height, cellSize, staleLimit)
 	self.images = {}
 	self.handles = {}
+	self.layers = {}
+
 	self.width = width
 	self.height = height
 	self.cellWidth = math.floor(self.width / cellSize)
 	self.cellHeight = math.floor(self.height / cellSize)
 	self.cellSize = cellSize
-	self.layers = {}
+	self.staleLimit = staleLimit or Atlas.STALE_LIMIT_SECONDS
 end
 
 function Atlas:getWidth()
@@ -305,7 +316,7 @@ function Atlas:add(handle, image, key)
 
 	if not self:has(handle) then
 		table.insert(self.images, handle)
-		local wrappedImage = Atlas.Image(image)
+		local wrappedImage = Atlas.Image(image, self.staleLimit)
 		self.handles[handle] = wrappedImage
 
 		if key then
@@ -345,11 +356,38 @@ end
 function Atlas:replace(handle, image)
 	if self:has(handle) then
 		local wrappedImage = self.handles[handle]
-		wrappedImage:replace(image)
-		wrappedImage:update()
+		if not image then
+			wrappedImage:forceStale()
+		else
+			local currentWidth = wrappedImage:getTexture():getWidth()
+			local currentHeight = wrappedImage:getTexture():getHeight()
+			local newWidth = image:getWidth()
+			local newHeight = image:getWidth()
 
-		local layer = wrappedImage:getLayer()
-		self.layers[layer]:replace(wrappedImage)
+			if newWidth > currentWidth or newHeight > currentHeight then
+				wrappedImage:forceStale()
+
+				for i = #self.images, 1, -1 do
+					local h = self.images[i]
+					local w = self.handles[h]
+
+					if h == handle then
+						self.layers[w:getLayer()]:remove(w)
+
+						table.remove(self.images, i)
+						self.handles[handle] = nil
+					end
+				end
+
+				self:add(handle, image)
+			else
+				wrappedImage:replace(image)
+				wrappedImage:update()
+
+				local layer = wrappedImage:getLayer()
+				self.layers[layer]:replace(wrappedImage)
+			end
+		end
 	end
 end
 
@@ -359,10 +397,26 @@ function Atlas:quad(handle)
 	end
 end
 
+function Atlas:coordinates(handle)
+	if self:has(handle) then
+		local quad = self.handles[handle]:getQuad()
+		local x, y, w, h = quad:getViewport()
+
+		local left = x / self.width
+		local right = (x + w) / self.width
+		local top = y / self.height
+		local bottom = (y + h) / self.height
+
+		return left, right, top, bottom
+	end
+end
+
 function Atlas:layer(handle)
 	if self:has(handle) then
 		return self.handles[handle]:getLayer()
 	end
+
+	assert(false, "WTF")
 end
 
 function Atlas:texture(handle)
@@ -397,8 +451,7 @@ function Atlas:update()
 	end
 
 	love.graphics.push("all")
-	love.graphics.setBlendMode("replace")
-	love.graphics.setCanvas(canvas)
+	love.graphics.setBlendMode("replace", "premultiplied")
 	love.graphics.origin()
 	love.graphics.setScissor()
 	love.graphics.setColor(1, 1, 1, 1)

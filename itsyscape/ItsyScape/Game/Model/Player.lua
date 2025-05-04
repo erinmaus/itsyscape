@@ -14,11 +14,13 @@ local Player = Class()
 
 -- Constructs a new player.
 function Player:new()
-	self.onChangeCamera = Callback()
-	self.onPokeCamera = Callback()
-	self.onSave = Callback()
-	self.onLeave = Callback()
-	self.onMove = Callback()
+	self.onChangeCamera = Callback(false)
+	self.onPokeCamera = Callback(false)
+	self.onPushCamera = Callback(false)
+	self.onPopCamera = Callback(false)
+	self.onSave = Callback(false)
+	self.onLeave = Callback(false)
+	self.onMove = Callback(false)
 end
 
 -- Gets the Actor this Player is represented by.
@@ -38,6 +40,10 @@ end
 
 -- Returns the Actor that is the combat target of the player, false otherwise.
 function Player:getTarget()
+	return Class.ABSTRACT()
+end
+
+function Player:getOffensiveRange()
 	return Class.ABSTRACT()
 end
 

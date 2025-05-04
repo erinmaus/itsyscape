@@ -1,5 +1,6 @@
 .DS_Store
 razmatazz/
+build/
 workspace/
 /tools
 design/
@@ -15,3 +16,7 @@ itsyscape-android/
 itsyrealm.love
 cmake*
 itsyscape/version.meta
+itsyscape/.tone
+itsyscape/Resources/Game/Dialog/*/Dialog.json
+itsyscape/Resources/Game/TileSets/*/Cache/
+*.mapmesh

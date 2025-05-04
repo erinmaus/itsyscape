@@ -9,7 +9,6 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
-local PowerCoolDownBehavior = require "ItsyScape.Peep.Behaviors.PowerCoolDownBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 
 local HasBuff = B.Node("HasBuff")

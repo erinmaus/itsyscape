@@ -19,10 +19,15 @@ local Interface = Class(Widget)
 function Interface:new(id, index, view)
 	Widget.new(self)
 
-	self.id = id
 	self.index = index
 	self.view = view
 	self.onClose = Callback()
+
+	self:setID(id)
+end
+
+function Interface:attach()
+	-- Nothing.
 end
 
 -- Gets the UI model this interface belongs to.
@@ -35,14 +40,13 @@ function Interface:getView()
 	return self.view
 end
 
--- Gets the interface ID.
-function Interface:getID()
-	return self.id
-end
-
 -- Gets the index of the interface.
 function Interface:getIndex()
 	return self.index
+end
+
+function Interface:tick()
+	-- Nothing.
 end
 
 -- Called when the interface is poked.
@@ -63,6 +67,11 @@ function Interface:poke(actionID, actionIndex, e)
 	end
 
 	return false
+end
+
+function Interface:focusChild(widget, reason)
+	local inputProvider = self:getView():getInputProvider()
+	inputProvider:setFocusedWidget(widget, reason or "select")
 end
 
 -- Utility to poke the correct Interface via the UI model.

@@ -41,6 +41,8 @@ local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Player = Class(Peep)
 
+Player.Palette = Utility.Peep.Human.Palette
+
 function Player:new(resource, ...)
 	Peep.new(self, ...)
 
@@ -53,6 +55,7 @@ function Player:new(resource, ...)
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1.5, 2, 1.5)
 
+	Utility.Peep.makeCharacter(self)
 	Utility.Peep.makeAttackable(self)
 	Utility.Peep.makeMashina(self)
 	Utility.Peep.makeHuman(self)
@@ -61,16 +64,21 @@ function Player:new(resource, ...)
 	Utility.Peep.addEquipment(self)
 	Utility.Peep.addInventory(self)
 
-	self:addPoke('transferItemTo')
-	self:addPoke('transferItemFrom')
-	self:addPoke('spawnItem')
-	self:addPoke('spawnEquipment')
-	self:addPoke('walk')
-	self:addPoke('fall')
+	self:addPoke("transferItemTo")
+	self:addPoke("transferItemFrom")
+	self:addPoke("spawnItem")
+	self:addPoke("spawnEquipment")
+	self:addPoke("walk")
+	self:addPoke("fall")
+	self:addPoke("movedOutOfBounds")
 
 	Utility.Peep.setResource(self, resource)
 
 	Utility.Peep.makeDummy(self)
+end
+
+function Player:applySkin(...)
+	Utility.Peep.Human.applySkin(self, ...)
 end
 
 function Player:ready(director, game)

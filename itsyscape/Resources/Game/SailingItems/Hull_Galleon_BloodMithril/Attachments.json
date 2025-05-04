@@ -1,0 +1,45 @@
+{
+	"HULL_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Hull_Galleon_BloodMithril/Model.lstatic",
+			"group": "hull.interior",
+			"texture": "Resources/Game/SailingItems/Hull_Galleon_BloodMithril/Texture.png",
+			"shader": "Resources/Shaders/SpecularTriplanarWallhack",
+			"uniforms": [
+				["float", "scape_TriplanarScale", -0.875]
+			],
+			"colorIndex": 1,
+			"outlineThreshold": 0.3,
+			"enableWallHack": true
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Hull_Galleon_BloodMithril/Model.lstatic",
+			"group": "hull.exterior",
+			"texture": "Resources/Game/SailingItems/Hull_Galleon_BloodMithril/Texture.png",
+			"shader": "Resources/Shaders/SpecularTriplanarWallhack",
+			"uniforms": [
+				["float", "scape_TriplanarScale", -0.875]
+			],
+			"colorIndex": 1,
+			"outlineThreshold": 0.3,
+			"enableWallHack": true
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Hull_Galleon_BloodMithril/Model_Stairs.lstatic",
+			"group": "stairs.stern",
+			"texture": "Resources/Game/SailingItems/Hull_Galleon_BloodMithril/Texture.png",
+			"shader": "Resources/Shaders/SpecularTriplanar",
+			"uniforms": [
+				["float", "scape_TriplanarScale", -0.875]
+			],
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Hull_Galleon_BloodMithril/Mask.lstatic",
+			"group": "mask",	
+			"texture": "Resources/Game/SailingItems/Hull_Galleon_BloodMithril/Texture_Mask.png",
+			"isShadowVolume": true
+		}
+	]
+}

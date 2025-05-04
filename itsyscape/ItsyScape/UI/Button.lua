@@ -47,7 +47,7 @@ end
 
 function Button:mouseRelease(x, y, button, ...)
 	if self.isPressed[button] and self.isMouseOver then
-		self.onClick(self, button)
+		self:onClick(button)
 		self:blur()
 	end
 
@@ -57,11 +57,24 @@ function Button:mouseRelease(x, y, button, ...)
 end
 
 function Button:keyUp(key, ...)
-	if key == 'enter' or key == 'space' then
-		self.onClick(self)
+	if key == "enter" or key == "space" then
+		self:onClick("keyboard")
 	end
 
 	Widget.keyUp(self, key, ...)
+end
+
+function Button:gamepadRelease(joystick, button)
+	local inputProvider = self:getInputProvider()
+	if inputProvider and inputProvider:isCurrentJoystick(joystick) then
+		if button == inputProvider:getKeybind("gamepadPrimaryAction") then
+			self:onClick(1)
+		elseif button == inputProvider:getKeybind("gamepadSecondaryAction") then
+			self:onClick(2)
+		end
+	end
+
+	Widget.gamepadRelease(self, joystick, button)
 end
 
 return Button

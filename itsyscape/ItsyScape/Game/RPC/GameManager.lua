@@ -74,7 +74,7 @@ function GameManager.Instance:iterateProperties()
 end
 
 function GameManager.Instance:hasProperty(propertyName)
-	return self.properties[propertyName] ~= nil and self.properties[propertyName]:hasValue()
+	return self.properties[propertyName] ~= nil and self.properties[propertyName]:getHasValue()
 end
 
 function GameManager.Instance:getProperty(propertyName)
@@ -93,7 +93,12 @@ function GameManager.Instance:setProperty(propertyName, ...)
 	property:set(propertyName, ...)
 end
 
-function GameManager.Instance:_updateProperty(property, force)
+function GameManager.Instance:pullProperty(propertyName, field, ...)
+	local property = self.properties[propertyName]
+	property:pull(propertyName, field, ...)
+end
+
+function GameManager.Instance:updateProperty(property, force)
 	local isDirty = property:update(self.instance)
 	if isDirty or force then
 		self.gameManager:pushProperty(
@@ -108,7 +113,7 @@ function GameManager.Instance:update(force)
 	for _, property in ipairs(self.properties) do
 		self.gameManager:getDebugStats():measure(
 			string.format("%s::%s::%s", EventQueue.EVENT_TYPE_PROPERTY, self.interface, property:getField()),
-			self._updateProperty,
+			self.updateProperty,
 			self,
 			property,
 			force)
@@ -116,31 +121,71 @@ function GameManager.Instance:update(force)
 end
 
 GameManager.Property = Class()
-function GameManager.Property:new(instance, field)
-	self._handle = NProperty()
-	self._handle:setField(field)
-	self._handle:setInstanceInterface(instance:getInterface())
-	self._handle:setInstanceID(instance:getID())
+function GameManager.Property:new(instance, field, property)
+	self.instance = instance
+	self.field = field
+	self.property = property
+	self.hasValue = false
 end
 
 function GameManager.Property:getField()
-	return self._handle:getField()
+	return self.field
 end
 
-function GameManager.Property:hasValue()
-	return self._handle:hasValue()
+function GameManager.Property:getHasValue()
+	return self.hasValue
 end
 
 function GameManager.Property:getValue()
-	return self._handle:getValue()
+	return unpack(self.value.arguments, 1, self.n)
+end
+
+local function _isEqual(a, b)
+	if type(a) ~= type(b) then
+		return false
+	end
+
+	if type(a) == "table" then
+		if getmetatable(a) or getmetatable(b) then
+			return a == b
+		end
+
+		for k, v in pairs(a) do
+			if b[k] == nil or not _isEqual(v, b[k]) then
+				return false
+			end
+		end
+
+		for k in pairs(b) do
+			if a[k] == nil then
+				return false
+			end
+		end
+		
+		return true
+	end
+
+	return a == b
 end
 
 function GameManager.Property:update(instance)
-	return self._handle:update(instance[self._handle:getField()](instance))
+	self.hasValue = true
+
+	local oldValue = self.value
+	self.value = { arguments = { self.property:filter(instance[self.field](instance)) } }
+	self.value.n = table.maxn(self.value.arguments)
+	
+	return not _isEqual(self.value, oldValue)
 end
 
-function GameManager.Property:set(instance, ...)
-	self._handle:setValue(...)
+function GameManager.Property:set(instance, value)
+	self.hasValue = true
+	self.value = value
+end
+
+function GameManager.Property:pull(instance, field, e)
+	self.hasValue = true
+	self.value = e[field]
 end
 
 GameManager.PropertyGroup = Class()
@@ -196,16 +241,15 @@ function GameManager.PropertyGroup:findIndexOfKey(key)
 end
 
 function GameManager.PropertyGroup:set(key, ...)
-	local values = NVariant.fromArguments(...)
 	local index, outPrioritized = self:findIndexOfKey(key)
 	if not outPrioritized then
 		if index then
 			self.values[index].key = key
-			self.values[index].value = values
+			self.values[index].value = { n = select("#", ... ), arguments = { ... } }
 		else
 			table.insert(self.values, {
 				key = key,
-				value = values
+				value = { n = select("#", ... ), arguments = { ... } }
 			})
 		end
 
@@ -232,7 +276,8 @@ end
 function GameManager.PropertyGroup:get(key)
 	local index, outPrioritized = self:findIndexOfKey(key)
 	if index then
-		return self.values[index].value:get()
+		local v = self.values[index].value
+		return unpack(v.arguments, 1, v.n)
 	end
 end
 
@@ -246,6 +291,7 @@ function GameManager:new()
 	self.queue = OutgoingEventQueue()
 
 	self.interfaces = {}
+	self.interfaceInstances = {}
 	self.instances = {}
 
 	self.ticks = 0
@@ -267,9 +313,8 @@ function GameManager:registerInterface(interface, Type)
 	assert(Class.isType(result))
 	assert(Class.isDerived(Type, result))
 
-	self.interfaces[interface] = {
-		type = Type
-	}
+	self.interfaces[interface] = { type = Type }
+	self.interfaceInstances[interface] = {}
 end
 
 function GameManager:getInterfaceType(interface)
@@ -320,7 +365,7 @@ function GameManager:processCallback(e)
 		local event = obj[e.callback]
 
 		if Class.isCompatibleType(event, Callback) or type(event) == "function" then
-			event(obj, e:get("value"))
+			event(obj, unpack(e.value.arguments, 1, e.value.n))
 		end
 	end
 end
@@ -334,7 +379,7 @@ function GameManager:processProperty(e)
 	if not instance then
 		Log.engine("'%s' (ID %d) not found; cannot update property '%s'.", e.interface, e.id, e.property)
 	else
-		instance:setProperty(e.property, e:rawget("value"))
+		instance:pullProperty(e.property, "value", e)
 	end
 end
 
@@ -356,7 +401,7 @@ function GameManager:receive()
 end
 
 function GameManager:update()
-	for i = 1, #self.instances do
+	for i = #self.instances, 1, -1 do
 		self.instances[i]:update()
 	end
 end
@@ -369,17 +414,7 @@ function GameManager:getInstance(interface, id)
 end
 
 function GameManager:iterateInstances(interface)
-	local instances = self.interfaces[interface]
-
-	local current = nil
-	return function()
-		current = next(instances, current)
-		while type(current) ~= "number" and type(current) ~= "nil" do
-			current = next(instances, current)
-		end
-
-		return current and instances[current]:getInstance()
-	end
+	return pairs(self.interfaceInstances[interface])
 end
 
 function GameManager:newInstance(interface, id, obj)
@@ -388,6 +423,7 @@ function GameManager:newInstance(interface, id, obj)
 
 	instances[id] = instance
 	table.insert(self.instances, instance)
+	self.interfaceInstances[interface][obj] = id
 
 	return instance
 end
@@ -396,12 +432,15 @@ function GameManager:destroyInstance(interface, id)
 	local instances = self.interfaces[interface]
 	local instance = instances[id]
 
-	instances[id] = nil
+	if instance then
+		instances[id] = nil
+		self.interfaceInstances[interface][instance:getInstance()] = nil
 
-	for i = 1, #self.instances do
-		if self.instances[i] == instance then
-			table.remove(self.instances, i)
-			break
+		for i = 1, #self.instances do
+			if self.instances[i] == instance then
+				table.remove(self.instances, i)
+				break
+			end
 		end
 	end
 end

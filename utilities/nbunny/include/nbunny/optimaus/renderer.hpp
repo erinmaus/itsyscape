@@ -13,6 +13,7 @@
 #ifndef NBUNNY_OPTIMAUS_RENDERER_HPP
 #define NBUNNY_OPTIMAUS_RENDERER_HPP
 
+#include <vector>
 #include "modules/graphics/Shader.h"
 #include "nbunny/optimaus/common.hpp"
 #include "nbunny/optimaus/scene.hpp"
@@ -22,10 +23,17 @@ namespace nbunny
 {
 	enum
 	{
-		RENDERER_PASS_DEFERRED = 1,
-		RENDERER_PASS_FORWARD  = 2,
-		RENDERER_PASS_MOBILE   = 3,
-		RENDERER_PASS_MAX      = 3
+		RENDERER_PASS_NONE             = 0,
+		RENDERER_PASS_DEFERRED         = 1,
+		RENDERER_PASS_FORWARD          = 2,
+		RENDERER_PASS_MOBILE           = 3,
+		RENDERER_PASS_OUTLINE          = 4,
+		RENDERER_PASS_ALPHA_MASK       = 5,
+		RENDERER_PASS_PARTICLE_OUTLINE = 6,
+		RENDERER_PASS_SHADOW           = 7,
+		RENDERER_PASS_REFLECTION       = 8,
+		RENDERER_PASS_SHIMMER          = 9,
+		RENDERER_PASS_MAX              = 9
 	};
 
 	class RendererPass;
@@ -39,7 +47,13 @@ namespace nbunny
 		ShaderCache shader_cache;
 
 		Camera default_camera;
+		Camera skybox_camera;
 		Camera* camera = nullptr;
+
+		std::vector<SceneNode*> all_scene_nodes;
+		std::vector<SceneNode*> visible_scene_nodes;
+		std::vector<SceneNode*> visible_scene_nodes_by_material;
+		std::vector<SceneNode*> visible_scene_nodes_by_position;
 
 		glm::vec4 clear_color = glm::vec4(0.39f, 0.58f, 0.93f, 1);
 
@@ -48,15 +62,34 @@ namespace nbunny
 		love::graphics::Shader* current_shader = nullptr;
 
 		float time = 0.0f;
+		float current_time = 0.0f;
+
+		int current_renderer_pass_id = 0;
+		bool is_clip_enabled = false;
+
+		SceneNode* root_node = nullptr;
+
+		Camera get_skybox_camera(SceneNode& skybox_scene_node);
+
+		bool should_clear = false;
+		bool is_child_renderer = false;
 
 	public:
 		Renderer(int reference);
 		~Renderer() = default;
 
+		const std::vector<SceneNode*>& get_all_scene_nodes() const;
+		const std::vector<SceneNode*>& get_visible_scene_nodes() const;
+		const std::vector<SceneNode*>& get_visible_scene_nodes_by_material() const;
+		const std::vector<SceneNode*>& get_visible_scene_nodes_by_position() const;
+
 		void add_renderer_pass(RendererPass* renderer_pass);
 
 		void set_clear_color(const glm::vec4& color);
 		const glm::vec4& get_clear_color() const;
+
+		void set_is_child_renderer(bool value);
+		bool get_is_child_renderer() const;
 
 		void set_camera(Camera& camera);
 		Camera& get_camera();
@@ -64,9 +97,12 @@ namespace nbunny
 
 		void set_current_shader(love::graphics::Shader* value);
 		love::graphics::Shader* get_current_shader() const;
+		int get_current_pass_id() const;
 
 		ShaderCache& get_shader_cache();
 		const ShaderCache& get_shader_cache() const;
+
+		SceneNode* get_root_node() const;
 
 		virtual void draw(lua_State* L, SceneNode& node, float delta, int width, int height);
 		virtual void draw_node(lua_State* L, SceneNode& node, float delta);
@@ -80,7 +116,7 @@ namespace nbunny
 
 	public:
 		RendererPass(int renderer_pass_id);
-		~RendererPass() = default;
+		virtual ~RendererPass() = default;
 
 		int get_renderer_pass_id() const;
 

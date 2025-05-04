@@ -11,8 +11,8 @@ local Class = require "ItsyScape.Common.Class"
 local Packet = require "ItsyScape.Game.Dialog.Packet"
 
 local SpeakerPacket = Class(Packet)
-function SpeakerPacket:new(executor, speaker)
-	Packet.new(self, executor)
+function SpeakerPacket:new(dialog, speaker)
+	Packet.new(self, dialog)
 	self.speaker = speaker
 end
 

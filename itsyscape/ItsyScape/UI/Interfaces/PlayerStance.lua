@@ -50,9 +50,9 @@ PlayerStance.DESCRIPTION = {
 
 PlayerStance.ACTIVE_STYLE = function(skill, path)
 	local t = {
-		inactive = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Inactive.9.png",
-		hover = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Hover.9.png",
-		pressed = "Resources/Renderers/Widget/Button/SelectedAttackStyle-Pressed.9.png",
+		inactive = "Resources/Game/UI/Buttons/AlternateButtonActive-Default.png",
+		hover = "Resources/Game/UI/Buttons/AlternateButtonActive-Hover.png",
+		pressed = "Resources/Game/UI/Buttons/AlternateButtonActive-Pressed.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 		fontSize = 26,
 		textX = 0.3,
@@ -69,9 +69,9 @@ end
 
 PlayerStance.INACTIVE_STYLE = function(skill, path)
 	local t = {
-		inactive = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Inactive.9.png",
-		hover = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Hover.9.png",
-		pressed = "Resources/Renderers/Widget/Button/UnselectedAttackStyle-Pressed.9.png",
+		inactive = "Resources/Game/UI/Buttons/ButtonActive-Default.png",
+		hover = "Resources/Game/UI/Buttons/ButtonActive-Hover.png",
+		pressed = "Resources/Game/UI/Buttons/ButtonActive-Pressed.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
 		fontSize = 26,
 		textX = 0.3,
@@ -88,14 +88,6 @@ end
 
 function PlayerStance:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
-
-	self.panel = Panel()
-	self.panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/Default.9.png"
-	}, ui:getResources()))
-	self:addChild(self.panel)
-
-	self.panel:setSize(self:getSize())
 
 	self.buttons = {}
 	local function addButton(stance, name)
@@ -119,28 +111,28 @@ function PlayerStance:new(id, index, ui)
 	addButton(Weapon.STANCE_AGGRESSIVE, "Aggressive")
 	addButton(Weapon.STANCE_CONTROLLED, "Controlled")
 	addButton(Weapon.STANCE_DEFENSIVE, "Defensive")
-	do
-		local button = Button()
+	-- do
+	-- 	local button = Button()
 
-		button.onClick:register(function()
-			for _, interface in self:getView():getInterfaces("ProCombatStatusHUD") do
-				interface:toggleRadialMenu()
-			end
-		end)
-		button:setStyle(ButtonStyle(
-			PlayerStance.INACTIVE_STYLE("Shockwave", "Resources/Game/Powers/%s/Icon.png"),
-			self:getView():getResources()))
-		button:setID("PlayerStance-ToggleHUD")
+	-- 	button.onClick:register(function()
+	-- 		for _, interface in self:getView():getInterfaces("ProCombatStatusHUD") do
+	-- 			interface:toggleRadialMenu()
+	-- 		end
+	-- 	end)
+	-- 	button:setStyle(ButtonStyle(
+	-- 		PlayerStance.INACTIVE_STYLE("Shockwave", "Resources/Game/Powers/%s/Icon.png"),
+	-- 		self:getView():getResources()))
+	-- 	button:setID("PlayerStance-ToggleHUD")
 
-		button:setText("Toggle HUD")
-		button:setToolTip(
-			ToolTip.Header("Toggle HUD"),
-			ToolTip.Text("Toggles the combat HUD on or off."),
-			ToolTip.Text("Alternatively, you can press the 'Player 1 Focus' button (defaults to the tab key)."))
+	-- 	button:setText("Toggle HUD")
+	-- 	button:setToolTip(
+	-- 		ToolTip.Header("Toggle HUD"),
+	-- 		ToolTip.Text("Toggles the combat HUD on or off."),
+	-- 		ToolTip.Text("Alternatively, you can press the 'Player 1 Focus' button (defaults to the tab key)."))
 
-		self:addChild(button)
-		self.buttons.toggleHUD = button
-	end
+	-- 	self:addChild(button)
+	-- 	self.buttons.toggleHUD = button
+	-- end
 	do
 		local button = Button()
 
@@ -151,18 +143,19 @@ function PlayerStance:new(id, index, ui)
 		button:setStyle(ButtonStyle(
 			PlayerStance.INACTIVE_STYLE("Flee", "Resources/Game/UI/Icons/Concepts/%s.png"),
 			self:getView():getResources()))
-		button:setID("PlayerStance-Flee")
+		button:setID("PlayerStance-Yield")
 
-		button:setText("Flee")
+		button:setText("Yield")
 		button:setToolTip(
-			ToolTip.Header("Flee"),
-			ToolTip.Text("Dis-engage in combat with your foe."))
+			ToolTip.Header("Yield"),
+			ToolTip.Text("Disengage from combat with your foe."))
 
 		self:addChild(button)
 		self.buttons.flee = button
 	end
 
 	self:performLayout()
+	self:update(0)
 end
 
 function PlayerStance:performLayout()
@@ -184,11 +177,11 @@ function PlayerStance:performLayout()
 			y = y + buttonHeight + PlayerStance.PADDING
 		end
 
-		self.buttons.toggleHUD:setSize(
-			panelWidth - PlayerStance.PADDING * 2,
-			buttonHeight)
-		self.buttons.toggleHUD:setPosition(PlayerStance.PADDING, y)
-		y = y + buttonHeight + PlayerStance.PADDING
+		-- self.buttons.toggleHUD:setSize(
+		-- 	panelWidth - PlayerStance.PADDING * 2,
+		-- 	buttonHeight)
+		-- self.buttons.toggleHUD:setPosition(PlayerStance.PADDING, y)
+		-- y = y + buttonHeight + PlayerStance.PADDING
 
 		self.buttons.flee:setSize(
 			panelWidth - PlayerStance.PADDING * 2,

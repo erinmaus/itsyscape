@@ -9,10 +9,10 @@
 --------------------------------------------------------------------------------
 
 local debug = require "debug"
-local Log = {}
+local Log = { START = love.timer.getTime() }
 
 function Log.sendError(message, targetStack)
-	if _DEBUG then
+	if _DEBUG or _EDITOR then
 		return
 	end
 
@@ -288,12 +288,14 @@ function Log.print(scope, message)
 		s = ": "
 	end
 
-	local formattedMessage = table.concat({ os.date(), s, message, "\n" }, "")
+	local timestamp = string.format("(%0.6f)", love.timer.getTime() - Log.START)
+
+	local formattedMessage = table.concat({ os.date(), " ", timestamp, s, message, "\n" }, "")
 	Log.write(formattedMessage, scope == "debug" or scope == "engine")
 end
 
 function Log.write(message, writeOnly)
-	if not writeOnly or (_CONF and _CONF.server) then
+	if not writeOnly or (_CONF and _CONF.server) or _LOG_WRITE_ALL then
 		io.stderr:write(message)
 	end
 

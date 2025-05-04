@@ -530,14 +530,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Fire",
+		Key = "CookingMethodFire",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedSardine"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedSardine"
 	}
 
@@ -675,14 +675,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Fire",
+		Key = "CookingMethodFire",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedSeaBass"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedSeaBass"
 	}
 
@@ -936,14 +936,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Fire",
+		Key = "CookingMethodFire",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedCoelacanth"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedCoelacanth"
 	}
 
@@ -1378,14 +1378,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Fire",
+		Key = "CookingMethodFire",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedBass"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedBass"
 	}
 
@@ -1656,14 +1656,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Fire",
+		Key = "CookingMethodFire",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedAlligatorGar"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedAlligatorGar"
 	}
 
@@ -1917,14 +1917,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Fire",
+		Key = "CookingMethodFire",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedShrimp"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedShrimp"
 	}
 
@@ -2178,14 +2178,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Fire",
+		Key = "CookingMethodFire",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedCrawfish"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedCrawfish"
 	}
 
@@ -2281,7 +2281,7 @@ do
 	}
 
 	ItsyScape.Meta.GatherableProp {
-		Health = 65,
+		Health = 40,
 		SpawnTime = 20,
 		Resource = ItsyScape.Resource.Prop "LightningStormfish_Default"
 	}
@@ -2466,14 +2466,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Fire",
+		Key = "CookingMethodFire",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedLightningStormfish"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedLightningStormfish"
 	}
 
@@ -2568,7 +2568,7 @@ do
 	}
 
 	ItsyScape.Meta.GatherableProp {
-		Health = 45,
+		Health = 35,
 		SpawnTime = 10,
 		Resource = ItsyScape.Resource.Prop "BlackmeltBass_Default"
 	}
@@ -2753,14 +2753,14 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Fire",
+		Key = "CookingMethodFire",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
 	}
 
 	ItsyScape.Meta.ResourceCategory {
-		Key = "CookingMethod",
-		Value = "Range",
+		Key = "CookingMethodRange",
+		Value = "Fish",
 		Resource = ItsyScape.Resource.Item "CookedBlackmeltBass"
 	}
 

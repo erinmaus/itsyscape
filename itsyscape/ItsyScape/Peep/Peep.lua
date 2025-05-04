@@ -30,8 +30,8 @@ Peep.DEFAULT_CHANNEL = 1
 
 function Peep:new(name)
 	self.behaviors = {}
-	self.onBehaviorAdded = Callback()
-	self.onBehaviorRemoved = Callback()
+	self.onBehaviorAdded = Callback(false)
+	self.onBehaviorRemoved = Callback(false)
 
 	-- It's a RollerCoaster Tycoon reference.
 	self.name = name or string.format("Guest %d", Peep.PEEPS_TALLY)
@@ -57,17 +57,18 @@ function Peep:new(name)
 
 	self.state = State()
 
-	self:addPoke('ready')
-	self:addPoke('assign')
-	self:addPoke('move')
-	self:addPoke('finalize')
-	self:addPoke('postReady')
-	self:addPoke('reaper')
-	self:addPoke('poof')
-	self:addPoke('effectAdded')
-	self:addPoke('effectRemoved')
-	self:addPoke('command')
-	self:addPoke('actionPerformed')
+	self:addPoke("ready")
+	self:addPoke("assign")
+	self:addPoke("move")
+	self:addPoke("finalize")
+	self:addPoke("postReady")
+	self:addPoke("reaper")
+	self:addPoke("poof")
+	self:addPoke("effectAdded")
+	self:addPoke("effectRemoved")
+	self:addPoke("command")
+	self:addPoke("actionPerformed")
+	self:addPoke("event")
 end
 
 -- Adds a poke 'name'.
@@ -83,9 +84,9 @@ function Peep:addPoke(name)
 	local preview = "preview" .. base
 
 	if self.pokes[name] == nil then
-		self.pokes[name] = Callback()
-		self.pokes[preview] = Callback()
-		self.pokes[post] = Callback()
+		self.pokes[name] = Callback(false)
+		self.pokes[preview] = Callback(false)
+		self.pokes[post] = Callback(false)
 	end
 
 	return self.pokes[name]
@@ -168,16 +169,21 @@ end
 
 -- Pokes a peep the next update.
 function Peep:pushPoke(a, b, ...)
-	if type(a) == 'number' then
+	if type(a) == "number" and a > 0 then
 		table.insert(self.pendingPokes, {
 			time = love.timer.getTime() + a,
 			callback = b,
-			arguments = { n = select('#', ...), ... }
+			arguments = { n = select("#", ...), ... }
 		})
-	elseif type(a) == 'string' then
+	elseif type(a) == "string" then
 		table.insert(self.pendingPokes, {
 			callback = a,
-			arguments = { n = select('#', b, ...), b, ... }
+			arguments = { n = select("#", b, ...), b, ... }
+		})
+	elseif Class.isCallable(a) then
+		table.insert(self.pendingPokes, {
+			callback = a,
+			arguments = { n = select("#", b, ...), b, ... }
 		})
 	end
 end
@@ -553,7 +559,12 @@ function Peep:update(director, game)
 	while index <= count do
 		local poke = self.pendingPokes[index]
 		if not poke.time or poke.time <= love.timer.getTime() then
-			self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
+			if type(poke.callback) == "string" then
+				self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
+			elseif Class.isCallable(poke.callback) then
+				poke.callback(peep, unpack(poke.arguments, 1, poke.arguments.n))
+			end
+
 			table.remove(self.pendingPokes, index)
 			count = count - 1
 		else

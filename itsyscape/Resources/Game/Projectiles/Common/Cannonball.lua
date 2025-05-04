@@ -119,8 +119,8 @@ end
 
 function Cannonball:tick()
 	if not self.spawnPosition or not self.fallPosition then
-		self.spawnPosition = self:getTargetPosition(self:getSource(), Vector(0, 0, 1.5))
-		self.fallPosition = self:getTargetPosition(self:getDestination())
+		self.spawnPosition = self:getTargetPosition(self:getSource(), Vector(0, 0, 1.5)):keep()
+		self.fallPosition = self:getTargetPosition(self:getDestination()):keep()
 
 		self.duration = math.min((self.spawnPosition - self.fallPosition):getLength() / self.SPEED, 1)
 	end

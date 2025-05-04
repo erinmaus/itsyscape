@@ -35,8 +35,10 @@ function RemoteGameManager:new(rpcService, ...)
 
 	self.rpcService = rpcService
 
-	self.pending = NEventQueue()
-	self.event = NVariant()
+	self.pending = {}
+
+	self.dirtyInstances = {}
+	self.dirtyInstancesCache = {}
 
 	self:registerInterface("ItsyScape.Game.Model.Actor", RemoteActor)
 	self:registerInterface("ItsyScape.Game.Model.Game", RemoteGame)
@@ -44,6 +46,8 @@ function RemoteGameManager:new(rpcService, ...)
 	self:registerInterface("ItsyScape.Game.Model.Player", RemotePlayer)
 	self:registerInterface("ItsyScape.Game.Model.Prop", RemoteProp)
 	self:registerInterface("ItsyScape.Game.Model.UI", RemoteUI)
+
+	self.pendingDestroys = {}
 
 	self.processedTicks = {
 		["ItsyScape.Game.Model.Actor"] = 0,
@@ -74,9 +78,15 @@ function RemoteGameManager:new(rpcService, ...)
 		self:getInstance("ItsyScape.Game.Model.UI", 0):getInstance(),
 		self)
 
-	self.onTick = Callback()
+	self.onTick = Callback(false)
+	self.onFlush = Callback(false)
 
 	self.rpcService:connect(self)
+end
+
+function RemoteGameManager:registerInterface(interfaceID, Type)
+	GameManager.registerInterface(self, interfaceID, Type)
+	self.dirtyInstances[interfaceID] = self.dirtyInstances[interfaceID] or {}
 end
 
 function RemoteGameManager:getRPCService()
@@ -111,13 +121,20 @@ function RemoteGameManager:send()
 	self:getQueue():tick()
 end
 
+local function _sortPending(a, b)
+	return a.__timestamp < b.__timestamp
+end
+
 function RemoteGameManager:receive()
 	local e
 	repeat
 		e = self.rpcService:receive()
 		if e then
-			self.pending:pull(e)
-			if e.type == EventQueue.EVENT_TYPE_TICK then
+			table.insert(self.pending, e)
+
+			if e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY then
+				self:process(e)
+			elseif e.type == EventQueue.EVENT_TYPE_TICK then
 				if e.interface then
 					if self.processedTicks[e.interface] then
 						self.processedTicks[e.interface] = self.processedTicks[e.interface] + 1
@@ -134,14 +151,15 @@ function RemoteGameManager:receive()
 								self.processedTicks[interface] = ticks - 1
 							end
 
-							self.pending:sort("__timestamp")
-							self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
-							self:flush()
+							table.sort(self.pending, _sortPending)
+							self:tick()
+
+							break
 						end
 					end
 				else
-					self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
-					self:flush()
+					self:getDebugStats():measure("RemoteGameManager::tick", self.tick, self)
+					break
 				end
 			end
 		end
@@ -150,25 +168,58 @@ function RemoteGameManager:receive()
 	return false
 end
 
+function RemoteGameManager:tick()
+	self.onTick(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
+	self:flush()
+	self.onFlush(self:getInstance("ItsyScape.Game.Model.Game", 0):getInstance())
+
+	for _, dirtyInstances in pairs(self.dirtyInstances) do
+		table.clear(dirtyInstances)
+	end
+
+	for interface, instances in pairs(self.pendingDestroys) do
+		for id in pairs(instances) do
+			Log.engine("Destroyed '%s' (%d).", interface, id)
+			self:destroyInstance(interface, id)
+		end
+
+		table.clear(instances)
+	end
+
+	table.clear(self.dirtyInstancesCache)
+end
+
 function RemoteGameManager:_flush()
 	local n = 0
-	for i = 1, self.pending:length() do
-		n = n + 1
-		self.pending:get(i - 1, self.event)
-		self:process(self.event)
+	for i = 1, #self.pending do
+		local e = self.pending[i]
+		self:markDirty(e)
 
-		if self.event.type == EventQueue.EVENT_TYPE_TICK then
+		if not (e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY) then
+			self:process(e)
+		end
+
+		if e.type == EventQueue.EVENT_TYPE_TICK then
 			local j = i + 1
-			while self.event.type == EventQueue.EVENT_TYPE_TICK and j <= self.pending:length() do
-				self.pending:get(j - 1, self.event)
+			while e.type == EventQueue.EVENT_TYPE_TICK and j <= #self.pending do
+				e = self.pending[j]
 				j = j + 1
 			end
+
+			n = j
 
 			break
 		end
 	end
 
-	self.pending:clear(n)
+	if n >= #self.pending then
+		table.clear(self.pending)
+	else
+		while n > 0 do
+			table.remove(self.pending, 1)
+			n = n - 1
+		end
+	end
 end
 
 function RemoteGameManager:flush()
@@ -184,10 +235,30 @@ function RemoteGameManager:pushTick()
 	self:send()
 end
 
+function RemoteGameManager:iterateDirty()
+	return ipairs(self.dirtyInstancesCache)
+end
+
+function RemoteGameManager:markDirty(e)
+	if e.interface and e.id and not self.dirtyInstances[e.interface][e.id] then
+		self.dirtyInstances[e.interface][e.id] = true
+		table.insert(self.dirtyInstancesCache, self:getInstance(e.interface, e.id))
+	end
+end
+
 function RemoteGameManager:processCreate(e)
 	local exists = self:getInstance(e.interface, e.id)
 	if exists then
-		Log.debug("Interface '%s' with ID %d already exists; ignoring create.", e.interface, e.id)
+		local pendingInstances = self.pendingDestroys[e.interface]
+		local isPendingDestroy = pendingInstances and pendingInstances[e.id]
+
+		if isPendingDestroy then
+			Log.debug("Interface '%s' with ID %d removed from pending destroy list because of create.", e.interface, e.id)
+			pendingInstances[e.id] = nil
+		else
+			Log.debug("Interface '%s' with ID %d already exists; ignoring create.", e.interface, e.id)
+		end
+
 		return
 	end
 
@@ -205,7 +276,17 @@ function RemoteGameManager:processCreate(e)
 end
 
 function RemoteGameManager:processDestroy(e)
-	self:destroyInstance(e.interface, e.id)
+	local pendingInstances = self.pendingDestroys[e.interface]
+	if not pendingInstances then
+		pendingInstances = {}
+		self.pendingDestroys[e.interface] = pendingInstances
+	end
+
+	local instance = self:getInstance(e.interface, e.id)
+	if instance then
+		Log.engine("Pending destroy of '%s' (%d).", e.interface, e.id)
+		pendingInstances[e.id] = true
+	end
 end
 
 function RemoteGameManager:processCallback(e)

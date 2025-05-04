@@ -161,7 +161,7 @@ end
 
 function FireBlast:tick()
 	if not self.spawnPosition then
-		self.spawnPosition = self:getTargetPosition(self:getSource()) + Vector(0, 1, 0)
+		self.spawnPosition = (self:getTargetPosition(self:getSource()) + Vector(0, 1, 0)):keep()
 
 		local hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)
 		self.duration = math.max((self.spawnPosition - hitPosition):getLength() / self.SPEED, 0.5)

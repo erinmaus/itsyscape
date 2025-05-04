@@ -13,9 +13,11 @@ local Utility = require "ItsyScape.Game.Utility"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Action = require "ItsyScape.Peep.Action"
+local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 
 local Travel = Class(Action)
 Travel.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
@@ -35,7 +37,7 @@ function Travel:perform(state, player, target)
 		if walk then
 			local travel = CallbackCommand(self.travel, self, state, player, target)
 			local perform = CallbackCommand(Action.perform, self, state, player)
-			local command = CompositeCommand(true, walk, travel, perform)
+			local command = CompositeCommand(true, walk, wait, travel, perform)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)
@@ -72,6 +74,13 @@ function Travel:travel(state, peep, target)
 
 	local gameDB = self:getGameDB()
 	local record = gameDB:getRecord("TravelDestination", { Action = self:getAction() })
+
+	local isLocal = false
+	if not record then
+		record = gameDB:getRecord("LocalTravelDestination", { Action = self:getAction() })
+		isLocal = record and true
+	end
+
 	if not record then
 		return
 	end
@@ -93,62 +102,61 @@ function Travel:travel(state, peep, target)
 	
 	self:transfer(state, peep, Travel.FLAGS)
 
-	local arguments = record:get("Arguments")
-	if arguments and arguments ~= "" then
-		arguments = "?" .. arguments
-	else
-		arguments = ""
-	end
-
-	local isSameStage = false
-	do
-		local instance = Utility.Peep.getInstance(peep)
-		local mapScript = instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
-		if mapScript:getFilename() == map.name and arguments == "" then
-			isSameStage = true
+	if isLocal then
+		local mapScriptResource = Utility.Peep.getMapResource(peep)
+		if not mapScriptResource or mapScriptResource.id.value ~= map.id.value then
+			return
 		end
-	end
 
-	if isSameStage then
-		local anchorPosition = Vector(Utility.Map.getAnchorPosition(
-			self:getGame(),
-			map,
-			destination))
-		Utility.Peep.setPosition(peep, anchorPosition)
+		local position = Vector(Utility.Map.getAnchorPosition(self:getGame(), map, record:get("Anchor")))
+		Utility.Peep.setPosition(peep, position)
+		Utility.orientateToAnchor(peep, mapScriptResource, record:get("Anchor"))
 	else
-		local stage = self:getGame():getStage()
-
-		local instance = Utility.Peep.getInstance(peep)
-		local raid = instance:getRaid()
-		local isInGroup = raid ~= nil and gameDB:getRecord("RaidGroup", {
-			Map = map,
-			Raid = raid:getResource()
-		})
-
-		if raid and isInGroup then
-			local existingInstance = raid:getInstances(map.name)[1]
-			if existingInstance then
-				stage:movePeep(peep, existingInstance, destination)
-			else
-				local newInstance = stage:movePeep(peep, "@" .. map.name .. arguments, destination)
-				raid:addInstance(newInstance)
-			end
+		local arguments = record:get("Arguments")
+		if arguments and arguments ~= "" then
+			arguments = "?" .. arguments
 		else
-			if record:get("IsInstance") == 0 then
-				stage:movePeep(peep, map.name .. arguments, destination)
-			else
-				stage:movePeep(peep, "@" .. map.name .. arguments, destination)
+			arguments = ""
+		end
+
+		local isSameStage = false
+		do
+			local instance = Utility.Peep.getInstance(peep)
+			local mapScript = instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
+			if mapScript:getFilename() == map.name and arguments == "" then
+				isSameStage = true
 			end
 		end
-	end
 
-	peep:getCommandQueue():clear()
-	peep:removeBehavior(TargetTileBehavior)
+		if isSameStage then
+			local anchorPosition = Vector(Utility.Map.getAnchorPosition(
+				self:getGame(),
+				map,
+				destination))
+			Utility.Peep.setPosition(peep, anchorPosition)
+		else
+			local instance = Utility.Peep.getInstance(peep)
+			local raid = instance:getRaid()
+			local isInGroup = raid ~= nil and gameDB:getRecord("RaidGroup", {
+				Map = map,
+				Raid = raid:getResource()
+			})
 
-	local movement = peep:getBehavior(MovementBehavior)
-	if movement then
-		movement.velocity = Vector.ZERO
-		movement.acceleration = Vector.ZERO
+			if raid and isInGroup then
+				local existingInstance = raid:getInstances(map.name)[1]
+				if existingInstance then
+					Utility.move(peep, existingInstance, destination)
+				else
+					Utility.move(peep, "@" .. map.name .. arguments, destination, raid)
+				end
+			else
+				if record:get("IsInstance") == 0 then
+					Utility.move(peep, map.name .. arguments, destination)
+				else
+					Utility.move(peep, "@" .. map.name .. arguments, destination)
+				end
+			end
+		end
 	end
 end
 

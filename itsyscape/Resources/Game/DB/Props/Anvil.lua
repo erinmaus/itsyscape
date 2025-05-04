@@ -44,3 +44,26 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Anvil_Default"
 }
+
+ItsyScape.Resource.Prop "Anvil_Default2" {
+	AnvilAction,
+
+	ItsyScape.Action.UseCraftWindow()
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicAnvil",
+	Resource = ItsyScape.Resource.Prop "Anvil_Default2"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Anvil",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Anvil_Default2"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "With a hammer and some bars, you can make weapons and armor.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "Anvil_Default2"
+}

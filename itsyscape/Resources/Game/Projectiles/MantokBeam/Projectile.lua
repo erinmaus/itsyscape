@@ -63,7 +63,7 @@ function MantokBeam:generatePath(ray, length)
 		local delta = currentDistance / length
 
 		local position = ray:project(currentDistance)
-		table.insert(self.fullBeamPath, position)
+		table.insert(self.fullBeamPath, position:keep())
 
 		currentDistance = currentDistance + self.SEGMENT_LENGTH
 	end
@@ -137,8 +137,8 @@ end
 
 function MantokBeam:tick()
 	if not self.spawnPosition then
-		self.spawnPosition = self:getTargetPosition(self:getSource())
-		self.hitPosition = self:getTargetPosition(self:getDestination())
+		self.spawnPosition = self:getTargetPosition(self:getSource()):keep()
+		self.hitPosition = self:getTargetPosition(self:getDestination()):keep()
 
 		local difference = self.hitPosition - self.spawnPosition
 		local differenceLength = difference:getLength()

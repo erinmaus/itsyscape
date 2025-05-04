@@ -74,7 +74,7 @@ end
 function WidgetRenderManager:setToolTip(duration, ...)
 	local toolTip = ToolTip(...)
 	toolTip:setDuration(duration or WidgetRenderManager.TOOL_TIP_DURATION)
-	toolTip:setPosition(love.graphics.getScaledPoint(love.mouse.getPosition()))
+	toolTip:setPosition(itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition()))
 
 	self.toolTips[toolTip] = true
 
@@ -139,7 +139,7 @@ function WidgetRenderManager:start()
 	self.hovered = {}
 
 	do
-		local mx, my = love.graphics.getScaledPoint(love.mouse.getPosition())
+		local mx, my = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 
 		local widget = self.input:getWidgetUnderPoint(
 			mx, my,
@@ -216,7 +216,7 @@ function WidgetRenderManager:stop()
 		itsyrealm.graphics.translate(-x, -y)
 	end
 
-	local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+	local mouseX, mouseY = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 	if self.cursor.widget then
 		itsyrealm.graphics.translate(self.cursor.x, self.cursor.y)
 		itsyrealm.graphics.translate(mouseX, mouseY)
@@ -262,12 +262,24 @@ function WidgetRenderManager:stop()
 end
 
 function WidgetRenderManager:draw(widget, state, cursor)
+	if self.hovered[widget] ~= nil and widget:getToolTip() then
+		if widget == self.topHovered then
+			self.hovered[widget] = { w = ToolTip(widget:getToolTip()), s = state }
+		else
+			self.hovered[widget] = nil
+		end
+	end
+
 	do
 		local _, _, w, h = itsyrealm.graphics.getPseudoScissor()
 
 		if (w == 0 or h == 0) and not (widget:getParent() and widget:getParent():getOverflow()) then
 			return
 		end
+	end
+
+	if widget:getParent() and not widget:getParent():isChildVisible(widget) then
+		return
 	end
 
 	if widget == self.cursor.widget and not cursor then
@@ -277,14 +289,6 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 	if widget == self.inputFocus.widget and not cursor then
 		self.inputFocus.state = state
-	end
-
-	if self.hovered[widget] ~= nil and widget:getToolTip() then
-		if widget == self.topHovered then
-			self.hovered[widget] = { w = ToolTip(widget:getToolTip()), s = state }
-		else
-			self.hovered[widget] = nil
-		end
 	end
 
 	if Class.isCompatibleType(widget, Interface) then
@@ -306,13 +310,13 @@ function WidgetRenderManager:draw(widget, state, cursor)
 
 			local _, _, scaleX, scaleY = love.graphics.getScaledMode()
 			itsyrealm.graphics.intersectPseudoScissor(cornerX, cornerY, w * scaleX, h * scaleY)
-		end
 
-		local sw, sh = widget:getScrollSize()
-		local sx, sy = widget:getScroll()
-		if sw > w or sh > h or sx > 0 or sy > 0 then
-			appliedScissor = true
-			itsyrealm.graphics.applyPseudoScissor()
+			local sw, sh = widget:getScrollSize()
+			local sx, sy = widget:getScroll()
+			if sw > w or sh > h or sx > 0 or sy > 0 then
+				appliedScissor = true
+				itsyrealm.graphics.applyPseudoScissor()
+			end
 		end
 	end
 
@@ -325,24 +329,25 @@ function WidgetRenderManager:draw(widget, state, cursor)
 		end
 
 		if (w > 0 and h > 0) or widget:getOverflow() then
+			widget:beforeDraw()
 			self.debugStats:measure(renderer, widget, state)
+			widget:afterDraw()
 		end
 	end
 
 	local scrollX, scrollY = widget:getScroll()
 	itsyrealm.graphics.translate(-scrollX, -scrollY)
 
+	widget:beforeDrawChildren()
 	self:drawChildren(widget, state, cursor)
+	widget:afterDrawChildren()
 
-	if not widget:getOverflow() and pushedScissor then
-		local w, h = widget:getSize()
-		if w > 0 and h > 0 then
-			itsyrealm.graphics.popPseudoScissor()
+	if pushedScissor then
+		itsyrealm.graphics.popPseudoScissor()
+
+		if appliedScissor then
+			itsyrealm.graphics.resetPseudoScissor()
 		end
-	end
-
-	if appliedScissor then
-		itsyrealm.graphics.resetPseudoScissor()
 	end
 
 	itsyrealm.graphics.translate(scrollX, scrollY)

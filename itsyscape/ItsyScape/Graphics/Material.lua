@@ -13,6 +13,12 @@ local NMaterial = require "nbunny.optimaus.scenenodematerial"
 
 local Material, Metatable = Class()
 
+Material.DEFAULT_OUTLINE_THRESHOLD = 0.5
+
+Material.UNIFORM_INTEGER = 1
+Material.UNIFORM_FLOAT   = 2
+Material.UNIFORM_TEXTURE = 3
+
 -- Constructs a new Material from the shader and textures.
 --
 -- If no shader is provided, the shader is set to a falsey value.
@@ -20,9 +26,9 @@ local Material, Metatable = Class()
 -- Nil values in textures are ignored.
 function Material:new(node, shader, ...)
 	self._handle = node:getHandle():getMaterial()
+	self._handle:setOutlineThreshold(Material.DEFAULT_OUTLINE_THRESHOLD)
 	self.shader = shader or false
 	self:setTextures(...)
-	self.uniforms = {}
 end
 
 function Material:getHandle()
@@ -44,22 +50,6 @@ function Material:setShader(value)
 	end
 end
 
--- Sets a uniform to pass on to the shader.
---
--- If 'value' is nil, the uniform is unset.
---
--- 'key' must be a string.
-function Material:setUniform(key, value)
-	if type(key) == 'string' then
-		self.uniforms[key] = value
-	end
-end
-
--- Gets an iterator over the uniforms.
-function Material:getUniforms()
-	return pairs(self.uniforms)
-end
-
 -- Unsets the shader.
 function Material:unsetShader()
 	self.shader = false
@@ -78,6 +68,22 @@ function Material:setIsTranslucent(value)
 	self._handle:setIsTranslucent(value or false)
 end
 
+function Material:getIsStencilWriteEnabled()
+	return self._handle:getIsStencilWriteEnabled()
+end
+
+function Material:setIsStencilWriteEnabled(value)
+	self._handle:setIsStencilWriteEnabled(value == nil and false or value)
+end
+
+function Material:getIsStencilMaskEnabled()
+	return self._handle:getIsStencilMaskEnabled()
+end
+
+function Material:setIsStencilMaskEnabled(value)
+	self._handle:setIsStencilMaskEnabled(value == nil and false or value)
+end
+
 -- Returns true if the Material should be fully lit, false otherwise.
 function Material:getIsFullLit()
 	return self._handle:getIsFullLit()
@@ -85,6 +91,30 @@ end
 
 function Material:setIsFullLit(value)
 	self._handle:setIsFullLit(value or false)
+end
+
+function Material:getIsParticulate()
+	return self._handle:getIsParticulate()
+end
+
+function Material:setIsParticulate(value)
+	self._handle:setIsParticulate(value or false)
+end
+
+function Material:getIsShadowCaster()
+	return self._handle:getIsShadowCaster()
+end
+
+function Material:setIsShadowCaster(value)
+	self._handle:setIsShadowCaster(value == nil and true or not not value)
+end
+
+function Material:getIsRendered()
+	return self._handle:getIsRendered()
+end
+
+function Material:setIsRendered(value)
+	self._handle:setIsRendered(value == nil and value or not not value)
 end
 
 -- If true, the node this material belongs to will use the camera's target position
@@ -117,12 +147,102 @@ function Material:setIsCullDisabled(value)
 	self._handle:setIsCullDisabled(value or false)
 end
 
+function Material:getOutlineThreshold()
+	return self._handle:getOutlineThreshold()
+end
+
+function Material:setOutlineThreshold(value)
+	self._handle:setOutlineThreshold(value or 0.5)
+end
+
+function Material:getZBias()
+	return self._handle:getZBias()
+end
+
+function Material:setZBias(value)
+	self._handle:setZBias(value)
+end
+
+function Material:getIsReflectiveOrRefractive()
+	return self._handle:getIsReflectiveOrRefractive()
+end
+
+function Material:setIsReflectiveOrRefractive(value)
+	self._handle:setIsReflectiveOrRefractive(value)
+end
+
+function Material:getReflectionPower()
+	local result = self._handle:getReflectionPower()
+	if result > 1 then
+		return 0
+	end
+
+	return result
+end
+
+function Material:getRefractionPower()
+	local result = self._handle:getReflectionPower()
+	if result < 1 then
+		return 0
+	end
+
+	return result - 1
+end
+
+function Material:setReflectionPower(value)
+	self._handle:setReflectionPower(math.clamp(value, 0, 1))
+end
+
+function Material:setRefractionPower(value)
+	self._handle:setReflectionPower(math.clamp(value, 0, 1) + 1)
+end
+
+function Material:getReflectionDistance()
+	return self._handle:getReflectionDistance()
+end
+
+function Material:setReflectionDistance(value)
+	self._handle:setReflectionDistance(value)
+end
+
+function Material:getRoughness()
+	return self._handle:getRoughness()
+end
+
+function Material:setRoughness(value)
+	self._handle:setRoughness(value)
+end
+
 function Material:getColor()
 	return Color(self._handle:getColor())
 end
 
 function Material:setColor(value)
 	self._handle:setColor((value or Color(1)):get())
+end
+
+function Material:getOutlineColor()
+	return Color(self._handle:getOutlineColor())
+end
+
+function Material:setOutlineColor(value)
+	self._handle:setOutlineColor((value or Color(0)):get())
+end
+
+function Material:getIsShimmerEnabled()
+	return self._handle:getIsShimmerEnabled()
+end
+
+function Material:setIsShimmerEnabled(value)
+	self._handle:setIsShimmerEnabled(value)
+end
+
+function Material:getShimmerColor()
+	return Color(self._handle:getShimmerColor())
+end
+
+function Material:setShimmerColor(value)
+	self._handle:setShimmerColor((value or Color(0)):get())
 end
 
 -- Gets the number of textures.
@@ -175,6 +295,36 @@ function Material:unsetTexture(index)
 	table.remove(self.textures.n, index or 1)
 
 	self._handle:setTextures(unpack(self.textures.n))
+end
+
+function Material:send(uniformType, uniform, ...)
+	local data = {}
+
+	for i = 1, select("#", ...) do
+		local values = select(i, ...)
+
+		if type(values) == "table" then
+			for _, a in ipairs(values) do
+				if type(a) == "table" then
+					for _, b in ipairs(a) do
+						table.insert(data, b)
+					end
+				else
+					table.insert(data, a)
+				end
+			end
+		else
+			table.insert(data, values)
+		end
+	end
+
+	if uniformType == Material.UNIFORM_INTEGER then
+		self._handle:setIntUniform(uniform, data)
+	elseif uniformType == Material.UNIFORM_TEXTURE then
+		self._handle:setTextureUniform(uniform, unpack(data))
+	else
+		self._handle:setFloatUniform(uniform, data)
+	end
 end
 
 -- Compares Materials by resources.

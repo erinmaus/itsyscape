@@ -217,6 +217,10 @@ function Weapon.DamageRoll:setBonus(value)
 	self.bonus = value or self.bonus
 end
 
+function Weapon.DamageRoll:getBaseHit()
+	return Utility.Combat.calcMaxHit(self.level, 1, self.bonus)
+end
+
 function Weapon.DamageRoll:getMaxHit()
 	return self.maxHit or Utility.Combat.calcMaxHit(self.level, 1, self.bonus)
 end
@@ -251,6 +255,30 @@ function Weapon.DamageRoll:setDamageMultiplier(value)
 	else
 		self.damageMultiplier = value
 	end
+end
+
+function Weapon.DamageRoll:setHitReduction(value)
+	self.hitReduction = value or 0
+end
+
+function Weapon.DamageRoll:getHitReduction()
+	return self.hitReduction
+end
+
+function Weapon.DamageRoll:setMaxHitBoost(value)
+	self.maxHitBoost = value or 0
+end
+
+function Weapon.DamageRoll:getMaxHitBoost()
+	return self.maxHitBoost
+end
+
+function Weapon.DamageRoll:setMinHitBoost(value)
+	self.minHitBoost = value or 0
+end
+
+function Weapon.DamageRoll:getMinHitBoost()
+	return self.minHitBoost
 end
 
 function Weapon.DamageRoll:roll()
@@ -453,6 +481,8 @@ function Weapon:rollAttack(peep, target, bonus)
 	self:applyAttackModifiers(roll)
 	self:previewAttackRoll(roll)
 
+	peep:poke("rollAttack", roll)
+
 	return roll
 end
 
@@ -496,6 +526,8 @@ function Weapon:rollDamage(peep, purpose, target)
 	local roll = Weapon.DamageRoll(self, peep, purpose, target)
 	self:applyDamageModifiers(roll)
 	self:previewDamageRoll(roll)
+
+	peep:poke("rollDamage", roll)
 
 	return roll
 end
@@ -543,13 +575,13 @@ function Weapon:onAttackHit(peep, target)
 		peep:poke('initiateAttack', attack, target)
 	end
 
-	self:dealtDamage(peep, target, attack)
+	self:dealtDamage(peep, target, attack, roll)
 	self:applyCooldown(peep, target)
 
 	return attack
 end
 
-function Weapon:dealtDamage(peep, target, attack)
+function Weapon:dealtDamage(peep, target, attack, roll)
 	-- Nothing.
 end
 
@@ -570,9 +602,10 @@ function Weapon:onAttackMiss(peep, target)
 	return attack
 end
 
-function Weapon:applyCooldown(peep, target)
-	if self:getCooldown(peep) == 0 then
-		return
+function Weapon:getModifiedCooldown(peep, target)
+	local cooldown = self:getCooldown(peep)
+	if cooldown == 0 then
+		return 0
 	end
 
 	local cooldown = self:getCooldown(peep)
@@ -588,6 +621,11 @@ function Weapon:applyCooldown(peep, target)
 		end
 	end
 
+	return cooldown
+end
+
+function Weapon:applyCooldown(peep, target)
+	local cooldown = self:getModifiedCooldown(peep, target)
 	local _, c = peep:addBehavior(AttackCooldownBehavior)
 	c.cooldown = math.max(c.cooldown, cooldown)
 	c.ticks = peep:getDirector():getGameInstance():getCurrentTime()

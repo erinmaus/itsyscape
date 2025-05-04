@@ -1,0 +1,16 @@
+{
+	"CAPSTAN_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Capstan_ExquisiteDragonBone/Model.lstatic",
+			"group": "capstan.bone",
+			"texture": "Resources/Game/SailingItems/Capstan_ExquisiteDragonBone/Texture.png"
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Capstan_ExquisiteDragonBone/Model.lstatic",
+			"group": "capstan",
+			"colorIndex": 1,
+			"texture": "Resources/Game/SailingItems/Capstan_ExquisiteDragonBone/Texture.png",
+			"outlineThreshold": -0.01
+		}
+	]
+}

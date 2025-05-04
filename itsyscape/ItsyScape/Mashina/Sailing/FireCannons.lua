@@ -37,7 +37,7 @@ function FireCannons:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	local normal = Sailing.getShipDirectionNormal(target)
+	local normal = Sailing.getShipForward(target)
 
 	local cannonProbe = Sailing.probeShipCannons(ship, position, normal, direction, always)
 	local count = Sailing.fireShipCannons(ship, cannonProbe)

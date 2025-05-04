@@ -1,0 +1,46 @@
+{
+	"$paths": {
+		"COLOR": ["colors", "$color"],
+		"ENGINE": ["engine", "$var"]
+	},
+
+	"engine": {
+		"walkQueueTimeMS": 50
+	},
+
+	"colors": {
+		"ui.text": "ffffff",
+		"ui.combat.bar.text": "ffffff",
+		"ui.combat.bar.textShadow": "000000",
+		"ui.combat.health.damage": "8c2726",
+		"ui.combat.health.hitpoints": "589c2b",
+		"ui.combat.zeal.tier0Fire": "4f1818",
+		"ui.combat.zeal.tier1Fire": "c93736",
+		"ui.combat.zeal.tier2Fire": "f26722",
+		"ui.combat.zeal.tier3Fire": "37c8ab",
+		"ui.combat.zeal.tier4Fire": "6b4da0",
+		"ui.combat.zeal.remainder": "1f5173",
+		"ui.combat.zeal.background": "000000",
+		"ui.combat.nextPlayerAttack": "589c2b",
+		"ui.combat.nextTargetAttack": "8c2726",
+		"ui.combat.animatedDecoration": "ffcc00",
+		"ui.combat.pendingAttackTime": "ffffff",
+		"ui.combat.pendingAttackDuration": "666666",
+		"ui.combat.warning": "faa92b",
+		"ui.combat.specialWarningFrom": "8d5fd3",
+		"ui.combat.specialWarningTo": "faa92b",
+		"ui.resource.remainder": "1f5173",
+		"ui.resource.progress": "8c2726",
+		"ui.stat.better": "00ff00",
+		"ui.stat.worse": "ff0000",
+		"ui.stat.neutral": "ffffff",
+		"ui.stat.zero": "aaaaaa",
+		"ui.poke.prop": "60bcd4",
+		"ui.poke.actor": "fedd56",
+		"ui.poke.item": "6dc389",
+		"ui.poke.misc": "999999",
+		"world.shimmer.attackable": "c93736",
+		"world.shimmer.unselected": "999999",
+		"world.shimmer.interactive": "ffcc00"
+	}
+}

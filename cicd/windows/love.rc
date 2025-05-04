@@ -1,0 +1,62 @@
+/**
+ * Don't forget to save this file in little-endian UTF-16.
+ */
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+#define LOVE_VERSION_STRING "11.2"
+#define LOVE_MAJOR 11
+#define LOVE_MINOR 1
+#define LOVE_REVISION 0
+#define LOVE_BUILD 0
+
+#if defined liblove_EXPORTS && !defined LOVE_LIB
+#define LOVE_LIB 1 
+#endif 
+
+#ifdef LOVE_LIB
+#define FILE_DESC "libLÖVE"
+#define FILE_NAME "love.dll"
+#else
+#define FILE_DESC "ItsyRealm"
+#define FILE_NAME "love.exe"
+1 ICON            "love.ico"
+#endif
+
+
+1 VERSIONINFO
+FILEVERSION       LOVE_MAJOR, LOVE_MINOR, LOVE_REVISION, LOVE_BUILD
+PRODUCTVERSION    LOVE_MAJOR, LOVE_MINOR, LOVE_REVISION, 0
+FILEFLAGSMASK     0
+FILEOS            0x00040004L    // VOS_NT_WINDOWS32
+#ifdef LOVE_LIB
+FILETYPE          2              // VFT_DLL
+#else
+FILETYPE          1              // VFT_APP
+#endif
+
+{
+	BLOCK "StringFileInfo"
+	{
+		BLOCK "040904b0"
+		{
+			VALUE "FileDescription",  FILE_DESC " " LOVE_VERSION_STRING
+			VALUE "FileVersion",      LOVE_VERSION_STRING
+#if LOVE_BUILD > 0
+			" r" TOSTRING(LOVE_BUILD)
+#endif
+			VALUE "CompanyName",      "Rat Skull Media LLC"
+			VALUE "LegalCopyright",   "Copyright © 2018-2025 Rat Skull Media LLC"
+			VALUE "ProductName",      "ItsyRealm"
+			VALUE "ProductVersion",   LOVE_VERSION_STRING
+			VALUE "InternalName",     ""
+			VALUE "OriginalFilename", FILE_NAME
+		}
+	}
+
+	BLOCK "VarFileInfo"
+	{
+		VALUE "Translation", 0x409, 1252
+	}
+}

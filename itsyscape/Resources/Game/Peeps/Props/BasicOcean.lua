@@ -10,7 +10,9 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
+local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local WhirlpoolBehavior = require "ItsyScape.Peep.Behaviors.WhirlpoolBehavior"
 local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
 
@@ -25,7 +27,38 @@ function BasicOcean:getPropState()
 	local ocean = mapScript and mapScript:getBehavior(OceanBehavior) or {}
 	local whirlpool = mapScript and mapScript:getBehavior(WhirlpoolBehavior) or {}
 
+	local shipPeeps = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.layer(Utility.Peep.getLayer(self)),
+		Probe.component(ShipMovementBehavior))
+
+	local ships = {}
+	for _, shipPeep in ipairs(shipPeeps) do
+		local shipMovement = shipPeep:getBehavior(ShipMovementBehavior)
+		local mask = shipMovement and shipMovement.mask
+		if mask then
+			local position, rotation, scale, origin = Utility.Peep.getDecomposedMapTransform(shipPeep)
+			local ship = {
+				id = shipPeep:getTally(),
+				position = { position:get() },
+				rotation = { rotation:get() },
+				scale = { scale:get() },
+				origin = { origin:get() },
+				size = { shipMovement.beam, 0, shipMovement.length },
+				direction = { shipMovement.steerDirectionNormal:get() },
+				mask = mask
+			}
+
+			table.insert(ships, ship)
+		end
+	end
+
 	return {
+		time = ocean.time or 0,
+		x = love.timer.getTime(),
+
+		ships = ships,
+
 		ocean = {
 			hasOcean = ocean ~= nil,
 			y = ocean.depth,
@@ -34,7 +67,9 @@ function BasicOcean:getPropState()
 			textureTimeScale = ocean.textureTimeScale and {
 				ocean.textureTimeScale.x,
 				ocean.textureTimeScale.y
-			}
+			} or {},
+			windSpeedMultiplier = ocean.windSpeedMultiplier or 0.25,
+			windPatternMultiplier = { (ocean.windPatternMultiplier or Vector(2, 4, 8)):get() }
 		},
 
 		whirlpool = {

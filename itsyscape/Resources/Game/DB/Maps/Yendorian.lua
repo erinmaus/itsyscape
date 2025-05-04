@@ -30,6 +30,27 @@ do
 end
 
 do
+	local Ballista = ItsyScape.Resource.Prop "YendorianBallista"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yedorian ballista",
+		Language = "en-US",
+		Resource = Ballista
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A Yendorian will literally use a ballista like a human uses a crossbow!",
+		Language = "en-US",
+		Resource = Ballista
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = Ballista
+	}
+end
+
+do
 	local Pillar = ItsyScape.Resource.Prop "YendorianRuins_Pillar"
 
 	ItsyScape.Meta.ResourceName {

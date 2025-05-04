@@ -12,11 +12,28 @@ require "love.thread"
 require "love.timer"
 
 local version = love.filesystem.read("version.meta")
-_ITSYREALM_VERSION = version or "mainline"
-_ITSYREALM_VERSION = _ITSYREALM_VERSION:gsub("%s*(%S*)%s*", "%1")
-_ITSYREALM_MAJOR   = tonumber(_ITSYREALM_VERSION:match("^(%d+)%.%d+%.%d+")) or 0
-_ITSYREALM_MINOR   = tonumber(_ITSYREALM_VERSION:match("^%d+%.(%d+)%.%d+")) or 0
-_ITSYREALM_BUILD   = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.(%d+)")) or 0
+_ITSYREALM_VERSION  = version or "mainline"
+_ITSYREALM_VERSION  = _ITSYREALM_VERSION:gsub("%s*(%S*)%s*", "%1")
+_ITSYREALM_MAJOR    = tonumber(_ITSYREALM_VERSION:match("^(%d+)%.%d+%.%d+%.%d+")) or 0
+_ITSYREALM_MINOR    = tonumber(_ITSYREALM_VERSION:match("^%d+%.(%d+)%.%d+%.%d+")) or 0
+_ITSYREALM_BUILD    = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.(%d+)%.%d+")) or 0
+_ITSYREALM_REVISION = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.%d+%.(%d+)")) or 0
+_ITSYREALM_HASH     = _ITSYREALM_VERSION:match("^%d+%.%d+%.%d+%.%d+-(%w+)")
+_ITSYREALM_DEMO     = not not _ITSYREALM_VERSION:match("-demo$")
+_ITSYREALM_PROD     = not not _ITSYREALM_VERSION:match("-production$")
+_ITSYREALM_DEBUG    = version == "mainline"
+
+_ITSYREALM_META = {
+	version = _ITSYREALM_VERSION,
+	major = _ITSYREALM_MAJOR,
+	minor = _ITSYREALM_MINOR,
+	build = _ITSYREALM_BUILD,
+	revision = _ITSYREALM_REVISION,
+	hash = _ITSYREALM_HASH,
+	demo = _ITSYREALM_DEMO,
+	prod = _ITSYREALM_PROD,
+	debug = _ITSYREALM_DEBUG
+}
 
 math.randomseed(os.time())
 
@@ -96,11 +113,51 @@ do
 	table.clear = require "table.clear"
 
 	math.clamp = function(a, min, max)
+		min, max = math.min(min or 0, max or 1), math.max(min or 0, max or 1)
 		return math.max(math.min(a, max or 1), min or 0)
 	end
 
 	math.lerp = function(from, to, delta)
 		return to * delta + from * (1 - delta)
+	end
+
+	math.sign = function(v)
+		if v < 0 then
+			return -1
+		end
+
+		return 1
+	end
+
+	math.zerosign = function(v)
+		if v < 0 then
+			return -1
+		elseif v > 0 then
+			return 1
+		end
+
+		return 0
+	end
+
+	math.lerpAngle = function(from, to, delta)
+		local difference = (to - from) % (math.pi * 2)
+		local distance = (2 * difference) % (math.pi * 2) - difference
+
+		return from + distance * delta
+	end
+
+	math.diffAngle = function(left, right)
+		local result = left - right
+		result = (result + math.pi) % (math.pi * 2) - math.pi
+		return result
+	end
+
+	math.wrapIndex = function(value, increment, max)
+    	return (value + increment - 1) % max + 1
+	end
+
+	math.wrap = function(value, min, max)
+		return min + ((value - min) % (max - min + 1))
 	end
 
 	local utf8 = require "utf8"
@@ -120,10 +177,8 @@ else
 	Log.engine("ItsyRealm version '%s' bootstrapped.", _ITSYREALM_VERSION)
 end
 
-if love.system.getOS() == "OS X" and jit and jit.arch == "arm64" then
-	Log.info("Running on macOS (arch = '%s'), disabling JIT.", jit and jit.arch or "???")
-	require("jit").off()
-end
+Log.debug("ItsyRealm meta: %s", Log.dump(_ITSYREALM_META))
+require("jit").off()
 
 local _collectgarbage = collectgarbage
 local gcStops = 0
@@ -131,13 +186,12 @@ local gcStops = 0
 function collectgarbage(opt, arg)
 	if opt == "stop" then
 		if gcStops == 0 then
-			local result = _collectgarbage("stop")
+			_collectgarbage("stop")
 		end
 
 		gcStops = gcStops + 1
-
-		return result
 	elseif opt == "restart" then
+		assert(gcStops >= 1)
 		gcStops = math.max(gcStops - 1, 0)
 
 		if gcStops == 0 then

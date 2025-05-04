@@ -13,10 +13,14 @@ local Utility = require "ItsyScape.Game.Utility"
 
 local Bash = Class(CombatPower)
 
+function Bash:new(...)
+	CombatPower.new(self, ...)
+	self:setXWeaponID("Power_Bash")
+end
+
 function Bash:activate(activator, target)
 	CombatPower.activate(self, activator, target)
-
-	self:setXWeaponID("Power_Bash")
+	Utility.Combat.deflectPendingPower(self, activator, target)
 end
 
 return Bash

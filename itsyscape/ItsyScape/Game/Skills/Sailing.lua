@@ -8,17 +8,27 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Utility = require "ItsyScape.Game.Utility"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Item = require "ItsyScape.Game.Item"
+local Utility = require "ItsyScape.Game.Utility"
+local ICannon = require "ItsyScape.Game.Skills.ICannon"
+local Color = require "ItsyScape.Graphics.Color"
 local Peep = require "ItsyScape.Peep.Peep"
+local MapPeep = require "ItsyScape.Peep.Peeps.Map"
 local Probe = require "ItsyScape.Peep.Probe"
+local FishBehavior = require "ItsyScape.Peep.Behaviors.FishBehavior"
+local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local SailingResourceBehavior = require "ItsyScape.Peep.Behaviors.SailingResourceBehavior"
 local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavior"
 local ShipCrewMemberBehavior = require "ItsyScape.Peep.Behaviors.ShipCrewMemberBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
 local ShipStatsBehavior = require "ItsyScape.Peep.Behaviors.ShipStatsBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local PathFinder = require "ItsyScape.World.PathFinder"
+local PathNode = require "ItsyScape.World.PathNode"
 
 local Sailing = {}
 
@@ -35,6 +45,19 @@ end
 function Sailing.setCrewMember(ship, peep)
 	local _, crewMember = peep:addBehavior(ShipCrewMemberBehavior)
 	crewMember.ship = ship
+end
+
+function Sailing.getShip(peep)
+	local instance = Utility.Peep.getInstance(peep)
+	local mapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
+	local baseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup)
+	local mapScript = instance:getMapScriptByLayer(baseLayer)
+
+	if mapScript:hasBehavior(ShipMovementBehavior) then
+		return mapScript
+	end
+
+	return nil
 end
 
 function Sailing.getDirectionFromPoints(a, b, c, bias)
@@ -67,6 +90,21 @@ function Sailing.getDirection(ship, targetPosition, bias)
 	return Sailing.getDirectionFromPoints(shipPosition, shipPosition + shipForward, targetPosition, bias)
 end
 
+function Sailing._offsetVectorFromShip(position, target)
+	local shipSize = Sailing.getShipSize(target)
+	local size = Vector()
+
+	if math.abs(position.x) > 0 then
+		size.x = shipSize.x / 2 * math.sign(position.x)
+	end
+
+	if math.abs(position.z) > 0 then
+		size.z = shipSize.z / 2 * math.sign(position.z)
+	end
+
+	return position + size
+end
+
 function Sailing.getShipTarget(ship, target, offset)
 	local position
 	if type(target) == "string" then
@@ -94,19 +132,18 @@ function Sailing.getShipTarget(ship, target, offset)
 
 			if Class.isCompatibleType(offset, Ray) then
 				if shipMovement then
-					local r = shipMovement.rotation * Quaternion.Y_90
+					local r = shipMovement.rotation
 					offset = Ray(
-						r:transformVector(offset.origin),
+						r:transformVector(Sailing._offsetVectorFromShip(offset.origin, target)),
 						r:transformVector(offset.direction):getNormal())
 				else
 					offset = Ray(
 						rotation:transformVector(offset.origin),
 						rotation:transformVector(offset.direction):getNormal())
-					offset = rotation:transformVector(offset)
 				end
 			elseif Class.isCompatibleType(offset, Vector) then
 				if shipMovement then
-					offset = (shipMovement.rotation * Quaternion.Y_90):transformVector(offset)
+					offset = shipMovement.rotation:getNormal():transformVector(Sailing._offsetVectorFromShip(offset, target))
 				else
 					offset = rotation:transformVector(offset)
 				end
@@ -116,49 +153,115 @@ function Sailing.getShipTarget(ship, target, offset)
 		position = nil
 	end
 
+	local targetPosition
 	if position then
 		position = position * Vector.PLANE_XZ
+
+		if Class.isCompatibleType(offset, Ray) then
+			targetPosition = position + offset.origin
+		elseif Class.isCompatibleType(offset, Vector) then
+			targetPosition = position + offset
+		else
+			targetPosition = position
+		end
+
+		targetPosition = targetPosition * Vector.PLANE_XZ
 	end
 
-	return position, offset
+
+	return position, offset, targetPosition
 end
 
 -- This is the normal the ship is heading in, NOT the steer direction normal.
 -- The steer direction normal is the axis on which 1 or -1 is projected to steer the ship.
-function Sailing.getShipDirectionNormal(ship)
+function Sailing.getShipForward(ship)
 	if Class.isCompatibleType(ship, Peep) then
 		local shipMovement = ship:getBehavior(ShipMovementBehavior)
 		if shipMovement then
-			return (shipMovement.rotation * Quaternion.Y_90):transformVector(shipMovement.steerDirectionNormal):getNormal()
+			return shipMovement.rotation:transformVector(shipMovement.steerDirectionNormal):getNormal()
 		end
 	end
 
 	return nil
 end
 
-function Sailing.getShipBow(ship)
+function Sailing.getShipBow(ship, length)
 	if Class.isCompatibleType(ship, Peep) then
 		local shipMovement = ship:getBehavior(ShipMovementBehavior)
 		if shipMovement then
 			local direction = shipMovement.rotation:transformVector(shipMovement.steerDirectionNormal):getNormal()
-			local length = shipMovement.length / 2
+			length = (length or shipMovement.length) / 2
 
 			return direction * length
 		end
+
+		local rotation = Utility.Peep.getRotation(ship):getNormal()
+		local size = Utility.Peep.getSize(ship)
+		return rotation:transformVector(Vector(0, 0, size.z / 2))
 	end
 
 	return nil
 end
 
-function Sailing.getShipStern(ship)
+function Sailing.getShipSize(ship)
+	local shipMovement = ship:getBehavior(ShipMovementBehavior)
+	if shipMovement then
+		-- todo take into account steer normal
+		return Vector(shipMovement.length, 0, shipMovement.beam)
+	end
+
+	return Utility.Peep.getSize(ship)
+end
+
+function Sailing.getShipStern(ship, length)
 	if Class.isCompatibleType(ship, Peep) then
 		local shipMovement = ship:getBehavior(ShipMovementBehavior)
 		if shipMovement then
 			local direction = shipMovement.rotation:transformVector(shipMovement.steerDirectionNormal):getNormal()
-			local length = shipMovement.length / 2
+			length = (length or shipMovement.length) / 2
 
 			return direction * -length
 		end
+
+		local rotation = Utility.Peep.getRotation(ship):getNormal()
+		local size = Utility.Peep.getSize(ship)
+		return rotation:transformVector(Vector(0, 0, -size.z / 2))
+	end
+
+	return nil
+end
+
+function Sailing.getShipStarboard(ship, beam)
+	if Class.isCompatibleType(ship, Peep) then
+		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+		if shipMovement then
+			local direction = shipMovement.rotation:transformVector(shipMovement.opposingSteerDirectionNormal):getNormal()
+			beam = (beam or shipMovement.beam) / 2
+
+			return direction * beam
+		end
+
+		local rotation = Utility.Peep.getRotation(ship):getNormal()
+		local size = Utility.Peep.getSize(ship)
+		return rotation:transformVector(Vector(size.x / 2, 0, 0))
+	end
+
+	return nil
+end
+
+function Sailing.getShipPort(ship, beam)
+	if Class.isCompatibleType(ship, Peep) then
+		local shipMovement = ship:getBehavior(ShipMovementBehavior)
+		if shipMovement then
+			local direction = shipMovement.rotation:transformVector(shipMovement.opposingSteerDirectionNormal):getNormal()
+			beam = (beam or shipMovement.beam) / 2
+
+			return direction * -beam
+		end
+
+		local rotation = Utility.Peep.getRotation(ship):getNormal()
+		local size = Utility.Peep.getSize(ship)
+		return rotation:transformVector(Vector(-size.x / 2, 0, 0))
 	end
 
 	return nil
@@ -435,6 +538,51 @@ Sailing.Ship.SLOTS = {
 	"Figurehead"
 }
 
+Sailing.Ship.SIZE_GALLEON    = "Galleon"
+Sailing.Ship.SIZE_BRIGANTINE = "Brigantine"
+Sailing.Ship.SIZE_SLOOP      = "Sloop"
+
+function Sailing.Ship.getNPCCustomizations(game, shipResource)
+	local gameDB = game:getGameDB()
+
+	if type(shipResource) == "string" then
+		shipResource = gameDB:getResource(shipResource, "SailingShip")
+	end
+
+	if not shipResource then
+		return {}
+	end
+
+	local result = {}
+	local sailingItems = gameDB:getRecords("ShipSailingItem", { Ship = shipResource })
+	for _, inputSailingItem in ipairs(sailingItems) do
+		local sailingItem = {
+			colors = {
+				{ inputSailingItem:get("Red1"), inputSailingItem:get("Green1"), inputSailingItem:get("Blue1") },
+				{ inputSailingItem:get("Red2"), inputSailingItem:get("Green2"), inputSailingItem:get("Blue2") }
+			},
+
+			isColorCustomized = inputSailingItem:get("IsColorCustomized") ~= 0,
+
+			itemGroup = inputSailingItem:get("ItemGroup"),
+			slot = inputSailingItem:get("Slot"),
+			index = inputSailingItem:get("Index"),
+
+			sailingItemID = inputSailingItem:get("SailingItem").name,
+			props = {}
+		}
+
+		local props = gameDB:getRecords("ShipSailingItemPropHotspot", { SailingItem = inputSailingItem:get("SailingItem") })
+		for _, prop in ipairs(props) do
+			sailingItem.props[prop:get("Slot")] = prop:get("Prop").name
+		end
+
+		table.insert(result, sailingItem)
+	end
+
+	return result
+end
+
 function Sailing.Ship.getStats(peep)
 	local storage = peep:getDirector():getPlayerStorage(peep):getRoot()
 
@@ -499,6 +647,563 @@ function Sailing.Ship.getInventorySpace(peep)
 	end
 end
 
+Sailing.Navigation = {}
+
+Sailing.Navigation.PathFinder = Class(PathFinder)
+
+function Sailing.Navigation.PathFinder:new(nodes, ship)
+	PathFinder.new(self, PathFinder.AStar(self))
+
+	self.nodes = nodes
+	self.ship = ship
+
+	self.edges = {}
+	self.neighborEdges = {}
+
+	self.edgeIDs = {}
+	self.edgeID = 0
+end
+
+function Sailing.Navigation.PathFinder:getNeighbors(edge, goal)
+	if self.neighborEdges[edge.id] then
+		return self.neighborEdges[edge.id]
+	end
+
+	local neighbors = {}
+	for _, neighbor in ipairs(edge.node.neighbors) do
+		table.insert(neighbors, self:makeEdge(self.nodes[neighbor], edge, goal))
+	end
+
+	self.neighborEdges[edge.id] = neighbors
+	return neighbors
+end
+
+function Sailing.Navigation.PathFinder:getID(edge)
+	local parentID = edge.parent and edge.parent.node.id or 0
+
+	local parents = self.edgeIDs[parentID]
+	if not parents then
+		parents = {}
+		self.edgeIDs[parentID] = parents
+	end
+
+	local id = parents[edge.node.id]
+	if not id then
+		self.edgeID = self.edgeID + 1
+		id = self.edgeID
+
+		parents[edge.node.id] = id
+	end
+
+	return id
+end
+
+function Sailing.Navigation.PathFinder:getCost(edge)
+	return edge.cost
+end
+
+function Sailing.Navigation.PathFinder:getScore(edge)
+	return edge.score
+end
+
+function Sailing.Navigation.PathFinder:makeEdge(node, parent, goal)
+	local edge = {
+		id = #self.edges + 1,
+		parent = parent,
+		node = node,
+		score = 0,
+		cost = (parent and parent.cost or 0)
+	}
+
+	table.insert(self.edges, edge)
+
+	if goal then
+		edge.score = self:getDistance(node.position, goal)
+
+		if parent then
+			edge.cost = edge.cost + self:getDistance(self:getLocation(edge), self:getLocation(parent))
+		end
+	end
+
+	return edge
+end
+
+function Sailing.Navigation.PathFinder:getEdge(location)
+	for _, edge in ipairs(self.edges) do
+		if edge.node.position == location and not edge.parent then
+			return edge
+		end
+	end
+
+	local closest
+	local closestDistance = math.huge
+	for _, node in ipairs(self.nodes) do
+		local distance = (location - node.position):getLengthSquared()
+		if distance < closestDistance then
+			closest = node
+			closestDistance = distance
+		end
+	end
+
+	return self:makeEdge(closest)
+end
+
+function Sailing.Navigation.PathFinder:getLocation(edge)
+	return edge.node.position
+end
+
+function Sailing.Navigation.PathFinder:getDistance(a, b)
+	return (a - b):getLength()
+end
+
+function Sailing.Navigation.PathFinder:sameLocation(a, b)
+	return a == b
+end
+
+function Sailing.Navigation.PathFinder:materialize(edge)
+	return PathNode(edge.node.position.x, edge.node.position.z)
+end
+
+function Sailing.Navigation.PathFinder:getParent(edge)
+	return edge.parent
+end
+
+Sailing.Navigation.SHIP_NAVIGATION_POINTS = {
+	Vector(-1, 0, -1),
+	Vector(0, 0, -1),
+	Vector(1, 0, -1),
+	Vector(1, 0, 0),
+	Vector(1, 0, 1),
+	Vector(0, 0, 1),
+	Vector(-1, 0, 1),
+	Vector(-1, 0, 0)
+}
+
+function Sailing.Navigation.getNavigationPoints(ship, sizeOffset)
+	local shipSize = Sailing.getShipSize(ship)
+	shipSize = shipSize + sizeOffset * 2
+	local halfShipSize = shipSize / 2
+
+	local shipMovement = ship:getBehavior(ShipMovementBehavior)
+	local rotation = shipMovement and shipMovement.rotation or Quaternion.IDENTITY
+
+	local result = {}
+	for _, inputPoint in ipairs(Sailing.Navigation.SHIP_NAVIGATION_POINTS) do
+		local outputPoint = rotation:transformVector(inputPoint * halfShipSize)
+		table.insert(result, outputPoint)
+	end
+
+	return result
+end
+
+function Sailing.Navigation.buildNodes(ship, target, offset)
+	local director = ship:getDirector()
+
+	local layer
+	do
+		position = ship:getBehavior(PositionBehavior)
+		layer = position and position.layer
+		layer = layer or Utility.Peep.getLayer(ship)
+	end
+
+	local otherShips = director:probe(
+		ship:getLayerName(),
+		Probe.layer(layer),
+		Probe.component(ShipMovementBehavior))
+
+	local _, _, targetPosition = Sailing.getShipTarget(ship, target, offset)
+	if not targetPosition then
+		return nil
+	end
+
+	local shipMovementCortex = director:getCortex("ShipMovement")
+	if not shipMovementCortex then
+		return nil
+	end
+
+	local shipPosition = Utility.Peep.getPosition(ship) * Vector.PLANE_XZ
+	local shipSize = Sailing.getShipSize(ship)
+	shipSize = Vector(math.max(shipSize.x, shipSize.z))
+
+	local nodes = {
+		{ id = 1, position = shipPosition, neighbors = {} },
+		{ id = 2, position = targetPosition, neighbors = {} }
+	}
+	for otherShipIndex, otherShip in ipairs(otherShips) do
+		local otherShipPoints = Sailing.Navigation.getNavigationPoints(otherShip, shipSize)
+
+		local startIndex = #nodes
+		for _, otherShipPoint in ipairs(otherShipPoints) do
+			local node = {
+				id = #nodes + 1,
+				shipIndex = otherShipIndex,
+				groupID = otherShip:getTally(),
+				position = otherShipPoint,
+				neighbors = {}
+			}
+
+			table.insert(nodes, node)
+		end
+
+		for indexOffset = 1, #otherShipPoints do
+			local index = startIndex + indexOffset
+			local node = nodes[index]
+
+			local previousNeighorIndexOffset = indexOffset - 1
+			if previousNeighorIndexOffset <= 0 then
+				previousNeighorIndexOffset = #otherShipPoints
+			end
+
+			local nextNeighorIndexOffset = indexOffset + 1
+			if nextNeighorIndexOffset > #otherShipPoints then
+				nextNeighorIndexOffset = 1
+			end
+
+			local previousNeighorNode = nodes[startIndex + previousNeighorIndexOffset]
+			local nextNeighorNode = nodes[startIndex + nextNeighorIndexOffset]
+			table.insert(node.neighbors, previousNeighorNode.id)
+			table.insert(node.neighbors, nextNeighorNode.id)
+		end
+	end
+
+	-- Ew, n ^ 2. If this is a performance issue, we'll need to optimize.
+	for i, selfNode in ipairs(nodes) do
+		for j, otherNode in ipairs(nodes) do
+			if j > i and (selfNode.groupID == nil or otherNode.groupID == nil or selfNode.groupID ~= otherNode.groupID) then
+				local ray = Ray(selfNode.position, selfNode.position:direction(otherNode.position))
+				local selfDistanceToOther = (selfNode.position - otherNode.position):getLengthSquared()
+
+				local hasCollision = false
+				for _, otherShip in ipairs(otherShips) do
+					local nearPoint = shipMovementCortex:projectRayAgainstShip(otherShip, ray)
+					if nearPoint then
+						local selfDistanceToNear = (selfNode.position - nearPoint):getLengthSquared()
+
+						if selfDistanceToNear <= selfDistanceToOther then
+							hasCollision = true
+							break
+						end
+					end
+				end
+
+				if not hasCollision then
+					table.insert(selfNode.neighbors, otherNode.id)
+					table.insert(otherNode.neighbors, selfNode.id)
+				end
+			end
+		end
+	end
+
+	return nodes, otherShips
+end
+
+function Sailing.Navigation.navigate(nodes)
+	local path = Sailing.Navigation.PathFinder(nodes):find(nodes[1].position, nodes[2].position)
+	if not path or path:getNumNodes() == 0 then
+		return nil
+	end
+
+	local result = {}
+	for i = 1, path:getNumNodes() do
+		local node = path:getNodeAtIndex(i)
+		table.insert(result, Vector(node.i, 0, node.j))
+	end
+
+	return result
+end
+
+Sailing.Ocean = {}
+
+function Sailing.Ocean.hasOcean(peep)
+	local instance = Utility.Peep.getInstance(peep)
+	local mapScript = instance:getBaseMapScript()
+	local ocean = mapScript and mapScript:hasBehavior(OceanBehavior)
+
+	return not not ocean
+end
+
+function Sailing.Ocean.getPositionRotation(peep)
+	local game = peep:getDirector():getGameInstance()
+
+	local position = peep:getBehavior(PositionBehavior)
+	local layer = position and position.layer
+
+	if not layer then
+		local instance = Utility.Peep.getInstance(peep)
+		layer = instance:getBaseLayer()
+	end
+
+	local mapScript = Utility.Peep.getInstance(peep):getMapScriptByLayer(layer)
+	local ocean = mapScript and mapScript:getBehavior(OceanBehavior)
+
+	-- Beam (width) needs to be projected out a bit, otherwise
+	-- the ship/fish/whatever will rotate too violently.
+	local beam
+	if peep:hasBehavior(ShipMovementBehavior) then
+		beam = peep:getBehavior(ShipMovementBehavior).beam * 2
+	elseif peep:hasBehavior(SizeBehavior) then
+		beam = peep:getBehavior(SizeBehavior).size.x * 2
+	end
+
+	local peepLeft = Sailing.getShipPort(peep, beam)
+	local peepForward = Sailing.getShipBow(peep)
+	local peepBackward = Sailing.getShipStern(peep)
+
+	local windDirection, windSpeed, windPattern = Utility.Map.getWind(game, layer)
+
+	local worldPosition = Utility.Peep.getPosition(peep)
+	worldPosition = Utility.Map.transformWorldPositionByWave(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
+		windDirection,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		Vector(worldPosition.x, -(ocean and ocean.offset or 1), worldPosition.z),
+		Vector(worldPosition.x, 0, worldPosition.z))
+	local worldPositionXZ = Vector(worldPosition.x, 0, worldPosition.z)
+
+	local worldLeftPosition = Utility.Map.transformWorldPositionByWave(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
+		windDirection,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		Vector(peepLeft.x, -(ocean and ocean.offset or 1), peepLeft.z) + worldPositionXZ,
+		Vector(peepLeft.x, 0, peepLeft.z) + worldPositionXZ)
+
+	local worldForwardPosition = Utility.Map.transformWorldPositionByWave(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
+		windDirection,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		Vector(peepForward.x, -(ocean and ocean.offset or 1), peepForward.z) + worldPositionXZ,
+		Vector(peepForward.x, 0, peepForward.z) + worldPositionXZ)
+
+	local worldBackwardPosition = Utility.Map.transformWorldPositionByWave(
+		ocean and ocean.time or 0,
+		windSpeed * (ocean and ocean.windSpeedMultiplier or 1),
+		windDirection,
+		windPattern * (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)),
+		Vector(peepBackward.x, -(ocean and ocean.offset or 1), peepBackward.z) + worldPositionXZ,
+		Vector(peepBackward.x, 0, peepBackward.z) + worldPositionXZ)
+
+	local normal
+	do
+		local s = worldForwardPosition - worldLeftPosition
+		local t = worldBackwardPosition - worldForwardPosition
+		normal = s:cross(t):getNormal()
+	end
+
+	local rotation = Quaternion.fromVectors(Vector.UNIT_Y, normal):getNormal()
+
+	return worldPosition, rotation
+end
+
+Sailing.Cannon = {}
+
+Sailing.Cannon.DEFAULT_SPEED     = 32
+Sailing.Cannon.DEFAULT_GRAVITY   = Vector(0, -4, 0)
+Sailing.Cannon.DEFAULT_DRAG      = 0.99
+Sailing.Cannon.DEFAULT_TIMESTEP  = 1 / 10
+Sailing.Cannon.DEFAULT_MAX_STEPS = 500
+
+Sailing.Cannon.GLOBAL_MAX_STEPS = 2000
+
+function Sailing.Cannon.getDefaultCannonballPathProperties()
+	return {
+		speed = Sailing.Cannon.DEFAULT_SPEED,
+		speedOffset = 0,
+		speedMultiplier = 1,
+
+		gravity = Sailing.Cannon.DEFAULT_GRAVITY,
+		gravityOffset = Vector(0),
+		gravityMultiplier = Vector(1),
+
+		drag = Sailing.Cannon.DEFAULT_DRAG,
+		dragOffset = 0,
+		dragMultiplier = 1,
+
+		timestep = Sailing.Cannon.DEFAULT_TIMESTEP,
+		timestepOffset = 0,
+		timestepMultiplier = 1,
+
+		maxSteps = Sailing.Cannon.DEFAULT_MAX_STEPS,
+		maxStepsOffset = 0,
+		maxStepsMultiplier = 1
+	}
+end
+
+function Sailing.Cannon._getCannonballPathProperties(gameDB, resource)
+	if not resource then
+		return Sailing.Cannon.getDefaultCannonballPathProperties()
+	end
+
+	local pathRecord = gameDB:getRecord("CannonballPathProperties", { Resource = resource })
+	if not pathRecord then
+		return Sailing.Cannon.getDefaultCannonballPathProperties()
+	end
+
+	local speed = pathRecord:get("Speed")
+	local speedOffset = pathRecord:get("SpeedOffset")
+	local speedMultiplier = pathRecord:get("SpeedMultiplier")
+	speedMultiplier = speedMultiplier == 0 and 1 or speedMultiplier
+
+	local gravity = Vector(pathRecord:get("GravityX"), pathRecord:get("GravityY"), pathRecord:get("GravityX"))
+	local gravityOffset = Vector(pathRecord:get("GravityOffsetX"), pathRecord:get("GravityOffsetY"), pathRecord:get("GravityOffsetX"))
+	local gravityMultiplier = Vector(pathRecord:get("GravityMultiplierX"), pathRecord:get("GravityMultiplierY"), pathRecord:get("GravityMultiplierX"))
+	gravityMultiplier = gravityMultiplier:getLength() == 0 and Vector(1)
+
+	local drag = pathRecord:get("Drag")
+	local dragOffset = pathRecord:get("DragOffset")
+	local dragMultiplier = pathRecord:get("DragMultiplier")
+	dragMultiplier = dragMultiplier == 0 and 1 or dragMultiplier
+
+	local timestep = pathRecord:get("Timestep")
+	local timestepOffset = pathRecord:get("TimestepOffset")
+	local timestepMultiplier = pathRecord:get("TimestepMultiplier")
+	timestepMultiplier = timestepMultiplier == 0 and 1 or timestepMultiplier
+
+	local maxSteps = pathRecord:get("MaxSteps")
+	local maxStepsOffset = pathRecord:get("MaxStepsOffset")
+	local maxStepsMultiplier = pathRecord:get("MaxStepsMultiplier")
+	maxStepsMultiplier = maxStepsMultiplier == 0 and 1 or maxStepsMultiplier
+
+	return {
+		speed = speed,
+		speedOffset = speedOffset,
+		speedMultiplier = speedMultiplier,
+
+		gravity = gravity,
+		gravityOffset = gravityOffset,
+		gravityMultiplier = gravityMultiplier,
+
+		drag = drag,
+		dragOffset = dragOffset,
+		dragMultiplier = dragMultiplier,
+
+		timestep = timestep,
+		timestepOffset = timestepOffset,
+		timestepMultiplier = timestepMultiplier,
+
+		maxSteps = maxSteps,
+		maxStepsOffset = maxStepsOffset,
+		maxStepsMultiplier = maxStepsMultiplier,
+	}
+end
+
+function Sailing.Cannon._mergeCannonballPathProperties(...)
+	local result = {}
+
+	for i = 1, select("#", ...) do
+		local properties = select(i, ...)
+
+		result.speed = result.speed or properties.speed
+		result.gravity = result.gravity or properties.gravity
+		result.drag = result.drag or properties.drag
+		result.timestep = result.timestep or properties.timestep
+		result.maxSteps = result.maxSteps or properties.maxSteps
+
+		result.speed = (result.speed + properties.speedOffset) * properties.speedMultiplier
+		result.gravity = (result.gravity + properties.gravityOffset) * properties.gravityMultiplier
+		result.drag = (result.drag + properties.dragOffset) * properties.dragMultiplier
+		result.timestep = (result.timestep + properties.timestepOffset) * properties.timestepMultiplier
+		result.maxSteps = (result.maxSteps + properties.maxStepsOffset) * properties.maxStepsMultiplier
+	end
+
+	return result
+end
+
+function Sailing.Cannon.getCannonballPathProperties(peep, cannon, ammo)
+	local gameDB = peep:getDirector():getGameDB()
+	local stage = peep:getDirector():getGameInstance():getStage()
+
+	local cannonResource
+	if type(cannon) == "string" then
+		cannonResource = gameDB:getRecord(cannon, "SailingItem")
+	elseif Class.isCompatibleType(cannon, Peep) then
+		local sailingResource = cannon:getBehavior(SailingResourceBehavior)
+		if sailingResource and sailingResource.resource then
+			cannonResource = sailingResource.resource
+		end
+	elseif cannon then
+		cannonResource = cannon
+	end
+
+	local ammoResource
+	if type(cannon) == "string" then
+		ammoResource = gameDB:getRecord(cannon, "SailingItem")
+	elseif Class.isCompatibleType(ammo, Peep) then
+		local sailingResource = ammo:getBehavior(SailingResourceBehavior)
+		if sailingResource and sailingResource.resource then
+			ammoResource = sailingResource.resource
+		end
+	elseif Class.isCompatibleType(ammo, Item) then
+		local itemResource = gameDB:getRecord(ammo:getID(), "Item")
+		local ammoRecord = gameDB:getRecord("ItemSailingItemMapping", { Item = itemResource })
+		if ammoRecord then
+			ammoResource = ammoRecord:get("SailingItem")
+		end
+	elseif ammo then
+		ammoResource = ammo
+	end
+
+	local cannonProperties = Sailing.Cannon._getCannonballPathProperties(gameDB, cannonResource)
+	local ammoProperties = Sailing.Cannon._getCannonballPathProperties(gameDB, ammoResource)
+
+	return Sailing.Cannon._mergeCannonballPathProperties(cannonProperties, ammoProperties)
+end
+
+function Sailing.Cannon.buildCannonballPath(cannon, properties)
+	local rotation, position
+
+	if Class.hasInterface(cannon, ICannon) then
+		rotation = cannon:getCannonDirection()
+		position = cannon:getCannonPosition()
+	else
+		rotation = Quaternion.IDENTITY
+		position = Utility.Peep.getAbsolutePosition(cannon)
+	end
+
+	local normal = rotation:transformVector(Vector.UNIT_Z)
+	local speed = properties.speed or Sailing.Cannon.DEFAULT_SPEED
+	local gravity = properties.gravity or Sailing.Cannon.DEFAULT_GRAVITY
+	local drag = properties.drag or Sailing.Cannon.DEFAULT_DRAG
+	local timestep = properties.timestep or Sailing.Cannon.DEFAULT_TIMESTEP
+	local maxSteps = properties.maxSteps or Sailing.Cannon.DEFAULT_MAX_STEPS
+	maxSteps = math.clamp(maxSteps, 1, Sailing.Cannon.GLOBAL_MAX_STEPS)
+
+	local currentStep = 1
+	local currentPosition = position
+	local currentVelocity = normal * speed
+
+	local path = { { i = 0, time = 0, position = currentPosition, velocity = currentVelocity } }
+	while currentStep <= maxSteps and currentPosition.y > 0 do
+		local velocityTimestep
+		if drag <= 0 or drag >= 1 then
+			velocityTimestep = 1
+		else
+			velocityTimestep = (drag ^ timestep - 1) / math.log(drag)
+		end
+
+		currentVelocity = currentVelocity + gravity * timestep
+		currentPosition = currentPosition + currentVelocity * velocityTimestep
+
+		if drag > 0 and drag < 1 then
+			currentVelocity = currentVelocity * drag ^ timestep
+		end
+
+		local pathStep = {
+			i = currentStep,
+			time = currentStep * timestep,
+			position = currentPosition,
+			velocity = currentVelocity
+		}
+
+		table.insert(path, pathStep)
+
+		currentStep = currentStep + 1
+	end
+
+	return path, currentStep * timestep
+end
 
 Sailing.Itinerary = {}
 function Sailing.Itinerary.hasItinerary(peep)

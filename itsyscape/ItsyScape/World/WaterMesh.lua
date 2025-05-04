@@ -28,6 +28,10 @@ function WaterMesh:new(width, height, scale)
 	self:_buildMesh()
 end
 
+function WaterMesh:getScale()
+	return self.scale
+end
+
 function WaterMesh:release()
 	self.mesh:release()
 	self.mesh = false
@@ -35,6 +39,10 @@ end
 
 function WaterMesh:getBounds()
 	return self.min, self.max
+end
+
+function WaterMesh:getMesh()
+	return self.mesh
 end
 
 function WaterMesh:draw(texture, ...)
@@ -45,12 +53,16 @@ function WaterMesh:draw(texture, ...)
 end
 
 function WaterMesh:_buildMesh()
-	self.min = Vector(math.huge)
-	self.max = Vector(-math.huge)
+	self.min = Vector(math.huge):keep()
+	self.max = Vector(-math.huge):keep()
 
 	for j = 1, self.height do
 		for i = 1, self.width do
 			self:_addFlat(i - 0.5, j - 0.5)
+		end
+
+		if coroutine.running() then
+			coroutine.yield()
 		end
 	end
 
@@ -67,8 +79,8 @@ function WaterMesh:_addVertex(position, normal, texture)
 		position.x * 1 / self.scale, position.z * 1 / self.scale
 	}
 
-	self.min = self.min:min(position)
-	self.max = self.max:max(position)
+	self.min:min(position):keep(self.min)
+	self.max:max(position):keep(self.max)
 
 	table.insert(self.vertices, vertex)
 end

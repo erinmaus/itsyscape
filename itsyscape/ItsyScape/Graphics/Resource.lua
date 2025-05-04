@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local NResource = require "nbunny.optimaus.resource"
 local NResourceInstance = require "nbunny.optimaus.resourceinstance"
@@ -26,6 +27,8 @@ local NResourceInstance = require "nbunny.optimaus.resourceinstance"
 --                  returns 1, getCurrentID will now be 2.
 --  * wrap:         Wraps the provided resource instance. This is an impl detail.
 local Resource = Class()
+Resource._currentID = 0
+Resource._pending = {}
 
 -- Constructor. Allocates a new ID for the Resource, bumping CURRENT_ID.
 function Resource:new()
@@ -51,22 +54,50 @@ function Resource:loadFromFile(filename, resourceManager)
 	return Class.ABSTRACT()
 end
 
+function Resource._queue(type, filename)
+	local id = Resource._currentID + 1
+
+	love.thread.getChannel('ItsyScape.Resource.File::input'):push({
+		id = id,
+		type = type,
+		filename = filename
+	})
+
+	Resource._currentID = id
+
+	return id
+end
+
+function Resource._poll(id, filename)
+	local result
+	repeat
+		result = Resource._pending[id]
+		if not result then
+			coroutine.yield()
+		end
+	until result
+
+	Resource._pending[id] = nil
+	return result
+end
+
 function Resource.readFile(filename)
 	if coroutine.running() then
-		love.thread.getChannel('ItsyScape.Resource.File::input'):push({
-			type = 'file',
-			filename = filename
-		})
+		local id = Resource._queue("file", filename)
+		local resource = Resource._poll(id, filename)
 
-		coroutine.yield()
+		return resource.value
+	else
+		return love.filesystem.read(filename)
+	end
+end
 
-		local s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
-		while not s do
-			coroutine.yield()
-			s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
-		end
+function Resource.readImageData(filename)
+	if coroutine.running() then
+		local id = Resource._queue("image", filename)
+		local resource = Resource._poll(id, filename)
 
-		return s
+		return resource.value
 	else
 		return love.filesystem.read(filename)
 	end
@@ -74,30 +105,83 @@ end
 
 function Resource.readLua(filename)
 	if coroutine.running() then
-		love.thread.getChannel('ItsyScape.Resource.File::input'):push({
-			type = 'lua',
-			filename = filename
-		})
+		local id = Resource._queue("lua", filename)
+		local resource = Resource._poll(id)
 
-		coroutine.yield()
-
-		local s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
-		while not s do
-			coroutine.yield()
-			s = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
+		return buffer.decode(resource.table)
+	else
+		local source, error = love.filesystem.read(filename)
+		if not source then
+			Log.error("Couldn't load model %s: %s", filename, error)
+			return {}
 		end
 
-		return s
-	else
-		local s = "return " .. love.filesystem.read(filename)
+		local s = "return " .. source
 		return assert(setfenv(loadstring(s), {}))()
 	end
+end
+
+local TYPES = {
+	file = true,
+	image = true,
+	lua = true
+}
+
+function Resource.many(t)
+	assert(coroutine.running(), "Resource.many is only async")
+
+	local result = {}
+
+	for i = 1, #t, 2 do
+		local fileType, filename = t[i], t[i + 1]
+		assert(TYPES[fileType], "resource file type not found")
+
+		table.insert(result, Resource._queue(fileType, filename))
+	end
+
+	local count = 0
+	while count < #result do
+		for index, id in ipairs(result) do
+			if type(id) == "number" then
+				local file = Resource._pending[id]
+				if file then
+					Resource._pending[id] = nil
+
+					if file.type == "image" then
+						result[index] = file.value
+					elseif file.type == "file" then
+						result[index] = file.value
+					elseif file.type == "lua" then
+						result[index] = buffer.decode(resource.table)
+					end
+
+					count = count + 1
+				end
+			end
+		end
+
+		coroutine.yield()
+	end
+
+	return result
 end
 
 function Resource.quit()
 	love.thread.getChannel('ItsyScape.Resource.File::input'):push({
 		type = 'quit'
 	})
+end
+
+function Resource.update()
+	local c = 0
+	local result
+	repeat
+		result = love.thread.getChannel('ItsyScape.Resource.File::output'):pop()
+		if result then
+			Resource._pending[result.id] = result
+			c = c + 1
+		end
+	until not result
 end
 
 -- Returns a boolean value indicating if the resource is ready (e.g., loaded).

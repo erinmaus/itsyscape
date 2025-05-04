@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local ProxyXWeapon = require "ItsyScape.Game.ProxyXWeapon"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local Earthquake = Class(ProxyXWeapon)
@@ -33,18 +34,17 @@ function Earthquake:hitSurroundingPeeps(peep, target)
 
 	local targetPosition = Utility.Peep.getAbsolutePosition(target)
 
-	local hits = peep:getDirector():probe(peep:getLayerName(), function(p)
-		if peep == p then
-			return false
-		end
+	local hits = peep:getDirector():probe(
+		peep:getLayerName(),
+		Probe.attackable(peep),
+		function(p)
+			if peep == p then
+				return false
+			end
 
-		if not Utility.Peep.isAttackable(p) then
-			return false
-		end
-
-		local position = Utility.Peep.getAbsolutePosition(p)
-		return (targetPosition - position):getLength() <= range
-	end)
+			local position = Utility.Peep.getAbsolutePosition(p)
+			return (targetPosition - position):getLength() <= range
+		end)
 
 	for i = 1, #hits do
 		ProxyXWeapon.perform(self, peep, hits[i])

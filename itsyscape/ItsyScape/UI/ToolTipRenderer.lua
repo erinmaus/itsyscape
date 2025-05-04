@@ -21,7 +21,7 @@ ToolTipRenderer.OFFSET_Y = 32
 function ToolTipRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
 
-	self.toolTipBorder = resources:load(patchy.load, "Resources/Renderers/Widget/Panel/ToolTip.9.png")
+	self.toolTipBorder = resources:load(patchy.load, "Resources/Game/UI/Panels/ToolTip.png")
 	self.headerFont = resources:load(love.graphics.newFont, "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf", 24)
 	self.textFont = resources:load(love.graphics.newFont, "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf", 22)
 	self.maxWidth = 320
@@ -59,7 +59,7 @@ function ToolTipRenderer:layout(widget)
 			if type(value) == 'string' then
 				text = value
 				shadow = false
-				color = Color(0, 0, 0, 1)
+				color = Color(1, 1, 1, 1)
 			else
 				text = value.text
 				shadow = value.shadow
@@ -96,6 +96,12 @@ function ToolTipRenderer:draw(widget, state)
 	local draw, width, height = self:layout(widget)
 	width = width + self.padding * 2
 	height = height + self.padding * 2
+
+	local currentWidth, currentHeight = widget:getSize()
+	if currentWidth == 0 and currentHeight == 0 then
+		widget:setSize(width, height)
+		widget:onLayout()
+	end
 
 	local screenWidth, screenHeight, scale = love.graphics.getScaledMode()
 	local sx, sy = itsyrealm.graphics.transformPoint(ToolTipRenderer.OFFSET_X, ToolTipRenderer.OFFSET_Y)

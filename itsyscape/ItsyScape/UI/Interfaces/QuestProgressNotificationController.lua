@@ -145,7 +145,10 @@ function QuestProgressNotificationController:updateMapHints()
 					local description = Utility.getDescription(step, gameDB, nil, 1)
 					local mapObject = hint:get("MapObject")
 
-					local hit = director:probe(peep:getLayerName(), Probe.mapObject(mapObject))[1]
+					local hit = director:probe(
+						peep:getLayerName(),
+						Probe.mapObject(mapObject),
+						Probe.instance(Utility.Peep.getPlayerModel(peep), true))[1]
 					if hit then
 						local prop = hit:getBehavior(PropReferenceBehavior)
 						if prop and prop.prop then

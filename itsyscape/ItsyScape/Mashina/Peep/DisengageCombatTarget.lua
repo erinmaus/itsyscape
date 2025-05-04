@@ -8,7 +8,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
+local Utility = require "ItsyScape.Game.Utility"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
+local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 
 local DisengageCombatTarget = B.Node("DisengageCombatTarget")
 DisengageCombatTarget.CURRENT_TARGET = B.Reference()
@@ -20,13 +23,18 @@ function DisengageCombatTarget:update(mashina, state, executor)
 		peep = combatTarget and combatTarget.actor and combatTarget.actor:getPeep()
 	end
 
+	local aggressive = mashina:getBehavior(AggressiveBehavior)
+	if aggressive then
+		peep = peep or aggressive.pendingTarget
+	end
+
+	Utility.Combat.disengage(mashina)
+
 	if not peep then
 		return B.Status.Failure
 	end
 
 	state[self.CURRENT_TARGET] = peep
-
-	mashina:removeBehavior(CombatTargetBehavior)
 	return B.Status.Success
 end
 

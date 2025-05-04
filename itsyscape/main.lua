@@ -1,6 +1,8 @@
 _LOG_SUFFIX = "client"
 require "bootstrap"
 
+local NLuaRuntime = require "nbunny.luaruntime"
+
 if _MOBILE then
 	local p = print
 
@@ -36,7 +38,9 @@ end
 itsyrealm = {
 	graphics = {
 		impl = {}
-	}
+	},
+
+	mouse = {}
 }
 
 _ARGS = {}
@@ -63,7 +67,7 @@ function love.load(args)
 		end
 
 		if args[i] == "/debugplus" or args[i] == "--debugplus" then
-			_DEBUG = 'plus'
+			_DEBUG = "plus"
 		end
 
 		if args[i] == "/phantom" then
@@ -73,6 +77,15 @@ function love.load(args)
 		local c = args[i]:match("/f:(%w+)") or args[i]:match("--f:(%w+)")
 		if c then
 			_ARGS[c:lower()] = true
+		end
+
+		local c, o = args[i]:match("/f:(%w+)=(.+)")
+		if not (c and o) then
+			c, o = args[i]:match("--f:(%w+)=(.+)")
+		end
+
+		if c and o then
+			_ARGS[c:lower()] = o
 		end
 
 		table.insert(_ARGS, args[i])
@@ -155,6 +168,36 @@ function love.mousemoved(x, y, dx, dy, isTouch)
 	end
 end
 
+function love.joystickadded(...)
+	if _APP and not _CONF.server then
+		_APP:joystickAdd(...)
+	end
+end
+
+function love.joystickeremoved(...)
+	if _APP and not _CONF.server then
+		_APP:joystickRemove(...)
+	end
+end
+
+function love.gamepadaxis(...)
+	if _APP and not _CONF.server then
+		_APP:gamepadAxis(...)
+	end
+end
+
+function love.gamepadreleased(...)
+	if _APP and not _CONF.server then
+		_APP:gamepadRelease(...)
+	end
+end
+
+function love.gamepadpressed(...)
+	if _APP and not _CONF.server then
+		_APP:gamepadPress(...)
+	end
+end
+
 -- Uncomment to test single-touch controls
 -- _MOBILE = true
 
@@ -189,7 +232,9 @@ function love.touchmoved(...)
 end
 
 local isCollectingGarbage = true
+local isProfiling = false
 local oldDebug = _DEBUG
+local dumpNbunnyFuncCalls = false
 function love.keypressed(...)
 	if _APP and not _CONF.server then
 		_APP:keyDown(...)
@@ -209,8 +254,6 @@ function love.keypressed(...)
 					collectgarbage()
 					_DEBUG = oldDebug
 				end
-			else
-				_APP.showDebug = not _APP.showDebug
 			end
 		elseif (select(1, ...) == 'f2') then
 			_APP.showUI = not _APP.showUI
@@ -220,11 +263,39 @@ function love.keypressed(...)
 			_APP.show3D = not _APP.show3D
 		elseif (select(1, ...) == 'f5') then
 			itsyrealm.graphics.disable()
-		elseif (select(1, ...) == 'f12') then
-			local p = require "ProFi"
-			jit.off()
-			p:setGetTimeMethod(love.timer.getTime)
-			p:start()
+		elseif (select(1, ...) == "f6") then
+			if love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift') then
+				if isProfiling then
+					isProfiling = true
+					require("jit.p").stop()
+				else
+					isProfiling = false
+					require("jit.p").start("3lm1i1")
+				end
+			elseif love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
+				local file = love.filesystem.read("settings.cfg")
+				if file then
+					local r, e = loadstring('return ' .. file)
+					if r then
+						r, e = pcall(r)
+						if r then
+							_CONF = e
+							_DEBUG = _CONF.debug
+
+							love.window.setMode(_CONF.width, _CONF.height, {
+								fullscreen = _CONF.fullscreen,
+								vsync = _CONF.vsync,
+								display = _CONF.display
+							})
+
+							itsyrealm.graphics.dirty()
+							_APP:getGameView():dirty()
+						end
+					end
+				end
+			else
+				dumpNbunnyFuncCalls = true
+			end
 		end
 	end
 end
@@ -261,10 +332,8 @@ function love.focus(isInFocus)
 end
 
 function love.quit()
-	if _DEBUG then
-		local p = require "ProFi"
-		p:stop()
-		p:writeReport("itsyscape.log")
+	if isProfiling then
+		require("jit.p").stop()
 	end
 
 	local result = _APP:quit()
@@ -430,6 +499,120 @@ function itsyrealm.errorhandler()
 
 		if love.timer then
 			love.timer.sleep(0.1)
+		end
+	end
+end
+
+local isCI = os.getenv("CI")
+function love.run()
+	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
+
+	-- We don't want the first frame's dt to include time taken by love.load.
+	if love.timer then love.timer.step() end
+
+	local dt = 0
+
+	-- Main loop time.
+	return function()
+		local oldDumpNbunnyFuncCalls = dumpNbunnyFuncCalls
+		
+		if _DEBUG then
+			NLuaRuntime.startMeasurements()
+
+			if oldDumpNbunnyFuncCalls then
+				NLuaRuntime.startDebug()
+			end
+		end
+
+		-- Process events.
+		if love.event then
+			love.event.pump()
+			for name, a,b,c,d,e,f in love.event.poll() do
+				if name == "quit" then
+					if not love.quit or not love.quit() then
+						return a or 0
+					end
+				end
+				love.handlers[name](a,b,c,d,e,f)
+			end
+		end
+
+		-- Update dt, as we'll be passing it to update
+		if love.timer then dt = love.timer.step() end
+
+		-- Call update and draw
+		if love.update then
+			if _APP then
+				_APP:measure("love.update()", love.update, dt)
+			else
+				love.update(dt)
+			end
+		end
+
+		if love.graphics and love.graphics.isActive() and not isCI then
+			love.graphics.origin()
+			love.graphics.clear(love.graphics.getBackgroundColor())
+
+			if love.draw then
+				if _APP then
+					_APP:measure("love.draw()", love.draw)
+				else
+					love.draw()
+				end
+			end
+
+			if _APP then
+				_APP:measure("love.graphics.present()", love.graphics.present)
+			else
+				love.graphics.present()
+			end
+		end
+
+		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 0) / 1000) end
+
+		if _DEBUG then
+			NLuaRuntime.stopMeasurements()
+
+			if oldDumpNbunnyFuncCalls then
+				NLuaRuntime.stopDebug()
+
+				do
+					local calls, totalTime = NLuaRuntime.getMeasurements()
+					local totalNumCalls = NLuaRuntime.getNumCalls()
+
+					local csv = {}
+					for method, stats in pairs(calls) do
+						table.insert(csv, string.format("%s, %d, %f", method, stats.calls, stats.time))
+					end
+
+					table.sort(csv, function(a, b)
+						return a < b
+					end)
+
+					Log.info("Nbunny function calls (%d total, %.2f ms):\n%s", totalNumCalls, totalTime * 1000, table.concat(csv, "\n"))
+				end
+
+				do
+					local json = require "json"
+
+					local calls = NLuaRuntime.getCalls()
+					table.sort(calls, function(a, b)
+						return a.time > b.time
+					end)
+
+					for _, call in ipairs(calls) do
+						call.arguments = Log.dump(call.arguments)
+						call.returnValue = Log.dump(call.returnValue)
+					end
+
+					local result = json.encode(calls)
+
+					local filename = string.format("nbunny-%s.json", os.date("%Y%m%d_%H%M%S"))
+					love.filesystem.write(filename, result)
+				end
+
+				dumpNbunnyFuncCalls = false
+			end
 		end
 	end
 end

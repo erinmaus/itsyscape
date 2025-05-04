@@ -130,7 +130,7 @@ function HumanoidActorAnimatorCortex:onInitiateAttack(peep, p)
 				resource)
 			break
 		else
-			Log.info("Missing '%s' animation.", animations[i])
+			Log.info("Missing '%s' animation for peep '%s'.", animations[i], peep:getName())
 		end
 	end
 end

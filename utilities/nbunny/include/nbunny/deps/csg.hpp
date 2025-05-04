@@ -4,6 +4,7 @@
 #define module_private private
 #endif 
 
+#include <algorithm>
 #include <vector>
 #include <set>
 #include <functional>

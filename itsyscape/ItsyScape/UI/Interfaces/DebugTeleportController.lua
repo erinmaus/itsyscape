@@ -59,18 +59,14 @@ function DebugTeleportController:teleport(e)
 					local existingInstance = raid:getInstances(map.name)[1]
 					if existingInstance then
 						Log.info("Teleporting to existing instance.")
-						stage:movePeep(peep, existingInstance, e.anchor)
+						Utility.move(peep, existingInstance, e.anchor)
 					else
 						Log.info("Teleporting to new instance.")
-						local newInstance = stage:movePeep(peep, "@" .. map.name, e.anchor)
-						raid:addInstance(newInstance)
+						Utility.move(peep, "@" .. map.name, e.anchor, raid)
 					end
 				end
 			else
-				stage:movePeep(
-					peep,
-					e.map,
-					e.anchor)
+				Utility.move(peep, e.map, e.anchor)
 			end
 		end
 	end

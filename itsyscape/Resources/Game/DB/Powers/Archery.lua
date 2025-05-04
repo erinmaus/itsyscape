@@ -27,9 +27,12 @@ ItsyScape.Resource.Power "Shockwave" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Shockwave"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -43,7 +46,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Stuns your opponent for 5-10 seconds and deals 50%-150% damage depending on your Dexterity level.",
+	Value = "Stuns your foe and deals increased damage. Prevents the foe's next special attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Shockwave"
 }
@@ -67,9 +70,12 @@ ItsyScape.Resource.Power "DoubleTake" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 40,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "DoubleTake"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -107,9 +113,12 @@ ItsyScape.Resource.Power "PiercingShot" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "PiercingShot"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -123,7 +132,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Shoot a piercing shot that hurts all enemies along projectile's path. Target gets deal 50%-200% damage based on Dexterity level.",
+	Value = "Shoot a piercing shot that hurts all enemies along projectile's path. Your target takes increased damage.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "PiercingShot"
 }
@@ -152,9 +161,12 @@ ItsyScape.Resource.Power "Boom" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Boom"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 5,
 	MaxLevel = 55,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -168,7 +180,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Using a stick of dynamite, drop a bomb at the feet of the target, causing a timed explosion resulting in 100%-300% damage in the immediate area.",
+	Value = "Drop a bomb at the feet of the target, causing a delayed explosion to anyone in the immediate area.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Boom"
 }
@@ -219,9 +231,12 @@ ItsyScape.Resource.Power "Snipe" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Snipe"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 10,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -235,7 +250,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Carefully aim to always hit the target. Damage scales from 90%-180% based on Dexterity level.",
+	Value = "Carefully aim to always hit the target.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Snipe"
 }
@@ -259,9 +274,12 @@ ItsyScape.Resource.Power "TrickShot" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 20,
 	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -291,7 +309,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Take a trick shot, dazing the enemy. Always hits, dealing up to 200% damage, but accuracy affects damage. A dazed enemy will have 10% reduced accuracy and damage for 30 seconds.",
+	Value = "Take a trick shot, dazing the enemy. Always hits, but accuracy affects damage. A dazed enemy will have reduced accuracy and damage.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "TrickShot"
 }
@@ -315,9 +333,12 @@ ItsyScape.Resource.Power "SoulStrike" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 3,
+	Resource = ItsyScape.Resource.Power "SoulStrike"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 30,
 	MaxLevel = 80,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -331,7 +352,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Debuffs offensive stats and defense directly by 10% their current value. Deals 200%-400%, depending on the strength of the debuffs.",
+	Value = "Debuffs offensive stats and defense directly by 10% their current value. The higher the debuff, the more damage dealt.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "SoulStrike"
 }
@@ -355,9 +376,12 @@ ItsyScape.Resource.Power "Headshot" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 90,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Headshot"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 40,
 	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -371,7 +395,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Aim for the head. Less accurate shot, but damage ranges from 200% - 400% upon a successful hit. This attack deals an extra 100% damage to undead.",
+	Value = "Aim for the head. Less accurate shot, but can deal massive damage. Increased effectiveness against the undead.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Headshot"
 }
@@ -395,9 +419,12 @@ ItsyScape.Resource.Power "Hesitate" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Hesitate"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 50,
 	MaxLevel = 80,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -411,7 +438,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Take your time before your next shot. Damage is delayed, but accuracy is greatly increased. Deals upwards of 100% damage, ignoring most defenses, buffs, and debuffs.",
+	Value = "Take your time before your next shot. Damage is delayed, but accuracy is greatly increase. Ignores most defenses, buffs, and debuffs.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Hesitate"
 }
@@ -440,9 +467,12 @@ ItsyScape.Resource.Power "Nuke" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 300,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 4,
+	Resource = ItsyScape.Resource.Power "Nuke"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 60,
 	MaxLevel = 90,
 	Skill = ItsyScape.Resource.Skill "Archery",
@@ -456,7 +486,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Using a stick of radioactive dynamite, cause a nuclear explosion at the feet of your target, damaging anyone within the blast with up to 500% damage. Afflicted targets will become radioactive for 60 seconds.",
+	Value = "Cause a nuclear explosion at the feet of your target, damaging anyone within the blast with insane damage. Afflicted targets will become radioactive.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Nuke"
 }

@@ -70,7 +70,6 @@ function RockView:load()
 
 			self.activeNode:fromGroup(mesh:getResource(), "CommonRock")
 			self.activeNode:getMaterial():setTextures(self.activeNodeTexture)
-			self.activeNode:getMaterial():setIsTranslucent(true)
 			self.activeNode:setParent(root)
 
 			local state = self:getProp():getState()
@@ -86,6 +85,14 @@ function RockView:load()
 				self.depleted = state.depleted
 			end
 		end)
+end
+
+function RockView:getActiveNode()
+	return self.activeNode
+end
+
+function RockView:getDepletedNode()
+	return self.depletedNode
 end
 
 function RockView:remove()

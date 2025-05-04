@@ -28,7 +28,7 @@ function Map:new(resource, name, ...)
 	self.arguments = {}
 end
 
-function Map:showPlayerMapInfo(player, resource)
+function Map:showPlayerMapInfo(player)
 	local playerPeep = player:getActor():getPeep()
 
 	local storage = self:getDirector():getPlayerStorage(playerPeep)
@@ -41,7 +41,7 @@ function Map:showPlayerMapInfo(player, resource)
 		return
 	end
 
-	local resource = resource or Utility.Peep.getResource(self)
+	local resource = Utility.Peep.getResource(self)
 	local name = Utility.getName(resource, self:getDirector():getGameDB())
 	local description = Utility.getDescription(resource, self:getDirector():getGameDB())
 

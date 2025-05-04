@@ -19,7 +19,7 @@ function RichTextLabel:new()
 	self.onSize = Callback()
 	self.onScroll = Callback()
 
-	self:setIsClickThrough(true)
+	self:setIsSelfClickThrough(true)
 end
 
 function RichTextLabel:getOverflow()

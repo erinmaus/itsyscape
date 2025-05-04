@@ -252,8 +252,8 @@ function AstralMaelstrom:tick()
 	Projectile.tick(self)
 
 	if not self.isReady then
-		self.startPosition = self:getTargetPosition(self:getDestination()) + Vector(0, AstralMaelstrom.ELEVATION, 0)
-		self.hitPosition = self:getTargetPosition(self:getDestination())
+		self.startPosition = (self:getTargetPosition(self:getDestination()) + Vector(0, AstralMaelstrom.ELEVATION, 0)):keep()
+		self.hitPosition = self:getTargetPosition(self:getDestination()):keep()
 
 		self.splosionParticleSystem:getTransform():setLocalTranslation(self.hitPosition)
 		self.smokeParticleSystem:getTransform():setLocalTranslation(self.hitPosition)

@@ -69,7 +69,7 @@ function Cook:cook(state, player, failure, target)
 		if difference >= width then
 			chance = 0.01
 		else
-			chance = math.max(math.min(2 ^ -(difference + 1), 1.0), 0.01)
+			chance = math.max(math.min(2 ^ -(difference + 1), 1.0), 0)
 		end
 
 		Log.info("Chance of burning food: %d%%.", chance * 100)

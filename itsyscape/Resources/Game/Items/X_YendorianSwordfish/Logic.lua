@@ -15,7 +15,7 @@ local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 local YendorianSwordfish = Class(MeleeWeapon)
 
 function YendorianSwordfish:getAttackRange(peep)
-	return 3.5
+	return 2.5
 end
 
 function YendorianSwordfish:getBonusForStance(peep)
@@ -23,7 +23,7 @@ function YendorianSwordfish:getBonusForStance(peep)
 end
 
 function YendorianSwordfish:getCooldown()
-	return 1.8
+	return 5
 end
 
 return YendorianSwordfish

@@ -8,7 +8,11 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Config = require "ItsyScape.Game.Config"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Mapp = require "ItsyScape.GameDB.Mapp"
+local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Atlas = require "ItsyScape.UI.Atlas"
 local Button = require "ItsyScape.UI.Button"
@@ -24,7 +28,9 @@ local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
-local PokeMenu = require "ItsyScape.UI.PokeMenu"
+local GamepadPokeMenu = require "ItsyScape.UI.GamepadPokeMenu"
+local GamepadIcon = require "ItsyScape.UI.GamepadIcon"
+local GamepadIconRenderer = require "ItsyScape.UI.GamepadIconRenderer"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelRenderer = require "ItsyScape.UI.PanelRenderer"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
@@ -61,8 +67,21 @@ UIView.MOBILE_X_PADDING = 48
 UIView.MOBILE_Y_PADDING = 24
 UIView.MOBILE_SCALE     = 0.65
 
-function love.graphics.getScaledMode()
-	local currentWidth, currentHeight = love.window.getMode()
+UIView.INPUT_SCHEME_MOUSE_KEYBOARD = "mouse/keyboard"
+UIView.INPUT_SCHEME_TOUCH          = "touch"
+UIView.INPUT_SCHEME_GYRO           = "gyro"
+UIView.INPUT_SCHEME_GAMEPAD        = "gamepad"
+
+local uiScale = 1
+function itsyrealm.graphics.setUIScale(value)
+	if type(value) == "number" or type(value) == "nil" then
+		uiScale = value or 1
+	end
+end
+
+local _mode
+function itsyrealm.graphics.getScaledMode()
+	local currentWidth, currentHeight = love.window.getMode(_mode)
 	local desiredWidth, desiredHeight = UIView.WIDTH, UIView.HEIGHT
 	local paddingX, paddingY = 0, 0
 
@@ -78,6 +97,7 @@ function love.graphics.getScaledMode()
 	else
 		scale = 1
 	end
+	scale = scale * (uiScale or 1)
 
 	local realWidth = currentWidth / scale - paddingX * 2
 	local realHeight = currentHeight / scale - paddingY * 2
@@ -85,12 +105,28 @@ function love.graphics.getScaledMode()
 	return math.floor(realWidth), math.floor(realHeight), scale, scale, paddingX, paddingY
 end
 
-function love.graphics.getScaledPoint(x, y)
-	local _, _, sx, sy, ox, oy = love.graphics.getScaledMode()
+function itsyrealm.graphics.getScaledPoint(x, y)
+	local _, _, sx, sy, ox, oy = itsyrealm.graphics.getScaledMode()
 	x = x / sx
 	y = y / sy
 
 	return x, y
+end
+
+function itsyrealm.graphics.inverseGetScaledPoint(x, y)
+	local _, _, sx, sy, ox, oy = itsyrealm.graphics.getScaledMode()
+	x = x * sx
+	y = y * sy
+
+	return x, y
+end
+
+function love.graphics.getScaledMode()
+	return itsyrealm.graphics.getScaledMode()
+end
+
+function love.graphics.getScaledPoint(x, y)
+	return itsyrealm.graphics.getScaledPoint(x, y)
 end
 
 local graphicsState = {
@@ -99,6 +135,7 @@ local graphicsState = {
 	transforms = {},
 	renderStates = {},
 	pseudoScissor = {},
+	appliedPseudoScissor = { n = 0 },
 	sizes = {},
 	drawQueue = { n = 0 },
 	oldSizes = {},
@@ -123,6 +160,15 @@ do
 
 	local w, h = love.window.getMode()
 	table.insert(graphicsState.pseudoScissor, { 0, 0, w, h })
+	table.insert(graphicsState.appliedPseudoScissor, { 0, 0, w, h })
+end
+
+function itsyrealm.mouse.getPosition()
+	if _APP then
+		return _APP:getMousePosition()
+	end
+
+	return love.mouse.getPosition()
 end
 
 function itsyrealm.graphics.getTime()
@@ -150,6 +196,7 @@ function itsyrealm.graphics.impl.captureRenderState()
 	renderState.font = love.graphics.getFont()
 	renderState.lineHeight = love.graphics.getFont():getLineHeight()
 	renderState.lineWidth = love.graphics.getLineWidth()
+	renderState.lineStyle = love.graphics.getLineStyle()
 	renderState.transform = transform
 
 	return renderState
@@ -158,6 +205,7 @@ end
 function itsyrealm.graphics.impl.setRenderState(renderState)
 	love.graphics.setColor(renderState.color)
 	love.graphics.setLineWidth(renderState.lineWidth)
+	love.graphics.setLineStyle(renderState.lineStyle)
 	love.graphics.origin()
 	love.graphics.applyTransform(renderState.transform)
 end
@@ -212,29 +260,33 @@ function itsyrealm.graphics.impl.drawItemIcon(width, height, icon, count, color,
 			originX, originY)
 	end
 
+	local r, g, b, a = love.graphics.getColor()
+
 	if disabled then
-		love.graphics.setColor(0.3, 0.3, 0.3, 1)
+		love.graphics.setColor(0.3, 0.3, 0.3, a)
 	else
-		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setColor(1, 1, 1, a)
 	end
 
 	love.graphics.draw(icon, x, y, 0, itemScaleX, itemScaleY, originX, originY)
 
-	if isDisabled then
-		love.graphics.setColor(1, 1, 1, 1)
-	end
-
 	if count ~= "1" then
-		love.graphics.setColor(unpack(color))
-
 		local textWidth = love.graphics.getFont():getWidth(count)
 
+		local x = width - textWidth - 2
+		local y = 2
+
 		love.graphics.setColor(0, 0, 0, 1)
-		love.graphics.print(count, width - textWidth, 2, 0, 0, scaleX, scaleY)
+		love.graphics.print(count, x - 2, y - 2, 0, scaleX, scaleY)
+		love.graphics.print(count, x + 2, y - 2, 0, scaleX, scaleY)
+		love.graphics.print(count, x - 2, y + 2, 0, scaleX, scaleY)
+		love.graphics.print(count, x + 2, y + 2, 0, scaleX, scaleY)
 
 		love.graphics.setColor(unpack(color))
-		love.graphics.print(count, width - textWidth - 2, 0, 0, scaleX, scaleY)
+		love.graphics.print(count, x, y, 0, scaleX, scaleY)
 	end
+
+	love.graphics.setColor(r, g, b, a)
 end
 
 function itsyrealm.graphics.impl.newItemIcon(width, height, ...)
@@ -268,7 +320,9 @@ function itsyrealm.graphics.impl.drawItem(renderState, handle, active)
 	else
 		alpha = 1
 	end
-	love.graphics.setColor(1, 1, 1, alpha)
+
+	local r, g, b, a = unpack(renderState.color)
+	love.graphics.setColor(r, g, b, a * alpha)
 
 	love.graphics.origin()
 	love.graphics.applyTransform(renderState.transform)
@@ -306,6 +360,14 @@ function itsyrealm.graphics.impl.draw(renderState, image, ...)
 	love.graphics.applyTransform(renderState.transform)
 	love.graphics.setColor(renderState.color)
 	love.graphics.drawLayer(atlas, layer, atlasQuad, ...)
+end
+
+function itsyrealm.graphics.impl.drawCallback(renderState, func, ...)
+	love.graphics.setColor(renderState.color)
+	love.graphics.setBlendMode("alpha")
+	love.graphics.origin()
+	love.graphics.applyTransform(renderState.transform)
+	func(...)
 end
 
 function itsyrealm.graphics.impl.uncachedDraw(renderState, image, ...)
@@ -718,6 +780,7 @@ end
 function itsyrealm.graphics.clearPseudoScissor()
 	local w, h = love.window.getMode()
 	graphicsState.pseudoScissor = { { 0, 0, w, h } }
+	graphicsState.appliedPseudoScissor = { n = 0, { 0, 0, w, h } }
 end
 
 function itsyrealm.graphics.pushInterface(width, height)
@@ -795,11 +858,23 @@ function itsyrealm.graphics.impl.push(command, ...)
 end
 
 function itsyrealm.graphics.resetPseudoScissor()
-	local w, h = love.window.getMode()
-	itsyrealm.graphics.impl.pushSize()
-	itsyrealm.graphics.impl.push(
-		itsyrealm.graphics.impl.setScissor,
-		0, 0, w, h)
+	graphicsState.appliedPseudoScissor.n = graphicsState.appliedPseudoScissor.n - 1
+	assert(graphicsState.appliedPseudoScissor.n >= 0, "unbalanced pseudo scissor stack")
+
+	table.remove(graphicsState.appliedPseudoScissor)
+
+	if graphicsState.appliedPseudoScissor.n > 0 then
+		itsyrealm.graphics.impl.pushSize()
+		itsyrealm.graphics.impl.push(
+			itsyrealm.graphics.impl.setScissor,
+			unpack(graphicsState.appliedPseudoScissor[#graphicsState.appliedPseudoScissor]))
+	else
+		local w, h = love.window.getMode()
+		itsyrealm.graphics.impl.pushSize()
+		itsyrealm.graphics.impl.push(
+			itsyrealm.graphics.impl.setScissor,
+			0, 0, w, h)
+	end
 end
 
 function itsyrealm.graphics.intersectPseudoScissor(x, y, w, h)
@@ -829,6 +904,10 @@ end
 
 function itsyrealm.graphics.applyPseudoScissor()
 	local x, y, w, h = unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+
+	table.insert(graphicsState.appliedPseudoScissor, graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+	graphicsState.appliedPseudoScissor.n = graphicsState.appliedPseudoScissor.n + 1
+
 	itsyrealm.graphics.impl.pushSize()
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.setScissor,
@@ -837,6 +916,10 @@ end
 
 function itsyrealm.graphics.getPseudoScissor()
 	return unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+end
+
+function itsyrealm.graphics.getPseudoScissorN()
+	return #graphicsState.pseudoScissor
 end
 
 function itsyrealm.graphics.drawItem(handle, width, height, icon, itemID, count, color, note, disabled, active)
@@ -943,6 +1026,14 @@ function itsyrealm.graphics.polygon(...)
 		itsyrealm.graphics.impl.polygon, ...)
 end
 
+function itsyrealm.graphics.pushCallback(func, ...)
+	itsyrealm.graphics.impl.pushSize()
+	itsyrealm.graphics.impl.push(
+		itsyrealm.graphics.impl.drawCallback,
+		itsyrealm.graphics.impl.captureRenderState(),
+		func, ...)
+end
+
 function itsyrealm.graphics.uncachedDraw(...)
 	itsyrealm.graphics.impl.pushSize()
 	itsyrealm.graphics.impl.push(
@@ -1034,6 +1125,11 @@ itsyrealm.graphics.disabled.uncachedDrawLayer = love.graphics.drawLayer
 function UIView:new(gameView)
 	self.game = gameView:getGame()
 	self.gameView = gameView
+	self.currentInputSchemes = {
+		[
+			_MOBILE and UIView.INPUT_SCHEME_MOUSE_KEYBOARD or UIView.INPUT_SCHEME_TOUCH
+		] = true
+	}
 
 	local ui = self.game:getUI()
 	ui.onOpen:register(self.open, self)
@@ -1045,6 +1141,7 @@ function UIView:new(gameView)
 	self.inputProvider = WidgetInputProvider(self.root)
 
 	self.resources = WidgetResourceManager()
+	self.root:setData(WidgetResourceManager, self.resources)
 
 	self.renderManager = WidgetRenderManager(self.inputProvider)
 	self.renderManager:addRenderer(Button, ButtonRenderer(self.resources))
@@ -1055,15 +1152,16 @@ function UIView:new(gameView)
 	self.renderManager:addRenderer(Icon, IconRenderer(self.resources))
 	self.renderManager:addRenderer(ItemIcon, ItemIconRenderer(self.resources))
 	self.renderManager:addRenderer(Panel, PanelRenderer(self.resources))
-	self.renderManager:addRenderer(PokeMenu, PanelRenderer(self.resources))
+	self.renderManager:addRenderer(GamepadPokeMenu, PanelRenderer(self.resources))
 	self.renderManager:addRenderer(RichTextLabel, RichTextLabelRenderer(self.resources))
-	self.renderManager:addRenderer(SceneSnippet, SceneSnippetRenderer(self.resources))
+	self.renderManager:addRenderer(SceneSnippet, SceneSnippetRenderer(self.resources, self.gameView))
 	self.renderManager:addRenderer(ScrollBar.Button, ScrollButtonRenderer(self.resources))
 	self.renderManager:addRenderer(ScrollBar.DragButton, ScrollButtonRenderer(self.resources))
 	self.renderManager:addRenderer(SpellIcon, SpellIconRenderer(self.resources))
 	self.renderManager:addRenderer(TextInput, TextInputRenderer(self.resources))
 	self.renderManager:addRenderer(Texture, TextureRenderer(self.resources))
 	self.renderManager:addRenderer(ToolTip, ToolTipRenderer(self.resources))
+	self.renderManager:addRenderer(GamepadIcon, GamepadIconRenderer(self.resources))
 
 	self.interfaces = {}
 
@@ -1074,6 +1172,18 @@ function UIView:new(gameView)
 	self.pokes = {}
 
 	self.uiState = {}
+end
+
+function UIView:enableInputScheme(inputScheme)
+	self.currentInputSchemes[inputScheme]= true
+end
+
+function UIView:disableInputScheme(inputScheme)
+	self.currentInputSchemes[inputScheme]= nil
+end
+
+function UIView:hasInputScheme(inputScheme)
+	return self.currentInputSchemes[inputScheme] == true
 end
 
 function UIView:pull(interfaceID, interfaceIndex)
@@ -1140,6 +1250,18 @@ function UIView:getInterfaces(interfaceID)
 	return pairs(self.interfaces[interfaceID] or {})
 end
 
+function UIView:getInterface(interfaceID, index)
+	local interfaces = self.interfaces[interfaceID]
+	if interfaces then
+		index = index or next(interfaces)
+		if index then
+			return interfaces[index]
+		end
+	end
+
+	return nil
+end
+
 function UIView:open(ui, interfaceID, index)
 	local TypeName = string.format("ItsyScape.UI.Interfaces.%s", interfaceID)
 	local Type = require(TypeName)
@@ -1150,6 +1272,7 @@ function UIView:open(ui, interfaceID, index)
 	self.interfaces[interfaceID] = interfaces
 
 	self.root:addChild(interface)
+	interface:attach()
 end
 
 function UIView:close(ui, interfaceID, index)
@@ -1175,7 +1298,201 @@ function UIView:poke(ui, interfaceID, index, actionID, actionIndex, e)
 	})
 end
 
-function UIView:examine(a, b)
+function UIView:_layoutToolTip(widget, toolTip)
+	local absoluteX, absoluteY = widget:getAbsolutePosition()
+	local widgetWidth, widgetHeight = widget:getSize()
+	local toolTipWidth, toolTipHeight = toolTip:getSize()
+	toolTip:setPosition(absoluteX - toolTipWidth / 2, absoluteY + widgetHeight / 2)
+end
+
+local function _sortItemStats(a, b)
+	return a.value > b.value
+end
+
+local function _match(a, b, pattern)
+	if pattern or pattern == nil then
+		return a:match(b)
+	end
+
+	return a == b
+end
+
+function UIView:_getItemSoundEffectFilename(itemState, itemActionState)
+	local soundEffects = Config.get("SoundEffects", "SFX", "category", "item", "_", {})
+
+	if not (itemState and itemActionState) then
+		return nil
+	end
+
+	local gameDB = self.game:getGameDB()
+	local itemRecord = gameDB:getResource(itemState.id, "Item")
+	local lootCategoryID = itemRecord and gameDB:getRecord("LootCategory", { Item = itemRecord })
+	lootCategoryID = lootCategoryID and lootCategoryID:get("Category").name
+	local equipRecord = itemRecord and gameDB:getRecord("Equipment", { Resource = itemRecord })
+	local equipSlot = equipRecord and equipRecord:get("EquipSlot")
+
+	local equipmentStats = {}
+	if itemState.stats then
+		for _, stat in ipairs(itemState.stats) do
+			table.insert(equipmentStats, stat)
+		end
+	elseif equipRecord then
+		for _, statName in ipairs(Equipment.STATS) do
+			table.insert(equipmentStats, { name = statName, value = equipRecord:get(statName) or 0 })
+		end
+	end
+
+	local actionConstraints
+	do
+		local action = Mapp.Action()
+		if itemActionState.id >= 1 and gameDB:getBrochure():tryGetAction(Mapp.ID(itemActionState.id), action) then
+			actionConstraints = Utility.getActionConstraints(self.game, action)
+		else
+			actionConstraints = { requirements = {}, inputs = {}, outputs = {} }
+		end
+	end
+
+
+	local soundEffectFilename
+	for _, soundEffect in ipairs(soundEffects) do
+		if not soundEffect.match or #soundEffect.match == 0 then
+			soundEffectFilename = soundEffect.filename
+			break
+		end
+
+		for _, match in ipairs(soundEffect.match) do
+			local hasAllRequirements = true
+
+			for _, requirement in ipairs(match) do
+				if requirement.resourceID then
+					if not _match(itemState.id, requirement.resourceID, requirement.pattern) then
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.actionType then
+					if not _match(itemActionState.type, requirement.actionType, requirement.pattern) then
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.lootCategoryID then
+					if not lootCategoryID or not _match(lootCategoryID, requirement.lootCategoryID, requirement.pattern) then
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.requirementResourceID or requirement.requirementResourceType then
+					local hasConstraint = false
+					for _, requirementConstraint in ipairs(actionConstraints.requirements) do
+						if (not requirement.requirementResourceID or _match(requirementConstraint.resource, requirement.requirementResourceID, requirement.pattern)) and
+						   (not requirement.requirementResourceType or _match(requirementConstraint.type, requirement.requirementResourceType, requirement.pattern))
+						then
+							hasConstraint = true
+							break
+						end
+					end
+
+					if not hasConstraint then
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.equipmentSlots then
+					local hasSlot = false
+					for _, requiredSlot in ipairs(requirement.equipmentSlots) do
+						local requiredSlotIndex
+						do
+							local requiredSlotFullName = string.format("PLAYER_SLOT_%s", requiredSlot)
+							for i, slot in pairs(Equipment.PLAYER_SLOT_NAMES) do
+								if slot == requiredSlotFullName then
+									requiredSlotIndex = i
+									break
+								end
+							end
+						end
+
+						if requiredSlotIndex and requiredSlotIndex == equipSlot then
+							hasSlot = true
+							break
+						end
+					end
+
+					if not hasSlot then
+						hasAllRequirements = false
+						break
+					end
+				end
+
+				if requirement.maxEquipmentStat then
+					local hasStat = false
+
+					for i = 1, #equipmentStats do
+						if i > 1 and equipmentStats[i - 1].value > equipmentStats[i].value then
+							break
+						end
+
+						if equipmentStats[i].name == requirement.maxEquipmentStat then
+							hasStat = true
+							break
+						end
+					end
+
+					if not hasStat then
+						hasAllRequirements = false
+						break
+					end
+				end
+			end
+
+			if hasAllRequirements then
+				soundEffectFilename = soundEffect.filename
+				break
+			end
+		end
+
+		if soundEffectFilename then
+			break
+		end
+	end
+
+	return soundEffectFilename
+end
+
+function UIView:playItemSoundEffect(itemState, itemActionState)
+	local soundEffects = Config.get("SoundEffects", "SFX", "category", "item", "_", {})
+	local roots = Config.get("SoundEffects", "ROOTS", "category", "item", "_", {})
+	local minPitch = Config.get("SoundEffects", "MIN_PITCH", "category", "item", "_", 0.8)
+	local maxPitch = Config.get("SoundEffects", "MIN_PITCH", "category", "item", "_", 1.0)
+
+	local soundEffectFilename = self:_getItemSoundEffectFilename(itemState, itemActionState)
+	if not soundEffectFilename then
+		soundEffectFilename = soundEffects[#soundEffects] and soundEffects[#soundEffects].filename
+	end	
+
+	if soundEffectFilename then
+		for _, root in ipairs(roots) do
+			local filename = string.format("%s/%s", root, soundEffectFilename)
+
+			if love.filesystem.getInfo(filename) then
+				local sound = love.audio.newSource(filename, "static")
+				sound:setVolume((_CONF.soundEffectsVolume or 1) * (_CONF.volume or 1))
+				sound:setPitch(love.math.random() * (maxPitch - minPitch) + minPitch)
+				sound:play()
+				
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+function UIView:examine(a, b, w)
 	local object, description
 	if a and b then
 		object = a
@@ -1210,11 +1527,19 @@ function UIView:examine(a, b)
 	end
 
 	if not Class.isCompatibleType(object, ToolTip.Component) then
-		object = ToolTip.Header(object)
+		object = ToolTip.Header(object, {
+			shadow = true,
+			color = Color(1, 1, 1)
+		})
 	end
 
 	if type(description) == "string" then
-		description = { ToolTip.Text(description) }
+		description = {
+			ToolTip.Text(description, {
+				shadow = true,
+				color = Color(1, 1, 1)
+			})
+		}
 	end
 
 	local toolTip = self.renderManager:setToolTip(
@@ -1224,24 +1549,43 @@ function UIView:examine(a, b)
 
 	if not _MOBILE then
 		toolTip:setStyle(PanelStyle({
-			image = "Resources/Renderers/Widget/Panel/Examine.9.png"
+			image = "Resources/Game/UI/Panels/ToolTip.png"
 		}, self.resources))
 	end
+
+	if w then
+		toolTip.onLayout:register(self._layoutToolTip, self, w)
+	end
+
+	return toolTip
 end
 
-function UIView:probe(actions)
+function UIView:probe(actions, x, y, centerX, centerY)
 	self:closePokeMenu()
 
-	self.pendingPokeMenu = PokeMenu(self, actions)
+	self.pendingPokeMenu = GamepadPokeMenu(self, actions)
 	do
 		local windowWidth, windowHeight, _, _, offsetX, offsetY = love.graphics.getScaledMode()
 		local menuWidth, menuHeight = self.pendingPokeMenu:getSize()
-		local mouseX, mouseY = love.graphics.getScaledPoint(love.mouse.getPosition())
+		local mouseX, mouseY = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+		mouseX = x or mouseX
+		mouseY = y or mouseY
+
+		if centerX then
+			local pokeMenuWidth = self.pendingPokeMenu:getSize()
+			mouseX = mouseX - pokeMenuWidth / 2
+		end
+
+		if centerY then
+			local _, pokeMenuHeight = self.pendingPokeMenu:getSize()
+			mouseY = mouseY - pokeMenuHeight / 2
+		end
+
 		mouseX = mouseX - offsetX
 		mouseY = mouseY - offsetY
 
-		local menuX = mouseX - PokeMenu.PADDING
-		local menuY = mouseY - PokeMenu.PADDING
+		local menuX = mouseX - GamepadPokeMenu.PADDING
+		local menuY = mouseY - GamepadPokeMenu.PADDING
 
 		if menuX + menuWidth > windowWidth then
 			local difference = menuX + menuWidth - windowWidth
@@ -1257,12 +1601,26 @@ function UIView:probe(actions)
 			menuX,
 			menuY)
 
-		self.pendingPokeMenu.onClose:register(function() self.pendingPokeMenu = false end)
+		self.pendingPokeMenu.onClose:register(self._onPokeMenuClosed, self)
 
 		self.root:addChild(self.pendingPokeMenu)
 	end
 
+	self.previousFocusedWidget = self.inputProvider:getFocusedWidget()
+	self.inputProvider:setFocusedWidget(self.pendingPokeMenu, "select")
+
 	return self.pendingPokeMenu
+end
+
+function UIView:_onPokeMenuClosed(pokeMenu)
+	if self.pokeMenu == pokeMenu and self.previousFocusedWidget then
+		self.inputProvider:setFocusedWidget(self.previousFocusedWidget, "select")
+		self.previousFocusedWidget = nil
+	end
+
+	if self.pendingPokeMenu == pokeMenu then
+		self.pendingPokeMenu = nil
+	end
 end
 
 function UIView:isPokeMenu(widget)
@@ -1278,6 +1636,10 @@ function UIView:closePokeMenu()
 		self.pokeMenu:close()
 		self.pokeMenu = false
 	end
+end
+
+function UIView:focus(widget, reason)
+	self.inputProvider:setFocusedWidget(widget, reason)
 end
 
 function UIView:findWidgetByID(id, topLevelWidget)
@@ -1299,9 +1661,17 @@ end
 
 function UIView:tick()
 	self.uiState = {}
+
+	for _, interfaces in pairs(self.interfaces) do
+		for _, interface in pairs(interfaces) do
+			interface:tick()
+		end
+	end
 end
 
 function UIView:update(delta)
+	self.inputProvider:update(delta)
+
 	if self.pendingPokeMenu then
 		self.pokeMenu = self.pendingPokeMenu
 		self.pendingPokeMenu = nil

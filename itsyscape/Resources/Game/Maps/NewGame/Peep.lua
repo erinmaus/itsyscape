@@ -15,7 +15,7 @@ local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
 
 local NewGame = Class(MapScript)
-NewGame.SISTINE_LOCATION = Vector(-48, -32, -48)
+NewGame.SISTINE_LOCATION = Vector(-64, -16, -64)
 
 function NewGame:onLoad(...)
 	MapScript.onLoad(self, ...)
@@ -24,7 +24,7 @@ function NewGame:onLoad(...)
 
 	Utility.Map.spawnMap(
 		self,
-		"EmptyRuins_SistineOfTheSimulacrum_Outside",
+		"IsabelleIsland_FoggyForest2",
 		NewGame.SISTINE_LOCATION)
 end
 
@@ -70,13 +70,13 @@ function NewGame:onPlayerEnter(player)
 	player:changeCamera("StandardCutscene")
 	player:pokeCamera("targetActor", player:getActor():getID())
 	player:pokeCamera("zoom", 100, 0)
-	player:pokeCamera("verticalRotate", -math.pi / 2 + math.pi / 8, 0)
+	player:pokeCamera("verticalRotate", -math.pi / 8, 0)
 
 	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
 		Utility.UI.closeAll(playerPeep)
-		Utility.UI.openInterface(playerPeep, "CharacterCustomization", true, function()
+		Utility.UI.openInterface(playerPeep, "CharacterCustomizationV2", true, function()
 			self:movePlayer(playerPeep)
-		end)
+		end, true)
 	else
 		self:movePlayer(playerPeep)
 	end

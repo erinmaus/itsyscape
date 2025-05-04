@@ -1,6 +1,5 @@
 {
-	model = "Resources/Game/Skins/MysticCotton/Hat.lmesh",
+	model = "Resources/Game/Skins/Common/Equipment/WizardHat.lmesh",
 	texture = "Resources/Game/Skins/MysticCotton/Texture.png",
-	isBlocking = false,
-	isGhosty = true
+	isBlocking = false
 }

@@ -117,20 +117,24 @@ function Ocean:onPlacePlayer(playerPeep, anchor, ship)
 
 	Utility.Peep.setPosition(playerPeep, Vector(x, y, z))
 
-	if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
-		self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
-	elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", playerPeep) then
-		self:summonCthulhu()
-	else
-		playerPeep:removeBehavior(DisabledBehavior)
+	-- if Utility.Quest.isNextStep("PreTutorial", "PreTutorial_Start", playerPeep) then
+	-- 	self:pushPoke("playCutscene", playerPeep, "IsabelleIsland_FarOcean2_Intro")
+	-- elseif Utility.Quest.isNextStep("PreTutorial", "PreTutorial_CthulhuRises", playerPeep) then
+	-- 	self:summonCthulhu()
+	-- else
+	-- 	playerPeep:removeBehavior(DisabledBehavior)
 
-		Utility.UI.closeAll(playerPeep, nil, { "CutsceneTransition", "DramaticText" })
-		Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
+	-- 	Utility.UI.closeAll(playerPeep, nil, { "CutsceneTransition", "DramaticText" })
+	-- 	Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
 
-		-- This usually shouldn't happen...
-		playerPeep:getState():give("KeyItem", "PreTutorial_DefendShip")
-		game:getStage():movePeep(playerPeep, "@Sailing_WhalingTemple", "Anchor_Spawn")
-	end
+	-- 	-- This usually shouldn't happen...
+	-- 	playerPeep:getState():give("KeyItem", "PreTutorial_DefendShip")
+	-- 	game:getStage():movePeep(playerPeep, "@Sailing_WhalingTemple", "Anchor_Spawn")
+	-- end
+
+	Utility.UI.closeAll(playerPeep, nil)
+	self:pushPoke("finishCutscene", playerPeep)
+	self:pushPoke("engage", "IsabelleIsland_Port_PortmasterJenkins", "engage")
 end
 
 function Ocean:onPlayCutscene(playerPeep, cutscene)
@@ -146,11 +150,11 @@ function Ocean:onFinishCutscene(playerPeep)
 		playerPeep,
 		Utility.UI.Groups.WORLD)
 
-	if self.currentTutorialState == Ocean.STATE_NONE then
-		self:showCameraTutorial(playerPeep)
-	else
-		playerPeep:removeBehavior(DisabledBehavior)
-	end
+	-- if self.currentTutorialState == Ocean.STATE_NONE then
+	-- 	self:showCameraTutorial(playerPeep)
+	-- else
+	-- 	playerPeep:removeBehavior(DisabledBehavior)
+	-- end
 
 	local playerModel = Utility.Peep.getPlayerModel(playerPeep)
 	playerModel:pokeCamera("unlockRotation")
@@ -495,7 +499,7 @@ function Ocean:updateCannonTargets()
 			position = Utility.Peep.getPosition(target)
 		else
 			position = Sailing.getShipTarget(self.soakedLog, self.deadPrincess)
-			normal = Sailing.getShipDirectionNormal(self.deadPrincess)
+			normal = Sailing.getShipForward(self.deadPrincess)
 		end
 	end
 

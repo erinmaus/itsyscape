@@ -14,6 +14,7 @@ local CutsceneEntity = require "ItsyScape.Game.CutsceneEntity"
 local CutsceneMap = require "ItsyScape.Game.CutsceneMap"
 local Utility = require "ItsyScape.Game.Utility"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 
 local Cutscene = Class()
 
@@ -30,6 +31,8 @@ function Cutscene:new(resource, player, director, layerName, map, entities)
 		Camera = CutsceneCamera(self.game, Utility.Peep.getPlayerModel(player))
 	}
 
+	self.player = Utility.Peep.getPlayerModel(player)
+
 	self:findMapObjects()
 	self:findPeeps()
 	self:findProps()
@@ -40,7 +43,6 @@ function Cutscene:new(resource, player, director, layerName, map, entities)
 
 	self.isDone = false
 
-	self.player = Utility.Peep.getPlayerModel(player)
 	self._onPlayerMove = function()
 		self:_finish()
 	end
@@ -59,7 +61,7 @@ function Cutscene:addEntity(name, Type, probe)
 		Log.warn("More than 1 hit for '%s'; will use first found.", name)
 	elseif #hits == 0 then
 		Log.warn("No hit found for '%s'.", name)
-		return
+		return false
 	end
 
 	if self.entities[name] then
@@ -69,6 +71,7 @@ function Cutscene:addEntity(name, Type, probe)
 
 	local peep = hits[1]
 	self.entities[name] = Type(peep)
+	return true
 end
 
 function Cutscene:find(recordName, Type, getResourceMethod)
@@ -77,10 +80,22 @@ function Cutscene:find(recordName, Type, getResourceMethod)
 	})
 
 	for i = 1, #records do
-		self:addEntity(records[i]:get("Name"), Type, function(p)
+		local success = self:addEntity(records[i]:get("Name"), Type, function(p)
+			local instance = p:getBehavior(InstancedBehavior)
+			if not (instance and instance.playerID ~= self.player:getID()) then
+				return false
+			end
+
 			local resource = getResourceMethod(p)
 			return resource and resource.id.value == records[i]:get("Resource").id.value
 		end)
+
+		if not success then
+			self:addEntity(records[i]:get("Name"), Type, function(p)
+				local resource = getResourceMethod(p)
+				return resource and resource.id.value == records[i]:get("Resource").id.value
+			end)
+		end
 	end
 
 	Log.info("Added %d of '%s' record(s).", #records, recordName)

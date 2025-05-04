@@ -7,12 +7,14 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local CommonMath = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
+local Config = require "ItsyScape.Game.Config"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Curve = require "ItsyScape.Game.Curve"
 local CurveConfig = require "ItsyScape.Game.CurveConfig"
@@ -21,6 +23,10 @@ local Stats = require "ItsyScape.Game.Stats"
 local Color = require "ItsyScape.Graphics.Color"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
+local CharacterBehavior = require "ItsyScape.Peep.Behaviors.CharacterBehavior"
+local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -31,6 +37,7 @@ local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedIn
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
+local ImmortalBehavior = require "ItsyScape.Peep.Behaviors.ImmortalBehavior"
 local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
@@ -40,6 +47,8 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
@@ -47,6 +56,8 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
+local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 
@@ -55,6 +66,69 @@ local MapPathFinder = require "ItsyScape.World.MapPathFinder"
 -- These methods can be used on both the client and server. They should not load
 -- any resources.
 local Utility = {}
+
+function _doMove(stage, player, path, anchor, raid, e, callback)
+	if callback then
+		callback("waited", player)
+	end
+
+	local instance = stage:movePeep(player, path, anchor, e)
+
+	if instance ~= path and raid then
+		raid:addInstance(instance)
+	end
+
+	if callback then
+		callback("move", player, instance)
+	end
+end
+
+-- callback lifecycle:
+--   - "wait"   -> begin waiting before move
+--   - "waited" -> finished waiting before move
+--   - "move"   -> peep moved
+--   - "ready"  -> player can move again
+function Utility.move(player, path, anchor, raid, e, callback)
+	local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+
+	local move = CallbackCommand(_doMove, player:getDirector():getGameInstance():getStage(), player, path, anchor, raid, e, callback)
+	local wait = WaitCommand(0.5, false)
+	local command = CompositeCommand(true, wait, move)
+
+	if not player:getCommandQueue():interrupt(command) then
+		if callback then
+			callback("cancel", player)
+		end
+
+		Log.info("Couldn't interrupt command queue for player '%s'; cannot move.", player:getName())
+		return false
+	end
+
+	if callback then
+		callback("wait", player)
+	end
+
+	Utility.Peep.disable(player)
+	player:removeBehavior(TargetTileBehavior)
+
+	local movement = player:getBehavior(MovementBehavior)
+	if movement then
+		movement.velocity = Vector.ZERO
+		movement.acceleration = Vector.ZERO
+	end
+
+	Utility.UI.openInterface(player, "CutsceneTransition", false, nil, function()
+		Utility.Peep.enable(player)
+
+		if callback then
+			callback("ready", player)
+		end
+	end)
+
+	return true
+end
 
 function Utility.save(player, saveLocation, talk, ...)
 	local director = player:getDirector()
@@ -121,12 +195,26 @@ function Utility.save(player, saveLocation, talk, ...)
 	return false
 end
 
+function Utility.moveToAnchor(peep, map, anchor)
+	if not peep then
+		return nil
+	end
+
+	local game = peep:getDirector():getGameInstance()
+	local x, y, z, localLayer = Utility.Map.getAnchorPosition(game, map, anchor)
+	Utility.Peep.setPosition(peep, Vector(x, y, z))
+	Utility.Peep.setLocalLayer(peep, localLayer)
+
+	return peep
+end
+
 function Utility.orientateToAnchor(peep, map, anchor)
 	if peep then
 		local game = peep:getDirector():getGameInstance()
 		local rotation = Quaternion(Utility.Map.getAnchorRotation(game, map, anchor))
 		local scale = Vector(Utility.Map.getAnchorScale(game, map, anchor))
 		local direction = Utility.Map.getAnchorDirection(game, map, anchor)
+		local _, _, _, localLayer = Utility.Map.getAnchorPosition(game, map, anchor)
 
 		if rotation ~= Quaternion.IDENTITY then
 			local shipMovement = peep:getBehavior(ShipMovementBehavior)
@@ -150,6 +238,8 @@ function Utility.orientateToAnchor(peep, map, anchor)
 				movement.targetFacing = direction
 			end
 		end
+
+		Utility.Peep.setLocalLayer(peep, localLayer)
 	end
 
 	return peep
@@ -475,13 +565,7 @@ function Utility.spawnMapAtPosition(peep, resource, x, y, z, args)
 
 	if mapScript then
 		mapScript:listen('finalize', function()
-			Utility.orientateToAnchor(mapScript, map, anchor)
-
-			local position = mapScript:getBehavior(PositionBehavior)
-			if Class.isCompatibleType(mapScript, require "Resources.Game.Peeps.Maps.ShipMapPeep") then
-				position.offset = Vector(0, position.position.y, 0)
-				position.position = Vector(position.position.x, 0, position.position.z)
-			end
+			Utility.Peep.setPosition(mapScript, Vector(x, y, z))
 		end)
 
 		return mapScript, layer
@@ -489,6 +573,69 @@ function Utility.spawnMapAtPosition(peep, resource, x, y, z, args)
 
 	Log.error("Couldn't spawn map '%s'.", resourceName)
 	return nil, nil
+end
+
+function Utility.spawnInstancedMapGroup(playerPeep, groupName)
+	local Probe = require "ItsyScape.Peep.Probe"
+
+	local stage = playerPeep:getDirector():getGameInstance():getStage()
+	local gameDB = playerPeep:getDirector():getGameDB()
+
+	local instance = Utility.Peep.getInstance(playerPeep)
+	local instanceMapGroup = instance:getMapGroup(Utility.Peep.getLayer(playerPeep))
+	local layerName = stage:buildLayerNameFromInstanceIDAndFilename(instance:getID(), instance:getFilename())
+
+	local mapResource = Utility.Peep.getMapResource(playerPeep)
+	if not mapResource then
+		return false
+	end
+
+	local mapObjectGroupRecords = gameDB:getRecords("MapObjectGroup", {
+		IsInstanced = 1,
+		MapObjectGroup = groupName,
+		Map = mapResource
+	})
+
+	local results = {}
+	local namedPeeps = {}
+	for _, mapObjectGroup in ipairs(mapObjectGroupRecords) do
+		local mapObject = mapObjectGroup:get("MapObject")
+		local mapObjectLocation = gameDB:getRecord("MapObjectLocation", {
+			Resource = mapObject
+		})
+
+		local exists = #playerPeep:getDirector():probe(
+			playerPeep:getLayerName(),
+			Probe.mapObject(mapObject),
+			Probe.instance(Utility.Peep.getPlayerModel(playerPeep))) >= 1
+
+		if mapObjectLocation and not exists then
+			local localLayer = math.max(mapObjectLocation:get("Layer"), 1)
+			local globalLayer = instance:getGlobalLayerFromLocalLayer(instanceMapGroup, localLayer)
+			local actor, prop = stage:instantiateMapObject(
+				mapObject,
+				globalLayer,
+				layerName,
+				false,
+				playerPeep)
+
+			assert(not (actor and prop), "single map object location spawned both an actor and prop")
+
+			if actor then
+				table.insert(results, actor:getPeep())
+			end
+
+			if prop then
+				table.insert(results, prop:getPeep())
+			end
+
+			if actor or prop then
+				namedPeeps[mapObjectLocation:get("Name")] = (actor or prop):getPeep()
+			end
+		end
+	end
+
+	return results, namedPeeps
 end
 
 function Utility.performAction(game, resource, id, scope, ...)
@@ -723,15 +870,231 @@ Utility.Time.DAY = 24 * 60 * 60
 Utility.Time.BIRTHDAY_INFO = {
 	year = 2018,
 	month = 3,
-	day = 23
+	day = 23,
+}
+Utility.Time.INGAME_BIRTHDAY_INFO = {
+	year = 1000,
+	month = 1,
+	day = 1
+}
+Utility.Time.INGAME_RITUAL_INFO = {
+	year = 1,
+	month = 2,
+	day = 25,
+	dayOfWeek = 2,
 }
 Utility.Time.BIRTHDAY_TIME = os.time(Utility.Time.BIRTHDAY_INFO)
 
-function Utility.Time.getDays(currentTime)
-	currentTime = currentTime or referenceTime
+Utility.Time.DAYS = {
+	"Featherday", -- Sunday
+	"Myreday",    -- Monday
+	"Theoday",    -- Tuesday
+	"Brakday" ,   -- Wednesday
+	"Takday",     -- Thursday
+	"Enderday",   -- Friday,
+	"Yenderday"   -- Saturday
+}
 
-	local referenceTime = Utility.Time.BIRTHDAY_TIME
+Utility.Time.AGE_BEFORE_RITUAL = "Age of Gods"
+Utility.Time.AGE_AFTER_RITUAL  = "Age of Humanity"
+
+Utility.Time.SHORT_AGE = {
+	[Utility.Time.AGE_BEFORE_RITUAL] = "A.G.",
+	[Utility.Time.AGE_AFTER_RITUAL]  = "A.H."
+}
+
+Utility.Time.MONTHS = {
+	"Fallsun",
+	"Emptorius",
+	"Longnights",
+	"Basturian",
+	"Godsun",
+	"Yohnus",
+	"Emberdawn",
+	"Prisius",
+	"Linshine",
+	"Chillbreak",
+	"Fogsden",
+	"Darksere",
+	"Yendermonth"
+}
+
+Utility.Time.DAYS_IN_INGAME_MONTH = {
+	30,
+	25,
+	31,
+	28,
+	29,
+	31,
+	29,
+	30,
+	29,
+	29,
+	28,
+	31,
+	27
+}
+
+Utility.Time.NUM_DAYS_PER_INGAME_YEAR = 377
+
+function Utility.Time._getIngameYearMonthDay(days)
+	local daysSinceRitualYear = Utility.Time.INGAME_BIRTHDAY_INFO.year * Utility.Time.NUM_DAYS_PER_INGAME_YEAR + days
+	local year = math.floor(daysSinceRitualYear / Utility.Time.NUM_DAYS_PER_INGAME_YEAR)
+
+	local day = daysSinceRitualYear - (math.floor(daysSinceRitualYear / Utility.Time.NUM_DAYS_PER_INGAME_YEAR) * Utility.Time.NUM_DAYS_PER_INGAME_YEAR) + 1
+	local dayOfWeek = daysSinceRitualYear % #Utility.Time.DAYS + 1
+
+	local month
+	do
+		local d = 0
+		for i, daysInMonth in ipairs(Utility.Time.DAYS_IN_INGAME_MONTH) do
+			if day <= d + daysInMonth then
+				month = i
+				break
+			else
+				d = d + daysInMonth
+			end
+		end
+
+		day = day - d
+	end
+
+	local age
+	if year <= 0 then
+		year = math.abs(year) + 1
+		age = Utility.Time.AGE_BEFORE_RITUAL
+	else
+		age = Utility.Time.AGE_AFTER_RITUAL
+	end
+
+	return {
+		year = year,
+		month = month,
+		day = day,
+		age = age,
+		dayOfWeek = dayOfWeek,
+		dayOfWeekName = Utility.Time.DAYS[dayOfWeek],
+		monthName = Utility.Time.MONTHS[month]
+	}
+end
+
+function Utility.Time.getIngameYearMonthDay(currentTime)
+	local days = Utility.Time.getDays(currentTime)
+	return Utility.Time._getIngameYearMonthDay(days)
+end
+
+function Utility.Time.toCurrentTime(year, month, day)
+	year = year or 1
+	month = month or 1
+	day = day or 1
+
+	local yearDifference = year - Utility.Time.INGAME_BIRTHDAY_INFO.year
+	local offsetDays = math.abs(yearDifference) * Utility.Time.NUM_DAYS_PER_INGAME_YEAR + (day - 1)
+
+	for i = 1, month - 1 do
+		offsetDays = offsetDays + Utility.Time.DAYS_IN_INGAME_MONTH[i]
+	end
+
+	offsetDays = offsetDays * math.sign(yearDifference)
+
+	local offsetTime = offsetDays * Utility.Time.DAY
+	local currentTime = Utility.Time.BIRTHDAY_TIME + offsetTime
+	return currentTime
+end
+
+-- Applies years, then months, then days.
+-- Does not handle fractional years/month/days.
+function Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, yearOffset)
+	yearOffset = math.floor(yearOffset or 0)
+	monthOffset = math.floor(monthOffset or 0)
+	dayOffset = math.floor(dayOffset or 0)
+
+	local yearMonthDay = Utility.Time.getIngameYearMonthDay(currentTime)
+
+	if yearMonthDay.age == Utility.AGE_BEFORE_RITUAL then
+		yearMonthDay.year = -(yearMonthDay.year - 1)
+	end
+
+	yearMonthDay.year = yearMonthDay.year + yearOffset + math.floor(monthOffset / #Utility.Time.MONTHS) + math.floor(dayOffset / Utility.Time.NUM_DAYS_PER_INGAME_YEAR)
+
+	local remainderMonths = math.sign(monthOffset) * (math.abs(monthOffset) % #Utility.Time.MONTHS)
+	if monthOffset < 0 then
+		if math.abs(remainderMonths) >= year.month then
+			year = year - 1
+
+			yearMonthDay.month = year.month - remainderMonths + #Utility.Time.MONTHS
+		else
+			yearMonthDay.month = yearMonthDay + remainderMonths
+		end
+	elseif monthOffset > 0 then
+		yearMonthDay.month = yearMonthDay.month + remainderMonths
+		if yearMonthDay.month >= #Utility.Time.MONTHS then
+			yearMonthDay.month = yearMonthDay.month - #Utility.Time.MONTHS
+			year = year + 1
+		end
+	end
+
+	yearMonthDay.day = yearMonthDay.day + math.sign(dayOffset) * math.abs(dayOffset) % Utility.Time.NUM_DAYS_PER_INGAME_YEAR
+	while yearMonthDay.day > Utility.Time.DAYS_IN_INGAME_MONTH[yearMonthDay.month] or yearMonthDay.day <= 0 do
+		if yearMonthDay.day <= 0 then
+			yearMonthDay.day = yearMonthDay + Utility.Time.DAYS_IN_INGAME_MONTH[yearMonthDay.month]
+
+			yearMonthDay.month = yearMonthDay.month - 1
+			if yearMonthDay.month <= 0 then
+				yearMonthDay.month = #Utility.Time.MONTHS
+				yearMonthDay.year = yearMonthDay.year - 1
+			end
+		else
+			yearMonthDay.day = yearMonthDay.day - Utility.Time.DAYS_IN_INGAME_MONTH[yearMonthDay.month]
+
+			yearMonthDay.month = yearMonthDay.month + 1
+			if yearMonthDay.month > #Utility.Time.MONTHS then
+				yearMonthDay.month = 1
+				yearMonthDay.year = yearMonthDay.year + 1
+			end
+		end
+	end
+
+	do
+		local daysSinceRitualYear = Utility.Time.NUM_DAYS_PER_INGAME_YEAR * yearMonthDay.year + yearMonthDay.day
+		for i = 1, yearMonthDay.month - 1 do
+			daysSinceRitualYear = daysSinceRitualYear + Utility.Time.DAYS_IN_INGAME_MONTH[i]
+		end
+
+		yearMonthDay.dayOfWeek = daysSinceRitualYear % #Utility.Time.DAYS + 1
+		yearMonthDay.dayOfWeekName = Utility.Time.DAYS[yearMonthDay.dayOfWeek]
+	end
+
+	if yearMonthDay.year <= 0 then
+		yearMonthDay.year = math.abs(yearMonthDay.year) + 1
+		yearMonthDay.age = Utility.Time.AGE_BEFORE_RITUAL
+	else
+		yearMonthDay.age = Utility.Time.AGE_AFTER_RITUAL
+	end
+
+	yearMonthDay.monthName = Utility.Time.MONTHS[yearMonthDay.month]
+
+	return yearMonthDay
+end
+
+function Utility.Time.getAndUpdateAdventureStartTime(root)
+	local clockStorage = root:getSection("Clock")
+	if not clockStorage:hasValue("start") then
+		clockStorage:set("start", Utility.Time.BIRTHDAY_TIME)
+	end
+
+	return clockStorage:get("start")
+end
+
+function Utility.Time.getDays(currentTime, referenceTime)
+	referenceTime = referenceTime or Utility.Time.BIRTHDAY_TIME
+	currentTime = currentTime or os.time()
+
 	return math.floor(os.difftime(currentTime, referenceTime) / Utility.Time.DAY)
+end
+
+function Utility.Time.getSeconds(root)
+	return root:getSection("Clock"):get("seconds") or 0
 end
 
 function Utility.Time.getAndUpdateTime(root)
@@ -746,16 +1109,117 @@ function Utility.Time.getAndUpdateTime(root)
 	return currentTime + currentOffset
 end
 
-function Utility.Time.updateTime(root, days)
+function Utility.Time.updateTime(root, days, seconds)
 	local currentOffset = root:getSection("Clock"):get("offset") or 0
-	local futureOffset = currentOffset + Utility.Time.DAY * (days or 1)
+	local futureOffset = currentOffset + Utility.Time.DAY * (days or 1) + (seconds or 0)
 	root:getSection("Clock"):set("offset", futureOffset)
+
+	if seconds then
+		local currentSeconds = root:getSection("Clock"):get("seconds") or 0
+		root:getSection("Clock"):set("seconds", currentSeconds + seconds)
+	end
 
 	return Utility.Time.getAndUpdateTime(root)
 end
 
 -- Contains utility methods that deal with combat.
 Utility.Combat = {}
+
+Utility.Combat.DEFAULT_STRAFE_ROTATIONS = {
+	Quaternion.Y_90,
+	Quaternion.Y_270
+}
+
+function Utility.Combat.disengage(peep)
+	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
+
+	local charge = peep:getBehavior(CombatChargeBehavior)
+	if charge then
+		Utility.Peep.cancelWalk(charge.currentWalkID)
+
+		peep:removeBehavior(CombatChargeBehavior)
+		peep:removeBehavior(TargetTileBehavior)
+	end
+
+	peep:getCommandQueue(CombatCortex.QUEUE):interrupt()
+	peep:removeBehavior(CombatTargetBehavior)
+
+	local aggressive = peep:getBehavior(AggressiveBehavior)
+	if aggressive then
+		aggressive.pendingTarget = false
+		aggressive.pendingResponseTime = 0
+	end
+end
+
+function Utility.Combat.strafe(peep, target, distance, rotations, onStrafe)
+	if not target then
+		local possibleTarget = peep:getBehavior(CombatTargetBehavior)
+		if not (possibleTarget and possibleTarget.actor and possibleTarget.actor:getPeep()) then
+			return false
+		end
+		target = possibleTarget.actor:getPeep()
+	end
+
+	rotations = rotations or Utility.Combat.DEFAULT_STRAFE_ROTATIONS
+	local rotation = rotations[love.math.random(#rotations)]
+
+	local peepPosition = Utility.Peep.getPosition(peep) * Vector.PLANE_XZ
+	local direction
+	if Class.isCompatibleType(target, Vector) then
+		direction = rotation:transformVector(target):getNormal()
+	else
+		local targetPosition = Utility.Peep.getPosition(target) * Vector.PLANE_XZ
+		direction = rotation:transformVector(peepPosition:direction(targetPosition)):getNormal()
+	end
+
+	local position = peepPosition + direction * distance
+	local k = Utility.Peep.getLayer(peep)
+
+	local callback, n = Utility.Peep.queueWalk(peep, position.x, position.z, k, math.huge, { asCloseAsPossible = true, isPosition = true })
+	callback:register(function(s)
+		if onStrafe then
+			onStrafe(peep, target, s)
+		end
+	end)
+
+	return true, n
+end
+
+function Utility.Combat.deflectPendingPower(power, activator, target)
+	local ZealPoke = require "ItsyScape.Game.ZealPoke"
+
+	if target and target:hasBehavior(PendingPowerBehavior) then
+		local pendingPower = target:getBehavior(PendingPowerBehavior)
+		if pendingPower.power then
+			local pendingPowerID = pendingPower.power:getResource().name
+
+			Log.info("%s (activated by '%s') negated pending power '%s' on target '%s'.",
+				power:getResource().name,
+				activator:getName(),
+				pendingPowerID,
+				target:getName())
+
+			local rechargeCost = pendingPower.power:getCost(target)
+			local _, recharge = target:addBehavior(PowerRechargeBehavior)
+			recharge.powers[pendingPowerID] = math.max(recharge.powers[pendingPowerID] or 0, rechargeCost)
+
+			target:poke("zeal", ZealPoke.onLosePower({
+				power = pendingPower.power,
+				zeal = -rechargeCost
+			}))
+
+			target:poke("powerDeflected", {
+				activator = activator,
+				power = pendingPower.power,
+				action = pendingPower.power:getAction()
+			})
+
+			target:removeBehavior(PendingPowerBehavior)
+
+			return pendingPower.power
+		end
+	end
+end
 
 function Utility.Combat.getCombatLevel(peep)
 	local stats = peep:getBehavior(StatsBehavior)
@@ -904,13 +1368,21 @@ Utility.Text.PRONOUN_SUBJECT    = GenderBehavior.PRONOUN_SUBJECT
 Utility.Text.PRONOUN_OBJECT     = GenderBehavior.PRONOUN_OBJECT
 Utility.Text.PRONOUN_POSSESSIVE = GenderBehavior.PRONOUN_POSSESSIVE
 Utility.Text.FORMAL_ADDRESS     = GenderBehavior.FORMAL_ADDRESS
-Utility.Text.DEFAULT_PRONOUNS   = {
+
+Utility.Text.NAMED_PRONOUN = {
+	subject = Utility.Text.PRONOUN_SUBJECT,
+	object = Utility.Text.PRONOUN_OBJECT,
+	possessive = Utility.Text.PRONOUN_POSSESSIVE,
+	formal = Utility.Text.FORMAL_ADDRESS,
+}
+
+Utility.Text.DEFAULT_PRONOUNS = {
 	["en-US"] = {
 		["x"] = {
 			"they",
 			"them",
 			"their",
-			"mazer"
+			"patrician"
 		},
 		["male"] = {
 			"he",
@@ -930,6 +1402,653 @@ Utility.Text.BE = {
 	[true] = { present = 'are', past = 'were', future = 'will be' },
 	[false] = { present = 'is', past = 'was', future = 'will be' }
 }
+
+function Utility.Text._find(text, pattern, offset)
+	local i, j = text:sub(offset):find(pattern)
+	if i and j then
+		return i + offset - 1, j + offset - 1
+	end
+
+	return nil, nil
+end
+
+function Utility.Text.parse(text, rootTag)
+	local _find = Utility.Text._find
+
+	local rootElement = {
+		tag = rootTag,
+		attributes = {},
+		children = {}
+	}
+
+	local elementStack = { rootElement }
+
+	local previousI = 1
+	local i, j = 0
+	repeat
+		i, j = text:find("</?([%w_-][%w%d_-]*)", previousI)
+
+		if i and j then
+			if i > previousI then
+				local fragment = text:sub(previousI, i - 1)
+
+				table.insert(elementStack[#elementStack].children, fragment)
+			end
+
+			local elementTag = text:sub(i + 1, j)
+
+			if elementTag:sub(1, 1) == "/" then
+				elementTag = elementTag:sub(2)
+
+				local element = elementStack[#elementStack]
+				if element.tag ~= elementTag then
+					error(string.format("expected ending element tag '%s', got '%s'", element.tag, elementTag))
+				end
+
+				local endTagBracket = text:sub(j + 1, j + 1)
+				if endTagBracket ~= ">" then
+					error(string.format("expected '>' to end element tag '%s', got '%s'", elementTag, endTagBracket))
+				end
+
+				table.remove(elementStack, #elementStack)
+			else
+				local element = { attributes = {}, children = {}, tag = elementTag }
+
+				if #elementStack >= 1 then
+					local parent = elementStack[#elementStack]
+
+					element.parent = parent
+					table.insert(parent.children, element)
+				end
+
+				table.insert(elementStack, element)
+			end
+
+			local attributeJ, attributeI = j
+			repeat
+				local endTagI, endTagJ = _find(text, "^%s*/?>\n?", attributeJ + 1)
+				attributeI, attributeJ = _find(text, "^%s+([%w_-][%w%d_-]*)", attributeJ + 1)
+
+				if attributeI and attributeJ then
+					local attribute = text:sub(attributeI + 1, attributeJ)
+					local typeName = text:sub(attributeJ + 1):match("^:(%w+)=")
+
+					local value
+					do
+						local valueStart = attributeJ + #(typeName or "") + (typeName and 2 or 1)
+						if text:sub(valueStart, valueStart) ~= "=" then
+							value = true
+							typeName = typeName or "boolean"
+						else
+							local valueI, valueJ = _find(text, "^=\'[^\']+\'", valueStart)
+							if valueI and valueJ then
+								while text:sub(valueJ - 1, valueJ - 1) == "\\" do
+									local _
+									_, valueJ = _find(text, "^[^\']+\'", valueJ + 1)
+
+									if not valueJ then
+										error(string.format("value for attribute '%s' in element tag '%s' unterminated", attribute, elementStack[#elementStack].tag))
+									else
+										valueJ = valueJ + 1
+									end
+								end
+
+								value = text:sub(valueI + 2, valueJ - 1):gsub("\\\'", "\'")
+
+								attributeJ = valueJ
+								j = valueJ
+							else
+								error(string.format("attribute '%s' in element tag '%s' malformed", attribute, elementStack[#elementStack].tag))
+							end
+						end
+					end
+
+					if value ~= nil then
+						if typeName then
+							if typeName == "number" then
+								value = tonumber(value) or nil
+							elseif typeName == "string" then
+								value = tostring(value)
+							elseif typeName == "boolean" then
+								if type(value) == "string" then
+									if value:lower() == "true" then
+										value = true
+									elseif value:lower() == "false" then
+										value = false
+									end
+								else
+									value = not not value
+								end
+							end
+						else
+							value = tonumber(value) or value
+							typeName = type(value)
+						end
+
+						local element = elementStack[#elementStack]
+						if element.attributes[attribute] ~= nil then
+							error(string.format("duplicate attribute '%s' in element tag '%s'", attribute, element.tag))
+						else
+							element.attributes[attribute] = { value = value, type = typeName or "?" }
+						end
+					end
+				elseif endTagI and endTagJ then
+					if text:sub(endTagI, endTagJ):match("^%s/>") then
+						table.remove(elementStack, #elementStack)
+					end
+
+					j = endTagJ + 1
+					break
+				else
+					error(string.format("element tag '%s' unterminated", elementStack[#elementStack].tag))
+				end
+			until not attributeI
+
+			previousI = j
+		end
+	until not i
+
+	if previousI and previousI + 1 < #text then
+		table.insert(rootElement.children, text:sub(previousI + 1))
+	end
+
+	if #elementStack > 1 then
+		error(string.format("unmatched element tag '%s'", elementStack[#elementStack].tag))
+	end
+
+	return rootElement
+end
+
+Utility.Text.TIME_FORMAT = {
+	year = function(yearMonthDay)
+		return tostring(yearMonthDay.year)
+	end,
+
+	yearOptionalShortAge = function(yearMonthDay)
+		if yearMonthDay.age ~= Utility.Time.AGE_AFTER_RITUAL then
+			return string.format("%d %s", yearMonthDay.year, Utility.Time.SHORT_AGE[yearMonthDay.age])
+		else
+			return tostring(yearMonthDay.year)
+		end
+	end,
+
+	yearOptionalLongAge = function(yearMonthDay)
+		if yearMonthDay.age ~= Utility.Time.AGE_AFTER_RITUAL then
+			return string.format("%d %s", yearMonthDay.year, yearMonthDay.age)
+		else
+			return tostring(yearMonthDay.year)
+		end
+	end,
+
+	age = function(yearMonthDay)
+		return Utility.Time.SHORT_AGE[yearMonthDay.age]
+	end,
+
+	longAge = function(yearMonthDay)
+		return yearMonthDay.age
+	end,
+
+	day = function(yearMonthDay)
+		return yearMonthDay.day
+	end,
+
+	dayWithSpacePadding = function(yearMonthDay)
+		return string.format("% 2d", yearMonthDay.day)
+	end,
+
+	dayWithNumberPadding = function(yearMonthDay)
+		return string.format("%02d", yearMonthDay.day)
+	end,
+
+	dayOfWeek = function(yearMonthDay)
+		return yearMonthDay.dayOfWeek
+	end,
+
+	dayOfWeekName = function(yearMonthDay)
+		return yearMonthDay.dayOfWeekName
+	end,
+
+	month = function(yearMonthDay)
+		return yearMonthDay.month
+	end,
+
+	monthName = function(yearMonthDay)
+		return Utility.Time.MONTHS[yearMonthDay.month]
+	end
+}
+
+Utility.Text.Dialog = {}
+
+local function _listToFlags(dialog, list)
+	if type(list) ~= "table" then
+		return {}
+	end
+
+	local flags = {}
+	for k, v in list:values() do
+		local flag = v:getValueName():gsub("_", "-")
+		flags[flag] = true
+	end
+
+	return flags
+end
+
+function Utility.Text.Dialog.ir_state_has(dialog, characterName, resourceType, resource, count, flags)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return peep:getState():has(resourceType, resource, count, _listToFlags(dialog, flags))
+end
+
+function Utility.Text.Dialog.ir_state_count(dialog, characterName, resourceType, resource, flags)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return peep:getState():count(resourceType, resource, _listToFlags(dialog, flags))
+end
+
+function Utility.Text.Dialog.ir_state_give(dialog, characterName, resourceType, resource, count, flags)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return peep:getState():give(resourceType, resource, count, _listToFlags(dialog, flags))
+end
+
+function Utility.Text.Dialog.ir_state_take(dialog, characterName, resourceType, resource, count, flags)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return peep:getState():take(resourceType, resource, count, _listToFlags(dialog, flags))
+end
+
+function Utility.Text.Dialog.ir_has_started_quest(dialog, characterName, questName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return Utility.Quest.didStart(questName, peep)
+end
+
+function Utility.Text.Dialog.ir_is_next_quest_step(dialog, characterName, questName, keyItemID)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return Utility.Quest.isNextStep(questName, keyItemID, peep)
+end
+
+function Utility.Text.Dialog.ir_get_pronoun(dialog, characterName, pronounType, upperCase)
+	local index = Utility.Text.NAMED_PRONOUN[pronounType]
+	local default = Utility.Text.DEFAULT_PRONOUNS["en-US"]["x"][index] or ""
+
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return default
+	end
+
+	return Utility.Text.getPronoun(peep, index, "en-US", upperCase)
+end
+
+function Utility.Text.Dialog.ir_is_pronoun_plural(dialog, characterName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return true
+	end
+
+	local gender = peep:getBehavior(GenderBehavior)
+	if gender then
+		return gender.pronounsPlural
+	end
+
+	return true
+end
+
+function Utility.Text.Dialog.ir_get_pronoun_lowercase(dialog, characterName, pronounType)
+	return Utility.Text.Dialog.ir_get_pronoun(dialog, characterName, pronounType, false)
+end
+
+function Utility.Text.Dialog.ir_get_pronoun_uppercase(dialog, characterName, pronounType)
+	return Utility.Text.Dialog.ir_get_pronoun(dialog, characterName, pronounType, true)
+end
+
+function Utility.Text.Dialog.ir_get_english_be(dialog, characterName, tense, upperCase)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return Utility.Text.BE[true][tense] or ""
+	end
+
+	return Utility.Text.getEnglishBe(peep, tense, upperCase)
+end
+
+function Utility.Text.Dialog.ir_get_english_be_lowercase(dialog, characterName, tense)
+	return Utility.Text.Dialog.ir_get_english_be(dialog, characterName, tense, false)
+end
+
+function Utility.Text.Dialog.ir_get_english_be_uppercase(dialog, characterName, tense)
+	return Utility.Text.Dialog.ir_get_english_be(dialog, characterName, tense, true)
+end
+
+function Utility.Text.Dialog.ir_get_relative_date_from_start(dialog, dayOffset, monthOffset, yearOffset, format)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	local startTime = Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
+	return Utility.Text.Dialog.ir_get_relative_date_from_time(dialog, dayOffset, monthOffset, yearOffset, format, startTime)
+end
+
+function Utility.Text.Dialog.ir_get_relative_date_from_now(dialog, dayOffset, monthOffset, yearOffset, format)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	local currentTime = Utility.Time.getAndUpdateTime(rootStorage)
+	return Utility.Text.Dialog.ir_get_relative_date_from_time(dialog, dayOffset, monthOffset, yearOffset, format, currentTime)
+end
+
+function Utility.Text.Dialog.ir_get_relative_date_from_birthday(dialog, dayOffset, monthOffset, yearOffset, format)
+	local currentTime = Utility.Time.BIRTHDAY_TIME
+	return Utility.Text.Dialog.ir_get_relative_date_from_time(dialog, dayOffset, monthOffset, yearOffset, format, currentTime)
+end
+
+function Utility.Text.Dialog.ir_get_relative_date_from_time(dialog, dayOffset, monthOffset, yearOffset, format, currentTime)
+	local yearMonthDay = Utility.Time.offsetIngameTime(currentTime or Utility.Time.BIRTHDAY_TIME, dayOffset, monthOffset, yearOffset)
+	local newTime = Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+
+	return Utility.Text.Dialog.ir_format_date(dialog, format, newTime)
+end
+
+function Utility.Text.Dialog.ir_format_date(dialog, format, currentTime)
+	local format = format or "%monthName %day, %yearOptionalShortAge"
+	local yearMonthDay = Utility.Time.getIngameYearMonthDay(currentTime or Utility.Time.BIRTHDAY_TIME)
+
+	return format:gsub("%%(%w+)", function(key)
+		local func = Utility.Text.TIME_FORMAT[key]
+		if not func then
+			error(string.format("time format specifier '%s' not valid", key))
+		end
+
+		return func(yearMonthDay)
+	end)
+end
+
+function Utility.Text.Dialog.ir_get_start_time(dialog)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	return Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
+end
+
+function Utility.Text.Dialog.ir_get_current_time(dialog)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	return Utility.Time.getAndUpdateTime(rootStorage)
+end
+
+function Utility.Text.Dialog.ir_get_birthday_time(dialog)
+	return Utility.Time.BIRTHDAY_TIME
+end
+
+function Utility.Text.Dialog.ir_get_date_component(dialog, currentTime, component)
+	return Utility.Time.getIngameYearMonthDay(currentTime)[component]
+end
+
+function Utility.Text.Dialog.ir_to_current_time(dialog, year, month, day)
+	return Utility.Time.toCurrentTime(year, month, day)
+end
+
+function Utility.Text.Dialog.ir_offset_current_time(dialog, currentTime, dayOffset, monthOffset, yearOffset)
+	local yearMonthDay = Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, yearOffset)
+	return Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+end
+
+function Utility.Text.Dialog.ir_get_num_days_in_month(dialog, month)
+	return Utility.Time.DAYS_IN_INGAME_MONTH[month]
+end
+
+function Utility.Text.Dialog.ir_get_month_name(dialog, month)
+	return Utility.Time.MONTHS[month]
+end
+
+function Utility.Text.Dialog.ir_get_day_name(dialog, day)
+	return Utility.Time.DAYS[day]
+end
+
+function Utility.Text.Dialog.ir_yell(dialog, message)
+	return message:upper()
+end
+
+function Utility.Text.Dialog.ir_get_infinite()
+	return math.huge
+end
+
+function Utility.Text.Dialog.ir_play_animation(dialog, characterName, animationSlot, animationPriority, animationName, animationForced, animationTime)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return false
+	end
+
+	local filename = string.format("Resources/Game/Animations/%s/Script.lua", animationName)
+	if not love.filesystem.getInfo(filename) then
+		return false
+	end
+
+	actor:playAnimation(
+		animationSlot,
+		animationPriority,
+		CacheRef("ItsyScape.Graphics.AnimationResource", filename),
+		animationForced,
+		animationTime)
+
+	return true
+end
+
+function Utility.Text.Dialog.ir_poke_map(dialog, characterName, pokeName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	local mapScript = Utility.Peep.getMapScript(peep)
+	if not mapScript then
+		return false
+	end
+
+	mapScript:poke(pokeName, dialog:getSpeaker("_TARGET"), peep)
+end
+
+function Utility.Text.Dialog.ir_push_poke_map(dialog, characterName, pokeName, time)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	local mapScript = Utility.Peep.getMapScript(peep)
+	if not mapScript then
+		return false
+	end
+
+	mapScript:pushPoke(time, pokeName, dialog:getSpeaker("_TARGET"), peep)
+end
+
+function Utility.Text.Dialog.ir_poke_peep(dialog, characterName, pokeName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	if characterName == "_TARGET" then
+		peep:poke(pokeName)
+	else
+		peep:poke(pokeName, dialog:getSpeaker("_TARGET"))
+	end
+end
+
+function Utility.Text.Dialog.ir_push_poke_peep(dialog, characterName, pokeName, time)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	if characterName == "_TARGET" then
+		peep:pushPoke(time, pokeName)
+	else
+		peep:pushPoke(time, pokeName, dialog:getSpeaker("_TARGET"))
+	end
+end
+
+function Utility.Text.Dialog.ir_move_peep_to_anchor(dialog, characterName, anchorName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	Utility.moveToAnchor(peep, Utility.Peep.getMapResource(peep), anchorName)
+	return true
+end
+
+function Utility.Text.Dialog.ir_orientate_peep_to_anchor(dialog, characterName, anchorName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	Utility.orientateToAnchor(peep, Utility.Peep.getMapResource(peep), anchorName)
+	return true
+end
+
+function Utility.Text.Dialog.ir_face(dialog, selfCharacterName, targetCharacterName)
+	local selfPeep = dialog:getSpeaker(selfCharacterName)
+	local targetPeep = dialog:getSpeaker(targetCharacterName)
+	if not (targetPeep and selfPeep) then
+		return false
+	end
+
+	Utility.Peep.face(selfPeep, targetPeep)
+	return true
+end
+
+function Utility.Text.Dialog.ir_face_away(dialog, selfCharacterName, targetCharacterName)
+	local selfPeep = dialog:getSpeaker(selfCharacterName)
+	local targetPeep = dialog:getSpeaker(targetCharacterName)
+	if not (targetPeep and selfPeep) then
+		return false
+	end
+
+	Utility.Peep.faceAway(selfPeep, targetPeep)
+	return true
+end
+
+function Utility.Text.Dialog.ir_set_peep_mashina_state(dialog, characterName, state)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return Utility.Peep.setMashinaState(peep, state)
+end
+
+function Utility.Text.Dialog.ir_set_external_dialog_variable(dialog, characterName, variableName, variableValue)
+	local playerPeep = dialog:getSpeaker("_TARGET")
+	if not playerPeep then
+		return false
+	end
+
+	Utility.Text.setDialogVariable(playerPeep, characterName, variableName, variableValue)
+	return true
+end
+
+function Utility.Text.Dialog.ir_get_external_dialog_variable(dialog, characterName, variableName)
+	local playerPeep = dialog:getSpeaker("_TARGET")
+	if not playerPeep then
+		return ""
+	end
+
+	local result = Utility.Text.getDialogVariable(playerPeep, characterName, variableName)
+	if result == nil then
+		return ""
+	end
+
+	return result
+end
+
+function Utility.Text.Dialog.ir_is_in_passage(dialog, characterName, passageName)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return Utility.Peep.isInPassage(peep, passageName)
+end
+
+function Utility.Text.Dialog.ir_get_stance(dialog, characterName)
+	local Weapon = require "ItsyScape.Game.Weapon"
+
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return Weapon.STANCE_NONE
+	end
+
+	local stance = peep:getBehavior(StanceBehavior)
+	if not stance then
+		return Weapon.STANCE_NONE
+	end
+
+	return stance.stance
+end
+
+
+function Utility.Text.bind(dialog, common, language)
+	common = common or Utility.Text.Dialog
+
+	for k, v in pairs(common) do
+		dialog:bindExternalFunction(k, v, dialog)
+	end
+end
+
+function Utility.Text.setDialogVariable(playerPeep, character, variableName, variableValue)
+	local director = playerPeep:getDirector()
+
+	if type(character) == "string" then
+		character = director:getGameDB():getResource(character, "Character")
+	end
+
+	if not character then
+		return false
+	end
+
+	local dialogStorage = director:getPlayerStorage(playerPeep):getRoot():getSection("Player"):getSection("Dialog")
+	local characterDialogStorage = dialogStorage:getSection(character.name)
+
+	characterDialogStorage:unset(variableName)
+	characterDialogStorage:set(variableName, variableValue)
+
+	return true
+end
+
+function Utility.Text.getDialogVariable(playerPeep, character, variableName)
+	local director = playerPeep:getDirector()
+
+	if type(character) == "string" then
+		character = director:getGameDB():getResource(character, "Character")
+	end
+
+	if not character then
+		return nil
+	end
+
+	local dialogStorage = director:getPlayerStorage(playerPeep):getRoot():getSection("Player"):getSection("Dialog")
+	local characterDialogStorage = dialogStorage:getSection(character.name)
+
+	return characterDialogStorage:get(variableName)
+end
 
 function Utility.Text.getPronouns(peep)
 	local gender = peep:getBehavior(GenderBehavior)
@@ -969,7 +2088,7 @@ function Utility.Text.getPronoun(peep, class, lang, upperCase)
 	return g
 end
 
-function Utility.Text.getEnglishBe(peep)
+function Utility.Text.getEnglishBe(peep, class, upperCase)
 	local g
 	do
 		local gender = peep:getBehavior(GenderBehavior)
@@ -978,6 +2097,11 @@ function Utility.Text.getEnglishBe(peep)
 		end
 
 		g = g or Utility.Text.BE[true]
+	end
+	g = g[class] or (upperCase and "*Be" or "*be")
+
+	if upperCase then
+		g = g:sub(1, 1):upper() .. g:sub(2)
 	end
 
 	return g
@@ -1005,12 +2129,22 @@ Utility.UI.Groups = {
 	WORLD = {
 		"Ribbon",
 		"Chat",
-		"ProCombatStatusHUD",
+		"GamepadRibbon",
+		"GamepadCombatHUD",
 		"QuestProgressNotification"
 	}
 }
 
 function Utility.UI.openGroup(peep, group)
+	if type(group) == "string" then
+		if not Utility.UI.Groups[group] then
+			Log.error("Built-in UI group '%s' not found; cannot open for peep '%s'.", group, peep:getName())
+			return
+		end
+
+		group = Utility.UI.Groups[group]
+	end
+
 	for i = 1, #group do
 		local interfaceID = group[i]
 
@@ -1076,7 +2210,7 @@ function Utility.UI.openInterface(peep, interfaceID, blocking, ...)
 			local _, n, controller = ui:openBlockingInterface(peep, interfaceID, ...)
 			return n ~= nil, n, controller
 		else
-			local _, n, controller= ui:open(peep, interfaceID, ...)
+			local _, n, controller = ui:open(peep, interfaceID, ...)
 			return n ~= nil, n, controller
 		end
 	end
@@ -1095,30 +2229,60 @@ function Utility.UI.isOpen(peep, interfaceID, interfaceIndex)
 end
 
 function Utility.UI.getOpenInterface(peep, interfaceID, interfaceIndex)
+	if not interfaceIndex then
+		local isOpen, i = Utility.UI.isOpen(peep, interfaceID)
+		if not isOpen then
+			return nil
+		end
+
+		interfaceIndex = i
+	end
+
 	local ui = peep:getDirector():getGameInstance():getUI()
 	return ui:get(interfaceID, interfaceIndex)
 end
 
-function Utility.UI.tutorial(target, tips, done)
-	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
-	target:addBehavior(DisabledBehavior)
+function Utility.UI.tutorial(target, tips, done, state)
+	state = state or {}
 
 	local index = 0
 	local function after()
 		index = index + 1
 		if index <= #tips then
+			if Class.isCallable(tips[index].init) then
+				tips[index].init(target, index)
+			end
+
+			local id = tips[index].id
+			if Class.isCallable(id) then
+				id = id(target, state)
+			end
+
+			local message = tips[index].message
+			if Class.isCallable(message) then
+				message = message(target, state)
+			end
+
+			local position = tips[index].position
+			if Class.isCallable(position) then
+				position = position(target, state)
+			end
+
+			local style = tips[index].style
+			if Class.isCallable(style) then
+				style = style(target, state)
+			end
+
 			Utility.UI.openInterface(
 				target,
 				"TutorialHint",
 				false,
-				tips[index].id,
-				tips[index].message,
-				tips[index].open(target, {}),
-				{ position = tips[index].position, style = tips[index].style },
+				id,
+				message,
+				tips[index].open(target, state),
+				{ position = position, style = style },
 				after)
 		else
-			target:removeBehavior(DisabledBehavior)
-
 			if done then
 				done()
 			end
@@ -1176,6 +2340,36 @@ end
 -- Contains utility methods to deal with items.
 Utility.Item = {}
 
+function Utility.Item._pullActions(game, item, scope)
+	if item:isNoted() then
+		return {}
+	end
+
+	local result = {}
+
+	local gameDB = game:getGameDB()
+	local itemResource = gameDB:getResource(item:getID(), "Item")
+	if itemResource then
+		table.insert(result, Utility.getActions(game, itemResource, scope, true))
+	end
+
+	return result
+end
+
+function Utility.Item.pull(peep, item, scope)
+	return {
+		ref = item:getRef(),
+		id = item:getID(),
+		count = item:getCount(),
+		noted = item:isNoted(),
+		name = Utility.Item.getInstanceName(item),
+		description = Utility.Item.getInstanceDescription(item),
+		stats = Utility.Item.getInstanceStats(item, peep),
+		slot = Utility.Item.getSlot(item),
+		actions = peep and Utility.Item._pullActions(peep:getDirector():getGameInstance(), item, scope) or {}
+	}
+end
+
 function Utility.Item.getStorage(peep, tag, clear, player)
 	local director = peep:getDirector()
 	local gameDB = director:getGameDB()
@@ -1197,7 +2391,8 @@ end
 -- 'lang' defaults to "en-US".
 --
 -- Values
---  * Under 100,000 remain as-is.
+--  * Under 10,000 remain as-is.
+--  * Up to 100,000 (exclusive) is divided by 10,000 and suffixed is with a 'k' specifier.
 --  * Up to a million are divided by 100,000 and suffixed with a 'k' specifier.
 --  * Up to a billion are divided by the same and suffixed with an 'm' specifier.
 --  * Up to a trillion are divided by the same and suffixed with an 'b' specifier.
@@ -1209,6 +2404,7 @@ function Utility.Item.getItemCountShorthand(count, lang)
 	lang = lang or "en-US"
 	-- 'lang' is NYI.
 
+	local TEN_THOUSAND     = 10000
 	local HUNDRED_THOUSAND = 100000
 	local MILLION          = 1000000
 	local BILLION          = 1000000000
@@ -1231,6 +2427,9 @@ function Utility.Item.getItemCountShorthand(count, lang)
 	elseif count >= HUNDRED_THOUSAND then
 		text = string.format("%dk", count / HUNDRED_THOUSAND * 100)
 		color = { 1, 1, 1, 1 }
+	elseif count >= TEN_THOUSAND then
+		text = string.format("%dk", count / TEN_THOUSAND * 10)
+		color = { 1, 1, 0, 1 }
 	else
 		text = string.format("%d", count)
 		color = { 1, 1, 0, 1 }
@@ -1384,13 +2583,28 @@ function Utility.Item.getStats(id, gameDB)
 	return nil
 end
 
+function Utility.Item.getSlot(item)
+	local gameDB = item:getManager():getGameDB()
+	local itemResource = gameDB:getResource(item:getID(), "Item")
+	if not itemResource then
+		return nil
+	end
+
+	local equipmentRecord = gameDB:getRecord("Equipment", { Resource = itemResource })
+	if not equipmentRecord then
+		return nil
+	end
+
+	return equipmentRecord:get("EquipSlot")
+end
+
 function Utility.Item.getInstanceStats(item, peep)
 	local baseStats = Utility.Item.getStats(item:getID(), item:getManager():getGameDB())
 
 	local calculatedStats
 	do
 		local logic = item:getManager():getLogic(item:getID())
-		if logic and Class.isCompatibleType(logic, require "ItsyScape.Game.Equipment") then
+		if peep and logic and Class.isCompatibleType(logic, require "ItsyScape.Game.Equipment") then
 			calculatedStats = logic:getCalculatedBonuses(peep, item)
 		else
 			calculatedStats = {}
@@ -1459,10 +2673,15 @@ function Utility.Item.groupStats(stats)
 	}
 end
 
-function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted)
+function Utility.Item.spawnInPeepInventory(peep, item, quantity, noted, userdata)
 	local flags = { ['item-inventory'] = true }
+
 	if noted then
 		flags['item-noted'] = true
+	end
+
+	if userdata then
+		flags['item-userdata'] = userdata
 	end
 
 	return peep:getState():give("Item", item, quantity, flags)
@@ -1486,6 +2705,8 @@ function Utility.Item.getItemsInPeepInventory(peep, itemID)
 			table.insert(result, item)
 		elseif type(itemID) == "table" or type(itemID) == "function" and itemID(item) then
 			table.insert(result, item)
+		elseif itemID == nil then
+			table.insert(result, item)
 		end
 	end
 
@@ -1493,6 +2714,80 @@ function Utility.Item.getItemsInPeepInventory(peep, itemID)
 end
 
 Utility.Map = {}
+
+function Utility.Map.getWind(game, layer)
+	local instance = game:getStage():getInstanceByLayer(layer)
+	local mapInfo = instance and instance:getMap(layer)
+	local meta = mapInfo and mapInfo:getMeta()
+
+	return (meta and meta.windDirection and Vector(unpack(meta.windDirection)) or Vector(-1, 0, -1)):getNormal(),
+	       meta and meta.windSpeed or 4,
+	       meta and meta.windPattern and Vector(unpack(meta.windPattern)) or Vector(5, 10, 15)
+end
+
+function Utility.Map.transformWorldPositionByWind(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition, normal)
+	local windRotation = Quaternion.lookAt(Vector.ZERO, windDirection, Vector.UNIT_Y)
+	local windDelta = time * windSpeed + worldPosition:getLength() * windSpeed
+	local windMu = (math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z) + 1.0) / 2.0;
+	local currentWindRotation = Quaternion.IDENTITY:slerp(windRotation, windMu):getNormal()
+
+	local relativePosition = worldPosition - anchorPosition
+	local transformedRelativePosition = currentWindRotation:transformVector(relativePosition)
+	normal = currentWindRotation:transformVector(currentWindRotation, normal or Vector.UNIT_Y)
+
+	return transformedRelativePosition + anchorPosition, normal, currentWindRotation
+end
+
+function Utility.Map.transformWorldPositionByWave(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition)
+	local windDelta = time * windSpeed
+	local windDeltaCoordinate = windDirection * Vector(windDelta) + worldPosition
+	local windMu = (math.sin((windDeltaCoordinate.x + windDeltaCoordinate.z) / windPattern.x) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.z) / windPattern.y) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.z) / windPattern.z) + 1.0) / 2.0
+	
+	local distance = (anchorPosition - worldPosition):getLength()
+	return worldPosition + Vector(0, distance * windMu, 0)
+end
+
+function Utility.Map.calculateWaveNormal(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition, scale)
+	scale = scale or Vector.ONE
+
+	local normalWorldPositionLeft = Utility.Map.transformWorldPositionByWave(
+		time,
+		windSpeed,
+		windDirection,
+		windPattern,
+		anchorPosition - Vector(scale.x, 0, 0),
+		worldPosition - Vector(scale.x, 0, 0))
+
+	local normalWorldPositionRight = Utility.Map.transformWorldPositionByWave(
+		time,
+		windSpeed,
+		windDirection,
+		windPattern,
+		anchorPosition + Vector(scale.x, 0, 0),
+		worldPosition + Vector(scale.x, 0, 0))
+
+	local normalWorldPositionTop = Utility.Map.transformWorldPositionByWave(
+		time,
+		windSpeed,
+		windDirection,
+		windPattern,
+		anchorPosition - Vector(0, 0, 1),
+		worldPosition - Vector(0, 0, scale.z))
+
+	local normalWorldPositionBottom = Utility.Map.transformWorldPositionByWave(
+		time,
+		windSpeed,
+		windDirection,
+		windPattern,
+		anchorPosition + Vector(0, 0, 1),
+		worldPosition + Vector(0, 0, scale.z))
+
+	local normal = Vector(
+		2.0 * (normalWorldPositionLeft.y - normalWorldPositionRight.y),
+		4.0,
+		2.0 * (normalWorldPositionTop.y - normalWorldPositionBottom.y))
+	return normal:getNormal()
+end
 
 function Utility.Map.getTileRotation(map, i, j)
 	local tile = map:getTile(i, j)
@@ -1586,6 +2881,21 @@ function Utility.Map.getMapObject(game, map, name)
 	return nil
 end
 
+function Utility.Map.hasAnchor(game, map, anchor)
+	local gameDB = game:getGameDB()
+
+	if type(map) == 'string' then
+		map = gameDB:getResource(map, "Map")
+	end
+
+	local mapObject = gameDB:getRecord("MapObjectLocation", {
+		Name = anchor,
+		Map = map
+	})
+
+	return mapObject ~= nil
+end
+
 function Utility.Map.getAnchorPosition(game, map, anchor)
 	local gameDB = game:getGameDB()
 
@@ -1600,10 +2910,11 @@ function Utility.Map.getAnchorPosition(game, map, anchor)
 
 	if mapObject then
 		local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
-		return x or 0, y or 0, z or 0
+		local localLayer = math.max(mapObject:get("Layer"), 1)
+		return x or 0, y or 0, z or 0, localLayer
 	end
 
-	return 0, 0, 0
+	return 0, 0, 0, 1
 end
 
 function Utility.Map.getAnchorRotation(game, map, anchor)
@@ -1679,7 +2990,7 @@ function Utility.Map.spawnMap(peep, map, position, args)
 	local mapLayer, mapScript = stage:loadMapResource(instance, map, args)
 
 	local _, p = mapScript:addBehavior(PositionBehavior)
-	p.position = position
+	p.position = position or Vector.ZERO
 
 	return mapLayer, mapScript
 end
@@ -1800,6 +3111,113 @@ function Utility.Map.getRandomPosition(map, position, distance, checkLineOfSight
 end
 
 Utility.Peep = {}
+
+function Utility.Peep.isEnabled(peep)
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+	return not peep:hasBehavior(DisabledBehavior)
+end
+
+function Utility.Peep.isDisabled(peep)
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+	return peep:hasBehavior(DisabledBehavior)
+end
+
+function Utility.Peep.disable(peep)
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+
+	local disabled = peep:getBehavior(DisabledBehavior)
+	if not disabled then
+		peep:removeBehavior(TargetTileBehavior)
+		peep:addBehavior(DisabledBehavior)
+		return true
+	end
+
+
+	disabled.index = disabled.index + 1
+	return false
+end
+
+function Utility.Peep.enable(peep)
+	local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+
+	local disabled = peep:getBehavior(DisabledBehavior)
+	if not disabled then
+		return true
+	end
+
+	disabled.index = disabled.index - 1
+
+	if disabled.index <= 0 then
+		peep:removeBehavior(DisabledBehavior)
+		return true
+	end
+
+	return false
+end
+
+function Utility.Peep.dialog(peep, obj, target, overrideEntryPoint)
+	local map = Utility.Peep.getMapResource(peep)
+
+	if type(target) == "string" then
+		local Probe = require "ItsyScape.Peep.Probe"
+
+		local hit = peep:getDirector():probe(
+			peep:getLayerName(),
+			Probe.namedMapObject(target),
+			Probe.instance(Utility.Peep.getPlayerModel(peep)))[1]
+
+		if not hit then
+			hit = peep:getDirector():probe(
+				peep:getLayerName(),
+				Probe.namedMapObject(target))[1]
+		end
+
+		target = hit
+	end
+
+	local namedAction
+	if type(obj) == "string" then
+		local gameDB = peep:getDirector():getGameDB()
+
+		local namedMapAction = gameDB:getRecord("NamedMapAction", {
+			Name = obj,
+			Map = map
+		})
+
+		local mapObject = target and Utility.Peep.getMapObject(target)
+		local namedMapObjectAction = mapObject and gameDB:getRecord("NamedPeepAction", {
+			Name = obj,
+			Peep = mapObject
+		})
+
+		local resource = target and Utility.Peep.getResource(target)
+		local namedResourceAction = resource and gameDB:getRecord("NamedPeepAction", {
+			Name = obj,
+			Peep = resource
+		})
+
+		namedAction = namedMapObjectAction or namedResourceAction or namedMapAction
+		if not namedAction then
+			Log.warn("Couldn't get named action '%s' from map, resource, or map object for peep '%s'!", name, peep:getName())
+			return false
+		end
+
+		namedAction = namedAction:get("Action")
+	elseif Class.isCompatibleType(obj, require "ItsyScape.Peep.Action") then
+		namedAction = obj:getAction()
+	else
+		namedAction = obj
+	end
+
+	local action = Utility.getAction(peep:getDirector():getGameInstance(), namedAction, false, false)
+	if not action then
+		Log.warn("Couldn't get named action '%s' for peep '%s' on map '%s'!", name, peep:getName(), map and map.name or "???")
+		return false
+	end
+
+	local success, _, dialog = Utility.UI.openInterface(peep, "DialogBox", true, action.instance, target or peep, overrideEntryPoint)
+	return success, dialog
+end
 
 function Utility.Peep.talk(peep, message, ...)
 	Utility.Peep.message(peep, "Message", message, ...)
@@ -1972,9 +3390,18 @@ function Utility.Peep.getTransform(peep)
 			scale = Vector.ONE
 		end
 
+		local origin = peep:getBehavior(OriginBehavior)
+		if origin then
+			origin = origin.origin
+		else
+			origin = Vector.ZERO
+		end
+
+		transform:translate(origin:get())
 		transform:translate(position:get())
 		transform:scale(scale:get())
 		transform:applyQuaternion(rotation:get())
+		transform:translate((-origin):get())
 	end
 
 	return transform
@@ -1997,8 +3424,55 @@ function Utility.Peep.getAbsoluteTransform(peep)
 	return transform
 end
 
-function Utility.Peep.getMapTransform(peep)
-	local transform = love.math.newTransform()
+function Utility.Peep.getDecomposedMapTransform(peep)
+	local position = peep:getBehavior(PositionBehavior)
+	if position then
+		position = position.position
+	else
+		position = Vector.ZERO
+	end
+
+	local rotation = peep:getBehavior(RotationBehavior)
+	if rotation then
+		rotation = rotation.rotation
+	else
+		rotation = Quaternion.IDENTITY
+	end
+
+	local scale = peep:getBehavior(ScaleBehavior)
+	if scale then
+		scale = scale.scale
+	else
+		scale = Vector.ONE
+	end
+
+	local origin = peep:getBehavior(OriginBehavior)
+	if origin then
+		origin = origin.origin
+	else
+		origin = Vector.ZERO
+	end
+
+	local parent
+	do
+		local mapOffset = peep:getBehavior(MapOffsetBehavior)
+		if mapOffset then
+			origin = origin + mapOffset.origin
+			position = position + mapOffset.offset
+			rotation = rotation * mapOffset.rotation
+			scale = scale * mapOffset.scale
+		end
+
+		if mapOffset.parentLayer then
+			parent = Utility.Peep.getInstance(peep):getMapScriptByLayer(mapOffset.parentLayer)
+		end
+	end
+
+	return position, rotation, scale, origin, parent
+end
+
+function Utility.Peep.getMapTransform(peep, transform)
+	transform = transform or love.math.newTransform()
 
 	do
 		local transformOverride = peep:getBehavior(TransformBehavior)
@@ -2009,40 +3483,10 @@ function Utility.Peep.getMapTransform(peep)
 	end
 
 	do
-		local position = peep:getBehavior(PositionBehavior)
-		if position then
-			position = position.position
-		else
-			position = Vector.ZERO
-		end
+		local position, rotation, scale, origin, parent = Utility.Peep.getDecomposedMapTransform(peep)
 
-		local rotation = peep:getBehavior(RotationBehavior)
-		if rotation then
-			rotation = rotation.rotation
-		else
-			rotation = Quaternion.IDENTITY
-		end
-
-		local scale = peep:getBehavior(ScaleBehavior)
-		if scale then
-			scale = scale.scale
-		else
-			scale = Vector.ONE
-		end
-
-		local origin = peep:getBehavior(OriginBehavior)
-		if origin then
-			origin = origin.origin
-		else
-			origin = Vector.ZERO
-		end
-
-		local mapOffset = peep:getBehavior(MapOffsetBehavior)
-		if mapOffset then
-			origin = origin + mapOffset.origin
-			position = position + mapOffset.offset
-			rotation = rotation * mapOffset.rotation
-			scale = scale * mapOffset.scale
+		if parent then
+			Utility.Peep.getMapTransform(parent, transform)
 		end
 
 		transform:translate(origin:get())
@@ -2102,6 +3546,31 @@ function Utility.Peep.setLayer(peep, layer)
 	end
 end
 
+function Utility.Peep.setLocalLayer(peep, localLayer, mapScript)
+	mapScript = mapScript or Utility.Peep.getMapScript(peep)
+	if not mapScript then
+		return
+	end
+
+	local mapScriptLayer = Utility.Peep.getLayer(mapScript)
+	local instance = peep:getDirector():getGameInstance():getStage():getInstanceByLayer(mapScriptLayer)
+	if not instance then
+		return
+	end
+
+	local mapGroup = instance:getMapGroup(mapScriptLayer)
+	if not mapGroup then
+		return
+	end
+
+	local globalLayer = instance:getGlobalLayerFromLocalLayer(mapGroup, localLayer)
+	if not globalLayer then
+		return
+	end
+
+	Utility.Peep.setLayer(peep, globalLayer)
+end
+
 function Utility.Peep.getPosition(peep)
 	local position = peep:getBehavior(PositionBehavior)
 	if position then
@@ -2116,16 +3585,46 @@ function Utility.Peep.setPosition(peep, position, lerp)
 	if p then
 		p.position = position
 	else
-		Log.warn("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
+		Log.error("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
 	end
 
 	if not lerp then
 		local actor = peep:getBehavior(ActorReferenceBehavior)
 		actor = actor and actor.actor
 		if actor then
-			actor:onTeleport(position)
+			actor:onTeleport(position, p.layer)
 		end
 	end
+end
+
+function Utility.Peep.makeInstanced(peep, playerPeep)
+	local _, instance = peep:addBehavior(InstancedBehavior)
+	instance.playerID = Utility.Peep.getPlayerModel(playerPeep):getID()
+end
+
+function Utility.Peep.teleportCompanion(peep, targetPeep)
+	local i, j, k = Utility.Peep.getTile(targetPeep)
+	local map = Utility.Peep.getMap(targetPeep)
+
+	local offsetX = (love.math.random() - 0.5) * 2 * (map:getCellSize() / 2)
+	local offsetZ = (love.math.random() - 0.5) * 2 * (map:getCellSize() / 2)
+	local offset = Vector(offsetX, 0, offsetZ)
+
+	if map:canMove(i, j, 1, 0) then
+		Utility.Peep.setPosition(peep, map:getTileCenter(i + 1, j) + offset)
+		return true
+	elseif map:canMove(i, j, -1, 0) then
+		Utility.Peep.setPosition(peep, map:getTileCenter(i - 1, j) + offset)
+		return true
+	elseif map:canMove(i, j, 0, -1) then
+		Utility.Peep.setPosition(peep, map:getTileCenter(i, j - 1) + offset)
+		return true
+	elseif map:canMove(i, j, 0, 1) then
+		Utility.Peep.setPosition(peep, map:getTileCenter(i, j + 1) + offset)
+		return true
+	end
+
+	return false
 end
 
 function Utility.Peep.getScale(peep)
@@ -2133,7 +3632,7 @@ function Utility.Peep.getScale(peep)
 	if scale then
 		return scale.scale
 	else
-		return Vector.ZERO
+		return Vector.ONE
 	end
 end
 
@@ -2164,6 +3663,15 @@ function Utility.Peep.setRotation(peep, rotation)
 	end
 end
 
+function Utility.Peep.setOrigin(peep, origin)
+	local p = peep:getBehavior(OriginBehavior)
+	if p then
+		p.origin = origin
+	else
+		Log.warn("Peep '%s' doesn't have an origin; can't set new origin.", peep:getName())
+	end
+end
+
 function Utility.Peep.getAbsolutePosition(peep)
 	local position = Utility.Peep.getPosition(peep)
 	local transform = Utility.Peep.getParentTransform(peep)
@@ -2173,6 +3681,29 @@ function Utility.Peep.getAbsolutePosition(peep)
 	else
 		return position
 	end
+end
+
+function Utility.Peep.getAbsoluteDistance(sourcePeep, targetPeep)
+	local sourcePeepPosition = Utility.Peep.getAbsolutePosition(sourcePeep)
+	local sourcePeepSize = Utility.Peep.getSize(sourcePeep)
+	local sourcePeepHalfSize = sourcePeepSize / 2
+	local sourcePeepMin, sourcePeepMax = sourcePeepPosition - sourcePeepHalfSize, sourcePeepPosition + sourcePeepHalfSize
+
+	local targetPeepPosition = Utility.Peep.getAbsolutePosition(targetPeep)
+	local targetPeepSize = Utility.Peep.getSize(targetPeep)
+	local targetPeepHalfSize = targetPeepSize / 2
+	local targetPeepMin, targetPeepMax = targetPeepPosition - targetPeepHalfSize, targetPeepPosition + targetPeepHalfSize
+
+	local u = (sourcePeepMin - targetPeepMax):max(Vector.ZERO)
+	local v = (targetPeepMin - sourcePeepMax):max(Vector.ZERO)
+	local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
+
+	if squaredDistance > 0 then
+		return math.sqrt(squaredDistance)
+	end
+
+	-- Overlapping.
+	return 0
 end
 
 function Utility.Peep.getSize(peep)
@@ -2185,12 +3716,19 @@ function Utility.Peep.getSize(peep)
 end
 
 function Utility.Peep.setSize(peep, size)
-	local size = peep:getBehavior(SizeBehavior)
-	if size then
-		size.size = size
+	local s = peep:getBehavior(SizeBehavior)
+	if s then
+		s.size = size
 	else
 		Log.warn("Peep '%s' doesn't have a size; can't set new size.", peep:getName())
 	end
+end
+
+function Utility.Peep.getBounds(peep)
+	local position = Utility.Peep.getPosition(peep)
+	local size = Utility.Peep.getSize(peep)
+
+	return position - Vector(size.x / 2, 0, size.z / 2), position + Vector(size.x / 2, size.y, size.z / 2)
 end
 
 function Utility.Peep.getTargetLineOfSight(peep, target, offset)
@@ -2370,6 +3908,29 @@ function Utility.Peep.getStorage(peep, instancedPlayer)
 	return nil
 end
 
+function Utility.Peep.getInventory(peep)
+	local inventory = peep:getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+
+	if not inventory then
+		return nil
+	end
+
+	local broker = inventory:getBroker()
+	if not broker then
+		return nil
+	end
+
+	local result = {}
+	for key in broker:keys(inventory) do
+		for item in broker:iterateItemsByKey(inventory, key) do
+			table.insert(result, item)
+		end
+	end
+
+	return result
+end
+
 function Utility.Peep.getEquippedItem(peep, slot)
 	local equipment = peep:getBehavior(EquipmentBehavior)
 	if equipment and equipment.equipment then
@@ -2472,20 +4033,20 @@ end
 function Utility.Peep.getEquippedWeapon(peep, includeXWeapon)
 	local Equipment = require "ItsyScape.Game.Equipment"
 
+	if includeXWeapon then
+		local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
+		local xWeapon = peep:getBehavior(WeaponBehavior)
+		if xWeapon and xWeapon.weapon then
+			return xWeapon.weapon
+		end
+	end
+
 	local weapon = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_RIGHT_HAND) or
 		Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_TWO_HANDED)
 	if weapon then
 		local logic = peep:getDirector():getItemManager():getLogic(weapon:getID())
 		if logic then
 			return logic, weapon
-		end
-	end
-
-	if includeXWeapon then
-		local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
-		local xWeapon = peep:getBehavior(WeaponBehavior)
-		if xWeapon and xWeapon.weapon then
-			return xWeapon.weapon
 		end
 	end
 
@@ -2575,7 +4136,6 @@ function Utility.Peep.equipXWeapon(peep, id)
 			xWeapon:onEquip(peep)
 		end
 	end
-
 end
 
 function Utility.Peep.equipXShield(peep, id)
@@ -2655,11 +4215,19 @@ function Utility.Peep.toggleEffect(peep, resource, onOrOff, ...)
 	local e = peep:getEffect(EffectType)
 	if e and onOrOff ~= true then
 		peep:removeEffect(e)
+		return true, e
 	elseif not e and onOrOff ~= false then
 		local effectInstance = EffectType(...)
 		effectInstance:setResource(resource)
 		peep:addEffect(effectInstance)
+		return true, effectInstance
 	end
+
+	if e and onOrOff or (not e and not onOrOff) then
+		return true, e
+	end
+
+	return false
 end
 
 function Utility.Peep.getPowerType(resource, gameDB)
@@ -2683,24 +4251,133 @@ function Utility.Peep.canAttack(peep)
 	return status.currentHitpoints > 0 and not status.dead
 end
 
-function Utility.Peep.isAttackable(peep)
-	local resource = Utility.Peep.getResource(peep)
-	local mapObject = Utility.Peep.getMapObject(peep)
+function _canPeepAttack(peep, target, teams, otherTeams, matchup)
+	local targetCharacter = Utility.Peep.getCharacter(target)
+	if not targetCharacter then
+		return true
+	end
 
-	local function isAttackable(r)
-		if r then
-			local actions = Utility.getActions(peep:getDirector():getGameInstance(), r)
-			for i = 1, #actions do
-				if actions[i].instance:is("Attack") or actions[i].instance:is("InvisibleAttack") then
-					return true
-				end
+	local override = teams.override[targetCharacter.name]
+	if override then
+		if override == TeamsBehavior.ENEMY then
+			-- Forced enemy.
+			return true, true
+		elseif override == TeamsBehavior.ALLY and otherTeams.override[targetCharacter.name] ~= TeamsBehavior.ENEMY then
+			-- Forced ally.
+			return false, true
+		end
+	end
+
+	if #teams.teams == 0 or #otherTeams.teams == 0 then
+		return true, false
+	end
+
+	for _, team in ipairs(teams.teams) do
+		for _, otherTeam in ipairs(otherTeams.teams) do
+			local status = matchup[team] and matchup[team][otherTeam]
+			if status == TeamsBehavior.ENEMY then
+				return true, false
 			end
 		end
+	end
 
+	return false, false
+end
+
+function Utility.Peep.canPeepAttackTarget(peep, target)
+	if not (Utility.Peep.isAttackable(peep) and Utility.Peep.canAttack(peep)) then
 		return false
 	end
 
-	return isAttackable(resource) or isAttackable(mapObject) or peep:hasBehavior(PlayerBehavior)
+	if not (Utility.Peep.isAttackable(target) and Utility.Peep.canAttack(target)) then
+		return false
+	end
+
+	local player = Utility.Peep.getPlayer(peep)
+	if not player then
+		return true
+	end
+
+	local teams = player:getBehavior(TeamsBehavior)
+	if not teams then
+		return true
+	end
+
+	local peepTeams = peep:getBehavior(TeamBehavior)
+	local targetTeams = target:getBehavior(TeamBehavior)
+
+	local peepCharacter = Utility.Peep.getCharacter(peep)
+	local targetCharacter = Utility.Peep.getCharacter(target)
+
+	if not (peepCharacter and targetCharacter) then
+		return true
+	end
+
+	local peepVsTarget = teams.characters[peepCharacter] and teams.characters[peepCharacter][targetCharacter]
+	local targetVsPeep = teams.characters[targetCharacter] and teams.characters[targetCharacter][peepCharacter]
+
+	if peepVsTarget == TeamsBehavior.ENEMY or targetVsPeep == TeamsBehavior.ENEMY then
+		return true
+	end
+
+	local canAttack, isForced = _canPeepAttack(peep, target, peepTeams, targetTeams, teams.teams)
+	if isForced then
+		return canAttack
+	end
+
+	return canAttack or _canPeepAttack(target, peep, targetTeams, peepTeams, teams.teams)
+end
+
+local function _isAttackable(peep, r)
+	if not r then
+		return false
+	end
+
+	local actions = Utility.getActions(peep:getDirector():getGameInstance(), r)
+	for i = 1, #actions do
+		if actions[i].instance:is("Attack") or actions[i].instance:is("InvisibleAttack") then
+			return true
+		end
+	end
+
+	return false
+end
+
+function Utility.Peep.isAttackable(peep)
+	if peep:hasBehavior(PlayerBehavior) then
+		return true
+	end
+
+	local resource = Utility.Peep.getResource(peep)
+	local mapObject = Utility.Peep.getMapObject(peep)
+
+	return _isAttackable(peep, resource) or _isAttackable(peep, mapObject) or peep:hasBehavior(PlayerBehavior)
+end
+
+function Utility.Peep.playAnimation(peep, animationSlot, animationPriority, animationName, animationForced, animationTime)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return false
+	end
+
+	local filename = string.format("Resources/Game/Animations/%s/Script.lua", animationName)
+	if not love.filesystem.getInfo(filename) then
+		if love.filesystem.getInfo(animationName) then
+			filename = animationName
+		else
+			return false
+		end
+	end
+
+	actor:playAnimation(
+		animationSlot,
+		animationPriority,
+		CacheRef("ItsyScape.Graphics.AnimationResource", filename),
+		animationForced,
+		animationTime)
+
+	return true
 end
 
 -- Makes the peep walk to the tile (i, j, k).
@@ -2724,6 +4401,73 @@ function Utility.Peep.walk(peep, i, j, k, distance, t, ...)
 	end
 
 	return false, r
+end
+
+Utility.Peep.WALK_QUEUE = { n = 0, pending = {} }
+
+function Utility.Peep.cancelWalk(n)
+	for i, pending in ipairs(Utility.Peep.WALK_QUEUE.pending) do
+		if pending.n == id then
+			table.remove(Utility.Peep.WALK_QUEUE.pending, i)
+			break
+		end
+	end
+end
+
+function Utility.Peep.updateWalks(time)
+	local walkQueueTimeMS = Config.get("Config", "ENGINE", "var", "walkQueueTimeMS", "_", 10)
+	local targetTime = love.timer.getTime() + (time or (walkQueueTimeMS / 1000))
+
+	local queue = Utility.Peep.WALK_QUEUE.pending
+	while love.timer.getTime() < targetTime and #queue > 0 do
+		for i = #queue, 1, -1 do
+			local pending = queue[i]
+
+			if pending.s == nil then
+				pending.s = pending.update()
+			end
+
+			if pending.s ~= nil then
+				pending.callback(pending.s)
+				table.remove(queue, i)
+			end
+		end
+	end
+end
+
+function Utility.Peep.queueWalk(peep, i, j, k, distance, t, ...)
+	local callback = Callback(false)
+
+	t = t or { asCloseAsPossible = true }
+	local y = {}
+	do
+		for k, v in pairs(t) do
+			y[k] = v
+		end
+
+		y.yield = true
+	end
+
+	if t.isPosition then
+		local map = peep:getDirector():getGameInstance():getStage():getMap(k or Utility.Peep.getLayer(peep))
+		local _, s, t = map:getTileAt(i, j)
+
+		i = s
+		j = t
+	end
+
+	Utility.Peep.WALK_QUEUE.n = Utility.Peep.WALK_QUEUE.n + 1
+	local walkCoroutine = coroutine.wrap(Utility.Peep.walk)
+	local pending = {
+		n = Utility.Peep.WALK_QUEUE.n,
+		callback = callback,
+		update = walkCoroutine
+	}
+
+	pending.s = walkCoroutine(peep, i, j, k, distance, y, ...)
+
+	table.insert(Utility.Peep.WALK_QUEUE.pending, pending)
+	return callback, pending.n
 end
 
 function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)
@@ -2808,7 +4552,7 @@ function Utility.Peep.getTile(peep)
 	return i, j, k, tile
 end
 
-function Utility.Peep.isInPassage(peep, passage)
+function Utility.Peep.getPassages(peep)
 	local position = Utility.Peep.getPosition(peep)
 	local mapResource = Utility.Peep.getMapResource(peep)
 
@@ -2816,23 +4560,36 @@ function Utility.Peep.isInPassage(peep, passage)
 	local passages = gameDB:getRecords("MapObjectRectanglePassage", {
 		Map = mapResource
 	})
-	for i = 1, #passages do
-		local x1, z1 = passages[i]:get("X1"), passages[i]:get("Z1")
-		local x2, z2 = passages[i]:get("X2"), passages[i]:get("Z2")
+
+	local result = {}
+	for _, passage in ipairs(passages) do
+		local x1, z1 = passage:get("X1"), passage:get("Z1")
+		local x2, z2 = passage:get("X2"), passage:get("Z2")
 		if position.x >= x1 and position.x <= x2 and
 		   position.z >= z1 and position.z <= z2
 		then
 			local mapObject = gameDB:getRecord("MapObjectReference", {
 				Map = mapResource,
-				Resource = passages[i]:get("Resource")
+				Resource = passage:get("Resource")
 			})
 
-			if mapObject:get("Name") == passage then
-				return true
+			local currentPassageName = mapObject and mapObject:get("Name")
+			if currentPassageName then
+				table.insert(result, currentPassageName)
 			end
 		end
 	end
 
+	return result
+end
+
+function Utility.Peep.isInPassage(peep, passage)
+	local passages = Utility.Peep.getPassages(peep)
+	for _, p in ipairs(passages) do
+		if p == passage then
+			return true
+		end
+	end
 	return false
 end
 
@@ -2912,9 +4669,20 @@ function Utility.Peep.getWalk(peep, i, j, k, distance, t, ...)
 	return false, "path not found"
 end
 
+function Utility.Peep.setFacing(peep, direction)
+	local movement = peep:getBehavior(MovementBehavior)
+	if movement then
+		if direction < 0 then
+			movement.targetFacing = MovementBehavior.FACING_LEFT
+		elseif direction > 0 then
+			movement.targetFacing = MovementBehavior.FACING_RIGHT
+		end
+	end
+end
+
 function Utility.Peep.face(peep, target)
-	local peepPosition = Utility.Peep.getPosition(peep)
-	local targetPosition = Utility.Peep.getPosition(target)
+	local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+	local targetPosition = Utility.Peep.getAbsolutePosition(target)
 
 	local dx = targetPosition.x - peepPosition.x
 
@@ -2928,6 +4696,22 @@ function Utility.Peep.face(peep, target)
 	end
 end
 
+function Utility.Peep.faceAway(peep, target)
+	local peepPosition = Utility.Peep.getAbsolutePosition(peep)
+	local targetPosition = Utility.Peep.getAbsolutePosition(target)
+
+	local dx = targetPosition.x - peepPosition.x
+
+	local movement = peep:getBehavior(MovementBehavior)
+	if movement then
+		if dx > 0 then
+			movement.targetFacing = MovementBehavior.FACING_LEFT
+		elseif dx < 0 then
+			movement.targetFacing = MovementBehavior.FACING_RIGHT
+		end
+	end
+end
+
 function Utility.Peep.lookAt(self, target, delta)
 	local rotation = self:getBehavior(RotationBehavior)
 	if rotation then
@@ -2936,8 +4720,12 @@ function Utility.Peep.lookAt(self, target, delta)
 
 		if Class.isCompatibleType(target, Vector) then
 			peepPosition = target
-		else
+		elseif Class.isCompatibleType(target, Ray) then
+			peepPosition = target.origin
+		elseif Class.isCompatibleType(target, require "ItsyScape.Peep.Peep") then
 			peepPosition = Utility.Peep.getAbsolutePosition(target)
+		else
+			return
 		end
 
 		local selfMapTransform = Utility.Peep.getParentTransform(self)
@@ -3019,7 +4807,22 @@ function Utility.Peep.face3D(self)
 	return false
 end
 
+function Utility.Peep.applyCooldown(peep, time)
+	if not time then
+		local weapon = Utility.Peep.getEquippedWeapon(peep, true)
+		if weapon and Class.isCompatibleType(weapon, require "ItsyScape.Game.Weapon") then
+			time = weapon:getCooldown(peep)
+		end
+	end
+
+	local _, cooldown = peep:addBehavior(AttackCooldownBehavior)
+	cooldown.cooldown = math.max(cooldown.cooldown, time)
+	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTick()
+end
+
 function Utility.Peep.attack(peep, other, distance)
+	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
+
 	do
 		local status = peep:getBehavior(CombatStatusBehavior)
 		if not status then
@@ -3031,9 +4834,13 @@ function Utility.Peep.attack(peep, other, distance)
 		end
 	end
 
+	if not Utility.Peep.canPeepAttackTarget(peep, other) then
+		return false
+	end
+
 	local actor = other:getBehavior(ActorReferenceBehavior)
 	if actor and actor.actor then
-		if peep:getCommandQueue():interrupt(AttackCommand()) then
+		if peep:getCommandQueue(CombatCortex.QUEUE):interrupt(AttackCommand()) then
 			local _, target = peep:addBehavior(CombatTargetBehavior)
 			target.actor = actor.actor
 		end
@@ -3058,6 +4865,11 @@ function Utility.Peep.attack(peep, other, distance)
 	end
 
 	return true
+end
+
+function Utility.Peep.getCharacter(peep)
+	local character = peep:getBehavior(CharacterBehavior)
+	return character and character.character
 end
 
 function Utility.Peep.getResource(peep)
@@ -3165,7 +4977,11 @@ function Utility.Peep.getMap(peep)
 end
 
 function Utility.Peep.getMapResource(peep)
-	return Utility.Peep.getMapResourceFromLayer(peep)
+	local instance = Utility.Peep.getInstance(peep)
+	local mapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
+	local groupBaseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup)
+	local mapScript = instance:getMapScriptByLayer(groupBaseLayer) or instance:getBaseMapScript()
+	return Utility.Peep.getResource(mapScript)
 end
 
 function Utility.Peep.getMapResourceFromLayer(peep)
@@ -3186,10 +5002,12 @@ function Utility.Peep.setMapResource(peep, map)
 end
 
 function Utility.Peep.getMapScript(peep)
-	local instance = peep:getDirector():getGameInstance():getStage():getPeepInstance(peep)
-	if instance then
-		return instance:getMapScriptByLayer(Utility.Peep.getLayer(peep))
-	end
+	local instance = Utility.Peep.getInstance(peep)
+	local mapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
+	local groupBaseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup)
+	local mapScript = instance:getMapScriptByLayer(groupBaseLayer)
+
+	return mapScript
 end
 
 function Utility.Peep.setNameMagically(peep)
@@ -3221,6 +5039,20 @@ function Utility.Peep.setNameMagically(peep)
 		peep:setName(name)
 	elseif resource then
 		peep:setName("*" .. resource.name)
+	end
+end
+
+function Utility.Peep.poofInstancedMapGroup(playerPeep, mapObjectGroup)
+	local Probe = require "ItsyScape.Peep.Probe"
+
+	local director = playerPeep:getDirector()
+	local hits = director:probe(
+		playerPeep:getLayerName(),
+		Probe.mapObjectGroup(mapObjectGroup),
+		Probe.instance(Utility.Peep.getPlayerModel(playerPeep)))
+
+	for _, hit in ipairs(hits) do
+		Utility.Peep.poof(hit)
 	end
 end
 
@@ -3381,11 +5213,19 @@ function Utility.Peep.makeMashina(peep)
 	peep:listen('ready', Utility.Peep.Mashina.onReady)
 end
 
+function Utility.Peep.getMashinaState(peep)
+	local mashina = peep:getBehavior(MashinaBehavior)
+	return mashina and mashina.currentState or false
+end
+
 function Utility.Peep.setMashinaState(peep, state)
 	local mashina = peep:getBehavior(MashinaBehavior)
 	if mashina then
 		mashina.currentState = state or false
+		return not not mashina.states[state] or state == false
 	end
+
+	return false
 end
 
 Utility.Peep.Inventory = {}
@@ -3580,80 +5420,6 @@ function Utility.Peep.Attackable:bossReceiveAttack(p)
 		self)
 end
 
-function Utility.Peep.Attackable:aggressiveOnReceiveAttack(p)
-	local combat = self:getBehavior(CombatStatusBehavior)
-	if not combat or combat.dead then
-		return
-	end
-	
-	local isAttackable = Utility.Peep.isAttackable(self)
-	local isPlayerAggressor = p:getAggressor() and p:getAggressor():hasBehavior(PlayerBehavior)
-	if not isAttackable and isPlayerAggressor then
-		return
-	end
-
-	local damage = math.max(math.min(combat.currentHitpoints, p:getDamage()), 0)
-
-	local attack = AttackPoke({
-		attackType = p:getAttackType(),
-		weaponType = p:getWeaponType(),
-		damageType = p:getDamageType(),
-		damage = damage,
-		aggressor = p:getAggressor(),
-		delay = p:getDelay()
-	})
-
-	local target = self:getBehavior(CombatTargetBehavior)
-	if not target and p:getAggressor() then
-		local actor = p:getAggressor():getBehavior(ActorReferenceBehavior)
-		if actor and actor.actor then
-			if self:getCommandQueue():interrupt(AttackCommand()) then
-				local _, target = self:addBehavior(CombatTargetBehavior)
-				target.actor = actor.actor
-
-				local mashina = self:getBehavior(MashinaBehavior)
-				if mashina then
-					if mashina.currentState == 'idle' or not mashina.currentState then
-						if mashina.states['begin-attack'] then
-							mashina.currentState = 'begin-attack'
-						elseif mashina.states['attack'] then
-							mashina.currentState = 'attack'
-						else
-							mashina.currentState = false
-						end
-
-						self:poke('firstStrike', attack)
-					end
-				end
-			end
-		end
-	end
-
-	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
-	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
-	local UninterrupibleCallbackCommand = require "ItsyScape.Peep.UninterrupibleCallbackCommand"
-
-	if damage > 0 then
-		if p:getDelay() > 0 then
-			local queue = self:getParallelCommandQueue('hit')
-			local a = WaitCommand(p:getDelay(), false)
-			local b = UninterrupibleCallbackCommand(function() self:poke('hit', attack) end)
-			queue:push(CompositeCommand(true, a, b))
-		else
-			self:poke('hit', attack)
-		end
-	else
-		if p:getDelay() > 0 then
-			local queue = self:getParallelCommandQueue('hit')
-			local a = WaitCommand(p:getDelay(), false)
-			local b = UninterrupibleCallbackCommand(function() self:poke('miss', attack) end)
-			queue:push(CompositeCommand(true, a, b))
-		else
-			self:poke('miss', attack)
-		end
-	end
-end
-
 function Utility.Peep.Attackable:onReceiveAttack(p)
 	local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 	local WaitCommand = require "ItsyScape.Peep.WaitCommand"
@@ -3703,6 +5469,8 @@ function Utility.Peep.Attackable:onReceiveAttack(p)
 	end
 end
 
+Utility.Peep.Attackable.aggressiveOnReceiveAttack = Utility.Peep.Attackable.onReceiveAttack
+
 function Utility.Peep.Attackable:onHeal(p)
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if combat and combat.currentHitpoints >= 0 then
@@ -3717,7 +5485,54 @@ function Utility.Peep.Attackable:onHeal(p)
 	end
 end
 
+function Utility.Peep.Attackable:onZeal(p)
+	for effect in self:getEffects(require "ItsyScape.Peep.Effects.ZealEffect") do
+		effect:modifyZealEvent(p, self)
+	end
+
+	local pendingPowers = self:getBehavior(PowerRechargeBehavior)
+	if pendingPowers then
+		for powerID, powerZeal in pairs(pendingPowers.powers) do
+			local multiplier, offset = 1, 0
+			for effect in self:getEffects(require "ItsyScape.Peep.Effects.ZealEffect") do
+				local m, o = effect:modifyActiveRecharge(p, powerID)
+				multiplier = multiplier + m
+				offset = offset + o
+			end
+
+			local recharge = math.clamp(p:getEffectiveZeal() * multiplier + offset, 0.01, 1)
+			powerZeal = powerZeal - recharge
+
+			if powerZeal <= 0 then
+				pendingPowers.powers[powerID] = nil
+			else
+				pendingPowers.powers[powerID] = powerZeal
+			end
+		end
+	end
+
+	local status = self:getBehavior(CombatStatusBehavior)
+	if not status then
+		return
+	end
+
+	local zeal = p:getEffectiveZeal()
+	local currentZeal = status.currentZeal + zeal
+	local multiplier, offset = 1, 0
+	for effect in self:getEffects(require "ItsyScape.Peep.Effects.ZealEffect") do
+		local m, o = effect:modifyZeal(p, self)
+		multiplier = multiplier + m
+		offset = offset + o
+	end
+
+	status.currentZeal = math.clamp(currentZeal * multiplier + offset, 0, status.maximumZeal)
+end
+
 function Utility.Peep.Attackable:onHit(p)
+	if self:hasBehavior(DisabledBehavior) then
+		return
+	end
+
 	local combat = self:getBehavior(CombatStatusBehavior)
 	if not combat then
 		return
@@ -3728,6 +5543,9 @@ function Utility.Peep.Attackable:onHit(p)
 	end
 
 	combat.currentHitpoints = math.max(combat.currentHitpoints - p:getDamage(), 0)
+	if combat.currentHitpoints <= 0 and self:hasBehavior(ImmortalBehavior) then
+		combat.currentHitpoints = 1
+	end
 
 	if math.floor(combat.currentHitpoints) == 0 then
 		self:pushPoke('die', p)
@@ -3739,7 +5557,7 @@ function Utility.Peep.Attackable:onMiss(p)
 end
 
 function Utility.Peep.Attackable:onDie(p)
-	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
+	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 	self:getCommandQueue():clear()
 	self:getCommandQueue(CombatCortex.QUEUE):clear()
 	self:removeBehavior(CombatTargetBehavior)
@@ -3921,35 +5739,42 @@ function Utility.Peep.makeAttackable(peep, retaliate)
 	end
 
 	peep:addBehavior(CombatStatusBehavior)
+	peep:addBehavior(PowerRechargeBehavior)
 
-	peep:addPoke('initiateAttack')
-	peep:listen('initiateAttack', Utility.Peep.Attackable.onInitiateAttack)
-	peep:addPoke('receiveAttack')
-	peep:addPoke('switchStyle')
+	peep:addPoke("initiateAttack")
+	peep:listen("initiateAttack", Utility.Peep.Attackable.onInitiateAttack)
+	peep:addPoke("receiveAttack")
+	peep:addPoke("switchStyle")
+	peep:addPoke("rollAttack")
+	peep:addPoke("rollDamage")
 
-	peep:listen('ready', Utility.Peep.Attackable.onReady)
-	peep:listen('postReady', Utility.Peep.Attackable.onPostReady)
+	peep:listen("ready", Utility.Peep.Attackable.onReady)
+	peep:listen("postReady", Utility.Peep.Attackable.onPostReady)
 
 	if retaliate then
-		peep:listen('receiveAttack', Utility.Peep.Attackable.aggressiveOnReceiveAttack)
+		peep:addBehavior(AggressiveBehavior)
+		peep:listen("receiveAttack", Utility.Peep.Attackable.aggressiveOnReceiveAttack)
 	else
-		peep:listen('receiveAttack', Utility.Peep.Attackable.onReceiveAttack)
+		peep:listen("receiveAttack", Utility.Peep.Attackable.onReceiveAttack)
 	end
 
-	peep:addPoke('targetFled')
-	peep:listen('targetFled', Utility.Peep.Attackable.onTargetFled)
-	peep:addPoke('hit')
-	peep:listen('hit', Utility.Peep.Attackable.onHit)
-	peep:addPoke('miss')
-	peep:listen('miss', Utility.Peep.Attackable.onMiss)
-	peep:addPoke('die')
-	peep:listen('die', Utility.Peep.Attackable.onDie)
-	peep:addPoke('heal')
-	peep:listen('heal', Utility.Peep.Attackable.onHeal)
-	peep:addPoke('resurrect')
-	peep:listen('resurrect', Utility.Peep.Attackable.onResurrect)
-	peep:addPoke('powerApplied')
-	peep:addPoke('powerActivated')
+	peep:addPoke("targetFled")
+	peep:listen("targetFled", Utility.Peep.Attackable.onTargetFled)
+	peep:addPoke("hit")
+	peep:listen("hit", Utility.Peep.Attackable.onHit)
+	peep:addPoke("miss")
+	peep:listen("miss", Utility.Peep.Attackable.onMiss)
+	peep:addPoke("die")
+	peep:listen("die", Utility.Peep.Attackable.onDie)
+	peep:addPoke("heal")
+	peep:listen("heal", Utility.Peep.Attackable.onHeal)
+	peep:addPoke("resurrect")
+	peep:listen("resurrect", Utility.Peep.Attackable.onResurrect)
+	peep:addPoke("powerApplied")
+	peep:addPoke("powerActivated")
+	peep:addPoke("powerDeflected")
+	peep:addPoke("zeal")
+	peep:listen("zeal", Utility.Peep.Attackable.onZeal)
 end
 
 function Utility.Peep.makeSkiller(peep)
@@ -4083,26 +5908,36 @@ function Utility.Peep.Dummy:onFinalize()
 		"Resources/Game/Bodies/Human.lskel")
 	actor:setBody(body)
 
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Head/Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-	local eyes = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Hands/Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/Dummy.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_HEAD,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Head/Dummy.lua",
+		{ Utility.Peep.Human.Palette.SKIN_MEDIUM })
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/Dummy.lua",
+		{ Utility.Peep.Human.Palette.SKIN_MEDIUM })
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_HEAD,
+		math.huge,
+		"PlayerKit2/Eyes/Eyes.lua",
+		{ Utility.Peep.Human.Palette.ACCENT_PINK, Utility.Peep.Human.Palette.EYE_BLACK, Utility.Peep.Human.Palette.EYE_WHITE })
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE, 
+		"PlayerKit2/Hands/Dummy.lua",
+		{ Utility.Peep.Human.Palette.SKIN_MEDIUM })
+	Utility.Peep.Human.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/Dummy.lua",
+		{ Utility.Peep.Human.Palette.SKIN_MEDIUM })
 
 	if dummy:get("Shield") ~= "" and not Class.isCompatibleType(self, require "ItsyScape.Peep.Peeps.Player") then
 		local shieldSkin = CacheRef(
@@ -4185,6 +6020,32 @@ function Utility.Peep.Dummy:onFinalize()
 end
 
 Utility.Peep.Creep = {}
+
+function Utility.Peep.Creep.addAnimation(peep, name, animation)
+	Utility.Peep.Human.addAnimation(peep, name, animation)
+end
+
+function Utility.Peep.Creep.applySkin(...)
+	Utility.Peep.Human.applySkin(...)
+end
+
+function Utility.Peep.Creep.setBody(peep, body)
+	local filename = string.format("Resources/Game/Bodies/%s.lskel", body)
+	if not love.filesystem.getInfo(filename) then
+		Log.error("Cannot set body '%s' for peep '%s': file '%s' not found!", body, peep:getName(), filename)
+		return false
+	end
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return false
+	end
+
+	actor:setBody(CacheRef("ItsyScape.Game.Body", filename))
+end
+
 function Utility.Peep.Creep:applySkins()
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
@@ -4223,6 +6084,80 @@ function Utility.Peep.Creep:applySkins()
 end
 
 Utility.Peep.Human = {}
+Utility.Peep.Human.Palette = {
+	SKIN_LIGHT = Color.fromHexString("efe3a9"),
+	SKIN_MEDIUM = Color.fromHexString("c5995f"),
+	SKIN_DARK = Color.fromHexString("a4693c"),
+	SKIN_PLASTIC = Color.fromHexString("ffcc00"),
+	SKIN_ZOMBI = Color.fromHexString("bf50d9"),
+	SKIN_NYMPH = Color.fromHexString("cdde87"),
+
+	HAIR_BROWN = Color.fromHexString("6c4527"),
+	HAIR_BLACK = Color.fromHexString("3e3e3e"),
+	HAIR_GREY = Color.fromHexString("cccccc"),
+	HAIR_BLONDE = Color.fromHexString("ffee00"),
+	HAIR_PURPLE = Color.fromHexString("8358c3"),
+	HAIR_RED = Color.fromHexString("d45500"),
+	HAIR_GREEN = Color.fromHexString("8dd35f"),
+
+	EYE_BLACK = Color.fromHexString("000000"),
+	EYE_WHITE = Color.fromHexString("ffffff"),
+
+	BONE = Color.fromHexString("e9ddaf"),
+	BONE_ANCIENT = Color.fromHexString("939dac"),
+
+	PRIMARY_RED = Color.fromHexString("cb1d1d"),
+	PRIMARY_GREEN = Color.fromHexString("abc837"),
+	PRIMARY_BLUE = Color.fromHexString("3771c8"),
+	PRIMARY_YELLOW = Color.fromHexString("ffcc00"),
+	PRIMARY_PURPLE = Color.fromHexString("855ad8"),
+	PRIMARY_PINK = Color.fromHexString("ffd5e5"),
+	PRIMARY_BROWN = Color.fromHexString("76523c"),
+	PRIMARY_WHITE = Color.fromHexString("ebf7f9"),
+	PRIMARY_GREY = Color.fromHexString("cccccc"),
+	PRIMARY_BLACK = Color.fromHexString("4d4d4d"),
+
+	ACCENT_GREEN = Color.fromHexString("8dd35f"),
+	ACCENT_PINK = Color.fromHexString("ff2a7f"),
+}
+
+function Utility.Peep.Human:addAnimation(name, animation)
+	local filename = string.format("Resources/Game/Animations/%s/Script.lua", animation)
+	if not love.filesystem.getInfo(filename) then
+		Log.error("Cannot add animation '%s' as resource '%s' for peep '%s': file '%s' not found!", animation, name, peep:getName(), filename)
+		return false
+	end
+
+	local animation = CacheRef("ItsyScape.Graphics.AnimationResource", filename)
+	self:addResource(name, animation)
+end
+
+function Utility.Peep.Human:applySkin(slot, priority, relativeFilename, colorConfig)
+	colorConfig = colorConfig or {}
+
+	local remappedColorConfig = {}
+	for _, color in ipairs(colorConfig) do
+		table.insert(remappedColorConfig, { color:get() })
+	end
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return false
+	end
+
+	local filename = string.format("Resources/Game/Skins/%s", relativeFilename)
+	if not love.filesystem.getInfo(filename) then
+		error(string.format("Could not find skin '%s'!", filename))
+	end
+
+	local skin = CacheRef("ItsyScape.Game.Skin.ModelSkin", filename)
+	actor:setSkin(slot, priority, skin, remappedColorConfig)
+
+	return true
+end
+
 function Utility.Peep.Human:applySkins()
 	local director = self:getDirector()
 	local gameDB = director:getGameDB()
@@ -4244,8 +6179,26 @@ function Utility.Peep.Human:applySkins()
 			for i = 1, #skins do
 				local skin = skins[i]
 				if skin:get("Type") and skin:get("Filename") then
+					local colors = gameDB:getRecords("PeepSkinColor", {
+						Resource = resource,
+						Slot = skin:get("Slot"),
+						Priority = skin:get("Priority")
+					})
+
+					local colorConfig = {}
+					for _, color in ipairs(colors) do
+						local key = color:get("Color")
+						local c = Utility.Peep.Human.Palette[key] or Color.fromHexString(key) or Color(1, 0, 0)
+
+						local h = color:get("H")
+						local s = color:get("S")
+						local l = color:get("L")
+
+						table.insert(colorConfig, { c:shiftHSL(h, s, l):get() })
+					end
+
 					local c = CacheRef(skin:get("Type"), skin:get("Filename"))
-					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c)
+					actor:setSkin(skin:get("Slot"), skin:get("Priority"), c, colorConfig)
 				end
 			end
 		end
@@ -4400,6 +6353,10 @@ function Utility.Peep.makeHuman(peep)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionCraft_1/Script.lua")
 	peep:addResource("animation-action-craft", actionCraft)
+	local actionEat = CacheRef(
+		"ItsyScape.Graphics.AnimationResource",
+		"Resources/Game/Animations/Human_ActionEat_1/Script.lua")
+	peep:addResource("animation-action-enchant", actionEat)
 	local actionEnchant = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Human_ActionEnchant_1/Script.lua")
@@ -4575,6 +6532,69 @@ function Utility.Peep.makeHuman(peep)
 	peep:addResource("animation-jump", jumpAnimation)
 
 	peep:listen('finalize', Utility.Peep.Human.onFinalize)
+end
+
+Utility.Peep.Character = {}
+
+local function _tryMakeCharacter(peep, resource)
+	if not resource then
+		return false
+	end
+
+	local gameDB = peep:getDirector():getGameDB()
+	local character = gameDB:getRecord("PeepCharacter", {
+		Peep = resource
+	})
+
+	if character then
+		local _, c = peep:addBehavior(CharacterBehavior)
+		c.character = character:get("Character")
+
+		return true
+	end
+
+	return false
+end
+
+function Utility.Peep.Character:onFinalize()
+	local resource = Utility.Peep.getResource(self)
+	local mapObject = Utility.Peep.getMapObject(self)
+
+	if not (_tryMakeCharacter(self, mapObject) or _tryMakeCharacter(self, resource)) then
+		return
+	end
+
+	local character = Utility.Peep.getCharacter(self)
+	local teamRecords = character and self:getDirector():getGameDB():getRecords("CharacterTeam", {
+		Character = character
+	})
+
+	if not teamRecords then
+		return
+	end
+
+	local _, teams = self:addBehavior(TeamBehavior)
+	for _, teamRecord in ipairs(teamRecords) do
+		local team = teamRecord:get("Team").name
+
+		local hasTeam = false
+		for _, otherTeam in ipairs(teams.teams) do
+			if otherTeam == team then
+				hasTeam = true
+				break
+			end
+		end
+
+		if not hasTeam then
+			Log.info("Peep '%s' (character = '%s') is on team '%s'.", self:getName(), character.name, team)
+			table.insert(teams.teams, team)
+		end
+	end
+end
+
+function Utility.Peep.makeCharacter(peep)
+	peep:addBehavior(TeamBehavior)
+	peep:listen('finalize', Utility.Peep.Character.onFinalize)
 end
 
 Utility.Boss = {}
@@ -5077,6 +7097,10 @@ function Utility.Quest.didComplete(quest, peep)
 	end
 
 	return peep:getState():has("Quest", quest)
+end
+
+function Utility.Quest.didStep(quest, step, peep)
+	return peep:getState():has("KeyItem", step)
 end
 
 function Utility.Quest.didStart(quest, peep)

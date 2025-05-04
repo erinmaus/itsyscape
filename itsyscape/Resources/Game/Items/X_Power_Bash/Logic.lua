@@ -67,8 +67,8 @@ function Bash:previewDamageRoll(roll)
 end
 
 
-function Bash:dealtDamage(peep, target, attack)
-	ProxyXWeapon.dealtDamage(self, peep, target, attack)
+function Bash:dealtDamage(peep, target, attack, roll)
+	ProxyXWeapon.dealtDamage(self, peep, target, attack, roll)
 
 	local level = peep:getState():count(
 		"Skill",

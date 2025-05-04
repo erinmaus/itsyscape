@@ -43,25 +43,19 @@ function ShipMovementCortex.Ship:prepare()
 		return
 	end
 
-	local _, origin = self.ship:addBehavior(OriginBehavior)
-	origin.origin = Vector(map:getWidth(), 0, map:getHeight())
-
-	local _, offset = self.ship:addBehavior(MapOffsetBehavior)
-	offset.offset = Vector(-map:getWidth(), 0, -map:getHeight())
-
 	local _, movement = self.ship:addBehavior(MovementBehavior)
 	movement.noClip = true
 
-	local width = (map:getWidth() - 5.5) * map:getCellSize()
-	local height = (map:getHeight() - 4) * map:getCellSize()
+	local width = map:getWidth() * map:getCellSize()
+	local height = map:getHeight() * map:getCellSize()
 	local radius = height / 2
-	local numCircles = width / height * 2 + 1
-	for i = 0, numCircles * 2 do
+	local numCircles = ((width / height) * 2 + 1)
+	for i = 1, numCircles do
 		local cellSize = width / numCircles
 		local circle = {
-			x =  (i / 2) / numCircles * width - radius - width / 2,
+			x =  (i - 1) / (numCircles - 1) * width - width / 2,
 			y = 0,
-			radius = math.sqrt(radius * 1.25)
+			radius = radius
 		}
 
 		table.insert(self.shape, circle)
@@ -91,7 +85,7 @@ function ShipMovementCortex.Ship:steer(steerDirection, rudder)
 
 	local _, shipStats = self.ship:addBehavior(ShipStatsBehavior)
 	local turnRadius = math.rad(shipStats.bonuses[ShipStatsBehavior.STAT_TURN])
-	turnRadius = math.max(turnRadius, math.pi / 16) -- clamp the minimum to something sensible
+	turnRadius = math.max(turnRadius, math.pi / 8) -- clamp the minimum to something sensible
 
 	local shipMovement = self.ship:getBehavior(ShipMovementBehavior)
 	local angle = turnRadius * steerDirection * rudder
@@ -114,7 +108,6 @@ function ShipMovementCortex.Ship:move(delta)
 
 	if shipMovement.steerDirection ~= 0 and shipMovement.isMoving then
 		self:steer(shipMovement.steerDirection, shipMovement.rudder)
-		shipMovement.steerDirection = 0
 	end
 
 	local maxAcceleration = math.max(shipStats.bonuses[ShipStatsBehavior.STAT_SPEED] / self.MAX_ACCELERATION_DENOMINATOR, 1)
@@ -139,18 +132,12 @@ function ShipMovementCortex.Ship:move(delta)
 	shipMovement.rotation = (shipMovement.rotation * rotationStep):getNormal()
 	shipMovement.angularAcceleration = 0
 
-	local steerDirectionNormal = shipMovement.steerDirectionNormal
-	local currentDirectionNormal = Quaternion.transformVector(shipMovement.rotation, steerDirectionNormal)
+	local currentDirectionNormal = Sailing.getShipForward(self.ship)
+	local directionRotation = Quaternion.fromVectors(shipMovement.steerDirectionNormal, currentDirectionNormal)
+	local position, rotation = Sailing.Ocean.getPositionRotation(self.ship)
 
-	local rotation = Quaternion.lookAt(currentDirectionNormal, Vector.ZERO)
-	if ocean then
-		local delta = love.timer.getTime() * ocean.weatherRockMultiplier
-		local mu = math.sin(delta)
-		local angle = mu * ocean.weatherRockRange
-
-		rotation = rotation * Quaternion.fromAxisAngle(shipMovement.rockDirectionNormal, angle)
-	end
-	Utility.Peep.setRotation(self.ship, (rotation * Quaternion.Y_90):getNormal())
+	Utility.Peep.setRotation(self.ship, (directionRotation * rotation):getNormal())
+	Utility.Peep.setPosition(self.ship, position + Vector(0, 8, 0))
 
 	if shipMovement.isMoving then
 		local acceleration = currentDirectionNormal * movement.maxAcceleration
@@ -164,29 +151,47 @@ function ShipMovementCortex.Ship:projectRay(ray)
 	-- Make the ray planar (XZ).
 	ray = Ray(ray.origin * Vector.PLANE_XZ, (ray.direction * Vector.PLANE_XZ):getNormal())
 
+	local nearPoint, farPoint
+	local nearPointDistance, farPointDistance = math.huge, -math.huge
 	for i = 1, #self.shape do
 		local selfCircle = self.shape[i]
 		local selfCircleX, _, selfCircleY = selfTransform:transformPoint(selfCircle.x, 0, selfCircle.y)
 		local selfCircleRadius = selfCircle.radius
 		local selfCirclePosition = Vector(selfCircleX, 0, selfCircleY)
 
-		-- https://www.bluebill.net/circle_ray_intersection.html#example
-		local U = selfCirclePosition - ray.origin
-		local U1 = U:dot(ray.direction) * ray.direction
-		local U2 = U - U1
-		local d = U2:getLength()
+		local m = ray.origin - selfCirclePosition
+		local b = m:dot(ray.direction)
+		local c = m:dot(m) - selfCircleRadius ^ 2
 
-		-- We add a little buffer to prevent near misses.
-		if d < selfCircleRadius * 2 then
-			local m = math.sqrt(math.max(selfCircleRadius ^ 2 - d ^ 2, 0))
-			local P1 = ray.origin + U1 + m * ray.direction
-			local P2 = ray.origin + U1 - m * ray.direction
+		if not (c > 0 and b > 0) then
+			local discriminant = b * b - c
 
-			return P2, P1
+			if discriminant >= 0 then
+				local t1 = -b - math.sqrt(discriminant)
+				local t2 = -b + math.sqrt(discriminant)
+
+				if t1 >= 0 and t2 >= 0 then
+					local currentNearPoint = ray.origin + t1 * ray.direction
+					local currentFarPoint = ray.origin + t2 * ray.direction
+
+					local currentNearPointDistance = (currentNearPoint - ray.origin):getLengthSquared()
+					local currentFarPointDistance = (currentFarPoint - ray.origin):getLengthSquared()
+
+					if currentNearPointDistance < nearPointDistance then
+						nearPoint = currentNearPoint
+						nearPointDistance = currentNearPointDistance
+					end
+
+					if currentFarPointDistance > farPointDistance then
+						farPoint = currentFarPoint
+						farPointDistance = currentFarPointDistance
+					end
+				end
+			end
 		end
 	end
 
-	return nil
+	return nearPoint, farPoint
 end
 
 function ShipMovementCortex.Ship:avoid(otherShip, bowPosition)
@@ -232,26 +237,29 @@ function ShipMovementCortex.Ship:isColliding(other)
 end
 
 function ShipMovementCortex.Ship:handleFishCollision(other)
-	local shipMovement = self.ship:getBehavior(ShipMovementBehavior)
-	if not shipMovement then
-		return
-	end
+	local selfTransform = Utility.Peep.getTransform(self.ship)
 
-	local otherMovement = other:getBehavior(MovementBehavior)
-	if not otherMovement then
-		return
-	end
-
-	local shipRadius = math.sqrt(math.max(shipMovement.length, shipMovement.beam))
-	local shipPosition = Utility.Peep.getPosition(self.ship) * Vector.PLANE_XZ
 	local otherPosition = Utility.Peep.getPosition(other) * Vector.PLANE_XZ
+	local otherSize = Utility.Peep.getSize(other)
+	local otherRadius = math.max(otherSize.x, otherSize.z) / 2
 
-	local difference = otherPosition - shipPosition
-	local distance = difference:getLength()
+	for i = 1, #self.shape do
+		local selfCircle = self.shape[i]
+		local selfCircleX, _, selfCircleY = selfTransform:transformPoint(selfCircle.x, 0, selfCircle.y)
+		local selfCircleRadius = selfCircle.radius
+		local selfCirclePosition = Vector(selfCircleX, 0, selfCircleY)
 
-	if distance <= shipRadius then
-		local clampedPosition = shipPosition + difference:getNormal() * shipRadius
-		Utility.Peep.setPosition(other, clampedPosition)
+		local shipPosition = Utility.Peep.getPosition(self.ship) * Vector.PLANE_XZ
+
+		difference = otherPosition - selfCirclePosition
+		distance = difference:getLength()
+
+		if distance <= selfCircleRadius + otherRadius then
+			local clampedPosition = selfCirclePosition + difference:getNormal() * (selfCircleRadius + otherRadius)
+			Utility.Peep.setPosition(other, clampedPosition, true)
+
+			break
+		end
 	end
 end
 
@@ -330,11 +338,11 @@ function ShipMovementCortex:projectRay(ray, key)
 		if not self.pendingShips[peep] and peep:getLayerName() == key then
 			local ship = self.ships[peep]
 
-			local closePoint, farPoint = ship:projectRay(ray)
-			if closePoint and farPoint then
+			local nearPoint, farPoint = ship:projectRay(ray)
+			if nearPoint and farPoint then
 				table.insert(results, {
 					peep = peep,
-					closePoint = closePoint,
+					nearPoint = nearPoint,
 					farPoint = farPoint
 				})
 			end
@@ -342,6 +350,15 @@ function ShipMovementCortex:projectRay(ray, key)
 	end
 
 	return results
+end
+
+function ShipMovementCortex:projectRayAgainstShip(peep, ray)
+	local ship = self.ships[peep]
+	if ship then
+		return ship:projectRay(ray)
+	end
+
+	return nil
 end
 
 function ShipMovementCortex:avoid(otherShipPeep)

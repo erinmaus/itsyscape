@@ -57,8 +57,8 @@ end
 
 function Boomerang:tick()
 	if not self.spawnPosition or not self.hitPosition then
-		self.spawnPosition = self:getTargetPosition(self:getSource()) + Vector(0, 1, 0)
-		self.hitPosition = self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)
+		self.spawnPosition = (self:getTargetPosition(self:getSource()) + Vector(0, 1, 0)):keep()
+		self.hitPosition = (self:getTargetPosition(self:getDestination()) + Vector(0, 1, 0)):keep()
 
 		self.duration = (self.spawnPosition - self.hitPosition):getLength() / self.SPEED
 	end

@@ -188,53 +188,61 @@ do
 		Resource = Reddick
 	}
 
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Shirts/ReddicksRobes.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Resource = Reddick
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Shoes/Boots_Seafarer1.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Resource = Reddick
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Brown.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
-		Priority = math.huge,
-		Resource = Reddick
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Hands/ReddicksGloves.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Resource = Reddick
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Head/Light.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
-		Resource = Reddick
-	}
-
-	ItsyScape.Meta.PeepSkin {
-		Type = "ItsyScape.Game.Skin.ModelSkin",
-		Filename = "Resources/Game/Skins/PlayerKit1/Hair/Enby.lua",
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
-		Priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_ACCENT,
-		Resource = Reddick
-	}
+	ItsyScape.Utility.skins(Reddick, {
+		{
+			filename = "PlayerKit2/Shirts/FancyRobe.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_BODY,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"PRIMARY_BLACK",
+				"PRIMARY_RED",
+				"PRIMARY_YELLOW"
+			}
+		},
+		{
+			filename = "PlayerKit2/Shoes/Boots_Seafarer1.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_FEET,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"PRIMARY_BLACK"
+			}
+		},
+		{
+			filename = "PlayerKit2/Eyes/Eyes.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+			priority = math.huge,
+			colors = {
+				"HAIR_BROWN",
+				"EYE_WHITE",
+				"EYE_BLACK"
+			}
+		},
+		{
+			filename = "PlayerKit2/Hands/StripedGloves.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HANDS,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"PRIMARY_RED",
+				"PRIMARY_YELLOW"
+			}
+		},
+		{
+			filename = "PlayerKit2/Head/Humanlike.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_BASE,
+			colors = {
+				"SKIN_LIGHT"
+			}
+		},
+		{
+			filename = "PlayerKit2/Hair/Enby.lua",
+			slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_HEAD,
+			priority = ItsyScape.Utility.Equipment.SKIN_PRIORITY_ACCENT,
+			colors = {
+				"HAIR_BROWN"
+			}
+		}
+	})
 
 	ItsyScape.Meta.ResourceName {
 		Value = "Earl Reddick",

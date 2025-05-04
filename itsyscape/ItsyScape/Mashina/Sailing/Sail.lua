@@ -82,8 +82,8 @@ function Sail:update(mashina, state, executor)
 	if Class.isCompatibleType(target, Peep) and target:hasBehavior(ShipMovementBehavior) then
 		local flank = state[self.FLANK]
 		if flank then
-			local selfNormal = Sailing.getShipDirectionNormal(ship)
-			local otherNormal = Sailing.getShipDirectionNormal(target)
+			local selfNormal = Sailing.getShipForward(ship)
+			local otherNormal = Sailing.getShipForward(target)
 			local dot = math.abs(selfNormal:dot(otherNormal))
 
 			local angle = math.acos(math.clamp(dot))

@@ -23,6 +23,7 @@ end
 function Parry:activate(activator, target)
 	CombatPower.activate(self, activator, target)
 	Utility.Peep.applyEffect(activator, self.effectResource, true, activator)
+	Utility.Combat.deflectPendingPower(self, activator, target)
 end
 
 return Parry

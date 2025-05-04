@@ -21,7 +21,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "ComfyChair_Default",
+		Prop = ItsyScape.Resource.Prop "CommonFire",
 		MapObject = M["ComfyChair_Default1"]
 	}
 end

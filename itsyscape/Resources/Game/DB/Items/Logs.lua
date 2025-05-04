@@ -24,7 +24,7 @@ local LOGS = {
 		weight = 8,
 		health = 4,
 		tinderbox = "Tinderbox",
-		variants = { "Snowy" },
+		variants = { "Snowy", "Jungle1", "Jungle2" },
 		secondaries = {
 			"Leaf",
 			"Branch"
@@ -36,7 +36,7 @@ local LOGS = {
 		weight = -2,
 		health = 4,
 		tinderbox = "Tinderbox",
-		variants = { "Stormy" }
+		variants = { "Stormy", "Jungle1", "Jungle2" }
 	},
 
 	["Rotten"] = {
@@ -135,6 +135,18 @@ local LOGS = {
 		tinderbox = "Tinderbox",
 		secondaries = {
 			"Branch"
+		}
+	},
+
+	["Balsa"] = {
+		tier = 45,
+		weight = 1,
+		health = 50,
+		tinderbox = "Tinderbox",
+		secondaries = {
+			"Branch",
+			"GreenLeaf",
+			"PurpleLeaf"
 		}
 	}
 }
@@ -343,8 +355,7 @@ for name, log in spairs(LOGS) do
 
 		local CookAction = ItsyScape.Action.OpenCraftWindow()
 		ItsyScape.Meta.DelegatedActionTarget {
-			CategoryKey = "CookingMethod",
-			CategoryValue = "Fire",
+			CategoryKey = "CookingMethodFire",
 			Action = CookAction
 		}
 
@@ -427,6 +438,18 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "An evergreen found all over the Realm.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "CommonTree_Default"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A hardy evergreen found all over the tropical regions of the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CommonTree_Jungle1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A hardy evergreen found all over the tropical regions of the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "CommonTree_Jungle2"
 }
 
 ItsyScape.Meta.ResourceDescription {
@@ -784,6 +807,18 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "A shadow of the common jungle pine.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ShadowTree_Jungle1"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A shadow of the common jungle pine.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "ShadowTree_Jungle2"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "A shadow of the great common fir tree of the Realm, whipped around in a frenzy.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "ShadowTree_Stormy"
@@ -967,6 +1002,42 @@ ItsyScape.Resource.Item "FossilizedOakBranch" {
 			Count = ItsyScape.Utility.xpForResource(25)
 		}
 	}
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Strong and soft logs that also don't weigh much.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaLogs"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A common tropical tree found on islands near the edge of the Realm.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "BalsaTree_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Green balsa leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaGreenLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A single green leaf from a balsa tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaGreenLeaf"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Purple balsa leaf",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaPurpleLeaf"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A single purple leaf from a balsa tree.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaPurpleLeaf"
 }
 
 ItsyScape.Resource.Prop "Charcoal" {

@@ -18,6 +18,7 @@ local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
+local ShipMovementCortex = require "ItsyScape.Peep.Cortexes.ShipMovementCortex"
 
 local Swim = B.Node("Swim")
 Swim.TARGET = B.Reference()
@@ -33,85 +34,62 @@ function Swim:update(mashina, state, executor)
 	local face3D = state[self.FACE3D]
 	local face2D = state[self.FACE2D]
 
+	local nodes = Sailing.Navigation.buildNodes(mashina, target, offset)
+	local path = Sailing.Navigation.navigate(nodes)
+
+	if not path then
+		return B.Status.Failure
+	end
+
 	local movement = mashina:getBehavior(MovementBehavior)
 	if not movement then
 		return B.Status.Failure
 	end
 
-	local otherPosition, otherOffset = Sailing.getShipTarget(mashina, target, offset)
-	if not otherPosition then
-		return B.Status.Failure
+	local targetPosition = path[1]
+	if not targetPosition then
+		local _, _, t = Sailing.getShipTarget(mashina, target, offset)
+		targetPosition = t
 	end
 
-	local targetPosition
-	if Class.isCompatibleType(otherOffset, Ray) then
-		targetPosition = otherPosition + otherOffset.origin
-	elseif Class.isCompatibleType(otherOffset, Vector) then
-		targetPosition = otherPosition + otherOffset
-	else
-		targetPosition = otherPosition
-	end	
-	targetPosition = targetPosition * Vector.PLANE_XZ
-
+	local goalPosition = path[#path]
 	local currentPosition = Utility.Peep.getPosition(mashina) * Vector.PLANE_XZ
-	local distanceFromTarget = (targetPosition - currentPosition):getLength()
-	local direction = (targetPosition - currentPosition):getNormal()
+	local distanceFromGoal = (goalPosition - currentPosition):getLength()
+	local direction = currentPosition:direction(targetPosition)
 
 	local isClose = false
 	if Class.isCompatibleType(otherOffset, Ray) then
-		local ray = Ray(targetPosition, otherOffset.direction)
+		local ray = Ray(goalPosition, otherOffset.direction)
 		local _, A = ray:closest(currentPosition)
-		local isWithinTargetDistance = (A - targetPosition):getLength() < distance
+		local isWithinTargetDistance = (A - goalPosition):getLength() < distance
 
 		local size = Utility.Peep.getSize(mashina)
 		local isWithinWidth = (A - currentPosition):getLength() < size.x / 2
 		isClose = isWithinTargetDistance and isWithinWidth
 	end
 
-	if Class.isCompatibleType(target, Peep) then
-		local shipMovement = target:getBehavior(ShipMovementBehavior)
+	local direction = currentPosition:direction(targetPosition)
 
-		if shipMovement and face3D and mashina:hasBehavior(RotationBehavior) then
-			local rotation = shipMovement.rotation
-			if face2D then
-				local inverseRotation = -rotation
-				local inverseTransformedDirection = inverseRotation:transformVector(direction)
-				if inverseTransformedDirection.x < 0 then
-					-- Rotation 180 to face left.
-					-- Do nothing otherwise. Objects using 2D facing default to facing +X.
-					rotation = rotation * Quaternion.Y_180
-				end
-			end
-
-			Utility.Peep.setRotation(mashina, rotation)
-		end
-
-		if shipMovement then
-			-- Try and avoid the ship.
-
-			local radius = math.max(shipMovement.length, shipMovement.beam) / 2
-
-			local projectedPosition = currentPosition + movement.velocity * Vector.PLANE_XZ
-			local projectedDifference = projectedPosition - otherPosition
-			local projectedDistanceFromShip = projectedDifference:getLength()
-
-			if projectedDistanceFromShip <= radius then
-				local modifiedOtherPosition = otherPosition + projectedDifference:getNormal() * radius
-				direction = (modifiedOtherPosition - currentPosition):getNormal()
-			end
-		end
-	end
-
-	if isClose or distanceFromTarget < distance then
+	if isClose or distanceFromGoal < distance then
 		movement.isStopping = true
-		movement.acceleration = Vector(0)
+
+		Utility.Peep.lookAt(mashina, target)
 
 		return B.Status.Success
 	else
 		movement.isStopping = false
-		movement.acceleration = movement.acceleration + direction * movement.maxAcceleration
+		--movement.acceleration = movement.acceleration + direction * movement.maxAcceleration
+		movement.velocity = direction * movement.maxSpeed
+		Utility.Peep.lookAt(mashina, target)
 
 		return B.Status.Working
+	end
+end
+
+function Swim:deactivated(mashina, state)
+	local prop = state[self.PROP]
+	if prop then
+		Utility.Peep.poof(prop:getPeep())
 	end
 end
 

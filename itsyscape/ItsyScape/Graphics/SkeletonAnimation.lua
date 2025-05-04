@@ -25,9 +25,9 @@ SkeletonAnimation.KeyFrame = Class()
 --  * t defaults to { 0, 0, 0 }
 function SkeletonAnimation.KeyFrame:new(time, s, r, t)
 	self.time = time or 0
-	self.scale = s or Vector(1)
-	self.rotation = r or Quaternion()
-	self.translation = t or Vector(0)
+	self.scale = (s or Vector(1)):keep()
+	self.rotation = (r or Quaternion()):keep()
+	self.translation = (t or Vector(0)):keep()
 
 	self._handle = NSkeletonKeyFrame()
 	self._handle:setTime(time)
@@ -142,8 +142,10 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 			addFrame(bone:getName())
 		end
 	else
-		for name in pairs(t) do
-			addFrame(name)
+		for name, value in pairs(t) do
+			if type(value) == "table" then
+				addFrame(name)
+			end
 		end
 	end
 
@@ -152,11 +154,7 @@ function SkeletonAnimation:loadFromTable(t, skeleton)
 end
 
 function SkeletonAnimation:getDuration()
-	if self.skeleton then
-		return self:getHandle():getDuration()
-	else
-		return self.duration
-	end
+	return self.duration
 end
 
 function SkeletonAnimation:computeFilteredTransforms(time, transforms, filter)
@@ -263,6 +261,44 @@ function SkeletonAnimation:applyBindPose(time, transforms, index)
 	local bone = self.skeleton:getBoneByIndex(index)
 	local transform = transforms[index]
 	transform:apply(bone:getInverseBindPose())
+end
+
+function SkeletonAnimation.blend(skeleton, fromAnimation, fromTime, toAnimation, toTime, duration)
+	local definition = { _version = 2 }
+
+	for i = 1, skeleton:getNumBones() do
+		local bone = skeleton:getBoneByIndex(i)
+		local boneName = bone:getName()
+
+		local previousBoneFrame = fromAnimation:getInterpolatedBoneFrameAtTime(boneName, fromTime)
+		local currentBoneFrame = toAnimation:getInterpolatedBoneFrameAtTime(boneName, toTime)
+
+		if previousBoneFrame or currentBoneFrame then
+			previousBoneFrame = previousBoneFrame or currentBoneFrame
+			currentBoneFrame = currentBoneFrame or previousBoneFrame
+
+			local blendFrame = {
+				translation = {
+					{ time = 0, previousBoneFrame:getTranslation():get() },
+					{ time = duration, currentBoneFrame:getTranslation():get() }
+				},
+
+				rotation = {
+					{ time = 0, previousBoneFrame:getRotation():get() },
+					{ time = duration, currentBoneFrame:getRotation():get() }
+				},
+
+				scale = {
+					{ time = 0, previousBoneFrame:getScale():get() },
+					{ time = duration, currentBoneFrame:getScale():get() }
+				}
+			}
+
+			definition[boneName] = blendFrame
+		end
+	end
+
+	return SkeletonAnimation(definition, skeleton)
 end
 
 return SkeletonAnimation

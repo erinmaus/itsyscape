@@ -1,0 +1,26 @@
+{
+	"RAIL_ATTACHMENTS": [
+		{
+			"mesh": "Resources/Game/SailingItems/Rail_Galleon_BloodMithril/Model.lstatic",
+			"group": "rail.stern",
+			"texture": "Resources/Game/SailingItems/Rail_Galleon_BloodMithril/Texture.png",
+			"shader": "Resources/Shaders/SpecularTriplanar",
+			"uniforms": [
+				["float", "scape_TriplanarScale", -0.875]
+			],
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		},
+		{
+			"mesh": "Resources/Game/SailingItems/Rail_Galleon_BloodMithril/Model.lstatic",
+			"group": "rail.bow",
+			"texture": "Resources/Game/SailingItems/Rail_Galleon_BloodMithril/Texture.png",
+			"shader": "Resources/Shaders/SpecularTriplanar",
+			"uniforms": [
+				["float", "scape_TriplanarScale", -0.875]
+			],
+			"colorIndex": 1,
+			"outlineThreshold": 0.3
+		}
+	],
+}

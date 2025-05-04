@@ -28,13 +28,14 @@ function WaterMeshSceneNode:new()
 
 	self.yOffset = 0.125
 	self.positionTimeScale = 8
-	self.textureTimeScale = Vector(math.pi / 4, 0.5)
+	self.textureTimeScale = Vector(math.pi / 4, 0.5):keep()
 
 	self.width = 0
 	self.height = self.yOffset * 2
 	self.depth = 0
 
 	self:getMaterial():setShader(WaterMeshSceneNode.DEFAULT_SHADER)
+	self:getMaterial():setIsStencilMaskEnabled(true)
 end
 
 function WaterMeshSceneNode:getYOffset()
@@ -43,7 +44,16 @@ end
 
 function WaterMeshSceneNode:setYOffset(value)
 	self.yOffset = value or self.yOffset
-	self:setBounds(Vector.ZERO, Vector(self.width, self.height, self.depth))
+
+	if self.waterMesh then
+		local min, max = self.waterMesh:getBounds()
+
+		if self.yOffset < 0 then
+			self:setBounds(min + Vector(0, self.yOffset, 0), max)
+		else
+			self:setBounds(min, max + Vector(0, self.yOffset, 0))
+		end
+	end
 end
 
 function WaterMeshSceneNode:getPositionTimeScale()
@@ -100,6 +110,10 @@ function WaterMeshSceneNode:setMesh(mesh)
 	self:setBounds(self.waterMesh:getBounds())
 end
 
+function WaterMeshSceneNode:getMesh()
+	return self.waterMesh
+end
+
 -- Hahahahaha.
 function WaterMeshSceneNode:degenerate()
 	if self.waterMesh then
@@ -115,7 +129,7 @@ function WaterMeshSceneNode:draw(renderer, delta)
 	then
 		texture:getResource():setFilter('nearest', 'nearest')
 		texture:getResource():setWrap('repeat', 'repeat')
-		shader:send("scape_DiffuseTexture", texture:getResource())
+		shader:send("scape_DiffuseTexture", texture:getResource(renderer:getCurrentPass():getID()))
 	end
 
 	if shader:hasUniform("scape_TimeScale") then
@@ -124,6 +138,10 @@ function WaterMeshSceneNode:draw(renderer, delta)
 
 	if shader:hasUniform("scape_YOffset") then
 		shader:send("scape_YOffset", self.yOffset)
+	end
+
+	if shader:hasUniform("scape_XZScale") then
+		shader:send("scape_XZScale", self.waterMesh and self.waterMesh:getScale() or 4)
 	end
 
 	if self.waterMesh then

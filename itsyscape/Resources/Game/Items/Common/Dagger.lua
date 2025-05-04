@@ -23,7 +23,7 @@ function Dagger:getWeaponType()
 end
 
 function Dagger:getCooldown(peep)
-	return 1.5
+	return 2
 end
 
 return Dagger

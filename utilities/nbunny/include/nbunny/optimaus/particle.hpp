@@ -15,6 +15,7 @@
 
 #include "modules/graphics/Mesh.h"
 #include "nbunny/nbunny.hpp"
+#include "nbunny/lua_runtime.hpp"
 #include "nbunny/optimaus/scene.hpp"
 
 namespace nbunny
@@ -23,6 +24,7 @@ namespace nbunny
 	{
 	public:
 		glm::vec3 position = glm::vec3(0.0f);
+		glm::vec3 normal = glm::vec3(0.0f, 0.0f, 1.0f);
 		glm::vec3 velocity = glm::vec3(0.0f);
 		glm::vec3 acceleration = glm::vec3(0.0f);
 		float rotation = 0.0f;
@@ -81,6 +83,7 @@ namespace nbunny
 		struct Vertex
 		{
 			glm::vec3 position;
+			glm::vec3 particle_position;
 			glm::vec3 normal;
 			glm::vec2 texture;
 			glm::vec4 color;
@@ -94,19 +97,20 @@ namespace nbunny
 		std::vector<std::shared_ptr<ParticlePath>> paths;
 		std::shared_ptr<ParticleEmissionStrategy> emission_strategy;
 
+		std::size_t max_num_particles = 100;
 		std::vector<Particle> particles;
 		std::vector<Vertex> vertices;
 
 		std::vector<glm::vec4> textures;
 
 		bool is_playing = true;
+		bool is_pending = false;
 
 		void update(float time_delta);
-		void emit(int count);
 
 		glm::quat get_global_rotation(float delta) const;
-		void build(const glm::quat& inverse_rotation);
-		void push_particle_quad(const Particle& p, glm::quat rotation);
+		void build(const glm::quat& inverse_rotation, const glm::quat& self_rotation, const glm::mat4& view, float delta);
+		void push_particle_quad(const Particle& p, const glm::quat& inverse_rotation, const glm::quat& self_rotation);
 
 	public:
 		static const Type<ParticleSceneNode> type_pointer;
@@ -116,19 +120,20 @@ namespace nbunny
 		virtual ~ParticleSceneNode();
 
 		void clear();
-		void set_emission_strategy(lua_State* L, sol::table& def);
-		void set_emitters(lua_State* L, sol::table& def);
-		void set_paths(lua_State* L, sol::table& def);
+		void set_emission_strategy(lua_State* L, const lua::TemporaryReference& def);
+		void set_emitters(lua_State* L, const lua::TemporaryReference& def);
+		void set_paths(lua_State* L, const lua::TemporaryReference& def);
 
 		void from_definition(lua_State* L);
 		void update_local_position(const glm::vec3& position);
 		void update_local_direction(const glm::vec3& direction);
 
+		void emit(int count);
 		void pause();
 		void play();
 		bool get_is_playing() const;
 
-		void frame(float delta, float time_delta);
+		void frame(float delta) override;
 		void draw(Renderer& renderer, float delta) override;
 	};
 }

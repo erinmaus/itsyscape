@@ -17,23 +17,19 @@ local GridLayout = require "ItsyScape.UI.GridLayout"
 local Panel = require "ItsyScape.UI.Panel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
-local ProCombatStatusHUD = require "ItsyScape.UI.Interfaces.ProCombatStatusHUD"
+local PendingPowerIcon = require "ItsyScape.UI.Interfaces.Components.PendingPowerIcon"
+local RechargingPowerBar = require "ItsyScape.UI.Interfaces.Components.RechargingPowerBar"
 
 local PlayerPowers = Class(PlayerTab)
-PlayerPowers.TITLE_SIZE = 24
+PlayerPowers.TITLE_SIZE = 28
 PlayerPowers.BUTTON_SIZE = 48
 PlayerPowers.BUTTON_PADDING = 2
 
 function PlayerPowers:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
 
-	self.subPending = ProCombatStatusHUD.Pending()
+	self.subPending = PendingPowerIcon()
 	self.subPending:setSize(PlayerPowers.BUTTON_SIZE, PlayerPowers.BUTTON_SIZE)
-
-	local panel = Panel()
-	panel = Panel()
-	panel:setSize(self:getSize())
-	self:addChild(panel)
 
 	self.layout = GridLayout()
 	self.layout:setWrapContents(true)
@@ -53,11 +49,11 @@ function PlayerPowers:new(id, index, ui)
 		local attackLabel = Label()
 		attackLabel:setStyle(LabelStyle({
 			font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-			fontSize = 20,
+			fontSize = 26,
 			textShadow = true,
-			spaceLines = true
+			center = true
 		}, self:getView():getResources()))
-		attackLabel:setText("Attack")
+		attackLabel:setText("Rites of malice")
 		offensivePowersTitle:addChild(attackLabel)
 
 		self.layout:addChild(offensivePowersTitle)
@@ -87,11 +83,11 @@ function PlayerPowers:new(id, index, ui)
 		local defendLabel = Label()
 		defendLabel:setStyle(LabelStyle({
 			font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-			fontSize = 20,
+			fontSize = 26,
 			textShadow = true,
-			spaceLines = true
+			center = true
 		}, self:getView():getResources()))
-		defendLabel:setText("Defend")
+		defendLabel:setText("Rites of bulwark")
 		defensivePowersTitle:addChild(defendLabel)
 
 		self.layout:addChild(defensivePowersTitle)
@@ -134,21 +130,13 @@ function PlayerPowers:createPowerButtons(powers, layout, onClick)
 		local icon = Icon()
 		icon:setPosition(PlayerPowers.BUTTON_PADDING, PlayerPowers.BUTTON_PADDING)
 		icon:setSize(PlayerPowers.BUTTON_SIZE, PlayerPowers.BUTTON_SIZE)
-		button:setData('icon', icon)
+		button:setData("icon", icon)
 		button:addChild(icon)
 
 		button.onClick:register(onClick, self, i)
 
-		local coolDown = Label()
-		coolDown:setStyle(LabelStyle({
-			font = "Resources/Renderers/Widget/Common/TinySansSerif/Regular.ttf",
-			color = { 1, 1, 0, 1 },
-			fontSize = 22,
-			textShadow = true
-		}, self:getView():getResources()))
-		coolDown:setPosition(PlayerPowers.BUTTON_PADDING * 2, PlayerPowers.BUTTON_SIZE - 22 - PlayerPowers.BUTTON_PADDING * 2)
-		button:setData('coolDown', coolDown)
-		button:addChild(coolDown)
+		local rechargeBar = RechargingPowerBar()
+		button:setData("recharge", rechargeBar)
 
 		layout:addChild(button)
 
@@ -180,45 +168,54 @@ function PlayerPowers:refresh()
 end
 
 function PlayerPowers:updatePowers(buttons, powers, pendingID)
+	local state = self:getState()
+
 	for i = 1, #powers do
 		local power = powers[i]
 		local button = buttons[i]
 
-		local coolDown = button:getData('coolDown')
-		local icon = button:getData('icon')
+		if power and button then
+			local icon = button:getData("icon")
 
-		icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
+			icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
 
-		if not power.enabled then
-			icon:setColor(Color(0.25))
-		else
-			icon:setColor(Color(1))
-		end
+			if math.floor(power.zeal * 100) > math.floor(state.zeal.current * 100) then
+				icon:setColor(Color(0.25))
+			else
+				icon:setColor(Color(1))
+			end
 
-		local description = {}
-		for i = 1, #power.description do
-			table.insert(description, ToolTip.Text(power.description[i]))
-		end
+			local description = {}
+			for i = 1, #power.description do
+				table.insert(description, ToolTip.Text(power.description[i]))
+			end
 
-		local toolTip = {
-			ToolTip.Header(power.name),
-			unpack(power.description)
-		}
+			local toolTip = {
+				ToolTip.Header(power.name),
+				ToolTip.Text(string.format("This rite uses %d%% zeal.", power.zeal * 100)),
+				unpack(power.description)
+			}
 
-		button:setToolTip(unpack(toolTip))
+			local rechargeBar = button:getData("recharge")
+			rechargeBar:updateRecharge(power.pending, power.zeal)
 
-		if power.coolDown and power.coolDown ~= 0 then
-			coolDown:setText(tostring(power.coolDown))
-		else
-			coolDown:setText("")
-		end
+			local buttonWidth, buttonHeight = button:getSize()
+			rechargeBar:setPosition(self.BUTTON_PADDING, buttonHeight - 8 - self.BUTTON_PADDING)
+			rechargeBar:setSize(buttonWidth - self.BUTTON_PADDING * 2, 8)
 
-		button:setID("PlayerPowers-Power" .. power.id)
+			if rechargeBar:getParent() ~= button then
+				button:addChild(rechargeBar)
+			end
 
-		if pendingID == power.id then
-			button:addChild(self.subPending)
-		else
-			button:removeChild(self.subPending)
+			button:setToolTip(unpack(toolTip))
+
+			button:setID("PlayerPowers-Power-" .. power.id)
+
+			if pendingID == power.id then
+				button:addChild(self.subPending)
+			else
+				button:removeChild(self.subPending)
+			end
 		end
 	end
 end

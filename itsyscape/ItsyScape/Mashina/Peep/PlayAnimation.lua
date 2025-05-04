@@ -37,7 +37,7 @@ function PlayAnimation:update(mashina, state, executor)
 	end
 
 	local slot = state[self.SLOT] or 'mashina'
-	local priority = state[self.PRIORITY] or 0
+	local priority = state[self.PRIORITY] or 100
 	local force = state[self.FORCE] or false
 
 	if not filename then

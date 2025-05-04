@@ -66,17 +66,26 @@ function Decoration.Feature:setColor(value)
 	self:getHandle():setColor(value:get())
 end
 
+function Decoration.Feature:getTexture()
+	return self:getHandle():getTexture() + 1
+end
+
+function Decoration.Feature:setTexture(value)
+	self:getHandle():setTexture((value or 1) - 1)
+end
+
 function Decoration.Feature:serialize()
 	return {
 		id = self:getID(),
 		position = { self:getHandle():getPosition() },
 		rotation = { self:getHandle():getRotation() },
 		scale = { self:getHandle():getScale() },
-		color = { self:getHandle():getColor() }
+		color = { self:getHandle():getColor() },
+		texture = self:getHandle():getTexture()
 	}
 end
 
-function Decoration.Feature:map(func, staticMesh)
+function Decoration.Feature:map(func, staticMesh, index)
 	local transform = love.math.newTransform()
 
 	local position = self:getPosition()
@@ -112,13 +121,15 @@ function Decoration.Feature:map(func, staticMesh)
 			local s = v2 - v3
 			local t = v1 - v3
 
-			func(v1, v2, v3, s:cross(t):getNormal(), self)
+			func(v1, v2, v3, s:cross(t):getNormal(), self, index)
 		end
 	end
 end
 
 function Decoration:new(d)
 	self.tileSetID = false
+	self.isWall = false
+	self.uniforms = {}
 	self.features = {}
 	self._handle = NDecoration()
 
@@ -126,8 +137,6 @@ function Decoration:new(d)
 		self:loadFromFile(d)
 	elseif type(d) == 'table' then
 		self:loadFromTable(d)
-	else
-		error(("expected table or filename (string), got %s"):format(type(d)))
 	end
 end
 
@@ -145,6 +154,7 @@ end
 
 function Decoration:loadFromTable(t)
 	self.tileSetID = t.tileSetID or self.tileSetID
+	self.isWall = t.isWall or false
 
 	for i = 1, #t do
 		local feature = t[i]
@@ -152,17 +162,29 @@ function Decoration:loadFromTable(t)
 		local rotation = Quaternion(unpack(feature.rotation or { 0, 0, 0, 1 }))
 		local scale = Vector(unpack(feature.scale or { 1, 1, 1 }))
 		local color = Color(unpack(feature.color or { 1, 1, 1, 1 }))
-		self:add(feature.id, position, rotation, scale, color)
+		local texture = feature.texture or 1
+		self:add(feature.id, position, rotation, scale, color, texture)
+	end
+
+	if type(t.uniforms) == "table" then
+		for key, value in pairs(t.uniforms) do
+			if type(value) == "table" and #value >= 1 then
+				self.uniforms[key] = { unpack(value) }
+			elseif type(value) ~= "table" then
+				self.uniforms[key] = value
+			end
+		end
 	end
 end
 
-function Decoration:add(id, position, rotation, scale, color)
+function Decoration:add(id, position, rotation, scale, color, texture)
 	local description = Decoration.Feature(NDecorationFeature())
 	description:setID(id)
 	description:setPosition(position or Vector(0))
 	description:setRotation(rotation or Quaternion(0))
 	description:setScale(scale or Vector(1))
 	description:setColor(color or Color(1))
+	description:setTexture(texture or 1)
 
 	local feature = Decoration.Feature(self:getHandle():addFeature(description:getHandle()))
 
@@ -188,6 +210,8 @@ function Decoration:toString()
 	r:pushLine("{")
 	r:pushIndent(1)
 	r:pushFormatLine("tileSetID = %q,", self:getTileSetID())
+	r:pushIndent(1)
+	r:pushFormatLine("isWall = %s,", Log.boolean(self:getIsWall()))
 
 	for i = 1, #self.features do
 		local feature = self.features[i]
@@ -199,6 +223,7 @@ function Decoration:toString()
 			local rotation = feature:getRotation()
 			local scale = feature:getScale()
 			local color = feature:getColor()
+			local texture = feature:getTexture()
 
 			r:pushIndent(2)
 			r:pushFormatLine("id = %q,", feature:getID())
@@ -218,6 +243,8 @@ function Decoration:toString()
 			r:pushFormatLine(
 				"color = { %f, %f, %f, %f },",
 				color.r, color.g, color.b, color.a)
+			r:pushIndent(2)
+			r:pushFormatLine("texture = %d,", texture)
 		end
 		r:pushIndent(1)
 		r:pushLine("},")
@@ -229,11 +256,21 @@ end
 
 function Decoration:serialize()
 	local result = {
-		tileSetID = self:getTileSetID()
+		tileSetID = self:getTileSetID(),
+		isWall = self:getIsWall(),
+		uniforms = {}
 	}
 
 	for i = 1, #self.features do
 		table.insert(result, self.features[i]:serialize())
+	end
+
+	for key, value in pairs(self.uniforms) do
+		if type(value) == "table" then
+			result.uniforms[key] = { unpack(value) }
+		else
+			result.uniforms[key] = value
+		end
 	end
 
 	return result
@@ -241,24 +278,26 @@ end
 
 Decoration.RAY_TEST_RESULT_FEATURE = 1
 Decoration.RAY_TEST_RESULT_POSITION = 2
+Decoration.RAY_TEST_RESULT_INDEX = 3
 
 function Decoration:map(func, staticMesh)
 	local result = {}
 
-	for feature in self:iterate() do
-		feature:map(func, staticMesh)
+	for feature, index in self:iterate() do
+		feature:map(func, staticMesh, index)
 	end
 end
 
 function Decoration:testRay(ray, staticMesh)
 	local result = {}
 
-	self:map(function(v1, v2, v3, _, feature)
+	self:map(function(v1, v2, v3, _, feature, index)
 		local s, p = ray:hitTriangle(v2, v1, v3)
 		if s then
 			table.insert(result, {
 				feature,
-				p
+				p,
+				index
 			})
 		end
 	end, staticMesh)
@@ -266,20 +305,38 @@ function Decoration:testRay(ray, staticMesh)
 	return result
 end
 
+function Decoration:getIsWall()
+	return self.isWall
+end
+
+function Decoration:setIsWall(value)
+	self.isWall = value or false
+end
+
 function Decoration:getTileSetID()
 	return self.tileSetID
+end
+
+function Decoration:getUniform(key)
+	return self.uniforms[key]
+end
+
+function Decoration:setUniform(key, value)
+	self.uniforms[key] = value
 end
 
 function Decoration:iterate()
 	local index = 1
 
 	return function()
+		local previousIndex = index
+
 		local current = self.features[index]
 		if index <= #self.features then
 			index = index + 1
 		end
 
-		return current
+		return current, previousIndex
 	end
 end
 

@@ -124,6 +124,7 @@ function LayerTextureResource:loadFromFile(filename, resourceManager)
 
 	local image = love.graphics.newArrayImage(t, settings)
 	image:setFilter('nearest', 'nearest')
+	image:setWrap("repeat")
 	self.layerType = e.type or LayerTextureResource.TYPE_ARRAY	
 	self:getHandle():setTexture(image)
 end

@@ -74,4 +74,16 @@ function CombatEffect:applyToTargetWeaponRange(peep, range)
 	return range
 end
 
+-- Modifies the response time from target vs self.
+-- Returns (multiplier, offset)
+function CombatEffect:applyToTargetResponseTime(peep)
+	return 0, 0
+end
+
+-- Modifies the response time from target vs self.
+-- Returns (multiplier, offset)
+function CombatEffect:applyToSelfResponseTime(peep)
+	return 0, 0
+end
+
 return CombatEffect

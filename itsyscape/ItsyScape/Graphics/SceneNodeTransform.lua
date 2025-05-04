@@ -18,10 +18,10 @@ local SceneNodeTransform = Class()
 -- Constructs an identity scene transform.
 function SceneNodeTransform:new(node)
 	self._handle = node:getHandle():getTransform()
-	self.translation = Vector.ZERO
-	self.scale = Vector.ONE
-	self.rotation = Quaternion.IDENTITY
-	self.offset = Vector.ZERO
+	self.translation = Vector(0):keep()
+	self.scale = Vector(1):keep()
+	self.rotation = Quaternion():keep()
+	self.offset = Vector():keep()
 	self.previousTranslation = false
 	self.previousScale = false
 	self.previousRotation = false
@@ -62,7 +62,7 @@ end
 --
 -- Does nothing if value is nil.
 function SceneNodeTransform:setLocalTranslation(value)
-	self.translation = value or self.translation
+	self.translation = (value and value:keep(self.translation)) or self.translation
 	self._handle:setCurrentTranslation(
 		self.translation.x,
 		self.translation.y,
@@ -80,7 +80,7 @@ end
 --
 -- value is expected to be a Quaternion. If nil, rotation remains unchanged.
 function SceneNodeTransform:setLocalRotation(value)
-	self.rotation = value or self.rotation
+	self.rotation = (value and value:keep(self.rotation)) or self.rotation
 	self._handle:setCurrentRotation(
 		self.rotation.x,
 		self.rotation.y,
@@ -99,7 +99,7 @@ end
 --
 -- Does nothing if value is nil.
 function SceneNodeTransform:setLocalScale(value)
-	self.scale = value or self.scale
+	self.scale = (value and value:keep(self.scale)) or self.scale
 	self._handle:setCurrentScale(
 		self.scale.x,
 		self.scale.y,
@@ -117,7 +117,7 @@ end
 --
 -- Does nothing if value is nil.
 function SceneNodeTransform:setLocalOffset(value)
-	self.offset = value or self.offset
+	self.offset = (value and value:keep(self.offset)) or self.offset
 	self._handle:setCurrentOffset(
 		self.offset.x,
 		self.offset.y,
@@ -145,18 +145,22 @@ function SceneNodeTransform:setPreviousTransform(translation, rotation, scale, o
 	self.previousOffset = offset or self.previousOffset or false
 
 	if self.previousTranslation then
+		self.previousTranslation:keep()
 		self._handle:setPreviousTranslation(self.previousTranslation.x, self.previousTranslation.y, self.previousTranslation.z)
 	end
 
 	if self.previousRotation then
+		self.previousRotation:keep()
 		self._handle:setPreviousRotation(self.previousRotation.x, self.previousRotation.y, self.previousRotation.z, self.previousRotation.w)
 	end
 
 	if self.previousScale then
+		self.previousScale:keep()
 		self._handle:setPreviousScale(self.previousScale.x, self.previousScale.y, self.previousScale.z)
 	end
 
 	if self.previousOffset then
+		self.previousOffset:keep()
 		self._handle:setPreviousOffset(self.previousOffset.x, self.previousOffset.y, self.previousOffset.z)
 	end
 end
@@ -233,10 +237,6 @@ function SceneNodeTransform:tick(frameDelta)
 	self.previousRotation = self.rotation
 	self.previousScale = self.scale
 	self.previousTranslation = self.translation
-end
-
-function SceneNodeTransform:frame(delta)
-	-- Nothing.
 end
 
 return SceneNodeTransform

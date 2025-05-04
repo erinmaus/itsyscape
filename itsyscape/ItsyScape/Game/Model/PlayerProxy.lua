@@ -33,6 +33,7 @@ PlayerProxy.isReady = Property()
 PlayerProxy.flee = Event.ClientToServerRPC()
 PlayerProxy.getIsEngaged = Property()
 PlayerProxy.getTarget = Property()
+PlayerProxy.getOffensiveRange = Property()
 
 PlayerProxy.move = Event.ClientToServerRPC(Event.Argument("x"), Event.Arguments("z"))
 PlayerProxy.walk = Event.ClientToServerRPC(
@@ -52,6 +53,12 @@ PlayerProxy.pokeCamera:link("onPokeCamera", Event.Argument("event"), Event.Argum
 PlayerProxy.CAMERA = "camera"
 PlayerProxy.changeCamera = Event.Set(Event.KeyArgument("cameraType"))
 PlayerProxy.changeCamera:link("onChangeCamera", Event.Argument("cameraType"))
+
+PlayerProxy.pushCamera = Event.ServerToClientRPC(Event.Argument("cameraType"))
+PlayerProxy.pushCamera:link("onPushCamera", Event.Argument("cameraType"))
+
+PlayerProxy.popCamera = Event.ServerToClientRPC()
+PlayerProxy.popCamera:link("onPopCamera")
 
 PlayerProxy.talk = Event.ClientToServerRPC(Event.Argument("yell"))
 PlayerProxy.addExclusiveChatMessage = Event.ClientToServerRPC(Event.Argument("message"), Event.Argument("color"))

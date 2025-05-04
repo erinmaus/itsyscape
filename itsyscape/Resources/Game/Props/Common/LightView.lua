@@ -39,6 +39,7 @@ function LightView:tick()
 	local state = self:getProp():getState()
 	self.light:setColor(Color(unpack(state.color or {})))
 	self.light:setIsGlobal(state.global)
+	self.light:setCastsShadows(state.castsShadows)
 end
 
 return LightView

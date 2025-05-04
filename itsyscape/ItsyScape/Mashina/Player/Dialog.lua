@@ -14,6 +14,7 @@ local Dialog = B.Node("Dialog")
 Dialog.PEEP = B.Reference()
 Dialog.PLAYER = B.Reference()
 Dialog.NAMED_ACTION = B.Reference()
+Dialog.MAIN = B.Reference()
 Dialog.OPENED = B.Local()
 
 function Dialog:update(mashina, state, executor)
@@ -55,7 +56,7 @@ function Dialog:update(mashina, state, executor)
 
 				for _, action in ipairs(actions) do
 					if action.instance:is("talk") or action.instance:is("yell") then
-						Utility.UI.openInterface(player, "DialogBox", true, action.instance, peep)
+						Utility.UI.openInterface(player, "DialogBox", true, action.instance, peep, state[self.MAIN])
 						return true
 					end
 				end

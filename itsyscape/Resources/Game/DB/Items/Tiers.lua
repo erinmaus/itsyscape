@@ -11,6 +11,7 @@
 -- Metal
 do
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "WeirdAlloyBar",
 		Key = "Metal",
 		Value = "WeirdAlloy",
 		Language = "en-US",
@@ -19,6 +20,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "CopperBar",
 		Key = "Metal",
 		Value = "Copper",
 		Language = "en-US",
@@ -27,6 +29,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "TinBar",
 		Key = "Metal",
 		Value = "Tin",
 		Language = "en-US",
@@ -35,6 +38,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "BronzeBar",
 		Key = "Metal",
 		Value = "Bronze",
 		Language = "en-US",
@@ -43,6 +47,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "SandBar",
 		Key = "Metal",
 		Value = "Sand",
 		Language = "en-US",
@@ -51,6 +56,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "IronBar",
 		Key = "Metal",
 		Value = "Iron",
 		Language = "en-US",
@@ -59,6 +65,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "BlackenedIronBar",
 		Key = "Metal",
 		Value = "BlackenedIron",
 		Language = "en-US",
@@ -67,6 +74,16 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "MithrilBar",
+		Key = "Metal",
+		Value = "Mithril",
+		Language = "en-US",
+		Name = "Mithril",
+		Tier = 20
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "AdamantBar",
 		Key = "Metal",
 		Value = "Adamant",
 		Language = "en-US",
@@ -75,6 +92,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "UraniumBar",
 		Key = "Metal",
 		Value = "Uranium",
 		Language = "en-US",
@@ -83,6 +101,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "ItsyBar",
 		Key = "Metal",
 		Value = "Itsy",
 		Language = "en-US",
@@ -91,6 +110,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "GoldBar",
 		Key = "Metal",
 		Value = "Gold",
 		Language = "en-US",
@@ -102,6 +122,7 @@ end
 -- Woods
 do
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "CommonLogs",
 		Key = "Wood",
 		Value = "Common",
 		Language = "en-US",
@@ -110,6 +131,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "ShadowLogs",
 		Key = "Wood",
 		Value = "Shadow",
 		Language = "en-US",
@@ -118,6 +140,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "IsabelleIsland_FoggyForest_AncientSplinters",
 		Key = "Wood",
 		Value = "AncientSplinters",
 		Language = "en-US",
@@ -126,6 +149,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "WillowLogs",
 		Key = "Wood",
 		Value = "Willow",
 		Language = "en-US",
@@ -134,6 +158,43 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "OakLogs",
+		Key = "Wood",
+		Value = "Oak",
+		Language = "en-US",
+		Name = "Oak",
+		Tier = 20
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "MapleLogs",
+		Key = "Wood",
+		Value = "Maple",
+		Language = "en-US",
+		Name = "Maple",
+		Tier = 30
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "YewLogs",
+		Key = "Wood",
+		Value = "Yew",
+		Language = "en-US",
+		Name = "Yew",
+		Tier = 40
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "PetrifiedSpiderLogs",
+		Key = "Wood",
+		Value = "PetrifiedSpider",
+		Language = "en-US",
+		Name = "Petrified spider",
+		Tier = 50
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "AzathothianLogs",
 		Key = "Wood",
 		Value = "Azathothian",
 		Language = "en-US",
@@ -145,6 +206,7 @@ end
 -- Leathers
 do
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "MooishLeather",
 		Key = "Leather",
 		Value = "MooishLeather",
 		Language = "en-US",
@@ -153,6 +215,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "BugGuts",
 		Key = "Leather",
 		Value = "BugGuts",
 		Language = "en-US",
@@ -161,6 +224,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "RobinFeather",
 		Key = "Leather",
 		Value = "RobinFeather",
 		Language = "en-US",
@@ -169,6 +233,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "WhiteWolfHide",
 		Key = "Leather",
 		Value = "WhiteWolfHide",
 		Language = "en-US",
@@ -177,6 +242,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "AncientKaradon",
 		Key = "Leather",
 		Value = "AncientKaradon",
 		Language = "en-US",
@@ -185,6 +251,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "GreenDragonhide",
 		Key = "Leather",
 		Value = "GreenDragonhide",
 		Language = "en-US",
@@ -196,6 +263,7 @@ end
 -- Fabrics
 do
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "BlueCotton",
 		Key = "Fabric",
 		Value = "BlueCotton",
 		Language = "en-US",
@@ -204,6 +272,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "CottonCloth",
 		Key = "Fabric",
 		Value = "CottonCloth",
 		Language = "en-US",
@@ -212,6 +281,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "SpiderSilk",
 		Key = "Fabric",
 		Value = "SpiderSilk",
 		Language = "en-US",
@@ -220,6 +290,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "MysticCotton",
 		Key = "Fabric",
 		Value = "MysticCotton",
 		Language = "en-US",
@@ -228,6 +299,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "NobleSilk",
 		Key = "Fabric",
 		Value = "NobleSilk",
 		Language = "en-US",
@@ -236,6 +308,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "ZealotSilk",
 		Key = "Fabric",
 		Value = "ZealotSilk",
 		Language = "en-US",
@@ -247,6 +320,7 @@ end
 -- Glass
 do
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "BullseyeLanternLense",
 		Key = "Glass",
 		Value = "Lense",
 		Language = "en-US",
@@ -258,6 +332,7 @@ end
 -- Chemicals
 do
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "Gunpowder",
 		Key = "Chemical",
 		Value = "Gunpowder",
 		Language = "en-US",
@@ -269,6 +344,43 @@ end
 -- Cooking
 do
 	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "SeaBass",
+		Key = "CookingMethodRange",
+		Value = "Fish",
+		Language = "en-US",
+		Name = "Fish",
+		Tier = 0
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "SeaBass",
+		Key = "CookingMethodFire",
+		Value = "Fish",
+		Language = "en-US",
+		Name = "Fish",
+		Tier = 0
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "Beef",
+		Key = "CookingMethodRange",
+		Value = "Meat",
+		Language = "en-US",
+		Name = "Meat",
+		Tier = 1
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "Beef",
+		Key = "CookingMethodFire",
+		Value = "Meat",
+		Language = "en-US",
+		Name = "Meat",
+		Tier = 1
+	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "Butter",
 		Key = "Churn",
 		Value = "Butter",
 		Language = "en-US",

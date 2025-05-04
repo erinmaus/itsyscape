@@ -29,6 +29,10 @@ function ShipMovementBehavior:new()
 	-- This should point towards the bow (front) from the stern (back)
 	self.steerDirectionNormal = Vector(-1, 0, 0)
 
+	-- The oppositing normal of the ship at rest
+	-- This should point towards port (left) from starboard (right)
+	self.opposingSteerDirectionNormal = Vector(0, 0, 1)
+
 	-- The direction normal the ship rocks along.
 	self.rockDirectionNormal = Vector(0, 0, 1)
 
@@ -46,6 +50,9 @@ function ShipMovementBehavior:new()
 	-- Dimensions of ship (beam is "width" of ship)
 	self.length = 0
 	self.beam = 0
+
+	-- Ship mask. Used by EndlessWater et al to tweak water graphics.
+	self.mask = "Galleon_Wood"
 end
 
 return ShipMovementBehavior

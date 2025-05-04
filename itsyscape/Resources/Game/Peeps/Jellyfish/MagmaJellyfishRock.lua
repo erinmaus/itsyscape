@@ -38,7 +38,7 @@ function MagmaJellyfishRock:explode()
 	local director = self:getDirector()
 	local stage = self:getDirector():getGameInstance():getStage()
 	local position = Utility.Peep.getAbsolutePosition(self)
-	local hits = director:probe(self:getLayerName(), Probe.attackable(), function(peep)
+	local hits = director:probe(self:getLayerName(), Probe.attackable(self), function(peep)
 		local difference = (Utility.Peep.getAbsolutePosition(peep) - position):getLength()
 		return difference < MagmaJellyfishRock.RADIUS
 	end)

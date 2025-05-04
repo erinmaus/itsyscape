@@ -19,6 +19,7 @@ local buffer = require "string.buffer"
 local GameDB = require "ItsyScape.GameDB.GameDB"
 local AnalyticsClient = require "ItsyScape.Analytics.AnalyticsClient"
 local LocalGame = require "ItsyScape.Game.LocalModel.Game"
+local Config = require "ItsyScape.Game.Config"
 local Utility = require "ItsyScape.Game.Utility"
 local LocalGameManager = require "ItsyScape.Game.LocalModel.LocalGameManager"
 local ChannelRPCService = require "ItsyScape.Game.RPC.ChannelRPCService"
@@ -42,6 +43,7 @@ local gameManager = LocalGameManager(channelRpcService, game)
 
 local isRunning = true
 local isOnline = false
+local hasTick = false
 
 game.onQuit:register(function()
 	if not isOnline then
@@ -94,15 +96,21 @@ local function tick()
 
 			local startTime = love.timer.getTime()
 			while love.timer.getTime() < startTime + step do
-				collectgarbage("step", 1)
+				collectgarbage("step", 20)
 			end
 		end
 
 		measure("GameCleanup")
 
+		Config.update()
 		Analytics:update()
 	end
 	measure("End")
+
+	outputAdminChannel:push({
+		type = "memory",
+		memory = collectgarbage("count")
+	})
 end
 
 local function saveOnErrorForMultiPlayer()
@@ -221,76 +229,86 @@ local function saveOnErrorForSinglePlayer(clientID)
 end
 
 while isRunning do
-	local success, result = xpcall(tick, function(message)
-		local s, r = xpcall(Log.sendError, debug.traceback, message, 3)
-		if not s then
-			Log.warn("Could not send error: %s", r)
+	if hasTick then
+		local success, result = xpcall(tick, function(message)
+			local s, r = xpcall(Log.sendError, debug.traceback, message, 3)
+			if not s then
+				Log.warn("Could not send error: %s", r)
+			end
+
+			return debug.traceback(message)
+		end)
+
+		if not success then
+			local s, r
+			if serverRPCService then
+				s, r = xpcall(saveOnErrorForMultiPlayer, debug.traceback)
+			else
+				s, r = xpcall(saveOnErrorForSinglePlayer, debug.traceback)
+			end
+
+			if not s then
+				Log.warn("Couldn't save on error: %s", r)
+			end
+
+			error(result, 0)
 		end
 
-		return debug.traceback(message)
-	end)
+		local duration = getPeriodInMS("Start", "End") / 1000
+		if duration < game:getTargetDelta() then
+			local sleepDuration = game:getTargetDelta() - duration
 
-	if not success then
-		local s, r
-		if serverRPCService then
-			s, r = xpcall(saveOnErrorForMultiPlayer, debug.traceback)
+			local beforeSleep = love.timer.getTime()
+			love.timer.sleep(sleepDuration)
+			local afterSleep = love.timer.getTime()
+
+			if _DEBUG then
+				Log.engine("Slept for %0.2f ms, target was %0.2f.", sleepDuration * 1000, (afterSleep - beforeSleep) * 1000)
+			end
 		else
-			s, r = xpcall(saveOnErrorForSinglePlayer, debug.traceback)
+			love.timer.sleep(0.01)
 		end
 
-		if not s then
-			Log.warn("Couldn't save on error: %s", r)
-		end
-
-		error(result, 0)
-	end
-
-	local duration = getPeriodInMS("Start", "End") / 1000
-	if duration < game:getTargetDelta() then
-		local sleepDuration = game:getTargetDelta() - duration
-
-		local beforeSleep = love.timer.getTime()
-		love.timer.sleep(sleepDuration)
-		local afterSleep = love.timer.getTime()
-
-		if _DEBUG then
-			Log.engine("Slept for %0.2f ms, target was %0.2f.", sleepDuration * 1000, (afterSleep - beforeSleep) * 1000)
-		end
-	end
-
-	if duration > game:getTargetDelta() or _DEBUG then
-		Log.engine("Tick was %0.2f ms (expected %0.2f or less).", duration * 1000, game:getTargetDelta() * 1000)
-		Log.engine(
-			"Timing stats @ %.2f ms: iteration = %.2f ms, game tick = %.2f ms, game update = %.2f ms, game manager update = %.2f ms, game manager tick = %.2f ms, game manager send = %.2f ms, game manager receive = %.2f ms, cleanup = %.2f ms",
-			getPeriodInMS(nil, "Start"),
-			getPeriodInMS("Start", "End"),
-			getPeriodInMS("Start", "GameTick"),
-			getPeriodInMS("GameTick", "GameUpdate"),
-			getPeriodInMS("GameUpdate", "GameManagerUpdate"),
-			getPeriodInMS("GameManagerUpdate", "GameManagerTick"),
-			getPeriodInMS("GameManagerTick", "GameManagerSend"),
-			getPeriodInMS("GameManagerSend", "GameManagerReceive"),
-			getPeriodInMS("GameManagerReceive", "End"))
-
-		if _DEBUG == "plus" then
+		if duration > game:getTargetDelta() or _DEBUG then
+			Log.engine("Tick was %0.2f ms (expected %0.2f or less).", duration * 1000, game:getTargetDelta() * 1000)
 			Log.engine(
-				"Memory stats @ %.2f ms: iteration = %.2f kb, game tick = %.2f kb, game update = %.2f kb, game manager update = %.2f kb, game manager tick = %.2f kb, game manager send = %.2f kb, game manager receive = %.2f kb, cleanup = %.2f kb",
+				"Timing stats @ %.2f ms: iteration = %.2f ms, game tick = %.2f ms, game update = %.2f ms, game manager update = %.2f ms, game manager tick = %.2f ms, game manager send = %.2f ms, game manager receive = %.2f ms, cleanup = %.2f ms",
 				getPeriodInMS(nil, "Start"),
-				getMemoryInKB("Start", "End"),
-				getMemoryInKB("Start", "GameTick"),
-				getMemoryInKB("GameTick", "GameUpdate"),
-				getMemoryInKB("GameUpdate", "GameManagerUpdate"),
-				getMemoryInKB("GameManagerUpdate", "GameManagerTick"),
-				getMemoryInKB("GameManagerTick", "GameManagerSend"),
-				getMemoryInKB("GameManagerSend", "GameManagerReceive"),
-				getMemoryInKB("GameManagerReceive", "End"))
+				getPeriodInMS("Start", "End"),
+				getPeriodInMS("Start", "GameTick"),
+				getPeriodInMS("GameTick", "GameUpdate"),
+				getPeriodInMS("GameUpdate", "GameManagerUpdate"),
+				getPeriodInMS("GameManagerUpdate", "GameManagerTick"),
+				getPeriodInMS("GameManagerTick", "GameManagerSend"),
+				getPeriodInMS("GameManagerSend", "GameManagerReceive"),
+				getPeriodInMS("GameManagerReceive", "End"))
+
+			if _DEBUG == "plus" then
+				Log.engine(
+					"Memory stats @ %.2f ms: iteration = %.2f kb, game tick = %.2f kb, game update = %.2f kb, game manager update = %.2f kb, game manager tick = %.2f kb, game manager send = %.2f kb, game manager receive = %.2f kb, cleanup = %.2f kb",
+					getPeriodInMS(nil, "Start"),
+					getMemoryInKB("Start", "End"),
+					getMemoryInKB("Start", "GameTick"),
+					getMemoryInKB("GameTick", "GameUpdate"),
+					getMemoryInKB("GameUpdate", "GameManagerUpdate"),
+					getMemoryInKB("GameManagerUpdate", "GameManagerTick"),
+					getMemoryInKB("GameManagerTick", "GameManagerSend"),
+					getMemoryInKB("GameManagerSend", "GameManagerReceive"),
+					getMemoryInKB("GameManagerReceive", "End"))
+			end
 		end
+
+		hasTick = false
+	else
+		love.timer.sleep(game:getTargetDelta())
 	end
 
 	local e
 	repeat
 		e = inputAdminChannel:pop()
 		if e then
+			hasTick = true
+
 			if e.type == 'quit' then
 				isRunning = false
 
@@ -311,16 +329,9 @@ while isRunning do
 			elseif e.type == 'tryQuit' then
 				for _, player in game:iteratePlayers() do
 					if player:getID() == adminPlayerID then
-						if Utility.UI.isOpen(player:getActor():getPeep(), "ConfigWindow") then
-							outputAdminChannel:push({
-								type = 'quit'
-							})
-						else
-							Utility.UI.openInterface(
-								player:getActor():getPeep(),
-								"ConfigWindow",
-								false)
-						end
+						outputAdminChannel:push({
+							type = 'quit'
+						})
 
 						break
 					end

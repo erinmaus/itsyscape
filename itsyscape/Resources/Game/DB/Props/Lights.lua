@@ -26,6 +26,7 @@ Meta "Light" {
 	ColorBlue = Meta.TYPE_REAL,
 	ColorNormalized = Meta.TYPE_INTEGER,
 	Local = Meta.TYPE_INTEGER,
+	CastsShadows = Meta.TYPE_INTEGER,
 	Resource = Meta.TYPE_RESOURCE
 }
 
@@ -43,6 +44,16 @@ Meta "DirectionalLight" {
 	DirectionX = Meta.TYPE_REAL,
 	DirectionY = Meta.TYPE_REAL,
 	DirectionZ = Meta.TYPE_REAL,
+	Resource = Meta.TYPE_RESOURCE
+}
+
+Meta "ShadowCastingDirectionalLight" {
+	MinX = Meta.TYPE_REAL,
+	MinY = Meta.TYPE_REAL,
+	MinZ = Meta.TYPE_REAL,
+	MaxX = Meta.TYPE_REAL,
+	MaxY = Meta.TYPE_REAL,
+	MaxZ = Meta.TYPE_REAL,
 	Resource = Meta.TYPE_RESOURCE
 }
 

@@ -26,7 +26,7 @@ function Cthulhu:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Cthulhu', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(12, 24, 4)
+	size.size = Vector(12, 32, 4)
 	size.zoom = 0.75
 	size.pan = Vector(0, 12, 0)
 
@@ -41,6 +41,10 @@ function Cthulhu:new(resource, name, ...)
 
 	self:addBehavior(RotationBehavior)
 	self:addBehavior(FishBehavior)
+end
+
+function Cthulhu:onReceiveAttack()
+	Utility.Peep.setMashinaState(self, "attack")
 end
 
 function Cthulhu:ready(director, game)
@@ -77,7 +81,9 @@ function Cthulhu:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
-function Cthulhu:update()
+function Cthulhu:update(...)
+	Creep.update(self, ...)
+
 	Utility.Peep.face3D(self)
 end
 

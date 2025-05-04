@@ -19,12 +19,28 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 
 local BasePirate = Class(Player)
 
-local SKIN = {
-	"Light",
-	"Medium",
-	"Dark",
-	"Minifig",
-	"Zombi"
+local SKIN_COLOR = {
+	Player.Palette.SKIN_LIGHT,
+	Player.Palette.SKIN_MEDIUM,
+	Player.Palette.SKIN_DARK,
+	Player.Palette.SKIN_PLASTIC,
+	Player.Palette.SKIN_ZOMBI
+}
+
+local HAIR_COLOR = {
+	Player.Palette.HAIR_BROWN,
+	Player.Palette.HAIR_BLACK,
+	Player.Palette.HAIR_BLONDE
+}
+
+local HAIR_SKINS = {
+	"PlayerKit2/Hair/Afro.lua",
+	"PlayerKit2/Hair/Enby.lua",
+	"PlayerKit2/Hair/Emo.lua",
+	"PlayerKit2/Hair/Fade.lua",
+	"PlayerKit2/Hair/Pixie.lua",
+	"PlayerKit2/Hair/Messy1.lua",
+	"PlayerKit1/Hair/Bald.lua"
 }
 
 function BasePirate:new(resource, name, ...)
@@ -35,47 +51,58 @@ function BasePirate:new(resource, name, ...)
 end
 
 function BasePirate:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	local skin = SKIN[love.math.random(#SKIN)]
-
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Human.lskel")
-	actor:setBody(body)
-
-	local head = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Head/%s.lua", skin))
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, Equipment.SKIN_PRIORITY_BASE, head)
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shirts/PirateVest.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
-	local eyes
-	if skin == "Zombi" then
-		eyes = CacheRef(
-			"ItsyScape.Game.Skin.ModelSkin",
-			"Resources/Game/Skins/PlayerKit1/Eyes/WhiteEyes_Green.lua")
-	else
-		eyes = CacheRef(
-			"ItsyScape.Game.Skin.ModelSkin",
-			"Resources/Game/Skins/PlayerKit1/Eyes/Eyes_Brown.lua")
-	end
-	actor:setSkin(Equipment.PLAYER_SLOT_HEAD, math.huge, eyes)
-	local hands = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		string.format("Resources/Game/Skins/PlayerKit1/Hands/%s.lua", skin))
-	actor:setSkin(Equipment.PLAYER_SLOT_HANDS, Equipment.SKIN_PRIORITY_BASE, hands)
-	local feet = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/PlayerKit1/Shoes/LongBoots1.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_FEET, Equipment.SKIN_PRIORITY_BASE, feet)
-
 	Player.ready(self, director, game)
+
+	local skinColor = SKIN_COLOR[love.math.random(#SKIN_COLOR)]
+	local hairColor = HAIR_COLOR[love.math.random(#HAIR_COLOR)]
+	local hairSkin = HAIR_SKINS[love.math.random(#HAIR_SKINS)]
+
+	if skinColor == Player.Palette.SKIN_ZOMBI then
+		self:applySkin(
+			Equipment.PLAYER_SLOT_HEAD,
+			Equipment.SKIN_PRIORITY_BASE,
+			"PlayerKit2/Head/Zombi.lua",
+			{ skinColor, Player.Palette.ACCENT_GREEN })
+		self:applySkin(
+			Equipment.PLAYER_SLOT_HEAD,
+			math.huge,
+			"PlayerKit2/Eyes/Eyes.lua",
+			{ hairColor, Player.Palette.EYE_BLACK, Player.Palette.EYE_WHITE })
+	else
+		self:applySkin(
+			Equipment.PLAYER_SLOT_HEAD,
+			Equipment.SKIN_PRIORITY_BASE,
+			"PlayerKit2/Head/Humanlike.lua",
+			{ skinColor })
+		self:applySkin(
+			Equipment.PLAYER_SLOT_HEAD,
+			math.huge,
+			"PlayerKit2/Eyes/Eyes.lua",
+			{ hairColor, Player.Palette.EYE_WHITE, Player.Palette.EYE_BLACK })
+		self:applySkin(
+			Equipment.PLAYER_SLOT_HEAD,
+			Equipment.SKIN_PRIORITY_ACCENT,
+			hairSkin,
+			{ hairColor })
+	end
+
+	self:applySkin(
+		Equipment.PLAYER_SLOT_HANDS,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Hands/Humanlike.lua",
+		{ skinColor })
+
+	self:applySkin(
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shirts/PirateVest.lua",
+		{ Player.Palette.PRIMARY_WHITE, Player.Palette.PRIMARY_BROWN:setHSL(nil, 0.2, nil), Player.Palette.PRIMARY_GREY })
+
+	self:applySkin(
+		Equipment.PLAYER_SLOT_FEET,
+		Equipment.SKIN_PRIORITY_BASE,
+		"PlayerKit2/Shoes/LongBoots1.lua",
+		{ Player.Palette.PRIMARY_BLACK })
 end
 
 return BasePirate

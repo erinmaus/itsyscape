@@ -61,11 +61,6 @@ function CaesiumRock:update(delta)
 	RockView.update(self, delta)
 
 	self.flickerTime = self.flickerTime - delta
-end
-
-function CaesiumRock:tick()
-	RockView.tick(self)
-
 	if self.flickerTime < 0 then
 		self:flicker()
 	end

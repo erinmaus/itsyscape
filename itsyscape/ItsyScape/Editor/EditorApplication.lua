@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Application = require "ItsyScape.Application"
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local StringBuilder = require "ItsyScape.Common.StringBuilder"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
@@ -16,6 +17,8 @@ local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSc
 
 local EditorApplication = Class(Application)
 function EditorApplication:new()
+	_EDITOR = true
+
 	Application.new(self)
 
 	self.isCameraDragging = false
@@ -26,6 +29,7 @@ function EditorApplication:new()
 		self.light:setIsGlobal(true)
 		self.light:setDirection(-self:getCamera():getForward())
 		self.light:setParent(self:getGameView():getScene())
+		self.light:setDirection(Vector(0, 1, 1))
 		
 		local ambient = AmbientLightSceneNode()
 		ambient:setAmbience(0.4)
@@ -33,6 +37,7 @@ function EditorApplication:new()
 	end
 
 	self:getGameView():getRenderer():setCullEnabled(false)
+	self:getCamera():setFar(1000)
 end
 
 function EditorApplication:getOutputDirectoryName(category, resource)
@@ -138,14 +143,7 @@ end
 
 function EditorApplication:mousePress(x, y, button)
 	if not Application.mousePress(self, x, y, button) then
-		local isShiftDown = love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")
-		if button == 1 and isShiftDown then
-			self:probe(x, y, true)
-			return true
-		elseif button == 2 and isShiftDown then
-			self:probe(x, y, false)
-			return true
-		elseif button ~= 1 and not isShiftDown then
+		if button ~= 1 then
 			self.isCameraDragging = true
 			self.dragButton = button
 			return false
@@ -181,12 +179,12 @@ function EditorApplication:mouseMove(x, y, dx, dy)
 	if self.isCameraDragging then
 		local camera = self:getCamera()
 		if self.dragButton == 2 then
-			local offsetX = dx / 32 * camera:getStrafeLeft()
-			local offsetZ = dy / 32 * camera:getStrafeForward()
+			local offsetX = -dx / 32 * camera:getLeft() * Vector.PLANE_XZ
+			local offsetZ = dy / 32 * camera:getForward() * Vector.PLANE_XZ
 			local position = camera:getPosition() + offsetX + offsetZ
 			camera:setPosition(position)
 		elseif self.dragButton == 3 then
-			local angle1 = dx / 128
+			local angle1 = -dx / 128
 			local angle2 = -dy / 128
 			camera:setVerticalRotation(
 				camera:getVerticalRotation() + angle1)

@@ -13,7 +13,9 @@
 #ifndef NBUNNY_OPTIMAUS_MODEL_HPP
 #define NBUNNY_OPTIMAUS_MODEL_HPP
 
+#include <map>
 #include <memory>
+#include <unordered_map>
 #include "common/Object.h"
 #include "modules/graphics/Mesh.h"
 #include "nbunny/optimaus/resource.hpp"
@@ -32,13 +34,22 @@ namespace nbunny
 	{
 	private:
 		love::StrongRef<love::graphics::Mesh> mesh;
+		std::unordered_map<int, love::StrongRef<love::graphics::Mesh>> per_pass_mesh;
+		std::map<float, love::StrongRef<love::graphics::Mesh>> lod_mesh;
 
     public:
 		ModelInstance() = default;
         ModelInstance(int id, int reference);
 
 		void set_mesh(love::graphics::Mesh* value);
+		void set_per_pass_mesh(int renderer_pass_id, love::graphics::Mesh* value);
+		void set_lod_mesh(float lod, love::graphics::Mesh* value);
+
+		bool has_per_pass_mesh(int renderer_pass_id) const;
+
 		love::graphics::Mesh* get_mesh() const;
+		love::graphics::Mesh* get_per_pass_mesh(int renderer_pass_id) const;
+		love::graphics::Mesh* get_lod_mesh(float screen_size_percent) const;
     };
 
 	class ModelSceneNode : public SceneNode

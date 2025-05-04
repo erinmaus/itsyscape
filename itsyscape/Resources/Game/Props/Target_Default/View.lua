@@ -70,7 +70,7 @@ function TargetView:tick()
 		self.sprite = self:getGameView():getSpriteManager():add(
 			"TargetHint",
 			self:getRoot(),
-			Vector(unpack(self:getProp():getState().offset or { 0, 2, 0 })),
+			Vector(unpack(self:getProp():getState().offset or { 0, 1, 0 })),
 			self:getProp())
 	end
 end

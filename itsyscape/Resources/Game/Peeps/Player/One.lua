@@ -31,6 +31,7 @@ local Color = require "ItsyScape.Graphics.Color"
 local Peep = require "ItsyScape.Peep.Peep"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CharacterBehavior = require "ItsyScape.Peep.Behaviors.CharacterBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
@@ -45,6 +46,8 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
+local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 
 local One = Class(Peep)
 One.PENDING_ANALYTIC_LEVEL_UP_PERIOD_SECONDS = 5
@@ -65,6 +68,8 @@ function One:new(...)
 	self:addBehavior(StanceBehavior)
 	self:addBehavior(StatsBehavior)
 	self:addBehavior(CombatStatusBehavior)
+	self:addBehavior(TeamBehavior)
+	self:addBehavior(TeamsBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 2, 1)
@@ -87,6 +92,7 @@ function One:new(...)
 	Utility.Peep.makeHuman(self)
 	Utility.Peep.makeAttackable(self, false)
 
+	self:addPoke('actionTried')
 	self:addPoke('actionFailed')
 	self:addPoke('initiateAttack')
 	self:addPoke('receiveAttack')
@@ -105,6 +111,8 @@ function One:new(...)
 	self:addPoke('endGame')
 	self:addPoke('moveInstance')
 	self:addPoke('fall')
+	self:addPoke('openInterface')
+	self:addPoke('closeInterface')
 end
 
 function One:onChangeWardrobe(e)
@@ -125,12 +133,13 @@ function One:onChangeWardrobe(e)
 	do
 		if e.type and e.filename then
 			local ref = CacheRef(e.type, e.filename)
-			actor:setSkin(e.slot, e.priority, ref)
+			actor:setSkin(e.slot, e.priority, ref, e.config)
 		end
 
 		local storage = self:getDirector():getPlayerStorage(self)
 		storage = storage:getRoot():getSection("Player"):getSection("Skin")
 
+		storage:removeSection(e.slotName)
 		storage:getSection(e.slotName):set(e)
 	end
 end
@@ -158,20 +167,7 @@ function One:assign(director, key, ...)
 
 	local storage = director:getPlayerStorage(self):getRoot()
 	if storage:get("filename") and storage:hasSection("Location") then
-		local name = storage:getSection("Player"):getSection("Info"):get("name")
-		self:setName(name or self:getName())
-
-		local gender = self:getBehavior(GenderBehavior)
-		if storage:getSection("Player"):getSection("Info"):hasSection("Gender") then
-			local g = storage:getSection("Player"):getSection("Info"):getSection("Gender")
-			gender.gender = g:get("gender")
-			gender.description = g:get("description") or "Non-Binary"
-			gender.pronounsPlural = g:get("plural")
-			gender.pronouns[GenderBehavior.PRONOUN_SUBJECT] = g:get("subject")
-			gender.pronouns[GenderBehavior.PRONOUN_OBJECT] = g:get("object")
-			gender.pronouns[GenderBehavior.PRONOUN_POSSESSIVE] = g:get("possessive")
-			gender.pronouns[GenderBehavior.FORMAL_ADDRESS] = g:get("formal")
-		end
+		self:applyGender()
 
 		stats.stats:load(Utility.Peep.getStorage(self))
 
@@ -243,60 +239,104 @@ function One:assign(director, key, ...)
 	end
 end
 
+One.SKIN_COLORS = {
+	Utility.Peep.Human.Palette.SKIN_LIGHT,
+	Utility.Peep.Human.Palette.SKIN_MEDIUM,
+	Utility.Peep.Human.Palette.SKIN_DARK,
+	Utility.Peep.Human.Palette.SKIN_PLASTIC,
+}
+
+One.SHIRT_COLORS = {
+	Utility.Peep.Human.Palette.PRIMARY_RED,
+	Utility.Peep.Human.Palette.PRIMARY_GREEN,
+	Utility.Peep.Human.Palette.PRIMARY_BLUE,
+	Utility.Peep.Human.Palette.PRIMARY_YELLOW,
+	Utility.Peep.Human.Palette.PRIMARY_PURPLE,
+	Utility.Peep.Human.Palette.PRIMARY_PINK,
+	Utility.Peep.Human.Palette.PRIMARY_BROWN,
+	Utility.Peep.Human.Palette.PRIMARY_WHITE,
+	Utility.Peep.Human.Palette.PRIMARY_GREY,
+	Utility.Peep.Human.Palette.PRIMARY_BLACK,
+}
+
+One.HAIR_COLORS = {
+	Utility.Peep.Human.Palette.HAIR_BROWN,
+	Utility.Peep.Human.Palette.HAIR_BLACK,
+	Utility.Peep.Human.Palette.HAIR_GREY,
+	Utility.Peep.Human.Palette.HAIR_BLONDE,
+	Utility.Peep.Human.Palette.HAIR_PURPLE,
+	Utility.Peep.Human.Palette.HAIR_RED,
+	Utility.Peep.Human.Palette.HAIR_GREEN,
+}
+
+One.SHOE_COLORS = {
+	Utility.Peep.Human.Palette.PRIMARY_BROWN,
+	Utility.Peep.Human.Palette.PRIMARY_GREY,
+	Utility.Peep.Human.Palette.PRIMARY_BLACK,
+}
+
 One.SKINS = {
 	head = {
 		slot = Equipment.PLAYER_SLOT_HEAD,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		"Resources/Game/Skins/PlayerKit1/Head/Light.lua",
-		"Resources/Game/Skins/PlayerKit1/Head/Medium.lua",
-		"Resources/Game/Skins/PlayerKit1/Head/Dark.lua",
-		"Resources/Game/Skins/PlayerKit1/Head/Minifig.lua"
+		colors = One.SKIN_COLORS,
+
+		"Resources/Game/Skins/PlayerKit2/Head/Humanlike.lua",
 	},
 	eyes = {
 		slot = Equipment.PLAYER_SLOT_HEAD,
 		priority = math.huge,
-		"Resources/Game/Skins/PlayerKit1/Eyes/Eyes.lua"
+		colors = { Utility.Peep.Human.Palette.PRIMARY_PURPLE },
+		otherColors = { Utility.Peep.Human.Palette.EYE_WHITE, Utility.Peep.Human.Palette.EYE_BLACK },
+
+		"Resources/Game/Skins/PlayerKit2/Eyes/Eyes.lua",
 	},
 	feet = {
 		slot = Equipment.PLAYER_SLOT_FEET,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		"Resources/Game/Skins/PlayerKit1/Shoes/Boots1.lua"
+		colors = One.SHOE_COLORS,
+		otherColors = { Utility.Peep.Human.Palette.PRIMARY_GREY },
+
+		"Resources/Game/Skins/PlayerKit2/Shoes/Boots1.lua"
 	},
 	body = {
 		slot = Equipment.PLAYER_SLOT_BODY,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		"Resources/Game/Skins/PlayerKit1/Shirts/Red.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Green.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Blue.lua",
-		"Resources/Game/Skins/PlayerKit1/Shirts/Yellow.lua"
+		colors = One.SHIRT_COLORS,
+		otherColors = { Utility.Peep.Human.Palette.PRIMARY_BROWN, Utility.Peep.Human.Palette.PRIMARY_GREY },
+
+		"Resources/Game/Skins/PlayerKit2/Shirts/Plain.lua"
 	},
 	hands = {
 		slot = Equipment.PLAYER_SLOT_HANDS,
 		priority = Equipment.SKIN_PRIORITY_BASE,
-		"Resources/Game/Skins/PlayerKit1/Hands/BlackGloves.lua"
+		colors = One.SHOE_COLORS,
+
+		"Resources/Game/Skins/PlayerKit2/Hands/Gloves.lua"
 	},
 	hair = {
 		slot = Equipment.PLAYER_SLOT_HEAD,
 		priority = Equipment.SKIN_PRIORITY_ACCENT,
-		"Resources/Game/Skins/PlayerKit1/Hair/Afro.lua",
-		"Resources/Game/Skins/PlayerKit1/Hair/Enby.lua",
-		"Resources/Game/Skins/PlayerKit1/Hair/Emo.lua",
-		"Resources/Game/Skins/PlayerKit1/Hair/Fade.lua"
+		colors = One.HAIR_COLORS,
+
+		"Resources/Game/Skins/PlayerKit2/Hair/Afro.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Enby.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Emo.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Fade.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Pixie.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Messy1.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/Braid.lua",
+		"Resources/Game/Skins/PlayerKit2/Hair/GrrlPunk.lua"
 	}
 }
 
-function One:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
+local function roll(t)
+	local index = love.math.random(1, #t)
+	return t[index]
+end
 
-	local function roll(t)
-		local index = love.math.random(1, #t)
-		return t[index]
-	end
-
-	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
+function One:applySkins()
+	local director = self:getDirector()
 
 	local SLOTS = {
 		'hair',
@@ -312,25 +352,140 @@ function One:ready(director, game)
 		local slot = SLOTS[i]
 		if skin:hasSection(slot) then
 			local s = skin:getSection(slot)
+
+			local config
+			if s:hasSection("config") then
+				config = s:getSection("config"):get()
+			else
+				config = {}
+			end
+
 			self:onChangeWardrobe({
 				slot = s:get('slot'),
 				slotName = s:get('slotName'),
 				priority = s:get('priority'),
 				name = s:get('name'),
 				filename = s:get('filename'),
-				type = s:get('type')
+				type = s:get('type'),
+				config = config
 			})
 		else
+			local config = {
+				roll(One.SKINS[slot].colors),
+				unpack(One.SKINS[slot].otherColors or {}),
+			}
+
+			for index, c in ipairs(config) do
+				config[index] = { c:get() }
+			end
+
 			self:onChangeWardrobe({
 				slot = One.SKINS[slot].slot,
 				slotName = slot,
 				priority = One.SKINS[slot].priority,
 				name = 'Default',
 				filename = roll(One.SKINS[slot]),
-				type = "ItsyScape.Game.Skin.ModelSkin"
+				type = "ItsyScape.Game.Skin.ModelSkin",
+				config = config
 			})
 		end
 	end
+end
+
+function One:applyGender()
+	local director = self:getDirector()
+	local storage = director:getPlayerStorage(self):getRoot()
+
+	local name = storage:getSection("Player"):getSection("Info"):get("name")
+	self:setName(name or self:getName())
+
+	local gender = self:getBehavior(GenderBehavior)
+	if storage:getSection("Player"):getSection("Info"):hasSection("Gender") then
+		local g = storage:getSection("Player"):getSection("Info"):getSection("Gender")
+		gender.gender = g:get("gender")
+		gender.description = g:get("description") or "Non-Binary"
+		gender.pronounsPlural = g:get("plural")
+		gender.pronouns[GenderBehavior.PRONOUN_SUBJECT] = g:get("subject")
+		gender.pronouns[GenderBehavior.PRONOUN_OBJECT] = g:get("object")
+		gender.pronouns[GenderBehavior.PRONOUN_POSSESSIVE] = g:get("possessive")
+		gender.pronouns[GenderBehavior.FORMAL_ADDRESS] = g:get("formal")
+	end
+end
+
+function One:initTeams()
+	local teams = self:getBehavior(TeamsBehavior)
+
+	-- TODO pull this from player storage and init to default
+	teams.teams = {
+		Player = {
+			Humanity = TeamsBehavior.ALLY,
+			Yendorians = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
+			BlackTentacles = TeamsBehavior.ENEMY,
+			Heroes = TeamBehavior.NEUTRAL
+		},
+
+		Humanity = {
+			Player = TeamsBehavior.ALLY,
+			Yendorians = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
+			BlackTentacles = TeamsBehavior.NEUTRAL,
+			Heroes = TeamBehavior.ALLY
+		},
+
+		Dummy = {
+			Player = TeamsBehavior.NEUTRAL,
+			Humanity = TeamsBehavior.NEUTRAL,
+			Yendorians = TeamsBehavior.NEUTRAL,
+			BlackTentacles = TeamsBehavior.NEUTRAL,
+			Heroes = TeamBehavior.NEUTRAL
+		},
+
+		Yendorians = {
+			Player = TeamsBehavior.ENEMY,
+			Humanity = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
+			BlackTentacles = TeamsBehavior.ENEMY,
+			Heroes = TeamBehavior.ENEMY
+		},
+
+		BlackTentacles = {
+			Player = TeamsBehavior.ENEMY,
+			Yendorians = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
+			Humanity = TeamsBehavior.NEUTRAL,
+			Heroes = TeamBehavior.ENEMY
+		},
+
+		Heroes = {
+			Player = TeamsBehavior.NEUTRAL,
+			Humanity = TeamsBehavior.ALLY,
+			Yendorians = TeamsBehavior.ENEMY,
+			Dummy = TeamsBehavior.ENEMY,
+			BlackTentacles = TeamsBehavior.ENEMY
+		}
+	}
+
+	local team = self:getBehavior(TeamBehavior)
+	team.teams = {
+		"Player",
+		"Heroes",
+		"Humanity"
+	}
+end
+
+function One:ready(director, game)
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+	end
+
+	local _, character = self:addBehavior(CharacterBehavior)
+	character.character = director:getGameDB():getResource("Player", "Character")
+	self:initTeams()
+
+	actor:setBody(CacheRef("ItsyScape.Game.Body", "Resources/Game/Bodies/Human.lskel"))
+	self:applySkins()
 
 	self:getState():addProvider("KeyItem", KeyItemStateProvider(self))
 	self:getState():addProvider("Boss", BossStateProvider(self))
@@ -401,7 +556,7 @@ function One:onDie(p)
 	Utility.save(self, false, true, "Aaah!")
 
 	self.deadTimer = 5
-	self:addBehavior(DisabledBehavior)
+	Utility.Peep.disable(self)
 
 	Analytics:died(self, p and p:getAggressor())
 end
@@ -472,7 +627,7 @@ function One:update(...)
 		if self.rezzTimer > 0 then
 			self.rezzTimer = self.rezzTimer - delta
 			if self.rezzTimer < 0 then
-				self:removeBehavior(DisabledBehavior)
+				Utility.Peep.enable(self)
 				self.rezzTimer = math.huge
 				combatStatus.dead = false
 			end
@@ -506,14 +661,12 @@ function One:update(...)
 			stage:movePeep(
 				self,
 				mapName,
-				Vector(spawn:get("x"), spawn:get("y"), spawn:get("z")),
-				true)
+				Vector(spawn:get("x"), spawn:get("y"), spawn:get("z")))
 		else
 			stage:movePeep(
 				self,
 				"NewGame",
-				"Anchor_Spawn",
-				true)
+				"Anchor_Spawn")
 		end
 
 		self:poke('resurrect', {})
@@ -545,13 +698,34 @@ function One:onActionPerformed(e)
 	local combatStatus = self:getBehavior(CombatStatusBehavior)
 	if (self.deadTimer > 0 and self.deadTimer ~= math.huge) or
 	   (self.rezzTimer > 0 and self.rezzTimer ~= math.huge) or
-	   (combatStatus and combatStatus.dead) or
-	   self:hasBehavior(DisabledBehavior)
+	   (combatStatus and combatStatus.dead)
 	then
 		self:interrupt(true)
 	end
 
 	self.lastActionPerformed = e.action
+end
+
+function One:onOpenInterface(interfaceID, interfaceIndex, blocking)
+	if not blocking then
+		return
+	end
+
+	local interface = Utility.UI.getOpenInterface(self, interfaceID, interfaceIndex)
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self,
+		"GamepadRibbon",
+		"close",
+		nil,
+		{ interface = interface })
+	Utility.UI.broadcast(
+		self:getDirector():getGameInstance():getUI(),
+		self,
+		"GamepadCombatHUD",
+		"close",
+		nil,
+		{ interface = interface })
 end
 
 function One:interruptUI()

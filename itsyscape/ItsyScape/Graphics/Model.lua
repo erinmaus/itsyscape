@@ -9,23 +9,14 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local NModelResourceInstance = require "nbunny.optimaus.modelresourceinstance"
 
 local Model = Class()
-function Model:new(d, skeleton, handle)
-	self._handle = handle or NModelResourceInstance()
-
+function Model:new(d, skeleton)
 	if type(d) == 'string' then
 		self:loadFromFile(d, skeleton)
 	elseif type(d) == 'table' then
 		self:loadFromTable(d, skeleton)
-	else
-		error(("expected table or filename (string), got %s"):format(type(d)))
 	end
-end
-
-function Model:getHandle()
-	return self._handle
 end
 
 function Model:loadFromFile(filename, skeleton)
@@ -36,8 +27,9 @@ function Model:loadFromFile(filename, skeleton)
 	self:loadFromTable(result, skeleton)
 end
 
-function Model:bindSkeleton(skeleton)
-	local vertices = {}
+function Model:_bindSkeleton(skeleton)
+	local vertices = self.mappedVertices or {}
+	table.clear(vertices)
 
 	local LOVE_VERTEX_FORMAT_COUNT_INDEX = 3
 	local LOVE_VERTEX_FORMAT_NAME_INDEX = 1
@@ -62,7 +54,7 @@ function Model:bindSkeleton(skeleton)
 			break
 		end
 
-		positionOffset = postionOffset + self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]
+		positionOffset = positionOffset + self.format[i][LOVE_VERTEX_FORMAT_COUNT_INDEX]
 	end
 
 	local min, max = Vector(math.huge), Vector(-math.huge)
@@ -70,7 +62,12 @@ function Model:bindSkeleton(skeleton)
 	-- Convert bone names to bone indices.
 	-- Also update min max.
 	for i = 1, #self.vertices do
-		local vertex = { unpack(self.vertices[i]) }
+		local vertex = vertices[i] or {}
+
+		for j, value in ipairs(self.vertices[i]) do
+			vertex[j] = value
+		end
+
 		vertices[i] = vertex
 
 		for j = 1, maxBonesPerVertex do
@@ -86,22 +83,29 @@ function Model:bindSkeleton(skeleton)
 			end
 		end
 
-		local p = Vector(unpack(self.vertices[i], positionOffset + 1, positionOffset + positionCount))
-		min = min:min(p)
-		max = max:max(p)
+		local x, y, z = unpack(self.vertices[i], positionOffset + 1, positionOffset + positionCount)
+		min.x = math.min(min.x, x)
+		min.y = math.min(min.y, y)
+		min.z = math.min(min.z, z)
+		max.x = math.max(max.x, x)
+		max.y = math.max(max.y, y)
+		max.z = math.max(max.z, z)
 	end
 
-	local mesh = love.graphics.newMesh(self.format, vertices, 'triangles', 'static')
-	for _, element in ipairs(self.format) do
-		mesh:setAttributeEnabled(element[1], true)
+	if #vertices > 1 then
+		local mesh = love.graphics.newMesh(self.format, vertices, 'triangles', 'static')
+		for _, element in ipairs(self.format) do
+			mesh:setAttributeEnabled(element[1], true)
+		end
+
+		self.mesh = mesh
 	end
 
-	self:getHandle():setMesh(mesh)
-
-	self.min = min
-	self.max = max
+	self.min = min:keep()
+	self.max = max:keep()
 
 	self.skeleton = skeleton or false
+	self.mappedVertices = vertices
 end
 
 function Model:loadFromTable(t, skeleton)
@@ -117,7 +121,34 @@ function Model:loadFromTable(t, skeleton)
 	self.vertices = vertices
 	self.format = format
 
-	self:bindSkeleton(skeleton)
+	self:_bindSkeleton(skeleton)
+end
+
+function Model.fromMappedVertices(format, mappedVertices, count, min, max, skeleton)
+	local model = Model(skeleton, nil)
+
+	model.format = format
+	model.vertices = {}
+
+	model.mappedVertices = {}
+	for i = 1, count do
+		model.mappedVertices[i] = { unpack(mappedVertices[i]) }
+	end
+
+	model.min = min
+	model.max = max
+	model.skeleton = skeleton
+
+	if count > 1 then
+		local mesh = love.graphics.newMesh(format, model.mappedVertices, 'triangles', 'static')
+		for _, element in ipairs(format) do
+			mesh:setAttributeEnabled(element[1], true)
+		end
+
+		model.mesh = mesh
+	end
+
+	return model
 end
 
 function Model:getBounds()
@@ -129,15 +160,15 @@ function Model:getSkeleton()
 end
 
 function Model:getMesh()
-	return self:getHandle():getMesh()
+	return self.mesh
+end
+
+function Model:getVertices()
+	return self.mappedVertices
 end
 
 function Model:getFormat()
 	return self.format
-end
-
-function Model:release()
-	self:getHandle():setMesh()
 end
 
 return Model

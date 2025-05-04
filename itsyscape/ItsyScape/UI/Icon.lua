@@ -8,8 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Widget = require "ItsyScape.UI.Widget"
 local Color = require "ItsyScape.Graphics.Color"
+local Widget = require "ItsyScape.UI.Widget"
 
 local Icon = Class(Widget)
 Icon.DEFAULT_SIZE = 48

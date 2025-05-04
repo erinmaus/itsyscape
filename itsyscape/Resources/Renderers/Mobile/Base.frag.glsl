@@ -15,6 +15,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "Resources/Shaders/RendererPass.common.glsl"
+
 #define SCAPE_MAX_LIGHTS 16
 #define SCAPE_MAX_FOG    4
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 1.0 / 128.0
@@ -42,12 +44,19 @@ uniform struct Fog {
 	vec3 position;
 } scape_Fog[SCAPE_MAX_FOG];
 
+#ifdef SCAPE_ENABLE_RIM_LIGHTING
+void getRimLightProperties(vec3 position, inout vec3 eye, out float exponent, out float multiplier);
+#endif
+
 vec3 scapeApplyLight(
 	Light light,
 	vec3 position,
 	vec3 normal,
-	vec3 color)
+	vec3 color,
+	float specular)
 {
+	vec3 surfaceToCamera = normalize(scape_CameraEye - position);
+
 	vec3 direction;
 	float attenuation = 0.0;
 	if (light.position.w == 1.0)
@@ -69,12 +78,40 @@ vec3 scapeApplyLight(
 		}
 	}
 
-	vec3 ambient = light.ambientCoefficient * color * light.color;
+	vec3 ambientLight = light.ambientCoefficient * color * light.color;
+	vec3 pointLight = attenuation * attenuation * light.color * color;
 	float diffuseCoefficient = max(0.0, dot(normal, direction)) * light.position.w;
-	vec3 diffuse = diffuseCoefficient * color * light.color;
-	vec3 point = attenuation * attenuation * light.color * color;
+	vec3 diffuseLight = diffuseCoefficient * color * light.color;
 
-	return point + diffuse + ambient;
+	vec3 specularLight = vec3(0.0);
+	if (light.position.w == 1.0)
+	{
+		vec3 cameraToTarget = scape_CameraEye - scape_CameraTarget;
+		float cameraToTargetLength = length(cameraToTarget);
+		if (cameraToTargetLength > 0.0)
+		{
+			cameraToTarget /= vec3(cameraToTargetLength);
+
+			float exponent = pow(abs(dot(normal, cameraToTarget)), 3.0);
+			float specularCoefficient = (pow(5.0, exponent * pow(specular, 2.5)) - 1.0) / 4.0;
+			specularLight = specularCoefficient * vec3(pow(length(light.color), 1.5));
+		}
+	}
+
+#ifdef SCAPE_ENABLE_RIM_LIGHTING
+	vec3 rimLightEye = surfaceToCamera;
+	float rimLightExponent, rimLightMultiplier;
+	getRimLightProperties(position, rimLightEye, rimLightExponent, rimLightMultiplier);
+
+	float rimLightIntensity = max(0.0, 1.0 - (dot(rimLightEye, normal) * dot(surfaceToCamera, normal)));
+	rimLightIntensity = pow(rimLightIntensity, rimLightExponent) * rimLightMultiplier;
+
+	vec3 rimLight = color * rimLightIntensity;
+#else
+	vec3 rimLight = vec3(0.0);
+#endif
+
+	return pointLight + diffuseLight + specularLight + ambientLight + rimLight;
 }
 
 vec3 scapeApplyFog(
@@ -97,7 +134,12 @@ vec3 scapeApplyFog(
 	return mix(color, fog.color, factor);
 }
 
+
+#ifdef SCAPE_LIGHT_MODEL_V2
+void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out float specular);
+#else
 vec4 performEffect(vec4 color, vec2 textureCoordinate);
+#endif
 
 vec4 effect(
 	vec4 color,
@@ -105,9 +147,20 @@ vec4 effect(
 	vec2 textureCoordinate,
 	vec2 screenCoordinate)
 {
+#ifdef SCAPE_LIGHT_MODEL_V2
+	vec4 diffuse = color;
+	vec3 normal = frag_Normal;
+	vec3 position = frag_Position;
+	float specular = 0.0;
+	performAdvancedEffect(frag_Texture, diffuse, position, normal, specular);
+#else
+	vec3 normal = frag_Normal;
+	float specular = 0.0;
+	vec3 position = frag_Position;
 	vec4 diffuse = performEffect(color, frag_Texture);
-	float alpha = diffuse.a * color.a;
+#endif
 
+	float alpha = diffuse.a * color.a;
 	if (alpha < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{
 		discard;
@@ -118,9 +171,10 @@ vec4 effect(
 	{
 		result += scapeApplyLight(
 			scape_Lights[i],
-			frag_Position,
-			frag_Normal,
-			diffuse.rgb);
+			position,
+			normal,
+			diffuse.rgb,
+			specular);
 	}
 
 	for (int i = 0; i < scape_NumFogs; ++i)

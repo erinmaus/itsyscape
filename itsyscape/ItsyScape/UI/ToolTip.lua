@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
 local Widget = require "ItsyScape.UI.Widget"
@@ -24,7 +25,8 @@ function ToolTip.Header:new(text, k)
 
 	k = k or {}
 	self.text = text or "Lorem Ipsum"
-	self.color = k.color or Color(0, 0, 0, 1)
+	self.color = k.color or Color(1, 1, 1, 1)
+	self.shadow = k.shadow == nil and true or k.shadow
 end
 
 ToolTip.Text = Class(ToolTip.Component)
@@ -33,8 +35,8 @@ function ToolTip.Text:new(text, k)
 
 	k = k or {}
 	self.text = text or "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-	self.color = k.color or Color(0, 0, 0, 1)
-	self.shadow = k.shadow or false
+	self.color = k.color or Color(1, 1, 1, 1)
+	self.shadow = k.shadow == nil and true or k.shadow
 end
 
 ToolTip.Image = Class(ToolTip.Component)
@@ -50,6 +52,8 @@ end
 function ToolTip:new(...)
 	Widget.new(self)
 	self:setValues(...)
+
+	self.onLayout = Callback()
 
 	self.duration = math.huge
 end

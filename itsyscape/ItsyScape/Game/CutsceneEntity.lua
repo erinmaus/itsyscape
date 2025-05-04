@@ -190,7 +190,7 @@ function CutsceneEntity:lookAt(target, duration)
 	end
 end
 
-function CutsceneEntity:walkTo(anchor, distance)
+function CutsceneEntity:walkTo(anchor, distance, ghost, wait)
 	distance = distance or 0
 
 	return function()
@@ -199,8 +199,26 @@ function CutsceneEntity:walkTo(anchor, distance)
 		local map = Utility.Peep.getMap(self.peep)
 		local _, anchorI, anchorJ = map:getTileAt(anchorX, anchorZ)
 
-		local success = Utility.Peep.walk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep), distance, { isCutscene = true })
-		if success then
+		local movement = self.peep:getBehavior(MovementBehavior)
+		local oldGhost = movement and movement.ghost
+		if movement and ghost then
+			movement.ghost = true
+		end
+
+		local callback = Utility.Peep.queueWalk(self.peep, anchorI, anchorJ, Utility.Peep.getLayer(self.peep), distance, { isCutscene = true })
+
+		local isDone = false
+		local success
+		callback:register(function(s)
+			isDone = true
+			success = s
+		end)
+
+		repeat
+			coroutine.yield()
+		until isDone
+
+		if success and (wait or wait == nil) then
 			local peepI, peepJ, peepDistance
 			repeat
 				peepI, peepJ = Utility.Peep.getTile(self.peep)
@@ -208,6 +226,10 @@ function CutsceneEntity:walkTo(anchor, distance)
 
 				peepDistance = (Utility.Peep.getPosition(self.peep) * Vector.PLANE_XZ - Vector(anchorX, 0, anchorZ)):getLength()
 			until (peepI == anchorI and peepJ == anchorJ) or (distance and peepDistance <= distance)
+		end
+
+		if movement and ghost then
+			movement.ghost = oldGhost
 		end
 	end
 end
@@ -235,8 +257,21 @@ end
 function CutsceneEntity:teleport(anchor)
 	return function()
 		local mapResource = Utility.Peep.getMapResource(self.peep)
-		local anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+
+		local anchorPosition, layer
+		if Class.isCompatibleType(anchor, Vector) then
+			anchorPosition = anchor
+		elseif Class.isCompatibleType(anchor, CutsceneEntity) then
+			anchorPosition = Utility.Peep.getPosition(anchor:getPeep())
+			layer = Utility.Peep.getLayer(anchor:getPeep())
+		else
+			anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+		end
+
 		Utility.Peep.setPosition(self.peep, anchorPosition)
+		if layer then
+			Utility.Peep.setLayer(self.peep, layer)
+		end
 	end
 end
 
@@ -279,22 +314,26 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 		local mapResource = Utility.Peep.getMapResource(self.peep)
 		local anchorPosition
 		if Class.isCompatibleType(anchor, Vector) then
-			anchorPosition = anchor
+			anchorPosition = anchor + Utility.Peep.getPosition(self.peep)
+		elseif Class.isCompatibleType(anchor, CutsceneEntity) then
+			anchorPosition = Utility.Peep.getPosition(anchor:getPeep())
 		else
-			anchorPosition = Vector(
-				Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
+			anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 		end
-
-		local movement = self.peep:getBehavior(MovementBehavior)
-		local previousNoClipValue = movement.noClip
-		movement.noClip = true
 
 		local peepPosition = Utility.Peep.getPosition(self.peep)
 
-		if anchorPosition.x < peepPosition.x then
-			movement.facing = MovementBehavior.FACING_LEFT
-		else
-			movement.facing = MovementBehavior.FACING_RIGHT
+		local movement = self.peep:getBehavior(MovementBehavior)
+		local previousNoClipValue
+		if movement then
+			previousNoClipValue = movement.noClip
+			movement.noClip = true
+
+			if anchorPosition.x < peepPosition.x then
+				movement.facing = MovementBehavior.FACING_LEFT
+			else
+				movement.facing = MovementBehavior.FACING_RIGHT
+			end
 		end
 
 		local currentTime
@@ -316,9 +355,65 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 				distance = (anchorPosition - newPosition):getLength()
 				coroutine.yield()
 			until distance <= E
+		end
 
+		if movement then
 			movement.noClip = previousNoClipValue
 		end
+	end
+end
+
+function CutsceneEntity:curvePositions(anchors, duration, tween)
+	return function()
+		tween = Tween[tween or 'linear'] or Tween.linear
+
+		local mapResource = Utility.Peep.getMapResourceFromLayer(Utility.Peep.getInstance(self.peep):getBaseMapScript())
+		local anchorPositions = {}
+
+		for i = 1, #anchors do
+			table.insert(anchorPositions, Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchors[i])))
+		end
+
+		local curves
+		do
+			local currentPosition = Utility.Peep.getPosition(self.peep)
+
+			local x = { currentPosition.x, 0 }
+			local y = { currentPosition.y, 0 }
+			local z = { currentPosition.z, 0 }
+
+			for i = 1, #anchorPositions do
+				table.insert(x, anchorPositions[i].x)
+				table.insert(x, 0)
+
+				table.insert(y, anchorPositions[i].y)
+				table.insert(y, 0)
+
+				table.insert(z, anchorPositions[i].z)
+				table.insert(z, 0)
+			end
+
+			curves = {
+				love.math.newBezierCurve(unpack(x)),
+				love.math.newBezierCurve(unpack(y)),
+				love.math.newBezierCurve(unpack(z))
+			}
+		end
+
+		local currentTime
+		repeat
+			currentTime = (currentTime or 0) + self.game:getDelta()
+			local mu = math.clamp(currentTime / duration)
+			local delta = math.clamp(tween(mu))
+
+			local x = curves[1]:evaluate(delta)
+			local y = curves[2]:evaluate(delta)
+			local z = curves[3]:evaluate(delta)
+
+			Utility.Peep.setPosition(self.peep, Vector(x, y, z))
+
+			coroutine.yield()
+		until currentTime > duration
 	end
 end
 
@@ -420,7 +515,7 @@ function CutsceneEntity:stopAnimation(slot)
 	return function()
 		local actor = self.peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
-			actor.actor:playAnimation(slot)
+			actor.actor:stopAnimation(slot)
 		end
 	end
 end
@@ -534,40 +629,9 @@ function CutsceneEntity:poke(...)
 	end
 end
 
-function CutsceneEntity:dialog(name, target)
+function CutsceneEntity:dialog(name, target, overrideEntryPoint)
 	return function()
-		local gameDB = self.peep:getDirector():getGameDB()
-
-		local map = Utility.Peep.getMapResource(self.peep)
-		local namedMapAction = gameDB:getRecord("NamedMapAction", {
-			Name = name,
-			Map = map
-		})
-
-		local mapObject = target and Utility.Peep.getMapObject(target:getPeep())
-		local namedMapObjectAction = mapObject and gameDB:getRecord("NamedPeepAction", {
-			Name = name,
-			Peep = mapObject
-		})
-
-		local resource = target and Utility.Peep.getResource(target:getPeep())
-		local namedResourceAction = resource and gameDB:getRecord("NamedPeepAction", {
-			Name = name,
-			Peep = resource
-		})
-
-		local namedAction = namedMapObjectAction or namedResourceAction or namedMapAction
-		if not namedAction then
-			Log.warn("Couldn't get named action '%s' from map, resource, or map object for peep '%s'!", name, self.peep:getName())
-		end
-
-		local action = Utility.getAction(self.game, namedAction:get("Action"), false, false)
-		if not action then
-			Log.warn("Couldn't get named action '%s' for peep '%s' on map '%s'!", name, self.peep:getName(), map and map.name or "???")
-		end
-
-		Log.info("Got named action '%s' for peep '%s' on map '%s'.", name, self.peep:getName(), map and map.name or "???")
-		Utility.UI.openInterface(self.peep, "DialogBox", true, action.instance, target and target:getPeep() or self.peep)
+		Utility.Peep.dialog(self.peep, name, target and target:getPeep(), overrideEntryPoint)
 
 		while Utility.UI.isOpen(self.peep, "DialogBox") do
 			coroutine.yield()

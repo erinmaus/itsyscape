@@ -50,6 +50,7 @@ function Creep:new(resource, ...)
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 1, 1)
 
+	Utility.Peep.makeCharacter(self)
 	Utility.Peep.makeAttackable(self)
 	Utility.Peep.makeMashina(self)
 	Utility.Peep.addStats(self, Curve.MAX)
@@ -62,6 +63,7 @@ function Creep:new(resource, ...)
 	movement.stoppingForce = 4
 
 	self:addPoke("fall")
+	self:addPoke("movedOutOfBounds")
 
 	Utility.Peep.setResource(self, resource)
 

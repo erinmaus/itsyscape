@@ -88,6 +88,8 @@ function BasicTree:onResourceHit(e)
 		local e = { peep = e.peep }
 		self:poke('chopped', e)
 		self:poke('resourceObtained', e)
+
+		self.felledPosition = Utility.Peep.getPosition(e.peep)
 	end
 end
 
@@ -96,7 +98,8 @@ function BasicTree:previewShake()
 	g.count = g.count + 1
 
 	local gameDB = self:getDirector():getGameDB()
-	local p = gameDB:getRecord("GatherableProp", {
+	local resource = Utility.Peep.getResource(self)
+	local p = resource and gameDB:getRecord("GatherableProp", {
 		Resource = resource
 	})
 
@@ -123,7 +126,8 @@ function BasicTree:getPropState()
 	result.resource = {
 		progress = progress,
 		depleted = progress >= 100,
-		shaken = shakeCount or 0
+		shaken = shakeCount or 0,
+		felledPosition = self.felledPosition and { self.felledPosition:get() }
 	}
 
 	return result

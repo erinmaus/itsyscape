@@ -64,14 +64,17 @@ function ParticlesInstance:play(animatable, time)
 			transform:scale(scale:get())
 
 			animatable:getPostComposedTransform(attach, function(otherTransform)
-				transform:apply(otherTransform)
+				local combinedTransform = love.math.newTransform()
+				combinedTransform:applyQuaternion((-Quaternion.X_90):get())
+				combinedTransform:apply(transform)
+				combinedTransform:apply(otherTransform)
 
-				local localPosition = Vector(transform:transformPoint(0, 0, 0))
+				local localPosition = Vector(combinedTransform:transformPoint(0, 0, 0)) * Vector(1, 1, 1)
 				self.sceneNode:updateLocalPosition(localPosition)
 
 				if direction:getLength() > 0 then
 					local _, q = MathCommon.decomposeTransform(otherTransform)
-					self.sceneNode:updateLocalDirection((-q:getNormal()):transformVector(direction))
+					self.sceneNode:updateLocalDirection(q:getNormal():transformVector(direction:getNormal()))
 				end
 			end)
 		end

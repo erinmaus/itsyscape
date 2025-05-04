@@ -12,6 +12,11 @@ ItsyScape.Resource.Peep "Yendorian_Base" {
 	-- Nothing.
 }
 
+ItsyScape.Meta.PeepCharacter {
+	Peep = ItsyScape.Resource.Peep "Yendorian_Base",
+	Character = ItsyScape.Resource.Character "Yendorian"
+}
+
 ItsyScape.Meta.ResourceTag {
 	Value = "Eldritch",
 	Resource = ItsyScape.Resource.Peep "Yendorian_Base"
@@ -84,11 +89,11 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.Equipment {
 	AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(55, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1),
 	Prayer = 55,
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
@@ -97,6 +102,11 @@ ItsyScape.Meta.Equipment {
 
 ItsyScape.Resource.Peep "Yendorian_Ballista" {
 	ItsyScape.Action.Attack()
+}
+
+ItsyScape.Meta.PeepCharacter {
+	Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
+	Character = ItsyScape.Resource.Character "Yendorian"
 }
 
 ItsyScape.Meta.ResourceTag {
@@ -139,13 +149,18 @@ ItsyScape.Meta.PeepStat {
 	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
 }
 
+ItsyScape.Meta.PeepHealth {
+	Hitpoints = 500,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Ballista"
+}
+
 ItsyScape.Meta.Equipment {
 	AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(50, 1),
 	Prayer = 55,
 	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
@@ -167,6 +182,11 @@ ItsyScape.Meta.PeepMashinaState {
 
 ItsyScape.Resource.Peep "Yendorian_Mast" {
 	ItsyScape.Action.Attack()
+}
+
+ItsyScape.Meta.PeepCharacter {
+	Peep = ItsyScape.Resource.Peep "Yendorian_Mast",
+	Character = ItsyScape.Resource.Character "Yendorian"
 }
 
 ItsyScape.Meta.ResourceTag {
@@ -209,13 +229,18 @@ ItsyScape.Meta.PeepStat {
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
 }
 
+ItsyScape.Meta.PeepHealth {
+	Hitpoints = 500,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
 ItsyScape.Meta.Equipment {
 	AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(55, 1),
-	DefenseStab = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseSlash = ItsyScape.Utility.styleBonusForItem(55, 1),
-	DefenseCrush = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1),
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(35, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1),
 	Prayer = 55,
 	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
@@ -233,6 +258,11 @@ ItsyScape.Meta.PeepMashinaState {
 	Tree = "Resources/Game/Peeps/Yendorian/GenericYendorian_IdleLogic.lua",
 	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Mast"
+}
+
+ItsyScape.Meta.PeepCharacter {
+	Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
+	Character = ItsyScape.Resource.Character "Yendorian"
 }
 
 ItsyScape.Resource.Peep "Yendorian_Swordfish" {
@@ -279,13 +309,18 @@ ItsyScape.Meta.PeepStat {
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
 
+ItsyScape.Meta.PeepHealth {
+	Hitpoints = 500,
+	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
+}
+
 ItsyScape.Meta.Equipment {
 	AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(55, 1),
 	DefenseStab = ItsyScape.Utility.styleBonusForItem(50, 1),
 	DefenseSlash = ItsyScape.Utility.styleBonusForItem(50, 1),
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(50, 1),
-	DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1),
-	DefenseRanged = ItsyScape.Utility.styleBonusForItem(55, 1),
+	DefenseMagic = ItsyScape.Utility.styleBonusForItem(50, 1),
+	DefenseRanged = ItsyScape.Utility.styleBonusForItem(50, 1),
 	Prayer = 55,
 	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(60),
 	Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
@@ -304,3 +339,78 @@ ItsyScape.Meta.PeepMashinaState {
 	IsDefault = 1,
 	Resource = ItsyScape.Resource.Peep "Yendorian_Swordfish"
 }
+
+do
+	local Scout = ItsyScape.Resource.Peep "Yendorian_Scout" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepCharacter {
+		Peep = Scout,
+		Character = ItsyScape.Resource.Character "Yendorian"
+	}
+
+	ItsyScape.Meta.ResourceTag {
+		Value = "Eldritch",
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Yendorian.ScoutYendorian",
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Yendorian scout",
+		Language = "en-US",
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Where there's a Yendorian scout, there's Yendorian troops not too far away.",
+		Language = "en-US",
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(55),
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(55),
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(30),
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 150,
+		Resource = Scout
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = -1000,
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
+		StrengthRanged = 0,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = Scout
+	}
+end
+

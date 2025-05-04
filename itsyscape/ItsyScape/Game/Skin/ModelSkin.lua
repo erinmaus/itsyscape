@@ -21,17 +21,25 @@ local ModelSkin = Class(Skin)
 function ModelSkin:new()
 	self.model = false
 	self.texture = false
+	self.pathTexture = false
 	self.isBlocking = true
 	self.isOccluded = false
 	self.isOccluding = false
 	self.isTranslucent = false
 	self.isGhosty = false
 	self.shader = false
-	self.position = Vector(0)
-	self.scale = Vector(1)
-	self.rotation = Quaternion(0, 0, 0, 1)
+	self.multiShader = false
+	self.position = Vector(0):keep()
+	self.scale = Vector(1):keep()
+	self.rotation = Quaternion():keep()
+	self.outlineThreshold = 0.5
 	self.lights = {}
 	self.particles = {}
+	self.colors = {}
+	self.pathToColor = {}
+	self.bumpHeight = 1
+	self.isReflective = false
+	self.reflectionPower = 0.5
 end
 
 function ModelSkin:getResource()
@@ -57,7 +65,7 @@ end
 --                                 -- Defaults to true.
 -- }
 function ModelSkin:loadFromFile(filename)
-	local file = "return " .. love.filesystem.read(filename)
+	local file = "return " .. (love.filesystem.read(filename) or "{}")
 	local chunk = assert(loadstring(file))
 	local result = setfenv(chunk, {})()
 
@@ -71,6 +79,40 @@ function ModelSkin:loadFromFile(filename)
 		self.texture = CacheRef("ItsyScape.Graphics.TextureResource", result.texture)
 	else
 		self.texture = false
+	end
+
+	if result.pathTexture then
+		self.texture = CacheRef("ItsyScape.Graphics.PathTextureResource", result.pathTexture)
+	end
+
+	if result.colors then
+		for _, color in ipairs(result.colors) do
+			table.insert(self.colors, {
+				name = color.name,
+				hueOffset = color.hueOffset and color.hueOffset / 360,
+				saturationOffset = color.saturationOffset and color.saturationOffset / 255,
+				lightnessOffset = color.lightnessOffset and color.lightnessOffset / 255,
+			})
+
+			for _, path in ipairs(color) do
+				self.pathToColor[path] = color.name
+			end
+
+			if color.color then
+				self.pathToColor[color.color] = color.name
+			end
+		end
+
+		for i, color in ipairs(self.colors) do
+			if result.colors[i].parent then
+				for j = 1, i do
+					if self.colors[j].name == result.colors[i].parent then
+						color.parent = self.colors[j]
+						break
+					end
+				end
+			end
+		end
 	end
 
 	if result.isBlocking == nil then
@@ -110,35 +152,40 @@ function ModelSkin:loadFromFile(filename)
 
 	if result.shader and type(result.shader) == "string" then
 		self.shader = CacheRef("ItsyScape.Graphics.ShaderResource", result.shader)
+
+		if result.multiShader and type(result.multiShader) == "string" then
+			self.multiShader = CacheRef("ItsyScape.Graphics.ShaderResource", result.multiShader)
+		end
 	else
 		self.shader = false
+		self.multiShader = false
 	end
 
 	if result.position and
 	   type(result.position) == 'table' and
 	   #result.position == 3
 	then
-		self.position = Vector(unpack(result.position))
+		self.position = Vector(unpack(result.position)):keep()
 	end
 
 	if result.scale and
 	   type(result.scale) == 'table' and
 	   #result.scale == 3
 	then
-		self.scale = Vector(unpack(result.scale))
+		self.scale = Vector(unpack(result.scale)):keep()
 	end
 
 	if result.rotation and
 	   type(result.rotation) == 'table' and
 	   #result.rotation == 4
 	then
-		self.rotation = Quaternion(unpack(result.rotation))
+		self.rotation = Quaternion(unpack(result.rotation)):keep()
 	end
 
 	if result.rotation and type(result.rotation) == 'string' then
 		local r = Quaternion[result.rotation]
 		if r and Class.isType(r, Quaternion) then
-			self.rotation = Quaternion(r:get())
+			self.rotation = Quaternion(r:get()):keep()
 		end
 	end
 
@@ -178,6 +225,22 @@ function ModelSkin:loadFromFile(filename)
 	end
 
 	self.particles = result.particles or {}
+
+	if result.outlineThreshold then
+		self.outlineThreshold = result.outlineThreshold
+	end
+
+	if result.bumpHeight then
+		self.bumpHeight = result.bumpHeight
+	end
+
+	if result.isReflective ~= nil then
+		self.isReflective = not not result.isReflective
+	end
+
+	if result.reflectionPower then
+		self.reflectionPower = result.reflectionPower
+	end
 end
 
 -- Gets the model CacheRef.
@@ -238,6 +301,78 @@ end
 
 function ModelSkin:getShader()
 	return self.shader
+end
+
+function ModelSkin:getMultiShader()
+	return self.multiShader
+end
+
+function ModelSkin:getColors()
+	return self.colors
+end
+
+function ModelSkin:getOutlineThreshold()
+	return self.outlineThreshold
+end
+
+function ModelSkin:getBumpHeight()
+	return self.bumpHeight
+end
+
+function ModelSkin:getIsReflective()
+	return self.isReflective
+end
+
+function ModelSkin:getReflectionPower()
+	return self.reflectionPower
+end
+
+function ModelSkin:_getColor(colorName, colors, c)
+	local index = 0
+	for _, color in ipairs(self.colors) do
+		if not color.parent then
+			index = index + 1
+		end
+
+		if color.name == colorName or color.color == colorName then
+			local result = colors and colors[colorName]
+			result = result or colors[index]
+
+			if not result then
+				result = c[colorName] or Color(Vector(love.math.random(), love.math.random(), love.math.random()):getNormal():get())
+				c[colorName] = result
+			end
+
+			if color and color.parent then
+				result = self:_getColor(color.parent.name, colors, c)
+			end
+
+			if color.hueOffset or color.saturationOffset or color.lightnessOffset then
+				local h, s, l = result:toHSL()
+				h = h + (color.hueOffset or 0)
+				s = math.clamp(s + (color.saturationOffset or 0))
+				l = math.clamp(l + (color.lightnessOffset or 0))
+
+				local b = result
+				result = Color.fromHSL(h % 1, s, l)
+			end
+
+			return result
+		end
+	end
+
+	return colors[colorName]
+end
+
+function ModelSkin:mapPathsToColors(colors, c)
+	local result = {}
+	local c = {}
+
+	for pathID, colorName in pairs(self.pathToColor) do
+		result[pathID] = self:_getColor(colorName, colors, c)
+	end
+
+	return result
 end
 
 return ModelSkin

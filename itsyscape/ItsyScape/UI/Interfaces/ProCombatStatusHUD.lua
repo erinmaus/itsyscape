@@ -104,7 +104,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 	self.effectsPanel:setPadding(ProCombatStatusHUD.PADDING, ProCombatStatusHUD.PADDING)
 	self.effectsPanel:setWrapContents(true)
 	self.effectsPanel:setSize(ProCombatStatusHUD.Target.WIDTH, 0)
-	self.effectsPanel:setIsClickThrough(true)
+	self.effectsPanel:setIsSelfClickThrough(true)
 	self:addChild(self.effectsPanel)
 
 	self.label = Label()
@@ -115,7 +115,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 		color = { 1, 1, 1, 1 }
 	}, self.hud:getView():getResources()))
 	self.label:setPosition(0, (ProCombatStatusHUD.Target.HEIGHT + ProCombatStatusHUD.EFFECT_PADDING) + (ProCombatStatusHUD.Target.STAT_HEIGHT + ProCombatStatusHUD.EFFECT_PADDING) * 2)
-	self.label:setIsClickThrough(true)
+	self.label:setIsSelfClickThrough(true)
 	self:addChild(self.label)
 
 	self.hitPoints = ProCombatStatusHUD.StatBar()
@@ -131,7 +131,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 		color = { 1, 1, 1, 1 }
 	}, self.hud:getView():getResources()))
 	self.hitPointsLabel:setPosition(ProCombatStatusHUD.EFFECT_PADDING, -ProCombatStatusHUD.EFFECT_PADDING)
-	self.hitPointsLabel:setIsClickThrough(true)
+	self.hitPointsLabel:setIsSelfClickThrough(true)
 	self.hitPoints:addChild(self.hitPointsLabel)
 	self:addChild(self.hitPoints)
 
@@ -148,7 +148,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 		color = { 1, 1, 1, 1 }
 	}, self.hud:getView():getResources()))
 	self.prayerPointsLabel:setPosition(ProCombatStatusHUD.EFFECT_PADDING, -ProCombatStatusHUD.EFFECT_PADDING)
-	self.prayerPointsLabel:setIsClickThrough(true)
+	self.prayerPointsLabel:setIsSelfClickThrough(true)
 	self.prayerPoints:addChild(self.prayerPointsLabel)
 	self:addChild(self.prayerPoints)
 
@@ -156,7 +156,7 @@ function ProCombatStatusHUD.Target:new(hud, actorID)
 
 	self.buttons = {}
 
-	self:setIsClickThrough(true)
+	self:setIsSelfClickThrough(true)
 end
 
 function ProCombatStatusHUD.Target:getEffects()
@@ -262,7 +262,7 @@ function ProCombatStatusHUD.StatBar:new()
 	self.inColor = Color(0, 1, 0, 1)
 	self.outColor = Color(1, 0, 0, 1)
 
-	self:setIsClickThrough(true)
+	self:setIsSelfClickThrough(true)
 end
 
 function ProCombatStatusHUD.StatBar:getCurrent()
@@ -327,7 +327,7 @@ function ProCombatStatusHUD.EffectBorder:new()
 	self.max = 1
 	self.color = Color(1, 1, 1, 0)
 
-	self:setIsClickThrough(true)
+	self:setIsSelfClickThrough(true)
 end
 
 function ProCombatStatusHUD.EffectBorder:getColor()
@@ -1569,6 +1569,17 @@ function ProCombatStatusHUD:positionTarget(targetWidget, sortedWidgets, delta)
 		end
 	end
 
+	-- local targetActor = self:getView():getGameView():getActorByID(targetWidget.actorID)
+	-- local targetActorView = targetActor and self:getView():getGameView():getActor(targetActor)
+	-- local worldPosition = Vector(targetActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0):transformPoint(0, 0, 0))
+	-- local screenPosition = self:getView():getGameView():getRenderer():getCamera():project(worldPosition)
+	-- if targetWidget.actorID == self:getState().player.actorID then
+	-- 	screenPosition = screenPosition + Vector(ProCombatStatusHUD.Target.WIDTH / 2, 0, 0)
+	-- else
+	-- 	screenPosition = screenPosition - Vector(ProCombatStatusHUD.Target.WIDTH * 1.5, 0, 0)
+	-- end
+	-- screenPosition = screenPosition - Vector(0, ProCombatStatusHUD.Target.HEIGHT / 2, 0)
+
 	local width, height = love.graphics.getScaledMode()
 	local radius = ProCombatStatusHUD.MAX_RADIUS + math.max(ProCombatStatusHUD.Target.WIDTH, ProCombatStatusHUD.Target.HEIGHT) / 3
 
@@ -1592,6 +1603,7 @@ function ProCombatStatusHUD:positionTarget(targetWidget, sortedWidgets, delta)
 		currentPosition.y = currentPosition.y - ProCombatStatusHUD.Target.HEIGHT
 	end
 
+	--currentPosition = screenPosition
 	targetWidget:setPosition(currentPosition.x, currentPosition.y)
 end
 
@@ -1613,7 +1625,7 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 			timeLabel:setPosition(
 				ProCombatStatusHUD.EFFECT_PADDING,
 				ProCombatStatusHUD.EFFECT_SIZE - 22 - ProCombatStatusHUD.EFFECT_PADDING)
-			timeLabel:setIsClickThrough(true)
+			timeLabel:setIsSelfClickThrough(true)
 			icon:setData('timeLabel', timeLabel)
 			icon:addChild(icon:getData('timeLabel'))
 
@@ -1621,7 +1633,7 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 			tinyDescriptionLabel:setPosition(
 				ProCombatStatusHUD.EFFECT_PADDING,
 				ProCombatStatusHUD.EFFECT_PADDING)
-			tinyDescriptionLabel:setIsClickThrough(true)
+			tinyDescriptionLabel:setIsSelfClickThrough(true)
 			icon:setData('tinyDescriptionLabel', tinyDescriptionLabel)
 			icon:addChild(icon:getData('tinyDescriptionLabel'))
 
@@ -1637,7 +1649,7 @@ function ProCombatStatusHUD:updateTargetEffects(targetWidget, state)
 
 		icon:setIcon(string.format("Resources/Game/Effects/%s/Icon.png", state.effects[i].id))
 		icon:setSize(ProCombatStatusHUD.EFFECT_SIZE, ProCombatStatusHUD.EFFECT_SIZE)
-		icon:setIsClickThrough(true)
+		icon:setIsSelfClickThrough(true)
 
 		local duration = state.effects[i].duration
 		if duration ~= math.huge then
@@ -1712,35 +1724,39 @@ function ProCombatStatusHUD:updatePowers(type, buttons, powers, pendingID, radia
 		local button = buttons[i]
 
 		if power and button then
-			local coolDown = button:getData('coolDown')
-			local icon = button:getData('icon')
+			local id = button:getData("id")
+			if id ~= power.id then
+				button:setData("id", power.id)
+				local icon = button:getData('icon')
 
-			icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
+				icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.id))
 
-			local description = {}
-			for i = 1, #power.description do
-				table.insert(description, ToolTip.Text(power.description[i]))
+				local description = {}
+				for i = 1, #power.description do
+					table.insert(description, ToolTip.Text(power.description[i]))
+				end
+
+				local toolTip = {
+					ToolTip.Header(power.name),
+					unpack(power.description)
+				}
+
+				button:setToolTip(unpack(toolTip))
+
+				button:setID("ProCombatStatusHUD-Power" .. power.id)
 			end
 
-			local toolTip = {
-				ToolTip.Header(power.name),
-				unpack(power.description)
-			}
-
-			button:setToolTip(unpack(toolTip))
-
+			local coolDown = button:getData('coolDown')
 			if power.coolDown and power.coolDown ~= 0 then
 				coolDown:setText(tostring(power.coolDown))
 			else
 				coolDown:setText("")
 			end
 
-			button:setID("ProCombatStatusHUD-Power" .. power.id)
-
-			if pendingID == power.id then
+			if pendingID == power.id and self.subPending:getParent() ~= button then
 				button:addChild(self.subPending)
 				pendingIndex = i
-			else
+			elseif pendingID ~= power.id and self.subPending:getParent() == button then
 				button:removeChild(self.subPending)
 			end
 		end
@@ -1785,7 +1801,10 @@ function ProCombatStatusHUD:updateSpells()
 				button:getChildAt(1):setSpellActive(false)
 			end
 
-			button:setID("ProCombatStatusHUD-Spell" .. spell.id)
+			if button:getData("id") ~= spell.id then
+				button:setData("id", spell.id)
+				button:setID("ProCombatStatusHUD-Spell" .. spell.id)
+			end
 		end
 	end
 
@@ -1803,13 +1822,18 @@ function ProCombatStatusHUD:updatePrayers()
 		if button and prayer then
 			local icon = button:getChildAt(1)
 
-			if prayer.active then
+			if prayer.active and not button:getData("active") then
+				button:setData("active", true)
 				icon:setColor(Color(1, 1, 1, 1))
-			else
+			elseif not prayer.active and button:getData("active") then
+				button:setData("active", false)
 				icon:setColor(Color(0.3, 0.3, 0.3))
 			end
 
-			button:setID("ProCombatStatusHUD-Prayer" .. prayer.id)
+			if button:getData("id") ~= prayer.id then
+				button:setData("id", prayer.id)
+				button:setID("ProCombatStatusHUD-Prayer" .. prayer.id)
+			end
 		end
 	end
 end

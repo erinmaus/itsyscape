@@ -15,7 +15,7 @@ local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
-local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
+local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 
 local Attack = Class(Action)
 Attack.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }

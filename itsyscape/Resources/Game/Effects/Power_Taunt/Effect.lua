@@ -11,7 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Effect = require "ItsyScape.Peep.Effect"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 
--- Halves the accuracy of the opponent, while increasing their damage by 50%.
+-- Halves the accuracy of the opponent.
 local Taunt = Class(CombatEffect)
 Taunt.DURATION = 30
 
@@ -24,10 +24,6 @@ function Taunt:applySelfToAttack(roll)
 	local newAccuracyRoll = math.floor(accuracyRoll / 2)
 
 	roll:setMaxAttackRoll(newAccuracyRoll)
-end
-
-function Taunt:applySelfToDamage(roll)
-	roll:setMaxHit(math.floor(roll:getMaxHit() * 1.5 + 0.5))
 end
 
 return Taunt

@@ -62,14 +62,14 @@ end
 
 function Earthquake:tick()
 	if not self.destinationPosition or not self.sourcePosition or not self.size then
-		self.destinationPosition = self:getTargetPosition(self:getDestination())
-		self.sourcePosition = self:getTargetPosition(self:getSource())
+		self.destinationPosition = self:getTargetPosition(self:getDestination()):keep()
+		self.sourcePosition = self:getTargetPosition(self:getSource()):keep()
 
 		local min, max = self:getDestination():getBounds()
 		local x = max.x - min.z
 		local z = max.z - min.z
 
-		self.size = Vector(math.max(x, z)) * 3
+		self.size = (Vector(math.max(x, z)) * 3):keep()
 
 		self.destinationPosition.y = self.destinationPosition.y - (max.y - min.y) / 2
 		self.destinationPosition = self.sourcePosition:lerp(self.destinationPosition, 0.5)

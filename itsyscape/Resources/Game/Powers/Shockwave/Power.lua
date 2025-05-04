@@ -19,4 +19,13 @@ function Shockwave:new(...)
 	self:setXWeaponID("Power_Shockwave")
 end
 
+function Shockwave:activate(activator, target)
+	CombatPower.activate(self, activator, target)
+
+	local stage = activator:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("ShockwaveSplosion", activator, target)
+
+	Utility.Combat.deflectPendingPower(self, activator, target)
+end
+
 return Shockwave

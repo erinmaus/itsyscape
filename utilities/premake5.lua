@@ -24,6 +24,8 @@ solution "ItsyScape.Utilities"
 		language "C++"
 		kind "ConsoleApp"
 
+		cppdialect "C++20"
+
 		configuration "Debug"
 			targetsuffix "_debug"
 			objdir "obj/debug"

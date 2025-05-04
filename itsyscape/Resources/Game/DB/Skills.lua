@@ -302,6 +302,7 @@ ItsyScape.Resource.Skill "Fishing"
 
 ItsyScape.Resource.Skill "Sailing"
 	ActionType "Fire"
+	ActionType "Steer"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Fire",

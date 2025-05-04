@@ -66,6 +66,15 @@ function Controller:poke(actionID, actionIndex, e)
 	-- Nothing.
 end
 
+-- Sends a poke to the client.
+function Controller:send(callback, ...)
+	self:getDirector():getGameInstance():getUI():sendPoke(
+		self,
+		callback,
+		nil,
+		{ n = select("#", ...), ... })
+end
+
 -- Pulls the current state of the interface.
 function Controller:pull()
 	return {}

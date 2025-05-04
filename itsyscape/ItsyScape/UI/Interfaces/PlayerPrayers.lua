@@ -11,6 +11,7 @@ local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
+local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local Widget = require "ItsyScape.UI.Widget"
 local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local GridLayout = require "ItsyScape.UI.GridLayout"
@@ -22,7 +23,20 @@ local PlayerTab = require "ItsyScape.UI.Interfaces.PlayerTab"
 
 local PlayerPrayers = Class(PlayerTab)
 PlayerPrayers.ICON_SIZE = 48
-PlayerPrayers.BUTTON_PADDING = 2
+PlayerPrayers.PADDING = 8
+PlayerPrayers.BUTTON_PADDING = 4
+
+PlayerPrayers.INACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/Button-Default.png",
+	pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/Button-Hover.png",
+}
+
+PlayerPrayers.ACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/ButtonActive-Default.png",
+	pressed = "Resources/Game/UI/Buttons/ButtonActive-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/ButtonActive-Hover.png",
+}
 
 function PlayerPrayers:new(id, index, ui)
 	PlayerTab.new(self, id, index, ui)
@@ -31,22 +45,16 @@ function PlayerPrayers:new(id, index, ui)
 	self.numPrayers = 0
 	self.onPrayersResized = Callback()
 
-	local panel = Panel()
-	panel = Panel()
-	panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/Default.9.png"
-	}, ui:getResources()))
-	panel:setSize(self:getSize())
-	self:addChild(panel)
-
 	self.layout = GridLayout()
+	self.layout:setPadding(self.PADDING, self.PADDING)
+	self.layout:setSize(self:getSize(), 0)
+	self.layout:setWrapContents(true)
 	self.layout:setUniformSize(
 		true,
 		PlayerPrayers.ICON_SIZE + PlayerPrayers.BUTTON_PADDING * 2,
 		PlayerPrayers.ICON_SIZE + PlayerPrayers.BUTTON_PADDING * 2)
-	panel:addChild(self.layout)
 
-	self.layout:setSize(self:getSize())
+	self:addChild(self.layout)
 
 	self.buttons = {}
 end
@@ -78,8 +86,8 @@ function PlayerPrayers:setNumPrayers(value)
 					PlayerPrayers.BUTTON_PADDING)
 
 				button:addChild(icon)
-				button:setData('icon', icon)
-				button:setData('index', i)
+				button:setData("icon", icon)
+				button:setData("index", i)
 				button.onMouseEnter:register(self.hoverPrayer, self)
 				button.onMouseLeave:register(self.unhoverPrayer, self)
 				button.onLeftClick:register(self.togglePrayer, self)
@@ -104,7 +112,7 @@ function PlayerPrayers:setNumPrayers(value)
 			ToolTip.Text(prayer.description),
 			ToolTip.Text(string.format("Requires level %d Faith.", prayer.level)))
 
-		local icon = button:getData('icon')
+		local icon = button:getData("icon")
 		icon:setIcon(string.format("Resources/Game/Effects/%s/Icon.png", prayer.id))
 	end
 
@@ -114,13 +122,13 @@ function PlayerPrayers:setNumPrayers(value)
 end
 
 function PlayerPrayers:drag(button, x, y)
-	if self:getView():getRenderManager():getCursor() ~= button:getData('icon') then
-		self:getView():getRenderManager():setCursor(button:getData('icon'))
+	if self:getView():getRenderManager():getCursor() ~= button:getData("icon") then
+		self:getView():getRenderManager():setCursor(button:getData("icon"))
 	end
 end
 
 function PlayerPrayers:drop(button, x, y)
-	if self:getView():getRenderManager():getCursor() == button:getData('icon') then
+	if self:getView():getRenderManager():getCursor() == button:getData("icon") then
 		self:getView():getRenderManager():setCursor(nil)
 	end
 end
@@ -134,7 +142,7 @@ function PlayerPrayers:unhoverPrayer(button)
 end
 
 function PlayerPrayers:togglePrayer(button)
-	local index = button:getData('index')
+	local index = button:getData("index")
 	local prayers = self:getState().prayers or {}
 	local prayer = prayers[index]
 	if prayer then
@@ -150,11 +158,22 @@ function PlayerPrayers:update(...)
 		local prayer = state.prayers[i]
 		local button = self.buttons[i]
 		local icon = button:getData("icon")
+		local active = button:getData("active")
 
-		if prayer and prayer.isActive then
-			icon:setColor(Color(1))
-		else
-			icon:setColor(Color(0.3))
+		if prayer then
+			if prayer.isActive and (not active or active == nil) then
+				button:setStyle(self.ACTIVE_BUTTON_STYLE, ButtonStyle)
+			elseif not prayer.isActive and (active or active == nil) then
+				button:setStyle(self.INACTIVE_BUTTON_STYLE, ButtonStyle)
+			end
+
+			if prayer.enabled then
+				icon:setColor(Color(1))
+			else
+				icon:setColor(Color(0.3))
+			end
+
+			button:setData("active", prayer.isActive)
 		end
 	end
 end

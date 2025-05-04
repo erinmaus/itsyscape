@@ -25,6 +25,8 @@ end
 function Confuse:activate(activator, target)
 	CombatPower.activate(self, activator, target)
 	Utility.Peep.applyEffect(target, self.effectResource, true, activator)
+
+	Utility.Combat.deflectPendingPower(self, activator, target)
 end
 
 return Confuse

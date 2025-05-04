@@ -25,8 +25,18 @@ function ParticleSceneNode:new()
 	self:getMaterial():setShader(ParticleSceneNode.DEFAULT_SHADER)
 	self:getMaterial():setIsTranslucent(true)
 	self:getMaterial():setIsFullLit(true)
+	self:getMaterial():setIsShadowCaster(false)
 
 	self.isReady = false
+	self._texture = false
+end
+
+function ParticleSceneNode:emit(count)
+	self:getHandle():emit(count)
+end
+
+function ParticleSceneNode:clear()
+	self:getHandle():clear()
 end
 
 function ParticleSceneNode:pause()
@@ -47,12 +57,18 @@ end
 
 function ParticleSceneNode:initParticleSystemFromDef(def, resources)
 	if def.texture then
-		resources:queue(TextureResource, def.texture, function(texture)
-			self:getMaterial():setTextures(texture)
-			self:getHandle():initParticleSystemFromDef(def)
+		if def.texture ~= self._texture then
+			resources:queue(TextureResource, def.texture, function(texture)
+				self._texture = def.texture
 
-			self.isReady = true
-		end)
+				self:getMaterial():setTextures(texture)
+				self:getHandle():initParticleSystemFromDef(def)
+
+				self.isReady = true
+			end)
+		else
+			self:getHandle():initParticleSystemFromDef(def)
+		end
 	else
 		self:getHandle():initParticleSystemFromDef(def)
 		self.isReady = true
@@ -77,11 +93,6 @@ end
 
 function ParticleSceneNode:updateLocalDirection(position)
 	self:getHandle():updateLocalDirection(position:get())
-end
-
-function ParticleSceneNode:frame(delta)
-	SceneNode.frame(self, delta)
-	self:getHandle():frame(delta, love.timer.getDelta())
 end
 
 return ParticleSceneNode

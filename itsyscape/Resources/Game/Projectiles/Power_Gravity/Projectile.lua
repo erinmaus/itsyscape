@@ -134,7 +134,7 @@ end
 
 function Gravity:tick()
 	if not self.position or not self.size then
-		self.position = self:getTargetPosition(self:getDestination()) + Vector(0, Gravity.MAX_SIZE, 0)
+		self.position = (self:getTargetPosition(self:getDestination()) + Vector(0, Gravity.MAX_SIZE, 0)):keep()
 
 		local min, max = self:getDestination():getBounds()
 		local center = max - min
@@ -158,8 +158,8 @@ function Gravity:update(elapsed)
 		self.fog:setNearDistance((fogValue + Gravity.FOG_FAR) * self.size)
 		self.fog:setFarDistance(fogValue * self.size)
 		self.fog:setColor(Gravity.SINGULARITY_COLOR)
-		self.fog:getHandle():tick()
 		self.fog:setParent(root)
+		self.fog:tick()
 
 		self.singularity:getMaterial():setColor(Color(
 			Gravity.SINGULARITY_COLOR.r,

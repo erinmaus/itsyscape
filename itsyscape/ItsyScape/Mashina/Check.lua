@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
 local B = require "B"
 
 local Check = B.Node("Check")
@@ -15,7 +16,7 @@ Check.CONDITION = B.Reference()
 function Check:update(mashina, state, executor)
 	local a = state[self.CONDITION]
 
-	if type(a) == 'table' or type(a) == 'function' then
+	if Class.isCallable(a) then
 		a = a(mashina, state, executor)
 	end
 

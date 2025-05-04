@@ -20,12 +20,17 @@ function OceanBehavior:new()
 	self.weatherBobScale = 1
 	self.weatherRockRange = 0
 	self.weatherRockMultiplier = math.pi / 4
-	self.depth = 1.5
+	self.depth = 3.25
 
 	-- Visual properties.
-	self.offset = 0
+	self.offset = 1.5
 	self.positionTimeScale = 4
 	self.textureTimeScale = Vector(math.pi / 4, 1 / 2, 0)
+	self.windSpeedMultiplier = 1
+	self.windPatternMultiplier = Vector(2, 4, 8)
+
+	-- Used to sync time between frontend and backend.
+	self.time = 0
 end
 
 return OceanBehavior

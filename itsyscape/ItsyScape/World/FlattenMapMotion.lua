@@ -27,11 +27,21 @@ function FlattenMapMotion:iterate(func)
 			local s = x + i
 			local t = y + j
 
-			if s >= 1 and s <= map:getWidth() and
-			   t >= 1 and t <= map:getHeight()
-			then
-				local tile = map:getTile(s, t)
-				func(tile, s, t)
+			if love.keyboard.isDown("lalt") or love.keyboard.isDown("ralt") then
+				if s >= 1 and s <= map:getWidth() and
+				   t >= 1 and t <= map:getHeight() and
+				   x ^ 2 + y ^ 2 < (self.size + 0.5) ^ 2 
+				then
+					local tile = map:getTile(s, t)
+					func(tile, s, t)
+				end
+			else
+				if s >= 1 and s <= map:getWidth() and
+				   t >= 1 and t <= map:getHeight()
+				then
+					local tile = map:getTile(s, t)
+					func(tile, s, t)
+				end
 			end
 		end
 	end

@@ -42,7 +42,7 @@ function OpenCraftWindow:perform(state, player, prop)
 		local face = CallbackCommand(Utility.Peep.face, player, prop)
 
 		if walk then
-			local open = OpenInterfaceCommand("CraftWindow", true, prop, key, value, target:get("ActionType"))
+			local open = OpenInterfaceCommand("CraftWindow2", true, prop, key, value, target:get("ActionType"))
 			local perform = CallbackCommand(Action.perform, self, state, player)
 			local command = CompositeCommand(true, walk, face, open, perform)
 

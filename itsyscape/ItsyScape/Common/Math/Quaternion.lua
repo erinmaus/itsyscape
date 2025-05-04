@@ -8,13 +8,17 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Pool = require "ItsyScape.Common.Math.Pool"
 local Vector = require "ItsyScape.Common.Math.Vector"
 
 -- Four-dimensional quaternion type.
-local Quaternion, Metatable = Class()
+local BaseQuaternion, Metatable = Class()
+local Quaternion = Pool.wrap(BaseQuaternion)
 
 -- Creates a quaternion from an axis and angle.
-function Quaternion.fromAxisAngle(axis, angle)
+function BaseQuaternion.fromAxisAngle(axis, angle)
+	axis:compatible()
+
 	local halfAngle = angle * 0.5
 	local halfAngleSine = math.sin(halfAngle)
 	local halfAngleCosine = math.cos(halfAngle)
@@ -26,21 +30,27 @@ function Quaternion.fromAxisAngle(axis, angle)
 end
 
 local E = 0.00001
-function Quaternion.lookAt(source, target, up)
+function BaseQuaternion.lookAt(source, target, up)
+	source:compatible(target)
+	source:compatible(up)
+	target:compatible(up)
+
 	up = up or -Vector.UNIT_Z
 
 	local forward = (target - source):getNormal()
 
 	local dot = forward:dot(up)
-	if math.abs(dot + 1.0) < E then
-		return Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
-	elseif math.abs(dot - 1.0) < E then
-		return Quaternion.IDENTITY
-	end
-
 	local angle = math.acos(dot)
 	local axis = up:cross(forward):getNormal()
-	return Quaternion.fromAxisAngle(axis, angle):getNormal()
+	return BaseQuaternion.fromAxisAngle(axis, angle):getNormal()
+end
+
+function BaseQuaternion.fromVectors(source, target)
+	local dot = source:getNormal():dot(target:getNormal())
+	local halfCos = math.sqrt((1 + dot) / 2)
+	local halfSin = math.sqrt((1 - dot) / 2)
+	local cross = source:cross(target):getNormal() * halfSin
+	return Quaternion(cross.x, cross.y, cross.z, halfCos)
 end
 
 -- Constructs a new three-dimensional quaternion from the provided components.
@@ -50,15 +60,26 @@ end
 --
 -- Thus Quaternion(1) gives { 1, 1, 1, 1 }, Quaternion() gives { 0, 0, 0, 1 },
 -- and Quaternion(1, 2) gives { 1, 2, 1, 1 }.
-function Quaternion:new(x, y, z, w)
+function BaseQuaternion:new(x, y, z, w)
 	self.x = x or 0
 	self.y = y or x or 0
 	self.z = z or x or 0
 	self.w = w or 1
 end
 
+function BaseQuaternion:keep()
+	-- Nothing
+end
+
+function BaseQuaternion:copy(other)
+	other.x = self.x
+	other.y = self.y
+	other.z = self.z
+	other.w = self.w
+end
+
 -- Returns the x, y, z, w (in that order) components as a tuple.
-function Quaternion:get()
+function BaseQuaternion:get()
 	return self.x, self.y, self.z, self.w
 end
 
@@ -67,7 +88,7 @@ end
 -- delta is clamped to 0 .. 1 inclusive.
 --
 -- Returns the interpolated quaternion.
-function Quaternion:lerp(other, delta)
+function BaseQuaternion:lerp(other, delta)
 	delta = math.min(math.max(delta, 0.0), 1.0)
 	local deltaQuat = Quaternion(delta, delta, delta, delta)
 	local inverseDeltaQuat = Quaternion(1 - delta, 1 - delta, 1 - delta, 1 - delta)
@@ -80,7 +101,9 @@ end
 -- delta is clamped to 0 .. 1 inclusive.
 --
 -- Implementation borrowed from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
-function Quaternion:slerp(other, delta)
+function BaseQuaternion:slerp(other, delta)
+	self:compatible(other)
+
 	-- Clamp delta.
 	delta = math.min(math.max(delta, 0.0), 1.0)
 
@@ -116,17 +139,19 @@ function Quaternion:slerp(other, delta)
 end
 
 -- Gets the length (i.e., magnitude) of the quaternion, squared.
-function Quaternion:getLengthSquared()
+function BaseQuaternion:getLengthSquared()
+	self:compatible()
+
 	return self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w
 end
 
 -- Gets the length (i.e., magnitude) of the quaternion.
-function Quaternion:getLength()
+function BaseQuaternion:getLength()
 	return math.sqrt(self:getLengthSquared())
 end
 
 -- Returns a normal of the quaternion.
-function Quaternion:getNormal()
+function BaseQuaternion:getNormal()
 	local length = self:getLength()
 	if length == 0 then
 		return self
@@ -140,18 +165,60 @@ function Quaternion:getNormal()
 	end
 end
 
-function Quaternion:transformVector(vector)
+function BaseQuaternion:inverse()
+	local lengthSquared = self:getLengthSquared()
+	if length == 0 then
+		return self
+	end
+
+	local inverseLengthSquared = 1 / lengthSquared
+	return Quaternion(
+		-self.x * inverseLengthSquared,
+		-self.y * inverseLengthSquared,
+		-self.z * inverseLengthSquared,
+		self.w * inverseLengthSquared)
+end
+
+function BaseQuaternion:transformVector(vector)
+	self:compatible(vector)
+
 	local v = Quaternion(vector.x, vector.y, vector.z, 0)
 	local normal = self:getNormal()
 	local conjugate = -normal
+	local result = Vector((normal * v * conjugate):get())
+	local a = collectgarbage("count")
 
-	return Vector((normal * v * conjugate):get())
+	return result
+end
+
+function BaseQuaternion.fromEulerXYZ(x, y, z)
+	x = Quaternion.fromAxisAngle(Vector.UNIT_X, x)
+	y = Quaternion.fromAxisAngle(Vector.UNIT_Y, y)
+	z = Quaternion.fromAxisAngle(Vector.UNIT_Z, z)
+
+	return (z * y * x):getNormal()
+end
+
+function BaseQuaternion:getDebugEulerXYZ()
+	local x, y, z = self:getEulerXYZ()
+	return math.deg(x), math.deg(y), math.deg(z)
+end
+
+function BaseQuaternion:getEulerXYZ()
+	self:compatible()
+
+	local x = math.atan2(2.0 * (self.y * self.z + self.w * self.x) , self.w * self.w - self.x * self.x - self.y * self.y + self.z * self.z)
+	local y = math.asin(math.clamp(-2.0 * (self.x * self.z - self.w * self.y), -1, 1))
+	local z = math.atan2(2.0 * (self.x * self.y + self.w * self.z) , self.w * self.w + self.x * self.x - self.y * self.y - self.z * self.z)
+
+	return x, y, z
 end
 
 -- Adds two quaternions.
 function Metatable.__add(a, b)
-	local result = Quaternion()
+	a:compatible(b)
 
+	local result = Quaternion()
 	result.x = a.x + b.x
 	result.y = a.y + b.y
 	result.z = a.z + b.z
@@ -162,8 +229,9 @@ end
 
 -- Multiplies two quaternions.
 function Metatable.__mul(a, b)
-	local result = Quaternion()
+	a:compatible(b)
 
+	local result = Quaternion()
 	result.x =  a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x
 	result.y = -a.x * b.z + a.y * b.w + a.z * b.x + a.w * b.y
 	result.z =  a.x * b.y - a.y * b.x + a.z * b.w + a.w * b.z
@@ -176,10 +244,12 @@ end
 --
 -- Returns { -x, -y, -z, w }.
 function Metatable.__unm(a)
+	a:compatible()
 	return Quaternion(-a.x, -a.y, -a.z, a.w)
 end
 
 function Metatable.__eq(a, b)
+	a:compatible(b)
 	return a.x == b.x and a.y == b.y and a.z == b.z and a.w == b.w
 end
 

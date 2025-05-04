@@ -8,9 +8,11 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Pool = require "ItsyScape.Common.Math.Pool"
 
 -- Three-dimensional vector type.
-local Vector, Metatable = Class()
+local BaseVector, Metatable = Class()
+local Vector = Pool.wrap(BaseVector)
 
 -- Constructs a new three-dimensional vector from the provided components.
 --
@@ -18,24 +20,62 @@ local Vector, Metatable = Class()
 --
 -- Thus Vector(1) gives { 1, 1, 1 }, Vector() gives { 0, 0, 0 },
 -- and Vector(1, 2) gives { 1, 2, 1 }.
-function Vector:new(x, y, z)
+function BaseVector:new(x, y, z)
 	self.x = x or 0
 	self.y = y or x or 0
 	self.z = z or x or 0
 end
 
+function BaseVector:keep()
+	-- Nothing
+end
+
+function BaseVector:copy(other)
+	other.x = self.x
+	other.y = self.y
+	other.z = self.z
+end
+
 -- Returns the x, y, z components as a tuple.
-function Vector:get()
+function BaseVector:get()
 	return self.x, self.y, self.z
 end
 
+function BaseVector:abs()
+	self:compatible()
+	return Vector(math.abs(self.x), math.abs(self.y), math.abs(self.z))
+end
+
+function BaseVector:floor()
+	self:compatible()
+	return Vector(math.floor(self.x), math.floor(self.y), math.floor(self.z))
+end
+
+function BaseVector:ceil()
+	self:compatible()
+	return Vector(math.ceil(self.x), math.ceil(self.y), math.ceil(self.z))
+end
+
 -- Calculates and returns the dot product of two vectors.
-function Vector:dot(other)
+function BaseVector:dot(other)
+	self:compatible(other)
 	return self.x * other.x + self.y * other.y + self.z * other.z
 end
 
+function BaseVector:reflect(normal)
+	self:compatible(normal)
+	local dot = self:dot(normal)
+	return self - 2.0 * normal * dot
+end
+
+function BaseVector:project(other)
+	self:compatible(other)
+	return self:dot(other) / other:dot(other) * other
+end
+
 -- Returns a vector with the minimum components of both vectors.
-function Vector:min(other)
+function BaseVector:min(other)
+	self:compatible(other)
 	return Vector(
 		math.min(self.x, other.x),
 		math.min(self.y, other.y),
@@ -43,14 +83,45 @@ function Vector:min(other)
 end
 
 -- Returns a vector with the maximum components of both vectors.
-function Vector:max(other)
+function BaseVector:max(other)
+	self:compatible(other)
 	return Vector(
 		math.max(self.x, other.x),
 		math.max(self.y, other.y),
 		math.max(self.z, other.z))
 end
 
+function BaseVector:clamp(min, max)
+	self:compatible(min)
+	self:compatible(max)
+	min:compatible(max)
+
+	return self:min(max):max(min)
+end
+
+function Vector:transform(transform)
+	if not transform then
+		return self
+	end
+
+	return Vector(transform:transformPoint(self.x, self.y, self.z))
+end
+
+function Vector:inverseTransform(transform)
+	if not transform then
+		return self
+	end
+
+	return Vector(transform:inverseTransformPoint(self.x, self.y, self.z))
+end
+
 function Vector.transformBounds(min, max, transform)
+	min:compatible(max)
+
+	if not transform then
+		return min, max
+	end
+
 	local corners = {
 		min.x, min.y, min.z,
 		max.x, min.y, min.z,
@@ -86,7 +157,9 @@ end
 -- delta is clamped to 0 .. 1 inclusive.
 --
 -- Returns the interpolated vector.
-function Vector:lerp(other, delta)
+function BaseVector:lerp(other, delta)
+	self:compatible(other)
+
 	delta = math.min(math.max(delta, 0.0), 1.0)
 	local result = Vector()
 	result.x = other.x * delta + self.x * (1 - delta)
@@ -96,7 +169,9 @@ function Vector:lerp(other, delta)
 end
 
 -- Calculates the cross product of two vectors.
-function Vector:cross(other)
+function BaseVector:cross(other)
+	self:compatible(other)
+
 	local s = self.y * other.z - self.z * other.y
 	local t = self.z * other.x - self.x * other.z
 	local r = self.x * other.y - self.y * other.x
@@ -104,13 +179,20 @@ function Vector:cross(other)
 	return Vector(s, t, r)
 end
 
+function Vector:distance(other)
+	local difference = self - other
+	return difference:getLength()
+end
+
 -- Gets the length (i.e., magnitude) of the vector, squared.
-function Vector:getLengthSquared()
+function BaseVector:getLengthSquared()
+	self:compatible()
+
 	return self.x * self.x + self.y * self.y + self.z * self.z
 end
 
 -- Gets the length (i.e., magnitude) of the vector.
-function Vector:getLength()
+function BaseVector:getLength()
 	local lengthSquared = self:getLengthSquared()
 	if lengthSquared == 0 then
 		return 0
@@ -120,13 +202,20 @@ function Vector:getLength()
 end
 
 -- Returns a normal of the vector.
-function Vector:getNormal()
+function BaseVector:getNormal()
 	local length = self:getLength()
 	if length == 0 then
 		return self
 	else
 		return self / self:getLength()
 	end
+end
+
+function BaseVector:direction(other)
+	self:compatible()
+	other:compatible()
+
+	return (other - self):getNormal()
 end
 
 -- Adds two vectors or a vector and a scalar.
@@ -137,14 +226,17 @@ function Metatable.__add(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		b:compatible()
 		result.x = a + b.x
 		result.y = a + b.y
 		result.z = a + b.z
 	elseif type(b) == 'number' then
+		a:compatible()
 		result.x = a.x + b
 		result.y = a.y + b
 		result.z = a.z + b
 	else
+		a:compatible(b)
 		result.x = a.x + b.x
 		result.y = a.y + b.y
 		result.z = a.z + b.z
@@ -161,14 +253,17 @@ function Metatable.__sub(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		b:compatible()
 		result.x = a - b.x
 		result.y = a - b.y
 		result.z = a - b.z
 	elseif type(b) == 'number' then
+		a:compatible()
 		result.x = a.x - b
 		result.y = a.y - b
 		result.z = a.z - b
 	else
+		a:compatible(b)
 		result.x = a.x - b.x
 		result.y = a.y - b.y
 		result.z = a.z - b.z
@@ -185,14 +280,17 @@ function Metatable.__mul(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		b:compatible()
 		result.x = a * b.x
 		result.y = a * b.y
 		result.z = a * b.z
 	elseif type(b) == 'number' then
+		a:compatible()
 		result.x = a.x * b
 		result.y = a.y * b
 		result.z = a.z * b
 	else
+		a:compatible(b)
 		result.x = a.x * b.x
 		result.y = a.y * b.y
 		result.z = a.z * b.z
@@ -210,14 +308,17 @@ function Metatable.__div(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		b:compatible()
 		result.x = a / b.x
 		result.y = a / b.y
 		result.z = a / b.z
 	elseif type(b) == 'number' then
+		a:compatible()
 		result.x = a.x / b
 		result.y = a.y / b
 		result.z = a.z / b
 	else
+		a:compatible(b)
 		result.x = a.x / b.x
 		result.y = a.y / b.y
 		result.z = a.z / b.z
@@ -230,6 +331,7 @@ end
 --
 -- Returns { -x, -y, -z }.
 function Metatable.__unm(a)
+	a:compatible()
 	return Vector(-a.x, -a.y, -a.z)
 end
 
@@ -237,14 +339,17 @@ function Metatable.__pow(a, b)
 	local result = Vector()
 
 	if type(a) == 'number' then
+		b:compatible()
 		result.x = a ^ b.x
 		result.y = a ^ b.y
 		result.z = a ^ b.z
 	elseif type(b) == 'number' then
+		a:compatible()
 		result.x = a.x ^ b
 		result.y = a.y ^ b
 		result.z = a.z ^ b
 	else
+		a:compatible(b)
 		result.x = a.x ^ b.x
 		result.y = a.y ^ b.y
 		result.z = a.z ^ b.z
@@ -254,6 +359,7 @@ function Metatable.__pow(a, b)
 end
 
 function Metatable.__eq(a, b)
+	a:compatible(b)
 	return a.x == b.x and a.y == b.y and a.z == b.z
 end
 

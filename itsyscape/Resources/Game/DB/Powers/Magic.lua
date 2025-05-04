@@ -28,14 +28,17 @@ ItsyScape.Resource.Power "Confuse" {
 }
 
 ItsyScape.Meta.PowerSpec {
-	IsQuick = 1,
-	IsInstant = 1,
 	Resource = ItsyScape.Resource.Power "Confuse"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Confuse"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 15,
+	MaxReduction = 5,
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -53,7 +56,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lowers your accuracy by 10-30% depending on the opponent's Wisdom level.",
+	Value = "Lowers your accuracy by 10-30% depending on the foe's Wisdom level.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Confuse"
 }
@@ -65,7 +68,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lowers your opponent's accuracy by 10-30% depending on your Wisdom level for 30 seconds.",
+	Value = "Lowers your foe's accuracy for 30 seconds. Prevents the foe's next special attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Confuse"
 }
@@ -90,14 +93,17 @@ ItsyScape.Resource.Power "Weaken" {
 }
 
 ItsyScape.Meta.PowerSpec {
-	IsQuick = 1,
-	IsInstant = 1,
 	Resource = ItsyScape.Resource.Power "Weaken"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "Weaken"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 15,
+	MaxReduction = 5,
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -115,7 +121,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lowers your damage by 10-30% depending on the opponent's Wisdom level.",
+	Value = "Lowers your damage by 10-30% depending on the foe's Wisdom level.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Weaken"
 }
@@ -127,7 +133,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lowers your opponent's damage by 10-30% depending on your Wisdom level for 30 seconds.",
+	Value = "Lowers your foe's damage for 30 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Weaken"
 }
@@ -157,9 +163,14 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Curse"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "Curse"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
+	BaseCost = 15,
+	MaxReduction = 5,
 	MinLevel = 1,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -177,7 +188,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lowers your defense by 10-30% depending on the opponent's Wisdom level.",
+	Value = "Lowers your defense by 10-30% depending on the foe's Wisdom level.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Curse"
 }
@@ -189,7 +200,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lowers your opponent's defense by 10-30% depending on your Wisdom level for 30 seconds.",
+	Value = "Lowers your foe's defense for 30 seconds.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Curse"
 }
@@ -213,9 +224,12 @@ ItsyScape.Resource.Power "Corrupt" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 30,
-	MaxReduction = 10,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Corrupt"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 5,
 	MaxLevel = 35,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -245,7 +259,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Inflicts a corrupting influence on your opponent, dealing 100%-300% damage (based on your Wisdom level) over 10 seconds.",
+	Value = "Inflicts a corrupting influence on your foe, dealing over time.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Corrupt"
 }
@@ -268,9 +282,12 @@ ItsyScape.Resource.Power "Nirvana" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 300,
-	MaxReduction = 150,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 3,
+	Resource = ItsyScape.Resource.Power "Nirvana"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 10,
 	MaxLevel = 100,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -295,7 +312,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Channel the power of Prisium, the Great Intelligence, and cast spells without runes.",
+	Value = "Channel the power of Prisium, the Great Intelligence, and cast spells without the need for runes.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Nirvana"
 }
@@ -337,9 +354,12 @@ ItsyScape.Meta.PowerSpec {
 	Resource = ItsyScape.Resource.Power "Hexagram"
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 60,
-	MaxReduction = 20,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Hexagram"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 20,
 	MaxLevel = 60,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -393,9 +413,12 @@ ItsyScape.Resource.Power "IceBarrage" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 90,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 30,
 	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -425,7 +448,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Unleash a damaging elemental attack, slowing the foe by 50% for 30 to 60 seconds based on Wisdom level. Deals 100% - 300% damage.",
+	Value = "Unleash an incredibly damaging elemental attack, slowing the foe by 50%.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "IceBarrage"
 }
@@ -449,9 +472,12 @@ ItsyScape.Resource.Power "Gravity" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 150,
-	MaxReduction = 30,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 3,
+	Resource = ItsyScape.Resource.Power "Gravity"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 40,
 	MaxLevel = 90,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -465,7 +491,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Deals up to 300% damage. Applies a 10% to 20% debuff directly to the Constitution stat based on damage dealt.",
+	Value = "Deals massive damage. Applies a debuff directly to the foe's Constitution stat based on damage dealt.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Gravity"
 }
@@ -489,9 +515,12 @@ ItsyScape.Resource.Power "BindShadow" {
 	}
 }
 
-ItsyScape.Meta.CombatPowerCoolDown {
-	BaseCoolDown = 120,
-	MaxReduction = 60,
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "BindShadow"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 50,
 	MaxLevel = 90,
 	Skill = ItsyScape.Resource.Skill "Magic",
@@ -505,7 +534,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Bind the shadow of the opponent to attack, dealing 200% of your opponent's damage against itself.",
+	Value = "Bind the shadow of the foe to attack, dealing double your foe's damage against themselves.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "BindShadow"
 }

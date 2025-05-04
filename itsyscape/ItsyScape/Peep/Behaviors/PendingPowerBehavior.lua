@@ -21,6 +21,7 @@ function PendingPowerBehavior:new()
 	Behavior.Type.new(self)
 
 	self.power = false
+	self.turns = 0
 end
 
 return PendingPowerBehavior

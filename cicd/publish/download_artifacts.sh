@@ -2,13 +2,15 @@
 
 cd "$(dirname "$0")"
 
+latest_tag=$(git describe --tags --abbrev=0)
+
 gh api \
   -H "Accept: application/vnd.github+json" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   /repos/erinmaus/itsyscape/actions/artifacts > artifacts.json
 
 for artifact_name in "itsyrealm_windows" "itsyrealm_linux" "itsyrealm_macos"; do
-  artifact_download_url=$(cat ./artifacts.json | jq -r ".artifacts | map(select(.expired != true and .name == \"${artifact_name}\" and .workflow_run.head_branch == \"$(../common/get_version.sh)\"))[0].archive_download_url")
+  artifact_download_url=$(cat ./artifacts.json | jq -r ".artifacts | map(select(.expired != true and .name == \"${artifact_name}\" and .workflow_run.head_branch == \"${latest_tag}\"))[0].archive_download_url")
 
   if [ $? -ne 0 ] || [ -z "$artifact_download_url" ]; then
     echo "Error: could not get latest artifact download URL of type '${artifact_name}'"
@@ -36,7 +38,7 @@ for artifact_name in "itsyrealm_windows" "itsyrealm_linux" "itsyrealm_macos"; do
 done
 
 # Requires an extra step for macOS
-ditto -x -k "./itsyrealm_macos/ItsyRealm.zip" .
+ditto -x -k "./itsyrealm_macos/ItsyRealm.zip" ./itsyrealm_macos/
 
 if [ $? -ne 0 ]; then
   echo "Could not extract ItsyRealm.app from ${artifact_name}.zip"

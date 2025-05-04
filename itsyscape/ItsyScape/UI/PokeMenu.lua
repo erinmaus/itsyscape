@@ -21,6 +21,8 @@ PokeMenu.PADDING = 6
 function PokeMenu:new(view, actions)
 	Widget.new(self)
 
+	self.uiView = view
+
 	local buttonStyle = ButtonStyle({
 		inactive = Color(0, 0, 0, 0),
 		pressed = Color(29 / 255, 25 / 255, 19 / 255, 1),
@@ -102,9 +104,10 @@ function PokeMenu:new(view, actions)
 end
 
 function PokeMenu:mouseLeave(...)
-	Widget.mouseLeave(self, ...)
-
-	self:close()
+	if not self.uiView:hasInputScheme(self.uiView.INPUT_SCHEME_GYRO) then
+		Widget.mouseLeave(self, ...)
+		self:close()
+	end
 end
 
 function PokeMenu:close()

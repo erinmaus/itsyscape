@@ -42,25 +42,51 @@ MapMesh.FORMAT = {
 --
 -- If 'left', 'right', 'top', and 'bottom' are provided, only a portion of the
 -- map mesh is generated (those tiles that fall within the bounds).
-function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor)
+function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor, largeTileSet)
 	self.vertices = {}
 	self.map = map
 	self.tileSet = tileSet
 	self.isMultiTexture = Class.isCompatibleType(tileSet, MultiTileSet)
+	self.largeTileSet = largeTileSet
 	self.mask = mask
 	self.islandProcessor = islandProcessor
-	self.min, self.max = Vector(math.huge), Vector(-math.huge)
+	self.min, self.max = Vector(math.huge):keep(), Vector(-math.huge):keep()
 
 	left = math.max(left or 1, 1)
 	right = math.min(right or map.width, map.width)
 	top = math.max(top or 1, 1)
 	bottom = math.min(bottom or map.height, map.height)
 
+	self.left = left
+	self.right = right
+	self.top = top
+	self.bottom = bottom
+
 	self:_buildMesh(left, right, top, bottom)
+end
+
+function MapMesh:getLeft()
+	return self.left
+end
+
+function MapMesh:getRight()
+	return self.right
+end
+
+function MapMesh:getTop()
+	return self.top
+end
+
+function MapMesh:getBottom()
+	return self.bottom
 end
 
 function MapMesh:getBounds()
 	return self.min, self.max
+end
+
+function MapMesh:getVertices()
+	return self.vertices
 end
 
 -- Frees underlying resources.
@@ -212,6 +238,10 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 				self:_addFlat(i, j, tile, k)
 			end
 		end
+
+		if coroutine.running() then
+			coroutine.yield()
+		end
 	end
 
 	self:_mask(left, right, top, bottom)
@@ -307,6 +337,10 @@ function MapMesh:_maskIsland(left, right, top, bottom, island)
 
 		self.masks[islandTile.index] = masks
 	end
+
+	if coroutine.running() then
+		coroutine.yield()
+	end
 end
 
 function MapMesh:_mask(left, right, top, bottom)
@@ -326,6 +360,10 @@ function MapMesh:_mask(left, right, top, bottom)
 				for maskType, maskTileID in pairs(tile.mask) do
 					self:_addFlat(i, j, tile, 'flat', maskType, maskTileID)
 				end
+			end
+
+			if coroutine.running() then
+				coroutine.yield()
 			end
 		end
 	end
@@ -354,8 +392,8 @@ function MapMesh:_addVertex(position, normal, texture, tile, color, layer, maskL
 	table.insert(self.vertices, vertex)
 	self.minY = math.min(self.minY or math.huge, position.y)
 	self.maxY = math.max(self.maxY or -math.huge, position.y)
-	self.min = self.min:min(position)
-	self.max = self.max:max(position)
+	self.min = self.min:min(position):keep()
+	self.max = self.max:max(position):keep()
 end
 
 -- Builds a vertex from a local position.
@@ -414,10 +452,19 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 		end
 	end
 
-	local left = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureLeft', 0)
-	local right = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureRight', 1)
-	local top = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureTop', 0)
-	local bottom = self:_getTileProperty(tile.tileSetID, tileIndex, 'textureBottom', 1)
+	local layer, left, right, top, bottom
+	if self.largeTileSet then
+		layer, left, right, top, bottom = self.largeTileSet:getTextureCoordinates(
+			tile.tileSetID,
+			self:_getTileProperty(tile.tileSetID, tileIndex, "name"),
+			i,
+			j)
+	end
+
+	left = left or self:_getTileProperty(tile.tileSetID, tileIndex, 'textureLeft', 0)
+	right = right or self:_getTileProperty(tile.tileSetID, tileIndex, 'textureRight', 1)
+	top = top or self:_getTileProperty(tile.tileSetID, tileIndex, 'textureTop', 0)
+	bottom = bottom or self:_getTileProperty(tile.tileSetID, tileIndex, 'textureBottom', 1)
 
 	local red = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorRed', 255) * tile.red
 	local green = self:_getTileProperty(tile.tileSetID, tileIndex, 'colorGreen', 255) * tile.green
@@ -427,7 +474,7 @@ function MapMesh:_buildVertex(localPosition, normal, side, index, i, j, tile, ma
 	local texture = { s = s, t = t }
 	local tileBounds = { left = left, right = right, top = top, bottom = bottom }
 	local color = { r = red, g = green, b = blue, a = alpha }
-	local layer = self:_getTileLayer(tile.tileSetID)
+	layer = (layer and layer - 1) or self:_getTileLayer(tile.tileSetID)
 
 	local maskKey = self:_getTileProperty(tile.tileSetID, tileIndex, "mask-key", tile:getData("mask-key", "default"))
 	local maskOffset = (maskKey and self.mask and self.mask[maskKey]) or 1
@@ -613,6 +660,12 @@ MapMesh._addTopEdge = addEdgeBuilder(getTopVertices, -1)
 
 MapMesh._addBottomEdge = addEdgeBuilder(getBottomVertices, 1)
 
+local function calculateTriangleNormal(a, b, c)
+	local s = a - b
+	local t = c - a
+	return s:cross(t):getNormal()
+end
+
 -- Simply adds the flat (top).
 function MapMesh:_addFlat(i, j, tile, index, maskType, maskTile)
 	local E = self.map.cellSize / 2
@@ -620,12 +673,6 @@ function MapMesh:_addFlat(i, j, tile, index, maskType, maskTile)
 	local topRight = Vector(E, tile.topRight, -E)
 	local bottomLeft = Vector(-E, tile.bottomLeft, E)
 	local bottomRight = Vector(E, tile.bottomRight, E)
-
-	local function calculateTriangleNormal(a, b, c)
-		local s = a - b
-		local t = c - a
-		return s:cross(t):getNormal()
-	end
 
 	local crease = tile:getCrease()
 	if crease == Tile.CREASE_FORWARD then

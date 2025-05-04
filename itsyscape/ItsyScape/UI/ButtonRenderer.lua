@@ -17,9 +17,9 @@ function ButtonRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
 
 	self.defaultStyle = ButtonStyle({
-		pressed = "Resources/Renderers/Widget/Button/Default-Pressed.9.png",
-		inactive = "Resources/Renderers/Widget/Button/Default-Inactive.9.png",
-		hover = "Resources/Renderers/Widget/Button/Default-Hover.9.png",
+		inactive = "Resources/Game/UI/Buttons/Button-Default.png",
+		pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
+		hover = "Resources/Game/UI/Buttons/Button-Hover.png",
 		color = { 1, 1, 1, 1 },
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 		fontSize = _MOBILE and 28 or 24,

@@ -99,6 +99,10 @@ function Director:removeCortex(cortex)
 end
 
 function Director:getCortex(cortexType)
+	if type(cortexType) == "string" then
+		cortexType = require(string.format("ItsyScape.Peep.Cortexes.%sCortex", cortexType))
+	end
+
 	for _, cortex in ipairs(self.cortexes) do
 		if cortex:isCompatibleType(cortexType) then
 			return cortex
@@ -270,31 +274,23 @@ function Director:update(delta)
 	end
 	local afterCortexPreview = love.timer.getTime()
 
-	local totalReadyTime = 0
 	for _, peep in ipairs(self.peeps) do
 		if self.pendingReady[peep] then
-			if totalReadyTime < self.READY_TIME_MS then
-				local beforeTime = love.timer.getTime()
-				do
-					local key = self.keys[peep]
+			local key = self.keys[peep]
 
-					self:assignPeep(peep, key)
+			self:assignPeep(peep, key)
 
-					local layer = self.peepsByLayer[key]
-					if not layer then
-						layer = {}
-						self.peepsByLayer[key] = layer
-					end
-
-					peep:preUpdate(self, self:getGameInstance())
-
-					table.insert(layer, peep)
-				end
-				local afterTime = love.timer.getTime()
-
-				totalReadyTime = totalReadyTime + (afterTime - beforeTime) * 1000
-				self.pendingReady[peep] = nil
+			local layer = self.peepsByLayer[key]
+			if not layer then
+				layer = {}
+				self.peepsByLayer[key] = layer
 			end
+
+			peep:preUpdate(self, self:getGameInstance())
+
+			table.insert(layer, peep)
+
+			self.pendingReady[peep] = nil
 		elseif not self.oldPeeps[peep] then
 			peep:preUpdate(self, self:getGameInstance())
 		end

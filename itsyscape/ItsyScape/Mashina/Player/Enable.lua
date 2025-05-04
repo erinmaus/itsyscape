@@ -16,7 +16,7 @@ Enable.PLAYER = B.Reference()
 
 function Enable:update(mashina, state, executor)
 	local player = state[self.PLAYER]
-	player:removeBehavior(DisabledBehavior)
+	Utility.Peep.enable(player)
 
 	return B.Status.Success
 end

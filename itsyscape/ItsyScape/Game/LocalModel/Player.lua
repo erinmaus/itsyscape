@@ -12,6 +12,7 @@ local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
 local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Player = require "ItsyScape.Game.Model.Player"
@@ -29,7 +30,7 @@ local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehav
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
-local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
+local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
 local PathNode = require "ItsyScape.World.PathNode"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
@@ -53,8 +54,8 @@ function LocalPlayer:new(id, game, stage)
 	self.id = id
 	self.isPlayable = false
 
-	self.onPoof = Callback()
-	self.onForceDisconnect = Callback()
+	self.onPoof = Callback(false)
+	self.onForceDisconnect = Callback(false)
 
 	self.messages = { received = 0 }
 end
@@ -154,10 +155,18 @@ function LocalPlayer:spawn(storage, newGame, password)
 			self.isPlayable = not root:hasSection("Location") or not root:getSection("Location"):get("isTitleScreen")
 
 			if newGame then
-				self.stage:movePeep(
-					actor:getPeep(),
-					"NewGame",
-					"Anchor_Spawn")
+				if _ITSYREALM_DEMO then
+					self.stage:movePeep(
+						actor:getPeep(),
+						"NewDemo",
+						"Anchor_Spawn")
+				else
+					self.stage:movePeep(
+						actor:getPeep(),
+						"NewGame",
+						"Anchor_Spawn")
+				end
+
 				actor:getPeep():pushPoke('bootstrapComplete')
 				Analytics:startGame(actor:getPeep())
 			else
@@ -171,14 +180,18 @@ function LocalPlayer:spawn(storage, newGame, password)
 							mapName = location:get("name")
 						end
 
+						Utility.Peep.disable(actor:getPeep())
+						Utility.UI.openInterface(actor:getPeep(), "CutsceneTransition", false, nil, function()
+							Utility.Peep.enable(actor:getPeep())
+						end)
+
 						self.stage:movePeep(
 							actor:getPeep(),
 							mapName,
 							Vector(
 								location:get("x"),
 								location:get("y"),
-								location:get("z")),
-							true)
+								location:get("z")))
 
 						local statusStorage = root:getSection("Status")
 						local status = actor:getPeep():getBehavior(CombatStatusBehavior)
@@ -370,6 +383,10 @@ function LocalPlayer:poke(id, obj, scope)
 	self.nextActionID = id
 	self.nextActionScope = scope
 	self.lastPokeTime = love.timer.getTime()
+
+	self.actor:getPeep():poke("actionTried", {
+		actionID = nextActionID
+	})
 end
 
 function LocalPlayer:takeItem(i, j, layer, ref)
@@ -434,7 +451,18 @@ function LocalPlayer:isPendingActionMovement()
 end
 
 function LocalPlayer:tryPerformPoke()
-	local movement = self:getActor():getPeep():getBehavior(MovementBehavior)
+	local peep = self.actor:getPeep()
+
+	if not peep or peep:hasBehavior(DisabledBehavior) then
+		self.nextObject = nil
+		self.nextActionID = nil
+		self.nextActionScope = nil
+		self.lastPokeTime = nil
+
+		return
+	end
+
+	local movement = peep:getBehavior(MovementBehavior)
 	if not movement or movement.velocity:getLength() == 0 or self:isPendingActionMovement() then
 		if self.lastPokeTime and self.lastPokeTime + LocalPlayer.POKE_GRACE_PERIOD > love.timer.getTime() then
 			local obj = self.nextObject
@@ -520,18 +548,38 @@ function LocalPlayer:updateDiscord()
 	self.line2 = line2
 end
 
+function LocalPlayer:_finishWalk()
+	self.pendingWalkID = nil
+end
+
 -- Moves the player to the specified position on the map via walking.
 function LocalPlayer:walk(i, j, k)
+	if self.pendingWalkID then
+		Utility.Peep.cancelWalk(self.pendingWalkID)
+		self.pendingWalkID = nil
+	end
+
 	local peep = self.actor:getPeep()
-	return Utility.Peep.walk(peep, i, j, k, math.huge, { asCloseAsPossible = true })
+	local callback, id = Utility.Peep.queueWalk(peep, i, j, k, math.huge, { asCloseAsPossible = true })
+
+	self.pendingWalkID = id
+	callback:register(self._finishWalk, self)
 end
 
 function LocalPlayer:changeCamera(cameraType)
-	self.onChangeCamera(self, cameraType)
+	self:onChangeCamera(cameraType)
+end
+
+function LocalPlayer:pushCamera(cameraType)
+	self:onPushCamera(cameraType)
+end
+
+function LocalPlayer:popCamera()
+	self:onPopCamera()
 end
 
 function LocalPlayer:pokeCamera(event, ...)
-	self.onPokeCamera(self, event, ...)
+	self:onPokeCamera(event, ...)
 end
 
 function LocalPlayer:pushMessage(player, message)
@@ -609,6 +657,22 @@ function LocalPlayer:addExclusiveChatMessage(message, color)
 			(self:getActor() and self:getActor():getName()) or "<invalid>",
 			self.id)
 	end
+end
+
+function LocalPlayer:getOffensiveRange()
+	local UNIT_RANGE = 2
+
+	if not (self.actor and self.actor:getPeep()) then
+		return UNIT_RANGE
+	end
+
+	local peep = self.actor:getPeep()
+	local weapon = Utility.Peep.getEquippedWeapon(peep, true)
+	if not Class.isCompatibleType(weapon, Weapon) then
+		return UNIT_RANGE
+	end
+
+	return weapon:getAttackRange(peep) * UNIT_RANGE
 end
 
 return LocalPlayer

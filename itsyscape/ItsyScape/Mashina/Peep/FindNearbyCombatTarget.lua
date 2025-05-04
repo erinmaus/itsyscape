@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Probe = require "ItsyScape.Peep.Probe"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 
 local FindNearbyCombatTarget = B.Node("FindNearbyCombatTarget")
@@ -37,6 +38,10 @@ end
 local function probeFilterNPCs(mashina, includeNPCs, p)
 	if not includeNPCs then
 		if p:hasBehavior(PlayerBehavior) and p ~= mashina then
+			return true
+		end
+
+		if p:hasBehavior(FollowerBehavior) and p ~= mashina then
 			return true
 		end
 	else
@@ -76,7 +81,7 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 	sameLayer = sameLayer == nil and true or sameLayer
 
 	local status = mashina:getBehavior(CombatStatusBehavior)
-	local distance = math.min(state[self.DISTANCE] or math.huge, status and status.maxChaseDistance or math.huge)
+	local distance = state[self.DISTANCE] or (status and status.maxChaseDistance) or math.huge
 
 	local weapon = Utility.Peep.getEquippedWeapon(mashina, true)
 	if weapon and Class.isCompatibleType(weapon, Weapon) then
@@ -85,8 +90,9 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 
 	local p = director:probe(
 		mashina:getLayerName(),
-		Probe.attackable(),
-		Probe.distance(mashina, distance / 2),
+		Probe.attackable(mashina),
+		Probe.distance(mashina, distance),
+		mashina:hasBehavior(InstancedBehavior) and Probe.instance(Utility.Peep.getPlayerModel(mashina)) or Probe.any(),
 		Probe.bind(probeIsAlive, state[self.INCLUDE_DEAD]),
 		Probe.bind(probeFilterNPCs, mashina, includeNPCs),
 		Probe.bind(probeFilterLineOfSight, mashina, sameLayer, state[self.LINE_OF_SIGHT]),
@@ -97,9 +103,9 @@ function FindNearbyCombatTarget:update(mashina, state, executor)
 		table.sort(
 			p,
 			function(a, b)
-				local p = Utility.Peep.getPosition(mashina)
-				local aP = Utility.Peep.getPosition(a)
-				local bP = Utility.Peep.getPosition(b)
+				local p = Utility.Peep.getAbsolutePosition(mashina)
+				local aP = Utility.Peep.getAbsolutePosition(a)
+				local bP = Utility.Peep.getAbsolutePosition(b)
 
 				local aDistance = (aP - p):getLength()
 				local bDistance = (bP - p):getLength()

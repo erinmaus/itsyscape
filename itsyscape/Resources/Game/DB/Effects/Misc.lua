@@ -23,3 +23,19 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "FungalInfection"
 }
+
+do
+	local Favored = ItsyScape.Resource.Effect "Favored"
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Gods' Favor",
+		Language = "en-US",
+		Resource = Favored
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "With the favor of the gods on your side, gain twice as much zeal.",
+		Language = "en-US",
+		Resource = Favored
+	}
+end

@@ -134,7 +134,16 @@ function TextInput:_getTextLength()
 end
 
 function TextInput:keyDown(key, scan, isRepeat, ...)
-	if key == 'left' then
+	local text
+	if key == "v" then
+		local isMacOSPaste = love.system.getOS() == "OS X" and (love.keyboard.isDown("lgui") or love.keyboard.isDown("rgui"))
+		local isStandardPaste = love.system.getOS() ~= "OS X" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl"))
+
+		if isMacOSPaste or isStandardPaste then
+			text = love.system.getClipboardText():gsub("[\n\r\t]", "")
+			self:typeText(text, true)
+		end
+	elseif key == 'left' then
 		if self.isShiftDown > 0 then
 			self:slideSelection(-1)
 		else
@@ -160,71 +169,36 @@ function TextInput:keyDown(key, scan, isRepeat, ...)
 		end
 	elseif key == "delete" then
 		if self.cursorLength == 0 then
-			self.text = self:_subText(1, self.cursorIndex + 1) ..
-			            self:_subText(self.cursorIndex + 2)
-			self.onValueChanged(self, self.text)
+			text = self:_subText(1, self.cursorIndex + 1) ..
+			       self:_subText(self.cursorIndex + 2)
 		else
-			self.text = self:_subText(1, self:getLeftCursor() + 1) ..
-			            self:_subText(self:getRightCursor() + 1)
-			self.onValueChanged(self, self.text)
+			text = self:_subText(1, self:getLeftCursor() + 1) ..
+			       self:_subText(self:getRightCursor() + 1)
 		end
 
 		self:setCursor(self:getLeftCursor(), 0)
 	elseif key == 'backspace' then
-	--if key == 'backspace' then
-		-- self.cursorIndex = math.max(self.cursorIndex - 1, 0)
-		-- if self.cursorIndex == 0 and self.cursorLength == self:_getTextLength() then
-		-- 	self:setText("")
-		-- 	self.cursorLength = 0
-		-- elseif self.cursorIndex == 0 then
-		-- 	self.cursorIndex = 0
-		-- 	self:setText("")
-		-- else
-		-- 	self:setText(self:_subText(1, -1))
-		-- end
-
-		-- self.onValueChanged(self, self:getText())
-
-		-- if self.cursorIndex + self.cursorLength == self:_getTextLength() and
-		--    self:_getTextLength() > 0
-		-- then
-		-- 	self.text = self:_subText(1, self:_getTextLength() - math.max(self.cursorLength, 1))
-		-- 	self.onValueChanged(self, self.text)
-		-- elseif self.cursorIndex > 1 then
-		-- 	if self.cursorIndex > self:_getTextLength() then
-		-- 		self.text = self:_subText(1, self.cursorIndex - 2)
-		-- 	else
-		-- 		self.text = self:_subText(1, self.cursorIndex - 1) ..
-		-- 	                self:_subText(self.cursorIndex - 1 + math.max(self.cursorLength, 1))
-		-- 	end
-		-- 	self.onValueChanged(self, self.text)
-		-- 	self:moveCursor(self:getLeftCursor() - 1)
-		-- end
-
 		if self.cursorLength == 0 then
-			self.text = self:_subText(1, self.cursorIndex) ..
+			text = self:_subText(1, self.cursorIndex) ..
 			            self:_subText(self.cursorIndex + 1)
-			self.onValueChanged(self, self.text)
 			self.cursorIndex = self.cursorIndex - 1
 		elseif self.cursorLength == self:_getTextLength() then
-			self.text = ""
+			text = ""
 		else
-			self.text = self:_subText(1, self:getLeftCursor() + 1) ..
-			            self:_subText(self:getRightCursor() + 1)
-			self.onValueChanged(self, self.text)
+			text = self:_subText(1, self:getLeftCursor() + 1) ..
+			       self:_subText(self:getRightCursor() + 1)
 		end
 
 		self:setCursor(self:getLeftCursor(), 0)
 	elseif (key == 'lshift' or key == 'rshift') and not isRepeat then
 		self.isShiftDown = self.isShiftDown + 1
 	elseif key == 'return' and not isRepeat then
-		if _MOBILE then
-			self:blur()
-		end
+		self:blur()
+		self:onSubmit(self:getText())
+	end
 
-		self.onSubmit(self, self.text)
-	-- elseif key == 'tab' then
-	-- 	return false
+	if text then
+		self:valueChanged(text)
 	end
 
 	Widget.keyDown(self, key, scan, isRepeat, ...)
@@ -239,22 +213,32 @@ function TextInput:keyUp(key, ...)
 	Widget.keyUp(self, key, ...)
 end
 
-function TextInput:type(text, ...)
+function TextInput:valueChanged(value)
+	self:setText(value)
+	self:onValueChanged(self:getText())
+end
+
+function TextInput:typeText(text, isPaste)
 	local left = self:getLeftCursor()
 	local right = self:getRightCursor()
 
-	self.text = self:_subText(1, self:getLeftCursor() + 1) ..
-	            text ..
-	            self:_subText(self:getRightCursor() + 1)
-	-- if self.cursorIndex == 0 and self.cursorLength == #self.text then
-	-- 	self.text = text
-	-- else
-	-- 	self.text = self.text .. text
-	-- end
+	local text = self:_subText(1, self:getLeftCursor() + 1) ..
+	             text ..
+	             self:_subText(self:getRightCursor() + 1)
 
-	self.onValueChanged(self, self.text)
-	self.cursorIndex = self:getLeftCursor() + 1
+	self:valueChanged(text)
+
+	if isPaste then
+		self.cursorIndex = self:getLeftCursor() + utf8.len(text)
+	else
+		self.cursorIndex = self:getLeftCursor() + 1
+	end
+
 	self.cursorLength = 0
+end
+
+function TextInput:type(text, ...)
+	self:typeText(text, false)
 
 	Widget.type(self, text, ...)
 end

@@ -30,6 +30,25 @@ function BaseGoblin:new(resource, name, ...)
 
 	self:addBehavior(HumanoidBehavior)
 	self:addBehavior(CombatStatusBehavior)
+end
+
+function BaseGoblin:ready(director, game)
+	Player.ready(self, director, game)
+
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor = actor.actor
+	end
+
+	local body = CacheRef(
+		"ItsyScape.Game.Body",
+		"Resources/Game/Bodies/Goblin.lskel")
+	actor:setBody(body)
+
+	local skin = CacheRef(
+		"ItsyScape.Game.Skin.ModelSkin",
+		"Resources/Game/Skins/Goblin/Base.lua")
+	actor:setSkin('npc', 1, skin)
 
 	local walkAnimation = CacheRef(
 		"ItsyScape.Graphics.AnimationResource",
@@ -52,28 +71,9 @@ function BaseGoblin:new(resource, name, ...)
 		"ItsyScape.Graphics.AnimationResource",
 		"Resources/Game/Animations/Goblin_Die/Script.lua")
 	self:addResource("animation-die", dieAnimation)
-end
-
-function BaseGoblin:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
-
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Goblin.lskel")
-	actor:setBody(body)
-
-	local skin = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Goblin/Base.lua")
-	actor:setSkin('npc', 1, skin)
 
 	local stats = self:getBehavior(StatsBehavior)
 	stats.stats = Stats("Goblin", game:getGameDB())
-
-	Player.ready(self, director, game)
 
 	local combat = self:getBehavior(CombatStatusBehavior)
 	combat.maximumHitpoints = stats.stats:getSkill("Constitution"):getBaseLevel()
@@ -81,8 +81,6 @@ function BaseGoblin:ready(director, game)
 end
 
 function BaseGoblin:onHit(p)
-	Player.onHit(self, p)
-
 	print(string.format("Ow! The goblin took %d damage.", p:getDamage()))
 end
 

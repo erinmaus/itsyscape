@@ -8,9 +8,22 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local FireView = require "Resources.Game.Props.Common.FireView"
 
 local CoconutFireView = Class(FireView)
+
+function CoconutFireView:getInnerColors()
+	return {
+		{ Color.fromHexString("d500ff", 0):get() }
+	}
+end
+
+function CoconutFireView:getOuterColors()
+	return {
+		{ Color.fromHexString("ff2ab1", 0):get() }
+	}
+end
 
 function CoconutFireView:getTextureFilename()
 	return "Resources/Game/Props/CoconutFire/Texture.png"

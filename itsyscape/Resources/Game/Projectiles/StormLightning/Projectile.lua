@@ -26,7 +26,8 @@ Lightning.MAX_SPAWN_RADIUS = 40
 Lightning.MAX_SEGMENT_LENGTH = 70 / 1000
 Lightning.MIN_SEGMENT_LENGTH = 40 / 1000
 Lightning.MAX_JITTER_DISTANCE = 2.5
-Lightning.COLOR = Color.fromHexString("ffffff", 1)
+Lightning.COLOR = Color.fromHexString("00ff00", 1)
+Lightning.CLAMP_BOTTOM = true
 
 function Lightning:load()
 	Projectile.load(self)
@@ -39,8 +40,9 @@ function Lightning:load()
 
 	self.lightningBeam = LightBeamSceneNode()
 	self.lightningBeam:setParent(root)
-	self.lightningBeam:setBeamSize(0.5)
+	self.lightningBeam:setBeamSize(1)
 	self.lightningBeam:getMaterial():setIsFullLit(true)
+	self.lightningBeam:getMaterial():setIsTranslucent(true)
 	self.lightningBeam:getMaterial():setColor(Lightning.COLOR)
 
 	self.fullPath = {}
@@ -80,13 +82,13 @@ function Lightning:generatePath(spawn, hit)
 			currentPoint = currentPoint + offset
 		end
 
-		table.insert(self.fullPath, currentPoint)
+		table.insert(self.fullPath, currentPoint:keep())
 		delta = delta + mu
 	end
 end
 
 function Lightning:updatePath()
-	local numSegments = math.min(math.floor(#self.fullPath * self:getDelta()) + 1, #self.fullPath)
+	local numSegments = math.min(math.floor(#self.fullPath * (self:getDelta() * 2)), #self.fullPath)
 
 	for i = self.previousNumSegments + 1, numSegments do
 		local a = self.fullPath[i - 1]
@@ -116,7 +118,7 @@ end
 
 function Lightning:tick()
 	if not self.spawnPosition then
-		self.hitPosition = self:getTargetPosition(self:getDestination())
+		self.hitPosition = self:getTargetPosition(self:getDestination()):keep()
 
 		local radius = love.math.random() * (Lightning.MAX_SPAWN_RADIUS - Lightning.MIN_SPAWN_RADIUS) + Lightning.MIN_SPAWN_RADIUS
 		local angle = love.math.random() * math.pi * 2

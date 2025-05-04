@@ -78,6 +78,7 @@ function MovementBehavior:new()
 	self.clampToZero = true
 	self.float = 0
 	self.noClip = false
+	self.ghost = false
 end
 
 function MovementBehavior:clampMovement()

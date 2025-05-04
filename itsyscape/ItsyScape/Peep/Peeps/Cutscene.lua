@@ -64,7 +64,7 @@ function CutscenePeep:onReady()
 
 		if self.cameraName then
 			local playerModel = Utility.Peep.getPlayerModel(self.player)
-			playerModel:changeCamera(self.cameraName)
+			playerModel:pushCamera(self.cameraName)
 		end
 	end
 end
@@ -76,7 +76,7 @@ function CutscenePeep:update(...)
 		if not self.cutscene:update() then
 			if self.cameraName and not self.suppressCameraChange then
 				local player = Utility.Peep.getPlayerModel(self.player)
-				player:changeCamera("Default")
+				player:popCamera()
 			end
 
 			self:poke('done')

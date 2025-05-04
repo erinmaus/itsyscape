@@ -9,12 +9,13 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
-local Widget = require "ItsyScape.UI.Widget"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local Panel = require "ItsyScape.UI.Panel"
 local ScrollBar = require "ItsyScape.UI.ScrollBar"
+local Widget = require "ItsyScape.UI.Widget"
 
 local ScrollablePanel = Class(Panel)
-ScrollablePanel.DEFAULT_SCROLL_SIZE = 48
+ScrollablePanel.DEFAULT_SCROLL_SIZE = 16
 
 function ScrollablePanel:new(InnerPanelType)
 	Panel.new(self)
@@ -174,12 +175,20 @@ function ScrollablePanel:performLayout()
 	self:setScrollSize(self.panel:getSize())
 end
 
+function ScrollablePanel:getNumChildren()
+	return self.panel:getNumChildren()
+end
+
 function ScrollablePanel:addChild(...)
 	self.panel:addChild(...)
 end
 
 function ScrollablePanel:removeChild(...)
 	self.panel:removeChild(...)
+end
+
+function ScrollablePanel:getChildAt(...)
+	return self.panel:getChildAt(...)
 end
 
 function ScrollablePanel:mouseScroll(x, y)

@@ -34,19 +34,16 @@ function RangedWeapon:getAmmo(peep)
 	return Equipment.AMMO_NONE, nil
 end
 
-function RangedWeapon:rollDamage(peep, purpose, target)
-	local roll = Weapon.DamageRoll(self, peep, purpose, target)
+function RangedWeapon:previewDamageRoll(roll)
+	Weapon.previewDamageRoll(self, roll)
+
+	local peep = roll:getSelf()
 	if self:getAmmoSlot() ~= Equipment.PLAYER_SLOT_QUIVER then
 		local _, equipmentRecord = Utility.Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_QUIVER)
 		if equipmentRecord then
 			roll:setBonus(roll:getBonus() - equipmentRecord:get("StrengthRanged"))
 		end
 	end
-
-	self:applyDamageModifiers(roll)
-	self:previewDamageRoll(roll)
-
-	return roll
 end
 
 function RangedWeapon:getIsTwoHanded()

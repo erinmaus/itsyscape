@@ -24,6 +24,10 @@ function Rowboat:new(...)
 	self.time = 0
 end
 
+function Rowboat:getIsStatic()
+	return false
+end
+
 function Rowboat:load()
 	PropView.load(self)
 
@@ -46,21 +50,6 @@ function Rowboat:load()
 			self.decoration:getMaterial():setTextures(self.texture)
 			self.decoration:setParent(root)
 		end)
-end
-
-function Rowboat:update(delta)
-	PropView.update(self, delta)
-
-	if self.decoration then
-		self.time = self.time + delta
-		local position = Vector(0, math.sin(self.time * math.pi / 4) * 0.25, 0)
-		local rotation = Quaternion.fromAxisAngle(
-			Vector.UNIT_Z,
-			math.sin(self.time * math.pi / 4) * math.pi / 32)
-
-		self.decoration:getTransform():setLocalTranslation(position)
-		self.decoration:getTransform():setLocalRotation(rotation)
-	end
 end
 
 return Rowboat

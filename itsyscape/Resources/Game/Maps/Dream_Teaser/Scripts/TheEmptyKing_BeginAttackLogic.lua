@@ -10,7 +10,7 @@
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
-local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex"
+local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 
 local STAFF = B.Reference("TheEmptyKing_BeginAttackLogic", "STAFF")
 local AGGRESSOR = B.Reference("TheEmptyKing_BeginAttackLogic", "AGGRESSOR")

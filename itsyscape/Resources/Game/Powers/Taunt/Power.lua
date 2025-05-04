@@ -38,7 +38,7 @@ function Taunt:activate(activator, target)
 	if activatorActor and activatorActor.actor then
 		activatorActor = activatorActor.actor
 
-		local taunt = Taunt.TAUNTS["en-US"][math.random(#Taunt.TAUNTS["en-US"])]
+		local taunt = Taunt.TAUNTS["en-US"][love.math.random(#Taunt.TAUNTS["en-US"])]
 		Utility.Peep.yell(activator, taunt)
 
 		local _, victimTarget = target:addBehavior(CombatTargetBehavior)

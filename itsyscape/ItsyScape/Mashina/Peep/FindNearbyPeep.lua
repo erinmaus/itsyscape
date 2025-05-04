@@ -20,11 +20,15 @@ FindNearbyPeep.DISTANCE = B.Reference()
 FindNearbyPeep.RESULT = B.Reference()
 FindNearbyPeep.RANDOM = B.Reference()
 FindNearbyPeep.COUNT = B.Reference()
+FindNearbyPeep.INCLUDE_SELF = B.Reference()
 
 function FindNearbyPeep:update(mashina, state, executor)
 	local director = mashina:getDirector()
 
 	local distance = state[self.DISTANCE] or math.huge
+	local includeSelf = state[self.INCLUDE_SELF]
+	includeSelf = includeSelf == nil and false or includeSelf
+
 	local p = director:probe(
 		mashina:getLayerName(),
 		Probe.near(mashina, distance),
@@ -47,9 +51,9 @@ function FindNearbyPeep:update(mashina, state, executor)
 		table.sort(
 			p,
 			function(a, b)
-				local p = Utility.Peep.getPosition(mashina)
-				local aP = Utility.Peep.getPosition(a)
-				local bP = Utility.Peep.getPosition(b)
+				local p = Utility.Peep.getAbsolutePosition(mashina)
+				local aP = Utility.Peep.getAbsolutePosition(a)
+				local bP = Utility.Peep.getAbsolutePosition(b)
 
 				local aDistance = (aP - p):getLength()
 				local bDistance = (bP - p):getLength()
@@ -57,7 +61,7 @@ function FindNearbyPeep:update(mashina, state, executor)
 			end)
 
 		for i = 1, #p do
-			if p[i] ~= mashina then
+			if p[i] ~= mashina or includeSelf then
 				state[self.RESULT] = p[i]
 				return B.Status.Success
 			end

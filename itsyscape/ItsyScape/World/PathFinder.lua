@@ -7,7 +7,6 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-
 local Class = require "ItsyScape.Common.Class"
 local Path = require "ItsyScape.World.Path"
 
@@ -231,6 +230,14 @@ end
 PathFinder.AStar = Class(PathFinder.Algorithm)
 function PathFinder.AStar:new(pathFinder)
 	PathFinder.Algorithm.new(self, pathFinder)
+
+	self._compareFunc = function(a, b)
+		return self:getPathFinder():getScore(a) - self:getPathFinder():getScore(b)
+	end
+
+	self._sortFunc = function(a, b)
+		return self._compareFunc(a, b) < 0
+	end
 end
 
 function PathFinder.AStar:materialize(edge)
@@ -252,6 +259,9 @@ end
 function PathFinder.AStar:find(start, stop, nearest)
 	self.open = {}
 	self.closed = {}
+	self.queue = {}
+	self.pending = {}
+	self.visited = {}
 
 	if self:getPathFinder():sameLocation(start, stop) then
 		local path = Path()
@@ -279,7 +289,7 @@ function PathFinder.AStar:find(start, stop, nearest)
 		local bestEdge = nil
 		local bestDistanceI = math.huge
 		local bestDistanceJ = math.huge
-		for _, closed in pairs(self.closed) do
+		for _, closed in ipairs(self.visited) do
 			local distanceI = self:getPathFinder():getDistance(stop, closed)
 			local distanceJ = self:getPathFinder():getDistance(start, closed)
 
@@ -309,49 +319,38 @@ function PathFinder.AStar:find(start, stop, nearest)
 end
 
 function PathFinder.AStar:getBestOpenEdge()
-	local bestOpenEdge = nil
-	local bestOpenEdgeScore = math.huge
-
-	for _, edge in pairs(self.open) do
-		if bestOpenEdge == nil then
-			bestOpenEdge = edge
-			bestOpenEdgeScore = self:getPathFinder():getScore(edge)
-		else
-			local cost = self:getPathFinder():getScore(edge)
-			if cost < bestOpenEdgeScore then
-				bestOpenEdge = edge
-				bestOpenEdgeScore = cost
-			end
-		end
-	end
-
-	return bestOpenEdge
+	return table.remove(self.pending, 1)
 end
 
 function PathFinder.AStar:processEdge(edge, goal)
 	local edgeID = self:getPathFinder():getID(edge)
+
 	self.open[edgeID] = nil
 	self.closed[edgeID] = edge
+	table.insert(self.visited, edge)
 
 	local neighbors = self:getPathFinder():getNeighbors(edge, goal)
-	for _, neighbor in pairs(neighbors) do repeat
+	for _, neighbor in ipairs(neighbors) do
 		local neighborID = self:getPathFinder():getID(neighbor)
-		if self:getPathFinder():sameLocation(neighbor, goal) then
+		if self:getPathFinder():sameLocation(self:getPathFinder():getLocation(neighbor), goal) then
 			return neighbor
-		elseif self.closed[neighborID] ~= nil then
-			break
-		elseif self.open[neighborID] then
-			local pendingEdge = self.open[neighborID]
+		elseif not self.closed[neighborID] then
+			if self.open[neighborID] then
+				local pendingEdge = self.open[neighborID]
 
-			local nextScore = self:getPathFinder():getScore(neighbor)
-			local currentScore = self:getPathFinder():getScore(pendingEdge)
-			if nextScore < currentScore then
+				local nextScore = self:getPathFinder():getScore(neighbor)
+				local currentScore = self:getPathFinder():getScore(pendingEdge)
+				if nextScore < currentScore then
+					self.open[neighborID] = neighbor
+				end
+			else
 				self.open[neighborID] = neighbor
+
+				table.insert(self.pending, neighbor)
+				table.sort(self.pending, self._sortFunc)
 			end
-		else
-			self.open[neighborID] = neighbor
 		end
-	until true end
+	end
 
 	return nil
 end

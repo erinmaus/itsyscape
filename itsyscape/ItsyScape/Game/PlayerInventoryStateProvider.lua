@@ -54,24 +54,24 @@ function PlayerInventoryStateProvider:take(name, count, flags)
 		return false
 	end
 
-	if not flags['item-inventory'] then
+	if not flags["item-inventory"] then
 		return false
 	end
 
 	local noted = false
-	if flags['item-noted'] then
+	if flags["item-noted"] then
 		noted = true
 	end
 
-	if flags['item-ignore'] then
+	if flags["item-ignore"] then
 		return true
 	end
 
 	local items = { count = 0 }
 
-	if flags['item-instances'] then
-		for i = 1, #flags['item-instances'] do
-			local item = flags['item-instances'][i]
+	if flags["item-instances"] then
+		for i = 1, #flags["item-instances"] do
+			local item = flags["item-instances"][i]
 			if item:isNoted() == noted and item:getID() == name then
 				table.insert(items, item)
 
@@ -118,16 +118,16 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 		return false
 	end
 
-	if not flags['item-inventory'] then
+	if not flags["item-inventory"] then
 		return false
 	end
 
-	if flags['item-ignore'] then
+	if flags["item-ignore"] then
 		return true
 	end
 
 	local noted = false
-	if flags['item-noted'] then
+	if flags["item-noted"] then
 		noted = true
 	end
 
@@ -135,25 +135,25 @@ function PlayerInventoryStateProvider:give(name, count, flags)
 	local transaction = broker:createTransaction()
 	local successfullyAddedToInventory
 
-	if flags['force-item-drop'] then
+	if flags["force-item-drop"] then
 		successfullyAddedToInventory = false
 	else
 		transaction:addParty(self.inventory)
-		transaction:spawn(self.inventory, name, count, noted, true)
+		transaction:spawn(self.inventory, name, count, noted, true, false, flags["item-userdata"])
 		successfullyAddedToInventory = transaction:commit()
 	end
 
 	if not successfullyAddedToInventory then
-		if flags['item-drop-excess'] or flags['force-item-drop'] then
+		if flags["item-drop-excess"] or flags["force-item-drop"] then
 			local pocketTransaction = broker:createTransaction()
 			pocketTransaction:addParty(self.tornPocket)
-			pocketTransaction:spawn(self.tornPocket, name, count, noted, true)
+			pocketTransaction:spawn(self.tornPocket, name, count, noted, true, false, flags["item-userdata"])
 
 			local success = pocketTransaction:commit()
 			if success then
 				local stage = self.peep:getDirector():getGameInstance():getStage()
 				for item in broker:iterateItems(self.tornPocket) do
-					stage:dropItem(item, item:getCount(), 'uninterrupted-drop')
+					stage:dropItem(item, item:getCount(), "uninterrupted-drop")
 				end
 
 				return true, pocketTransaction
@@ -171,12 +171,12 @@ function PlayerInventoryStateProvider:count(name, flags)
 		return 0
 	end
 
-	if not flags['item-inventory'] then
+	if not flags["item-inventory"] then
 		return 0
 	end
 
 	local noted = false
-	if flags['item-noted'] then
+	if flags["item-noted"] then
 		noted = true
 	end
 
