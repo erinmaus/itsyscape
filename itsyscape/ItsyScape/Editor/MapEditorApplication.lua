@@ -432,6 +432,36 @@ function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID, masks)
 	self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture, masks)
 end
 
+function MapEditorApplication:recursiveSetFlag(map, i, j, flag, elevation, e)
+	if i < 0 or j < 0 or i > map:getWidth() or j > map:getHeight() then
+		return
+	end
+
+	e = e or {}
+	local index = j * map:getWidth() + i
+	if not e[index] then
+		e[index] = true
+
+		map:getTile(i, j):setFlag(flag)
+
+		if map:canMove(i, j, -1, 0) and map:getTileCenter(i - 1, j).y <= elevation then
+			self:recursiveSetFlag(map, i - 1, j, flag, elevation, e)
+		end
+
+		if map:canMove(i, j, 1, 0) and map:getTileCenter(i + 1, j).y <= elevation  then
+			self:recursiveSetFlag(map, i + 1, j, flag, elevation, e)
+		end
+
+		if map:canMove(i, j, 0, -1) and map:getTileCenter(i, j - 1).y <= elevation then
+			self:recursiveSetFlag(map, i, j - 1, flag, elevation, e)
+		end
+
+		if map:canMove(i, j, 0, 1) and map:getTileCenter(i - 1, j - 1).y <= elevation then
+			self:recursiveSetFlag(map, i, j + 1, flag, elevation, e)
+		end
+	end
+end
+
 function MapEditorApplication:recursivePaint(map, i, j, e)
 	if i < 0 or j < 0 or i > map:getWidth() or j > map:getHeight() then
 		return
@@ -1278,10 +1308,16 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 				if key == 'i' then
 					local map = self:getGame():getStage():getMap(self.currentLayer)
 					local tile = map:getTile(self.currentI, self.currentJ)
-					if tile:hasFlag('impassable') then
-						tile:unsetFlag('impassable')
+					if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
+						self:recursiveSetFlag(map, self.currentI, self.currentJ, "impassable", map:getTileCenter(self.currentI, self.currentJ).y)
 					else
-						tile:setFlag('impassable')
+						local map = self:getGame():getStage():getMap(self.currentLayer)
+						local tile = map:getTile(self.currentI, self.currentJ)
+						if tile:hasFlag('impassable') then
+							tile:unsetFlag('impassable')
+						else
+							tile:setFlag('impassable')
+						end
 					end
 				elseif key == 'b' then
 					local map = self:getGame():getStage():getMap(self.currentLayer)
