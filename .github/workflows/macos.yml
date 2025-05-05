@@ -42,7 +42,7 @@ jobs:
           security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PASSWORD" build.keychain
 
-          ./cicd/macos/codesign.sh ./cicd/macos/itsyrealm/ItsyRealm.app
+          ./cicd/macos/codesign.sh "./itsyrealm/ItsyRealm.app"
           ditto -c -k --keepParent "cicd/macos/itsyrealm/ItsyRealm.app" "notarization.zip"
       -
         name: Artifact
