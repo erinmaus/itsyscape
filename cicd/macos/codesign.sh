@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd "$(dirname "$0")"
+
 set -xe
        
 find $1/Contents/Frameworks -name '*.framework' -exec /usr/bin/codesign --force -s "$MACOS_CERTIFICATE_NAME" --timestamp  {} -v \;

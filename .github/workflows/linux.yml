@@ -45,6 +45,7 @@ jobs:
             cicd/linux/settings.cfg
             cicd/linux/itsyrealm.love
             cicd/linux/LICENSE.txt
+            cicd/linux/installdir
       -
         name: Build image and push
         uses: docker/build-push-action@v3

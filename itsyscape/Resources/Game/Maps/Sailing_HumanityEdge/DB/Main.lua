@@ -2434,10 +2434,6 @@ do
 		Action = TalkAction,
 		Peep = M["CapnRaven"]
 	}
-
-	M["CapnRaven"] {
-		TalkAction
-	}
 end
 
 -- Knights talk actions.

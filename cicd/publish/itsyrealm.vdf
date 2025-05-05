@@ -31,7 +31,7 @@
 		{
 			"FileMapping"
 			{
-				"LocalPath" "itsyrealm_linux/*"
+				"LocalPath" "itsyrealm_linux/installdir/*"
 				"DepotPath" "."
 				"recursive" "1"
 			}
