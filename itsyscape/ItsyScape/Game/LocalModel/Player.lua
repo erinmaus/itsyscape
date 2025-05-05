@@ -385,7 +385,7 @@ function LocalPlayer:poke(id, obj, scope)
 	self.lastPokeTime = love.timer.getTime()
 
 	self.actor:getPeep():poke("actionTried", {
-		actionID = nextActionID
+		actionID = self.nextActionID
 	})
 end
 

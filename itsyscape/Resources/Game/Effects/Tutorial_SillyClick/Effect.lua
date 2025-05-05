@@ -24,8 +24,6 @@ function SillyClick:new(activator)
 	self._onActionTried = function(e)
 		local actionID = e and e.actionID
 
-		print(">>> actionTried", actionID)
-
 		local currentTime = love.timer.getTime()
 		local previousTime = self.lastActionTime
 

@@ -488,7 +488,7 @@ Gods damn him... Hope he learns to love his %hint(afterlife of eternal drowning)
 Understood. Grant us your wisdom, Your Hungriness.
 
 # speaker={C_ORLANDO}
-Keep your jabs to yourself I will have you reprimanded. %person(Lady Isabelle) won't take kindly to this abuse. She...
+Keep your jabs to yourself or I will have you reprimanded. %person(Lady Isabelle) won't take kindly to this abuse. She...
 
 # speaker={C_PLAYER}
 * [(Course-correct the banter.)] You're both being belligerent! Can we focus on the task at hand?
@@ -515,7 +515,7 @@ Bah! {player_get_pronoun_uppercase(X_THEY)} are right.
 ...I agree. %person({player_get_pronoun_uppercase(X_MX)}) {player_name}, you're more diplomatic than I remembered.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-Bah! {player_get_pronoun_uppercase(X_THEY)} are right. Maybe they're more than just a bookworm...
+Bah! {player_get_pronoun_uppercase(X_THEY)} are right. Maybe {player_get_pronoun_lowercase(X_THEY)} {player_get_english_be_uppercase(X_ARE)} more than just a bookworm...
 
 -> continue
 
@@ -1427,7 +1427,7 @@ Now let's try and dodge the dummy's rite...
 = incorrect_rite
 
 # speaker={C_ORLANDO}
-Wow! Improvising, huh?! That was SO COOL... But you need to use %hint{quest_tutorial_get_offensive_power_name()}!
+Wow! Improvising, huh?! That was SO COOL... But you need to use %hint({quest_tutorial_get_offensive_power_name()})!
 
 # speaker={C_ORLANDO}
 Try again!
@@ -1437,7 +1437,7 @@ Try again!
 = did_not_use_rite
 
 # speaker={C_ORLANDO}
-It's okay, take your time! Use %hint{quest_tutorial_get_offensive_power_name()} when you're ready!
+It's okay, take your time! Use %hint({quest_tutorial_get_offensive_power_name()}) when you're ready!
 
 -> DONE
 
@@ -1612,10 +1612,10 @@ On it.
 You're joking. You've gotta be joking.
 
 # speaker={C_ORLANDO}
-Stop being mean to {player_get_pronoun_uppercase(X_THEM)}, %person(Ser Commander)!
+Stop being mean to {player_get_pronoun_lowercase(X_THEM)}, %person(Ser Commander)!
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-...{player_get_pronoun_uppercase(X_THEY)} need to get {player_get_pronoun_uppercase(X_THEIR)} head looked at.
+...{player_get_pronoun_uppercase(X_THEY)} need to get {player_get_pronoun_lowercase(X_THEIR)} head looked at.
 
 # speaker={C_PLAYER}
 {

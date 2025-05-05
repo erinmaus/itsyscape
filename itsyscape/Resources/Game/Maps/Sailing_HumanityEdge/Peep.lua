@@ -991,9 +991,8 @@ function Island:updateTutorialFishStormfishStep(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
 			Utility.Peep.enable(playerPeep)
 
-			Utility.Peep.setMashinaState(orlando, "tutorial-chop")
-
 			self:transitionTutorial(playerPeep, "Tutorial_FishedLightningStormfish")
+			Utility.Peep.setMashinaState(orlando, "tutorial-chop")
 		end, "quest_tutorial_main_fish.done_fishing")
 	end
 end
@@ -1236,6 +1235,13 @@ function Island:onPlaceTutorialDummy(playerPeep)
 			local dummyMapObjectName = self.MAP_OBJECT_DUMMY[class] or self.MAP_OBJECT_DUMMY[Weapon.STYLE_MAGIC]
 			local dummyActor = Utility.spawnInstancedMapObjectAtAnchor(self, playerPeep, dummyMapObjectName, "Anchor_Orlando_PlaceDummy")
 			local dummyPeep = dummyActor:getPeep()
+
+			local team = dummyPeep:getBehavior(TeamBehavior)
+
+			local orlandoCharacter = Utility.Peep.getCharacter(self:getCompanion(playerPeep, "Orlando"))
+			local knightCommanderCharacter = Utility.Peep.getCharacter(self:getCompanion(playerPeep, "KnightCommander"))
+			team.override[orlandoCharacter.name] = TeamsBehavior.ALLY
+			team.override[knightCommanderCharacter.name] = TeamsBehavior.ALLY
 
 			Utility.Peep.makeInstanced(dummyPeep, playerPeep)
 			Utility.Peep.teleportCompanion(dummyPeep, orlando)

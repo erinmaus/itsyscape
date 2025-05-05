@@ -109,11 +109,63 @@ function DemoApplication:new()
 
 		local nodeA = self:_getShimmerNodeObject(a)
 		local nodeB = self:_getShimmerNodeObject(b)
+		local player = self:getGame():getPlayer()
 
 		if nodeA and nodeB then
+			if a.objectType == "actor" and b.objectType == "actor" then
+				local aHasAttackAction = false
+				local bHasAttackAction = false
+
+				for _, action in ipairs(a.actions) do
+					if action.type == "Attack" then
+						aHasAttackAction = true
+						break
+					end
+				end
+
+				for _, action in ipairs(b.actions) do
+					if action.type == "Attack" then
+						bHasAttackAction = true
+						break
+					end
+				end
+
+				if aHasAttackAction ~= bHasAttackAction then
+					if aHasAttackAction then
+						return true
+					end
+
+					return false
+				else
+					local aIsAgressor = false
+					local bIsAggressor = false
+
+					local combatHUD = self:getUIView():getInterface("GamepadCombatHUD")
+					local state = combatHUD and combatHUD:getState()
+					if state and #state.combatants > 1 then
+						for _, combatant in ipairs(state.combatants) do
+							if combatant.targetID == player:getActor():getID() and combatant.id == a.objectID then
+								aIsAgressor = true
+							end
+
+							if combatant.targetID == player:getActor():getID() and combatant.id == b.objectID then
+								bIsAgressor = true
+							end
+						end
+					end
+
+					if aIsAgressor ~= bIsAgressor then
+						if aIsAgressor then
+							return true
+						end
+
+						return false
+					end
+				end
+			end
+
 			local relativePosition
 			do
-				local player = self:getGame():getPlayer()
 				player = player and player:getActor()
 				player = player and self:getGameView():getActor(player)
 
@@ -2069,9 +2121,9 @@ function DemoApplication:probeCurrentShimmer(performDefault)
 
 	if performDefault then
 		for _, action in ipairs(actions) do
-			print("trying...", _, action.type, action.suppress)
 			if action.type:lower() ~= "examine" and not action.suppress then
 				local x, y = self:_getObjectUIPosition(object, 0.5)
+				self.clickActionType = Application.CLICK_ACTION
 				self.clickActionTime = Application.CLICK_DURATION
 				self.clickX, self.clickY = x, y
 
@@ -2079,8 +2131,6 @@ function DemoApplication:probeCurrentShimmer(performDefault)
 				if not s then
 					Log.warn("Couldn't perform action: %s", r)
 				end
-
-				print("success", _)
 
 				break
 			end
