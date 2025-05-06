@@ -134,7 +134,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 750,
+		Hitpoints = 600,
 		Resource = Keelhauler
 	}
 

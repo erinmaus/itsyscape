@@ -1047,8 +1047,13 @@ function Island:updateTutorialFindPeakStep(playerPeep)
 	then
 		Utility.Peep.disable(playerPeep)
 
-		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), false)
-		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), false)
+		local orlando = self:getCompanion(playerPeep, "Orlando")
+		local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
+
+		Utility.Peep.setMashinaState(orlando, "tutorial-disengage-follow-player")
+		Utility.Peep.setMashinaState(knightCommander, "tutorial-disengage-follow-player")
+		Utility.Combat.disengage(orlando)
+		Utility.Combat.disengage(knightCommander)
 
 		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), "tutorial-follow-player")
@@ -1075,6 +1080,14 @@ function Island:updateTutorialFindYendoriansStep(playerPeep)
 	if Utility.Peep.isInPassage(playerPeep, "Passage_Peak") and
 	   Utility.Peep.isEnabled(playerPeep)
 	then
+		local orlando = self:getCompanion(playerPeep, "Orlando")
+		local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
+
+		Utility.Peep.setMashinaState(orlando, "tutorial-disengage-follow-player")
+		Utility.Peep.setMashinaState(knightCommander, "tutorial-disengage-follow-player")
+		Utility.Combat.disengage(orlando)
+		Utility.Combat.disengage(knightCommander)
+
 		self:poke("playFoundPiratesCutscene", playerPeep)
 	end
 end

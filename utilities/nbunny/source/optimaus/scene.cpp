@@ -51,7 +51,7 @@ const glm::vec3& nbunny::SceneNodeTransform::get_current_translation() const
 
 const glm::vec3& nbunny::SceneNodeTransform::get_previous_translation() const
 {
-	return previous_translation;
+	return ticked ? previous_translation : current_translation;
 }
 
 void nbunny::SceneNodeTransform::set_current_rotation(const glm::quat& value)
@@ -71,7 +71,7 @@ const glm::quat& nbunny::SceneNodeTransform::get_current_rotation() const
 
 const glm::quat& nbunny::SceneNodeTransform::get_previous_rotation() const
 {
-	return previous_rotation;
+	return ticked ? previous_rotation : current_rotation;
 }
 
 void nbunny::SceneNodeTransform::set_current_scale(const glm::vec3& value)
@@ -91,7 +91,7 @@ const glm::vec3& nbunny::SceneNodeTransform::get_current_scale() const
 
 const glm::vec3& nbunny::SceneNodeTransform::get_previous_scale() const
 {
-	return previous_scale;
+	return ticked ? previous_scale : current_scale;
 }
 
 void nbunny::SceneNodeTransform::set_current_offset(const glm::vec3& value)
@@ -111,7 +111,7 @@ const glm::vec3& nbunny::SceneNodeTransform::get_current_offset() const
 
 const glm::vec3& nbunny::SceneNodeTransform::get_previous_offset() const
 {
-	return previous_offset;
+	return ticked ? previous_offset : current_offset;
 }
 
 void nbunny::SceneNodeTransform::tick(float delta)

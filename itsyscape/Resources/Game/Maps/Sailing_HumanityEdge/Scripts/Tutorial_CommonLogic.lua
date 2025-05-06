@@ -48,6 +48,10 @@ local IsAttacking = Mashina.Sequence {
 		Mashina.Peep.HasCombatTarget
 	},
 
+	Mashina.Player.IsEnabled {
+		player = PLAYER
+	},
+
 	Mashina.Peep.SetState {
 		state = "tutorial-general-attack"
 	}

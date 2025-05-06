@@ -1412,6 +1412,12 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-disengage-follow-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_DisengageFollowLogic.lua",
+		Resource = M["Orlando"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-general-attack",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
 		Resource = M["Orlando"]
@@ -1732,6 +1738,12 @@ do
 	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-follow-player",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_FollowLogic.lua",
+		Resource = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-disengage-follow-player",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_DisengageFollowLogic.lua",
 		Resource = M["KnightCommander"]
 	}
 

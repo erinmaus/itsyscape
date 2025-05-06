@@ -176,7 +176,7 @@ end
 
 -- Returns true if pending resources are in the queue, false otherwise.
 function ResourceManager:getIsPending()
-	return #self.pendingSyncEvents > 0 or #self.pendingAsyncEvents > 0, #self.pendingSyncEvents + #self.pendingAsyncEvents
+	return #self.pendingResources > 0 and (#self.pendingSyncEvents > 0 or #self.pendingAsyncEvents > 0), #self.pendingSyncEvents + #self.pendingAsyncEvents
 end
 
 -- Loads async resources.
@@ -385,10 +385,6 @@ function ResourceManager:_load(resourceType, filename, ...)
 		filename = newFilename
 	end
 
-	if coroutine.running() then
-		coroutine.yield()
-	end
-
 	local resourcesOfType = self.resources[resourceType] or setmetatable({}, { __mode = 'v' })
 	if resourcesOfType[filename] and (coroutine.running() or resourcesOfType[filename] ~= true) then
 		while resourcesOfType[filename] == true do
@@ -398,6 +394,10 @@ function ResourceManager:_load(resourceType, filename, ...)
 
 		Log.debug("Resource '%s' (%s) cached.", filename, resourceType._DEBUG.shortName)
 	else
+		if coroutine.running() then
+			coroutine.yield()
+		end
+
 		local before = love.timer.getTime()
 		do
 			local resource = resourceType()
@@ -487,7 +487,15 @@ function ResourceManager:_queue(resourceType, filename, async, callback, ...)
 	local pending = { callback = load:coroutine(), filename = filename }
 	local c = Function(_wrappedCallback, pending, callback):coroutine()
 
-	table.insert(self.pendingResources, pending)
+	local success, result = coroutine.resume(pending.callback)
+	if success and result then
+		Log.info("No need to queue resource '%s'; already loaded.", filename)
+		pending.resource = result
+		pending.done = true
+	else
+		Log.info("Queuing resource '%s'...", filename)
+		table.insert(self.pendingResources, pending)
+	end
 
 	local e = { filename = filename, callback = c, traceback = _DEBUG and debug.traceback() }
 	if async then

@@ -82,6 +82,8 @@ function GameView:new(game, camera)
 	self.resourceManager = ResourceManager()
 	self.spriteManager = SpriteManager(self, self.resourceManager)
 
+	self.largeTileSetsPending = 0
+
 	self:initRenderer(_CONF)
 
 	self.itemBagModel = self.resourceManager:load(
@@ -154,6 +156,10 @@ end
 
 function GameView:getCamera()
 	return self.camera
+end
+
+function GameView:getIsHeavyResourcePending()
+	return self.largeTileSetsPending > 0
 end
 
 function GameView:initRenderer(conf)
@@ -534,8 +540,11 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 	m.weatherMap:addMap(m.map)
 
 	m.largeTileSet:resize(m.map)
+
+	self.largeTileSetsPending = self.largeTileSetsPending + 1
 	self.resourceManager:queueAsyncEvent(function()
-		m.largeTileSet:emitAll(m.map)
+		pcall(m.largeTileSet.emitAll, m.largeTileSet, m.map)
+		self.largeTileSetsPending = self.largeTileSetsPending - 1
 	end)
 
 	self.mapMeshes[layer] = m
@@ -766,8 +775,10 @@ function GameView:updateMap(map, layer)
 			if m.map ~= map then
 				if m.map and (m.map:getWidth() ~= map:getWidth() or m.map:getHeight() ~= map:getHeight()) then
 					m.largeTileSet:resize(map)
+					self.largeTileSetsPending = self.largeTileSetsPending + 1
 					self.resourceManager:queueAsyncEvent(function()
-						m.largeTileSet:emitAll(map)
+						pcall(m.largeTileSet.emitAll, m.largeTileSet, map)
+						self.largeTileSetsPending = self.largeTileSetsPending - 1
 					end)
 				end 
 
@@ -1352,8 +1363,13 @@ function GameView:getActorByID(id)
 end
 
 function GameView:removeActor(actor)
-	if actor and self.actors[actor:getID()] then
-		self.probe:remove("ItsyScape.Game.Model.Actor", actor:getID())
+	if not actor then
+		return
+	end
+
+	self.probe:remove("ItsyScape.Game.Model.Actor", actor:getID())
+
+	if self.actors[actor:getID()] then
 		self.actors[actor:getID()]:release()
 		self.actors[actor:getID()] = nil
 		self.views[actor] = nil
@@ -1399,9 +1415,13 @@ function GameView:getPropByID(id)
 end
 
 function GameView:removeProp(prop)
-	if prop and self.props[prop:getID()] then
-		self.probe:remove("ItsyScape.Game.Model.Prop", prop:getID())
+	if not prop then
+		return
+	end
 
+	self.probe:remove("ItsyScape.Game.Model.Prop", prop:getID())
+
+	if prop and self.props[prop:getID()] then
 		self.props[prop:getID()]:remove()
 		self.props[prop:getID()] = nil
 		self.views[prop] = nil
@@ -1454,7 +1474,7 @@ function GameView:spawnItem(item, tile, position)
 
 	self.probe:addOrUpdate(
 		"X.Item",
-		item.ref, map:getHandle(),
+		item.ref, itemNode:getHandle(),
 		position.x - 0.5, position.y - 0.5, position.z - 0.5,
 		position.x + 0.5, position.y + 0.5, position.z + 0.5)
 
@@ -1466,11 +1486,12 @@ function GameView:spawnItem(item, tile, position)
 end
 
 function GameView:poofItem(item)
+	self.probe:remove("X.Item", item.ref)
+
 	local node = self.items[item.ref]
 	if node then
 		node:setParent(nil)
 
-		self.probe:remove("X.Item", item.ref)
 		self.items[item.ref] = nil
 	end
 
@@ -2225,17 +2246,17 @@ function GameView:postTick()
 					objectView)
 
 				if interface == "ItsyScape.Game.Model.Prop" then
-					local parentNode = objectView:getRoot():getParent()
-					local parentNodeHandle = parentNode and parentNode:getHandle() or nil
+					local node = objectView:getRoot()
+					local nodeHandle = node and node:getHandle() or nil
 					local id = objectView:getProp():getID()
 					local min, max = objectView:getProp():getBounds()
-					self.probe:addOrUpdate(interface, object:getID(), parentNodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
+					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
 				elseif interface == "ItsyScape.Game.Model.Actor" then
-					local parentNode = objectView:getSceneNode():getParent()
-					local parentNodeHandle = parentNode and parentNode:getHandle() or nil
+					local node = objectView:getSceneNode()
+					local nodeHandle = node and node:getHandle() or nil
 					local id = objectView:getActor():getID()
 					local min, max = objectView:getActor():getBounds()
-					self.probe:addOrUpdate(interface, object:getID(), parentNodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
+					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
 				end
 			end
 		end

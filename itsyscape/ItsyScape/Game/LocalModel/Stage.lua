@@ -996,12 +996,6 @@ function LocalStage:movePeep(peep, path, anchor, e)
 	if peep:hasBehavior(PlayerBehavior) then
 		local player = self.game:getPlayerByID(peep:getBehavior(PlayerBehavior).playerID)
 		player:saveLocation()
-
-		-- TODO: is this needed?
-		-- local previousInstance = self:getPeepInstance(peep)
-		-- if previousInstance then
-		-- 	previousInstance:removePlayer(player, { arguments = e and e.previousPlayerArguments })
-		-- end
 	end
 
 	do
@@ -1487,6 +1481,10 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 	if not self.grounds[layer] then
 		Log.info("No ground for layer '%d'; player '%s' cannot take item.", layer, player:getActor():getName())
 		return
+	end
+
+	if Utility.Peep.isDisabled(player:getActor():getPeep()) then
+		Log.info("Player '%s' is disabled; cannot take item.", player:getActor():getName())
 	end
 
 	local groundInventory = self.grounds[layer]:getBehavior(InventoryBehavior)

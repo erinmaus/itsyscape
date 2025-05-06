@@ -129,15 +129,25 @@ function CutsceneTransition:update(delta)
 				
 				self:sendPoke("close", nil, {})
 			end
-		elseif self.isCheckingQueue then
-			local resources = self:getView():getGameView():getResourceManager()
-			self.wasQueueEmpty = self.wasQueueEmpty or not resources:getIsPending()
-
-
-			if self.wasQueueEmpty then
+		elseif self.isWaitingOnEvent then
+			if self.didEventFire then
 				Log.info("Took %0.2f ms to load.", self.time * 1000)
 
 				self.time = 0
+			end
+
+			delta = 1
+		elseif self.isCheckingQueue then
+			local gameView = self:getView():getGameView()
+			local resources = self:getView():getGameView():getResourceManager()
+			self.wasQueueEmpty = self.wasQueueEmpty or not (resources:getIsPending() or gameView:getIsHeavyResourcePending())
+
+			if self.wasQueueEmpty then
+				resources:queueEvent(function()
+					self.didEventFire = true
+				end)
+
+				self.isWaitingOnEvent = true
 			end
 
 			delta = 1
@@ -147,6 +157,10 @@ function CutsceneTransition:update(delta)
 			end
 
 			delta = 1
+		end
+	else
+		if self.time > self.DELAY_AFTER_MOVE_SECONDS then
+			self.didPlayerMove = true
 		end
 	end
 

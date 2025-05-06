@@ -176,18 +176,30 @@ void nbunny::Probe::add(ProbeEntity& entity, float frame_delta)
         glm::vec3(entity.max.x, entity.max.y, entity.max.z)
     };
 
-    if (entity.parent_scene_node)
+    if (entity.scene_node)
     {
-        glm::mat4 transform = entity.parent_scene_node->get_transform().get_global(frame_delta);
+        auto parent = entity.scene_node->get_parent();
+
+        glm::mat4 transform(1.0f);
+        if (parent)
+        {
+            transform = parent->get_transform().get_global(frame_delta);
+        }
+
+        auto current_rotation = entity.scene_node->get_transform().get_current_rotation();
+        auto previous_rotation = entity.scene_node->get_transform().get_previous_rotation();
+        auto interpolated_rotation = glm::slerp(previous_rotation, current_rotation, frame_delta);
 
         glm::vec3 min = glm::vec3(std::numeric_limits<float>::infinity());
         glm::vec3 max = glm::vec3(-std::numeric_limits<float>::infinity());
 
         for (auto& corner: corners)
         {
-            auto transformed_corner = glm::vec3(transform * glm::vec4(corner, 1.0));
-            min = glm::min(min, corner);
-            max = glm::max(max, corner);
+            auto transformed_corner = transform * glm::vec4(corner, 1.0);
+            transformed_corner = glm::rotate(interpolated_rotation, transformed_corner);
+
+            min = glm::min(min, glm::vec3(corner));
+            max = glm::max(max, glm::vec3(corner));
         }
 
         entity.transformed_min = min;
@@ -225,7 +237,7 @@ void nbunny::Probe::add(ProbeEntity& entity, float frame_delta)
     }
 }
 
-void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNode* parent_scene_node, const glm::vec3& min, const glm::vec3& max)
+void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNode* scene_node, const glm::vec3& min, const glm::vec3& max)
 {
     auto iter = entity_indices.find(std::make_pair(interface, id));
     if (iter != entity_indices.end())
@@ -235,7 +247,7 @@ void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNod
         auto& entity = entities.at(index);
         entity.min = min;
         entity.max = max;
-        entity.parent_scene_node = parent_scene_node;
+        entity.scene_node = scene_node;
     }
     else
     {
@@ -251,7 +263,7 @@ void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNod
             entity.id = id;
             entity.min = min;
             entity.max = max;
-            entity.parent_scene_node = parent_scene_node;
+            entity.scene_node = scene_node;
             entity_indices.insert_or_assign(std::make_pair(interface, id), index);
         }
         else
@@ -262,7 +274,7 @@ void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNod
             entity.id = id;
             entity.min = min;
             entity.max = max;
-            entity.parent_scene_node = parent_scene_node;
+            entity.scene_node = scene_node;
 
             entities.push_back(std::move(entity));
             entity_indices.insert_or_assign(std::make_pair(interface, id), entities.size() - 1);
@@ -423,10 +435,10 @@ static int nbunny_probe_add_or_update(lua_State* L)
     const char* interface = luaL_checkstring(L, 2);
     int id = luaL_checkinteger(L, 3);
 
-    nbunny::SceneNode* parent_scene_node = nullptr;
+    nbunny::SceneNode* scene_node = nullptr;
     if (!lua_isnil(L, 4))
     {
-        parent_scene_node = nbunny::lua::get<nbunny::SceneNode*>(L, 4);
+        scene_node = nbunny::lua::get<nbunny::SceneNode*>(L, 4);
     }
 
     float min_x = luaL_checknumber(L, 5);
@@ -437,7 +449,7 @@ static int nbunny_probe_add_or_update(lua_State* L)
     float max_y = luaL_checknumber(L, 9);
     float max_z = luaL_checknumber(L, 10);
 
-    probe->add_or_update(interface, id, parent_scene_node, glm::vec3(min_x, min_y, min_z), glm::vec3(max_x, max_y, max_z));
+    probe->add_or_update(interface, id, scene_node, glm::vec3(min_x, min_y, min_z), glm::vec3(max_x, max_y, max_z));
 
     return 0;
 }

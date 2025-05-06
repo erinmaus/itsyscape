@@ -566,9 +566,8 @@ function One:onResurrect()
 
 	self.rezzTimer = 2
 
-	-- Keep them dead until we rezz ourselves
 	local combatStatus = self:getBehavior(CombatStatusBehavior)
-	combatStatus.dead = true
+	combatStatus.dead = false
 end
 
 function One:updatePendingAnalytics(force)
@@ -618,9 +617,7 @@ function One:update(...)
 
 	do
 		local combatStatus = self:getBehavior(CombatStatusBehavior)
-		if combatStatus.dead or
-		   (self.rezzTimer > 0 and self.rezzTimer ~= math.huge)
-		then
+		if combatStatus.dead then
 			self:interrupt(true)
 		end
 
@@ -629,7 +626,6 @@ function One:update(...)
 			if self.rezzTimer < 0 then
 				Utility.Peep.enable(self)
 				self.rezzTimer = math.huge
-				combatStatus.dead = false
 			end
 		end
 	end
@@ -646,30 +642,8 @@ function One:update(...)
 		combatStatus.currentHitpoints = combatStatus.maximumHitpoints
 		combatStatus.currentPrayer = combatStatus.maximumPrayer
 
-		local director = self:getDirector()
-		local stage = director:getGameInstance():getStage()
-		local storage = director:getPlayerStorage(self):getRoot()
-		local spawn = storage:getSection("Spawn")
-		if spawn and spawn:get("name") then
-			local mapName
-			if spawn:get("instance") then
-				mapName = "@" .. spawn:get("name")
-			else
-				mapName = spawn:get("name")
-			end
-
-			stage:movePeep(
-				self,
-				mapName,
-				Vector(spawn:get("x"), spawn:get("y"), spawn:get("z")))
-		else
-			stage:movePeep(
-				self,
-				"NewGame",
-				"Anchor_Spawn")
-		end
-
-		self:poke('resurrect', {})
+		Utility.UI.openInterface(self, "CutsceneTransition", false)
+		self:getDirector():getGameInstance():getStage():movePeep(self, "Purgatory", "Anchor_Spawn")
 	end
 
 	if _DEBUG and love.keyboard.isDown('f9') then
