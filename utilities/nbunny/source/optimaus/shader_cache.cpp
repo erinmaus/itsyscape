@@ -213,7 +213,7 @@ void nbunny::ShaderCache::update_uniform(
 	std::size_t data_size)
 {
 	auto byte_data = (const std::uint8_t*)data;
-	std::vector<std::uint8_t> d(byte_data, byte_data + data_size + 1);
+	std::vector<std::uint8_t> d(byte_data, byte_data + data_size);
 	update_uniform(shader, uniform_name, d);
 }
 
