@@ -289,6 +289,7 @@ void nbunny::Probe::remove(const std::string& interface, int id)
 
     if (found)
     {
+        entity_indices.erase(std::make_pair(interface, id));
         free_entity_indices.push_back(index);
     }
 }

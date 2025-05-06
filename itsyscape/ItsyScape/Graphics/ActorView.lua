@@ -762,14 +762,6 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 	local resourceManager = self.game:getResourceManager()
 
 	for i = 1, #slotNodes do
-		-- if self.skins[slot] and self.skins[slot].generation ~= generation then
-		-- 	if coroutine.running() then
-		-- 		self.currentApplySkin = self.currentApplySkin - 1
-		-- 	end
-
-		-- 	return
-		-- end
-
 		local slot = slotNodes[i]
 		local skin = slot.definition
 
@@ -912,10 +904,6 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 		end
 	end
 
-	if self.skins[slot] and self.skins[slot].generation ~= generation then
-		return
-	end
-
 	for i = 1, #slotNodes do
 		local slotNode = slotNodes[i]
 
@@ -946,15 +934,15 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 end
 
 function ActorView:applySkin(slot, slotNodes)
-	local copySlotNodes = {}
-	for _, slotNode in ipairs(slotNodes) do
-		table.insert(copySlotNodes, slotNode)
+	local resourceManager = self.game:getResourceManager()
+	if slotNodes.handle then
+		Log.info("Canceling existing slot '%s' skinning on actor '%s' (%d).", slot, self.actor:getName(), self.actor:getID())
+
+		resourceManager:cancel(slotNodes.handle)
+		slotNodes.handle = nil
 	end
 
-	self.currentApplySkin = self.currentApplySkin + 1
-
-	local resourceManager = self.game:getResourceManager()
-	resourceManager:queueEvent(self._doApplySkin, self, copySlotNodes, slot, slotNodes.generation)
+	slotNodes.handle = resourceManager:queueEvent(self._doApplySkin, self, slotNodes, slot)
 end
 
 function ActorView:transmogrify(body)
@@ -994,7 +982,7 @@ function ActorView:changeSkin(slot, priority, skin, config)
 		return
 	end
 
-	local slotNodes = self.skins[slot] or { generation = 0 }
+	local slotNodes = self.skins[slot] or { slot = slot }
 
 	local oldSkinSlotNode
 	for i = 1, #slotNodes do
@@ -1009,6 +997,7 @@ function ActorView:changeSkin(slot, priority, skin, config)
 
 	if priority then
 		local s = {
+			slot = slot,
 			definition = skin,
 			priority = priority,
 			config = config or {}
@@ -1018,12 +1007,11 @@ function ActorView:changeSkin(slot, priority, skin, config)
 		table.sort(slotNodes, _sortSlotNodes)
 	end
 
-	slotNodes.generation = slotNodes.generation + 1
 	if self.body then
 		if self:getIsImmediate() then
-			self:_doApplySkin(slotNodes, slot, slotNodes.generation)
+			self:_doApplySkin(slotNodes, slot)
 		else
-			self:applySkin(slot, slotNodes, slotNodes.generation)
+			self:applySkin(slot, slotNodes)
 		end
 	end
 

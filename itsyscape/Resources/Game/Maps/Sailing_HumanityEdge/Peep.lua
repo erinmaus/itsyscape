@@ -1029,7 +1029,12 @@ function Island:updateTutorialFindPeakStep(playerPeep)
 	then
 		Utility.Peep.disable(playerPeep)
 
+		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), false)
+		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), false)
+
 		self:talkToPeep(playerPeep, "Orlando", function()
+			Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), "tutorial-follow-player")
+
 			Utility.Peep.enable(playerPeep)
 
 			self:transitionTutorial(playerPeep, "Tutorial_FoundPeak")

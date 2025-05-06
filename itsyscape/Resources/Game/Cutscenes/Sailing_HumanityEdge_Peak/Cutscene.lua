@@ -57,7 +57,7 @@ return Sequence {
 		Sequence {
 			Pirate1:wait(1.5),
 			Camera:zoom(75, 1.5),
-			Pirate1:wait(1.5)
+			Pirate1:wait(2.5)
 		},
 
 		Pirate1:waitForState("gun-yendorians"),

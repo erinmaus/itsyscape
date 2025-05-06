@@ -287,7 +287,7 @@ You're not better than anyone else. Sometimes we gotta do things we don't wanna.
 == quest_tutorial_main_defeat_keelhauler ==
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-Look! We must take these pirates out before they can cause any more trouble
+Look! We must take these pirates out before they can cause any more trouble.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 They stand no chance against %person(Vizier-King Yohn's) greatest knights!

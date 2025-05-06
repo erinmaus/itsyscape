@@ -154,6 +154,7 @@ function PathTexture:draw(canvas, colors)
 
 	love.graphics.push("all")
 	love.graphics.setMeshCullMode("none")
+	love.graphics.setDepthMode("always", false)
 	love.graphics.origin()
 
 	love.graphics.setCanvas(canvas)

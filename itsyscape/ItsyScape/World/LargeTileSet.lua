@@ -235,7 +235,7 @@ function LargeTileSet:emitAll(map)
 					if absoluteI <= map:getWidth() and absoluteJ <= map:getHeight() then
 						local layer = self:getTextureCoordinates(largeTileInfo.tileSetID, largeTileInfo.name, absoluteI, absoluteJ)
 
-						if layer then
+						if layer and layer <= diffuseCanvas:getLayerCount() then
 							love.graphics.push("all")
 							love.graphics.setBlendMode("replace", "premultiplied")
 

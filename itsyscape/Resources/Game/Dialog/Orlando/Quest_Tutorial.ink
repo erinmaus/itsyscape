@@ -220,7 +220,7 @@ OH! And, um, I mean, actually, it would be worse for you, of course, because, li
 Eh... Where am I?
 
 # speaker={C_ORLANDO}
-We're gonna need to get you checked out as asoon as we get back to %location(Isabelle Island)...
+We're gonna need to get you checked out as soon as we get back to %location(Isabelle Island)...
 
 # speaker={C_ORLANDO}
 But... Right now we're pretty far from anywheres. We're at %location(Humanity's Edge). The last island of the %location(Realm) before %person(Yendor's) dead city, %location(R'lyeh)...
@@ -247,7 +247,7 @@ And R'lyeh, well, that's it. We don't what what R'lyeh is. No human has sailed f
 Not even the %hint(Black Tentacles) are that crazy.
 
 # speaker={C_ORLANDO}
-%person(Yendor's) zealots say there's a huge city under those bloody waves... Larger than the Realm itself.
+%person(Yendor's) loons say there's a big city under those waves... A city bigger than the Realm!
 
 -> loop
 
@@ -272,7 +272,7 @@ That's right... The hellfire harpoon. The schematics... I know them by heart.
 Seems you're getting some sense of things back!
 
 # speaker={C_PLAYER}
-The hellfire harpoon... It can kill gods right? {quest_tutorial_main_started_asked_where_am_i: Like %person(Yendor)}?
+The hellfire harpoon... It can kill gods, right? {quest_tutorial_main_started_asked_where_am_i: Like %person(Yendor)?}
 
 # speaker={C_ORLANDO}
 Yes! Exactly! We're building it out here for secrecy, and, well, because if we mess up...
@@ -407,7 +407,7 @@ Um.... Sure, ok, I'll... uh.... try! This might be kinda difficult with me looki
 }
 
 # speaker={C_ORLANDO}
-That's the %person({player_get_pronoun_uppercase(X_MX)}) {player_name}. You look terrifying!
+That's the %person({player_get_pronoun_uppercase(X_MX)}) {player_name} I know. You look terrifying!
 
 # speaker={C_ORLANDO}
 Now that you're all geared up, we can pick up where we left off.
@@ -1274,7 +1274,7 @@ Let's try again...
 = did_eat
 
 # speaker={C_ORLANDO}
-Good job eating! Easy foods like fish heal, while foods that need recipes can heal and also buff your stats!
+Good job eating! Foods cooked over a camp fire, like fish, only heal. But foods that need recipes and a cooking range heal more and also buff your stats!
 
 # speaker={C_ORLANDO}
 Cooking is amazing! It turns boring old plants and animals into pieces of art!
@@ -1374,10 +1374,10 @@ I'll show you how to use %hint(Tornado)! It's my fave! You spin in a big circle 
 Zeal means something different for everyone! For me, it's my braveness level. The braver I'm being, the faster I get zeal!
 
 # speaker={C_ORLANDO}
-For you, it might be how smitey you're feeling if you're religious. Or hecks, maybe you're a hippy and it's how peaceful you're feeling.
+For you, it might be how smitey you're feeling if you're religious. Or hecks, maybe you're a hippy, and it's how peaceful you're feeling.
 
 # speaker={C_ORLANDO}
-Think about what zeal is to you... You might not know right now and that's okay! Some peeps take forever to figure it out.
+Think about what zeal is to you... You might not know right now, and that's okay! Some peeps take forever to figure it out.
 
 -> can_use_rite_loop
 
@@ -1390,7 +1390,7 @@ Rites require a certain connection with your inside self. Like one of those voic
 "One of those voices"? Hmm...
 
 # speaker={C_ORLANDO}
-Oh, sorry %person(Ser Commander), I forgot, you probably only got one inner voice and it's a squealing donkey!
+Oh, sorry %person(Ser Commander), I forgot, you probably only got one inner voice, and it's a squealing donkey!
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
 ... and your inner voices are what, a drove of squealing pigs?
@@ -1664,7 +1664,7 @@ C'mon %person(Ser Commander), stop it. Anyway...
 = explain_black_tentacles
 
 # speaker={C_ORLANDO}
-The Black Tentacles are the meanest pirates to sail the seas. Their captain, Raven, is legendary... for being brutal to her enemies.
+The Black Tentacles are the meanest pirates to sail the seas. Their captain, %person(Raven), is legendary... for being brutal to her enemies.
 
 # speaker={C_ORLANDO}
 She wants to become the legendary Pirate Queen... And there hasn't been a Pirate King or Queen in a thousand years!

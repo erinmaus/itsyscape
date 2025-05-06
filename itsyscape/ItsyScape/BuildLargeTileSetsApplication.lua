@@ -116,7 +116,7 @@ function BuildLargeTileSetsApplication:getLargeTileSets()
 end
 
 function BuildLargeTileSetsApplication:saveLargeTile(tileSetID, imageData, i, j, tileName, suffix)
-	local directoryName = string.format("Resources/Game/Tilesets/%s/Cache", tileSetID)
+	local directoryName = string.format("Resources/Game/TileSets/%s/Cache", tileSetID)
 	love.filesystem.createDirectory(directoryName)
 	
 	local filename = string.format("%s/%s_%03dx%03d%s.png", directoryName, tileName, i, j, suffix)

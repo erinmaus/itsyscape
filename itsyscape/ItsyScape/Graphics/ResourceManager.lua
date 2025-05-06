@@ -14,7 +14,7 @@ local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
-ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 30
+ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 120
 ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
 ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = _DEBUG == "plus" and 1 or 2 / 1000
 
@@ -27,6 +27,7 @@ function ResourceManager.View:new(resourceManager)
 
 	self.pending = {}
 	self.pendingIndex = 0
+	self.cancelled = {}
 
 	self.resourceManager:queueAsyncEvent(self._poll, self)
 
@@ -44,10 +45,12 @@ function ResourceManager.View:_poll()
 		local pending = self.pending[currentIndex]
 
 		if pending.ready then
-			if pending.resource then
-				pending.callback(pending.resource)
-			else
-				pending.callback()
+			if not self.cancelled[pending] then
+				if pending.resource then
+					pending.callback(pending.resource)
+				else
+					pending.callback()
+				end
 			end
 
 			currentIndex = currentIndex + 1
@@ -69,24 +72,25 @@ function ResourceManager.View:queue(resourceType, filename, callback, ...)
 	local index = self.pendingIndex
 
 	self.pending[index] = { callback = callback, filename = filename }
-
-	self.resourceManager:queueAsync(
+	self.pending[index].handle = self.resourceManager:queueAsync(
 		resourceType,
 		filename,
 		Function(self._done, self, index),
 		...)
+
+	return self.pending[index].handle
 end
 
 function ResourceManager.View:queueAsync(...)
-	self.resourceManager:queueAsync(...)
+	return self.resourceManager:queueAsync(...)
 end
 
 function ResourceManager.View:queueCacheRef(ref, callback, ...)
-	self:queue(ref:getResourceType(), ref:getFilename(), callback, ...)
+	return self:queue(ref:getResourceType(), ref:getFilename(), callback, ...)
 end
 
 function ResourceManager.View:queueAsyncCacheRef(...)
-	self.resourceManager:queueAsyncCacheRef(...)
+	return self.resourceManager:queueAsyncCacheRef(...)
 end
 
 function ResourceManager.View:queueEvent(callback, ...)
@@ -94,10 +98,22 @@ function ResourceManager.View:queueEvent(callback, ...)
 	local index = self.pendingIndex
 
 	self.pending[index] = { callback = Function(callback, ...), ready = true }
+	return self.pending[index]
 end
 
 function ResourceManager.View:queueAsyncEvent(...)
-	self.resourceManager:queueAsyncEvent(...)
+	return self.resourceManager:queueAsyncEvent(...)
+end
+
+function ResourceManager.View:cancel(handle)
+	for _, pending in pairs(self.pending) do
+		if pending == handle then
+			self.cancelled[pending] = true
+			return
+		end
+	end
+
+	self.resourceManager:cancel(handle)
 end
 
 function ResourceManager:new()
@@ -126,6 +142,20 @@ function ResourceManager:new()
 		fileIOThread:start(i)
 
 		table.insert(self.fileIOThreads, fileIOThread)
+	end
+end
+
+function ResourceManager:cancel(handle)
+	for i = #self.pendingSyncEvents, 1, -1 do
+		if self.pendingSyncEvents[i] == handle then
+			table.remove(self.pendingSyncEvents, i)
+		end
+	end
+
+	for i = #self.pendingAsyncEvents, 1, -1 do
+		if self.pendingAsyncEvents[i] == handle then
+			table.remove(self.pendingAsyncEvents, i)
+		end
 	end
 end
 
@@ -465,14 +495,16 @@ function ResourceManager:_queue(resourceType, filename, async, callback, ...)
 	else
 		table.insert(self.pendingSyncEvents, e)
 	end
+
+	return e
 end
 
 function ResourceManager:queueAsync(resourceType, filename, callback, ...)
-	self:_queue(resourceType, filename, true, callback, ...)
+	return self:_queue(resourceType, filename, true, callback, ...)
 end
 
 function ResourceManager:queue(resourceType, filename, callback, ...)
-	self:_queue(resourceType, filename, false, callback, ...)
+	return self:_queue(resourceType, filename, false, callback, ...)
 end
 
 function ResourceManager:queueCacheRef(ref, callback, ...)
@@ -504,14 +536,16 @@ function ResourceManager:_queueEvent(async, callback, ...)
 	else
 		table.insert(self.pendingSyncEvents, e)
 	end
+
+	return e
 end
 
 function ResourceManager:queueEvent(...)
-	self:_queueEvent(false, ...)
+	return self:_queueEvent(false, ...)
 end
 
 function ResourceManager:queueAsyncEvent(...)
-	self:_queueEvent(true, ...)
+	return self:_queueEvent(true, ...)
 end
 
 local function _sortStats(a, b)

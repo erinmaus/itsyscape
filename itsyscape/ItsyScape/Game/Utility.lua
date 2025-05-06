@@ -4959,6 +4959,10 @@ function Utility.Peep.getRaid(peep)
 end
 
 function Utility.Peep.getMap(peep)
+	if not peep:getDirector() then
+		return Utility.Peep._defaultMap
+	end
+
 	local director = peep:getDirector()
 	local position = peep:getBehavior(PositionBehavior)
 
