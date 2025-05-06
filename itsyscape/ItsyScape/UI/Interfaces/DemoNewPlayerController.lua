@@ -137,6 +137,7 @@ function DemoNewPlayerController:newPlayer(e)
 		return
 	end
 
+	class.storage:getRoot():set("filename", "Player/Demo.dat")
 	self:getDirector():setPlayerStorage(player.playerID, class.storage)
 
 	peep:applySkins()

@@ -87,7 +87,7 @@ Description "Tutorial_FishedLightningStormfish" {
 
 Description "Tutorial_CookedLightningStormfish" {
 	before = "The lightning stormfish need to be cooked on the campfire Ser Orlando started.",
-	after = "You cooked the lightning stormfihs on the campfire Ser Orlando started."
+	after = "You cooked the lightning stormfish on the campfire Ser Orlando started."
 }
 
 Description "Tutorial_Combat" {

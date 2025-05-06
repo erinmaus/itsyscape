@@ -670,6 +670,24 @@ function Island:prepareTutorial(playerPeep, arguments)
 
 	if not Utility.Quest.didStart("Tutorial", playerPeep) then
 		self:saveTutorialLocation(playerPeep, "Anchor_Spawn")
+		Utility.save(playerPeep)
+	end
+
+	do
+		local _silence, _gotKeyItem
+
+		_silence = function()
+			playerPeep:silence("move", _silence)
+			playerPeep:silence("gotKeyItem", _gotKeyItem)
+		end
+
+		_gotKeyItem = function(_, keyItemID)
+			Log.info("Player '%s' got key item (ID = '%s'), saving.", playerPeep:getName(), keyItemID)
+			Utility.save(playerPeep)
+		end
+
+		playerPeep:listen("move", _silence)
+		playerPeep:listen("gotKeyItem", _gotKeyItem)
 	end
 
 	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Team")

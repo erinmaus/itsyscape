@@ -336,7 +336,7 @@ local PlayerShouldYield = Mashina.Step {
 		[ASKED_TO_YIELD] = B.Output.result
 	},
 
-	Mashina.Peep.Timeout {
+	Mashina.Peep.TimeOut {
 		duration = 4
 	},
 

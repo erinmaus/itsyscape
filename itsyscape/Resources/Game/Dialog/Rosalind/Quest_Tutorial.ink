@@ -85,7 +85,7 @@ Oh, well, that makes more sense...
 Well, that's great to hear!
 
 # speaker={C_ORLANDO}
-I think {player_get_english_be_uppercase(X_ARE)} are downplaying it... but I like the happy thoughts!
+I think {player_get_english_be_lowercase(X_ARE)} are downplaying it... but I like the happy thoughts!
 
 -> DONE
 
