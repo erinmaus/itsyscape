@@ -267,11 +267,13 @@ function LargeTileSet:emitAll(map)
 							outlineImage:release()
 
 							currentIndex = currentIndex + 3
+
+							coroutine.yield()
 						end
 					end
 				end
 			end
-		else
+		elseif not (_ITSYREALM_PROD or _ITSYREALM_DEMO) then
 			self:_emit("cache", map, largeTileInfo.tileSetID, largeTileInfo.name, 1, 1, numTilesPerAxis, numTilesPerAxis, self.TILE_SIZE)
 
 			for offsetAtlasI = 1, self.numLargeTilesWidth do
