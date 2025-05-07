@@ -136,18 +136,20 @@ function Island:_dropPlayerInventory(playerPeep)
 	end
 end
 
-function Island:doTalkToPeep(playerPeep, otherPeepName, callback, entryPoint)
+function Island:doTalkToPeep(playerPeep, otherPeepName, callback, entryPoint, enabled)
 	local success, dialog = Utility.Peep.dialog(playerPeep, "Talk", otherPeepName, entryPoint)
 	if success then
-		Utility.Peep.disable(playerPeep)
+		if not enabled then
+			Utility.Peep.disable(playerPeep)
+
+			dialog.onClose:register(function()
+				Utility.Peep.enable(playerPeep)
+			end)
+		end
 
 		if callback then
 			dialog.onClose:register(callback)
 		end
-
-		dialog.onClose:register(function()
-			Utility.Peep.enable(playerPeep)
-		end)
 	else
 		if callback then
 			callback()
@@ -157,7 +159,7 @@ function Island:doTalkToPeep(playerPeep, otherPeepName, callback, entryPoint)
 	return success
 end
 
-function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint)
+function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint, enabled)
 	local otherPeep = self:getCompanion(playerPeep, otherPeepName)
 
 	local function wrappedCallback()
@@ -181,7 +183,7 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint)
 		end
 	end
 
-	return self:doTalkToPeep(playerPeep, otherPeepName, wrappedCallback, entryPoint)
+	return self:doTalkToPeep(playerPeep, otherPeepName, wrappedCallback, entryPoint, enabled)
 end
 
 function Island:onInitScoutTutorial(playerPeep)
@@ -847,17 +849,15 @@ function Island:onTutorialReachPeak(playerPeep)
 
 	self:saveTutorialLocation(playerPeep, "Anchor_VsPirates")
 
-	Utility.Peep.disable(playerPeep)
-	self:talkToPeep(playerPeep, "CapnRaven", function()
-		Utility.Peep.enable(playerPeep)
-
+	local shouldEnable = not not Utility.Text.getDialogVariable(playerPeep, "CapnRaven", "quest_tutorial_encountered_capn_raven")
+	self:doTalkToPeep(playerPeep, "CapnRaven", function()
 		local pirate1 = self:getCompanion(playerPeep, "CapnRaven_PirateBodyGuard1")
 		local pirate2 = self:getCompanion(playerPeep, "CapnRaven_PirateBodyGuard2")
 		local orlando = self:getCompanion(playerPeep, "Orlando")
 
 		Utility.Peep.attack(pirate1, orlando)
 		Utility.Peep.attack(pirate2, playerPeep)
-	end, "quest_tutorial_initial_encounter")
+	end, "quest_tutorial_initial_encounter", shouldEnable)
 end
 
 function Island:updateTutorialItemSteps(playerPeep)

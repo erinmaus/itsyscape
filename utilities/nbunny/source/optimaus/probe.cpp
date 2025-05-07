@@ -81,6 +81,12 @@ bool nbunny::is_point_in_cone(const glm::vec3& cone_position, const glm::vec3& c
 
 bool nbunny::cone_hit_bounds(const glm::vec3& cone_position, const glm::vec3& cone_direction, float cone_length, float cone_radius, const glm::vec3& min, const glm::vec3& max, glm::vec3& point)
 {
+    if (cone_position.x >= min.x && cone_position.x <= max.x && cone_position.y >= min.y && cone_position.y <= max.y && cone_position.z >= min.z && cone_position.z <= max.z)
+    {
+        point = cone_position;
+        return true;
+    }
+
     auto fbl = glm::vec3(min.x, min.y, max.z);
     auto fbr = glm::vec3(max.x, min.y, max.z);
     auto bbl = glm::vec3(min.x, min.y, min.z);

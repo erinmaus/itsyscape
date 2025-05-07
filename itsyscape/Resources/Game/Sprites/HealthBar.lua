@@ -38,8 +38,6 @@ end
 function HealthBar:draw(position, time)
 	local alpha = 1 - math.clamp(math.max((time - 5.5) / 0.5))
 
-	Log.info(">>> self.actor %s %s %s %s %d %s %d", self.actor:getName(), "ptr", self.actor, "hp", self.actor:getCurrentHitpoints(), "/", self.actor:getMaximumHitpoints())
-
 	local x = position.x - self.WIDTH / 2
 	local y = position.y - self.HEIGHT
 

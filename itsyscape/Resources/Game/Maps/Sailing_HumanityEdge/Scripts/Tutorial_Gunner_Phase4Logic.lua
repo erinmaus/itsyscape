@@ -31,16 +31,20 @@ local Intro = Mashina.Step {
 		[CANNON] = B.Output.result
 	},
 
-	Mashina.Sailing.AimCannon {
-		target = CommonLogic.ORLANDO,
-		cannon = CANNON
+	Mashina.Success {
+		Mashina.Sailing.AimCannon {
+			target = CommonLogic.ORLANDO,
+			cannon = CANNON
+		}
 	},
 
 	Mashina.Repeat {
-		Mashina.Sailing.AimCannon {
-			target = TARGET,
-			cannon = CANNON,
-			steady = true
+		Mashina.Success {
+			Mashina.Sailing.AimCannon {
+				target = TARGET,
+				cannon = CANNON,
+				steady = true
+			}
 		},
 
 		Mashina.Invert {
