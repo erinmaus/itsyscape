@@ -132,17 +132,33 @@ function TextButtonStyle:draw(widget)
 			textWidth = font:getWidth(widget:getText())
 		end
 
+		itsyrealm.graphics.translate(self.padding, self.padding)
+
 		if selectionWidth > 0 and Class.isCompatibleType(widget, GamepadNumberInput) then
-			love.graphics.setColor(self.selectionColor:get())
+			love.graphics.setColor(0, 0, 0, 1)
+			itsyrealm.graphics.translate(2, 2)
 			itsyrealm.graphics.polygon(
 				"fill",
-				selectionX, selectionY,
-				selectionX + selectionWidth / 2, selectionY - self.padding * 2,
-				selectionX + selectionWidth, selectionY)
+				selectionX, selectionY + self.padding,
+				selectionX + selectionWidth / 2, selectionY - self.padding * 3,
+				selectionX + selectionWidth, selectionY + self.padding)
 			itsyrealm.graphics.polygon(
 				"fill",
 				selectionX, selectionY + font:getHeight(),
-				selectionX + selectionWidth / 2, selectionY + font:getHeight() + self.padding * 2,
+				selectionX + selectionWidth / 2, selectionY + font:getHeight() + self.padding * 3,
+				selectionX + selectionWidth, selectionY + font:getHeight())
+
+			love.graphics.setColor(1, 1, 1, 1)
+			itsyrealm.graphics.translate(-2, -2)
+			itsyrealm.graphics.polygon(
+				"fill",
+				selectionX, selectionY + self.padding,
+				selectionX + selectionWidth / 2, selectionY - self.padding * 3,
+				selectionX + selectionWidth, selectionY + self.padding)
+			itsyrealm.graphics.polygon(
+				"fill",
+				selectionX, selectionY + font:getHeight(),
+				selectionX + selectionWidth / 2, selectionY + font:getHeight() + self.padding * 3,
 				selectionX + selectionWidth, selectionY + font:getHeight())
 		end
 
@@ -153,7 +169,6 @@ function TextButtonStyle:draw(widget)
 				(width - self.padding * scaleX * 2) * scaleX,
 				(height - self.padding * scaleY * 2) * scaleY)
 			itsyrealm.graphics.applyPseudoScissor()
-			itsyrealm.graphics.translate(self.padding, self.padding)
 		end
 
 		if selectionWidth > 0 then
