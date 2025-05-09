@@ -397,7 +397,7 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 150,
+		Hitpoints = 75,
 		Resource = Scout
 	}
 
