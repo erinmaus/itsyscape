@@ -496,6 +496,11 @@ function Island:onFinishPreparingTutorial(playerPeep)
 
 			Utility.Peep.setMashinaState(orlando, "tutorial-look-away-from-player")
 		end)
+	elseif not Utility.Quest.didStep("Tutorial", "Tutorial_FoundScout", playerPeep) then
+		self:talkToPeep(playerPeep, "Orlando", function()
+			local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
+			Utility.Peep.talk(knightCommander, "Oi! Get over here already!", nil, 5)
+		end)
 	end
 
 	if not Utility.Quest.didStep("Tutorial", "Tutorial_DefeatedScout", playerPeep) then
@@ -761,6 +766,8 @@ function Island:prepareTutorial(playerPeep, arguments)
 		self:getDirector():getGameInstance(),
 		"NPC_Isabelle_Exquisitor")
 	isabellesShip:pushPoke("customize", exquisitor)
+	
+	Utility.UI.openGroup(playerPeep, "WORLD")
 end
 
 function Island:onPlayerEnter(player, arguments)

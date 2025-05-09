@@ -192,9 +192,9 @@ end
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 141,
+		PositionX = 103,
 		PositionY = 3,
-		PositionZ = 173,
+		PositionZ = 165,
 		Direction = -1,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,

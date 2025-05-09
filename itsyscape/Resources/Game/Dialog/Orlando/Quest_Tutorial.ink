@@ -407,10 +407,7 @@ Um.... Sure, ok, I'll... uh.... try! This might be kinda difficult with me looki
 }
 
 # speaker={C_ORLANDO}
-That's the %person({player_get_pronoun_uppercase(X_MX)}) {player_name} I know. You look terrifying!
-
-# speaker={C_ORLANDO}
-Now that you're all geared up, we can pick up where we left off.
+Now that you've bounced back from the lightning strike...
 
 # speaker={C_ORLANDO}
 Let's go meet with the %person(Ser Commander) at the entrance of the camp and scout for pesky pirates... or worse, Yendorians!
@@ -420,6 +417,8 @@ Let's go meet with the %person(Ser Commander) at the entrance of the camp and sc
 -> DONE
 
 = see_ser_commander
+
+# speaker={C_ORLANDO}
 Let's go meet with the %person(Ser Commander) at the entrance of the camp!
 
 -> DONE
@@ -861,7 +860,7 @@ Looks like you've fished up two %item(lightning stormfish)!
 %empty()
 
 ~ play_animation(C_ORLANDO, "Human_ActionGive_1")
-~ player_give_item("CookedLightningStormfish", 3)
+~ player_give_item("LightningStormfish", 3)
 
 # speaker={C_ORLANDO}
 Here's another few raw %item(lightning stormfish) I found... uh, somewhere.
