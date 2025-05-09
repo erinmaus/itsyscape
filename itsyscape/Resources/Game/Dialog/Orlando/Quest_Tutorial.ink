@@ -765,7 +765,7 @@ You will stand guard. We will make this quick. I'd rather us take a minute to st
 Hmmph!
 
 # speaker={C_ORLANDO}
-%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, let me know when you've fished at least five stormfish.
+%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, let me know when you've fished at least two stormfish.
 
 # speaker={C_PLAYER}
 Sure thing!
@@ -856,7 +856,15 @@ Sure thing!
 = done_fishing
 
 # speaker={C_ORLANDO}
-Looks like you've fished up five %item(lightning stormfish)!
+Looks like you've fished up two %item(lightning stormfish)!
+
+%empty()
+
+~ play_animation(C_ORLANDO, "Human_ActionGive_1")
+~ player_give_item("CookedLightningStormfish", 3)
+
+# speaker={C_ORLANDO}
+Here's another few raw %item(lightning stormfish) I found... uh, somewhere.
 
 # speaker={C_PLAYER}
 I did, but... How do we cook them?

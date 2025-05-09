@@ -1003,7 +1003,7 @@ function Island:updateTutorialFishStormfishStep(playerPeep)
 
 	local count = playerPeep:getState():count("Item", "LightningStormfish", { ["item-inventory"] = true })
 
-	if count >= 5 and Utility.Peep.isEnabled(playerPeep) then
+	if count >= 2 and Utility.Peep.isEnabled(playerPeep) then
 		Utility.Peep.disable(playerPeep)
 
 		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
