@@ -71,3 +71,19 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Tutorial_NoKill"
 }
+
+ItsyScape.Resource.Effect "Tutorial_DoubleAccuracy" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Double accuracy (tutorial)",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Tutorial_DoubleAccuracy"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "The attacker has their attack roll doubled.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Tutorial_DoubleAccuracy"
+}

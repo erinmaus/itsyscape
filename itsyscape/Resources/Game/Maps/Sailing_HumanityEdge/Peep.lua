@@ -669,6 +669,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 	end
 
 	Utility.Peep.toggleEffect(playerPeep, "Tutorial_SillyClick", true)
+	Utility.Peep.toggleEffect(playerPeep, "Tutorial_DoubleAccuracy", true)
 
 	if not Utility.Quest.didStart("Tutorial", playerPeep) then
 		self:saveTutorialLocation(playerPeep, "Anchor_Spawn")
@@ -780,6 +781,7 @@ function Island:onPlayerLeave(player)
 		if self.playersInTutorial[playerPeep] then
 			self.playersInTutorial[playerPeep] = nil
 			Utility.Peep.toggleEffect(playerPeep, "Tutorial_SillyClick", false)
+			Utility.Peep.toggleEffect(playerPeep, "Tutorial_DoubleAccuracy", false)
 		end
 	end
 
