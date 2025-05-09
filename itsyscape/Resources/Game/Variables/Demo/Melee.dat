@@ -30,7 +30,21 @@
     },
     KeyItems = {
       sections = {},
-      values = {}
+      values = {
+        Tutorial_EquippedItems = true,
+        Tutorial_GatheredItems = true,
+        Tutorial_Start = true
+      }
+    },
+    Location = {
+      sections = {},
+      values = {
+        instance = false,
+        name = "Sailing_HumanityEdge",
+        x = 103,
+        y = 3,
+        z = 165
+      }
     },
     Nominomicon = {
       sections = {},
@@ -49,11 +63,139 @@
               values = {}
             },
             Equipment = {
-              sections = {},
+              sections = {
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumHelmet",
+                    ["item-key"] = 1,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumBoots",
+                    ["item-key"] = 2,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumGloves",
+                    ["item-key"] = 3,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumZweihander",
+                    ["item-key"] = 4,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumPlatebody",
+                    ["item-key"] = 5,
+                    ["item-noted"] = false
+                  }
+                }
+              },
               values = {}
             },
             Player = {
-              sections = {},
+              sections = {
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "CookedLightningStormfish",
+                    ["item-key"] = 1,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "CookedLightningStormfish",
+                    ["item-key"] = 2,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "CookedLightningStormfish",
+                    ["item-key"] = 3,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "CookedLightningStormfish",
+                    ["item-key"] = 4,
+                    ["item-noted"] = false
+                  }
+                }
+              },
               values = {}
             }
           },
@@ -64,6 +206,25 @@
     },
     Player = {
       sections = {
+        Dialog = {
+          sections = {
+            Orlando = {
+              sections = {},
+              values = {
+                quest_tutorial_main_equipped_items_thought = true,
+                quest_tutorial_main_started_asked_what_happened = true,
+                quest_tutorial_main_started_asked_what_is_going_on = true,
+                quest_tutorial_main_started_got_up = true,
+                quest_tutorial_main_starting_player_class = 1
+              }
+            },
+            VizierRockKnight = {
+              sections = {},
+              values = {}
+            }
+          },
+          values = {}
+        },
         Info = {
           sections = {
             Gender = {

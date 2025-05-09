@@ -17,8 +17,11 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local Controller = require "ItsyScape.UI.Controller"
 local TutorialCommon = require "Resources.Game.Peeps.Tutorial.Common"
+local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
 
 local DemoNewPlayerController = Class(Controller)
 
@@ -140,6 +143,20 @@ function DemoNewPlayerController:newPlayer(e)
 	class.storage:getRoot():set("filename", "Player/Demo.dat")
 	self:getDirector():setPlayerStorage(player.playerID, class.storage)
 
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	equipment = equipment and equipment.equipment
+	if equipment then
+		Log.info("Deserializing equipment...")
+		equipment:load(equipment:getBroker())
+	end
+	
+	local inventory = peep:getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+	if inventory then
+		Log.info("Deserializing inventory..")
+		inventory:load(inventory:getBroker())
+	end
+
 	peep:applySkins()
 	peep:applyGender()
 
@@ -159,6 +176,18 @@ function DemoNewPlayerController:newPlayer(e)
 		status.currentPrayer = self.LEVEL
 		status.maximumPrayer = self.LEVEL
 	end
+
+	Utility.UI.openInterface(peep, "DramaticText", false, { {
+		color = { 1, 1, 1, 1 },
+		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+		fontSize = 48,
+		textShadow = true,
+		align = 'center',
+		width = DramaticTextController.CANVAS_WIDTH - 64,
+		x = 32,
+		y = DramaticTextController.CANVAS_HEIGHT / 2 - 64,
+		text = string.format("Recovering from a freak lightning strike,\n%s starts the journey to save the world...", peep:getName())
+	} }, 5)
 
 	self:onClose(class.info.style)
 	self:getGame():getUI():closeInstance(self)
