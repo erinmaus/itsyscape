@@ -16,7 +16,7 @@ GamepadIcon.DEFAULT_SIZE = 48
 GamepadIcon.DEFAULT_SPEED = 0.5
 
 GamepadIcon.CONTROLLERS = {
-	["Default"] = "SteamDeck",
+	["Default"] = "PlayStation",
 	["DualSense Wireless Controller"] = "PlayStation",
 	["Steam Deck"] = "SteamDeck"
 }
