@@ -33,7 +33,7 @@ do
 	ItsyScape.Meta.Dummy {
 		Tier = 50,
 		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MAGIC,
-		Hitpoints = 100,
+		Hitpoints = 50,
 
 		ChaseDistance = math.huge,
 
@@ -86,7 +86,7 @@ do
 	ItsyScape.Meta.Dummy {
 		Tier = 50,
 		CombatStyle = ItsyScape.Utility.Weapon.STYLE_MELEE,
-		Hitpoints = 100,
+		Hitpoints = 50,
 
 		ChaseDistance = math.huge,
 
@@ -139,7 +139,7 @@ do
 	ItsyScape.Meta.Dummy {
 		Tier = 50,
 		CombatStyle = ItsyScape.Utility.Weapon.STYLE_ARCHERY,
-		Hitpoints = 100,
+		Hitpoints = 50,
 
 		ChaseDistance = math.huge,
 
