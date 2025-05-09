@@ -250,6 +250,7 @@ function MakeContentTab:refresh(state)
 	GamepadContentTab.refresh(self, state)
 
 	self:updateConstraints()
+	self.makeInput:setValue(state.actionCount or 1)
 end
 
 return MakeContentTab
