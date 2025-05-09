@@ -29,7 +29,7 @@ Common.WAIT_OPEN_FUNCTION = function(t, f)
 	return function(target, state)
 		state.time = nil
 
-		if f then
+		if Class.isCallable(f) then
 			f = f(target, state)
 		end
 
