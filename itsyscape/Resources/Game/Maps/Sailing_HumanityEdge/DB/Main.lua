@@ -441,6 +441,15 @@ do
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = M["PeakYendorian1"]
 	}
+
+	M["PeakYendorian1"] {
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Sailing_HumanityEdge_MiscDropTable",
+				Count = 1
+			}
+		}
+	}
 end
 
 M["PeakYendorian2"] = ItsyScape.Resource.MapObject.Unique()
@@ -499,6 +508,15 @@ do
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = M["PeakYendorian2"]
 	}
+
+	M["PeakYendorian2"] {
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Sailing_HumanityEdge_MiscDropTable",
+				Count = 1
+			}
+		}
+	}
 end
 
 M["PeakYenderhound"] = ItsyScape.Resource.MapObject.Unique()
@@ -531,6 +549,15 @@ do
 		State = "attack",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AttackLogic.lua",
 		Resource = M["PeakYenderhound"]
+	}
+
+	M["PeakYenderhound"] {
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Sailing_HumanityEdge_MiscDropTable",
+				Count = 1
+			}
+		}
 	}
 end
 
@@ -2602,6 +2629,15 @@ do
 
 	M["MiningKnight2"] {
 		TalkAction
+	}
+end
+
+do
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CookedLightningStormfish",
+		Weight = 1,
+		Count = 3,
+		Resource = ItsyScape.Resource.DropTable "Sailing_HumanityEdge_MiscDropTable"
 	}
 end
 
