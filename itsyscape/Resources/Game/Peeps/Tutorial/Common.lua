@@ -33,7 +33,7 @@ Common.WAIT_OPEN_FUNCTION = function(t, f)
 		end
 
 		return function()
-			if f and f() then
+			if Class.isCallable(f) and f() then
 				return true
 			end
 
