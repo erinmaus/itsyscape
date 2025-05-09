@@ -10,6 +10,7 @@
 local utf8 = require "utf8"
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
+local GamepadNumberInput = require "ItsyScape.UI.GamepadNumberInput"
 local TextInput = require "ItsyScape.UI.TextInput"
 local WidgetStyle = require "ItsyScape.UI.WidgetStyle"
 local patchy = require "patchy"
@@ -78,16 +79,6 @@ function TextButtonStyle:draw(widget)
 		self.states['inactive'](width, height)
 	end
 
-	do
-		local x, y = itsyrealm.graphics.getPseudoScissor()
-		itsyrealm.graphics.intersectPseudoScissor(
-			x + self.padding * scaleX, y + self.padding * scaleY,
-			(width - self.padding * scaleX * 2) * scaleX,
-			(height - self.padding * scaleY * 2) * scaleY)
-		itsyrealm.graphics.applyPseudoScissor()
-		itsyrealm.graphics.translate(self.padding, self.padding)
-	end
-
 	if #widget:getText() > 0 then
 		local previousFont = love.graphics.getFont()
 
@@ -139,6 +130,30 @@ function TextButtonStyle:draw(widget)
 			selectionY = textY
 
 			textWidth = font:getWidth(widget:getText())
+		end
+
+		if selectionWidth > 0 and Class.isCompatibleType(widget, GamepadNumberInput) then
+			love.graphics.setColor(self.selectionColor:get())
+			itsyrealm.graphics.polygon(
+				"fill",
+				selectionX, selectionY,
+				selectionX + selectionWidth / 2, selectionY - self.padding * 2,
+				selectionX + selectionWidth, selectionY)
+			itsyrealm.graphics.polygon(
+				"fill",
+				selectionX, selectionY + font:getHeight(),
+				selectionX + selectionWidth / 2, selectionY + font:getHeight() + self.padding * 2,
+				selectionX + selectionWidth, selectionY + font:getHeight())
+		end
+
+		do
+			local x, y = itsyrealm.graphics.getPseudoScissor()
+			itsyrealm.graphics.intersectPseudoScissor(
+				x + self.padding * scaleX, y + self.padding * scaleY,
+				(width - self.padding * scaleX * 2) * scaleX,
+				(height - self.padding * scaleY * 2) * scaleY)
+			itsyrealm.graphics.applyPseudoScissor()
+			itsyrealm.graphics.translate(self.padding, self.padding)
 		end
 
 		if selectionWidth > 0 then
