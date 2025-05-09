@@ -425,17 +425,17 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 200,
+		Hitpoints = 100,
 		Resource = M["PeakYendorian1"]
 	}
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30),
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
 		Prayer = 55,
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
@@ -492,17 +492,17 @@ do
 	}
 
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 200,
+		Hitpoints = 100,
 		Resource = M["PeakYendorian2"]
 	}
 
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(30, 1),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(30),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30),
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
 		Prayer = 55,
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
