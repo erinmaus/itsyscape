@@ -258,13 +258,19 @@ function Probe:_run(callback)
 
 		if interface == "ItsyScape.Game.Model.Actor" and tests.actors then
 			local actor = self.gameView:getActorByID(id)
-			self:_actor(actor, Vector(x, y, z), distance)
+			if actor then
+				self:_actor(actor, Vector(x, y, z), distance)
+			end
 		elseif interface == "ItsyScape.Game.Model.Prop" and tests.props then
 			local prop = self.gameView:getPropByID(id)
-			self:_prop(prop, Vector(x, y, z), distance)
+			if prop then
+				self:_prop(prop, Vector(x, y, z), distance)
+			end
 		elseif interface == "X.Item" and tests.loot then
 			local item = self.game:getStage():getItem(id)
-			self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, Vector(x, y, z), distance)
+			if item then
+				self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, Vector(x, y, z), distance)
+			end
 		end
 	end
 
