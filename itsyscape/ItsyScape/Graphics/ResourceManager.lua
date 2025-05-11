@@ -15,8 +15,11 @@ local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
 ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 120
+ResourceManager.LOADING_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 20
 ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
-ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = _DEBUG == "plus" and 1 or 2 / 1000
+
+ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_RUNTIME = _DEBUG == "plus" and 1 or 2 / 1000
+ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING = _DEBUG == "plus" and 1 or 10 / 1000
 
 ResourceManager.FILE_IO_THREADS = 4
 
@@ -125,11 +128,8 @@ function ResourceManager:new()
 	self.pendingAsyncEvents = {}
 	self.pendingResources = {}
 
-	if _MOBILE then
-		self.frameDuration = ResourceManager.MOBILE_FRAME_DURATION
-	else
-		self.frameDuration = ResourceManager.DESKTOP_FRAME_DURATION
-	end
+	self.maxTimeForSyncResource = ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_RUNTIME
+	self:setFrameDuration()
 
 	self.onPending = Callback(false)
 	self.onUpdate = Callback(false)
@@ -143,6 +143,32 @@ function ResourceManager:new()
 
 		table.insert(self.fileIOThreads, fileIOThread)
 	end
+end
+
+function ResourceManager:getMaxTimeForSyncResource()
+	return self.maxTimeForSyncResource
+end
+
+function ResourceManager:setMaxTimeForSyncResource(value)
+	self.maxTimeForSyncResource = value or ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_RUNTIME
+end
+
+function ResourceManager:getFrameDuration()
+	return self.frameDuration
+end
+
+function ResourceManager:setFrameDuration(value)
+	if not value or value == 0 then
+		if _MOBILE then
+			self.frameDuration = ResourceManager.MOBILE_FRAME_DURATION
+		else
+			self.frameDuration = ResourceManager.DESKTOP_FRAME_DURATION
+		end
+
+		return
+	end
+
+	self.frameDuration = value
 end
 
 function ResourceManager:cancel(handle)
@@ -167,11 +193,6 @@ end
 
 function ResourceManager:clear()
 	table.clear(self.cache)
-end
-
--- Sets the frame duration, in seconds.
-function ResourceManager:setFrameDuration(value)
-	self.frameDuration = value or self.frameDuration
 end
 
 -- Returns true if pending resources are in the queue, false otherwise.
@@ -342,7 +363,7 @@ function ResourceManager:update()
 		currentTime = love.timer.getTime()
 
 		c = c + 1
-	until currentTime > pendingSyncEventBreakTime or elapsedTimeForSingleResource > ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE
+	until currentTime > pendingSyncEventBreakTime or elapsedTimeForSingleResource > self.maxTimeForSyncResource
 
 	if _LOG_WRITE_ALL and c > 0 then
 		Log.debug("Ran async event(s), %d pending; %d iterations.", c, #self.pendingSyncEvents, c)

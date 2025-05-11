@@ -352,6 +352,8 @@ function DemoApplication:savePlayer(_, storage, isError)
 end
 
 function DemoApplication:setMapName(_, _, map)
+	Log.info("Player loaded new map '%s'.", map)
+
 	self:updateMemoryLabel(map)
 end
 
