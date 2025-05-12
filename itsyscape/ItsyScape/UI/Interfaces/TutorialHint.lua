@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local Label = require "ItsyScape.UI.Label"
@@ -40,13 +41,14 @@ end
 
 function TutorialHint.Circle:draw()
 	local time = love.timer.getTime()
-	local alpha = math.sin(time * math.pi * 2)
+	local delta = time % 1
+	local color = Color.fromHSL(math.abs(delta), 1, 0.5)
 
-	love.graphics.setLineWidth(4)
+	love.graphics.setLineWidth(4 + math.sin(delta * math.pi) * 8)
 	love.graphics.setBlendMode('alpha')
-	love.graphics.setColor(0, 0, 0, alpha)
+	love.graphics.setColor(0, 0, 0, 1)
 	itsyrealm.graphics.circle('line', 2, 2, self.radius)
-	love.graphics.setColor(0, 1, 0, alpha)
+	love.graphics.setColor(color:get())
 	itsyrealm.graphics.circle('line', 0, 0, self.radius)
 	love.graphics.setColor(1, 1, 1, 1)
 end
@@ -58,14 +60,15 @@ end
 
 function TutorialHint.Rectangle:draw()
 	local time = love.timer.getTime()
-	local alpha = math.sin(time * math.pi * 2)
+	local delta = time % 1
+	local color = Color.fromHSL(math.abs(delta), 1, 0.5)
 
-	love.graphics.setLineWidth(4)
+	love.graphics.setLineWidth(4 + math.sin(delta * math.pi) * 8)
 
 	local w, h = self:getSize()
-	love.graphics.setColor(0, 0, 0, alpha)
+	love.graphics.setColor(0, 0, 0, 1)
 	itsyrealm.graphics.rectangle('line', 2, 2, w, h, 4, 4)
-	love.graphics.setColor(0, 1, 0, alpha)
+	love.graphics.setColor(color:get())
 	itsyrealm.graphics.rectangle('line', 0, 0, w, h, 4, 4)
 	love.graphics.setColor(1, 1, 1, 1)
 end
