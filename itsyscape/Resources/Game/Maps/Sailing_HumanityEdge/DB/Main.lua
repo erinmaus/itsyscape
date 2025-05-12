@@ -1273,6 +1273,13 @@ do
 		Resource = M["CapnRaven_PirateBodyGuard1"]
 	}
 
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = -50,
+		StrengthMelee = -40,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["CapnRaven_PirateBodyGuard1"]
+	}
+
 	M["CapnRaven_PirateBodyGuard1"] {
 		ItsyScape.Action.Attack()
 	}
@@ -1307,6 +1314,13 @@ do
 	ItsyScape.Meta.PeepEquipmentItem {
 		Item = ItsyScape.Resource.Item "ItsyLongsword",
 		Count = 1,
+		Resource = M["CapnRaven_PirateBodyGuard2"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = -50,
+		StrengthMelee = -40,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = M["CapnRaven_PirateBodyGuard2"]
 	}
 
