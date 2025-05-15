@@ -61,7 +61,8 @@ function StandardHealthBar:new()
 	self.isReady = false
 
 	self._stencil = function()
-		itsyrealm.graphics.rectangle("fill", 4, 4, width, height, 4, 4)
+		local width, height = self:getSize()
+		love.graphics.rectangle("fill", 0, 0, width, height, 4, 4)
 	end
 end
 
@@ -229,7 +230,7 @@ function StandardHealthBar:draw(resources, state)
 		itsyrealm.graphics.rectangle("fill", width - damageWidth, 0, damageWidth, height, 4, 4)
 	end
 
-	itsyrealm.graphics.pushCallback(self._stencil)
+	itsyrealm.graphics.pushCallback(love.graphics.stencil, self._stencil)
 	itsyrealm.graphics.pushCallback(love.graphics.setStencilTest, "greater", 0)
 
 	for _, bloodSplat in ipairs(self.bloodSplats) do
