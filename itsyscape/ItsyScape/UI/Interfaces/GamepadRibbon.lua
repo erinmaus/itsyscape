@@ -199,6 +199,8 @@ function GamepadRibbon:new(id, index, ui)
 
 	self:performLayout()
 	self.isDirty = false
+
+	self.combinedState = {}
 end
 
 function GamepadRibbon:gamepadRelease(joystick, button)
@@ -453,12 +455,14 @@ function GamepadRibbon:_openInventoryTab()
 end
 
 function GamepadRibbon:_updateInventoryTab()
-	local state = self:getState()
+	if not self.combinedState.inventory then
+		return
+	end
 
-	self.inventoryTabContent:refresh(state.inventory)
+	self.inventoryTabContent:refresh(self.combinedState.inventory)
 
 	local index = self.inventoryTabContent:getCurrentInventorySlotIndex()
-	local item = state.inventory.items[index]
+	local item = self.combinedState.inventory.items[index]
 	local otherItem
 	if item then
 		local slot
@@ -468,7 +472,7 @@ function GamepadRibbon:_updateInventoryTab()
 			slot = item.slot
 		end
 
-		otherItem = state.equipment.items[slot]
+		otherItem = self.combinedState.equipment.items[slot]
 	end
 
 	if self.currentTabName == self.TAB_PLAYER_INVENTORY then
@@ -498,12 +502,14 @@ function GamepadRibbon:_openEquipmentTab()
 end
 
 function GamepadRibbon:_updateEquipmentTab()
-	local state = self:getState()
+	if not (self.combinedState.equipment and self.combinedState.stats) then
+		return
+	end
 
 	self.equipmentTabContent:refresh({
-		items = state.equipment.items,
-		count = state.equipment.count,
-		stats = state.stats
+		items = self.combinedState.equipment.items,
+		count = self.combinedState.equipment.count,
+		stats = self.combinedState.stats
 	})
 
 	local slot = self.equipmentTabContent:getCurrentEquipmentSlot()
@@ -545,12 +551,16 @@ function GamepadRibbon:_openSkillTab()
 end
 
 function GamepadRibbon:_updateSkillTab()
-	local state = self:getState()
+	if not self.combinedState.skills then
+		return
+	end
 
-	self.skillsTabContent:refresh(state.skills)
+	self.skillsTabContent:refresh(self.combinedState.skills)
 
 	local index = self.skillsTabContent:getCurrentSkillIndex()
-	self.skillInfoTabContent:refresh(state.skills.skills[index])
+	if self.combinedState.skills then
+		self.skillInfoTabContent:refresh(self.combinedState.skills.skills[index])
+	end
 end
 
 function GamepadRibbon:_updateSettingsTab()
@@ -641,6 +651,22 @@ function GamepadRibbon:activate(tab, isTabButton)
 
 		self.activeButton = button
 	end
+end
+
+function GamepadRibbon:updateSkills(skills)
+	self.combinedState.skills = skills
+end
+
+function GamepadRibbon:updateEquipment(equipment)
+	self.combinedState.equipment = equipment
+end
+
+function GamepadRibbon:updateEquipmentStats(stats)
+	self.combinedState.stats = stats
+end
+
+function GamepadRibbon:updateInventory(inventory)
+	self.combinedState.inventory = inventory
 end
 
 function GamepadRibbon:update(delta)
