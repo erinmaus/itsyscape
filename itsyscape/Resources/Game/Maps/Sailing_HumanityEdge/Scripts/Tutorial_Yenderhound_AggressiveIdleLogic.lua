@@ -19,6 +19,8 @@ local Tree = BTreeBuilder.Node() {
 	Mashina.ParallelTry {
 		Mashina.Sequence {
 			Mashina.Peep.FindNearbyCombatTarget {
+				line_of_sight = true,
+
 				-- We don't want to gang up on single a potential target in the tutorial.
 				filter = function(peep)
 					local hits = peep:getDirector():probe(

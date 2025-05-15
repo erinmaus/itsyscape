@@ -274,66 +274,6 @@ do
 	}
 end
 
-M["WizardDummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "WizardDummy",
-		Map = M._MAP,
-		Resource = M["WizardDummy"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "TutorialDummy_Wizard",
-		MapObject = M["WizardDummy"],
-		DoesNotDespawn = 1,
-		DoesNotRespawn = 1
-	}
-end
-
-M["ArcherDummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "ArcherDummy",
-		Map = M._MAP,
-		Resource = M["ArcherDummy"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "TutorialDummy_Archer",
-		MapObject = M["ArcherDummy"],
-		DoesNotDespawn = 1,
-		DoesNotRespawn = 1
-	}
-end
-
-M["WarriorDummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "WarriorDummy",
-		Map = M._MAP,
-		Resource = M["WarriorDummy"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "TutorialDummy_Warrior",
-		MapObject = M["WarriorDummy"],
-		DoesNotDespawn = 1,
-		DoesNotRespawn = 1
-	}
-end
-
-M["Anchor_Orlando_PlaceDummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 65,
-		PositionY = 5,
-		PositionZ = 159,
-		Name = "Anchor_Orlando_PlaceDummy",
-		Map = M._MAP,
-		Resource = M["Anchor_Orlando_PlaceDummy"]
-	}
-end
-
 M["Anchor_Orlando_Duel"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -405,22 +345,22 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
+		Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
 		MapObject = M["PeakYendorian1"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "attack",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_GoodAttackLogic.lua",
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_AggressiveIdleLogic.lua",
+		IsDefault = 1,
 		Resource = M["PeakYendorian1"]
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_AggressiveIdleLogic.lua",
-		IsDefault = 1,
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_RiteLogic.lua",
 		Resource = M["PeakYendorian1"]
 	}
 
@@ -472,22 +412,22 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
+		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
 		MapObject = M["PeakYendorian2"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "attack",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_GoodAttackLogic.lua",
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_AggressiveIdleLogic.lua",
+		IsDefault = 1,
 		Resource = M["PeakYendorian2"]
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_AggressiveIdleLogic.lua",
-		IsDefault = 1,
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_DeflectLogic.lua",
 		Resource = M["PeakYendorian2"]
 	}
 
@@ -1477,8 +1417,8 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "tutorial-duel",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_DuelLogic.lua",
+		State = "tutorial-deflect",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_DeflectLogic.lua",
 		Resource = M["Orlando"]
 	}
 end

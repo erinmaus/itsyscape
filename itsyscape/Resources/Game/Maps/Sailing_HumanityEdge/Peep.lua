@@ -18,6 +18,7 @@ local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Probe = require "ItsyScape.Peep.Probe"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local ImmortalBehavior = require "ItsyScape.Peep.Behaviors.ImmortalBehavior"
@@ -53,12 +54,6 @@ Island.CLASS_INVENTORY = {
 	[Weapon.STYLE_MELEE] = {
 		{ id = "IsabelliumZweihander", count = 1 }
 	}
-}
-
-Island.MAP_OBJECT_DUMMY = {
-	[Weapon.STYLE_MAGIC] = "WizardDummy", 
-	[Weapon.STYLE_ARCHERY] = "ArcherDummy", 
-	[Weapon.STYLE_MELEE] = "WarriorDummy", 
 }
 
 Island.FISHING_INVENTORY = {
@@ -569,6 +564,7 @@ function Island:initCompanion(playerPeep, companion)
 	local peep = self:getCompanion(playerPeep, companion)
 
 	peep:addBehavior(ImmortalBehavior)
+	peep:removeBehavior(AggressiveBehavior)
 
 	local player = Utility.Peep.getPlayerModel(playerPeep)
 	if peep and player then
@@ -610,6 +606,7 @@ function Island:onFinishPreparingTeam(playerPeep)
 	self:teleportCompanion(playerPeep, "Orlando")
 	if Utility.Quest.isNextStep("Tutorial", "Tutorial_CookedLightningStormfish", playerPeep) then
 		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), "tutorial-chop")
+		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), "tutorial-follow-player")
 	end
 end
 
@@ -821,7 +818,18 @@ function Island:onShowYieldHint(playerPeep)
 end
 
 function Island:onShowEatHint(playerPeep)
-	TutorialCommon.showEatHint(playerPeep)
+	local didEat = false
+	Utility.Quest.listenForAction(playerPeep, "Item", "CookedLightningStormfish", "Eat", function()
+		didEat = true
+
+		self:talkToPeep(playerPeep, "Orlando", nil, "quest_tutorial_main_defeat_yenderhounds.did_eat")
+	end)
+
+	TutorialCommon.showEatHint(playerPeep, function()
+		if not didEat then
+			self:talkToPeep(playerPeep, "Orlando", nil, "quest_tutorial_main_defeat_yenderhounds.needs_to_eat_again")
+		end
+	end)
 end
 
 function Island:onShowOffensiveRiteHint(playerPeep)
@@ -980,17 +988,16 @@ function Island:updateTutorialEncounterYenderhoundsStep(playerPeep)
 	if not isAlive and Utility.Peep.isEnabled(playerPeep) then
 		Utility.Peep.disable(playerPeep)
 
-		local stormfish = playerPeep:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
+		local stormfishInInventory = playerPeep:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
+		local _, _, stormfishOnGround = TutorialCommon.hasPeepDroppedItems(playerPeep, "^CookedLightningStormfish$")
+		local totalStormfish = stormfishInInventory + stormfishOnGround
 		local status = playerPeep:getBehavior(CombatStatusBehavior)
-		local hitpointsRatio = status and (status.currentHitpoints / status.maximumHitpoints)
 
 		local stitch
-		if stormfish >= 3 and hitpointsRatio > 0.75 then
-			stitch = "good_scenario"
-		elseif stormfish <= 1 and hitpointsRatio < 0.25 then
-			stitch = "worst_scenario"
+		if totalStormfish >= 4 and (status and status.currentHitpoints < status.maximumHitpoints) then
+			stitch = "needs_to_eat"
 		else
-			stitch = "bad_scenario"
+			stitch = "good_job"
 		end
 
 		local knot = string.format("quest_tutorial_main_defeat_yenderhounds.%s", stitch)
@@ -1029,8 +1036,8 @@ function Island:updateTutorialCookStormfishStep(playerPeep)
 
 	local count = playerPeep:getState():count("Item", "CookedLightningStormfish", { ["item-inventory"] = true })
 
-	local _, groundFish = TutorialCommon.hasPeepDroppedItems(playerPeep, "^CookedLightningStormfish$")
-	count = count + #groundFish
+	local _, _, numGroundFish = TutorialCommon.hasPeepDroppedItems(playerPeep, "^CookedLightningStormfish$")
+	count = count + numGroundFish
 
 	if count >= 5 and Utility.Peep.isEnabled(playerPeep) then
 		Utility.Peep.disable(playerPeep)
@@ -1105,136 +1112,6 @@ function Island:updateTutorialDefeatKeelhaulerStep(playerPeep)
 	end
 end
 
-function Island:onPrepareDuel(playerPeep)
-	local orlando = self:getCompanion(playerPeep, "Orlando")
-	Utility.Peep.setMashinaState(orlando, false)
-
-	local isOrlandoPending = true
-	do
-		local x, y, z = Utility.Map.getAnchorPosition(
-			self:getDirector():getGameInstance(),
-			Utility.Peep.getMapResource(self),
-			"Anchor_Orlando_Duel")
-
-		local w = Utility.Peep.queueWalk(
-			orlando,
-			x, z, Utility.Peep.getLayer(playerPeep),
-			0,
-			{ asCloseAsPossible = true, isPosition = true })
-
-		w:register(function()
-			isOrlandoPending = false
-		end)
-	end
-
-	local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
-	Utility.Peep.setMashinaState(knightCommander, false)
-
-	local isKnightCommanderPending = true
-	do
-		local x, y, z = Utility.Map.getAnchorPosition(
-			self:getDirector():getGameInstance(),
-			Utility.Peep.getMapResource(self),
-			"Anchor_KnightCommander_Duel")
-
-		local w = Utility.Peep.queueWalk(
-			knightCommander,
-			x, z, Utility.Peep.getLayer(playerPeep),
-			0,
-			{ asCloseAsPossible = true, isPosition = true })
-		w:register(function()
-			isKnightCommanderPending = false
-		end)
-	end
-
-	do
-		Utility.Peep.disable(playerPeep)
-
-		local x, y, z = Utility.Map.getAnchorPosition(
-			self:getDirector():getGameInstance(),
-			Utility.Peep.getMapResource(self),
-			"Anchor_Player_Duel")
-
-		local playerWalk = Utility.Peep.queueWalk(
-			playerPeep,
-			x, z, Utility.Peep.getLayer(playerPeep),
-			0,
-			{ asCloseAsPossible = true, isPosition = true, isCutscene = true })
-
-		playerWalk:register(function(s)
-			if s then
-				local condition = function()
-					if isOrlandoPending or orlando:getCommandQueue():getIsPending() then
-						return true
-					end
-
-					if isKnightCommanderPending or knightCommander:getCommandQueue():getIsPending() then
-						return true
-					end
-
-					return false
-				end
-
-				playerPeep:getCommandQueue():push(CompositeCommand(condition), WaitCommand(math.huge))
-				playerPeep:getCommandQueue():push(CallbackCommand(function()
-					self:doTalkToPeep(playerPeep, "Orlando", function()
-						Utility.Peep.enable(playerPeep)
-
-						local attackableOrlandoResource = self:getDirector():getGameDB():getResource("Orlando_Attackable", "Peep")
-						if attackableOrlandoResource then
-							Utility.Peep.setResource(orlando, attackableOrlandoResource)
-						end
-
-						local playerCharacter = Utility.Peep.getCharacter(playerPeep)
-						if playerCharacter then
-							local team = orlando:getBehavior(TeamBehavior)
-							team.override[playerCharacter.name] = TeamsBehavior.ENEMY
-						end
-
-						Utility.Peep.setMashinaState(orlando, "tutorial-duel")
-						Utility.Peep.setMashinaState(knightCommander, "tutorial-duel")
-					end, "quest_tutorial_duel.begin")
-				end))
-			else
-				Utility.Peep.enable(playerPeep)
-			end
-		end)
-	end
-end
-
-function Island:onPlayerFinishDuel(playerPeep)
-	local orlando = self:getCompanion(playerPeep, "Orlando")
-	local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
-
-	local regularOrlandoResource = self:getDirector():getGameDB():getResource("Orlando", "Peep")
-	if regularOrlandoResource then
-		Utility.Peep.setResource(orlando, regularOrlandoResource)
-	end
-
-	local playerCharacter = Utility.Peep.getCharacter(playerPeep)
-	if playerCharacter then
-		local team = orlando:getBehavior(TeamBehavior)
-		team.override[playerCharacter.name] = nil
-	end
-
-	Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
-	Utility.Peep.setMashinaState(knightCommander, "tutorial-follow-player")
-
-	Utility.Peep.toggleEffect(playerPeep, "Tutorial_NoKill", false)
-
-	local orlandoStatus = orlando:getBehavior(CombatStatusBehavior)
-	if orlandoStatus.currentHitpoints < orlandoStatus.maximumHitpoints then
-		orlando:poke("heal", {
-			hitPoints = orlandoStatus.maximumHitpoints - orlandoStatus.currentHitpoints
-		})
-	end
-
-	self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
-		Utility.Peep.enable(playerPeep)
-		self:transitionTutorial(playerPeep, "Tutorial_Combat")
-	end, "quest_tutorial_duel.finished")
-end
-
 function Island:onGunnersEngagePlayer(playerPeep)
 	Utility.Peep.disable(playerPeep)
 	self:doTalkToPeep(playerPeep, "CapnRaven", function()
@@ -1246,82 +1123,6 @@ function Island:onGunnersEngagePlayer(playerPeep)
 
 		Utility.Peep.enable(playerPeep)
 	end, "quest_tutorial_fight_keelhauler.enter_phase_4")
-end
-
-function Island:onPlaceTutorialDummy(playerPeep)
-	local class = Utility.Text.getDialogVariable(playerPeep, "Orlando", "quest_tutorial_main_starting_player_class")
-
-	local orlando = self:getCompanion(playerPeep, "Orlando")
-	Utility.Peep.setMashinaState(orlando, false)
-
-	local x, y, z = Utility.Map.getAnchorPosition(
-		self:getDirector():getGameInstance(),
-		Utility.Peep.getMapResource(self),
-		"Anchor_Orlando_PlaceDummy")
-
-	local orlandoWalk = Utility.Peep.queueWalk(
-		orlando,
-		x, z, Utility.Peep.getLayer(playerPeep),
-		0,
-		{ asCloseAsPossible = true, isPosition = true })
-
-	orlandoWalk:register(function(s)
-		orlando:getCommandQueue():push(CallbackCommand(function()
-			Utility.Peep.setFacing(orlando, 1)
-			Utility.Peep.playAnimation(
-				orlando,
-				"x-tutorial",
-				100,
-				"Human_ActionGive_1")
-
-			local dummyMapObjectName = self.MAP_OBJECT_DUMMY[class] or self.MAP_OBJECT_DUMMY[Weapon.STYLE_MAGIC]
-			local dummyActor = Utility.spawnInstancedMapObjectAtAnchor(self, playerPeep, dummyMapObjectName, "Anchor_Orlando_PlaceDummy")
-			local dummyPeep = dummyActor:getPeep()
-
-			local team = dummyPeep:getBehavior(TeamBehavior)
-
-			local orlandoCharacter = Utility.Peep.getCharacter(self:getCompanion(playerPeep, "Orlando"))
-			local knightCommanderCharacter = Utility.Peep.getCharacter(self:getCompanion(playerPeep, "KnightCommander"))
-			team.override[orlandoCharacter.name] = TeamsBehavior.ALLY
-			team.override[knightCommanderCharacter.name] = TeamsBehavior.ALLY
-
-			Utility.Peep.makeInstanced(dummyPeep, playerPeep)
-			Utility.Peep.teleportCompanion(dummyPeep, orlando)
-			Utility.Peep.setFacing(dummyPeep, -1)
-			Utility.Peep.setMashinaState(dummyPeep, "tutorial-yield")
-
-			dummyPeep:listen("die", function()
-				Utility.Peep.disable(playerPeep)
-				self:talkToPeep(playerPeep, "Orlando", function()
-					Utility.Peep.enable(playerPeep)
-				end, "quest_tutorial_main_duel.ask_to_duel_after_dummy_defeated")
-			end)
-
-			Utility.Peep.disable(playerPeep)
-			self:talkToPeep(playerPeep, "Orlando", function()
-				Utility.Peep.enable(playerPeep)
-				Utility.Peep.setMashinaState(orlando, "tutorial-follow-player")
-			end, "quest_tutorial_combat.place_dummy")
-
-			Utility.Peep.setMashinaState(
-				self:getCompanion(playerPeep, "KnightCommander"),
-				"tutorial-follow-player")
-		end))
-	end)
-
-	Utility.Peep.disable(playerPeep)
-	local playerWalk = Utility.Peep.queueWalk(
-		playerPeep,
-		x, z, Utility.Peep.getLayer(playerPeep),
-		2.5,
-		{ asCloseAsPossible = false, isPosition = true, isCutscene = true })
-	playerWalk:register(function(s)
-		if s then
-			playerPeep:getCommandQueue():push(CallbackCommand(Utility.Peep.enable, playerPeep))
-		else
-			Utility.Peep.enable(playerPeep)
-		end
-	end)
 end
 
 function Island:onGiveTutorialFishingGear(playerPeep)
@@ -1347,8 +1148,6 @@ function Island:updateTutorialPlayer(playerPeep)
 		self:updateTutorialFishStormfishStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_CookedLightningStormfish", playerPeep) then
 		self:updateTutorialCookStormfishStep(playerPeep)
-	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_Combat", playerPeep) then
-		self:updateTutorialCombatStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundPeak", playerPeep) then
 		self:updateTutorialFindPeakStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundYendorians", playerPeep) then

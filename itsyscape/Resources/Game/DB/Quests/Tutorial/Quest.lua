@@ -8,8 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-include "Resources/Game/DB/Quests/Tutorial/Dummies.lua"
-
 ItsyScape.Meta.ResourceName {
 	Value = "The Ultimate Weapon",
 	Language = "en-US",
@@ -36,7 +34,6 @@ Quest "Tutorial" {
 	Step "Tutorial_DefeatedYenderhounds",
 	Step "Tutorial_FishedLightningStormfish",
 	Step "Tutorial_CookedLightningStormfish",
-	Step "Tutorial_Combat",
 	Step "Tutorial_FoundPeak",
 	Step "Tutorial_FoundYendorians",
 	Step "Tutorial_DefeatedKeelhauler",
@@ -88,11 +85,6 @@ Description "Tutorial_FishedLightningStormfish" {
 Description "Tutorial_CookedLightningStormfish" {
 	before = "The lightning stormfish need to be cooked on the campfire Ser Orlando started.",
 	after = "You cooked the lightning stormfish on the campfire Ser Orlando started."
-}
-
-Description "Tutorial_Combat" {
-	before = "After being uncertain of the foes ahead, Ser Orlando suggested you practice combat with him to regain your confidence.",
-	after = "After practicing with Ser Orlando, you regained your confidence and can take on whatever is coming ahead!"
 }
 
 Description "Tutorial_FoundPeak" {

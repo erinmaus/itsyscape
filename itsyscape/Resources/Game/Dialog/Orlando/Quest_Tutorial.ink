@@ -105,11 +105,8 @@ Okay...
 # speaker={C_PLAYER}
 ~ temp did_kill_yenderhounds = player_did_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds")
 ~ temp in_fishing_area = player_is_in_passage("Passage_FishingArea") && did_kill_yenderhounds
-~ temp did_duel = player_did_quest_step("Tutorial", "Tutorial_Combat")
 * {in_fishing_area} [(Ask about fishing).] %person(Ser Orlando), I have a question about fishing...
   -> quest_tutorial_main_fish
-* {in_fishing_area && did_duel} [(Ask about dueling).] %person(Ser Orlando), I have a question about dueling...
-  -> quest_tutorial_main_duel
 * {in_fishing_area} [(Talk about something else.)]
   -> table_of_contents
 * {in_fishing_area} [(Don't say anything.)]
@@ -126,7 +123,6 @@ Okay...
     - player_is_next_quest_step("Tutorial", "Tutorial_FoundYenderhounds"): -> quest_tutorial_main_find_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_FishedLightningStormfish"): -> quest_tutorial_main_fish
-    - player_is_next_quest_step("Tutorial", "Tutorial_Combat"): -> quest_tutorial_combat
     - player_is_next_quest_step("Tutorial", "Tutorial_FoundPeak"): -> quest_tutorial_ascend_peak
     - player_is_next_quest_step("Tutorial", "Tutorial_FoundYendorians"): -> quest_tutorial_ascend_peak
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedKeelhauler"): -> quest_tutorial_fight_keelhauler
@@ -677,7 +673,7 @@ You took a beating! And you don't have any food to heal yourself.
 
 -> victory_outro
 
-= bad_scenario
+= needs_to_eat
 
 -> victory_intro ->
 
@@ -687,9 +683,35 @@ Ugh... Ouch... I'm in so much pain!
 # speaker={C_ORLANDO}
 Those Yenderhounds were vicious! You need to heal up.
 
+%empty()
+~ player_poke_map("showEatHint")
+
+-> DONE
+
+= needs_to_eat_again
+
+# speaker={C_ORLANDO}
+You took a beating! You gotta heal!
+
+%empty()
+~ player_poke_map("showEatHint")
+
+-> DONE
+
+= did_eat 
+
+# speaker={C_ORLANDO}
+Foods cooked over a camp fire, like fish, only heal.
+
+# speaker={C_ORLANDO}
+But foods that need recipes and a cooking gear heal more and also buff your stats!
+
+# speaker={C_ORLANDO}
+Cooking is amazing! It turns boring old plants and animals into pieces of art!
+
 -> victory_outro
 
-= good_scenario
+= good_job
 
 -> victory_intro ->
 
@@ -697,7 +719,7 @@ Those Yenderhounds were vicious! You need to heal up.
 That was bad...
 
 # speaker={C_ORLANDO}
-It's amazing you weren't hurt that badly!
+It's amazing you weren't hurt at all!
 
 -> victory_outro
 
@@ -714,10 +736,16 @@ Verily. Those mutts spread us thin by attacking each of us individually.
 = victory_outro
 
 # speaker={C_ORLANDO}
+We should get going... But...
+
+# speaker={C_VIZIER_ROCK_KNIGHT}
+"...but?"
+
+# speaker={C_ORLANDO}
 I'm fresh out food...! We gotta re-supply. Thanks-fully there's a fishing spot nearby.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-%item(Lightning stormfish)? You expect me to eat some godsforsaken R'lyhen bottomfeeder?
+Seriously? %item(Lightning stormfish)? You expect me to eat some godsforsaken R'lyhen bottomfeeder?
 
 # speaker={C_ORLANDO}
 ...
@@ -861,7 +889,7 @@ Looks like you've fished up two %item(lightning stormfish)!
 %empty()
 
 ~ play_animation(C_ORLANDO, "Human_ActionGive_1")
-~ player_give_item("CookedLightningStormfish", 3)
+~ player_give_item("LightningStormfish", 3)
 
 # speaker={C_ORLANDO}
 Here's another few raw %item(lightning stormfish) I found... uh, somewhere.
@@ -888,185 +916,12 @@ Sure thing! Lemme get on that.
 
 -> DONE
 
-== quest_tutorial_main_duel ==
+== quest_tutorial_cook_fish ==
 
-= loop
-
-~ temp can_place_dummy = quest_tutorial_orlando_all_dummies_dead()
-
-# speaker={C_PLAYER}
-
-* [(Ask to duel again.)] %person(Ser Orlando), would you like to duel again?
-  -> ask_to_duel
-* {can_place_dummy} [(Ask for practice with the dummy.)] %person(Ser Orlando), can I practice with the dummy?
-  -> ask_to_practice
-
-= ask_to_duel
+= done_cooking
 
 # speaker={C_ORLANDO}
-Sure thing! %person(Ser Commander)!
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-...oh my gods. Are you serious?
-
-# speaker={C_ORLANDO}
-Yep! I am!
-
-%empty()
-~ player_poke_map("prepareDuel")
-
--> DONE
-
-= ask_to_practice
-
-# speaker={C_ORLANDO}
-I got you, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}!
-
-%empty()
-~ player_poke_map("placeTutorialDummy")
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-...oh my gods. Are you serious?
-
-# speaker={C_ORLANDO}
-Yep! I am!
-
-%empty()
-~ player_poke_map("prepareDuel")
-
--> DONE
-
-= ask_to_duel_after_dummy_defeated
-
-# speaker={C_ORLANDO}
-Awesome! So with the dummy knocked out, it's time to... DUEL!
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-...and here we go.
-
-# speaker={C_PLAYER}
-* Actually... I have something I need to do first.
-  -> pause_duel
-* Let's do this!
-  -> quest_tutorial_duel
-
-= pause_duel
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-Are... you... SERIOUS?!
-
-# speaker={C_ORLANDO}
-AHEM.
-
-# speaker={C_ORLANDO}
-(%person(Ser Orlando) gives the %person(Ser Commander) a sharp glare.)
-
-# speaker={C_ORLANDO}
-Go ahead, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}. Just tell me when you wanna duel.
-
-# speaker={C_PLAYER}
-Heard loud and clear!
-
--> DONE
-
-== quest_tutorial_duel ==
-
-# speaker={C_ORLANDO}
-The rules are simple! We fight honorably until the other peep yields.
-
-# speaker={C_ORLANDO}
-When the other peep yields, you gotta yield too. Don't keep fighting!
-
-# speaker={C_ORLANDO}
-%person(Ser Commander) will judge the fight.
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-Very well. If any of you break the rules, I will step in. And you do not want me to step in, given how... annoyed I am.
-
-# speaker={C_ORLANDO}
-Heard loud and clear!
-
-# speaker={C_ORLANDO}
-%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, you can deal the first strike since I challenged you.
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-To your places!
-
-%empty()
-~ player_poke_map("prepareDuel")
-
--> DONE
-
-= begin
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-May %person(Bastiel) watch over this fight and grant the most heroic and chivalrous of you victory.
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-Ready...
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-DUEL!
-
--> DONE
-
-= orlando_yielded
-
-# speaker={C_ORLANDO}
-I yield, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}!
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-%person({player_get_pronoun_uppercase(X_MX)}) {player_name} defeats %person(Ser Orlando) handedly!
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, yield now to end the duel.
-
--> DONE
-
-= player_yielded
-
-# speaker={C_PLAYER}
-I yield, %person(Ser Orlando)!
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-%person(Ser Orlando) defeats %person({player_get_pronoun_uppercase(X_MX)}) {player_name} handedly! Hmmph...
-
-# speaker={C_ORLANDO}
-Wow! That was a good fight! I didn't expect to beat you...
-
-%empty()
-
-~ player_poke_map("playerFinishDuel")
-
--> DONE
-
-= player_yielded_after_orlando
-
-# speaker={C_PLAYER}
-Good fight, %person(Ser Orlando)!
-
-# speaker={C_ORLANDO}
-Wow! That was good! Guess I need more practice... Another day!
-
-%empty()
-~ player_poke_map("playerFinishDuel")
-
--> DONE
-
-= player_should_yield
-
-# speaker={C_ORLANDO}
-Not to sound arrogant, but I think you should yield %person({player_get_pronoun_uppercase(X_MX)}) {player_name}...!
-
-# speaker={C_ORLANDO}
-You don't wanna die, do you?!
-
--> DONE
-
-= finished
-
-# speaker={C_ORLANDO}
-If you want to duel again, just talk to me.
+If you want to keep fishin, go on ahead!
 
 # speaker={C_ORLANDO}
 But if you're comfy... uh, I mean, um,  confident... enough, we can get going.
@@ -1083,226 +938,11 @@ I'll just pretend I didn't hear that, %person(Ser Commander).
 -> DONE
 
 == quest_tutorial_combat ==
-~ temp can_place_dummy = quest_tutorial_orlando_all_dummies_dead()
-~ temp has_placed_dummies = quest_tutorial_orlando_has_dummies()
-
-# speaker={C_ORLANDO}
-Let's teach you how to fight!
-
-# speaker={C_PLAYER}
-* {has_placed_dummies && can_place_dummy} Let's duel!
-  -> quest_tutorial_duel
-* {can_place_dummy} Can you drop a dummy?
-  -> drop_new_dummy
-* -> DONE
-
-= start
-
-# speaker={C_ORLANDO}
-%person({player_get_pronoun_uppercase(X_MX)}) {player_name}, I'm a li'l worried about you.
-
-# speaker={C_ORLANDO}
-You're not fighting like the {quest_tutorial_get_class_name()} I knew...
-
-# speaker={C_ORLANDO}
-...are you okay?
-
-# speaker={C_PLAYER}
-* I'm still a bit out of it...[] Can you help me get back up to speed?
-  -> start_still_out_of_it
-* No, I'm totally fine!
-  -> start_totally_fine
-
-= start_still_out_of_it
-
-# speaker={C_ORLANDO}
-EEEEEEEEEEEEEEEEEEEEEEE!
-
-# speaker={C_ORLANDO}
-I thought you'd never ask!
-
-# speaker={C_ORLANDO}
-Like I said, I'm always prepared!
-
-%empty()
-~ player_poke_map("placeTutorialDummy")
-
--> DONE
-
-= start_totally_fine
-
-# speaker={C_ORLANDO}
-Okay... You sure? So... If we had a mock duel you'd be able to beat me?
-
-# speaker={C_PLAYER}
-* Yes![] Definitely! You stand no chance!
-  -> totally_fine_let_us_duel
-* No![] You're right, I need help.
-  -> start_still_out_of_it
-
-= totally_fine_let_us_duel
-
-# speaker={C_ORLANDO}
-EEEEEEEEEEEEEEEEEEEEEEE!
-
-# speaker={C_ORLANDO}
-Confident! Just like the %person({player_get_pronoun_uppercase(X_MX)}) {player_name} I know!
-
--> quest_tutorial_duel
-
-= place_dummy
-
-{
-  - not quest_tutorial_main_did_place_dummy: -> drop_first_dummy
-  - else: -> drop_n_dummy
-}
-
-= drop_first_dummy
-
-# speaker={C_ORLANDO}
-There we go!
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-I cannot stay silent any longer... You have a dummy on you?!
-
-# speaker={C_ORLANDO}
-I... have my reasons.
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-Of course you do. Of course.
-
-# speaker={C_ORLANDO}
-Anyway... I'll remind you how to fight like a real hero again!
-
-# speaker={C_ORLANDO}
-So whenever you're ready, attack the dummy!
-
-# speaker={C_ORLANDO}
-The dummy can't kill you... Uh, I think it can't, at least... So... you (...probably...) don't gotta worry about that!
-
-%empty()
-~ quest_tutorial_main_did_place_dummy = true
-
--> DONE
-
-= drop_n_dummy
-
-# speaker={C_ORLANDO}
-Whenever you're ready, attack the dummy!
-
-# speaker={C_ORLANDO}
-The dummy can't kill you! So you don't gotta worry about that!
-
--> DONE
-
-= drop_new_dummy
-
-# speaker={C_ORLANDO}
-Lemme go drop another dummy!
-
-%empty()
-~ player_poke_map("placeTutorialDummy")
-
--> DONE
-
-= yield
-
-# speaker={C_ORLANDO}
-Ok, first up, yielding!
-
-# speaker={C_ORLANDO}
-To stop fighting your foe, yield! Then you can just run away!
-
-# speaker={C_ORLANDO}
-The dummy will hold back. Now yield!
-
--> DONE
-
-= did_not_yield
-
-# speaker={C_ORLANDO}
-C'mon, stop attacking the dummy and yield!
-
--> DONE
-
-= did_yield
-
-# speaker={C_ORLANDO}
-Great! If you're ever confused and need help, yield and I'll jump in and help.
-
-# speaker={C_ORLANDO}
-Next up, let's focus on healing... This might hurt a bit!
-
--> DONE
-
-= did_not_eat
-
-{
-  - not player_has_item("CookedLightningStormfish", 1): -> did_not_eat_needs_food
-  - else: -> did_not_eat_has_food
-}
-
-= did_not_eat_needs_food
-
-# speaker={C_ORLANDO}
-Woah, how'd you run out of food already?!
-
-# speaker={C_ORLANDO}
-I gotchu! Here's a %item(cooked lightning stormfish).
-
-%empty()
-
-~ play_animation(C_ORLANDO, "Human_ActionGive_1")
-{not player_give_item("CookedLightningStormfish", 1): -> quest_tutorial_drop_items ->}
-
--> DONE
-
-= eat
-
-# speaker={C_ORLANDO}
-Dummy, yield!
-
-# speaker={C_ORLANDO}
-Looks like you've taken a beating! Time to heal!
-
-{not player_has_item("CookedLightningStormfish", 1): -> did_not_eat_needs_food}
-
--> DONE
-
-= did_not_eat_has_food
-
-# speaker={C_ORLANDO}
-You need to heal! You've taken a beating...
-
-# speaker={C_ORLANDO}
-Let's try again...
-
--> DONE
-
-= did_eat
-
-# speaker={C_ORLANDO}
-Good job eating! Foods cooked over a camp fire, like fish, only heal. But foods that need recipes and a cooking range heal more and also buff your stats!
-
-# speaker={C_ORLANDO}
-Cooking is amazing! It turns boring old plants and animals into pieces of art!
-
-# speaker={C_ORLANDO}
-Next up, we'll look at rites!
-
--> DONE
-
-= incorrect_yield
-
-# speaker={C_ORLANDO}
-Are you okay? Take a break and attack the dummy when you're ready!
-
--> DONE
 
 = can_use_rite
 
 # speaker={C_ORLANDO}
-Wow! Did you see that? The dummy used a rite of malice!
+Y'know, you can use rites, right?!
 
 # speaker={C_ORLANDO}
 Rites of malice deal more damage and rites of bulwark lower damage! They also got a bunch of other cool effects!
@@ -1313,26 +953,11 @@ You can dodge attacks, slow down your foe, get them stuck, lower their stats, an
 # speaker={C_ORLANDO}
 Since rites are kinda, uh, emotional... they require a certain amount of zeal.
 
--> can_use_rite_loop
-
-= can_use_rite_loop
-
-# speaker={C_PLAYER}
-
-* Uh, what is zeal?
-  -> what_is_zeal
-* Rites are emotional?
-  -> what_are_rites
-* [(Continue listening to %person(Ser Orlando).)]
-  -> can_use_rite_post_loop
-
-= can_use_rite_post_loop
-
 # speaker={C_ORLANDO}
 You get zeal from fighting good. The better you're doing, the more zeal you'll get!
 
 # speaker={C_ORLANDO}
-And after you use a rite, it needs to recharge. So you can't use the same rite back-to-back!
+And after you use a rite, it needs to recharge. So you can't use the same rite over'n'over again!
 
 # speaker={C_ORLANDO}
 The cooler, uh, ... I mean stronger the rite, the more zeal it takes and the longer it recharges!
@@ -1371,56 +996,22 @@ I'll show you how to use %hint(Snipe)! It never misses and deals extra damage, b
 = use_tornado
 
 # speaker={C_ORLANDO}
-I'll show you how to use %hint(Tornado)! It's my fave! You spin in a big circle and hit everyone around you. Good if you got ganged up on!
+I'll show you how to use %hint(Tornado)! It's my fave!
+
+# speaker={C_ORLANDO}
+You spin in a big circle and hit everyone around you. Good if you got ganged up on!
 
 -> DONE
 
-# speaker={C_ORLANDO}
-= what_is_zeal
+= preemptively_used_rite
 
 # speaker={C_ORLANDO}
-Zeal means something different for everyone! For me, it's my braveness level. The braver I'm being, the faster I get zeal!
+Wow, awesome job using a rite!
 
 # speaker={C_ORLANDO}
-For you, it might be how smitey you're feeling if you're religious. Or hecks, maybe you're a hippy, and it's how peaceful you're feeling.
+Lemme show you a really cool rite when you're ready!
 
-# speaker={C_ORLANDO}
-Think about what zeal is to you... You might not know right now, and that's okay! Some peeps take forever to figure it out.
-
--> can_use_rite_loop
-
-= what_are_rites
-
-# speaker={C_ORLANDO}
-Rites require a certain connection with your inside self. Like one of those voices in your head!
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-"One of those voices"? Hmm...
-
-# speaker={C_ORLANDO}
-Oh, sorry %person(Ser Commander), I forgot, you probably only got one inner voice, and it's a squealing donkey!
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-... and your inner voices are what, a drove of squealing pigs?
-
-# speaker={C_PLAYER}
-{
-  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_defused_situation") && quest_tutorial_main_defused_scout_argument: Let's put a cork in it.
-  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_inflamed_situation") && quest_tutorial_main_inflamed_scout_argument: How about you both stop acting like a couple of farm animals and get back on topic?
-  - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_ignored_situation") && quest_tutorial_main_ignored_scout_argument: ...
-  - else: Ahem?
-}
-
-# speaker={C_ORLANDO}
-Um... sorries.
-
-# speaker={C_VIZIER_ROCK_KNIGHT}
-Apologies, %person({player_get_pronoun_uppercase(X_MX)}).
-
-# speaker={C_ORLANDO}
-Anyways, increasing your combat skills isn't just about how tough you are. You gotta connect with your inside self!
-
--> can_use_rite_loop
+-> DONE
 
 = correct_rite
 
@@ -1428,7 +1019,7 @@ Anyways, increasing your combat skills isn't just about how tough you are. You g
 Good job! You aced it!
 
 # speaker={C_ORLANDO}
-Now let's try and dodge the dummy's rite...
+Go on and try some other rites, if ya want!
 
 -> DONE
 
@@ -1452,10 +1043,10 @@ It's okay, take your time! Use %hint({quest_tutorial_get_offensive_power_name()}
 = can_deflect
 
 # speaker={C_ORLANDO}
-Look! The dummy is preparing to use a rite!
+Look! The Yendorian is trying to use a rite! That's BAD!
 
 # speaker={C_ORLANDO}
-But don't worry, it won't actually use the rite until I tell it to!
+I'll slow him down, you gotta deflect it!
 
 -> deflect_switch
 
@@ -1473,7 +1064,7 @@ But don't worry, it won't actually use the rite until I tell it to!
 = use_bash_again 
 
 # speaker={C_ORLANDO}
-You gotta use %hint(Bash) again since you're using a %hint(defensive stance)!
+Use %hint(Bash) again since you're using a %hint(defensive stance)!
 
 # speaker={C_ORLANDO}
 Do you want me to show you how to use %hint(Bash) again?
@@ -1483,7 +1074,7 @@ Do you want me to show you how to use %hint(Bash) again?
 = use_confuse
 
 # speaker={C_ORLANDO}
-This time, you need to use %hint(Confuse)! This will stop your foe from using their next rite or special attack. It also lowers their accuracy!
+This time, use %hint(Confuse)! This will stop your foe from using their next rite or special attack. It also lowers their accuracy!
 
 # speaker={C_ORLANDO}
 Do you want me to show you how to use %hint(Confuse)?
@@ -1493,7 +1084,7 @@ Do you want me to show you how to use %hint(Confuse)?
 = use_shockwave
 
 # speaker={C_ORLANDO}
-This time, you need to use %hint(Shockwave)! This will stop your foe from using their next rite or special attack. It also stuns them!
+This time, use %hint(Shockwave)! This will stop your foe from using their next rite or special attack. It also stuns them!
 
 # speaker={C_ORLANDO}
 Do you want me to show you how to use %hint(Shockwave)?
@@ -1503,7 +1094,7 @@ Do you want me to show you how to use %hint(Shockwave)?
 = use_parry
 
 # speaker={C_ORLANDO}
-This time, you need to use %hint(Parry)! This one is SO COOL! It will stop your foe from using their next rite or special attack. It also prevents your foe's next attack from hurting you!
+This time, use %hint(Parry)! This one is SO COOL! It will stop your foe from using their next rite or special attack. It also prevents your foe's next attack from hurting you!
 
 # speaker={C_ORLANDO}
 Do you want me to show you how to use %hint(Parry)?
@@ -1531,17 +1122,14 @@ Okay, great! First things first...
 = did_not_deflect
 
 # speaker={C_ORLANDO}
-C'mon, you need to use a rite to counter the dummy!
+C'mon, you need to use a rite to counter me!
 
 -> deflect_switch
 
 = correct_deflect
 
 # speaker={C_ORLANDO}
-That... was... AWESOME! You aced it!
-
-# speaker={C_ORLANDO}
-Now go on! Finish the dummy! 
+That... was... AWESOME! You aced it! 
 
 -> DONE
 

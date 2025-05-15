@@ -556,7 +556,7 @@ function Common.hasPeepDroppedItems(playerPeep, pattern)
 		end
 	end
 
-	return hasDroppedItem, filteredInventory
+	return hasDroppedItem, filteredInventory, #filteredInventory
 end
 
 function Common.hasPeepDroppedIsabellium(playerPeep)
