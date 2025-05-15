@@ -1269,6 +1269,24 @@ do
 	}
 end
 
+M["BalsaTree"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 5,
+		PositionZ = 151,
+		Name = "BalsaTree",
+		Map = M._MAP,
+		Resource = M["BalsaTree"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "BalsaTree_Default",
+		MapObject = M["BalsaTree"]
+	}
+end
+
+
 M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectGroup {

@@ -184,6 +184,7 @@ function Make:gather(state, player, prop, toolType, skill)
 				walk:register(function(s)
 					if not s then
 						self:failWithMessage(player, "ActionFail_Walk")
+						return
 					end
 
 					local face = CallbackCommand(Utility.Peep.face, player, prop)

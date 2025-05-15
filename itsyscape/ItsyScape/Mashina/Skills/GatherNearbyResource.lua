@@ -13,6 +13,7 @@ local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourc
 local Probe = require "ItsyScape.Peep.Probe"
 
 local GatherNearbyResource = B.Node("GatherNearbyResource")
+GatherNearbyResource.PEEP = B.Reference()
 GatherNearbyResource.ACTION = B.Reference()
 GatherNearbyResource.RESOURCE = B.Reference()
 GatherNearbyResource.SUCCESS = B.Local()
@@ -31,7 +32,8 @@ function GatherNearbyResource:activated(mashina, state)
 	local resource = state[self.RESOURCE]
 	local director = mashina:getDirector()
 	local game = director:getGameInstance()
-	local p = director:probe(mashina:getLayerName(), Probe.actionOutput(actionType, resource, "Item"))
+	local peeps = state[self.PEEP] and { state[self.PEEP] }
+	local p = peeps or director:probe(mashina:getLayerName(), Probe.actionOutput(actionType, resource, "Item"))
 
 	table.sort(
 		p,

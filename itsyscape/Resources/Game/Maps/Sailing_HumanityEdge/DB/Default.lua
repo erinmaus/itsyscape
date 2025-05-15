@@ -602,30 +602,6 @@ do
 	}
 end
 
-M["CoconutTree_Default2"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 75.000000,
-		PositionY = 5.000000,
-		PositionZ = 151.000000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
-		Name = "CoconutTree_Default2",
-		Map = M._MAP,
-		Resource = M["CoconutTree_Default2"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "BalsaTree_Default",
-		MapObject = M["CoconutTree_Default2"]
-	}
-end
-
 M["CommonTree_Jungle11"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
