@@ -65,6 +65,10 @@ function GamepadToolTip:new()
 	self:setAreChildrenClickThrough(true)
 end
 
+function GamepadToolTip:getOverflow()
+	return true
+end
+
 function GamepadToolTip:setRowSize(width, height)
 	self.maxWidth = width or self.maxWidth
 	self.buttonSize = height or self.buttonSize

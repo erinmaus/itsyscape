@@ -135,7 +135,6 @@ function GamepadIconRenderer:draw(widget, state)
 	local inputProvider = widget:getInputProvider()
 	local joystickName = inputProvider and inputProvider:getCurrentJoystick() and inputProvider:getCurrentJoystick():getName() or "Default"
 
-
 	local icon = self:_getIcon(joystickName, widget)
 	if icon then
 		local scaleX, scaleY

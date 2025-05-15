@@ -2281,7 +2281,7 @@ do
 	}
 
 	ItsyScape.Meta.GatherableProp {
-		Health = 40,
+		Health = 100,
 		SpawnTime = 20,
 		Resource = ItsyScape.Resource.Prop "LightningStormfish_Default"
 	}

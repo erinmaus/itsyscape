@@ -328,7 +328,7 @@ function WidgetRenderManager:draw(widget, state, cursor)
 			itsyrealm.graphics.pushInterface(widget:getSize())
 		end
 
-		if (w > 0 and h > 0) or widget:getOverflow() then
+		if (w > 0 and h > 0) or widget:getOverflow() or (widget:getParent() and widget:getParent():getOverflow()) then
 			widget:beforeDraw()
 			self.debugStats:measure(renderer, widget, state)
 			widget:afterDraw()
