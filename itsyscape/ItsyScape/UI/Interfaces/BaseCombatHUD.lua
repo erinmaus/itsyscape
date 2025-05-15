@@ -99,6 +99,20 @@ function BaseCombatHUD:new(...)
 	self.currentCombatStyle = false
 	self.currentStance = false
 	self.currentSpellID = false
+	self.currentState = {
+		combatants = {},
+		player = {},
+		powers = {},
+		spells = {},
+		activeSpellID = false,
+		prayers = {},
+		food = {},
+		equipment = {},
+		config = {},
+		style = false,
+		stance = false,
+		turns = {}
+	}
 
 	self.pendingSprites = {}
 
@@ -107,6 +121,14 @@ function BaseCombatHUD:new(...)
 	self:performLayout()
 
 	self.onClose:register(self.flushSprites, self)
+end
+
+function BaseCombatHUD:updateState(key, value)
+	self.currentState[key] = value
+end
+
+function BaseCombatHUD:getState()
+	return self.currentState
 end
 
 function BaseCombatHUD:flushSprites()
@@ -622,6 +644,7 @@ function BaseCombatHUD:updateThingies()
 end
 
 function BaseCombatHUD:refresh()
+	print(">>>> refresh")
 	self.wasRefreshed = true
 	self:refreshThingies()
 end

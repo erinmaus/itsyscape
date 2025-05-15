@@ -19,6 +19,7 @@ local Spell = require "ItsyScape.Game.Spell"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local Variables = require "ItsyScape.Game.Variables"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Controller = require "ItsyScape.UI.Controller"
@@ -87,8 +88,6 @@ function BaseCombatHUDController:new(peep, director)
 	self.currentOpenedThingies = {}
 
 	self.updateDebugStats = UpdateDebugStats()
-
-	self:update(0)
 end
 
 function BaseCombatHUDController:bindToPlayer(peep)
@@ -126,9 +125,9 @@ end
 
 function BaseCombatHUDController:poke(actionID, actionIndex, e)
 	if actionID == "activateOffensivePower" then
-		self:activate(self.state.powers.offensive, e)
+		self:activate(self.currentState.powers.offensive, e)
 	elseif actionID == "activateDefensivePower" then
-		self:activate(self.state.powers.defensive, e)
+		self:activate(self.currentState.powers.defensive, e)
 	elseif actionID == "castSpell" then
 		self:castSpell(e)
 	elseif actionID == "pray" then
@@ -174,7 +173,7 @@ function BaseCombatHUDController:activate(powers, e)
 		local peep = self:getPeep()
 		local gameDB = self:getDirector():getGameDB()
 
-		if power.id == self.state.powers.pendingID then
+		if power.id == self.currentState.powers.pendingID then
 			peep:removeBehavior(PendingPowerBehavior)
 		else
 			local powerResource = gameDB:getResource(power.id, "Power")
@@ -449,10 +448,6 @@ function BaseCombatHUDController:toggle(e, open)
 	self:send("toggle", open)
 end
 
-function BaseCombatHUDController:pull()
-	return self.state
-end
-
 function BaseCombatHUDController:pullStateForPeep(peep)
 	local gameDB = self:getDirector():getGameDB()
 
@@ -630,6 +625,34 @@ function BaseCombatHUDController:getPendingPowerID()
 	return nil
 end
 
+function BaseCombatHUDController:getPowers()
+	local result = {
+		offensive = {},
+		defensive = {},
+		pendingID = self:getPendingPowerID()
+	}
+
+	for _, power in ipairs(self.currentOffensivePowers) do
+		local p = {}
+		for k, v in pairs(power) do
+			p[k] = v
+		end
+
+		table.insert(result.offensive, p)
+	end
+
+	for _, power in ipairs(self.currentDefensivePowers) do
+		local p = {}
+		for k, v in pairs(power) do
+			p[k] = v
+		end
+
+		table.insert(result.defensive, p)
+	end
+
+	return result
+end
+
 function BaseCombatHUDController:updateActiveSpell()
 	local activeSpellID
 	do
@@ -723,6 +746,21 @@ function BaseCombatHUDController:updateSpells()
 	end
 
 	self.offensiveSpells = spells
+end
+
+function BaseCombatHUDController:getSpells()
+	local result = {}
+
+	for _, spell in ipairs(self.castableSpells) do
+		local s = {}
+		for k, v in pairs(spell) do
+			s[k] = v
+		end
+
+		table.insert(result, s)
+	end
+
+	return result
 end
 
 function BaseCombatHUDController:updateCastableSpells()
@@ -872,6 +910,21 @@ function BaseCombatHUDController:updateUsablePrayers()
 	end
 
 	self.usablePrayers = prayers
+end
+
+function BaseCombatHUDController:getPrayers()
+	local result = {}
+
+	for _, prayer in ipairs(self.usablePrayers) do
+		local p = {}
+		for k, v in pairs(prayer) do
+			p[k] = v
+		end
+
+		table.insert(result, p)
+	end
+
+	return result
 end
 
 function BaseCombatHUDController:getCurrentEquipment(e)
@@ -1024,7 +1077,7 @@ function BaseCombatHUDController:updateTurnOrder()
 	local targetPeep = playerPeep:getBehavior(CombatTargetBehavior)
 	targetPeep = targetPeep and targetPeep.actor and targetPeep.actor:getPeep()
 
-	table.clear(self.turns)
+	self.turns = {}
 	if not targetPeep then
 		return
 	end
@@ -1067,20 +1120,31 @@ function BaseCombatHUDController:updateTurnOrder()
 	self.turns.time = time
 end
 
+function BaseCombatHUDController:updateStateKey(key, current, previous)
+	if not RPCState.deepEquals(current, previous) then
+		self:send("updateState", key, current)
+	end
+end
+
 function BaseCombatHUDController:updateState()
+	self.previousState = self.currentState or {}
+	self.currentState = self:buildCurrentState()
+
+	for key, value in pairs(self.currentState) do
+		self:updateStateKey(key, value, self.previousState[key])
+	end
+end
+
+function BaseCombatHUDController:buildCurrentState()
 	local director = self:getDirector()
 
 	local result = {
 		combatants = {},
-		powers = {
-			offensive = self.currentOffensivePowers,
-			defensive = self.currentDefensivePowers,
-			pendingID = self:getPendingPowerID()
-		},
-		spells = self.castableSpells,
+		powers = self:getPowers(),
+		spells = self:getSpells(),
 		activeSpellID = self.activeSpellID,
-		prayers = self.usablePrayers,
-		food= self:getFood(),
+		prayers = self:getPrayers(),
+		food = self:getFood(),
 		equipment = self:getEquipment(),
 		config = self:getConfig(),
 		style = self.style,
@@ -1111,7 +1175,7 @@ function BaseCombatHUDController:updateState()
 		end
 	end
 
-	self.state = result
+	return result
 end
 
 function BaseCombatHUDController:_pullPowers()
@@ -1398,8 +1462,7 @@ function BaseCombatHUDController:getFood()
 end
 
 function BaseCombatHUDController:sendRefresh()
-	local ui = self:getDirector():getGameInstance():getUI()
-	ui:sendPoke(self, "refresh", nil, {})
+	self:send("refresh")
 end
 
 function BaseCombatHUDController:close()
@@ -1421,19 +1484,23 @@ function BaseCombatHUDController:update(delta)
 	self.updateDebugStats:measure("updateTurnOrder", self)
 	self.updateDebugStats:measure("updateFood", self)
 
+	local wasDirty = self.isDirty
+
 	if self.isDirty then
 		self.updateDebugStats:measure("updatePowers", self)
 		self.updateDebugStats:measure("updateSpells", self)
 		self.updateDebugStats:measure("updatePrayers", self)
 		self.isDirty = false
 		self.needsRefresh = true
-	elseif self.needsRefresh then
-		self.needsRefresh = false
-		self.updateDebugStats:measure("sendRefresh", self)
 	end
 
 	self.updateDebugStats:measure("updatePowersRecharge", self)
 	self.updateDebugStats:measure("updateState", self)
+
+	if not wasDirty and self.needsRefresh then
+		self.needsRefresh = false
+		self.updateDebugStats:measure("sendRefresh", self)
+	end
 end
 
 return BaseCombatHUDController
