@@ -70,7 +70,7 @@ function DialogBox:new(id, index, ui)
 
 	self:setZDepth(10000)
 
-	self:setData(GamepadSink, GamepadSink({ isBlocking = true }))
+	self:setData(GamepadSink, GamepadSink({ isBlocking = true, isBlockingCamera = false }))
 
 	local w, h = love.graphics.getScaledMode()
 
