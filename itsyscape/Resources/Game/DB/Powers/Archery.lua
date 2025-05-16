@@ -144,11 +144,6 @@ ItsyScape.Resource.Power "Boom" {
 			Count = ItsyScape.Utility.xpForLevel(5)
 		},
 
-		Input {
-			Resource = ItsyScape.Resource.Item "Dynamite",
-			Count = 1
-		},
-
 		Output {
 			Resource = ItsyScape.Resource.Skill "Archery",
 			Count = ItsyScape.Utility.xpForResource(10)
@@ -448,11 +443,6 @@ ItsyScape.Resource.Power "Nuke" {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Archery",
 			Count = ItsyScape.Utility.xpForLevel(60)
-		},
-
-		Input {
-			Resource = ItsyScape.Resource.Item "Dynamite",
-			Count = 1
 		},
 
 		Output {
