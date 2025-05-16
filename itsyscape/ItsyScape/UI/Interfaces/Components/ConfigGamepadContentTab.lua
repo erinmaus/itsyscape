@@ -108,15 +108,6 @@ function ConfigGamepadContentTab:focus(reason)
 end
 
 function ConfigGamepadContentTab:_onButtonsWrapFocus(_, child, directionX, directionY)
-	local inputProvider = self:getInputProvider()
-	if inputProvider then
-		if directionX ~= 0 then
-			inputProvider:setFocusedWidget(child, "select")
-		elseif directionY > 0 then
-			inputProvider:setFocusedWidget(child, "select")
-		end
-	end
-
 	self:onWrapFocus(directionX, directionY)
 end
 

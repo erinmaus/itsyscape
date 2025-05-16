@@ -204,18 +204,22 @@ function CraftWindowController:sort()
 			local aOutXP, bOutXP = self:findActionOutputXP(a), self:findActionOutputXP(b)
 			local aResource, bResource = self:findActionResource(a), self:findActionResource(b)
 
-			if aReqXP < bReqXP then
-				return true
-			elseif aReqXP == bReqXP then
-				if aOutXP < bOutXP then
+			if a.canPerformAction == b.canPerformAction then
+				if aReqXP < bReqXP then
 					return true
-				elseif aOutXP == bOutXP then
-					if aResource and bResource then
-						return aResource.name < bResource.name
-					else
-						return a.id < b.id
+				elseif aReqXP == bReqXP then
+					if aOutXP < bOutXP then
+						return true
+					elseif aOutXP == bOutXP then
+						if aResource and bResource then
+							return aResource.name < bResource.name
+						else
+							return a.id < b.id
+						end
 					end
 				end
+			elseif a.canPerformAction then
+				return true
 			end
 
 			return false
