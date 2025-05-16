@@ -134,7 +134,7 @@ local graphicsState = {
 	sizeTransform = love.math.newTransform(),
 	transforms = {},
 	renderStates = {},
-	pseudoScissor = {},
+	pseudoScissor = { n = 0 },
 	appliedPseudoScissor = { n = 0 },
 	sizes = {},
 	drawQueue = { n = 0 },
@@ -160,6 +160,8 @@ do
 
 	local w, h = love.window.getMode()
 	table.insert(graphicsState.pseudoScissor, { 0, 0, w, h })
+	graphicsState.pseudoScissor.n = 1
+
 	table.insert(graphicsState.appliedPseudoScissor, { 0, 0, w, h })
 end
 
@@ -424,6 +426,29 @@ end
 
 function itsyrealm.graphics.dirty()
 	graphicsState.atlas:dirty()
+end
+
+function itsyrealm.graphics.replay(replay)
+	assert(not graphicsState.recording, "cannot replay while recording")
+	for _, r in ipairs(replay) do
+		if r.immediate then
+			r.command(unpack(r, 1, r.n))
+		else
+			itsyrealm.graphics.impl.push(r.command, unpack(r, 1, r.n))
+		end
+	end
+end
+
+function itsyrealm.graphics.startRecording()
+	assert(not graphicsState.recording, "already recording")
+	graphicsState.recording = {}
+
+	return graphicsState.recording
+end
+
+function itsyrealm.graphics.stopRecording()
+	assert(graphicsState.recording, "not recording")
+	graphicsState.recording = nil
 end
 
 itsyrealm.graphics.disabled = {}
@@ -779,8 +804,14 @@ end
 
 function itsyrealm.graphics.clearPseudoScissor()
 	local w, h = love.window.getMode()
-	graphicsState.pseudoScissor = { { 0, 0, w, h } }
-	graphicsState.appliedPseudoScissor = { n = 0, { 0, 0, w, h } }
+
+	graphicsState.pseudoScissor.n = 1
+	graphicsState.pseudoScissor[1][1] = 0
+	graphicsState.pseudoScissor[1][2] = 0
+	graphicsState.pseudoScissor[1][3] = w
+	graphicsState.pseudoScissor[1][4] = h
+
+	graphicsState.appliedPseudoScissor.n = 0
 end
 
 function itsyrealm.graphics.pushInterface(width, height)
@@ -791,6 +822,25 @@ function itsyrealm.graphics.pushInterface(width, height)
 end
 
 function itsyrealm.graphics.impl.pushSize(handle, x, y, width, height, scaleX, scaleY, transform)
+	if graphicsState.recording then
+		table.insert(graphicsState.recording, {
+			command = itsyrealm.graphics.impl.pushSize,
+			immediate = true,
+
+			n = 8,
+			handle,
+			x,
+			y,
+			width,
+			height,
+			scaleX,
+			scaleY,
+			transform
+		})
+
+		return
+	end
+
 	transform = transform == nil and true or false
 
 	scaleX = scaleX or 1
@@ -855,6 +905,16 @@ function itsyrealm.graphics.impl.push(command, ...)
 
 		graphicsState.drawQueue.n = graphicsState.drawQueue.n + 1
 	end
+
+	if graphicsState.recording then
+		table.insert(
+			graphicsState.recording,
+			{
+				command = command,
+				n = select('#', ...),
+				...
+			})
+	end
 end
 
 function itsyrealm.graphics.resetPseudoScissor()
@@ -878,12 +938,12 @@ function itsyrealm.graphics.resetPseudoScissor()
 end
 
 function itsyrealm.graphics.intersectPseudoScissor(x, y, w, h)
-	if #graphicsState.pseudoScissor == 0 then
+	if graphicsState.pseudoScissor.n == 0 then
 		Log.error("Can't apply pseudo scissor: stack is empty.")
 		return
 	end
 
-	local pseudoScissor = graphicsState.pseudoScissor[#graphicsState.pseudoScissor]
+	local pseudoScissor = graphicsState.pseudoScissor[graphicsState.pseudoScissor.n]
 	local x1 = math.max(pseudoScissor[1], x)
 	local y1 = math.max(pseudoScissor[2], y)
 	local x2 = math.min(
@@ -893,33 +953,37 @@ function itsyrealm.graphics.intersectPseudoScissor(x, y, w, h)
 		pseudoScissor[2] + pseudoScissor[4],
 		y + h)
 
-	local newPseudoScissor = { x1, y1, math.max(0, x2 - x1), math.max(0, y2 - y1) }
+	graphicsState.pseudoScissor.n = graphicsState.pseudoScissor.n + 1
 
-	table.insert(graphicsState.pseudoScissor, newPseudoScissor)
+	local newPseudoScissor = graphicsState.pseudoScissor[graphicsState.pseudoScissor.n] or {}
+	newPseudoScissor[1] = x1
+	newPseudoScissor[2] = y1
+	newPseudoScissor[3] = math.max(0, x2 - x1)
+	newPseudoScissor[4] = math.max(0, y2 - y1)
+
+	graphicsState.pseudoScissor[graphicsState.pseudoScissor.n] = newPseudoScissor
 end
 
 function itsyrealm.graphics.popPseudoScissor()
-	table.remove(graphicsState.pseudoScissor)
+	graphicsState.pseudoScissor.n = graphicsState.pseudoScissor.n - 1
 end
 
 function itsyrealm.graphics.applyPseudoScissor()
-	local x, y, w, h = unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
-
-	table.insert(graphicsState.appliedPseudoScissor, graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+	table.insert(graphicsState.appliedPseudoScissor, graphicsState.pseudoScissor[graphicsState.pseudoScissor.n])
 	graphicsState.appliedPseudoScissor.n = graphicsState.appliedPseudoScissor.n + 1
 
 	itsyrealm.graphics.impl.pushSize()
 	itsyrealm.graphics.impl.push(
 		itsyrealm.graphics.impl.setScissor,
-		unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor]))
+		unpack(graphicsState.pseudoScissor[graphicsState.pseudoScissor.n]))
 end
 
 function itsyrealm.graphics.getPseudoScissor()
-	return unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor])
+	return unpack(graphicsState.pseudoScissor[graphicsState.pseudoScissor.n])
 end
 
 function itsyrealm.graphics.getPseudoScissorN()
-	return #graphicsState.pseudoScissor
+	return graphicsState.pseudoScissor.n
 end
 
 function itsyrealm.graphics.drawItem(handle, width, height, icon, itemID, count, color, note, disabled, active)
@@ -1113,7 +1177,7 @@ itsyrealm.graphics.disabled.intersectPseudoScissor = itsyrealm.graphics.intersec
 itsyrealm.graphics.disabled.popPseudoScissor = itsyrealm.graphics.popPseudoScissor
 
 function itsyrealm.graphics.disabled.applyPseudoScissor()
-	love.graphics.setScissor(unpack(graphicsState.pseudoScissor[#graphicsState.pseudoScissor]))
+	love.graphics.setScissor(unpack(graphicsState.pseudoScissor[graphicsState.pseudoScissor.n]))
 end
 
 itsyrealm.graphics.disabled.getPseudoScissor = itsyrealm.graphics.getPseudoScissor

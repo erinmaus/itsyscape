@@ -45,6 +45,11 @@ function GamepadIconRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
 
 	self.icons = {}
+	self.replays = {}
+end
+
+function GamepadIconRenderer:drop(widget)
+	self.replays[widget] = nil
 end
 
 function GamepadIconRenderer:_buildNames(joystickName, icon)
@@ -129,13 +134,53 @@ function GamepadIconRenderer:_getIcon(joystickName, icon)
 	return nil
 end
 
+function GamepadIconRenderer:isSame(widget)
+	local replay = self.replays[widget]
+	if not replay then
+		return false
+	end
+
+	local oldOutline, oldUseColor, oldID, oldAction, oldButton = unpack(replay)
+
+	local currentOutline = widget:getOutline()
+	local currentUseColor = widget:getUseDefaultColor()
+	local currentID = widget:getCurrentButtonID()
+	local currentAction = widget:getCurrentButtonAction() or "none"
+	local currentButton = id and (
+		(GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller] and GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller][id]) or
+		GamepadIconRenderer.GAMEPAD_BUTTON[id] or
+		id)
+
+	return oldOutline == currentOutline and
+	       oldUseColor == currentUseColor and
+	       oldID == currentID and
+	       oldAction == currentAction and
+	       oldButton == currentButton
+end
+
 function GamepadIconRenderer:draw(widget, state)
 	self:visit(widget)
 
 	local inputProvider = widget:getInputProvider()
 	local joystickName = inputProvider and inputProvider:getCurrentJoystick() and inputProvider:getCurrentJoystick():getName() or "Default"
 
-	local icon = self:_getIcon(joystickName, widget)
+	if not self:isSame(widget) then
+		local currentOutline = widget:getOutline()
+		local currentUseColor = widget:getUseDefaultColor()
+		local currentID = widget:getCurrentButtonID()
+		local currentAction = widget:getCurrentButtonAction() or "none"
+		local currentButton = id and (
+			(GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller] and GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller][id]) or
+			GamepadIconRenderer.GAMEPAD_BUTTON[id] or
+			id)
+
+		local replay = { currentOutline, currentUseColor, currentID, currentAction, currentButton }
+		replay.icon = self:_getIcon(joystickName, widget)
+
+		self.replays[widget] = replay
+	end
+
+	local icon = self.replays[widget] and self.replays[widget].icon
 	if icon then
 		local scaleX, scaleY
 		do
