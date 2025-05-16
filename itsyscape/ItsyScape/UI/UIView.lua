@@ -188,10 +188,15 @@ function itsyrealm.graphics.impl.captureRenderState()
 	transform:reset()
 	transform:apply(graphicsState.transform)
 
-	local renderState = graphicsState.renderStates[index]
-	if not renderState then
+	local renderState
+	if graphicsState.recording then
 		renderState = { color = {} }
-		graphicsState.renderStates[index] = renderState
+	else
+		renderState = graphicsState.renderStates[index]
+		if not renderState then
+			renderState = { color = {} }
+			graphicsState.renderStates[index] = renderState
+		end
 	end
 
 	renderState.color[1], renderState.color[2], renderState.color[3], renderState.color[4] = love.graphics.getColor()
@@ -764,7 +769,7 @@ function itsyrealm.graphics.stop()
 			table.insert(graphicsState.currentSizes[handle], size)
 		end
 
-		if type(currentHandle) == "userdata" then
+		if type(currentHandle) == "userdata" and size then
 			itsyrealm.graphics.queue(currentHandle, size, draw.command, unpack(draw, 1, draw.n))
 		else
 			if shouldFlush then
