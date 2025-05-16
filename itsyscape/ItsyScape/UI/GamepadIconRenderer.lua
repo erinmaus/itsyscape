@@ -33,6 +33,10 @@ GamepadIconRenderer.GAMEPAD_BUTTON = {
 }
 
 GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE = {
+	["SteamDeck"] = {
+		["start"] = "button_options"
+	},
+
 	["PlayStation"] = {
 		["start"] = "button_options",
 		["back"] = "button_create",
