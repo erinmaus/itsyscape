@@ -197,12 +197,12 @@ function CraftWindowController:sort()
 	for i = 1, #self.state.groups do
 		local group = self.state.groups[i]
 		table.sort(group, function(a, b)
-			a = self.actionsByID[a.id]:getAction()
-			b = self.actionsByID[b.id]:getAction()
+			local aAction = self.actionsByID[a.id]:getAction()
+			local bAction = self.actionsByID[b.id]:getAction()
 
-			local aReqXP, bReqXP = self:findActionLevelRequirement(a), self:findActionLevelRequirement(b)
-			local aOutXP, bOutXP = self:findActionOutputXP(a), self:findActionOutputXP(b)
-			local aResource, bResource = self:findActionResource(a), self:findActionResource(b)
+			local aReqXP, bReqXP = self:findActionLevelRequirement(aAction), self:findActionLevelRequirement(bAction)
+			local aOutXP, bOutXP = self:findActionOutputXP(aAction), self:findActionOutputXP(bAction)
+			local aResource, bResource = self:findActionResource(aAction), self:findActionResource(bAction)
 
 			if a.canPerformAction == b.canPerformAction then
 				if aReqXP < bReqXP then
