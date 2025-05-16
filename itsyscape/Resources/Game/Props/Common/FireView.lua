@@ -30,6 +30,7 @@ FireView.MAX_COLOR_BRIGHTNESS = 1.0
 FireView.COLOR = Color(1, 0.5, 0, 1)
 FireView.HEIGHT = 1
 FireView.SCALE = 1
+FireView.OFFSET = Vector(0):keep()
 FireView.HAS_CUSTOM_MODEL = false
 
 function FireView:new(prop, gameView)
@@ -334,20 +335,23 @@ function FireView:load()
 		self.outerFlames:initParticleSystemFromDef(self:_getOuterParticleDefinition(), resources)
 		self.outerFlames:setParent(root)
 		self.outerFlames:getTransform():setLocalScale(Vector(self.SCALE))
+		self.outerFlames:getTransform():setLocalTranslation(self.OFFSET)
 
 		self.innerFlames = ParticleSceneNode()
 		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
 		self.innerFlames:setParent(root)
 		self.innerFlames:getTransform():setLocalScale(Vector(self.SCALE))
+		self.innerFlames:getTransform():setLocalTranslation(self.OFFSET)
 
 		self.smoke = ParticleSceneNode()
 		self.smoke:getMaterial():setIsFullLit(false)
 		self.smoke:initParticleSystemFromDef(self:_getSmokeParticleDefinition(), resources)
 		self.smoke:setParent(root)
 		self.smoke:getTransform():setLocalScale(Vector(self.SCALE))
+		self.smoke:getTransform():setLocalTranslation(self.OFFSET)
 
 		self.light = PointLightSceneNode()
-		self.light:getTransform():setLocalTranslation(Vector(0, 0.5, 0.5))
+		self.light:getTransform():setLocalTranslation(Vector(0, 0.5, 0.0) + self.OFFSET)
 		self.light:setParent(root)
 
 		if self.HAS_CUSTOM_MODEL then

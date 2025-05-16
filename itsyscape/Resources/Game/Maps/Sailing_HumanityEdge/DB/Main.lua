@@ -1759,6 +1759,12 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-wait",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_WaitLogic.lua",
+		Resource = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-duel",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_DuelLogic.lua",
 		Resource = M["KnightCommander"]

@@ -1021,3 +1021,29 @@ do
 		Resource = ItsyScape.Resource.Prop "WoodworkingBench_Isabelle"
 	}
 end
+
+do
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicFire",
+		Resource = ItsyScape.Resource.Prop "Brazier_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 1.5,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Brazier_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Golden brazier",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Brazier_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A pointless display of wealth.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Brazier_Isabelle"
+	}
+end

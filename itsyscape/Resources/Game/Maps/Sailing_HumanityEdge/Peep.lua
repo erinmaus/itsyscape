@@ -491,7 +491,6 @@ function Island:onFinishPreparingTutorial(playerPeep)
 	elseif not Utility.Quest.didStep("Tutorial", "Tutorial_FoundScout", playerPeep) then
 		self:talkToPeep(playerPeep, "Orlando", function()
 			local knightCommander = self:getCompanion(playerPeep, "KnightCommander")
-			Utility.Peep.talk(knightCommander, "Oi! Get over here already!", nil, 5)
 		end)
 	end
 
@@ -601,6 +600,8 @@ function Island:onFinishPreparingTeam(playerPeep)
 		then
 			Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), "tutorial-stand-guard")
 		end
+	else
+		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), "tutorial-wait")
 	end
 
 	self:teleportCompanion(playerPeep, "Orlando")
