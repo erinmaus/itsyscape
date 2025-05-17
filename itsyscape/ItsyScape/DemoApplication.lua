@@ -1124,6 +1124,8 @@ function DemoApplication:gamepadRelease(joystick, button)
 		self:toggleUI("GamepadCombatHUD")
 	elseif button == inputProvider:getKeybind("gamepadOpenRibbon") then
 		self:toggleUI("GamepadRibbon")
+	elseif button == inputProvider:getKeybind("gamepadToggleTargetCamera") then
+		_CONF.targetCameraMode = not _CONF.targetCameraMode
 	end
 end
 

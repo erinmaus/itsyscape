@@ -107,11 +107,17 @@ function DefaultCameraController:new(...)
 	self.targetDistance = self:getCamera():getDistance()
 	self.currentDistance = self:getCamera():getDistance()
 
-	self.isTargetting = _CONF.targetCameraMode or false
+	self.isTargetting = _CONF.targetCameraMode == nil and true or not not _CONF.targetCameraMode
 	self.isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	self.targetOpponentDistance = 0
+	_CONF.targetCameraMode = self.isTargetting
 
 	self.cursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
+end
+
+function DefaultCameraController:toggleTargetting()
+	self.isTargetting = not self.isTargetting
+	_CONF.targetCameraMode = self.isTargetting
 end
 
 function DefaultCameraController:getPlayerMapRotation()
@@ -656,8 +662,13 @@ function DefaultCameraController:update(delta)
 	self:updateFirstPerson(delta)
 
 	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
-	if isFocusDown ~= self.isFocusDown and isFocusDown then
-		self.isTargetting = not self.isTargetting
+	if (isFocusDown ~= self.isFocusDown and isFocusDown) or _CONF.targetCameraMode ~= self.isTargetting then
+		if isFocusDown then
+			self.isTargetting = not self.isTargetting
+		else
+			self.isTargetting = _CONF.targetCameraMode
+		end
+
 		if self.isTargetting then
 			Log.info("Target camera mode enabled.")
 		else

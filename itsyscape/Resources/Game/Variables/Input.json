@@ -25,6 +25,7 @@
 
 			"gamepadOpenCombatRing": "rightshoulder",
 			"gamepadOpenRibbon": "start",
+			"gamepadToggleTargetCamera": "leftshoulder",
 			"gamepadNext": "rightshoulder",
 			"gamepadPrevious": "leftshoulder",
 			"gamepadPrimaryAction": "a",
