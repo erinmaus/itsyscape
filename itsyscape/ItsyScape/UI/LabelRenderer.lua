@@ -22,16 +22,56 @@ function LabelRenderer:new(resources)
 		fontSize = _MOBILE and 26 or 24,
 		textShadow = true
 	}, resources)
+
+	self.replays = {}
+end
+
+function LabelRenderer:drop(widget)
+	self.replays[widget] = nil
+end
+
+function LabelRenderer:isSame(widget)
+	local replay = self.replays[widget]
+	if not replay then
+		return false
+	end
+
+	local oldX, oldY, oldWidth, oldHeight, oldText, oldStyle = unpack(replay)
+
+	local currentX, currentY = widget:getAbsolutePosition()
+	local currentWidth, currentHeight = widget:getSize()
+	local currentText, currentStyle = widget:getText(), widget:getStyle()
+
+	return oldX == currentX and
+	       oldY == currentY and
+	       oldWidth == currentWidth and
+	       oldHeight == currentHeight and
+	       oldText == currentText and
+	       oldStyle == currentStyle
 end
 
 function LabelRenderer:draw(widget, state)
 	self:visit(widget)
 
 	local style = widget:getStyle()
-	if style and Class.isCompatibleType(style, LabelStyle) then
-		style:draw(widget, state)
+	if not (style and Class.isCompatibleType(style, LabelStyle)) then
+		style = self.defaultStyle
+	end
+
+	if self:isSame(widget) then
+		itsyrealm.graphics.replay(self.replays[widget].replay)
 	else
-		self.defaultStyle:draw(widget, state)
+		local currentX, currentY = widget:getAbsolutePosition()
+		local currentWidth, currentHeight = widget:getSize()
+		local currentText, currentStyle = widget:getText(), widget:getStyle()
+
+		local replay = { currentX, currentY, currentWidth, currentHeight, currentText, currentStyle }
+
+		replay.replay = itsyrealm.graphics.startRecording()
+		style:draw(widget, state)
+		itsyrealm.graphics.stopRecording()
+
+		self.replays[widget] = replay
 	end
 end
 

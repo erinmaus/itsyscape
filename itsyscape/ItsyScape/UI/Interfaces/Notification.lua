@@ -26,7 +26,13 @@ function Notification:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	local w, h = love.graphics.getScaledMode()
-	local x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+	local x, y
+	if self:getView():getInputProvider():getCurrentJoystick() then
+		x = (w - Notification.WIDTH) / 2
+		y = h / 2 + h / 4
+	else
+		itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+	end
 
 	self.panel = Panel()
 	self.panel:setStyle(PanelStyle({

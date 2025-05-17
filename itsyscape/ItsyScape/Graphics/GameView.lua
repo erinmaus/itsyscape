@@ -83,6 +83,7 @@ function GameView:new(game, camera)
 	self.spriteManager = SpriteManager(self, self.resourceManager)
 
 	self.largeTileSetsPending = 0
+	self.decorationsPending = 0
 
 	self:initRenderer(_CONF)
 
@@ -159,7 +160,7 @@ function GameView:getCamera()
 end
 
 function GameView:getIsHeavyResourcePending()
-	return self.largeTileSetsPending > 0
+	return self.largeTileSetsPending > 0 or self.decorationsPending > 0
 end
 
 function GameView:initRenderer(conf)
@@ -1563,7 +1564,10 @@ function GameView:decorate(group, decoration, layer, callback)
 			sceneNode = DecorationSceneNode()
 		end
 
+		self.decorationsPending = self.decorationsPending + 1
 		self.resourceManager:queueAsyncEvent(function()
+			self.decorationsPending = math.max(self.decorationsPending - 1, 0)
+
 			local tileSetFilename = string.format(
 				"Resources/Game/TileSets/%s/Layout.lstatic",
 				decoration:getTileSetID())

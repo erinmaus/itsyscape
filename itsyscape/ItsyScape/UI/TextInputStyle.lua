@@ -10,6 +10,7 @@
 local utf8 = require "utf8"
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
+local GamepadNumberInput = require "ItsyScape.UI.GamepadNumberInput"
 local TextInput = require "ItsyScape.UI.TextInput"
 local WidgetStyle = require "ItsyScape.UI.WidgetStyle"
 local patchy = require "patchy"
@@ -78,16 +79,6 @@ function TextButtonStyle:draw(widget)
 		self.states['inactive'](width, height)
 	end
 
-	do
-		local x, y = itsyrealm.graphics.getPseudoScissor()
-		itsyrealm.graphics.intersectPseudoScissor(
-			x + self.padding * scaleX, y + self.padding * scaleY,
-			(width - self.padding * scaleX * 2) * scaleX,
-			(height - self.padding * scaleY * 2) * scaleY)
-		itsyrealm.graphics.applyPseudoScissor()
-		itsyrealm.graphics.translate(self.padding, self.padding)
-	end
-
 	if #widget:getText() > 0 then
 		local previousFont = love.graphics.getFont()
 
@@ -141,6 +132,45 @@ function TextButtonStyle:draw(widget)
 			textWidth = font:getWidth(widget:getText())
 		end
 
+		itsyrealm.graphics.translate(self.padding, self.padding)
+
+		if selectionWidth > 0 and Class.isCompatibleType(widget, GamepadNumberInput) then
+			love.graphics.setColor(0, 0, 0, 1)
+			itsyrealm.graphics.translate(2, 2)
+			itsyrealm.graphics.polygon(
+				"fill",
+				selectionX, selectionY + self.padding,
+				selectionX + selectionWidth / 2, selectionY - self.padding * 3,
+				selectionX + selectionWidth, selectionY + self.padding)
+			itsyrealm.graphics.polygon(
+				"fill",
+				selectionX, selectionY + font:getHeight(),
+				selectionX + selectionWidth / 2, selectionY + font:getHeight() + self.padding * 3,
+				selectionX + selectionWidth, selectionY + font:getHeight())
+
+			love.graphics.setColor(1, 1, 1, 1)
+			itsyrealm.graphics.translate(-2, -2)
+			itsyrealm.graphics.polygon(
+				"fill",
+				selectionX, selectionY + self.padding,
+				selectionX + selectionWidth / 2, selectionY - self.padding * 3,
+				selectionX + selectionWidth, selectionY + self.padding)
+			itsyrealm.graphics.polygon(
+				"fill",
+				selectionX, selectionY + font:getHeight(),
+				selectionX + selectionWidth / 2, selectionY + font:getHeight() + self.padding * 3,
+				selectionX + selectionWidth, selectionY + font:getHeight())
+		end
+
+		do
+			local x, y = itsyrealm.graphics.getPseudoScissor()
+			itsyrealm.graphics.intersectPseudoScissor(
+				x + self.padding * scaleX, y + self.padding * scaleY,
+				(width - self.padding * scaleX * 2) * scaleX,
+				(height - self.padding * scaleY * 2) * scaleY)
+			itsyrealm.graphics.applyPseudoScissor()
+		end
+
 		if selectionWidth > 0 then
 			love.graphics.setColor(self.selectionColor:get())
 			itsyrealm.graphics.rectangle(
@@ -174,6 +204,11 @@ function TextButtonStyle:draw(widget)
 		end
 
 		love.graphics.setFont(previousFont)
+
+		itsyrealm.graphics.translate(-self.padding, -self.padding)
+		itsyrealm.graphics.popPseudoScissor()
+		itsyrealm.graphics.resetPseudoScissor()
+		love.graphics.setColor(1, 1, 1, 1)
 	else
 		if widget:getIsFocused() then
 			local font = self.font or love.graphics.getFont()
@@ -182,11 +217,6 @@ function TextButtonStyle:draw(widget)
 			itsyrealm.graphics.line(2, 0, 2, font:getHeight())
 		end
 	end
-
-	itsyrealm.graphics.translate(-self.padding, -self.padding)
-	itsyrealm.graphics.popPseudoScissor()
-	itsyrealm.graphics.resetPseudoScissor()
-	love.graphics.setColor(1, 1, 1, 1)
 end
 
 return TextButtonStyle

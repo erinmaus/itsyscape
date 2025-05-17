@@ -8,11 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Command = require "ItsyScape.Peep.Command"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 
 local GatherResourceCommand = Class(Command)
@@ -50,6 +52,12 @@ function GatherResourceCommand:onResourceObtained(peep, e)
 end
 
 function GatherResourceCommand:onBegin(peep)
+	if peep:hasBehavior(PlayerBehavior) then
+		self.isInterfaceOpen, self.interfaceIndex = Utility.UI.openInterface(peep, "ActionCommand", false, self.prop, self.action, Function(self.attack, self))
+	else
+		self.isInterfaceOpen = false
+	end
+
 	local itemManager = peep:getDirector():getItemManager()
 	local logic = itemManager:getLogic(self.tool:getID())
 	if logic:isCompatibleType(Weapon) then
@@ -121,11 +129,21 @@ function GatherResourceCommand:hideTool(peep)
 end
 
 function GatherResourceCommand:onEnd(peep)
+	if self.isInterfaceOpen then
+		local ui = peep:getDirector():getGameInstance():getUI()
+		ui:close("ActionCommand", self.interfaceIndex)
+	end
+
 	self.prop:silence('resourceObtained', self._onResourceObtained)
 	self:hideTool(peep)
 end
 
 function GatherResourceCommand:onInterrupt(peep)
+	if self.isInterfaceOpen then
+		local ui = peep:getDirector():getGameInstance():getUI()
+		ui:close("ActionCommand", self.interfaceIndex)
+	end
+
 	self.prop:silence('resourceObtained', self._onResourceObtained)
 	self:hideTool(peep)
 end
@@ -139,7 +157,7 @@ function GatherResourceCommand:update(delta, peep)
 	end
 end
 
-function GatherResourceCommand:attack(peep)
+function GatherResourceCommand:attack(peep, spread)
 	local itemManager = peep:getDirector():getItemManager()
 	local logic = itemManager:getLogic(self.tool:getID())
 	if logic:isCompatibleType(Weapon) then
@@ -156,7 +174,15 @@ function GatherResourceCommand:attack(peep)
 			end
 		end
 
-		local damage = logic:rollDamage(peep, Weapon.PURPOSE_TOOL, self.prop):roll()
+		local damageRoll = logic:rollDamage(peep, Weapon.PURPOSE_TOOL, self.prop)
+
+		local damage
+		if spread then
+			damage = math.lerp(damageRoll:getMinHit(), damageRoll:getMaxHit(), spread)
+		else
+			damage = damageRoll:roll()
+		end
+
 		self.prop:poke('resourceHit', {
 			tool = self.tool,
 			damage = damage,

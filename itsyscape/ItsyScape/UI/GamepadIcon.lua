@@ -18,6 +18,7 @@ GamepadIcon.DEFAULT_SPEED = 0.5
 GamepadIcon.CONTROLLERS = {
 	["Default"] = "SteamDeck",
 	["DualSense Wireless Controller"] = "PlayStation",
+	["PS5 Controller"] = "PlayStation",
 	["Steam Deck"] = "SteamDeck"
 }
 

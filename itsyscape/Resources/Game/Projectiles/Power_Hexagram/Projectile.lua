@@ -77,7 +77,7 @@ function Hexagram:generatePath()
 			math.sin(nextPointAngle) * Hexagram.RADIUS)
 
 		for j = 1, Hexagram.NUM_SEGMENTS do
-			local position = position1:lerp(position2, j / Hexagram.NUM_SEGMENTS)
+			local position = position1:lerp(position2, j / Hexagram.NUM_SEGMENTS):keep()
 
 			table.insert(self.fullPath, position)
 		end

@@ -293,11 +293,22 @@ function Map:castRay(ray, stepCallback)
 
 	if ray.direction.x ^ 2 + ray.direction.z ^ 2 > 0 then
 		while tileI >= 1 and tileI <= self.width and tileJ >= 1 and tileJ <= self.height do
-			local deltaX = ((tileI + tileOffsetI) * self.cellSize - currentX) / ray.direction.x
-			local deltaZ = ((tileJ + tileOffsetJ) * self.cellSize - currentZ) / ray.direction.z
+			local deltaX
+			if ray.direction.x ~= 0 then
+				deltaX = ((tileI + tileOffsetI) * self.cellSize - currentX) / ray.direction.x
+			else
+				deltaX = 0
+			end
+
+			local deltaZ
+			if ray.direction.z ~= 0 then
+				deltaZ = ((tileJ + tileOffsetJ) * self.cellSize - currentZ) / ray.direction.z
+			else
+				deltaZ = 0
+			end
 
 			local pt = t
-			if deltaX < deltaZ then
+			if deltaX < deltaZ and ray.direction.x ~= 0 then
 				t = t + deltaX
 				tileI = tileI + directionSignX
 			else

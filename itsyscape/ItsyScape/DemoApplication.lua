@@ -352,6 +352,8 @@ function DemoApplication:savePlayer(_, storage, isError)
 end
 
 function DemoApplication:setMapName(_, _, map)
+	Log.info("Player loaded new map '%s'.", map)
+
 	self:updateMemoryLabel(map)
 end
 
@@ -1079,8 +1081,6 @@ function DemoApplication:toggleUI(hud)
 end
 
 function DemoApplication:gamepadRelease(joystick, button)
-	local inputProvider = self:getUIView():getInputProvider()
-	local focusedWidget = inputProvider:getFocusedWidget()
 	Application.gamepadRelease(self, joystick, button)
 
 	local inputProvider = self:getUIView():getInputProvider()
@@ -1092,6 +1092,7 @@ function DemoApplication:gamepadRelease(joystick, button)
 	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
 	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
 
+	local focusedWidget = inputProvider:getFocusedWidget()
 	if not focusedWidget then
 		if button == cycleTargetButton then
 			self:nextShimmer()
@@ -1102,11 +1103,19 @@ function DemoApplication:gamepadRelease(joystick, button)
 		end
 	end
 
-	if focusedWidget and self:isInterfaceBlockingGamepadMovement() then
-		local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
-		local ribbon = self:getUIView():getInterface("GamepadRibbon")
+	local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
+	local ribbon = self:getUIView():getInterface("GamepadRibbon")
 
-		if not (focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon)) then
+	if combatRing and combatRing:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenCombatRing") then
+		self:toggleUI("GamepadCombatHUD")
+		return
+	elseif ribbon and ribbon:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenRibbon") then
+		self:toggleUI("GamepadRibbon")
+		return
+	end
+
+	if focusedWidget and self:isInterfaceBlockingGamepadMovement() then
+		if focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon) then
 			return
 		end
 	end

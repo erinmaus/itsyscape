@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Dummy_YieldLogic.lua
+-- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_EatLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -14,6 +14,31 @@ local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
+
+local HandleEarlyEat = Mashina.Step {
+	Mashina.Peep.OnPoke {
+		target = CommonLogic.PLAYER,
+		event = "heal"
+	},
+
+	Mashina.Player.Disable {
+		player = CommonLogic.PLAYER
+	},
+
+	Mashina.Player.Dialog {
+		peep = CommonLogic.ORLANDO,
+		player = CommonLogic.PLAYER,
+		main = "quest_tutorial_combat.eat_early"
+	},
+
+	Mashina.Player.Enable {
+		player = CommonLogic.PLAYER
+	},
+
+	Mashina.Peep.SetState {
+		state = "tutorial-rites"
+	}
+}
 
 local HandleOffense = Mashina.Step {
 	Mashina.Peep.RemoveEffect {

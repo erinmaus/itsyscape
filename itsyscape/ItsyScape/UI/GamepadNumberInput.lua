@@ -49,6 +49,7 @@ end
 
 function GamepadNumberInput:setValue(value)
 	self:_setValueText(tostring(value or "0"))
+	self:_tryPlaceCursor()
 end
 
 function GamepadNumberInput:getValue()

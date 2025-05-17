@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
@@ -28,12 +29,12 @@ Common.WAIT_OPEN_FUNCTION = function(t, f)
 	return function(target, state)
 		state.time = nil
 
-		if f then
+		if Class.isCallable(f) then
 			f = f(target, state)
 		end
 
 		return function()
-			if f and f() then
+			if Class.isCallable(f) and f() then
 				return true
 			end
 
@@ -555,7 +556,7 @@ function Common.hasPeepDroppedItems(playerPeep, pattern)
 		end
 	end
 
-	return hasDroppedItem, filteredInventory
+	return hasDroppedItem, filteredInventory, #filteredInventory
 end
 
 function Common.hasPeepDroppedIsabellium(playerPeep)

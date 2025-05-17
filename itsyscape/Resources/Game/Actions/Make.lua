@@ -15,6 +15,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
+local QueueWalkCommand = require "ItsyScape.Peep.QueueWalkCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
@@ -178,14 +179,12 @@ function Make:gather(state, player, prop, toolType, skill)
 			local progress = prop:getBehavior(PropResourceHealthBehavior)
 			if progress and progress.currentProgress < progress.maxProgress then
 				local i, j, k = Utility.Peep.getTileAnchor(prop)
-				local walk = Utility.Peep.queueWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
+				local walk, n = Utility.Peep.queueWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
 
-				local done = false
 				walk:register(function(s)
-					done = true
-
 					if not s then
-						return self:failWithMessage(player, "ActionFail_Walk")
+						self:failWithMessage(player, "ActionFail_Walk")
+						return
 					end
 
 					local face = CallbackCommand(Utility.Peep.face, player, prop)
@@ -199,13 +198,7 @@ function Make:gather(state, player, prop, toolType, skill)
 					end
 				end)
 
-				return player:getCommandQueue():interrupt(
-					CompositeCommand(
-						function()
-							return not done
-						end,
-						WaitCommand(math.huge))
-					)
+				return player:getCommandQueue():interrupt(QueueWalkCommand(walk, n))
 			else
 				Log.info("Resource '%s' depleted.", prop:getName())
 			end

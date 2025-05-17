@@ -8,8 +8,10 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Config = require "ItsyScape.Game.Config"
@@ -33,6 +35,7 @@ DefaultCameraController.MAX_DISTANCE = 25
 DefaultCameraController.MAX_STICKY_DISTANCE = 100
 DefaultCameraController.DEFAULT_DISTANCE = 30
 DefaultCameraController.SCROLL_DISTANCE_Y_ENGAGE = 128
+DefaultCameraController.ELEVATION_HORIZONTAL_VELOCITY = math.pi / 8
 
 DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS = 0.25
 
@@ -92,6 +95,8 @@ function DefaultCameraController:new(...)
 	self.cameraHorizontalRotationOffset = _CONF.camera and _CONF.camera.horizontalRotationOffset or 0
 	self.cameraHorizontalRotationOffsetRemainder = 0
 	self.cameraOffset = Vector(0):keep()
+	self.currentElevationHorizontalRotationOffset = 0
+	self.targetElevationHorizontalRotationOffset = 0
 
 	self:getCamera():setHorizontalRotation(
 		DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset)
@@ -542,6 +547,20 @@ function DefaultCameraController:updateTargetDistance()
 	self.targetOpponentDistance = distance + targetSize
 end
 
+function DefaultCameraController:updateElevation(delta)
+	local difference = self.targetElevationHorizontalRotationOffset - self.currentElevationHorizontalRotationOffset
+
+	if difference > 0 then
+		self.currentElevationHorizontalRotationOffset = math.min(
+			self.targetElevationHorizontalRotationOffset,
+			self.currentElevationHorizontalRotationOffset + DefaultCameraController.ELEVATION_HORIZONTAL_VELOCITY * delta)
+	elseif difference < 0 then
+		self.currentElevationHorizontalRotationOffset = math.max(
+			self.targetElevationHorizontalRotationOffset,
+			self.currentElevationHorizontalRotationOffset - DefaultCameraController.ELEVATION_HORIZONTAL_VELOCITY * delta)
+	end
+end
+
 function DefaultCameraController:updateShow(delta)
 	if not self.curve then
 		return
@@ -630,6 +649,7 @@ function DefaultCameraController:update(delta)
 		end
 	end
 
+	self:updateElevation(delta)
 	self:updateShow(delta)
 	self:updateControls(delta)
 	self:updatePanning(delta)
@@ -888,6 +908,85 @@ function DefaultCameraController:_clampCenter(center)
 	return newCenter
 end
 
+function DefaultCameraController:_stepGround(distance, target, eye, map, i, j, x, z, t)
+	local center = map:getTileCenter(i, j)
+	local positionToTile = Ray(target, target:direction(center))
+	local _, projectedEye = positionToTile:closest(eye)
+
+	if not self._stepGroundMaxY or projectedEye.y > self._stepGroundMaxY then
+		self._stepGroundMaxY = projectedEye.y
+		self._stepGroundPosition = center
+	end
+
+	if t >= distance then
+		return true
+	end
+end
+
+function DefaultCameraController:_clampGround(currentHorizontalRotation)
+	local camera = self:getCamera()
+	local gameView = self:getGameView()
+
+	self.targetElevationHorizontalRotationOffset = 0
+
+	local player = self:getGame():getPlayer()
+	if not player then
+		return
+	end
+
+	local playerActor = player:getActor()
+	if not playerActor then
+		return
+	end
+
+	local i, j, layer = playerActor:getTile()
+	local map = gameView:getMap(layer)
+	local mapSceneNode = gameView:getMapSceneNode(layer)
+
+	if not (map and mapSceneNode) then
+		return
+	end
+
+	local eye = camera:getEye()
+	local target = map:getTileCenter(i, j)
+
+	local mapSceneNodeTransform = mapSceneNode:getTransform():getGlobalDeltaTransform(self:getApp():getFrameDelta())
+	eye = eye:inverseTransform(mapSceneNodeTransform)
+	target = target:inverseTransform(mapSceneNodeTransform)
+	local maxDistance = (target * Vector.PLANE_XZ):distance(eye * Vector.PLANE_XZ)
+
+	self._stepGroundMaxY = target.y
+	self._stepGroundPosition = nil
+	local result = map:castRay(
+		Ray(target, target:direction(eye)),
+		Function(self._stepGround, self, maxDistance, target, eye))
+
+	if not result then
+		return
+	end
+
+	if not (self._stepGroundMaxY and self._stepGroundPosition) then
+		return
+	end
+
+	local tile = self._stepGroundPosition + Vector(0, 4, 0)
+	local positionToTile = Ray(target, target:direction(tile))
+	local _, projectedEye = positionToTile:closest(eye)
+
+	if eye.y > projectedEye.y then
+		return
+	end
+
+	local a = target
+	local b = projectedEye
+	local c = Vector(b.x, a.y, b.z)
+
+	local dotProduct = math.clamp(Vector.dot(a:direction(b), a:direction(c)), -1, 1)
+	local targetHorizontalRotation = -math.acos(dotProduct)
+
+	self.targetElevationHorizontalRotationOffset = math.diffAngle(targetHorizontalRotation, currentHorizontalRotation)
+end
+
 function DefaultCameraController:_getCurrentFirstPersonPosition()
 	local delta = math.clamp(self.firstPersonPositionTime / DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS)
 	local currentPosition = self.previousFirstPersonPosition:lerp(self.targetFirstPersonPosition, delta)
@@ -981,7 +1080,13 @@ function DefaultCameraController:draw()
 		self:getCamera():setRotation(-self:getPlayerMapRotation())
 	else
 		self:getCamera():setRotation()
+
+		--if not _DEBUG then
+			self:_clampGround(horizontalOffset)
+		--end
 	end
+
+	self:getCamera():setHorizontalRotation(horizontalOffset + self.currentElevationHorizontalRotationOffset)
 end
 
 return DefaultCameraController

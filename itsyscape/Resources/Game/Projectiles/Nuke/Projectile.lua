@@ -162,7 +162,7 @@ end
 
 function Nuke:tick()
 	if not self.spawnPosition then
-		self.spawnPosition = self:getTargetPosition(self:getDestination())
+		self.spawnPosition = self:getTargetPosition(self:getDestination()):keep()
 		self:playAnimation(self:getDestination(), "SFX_Nuke")
 	end
 end

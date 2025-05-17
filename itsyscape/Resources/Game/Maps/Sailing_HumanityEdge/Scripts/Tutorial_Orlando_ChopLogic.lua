@@ -12,6 +12,7 @@ local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
 
+local TARGET_TREE = B.Reference("Tutorial_Orlando_ChopLogic", "TARGET_TREE")
 local TARGET_FIRE = B.Reference("Tutorial_Orlando_ChopLogic", "TARGET_FIRE")
 
 local ITEMS_TO_KEEP = {
@@ -24,7 +25,13 @@ local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		Mashina.Success {
 			Mashina.Step {
+				Mashina.Peep.FindNearbyPeep {
+					filter = Probe.namedMapObject("BalsaTree"),
+					[TARGET_TREE] = B.Output.result
+				},
+
 				Mashina.Skills.GatherNearbyResource {
+					peep = TARGET_TREE,
 					action = "Chop",
 					resource = "BalsaLogs"
 				},

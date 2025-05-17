@@ -17,6 +17,8 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
+local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local Controller = require "ItsyScape.UI.Controller"
 local TutorialCommon = require "Resources.Game.Peeps.Tutorial.Common"
 
@@ -139,6 +141,20 @@ function DemoNewPlayerController:newPlayer(e)
 
 	class.storage:getRoot():set("filename", "Player/Demo.dat")
 	self:getDirector():setPlayerStorage(player.playerID, class.storage)
+
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	equipment = equipment and equipment.equipment
+	if equipment then
+		Log.info("Deserializing equipment...")
+		equipment:load(equipment:getBroker())
+	end
+	
+	local inventory = peep:getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+	if inventory then
+		Log.info("Deserializing inventory..")
+		inventory:load(inventory:getBroker())
+	end
 
 	peep:applySkins()
 	peep:applyGender()

@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Color = require "ItsyScape.Graphics.Color"
+local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
@@ -80,7 +81,20 @@ function CutsceneTransition:new(id, index, ui)
 
 	self.onClose:register(function()
 		player.onMove:unregister(self._onPlayerMove)
+
+		local num = 0
+		for _ in self:getView():getInterfaces("CutsceneTransition") do
+			num = num + 1
+		end
+
+		if num <= 1 then
+			self:getView():getGameView():getResourceManager():setFrameDuration()
+			self:getView():getGameView():getResourceManager():setMaxTimeForSyncResource()
+		end
 	end)
+
+	self:getView():getGameView():getResourceManager():setFrameDuration(ResourceManager.LOADING_FRAME_DURATION)
+	self:getView():getGameView():getResourceManager():setMaxTimeForSyncResource(ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING)
 
 	self.didPlayerMove = false
 	self.isCheckingQueue = false
@@ -120,6 +134,15 @@ function CutsceneTransition:update(delta)
 					delta = 1
 				end
 			end
+		elseif self.isWaitingOnEvent then
+			if self.didEventFire then
+				Log.info("Took %0.2f ms to load.", self.time * 1000)
+
+				self.time = 0
+				self.isWaitingOnEvent = false
+			end
+
+			delta = 1
 		elseif self.wasQueueEmpty then
 			delta = 1
 
@@ -129,14 +152,6 @@ function CutsceneTransition:update(delta)
 				
 				self:sendPoke("close", nil, {})
 			end
-		elseif self.isWaitingOnEvent then
-			if self.didEventFire then
-				Log.info("Took %0.2f ms to load.", self.time * 1000)
-
-				self.time = 0
-			end
-
-			delta = 1
 		elseif self.isCheckingQueue then
 			local gameView = self:getView():getGameView()
 			local resources = self:getView():getGameView():getResourceManager()

@@ -703,10 +703,10 @@ function One:onOpenInterface(interfaceID, interfaceIndex, blocking)
 end
 
 function One:interruptUI()
-	if self:getIsReady() and not self:hasBehavior(DisabledBehavior) then
-		local game = self:getDirector():getGameInstance()
-		game:getUI():interrupt(self)
-	end
+	-- if self:getIsReady() and Utility.Peep.isEnabled(self) then
+	-- 	local game = self:getDirector():getGameInstance()
+	-- 	game:getUI():interrupt(self)
+	-- end
 end
 
 function One:onBootstrapComplete()

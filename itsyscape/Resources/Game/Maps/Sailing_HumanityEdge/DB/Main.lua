@@ -274,66 +274,6 @@ do
 	}
 end
 
-M["WizardDummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "WizardDummy",
-		Map = M._MAP,
-		Resource = M["WizardDummy"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "TutorialDummy_Wizard",
-		MapObject = M["WizardDummy"],
-		DoesNotDespawn = 1,
-		DoesNotRespawn = 1
-	}
-end
-
-M["ArcherDummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "ArcherDummy",
-		Map = M._MAP,
-		Resource = M["ArcherDummy"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "TutorialDummy_Archer",
-		MapObject = M["ArcherDummy"],
-		DoesNotDespawn = 1,
-		DoesNotRespawn = 1
-	}
-end
-
-M["WarriorDummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectReference {
-		Name = "WarriorDummy",
-		Map = M._MAP,
-		Resource = M["WarriorDummy"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "TutorialDummy_Warrior",
-		MapObject = M["WarriorDummy"],
-		DoesNotDespawn = 1,
-		DoesNotRespawn = 1
-	}
-end
-
-M["Anchor_Orlando_PlaceDummy"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 65,
-		PositionY = 5,
-		PositionZ = 159,
-		Name = "Anchor_Orlando_PlaceDummy",
-		Map = M._MAP,
-		Resource = M["Anchor_Orlando_PlaceDummy"]
-	}
-end
-
 M["Anchor_Orlando_Duel"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -405,16 +345,10 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
+		Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
 		MapObject = M["PeakYendorian1"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "attack",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_GoodAttackLogic.lua",
-		Resource = M["PeakYendorian1"]
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
@@ -424,22 +358,37 @@ do
 		Resource = M["PeakYendorian1"]
 	}
 
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_RiteLogic.lua",
+		Resource = M["PeakYendorian1"]
+	}
+
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 200,
+		Hitpoints = 100,
 		Resource = M["PeakYendorian1"]
 	}
 
 	ItsyScape.Meta.Equipment {
 		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(30, 1),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(30),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30),
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
 		Prayer = 55,
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = M["PeakYendorian1"]
+	}
+
+	M["PeakYendorian1"] {
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Sailing_HumanityEdge_MiscDropTable",
+				Count = 1
+			}
+		}
 	}
 end
 
@@ -463,16 +412,10 @@ do
 	}
 
 	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Yendorian_Swordfish",
+		Peep = ItsyScape.Resource.Peep "Yendorian_Ballista",
 		MapObject = M["PeakYendorian2"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
-	}
-
-	ItsyScape.Meta.PeepMashinaState {
-		State = "attack",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_GoodAttackLogic.lua",
-		Resource = M["PeakYendorian2"]
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
@@ -482,22 +425,37 @@ do
 		Resource = M["PeakYendorian2"]
 	}
 
+	ItsyScape.Meta.PeepMashinaState {
+		State = "attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_DeflectLogic.lua",
+		Resource = M["PeakYendorian2"]
+	}
+
 	ItsyScape.Meta.PeepHealth {
-		Hitpoints = 200,
+		Hitpoints = 100,
 		Resource = M["PeakYendorian2"]
 	}
 
 	ItsyScape.Meta.Equipment {
 		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(30, 1),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(30),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(25),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(30),
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
 		Prayer = 55,
 		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(30),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = M["PeakYendorian2"]
+	}
+
+	M["PeakYendorian2"] {
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Sailing_HumanityEdge_MiscDropTable",
+				Count = 1
+			}
+		}
 	}
 end
 
@@ -531,6 +489,15 @@ do
 		State = "attack",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderhound_AttackLogic.lua",
 		Resource = M["PeakYenderhound"]
+	}
+
+	M["PeakYenderhound"] {
+		ItsyScape.Action.Loot() {
+			Output {
+				Resource = ItsyScape.Resource.DropTable "Sailing_HumanityEdge_MiscDropTable",
+				Count = 1
+			}
+		}
 	}
 end
 
@@ -1246,6 +1213,13 @@ do
 		Resource = M["CapnRaven_PirateBodyGuard1"]
 	}
 
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = -50,
+		StrengthMelee = -40,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["CapnRaven_PirateBodyGuard1"]
+	}
+
 	M["CapnRaven_PirateBodyGuard1"] {
 		ItsyScape.Action.Attack()
 	}
@@ -1283,10 +1257,35 @@ do
 		Resource = M["CapnRaven_PirateBodyGuard2"]
 	}
 
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = -50,
+		StrengthMelee = -40,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["CapnRaven_PirateBodyGuard2"]
+	}
+
 	M["CapnRaven_PirateBodyGuard2"] {
 		ItsyScape.Action.Attack()
 	}
 end
+
+M["BalsaTree"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75,
+		PositionY = 5,
+		PositionZ = 151,
+		Name = "BalsaTree",
+		Map = M._MAP,
+		Resource = M["BalsaTree"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "BalsaTree_Default",
+		MapObject = M["BalsaTree"]
+	}
+end
+
 
 M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
 do
@@ -1436,8 +1435,8 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "tutorial-duel",
-		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_DuelLogic.lua",
+		State = "tutorial-deflect",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_DeflectLogic.lua",
 		Resource = M["Orlando"]
 	}
 end
@@ -1756,6 +1755,12 @@ do
 	ItsyScape.Meta.PeepMashinaState {
 		State = "tutorial-stand-guard",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_StandGuardLogic.lua",
+		Resource = M["KnightCommander"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-wait",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_WaitLogic.lua",
 		Resource = M["KnightCommander"]
 	}
 
@@ -2602,6 +2607,15 @@ do
 
 	M["MiningKnight2"] {
 		TalkAction
+	}
+end
+
+do
+	ItsyScape.Meta.DropTableEntry {
+		Item = ItsyScape.Resource.Item "CookedLightningStormfish",
+		Weight = 1,
+		Count = 3,
+		Resource = ItsyScape.Resource.DropTable "Sailing_HumanityEdge_MiscDropTable"
 	}
 end
 

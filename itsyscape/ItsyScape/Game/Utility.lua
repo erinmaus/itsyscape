@@ -4407,7 +4407,7 @@ Utility.Peep.WALK_QUEUE = { n = 0, pending = {} }
 
 function Utility.Peep.cancelWalk(n)
 	for i, pending in ipairs(Utility.Peep.WALK_QUEUE.pending) do
-		if pending.n == id then
+		if pending.n == n then
 			table.remove(Utility.Peep.WALK_QUEUE.pending, i)
 			break
 		end

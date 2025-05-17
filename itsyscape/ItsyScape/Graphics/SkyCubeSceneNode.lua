@@ -147,24 +147,6 @@ function SkyCubeSceneNode:tick(frameDelta)
 	SceneNode.tick(self, frameDelta)
 end
 
-function SkyCubeSceneNode:_updateMesh(renderer)
-	local camera = renderer:getCamera()
-	local projection, view = camera:getTransforms()
-	local projectionView = projection * view
-
-	for i, vertex in ipairs(SkyCubeSceneNode.MESH_DATA) do
-		local x, y, z = unpack(vertex)
-		x, y, z = projectionView:inverseTransformPoint(unpack(vertex))
-
-		local otherVertex = self.vertices[i]
-		otherVertex[1] = x
-		otherVertex[2] = y
-		otherVertex[3] = z
-	end
-
-	--self.mesh:setVertices(self.vertices)
-end
-
 function SkyCubeSceneNode:draw(renderer, frameDelta)
 	local shader = renderer:getCurrentShader()
 	if shader then
@@ -183,7 +165,6 @@ function SkyCubeSceneNode:draw(renderer, frameDelta)
 		end
 	end
 
-	self:_updateMesh(renderer)
 	love.graphics.setFrontFaceWinding("cw")
 	love.graphics.draw(self.mesh)
 	love.graphics.setFrontFaceWinding("ccw")

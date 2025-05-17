@@ -216,7 +216,7 @@ end
 
 function SpiralLayout:_setAngle(currentAngle, focus)
 	local minAngle = 0
-	local maxAngle = (self:getNumOptions() + 1) / self.numVisibleOptions * (math.pi * 2)
+	local maxAngle = (self:getNumOptions() - 1) / self.numVisibleOptions * (math.pi * 2)
 
 	currentAngle = math.wrap(currentAngle, minAngle, maxAngle)
 	self.currentAngle = currentAngle

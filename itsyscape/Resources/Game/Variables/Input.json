@@ -20,7 +20,7 @@
 			"scrollXAxis": "rightx",
 			"scrollYAxis": "righty",
 
-			"axisSensitivity": 0.6,
+			"axisSensitivity": 0.3,
 			"radialDrag": 1,
 
 			"gamepadOpenCombatRing": "rightshoulder",

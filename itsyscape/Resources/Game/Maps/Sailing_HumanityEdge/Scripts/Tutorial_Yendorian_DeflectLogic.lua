@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Dummy_RiteLogic.lua
+-- Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yendorian_DeflectLogic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -15,58 +15,30 @@ local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
-local UseRite = Mashina.Step {
-	Mashina.ParallelTry {
-		Mashina.Sequence {
-			Mashina.Peep.IsCombatStyle {
-				style = Weapon.STYLE_MAGIC
-			},
-
-			Mashina.Peep.CanQueuePower {
-				power = "BindShadow"
-			},
-
-			Mashina.Peep.QueuePower {
-				power = "BindShadow"
-			}
-		},
-
-		Mashina.Sequence {
-			Mashina.Peep.IsCombatStyle {
-				style = Weapon.STYLE_ARCHERY
-			},
-
-			Mashina.Peep.CanQueuePower {
-				power = "Snipe"
-			},
-
-			Mashina.Peep.QueuePower {
-				power = "Snipe"
-			}
-		},
-
-		Mashina.Sequence {
-			Mashina.Peep.IsCombatStyle {
-				style = Weapon.STYLE_MELEE
-			},
-
-			Mashina.Peep.CanQueuePower {
-				power = "Tornado"
-			},
-
-			Mashina.Peep.QueuePower {
-				power = "Tornado"
-			}
-		}
-	},
-
-	Mashina.Peep.DidUsePower
+local CanUseRite = Mashina.Peep.CanQueuePower {
+	power = "Snipe"
 }
 
-local CanUseRite = Mashina.Try {
+local UseRite = Mashina.Step {
+	Mashina.Peep.QueuePower {
+		power = "Snipe",
+		turns = 1
+	},
+
+	Mashina.Peep.DidAttack,
+
+	Mashina.Peep.HasQueuedPower {
+		target = CommonLogic.PLAYER
+	},
+
+	Mashina.Peep.OnPoke {
+		event = "powerActivated"
+	}
+}
+
+local CanPlayerUseRite = Mashina.Try {
 	Mashina.Sequence {
 		Mashina.Peep.IsStance {
-			target = CommonLogic.PLAYER,
 			stance = Weapon.STANCE_DEFENSIVE
 		},
 
@@ -78,94 +50,58 @@ local CanUseRite = Mashina.Try {
 
 	Mashina.Sequence {
 		Mashina.Peep.IsCombatStyle {
-			target = CommonLogic.PLAYER,
 			style = Weapon.STYLE_MAGIC
 		},
 
 		Mashina.Peep.CanQueuePower {
 			peep = CommonLogic.PLAYER,
-			power = "Corrupt"
+			power = "Confuse"
 		}
 	},
 
 	Mashina.Sequence {
 		Mashina.Peep.IsCombatStyle {
-			target = CommonLogic.PLAYER,
 			style = Weapon.STYLE_ARCHERY
 		},
 
 		Mashina.Peep.CanQueuePower {
 			peep = CommonLogic.PLAYER,
-			power = "Snipe"
+			power = "Shockwave"
 		}
 	},
 
 	Mashina.Sequence {
 		Mashina.Peep.IsCombatStyle {
-			target = CommonLogic.PLAYER,
 			style = Weapon.STYLE_MELEE
 		},
 
 		Mashina.Peep.CanQueuePower {
 			peep = CommonLogic.PLAYER,
-			power = "Tornado"
+			power = "Parry"
 		}
 	}
 }
 
-local CanUseRiteDialog = Mashina.Step {
-	CanUseRite,
-
-	Mashina.Invert {
-		Mashina.Player.IsInterfaceOpen {
-			interface = "DialogBox",
-			player = CommonLogic.Player
-		}
+local CanDeflect = Mashina.Step {
+	Mashina.Sequence {
+		CanUseRite,
+		CanPlayerUseRite
 	},
 
 	Mashina.Player.Disable {
 		player = CommonLogic.PLAYER
 	},
 
-	Mashina.Player.Dialog {
-		peep = CommonLogic.ORLANDO,
-		player = CommonLogic.PLAYER,
-		main = "quest_tutorial_combat.can_use_rite"
-	},
+	Mashina.ParallelTry {
+		UseRite,
 
-	Mashina.Player.Enable {
-		player = CommonLogic.PLAYER
-	},
-
-	Mashina.Peep.PokeMap {
-		event = "showOffensiveRiteHint",
-		poke = CommonLogic.PLAYER
-	}
-}
-
-local DidUseRiteBefore = Mashina.Peep.OnPoke {
-	target = CommonLogic.PLAYER,
-	event = "powerActivated"
-}
-
-local DidUseRiteBeforeDialog = Mashina.Step {
-	DidUseRiteBefore,
-
-	Mashina.Invert {
-		Mashina.Player.IsInterfaceOpen {
-			interface = "DialogBox",
-			player = CommonLogic.Player
+		Mashina.Sequence {
+			Mashina.Player.Dialog {
+				peep = CommonLogic.ORLANDO,
+				player = CommonLogic.PLAYER,
+				main = "quest_tutorial_combat.can_deflect"
+			}
 		}
-	},
-
-	Mashina.Player.Disable {
-		player = CommonLogic.PLAYER
-	},
-
-	Mashina.Player.Dialog {
-		peep = CommonLogic.ORLANDO,
-		player = CommonLogic.PLAYER,
-		main = "quest_tutorial_combat.preemptively_used_rite"
 	},
 
 	Mashina.Player.Enable {
@@ -179,7 +115,7 @@ local DidUseCorrectRite = Mashina.Peep.OnPoke {
 	callback = function(_, _, _, _, e)
 		local resourceID = e.power:getResource().name
 
-		if resourceID == "Corrupt" or resourceID == "Snipe" or resourceID == "Tornado" or resourceID == "Bash" then
+		if resourceID == "Confuse" or resourceID == "Shockwave" or resourceID == "Parry" or resourceID == "Bash" then
 			return nil, B.Status.Success
 		end
 
@@ -187,7 +123,7 @@ local DidUseCorrectRite = Mashina.Peep.OnPoke {
 	end
 }
 
-local DidUseCorrectOffensiveRite = Mashina.Step {
+local DidUseCorrectDeflectRite = Mashina.Step {
 	DidUseCorrectRite,
 
 	Mashina.Player.Disable {
@@ -197,7 +133,7 @@ local DidUseCorrectOffensiveRite = Mashina.Step {
 	Mashina.Player.Dialog {
 		peep = CommonLogic.ORLANDO,
 		player = CommonLogic.PLAYER,
-		main = "quest_tutorial_combat.correct_rite"
+		main = "quest_tutorial_combat.correct_deflect"
 	},
 
 	Mashina.Player.Enable {
@@ -205,14 +141,9 @@ local DidUseCorrectOffensiveRite = Mashina.Step {
 	}
 }
 
-local DidUseIncorrectOffensiveRite = Mashina.Step {
+local DidUseIncorrectDeflectRite = Mashina.Step {
 	Mashina.Invert {
 		DidUseCorrectRite
-	},
-
-	Mashina.Peep.OnPoke {
-		target = CommonLogic.PLAYER,
-		event = "powerActivated"
 	},
 
 	Mashina.Player.Disable {
@@ -222,7 +153,7 @@ local DidUseIncorrectOffensiveRite = Mashina.Step {
 	Mashina.Player.Dialog {
 		peep = CommonLogic.ORLANDO,
 		player = CommonLogic.PLAYER,
-		main = "quest_tutorial_combat.incorrect_rite"
+		main = "quest_tutorial_combat.incorrect_deflect"
 	},
 
 	Mashina.Player.Enable {
@@ -253,6 +184,7 @@ local IgnoredInstructions = Mashina.Step {
 	WasAttackedWithoutQueuedPower,
 
 	CanUseRite,
+	CanPlayerUseRite,
 
 	Mashina.Player.Disable {
 		player = CommonLogic.PLAYER
@@ -261,32 +193,35 @@ local IgnoredInstructions = Mashina.Step {
 	Mashina.Player.Dialog {
 		peep = CommonLogic.ORLANDO,
 		player = CommonLogic.PLAYER,
-		main = "quest_tutorial_combat.did_not_use_rite"
+		main = "quest_tutorial_combat.did_not_deflect"
 	},
 
 	Mashina.Player.Enable {
 		player = CommonLogic.PLAYER
-	},
-
-	Mashina.Peep.PokeMap {
-		event = "showOffensiveRiteHint",
-		poke = CommonLogic.PLAYER
 	}
 }
 
 local FollowedInstructions = Mashina.ParallelTry {
+	DidUseCorrectDeflectRite,
 	Mashina.Failure {
-		DidUseIncorrectOffensiveRite
+		DidUseIncorrectDeflectRite
+	}
+}
+
+local WillAttack = Mashina.Sequence {
+	Mashina.Peep.HasCombatTarget {
+		peep = CommonLogic.PLAYER,
+		[CommonLogic.PLAYER_TARGET] = B.Output.target
 	},
 
-	DidUseCorrectOffensiveRite
+	Mashina.Check {
+		condition = function(mashina, state)
+			return state[CommonLogic.PLAYER_TARGET] == mashina
+		end
+	}
 }
 
-local DidAttackDummy = Mashina.Peep.HasCombatTarget {
-	peep = CommonLogic.PLAYER
-}
-
-local DidNotAttackDummy = Mashina.Sequence {
+local DidNotAttack = Mashina.Sequence {
 	Mashina.Invert {
 		Mashina.Peep.HasCombatTarget {
 			peep = CommonLogic.PLAYER
@@ -297,8 +232,6 @@ local DidNotAttackDummy = Mashina.Sequence {
 		Mashina.Peep.DidAttack,
 		Mashina.Peep.DidAttack,
 		Mashina.Peep.DidAttack,
-
-		CommonLogic.GetOrlando,
 
 		Mashina.Player.Disable {
 			player = CommonLogic.PLAYER
@@ -316,6 +249,23 @@ local DidNotAttackDummy = Mashina.Sequence {
 	}
 }
 
+local RiteLoop = Mashina.Repeat {
+	Mashina.Invert {
+		Mashina.ParallelTry {
+			Mashina.Failure {
+				UseRite
+			},
+
+			Mashina.ParallelTry {
+				FollowedInstructions,
+				Mashina.Failure {
+					IgnoredInstructions
+				}
+			}
+		}
+	}
+}
+
 local HandleOffense = Mashina.Step {
 	Mashina.Peep.ApplyEffect {
 		effect = "Tutorial_NoDamage",
@@ -329,10 +279,10 @@ local HandleOffense = Mashina.Step {
 	Mashina.Repeat {
 		Mashina.Invert {
 			Mashina.ParallelTry {
-				DidAttackDummy,
+				WillAttack,
 
 				Mashina.Failure {
-					DidNotAttackDummy
+					DidNotAttack
 				}
 			}
 		}
@@ -349,59 +299,15 @@ local HandleOffense = Mashina.Step {
 
 	Mashina.Repeat {
 		Mashina.Invert {
-			Mashina.Step {
-				Mashina.Peep.DidAttack,
-				UseRite
-			}
+			CanDeflect
 		}
 	},
 
-	Mashina.Repeat {
-		CommonLogic.GetOrlando,
-
-		Mashina.Invert {
-			Mashina.ParallelTry {
-				CanUseRiteDialog,
-				DidUseRiteBeforeDialog
-			}
-		}
-	},
-
-	Mashina.Peep.RemoveEffect {
-		effect = "Tutorial_NoKill"
-	},
-
-	Mashina.Peep.ApplyEffect {
-		effect = "Tutorial_NoDamage",
-		singular = true
-	},
-
-	Mashina.Repeat {
-		Mashina.Invert {
-			Mashina.ParallelTry {
-				FollowedInstructions,
-				Mashina.Failure {
-					IgnoredInstructions
-				}
-			}
-		}
-	},
-
-	Mashina.Peep.RemoveEffect {
-		effect = "Tutorial_NoDamage"
-	},
+	RiteLoop,
 
 	Mashina.Peep.SetState {
-		state = "tutorial-deflect"
+		state = false
 	}
-}
-
-local AttackOrDefend = Mashina.ParallelTry {
-	Mashina.Failure {
-		CommonLogic.Heal
-	},
-
-	HandleOffense
 }
 
 local Tree = BTreeBuilder.Node() {
@@ -414,20 +320,16 @@ local Tree = BTreeBuilder.Node() {
 			stance = Weapon.STANCE_CONTROLLED
 		},
 
+		CommonLogic.GetOrlando,
+
 		Mashina.Repeat {
 			Mashina.Success {
-				Mashina.ParallelTry {
-					Mashina.Failure {
-						CommonLogic.DidYieldDuringCombatTutorial
+				Mashina.ParallelSequence {
+					Mashina.Success {
+						CommonLogic.Heal
 					},
 
-					Mashina.Try {
-						Mashina.Failure {
-							CommonLogic.IsYielding
-						},
-
-						AttackOrDefend
-					}
+					HandleOffense
 				}
 			}
 		}

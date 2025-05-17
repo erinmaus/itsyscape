@@ -17,10 +17,9 @@ local Map = require "ItsyScape.World.Map"
 
 local BuildLargeTileSetsApplication = Class(EditorApplication)
 
-ResourceManager.DESKTOP_FRAME_DURATION = 5
-ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = 5
-
 function BuildLargeTileSetsApplication:new()
+	ResourceManager.DESKTOP_FRAME_DURATION = 5
+	ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = 5
 	_LOG_WRITE_ALL = true
 
 	EditorApplication.new(self)
@@ -176,7 +175,8 @@ function BuildLargeTileSetsApplication:update(delta)
 	EditorApplication.update(self, delta)
 
 	local resources = self:getGameView():getResourceManager()
-	if not resources:getIsPending() then
+	local _, n = resources:getIsPending()
+	if n == 0 then
 		if self.mapIndex <= #self.maps then
 			if self.mapIndex > 0 then
 				self:saveMap(self.maps[self.mapIndex].layer, self.maps[self.mapIndex].map, self.maps[self.mapIndex].filename, self.maps[self.mapIndex].meta)

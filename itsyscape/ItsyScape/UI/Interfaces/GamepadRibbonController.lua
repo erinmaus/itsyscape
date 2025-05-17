@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Curve = require "ItsyScape.Game.Curve"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local Utility = require "ItsyScape.Game.Utility"
@@ -133,10 +134,6 @@ function GamepadRibbonController:pull()
 	local showSurvey = (os.time() - lastSurveyTime) >= Utility.Time.DAY
 
 	return {
-		inventory = { items = self:pullInventory(), count = self:getInventorySpace() },
-		equipment = { items = self:pullEquipment(), count = Equipment.PLAYER_SLOTS_MAX },
-		skills = self:pullSkills(),
-		stats = self:pullEquipmentStats(),
 		showSurvey = showSurvey
 	}
 end
@@ -874,6 +871,51 @@ function GamepadRibbonController:steal(e)
 			state:give("Item", inputResource.name, output.count or 1, { ['item-inventory'] = true, ['item-drop-excess'] = true })
 		end
 	end
+end
+
+function GamepadRibbonController:updateSkills()
+	self.previousSkills = self.currentSkills
+	self.currentSkills = self:pullSkills()
+
+	if not RPCState.deepEquals(self.previousSkills, self.currentSkills) then
+		self:send("updateSkills", self.currentSkills)
+	end
+end
+
+function GamepadRibbonController:updateEquipment()
+	self.previousEquipment = self.currentEquipment
+	self.currentEquipment = { items = self:pullEquipment(), count = Equipment.PLAYER_SLOTS_MAX }
+
+	if not RPCState.deepEquals(self.previousEquipment, self.currentEquipment) then
+		self:send("updateEquipment", self.currentEquipment)
+	end
+end
+
+function GamepadRibbonController:updateEquipmentStats()
+	self.previousEquipmentStats = self.currentEquipmentStats
+	self.currentEquipmentStats = self:pullEquipmentStats()
+
+	if not RPCState.deepEquals(self.previousEquipmentStats, self.currentEquipmentStats) then
+		self:send("updateEquipmentStats", self.currentEquipmentStats)
+	end
+end
+
+function GamepadRibbonController:updateInventory()
+	self.previousInventory = self.currentInventory
+	self.currentInventory = { items = self:pullInventory(), count = self:getInventorySpace() }
+
+	if not RPCState.deepEquals(self.previousInventory, self.currentInventory) then
+		self:send("updateInventory", self.currentInventory)
+	end
+end
+
+function GamepadRibbonController:update(delta)
+	Controller.update(self, delta)
+
+	self:updateSkills()
+	self:updateEquipment()
+	self:updateEquipmentStats()
+	self:updateInventory()
 end
 
 return GamepadRibbonController

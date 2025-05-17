@@ -74,9 +74,15 @@ local Heal = Mashina.Step {
 		end
 	},
 
-	Mashina.Peep.PlayAnimation {
-		animation = "Human_ActionEat_1",
-		priority = 500
+	Mashina.Try {
+		Mashina.Invert {
+			Mashina.Peep.IsHuman
+		},
+
+		Mashina.Peep.PlayAnimation {
+			animation = "Human_ActionEat_1",
+			priority = 500
+		},	
 	},
 
 	Mashina.Peep.Heal {
