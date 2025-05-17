@@ -104,7 +104,6 @@ function BaseCombatHUD:new(...)
 		player = {},
 		powers = {},
 		spells = {},
-		activeSpellID = false,
 		prayers = {},
 		food = {},
 		equipment = {},
