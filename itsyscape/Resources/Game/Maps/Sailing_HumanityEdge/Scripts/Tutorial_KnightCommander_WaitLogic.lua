@@ -39,7 +39,7 @@ local StandGuardAndLookStupid = Mashina.Sequence {
 
 local YellAtNearbyPlayer = Mashina.Step {
 	Mashina.Peep.FindNearbyPeep {
-		distance = 16,
+		distance = 8,
 
 		filter = function(p, mashina)
 			local player = p:getBehavior(PlayerBehavior)

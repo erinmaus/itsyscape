@@ -170,6 +170,8 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint, enab
 
 	if otherPeep then
 		Utility.Peep.setMashinaState(otherPeep, false)
+		Utility.Combat.disengage(otherPeep)
+		otherPeep:getCommandQueue():interrupt()
 
 		local i, j, k = Utility.Peep.getTile(playerPeep)
 		if Utility.Peep.walk(otherPeep, i, j, k, 3, { asCloseAsPossible = false }) then
@@ -587,6 +589,7 @@ function Island:onFinishPreparingTeam(playerPeep)
 	self:initCompanion(playerPeep, "Orlando")
 
 	if not Utility.Quest.didStart("Tutorial", playerPeep) then
+		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), "tutorial-wait")
 		return
 	end
 
@@ -1047,6 +1050,7 @@ function Island:updateTutorialCookStormfishStep(playerPeep)
 			Utility.Peep.enable(playerPeep)
 
 			self:transitionTutorial(playerPeep, "Tutorial_CookedLightningStormfish")
+			Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), "tutorial-follow-player")
 		end, "quest_tutorial_cook_fish.done_cooking")
 	end
 end
