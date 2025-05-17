@@ -1122,7 +1122,7 @@ Okay, great! First things first...
 = did_not_deflect
 
 # speaker={C_ORLANDO}
-C'mon, you need to use a rite to counter me!
+C'mon, you need to use a rite to counter the Yendorian!
 
 -> deflect_switch
 
@@ -1146,7 +1146,7 @@ Let's try again!
 = attack_dummy_again
 
 # speaker={C_ORLANDO}
-Go on and attack the dummy!
+Go on and attack the Yendorian!
 
 -> DONE
 

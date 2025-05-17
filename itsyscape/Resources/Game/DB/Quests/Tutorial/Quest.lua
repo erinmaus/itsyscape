@@ -64,7 +64,7 @@ Description "Tutorial_FoundScout" {
 
 Description "Tutorial_DefeatedScout" {
 	before = "Defeat the Yendorian scout before it alerts the others!",
-	after = "Oh no! Despite defeating the Yendorian scout, in his last moments he sent up a flare alerting the Yendorian party further ahead."
+	after = "Oh no! Despite defeating the Yendorian scout, in his last moments, he sent up a flare, alerting the Yendorian party further ahead."
 }
 
 Description "Tutorial_FoundYenderhounds" {
