@@ -10,6 +10,7 @@
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
+local QueueWalkCommand = require "ItsyScape.Peep.QueueWalkCommand"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 
 local WalkToPeep = B.Node("WalkToPeep")
@@ -28,6 +29,9 @@ function WalkToPeep:update(mashina, state, executor)
 		local callback, id = Utility.Peep.queueWalk(mashina, i, j, k, state[self.DISTANCE], {
 			asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE]
 		})
+
+		Log.info("Queuing walk to (%d, %d; %d) for '%s'.", i, j, k, mashina:getName())
+		mashina:getCommandQueue():interrupt(QueueWalkCommand(callback, id))
 
 		self.walkID = id
 		callback:register(function(status)
