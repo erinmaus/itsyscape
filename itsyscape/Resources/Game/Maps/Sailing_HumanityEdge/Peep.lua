@@ -347,6 +347,7 @@ function Island:onAttackKeelhauler(playerPeep)
 	local orlando = self:getCompanion(playerPeep, "Orlando")
 
 	Utility.Peep.attack(keelhauler, orlando, math.huge)
+	Utility.Peep.attack(orlando, keelhauler, math.huge)
 	Utility.Peep.applyCooldown(keelhauler)
 
 	Utility.Peep.setMashinaState(keelhauler, "attack-phase-2")
@@ -470,7 +471,7 @@ end
 
 function Island:onFinishDemo(playerPeep)
 	if _ITSYREALM_DEMO then
-		Utility.move(playerPeep, "FinishDemo")
+		Utility.move(playerPeep, "@FinishDemo")
 	end
 end
 
@@ -874,6 +875,7 @@ function Island:onTutorialReachPeak(playerPeep)
 		local orlando = self:getCompanion(playerPeep, "Orlando")
 
 		Utility.Peep.attack(pirate1, orlando)
+		Utility.Peep.attack(orlando, pirate1)
 		Utility.Peep.attack(pirate2, playerPeep)
 	end, "quest_tutorial_initial_encounter", shouldEnable)
 end

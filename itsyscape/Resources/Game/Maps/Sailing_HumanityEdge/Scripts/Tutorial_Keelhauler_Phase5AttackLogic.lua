@@ -75,12 +75,6 @@ local Attack = Mashina.Step {
 }
 
 local Dash = Mashina.Sequence {
-	Mashina.Invert {
-		Mashina.Peep.HasZeal {
-			zeal = 0.5
-		}
-	},
-
 	Mashina.Step {
 		Mashina.Peep.DidAttack,
 		Mashina.Peep.DidAttack,
