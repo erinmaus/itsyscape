@@ -235,6 +235,8 @@ end
 
 function Island:onPlayFoundPiratesCutscene(playerPeep)
 	Utility.Peep.disable(playerPeep)
+	Utility.Combat.disengage(playerPeep)
+
 	self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
 		Utility.UI.closeAll(playerPeep)
 
