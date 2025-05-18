@@ -366,7 +366,7 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 			continue;
 		}
 
-		buffer.resize(buffer.size() + static_mesh_group->getVertexCount());
+		buffer.reserve(buffer.size() + static_mesh_group->getVertexCount());
 
 		for (std::size_t vertex_index = 0; vertex_index < static_mesh_group->getVertexCount(); ++vertex_index)
 		{
