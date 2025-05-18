@@ -114,7 +114,7 @@ void nbunny::DepthRendererPass::draw_pass(lua_State* L, float delta)
 
 	graphics->clear(
 		love::graphics::OptionalColorf(),
-		love::OptionalInt(),
+		0,
 		1.0f);
 
 	love::graphics::Graphics::ColorMask enabled_mask;
