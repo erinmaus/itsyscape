@@ -22,7 +22,8 @@ RendererPass.PASS_PARTICLE_OUTLINE = 6
 RendererPass.PASS_SHADOW           = 7
 RendererPass.PASS_REFLECTION       = 8
 RendererPass.PASS_SHIMMER          = 9
-RendererPass.PASS_MAX              = 9
+RendererPass.PASS_DEPTH            = 10
+RendererPass.PASS_MAX              = 10
 
 function RendererPass:new(renderer)
 	self.renderer = renderer

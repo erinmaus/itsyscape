@@ -481,8 +481,8 @@ void nbunny::DeferredRendererPass::draw_nodes(lua_State* L, float delta, const s
 	auto renderer = get_renderer();
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
-	love::graphics::CompareMode depth_compare_mode = love::graphics::COMPARE_LEQUAL;
-	bool depth_write_enabled = true;
+	love::graphics::CompareMode depth_compare_mode = love::graphics::COMPARE_EQUAL;
+	bool depth_write_enabled = false;
 	graphics->getDepthMode(depth_compare_mode, depth_write_enabled);
 
 	for (auto& scene_node: nodes)
@@ -533,47 +533,13 @@ void nbunny::DeferredRendererPass::draw_pass(lua_State* L, float delta)
 			love::Colorf(0.0, 0.0, 0.0, 0.0),
 			love::Colorf(0.0, 0.0, 0.0, 0.0)
 		},
-		0,
-		1.0f);
-
-	love::graphics::Graphics::ColorMask enabled_mask;
-	enabled_mask.r = true;
-	enabled_mask.g = true;
-	enabled_mask.b = true;
-	enabled_mask.a = true;
-
-	love::graphics::Graphics::ColorMask disabled_mask;
-	disabled_mask.r = false;
-	disabled_mask.g = false;
-	disabled_mask.b = false;
-	disabled_mask.a = false;
+		love::OptionalInt(),
+		love::OptionalDouble());
 	
-	graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 	graphics->setMeshCullMode(love::graphics::CULL_BACK);
 
-	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-	if (!stencil_masked_drawable_scene_nodes.empty() && !stencil_write_drawable_scene_nodes.empty())
-	{
-		graphics->setColorMask(disabled_mask);
-		draw_nodes(L, delta, stencil_masked_drawable_scene_nodes);
-
-		graphics->setDepthMode(love::graphics::COMPARE_GEQUAL, false);
-		graphics->drawToStencilBuffer(love::graphics::STENCIL_INCREMENT, 0);
-		glad::glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
-		draw_nodes(L, delta, stencil_write_drawable_scene_nodes);
-
-		graphics->stopDrawToStencilBuffer();
-		glad::glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-		graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-	}
-
-	graphics->setColorMask(enabled_mask);
-	graphics->clear(
-		love::graphics::OptionalColorf(),
-		love::OptionalInt(),
-		1.0f);
+	graphics->setDepthMode(love::graphics::COMPARE_EQUAL, false);
 	draw_nodes(L, delta, drawable_scene_nodes);
 
 	if (!stencil_masked_drawable_scene_nodes.empty())

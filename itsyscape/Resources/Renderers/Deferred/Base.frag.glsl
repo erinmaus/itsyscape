@@ -51,15 +51,6 @@ void effect()
 
 	normal = clampGBufferNormal(normal);
 
-	if (diffuse.a < 250.0 / 255.0)
-	{
-		discard;
-	}
-	else
-	{
-		diffuse.a = 1.0;
-	}
-
 	love_Canvases[0] = diffuse;
 	love_Canvases[2] = vec4(specular, scape_OutlineColor.r, (scape_OutlineThreshold + 1.0) / 2.0, 1.0);
 }
