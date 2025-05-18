@@ -119,8 +119,6 @@ function QuestProgressNotification:new(id, index, ui)
 	self.infoPanel:addChild(self.guideLabel)
 
 	self:setZDepth(-1)
-
-	self:updateQuest()
 end
 
 function QuestProgressNotification:getOverflow()
@@ -134,17 +132,21 @@ function QuestProgressNotification:updatePosition()
 	self:setPosition(x, y)
 end
 
-function QuestProgressNotification:updateQuest()
+function QuestProgressNotification:updateQuestSteps(steps)
 	local state = self:getState()
 
 	self.title:setText(state.questName or "")
 
-	local label = state.steps and {
-		state.steps[#state.steps - 1] or "",
-		state.steps[#state.steps] or "",
+	local label = steps and {
+		steps[#steps - 1] or "",
+		steps[#steps] or "",
 	}
 
 	self.guideLabel:setText(label or "")
+end
+
+function QuestProgressNotification:updateQuestHints(hints)
+	Log.info("Updating hints: %s", Log.dump(hints))
 end
 
 function QuestProgressNotification:update(delta)
@@ -178,8 +180,6 @@ function QuestProgressNotification:update(delta)
 			self.scrollTime = nil
 		end
 	end
-
-	self:updateQuest()
 end
 
 return QuestProgressNotification
