@@ -534,6 +534,8 @@ function ActorView:new(actor, actorID)
 	self.rotation = Quaternion():keep()
 
 	self.animations = {}
+	self.definitions = {}
+	self.instances = {}
 	self._onAnimationPlayed = function(_, slot, priority, animation, _, time)
 		self:playAnimation(slot, animation, priority, time or 0)
 	end
@@ -683,7 +685,7 @@ function ActorView:_loadAnimation(a, definition, slot, animation, priority, time
 
 		a.cacheRef = animation
 		a.definition = definition:getResource()
-		a.instance = a.definition:play(self.animatable)
+		a.instance = self.instances[animation:getFilename()] or a.definition:play(self.animatable)
 		a.time = time or 0
 		a.priority = priority or -math.huge
 		a.id = self.animatable:addPlayingAnimation(a.instance, a.time)
@@ -724,7 +726,7 @@ function ActorView:playAnimation(slot, animation, priority, time)
 		if self:getIsImmediate() then
 			self:_loadAnimation(a, self.game:getResourceManager():loadCacheRef(animation), slot, animation, priority, time)
 		else
-			self.game:getResourceManager():queueAsyncEvent(self._loadAnimation, self, a, self.game:getResourceManager():loadCacheRef(animation), slot, animation, priority, time)
+			self.game:getResourceManager():queueAsyncEvent(self._loadAnimation, self, a, self.definitions[animation:getFilename()] or self.game:getResourceManager():loadCacheRef(animation), slot, animation, priority, time)
 		end
 
 		self.animations[slot] = a

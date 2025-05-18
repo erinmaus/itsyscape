@@ -326,46 +326,81 @@ function RichTextLabelRenderer:drop(widget)
 	self.texts[widget] = nil
 end
 
+function RichTextLabelRenderer:isSame(widget)
+	local text = self.texts[widget]
+	if not text then
+		return false
+	end
+
+	local oldX, oldY, oldWidth, oldHeight, oldText, oldStyle = unpack(text)
+
+	local currentX, currentY = widget:getAbsolutePosition()
+	local currentWidth, currentHeight = widget:getSize()
+	local currentText, currentStyle = widget:getText(), widget:getStyle()
+
+	return oldX == currentX and
+	       oldY == currentY and
+	       oldWidth == currentWidth and
+	       oldHeight == currentHeight and
+	       oldText == currentText and
+	       oldStyle == currentStyle
+end
+
 function RichTextLabelRenderer:draw(widget, state)
 	self:visit(widget)
 
-	local text = self.texts[widget]
-	if not text or text.t ~= widget:getText() then
+	if not self:isSame(widget) then
+		local text = self.texts[widget]
 		local t = widget:getText()
 		if type(t) == 'string' then
 			t = { { t = 'text', t } }
 		end
 
+		local currentX, currentY = widget:getAbsolutePosition()
+		local currentWidth, currentHeight = widget:getSize()
+		local currentText, currentStyle = widget:getText(), widget:getStyle()
+
 		text = {
 			t = t,
 			y = 0,
-			resources = {}
+			resources = {},
+
+			currentX,
+			currentY,
+			currentWidth,
+			currentHeight,
+			currentText,
+			currentStyle
 		}
 
 		self.texts[widget] = text
-	end
 
-	local w, h = widget:getSize()
-	local renderer = RichTextLabelRenderer.Draw(self, text.t, text.resources, widget:getStyle(), w)
-	renderer:draw()
+		local w, h = widget:getSize()
+		text.replay = itsyrealm.graphics.startRecording()
+		local renderer = RichTextLabelRenderer.Draw(self, text.t, text.resources, widget:getStyle(), w)
+		renderer:draw()
+		itsyrealm.graphics.stopRecording()
 
-	if widget:getWrapParentContents() then
-		local p = widget:getParent()
-		if p then
-			p:setSize(w, renderer.y + renderer.height)
+		if widget:getWrapParentContents() then
+			local p = widget:getParent()
+			if p then
+				p:setSize(w, renderer.y + renderer.height)
+			end
 		end
-	end
 
-	if widget:getWrapContents() and text.y ~= renderer.y then
-		widget:setSize(w, renderer.y)
-		widget:onSize()
+		if widget:getWrapContents() and text.y ~= renderer.y then
+			widget:setSize(w, renderer.y)
+			widget:onSize()
 
-		text.y = renderer.y
-	end
+			text.y = renderer.y
+		end
 
-	if text.scrollY ~= renderer.scrollY then
-		widget:onScroll(renderer.scrollY)
-		text.scrollY = renderer.scrollY
+		if text.scrollY ~= renderer.scrollY then
+			widget:onScroll(renderer.scrollY)
+			text.scrollY = renderer.scrollY
+		end
+	else
+		itsyrealm.graphics.replay(self.texts[widget].replay)
 	end
 end
 

@@ -71,7 +71,6 @@ function QuestProgressNotificationController:new(peep, director, keyItem)
 			end
 		end
 	end
-
 end
 
 function QuestProgressNotificationController:poke(actionID, actionIndex, e)
@@ -217,17 +216,27 @@ function QuestProgressNotificationController:pull()
 	if self.questID and self.log then
 		return {
 			id = self.questID,
-			questName = QuestProgressNotificationController.QUEST_CACHE[self.questID].name,
-			steps = self.log,
-			hints = self.hints or {}
+			questName = QuestProgressNotificationController.QUEST_CACHE[self.questID].name
 		}
 	else
 		return {
 			id = false,
-			questName = "",
-			steps = {},
-			hints = {}
+			questName = ""
 		}
+	end
+end
+
+function QuestProgressNotificationController:update(delta)
+	Controller.update(self, delta)
+
+	if self.previousLog ~= self.log then
+		self:send("updateQuestSteps", self.log)
+		self.previousLog = self.log
+	end
+	
+	if self.previousHints ~= self.hints then
+		self:send("updateQuestHints", self.hints)
+		self.previousHints = self.hints
 	end
 end
 

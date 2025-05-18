@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local DeferredRendererPass = require "ItsyScape.Graphics.DeferredRendererPass"
+local DepthRendererPass = require "ItsyScape.Graphics.DepthRendererPass"
 local ForwardRendererPass = require "ItsyScape.Graphics.ForwardRendererPass"
 local OutlineRendererPass = require "ItsyScape.Graphics.OutlineRendererPass"
 local ParticleOutlineRendererPass = require "ItsyScape.Graphics.ParticleOutlineRendererPass"
@@ -62,6 +63,7 @@ function Renderer:new(conf)
 	self.shadowPass = ShadowRendererPass(self, shadowQuality)
 	self.outlinePass = OutlineRendererPass(self)
 	self.finalDeferredPass = DeferredRendererPass(self, self.shadowPass)
+	self.depthPass = DepthRendererPass(self, self.finalDeferredPass:getGBuffer())
 	self.finalForwardPass = ForwardRendererPass(self, self.finalDeferredPass)
 	self.alphaMaskPass = AlphaMaskRendererPass(self, self.finalDeferredPass:getHandle():getDepthBuffer())
 	self.particleOutlinePass = ParticleOutlineRendererPass(self, self.finalDeferredPass:getHandle():getDepthBuffer())
@@ -71,6 +73,7 @@ function Renderer:new(conf)
 		[self.shadowPass:getID()] = self.shadowPass,
 		[self.outlinePass:getID()] = self.outlinePass,
 		[self.finalDeferredPass:getID()] = self.finalDeferredPass,
+		[self.depthPass:getID()] = self.depthPass,
 		[self.finalForwardPass:getID()] = self.finalForwardPass,
 		[self.alphaMaskPass:getID()] = self.alphaMaskPass,
 		[self.particleOutlinePass:getID()] = self.particleOutlinePass,
@@ -82,6 +85,7 @@ function Renderer:new(conf)
 		self._renderer:addRendererPass(self.shadowPass:getHandle())
 	end
 
+	self._renderer:addRendererPass(self.depthPass:getHandle())
 	self._renderer:addRendererPass(self.finalDeferredPass:getHandle())
 	self._renderer:addRendererPass(self.finalForwardPass:getHandle())
 
