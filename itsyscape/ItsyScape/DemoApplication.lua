@@ -21,6 +21,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Actor = require "ItsyScape.Game.Model.Actor"
 local Prop = require "ItsyScape.Game.Model.Prop"
 local Color = require "ItsyScape.Graphics.Color"
+local OutlinePostProcessPass = require "ItsyScape.Graphics.OutlinePostProcessPass"
 local TitleScreen = require "ItsyScape.Graphics.TitleScreen"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local DefaultCameraController = require "ItsyScape.Graphics.DefaultCameraController"
@@ -1760,7 +1761,6 @@ function DemoApplication:snapshotPlayerPeep()
 		actors = { self:getGame():getPlayer():getActor() }
 	end
 
-	local renderer = Renderer()
 	love.graphics.push('all')
 	do
 		local camera = ThirdPersonCamera()
@@ -1776,6 +1776,9 @@ function DemoApplication:snapshotPlayerPeep()
 		renderer:setClearColor(Color(0, 0, 0, 0))
 		renderer:setCullEnabled(false)
 		renderer:setCamera(camera)
+
+		local outlinePostProcessPass = OutlinePostProcessPass(renderer)
+		outlinePostProcessPass:load(self:getGameView():getResourceManager())
 
 		for index, actor in ipairs(actors) do
 			love.graphics.push("all")
@@ -1793,7 +1796,7 @@ function DemoApplication:snapshotPlayerPeep()
 			camera:setPosition(position)
 			camera:setDistance(zoom)
 
-			renderer:draw(view:getSceneNode(), self:getFrameDelta(), 1024, 1024)
+			renderer:draw(view:getSceneNode(), self:getFrameDelta(), 1024, 1024, { outlinePostProcessPass })
 			love.graphics.setCanvas()
 
 			local imageData = renderer:getOutputBuffer():getColor():newImageData()
