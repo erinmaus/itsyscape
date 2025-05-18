@@ -28,7 +28,7 @@ cp -rv ~/.local/share/ItsyRealm/Resources/* Resources/
 
 echo $ITSYREALM_VERSION > version.meta
 
-rm -f ../itsyrealm.love && find . -type f | sort | tr "\n" "\0" | xargs -0 -n1 zip -0 ../itsyrealm.love
+rm -f ../itsyrealm.love && find . -type f | sort | tr "\n" "\0" | xargs -0 zip -0 ../itsyrealm.love
 
 cd ..
 cp ./itsyrealm.love ./installdir/bin/itsyrealm.love
