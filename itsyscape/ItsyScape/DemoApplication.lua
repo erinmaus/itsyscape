@@ -542,7 +542,7 @@ function DemoApplication:_openGraphicsOptions(_, buttonIndex)
 	self:openOptionsScreen(GraphicsOptions, function(value)
 		if value then
 			self:_updateGraphicsOptions()
-			love.audio.setVolume(_CONF.volume)
+			love.audio.setVolume(_CONF.volume or love.audio.getVolume())
 		end
 
 		self:closeMainMenu()
@@ -694,9 +694,10 @@ function DemoApplication:openDemoMainMenu()
 end
 
 function DemoApplication:_updateGraphicsOptions()
-	love.window.setMode(_CONF.width, _CONF.height, {
-		fullscreen = _CONF.fullscreen,
-		vsync = _CONF.vsync,
+	local w, h, flags = love.window.getMode()
+	love.window.setMode(_CONF.width or w, _CONF.height or h, {
+		fullscreen = _CONF.fullscreen == nil and flags.fullscreen or not not _CONF.fullscreen,
+		vsync = _CONF.vsync == nil and flags.vsync or _CONF.vsync,
 		display = _CONF.display
 	})
 
