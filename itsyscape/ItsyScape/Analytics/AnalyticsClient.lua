@@ -59,8 +59,8 @@ function Client.getConfig()
 		end
 	end
 
-	if config.enabled ~= false then
-		config.enabled = true
+	if config.enable ~= false then
+		config.enable = true
 	end
 
 	return config

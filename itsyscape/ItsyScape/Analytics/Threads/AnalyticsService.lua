@@ -19,7 +19,11 @@ local function uuidv7()
 		values[i] = ffi.new("uint64_t", love.math.random(0, 0xFF))
 	end
 
-	local timestamp = ffi.new("uint64_t", os.time() * 1000)
+	local utcDate = os.date("!*t")
+	local localDate = os.date("%c")
+	utcDate.isdst = localDate.isdst
+
+	local timestamp = ffi.new("uint64_t", os.time(utcDate) * 1000)
 	local timestampHigh = bit.band(bit.rshift(timestamp, 16), 0xFFFFFFFF)
 	local timestampLow = bit.band(timestamp, 0xFFFF)
 
@@ -175,7 +179,7 @@ while isRunning do
 				pushAnalyticEvent(event.data)
 			end
 		elseif event.type == 'session' then
-			sessionID = math.floor(socket.gettime() * 1000)
+			sessionID = uuidv7()
 		elseif event.type == 'id' then
 			deviceID = event.id or json.null
 			deviceBrand = event.brand or nil
