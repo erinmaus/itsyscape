@@ -13,7 +13,7 @@ echo $ITSYREALM_VERSION > version.meta
 cp -r ../cicd/macos/staging/ext/B ./B
 cp -r ../cicd/macos/staging/ext/devi ./devi
 cp -r ../cicd/macos/staging/ext/nomicon ./nomicon
-zip -9 -qr ../cicd/macos/staging/ItsyRealm.app/Contents/Resources/itsyrealm.love .
+zip -0 -oXqr ../cicd/macos/staging/ItsyRealm.app/Contents/Resources/itsyrealm.love .
 rm -r ./B
 rm -r ./devi
 rm -r ./nomicon
