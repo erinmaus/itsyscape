@@ -10,6 +10,40 @@
 _LOG_SUFFIX = "analytics"
 require "bootstrap"
 
+local bit = require "bit"
+local ffi = require "ffi"
+
+local function uuidv7()
+	local values = {}
+	for i = 1, 16 do
+		values[i] = ffi.new("uint64_t", love.math.random(0, 0xFF))
+	end
+
+	local timestamp = ffi.new("uint64_t", os.time() * 1000)
+	local timestampHigh = bit.band(bit.rshift(timestamp, 16), 0xFFFFFFFF)
+	local timestampLow = bit.band(timestamp, 0xFFFF)
+
+	values[1] = bit.band(bit.rshift(timestampHigh, 24), 0xFF)
+	values[2] = bit.band(bit.rshift(timestampHigh, 16), 0xFF)
+	values[3] = bit.band(bit.rshift(timestampHigh, 8), 0xFF)
+	values[4] = bit.band(timestampHigh, 0xFF)
+	values[5] = bit.band(bit.rshift(timestampLow, 8), 0xFF)
+	values[6] = bit.band(timestampLow, 0xFF)
+
+	values[7] = bit.bor(bit.rshift(values[7], 8), 0x70)
+	values[9] = bit.bor(bit.rshift(values[9], 8), 0x80)
+
+	local result = {}
+	for i = 1, 16 do
+		table.insert(result, string.format("%02x", values[i]))
+		if i == 4 or i == 6 or i == 8 or i == 10 then
+			table.insert(result, "-")
+		end
+	end
+
+	return table.concat(result)
+end
+
 local socket = require "socket"
 local POSTHOG_API_KEY = "phc_LdsYQWylO249JvLVvSQwgjn5Gs1n5VyP6UbEnIn83U0"
 
@@ -20,7 +54,7 @@ local inputChannel = love.thread.getChannel("ItsyScape.Analytics::input")
 
 local eventID = 1
 
-local sessionID = math.floor(socket.gettime() * 1000)
+local sessionID = uuidv7()
 local deviceID = json.null
 local deviceBrand, deviceModel
 
@@ -124,6 +158,10 @@ do
 			Log.warn("Couldn't process 'Player/Common.dat': %s", Log.stringify(config))
 		end
 	end
+end
+
+if isEnabled then
+	Log.info("Starting analytics service with session ID '%s'.", sessionID)
 end
 
 while isRunning do
