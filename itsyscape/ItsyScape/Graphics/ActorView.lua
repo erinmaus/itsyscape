@@ -1322,7 +1322,7 @@ function ActorView:draw()
 				local isTextureCompatible = material:getNumTextures() ~= 1 or (material:getNumTextures() == 1 and material:getTexture(1):isCompatibleType(TextureResource))
 				local isImmediate = self:getIsImmediate()
 
-				if not _CONF.featureFlagEnableCombinedActorModel or isForward or isMultiTexture or isImmediate then
+				if isForward or isMultiTexture or isImmediate then
 					modelSceneNode:setParent(slot.sceneNode)
 				else
 					local texture = material:getTexture(1)
