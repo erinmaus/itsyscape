@@ -86,7 +86,7 @@ function ModelResource:loadFromFile(filename, _, skeleton)
 				local lodFile = Resource.readLua(lodFilename)
 				local model = Model(lodFile, skeleton or self.skeleton)
 
-				self:getHandle():setLODMesh(s, model:getMesh())
+				self:getHandle():setLODMesh(s / 100, model:getMesh())
 
 				if coroutine.running() then
 					coroutine.yield()
