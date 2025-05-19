@@ -59,6 +59,14 @@ void nbunny::StaticMeshInstance::set_mesh(const std::string& group, love::graphi
 	{
 		meshes.emplace(group, mesh);
 		groups.push_back(group);
+
+		std::vector<std::uint8_t> data;
+		data.resize(mesh->getVertexCount() * mesh->getVertexStride());
+		auto gpu_data = (const std::uint8_t*)mesh->mapVertexData();
+		std::memcpy(&data[0], gpu_data, data.size());
+		mesh->unmapVertexData(0, 0);
+
+		mesh_data.emplace(group, data);
 	}
 	else
 	{
@@ -69,6 +77,11 @@ void nbunny::StaticMeshInstance::set_mesh(const std::string& group, love::graphi
 love::graphics::Mesh* nbunny::StaticMeshInstance::get_mesh(const std::string& group) const
 {
 	return meshes.at(group).get();
+}
+
+const std::uint8_t* nbunny::StaticMeshInstance::get_mesh_data(const std::string& group) const
+{
+	return &mesh_data.at(group)[0];
 }
 
 bool nbunny::StaticMeshInstance::has_mesh(const std::string& group) const

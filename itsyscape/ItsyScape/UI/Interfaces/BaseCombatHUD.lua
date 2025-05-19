@@ -643,7 +643,6 @@ function BaseCombatHUD:updateThingies()
 end
 
 function BaseCombatHUD:refresh()
-	print(">>>> refresh")
 	self.wasRefreshed = true
 	self:refreshThingies()
 end

@@ -132,9 +132,9 @@ local function _tryMerge(otherRectangle, newRectangle)
 	return false
 end
 
-function Atlas.Layer:tryAdd(image)
-	local width = math.ceil(image:getWidth() / self.cellSize)
-	local height = math.ceil(image:getHeight() / self.cellSize)
+function Atlas.Layer:tryAdd(image, w, h)
+	width = math.ceil((w or image:getWidth()) / self.cellSize)
+	height = math.ceil((h or image:getHeight()) / self.cellSize)
 
 	self:clean()
 
@@ -185,8 +185,8 @@ function Atlas.Layer:tryAdd(image)
 			local quad = love.graphics.newQuad(
 				rectangle.i * self.cellSize,
 				rectangle.j * self.cellSize,
-				image:getWidth(),
-				image:getHeight(),
+				w or image:getWidth(),
+				h or image:getHeight(),
 				self.cellSize * self.cellWidth,
 				self.cellSize * self.cellHeight)
 			image:setQuad(quad)
@@ -258,7 +258,14 @@ function Atlas.Layer:update()
 		love.graphics.setColor(0, 0, 0, 0)
 		love.graphics.rectangle("fill", rectangle.i * self.cellSize, rectangle.j * self.cellSize, rectangle.width * self.cellSize, rectangle.height * self.cellSize)
 		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.draw(rectangle.image:getTexture(), rectangle.i * self.cellSize, rectangle.j * self.cellSize)
+
+		local _, _, w, h = rectangle.image:getQuad():getViewport()
+		love.graphics.draw(
+			rectangle.image:getTexture(),
+			rectangle.i * self.cellSize, rectangle.j * self.cellSize,
+			0,
+			w / rectangle.image:getWidth(),
+			h / rectangle.image:getHeight())
 	end
 
 	table.clear(self.pendingUpdates)

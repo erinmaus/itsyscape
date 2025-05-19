@@ -31,7 +31,7 @@ function Notification:new(id, index, ui)
 		x = (w - Notification.WIDTH) / 2
 		y = h / 2 + h / 4
 	else
-		itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+		x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 	end
 
 	self.panel = Panel()

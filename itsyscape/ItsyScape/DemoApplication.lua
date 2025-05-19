@@ -274,7 +274,7 @@ function DemoApplication:new()
 
 	self:initTitleScreen()
 
-	Pool():makeCurrent()
+	--Pool():makeCurrent()
 end
 
 function DemoApplication:changeCamera(_, cameraType)
@@ -2518,7 +2518,7 @@ end
 function DemoApplication:update(delta)
 	Application.update(self, delta)
 
-	Pool.getCurrent():update()
+	--Pool.getCurrent():update()
 
 	self:pumpGyroMouse(delta)
 	self:updateMobileMouse()

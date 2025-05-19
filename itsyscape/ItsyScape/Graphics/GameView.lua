@@ -643,7 +643,7 @@ function GameView:updateGroundDecorations(m)
 			self:_updateWind(m.layer, d.sceneNode)
 		end
 
-		if group ~= Block.GROUP_STATIC then
+		if group == Block.GROUP_BENDY then
 			table.insert(m.dynamicGroundDecorations, d)
 		else
 			table.insert(m.staticGroundDecorations, d)
@@ -661,6 +661,7 @@ function GameView:updateGroundDecorations(m)
 		table.sort(cachedGroundDecorations)
 
 		self.resourceManager:queueAsyncEvent(function()
+			local groups = {}
 			for _, filename in ipairs(cachedGroundDecorations) do
 				local index, tileSetID, layer = filename:match("_x_GroundDecorations_(%d+)_(.+)@(%d+).ldeco.cache")
 
@@ -681,11 +682,51 @@ function GameView:updateGroundDecorations(m)
 					local fullFilename = string.format("%s/%s", cachedGroundDecorationDirectory, filename)
 					local decoration = Decoration(buffer.decode(love.filesystem.read(fullFilename)))
 
+					local groupLayers = groups[layer]
+					if not groupLayers then
+						groupLayers = {}
+						groups[layer] = groupLayers
+					end
+
 					local group = decoration:getUniform("_x_Group")
 					decoration:setIsWall(group == Block.GROUP_STATIC)
 
-					local groupName = string.format("_x_GroundDecorations_%d_%s@%d", index, tileSetID, layer)
-					self:decorate(groupName, decoration, m.layer, updateDecorationMaterial)
+					local parentGroups = groupLayers[group]
+					if not parentGroups then
+						parentGroups = {}
+						groupLayers[group] = parentGroups
+					end
+
+					local parentDecoration = parentGroups[tileSetID]
+					if not parentDecoration then
+						parentDecoration = Decoration({ tileSetID = tileSetID })
+						parentDecoration:setUniform("_x_Group", group)
+						parentDecoration:setIsWall(decoration:getIsWall())
+
+						parentGroups[tileSetID] = parentDecoration
+					end
+
+					for i = 1, decoration:getNumFeatures() do
+						local f = decoration:getFeatureByIndex(i)
+						parentDecoration:add(
+							f:getID(),
+							f:getPosition(),
+							f:getRotation(),
+							f:getScale(),
+							f:getColor(),
+							f:getTexture())
+					end
+
+					coroutine.yield()
+				end
+			end
+
+			for layer, parentLayers in pairs(groups) do
+				for groupName, parentGroups in pairs(parentLayers) do
+					for tileSetID, decoration in pairs(parentGroups) do
+						local decorationName = string.format("_x_GroundDecorations_%s_%s@%d", groupName, tileSetID, layer)
+						self:decorate(decorationName, decoration, m.layer, updateDecorationMaterial)
+					end
 				end
 			end
 		end)
@@ -1095,120 +1136,115 @@ function GameView:_updatePlayerMapNode()
 	local delta = _APP:getFrameDelta()
 
 	-- local distanceSquared = (self.camera:getDistance() * 2) ^ 2
-	-- local position = self.camera:getPosition()
+	-- local position = self.camera:getPosition():inverseTransform(m.node:getTransform():getGlobalDeltaTransform(delta))
 	-- local playerMin = position - Vector.PLANE_XZ
 	-- local playerMax = position + Vector.PLANE_XZ
 	-- for _, d in ipairs(m.dynamicGroundDecorations) do
 	-- 	local decorationMin, decorationMax = d.sceneNode:getBounds()
-	-- 	decorationMin, decorationMax = Vector.transformBounds(decorationMin, decorationMax, m.node:getTransform():getGlobalDeltaTransform(delta))
-
 	-- 	local u = (playerMin - decorationMax):max(Vector.ZERO)
 	-- 	local v = (decorationMin - playerMax):max(Vector.ZERO)
 	-- 	local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
 
 	-- 	if squaredDistance <= distanceSquared then
-	-- 		if d.sceneNode:getParent()  ~= m.node then
+	-- 		if d.sceneNode:getParent() ~= m.node then
 	-- 			d.sceneNode:setParent(m.node)
-	-- 		end
-
-	-- 		if d.alphaSceneNode and d.alphaSceneNode:getParent()  ~= m.node then
-	-- 			d.alphaSceneNode:setParent(m.node)
 	-- 		end
 	-- 	else
 	-- 		if d.sceneNode:getParent() == m.node then
+	-- 			print(">>> hid", d.name)
 	-- 			d.sceneNode:setParent(nil)
 	-- 		end
 	-- 	end
 	-- end
 
-	local _, playerI, playerJ = m.map:getTileAt(self.camera:getPosition().x, self.camera:getPosition().z)
+	-- local _, playerI, playerJ = m.map:getTileAt(self.camera:getPosition().x, self.camera:getPosition().z)
 
-	local eye = self.camera:getEye()
-	local _, eyeI, eyeJ = m.map:getTileAt(eye.x, eye.z)
+	-- local eye = self.camera:getEye()
+	-- local _, eyeI, eyeJ = m.map:getTileAt(eye.x, eye.z)
 
-	local differenceI = eyeI - playerI
-	local differenceJ = eyeJ - playerJ
+	-- local differenceI = eyeI - playerI
+	-- local differenceJ = eyeJ - playerJ
 
-	local forward = self.camera:getForward()
-	forward.y = -forward.y
+	-- local forward = self.camera:getForward()
+	-- forward.y = -forward.y
 
-	local ray = Ray(self.camera:getPosition() + Vector(0, 0.5, 0), forward)
-	if math.abs(differenceI) > math.abs(differenceJ) then
-		local directionI = math.sign(differenceI)
+	-- local ray = Ray(self.camera:getPosition() + Vector(0, 0.5, 0), forward)
+	-- if math.abs(differenceI) > math.abs(differenceJ) then
+	-- 	local directionI = math.sign(differenceI)
 
-		local stopI
-		if directionI < 0 then
-			stopI = 1
-		else
-			stopI = m.map:getWidth()
-		end
+	-- 	local stopI
+	-- 	if directionI < 0 then
+	-- 		stopI = 1
+	-- 	else
+	-- 		stopI = m.map:getWidth()
+	-- 	end
 
-		local isHidden = false
-		for i = playerI + directionI, stopI, directionI do
-			local center = m.map:getTileCenter(i, playerJ)
-			local _, projection = ray:closest(center)
+	-- 	local isHidden = false
+	-- 	for i = playerI + directionI, stopI, directionI do
+	-- 		local center = m.map:getTileCenter(i, playerJ)
+	-- 		local _, projection = ray:closest(center)
 
-			isHidden = center.y > projection.y
-			if isHidden then
-				break
-			end
-		end
+	-- 		isHidden = center.y > projection.y
+	-- 		if isHidden then
+	-- 			break
+	-- 		end
+	-- 	end
 
-		if isHidden then
-			local foundCliff = false
-			for i = playerI + directionI, stopI, directionI do
-				local center = m.map:getTileCenter(i, playerJ)
-				local _, projection = ray:closest(center)
+	-- 	if isHidden then
+	-- 		local foundCliff = false
+	-- 		for i = playerI + directionI, stopI, directionI do
+	-- 			local center = m.map:getTileCenter(i, playerJ)
+	-- 			local _, projection = ray:closest(center)
 
-				if center.y > projection.y then
-					foundCliff = true
-				elseif foundCliff or i == stopI then
-					foundCliff = true
-					near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
-					break
-				end
-			end
-		end
-	else
-		local directionJ = math.sign(differenceJ)
+	-- 			if center.y > projection.y then
+	-- 				foundCliff = true
+	-- 			elseif foundCliff or i == stopI then
+	-- 				foundCliff = true
+	-- 				near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
+	-- 				break
+	-- 			end
+	-- 		end
+	-- 	end
+	-- else
+	-- 	local directionJ = math.sign(differenceJ)
 
-		local stopJ
-		if directionJ < 0 then
-			stopJ = 1
-		else
-			stopJ = m.map:getHeight()
-		end
+	-- 	local stopJ
+	-- 	if directionJ < 0 then
+	-- 		stopJ = 1
+	-- 	else
+	-- 		stopJ = m.map:getHeight()
+	-- 	end
 
-		local isHidden = false
-		for j = playerJ + directionJ, stopJ, directionJ do
-			local center = m.map:getTileCenter(playerI, j)
-			local _, projection = ray:closest(center)
+	-- 	local isHidden = false
+	-- 	for j = playerJ + directionJ, stopJ, directionJ do
+	-- 		local center = m.map:getTileCenter(playerI, j)
+	-- 		local _, projection = ray:closest(center)
 
-			isHidden = center.y > projection.y
-			if isHidden then
-				break
-			end
-		end
+	-- 		isHidden = center.y > projection.y
+	-- 		if isHidden then
+	-- 			break
+	-- 		end
+	-- 	end
 
-		if isHidden then
-			local foundCliff = false
-			for j = playerJ + directionJ, stopJ, directionJ do
-				local center = m.map:getTileCenter(playerI, j)
-				local _, projection = ray:closest(center)
+	-- 	if isHidden then
+	-- 		local foundCliff = false
+	-- 		for j = playerJ + directionJ, stopJ, directionJ do
+	-- 			local center = m.map:getTileCenter(playerI, j)
+	-- 			local _, projection = ray:closest(center)
 
-				if center.y > projection.y then
-					foundCliff = true
-				elseif foundCliff or j == stopJ then
-					foundCliff = true
-					near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
-					break
-				end
-			end
-		end
-	end
+	-- 			if center.y > projection.y then
+	-- 				foundCliff = true
+	-- 			elseif foundCliff or j == stopJ then
+	-- 				foundCliff = true
+	-- 				near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
+	-- 				break
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end
 
 	for _, node in ipairs(m.parts) do
-		node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", near)
+		node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
 	end
 
 	if self.previousPlayerLayer and self.previousPlayerLayer ~= layer then

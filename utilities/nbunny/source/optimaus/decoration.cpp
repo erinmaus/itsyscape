@@ -338,8 +338,7 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 		}
 
 		auto static_mesh_group = static_mesh.get_mesh(feature->tile_id);
-
-		auto data = (const unsigned char*)static_mesh_group->mapVertexData();
+		auto data = static_mesh.get_mesh_data(feature->tile_id);
 
 		auto translation = glm::translate(glm::mat4(1.0f), feature->position);
 		auto rotation = glm::toMat4(feature->rotation);
@@ -366,12 +365,13 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 			continue;
 		}
 
+		auto start_index = buffer.size();
 		buffer.resize(buffer.size() + static_mesh_group->getVertexCount());
 
 		for (std::size_t vertex_index = 0; vertex_index < static_mesh_group->getVertexCount(); ++vertex_index)
 		{
 			auto input_vertex = data + static_mesh_group->getVertexStride() * vertex_index;
-			Vertex output_vertex;
+			auto& output_vertex = buffer.at(start_index + vertex_index);
 
 			output_vertex.feature_position = feature->position;
 			output_vertex.feature_rotation = feature->rotation;
@@ -397,13 +397,9 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 			}
 			output_vertex.color = input_color;
 
-			buffer.push_back(output_vertex);
-
 			min = glm::min(min, output_vertex.position);
 			max = glm::max(max, output_vertex.position);
 		}
-
-		static_mesh_group->unmapVertexData(0, 0);
 	}
 
 	set_min(min);
