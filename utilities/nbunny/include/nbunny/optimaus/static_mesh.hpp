@@ -31,6 +31,7 @@ namespace nbunny
 	{
 	private:
 		std::unordered_map<std::string, love::StrongRef<love::graphics::Mesh>> meshes;
+		std::unordered_map<std::string, std::vector<std::uint8_t>> mesh_data;
 		std::vector<std::string> groups;
 
 	public:
@@ -39,6 +40,7 @@ namespace nbunny
 
 		void set_mesh(const std::string& group, love::graphics::Mesh* mesh);
 		love::graphics::Mesh* get_mesh(const std::string& group) const;
+		const std::uint8_t* get_mesh_data(const std::string& group) const;
 		bool has_mesh(const std::string& group) const;
 
 		const std::vector<std::string>& get_mesh_groups() const;
