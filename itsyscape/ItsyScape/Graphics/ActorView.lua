@@ -222,6 +222,213 @@ function ActorView.Animatable:update()
 	end
 end
 
+ActorView.CombinedTexture = Class()
+ActorView.CombinedTexture.GRID_SIZE = 128
+ActorView.CombinedTexture.MAX_EXPONENT = 4
+
+function ActorView.CombinedTexture:new()
+	local maxTextureSize = love.graphics.getSystemLimits().texturesize
+	maxTextureSize = math.min(maxTextureSize, 4096)
+
+	self.atlasSize = maxTextureSize
+
+	self.diffuseAtlas = love.graphics.newCanvas(self.atlasSize, self.atlasSize)
+	self.specularAtlas = love.graphics.newCanvas(self.atlasSize, self.atlasSize)
+	self.outlineAtlas = love.graphics.newCanvas(self.atlasSize, self.atlasSize)
+	self.heightmapAtlas = love.graphics.newCanvas(self.atlasSize, self.atlasSize)
+
+	self.texture = TextureResource(self.diffuseAtlas)
+	self.texture:getHandle():setPerPassTexture(TextureResource.PASSES.Outline, self.outlineAtlas)
+	self.texture:getHandle():setBoundTexture("Specular", self.specularAtlas)
+	self.texture:getHandle():setBoundTexture("Heightmap", self.heightmapAtlas)
+
+	self.textures = {}
+	self.images = {}
+
+	self.scale = 1
+end
+
+function ActorView.CombinedTexture:getResource()
+	return self.texture
+end
+
+function ActorView.CombinedTexture:coordinates(textureResource)
+	local image = self.images[textureResource:getID()]
+	local quad = image:getQuad()
+
+	local x, y, w, h = quad:getViewport()
+	local sw, sh = quad:getTextureDimensions()
+
+	local l, r = x / sw, (x + w) / sw
+	local t, b = y / sh, (y + h) / sh
+
+	return l, r, t, b
+end
+
+local function _sortTextures(a, b)
+	return a:getID() < b:getID()
+end
+
+function ActorView.CombinedTexture:add(texture)
+	for _, t in ipairs(self.textures) do
+		if t:getID() == texture:getID() then
+			return
+		end
+	end
+
+	table.insert(self.textures, texture)
+	table.sort(self.textures, _sortTextures)
+
+	local image = Atlas.Image(texture:getResource(), math.huge)
+	self.images[texture:getID()] = image
+
+	self.isDirty = true
+end
+
+function ActorView.CombinedTexture:remove(texture)
+	for i, t in ipairs(self.textures) do
+		if t:getID() == texture:getID() then
+			table.remove(self.textures, i)
+			self.isDirty = true
+			return
+		end
+	end
+end
+
+function ActorView.CombinedTexture:_build()
+	love.graphics.push("all")
+	love.graphics.setBlendMode("replace", "premultiplied")
+	love.graphics.origin()
+
+	love.graphics.setCanvas(self.diffuseAtlas)
+	love.graphics.clear(0, 0, 0, 0)
+	for _, textureResource in ipairs(self.textures) do
+		local texture = textureResource:getResource()
+		local image = self.images[textureResource:getID()]
+
+		local x, y, w, h = image:getQuad():getViewport()
+		love.graphics.draw(
+			texture,
+			x, y,
+			0,
+			w / texture:getWidth(),
+			h / texture:getHeight())
+	end
+
+	love.graphics.setCanvas(self.outlineAtlas)
+	love.graphics.clear(0, 0, 0, 0)
+	for _, textureResource in ipairs(self.textures) do
+		local texture = textureResource:getHandle():getPerPassTexture(TextureResource.PASSES.Outline)
+		local image = self.images[textureResource:getID()]
+		local x, y, w, h = image:getQuad():getViewport()
+
+		if texture then
+			love.graphics.draw(
+				texture,
+				x, y,
+				0,
+				w / texture:getWidth(),
+				h / texture:getHeight())
+		else
+			love.graphics.setColor(0, 0, 0, 0)
+			love.graphics.rectangle("fill", x, y, w, h)
+		end
+	end
+
+	love.graphics.setCanvas(self.specularAtlas)
+	love.graphics.clear(0, 0, 0, 0)
+	for _, textureResource in ipairs(self.textures) do
+		local texture = textureResource:getHandle():getBoundTexture("Specular")
+		local image = self.images[textureResource:getID()]
+		local x, y, w, h = image:getQuad():getViewport()
+
+		if texture then
+			love.graphics.draw(
+				texture,
+				x, y,
+				0,
+				w / texture:getWidth(),
+				h / texture:getHeight())
+		else
+			love.graphics.setColor(0, 0, 0, 0)
+			love.graphics.rectangle("fill", x, y, w, h)
+		end
+	end
+
+	love.graphics.setCanvas(self.heightmapAtlas)
+	love.graphics.clear(0, 0, 0, 0)
+	for _, textureResource in ipairs(self.textures) do
+		local texture = textureResource:getHandle():getBoundTexture("Heightmap")
+		local image = self.images[textureResource:getID()]
+		local x, y, w, h = image:getQuad():getViewport()
+
+		if texture then
+			love.graphics.draw(
+				texture,
+				x, y,
+				0,
+				w / texture:getWidth(),
+				h / texture:getHeight())
+		else
+			love.graphics.setColor(0, 0, 0, 0)
+			love.graphics.rectangle("fill", x, y, w, h)
+		end
+	end
+
+	love.graphics.pop()
+
+	self.isDirty = true
+end
+
+function ActorView.CombinedTexture:_error()
+	love.graphics.setCanvas(self.diffuseAtlas)
+	love.graphics.clear(1, 0, 0, 1)
+	love.graphics.setCanvas(self.outlineAtlas)
+	love.graphics.clear(1, 0, 0, 1)
+	love.graphics.setCanvas(self.specularAtlas)
+	love.graphics.clear(1, 0, 0, 1)
+	love.graphics.setCanvas(self.heightmapAtlas)
+	love.graphics.clear(1, 0, 0, 1)
+
+	self.isDirty = false
+end
+
+function ActorView.CombinedTexture:dirty()
+	self.isDirty = true
+end
+
+function ActorView.CombinedTexture:update()
+	if not self.isDirty then
+		return
+	end
+
+	local scaleExponent = 0
+	for scaleExponent = 0, self.MAX_EXPONENT do
+		local scale = 1 / (2 ^ scaleExponent)
+
+		self.atlasLayer = Atlas.Layer(self.atlasSize / self.GRID_SIZE, self.atlasSize / self.GRID_SIZE, self.GRID_SIZE)
+
+		local isSuccess = true
+		for _, textureResource in ipairs(self.textures) do
+			local texture = textureResource:getResource()
+			local image = self.images[textureResource:getID()]
+
+			if not self.atlasLayer:tryAdd(image, math.floor(texture:getWidth() * scale), math.floor(texture:getHeight() * scale)) then
+				isSuccess = false
+				break
+			end
+		end
+
+		if isSuccess then
+			self.scale = scale
+			self:_build()
+			return
+		end
+	end
+
+	self:_error()
+end
+
 ActorView.CombinedModel = Class()
 ActorView.CombinedModel.VERTEX_FORMAT = {
 	{ 'VertexPosition', 'float', 3 },
@@ -229,23 +436,14 @@ ActorView.CombinedModel.VERTEX_FORMAT = {
 	{ 'VertexTexture', 'float', 2 },
 	{ 'VertexBoneIndex', 'float', 4 },
 	{ 'VertexBoneWeight', 'float', 4 },
-	{ 'VertexDirection', 'float', 1 },
-	{ 'VertexLayer', 'float', 1 },
+	{ 'VertexDirection', 'float', 1 }
 }
 
 function ActorView.CombinedModel:new(actorView, shader)
 	self.actorView = actorView
 	self.shader = shader
 
-	local maxTextureSize = love.graphics.getSystemLimits().texturesize
-	maxTextureSize = math.min(maxTextureSize, 2048)
-
-	self.atlasSize = maxTextureSize
-
-	self.isAtlasDirty = false
-	self.baseAtlas = Atlas(self.atlasSize, self.atlasSize, 128, math.huge)
-	self.perPassAtlases = {}
-	self.boundTextureAtlases = {}
+	self.texture = ActorView.CombinedTexture()
 
 	self.baseModels = {}
 	self.currentBaseModels = {}
@@ -278,12 +476,13 @@ function ActorView.CombinedModel:add(baseModelSceneNode, baseTexture)
 	self:remove(baseModelSceneNode)
 
 	table.insert(self.baseModels, { sceneNode = baseModelSceneNode, texture = baseTexture })
+	self.texture:add(baseTexture)
 end
 
 function ActorView.CombinedModel:remove(baseModelSceneNode)
 	for i = #self.baseModels, 1, -1 do
 		if self.baseModels[i].sceneNode == baseModelSceneNode then
-			self.baseAtlas:replace(self.baseModels[i].texture)
+			self.texture:remove(self.baseModels[i].texture)
 			table.remove(self.baseModels, i)
 		end
 	end
@@ -298,7 +497,7 @@ function ActorView.CombinedModel:getIsEmpty()
 end
 
 function ActorView.CombinedModel:dirty()
-	self.isAtlasDirty = true
+	self.texture:dirty()
 end
 
 function ActorView.CombinedModel:_getIsModelDirty()
@@ -384,11 +583,6 @@ function ActorView.CombinedModel:_appendModel(baseModel, baseTexture)
 					local outputVertex = self.mappedVertices[outputVertexIndex] or {}
 
 					if attributeName == "VertexLayer" then
-						local layer = self.baseAtlas:layer(baseTexture) or 1
-						for i = 1, outputCount do
-							outputVertex[outputOffset + i - 1] = layer - 1
-						end
-					else
 						for i = 1, outputCount do
 							outputVertex[outputOffset + i - 1] = 0
 						end
@@ -424,7 +618,7 @@ function ActorView.CombinedModel:_appendModel(baseModel, baseTexture)
 					self.min = min
 					self.max = max
 				elseif attributeName == "VertexTexture" then
-					local left, right, top, bottom = self.baseAtlas:coordinates(baseTexture)
+					local left, right, top, bottom = self.texture:coordinates(baseTexture)
 					local width = right - left
 					local height = bottom - top
 
@@ -484,31 +678,8 @@ function ActorView.CombinedModel:_updateModel()
 	self.isUpdating = self.isUpdating - 1
 end
 
-function ActorView.CombinedModel:_updateAtlas()
-	local rebuildOtherAtlases = false
-
-	for _, baseModel in ipairs(self.baseModels) do
-		local handle = baseModel.texture
-		local texture = baseModel.sceneNode:getMaterial():getTexture(1)
-		local key = texture:getID()
-
-		if not self.baseAtlas:has(handle) then
-			self.baseAtlas:add(handle, texture:getResource(), key)
-			rebuildOtherAtlases = true
-		elseif self.baseAtlas:reset(handle, key) then
-			self.baseAtlas:replace(handle, texture:getResource(), key)
-		end
-	end
-
-	self.baseAtlas:update()
-
-	if rebuildOtherAtlases then
-		self.texture = LayerTextureResource(self.baseAtlas:getTexture())
-	end
-end
-
 function ActorView.CombinedModel:update()
-	self:_updateAtlas()
+	self.texture:update()
 
 	if self:_getIsModelDirty() then
 		self.isUpdating = self.isUpdating + 1
@@ -516,7 +687,7 @@ function ActorView.CombinedModel:update()
 	end
 
 	if self.texture then
-		self.sceneNode:getMaterial():setTextures(self.texture)
+		self.sceneNode:getMaterial():setTextures(self.texture:getResource())
 	end
 end
 
@@ -762,6 +933,10 @@ end
 
 function ActorView:_doApplySkin(slotNodes, slot, generation)
 	local resourceManager = self.game:getResourceManager()
+
+	if coroutine.running() then
+		self.currentApplySkin = self.currentApplySkin + 1
+	end
 
 	for i = 1, #slotNodes do
 		local slot = slotNodes[i]
@@ -1135,7 +1310,7 @@ end
 
 function ActorView:draw()
 	if self.currentApplySkin ~= 0 then
-		--return
+		return
 	end
 
 	for _, slotNodes in pairs(self.skins) do
@@ -1143,23 +1318,21 @@ function ActorView:draw()
 			local modelSceneNode = slot.model
 			if modelSceneNode then
 				local material = modelSceneNode:getMaterial()
-
-				local hasMultiShader = (not slot.shader and not slot.multiShader) or (slot.shader and slot.multiShader)
 				local isForward = material:getIsFullLit() or material:getIsTranslucent()
 				local isTextureCompatible = material:getNumTextures() ~= 1 or (material:getNumTextures() == 1 and material:getTexture(1):isCompatibleType(TextureResource))
 				local isImmediate = self:getIsImmediate()
 
-				if not _CONF.featureFlagEnableCombinedActorModel or not hasMultiShader or isForward or isMultiTexture or isImmediate then
+				if not _CONF.featureFlagEnableCombinedActorModel or isForward or isMultiTexture or isImmediate then
 					modelSceneNode:setParent(slot.sceneNode)
 				else
 					local texture = material:getTexture(1)
-					local multiShader = material.multiShader or ActorView.DEFAULT_MULTI_SHADER
+					local shader = material:getShader()
 
 					modelSceneNode:setParent(nil)
 
 					local combinedModel
 					for _, c in ipairs(self.combinedModelSceneNodes) do
-						if c:getShader():getID() == multiShader:getID() then
+						if c:getShader():getID() == shader:getID() then
 							combinedModel = c
 							break
 						end
@@ -1172,12 +1345,12 @@ function ActorView:draw()
 						end
 
 						if not combinedModel then
-							combinedModel = ActorView.CombinedModel(self, multiShader)
+							combinedModel = ActorView.CombinedModel(self, shader)
 							table.insert(self.combinedModelSceneNodes, combinedModel)
 						end
 
 						slot.combinedModel = combinedModel
-						combinedModel:add(modelSceneNode, slot.texture)
+						combinedModel:add(modelSceneNode, modelSceneNode:getMaterial():getTexture(1))
 					end
 
 					if combinedModel and not slot.sceneNode:getParent() then
