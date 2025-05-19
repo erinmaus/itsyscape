@@ -226,10 +226,11 @@ ActorView.CombinedTexture = Class()
 ActorView.CombinedTexture.GRID_SIZE = 128
 ActorView.CombinedTexture.MAX_EXPONENT = 4
 
-function ActorView.CombinedTexture:new()
+function ActorView.CombinedTexture:new(actorView)
 	local maxTextureSize = love.graphics.getSystemLimits().texturesize
 	maxTextureSize = math.min(maxTextureSize, 4096)
 
+	self.actorView = actorView
 	self.atlasSize = maxTextureSize
 
 	self.diffuseAtlas = love.graphics.newCanvas(self.atlasSize, self.atlasSize)
@@ -377,7 +378,7 @@ function ActorView.CombinedTexture:_build()
 
 	love.graphics.pop()
 
-	self.isDirty = true
+	self.isDirty = false
 end
 
 function ActorView.CombinedTexture:_error()
@@ -401,6 +402,8 @@ function ActorView.CombinedTexture:update()
 	if not self.isDirty then
 		return
 	end
+
+	Log.info("Rebuilding combined texture for actor '%s' (%d)...", self.actorView:getActor():getName(), self.actorView:getActor():getID())
 
 	local scaleExponent = 0
 	for scaleExponent = 0, self.MAX_EXPONENT do
@@ -443,7 +446,7 @@ function ActorView.CombinedModel:new(actorView, shader)
 	self.actorView = actorView
 	self.shader = shader
 
-	self.texture = ActorView.CombinedTexture()
+	self.texture = ActorView.CombinedTexture(actorView)
 
 	self.baseModels = {}
 	self.currentBaseModels = {}
@@ -652,10 +655,6 @@ function ActorView.CombinedModel:_updateModel()
 		local texture = baseModel.texture
 
 		self:_appendModel(model, texture)
-
-		if coroutine.running() then
-			coroutine.yield()
-		end
 	end
 
 	if self.mappedVertexCount >= 1 then
@@ -671,10 +670,6 @@ function ActorView.CombinedModel:_updateModel()
 		self.sceneNode:setModel(self.combinedModelResource)
 	end
 
-	if coroutine.running() then
-		coroutine.yield()
-	end
-
 	self.isUpdating = self.isUpdating - 1
 end
 
@@ -682,8 +677,10 @@ function ActorView.CombinedModel:update()
 	self.texture:update()
 
 	if self:_getIsModelDirty() then
+		Log.info("Rebuilding combined model for actor '%s' (%d)...", self.actorView:getActor():getName(), self.actorView:getActor():getID())
+
 		self.isUpdating = self.isUpdating + 1
-		self.actorView:getGameView():getResourceManager():queueEvent(self._updateModel, self)
+		self:_updateModel()
 	end
 
 	if self.texture then
@@ -1338,7 +1335,7 @@ function ActorView:draw()
 						end
 					end
 
-					if not combinedModel or slot.combinedModel ~= combinedModel and slot.sceneNode:getParent() then
+					if (not combinedModel or slot.combinedModel ~= combinedModel) and slot.sceneNode:getParent() then
 						if slot.combinedModel then
 							slot.combinedModel:remove(modelSceneNode)
 							slot.combinedModel = nil

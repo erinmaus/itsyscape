@@ -99,7 +99,7 @@ function Resource.readImageData(filename)
 
 		return resource.value
 	else
-		return love.filesystem.read(filename)
+		return love.image.newImageData(filename)
 	end
 end
 
