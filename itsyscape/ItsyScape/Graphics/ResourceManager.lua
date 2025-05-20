@@ -406,15 +406,22 @@ function ResourceManager:_load(resourceType, filename, ...)
 		filename = newFilename
 	end
 
-	local resourcesOfType = self.resources[resourceType] or setmetatable({}, { __mode = 'v' })
+	local resourcesOfType = self.resources[resourceType]
+	if not resourcesOfType then
+		resourcesOfType = setmetatable({}, { __mode = 'v' })
+		self.resources[resourceType] = resourcesOfType
+	end
+
 	if resourcesOfType[filename] and (coroutine.running() or resourcesOfType[filename] ~= true) then
 		while resourcesOfType[filename] == true do
 			Log.debug("Resource '%s' (%s) still loading elsewhere...", filename, resourceType._DEBUG.shortName)
 			coroutine.yield()
 		end
-
+		
 		Log.debug("Resource '%s' (%s) cached.", filename, resourceType._DEBUG.shortName)
 	else
+		resourcesOfType[filename] = true
+
 		if coroutine.running() then
 			coroutine.yield()
 		end
@@ -422,14 +429,11 @@ function ResourceManager:_load(resourceType, filename, ...)
 		local before = love.timer.getTime()
 		do
 			local resource = resourceType()
-			resourcesOfType[filename] = true
-			self.resources[resourceType] = resourcesOfType
-
 			resource:loadFromFile(filename, self, ...)
 			resourcesOfType[filename] = resource
 		end
 		local after = love.timer.getTime()
-
+		
 		local duration = after - before
 		local stats = self.loadStats[resourceType] or {}
 		stats.totalTime = (stats.totalTime or 0) + duration

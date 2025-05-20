@@ -162,7 +162,10 @@ function TextureResource.generateOutlineImage(image)
 end
 
 function TextureResource:loadFromFile(filename, resourceManager)
-	local image = love.graphics.newImage(filename) 
+	local imageData = Resource.readImageData(filename)
+	local image = love.graphics.newImage(imageData)
+	imageData:release()
+
 	image:setFilter('nearest', 'nearest')
 	image:setWrap("repeat")
 	self:getHandle():setTexture(image)

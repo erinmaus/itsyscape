@@ -23,7 +23,7 @@ while true do
 		break
 	end
 
-	Log.engine("Resource thread %d received a request %d.", _INDEX or 0, request.id or -1)
+	Log.engine("Resource thread %d received a request %d for file '%s'.", _INDEX or 0, request.id or -1, request.filename or "n/a")
 
 	local before = love.timer.getTime()
 	if request.type == "file" then

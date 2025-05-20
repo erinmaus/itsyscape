@@ -27,8 +27,10 @@ void effect()
 {
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
 
+#ifndef SCAPE_DEPTH_PASS_SKIP_DISCARD
 	if (diffuse.a < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{
 		discard;
 	}
+#endif
 }
