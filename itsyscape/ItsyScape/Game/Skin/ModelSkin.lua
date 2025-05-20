@@ -40,6 +40,7 @@ function ModelSkin:new()
 	self.bumpHeight = 1
 	self.isReflective = false
 	self.reflectionPower = 0.5
+	self.hasTransform = false
 end
 
 function ModelSkin:getResource()
@@ -166,6 +167,7 @@ function ModelSkin:loadFromFile(filename)
 	   #result.position == 3
 	then
 		self.position = Vector(unpack(result.position)):keep()
+		self.hasTransform = true
 	end
 
 	if result.scale and
@@ -173,6 +175,7 @@ function ModelSkin:loadFromFile(filename)
 	   #result.scale == 3
 	then
 		self.scale = Vector(unpack(result.scale)):keep()
+		self.hasTransform = true
 	end
 
 	if result.rotation and
@@ -180,6 +183,7 @@ function ModelSkin:loadFromFile(filename)
 	   #result.rotation == 4
 	then
 		self.rotation = Quaternion(unpack(result.rotation)):keep()
+		self.hasTransform = true
 	end
 
 	if result.rotation and type(result.rotation) == 'string' then
@@ -187,6 +191,7 @@ function ModelSkin:loadFromFile(filename)
 		if r and Class.isType(r, Quaternion) then
 			self.rotation = Quaternion(r:get()):keep()
 		end
+		self.hasTransform = true
 	end
 
 	if result.fullLit ~= nil then
@@ -325,6 +330,10 @@ end
 
 function ModelSkin:getReflectionPower()
 	return self.reflectionPower
+end
+
+function ModelSkin:getHasTransform()
+	return self.hasTransform
 end
 
 function ModelSkin:_getColor(colorName, colors, c)

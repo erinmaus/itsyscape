@@ -384,14 +384,16 @@ function ActorView.CombinedTexture:_build()
 end
 
 function ActorView.CombinedTexture:_error()
+	love.graphics.push("all")
 	love.graphics.setCanvas(self.diffuseAtlas)
 	love.graphics.clear(1, 0, 0, 1)
 	love.graphics.setCanvas(self.outlineAtlas)
-	love.graphics.clear(1, 0, 0, 1)
+	love.graphics.clear(0, 0, 0, 0)
 	love.graphics.setCanvas(self.specularAtlas)
-	love.graphics.clear(1, 0, 0, 1)
+	love.graphics.clear(0, 0, 0, 0)
 	love.graphics.setCanvas(self.heightmapAtlas)
-	love.graphics.clear(1, 0, 0, 1)
+	love.graphics.clear(0, 0, 0, 0)
+	love.graphics.pop()
 
 	self.isDirty = false
 end
@@ -1193,6 +1195,10 @@ function ActorView:changeSkin(slot, priority, skin, config)
 
 	if oldSkinSlotNode and oldSkinSlotNode.sceneNode then
 		oldSkinSlotNode.sceneNode:setParent(nil)
+
+		if oldSkinSlotNode.model and oldSkinSlotNode.combinedModel then
+			oldSkinSlotNode.combinedModel:remove(oldSkinSlotNode.model)
+		end
 	end
 
 	self.skins[slot] = slotNodes
@@ -1317,11 +1323,12 @@ function ActorView:draw()
 			local modelSceneNode = slot.model
 			if modelSceneNode then
 				local material = modelSceneNode:getMaterial()
+				local hasTransform = slot.instance:getHasTransform()
 				local isForward = material:getIsFullLit() or material:getIsTranslucent()
 				local isTextureCompatible = material:getNumTextures() ~= 1 or (material:getNumTextures() == 1 and material:getTexture(1):isCompatibleType(TextureResource))
 				local isImmediate = self:getIsImmediate()
 
-				if isForward or isMultiTexture or isImmediate then
+				if hasTransform or isForward or isMultiTexture or isImmediate then
 					modelSceneNode:setParent(slot.sceneNode)
 				else
 					local texture = material:getTexture(1)
@@ -1349,7 +1356,7 @@ function ActorView:draw()
 						end
 
 						slot.combinedModel = combinedModel
-						combinedModel:add(modelSceneNode, texture)
+						combinedModel:add(modelSceneNode, modelSceneNode:getMaterial():getTexture(1))
 					end
 
 					if combinedModel and not slot.sceneNode:getParent() then
@@ -1370,7 +1377,7 @@ function ActorView:draw()
 		else
 			combinedModel:update(delta)
 
-			if not sceneNode:getParent() and combinedModel:getIsReady() then
+			if not sceneNode:getParent() then
 				sceneNode:setParent(self.sceneNode)
 				sceneNode:setTransforms(self.animatable:getTransforms())
 			end
