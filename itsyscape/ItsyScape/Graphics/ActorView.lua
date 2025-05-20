@@ -320,19 +320,21 @@ function ActorView.CombinedTexture:_build()
 	love.graphics.clear(0, 0, 0, 0)
 	for _, textureResource in ipairs(self.textures) do
 		local texture = textureResource:getHandle():getPerPassTexture(TextureResource.PASSES.Outline)
-		local image = self.images[textureResource:getID()]
-		local x, y, w, h = image:getQuad():getViewport()
+		if texture ~= textureResource:getResource() then
+			local image = self.images[textureResource:getID()]
+			local x, y, w, h = image:getQuad():getViewport()
 
-		if texture then
-			love.graphics.draw(
-				texture,
-				x, y,
-				0,
-				w / texture:getWidth(),
-				h / texture:getHeight())
-		else
-			love.graphics.setColor(0, 0, 0, 0)
-			love.graphics.rectangle("fill", x, y, w, h)
+			if texture then
+				love.graphics.draw(
+					texture,
+					x, y,
+					0,
+					w / texture:getWidth(),
+					h / texture:getHeight())
+			else
+				love.graphics.setColor(0, 0, 0, 0)
+				love.graphics.rectangle("fill", x, y, w, h)
+			end
 		end
 	end
 
@@ -1347,7 +1349,7 @@ function ActorView:draw()
 						end
 
 						slot.combinedModel = combinedModel
-						combinedModel:add(modelSceneNode, modelSceneNode:getMaterial():getTexture(1))
+						combinedModel:add(modelSceneNode, texture)
 					end
 
 					if combinedModel and not slot.sceneNode:getParent() then
