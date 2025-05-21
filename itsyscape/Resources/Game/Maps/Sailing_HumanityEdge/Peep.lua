@@ -1110,6 +1110,18 @@ function Island:updateTutorialFindYendoriansStep(playerPeep)
 		Utility.Combat.disengage(orlando)
 		Utility.Combat.disengage(knightCommander)
 
+		local peakYendorian1 = self:getCompanion(playerPeep, "PeakYendorian1")
+		if peakYendorian1 then
+			Utility.Peep.setMashinaState(peakYendorian1, false)
+			Utility.Combat.disengage(peakYendorian1)
+		end
+
+		local peakYendorian2 = self:getCompanion(playerPeep, "PeakYendorian2")
+		if peakYendorian2 then
+			Utility.Peep.setMashinaState(peakYendorian2, false)
+			Utility.Combat.disengage(peakYendorian2)
+		end
+
 		self:poke("playFoundPiratesCutscene", playerPeep)
 	end
 end

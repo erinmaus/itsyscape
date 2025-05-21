@@ -228,7 +228,7 @@ ActorView.CombinedTexture.MAX_EXPONENT = 4
 
 function ActorView.CombinedTexture:new(actorView)
 	local maxTextureSize = love.graphics.getSystemLimits().texturesize
-	maxTextureSize = math.min(maxTextureSize, 4096)
+	maxTextureSize = math.min(maxTextureSize, 2048)
 
 	self.actorView = actorView
 	self.atlasSize = maxTextureSize
@@ -245,6 +245,7 @@ function ActorView.CombinedTexture:new(actorView)
 
 	self.textures = {}
 	self.images = {}
+	self.counts = {}
 
 	self.scale = 1
 end
@@ -271,25 +272,41 @@ local function _sortTextures(a, b)
 end
 
 function ActorView.CombinedTexture:add(texture)
-	for _, t in ipairs(self.textures) do
-		if t:getID() == texture:getID() then
-			return
-		end
+	local id = texture:getID()
+
+	if self.counts[id] then
+		self.counts[id] = self.counts[id] + 1
+		return
 	end
 
 	table.insert(self.textures, texture)
 	table.sort(self.textures, _sortTextures)
 
 	local image = Atlas.Image(texture:getResource(), math.huge)
-	self.images[texture:getID()] = image
+	self.images[id] = image
 
+	self.counts[id] = 1
 	self.isDirty = true
 end
 
 function ActorView.CombinedTexture:remove(texture)
+	local id = texture:getID()
+
+	if not self.counts[id] then
+		return
+	end
+
+	self.counts[id] = self.counts[id] - 1
+	if self.counts[id] > 0 then
+		return
+	end
+
+	self.counts[id] = nil
 	for i, t in ipairs(self.textures) do
-		if t:getID() == texture:getID() then
+		if t:getID() == id then
 			table.remove(self.textures, i)
+			self.images[id] = nil
+
 			self.isDirty = true
 			return
 		end
@@ -384,14 +401,16 @@ function ActorView.CombinedTexture:_build()
 end
 
 function ActorView.CombinedTexture:_error()
+	love.graphics.push("all")
 	love.graphics.setCanvas(self.diffuseAtlas)
 	love.graphics.clear(1, 0, 0, 1)
 	love.graphics.setCanvas(self.outlineAtlas)
-	love.graphics.clear(1, 0, 0, 1)
+	love.graphics.clear(0, 0, 0, 0)
 	love.graphics.setCanvas(self.specularAtlas)
-	love.graphics.clear(1, 0, 0, 1)
+	love.graphics.clear(0, 0, 0, 0)
 	love.graphics.setCanvas(self.heightmapAtlas)
-	love.graphics.clear(1, 0, 0, 1)
+	love.graphics.clear(0, 0, 0, 0)
+	love.graphics.pop()
 
 	self.isDirty = false
 end
@@ -1193,6 +1212,10 @@ function ActorView:changeSkin(slot, priority, skin, config)
 
 	if oldSkinSlotNode and oldSkinSlotNode.sceneNode then
 		oldSkinSlotNode.sceneNode:setParent(nil)
+
+		if oldSkinSlotNode.model and oldSkinSlotNode.combinedModel then
+			oldSkinSlotNode.combinedModel:remove(oldSkinSlotNode.model)
+		end
 	end
 
 	self.skins[slot] = slotNodes
@@ -1317,11 +1340,12 @@ function ActorView:draw()
 			local modelSceneNode = slot.model
 			if modelSceneNode then
 				local material = modelSceneNode:getMaterial()
+				local hasTransform = slot.instance:getHasTransform()
 				local isForward = material:getIsFullLit() or material:getIsTranslucent()
 				local isTextureCompatible = material:getNumTextures() ~= 1 or (material:getNumTextures() == 1 and material:getTexture(1):isCompatibleType(TextureResource))
 				local isImmediate = self:getIsImmediate()
 
-				if isForward or isMultiTexture or isImmediate then
+				if hasTransform or isForward or isMultiTexture or isImmediate then
 					modelSceneNode:setParent(slot.sceneNode)
 				else
 					local texture = material:getTexture(1)
@@ -1354,6 +1378,7 @@ function ActorView:draw()
 
 					if combinedModel and not slot.sceneNode:getParent() then
 						combinedModel:remove(modelSceneNode)
+						slot.combinedModel = nil
 					end
 				end
 			end
@@ -1370,7 +1395,7 @@ function ActorView:draw()
 		else
 			combinedModel:update(delta)
 
-			if not sceneNode:getParent() and combinedModel:getIsReady() then
+			if not sceneNode:getParent() then
 				sceneNode:setParent(self.sceneNode)
 				sceneNode:setTransforms(self.animatable:getTransforms())
 			end
