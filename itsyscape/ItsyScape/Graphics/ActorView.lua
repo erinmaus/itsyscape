@@ -228,7 +228,7 @@ ActorView.CombinedTexture.MAX_EXPONENT = 4
 
 function ActorView.CombinedTexture:new(actorView)
 	local maxTextureSize = love.graphics.getSystemLimits().texturesize
-	maxTextureSize = math.min(maxTextureSize, 4096)
+	maxTextureSize = math.min(maxTextureSize, 2048)
 
 	self.actorView = actorView
 	self.atlasSize = maxTextureSize
@@ -245,6 +245,7 @@ function ActorView.CombinedTexture:new(actorView)
 
 	self.textures = {}
 	self.images = {}
+	self.counts = {}
 
 	self.scale = 1
 end
@@ -271,25 +272,41 @@ local function _sortTextures(a, b)
 end
 
 function ActorView.CombinedTexture:add(texture)
-	for _, t in ipairs(self.textures) do
-		if t:getID() == texture:getID() then
-			return
-		end
+	local id = texture:getID()
+
+	if self.counts[id] then
+		self.counts[id] = self.counts[id] + 1
+		return
 	end
 
 	table.insert(self.textures, texture)
 	table.sort(self.textures, _sortTextures)
 
 	local image = Atlas.Image(texture:getResource(), math.huge)
-	self.images[texture:getID()] = image
+	self.images[id] = image
 
+	self.counts[id] = 1
 	self.isDirty = true
 end
 
 function ActorView.CombinedTexture:remove(texture)
+	local id = texture:getID()
+
+	if not self.counts[id] then
+		return
+	end
+
+	self.counts[id] = self.counts[id] - 1
+	if self.counts[id] > 0 then
+		return
+	end
+
+	self.counts[id] = nil
 	for i, t in ipairs(self.textures) do
-		if t:getID() == texture:getID() then
+		if t:getID() == id then
 			table.remove(self.textures, i)
+			self.images[id] = nil
+
 			self.isDirty = true
 			return
 		end
@@ -1356,11 +1373,12 @@ function ActorView:draw()
 						end
 
 						slot.combinedModel = combinedModel
-						combinedModel:add(modelSceneNode, modelSceneNode:getMaterial():getTexture(1))
+						combinedModel:add(modelSceneNode, texture)
 					end
 
 					if combinedModel and not slot.sceneNode:getParent() then
 						combinedModel:remove(modelSceneNode)
+						slot.combinedModel = nil
 					end
 				end
 			end
