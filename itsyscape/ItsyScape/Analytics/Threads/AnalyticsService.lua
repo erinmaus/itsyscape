@@ -13,6 +13,8 @@ require "bootstrap"
 local bit = require "bit"
 local ffi = require "ffi"
 
+local Events = require "ItsyScape.Analytics.Events"
+
 local function uuidv7()
 	local values = {}
 	for i = 1, 16 do
@@ -168,6 +170,8 @@ if isEnabled then
 	Log.info("Starting analytics service with session ID '%s'.", sessionID)
 end
 
+local hasStartedGame = false
+
 while isRunning do
 	local event = inputChannel:demand()
 
@@ -176,7 +180,17 @@ while isRunning do
 			isRunning = false
 		elseif event.type == 'submit' then
 			if isEnabled then
-				pushAnalyticEvent(event.data)
+				if event.data.event == Events.START_GAME then
+					hasStartedGame = true
+				end
+
+				if hasStartedGame then
+					pushAnalyticEvent(event.data)
+				end
+
+				if event.data.event == Events.END_GAME then
+					hasStartedGame = false
+				end
 			end
 		elseif event.type == 'session' then
 			sessionID = uuidv7()
