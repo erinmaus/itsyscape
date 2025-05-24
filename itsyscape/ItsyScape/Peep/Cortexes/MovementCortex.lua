@@ -1,4 +1,3 @@
-
 --------------------------------------------------------------------------------
 -- ItsyScape/Peep/Cortexes/MovementCortex.lua
 --
@@ -8,14 +7,17 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local bump = require "bump"
+local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
+local Peep = require "ItsyScape.Peep.Peep"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local Tile = require "ItsyScape.World.Tile"
 
@@ -35,11 +37,13 @@ MovementCortex.OFFSETS = {
 	{  0,  1 }
 }
 
-MovementCortex.BUFFER = 0.01
-
 -- Until we have pathfinding that takes into account a peep's size,
 -- we need to clamp them to roughly a tile (with some wiggle room to make imperfect movement easier)
-MovementCortex.PEEP_SIZE = Vector(1.5)
+MovementCortex.PEEP_RADIUS = 0.5
+
+local function _isPassable(map, i, j, s, t)
+	return not map:getTile(s, t):hasStaticFlag("impassable")
+end
 
 function MovementCortex:new()
 	Cortex.new(self)
@@ -63,11 +67,22 @@ function MovementCortex:detach()
 	Cortex.detach(self)
 end
 
+function MovementCortex:previewPeep(peep)
+	Cortex.previewPeep(self, peep)
+
+	if peep:hasBehavior(StaticBehavior) and peep:hasBehavior(PropReferenceBehavior) then
+		self:addPropToWorld(Utility.Peep.getLayer(peep), peep)
+	elseif self.props[peep] then
+		self:removePropFromWorld(self.peepsByLayer[peep], peep)
+	end
+end
+
 function MovementCortex:listen()
 	local stage = self:getDirector():getGameInstance():getStage()
 
 	self.worlds = {}
 	self.peepsByLayer = {}
+	self.props = {}
 	self._onLoadMap = function(_, _, layer)
 		self:addWorld(layer)
 	end
@@ -88,35 +103,78 @@ end
 
 function MovementCortex:addWorld(layer)
 	local map = self:getDirector():getMap(layer)
-	local world = bump.newWorld(map:getCellSize())
+	local world = slick.newWorld(
+		map:getWidth() * map:getCellSize(),
+		map:getHeight() * map:getCellSize(), {
+			quadTreeX = 0,
+			quadTreeY = 0
+		})
+
 	self.worlds[layer] = {
 		world = world,
 		tiles = {},
 		peeps = {},
+		props = {},
 		layer = layer
 	}
-
-	world:addResponse("slide-left", MovementCortex.slide(-1, 0))
-	world:addResponse("slide-right", MovementCortex.slide(1, 0))
-	world:addResponse("slide-up", MovementCortex.slide(0, -1))
-	world:addResponse("slide-down", MovementCortex.slide(0, 1))
 end
 
 function MovementCortex:addPeepToWorld(layer, peep)
-	self:removePeepFromWorld(peep)
+	self:removePeepFromWorld(self.peepsByLayer[peep], peep)
 
 	local w = self.worlds[layer]
 	if w then
 		w.peeps[peep] = true
+		self.peepsByLayer[peep] = Utility.Peep.getLayer(peep)
 
 		local position = Utility.Peep.getPosition(peep)
-		local size = MovementCortex.PEEP_SIZE
-		w.world:add(peep, position.x - size.x / 2, position.z - size.z / 2, size.x, size.z)
+		w.world:add(peep, position.x, position.z, slick.newCircleShape(0, 0, MovementCortex.PEEP_RADIUS))
 	end
 end
 
-function MovementCortex:removePeepFromWorld(peep)
-	local layer = self.peepsByLayer[peep]
+function MovementCortex:addPropToWorld(layer, prop)
+	self:removePropFromWorld(self.peepsByLayer[prop], prop)
+
+	local w = self.worlds[layer]
+	if w then
+		w.props[prop] = true
+		self.peepsByLayer[prop] = Utility.Peep.getLayer(prop)
+		self.props[prop] = true
+
+		local position = Utility.Peep.getPosition(prop)
+		local _, rotation, _ = Utility.Peep.getRotation(prop):getEulerXYZ()
+		local scale = Utility.Peep.getScale(prop)
+		local size = Utility.Peep.getSize(prop)
+		local offset = -size / 2
+		w.world:add(
+			prop,
+			slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
+			slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+	end
+end
+
+function MovementCortex:updateProp(prop)
+	local layer = Utility.Peep.getLayer(prop)
+	if layer ~= self.peepsByLayer[prop] then
+		self:removePropFromWorld(self.peepsByLayer[prop], prop)
+		self:addPropToWorld(layer, prop)
+	end
+
+	local w = self.worlds[layer]
+	if w then
+		local position = Utility.Peep.getPosition(prop)
+		local _, rotation, _ = Utility.Peep.getRotation(prop):getEulerXYZ()
+		local scale = Utility.Peep.getScale(prop)
+		local size = Utility.Peep.getSize(prop)
+		local offset = -size / 2
+		w.world:update(
+			prop,
+			slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
+			slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+	end
+end
+
+function MovementCortex:removePeepFromWorld(layer, peep)
 	if not layer then
 		return
 	end
@@ -127,20 +185,27 @@ function MovementCortex:removePeepFromWorld(peep)
 	end
 
 	w.peeps[peep] = nil
-	if w.world:hasItem(peep) then
+	if w.world:has(peep) then
 		w.world:remove(peep)
 	end
 end
 
-function MovementCortex:_addProxyTileToWorld(world, flags, x, y, w, h)
-	local tile = Tile()
-	for i = 1, #flags do
-		tile:setFlag(flags[i])
+function MovementCortex:removePropFromWorld(layer, prop)
+	if not layer then
+		return
 	end
 
-	world.world:add(tile, x, y, w, h)
+	local w = self.worlds[layer]
+	if not w then
+		return
+	end
 
-	table.insert(world.tiles, tile)
+	w.props[prop] = nil
+	self.props[prop] = true
+
+	if w.world:has(prop) then
+		w.world:remove(prop)
+	end
 end
 
 function MovementCortex:updateWorld(layer)
@@ -156,55 +221,31 @@ function MovementCortex:updateWorld(layer)
 	end
 	table.clear(w.tiles)
 
-	local buffer = map:getCellSize() * MovementCortex.BUFFER
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
 			local tile = map:getTile(i, j)
 			local tileCenter = map:getTileCenter(i, j)
 			local min = tileCenter - Vector(map:getCellSize() / 2)
-			local isWall = tile:hasFlag("wall-left") or tile:hasFlag("wall-right") or tile:hasFlag("wall-top") or tile:hasFlag("wall-bottom")
 
-			if tile:hasFlag("wall-left") then
-				self:_addProxyTileToWorld(w, { "wall-left" }, min.x, min.z, map:getCellSize() / 2, map:getCellSize())
-			end
-
-			if tile:hasFlag("wall-right") then
-				self:_addProxyTileToWorld(w, { "wall-right" }, min.x + map:getCellSize() / 2, min.z, map:getCellSize() / 2, map:getCellSize())
-			end
-
-			if tile:hasFlag("wall-top") then
-				self:_addProxyTileToWorld(w, { "wall-top" }, min.x, min.z, map:getCellSize(), map:getCellSize() / 2)
-			end
-
-			if tile:hasFlag("wall-bottom") then
-				self:_addProxyTileToWorld(w, { "wall-bottom" }, min.x, min.z + map:getCellSize() / 2, map:getCellSize(), map:getCellSize() / 2)
-			end
-
-			if not isWall then
-				w.world:add(tile, min.x, min.z, map:getCellSize(), map:getCellSize())
-			end
-
-			if not isWall and tile:getIsPassable() then
+			w.world:add(tile, min.x, min.z, slick.newRectangleShape(0, 0, map:getCellSize(), map:getCellSize()))
+			if tile:getIsPassable() then
 				for k = 1, #MovementCortex.OFFSETS do
 					local offsetI, offsetJ = unpack(MovementCortex.OFFSETS[k])
 
-					if not map:canMove(i, j, offsetI, offsetJ) and map:getTile(i + offsetI, j + offsetJ):getIsPassable() then
+					if not map:canMove(i, j, offsetI, offsetJ, false, _isPassable) and map:getTile(i + offsetI, j + offsetJ):getIsPassable() then
 						local t = Tile()
+						t:setFlag("impassable")
 
 						if offsetI < 0 then
-							t:setFlag("x-movement-slide-right")
-							w.world:add(t, min.x, min.z, buffer, map:getCellSize())
+							w.world:add(t, min.x, min.z, slick.newLineSegmentShape(0, 0, 0, map:getCellSize()))
 						elseif offsetI > 0 then
-							t:setFlag("x-movement-slide-left")
-							w.world:add(t, min.x + map:getCellSize() - buffer, min.z, buffer, map:getCellSize())
+							w.world:add(t, min.x, min.z, slick.newLineSegmentShape(map:getCellSize(), 0, map:getCellSize(), map:getCellSize()))
 						end
 
 						if offsetJ < 0 then
-							t:setFlag("x-movement-slide-up")
-							w.world:add(t, min.x, min.z, map:getCellSize(), buffer)
+							w.world:add(t, min.x, min.z, slick.newLineSegmentShape(0, 0, map:getCellSize(), 0))
 						elseif offsetJ > 0 then
-							t:setFlag("x-movement-slide-down")
-							w.world:add(t, min.x, min.z + map:getCellSize() - buffer, map:getCellSize(), buffer)
+							w.world:add(t, min.x, min.z, slick.newLineSegmentShape(0, map:getCellSize(), map:getCellSize(), map:getCellSize()))
 						end
 
 						table.insert(w.tiles, t)
@@ -223,47 +264,19 @@ function MovementCortex:unloadWorld(layer)
 	end
 end
 
-function MovementCortex.slide(normalX, normalY)
-	return function(world, col, x, y, w, h, goalX, goalY, filter)
-		goalX = goalX or x
-		goalY = goalY or y
-
-		local tch, move  = col.touch, col.move
-		if move.x ~= 0 or move.y ~= 0 then
-			if col.normal.x == normalX and normalX ~= 0 then
-				goalX = tch.x
-			elseif col.normal.y == -normalY and normalY ~= 0 then
-				goalY = tch.y
-			end
-		end
-
-		col.slide = { x = goalX, y = goalY }
-
-		x,y = tch.x, tch.y
-		local cols, len  = world:project(col.item, x, y, w, h, goalX, goalY, filter)
-		return goalX, goalY, cols, len
-	end
-end
-
 function MovementCortex:filter(item, other)
 	if Class.isCompatibleType(other, Tile) then
-		if (other:hasFlag("impassable") or other:hasFlag("door") or
-		   other:hasFlag("wall-left") or other:hasFlag("wall-right") or
-		   other:hasFlag("wall-top") or other:hasFlag("wall-bottom"))
-	    then
+		if other:hasStaticFlag("impassable") then
 			return "slide"
-		elseif other:hasFlag("x-movement-slide-left") then
-			return "slide-left"
-		elseif other:hasFlag("x-movement-slide-right") then
-			return "slide-right"
-		elseif other:hasFlag("x-movement-slide-up") then
-			return "slide-up"
-		elseif other:hasFlag("x-movement-slide-down") then
-			return "slide-down"
+		end
+	elseif Class.isCompatibleType(other, Peep) then
+		local static = other:getBehavior(StaticBehavior)
+		if static and static.type == StaticBehavior.IMPASSABLE then
+			return "slide"
 		end
 	end
 
-	return nil
+	return false
 end
 
 -- Clamps vector following rules of MovementCortex.CLAMP_EPSILON.
@@ -311,16 +324,24 @@ function MovementCortex:update(delta)
 	local gravity = game:getStage():getGravity()
 	local map = game:getStage():getMap()
 
+	for prop in pairs(self.props) do
+		self:updateProp(prop)
+	end
+
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
-		local size = MovementCortex.PEEP_SIZE
-		local halfSize = size / 2
 		local layer = Utility.Peep.getLayer(peep)
+
+		if layer ~= self.peepsByLayer[peep] then
+			self:removePeepFromWorld(self.peepsByLayer[layer], peep)
+			self:addPeepToWorld(layer, peep)
+		end
+
 		local map = self:getDirector():getMap(layer)
 		local w = self.worlds[layer]
 		if map and w then
-			if not w.world:hasItem(peep) then
+			if not w.world:has(peep) then
 				self:addPeepToWorld(layer, peep)
 			end
 
@@ -355,9 +376,7 @@ function MovementCortex:update(delta)
 			end
 
 			local oldPosition = position.position
-			w.world:update(peep, oldPosition.x - halfSize.x, oldPosition.z - halfSize.x, size.x, size.z)
-
-			local oldTile, oldI, oldJ = map:getTileAt(oldPosition.x, oldPosition.z)
+			w.world:update(peep, oldPosition.x, oldPosition.z)
 
 			local velocity = (movement.velocity + movement.additionalVelocity) * delta * movement.velocityMultiplier
 			velocity = velocity + movement.push * delta
@@ -371,23 +390,11 @@ function MovementCortex:update(delta)
 			if not movement.noClip then
 				local actualX, actualZ, collisions = w.world:move(
 					peep,
-					newPosition.x - halfSize.x,
-					newPosition.z - halfSize.z,
+					newPosition.x,
+					newPosition.z,
 					self._filter)
-				actualX = actualX + halfSize.x
-				actualZ = actualZ + halfSize.z
 
-				local newTile, newI, newJ = map:getTileAt(actualX, actualZ)
-				if not map:canMove(oldI, oldJ, newI - oldI, newJ - oldJ) or map:isOutOfBounds(actualX, actualZ) then
-					-- Last fail safe.
-					position.position = Vector(oldPosition:get())
-				else
-					position.position = Vector(actualX, newPosition.y, actualZ)
-
-					if #collisions > 0 then
-						peep:poke('movedOutOfBounds')
-					end
-				end
+				position.position = Vector(actualX, newPosition.y, actualZ)
 			else
 				position.position = newPosition
 			end

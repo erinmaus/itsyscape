@@ -236,9 +236,9 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 1.5,
+	SizeX = 2,
 	SizeY = 2,
-	SizeZ = 1.5,
+	SizeZ = 2,
 	MapObject = ItsyScape.Resource.Prop "Crate_Default1"
 }
 

@@ -16,6 +16,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local Prop = Class(Peep)
 
@@ -27,6 +28,7 @@ function Prop:new(resource, ...)
 	self:addBehavior(RotationBehavior)
 	self:addBehavior(ScaleBehavior)
 	self:addBehavior(SizeBehavior)
+	self:addBehavior(StaticBehavior)
 	
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 1, 1)

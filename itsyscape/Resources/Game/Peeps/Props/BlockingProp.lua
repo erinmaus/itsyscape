@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local BlockingProp = Class(Prop) 
 
@@ -20,6 +21,9 @@ function BlockingProp:new(...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 2, 1)
+
+	local static = self:getBehavior(StaticBehavior)
+	static.type = StaticBehavior.BLOCKING
 end
 
 function BlockingProp:spawnOrPoofTile(tile, i, j, mode)
