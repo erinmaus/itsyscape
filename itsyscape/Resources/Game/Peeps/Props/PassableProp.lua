@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local PassableProp = Class(Prop) 
 
@@ -20,6 +21,9 @@ function PassableProp:new(...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 2, 1)
+
+	local static = self:getBehavior(StaticBehavior)
+	static.type = StaticBehavior.PASSABLE
 end
 
 function PassableProp:spawnOrPoofTile(tile, i, j, mode)

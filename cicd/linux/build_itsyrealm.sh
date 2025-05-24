@@ -15,6 +15,7 @@ cd itsyscape-love
 cp -r ../bmashina/lmashina/lua/B ./B
 cp -r ../devi/devi ./devi
 cp -r ../nomicon/nomicon ./nomicon
+cp -r ../slick/slick ./slick
 
 export LD_LIBRARY_PATH="$(pwd)/../installdir/lib/:$LD_LIBRARY_PATH"
 export PATH="$(pwd)/../installdir/bin/:$PATH"
