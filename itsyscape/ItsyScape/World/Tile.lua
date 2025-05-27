@@ -147,7 +147,7 @@ end
 
 function Tile:hasFlag(f)
 	f = tostring(f)
-	return self.flags[f] == true or self.runtimeFlags[f] == true
+	return self.flags[f] == true or self.runtimeFlags[f]
 end
 
 function Tile:iterateFlags()

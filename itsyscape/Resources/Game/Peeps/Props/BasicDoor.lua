@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local BasicDoor = Class(Prop)
 
@@ -23,6 +24,9 @@ function BasicDoor:new(...)
 
 	self:addPoke('open')
 	self:addPoke('close')
+
+	local static = self:getBehavior(StaticBehavior)
+	static.type = StaticBehavior.BLOCKING
 
 	self.isOpen = false
 end
