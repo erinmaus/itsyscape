@@ -179,13 +179,20 @@ end
 
 function itsyrealm.graphics.impl.captureRenderState()
 	local index = graphicsState.drawQueue.n + 1
-	local transform = graphicsState.transforms[index]
-	if not transform then
+
+	local transform
+	if graphicsState.recording then
 		transform = love.math.newTransform()
-		graphicsState.transforms[index] = transform
+	else
+		transform = graphicsState.transforms[index]
+		if not transform then
+			transform = love.math.newTransform()
+			graphicsState.transforms[index] = transform
+		else
+			transform:reset()
+		end
 	end
 
-	transform:reset()
 	transform:apply(graphicsState.transform)
 
 	local renderState
