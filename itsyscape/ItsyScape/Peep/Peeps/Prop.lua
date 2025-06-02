@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
@@ -54,18 +55,49 @@ function Prop:spawnOrPoof(mode)
 	if position then
 		local map = self:getDirector():getMap(position.layer or 1)
 		if map then
+			local transform = Utility.Peep.getTransform(self)
 			local p = position.position
 			local halfSize
 			do
-				local transform = Utility.Peep.getTransform(self)
 				local min, max = Vector.transformBounds(Vector.ZERO, size.size, transform)
 				halfSize = (max - min) / 2
 			end
 
+			local rotation = Utility.Peep.getRotation(self)
+			local polygon = {
+				rotation:transformVector(Vector(-size.size.x / 2, 0, -size.size.z / 2)) + p,
+				rotation:transformVector(Vector(size.size.x / 2, 0, -size.size.z / 2)) + p,
+				rotation:transformVector(Vector(size.size.x / 2, 0, size.size.z / 2)) + p,
+				rotation:transformVector(Vector(-size.size.x / 2, 0, size.size.z / 2)) + p
+			}
+
 			for x = p.x - halfSize.x, p.x + halfSize.x, map:getCellSize() do
 				for z = p.z - halfSize.z, p.z + halfSize.z, map:getCellSize() do
+					local p = Vector(x, 0, z)
 					local tile, i, j = map:getTileAt(x, z)
-					self:spawnOrPoofTile(tile, i, j, mode)
+					local center = map:getTileCenter(i, j)
+
+					local inside = true
+					local side
+					for u = 1, #polygon do
+						local v = (u % #polygon) + 1
+
+						local s = MathCommon.side(polygon[u], polygon[v], center)
+						side = side or s
+						if side ~= s then
+							inside = false
+							break
+						end
+					end
+
+					if inside then
+						Log.info(">>> impassable %s %d %d", self:getName(), i, j)
+						self:spawnOrPoofTile(tile, i, j, mode)
+					else
+						Log.info(">>> passable %s %d %d", self:getName(), i, j)
+						Log.info("center %d %d", center.x, center.z)
+						Log.info("polygon: %s", Log.dump(polygon))
+					end
 				end
 			end
 		end

@@ -138,11 +138,11 @@ function Tile:unsetRuntimeFlag(f)
 end
 
 function Tile:hasStaticFlag(f)
-	return self.flags[tostring(f)] == true
+	return not not self.flags[tostring(f)]
 end
 
 function Tile:hasRuntimeFlag(f)
-	return self.runtimeFlags[tostring(f)] == true
+	return not not self.runtimeFlags[tostring(f)]
 end
 
 function Tile:hasFlag(f)

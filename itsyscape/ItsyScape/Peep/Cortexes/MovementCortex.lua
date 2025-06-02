@@ -387,7 +387,7 @@ function MovementCortex:update(delta)
 				newPosition = newPosition + gravity * delta
 			end
 
-			if not movement.noClip then
+			if not movement.noClip and velocity:getLength() > 0 then
 				local actualX, actualZ, collisions = w.world:move(
 					peep,
 					newPosition.x,

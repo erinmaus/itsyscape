@@ -17,6 +17,9 @@ StaticBehavior.BLOCKING = "blocking"
 StaticBehavior.PASSABLE = "passable"
 StaticBehavior.IMPASSABLE = "impassable"
 
+StaticBehavior.SHAPE_RECTANGLE = "rectangle"
+StaticBehavior.SHAPE_CIRCLE = "circle"
+
 -- Constructs a StaticBehavior with the provided dimensions.
 --
 -- Values default to 1.
@@ -24,6 +27,7 @@ function StaticBehavior:new(width, height, depth)
 	Behavior.Type.new(self)
 
 	self.type = StaticBehavior.IMPASSABLE
+	self.shape = StaticBehavior.SHAPE_RECTANGLE
 end
 
 return StaticBehavior
