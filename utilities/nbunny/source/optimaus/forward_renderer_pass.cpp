@@ -10,6 +10,7 @@
 
 #include "modules/graphics/Graphics.h"
 #include "modules/math/Transform.h"
+#include "nbunny/optimaus/deferred_renderer_pass.hpp"
 #include "nbunny/optimaus/forward_renderer_pass.hpp"
 
 void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
@@ -259,6 +260,8 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 			send_fog(shader, fog[i], i);
 		}
 
+		shader_cache.update_uniform(shader, "scape_DepthTexture", depth_buffer.get_canvas(0));
+
 		int num_fog = scene_node->get_material().get_is_full_lit() ? 0 : (int)fog.size();
 		shader_cache.update_uniform(shader, "scape_NumFog", &num_fog, sizeof(int));
 
@@ -281,8 +284,8 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-nbunny::ForwardRendererPass::ForwardRendererPass(LBuffer& c_buffer) :
-	RendererPass(RENDERER_PASS_FORWARD), c_buffer(c_buffer)
+nbunny::ForwardRendererPass::ForwardRendererPass(GBuffer& depth_buffer, LBuffer& c_buffer) :
+	RendererPass(RENDERER_PASS_FORWARD), depth_buffer(depth_buffer), c_buffer(c_buffer)
 {
 	// Nothing.
 }
@@ -317,8 +320,9 @@ void nbunny::ForwardRendererPass::attach(Renderer& renderer)
 
 static int nbunny_forward_renderer_pass_constructor(lua_State* L)
 {
-	auto c_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 2);
-	nbunny::lua::push(L, std::make_shared<nbunny::ForwardRendererPass>(*c_buffer));
+	auto g_buffer = nbunny::lua::get<nbunny::GBuffer*>(L, 2);
+	auto c_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 3);
+	nbunny::lua::push(L, std::make_shared<nbunny::ForwardRendererPass>(*g_buffer, *c_buffer));
 	return 1;
 }
 

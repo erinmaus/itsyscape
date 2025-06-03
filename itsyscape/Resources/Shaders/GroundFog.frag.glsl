@@ -1,17 +1,28 @@
+#include "Resources/Shaders/GBuffer.common.glsl"
+
+uniform float scape_SoftDepth;
+
 uniform Image scape_DiffuseTexture;
+uniform Image scape_DepthTexture;
 uniform Image scape_BumpCanvas;
 
 uniform vec2 scape_MapSize;
 
 varying vec3 frag_ParticlePosition;
 varying vec3 frag_LocalPosition;
+varying vec2 frag_ScreenPosition;
 
 void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out float specular)
 {
+	float depth = Texel(scape_DepthTexture, frag_ScreenPosition).r;
+	vec3 referencePosition = worldPositionFromGBufferDepth(depth, frag_ScreenPosition, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
+	float distance = distance(referencePosition, position);
+
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
 
 	color = Texel(scape_DiffuseTexture, textureCoordinate) * color;
 	color.a *= 1.0 - Texel(scape_BumpCanvas, frag_LocalPosition.xz / scape_MapSize).x;
+	color.a *= smoothstep(0.1, 0.3, distance);
 
 	position = frag_ParticlePosition;
 }

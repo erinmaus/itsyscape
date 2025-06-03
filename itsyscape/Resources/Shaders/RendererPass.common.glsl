@@ -9,6 +9,7 @@ uniform mat4 scape_ViewMatrix;
 uniform mat4 scape_InverseViewMatrix;
 
 uniform mat4 scape_ProjectionMatrix;
+uniform mat4 scape_InverseProjectionMatrix;
 
 uniform vec4 scape_ClipPlane;
 

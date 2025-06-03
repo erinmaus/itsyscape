@@ -268,6 +268,9 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 		auto projection_matrix = camera->get_projection();
 		shader_cache.update_uniform(shader, "scape_ProjectionMatrix", glm::value_ptr(projection_matrix), sizeof(glm::mat4));
 
+		auto inverse_projection_matrix = glm::inverse(projection_matrix);
+		shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
+
 		if (camera->get_is_clip_plane_enabled())
 		{
 			auto clip_plane = camera->get_clip_plane();

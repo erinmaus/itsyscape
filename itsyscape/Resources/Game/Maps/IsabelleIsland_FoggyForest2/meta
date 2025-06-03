@@ -6,5 +6,7 @@
 		{
 			default = true,
 		},
+		bendyClearColor = { 0, 0, 0, 0.005 },
+		bendyScale = 1
 	},
 }

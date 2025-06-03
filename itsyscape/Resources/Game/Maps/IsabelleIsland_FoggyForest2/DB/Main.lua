@@ -17,6 +17,23 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+M["GroundFog"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "GroundFog",
+		Map = M._MAP,
+		Resource = M["GroundFog"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "GroundFog",
+		MapObject = M["GroundFog"]
+	}
+end
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
