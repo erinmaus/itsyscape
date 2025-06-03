@@ -1356,6 +1356,13 @@ function GameView:getMap(layer)
 	end
 end
 
+function GameView:getMapBumpCanvas(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.bumpCanvas, m.actorCanvas
+	end
+end
+
 function GameView:getWind(layer)
 	local m = self.mapMeshes[layer]
 	if m then
@@ -2181,7 +2188,7 @@ function GameView:_drawActorOnActorCanvas(delta, actor, m)
 	local radius = math.min(size.x, size.z) / 2
 	local relativePosition = position / Vector(m.map:getWidth() * m.map:getCellSize(), 1.0, m.map:getHeight() * m.map:getCellSize())
 	local relativeScale = (radius + 3) / m.map:getCellSize()
-	relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / self.actorCanvasCircle:getWidth())
+	relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / self.actorCanvasCircle:getWidth()) * (m.meta and m.meta.bendyScale or 1)
 
 	love.graphics.draw(self.actorCanvasCircle, relativePosition.x * m.actorCanvas:getWidth(), relativePosition.z * m.actorCanvas:getHeight(), 0, relativeScale, relativeScale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
 end
@@ -2190,10 +2197,15 @@ function GameView:_updateActorCanvases(delta)
 	love.graphics.push("all")
 	for layer, m in pairs(self.mapMeshes) do
 		love.graphics.setCanvas(m.actorCanvas)
-		love.graphics.clear(0, 0, 0, 1)
 
 		love.graphics.setShader()
+		love.graphics.origin()
 		love.graphics.setBlendMode("alpha", "alphamultiply")
+
+		love.graphics.setColor(m.meta and m.meta.bendyClearColor or { 0, 0, 0, 1 })
+		love.graphics.rectangle("fill", 0, 0, m.actorCanvas:getWidth(), m.actorCanvas:getHeight())
+
+		love.graphics.setColor(1, 1, 1, 1)
 
 		for actor in self.game:getStage():iterateActors() do
 			local _, _, actorLayer = actor:getTile()

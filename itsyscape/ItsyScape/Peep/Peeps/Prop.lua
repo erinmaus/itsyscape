@@ -91,12 +91,7 @@ function Prop:spawnOrPoof(mode)
 					end
 
 					if inside then
-						Log.info(">>> impassable %s %d %d", self:getName(), i, j)
 						self:spawnOrPoofTile(tile, i, j, mode)
-					else
-						Log.info(">>> passable %s %d %d", self:getName(), i, j)
-						Log.info("center %d %d", center.x, center.z)
-						Log.info("polygon: %s", Log.dump(polygon))
 					end
 				end
 			end
