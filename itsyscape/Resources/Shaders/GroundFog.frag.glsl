@@ -16,13 +16,13 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 {
 	float depth = Texel(scape_DepthTexture, frag_ScreenPosition).r;
 	vec3 referencePosition = worldPositionFromGBufferDepth(depth, frag_ScreenPosition, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
-	float distance = distance(referencePosition, position);
+	float d = distance(referencePosition, position);
 
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
 
 	color = Texel(scape_DiffuseTexture, textureCoordinate) * color;
 	color.a *= 1.0 - Texel(scape_BumpCanvas, frag_LocalPosition.xz / scape_MapSize).x;
-	color.a *= smoothstep(0.1, 0.3, distance);
+	color.a *= smoothstep(0.5, 1.0, d);
 
 	position = frag_ParticlePosition;
 }

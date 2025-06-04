@@ -419,6 +419,8 @@ love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, cons
             shader_resource->get_id(),
             [&](const auto& base_vertex_source, const auto& base_pixel_source, auto& v, auto& p)
             {
+                std::cout << "renderer pass: " << get_renderer_pass_id() << std::endl;
+
                 // Get source object from resource
                 // This assumes the object is an ItsyScape.Graphics.ShaderResource, which should be a valid assumption.
                 // TODO: error handling
@@ -455,12 +457,14 @@ love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, cons
                 lua_pushlstring(L, p.c_str(), p.size());
 
                 if (lua_pcall(L, 3, 2, 0) != 0)
-                    luaL_error(L, "%s", lua_tostring(L, -1));
+					luaL_error(L, "%s", lua_tostring(L, -1));
 
-                v = luaL_checkstring(L, -2);
-                p = luaL_checkstring(L, -1);
+				v = luaL_checkstring(L, -2);
+				p = luaL_checkstring(L, -1);
 
-                lua_pop(L, 2);
+				lua_pop(L, 2);
+
+                std::cout << "renderer pass: (DONE!)" << get_renderer_pass_id() << std::endl;
             });
 }
 

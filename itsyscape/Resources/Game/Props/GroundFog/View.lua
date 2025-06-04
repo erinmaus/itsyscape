@@ -31,7 +31,7 @@ GroundFog.PARTICLE_SYSTEM = {
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 0, 2 },
+			radius = { 0, 4 },
 			yRange = { 0, 0 },
 			normal = { true }
 		},
@@ -51,7 +51,7 @@ GroundFog.PARTICLE_SYSTEM = {
 		},
 		{
 			type = "RandomScaleEmitter",
-			scale = { 1, 2 }
+			scale = { 2, 3 }
 		},
 		{
 			type = "RandomRotationEmitter",
@@ -110,10 +110,10 @@ function GroundFog:_build()
 
 		material:send(material.UNIFORM_FLOAT, "scape_MapSize", map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize())
 
-		for i = 1, map:getWidth() do
-			for j = 1, map:getHeight() do
+		for i = 1, map:getWidth() + 1, 2 do
+			for j = 1, map:getHeight() + 1, 2 do
 				self.particles:updateLocalPosition(map:getTileCenter(i, j))
-				self.particles:emit(love.math.random(10, 15))
+				self.particles:emit(love.math.random(5, 10))
 			end
 
 			coroutine.yield()
