@@ -3,6 +3,7 @@
 uniform float scape_SoftDepth;
 
 uniform Image scape_DiffuseTexture;
+uniform Image scape_BlurTexture;
 uniform Image scape_DepthTexture;
 uniform Image scape_BumpCanvas;
 
@@ -18,10 +19,15 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	vec3 referencePosition = worldPositionFromGBufferDepth(depth, frag_ScreenPosition, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
 	float d = distance(referencePosition, position);
 
-	textureCoordinate.t = 1.0 - textureCoordinate.t;
+	float delta = Texel(scape_BumpCanvas, frag_LocalPosition.xz / scape_MapSize).x;
 
-	color = Texel(scape_DiffuseTexture, textureCoordinate) * color;
-	color.a *= 1.0 - Texel(scape_BumpCanvas, frag_LocalPosition.xz / scape_MapSize).x;
+	textureCoordinate.t = 1.0 - textureCoordinate.t;
+	vec4 solidSample = Texel(scape_DiffuseTexture, textureCoordinate);
+	vec4 blurSample = Texel(scape_BlurTexture, textureCoordinate);
+	vec4 sample = mix(solidSample, blurSample, delta);
+
+	color *= sample;
+	color.a *= 1.0 - delta;
 	color.a *= smoothstep(0.5, 1.0, d);
 
 	position = frag_ParticlePosition;

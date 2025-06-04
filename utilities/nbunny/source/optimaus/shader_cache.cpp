@@ -88,8 +88,6 @@ std::string nbunny::ShaderCache::ShaderSource::parse_includes(const std::string&
 			result += line.str();
 
 			++current_line_number;
-
-			std::cout << "done..." << std::endl;
 		}
 
 		current = match.suffix().first;

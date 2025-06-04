@@ -139,10 +139,12 @@ end
 -- Generally this is only called when an instantaneous event occurs, like
 -- teleporting.
 function SceneNodeTransform:setPreviousTransform(translation, rotation, scale, offset)
-	self.previousTranslation = translation or self.previousTranslation or false
-	self.previousRotation = rotation or self.previousRotation or false
-	self.previousScale = scale or self.previousScale or false
-	self.previousOffset = offset or self.previousOffset or false
+	local t, r, s, o = self:getPreviousTransform()
+
+	self.previousTranslation = translation or t
+	self.previousRotation = rotation or r
+	self.previousScale = scale or s
+	self.previousOffset = offset or o
 
 	if self.previousTranslation then
 		self.previousTranslation:keep()
@@ -166,10 +168,10 @@ function SceneNodeTransform:setPreviousTransform(translation, rotation, scale, o
 end
 
 function SceneNodeTransform:getPreviousTransform()
-	return self.previousTranslation or self.translation,
-	       self.previousRotation or self.rotation,
-	       self.previousScale or self.scale,
-	       self.previousOffset or self.offset
+	return Vector(self._handle:getPreviousTranslation()),
+	       Quaternion(self._handle:getPreviousRotation()),
+	       Vector(self._handle:getPreviousScale()),
+	       Vector(self._handle:getPreviousOffset())
 end
 
 -- Rotates the transform by the axis angle.

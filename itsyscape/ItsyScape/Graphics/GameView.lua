@@ -106,6 +106,7 @@ function GameView:new(game, camera)
 	self.whiteTextureImageData = whiteTextureImageData
 
 	self.actorCanvasCircle = love.graphics.newImage("ItsyScape/Graphics/Resources/GameViewActorCanvasCircle.png")
+	self.fogCanvasCircle = love.graphics.newImage("ItsyScape/Graphics/Resources/GameViewFogCanvasCircle.png")
 
 	self.defaultMapMaskTexture = LayerTextureResource(love.graphics.newArrayImage(whiteTextureImageData))
 
@@ -503,13 +504,18 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 	local actorCanvas = love.graphics.newCanvas(
 		map:getWidth() * GameView.ACTOR_CANVAS_CELL_SIZE,
 		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
-		{ format = "rgba16f" })
+		{ format = "rgba8" })
 	actorCanvas:setFilter("linear", "linear")
 	local bumpCanvas = love.graphics.newCanvas(
 		map:getWidth() * GameView.ACTOR_CANVAS_CELL_SIZE,
 		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
 		{ format = "rgba16f" })
 	bumpCanvas:setFilter("linear", "linear")
+	local fogCanvas = love.graphics.newCanvas(
+		map:getWidth() * GameView.ACTOR_CANVAS_CELL_SIZE,
+		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
+		{ format = "rgba8" })
+	fogCanvas:setFilter("linear", "linear")
 
 	local m = {
 		tileSet = tileSet,
@@ -531,6 +537,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		meta = meta,
 		wallHackEnabled = not (meta and type(meta.wallHack) == "table" and meta.wallHack.enabled == false),
 		actorCanvas = actorCanvas,
+		fogCanvas = fogCanvas,
+		bumpActors = {},
 		bumpCanvas = bumpCanvas,
 		wallHackDecorations = setmetatable({}, { __mode = "k" }),
 		decorationTextures = setmetatable({}, { __mode = "v" }),
@@ -1359,7 +1367,7 @@ end
 function GameView:getMapBumpCanvas(layer)
 	local m = self.mapMeshes[layer]
 	if m then
-		return m.bumpCanvas, m.actorCanvas
+		return m.bumpCanvas, m.actorCanvas, m.fogCanvas
 	end
 end
 
@@ -2173,45 +2181,90 @@ function GameView:update(delta)
 	end
 end
 
-function GameView:_drawActorOnActorCanvas(delta, actor, m)
+function GameView:_drawActorOnActorCanvas(canvas, circle, position, scale, alpha)
+	love.graphics.setColor(1, 1, 1, alpha)
+	love.graphics.draw(circle, position.x * canvas:getWidth(), position.z * canvas:getHeight(), 0, scale, scale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
+end
+
+function GameView:_getActorCanvasRelativePositionScale(delta, circle, actor, m)
 	local actorView = self:getActor(actor)
 	if not actorView then
 		return
 	end
 
-	local transform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(delta)
-	local position = Vector(transform:transformPoint(0, 0, 0))
+	local transform = actorView:getSceneNode():getTransform()
+	local currentTranslation = transform:getLocalTranslation()
+	local previousTranslation = transform:getPreviousTransform()
+	local position = previousTranslation:lerp(currentTranslation, delta)
+
+	local relativePosition = position / Vector(m.map:getWidth() * m.map:getCellSize(), 1.0, m.map:getHeight() * m.map:getCellSize())
 
 	local min, max = actor:getBounds()
 	local size = max - min
 
 	local radius = math.min(size.x, size.z) / 2
-	local relativePosition = position / Vector(m.map:getWidth() * m.map:getCellSize(), 1.0, m.map:getHeight() * m.map:getCellSize())
 	local relativeScale = (radius + 3) / m.map:getCellSize()
-	relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / self.actorCanvasCircle:getWidth()) * (m.meta and m.meta.bendyScale or 1)
+	relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / circle:getWidth()) * (m.meta and m.meta.bendyScale or 1)
 
-	love.graphics.draw(self.actorCanvasCircle, relativePosition.x * m.actorCanvas:getWidth(), relativePosition.z * m.actorCanvas:getHeight(), 0, relativeScale, relativeScale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
+	return position, size, relativePosition, relativeScale
 end
 
 function GameView:_updateActorCanvases(delta)
+	local time = love.timer.getDelta()
+
 	love.graphics.push("all")
 	for layer, m in pairs(self.mapMeshes) do
-		love.graphics.setCanvas(m.actorCanvas)
-
+		love.graphics.setBlendMode("alpha", "alphamultiply")
 		love.graphics.setShader()
 		love.graphics.origin()
-		love.graphics.setBlendMode("alpha", "alphamultiply")
-
-		love.graphics.setColor(m.meta and m.meta.bendyClearColor or { 0, 0, 0, 1 })
-		love.graphics.rectangle("fill", 0, 0, m.actorCanvas:getWidth(), m.actorCanvas:getHeight())
-
-		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.clear(0, 0, 0, 1)
 
 		for actor in self.game:getStage():iterateActors() do
 			local _, _, actorLayer = actor:getTile()
 			if actorLayer == layer then
-				self:_drawActorOnActorCanvas(delta, actor, m)
+				local state = m.bumpActors[actor:getID()] or {}
+				m.bumpActors[actor:getID()] = state
+
+				local k1, k2, p, s = self:_getActorCanvasRelativePositionScale(delta, self.fogCanvasCircle, actor, m)
+				if state[1] then
+					if state[1].k1:distance(k1) < (m.meta and m.meta.fogDistance or 0.25) and state[1].k2 == k2 then
+						state[1].time = 0
+						state[1].position = p:keep()
+					else
+						table.insert(state, 1, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
+					end
+				else
+					table.insert(state, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
+				end
 			end
+		end
+
+		love.graphics.setCanvas(m.fogCanvas)
+		love.graphics.clear(0, 0, 0, 1)
+		for id, state in pairs(m.bumpActors) do
+			for i = #state, 1, -1 do
+				if state[i].time >= 1 then
+					table.remove(state, i)
+				else
+					state[i].time = math.clamp(state[i].time + (time / (m.meta and m.meta.fogDuration or 1)))
+				end
+			end
+
+			if #state == 0 then
+				m.bumpActors[id] = nil
+			end
+
+			for i = 1, #state do
+				self:_drawActorOnActorCanvas(m.fogCanvas, self.fogCanvasCircle, state[i].position, state[i].scale * (m.meta and m.meta.fogScale or 1), 1 - state[i].time)
+			end
+		end
+
+		love.graphics.setColor(1, 1, 1, 1)
+
+		love.graphics.setCanvas(m.actorCanvas)
+		love.graphics.clear(0, 0, 0, 1)
+		for id, state in pairs(m.bumpActors) do
+			self:_drawActorOnActorCanvas(m.actorCanvas, self.actorCanvasCircle, state[1].position, state[1].scale * (m.meta and m.meta.fogScale or 1), 1)
 		end
 
 		love.graphics.setCanvas(m.bumpCanvas)

@@ -14,6 +14,7 @@ local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local GroundFog = Class(PropView)
 
@@ -79,6 +80,19 @@ function GroundFog:new(prop, gameView)
 	self.lightning = {}
 end
 
+function GroundFog:load()
+	PropView.load(self)
+
+	local resources = self:getResources()
+
+	resources:queue(
+		TextureResource,
+		"Resources/Game/Props/GroundFog/Particle_Blurred.png",
+		function(texture)
+			self.blurParticle = texture
+		end)
+end
+
 function GroundFog:_build()
 	if self.particles then
 		self.particles:setParent(nil)
@@ -102,12 +116,13 @@ function GroundFog:_build()
 	local _, layer = self.prop:getPosition()
 
 	local gameView = self:getGameView()
-	local _, canvas = gameView:getMapBumpCanvas(layer)
+	local _, _, canvas = gameView:getMapBumpCanvas(layer)
 	material:send(material.UNIFORM_TEXTURE, "scape_BumpCanvas", canvas)
 
 	resources:queueEvent(function()
 		local map = self:getGameView():getMap(layer)
 
+		material:send(material.UNIFORM_TEXTURE, "scape_BlurTexture", self.blurParticle:getResource())
 		material:send(material.UNIFORM_FLOAT, "scape_MapSize", map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize())
 
 		for i = 1, map:getWidth() + 1, 2 do
