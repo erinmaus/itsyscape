@@ -172,12 +172,14 @@ StageProxy.decorate = Event.Set(
 	StageProxy.DECORATION,
 	Event.KeyArgument("group"),
 	Event.Argument("decoration"),
-	Event.KeyArgument("layer", true))
+	Event.KeyArgument("layer", true),
+	Event.Argument("material"))
 StageProxy.decorate:link(
 	"onDecorate",
 	Event.Argument("group"),
 	Event.Argument("decoration"),
-	Event.Argument("layer"))
+	Event.Argument("layer"),
+	Event.Argument("material"))
 StageProxy.undecorate = Event.Unset(
 	StageProxy.DECORATION,
 	Event.KeyArgument("group"),

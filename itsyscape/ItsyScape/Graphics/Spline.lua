@@ -17,11 +17,12 @@ local MapCurve = require "ItsyScape.World.MapCurve"
 local Spline = Class()
 Spline.Feature = Class()
 
-function Spline.Feature:new(id, curve, color, texture)
+function Spline.Feature:new(id, curve, color, texture, material)
 	self.id = id
 	self.curve = curve
 	self.color = color or Color()
 	self.texture = texture or 1
+	self.material = material or false
 end
 
 function Spline.Feature:setID(value)
@@ -56,12 +57,21 @@ function Spline.Feature:getTexture()
 	return self.texture
 end
 
+function Spline.Feature:setMaterial(value)
+	self.material = value or false
+end
+
+function Spline.Feature:getMaterial()
+	return self.material
+end
+
 function Spline.Feature:serialize()
 	return {
 		id = self:getID(),
 		curve = self.curve:toConfig(),
 		color = { self.color:get() },
-		texture = self.texture
+		texture = self.texture,
+		material = self.material
 	}
 end
 
@@ -121,8 +131,15 @@ function Spline:loadFromTable(t)
 	end
 end
 
-function Spline:add(id, curve, color, texture)
-	local feature = Spline.Feature(id, curve, color, texture)
+function Spline:add(id, curve, color, texture, material)
+	local feature = Spline.Feature(id, curve, color, texture, material)
+	table.insert(self.features, feature)
+
+	return feature
+end
+
+function Spline:push(other)
+	local feature = Spline.Feature(other:getID(), other:getCurve(), other:getColor(), other:getTexture(), other:getMaterial())
 	table.insert(self.features, feature)
 
 	return feature

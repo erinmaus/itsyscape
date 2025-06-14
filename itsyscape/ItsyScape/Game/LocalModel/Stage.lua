@@ -1670,14 +1670,14 @@ function LocalStage:forecast(layer, name, id, props)
 	end
 end
 
-function LocalStage:decorate(group, decoration, layer)
+function LocalStage:decorate(group, decoration, layer, material)
 	if not decoration then
 		self.onUndecorate(self, group, layer or 1)
 	else
 		if Class.isCompatibleType(decoration, Spline) then
-			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Spline", value = decoration:serialize() }, layer or 1)
+			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Spline", value = decoration:serialize() }, layer or 1, material)
 		elseif Class.isCompatibleType(decoration, Decoration) then
-			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Decoration", value = decoration:serialize() }, layer or 1)
+			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Decoration", value = decoration:serialize() }, layer or 1, material)
 		end
 	end
 end

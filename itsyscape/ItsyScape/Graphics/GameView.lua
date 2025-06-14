@@ -265,9 +265,9 @@ function GameView:attach(game)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
 
-	self._onDecorate = function(_, group, decoration, layer)
+	self._onDecorate = function(_, group, decoration, layer, materials)
 		Log.info("Decorating '%s' (%s) on layer %d.", group, decoration.type, layer)
-		self:decorate(group, decoration, layer)
+		self:decorate(group, decoration, layer, materials)
 	end
 	stage.onDecorate:register(self._onDecorate)
 
@@ -620,47 +620,49 @@ function GameView:updateGroundDecorations(m)
 	end
 
 	local function updateDecorationMaterial(d, group)
-		d.sceneNode:getMaterial():setOutlineThreshold(0.5)
-		d.sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
-		d.sceneNode:getMaterial():setIsShadowCaster(false)
+		for _, sceneNode in ipairs(d.sceneNodes) do
+			sceneNode:getMaterial():setOutlineThreshold(0.5)
+			sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
+			sceneNode:getMaterial():setIsShadowCaster(false)
 
-		local group = d.decoration:getUniform("_x_Group")
+			local group = d.decoration:getUniform("_x_Group")
 
-		if group == Block.GROUP_SHINY then
-			d.sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
-			d.sceneNode:getMaterial():setReflectionPower(1.0)
-			d.sceneNode:getMaterial():setReflectionDistance(0.75)
-			d.sceneNode:getMaterial():setRoughness(0.5)
-		elseif group == Block.GROUP_BENDY then
-			local newTexture = m.decorationTextures[d.texture:getID()]
-			if not newTexture then
-				newTexture = TextureResource(d.texture:getResource())
-				newTexture:getHandle():setBoundTexture("Specular", d.texture:getHandle():getBoundTexture("Specular"))
-				newTexture:getHandle():setBoundTexture("Heightmap", d.texture:getHandle():getBoundTexture("Heightmap"))
-				m.decorationTextures[d.texture:getID()] = newTexture
+			if group == Block.GROUP_SHINY then
+				sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
+				sceneNode:getMaterial():setReflectionPower(1.0)
+				sceneNode:getMaterial():setReflectionDistance(0.75)
+				sceneNode:getMaterial():setRoughness(0.5)
+			elseif group == Block.GROUP_BENDY then
+				local newTexture = m.decorationTextures[d.texture:getID()]
+				if not newTexture then
+					newTexture = TextureResource(d.texture:getResource())
+					newTexture:getHandle():setBoundTexture("Specular", d.texture:getHandle():getBoundTexture("Specular"))
+					newTexture:getHandle():setBoundTexture("Heightmap", d.texture:getHandle():getBoundTexture("Heightmap"))
+					m.decorationTextures[d.texture:getID()] = newTexture
+				end
+
+				d.texture = newTexture
+				sceneNode:getMaterial():setTextures(newTexture)
+				if d.alphaSceneNode then
+					d.alphaSceneNode:getMaterial():setTextures(newTexture)
+				end
+
+				local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
+				sceneNode:getMaterial():setShader(shader)
+				self:_updateWind(m.layer, sceneNode)
 			end
 
-			d.texture = newTexture
-			d.sceneNode:getMaterial():setTextures(newTexture)
-			if d.alphaSceneNode then
-				d.alphaSceneNode:getMaterial():setTextures(newTexture)
+			if group == Block.GROUP_BENDY then
+				table.insert(m.dynamicGroundDecorations, d)
+			else
+				table.insert(m.staticGroundDecorations, d)
 			end
+			
+			d.isGroundDecoration = true
 
-			local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
-			d.sceneNode:getMaterial():setShader(shader)
-			self:_updateWind(m.layer, d.sceneNode)
+			m.wallHackDecorations[sceneNode] = true
+			m.wallHackDirty = true
 		end
-
-		if group == Block.GROUP_BENDY then
-			table.insert(m.dynamicGroundDecorations, d)
-		else
-			table.insert(m.staticGroundDecorations, d)
-		end
-		
-		d.isGroundDecoration = true
-
-		m.wallHackDecorations[d.sceneNode] = true
-		m.wallHackDirty = true
 	end
 
 	local cachedGroundDecorationDirectory = m.resource and string.format("Resources/Game/Maps/%s/GroundDecorationsCache", m.resource)
@@ -733,7 +735,7 @@ function GameView:updateGroundDecorations(m)
 				for groupName, parentGroups in pairs(parentLayers) do
 					for tileSetID, decoration in pairs(parentGroups) do
 						local decorationName = string.format("_x_GroundDecorations_%s_%s@%d", groupName, tileSetID, layer)
-						self:decorate(decorationName, decoration, m.layer, updateDecorationMaterial)
+						self:decorate(decorationName, decoration, m.layer, nil, updateDecorationMaterial)
 					end
 				end
 			end
@@ -765,7 +767,7 @@ function GameView:updateGroundDecorations(m)
 							decoration:setUniform("_x_Group", group)
 							decoration:setIsWall(group == Block.GROUP_STATIC)
 
-							self:decorate(groupName, decoration, m.layer, updateDecorationMaterial)
+							self:decorate(groupName, decoration, m.layer, nil, updateDecorationMaterial)
 						end
 					end)
 				end
@@ -1556,16 +1558,15 @@ function GameView:getItem(ref)
 	return self.items[ref]
 end
 
-function GameView:decorate(group, decoration, layer, callback)
+function GameView:decorate(group, decoration, layer, materials, callback)
 	local m = self.mapMeshes[layer]
 	if not m then
 		return
 	end
 
 	local groupName = group .. '#' .. tostring(layer)
-	if self.decorations[groupName] and
-	   self.decorations[groupName].sceneNode
-	then
+	if self.decorations[groupName] then
+		print(">>> removed", groupName)
 		local d = self.decorations[groupName]
 
 		if d.isGroundDecoration then
@@ -1583,9 +1584,12 @@ function GameView:decorate(group, decoration, layer, callback)
 			end
 		end
 
-		d.sceneNode:setParent(nil)
-		if d.alphaSceneNode then
-			d.alphaSceneNode:setParent(nil)
+		for _, n in ipairs(d.sceneNodes) do
+			n:setParent(nil)
+		end
+
+		for _, n in ipairs(d.alphaSceneNodes) do
+			n:setParent(nil)
 		end
 
 		self.decorations[groupName] = nil
@@ -1596,9 +1600,12 @@ function GameView:decorate(group, decoration, layer, callback)
 		map = self.scene
 	end
 
+	local Type
 	if not Class.isClass(decoration) and decoration then
-		local Type = require(decoration.type)
+		Type = require(decoration.type)
 		decoration = Type(decoration.value)
+	elseif Class.isClass(decoration) then
+		Type = Class.getType(decoration)
 	end
 
 	local isSpline = Class.isCompatibleType(decoration, Spline)
@@ -1606,13 +1613,13 @@ function GameView:decorate(group, decoration, layer, callback)
 	local isValid = isSpline or isDecoration
 
 	if decoration and isValid then
-		local d = {}
+		local d = { sceneNodes = {}, alphaSceneNodes = {} }
 
-		local sceneNode
+		local SceneNodeType
 		if isSpline then
-			sceneNode = SplineSceneNode()
+			SceneNodeType = SplineSceneNode
 		elseif isDecoration then
-			sceneNode = DecorationSceneNode()
+			SceneNodeType = DecorationSceneNode
 		end
 
 		self.decorationsPending = self.decorationsPending + 1
@@ -1625,7 +1632,7 @@ function GameView:decorate(group, decoration, layer, callback)
 			local staticMesh = self.resourceManager:load(
 				StaticMeshResource,
 				tileSetFilename)
-
+ 
 			local textureFilename = string.format(
 				"Resources/Game/TileSets/%s/Texture.png",
 				decoration:getTileSetID())
@@ -1644,72 +1651,97 @@ function GameView:decorate(group, decoration, layer, callback)
 					textureFilename)
 			end
 
-			if isSpline then
-				sceneNode:fromSpline(decoration, staticMesh:getResource())
-				sceneNode:getMaterial():setTextures(texture)
-			else
-				sceneNode:fromDecoration(decoration, staticMesh:getResource())
-				sceneNode:getMaterial():setTextures(texture)
-			end
+			d.texture = texture
+			d.staticMesh = staticMesh
 
 			if self.decorations[groupName] ~= d then
-				Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
 				return
 			end
 
-			sceneNode:setParent(map)
+			local m = {}
+			for feature in decoration:iterate() do
+				local material = feature:getMaterial()
 
-			if decoration:getIsWall() and not self:_getIsMapEditor() then
-				local shader
-				if Class.isCompatibleType(texture, LayerTextureResource) then
-					shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/MultiTextureWallDecoration")
-				else
-					shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/WallDecoration")
+				local g = m[material]
+				if not g then
+					g = Type()
+					m[material] = g
 				end
 
-				sceneNode:getMaterial():setShader(shader)
-				sceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
-
-				local alphaSceneNode
-				if isSpline then
-					alphaSceneNode = SplineSceneNode()
-					alphaSceneNode:fromSpline(decoration, staticMesh:getResource())
-				else
-					alphaSceneNode = DecorationSceneNode()
-					alphaSceneNode:fromDecoration(decoration, staticMesh:getResource())
-				end
-
-				alphaSceneNode:getMaterial():setTextures(texture)
-				alphaSceneNode:getMaterial():setIsTranslucent(true)
-				alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
-				alphaSceneNode:getMaterial():setShader(shader)
-				alphaSceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
-				alphaSceneNode:setParent(map)
-
-				d.alphaSceneNode = alphaSceneNode
-			else
-				local shader
-				if Class.isCompatibleType(texture, LayerTextureResource) then
-					shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/MultiTextureDecoration")
-				else
-					shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/Decoration")
-				end
-
-				if sceneNode:getMaterial():getShader():getID() == DecorationSceneNode.DEFAULT_SHADER:getID() then
-					sceneNode:getMaterial():setShader(shader)
-				end
+				g:push(feature)
 			end
 
-			d.texture = texture
-			d.staticMesh = staticMesh
+			for materialName, subDecoration in pairs(m) do
+				local sceneNode = SceneNodeType()
+
+				if isSpline then
+					sceneNode:fromSpline(subDecoration, staticMesh:getResource())
+					sceneNode:getMaterial():setTextures(texture)
+				else
+					sceneNode:fromDecoration(subDecoration, staticMesh:getResource())
+					sceneNode:getMaterial():setTextures(texture)
+				end
+
+				sceneNode:setParent(map)
+				table.insert(d.sceneNodes, sceneNode)
+
+				local alphaSceneNode
+				if decoration:getIsWall() and not self:_getIsMapEditor() then
+					local shader
+					if Class.isCompatibleType(texture, LayerTextureResource) then
+						shader = self.resourceManager:load(
+							ShaderResource,
+							"Resources/Shaders/MultiTextureWallDecoration")
+					else
+						shader = self.resourceManager:load(
+							ShaderResource,
+							"Resources/Shaders/WallDecoration")
+					end
+
+					sceneNode:getMaterial():setShader(shader)
+					sceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
+
+					if isSpline then
+						alphaSceneNode = SplineSceneNode()
+						alphaSceneNode:fromSpline(subDecoration, staticMesh:getResource())
+					else
+						alphaSceneNode = DecorationSceneNode()
+						alphaSceneNode:fromDecoration(subDecoration, staticMesh:getResource())
+					end
+
+					alphaSceneNode:getMaterial():setTextures(texture)
+					alphaSceneNode:getMaterial():setIsTranslucent(true)
+					alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
+					alphaSceneNode:getMaterial():setShader(shader)
+					alphaSceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
+					alphaSceneNode:setParent(map)
+
+					table.insert(d.alphaSceneNodes, alphaSceneNode)
+				else
+					local shader
+					if Class.isCompatibleType(texture, LayerTextureResource) then
+						shader = self.resourceManager:load(
+							ShaderResource,
+							"Resources/Shaders/MultiTextureDecoration")
+					else
+						shader = self.resourceManager:load(
+							ShaderResource,
+							"Resources/Shaders/Decoration")
+					end
+
+					if sceneNode:getMaterial():getShader():getID() == DecorationSceneNode.DEFAULT_SHADER:getID() then
+						sceneNode:getMaterial():setShader(shader)
+					end
+				end
+
+				if materials and materials[materialName] then
+					materials[materialName]:apply(sceneNode, self.resourceManager)
+
+					if alphaSceneNode then
+						materials[materialName]:apply(alphaSceneNode, self.resourceManager)
+					end
+				end
+			end
 
 			if callback then
 				callback(d)
@@ -1719,11 +1751,9 @@ function GameView:decorate(group, decoration, layer, callback)
 		d.decoration = decoration
 		d.name = group
 		d.layer = layer
-		d.sceneNode = sceneNode
+		d.materials = materials
 
 		self.decorations[groupName] = d
-
-		return sceneNode
 	end
 end
 
@@ -1962,10 +1992,26 @@ function GameView:getDecorations()
 	return result, count
 end
 
+function GameView:getDecoration(group, layer)
+	local name = string.format("%s#%d", group, layer)
+	local d = self.decorations[name]
+	return d and d.decoration
+end
+
 function GameView:getDecorationLayer(decoration)
 	for k, v in pairs(self.decorations) do
 		if v.decoration == decoration then
 			return v.layer
+		end
+	end
+
+	return nil
+end
+
+function GameView:getDecorationMaterials(decoration)
+	for k, v in pairs(self.decorations) do
+		if v.decoration == decoration then
+			return v.materials
 		end
 	end
 

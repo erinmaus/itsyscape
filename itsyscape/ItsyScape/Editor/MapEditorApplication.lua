@@ -360,7 +360,13 @@ end
 
 function MapEditorApplication:getLastDecorationFeature()
 	local _, decoration = self.decorationList:getCurrentDecoration()
-	if decoration and self.currentFeatureIndex then
+	if type(self.currentFeatureIndex) == "table" then
+		local result = {}
+		for _, index in ipairs(self.currentFeatureIndex) do
+			table.insert(result, decoration:getFeatureByIndex(index))
+		end
+		return result
+	elseif decoration and self.currentFeatureIndex then
 		return decoration:getFeatureByIndex(self.currentFeatureIndex)
 	end
 
@@ -381,11 +387,11 @@ function MapEditorApplication:updateCurve()
 	elseif self.currentTool == MapEditorApplication.TOOL_DECORATE then
 		local group, decoration = self.decorationList:getCurrentDecoration()
 		local feature = self:getLastDecorationFeature()
-		if feature then
+		if Class.isCompatibleType(feature, Spline.Feature) then
 			feature:setCurve(self.curve)
 
 			if decoration and Class.isCompatibleType(decoration, Spline) then
-				self:getGame():getStage():decorate(group, decoration)
+				self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 			end
 		end
 	end
@@ -760,19 +766,49 @@ function MapEditorApplication:mousePress(x, y, button)
 								local lastDecorationFeature = self:getLastDecorationFeature()
 								local rotation, scale
 								if lastDecorationFeature then
-									rotation = lastDecorationFeature:getRotation()
-									scale = lastDecorationFeature:getScale()
+									local f
+									if Class.isCompatibleType(lastDecorationFeature, Decoration.Feature) then
+										f = lastDecorationFeature
+									else
+										f = lastDecorationFeature[1]
+									end
+
+									if f then
+										rotation = f:getRotation()
+										scale = f:getScale()
+									end
 								end
 
-								feature = decoration:add(
-									tile,
-									Vector(x, y, z),
-									rotation,
-									scale,
-									self.currentDecorationColor,
-									self.decorationPalette:getCurrentTexture())
-								self:getGame():getStage():decorate(group, decoration, layer)
-								self.currentFeatureIndex = decoration:getNumFeatures()
+								if self.decorationPalette:getCurrentBuilding() then
+									local building = self.decorationPalette:getCurrentBuilding()
+									local decorationGroup = building:getDecorationGroupByName(tile)
+
+									local features = {}
+									for _, groupFeature in decorationGroup:iterate() do
+										local f = decoration:add(
+											groupFeature:getID(),
+											Vector(x, y, z),
+											rotation,
+											scale,
+											self.currentDecorationColor,
+											self.decorationPalette:getCurrentTexture(),
+											groupFeature:getMaterial())
+										table.insert(features, decoration:getNumFeatures())
+									end
+									self.currentFeatureIndex = features
+
+									self:getGame():getStage():decorate(group, decoration, layer, building:getMaterials())
+								else
+									feature = decoration:add(
+										tile,
+										Vector(x, y, z),
+										rotation,
+										scale,
+										self.currentDecorationColor,
+										self.decorationPalette:getCurrentTexture())
+									self:getGame():getStage():decorate(group, decoration, layer, self:getGameView():getDecorationMaterials(decoration))
+									self.currentFeatureIndex = decoration:getNumFeatures()
+								end
 							end
 						end
 					end
@@ -1186,7 +1222,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 
 				local group, decoration = self.decorationList:getCurrentDecoration()
 				if group and decoration then
-					self:getGameView():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1)
+					self:getGameView():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 				end
 			elseif Class.isCompatibleType(target, MapCurve.Value) and target:getIndex() then
 				local mapSceneNode = self:getGameView():getMapSceneNode(self.curveLayer)
@@ -1428,7 +1464,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 								self:beginEditCurve(false, curve:toConfig())
 							end
-						else
+						elseif not self.decorationPalette:getCurrentBuilding() then
 							local lastDecorationFeature = self:getLastDecorationFeature()
 							local rotation, scale
 							if lastDecorationFeature then
@@ -1478,15 +1514,29 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 										feature:getPosition() - decorationForward,
 										feature:getRotation(),
 										feature:getScale(),
-										feature:getColor())
+										feature:getColor(),
+										feature:getMaterial())
 
-									self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1)
+									self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 
 									if newFeature then
 										self:createBoundsGizmo(newFeature)
 										self.currentFeatureIndex = decoration:getNumFeatures()
 									end
 								end
+							end
+						end
+					elseif type(feature) == "table" and #feature > 0 then
+						if key == "r" then
+							for _, f in ipairs(feature) do
+								f:setRotation((f:getRotation() * Quaternion.Y_90):getNormal())
+							end
+
+							local group, decoration = self.decorationList:getCurrentDecoration()
+							if group and decoration then
+								print("yolo", group, decoration)
+								print("badabing")
+								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 							end
 						end
 					end
@@ -1502,7 +1552,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 									local group, decoration = self.decorationList:getCurrentDecoration()
 									if group and decoration then
-										self:getGame():getStage():decorate(group, decoration)
+										self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 									end
 
 									self.currentDecorationColor = color
@@ -1539,7 +1589,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 							self.currentFeatureIndex = nil
 
-							self:getGame():getStage():decorate(group, decoration)
+							self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 						end
 					end
 				end
@@ -1783,20 +1833,20 @@ function MapEditorApplication:save(filename)
 				end
 
 				if extension then
-					local layer = self:_getPhysicalLayer(self:getDecorationLayer(decoration))
+					local layer = self:_getPhysicalLayer(self:getGameView():getDecorationLayer(decoration))
 					if layer then
-						local filename
+						local f
 						if layer == 1 then
-							filename = self:getOutputFilename("Maps", filename, "Decorations", group .. "." .. extension)
+							f = self:getOutputFilename("Maps", filename, "Decorations", group .. "." .. extension)
 						else
-							filename = self:getOutputFilename("Maps", filename, "Decorations", group .. "@" .. layer .. "." .. extension)
+							f = self:getOutputFilename("Maps", filename, "Decorations", group .. "@" .. layer .. "." .. extension)
 						end
 
-						local s, r = love.filesystem.write(filename, decoration:toString())
+						local s, r = love.filesystem.write(f, decoration:toString())
 						if not s then
 							Log.warn(
 								"Couldn't save decoration '%s' to %s: %s",
-								group, filename, r)
+								group, f, r)
 						end
 					end
 				end
