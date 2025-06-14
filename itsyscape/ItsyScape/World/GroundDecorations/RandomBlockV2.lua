@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- ItsyScape/World/GroundDecorations/GrassBlockV2.lua
+-- ItsyScape/World/GroundDecorations/RandomBlock.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -14,70 +14,77 @@ local Color = require "ItsyScape.Graphics.Color"
 local Block = require "ItsyScape.World.GroundDecorations.Block"
 local Noise = require "ItsyScape.Graphics.Noise"
 
-local GrassBlock = Class(Block)
+local RandomBlock = Class(Block)
 
-GrassBlock.GROUP = Block.GROUP_BENDY
-
-GrassBlock.SATURATION = 6
-
-GrassBlock.DIRT_NOISE = Noise {
-	scale = 12,
-	octaves = 2,
-	attenuation = 0.5
+RandomBlock.ROTATIONS = {
+	Quaternion.IDENTITY,
+	Quaternion.Y_90,
+	Quaternion.Y_180,
+	Quaternion.Y_279
 }
 
-GrassBlock.DIRT_THRESHOLD = 0.35
+RandomBlock.ROTATION_NOISE = Noise {
+	scale = 11723,
+	octaves = 1,
+	attenuation = 0
+}
 
-GrassBlock.MIN_OFFSET = -0.25
-GrassBlock.MAX_OFFSET = 0.25
-GrassBlock.OFFSET_NOISE = Noise {
+RandomBlock.MIN_OFFSET = -0.25
+RandomBlock.MAX_OFFSET = 0.25
+RandomBlock.OFFSET_NOISE = Noise {
 	scale = 23163,
 	octaves = 2,
 	attenuation = -2
 }
 
+RandomBlock.FEATURE_THRESHOLD = 0.5
 
-GrassBlock.FEATURES = {
-	"grass1",
-	"grass2",
-	"grass3",
-	"grass4",
-	"grass5"
-}
+RandomBlock.FEATURES = {}
 
-GrassBlock.FEATURE_NOISE = Noise {
+RandomBlock.FEATURE_NOISE = Noise {
 	scale = 12363,
 	octaves = 1,
 	attenuation = 0
 }
 
-GrassBlock.COLORS = {
-	Color.fromHexString("558855"),
-	Color.fromHexString("4c7a4c"),
-	Color.fromHexString("5d805e"),
-	Color.fromHexString("4f7252"),
-	Color.fromHexString("49784d"),
-	Color.fromHexString("3e6d3a"),
+RandomBlock.SATURATION = 2
+
+RandomBlock.COLORS = {
+	Color.fromHexString("ffffff")
 }
 
-GrassBlock.MIN_SCALE = 1.5
-GrassBlock.MAX_SCALE = 2.5
-
-GrassBlock.COLOR_NOISE = Noise {
+RandomBlock.COLOR_NOISE = Noise {
 	offset = Vector(0.5, 0, 0.5),
 	scale = 123,
 	octaves = 1,
 	attenuation = 0
 }
 
-function GrassBlock:bind()
+function RandomBlock:bind()
+	self._rotations = Noise.UniformSampler(self.ROTATION_NOISE)
 	self._colors = Noise.UniformSampler(self.COLOR_NOISE)
 	self._offsets = Noise.UniformSampler(self.OFFSET_NOISE)
 	self._features = Noise.UniformSampler(self.FEATURE_NOISE)
-	self._dirt = Noise.UniformSampler(self.DIRT_NOISE)
 end
 
-function GrassBlock:cache(tileSet, map, i, j, tileSetTile, mapTile)
+function RandomBlock:_getCache(i, j, row)
+	local cacheRow = self._cache[j]
+	local cell = cacheRow and cacheRow[i]
+	local value = cell and cell[row]
+
+	return value
+end
+
+function RandomBlock:_setCache(i, j, row, value)
+	local cacheRow = self._cache[j] or {}
+	local cell = cacheRow[i] or {}
+	cell[row] = value
+
+	cacheRow[i] = cell
+	self._cache[j] = cacheRow
+end
+
+function RandomBlock:cache(tileSet, map, i, j, tileSetTile, mapTile)
 	local topLeft = Vector(
 		(i - 1) * map:getCellSize(),
 		0,
@@ -91,8 +98,8 @@ function GrassBlock:cache(tileSet, map, i, j, tileSetTile, mapTile)
 			local noiseX = absoluteX / (map:getWidth() * map:getCellSize())
 			local noiseZ = absoluteZ / (map:getHeight() * map:getCellSize())
 
-			local dirt = self._dirt:sample2D(noiseX, noiseZ)
 			local color = self._colors:sample2D(noiseX, noiseZ)
+			local rotation = self._rotations:sample2D(noiseX, noiseZ)
 			local offsetX = self._offsets:sample3D(noiseX, noiseZ, 1)
 			local offsetZ = self._offsets:sample3D(noiseX, noiseZ, 2)
 			local feature = self._features:sample2D(noiseX, noiseZ)
@@ -103,7 +110,7 @@ function GrassBlock:cache(tileSet, map, i, j, tileSetTile, mapTile)
 				offsetX = offsetX,
 				offsetZ = offsetZ,
 				color = color,
-				dirt = dirt,
+				rotation = rotation,
 				feature = feature
 			}
 
@@ -112,12 +119,8 @@ function GrassBlock:cache(tileSet, map, i, j, tileSetTile, mapTile)
 	end
 end
 
-function GrassBlock:emit(drawType, tileSet, map, i, j, tileSetTile, mapTile)
-	if #mapTile.decals > 0 then
-		return
-	end
-
-	if drawType == "cache" then
+function RandomBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
+	if method == "cache" then
 		self:cache(tileSet, map, i, j, tileSetTile, mapTile)
 		return
 	end
@@ -131,26 +134,25 @@ function GrassBlock:emit(drawType, tileSet, map, i, j, tileSetTile, mapTile)
 	for x = 1, self.SATURATION do
 		for z = 1, self.SATURATION do
 			local g = self:getCache(i, j, map:getWidth(), map:getHeight(), x, z, self.SATURATION, self.SATURATION)
-			local dirt = self._dirt:uniform(g.dirt)
+			local feature = self._features:uniform(g.feature)
 
-			if dirt >= self.DIRT_THRESHOLD then
-				local delta = math.sin((dirt - self.DIRT_THRESHOLD) / (1 - self.DIRT_THRESHOLD) * math.pi * 2)
-				local scale = delta >= 0 and math.lerp(self.MIN_SCALE, self.MAX_SCALE, delta) or 0
+			if feature >= self.FEATURE_THRESHOLD then
+				local delta = (feature - self.FEATURE_THRESHOLD) / (1 - self.FEATURE_THRESHOLD)
 				local color = self.COLORS[self._colors:index(g.color, #self.COLORS)]
 				local absoluteX = g.x + self._offsets:range(g.offsetX, self.MIN_OFFSET, self.MAX_OFFSET) * map:getCellSize()
 				local absoluteZ = g.z + self._offsets:range(g.offsetZ, self.MIN_OFFSET, self.MAX_OFFSET) * map:getCellSize()
 				local absoluteY = map:getInterpolatedHeight(absoluteX, absoluteZ)
-				local feature = self.FEATURES[self._features:index(g.feature, #self.FEATURES)]
+				local feature = self.FEATURES[math.clamp(math.floor(delta * #self.FEATURES) + 1, 1, #self.FEATURES)]
 
 				self:addFeature(
 					feature,
-					Vector(absoluteX, absoluteY - 0.125, absoluteZ),
+					Vector(absoluteX, absoluteY, absoluteZ),
 					Quaternion.IDENTITY,
-					Vector(scale),
+					Vector(1),
 					color)
 			end
 		end
 	end
 end
 
-return GrassBlock
+return RandomBlock

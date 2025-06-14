@@ -14,6 +14,7 @@ local MathCommon = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
+local Building = require "ItsyScape.Graphics.Building"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Decoration = require "ItsyScape.Graphics.Decoration"
@@ -1566,7 +1567,6 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 
 	local groupName = group .. '#' .. tostring(layer)
 	if self.decorations[groupName] then
-		print(">>> removed", groupName)
 		local d = self.decorations[groupName]
 
 		if d.isGroundDecoration then
@@ -1611,6 +1611,17 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 	local isSpline = Class.isCompatibleType(decoration, Spline)
 	local isDecoration = Class.isCompatibleType(decoration, Decoration)
 	local isValid = isSpline or isDecoration
+
+	local baseMaterials
+	do
+		local buildingFilename = string.format(
+			"Resources/Game/TileSets/%s/Building.lua",
+			decoration:getTileSetID())
+		if love.filesystem.getInfo(buildingFilename) then
+			local building = Building(buildingFilename)
+			baseMaterials = building:getMaterials()
+		end
+	end
 
 	if decoration and isValid then
 		local d = { sceneNodes = {}, alphaSceneNodes = {} }
@@ -1734,11 +1745,14 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 					end
 				end
 
-				if materials and materials[materialName] then
-					materials[materialName]:apply(sceneNode, self.resourceManager)
+				local m = baseMaterials and baseMaterials[materialName]
+				m = m or (materials and materials[materialName])
+
+				if m then
+					m:apply(sceneNode, self.resourceManager)
 
 					if alphaSceneNode then
-						materials[materialName]:apply(alphaSceneNode, self.resourceManager)
+						m:apply(alphaSceneNode, self.resourceManager)
 					end
 				end
 			end

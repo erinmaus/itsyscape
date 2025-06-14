@@ -22,6 +22,10 @@
 				shader = "Resources/Shaders/Triplanar",
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Wallpaper.png",
 
+				uniforms = {
+					scape_TriplanarScale = { "float", -0.5 }
+				},
+
 				properties = {
 					outlineThreshold = 0.5,
 					color = "ffe680"

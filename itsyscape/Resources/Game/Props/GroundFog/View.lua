@@ -125,10 +125,13 @@ function GroundFog:_build()
 		material:send(material.UNIFORM_TEXTURE, "scape_BlurTexture", self.blurParticle:getResource())
 		material:send(material.UNIFORM_FLOAT, "scape_MapSize", map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize())
 
-		for i = 1, map:getWidth() + 1, 2 do
-			for j = 1, map:getHeight() + 1, 2 do
-				self.particles:updateLocalPosition(map:getTileCenter(i, j))
-				self.particles:emit(love.math.random(5, 10))
+		for i = 1, map:getWidth() do
+			for j = 1, map:getHeight() do
+				local tile = map:getTile(i, j)
+				if not tile:hasFlag("building") then
+					self.particles:updateLocalPosition(map:getTileCenter(i, j))
+					self.particles:emit(love.math.random(3, 5))
+				end
 			end
 
 			coroutine.yield()
