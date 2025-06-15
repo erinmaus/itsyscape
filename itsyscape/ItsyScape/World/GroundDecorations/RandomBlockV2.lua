@@ -37,12 +37,18 @@ RandomBlock.OFFSET_NOISE = Noise {
 	attenuation = -2
 }
 
-RandomBlock.FEATURE_THRESHOLD = 0.5
-
 RandomBlock.FEATURES = {}
 
+RandomBlock.FEATURE_THRESHOLD = 0.5
+
+RandomBlock.EMPTY_NOISE = Noise {
+	scale = 737,
+	octaves = 2,
+	attenuation = -2
+}
+
 RandomBlock.FEATURE_NOISE = Noise {
-	scale = 12363,
+	scale = 1233,
 	octaves = 1,
 	attenuation = 0
 }
@@ -60,7 +66,11 @@ RandomBlock.COLOR_NOISE = Noise {
 	attenuation = 0
 }
 
+RandomBlock.MIN_SCALE = 0.75
+RandomBlock.MAX_SCALE = 1
+
 function RandomBlock:bind()
+	self._empty = Noise.UniformSampler(self.EMPTY_NOISE)
 	self._rotations = Noise.UniformSampler(self.ROTATION_NOISE)
 	self._colors = Noise.UniformSampler(self.COLOR_NOISE)
 	self._offsets = Noise.UniformSampler(self.OFFSET_NOISE)
@@ -103,6 +113,7 @@ function RandomBlock:cache(tileSet, map, i, j, tileSetTile, mapTile)
 			local offsetX = self._offsets:sample3D(noiseX, noiseZ, 1)
 			local offsetZ = self._offsets:sample3D(noiseX, noiseZ, 2)
 			local feature = self._features:sample2D(noiseX, noiseZ)
+			local empty = self._empty:sample2D(noiseX, noiseZ)
 
 			local g = {
 				x = absoluteX,
@@ -111,7 +122,8 @@ function RandomBlock:cache(tileSet, map, i, j, tileSetTile, mapTile)
 				offsetZ = offsetZ,
 				color = color,
 				rotation = rotation,
-				feature = feature
+				feature = feature,
+				empty = empty
 			}
 
 			self:addCache(i, j, map:getWidth(), map:getHeight(), x, z, self.SATURATION, self.SATURATION, g)
@@ -134,21 +146,23 @@ function RandomBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 	for x = 1, self.SATURATION do
 		for z = 1, self.SATURATION do
 			local g = self:getCache(i, j, map:getWidth(), map:getHeight(), x, z, self.SATURATION, self.SATURATION)
-			local feature = self._features:uniform(g.feature)
+			local empty = self._empty:uniform(g.empty)
 
-			if feature >= self.FEATURE_THRESHOLD then
-				local delta = (feature - self.FEATURE_THRESHOLD) / (1 - self.FEATURE_THRESHOLD)
+			if empty >= self.FEATURE_THRESHOLD then
+				local delta = math.sin((empty - self.FEATURE_THRESHOLD) / (1 - self.FEATURE_THRESHOLD) * math.pi * 2)
+				local scale = delta >= 0 and math.lerp(self.MIN_SCALE, self.MAX_SCALE, delta) or 0
+				local rotation = self.ROTATIONS[self._rotations:index(g.rotation, #self.ROTATIONS)]
 				local color = self.COLORS[self._colors:index(g.color, #self.COLORS)]
 				local absoluteX = g.x + self._offsets:range(g.offsetX, self.MIN_OFFSET, self.MAX_OFFSET) * map:getCellSize()
 				local absoluteZ = g.z + self._offsets:range(g.offsetZ, self.MIN_OFFSET, self.MAX_OFFSET) * map:getCellSize()
 				local absoluteY = map:getInterpolatedHeight(absoluteX, absoluteZ)
-				local feature = self.FEATURES[math.clamp(math.floor(delta * #self.FEATURES) + 1, 1, #self.FEATURES)]
+				local feature = self.FEATURES[self._features:index(g.feature, #self.FEATURES)]
 
 				self:addFeature(
 					feature,
 					Vector(absoluteX, absoluteY, absoluteZ),
-					Quaternion.IDENTITY,
-					Vector(1),
+					rotation,
+					Vector(scale),
 					color)
 			end
 		end

@@ -47,22 +47,49 @@ function ViziersRockGround:new()
 		FEATURE_THRESHOLD = 0.3,
 		SATURATION = 2,
 
+		ROTATIONS = {
+			Quaternion.IDENTITY,
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (1 / 6)),
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (2 / 6)),
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (3 / 6)),
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (4 / 6)),
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (5 / 6)),
+		},
+
 		FEATURES = {
+			"shell1",
 			"shell1",
 			"shell2",
 			"shell3",
+			"shell3",
+			"shell4",
+			"shell4",
 			"shell4"
 		}
 	})
 
 	self:registerTile("mud", RandomBlock:Bind(self) {
-		FEATURE_THRESHOLD = 0.5,
-		SATURATION = 2,
+		FEATURE_THRESHOLD = 0.4,
+		SATURATION = 1,
+
+		ROTATIONS = {
+			Quaternion.IDENTITY,
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (1 / 6)),
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (2 / 6)),
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (3 / 6)),
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (4 / 6)),
+			Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi * (5 / 6)),
+		},
 
 		FEATURES = {
 			"garbage1",
+			"garbage1",
+			"garbage1",
+			"garbage2",
 			"garbage2",
 			"garbage3",
+			"garbage4",
+			"garbage4",
 			"garbage4"
 		}
 	})
@@ -71,6 +98,8 @@ function ViziersRockGround:new()
 		FEATURE_THRESHOLD = 0,
 		SATURATION = 1,
 
+		MIN_SCALE = 1,
+		MAX_SCALE = 1,
 		MIN_OFFSET = 0.5,
 		MAX_OFFSET = 0.5,
 
@@ -90,6 +119,8 @@ function ViziersRockGround:new()
 		FEATURE_THRESHOLD = 0,
 		SATURATION = 1,
 
+		MIN_SCALE = 1,
+		MAX_SCALE = 1,
 		MIN_OFFSET = 0.5,
 		MAX_OFFSET = 0.5,
 
