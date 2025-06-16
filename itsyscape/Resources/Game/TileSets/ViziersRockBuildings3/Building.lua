@@ -56,6 +56,30 @@
 				}
 			}
 		},
+		{
+			name = "tile",
+			material = {
+				shader = "Resources/Shaders/Decoration",
+				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Tile.png",
+
+				properties = {
+					outlineThreshold = 0.5,
+					color = "aa6c00"
+				}
+			}
+		},
+		{
+			name = "corner",
+			material = {
+				shader = "Resources/Shaders/Decoration",
+				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Corner.png",
+
+				properties = {
+					outlineThreshold = 0.5,
+					color = "6f7c91"
+				}
+			}
+		},
 	},
 
 	decorations = {
@@ -153,6 +177,78 @@
 				{ id = "wall.interior.x3.wallpaper", material = "wallpaper" },
 				{ id = "wall.interior.x4.wallpaper", material = "wallpaper" },
 				{ id = "wall.interior.x.wood", material = "wood" }
+			}
+		},
+		{
+			name = "roof.base.steep.edge",
+
+			features = {
+				{ id = "roof.base.steep.edge.tiles", material = "tile" },
+				{ id = "roof.base.steep.edge.trim", material = "wood" },
+			}
+		},
+		{
+			name = "roof.base.steep.exterior-corner",
+
+			features = {
+				{ id = "roof.base.steep.exterior-corner.corner", material = "corner" },
+				{ id = "roof.base.steep.exterior-corner.tiles", material = "tile" },
+				{ id = "roof.base.steep.exterior-corner.trim", material = "wood" },
+			}
+		},
+		{
+			name = "roof.base.steep.interior-corner",
+
+			features = {
+				{ id = "roof.base.steep.interior-corner.corner", material = "corner" },
+				{ id = "roof.base.steep.interior-corner.tiles", material = "tile" },
+				{ id = "roof.base.steep.interior-corner.trim", material = "wood" },
+			}
+		},
+		{
+			name = "roof.peak.cap",
+
+			features = {
+				{ id = "roof.peak.cap.corner", material = "corner" },
+				{ id = "roof.peak.cap.tiles", material = "tile" }
+			}
+		},
+		{
+			name = "roof.peak.edge",
+
+			features = {
+				{ id = "roof.peak.edge.corner", material = "corner" },
+				{ id = "roof.peak.edge.tiles", material = "tile" }
+			}
+		},
+		{
+			name = "roof.peak.flat",
+
+			features = {
+				{ id = "roof.peak.flat.tiles", material = "tile" }
+			}
+		},
+		{
+			name = "roof.steep.edge",
+
+			features = {
+				{ id = "roof.steep.edge.tiles", material = "tile" }
+			}
+		},
+		{
+			name = "roof.steep.exterior-corner",
+
+			features = {
+				{ id = "roof.steep.exterior-corner.tiles", material = "tile" },
+				{ id = "roof.steep.exterior-corner.corner", material = "corner" }
+			}
+		},
+		{
+			name = "roof.steep.interior-corner",
+
+			features = {
+				{ id = "roof.steep.interior-corner.tiles", material = "tile" },
+				{ id = "roof.steep.interior-corner.corner", material = "corner" }
 			}
 		},
 	}

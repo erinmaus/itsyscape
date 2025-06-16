@@ -7,9 +7,9 @@ TriplanarTextureCoordinates triplanarMap(vec3 modelPosition, vec3 modelNormal)
 {
 	TriplanarTextureCoordinates result;
 
-	result.x = modelPosition.yz;
+	result.x = -modelPosition.zy;
 	result.y = modelPosition.xz;
-	result.z = modelPosition.xy;
+	result.z = -modelPosition.xy;
 
 	if (modelNormal.x < 0.0)
 	{
@@ -21,12 +21,12 @@ TriplanarTextureCoordinates triplanarMap(vec3 modelPosition, vec3 modelNormal)
 		result.y.x = -result.y.x;
 	}
 
-	if (modelNormal.z >= 0.0)
+	if (modelNormal.z > 0.0)
 	{
 		result.z.x = -result.z.x;
 	}
 
-	result.x.y += 0.5;
+	result.x.x += 0.5;
 	result.z.x += 0.5;
 
 	return result;

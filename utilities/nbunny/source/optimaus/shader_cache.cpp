@@ -347,8 +347,6 @@ static int nbunny_shader_cache_build_composite(lua_State* L)
 		nbunny::ShaderCache::ShaderSource shader_source(vertex_source, pixel_source);
 		shader_source.combine("glsl3", base_vertex_source, base_pixel_source, v, p);
 
-		std::cout << "combined: " << p << std::endl;
-
 		lua_pushboolean(L, get_is_mobile());
 		lua_pushlstring(L, v.data(), v.size());
 		lua_pushlstring(L, p.data(), p.size());
