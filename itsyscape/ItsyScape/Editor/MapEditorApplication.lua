@@ -360,13 +360,17 @@ end
 
 function MapEditorApplication:getLastDecorationFeature()
 	local _, decoration = self.decorationList:getCurrentDecoration()
+	if not decoration then
+		return nil
+	end
+
 	if type(self.currentFeatureIndex) == "table" then
 		local result = {}
 		for _, index in ipairs(self.currentFeatureIndex) do
 			table.insert(result, decoration:getFeatureByIndex(index))
 		end
 		return result
-	elseif decoration and self.currentFeatureIndex then
+	elseif self.currentFeatureIndex then
 		return decoration:getFeatureByIndex(self.currentFeatureIndex)
 	end
 
@@ -1824,7 +1828,7 @@ function MapEditorApplication:save(filename)
 
 		local decorations = self:getGameView():getDecorations()
 		for group, decoration in pairs(decorations) do
-			if self:getGameView():getDecorationLayer(decoration) == 1 and not group:match("_x") then
+			if not group:match("_x") then
 				local extension
 				if Class.isCompatibleType(decoration, Decoration) then
 					extension = "ldeco"
@@ -1894,7 +1898,7 @@ function MapEditorApplication:save(filename)
 						scale = { scale:get() },
 						origin = { (origin or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
 					},
-					wallHack = self.meta and self.meta[layers[i]].wallHack or nil,
+					wallHack = self.meta and self.meta[layers[i]] and self.meta[layers[i]].wallHack or nil,
 					curve = self.mapScriptCurves[layers[i]]
 				}
 			end

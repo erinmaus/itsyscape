@@ -661,8 +661,15 @@ function GameView:updateGroundDecorations(m)
 			
 			d.isGroundDecoration = true
 
-			m.wallHackDecorations[sceneNode] = true
-			m.wallHackDirty = true
+			if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+				m.wallHackDecorations[sceneNode] = true
+				m.wallHackDirty = true
+			else
+				local material = sceneNode:getMaterial()
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+			end
 		end
 	end
 
@@ -700,7 +707,12 @@ function GameView:updateGroundDecorations(m)
 					end
 
 					local group = decoration:getUniform("_x_Group")
-					decoration:setIsWall(group == Block.GROUP_STATIC)
+
+					if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+						decoration:setIsWall(group == Block.GROUP_STATIC or group == Block.GROUP_SHINY)
+					else
+						decoration:setIsWall(false)
+					end
 
 					local parentGroups = groupLayers[group]
 					if not parentGroups then
@@ -712,7 +724,6 @@ function GameView:updateGroundDecorations(m)
 					if not parentDecoration then
 						parentDecoration = Decoration({ tileSetID = tileSetID })
 						parentDecoration:setUniform("_x_Group", group)
-						parentDecoration:setIsWall(decoration:getIsWall())
 
 						parentGroups[tileSetID] = parentDecoration
 					end
@@ -766,7 +777,12 @@ function GameView:updateGroundDecorations(m)
 							local groupName = string.format("_x_GroundDecorations_%d_%s@%d", i, tileSetID, m.layer)
 
 							decoration:setUniform("_x_Group", group)
-							decoration:setIsWall(group == Block.GROUP_STATIC)
+
+							if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+								decoration:setIsWall(group == Block.GROUP_STATIC or group == Block.GROUP_SHINY)
+							else
+								decoration:setIsWall(false)
+							end
 
 							self:decorate(groupName, decoration, m.layer, nil, updateDecorationMaterial)
 						end
@@ -866,13 +882,18 @@ function GameView:updateMap(map, layer)
 		table.insert(m.parts, node)
 
 		local alphaNode
-		if m.wallHackEnabled then
+		if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
 			alphaNode = MapMeshSceneNode()
 			alphaNode:getMaterial():setIsTranslucent(true)
 			alphaNode:getMaterial():setOutlineThreshold(-1.0)
 			alphaNode:setParent(m.node)
 
 			table.insert(m.parts, alphaNode)
+		else
+			local material = node:getMaterial()
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
 		end
 
 		if m.meta and m.meta.material then
@@ -1029,14 +1050,16 @@ end
 
 function GameView:_updateMapNodeWallHack(m)
 	local wallHackEnabled = m.wallHackEnabled == nil or m.wallHackEnabled
-	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 1.25, 1.25, 4, 0.25, 8
+	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 1.25, 1.25, 4, 1.25, 0
+	local isMapWallhackEnabled = false
 	if wallHackEnabled and not self:_getIsMapEditor() then
 		if m.meta and type(m.meta.wallHack) == "table" then
 			wallHackLeft = m.meta.wallHack.left or wallHackLeft
 			wallHackRight = m.meta.wallHack.right or wallHackRight
 			wallHackTop = m.meta.wallHack.top or wallHackTop
 			wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
-			wallHackNear = m.meta.wallHackNear or wallHackNear
+			wallHackNear = m.meta.wallHack.near or wallHackNear
+			isMapWallhackEnabled = not not m.meta.wallHack.map
 		end
 	else
 		wallHackLeft = 0
@@ -1054,7 +1077,7 @@ function GameView:_updateMapNodeWallHack(m)
 	if not wallHackParameters or m.wallHackDirty or
 	   wallHackParameters.left ~= wallHackLeft or wallHackParameters.right ~= wallHackRight or
 	   wallHackParameters.top ~= wallHackTop or wallHackParameters.bottom ~= wallHackBottom or
-	   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up
+	   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up or true
 	then
 		wallHackParameters = wallHackParameters or {}
 		wallHackParameters.left = wallHackLeft
@@ -1067,11 +1090,20 @@ function GameView:_updateMapNodeWallHack(m)
 		m.wallHackParameters = wallHackParameters
 		m.wallHackDirty = false
 
-		for _, part in ipairs(m.parts) do
-			local material = part:getMaterial()
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", wallHackNear)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
+		if isMapWallhackEnabled then
+			for _, part in ipairs(m.parts) do
+				local material = part:getMaterial()
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", wallHackNear)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
+			end
+		else
+			for _, part in ipairs(m.parts) do
+				local material = part:getMaterial()
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+			end
 		end
 		
 		for decoration in pairs(m.wallHackDecorations) do
@@ -1669,20 +1701,20 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 				return
 			end
 
-			local m = {}
+			local decorationsByMaterial = {}
 			for feature in decoration:iterate() do
 				local material = feature:getMaterial()
 
-				local g = m[material]
+				local g = decorationsByMaterial[material]
 				if not g then
 					g = Type()
-					m[material] = g
+					decorationsByMaterial[material] = g
 				end
 
 				g:push(feature)
 			end
 
-			for materialName, subDecoration in pairs(m) do
+			for materialName, subDecoration in pairs(decorationsByMaterial) do
 				local sceneNode = SceneNodeType()
 
 				if isSpline then
@@ -1727,6 +1759,9 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 					alphaSceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
 					alphaSceneNode:setParent(map)
 
+					m.wallHackDecorations[alphaSceneNode] = true
+					m.wallHackDecorations[sceneNode] = true
+
 					table.insert(d.alphaSceneNodes, alphaSceneNode)
 				else
 					local shader
@@ -1743,16 +1778,21 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 					if sceneNode:getMaterial():getShader():getID() == DecorationSceneNode.DEFAULT_SHADER:getID() then
 						sceneNode:getMaterial():setShader(shader)
 					end
+
+					local material = sceneNode:getMaterial()
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
 				end
 
-				local m = baseMaterials and baseMaterials[materialName]
-				m = m or (materials and materials[materialName])
+				local material = baseMaterials and baseMaterials[materialName]
+				material = material or (materials and materials[materialName])
 
-				if m then
-					m:apply(sceneNode, self.resourceManager)
+				if material then
+					material:apply(sceneNode, self.resourceManager)
 
 					if alphaSceneNode then
-						m:apply(alphaSceneNode, self.resourceManager)
+						material:apply(alphaSceneNode, self.resourceManager)
 					end
 				end
 			end

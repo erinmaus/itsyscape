@@ -103,7 +103,7 @@ void nbunny::OutlineRendererPass::draw_nodes(lua_State* L, float delta)
 		renderer->set_current_shader(shader);
 
 		auto color = scene_node->get_material().get_color();
-		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
+		graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, color.a));
 
 		renderer->draw_node(L, *scene_node, delta);
 	}

@@ -148,8 +148,8 @@ function RandomBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 			local g = self:getCache(i, j, map:getWidth(), map:getHeight(), x, z, self.SATURATION, self.SATURATION)
 			local empty = self._empty:uniform(g.empty)
 
-			if empty >= self.FEATURE_THRESHOLD then
-				local delta = math.sin((empty - self.FEATURE_THRESHOLD) / (1 - self.FEATURE_THRESHOLD) * math.pi * 2)
+			if empty >= self.FEATURE_THRESHOLD or self.FEATURE_THRESHOLD == 0 then
+				local delta = self.FEATURE_THRESHOLD == 0 and 1 or math.sin((empty - self.FEATURE_THRESHOLD) / (1 - self.FEATURE_THRESHOLD) * math.pi * 2)
 				local scale = delta >= 0 and math.lerp(self.MIN_SCALE, self.MAX_SCALE, delta) or 0
 				local rotation = self.ROTATIONS[self._rotations:index(g.rotation, #self.ROTATIONS)]
 				local color = self.COLORS[self._colors:index(g.color, #self.COLORS)]

@@ -34,7 +34,5 @@ void effect()
 		discard;
 	}
 
-	diffuse.a = 1.0;
-
 	love_Canvases[0] = diffuse;
 }

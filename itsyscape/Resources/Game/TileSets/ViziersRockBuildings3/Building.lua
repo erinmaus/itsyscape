@@ -3,7 +3,7 @@
 		{
 			name = "brick",
 			material = {
-				shader = "Resources/Shaders/SpecularMultiTriplanar",
+				shader = "Resources/Shaders/DecorationSpecularMultiTriplanar",
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Brick.lua",
 				uniforms = {
 					scape_NumLayers = { "integer", 3 },
@@ -19,7 +19,7 @@
 		{
 			name = "wallpaper",
 			material = {
-				shader = "Resources/Shaders/Triplanar",
+				shader = "Resources/Shaders/DecorationTriplanar",
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Wallpaper.png",
 
 				uniforms = {
@@ -35,7 +35,7 @@
 		{
 			name = "wood",
 			material = {
-				shader = "Resources/Shaders/Triplanar",
+				shader = "Resources/Shaders/DecorationTriplanar",
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Wood.png",
 
 				properties = {
@@ -47,7 +47,7 @@
 		{
 			name = "glass",
 			material = {
-				shader = "Resources/Shaders/Decoration",
+				shader = "Resources/Shaders/WallDecoration",
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Window.png",
 
 				properties = {
@@ -59,7 +59,7 @@
 		{
 			name = "tile",
 			material = {
-				shader = "Resources/Shaders/Decoration",
+				shader = "Resources/Shaders/WallDecoration",
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Tile.png",
 
 				properties = {
@@ -71,7 +71,7 @@
 		{
 			name = "corner",
 			material = {
-				shader = "Resources/Shaders/Decoration",
+				shader = "Resources/Shaders/WallDecoration",
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Corner.png",
 
 				properties = {
