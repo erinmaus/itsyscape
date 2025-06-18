@@ -1,17 +1,18 @@
 {
 	{
-		tileSetID = "ViziersRock2",
-		wallHack = {
+		wallHack =
+		{
+			map = false,
 			enabled = true,
-			map = false
-		}
+		},
+		tileSetID = "ViziersRock2",
 	},
 	{
-		tileSetID = "ViziersRock2",
-
-		wallHack = {
+		wallHack =
+		{
+			map = true,
 			enabled = true,
-			map = true
-		}
+		},
+		tileSetID = "ViziersRock2",
 	},
 }

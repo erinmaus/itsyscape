@@ -1836,14 +1836,16 @@ function MapEditorApplication:save(filename)
 					extension = "lspline"
 				end
 
+				local groupWithoutLayer = group:match("(.+)@%d+") or group
+
 				if extension then
 					local layer = self:_getPhysicalLayer(self:getGameView():getDecorationLayer(decoration))
 					if layer then
 						local f
 						if layer == 1 then
-							f = self:getOutputFilename("Maps", filename, "Decorations", group .. "." .. extension)
+							f = self:getOutputFilename("Maps", filename, "Decorations", groupWithoutLayer .. "." .. extension)
 						else
-							f = self:getOutputFilename("Maps", filename, "Decorations", group .. "@" .. layer .. "." .. extension)
+							f = self:getOutputFilename("Maps", filename, "Decorations", groupWithoutLayer .. "@" .. layer .. "." .. extension)
 						end
 
 						local s, r = love.filesystem.write(f, decoration:toString())
