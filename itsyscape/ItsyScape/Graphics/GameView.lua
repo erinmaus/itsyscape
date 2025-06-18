@@ -12,6 +12,7 @@ local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local Building = require "ItsyScape.Graphics.Building"
@@ -55,6 +56,7 @@ local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 16
 GameView.FADE_DURATION = 2
 GameView.ACTOR_CANVAS_CELL_SIZE = 32
+GameView.WALL_HACK_EXPAND_DURATION = 0.5
 
 GameView.PropViewDebugStats = Class(DebugStats)
 function GameView.PropViewDebugStats:process(node, delta)
@@ -1048,9 +1050,27 @@ function GameView:_updateWind(layer, node)
 	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 end
 
-function GameView:_updateMapNodeWallHack(m)
+function GameView:_isPlayerInBuilding()
+	local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
+	if not playerActor then
+		return false
+	end
+
+	local i, j, layer = playerActor:getTile()
+	local m = self.mapMeshes[layer]
+	if not m then
+		return false
+	end
+
+	local tile = m.map:getTile(i, j)
+	return tile:hasFlag("building")
+end
+
+function GameView:_updateMapNodeWallHack(m, delta)
 	local wallHackEnabled = m.wallHackEnabled == nil or m.wallHackEnabled
-	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 1.25, 1.25, 4, 1.25, 0
+	wallHackEnabled = wallHackEnabled and self:_isPlayerInBuilding()
+
+	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 4, 4, 4, 2, 0
 	local isMapWallhackEnabled = false
 	if wallHackEnabled and not self:_getIsMapEditor() then
 		if m.meta and type(m.meta.wallHack) == "table" then
@@ -1061,12 +1081,6 @@ function GameView:_updateMapNodeWallHack(m)
 			wallHackNear = m.meta.wallHack.near or wallHackNear
 			isMapWallhackEnabled = not not m.meta.wallHack.map
 		end
-	else
-		wallHackLeft = 0
-		wallHackRight = 0
-		wallHackTop = 0
-		wallHackBottom = 0
-		wallHackNear = 0
 	end
 
 	local globalTransform = m.node:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
@@ -1074,11 +1088,19 @@ function GameView:_updateMapNodeWallHack(m)
 	local up = rotation:transformVector(Vector.UNIT_Y):getNormal()
 
 	local wallHackParameters = m.wallHackParameters
+	local time = math.min((wallHackParameters and wallHackParameters.time or 0) + delta, self.WALL_HACK_EXPAND_DURATION)
+
 	if not wallHackParameters or m.wallHackDirty or
 	   wallHackParameters.left ~= wallHackLeft or wallHackParameters.right ~= wallHackRight or
 	   wallHackParameters.top ~= wallHackTop or wallHackParameters.bottom ~= wallHackBottom or
-	   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up or true
+	   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up or
+	   wallHackParameters.time ~= time or
+	   wallHackParameters.enabled ~= wallHackEnabled
 	then
+		if wallHackParameters and wallHackEnabled ~= wallHackParameters.enabled then
+			time = self.WALL_HACK_EXPAND_DURATION - time
+		end
+
 		wallHackParameters = wallHackParameters or {}
 		wallHackParameters.left = wallHackLeft
 		wallHackParameters.right = wallHackRight
@@ -1086,6 +1108,27 @@ function GameView:_updateMapNodeWallHack(m)
 		wallHackParameters.bottom = wallHackBottom
 		wallHackParameters.near = wallHackNear
 		wallHackParameters.up = up:keep(wallHackParameters.up)
+		wallHackParameters.time = time
+		wallHackParameters.enabled = wallHackEnabled
+
+		if not (wallHackParameters.enabled or wallHackParameters.time < self.WALL_HACK_EXPAND_DURATION) then
+			wallHackLeft = 0
+			wallHackRight = 0
+			wallHackTop = 0
+			wallHackBottom = 0
+			wallHackNear = 0
+		end
+
+		local mu = Tween.sineEaseOut(time / self.WALL_HACK_EXPAND_DURATION)
+		if not wallHackEnabled then
+			mu = 1 - mu
+		end
+
+		local currentWallHackLeft = math.lerp(0, wallHackLeft, mu)
+		local currentWallHackRight = math.lerp(0, wallHackRight, mu)
+		local currentWallHackTop = math.lerp(0, wallHackTop, mu)
+		local currentWallHackBottom = math.lerp(0, wallHackBottom, mu)
+		local currentWallHackNear = math.lerp(0, wallHackNear, mu)
 
 		m.wallHackParameters = wallHackParameters
 		m.wallHackDirty = false
@@ -1093,8 +1136,8 @@ function GameView:_updateMapNodeWallHack(m)
 		if isMapWallhackEnabled then
 			for _, part in ipairs(m.parts) do
 				local material = part:getMaterial()
-				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
-				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", wallHackNear)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
 			end
 		else
@@ -1108,8 +1151,8 @@ function GameView:_updateMapNodeWallHack(m)
 		
 		for decoration in pairs(m.wallHackDecorations) do
 			local material = decoration:getMaterial()
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", wallHackNear)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
 			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
 		end
 	end
@@ -1175,116 +1218,6 @@ function GameView:_updatePlayerMapNode()
 	if not m then
 		return
 	end
-
-	local delta = _APP:getFrameDelta()
-
-	-- local distanceSquared = (self.camera:getDistance() * 2) ^ 2
-	-- local position = self.camera:getPosition():inverseTransform(m.node:getTransform():getGlobalDeltaTransform(delta))
-	-- local playerMin = position - Vector.PLANE_XZ
-	-- local playerMax = position + Vector.PLANE_XZ
-	-- for _, d in ipairs(m.dynamicGroundDecorations) do
-	-- 	local decorationMin, decorationMax = d.sceneNode:getBounds()
-	-- 	local u = (playerMin - decorationMax):max(Vector.ZERO)
-	-- 	local v = (decorationMin - playerMax):max(Vector.ZERO)
-	-- 	local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
-
-	-- 	if squaredDistance <= distanceSquared then
-	-- 		if d.sceneNode:getParent() ~= m.node then
-	-- 			d.sceneNode:setParent(m.node)
-	-- 		end
-	-- 	else
-	-- 		if d.sceneNode:getParent() == m.node then
-	-- 			print(">>> hid", d.name)
-	-- 			d.sceneNode:setParent(nil)
-	-- 		end
-	-- 	end
-	-- end
-
-	-- local _, playerI, playerJ = m.map:getTileAt(self.camera:getPosition().x, self.camera:getPosition().z)
-
-	-- local eye = self.camera:getEye()
-	-- local _, eyeI, eyeJ = m.map:getTileAt(eye.x, eye.z)
-
-	-- local differenceI = eyeI - playerI
-	-- local differenceJ = eyeJ - playerJ
-
-	-- local forward = self.camera:getForward()
-	-- forward.y = -forward.y
-
-	-- local ray = Ray(self.camera:getPosition() + Vector(0, 0.5, 0), forward)
-	-- if math.abs(differenceI) > math.abs(differenceJ) then
-	-- 	local directionI = math.sign(differenceI)
-
-	-- 	local stopI
-	-- 	if directionI < 0 then
-	-- 		stopI = 1
-	-- 	else
-	-- 		stopI = m.map:getWidth()
-	-- 	end
-
-	-- 	local isHidden = false
-	-- 	for i = playerI + directionI, stopI, directionI do
-	-- 		local center = m.map:getTileCenter(i, playerJ)
-	-- 		local _, projection = ray:closest(center)
-
-	-- 		isHidden = center.y > projection.y
-	-- 		if isHidden then
-	-- 			break
-	-- 		end
-	-- 	end
-
-	-- 	if isHidden then
-	-- 		local foundCliff = false
-	-- 		for i = playerI + directionI, stopI, directionI do
-	-- 			local center = m.map:getTileCenter(i, playerJ)
-	-- 			local _, projection = ray:closest(center)
-
-	-- 			if center.y > projection.y then
-	-- 				foundCliff = true
-	-- 			elseif foundCliff or i == stopI then
-	-- 				foundCliff = true
-	-- 				near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
-	-- 				break
-	-- 			end
-	-- 		end
-	-- 	end
-	-- else
-	-- 	local directionJ = math.sign(differenceJ)
-
-	-- 	local stopJ
-	-- 	if directionJ < 0 then
-	-- 		stopJ = 1
-	-- 	else
-	-- 		stopJ = m.map:getHeight()
-	-- 	end
-
-	-- 	local isHidden = false
-	-- 	for j = playerJ + directionJ, stopJ, directionJ do
-	-- 		local center = m.map:getTileCenter(playerI, j)
-	-- 		local _, projection = ray:closest(center)
-
-	-- 		isHidden = center.y > projection.y
-	-- 		if isHidden then
-	-- 			break
-	-- 		end
-	-- 	end
-
-	-- 	if isHidden then
-	-- 		local foundCliff = false
-	-- 		for j = playerJ + directionJ, stopJ, directionJ do
-	-- 			local center = m.map:getTileCenter(playerI, j)
-	-- 			local _, projection = ray:closest(center)
-
-	-- 			if center.y > projection.y then
-	-- 				foundCliff = true
-	-- 			elseif foundCliff or j == stopJ then
-	-- 				foundCliff = true
-	-- 				near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
-	-- 				break
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end
 
 	for _, node in ipairs(m.parts) do
 		node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
@@ -1362,6 +1295,17 @@ function GameView:setSkyboxColor(layer, color)
 			skybox.color = color
 		end
 	end
+end
+
+function GameView:getLayers()
+	local result = {}
+	for layer in pairs(self.mapMeshes) do
+		table.insert(result, layer)
+	end
+
+	table.sort(result)
+
+	return result
 end
 
 function GameView:getMapSceneNode(layer)
@@ -2256,7 +2200,7 @@ end
 
 function GameView:updateMaps(delta)
 	for _, m in pairs(self.mapMeshes) do
-		self:_updateMapNodeWallHack(m)
+		self:_updateMapNodeWallHack(m, delta)
 	end
 end
 
