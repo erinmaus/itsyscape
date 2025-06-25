@@ -47,7 +47,7 @@ function DecorationMaterial:apply(sceneNode, resourceManager)
 	local textures = {}
 	for _, textureFilename in ipairs(self.textures) do
 		local TextureType
-		if texture:match("%.lua$") then
+		if textureFilename:match("%.lua$") then
 			TextureType = LayerTextureResource
 		else
 			TextureType = TextureResource
@@ -91,7 +91,7 @@ function DecorationMaterial:apply(sceneNode, resourceManager)
 	resourceManager:queueEvent(function()
 		for uniformName, uniformValue in pairs(self.uniforms) do
 			if uniformValue.type == "texture" then
-				material:send(Material.UNIFORM_TEXTURE, uniformName, textures[uniformValue.value])
+				material:send(Material.UNIFORM_TEXTURE, uniformName, textures[uniformValue.value[1]]:getResource())
 			elseif uniformValue.type == "float" then
 				material:send(Material.UNIFORM_FLOAT, uniformName, uniformValue.value)
 			elseif uniformValue.type == "integer" then
@@ -128,7 +128,11 @@ function DecorationMaterial:loadFromTable(t)
 			local outUniformValue
 			if uniformType == "texture" then
 				table.insert(self.textures, inUniformValue[2])
-				outUniformValue = { #self.textures }
+				if self.texture then
+					outUniformValue = { #self.textures + 1 }
+				else
+					outUniformValue = { #self.textures }
+				end
 			else
 				outUniformValue = { unpack(inUniformValue, 2, #inUniformValue) }
 			end

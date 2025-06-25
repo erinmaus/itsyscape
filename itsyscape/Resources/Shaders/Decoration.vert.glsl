@@ -6,8 +6,13 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	vec4 warpedPosition = vec4(transformPointByCurves(position.xyz), position.w);
+	vec3 warpedNormal = frag_Normal;
+	vec3 warpedPosition = position.xyz;
 
-	localPosition = warpedPosition.xyz;
-	projectedPosition = modelViewProjectionMatrix * warpedPosition;
+	transformPointByCurves(warpedPosition, warpedNormal);
+
+	localPosition = warpedPosition;
+	projectedPosition = modelViewProjectionMatrix * vec4(warpedPosition, 1.0);
+
+	frag_Normal = warpedNormal;
 }

@@ -1515,10 +1515,11 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 									local newFeature = decoration:add(
 										feature:getID(),
-										feature:getPosition() - decorationForward,
+										feature:getPosition(),
 										feature:getRotation(),
 										feature:getScale(),
 										feature:getColor(),
+										feature:getTexture(),
 										feature:getMaterial())
 
 									self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
@@ -1538,8 +1539,6 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 							local group, decoration = self.decorationList:getCurrentDecoration()
 							if group and decoration then
-								print("yolo", group, decoration)
-								print("badabing")
 								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 							end
 						end
@@ -1775,6 +1774,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						end
 
 						self:beginEditCurve(map, config or {
+							linear = true,
 							min = { 0, 0, 0 },
 							max = { map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize() },
 							axis = { 0, 0, 1 },

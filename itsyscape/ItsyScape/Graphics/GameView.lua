@@ -1159,12 +1159,7 @@ function GameView:_updateMapNodeWallHack(m, delta)
 end
 
 function GameView:_updateMapNode(m, node)
-	local mapMesh = node:getMapMesh()
-	if not mapMesh then
-		return
-	end
-
-	local min, max = mapMesh:getBounds()
+	local min, max = Vector(0), Vector(m.map:getWidth() * m.map:getCellSize(), 0, m.map:getHeight() * m.map:getCellSize())
 	local halfSize = (max - min) / 2
 
 	local newMin, newMax = min, max
@@ -1272,10 +1267,12 @@ function GameView:bendMap(layer, ...)
 
 	for _, decorationInfo in pairs(self.decorations) do
 		if decorationInfo.layer == layer then
-			self:_updateMapNode(m, decorationInfo.sceneNode)
+			for _, sceneNode in ipairs(decorationInfo.sceneNodes) do
+				self:_updateMapNode(m, sceneNode)
+			end
 			
-			if decorationInfo.alphaSceneNode then
-				self:_updateMapNode(m, decorationInfo.alphaSceneNode)
+			for _, sceneNode in ipairs(decorationInfo.alphaSceneNodes) do
+				self:_updateMapNode(m, sceneNode)
 			end
 		end
 	end

@@ -150,7 +150,6 @@ function Building:loadFromTable(d)
 		end
 
 		table.insert(self.decorationGroups, g)
-		print("_", _)
 		self.decorationGroupsByName[g:getName()] = g
 	end
 end

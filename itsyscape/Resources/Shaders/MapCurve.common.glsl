@@ -18,19 +18,19 @@ uniform struct Curve {
 } scape_Curves[SCAPE_MAX_NUM_CURVES];
 uniform ArrayImage scape_CurveTextures;
 
-vec3 transformPointByCurve(int index, vec3 point)
+void transformPointByCurve(int index, inout vec3 currentPoint, inout vec3 currentNormal)
 {
 	Curve curve = scape_Curves[index];
 
 	vec3 curveMin = vec3(curve.size.x, 0.0, curve.size.y);
 	vec3 curveMax = vec3(curve.size.z, 0.0, curve.size.w);
-	vec3 planarPoint = vec3(point.x, 0.0, point.z);
+	vec3 planarPoint = vec3(currentPoint.x, 0.0, currentPoint.z);
 
 	vec3 relative = (planarPoint - curveMin) / (curveMax - curveMin) * curve.axis;
 	float t = max(relative.x, relative.z);
 	if (t < 0.0 || t > 1.0)
 	{
-		return point;
+		return;
 	}
 
 	vec3 position = Texel(scape_CurveTextures, vec3(t, SCAPE_CURVE_TEXTURE_POSITION, float(index))).xyz;
@@ -38,19 +38,20 @@ vec3 transformPointByCurve(int index, vec3 point)
 	vec4 rotation = Texel(scape_CurveTextures, vec3(t, SCAPE_CURVE_TEXTURE_ROTATION, float(index)));
 
 	vec3 oppositeAxis = normalize(cross(vec3(0.0, 1.0, 0.0), curve.axis));
- 	vec3 up = vec3(point.y) * normal;
+ 	vec3 up = vec3(currentPoint.y) * normal;
  	vec3 center = oppositeAxis * vec3(scape_MapSize.x / 2.0, 0.0, scape_MapSize.y / 2.0);
- 	vec3 relativePoint = oppositeAxis * point - center + up;
+ 	vec3 relativePoint = oppositeAxis * currentPoint - center + up;
  	relativePoint = quaternionTransformVector(rotation, vec4(relativePoint, 0.0)).xyz;
 
- 	return position + relativePoint;
+ 	currentPoint = position + relativePoint;
+ 	currentNormal = normalize(quaternionTransformVector(rotation, vec4(normal, 0.0))).xyz;
 }
 
-vec3 transformPointByCurves(vec3 point)
+vec3 transformPointByCurves(inout vec3 point, inout vec3 normal)
 {
 	for (int i = 0; i < scape_NumCurves; ++i)
 	{
-		point = transformPointByCurve(i, point);
+		transformPointByCurve(i, point, normal);
 	}
 
 	return point;

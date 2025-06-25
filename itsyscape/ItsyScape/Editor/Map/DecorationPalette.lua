@@ -261,7 +261,7 @@ function DecorationPalette:loadDecorations()
 	table.insert(self.buttons, setColorButton)
 
 	local gridLayout = self.buttonsPanel:getInnerPanel()
-	gridLayout:setSize(width, 0)
+	gridLayout:setSize(self.buttonsPanel:getSize(), 0)
 	gridLayout:setPosition(
 		DecorationPalette.PADDING / 2,
 		DecorationPalette.PADDING / 2)
@@ -281,6 +281,8 @@ function DecorationPalette:loadDecorations()
 	for i = 1, #self.buttons do
 		self.buttonsPanel:addChild(self.buttons[i])
 	end
+
+	print(">>> gridLayout:getSize()", gridLayout:getSize())
 
 	self.buttonsPanel:setScrollSize(gridLayout:getSize())
 	self.buttonsPanel:setScroll(0, 0)

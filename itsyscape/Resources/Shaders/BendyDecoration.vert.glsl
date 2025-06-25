@@ -19,8 +19,13 @@ void performTransform(
 	transformWorldPositionByBump(scape_BumpCanvas, relativePosition, 1.0, FeaturePosition, bendyPosition);
 	transformWorldPositionByWind(scape_Time, scape_WindSpeed, scape_WindDirection, scape_WindPattern, FeaturePosition, bendyPosition, normal);
 
-	vec4 warpedPosition = vec4(transformPointByCurves(bendyPosition), position.w);
+	vec3 warpedNormal = frag_Normal;
+	vec3 warpedPosition = position.xyz;
 
-	localPosition = warpedPosition.xyz;
-	projectedPosition = modelViewProjectionMatrix * warpedPosition;
+	transformPointByCurves(warpedPosition, warpedNormal);
+
+	localPosition = warpedPosition;
+	projectedPosition = modelViewProjectionMatrix * vec4(warpedPosition, 1.0);
+
+	frag_Normal = warpedNormal;
 }
