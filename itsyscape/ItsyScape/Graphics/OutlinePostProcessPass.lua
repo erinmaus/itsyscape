@@ -32,7 +32,7 @@ function OutlinePostProcessPass:new(...)
 	PostProcessPass.new(self, ...)
 
 	self.isEnabled = true
-	self.depthStep = 0
+	self.depthStep = 0.1
 	self.normalStep = 0.3
 	self.minOutlineThickness = 0.25
 	self.maxOutlineThickness = 1.5
