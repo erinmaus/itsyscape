@@ -44,15 +44,13 @@ void transformPointByCurve(int index, inout vec3 currentPoint, inout vec3 curren
  	relativePoint = quaternionTransformVector(rotation, vec4(relativePoint, 0.0)).xyz;
 
  	currentPoint = position + relativePoint;
- 	currentNormal = normalize(quaternionTransformVector(rotation, vec4(normal, 0.0))).xyz;
+ 	currentNormal = normalize(quaternionTransformVector(rotation, vec4(currentNormal, 0.0))).xyz;
 }
 
-vec3 transformPointByCurves(inout vec3 point, inout vec3 normal)
+void transformPointByCurves(inout vec3 point, inout vec3 normal)
 {
 	for (int i = 0; i < scape_NumCurves; ++i)
 	{
 		transformPointByCurve(i, point, normal);
 	}
-
-	return point;
 }

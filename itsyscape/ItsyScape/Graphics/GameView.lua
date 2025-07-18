@@ -549,6 +549,10 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		dynamicGroundDecorations = {}
 	}
 
+	if meta and meta.curve then
+		self:bendMap(m.layer, meta.curve)
+	end
+
 	m.weatherMap:addMap(m.map)
 
 	m.largeTileSet:resize(m.map)
@@ -1277,7 +1281,7 @@ function GameView:bendMap(layer, ...)
 		end
 	end
 
-	love.thread.getChannel('ItsyScapende.Map::input'):push({
+	love.thread.getChannel('ItsyScape.Map::input'):push({
 		type = 'bend',
 		key = layer,
 		config = curves[1] and curves[1]:toConfig()
@@ -1735,6 +1739,16 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 					if alphaSceneNode then
 						material:apply(alphaSceneNode, self.resourceManager)
 					end
+				end
+			end
+
+			if m.curves then
+				for _, sceneNode in ipairs(d.sceneNodes) do
+					self:_updateMapNode(m, sceneNode)
+				end
+
+				for _, alphaSceneNode in ipairs(d.alphaSceneNodes) do
+					self:_updateMapNode(m, alphaSceneNode)
 				end
 			end
 

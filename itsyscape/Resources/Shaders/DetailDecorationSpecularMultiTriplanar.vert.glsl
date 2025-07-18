@@ -13,4 +13,6 @@ void performTransform(
 
 	localPosition = warpedPosition;
 	projectedPosition = modelViewProjectionMatrix * vec4(warpedPosition, 1.0);
+
+	frag_Normal = warpedNormal;
 }

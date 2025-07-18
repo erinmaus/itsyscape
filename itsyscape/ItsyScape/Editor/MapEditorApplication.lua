@@ -1036,6 +1036,13 @@ function MapEditorApplication:mousePress(x, y, button)
 
 					self:getUIView():probe(actions)
 				end)
+			elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
+				local tileSetFilename = string.format(
+					"Resources/Game/TileSets/%s/Layout.lua",
+					(self.meta and self.meta[self.currentLayer] and self.meta[self.currentLayer].tileSetID) or "GrassyPlain")
+				self.tileSet, self.tileSetTexture = TileSet.loadFromFile(tileSetFilename, true)
+
+				self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture, self.meta and self.meta[self.currentLayer] and self.meta[self.currentLayer].maskID)
 			end
 		end
 	end

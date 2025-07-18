@@ -32,6 +32,6 @@ vec3 worldPositionFromGBufferDepth(float depth, vec2 textureCoordinate, mat4 inv
     vec4 viewSpacePosition = inverseProjectionMatrix * clipSpacePosition;
     viewSpacePosition /= vec4(viewSpacePosition.w);
 
-    vec4 worldSpacePosiiton = inverseViewMatrix * viewSpacePosition;
-    return worldSpacePosiiton.xyz;
+    vec4 worldSpacePositon = inverseViewMatrix * viewSpacePosition;
+    return worldSpacePositon.xyz;
 }
