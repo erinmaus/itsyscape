@@ -31,7 +31,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	float depthEdgeStepComponent2 = 0.0;
 	if (outlineThreshold >= 0.0)
 	{
-		clamp((linearDepth - SCAPE_DEPTH_EDGE_FALL_OFF) / SCAPE_DEPTH_EDGE_FALL_OFF_RANGE, 0.0, 1.0) * SCAPE_DEPTH_EDGE_FALL_OFF_STEP;
+		depthEdgeStepComponent2 = clamp((linearDepth - SCAPE_DEPTH_EDGE_FALL_OFF) / SCAPE_DEPTH_EDGE_FALL_OFF_RANGE, 0.0, 1.0) * SCAPE_DEPTH_EDGE_FALL_OFF_STEP;
 	}
 
 	float depthEdgeStep = max(scape_DepthStep + max(depthEdgeStepComponent1, depthEdgeStepComponent2), 0.0);
