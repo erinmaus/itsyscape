@@ -744,8 +744,6 @@ function GameView:updateGroundDecorations(m)
 							f:getColor(),
 							f:getTexture())
 					end
-
-					coroutine.yield()
 				end
 			end
 
