@@ -32,7 +32,7 @@ function OutlinePostProcessPass:new(...)
 	PostProcessPass.new(self, ...)
 
 	self.isEnabled = true
-	self.depthStep = 0.1
+	self.depthStep = 0.075
 	self.normalStep = 0.3
 	self.minOutlineThickness = 0.25
 	self.maxOutlineThickness = 1.5
@@ -197,8 +197,7 @@ function OutlinePostProcessPass:_drawDepthOutline(width, height)
 	local alphaMaskRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_ALPHA_MASK)
 
 	local camera = self:getRenderer():getCamera()
-	local projection = camera:getTransforms()
-	local inverseProjection = projection:inverse()
+	local forward = camera:getForward()
 
 	self:bindShader(
 		self.depthOutlineShader,
@@ -209,7 +208,7 @@ function OutlinePostProcessPass:_drawDepthOutline(width, height)
 		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.SPECULAR_OUTLINE_INDEX),
 		"scape_DepthStep", self.depthStep,
 		"scape_NormalStep", self.normalStep,
-		"scape_InverseProjectionMatrix", inverseProjection)
+		"scape_Forward", { forward:get() })
 
 	love.graphics.draw(alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX))
 end

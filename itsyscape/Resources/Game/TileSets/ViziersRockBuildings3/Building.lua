@@ -11,7 +11,7 @@
 				},
 
 				properties = {
-					outlineThreshold = 0.5,
+					outlineThreshold = 0.05,
 					color = "6f7c91"
 				}
 			}
@@ -27,7 +27,7 @@
 				},
 
 				properties = {
-					outlineThreshold = 0.5,
+					outlineThreshold = 0.05,
 					color = "ffe680"
 				}
 			}
@@ -39,7 +39,7 @@
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Wood.png",
 
 				properties = {
-					outlineThreshold = 0.5,
+					outlineThreshold = 0.05,
 					color = "614433"
 				}
 			}
@@ -63,7 +63,7 @@
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Tile.png",
 
 				properties = {
-					outlineThreshold = 0.5,
+					outlineThreshold = 0.05,
 					color = "aa6c00"
 				}
 			}
@@ -75,7 +75,7 @@
 				texture = "Resources/Game/TileSets/ViziersRockBuildings3/Corner.png",
 
 				properties = {
-					outlineThreshold = 0.5,
+					outlineThreshold = 0.05,
 					color = "6f7c91"
 				}
 			}

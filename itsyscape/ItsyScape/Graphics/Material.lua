@@ -13,7 +13,7 @@ local NMaterial = require "nbunny.optimaus.scenenodematerial"
 
 local Material, Metatable = Class()
 
-Material.DEFAULT_OUTLINE_THRESHOLD = 0.5
+Material.DEFAULT_OUTLINE_THRESHOLD = 0.05
 
 Material.UNIFORM_INTEGER = 1
 Material.UNIFORM_FLOAT   = 2
