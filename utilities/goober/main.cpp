@@ -130,7 +130,9 @@ void exportSkeleton(const aiScene* scene, FILE* output)
 	}
 
 	auto node = scene->mRootNode->FindNode("Armature");
-	if (!node && node->mParent != scene->mRootNode)
+	node = node ? node : scene->mRootNode;
+
+	if (!node || !(node->mParent == scene->mRootNode || scene->mRootNode == node))
 	{
 		std::fprintf(stderr, "no skeleton (must be node named 'Armature')\n");
 		return;
@@ -138,9 +140,53 @@ void exportSkeleton(const aiScene* scene, FILE* output)
 
 	std::fprintf(output, "{\n");
 
-	aiMatrix4x4 parent = node->mParent->mTransformation;
+	aiMatrix4x4 parent = node == scene->mRootNode ? aiMatrix4x4() : node->mParent->mTransformation;
 	exportBoneNode(scene, nullptr, node, parent, output);
 
+	std::fprintf(output, "}\n");
+}
+
+void exportSceneNode(
+	const aiScene* scene,
+	const aiNode* parent,
+	const aiNode* node,
+	FILE* output)
+{
+	std::fprintf(output, "\t[\"%s\"] = {\n", node->mName.C_Str());
+	if (parent)
+	{
+		std::fprintf(output, "\t\tparent = \"%s\",\n", node->mParent->mName.C_Str());
+	}
+
+	aiMatrix4x4 nodeWorldTransform = node->mTransformation;
+	if (node == scene->mRootNode)
+	{
+		aiMatrix4x4 rotation;
+		aiMatrix4x4::RotationX(-((float)M_PI / 2.0f), nodeWorldTransform);
+		nodeWorldTransform = nodeWorldTransform * rotation;
+	}
+
+	auto nodeInverseBindPoseMatrixElements = &nodeWorldTransform.a1;
+	std::fprintf(output, "\t\ttransform = { ");
+	for (int j = 0; j < 16; ++j)
+	{
+		std::fprintf(output, "%f, ", nodeInverseBindPoseMatrixElements[j]);
+	}
+	std::fprintf(output, "},\n");
+	std::fprintf(output, "\t},\n");
+
+	for (int i = 0; i < node->mNumChildren; ++i)
+	{
+		exportSceneNode(scene, node, node->mChildren[i], output);
+	}
+}
+
+void exportScene(const aiScene* scene, FILE* output)
+{
+	auto node = scene->mRootNode;
+
+	std::fprintf(output, "{\n");
+	exportSceneNode(scene, nullptr, node, output);
 	std::fprintf(output, "}\n");
 }
 
@@ -407,6 +453,10 @@ int main(int argc, const char* argv[])
 	else if (std::strcmp(argv[1], "static") == 0)
 	{
 		exportStaticMeshes(scene, output);
+	}
+	else if (std::strcmp(argv[1], "scene") == 0)
+	{
+		exportScene(scene, output);
 	}
 	else
 	{

@@ -89,11 +89,7 @@ function PropPalette:new(application)
 					local propViewName = string.format(
 						"Resources.Game.Props.%s.View",
 						prop.name)
-					local s, r = pcall(require, propViewName)
-					if not s then
-						r = require "Resources.Game.Props.Null.View"
-					end
-					local PropViewType = r
+					local PropViewType = require(propViewName)
 					local p = LocalProp(self.application:getGame(), Peep)
 					local propView = PropViewType(p, self.application:getGameView())
 					propView:load()
