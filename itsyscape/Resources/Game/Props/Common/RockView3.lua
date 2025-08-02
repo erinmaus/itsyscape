@@ -33,6 +33,13 @@ function RockView:load()
 	local root = self:getRoot()
 
 	resources:queue(
+		ShaderResource,
+		"Resources/Shaders/SpecularTriplanar",
+		function(shader)
+			self.shader = shader
+		end)
+
+	resources:queue(
 		SceneTemplateResource,
 		"Resources/Game/Props/Common/Rock/Exterior.lscene",
 		function(scene)
@@ -46,25 +53,35 @@ function RockView:load()
 			self.mesh = mesh:getResource()
 		end)
 
+	resources:queue(
+		TextureResource,
+		"Resources/Game/Props/Common/Rock/Texture_V3.png",
+		function(texture)
+			self.texture = texture
+		end)
+
 	resources:queueEvent(function()
 		local decoration = Decoration()
 
 		for _, node in self.scene:iterate() do
 			local position = MathCommon.decomposeTransform(node:getGlobalTransform())
-			--position = (-Quaternion.X_90):getNormal():transformVector(position)
 
 			decoration:add(
 				node:getName(),
 				position,
 				Quaternion.IDENTITY,
 				Vector.ONE,
-				Color.fromHSL(love.math.random(), 0.8, 0.6))
-			print(">>> add", node:getName(), position:get())
+				Color(1))
 		end
 
 		local textureResource = self:getGameView():getWhiteTexture()
 		local exteriorNode = DecorationSceneNode()
-		exteriorNode:getMaterial():setTextures(textureResource)
+
+		local material = exteriorNode:getMaterial()
+		material:setTextures(self.texture)
+		material:setShader(self.shader)
+		material:setOutlineThreshold(-0.01)
+
 		exteriorNode:fromDecoration(decoration, self.mesh)
 		exteriorNode:setParent(root)
 	end)

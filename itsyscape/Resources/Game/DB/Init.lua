@@ -272,6 +272,34 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "Gatherable"
+
+	Meta "GatherableScene" {
+		ModelFilename = Meta.TYPE_TEXT,
+		SceneFilename = Meta.TYPE_TEXT,
+		MaterialFilename = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "GatherableModel" {
+		ModelFilename = Meta.TYPE_TEXT,
+		ModelGroup = Meta.TYPE_TEXT,
+		MaterialFilename = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "GatherableItem" {
+		Item = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "GatherableAction" {
+		Action = Meta.TYPE_ACTION,
+		Weight = Meta.TYPE_NUMBER,
+		Gatherable = Meta.TYPE_RESOURCE,
+		LootCategory = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Character"
 	ResourceType "Team"
 
@@ -526,6 +554,7 @@ Game "ItsyScape"
 
 	ResourceType "LootCategory"
 
+	ItsyScape.Resource.LootCategory "Basic"
 	ItsyScape.Resource.LootCategory "Legendary"
 
 	ItsyScape.Meta.ResourceName {

@@ -48,7 +48,7 @@ function SceneTemplate.Node:getScene()
 	return self.scene
 end
 
-function SceneTemplate:new(d, handle)
+function SceneTemplate:new(d)
 	self.nodesByName = {}
 	self.rootNode = false
 

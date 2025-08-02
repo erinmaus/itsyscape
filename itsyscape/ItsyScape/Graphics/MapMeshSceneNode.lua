@@ -31,8 +31,8 @@ function MapMeshSceneNode:new()
 	self.isOwner = false
 
 	self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
-	self:getMaterial():setOutlineThreshold(-0.01)
-	self:getMaterial():setOutlineColor(Color(0.7))
+	self:getMaterial():setOutlineThreshold(0.5)
+	self:getMaterial():setOutlineColor(Color(0))
 end
 
 function MapMeshSceneNode:fromVertices(vertices, min, max)

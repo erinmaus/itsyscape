@@ -90,12 +90,19 @@ function GameView:new(game, camera)
 
 	self:initRenderer(_CONF)
 
-	self.itemBagModel = self.resourceManager:load(
-		ModelResource,
-		"Resources/Game/Items/ItemBag.lmesh")
-	self.itemBagIconModel = self.resourceManager:load(
-		ModelResource,
-		"Resources/Game/Items/ItemBagIcon.lmesh")
+	self.itemBagMesh = self.resourceManager:load(
+		StaticMeshResource,
+		"Resources/Game/Items/ItemBag.lstatic")
+	self.itemBagTexture = self.resourceManager:load(
+		TextureResource,
+		"Resources/Game/Items/ItemBagTexture.png")
+	self.itemBagStringTexture = self.resourceManager:load(
+		TextureResource,
+		"Resources/Game/Items/ItemBagStringTexture.png")
+	self.itemBagShader = self.resourceManager:load(
+		ShaderResource,
+		"Resources/Shaders/SpecularTriplanar")
+
 	self.items = {}
 
 	local translucentTextureImageData = love.image.newImageData(1, 1)
@@ -1473,15 +1480,30 @@ end
 function GameView:spawnItem(item, tile, position)
 	local itemNode = SceneNode()
 	do
-		local lootBagNode = ModelSceneNode()
-		lootBagNode:setModel(self.itemBagModel)
-		lootBagNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
-		lootBagNode:getMaterial():setTextures(self.itemTexture)
+		local lootBagNode = DecorationSceneNode()
+		lootBagNode:fromGroup(self.itemBagMesh, "bag")
 		lootBagNode:setParent(itemNode)
+
+		local material = lootBagNode:getMaterial()
+		material:setTextures(self.itemBagTexture)
+		material:setShader(self.itemBagShader)
+		material:send(Material.UNIFORM_FLOAT, "scape_TriplanarExponent", 0)
+		material:send(Material.UNIFORM_FLOAT, "scape_TriplanarOffset", 0)
+		material:send(Material.UNIFORM_FLOAT, "scape_TriplanarScale", 0)
+		material:setColor(Color(0.70, 0.44, 0.16, 1.0))
 	end
 	do
-		local lootIconNode = ModelSceneNode(self.itemBagIconModel)
-		lootIconNode:setModel(self.itemBagIconModel)
+		local stringNode = DecorationSceneNode()
+		stringNode:fromGroup(self.itemBagMesh, "string")
+		stringNode:setParent(itemNode)
+
+		local material = stringNode:getMaterial()
+		material:setTextures(self.itemBagStringTexture)
+		material:setOutlineThreshold(0.5)
+	end
+	do
+		local lootIconNode = DecorationSceneNode()
+		lootIconNode:fromGroup(self.itemBagMesh, "icon")
 
 		local texture = self.resourceManager:queue(
 			TextureResource,
@@ -1490,7 +1512,6 @@ function GameView:spawnItem(item, tile, position)
 				lootIconNode:getMaterial():setTextures(texture)
 			end)
 
-		lootIconNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
 		lootIconNode:setParent(itemNode)
 	end
 

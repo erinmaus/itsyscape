@@ -239,14 +239,22 @@ function SkillsGamepadContentTab:refresh(state)
 			color = "ui.stat.neutral"
 		end
 
-		value:setText({
-			color,
-			tostring(skill.workingLevel),
-			"ui.stat.zero",
-			"/",
-			"ui.text",
-			tostring(skill.baseLevel)
-		})
+		local currentWorkingLevel = value:getData("workingLevel")
+		local currentBaseLevel = value:getData("baseLevel")
+
+		if currentWorkingLevel ~= skill.workingLevel or currentBaseLevel ~= skill.baseLevel then
+			value:setText({
+				color,
+				tostring(skill.workingLevel),
+				"ui.stat.zero",
+				"/",
+				"ui.text",
+				tostring(skill.baseLevel)
+			})
+
+			value:setData("workingLevel", skill.workingLevel)
+			value:setData("baseLevel", skill.baseLevel)
+		end
 	end
 
 	self:_updateToolTip()
