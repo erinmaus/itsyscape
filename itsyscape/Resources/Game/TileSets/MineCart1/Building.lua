@@ -161,6 +161,42 @@
 			}
 		},
 		{
+			name = "turn.even",
+
+			features = {
+				{ id = "track.metal.turn", material = "metal" },
+				{ id = "track.even.turn.plank", material = "track-plank" },
+				{ id = "track.even.turn.side", material = "splinter" },
+			}
+		},
+		{
+			name = "turn.odd",
+
+			features = {
+				{ id = "track.metal.turn", material = "metal" },
+				{ id = "track.odd.turn.plank", material = "track-plank" },
+				{ id = "track.odd.turn.side", material = "splinter" },
+			}
+		},
+		{
+			name = "turn.even.bad",
+
+			features = {
+				{ id = "track.metal.turn.bad", material = "metal" },
+				{ id = "track.even.turn.bad.plank", material = "track-plank" },
+				{ id = "track.even.turn.bad.side", material = "splinter" },
+			}
+		},
+		{
+			name = "turn.odd.bad",
+
+			features = {
+				{ id = "track.metal.turn.bad", material = "metal" },
+				{ id = "track.odd.turn.bad.plank", material = "track-plank" },
+				{ id = "track.odd.turn.bad.side", material = "splinter" },
+			}
+		},
+		{
 			name = "right-interchange.even",
 
 			features = {

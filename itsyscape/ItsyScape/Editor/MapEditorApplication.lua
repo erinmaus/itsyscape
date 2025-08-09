@@ -747,28 +747,23 @@ function MapEditorApplication:mousePress(x, y, button)
 						end
 					end
 
-					print("???? HIT", Log.boolean(hit))
-
 					local feature
 					if hit and not (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
 						self.currentFeatureIndex = hit[Decoration.RAY_TEST_RESULT_INDEX]
 						feature = self:getLastDecorationFeature()
 					end
 
-					print("???? FEATURE", Log.boolean(feature))
 					if not feature and Class.isCompatibleType(decoration, Decoration) then
 						local layer = self:getGameView():getDecorationLayer(decoration) or 1
 
 						local tile = self.decorationPalette:getCurrentGroup()
 
-						print("???? TILE", Log.boolean(tile))
 						if tile then
 							local motion = MapMotion(self:getGame():getStage():getMap(layer))
 							motion:onMousePressed(self:makeMotionEvent(x, y, button, layer))
 
 							local t, i, j = motion:getTile()
 							if t then
-								print("???? ij", i, j)
 
 								local y = t:getInterpolatedHeight(0.5, 0.5)
 								local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
@@ -831,8 +826,6 @@ function MapEditorApplication:mousePress(x, y, button)
 							self:beginEditCurve(false, feature:getCurve():toConfig())
 						end
 					end
-				else
-					print("NOOOO!!!!!")
 				end
 			elseif self.currentTool == MapEditorApplication.TOOL_PROP and not (self.gizmo and self.gizmo:getIsActive()) then
 				if not love.keyboard.isDown("lctrl") and not love.keyboard.isDown("rctrl") then
@@ -1049,7 +1042,6 @@ function MapEditorApplication:mousePress(x, y, button)
 				local tileSetFilename = string.format(
 					"Resources/Game/TileSets/%s/Layout.lua",
 					(self.meta and self.meta[self.currentLayer] and self.meta[self.currentLayer].tileSetID) or "GrassyPlain")
-				print(">>>> filename", tileSetFilename, self.currentLayer)
 				self.tileSet, self.tileSetTexture = TileSet.loadFromFile(tileSetFilename, true)
 
 				self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture, self.meta and self.meta[self.currentLayer] and self.meta[self.currentLayer].maskID)
@@ -1595,22 +1587,14 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 								v = -v
 							end
 
-							if math.abs(v.x) > 0.5 then
-								v.x = math.sign(v.x)
+							if math.abs(v.x) > math.abs(v.y) and math.abs(v.x) > math.abs(v.z) then
+								v = Vector(math.sign(v.x), 0, 0)
+							elseif math.abs(v.y) > math.abs(v.x) and math.abs(v.y) > math.abs(v.z) then
+								v = Vector(0, math.sign(v.y), 0)
+							elseif math.abs(v.z) > math.abs(v.x) and math.abs(v.z) > math.abs(v.y) then
+								v = Vector(0, 0, math.sign(v.z))
 							else
-								v.x = 0
-							end
-
-							if math.abs(v.y) > 0.5 then
-								v.y = math.sign(v.y)
-							else
-								v.y = 0
-							end
-
-							if math.abs(v.z) > 0.5 then
-								v.z = math.sign(v.z)
-							else
-								v.z = 0
+								v = Vector(0)
 							end
 
 							for _, f in ipairs(feature) do

@@ -36,7 +36,8 @@
 		y = 256,
 		width = 128,
 		height = 128,
-		name = "stone"
+		name = "stone",
+		mask = false
 	},
 
 	{
