@@ -17,7 +17,7 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local FireView = require "Resources.Game.Props.Common.FireView"
 
 local Brazier = Class(FireView)
-Brazier.SCALE = 2
+Brazier.SCALE = 1.5
 Brazier.OFFSET = Vector(0, 1, 0):keep()
 Brazier.HAS_CUSTOM_MODEL = true
 
