@@ -193,6 +193,8 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 		love.graphics.clear(self.DIFFUSE_BACKGROUND_COLOR:get())
 	elseif drawType == "specular" then
 		love.graphics.clear(self.SPECULAR_BACKGROUND_COLOR:get())
+	elseif drawType == "outline" then
+		love.graphics.clear(1, 1, 1, 1)
 	end
 
 	for _, g in ipairs(grass) do

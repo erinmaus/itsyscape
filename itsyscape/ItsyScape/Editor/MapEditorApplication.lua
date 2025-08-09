@@ -747,22 +747,29 @@ function MapEditorApplication:mousePress(x, y, button)
 						end
 					end
 
+					print("???? HIT", Log.boolean(hit))
+
 					local feature
-					if hit then
+					if hit and not (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
 						self.currentFeatureIndex = hit[Decoration.RAY_TEST_RESULT_INDEX]
 						feature = self:getLastDecorationFeature()
 					end
 
+					print("???? FEATURE", Log.boolean(feature))
 					if not feature and Class.isCompatibleType(decoration, Decoration) then
 						local layer = self:getGameView():getDecorationLayer(decoration) or 1
 
 						local tile = self.decorationPalette:getCurrentGroup()
+
+						print("???? TILE", Log.boolean(tile))
 						if tile then
 							local motion = MapMotion(self:getGame():getStage():getMap(layer))
 							motion:onMousePressed(self:makeMotionEvent(x, y, button, layer))
 
 							local t, i, j = motion:getTile()
 							if t then
+								print("???? ij", i, j)
+
 								local y = t:getInterpolatedHeight(0.5, 0.5)
 								local x = (i - 1 + 0.5) * motion:getMap():getCellSize()
 								local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
@@ -824,6 +831,8 @@ function MapEditorApplication:mousePress(x, y, button)
 							self:beginEditCurve(false, feature:getCurve():toConfig())
 						end
 					end
+				else
+					print("NOOOO!!!!!")
 				end
 			elseif self.currentTool == MapEditorApplication.TOOL_PROP and not (self.gizmo and self.gizmo:getIsActive()) then
 				if not love.keyboard.isDown("lctrl") and not love.keyboard.isDown("rctrl") then
@@ -1040,6 +1049,7 @@ function MapEditorApplication:mousePress(x, y, button)
 				local tileSetFilename = string.format(
 					"Resources/Game/TileSets/%s/Layout.lua",
 					(self.meta and self.meta[self.currentLayer] and self.meta[self.currentLayer].tileSetID) or "GrassyPlain")
+				print(">>>> filename", tileSetFilename, self.currentLayer)
 				self.tileSet, self.tileSetTexture = TileSet.loadFromFile(tileSetFilename, true)
 
 				self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture, self.meta and self.meta[self.currentLayer] and self.meta[self.currentLayer].maskID)
@@ -1536,12 +1546,75 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 										self.currentFeatureIndex = decoration:getNumFeatures()
 									end
 								end
+							else
+								
 							end
 						end
 					elseif type(feature) == "table" and #feature > 0 then
 						if key == "r" then
 							for _, f in ipairs(feature) do
 								f:setRotation((f:getRotation() * Quaternion.Y_90):getNormal())
+							end
+
+							local group, decoration = self.decorationList:getCurrentDecoration()
+							if group and decoration then
+								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
+							end
+						elseif key == "d" then
+							local group, decoration = self.decorationList:getCurrentDecoration()
+							if group and decoration then
+								local result = {}
+
+								for _, f in ipairs(feature) do
+									local n = decoration:add(
+										f:getID(),
+										f:getPosition(),
+										f:getRotation(),
+										f:getScale(),
+										f:getColor(),
+										f:getTexture(),
+										f:getMaterial())
+									table.insert(result, decoration:getNumFeatures())
+								end
+
+								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
+								self.currentFeatureIndex = result
+							end
+						elseif key == "x" or key == "y" or key == "z" then
+							local V = {
+								x = Vector(1, 0, 0),
+								y = Vector(0, -1, 0),
+								z = Vector(0, 0, 1)
+							}
+
+							local v = V[key]
+							local r = self:getCamera():getCombinedRotation()
+							v = r:transformVector(v)
+
+							if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
+								v = -v
+							end
+
+							if math.abs(v.x) > 0.5 then
+								v.x = math.sign(v.x)
+							else
+								v.x = 0
+							end
+
+							if math.abs(v.y) > 0.5 then
+								v.y = math.sign(v.y)
+							else
+								v.y = 0
+							end
+
+							if math.abs(v.z) > 0.5 then
+								v.z = math.sign(v.z)
+							else
+								v.z = 0
+							end
+
+							for _, f in ipairs(feature) do
+								f:setPosition(f:getPosition() + v)
 							end
 
 							local group, decoration = self.decorationList:getCurrentDecoration()

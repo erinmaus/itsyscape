@@ -33,5 +33,10 @@ void SCAPE_SPECULAR_BUMP_PERFORM_FUNC(vec2 textureCoordinate, inout vec4 color, 
 #endif
 
 	specular = specularSample.r * specularSample.a;
+
+#ifdef SCAPE_SPECULAR_DISABLE_EXTRA_SPECULAR_BLENDING
+	color = colorSample * color;
+#else
 	color = colorSample * color * vec4(mix(vec3(specular), vec3(1.0), 1.0 - specularSample.a), 1.0);
+#endif
 }	

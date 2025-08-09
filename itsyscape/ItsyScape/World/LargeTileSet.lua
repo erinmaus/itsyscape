@@ -18,7 +18,7 @@ LargeTileSet = Class()
 
 LargeTileSet.ATLAS_SIZE = 1024
 LargeTileSet.TILE_SIZE  = 128
-LargeTileSet.SCALED_TILE_SIZE = 64
+LargeTileSet.SCALED_TILE_SIZE = 128
 LargeTileSet.CACHED_MAP_SIZE = 128
 
 function LargeTileSet:new(tileSet)
