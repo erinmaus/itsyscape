@@ -1,0 +1,5 @@
+{
+	type = "array",
+
+	"Splinter.png"
+}
