@@ -1451,6 +1451,7 @@ include "Resources/Game/DB/Items/Candles.lua"
 include "Resources/Game/DB/Items/Isabellium.lua"
 include "Resources/Game/DB/Items/TreeSecondaries.lua"
 include "Resources/Game/DB/Items/EquipmentPlaceholders.lua"
+include "Resources/Game/DB/Items/Fossils.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"

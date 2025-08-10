@@ -91,7 +91,7 @@ return {
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Dirt%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Dirt%d@Specular.png",
-		OUTLINE_SAMPLE_FILENAME = "",
+		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Dirt%d@Outline.png",
 		NUM_SAMPLES = 3,
 
 		DIRT_THRESHOLD = 0,

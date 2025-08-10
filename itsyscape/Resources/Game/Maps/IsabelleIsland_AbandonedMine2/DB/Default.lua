@@ -2,6 +2,54 @@ local M = {}
 
 M._MAP = ItsyScape.Resource.Map "IsabelleIsland_AbandonedMine2"
 
+M["AncientVelocirexFossil7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 103.000000,
+		PositionY = 5.250000,
+		PositionZ = 157.250000,
+		RotationX = 0.000000,
+		RotationY = -1.000000,
+		RotationZ = 0.000000,
+		RotationW = 0.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "AncientVelocirexFossil7",
+		Map = M._MAP,
+		Resource = M["AncientVelocirexFossil7"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "AncientVelocirexFossil",
+		MapObject = M["AncientVelocirexFossil7"]
+	}
+end
+
+M["AncientWhaleFossil2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 151.000000,
+		PositionY = 3.250000,
+		PositionZ = 135.000000,
+		RotationX = 0.000000,
+		RotationY = -1.000000,
+		RotationZ = 0.000000,
+		RotationW = 0.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "AncientWhaleFossil2",
+		Map = M._MAP,
+		Resource = M["AncientWhaleFossil2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "AncientWhaleFossil",
+		MapObject = M["AncientWhaleFossil2"]
+	}
+end
+
 M["Brazier_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -23,6 +71,30 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Brazier_Isabelle",
 		MapObject = M["Brazier_Isabelle1"]
+	}
+end
+
+M["Brazier_Isabelle11"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 97.000000,
+		PositionY = 3.000000,
+		PositionZ = 153.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Brazier_Isabelle11",
+		Map = M._MAP,
+		Resource = M["Brazier_Isabelle11"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Brazier_Isabelle",
+		MapObject = M["Brazier_Isabelle11"]
 	}
 end
 
@@ -95,6 +167,30 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Brazier_Isabelle",
 		MapObject = M["Brazier_Isabelle14"]
+	}
+end
+
+M["Brazier_Isabelle16"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 107.000000,
+		PositionY = 3.000000,
+		PositionZ = 153.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Brazier_Isabelle16",
+		Map = M._MAP,
+		Resource = M["Brazier_Isabelle16"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Brazier_Isabelle",
+		MapObject = M["Brazier_Isabelle16"]
 	}
 end
 
@@ -527,6 +623,30 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Brazier_Isabelle",
 		MapObject = M["Brazier_Isabelle8"]
+	}
+end
+
+M["Brazier_Isabelle9"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 147.000000,
+		PositionY = 3.000000,
+		PositionZ = 133.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Brazier_Isabelle9",
+		Map = M._MAP,
+		Resource = M["Brazier_Isabelle9"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Brazier_Isabelle",
+		MapObject = M["Brazier_Isabelle9"]
 	}
 end
 
