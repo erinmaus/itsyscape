@@ -3,7 +3,7 @@
 		['invert-y'] = false
 	},
 
-	texture = "Resources/Game/TileSets/Underground1/TileSet.png",
+	texture = "Resources/Game/TileSets/YendorianUnderground1/TileSet.png",
 	textureWidth = 1024,
 	textureHeight = 1024,
 

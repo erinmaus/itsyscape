@@ -16,9 +16,9 @@ return {
 	moss = Block.Bind(Grass) {
 		SATURATION = 4,
 
-		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Moss%d.png",
-		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Moss%d@Specular.png",
-		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Moss%d@Outline.png",
+		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Moss%d.png",
+		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Moss%d@Specular.png",
+		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Moss%d@Outline.png",
 		NUM_SAMPLES = 3,
 
 		COLORS = {
@@ -33,8 +33,8 @@ return {
 	sand = Block.Bind(Grass) {
 		SATURATION = 4,
 
-		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Sand%d.png",
-		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Sand%d@Specular.png",
+		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Sand%d.png",
+		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Sand%d@Specular.png",
 		OUTLINE_SAMPLE_FILENAME = "",
 		NUM_SAMPLES = 3,
 
@@ -80,18 +80,19 @@ return {
 		},
 
 		COLORS = {
-			Color.fromHexString("856a55")
+			Color.fromHexString("d6c083"),
+			Color.fromHexString("efe6cd"),
 		},
 
-		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("785845"),
+		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("d6c083"),
 	},
 
 	dirt = Block.Bind(Grass) {
 		SATURATION = 4,
 
-		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Dirt%d.png",
-		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Dirt%d@Specular.png",
-		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/Underground1/Dirt%d@Outline.png",
+		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Dirt%d.png",
+		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Dirt%d@Specular.png",
+		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Dirt%d@Outline.png",
 		NUM_SAMPLES = 3,
 
 		DIRT_THRESHOLD = 0,

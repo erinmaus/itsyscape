@@ -2300,15 +2300,17 @@ function GameView:_updateActorCanvases(delta)
 				m.bumpActors[actor:getID()] = state
 
 				local k1, k2, p, s = self:_getActorCanvasRelativePositionScale(delta, self.fogCanvasCircle, actor, m)
-				if state[1] then
-					if state[1].k1:distance(k1) < (m.meta and m.meta.fogDistance or 0.25) and state[1].k2 == k2 then
-						state[1].time = 0
-						state[1].position = p:keep()
+				if k1 and k2 and p and s then
+					if state[1] then
+						if state[1].k1:distance(k1) < (m.meta and m.meta.fogDistance or 0.25) and state[1].k2 == k2 then
+							state[1].time = 0
+							state[1].position = p:keep()
+						else
+							table.insert(state, 1, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
+						end
 					else
-						table.insert(state, 1, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
+						table.insert(state, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
 					end
-				else
-					table.insert(state, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
 				end
 			end
 		end

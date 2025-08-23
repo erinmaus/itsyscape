@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/TileSets/Underground1/Ground.lua
+-- Resources/Game/TileSets/YendorianUnderground1/Ground.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -20,7 +20,7 @@ local RandomBlock = require "ItsyScape.World.GroundDecorations.RandomBlockV2"
 local ViziersRockGround = Class(GroundDecorations)
 
 function ViziersRockGround:new()
-	GroundDecorations.new(self, "Underground1")
+	GroundDecorations.new(self, "YendorianUnderground1")
 
 	self:registerTile("wood", WoodBlock:Bind(self) {
 		COLORS = {
@@ -92,6 +92,7 @@ function ViziersRockGround:new()
 		FEATURES = {
 			"shell1",
 			"shell1",
+			"shell2",
 			"shell2",
 			"shell3",
 			"shell3",

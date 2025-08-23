@@ -1036,13 +1036,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Golden brazier",
+		Value = "Brazier",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Brazier_Isabelle"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "A pointless display of wealth.",
+		Value = "Lights the way.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Brazier_Isabelle"
 	}

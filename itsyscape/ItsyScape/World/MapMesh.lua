@@ -42,7 +42,7 @@ MapMesh.FORMAT = {
 --
 -- If 'left', 'right', 'top', and 'bottom' are provided, only a portion of the
 -- map mesh is generated (those tiles that fall within the bounds).
-function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor, largeTileSet)
+function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor, largeTileSet, buildEdges, buildFlats, targetTileSet)
 	self.vertices = {}
 	self.map = map
 	self.tileSet = tileSet
@@ -51,6 +51,9 @@ function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcess
 	self.mask = mask
 	self.islandProcessor = islandProcessor
 	self.min, self.max = Vector(math.huge):keep(), Vector(-math.huge):keep()
+	self.buildEdges = buildEdges == nil and true or buildEdges
+	self.buildFlats = buildFlats == nil and true or buildFlats
+	self.targetTileSet = targetTileSet or false
 
 	left = math.max(left or 1, 1)
 	right = math.min(right or map.width, map.width)
@@ -212,30 +215,42 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 	for j = top, bottom do
 		for i = left, right do
 			local tile = self.map:getTile(i, j)
+			local isTileSetMatch = not self.targetTileSet or self.targetTileSet == tile.tileSetID
 
-			if i == 1 then
-				self:_addLeftEdge(i, j, tile, nil)
+			if self.buildEdges and isTileSetMatch then
+				if type(self.buildEdges) == "boolean" or self.buildEdges == tile.edge then
+					if i == 1 then
+						self:_addLeftEdge(i, j, tile, nil)
+					end
+					if i == self.map.width then
+						self:_addRightEdge(i, j, tile, nil)
+					end
+
+					self:_addLeftEdge(i, j, tile, self.map:getTile(i - 1, j))
+					self:_addRightEdge(i, j, tile, self.map:getTile(i + 1, j))
+
+					if j == 1 then
+						self:_addTopEdge(i, j, tile, nil)
+					end
+					if j == self.map.height then
+						self:_addBottomEdge(i, j, tile, nil)
+					end
+
+					self:_addTopEdge(i, j, tile, self.map:getTile(i, j - 1))
+					self:_addBottomEdge(i, j, tile, self.map:getTile(i, j + 1))
+				end
 			end
-			if i == self.map.width then
-				self:_addRightEdge(i, j, tile, nil)
-			end
 
-			self:_addLeftEdge(i, j, tile, self.map:getTile(i - 1, j))
-			self:_addRightEdge(i, j, tile, self.map:getTile(i + 1, j))
+			if self.buildFlats and isTileSetMatch then
+				if type(self.buildFlats) == "boolean" or self.buildFlats == tile.flat then
+					self:_addFlat(i, j, tile, 'flat')
 
-			if j == 1 then
-				self:_addTopEdge(i, j, tile, nil)
-			end
-			if j == self.map.height then
-				self:_addBottomEdge(i, j, tile, nil)
-			end
-
-			self:_addTopEdge(i, j, tile, self.map:getTile(i, j - 1))
-			self:_addBottomEdge(i, j, tile, self.map:getTile(i, j + 1))
-
-			self:_addFlat(i, j, tile, 'flat')
-			for k = 1, #tile.decals do
-				self:_addFlat(i, j, tile, k)
+					if type(self.buildFlats) == "boolean" then
+						for k = 1, #tile.decals do
+							self:_addFlat(i, j, tile, k)
+						end
+					end
+				end
 			end
 		end
 	end
