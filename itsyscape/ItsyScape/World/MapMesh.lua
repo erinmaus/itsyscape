@@ -42,7 +42,7 @@ MapMesh.FORMAT = {
 --
 -- If 'left', 'right', 'top', and 'bottom' are provided, only a portion of the
 -- map mesh is generated (those tiles that fall within the bounds).
-function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor, largeTileSet, buildEdges, buildFlats, targetTileSet)
+function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor, largeTileSet, target)
 	self.vertices = {}
 	self.map = map
 	self.tileSet = tileSet
@@ -51,9 +51,12 @@ function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcess
 	self.mask = mask
 	self.islandProcessor = islandProcessor
 	self.min, self.max = Vector(math.huge):keep(), Vector(-math.huge):keep()
-	self.buildEdges = buildEdges == nil and true or buildEdges
-	self.buildFlats = buildFlats == nil and true or buildFlats
-	self.targetTileSet = targetTileSet or false
+	self.buildFlats = (not target or target.buildFlats == nil) and true or (target and target.buildFlats)
+	self.buildEdges = (not target or target.buildEdges == nil) and true or (target and target.buildEdges)
+	self.targetTileSetID = target and target.tileSetID or true
+	self.targetFlatID = target and target.flat or true
+	self.targetEdgeID = target and target.edge or true
+	self.ignored = target and target.ignored or {}
 
 	left = math.max(left or 1, 1)
 	right = math.min(right or map.width, map.width)
@@ -215,9 +218,11 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 	for j = top, bottom do
 		for i = left, right do
 			local tile = self.map:getTile(i, j)
-			local isTileSetMatch = not self.targetTileSet or self.targetTileSet == tile.tileSetID
+			local isTileSetMatch = self.targetTileSetID == true or self.targetTileSetID == tile.tileSetID
+			local isFlatIgnored = self.ignored[tile.tileSetID] and self.ignored[tile.tileSetID][tile.flat]
+			local isEdgeIgnored = self.ignored[tile.tileSetID] and self.ignored[tile.tileSetID][tile.edge]
 
-			if self.buildEdges and isTileSetMatch then
+			if self.buildEdges and not isEdgeIgnored and isTileSetMatch then
 				if type(self.buildEdges) == "boolean" or self.buildEdges == tile.edge then
 					if i == 1 then
 						self:_addLeftEdge(i, j, tile, nil)
@@ -241,7 +246,7 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 				end
 			end
 
-			if self.buildFlats and isTileSetMatch then
+			if self.buildFlats and not isFlatIgnored and isTileSetMatch then
 				if type(self.buildFlats) == "boolean" or self.buildFlats == tile.flat then
 					self:_addFlat(i, j, tile, 'flat')
 
@@ -255,7 +260,9 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 		end
 	end
 
-	self:_mask(left, right, top, bottom)
+	if self.buildFlats then
+		self:_mask(left, right, top, bottom)
+	end
 
 	-- Create mesh and enable all attributes.
 	self.mesh = love.graphics.newMesh(MapMesh.FORMAT, self.vertices, 'triangles', 'static')

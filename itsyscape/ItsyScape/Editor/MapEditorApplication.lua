@@ -2146,12 +2146,25 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 
 			local tileSetID
 			if meta[layer] then
-				tileSetID = meta[layer].tileSetID
+				if type(meta[layer].tileSetID) == "table" then
+					tileSetID = meta[layer].tileSetID[1]
+				else
+					tileSetID = meta[layer].tileSetID
+				end
 			end
 
 			local layerMeta = meta[layer] or {}
 
 			local stage = self:getGame():getStage()
+
+			for i = 1, map:getWidth() do
+				for j = 1, map:getHeight() do
+					local tile = map:getTile(i, j)
+					if tile.tileSetID == "" then
+						tile.tileSetID = tileSetID
+					end
+				end
+			end
 
 			local realLayer = layer + (baseLayer or 0)
 			stage:newMap(

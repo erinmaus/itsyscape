@@ -607,6 +607,146 @@ function GameView:_getIsMapEditor()
 	return _APP:getType() == require "ItsyScape.Editor.MapEditorApplication"
 end
 
+function GameView:updateWallDecorations(m)
+	if m.meta and m.meta.disableWallDecorations then
+		Log.info("Not updating wall decorations; explicitly disabled.")
+		return false
+	end
+		
+	local tileSetIDs
+	if type(m.tileSetID) == 'string' then
+		tileSetIDs = { m.tileSetID }
+	else
+		tileSetIDs = m.tileSetID
+	end
+
+	local walls = {}
+	for i = 1, #tileSetIDs do
+		local tileSetID = tileSetIDs[i] or "GrassyPlain"
+
+		local wallDecorationsFilename = string.format(
+			"Resources/Game/TileSets/%s/Wall.lua",
+			tileSetID)
+		local wallExists = love.filesystem.getInfo(wallDecorationsFilename)
+
+		if wallExists then
+			local w = walls[tileSetID]
+			if not w then
+				w = {}
+				walls[tileSetID] = w
+			end
+
+			local chunk = love.filesystem.load(wallDecorationsFilename)
+			local WallType = chunk()
+			if WallType then
+				local wall = WallType()
+				for _, megaTexture in wall:iterateMegaTextures() do
+					local targetEdgeID
+					if Class.isCompatibleType(m.tileSet, TileSet) then
+						targetEdgeID = m.tileSet:getTileIndex(megaTexture:getID())
+					else
+						targetEdgeID = m.tileSet:getTileSetByID(tileSetID):getTileIndex(megaTexture:getID())
+					end
+
+					w[targetEdgeID] = true
+
+					self.resourceManager:queueAsyncEvent(function()
+						local node = MapMeshSceneNode()
+						node:setParent(m.node)
+						table.insert(m.parts, node)
+
+						local alphaNode
+						if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+							alphaNode = MapMeshSceneNode()
+							alphaNode:getMaterial():setIsTranslucent(true)
+							alphaNode:getMaterial():setOutlineThreshold(-1.0)
+							alphaNode:setParent(m.node)
+
+							table.insert(m.parts, alphaNode)
+						else
+							local material = node:getMaterial()
+							material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+							material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+							material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+						end
+
+						if m.meta and m.meta.material then
+							local metaMaterial = m.meta.material
+							for _, part in ipairs(m.parts) do
+								local material = part:getMaterial()
+								if metaMaterial.isReflectiveOrRefractive then
+									material:setIsReflectiveOrRefractive(true)
+								else
+									material:setIsReflectiveOrRefractive(false)
+								end
+
+								if metaMaterial.reflectionPower then
+									material:setReflectionPower(metaMaterial.reflectionPower)
+								else
+									material:setReflectionPower(0)
+								end
+
+								if metaMaterial.reflectionRoughness then
+									material:setRoughness(metaMaterial.reflectionRoughness)
+								elseif material.isReflectiveOrRefractive then
+									material:setRoughness(0)
+								end
+
+								if metaMaterial.reflectionDistance then
+									material:setReflectionDistance(metaMaterial.reflectionDistance)
+								elseif material.setIsReflectiveOrRefractive then
+									material:setReflectionDistance(1)
+								end
+							end
+						end
+
+						local vertices
+						if m.filename ~= nil and m.meta and not m.meta.disableCaching then
+							local filename = string.format("%s_%s_%s.mapmesh", m.filename, tileSetID, megaTexture:getID())
+							if love.filesystem.getInfo(filename) then
+								vertices = buffer.decode(love.filesystem.read(filename))
+							end
+						end
+
+						if vertices then
+							node:fromVertices(vertices.data, Vector(unpack(vertices.min)), Vector(unpack(vertices.max)))
+						else
+							node:fromMap(
+								m.map,
+								m.tileSet,
+								1, 1,
+								m.map:getWidth(),
+								m.map:getHeight(),
+								m.mapMeshMasks,
+								m.islandProcessor,
+								m.largeTileSet,
+								{
+									buildFlats = false,
+									buildEdges = true,
+									tileSetID = tileSetID,
+									targetEdgeID = targetEdgeID
+								})
+						end
+
+						megaTexture:getMaterial():apply(node, self.resourceManager)
+						node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
+						self:_updateMapNode(m, node)
+
+						if alphaNode then
+							megaTexture:getMaterial():apply(alphaNode, self.resourceManager)
+							alphaNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
+							alphaNode:setMapMesh(node:getMapMesh(), true)
+							self:_updateMapNode(m, alphaNode)
+						end
+					end)
+				end
+			end
+		end
+	end
+
+	return walls
+end
+
 function GameView:updateGroundDecorations(m)
 	if self:_getIsMapEditor() then
 		Log.info("Map editor: not updating ground decorations.")
@@ -841,6 +981,23 @@ function GameView:updateMap(map, layer)
 				else
 					map = m.map
 				end
+
+				local tileSetID
+				if type(m.tileSetID) == "table" then
+					tileSetID = m.tileSetID[1]
+				else
+					tileSetID = m.tileSetID
+				end
+
+				tileSetID = tileSetID or "GrassyPlain"
+				for i = 1, map:getWidth() do
+					for j = 1, map:getHeight() do
+						local tile = map:getTile(i, j)
+						if tile.tileSetID == "" then
+							tile.tileSetID = tileSetID
+						end
+					end
+				end
 			else
 				m.filename = nil
 			end
@@ -892,6 +1049,7 @@ function GameView:updateMap(map, layer)
 		node:setParent(m.node)
 		table.insert(m.parts, node)
 
+
 		local alphaNode
 		if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
 			alphaNode = MapMeshSceneNode()
@@ -906,6 +1064,8 @@ function GameView:updateMap(map, layer)
 			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
 			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
 		end
+
+		local ignored = self:updateWallDecorations(m)
 
 		if m.meta and m.meta.material then
 			local metaMaterial = m.meta.material
@@ -957,7 +1117,12 @@ function GameView:updateMap(map, layer)
 					m.map:getHeight(),
 					m.mapMeshMasks,
 					m.islandProcessor,
-					m.largeTileSet)
+					m.largeTileSet,
+					{
+						buildFlats = true,
+						buildEdges = true,
+						ignored = ignored
+					})
 			end
 
 			m.node:setBounds(node:getBounds())

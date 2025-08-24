@@ -657,6 +657,13 @@ function Map:toString()
 					"edge = %d, flat = %d, decals = { %s },",
 					tile.edge, tile.flat, table.concat(tile.decals, ", "))
 
+				if tile.tileSetID ~= "" then
+					r:pushIndent(3)
+					r:pushFormatLine(
+						"tileSetID = %q,",
+						tile.tileSetID)
+				end
+
 				if next(tile.mask, nil) then
 					r:pushIndent(3)
 

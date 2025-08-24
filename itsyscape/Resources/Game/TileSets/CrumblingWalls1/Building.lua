@@ -44,7 +44,7 @@
 				shader = "Resources/Shaders/DecorationTriplanar",
 				texture = "Resources/Game/TileSets/CrumblingWalls1/Caulk.png",
 				uniforms = {
-					scape_NumLayers = { "integer", 2 },
+					scape_NumLayers = { "integer", 1 },
 					scape_TriplanarScale = { "float", 0.5 },
 					scape_TriplanarExponent = { "float", 0 },
 					scape_TriplanarOffset = { "float", 0 }
