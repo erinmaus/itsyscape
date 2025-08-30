@@ -743,7 +743,7 @@ function LocalStage:newMap(width, height, tileSetID, maskID, layer, meta)
 	return map
 end
 
-function LocalStage:updateMap(layer, map)
+function LocalStage:updateMap(layer, map, i, j, w, h)
 	map = map or self.game:getDirector():getMap(layer)
 
 	if map then
@@ -751,7 +751,7 @@ function LocalStage:updateMap(layer, map)
 			self.game:getDirector():setMap(layer, map)
 		end
 
-		self.onMapModified(self, map, layer)
+		self.onMapModified(self, map, layer, i, j, w, h)
 	end
 end
 

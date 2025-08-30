@@ -169,8 +169,10 @@ function NewMapInterface:createMap()
 					then
 						tile.flat = 3
 					else
-						tile.edge = 2
+						tile.flat = 1
 					end
+
+					tile.edge = 2
 
 					if j <= halfPadding or j > height + padding + halfPadding or
 					   i <= halfPadding or i > width + padding + halfPadding

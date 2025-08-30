@@ -107,7 +107,9 @@ function MovementCortex:addWorld(layer)
 		map:getWidth() * map:getCellSize(),
 		map:getHeight() * map:getCellSize(), {
 			quadTreeX = 0,
-			quadTreeY = 0
+			quadTreeY = 0,
+			quadTreeMaxLevels = 4,
+			quadTreeMaxData = 16
 		})
 
 	self.worlds[layer] = {
@@ -216,10 +218,24 @@ function MovementCortex:updateWorld(layer)
 		return
 	end
 
+	local add = w.world.add
+	local totalTime = 0 
+	w.world.add = function(...)
+		local b = love.timer.getTime()
+		local r = add(...)
+		local a = love.timer.getTime()
+		totalTime = totalTime + (a - b) * 1000
+		return r
+	end
+
+	local b = love.timer.getTime()
 	for i = 1, #w.tiles do
 		w.world:remove(w.tiles[i])
 	end
 	table.clear(w.tiles)
+	local a = love.timer.getTime()
+
+	local b = love.timer.getTime()
 
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
@@ -256,6 +272,8 @@ function MovementCortex:updateWorld(layer)
 			table.insert(w.tiles, tile)
 		end
 	end
+
+	print(">>> totalTime", totalTime)
 end
 
 function MovementCortex:unloadWorld(layer)

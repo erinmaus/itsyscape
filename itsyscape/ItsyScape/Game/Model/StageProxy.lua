@@ -42,11 +42,19 @@ StageProxy.unloadMap:link(
 StageProxy.modifyMap = Event.Set(
 	StageProxy.MAP,
 	Event.Argument("map"),
-	Event.KeyArgument("layer", true))
+	Event.KeyArgument("layer", true),
+	Event.Argument("i"),
+	Event.Argument("j"),
+	Event.Argument("w"),
+	Event.Argument("h"))
 StageProxy.modifyMap:link(
 	"onMapModified",
 	Event.Argument("map"),
-	Event.Argument("layer"))
+	Event.Argument("layer"),
+	Event.Argument("i"),
+	Event.Argument("j"),
+	Event.Argument("w"),
+	Event.Argument("h"))
 
 StageProxy.MAP_MOVE = "mapMove"
 StageProxy.moveMap = Event.Set(

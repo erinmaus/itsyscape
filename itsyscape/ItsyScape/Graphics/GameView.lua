@@ -53,7 +53,7 @@ local NShaderCache = require "nbunny.optimaus.shadercache"
 local NProbe = require "nbunny.optimaus.probe"
 
 local GameView = Class()
-GameView.MAP_MESH_DIVISIONS = 16
+GameView.MAP_MESH_DIVISIONS = 128
 GameView.FADE_DURATION = 2
 GameView.ACTOR_CANVAS_CELL_SIZE = 32
 GameView.WALL_HACK_EXPAND_DURATION = 0.5
@@ -228,9 +228,9 @@ function GameView:attach(game)
 	end
 	stage.onUnloadMap:register(self._onUnloadMap)
 
-	self._onMapModified = function(_, map, layer)
+	self._onMapModified = function(_, map, layer, i, j, w, h)
 		Log.info("Map for layer %d modified.", layer)
-		self:updateMap(map, layer)
+		self:updateMap(map, layer, i, j, w, h)
 	end
 	stage.onMapModified:register(self._onMapModified)
 
@@ -583,7 +583,7 @@ function GameView:removeMap(layer)
 		end
 
 		for i = 1, #m.parts do
-			m.parts[i]:setMapMesh(nil)
+			m.parts[i].node:setMapMesh(nil)
 		end
 
 		m.weatherMap:removeMap(m.map)
@@ -966,7 +966,7 @@ function GameView:testMap(layer, ray, callback)
 	end
 end
 
-function GameView:updateMap(map, layer)
+function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 	local m = self.mapMeshes[layer]
 	if m then
 		if m.map then
@@ -1039,123 +1039,161 @@ function GameView:updateMap(map, layer)
 			Log.debug("Updated layer '%d' in %d ms.", layer, (after - before) * 1000)
 		end
 
-		for i = 1, #m.parts do
-			m.parts[i]:setParent(nil)
-			m.parts[i]:setMapMesh(nil)
-		end
-		m.parts = {}
+		for i = #m.parts, 1, -1 do
+			if partialI and partialJ and partialW and partialH then
+				if m.parts[i].i < (partialI + partialW) and
+				   m.parts[i].i + m.parts[i].w > partialI and
+				   m.parts[i].j < (partialJ + partialH) and
+				   m.parts[i].j + m.parts[i].h > partialJ
+				then
+					m.parts[i].node:setParent(nil)
+					m.parts[i].node:setMapMesh(nil)
 
-		local node = MapMeshSceneNode()
-		node:setParent(m.node)
-		table.insert(m.parts, node)
-
-
-		local alphaNode
-		if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
-			alphaNode = MapMeshSceneNode()
-			alphaNode:getMaterial():setIsTranslucent(true)
-			alphaNode:getMaterial():setOutlineThreshold(-1.0)
-			alphaNode:setParent(m.node)
-
-			table.insert(m.parts, alphaNode)
-		else
-			local material = node:getMaterial()
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
-		end
-
-		local ignored = self:updateWallDecorations(m)
-
-		if m.meta and m.meta.material then
-			local metaMaterial = m.meta.material
-			for _, part in ipairs(m.parts) do
-				local material = part:getMaterial()
-				if metaMaterial.isReflectiveOrRefractive then
-					material:setIsReflectiveOrRefractive(true)
-				else
-					material:setIsReflectiveOrRefractive(false)
+					table.remove(m.parts, i)
 				end
-
-				if metaMaterial.reflectionPower then
-					material:setReflectionPower(metaMaterial.reflectionPower)
-				else
-					material:setReflectionPower(0)
-				end
-
-				if metaMaterial.reflectionRoughness then
-					material:setRoughness(metaMaterial.reflectionRoughness)
-				elseif material.isReflectiveOrRefractive then
-					material:setRoughness(0)
-				end
-
-				if metaMaterial.reflectionDistance then
-					material:setReflectionDistance(metaMaterial.reflectionDistance)
-				elseif material.setIsReflectiveOrRefractive then
-					material:setReflectionDistance(1)
-				end
-			end
-		end
-
-		local function _update()
-			local vertices
-			if m.filename ~= nil and m.meta and not m.meta.disableCaching then
-				local filename = string.format("%s.mapmesh", m.filename)
-				if love.filesystem.getInfo(filename) then
-					vertices = buffer.decode(love.filesystem.read(filename))
-				end
-			end
-
-			if vertices then
-				node:fromVertices(vertices.data, Vector(unpack(vertices.min)), Vector(unpack(vertices.max)))
 			else
-				node:fromMap(
-					m.map,
-					m.tileSet,
-					1, 1,
-					m.map:getWidth(),
-					m.map:getHeight(),
-					m.mapMeshMasks,
-					m.islandProcessor,
-					m.largeTileSet,
-					{
-						buildFlats = true,
-						buildEdges = true,
-						ignored = ignored
+				m.parts[i].node:setParent(nil)
+				m.parts[i].node:setMapMesh(nil)
+
+				table.remove(m.parts, i)
+			end
+		end
+
+		local startI = partialI and math.max(partialI, 1) or 1
+		local startJ = partialJ and math.max(partialJ, 1) or 1
+		local stopI = partialI and partialW and math.min(partialI + partialW - 1, map:getWidth()) or map:getWidth()
+		local stopJ = partialJ and partialH and math.min(partialJ + partialH - 1, map:getHeight()) or map:getHeight()
+
+		for i = startI, stopI, self.MAP_MESH_DIVISIONS do
+			for j = startJ, stopJ, self.MAP_MESH_DIVISIONS do
+				local node = MapMeshSceneNode()
+				node:setParent(m.node)
+
+				local w = math.min(self.MAP_MESH_DIVISIONS, map:getWidth() - i + 1)
+				local h = math.min(self.MAP_MESH_DIVISIONS, map:getHeight() - j + 1)
+
+				table.insert(m.parts, {
+					i = i,
+					j = j,
+					w = w, 
+					h = h,
+					node = node,
+				})
+
+				local alphaNode
+				if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+					alphaNode = MapMeshSceneNode()
+					alphaNode:getMaterial():setIsTranslucent(true)
+					alphaNode:getMaterial():setOutlineThreshold(-1.0)
+					alphaNode:setParent(m.node)
+
+					table.insert(m.parts, {
+						i = i,
+						j = j,
+						w = w,
+						h = h,
+						node = node,
 					})
-			end
-
-			m.node:setBounds(node:getBounds())
-
-			if m.mapMeshMasks then
-				node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
-			else
-				node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
-			end
-
-			if alphaNode then
-				alphaNode:setMapMesh(node:getMapMesh(), true)
-				self:_updateMapNode(m, alphaNode)
-
-				if m.mapMeshMasks then
-					alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
 				else
-					alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+					local material = node:getMaterial()
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+				end
+
+				local ignored = self:updateWallDecorations(m)
+
+				if m.meta and m.meta.material then
+					local metaMaterial = m.meta.material
+					for _, n in ipairs({ node, alphaNode }) do
+						local material = n:getMaterial()
+						if metaMaterial.isReflectiveOrRefractive then
+							material:setIsReflectiveOrRefractive(true)
+						else
+							material:setIsReflectiveOrRefractive(false)
+						end
+
+						if metaMaterial.reflectionPower then
+							material:setReflectionPower(metaMaterial.reflectionPower)
+						else
+							material:setReflectionPower(0)
+						end
+
+						if metaMaterial.reflectionRoughness then
+							material:setRoughness(metaMaterial.reflectionRoughness)
+						elseif material.isReflectiveOrRefractive then
+							material:setRoughness(0)
+						end
+
+						if metaMaterial.reflectionDistance then
+							material:setReflectionDistance(metaMaterial.reflectionDistance)
+						elseif material.setIsReflectiveOrRefractive then
+							material:setReflectionDistance(1)
+						end
+					end
+				end
+
+				local function _update()
+					local vertices
+					if m.filename ~= nil and m.meta and not m.meta.disableCaching and not (partialI and partialJ and partialW and partialH) then
+						local filename = string.format("%s.mapmesh", m.filename)
+						if love.filesystem.getInfo(filename) then
+							vertices = buffer.decode(love.filesystem.read(filename))
+						end
+					end
+
+					if vertices then
+						node:fromVertices(vertices.data, Vector(unpack(vertices.min)), Vector(unpack(vertices.max)))
+					else
+						node:fromMap(
+							m.map,
+							m.tileSet,
+							i, j,
+							w,
+							h,
+							m.mapMeshMasks,
+							m.islandProcessor,
+							m.largeTileSet,
+							{
+								buildFlats = true,
+								buildEdges = true,
+								ignored = ignored
+							})
+					end
+
+					m.node:setBounds(node:getBounds())
+
+					if m.mapMeshMasks then
+						node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
+					else
+						node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+					end
+
+					if alphaNode then
+						alphaNode:setMapMesh(node:getMapMesh(), true)
+						self:_updateMapNode(m, alphaNode)
+
+						if m.mapMeshMasks then
+							alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
+						else
+							alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+						end
+					end
+
+					self:_updateMapNode(m, node)
+				end
+
+				if self:_getIsMapEditor() then
+					_update()
+				else
+					self.resourceManager:queueAsyncEvent(_update)
+				end
+
+				node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
+				if alphaNode then
+					alphaNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
 				end
 			end
-
-			self:_updateMapNode(m, node)
-		end
-
-		if self:_getIsMapEditor() then
-			_update()
-		else
-			self.resourceManager:queueAsyncEvent(_update)
-		end
-
-		node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
-		if alphaNode then
-			alphaNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
 		end
 
 		m.weatherMap:addMap(m.map)
@@ -1309,14 +1347,14 @@ function GameView:_updateMapNodeWallHack(m, delta)
 
 		if isMapWallhackEnabled then
 			for _, part in ipairs(m.parts) do
-				local material = part:getMaterial()
+				local material = part.node:getMaterial()
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
 			end
 		else
 			for _, part in ipairs(m.parts) do
-				local material = part:getMaterial()
+				local material = part.node:getMaterial()
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
@@ -1388,8 +1426,8 @@ function GameView:_updatePlayerMapNode()
 		return
 	end
 
-	for _, node in ipairs(m.parts) do
-		node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+	for _, part in ipairs(m.parts) do
+		part.node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
 	end
 
 	if self.previousPlayerLayer and self.previousPlayerLayer ~= layer then
@@ -1435,8 +1473,8 @@ function GameView:bendMap(layer, ...)
 		m.curveTexture = nil
 	end
 
-	for _, node in ipairs(m.parts) do
-		self:_updateMapNode(m, node)
+	for _, part in ipairs(m.parts) do
+		self:_updateMapNode(m, part.node)
 	end
 
 	for _, decorationInfo in pairs(self.decorations) do
@@ -1489,7 +1527,12 @@ end
 function GameView:getMapMeshSceneNodes(layer)
 	local m = self.mapMeshes[layer]
 	if m then
-		return unpack(m.parts)
+		local r = {}
+		for _, part in ipairs(m.parts) do
+			table.insert(r, part.node)
+		end
+
+		return unpack(r)
 	end
 end
 

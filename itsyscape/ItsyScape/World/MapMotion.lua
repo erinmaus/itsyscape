@@ -106,6 +106,10 @@ function MapMotion:getTile()
 	return self.tile, self.tileI or 1, self.tileJ or 1
 end
 
+function MapMotion:getRegion()
+	return self.tileI, self.tileJ, 1, 1
+end
+
 function MapMotion:getPosition()
 	return self.position or Vector.ZERO
 end

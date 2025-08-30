@@ -16,8 +16,17 @@ function HillMapMotion:endPerform(e)
 	self.direction = 0
 end
 
+function HillMapMotion:getRegion()
+	if self.regionStartI and self.regionStartJ and self.regionStopI and self.regionStopJ then
+		return self.regionStartI, self.regionStartJ, self.regionStopI - self.regionStartI + 1, self.regionStopJ - self.regionStartJ + 1
+	end
+end
+
 -- Raises the corner of a tile. Default action.
 function HillMapMotion:perform(e, distance)
+	self.regionStartI, self.regionStartJ = nil
+	self.regionStopI, self.regionStopJ = nil
+
 	local tile, i, j = self:getTile()
 
 	local min = math.min(
@@ -68,6 +77,9 @@ function HillMapMotion:perform(e, distance)
 		local left = i - stop
 		local top = j - stop
 
+		self.regionStartI, self.regionStartJ = math.huge, math.huge
+		self.regionStopI, self.regionStopJ = math.huge, math.huge
+
 		for k = 0, stop do
 			if distance > 0 then
 				elevation = k
@@ -110,6 +122,11 @@ function HillMapMotion:raiseCorner(x, y, func, elevation)
 		local e = tile:getCorner(s, t)
 		tile:setCorner(s, t, func(elevation, e))
 	end
+
+	self.regionStartI = math.min(i, self.regionStartI)
+	self.regionStartJ = math.min(j, self.regionStartJ)
+	self.regionStopI = math.max(i, self.regionStopI)
+	self.regionStopJ = math.max(j, self.regionStopJ)
 end
 
 function HillMapMotion:rectangle(x, y, width, height, func, elevation)

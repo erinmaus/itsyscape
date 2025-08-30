@@ -32,6 +32,7 @@ local NewMapInterface = require "ItsyScape.Editor.Map.NewMapInterface"
 local TerrainToolPanel = require "ItsyScape.Editor.Map.TerrainToolPanel"
 local TileSetPalette = require "ItsyScape.Editor.Map.TileSetPalette"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local GameView = require "ItsyScape.Graphics.GameView"
 local MapGridMeshSceneNode = require "ItsyScape.Graphics.MapGridMeshSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
@@ -62,11 +63,7 @@ MapEditorApplication.TOOL_BRUSH = 6
 
 function MapEditorApplication:new()
 	-- ew
-	do
-		local GameView = require "ItsyScape.Graphics.GameView"
-		GameView.MAP_MESH_DIVISIONS = 1024
-	end
-
+	GameView.MAP_MESH_DIVISIONS = 1
 	_DEBUG = false
 
 	EditorApplication.new(self)
@@ -601,7 +598,6 @@ function MapEditorApplication:paint()
 
 	self:_doPaint(x, y)
 	while not (x == i2 and y == j2) do
-
 		local e2 = 2 * error
 		if e2 >= dy then
 			error = error + dy
@@ -616,7 +612,12 @@ function MapEditorApplication:paint()
 		self:_doPaint(x, y)
 	end
 
-	self:getGame():getStage():updateMap(self.currentLayer)
+	local i = math.min(i1, i2)
+	local j = math.min(i1, i2)
+	local w = math.max(i1, i2) - i + 1
+	local h = math.max(j1, j2) - j + 1
+
+	self:getGame():getStage():updateMap(self.currentLayer, nil, i, j, w, h)
 end
 
 function MapEditorApplication:makeMotionEvent(x, y, button, layer)
@@ -719,6 +720,8 @@ function MapEditorApplication:mousePress(x, y, button)
 			elseif self.currentTool == MapEditorApplication.TOOL_BRUSH then
 				self.paintingMotion = self:getBrushMotion()
 				self.isPainting = true
+				self.paintingStartI, self.paintingStartJ = math.huge, math.huge
+				self.paintingStopI, self.paintingStopJ = -math.huge, -math.huge
 			elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 				self:paint()
 				self.isDragging = true
@@ -1056,7 +1059,8 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			local r = self.motion:onMouseMoved(self:makeMotionEvent(x, y))
 
 			if r then
-				self:getGame():getStage():updateMap(self.motionLayer)
+				local i, j, w, h = self.motion:getRegion()
+				self:getGame():getStage():updateMap(self.motionLayer, nil, i, j, w, h)
 			end
 		end
 
@@ -1316,8 +1320,16 @@ function MapEditorApplication:mouseRelease(x, y, button)
 			self.paintingMotion = nil
 
 			if self.isPainting then
-				self:getGame():getStage():updateMap(self.motionLayer)
+				local i = self.paintingStartI or 1
+				local j = self.paintingStartJ or 1
+				local w = (self.paintingStopI or map:getWidth()) - i + 1
+				local h = (self.paintingStopJ or map:getHeight()) - j + 1
+
+				self:getGame():getStage():updateMap(self.motionLayer, nil, i, j, w, h)
+
 				self.isPainting = false
+				self.paintingStartI, self.paintingStartJ = nil, nil
+				self.paintingStopI, self.paintingStopJ = nil, nil
 			end
 
 			self.previousPaintI = nil
@@ -2552,17 +2564,7 @@ function MapEditorApplication:brush(delta)
 		return
 	end
 
-	-- local corner = tile:findNearestCorner(motion:getPosition(), i, j, map:getCellSize())
-	-- for _, c in ipairs(Tile.CORNERS) do
-	-- 	if c.name == corner then
-	-- 		i = i + (c.offsetX + 1)
-	-- 		j = j + (c.offsetY + 1)
-	-- 	end
-	-- end
-
 	local tileElevation = map:getTile(i, j).topLeft
-	print("TILE", i, j, "elev", tileElevation)
-
 	local brushToolSize = math.floor(self.brushToolPanel:getToolSize() / 2) + 1
 	local startI = math.max(i - brushToolSize, 1)
 	local stopI = math.min(i + brushToolSize, map:getWidth() + 1)
@@ -2611,53 +2613,7 @@ function MapEditorApplication:brush(delta)
 		end
 	end
 
-	self:updateGrid(self:getGame():getStage(), self:getGame():getStage():getMap(1), 1)
-
-	-- local brushToolSize = math.ceil(math.floor(self.brushTool:getToolSize() * 2) / 2)
-	-- local startS = math.max(s - brushToolSize, 1)
-	-- local stopS = math.min(s + brushToolSize, map:getWidth() * 2 + 1)
-	-- local startT = math.max(t - brushToolSize, 1)
-	-- local stopT = math.min(t + brushToolSize, map:getHeight() * 2 + 1)
-
-	-- local elevations = {}
-	-- for currentS = startS, stopS, 2 do
-	-- 	local e = elevations[currentS], 2 or {}
-	-- 	for currentT = startT, stopT do
-	-- 		local tileS = currentS % -2
-	-- 		local tileT = currentT % -2
-
-	-- 		local sum = 0
-	-- 		local count = 0
-	-- 		for offsetS = -1, 0 do
-	-- 			for offsetT = -1, 0 do
-	-- 				local currentI = math.floor((currentS + offsetS) / 2)
-	-- 				local currentJ = math.floor((currentT + offsetT) / 2)
-
-	-- 				if currentI >= 1 and currentI <= map:getWidth() and currentJ >= 1 and currentJ <= map:getHeight() then
-	-- 					sum = sum + 
-	-- 				end
-	-- 			end
-	-- 		end
-
-	-- 		local average = sum / 4
-	-- 		e[currentT] = average
-	-- 	end
-	-- 	elevations[currentS] = e
-	-- end
-
-	-- for currentS = startS, stopS do
-	-- 	for currentT = startT, stopT do
-	-- 		if radius <= brushToolSize then
-	-- 			local radiusDelta = radius / brushToolSize
-	-- 			local offset = self.brushTool:getPressure() * delta * radiusDelta
-
-	-- 			local currentI = math.floor(currentS / 2)
-	-- 			local currentJ = math.floor(currentT / 2)
-	-- 			local tileS = currentS - currentI * 2 - 1
-	-- 			local tileT = currentT - currentJ * 2 - 1
-	-- 		end
-	-- 	end
-	-- end
+	self:updateGrid(self:getGame():getStage(), self:getGame():getStage():getMap(1))
 end
 
 function MapEditorApplication:update(delta)

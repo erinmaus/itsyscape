@@ -21,13 +21,15 @@ return {
 		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Moss%d@Outline.png",
 		NUM_SAMPLES = 3,
 
+		DIRT_THRESHOLD = 0.5,
+
 		COLORS = {
-			Color.fromHexString("8a916f"),
-			Color.fromHexString("729168"),
-			Color.fromHexString("7c7d50"),
+			Color.fromHexString("7d8776"),
+			Color.fromHexString("5d6954"),
+			Color.fromHexString("2f342a"),
 		},
 
-		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("a38265")
+		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("523931")
 	},
 
 	sand = Block.Bind(Grass) {
@@ -52,10 +54,10 @@ return {
 		},
 
 		COLORS = {
-			Color.fromHexString("d6aa83")
+			Color.fromHexString("d3b794")
 		},
 
-		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("a38265"),
+		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("d3b794"),
 	},
 
 	mud = Block.Bind(Grass) {
@@ -66,7 +68,7 @@ return {
 		OUTLINE_SAMPLE_FILENAME = "",
 		NUM_SAMPLES = 3,
 
-		DIRT_THRESHOLD = 0,
+		DIRT_THRESHOLD = 0.5,
 
 		MIN_OFFSET = -8,
 		MAX_OFFSET = 8,
@@ -80,14 +82,42 @@ return {
 		},
 
 		COLORS = {
-			Color.fromHexString("d6c083"),
-			Color.fromHexString("efe6cd"),
+			Color.fromHexString("523931"),
+			Color.fromHexString("aa7766"),
 		},
 
-		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("d6c083"),
+		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("523931"),
 	},
 
 	dirt = Block.Bind(Grass) {
+		SATURATION = 4,
+
+		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Dirt%d.png",
+		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Dirt%d@Specular.png",
+		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Dirt%d@Outline.png",
+		NUM_SAMPLES = 3,
+
+		DIRT_THRESHOLD = 0.5,
+
+		MIN_OFFSET = -8,
+		MAX_OFFSET = 8,
+		MIN_SCALE = 1,
+		MAX_SCALE = 1.2,
+
+		ROTATION_NOISE = Noise {
+			scale = 13,
+			octaves = 2,
+			attenuation = 0
+		},
+
+		COLORS = {
+			Color.fromHexString("aa7766")
+		},
+
+		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("aa7766"),
+	},
+
+	dirt_dark = Block.Bind(Grass) {
 		SATURATION = 4,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Dirt%d.png",
@@ -99,8 +129,8 @@ return {
 
 		MIN_OFFSET = -8,
 		MAX_OFFSET = 8,
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.2,
+		MIN_SCALE = 1.2,
+		MAX_SCALE = 1.4,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,
@@ -109,9 +139,9 @@ return {
 		},
 
 		COLORS = {
-			Color.fromHexString("6c5d53")
+			Color.fromHexString("523931")
 		},
 
-		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("6c5d53"),
+		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("523931"),
 	}
 }
