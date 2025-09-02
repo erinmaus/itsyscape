@@ -567,7 +567,6 @@ function DefaultCameraController:updateElevation(delta)
 	end
 
 	if math.abs(self.currentElevationHorizontalRotationOffset + self.cameraHorizontalRotationOffset) < DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET then
-		print("before", math.deg(self.cameraHorizontalRotationOffset))
 		self.cameraHorizontalRotationOffset = self.cameraHorizontalRotationOffset + self.currentElevationHorizontalRotationOffset
 
 		if difference > 0 then
@@ -577,8 +576,6 @@ function DefaultCameraController:updateElevation(delta)
 		end
 
 		self.currentElevationHorizontalRotationOffset = 0
-
-		print("YAR HAR HAR", math.deg(self.cameraHorizontalRotationOffset))
 	end
 end
 
@@ -1043,10 +1040,8 @@ function DefaultCameraController:_clampGround(currentHorizontalRotation)
 	local dotProduct = math.clamp(Vector.dot(a:direction(b), a:direction(c)), -1, 1)
 	local targetHorizontalRotation = -math.acos(dotProduct)
 
-
 	self.targetElevationHorizontalRotationOffset = math.diffAngle(targetHorizontalRotation, currentHorizontalRotation)
 	if self.targetElevationHorizontalRotationOffset > 0 then
-		print("target", math.deg(self.targetElevationHorizontalRotationOffset), "zero'd")
 		self.targetElevationHorizontalRotationOffset = 0
 	end
 end

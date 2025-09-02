@@ -41,7 +41,7 @@ do
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 0.3,
+		Ambience = 0.5,
 		Resource = M["Light_Ambient"]
 	}
 end
@@ -89,9 +89,9 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 80,
-		ColorGreen = 80,
-		ColorBlue = 80,
+		ColorRed = 200,
+		ColorGreen = 200,
+		ColorBlue = 200,
 		CastsShadows = 1,
 		Resource = M["Light_Sun"]
 	}
