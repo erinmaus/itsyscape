@@ -46,8 +46,15 @@ function MapMotion:onMousePressed(e)
 	--   2. Raise entire tile if position is close to center (< cellSize / 2?)
 	local tiles = self.map:testRay(e.ray)
 	local function compareZ(a, b)
-		local distance1 = Vector.getLength(a[Map.RAY_TEST_RESULT_POSITION] - e.eye)
-		local distance2 = Vector.getLength(b[Map.RAY_TEST_RESULT_POSITION] - e.eye)
+		local distance1, distance2
+		if e.camera then
+			distance1 = e.camera:project(a[Map.RAY_TEST_RESULT_POSITION]).z
+			distance2 = e.camera:project(b[Map.RAY_TEST_RESULT_POSITION]).z
+		else
+			distance1 = Vector.getLength(a[Map.RAY_TEST_RESULT_POSITION] - e.eye)
+			distance2 = Vector.getLength(b[Map.RAY_TEST_RESULT_POSITION] - e.eye)
+		end
+
 		return distance1 < distance2
 	end
 	table.sort(tiles, compareZ)

@@ -88,5 +88,14 @@
 		width = 128,
 		height = 128,
 		name = "black",
-	}
+	},
+
+	{
+		x = 256,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "stone_purple",
+		mask = false
+	},
 }

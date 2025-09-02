@@ -12,6 +12,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = M._MAP
 }
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.IsabelleIsland_AbandonedMine2.Peep",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -58,11 +63,11 @@ do
 	}
 
 	ItsyScape.Meta.Fog {
-		ColorRed = 108,
-		ColorGreen = 93,
-		ColorBlue = 83,
-		NearDistance = 30,
-		FarDistance = 50,
+		ColorRed = 0,
+		ColorGreen = 0,
+		ColorBlue = 0,
+		NearDistance = 50,
+		FarDistance = 100,
 		Resource = M["Light_Fog"]
 	}
 end
@@ -87,6 +92,7 @@ do
 		ColorRed = 80,
 		ColorGreen = 80,
 		ColorBlue = 80,
+		CastsShadows = 1,
 		Resource = M["Light_Sun"]
 	}
 

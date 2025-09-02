@@ -63,7 +63,7 @@ MapEditorApplication.TOOL_BRUSH = 6
 
 function MapEditorApplication:new()
 	-- ew
-	GameView.MAP_MESH_DIVISIONS = 1
+	GameView.MAP_MESH_DIVISIONS = 4
 	_DEBUG = false
 
 	EditorApplication.new(self)
@@ -612,12 +612,19 @@ function MapEditorApplication:paint()
 		self:_doPaint(x, y)
 	end
 
-	local i = math.min(i1, i2)
-	local j = math.min(i1, i2)
-	local w = math.max(i1, i2) - i + 1
-	local h = math.max(j1, j2) - j + 1
+	local map = self:getGame():getStage():getMap(self.currentLayer)
+	local size = self.landscapeToolPanel:getToolSize()
 
-	self:getGame():getStage():updateMap(self.currentLayer, nil, i, j, w, h)
+	if size < 0 then
+		self:getGame():getStage():updateMap(self.currentLayer, nil)
+	else
+		local i = math.max(math.min(i1 - size, i2 - size), 1)
+		local j = math.max(math.min(j1 - size, j2 - size), 1)
+		local w = math.min(math.max(i1 + size, i2 + size), map:getWidth()) - i + 1
+		local h = math.min(math.max(j1 + size, j2 + size), map:getHeight()) - j + 1
+
+		self:getGame():getStage():updateMap(self.currentLayer, nil, i, j, w, h)
+	end
 end
 
 function MapEditorApplication:makeMotionEvent(x, y, button, layer)
@@ -641,7 +648,8 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 		forward = self:getCamera():getForward(),
 		left = self:getCamera():getLeft(),
 		zoom = self:getCamera():getDistance(),
-		eye = self:getCamera():getEye()
+		eye = self:getCamera():getEye(),
+		camera = self:getCamera()
 	}
 end
 
@@ -729,7 +737,7 @@ function MapEditorApplication:mousePress(x, y, button)
 				local group, decoration = self.decorationList:getCurrentDecoration()
 				if group and decoration then
 					local hit
-					do
+					if not (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
 						local tileSetFilename = string.format(
 							"Resources/Game/TileSets/%s/Layout.lstatic",
 							decoration:getTileSetID())
@@ -740,10 +748,10 @@ function MapEditorApplication:mousePress(x, y, button)
 						do
 							local hits = decoration:testRay(self:shoot(x, y), staticMesh:getResource())
 							table.sort(hits, function(a, b)
-								local i = self:getCamera():getEye() - a[Decoration.RAY_TEST_RESULT_POSITION]
-								local j = self:getCamera():getEye() - b[Decoration.RAY_TEST_RESULT_POSITION]
+								local i = self:getCamera():project(a[Decoration.RAY_TEST_RESULT_POSITION])
+								local j = self:getCamera():project(b[Decoration.RAY_TEST_RESULT_POSITION])
 
-								return i:getLength() < j:getLength()
+								return i.z < j.z
 							end)
 
 							hit = hits[1]
@@ -751,7 +759,7 @@ function MapEditorApplication:mousePress(x, y, button)
 					end
 
 					local feature
-					if hit and not (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
+					if hit then
 						self.currentFeatureIndex = hit[Decoration.RAY_TEST_RESULT_INDEX]
 						feature = self:getLastDecorationFeature()
 					end
@@ -1593,24 +1601,25 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 							local v = V[key]
 							local r = self:getCamera():getCombinedRotation()
-							v = r:transformVector(v)
-
 							if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
 								v = -v
 							end
 
-							if math.abs(v.x) > math.abs(v.y) and math.abs(v.x) > math.abs(v.z) then
-								v = Vector(math.sign(v.x), 0, 0)
-							elseif math.abs(v.y) > math.abs(v.x) and math.abs(v.y) > math.abs(v.z) then
-								v = Vector(0, math.sign(v.y), 0)
-							elseif math.abs(v.z) > math.abs(v.x) and math.abs(v.z) > math.abs(v.y) then
-								v = Vector(0, 0, math.sign(v.z))
+							local t = r:transformVector(v)
+
+							local n
+							if math.abs(v.y) > 0 then
+								n = Vector(0, v.y, 0)
+							elseif math.abs(t.x) > math.abs(t.z) then
+								n = Vector(math.sign(t.x), 0, 0)
+							elseif math.abs(t.z) > math.abs(t.x) then
+								n = Vector(0, 0, math.sign(t.z))
 							else
-								v = Vector(0)
+								n = Vector(0)
 							end
 
 							for _, f in ipairs(feature) do
-								f:setPosition(f:getPosition() + v)
+								f:setPosition(f:getPosition() + n)
 							end
 
 							local group, decoration = self.decorationList:getCurrentDecoration()
@@ -1626,7 +1635,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							self.currentPalette = ColorPalette(self)
 							local function _update(_, color)
 								local currentFeature = self:getLastDecorationFeature()
-								if currentFeature then
+								if feature and not (type(feature) == "table" and #feature > 0) then
 									currentFeature:setColor(color)
 
 									local group, decoration = self.decorationList:getCurrentDecoration()
@@ -1654,7 +1663,11 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							local _, h = love.graphics.getScaledMode()
 							local y = h - ColorPalette.HEIGHT
 
-							self.currentPalette:open(feature:getColor(), colors, x, y)
+							if type(feature) == "table" and #feature > 0 then
+								self.currentPalette:open(Color(1), colors, x, y)
+							else
+								self.currentPalette:open(feature:getColor(), colors, x, y)
+							end
 						end
 					elseif key == "delete" or key == "backspace" then
 						if self.gizmo then

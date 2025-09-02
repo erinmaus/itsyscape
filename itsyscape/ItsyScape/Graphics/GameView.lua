@@ -1060,9 +1060,13 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 		end
 
 		local startI = partialI and math.max(partialI, 1) or 1
+		startI = math.max(startI - (startI - 1) % self.MAP_MESH_DIVISIONS, 1)
 		local startJ = partialJ and math.max(partialJ, 1) or 1
+		startJ = math.max(startJ - (startJ - 1) % self.MAP_MESH_DIVISIONS, 1)
 		local stopI = partialI and partialW and math.min(partialI + partialW - 1, map:getWidth()) or map:getWidth()
+		stopI = math.min((self.MAP_MESH_DIVISIONS - ((stopI - 1) % self.MAP_MESH_DIVISIONS + 1)) + stopI, map:getWidth())
 		local stopJ = partialJ and partialH and math.min(partialJ + partialH - 1, map:getHeight()) or map:getHeight()
+		stopJ = math.min((self.MAP_MESH_DIVISIONS - ((stopJ - 1) % self.MAP_MESH_DIVISIONS + 1)) + stopJ, map:getWidth())
 
 		for i = startI, stopI, self.MAP_MESH_DIVISIONS do
 			for j = startJ, stopJ, self.MAP_MESH_DIVISIONS do
@@ -1211,6 +1215,8 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled, pa
 		transform:setLocalRotation(rotation)
 		transform:setLocalScale(scale)
 		transform:setLocalOffset(offset)
+
+		Log.info(">>>>>>> move %s %d, %d, %d", m.filename, (position or Vector.ZERO):get())
 
 		love.thread.getChannel('ItsyScape.Map::input'):push({
 			type = "transform",
@@ -2595,7 +2601,7 @@ function GameView:draw(delta, width, height)
 	if skybox then
 		local info = self.skyboxes[skybox]
 		
-		self.renderer:setClearColor(Color(0, 0, 0, 0))
+		self.renderer:setClearColor(info.color)
 		self.renderer:draw(skybox, delta, width, height, { self.sceneOutlinePostProcessPass })
 		self.renderer:present(false)
 	end

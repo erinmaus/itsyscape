@@ -21,6 +21,7 @@
 nbunny::Camera nbunny::Renderer::get_skybox_camera(SceneNode& skybox_scene_node)
 {
 	Camera skybox_camera(get_camera());
+	skybox_camera.set_is_cull_enabled(false);
 
 	auto old_view = get_camera().get_view();
 	skybox_camera.update(glm::mat4(1.0f), skybox_camera.get_projection());

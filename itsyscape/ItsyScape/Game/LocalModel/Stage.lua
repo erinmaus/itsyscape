@@ -1326,8 +1326,8 @@ function LocalStage:loadMapResource(instance, filename, args)
 			if layerMeta.transform then
 				offset.origin = Vector(unpack(layerMeta.transform.origin or {}))
 				offset.offset = Vector(unpack(layerMeta.transform.translation or {}))
-				offset.rotation = Quaternion(unpack(layerMeta.transform.rotation or {}))
-				offset.scale = Vector(unpack(layerMeta.transform.scale or {}))
+				offset.rotation = Quaternion(unpack(layerMeta.transform.rotation or { Quaternion.IDENTITY:get() }))
+				offset.scale = Vector(unpack(layerMeta.transform.scale or { Vector.ONE:get() }))
 			end
 		end
 	end

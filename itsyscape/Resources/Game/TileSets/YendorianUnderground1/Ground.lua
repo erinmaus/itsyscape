@@ -122,6 +122,27 @@ function ViziersRockGround:new()
 			Color.fromHexString("bfa797")
 		}
 	})
+
+	self:registerTile("stone_purple", RandomBlock:Bind(self) {
+		FEATURE_THRESHOLD = 0,
+		SATURATION = 1,
+
+		MIN_SCALE = 1,
+		MAX_SCALE = 1,
+		MIN_OFFSET = 0.5,
+		MAX_OFFSET = 0.5,
+
+		FEATURES = {
+			"bricks1",
+			"bricks2",
+			"bricks3",
+			"bricks4"
+		},
+
+		COLORS = {
+			Color.fromHexString("7d8776")
+		}
+	})
 end
 
 return ViziersRockGround

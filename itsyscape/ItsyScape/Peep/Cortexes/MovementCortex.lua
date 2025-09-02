@@ -218,32 +218,23 @@ function MovementCortex:updateWorld(layer)
 		return
 	end
 
-	local add = w.world.add
-	local totalTime = 0 
-	w.world.add = function(...)
-		local b = love.timer.getTime()
-		local r = add(...)
-		local a = love.timer.getTime()
-		totalTime = totalTime + (a - b) * 1000
-		return r
-	end
-
-	local b = love.timer.getTime()
 	for i = 1, #w.tiles do
-		w.world:remove(w.tiles[i])
+		if w.world:has(w.tiles[i]) then
+			w.world:remove(w.tiles[i])
+		end
 	end
+
 	table.clear(w.tiles)
-	local a = love.timer.getTime()
-
-	local b = love.timer.getTime()
-
 	for i = 1, map:getWidth() do
 		for j = 1, map:getHeight() do
 			local tile = map:getTile(i, j)
 			local tileCenter = map:getTileCenter(i, j)
 			local min = tileCenter - Vector(map:getCellSize() / 2)
 
-			w.world:add(tile, min.x, min.z, slick.newRectangleShape(0, 0, map:getCellSize(), map:getCellSize()))
+			if not tile:getIsPassable() then
+				w.world:add(tile, min.x, min.z, slick.newRectangleShape(0, 0, map:getCellSize(), map:getCellSize()))
+			end
+
 			if tile:getIsPassable() then
 				for k = 1, #MovementCortex.OFFSETS do
 					local offsetI, offsetJ = unpack(MovementCortex.OFFSETS[k])
@@ -272,8 +263,6 @@ function MovementCortex:updateWorld(layer)
 			table.insert(w.tiles, tile)
 		end
 	end
-
-	print(">>> totalTime", totalTime)
 end
 
 function MovementCortex:unloadWorld(layer)

@@ -1,10 +1,5 @@
 {
 	{
 		tileSetID = "YendorianUnderground1",
-		maskID =
-		{
-			default = true,
-		},
-		autoMask = true,
 	},
 }

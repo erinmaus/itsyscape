@@ -173,6 +173,22 @@ function EditorApplication:mouseScroll(x, y)
 	return false
 end
 
+function EditorApplication:keyDown(key, scan, isRepeat, ...)
+	local r = Application.keyDown(self, key, scan, isRepeat, ...)
+
+	if not isRepeat and not r then
+		if key == "-" then
+			self:getCamera():setPosition(self:getCamera():getPosition() - Vector.UNIT_Y)
+			return true
+		elseif key == "+" then
+			self:getCamera():setPosition(self:getCamera():getPosition() + Vector.UNIT_Y)
+			return true
+		end
+	end
+
+	return r
+end
+
 function EditorApplication:mouseMove(x, y, dx, dy)
 	Application.mouseMove(self, x, y, dx, dy)
 

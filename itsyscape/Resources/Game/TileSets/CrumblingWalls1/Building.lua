@@ -14,7 +14,7 @@
 
 				properties = {
 					outlineThreshold = 0.5,
-					color = "463779",
+					color = "d3b794",
 				}
 			}
 		},
@@ -34,7 +34,7 @@
 
 				properties = {
 					outlineThreshold = 0.5,
-					color = "463779",
+					color = "d3b794",
 				}
 			}
 		},
