@@ -485,11 +485,7 @@ function InventoryGamepadContentTab:probe(index, button)
 		})
 	end
 
-	local buttonX, buttonY = button:getAbsolutePosition()
-	local buttonWidth, buttonHeight = button:getSize()
-	buttonX = buttonX + buttonWidth / 2
-	buttonY = buttonY + buttonHeight / 2
-
+	local buttonX, buttonY = button:getAbsoluteCenter()
 	local pokeMenu = self:getUIView():probe(actions, buttonX, buttonY, true, false)
 	pokeMenu.onClose:register(Function(self.probeInventoryItem, self, false))
 

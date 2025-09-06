@@ -66,6 +66,7 @@ function SkillsGamepadContentTab:new(interface)
 	GamepadContentTab.new(self, interface)
 
 	self.onSelectSkill = Callback()
+	self.onProbeSkill = Callback()
 
 	self.scrollableLayout = ScrollablePanel(GamepadGridLayout)
 	self.scrollableLayout:setSize(self:getSize())
@@ -166,7 +167,6 @@ end
 
 function SkillsGamepadContentTab:_addSkillButton()
 	local index = self.layout:getNumChildren() + 1
-
 	local button = Button()
 	button:setData("index", index)
 	button:setStyle(self.INACTIVE_BUTTON_STYLE, ButtonStyle)
@@ -261,10 +261,6 @@ function SkillsGamepadContentTab:refresh(state)
 end
 
 function SkillsGamepadContentTab:activate(index, button, buttonIndex)
-	if buttonIndex ~= 1 then
-		return
-	end
-
 	local state = self:getState()
 	local skills = state and state.skills
 	local skill = skills[index]
@@ -273,7 +269,11 @@ function SkillsGamepadContentTab:activate(index, button, buttonIndex)
 		return
 	end
 
-	self:onSelectSkill(index, skill)
+	if buttonIndex == 2 then
+		self:onProbeSkill(index, skill, button)
+	elseif buttonIndex == 1 then
+		self:onSelectSkill(index, skill, button)
+	end
 end
 
 return SkillsGamepadContentTab

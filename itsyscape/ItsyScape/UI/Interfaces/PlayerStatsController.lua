@@ -61,7 +61,7 @@ function PlayerStatsController:new(peep, director)
 end
 
 function PlayerStatsController:poke(actionID, actionIndex, e)
-	if actionID == "open" then
+	if actionID == "openSkillGuide" then
 		self:openSkillGuide(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)

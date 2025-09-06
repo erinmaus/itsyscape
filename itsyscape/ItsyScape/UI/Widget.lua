@@ -389,6 +389,15 @@ function Widget:getAbsolutePosition()
 	return x, y
 end
 
+function Widget:getAbsoluteCenter()
+	local x, y = self:getAbsolutePosition()
+	local width, height = self:getSize()
+	x = x + width / 2
+	y = y + height / 2
+
+	return x, y
+end
+
 function Widget:setPosition(x, y)
 	self.x = x or self.x
 	self.y = y or self.y
