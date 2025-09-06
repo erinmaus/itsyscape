@@ -287,7 +287,7 @@ function RockView:tick()
 		end
 
 		if r.progress ~= self.progress then
-			if r.progress < self.progress then
+			if r.progress > self.progress then
 				self:hit(self.shakeTime)
 			end
 
@@ -299,6 +299,8 @@ function RockView:tick()
 
 			if self.depleted then
 				self:deplete(self.depleteTime)
+			else
+				self:spawn(self.depleteTime)
 			end
 		end
 	end
