@@ -22,8 +22,23 @@ function MapMotion:new(map)
 end
 
 function MapMotion:getReferenceY(e)
-	local y = e.y / 30
+	local tile, i, j = self:getTile()
+	local map = self:getMap()
 
+	if tile and i and j and map then
+		local min = Vector(map:getCellSize() * (i - 1), -10000, map:getCellSize() * (j - 1))
+		local max = Vector(map:getCellSize() * i, 10000, map:getCellSize() * j)
+		min, max = Vector.transformBounds(min, max, e.transform)
+
+		local hit, point = e.ray:hitBounds(min, max)
+		if hit and point then
+			return point.y
+		else
+			return map:getTileCenter(i, j).y
+		end
+	end
+
+	local y = e.y / 30
 	return -y
 end
 
@@ -62,7 +77,6 @@ function MapMotion:onMousePressed(e)
 	if #tiles >= 1 and e.button == 1 then
 		local v = e.ray.origin:cross(e.forward)
 		self.isDragging = true
-		self.referenceY = math.floor(self:getReferenceY(e))
 		self.tile = tiles[1][Map.RAY_TEST_RESULT_TILE]
 		self.tileI = tiles[1][Map.RAY_TEST_RESULT_I]
 		self.tileJ = tiles[1][Map.RAY_TEST_RESULT_J]
@@ -100,7 +114,8 @@ function MapMotion:onMousePressed(e)
 				end
 			end
 		end
-		
+
+		self.referenceY = self:getReferenceY(e)
 		self:beginPerform(e)
 	end
 end
@@ -148,12 +163,16 @@ function MapMotion:onMouseMoved(e)
 	if self.isDragging then
 		-- Using the Z-axis as the reference point, compute how far along
 		-- the Y-axis the ray has moved and adjust corners by amount.
-		local y = math.floor(self:getReferenceY(e))
-		local distance = y - self.referenceY
+		local y = self:getReferenceY(e)
+		local center = self.map:getTileCenter(self.tileI, self.tileJ)
+		local distance = y - center.y
 
 		if math.abs(distance) >= 1 then
-			self:perform(e, distance)
-			self.referenceY = y
+			local d = math.abs(distance)
+			while d >= 1 do
+				self:perform(e, math.sign(distance))
+				d = d - 1
+			end
 
 			return true
 		end

@@ -9,6 +9,21 @@
 --------------------------------------------------------------------------------
 
 local ORES = {
+	["Shell"] = {
+		name = "Shell fossil",
+
+		tier = 15,
+		weight = 6,
+		health = 100,
+
+		uniques = {
+			"SmallShellFossil",
+			"LargeShellFossil",
+			"SmallTrilobiteFossil",
+			"LargeTrilobiteFossil"
+		}
+	},
+
 	["AncientWhale"] = {
 		name = "Ancient whale skull",
 		item = "AncientWhaleSkull",
@@ -61,47 +76,67 @@ local ORES = {
 
 for name, ore in spairs(ORES) do
 	local ItemName = string.format("%sFossil", name)
-	local Ore = ItsyScape.Resource.Item(ore.item)
+	local Ore = ore.item and ItsyScape.Resource.Item(ore.item)
 
-	ItsyScape.Meta.Item {
-		Value = ItsyScape.Utility.valueForItem(ore.tier + 10) * 2,
-		Weight = ore.weight,
-		Resource = Ore
-	}
+	if Ore then
+		ItsyScape.Meta.Item {
+			Value = ItsyScape.Utility.valueForItem(ore.tier + 10) * 2,
+			Weight = ore.weight,
+			Resource = Ore
+		}
 
-	ItsyScape.Meta.ResourceCategory {
-		Key = "Fossil",
-		Value = name,
-		Resource = Ore
-	}
+		ItsyScape.Meta.ResourceCategory {
+			Key = "Fossil",
+			Value = name,
+			Resource = Ore
+		}
 
-	ItsyScape.Meta.ResourceName {
-		Value = ore.name,
-		Language = "en-US",
-		Resource = Ore
-	}
+		ItsyScape.Meta.ResourceName {
+			Value = ore.name,
+			Language = "en-US",
+			Resource = Ore
+		}
+	end
 
 	local RockName = string.format("%sFossil", name)
 	local Rock = ItsyScape.Resource.Prop(RockName)
 
 	local MineAction = ItsyScape.Action.Mine()
 
-	MineAction {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Mining",
-			Count = ItsyScape.Utility.xpForLevel(math.max(ore.tier, 0) + 20)
-		},
+	if Ore then
+		MineAction {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Mining",
+				Count = ItsyScape.Utility.xpForLevel(math.max(ore.tier, 0) + 20)
+			},
 
-		Output {
-			Resource = ItsyScape.Resource.Skill "Mining",
-			Count = ItsyScape.Utility.xpForResource(math.max(ore.tier, 1) + 20) * 3
-		},
+			Output {
+				Resource = ItsyScape.Resource.Skill "Mining",
+				Count = ItsyScape.Utility.xpForResource(math.max(ore.tier, 1) + 20) * 3
+			},
 
-		Output {
-			Resource = Ore,
-			Count = 1
+			Output {
+				Resource = Ore,
+				Count = 1
+			}
 		}
-	}
+	else
+		MineAction {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Mining",
+				Count = ItsyScape.Utility.xpForLevel(math.max(ore.tier, 0) + 20)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Skill "Mining",
+				Count = ItsyScape.Utility.xpForResource(math.max(ore.tier, 1) + 20) * 3
+			}
+		}
+
+		ItsyScape.Meta.HiddenFromSkillGuide {
+			Action = MineAction
+		}
+	end
 
 	ItsyScape.Meta.ActionDifficulty {
 		Value = math.max(ore.tier + 15),
@@ -155,6 +190,19 @@ for name, ore in spairs(ORES) do
 end
 
 ItsyScape.Meta.ResourceDescription {
+	Value = "Full of sea creature fossils.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "ShellFossil"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 1.5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "ShellFossil"
+}
+
+ItsyScape.Meta.ResourceDescription {
 	Value = "The velocirex was an early, flightless dragon. Archeologists theorize it couldn't breathe fire because its bones couldn't withstand the heat.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Item "AncientVelocirexSkull"
@@ -193,3 +241,172 @@ ItsyScape.Meta.MapObjectSize {
 	OffsetY = 2.5,
 	MapObject = ItsyScape.Resource.Prop "AncientWhaleFossil"
 }
+
+ItsyScape.Resource.Item "SmallShellFossil" {
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Count = ItsyScape.Utility.xpForLevel(15),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = ItsyScape.Utility.xpForResource(15),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = 1,
+			Resource = ItsyScape.Resource.Item "SmallShellFossil"
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Shell fossil",
+	Resource = ItsyScape.Resource.Item "SmallShellFossil"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "A small shell fossil from a sea creature of a time primeval.",
+	Resource = ItsyScape.Resource.Item "SmallShellFossil"
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Value = ItsyScape.Utility.valueForItem(20),
+	Resource = ItsyScape.Resource.Item "SmallShellFossil"
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 500,
+	Resource = ItsyScape.Resource.Item "SmallShellFossil"
+}
+
+ItsyScape.Resource.Item "LargeShellFossil" {
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Count = ItsyScape.Utility.xpForLevel(25),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = ItsyScape.Utility.xpForResource(25),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = 1,
+			Resource = ItsyScape.Resource.Item "LargeShellFossil"
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Large shell fossil",
+	Resource = ItsyScape.Resource.Item "LargeShellFossil"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "A rare, large shell fossil from a time immemorial. If only fossils could speak...",
+	Resource = ItsyScape.Resource.Item "LargeShellFossil"
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Value = ItsyScape.Utility.valueForItem(20),
+	Resource = ItsyScape.Resource.Item "LargeShellFossil"
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 250,
+	Resource = ItsyScape.Resource.Item "LargeShellFossil"
+}
+
+ItsyScape.Resource.Item "SmallTrilobyteFossil" {
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Count = ItsyScape.Utility.xpForLevel(15),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = ItsyScape.Utility.xpForResource(15),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = 1,
+			Resource = ItsyScape.Resource.Item "SmallTrilobyteFossil"
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Trilobyte fossil",
+	Resource = ItsyScape.Resource.Item "SmallTrilobyteFossil"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "A small trilobyte fossil... Ew, how gross this must've been! Like a cockroach crustacean hybrid...",
+	Resource = ItsyScape.Resource.Item "SmallTrilobyteFossil"
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Value = ItsyScape.Utility.valueForItem(20),
+	Resource = ItsyScape.Resource.Item "SmallTrilobyteFossil"
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 300,
+	Resource = ItsyScape.Resource.Item "SmallTrilobyteFossil"
+}
+
+ItsyScape.Resource.Item "LargeTrilobyteFossil" {
+	ItsyScape.Action.ObtainSecondary() {
+		Requirement {
+			Count = ItsyScape.Utility.xpForLevel(25),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = ItsyScape.Utility.xpForResource(25),
+			Resource = ItsyScape.Resource.Skill "Mining"
+		},
+
+		Output {
+			Count = 1,
+			Resource = ItsyScape.Resource.Item "LargeTrilobyteFossil"
+		}
+	}
+}
+
+ItsyScape.Meta.ResourceName {
+	Language = "en-US",
+	Value = "Large trilobyte fossil",
+	Resource = ItsyScape.Resource.Item "LargeTrilobyteFossil"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Language = "en-US",
+	Value = "A large trilobyte fossil. Makes the skin crawl...",
+	Resource = ItsyScape.Resource.Item "LargeTrilobyteFossil"
+}
+
+ItsyScape.Meta.Item {
+	Stackable = 1,
+	Value = ItsyScape.Utility.valueForItem(20),
+	Resource = ItsyScape.Resource.Item "LargeTrilobyteFossil"
+}
+
+ItsyScape.Meta.SecondaryWeight {
+	Weight = 150,
+	Resource = ItsyScape.Resource.Item "LargeTrilobyteFossil"
+}
+

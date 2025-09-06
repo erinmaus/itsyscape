@@ -649,7 +649,8 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 		left = self:getCamera():getLeft(),
 		zoom = self:getCamera():getDistance(),
 		eye = self:getCamera():getEye(),
-		camera = self:getCamera()
+		camera = self:getCamera(),
+		transform = mapSceneNode:getTransform():getGlobalTransform()
 	}
 end
 
@@ -890,8 +891,11 @@ function MapEditorApplication:mousePress(x, y, button)
 								local z = (j - 1 + 0.5) * motion:getMap():getCellSize()
 
 								local peep = p:getPeep()
-								local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
-								position.position = Vector(x, y, z)
+
+								peep:listen("ready", function()
+									local position = peep:getBehavior(require "ItsyScape.Peep.Behaviors.PositionBehavior")
+									position.position = Vector(x, y, z)
+								end)
 
 								local function makeDefaultName(name)
 									if not name or name == "" then
