@@ -1216,8 +1216,6 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled, pa
 		transform:setLocalScale(scale)
 		transform:setLocalOffset(offset)
 
-		Log.info(">>>>>>> move %s %d, %d, %d", m.filename, (position or Vector.ZERO):get())
-
 		love.thread.getChannel('ItsyScape.Map::input'):push({
 			type = "transform",
 			key = layer,
@@ -1719,9 +1717,14 @@ function GameView:spawnItem(item, tile, position)
 		local lootIconNode = DecorationSceneNode()
 		lootIconNode:fromGroup(self.itemBagMesh, "icon")
 
+		local iconFilename = string.format("Resources/Game/Items/%s/Icon.png", item.id)
+		if not love.filesystem.getInfo(iconFilename) then
+			iconFilename = "Resources/Game/Items/Null/Icon.png"
+		end
+
 		local texture = self.resourceManager:queue(
 			TextureResource,
-			string.format("Resources/Game/Items/%s/Icon.png", item.id),
+			iconFilename,
 			function(texture)
 				lootIconNode:getMaterial():setTextures(texture)
 			end)
