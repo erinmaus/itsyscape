@@ -399,6 +399,8 @@ function RichTextLabelRenderer:draw(widget, state)
 			widget:onScroll(renderer.scrollY)
 			text.scrollY = renderer.scrollY
 		end
+
+		itsyrealm.graphics.replay(text.replay)
 	else
 		itsyrealm.graphics.replay(self.texts[widget].replay)
 	end
