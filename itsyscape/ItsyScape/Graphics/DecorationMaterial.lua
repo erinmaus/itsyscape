@@ -210,9 +210,9 @@ function DecorationMaterial:loadFromTable(t)
 		self.properties.isTranslucent = nil
 	end
 
-	if properties.isReflective ~= nil then
-		self.set.isReflective = true
-		self.properties.isReflectiveOrRefractive = not not properties.isReflective
+	if properties.isReflectiveOrRefractive ~= nil then
+		self.set.isReflectiveOrRefractive = true
+		self.properties.isReflectiveOrRefractive = not not properties.isReflectiveOrRefractive
 	else
 		self.properties.isReflectiveOrRefractive = false
 	end

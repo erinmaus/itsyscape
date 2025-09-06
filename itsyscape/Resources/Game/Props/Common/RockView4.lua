@@ -52,9 +52,9 @@ function RockView:getOreMaterial()
 
 		properties = {
 			isReflectiveOrRefractive = true,
-			reflectionPower = 1,
-			reflectionDistance = 10,
-			roughness = 0.5
+			reflectionPower = 0.5,
+			reflectionDistance = 0.5,
+			roughness = 1
 		}
 	})
 end

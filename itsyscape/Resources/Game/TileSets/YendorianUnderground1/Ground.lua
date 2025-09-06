@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
 local GroundDecorations = require "ItsyScape.World.GroundDecorationsV2"
+local Block = require "ItsyScape.World.GroundDecorations.Block"
 local WoodBlock = require "ItsyScape.World.GroundDecorations.WoodBlockV2"
 local GrassBlock = require "ItsyScape.World.GroundDecorations.GrassBlockV2"
 local VineBlock = require "ItsyScape.World.GroundDecorations.VineBlockV2"
@@ -103,6 +104,8 @@ function ViziersRockGround:new()
 	})
 
 	self:registerTile("stone", RandomBlock:Bind(self) {
+		GROUP = Block.GROUP_SHINY,
+
 		FEATURE_THRESHOLD = 0,
 		SATURATION = 1,
 
@@ -124,6 +127,8 @@ function ViziersRockGround:new()
 	})
 
 	self:registerTile("stone_purple", RandomBlock:Bind(self) {
+		GROUP = Block.GROUP_SHINY,
+
 		FEATURE_THRESHOLD = 0,
 		SATURATION = 1,
 

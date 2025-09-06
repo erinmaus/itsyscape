@@ -783,9 +783,9 @@ function GameView:updateGroundDecorations(m)
 
 			if group == Block.GROUP_SHINY then
 				sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
-				sceneNode:getMaterial():setReflectionPower(1.0)
-				sceneNode:getMaterial():setReflectionDistance(0.75)
-				sceneNode:getMaterial():setRoughness(0.5)
+				sceneNode:getMaterial():setReflectionPower(0.5)
+				sceneNode:getMaterial():setReflectionDistance(0.5)
+				sceneNode:getMaterial():setRoughness(1)
 			elseif group == Block.GROUP_BENDY then
 				local newTexture = m.decorationTextures[d.texture:getID()]
 				if not newTexture then
