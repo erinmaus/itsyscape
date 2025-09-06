@@ -19,8 +19,8 @@ local ORES = {
 		uniques = {
 			"SmallShellFossil",
 			"LargeShellFossil",
-			"SmallTrilobiteFossil",
-			"LargeTrilobiteFossil"
+			"SmallTrilobyteFossil",
+			"LargeTrilobyteFossil"
 		}
 	},
 
@@ -181,6 +181,22 @@ for name, ore in spairs(ORES) do
 	end
 
 	Rock(SecondaryActions)
+
+	local UniqueActions = {}
+	if ore.uniques then
+		for i = 1, #ore.uniques do
+			local Action = ItsyScape.Action.ObtainSecondary() {
+				Output {
+					Resource = ItsyScape.Resource.Item(ore.uniques[i]),
+					Count = 1
+				}
+			}
+			
+			table.insert(UniqueActions, Action)
+		end
+	end
+
+	Rock(UniqueActions)
 
 	ItsyScape.Meta.ResourceName {
 		Value = ore.name,
