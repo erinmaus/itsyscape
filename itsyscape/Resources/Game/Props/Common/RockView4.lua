@@ -14,6 +14,7 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local PropView = require "ItsyScape.Graphics.PropView"
@@ -45,6 +46,23 @@ function RockView:new(...)
 	PropView.new(self, ...)
 end
 
+function RockView:getOreMaterial()
+	return DecorationMaterial({
+		shader = false,
+
+		properties = {
+			isReflectiveOrRefractive = true,
+			reflectionPower = 1,
+			reflectionDistance = 10,
+			roughness = 0.5
+		}
+	})
+end
+
+function RockView:getRockMaterial()
+	return DecorationMaterial({ shader = false })
+end
+
 function RockView:getOreTextureFilename()
 	return Class.ABSTRACT()
 end
@@ -71,9 +89,8 @@ function RockView:getParticleSystem()
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.5 },
-				speed = { 2, 3 },
-				normal = { true }
+				radius = { 0.5, 0.75 },
+				speed = { 2, 3 }
 			},
 			{
 				type = "RandomColorEmitter",
@@ -199,7 +216,7 @@ function RockView:load()
 		local _, rockGroup = self:getRockModelFilename()
 
 		local node = DecorationSceneNode()
-		node:fromGroup(self.oreMesh, rockGroup)
+		node:fromGroup(self.rockMesh, rockGroup)
 		node:setParent(self.proxyRoot)
 
 		local material = node:getMaterial()
@@ -207,10 +224,15 @@ function RockView:load()
 		material:setShader(self.rockShader)
 		material:setOutlineThreshold(-0.01)
 
-		material:send(material.UNIFORM_FLOAT, "scape_TriplanarScale", -0.5)
+		material:send(material.UNIFORM_FLOAT, "scape_TriplanarScale", 0)
 		material:send(material.UNIFORM_FLOAT, "scape_TriplanarOffset", 0)
 		material:send(material.UNIFORM_FLOAT, "scape_TriplanarExponent", 0)
 		material:send(material.UNIFORM_FLOAT, "scape_SpecularWeight", 1)
+
+		local rockMaterial = self:getRockMaterial()
+		if rockMaterial then
+			rockMaterial:apply(node, self:getResources())
+		end
 
 		self.rockNode = node
 	end)
@@ -226,6 +248,11 @@ function RockView:load()
 		material:setTextures(self.oreTexture)
 		material:setShader(self.oreShader)
 		material:setOutlineThreshold(0.5)
+
+		local oreMaterial = self:getOreMaterial()
+		if oreMaterial then
+			oreMaterial:apply(node, self:getResources())
+		end
 
 		self.oreNode = node
 	end)
@@ -259,12 +286,12 @@ end
 
 function RockView:spawn(time)
 	self.isDepleted = false
-	self.depleteTime = math.max(self.FADE_TIME_SECONDS - (time or 0), self.FADE_TIME_SECONDS)
+	self.depleteTime = math.clamp(self.FADE_TIME_SECONDS - (time or 0), 0, self.FADE_TIME_SECONDS)
 end
 
 function RockView:hit(time)
 	self.shakeInterval = 0
-	self.shakeTime = math.max(self.SHAKE_TIME_SECONDS - (time or 0), self.SHAKE_TIME_SECONDS)
+	self.shakeTime = math.clamp(self.SHAKE_TIME_SECONDS - (time or 0), 0, self.SHAKE_TIME_SECONDS)
 	self.isShaking = self.shakeTime > 0
 
 	if self.progress > 0 and self.isShaking and self.dustNode then
@@ -318,7 +345,7 @@ function RockView:updateDeplete(delta)
 	alpha = Tween.sineEaseOut(alpha)
 
 	if self.oreNode then
-		self.oreNode:getMaterial():setColor(Color(1, 1, 1, alpha))
+		self.oreNode:getMaterial():setAlpha(alpha)
 	end
 
 	if self.rockNode then

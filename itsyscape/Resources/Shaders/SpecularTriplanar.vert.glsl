@@ -7,9 +7,10 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	frag_ModelPosition = position.xyz;
+	frag_ModelPosition = (scape_WorldMatrix * position).xyz;
 	frag_ModelNormal = VertexNormal;
 
 	localPosition = position.xyz;
 	projectedPosition = modelViewProjectionMatrix * position;
+
 }

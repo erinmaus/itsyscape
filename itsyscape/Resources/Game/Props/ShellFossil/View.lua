@@ -9,11 +9,22 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local RockView = require "Resources.Game.Props.Common.RockView4"
 
 local ShellFossilView = Class(RockView)
 
 ShellFossilView.DUST_PARTICLE_COLOR = Color.fromHexString("a69680")
+
+function ShellFossilView:getOreMaterial()
+	return DecorationMaterial({
+		shader = false,
+
+		uniforms = {
+			scape_TriplanarScale = { "float", -0.5 },
+		}
+	})
+end
 
 function ShellFossilView:getOreTextureFilename()
 	return "Resources/Game/Props/ShellFossil/Fossil.png"

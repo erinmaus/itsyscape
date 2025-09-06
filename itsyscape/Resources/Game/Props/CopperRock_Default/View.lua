@@ -8,12 +8,27 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local RockView = require "Resources.Game.Props.Common.RockView2"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
+local RockView = require "Resources.Game.Props.Common.RockView4"
 
 local CopperRockView = Class(RockView)
 
-function CopperRockView:getTextureFilename()
-	return "Resources/Game/Props/CopperRock_Default/Texture.png"
+function CopperRockView:getRockMaterial()
+	return RockView.getRockMaterial(self):replace(DecorationMaterial({
+		shader = false,
+
+		uniforms = {
+			scape_TriplanarScale = { "float", -0.5 }
+		}
+	}))
+end
+
+function CopperRockView:getOreTextureFilename()
+	return "Resources/Game/Props/CopperRock_Default/Ore.png"
+end
+
+function CopperRockView:getRockTextureFilename()
+	return "Resources/Game/Props/CopperRock_Default/Rock.png"
 end
 
 return CopperRockView

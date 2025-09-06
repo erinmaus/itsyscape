@@ -11,6 +11,8 @@
 local ORES = {
 	["Shell"] = {
 		name = "Shell fossil",
+		item = "SmallShellFossil",
+		hidden = true,
 
 		tier = 15,
 		weight = 6,
@@ -76,7 +78,7 @@ local ORES = {
 
 for name, ore in spairs(ORES) do
 	local ItemName = string.format("%sFossil", name)
-	local Ore = ore.item and ItsyScape.Resource.Item(ore.item)
+	local Ore = not ore.hidden and ItsyScape.Resource.Item(ore.item)
 
 	if Ore then
 		ItsyScape.Meta.Item {
@@ -130,6 +132,11 @@ for name, ore in spairs(ORES) do
 			Output {
 				Resource = ItsyScape.Resource.Skill "Mining",
 				Count = ItsyScape.Utility.xpForResource(math.max(ore.tier, 1) + 20) * 3
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item(ore.item),
+				Count = 1
 			}
 		}
 
