@@ -221,6 +221,15 @@ function Material:setColor(value)
 	self._handle:setColor((value or Color(1)):get())
 end
 
+function Material:getAlpha()
+	return self:getColor().a
+end
+
+function Material:setAlpha(value)
+	local c = self:getColor()
+	self:setColor(Color(c.r, c.g, c.b, value))
+end
+
 function Material:getOutlineColor()
 	return Color(self._handle:getOutlineColor())
 end

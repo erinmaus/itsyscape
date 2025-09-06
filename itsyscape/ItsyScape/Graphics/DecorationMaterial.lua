@@ -22,6 +22,7 @@ function DecorationMaterial:new(d)
 	self.uniforms = {}
 	self.properties = {
 		color = Color(1),
+		alpha = 1,
 		outlineColor = Color(0),
 		outlineThreshold = 0.5,
 		isReflectiveOrRefractive = false,
@@ -29,6 +30,7 @@ function DecorationMaterial:new(d)
 		reflectionDistance = 2,
 		roughness = 0
 	}
+	self.set = {}
 
 	self.textures = {}
 	self.texture = false
@@ -78,30 +80,38 @@ function DecorationMaterial:apply(sceneNode, resourceManager)
 	end
 
 	resourceManager:queueEvent(function()
-		material:setTextures(unpack(textures))
+		if #textures >= 1 then
+			material:setTextures(unpack(textures))
+		end
 	end)
 
-	resourceManager:queue(
-		ShaderResource,
-		self.shader,
-		function(shader)
-			material:setShader(shader)
-		end)
+	if self.shader then
+		resourceManager:queue(
+			ShaderResource,
+			self.shader,
+			function(shader)
+				material:setShader(shader)
+			end)
+	end
 
 	resourceManager:queueEvent(function()
 		for uniformName, uniformValue in pairs(self.uniforms) do
-			if uniformValue.type == "texture" then
-				material:send(Material.UNIFORM_TEXTURE, uniformName, textures[uniformValue.value[1]]:getResource())
-			elseif uniformValue.type == "float" then
-				material:send(Material.UNIFORM_FLOAT, uniformName, uniformValue.value)
-			elseif uniformValue.type == "integer" then
-				material:send(Material.UNIFORM_INTEGER, uniformName, uniformValue.value)
+			if uniformValue then
+				if uniformValue.type == "texture" then
+					material:send(Material.UNIFORM_TEXTURE, uniformName, textures[uniformValue.value[1]]:getResource())
+				elseif uniformValue.type == "float" then
+					material:send(Material.UNIFORM_FLOAT, uniformName, uniformValue.value)
+				elseif uniformValue.type == "integer" then
+					material:send(Material.UNIFORM_INTEGER, uniformName, uniformValue.value)
+				end
 			end
 		end
 
 		for name, property in pairs(self.properties) do
-			local func = "set" .. name:sub(1, 1):upper() .. name:sub(2)
-			material[func](material, property)
+			if self.set[name] then
+				local func = "set" .. name:sub(1, 1):upper() .. name:sub(2)
+				material[func](material, property)
+			end
 		end
 	end)
 end
@@ -115,37 +125,49 @@ function DecorationMaterial:loadFromFile(filename)
 end
 
 function DecorationMaterial:loadFromTable(t)
-	self.shader = t.shader or self.shader
+	self.shader = t.shader == nil and self.shader or t.shader
 	self.texture = t.texture or false
+
+	self.set.texture = t.texture ~= nil
+	self.set.shader = t.shader ~= nil
 
 	table.clear(self.uniforms)
 	table.clear(self.textures)
 
 	if t.uniforms then
 		for uniformName, inUniformValue in pairs(t.uniforms) do
-			local uniformType = inUniformValue[1]
+			if inUniformValue then
+				local uniformType = inUniformValue[1]
 
-			local outUniformValue
-			if uniformType == "texture" then
-				table.insert(self.textures, inUniformValue[2])
-				if self.texture then
-					outUniformValue = { #self.textures + 1 }
+				local outUniformValue
+				if uniformType == "texture" then
+					table.insert(self.textures, inUniformValue[2])
+					if self.texture then
+						outUniformValue = { #self.textures + 1 }
+					else
+						outUniformValue = { #self.textures }
+					end
 				else
-					outUniformValue = { #self.textures }
+					outUniformValue = { unpack(inUniformValue, 2, #inUniformValue) }
 				end
-			else
-				outUniformValue = { unpack(inUniformValue, 2, #inUniformValue) }
-			end
 
-			self.uniforms[uniformName] = {
-				type = uniformType,
-				value = outUniformValue
-			}
+				self.uniforms[uniformName] = {
+					type = uniformType,
+					value = outUniformValue
+				}
+			else
+				self.uniforms[uniformName] = {
+					type = "unset",
+					value = false
+				}
+			end
 		end
 	end
 
 	local properties = t.properties or {}
 	if properties.color ~= nil then
+		self.set.color = true
+
 		if type(properties.color) == "string" then
 			self.properties.color = Color.fromHexString(properties.color)
 		else
@@ -155,7 +177,16 @@ function DecorationMaterial:loadFromTable(t)
 		self.properties.color = Color(1)
 	end
 
+	if properties.alpha ~= nil then
+		self.set.alpha = true
+		self.properties.alpha = properties.alpha
+	else
+		self.properties.alpha = 1
+	end
+
 	if properties.outlineColor ~= nil then
+		self.set.outlineColor = true
+
 		if type(properties.outlineColor) == "string" then
 			self.properties.outlineColor = Color.fromHexString(properties.outlineColor)
 		else
@@ -166,67 +197,113 @@ function DecorationMaterial:loadFromTable(t)
 	end
 
 	if properties.outlineThreshold ~= nil then
+		self.set.outlineThreshold = true
 		self.properties.outlineThreshold = properties.outlineThreshold
 	else
 		self.properties.outlineThreshold = 0.5
 	end
 
 	if properties.isTranslucent ~= nil then
+		self.set.isTranslucent = true
 		self.properties.isTranslucent = not not properties.isTranslucent
 	else
 		self.properties.isTranslucent = nil
 	end
 
 	if properties.isReflective ~= nil then
+		self.set.isReflective = true
 		self.properties.isReflectiveOrRefractive = not not properties.isReflective
 	else
 		self.properties.isReflectiveOrRefractive = false
 	end
 
 	if properties.isRefractive ~= nil then
+		self.set.isRefractive = true
 		self.properties.isRefractiveOrRefractive = not not properties.isRefractive
 	end
 
 	if properties.reflectionPower ~= nil then
+		self.set.reflectionPower = true
 		self.properties.reflectionPower = properties.reflectionPower
 	else
 		self.properties.reflectionPower = 1
 	end
 
 	if properties.reflectionDistance ~= nil then
+		self.set.reflectionDistance = true
 		self.properties.reflectionDistance = properties.reflectionDistance
 	else
 		self.properties.reflectionDistance = 2
 	end
 
 	if properties.roughness ~= nil then
+		self.set.roughness = true
 		self.properties.roughness = properties.roughness
 	else
 		self.properties.roughness = 0
 	end
 end
 
+function DecorationMaterial:replace(other)
+	local o = other:serialize()
+
+	local result = self:serialize()
+	if o.shader then
+		result.shader = o.shader
+	end
+
+	if o.texture then
+		result.texture = o.texture
+	end
+
+	for k, v in pairs(o.properties) do
+		result.properties[k] = v
+	end
+
+	for k, v in pairs(o.uniforms) do
+		result.uniforms[k] = v
+	end
+
+	return DecorationMaterial(result)
+end
+
 function DecorationMaterial:serialize()
+	local shader
+	if self.set.shader then
+		shader = self.shader
+	end
+
+	local texture
+	if self.set.texture then
+		texture = self.texture
+	end
+
 	local result = {
-			shader = self.shader,
-			texture = self.texture,
+			shader = shader,
+			texture = texture,
 			uniforms = {},
 			properties = {
-				color = self.properties.color:toHexString(),
-				outlineColor = self.properties.outlineColor:toHexString(),
-				outlineThreshold = self.properties.outlineThreshold,
-				isTranslucent = self.properties.isTranslucent,
-				isReflectiveOrRefractive = self.properties.isReflectiveOrRefractive,
-				reflectionPower = self.properties.reflectionPower,
-				reflectionDistance = self.properties.reflectionDistance,
-				roughness = self.properties.roughness
+				color = self.set.color and self.properties.color:toHexString() or nil,
+				alpha = self.set.alpha and self.properties.alpha or nil,
+				outlineColor = self.set.outlineColor and self.properties.outlineColor:toHexString() or nil,
+				outlineThreshold = self.set.outlineThreshold and self.properties.outlineThreshold or nil,
+				isTranslucent = self.set.isTranslucent and self.properties.isTranslucent or nil,
+				isReflectiveOrRefractive = self.set.isReflectiveOrRefractive and self.properties.isReflectiveOrRefractive or nil,
+				reflectionPower = self.set.reflectionPower and self.properties.reflectionPower or nil,
+				reflectionDistance = self.set.reflectionDistance and self.properties.reflectionDistance or nil,
+				roughness = self.set.roughness and self.properties.roughness or nil
 			}
 		}
+
 	for uniformName, uniformValue in pairs(self.uniforms) do
-		result.uniforms[uniformName] = {
-			uniformValue.type,
-			unpack(uniformValue.value)
-		}
+		if uniformValue.type ~= "unset" then
+			result.uniforms[uniformName] = {
+				uniformValue.type,
+				unpack(uniformValue.value)
+			}
+		else
+			result.uniforms[uniformValue] = false
+		end
 	end
 
 	return result
