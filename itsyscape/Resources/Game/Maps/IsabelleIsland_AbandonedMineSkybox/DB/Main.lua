@@ -1,5 +1,10 @@
 local M = include "Resources/Game/Maps/IsabelleIsland_AbandonedMineSkybox/DB/Default.lua"
 
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Maps.IsabelleIsland_AbandonedMineSkybox.Peep",
+	Resource = M._MAP
+}
+
 M["Light_Ambient"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

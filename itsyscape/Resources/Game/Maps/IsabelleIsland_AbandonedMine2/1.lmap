@@ -89623,7 +89623,7 @@
 			},
 		},
 		{
-			topLeft = 7, topRight = 7, bottomLeft = 7, bottomRight = 7,
+			topLeft = 10, topRight = 11, bottomLeft = 9, bottomRight = 10,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 9, flat = 7, decals = {  },
 			tileSetID = "YendorianUnderground1",

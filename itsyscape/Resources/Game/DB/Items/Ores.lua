@@ -8,11 +8,33 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+local DEFAULT_TIER = {
+	tierOffset = 0,
+	ores = 1,
+	healthMultiplier = 1,
+	healthFactor = 1,
+	name = "Default",
+}
+
+local DEFAULT_TIERS = {
+	DEFAULT_TIER
+}
+
 local ORES = {
 	["Copper"] = {
 		tier = 0,
 		weight = 10.5,
 		health = 4,
+		tiers = {
+			DEFAULT_TIER,
+			{
+				tierOffset = 30,
+				ores = 5,
+				healthMultiplier = 5,
+				healthFactor = 2,
+				name = "Superior" 
+			}
+		},
 		secondaries = {
 			"TableSalt",
 			"PurpleSaltPeter",
@@ -28,6 +50,16 @@ local ORES = {
 		tier = 0,
 		weight = 9.1,
 		health = 4,
+		tiers = {
+			DEFAULT_TIER,
+			{
+				tierOffset = 30,
+				ores = 5,
+				healthMultiplier = 5,
+				healthFactor = 2,
+				name = "Superior" 
+			}
+		},
 		secondaries = {
 			"TableSalt",
 			"PurpleSaltPeter",
@@ -207,105 +239,130 @@ for name, ore in spairs(ORES) do
 		Resource = Ore
 	}
 
-	local RockName = string.format("%sRock_Default", name)
-	local Rock = ItsyScape.Resource.Prop(RockName)
+	for _, tier in ipairs(ore.tiers or DEFAULT_TIERS) do
 
-	local MineAction = ItsyScape.Action.Mine()
+		local RockName = string.format("%sRock_%s", name, tier.name)
+		local Rock = ItsyScape.Resource.Prop(RockName)
 
-	MineAction {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Mining",
-			Count = ItsyScape.Utility.xpForLevel(math.max(ore.tier, 0))
-		},
+		local MineAction = ItsyScape.Action.Mine()
 
-		Output {
-			Resource = ItsyScape.Resource.Skill "Mining",
-			Count = ItsyScape.Utility.xpForResource(math.max(ore.tier, 1)) * 3
-		},
+		MineAction {
+			Requirement {
+				Resource = ItsyScape.Resource.Skill "Mining",
+				Count = ItsyScape.Utility.xpForLevel(math.max(ore.tier + tier.tierOffset, 0))
+			},
 
-		Output {
-			Resource = Ore,
-			Count = 1
+			Output {
+				Resource = ItsyScape.Resource.Skill "Mining",
+				Count = ItsyScape.Utility.xpForResource(math.max(ore.tier + tier.tierOffset, 1)) * 3
+			},
+
+			Output {
+				Resource = Ore,
+				Count = tier.ores,
+			}
 		}
-	}
 
-	ItsyScape.Meta.ActionDifficulty {
-		Value = math.max(ore.tier + 10),
-		Action = MineAction
-	}
+		ItsyScape.Meta.ActionDifficulty {
+			Value = math.max(ore.tier + 10),
+			Action = MineAction
+		}
 
-	ItsyScape.Meta.GatherableProp {
-		Health = ore.health,
-		SpawnTime = ore.tier + 10,
-		Resource = Rock
-	}
+		ItsyScape.Meta.GatherableProp {
+			Health = (ore.health ^ tier.healthFactor) * tier.healthMultiplier,
+			SpawnTime = ore.tier + 10,
+			Resource = Rock
+		}
 
-	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.BasicRock",
-		Resource = Rock
-	}
+		ItsyScape.Meta.PeepID {
+			Value = "Resources.Game.Peeps.Props.BasicRock",
+			Resource = Rock
+		}
 
-	ItsyScape.Meta.PropAnchor {
-		OffsetI = 0,
-		OffsetJ = 0,
-		Resource = Rock
-	}
+		ItsyScape.Meta.PropAnchor {
+			OffsetI = 0,
+			OffsetJ = 0,
+			Resource = Rock
+		}
 
-	Rock { MineAction }
+		Rock { MineAction }
 
-	local SecondaryActions = {}
-	if ore.secondaries then
-		for i = 1, #ore.secondaries do
-			local Action = ItsyScape.Action.ObtainSecondary() {
-				Output {
-					Resource = ItsyScape.Resource.Item(ore.secondaries[i]),
-					Count = 1
+		local SecondaryActions = {}
+		if ore.secondaries then
+			for i = 1, #ore.secondaries do
+				local Action = ItsyScape.Action.ObtainSecondary() {
+					Output {
+						Resource = ItsyScape.Resource.Item(ore.secondaries[i]),
+						Count = 1
+					}
 				}
-			}
 
-			ItsyScape.Meta.HiddenFromSkillGuide {
-				Action = Action
-			}
-			
-			table.insert(SecondaryActions, Action)
+				ItsyScape.Meta.HiddenFromSkillGuide {
+					Action = Action
+				}
+				
+				table.insert(SecondaryActions, Action)
+			end
 		end
-	end
 
-	Rock(SecondaryActions)
+		Rock(SecondaryActions)
 
-	ItsyScape.Meta.ResourceName {
-		Value = string.format("%s rock", ore.niceName or name),
-		Language = "en-US",
-		Resource = Rock
-	}
-
-	if ore.variants then
-		for i = 1, #ore.variants do
-			local VariantRockName = string.format("%sRock_%s", name, ore.variants[i])
-			local VariantRock = ItsyScape.Resource.Prop(VariantRockName)
-
-			VariantRock {
-				MineAction
+		if tier ~= DEFAULT_TIER then
+			ItsyScape.Meta.ResourceName {
+				Value = string.format("%s %s rock", tier.name, (ore.niceName or name):lower()),
+				Language = "en-US",
+				Resource = Rock
 			}
-
-			VariantRock(SecondaryActions)
-
+		else
 			ItsyScape.Meta.ResourceName {
 				Value = string.format("%s rock", ore.niceName or name),
 				Language = "en-US",
-				Resource = VariantRock
+				Resource = Rock
 			}
+		end
 
-			ItsyScape.Meta.PeepID {
-				Value = "Resources.Game.Peeps.Props.BasicRock",
-				Resource = VariantRock
-			}
+		if ore.variants then
+			for i = 1, #ore.variants do
+				local VariantRockName
+				if tier ~= DEFAULT_TIER then
+					VariantRockName = string.format("%sRock_%s_%s", name, tier.name, ore.variants[i])
+				else
+					VariantRockName = string.format("%sRock_%s", name, ore.variants[i])
+				end
 
-			ItsyScape.Meta.GatherableProp {
-				Health = ore.health,
-				SpawnTime = ore.tier + 10,
-				Resource = VariantRock
-			}
+				local VariantRock = ItsyScape.Resource.Prop(VariantRockName)
+
+				VariantRock {
+					MineAction
+				}
+
+				VariantRock(SecondaryActions)
+
+				if tier ~= DEFAULT_TIER then
+					ItsyScape.Meta.ResourceName {
+						Value = string.format("%s %s rock", tier.name, (ore.niceName or name):lower()),
+						Language = "en-US",
+						Resource = Rock
+					}
+				else
+					ItsyScape.Meta.ResourceName {
+						Value = string.format("%s rock", ore.niceName or name),
+						Language = "en-US",
+						Resource = VariantRock
+					}
+				end
+
+				ItsyScape.Meta.PeepID {
+					Value = "Resources.Game.Peeps.Props.BasicRock",
+					Resource = VariantRock
+				}
+
+				ItsyScape.Meta.GatherableProp {
+					Health = (ore.health ^ tier.healthFactor) * tier.healthMultiplier,
+					SpawnTime = ore.tier + 10,
+					Resource = Rock
+				}
+			end
 		end
 	end
 end

@@ -2,6 +2,54 @@ local M = {}
 
 M._MAP = ItsyScape.Resource.Map "IsabelleIsland_AbandonedMine2"
 
+M["AncientVelocirexFossil1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 107.000000,
+		PositionY = 9.000000,
+		PositionZ = 67.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "AncientVelocirexFossil1",
+		Map = M._MAP,
+		Resource = M["AncientVelocirexFossil1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "AncientVelocirexFossil",
+		MapObject = M["AncientVelocirexFossil1"]
+	}
+end
+
+M["AncientWhaleFossil1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37.000000,
+		PositionY = 9.000000,
+		PositionZ = 163.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "AncientWhaleFossil1",
+		Map = M._MAP,
+		Resource = M["AncientWhaleFossil1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "AncientWhaleFossil",
+		MapObject = M["AncientWhaleFossil1"]
+	}
+end
+
 M["Brazier_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -29,7 +77,7 @@ end
 M["CopperRock_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 59.448878,
+		PositionX = 59.000000,
 		PositionY = 16.000000,
 		PositionZ = 43.467203,
 		RotationX = 0.000000,
@@ -53,9 +101,9 @@ end
 M["CopperRock_Default2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 69.000000,
+		PositionX = 64.901329,
 		PositionY = 16.000000,
-		PositionZ = 36.000000,
+		PositionZ = 36.913738,
 		RotationX = 0.000000,
 		RotationY = -0.310482,
 		RotationZ = 0.000000,
@@ -77,9 +125,9 @@ end
 M["CopperRock_Default3"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 73.609595,
+		PositionX = 73.000000,
 		PositionY = 16.000000,
-		PositionZ = 49.523797,
+		PositionZ = 50.500000,
 		RotationX = 0.000000,
 		RotationY = -0.424458,
 		RotationZ = 0.000000,
@@ -98,12 +146,12 @@ do
 	}
 end
 
-M["Crate_Default11"] = ItsyScape.Resource.MapObject.Unique()
+M["CopperRock_Default4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 145.000000,
-		PositionY = 0.000000,
-		PositionZ = 137.000000,
+		PositionX = 49.000000,
+		PositionY = 9.000000,
+		PositionZ = 135.000000,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
 		RotationZ = 0.000000,
@@ -111,71 +159,143 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Crate_Default11",
+		Name = "CopperRock_Default4",
 		Map = M._MAP,
-		Resource = M["Crate_Default11"]
+		Resource = M["CopperRock_Default4"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Crate_Default1",
-		MapObject = M["Crate_Default11"]
+		Prop = ItsyScape.Resource.Prop "CopperRock_Default",
+		MapObject = M["CopperRock_Default4"]
 	}
 end
 
-M["Crate_Default12"] = ItsyScape.Resource.MapObject.Unique()
+M["CopperRock_Default5"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 147.000000,
-		PositionY = 0.000000,
-		PositionZ = 137.000000,
+		PositionX = 61.000000,
+		PositionY = 9.000000,
+		PositionZ = 143.000000,
 		RotationX = 0.000000,
-		RotationY = 0.000000,
+		RotationY = -0.994970,
 		RotationZ = 0.000000,
-		RotationW = 1.000000,
+		RotationW = 0.100172,
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Crate_Default12",
+		Name = "CopperRock_Default5",
 		Map = M._MAP,
-		Resource = M["Crate_Default12"]
+		Resource = M["CopperRock_Default5"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Crate_Default1",
-		MapObject = M["Crate_Default12"]
+		Prop = ItsyScape.Resource.Prop "CopperRock_Default",
+		MapObject = M["CopperRock_Default5"]
 	}
 end
 
-M["Crate_Default13"] = ItsyScape.Resource.MapObject.Unique()
+M["CopperRock_Default6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41.000000,
+		PositionY = 9.000000,
+		PositionZ = 135.000000,
+		RotationX = 0.000000,
+		RotationY = 0.999896,
+		RotationZ = 0.000000,
+		RotationW = 0.014399,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CopperRock_Default6",
+		Map = M._MAP,
+		Resource = M["CopperRock_Default6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CopperRock_Default",
+		MapObject = M["CopperRock_Default6"]
+	}
+end
+
+M["CopperRock_Superior1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 145.000000,
+		PositionY = 0.000000,
+		PositionZ = 137.000000,
+		RotationX = 0.000000,
+		RotationY = 0.691437,
+		RotationZ = 0.000000,
+		RotationW = 0.722437,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CopperRock_Superior1",
+		Map = M._MAP,
+		Resource = M["CopperRock_Superior1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CopperRock_Superior",
+		MapObject = M["CopperRock_Superior1"]
+	}
+end
+
+M["CopperRock_Superior2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 137.000000,
+		PositionY = 0.000000,
+		PositionZ = 147.000000,
+		RotationX = 0.000000,
+		RotationY = -0.999507,
+		RotationZ = 0.000000,
+		RotationW = -0.031403,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CopperRock_Superior2",
+		Map = M._MAP,
+		Resource = M["CopperRock_Superior2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CopperRock_Superior",
+		MapObject = M["CopperRock_Superior2"]
+	}
+end
+
+M["CopperRock_Superior3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 131.000000,
 		PositionY = 0.000000,
 		PositionZ = 139.000000,
 		RotationX = 0.000000,
-		RotationY = 0.000000,
+		RotationY = -0.199777,
 		RotationZ = 0.000000,
-		RotationW = 1.000000,
+		RotationW = 0.979841,
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Crate_Default13",
+		Name = "CopperRock_Superior3",
 		Map = M._MAP,
-		Resource = M["Crate_Default13"]
+		Resource = M["CopperRock_Superior3"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Crate_Default1",
-		MapObject = M["Crate_Default13"]
+		Prop = ItsyScape.Resource.Prop "CopperRock_Superior",
+		MapObject = M["CopperRock_Superior3"]
 	}
 end
 
-M["Crate_Default14"] = ItsyScape.Resource.MapObject.Unique()
+M["CopperRock_Superior4"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 143.000000,
-		PositionY = 0.000000,
-		PositionZ = 137.000000,
+		PositionX = 137.423410,
+		PositionY = 3.000000,
+		PositionZ = 113.697740,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
 		RotationZ = 0.000000,
@@ -183,14 +303,38 @@ do
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
-		Name = "Crate_Default14",
+		Name = "CopperRock_Superior4",
 		Map = M._MAP,
-		Resource = M["Crate_Default14"]
+		Resource = M["CopperRock_Superior4"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Crate_Default1",
-		MapObject = M["Crate_Default14"]
+		Prop = ItsyScape.Resource.Prop "CopperRock_Superior",
+		MapObject = M["CopperRock_Superior4"]
+	}
+end
+
+M["CopperRock_Superior5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43.000000,
+		PositionY = 9.000000,
+		PositionZ = 151.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "CopperRock_Superior5",
+		Map = M._MAP,
+		Resource = M["CopperRock_Superior5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "CopperRock_Superior",
+		MapObject = M["CopperRock_Superior5"]
 	}
 end
 
@@ -242,12 +386,60 @@ do
 	}
 end
 
+M["ShellFossil3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55.000000,
+		PositionY = 9.000000,
+		PositionZ = 123.000000,
+		RotationX = 0.000000,
+		RotationY = 0.382683,
+		RotationZ = 0.000000,
+		RotationW = 0.923880,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ShellFossil3",
+		Map = M._MAP,
+		Resource = M["ShellFossil3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ShellFossil",
+		MapObject = M["ShellFossil3"]
+	}
+end
+
+M["ShellFossil4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 40.906171,
+		PositionY = 9.000000,
+		PositionZ = 120.500000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 0.700735,
+		ScaleY = 0.700735,
+		ScaleZ = 0.700735,
+		Name = "ShellFossil4",
+		Map = M._MAP,
+		Resource = M["ShellFossil4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ShellFossil",
+		MapObject = M["ShellFossil4"]
+	}
+end
+
 M["TinRock_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 73.560644,
+		PositionX = 67.750000,
 		PositionY = 16.000000,
-		PositionZ = 35.347531,
+		PositionZ = 34.750000,
 		RotationX = 0.000000,
 		RotationY = 0.923447,
 		RotationZ = 0.000000,
@@ -269,9 +461,9 @@ end
 M["TinRock_Default2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 65.875000,
+		PositionX = 65.000000,
 		PositionY = 16.000000,
-		PositionZ = 36.000000,
+		PositionZ = 35.000000,
 		RotationX = 0.000000,
 		RotationY = -0.988324,
 		RotationZ = 0.000000,
@@ -295,7 +487,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 51.468750,
 		PositionY = 13.000000,
-		PositionZ = 57.562500,
+		PositionZ = 57.000000,
 		RotationX = 0.000000,
 		RotationY = 0.659034,
 		RotationZ = 0.000000,
@@ -311,6 +503,174 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "TinRock_Default",
 		MapObject = M["TinRock_Default3"]
+	}
+end
+
+M["TinRock_Default4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59.000000,
+		PositionY = 9.000000,
+		PositionZ = 149.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "TinRock_Default4",
+		Map = M._MAP,
+		Resource = M["TinRock_Default4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TinRock_Default",
+		MapObject = M["TinRock_Default4"]
+	}
+end
+
+M["TinRock_Default5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 45.000000,
+		PositionY = 9.000000,
+		PositionZ = 143.000000,
+		RotationX = 0.000000,
+		RotationY = -0.665337,
+		RotationZ = 0.000000,
+		RotationW = 0.746543,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "TinRock_Default5",
+		Map = M._MAP,
+		Resource = M["TinRock_Default5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TinRock_Default",
+		MapObject = M["TinRock_Default5"]
+	}
+end
+
+M["TinRock_Default6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 55.000000,
+		PositionY = 9.000000,
+		PositionZ = 153.000000,
+		RotationX = 0.000000,
+		RotationY = 0.953149,
+		RotationZ = 0.000000,
+		RotationW = 0.302501,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "TinRock_Default6",
+		Map = M._MAP,
+		Resource = M["TinRock_Default6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TinRock_Default",
+		MapObject = M["TinRock_Default6"]
+	}
+end
+
+M["TinRock_Superior1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 135.000000,
+		PositionY = 0.000000,
+		PositionZ = 139.000000,
+		RotationX = 0.000000,
+		RotationY = 0.924812,
+		RotationZ = 0.000000,
+		RotationW = 0.380425,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "TinRock_Superior1",
+		Map = M._MAP,
+		Resource = M["TinRock_Superior1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TinRock_Superior",
+		MapObject = M["TinRock_Superior1"]
+	}
+end
+
+M["TinRock_Superior2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 131.000000,
+		PositionY = 0.000000,
+		PositionZ = 147.000000,
+		RotationX = 0.000000,
+		RotationY = -0.541402,
+		RotationZ = 0.000000,
+		RotationW = -0.840764,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "TinRock_Superior2",
+		Map = M._MAP,
+		Resource = M["TinRock_Superior2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TinRock_Superior",
+		MapObject = M["TinRock_Superior2"]
+	}
+end
+
+M["TinRock_Superior3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 132.250000,
+		PositionY = 3.000000,
+		PositionZ = 119.500000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "TinRock_Superior3",
+		Map = M._MAP,
+		Resource = M["TinRock_Superior3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TinRock_Superior",
+		MapObject = M["TinRock_Superior3"]
+	}
+end
+
+M["TinRock_Superior5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 57.000000,
+		PositionY = 9.000000,
+		PositionZ = 137.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "TinRock_Superior5",
+		Map = M._MAP,
+		Resource = M["TinRock_Superior5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "TinRock_Superior",
+		MapObject = M["TinRock_Superior5"]
 	}
 end
 
