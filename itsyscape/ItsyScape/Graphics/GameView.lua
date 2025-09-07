@@ -19,6 +19,7 @@ local Building = require "ItsyScape.Graphics.Building"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
 local Material = require "ItsyScape.Graphics.Material"
@@ -1214,8 +1215,6 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 end
 
 function GameView:updateMapSky(layer, properties)
-	Log.info(">>>> updateMapSky %s", Log.dump(properties))
-
 	local m = self.mapMeshes[layer]
 	if not m then
 		return
@@ -1409,9 +1408,15 @@ function GameView:_updateMapWater(m, delta)
 		waterRimColor = previousAmbientColor:lerp(currentAmbientColor, _APP:getPreviousFrameDelta())
 	end
 
+	local windDirection, windSpeed, windPattern = self:getWind(m.layer)
+
 	for _, water in ipairs(m.water) do
 		local material = water.node:getMaterial()
 		material:send(material.UNIFORM_FLOAT, "scape_SkyColor", waterRimColor:get())
+
+		material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
+		material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
+		material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 	end
 end
 
@@ -1619,6 +1624,13 @@ function GameView:getWind(layer)
 	end
 
 	return Vector(-1, 0, -1):getNormal(), 4, Vector(5, 10, 15), self.whiteTexture:getResource()
+end
+
+function GameView:getSkyProperties(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.currentSkyProperties, m.previousSkyProperties
+	end
 end
 
 function GameView:addActor(actorID, actor)
@@ -2062,42 +2074,81 @@ function GameView:flood(key, water, layer)
 		water.y,
 		water.finesse)
 
-	if water.positionTimeScale then
-		node:setPositionTimeScale(water.positionTimeScale)
-	end
+	local _prepare = function()
+		if water.positionTimeScale then
+			node:setPositionTimeScale(water.positionTimeScale)
+		end
 
-	if water.textureTimeScale then
-		node:setTextureTimeScale(unpack(water.textureTimeScale))
-	end
+		if water.textureTimeScale then
+			node:setTextureTimeScale(unpack(water.textureTimeScale))
+		end
 
-	if water.yOffset then
-		node:setYOffset(water.yOffset)
-	end
+		if water.yOffset then
+			node:setYOffset(water.yOffset)
+		end
 
-	if water.isTranslucent or (water.alpha and water.alpha < 1) then
+		if water.isTranslucent or (water.alpha and water.alpha < 1) then
+			node:getMaterial():setIsTranslucent(true)
+		end
+
+		if water.alpha then
+			node:getMaterial():setColor(Color(1, 1, 1, water.alpha))
+		end
+
+		if water.reflectionDistance then
+			node:getMaterial():setIsReflectiveOrRefractive(true)
+			node:getMaterial():setReflectionDistance(water.reflectionDistance)
+		end
+
 		node:getMaterial():setIsTranslucent(true)
 	end
 
-	if water.alpha then
-		node:getMaterial():setColor(Color(1, 1, 1, water.alpha))
-	end
+	local materialFilename = string.format("Resources/Game/Water/%s/Material.lua", water.texture or "LightFoamyWater1")
+	if love.filesystem.getInfo(materialFilename) then
+		local material = DecorationMaterial(materialFilename)
+		material:apply(node, self.resourceManager)
 
-	if water.reflectionDistance then
-		node:getMaterial():setIsReflectiveOrRefractive(true)
-		node:getMaterial():setReflectionDistance(water.reflectionDistance)
-	end
+		self.resourceManager:queueEvent(_prepare)
 
-	node:getMaterial():setIsTranslucent(true)
-
-	self.resourceManager:queue(
-		TextureResource,
-		string.format("Resources/Game/Water/%s/Texture.png", water.texture or "LightFoamyWater1"),
-		function(resource)
-			node:getMaterial():setTextures(resource)
+		self.resourceManager:queueEvent(function()
 			node:setParent(parent)
-		end)
 
-	node:getMaterial():setOutlineThreshold(-1.0)
+			if not water.textureTimeScale then
+				local x, y = material:getUniformValue("scape_TimeScale")
+				if x and y then
+					node:setTextureTimeScale(x, y)
+				end
+			end
+
+			if not water.yOffset then
+				local y = material:getUniformValue("scape_YOffset")
+				if y then
+					node:setYOffset(y)
+				end
+			end
+		end)
+	else
+		self.resourceManager:queueEvent(_prepare)
+
+		self.resourceManager:queue(
+			TextureResource,
+			string.format("Resources/Game/Water/%s/Texture.png", water.texture or "LightFoamyWater1"),
+			function(resource)
+				node:getMaterial():setTextures(resource)
+				node:setParent(parent)
+			end)
+
+		self.resourceManager:queue(
+			TextureResource,
+			string.format("Resources/Game/Water/%s/Foam.png", water.texture or "LightFoamyWater1"),
+			function(resource)
+				local material = node:getMaterial()
+				material:send(material.UNIFORM_TEXTURE, "scape_FoamTexture", resource:getResource())
+			end)
+
+		node:getMaterial():setOutlineThreshold(-1.0)
+	end
+
 
 	local w = { node = node, layer = layer or 1 }
 

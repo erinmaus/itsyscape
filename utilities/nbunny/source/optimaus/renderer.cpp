@@ -252,6 +252,9 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	auto world_matrix = node.get_transform().get_global(delta);
 	shader_cache.update_uniform(shader, "scape_WorldMatrix", glm::value_ptr(world_matrix), sizeof(glm::mat4));
 
+	auto inverse_world_matrix = glm::inverse(world_matrix);
+	shader_cache.update_uniform(shader, "scape_InverseWorldMatrix", glm::value_ptr(inverse_world_matrix), sizeof(glm::mat4));
+
 	auto normal_matrix = node.get_transform().get_global(delta);
 	shader_cache.update_uniform(shader, "scape_NormalMatrix", glm::value_ptr(normal_matrix), sizeof(glm::mat4));
 
@@ -297,6 +300,12 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 
 		auto camera_eye = camera->get_eye_position();
 		shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec4));
+
+		auto camera_near = camera->get_near();
+		shader_cache.update_uniform(shader, "scape_CameraNear", &camera_near, sizeof(float));
+
+		auto camera_far = camera->get_far();
+		shader_cache.update_uniform(shader, "scape_CameraFar", &camera_far, sizeof(float));
 	}
 	else
 	{

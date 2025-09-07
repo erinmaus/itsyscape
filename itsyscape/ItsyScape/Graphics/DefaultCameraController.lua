@@ -1140,9 +1140,9 @@ function DefaultCameraController:draw()
 	else
 		self:getCamera():setRotation()
 
-		--if not _DEBUG then
+		if not _DEBUG then
 			self:_clampGround(horizontalOffset)
-		--end
+		end
 	end
 
 	self:getCamera():setHorizontalRotation(horizontalOffset + self.currentElevationHorizontalRotationOffset)

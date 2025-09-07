@@ -1236,6 +1236,8 @@ function LocalStage:loadMapResource(instance, filename, args)
 		local waterDirectoryPath = directoryPath .. "/Water"
 		for _, item in ipairs(love.filesystem.getDirectoryItems(waterDirectoryPath)) do
 			local data = "return " .. (love.filesystem.read(waterDirectoryPath .. "/" .. item) or "")
+			print(">>> data", data)
+			print(">>> filename", waterDirectoryPath .. "/" .. item)
 			local chunk = assert(loadstring(data))
 			water = setfenv(chunk, {})() or {}
 

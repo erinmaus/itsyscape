@@ -24,8 +24,8 @@ function WaterMesh:new(width, height, textureScale, i, j, positionScale)
 	self.width = width
 	self.height = height
 	self.textureScale = textureScale or 4
-	self.i = i or 0
-	self.j = j or 0
+	self.i = (i or 0)
+	self.j = (j or 0)
 	self.positionScale = positionScale or 1
 
 	self:_buildMesh()

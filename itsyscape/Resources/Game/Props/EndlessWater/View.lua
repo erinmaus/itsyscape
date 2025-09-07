@@ -12,9 +12,11 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Transform = require "ItsyScape.Common.Math.Transform"
 local Color = require "ItsyScape.Graphics.Color"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
 local PropView = require "ItsyScape.Graphics.PropView"
 local Renderer = require "ItsyScape.Graphics.Renderer"
+local Resource = require "ItsyScape.Graphics.Resource"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
@@ -24,13 +26,6 @@ local WaterMeshSceneNode = require "ItsyScape.Graphics.WaterMeshSceneNode"
 local WaterMesh = require "ItsyScape.World.WaterMesh"
 
 local EndlessWater = Class(PropView)
-EndlessWater.SHADER = ShaderResource()
-do
-	EndlessWater.SHADER:loadFromFile("Resources/Shaders/WhirlpoolWater")
-end
-
-EndlessWater.HOLE_COLOR = Color.fromHexString("87cdde")
-EndlessWater.FOAM_COLOR = Color.fromHexString("ffffff")
 
 -- Size of map sector, in terms of unit (1 unit = cell size)
 EndlessWater.SIZE = 64
@@ -56,6 +51,14 @@ EndlessWater.WHIRLPOOL_PROPS = {
 }
 
 EndlessWater.PASS_ID = 1
+
+EndlessWater.EXTENDED_MATERIAL = DecorationMaterial({
+	shader = "Resources/Shaders/WhirlpoolWater",
+
+	uniforms = {
+		scape_TextureScale = { "float", 4, 4 }
+	}
+})
 
 function EndlessWater:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -85,6 +88,11 @@ function EndlessWater:load()
 			self.texture = texture
 		end)
 
+	local waterMaterial
+	resources:queueEvent(function()
+		waterMaterial = DecorationMaterial(Resource.readLua("Resources/Game/Water/LightFoamyWater1/Material.lua")):replace(self.EXTENDED_MATERIAL)
+	end)
+
 	self.waters = {}
 	for i = -EndlessWater.WIDTH, EndlessWater.WIDTH do
 		for j = -EndlessWater.HEIGHT, EndlessWater.HEIGHT do
@@ -106,9 +114,10 @@ function EndlessWater:load()
 
 	resources:queueEvent(function()
 		self.waterMesh = WaterMesh(EndlessWater.SIZE * EndlessWater.CELL_SIZE, EndlessWater.SIZE * EndlessWater.CELL_SIZE, 8)
+
 		for _, water in ipairs(self.waters) do
 			water:setMesh(self.waterMesh)
-			water:getMaterial():setTextures(self.texture)
+			waterMaterial:apply(water, self:getResources())
 		end
 	end)
 	
@@ -134,6 +143,18 @@ function EndlessWater:tick()
 	local _, layer = self:getProp():getPosition()
 	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
 
+	local waterRimColor
+
+	local currentSkyProperties, previousSkyProperties = self:getGameView():getSkyProperties(layer)
+	if not (currentSkyProperties and previousSkyProperties) then
+		waterRimColor = Color(1, 1, 1, 1)
+	else
+		local previousAmbientColor = Color(unpack(previousSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
+		local currentAmbientColor = Color(unpack(currentSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
+
+		waterRimColor = previousAmbientColor:lerp(currentAmbientColor, _APP:getPreviousFrameDelta())
+	end
+
 	self.previousTime = self.currentTime
 	self.currentTime = state.time or 0
 
@@ -148,8 +169,6 @@ function EndlessWater:tick()
 				end
 			end
 
-			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolHoleColor", { EndlessWater.HOLE_COLOR:get() })
-			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolFoamColor", { EndlessWater.FOAM_COLOR:get() })
 			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolAlpha", 1.0)
 		else
 			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolAlpha", 0.0)
@@ -161,6 +180,7 @@ function EndlessWater:tick()
 			water:setTextureTimeScale(unpack(state.ocean.textureTimeScale))
 		end
 
+		material:send(material.UNIFORM_FLOAT, "scape_SkyColor", waterRimColor:get())
 		material:send(material.UNIFORM_FLOAT, "scape_BumpForce", 0)
 		material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
 		material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)

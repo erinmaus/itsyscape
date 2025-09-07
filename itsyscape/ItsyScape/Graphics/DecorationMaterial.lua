@@ -23,6 +23,7 @@ function DecorationMaterial:new(d)
 	self.properties = {
 		color = Color(1),
 		alpha = 1,
+		isTranslucent = false,
 		outlineColor = Color(0),
 		outlineThreshold = 0.5,
 		isReflectiveOrRefractive = false,
@@ -147,6 +148,11 @@ function DecorationMaterial:loadFromTable(t)
 					else
 						outUniformValue = { #self.textures }
 					end
+				elseif uniformType == "color" then
+					local c = Color.fromHexString(inUniformValue[2], inUniformValue[3])
+
+					uniformType = "float"
+					outUniformValue = { c:get() }
 				else
 					outUniformValue = { unpack(inUniformValue, 2, #inUniformValue) }
 				end
@@ -244,6 +250,21 @@ function DecorationMaterial:loadFromTable(t)
 	end
 end
 
+function DecorationMaterial:getUniformValue(name)
+	local uniformValue = self.uniforms[name]
+	if uniformValue then
+		if uniformValue.type == "texture" then
+			return self.textures[uniformValue.value[1]]
+		elseif uniformValue.type == "float" then
+			return unpack(uniformValue.value)
+		elseif uniformValue.type == "integer" then
+			return unpack(uniformValue.value)
+		end
+	end
+
+	return nil
+end
+
 function DecorationMaterial:replace(other)
 	local o = other:serialize()
 
@@ -297,10 +318,17 @@ function DecorationMaterial:serialize()
 
 	for uniformName, uniformValue in pairs(self.uniforms) do
 		if uniformValue.type ~= "unset" then
-			result.uniforms[uniformName] = {
-				uniformValue.type,
-				unpack(uniformValue.value)
-			}
+			if uniformValue.type == "texture" then
+				result.uniforms[uniformName] = {
+					uniformValue.type,
+					self.textures[uniformValue.value[1]]
+				}
+			else
+				result.uniforms[uniformName] = {
+					uniformValue.type,
+					unpack(uniformValue.value)
+				}
+			end
 		else
 			result.uniforms[uniformValue] = false
 		end
