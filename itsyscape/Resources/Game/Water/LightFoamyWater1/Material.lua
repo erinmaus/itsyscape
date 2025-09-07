@@ -4,6 +4,7 @@
 	uniforms = {
 		scape_YOffset = { "float", 0.5 },
 		scape_TextureScale = { "float", 4, 4 },
+		scape_TimeScale = { "float", 0.125, 0.25 },
 
 		scape_WindSpeedMultiplier = { "float", 1 },
 		scape_WindPatternMultiplier = { "float", 1, 1, 1 },

@@ -56,7 +56,7 @@ EndlessWater.EXTENDED_MATERIAL = DecorationMaterial({
 	shader = "Resources/Shaders/WhirlpoolWater",
 
 	uniforms = {
-		scape_TextureScale = { "float", 4, 4 }
+		scape_TextureScale = { "float", 2, 2 }
 	}
 })
 

@@ -1145,7 +1145,9 @@ function DefaultCameraController:draw()
 		end
 	end
 
-	self:getCamera():setHorizontalRotation(horizontalOffset + self.currentElevationHorizontalRotationOffset)
+	if self.isFirstPerson <= 0 then
+		self:getCamera():setHorizontalRotation(horizontalOffset + self.currentElevationHorizontalRotationOffset)
+	end
 end
 
 return DefaultCameraController

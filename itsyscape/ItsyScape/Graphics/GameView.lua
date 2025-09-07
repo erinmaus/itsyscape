@@ -1797,7 +1797,8 @@ function GameView:spawnItem(item, tile, position)
 		"X.Item",
 		item.ref, itemNode:getHandle(),
 		position.x - 0.5, position.y - 0.5, position.z - 0.5,
-		position.x + 0.5, position.y + 0.5, position.z + 0.5)
+		position.x + 0.5, position.y + 0.5, position.z + 0.5,
+		item.id)
 
 	if not _APP:getUIView():getInterface("CutsceneTransition") then
 		_APP:getUIView():playItemSoundEffect(item, { id = -1, type = "Drop" })
@@ -2764,13 +2765,14 @@ function GameView:postTick()
 					local nodeHandle = node and node:getHandle() or nil
 					local id = objectView:getProp():getID()
 					local min, max = objectView:getProp():getBounds()
-					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
+
+					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getProp():getName())
 				elseif interface == "ItsyScape.Game.Model.Actor" then
 					local node = objectView:getSceneNode()
 					local nodeHandle = node and node:getHandle() or nil
 					local id = objectView:getActor():getID()
 					local min, max = objectView:getActor():getBounds()
-					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
+					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getActor():getName())
 				end
 			end
 		end
