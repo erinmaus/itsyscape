@@ -35,6 +35,7 @@ function Instance.Map:new(layer, map, tileSetID, maskID, meta)
 	self.maskID = maskID
 	self.meta = meta
 	self.transform = { n = 0 }
+	self.sky = { n = 0 }
 	self.linksByMap = {}
 	self.linksByLayer = {}
 end
@@ -68,6 +69,17 @@ end
 
 function Instance.Map:getTransform()
 	return unpack(self.transform, 1, self.transform.n)
+end
+
+function Instance.Map:setSkyProperties(...)
+	self.sky = {
+		n = select('#', ...),
+		...
+	}
+end
+
+function Instance.Map:getSkyProperties()
+	return unpack(self.sky, 1, self.sky.n)
 end
 
 function Instance.Map:addLink(otherMap)
@@ -367,6 +379,28 @@ function Instance:new(id, filename, stage)
 		end
 	end
 	stage.onMapMoved:register(self._onMapMoved)
+
+	self._onMapSkyUpdated = function(_, layer, ...)
+		if self:hasLayer(layer, true) then
+			Log.engine(
+				"Sky updated for map in instance %s (%d) on layer %d.",
+				self:getFilename(),
+				self:getID(),
+				layer)
+
+			local map = self.maps[layer]
+			if map then
+				map:setSkyProperties(...)
+			end
+		else
+			Log.engine(
+				"Did not update sky for map in instance %s (%d) on layer %d; layer is not in instance.",
+				self:getFilename(),
+				self:getID(),
+				layer)
+		end
+	end
+	stage.onMapSkyUpdated:register(self._onMapSkyUpdated)
 
 	self._onMapLinked = function(_, layer, otherLayer)
 		if self:hasLayer(layer, true) and self:hasLayer(otherLayer, true) then
@@ -795,6 +829,7 @@ function Instance:unload()
 	self.stage.onUnloadMap:unregister(self._onUnloadMap)
 	self.stage.onMapModified:unregister(self._onMapModified)
 	self.stage.onMapMoved:unregister(self._onMapMoved)
+	self.stage.onMapSkyUpdated:unregister(self._onMapSkyUpdated)
 	self.stage.onMapLinked:unregister(self._onMapLinked)
 	self.stage.onMapUnlinked:unregister(self._onMapUnlinked)
 	self.stage.onActorSpawned:unregister(self._onActorSpawned)
@@ -1464,6 +1499,13 @@ function Instance:loadPlayer(localGameManager, player)
 				"onMapMoved",
 				nil,
 				layer, self.maps[layer]:getTransform())
+			localGameManager:assignTargetToLastPush(player)
+			localGameManager:pushCallback(
+				"ItsyScape.Game.Model.Stage",
+				0,
+				"onMapSkyUpdated",
+				nil,
+				layer, self.maps[layer]:getSkyProperties())
 			localGameManager:assignTargetToLastPush(player)
 
 			Log.engine("Loaded layer %d.", layer)

@@ -17,6 +17,8 @@ local SkyBehavior = Behavior("Sky")
 function SkyBehavior:new()
 	Behavior.Type.new(self)
 
+	self.hasSky = true
+
 	self.sunNormal = Vector()
 	self.sunDistance = 35
 	self.sunPosition = Vector()

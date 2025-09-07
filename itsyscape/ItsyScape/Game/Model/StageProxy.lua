@@ -82,6 +82,22 @@ StageProxy.stopMoveMap:link(
 	"onUnloadMap",
 	Event.Argument("layer"))
 
+StageProxy.MAP_SKY = "mapSky"
+StageProxy.updateMapSky = Event.Set(
+	StageProxy.MAP_SKY,
+	Event.KeyArgument("layer", true),
+	Event.Argument("properties"))
+StageProxy.updateMapSky:link(
+	"onMapSkyUpdated",
+	Event.Argument("layer"),
+	Event.Argument("properties"))
+StageProxy.stopUpdateMapSky = Event.Unset(
+	StageProxy.MAP_SKY,
+	Event.KeyArgument("layer", true))
+StageProxy.stopUpdateMapSky:link(
+	"onUnloadMap",
+	Event.Argument("layer"))
+
 -- StageProxy.MAP_LINK = "mapLink"
 -- StageProxy.linkMap = Event.Set(
 -- 	StageProxy.MAP_LINK,

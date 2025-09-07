@@ -180,7 +180,7 @@ function EditorApplication:keyDown(key, scan, isRepeat, ...)
 		if key == "-" then
 			self:getCamera():setPosition(self:getCamera():getPosition() - Vector.UNIT_Y)
 			return true
-		elseif key == "+" then
+		elseif key == "=" then
 			self:getCamera():setPosition(self:getCamera():getPosition() + Vector.UNIT_Y)
 			return true
 		end

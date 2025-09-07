@@ -2,8 +2,8 @@
 
 float calculateOldWaveHeight(vec3 position, vec2 timeScale, float time, float maxHeight)
 {
-	float offset1 = sin(time * SCAPE_PI + position.x / timeScale.y * SCAPE_PI * timeScale.x) * maxHeight;
-	float offset2 = sin(time * SCAPE_PI + position.z / timeScale.y * SCAPE_PI * timeScale.x) * maxHeight;
+	float offset1 = sin(time * SCAPE_PI + position.x * SCAPE_PI * timeScale.x) * maxHeight;
+	float offset2 = sin(time * SCAPE_PI + position.z * SCAPE_PI * timeScale.x) * maxHeight;
 
 	return position.y + offset1 + offset2;
 }

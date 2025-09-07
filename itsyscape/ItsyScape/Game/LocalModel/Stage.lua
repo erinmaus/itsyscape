@@ -18,6 +18,7 @@ local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local Instance = require "ItsyScape.Game.LocalModel.Instance"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Stage = require "ItsyScape.Game.Model.Stage"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Peep = require "ItsyScape.Peep.Peep"
@@ -79,6 +80,8 @@ function LocalStage:new(game)
 	if self:_preloadMapObjects() then
 		self._preloadMapObjects = nil
 	end
+
+	self.skies = setmetatable({}, { __mode = "k" })
 end
 
 function LocalStage:preloadMapObjects()
@@ -752,6 +755,16 @@ function LocalStage:updateMap(layer, map, i, j, w, h)
 		end
 
 		self.onMapModified(self, map, layer, i, j, w, h)
+	end
+end
+
+function LocalStage:updateSky(instance, properties)
+	if not RPCState.deepEquals(self.skies[instance], properties) then
+		self.skies[instance] = properties
+
+		for _, layer in instance:iterateLayers() do
+			self:onMapSkyUpdated(layer, properties)
+		end
 	end
 end
 

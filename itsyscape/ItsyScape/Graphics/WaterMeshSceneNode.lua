@@ -83,7 +83,7 @@ function WaterMeshSceneNode:generate(map, i, j, w, h, y, scale, fine, cellSize)
 
 	local width, height = w * fine, h * fine
 
-	self.waterMesh = WaterMesh(width, height, scale)
+	self.waterMesh = WaterMesh(width, height, scale, i, j - 1, fine * map:getCellSize())
 	self.isOwner = true
 
 	local cellSize = cellSize or (map and map:getCellSize()) or 2
@@ -121,29 +121,25 @@ function WaterMeshSceneNode:degenerate()
 	end
 end
 
+function WaterMeshSceneNode:frame()
+	local material = self:getMaterial()
+
+	local diffuseTexture = self:getMaterial():getTexture(1)
+	if diffuseTexture and diffuseTexture:getIsReady() then
+		material:send(material.UNIFORM_TEXTURE, "scape_DiffuseTexture", diffuseTexture:getResource())
+	end
+
+	material:send(material.UNIFORM_FLOAT, "scape_TimeScale", self.positionTimeScale, self.textureTimeScale.x, self.textureTimeScale.y, 0)
+	material:send(material.UNIFORM_FLOAT, "scale_YOffset", self.yOffset)
+	material:send(material.UNIFORM_FLOAT, "scale_XZScale", self.waterMesh and self.waterMesh:getScale() or 4)
+
+	local Color = require "ItsyScape.Graphics.Color"
+	material:send(material.UNIFORM_FLOAT, "scape_FoamColor", Color.fromHexString("7a253c", 0.5):get())
+	material:send(material.UNIFORM_FLOAT, "scape_ShallowWaterColor", Color.fromHexString("604ba5", 1.0):get())
+	material:send(material.UNIFORM_FLOAT, "scape_DeepWaterColor", Color.fromHexString("604ba5", 1.0):get())
+end
+
 function WaterMeshSceneNode:draw(renderer, delta)
-	local shader = renderer:getCurrentShader()
-	local texture = self:getMaterial():getTexture(1)
-	if shader:hasUniform("scape_DiffuseTexture") and
-	   texture and texture:getIsReady()
-	then
-		texture:getResource():setFilter('nearest', 'nearest')
-		texture:getResource():setWrap('repeat', 'repeat')
-		shader:send("scape_DiffuseTexture", texture:getResource(renderer:getCurrentPass():getID()))
-	end
-
-	if shader:hasUniform("scape_TimeScale") then
-		shader:send("scape_TimeScale", { self.textureTimeScale.x, self.textureTimeScale.y, self.positionTimeScale, self.width })
-	end
-
-	if shader:hasUniform("scape_YOffset") then
-		shader:send("scape_YOffset", self.yOffset)
-	end
-
-	if shader:hasUniform("scape_XZScale") then
-		shader:send("scape_XZScale", self.waterMesh and self.waterMesh:getScale() or 4)
-	end
-
 	if self.waterMesh then
 		self.waterMesh:draw()
 	end

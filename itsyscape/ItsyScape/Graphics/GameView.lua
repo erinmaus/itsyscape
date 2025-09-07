@@ -239,6 +239,11 @@ function GameView:attach(game)
 	end
 	stage.onMapMoved:register(self._onMapMoved)
 
+	self._onMapSkyUpdated = function(_, layer, properties)
+		self:updateMapSky(layer, properties)
+	end
+	stage.onMapSkyUpdated:register(self._onMapSkyUpdated)
+
 	self._onActorSpawned = function(_, actorID, actor)
 		Log.info("Spawning actor '%s' (%s).", actorID, actor and actor:getPeepID())
 		self:addActor(actorID, actor)
@@ -411,6 +416,7 @@ function GameView:release()
 	stage.onUnloadMap:unregister(self._onUnloadMap)
 	stage.onMapModified:unregister(self._onMapModified)
 	stage.onMapMoved:unregister(self._onMapMoved)
+	stage.onMapSkyUpdated:unregister(self._onMapSkyUpdated)
 	stage.onActorSpawned:unregister(self.onActorSpawned)
 	stage.onActorKilled:unregister(self._onActorKilled)
 	stage.onPropPlaced:unregister(self._onPropPlaced)
@@ -553,7 +559,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		wallHackDecorations = setmetatable({}, { __mode = "k" }),
 		decorationTextures = setmetatable({}, { __mode = "v" }),
 		staticGroundDecorations = {},
-		dynamicGroundDecorations = {}
+		dynamicGroundDecorations = {},
+		water = {}
 	}
 
 	if meta and meta.curve then
@@ -1206,6 +1213,23 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 	end
 end
 
+function GameView:updateMapSky(layer, properties)
+	Log.info(">>>> updateMapSky %s", Log.dump(properties))
+
+	local m = self.mapMeshes[layer]
+	if not m then
+		return
+	end
+
+	if not properties then
+		m.previousSkyProperties = false
+		m.currentSkyProperties = false
+	else
+		m.previousSkyProperties = m.currentSkyProperties or properties
+		m.currentSkyProperties = properties
+	end
+end
+
 function GameView:moveMap(layer, position, rotation, scale, offset, disabled, parentLayer)
 	local m = self.mapMeshes[layer]
 	local node = m and m.node
@@ -1371,6 +1395,23 @@ function GameView:_updateMapNodeWallHack(m, delta)
 			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
 			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
 		end
+	end
+end
+
+function GameView:_updateMapWater(m, delta)
+	local waterRimColor
+	if not (m.currentSkyProperties and m.previousSkyProperties) then
+		waterRimColor = Color(1, 1, 1, 1)
+	else
+		local previousAmbientColor = Color(unpack(m.previousSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
+		local currentAmbientColor = Color(unpack(m.currentSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
+
+		waterRimColor = previousAmbientColor:lerp(currentAmbientColor, _APP:getPreviousFrameDelta())
+	end
+
+	for _, water in ipairs(m.water) do
+		local material = water.node:getMaterial()
+		material:send(material.UNIFORM_FLOAT, "scape_SkyColor", waterRimColor:get())
 	end
 end
 
@@ -2005,7 +2046,7 @@ end
 function GameView:flood(key, water, layer)
 	self:drain(key)
 
-	local parent = self:getMapSceneNode((water.layer or 1) - 1 + (layer or 1))
+	local parent = self:getMapSceneNode(layer or 1)
 	if not parent then
 		parent = self.scene
 	end
@@ -2021,8 +2062,12 @@ function GameView:flood(key, water, layer)
 		water.y,
 		water.finesse)
 
-	if water.timeScale then
-		node:setTextureTimeScale(water.timeScale)
+	if water.positionTimeScale then
+		node:setPositionTimeScale(water.positionTimeScale)
+	end
+
+	if water.textureTimeScale then
+		node:setTextureTimeScale(unpack(water.textureTimeScale))
 	end
 
 	if water.yOffset then
@@ -2042,6 +2087,8 @@ function GameView:flood(key, water, layer)
 		node:getMaterial():setReflectionDistance(water.reflectionDistance)
 	end
 
+	node:getMaterial():setIsTranslucent(true)
+
 	self.resourceManager:queue(
 		TextureResource,
 		string.format("Resources/Game/Water/%s/Texture.png", water.texture or "LightFoamyWater1"),
@@ -2052,13 +2099,30 @@ function GameView:flood(key, water, layer)
 
 	node:getMaterial():setOutlineThreshold(-1.0)
 
-	self.water[key] = node
+	local w = { node = node, layer = layer or 1 }
+
+	self.water[key] = w
+
+	local m = self.mapMeshes[layer]
+	if m then
+		table.insert(m.water, w)
+	end
 end
 
 function GameView:drain(key)
 	if self.water[key] then
-		self.water[key]:setParent(nil)
-		self.water[key]:degenerate()
+		self.water[key].node:setParent(nil)
+		self.water[key].node:degenerate()
+
+		local m = self.mapMeshes[self.water[key].layer]
+		if m then
+			for i = #m.water, 1, -1 do
+				if m.water[i] == self.water[key].node then
+					table.remove(m.water, i)
+				end
+			end
+		end
+
 		self.water[key] = nil
 	end
 end
@@ -2448,6 +2512,7 @@ end
 function GameView:updateMaps(delta)
 	for _, m in pairs(self.mapMeshes) do
 		self:_updateMapNodeWallHack(m, delta)
+		self:_updateMapWater(m, delta)
 	end
 end
 
