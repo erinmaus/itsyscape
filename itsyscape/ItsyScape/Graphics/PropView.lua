@@ -25,7 +25,13 @@ function PropView:new(prop, gameView)
 	self.greeble = {}
 end
 
-function PropView:addGreeble(GreebleType, t, ...)
+function PropView:updateGreebles(greebles, t)
+	for _, greeble in ipairs(greebles or self.greebles) do
+		greeble:regreebilize(t)
+	end
+end
+
+function PropView:addGreeble(GreebleType, t, transform, ...)
 	local greeble = GreebleType(self.prop, self.gameView)
 	greeble:greebilize(self, t, ...)
 	greeble:attach()
@@ -39,6 +45,24 @@ function PropView:addGreeble(GreebleType, t, ...)
 	end
 
 	table.insert(self.greeble, greeble)
+
+	if transform then
+		if transform.translation then
+			greeble:getRoot():getTransform():setLocalTranslation(transform.translation)
+		end
+
+		if transform.offset then
+			greeble:getRoot():getTransform():setLocalOffset(transform.offset)
+		end
+
+		if transform.rotation then
+			greeble:getRoot():getTransform():setLocalRotation(transform.rotation)
+		end
+
+		if transform.scale then
+			greeble:getRoot():getTransform():setLocalOffset(transform.scale)
+		end
+	end
 
 	return greeble
 end

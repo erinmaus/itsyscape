@@ -140,12 +140,29 @@ function SmokeGreeble:load()
 	end)
 end
 
-function SmokeGreeble:update(delta)
-	Greeble.update(self, delta)
+function SmokeGreeble:regreebilize(t, ...)
+	Greeble.regreebilize(self, t, ...)
 
+	self._smokeParticleDefinition = nil
+
+	self:_updateParticles()
+
+	if self.smoke then
+		self.smoke:getTransform():setLocalScale(self.SMOKE_SCALE)
+		self.smoke:getTransform():setLocalTranslation(self.SMOKE_OFFSET)
+	end
+end
+
+function SmokeGreeble:_updateParticles()
 	if self.smoke then
 		self.smoke:initEmittersFromDef(self:_getSmokeParticleDefinition().emitters)
 	end
+end
+
+function SmokeGreeble:update(delta)
+	Greeble.update(self, delta)
+
+	self:_updateParticles()
 end
 
 return SmokeGreeble

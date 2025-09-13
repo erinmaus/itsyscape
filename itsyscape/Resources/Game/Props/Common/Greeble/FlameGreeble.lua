@@ -214,9 +214,26 @@ function FlameGreeble:load()
 	end)
 end
 
-function FlameGreeble:update(delta)
-	Greeble.update(self, delta)
+function FlameGreeble:regreebilize(t, ...)
+	Greeble.regreebilize(self, t, ...)
 
+	self._outerParticleDefinition = nil
+	self._innerParticleDefinition = nil
+
+	self:_updateParticles()
+
+	if self.outerFlames then
+		self.outerFlames:getTransform():setLocalScale(self.FLAME_SCALE)
+		self.outerFlames:getTransform():setLocalTranslation(self.FLAME_OFFSET)
+	end
+
+	if self.innerFlames then
+		self.innerFlames:getTransform():setLocalScale(self.FLAME_SCALE)
+		self.innerFlames:getTransform():setLocalTranslation(self.FLAME_OFFSET)
+	end
+end
+
+function FlameGreeble:_updateParticles()
 	if self.outerFlames then
 		self.outerFlames:initEmittersFromDef(self:_getOuterParticleDefinition().emitters)
 	end
@@ -224,6 +241,12 @@ function FlameGreeble:update(delta)
 	if self.innerFlames then
 		self.innerFlames:initEmittersFromDef(self:_getInnerParticleDefinition().emitters)
 	end
+end
+
+function FlameGreeble:update(delta)
+	Greeble.update(self, delta)
+
+	self:_updateParticles()
 end
 
 return FlameGreeble

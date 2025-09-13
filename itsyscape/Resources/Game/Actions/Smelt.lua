@@ -21,13 +21,20 @@ function Smelt:perform(state, player, prop)
 
 	if self:canPerform(state, flags) then
 		local a = CallbackCommand(self.make, self, state, player)
-		local b = WaitCommand(self:getActionDuration())
+		local b = CallbackCommand(self.smelt, self, player, prop)
+		local c = WaitCommand(self:getActionDuration())
 
 		local queue = player:getCommandQueue()
-		return queue:push(CompositeCommand(nil, a, b))
+		return queue:push(CompositeCommand(nil, a, b, c))
 	end
 
 	return false, "can't perform"
+end
+
+function Smelt:smelt(player, prop)
+	if prop then
+		prop:poke("smelt", { peep = player })
+	end
 end
 
 return Smelt

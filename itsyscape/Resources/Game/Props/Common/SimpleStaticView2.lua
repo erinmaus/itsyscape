@@ -9,7 +9,6 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local Color = require "ItsyScape.Graphics.Color"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local PropView = require "ItsyScape.Graphics.PropView"
@@ -27,24 +26,7 @@ function SimpleStaticView:new(...)
 	PropView.new(self, ...)
 
 	for _, greeble in ipairs(self.GREEBLE) do
-		local g = self:addGreeble(greeble.type, greeble.config)
-		if greeble.transform then
-			if greeble.transform.translation then
-				g:getRoot():getTransform():setLocalTranslation(greeble.transform.translation)
-			end
-
-			if greeble.transform.offset then
-				g:getRoot():getTransform():setLocalOffset(greeble.transform.offset)
-			end
-
-			if greeble.transform.rotation then
-				g:getRoot():getTransform():setLocalRotation(greeble.transform.rotation)
-			end
-
-			if greeble.transform.scale then
-				g:getRoot():getTransform():setLocalOffset(greeble.transform.scale)
-			end
-		end
+		self:addGreeble(greeble.type, greeble.config, greeble.transform)
 	end
 end
 

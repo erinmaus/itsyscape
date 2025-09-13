@@ -12,9 +12,7 @@ local PropView = require "ItsyScape.Graphics.PropView"
 
 local Greeble = Class(PropView)
 
-function Greeble:greebilize(parent, t, ...)
-	self.parentPropView = parent
-
+function Greeble:_updateProperties(t)
 	if not t then
 		return
 	end
@@ -30,6 +28,16 @@ function Greeble:greebilize(parent, t, ...)
 			self[key] = value
 		end
 	end
+end
+
+function Greeble:greebilize(parent, t, ...)
+	self.parentPropView = parent
+
+	self:_updateProperties(t)
+end
+
+function Greeble:regreebilize(t, ...)
+	self:_updateProperties(t)
 end
 
 function Greeble:updateTransform()
