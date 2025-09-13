@@ -477,7 +477,7 @@ function LocalStage:placeProp(propID, layer, layerName)
 	local Peep, resource, realID = self:lookupResource(propID, "Prop")
 
 	if Peep then
-		local prop = LocalProp(self.game, Peep, realID)
+		local prop = LocalProp(self.game, Peep, realID, self:lookupPropAlias(realID))
 		prop:place(self.currentPropID, layerName, resource)
 
 		self.currentPropID = self.currentPropID + 1

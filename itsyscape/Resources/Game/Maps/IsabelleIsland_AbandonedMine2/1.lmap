@@ -25675,7 +25675,7 @@
 		{
 			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -29107,7 +29107,7 @@
 		{
 			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -61787,7 +61787,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -61799,7 +61799,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -61811,7 +61811,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -62955,7 +62955,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -62967,7 +62967,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -62979,7 +62979,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -64123,7 +64123,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -64135,7 +64135,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -64147,7 +64147,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -65291,7 +65291,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -65303,7 +65303,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -65315,7 +65315,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -66459,7 +66459,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -66471,7 +66471,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -66483,7 +66483,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -67627,7 +67627,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -67639,7 +67639,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -67651,7 +67651,7 @@
 		{
 			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 9, decals = {  },
+			edge = 9, flat = 1, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -68699,7 +68699,7 @@
 		{
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -68711,7 +68711,7 @@
 		{
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -68735,7 +68735,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -69855,7 +69855,7 @@
 		{
 			topLeft = 15, topRight = 15, bottomLeft = 15, bottomRight = 15,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -69867,7 +69867,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -69879,7 +69879,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -69891,7 +69891,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -69903,7 +69903,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -71023,7 +71023,7 @@
 		{
 			topLeft = 14, topRight = 14, bottomLeft = 14, bottomRight = 14,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -71035,7 +71035,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -72191,7 +72191,7 @@
 		{
 			topLeft = 14, topRight = 14, bottomLeft = 14, bottomRight = 14,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -72203,7 +72203,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -73359,7 +73359,7 @@
 		{
 			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -73371,7 +73371,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -74527,7 +74527,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{
@@ -74539,7 +74539,7 @@
 		{
 			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 9, flat = 1, decals = {  },
+			edge = 9, flat = 9, decals = {  },
 			tileSetID = "YendorianUnderground1",
 			data =
 			{

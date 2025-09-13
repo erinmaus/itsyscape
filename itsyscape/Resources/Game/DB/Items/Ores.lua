@@ -71,6 +71,31 @@ local ORES = {
 		}
 	},
 
+	["Flourite"] = {
+		tier = 10,
+		weight = 3.3,
+		health = 12,
+		tiers = {
+			DEFAULT_TIER,
+			{
+				tierOffset = 40,
+				ores = 3,
+				healthMultiplier = 7,
+				healthFactor = 3,
+				name = "Superior" 
+			}
+		},
+		secondaries = {
+			"TableSalt",
+			"PurpleSaltPeter",
+			"BlackFlint",
+			"CrumblySulfur",
+			"VegetableOil",
+			"BlackGold",
+			"Sapphire"
+		}
+	},
+
 	["Iron"] = {
 		tier = 10,
 		weight = 11.5,
