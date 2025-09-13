@@ -17,15 +17,42 @@ local Resource = require "ItsyScape.Graphics.Resource"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local SimpleStaticView2 = Class(PropView)
+local SimpleStaticView = Class(PropView)
 
-SimpleStaticView2.DESCRIPTION = {}
+SimpleStaticView.DESCRIPTION = {}
 
-function SimpleStaticView2:getDescription()
+SimpleStaticView.GREEBLE = {}
+
+function SimpleStaticView:new(...)
+	PropView.new(self, ...)
+
+	for _, greeble in ipairs(self.GREEBLE) do
+		local g = self:addGreeble(greeble.type, greeble.config)
+		if greeble.transform then
+			if greeble.transform.translation then
+				g:getRoot():getTransform():setLocalTranslation(greeble.transform.translation)
+			end
+
+			if greeble.transform.offset then
+				g:getRoot():getTransform():setLocalOffset(greeble.transform.offset)
+			end
+
+			if greeble.transform.rotation then
+				g:getRoot():getTransform():setLocalRotation(greeble.transform.rotation)
+			end
+
+			if greeble.transform.scale then
+				g:getRoot():getTransform():setLocalOffset(greeble.transform.scale)
+			end
+		end
+	end
+end
+
+function SimpleStaticView:getDescription()
 	return self.DESCRIPTION
 end
 
-function SimpleStaticView2:load()
+function SimpleStaticView:load()
 	PropView.load(self)
 
 	local resources = self:getResources()
@@ -64,4 +91,4 @@ function SimpleStaticView2:load()
 	end
 end
 
-return SimpleStaticView2
+return SimpleStaticView

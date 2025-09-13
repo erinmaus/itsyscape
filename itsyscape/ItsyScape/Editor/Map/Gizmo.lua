@@ -356,9 +356,10 @@ function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previou
 	end
 
 	local transform = sceneNode:getTransform()
+	local rotation = Quaternion.fromAxisAngle(self.axis, angle)
 	local currentRotation
 	if snap then
-		local currentXYZ = Vector(transform:getLocalRotation():getNormal():getEulerXYZ())
+		local currentXYZ = Vector((transform:getLocalRotation() * rotation):getNormal():getEulerXYZ())
 		local invertAxis = Vector.ONE - self.axis
 		local snappedXYZ = (currentXYZ * self.axis / self.STEP_ANGLE):floor() * self.STEP_ANGLE
 		currentRotation = Quaternion.fromEulerXYZ((invertAxis * currentXYZ + snappedXYZ):get())
@@ -366,10 +367,7 @@ function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previou
 		currentRotation = transform:getLocalRotation()
 	end
 
-	--local axis = (-currentRotation):getNormal():transformVector(self.axis)
-	local axis = self.axis
-	local rotation = Quaternion.fromAxisAngle(axis, angle)
-	transform:setLocalRotation((currentRotation * rotation):getNormal())
+	transform:setLocalRotation(currentRotation:getNormal())
 
 	return true
 end

@@ -50,6 +50,54 @@ do
 	}
 end
 
+M["Anvil_Default21"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 156.000000,
+		PositionY = 16.000000,
+		PositionZ = 59.500000,
+		RotationX = -0.000000,
+		RotationY = 0.382683,
+		RotationZ = -0.000000,
+		RotationW = 0.923880,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Anvil_Default21",
+		Map = M._MAP,
+		Resource = M["Anvil_Default21"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Anvil_Default2",
+		MapObject = M["Anvil_Default21"]
+	}
+end
+
+M["Anvil_Default22"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 156.250000,
+		PositionY = 16.000000,
+		PositionZ = 62.750000,
+		RotationX = -0.000000,
+		RotationY = 0.382683,
+		RotationZ = -0.000000,
+		RotationW = 0.923880,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Anvil_Default22",
+		Map = M._MAP,
+		Resource = M["Anvil_Default22"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Anvil_Default2",
+		MapObject = M["Anvil_Default22"]
+	}
+end
+
 M["Brazier_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -458,6 +506,78 @@ do
 	}
 end
 
+M["Crate_Default11"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 139.500000,
+		PositionY = 16.000000,
+		PositionZ = 49.500000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Crate_Default11",
+		Map = M._MAP,
+		Resource = M["Crate_Default11"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_Default11"]
+	}
+end
+
+M["Crate_Default12"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 139.500000,
+		PositionY = 16.000000,
+		PositionZ = 51.500000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Crate_Default12",
+		Map = M._MAP,
+		Resource = M["Crate_Default12"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_Default12"]
+	}
+end
+
+M["Crate_Default13"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 141.250000,
+		PositionY = 16.000000,
+		PositionZ = 49.500000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Crate_Default13",
+		Map = M._MAP,
+		Resource = M["Crate_Default13"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Crate_Default1",
+		MapObject = M["Crate_Default13"]
+	}
+end
+
 M["Desk_Foreman1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -698,6 +818,30 @@ do
 	}
 end
 
+M["Furnace_Default2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155.500000,
+		PositionY = 16.000000,
+		PositionZ = 55.500000,
+		RotationX = 0.000000,
+		RotationY = -0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Furnace_Default2",
+		Map = M._MAP,
+		Resource = M["Furnace_Default2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Furnace_Default",
+		MapObject = M["Furnace_Default2"]
+	}
+end
+
 M["Lamp_IsabelleTower1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -752,7 +896,7 @@ do
 		PositionX = 157.000000,
 		PositionY = 18.500000,
 		PositionZ = 49.000000,
-		RotationX = -0.000000,
+		RotationX = 0.000000,
 		RotationY = -0.848485,
 		RotationZ = 0.000000,
 		RotationW = 0.529220,
@@ -800,9 +944,9 @@ do
 		PositionX = 145.000000,
 		PositionY = 18.250000,
 		PositionZ = 67.000000,
-		RotationX = -0.000000,
+		RotationX = 0.000000,
 		RotationY = 0.816884,
-		RotationZ = -0.000000,
+		RotationZ = 0.000000,
 		RotationW = 0.576802,
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,

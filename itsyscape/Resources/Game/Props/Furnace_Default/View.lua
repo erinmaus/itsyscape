@@ -10,87 +10,132 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
-local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
-local PropView = require "ItsyScape.Graphics.PropView"
-local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
-local TextureResource = require "ItsyScape.Graphics.TextureResource"
-local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
+local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView2"
+local FlameGreeble = require "Resources.Game.Props.Common.Greeble.FlameGreeble"
+local SmokeGreeble = require "Resources.Game.Props.Common.Greeble.SmokeGreeble"
+local FlickerGreeble = require "Resources.Game.Props.Common.Greeble.FlickerGreeble"
 
-local FurnaceView = Class(PropView)
-FurnaceView.MIN_FLICKER_TIME = 10 / 60
-FurnaceView.MAX_FLICKER_TIME = 20 / 60
-FurnaceView.MIN_ATTENUATION = 0.5
-FurnaceView.MAX_ATTENUATION = 1.5
-FurnaceView.MIN_COLOR_BRIGHTNESS = 0.9
-FurnaceView.MAX_COLOR_BRIGHTNESS = 1.0
+local Furnace = Class(SimpleStaticView)
 
-function FurnaceView:new(prop, gameView)
-	PropView.new(self, prop, gameView)
+Furnace.GREEBLE = {
+	{
+		type = FlameGreeble,
 
-	self.flickerTime = 0
-end
+		transform = {
+			translation = Vector(-1, 0.75, -0.5)
+		},
 
-function FurnaceView:load()
-	PropView.load(self)
+		config = {
+			FLAME_SCALE = Vector(2):keep(),
+			FLAME_HEIGHT = 0.25,
+			INNER_FLAME_SPEED = 0.1,
+			OUTER_FLAME_SPEED = 0.2
+		}
+	},
+	{
+		type = FlameGreeble,
 
-	local resources = self:getResources()
-	local root = self:getRoot()
+		transform = {
+			translation = Vector(1, 0.75, -0.5)
+		},
 
-	resources:queue(
-		StaticMeshResource,
-		"Resources/Game/Props/Furnace_Default/Furnace.lstatic",
-		function(mesh)
-			self.mesh = mesh
-		end)
-	resources:queue(
-		TextureResource,
-		"Resources/Game/Props/Furnace_Default/Texture.png",
-		function(texture)
-			self.texture = texture
-		end)
-	resources:queueEvent(function()
-		self.decoration = DecorationSceneNode()
-		self.decoration:fromGroup(self.mesh:getResource(), "Furnace")
-		self.decoration:getMaterial():setTextures(self.texture)
-		self.decoration:setParent(root)
+		config = {
+			FLAME_SCALE = Vector(2):keep(),
+			FLAME_HEIGHT = 0.25,
+			INNER_FLAME_SPEED = 0.1,
+			OUTER_FLAME_SPEED = 0.2
+		}
+	},
+	{
+		type = FlameGreeble,
 
-		self.light = PointLightSceneNode()
-		self.light:getTransform():setLocalTranslation(Vector(0, 2, 0))
-		self.light:setParent(root)
+		transform = {
+			translation = Vector(0, 0.75, -0.5)
+		},
 
-		self:flicker()
-	end)
-end
+		config = {
+			FLAME_SCALE = Vector(2):keep(),
+			FLAME_HEIGHT = 0.5,
+			INNER_FLAME_SPEED = 0.2,
+			OUTER_FLAME_SPEED = 0.3
+		}
+	},
+	{
+		type = SmokeGreeble,
 
-function FurnaceView:flicker()
-	if self.light then
-		local flickerWidth = FurnaceView.MAX_FLICKER_TIME - FurnaceView.MIN_FLICKER_TIME
-		self.flickerTime = math.random() * flickerWidth + FurnaceView.MIN_FLICKER_TIME
+		transform = {
+			translation = Vector(0, 5, -0.5)
+		},
 
-		local scale = 1.0 + (self:getProp():getScale():getLength() - math.sqrt(3))
-		local attenuationWidth = FurnaceView.MAX_ATTENUATION - FurnaceView.MIN_ATTENUATION
-		local attenuation = math.random() * attenuationWidth + FurnaceView.MAX_ATTENUATION
-		self.light:setAttenuation(attenuation)
+		config = {
+			SMOKE_SCALE = Vector(2),
+			SMOKE_SPEED = 0.5,
+			SMOKE_HEIGHT = 0
+		}
+	},
+	{
+		type = FlickerGreeble,
 
-		local brightnessWidth = FurnaceView.MAX_COLOR_BRIGHTNESS - FurnaceView.MIN_COLOR_BRIGHTNESS
-		local brightness = math.random() * brightnessWidth + FurnaceView.MAX_COLOR_BRIGHTNESS
-		local color = Color(brightness, brightness, brightness, 1)
-		self.light:setColor(color)
-	end
-end
+		transform = {
+			translation = Vector(0, 1.5, 1)
+		},
 
-function FurnaceView:update(delta)
-	PropView.update(self, delta)
+		config = {
+			MIN_ATTENUATION = 8,
+			MAX_ATTENUATION = 12,
+			COLORS = {
+				Color.fromHexString("ffd52a")
+			}
+		}
+	}
+}
 
-	self.flickerTime = self.flickerTime - delta
-end
+Furnace.DESCRIPTION = {
+	{
+		mesh = "Resources/Game/Props/Furnace_Default/Model.lstatic",
+		group = "bricks",
 
-function FurnaceView:tick()
-	PropView.tick(self)
+		material = {
+			shader = "Resources/Shaders/DetailDecorationSpecularMultiTriplanar",
+			texture = "Resources/Game/Props/Furnace_Default/Bricks.png",
+			uniforms = {
+				scape_NumLayers = { "integer", 2 },
+				scape_TriplanarScale = { "float", -0.25, 0.1 },
+				scape_TriplanarOffset = { "float", 0, 0 },
+				scape_TriplanarExponent = { "float", 0, 0 },
+				scape_TriplanarTexture = { "texture", "Resources/Game/Props/Furnace_Default/BricksDetail.lua" },
+				scape_TriplanarSpecularTexture = { "texture", "Resources/Game/Props/Furnace_Default/SpecularBricksDetail.lua" },
+				scape_SpecularWeight = { "float", 1 },
+			},
 
-	if self.flickerTime < 0 then
-		self:flicker()
-	end
-end
+			properties = {
+				outlineThreshold = 0.5,
+				color = "927552",
+			}
+		}
 
-return FurnaceView
+	},
+	{
+		mesh = "Resources/Game/Props/Furnace_Default/Model.lstatic",
+		group = "metal",
+
+		material = {
+			shader = "Resources/Shaders/SpecularTriplanar",
+			texture = "Resources/Game/Props/Furnace_Default/Metal.png",
+
+			properties = {
+				outlineThreshold = 0.5,
+				color = "42414b"
+			},
+
+			uniforms = {
+				scape_TriplanarScale = { "float", -0.5 },
+				scape_TriplanarExponent = { "float", 0 },
+				scape_TriplanarOffset = { "float", 0 },
+				scape_SpecularWeight = { "float", 0.5 }
+			}
+		}
+	}
+}
+
+return Furnace

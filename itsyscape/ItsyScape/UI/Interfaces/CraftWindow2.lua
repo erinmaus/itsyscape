@@ -347,6 +347,7 @@ function CraftWindow:updateTitleScene()
 	self.camera:copy(gameView:getCamera())
 	self.camera:setPosition(Vector.ZERO:transform(node:getTransform():getGlobalTransform(_APP:getFrameDelta())) + offset)
 	self.camera:setDistance(distance * 2 + 2)
+	self.camera:setRotation(-node:getTransform():getLocalRotation())
 end
 
 function CraftWindow:updateControls()

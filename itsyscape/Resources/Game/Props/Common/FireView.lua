@@ -346,7 +346,7 @@ function FireView:load()
 		self.smoke = ParticleSceneNode()
 		self.smoke:getMaterial():setIsFullLit(false)
 		self.smoke:initParticleSystemFromDef(self:_getSmokeParticleDefinition(), resources)
-		--self.smoke:setParent(root)
+		self.smoke:setParent(root)
 		self.smoke:getTransform():setLocalScale(Vector(self.SCALE))
 		self.smoke:getTransform():setLocalTranslation(self.OFFSET)
 

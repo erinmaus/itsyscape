@@ -20,6 +20,27 @@ function PropView:new(prop, gameView)
 
 	self.sceneNode = SceneNode()
 	self.ready = false
+	self.didLoad = false
+
+	self.greeble = {}
+end
+
+function PropView:addGreeble(GreebleType, t, ...)
+	local greeble = GreebleType(self.prop, self.gameView)
+	greeble:greebilize(self, t, ...)
+	greeble:attach()
+
+	if self.didLoad then
+		greeble:load()
+	end
+
+	if self.ready then
+		greeble:update(0)
+	end
+
+	table.insert(self.greeble, greeble)
+
+	return greeble
 end
 
 function PropView:getIsEditor()
@@ -52,7 +73,11 @@ function PropView:getIsStatic()
 end
 
 function PropView:load()
-	-- Nothing.
+	self.didLoad = true
+
+	for _, greeble in ipairs(self.greeble) do
+		greeble:load()
+	end
 end
 
 function PropView:attach()
@@ -104,17 +129,35 @@ end
 
 function PropView:remove()
 	self.sceneNode:setParent(nil)
+
+
+	for _, greeble in ipairs(self.greeble) do
+		greeble:remove()
+	end
 end
 
 function PropView:update(delta)
 	if not self.ready then
 		self:updateTransform()
+
+		for _, greeble in ipairs(self.greeble) do
+			greeble:updateTransform()
+		end
+
 		self.ready = true
+	end
+
+	for _, greeble in ipairs(self.greeble) do
+		greeble:update(delta)
 	end
 end
 
 function PropView:tick()
 	self:updateTransform()
+
+	for _, greeble in ipairs(self.greeble) do
+		greeble:tick()
+	end
 end
 
 return PropView

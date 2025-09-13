@@ -18,7 +18,7 @@ function BasicFurnace:new(...)
 	Prop.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(4.5, 3, 1)
+	size.size = Vector(4.5, 4, 3.5)
 end
 
 return BasicFurnace

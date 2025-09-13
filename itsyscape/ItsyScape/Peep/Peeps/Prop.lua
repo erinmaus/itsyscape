@@ -71,6 +71,9 @@ function Prop:spawnOrPoof(mode)
 				rotation:transformVector(Vector(-size.size.x / 2, 0, size.size.z / 2)) + p
 			}
 
+			local centerI, centerJ = Utility.Peep.getTile(self)
+			self:spawnOrPoofTile(map:getTile(centerI, centerJ), centerI, centerJ, mode)
+
 			for x = p.x - halfSize.x, p.x + halfSize.x, map:getCellSize() do
 				for z = p.z - halfSize.z, p.z + halfSize.z, map:getCellSize() do
 					local p = Vector(x, 0, z)
