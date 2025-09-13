@@ -33,6 +33,12 @@ ItsyScape.Meta.PeepID {
 	Resource = ItsyScape.Resource.Prop "Anvil_Default"
 }
 
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
+	Resource = ItsyScape.Resource.Prop "Anvil_Default"
+}
+
 ItsyScape.Meta.ResourceName {
 	Value = "Anvil",
 	Language = "en-US",
@@ -49,6 +55,12 @@ ItsyScape.Resource.Prop "Anvil_Default2" {
 	AnvilAction,
 
 	ItsyScape.Action.UseCraftWindow()
+}
+
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0,
+	Resource = ItsyScape.Resource.Prop "Anvil_Default2"
 }
 
 ItsyScape.Meta.PeepID {

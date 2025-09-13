@@ -53,13 +53,13 @@ end
 M["Anvil_Default21"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 156.000000,
+		PositionX = 156.500000,
 		PositionY = 16.000000,
 		PositionZ = 59.500000,
-		RotationX = -0.000000,
-		RotationY = 0.382683,
-		RotationZ = -0.000000,
-		RotationW = 0.923880,
+		RotationX = 0.000000,
+		RotationY = 0.923880,
+		RotationZ = 0.000000,
+		RotationW = 0.382683,
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,
@@ -77,13 +77,13 @@ end
 M["Anvil_Default22"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 156.250000,
+		PositionX = 156.500000,
 		PositionY = 16.000000,
 		PositionZ = 62.750000,
-		RotationX = -0.000000,
-		RotationY = 0.382683,
-		RotationZ = -0.000000,
-		RotationW = 0.923880,
+		RotationX = 0.000000,
+		RotationY = 0.923880,
+		RotationZ = 0.000000,
+		RotationW = 0.382683,
 		ScaleX = 1.000000,
 		ScaleY = 1.000000,
 		ScaleZ = 1.000000,

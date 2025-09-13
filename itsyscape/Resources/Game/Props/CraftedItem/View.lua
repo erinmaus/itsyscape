@@ -16,8 +16,8 @@ local ParticleGreeble = require "Resources.Game.Props.Common.Greeble.ParticleGre
 
 local CraftedItem = Class(PropView)
 
-CraftedItem.DURATION_SHOW_INPUT_ITEMS_SECONDS  = 1
-CraftedItem.DURATION_SHOW_OUTPUT_ITEMS_SECONDS = 1
+CraftedItem.DURATION_SHOW_INPUT_ITEMS_SECONDS  = 2.5
+CraftedItem.DURATION_SHOW_OUTPUT_ITEMS_SECONDS = 2.5
 
 CraftedItem.DUST_INTERVAL          = 0.05
 CraftedItem.INITIAL_DUST_PARTICLES = 25

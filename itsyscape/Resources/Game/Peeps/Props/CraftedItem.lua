@@ -15,7 +15,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local CraftedItem = Class(Prop) 
-CraftedItem.DURATION = 5
+CraftedItem.DURATION = 10
 
 function CraftedItem:new(...)
 	Prop.new(self, ...)

@@ -25,7 +25,7 @@ local Action = require "ItsyScape.Peep.Action"
 local Make = Class(Action)
 Make.SCOPES = { ['craft'] = true }
 Make.FLAGS = { ['item-inventory'] = true }
-Make.PAUSE = 3
+Make.PAUSE = 5
 
 function Make:canPerform(state, flags)
 	return Action.canPerform(self, state, flags) and Action.canTransfer(self, state, flags)
