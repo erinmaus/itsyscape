@@ -26,6 +26,7 @@ function ParticleSceneNode:new()
 	self:getMaterial():setIsTranslucent(true)
 	self:getMaterial():setIsFullLit(true)
 	self:getMaterial():setIsShadowCaster(false)
+	self:getMaterial():setIsZWriteDisabled(true)
 
 	self.isReady = false
 	self._texture = false

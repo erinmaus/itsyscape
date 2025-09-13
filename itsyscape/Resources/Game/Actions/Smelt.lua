@@ -33,7 +33,8 @@ end
 
 function Smelt:smelt(player, prop)
 	if prop then
-		prop:poke("smelt", { peep = player })
+		prop:poke("smelt", { peep = player, action = self })
+		self:spawnCraftedItem(player, prop)
 	end
 end
 

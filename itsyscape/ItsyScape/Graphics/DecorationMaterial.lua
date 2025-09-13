@@ -29,7 +29,8 @@ function DecorationMaterial:new(d)
 		isReflectiveOrRefractive = false,
 		reflectionPower = 1,
 		reflectionDistance = 2,
-		roughness = 0
+		roughness = 0,
+		isShaderCaster = false,
 	}
 	self.set = {}
 
@@ -248,6 +249,13 @@ function DecorationMaterial:loadFromTable(t)
 	else
 		self.properties.roughness = 0
 	end
+
+	if properties.isShadowCaster ~= nil then
+		self.set.isShadowCaster = true
+		self.properties.isShadowCaster = properties.isShadowCaster
+	else
+		self.properties.isShadowCaster = true
+	end
 end
 
 function DecorationMaterial:getUniformValue(name)
@@ -288,6 +296,14 @@ function DecorationMaterial:replace(other)
 	return DecorationMaterial(result)
 end
 
+local function _get(set, value)
+	if set then
+		return value
+	end
+
+	return nil
+end
+
 function DecorationMaterial:serialize()
 	local shader
 	if self.set.shader then
@@ -304,15 +320,16 @@ function DecorationMaterial:serialize()
 			texture = texture,
 			uniforms = {},
 			properties = {
-				color = self.set.color and self.properties.color:toHexString() or nil,
-				alpha = self.set.alpha and self.properties.alpha or nil,
-				outlineColor = self.set.outlineColor and self.properties.outlineColor:toHexString() or nil,
-				outlineThreshold = self.set.outlineThreshold and self.properties.outlineThreshold or nil,
-				isTranslucent = self.set.isTranslucent and self.properties.isTranslucent or nil,
-				isReflectiveOrRefractive = self.set.isReflectiveOrRefractive and self.properties.isReflectiveOrRefractive or nil,
-				reflectionPower = self.set.reflectionPower and self.properties.reflectionPower or nil,
-				reflectionDistance = self.set.reflectionDistance and self.properties.reflectionDistance or nil,
-				roughness = self.set.roughness and self.properties.roughness or nil
+				color = _get(self.set.color, self.properties.color:toHexString()),
+				alpha = _get(self.set.alpha, self.properties.alpha),
+				outlineColor = _get(self.set.outlineColor, self.properties.outlineColor:toHexString()),
+				outlineThreshold = _get(self.set.outlineThreshold, self.properties.outlineThreshold),
+				isTranslucent = _get(self.set.isTranslucent, self.properties.isTranslucent),
+				isReflectiveOrRefractive = _get(self.set.isReflectiveOrRefractive, self.properties.isReflectiveOrRefractive),
+				reflectionPower = _get(self.set.reflectionPower, self.properties.reflectionPower),
+				reflectionDistance = _get(self.set.reflectionDistance, self.properties.reflectionDistance),
+				roughness = _get(self.set.roughness, self.properties.roughness),
+				isShadowCaster = _get(self.set.isShadowCaster, self.properties.isShadowCaster)
 			}
 		}
 

@@ -15,20 +15,27 @@ local Make = require "Resources.Game.Actions.Make"
 
 local Smith = Class(Make)
 Smith.SCOPES = { ['craft'] = true }
-Smith.PAUSE = 2
 
 function Smith:perform(state, player, prop)
 	local flags = { ['item-inventory'] = true }
 
 	if self:canPerform(state, flags) then
 		local a = CallbackCommand(self.make, self, state, player)
-		local b = WaitCommand(self:getActionDuration(10))
+		local b = CallbackCommand(self.smith, self, player, prop)
+		local c = WaitCommand(self:getActionDuration())
 
 		local queue = player:getCommandQueue()
-		return queue:push(CompositeCommand(nil, a, b))
+		return queue:push(CompositeCommand(nil, a, b, c))
 	end
 
 	return false, "can't perform"
+end
+
+function Smith:smith(player, prop)
+	if prop then
+		prop:poke("smith", { peep = player, action = self })
+		self:spawnCraftedItem(player, prop)
+	end
 end
 
 return Smith

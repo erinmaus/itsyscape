@@ -17,6 +17,7 @@ local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local QueueWalkCommand = require "ItsyScape.Peep.QueueWalkCommand"
 local WaitCommand = require "ItsyScape.Peep.WaitCommand"
+local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local Action = require "ItsyScape.Peep.Action"
@@ -24,7 +25,7 @@ local Action = require "ItsyScape.Peep.Action"
 local Make = Class(Action)
 Make.SCOPES = { ['craft'] = true }
 Make.FLAGS = { ['item-inventory'] = true }
-Make.PAUSE = 1.5
+Make.PAUSE = 3
 
 function Make:canPerform(state, flags)
 	return Action.canPerform(self, state, flags) and Action.canTransfer(self, state, flags)
@@ -284,6 +285,25 @@ function Make:make(state, player, prop, flags)
 	Action.perform(self, state, player)
 
 	player:poke('resourceObtained', {})
+end
+
+function Make:spawnCraftedItem(player, prop)
+	local x, y, z = Utility.Peep.getPosition(prop):get()
+
+	local craftedItemProp = Utility.spawnPropAtPosition(Utility.Peep.getMapScript(prop), "CraftedItem", x, y + 1, z)
+	if craftedItemProp then
+		craftedItemProp:getPeep():pushPoke("make", {
+			player = player,
+			action = self
+		})
+
+		Utility.Peep.setRotation(craftedItemProp:getPeep(), Utility.Peep.getRotation(prop))
+
+		if player:hasBehavior(PlayerBehavior) then
+			local _, instance = craftedItemProp:getPeep():addBehavior(InstancedBehavior)
+			instance.playerID = player:getBehavior(PlayerBehavior).playerID
+		end
+	end
 end
 
 return Make

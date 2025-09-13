@@ -1755,7 +1755,8 @@ function GameView:spawnItem(item, tile, position)
 		material:send(Material.UNIFORM_FLOAT, "scape_TriplanarExponent", 0)
 		material:send(Material.UNIFORM_FLOAT, "scape_TriplanarOffset", 0)
 		material:send(Material.UNIFORM_FLOAT, "scape_TriplanarScale", 0)
-		material:setColor(Color(0.70, 0.44, 0.16, 1.0))
+		material:send(Material.UNIFORM_FLOAT, "scape_SpecularWeight", 0)
+		material:setColor(Color.fromHexString("76492b"))
 	end
 	do
 		local stringNode = DecorationSceneNode()

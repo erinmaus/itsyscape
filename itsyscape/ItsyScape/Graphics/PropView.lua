@@ -26,7 +26,7 @@ function PropView:new(prop, gameView)
 end
 
 function PropView:updateGreebles(greebles, t)
-	for _, greeble in ipairs(greebles or self.greebles) do
+	for _, greeble in ipairs(greebles or self.greeble) do
 		greeble:regreebilize(t)
 	end
 end
@@ -66,6 +66,29 @@ function PropView:addGreeble(GreebleType, t, transform, ...)
 
 	return greeble
 end
+
+function PropView:removeGreeble(greeble)
+	local didRemove = false
+	for i = #self.greeble, 1, -1 do
+		if self.greeble[i] == greeble then
+			local g = table.remove(self.greeble, i)
+			g:remove()
+
+			didRemove = true
+		end
+	end
+
+	return didRemove
+end
+
+function PropView:clearGreebles()
+	for _, greeble in ipairs(self.greeble) do
+		greeble:remove()
+	end
+
+	table.clear(self.greeble)
+end
+
 
 function PropView:getIsEditor()
 	return Class.isCompatibleType(_APP, require "ItsyScape.Editor.EditorApplication")
@@ -153,7 +176,6 @@ end
 
 function PropView:remove()
 	self.sceneNode:setParent(nil)
-
 
 	for _, greeble in ipairs(self.greeble) do
 		greeble:remove()

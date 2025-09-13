@@ -1631,6 +1631,7 @@ include "Resources/Game/DB/Props/Firefly.lua"
 include "Resources/Game/DB/Props/Flare.lua"
 include "Resources/Game/DB/Props/GroundFog.lua"
 include "Resources/Game/DB/Props/FurnitureSets.lua"
+include "Resources/Game/DB/Props/CraftedItem.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"

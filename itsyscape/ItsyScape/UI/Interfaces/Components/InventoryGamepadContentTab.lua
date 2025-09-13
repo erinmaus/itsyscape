@@ -415,7 +415,7 @@ function InventoryGamepadContentTab:probe(index, button)
 			verb = "Swap",
 			type = "Swap",
 			object = object,
-			objectID = item.id,
+			objectID = item and item.id or "Null",
 			objectType = "item",
 			callback = Function(self.endSwap, self, index)
 		})
@@ -425,7 +425,7 @@ function InventoryGamepadContentTab:probe(index, button)
 			verb = "Examine",
 			type = "Examine",
 			object = object,
-			objectID = item.id,
+			objectID = item and item.id or "Null",
 			objectType = "item",
 			callback = Function(self.examine, self, item)
 		})
