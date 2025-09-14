@@ -75,6 +75,7 @@ function GraphicsOptions:new(application)
 		vsync = _CONF.vsync or flags.vsync,
 		volume = _CONF.volume or 1,
 		probe = _CONF.probe == nil and true or _CONF.probe,
+		outlineJitterInterval = _CONF.outlineJitterInterval == nil and 8 or _CONF.outlineJitterInterval,
 		outlines = _CONF.outlines == nil and true or _CONF.outlines,
 		reflections = _CONF.reflections == nil and true or _CONF.reflections,
 		shadows = _CONF.shadows == nil and true or _CONF.shadows,
@@ -117,6 +118,7 @@ function GraphicsOptions:new(application)
 	self:_addButton(self.getVSyncText, self.getVSyncOptions)
 	self:_addButton(self.getVolumeText, self.getVolumeOptions)
 	self:_addButton(self.getOneClickText, self.getOneClickOptions)
+	self:_addButton(self.getOutlineAnimationIntervalText, self.getOutlineAnimationIntervalOptions)
 	self:_addButton(self.getOutlinesText, self.getOutlinesOptions)
 	self:_addButton(self.getReflectionsText, self.getReflectionsOptions)
 	self:_addButton(self.getShadowsText, self.getShadowsOptions)
@@ -350,6 +352,52 @@ function GraphicsOptions:setOneClick(value)
 	self.conf.probe = value
 end
 
+function GraphicsOptions:getOutlineAnimationIntervalText()
+	if self.conf.outlineJitterInterval > 1 then
+		return "Outline Animation: Fast"
+	elseif self.conf.outlineJitterInterval > 0 then
+		return "Outline Animation: Slow"
+	end
+
+	return "Outline Animation: Off"
+end
+
+function GraphicsOptions:getOutlineAnimationIntervalOptions()
+	return {
+		{
+				id = 1,
+				type = "Choose",
+				verb = "Choose",
+				object = "Fast",
+				objectID = 1,
+				objectType = "option",
+				callback = Function(self.setOutlineAnimationInterval, self, 8)
+		},
+		{
+				id = 2,
+				type = "Choose",
+				verb = "Choose",
+				object = "Slow",
+				objectID = 2,
+				objectType = "option",
+				callback = Function(self.setOutlineAnimationInterval, self, 1)
+		},
+		{
+				id = 3,
+				type = "Choose",
+				verb = "Choose",
+				object = "Off",
+				objectID = 2,
+				objectType = "option",
+				callback = Function(self.setOutlineAnimationInterval, self, 0)
+		}
+	}
+end
+
+function GraphicsOptions:setOutlineAnimationInterval(value)
+	self.conf.outlineJitterInterval = value
+end
+
 function GraphicsOptions:getOutlinesText()
 	return string.format("Outlines: %s", self.conf.outlines and "On" or "Off")
 end
@@ -538,6 +586,7 @@ function GraphicsOptions:confirm(save)
 		_CONF.vsync = self.conf.vsync
 		_CONF.volume = self.conf.volume
 		_CONF.probe = self.conf.probe
+		_CONF.outlineJitterInterval = self.conf.outlineJitterInterval
 		_CONF.outlines = self.conf.outlines
 		_CONF.reflections = self.conf.reflections
 		_CONF.shadows = self.conf.shadows

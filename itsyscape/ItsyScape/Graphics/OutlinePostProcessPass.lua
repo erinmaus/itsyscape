@@ -45,6 +45,7 @@ function OutlinePostProcessPass:new(...)
 	self.outlineThicknessNoiseScale = Vector(1.79836848):keep()
 	self.outlineThicknessNoiseJitter = 3
 	self.startTime = love.timer.getTime()
+	self.jitterInterval = 8
 
 	local translucentTextureImageData = love.image.newImageData(1, 1)
 	translucentTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
@@ -158,6 +159,14 @@ end
 
 function OutlinePostProcessPass:getOutlineThicknessNoiseJitter()
 	return self.outlineThicknessNoiseJitter
+end
+
+function OutlinePostProcessPass:setJitterInterval(value)
+	self.jitterInterval = value
+end
+
+function OutlinePostProcessPass:getJitterInterval()
+	return self.jitterInterval
 end
 
 function OutlinePostProcessPass:setShimmerTexture(value)
@@ -310,7 +319,8 @@ function OutlinePostProcessPass:_composeOutline(width, height)
 		"scape_OutlineThicknessNoiseJitter", self.outlineThicknessNoiseJitter,
 		"scape_InverseProjectionMatrix", inverseProjection,
 		"scape_InverseViewMatrix", inverseView,
-		"scape_Time", love.timer.getTime() - self.startTime)
+		"scape_Time", love.timer.getTime() - self.startTime,
+		"scape_JitterInterval", self.jitterInterval)
 
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.draw(self.outlineBuffer:getCanvas(2))

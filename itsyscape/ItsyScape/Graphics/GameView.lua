@@ -186,6 +186,7 @@ function GameView:initRenderer(conf)
 	self.sceneOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
 	self.sceneOutlinePostProcessPass:load(self.resourceManager)
 	self.sceneOutlinePostProcessPass:setIsEnabled(not conf or conf.outlines == nil or not not conf.outlines)
+	self.sceneOutlinePostProcessPass:setJitterInterval(not conf or conf.outlineJitterInterval == nil and 8 or conf.outlineJitterInterval)
 
 	self.ssrPostProcessPass = SSRPostProcessPass(self.renderer)
 	self.ssrPostProcessPass:load(self.resourceManager)
@@ -2832,11 +2833,11 @@ function GameView:dirty()
 			self.resourceManager:queueAsyncEvent(function()
 				map.largeTileSet:emitAll(map.map)
 			
-				for _, node in ipairs(map.parts) do
+				for _, part in ipairs(map.parts) do
 					if map.mapMeshMasks then
-						node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture())
+						part.node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture())
 					else
-						node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture)
+						part.node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture)
 					end
 				end
 			end)

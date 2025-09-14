@@ -16,6 +16,7 @@ uniform float scape_MinOutlineDepthAlpha;
 uniform float scape_MaxOutlineDepthAlpha;
 uniform float scape_OutlineFadeDepth;
 uniform float scape_Time;
+uniform float scape_JitterInterval;
 uniform mat4 scape_InverseProjectionMatrix;
 uniform mat4 scape_InverseViewMatrix;
 uniform vec3 scape_OutlineThicknessNoiseScale;
@@ -30,7 +31,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	float alphaMultiplier = 1.0 - smoothstep(scape_FarOutlineDistance, scape_FarOutlineDistance + scape_OutlineFadeDepth, depth);
 	alphaMultiplier = mix(scape_MinOutlineDepthAlpha, scape_MaxOutlineDepthAlpha, alphaMultiplier);
 
-	float time = floor(scape_Time * 8.0) / 8.0;
+	float time = floor(scape_Time * scape_JitterInterval) / max(scape_JitterInterval, 0.0001);
 	vec3 worldPosition = worldPositionFromGBufferDepth(depthSample, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
 	float offset = snoise(vec4(worldPosition * scape_OutlineThicknessNoiseScale, time));
 	offset += 1.0;
