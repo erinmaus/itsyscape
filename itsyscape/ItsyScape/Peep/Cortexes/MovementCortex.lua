@@ -231,10 +231,7 @@ function MovementCortex:updateWorld(layer)
 			local tileCenter = map:getTileCenter(i, j)
 			local min = tileCenter - Vector(map:getCellSize() / 2)
 
-			if not tile:getIsPassable() then
-				w.world:add(tile, min.x, min.z, slick.newRectangleShape(0, 0, map:getCellSize(), map:getCellSize()))
-			end
-
+			w.world:add(tile, min.x, min.z, slick.newRectangleShape(0, 0, map:getCellSize(), map:getCellSize()))
 			if tile:getIsPassable() then
 				for k = 1, #MovementCortex.OFFSETS do
 					local offsetI, offsetJ = unpack(MovementCortex.OFFSETS[k])

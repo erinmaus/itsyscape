@@ -18,6 +18,21 @@ local COMPONENTS = {
 		peepID = "Resources.Game.Peeps.Props.FurnitureProp",
 		size = { x = 3.5, y = 2, z = 1.5 }
 	},
+
+	["Table"] = {
+		peepID = "Resources.Game.Peeps.Props.FurnitureProp",
+		size = { x = 3.5, y = 2, z = 3.5 }
+	},
+
+	["LongTable"] = {
+		peepID = "Resources.Game.Peeps.Props.FurnitureProp",
+		size = { x = 7.5, y = 2, z = 3.5 }
+	},
+
+	["Chest"] = {
+		peepID = "Resources.Game.Peeps.Props.BasicChest",
+		size = { x = 1.5, y = 2, z = 1.5 }
+	}
 }
 
 local SETS = {
@@ -25,7 +40,10 @@ local SETS = {
 		name = "Foreman",
 		components = {
 			"Chair",
-			"Desk"
+			"Desk",
+			"Table",
+			"LongTable",
+			"Chest"
 		}
 	}
 }
@@ -53,3 +71,7 @@ for _, set in ipairs(SETS) do
 		}
 	end
 end
+
+ItsyScape.Resource.Prop "Chest_Foreman" {
+	ItsyScape.Action.Dresser_Search()
+}

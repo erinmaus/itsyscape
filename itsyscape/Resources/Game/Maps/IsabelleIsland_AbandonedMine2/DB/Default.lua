@@ -170,6 +170,54 @@ do
 	}
 end
 
+M["BronzeBars1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 154.236864,
+		PositionY = 16.000000,
+		PositionZ = 52.495426,
+		RotationX = 0.000000,
+		RotationY = -0.923880,
+		RotationZ = 0.000000,
+		RotationW = 0.382683,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "BronzeBars1",
+		Map = M._MAP,
+		Resource = M["BronzeBars1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "BronzeBars",
+		MapObject = M["BronzeBars1"]
+	}
+end
+
+M["BronzeBars2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 140.500000,
+		PositionY = 18.000000,
+		PositionZ = 59.000000,
+		RotationX = 0.000000,
+		RotationY = 0.923880,
+		RotationZ = 0.000000,
+		RotationW = -0.382683,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "BronzeBars2",
+		Map = M._MAP,
+		Resource = M["BronzeBars2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "BronzeBars",
+		MapObject = M["BronzeBars2"]
+	}
+end
+
 M["Chair_Foreman1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -191,6 +239,126 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Chair_Foreman",
 		MapObject = M["Chair_Foreman1"]
+	}
+end
+
+M["Chair_Foreman2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 143.750000,
+		PositionY = 16.000000,
+		PositionZ = 53.000000,
+		RotationX = 0.000000,
+		RotationY = -0.382683,
+		RotationZ = 0.000000,
+		RotationW = 0.923880,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chair_Foreman2",
+		Map = M._MAP,
+		Resource = M["Chair_Foreman2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chair_Foreman",
+		MapObject = M["Chair_Foreman2"]
+	}
+end
+
+M["Chair_Foreman3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 139.750000,
+		PositionY = 16.000000,
+		PositionZ = 61.500000,
+		RotationX = 0.000000,
+		RotationY = 0.923880,
+		RotationZ = 0.000000,
+		RotationW = 0.382683,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chair_Foreman3",
+		Map = M._MAP,
+		Resource = M["Chair_Foreman3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chair_Foreman",
+		MapObject = M["Chair_Foreman3"]
+	}
+end
+
+M["Chair_Foreman4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 149.500000,
+		PositionY = 16.000000,
+		PositionZ = 37.500000,
+		RotationX = 0.000000,
+		RotationY = -0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chair_Foreman4",
+		Map = M._MAP,
+		Resource = M["Chair_Foreman4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chair_Foreman",
+		MapObject = M["Chair_Foreman4"]
+	}
+end
+
+M["Chair_Foreman5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 146.000000,
+		PositionY = 16.000000,
+		PositionZ = 39.000000,
+		RotationX = 0.000000,
+		RotationY = 1.000000,
+		RotationZ = 0.000000,
+		RotationW = 0.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chair_Foreman5",
+		Map = M._MAP,
+		Resource = M["Chair_Foreman5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chair_Foreman",
+		MapObject = M["Chair_Foreman5"]
+	}
+end
+
+M["Chest_Foreman1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 143.000000,
+		PositionY = 16.000000,
+		PositionZ = 50.000000,
+		RotationX = 0.000000,
+		RotationY = 0.382683,
+		RotationZ = 0.000000,
+		RotationW = 0.923880,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chest_Foreman1",
+		Map = M._MAP,
+		Resource = M["Chest_Foreman1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Foreman",
+		MapObject = M["Chest_Foreman1"]
 	}
 end
 
@@ -986,6 +1154,30 @@ do
 	}
 end
 
+M["LongTable_Foreman1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 141.000000,
+		PositionY = 16.000000,
+		PositionZ = 57.000000,
+		RotationX = 0.000000,
+		RotationY = -0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "LongTable_Foreman1",
+		Map = M._MAP,
+		Resource = M["LongTable_Foreman1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "LongTable_Foreman",
+		MapObject = M["LongTable_Foreman1"]
+	}
+end
+
 M["ShellFossil1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1079,6 +1271,30 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "ShellFossil",
 		MapObject = M["ShellFossil4"]
+	}
+end
+
+M["Table_Foreman3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 147.000000,
+		PositionY = 16.000000,
+		PositionZ = 36.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Table_Foreman3",
+		Map = M._MAP,
+		Resource = M["Table_Foreman3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Table_Foreman",
+		MapObject = M["Table_Foreman3"]
 	}
 end
 

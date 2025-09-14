@@ -249,6 +249,7 @@ for name, ore in spairs(ORES) do
 	ItsyScape.Meta.Item {
 		Value = ItsyScape.Utility.valueForItem(ore.tier),
 		Weight = ore.weight,
+		Stackable = 1,
 		Resource = Ore
 	}
 

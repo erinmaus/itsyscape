@@ -158,6 +158,7 @@ for name, log in spairs(LOGS) do
 	ItsyScape.Meta.Item {
 		Value = ItsyScape.Utility.valueForItem(log.tier),
 		Weight = log.weight,
+		Stackable = 1,
 		Resource = Log
 	}
 
