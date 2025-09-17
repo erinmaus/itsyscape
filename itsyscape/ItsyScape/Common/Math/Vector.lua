@@ -211,6 +211,14 @@ function BaseVector:getNormal()
 	end
 end
 
+function BaseVector:difference(other)
+	self:compatible()
+	other:compatible()
+
+	return other - self
+end
+
+
 function BaseVector:direction(other)
 	self:compatible()
 	other:compatible()

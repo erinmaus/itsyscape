@@ -16,8 +16,8 @@ local ParticleGreeble = require "Resources.Game.Props.Common.Greeble.ParticleGre
 
 local CraftedItem = Class(PropView)
 
-CraftedItem.DURATION_SHOW_INPUT_ITEMS_SECONDS  = 2.5
-CraftedItem.DURATION_SHOW_OUTPUT_ITEMS_SECONDS = 2.5
+CraftedItem.DURATION_SHOW_INPUT_ITEMS_SECONDS  = 2
+CraftedItem.DURATION_SHOW_OUTPUT_ITEMS_SECONDS = 1.5
 
 CraftedItem.DUST_INTERVAL          = 0.05
 CraftedItem.INITIAL_DUST_PARTICLES = 25
@@ -33,7 +33,7 @@ local STATE_NONE    = "none"
 local STATE_INPUTS  = "input"
 local STATE_OUTPUTS = "outputs"
 
-function CraftedItem:_loadItemGreebles(items)
+function CraftedItem:_loadItemGreebles(items, offset)
 	local size = math.max(self.ITEM_SCALE.x, self.ITEM_SCALE.z)
 
 	local particleConfig = {
@@ -115,7 +115,9 @@ function CraftedItem:_loadItemGreebles(items)
 		local z = math.sin(angle) * radius
 
 		local itemGreeble = self:addGreeble(ItemGreeble, {
-			ID = items[i]
+			ID = items[i],
+			DROP_IN_DURATION = 0.5,
+			DROP_IN_OFFSET = offset
 		}, {
 			translation = Vector(x, y, z) * self.ITEM_SCALE,
 			scale = self.ITEM_SCALE
@@ -148,8 +150,23 @@ function CraftedItem:_updateLoad()
 		self.isDespawning = isDespawning
 
 		if self.isDespawning then
+			local state = self:getProp():getState()
+			local actor = self:getGameView():getActorByID(state.targetActorID)
+			local actorView = actor and self:getGameView():getView(actor)
+			local actorNode = actorView and actorView:getSceneNode()
+
+			local offset
+			if actorNode then
+				local actorPosition = actorNode:getTransform():getLocalTranslation()
+				local selfPosition = self:getRoot():getTransform():getLocalTranslation()
+				local selfRotation = self:getRoot():getTransform():getLocalRotation()
+
+				offset = selfPosition:lerp(actorPosition, 0.5) - selfPosition
+				offset = (-selfRotation):getNormal():transformVector(offset)
+			end
+
 			local inputIDs = self:getProp():getState().inputs or { "GoldBar", "GoldBar", "GoldBar", "Goldbar", "Ruby" }
-			self:_loadItemGreebles(inputIDs, true)
+			self:_loadItemGreebles(inputIDs, offset)
 
 			self:getResources():queueEvent(function()
 				self:getResources():queueEvent(function()
@@ -207,6 +224,7 @@ function CraftedItem:update(delta)
 
 			local outputIDs = self:getProp():getState().outputs or { "AmuletOfYendor" }
 			self:_loadItemGreebles(outputIDs)
+			table.clear(self.particleGreebles)
 
 			self.currentState = STATE_OUTPUTS
 		end

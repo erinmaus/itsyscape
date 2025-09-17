@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 
 local CraftedItem = Class(Prop) 
 CraftedItem.DURATION = 10
@@ -62,6 +63,11 @@ function CraftedItem:onMake(e)
 		end
 	end
 
+	local actor = e.player and e.player:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	self.targetActorID = actor:getID()
+
 	self.duration = self.DURATION
 end
 
@@ -74,7 +80,8 @@ function CraftedItem:getPropState()
 	return {
 		despawning = self.duration ~= math.huge or _APP,
 		inputs = hasInputsOrOutputs and self.inputItemIDs,
-		outputs = hasInputsOrOutputs and self.outputItemIDs
+		outputs = hasInputsOrOutputs and self.outputItemIDs,
+		targetActorID = self.targetActorID or false
 	}
 end
 
