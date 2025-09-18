@@ -1,5 +1,3 @@
-#line 2000
-
 #include "Resources/Shaders/Depth.common.glsl"
 #include "Resources/Shaders/GBuffer.common.glsl"
 

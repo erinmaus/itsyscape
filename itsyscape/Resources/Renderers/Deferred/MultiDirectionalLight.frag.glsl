@@ -34,7 +34,7 @@ vec4 effect(
 	float specular = specularSample.r;
 	float alpha = specularSample.a;
 
-	vec3 result;
+	vec3 result = vec3(0.0);
 	for (int i = 0; i < scape_NumLights; ++i)
 	{
 		float lightDotSurface = max(dot(scape_LightDirection[i], normal), 0.0);
