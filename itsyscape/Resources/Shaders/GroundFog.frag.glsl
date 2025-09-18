@@ -24,9 +24,9 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
 	vec4 solidSample = Texel(scape_DiffuseTexture, textureCoordinate);
 	vec4 blurSample = Texel(scape_BlurTexture, textureCoordinate);
-	vec4 sample = mix(solidSample, blurSample, delta);
+	vec4 mixedSample = mix(solidSample, blurSample, delta);
 
-	color *= sample;
+	color *= mixedSample;
 	color.a *= 1.0 - delta;
 	color.a *= smoothstep(0.5, 1.0, d);
 
@@ -41,7 +41,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 	result.a *= 1.0 - Texel(scape_BumpCanvas, frag_LocalPosition.xz / scape_MapSize).x;
 
 #ifdef SCAPE_PARTICLE_OUTLINE_PASS
-	result.a = 0;
+	result.a = 0.0;
 #endif
 
 	return result;

@@ -11,7 +11,7 @@ void performTransform(
 	localPosition = position.xyz;
 	projectedPosition = modelViewProjectionMatrix * position;
 
-	vec4 offsetProjectedPosition = modelViewProjectionMatrix * (position + vec4(scape_Offset, 0));
+	vec4 offsetProjectedPosition = modelViewProjectionMatrix * (position + vec4(scape_Offset, 0.0));
 
 	float depth = projectedPosition.z / projectedPosition.w; 
 

@@ -41,7 +41,7 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	foamColor.a *= 1.0 - (foamSample.a * (1.0 - smoothstep(scape_FarFoamDepth.x, scape_FarFoamDepth.y, d)));
 
 	vec4 shallowWaterColor = vec4(
-		mix(scape_ShallowWaterColor.rgb, scape_SkyColor.rgb, clamp(calculateFresnel(2, normal), 0.0, 1.0)),
+		mix(scape_ShallowWaterColor.rgb, scape_SkyColor.rgb, clamp(calculateFresnel(2.0, normal), 0.0, 1.0)),
 		scape_ShallowWaterColor.a);
 
 	float delta = smoothstep(scape_WaterDepth.x, scape_WaterDepth.y, d);

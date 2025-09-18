@@ -1,3 +1,7 @@
+#ifdef GL_ES
+precision highp float;
+#endif
+
 #include "Resources/Shaders/RendererPass.common.glsl"
 #include "Resources/Shaders/GBuffer.common.glsl"
 

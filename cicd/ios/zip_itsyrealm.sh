@@ -2,29 +2,38 @@
 
 set -xe
 
-ITSYREALM_VERSION=${ITSYREALM_VERSION:=$(../common/make_version.sh)}
+ITSYREALM_VERSION=${ITSYREALM_VERSION:=$(../common/make_version.sh build)}
 
-cd ../../itsyscape
+cd ../..
 
-echo $ITSYREALM_VERSION > version.meta
+echo $ITSYREALM_VERSION > itsyscape/version.meta
 
-if [ "$1" != "release" ]; then
-	if [ -f "$HOME/Library/Application Support/ItsyRealm/Player/Default.dat" ]; then
-		mkdir -p Player
-		cp "$HOME/Library/Application Support/ItsyRealm/Player/Default.dat" ./Player/Default.dat
+if [ -z "SKIP_COMPILING_ASSETS" ]; then
+	if [ -z "$LOVE_BINARY" ]; then
+		pushd ./cicd/macos
+		./build.sh
+		rm -f ./staging/ItsyRealm.app/Contents/Resources/itsyrealm.love
+		LOVE_BINARY="$(pwd)/itsyrealm/ItsyRealm.app/Contents/MacOS/ItsyRealm"
+		popd
 	fi
 
-	if [ -f "$HOME/Library/Application Support/ItsyRealm/Player/Common.dat" ]; then
-		mkdir -p Player
-		cp "$HOME/Library/Application Support/ItsyRealm/Player/Common.dat" ./Player/Common.dat
-	fi
+	frameworks_path="$(dirname $LOVE_BINARY)/../Frameworks/"
+	LUA_CPATH="$frameworks_path/?.dylib;$frameworks_path/?.so" "$LOVE_BINARY" --fused itsyscape --f:anonymous --debug --main ItsyScape.BuildLargeTileSetsApplication
+	cp -vr "$HOME/Library/Application Support/ItsyRealm/Resources/"* ./itsyscape/Resources
 fi
 
+#./cicd/common/make_bin.sh
+
+cd itsyscape
 cp -r ../cicd/ios/staging/ext/B ./B
 cp -r ../cicd/ios/staging/ext/devi ./devi
+cp -r ../cicd/ios/staging/ext/nomicon ./nomicon
+cp -r ../cicd/ios/staging/ext/slick ./slick
 rm -f ../cicd/ios/staging/itsyrealm.love
 zip -0 -oXqr ../cicd/ios/staging/itsyrealm.love .
 rm -r ./B
 rm -r ./devi
+rm -r ./nomicon
+rm -r ./slick
 rm -rf ./Player/Default.dat
 rm -rf ./Player/Common.dat

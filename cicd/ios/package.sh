@@ -11,7 +11,7 @@ unzip -q ItsyRealm.ipa
 rm -rf ./Payload/ItsyRealm.app/_CodeSignatures/*
 
 PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/${IOS_PROFILE_FILENAME}"
-rm ./Payload/ItsyRealm.app/embedded.mobileprovision
+rm -rf ./Payload/ItsyRealm.app/embedded.mobileprovision
 cp "$PROFILE_PATH" ./Payload/ItsyRealm.app/embedded.mobileprovision
 
 security cms -D -i "$PROFILE_PATH" > provision.plist

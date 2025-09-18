@@ -471,7 +471,7 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 
 	graphics->draw(g_buffer.get_canvas(DEPTH_INDEX), love::Matrix4());
 
-	output_buffer.use();
+	output_buffer.use(false);
 	get_renderer()->set_current_shader(nullptr);
 	graphics->draw(shadow_buffer.get_color(), love::Matrix4());
 }
@@ -554,7 +554,7 @@ void nbunny::DeferredRendererPass::draw_pass(lua_State* L, float delta)
 
 void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 {
-	light_buffer.use();
+	light_buffer.use(false);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
@@ -599,7 +599,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
 		return;
 	}
 
-	fog_buffer.use();
+	fog_buffer.use(false);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 0.0f), love::OptionalInt(), love::OptionalDouble());
@@ -621,7 +621,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
 
 void nbunny::DeferredRendererPass::mix_lights(lua_State* L)
 {
-	output_buffer.use();
+	output_buffer.use(false);
 	get_renderer()->set_current_shader(nullptr);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
@@ -650,7 +650,7 @@ void nbunny::DeferredRendererPass::mix_lights(lua_State* L)
 
 void nbunny::DeferredRendererPass::mix_fog()
 {
-	output_buffer.use();
+	output_buffer.use(false);
 	get_renderer()->set_current_shader(nullptr);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);

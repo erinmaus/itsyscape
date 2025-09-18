@@ -134,7 +134,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float ma
 	if (hitSecondPass >= 1.0 && localTextureCoordinate.x >= 0.0 && localTextureCoordinate.x <= 1.0 && localTextureCoordinate.y >= 0.0 && localTextureCoordinate.y <= 1.0)
 	{
 		float alpha1 = 1.0 - clamp(depth / THICKNESS, 0.0, 1.0);
-		float alpha2 = 1.0 - min(length(localPosition.xyz - surfacePosition) / maxViewSpaceDistance, 1);
+		float alpha2 = 1.0 - min(length(localPosition.xyz - surfacePosition) / maxViewSpaceDistance, 1.0);
 		float alpha3 = 1.0 - max(dot(-surfaceViewSpaceNormal, pivot), 0.0);
 		float alpha4 = min((1.0 - localTextureCoordinate.x) / (16.0 * scape_TexelSize.x), 1.0);
 		float alpha5 = min(localTextureCoordinate.x / (16.0 * scape_TexelSize.x), 1.0);

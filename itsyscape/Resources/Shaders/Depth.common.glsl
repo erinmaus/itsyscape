@@ -1,3 +1,5 @@
+#line 1000
+
 #ifndef SCAPE_DEPTH_DO_NOT_DEFINE_CAMERA_UNIFORMS
 uniform float scape_Near;
 uniform float scape_Far;

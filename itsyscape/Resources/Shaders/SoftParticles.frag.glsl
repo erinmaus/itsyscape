@@ -18,9 +18,9 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	float d = distance(referencePosition, position);
 
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
-	vec4 sample = Texel(scape_DiffuseTexture, textureCoordinate);
+	vec4 textureSample = Texel(scape_DiffuseTexture, textureCoordinate);
 
-	color *= sample;
+	color *= textureSample;
 	color.a *= smoothstep(0.25, 1.0, d);
 
 	position = frag_ParticlePosition;
@@ -32,7 +32,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 	vec4 result = Texel(scape_DiffuseTexture, textureCoordinate) * color;
 
 #ifdef SCAPE_PARTICLE_OUTLINE_PASS
-	result.a = 0;
+	result.a = 0.0;
 #endif
 
 	return result;

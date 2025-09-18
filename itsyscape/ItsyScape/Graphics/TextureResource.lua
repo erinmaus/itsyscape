@@ -24,9 +24,9 @@ if love.graphics then
 		{
 			vec4 currentSample = Texel(image, textureCoordinate);
 			float currentSampleLength = length(currentSample);
-			for (float x = 0; x <= scape_MipmapBlockSize.x; x += scape_MipmapTexelScale.x)
+			for (float x = 0.0; x <= scape_MipmapBlockSize.x; x += scape_MipmapTexelScale.x)
 			{
-				for (float y = 0; y <= scape_MipmapBlockSize.y; y += scape_MipmapTexelScale.y)
+				for (float y = 0.0; y <= scape_MipmapBlockSize.y; y += scape_MipmapTexelScale.y)
 				{
 					vec4 subSample = Texel(image, textureCoordinate + vec2(x, y));
 					float subSampleLength = length(subSample);

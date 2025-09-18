@@ -4,7 +4,7 @@ set -xe
 
 cd build
 
-git clone https://github.com/erinmaus/devi
+git clone https://github.com/erinmaus/devi || true
 cd devi
 
 make PLATFORM=IOS PREFIX=$(pwd)/.. LUA_LIB=lua51 all

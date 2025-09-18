@@ -1,0 +1,15 @@
+diff --git a/src/modules/graphics/wrap_Graphics.lua b/src/modules/graphics/wrap_Graphics.lua
+index 75425e0..ebde221 100644
+--- a/src/modules/graphics/wrap_Graphics.lua
++++ b/src/modules/graphics/wrap_Graphics.lua
+@@ -45,6 +45,10 @@ GLSL.SYNTAX = [[
+ #else
+ 	#define LOVE_HIGHP_OR_MEDIUMP mediump
+ #endif
++#if defined(GL_ES) && defined(GL_FRAGMENT_PRECISION_HIGH)
++	#define lowp highp
++	#define mediump highp
++#endif
+ #define number float
+ #define Image sampler2D
+ #define ArrayImage sampler2DArray

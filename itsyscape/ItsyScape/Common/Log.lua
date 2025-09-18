@@ -12,7 +12,7 @@ local debug = require "debug"
 local Log = { START = love.timer.getTime() }
 
 function Log.sendError(message, targetStack)
-	if _DEBUG or _EDITOR then
+	if (_DEBUG or _EDITOR) and not _MOBILE then
 		return
 	end
 
