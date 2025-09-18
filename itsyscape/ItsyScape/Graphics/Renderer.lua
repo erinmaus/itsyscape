@@ -197,13 +197,13 @@ function Renderer:draw(scene, delta, width, height, postProcessPasses)
 	self._renderer:draw(scene:getHandle(), delta, width, height)
 	love.graphics.pop()
 
-	-- if postProcessPasses then
-	-- 	for _, postProcessPass in ipairs(postProcessPasses) do
-	-- 		love.graphics.push("all")
-	-- 		postProcessPass:draw(width, height)
-	-- 		love.graphics.pop()
-	-- 	end
-	-- end
+	if postProcessPasses then
+		for _, postProcessPass in ipairs(postProcessPasses) do
+			love.graphics.push("all")
+			postProcessPass:draw(width, height)
+			love.graphics.pop()
+		end
+	end
 end
 
 function Renderer:getOutputBuffer()

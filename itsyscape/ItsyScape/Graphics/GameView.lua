@@ -87,6 +87,7 @@ function GameView:new(game, camera)
 	self.spriteManager = SpriteManager(self, self.resourceManager)
 
 	self.largeTileSetsPending = 0
+	self.largeTileSets = setmetatable({}, { __mode = "v" })
 	self.decorationsPending = 0
 
 	self:initRenderer(_CONF)
@@ -436,6 +437,54 @@ function GameView:release()
 	stage.onStopMusic:unregister(self._onStopMusic)
 end
 
+function GameView:_getLargeTileSet(tileSet, map)
+	local key
+	do
+		local ids = {}
+		if Class.isCompatibleType(tileSet, TileSet) then
+			table.insert(ids, tileSet:getID())
+		elseif Class.isCompatibleType(tileSet, MultiTileSet) then
+			for _, tileSetID in ipairs(tileSet:iterateTileSetIDs()) do
+				table.insert(ids, tileSetID)
+			end
+		end
+
+		table.sort(ids)
+		key = table.concat(ids, ",")
+	end
+
+	if _DEBUG then
+		Log.info("Not caching large tile set with key '%s' because of debug mode.", key)
+
+		local result = LargeTileSet(tileSet)
+		self.largeTileSetsPending = self.largeTileSetsPending + 1
+		self.resourceManager:queueAsyncEvent(function()
+			result:emitAll(map)
+			self.largeTileSetsPending = self.largeTileSetsPending - 1
+		end)
+
+		return result
+	end
+
+	local result = self.largeTileSets[key]
+	if not result then
+		Log.info("Building large tile set with key '%s'.", key)
+
+		result = LargeTileSet(tileSet)
+		self.largeTileSets[key] = result
+
+		self.largeTileSetsPending = self.largeTileSetsPending + 1
+		self.resourceManager:queueEvent(function()
+			result:emitAll(map)
+			self.largeTileSetsPending = self.largeTileSetsPending - 1
+		end)
+	else
+		Log.info("Re-using large tile set with key '%s'.", key)
+	end
+
+	return result
+end
+
 function GameView:addMap(map, layer, tileSetID, mask, meta)
 	meta = meta or {}
 
@@ -462,7 +511,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
 	end
 
-	local largeTileSet = LargeTileSet(tileSet)
+	local largeTileSet = self:_getLargeTileSet(tileSet, map)
 
 	local mapMeshMasks = {}
 	if mask then
@@ -570,14 +619,6 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 	end
 
 	m.weatherMap:addMap(m.map)
-
-	m.largeTileSet:resize(m.map)
-
-	self.largeTileSetsPending = self.largeTileSetsPending + 1
-	self.resourceManager:queueAsyncEvent(function()
-		pcall(m.largeTileSet.emitAll, m.largeTileSet, m.map)
-		self.largeTileSetsPending = self.largeTileSetsPending - 1
-	end)
 
 	self.mapMeshes[layer] = m
 end
@@ -1020,12 +1061,8 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 
 			if m.map ~= map then
 				if m.map and (m.map:getWidth() ~= map:getWidth() or m.map:getHeight() ~= map:getHeight()) then
-					m.largeTileSet:resize(map)
-					self.largeTileSetsPending = self.largeTileSetsPending + 1
-					self.resourceManager:queueAsyncEvent(function()
-						pcall(m.largeTileSet.emitAll, m.largeTileSet, map)
-						self.largeTileSetsPending = self.largeTileSetsPending - 1
-					end)
+					Log.info("Map size changed, updating large tile set...")
+					m.largeTileSet = self:_getLargeTileSet(m.tileSet, map)
 				end 
 
 				m.map = map
@@ -1175,25 +1212,34 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 					end
 
 					m.node:setBounds(node:getBounds())
-
-					if m.mapMeshMasks then
-						node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
-					else
-						node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
-					end
+					self:_updateMapNode(m, node)
 
 					if alphaNode then
 						alphaNode:setMapMesh(node:getMapMesh(), true)
 						self:_updateMapNode(m, alphaNode)
+					end
+
+					local function _tryApplyTexture()
+						while not m.largeTileSet:getIsReady() do
+							coroutine.yield()
+						end
 
 						if m.mapMeshMasks then
-							alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
+							node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
 						else
-							alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+							node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+						end
+
+						if alphaNode then
+							if m.mapMeshMasks then
+								alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
+							else
+								alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+							end
 						end
 					end
 
-					self:_updateMapNode(m, node)
+					self.resourceManager:queueAsyncEvent(_tryApplyTexture)
 				end
 
 				if self:_getIsMapEditor() then

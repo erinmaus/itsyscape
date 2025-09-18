@@ -63,7 +63,7 @@ namespace nbunny
 		void draw_lights(lua_State* L, float delta);
 		void draw_fog(lua_State* L, float delta);
 		void draw_shadows(lua_State* L, float delta);
-		void copy_depth_buffer(lua_State* L);
+		void copy_depth_buffer(lua_State* L, float delta);
 
 		float ambient_light = 0.0f;
 

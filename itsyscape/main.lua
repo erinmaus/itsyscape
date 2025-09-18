@@ -382,6 +382,12 @@ function itsyrealm.errorhandler()
 		end
 	end
 
+	if love.audio then
+		love.audio.stop()
+	end
+
+	love.graphics.reset()
+
 	local logo
 	do
 		local s, v = pcall(love.graphics.newImage, "Resources/Game/TitleScreens/Logo.png")
@@ -420,12 +426,6 @@ function itsyrealm.errorhandler()
 			height = love.graphics.getHeight()
 		end
 	end
-
-	if love.audio then
-		love.audio.stop()
-	end
-
-	love.graphics.reset()
 
 	local function draw()
 		love.graphics.clear(0, 0, 0)

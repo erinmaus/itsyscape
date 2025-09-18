@@ -21,10 +21,23 @@ void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
 	for (auto visible_scene_node: visible_scene_nodes)
 	{
 		auto& material = visible_scene_node->get_material();
-		if (material.get_is_translucent() || material.get_is_full_lit())
+		if (!(material.get_is_translucent() || material.get_is_full_lit()))
 		{
-			drawable_scene_nodes.push_back(visible_scene_node);
+			continue;
 		}
+
+		// if (material.should_stencil_mask())
+		// {
+		// 	stencil_masked_drawable_scene_nodes.push_back(visible_scene_node);
+		// }
+		// else if (material.should_stencil_write())
+		// {
+		// 	stencil_write_drawable_scene_nodes.push_back(visible_scene_node);
+		// }
+		// else
+		// {
+			drawable_scene_nodes.push_back(visible_scene_node);
+		// }
 	}
 }
 
@@ -273,7 +286,18 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
 		}
 
+		bool is_stencil_mask_enabled = scene_node->get_material().get_is_stencil_mask_enabled();
+		if (is_stencil_mask_enabled)
+		{
+			graphics->setStencilTest(love::graphics::COMPARE_EQUAL, 0);
+		}
+
 		renderer->draw_node(L, *scene_node, delta);
+
+		if (is_stencil_mask_enabled)
+		{
+			graphics->setStencilTest(love::graphics::COMPARE_ALWAYS, 0);
+		}
 
 		if (scene_node->get_material().get_is_z_write_disabled())
 		{
