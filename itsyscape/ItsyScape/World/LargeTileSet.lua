@@ -210,13 +210,19 @@ function LargeTileSet:emitAll(map)
 	local scaleMultiplier = self.SCALED_TILE_SIZE / self.TILE_SIZE
 	local numTilesPerAxis = self.ATLAS_SIZE / self.TILE_SIZE
 
+	local resized = false
+
 	for largeTileIndex, largeTileInfo in ipairs(self.largeTiles) do
 		local baseDirectory = string.format("Resources/Game/TileSets/%s/Cache", largeTileInfo.tileSetID)
 
 		if self:getIsCacheEnabled() and love.filesystem.getInfo(baseDirectory) then
-			map = self.CACHED_MAP
-			self:resize(self.CACHED_MAP)
-			self:_buildBaseLayers()
+			if not resized then
+				map = self.CACHED_MAP
+				self:resize(self.CACHED_MAP)
+				self:_buildBaseLayers()
+
+				resized = true
+			end
 
 			local diffuseCanvas = self.diffuseCanvas
 			local specularCanvas = self.specularCanvas
@@ -289,11 +295,10 @@ function LargeTileSet:emitAll(map)
 					end
 				end
 			end
-
-			self.ready = true
 		elseif not (_ITSYREALM_PROD or _ITSYREALM_DEMO) then
 			self:resize(map)
 			self:_buildBaseLayers()
+			resized = true
 
 			local diffuseCanvas = self.diffuseCanvas
 			local specularCanvas = self.specularCanvas
@@ -340,10 +345,15 @@ function LargeTileSet:emitAll(map)
 					end
 				end
 			end
-
-			self.ready = true
 		end
 	end
+
+	if not resized then
+		self:resize(map)
+		self:_buildBaseLayers()
+	end
+
+	self.ready = true
 end
 
 function LargeTileSet:getTextureCoordinates(tileSetID, name, i, j)

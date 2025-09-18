@@ -474,7 +474,7 @@ function GameView:_getLargeTileSet(tileSet, map)
 		self.largeTileSets[key] = result
 
 		self.largeTileSetsPending = self.largeTileSetsPending + 1
-		self.resourceManager:queueEvent(function()
+		self.resourceManager:queueAsyncEvent(function()
 			result:emitAll(map)
 			self.largeTileSetsPending = self.largeTileSetsPending - 1
 		end)
@@ -968,7 +968,7 @@ function GameView:updateGroundDecorations(m)
 				local chunk = love.filesystem.load(groundDecorationsFilename)
 
 				local GroundType = chunk()
-				if GroundType then
+				if GroundType and Class.isDerived(GroundType, require "ItsyScape.World.GroundDecorationsV2") then
 					local ground = GroundType()
 					self.resourceManager:queueAsyncEvent(function()
 						ground:emitAll(m.tileSet, m.map)
@@ -1195,6 +1195,10 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 					if vertices then
 						node:fromVertices(vertices.data, Vector(unpack(vertices.min)), Vector(unpack(vertices.max)))
 					else
+						while not m.largeTileSet:getIsReady() do
+							coroutine.yield()
+						end
+
 						node:fromMap(
 							m.map,
 							m.tileSet,

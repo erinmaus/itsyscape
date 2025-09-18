@@ -88,7 +88,12 @@ function BuildLargeTileSetsApplication:saveMap(layer, map, filename, meta)
 		local outputFilename = string.format("%s/%s.ldeco.cache", groundDecorationsDirectory, name)
 		love.filesystem.write(outputFilename, buffer.encode(groundDecoration:serialize()))
 		Log.info("Saved ground decoration '%s' to '%s'.", name, outputFilename)
-	end	
+	end
+
+	self:getGame():getStage():unloadMap(layer)
+
+	collectgarbage()
+	collectgarbage()
 end
 
 function BuildLargeTileSetsApplication:buildMap(layer, map, filename, meta)
@@ -172,6 +177,8 @@ function BuildLargeTileSetsApplication:saveLayer(layer)
 	end
 
 	stage:unloadMap(layer)
+	collectgarbage()
+	collectgarbage()
 end
 
 function BuildLargeTileSetsApplication:update(delta)

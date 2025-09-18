@@ -397,7 +397,7 @@ void nbunny::DeferredRendererPass::copy_depth_buffer(lua_State* L, float delta)
 
 	graphics->draw(g_buffer.get_canvas(0), love::Matrix4());
 
-	if (!stencil_masked_drawable_scene_nodes.empty() && !stencil_write_drawable_scene_nodes.empty())
+	if (!stencil_write_drawable_scene_nodes.empty())
 	{
 		auto renderer = get_renderer();
 
