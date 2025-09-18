@@ -20,9 +20,9 @@ if [ -z "SKIP_COMPILING_ASSETS" ]; then
 	frameworks_path="$(dirname $LOVE_BINARY)/../Frameworks/"
 	LUA_CPATH="$frameworks_path/?.dylib;$frameworks_path/?.so" "$LOVE_BINARY" --fused itsyscape --f:anonymous --debug --main ItsyScape.BuildLargeTileSetsApplication
 
+fi
 	cp -vr "$HOME/Library/Application Support/ItsyRealm/Resources/"* ./itsyscape/Resources
 	./cicd/common/make_bin.sh
-fi
 
 cd itsyscape
 cp -r ../cicd/ios/staging/ext/B ./B

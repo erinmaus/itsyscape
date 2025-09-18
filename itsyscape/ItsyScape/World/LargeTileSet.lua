@@ -18,8 +18,8 @@ local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 LargeTileSet = Class()
 
 LargeTileSet.ATLAS_SIZE = 1024
-LargeTileSet.TILE_SIZE  = 128
-LargeTileSet.SCALED_TILE_SIZE = _MOBILE and 32 or 128
+LargeTileSet.TILE_SIZE  = 64
+LargeTileSet.SCALED_TILE_SIZE = _MOBILE and 32 or 64
 LargeTileSet.CACHED_MAP_SIZE = 128
 LargeTileSet.MOBILE_CACHED_MAP_SIZE = 96
 
@@ -127,7 +127,7 @@ function LargeTileSet:resize(map)
 		self.layers = layers
 		self.diffuseCanvas = love.graphics.newCanvas(atlasSize, atlasSize, self.layers, { type = "array", format = "rgb5a1" })
 		self.specularCanvas = love.graphics.newCanvas(atlasSize, atlasSize, self.layers, { type = "array", format = "rgb5a1" })
-		self.outlineCanvas = love.graphics.newCanvas(atlasSize, atlasSize, self.layers, { type = "array", format = "rgba8" })
+		self.outlineCanvas = love.graphics.newCanvas(atlasSize, atlasSize, self.layers, { type = "array", format = "rgb5a1" })
 
 		self.diffuseTexture = LayerTextureResource(self.diffuseCanvas)
 		self.diffuseTexture:getHandle():setPerPassTexture(RendererPass.PASS_OUTLINE, self.outlineCanvas)
@@ -207,11 +207,14 @@ function LargeTileSet:getIsReady()
 end
 
 function LargeTileSet:emitAll(map)
+	if not self:getIsCacheEnabled() then
+		map = self.CACHED_MAP
+	end
+
 	local scaleMultiplier = self.SCALED_TILE_SIZE / self.TILE_SIZE
 	local numTilesPerAxis = self.ATLAS_SIZE / self.TILE_SIZE
 
 	local resized = false
-
 	for largeTileIndex, largeTileInfo in ipairs(self.largeTiles) do
 		local baseDirectory = string.format("Resources/Game/TileSets/%s/Cache", largeTileInfo.tileSetID)
 

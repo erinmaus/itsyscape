@@ -127,8 +127,32 @@ local TYPES = {
 	lua = true
 }
 
+function Resource._manySync(t)
+	local result = {}
+	for i = 1, #t, 2 do
+		local fileType, filename = t[i], t[i + 1]
+
+		local r
+		if fileType == "image" then
+			r = Resource.readImageData(filename)
+		elseif fileType == "file" then
+			r = Resource.readFile(filename)
+		elseif fileType == "lua" then
+			r = Resource.readLua(filename)
+		else
+			error(string.format("unhandled resource type '%s'", fileType))
+		end
+
+		table.insert(result, r)
+	end
+
+	return result
+end
+
 function Resource.many(t)
-	assert(coroutine.running(), "Resource.many is only async")
+	if not coroutine.running() then
+		return Resource._manySync(t)
+	end
 
 	local result = {}
 

@@ -16,6 +16,8 @@ local Block = require "ItsyScape.World.TileSets.Block"
 
 local Grass = Class(Block)
 
+Grass.SCALE_FACTOR = 0.4
+
 Grass.GLOBAL_OFFSET = Vector(174 / 257)
 
 Grass.SATURATION = 4
@@ -200,10 +202,10 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 	for _, g in ipairs(grass) do
 		local dirt = self._dirt:uniform(g.dirt)
 		if dirt >= self.DIRT_THRESHOLD then
-			local scale = self._scales:range(g.scale, self.MIN_SCALE, self.MAX_SCALE)
+			local scale = self._scales:range(g.scale, self.MIN_SCALE * self.SCALE_FACTOR, self.MAX_SCALE * self.SCALE_FACTOR)
 			local rotation = self._rotations:range(g.rotation, self.MIN_ROTATION, self.MAX_ROTATION)
-			local x = g.x + self._offsets:range(g.offsetX, self.MIN_OFFSET, self.MAX_OFFSET)
-			local y = g.y + self._offsets:range(g.offsetY, self.MIN_OFFSET, self.MAX_OFFSET)
+			local x = g.x + self._offsets:range(g.offsetX, self.MIN_OFFSET * self.SCALE_FACTOR, self.MAX_OFFSET * self.SCALE_FACTOR)
+			local y = g.y + self._offsets:range(g.offsetY, self.MIN_OFFSET * self.SCALE_FACTOR, self.MAX_OFFSET * self.SCALE_FACTOR)
 
 			if drawType == "diffuse" then
 				local color = self.COLORS[self._colors:index(g.color, #self.COLORS)]
