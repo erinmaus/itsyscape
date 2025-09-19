@@ -92,7 +92,7 @@ function love.load(args)
 	end
 
 	_ARGS["anonymous"] = true
-	_DEBUG = _MOBILE or (_DEBUG or _CONF.debug) or false
+	_DEBUG = not _MOBILE and (_DEBUG or _CONF.debug) or false
 
 	if not main then
 		if _CONF.server then
