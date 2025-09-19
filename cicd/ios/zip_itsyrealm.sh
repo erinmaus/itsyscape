@@ -21,6 +21,7 @@ if [ -z "SKIP_COMPILING_ASSETS" ]; then
 	LUA_CPATH="$frameworks_path/?.dylib;$frameworks_path/?.so" "$LOVE_BINARY" --fused itsyscape --f:anonymous --debug --main ItsyScape.BuildLargeTileSetsApplication
 
 	cp -vr "$HOME/Library/Application Support/ItsyRealm/Resources/"* ./itsyscape/Resources
+	make LUAJIT="$(pwd)/cicd/macos/build/LuaJIT/src/luajit" all
 	./cicd/common/make_bin.sh
 fi
 
