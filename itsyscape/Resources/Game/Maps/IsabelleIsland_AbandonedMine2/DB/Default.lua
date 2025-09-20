@@ -173,9 +173,9 @@ end
 M["BronzeBars1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 154.236864,
+		PositionX = 153.500000,
 		PositionY = 16.000000,
-		PositionZ = 52.495426,
+		PositionZ = 49.250000,
 		RotationX = 0.000000,
 		RotationY = -0.923880,
 		RotationZ = 0.000000,
@@ -1271,6 +1271,30 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "ShellFossil",
 		MapObject = M["ShellFossil4"]
+	}
+end
+
+M["SlackTub1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155.750000,
+		PositionY = 16.000000,
+		PositionZ = 50.000000,
+		RotationX = 0.000000,
+		RotationY = -0.382683,
+		RotationZ = 0.000000,
+		RotationW = 0.923880,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "SlackTub1",
+		Map = M._MAP,
+		Resource = M["SlackTub1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "SlackTub",
+		MapObject = M["SlackTub1"]
 	}
 end
 
