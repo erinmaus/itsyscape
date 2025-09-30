@@ -18,6 +18,7 @@ local LocalActor = require "ItsyScape.Game.LocalModel.Actor"
 local Instance = require "ItsyScape.Game.LocalModel.Instance"
 local LocalProp = require "ItsyScape.Game.LocalModel.Prop"
 local Stage = require "ItsyScape.Game.Model.Stage"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local Peep = require "ItsyScape.Peep.Peep"
@@ -79,6 +80,8 @@ function LocalStage:new(game)
 	if self:_preloadMapObjects() then
 		self._preloadMapObjects = nil
 	end
+
+	self.skies = setmetatable({}, { __mode = "k" })
 end
 
 function LocalStage:preloadMapObjects()
@@ -474,7 +477,7 @@ function LocalStage:placeProp(propID, layer, layerName)
 	local Peep, resource, realID = self:lookupResource(propID, "Prop")
 
 	if Peep then
-		local prop = LocalProp(self.game, Peep, realID)
+		local prop = LocalProp(self.game, Peep, realID, self:lookupPropAlias(realID))
 		prop:place(self.currentPropID, layerName, resource)
 
 		self.currentPropID = self.currentPropID + 1
@@ -743,7 +746,7 @@ function LocalStage:newMap(width, height, tileSetID, maskID, layer, meta)
 	return map
 end
 
-function LocalStage:updateMap(layer, map)
+function LocalStage:updateMap(layer, map, i, j, w, h)
 	map = map or self.game:getDirector():getMap(layer)
 
 	if map then
@@ -751,7 +754,17 @@ function LocalStage:updateMap(layer, map)
 			self.game:getDirector():setMap(layer, map)
 		end
 
-		self.onMapModified(self, map, layer)
+		self.onMapModified(self, map, layer, i, j, w, h)
+	end
+end
+
+function LocalStage:updateSky(instance, properties)
+	if not RPCState.deepEquals(self.skies[instance], properties) then
+		self.skies[instance] = properties
+
+		for _, layer in instance:iterateLayers() do
+			self:onMapSkyUpdated(layer, properties)
+		end
 	end
 end
 
@@ -1223,6 +1236,8 @@ function LocalStage:loadMapResource(instance, filename, args)
 		local waterDirectoryPath = directoryPath .. "/Water"
 		for _, item in ipairs(love.filesystem.getDirectoryItems(waterDirectoryPath)) do
 			local data = "return " .. (love.filesystem.read(waterDirectoryPath .. "/" .. item) or "")
+			print(">>> data", data)
+			print(">>> filename", waterDirectoryPath .. "/" .. item)
 			local chunk = assert(loadstring(data))
 			water = setfenv(chunk, {})() or {}
 
@@ -1326,8 +1341,8 @@ function LocalStage:loadMapResource(instance, filename, args)
 			if layerMeta.transform then
 				offset.origin = Vector(unpack(layerMeta.transform.origin or {}))
 				offset.offset = Vector(unpack(layerMeta.transform.translation or {}))
-				offset.rotation = Quaternion(unpack(layerMeta.transform.rotation or {}))
-				offset.scale = Vector(unpack(layerMeta.transform.scale or {}))
+				offset.rotation = Quaternion(unpack(layerMeta.transform.rotation or { Quaternion.IDENTITY:get() }))
+				offset.scale = Vector(unpack(layerMeta.transform.scale or { Vector.ONE:get() }))
 			end
 		end
 	end
@@ -1670,14 +1685,14 @@ function LocalStage:forecast(layer, name, id, props)
 	end
 end
 
-function LocalStage:decorate(group, decoration, layer)
+function LocalStage:decorate(group, decoration, layer, material)
 	if not decoration then
 		self.onUndecorate(self, group, layer or 1)
 	else
 		if Class.isCompatibleType(decoration, Spline) then
-			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Spline", value = decoration:serialize() }, layer or 1)
+			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Spline", value = decoration:serialize() }, layer or 1, material)
 		elseif Class.isCompatibleType(decoration, Decoration) then
-			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Decoration", value = decoration:serialize() }, layer or 1)
+			self.onDecorate(self, group, { type = "ItsyScape.Graphics.Decoration", value = decoration:serialize() }, layer or 1, material)
 		end
 	end
 end

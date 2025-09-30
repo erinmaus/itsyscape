@@ -28,6 +28,7 @@ Quest "Tutorial" {
 	Step "Tutorial_Start",
 	Step "Tutorial_GatheredItems",
 	Step "Tutorial_EquippedItems",
+	Step "Tutorial_MetSerCommander",
 	Step "Tutorial_FoundScout",
 	Step "Tutorial_DefeatedScout",
 	Step "Tutorial_FoundYenderhounds",
@@ -55,6 +56,11 @@ Description "Tutorial_GatheredItems" {
 Description "Tutorial_EquippedItems" {
 	before = "Some of the dropped items were equipment. You should probably gear back up!",
 	after = "Some of the dropped items were equipment, so you equipped them to gear back up for the fights ahead."
+}
+
+Description "Tutorial_MetSerCommander" {
+	before = "Find the Ser Commander.",
+	after = "The Ser Commander was waiting for you at the camp entrance. Now you're ready to explore!"
 }
 
 Description "Tutorial_FoundScout" {

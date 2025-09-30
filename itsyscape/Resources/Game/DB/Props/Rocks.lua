@@ -8,6 +8,34 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
+ItsyScape.Resource.Prop "TestRockV3" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.StaticProp",
+	Resource = ItsyScape.Resource.Prop "TestRockV3"
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 1.5,
+	SizeY = 1.5,
+	SizeZ = 1.5,
+	MapObject = ItsyScape.Resource.Prop "TestRockV3"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Rock",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "TestRockV3"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "That's a cool rock!",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "TestRockV3"
+}
+
 ItsyScape.Resource.Prop "Rock_Variant_1" {
 	-- Nothing.
 }

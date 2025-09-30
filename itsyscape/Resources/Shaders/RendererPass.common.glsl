@@ -3,17 +3,21 @@ const float EPSILON = 0.01;
 uniform float scape_Time;
 
 uniform mat4 scape_WorldMatrix;
+uniform mat4 scape_InverseWorldMatrix;
 uniform mat4 scape_NormalMatrix;
 
 uniform mat4 scape_ViewMatrix;
 uniform mat4 scape_InverseViewMatrix;
 
 uniform mat4 scape_ProjectionMatrix;
+uniform mat4 scape_InverseProjectionMatrix;
 
 uniform vec4 scape_ClipPlane;
 
 uniform vec3 scape_CameraEye;
 uniform vec3 scape_CameraTarget;
+uniform float scape_CameraNear;
+uniform float scape_CameraFar;
 
 mat4 getWorldViewProjection()
 {

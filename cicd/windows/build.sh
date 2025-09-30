@@ -28,6 +28,7 @@ mkdir -p staging/ext
 ./get_discworld.sh
 ./get_nbunny.sh
 ./get_nomicon.sh
+./get_slick.sh
 ./get_devi.sh
 
 cp /mingw64/bin/libgcc_s_seh-1.dll ./staging/libgcc_s_seh-1.dll

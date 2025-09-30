@@ -18,7 +18,21 @@ function BasicFurnace:new(...)
 	Prop.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(4.5, 3, 1)
+	size.size = Vector(4.5, 4, 3.5)
+
+	self:addPoke("smelt")
+
+	self.smeltGeneration = 0
+end
+
+function BasicFurnace:onSmelt()
+	self.smeltGeneration = self.smeltGeneration + 1
+end
+
+function BasicFurnace:getPropState()
+	return {
+		generation = self.smeltGeneration
+	}
 end
 
 return BasicFurnace

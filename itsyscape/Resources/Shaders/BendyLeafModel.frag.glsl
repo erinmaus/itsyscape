@@ -6,7 +6,7 @@ uniform Image scape_DiffuseTexture;
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
-	vec4 sample = Texel(scape_DiffuseTexture, textureCoordinate) * color;
+	vec4 textureSample = Texel(scape_DiffuseTexture, textureCoordinate) * color;
 	float alpha = getWallHackAlpha(frag_Position);
-	return vec4(sample.rgb, sample.a * alpha);
+	return vec4(textureSample.rgb, textureSample.a * alpha);
 }

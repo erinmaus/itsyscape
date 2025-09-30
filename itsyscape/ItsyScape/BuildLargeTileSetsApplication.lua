@@ -22,6 +22,9 @@ function BuildLargeTileSetsApplication:new()
 	ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = 5
 	_LOG_WRITE_ALL = true
 
+	_ITSYREALM_PROD = false
+	_ITSYREALM_DEMO = false
+
 	EditorApplication.new(self)
 
 	self.maps = self:getMaps()
@@ -85,7 +88,12 @@ function BuildLargeTileSetsApplication:saveMap(layer, map, filename, meta)
 		local outputFilename = string.format("%s/%s.ldeco.cache", groundDecorationsDirectory, name)
 		love.filesystem.write(outputFilename, buffer.encode(groundDecoration:serialize()))
 		Log.info("Saved ground decoration '%s' to '%s'.", name, outputFilename)
-	end	
+	end
+
+	self:getGame():getStage():unloadMap(layer)
+
+	collectgarbage()
+	collectgarbage()
 end
 
 function BuildLargeTileSetsApplication:buildMap(layer, map, filename, meta)
@@ -128,7 +136,7 @@ end
 function BuildLargeTileSetsApplication:saveLargeTileSet(tileSetID, largeTileSet)
 	local diffuse = largeTileSet:getDiffuseTexture():getResource()
 	local outline = largeTileSet:getDiffuseTexture():getHandle():getPerPassTexture(RendererPass.PASS_OUTLINE)
-	local specular = largeTileSet:getDiffuseTexture():getResource()
+	local specular = largeTileSet:getSpecularTexture():getResource()
 
 	local w, h = largeTileSet:getLargeTileSize()
 	local tilesCount = largeTileSet:getLargeTilesCount()
@@ -169,6 +177,8 @@ function BuildLargeTileSetsApplication:saveLayer(layer)
 	end
 
 	stage:unloadMap(layer)
+	collectgarbage()
+	collectgarbage()
 end
 
 function BuildLargeTileSetsApplication:update(delta)
@@ -176,7 +186,7 @@ function BuildLargeTileSetsApplication:update(delta)
 
 	local resources = self:getGameView():getResourceManager()
 	local _, n = resources:getIsPending()
-	if n == 0 then
+	if n == 0 and not self:getGameView():getIsHeavyResourcePending() then
 		if self.mapIndex <= #self.maps then
 			if self.mapIndex > 0 then
 				self:saveMap(self.maps[self.mapIndex].layer, self.maps[self.mapIndex].map, self.maps[self.mapIndex].filename, self.maps[self.mapIndex].meta)
@@ -187,11 +197,11 @@ function BuildLargeTileSetsApplication:update(delta)
 				self:buildMap(self.maps[self.mapIndex].layer, self.maps[self.mapIndex].map, self.maps[self.mapIndex].filename, self.maps[self.mapIndex].meta)
 			end
 		elseif self.tileSetIndex <= #self.largeTileSets then
-			local previousLayer = self.tileSetIndex + 100
+			local previousLayer = self.tileSetIndex + 1000
 			self:saveLayer(previousLayer)
 
 			self.tileSetIndex = self.tileSetIndex + 1
-			local currentLayer = self.tileSetIndex + 100
+			local currentLayer = self.tileSetIndex + 1000
 
 			if self.tileSetIndex <= #self.largeTileSets then
 				self:buildLargeTileSet(currentLayer, self.largeTileSets[self.tileSetIndex])

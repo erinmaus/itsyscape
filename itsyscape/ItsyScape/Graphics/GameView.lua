@@ -12,11 +12,14 @@ local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ActorView = require "ItsyScape.Graphics.ActorView"
+local Building = require "ItsyScape.Graphics.Building"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
 local Material = require "ItsyScape.Graphics.Material"
@@ -51,9 +54,10 @@ local NShaderCache = require "nbunny.optimaus.shadercache"
 local NProbe = require "nbunny.optimaus.probe"
 
 local GameView = Class()
-GameView.MAP_MESH_DIVISIONS = 16
+GameView.MAP_MESH_DIVISIONS = 128
 GameView.FADE_DURATION = 2
 GameView.ACTOR_CANVAS_CELL_SIZE = 32
+GameView.WALL_HACK_EXPAND_DURATION = 0.5
 
 GameView.PropViewDebugStats = Class(DebugStats)
 function GameView.PropViewDebugStats:process(node, delta)
@@ -83,16 +87,24 @@ function GameView:new(game, camera)
 	self.spriteManager = SpriteManager(self, self.resourceManager)
 
 	self.largeTileSetsPending = 0
+	self.largeTileSets = setmetatable({}, { __mode = "v" })
 	self.decorationsPending = 0
 
 	self:initRenderer(_CONF)
 
-	self.itemBagModel = self.resourceManager:load(
-		ModelResource,
-		"Resources/Game/Items/ItemBag.lmesh")
-	self.itemBagIconModel = self.resourceManager:load(
-		ModelResource,
-		"Resources/Game/Items/ItemBagIcon.lmesh")
+	self.itemBagMesh = self.resourceManager:load(
+		StaticMeshResource,
+		"Resources/Game/Items/ItemBag.lstatic")
+	self.itemBagTexture = self.resourceManager:load(
+		TextureResource,
+		"Resources/Game/Items/ItemBagTexture.png")
+	self.itemBagStringTexture = self.resourceManager:load(
+		TextureResource,
+		"Resources/Game/Items/ItemBagStringTexture.png")
+	self.itemBagShader = self.resourceManager:load(
+		ShaderResource,
+		"Resources/Shaders/SpecularTriplanar")
+
 	self.items = {}
 
 	local translucentTextureImageData = love.image.newImageData(1, 1)
@@ -106,6 +118,7 @@ function GameView:new(game, camera)
 	self.whiteTextureImageData = whiteTextureImageData
 
 	self.actorCanvasCircle = love.graphics.newImage("ItsyScape/Graphics/Resources/GameViewActorCanvasCircle.png")
+	self.fogCanvasCircle = love.graphics.newImage("ItsyScape/Graphics/Resources/GameViewFogCanvasCircle.png")
 
 	self.defaultMapMaskTexture = LayerTextureResource(love.graphics.newArrayImage(whiteTextureImageData))
 
@@ -174,6 +187,7 @@ function GameView:initRenderer(conf)
 	self.sceneOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
 	self.sceneOutlinePostProcessPass:load(self.resourceManager)
 	self.sceneOutlinePostProcessPass:setIsEnabled(not conf or conf.outlines == nil or not not conf.outlines)
+	self.sceneOutlinePostProcessPass:setJitterInterval(not conf or conf.outlineJitterInterval == nil and 8 or conf.outlineJitterInterval)
 
 	self.ssrPostProcessPass = SSRPostProcessPass(self.renderer)
 	self.ssrPostProcessPass:load(self.resourceManager)
@@ -217,9 +231,9 @@ function GameView:attach(game)
 	end
 	stage.onUnloadMap:register(self._onUnloadMap)
 
-	self._onMapModified = function(_, map, layer)
+	self._onMapModified = function(_, map, layer, i, j, w, h)
 		Log.info("Map for layer %d modified.", layer)
-		self:updateMap(map, layer)
+		self:updateMap(map, layer, i, j, w, h)
 	end
 	stage.onMapModified:register(self._onMapModified)
 
@@ -227,6 +241,11 @@ function GameView:attach(game)
 		self:moveMap(layer, position, rotation, scale, offset, disabled, parentLayer)
 	end
 	stage.onMapMoved:register(self._onMapMoved)
+
+	self._onMapSkyUpdated = function(_, layer, properties)
+		self:updateMapSky(layer, properties)
+	end
+	stage.onMapSkyUpdated:register(self._onMapSkyUpdated)
 
 	self._onActorSpawned = function(_, actorID, actor)
 		Log.info("Spawning actor '%s' (%s).", actorID, actor and actor:getPeepID())
@@ -264,9 +283,9 @@ function GameView:attach(game)
 	end
 	stage.onTakeItem:register(self._onTakeItem)
 
-	self._onDecorate = function(_, group, decoration, layer)
+	self._onDecorate = function(_, group, decoration, layer, materials)
 		Log.info("Decorating '%s' (%s) on layer %d.", group, decoration.type, layer)
-		self:decorate(group, decoration, layer)
+		self:decorate(group, decoration, layer, materials)
 	end
 	stage.onDecorate:register(self._onDecorate)
 
@@ -400,6 +419,7 @@ function GameView:release()
 	stage.onUnloadMap:unregister(self._onUnloadMap)
 	stage.onMapModified:unregister(self._onMapModified)
 	stage.onMapMoved:unregister(self._onMapMoved)
+	stage.onMapSkyUpdated:unregister(self._onMapSkyUpdated)
 	stage.onActorSpawned:unregister(self.onActorSpawned)
 	stage.onActorKilled:unregister(self._onActorKilled)
 	stage.onPropPlaced:unregister(self._onPropPlaced)
@@ -415,6 +435,62 @@ function GameView:release()
 	stage.onProjectile:unregister(self._onProjectile)
 	stage.onPlayMusic:unregister(self._onPlayMusic)
 	stage.onStopMusic:unregister(self._onStopMusic)
+end
+
+function GameView:_getLargeTileSet(tileSet, map)
+	local key
+	do
+		local ids = {}
+		if Class.isCompatibleType(tileSet, TileSet) then
+			table.insert(ids, tileSet:getID())
+		elseif Class.isCompatibleType(tileSet, MultiTileSet) then
+			for _, tileSetID in ipairs(tileSet:iterateTileSetIDs()) do
+				table.insert(ids, tileSetID)
+			end
+		end
+
+		table.sort(ids)
+		key = table.concat(ids, ",")
+	end
+
+	if _DEBUG then
+		Log.info("Not caching large tile set with key '%s' because of debug mode.", key)
+
+		local result = LargeTileSet(tileSet)
+
+		if self:_getIsMapEditor() then
+			result:emitAll(map)
+		else
+			self.largeTileSetsPending = self.largeTileSetsPending + 1
+			self.resourceManager:queueAsyncEvent(function()
+				result:emitAll(map)
+				self.largeTileSetsPending = self.largeTileSetsPending - 1
+			end)
+		end
+
+		return result
+	end
+
+	local result = self.largeTileSets[key]
+	if not result then
+		Log.info("Building large tile set with key '%s'.", key)
+
+		result = LargeTileSet(tileSet)
+		self.largeTileSets[key] = result
+
+		if self:_getIsMapEditor() then
+			result:emitAll(map)
+		else
+			self.largeTileSetsPending = self.largeTileSetsPending + 1
+			self.resourceManager:queueAsyncEvent(function()
+				result:emitAll(map)
+				self.largeTileSetsPending = self.largeTileSetsPending - 1
+			end)
+		end
+		Log.info("Re-using large tile set with key '%s'.", key)
+	end
+
+	return result
 end
 
 function GameView:addMap(map, layer, tileSetID, mask, meta)
@@ -443,7 +519,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		tileSet, texture = TileSet.loadFromFile(tileSetFilename, true)
 	end
 
-	local largeTileSet = LargeTileSet(tileSet)
+	local largeTileSet = self:_getLargeTileSet(tileSet, map)
 
 	local mapMeshMasks = {}
 	if mask then
@@ -503,13 +579,18 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 	local actorCanvas = love.graphics.newCanvas(
 		map:getWidth() * GameView.ACTOR_CANVAS_CELL_SIZE,
 		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
-		{ format = "rgba16f" })
+		{ format = "rgba8" })
 	actorCanvas:setFilter("linear", "linear")
 	local bumpCanvas = love.graphics.newCanvas(
 		map:getWidth() * GameView.ACTOR_CANVAS_CELL_SIZE,
 		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
 		{ format = "rgba16f" })
 	bumpCanvas:setFilter("linear", "linear")
+	local fogCanvas = love.graphics.newCanvas(
+		map:getWidth() * GameView.ACTOR_CANVAS_CELL_SIZE,
+		map:getHeight() * GameView.ACTOR_CANVAS_CELL_SIZE,
+		{ format = "rgba8" })
+	fogCanvas:setFilter("linear", "linear")
 
 	local m = {
 		tileSet = tileSet,
@@ -531,22 +612,21 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		meta = meta,
 		wallHackEnabled = not (meta and type(meta.wallHack) == "table" and meta.wallHack.enabled == false),
 		actorCanvas = actorCanvas,
+		fogCanvas = fogCanvas,
+		bumpActors = {},
 		bumpCanvas = bumpCanvas,
 		wallHackDecorations = setmetatable({}, { __mode = "k" }),
 		decorationTextures = setmetatable({}, { __mode = "v" }),
 		staticGroundDecorations = {},
-		dynamicGroundDecorations = {}
+		dynamicGroundDecorations = {},
+		water = {}
 	}
 
+	if meta and meta.curve then
+		self:bendMap(m.layer, meta.curve)
+	end
+
 	m.weatherMap:addMap(m.map)
-
-	m.largeTileSet:resize(m.map)
-
-	self.largeTileSetsPending = self.largeTileSetsPending + 1
-	self.resourceManager:queueAsyncEvent(function()
-		pcall(m.largeTileSet.emitAll, m.largeTileSet, m.map)
-		self.largeTileSetsPending = self.largeTileSetsPending - 1
-	end)
 
 	self.mapMeshes[layer] = m
 end
@@ -561,7 +641,7 @@ function GameView:removeMap(layer)
 		end
 
 		for i = 1, #m.parts do
-			m.parts[i]:setMapMesh(nil)
+			m.parts[i].node:setMapMesh(nil)
 		end
 
 		m.weatherMap:removeMap(m.map)
@@ -583,6 +663,146 @@ end
 
 function GameView:_getIsMapEditor()
 	return _APP:getType() == require "ItsyScape.Editor.MapEditorApplication"
+end
+
+function GameView:updateWallDecorations(m)
+	if m.meta and m.meta.disableWallDecorations then
+		Log.info("Not updating wall decorations; explicitly disabled.")
+		return false
+	end
+		
+	local tileSetIDs
+	if type(m.tileSetID) == 'string' then
+		tileSetIDs = { m.tileSetID }
+	else
+		tileSetIDs = m.tileSetID
+	end
+
+	local walls = {}
+	for i = 1, #tileSetIDs do
+		local tileSetID = tileSetIDs[i] or "GrassyPlain"
+
+		local wallDecorationsFilename = string.format(
+			"Resources/Game/TileSets/%s/Wall.lua",
+			tileSetID)
+		local wallExists = love.filesystem.getInfo(wallDecorationsFilename)
+
+		if wallExists then
+			local w = walls[tileSetID]
+			if not w then
+				w = {}
+				walls[tileSetID] = w
+			end
+
+			local chunk = love.filesystem.load(wallDecorationsFilename)
+			local WallType = chunk()
+			if WallType then
+				local wall = WallType()
+				for _, megaTexture in wall:iterateMegaTextures() do
+					local targetEdgeID
+					if Class.isCompatibleType(m.tileSet, TileSet) then
+						targetEdgeID = m.tileSet:getTileIndex(megaTexture:getID())
+					else
+						targetEdgeID = m.tileSet:getTileSetByID(tileSetID):getTileIndex(megaTexture:getID())
+					end
+
+					w[targetEdgeID] = true
+
+					self.resourceManager:queueAsyncEvent(function()
+						local node = MapMeshSceneNode()
+						node:setParent(m.node)
+						table.insert(m.parts, node)
+
+						local alphaNode
+						if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+							alphaNode = MapMeshSceneNode()
+							alphaNode:getMaterial():setIsTranslucent(true)
+							alphaNode:getMaterial():setOutlineThreshold(-1.0)
+							alphaNode:setParent(m.node)
+
+							table.insert(m.parts, alphaNode)
+						else
+							local material = node:getMaterial()
+							material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+							material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+							material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+						end
+
+						if m.meta and m.meta.material then
+							local metaMaterial = m.meta.material
+							for _, part in ipairs(m.parts) do
+								local material = part:getMaterial()
+								if metaMaterial.isReflectiveOrRefractive then
+									material:setIsReflectiveOrRefractive(true)
+								else
+									material:setIsReflectiveOrRefractive(false)
+								end
+
+								if metaMaterial.reflectionPower then
+									material:setReflectionPower(metaMaterial.reflectionPower)
+								else
+									material:setReflectionPower(0)
+								end
+
+								if metaMaterial.reflectionRoughness then
+									material:setRoughness(metaMaterial.reflectionRoughness)
+								elseif material.isReflectiveOrRefractive then
+									material:setRoughness(0)
+								end
+
+								if metaMaterial.reflectionDistance then
+									material:setReflectionDistance(metaMaterial.reflectionDistance)
+								elseif material.setIsReflectiveOrRefractive then
+									material:setReflectionDistance(1)
+								end
+							end
+						end
+
+						local vertices
+						if m.filename ~= nil and m.meta and not m.meta.disableCaching then
+							local filename = string.format("%s_%s_%s.mapmesh", m.filename, tileSetID, megaTexture:getID())
+							if love.filesystem.getInfo(filename) then
+								vertices = buffer.decode(love.filesystem.read(filename))
+							end
+						end
+
+						if vertices then
+							node:fromVertices(vertices.data, Vector(unpack(vertices.min)), Vector(unpack(vertices.max)))
+						else
+							node:fromMap(
+								m.map,
+								m.tileSet,
+								1, 1,
+								m.map:getWidth(),
+								m.map:getHeight(),
+								m.mapMeshMasks,
+								m.islandProcessor,
+								m.largeTileSet,
+								{
+									buildFlats = false,
+									buildEdges = true,
+									tileSetID = tileSetID,
+									targetEdgeID = targetEdgeID
+								})
+						end
+
+						megaTexture:getMaterial():apply(node, self.resourceManager)
+						node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
+						self:_updateMapNode(m, node)
+
+						if alphaNode then
+							megaTexture:getMaterial():apply(alphaNode, self.resourceManager)
+							alphaNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
+							alphaNode:setMapMesh(node:getMapMesh(), true)
+							self:_updateMapNode(m, alphaNode)
+						end
+					end)
+				end
+			end
+		end
+	end
+
+	return walls
 end
 
 function GameView:updateGroundDecorations(m)
@@ -612,47 +832,56 @@ function GameView:updateGroundDecorations(m)
 	end
 
 	local function updateDecorationMaterial(d, group)
-		d.sceneNode:getMaterial():setOutlineThreshold(0.5)
-		d.sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
-		d.sceneNode:getMaterial():setIsShadowCaster(false)
+		for _, sceneNode in ipairs(d.sceneNodes) do
+			sceneNode:getMaterial():setOutlineThreshold(0.5)
+			sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
+			sceneNode:getMaterial():setIsShadowCaster(false)
 
-		local group = d.decoration:getUniform("_x_Group")
+			local group = d.decoration:getUniform("_x_Group")
 
-		if group == Block.GROUP_SHINY then
-			d.sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
-			d.sceneNode:getMaterial():setReflectionPower(1.0)
-			d.sceneNode:getMaterial():setReflectionDistance(0.75)
-			d.sceneNode:getMaterial():setRoughness(0.5)
-		elseif group == Block.GROUP_BENDY then
-			local newTexture = m.decorationTextures[d.texture:getID()]
-			if not newTexture then
-				newTexture = TextureResource(d.texture:getResource())
-				newTexture:getHandle():setBoundTexture("Specular", d.texture:getHandle():getBoundTexture("Specular"))
-				newTexture:getHandle():setBoundTexture("Heightmap", d.texture:getHandle():getBoundTexture("Heightmap"))
-				m.decorationTextures[d.texture:getID()] = newTexture
+			if group == Block.GROUP_SHINY then
+				sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
+				sceneNode:getMaterial():setReflectionPower(0.5)
+				sceneNode:getMaterial():setReflectionDistance(0.5)
+				sceneNode:getMaterial():setRoughness(1)
+			elseif group == Block.GROUP_BENDY then
+				local newTexture = m.decorationTextures[d.texture:getID()]
+				if not newTexture then
+					newTexture = TextureResource(d.texture:getResource())
+					newTexture:getHandle():setBoundTexture("Specular", d.texture:getHandle():getBoundTexture("Specular"))
+					newTexture:getHandle():setBoundTexture("Heightmap", d.texture:getHandle():getBoundTexture("Heightmap"))
+					m.decorationTextures[d.texture:getID()] = newTexture
+				end
+
+				d.texture = newTexture
+				sceneNode:getMaterial():setTextures(newTexture)
+				if d.alphaSceneNode then
+					d.alphaSceneNode:getMaterial():setTextures(newTexture)
+				end
+
+				local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
+				sceneNode:getMaterial():setShader(shader)
+				self:_updateWind(m.layer, sceneNode)
 			end
 
-			d.texture = newTexture
-			d.sceneNode:getMaterial():setTextures(newTexture)
-			if d.alphaSceneNode then
-				d.alphaSceneNode:getMaterial():setTextures(newTexture)
+			if group == Block.GROUP_BENDY then
+				table.insert(m.dynamicGroundDecorations, d)
+			else
+				table.insert(m.staticGroundDecorations, d)
 			end
+			
+			d.isGroundDecoration = true
 
-			local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
-			d.sceneNode:getMaterial():setShader(shader)
-			self:_updateWind(m.layer, d.sceneNode)
+			if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+				m.wallHackDecorations[sceneNode] = true
+				m.wallHackDirty = true
+			else
+				local material = sceneNode:getMaterial()
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+			end
 		end
-
-		if group == Block.GROUP_BENDY then
-			table.insert(m.dynamicGroundDecorations, d)
-		else
-			table.insert(m.staticGroundDecorations, d)
-		end
-		
-		d.isGroundDecoration = true
-
-		m.wallHackDecorations[d.sceneNode] = true
-		m.wallHackDirty = true
 	end
 
 	local cachedGroundDecorationDirectory = m.resource and string.format("Resources/Game/Maps/%s/GroundDecorationsCache", m.resource)
@@ -689,7 +918,12 @@ function GameView:updateGroundDecorations(m)
 					end
 
 					local group = decoration:getUniform("_x_Group")
-					decoration:setIsWall(group == Block.GROUP_STATIC)
+
+					if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+						decoration:setIsWall(group == Block.GROUP_STATIC or group == Block.GROUP_SHINY)
+					else
+						decoration:setIsWall(false)
+					end
 
 					local parentGroups = groupLayers[group]
 					if not parentGroups then
@@ -701,7 +935,6 @@ function GameView:updateGroundDecorations(m)
 					if not parentDecoration then
 						parentDecoration = Decoration({ tileSetID = tileSetID })
 						parentDecoration:setUniform("_x_Group", group)
-						parentDecoration:setIsWall(decoration:getIsWall())
 
 						parentGroups[tileSetID] = parentDecoration
 					end
@@ -716,8 +949,6 @@ function GameView:updateGroundDecorations(m)
 							f:getColor(),
 							f:getTexture())
 					end
-
-					coroutine.yield()
 				end
 			end
 
@@ -725,7 +956,7 @@ function GameView:updateGroundDecorations(m)
 				for groupName, parentGroups in pairs(parentLayers) do
 					for tileSetID, decoration in pairs(parentGroups) do
 						local decorationName = string.format("_x_GroundDecorations_%s_%s@%d", groupName, tileSetID, layer)
-						self:decorate(decorationName, decoration, m.layer, updateDecorationMaterial)
+						self:decorate(decorationName, decoration, m.layer, nil, updateDecorationMaterial)
 					end
 				end
 			end
@@ -745,7 +976,7 @@ function GameView:updateGroundDecorations(m)
 				local chunk = love.filesystem.load(groundDecorationsFilename)
 
 				local GroundType = chunk()
-				if GroundType then
+				if GroundType and Class.isDerived(GroundType, require "ItsyScape.World.GroundDecorationsV2") then
 					local ground = GroundType()
 					self.resourceManager:queueAsyncEvent(function()
 						ground:emitAll(m.tileSet, m.map)
@@ -755,9 +986,14 @@ function GameView:updateGroundDecorations(m)
 							local groupName = string.format("_x_GroundDecorations_%d_%s@%d", i, tileSetID, m.layer)
 
 							decoration:setUniform("_x_Group", group)
-							decoration:setIsWall(group == Block.GROUP_STATIC)
 
-							self:decorate(groupName, decoration, m.layer, updateDecorationMaterial)
+							if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+								decoration:setIsWall(group == Block.GROUP_STATIC or group == Block.GROUP_SHINY)
+							else
+								decoration:setIsWall(false)
+							end
+
+							self:decorate(groupName, decoration, m.layer, nil, updateDecorationMaterial)
 						end
 					end)
 				end
@@ -788,7 +1024,7 @@ function GameView:testMap(layer, ray, callback)
 	end
 end
 
-function GameView:updateMap(map, layer)
+function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 	local m = self.mapMeshes[layer]
 	if m then
 		if m.map then
@@ -803,6 +1039,23 @@ function GameView:updateMap(map, layer)
 				else
 					map = m.map
 				end
+
+				local tileSetID
+				if type(m.tileSetID) == "table" then
+					tileSetID = m.tileSetID[1]
+				else
+					tileSetID = m.tileSetID
+				end
+
+				tileSetID = tileSetID or "GrassyPlain"
+				for i = 1, map:getWidth() do
+					for j = 1, map:getHeight() do
+						local tile = map:getTile(i, j)
+						if tile.tileSetID == "" then
+							tile.tileSetID = tileSetID
+						end
+					end
+				end
 			else
 				m.filename = nil
 			end
@@ -816,12 +1069,8 @@ function GameView:updateMap(map, layer)
 
 			if m.map ~= map then
 				if m.map and (m.map:getWidth() ~= map:getWidth() or m.map:getHeight() ~= map:getHeight()) then
-					m.largeTileSet:resize(map)
-					self.largeTileSetsPending = self.largeTileSetsPending + 1
-					self.resourceManager:queueAsyncEvent(function()
-						pcall(m.largeTileSet.emitAll, m.largeTileSet, map)
-						self.largeTileSetsPending = self.largeTileSetsPending - 1
-					end)
+					Log.info("Map size changed, updating large tile set...")
+					m.largeTileSet = self:_getLargeTileSet(m.tileSet, map)
 				end 
 
 				m.map = map
@@ -844,115 +1093,198 @@ function GameView:updateMap(map, layer)
 			Log.debug("Updated layer '%d' in %d ms.", layer, (after - before) * 1000)
 		end
 
-		for i = 1, #m.parts do
-			m.parts[i]:setParent(nil)
-			m.parts[i]:setMapMesh(nil)
-		end
-		m.parts = {}
+		for i = #m.parts, 1, -1 do
+			if partialI and partialJ and partialW and partialH then
+				if m.parts[i].i < (partialI + partialW) and
+				   m.parts[i].i + m.parts[i].w > partialI and
+				   m.parts[i].j < (partialJ + partialH) and
+				   m.parts[i].j + m.parts[i].h > partialJ
+				then
+					m.parts[i].node:setParent(nil)
+					m.parts[i].node:setMapMesh(nil)
 
-		local node = MapMeshSceneNode()
-		node:setParent(m.node)
-		table.insert(m.parts, node)
-
-		local alphaNode
-		if m.wallHackEnabled then
-			alphaNode = MapMeshSceneNode()
-			alphaNode:getMaterial():setIsTranslucent(true)
-			alphaNode:getMaterial():setOutlineThreshold(-1.0)
-			alphaNode:setParent(m.node)
-
-			table.insert(m.parts, alphaNode)
-		end
-
-		if m.meta and m.meta.material then
-			local metaMaterial = m.meta.material
-			for _, part in ipairs(m.parts) do
-				local material = part:getMaterial()
-				if metaMaterial.isReflectiveOrRefractive then
-					material:setIsReflectiveOrRefractive(true)
-				else
-					material:setIsReflectiveOrRefractive(false)
+					table.remove(m.parts, i)
 				end
-
-				if metaMaterial.reflectionPower then
-					material:setReflectionPower(metaMaterial.reflectionPower)
-				else
-					material:setReflectionPower(0)
-				end
-
-				if metaMaterial.reflectionRoughness then
-					material:setRoughness(metaMaterial.reflectionRoughness)
-				elseif material.isReflectiveOrRefractive then
-					material:setRoughness(0)
-				end
-
-				if metaMaterial.reflectionDistance then
-					material:setReflectionDistance(metaMaterial.reflectionDistance)
-				elseif material.setIsReflectiveOrRefractive then
-					material:setReflectionDistance(1)
-				end
-			end
-		end
-
-		local function _update()
-			local vertices
-			if m.filename ~= nil and m.meta and not m.meta.disableCaching then
-				local filename = string.format("%s.mapmesh", m.filename)
-				if love.filesystem.getInfo(filename) then
-					vertices = buffer.decode(love.filesystem.read(filename))
-				end
-			end
-
-			if vertices then
-				node:fromVertices(vertices.data, Vector(unpack(vertices.min)), Vector(unpack(vertices.max)))
 			else
-				node:fromMap(
-					m.map,
-					m.tileSet,
-					1, 1,
-					m.map:getWidth(),
-					m.map:getHeight(),
-					m.mapMeshMasks,
-					m.islandProcessor,
-					m.largeTileSet)
+				m.parts[i].node:setParent(nil)
+				m.parts[i].node:setMapMesh(nil)
+
+				table.remove(m.parts, i)
 			end
+		end
 
-			m.node:setBounds(node:getBounds())
+		local startI = partialI and math.max(partialI, 1) or 1
+		startI = math.max(startI - (startI - 1) % self.MAP_MESH_DIVISIONS, 1)
+		local startJ = partialJ and math.max(partialJ, 1) or 1
+		startJ = math.max(startJ - (startJ - 1) % self.MAP_MESH_DIVISIONS, 1)
+		local stopI = partialI and partialW and math.min(partialI + partialW - 1, map:getWidth()) or map:getWidth()
+		stopI = math.min((self.MAP_MESH_DIVISIONS - ((stopI - 1) % self.MAP_MESH_DIVISIONS + 1)) + stopI, map:getWidth())
+		local stopJ = partialJ and partialH and math.min(partialJ + partialH - 1, map:getHeight()) or map:getHeight()
+		stopJ = math.min((self.MAP_MESH_DIVISIONS - ((stopJ - 1) % self.MAP_MESH_DIVISIONS + 1)) + stopJ, map:getWidth())
 
-			if m.mapMeshMasks then
-				node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
-			else
-				node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
-			end
+		for i = startI, stopI, self.MAP_MESH_DIVISIONS do
+			for j = startJ, stopJ, self.MAP_MESH_DIVISIONS do
+				local node = MapMeshSceneNode()
+				node:setParent(m.node)
 
-			if alphaNode then
-				alphaNode:setMapMesh(node:getMapMesh(), true)
-				self:_updateMapNode(m, alphaNode)
+				local w = math.min(self.MAP_MESH_DIVISIONS, map:getWidth() - i + 1)
+				local h = math.min(self.MAP_MESH_DIVISIONS, map:getHeight() - j + 1)
 
-				if m.mapMeshMasks then
-					alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
+				table.insert(m.parts, {
+					i = i,
+					j = j,
+					w = w, 
+					h = h,
+					node = node,
+				})
+
+				local alphaNode
+				if m.wallHackEnabled and (m.meta and type(m.meta.wallHack) == "table" and m.meta.wallHack.map) then
+					alphaNode = MapMeshSceneNode()
+					alphaNode:getMaterial():setIsTranslucent(true)
+					alphaNode:getMaterial():setOutlineThreshold(-1.0)
+					alphaNode:setParent(m.node)
+
+					table.insert(m.parts, {
+						i = i,
+						j = j,
+						w = w,
+						h = h,
+						node = node,
+					})
 				else
-					alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+					local material = node:getMaterial()
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+				end
+
+				local ignored = self:updateWallDecorations(m)
+
+				if m.meta and m.meta.material then
+					local metaMaterial = m.meta.material
+					for _, n in ipairs({ node, alphaNode }) do
+						local material = n:getMaterial()
+						if metaMaterial.isReflectiveOrRefractive then
+							material:setIsReflectiveOrRefractive(true)
+						else
+							material:setIsReflectiveOrRefractive(false)
+						end
+
+						if metaMaterial.reflectionPower then
+							material:setReflectionPower(metaMaterial.reflectionPower)
+						else
+							material:setReflectionPower(0)
+						end
+
+						if metaMaterial.reflectionRoughness then
+							material:setRoughness(metaMaterial.reflectionRoughness)
+						elseif material.isReflectiveOrRefractive then
+							material:setRoughness(0)
+						end
+
+						if metaMaterial.reflectionDistance then
+							material:setReflectionDistance(metaMaterial.reflectionDistance)
+						elseif material.setIsReflectiveOrRefractive then
+							material:setReflectionDistance(1)
+						end
+					end
+				end
+
+				local function _update()
+					local vertices
+					if m.filename ~= nil and m.meta and not m.meta.disableCaching and not (partialI and partialJ and partialW and partialH) then
+						local filename = string.format("%s.mapmesh", m.filename)
+						if love.filesystem.getInfo(filename) then
+							vertices = buffer.decode(love.filesystem.read(filename))
+						end
+					end
+
+					if vertices then
+						node:fromVertices(vertices.data, Vector(unpack(vertices.min)), Vector(unpack(vertices.max)))
+					else
+						while not m.largeTileSet:getIsReady() do
+							coroutine.yield()
+						end
+
+						node:fromMap(
+							m.map,
+							m.tileSet,
+							i, j,
+							w,
+							h,
+							m.mapMeshMasks,
+							m.islandProcessor,
+							m.largeTileSet,
+							{
+								buildFlats = true,
+								buildEdges = true,
+								ignored = ignored
+							})
+					end
+
+					m.node:setBounds(node:getBounds())
+					self:_updateMapNode(m, node)
+
+					if alphaNode then
+						alphaNode:setMapMesh(node:getMapMesh(), true)
+						self:_updateMapNode(m, alphaNode)
+					end
+
+					local function _tryApplyTexture()
+						while not m.largeTileSet:getIsReady() do
+							coroutine.yield()
+						end
+
+						if m.mapMeshMasks then
+							node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
+						else
+							node:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+						end
+
+						if alphaNode then
+							if m.mapMeshMasks then
+								alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), m.mask:getTexture(), m.largeTileSet:getSpecularTexture())
+							else
+								alphaNode:getMaterial():setTextures(m.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture, m.largeTileSet:getSpecularTexture())
+							end
+						end
+					end
+
+					self.resourceManager:queueAsyncEvent(_tryApplyTexture)
+				end
+
+				if self:_getIsMapEditor() then
+					_update()
+				else
+					self.resourceManager:queueAsyncEvent(_update)
+				end
+
+				node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
+				if alphaNode then
+					alphaNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
 				end
 			end
-
-			self:_updateMapNode(m, node)
-		end
-
-		if self:_getIsMapEditor() then
-			_update()
-		else
-			self.resourceManager:queueAsyncEvent(_update)
-		end
-
-		node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
-		if alphaNode then
-			alphaNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
 		end
 
 		m.weatherMap:addMap(m.map)
 
 		self.resourceManager:queueEvent(self.updateGroundDecorations, self, m)
+	end
+end
+
+function GameView:updateMapSky(layer, properties)
+	local m = self.mapMeshes[layer]
+	if not m then
+		return
+	end
+
+	if not properties then
+		m.previousSkyProperties = false
+		m.currentSkyProperties = false
+	else
+		m.previousSkyProperties = m.currentSkyProperties or properties
+		m.currentSkyProperties = properties
 	end
 end
 
@@ -1016,23 +1348,37 @@ function GameView:_updateWind(layer, node)
 	material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
 end
 
-function GameView:_updateMapNodeWallHack(m)
+function GameView:_isPlayerInBuilding()
+	local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
+	if not playerActor then
+		return false
+	end
+
+	local i, j, layer = playerActor:getTile()
+	local m = self.mapMeshes[layer]
+	if not m then
+		return false
+	end
+
+	local tile = m.map:getTile(i, j)
+	return tile:hasFlag("building")
+end
+
+function GameView:_updateMapNodeWallHack(m, delta)
 	local wallHackEnabled = m.wallHackEnabled == nil or m.wallHackEnabled
-	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 1.25, 1.25, 4, 0.25, 8
+	wallHackEnabled = wallHackEnabled and self:_isPlayerInBuilding()
+
+	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 4, 4, 4, 2, 0
+	local isMapWallhackEnabled = false
 	if wallHackEnabled and not self:_getIsMapEditor() then
 		if m.meta and type(m.meta.wallHack) == "table" then
 			wallHackLeft = m.meta.wallHack.left or wallHackLeft
 			wallHackRight = m.meta.wallHack.right or wallHackRight
 			wallHackTop = m.meta.wallHack.top or wallHackTop
 			wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
-			wallHackNear = m.meta.wallHackNear or wallHackNear
+			wallHackNear = m.meta.wallHack.near or wallHackNear
+			isMapWallhackEnabled = not not m.meta.wallHack.map
 		end
-	else
-		wallHackLeft = 0
-		wallHackRight = 0
-		wallHackTop = 0
-		wallHackBottom = 0
-		wallHackNear = 0
 	end
 
 	local globalTransform = m.node:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
@@ -1040,11 +1386,19 @@ function GameView:_updateMapNodeWallHack(m)
 	local up = rotation:transformVector(Vector.UNIT_Y):getNormal()
 
 	local wallHackParameters = m.wallHackParameters
+	local time = math.min((wallHackParameters and wallHackParameters.time or 0) + delta, self.WALL_HACK_EXPAND_DURATION)
+
 	if not wallHackParameters or m.wallHackDirty or
 	   wallHackParameters.left ~= wallHackLeft or wallHackParameters.right ~= wallHackRight or
 	   wallHackParameters.top ~= wallHackTop or wallHackParameters.bottom ~= wallHackBottom or
-	   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up
+	   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up or
+	   wallHackParameters.time ~= time or
+	   wallHackParameters.enabled ~= wallHackEnabled
 	then
+		if wallHackParameters and wallHackEnabled ~= wallHackParameters.enabled then
+			time = self.WALL_HACK_EXPAND_DURATION - time
+		end
+
 		wallHackParameters = wallHackParameters or {}
 		wallHackParameters.left = wallHackLeft
 		wallHackParameters.right = wallHackRight
@@ -1052,33 +1406,81 @@ function GameView:_updateMapNodeWallHack(m)
 		wallHackParameters.bottom = wallHackBottom
 		wallHackParameters.near = wallHackNear
 		wallHackParameters.up = up:keep(wallHackParameters.up)
+		wallHackParameters.time = time
+		wallHackParameters.enabled = wallHackEnabled
+
+		if not (wallHackParameters.enabled or wallHackParameters.time < self.WALL_HACK_EXPAND_DURATION) then
+			wallHackLeft = 0
+			wallHackRight = 0
+			wallHackTop = 0
+			wallHackBottom = 0
+			wallHackNear = 0
+		end
+
+		local mu = Tween.sineEaseOut(time / self.WALL_HACK_EXPAND_DURATION)
+		if not wallHackEnabled then
+			mu = 1 - mu
+		end
+
+		local currentWallHackLeft = math.lerp(0, wallHackLeft, mu)
+		local currentWallHackRight = math.lerp(0, wallHackRight, mu)
+		local currentWallHackTop = math.lerp(0, wallHackTop, mu)
+		local currentWallHackBottom = math.lerp(0, wallHackBottom, mu)
+		local currentWallHackNear = math.lerp(0, wallHackNear, mu)
 
 		m.wallHackParameters = wallHackParameters
 		m.wallHackDirty = false
 
-		for _, part in ipairs(m.parts) do
-			local material = part:getMaterial()
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", wallHackNear)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
+		if isMapWallhackEnabled then
+			for _, part in ipairs(m.parts) do
+				local material = part.node:getMaterial()
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
+			end
+		else
+			for _, part in ipairs(m.parts) do
+				local material = part.node:getMaterial()
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+			end
 		end
 		
 		for decoration in pairs(m.wallHackDecorations) do
 			local material = decoration:getMaterial()
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", wallHackLeft, wallHackRight, wallHackTop, wallHackBottom)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", wallHackNear)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
+			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
 			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
 		end
 	end
 end
 
-function GameView:_updateMapNode(m, node)
-	local mapMesh = node:getMapMesh()
-	if not mapMesh then
-		return
+function GameView:_updateMapWater(m, delta)
+	local waterRimColor
+	if not (m.currentSkyProperties and m.previousSkyProperties) then
+		waterRimColor = Color(1, 1, 1, 1)
+	else
+		local previousAmbientColor = Color(unpack(m.previousSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
+		local currentAmbientColor = Color(unpack(m.currentSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
+
+		waterRimColor = previousAmbientColor:lerp(currentAmbientColor, _APP:getPreviousFrameDelta())
 	end
 
-	local min, max = mapMesh:getBounds()
+	local windDirection, windSpeed, windPattern = self:getWind(m.layer)
+
+	for _, water in ipairs(m.water) do
+		local material = water.node:getMaterial()
+		material:send(material.UNIFORM_FLOAT, "scape_SkyColor", waterRimColor:get())
+
+		material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
+		material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
+		material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
+	end
+end
+
+function GameView:_updateMapNode(m, node)
+	local min, max = Vector(0), Vector(m.map:getWidth() * m.map:getCellSize(), 0, m.map:getHeight() * m.map:getCellSize())
 	local halfSize = (max - min) / 2
 
 	local newMin, newMax = min, max
@@ -1133,118 +1535,8 @@ function GameView:_updatePlayerMapNode()
 		return
 	end
 
-	local delta = _APP:getFrameDelta()
-
-	-- local distanceSquared = (self.camera:getDistance() * 2) ^ 2
-	-- local position = self.camera:getPosition():inverseTransform(m.node:getTransform():getGlobalDeltaTransform(delta))
-	-- local playerMin = position - Vector.PLANE_XZ
-	-- local playerMax = position + Vector.PLANE_XZ
-	-- for _, d in ipairs(m.dynamicGroundDecorations) do
-	-- 	local decorationMin, decorationMax = d.sceneNode:getBounds()
-	-- 	local u = (playerMin - decorationMax):max(Vector.ZERO)
-	-- 	local v = (decorationMin - playerMax):max(Vector.ZERO)
-	-- 	local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
-
-	-- 	if squaredDistance <= distanceSquared then
-	-- 		if d.sceneNode:getParent() ~= m.node then
-	-- 			d.sceneNode:setParent(m.node)
-	-- 		end
-	-- 	else
-	-- 		if d.sceneNode:getParent() == m.node then
-	-- 			print(">>> hid", d.name)
-	-- 			d.sceneNode:setParent(nil)
-	-- 		end
-	-- 	end
-	-- end
-
-	-- local _, playerI, playerJ = m.map:getTileAt(self.camera:getPosition().x, self.camera:getPosition().z)
-
-	-- local eye = self.camera:getEye()
-	-- local _, eyeI, eyeJ = m.map:getTileAt(eye.x, eye.z)
-
-	-- local differenceI = eyeI - playerI
-	-- local differenceJ = eyeJ - playerJ
-
-	-- local forward = self.camera:getForward()
-	-- forward.y = -forward.y
-
-	-- local ray = Ray(self.camera:getPosition() + Vector(0, 0.5, 0), forward)
-	-- if math.abs(differenceI) > math.abs(differenceJ) then
-	-- 	local directionI = math.sign(differenceI)
-
-	-- 	local stopI
-	-- 	if directionI < 0 then
-	-- 		stopI = 1
-	-- 	else
-	-- 		stopI = m.map:getWidth()
-	-- 	end
-
-	-- 	local isHidden = false
-	-- 	for i = playerI + directionI, stopI, directionI do
-	-- 		local center = m.map:getTileCenter(i, playerJ)
-	-- 		local _, projection = ray:closest(center)
-
-	-- 		isHidden = center.y > projection.y
-	-- 		if isHidden then
-	-- 			break
-	-- 		end
-	-- 	end
-
-	-- 	if isHidden then
-	-- 		local foundCliff = false
-	-- 		for i = playerI + directionI, stopI, directionI do
-	-- 			local center = m.map:getTileCenter(i, playerJ)
-	-- 			local _, projection = ray:closest(center)
-
-	-- 			if center.y > projection.y then
-	-- 				foundCliff = true
-	-- 			elseif foundCliff or i == stopI then
-	-- 				foundCliff = true
-	-- 				near = (math.abs(i - playerI) + 1) * m.map:getCellSize() + 0.5
-	-- 				break
-	-- 			end
-	-- 		end
-	-- 	end
-	-- else
-	-- 	local directionJ = math.sign(differenceJ)
-
-	-- 	local stopJ
-	-- 	if directionJ < 0 then
-	-- 		stopJ = 1
-	-- 	else
-	-- 		stopJ = m.map:getHeight()
-	-- 	end
-
-	-- 	local isHidden = false
-	-- 	for j = playerJ + directionJ, stopJ, directionJ do
-	-- 		local center = m.map:getTileCenter(playerI, j)
-	-- 		local _, projection = ray:closest(center)
-
-	-- 		isHidden = center.y > projection.y
-	-- 		if isHidden then
-	-- 			break
-	-- 		end
-	-- 	end
-
-	-- 	if isHidden then
-	-- 		local foundCliff = false
-	-- 		for j = playerJ + directionJ, stopJ, directionJ do
-	-- 			local center = m.map:getTileCenter(playerI, j)
-	-- 			local _, projection = ray:closest(center)
-
-	-- 			if center.y > projection.y then
-	-- 				foundCliff = true
-	-- 			elseif foundCliff or j == stopJ then
-	-- 				foundCliff = true
-	-- 				near = (math.abs(j - playerJ) + 1) * m.map:getCellSize() + 0.5
-	-- 				break
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end
-
-	for _, node in ipairs(m.parts) do
-		node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+	for _, part in ipairs(m.parts) do
+		part.node:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
 	end
 
 	if self.previousPlayerLayer and self.previousPlayerLayer ~= layer then
@@ -1290,21 +1582,23 @@ function GameView:bendMap(layer, ...)
 		m.curveTexture = nil
 	end
 
-	for _, node in ipairs(m.parts) do
-		self:_updateMapNode(m, node)
+	for _, part in ipairs(m.parts) do
+		self:_updateMapNode(m, part.node)
 	end
 
 	for _, decorationInfo in pairs(self.decorations) do
 		if decorationInfo.layer == layer then
-			self:_updateMapNode(m, decorationInfo.sceneNode)
+			for _, sceneNode in ipairs(decorationInfo.sceneNodes) do
+				self:_updateMapNode(m, sceneNode)
+			end
 			
-			if decorationInfo.alphaSceneNode then
-				self:_updateMapNode(m, decorationInfo.alphaSceneNode)
+			for _, sceneNode in ipairs(decorationInfo.alphaSceneNodes) do
+				self:_updateMapNode(m, sceneNode)
 			end
 		end
 	end
 
-	love.thread.getChannel('ItsyScapende.Map::input'):push({
+	love.thread.getChannel('ItsyScape.Map::input'):push({
 		type = 'bend',
 		key = layer,
 		config = curves[1] and curves[1]:toConfig()
@@ -1321,6 +1615,17 @@ function GameView:setSkyboxColor(layer, color)
 	end
 end
 
+function GameView:getLayers()
+	local result = {}
+	for layer in pairs(self.mapMeshes) do
+		table.insert(result, layer)
+	end
+
+	table.sort(result)
+
+	return result
+end
+
 function GameView:getMapSceneNode(layer)
 	local m = self.mapMeshes[layer]
 	if m then
@@ -1331,7 +1636,12 @@ end
 function GameView:getMapMeshSceneNodes(layer)
 	local m = self.mapMeshes[layer]
 	if m then
-		return unpack(m.parts)
+		local r = {}
+		for _, part in ipairs(m.parts) do
+			table.insert(r, part.node)
+		end
+
+		return unpack(r)
 	end
 end
 
@@ -1356,6 +1666,13 @@ function GameView:getMap(layer)
 	end
 end
 
+function GameView:getMapBumpCanvas(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.bumpCanvas, m.actorCanvas, m.fogCanvas
+	end
+end
+
 function GameView:getWind(layer)
 	local m = self.mapMeshes[layer]
 	if m then
@@ -1366,6 +1683,13 @@ function GameView:getWind(layer)
 	end
 
 	return Vector(-1, 0, -1):getNormal(), 4, Vector(5, 10, 15), self.whiteTexture:getResource()
+end
+
+function GameView:getSkyProperties(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.currentSkyProperties, m.previousSkyProperties
+	end
 end
 
 function GameView:addActor(actorID, actor)
@@ -1480,24 +1804,44 @@ end
 function GameView:spawnItem(item, tile, position)
 	local itemNode = SceneNode()
 	do
-		local lootBagNode = ModelSceneNode()
-		lootBagNode:setModel(self.itemBagModel)
-		lootBagNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
-		lootBagNode:getMaterial():setTextures(self.itemTexture)
+		local lootBagNode = DecorationSceneNode()
+		lootBagNode:fromGroup(self.itemBagMesh, "bag")
 		lootBagNode:setParent(itemNode)
+
+		local material = lootBagNode:getMaterial()
+		material:setTextures(self.itemBagTexture)
+		material:setShader(self.itemBagShader)
+		material:send(Material.UNIFORM_FLOAT, "scape_TriplanarExponent", 0)
+		material:send(Material.UNIFORM_FLOAT, "scape_TriplanarOffset", 0)
+		material:send(Material.UNIFORM_FLOAT, "scape_TriplanarScale", 0)
+		material:send(Material.UNIFORM_FLOAT, "scape_SpecularWeight", 0)
+		material:setColor(Color.fromHexString("76492b"))
 	end
 	do
-		local lootIconNode = ModelSceneNode(self.itemBagIconModel)
-		lootIconNode:setModel(self.itemBagIconModel)
+		local stringNode = DecorationSceneNode()
+		stringNode:fromGroup(self.itemBagMesh, "string")
+		stringNode:setParent(itemNode)
+
+		local material = stringNode:getMaterial()
+		material:setTextures(self.itemBagStringTexture)
+		material:setOutlineThreshold(0.5)
+	end
+	do
+		local lootIconNode = DecorationSceneNode()
+		lootIconNode:fromGroup(self.itemBagMesh, "icon")
+
+		local iconFilename = string.format("Resources/Game/Items/%s/Icon.png", item.id)
+		if not love.filesystem.getInfo(iconFilename) then
+			iconFilename = "Resources/Game/Items/Null/Icon.png"
+		end
 
 		local texture = self.resourceManager:queue(
 			TextureResource,
-			string.format("Resources/Game/Items/%s/Icon.png", item.id),
+			iconFilename,
 			function(texture)
 				lootIconNode:getMaterial():setTextures(texture)
 			end)
 
-		lootIconNode:getMaterial():setShader(ModelSceneNode.STATIC_SHADER)
 		lootIconNode:setParent(itemNode)
 	end
 
@@ -1513,7 +1857,8 @@ function GameView:spawnItem(item, tile, position)
 		"X.Item",
 		item.ref, itemNode:getHandle(),
 		position.x - 0.5, position.y - 0.5, position.z - 0.5,
-		position.x + 0.5, position.y + 0.5, position.z + 0.5)
+		position.x + 0.5, position.y + 0.5, position.z + 0.5,
+		item.id)
 
 	if not _APP:getUIView():getInterface("CutsceneTransition") then
 		_APP:getUIView():playItemSoundEffect(item, { id = -1, type = "Drop" })
@@ -1541,16 +1886,14 @@ function GameView:getItem(ref)
 	return self.items[ref]
 end
 
-function GameView:decorate(group, decoration, layer, callback)
+function GameView:decorate(group, decoration, layer, materials, callback)
 	local m = self.mapMeshes[layer]
 	if not m then
 		return
 	end
 
 	local groupName = group .. '#' .. tostring(layer)
-	if self.decorations[groupName] and
-	   self.decorations[groupName].sceneNode
-	then
+	if self.decorations[groupName] then
 		local d = self.decorations[groupName]
 
 		if d.isGroundDecoration then
@@ -1568,9 +1911,12 @@ function GameView:decorate(group, decoration, layer, callback)
 			end
 		end
 
-		d.sceneNode:setParent(nil)
-		if d.alphaSceneNode then
-			d.alphaSceneNode:setParent(nil)
+		for _, n in ipairs(d.sceneNodes) do
+			n:setParent(nil)
+		end
+
+		for _, n in ipairs(d.alphaSceneNodes) do
+			n:setParent(nil)
 		end
 
 		self.decorations[groupName] = nil
@@ -1581,23 +1927,37 @@ function GameView:decorate(group, decoration, layer, callback)
 		map = self.scene
 	end
 
+	local Type
 	if not Class.isClass(decoration) and decoration then
-		local Type = require(decoration.type)
+		Type = require(decoration.type)
 		decoration = Type(decoration.value)
+	elseif Class.isClass(decoration) then
+		Type = Class.getType(decoration)
 	end
 
 	local isSpline = Class.isCompatibleType(decoration, Spline)
 	local isDecoration = Class.isCompatibleType(decoration, Decoration)
 	local isValid = isSpline or isDecoration
 
-	if decoration and isValid then
-		local d = {}
+	local baseMaterials
+	do
+		local buildingFilename = string.format(
+			"Resources/Game/TileSets/%s/Building.lua",
+			decoration:getTileSetID())
+		if love.filesystem.getInfo(buildingFilename) then
+			local building = Building(buildingFilename)
+			baseMaterials = building:getMaterials()
+		end
+	end
 
-		local sceneNode
+	if decoration and isValid then
+		local d = { sceneNodes = {}, alphaSceneNodes = {} }
+
+		local SceneNodeType
 		if isSpline then
-			sceneNode = SplineSceneNode()
+			SceneNodeType = SplineSceneNode
 		elseif isDecoration then
-			sceneNode = DecorationSceneNode()
+			SceneNodeType = DecorationSceneNode
 		end
 
 		self.decorationsPending = self.decorationsPending + 1
@@ -1610,7 +1970,7 @@ function GameView:decorate(group, decoration, layer, callback)
 			local staticMesh = self.resourceManager:load(
 				StaticMeshResource,
 				tileSetFilename)
-
+ 
 			local textureFilename = string.format(
 				"Resources/Game/TileSets/%s/Texture.png",
 				decoration:getTileSetID())
@@ -1629,72 +1989,118 @@ function GameView:decorate(group, decoration, layer, callback)
 					textureFilename)
 			end
 
-			if isSpline then
-				sceneNode:fromSpline(decoration, staticMesh:getResource())
-				sceneNode:getMaterial():setTextures(texture)
-			else
-				sceneNode:fromDecoration(decoration, staticMesh:getResource())
-				sceneNode:getMaterial():setTextures(texture)
-			end
+			d.texture = texture
+			d.staticMesh = staticMesh
 
 			if self.decorations[groupName] ~= d then
-				Log.debug("Decoration group '%s' has been overwritten; ignoring.", groupName)
 				return
 			end
 
-			sceneNode:setParent(map)
+			local decorationsByMaterial = {}
+			for feature in decoration:iterate() do
+				local material = feature:getMaterial()
 
-			if decoration:getIsWall() and not self:_getIsMapEditor() then
-				local shader
-				if Class.isCompatibleType(texture, LayerTextureResource) then
-					shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/MultiTextureWallDecoration")
-				else
-					shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/WallDecoration")
+				local g = decorationsByMaterial[material]
+				if not g then
+					g = Type()
+					decorationsByMaterial[material] = g
 				end
 
-				sceneNode:getMaterial():setShader(shader)
-				sceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
+				g:push(feature)
+			end
+
+			for materialName, subDecoration in pairs(decorationsByMaterial) do
+				local sceneNode = SceneNodeType()
+
+				if isSpline then
+					sceneNode:fromSpline(subDecoration, staticMesh:getResource())
+					sceneNode:getMaterial():setTextures(texture)
+				else
+					sceneNode:fromDecoration(subDecoration, staticMesh:getResource())
+					sceneNode:getMaterial():setTextures(texture)
+				end
+
+				sceneNode:setParent(map)
+				table.insert(d.sceneNodes, sceneNode)
 
 				local alphaSceneNode
-				if isSpline then
-					alphaSceneNode = SplineSceneNode()
-					alphaSceneNode:fromSpline(decoration, staticMesh:getResource())
-				else
-					alphaSceneNode = DecorationSceneNode()
-					alphaSceneNode:fromDecoration(decoration, staticMesh:getResource())
-				end
+				if decoration:getIsWall() and not self:_getIsMapEditor() then
+					local shader
+					if Class.isCompatibleType(texture, LayerTextureResource) then
+						shader = self.resourceManager:load(
+							ShaderResource,
+							"Resources/Shaders/MultiTextureWallDecoration")
+					else
+						shader = self.resourceManager:load(
+							ShaderResource,
+							"Resources/Shaders/WallDecoration")
+					end
 
-				alphaSceneNode:getMaterial():setTextures(texture)
-				alphaSceneNode:getMaterial():setIsTranslucent(true)
-				alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
-				alphaSceneNode:getMaterial():setShader(shader)
-				alphaSceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
-				alphaSceneNode:setParent(map)
-
-				d.alphaSceneNode = alphaSceneNode
-			else
-				local shader
-				if Class.isCompatibleType(texture, LayerTextureResource) then
-					shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/MultiTextureDecoration")
-				else
-					shader = self.resourceManager:load(
-						ShaderResource,
-						"Resources/Shaders/Decoration")
-				end
-
-				if sceneNode:getMaterial():getShader():getID() == DecorationSceneNode.DEFAULT_SHADER:getID() then
 					sceneNode:getMaterial():setShader(shader)
+					sceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0.0)
+
+					if isSpline then
+						alphaSceneNode = SplineSceneNode()
+						alphaSceneNode:fromSpline(subDecoration, staticMesh:getResource())
+					else
+						alphaSceneNode = DecorationSceneNode()
+						alphaSceneNode:fromDecoration(subDecoration, staticMesh:getResource())
+					end
+
+					alphaSceneNode:getMaterial():setTextures(texture)
+					alphaSceneNode:getMaterial():setIsTranslucent(true)
+					alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
+					alphaSceneNode:getMaterial():setShader(shader)
+					alphaSceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
+					alphaSceneNode:setParent(map)
+
+					m.wallHackDecorations[alphaSceneNode] = true
+					m.wallHackDecorations[sceneNode] = true
+
+					table.insert(d.alphaSceneNodes, alphaSceneNode)
+				else
+					local shader
+					if Class.isCompatibleType(texture, LayerTextureResource) then
+						shader = self.resourceManager:load(
+							ShaderResource,
+							"Resources/Shaders/MultiTextureDecoration")
+					else
+						shader = self.resourceManager:load(
+							ShaderResource,
+							"Resources/Shaders/Decoration")
+					end
+
+					if sceneNode:getMaterial():getShader():getID() == DecorationSceneNode.DEFAULT_SHADER:getID() then
+						sceneNode:getMaterial():setShader(shader)
+					end
+
+					local material = sceneNode:getMaterial()
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+				end
+
+				local material = baseMaterials and baseMaterials[materialName]
+				material = material or (materials and materials[materialName])
+
+				if material then
+					material:apply(sceneNode, self.resourceManager)
+
+					if alphaSceneNode then
+						material:apply(alphaSceneNode, self.resourceManager)
+					end
 				end
 			end
 
-			d.texture = texture
-			d.staticMesh = staticMesh
+			if m.curves then
+				for _, sceneNode in ipairs(d.sceneNodes) do
+					self:_updateMapNode(m, sceneNode)
+				end
+
+				for _, alphaSceneNode in ipairs(d.alphaSceneNodes) do
+					self:_updateMapNode(m, alphaSceneNode)
+				end
+			end
 
 			if callback then
 				callback(d)
@@ -1704,18 +2110,16 @@ function GameView:decorate(group, decoration, layer, callback)
 		d.decoration = decoration
 		d.name = group
 		d.layer = layer
-		d.sceneNode = sceneNode
+		d.materials = materials
 
 		self.decorations[groupName] = d
-
-		return sceneNode
 	end
 end
 
 function GameView:flood(key, water, layer)
 	self:drain(key)
 
-	local parent = self:getMapSceneNode((water.layer or 1) - 1 + (layer or 1))
+	local parent = self:getMapSceneNode(layer or 1)
 	if not parent then
 		parent = self.scene
 	end
@@ -1731,44 +2135,106 @@ function GameView:flood(key, water, layer)
 		water.y,
 		water.finesse)
 
-	if water.timeScale then
-		node:setTextureTimeScale(water.timeScale)
-	end
+	local _prepare = function()
+		if water.positionTimeScale then
+			node:setPositionTimeScale(water.positionTimeScale)
+		end
 
-	if water.yOffset then
-		node:setYOffset(water.yOffset)
-	end
+		if water.textureTimeScale then
+			node:setTextureTimeScale(unpack(water.textureTimeScale))
+		end
 
-	if water.isTranslucent or (water.alpha and water.alpha < 1) then
+		if water.yOffset then
+			node:setYOffset(water.yOffset)
+		end
+
+		if water.isTranslucent or (water.alpha and water.alpha < 1) then
+			node:getMaterial():setIsTranslucent(true)
+		end
+
+		if water.alpha then
+			node:getMaterial():setColor(Color(1, 1, 1, water.alpha))
+		end
+
+		if water.reflectionDistance then
+			node:getMaterial():setIsReflectiveOrRefractive(true)
+			node:getMaterial():setReflectionDistance(water.reflectionDistance)
+		end
+
 		node:getMaterial():setIsTranslucent(true)
 	end
 
-	if water.alpha then
-		node:getMaterial():setColor(Color(1, 1, 1, water.alpha))
-	end
+	local materialFilename = string.format("Resources/Game/Water/%s/Material.lua", water.texture or "LightFoamyWater1")
+	if love.filesystem.getInfo(materialFilename) then
+		local material = DecorationMaterial(materialFilename)
+		material:apply(node, self.resourceManager)
 
-	if water.reflectionDistance then
-		node:getMaterial():setIsReflectiveOrRefractive(true)
-		node:getMaterial():setReflectionDistance(water.reflectionDistance)
-	end
+		self.resourceManager:queueEvent(_prepare)
 
-	self.resourceManager:queue(
-		TextureResource,
-		string.format("Resources/Game/Water/%s/Texture.png", water.texture or "LightFoamyWater1"),
-		function(resource)
-			node:getMaterial():setTextures(resource)
+		self.resourceManager:queueEvent(function()
 			node:setParent(parent)
+
+			if not water.textureTimeScale then
+				local x, y = material:getUniformValue("scape_TimeScale")
+				if x and y then
+					node:setTextureTimeScale(x, y)
+				end
+			end
+
+			if not water.yOffset then
+				local y = material:getUniformValue("scape_YOffset")
+				if y then
+					node:setYOffset(y)
+				end
+			end
 		end)
+	else
+		self.resourceManager:queueEvent(_prepare)
 
-	node:getMaterial():setOutlineThreshold(-1.0)
+		self.resourceManager:queue(
+			TextureResource,
+			string.format("Resources/Game/Water/%s/Texture.png", water.texture or "LightFoamyWater1"),
+			function(resource)
+				node:getMaterial():setTextures(resource)
+				node:setParent(parent)
+			end)
 
-	self.water[key] = node
+		self.resourceManager:queue(
+			TextureResource,
+			string.format("Resources/Game/Water/%s/Foam.png", water.texture or "LightFoamyWater1"),
+			function(resource)
+				local material = node:getMaterial()
+				material:send(material.UNIFORM_TEXTURE, "scape_FoamTexture", resource:getResource())
+			end)
+
+		node:getMaterial():setOutlineThreshold(-1.0)
+	end
+
+
+	local w = { node = node, layer = layer or 1 }
+
+	self.water[key] = w
+
+	local m = self.mapMeshes[layer]
+	if m then
+		table.insert(m.water, w)
+	end
 end
 
 function GameView:drain(key)
 	if self.water[key] then
-		self.water[key]:setParent(nil)
-		self.water[key]:degenerate()
+		self.water[key].node:setParent(nil)
+		self.water[key].node:degenerate()
+
+		local m = self.mapMeshes[self.water[key].layer]
+		if m then
+			for i = #m.water, 1, -1 do
+				if m.water[i] == self.water[key].node then
+					table.remove(m.water, i)
+				end
+			end
+		end
+
 		self.water[key] = nil
 	end
 end
@@ -1947,10 +2413,26 @@ function GameView:getDecorations()
 	return result, count
 end
 
+function GameView:getDecoration(group, layer)
+	local name = string.format("%s#%d", group, layer)
+	local d = self.decorations[name]
+	return d and d.decoration
+end
+
 function GameView:getDecorationLayer(decoration)
 	for k, v in pairs(self.decorations) do
 		if v.decoration == decoration then
 			return v.layer
+		end
+	end
+
+	return nil
+end
+
+function GameView:getDecorationMaterials(decoration)
+	for k, v in pairs(self.decorations) do
+		if v.decoration == decoration then
+			return v.materials
 		end
 	end
 
@@ -2141,7 +2623,8 @@ end
 
 function GameView:updateMaps(delta)
 	for _, m in pairs(self.mapMeshes) do
-		self:_updateMapNodeWallHack(m)
+		self:_updateMapNodeWallHack(m, delta)
+		self:_updateMapWater(m, delta)
 	end
 end
 
@@ -2166,40 +2649,92 @@ function GameView:update(delta)
 	end
 end
 
-function GameView:_drawActorOnActorCanvas(delta, actor, m)
+function GameView:_drawActorOnActorCanvas(canvas, circle, position, scale, alpha)
+	love.graphics.setColor(1, 1, 1, alpha)
+	love.graphics.draw(circle, position.x * canvas:getWidth(), position.z * canvas:getHeight(), 0, scale, scale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
+end
+
+function GameView:_getActorCanvasRelativePositionScale(delta, circle, actor, m)
 	local actorView = self:getActor(actor)
 	if not actorView then
 		return
 	end
 
-	local transform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(delta)
-	local position = Vector(transform:transformPoint(0, 0, 0))
+	local transform = actorView:getSceneNode():getTransform()
+	local currentTranslation = transform:getLocalTranslation()
+	local previousTranslation = transform:getPreviousTransform()
+	local position = previousTranslation:lerp(currentTranslation, delta)
+
+	local relativePosition = position / Vector(m.map:getWidth() * m.map:getCellSize(), 1.0, m.map:getHeight() * m.map:getCellSize())
 
 	local min, max = actor:getBounds()
 	local size = max - min
 
 	local radius = math.min(size.x, size.z) / 2
-	local relativePosition = position / Vector(m.map:getWidth() * m.map:getCellSize(), 1.0, m.map:getHeight() * m.map:getCellSize())
 	local relativeScale = (radius + 3) / m.map:getCellSize()
-	relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / self.actorCanvasCircle:getWidth())
+	relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / circle:getWidth()) * (m.meta and m.meta.bendyScale or 1)
 
-	love.graphics.draw(self.actorCanvasCircle, relativePosition.x * m.actorCanvas:getWidth(), relativePosition.z * m.actorCanvas:getHeight(), 0, relativeScale, relativeScale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
+	return position, size, relativePosition, relativeScale
 end
 
 function GameView:_updateActorCanvases(delta)
+	local time = love.timer.getDelta()
+
 	love.graphics.push("all")
 	for layer, m in pairs(self.mapMeshes) do
-		love.graphics.setCanvas(m.actorCanvas)
-		love.graphics.clear(0, 0, 0, 1)
-
-		love.graphics.setShader()
 		love.graphics.setBlendMode("alpha", "alphamultiply")
+		love.graphics.setShader()
+		love.graphics.origin()
+		love.graphics.clear(0, 0, 0, 1)
 
 		for actor in self.game:getStage():iterateActors() do
 			local _, _, actorLayer = actor:getTile()
 			if actorLayer == layer then
-				self:_drawActorOnActorCanvas(delta, actor, m)
+				local state = m.bumpActors[actor:getID()] or {}
+				m.bumpActors[actor:getID()] = state
+
+				local k1, k2, p, s = self:_getActorCanvasRelativePositionScale(delta, self.fogCanvasCircle, actor, m)
+				if k1 and k2 and p and s then
+					if state[1] then
+						if state[1].k1:distance(k1) < (m.meta and m.meta.fogDistance or 0.25) and state[1].k2 == k2 then
+							state[1].time = 0
+							state[1].position = p:keep()
+						else
+							table.insert(state, 1, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
+						end
+					else
+						table.insert(state, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
+					end
+				end
 			end
+		end
+
+		love.graphics.setCanvas(m.fogCanvas)
+		love.graphics.clear(0, 0, 0, 1)
+		for id, state in pairs(m.bumpActors) do
+			for i = #state, 1, -1 do
+				if state[i].time >= 1 then
+					table.remove(state, i)
+				else
+					state[i].time = math.clamp(state[i].time + (time / (m.meta and m.meta.fogDuration or 1)))
+				end
+			end
+
+			if #state == 0 then
+				m.bumpActors[id] = nil
+			end
+
+			for i = 1, #state do
+				self:_drawActorOnActorCanvas(m.fogCanvas, self.fogCanvasCircle, state[i].position, state[i].scale * (m.meta and m.meta.fogScale or 1), 1 - state[i].time)
+			end
+		end
+
+		love.graphics.setColor(1, 1, 1, 1)
+
+		love.graphics.setCanvas(m.actorCanvas)
+		love.graphics.clear(0, 0, 0, 1)
+		for id, state in pairs(m.bumpActors) do
+			self:_drawActorOnActorCanvas(m.actorCanvas, self.actorCanvasCircle, state[1].position, state[1].scale * (m.meta and m.meta.fogScale or 1), 1)
 		end
 
 		love.graphics.setCanvas(m.bumpCanvas)
@@ -2246,7 +2781,7 @@ function GameView:draw(delta, width, height)
 	if skybox then
 		local info = self.skyboxes[skybox]
 		
-		self.renderer:setClearColor(Color(0, 0, 0, 0))
+		self.renderer:setClearColor(info.color)
 		self.renderer:draw(skybox, delta, width, height, { self.sceneOutlinePostProcessPass })
 		self.renderer:present(false)
 	end
@@ -2290,13 +2825,14 @@ function GameView:postTick()
 					local nodeHandle = node and node:getHandle() or nil
 					local id = objectView:getProp():getID()
 					local min, max = objectView:getProp():getBounds()
-					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
+
+					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getProp():getName())
 				elseif interface == "ItsyScape.Game.Model.Actor" then
 					local node = objectView:getSceneNode()
 					local nodeHandle = node and node:getHandle() or nil
 					local id = objectView:getActor():getID()
 					local min, max = objectView:getActor():getBounds()
-					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z)
+					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getActor():getName())
 				end
 			end
 		end
@@ -2355,11 +2891,11 @@ function GameView:dirty()
 			self.resourceManager:queueAsyncEvent(function()
 				map.largeTileSet:emitAll(map.map)
 			
-				for _, node in ipairs(map.parts) do
+				for _, part in ipairs(map.parts) do
 					if map.mapMeshMasks then
-						node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture())
+						part.node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), map.mask:getTexture())
 					else
-						node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture)
+						part.node:getMaterial():setTextures(map.largeTileSet:getDiffuseTexture(), self.defaultMapMaskTexture)
 					end
 				end
 			end)

@@ -6,5 +6,7 @@
 		{
 			default = true,
 		},
+		fogDuration = 2,
+		fogScale = 1
 	},
 }

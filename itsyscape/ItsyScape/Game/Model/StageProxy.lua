@@ -42,11 +42,19 @@ StageProxy.unloadMap:link(
 StageProxy.modifyMap = Event.Set(
 	StageProxy.MAP,
 	Event.Argument("map"),
-	Event.KeyArgument("layer", true))
+	Event.KeyArgument("layer", true),
+	Event.Argument("i"),
+	Event.Argument("j"),
+	Event.Argument("w"),
+	Event.Argument("h"))
 StageProxy.modifyMap:link(
 	"onMapModified",
 	Event.Argument("map"),
-	Event.Argument("layer"))
+	Event.Argument("layer"),
+	Event.Argument("i"),
+	Event.Argument("j"),
+	Event.Argument("w"),
+	Event.Argument("h"))
 
 StageProxy.MAP_MOVE = "mapMove"
 StageProxy.moveMap = Event.Set(
@@ -71,6 +79,22 @@ StageProxy.stopMoveMap = Event.Unset(
 	StageProxy.MAP_MOVE,
 	Event.KeyArgument("layer", true))
 StageProxy.stopMoveMap:link(
+	"onUnloadMap",
+	Event.Argument("layer"))
+
+StageProxy.MAP_SKY = "mapSky"
+StageProxy.updateMapSky = Event.Set(
+	StageProxy.MAP_SKY,
+	Event.KeyArgument("layer", true),
+	Event.Argument("properties"))
+StageProxy.updateMapSky:link(
+	"onMapSkyUpdated",
+	Event.Argument("layer"),
+	Event.Argument("properties"))
+StageProxy.stopUpdateMapSky = Event.Unset(
+	StageProxy.MAP_SKY,
+	Event.KeyArgument("layer", true))
+StageProxy.stopUpdateMapSky:link(
 	"onUnloadMap",
 	Event.Argument("layer"))
 
@@ -172,12 +196,14 @@ StageProxy.decorate = Event.Set(
 	StageProxy.DECORATION,
 	Event.KeyArgument("group"),
 	Event.Argument("decoration"),
-	Event.KeyArgument("layer", true))
+	Event.KeyArgument("layer", true),
+	Event.Argument("material"))
 StageProxy.decorate:link(
 	"onDecorate",
 	Event.Argument("group"),
 	Event.Argument("decoration"),
-	Event.Argument("layer"))
+	Event.Argument("layer"),
+	Event.Argument("material"))
 StageProxy.undecorate = Event.Unset(
 	StageProxy.DECORATION,
 	Event.KeyArgument("group"),

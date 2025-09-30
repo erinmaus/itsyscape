@@ -13,10 +13,12 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local PromptWindow = require "ItsyScape.Editor.Common.PromptWindow"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local StaticMesh = require "ItsyScape.Graphics.StaticMesh"
+local Building = require "ItsyScape.Graphics.Building"
 local Color = require "ItsyScape.Graphics.Color"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
@@ -119,29 +121,58 @@ function DecorationPalette:search(term)
 	self.buttonsPanel:setScroll(0, 0)
 end
 
-function DecorationPalette:loadDecorations()
-	self.searchInput:setText("")
-
-	self.staticMesh = StaticMesh(string.format("Resources/Game/TileSets/%s/Layout.lstatic", self.application.currentDecorationTileSet))
-
-	local textureFilename = string.format(
-		"Resources/Game/TileSets/%s/Texture.png",
-		self.application.currentDecorationTileSet)
-	local layerTextureFilename = string.format(
-		"Resources/Game/TileSets/%s/Texture.lua",
+function DecorationPalette:loadBuilding()
+	local buildingFilename = string.format(
+		"Resources/Game/TileSets/%s/Building.lua",
 		self.application.currentDecorationTileSet)
 
-	if love.filesystem.getInfo(layerTextureFilename) then
-		self.texture = LayerTextureResource()
-		self.texture:loadFromFile(layerTextureFilename)
-	else
-		self.texture = TextureResource()
-		self.texture:loadFromFile(textureFilename)
+	self.building = Building(buildingFilename)
+	for _, group in self.building:iterateGroups() do
+		local parent = SceneNode()
+
+		for _, feature in group:iterate() do
+			local sceneNode = DecorationSceneNode()
+			sceneNode:fromGroup(self.staticMesh, feature:getID())
+			
+			local material = sceneNode:getMaterial()
+			material:setIsCullDisabled(true)
+
+			if not feature:getMaterial() then
+				sceneNode:getMaterial():setTextures(self.texture)
+			else
+				self.building:getMaterialByName(feature:getMaterial()):getMaterial():apply(sceneNode, self.application:getGameView():getResourceManager())
+			end
+
+			sceneNode:setParent(parent)
+		end
+
+		local light = AmbientLightSceneNode()
+		light:setAmbience(1)
+		light:setIsGlobal(true)
+		light:setParent(parent)
+
+		local button = Button()
+		button.onClick:register(self.select, self, group:getName())
+		button:setData('tile-group', group:getName())
+
+		local sceneSnippet = SceneSnippet()
+		button:addChild(sceneSnippet)
+
+		sceneSnippet:setSize(
+			DecorationPalette.TILE_WIDTH - DecorationPalette.PADDING * 2,
+			DecorationPalette.TILE_WIDTH - DecorationPalette.PADDING * 2)
+		sceneSnippet:setPosition(
+			DecorationPalette.PADDING,
+			DecorationPalette.PADDING)
+		sceneSnippet:setCamera(self.camera)
+		sceneSnippet:setToolTip(ToolTip.Text(group:getName()))
+		parent:setParent(sceneSnippet:getRoot())
+
+		table.insert(self.buttons, button)
 	end
+end
 
-	local oldButtons = self.buttons or {}
-	self.buttons = {}
-
+function DecorationPalette:loadMeshes()
 	for group in self.staticMesh:iterate() do
 		local button = Button()
 		local sceneSnippet = SceneSnippet()
@@ -183,6 +214,41 @@ function DecorationPalette:loadDecorations()
 
 		table.insert(self.buttons, button)
 	end
+end
+
+function DecorationPalette:loadDecorations()
+	self.searchInput:setText("")
+
+	self.staticMesh = StaticMesh(string.format("Resources/Game/TileSets/%s/Layout.lstatic", self.application.currentDecorationTileSet))
+
+	local textureFilename = string.format(
+		"Resources/Game/TileSets/%s/Texture.png",
+		self.application.currentDecorationTileSet)
+	local layerTextureFilename = string.format(
+		"Resources/Game/TileSets/%s/Texture.lua",
+		self.application.currentDecorationTileSet)
+
+	if love.filesystem.getInfo(layerTextureFilename) then
+		self.texture = LayerTextureResource()
+		self.texture:loadFromFile(layerTextureFilename)
+	else
+		self.texture = TextureResource()
+		self.texture:loadFromFile(textureFilename)
+	end
+
+	local buildingFilename = string.format(
+		"Resources/Game/TileSets/%s/Building.lua",
+		self.application.currentDecorationTileSet)
+
+	local oldButtons = self.buttons or {}
+	self.buttons = {}
+
+	if love.filesystem.getInfo(buildingFilename) then
+		self:loadBuilding()
+	else
+		self.building = nil
+		self:loadMeshes()
+	end
 
 	table.sort(self.buttons, function(a, b)
 		return a:getData('tile-group') < b:getData('tile-group')
@@ -195,6 +261,7 @@ function DecorationPalette:loadDecorations()
 	table.insert(self.buttons, setColorButton)
 
 	local gridLayout = self.buttonsPanel:getInnerPanel()
+	gridLayout:setSize(self.buttonsPanel:getSize(), 0)
 	gridLayout:setPosition(
 		DecorationPalette.PADDING / 2,
 		DecorationPalette.PADDING / 2)
@@ -208,14 +275,15 @@ function DecorationPalette:loadDecorations()
 	gridLayout:setWrapContents(true)
 
 	for i = 1, #oldButtons do
-		gridLayout:removeChild(oldButtons[i])
+		self.buttonsPanel:removeChild(oldButtons[i])
 	end
 
 	for i = 1, #self.buttons do
-		gridLayout:addChild(self.buttons[i])
+		self.buttonsPanel:addChild(self.buttons[i])
 	end
 
-	self.buttonsPanel:setSize(width, windowHeight)
+	print(">>> gridLayout:getSize()", gridLayout:getSize())
+
 	self.buttonsPanel:setScrollSize(gridLayout:getSize())
 	self.buttonsPanel:setScroll(0, 0)
 end
@@ -238,7 +306,7 @@ function DecorationPalette:close()
 end
 
 function DecorationPalette:_select(group, button, texture)
-	if self.currentGroup == group and self.currenTexture == texture then
+	if self.currentGroup == group and self.currentTexture == texture then
 		button:setStyle(nil)
 		self.currentGroup = false
 		self.currentTexture = nil
@@ -289,6 +357,10 @@ function DecorationPalette:setColor()
 		self.application.currentDecorationColor = Color.fromHexString(color) or self.application.currentDecorationColor
 	end)
 	prompt:open("Enter six-digit color hex code.", "Color")
+end
+
+function DecorationPalette:getCurrentBuilding()
+	return self.building
 end
 
 function DecorationPalette:getCurrentGroup()

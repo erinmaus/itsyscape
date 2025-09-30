@@ -287,7 +287,7 @@ function Map:castRay(ray, stepCallback)
 	local result
 
 	result = stepCallback(self, tileI, tileJ, currentX, currentZ, t)
-	if result then
+	if result ~= nil then
 		return result
 	end
 
@@ -320,13 +320,13 @@ function Map:castRay(ray, stepCallback)
 			currentZ = ray.origin.z + ray.direction.z * t
 
 			result = stepCallback(self, tileI, tileJ, currentX, currentZ, t)
-			if result then
+			if result ~= nil then
 				return result
 			end
 		end
 	end
 
-	return false
+	return nil
 end
 
 function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
@@ -656,6 +656,13 @@ function Map:toString()
 				r:pushFormatLine(
 					"edge = %d, flat = %d, decals = { %s },",
 					tile.edge, tile.flat, table.concat(tile.decals, ", "))
+
+				if tile.tileSetID ~= "" then
+					r:pushIndent(3)
+					r:pushFormatLine(
+						"tileSetID = %q,",
+						tile.tileSetID)
+				end
 
 				if next(tile.mask, nil) then
 					r:pushIndent(3)

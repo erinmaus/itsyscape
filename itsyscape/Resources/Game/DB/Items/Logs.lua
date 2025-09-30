@@ -158,6 +158,7 @@ for name, log in spairs(LOGS) do
 	ItsyScape.Meta.Item {
 		Value = ItsyScape.Utility.valueForItem(log.tier),
 		Weight = log.weight,
+		Stackable = 1,
 		Resource = Log
 	}
 
@@ -349,7 +350,12 @@ for name, log in spairs(LOGS) do
 
 		ItsyScape.Meta.PropAnchor {
 			OffsetI = 0,
-			OffsetJ = 0,
+			OffsetJ = 1,
+			Resource = Fire
+		}
+
+		ItsyScape.Meta.MakeOffset {
+			OffsetY = 0.25,
 			Resource = Fire
 		}
 
@@ -1014,6 +1020,18 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A common tropical tree found on islands near the edge of the Realm.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "BalsaTree_Default"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Balsa branch",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaBranch"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A branch from a balsa tree. Good for kindling.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Item "BalsaBranch"
 }
 
 ItsyScape.Meta.ResourceName {

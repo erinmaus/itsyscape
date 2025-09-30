@@ -57,4 +57,19 @@ function Common.projectPointOnLineSegment(a, b, p)
 	return a + bMinusA * t
 end
 
+function Common.side(a, b, c, bias)
+	local result = ((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x))
+
+	local sign
+	if result > 0 + (bias or 0) then
+		sign = 1
+	elseif result < 0 - (bias or 0) then
+		sign = -1
+	else
+		sign = 0
+	end
+
+	return sign, result
+end
+
 return Common

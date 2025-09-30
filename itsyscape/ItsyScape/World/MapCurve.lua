@@ -34,6 +34,10 @@ function MapCurve.Value:getValue()
 	return self.value
 end
 
+function MapCurve.Value:distance(nextValue)
+	return Class.ABSTRACT()
+end
+
 function MapCurve.Value:evaluate(currentValue, nextValue, t)
 	return Class.ABSTRACT()
 end
@@ -54,6 +58,10 @@ MapCurve.Position = Class(MapCurve.Value)
 
 function MapCurve.Position:new(...)
 	MapCurve.Value.new(self, Vector, ...)
+end
+
+function MapCurve.Position:distance(nextValue)
+	return self:getValue():distance(nextValue:getValue())
 end
 
 function MapCurve.Position:evaluate(currentValue, nextValue, t)
@@ -103,6 +111,10 @@ function MapCurve.Scale:new(...)
 	MapCurve.Value.new(self, Vector, ...)
 end
 
+function MapCurve.Scale:distance(nextValue)
+	return self:getValue():distance(nextValue:getValue())
+end
+
 function MapCurve.Scale:evaluate(currentValue, nextValue, t)
 	return currentValue:lerp(nextValue, t)
 end
@@ -149,6 +161,10 @@ function MapCurve.Rotation:new(...)
 	MapCurve.Value.new(self, Quaternion, Quaternion(...):get())
 end
 
+function MapCurve.Rotation:distance(nextValue)
+	return self:getValue():distance(nextValue:getValue())
+end
+
 function MapCurve.Rotation:evaluate(currentValue, nextValue, t)
 	return currentValue:getNormal():slerp(nextValue:getNormal(), t):getNormal()
 end
@@ -183,6 +199,10 @@ function MapCurve.Normal:new(...)
 	MapCurve.Value.new(self, Vector, Vector(...):getNormal():get())
 end
 
+function MapCurve.Normal:distance(nextValue)
+	return 1
+end
+
 function MapCurve.Normal:evaluate(currentValue, nextValue, t)
 	return currentValue:getNormal():lerp(nextValue:getNormal(), t):getNormal()
 end
@@ -210,10 +230,11 @@ end
 
 MapCurve.Curve = Class()
 
-function MapCurve.Curve:new(Type, values, getFunc)
+function MapCurve.Curve:new(Type, values, getFunc, linear)
 	getFunc = getFunc or unpack
 
 	self.type = Type
+	self.linear = not not linear
 
 	self.values = {}
 	for i, value in ipairs(values) do
@@ -259,6 +280,14 @@ function MapCurve.Curve:split(index)
 	end
 
 	self.isDirty = true
+end
+
+function MapCurve.Curve:distance()
+	local length = 0
+	for i = 1, #self.values - 1, 1 do
+		length = length + self.values[i]:distance(self.values[i + 1])
+	end
+	return length
 end
 
 function MapCurve.Curve:length()
@@ -320,8 +349,37 @@ function MapCurve.Curve:_evaluate(values, t)
 	return curve[1] or self.type():getValue()
 end
 
+function MapCurve.Curve:_lerp(values, t)
+	if #self.values <= 1 then
+		return (self.values[1] or self.type()):getValue()
+	end
+
+	local length = self:distance() * math.clamp(t)
+
+	local previousLength = 0
+	local currentLength = self.values[1]:distance(self.values[2])
+	local previousIndex = 1
+	local currentIndex = 2
+	while currentLength < length and currentIndex < #self.values do
+		previousIndex = currentIndex
+		currentIndex = currentIndex + 1
+
+		previousLength = currentLength
+		currentLength = currentLength + self.values[previousIndex]:distance(self.values[currentIndex])
+	end
+
+	local stepLength = currentLength - previousLength
+	local delta = (length - previousLength) / stepLength
+
+	return self.values[previousIndex]:evaluate(self.values[previousIndex]:getValue(), self.values[currentIndex]:getValue(), delta)
+end
+
 function MapCurve.Curve:evaluate(t)
-	return self:_evaluate(self.values, t)
+	if self.linear then
+		return self:_lerp(self.values, t)
+	else
+		return self:_evaluate(self.values, t)
+	end
 end
 
 function MapCurve.Curve:_updateDerivative()
@@ -410,6 +468,7 @@ end
 function MapCurve:new(map, t)
 	t = t or {}
 
+	self.linear = not not t.linear
 	self.width = (map and map:getWidth()) or t.width or 0
 	self.height = (map and map:getHeight()) or t.height or 0
 	self.unit = (map and map:getCellSize()) or t.unit or 1
@@ -426,10 +485,10 @@ function MapCurve:new(map, t)
 	self.axis = Vector(unpack(axis)):keep()
 	self.oppositeAxis = Vector.UNIT_Y:cross(self.axis):getNormal():keep()
 
-	self.positionCurve = MapCurve.Curve(MapCurve.Position, t.positions or {})
-	self.rotationCurve = MapCurve.Curve(MapCurve.Rotation, t.rotations or {})
-	self.normalCurve = MapCurve.Curve(MapCurve.Normal, t.normals or {})
-	self.scaleCurve = MapCurve.Curve(MapCurve.Scale, t.scales or {})
+	self.positionCurve = MapCurve.Curve(MapCurve.Position, t.positions or {}, nil, t.linear)
+	self.rotationCurve = MapCurve.Curve(MapCurve.Rotation, t.rotations or {}, nil, t.linear)
+	self.normalCurve = MapCurve.Curve(MapCurve.Normal, t.normals or {}, nil, t.linear)
+	self.scaleCurve = MapCurve.Curve(MapCurve.Scale, t.scales or {}, nil, t.linear)
 end
 
 function MapCurve:evaluateRotation(t)
@@ -586,6 +645,7 @@ end
 
 function MapCurve:toConfig()
 	return {
+		linear = self.linear,
 		width = self.width,
 		height = self.height,
 		unit = self.unit,

@@ -28,7 +28,7 @@ function WaterMeshSceneNode:new()
 
 	self.yOffset = 0.125
 	self.positionTimeScale = 8
-	self.textureTimeScale = Vector(math.pi / 4, 0.5):keep()
+	self.textureTimeScale = Vector(math.pi / 8.0, 0.5 / 8.0):keep()
 
 	self.width = 0
 	self.height = self.yOffset * 2
@@ -44,6 +44,9 @@ end
 
 function WaterMeshSceneNode:setYOffset(value)
 	self.yOffset = value or self.yOffset
+
+	local material = self:getMaterial()
+	material:send(material.UNIFORM_FLOAT, "scape_YOffset", self.yOffset)
 
 	if self.waterMesh then
 		local min, max = self.waterMesh:getBounds()
@@ -71,6 +74,9 @@ end
 function WaterMeshSceneNode:setTextureTimeScale(x, y)
 	self.textureTimeScale.x = x or self.textureTimeScale.x
 	self.textureTimeScale.y = y or self.textureTimeScale.y
+
+	local material = self:getMaterial()
+	material:send(material.UNIFORM_FLOAT, "scape_TimeScale", self.textureTimeScale.x, self.textureTimeScale.y)
 end
 
 function WaterMeshSceneNode:generate(map, i, j, w, h, y, scale, fine, cellSize)
@@ -83,8 +89,11 @@ function WaterMeshSceneNode:generate(map, i, j, w, h, y, scale, fine, cellSize)
 
 	local width, height = w * fine, h * fine
 
-	self.waterMesh = WaterMesh(width, height, scale)
+	self.waterMesh = WaterMesh(width, height, scale, (i - 1) * fine, (j - 1) * fine, fine * map:getCellSize())
 	self.isOwner = true
+
+	local material = self:getMaterial()
+	material:send(material.UNIFORM_FLOAT, "scape_XZScale", self.waterMesh and self.waterMesh:getScale() or 4)
 
 	local cellSize = cellSize or (map and map:getCellSize()) or 2
 	local x, z = (i - 1) * cellSize, (j - 1) * cellSize
@@ -108,6 +117,9 @@ function WaterMeshSceneNode:setMesh(mesh)
 	self.isOwner = false
 
 	self:setBounds(self.waterMesh:getBounds())
+
+	local material = self:getMaterial()
+	material:send(material.UNIFORM_FLOAT, "scape_XZScale", self.waterMesh and self.waterMesh:getScale() or 4)
 end
 
 function WaterMeshSceneNode:getMesh()
@@ -121,29 +133,16 @@ function WaterMeshSceneNode:degenerate()
 	end
 end
 
+function WaterMeshSceneNode:frame()
+	local material = self:getMaterial()
+
+	local diffuseTexture = material:getTexture(1)
+	if diffuseTexture and diffuseTexture:getIsReady() then
+		material:send(material.UNIFORM_TEXTURE, "scape_DiffuseTexture", diffuseTexture:getResource())
+	end
+end
+
 function WaterMeshSceneNode:draw(renderer, delta)
-	local shader = renderer:getCurrentShader()
-	local texture = self:getMaterial():getTexture(1)
-	if shader:hasUniform("scape_DiffuseTexture") and
-	   texture and texture:getIsReady()
-	then
-		texture:getResource():setFilter('nearest', 'nearest')
-		texture:getResource():setWrap('repeat', 'repeat')
-		shader:send("scape_DiffuseTexture", texture:getResource(renderer:getCurrentPass():getID()))
-	end
-
-	if shader:hasUniform("scape_TimeScale") then
-		shader:send("scape_TimeScale", { self.textureTimeScale.x, self.textureTimeScale.y, self.positionTimeScale, self.width })
-	end
-
-	if shader:hasUniform("scape_YOffset") then
-		shader:send("scape_YOffset", self.yOffset)
-	end
-
-	if shader:hasUniform("scape_XZScale") then
-		shader:send("scape_XZScale", self.waterMesh and self.waterMesh:getScale() or 4)
-	end
-
 	if self.waterMesh then
 		self.waterMesh:draw()
 	end

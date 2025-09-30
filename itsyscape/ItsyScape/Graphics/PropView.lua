@@ -20,7 +20,75 @@ function PropView:new(prop, gameView)
 
 	self.sceneNode = SceneNode()
 	self.ready = false
+	self.didLoad = false
+
+	self.greeble = {}
 end
+
+function PropView:updateGreebles(greebles, t)
+	for _, greeble in ipairs(greebles or self.greeble) do
+		greeble:regreebilize(t)
+	end
+end
+
+function PropView:addGreeble(GreebleType, t, transform, ...)
+	local greeble = GreebleType(self.prop, self.gameView)
+	greeble:greebilize(self, t, ...)
+	greeble:attach()
+
+	if self.didLoad then
+		greeble:load()
+	end
+
+	if self.ready then
+		greeble:update(0)
+	end
+
+	table.insert(self.greeble, greeble)
+
+	if transform then
+		if transform.translation then
+			greeble:getRoot():getTransform():setLocalTranslation(transform.translation)
+		end
+
+		if transform.offset then
+			greeble:getRoot():getTransform():setLocalOffset(transform.offset)
+		end
+
+		if transform.rotation then
+			greeble:getRoot():getTransform():setLocalRotation(transform.rotation)
+		end
+
+		if transform.scale then
+			greeble:getRoot():getTransform():setLocalOffset(transform.scale)
+		end
+	end
+
+	return greeble
+end
+
+function PropView:removeGreeble(greeble)
+	local didRemove = false
+	for i = #self.greeble, 1, -1 do
+		if self.greeble[i] == greeble then
+			local g = table.remove(self.greeble, i)
+			g:remove()
+
+			didRemove = true
+		end
+	end
+
+	return didRemove
+end
+
+function PropView:clearGreebles()
+	for _, greeble in ipairs(self.greeble) do
+		greeble:remove()
+	end
+
+	table.clear(self.greeble)
+end
+
 
 function PropView:getIsEditor()
 	return Class.isCompatibleType(_APP, require "ItsyScape.Editor.EditorApplication")
@@ -52,7 +120,11 @@ function PropView:getIsStatic()
 end
 
 function PropView:load()
-	-- Nothing.
+	self.didLoad = true
+
+	for _, greeble in ipairs(self.greeble) do
+		greeble:load()
+	end
 end
 
 function PropView:attach()
@@ -104,17 +176,34 @@ end
 
 function PropView:remove()
 	self.sceneNode:setParent(nil)
+
+	for _, greeble in ipairs(self.greeble) do
+		greeble:remove()
+	end
 end
 
 function PropView:update(delta)
 	if not self.ready then
 		self:updateTransform()
+
+		for _, greeble in ipairs(self.greeble) do
+			greeble:updateTransform()
+		end
+
 		self.ready = true
+	end
+
+	for _, greeble in ipairs(self.greeble) do
+		greeble:update(delta)
 	end
 end
 
 function PropView:tick()
 	self:updateTransform()
+
+	for _, greeble in ipairs(self.greeble) do
+		greeble:tick()
+	end
 end
 
 return PropView

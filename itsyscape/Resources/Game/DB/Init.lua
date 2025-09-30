@@ -138,6 +138,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "MakeOffset" {
+		OffsetY = Meta.TYPE_NUMBER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Map"
 	ResourceType "MapObject"
 
@@ -270,6 +275,34 @@ Game "ItsyScape"
 		Health = Meta.TYPE_REAL,
 		SpawnTime = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
+	}
+
+	ResourceType "Gatherable"
+
+	Meta "GatherableScene" {
+		ModelFilename = Meta.TYPE_TEXT,
+		SceneFilename = Meta.TYPE_TEXT,
+		MaterialFilename = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "GatherableModel" {
+		ModelFilename = Meta.TYPE_TEXT,
+		ModelGroup = Meta.TYPE_TEXT,
+		MaterialFilename = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "GatherableItem" {
+		Item = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	Meta "GatherableAction" {
+		Action = Meta.TYPE_ACTION,
+		Weight = Meta.TYPE_NUMBER,
+		Gatherable = Meta.TYPE_RESOURCE,
+		LootCategory = Meta.TYPE_RESOURCE
 	}
 
 	ResourceType "Character"
@@ -526,6 +559,7 @@ Game "ItsyScape"
 
 	ResourceType "LootCategory"
 
+	ItsyScape.Resource.LootCategory "Basic"
 	ItsyScape.Resource.LootCategory "Legendary"
 
 	ItsyScape.Meta.ResourceName {
@@ -1422,6 +1456,7 @@ include "Resources/Game/DB/Items/Candles.lua"
 include "Resources/Game/DB/Items/Isabellium.lua"
 include "Resources/Game/DB/Items/TreeSecondaries.lua"
 include "Resources/Game/DB/Items/EquipmentPlaceholders.lua"
+include "Resources/Game/DB/Items/Fossils.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
@@ -1599,6 +1634,11 @@ include "Resources/Game/DB/Props/Jungle.lua"
 include "Resources/Game/DB/Props/Anchor.lua"
 include "Resources/Game/DB/Props/Firefly.lua"
 include "Resources/Game/DB/Props/Flare.lua"
+include "Resources/Game/DB/Props/GroundFog.lua"
+include "Resources/Game/DB/Props/FurnitureSets.lua"
+include "Resources/Game/DB/Props/CraftedItem.lua"
+include "Resources/Game/DB/Props/Bars.lua"
+include "Resources/Game/DB/Props/SlackTub.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"

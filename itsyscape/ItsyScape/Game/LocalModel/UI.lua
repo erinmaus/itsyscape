@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local UI = require "ItsyScape.Game.Model.UI"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 
 local LocalUI = Class(UI)
@@ -32,6 +33,7 @@ function LocalUI:new(game)
 	self.interfaces = {}
 	self.controllers = {}
 	self.blockingInterface = {}
+	self.uiStates = setmetatable({}, { __mode = "k" })
 
 	self.updateDebugStats = UIUpdateDebugStats()
 	self.pullDebugStats = UIPullDebugStats()
@@ -163,6 +165,9 @@ function LocalUI:_open(peep, interfaceID, blocking, ...)
 	self.interfaces[interfaceID] = i
 	self.controllers[controller] = { id = interfaceID, index = i.n }
 
+	local state = controller:pull()
+	self.uiStates[controller] = state
+
 	self.onPush(self, interfaceID, i.n, controller:pull(), controller:getPlayer())
 	self.onOpen(self, interfaceID, i.n, controller:getPlayer())
 
@@ -238,7 +243,12 @@ function LocalUI:update(delta)
 	for id, interfaces in pairs(self.interfaces) do
 		for n, interface in pairs(interfaces.v) do
 			self.updateDebugStats:measure(interface, delta)
-			self.onPush(self, id, n, self.pullDebugStats:measure(interface))
+
+			local state = self.pullDebugStats:measure(interface)
+			if not RPCState.deepEquals(self.uiStates[interface], state) then
+				self.uiStates[interface] = state
+				self.onPush(self, id, n, self.pullDebugStats:measure(interface))
+			end
 		end
 	end
 end

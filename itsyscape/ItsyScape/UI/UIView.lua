@@ -138,7 +138,7 @@ local graphicsState = {
 	appliedPseudoScissor = { n = 0 },
 	sizes = {},
 	drawQueue = { n = 0 },
-	oldSizes = {},
+	oldSizes = setmetatable({}, { __mode = "k" }),
 	currentSizes = setmetatable({}, { __mode = "k" }),
 	pendingSizes = {},
 	seenSizes = {},
@@ -179,13 +179,20 @@ end
 
 function itsyrealm.graphics.impl.captureRenderState()
 	local index = graphicsState.drawQueue.n + 1
-	local transform = graphicsState.transforms[index]
-	if not transform then
+
+	local transform
+	if graphicsState.recording then
 		transform = love.math.newTransform()
-		graphicsState.transforms[index] = transform
+	else
+		transform = graphicsState.transforms[index]
+		if not transform then
+			transform = love.math.newTransform()
+			graphicsState.transforms[index] = transform
+		else
+			transform:reset()
+		end
 	end
 
-	transform:reset()
 	transform:apply(graphicsState.transform)
 
 	local renderState
@@ -585,12 +592,12 @@ function itsyrealm.graphics.shouldFlush(nextSize)
 	for _, currentSizes in pairs(graphicsState.currentSizes) do
 		for _, otherSizes in pairs(graphicsState.currentSizes) do
 			if currentSizes ~= otherSizes then
-				for i, currentSize in ipairs(currentSizes) do
+				for i, currentSize in ipairs(currentSizes.values) do
 					if type(nextSize.handle) ~= "userdata" and isSizeBlocking(currentSize, nextSize) then
 						return true
 					end
 
-					for j, otherSize in ipairs(otherSizes) do
+					for j, otherSize in ipairs(otherSizes.values) do
 						if isSizeBlocking(currentSize, otherSize) then
 							return true
 						end
@@ -613,9 +620,9 @@ function itsyrealm.graphics.flush()
 		end
 	end
 
-	for _, size in pairs(graphicsState.currentSizes) do
-		table.clear(size)
-		table.insert(graphicsState.oldSizes, size)
+	for handle, size in pairs(graphicsState.currentSizes) do
+		table.clear(size.values)
+		graphicsState.oldSizes[handle] = size
 	end
 
 	table.clear(graphicsState.currentSizes)
@@ -624,7 +631,7 @@ end
 
 function itsyrealm.graphics.impl.addSizeToQueue(handle)
 	if not graphicsState.currentSizes[handle] then
-		graphicsState.currentSizes[handle] = table.remove(graphicsState.oldSizes, #graphicsState.oldSizes) or {}
+		graphicsState.currentSizes[handle] = graphicsState.oldSizes[handle] or { values = {} }
 		table.insert(graphicsState.pendingSizes, handle)
 
 		return 1
@@ -680,6 +687,7 @@ function itsyrealm.graphics.flushes.Font.getBatch(handle)
 	return nil
 end
 
+local _queuePrintColor = {}
 function itsyrealm.graphics.flushes.Font.queuePrint(size, renderState, text, x, y, angle, sx, sy, ...)
 	local _, _, scaleX, scaleY, paddingX, paddingY = love.graphics.getScaledMode()
 	local batch = itsyrealm.graphics.flushes.Font.getBatch(size.handle)
@@ -687,7 +695,9 @@ function itsyrealm.graphics.flushes.Font.queuePrint(size, renderState, text, x, 
 		local oldLineHeight = batch:getFont():getLineHeight()
 		batch:getFont():setLineHeight(renderState.lineHeight)
 		if type(text) == "string" then
-			batch:add({ renderState.color, text }, size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
+			_queuePrintColor[1] = renderState.color
+			_queuePrintColor[2] = text
+			batch:add(_queuePrintColor, size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
 		else
 			batch:add(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
 		end
@@ -702,12 +712,13 @@ function itsyrealm.graphics.flushes.Font.queuePrintF(size, renderState, text, x,
 		local oldLineHeight = batch:getFont():getLineHeight()
 		batch:getFont():setLineHeight(renderState.lineHeight)
 		if type(text) == "string" then
-			batch:addf({ renderState.color, text }, limit, align or "left", size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
+			_queuePrintColor[1] = renderState.color
+			_queuePrintColor[2] = text
+			batch:addf(_queuePrintColor, limit, align or "left", size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
 		else
 			batch:addf(itsyrealm.graphics.flushes.Font.recolor(text, renderState.color), limit, align or "left", size.x, size.y, angle, (sx or 1) * scaleX, (sy or 1) * scaleY, ...)
 		end
 		batch:getFont():setLineHeight(oldLineHeight)
-	else
 	end
 end
 
@@ -729,6 +740,7 @@ function itsyrealm.graphics.flushes.Font.flush(handle)
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.draw(batch)
 		love.graphics.pop()
+		batch:clear()
 	end
 end
 
@@ -755,8 +767,7 @@ function itsyrealm.graphics.stop()
 
 			if not graphicsState.currentSizes[handle] then
 				currentNumSizes = currentNumSizes + 1
-				graphicsState.currentSizes[handle] = table.remove(graphicsState.oldSizes, #graphicsState.oldSizes) or {}
-
+				graphicsState.currentSizes[handle] = graphicsState.oldSizes[handle] or { values = {} }
 				table.insert(graphicsState.pendingSizes, handle)
 			end
 
@@ -766,7 +777,7 @@ function itsyrealm.graphics.stop()
 				end
 			end
 
-			table.insert(graphicsState.currentSizes[handle], size)
+			table.insert(graphicsState.currentSizes[handle].values, size)
 		end
 
 		if type(currentHandle) == "userdata" and size then

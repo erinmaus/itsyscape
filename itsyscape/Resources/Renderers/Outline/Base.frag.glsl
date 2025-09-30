@@ -1,3 +1,7 @@
+#ifdef GL_ES
+precision highp float;
+#endif
+
 #line 1
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,6 +16,7 @@
 
 #include "Resources/Shaders/RendererPass.common.glsl"
 
+#define SCAPE_OUTLINE_PASS
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 0.5
 #define SCAPE_BLACK_DISCARD_THRESHOLD 128.0 / 255.0
 
@@ -33,8 +38,6 @@ void effect()
 	{
 		discard;
 	}
-
-	diffuse.a = 1.0;
 
 	love_Canvases[0] = diffuse;
 }

@@ -1,3 +1,7 @@
+#ifdef GL_ES
+precision highp float;
+#endif
+
 #line 1
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +98,7 @@ vec3 scapeApplyLight(
 
 			float exponent = pow(abs(dot(normal, cameraToTarget)), 3.0);
 			float specularCoefficient = (pow(5.0, exponent * pow(specular, 2.5)) - 1.0) / 4.0;
-			specularLight = specularCoefficient * vec3(pow(length(light.color), 1.5));
+			specularLight = specularCoefficient * vec3(pow(length(light.color), 1.5)) / vec3(4.0);
 		}
 	}
 

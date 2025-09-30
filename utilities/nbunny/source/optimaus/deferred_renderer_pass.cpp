@@ -380,7 +380,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, fl
 	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
 }
 
-void nbunny::DeferredRendererPass::copy_depth_buffer(lua_State* L)
+void nbunny::DeferredRendererPass::copy_depth_buffer(lua_State* L, float delta)
 {
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
@@ -396,6 +396,39 @@ void nbunny::DeferredRendererPass::copy_depth_buffer(lua_State* L)
 	get_renderer()->set_current_shader(shader);
 
 	graphics->draw(g_buffer.get_canvas(0), love::Matrix4());
+
+	graphics->flushStreamDraws();
+
+	if (!stencil_write_drawable_scene_nodes.empty())
+	{
+		auto renderer = get_renderer();
+
+		const auto& camera = renderer->get_camera();
+		auto view_matrix = camera.get_view();
+		auto projection_matrix = camera.get_projection();
+		love::math::Transform view(love::Matrix4(glm::value_ptr(view_matrix)));
+		love::Matrix4 projection(glm::value_ptr(projection_matrix));
+
+		graphics->replaceTransform(&view);
+		graphics->setProjection(projection);
+	
+		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
+		graphics->setMeshCullMode(love::graphics::CULL_BACK);
+		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+
+		draw_nodes(L, delta, stencil_masked_drawable_scene_nodes);
+
+		graphics->setDepthMode(love::graphics::COMPARE_GEQUAL, false);
+		graphics->drawToStencilBuffer(love::graphics::STENCIL_INCREMENT, 0);
+		glad::glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+		draw_nodes(L, delta, stencil_write_drawable_scene_nodes);
+
+		graphics->stopDrawToStencilBuffer();
+		glad::glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+		graphics->setMeshCullMode(love::graphics::CULL_BACK);
+		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+	}
 }
 
 void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
@@ -471,7 +504,7 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 
 	graphics->draw(g_buffer.get_canvas(DEPTH_INDEX), love::Matrix4());
 
-	output_buffer.use();
+	output_buffer.use(false);
 	get_renderer()->set_current_shader(nullptr);
 	graphics->draw(shadow_buffer.get_color(), love::Matrix4());
 }
@@ -554,7 +587,7 @@ void nbunny::DeferredRendererPass::draw_pass(lua_State* L, float delta)
 
 void nbunny::DeferredRendererPass::draw_lights(lua_State* L, float delta)
 {
-	light_buffer.use();
+	light_buffer.use(false);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->setBlendMode(love::graphics::Graphics::BLEND_ADD, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
@@ -599,7 +632,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
 		return;
 	}
 
-	fog_buffer.use();
+	fog_buffer.use(false);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 	graphics->clear(love::Colorf(0.0f, 0.0f, 0.0f, 0.0f), love::OptionalInt(), love::OptionalDouble());
@@ -621,7 +654,7 @@ void nbunny::DeferredRendererPass::draw_fog(lua_State* L, float delta)
 
 void nbunny::DeferredRendererPass::mix_lights(lua_State* L)
 {
-	output_buffer.use();
+	output_buffer.use(false);
 	get_renderer()->set_current_shader(nullptr);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
@@ -650,7 +683,7 @@ void nbunny::DeferredRendererPass::mix_lights(lua_State* L)
 
 void nbunny::DeferredRendererPass::mix_fog()
 {
-	output_buffer.use();
+	output_buffer.use(false);
 	get_renderer()->set_current_shader(nullptr);
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
@@ -754,7 +787,7 @@ void nbunny::DeferredRendererPass::draw(lua_State* L, SceneNode& node, float del
 	draw_shadows(L, delta);
 	draw_fog(L, delta);
 
-	copy_depth_buffer(L);
+	copy_depth_buffer(L, delta);
 }
 
 void nbunny::DeferredRendererPass::resize(int width, int height)

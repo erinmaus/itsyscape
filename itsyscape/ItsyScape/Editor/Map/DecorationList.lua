@@ -125,6 +125,7 @@ function DecorationList:new(application)
 	self.decorations = {}
 
 	self.currentDecoration = false
+	self.currentDecorationLayer = false
 	self.currentDecorationButton = false
 end
 
@@ -195,11 +196,12 @@ function DecorationList:update(...)
 
 		for i = 1, #d do
 			local decoration = decorations[d[i]]
+			local layer = self.application:getGameView():getDecorationLayer(decoration)
 			local button = Button()
 			button:setText(d[i])
 
 			button.onClick:register(function()
-				self:select(d[i], decoration, button)
+				self:select(d[i], layer, decoration, button)
 			end)
 
 			self.scrollablePanel:addChild(button)
@@ -209,7 +211,7 @@ function DecorationList:update(...)
 	end
 end
 
-function DecorationList:select(group, decoration, button)
+function DecorationList:select(group, layer, decoration, button)
 	if self.currentDecorationButton then
 		self.currentDecorationButton:setStyle(nil)
 	end
@@ -217,6 +219,7 @@ function DecorationList:select(group, decoration, button)
 	if self.currentDecoration == group then
 		button:setStyle(nil)
 		self.currentDecoration = false
+		self.currentDecorationLayer = false
 		self.currentDecorationButton = false
 	else
 		button:setStyle(ButtonStyle({
@@ -232,15 +235,16 @@ function DecorationList:select(group, decoration, button)
 
 		self.onSelect(self, group, decoration)
 		self.currentDecoration = group
+		self.currentDecorationLayer = layer
 		self.currentDecorationButton = button
 	end
 end
 
 function DecorationList:getCurrentDecoration()
-	if not self.currentDecoration then
+	if not (self.currentDecoration and self.currentDecorationLayer) then
 		return nil, nil
 	else
-		return self.currentDecoration, self.decorations[self.currentDecoration]
+		return self.currentDecoration, self.application:getGameView():getDecoration(self.currentDecoration, self.currentDecorationLayer)
 	end
 end
 

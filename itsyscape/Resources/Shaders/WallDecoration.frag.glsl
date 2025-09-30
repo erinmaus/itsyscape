@@ -1,3 +1,5 @@
+#define SCAPE_WALL_HACK_DO_NOT_CLAMP_TO_XZ
+
 uniform Image scape_DiffuseTexture;
 
 #include "Resources/Shaders/WallHack.common.glsl"

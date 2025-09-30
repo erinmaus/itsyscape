@@ -20,6 +20,7 @@ Decoration.Feature = Class()
 
 function Decoration.Feature:new(handle)
 	self._handle = handle
+	self.material = false
 end
 
 function Decoration.Feature:getHandle()
@@ -74,6 +75,14 @@ function Decoration.Feature:setTexture(value)
 	self:getHandle():setTexture((value or 1) - 1)
 end
 
+function Decoration.Feature:getMaterial()
+	return self.material
+end
+
+function Decoration.Feature:setMaterial(value)
+	self.material = value or false
+end
+
 function Decoration.Feature:serialize()
 	return {
 		id = self:getID(),
@@ -81,7 +90,8 @@ function Decoration.Feature:serialize()
 		rotation = { self:getHandle():getRotation() },
 		scale = { self:getHandle():getScale() },
 		color = { self:getHandle():getColor() },
-		texture = self:getHandle():getTexture()
+		texture = self:getHandle():getTexture(),
+		material = self.material
 	}
 end
 
@@ -163,7 +173,8 @@ function Decoration:loadFromTable(t)
 		local scale = Vector(unpack(feature.scale or { 1, 1, 1 }))
 		local color = Color(unpack(feature.color or { 1, 1, 1, 1 }))
 		local texture = feature.texture or 1
-		self:add(feature.id, position, rotation, scale, color, texture)
+		local material = feature.material or false
+		self:add(feature.id, position, rotation, scale, color, texture, material)
 	end
 
 	if type(t.uniforms) == "table" then
@@ -177,7 +188,7 @@ function Decoration:loadFromTable(t)
 	end
 end
 
-function Decoration:add(id, position, rotation, scale, color, texture)
+function Decoration:add(id, position, rotation, scale, color, texture, material)
 	local description = Decoration.Feature(NDecorationFeature())
 	description:setID(id)
 	description:setPosition(position or Vector(0))
@@ -187,6 +198,16 @@ function Decoration:add(id, position, rotation, scale, color, texture)
 	description:setTexture(texture or 1)
 
 	local feature = Decoration.Feature(self:getHandle():addFeature(description:getHandle()))
+	feature:setMaterial(material or false)
+
+	table.insert(self.features, feature)
+
+	return feature
+end
+
+function Decoration:push(other)
+	local feature = Decoration.Feature(self:getHandle():addFeature(other:getHandle()))
+	feature:setMaterial(other:getMaterial())
 
 	table.insert(self.features, feature)
 
@@ -224,6 +245,7 @@ function Decoration:toString()
 			local scale = feature:getScale()
 			local color = feature:getColor()
 			local texture = feature:getTexture()
+			local material = feature:getMaterial()
 
 			r:pushIndent(2)
 			r:pushFormatLine("id = %q,", feature:getID())
@@ -245,6 +267,12 @@ function Decoration:toString()
 				color.r, color.g, color.b, color.a)
 			r:pushIndent(2)
 			r:pushFormatLine("texture = %d,", texture)
+			r:pushIndent(2)
+			if material == false then
+				r:pushFormatLine("material = false,")
+			else
+				r:pushFormatLine("material = %q,", material)
+			end
 		end
 		r:pushIndent(1)
 		r:pushLine("},")

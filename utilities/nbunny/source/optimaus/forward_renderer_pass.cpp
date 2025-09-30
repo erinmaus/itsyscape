@@ -10,6 +10,7 @@
 
 #include "modules/graphics/Graphics.h"
 #include "modules/math/Transform.h"
+#include "nbunny/optimaus/deferred_renderer_pass.hpp"
 #include "nbunny/optimaus/forward_renderer_pass.hpp"
 
 void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
@@ -20,10 +21,23 @@ void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
 	for (auto visible_scene_node: visible_scene_nodes)
 	{
 		auto& material = visible_scene_node->get_material();
-		if (material.get_is_translucent() || material.get_is_full_lit())
+		if (!(material.get_is_translucent() || material.get_is_full_lit()))
 		{
-			drawable_scene_nodes.push_back(visible_scene_node);
+			continue;
 		}
+
+		// if (material.should_stencil_mask())
+		// {
+		// 	stencil_masked_drawable_scene_nodes.push_back(visible_scene_node);
+		// }
+		// else if (material.should_stencil_write())
+		// {
+		// 	stencil_write_drawable_scene_nodes.push_back(visible_scene_node);
+		// }
+		// else
+		// {
+			drawable_scene_nodes.push_back(visible_scene_node);
+		// }
 	}
 }
 
@@ -259,6 +273,8 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 			send_fog(shader, fog[i], i);
 		}
 
+		shader_cache.update_uniform(shader, "scape_DepthTexture", depth_buffer.get_canvas(0));
+
 		int num_fog = scene_node->get_material().get_is_full_lit() ? 0 : (int)fog.size();
 		shader_cache.update_uniform(shader, "scape_NumFog", &num_fog, sizeof(int));
 
@@ -270,7 +286,18 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, false);
 		}
 
+		bool is_stencil_mask_enabled = scene_node->get_material().get_is_stencil_mask_enabled();
+		if (is_stencil_mask_enabled)
+		{
+			graphics->setStencilTest(love::graphics::COMPARE_EQUAL, 0);
+		}
+
 		renderer->draw_node(L, *scene_node, delta);
+
+		if (is_stencil_mask_enabled)
+		{
+			graphics->setStencilTest(love::graphics::COMPARE_ALWAYS, 0);
+		}
 
 		if (scene_node->get_material().get_is_z_write_disabled())
 		{
@@ -281,8 +308,8 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
-nbunny::ForwardRendererPass::ForwardRendererPass(LBuffer& c_buffer) :
-	RendererPass(RENDERER_PASS_FORWARD), c_buffer(c_buffer)
+nbunny::ForwardRendererPass::ForwardRendererPass(GBuffer& depth_buffer, LBuffer& c_buffer) :
+	RendererPass(RENDERER_PASS_FORWARD), depth_buffer(depth_buffer), c_buffer(c_buffer)
 {
 	// Nothing.
 }
@@ -317,8 +344,9 @@ void nbunny::ForwardRendererPass::attach(Renderer& renderer)
 
 static int nbunny_forward_renderer_pass_constructor(lua_State* L)
 {
-	auto c_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 2);
-	nbunny::lua::push(L, std::make_shared<nbunny::ForwardRendererPass>(*c_buffer));
+	auto g_buffer = nbunny::lua::get<nbunny::GBuffer*>(L, 2);
+	auto c_buffer = nbunny::lua::get<nbunny::LBuffer*>(L, 3);
+	nbunny::lua::push(L, std::make_shared<nbunny::ForwardRendererPass>(*g_buffer, *c_buffer));
 	return 1;
 }
 

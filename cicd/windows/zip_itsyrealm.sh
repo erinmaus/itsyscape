@@ -2,6 +2,8 @@
 
 set -xe
 
+ITSYREALM_VERSION=${ITSYREALM_VERSION:-$(../common/make_version.sh)}
+
 cd build/assets/itsyscape
 
 echo $ITSYREALM_VERSION > version.meta

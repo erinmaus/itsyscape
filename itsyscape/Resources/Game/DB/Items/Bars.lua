@@ -111,6 +111,7 @@ for name, bar in spairs(BARS) do
 	ItsyScape.Meta.Item {
 		Value = ItsyScape.Utility.valueForItem(bar.tier + 1),
 		Weight = bar.weight,
+		Stackable = 1,
 		Resource = Bar
 	}
 

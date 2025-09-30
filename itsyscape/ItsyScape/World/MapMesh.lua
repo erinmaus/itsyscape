@@ -42,7 +42,7 @@ MapMesh.FORMAT = {
 --
 -- If 'left', 'right', 'top', and 'bottom' are provided, only a portion of the
 -- map mesh is generated (those tiles that fall within the bounds).
-function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor, largeTileSet)
+function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcessor, largeTileSet, target)
 	self.vertices = {}
 	self.map = map
 	self.tileSet = tileSet
@@ -51,6 +51,12 @@ function MapMesh:new(map, tileSet, left, right, top, bottom, mask, islandProcess
 	self.mask = mask
 	self.islandProcessor = islandProcessor
 	self.min, self.max = Vector(math.huge):keep(), Vector(-math.huge):keep()
+	self.buildFlats = (not target or target.buildFlats == nil) and true or (target and target.buildFlats)
+	self.buildEdges = (not target or target.buildEdges == nil) and true or (target and target.buildEdges)
+	self.targetTileSetID = target and target.tileSetID or true
+	self.targetFlatID = target and target.flat or true
+	self.targetEdgeID = target and target.edge or true
+	self.ignored = target and target.ignored or {}
 
 	left = math.max(left or 1, 1)
 	right = math.min(right or map.width, map.width)
@@ -212,39 +218,51 @@ function MapMesh:_buildMesh(left, right, top, bottom)
 	for j = top, bottom do
 		for i = left, right do
 			local tile = self.map:getTile(i, j)
+			local isTileSetMatch = self.targetTileSetID == true or self.targetTileSetID == tile.tileSetID
+			local isFlatIgnored = self.ignored[tile.tileSetID] and self.ignored[tile.tileSetID][tile.flat]
+			local isEdgeIgnored = self.ignored[tile.tileSetID] and self.ignored[tile.tileSetID][tile.edge]
 
-			if i == 1 then
-				self:_addLeftEdge(i, j, tile, nil)
+			if self.buildEdges and not isEdgeIgnored and isTileSetMatch then
+				if type(self.buildEdges) == "boolean" or self.buildEdges == tile.edge then
+					if i == 1 then
+						self:_addLeftEdge(i, j, tile, nil)
+					end
+					if i == self.map.width then
+						self:_addRightEdge(i, j, tile, nil)
+					end
+
+					self:_addLeftEdge(i, j, tile, self.map:getTile(i - 1, j))
+					self:_addRightEdge(i, j, tile, self.map:getTile(i + 1, j))
+
+					if j == 1 then
+						self:_addTopEdge(i, j, tile, nil)
+					end
+					if j == self.map.height then
+						self:_addBottomEdge(i, j, tile, nil)
+					end
+
+					self:_addTopEdge(i, j, tile, self.map:getTile(i, j - 1))
+					self:_addBottomEdge(i, j, tile, self.map:getTile(i, j + 1))
+				end
 			end
-			if i == self.map.width then
-				self:_addRightEdge(i, j, tile, nil)
+
+			if self.buildFlats and not isFlatIgnored and isTileSetMatch then
+				if type(self.buildFlats) == "boolean" or self.buildFlats == tile.flat then
+					self:_addFlat(i, j, tile, 'flat')
+
+					if type(self.buildFlats) == "boolean" then
+						for k = 1, #tile.decals do
+							self:_addFlat(i, j, tile, k)
+						end
+					end
+				end
 			end
-
-			self:_addLeftEdge(i, j, tile, self.map:getTile(i - 1, j))
-			self:_addRightEdge(i, j, tile, self.map:getTile(i + 1, j))
-
-			if j == 1 then
-				self:_addTopEdge(i, j, tile, nil)
-			end
-			if j == self.map.height then
-				self:_addBottomEdge(i, j, tile, nil)
-			end
-
-			self:_addTopEdge(i, j, tile, self.map:getTile(i, j - 1))
-			self:_addBottomEdge(i, j, tile, self.map:getTile(i, j + 1))
-
-			self:_addFlat(i, j, tile, 'flat')
-			for k = 1, #tile.decals do
-				self:_addFlat(i, j, tile, k)
-			end
-		end
-
-		if coroutine.running() then
-			coroutine.yield()
 		end
 	end
 
-	self:_mask(left, right, top, bottom)
+	if self.buildFlats then
+		self:_mask(left, right, top, bottom)
+	end
 
 	-- Create mesh and enable all attributes.
 	self.mesh = love.graphics.newMesh(MapMesh.FORMAT, self.vertices, 'triangles', 'static')
@@ -337,10 +355,6 @@ function MapMesh:_maskIsland(left, right, top, bottom, island)
 
 		self.masks[islandTile.index] = masks
 	end
-
-	if coroutine.running() then
-		coroutine.yield()
-	end
 end
 
 function MapMesh:_mask(left, right, top, bottom)
@@ -360,10 +374,6 @@ function MapMesh:_mask(left, right, top, bottom)
 				for maskType, maskTileID in pairs(tile.mask) do
 					self:_addFlat(i, j, tile, 'flat', maskType, maskTileID)
 				end
-			end
-
-			if coroutine.running() then
-				coroutine.yield()
 			end
 		end
 	end

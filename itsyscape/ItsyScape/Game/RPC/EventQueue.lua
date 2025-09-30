@@ -26,6 +26,7 @@ function EventQueue.newBuffer()
 		require("ItsyScape.Game.PlayerStorage").Section._METATABLE,
 		require("ItsyScape.Game.RPC.Event")._METATABLE,
 		require("ItsyScape.Graphics.Color")._METATABLE,
+		require("ItsyScape.Graphics.DecorationMaterial")._METATABLE,
 		require("ItsyScape.World.Map")._METATABLE,
 		require("ItsyScape.World.Tile")._METATABLE,
 		require("ItsyScape.Game.Model.Actor")._METATABLE,

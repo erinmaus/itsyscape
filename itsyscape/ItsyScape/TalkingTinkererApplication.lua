@@ -108,6 +108,8 @@ function TalkingTinkererApplication:initTinkerer()
 		instance:addMapScript(1, mapScript, "dummy")
 	end
 
+	stage:placeProp("resource://Brazier_Isabelle", 1, "0@dummy")
+
 	local success, actor = stage:spawnActor("resource://" .. resource, 1, "0@dummy")
 
 	if not success then
@@ -310,6 +312,7 @@ function TalkingTinkererApplication:loadCamera()
 	gameCamera:setHorizontalRotation(cameraConfig.horizontalRotation or gameCamera:getHorizontalRotation())
 	gameCamera:setVerticalRotation(cameraConfig.verticalRotation or gameCamera:getVerticalRotation())
 	gameCamera:setDistance(cameraConfig.distance or gameCamera:getDistance())
+	gameCamera:setPosition(self.cameraController.cameraOffset)
 end
 
 function TalkingTinkererApplication:renderTick()
@@ -324,9 +327,9 @@ function TalkingTinkererApplication:renderTick()
 
 	local outlinePostProcessPass = OutlinePostProcessPass(self.targetRenderer)
 	outlinePostProcessPass:load(self:getGameView():getResourceManager())
-	outlinePostProcessPass:setMinOutlineThickness(10)
-	outlinePostProcessPass:setMaxOutlineThickness(10)
-	outlinePostProcessPass:setMinOutlineDepthAlpha(1)
+	outlinePostProcessPass:setMinOutlineThickness(6)
+	outlinePostProcessPass:setMaxOutlineThickness(6)
+	outlinePostProcessPass:setMinOutlineDepthAlpha(1)3
 
 	local gameCamera = self:getCamera()
 	gameCamera:setWidth(width)
@@ -341,7 +344,7 @@ function TalkingTinkererApplication:renderTick()
 		self.targetSceneNode,
 		1,
 		width,
-		height, { outlinePostProcessPass })
+		height, { })
 	love.graphics.pop()
 
 	return self.targetRenderer:getOutputBuffer():getColor():newImageData()
@@ -366,7 +369,7 @@ function TalkingTinkererApplication:drawTinkerer()
 		self:playAnimation({ animation = "A" })
 	end
 
-	self:getGame():getStage():fireProjectile("ConfettiSplosion", Vector.ZERO, Vector.ZERO)
+	--self:getGame():getStage():fireProjectile("ConfettiSplosion", Vector.ZERO, Vector.ZERO)
 
 	local f = love.timer.getDelta
 	love.timer.getDelta = function()
@@ -469,8 +472,10 @@ function TalkingTinkererApplication:draw()
 	self.cameraController:draw()
 	love.graphics.push('all')
 	love.graphics.clear(0, 1, 0, 1)
-	self:getGameView():draw(self:getFrameDelta(), w, h)
-	love.graphics.draw(love.graphics.newImage(self:renderTick()), 0, 0)
+	--self:getGameView():draw(self:getFrameDelta(), w, h)
+	local image = love.graphics.newImage(self:renderTick())
+	love.graphics.draw(image, 0, 0)
+	image:release()
 	love.graphics.pop()
 end
 

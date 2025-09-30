@@ -163,13 +163,13 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Smithing",
-				Count = ItsyScape.Utility.xpForResource(2)
+				Resource = ItsyScape.Resource.Item "CopperBadge",
+				Count = 1
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Item "CopperBadge",
-				Count = 1
+				Resource = ItsyScape.Resource.Skill "Smithing",
+				Count = ItsyScape.Utility.xpForResource(2)
 			}
 		}
 	}

@@ -1,13 +1,17 @@
 #!/bin/sh
 
-name=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
+name=$(git describe --tags --abbrev=0)
+
 if [ ! -z "$ITSYREALM_VERSION_OVERRIDE" ]; then
     latest_version="$ITSYREALM_VERSION_OVERRIDE"
-    build_environment="$ITSYREALM_BUILD_OVERRIDE"
-else
-    latest_version=$(echo $name | sed -n 's/.*-\([0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*\).*$/\1/p')
-    build_environment=$(echo $name | sed -n 's/.*-[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*-\([a-zA-Z_][a-zA-Z0-9_]*\).*$/\1/p')
 fi
+
+if [ ! -z "$ITSYREALM_BUILD_OVERRIDE" ]; then
+    build_environment="$ITSYREALM_BUILD_OVERRIDE"
+fi
+
+latest_version=${latest_version:-$(echo $name | sed -n 's/.*-\([0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*\).*$/\1/p')}
+build_environment=${build_environment:-$(echo $name | sed -n 's/.*-[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*-\([a-zA-Z_][a-zA-Z0-9_]*\).*$/\1/p')}
 
 commit_version=$(git rev-parse --short=8 $name)
 build_version=$(git rev-list --count ${name}..HEAD)

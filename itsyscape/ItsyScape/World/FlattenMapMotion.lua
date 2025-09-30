@@ -10,12 +10,23 @@
 local Class = require "ItsyScape.Common.Class"
 local MapMotion = require "ItsyScape.World.MapMotion"
 
-FlattenMapMotion = Class(MapMotion)
+local FlattenMapMotion = Class(MapMotion)
 
 function FlattenMapMotion:new(size, ...)
 	MapMotion.new(self, ...)
 
 	self.size = size - 1
+end
+
+function FlattenMapMotion:getRegion()
+	local _, i, j = self:getTile()
+
+	i = i - self.size
+	j = j - self.size
+	local w = self.size * 2 + 1
+	local h = self.size * 2 + 1
+
+	return i, j, w, h
 end
 
 function FlattenMapMotion:iterate(func)

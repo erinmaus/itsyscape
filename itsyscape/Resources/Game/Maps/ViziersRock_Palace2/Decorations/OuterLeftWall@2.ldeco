@@ -1,0 +1,13 @@
+{
+	tileSetID = "ViziersRockPalace1",
+	isWall = false,
+	{
+		id = "wall.outer.left",
+		position = { 1.000000, 1.000000, 96.000000 },
+		rotation = { 0.000000, 0.707107, 0.000000, -0.707107 },
+		scale = { 1.000000, 1.000000, 1.000000 },
+		color = { 1.000000, 1.000000, 1.000000, 1.000000 },
+		texture = -16,
+		material = "feather1",
+	},
+}

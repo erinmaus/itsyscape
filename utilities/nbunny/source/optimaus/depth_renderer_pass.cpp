@@ -134,7 +134,7 @@ void nbunny::DepthRendererPass::draw_pass(lua_State* L, float delta)
 
     graphics->setColorMask(disabled_mask);
 	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-	if (!stencil_masked_drawable_scene_nodes.empty() && !stencil_write_drawable_scene_nodes.empty())
+	if (!stencil_write_drawable_scene_nodes.empty())
 	{
 		draw_nodes(L, delta, stencil_masked_drawable_scene_nodes);
 

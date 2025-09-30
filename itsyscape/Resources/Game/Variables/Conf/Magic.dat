@@ -1,0 +1,748 @@
+{
+  sections = {
+    Clock = {
+      sections = {},
+      values = {}
+    },
+    CombatHUD = {
+      sections = {
+        Config = {
+          sections = {},
+          values = {}
+        },
+        Equipment = {
+          sections = {
+            {
+              sections = {},
+              values = {
+                name = "Gear"
+              }
+            }
+          },
+          values = {}
+        }
+      },
+      values = {}
+    },
+    Dreams = {
+      sections = {},
+      values = {}
+    },
+    KeyItems = {
+      sections = {},
+      values = {
+        Tutorial_EquippedItems = true,
+        Tutorial_GatheredItems = true,
+        Tutorial_Start = true
+      }
+    },
+    Nominomicon = {
+      sections = {},
+      values = {
+        lastQuest = "Tutorial"
+      }
+    },
+    Peep = {
+      sections = {
+        Chat = {
+          sections = {},
+          values = {
+            hidden = false
+          }
+        },
+        Inventory = {
+          sections = {
+            Bank = {
+              sections = {},
+              values = {}
+            },
+            Equipment = {
+              sections = {
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumGloves",
+                    ["item-key"] = 1,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumBoots",
+                    ["item-key"] = 2,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumHelmet",
+                    ["item-key"] = 3,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumStaff",
+                    ["item-key"] = 4,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "IsabelliumPlatebody",
+                    ["item-key"] = 5,
+                    ["item-noted"] = false
+                  }
+                }
+              },
+              values = {}
+            },
+            Player = {
+              sections = {
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "CookedLightningStormfish",
+                    ["item-key"] = 1,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "CookedLightningStormfish",
+                    ["item-key"] = 2,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "CookedLightningStormfish",
+                    ["item-key"] = 3,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "CookedLightningStormfish",
+                    ["item-key"] = 4,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "FireRune",
+                    ["item-key"] = 5,
+                    ["item-noted"] = false
+                  }
+                },
+                {
+                  sections = {
+                    ["item-userdata"] = {
+                      sections = {},
+                      values = {}
+                    }
+                  },
+                  values = {
+                    ["item-count"] = 1,
+                    ["item-id"] = "AirRune",
+                    ["item-key"] = 6,
+                    ["item-noted"] = false
+                  }
+                }
+              },
+              values = {}
+            }
+          },
+          values = {}
+        },
+        Stats = {
+          sections = {
+            Antilogika = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Archery = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Attack = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Constitution = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Cooking = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Crafting = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Defense = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Dexterity = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Engineering = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Faith = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Firemaking = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Fishing = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Foraging = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Magic = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Mining = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Necromancy = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Sailing = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Smithing = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Strength = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Wisdom = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            },
+            Woodcutting = {
+              sections = {},
+              values = {
+                levelBoost = 0,
+                xp = 273278
+              }
+            }
+          },
+          values = {}
+        },
+        clock = {
+          sections = {},
+          values = {}
+        }
+      },
+      values = {}
+    },
+    Player = {
+      sections = {
+        Dialog = {
+          sections = {
+            Orlando = {
+              sections = {},
+              values = {
+                quest_tutorial_main_equipped_items_thought = true,
+                quest_tutorial_main_player_talked_about_seeing_ser_commander = true,
+                quest_tutorial_main_started_asked_what_happened = true,
+                quest_tutorial_main_started_asked_what_is_going_on = true,
+                quest_tutorial_main_started_asked_where_am_i = true,
+                quest_tutorial_main_started_got_up = true,
+                quest_tutorial_main_starting_player_class = 1
+              }
+            }
+          },
+          values = {}
+        },
+        Info = {
+          sections = {
+            Gender = {
+              sections = {},
+              values = {
+                description = "Girl",
+                formal = "misse",
+                gender = "female",
+                object = "her",
+                plural = false,
+                possessive = "her",
+                subject = "she"
+              }
+            }
+          },
+          values = {
+            name = "Amy"
+          }
+        },
+        SailingItems = {
+          sections = {},
+          values = {}
+        },
+        Skin = {
+          sections = {
+            body = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.21568627450980393,
+                        0.44313725490196099,
+                        0.78431372549019607,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.30196078431372547,
+                        0.18431372549019609,
+                        0.14117647058823529,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.80000000000000004,
+                        0.80000000000000004,
+                        0.80000000000000004,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.20000000000000001,
+                        0.20000000000000001,
+                        0.20000000000000001,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        1,
+                        1,
+                        1,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Shirts/Navigator.lua",
+                name = "Navigator",
+                priority = 0,
+                slot = 3,
+                slotName = "body",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            eyes = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.14117647058823529,
+                        0.14117647058823529,
+                        0.14117647058823529,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        1,
+                        1,
+                        1,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0,
+                        0,
+                        0,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.52156862745098043,
+                        0.35294117647058826,
+                        0.84705882352941175,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0,
+                        0,
+                        0,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        1,
+                        1,
+                        1,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Eyes/Eyes.lua",
+                name = "Eyes",
+                priority = 1/0 --[[math.huge]],
+                slot = 1,
+                slotName = "eyes",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            feet = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.30196078431372547,
+                        0.18431372549019609,
+                        0.14117647058823529,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.80000000000000004,
+                        0.80000000000000004,
+                        0.80000000000000004,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Shoes/Boots2.lua",
+                name = "Worn boots",
+                priority = 0,
+                slot = 5,
+                slotName = "feet",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            hair = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.14117647058823529,
+                        0.14117647058823529,
+                        0.14117647058823529,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.24313725490196078,
+                        0.24313725490196078,
+                        0.24313725490196078,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Hair/Braid.lua",
+                name = "Braid",
+                priority = 10,
+                slot = 1,
+                slotName = "hair",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            hands = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.64313725490196083,
+                        0.41176470588235292,
+                        0.23529411764705879,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        1,
+                        0.80000000000000004,
+                        0,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.46274509803921571,
+                        0.32156862745098042,
+                        0.23529411764705882,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        1,
+                        0.80000000000000004,
+                        0,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Hands/Humanlike.lua",
+                name = "Human/humanlike hands",
+                priority = 0,
+                slot = 6,
+                slotName = "hands",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            },
+            head = {
+              sections = {
+                config = {
+                  sections = {
+                    {
+                      sections = {},
+                      values = {
+                        0.64313725490196083,
+                        0.41176470588235292,
+                        0.23529411764705879,
+                        1
+                      }
+                    },
+                    {
+                      sections = {},
+                      values = {
+                        0.32549019607843138,
+                        0.36470588235294116,
+                        0.42352941176470588,
+                        1
+                      }
+                    }
+                  },
+                  values = {}
+                }
+              },
+              values = {
+                filename = "Resources/Game/Skins/PlayerKit2/Head/Humanlike.lua",
+                name = "Human/humanlike head",
+                priority = 0,
+                slot = 1,
+                slotName = "head",
+                type = "ItsyScape.Game.Skin.ModelSkin"
+              }
+            }
+          },
+          values = {}
+        }
+      },
+      values = {}
+    },
+    Spawn = {
+      sections = {},
+      values = {
+        instance = false,
+        name = "Sailing_HumanityEdge",
+        x = 141,
+        y = 3,
+        z = 173
+      }
+    },
+    Status = {
+      sections = {},
+      values = {
+        currentHitpoints = 60,
+        currentPrayer = 60,
+        stance = 2
+      }
+    }
+  },
+  values = {
+    filename = "Player/Demo.dat"
+  }
+}

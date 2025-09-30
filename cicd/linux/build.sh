@@ -49,6 +49,7 @@ make LOVE_BRANCH=${LOVE_BRANCH}
 ./build_nbunny.sh
 ./build_devi.sh
 ./build_nomicon.sh
+./build_slick.sh
 ./build_itsyrealm.sh
 
 rm love-${LOVE_BRANCH}.AppImage

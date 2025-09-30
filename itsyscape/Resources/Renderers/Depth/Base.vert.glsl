@@ -1,6 +1,5 @@
 #ifdef GL_ES
 precision highp float;
-#extension GL_EXT_clip_cull_distance : enable
 #endif
 
 #line 1
@@ -48,7 +47,9 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 	vec4 worldPosition = scape_WorldMatrix * vec4(localPosition, 1.0);
 	frag_Position = worldPosition.xyz;
 
+#ifndef GL_ES
 	gl_ClipDistance[0] = -dot(worldPosition, scape_ClipPlane);
+#endif
 
 	return projectedPosition;
 }

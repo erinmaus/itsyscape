@@ -31,8 +31,8 @@ function MapMeshSceneNode:new()
 	self.isOwner = false
 
 	self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
-	self:getMaterial():setOutlineThreshold(-0.01)
-	self:getMaterial():setOutlineColor(Color(0.7))
+	self:getMaterial():setOutlineThreshold(0.5)
+	self:getMaterial():setOutlineColor(Color(0))
 end
 
 function MapMeshSceneNode:fromVertices(vertices, min, max)
@@ -66,7 +66,7 @@ function MapMeshSceneNode:toVertices()
 	return nil, self:getBounds()
 end
 
-function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor, largeTileSet)
+function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcessor, largeTileSet, ...)
 	if self.isOwner and self.mapMesh then
 		self.mapMesh:release()
 	end
@@ -82,7 +82,7 @@ function MapMeshSceneNode:fromMap(map, tileSet, x, y, w, h, mask, islandProcesso
 		self:getMaterial():setShader(MapMeshSceneNode.DEFAULT_SHADER)
 	end
 
-	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1), mask, islandProcessor, largeTileSet)
+	self.mapMesh = MapMesh(map, tileSet, x, x + (w - 1), y, y + (h - 1), mask, islandProcessor, largeTileSet, ...)
 	self.isOwner = true
 	self.vertices = self.mapMesh:getVertices()
 

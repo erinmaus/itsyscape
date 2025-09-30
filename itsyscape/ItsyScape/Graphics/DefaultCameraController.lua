@@ -565,6 +565,18 @@ function DefaultCameraController:updateElevation(delta)
 			self.targetElevationHorizontalRotationOffset,
 			self.currentElevationHorizontalRotationOffset - DefaultCameraController.ELEVATION_HORIZONTAL_VELOCITY * delta)
 	end
+
+	if math.abs(self.currentElevationHorizontalRotationOffset + self.cameraHorizontalRotationOffset) < DefaultCameraController.MAX_CAMERA_HORIZONTAL_ROTATION_OFFSET then
+		self.cameraHorizontalRotationOffset = self.cameraHorizontalRotationOffset + self.currentElevationHorizontalRotationOffset
+
+		if difference > 0 then
+			self.targetElevationHorizontalRotationOffset = self.targetElevationHorizontalRotationOffset - self.currentElevationHorizontalRotationOffset
+		elseif difference < 0 then
+			self.targetElevationHorizontalRotationOffset = self.targetElevationHorizontalRotationOffset + self.currentElevationHorizontalRotationOffset
+		end
+
+		self.currentElevationHorizontalRotationOffset = 0
+	end
 end
 
 function DefaultCameraController:updateShow(delta)
@@ -919,10 +931,40 @@ function DefaultCameraController:_clampCenter(center)
 	return newCenter
 end
 
-function DefaultCameraController:_stepGround(distance, target, eye, map, i, j, x, z, t)
+function DefaultCameraController:_stepGround(distance, target, eye, isInsideBuilding, mapTransform, map, i, j, x, z, t)
 	local center = map:getTileCenter(i, j)
+
 	local positionToTile = Ray(target, target:direction(center))
 	local _, projectedEye = positionToTile:closest(eye)
+
+	local tile = map:getTile(i, j)
+	if tile:hasFlag("building") and not isInsideBuilding then
+		local gameView = self:getGameView()
+		local layers = gameView:getLayers()
+
+		for _, layer in ipairs(layers) do
+			local otherMap = gameView:getMap(layer)
+			local otherMapTransform = gameView:getMapSceneNode(layer):getTransform():getGlobalDeltaTransform(self:getApp():getFrameDelta())
+
+			local otherMapPosition = center:transform(mapTransform):inverseTransform(otherMapTransform)
+			if otherMapPosition.x >= 0 and
+			   otherMapPosition.z >= 0 and
+			   otherMapPosition.x <= otherMap:getWidth() * otherMap:getCellSize() and
+			   otherMapPosition.z <= otherMap:getHeight() * otherMap:getCellSize()
+			then
+				local _, otherI, otherJ = otherMap:getTileAt(otherMapPosition.x, otherMapPosition.z)
+				local otherCenter = otherMap:getTileCenter(otherI, otherJ):transform(otherMapTransform):inverseTransform(mapTransform)
+
+				local otherPositionToTile = Ray(target, target:direction(otherCenter))
+				local _, otherProjectedEye = otherPositionToTile:closest(eye)
+
+				if not self._stepGroundMaxY or otherProjectedEye.y > self._stepGroundMaxY then
+					self._stepGroundMaxY = otherProjectedEye.y
+					self._stepGroundPosition = otherCenter
+				end
+			end
+		end
+	end
 
 	if not self._stepGroundMaxY or projectedEye.y > self._stepGroundMaxY then
 		self._stepGroundMaxY = projectedEye.y
@@ -958,6 +1000,9 @@ function DefaultCameraController:_clampGround(currentHorizontalRotation)
 		return
 	end
 
+	local tile = map:getTile(i, j)
+	local isInsideBuilding = tile:hasFlag("building")
+
 	local eye = camera:getEye()
 	local target = map:getTileCenter(i, j)
 
@@ -970,7 +1015,7 @@ function DefaultCameraController:_clampGround(currentHorizontalRotation)
 	self._stepGroundPosition = nil
 	local result = map:castRay(
 		Ray(target, target:direction(eye)),
-		Function(self._stepGround, self, maxDistance, target, eye))
+		Function(self._stepGround, self, maxDistance, target, eye, isInsideBuilding, mapSceneNodeTransform))
 
 	if not result then
 		return
@@ -996,6 +1041,9 @@ function DefaultCameraController:_clampGround(currentHorizontalRotation)
 	local targetHorizontalRotation = -math.acos(dotProduct)
 
 	self.targetElevationHorizontalRotationOffset = math.diffAngle(targetHorizontalRotation, currentHorizontalRotation)
+	if self.targetElevationHorizontalRotationOffset > 0 then
+		self.targetElevationHorizontalRotationOffset = 0
+	end
 end
 
 function DefaultCameraController:_getCurrentFirstPersonPosition()
@@ -1092,12 +1140,14 @@ function DefaultCameraController:draw()
 	else
 		self:getCamera():setRotation()
 
-		--if not _DEBUG then
+		if not _DEBUG then
 			self:_clampGround(horizontalOffset)
-		--end
+		end
 	end
 
-	self:getCamera():setHorizontalRotation(horizontalOffset + self.currentElevationHorizontalRotationOffset)
+	if self.isFirstPerson <= 0 then
+		self:getCamera():setHorizontalRotation(horizontalOffset + self.currentElevationHorizontalRotationOffset)
+	end
 end
 
 return DefaultCameraController

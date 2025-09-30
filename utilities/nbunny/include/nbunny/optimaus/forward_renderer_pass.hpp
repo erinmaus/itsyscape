@@ -30,6 +30,7 @@ namespace nbunny
 			MAX_FOG    = 4
 		};
 
+		GBuffer& depth_buffer;
 		LBuffer& c_buffer;
 
 		std::vector<SceneNode*> drawable_scene_nodes;
@@ -38,6 +39,8 @@ namespace nbunny
 		std::vector<FogSceneNode*> fog_scene_nodes;
 		std::vector<Light> fog;
 		std::vector<Light> lights;
+
+		void copy_depth_buffer();
 
 		void walk_all_nodes(SceneNode& node, float delta);
 		void walk_visible_lights();
@@ -57,7 +60,7 @@ namespace nbunny
 		void send_fog(love::graphics::Shader* shader, Light& light, int index);
 
 	public:
-		ForwardRendererPass(LBuffer& c_buffer);
+		ForwardRendererPass(GBuffer& depth_buffer, LBuffer& c_buffer);
 		~ForwardRendererPass() = default;
 
 		LBuffer& get_c_buffer();

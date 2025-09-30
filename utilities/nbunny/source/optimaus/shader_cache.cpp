@@ -28,16 +28,24 @@ void nbunny::ShaderCache::ShaderSource::combine(
 	std::string& result_pixel_source)
 {
 	std::stringstream result_vertex;
-	result_vertex << "#pragma language" << " " << version << "\n";
-	result_vertex << vertex_prologue << "\n";
 	result_vertex << base_vertex_source << "\n";
 	result_vertex << vertex;
-
+	
 	std::stringstream result_pixel;
-	result_pixel << "#pragma language" << " " << version << "\n";
-	result_pixel << pixel_prologue << "\n";
 	result_pixel << base_pixel_source << "\n";
 	result_pixel << pixel;
+	
+	ShaderSource combined_source(result_vertex.str(), result_pixel.str(), true);
+	
+	result_vertex.str("");
+	result_vertex << "#pragma language" << " " << version << "\n";
+	result_vertex << combined_source.vertex_prologue << "\n";
+	result_vertex << combined_source.vertex;
+	
+	result_pixel.str("");
+	result_pixel << "#pragma language" << " " << version << "\n";
+	result_pixel << combined_source.pixel_prologue << "\n";
+	result_pixel << combined_source.pixel;
 
 	result_vertex_source = result_vertex.str();
 	result_pixel_source = result_pixel.str();
@@ -46,25 +54,23 @@ void nbunny::ShaderCache::ShaderSource::combine(
 std::string nbunny::ShaderCache::ShaderSource::parse_includes(const std::string& source, std::unordered_set<std::string>& filenames)
 {
 	std::string result;
+	std::size_t current_line_number = 1;
 
 	auto filesystem = love::Module::getInstance<love::filesystem::Filesystem>(love::Module::M_FILESYSTEM);
 
 	auto include_regex = std::regex("#include\\s+\"([^\"]+)\"\r?\n?");
+	auto line_include_regex = std::regex("^[\\s\r\n]*#include.*?$", std::regex::multiline);
 
-	auto begin = std::sregex_iterator(source.begin(), source.end(), include_regex);
-	auto end = std::sregex_iterator();
-
-	if (std::distance(begin, end) == 0)
+	std::smatch match;
+	auto current = source.begin();
+	auto previous = current;
+	auto end = source.end();
+	while (std::regex_search(current, end, match, include_regex))
 	{
-		return source;
-	}
+		std::string prefix(previous, match.prefix().second);
+		result += prefix;
 
-	std::size_t current_line_number = 1;
-
-	std::string suffix;
-	for (auto i = begin; i != end; ++i)
-	{
-		auto filename = (*i)[1].str();
+		auto filename = match[1].str();
 		if (!filenames.contains(filename))
 		{
 			filenames.insert(filename);
@@ -72,9 +78,8 @@ std::string nbunny::ShaderCache::ShaderSource::parse_includes(const std::string&
 			auto sub_source_file_data = filesystem->read(filename.c_str());
 			std::string sub_source(reinterpret_cast<const char*>(sub_source_file_data->getData()), sub_source_file_data->getSize());
 
-			result += i->prefix().str() + "#line 1\n" + parse_includes(sub_source, filenames) + "\n";
+			result += "#line 1\n" + parse_includes(sub_source, filenames) + "\n";
 
-			auto prefix = i->prefix().str();
 			current_line_number += std::count(prefix.begin(), prefix.end(), '\n');
 
 			std::stringstream line;
@@ -85,9 +90,11 @@ std::string nbunny::ShaderCache::ShaderSource::parse_includes(const std::string&
 			++current_line_number;
 		}
 
-		suffix = i->suffix();
+		current = match.suffix().first;
+		previous = current;
 	}
 
+	std::string suffix(current, end);
 	result += suffix;
 
 	return result;

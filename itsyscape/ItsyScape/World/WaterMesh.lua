@@ -19,17 +19,20 @@ WaterMesh.FORMAT = {
     { "VertexTexture", 'float', 2 }
 }
 
-function WaterMesh:new(width, height, scale)
+function WaterMesh:new(width, height, textureScale, i, j, positionScale)
 	self.vertices = {}
 	self.width = width
 	self.height = height
-	self.scale = scale or 4
+	self.textureScale = textureScale or 4
+	self.i = (i or 0)
+	self.j = (j or 0)
+	self.positionScale = positionScale or 1
 
 	self:_buildMesh()
 end
 
 function WaterMesh:getScale()
-	return self.scale
+	return self.textureScale
 end
 
 function WaterMesh:release()
@@ -58,7 +61,7 @@ function WaterMesh:_buildMesh()
 
 	for j = 1, self.height do
 		for i = 1, self.width do
-			self:_addFlat(i - 0.5, j - 0.5)
+			self:_addFlat(i, j)
 		end
 
 		if coroutine.running() then
@@ -76,7 +79,7 @@ function WaterMesh:_addVertex(position, normal, texture)
 	local vertex = {
 		position.x, position.y, position.z,
 		normal.x, normal.y, normal.z,
-		position.x * 1 / self.scale, position.z * 1 / self.scale
+		texture.x / self.textureScale, texture.y / self.textureScale
 	}
 
 	self.min:min(position):keep(self.min)
@@ -86,22 +89,25 @@ function WaterMesh:_addVertex(position, normal, texture)
 end
 
 function WaterMesh:_addFlat(i, j)
+	local offsetI = i - 0.5
+	local offsetJ = j - 0.5
+
 	local E = 0.5
-	local topLeft = Vector(-E + i, 0, -E + j)
-	local topRight = Vector(E + i, 0, -E + j)
-	local bottomLeft = Vector(-E + i, 0, E + j)
-	local bottomRight = Vector(E + i, 0, E + j)
+	local topLeft = Vector(-E + offsetI, 0, -E + offsetJ)
+	local topRight = Vector(E + offsetI, 0, -E + offsetJ)
+	local bottomLeft = Vector(-E + offsetI, 0, E + offsetJ)
+	local bottomRight = Vector(E + offsetI, 0, E + offsetJ)
 
 	local normal = Vector.UNIT_Y
 	do
-		self:_addVertex(topRight, normal, Vector(1, 0))
-		self:_addVertex(bottomLeft, normal, Vector(0, 1))
-		self:_addVertex(bottomRight, normal, Vector(1, 1))
+		self:_addVertex(topRight, normal, Vector(((i + self.i) + 1) / self.positionScale, (j + self.j) / self.positionScale))
+		self:_addVertex(bottomLeft, normal, Vector((i + self.i) / self.positionScale, ((j + self.j) + 1) / self.positionScale))
+		self:_addVertex(bottomRight, normal, Vector(((i + self.i) + 1) / self.positionScale, ((j + self.j) + 1) / self.positionScale))
 	end
 	do
-		self:_addVertex(topRight, normal, Vector(1, 0))
-		self:_addVertex(topLeft, normal, Vector(0, 0))
-		self:_addVertex(bottomLeft, normal, Vector(0, 1))
+		self:_addVertex(topRight, normal, Vector(((i + self.i) + 1) / self.positionScale, (j + self.j) / self.positionScale))
+		self:_addVertex(topLeft, normal, Vector((i + self.i) / self.positionScale, (j + self.j) / self.positionScale))
+		self:_addVertex(bottomLeft, normal, Vector((i + self.i) / self.positionScale, ((j + self.j) + 1) / self.positionScale))
 	end
 end
 

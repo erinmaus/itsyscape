@@ -28,6 +28,8 @@ namespace nbunny
         std::string interface;
         int id = 0;
 
+        std::string debug_name;
+
         SceneNode* scene_node = nullptr;
         glm::vec3 min = glm::vec3(0.0);
         glm::vec3 max = glm::vec3(0.0);
@@ -42,6 +44,8 @@ namespace nbunny
     {
         std::string interface;
         int id;
+
+        std::string debug_name;
 
         glm::vec3 position;
         float distance;
@@ -81,7 +85,7 @@ namespace nbunny
 	public:
         Probe(float cell_size);
 
-        void add_or_update(const std::string& interface, int id, SceneNode* scene_node, const glm::vec3& min, const glm::vec3& max);
+        void add_or_update(const std::string& interface, int id, SceneNode* scene_node, const glm::vec3& min, const glm::vec3& max, const std::string& debug_name);
         void remove(const std::string& interface, int id);
         void reset();
         

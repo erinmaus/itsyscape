@@ -61,6 +61,6 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 	TriPlanarTextureCoordinates triPlanarTextureCoordinates = triplanarMap();
 	vec3 weight = triplanarWeights();
 
-	vec4 texture = sampleDiffuse(weight, triPlanarTextureCoordinates, 0.0);
-	return texture * color;
+	vec4 diffuseSample = sampleDiffuse(weight, triPlanarTextureCoordinates, 0.0);
+	return diffuseSample * color;
 }

@@ -72,6 +72,7 @@ function LabelRenderer:draw(widget, state)
 		itsyrealm.graphics.stopRecording()
 
 		self.replays[widget] = replay
+		itsyrealm.graphics.replay(replay.replay)
 	end
 end
 

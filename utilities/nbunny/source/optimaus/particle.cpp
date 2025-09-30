@@ -780,9 +780,12 @@ void nbunny::ParticleSceneNode::update(float time_delta)
 
 void nbunny::ParticleSceneNode::emit(int count)
 {
-	while (count > 0 && particles.size() < max_num_particles)
+	auto current_index = particles.size();
+	particles.resize(std::min(max_num_particles, particles.size() + std::max(count, 0)));
+
+	for (auto i = current_index; i < particles.size(); ++i)
 	{
-		Particle p;
+		auto& p = particles.at(i);
 
 		auto rng = love::math::Math::instance.getRandomGenerator();
 		p.random = rng->random();
@@ -791,10 +794,6 @@ void nbunny::ParticleSceneNode::emit(int count)
 		{
 			emitter->emit(p);
 		}
-
-		particles.push_back(p);
-
-		--count;
 	}
 }
 
@@ -822,6 +821,7 @@ glm::quat nbunny::ParticleSceneNode::get_global_rotation(float delta) const
 void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const glm::quat& self_rotation, const glm::mat4& view, float delta)
 {
 	vertices.clear();
+	vertices.resize(particles.size() * quad.size());
 
 	auto view_world_transform = view * get_transform().get_global(delta);
 	std::stable_sort(particles.begin(), particles.end(), [&](auto& a, auto& b)
@@ -832,9 +832,11 @@ void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const g
 		return a_position.z > b_position.z;
 	});
 
+	std::size_t i = 0;
 	for (auto& particle: particles)
 	{
-		push_particle_quad(particle, inverse_rotation, self_rotation);
+		push_particle_quad(i, particle, inverse_rotation, self_rotation);
+		++i;
 	}
 
 	if (vertices.size() > 0)
@@ -869,11 +871,13 @@ void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const g
 	}
 }
 
-void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, const glm::quat& inverse_rotation, const glm::quat& self_rotation)
+void nbunny::ParticleSceneNode::push_particle_quad(std::size_t index, const Particle& p, const glm::quat& inverse_rotation, const glm::quat& self_rotation)
 {
+	std::size_t offset = 0;
 	for (auto& template_vertex: quad)
 	{
-		Vertex vertex;
+		auto& vertex = vertices.at(index * quad.size() + offset);
+
 		vertex.position = glm::vec3(
 			template_vertex.position.x * p.scale.x,
 			template_vertex.position.y * p.scale.y,
@@ -912,7 +916,7 @@ void nbunny::ParticleSceneNode::push_particle_quad(const Particle& p, const glm:
 			}
 		}
 
-		vertices.push_back(vertex);
+		++offset;
 	}
 }
 

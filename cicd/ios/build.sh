@@ -26,5 +26,7 @@ mkdir -p itsyrealm
 ./get_bmashina.sh
 ./get_discworld.sh
 ./get_devi.sh
+./get_nomicon.sh
+./get_slick.sh
 ./zip_itsyrealm.sh
 ./package.sh

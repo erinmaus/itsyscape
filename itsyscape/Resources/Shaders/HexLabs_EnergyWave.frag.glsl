@@ -1,5 +1,5 @@
 const float TWO_PI = 6.28;
-const float SPIKES = 2;
+const float SPIKES = 2.0;
 const float RADIUS = 0.2;
 const float HALF_RADIUS = 0.1;
 

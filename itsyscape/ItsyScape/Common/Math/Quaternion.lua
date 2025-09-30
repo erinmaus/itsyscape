@@ -150,6 +150,11 @@ function BaseQuaternion:getLength()
 	return math.sqrt(self:getLengthSquared())
 end
 
+function BaseQuaternion:distance(other)
+	local q = -self * other
+	return 2 * math.atan2(Vector(q.x, q.y, q.z):getLength(), q.w)
+end
+
 -- Returns a normal of the quaternion.
 function BaseQuaternion:getNormal()
 	local length = self:getLength()

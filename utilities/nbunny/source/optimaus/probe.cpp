@@ -8,6 +8,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <iostream>
 #include <limits>
 #include "nbunny/optimaus/probe.hpp"
 
@@ -171,41 +172,33 @@ void nbunny::Probe::add(ProbeEntity& entity, float frame_delta)
     }
     int index = entity_index_iter->second;
 
-    const std::vector<glm::vec3> corners = {
-        glm::vec3(entity.min.x, entity.min.y, entity.min.z),
-        glm::vec3(entity.max.x, entity.min.y, entity.min.z),
-        glm::vec3(entity.min.x, entity.max.y, entity.min.z),
-        glm::vec3(entity.min.x, entity.min.y, entity.max.z),
-        glm::vec3(entity.max.x, entity.max.y, entity.min.z),
-        glm::vec3(entity.max.x, entity.min.y, entity.max.z),
-        glm::vec3(entity.min.x, entity.max.y, entity.max.z),
-        glm::vec3(entity.max.x, entity.max.y, entity.max.z)
-    };
-
     if (entity.scene_node)
     {
-        auto parent = entity.scene_node->get_parent();
+        auto current_position = entity.scene_node->get_transform().get_current_translation();
+        auto relative_min = entity.min - current_position;
+        auto relative_max = entity.max - current_position;
 
-        glm::mat4 transform(1.0f);
-        if (parent)
-        {
-            transform = parent->get_transform().get_global(frame_delta);
-        }
+        const std::vector<glm::vec3> corners = {
+            glm::vec3(relative_min.x, relative_min.y, relative_min.z),
+            glm::vec3(relative_max.x, relative_min.y, relative_min.z),
+            glm::vec3(relative_min.x, relative_max.y, relative_min.z),
+            glm::vec3(relative_min.x, relative_min.y, relative_max.z),
+            glm::vec3(relative_max.x, relative_max.y, relative_min.z),
+            glm::vec3(relative_max.x, relative_min.y, relative_max.z),
+            glm::vec3(relative_min.x, relative_max.y, relative_max.z),
+            glm::vec3(relative_max.x, relative_max.y, relative_max.z)
+        };
 
-        auto current_rotation = entity.scene_node->get_transform().get_current_rotation();
-        auto previous_rotation = entity.scene_node->get_transform().get_previous_rotation();
-        auto interpolated_rotation = glm::slerp(previous_rotation, current_rotation, frame_delta);
+        auto min = glm::vec3(std::numeric_limits<float>::infinity());
+        auto max = glm::vec3(-std::numeric_limits<float>::infinity());
 
-        glm::vec3 min = glm::vec3(std::numeric_limits<float>::infinity());
-        glm::vec3 max = glm::vec3(-std::numeric_limits<float>::infinity());
-
+        auto transform = entity.scene_node->get_transform().get_global(frame_delta);
         for (auto& corner: corners)
         {
             auto transformed_corner = transform * glm::vec4(corner, 1.0);
-            transformed_corner = glm::rotate(interpolated_rotation, transformed_corner);
 
-            min = glm::min(min, glm::vec3(corner));
-            max = glm::max(max, glm::vec3(corner));
+            min = glm::min(min, glm::vec3(transformed_corner));
+            max = glm::max(max, glm::vec3(transformed_corner));
         }
 
         entity.transformed_min = min;
@@ -243,7 +236,7 @@ void nbunny::Probe::add(ProbeEntity& entity, float frame_delta)
     }
 }
 
-void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNode* scene_node, const glm::vec3& min, const glm::vec3& max)
+void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNode* scene_node, const glm::vec3& min, const glm::vec3& max, const std::string& debug_name)
 {
     auto iter = entity_indices.find(std::make_pair(interface, id));
     if (iter != entity_indices.end())
@@ -251,6 +244,7 @@ void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNod
         int index = iter->second;
 
         auto& entity = entities.at(index);
+        entity.debug_name = debug_name;
         entity.min = min;
         entity.max = max;
         entity.scene_node = scene_node;
@@ -267,6 +261,7 @@ void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNod
             entity.is_active = true;
             entity.interface = interface;
             entity.id = id;
+            entity.debug_name = debug_name;
             entity.min = min;
             entity.max = max;
             entity.scene_node = scene_node;
@@ -278,6 +273,7 @@ void nbunny::Probe::add_or_update(const std::string& interface, int id, SceneNod
             entity.is_active = true;
             entity.interface = interface;
             entity.id = id;
+            entity.debug_name = debug_name;
             entity.min = min;
             entity.max = max;
             entity.scene_node = scene_node;
@@ -455,7 +451,9 @@ static int nbunny_probe_add_or_update(lua_State* L)
     float max_y = luaL_checknumber(L, 9);
     float max_z = luaL_checknumber(L, 10);
 
-    probe->add_or_update(interface, id, scene_node, glm::vec3(min_x, min_y, min_z), glm::vec3(max_x, max_y, max_z));
+    const char* debug_name = luaL_optstring(L, 11, "");
+
+    probe->add_or_update(interface, id, scene_node, glm::vec3(min_x, min_y, min_z), glm::vec3(max_x, max_y, max_z), debug_name);
 
     return 0;
 }

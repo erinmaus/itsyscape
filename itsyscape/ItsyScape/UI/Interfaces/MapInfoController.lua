@@ -42,6 +42,12 @@ function MapInfoController:pull()
 end
 
 function MapInfoController:update(delta)
+	Controller.update(self, delta)
+
+	if Utility.UI.isOpen(self:getPeep(), "CutsceneTransition") then
+		return
+	end
+
 	local time = self.time - delta
 	if time < -1 then
 		self:getGame():getUI():closeInstance(self)

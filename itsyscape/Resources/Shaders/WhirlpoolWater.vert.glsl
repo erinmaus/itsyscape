@@ -4,6 +4,8 @@ uniform vec3 scape_WindPatternMultiplier;
 
 #include "Resources/Shaders/Wind.common.glsl"
 
+varying vec2 frag_ScreenPosition;
+
 void performTransform(
 	mat4 modelViewProjectionMatrix,
 	vec4 position,
@@ -68,4 +70,10 @@ void performTransform(
 	projectedPosition = modelViewProjectionMatrix * vec4(localPosition, 1.0);
 
 	frag_Normal = normal;
+
+	vec2 screenPosition = projectedPosition.xy / vec2(projectedPosition.w);
+	screenPosition += vec2(1.0);
+	screenPosition /= vec2(2.0);
+
+	frag_ScreenPosition = screenPosition;
 }

@@ -19,6 +19,14 @@ local DEFAULT_VERTEX_SHADER_SOURCE = [[
 	}
 ]]
 
+local SHADER_PREFIX = [[
+#ifdef GL_ES
+precision highp float;
+#endif
+
+#line 1
+]]
+
 local currentID = 0
 function PostProcessPass.newID()
 	currentID = currentID + 1
@@ -34,7 +42,7 @@ end
 function PostProcessPass:load(resources)
 	self.resources = resources
 	self.shaderCache = NShaderCache()
-	self.shaderCache:registerRendererPass(self:getID(), "", "")
+	self.shaderCache:registerRendererPass(self:getID(), SHADER_PREFIX, SHADER_PREFIX)
 end
 
 function PostProcessPass:_loadShader(filename)

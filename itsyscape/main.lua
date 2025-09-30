@@ -92,7 +92,7 @@ function love.load(args)
 	end
 
 	_ARGS["anonymous"] = true
-	_DEBUG = _DEBUG or _CONF.debug or false
+	_DEBUG = not _MOBILE and (_DEBUG or _CONF.debug) or false
 
 	if not main then
 		if _CONF.server then
@@ -117,13 +117,13 @@ function love.load(args)
 	else
 		s, r = xpcall(r, debug.traceback, args)
 		if not s then
-			Log.warn("Failed to create %s: %s", main, r)
+			error(string.format("Failed to create %s: %s", main, r))
 		else
 			_APP = r
 
 			s, r = xpcall(_APP.initialize, debug.traceback, _APP)
 			if not s then
-				Log.warn("Failed to initialize %s: %s", main, r)
+				error(string.format("Failed to initialize %s: %s", main, r))
 			end
 		end
 	end
@@ -382,6 +382,12 @@ function itsyrealm.errorhandler()
 		end
 	end
 
+	if love.audio then
+		love.audio.stop()
+	end
+
+	love.graphics.reset()
+
 	local logo
 	do
 		local s, v = pcall(love.graphics.newImage, "Resources/Game/TitleScreens/Logo.png")
@@ -421,16 +427,7 @@ function itsyrealm.errorhandler()
 		end
 	end
 
-	if love.audio then
-		love.audio.stop()
-	end
-
-	love.graphics.setCanvas()
-	love.graphics.setBlendMode('alpha')
-
 	local function draw()
-		love.graphics.setCanvas()
-
 		love.graphics.clear(0, 0, 0)
 		love.graphics.setColor(1, 1, 1, 1)
 
@@ -623,10 +620,8 @@ function love.errorhandler(message)
 	if not _GAME_THREAD_ERROR then
 		Log.sendError(message, 3)
 
-		local s = pcall(_APP.quit, _APP, true)
-		if not s then
-			Log.warn("Couldn't safely quit game as a last resort on error.")
-		else
+		if _APP then
+			_APP:quit(true)
 			Log.info("Safely quit game as a last resort on error.")
 		end
 	end

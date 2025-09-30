@@ -133,6 +133,7 @@ function NewMapInterface:createMap()
 	local padding = tonumber(self.paddingInput:getText()) or 16
 	local halfPadding = padding / 2
 	local elevation = tonumber(self.elevationInput:getText()) or 1
+	local tileSetID = self.tileSetIDInput:getText()
 
 	local layer
 	if self.create  then
@@ -157,7 +158,7 @@ function NewMapInterface:createMap()
 	end
 
 	if width and height then
-		stage:newMap(width + padding * 2, height + padding * 2, self.tileSetIDInput:getText(), true, layer)
+		stage:newMap(width + padding * 2, height + padding * 2, tileSetID, true, layer)
 		local map = stage:getMap(layer)
 		if map then
 			for j = 1, map:getHeight() do
@@ -168,8 +169,10 @@ function NewMapInterface:createMap()
 					then
 						tile.flat = 3
 					else
-						tile.edge = 2
+						tile.flat = 1
 					end
+
+					tile.edge = 2
 
 					if j <= halfPadding or j > height + padding + halfPadding or
 					   i <= halfPadding or i > width + padding + halfPadding
@@ -181,6 +184,7 @@ function NewMapInterface:createMap()
 					tile.topRight = elevation
 					tile.bottomLeft = elevation
 					tile.bottomRight = elevation
+					tile.tileSetID = tileSetID
 				end
 			end
 

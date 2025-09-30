@@ -32,7 +32,7 @@ function OutlinePostProcessPass:new(...)
 	PostProcessPass.new(self, ...)
 
 	self.isEnabled = true
-	self.depthStep = 0
+	self.depthStep = 0.075
 	self.normalStep = 0.3
 	self.minOutlineThickness = 0.25
 	self.maxOutlineThickness = 1.5
@@ -45,6 +45,7 @@ function OutlinePostProcessPass:new(...)
 	self.outlineThicknessNoiseScale = Vector(1.79836848):keep()
 	self.outlineThicknessNoiseJitter = 3
 	self.startTime = love.timer.getTime()
+	self.jitterInterval = 8
 
 	local translucentTextureImageData = love.image.newImageData(1, 1)
 	translucentTextureImageData:setPixel(0, 0, 1, 1, 1, 0)
@@ -160,6 +161,14 @@ function OutlinePostProcessPass:getOutlineThicknessNoiseJitter()
 	return self.outlineThicknessNoiseJitter
 end
 
+function OutlinePostProcessPass:setJitterInterval(value)
+	self.jitterInterval = value
+end
+
+function OutlinePostProcessPass:getJitterInterval()
+	return self.jitterInterval
+end
+
 function OutlinePostProcessPass:setShimmerTexture(value)
 	self.shimmerTexture = value or self.translucentTexture
 end
@@ -196,6 +205,9 @@ function OutlinePostProcessPass:_drawDepthOutline(width, height)
 	local deferredRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_DEFERRED)
 	local alphaMaskRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_ALPHA_MASK)
 
+	local camera = self:getRenderer():getCamera()
+	local forward = camera:getForward()
+
 	self:bindShader(
 		self.depthOutlineShader,
 		"scape_Near", camera:getNear(),
@@ -204,7 +216,8 @@ function OutlinePostProcessPass:_drawDepthOutline(width, height)
 		"scape_NormalTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.NORMAL_INDEX),
 		"scape_OutlineColorTexture", deferredRendererPass:getGBuffer():getCanvas(deferredRendererPass.SPECULAR_OUTLINE_INDEX),
 		"scape_DepthStep", self.depthStep,
-		"scape_NormalStep", self.normalStep)
+		"scape_NormalStep", self.normalStep,
+		"scape_Forward", { forward:get() })
 
 	love.graphics.draw(alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX))
 end
@@ -306,7 +319,8 @@ function OutlinePostProcessPass:_composeOutline(width, height)
 		"scape_OutlineThicknessNoiseJitter", self.outlineThicknessNoiseJitter,
 		"scape_InverseProjectionMatrix", inverseProjection,
 		"scape_InverseViewMatrix", inverseView,
-		"scape_Time", love.timer.getTime() - self.startTime)
+		"scape_Time", love.timer.getTime() - self.startTime,
+		"scape_JitterInterval", self.jitterInterval)
 
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.draw(self.outlineBuffer:getCanvas(2))

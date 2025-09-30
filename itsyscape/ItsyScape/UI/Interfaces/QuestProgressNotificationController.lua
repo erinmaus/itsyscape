@@ -49,6 +49,7 @@ function QuestProgressNotificationController:new(peep, director, keyItem)
 	Controller.new(self, peep, director)
 
 	self.targets = {}
+	self.instanced = {}
 
 	local game = director:getGameInstance()
 	local gameDB = director:getGameDB()
@@ -107,6 +108,10 @@ function QuestProgressNotificationController:updateKeyItem(keyItem)
 end
 
 function QuestProgressNotificationController:updateMapHints()
+	if not self.questID then
+		return
+	end
+
 	local peep = self:getPeep()
 	local nextStep = { Utility.Quest.getNextStep(self.questID, peep) }
 	nextStep = nextStep[#nextStep]
@@ -198,20 +203,6 @@ function QuestProgressNotificationController:updateMapHints()
 	self.tryAgain = tryAgain
 end
 
-function QuestProgressNotificationController:update(delta)
-	Controller.update(self, delta)
-
-	if not self.questID or not self.log then
-		self:getGame():getUI():closeInstance(self)
-	elseif self:getPeep():getState():has("Quest", self.questID) then
-		self:getGame():getUI():closeInstance(self)
-	else
-		if self.questID then
-			self:updateMapHints()
-		end
-	end
-end
-
 function QuestProgressNotificationController:pull()
 	if self.questID and self.log then
 		return {
@@ -226,8 +217,50 @@ function QuestProgressNotificationController:pull()
 	end
 end
 
+local function _sortPeeps(a, b)
+	return a:getTally() < b:getTally()
+end
+
+function QuestProgressNotificationController:updateInstanced()
+	local instanced = self:getDirector():probe(
+		self:getPeep():getLayerName(),
+		Probe.instance(Utility.Peep.getPlayerModel(self:getPeep()), false))
+	table.sort(instanced, _sortPeeps)
+
+	local isDifferent = false
+	if #self.instanced == #instanced then
+		for i = 1, #self.instanced do
+			if self.instanced[i] ~= instanced[i] then
+				isDifferent = true
+				break
+			end
+		end
+	else
+		isDifferent = true
+	end
+
+	if isDifferent then
+		self.instanced = instanced
+
+		self.tryAgain = true
+		self:updateMapHints()
+	end
+end
+
 function QuestProgressNotificationController:update(delta)
 	Controller.update(self, delta)
+
+	self:updateInstanced()
+
+	if not self.questID or not self.log then
+		self:getGame():getUI():closeInstance(self)
+	elseif self:getPeep():getState():has("Quest", self.questID) then
+		self:getGame():getUI():closeInstance(self)
+	else
+		if self.questID then
+			self:updateMapHints()
+		end
+	end
 
 	if self.previousLog ~= self.log then
 		self:send("updateQuestSteps", self.log)

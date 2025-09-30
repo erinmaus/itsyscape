@@ -13,7 +13,7 @@ local NMaterial = require "nbunny.optimaus.scenenodematerial"
 
 local Material, Metatable = Class()
 
-Material.DEFAULT_OUTLINE_THRESHOLD = 0.5
+Material.DEFAULT_OUTLINE_THRESHOLD = 0.05
 
 Material.UNIFORM_INTEGER = 1
 Material.UNIFORM_FLOAT   = 2
@@ -219,6 +219,15 @@ end
 
 function Material:setColor(value)
 	self._handle:setColor((value or Color(1)):get())
+end
+
+function Material:getAlpha()
+	return self:getColor().a
+end
+
+function Material:setAlpha(value)
+	local c = self:getColor()
+	self:setColor(Color(c.r, c.g, c.b, value))
 end
 
 function Material:getOutlineColor()

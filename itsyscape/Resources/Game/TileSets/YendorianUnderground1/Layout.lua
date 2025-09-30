@@ -1,0 +1,101 @@
+{
+	flags = {
+		['invert-y'] = false
+	},
+
+	texture = "Resources/Game/TileSets/YendorianUnderground1/TileSet.png",
+	textureWidth = 1024,
+	textureHeight = 1024,
+
+	{
+		x = 128,
+		y = 0,
+		width = 128,
+		height = 128,
+		name = "moss"
+	},
+
+	{
+		x = 0,
+		y = 0,
+		width = 128,
+		height = 256,
+		name = "cliff"
+	},
+
+	{
+		x = 128,
+		y = 128,
+		width = 128,
+		height = 128,
+		name = "dirt"
+	},
+
+	{
+		x = 256,
+		y = 128,
+		width = 128,
+		height = 128,
+		name = "dirt_dark",
+	},
+
+	{
+		x = 128,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "stone",
+		mask = false
+	},
+
+	{
+		x = 128,
+		y = 384,
+		width = 128,
+		height = 128,
+		name = "wood",
+		mask = false
+	},
+
+	{
+		x = 128,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "sand"
+	},
+
+	{
+		x = 256,
+		y = 512,
+		width = 128,
+		height = 128,
+		name = "mud"
+	},
+
+	{
+		x = 128,
+		y = 640,
+		width = 128,
+		height = 128,
+		name = "invisible",
+		mask = false
+	},
+
+	{
+		x = 256,
+		y = 640,
+		width = 128,
+		height = 128,
+		name = "black",
+	},
+
+	{
+		x = 256,
+		y = 256,
+		width = 128,
+		height = 128,
+		name = "stone_purple",
+		mask = false
+	},
+}

@@ -251,8 +251,14 @@ local AttackOrDefend = Mashina.ParallelTry {
 	HandleKeelhaulerCharge,
 	DidKillTarget,
 	HandlePowers,
+
 	Mashina.Failure {
 		CommonLogic.Heal
+	},
+
+	Mashina.Sequence {
+		CommonLogic.GetPlayer,
+		CommonLogic.AvoidCrowding
 	}
 }
 

@@ -1,0 +1,10 @@
+{
+	{
+		tileSetID = "YendorianUnderground1",
+		autoMask = true,
+		maskID =
+		{
+			default = true,
+		},
+	},
+}

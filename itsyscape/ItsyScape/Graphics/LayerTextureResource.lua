@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Resource = require "ItsyScape.Graphics.Resource"
+local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local NTextureResource = require "nbunny.optimaus.textureresource"
 local NTextureResourceInstance = require "nbunny.optimaus.textureresourceinstance"
 
@@ -127,6 +128,49 @@ function LayerTextureResource:loadFromFile(filename, resourceManager)
 	image:setWrap("repeat")
 	self.layerType = e.type or LayerTextureResource.TYPE_ARRAY	
 	self:getHandle():setTexture(image)
+
+	for passFilename, passID in pairs(TextureResource.PASSES) do
+		local testPerPassTextureFilename = filename:gsub(
+			"(.*)(%..+)$",
+			string.format("%%1@%s%%2", t[1]))
+
+		if testPerPassTextureFilename ~= t[1] and love.filesystem.getInfo(testPerPassTextureFilename) then
+			local perPassT = {}
+			for _, f in ipairs(t) do
+				local perPassTextureFilename = filename:gsub(
+					"(.*)(%..+)$",
+					string.format("%%1@%s%%2", f))
+				table.insert(perPassT, perPassTextureFilename)
+			end
+
+			local image = love.graphics.newArrayImage(perPassT, settings)
+			image:setFilter('linear', 'linear')
+			image:setWrap("repeat")
+			self:getHandle():setPerPassTexture(passID, perPassImage)
+		end
+	end
+
+	for passFilename in pairs(TextureResource.BOUND_TEXTURES) do
+		local testBoundTextureFilename = filename:gsub(
+			"(.*)(%..+)$",
+			string.format("%%1@%s%%2", passFilename))
+
+		if testBoundTextureFilename ~= t[1] and love.filesystem.getInfo(testBoundTextureFilename) then
+			local perPassT = {}
+			for _, f in ipairs(t) do
+				local boundTextureFilename = filename:gsub(
+					"(.*)(%..+)$",
+					string.format("%%1@%s%%2", f))
+				assert(love.filesystem.getInfo(boundTextureFilename) and boundTextureFilename ~= f)
+				table.insert(perPassT, boundTextureFilename)
+			end
+
+			local image = love.graphics.newArrayImage(perPassT, settings)
+			image:setFilter('linear', 'linear')
+			image:setWrap("repeat")
+			self:getHandle():setBoundTexture(passFilename, boundImage)
+		end
+	end
 end
 
 function LayerTextureResource:getIsReady()

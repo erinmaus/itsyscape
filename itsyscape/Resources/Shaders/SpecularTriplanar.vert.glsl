@@ -12,4 +12,5 @@ void performTransform(
 
 	localPosition = position.xyz;
 	projectedPosition = modelViewProjectionMatrix * position;
+
 }

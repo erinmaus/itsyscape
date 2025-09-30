@@ -21,6 +21,7 @@
 nbunny::Camera nbunny::Renderer::get_skybox_camera(SceneNode& skybox_scene_node)
 {
 	Camera skybox_camera(get_camera());
+	skybox_camera.set_is_cull_enabled(false);
 
 	auto old_view = get_camera().get_view();
 	skybox_camera.update(glm::mat4(1.0f), skybox_camera.get_projection());
@@ -251,6 +252,9 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	auto world_matrix = node.get_transform().get_global(delta);
 	shader_cache.update_uniform(shader, "scape_WorldMatrix", glm::value_ptr(world_matrix), sizeof(glm::mat4));
 
+	auto inverse_world_matrix = glm::inverse(world_matrix);
+	shader_cache.update_uniform(shader, "scape_InverseWorldMatrix", glm::value_ptr(inverse_world_matrix), sizeof(glm::mat4));
+
 	auto normal_matrix = node.get_transform().get_global(delta);
 	shader_cache.update_uniform(shader, "scape_NormalMatrix", glm::value_ptr(normal_matrix), sizeof(glm::mat4));
 
@@ -267,6 +271,9 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 
 		auto projection_matrix = camera->get_projection();
 		shader_cache.update_uniform(shader, "scape_ProjectionMatrix", glm::value_ptr(projection_matrix), sizeof(glm::mat4));
+
+		auto inverse_projection_matrix = glm::inverse(projection_matrix);
+		shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
 
 		if (camera->get_is_clip_plane_enabled())
 		{
@@ -293,6 +300,12 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 
 		auto camera_eye = camera->get_eye_position();
 		shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec4));
+
+		auto camera_near = camera->get_near();
+		shader_cache.update_uniform(shader, "scape_CameraNear", &camera_near, sizeof(float));
+
+		auto camera_far = camera->get_far();
+		shader_cache.update_uniform(shader, "scape_CameraFar", &camera_far, sizeof(float));
 	}
 	else
 	{
@@ -452,12 +465,12 @@ love::graphics::Shader* nbunny::RendererPass::get_node_shader(lua_State* L, cons
                 lua_pushlstring(L, p.c_str(), p.size());
 
                 if (lua_pcall(L, 3, 2, 0) != 0)
-                    luaL_error(L, "%s", lua_tostring(L, -1));
+					luaL_error(L, "%s", lua_tostring(L, -1));
 
-                v = luaL_checkstring(L, -2);
-                p = luaL_checkstring(L, -1);
+				v = luaL_checkstring(L, -2);
+				p = luaL_checkstring(L, -1);
 
-                lua_pop(L, 2);
+				lua_pop(L, 2);
             });
 }
 

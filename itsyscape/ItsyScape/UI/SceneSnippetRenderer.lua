@@ -40,6 +40,7 @@ function SceneSnippetRenderer:add(widget)
 	outlinePostProcessPass:setMaxOutlineThickness(1)
 	outlinePostProcessPass:setMinOutlineDepthAlpha(1.0)
 	outlinePostProcessPass:setOutlineThicknessNoiseJitter(1)
+	outlinePostProcessPass:setJitterInterval(_CONF and _CONF.outlineJitterInterval or 8)
 
 	self.renderers[widget] = renderer
 	self.outlinePostProcessPasses[widget] = { outlinePostProcessPass }

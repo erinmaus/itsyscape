@@ -202,6 +202,19 @@ do
 	}
 end
 
+M["Anchor_Spawn_Conf"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 105,
+		PositionY = 3,
+		PositionZ = 165,
+		Direction = -1,
+		Name = "Anchor_Spawn_Conf",
+		Map = M._MAP,
+		Resource = M["Anchor_Spawn_Conf"]
+	}
+end
+
 M["Anchor_MeetKnightCommander"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1769,6 +1782,12 @@ do
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_KnightCommander_DuelLogic.lua",
 		Resource = M["KnightCommander"]
 	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["KnightCommander"],
+		KeyItem = ItsyScape.Resource.KeyItem "Tutorial_MetSerCommander"
+	}
 end
 
 M["Passage_KnightCommander"] = ItsyScape.Resource.MapObject.Unique()
@@ -1786,6 +1805,24 @@ do
 		Z2 = 170,
 		Map = M._MAP,
 		Resource = M["Passage_KnightCommander"]
+	}
+end
+
+M["Passage_KnightCommander_OutOfBounds"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectReference {
+		Name = "Passage_KnightCommander_OutOfBounds",
+		Map = M._MAP,
+		Resource = M["Passage_KnightCommander_OutOfBounds"]
+	}
+
+	ItsyScape.Meta.MapObjectRectanglePassage {
+		X1 = 115,
+		Z1 = 160,
+		X2 = 125,
+		Z2 = 190,
+		Map = M._MAP,
+		Resource = M["Passage_KnightCommander_OutOfBounds"]
 	}
 end
 

@@ -85,8 +85,8 @@ function GrassBlock:cache(tileSet, map, i, j, tileSetTile, mapTile)
 
 	for x = 1, self.SATURATION do
 		for z = 1, self.SATURATION do
-			local absoluteX = topLeft.x + ((x - 1) / (self.SATURATION - 1)) * map:getCellSize()
-			local absoluteZ = topLeft.z + ((z - 1) / (self.SATURATION - 1)) * map:getCellSize()
+			local absoluteX = topLeft.x + ((x - 1) / math.max(self.SATURATION - 1, 1)) * map:getCellSize()
+			local absoluteZ = topLeft.z + ((z - 1) / math.max(self.SATURATION - 1, 1)) * map:getCellSize()
 
 			local noiseX = absoluteX / (map:getWidth() * map:getCellSize())
 			local noiseZ = absoluteZ / (map:getHeight() * map:getCellSize())

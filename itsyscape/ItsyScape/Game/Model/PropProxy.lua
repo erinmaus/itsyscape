@@ -17,6 +17,7 @@ local PropProxy = Proxy.Definition()
 
 PropProxy.getID = Property(-1)
 PropProxy.getPeepID = Property("null")
+PropProxy.getPropResourceID = Property("Null")
 PropProxy.getName = Property("Null")
 PropProxy.getDescription = Property("This prop hasn't fully loaded yet.")
 PropProxy.getResourceName = Property("Null")

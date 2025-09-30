@@ -16,7 +16,7 @@ local ForwardRendererPass = Class(RendererPass)
 function ForwardRendererPass:new(renderer, deferredPass)
 	RendererPass.new(self, renderer)
 
-	self._rendererPass = NForwardRendererPass(deferredPass:getCBuffer())
+	self._rendererPass = NForwardRendererPass(deferredPass:getHandle():getDepthBuffer(), deferredPass:getCBuffer())
 end
 
 function ForwardRendererPass:getHandle()

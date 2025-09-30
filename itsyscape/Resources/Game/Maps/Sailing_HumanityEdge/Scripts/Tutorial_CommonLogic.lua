@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
 local Mashina = require "ItsyScape.Mashina"
 local Probe = require "ItsyScape.Peep.Probe"
@@ -20,15 +21,72 @@ local GetPlayer = Mashina.Peep.GetPlayer {
 	[PLAYER] = B.Output.player
 }
 
-local AttackPlayerTarget = Mashina.Step {
-	Mashina.Invert {
-		Mashina.Player.IsNextQuestStep {
-			player = PLAYER,
-			quest = "Tutorial",
-			step = "Tutorial_Combat"
+local AvoidCrowdingPlayer = Mashina.Step {
+	Mashina.Navigation.IsCrowding {
+		peep = PLAYER,
+		distance = 1
+	},
+
+	Mashina.Player.IsEnabled {
+		player = PLAYER
+	},
+
+	Mashina.Peep.Strafe {
+		rotations = { Quaternion.Y_90, Quaternion.Y_180, Quaternion.Y_270 },
+		target = PLAYER,
+		distance = 1.5
+	},
+
+	Mashina.Peep.Wait,
+
+	Mashina.Peep.LookAt {
+		target = PLAYER
+	}
+}
+
+local TARGET_TO_AVOID = B.Reference("Tutorial_CommonLogic", "TARGET_TO_AVOID")
+
+local AvoidCrowdingPlayerTarget = Mashina.Step {
+	Mashina.Try {
+		Mashina.Peep.HasCombatTarget {
+			peep = PLAYER,
+			[TARGET_TO_AVOID] = B.Output.target,
+		},
+
+		Mashina.Peep.WasAttacked {
+			target = PLAYER,
+			[TARGET_TO_AVOID] = B.Output.aggressor
 		}
 	},
 
+	Mashina.Navigation.IsCrowding {
+		peep = TARGET_TO_AVOID,
+		distance = 3
+	},
+
+	Mashina.Player.IsEnabled {
+		player = PLAYER
+	},
+
+	Mashina.Peep.Strafe {
+		rotations = { Quaternion.Y_90, Quaternion.Y_180, Quaternion.Y_270 },
+		target = TARGET_TO_AVOID,
+		distance = 3
+	},
+
+	Mashina.Peep.Wait,
+
+	Mashina.Peep.LookAt {
+		target = TARGET_TO_AVOID
+	}
+}
+
+local AvoidCrowding = Mashina.ParallelTry {
+	AvoidCrowdingPlayerTarget,
+	AvoidCrowdingPlayer
+}
+
+local AttackPlayerTarget = Mashina.Step {
 	Mashina.Peep.DidAttack {
 		peep = PLAYER,
 		[PLAYER_TARGET] = B.Output.target
@@ -41,15 +99,44 @@ local AttackPlayerTarget = Mashina.Step {
 	Mashina.Peep.Wait
 }
 
+local TARGET_TO_ATTACK = B.Reference("Tutorial_CommonLogic", "TARGET_TO_ATTACK")
+
 local IsAttacking = Mashina.Sequence {
 	Mashina.ParallelTry {
-		Mashina.Peep.DidAttack,
-		Mashina.Peep.WasAttacked,
-		Mashina.Peep.HasCombatTarget
+		Mashina.Peep.DidAttack {
+			[TARGET_TO_ATTACK] = B.Output.target
+		},
+
+		Mashina.Peep.DidAttack {
+			peep = PLAYER,
+			[TARGET_TO_ATTACK] = B.Output.target
+		},
+
+		Mashina.Peep.WasAttacked {
+			[TARGET_TO_ATTACK] = B.Output.aggressor,
+		},
+
+		Mashina.Peep.WasAttacked {
+			target = PLAYER,
+			[TARGET_TO_ATTACK] = B.Output.aggressor,
+		},
+
+		Mashina.Peep.HasCombatTarget {
+			[TARGET_TO_ATTACK] = B.Output.target
+		},
+
+		Mashina.Peep.HasCombatTarget {
+			peep = PLAYER,
+			[TARGET_TO_ATTACK] = B.Output.target
+		}
 	},
 
 	Mashina.Player.IsEnabled {
 		player = PLAYER
+	},
+
+	Mashina.Peep.EngageCombatTarget {
+		peep = TARGET_TO_ATTACK
 	},
 
 	Mashina.Peep.SetState {
@@ -202,6 +289,8 @@ return {
 	PLAYER_TARGET = PLAYER_TARGET,
 
 	GetPlayer = GetPlayer,
+
+	AvoidCrowding = AvoidCrowding,
 
 	AttackPlayerTarget = AttackPlayerTarget,
 	IsAttacking = IsAttacking,

@@ -58,7 +58,38 @@ function PlayerStats:new(id, index, ui)
 
 	self.infoContent:addChild(self.backButton)
 
+	self.skillsContent.onProbeSkill:register(self.onProbeSkill, self)
 	self.skillsContent.onSelectSkill:register(self.onSelectSkill, self)
+end
+
+function PlayerStats:onProbeSkill(_, _, skill, button)
+	local actions = {
+		{
+			id = 1,
+			verb = "View-progress",
+			type = "View",
+			object = skill.name,
+			objectID = skill.id,
+			objectType = "skill",
+			callback = function()
+				self:onSelectSkill()
+			end
+		},
+		{
+			id = 1,
+			verb = "View-guide",
+			type = "View",
+			object = skill.name,
+			objectID = skill.id,
+			objectType = "skill",
+			callback = function()
+				self:sendPoke("openSkillGuide", nil, { skill = skill.id })
+			end
+		}
+	}
+
+	local buttonX, buttonY = button:getAbsoluteCenter()
+	self:getView():probe(actions, buttonX, buttonY, true, false)
 end
 
 function PlayerStats:onSelectSkill()

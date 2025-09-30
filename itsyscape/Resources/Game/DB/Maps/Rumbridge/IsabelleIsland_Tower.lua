@@ -763,7 +763,7 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectSize {
-		SizeX = 3,
+		SizeX = 4,
 		SizeY = 3,
 		SizeZ = 1.5,
 		MapObject = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
@@ -883,9 +883,9 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectSize {
-		SizeX = 1.5,
-		SizeY = 1.5,
-		SizeZ = 1.5,
+		SizeX = 1.6,
+		SizeY = 2,
+		SizeZ = 1.2,
 		MapObject = ItsyScape.Resource.Prop "Chest_Isabelle"
 	}
 
@@ -1036,13 +1036,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Golden brazier",
+		Value = "Brazier",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Brazier_Isabelle"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "A pointless display of wealth.",
+		Value = "Lights the way.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Brazier_Isabelle"
 	}

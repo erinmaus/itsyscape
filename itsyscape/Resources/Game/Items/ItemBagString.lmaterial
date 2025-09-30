@@ -1,0 +1,4 @@
+{
+	shader = "Resources/Shaders/StaticModel",
+	texture = "Resources/Game/Items/ItemBagStringTexture.png"
+}

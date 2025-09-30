@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
@@ -16,6 +17,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local Prop = Class(Peep)
 
@@ -27,6 +29,7 @@ function Prop:new(resource, ...)
 	self:addBehavior(RotationBehavior)
 	self:addBehavior(ScaleBehavior)
 	self:addBehavior(SizeBehavior)
+	self:addBehavior(StaticBehavior)
 	
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 1, 1)
@@ -52,18 +55,47 @@ function Prop:spawnOrPoof(mode)
 	if position then
 		local map = self:getDirector():getMap(position.layer or 1)
 		if map then
+			local transform = Utility.Peep.getTransform(self)
 			local p = position.position
 			local halfSize
 			do
-				local transform = Utility.Peep.getTransform(self)
 				local min, max = Vector.transformBounds(Vector.ZERO, size.size, transform)
 				halfSize = (max - min) / 2
 			end
 
+			local rotation = Utility.Peep.getRotation(self)
+			local polygon = {
+				rotation:transformVector(Vector(-size.size.x / 2, 0, -size.size.z / 2)) + p,
+				rotation:transformVector(Vector(size.size.x / 2, 0, -size.size.z / 2)) + p,
+				rotation:transformVector(Vector(size.size.x / 2, 0, size.size.z / 2)) + p,
+				rotation:transformVector(Vector(-size.size.x / 2, 0, size.size.z / 2)) + p
+			}
+
+			local centerI, centerJ = Utility.Peep.getTile(self)
+			self:spawnOrPoofTile(map:getTile(centerI, centerJ), centerI, centerJ, mode)
+
 			for x = p.x - halfSize.x, p.x + halfSize.x, map:getCellSize() do
 				for z = p.z - halfSize.z, p.z + halfSize.z, map:getCellSize() do
+					local p = Vector(x, 0, z)
 					local tile, i, j = map:getTileAt(x, z)
-					self:spawnOrPoofTile(tile, i, j, mode)
+					local center = map:getTileCenter(i, j)
+
+					local inside = true
+					local side
+					for u = 1, #polygon do
+						local v = (u % #polygon) + 1
+
+						local s = MathCommon.side(polygon[u], polygon[v], center)
+						side = side or s
+						if side ~= s then
+							inside = false
+							break
+						end
+					end
+
+					if inside then
+						self:spawnOrPoofTile(tile, i, j, mode)
+					end
 				end
 			end
 		end

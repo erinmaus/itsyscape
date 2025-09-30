@@ -765,7 +765,11 @@ function DemoApplication:openFullMainMenu()
 		self:openOptionsScreen(GraphicsOptions, function(value)
 			if value then
 				self:_updateGraphicsOptions()
+				love.audio.setVolume(_CONF.volume or love.audio.getVolume())
 			end
+
+			self:closeMainMenu()
+			self:openMainMenu()
 		end)
 	end)
 	graphicsOptionsButton:setPosition(

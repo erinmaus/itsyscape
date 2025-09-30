@@ -1,0 +1,14 @@
+{
+	{
+		skybox = {
+			color = { 0, 0, 0, 1 }
+		},
+
+		tileSetID = "YendorianUnderground1",
+
+		transform = {
+			origin = { 32, 0, 32 },
+			translation = { 0, 20, 0 }
+		},
+	},
+}

@@ -1,0 +1,12 @@
+{
+	shader = "Resources/Shaders/SpecularTriplanar",
+	texture = "Resources/Game/Items/ItemBagTexture.png",
+
+	uniforms = {
+		scape_TriplanarScale = { "float", 1 }
+	},
+
+	properties = {
+		color = { 0.70, 0.44, 0.16, 1.0 },
+	}
+}
