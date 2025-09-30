@@ -4,8 +4,9 @@ cd "$(dirname "$0")"
 
 set -xe
 
-cp ./itsyrealm_linux/itsyrealm.love ./itsyrealm_linux/LICENSE.txt ./itsyrealm_macos/ItsyRealm.app/Contents/Resources/
-cp ./itsyrealm_linux/itsyrealm.love ./itsyrealm_linux/LICENSE.txt ./itsyrealm_windows/
+cp ./itsyrealm_macos/staging/itsyrealm.love ./itsyrealm_linux/LICENSE.txt ./itsyrealm_macos/ItsyRealm.app/Contents/Resources/
+cp ./itsyrealm_macos/staging/itsyrealm.love ./itsyrealm_linux/LICENSE.txt ./itsyrealm_windows/
+cp ./itsyrealm_macos/staging/itsyrealm.love ./itsyrealm_linux/installdir/bin/
 cp ./itsyrealm_linux/LICENSE.txt ./itsyrealm_linux/installdir/LICENSE.txt
 
 mkdir -p ../macos/build/love2d/platform/xcode

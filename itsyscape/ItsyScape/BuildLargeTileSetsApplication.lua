@@ -20,7 +20,6 @@ local BuildLargeTileSetsApplication = Class(EditorApplication)
 function BuildLargeTileSetsApplication:new()
 	ResourceManager.DESKTOP_FRAME_DURATION = 5
 	ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE = 5
-	_LOG_WRITE_ALL = true
 
 	_ITSYREALM_PROD = false
 	_ITSYREALM_DEMO = false
