@@ -60,6 +60,11 @@ jobs:
           xcrun notarytool store-credentials "notarytool-profile" --apple-id "$MACOS_NOTARIZATION_APPLE_ID" --team-id "$MACOS_NOTARIZATION_TEAM_ID" --password "$MACOS_NOTARIZATION_PASSWORD"
           xcrun notarytool submit "notarization.zip" --keychain-profile "notarytool-profile" --wait
           xcrun stapler staple "cicd/macos/itsyrealm/ItsyRealm.app"
+      -
+        name: Compile assets
+        run: |
+          cd ./cicd/macos
+          ./compile_assets.sh
       - name: Package app
         run: |
           cd ./cicd/macos/itsyrealm
@@ -70,5 +75,6 @@ jobs:
         with:
           name: itsyrealm_macos
           path: |
+            cicd/macos/staging/itsyrealm.love
             cicd/macos/itsyrealm/ItsyRealm.zip
             cicd/macos/build/love2d/platform/xcode/love-macosxRelease.entitlements
