@@ -71,6 +71,18 @@ local CanUseRiteDialog = Mashina.Step {
 		zeal = 0.25
 	},
 
+	Mashina.Peep.DidAttack {
+		peep = CommonLogic.PLAYER
+	},
+
+	Mashina.Peep.DidAttack {
+		peep = CommonLogic.PLAYER
+	},
+
+	Mashina.Peep.DidAttack {
+		peep = CommonLogic.PLAYER
+	},
+
 	CanUseRite,
 
 	Mashina.Invert {

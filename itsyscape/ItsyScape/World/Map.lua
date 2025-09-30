@@ -287,7 +287,7 @@ function Map:castRay(ray, stepCallback)
 	local result
 
 	result = stepCallback(self, tileI, tileJ, currentX, currentZ, t)
-	if result then
+	if result ~= nil then
 		return result
 	end
 
@@ -320,13 +320,13 @@ function Map:castRay(ray, stepCallback)
 			currentZ = ray.origin.z + ray.direction.z * t
 
 			result = stepCallback(self, tileI, tileJ, currentX, currentZ, t)
-			if result then
+			if result ~= nil then
 				return result
 			end
 		end
 	end
 
-	return false
+	return nil
 end
 
 function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)

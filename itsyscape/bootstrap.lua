@@ -19,9 +19,10 @@ _ITSYREALM_MINOR    = tonumber(_ITSYREALM_VERSION:match("^%d+%.(%d+)%.%d+%.%d+")
 _ITSYREALM_BUILD    = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.(%d+)%.%d+")) or 0
 _ITSYREALM_REVISION = tonumber(_ITSYREALM_VERSION:match("^%d+%.%d+%.%d+%.(%d+)")) or 0
 _ITSYREALM_HASH     = _ITSYREALM_VERSION:match("^%d+%.%d+%.%d+%.%d+-(%w+)")
-_ITSYREALM_DEMO     = not not _ITSYREALM_VERSION:match("-demo$")
+_ITSYREALM_DEMO     = not not _ITSYREALM_VERSION:match("-demo$") or not not _ITSYREALM_VERSION:match("-conf$")
 _ITSYREALM_PROD     = not not _ITSYREALM_VERSION:match("-production$")
 _ITSYREALM_DEBUG    = version == "mainline"
+_ITSYREALM_CONF     = not not _ITSYREALM_VERSION:match("-conf$")
 
 _ITSYREALM_META = {
 	version = _ITSYREALM_VERSION,

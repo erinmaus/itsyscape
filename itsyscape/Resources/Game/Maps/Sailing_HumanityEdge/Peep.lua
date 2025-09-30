@@ -501,7 +501,10 @@ function Island:onFinishPreparingTutorial(playerPeep)
 
 	if not Utility.Quest.didStep("Tutorial", "Tutorial_DefeatedScout", playerPeep) then
 		Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_YendorianScout")
-		self:pushPoke("initScoutTutorial", playerPeep)
+
+		if Utility.Quest.didStep("Tutorial", "Tutorial_FoundScout", playerPeep) then
+			self:pushPoke("initScoutTutorial", playerPeep)
+		end
 	elseif not Utility.Quest.didStep("Tutorial", "Tutorial_DefeatedYenderhounds", playerPeep) then
 		Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Yenderhounds")
 		self:pushPoke("finishPreparingYenderhounds", playerPeep)
@@ -926,17 +929,24 @@ function Island:updateTutorialEquipItemsStep(playerPeep)
 	end
 end
 
-function Island:updateTutorialFindScoutStep(playerPeep)
+function Island:updateTutorialMeetSerCommanderStep(playerPeep)
+	if _ITSYREALM_CONF then
+		self:updateBarrier(playerPeep, "Orlando", "Passage_KnightCommander_OutOfBounds", "Anchor_Spawn_Conf", "quest_tutorial_main_out_of_bounds")
+	end
+
 	if Utility.Peep.isInPassage(playerPeep, "Passage_KnightCommander") and
 	   Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") ~= true and
 	   Utility.Peep.isEnabled(playerPeep)
 	then
 		Utility.Peep.disable(playerPeep)
 		self:talkToPeep(playerPeep, "KnightCommander", function()
+			self:transitionTutorial(playerPeep, "Tutorial_MetSerCommander")
 			Utility.Peep.enable(playerPeep)
 		end)
 	end
+end
 
+function Island:updateTutorialFindScoutStep(playerPeep)
 	if Utility.Peep.isInPassage(playerPeep, "Passage_Scout") and Utility.Peep.isEnabled(playerPeep) then
 		self:poke("playFoundScoutCutscene", playerPeep)
 	end
@@ -1157,6 +1167,8 @@ function Island:updateTutorialPlayer(playerPeep)
 		self:updateTutorialGatherItemsStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
 		self:updateTutorialEquipItemsStep(playerPeep)
+	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_MetSerCommander", playerPeep) then
+		self:updateTutorialMeetSerCommanderStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_FoundScout", playerPeep) then
 		self:updateTutorialFindScoutStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_DefeatedScout", playerPeep) then

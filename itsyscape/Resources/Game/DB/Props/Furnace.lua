@@ -45,6 +45,11 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "Furnace_Default"
 }
 
+ItsyScape.Meta.MakeOffset {
+	OffsetY = 1,
+	Resource = ItsyScape.Resource.Prop "Furnace_Default"
+}
+
 ItsyScape.Resource.Prop "Furnace_MoltenColumn" {
 	FurnaceAction,
 

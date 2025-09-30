@@ -43,6 +43,7 @@ local Tree = BTreeBuilder.Node() {
 		Mashina.ParallelTry {
 			CommonLogic.IsAttacking,
 			CommonLogic.AttackPlayerTarget,
+			CommonLogic.AvoidCrowding,
 			FollowPlayer
 		}		
 	}

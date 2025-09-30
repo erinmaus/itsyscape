@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Color = require "ItsyScape.Graphics.Color"
 local Sprite = require "ItsyScape.Graphics.Sprite"
 local FontResource = require "ItsyScape.Graphics.FontResource"
 local patchy = require "patchy"
@@ -17,6 +19,7 @@ TargetHint.MIN_WIDTH = 200
 TargetHint.SHADOW_OFFSET = 1
 TargetHint.PADDING = 8
 TargetHint.DISTANCE = 64
+TargetHint.EDGE_PADDING = _MOBILE and 64 or 128
 
 function TargetHint:new(...)
 	Sprite.new(self, ...)
@@ -36,7 +39,7 @@ function TargetHint:new(...)
 		end)
 	resources:queueEvent(
 		function()
-			self.background = patchy.load("Resources/Game/UI/Panels/ToolTip.png")
+			self.background = patchy.load("Resources/Game/UI/Panels/RainbowHint.png")
 		end)
 	resources:queueEvent(function()
 		self.ready = true
@@ -82,6 +85,14 @@ function TargetHint:draw(position, time)
 		width = nameWidth + TargetHint.PADDING * 2
 	end
 
+	position = position:max(Vector(width / 2 + TargetHint.EDGE_PADDING, height / 2 + TargetHint.EDGE_PADDING, 0))
+	position = position:min(Vector(love.graphics.getWidth() - width / 2 - TargetHint.EDGE_PADDING, love.graphics.getHeight() - height / 2 - TargetHint.EDGE_PADDING))
+
+	local time = love.timer.getTime()
+	local delta = time % 1
+	local color = Color.fromHSL(math.abs(delta), 1, 0.5)
+
+	love.graphics.setColor(color:get())
 	self.background:draw(
 		position.x - nameWidth / 2 - TargetHint.PADDING,
 		position.y - smallFontHeight - descriptionHeight - bigFontHeight - TargetHint.PADDING,

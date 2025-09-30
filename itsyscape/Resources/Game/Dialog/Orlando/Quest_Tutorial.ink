@@ -921,7 +921,7 @@ Sure thing! Lemme get on that.
 = done_cooking
 
 # speaker={C_ORLANDO}
-If you want to keep fishin, go on ahead!
+If you want to keep fishing, go on ahead!
 
 # speaker={C_ORLANDO}
 But if you're comfy... uh, I mean, um,  confident... enough, we can get going.

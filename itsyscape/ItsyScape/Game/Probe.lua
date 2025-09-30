@@ -488,7 +488,7 @@ function Probe:_actor(actor, point, distance)
 		end
 
 		if hasAttackAction then
-			if distance > self.game:getPlayer():getOffensiveRange() then
+			if distance > math.max(self.game:getPlayer():getOffensiveRange(), 8) then
 				return
 			end
 		else

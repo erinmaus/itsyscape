@@ -138,6 +138,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "MakeOffset" {
+		OffsetY = Meta.TYPE_NUMBER,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Map"
 	ResourceType "MapObject"
 

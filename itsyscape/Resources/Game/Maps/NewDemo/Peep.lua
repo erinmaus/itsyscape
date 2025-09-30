@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
 
 local NewGame = Class(MapScript)
 
@@ -35,11 +36,33 @@ function NewGame:onPlayerEnter(player)
 	Utility.UI.closeAll(playerPeep)
 	Utility.UI.openInterface(playerPeep, "DemoNewPlayer", true, function(_, style)
 		Utility.Peep.enable(playerPeep)
-		Utility.move(playerPeep, "Sailing_HumanityEdge", "Anchor_Spawn", nil, {
-			instancePlayerArguments = {
-				class = style
-			}
-		})
+
+		if _ITSYREALM_CONF then
+			Utility.UI.openInterface(playerPeep, "CutsceneTransition", false, 10)
+			Utility.UI.openInterface(playerPeep, "DramaticText", false, { {
+				color = { 1, 1, 1, 1 },
+				font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
+				fontSize = 48,
+				textShadow = true,
+				align = 'center',
+				width = DramaticTextController.CANVAS_WIDTH - 64,
+				x = 32,
+				y = DramaticTextController.CANVAS_HEIGHT / 2 - 64,
+				text = string.format("After a freak lightning strike,\n%s starts the journey to save the world...", playerPeep:getName())
+			} }, 10)
+
+			Utility.move(playerPeep, "Sailing_HumanityEdge", "Anchor_Spawn_Conf", nil, {
+				instancePlayerArguments = {
+					class = style
+				}
+			})
+		else
+			Utility.move(playerPeep, "Sailing_HumanityEdge", "Anchor_Spawn", nil, {
+				instancePlayerArguments = {
+					class = style
+				}
+			})
+		end
 	end)
 end
 

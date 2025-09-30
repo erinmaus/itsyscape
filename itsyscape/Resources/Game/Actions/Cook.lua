@@ -16,7 +16,7 @@ local WaitCommand = require "ItsyScape.Peep.WaitCommand"
 local Make = require "Resources.Game.Actions.Make"
 
 local Cook = Class(Make)
-Cook.DURATION = 0.4
+Cook.DURATION = 5
 Cook.SCOPES = { ['craft'] = true }
 Cook.FLAGS = { ['item-inventory'] = true }
 
@@ -75,22 +75,25 @@ function Cook:cook(state, player, failure, target)
 		Log.info("Chance of burning food: %d%%.", chance * 100)
 	end
 
-	local r = math.random()
+	local r = love.math.random()
 	if r <= chance then
-		self:fail(state, player, failure:get("Output"))
+		self:fail(state, player, target, failure:get("Output"))
 	else
-		self:succeed(state, player)
+		self:succeed(state, player, target)
 	end
 end
 
-function Cook:fail(state, player, action)
+function Cook:fail(state, player, target, action)
 	local a = Utility.getAction(self:getGame(), action)
 	if a then
+		a.instance:spawnCraftedItem(player, target)
 		a.instance:transfer(state, player)
 	end
 end
 
-function Cook:succeed(state, player)
+function Cook:succeed(state, player, target)
+	self:spawnCraftedItem(player, target)
+
 	if not self:transfer(state, player) then
 		player:getCommandQueue():clear()
 	end

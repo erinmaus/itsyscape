@@ -32,8 +32,12 @@ local FollowOrlando = Mashina.Success {
 				as_close_as_possible = false
 			},
 
+			Mashina.Peep.Wait,
+
 			Mashina.Repeat {
-				Mashina.Peep.Wait
+				Mashina.Success {
+					CommonLogic.AvoidCrowding
+				}
 			}
 		}
 	}

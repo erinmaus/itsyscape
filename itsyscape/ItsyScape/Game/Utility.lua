@@ -1162,29 +1162,59 @@ function Utility.Combat.strafe(peep, target, distance, rotations, onStrafe)
 		target = possibleTarget.actor:getPeep()
 	end
 
-	rotations = rotations or Utility.Combat.DEFAULT_STRAFE_ROTATIONS
-	local rotation = rotations[love.math.random(#rotations)]
-
-	local peepPosition = Utility.Peep.getPosition(peep) * Vector.PLANE_XZ
-	local direction
-	if Class.isCompatibleType(target, Vector) then
-		direction = rotation:transformVector(target):getNormal()
-	else
-		local targetPosition = Utility.Peep.getPosition(target) * Vector.PLANE_XZ
-		direction = rotation:transformVector(peepPosition:direction(targetPosition)):getNormal()
+	local pendingRotations = {}
+	do
+		rotations = rotations or Utility.Combat.DEFAULT_STRAFE_ROTATIONS
+		for _, rotation in ipairs(rotations) do
+			table.insert(pendingRotations, rotation)
+		end
 	end
 
-	local position = peepPosition + direction * distance
-	local k = Utility.Peep.getLayer(peep)
+	local map = Utility.Peep.getMap(peep)
+	local selfI, selfJ, selfK = Utility.Peep.getTile(peep)
 
-	local callback, n = Utility.Peep.queueWalk(peep, position.x, position.z, k, math.huge, { asCloseAsPossible = true, isPosition = true })
-	callback:register(function(s)
-		if onStrafe then
-			onStrafe(peep, target, s)
+	while #pendingRotations >= 1 do
+		local rotation = table.remove(pendingRotations, love.math.random(#pendingRotations))
+
+		local peepPosition = Utility.Peep.getAbsolutePosition(peep) * Vector.PLANE_XZ
+		local direction
+		if Class.isCompatibleType(target, Vector) then
+			direction = rotation:transformVector(target):getNormal()
+		else
+			local targetPosition = Utility.Peep.getAbsolutePosition(target) * Vector.PLANE_XZ
+			direction = rotation:transformVector(peepPosition:direction(targetPosition)):getNormal()
 		end
-	end)
 
-	return true, n
+		local ray = Ray(Utility.Peep.getPosition(peep), direction)
+		local position = ray:project(distance)
+
+		local previousI, previousJ
+		local isPassable = map:castRay(ray, function(_, tileI, tileJ, _, _, d)
+			if previousI and previousJ and not map:canMove(previousI, previousJ, tileI - previousI, tileJ - previousJ) then
+				return false
+			end
+
+			previousI = tileI
+			previousJ = tileJ
+
+			if d > distance then
+				return true
+			end
+		end)
+
+		if isPassable then
+			local callback, n = Utility.Peep.queueWalk(peep, position.x, position.z, selfK, math.huge, { asCloseAsPossible = true, isPosition = true })
+			callback:register(function(s)
+				if onStrafe then
+					onStrafe(peep, target, s)
+				end
+			end)
+
+			return true, n
+		end
+	end
+
+	return false, nil
 end
 
 function Utility.Combat.deflectPendingPower(power, activator, target)
@@ -4470,6 +4500,44 @@ function Utility.Peep.queueWalk(peep, i, j, k, distance, t, ...)
 
 	table.insert(Utility.Peep.WALK_QUEUE.pending, pending)
 	return callback, pending.n
+end
+
+function Utility.Peep.getMakeOffset(peep)
+	local offsetY
+	do
+		local mapObject = Utility.Peep.getMapObject(peep)
+		local resource = Utility.Peep.getResource(peep)
+		if mapObject then
+			local gameDB = peep:getDirector():getGameDB()
+
+			local record = gameDB:getRecord("MakeOffset", {
+				Resource = mapObject
+			})
+
+			if record then
+				offsetY = record:get("OffsetY")
+			end
+		end
+
+		if not offsetY and resource then
+			local gameDB = peep:getDirector():getGameDB()
+
+			local record = gameDB:getRecord("MakeOffset", {
+				Resource = resource
+			})
+
+			if record then
+				offsetY = record:get("OffsetY")
+			end
+		end
+	end
+
+	if not offsetY then
+		local size = Utility.Peep.getSize(peep)
+		offsetY = size.y
+	end
+
+	return offsetY or 0
 end
 
 function Utility.Peep.getTileAnchor(peep, offsetI, offsetJ)

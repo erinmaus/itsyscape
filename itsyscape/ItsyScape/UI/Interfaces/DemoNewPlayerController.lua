@@ -29,7 +29,7 @@ DemoNewPlayerController.LEVEL = 60
 DemoNewPlayerController.CLASSES = {
 	{
 		style = Weapon.STYLE_MAGIC,
-		filename = "Resources/Game/Variables/Demo/Magic.dat",
+		filename = _ITSYREALM_CONF and "Resources/Game/Variables/Conf/Magic.dat" or "Resources/Game/Variables/Demo/Magic.dat",
 		weapon = "IsabelliumStaff",
 		animations = {
 			idle = "Human_Idle_1",
@@ -43,7 +43,7 @@ DemoNewPlayerController.CLASSES = {
 	},
 	{
 		style = Weapon.STYLE_ARCHERY,
-		filename = "Resources/Game/Variables/Demo/Archery.dat",
+		filename = _ITSYREALM_CONF and "Resources/Game/Variables/Conf/Archery.dat" or "Resources/Game/Variables/Demo/Archery.dat",
 		weapon = "IsabelliumLongbow",
 		animations = {
 			idle = "Human_Idle_1",
@@ -57,7 +57,7 @@ DemoNewPlayerController.CLASSES = {
 	},
 	{
 		style = Weapon.STYLE_MELEE,
-		filename = "Resources/Game/Variables/Demo/Melee.dat",
+		filename = _ITSYREALM_CONF and "Resources/Game/Variables/Conf/Melee.dat" or "Resources/Game/Variables/Demo/Melee.dat",
 		weapon = "IsabelliumZweihander",
 		animations = {
 			idle = "Human_IdleZweihander_1",

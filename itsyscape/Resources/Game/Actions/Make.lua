@@ -288,9 +288,14 @@ function Make:make(state, player, prop, flags)
 end
 
 function Make:spawnCraftedItem(player, prop)
-	local x, y, z = Utility.Peep.getPosition(prop):get()
+	if not prop then
+		return
+	end
 
-	local craftedItemProp = Utility.spawnPropAtPosition(Utility.Peep.getMapScript(prop), "CraftedItem", x, y + 1, z)
+	local x, y, z = Utility.Peep.getPosition(prop):get()
+	local offsetY = Utility.Peep.getMakeOffset(prop)
+
+	local craftedItemProp = Utility.spawnPropAtPosition(Utility.Peep.getMapScript(prop), "CraftedItem", x, y + offsetY, z)
 	if craftedItemProp then
 		craftedItemProp:getPeep():pushPoke("make", {
 			player = player,
