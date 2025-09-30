@@ -212,4 +212,8 @@ function BuildLargeTileSetsApplication:update(delta)
 	end
 end
 
+function BuildLargeTileSetsApplication:draw()
+	-- Nothing.
+end
+
 return BuildLargeTileSetsApplication
