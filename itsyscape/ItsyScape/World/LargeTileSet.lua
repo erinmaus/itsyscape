@@ -298,7 +298,7 @@ function LargeTileSet:emitAll(map)
 					end
 				end
 			end
-		elseif not (_ITSYREALM_PROD or _ITSYREALM_DEMO) then
+		elseif not (_ITSYREALM_PROD or _ITSYREALM_DEMO) or _DEBUG then
 			self:resize(map)
 			self:_buildBaseLayers()
 			resized = true

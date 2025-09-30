@@ -2685,7 +2685,6 @@ function GameView:_updateActorCanvases(delta)
 		love.graphics.setBlendMode("alpha", "alphamultiply")
 		love.graphics.setShader()
 		love.graphics.origin()
-		love.graphics.clear(0, 0, 0, 1)
 
 		for actor in self.game:getStage():iterateActors() do
 			local _, _, actorLayer = actor:getTile()

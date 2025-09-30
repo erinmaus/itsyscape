@@ -20,6 +20,9 @@ return {
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle/TropicalYendorianGrass%d@Specular.png",
 		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle/TropicalYendorianGrass%d@Outline.png",
 		NUM_SAMPLES = 2,
+
+		MIN_SCALE = 1,
+		MAX_SCALE = 1.4
 	},
 
 	dirt_path = Block.Bind(Grass) {

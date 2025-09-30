@@ -20,7 +20,7 @@ void performTransform(
 	transformWorldPositionByWind(scape_Time, scape_WindSpeed, scape_WindDirection, scape_WindPattern, FeaturePosition, bendyPosition, normal);
 
 	vec3 warpedNormal = frag_Normal;
-	vec3 warpedPosition = position.xyz;
+	vec3 warpedPosition = bendyPosition;
 
 	transformPointByCurves(warpedPosition, warpedNormal);
 
