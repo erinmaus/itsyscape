@@ -221,7 +221,7 @@ end
 function ProjectedOldOneGlyph:new(w, h, radiusScale)
 	self.width = w
 	self.height = h
-	self.radiusScale = radiusScale or 1
+	self.radiusScale = radiusScale or 0.5
 
 	self.cells = {}
 

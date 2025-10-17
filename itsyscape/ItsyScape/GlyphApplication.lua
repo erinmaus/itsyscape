@@ -15,10 +15,11 @@ local EditorApplication = require "ItsyScape.Editor.EditorApplication"
 local Color = require "ItsyScape.Graphics.Color"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
-local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
+local GlyphManager = require "ItsyScape.Graphics.GlyphManager"
 local OldOneGlyph = require "ItsyScape.Graphics.OldOneGlyph"
-local ProjectedOldOneGlyph = require "ItsyScape.Graphics.ProjectedOldOneGlyph"
 local QuadSceneNode = require "ItsyScape.Graphics.QuadSceneNode"
+local ProjectedOldOneGlyph = require "ItsyScape.Graphics.ProjectedOldOneGlyph"
+local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
 local GlyphApplication = Class(EditorApplication)
 
@@ -36,6 +37,8 @@ function GlyphApplication:new()
 
 	self:getCamera():setVerticalRotation(0)
 	self:getCamera():setHorizontalRotation(0)
+
+	self.glyphManager = GlyphManager()
 end
 
 function GlyphApplication:updateGlyph(newGlyphIndex)

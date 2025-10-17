@@ -83,4 +83,20 @@ function Common.side(a, b, c, bias)
 	return sign, result
 end
 
+function Common.makeTransform(position, rotation, scale, offset)
+	position = position or Vector.ZERO
+	rotation = rotation or Quaternion.IDENTITY
+	scale = scale or Vector.ONE
+	offset = offset or Vector.ZERO
+
+	local transform = love.math.newTransform()
+	transform:translate(offset:get())
+	transform:translate(position:get())
+	transform:scale(scale:get())
+	transform:applyQuaternion(rotation:get())
+	transform:translate((-offset):get())
+
+	return transform
+end
+
 return Common
