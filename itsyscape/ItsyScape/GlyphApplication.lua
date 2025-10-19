@@ -39,7 +39,7 @@ function GlyphApplication:new()
 	self:getCamera():setVerticalRotation(0)
 	self:getCamera():setHorizontalRotation(0)
 
-	self.glyphManager = GlyphManager()
+	self.glyphManager = GlyphManager(nil, self:getGameView())
 	self.rootGlyph = self.glyphManager:tokenize([[
 		Harken back to when Yendor tore through the walls of the Realm,
 		and in Her image, render the earthen shell of the Realm Itself asunder.
@@ -89,8 +89,8 @@ function GlyphApplication:updatePlane(delta)
 		self.planeRotationTime = (self.planeRotationTime or 0) + delta
 	end
 
-	self.planeAxis = Vector(math.cos((self.planeRotationTime or 0) / math.pi / 8), 1, math.sin((self.planeRotationTime or 0) / math.pi))
-	self.planeRotation = Quaternion.fromAxisAngle(self.planeAxis, math.sin((self.planeRotationTime or 0)) / math.pi)
+	self.planeAxis = Vector(math.cos((self.planeRotationTime or 0) / math.pi / 8), 1, math.sin((self.planeRotationTime or 0) / math.pi / 8))
+	self.planeRotation = Quaternion.fromAxisAngle(self.planeAxis:getNormal(), math.sin((self.planeRotationTime or 0) / 8) / math.pi)
 	--self.planeRotation = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.rad(45 / 2))
 	self.planeNormal = self.planeRotation:getNormal():transformVector(Vector.UNIT_Y)
 
@@ -103,6 +103,8 @@ function GlyphApplication:updatePlane(delta)
 	self.planeNode:getTransform():setLocalTranslation(self.planeRotation:transformVector(Vector(0, -self.planeTranslationY, 0)))
 	self.planeNode:getTransform():setLocalRotation(Quaternion.fromVectors(Vector.UNIT_Z, self.planeNormal))
 	self.planeNode:tick(1)
+
+	self.rootGlyph:update(delta)
 end
 
 function GlyphApplication:update(delta)
@@ -149,277 +151,10 @@ function GlyphApplication:draw()
 	local width, height = love.graphics.getWidth(), love.graphics.getHeight()
 
 	love.graphics.push("all")
-	love.graphics.setColor(0, 0, 0, 1)
+	love.graphics.setColor(Color.fromHexString("463779"):get())
 
 	local projections = self.glyphManager:projectAll(self.rootGlyph, planeNormal, planeD)
-
-	--local projection = self.currentGlyph:project(ProjectedOldOneGlyph(3, 4, 0.5), planeNormal, planeD)
-
-	-- love.graphics.setPointSize(5)
-	-- local connections = {}
-	-- local pointToIsland = {}
-	-- local islands = {}
-	-- local lines = {}
-	-- for _, p1 in ipairs(points) do
-	-- 	local p1Position, p1Radius = unpack(p1)
-	-- 	love.graphics.points(_toPoint(p1))
-
-	-- 	local p1Min = p1Position - Vector(p1Radius)
-	-- 	local p1Max = p1Position + Vector(p1Radius)
-
-	-- 	for _, p2 in ipairs(points) do
-	-- 		local p2Position, p2Radius = unpack(p2)
-	-- 		local ray = Ray(p1Position, p1Position:direction(p2Position))
-	-- 		local distance = p1Position:distance(p2Position)
-
-	-- 		if p1 ~= p2 then
-	-- 			local blocked = false
-	-- 			for _, p3 in ipairs(points) do
-	-- 				local p3Position, p3Radius = unpack(p3)
-	-- 				local p3Min = p3Position - Vector(p3Radius)
-	-- 				local p3Max = p3Position + Vector(p3Radius)
-
-	-- 				if p3 ~= p1 and p3 ~= p2 then
-	-- 					local hit, _, t = ray:hitBounds(p3Min, p3Max)
-	-- 					if hit and t < distance then
-	-- 						blocked = true
-	-- 						break
-	-- 					end
-	-- 				end
-	-- 			end
-
-	-- 			if not blocked then
-	-- 				local x1, y1 = _toPoint(p1)
-	-- 				local x2, y2 = _toPoint(p2)
-
-	-- 				table.insert(lines, { x1, y1, x2, y2 })
-	-- 			end
-
-	-- 			-- local position1, radius1 = unpack(p1)
-	-- 			-- local position2, radius2 = unpack(p2)
-	-- 			-- local distance = math.sqrt((position1.x - position2.x) ^ 2 + (position1.y - position2.y) ^ 2)
-
-	-- 			-- if distance <= radius1 + radius2 then
-	-- 			-- 	local island = pointToIsland[p1] or pointToIsland[p2]
-	-- 			-- 	if not island then
-	-- 			-- 		island = { p1, p2, min = position1:min(position2), max = position2:max(position2) }
-
-	-- 			-- 		pointToIsland[p1] = island
-	-- 			-- 		pointToIsland[p2] = island
-
-	-- 			-- 		table.insert(islands, island)
-	-- 			-- 	end
-
-	-- 			-- 	if not pointToIsland[p1] then
-	-- 			-- 		island.min = island.min:min(position1)
-	-- 			-- 		island.max = island.max:max(position1)
-
-	-- 			-- 		pointToIsland[p1] = island
-	-- 			-- 		table.insert(pointToIsland, p1)
-	-- 			-- 	end
-
-	-- 			-- 	if not pointToIsland[p2] then
-	-- 			-- 		island.max = island.max:max(position2)
-	-- 			-- 		island.max = island.max:max(position2)
-
-	-- 			-- 		pointToIsland[p2] = island
-	-- 			-- 		table.insert(pointToIsland, p2)
-	-- 			-- 	end
-	-- 			-- end
-	-- 		end
-	-- 	end
-	-- end
-
-	-- local lines = {}
-	-- for _, island in ipairs(islands) do
-	-- 	local center = (island.max - island.min) / 2 + island.min
-	-- 	for _, otherIsland in ipairs(islands) do
-	-- 		local otherCenter = (otherIsland.max - otherIsland.min) / 2 + otherIsland.min
-
-	-- 		local hit = false
-	-- 		for _, i in ipairs(islands) do
-	-- 			if island ~= i and otherIsland ~= i then
-	-- 				local ray = Ray(center, center:direction(otherCenter))
-
-	-- 				if ray:hitBounds(i.min, i.max) then
-	-- 					hit = true
-	-- 					break
-	-- 				end
-	-- 			end
-	-- 		end
-
-	-- 		if not hit then
-	-- 			local x1, y1 = _toPoint({ center })
-	-- 			local x2, y2 = _toPoint({ otherCenter })
-	-- 			table.insert(lines, { x1, y1, x2, y2 })
-	-- 		end
-	-- 	end
-	-- end
-
-	-- for _, island in ipairs(islands) do
-	-- 	print(">>>> island....", _)
-	-- 	for i = 1, #island do
-	-- 		local p1 = island[i]
-	-- 		local p1Position, p1Radius = unpack(p1)
-
-	-- 		for j = i + 1, #island do
-	-- 			local p2 = island[j]
-	-- 			local p2Position, p2Radius = unpack(p2)
-
-	-- 			local ray = Ray(p1Position, p1Position:direction(p2Position))
-
-	-- 			local p2Min = p2Position - Vector(p2Radius / 2)
-	-- 			local p2Max = p2Position + Vector(p2Radius / 2)
-
-	-- 			local isBlocked = false
-	-- 			for _, p3 in ipairs(island) do
-	-- 				local p3Position, p3Radius = unpack(p3)
-	-- 				local p3Min = p3Position - Vector(p3Radius / 2)
-	-- 				local p3Max = p3Position + Vector(p3Radius / 2)
-
-	-- 				if p3 ~= p1 and p3 ~= p2 then
-	-- 					if ray:hitBounds(p3Min, p3Max) then
-	-- 						isBlocked = true
-	-- 						break
-	-- 					end
-	-- 				end
-	-- 			end
-
-	-- 			if not isBlocked then
-	-- 				local x1, y1 = _toPoint(p1)
-	-- 				local x2, y2 = _toPoint(p2)
-
-	-- 				table.insert(lines, { x1, y1, x2, y2 })
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end
-
-	-- love.graphics.setLineWidth(5)
-	-- for _, line in ipairs(lines) do
-	-- 	--love.graphics.line(unpack(line))
-	-- end
-
-	-- local slick = require("slick")
-	-- local t = slick.geometry.triangulation.delaunay.new()
-
-	-- for c1, c in pairs(connections) do
-	-- 	local p = { _toPoint(c1) }
-
-	-- 	for c2 in pairs(c) do
-	-- 		local x, y = _toPoint(c2)
-	-- 		table.insert(p, x)
-	-- 		table.insert(p, y)
-	-- 	end
-
-	-- 	if #p < (3 * 2) then
-	-- 		love.graphics.line(p[1], p[2], p[3], p[4])
-	-- 	else
-	-- 		local inputPoints = t:clean(p, {})
-	-- 		local triangles = t:triangulate(p, {}, { refine = false, interior = true, exterior = true, polygonization = false })
-
-	-- 		local polygons = _getPolygons(inputPoints, triangles)
-	-- 		for _, poly in ipairs(polygons) do
-	-- 			love.graphics.polygon("fill", poly)
-	-- 		end
-
-	-- 		print("fill", "POLYGON", Log.dump(polygons))
-	-- 	end
-	-- end
-
-	-- local min, max = Vector(math.huge), Vector(-math.huge)
-	-- for i = 1, #points do
-	-- 	local v = (Quaternion.fromVectors(_APP.planeNormal, Vector.UNIT_Y)):getNormal():transformVector(points[i][1])
-	-- 	min = min:min(v)
-	-- 	max = max:max(v)
-	-- end
-
-	-- print(">>> p", Log.dump(points))
-
-	-- print(">>> min", min.x, min.y, "size wh", max.x - min.x, max.y - min.y)
-
-	-- for _, p in ipairs(points) do
-	-- 	local x, y = _toPoint(p)
-	-- 	local _, radius = unpack(p)
-	-- 	love.graphics.circle("fill", x, y, radius * (height / 20))
-	-- end
-
-	local t = love.math.newTransform()
-	t:setTransformation(width / 2, height / 2, d, width / 200, -width / 200)
-	love.graphics.applyTransform(t)
-	love.graphics.setLineWidth(0)
-
-	for _, p in ipairs(projections) do
-		local glyph, projection = unpack(p)
-
-		if not glyph:getParent() then
-			local scale = glyph:getRadius() / self.glyphManager:getRadius()
-			projection:polygonize(1 / scale * 2)
-		else
-			projection:polygonize()
-		end
-	end
-
-	self.shaderCache:bindShader(
-		self.shakyShader,
-		"scape_Time", math.floor(self:getGameView():getRenderer():getTime() * 8) / 8,
-		"scape_Scale", 5)
-
-	love.graphics.stencil(function()
-		for _, p in ipairs(projections) do
-			local glyph, projection = unpack(p)
-			if not projection:getIsEmpty() then
-				love.graphics.circle("fill", projection:getPosition().x, projection:getPosition().y, self.glyphManager:getRadius() * 1.5)
-			end
-		end
-	end, "replace", 1, false)
-
-	love.graphics.setStencilTest("notequal", 1)
-	for _, p in ipairs(projections) do
-		local glyph, projection = unpack(p)
-
-		if not projection:getIsEmpty() and glyph:getHasChildren() then
-			love.graphics.circle("line", projection:getPosition().x, projection:getPosition().y, glyph:getRadius())
-		end
-	end
-
-	love.graphics.setStencilTest()
-
-	for _, p in ipairs(projections) do
-		local glyph, projection = unpack(p)
-
-		if not projection:getIsEmpty() and glyph:getParent() then
-			local scale = 1
-			if not glyph:getHasChildren() then
-				scale = 1.5
-			end
-
-			love.graphics.circle("line", projection:getPosition().x, projection:getPosition().y, self.glyphManager:getRadius() * 1.5)
-		end
-	end
-
-	love.graphics.setShader()
-
-	for _, p in ipairs(projections) do
-		local glyph, projection = unpack(p)
-
-		local scale
-		if not glyph:getParent() then
-			scale = glyph:getRadius() / self.glyphManager:getRadius()
-		else
-			scale = 2
-		end
-
-		local otherTransform = love.math.newTransform()
-
-		local d = love.mouse.getPosition() / love.graphics.getWidth()
-		otherTransform:setTransformation(projection:getPosition().x, projection:getPosition().y, 0, scale, scale, projection:getPosition().x, projection:getPosition().y)
-
-		love.graphics.push()
-		love.graphics.applyTransform(otherTransform)
-		projection:draw()
-		love.graphics.pop()
-	end
+	self.glyphManager:draw(self.rootGlyph, projections, width / 4, 0, width, height, 200)
 
 	love.graphics.pop()
 end

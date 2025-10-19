@@ -151,6 +151,16 @@ function OldOneGlyphInstance:getProjection()
 	return self.projection
 end
 
+function OldOneGlyphInstance:update(delta)
+	if self.parent then
+		self.phi = self.phi + delta * self.glyphManager:getRotationSpeed() * math.sqrt(self:getDepth())
+	end
+
+	for _, child in self:iterate() do
+		child:update(delta)
+	end
+end
+
 function OldOneGlyphInstance:project(normal, d, axis)
 	return self.glyph:project(self.projection, normal, d, self:getTransform(), axis)
 end
