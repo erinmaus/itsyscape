@@ -64,8 +64,8 @@ function ProjectedOldOneGlyph.Polygon:reset()
 	table.clear(self.points)
 end
 
-function ProjectedOldOneGlyph.Polygon:makeCenter(center)
-	local centerRadius = center:getRadius()
+function ProjectedOldOneGlyph.Polygon:makeCenter(center, scale)
+	local centerRadius = center:getRadius() * scale
 	local centerPosition = center:getPosition()
 
 	for i = 1, 4 do
@@ -78,8 +78,8 @@ function ProjectedOldOneGlyph.Polygon:makeCenter(center)
 	end
 end
 
-function ProjectedOldOneGlyph.Polygon:makeLeftLeaf(center, top, bottom)
-	local centerRadius = center:getRadius()
+function ProjectedOldOneGlyph.Polygon:makeLeftLeaf(center, top, bottom, scale)
+	local centerRadius = center:getRadius() * scale
 	local centerPosition = center:getPosition()
 	local topPosition = top:getPosition()
 	local bottomPosition = bottom:getPosition()
@@ -97,8 +97,8 @@ function ProjectedOldOneGlyph.Polygon:makeLeftLeaf(center, top, bottom)
 	self.points[6] = centerPosition.y
 end
 
-function ProjectedOldOneGlyph.Polygon:makeRightLeaf(center, top, bottom)
-	local centerRadius = center:getRadius()
+function ProjectedOldOneGlyph.Polygon:makeRightLeaf(center, top, bottom, scale)
+	local centerRadius = center:getRadius() * scale
 	local centerPosition = center:getPosition()
 	local topPosition = top:getPosition()
 	local bottomPosition = bottom:getPosition()
@@ -116,8 +116,8 @@ function ProjectedOldOneGlyph.Polygon:makeRightLeaf(center, top, bottom)
 	self.points[6] = centerPosition.y
 end
 
-function ProjectedOldOneGlyph.Polygon:makeTopLeaf(center, left, right)
-	local centerRadius = center:getRadius()
+function ProjectedOldOneGlyph.Polygon:makeTopLeaf(center, left, right, scale)
+	local centerRadius = center:getRadius() * scale
 	local centerPosition = center:getPosition()
 	local leftPosition = left:getPosition()
 	local rightPosition = right:getPosition()
@@ -135,8 +135,8 @@ function ProjectedOldOneGlyph.Polygon:makeTopLeaf(center, left, right)
 	self.points[6] = centerPosition.y
 end
 
-function ProjectedOldOneGlyph.Polygon:makeBottomLeaf(center, right, left)
-	local centerRadius = center:getRadius()
+function ProjectedOldOneGlyph.Polygon:makeBottomLeaf(center, right, left, scale)
+	local centerRadius = center:getRadius() * scale
 	local centerPosition = center:getPosition()
 	local leftPosition = left:getPosition()
 	local rightPosition = right:getPosition()
@@ -154,10 +154,10 @@ function ProjectedOldOneGlyph.Polygon:makeBottomLeaf(center, right, left)
 	self.points[6] = centerPosition.y
 end
 
-function ProjectedOldOneGlyph.Polygon:makeHorizontalEdge(left, right)
-	local leftRadius = left:getRadius()
+function ProjectedOldOneGlyph.Polygon:makeHorizontalEdge(left, right, scale)
+	local leftRadius = left:getRadius() * scale
 	local leftPosition = left:getPosition()
-	local rightRadius = right:getRadius()
+	local rightRadius = right:getRadius() * scale
 	local rightPosition = right:getPosition()
 
 	local leftX1 = math.cos(math.rad(-45)) * leftRadius + leftPosition.x
@@ -184,10 +184,10 @@ function ProjectedOldOneGlyph.Polygon:makeHorizontalEdge(left, right)
 	self.points[12] = leftPosition.y
 end
 
-function ProjectedOldOneGlyph.Polygon:makeVerticalEdge(bottom, top)
-	local bottomRadius = bottom:getRadius()
+function ProjectedOldOneGlyph.Polygon:makeVerticalEdge(bottom, top, scale)
+	local bottomRadius = bottom:getRadius() * scale
 	local bottomPosition = bottom:getPosition()
-	local topRadius = top:getRadius()
+	local topRadius = top:getRadius() * scale
 	local topPosition = top:getPosition()
 
 	local bottomX1 = math.cos(math.rad(-135)) * bottomRadius + bottomPosition.x
@@ -290,7 +290,9 @@ function ProjectedOldOneGlyph:add(position, radius, point)
 	end
 end
 
-function ProjectedOldOneGlyph:polygonize()
+function ProjectedOldOneGlyph:polygonize(scale)
+	scale = scale or 1
+
 	for i = 1, self.width do
 		for j = 1, self.height do
 			local center = self:getCell(i, j)
@@ -303,37 +305,37 @@ function ProjectedOldOneGlyph:polygonize()
 
 				if not ((left and left:getIsFilled()) or (right and right:getIsFilled()) or (top and top:getIsFilled()) or (bottom and bottom:getIsFilled())) then
 					local polygon = self:_newPolygon()
-					polygon:makeCenter(center)
+					polygon:makeCenter(center, scale)
 				end
 
 				if left and left:getIsFilled() then
 					local polygon = self:_newPolygon()
-					polygon:makeHorizontalEdge(left, center)
+					polygon:makeHorizontalEdge(left, center, scale)
 				end
 
 				if (top and top:getIsFilled()) and (bottom and bottom:getIsFilled()) and not (left and left:getIsFilled()) then
 					local polygon = self:_newPolygon()
-					polygon:makeLeftLeaf(center, top, bottom)
+					polygon:makeLeftLeaf(center, top, bottom, scale)
 				end
 
 				if (top and top:getIsFilled()) and (bottom and bottom:getIsFilled()) and not (right and right:getIsFilled()) then
 					local polygon = self:_newPolygon()
-					polygon:makeRightLeaf(center, top, bottom)
+					polygon:makeRightLeaf(center, top, bottom, scale)
 				end
 
 				if top and top:getIsFilled() then
 					local polygon = self:_newPolygon()
-					polygon:makeVerticalEdge(top, center)
+					polygon:makeVerticalEdge(top, center, scale)
 				end
 
 				if (right and right:getIsFilled()) and (left and left:getIsFilled()) and not (top and top:getIsFilled()) then
 					local polygon = self:_newPolygon()
-					polygon:makeTopLeaf(center, left, right)
+					polygon:makeTopLeaf(center, left, right, scale)
 				end
 
 				if (right and right:getIsFilled()) and (left and left:getIsFilled()) and not (bottom and bottom:getIsFilled()) then
 					local polygon = self:_newPolygon()
-					polygon:makeBottomLeaf(center, left, right)
+					polygon:makeBottomLeaf(center, left, right, scale)
 				end
 			end
 		end

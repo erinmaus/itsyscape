@@ -16,6 +16,7 @@ local GlyphManager = Class()
 function GlyphManager:new(t)
 	self.t = t or OldOneGlyph.DEFAULT_CONFIG
 	self.projectionRadiusScale = 0.5
+	self.maxDepth = 2
 
 	self.radius = math.max(self:getDimensions())
 
@@ -76,7 +77,7 @@ function GlyphManager:tokenize(message)
 		if #instances > 0 then
 			for i = 1, #instances + 1 do
 				parentIndex = (parent:byte() + i - 1) % #instances + 1
-				if instances[parentIndex]:getDepth() < 4 then
+				if instances[parentIndex]:getDepth() <= self.maxDepth then
 					break
 				end
 			end

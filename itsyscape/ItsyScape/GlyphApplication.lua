@@ -17,8 +17,9 @@ local Decoration = require "ItsyScape.Graphics.Decoration"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local GlyphManager = require "ItsyScape.Graphics.GlyphManager"
 local OldOneGlyph = require "ItsyScape.Graphics.OldOneGlyph"
-local QuadSceneNode = require "ItsyScape.Graphics.QuadSceneNode"
+local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
 local ProjectedOldOneGlyph = require "ItsyScape.Graphics.ProjectedOldOneGlyph"
+local QuadSceneNode = require "ItsyScape.Graphics.QuadSceneNode"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
@@ -32,7 +33,7 @@ function GlyphApplication:new()
 	self.planeNode = QuadSceneNode()
 	self.planeNode:getMaterial():setColor(Color(1, 0, 0, 0.5))
 	self.planeNode:getTransform():setLocalRotation(Quaternion.X_90)
-	self.planeNode:getTransform():setLocalScale(Vector(5))
+	self.planeNode:getTransform():setLocalScale(Vector(30))
 	self.planeNode:setParent(self:getGameView():getScene())
 
 	self:getCamera():setVerticalRotation(0)
@@ -45,6 +46,11 @@ function GlyphApplication:new()
 	]])
 
 	self:updateGlyph(self.rootGlyph)
+
+	self.shaderCache = PostProcessPass(self:getGameView():getRenderer(), 0)
+	self.shaderCache:load(self:getGameView():getResourceManager())
+
+	self.shakyShader = self.shaderCache:loadPostProcessShader("ShakyVertex")
 end
 
 function GlyphApplication:_updateGlyph(node, glyph)
@@ -83,7 +89,7 @@ function GlyphApplication:updatePlane(delta)
 		self.planeRotationTime = (self.planeRotationTime or 0) + delta
 	end
 
-	self.planeAxis = Vector(math.cos((self.planeRotationTime or 0) / math.pi), 1, math.sin((self.planeRotationTime or 0) / math.pi))
+	self.planeAxis = Vector(math.cos((self.planeRotationTime or 0) / math.pi / 8), 1, math.sin((self.planeRotationTime or 0) / math.pi))
 	self.planeRotation = Quaternion.fromAxisAngle(self.planeAxis, math.sin((self.planeRotationTime or 0)) / math.pi)
 	--self.planeRotation = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.rad(45 / 2))
 	self.planeNormal = self.planeRotation:getNormal():transformVector(Vector.UNIT_Y)
@@ -339,18 +345,80 @@ function GlyphApplication:draw()
 	-- end
 
 	local t = love.math.newTransform()
-	t:setTransformation(width / 2, height / 2, d, width / 100, -width / 100)
+	t:setTransformation(width / 2, height / 2, d, width / 200, -width / 200)
 	love.graphics.applyTransform(t)
 	love.graphics.setLineWidth(0)
 
 	for _, p in ipairs(projections) do
 		local glyph, projection = unpack(p)
-		projection:polygonize()
 
-		if not projection:getIsEmpty() then
-			love.graphics.circle("line", projection:getPosition().x, projection:getPosition().y, glyph:getRadius())
-			projection:draw()
+		if not glyph:getParent() then
+			local scale = glyph:getRadius() / self.glyphManager:getRadius()
+			projection:polygonize(1 / scale * 2)
+		else
+			projection:polygonize()
 		end
+	end
+
+	self.shaderCache:bindShader(
+		self.shakyShader,
+		"scape_Time", math.floor(self:getGameView():getRenderer():getTime() * 8) / 8,
+		"scape_Scale", 5)
+
+	love.graphics.stencil(function()
+		for _, p in ipairs(projections) do
+			local glyph, projection = unpack(p)
+			if not projection:getIsEmpty() then
+				love.graphics.circle("fill", projection:getPosition().x, projection:getPosition().y, self.glyphManager:getRadius() * 1.5)
+			end
+		end
+	end, "replace", 1, false)
+
+	love.graphics.setStencilTest("notequal", 1)
+	for _, p in ipairs(projections) do
+		local glyph, projection = unpack(p)
+
+		if not projection:getIsEmpty() and glyph:getHasChildren() then
+			love.graphics.circle("line", projection:getPosition().x, projection:getPosition().y, glyph:getRadius())
+		end
+	end
+
+	love.graphics.setStencilTest()
+
+	for _, p in ipairs(projections) do
+		local glyph, projection = unpack(p)
+
+		if not projection:getIsEmpty() and glyph:getParent() then
+			local scale = 1
+			if not glyph:getHasChildren() then
+				scale = 1.5
+			end
+
+			love.graphics.circle("line", projection:getPosition().x, projection:getPosition().y, self.glyphManager:getRadius() * 1.5)
+		end
+	end
+
+	love.graphics.setShader()
+
+	for _, p in ipairs(projections) do
+		local glyph, projection = unpack(p)
+
+		local scale
+		if not glyph:getParent() then
+			scale = glyph:getRadius() / self.glyphManager:getRadius()
+		else
+			scale = 2
+		end
+
+		local otherTransform = love.math.newTransform()
+
+		local d = love.mouse.getPosition() / love.graphics.getWidth()
+		otherTransform:setTransformation(projection:getPosition().x, projection:getPosition().y, 0, scale, scale, projection:getPosition().x, projection:getPosition().y)
+
+		love.graphics.push()
+		love.graphics.applyTransform(otherTransform)
+		projection:draw()
+		love.graphics.pop()
 	end
 
 	love.graphics.pop()

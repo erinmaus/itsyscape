@@ -61,7 +61,7 @@ function OldOneGlyphInstance:layout()
 	local count = #self.children
 
 	for i, child in self:iterate() do
-		local phi = (i - 1) / count * math.pi * 2
+		local phi = math.lerp(0, math.pi * 2, (i - 1) / count)
 		child:setPhi(phi)
 		child:layout()
 	end
@@ -84,6 +84,10 @@ function OldOneGlyphInstance:iterate()
 	return ipairs(self.children)
 end
 
+function OldOneGlyphInstance:getHasChildren()
+	return #self.children > 0
+end
+
 function OldOneGlyphInstance:setParent(value)
 	if self.parent then
 		for i, child in ipairs(self.parent.children) do
@@ -99,6 +103,10 @@ function OldOneGlyphInstance:setParent(value)
 	end
 
 	self.parent = value
+end
+
+function OldOneGlyphInstance:getParent()
+	return self.parent
 end
 
 function OldOneGlyphInstance:getTransform()
@@ -120,7 +128,7 @@ function OldOneGlyphInstance:getRadius()
 		maxChildRadius = math.max(maxChildRadius, child:getRadius())
 	end
 
-	return radius + maxChildRadius
+	return radius + maxChildRadius * 2
 end
 
 function OldOneGlyphInstance:getDepth()
