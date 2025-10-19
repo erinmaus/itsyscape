@@ -22,6 +22,10 @@ function GlyphManager:new(t)
 	self.glyphs = {}
 end
 
+function GlyphManager:getRadius()
+	return self.radius
+end
+
 function GlyphManager:getProjectionRadiusScale()
 	return self.projectionRadiusScale
 end
@@ -55,43 +59,59 @@ function GlyphManager:tokenize(message)
 	for text in message:gmatch("([^.!?,]*)[.!?,]*") do
 		local sanitized = text:gsub("[^%d%w][.!?]+", " "):gsub("^(%s*)", ""):gsub("(%s*)$", "")
 		if #sanitized > 0 then
-			print(sanitized)
-			table.insert(sentences, love.data.hash("sha256", sanitized))
+			table.insert(sentences, love.data.hash("sha1", sanitized))
+			table.insert(sentences, string.char(#sanitized % 255))
 		end
 	end
 
 	local tokens = table.concat(sentences, "")
 	local instances = {}
 
-	for glyph, theta, phi, parent in tokens:gmatch("....") do
-		local glyphIndex = glyph:bytes() + 1
+	for glyph, theta, parent in tokens:gmatch("(.)(.)(.)") do
+		local glyphIndex = glyph:byte() + 1
 
 		-- This should create a nice property where most glyphs are (within some distribution) closer to the top
 		-- rather than leaves.
-		local parentIndex = #glyphs > 0 and parent:bytes() % #glyphs + 1
+		local parentIndex
+		if #instances > 0 then
+			for i = 1, #instances + 1 do
+				parentIndex = (parent:byte() + i - 1) % #instances + 1
+				if instances[parentIndex]:getDepth() < 4 then
+					break
+				end
+			end
+		end
 
-		-- theta must be 0 <= theta < 2pi.
-		-- since "byte" would be between 0 .. 255, we divide by 256 to leave a small gap before 2pi
-		local thetaRadians = glyph:bytes() / 255 * math.pi * 2
-
-		-- phi must be between -1/2pi <= phi <= +1/2pi
-		local phiRadians = glyph:bytes() / 256 * math.pi - math.pi / 2
+		local thetaRadians = glyph:byte() / 256 * math.pi / 16
 
 		local instance = OldOneGlyphInstance(self:get(glyphIndex), self)
-		instance:setPhi(phiRadians)
 		instance:setTheta(thetaRadians)
 
 		if parentIndex then
-			instance:setParent(glyphs[parentIndex])
+			instance:setParent(instances[parentIndex])
 		end
 
 		table.insert(instances, instance)
 	end
 
+	instances[1]:layout()
+
 	return instances[1], instances
 end
 
+function GlyphManager:_projectAll(root, normal, d, axis, r)
+	root:project(normal, d, axis)
+	table.insert(r, { root, root:getProjection() })
+
+	for _, child in root:iterate() do
+		self:_projectAll(child, normal, d, axis, r)
+	end
+
+	return r
+end
+
 function GlyphManager:projectAll(root, normal, d, axis)
+	return self:_projectAll(root, normal, d, axis, {})
 end
 
 return GlyphManager

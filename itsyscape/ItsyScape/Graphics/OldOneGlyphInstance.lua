@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local MathCommon = require "ItsyScape.Common.Math.Common"
+local ProjectedOldOneGlyph = require "ItsyScape.Graphics.ProjectedOldOneGlyph"
 
 local OldOneGlyphInstance = Class()
 
@@ -26,6 +27,10 @@ function OldOneGlyphInstance:new(glyph, glyphManager)
 	self.phi = 0
 	self.parent = false
 	self.children = {}
+end
+
+function OldOneGlyphInstance:getGlyph()
+	return self.glyph
 end
 
 function OldOneGlyphInstance:getRotation()
@@ -52,16 +57,23 @@ function OldOneGlyphInstance:setPhi(value)
 	self.phi = value
 end
 
-function OldOneGlyphInstance:setPosition(value)
-	self.position = value:keep(self.position)
+function OldOneGlyphInstance:layout()
+	local count = #self.children
+
+	for i, child in self:iterate() do
+		local phi = (i - 1) / count * math.pi * 2
+		child:setPhi(phi)
+		child:layout()
+	end
 end
 
-function OldOneGlyphInstance:getRotation()
-	return self.rotation
-end
+function OldOneGlyphInstance:getPosition()
+	local radius = self.parent and self.parent:getRadius() or 0
 
-function OldOneGlyphInstance:setRotation(value)
-	self.rotation = value:keep(self.rotation)
+	return Vector(
+		radius * math.cos(self.phi) * math.cos(self.theta),
+		radius * math.cos(self.phi) * math.sin(self.theta),
+		radius * math.sin(self.phi))
 end
 
 function OldOneGlyphInstance:getParent()
@@ -90,14 +102,8 @@ function OldOneGlyphInstance:setParent(value)
 end
 
 function OldOneGlyphInstance:getTransform()
-	local radius = 2 ^ self:getDepth() * self.glyphManager:getRadius()
-
-	local position = Vector(
-		radius * math.cos(self.phi) * math.cos(self.theta),
-		radius * math.cos(self.phi) * math.sin(self.theta),
-		radius * math.sin(self.phi))
-
-	local transform = MathCommon.makeTransform(self.position, self.rotation)
+	local position = self:getPosition()
+	local transform = MathCommon.makeTransform(position)
 
 	if self.parent then
 		return self.parent:getTransform() * transform
@@ -106,7 +112,22 @@ function OldOneGlyphInstance:getTransform()
 	return transform
 end
 
+function OldOneGlyphInstance:getRadius()
+	local radius = self.glyphManager:getRadius()
+
+	local maxChildRadius = 0
+	for _, child in self:iterate() do
+		maxChildRadius = math.max(maxChildRadius, child:getRadius())
+	end
+
+	return radius + maxChildRadius
+end
+
 function OldOneGlyphInstance:getDepth()
+	if not self.parent then
+		return 0
+	end
+
 	local n = 1
 
 	local current = self.parent

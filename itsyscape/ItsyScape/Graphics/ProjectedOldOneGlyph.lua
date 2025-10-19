@@ -222,6 +222,7 @@ function ProjectedOldOneGlyph:new(w, h, radiusScale)
 	self.width = w
 	self.height = h
 	self.radiusScale = radiusScale or 0.5
+	self.position = Vector(0):keep()
 
 	self.cells = {}
 
@@ -248,6 +249,7 @@ function ProjectedOldOneGlyph:getCell(i, j)
 end
 
 function ProjectedOldOneGlyph:reset()
+	self.position = Vector(0):keep(self.position)
 	self.polygonCount = 0
 
 	for _, cell in ipairs(self.cells) do
@@ -268,6 +270,14 @@ function ProjectedOldOneGlyph:_newPolygon()
 
 	self.polygonCount = i
 	return polygon
+end
+
+function ProjectedOldOneGlyph:setPosition(value)
+	self.position = value:keep(self.position)
+end
+
+function ProjectedOldOneGlyph:getPosition()
+	return self.position
 end
 
 function ProjectedOldOneGlyph:add(position, radius, point)
@@ -328,6 +338,10 @@ function ProjectedOldOneGlyph:polygonize()
 			end
 		end
 	end
+end
+
+function ProjectedOldOneGlyph:getIsEmpty()
+	return self.polygonCount == 0
 end
 
 function ProjectedOldOneGlyph:draw()

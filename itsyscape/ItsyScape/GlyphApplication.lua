@@ -19,6 +19,7 @@ local GlyphManager = require "ItsyScape.Graphics.GlyphManager"
 local OldOneGlyph = require "ItsyScape.Graphics.OldOneGlyph"
 local QuadSceneNode = require "ItsyScape.Graphics.QuadSceneNode"
 local ProjectedOldOneGlyph = require "ItsyScape.Graphics.ProjectedOldOneGlyph"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
 local GlyphApplication = Class(EditorApplication)
@@ -27,7 +28,6 @@ function GlyphApplication:new()
 	EditorApplication.new(self)
 
 	self.glyphSphere = self:getGameView():getResourceManager():load(StaticMeshResource, "ItsyScape/Graphics/Resources/OldOneGlyphSphere.lstatic")
-	self:updateGlyph(0)
 
 	self.planeNode = QuadSceneNode()
 	self.planeNode:getMaterial():setColor(Color(1, 0, 0, 0.5))
@@ -39,51 +39,45 @@ function GlyphApplication:new()
 	self:getCamera():setHorizontalRotation(0)
 
 	self.glyphManager = GlyphManager()
+	self.rootGlyph = self.glyphManager:tokenize([[
+		Harken back to when Yendor tore through the walls of the Realm,
+		and in Her image, render the earthen shell of the Realm Itself asunder.
+	]])
+
+	self:updateGlyph(self.rootGlyph)
 end
 
-function GlyphApplication:updateGlyph(newGlyphIndex)
-	self.currentGlyph = OldOneGlyph()
-	self.currentGlyph:fromNoise(newGlyphIndex)
-
+function GlyphApplication:_updateGlyph(node, glyph)
 	local decoration = Decoration()
-	for _, point in self.currentGlyph:iterate() do
+	for _, point in glyph:getGlyph():iterate() do
 		decoration:add("glyph", point:getPosition(), Quaternion.IDENTITY, Vector(point:getRadius()))
 	end
 
-	if self.currentGlyphNode then
-		self.currentGlyphNode:setParent()
+	local childNode = DecorationSceneNode()
+	childNode:fromDecoration(decoration, self.glyphSphere)
+	childNode:setParent(node)
+	childNode:getMaterial():setColor(Color(0.3))
+	childNode:getTransform():setLocalTranslation(glyph:getPosition())
+
+	for _, child in glyph:iterate() do
+		self:_updateGlyph(childNode, child)
 	end
-
-	self.currentGlyphNode = DecorationSceneNode()
-	self.currentGlyphNode:fromDecoration(decoration, self.glyphSphere)
-	self.currentGlyphNode:setParent(self:getGameView():getScene())
-	self.currentGlyphNode:getMaterial():setColor(Color(0.2))
-
-	self.glyphIndex = newGlyphIndex
 end
 
-function GlyphApplication:keyDown(key, ...)
-	if not EditorApplication.keyDown(self, key, ...) then
-		local newGlyphIndex = self.glyphIndex
-
-		if key == "left" then
-			newGlyphIndex = newGlyphIndex - 1
-		end
-
-		if key == "right" then
-			newGlyphIndex = newGlyphIndex + 1
-		end
-
-		if newGlyphIndex >= 0 and newGlyphIndex ~= self.glyphIndex then
-			self:updateGlyph(newGlyphIndex)
-			Log.info("Switched to glyph '%d'.", self.glyphIndex)
-		end
+function GlyphApplication:updateGlyph(root)
+	if self.currentRootNode then
+		self.currentRootNode:setParent()
 	end
+
+	self.currentRootNode = SceneNode()
+	self.currentRootNode:setParent(self:getGameView():getScene())
+
+	self:_updateGlyph(self.currentRootNode, root)
 end
 
 function GlyphApplication:updatePlane(delta)
 	self.planeTranslationTime = (self.planeTranslationTime or 0) + delta
-	self.planeTranslationY = -(math.sin(self.planeTranslationTime / math.pi * 2) * 1.5 - 1)
+	self.planeTranslationY = -(math.sin(self.planeTranslationTime / math.pi / 8) * 2 - 1)
 
 	if love.keyboard.isDown("space") then
 		self.planeRotationTime = (self.planeRotationTime or 0) + delta
@@ -103,8 +97,6 @@ function GlyphApplication:updatePlane(delta)
 	self.planeNode:getTransform():setLocalTranslation(self.planeRotation:transformVector(Vector(0, -self.planeTranslationY, 0)))
 	self.planeNode:getTransform():setLocalRotation(Quaternion.fromVectors(Vector.UNIT_Z, self.planeNormal))
 	self.planeNode:tick(1)
-
-	self:updateGlyph(self.glyphIndex)
 end
 
 function GlyphApplication:update(delta)
@@ -153,7 +145,9 @@ function GlyphApplication:draw()
 	love.graphics.push("all")
 	love.graphics.setColor(0, 0, 0, 1)
 
-	local projection = self.currentGlyph:project(ProjectedOldOneGlyph(3, 4, 0.5), planeNormal, planeD)
+	local projections = self.glyphManager:projectAll(self.rootGlyph, planeNormal, planeD)
+
+	--local projection = self.currentGlyph:project(ProjectedOldOneGlyph(3, 4, 0.5), planeNormal, planeD)
 
 	-- love.graphics.setPointSize(5)
 	-- local connections = {}
@@ -344,12 +338,20 @@ function GlyphApplication:draw()
 	-- 	love.graphics.circle("fill", x, y, radius * (height / 20))
 	-- end
 
-	love.graphics.scale(width / 10, height / 10, 1)
-	love.graphics.translate(2.5, 5, 0)
-	love.graphics.scale(1, -1, 1)
+	local t = love.math.newTransform()
+	t:setTransformation(width / 2, height / 2, d, width / 100, -width / 100)
+	love.graphics.applyTransform(t)
+	love.graphics.setLineWidth(0)
 
-	projection:polygonize()
-	projection:draw()
+	for _, p in ipairs(projections) do
+		local glyph, projection = unpack(p)
+		projection:polygonize()
+
+		if not projection:getIsEmpty() then
+			love.graphics.circle("line", projection:getPosition().x, projection:getPosition().y, glyph:getRadius())
+			projection:draw()
+		end
+	end
 
 	love.graphics.pop()
 end

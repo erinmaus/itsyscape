@@ -128,6 +128,14 @@ end
 function OldOneGlyph:project(projection, normal, d, transform, axis)
 	projection:reset()
 
+	do
+		local position = Vector(-0.5, -0.5):transform(transform)
+		local distance = Vector.dot(normal, position) + d
+		local projectedPosition = MathCommon.transformPointFromPlaneToAxis(position + distance * normal, normal, d, axis)
+
+		projection:setPosition(projectedPosition)
+	end
+
 	for _, point in self:iterate() do
 		local position = point:getPosition():transform(transform)
 		local distance = Vector.dot(normal, position) + d
