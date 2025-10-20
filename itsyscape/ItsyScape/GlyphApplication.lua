@@ -90,7 +90,7 @@ function GlyphApplication:updatePlane(delta)
 	end
 
 	self.planeAxis = Vector(math.cos((self.planeRotationTime or 0) / math.pi / 8), 1, math.sin((self.planeRotationTime or 0) / math.pi / 8))
-	self.planeRotation = Quaternion.fromAxisAngle(self.planeAxis:getNormal(), math.sin((self.planeRotationTime or 0) / 8) / math.pi)
+	self.planeRotation = Quaternion.fromAxisAngle(self.planeAxis:getNormal(), math.sin((self.planeRotationTime or 0) / math.pi / 8) * math.pi / 8)
 	--self.planeRotation = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.rad(45 / 2))
 	self.planeNormal = self.planeRotation:getNormal():transformVector(Vector.UNIT_Y)
 
@@ -154,7 +154,7 @@ function GlyphApplication:draw()
 	love.graphics.setColor(Color.fromHexString("463779"):get())
 
 	local projections = self.glyphManager:projectAll(self.rootGlyph, planeNormal, planeD)
-	self.glyphManager:draw(self.rootGlyph, projections, width / 4, 0, width, height, 200)
+	self.glyphManager:draw(self.rootGlyph, projections, width / 4, 0, width, height, 200, love.timer.getTime() % 0.25)
 
 	love.graphics.pop()
 end

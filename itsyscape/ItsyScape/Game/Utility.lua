@@ -62,6 +62,7 @@ local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
 local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
 local MapPathFinder = require "ItsyScape.World.MapPathFinder"
+local socket = require "socket"
 
 -- Contains utility methods for a variety of purposes.
 --
@@ -1108,7 +1109,8 @@ function Utility.Time.getAndUpdateTime(root)
 		root:getSection("clock"):set("time", currentTime)
 	end
 
-	return currentTime + currentOffset
+	local ms = math.floor((socket.gettime() % 1) * 1000)
+	return currentTime + currentOffset + (ms / 1000)
 end
 
 function Utility.Time.updateTime(root, days, seconds)

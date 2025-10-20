@@ -168,7 +168,7 @@ function LocalUI:_open(peep, interfaceID, blocking, ...)
 	local state = controller:pull()
 	self.uiStates[controller] = state
 
-	self.onPush(self, interfaceID, i.n, controller:pull(), controller:getPlayer())
+	self.onPush(self, interfaceID, i.n, state, controller:getPlayer())
 	self.onOpen(self, interfaceID, i.n, controller:getPlayer())
 
 	peep:poke("openInterface", interfaceID, i.n, blocking)

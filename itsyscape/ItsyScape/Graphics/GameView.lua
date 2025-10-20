@@ -22,6 +22,7 @@ local Decoration = require "ItsyScape.Graphics.Decoration"
 local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local LayerTextureResource = require "ItsyScape.Graphics.LayerTextureResource"
+local GlyphManager = require "ItsyScape.Graphics.GlyphManager"
 local Material = require "ItsyScape.Graphics.Material"
 local MapMeshSceneNode = require "ItsyScape.Graphics.MapMeshSceneNode"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
@@ -142,6 +143,8 @@ function GameView:new(game, camera)
 
 	self.music = {}
 	self.pendingMusic = {}
+
+	self.glyphManager = GlyphManager(nil, self)
 end
 
 function GameView:getGame()
@@ -170,6 +173,10 @@ end
 
 function GameView:getCamera()
 	return self.camera
+end
+
+function GameView:getGlyphManager()
+	return self.glyphManager
 end
 
 function GameView:getIsHeavyResourcePending()

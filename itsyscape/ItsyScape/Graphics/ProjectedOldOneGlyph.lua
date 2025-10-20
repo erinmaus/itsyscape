@@ -58,10 +58,13 @@ end
 ProjectedOldOneGlyph.Polygon = Class()
 function ProjectedOldOneGlyph.Polygon:new()
 	self.points = {}
+	self.lines = {}
+	self.offsetPoints = {}
 end
 
 function ProjectedOldOneGlyph.Polygon:reset()
 	table.clear(self.points)
+	table.clear(self.offsetPoints)
 end
 
 function ProjectedOldOneGlyph.Polygon:makeCenter(center, scale)
@@ -214,8 +217,61 @@ function ProjectedOldOneGlyph.Polygon:makeVerticalEdge(bottom, top, scale)
 	self.points[12] = bottomY1
 end
 
-function ProjectedOldOneGlyph.Polygon:draw()
-	love.graphics.polygon("fill", self.points)
+function ProjectedOldOneGlyph.Polygon:draw(offset)
+	table.clear(self.offsetPoints)
+
+	local lineIndex = 0
+	for i = 1, #self.points, 2 do
+		local x1, y1 = unpack(self.points, i, i + 1)
+		local x2, y2 = unpack(self.points, i + 2, i + 3)
+		x2, y2 = x2 or self.points[1], y2 or self.points[2]
+
+		local differenceX, differenceY = x2 - x1, y2 - y1
+		local length = math.sqrt(differenceX ^ 2 + differenceY ^ 2)
+
+		local normalX, normalY
+		if length == 0 then
+			normalX = 1, 0
+		else
+			normalX, normalY = differenceX / length, differenceY / length
+		end
+
+		local crossX, crossY = normalY, -normalX
+
+		lineIndex = lineIndex + 1
+		local line = self.lines[lineIndex]
+		if not line then
+			line = {}
+			self.lines[lineIndex] = line
+		end
+
+		line[1], line[2] = x1 + crossX * offset, y1 + crossY * offset
+		line[3], line[4] = x2 + crossX * offset, y2 + crossY * offset
+	end
+
+	for i = 1, lineIndex do
+		local line1 = self.lines[i]
+		local line2 = self.lines[i % lineIndex + 1]
+
+		local x1, y1, x2, y2 = unpack(line1)
+		local x3, y3, x4, y4 = unpack(line2)
+
+		local a1 = x2 - x1
+		local b1 = x3 - x4
+		local c1 = x3 - x1
+		local a2 = y2 - y1
+		local b2 = y3 - y4
+		local c2 = y3 - y1
+		local t = (b1 * c2 - b2 * c1) / (a2 * b1 - a1 * b2)
+
+		local x = x1 + t * a1
+		local y = y1 + t * a2
+
+		table.insert(self.offsetPoints, x)
+		table.insert(self.offsetPoints, y)
+	end
+
+	love.graphics.polygon("fill", self.offsetPoints)
 end
 
 function ProjectedOldOneGlyph:new(w, h, radiusScale)
@@ -346,10 +402,12 @@ function ProjectedOldOneGlyph:getIsEmpty()
 	return self.polygonCount == 0
 end
 
-function ProjectedOldOneGlyph:draw()
+function ProjectedOldOneGlyph:draw(offset)
+	offset = offset or 0
+
 	for i = 1, self.polygonCount do
 		local polygon = self.polygons[i]
-		polygon:draw()
+		polygon:draw(offset)
 	end
 end
 

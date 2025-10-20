@@ -192,6 +192,7 @@ function One:assign(director, key, ...)
 		combat.maximumPrayer = 1
 	end
 
+
 	self.pendingLevelUps = {}
 	self.pendingXP = {}
 	self.pendingXPTime = love.timer.getTime()

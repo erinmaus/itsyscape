@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local OldOneGlyph = require "ItsyScape.Graphics.OldOneGlyph"
 local OldOneGlyphInstance = require "ItsyScape.Graphics.OldOneGlyphInstance"
 local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
@@ -137,7 +139,21 @@ local function _stencil()
 	end
 end
 
-function GlyphManager:draw(root, projections, x, y, w, h, size)
+function GlyphManager:getStandardPlane(time)
+	local planeD = -(math.sin(time / math.pi / 8) * 2 - 1)
+	local planeAxis = Vector(
+		math.cos(time / math.pi / 8),
+		1,
+		math.sin(time / math.pi / 8)):getNormal()
+	local planeRotation = Quaternion.fromAxisAngle(planeAxis, math.sin(time / math.pi / 8) * math.pi / 8)
+	local planeNormal = planeRotation:getNormal():transformVector(Vector.UNIT_Y)
+
+	return planeNormal, planeD
+end
+
+function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
+	offset = offset or 0
+
 	love.graphics.push("all")
 
 	local maxSize = math.max(w, h)
@@ -146,7 +162,17 @@ function GlyphManager:draw(root, projections, x, y, w, h, size)
 
 	self.transform:setTransformation(x + w / 2, y + h / 2, 0, baseScale * extraScale, -baseScale * extraScale)
 	love.graphics.applyTransform(self.transform)
-	love.graphics.setLineWidth(1 / 2)
+
+	local lineWidth = 1 / 2 + offset
+	love.graphics.setLineWidth(lineWidth)
+
+	local minX, minY = math.huge, math.huge
+	local maxX, maxY = -math.huge, -math.huge
+
+	love.graphics.setColorMask(false, false, false, false)
+	love.graphics.clear(false, false, 0)
+
+	love.graphics.setDepthMode("always", true)
 
 	for _, p in ipairs(projections) do
 		local glyph, projection = unpack(p)
@@ -168,20 +194,37 @@ function GlyphManager:draw(root, projections, x, y, w, h, size)
 	_stencilProjections = projections
 	_stencilGlyphManager = self
 
+	love.graphics.push("all")
+	love.graphics.setDepthMode("always", false)
 	love.graphics.stencil(_stencil, "replace", 1, false)
+	love.graphics.pop()
 
 	love.graphics.setStencilTest("notequal", 1)
 	for _, p in ipairs(projections) do
 		local glyph, projection = unpack(p)
+		local position = projection:getPosition()
 
 		if not projection:getIsEmpty() and glyph:getHasChildren() then
-			love.graphics.circle("line", projection:getPosition().x, projection:getPosition().y, glyph:getRadius())
+			love.graphics.circle("line",  position.x, position.y, glyph:getRadius())
 		end
+
+		local topLeftX, topLeftY = love.graphics.transformPoint(
+			position.x - glyph:getRadius() - lineWidth - 5,
+			position.y - glyph:getRadius() - lineWidth - 5)
+		local bottomRightX, bottomRightY = love.graphics.transformPoint(
+			position.x + glyph:getRadius() + lineWidth + 5,
+			position.y + glyph:getRadius() + lineWidth + 5)
+
+		minX = math.min(minX, topLeftX, bottomRightX)
+		minY = math.min(minY, topLeftY, bottomRightY)
+		maxX = math.max(maxX, topLeftX, bottomRightX)
+		maxY = math.max(maxY, topLeftY, bottomRightY)
 	end
 
 	love.graphics.setStencilTest()
 	for _, p in ipairs(projections) do
 		local glyph, projection = unpack(p)
+		local position = projection:getPosition()
 
 		if not projection:getIsEmpty() and glyph:getParent() then
 			local scale = 1
@@ -189,7 +232,7 @@ function GlyphManager:draw(root, projections, x, y, w, h, size)
 				scale = 1.5
 			end
 
-			love.graphics.circle("line", projection:getPosition().x, projection:getPosition().y, self.radius * 1.5)
+			love.graphics.circle("line", position.x, position.y, self.radius * 1.5)
 		end
 	end
 
@@ -210,9 +253,14 @@ function GlyphManager:draw(root, projections, x, y, w, h, size)
 
 		love.graphics.push()
 		love.graphics.applyTransform(self.transform)
-		projection:draw()
+		projection:draw(offset / scale)
 		love.graphics.pop()
 	end
+
+	love.graphics.origin()
+	love.graphics.setColorMask(true, true, true, true)
+	love.graphics.setDepthMode("equal", true)
+	love.graphics.rectangle("fill", minX, minY, maxX - minX, maxY - minY)
 
 	love.graphics.pop()
 end

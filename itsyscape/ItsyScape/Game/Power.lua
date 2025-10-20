@@ -102,6 +102,8 @@ function Power:activate(activator, target)
 			action = self:getAction()
 		})
 	end
+
+	Utility.UI.openInterface(activator, "RiteCircle", false, self)
 end
 
 function Power:getCost(peep)
