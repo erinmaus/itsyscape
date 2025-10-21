@@ -204,6 +204,14 @@ function DialogBox:new(id, index, ui)
 	self:next()
 end
 
+function DialogBox:restoreFocus()
+	if self.gridLayout then
+		self:focusChild(self.gridLayout)
+	else
+		self:focusChild(self.dialogButton)
+	end
+end
+
 function DialogBox:close()
 	self:getView():getRoot().onGamepadRelease:unregister(self._onRootGamepadRelease)
 	self:getView():getRoot().onKeyDown:unregister(self._onRootKeyDown)

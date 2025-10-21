@@ -178,6 +178,12 @@ function GamepadCombatHUD:new(...)
 	self:_initCommon()
 end
 
+function GamepadCombatHUD:restoreFocus()
+	if self:getIsShowing() then
+		self:focusChild(self:getMenu())
+	end
+end
+
 function GamepadCombatHUD:onSwitchCombatStyle(oldCombatStyle, newCombatStyle)
 	BaseCombatHUD.onSwitchCombatStyle(self, oldCombatStyle, newCombatStyle)
 

@@ -23,6 +23,7 @@ local Drawable = require "ItsyScape.UI.Drawable"
 local DrawableRenderer = require "ItsyScape.UI.DrawableRenderer"
 local Icon = require "ItsyScape.UI.Icon"
 local IconRenderer = require "ItsyScape.UI.IconRenderer"
+local Interface = require "ItsyScape.UI.Interface"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
@@ -1220,6 +1221,11 @@ function UIView:new(gameView)
 	self.root:setID("root")
 	self.inputProvider = WidgetInputProvider(self.root)
 
+	self.inputProvider.onBlur:register(self._onBlur, self)
+	self.inputProvider.onFocus:register(self._onFocus, self)
+	self.interfaceFocusStack = {}
+	self.hasPendingInterfaceFocus = false
+
 	self.resources = WidgetResourceManager()
 	self.root:setData(WidgetResourceManager, self.resources)
 
@@ -1252,6 +1258,70 @@ function UIView:new(gameView)
 	self.pokes = {}
 
 	self.uiState = {}
+end
+
+function UIView:restoreFocus(interface)
+	if not interface then
+		return
+	end
+
+	for i = #self.interfaceFocusStack, 1, -1 do
+		if self.interfaceFocusStack[i] == interface then
+			table.remove(self.interfaceFocusStack, i)
+		end
+	end
+	table.insert(self.interfaceFocusStack, #self.interfaceFocusStack, interface)
+
+	self.hasPendingInterfaceFocus = true
+end
+
+function UIView:_dump()
+	for i, interface in ipairs(self.interfaceFocusStack) do
+		print(">>> i", i, "interface", interface:getDebugInfo().shortName)
+	end
+	print()
+end
+
+function UIView:_onBlur(_, widget)
+	local interface = widget:getParentOfType(Interface)
+	if not interface then
+		return
+	end
+
+	for i = #self.interfaceFocusStack, 1, -1 do
+		if self.interfaceFocusStack[i] == interface then
+			table.remove(self.interfaceFocusStack, i)
+		end
+	end
+	table.insert(self.interfaceFocusStack, #self.interfaceFocusStack, interface)
+
+	local top = self.interfaceFocusStack[#self.interfaceFocusStack]
+	if top and top ~= interface then
+		self.hasPendingInterfaceFocus = true
+	end
+end
+
+function UIView:_onFocus(_, widget)
+	local interface = widget:getParentOfType(Interface)
+	if not interface then
+		return
+	end
+
+	local wasFocused = self.interfaceFocusStack[#self.interfaceFocusStack] == interface
+
+	for i = #self.interfaceFocusStack, 1, -1 do
+		if self.interfaceFocusStack[i] == interface then
+			table.remove(self.interfaceFocusStack, i)
+		end
+	end
+
+	table.insert(self.interfaceFocusStack, interface)
+
+	if not wasFocused then
+		Log.info("Interface '%s' (index %d) captured focus.", interface:getDebugInfo().shortName, #self.interfaceFocusStack)
+	end
+
+	self.hasPendingInterfaceFocus = false
 end
 
 function UIView:enableInputScheme(inputScheme)
@@ -1808,6 +1878,18 @@ function UIView:update(delta)
 
 			self.currentFocusedWidget = focusedWidget
 		end
+	end
+
+	if self.hasPendingInterfaceFocus then
+		local top = self.interfaceFocusStack[#self.interfaceFocusStack]
+		if top then
+			Log.info("Restoring focus to interface '%s' (index %d).", top:getDebugInfo().shortName, #self.interfaceFocusStack)
+			top:restoreFocus()
+		end
+
+		self.hasPendingInterfaceFocus = false
+
+		self:_dump()
 	end
 end
 

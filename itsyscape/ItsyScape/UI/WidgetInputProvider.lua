@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Variables = require "ItsyScape.Game.Variables"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
@@ -34,6 +35,9 @@ function WidgetInputProvider:new(root)
 	self.joysticks = {}
 	self.currentJoystickIndex = 1
 	self.currentJoystick = false
+
+	self.onFocus = Callback()
+	self.onBlur = Callback()
 
 	self.config = Variables.load("Resources/Game/Variables/Input.json")
 end
@@ -87,11 +91,13 @@ function WidgetInputProvider:setFocusedWidget(widget, reason)
 
 	local current = self:getFocusedWidget()
 	if current then
+		self:onBlur(current)
 		current:blur()
 	end
 
 	self.focusedWidget = widget or false
 	if self.focusedWidget then
+		self:onFocus(widget)
 		self.focusedWidget:focus(reason or 'force')
 	end
 end
@@ -99,6 +105,7 @@ end
 function WidgetInputProvider:getFocusedWidget()
 	if self.focusedWidget then
 		if not self.focusedWidget:getIsFocused() or not self.focusedWidget:hasParent(self.root) then
+			self:onBlur(self.focusedWidget)
 			self.focusedWidget = false
 		end
 	end

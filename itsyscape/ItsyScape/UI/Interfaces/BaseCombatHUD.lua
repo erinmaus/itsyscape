@@ -770,6 +770,9 @@ function BaseCombatHUD:hide()
 
 	self:sendPoke("hide", nil, {})
 
+	local uiView = self:getView()
+	uiView:restoreFocus(self)
+
 	return true
 end
 

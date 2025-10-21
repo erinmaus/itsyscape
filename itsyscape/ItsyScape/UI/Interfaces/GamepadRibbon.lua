@@ -203,6 +203,10 @@ function GamepadRibbon:new(id, index, ui)
 	self.combinedState = {}
 end
 
+function GamepadRibbon:restoreFocus()
+	self:_openOrClose()
+end
+
 function GamepadRibbon:gamepadRelease(joystick, button)
 	Interface.gamepadRelease(self, joystick, button)
 
