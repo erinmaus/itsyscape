@@ -14,6 +14,7 @@ local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
+local Config = require "ItsyScape.Game.Config"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Probe = require "ItsyScape.Game.Probe"
 local Variables = require "ItsyScape.Game.Variables"
@@ -400,7 +401,6 @@ end
 function Application:getUIView()
 	return self.uiView
 end
-
 
 function Application:getIsPaused()
 	return self.paused
@@ -906,9 +906,12 @@ function Application:quitGame(game)
 end
 
 function Application:mousePress(x, y, button)
+	self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_MOUSE_KEYBOARD)
+
 	local isBlocking, widget = self.uiView:getInputProvider():isBlocking(x, y)
 	if isBlocking then
 		self.uiView:getInputProvider():mousePress(x, y, button)
+		self.uiView:setCurrentInputScheme(self:getUIView().INPUT_SCHEME_MOUSE_KEYBOARD)
 
 		if not self.uiView:isPokeMenu(widget) then
 			self.uiView:closePokeMenu()
@@ -961,15 +964,22 @@ function Application:gamepadRelease(...)
 end
 
 function Application:gamepadPress(...)
+	self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_GAMEPAD)
 	self.uiView:getInputProvider():gamepadPress(...)
 end
 
 function Application:gamepadAxis(...)
+	local _, _, value = ...
+	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity") or 0.5
+	if math.abs(value) > axisSensitivity then
+		self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_GAMEPAD)
+	end
+
 	self.uiView:getInputProvider():gamepadAxis(...)
 end
 
 function Application:touchPress(...)
-	-- Nothing.
+	self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_TOUCH)
 end
 
 function Application:touchRelease(...)

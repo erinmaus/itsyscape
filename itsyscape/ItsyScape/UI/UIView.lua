@@ -1212,6 +1212,8 @@ function UIView:new(gameView)
 		] = true
 	}
 
+	self.currentInputScheme = _MOBILE and UIView.INPUT_SCHEME_MOUSE_KEYBOARD or UIView.INPUT_SCHEME_TOUCH
+
 	local ui = self.game:getUI()
 	ui.onOpen:register(self.open, self)
 	ui.onClose:register(self.close, self)
@@ -1228,6 +1230,7 @@ function UIView:new(gameView)
 
 	self.resources = WidgetResourceManager()
 	self.root:setData(WidgetResourceManager, self.resources)
+	self.root:setData(UIView, self)
 
 	self.renderManager = WidgetRenderManager(self.inputProvider)
 	self.renderManager:addRenderer(Button, ButtonRenderer(self.resources))
@@ -1265,35 +1268,28 @@ function UIView:restoreFocus(interface)
 		return
 	end
 
-	for i = #self.interfaceFocusStack, 1, -1 do
-		if self.interfaceFocusStack[i] == interface then
-			table.remove(self.interfaceFocusStack, i)
-		end
-	end
-	table.insert(self.interfaceFocusStack, #self.interfaceFocusStack, interface)
+	self:_removeFromFocusStack(interface)
+	table.insert(self.interfaceFocusStack, math.max(#self.interfaceFocusStack, 1), interface)
 
 	self.hasPendingInterfaceFocus = true
 end
 
-function UIView:_dump()
-	for i, interface in ipairs(self.interfaceFocusStack) do
-		print(">>> i", i, "interface", interface:getDebugInfo().shortName)
-	end
-	print()
-end
-
-function UIView:_onBlur(_, widget)
-	local interface = widget:getParentOfType(Interface)
-	if not interface then
-		return
-	end
-
+function UIView:_removeFromFocusStack(interface)
 	for i = #self.interfaceFocusStack, 1, -1 do
 		if self.interfaceFocusStack[i] == interface then
 			table.remove(self.interfaceFocusStack, i)
 		end
 	end
-	table.insert(self.interfaceFocusStack, #self.interfaceFocusStack, interface)
+end
+
+function UIView:_onBlur(_, widget)
+	local interface = widget:getParentOfType(Interface)
+	if not interface or interface:getRootParent() ~= self.root then
+		return
+	end
+
+	self:_removeFromFocusStack(interface)
+	table.insert(self.interfaceFocusStack, math.max(#self.interfaceFocusStack, 1), interface)
 
 	local top = self.interfaceFocusStack[#self.interfaceFocusStack]
 	if top and top ~= interface then
@@ -1303,18 +1299,13 @@ end
 
 function UIView:_onFocus(_, widget)
 	local interface = widget:getParentOfType(Interface)
-	if not interface then
+	if not interface or interface:getRootParent() ~= self.root then
 		return
 	end
 
 	local wasFocused = self.interfaceFocusStack[#self.interfaceFocusStack] == interface
 
-	for i = #self.interfaceFocusStack, 1, -1 do
-		if self.interfaceFocusStack[i] == interface then
-			table.remove(self.interfaceFocusStack, i)
-		end
-	end
-
+	self:_removeFromFocusStack(interface)
 	table.insert(self.interfaceFocusStack, interface)
 
 	if not wasFocused then
@@ -1334,6 +1325,28 @@ end
 
 function UIView:hasInputScheme(inputScheme)
 	return self.currentInputSchemes[inputScheme] == true
+end
+
+local VALID_INPUT_SCHEMES = {
+	[UIView.INPUT_SCHEME_MOUSE_KEYBOARD] = true,
+	[UIView.INPUT_SCHEME_TOUCH] = true,
+	[UIView.INPUT_SCHEME_GAMEPAD] = true,
+	[UIView.INPUT_SCHEME_GYRO] = true
+}
+
+function UIView:isInputSchemeValid(inputScheme)
+	return VALID_INPUT_SCHEMES[inputScheme] == true
+end
+
+function UIView:getCurrentInputScheme()
+	return self.currentInputScheme
+end
+
+function UIView:setCurrentInputScheme(value)
+	if self:isInputSchemeValid(value) then
+		self:enableInputScheme(value)
+		self.currentInputScheme = value
+	end
 end
 
 function UIView:pull(interfaceID, interfaceIndex)
@@ -1434,6 +1447,12 @@ function UIView:close(ui, interfaceID, index)
 
 			self.root:removeChild(interface)
 			interfaces[index] = nil
+
+			if self.interfaceFocusStack[#self.interfaceFocusStack] == interface then
+				self.hasPendingInterfaceFocus = true
+			end
+
+			self:_removeFromFocusStack(interface)
 		end
 	end
 end
@@ -1881,15 +1900,16 @@ function UIView:update(delta)
 	end
 
 	if self.hasPendingInterfaceFocus then
-		local top = self.interfaceFocusStack[#self.interfaceFocusStack]
-		if top then
-			Log.info("Restoring focus to interface '%s' (index %d).", top:getDebugInfo().shortName, #self.interfaceFocusStack)
-			top:restoreFocus()
+		for i = #self.interfaceFocusStack, 1, -1 do
+			local top = self.interfaceFocusStack[i]
+			local result = top:restoreFocus()
+			if result == nil or result then
+				Log.info("Restored focus to interface '%s' (index %d).", top:getDebugInfo().shortName, #self.interfaceFocusStack)
+				break
+			end
 		end
 
 		self.hasPendingInterfaceFocus = false
-
-		self:_dump()
 	end
 end
 

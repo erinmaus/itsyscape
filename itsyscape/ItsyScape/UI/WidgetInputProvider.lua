@@ -42,6 +42,10 @@ function WidgetInputProvider:new(root)
 	self.config = Variables.load("Resources/Game/Variables/Input.json")
 end
 
+function WidgetInputProvider:getCurrentInputScheme()
+	return self.currentInputScheme
+end
+
 local KEYBIND_PATH = Variables.Path("keybinds", "ui", Variables.PathParameter("key"))
 function WidgetInputProvider:getKeybind(keyBindName)
 	return self.config:get(KEYBIND_PATH, "key", keyBindName)
@@ -60,12 +64,12 @@ function WidgetInputProvider:isCurrentJoystick(joystick)
 		return false
 	end
 
-	local _, currentID = self.currentJoystick:getID()
+	local currentID = self.currentJoystick:getID()
 	return self.currentJoystick == joystick
 end
 
 function WidgetInputProvider:getGamepadAxis(joystick, axis)
-	local _, id = joystick:getID()
+	local id = joystick:getID()
 	local joystickInfo = self.joysticks[id]
 	if not joystickInfo then
 		return 0
@@ -311,7 +315,7 @@ function WidgetInputProvider:joystickAdd(joystick)
 	local index = self.currentJoystickIndex
 	self.currentJoystickIndex = self.currentJoystickIndex + 1
 
-	local _, id = joystick:getID()
+	local id = joystick:getID()
 	self.joysticks[id] = {
 		index = index,
 		axis = {},
@@ -330,11 +334,11 @@ function WidgetInputProvider:joystickAdd(joystick)
 end
 
 function WidgetInputProvider:joystickRemove(joystick)
-	local _, id = joystick:getID()
+	local id = joystick:getID()
 	self.joysticks[id] = nil
 
 	if self.currentJoystick then
-		local _, currentID = self.currentJoystick:getID()
+		local currentID = self.currentJoystick:getID()
 		if currentID == id then
 			self.currentJoystick = false
 		end
@@ -369,7 +373,7 @@ function WidgetInputProvider:gamepadPress(...)
 end
 
 function WidgetInputProvider:gamepadAxis(joystick, axis, value)
-	local _, id = joystick:getID()
+	local id = joystick:getID()
 	local joystickInfo = self.joysticks[id]
 	if joystickInfo then
 		joystickInfo.axis[axis] = value
@@ -532,7 +536,7 @@ function WidgetInputProvider:_updateGamepad(delta)
 		return
 	end
 
-	local _, id = self.currentJoystick:getID()
+	local id = self.currentJoystick:getID()
 	local joystickInfo = self.joysticks[id]
 	if not joystickInfo then
 		return

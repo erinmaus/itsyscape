@@ -158,18 +158,19 @@ function ActionCommand:_build(parent, t, o, delta)
 		widget:setHasBackground(false)
 		widget:setRowSize(math.huge, math.lerp(o.height, t.height, delta))
 
-		local inputProvider = self:getInputProvider()
-		if inputProvider and inputProvider:getCurrentJoystick() then
-			widget:setButtonID(t.gamepad.button)
-			widget:setText(t.gamepad.label or "")
-		elseif _MOBILE then
-			widget:setButtonID(t.mobile.button)
-			widget:getGamepadIcon():setController("Touch")
-			widget:setText(t.standard.label or "")
-		else
-			widget:setButtonID(t.standard.button)
-			widget:getGamepadIcon():setController("KeyboardMouse")
-			widget:setText(t.standard.label or "")
+		if t.standard then
+			widget:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, t.standard.button)
+			widget:setMessage(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, t.standard.label)
+		end
+
+		if t.gamepad then
+			widget:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, t.gamepad.button)
+			widget:setMessage(GamepadToolTip.INPUT_SCHEME_GAMEPAD, t.gamepad.label)
+		end
+
+		if t.mobile then
+			widget:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, t.mobile.button)
+			widget:setMessage(GamepadToolTip.INPUT_SCHEME_TOUCH, t.mobile.label)
 		end
 	elseif t.type == "component" then
 		widget = ActionCommand.Common(t, o, delta)

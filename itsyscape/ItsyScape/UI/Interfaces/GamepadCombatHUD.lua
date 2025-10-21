@@ -179,9 +179,11 @@ function GamepadCombatHUD:new(...)
 end
 
 function GamepadCombatHUD:restoreFocus()
-	if self:getIsShowing() then
-		self:focusChild(self:getMenu())
+	if not self:getIsShowing() then
+		return false
 	end
+
+	self:focusChild(self:getMenu())
 end
 
 function GamepadCombatHUD:onSwitchCombatStyle(oldCombatStyle, newCombatStyle)
@@ -512,13 +514,13 @@ function GamepadCombatHUD:addStandardThingiesInterface(menu, getDataCallback)
 
 	local backToolTip = GamepadToolTip()
 	backToolTip:setHasBackground(false)
-	backToolTip:setButtonID("b")
+	backToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "b")
 	backToolTip:setText("Back")
 	backToolTip:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2, -self.STANDARD_INTERFACE_TITLE_HEIGHT)
 
 	local menuActionToolTip = GamepadToolTip()
 	menuActionToolTip:setHasBackground(false)
-	menuActionToolTip:setButtonID("x")
+	menuActionToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "x")
 	menuActionToolTip:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2 + self.STANDARD_INTERFACE_TITLE_HEIGHT, self.PADDING)
 
 	local container = GamepadCombatHUD.StandardInterfaceContainer()

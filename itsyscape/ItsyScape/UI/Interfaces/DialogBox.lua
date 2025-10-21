@@ -133,6 +133,9 @@ function DialogBox:new(id, index, ui)
 		DialogBox.WIDTH / 2 - GamepadToolTip.MAX_WIDTH / 2,
 		DialogBox.HEIGHT - GamepadToolTip.BUTTON_SIZE - DialogBox.PADDING)
 	self.pressToContinue:setIsSelfClickThrough(true)
+	self.pressToContinue:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadPrimaryAction")
+	self.pressToContinue:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "mouse_left")
+	self.pressToContinue:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, "touch")
 	self:addChild(self.pressToContinue)
 
 	self.stopTalking = GamepadToolTip()
@@ -140,6 +143,8 @@ function DialogBox:new(id, index, ui)
 	self.stopTalking:setHasBackground(false)
 	self.stopTalking:setText("Stop talking")
 	self.stopTalking:setIsSelfClickThrough(true)
+	self.stopTalking:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadBack")
+	self.stopTalking:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "keyboard_escape")
 
 	self.inputBox = TextInput()
 	self.inputBox:setSize(DialogBox.WIDTH - DialogBox.PADDING * 2, 32)
@@ -262,15 +267,6 @@ function DialogBox:next(state)
 
 		self:addChild(self.dialogButton)
 		self:addChild(self.pressToContinue)
-
-		local inputProvider = self:getInputProvider()
-		if inputProvider and inputProvider:getCurrentJoystick() then
-			self.pressToContinue:getGamepadIcon():setController(false)
-			self.pressToContinue:setKeybind("gamepadPrimaryAction")
-		else
-			self.pressToContinue:getGamepadIcon():setController("KeyboardMouse")
-			self.pressToContinue:setButtonID("mouse_left")
-		end
 
 		self.pressToContinue:update(0)
 		local x = self.messageLabel:getPosition()
@@ -475,16 +471,7 @@ function DialogBox:update(delta)
 			self:addChild(self.stopTalking)
 		end
 
-		local inputProvider = self:getInputProvider()
-		if inputProvider and inputProvider:getCurrentJoystick() then
-			self.stopTalking:getGamepadIcon():setController(false)
-			self.stopTalking:setKeybind("gamepadBack")
-		else
-			self.stopTalking:getGamepadIcon():setController("KeyboardMouse")
-			self.stopTalking:setButtonID("keyboard_escape")
-		end
-		self.stopTalking:performLayout()
-
+		self.stopTalking:update(0)
 		local toolTipWidth, toolTipHeight = self.stopTalking:getSize()
 		self.stopTalking:setPosition(
 			DialogBox.WIDTH - toolTipWidth - self.PADDING,

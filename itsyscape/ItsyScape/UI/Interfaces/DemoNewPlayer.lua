@@ -121,6 +121,8 @@ function DemoNewPlayer:_onFocusPlayer(index)
 		self.toolTip:setText("Choose")
 	end
 	self.toolTip:update(0)
+	self.toolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "a")
+	self.toolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "mouse_left")
 
 	local toolTipWidth, toolTipHeight = self.toolTip:getSize()
 	local buttonX, buttonY = class.button:getAbsolutePosition()
@@ -154,6 +156,7 @@ function DemoNewPlayer:addClass(playerStorage, otherStorage, info)
 	button:setStyle(self.BUTTON_STYLE, ButtonStyle)
 	button.onClick:register(self._onSelectPlayer, self, index)
 	button.onFocus:register(self._onFocusPlayer, self, index)
+	button.onMouseEnter:register(self._onFocusPlayer, self, index)
 
 	local sceneSnippet = SceneSnippet()
 	sceneSnippet:setSize(self.BUTTON_WIDTH - self.PADDING * 2, self.BUTTON_WIDTH - self.PADDING * 2)
