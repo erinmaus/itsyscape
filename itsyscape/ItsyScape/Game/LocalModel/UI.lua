@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local UI = require "ItsyScape.Game.Model.UI"
 local RPCState = require "ItsyScape.Game.RPC.State"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
+local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local LocalUI = Class(UI)
 
@@ -148,6 +149,10 @@ function LocalUI:get(interfaceID, index)
 end
 
 function LocalUI:_open(peep, interfaceID, blocking, ...)
+	if not peep:hasBehavior(PlayerBehavior) then
+		return
+	end
+
 	local i = self.interfaces[interfaceID] or { n = 0, v = {} }
 	i.n = i.n + 1
 

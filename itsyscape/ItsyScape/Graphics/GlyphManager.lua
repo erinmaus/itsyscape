@@ -151,6 +151,36 @@ function GlyphManager:getStandardPlane(time)
 	return planeNormal, planeD
 end
 
+function GlyphManager:measure(root, projections, w, h, size, offset)
+	local maxSize = math.max(w, h)
+	local baseScale = maxSize / size
+	local extraScale = size / (root:getRadius() * baseScale)
+	local lineWidth = 1 / 2 + offset
+
+	self.transform:setTransformation(w / 2, h / 2, 0, baseScale * extraScale, -baseScale * extraScale)
+
+	local minX, minY = math.huge, math.huge
+	local maxX, maxY = -math.huge, -math.huge
+	for _, p in ipairs(projections) do
+		local glyph, projection = unpack(p)
+		local position = projection:getPosition()
+
+		local topLeftX, topLeftY = self.transform:transformPoint(
+			position.x - glyph:getRadius() - lineWidth - 5,
+			position.y - glyph:getRadius() - lineWidth - 5)
+		local bottomRightX, bottomRightY = self.transform:transformPoint(
+			position.x + glyph:getRadius() + lineWidth + 5,
+			position.y + glyph:getRadius() + lineWidth + 5)
+
+		minX = math.min(minX, topLeftX, bottomRightX)
+		minY = math.min(minY, topLeftY, bottomRightY)
+		maxX = math.max(maxX, topLeftX, bottomRightX)
+		maxY = math.max(maxY, topLeftY, bottomRightY)
+	end
+
+	return Vector(minX, minY, 0), Vector(maxX, maxY, 0)
+end
+
 function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 	offset = offset or 0
 
@@ -177,7 +207,7 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 	for _, p in ipairs(projections) do
 		local glyph, projection = unpack(p)
 
-		if not glyph:getParent() then
+		if glyph == root then
 			local scale = glyph:getRadius() / self.radius
 			projection:polygonize(1 / scale * 2)
 		else
@@ -226,7 +256,7 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 		local glyph, projection = unpack(p)
 		local position = projection:getPosition()
 
-		if not projection:getIsEmpty() and glyph:getParent() then
+		if not projection:getIsEmpty() and glyph ~= root then
 			local scale = 1
 			if not glyph:getHasChildren() then
 				scale = 1.5
@@ -242,7 +272,7 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 		local glyph, projection = unpack(p)
 
 		local scale
-		if not glyph:getParent() then
+		if glyph == root then
 			scale = glyph:getRadius() / self.radius
 		else
 			scale = 2

@@ -115,6 +115,12 @@ function DefaultCameraController:new(...)
 	self.cursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
 end
 
+function DefaultCameraController:push()
+	self.isCameraDragging = false
+	self.isActionMoving = false
+	self.isActionButtonDown = false
+end
+
 function DefaultCameraController:toggleTargetting()
 	self.isTargetting = not self.isTargetting
 	_CONF.targetCameraMode = self.isTargetting

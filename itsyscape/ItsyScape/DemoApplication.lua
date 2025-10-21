@@ -296,6 +296,7 @@ function DemoApplication:pushCamera(_, cameraType)
 	if not s then
 		Log.error("Could not load camera type '%s': %s", s, r)
 	else
+		self.cameraController:push()
 		self.cameraController = r(self)
 		table.insert(self.cameraControllers, self.cameraController)
 	end
@@ -309,6 +310,7 @@ function DemoApplication:popCamera()
 
 	table.remove(self.cameraControllers)
 	self.cameraController = self.cameraControllers[#self.cameraControllers]
+	self.cameraController:pop()
 end
 
 function DemoApplication:pokeCamera(_, event, ...)

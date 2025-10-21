@@ -24,6 +24,9 @@ local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
 local GlyphApplication = Class(EditorApplication)
+GlyphApplication.RITE_COLOR = Color.fromHexString("463779")
+GlyphApplication.GLOW_COLOR = Color.fromHexString("f26722")
+GlyphApplication.OUTLINE_COLOR = Color.fromHexString("000000")
 
 function GlyphApplication:new()
 	EditorApplication.new(self)
@@ -62,7 +65,7 @@ function GlyphApplication:_updateGlyph(node, glyph)
 	local childNode = DecorationSceneNode()
 	childNode:fromDecoration(decoration, self.glyphSphere)
 	childNode:setParent(node)
-	childNode:getMaterial():setColor(Color(0.3))
+	childNode:getMaterial():setColor(self.RITE_COLOR)
 	childNode:getTransform():setLocalTranslation(glyph:getPosition())
 
 	for _, child in glyph:iterate() do
@@ -141,7 +144,7 @@ local function _toPoint(p)
 end
 
 function GlyphApplication:draw()
-	love.graphics.clear(1, 1, 1, 1)
+	love.graphics.clear(0, 0, 0, 0)
 
 	EditorApplication.draw(self)
 
@@ -154,7 +157,19 @@ function GlyphApplication:draw()
 	love.graphics.setColor(Color.fromHexString("463779"):get())
 
 	local projections = self.glyphManager:projectAll(self.rootGlyph, planeNormal, planeD)
-	self.glyphManager:draw(self.rootGlyph, projections, width / 4, 0, width, height, 200, love.timer.getTime() % 0.25)
+
+	local offset = math.abs(math.sin(love.timer.getTime() / 8 * math.pi)) * 0.5 + 0.25
+
+	love.graphics.setBlendMode("add", "alphamultiply")
+	love.graphics.setColor(self.GLOW_COLOR.r, self.GLOW_COLOR.g, self.GLOW_COLOR.b, 0.5)
+	self.glyphManager:draw(self.rootGlyph, projections, width / 4, 0, width, height, 200, offset)
+
+	love.graphics.setBlendMode("alpha", "alphamultiply")
+	love.graphics.setColor(self.OUTLINE_COLOR.r, self.OUTLINE_COLOR.g, self.OUTLINE_COLOR.b, 1)
+	self.glyphManager:draw(self.rootGlyph, projections, width / 4, 0, width, height, 200, 0.25)
+
+	love.graphics.setColor(self.RITE_COLOR.r, self.RITE_COLOR.g, self.RITE_COLOR.b, 1)
+	self.glyphManager:draw(self.rootGlyph, projections, width / 4, 0, width, height, 200, 0)
 
 	love.graphics.pop()
 end
