@@ -1257,7 +1257,9 @@ Common.EAT_HINT = {
 		end,
 		message = {
 			gamepad = {
-				button = "a",
+				button = { "rightstick" },
+				action = { "left", "up", "right", "down"},
+				speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
 				label = "Open food ring"
 			},
 			standard = false,

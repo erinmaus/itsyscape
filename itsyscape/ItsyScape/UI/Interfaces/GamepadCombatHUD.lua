@@ -173,7 +173,10 @@ function GamepadCombatHUD:new(...)
 
 	BaseCombatHUD.new(self, ...)
 
-	self:setData(GamepadSink, GamepadSink())
+	self:setData(GamepadSink, GamepadSink({
+		isBlocking = false,
+		isBlockingCamera = true
+	}))
 
 	self:_initCommon()
 end
@@ -592,7 +595,7 @@ function GamepadCombatHUD:newSpiralMenu(name)
 		self.SPIRAL_OUTER_RADIUS * 2 + self.SELECTED_BUTTON_SIZE)
 	spiralMenu:setData("name", name)
 	spiralMenu:setRadius(self.SPIRAL_INNER_RADIUS, self.SPIRAL_OUTER_RADIUS)
-	spiralMenu:setData(GamepadSink, GamepadSink({ isBlockingCamera = false }))
+	spiralMenu:setData(GamepadSink, GamepadSink({ isBlocking = false, isBlockingCamera = true }))
 
 	local circlePanel = GamepadCirclePanel()
 	circlePanel:enable()
