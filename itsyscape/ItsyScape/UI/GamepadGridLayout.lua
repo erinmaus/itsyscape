@@ -28,6 +28,7 @@ function GamepadGridLayout:new()
 	self:setData(GamepadSink, GamepadSink())
 
 	self.currentFocusedWidget = false
+	self.wrapScroll = true
 end
 
 function GamepadGridLayout:setWrapFocus(value)
@@ -36,6 +37,14 @@ end
 
 function GamepadGridLayout:getWrapFocus()
 	return self.wrapFocus
+end
+
+function GamepadGridLayout:setWrapScroll(value)
+	self.wrapScroll = not not value
+end
+
+function GamepadGridLayout:getWrapScroll()
+	return self.wrapScroll
 end
 
 function GamepadGridLayout:getIsFocusable()
@@ -85,6 +94,10 @@ function GamepadGridLayout:_focusChild(widget)
 end
 
 function GamepadGridLayout:_tryScroll(widget)
+	if not self.wrapScroll then
+		return
+	end
+
 	local parent = self:getParent()
 	if not parent then
 		return

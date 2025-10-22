@@ -71,6 +71,7 @@ function GamepadToolTip:new()
 	self:setAreChildrenClickThrough(true)
 
 	self.variants = {}
+	self.centerParent = false
 	self.currentInputScheme = false
 
 	self.requireParentFocus = false
@@ -304,12 +305,12 @@ function GamepadToolTip:performLayout()
 		self.label:setPosition(self.PADDING * 2, self.PADDING)
 		self:setSize(
 			math.min(width + self.PADDING * 4, self.maxWidth),
-			math.max(height + self.PADDING * 2, self.BUTTON_SIZE + self.PADDING * 2))
+			math.max(height + self.PADDING * 2, self.buttonSize + self.PADDING * 2))
 	else
 		self.label:setPosition(self.buttonSize + self.PADDING * 2, self.PADDING)
 		self:setSize(
 			math.min(width + self.buttonSize + self.PADDING * 4, self.maxWidth),
-			math.max(height + self.PADDING * 2, self.BUTTON_SIZE + self.PADDING * 2))
+			math.max(height + self.PADDING * 2, self.buttonSize + self.PADDING * 2))
 	end
 
 	if self.centerParent and self:getParent() then

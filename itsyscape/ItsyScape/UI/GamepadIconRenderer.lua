@@ -67,6 +67,8 @@ function GamepadIconRenderer:_buildNames(joystickName, icon)
 		GamepadIconRenderer.GAMEPAD_BUTTON[id] or
 		id)
 
+	Log.info(">>> controller %s %s %s %s %s", controller, "id", id, Log.dump(icon._variants), icon:getID())
+
 	if not button then
 		return nil, nil
 	end
@@ -128,7 +130,6 @@ function GamepadIconRenderer:_getIcon(joystickName, icon)
 			end
 		end
 
-
 		self.icons[path] = value
 		if value then
 			return value
@@ -144,7 +145,7 @@ function GamepadIconRenderer:isSame(widget)
 		return false
 	end
 
-	local oldOutline, oldUseColor, oldID, oldAction, oldButton = unpack(replay)
+	local oldOutline, oldUseColor, oldID, oldAction, oldButton, oldController = unpack(replay)
 
 	local currentOutline = widget:getOutline()
 	local currentUseColor = widget:getUseDefaultColor()
@@ -154,12 +155,14 @@ function GamepadIconRenderer:isSame(widget)
 		(GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller] and GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller][id]) or
 		GamepadIconRenderer.GAMEPAD_BUTTON[id] or
 		id)
+	local currentController = widget:getController() or false
 
 	return oldOutline == currentOutline and
 	       oldUseColor == currentUseColor and
 	       oldID == currentID and
 	       oldAction == currentAction and
-	       oldButton == currentButton
+	       oldButton == currentButton and
+	       oldController == currentController
 end
 
 function GamepadIconRenderer:draw(widget, state)
@@ -177,8 +180,9 @@ function GamepadIconRenderer:draw(widget, state)
 			(GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller] and GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE[controller][id]) or
 			GamepadIconRenderer.GAMEPAD_BUTTON[id] or
 			id)
+		local currentController = widget:getController() or false
 
-		local replay = { currentOutline, currentUseColor, currentID, currentAction, currentButton }
+		local replay = { currentOutline, currentUseColor, currentID, currentAction, currentButton, currentController }
 		replay.icon = self:_getIcon(joystickName, widget)
 
 		self.replays[widget] = replay

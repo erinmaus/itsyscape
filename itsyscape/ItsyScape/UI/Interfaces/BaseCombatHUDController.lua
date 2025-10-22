@@ -81,6 +81,10 @@ function BaseCombatHUDController:new(peep, director)
 	self.usablePrayers = {}
 	self.turns = {}
 	self.food = {}
+	self.quickHeal = {
+		food = false,
+		enabled = false
+	}
 
 	self.powers = {}
 	self:_pullPowers()
@@ -1145,6 +1149,7 @@ function BaseCombatHUDController:buildCurrentState()
 		activeSpellID = self.activeSpellID,
 		prayers = self:getPrayers(),
 		food = self:getFood(),
+		quickHeal = self:getQuickHeal(),
 		equipment = self:getEquipment(),
 		config = self:getConfig(),
 		style = self.style,
@@ -1436,6 +1441,67 @@ function BaseCombatHUDController:updateFood()
 	end
 
 	self.isDirty = self.isDirty or #oldFood ~= #self.food
+
+	self:updateQuickHeal()
+end
+
+function BaseCombatHUDController:updateQuickHeal()
+	local combatStatus = self:getPeep():getBehavior(CombatStatusBehavior)
+	if not combatStatus then
+		return
+	end
+
+	local damage = combatStatus.maximumHitpoints - combatStatus.currentHitpoints
+
+	self.quickHeal.enabled = damage > 0 and #self.food > 0
+
+	local quickHealStorage = self:getStorage("Heal")
+	local itemID = quickHealStorage:get("itemID")
+
+	local item
+	if itemID then
+		for _, food in ipairs(self.food) do
+			if food.id == itemID then
+				item = food
+				break
+			end
+		end
+	end
+
+	if not item and #self.food >= 1 then
+		local firstFood = self.food[1]
+		local firstDistance = combatStatus.currentHitpoints + firstFood.health - combatStatus.maximumHitpoints
+
+		-- Food that heals closest to maximum hitpoints, but never fully heals
+		local bestFood1 = firstDistance < 0 and firstFood
+		local bestDistance1 = firstDistance < 0 and firstDistance or -math.huge
+
+		-- Food that heals to maximum hitpoints or more, but is closest to just maximum hitpoints
+		local bestFood2 = firstDistance >= 0 and bestFood1
+		local bestDistance2 = firstDistance >= 0 and firstDistance or math.huge
+
+		for i = 2, #self.food do
+			local food = self.food[i]
+			local distance = combatStatus.currentHitpoints + food.health - combatStatus.maximumHitpoints
+
+			if distance < 0 and distance > bestDistance1 then
+				bestFood1 = food
+				bestDistance1 = distance
+			end
+
+			if distance >= 0 and distance < bestDistance2 then
+				bestFood2 = food
+				bestDistance2 = distance
+			end
+		end
+
+		-- Prefer healing to maximum hitpoints, even if it's a slightly overheal;
+		-- otherwise, try and heal to maximum possible health.
+		item = bestFood2 or bestFood1
+	end
+
+	self.quickHeal.food = item or false
+	self.quickHeal.enabled = self.quickHeal.enabled and self.quickHeal.food
 end
 
 function BaseCombatHUDController:getFood()
@@ -1459,6 +1525,25 @@ function BaseCombatHUDController:getFood()
 	end
 
 	return foodState
+end
+
+function BaseCombatHUDController:getQuickHeal()
+	local enabled = self.quickHeal.enabled
+	local food = self.quickHeal.food
+
+	local quickHealState = {
+		enabled = enabled,
+		food = food and {
+			id = food.id,
+			count = food.count,
+			name = food.name,
+			description = food.description,
+			health = food.health,
+			keys = { unpack(food.keys) }
+		} or false
+	}
+
+	return quickHealState
 end
 
 function BaseCombatHUDController:sendRefresh()

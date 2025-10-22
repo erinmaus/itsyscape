@@ -27,6 +27,8 @@ function WidgetInputProvider:new(root)
 
 	self.root = root
 	self.root:setData(WidgetInputProvider, self)
+	self.root.onFocusChild:register(self._onFocusChild, self)
+	self.root.onBlurChild:register(self._onBlurChild, self)
 
 	self.focusedWidget = false
 	self.clickedWidgets = {}
@@ -88,7 +90,15 @@ function WidgetInputProvider:getHoveredWidgets()
 	end
 end
 
-function WidgetInputProvider:setFocusedWidget(widget, reason)
+function WidgetInputProvider:_onFocusChild(_, widget, reason)
+	self:_focusWidget(widget)
+end
+
+function WidgetInputProvider:_onBlurChild(_, widget, reason)
+	self:_focusWidget(false)
+end
+
+function WidgetInputProvider:_focusWidget(widget)
 	if widget and widget:getRootParent() ~= self.root then
 		return
 	end
@@ -96,13 +106,25 @@ function WidgetInputProvider:setFocusedWidget(widget, reason)
 	local current = self:getFocusedWidget()
 	if current then
 		self:onBlur(current)
-		current:blur()
 	end
 
 	self.focusedWidget = widget or false
 	if self.focusedWidget then
 		self:onFocus(widget)
-		self.focusedWidget:focus(reason or 'force')
+	end
+
+	return current
+end
+
+function WidgetInputProvider:setFocusedWidget(widget, reason)
+	local previous = self:_focusWidget(widget)
+
+	if previous then
+		previous:blur()
+	end
+
+	if widget then
+		widget:focus(reason)
 	end
 end
 
