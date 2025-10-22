@@ -33,7 +33,7 @@ function QuickCombatAction:new()
 	self.onBlurChild:register(self._childBlurred, self)
 
 	self.directionX = 0
-	self.directionY = -1
+	self.directionY = 1
 
 	-- The control icon sits just outside.
 	self:setSize(
@@ -48,7 +48,6 @@ function QuickCombatAction:new()
 	self.gamepadToolTip:setRowSize(
 		math.huge,
 		math.floor(self.BUTTON_SIZE / 2))
-	self.gamepadToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "mouse_left")
 	self.gamepadToolTip:setPosition(
 		-self.BUTTON_PADDING,
 		self.BUTTON_SIZE + self.BUTTON_PADDING * 2 - math.floor(self.BUTTON_SIZE / 2) + self.BUTTON_PADDING)
@@ -105,7 +104,6 @@ function QuickCombatAction:performLayout()
 
 			if self.directionX < 0 then
 				wrapperPositionX = -(wrapperWidth - s - p)
-				self.gridLayout:setIsReversed(true)
 			elseif self.directionX > 0 then
 				wrapperPositionX = 0
 			end
@@ -119,8 +117,7 @@ function QuickCombatAction:performLayout()
 
 			if self.directionY < 0 then
 				wrapperPositionY = -(wrapperHeight - s - p)
-				self.gridLayout:setIsReversed(true)
-			elseif self.directionY < 0 then
+			elseif self.directionY > 0 then
 				wrapperPositionY = 0
 			end
 		end
@@ -130,6 +127,12 @@ function QuickCombatAction:performLayout()
 	self.gridLayout:setPadding(paddingX, paddingY)
 	self.gridLayout:setSize(width, height)
 	self.gridLayout:performLayout()
+
+	if self.directionX < 0 then
+		self.gridLayout:setPosition(wrapperWidth - width, 0)
+	elseif self.directionX > 0 then
+		self.gridLayout:setPosition(0, 0)
+	end
 
 	if self.directionY < 0 then
 		self.gridLayout:setPosition(0, wrapperHeight - height)
@@ -182,8 +185,10 @@ function QuickCombatAction:_fill(delta)
 	local oldWidth, oldHeight = self.wrapper:getSize()
 	local scrollX, scrollY = 0, 0
 	local isDoneFilling = false
+
+	local width, height
 	if math.abs(self.directionX) > 0 then
-		width = math.clamp(width + pixels, self.minWidth, gridSizeX)
+		width = math.clamp(oldWidth + pixels, self.minWidth, gridSizeX)
 		height = gridSizeY
 
 		if self.isCollapsing and width == self.minWidth then
@@ -195,7 +200,7 @@ function QuickCombatAction:_fill(delta)
 
 	if math.abs(self.directionY) > 0 then
 		width = gridSizeX
-		height = math.clamp(height + pixels, self.minHeight, gridSizeY)
+		height = math.clamp(oldHeight + pixels, self.minHeight, gridSizeY)
 
 		if self.isCollapsing and height == self.minHeight then
 			isDoneFilling = true

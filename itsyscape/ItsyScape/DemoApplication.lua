@@ -566,41 +566,8 @@ end
 function DemoApplication:openDemoMainMenu()
 	local w, h = itsyrealm.graphics.getScaledMode()
 
-	local QuickCombatAction = require "ItsyScape.UI.Interfaces.Components.QuickCombatAction"
-	local ItemIcon = require "ItsyScape.UI.ItemIcon"
-	local q = QuickCombatAction()
-
-	local items = {
-		"ItsyDagger",
-		"ItsyLongsword",
-		"FishPie",
-		"AmuletOfYendor"
-	}
-
-	local Panel = require "ItsyScape.UI.Panel"
-
-	for _, item in ipairs(items) do
-		local button = Button()
-		local icon = ItemIcon()
-		icon:setPosition(QuickCombatAction.BUTTON_PADDING, QuickCombatAction.BUTTON_PADDING)
-		icon:setItemID(item)
-		button:addChild(icon)
-
-		q:getInnerPanel():addChild(button)
-	end
-	q:performLayout()
-	q:setPosition(200, 200)
-
-
 	local mainMenu = Widget()
 	mainMenu:setSize(w, h)
-
-
-	local p = Panel()
-	p:setPosition(200, 200)
-	p:setSize(56, 56)
-	mainMenu:addChild(p)
-	mainMenu:addChild(q)
 
 	self.mainMenu = mainMenu
 
