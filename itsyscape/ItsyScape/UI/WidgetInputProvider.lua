@@ -91,6 +91,11 @@ function WidgetInputProvider:getHoveredWidgets()
 end
 
 function WidgetInputProvider:_onFocusChild(_, widget, reason)
+	local currentFocusedWidget = self:getFocusedWidget()
+	if currentFocusedWidget and widget and currentFocusedWidget ~= widget then
+		currentFocusedWidget:blur()
+	end
+
 	self:_focusWidget(widget)
 end
 

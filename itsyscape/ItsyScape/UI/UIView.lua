@@ -53,6 +53,7 @@ local Widget = require "ItsyScape.UI.Widget"
 local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
 local WidgetRenderManager = require "ItsyScape.UI.WidgetRenderManager"
 local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
+local ControlManager = require "ItsyScape.UI.ControlManager"
 
 local UIView = Class()
 
@@ -1219,6 +1220,8 @@ function UIView:new(gameView)
 	ui.onClose:register(self.close, self)
 	ui.onPoke:register(self.poke, self)
 
+	self.controlManager = ControlManager(self)
+
 	self.root = UIView.Root()
 	self.root:setID("root")
 	self.inputProvider = WidgetInputProvider(self.root)
@@ -1465,6 +1468,68 @@ function UIView:poke(ui, interfaceID, index, actionID, actionIndex, e)
 		actionIndex = actionIndex,
 		e = e
 	})
+end
+
+function UIView:keyDown(...)
+	self.inputProvider:keyDown(...)
+	self.controlManager:keyDown(...)
+end
+
+function UIView:keyUp(...)
+	self.inputProvider:keyUp(...)
+	self.controlManager:keyUp(...)
+end
+
+function UIView:type(...)
+	self.inputProvider:type(...)
+end
+
+function UIView:joystickAdd(...)
+	self.inputProvider:joystickAdd(...)
+	self.controlManager:joystickAdd(...)
+end
+
+function UIView:joystickRemove(...)
+	self.inputProvider:joystickRemove(...)
+	self.controlManager:joystickRemove(...)
+end
+
+function UIView:gamepadRelease(...)
+	self.inputProvider:gamepadRelease(...)
+	self.controlManager:gamepadRelease(...)
+end
+
+function UIView:gamepadAxis(...)
+	self.inputProvider:gamepadAxis(...)
+	self.controlManager:gamepadAxis(...)
+end
+
+function UIView:mousePress(...)
+	self.inputProvider:mousePress(...)
+end
+
+function UIView:mouseScroll(...)
+	self.inputProvider:mouseScroll(...)
+end
+
+function UIView:mouseRelease(...)
+	self.inputProvider:mouseRelease(...)
+end
+
+function UIView:mouseMove(...)
+	self.inputProvider:mouseMove(...)
+end
+
+function UIView:touchPress(...)
+	-- Nothing.
+end
+
+function UIView:touchRelease(...)
+	-- Nothing.
+end
+
+function UIView:touchMove(...)
+	-- Nothing.
 end
 
 function UIView:_layoutToolTip(widget, toolTip)

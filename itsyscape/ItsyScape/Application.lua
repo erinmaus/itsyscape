@@ -910,7 +910,7 @@ function Application:mousePress(x, y, button)
 
 	local isBlocking, widget = self.uiView:getInputProvider():isBlocking(x, y)
 	if isBlocking then
-		self.uiView:getInputProvider():mousePress(x, y, button)
+		self.uiView:mousePress(x, y, button)
 		self.uiView:setCurrentInputScheme(self:getUIView().INPUT_SCHEME_MOUSE_KEYBOARD)
 
 		if not self.uiView:isPokeMenu(widget) then
@@ -927,14 +927,14 @@ end
 
 function Application:mouseRelease(x, y, button)
 	local isBlocking = self.uiView:getInputProvider():isBlocking(x, y)
-	self.uiView:getInputProvider():mouseRelease(x, y, button)
+	self.uiView:mouseRelease(x, y, button)
 
 	return isBlocking
 end
 
 function Application:mouseScroll(x, y)
-	if self.uiView:getInputProvider():isBlocking(itsyrealm.mouse.getPosition()) then
-		self.uiView:getInputProvider():mouseScroll(x, y)
+	if self.uiView:isBlocking(itsyrealm.mouse.getPosition()) then
+		self.uiView:mouseScroll(x, y)
 		return true
 	end
 
@@ -942,7 +942,7 @@ function Application:mouseScroll(x, y)
 end
 
 function Application:mouseMove(x, y, dx, dy)
-	self.uiView:getInputProvider():mouseMove(x, y, dx, dy)
+	self.uiView:mouseMove(x, y, dx, dy)
 
 	return false
 end
@@ -952,20 +952,20 @@ function Application:getMousePosition()
 end
 
 function Application:joystickAdd(...)
-	self.uiView:getInputProvider():joystickAdd(...)
+	self.uiView:joystickAdd(...)
 end
 
 function Application:joystickRemove(...)
-	self.uiView:getInputProvider():joystickRemove(...)
+	self.uiView:joystickRemove(...)
 end
 
 function Application:gamepadRelease(...)
-	self.uiView:getInputProvider():gamepadRelease(...)
+	self.uiView:gamepadRelease(...)
 end
 
 function Application:gamepadPress(...)
 	self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_GAMEPAD)
-	self.uiView:getInputProvider():gamepadPress(...)
+	self.uiView:gamepadPress(...)
 end
 
 function Application:gamepadAxis(...)
@@ -975,23 +975,24 @@ function Application:gamepadAxis(...)
 		self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_GAMEPAD)
 	end
 
-	self.uiView:getInputProvider():gamepadAxis(...)
+	self.uiView:gamepadAxis(...)
 end
 
 function Application:touchPress(...)
 	self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_TOUCH)
+	self:getUIView():touchPress(...)
 end
 
 function Application:touchRelease(...)
-	-- Nothing.
+	self:getUIView():touchRelease(...)
 end
 
 function Application:touchMove(...)
-	-- Nothing.
+	self:getUIView():touchMove(...)
 end
 
 function Application:keyDown(key, ...)
-	self.uiView:getInputProvider():keyDown(key, ...)
+	self.uiView:keyDown(key, ...)
 
 	if key == "f1" then
 		if not (love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')) then
@@ -1004,12 +1005,12 @@ function Application:keyDown(key, ...)
 end
 
 function Application:keyUp(...)
-	self.uiView:getInputProvider():keyUp(...)
+	self.uiView:keyUp(...)
 	return false
 end
 
 function Application:type(...)
-	self.uiView:getInputProvider():type(...)
+	self.uiView:type(...)
 	return false
 end
 

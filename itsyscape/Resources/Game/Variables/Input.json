@@ -1,6 +1,7 @@
 {
 	"$paths": {
-		"KEYBIND": ["keybinds", "$type", "$name"]
+		"KEYBIND": ["keybinds", "$type", "$name"],
+		"CONTROL": ["controls", "$name", "$inputScheme"]
 	},
 
 	"ui": {
@@ -10,6 +11,14 @@
 			"minTime": 0.1,
 			"startTime": 0.5,
 			"accelerationStep": 0.15,
+		}
+	},
+
+	"controls": {
+		"quickHeal": {
+			"$type": "ui",
+			"gamepad": ["ui", "gamepadQuickHeal"],
+			"mouse/keyboard": ["ui", "keyboardQuickHeal"]
 		}
 	},
 
@@ -31,7 +40,10 @@
 			"gamepadPrimaryAction": "a",
 			"gamepadSecondaryAction": "y",
 			"gamepadTertiaryAction": "x",
-			"gamepadBack": "b"
+			"gamepadBack": "b",
+			"gamepadQuickHeal": "dpup",
+
+			"keyboardQuickHeal": ["h"]
 		},
 
 		"world": {

@@ -11,6 +11,7 @@ local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
+local StatBar = require "ItsyScape.UI.Interfaces.Components.StatBar"
 local Widget = require "ItsyScape.UI.Widget"
 
 local QuickCombatAction = Class(Widget)
@@ -70,6 +71,8 @@ function QuickCombatAction:new()
 	self.isCollapsing = false
 	self.isExpanding = false
 end
+
+function QuickCombatAction:setKeybind()
 
 function QuickCombatAction:setDirection(x, y)
 	self.directionX = (x and y) and x or 0

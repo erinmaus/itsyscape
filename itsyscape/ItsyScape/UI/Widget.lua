@@ -34,6 +34,8 @@ function Widget:new()
 	self.onGamepadRelease = Callback()
 	self.onGamepadAxis = Callback()
 	self.onGamepadDirection = Callback()
+	self.onControlDown = Callback()
+	self.onControlUp = Callback()
 	self.onZDepthChange = Callback()
 	self.onStyleChange = Callback()
 	self.id = false
@@ -685,6 +687,23 @@ function Widget:gamepadDirection(...)
 	end
 end
 
+function Widget:controlDown(control)
+	print(">>> DOWN", control:getName(), self:getDebugInfo().shortName)
+	self:onControlDown(control)
+
+	if self:getParent() then
+		self:getParent():controlDown(control)
+	end
+end
+
+function Widget:controlUp(control)
+	print(">>> UP", control:getName(), self:getDebugInfo().shortName)
+	self:onControlUp(control)
+
+	if self:getParent() then
+		self:getParent():controlUp(control)
+	end
+end
 
 function Widget:update(...)
 	if _DEBUG == 'plus' then
