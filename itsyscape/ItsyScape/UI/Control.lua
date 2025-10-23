@@ -26,6 +26,15 @@ Control.KEYBOARD_MODIFIERS = {
 	["menu"] = true
 }
 
+Control.KEYBOARD_MODIFIER_ALIASES = {
+	["lshift"] = "rshift",
+	["rshift"] = "lshift",
+	["lctrl"] = "rctrl",
+	["rctrl"] = "lctrl",
+	["lalt"] = "ralt",
+	["ralt"] = "lalt",
+}
+
 function Control:new(name, controlManager)
 	self.name = name
 	self.controlManager = controlManager
@@ -57,7 +66,7 @@ end
 
 function Control:_overlaps(other)
 	local selfKeybind = self:_getKeybind(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD)
-	local otherKeybind = other:_otherKeybind(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD)
+	local otherKeybind = other:_getKeybind(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD)
 
 	for _, selfKey in ipairs(selfKeybind) do
 		local otherHasSelfKey = false
@@ -83,6 +92,17 @@ function Control:overlaps(other)
 	end
 
 	return self:_overlaps(other) or other:_overlaps(self)
+end
+
+function Control:priority(other)
+	if not (self:isValid() and other:isValid()) then
+		return false
+	end
+
+	local selfKeybind = self:_getKeybind(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD)
+	local otherKeybind = other:_getKeybind(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD)
+
+	return self:overlaps(other) and #selfKeybind > #otherKeybind
 end
 
 function Control:getKeyboardKey()
@@ -134,9 +154,7 @@ function Control:assignTo(other)
 end
 
 function Control:isValid(inputScheme)
-	if not inputScheme then
-		return self:_isKeyboardValid() and self:_isGamepadValid()
-	end
+	inputScheme = inputScheme or self.controlManager:getCurrentInputScheme()
 
 	if inputScheme == InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD then
 		return self:_isKeyboardValid()
@@ -162,12 +180,16 @@ function Control:_isKeyboardDown()
 
 	for _, otherKey in ipairs(keybind) do
 		if Control.KEYBOARD_MODIFIERS[otherKey] then
+			local aliasKey = Control.KEYBOARD_MODIFIER_ALIASES[otherKey]
+
 			local otherKeyTime = self.controlManager:getKeyboardInputTime(otherKey)
-			if not otherKeyTime then
+			local aliasKeyTime = aliasKey and self.controlManager:getKeyboardInputTime(aliasKey)
+
+			if not (otherKeyTime or aliasKeyTime) then
 				return false
 			end
 
-			if otherKeyTime > keyTime then
+			if not ((otherKeyTime and otherKeyTime <= keyTime) or (aliasKeyTime and aliasKeyTime <= keyTime)) then
 				return false
 			end
 		end
@@ -182,10 +204,20 @@ function Control:_isGamepadDown()
 	return not not buttonTime
 end
 
-function Control:isDown(inputScheme)
-	if not inputScheme then
-		return self:isDown(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD) or self:isDown(InputScheme.INPUT_SCHEME_GAMEPAD)
+function Control:getButtons(inputScheme)
+	inputScheme = inputScheme or self.controlManager:getCurrentInputScheme()
+
+	if inputScheme == InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD then
+		return unpack(self:_getKeybind(inputScheme))
+	elseif inputScheme == InputScheme.INPUT_SCHEME_GAMEPAD then
+		return self:_getKeybind(inputScheme)
 	end
+
+	return "none"
+end
+
+function Control:isDown(inputScheme)
+	inputScheme = inputScheme or self.controlManager:getCurrentInputScheme()
 
 	if not self:isValid(inputScheme) then
 		return false

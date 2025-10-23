@@ -14,6 +14,10 @@ local Controls = require "ItsyScape.UI.Controls"
 
 local ControlManager = Class()
 
+local WAS_ACTIVE = "was active"
+local IS_ACTIVE = "active"
+local NOT_ACTIVE = "not active"
+
 function ControlManager:new(uiView)
 	self.uiView = uiView
 
@@ -27,6 +31,10 @@ function ControlManager:new(uiView)
 	for _, controlName in ipairs(Controls) do
 		self:add(controlName)
 	end
+end
+
+function ControlManager:getCurrentInputScheme()
+	return self.uiView:getCurrentInputScheme()
 end
 
 function ControlManager:add(name)
@@ -83,14 +91,15 @@ function ControlManager:gamepadRelease(joystick, button)
 end
 
 function ControlManager:keyDown(_, scan, isRepeat)
-	if not isRepeat then
-		self.keys[scan] = love.timer.getTime()
+	if isRepeat then
+		return
 	end
 
+	self.keys[scan] = love.timer.getTime()
 	self:update()
 end
 
-function ControlManager:keyUp(_, scan)
+function ControlManager:keyUp(_, scan, isRepeat)
 	self.keys[scan] = nil
 	self:update()
 end
@@ -127,44 +136,57 @@ function ControlManager:update()
 
 	for _, control in pairs(self.controls) do
 		local isMaybeActive = self.activeControls[control] ~= nil
-		local isActive = self.activeControls[control] == true
+		local isActive = self.activeControls[control] == IS_ACTIVE
 		local isDown = control:isDown()
 
-		if isActive and not isDown then
-			self.activeControls[control] = nil
-			widget:controlUp(control)
-		elseif not isMaybeActive and isDown then
-			local overlaps = false
-			for _, active in pairs(self.activeControls) do
-				if self:overlaps(active) then
-					overlaps = true
+		local hasPriority = true
+		for _, otherControl in pairs(self.controls) do
+			if otherControl ~= control then
+				local isOtherMaybeActive = self.activeControls[otherControl] ~= nil
+				local isOtherDown = otherControl:isDown()
+				if not isOtherMaybeActive and isOtherDown and otherControl:priority(control) then
+					hasPriority = false
 					break
 				end
 			end
+		end
 
-			if not overlaps then
-				widget:controlDown(control)
-				self.activeControls[control] = true
+		if isActive and not isDown then
+			self.activeControls[control] = WAS_ACTIVE
+			widget:controlUp(control)
+		elseif not isMaybeActive and isDown then
+			if not hasPriority then
+				self.activeControls[control] = WAS_ACTIVE
 			else
-				self.activeControls[control] = false
+				widget:controlDown(control)
+				self.activeControls[control] = IS_ACTIVE
 			end
 		end
 
 		if isMaybeActive and not isDown then
 			local allOverlapsInactive = true
-			for otherControl, active in pairs(self.activeControls) do
-				if control:overlaps(otherControl) and active == true then
-					allOverlapsInactive = false
-					break
+			local n = 0
+			for active, status in pairs(self.activeControls) do
+				if active ~= control then
+					if control:overlaps(active) then
+						n = n + 1
+					end
+
+					if control:overlaps(active) and status ~= NOT_ACTIVE then
+						allOverlapsInactive = false
+						break
+					end
 				end
 			end
 
 			if allOverlapsInactive then
-				for otherControl in pairs(self.activeControls) do
-					self.activeControls[otherControl] = nil
+				for active in pairs(self.activeControls) do
+					if control:overlaps(active) then
+						self.activeControls[active] = nil
+					end
 				end
 			else
-				self.activeControls[control] = false
+				self.activeControls[control] = NOT_ACTIVE
 			end
 		end
 	end

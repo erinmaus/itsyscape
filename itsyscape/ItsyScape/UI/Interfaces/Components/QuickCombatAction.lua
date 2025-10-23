@@ -16,6 +16,7 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local QuickCombatAction = Class(Widget)
 QuickCombatAction.BUTTON_SIZE = 48
+QuickCombatAction.CONTROL_SIZE = 32
 QuickCombatAction.BUTTON_PADDING = 4
 QuickCombatAction.PADDING = 8
 QuickCombatAction.EXPAND_SPEED_PIXELS_PER_SECOND = QuickCombatAction.BUTTON_SIZE * 8
@@ -36,7 +37,7 @@ function QuickCombatAction:new()
 	self.directionX = 0
 	self.directionY = 1
 
-	-- The control icon sits just outside.
+	-- The control icon sits just outside
 	self:setSize(
 		QuickCombatAction.BUTTON_SIZE + self.BUTTON_PADDING * 4,
 		QuickCombatAction.BUTTON_SIZE + self.BUTTON_PADDING * 4)
@@ -48,10 +49,10 @@ function QuickCombatAction:new()
 	self.gamepadToolTip:setHasBackground(false)
 	self.gamepadToolTip:setRowSize(
 		math.huge,
-		math.floor(self.BUTTON_SIZE / 2))
+		self.CONTROL_SIZE)
 	self.gamepadToolTip:setPosition(
 		-self.BUTTON_PADDING,
-		self.BUTTON_SIZE + self.BUTTON_PADDING * 2 - math.floor(self.BUTTON_SIZE / 2) + self.BUTTON_PADDING)
+		self.BUTTON_SIZE + self.BUTTON_PADDING * 2 - self.CONTROL_SIZE + self.BUTTON_PADDING)
 
 	self.gridLayout = GamepadGridLayout()
 	self.gridLayout:setWrapScroll(false)
@@ -70,9 +71,22 @@ function QuickCombatAction:new()
 	self.isExpanded = false
 	self.isCollapsing = false
 	self.isExpanding = false
+
+	self.controlName = false
 end
 
-function QuickCombatAction:setKeybind()
+function QuickCombatAction:setControl(controlName)
+	self.controlName = controlName
+	self.gamepadToolTip:setControl(controlName)
+end
+
+function QuickCombatAction:getControl()
+	return self.controlName
+end
+
+function QuickCombatAction:controlDown()
+	
+end
 
 function QuickCombatAction:setDirection(x, y)
 	self.directionX = (x and y) and x or 0

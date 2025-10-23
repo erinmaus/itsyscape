@@ -688,7 +688,6 @@ function Widget:gamepadDirection(...)
 end
 
 function Widget:controlDown(control)
-	print(">>> DOWN", control:getName(), self:getDebugInfo().shortName)
 	self:onControlDown(control)
 
 	if self:getParent() then
@@ -697,7 +696,6 @@ function Widget:controlDown(control)
 end
 
 function Widget:controlUp(control)
-	print(">>> UP", control:getName(), self:getDebugInfo().shortName)
 	self:onControlUp(control)
 
 	if self:getParent() then

@@ -19,6 +19,12 @@
 			"$type": "ui",
 			"gamepad": ["ui", "gamepadQuickHeal"],
 			"mouse/keyboard": ["ui", "keyboardQuickHeal"]
+		},
+
+		"test": {
+			"$type": "ui",
+			"gamepad": ["ui", "gamepadTest"],
+			"mouse/keyboard": ["ui", "keyboardTest"]
 		}
 	},
 
@@ -43,7 +49,7 @@
 			"gamepadBack": "b",
 			"gamepadQuickHeal": "dpup",
 
-			"keyboardQuickHeal": ["h"]
+			"keyboardQuickHeal": ["lshift", "ralt", "h"],
 		},
 
 		"world": {

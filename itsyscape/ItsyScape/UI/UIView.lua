@@ -1400,6 +1400,10 @@ function UIView:getInputProvider()
 	return self.inputProvider
 end
 
+function UIView:getControlManager()
+	return self.controlManager
+end
+
 function UIView:getRenderManager()
 	return self.renderManager
 end

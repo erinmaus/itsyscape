@@ -76,6 +76,8 @@ function GamepadToolTip:new()
 
 	self.requireParentFocus = false
 	self.isParentFocused = false
+
+	self.controlName = false
 end
 
 function GamepadToolTip:getOverflow()
@@ -121,6 +123,10 @@ end
 
 function GamepadToolTip:setKeybind(inputScheme, keybind)
 	self:_setVariantKeyValue(inputScheme, "keybind", keybind)
+end
+
+function GamepadToolTip:setControl(control)
+	self.controlName = control or false
 end
 
 function GamepadToolTip:setButtonID(inputScheme, id)
@@ -199,6 +205,14 @@ function GamepadToolTip:_applyVariant()
 		self.gamepadIcon:setController("Touch")
 	else
 		self.gamepadIcon:setController()
+	end
+
+	if self.controlName then
+		local controlManager = uiView:getControlManager()
+		local control = controlManager:get(self.controlName)
+		if control then
+			self.gamepadIcon:setButtonIDs(control:getButtons())
+		end
 	end
 
 	local variant = self.variants[inputScheme] or self.variants[GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD] or next(self.variants)
