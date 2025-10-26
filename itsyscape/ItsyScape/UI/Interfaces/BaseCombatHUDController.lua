@@ -150,6 +150,10 @@ function BaseCombatHUDController:poke(actionID, actionIndex, e)
 		self:equip(e)
 	elseif actionID == "eat" then
 		self:eat(e)
+	elseif actionID == "activateQuickHeal" then
+		self:activateQuickHeal(e)
+	elseif actionID == "setQuickHealFood" then
+		self:setQuickHealFood(e)
 	elseif actionID == "changeStance" then
 		self:changeStance(e)
 	elseif actionID == "show"then
@@ -275,6 +279,22 @@ function BaseCombatHUDController:eat(e)
 			"inventory",
 			self:getPeep():getState(), self:getPeep(), item)
 	end
+end
+
+function BaseCombatHUDController:activateQuickHeal(e)
+	local enabled = self.quickHeal.enabled
+	local food = self.quickHeal.food
+
+	if enabled and food and food.instances[1] then
+		self:eat({ key = food.instances[1].key })
+	end
+end
+
+function BaseCombatHUDController:setQuickHealFood(e)
+	assert(type(e.id) == "string", "expected item ID as string")
+
+	local quickHealStorage = self:getStorage("Heal")
+	quickHealStorage:set("itemID", e.id)
 end
 
 function BaseCombatHUDController:deleteEquipment(e)
@@ -1501,7 +1521,7 @@ function BaseCombatHUDController:updateQuickHeal()
 	end
 
 	self.quickHeal.food = item or false
-	self.quickHeal.enabled = self.quickHeal.enabled and self.quickHeal.food
+	self.quickHeal.enabled = self.quickHeal.enabled and not not self.quickHeal.food
 end
 
 function BaseCombatHUDController:getFood()
@@ -1538,8 +1558,7 @@ function BaseCombatHUDController:getQuickHeal()
 			count = food.count,
 			name = food.name,
 			description = food.description,
-			health = food.health,
-			keys = { unpack(food.keys) }
+			health = food.health
 		} or false
 	}
 

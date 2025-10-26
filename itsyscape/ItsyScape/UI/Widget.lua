@@ -687,6 +687,18 @@ function Widget:gamepadDirection(...)
 	end
 end
 
+function Widget:previewControlDown(control)
+	for _, child in ipairs(self.children) do
+		child:previewControlDown(control)
+	end
+end
+
+function Widget:previewControlUp(control)
+	for _, child in ipairs(self.children) do
+		child:previewControlUp(control)
+	end
+end
+
 function Widget:controlDown(control)
 	self:onControlDown(control)
 

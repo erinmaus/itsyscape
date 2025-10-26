@@ -11,11 +11,14 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Color = require "ItsyScape.Graphics.Color"
+local Button = require "ItsyScape.UI.Button"
 local Interface = require "ItsyScape.UI.Interface"
+local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Drawable = require "ItsyScape.UI.Drawable"
 local Widget = require "ItsyScape.UI.Widget"
 local Particles = require "ItsyScape.UI.Particles"
 local CombatTarget = require "ItsyScape.UI.Interfaces.Components.CombatTarget"
+local QuickCombatAction = require "ItsyScape.UI.Interfaces.Components.QuickCombatAction"
 
 local BaseCombatHUD = Class(Interface)
 BaseCombatHUD.PADDING = 8
@@ -105,6 +108,7 @@ function BaseCombatHUD:new(...)
 		powers = {},
 		spells = {},
 		prayers = {},
+		quickHeal = {},
 		food = {},
 		equipment = {},
 		config = {},
@@ -113,6 +117,8 @@ function BaseCombatHUD:new(...)
 		turns = {}
 	}
 
+	self.dirtyState = {}
+
 	self.pendingSprites = {}
 
 	self.wasRefreshed = false
@@ -120,10 +126,93 @@ function BaseCombatHUD:new(...)
 	self:performLayout()
 
 	self.onClose:register(self.flushSprites, self)
+
+	self.quickHealAction = QuickCombatAction()
+	self.quickHealAction:setControl("quickHeal")
+	self.quickHealAction:setPosition(self.PADDING, self.PADDING)
+	self.quickHealAction.onActivate:register(self._onQuickHealFoodSelected, self)
+	self:addChild(self.quickHealAction)
+end
+
+function BaseCombatHUD:_onQuickHealFoodSelected(_, button)
+	self:activateQuickHeal()
+	button:blur()
+end
+
+function BaseCombatHUD:_onQuickHealOtherFoodSelected(food, button)
+	self:setQuickHealFood(food.id)
+	button:blur()
+end
+
+function BaseCombatHUD:_onQuickHealFoodMouseRelease(button)
+	button:blur()
+end
+
+function BaseCombatHUD:updateQuickHeal()
+	local state = self:getState()
+	local quickHeal = state.quickHeal
+
+	self.quickHealAction:getInnerPanel():clearChildren()
+
+	local food = state.food
+	local quickHealFood = {}
+	local quickHealFoodCount = {}
+	local quickHealFoodIDs = {}
+	for _, f in ipairs(food) do
+		if not quickHealFoodIDs[f.id] and not (quickHeal.food and quickHeal.food.id == f.id) then
+			quickHealFoodIDs[f.id] = true
+			table.insert(quickHealFood, f.id)
+		end
+
+		quickHealFoodCount[f.id] = (quickHealFoodCount[f.id] or 0) + f.count
+	end
+
+	if quickHeal.food then
+		table.insert(quickHealFood, 1, quickHeal.food.id)
+	end
+
+	local enabled = false
+	if #quickHealFood == 0 then
+		local id = "Pie"
+
+		table.insert(quickHealFood, {
+			{ id = id }
+		})
+
+		quickHealFoodCount[id] = 0
+	else
+		enabled = quickHeal.enabled
+	end
+
+	for i, f in ipairs(quickHealFood) do
+		local button = Button()
+
+		if i == 1 then
+			button.onClick:register(self._onQuickHealFoodSelected, self, self.quickHealAction)
+		else
+			button.onClick:register(self._onQuickHealOtherFoodSelected, self, f)
+		end
+
+		button.onMouseRelease:register(self._onQuickHealFoodMouseRelease, self)
+
+		local icon = ItemIcon()
+		icon:setItemID(f)
+		icon:setItemCount(quickHealFoodCount[f] or 1)
+
+		if i == 1 and not enabled then
+			icon:setIsDisabled(true)
+		end
+
+		icon:setPosition(QuickCombatAction.BUTTON_PADDING, QuickCombatAction.BUTTON_PADDING)
+		button:addChild(icon)
+
+		self.quickHealAction:getInnerPanel():addChild(button)
+	end
 end
 
 function BaseCombatHUD:updateState(key, value)
 	self.currentState[key] = value
+	self.dirtyState[key] = true
 end
 
 function BaseCombatHUD:getState()
@@ -160,6 +249,14 @@ end
 
 function BaseCombatHUD:onSwitchSpell(oldSpell, newSpell)
 	-- Nothing.
+end
+
+function BaseCombatHUD:activateQuickHeal()
+	self:sendPoke("activateQuickHeal", nil, {})
+end
+
+function BaseCombatHUD:setQuickHealFood(id)
+	self:sendPoke("setQuickHealFood", nil, { id = id })
 end
 
 function BaseCombatHUD:activateDefensivePower(index)
@@ -870,6 +967,11 @@ end
 
 function BaseCombatHUD:tick()
 	Interface.tick(self)
+
+	if self.dirtyState.quickHeal then
+		self:updateQuickHeal()
+	end
+	table.clear(self.dirtyState)
 
 	self:updateTurnOrder()
 end

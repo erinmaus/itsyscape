@@ -49,7 +49,7 @@
 			"gamepadBack": "b",
 			"gamepadQuickHeal": "dpup",
 
-			"keyboardQuickHeal": ["lshift", "ralt", "h"],
+			"keyboardQuickHeal": ["h"],
 		},
 
 		"world": {

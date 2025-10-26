@@ -18,8 +18,11 @@ local QuickCombatAction = Class(Widget)
 QuickCombatAction.BUTTON_SIZE = 48
 QuickCombatAction.CONTROL_SIZE = 32
 QuickCombatAction.BUTTON_PADDING = 4
+QuickCombatAction.STAT_BAR_HEIGHT = 8
 QuickCombatAction.PADDING = 8
 QuickCombatAction.EXPAND_SPEED_PIXELS_PER_SECOND = QuickCombatAction.BUTTON_SIZE * 8
+QuickCombatAction.CONTROL_EXPAND_TIME_SECONDS = 1
+QuickCombatAction.CONTROL_EXPAND_TIME_SHOW_SECONDS = 0.25
 
 function QuickCombatAction:new()
 	Widget.new(self)
@@ -30,6 +33,7 @@ function QuickCombatAction:new()
 	self.onExpand = Callback()
 	self.onCollapse = Callback()
 	self.onSizeUpdate = Callback()
+	self.onActivate = Callback()
 
 	self.onFocusChild:register(self._childFocused, self)
 	self.onBlurChild:register(self._childBlurred, self)
@@ -68,11 +72,21 @@ function QuickCombatAction:new()
 	self.wrapper:addChild(self.gridLayout)
 	self:addChild(self.gamepadToolTip)
 
-	self.isExpanded = false
 	self.isCollapsing = false
 	self.isExpanding = false
+	self.isExpanded = false
+	self.isCollapsed = true
 
 	self.controlName = false
+	self.isControlDown = false
+	self.controlDownTime = 0
+	self.controlTimeStatBar = StatBar()
+	self.controlTimeStatBar:setSize(
+		self.BUTTON_SIZE,
+		self.STAT_BAR_HEIGHT)
+	self.controlTimeStatBar:setPosition(
+		self.BUTTON_PADDING,
+		self.BUTTON_SIZE + self.BUTTON_PADDING * 2 - self.STAT_BAR_HEIGHT - self.BUTTON_PADDING)
 end
 
 function QuickCombatAction:setControl(controlName)
@@ -84,8 +98,26 @@ function QuickCombatAction:getControl()
 	return self.controlName
 end
 
-function QuickCombatAction:controlDown()
-	
+function QuickCombatAction:previewControlDown(control)
+	Widget.previewControlDown(self, control)
+
+	if control:is(self.controlName) and not (self.isExpanded or self.isExpanding) then
+		self.isControlDown = true
+		self.controlDownTime = 0
+	end
+end
+
+function QuickCombatAction:previewControlUp(control)
+	Widget.previewControlUp(self, control)
+
+	if control:is(self.controlName) then
+		self.isControlDown = false
+		self:performLayout()
+
+		if self.controlDownTime <= self.CONTROL_EXPAND_TIME_SHOW_SECONDS then
+			self:onActivate(self:getChildAt(1))
+		end
+	end
 end
 
 function QuickCombatAction:setDirection(x, y)
@@ -138,6 +170,12 @@ function QuickCombatAction:performLayout()
 				wrapperPositionY = 0
 			end
 		end
+	end
+
+	if self.isControlDown and self.controlDownTime > self.CONTROL_EXPAND_TIME_SHOW_SECONDS and self.controlTimeStatBar:getParent() ~= self then
+		self:addChild(self.controlTimeStatBar)
+	elseif not (self.isControlDown and self.controlDownTime > self.CONTROL_EXPAND_TIME_SHOW_SECONDS) and self.controlTimeStatBar:getParent() == self then
+		self:removeChild(self.controlTimeStatBar)
 	end
 
 	self.wrapper:setPosition(wrapperPositionX, wrapperPositionY)
@@ -237,22 +275,52 @@ function QuickCombatAction:_fill(delta)
 		if self.isExpanding then
 			self:onExpand(false)
 			self.isExpanding = false
+			self.isExpanded = true
 		end
 
 		if self.isCollapsing then
 			self:onCollapse(false)
 			self.isCollapsing = false
+			self.isCollapsed = true
 		end
+	else
+		self.isExpanded = false
+		self.isCollapsed = false
 	end
+end
+
+function QuickCombatAction:_control(delta)
+	if not self.isControlDown then
+		return
+	end
+
+	self.controlDownTime = self.controlDownTime + delta
+	if self.controlDownTime > self.CONTROL_EXPAND_TIME_SECONDS then
+		local firstChild = self:getInnerPanel():getChildAt(1)
+		if firstChild then
+			firstChild:focus()
+		end
+
+		self.controlDownTime = 0
+		self.isControlDown = false
+	end
+
+	if self.controlDownTime > self.CONTROL_EXPAND_TIME_SHOW_SECONDS then
+		self.controlTimeStatBar:updateProgress(
+			self.controlDownTime - self.CONTROL_EXPAND_TIME_SHOW_SECONDS,
+			self.CONTROL_EXPAND_TIME_SECONDS - self.CONTROL_EXPAND_TIME_SHOW_SECONDS)
+	end
+
+	self:performLayout()
 end
 
 function QuickCombatAction:update(delta)
 	Widget.update(self, delta)
 
+	self:_control(delta)
+
 	if self.isExpanding or self.isCollapsing then
 		self:_fill(delta)
-	else
-		self:_fill(0)
 	end
 end
 

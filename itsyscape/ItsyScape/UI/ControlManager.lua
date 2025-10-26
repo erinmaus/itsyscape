@@ -132,6 +132,7 @@ end
 
 function ControlManager:update()
 	local inputProvider = self.uiView:getInputProvider()
+	local rootWidget = self.uiView:getRoot()
 	local widget = inputProvider:getFocusedWidget() or self.uiView:getRoot()
 
 	for _, control in pairs(self.controls) do
@@ -153,11 +154,13 @@ function ControlManager:update()
 
 		if isActive and not isDown then
 			self.activeControls[control] = WAS_ACTIVE
+			rootWidget:previewControlUp(control)
 			widget:controlUp(control)
 		elseif not isMaybeActive and isDown then
 			if not hasPriority then
 				self.activeControls[control] = WAS_ACTIVE
 			else
+				rootWidget:previewControlDown(control)
 				widget:controlDown(control)
 				self.activeControls[control] = IS_ACTIVE
 			end

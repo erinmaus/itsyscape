@@ -933,7 +933,7 @@ function Application:mouseRelease(x, y, button)
 end
 
 function Application:mouseScroll(x, y)
-	if self.uiView:isBlocking(itsyrealm.mouse.getPosition()) then
+	if self.uiView:getInputProvider():isBlocking(itsyrealm.mouse.getPosition()) then
 		self.uiView:mouseScroll(x, y)
 		return true
 	end
