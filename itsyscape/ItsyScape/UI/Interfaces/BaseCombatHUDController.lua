@@ -291,10 +291,10 @@ function BaseCombatHUDController:activateQuickHeal(e)
 end
 
 function BaseCombatHUDController:setQuickHealFood(e)
-	assert(type(e.id) == "string", "expected item ID as string")
+	assert(type(e.id) == "string" or e.id == false, "expected item ID as string or false boolean")
 
 	local quickHealStorage = self:getStorage("Heal")
-	quickHealStorage:set("itemID", e.id)
+	quickHealStorage:set("quickHealItemID", e.id)
 end
 
 function BaseCombatHUDController:deleteEquipment(e)
@@ -1476,7 +1476,7 @@ function BaseCombatHUDController:updateQuickHeal()
 	self.quickHeal.enabled = damage > 0 and #self.food > 0
 
 	local quickHealStorage = self:getStorage("Heal")
-	local itemID = quickHealStorage:get("itemID")
+	local itemID = quickHealStorage:get("quickHealItemID")
 
 	local item
 	if itemID then
@@ -1497,7 +1497,7 @@ function BaseCombatHUDController:updateQuickHeal()
 		local bestDistance1 = firstDistance < 0 and firstDistance or -math.huge
 
 		-- Food that heals to maximum hitpoints or more, but is closest to just maximum hitpoints
-		local bestFood2 = firstDistance >= 0 and bestFood1
+		local bestFood2 = firstDistance >= 0 and firstFood
 		local bestDistance2 = firstDistance >= 0 and firstDistance or math.huge
 
 		for i = 2, #self.food do

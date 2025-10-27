@@ -40,8 +40,6 @@ function Button:mouseLeave(...)
 end
 
 function Button:mousePress(x, y, button)
-	self:focus()
-
 	self.isMouseOver = true
 	self.isPressed[button] = true
 	Widget.mousePress(self, x, y, button)
@@ -50,7 +48,6 @@ end
 function Button:mouseRelease(x, y, button, ...)
 	if self.isPressed[button] and self.isMouseOver then
 		self:onClick(button)
-		self:blur()
 	end
 
 	self.isPressed[button] = nil

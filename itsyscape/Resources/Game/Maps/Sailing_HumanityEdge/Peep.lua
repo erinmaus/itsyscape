@@ -37,7 +37,8 @@ Island.ALL_INVENTORY = {
 	{ id = "IsabelliumBoots", count = 1 },
 	{ id = "IsabelliumHelmet", count = 1 },
 	{ id = "IsabelliumPlatebody", count = 1 },
-	{ id = "CookedLightningStormfish", count = 4 }
+	{ id = "CookedLightningStormfish", count = 4 },
+	{ id = "CookedSeaBass", count = 4 },
 }
 
 Island.CLASS_INVENTORY = {

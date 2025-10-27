@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Color = require "ItsyScape.Graphics.Color"
@@ -16,7 +17,7 @@ local Interface = require "ItsyScape.UI.Interface"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Drawable = require "ItsyScape.UI.Drawable"
 local Widget = require "ItsyScape.UI.Widget"
-local Particles = require "ItsyScape.UI.Particles"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local CombatTarget = require "ItsyScape.UI.Interfaces.Components.CombatTarget"
 local QuickCombatAction = require "ItsyScape.UI.Interfaces.Components.QuickCombatAction"
 
@@ -134,27 +135,85 @@ function BaseCombatHUD:new(...)
 	self:addChild(self.quickHealAction)
 end
 
-function BaseCombatHUD:_onQuickHealFoodSelected(_, button)
-	self:activateQuickHeal()
-	button:blur()
+function BaseCombatHUD:_onQuickHealFoodSelected(_, button, buttonIndex)
+	local quickHeal = self:getState().quickHeal
+
+	if buttonIndex == 1 then
+		self:activateQuickHeal()
+		button:blur()
+	elseif buttonIndex == 2 then
+		local actions = {}
+
+		if quickHeal.food then
+			table.insert(actions, {
+				id = -1,
+				verb = "Eat",
+				type = "Eat",
+				object = quickHeal.food.name,
+				objectID = quickHeal.food.id,
+				objectType = "item",
+				callback = Function(self.activateQuickHeal, self)
+			})
+
+			table.insert(actions, {
+				id = -2,
+				verb = "Clear-quick-heal",
+				type = "Clear-quick-heal",
+				object = quickHeal.food.name,
+				objectID = quickHeal.food.id,
+				objectType = "item",
+				callback = Function(self.setQuickHealFood, self, false)
+			})
+		end
+
+		local buttonX, buttonY = button:getAbsoluteCenter()
+		self:getView():probe(actions, buttonX, buttonY, false, false)
+	end
 end
 
-function BaseCombatHUD:_onQuickHealOtherFoodSelected(food, button)
-	self:setQuickHealFood(food.id)
-	button:blur()
+function BaseCombatHUD:_onQuickHealOtherFoodSelected(foodID, button, buttonIndex)
+	local allFood = self:getState().food
+
+	local food
+	for _, f in ipairs(allFood) do
+		if f.id == foodID then
+			food = f
+			break			
+		end
+	end
+
+	if buttonIndex == 1 then
+		self:setQuickHealFood(foodID)
+		button:blur()
+	elseif buttonIndex == 2 then
+		local actions = {
+			{
+				id = -1,
+				verb = "Assign-quick-heal",
+				type = "Assign-quick-heal",
+				object = food and food.name or ("*" .. foodID),
+				objectID = foodID,
+				objectType = "item",
+				callback = Function(self.setQuickHealFood, self, foodID)
+			}
+		}
+
+		local buttonX, buttonY = button:getAbsoluteCenter()
+		self:getView():probe(actions, buttonX, buttonY, false, false)
+	end
 end
 
-function BaseCombatHUD:_onQuickHealFoodMouseRelease(button)
+function BaseCombatHUD:_onQuickHealFoodBlur(button)
 	button:blur()
 end
 
 function BaseCombatHUD:updateQuickHeal()
 	local state = self:getState()
+	local food = state.food
 	local quickHeal = state.quickHeal
 
 	self.quickHealAction:getInnerPanel():clearChildren()
 
-	local food = state.food
 	local quickHealFood = {}
 	local quickHealFoodCount = {}
 	local quickHealFoodIDs = {}
@@ -193,7 +252,8 @@ function BaseCombatHUD:updateQuickHeal()
 			button.onClick:register(self._onQuickHealOtherFoodSelected, self, f)
 		end
 
-		button.onMouseRelease:register(self._onQuickHealFoodMouseRelease, self)
+		button.onMouseRelease:register(self._onQuickHealFoodBlur, self)
+		button.onMousePress:register(self._onQuickHealFoodBlur, self)
 
 		local icon = ItemIcon()
 		icon:setItemID(f)
@@ -205,6 +265,27 @@ function BaseCombatHUD:updateQuickHeal()
 
 		icon:setPosition(QuickCombatAction.BUTTON_PADDING, QuickCombatAction.BUTTON_PADDING)
 		button:addChild(icon)
+
+		local foodItem
+		for _, otherF in ipairs(food) do
+			if otherF.id == f then
+				foodItem = otherF
+				break
+			end
+		end
+
+		if foodItem then
+			if i == 1 then
+				button:setToolTip(
+					ToolTip.Header(string.format("Eat %s", foodItem.name)),
+					ToolTip.Text(foodItem.description))
+			else
+				button:setToolTip(
+					ToolTip.Header(string.format("Assign %s", foodItem.name)),
+					ToolTip.Text("Assign this food item to the quick heal slot."),
+					ToolTip.Text(foodItem.description))
+			end
+		end
 
 		self.quickHealAction:getInnerPanel():addChild(button)
 	end

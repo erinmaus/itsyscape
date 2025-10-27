@@ -115,7 +115,7 @@ function QuickCombatAction:previewControlUp(control)
 		self:performLayout()
 
 		if self.controlDownTime <= self.CONTROL_EXPAND_TIME_SHOW_SECONDS then
-			self:onActivate(self:getChildAt(1))
+			self:onActivate(self:getInnerPanel():getChildAt(1))
 		end
 	end
 end
@@ -172,9 +172,11 @@ function QuickCombatAction:performLayout()
 		end
 	end
 
-	if self.isControlDown and self.controlDownTime > self.CONTROL_EXPAND_TIME_SHOW_SECONDS and self.controlTimeStatBar:getParent() ~= self then
+	local isControlBarActive = self.isControlDown and self.controlDownTime >= self.CONTROL_EXPAND_TIME_SHOW_SECONDS and not (self.isExpanding or self.isExpanded)
+
+	if isControlBarActive and self.controlTimeStatBar:getParent() ~= self then
 		self:addChild(self.controlTimeStatBar)
-	elseif not (self.isControlDown and self.controlDownTime > self.CONTROL_EXPAND_TIME_SHOW_SECONDS) and self.controlTimeStatBar:getParent() == self then
+	elseif not isControlBarActive and self.controlTimeStatBar:getParent() == self then
 		self:removeChild(self.controlTimeStatBar)
 	end
 
@@ -210,7 +212,13 @@ function QuickCombatAction:getGamepadToolTip()
 	return self.gamepadToolTip
 end
 
-function QuickCombatAction:_childFocused()
+function QuickCombatAction:_childFocused(_, child)
+	local firstChild = self:getInnerPanel():getChildAt(1)
+	local isFirstChildFocused = firstChild and (firstChild:isParentOf(child) or firstChild == child)
+	if isFirstChildFocused then
+		return
+	end
+
 	if self.isCollapsing then
 		self:onCollapse(false)
 		self.isCollapsing = false
@@ -294,15 +302,12 @@ function QuickCombatAction:_control(delta)
 		return
 	end
 
-	self.controlDownTime = self.controlDownTime + delta
-	if self.controlDownTime > self.CONTROL_EXPAND_TIME_SECONDS then
-		local firstChild = self:getInnerPanel():getChildAt(1)
-		if firstChild then
-			firstChild:focus()
+	self.controlDownTime = math.min(self.controlDownTime + delta, self.CONTROL_EXPAND_TIME_SECONDS)
+	if self.controlDownTime >= self.CONTROL_EXPAND_TIME_SECONDS then
+		local secondChild = self:getInnerPanel():getChildAt(2)
+		if secondChild then
+			secondChild:focus()
 		end
-
-		self.controlDownTime = 0
-		self.isControlDown = false
 	end
 
 	if self.controlDownTime > self.CONTROL_EXPAND_TIME_SHOW_SECONDS then
