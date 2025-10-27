@@ -259,8 +259,10 @@ end
 function DialogBox:next(state)
 	state = state or self:getState()
 
-	self:removeChild(self.gridLayout)
-	self.gridLayout = nil
+	if self.gridLayout then
+		self:removeChild(self.gridLayout)
+		self.gridLayout = nil
+	end
 
 	if state.content then
 		self.messageLabel:setText(DialogBox.concatMessage(state.content))
@@ -275,7 +277,6 @@ function DialogBox:next(state)
 		self.pressToContinue:setPosition(
 			x + labelWidth / 2 - toolTipWidth / 2,
 			self.HEIGHT - toolTipHeight - self.PADDING)
-
 
 		self:focusChild(self.dialogButton)
 	elseif state.input then

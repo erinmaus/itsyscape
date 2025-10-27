@@ -118,6 +118,14 @@ function QuickCombatAction:previewControlUp(control)
 			self:onActivate(self:getInnerPanel():getChildAt(1))
 		end
 	end
+
+	local inputProvider = self:getInputProvider()
+	local focusedWidget = inputProvider and inputProvider:getFocusedWidget()
+	if focusedWidget and self:isParentOf(focusedWidget) then
+		if control:is("back") then
+			focusedWidget:blur()
+		end
+	end
 end
 
 function QuickCombatAction:setDirection(x, y)
@@ -228,7 +236,7 @@ function QuickCombatAction:_childFocused(_, child)
 	self:onExpand(true)
 end
 
-function QuickCombatAction:_childBlurred()
+function QuickCombatAction:_childBlurred(_, child)
 	if self.isExpanding then
 		self:onExpand(false)
 		self.isExpanding = false

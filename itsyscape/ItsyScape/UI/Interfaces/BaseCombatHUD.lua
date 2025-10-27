@@ -16,8 +16,9 @@ local Button = require "ItsyScape.UI.Button"
 local Interface = require "ItsyScape.UI.Interface"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Drawable = require "ItsyScape.UI.Drawable"
-local Widget = require "ItsyScape.UI.Widget"
+local FocusBoundary = require "ItsyScape.UI.FocusBoundary"
 local ToolTip = require "ItsyScape.UI.ToolTip"
+local Widget = require "ItsyScape.UI.Widget"
 local CombatTarget = require "ItsyScape.UI.Interfaces.Components.CombatTarget"
 local QuickCombatAction = require "ItsyScape.UI.Interfaces.Components.QuickCombatAction"
 
@@ -128,11 +129,14 @@ function BaseCombatHUD:new(...)
 
 	self.onClose:register(self.flushSprites, self)
 
+	local quickHealFocusBoundary = FocusBoundary()
+	self:addChild(quickHealFocusBoundary)
+
 	self.quickHealAction = QuickCombatAction()
 	self.quickHealAction:setControl("quickHeal")
 	self.quickHealAction:setPosition(self.PADDING, self.PADDING)
-	self.quickHealAction.onActivate:register(self._onQuickHealFoodSelected, self)
-	self:addChild(self.quickHealAction)
+	self.quickHealAction.onActivate:register(self.activateQuickHeal, self)
+	quickHealFocusBoundary:addChild(self.quickHealAction)
 end
 
 function BaseCombatHUD:_onQuickHealFoodSelected(_, button, buttonIndex)

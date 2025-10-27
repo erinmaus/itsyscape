@@ -268,6 +268,7 @@ function GamepadRibbon:_openOrClose()
 		end
 
 		self:removeChild(self.container)
+		self:getView():removeFromFocusStack(self)
 	end
 end
 

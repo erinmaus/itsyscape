@@ -21,6 +21,7 @@ local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local Drawable = require "ItsyScape.UI.Drawable"
 local DrawableRenderer = require "ItsyScape.UI.DrawableRenderer"
+local FocusBoundary = require "ItsyScape.UI.FocusBoundary"
 local Icon = require "ItsyScape.UI.Icon"
 local IconRenderer = require "ItsyScape.UI.IconRenderer"
 local Interface = require "ItsyScape.UI.Interface"
@@ -1277,6 +1278,10 @@ function UIView:restoreFocus(interface)
 	self.hasPendingInterfaceFocus = true
 end
 
+function UIView:removeFromFocusStack(interface)
+	self:_removeFromFocusStack(interface)
+end
+
 function UIView:_removeFromFocusStack(interface)
 	for i = #self.interfaceFocusStack, 1, -1 do
 		if self.interfaceFocusStack[i] == interface then
@@ -1286,30 +1291,47 @@ function UIView:_removeFromFocusStack(interface)
 end
 
 function UIView:_onBlur(_, widget)
+	local focusBoundary = widget:getParentOfType(FocusBoundary)
 	local interface = widget:getParentOfType(Interface)
 	if not interface or interface:getRootParent() ~= self.root then
 		return
 	end
 
-	self:_removeFromFocusStack(interface)
-	table.insert(self.interfaceFocusStack, math.max(#self.interfaceFocusStack, 1), interface)
+	local hasFocusBoundary = focusBoundary and interface and interface:isParentOf(focusBoundary)
+	local focusParent = hasFocusBoundary and focusBoundary or interface
 
-	local top = self.interfaceFocusStack[#self.interfaceFocusStack]
-	if top and top ~= interface then
+	self:_removeFromFocusStack(focusParent)
+	if not hasFocusBoundary then
+		table.insert(self.interfaceFocusStack, math.max(#self.interfaceFocusStack, 1), interface)
+	end
+
+	if hasFocusBoundary then
+		self:_removeFromFocusStack(interface)
+		table.insert(self.interfaceFocusStack, interface)
 		self.hasPendingInterfaceFocus = true
+	else
+		local top = self.interfaceFocusStack[#self.interfaceFocusStack]
+		if top and top ~= interface then
+			self.hasPendingInterfaceFocus = true
+		end
 	end
 end
 
 function UIView:_onFocus(_, widget)
+	local focusBoundary = widget:getParentOfType(FocusBoundary)
 	local interface = widget:getParentOfType(Interface)
+
 	if not interface or interface:getRootParent() ~= self.root then
 		return
 	end
 
-	local wasFocused = self.interfaceFocusStack[#self.interfaceFocusStack] == interface
+	local hasFocusBoundary = focusBoundary and interface and interface:isParentOf(focusBoundary)
+	local focusParent = hasFocusBoundary and focusBoundary or interface
 
-	self:_removeFromFocusStack(interface)
-	table.insert(self.interfaceFocusStack, interface)
+	local wasFocused = self.interfaceFocusStack[#self.interfaceFocusStack] == interface or #self.interfaceFocusStack == 0
+
+	self:_removeFromFocusStack(focusParent)
+	table.insert(self.interfaceFocusStack, focusParent)
 
 	if not wasFocused then
 		Log.info("Interface '%s' (index %d) captured focus.", interface:getDebugInfo().shortName, #self.interfaceFocusStack)
@@ -1497,6 +1519,12 @@ function UIView:joystickRemove(...)
 	self.inputProvider:joystickRemove(...)
 	self.controlManager:joystickRemove(...)
 end
+
+function UIView:gamepadPress(...)
+	self.inputProvider:gamepadPress(...)
+	self.controlManager:gamepadPress(...)
+end
+
 
 function UIView:gamepadRelease(...)
 	self.inputProvider:gamepadRelease(...)

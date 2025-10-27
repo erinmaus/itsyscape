@@ -234,14 +234,14 @@ function Application:dumpMemoryStats()
 		stats.label)
 	love.filesystem.append("memory.csv", data)
 
-	Log.info(
-		"After %.2f seconds (label = '%s'), min memory = %.2f MB, max memory = %.2f MB, average memory = %.2f MB, median memory = %.2f MB, " ..
-		"min diff = %.2f MB, max diff = %.2f MB, average diff = %.2f MB, median diff = %.2f MB, FPS = %d",
-		currentTime - self.previousMemoryUsage.start,
-		stats.label,
-		stats.min, stats.max, stats.average, stats.median,
-		stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference,
-		love.timer.getFPS())
+	-- Log.info(
+	-- 	"After %.2f seconds (label = '%s'), min memory = %.2f MB, max memory = %.2f MB, average memory = %.2f MB, median memory = %.2f MB, " ..
+	-- 	"min diff = %.2f MB, max diff = %.2f MB, average diff = %.2f MB, median diff = %.2f MB, FPS = %d",
+	-- 	currentTime - self.previousMemoryUsage.start,
+	-- 	stats.label,
+	-- 	stats.min, stats.max, stats.average, stats.median,
+	-- 	stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference,
+	-- 	love.timer.getFPS())
 
 	self.previousMemoryUsage.time = currentTime
 end

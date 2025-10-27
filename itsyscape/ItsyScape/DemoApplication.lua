@@ -31,6 +31,7 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local FocusBoundary = require "ItsyScape.UI.FocusBoundary"
 local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
@@ -1073,9 +1074,11 @@ function DemoApplication:toggleUI(hud)
 end
 
 function DemoApplication:gamepadRelease(joystick, button)
+	local inputProvider = self:getUIView():getInputProvider()
+	local focusedWidget = inputProvider:getFocusedWidget()
+
 	Application.gamepadRelease(self, joystick, button)
 
-	local inputProvider = self:getUIView():getInputProvider()
 	if not inputProvider:isCurrentJoystick(joystick) then
 		return
 	end
@@ -1084,7 +1087,6 @@ function DemoApplication:gamepadRelease(joystick, button)
 	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
 	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
 
-	local focusedWidget = inputProvider:getFocusedWidget()
 	if not focusedWidget then
 		if button == cycleTargetButton then
 			self:nextShimmer()
@@ -1106,7 +1108,9 @@ function DemoApplication:gamepadRelease(joystick, button)
 		return
 	end
 
+	focusedWidget = inputProvider:getFocusedWidget()
 	if focusedWidget and self:isInterfaceBlockingGamepadMovement() then
+		local hasBoundary = focusedWidget:getParentOfType(FocusBoundary)
 		if focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon) then
 			return
 		end

@@ -173,11 +173,6 @@ function GamepadCombatHUD:new(...)
 
 	BaseCombatHUD.new(self, ...)
 
-	self:setData(GamepadSink, GamepadSink({
-		isBlocking = false,
-		isBlockingCamera = true
-	}))
-
 	self:_initCommon()
 end
 
@@ -409,6 +404,7 @@ function GamepadCombatHUD:toggle(open)
 	if not open and self:getIsShowing() then
 		self:clear()
 		self:hide()
+		self:getView():removeFromFocusStack(self)
 	elseif open and not self:getIsShowing() then
 		self:show()
 	end

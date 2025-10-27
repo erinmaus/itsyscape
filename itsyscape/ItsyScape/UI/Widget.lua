@@ -226,6 +226,13 @@ function Widget:addChild(child)
 end
 
 function Widget:removeChild(child)
+	local inputProvider = self:getInputProvider()
+	local focusedWidget = inputProvider and inputProvider:getFocusedWidget()
+
+	if focusedWidget and (child:isParentOf(focusedWidget) or focusedWidget == child) then
+		focusedWidget:blur()
+	end
+
 	for i = 1, #self.children do
 		if self.children[i] == child then
 			table.remove(self.children, i)
