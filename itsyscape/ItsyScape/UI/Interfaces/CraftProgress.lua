@@ -25,12 +25,14 @@ local StatBar = require "ItsyScape.UI.Interfaces.Components.StatBar"
 
 local CraftProgress = Class(Interface)
 
-CraftProgress.CONTENT_WIDTH  = Theme.calculateTiledSizeWithPadding(Theme.CONTENT_WIDTH, Theme.DEFAULT_OUTER_PADDING, 2)
+CraftProgress.CONTENT_WIDTH  = Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
 CraftProgress.CONTENT_HEIGHT = Theme.calculateTiledSizeWithPadding(
+	Theme.DEFAULT_OUTER_PADDING,
 	Theme.calculateSizeWithPadding(
 		Theme.DEFAULT_OUTER_PADDING,
 		Theme.DEFAULT_ITEM_SIZE_WITH_PADDING,
-		Theme.DEFAULT_ICON_SIZE), Theme.DEFAULT_OUTER_PADDING, 1)
+		Theme.DEFAULT_ICON_SIZE),
+	1)
 
 CraftProgress.WINDOW_WIDTH  = CraftProgress.CONTENT_WIDTH
 CraftProgress.WINDOW_HEIGHT = Theme.calculateSize(Theme.TITLE_HEIGHT, CraftProgress.CONTENT_HEIGHT)
@@ -94,7 +96,7 @@ function CraftProgress:new(...)
 		Theme.DEFAULT_ICON_SIZE)
 	self.progressBar:setPosition(
 		Theme.DEFAULT_OUTER_PADDING,
-		Theme.calculateSize(Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING), Theme.DEFAULT_INNER_PADDING))
+		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING))
 	self.contentPanel:addChild(self.progressBar)
 
 	self.progressBarLabel = Label()

@@ -109,7 +109,7 @@ function MakeContentTab:new(interface)
 
 	local constraintsGroup = Panel()
 	constraintsGroup:setStyle(self.GROUP_PANEL_STYLE, PanelStyle)
-	constraintsGroup:setSize(self.WIDTH, self.HEIGHT - self.MAKE_ROW_HEIGHT - self.PADDING * 3)
+	constraintsGroup:setSize(self.WIDTH - self.PADDING * 2, self.HEIGHT - self.MAKE_ROW_HEIGHT - self.PADDING * 3)
 	self.layout:addChild(constraintsGroup)
 
 	local constraintsGroupWidth, constraintsGroupHeight = constraintsGroup:getSize()
