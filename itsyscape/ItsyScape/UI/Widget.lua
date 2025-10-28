@@ -534,7 +534,7 @@ function Widget:performLayout()
 end
 
 function Widget:updateStyle()
-	if not Class.isCompatibleType(self.style, WidgetStyle) and self.styleType then
+	if self.style and not Class.isCompatibleType(self.style, WidgetStyle) and self.styleType then
 		local resourceManager = self:getResourceManager()
 		if not resourceManager then
 			return false

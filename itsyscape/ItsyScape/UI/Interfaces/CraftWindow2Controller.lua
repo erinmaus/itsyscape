@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local CraftResourceCommand = require "ItsyScape.Game.CraftResourceCommand"
 local Curve = require "ItsyScape.Game.Curve"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
@@ -72,6 +73,8 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 
 		verb = verbRecord and verbRecord:get("Value") or verb
 	end
+
+	self.prop = prop
 
 	local target
 	if prop and prop:hasBehavior(PropReferenceBehavior) then
@@ -249,21 +252,13 @@ function CraftWindowController:craft(e)
 	assert(type(e.count) == "number", "count must be number")
 	assert(e.count < math.huge, "count must be less than infinity")
 
-	e.count = math.max(math.min(e.count, 99), 0)
+	local count = math.clamp(e.count, 0, 99)
 
 	local action = self.actionsByID[e.id]
 	local player = self:getPeep()
-	local count = math.min(action:count(player:getState(), player), e.count)
+	count = math.min(action:count(player:getState()), count)
 
-	if player:getCommandQueue():clear() then
-		for i = 1, e.count do
-			action:perform(
-				player:getState(),
-				player,
-				self.prop)
-		end
-	end
-
+	player:getCommandQueue():push(CraftResourceCommand(action, count, self.prop))
 	self:getGame():getUI():closeInstance(self)
 end
 

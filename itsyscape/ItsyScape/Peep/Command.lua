@@ -61,6 +61,16 @@ function Command:onEnd(peep)
 	-- Nothing.
 end
 
+-- Called when a command is shifted.
+function Command:onPause(peep)
+	-- Nothing.
+end
+
+-- Called when a command was shifted and becomes active again.
+function Command:onResume(peep)
+	-- Nothing.
+end
+
 -- Interrupts the command.
 --
 -- Called when the command is interrupted.

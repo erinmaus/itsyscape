@@ -13,7 +13,8 @@ local GamepadSink = Class()
 
 GamepadSink.DEFAULT_OPTIONS = {
 	isBlocking = true,
-	isBlockingCamera = true
+	isBlockingCamera = true,
+	isBlockingRibbon = true
 }
 
 function GamepadSink:new(t)
@@ -21,6 +22,7 @@ function GamepadSink:new(t)
 
 	self.isBlocking = t.isBlocking == nil and self.DEFAULT_OPTIONS.isBlocking or t.isBlocking
 	self.isBlockingCamera = t.isBlockingCamera == nil and self.DEFAULT_OPTIONS.isBlockingCamera or t.isBlockingCamera
+	self.isBlockingRibbon = t.isBlockingRibbon == nil and self.DEFAULT_OPTIONS.isBlockingRibbon or t.isBlockingRibbon
 end
 
 function GamepadSink:setIsBlocking(value)
@@ -37,6 +39,14 @@ end
 
 function GamepadSink:getIsBlockingCamera()
 	return self.isBlockingCamera
+end
+
+function GamepadSink:setIsBlockingRibbon(value)
+	self.isBlockingRibbon = not not value
+end
+
+function GamepadSink:getIsBlockingRibbon()
+	return self.isBlockingRibbon
 end
 
 return GamepadSink

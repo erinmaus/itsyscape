@@ -49,7 +49,7 @@ function ColorPalette:new(application)
 	self:addChild(layout)
 
 	self.palette = GridLayout()
-	self.palette:setEdgePadding(false)
+	self.palette:setEdgePadding(false, false)
 	self.palette:setUniformSize(true, 32, self.ROW_HEIGHT)
 	layout:addChild(self.palette)
 
@@ -82,7 +82,7 @@ function ColorPalette:new(application)
 	layout:addChild(self.colorTextInput)
 
 	local buttons = GridLayout()
-	buttons:setEdgePadding(false)
+	buttons:setEdgePadding(false, false)
 	buttons:setPadding(self.PADDING, self.PADDING)
 	buttons:setUniformSize(true, self.WIDTH / 2 - self.PADDING * 3, self.ROW_HEIGHT)
 	layout:addChild(buttons)

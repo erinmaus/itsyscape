@@ -28,7 +28,8 @@ function GridLayout:new()
 	self.maxRowHeight = false
 	self.wrapContents = false
 	self.currentHeight = 0
-	self.edgePadding = true
+	self.edgePaddingX = true
+	self.edgePaddingY = true
 	self.reverse = false
 end
 
@@ -48,8 +49,9 @@ function GridLayout:setPadding(paddingX, paddingY)
 	end
 end
 
-function GridLayout:setEdgePadding(value)
-	self.edgePadding = value or false
+function GridLayout:setEdgePadding(x, y)
+	self.edgePaddingX = x or false
+	self.edgePaddingY = y or false
 end
 
 function GridLayout:setIsReversed(value)
@@ -61,7 +63,7 @@ function GridLayout:getIsReversed()
 end
 
 function GridLayout:getEdgePadding()
-	return self.edgePadding
+	return self.edgePaddingX, self.edgePaddingY
 end
 
 function GridLayout:getUniformSize()
@@ -145,8 +147,8 @@ function GridLayout:layoutChild(child)
 	local width, height = self:getSize()
 	local childWidth, childHeight = child:getSize()
 
-	local edgePaddingX = self.edgePadding and self.paddingX or 0
-	local edgePaddingY = self.edgePadding and self.paddingY or 0
+	local edgePaddingX = self.edgePaddingX and self.paddingX or 0
+	local edgePaddingY = self.edgePaddingY and self.paddingY or 0
 
 	local x = self.currentX or edgePaddingX
 	local y = self.currentY or edgePaddingY

@@ -1107,9 +1107,13 @@ function DemoApplication:gamepadRelease(joystick, button)
 		self:toggleUI("GamepadRibbon")
 		return
 	end
+	
+	if self:isInterfaceBlockingRibbon(focusedWidget) or self:isInterfaceBlockingRibbon() then
+		return
+	end
 
 	focusedWidget = inputProvider:getFocusedWidget()
-	if focusedWidget and self:isInterfaceBlockingGamepadMovement() then
+	if focusedWidget and self:isInterfaceBlockingGamepadMovement(focusedWidget) then
 		local hasBoundary = focusedWidget:getParentOfType(FocusBoundary)
 		if focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon) then
 			return
@@ -2323,9 +2327,24 @@ function DemoApplication:updateNearbyShimmer(delta)
 	end
 end
 
-function DemoApplication:isInterfaceBlockingGamepadMovement()
+function DemoApplication:isInterfaceBlockingRibbon(widget)
 	local inputProvider = self:getUIView():getInputProvider()
-	local focusedWidget = inputProvider:getFocusedWidget()
+	local focusedWidget = widget or inputProvider:getFocusedWidget()
+
+	if not focusedWidget then
+		return false
+	end
+
+	local interfaceParent = focusedWidget:getParentOfType(Interface)
+	local gamepadSink = interfaceParent and interfaceParent:getData(GamepadSink)
+	local otherGamepadSink = focusedWidget and focusedWidget:getParentData(GamepadSink)
+
+	return (gamepadSink and gamepadSink:getIsBlockingRibbon()) or (otherGamepadSink and otherGamepadSink:getIsBlockingRibbon())
+end
+
+function DemoApplication:isInterfaceBlockingGamepadMovement(widget)
+	local inputProvider = self:getUIView():getInputProvider()
+	local focusedWidget = widget or inputProvider:getFocusedWidget()
 
 	if not focusedWidget then
 		return false

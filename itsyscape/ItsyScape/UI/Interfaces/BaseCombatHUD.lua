@@ -133,6 +133,7 @@ function BaseCombatHUD:new(...)
 	self:addChild(quickHealFocusBoundary)
 
 	self.quickHealAction = QuickCombatAction()
+	self.quickHealAction:setID("BaseCombatHUD-QuickHeal")
 	self.quickHealAction:setControl("quickHeal")
 	self.quickHealAction:setPosition(self.PADDING, self.PADDING)
 	self.quickHealAction.onActivate:register(self.activateQuickHeal, self)
@@ -238,10 +239,7 @@ function BaseCombatHUD:updateQuickHeal()
 	if #quickHealFood == 0 then
 		local id = "Pie"
 
-		table.insert(quickHealFood, {
-			{ id = id }
-		})
-
+		table.insert(quickHealFood, id)
 		quickHealFoodCount[id] = 0
 	else
 		enabled = quickHeal.enabled
