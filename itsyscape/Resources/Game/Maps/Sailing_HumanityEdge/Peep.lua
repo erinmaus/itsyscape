@@ -1057,7 +1057,9 @@ function Island:updateTutorialCookStormfishStep(playerPeep)
 	local _, _, numGroundFish = TutorialCommon.hasPeepDroppedItems(playerPeep, "^CookedLightningStormfish$")
 	count = count + numGroundFish
 
-	if count >= 5 and Utility.Peep.isEnabled(playerPeep) then
+	local isCraftProgressOpen = Utility.UI.isOpen(playerPeep, "CraftProgress")
+
+	if count >= 5 and Utility.Peep.isEnabled(playerPeep) and not isCraftProgressOpen then
 		Utility.Peep.disable(playerPeep)
 
 		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)

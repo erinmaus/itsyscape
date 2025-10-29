@@ -83,10 +83,7 @@ local CanPlayerUseRite = Mashina.Try {
 }
 
 local CanDeflect = Mashina.Step {
-	Mashina.Sequence {
-		CanUseRite,
-		CanPlayerUseRite
-	},
+	CanUseRite,
 
 	Mashina.Player.Disable {
 		player = CommonLogic.PLAYER
@@ -168,6 +165,12 @@ local WasAttackedWithoutQueuedPower = Mashina.Sequence {
 		}
 	},
 
+	Mashina.Invert {
+		Mashina.Player.IsCombatRingOpen {
+			player = CommonLogic.PLAYER
+		}
+	},
+
 	Mashina.Peep.WasAttacked,
 }
 
@@ -179,12 +182,19 @@ local IgnoredInstructions = Mashina.Step {
 		}
 	},
 
-	WasAttackedWithoutQueuedPower,
-	WasAttackedWithoutQueuedPower,
-	WasAttackedWithoutQueuedPower,
+	Mashina.ParallelTry {
+		Mashina.Step {
+			WasAttackedWithoutQueuedPower,
+			WasAttackedWithoutQueuedPower,
+			WasAttackedWithoutQueuedPower,
+			CanUseRite,
+			CanPlayerUseRite
+		},
 
-	CanUseRite,
-	CanPlayerUseRite,
+		Mashina.Peep.TimeOut {
+			duration = 20
+		}
+	},
 
 	Mashina.Player.Disable {
 		player = CommonLogic.PLAYER
