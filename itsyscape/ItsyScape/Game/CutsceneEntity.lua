@@ -401,6 +401,7 @@ function CutsceneEntity:curvePositions(anchors, duration, tween)
 		end
 
 		local currentTime
+		local lerp = false
 		repeat
 			currentTime = (currentTime or 0) + self.game:getDelta()
 			local mu = math.clamp(currentTime / duration)
@@ -410,7 +411,8 @@ function CutsceneEntity:curvePositions(anchors, duration, tween)
 			local y = curves[2]:evaluate(delta)
 			local z = curves[3]:evaluate(delta)
 
-			Utility.Peep.setPosition(self.peep, Vector(x, y, z))
+			Utility.Peep.setPosition(self.peep, Vector(x, y, z), lerp)
+			lerp = true
 
 			coroutine.yield()
 		until currentTime > duration
@@ -470,6 +472,9 @@ function CutsceneEntity:slerpRotation(anchor, duration, tween)
 				Utility.Map.getAnchorRotation(self.game, mapResource, anchor))
 		end
 
+		local hasRotation = self.peep:hasBehavior(RotationBehavior)
+		self.peep:addBehavior(RotationBehavior)
+
 		local peepRotation = Utility.Peep.getRotation(self.peep)
 
 		local currentTime
@@ -492,6 +497,39 @@ function CutsceneEntity:slerpRotation(anchor, duration, tween)
 
 				coroutine.yield()
 			until distance <= E
+		end
+
+		if not hasRotation then
+			self.peep:removeBehavior(RotationBehavior)
+		end
+	end
+end
+
+function CutsceneEntity:spin(times, duration, axis, tween)
+	return function()
+		local angle = (times or 1) * math.pi * 2
+		axis = axis or Vector.UNIT_Y
+		tween = Tween[tween or 'linear'] or Tween.linear
+
+		local hasRotation = self.peep:hasBehavior(RotationBehavior)
+		self.peep:addBehavior(RotationBehavior)
+
+		local startRotation = Utility.Peep.getRotation(self.peep)
+
+		local currentTime
+		repeat
+			currentTime = (currentTime or 0) + self.game:getDelta()
+
+			local delta = tween(math.clamp(currentTime / duration))
+			local currentAngle = (angle * delta) % (math.pi * 2)
+			local newRotation = (startRotation * Quaternion.fromAxisAngle(axis, currentAngle)):getNormal()
+			Utility.Peep.setRotation(self.peep, newRotation)
+
+			coroutine.yield()
+		until currentTime > duration
+
+		if not hasRotation then
+			self.peep:removeBehavior(RotationBehavior)
 		end
 	end
 end

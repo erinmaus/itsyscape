@@ -243,6 +243,9 @@ function DemoApplication:new()
 		player.onSave:register(self.savePlayer, self)
 		player.onMove:register(self.setMapName, self)
 		player.onMove:register(self.clearResourceManagerCache, self)
+		player.onReady:register(function(_, actor)
+			actor.onTeleport:register(self.teleportCamera, self)
+		end)
 
 		if _MOBILE then
 			player.onMove:register(self.requestSave, self)
@@ -255,12 +258,6 @@ function DemoApplication:new()
 
 		self:play(player)
 		self:setAdmin(player:getID())
-	end)
-
-	self:getGame():getStage():onActorSpawned(function(_, _, actor)
-		if actor == self:getGame():getPlayer():getActor() then
-			actor.onTeleport:register(self.teleportCamera, self)
-		end
 	end)
 
 	self:getGame().onQuit:register(function()
@@ -377,6 +374,7 @@ function DemoApplication:setMapName(_, _, map)
 	Log.info("Player loaded new map '%s'.", map)
 
 	self:updateMemoryLabel(map)
+	self:teleportCamera()
 end
 
 function DemoApplication:clearResourceManagerCache()

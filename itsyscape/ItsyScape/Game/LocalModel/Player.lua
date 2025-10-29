@@ -167,7 +167,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 						"Anchor_Spawn")
 				end
 
-				actor:getPeep():pushPoke('bootstrapComplete')
+				actor:getPeep():pushPoke('bootstrapComplete', self)
 				Analytics:startGame(actor:getPeep())
 			else
 				if root:hasSection("Location") then
@@ -202,7 +202,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 						stance.stance = statusStorage:get("stance") or stance.stance
 
 						if not location:get("isTitleScreen") then
-							actor:getPeep():pushPoke('bootstrapComplete')
+							actor:getPeep():pushPoke('bootstrapComplete', self)
 							Analytics:startGame(actor:getPeep())
 						else
 							local x, y, z = Utility.Map.getAnchorPosition(self.game, location:get("name"), "Anchor_Spawn")

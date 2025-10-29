@@ -503,7 +503,9 @@ Keep your jabs to yourself or I will have you reprimanded. %person(Lady Isabelle
 ...I agree, %person({player_get_pronoun_uppercase(X_MX)}) {player_name}.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-Bah! {player_get_pronoun_uppercase(X_THEY)} are right.
+Bah! {player_get_pronoun_uppercase(X_THEY)} {player_get_english_be_lowercase(X_ARE)} right.
+
+-> continue
 
 = course_correct_two_in_a_row
 
@@ -511,7 +513,7 @@ Bah! {player_get_pronoun_uppercase(X_THEY)} are right.
 ...I agree. %person({player_get_pronoun_uppercase(X_MX)}) {player_name}, you're more diplomatic than I remembered.
 
 # speaker={C_VIZIER_ROCK_KNIGHT}
-Bah! {player_get_pronoun_uppercase(X_THEY)} are right. Maybe {player_get_pronoun_lowercase(X_THEY)} {player_get_english_be_uppercase(X_ARE)} more than just a bookworm...
+Bah! {player_get_pronoun_uppercase(X_THEY)} are right. Maybe {player_get_pronoun_lowercase(X_THEY)} {player_get_english_be_lowercase(X_ARE)} more than just a bookworm...
 
 -> continue
 
@@ -586,6 +588,8 @@ Let us keep the jests and jabs to ourselves and make peace for the time being.
 
 # speaker={C_ORLANDO}
 ...yes. You're right. Let me see where I was... That's right!
+
+-> continue
 
 = listen_two_in_a_row
 
@@ -1218,7 +1222,7 @@ Stop being mean to {player_get_pronoun_lowercase(X_THEM)}, %person(Ser Commander
   - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_defused_situation") && quest_tutorial_main_defused_scout_argument: -> stop_bickering
   - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_inflamed_situation") && quest_tutorial_main_inflamed_scout_argument: -> argue
   - get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_ignored_situation") && quest_tutorial_main_ignored_scout_argument: -> stay_silent
-  - else: Um... -> get_knights
+  - else: Um... -> explain_black_tentacles
 }
 
 = stop_bickering
@@ -1253,7 +1257,7 @@ C'mon %person(Ser Commander) and %person({player_get_pronoun_uppercase(X_MX)}) {
 ...
 
 # speaker={C_ORLANDO}
-C'mon %person(Ser Commander), stop it. Anyway...
+C'mon %person(Ser Commander), stop it! Anyway...
 
 -> explain_black_tentacles
 

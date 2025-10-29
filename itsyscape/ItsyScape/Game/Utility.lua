@@ -1137,10 +1137,10 @@ Utility.Combat.DEFAULT_STRAFE_ROTATIONS = {
 function Utility.Combat.disengage(peep)
 	local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 
+	Utility.Peep.cancelWalk(peep)
+
 	local charge = peep:getBehavior(CombatChargeBehavior)
 	if charge then
-		Utility.Peep.cancelWalk(charge.currentWalkID)
-
 		peep:removeBehavior(CombatChargeBehavior)
 		peep:removeBehavior(TargetTileBehavior)
 	end
@@ -4440,10 +4440,11 @@ end
 Utility.Peep.WALK_QUEUE = { n = 0, pending = {} }
 
 function Utility.Peep.cancelWalk(n)
-	for i, pending in ipairs(Utility.Peep.WALK_QUEUE.pending) do
-		if pending.n == n then
+	for i = #Utility.Peep.WALK_QUEUE.pending, 1, -1 do
+		local pending = Utility.Peep.WALK_QUEUE.pending[i]
+
+		if (type(n) == "number" and pending.n == n) or pending.peep == n then
 			table.remove(Utility.Peep.WALK_QUEUE.pending, i)
-			break
 		end
 	end
 end
@@ -4495,7 +4496,8 @@ function Utility.Peep.queueWalk(peep, i, j, k, distance, t, ...)
 	local pending = {
 		n = Utility.Peep.WALK_QUEUE.n,
 		callback = callback,
-		update = walkCoroutine
+		update = walkCoroutine,
+		peep = peep
 	}
 
 	pending.s = walkCoroutine(peep, i, j, k, distance, y, ...)

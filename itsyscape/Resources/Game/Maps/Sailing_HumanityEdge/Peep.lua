@@ -600,7 +600,7 @@ function Island:onFinishPreparingTeam(playerPeep)
 	end
 
 	if Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") == true then
-		if not Utility.Quest.didStep("Tutorial", "Tutorial_FoundPeak", playerPeep) then
+		if not Utility.Quest.didStep("Tutorial", "Tutorial_FoundYendorians", playerPeep) then
 			self:teleportCompanion(playerPeep, "KnightCommander")
 		end
 

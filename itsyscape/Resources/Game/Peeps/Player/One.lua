@@ -704,15 +704,19 @@ function One:onOpenInterface(interfaceID, interfaceIndex, blocking)
 end
 
 function One:interruptUI()
-	-- if self:getIsReady() and Utility.Peep.isEnabled(self) then
-	-- 	local game = self:getDirector():getGameInstance()
-	-- 	game:getUI():interrupt(self)
-	-- end
+	if self:getIsReady() and Utility.Peep.isEnabled(self) then
+		local game = self:getDirector():getGameInstance()
+		game:getUI():interrupt(self)
+	end
 end
 
-function One:onBootstrapComplete()
+function One:onBootstrapComplete(player)
 	self.didCompleteBootstrap = true
 	Utility.UI.openGroup(self, Utility.UI.Groups.WORLD)
+
+	if player then
+		player:onReady(player:getActor())
+	end
 end
 
 function One:onMoveInstance(previousInstance, currentInstance)

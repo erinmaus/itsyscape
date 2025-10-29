@@ -123,6 +123,10 @@ function DefaultCameraController:push()
 	self.isActionButtonDown = false
 end
 
+function DefaultCameraController:pop()
+	self:recenter()
+end
+
 function DefaultCameraController:toggleTargetting()
 	self.isTargetting = not self.isTargetting
 	_CONF.targetCameraMode = self.isTargetting
