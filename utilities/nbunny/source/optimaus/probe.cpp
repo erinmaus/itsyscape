@@ -8,14 +8,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
 #include <limits>
 #include "nbunny/optimaus/probe.hpp"
 
 bool nbunny::ray_hit_bounds(const glm::vec3& origin, const glm::vec3& direction, const glm::vec3& min, const glm::vec3& max, glm::vec3& point)
 {
-	// 1: https://tavianator.com/fast-branchless-raybounding-box-intersections/
-	// 2: https://tavianator.com/2015/ray_box_nan.html
+    // 1: https://tavianator.com/fast-branchless-raybounding-box-intersections/
+    // 2: https://tavianator.com/2015/ray_box_nan.html
     float t_min, t_max;
 
     float tx1 = (min.x - origin.x) / direction.x;
@@ -82,12 +81,6 @@ bool nbunny::is_point_in_cone(const glm::vec3& cone_position, const glm::vec3& c
 
 bool nbunny::cone_hit_bounds(const glm::vec3& cone_position, const glm::vec3& cone_direction, float cone_length, float cone_radius, const glm::vec3& min, const glm::vec3& max, glm::vec3& point)
 {
-    if (cone_position.x >= min.x && cone_position.x <= max.x && cone_position.y >= min.y && cone_position.y <= max.y && cone_position.z >= min.z && cone_position.z <= max.z)
-    {
-        point = cone_position;
-        return true;
-    }
-
     auto fbl = glm::vec3(min.x, min.y, max.z);
     auto fbr = glm::vec3(max.x, min.y, max.z);
     auto bbl = glm::vec3(min.x, min.y, min.z);
@@ -137,6 +130,29 @@ bool nbunny::cone_hit_bounds(const glm::vec3& cone_position, const glm::vec3& co
     if (in_cone)
     {
         point = best_point;
+        return true;
+    }
+
+    return false;
+}
+
+bool nbunny::is_point_in_circle(const glm::vec3& circle_position, float circle_radius, const glm::vec3& point)
+{
+    auto difference = circle_position - point;
+    auto distance_from_circle_center = glm::length(difference);
+
+    return distance_from_circle_center < circle_radius;
+}
+
+bool nbunny::circle_hit_bounds(const glm::vec3& circle_position, float circle_radius, const glm::vec3& min, const glm::vec3& max, glm::vec3& point)
+{
+    auto size = max - min;
+    auto center = min + size / glm::vec3(2.0f);
+    auto bound_radius = glm::max(glm::max(size.x, size.y), size.z) * std::sqrt(2.0f);
+
+    if (is_point_in_circle(circle_position, bound_radius + circle_radius, center))
+    {
+        point = center;
         return true;
     }
 
@@ -303,7 +319,6 @@ void nbunny::Probe::remove(const std::string& interface, int id)
 
     if (found)
     {
-        entity_indices.erase(std::make_pair(interface, id));
         free_entity_indices.push_back(index);
     }
 }
@@ -321,8 +336,8 @@ void nbunny::Probe::reset()
 
     has_ray = false;
     has_cone = false;
+    has_circle = false;
 }
-
 void nbunny::Probe::probe(float frame_delta)
 {
     prepare(frame_delta);
@@ -344,6 +359,12 @@ void nbunny::Probe::probe(float frame_delta)
         {
             glm::vec3 p;
             hit_cell = ray_hit_bounds(ray_origin, ray_direction, min, max, p);
+        }
+
+        if (!hit_cell && has_circle)
+        {
+            glm::vec3 p;
+            hit_cell = circle_hit_bounds(circle_position, circle_radius, min, max, p);
         }
 
         if (hit_cell)
@@ -375,6 +396,15 @@ void nbunny::Probe::probe(float frame_delta)
                         if (hit_entity)
                         {
                             distance = glm::length(position - ray_origin);
+                        }
+                    }
+
+                    if (!hit_entity && has_circle)
+                    {
+                        hit_entity = circle_hit_bounds(circle_position, circle_radius, entity.transformed_min, entity.transformed_max, position);
+                        if (hit_entity)
+                        {
+                            distance = glm::length(position - circle_position);
                         }
                     }
 
@@ -419,6 +449,18 @@ void nbunny::Probe::set_cone(const glm::vec3& position, const glm::vec3& directi
 void nbunny::Probe::unset_cone()
 {
     has_cone = false;
+}
+
+void nbunny::Probe::set_circle(const glm::vec3& position, float radius)
+{
+    has_circle = true;
+    circle_position = position;
+    circle_radius = radius;
+}
+
+void nbunny::Probe::unset_circle()
+{
+    has_circle = false;
 }
 
 int nbunny::Probe::get_num_hits() const
@@ -535,6 +577,31 @@ static int nbunny_probe_unset_cone(lua_State* L)
     return 0;
 }
 
+static int nbunny_probe_set_circle(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+
+    float position_x = luaL_checknumber(L, 2);
+    float position_y = luaL_checknumber(L, 3);
+    float position_z = luaL_checknumber(L, 4);
+
+    float radius = luaL_checknumber(L, 5);
+
+    probe->set_circle(
+        glm::vec3(position_x, position_y, position_z),
+        radius);
+
+    return 0;
+}
+
+static int nbunny_probe_unset_circle(lua_State* L)
+{
+    auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
+    probe->unset_circle();
+
+    return 0;
+}
+
 static int nbunny_probe_probe(lua_State* L)
 {
     auto probe = nbunny::lua::get<nbunny::Probe*>(L, 1);
@@ -587,6 +654,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_probe(lua_State* L)
         { "unsetRay", &nbunny_probe_unset_ray },
         { "setCone", &nbunny_probe_set_cone },
         { "unsetCone", &nbunny_probe_unset_cone },
+        { "setCircle", &nbunny_probe_set_circle },
+        { "unsetCircle", &nbunny_probe_unset_circle },
         { "probe", &nbunny_probe_probe },
         { "getNumHits", &nbunny_probe_get_num_hits },
         { "getHit", &nbunny_probe_get_hit },

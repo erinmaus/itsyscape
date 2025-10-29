@@ -67,6 +67,7 @@ DemoApplication.TITLE_SCREENS = {
 }
 DemoApplication.GYRO_RADIUS = 1
 DemoApplication.SHIMMER_DURATION = 0.25
+DemoApplication.SHIMMER_STATIONARY_DURATION_SECONDS = 1
 
 DemoApplication.GAMEPAD_TOGGLE_INTERFACES = {
 	"GamepadRibbon",
@@ -91,6 +92,7 @@ function DemoApplication:new()
 	self.shimmeringObjects = {}
 	self.pendingObjectID = false
 	self.pendingObjectType = false
+	self.stationaryDuration = 0
 	self.currentShimmerToolTip = GamepadToolTip()
 	self.currentShimmerToolTip:setZDepth(-900)
 	self.currentShimmerToolTip:setRowSize(math.huge)
@@ -255,6 +257,12 @@ function DemoApplication:new()
 		self:setAdmin(player:getID())
 	end)
 
+	self:getGame():getStage():onActorSpawned(function(_, _, actor)
+		if actor == self:getGame():getPlayer():getActor() then
+			actor.onTeleport:register(self.teleportCamera, self)
+		end
+	end)
+
 	self:getGame().onQuit:register(function()
 		self:quitPlayer(player)
 	end)
@@ -318,6 +326,14 @@ end
 
 function DemoApplication:pokeCamera(_, event, ...)
 	self.cameraController:poke(event, ...)
+end
+
+function DemoApplication:teleportCamera()
+	for _, camera in ipairs(self.cameraControllers) do
+		if Class.isCompatibleType(camera, DefaultCameraController) then
+			camera:recenter()
+		end
+	end
 end
 
 function DemoApplication:setPlayerFilename(value)
@@ -1980,10 +1996,18 @@ function DemoApplication:updatePositionProbe()
 	local direction = self.currentPlayerDirection
 
 	local probe = Probe(self:getGame(), gameView, self:getGameDB())
-	local coneLength = 10
-	local coneRadius = 6
 	probe.onExamine:register(self.examineShimmer, self)
-	probe:conecast(Ray(position - direction * 1.5, direction), coneLength, coneRadius)
+
+	local isStationary = self.stationaryDuration >= DemoApplication.SHIMMER_STATIONARY_DURATION_SECONDS
+	if isStationary then
+		local circleRadius = 6
+		probe:circlecast(position, circleRadius)
+	else
+		local coneLength = 10
+		local coneRadius = 6
+		probe:conecast(Ray(position - direction * 1.5, direction), coneLength, coneRadius)
+	end
+
 	probe:setTile(i, j, layer)
 	probe:run()
 
@@ -2253,6 +2277,24 @@ function DemoApplication:updateNearbyShimmer(delta)
 
 					self:getUIView():getRoot():addChild(self.currentShimmerToolTip)
 					self.currentShimmerToolTip:update(0)
+
+					if Class.isCompatibleType(self.cameraController, DefaultCameraController) then
+						local size
+
+						if Class.isCompatibleType(object, Prop) then
+							local min, max = object:getBounds()
+							size = max - min
+						elseif Class.isCompatibleType(object, Actor) then
+							local min, max = object:getBounds()
+							size = max - min
+						elseif Class.isCompatibleType(object, Probe.Item) then
+							size = Vector(1)
+						else
+							size = Vector(0)
+						end
+
+						self.cameraController:setTarget(node, size)
+					end
 				else
 					self:getUIView():getRoot():removeChild(self.currentShimmerToolTip)
 				end
@@ -2312,6 +2354,10 @@ function DemoApplication:updateNearbyShimmer(delta)
 	if not hasActive then
 		self:getUIView():getRoot():removeChild(self.currentShimmerToolTip)
 		self:getUIView():getRoot():removeChild(self.nextShimmerToolTip)
+
+		if Class.isCompatibleType(self.cameraController, DefaultCameraController) then
+			self.cameraController:unsetTarget()
+		end
 	else
 		if hasNext and isShimmerEnabled then
 			self:getUIView():getRoot():addChild(self.nextShimmerToolTip)
@@ -2443,6 +2489,8 @@ function DemoApplication:updatePlayerMovement()
 			end
 
 			player:move(x, z)
+
+			self.stationaryDuration = 0
 		else
 			player:move(0, 0)
 		end
@@ -2549,6 +2597,8 @@ end
 
 function DemoApplication:update(delta)
 	Application.update(self, delta)
+
+	self.stationaryDuration = self.stationaryDuration + delta
 
 	--Pool.getCurrent():update()
 
