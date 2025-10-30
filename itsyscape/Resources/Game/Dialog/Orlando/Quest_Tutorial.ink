@@ -118,7 +118,7 @@ Okay...
     - !player_has_started_quest("Tutorial"): -> quest_tutorial_main_started
     - player_is_next_quest_step("Tutorial", "Tutorial_GatheredItems"): -> quest_tutorial_main_gather_items
     - player_is_next_quest_step("Tutorial", "Tutorial_EquippedItems"): -> quest_tutorial_main_equipped_items
-    - player_is_next_quest_step("Tutorial", "Tutorial_FoundScout"): -> quest_tutorial_main_scout
+    - player_is_next_quest_step("Tutorial", "Tutorial_MetSerCommander") || player_is_next_quest_step("Tutorial", "Tutorial_FoundScout"): -> quest_tutorial_main_scout
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedScout"): -> quest_tutorial_main_defeat_scout
     - player_is_next_quest_step("Tutorial", "Tutorial_FoundYenderhounds"): -> quest_tutorial_main_find_yenderhounds
     - player_is_next_quest_step("Tutorial", "Tutorial_DefeatedYenderhounds"): -> quest_tutorial_main_defeat_yenderhounds
@@ -398,9 +398,12 @@ Um.... Sure, ok, I'll... uh.... try! This might be kinda difficult with me looki
 == quest_tutorial_main_scout ==
 
 {
-  - !get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_tagged_along"): -> see_ser_commander
+  - !quest_tutorial_main_player_talked_about_seeing_ser_commander: -> got_equipment
+  - !get_external_dialog_variable(C_VIZIER_ROCK_KNIGHT, "quest_tutorial_main_knight_commander_tagged_along"): -> meet_ser_commander
   - quest_tutorial_main_player_talked_about_seeing_ser_commander: -> scout
 }
+
+= got_equipment
 
 # speaker={C_ORLANDO}
 That's the %person({player_get_pronoun_uppercase(X_MX)}) {player_name} I know. You look terrifying!
@@ -415,7 +418,7 @@ Let's go meet with the %person(Ser Commander) at the entrance of the camp and sc
 
 -> DONE
 
-= see_ser_commander
+= meet_ser_commander
 Let's go meet with the %person(Ser Commander) at the entrance of the camp!
 
 -> DONE
