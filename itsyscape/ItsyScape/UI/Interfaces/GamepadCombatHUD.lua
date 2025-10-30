@@ -291,15 +291,18 @@ function GamepadCombatHUD:_newMenuActionIcon()
 end
 
 function GamepadCombatHUD:_initCommon()
-	self.iconGamepadPrimaryAction = Icon()
-	self.iconGamepadPrimaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_a.png")
-	self.iconGamepadPrimaryAction:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
+	self.iconGamepadPrimaryAction = GamepadToolTip()
+	self.iconGamepadPrimaryAction:setRowSize(math.huge, self.DEFAULT_ICON_SIZE)
+	self.iconGamepadPrimaryAction:setHasBackground(false)
+	self.iconGamepadPrimaryAction:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadPrimaryAction")
 	self.iconGamepadPrimaryAction:setPosition(
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
-	self.iconGamepadSecondaryAction = Icon()
-	self.iconGamepadSecondaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_y.png")
-	self.iconGamepadSecondaryAction:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
+
+	self.iconGamepadSecondaryAction = GamepadToolTip()
+	self.iconGamepadSecondaryAction:setRowSize(math.huge, self.DEFAULT_ICON_SIZE)
+	self.iconGamepadSecondaryAction:setHasBackground(false)
+	self.iconGamepadSecondaryAction:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadPrimaryAction")
 	self.iconGamepadSecondaryAction:setPosition(
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
