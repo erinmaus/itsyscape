@@ -245,6 +245,7 @@ function DemoApplication:new()
 		player.onMove:register(self.clearResourceManagerCache, self)
 		player.onReady:register(function(_, actor)
 			actor.onTeleport:register(self.teleportCamera, self)
+			self:teleportCamera()
 		end)
 
 		if _MOBILE then
@@ -326,11 +327,7 @@ function DemoApplication:pokeCamera(_, event, ...)
 end
 
 function DemoApplication:teleportCamera()
-	for _, camera in ipairs(self.cameraControllers) do
-		if Class.isCompatibleType(camera, DefaultCameraController) then
-			camera:recenter()
-		end
-	end
+	self.needsToTeleportCamera = true
 end
 
 function DemoApplication:setPlayerFilename(value)
@@ -405,12 +402,8 @@ function DemoApplication:initialize()
 	self.pendingTitleScreenOpen = true
 end
 
-function DemoApplication:tickSingleThread()
-	Application.tickSingleThread(self)
-end
-
-function DemoApplication:tickMultiThread()
-	Application.tickMultiThread(self)
+function DemoApplication:postTickMultiThread()
+	Application.postTickMultiThread(self)
 end
 
 function DemoApplication:closeTitleScreen()
@@ -2631,6 +2624,16 @@ function DemoApplication:update(delta)
 				love.mouse.setCursor(self.highDPICursor)
 			elseif scale <= 1 and currentCursor ~= self.defaultCursor then
 				love.mouse.setCursor(self.defaultCursor)
+			end
+		end
+	end
+
+	if self.needsToTeleportCamera then
+		self.needsToTeleportCamera = false
+
+		for _, camera in ipairs(self.cameraControllers) do
+			if Class.isCompatibleType(camera, DefaultCameraController) then
+				camera:recenter()
 			end
 		end
 	end
