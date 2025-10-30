@@ -212,7 +212,7 @@ function PlayerInventory:close()
 end
 
 function PlayerInventory:mousePress(...)
-	Interface.mousePress(self, ...)
+	PlayerTab.mousePress(self, ...)
 
 	self:cancelUse()
 end
