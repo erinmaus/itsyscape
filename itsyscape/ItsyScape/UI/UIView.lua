@@ -21,8 +21,10 @@ local DraggablePanel = require "ItsyScape.UI.DraggablePanel"
 local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local Drawable = require "ItsyScape.UI.Drawable"
 local DrawableRenderer = require "ItsyScape.UI.DrawableRenderer"
+local FocusBoundary = require "ItsyScape.UI.FocusBoundary"
 local Icon = require "ItsyScape.UI.Icon"
 local IconRenderer = require "ItsyScape.UI.IconRenderer"
+local Interface = require "ItsyScape.UI.Interface"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
@@ -52,6 +54,7 @@ local Widget = require "ItsyScape.UI.Widget"
 local WidgetInputProvider = require "ItsyScape.UI.WidgetInputProvider"
 local WidgetRenderManager = require "ItsyScape.UI.WidgetRenderManager"
 local WidgetResourceManager = require "ItsyScape.UI.WidgetResourceManager"
+local ControlManager = require "ItsyScape.UI.ControlManager"
 
 local UIView = Class()
 
@@ -1211,17 +1214,27 @@ function UIView:new(gameView)
 		] = true
 	}
 
+	self.currentInputScheme = _MOBILE and UIView.INPUT_SCHEME_MOUSE_KEYBOARD or UIView.INPUT_SCHEME_TOUCH
+
 	local ui = self.game:getUI()
 	ui.onOpen:register(self.open, self)
 	ui.onClose:register(self.close, self)
 	ui.onPoke:register(self.poke, self)
 
+	self.controlManager = ControlManager(self)
+
 	self.root = UIView.Root()
 	self.root:setID("root")
 	self.inputProvider = WidgetInputProvider(self.root)
 
+	self.inputProvider.onBlur:register(self._onBlur, self)
+	self.inputProvider.onFocus:register(self._onFocus, self)
+	self.interfaceFocusStack = {}
+	self.hasPendingInterfaceFocus = false
+
 	self.resources = WidgetResourceManager()
 	self.root:setData(WidgetResourceManager, self.resources)
+	self.root:setData(UIView, self)
 
 	self.renderManager = WidgetRenderManager(self.inputProvider)
 	self.renderManager:addRenderer(Button, ButtonRenderer(self.resources))
@@ -1254,6 +1267,79 @@ function UIView:new(gameView)
 	self.uiState = {}
 end
 
+function UIView:restoreFocus(interface)
+	if not interface then
+		return
+	end
+
+	self:_removeFromFocusStack(interface)
+	table.insert(self.interfaceFocusStack, math.max(#self.interfaceFocusStack, 1), interface)
+
+	self.hasPendingInterfaceFocus = true
+end
+
+function UIView:removeFromFocusStack(interface)
+	self:_removeFromFocusStack(interface)
+end
+
+function UIView:_removeFromFocusStack(interface)
+	for i = #self.interfaceFocusStack, 1, -1 do
+		if self.interfaceFocusStack[i] == interface then
+			table.remove(self.interfaceFocusStack, i)
+		end
+	end
+end
+
+function UIView:_onBlur(_, widget)
+	local focusBoundary = widget:getParentOfType(FocusBoundary)
+	local interface = widget:getParentOfType(Interface)
+	if not interface or interface:getRootParent() ~= self.root then
+		return
+	end
+
+	local hasFocusBoundary = focusBoundary and interface and interface:isParentOf(focusBoundary)
+	local focusParent = hasFocusBoundary and focusBoundary or interface
+
+	self:_removeFromFocusStack(focusParent)
+	if not hasFocusBoundary then
+		table.insert(self.interfaceFocusStack, math.max(#self.interfaceFocusStack, 1), interface)
+	end
+
+	if hasFocusBoundary then
+		self:_removeFromFocusStack(interface)
+		table.insert(self.interfaceFocusStack, interface)
+		self.hasPendingInterfaceFocus = true
+	else
+		local top = self.interfaceFocusStack[#self.interfaceFocusStack]
+		if top and top ~= interface then
+			self.hasPendingInterfaceFocus = true
+		end
+	end
+end
+
+function UIView:_onFocus(_, widget)
+	local focusBoundary = widget:getParentOfType(FocusBoundary)
+	local interface = widget:getParentOfType(Interface)
+
+	if not interface or interface:getRootParent() ~= self.root then
+		return
+	end
+
+	local hasFocusBoundary = focusBoundary and interface and interface:isParentOf(focusBoundary)
+	local focusParent = hasFocusBoundary and focusBoundary or interface
+
+	local wasFocused = self.interfaceFocusStack[#self.interfaceFocusStack] == interface or #self.interfaceFocusStack == 0
+
+	self:_removeFromFocusStack(focusParent)
+	table.insert(self.interfaceFocusStack, focusParent)
+
+	if not wasFocused then
+		Log.info("Interface '%s' (index %d) captured focus.", interface:getDebugInfo().shortName, #self.interfaceFocusStack)
+	end
+
+	self.hasPendingInterfaceFocus = false
+end
+
 function UIView:enableInputScheme(inputScheme)
 	self.currentInputSchemes[inputScheme]= true
 end
@@ -1264,6 +1350,28 @@ end
 
 function UIView:hasInputScheme(inputScheme)
 	return self.currentInputSchemes[inputScheme] == true
+end
+
+local VALID_INPUT_SCHEMES = {
+	[UIView.INPUT_SCHEME_MOUSE_KEYBOARD] = true,
+	[UIView.INPUT_SCHEME_TOUCH] = true,
+	[UIView.INPUT_SCHEME_GAMEPAD] = true,
+	[UIView.INPUT_SCHEME_GYRO] = true
+}
+
+function UIView:isInputSchemeValid(inputScheme)
+	return VALID_INPUT_SCHEMES[inputScheme] == true
+end
+
+function UIView:getCurrentInputScheme()
+	return self.currentInputScheme
+end
+
+function UIView:setCurrentInputScheme(value)
+	if self:isInputSchemeValid(value) then
+		self:enableInputScheme(value)
+		self.currentInputScheme = value
+	end
 end
 
 function UIView:pull(interfaceID, interfaceIndex)
@@ -1312,6 +1420,10 @@ end
 
 function UIView:getInputProvider()
 	return self.inputProvider
+end
+
+function UIView:getControlManager()
+	return self.controlManager
 end
 
 function UIView:getRenderManager()
@@ -1364,6 +1476,12 @@ function UIView:close(ui, interfaceID, index)
 
 			self.root:removeChild(interface)
 			interfaces[index] = nil
+
+			if self.interfaceFocusStack[#self.interfaceFocusStack] == interface then
+				self.hasPendingInterfaceFocus = true
+			end
+
+			self:_removeFromFocusStack(interface)
 		end
 	end
 end
@@ -1376,6 +1494,74 @@ function UIView:poke(ui, interfaceID, index, actionID, actionIndex, e)
 		actionIndex = actionIndex,
 		e = e
 	})
+end
+
+function UIView:keyDown(...)
+	self.inputProvider:keyDown(...)
+	self.controlManager:keyDown(...)
+end
+
+function UIView:keyUp(...)
+	self.inputProvider:keyUp(...)
+	self.controlManager:keyUp(...)
+end
+
+function UIView:type(...)
+	self.inputProvider:type(...)
+end
+
+function UIView:joystickAdd(...)
+	self.inputProvider:joystickAdd(...)
+	self.controlManager:joystickAdd(...)
+end
+
+function UIView:joystickRemove(...)
+	self.inputProvider:joystickRemove(...)
+	self.controlManager:joystickRemove(...)
+end
+
+function UIView:gamepadPress(...)
+	self.inputProvider:gamepadPress(...)
+	self.controlManager:gamepadPress(...)
+end
+
+
+function UIView:gamepadRelease(...)
+	self.inputProvider:gamepadRelease(...)
+	self.controlManager:gamepadRelease(...)
+end
+
+function UIView:gamepadAxis(...)
+	self.inputProvider:gamepadAxis(...)
+	self.controlManager:gamepadAxis(...)
+end
+
+function UIView:mousePress(...)
+	self.inputProvider:mousePress(...)
+end
+
+function UIView:mouseScroll(...)
+	self.inputProvider:mouseScroll(...)
+end
+
+function UIView:mouseRelease(...)
+	self.inputProvider:mouseRelease(...)
+end
+
+function UIView:mouseMove(...)
+	self.inputProvider:mouseMove(...)
+end
+
+function UIView:touchPress(...)
+	-- Nothing.
+end
+
+function UIView:touchRelease(...)
+	-- Nothing.
+end
+
+function UIView:touchMove(...)
+	-- Nothing.
 end
 
 function UIView:_layoutToolTip(widget, toolTip)
@@ -1808,6 +1994,19 @@ function UIView:update(delta)
 
 			self.currentFocusedWidget = focusedWidget
 		end
+	end
+
+	if self.hasPendingInterfaceFocus then
+		for i = #self.interfaceFocusStack, 1, -1 do
+			local top = self.interfaceFocusStack[i]
+			local result = top:restoreFocus()
+			if result == nil or result then
+				Log.info("Restored focus to interface '%s' (index %d).", top:getDebugInfo().shortName, #self.interfaceFocusStack)
+				break
+			end
+		end
+
+		self.hasPendingInterfaceFocus = false
 	end
 end
 

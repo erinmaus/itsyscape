@@ -613,7 +613,7 @@ function CharacterCustomization:new(id, index, ui)
 	self.colorLayout:addChild(self.colorSelectionLayout)
 
 	self.paletteLayout = GridLayout()
-	self.paletteLayout:setEdgePadding(false)
+	self.paletteLayout:setEdgePadding(false, false)
 	self.paletteLayout:setPadding(self.PADDING)
 	self.paletteLayout:setSize(columnWidth - self.PADDING * 3, self.BUTTON_SIZE)
 	self.colorLayout:addChild(self.paletteLayout)
@@ -780,7 +780,7 @@ function CharacterCustomization:new(id, index, ui)
 
 		local pronounLayout = GridLayout()
 		pronounLayout:setSize(descriptionLayout:getSize(), self.BUTTON_SIZE)
-		pronounLayout:setEdgePadding(false)
+		pronounLayout:setEdgePadding(false, false)
 		pronounLayout:setPadding(self.PADDING, 0)
 		pronounLayout:setUniformSize(true, inputWidth, self.BUTTON_SIZE)
 
@@ -826,7 +826,7 @@ function CharacterCustomization:new(id, index, ui)
 
 		local layout = GridLayout()
 		layout:setSize(descriptionLayout:getSize(), self.BUTTON_SIZE)
-		layout:setEdgePadding(false)
+		layout:setEdgePadding(false, false)
 		layout:setPadding(self.PADDING, 0)
 		layout:setUniformSize(true, inputWidth, self.BUTTON_SIZE)
 
@@ -1378,7 +1378,7 @@ function CharacterCustomization:showCopyColor()
 
 	for _, slot in ipairs(self.SLOTS) do
 		local paletteLayout = GridLayout()
-		paletteLayout:setEdgePadding(false)
+		paletteLayout:setEdgePadding(false, false)
 		paletteLayout:setPadding(self.PADDING)
 
 		local label = Label()

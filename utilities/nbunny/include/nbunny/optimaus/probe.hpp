@@ -55,6 +55,8 @@ namespace nbunny
     bool cone_hit_bounds(const glm::vec3& cone_position, const glm::vec3& cone_direction, float cone_length, float cone_radius, const glm::vec3& min, const glm::vec3& max, glm::vec3& point);
     bool is_point_in_cone(const glm::vec3& cone_position, const glm::vec3& cone_direction, float cone_length, float cone_radius, const glm::vec3& point, float& distance);
     glm::vec3 project_point_on_line_segment(const glm::vec3& a, const glm::vec3& b, const glm::vec3& point);
+    bool is_point_in_circle(const glm::vec3& circle_position, float circle_radius, const glm::vec3& point);
+    bool circle_hit_bounds(const glm::vec3& circle_position, float circle_radius, const glm::vec3& min, const glm::vec3& max, glm::vec3& point);
 
 	class Probe
 	{
@@ -76,6 +78,10 @@ namespace nbunny
         float cone_length;
         float cone_radius;
 
+        bool has_circle = false;
+        glm::vec3 circle_position;
+        float circle_radius;
+
         std::vector<ProbeHit> hits;
         std::unordered_set<int> checked_entities;
 
@@ -94,6 +100,9 @@ namespace nbunny
 
         void set_cone(const glm::vec3& position, const glm::vec3& direction, float length, float radius);
         void unset_cone();
+
+        void set_circle(const glm::vec3& position, float radius);
+        void unset_circle();
 
         void probe(float frame_delta);
 

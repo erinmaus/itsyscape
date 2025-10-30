@@ -34,6 +34,8 @@ function Widget:new()
 	self.onGamepadRelease = Callback()
 	self.onGamepadAxis = Callback()
 	self.onGamepadDirection = Callback()
+	self.onControlDown = Callback()
+	self.onControlUp = Callback()
 	self.onZDepthChange = Callback()
 	self.onStyleChange = Callback()
 	self.id = false
@@ -224,6 +226,13 @@ function Widget:addChild(child)
 end
 
 function Widget:removeChild(child)
+	local inputProvider = self:getInputProvider()
+	local focusedWidget = inputProvider and inputProvider:getFocusedWidget()
+
+	if focusedWidget and (child:isParentOf(focusedWidget) or focusedWidget == child) then
+		focusedWidget:blur()
+	end
+
 	for i = 1, #self.children do
 		if self.children[i] == child then
 			table.remove(self.children, i)
@@ -525,7 +534,7 @@ function Widget:performLayout()
 end
 
 function Widget:updateStyle()
-	if not Class.isCompatibleType(self.style, WidgetStyle) and self.styleType then
+	if self.style and not Class.isCompatibleType(self.style, WidgetStyle) and self.styleType then
 		local resourceManager = self:getResourceManager()
 		if not resourceManager then
 			return false
@@ -685,6 +694,33 @@ function Widget:gamepadDirection(...)
 	end
 end
 
+function Widget:previewControlDown(control)
+	for _, child in ipairs(self.children) do
+		child:previewControlDown(control)
+	end
+end
+
+function Widget:previewControlUp(control)
+	for _, child in ipairs(self.children) do
+		child:previewControlUp(control)
+	end
+end
+
+function Widget:controlDown(control)
+	self:onControlDown(control)
+
+	if self:getParent() then
+		self:getParent():controlDown(control)
+	end
+end
+
+function Widget:controlUp(control)
+	self:onControlUp(control)
+
+	if self:getParent() then
+		self:getParent():controlUp(control)
+	end
+end
 
 function Widget:update(...)
 	if _DEBUG == 'plus' then

@@ -173,9 +173,15 @@ function GamepadCombatHUD:new(...)
 
 	BaseCombatHUD.new(self, ...)
 
-	self:setData(GamepadSink, GamepadSink())
-
 	self:_initCommon()
+end
+
+function GamepadCombatHUD:restoreFocus()
+	if not self:getIsShowing() then
+		return false
+	end
+
+	self:focusChild(self:getMenu())
 end
 
 function GamepadCombatHUD:onSwitchCombatStyle(oldCombatStyle, newCombatStyle)
@@ -285,15 +291,18 @@ function GamepadCombatHUD:_newMenuActionIcon()
 end
 
 function GamepadCombatHUD:_initCommon()
-	self.iconGamepadPrimaryAction = Icon()
-	self.iconGamepadPrimaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_a.png")
-	self.iconGamepadPrimaryAction:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
+	self.iconGamepadPrimaryAction = GamepadToolTip()
+	self.iconGamepadPrimaryAction:setRowSize(math.huge, self.DEFAULT_ICON_SIZE)
+	self.iconGamepadPrimaryAction:setHasBackground(false)
+	self.iconGamepadPrimaryAction:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadPrimaryAction")
 	self.iconGamepadPrimaryAction:setPosition(
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
-	self.iconGamepadSecondaryAction = Icon()
-	self.iconGamepadSecondaryAction:setIcon("Resources/Game/UI/Icons/Controllers/PlayStation/button_y.png")
-	self.iconGamepadSecondaryAction:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
+
+	self.iconGamepadSecondaryAction = GamepadToolTip()
+	self.iconGamepadSecondaryAction:setRowSize(math.huge, self.DEFAULT_ICON_SIZE)
+	self.iconGamepadSecondaryAction:setHasBackground(false)
+	self.iconGamepadSecondaryAction:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadPrimaryAction")
 	self.iconGamepadSecondaryAction:setPosition(
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4),
 		self.SELECTED_BUTTON_SIZE - self.DEFAULT_ICON_SIZE * (3 / 4))
@@ -398,6 +407,7 @@ function GamepadCombatHUD:toggle(open)
 	if not open and self:getIsShowing() then
 		self:clear()
 		self:hide()
+		self:getView():removeFromFocusStack(self)
 	elseif open and not self:getIsShowing() then
 		self:show()
 	end
@@ -506,13 +516,13 @@ function GamepadCombatHUD:addStandardThingiesInterface(menu, getDataCallback)
 
 	local backToolTip = GamepadToolTip()
 	backToolTip:setHasBackground(false)
-	backToolTip:setButtonID("b")
+	backToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "b")
 	backToolTip:setText("Back")
 	backToolTip:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2, -self.STANDARD_INTERFACE_TITLE_HEIGHT)
 
 	local menuActionToolTip = GamepadToolTip()
 	menuActionToolTip:setHasBackground(false)
-	menuActionToolTip:setButtonID("x")
+	menuActionToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "x")
 	menuActionToolTip:setPosition(self.SPIRAL_OUTER_RADIUS + self.DEFAULT_ICON_SIZE * 2 + self.STANDARD_INTERFACE_TITLE_HEIGHT, self.PADDING)
 
 	local container = GamepadCombatHUD.StandardInterfaceContainer()
@@ -584,7 +594,7 @@ function GamepadCombatHUD:newSpiralMenu(name)
 		self.SPIRAL_OUTER_RADIUS * 2 + self.SELECTED_BUTTON_SIZE)
 	spiralMenu:setData("name", name)
 	spiralMenu:setRadius(self.SPIRAL_INNER_RADIUS, self.SPIRAL_OUTER_RADIUS)
-	spiralMenu:setData(GamepadSink, GamepadSink({ isBlockingCamera = false }))
+	spiralMenu:setData(GamepadSink, GamepadSink({ isBlocking = false, isBlockingCamera = true }))
 
 	local circlePanel = GamepadCirclePanel()
 	circlePanel:enable()

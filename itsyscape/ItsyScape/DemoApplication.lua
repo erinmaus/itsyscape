@@ -31,6 +31,7 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local FocusBoundary = require "ItsyScape.UI.FocusBoundary"
 local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
@@ -66,6 +67,7 @@ DemoApplication.TITLE_SCREENS = {
 }
 DemoApplication.GYRO_RADIUS = 1
 DemoApplication.SHIMMER_DURATION = 0.25
+DemoApplication.SHIMMER_STATIONARY_DURATION_SECONDS = 1
 
 DemoApplication.GAMEPAD_TOGGLE_INTERFACES = {
 	"GamepadRibbon",
@@ -90,10 +92,13 @@ function DemoApplication:new()
 	self.shimmeringObjects = {}
 	self.pendingObjectID = false
 	self.pendingObjectType = false
+	self.stationaryDuration = 0
 	self.currentShimmerToolTip = GamepadToolTip()
 	self.currentShimmerToolTip:setZDepth(-900)
 	self.currentShimmerToolTip:setRowSize(math.huge)
+	self.currentShimmerToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "a")
 	self.nextShimmerToolTip = GamepadToolTip()
+	self.nextShimmerToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "x")
 	self.nextShimmerToolTip:setZDepth(-900)
 	self.nextShimmerToolTip:setRowSize(math.huge)
 
@@ -238,6 +243,9 @@ function DemoApplication:new()
 		player.onSave:register(self.savePlayer, self)
 		player.onMove:register(self.setMapName, self)
 		player.onMove:register(self.clearResourceManagerCache, self)
+		player.onReady:register(function(_, actor)
+			actor.onTeleport:register(self.teleportCamera, self)
+		end)
 
 		if _MOBILE then
 			player.onMove:register(self.requestSave, self)
@@ -296,6 +304,7 @@ function DemoApplication:pushCamera(_, cameraType)
 	if not s then
 		Log.error("Could not load camera type '%s': %s", s, r)
 	else
+		self.cameraController:push()
 		self.cameraController = r(self)
 		table.insert(self.cameraControllers, self.cameraController)
 	end
@@ -309,10 +318,19 @@ function DemoApplication:popCamera()
 
 	table.remove(self.cameraControllers)
 	self.cameraController = self.cameraControllers[#self.cameraControllers]
+	self.cameraController:pop()
 end
 
 function DemoApplication:pokeCamera(_, event, ...)
 	self.cameraController:poke(event, ...)
+end
+
+function DemoApplication:teleportCamera()
+	for _, camera in ipairs(self.cameraControllers) do
+		if Class.isCompatibleType(camera, DefaultCameraController) then
+			camera:recenter()
+		end
+	end
 end
 
 function DemoApplication:setPlayerFilename(value)
@@ -356,6 +374,7 @@ function DemoApplication:setMapName(_, _, map)
 	Log.info("Player loaded new map '%s'.", map)
 
 	self:updateMemoryLabel(map)
+	self:teleportCamera()
 end
 
 function DemoApplication:clearResourceManagerCache()
@@ -551,39 +570,12 @@ function DemoApplication:_openGraphicsOptions(_, buttonIndex)
 	end)
 end
 
-function DemoApplication:_layoutDemoButton(button)
-	local child = button:getChildAt(1)
-	child:update(0)
-
-	local childWidth, childHeight = child:getSize()
-	local buttonWidth, buttonHeight = button:getSize()
-
-	child:setPosition(buttonWidth / 2 - childWidth / 2, buttonHeight / 2 - childHeight / 2)
-end
-
 function DemoApplication:_quitDemo(_, buttonIndex)
 	if buttonIndex ~= 1 then
 		return
 	end
 
 	love.event.quit()
-end
-
-function DemoApplication:_focusDemoButton(button)
-	local child = button:getChildAt(1)
-	if self:getUIView():getInputProvider():getCurrentJoystick() then
-		child:setButtonID("a")
-	else
-		child:setButtonID("none")
-	end
-
-	self:_layoutDemoButton(button)
-end
-
-function DemoApplication:_blurDemoButton(button)
-	local child = button:getChildAt(1)
-	child:setButtonID("none")
-	self:_layoutDemoButton(button)
 end
 
 function DemoApplication:openDemoMainMenu()
@@ -604,53 +596,61 @@ function DemoApplication:openDemoMainMenu()
 	local resumeButton = Button()
 	resumeButton:setSize(256, 64)
 	resumeButton.onClick:register(self._loadDemoPlayer, self)
-	resumeButton.onFocus:register(self._focusDemoButton, self)
-	resumeButton.onBlur:register(self._blurDemoButton, self)
 
 	local resumeText = GamepadToolTip()
 	resumeText:setHasBackground(false)
 	resumeText:setRowSize(256, 48)
 	resumeText:setText("Resume")
-	resumeText:setButtonID("none")
+	resumeText:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "none")
+	resumeText:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, "none")
+	resumeText:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "a")
+	resumeText:setRequireFocus(true)
+	resumeText:setCenter(true)
 	resumeButton:addChild(resumeText)
 
 	local playButton = Button()
 	playButton:setSize(256, 64)
 	playButton.onClick:register(self._newDemoPlayer, self)
-	playButton.onFocus:register(self._focusDemoButton, self)
-	playButton.onBlur:register(self._blurDemoButton, self)
 
 	local playText = GamepadToolTip()
 	playText:setHasBackground(false)
 	playText:setRowSize(256, 48)
 	playText:setText("New Game")
-	playText:setButtonID("none")
+	playText:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "none")
+	playText:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, "none")
+	playText:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "a")
+	playText:setRequireFocus(true)
+	playText:setCenter(true)
 	playButton:addChild(playText)
 
 	local settingsButton = Button()
 	settingsButton:setSize(256, 64)
 	settingsButton.onClick:register(self._openGraphicsOptions, self)
-	settingsButton.onFocus:register(self._focusDemoButton, self)
-	settingsButton.onBlur:register(self._blurDemoButton, self)
 
 	local settingsText = GamepadToolTip()
 	settingsText:setHasBackground(false)
 	settingsText:setRowSize(256, 48)
 	settingsText:setText("Settings")
-	settingsText:setButtonID("none")
+	settingsText:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "none")
+	settingsText:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, "none")
+	settingsText:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "a")
+	settingsText:setRequireFocus(true)
+	settingsText:setCenter(true)
 	settingsButton:addChild(settingsText)
 
 	local quitButton = Button()
 	quitButton:setSize(256, 64)
 	quitButton.onClick:register(self._quitDemo, self)
-	quitButton.onFocus:register(self._focusDemoButton, self)
-	quitButton.onBlur:register(self._blurDemoButton, self)
 
 	local quitText = GamepadToolTip()
 	quitText:setHasBackground(false)
 	quitText:setRowSize(256, 48)
 	quitText:setText("Quit")
-	quitText:setButtonID("none")
+	quitText:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "none")
+	quitText:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, "none")
+	quitText:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "a")
+	quitText:setRequireFocus(true)
+	quitText:setCenter(true)
 	quitButton:addChild(quitText)
 
 	if love.filesystem.getInfo("Player/Demo.dat") then
@@ -671,6 +671,7 @@ function DemoApplication:openDemoMainMenu()
 	gridLayout:setPosition(w / 2 - gridWidth / 2, h - gridHeight - 32)
 
 	gridLayout:update(0)
+	self:getUIView():getInputProvider():getFocusedWidget():update(0)
 
 	local playTextWidth, playTextHeight = playText:getSize()
 	playText:setPosition(128 - playTextWidth / 2, 32 - playTextHeight / 2)
@@ -1087,9 +1088,11 @@ function DemoApplication:toggleUI(hud)
 end
 
 function DemoApplication:gamepadRelease(joystick, button)
+	local inputProvider = self:getUIView():getInputProvider()
+	local focusedWidget = inputProvider:getFocusedWidget()
+
 	Application.gamepadRelease(self, joystick, button)
 
-	local inputProvider = self:getUIView():getInputProvider()
 	if not inputProvider:isCurrentJoystick(joystick) then
 		return
 	end
@@ -1098,7 +1101,6 @@ function DemoApplication:gamepadRelease(joystick, button)
 	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
 	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
 
-	local focusedWidget = inputProvider:getFocusedWidget()
 	if not focusedWidget then
 		if button == cycleTargetButton then
 			self:nextShimmer()
@@ -1119,8 +1121,14 @@ function DemoApplication:gamepadRelease(joystick, button)
 		self:toggleUI("GamepadRibbon")
 		return
 	end
+	
+	if self:isInterfaceBlockingRibbon(focusedWidget) or self:isInterfaceBlockingRibbon() then
+		return
+	end
 
-	if focusedWidget and self:isInterfaceBlockingGamepadMovement() then
+	focusedWidget = inputProvider:getFocusedWidget()
+	if focusedWidget and self:isInterfaceBlockingGamepadMovement(focusedWidget) then
+		local hasBoundary = focusedWidget:getParentOfType(FocusBoundary)
 		if focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon) then
 			return
 		end
@@ -1859,6 +1867,13 @@ function DemoApplication:snapshotGame()
 	love.graphics.pop()
 end
 
+function DemoApplication:_getIsVisible(object, y, padding)
+	local width, height = itsyrealm.graphics.getScaledMode()
+	local x, y = self:_getObjectUIPosition(object, y, padding)
+
+	return not (x < 0 or y < 0 or x > width or y > height)
+end
+
 function DemoApplication:_getObjectUIPosition(object, y, padding)
 	local gameView = self:getGameView()
 
@@ -1979,10 +1994,18 @@ function DemoApplication:updatePositionProbe()
 	local direction = self.currentPlayerDirection
 
 	local probe = Probe(self:getGame(), gameView, self:getGameDB())
-	local coneLength = 10
-	local coneRadius = 6
 	probe.onExamine:register(self.examineShimmer, self)
-	probe:conecast(Ray(position - direction * 1.5, direction), coneLength, coneRadius)
+
+	local isStationary = self.stationaryDuration >= DemoApplication.SHIMMER_STATIONARY_DURATION_SECONDS
+	if isStationary then
+		local circleRadius = 6
+		probe:circlecast(position, circleRadius)
+	else
+		local coneLength = 10
+		local coneRadius = 6
+		probe:conecast(Ray(position - direction * 1.5, direction), coneLength, coneRadius)
+	end
+
 	probe:setTile(i, j, layer)
 	probe:run()
 
@@ -2067,7 +2090,10 @@ function DemoApplication:getNextShimmer(pendingObjectID, pendingObjectType)
 			end
 		end
 
-		if not isOnlyExaminable and shimmeringObject.isActive then
+		local _, object = self:_getShimmerNodeObject(shimmeringObject)
+		local isOutOfRange = object and not self:_getIsVisible(object, 0.5)
+
+		if not (isOnlyExaminable or isOutOfRange) and shimmeringObject.isActive then
 			table.insert(shimmerCandidates, shimmeringObject)
 			if pendingObjectID == shimmeringObject.objectID and pendingObjectType == shimmeringObject.objectType then
 				currentIndex = #shimmerCandidates
@@ -2161,7 +2187,7 @@ function DemoApplication:probeCurrentShimmer(performDefault)
 end
 
 function DemoApplication:updateNearbyShimmer(delta)
-	local isShimmerEnabled = not not self:getUIView():getInputProvider():getCurrentJoystick()
+	local isShimmerEnabled = self:getUIView():getCurrentInputScheme() == UIView.INPUT_SCHEME_GAMEPAD
 
 	local playerActorID = self:getGame():getPlayer()
 	playerActorID = playerActorID and playerActorID:getActor()
@@ -2246,7 +2272,27 @@ function DemoApplication:updateNearbyShimmer(delta)
 							toolTipTextColor,
 							shimmeringObject.object
 						})
+
 					self:getUIView():getRoot():addChild(self.currentShimmerToolTip)
+					self.currentShimmerToolTip:update(0)
+
+					if Class.isCompatibleType(self.cameraController, DefaultCameraController) then
+						local size
+
+						if Class.isCompatibleType(object, Prop) then
+							local min, max = object:getBounds()
+							size = max - min
+						elseif Class.isCompatibleType(object, Actor) then
+							local min, max = object:getBounds()
+							size = max - min
+						elseif Class.isCompatibleType(object, Probe.Item) then
+							size = Vector(1)
+						else
+							size = Vector(0)
+						end
+
+						self.cameraController:setTarget(node, size)
+					end
 				else
 					self:getUIView():getRoot():removeChild(self.currentShimmerToolTip)
 				end
@@ -2279,8 +2325,6 @@ function DemoApplication:updateNearbyShimmer(delta)
 				toolTipTextColor,
 				shimmeringObject.object
 			})
-
-			self.nextShimmerToolTip:setButtonID("x")
 		end
 
 		if not shimmeringObject.isActive and shimmeringObject.time == DemoApplication.SHIMMER_DURATION then
@@ -2308,6 +2352,10 @@ function DemoApplication:updateNearbyShimmer(delta)
 	if not hasActive then
 		self:getUIView():getRoot():removeChild(self.currentShimmerToolTip)
 		self:getUIView():getRoot():removeChild(self.nextShimmerToolTip)
+
+		if Class.isCompatibleType(self.cameraController, DefaultCameraController) then
+			self.cameraController:unsetTarget()
+		end
 	else
 		if hasNext and isShimmerEnabled then
 			self:getUIView():getRoot():addChild(self.nextShimmerToolTip)
@@ -2316,15 +2364,31 @@ function DemoApplication:updateNearbyShimmer(delta)
 			local currentWidth, currentHeight = self.currentShimmerToolTip:getSize()
 
 			self.nextShimmerToolTip:setPosition(currentX, currentY + currentHeight + 4)
+			self.nextShimmerToolTip:update(0)
 		else
 			self:getUIView():getRoot():removeChild(self.nextShimmerToolTip)
 		end
 	end
 end
 
-function DemoApplication:isInterfaceBlockingGamepadMovement()
+function DemoApplication:isInterfaceBlockingRibbon(widget)
 	local inputProvider = self:getUIView():getInputProvider()
-	local focusedWidget = inputProvider:getFocusedWidget()
+	local focusedWidget = widget or inputProvider:getFocusedWidget()
+
+	if not focusedWidget then
+		return false
+	end
+
+	local interfaceParent = focusedWidget:getParentOfType(Interface)
+	local gamepadSink = interfaceParent and interfaceParent:getData(GamepadSink)
+	local otherGamepadSink = focusedWidget and focusedWidget:getParentData(GamepadSink)
+
+	return (gamepadSink and gamepadSink:getIsBlockingRibbon()) or (otherGamepadSink and otherGamepadSink:getIsBlockingRibbon())
+end
+
+function DemoApplication:isInterfaceBlockingGamepadMovement(widget)
+	local inputProvider = self:getUIView():getInputProvider()
+	local focusedWidget = widget or inputProvider:getFocusedWidget()
 
 	if not focusedWidget then
 		return false
@@ -2342,6 +2406,8 @@ function DemoApplication:updatePlayerMovement()
 	if not player then
 		return
 	end
+
+	local didPressKey = false
 
 	local x, z = 0, 0
 	if self.hasGyroInput then
@@ -2375,6 +2441,8 @@ function DemoApplication:updatePlayerMovement()
 		if right then
 			x = x - 1
 		end
+
+		didPressKey = up or down or left or right
 	end
 
 	do
@@ -2414,7 +2482,13 @@ function DemoApplication:updatePlayerMovement()
 		if not focusedWidget or
 		   not focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput")
 		then
+			if didPressKey then
+				self:getUIView():setCurrentInputScheme(UIView.INPUT_SCHEME_MOUSE_KEYBOARD)
+			end
+
 			player:move(x, z)
+
+			self.stationaryDuration = 0
 		else
 			player:move(0, 0)
 		end
@@ -2521,6 +2595,8 @@ end
 
 function DemoApplication:update(delta)
 	Application.update(self, delta)
+
+	self.stationaryDuration = self.stationaryDuration + delta
 
 	--Pool.getCurrent():update()
 

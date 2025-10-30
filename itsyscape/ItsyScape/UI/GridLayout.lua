@@ -28,7 +28,9 @@ function GridLayout:new()
 	self.maxRowHeight = false
 	self.wrapContents = false
 	self.currentHeight = 0
-	self.edgePadding = true
+	self.edgePaddingX = true
+	self.edgePaddingY = true
+	self.reverse = false
 end
 
 function GridLayout:getPadding()
@@ -47,12 +49,21 @@ function GridLayout:setPadding(paddingX, paddingY)
 	end
 end
 
-function GridLayout:setEdgePadding(value)
-	self.edgePadding = value or false
+function GridLayout:setEdgePadding(x, y)
+	self.edgePaddingX = x or false
+	self.edgePaddingY = y or false
+end
+
+function GridLayout:setIsReversed(value)
+	self.reverse = not not value
+end
+
+function GridLayout:getIsReversed()
+	return self.reverse
 end
 
 function GridLayout:getEdgePadding()
-	return self.edgePadding
+	return self.edgePaddingX, self.edgePaddingY
 end
 
 function GridLayout:getUniformSize()
@@ -136,8 +147,8 @@ function GridLayout:layoutChild(child)
 	local width, height = self:getSize()
 	local childWidth, childHeight = child:getSize()
 
-	local edgePaddingX = self.edgePadding and self.paddingX or 0
-	local edgePaddingY = self.edgePadding and self.paddingY or 0
+	local edgePaddingX = self.edgePaddingX and self.paddingX or 0
+	local edgePaddingY = self.edgePaddingY and self.paddingY or 0
 
 	local x = self.currentX or edgePaddingX
 	local y = self.currentY or edgePaddingY
@@ -176,8 +187,12 @@ function GridLayout:performLayout()
 		self.currentHeight = 0
 	end
 
-	for _, child in self:iterate() do
-		self:layoutChild(child)
+	local start = self.reverse and self:getNumChildren() or 1
+	local stop = self.reverse and 1 or self:getNumChildren()
+	local n = self.reverse and -1 or 1
+
+	for i = start, stop, n do
+		self:layoutChild(self:getChildAt(i))
 	end
 
 	if self.wrapContents then

@@ -365,7 +365,7 @@ function DialogBoxController:update(...)
 			self,
 			"next",
 			nil,
-			{})
+			{ self.state })
 		self.needsPump = false
 	end
 

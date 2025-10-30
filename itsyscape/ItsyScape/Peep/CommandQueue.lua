@@ -26,6 +26,7 @@ function CommandQueue:new(peep)
 	self.peep = peep
 	self.queue = {}
 	self.lastCommand = false
+	self.runningCommands = {}
 end
 
 -- Gets the Peep this queue belongs to.
@@ -73,6 +74,42 @@ function CommandQueue:push(command, clear)
 	return true
 end
 
+-- Shifts 'command' to the end. 'command' must be executing.
+--
+-- This means whatever is after 'command' will become current. 'command' will then
+-- execute AFTER 'command'.
+--
+-- Uninterruptible commands cannot be shifted.
+--
+-- If there is only one command in the queue, this fails as well.
+function CommandQueue:shift(command)
+	if #self.queue == 1 then
+		return false
+	end
+
+	local index
+	for i, otherCommand in ipairs(self.queue) do
+		if otherCommand == command then
+			index = i
+			break
+		end
+	end
+
+	if not index then
+		return false
+	end
+
+	if not command:getIsInterruptible() then
+		return false
+	end
+
+	table.remove(self.queue, index)
+	table.insert(self.queue, command)
+
+	command:onPause(self.peep)
+	return true
+end
+
 -- Interrupts the current command with the new 'command'.
 --
 -- If the current command is un-interruptible, nothing happens and this method
@@ -88,7 +125,9 @@ function CommandQueue:interrupt(command)
 			return false
 		end
 
-		currentCommand:onInterrupt(self.peep)
+		for command in pairs(self.runningCommands) do
+			command:onInterrupt(self.peep)
+		end
 	end
 
 	self.queue = { command }
@@ -113,7 +152,12 @@ end
 -- The pending commands are not executed.
 function CommandQueue:flush()
 	while #self.queue > 1 do
-		table.remove(self.queue, #self.queue)
+		local currentCommand = table.remove(self.queue, #self.queue)
+
+		if self.runningCommands[currentCommand] then
+			currentCommand:onInterrupt(self.peep)
+			self.runningCommands[currentCommand] = nil
+		end
 	end
 end
 
@@ -131,6 +175,7 @@ function CommandQueue:clear(force)
 		end
 
 		currentCommand:onInterrupt(self.peep)
+		self.runningCommands[currentCommand] = nil
 		
 		self.queue = {}
 	end
@@ -164,7 +209,12 @@ function CommandQueue:update(delta)
 				self.lastCommand = currentCommand
 
 				if currentCommand then
-					currentCommand:onBegin(self.peep)
+					if self.runningCommands[currentCommand] then
+						currentCommand:onResume(self.peep)
+					else
+						currentCommand:onBegin(self.peep)
+						self.runningCommands[currentCommand] = true
+					end
 				end
 			end
 
@@ -172,7 +222,6 @@ function CommandQueue:update(delta)
 				currentCommand:update(delta, self.peep)
 
 				if currentCommand:getIsFinished() then
-
 					-- Handle the case where the current command switches to
 					-- blocking from non-blocking.
 					--
@@ -182,6 +231,7 @@ function CommandQueue:update(delta)
 					end
 
 					currentCommand:onEnd(self.peep)
+					self.runningCommands[currentCommand] = nil
 
 					if self.queue[1] == currentCommand then
 						table.remove(self.queue, 1)

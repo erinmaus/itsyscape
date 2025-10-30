@@ -282,8 +282,6 @@ function DecorationPalette:loadDecorations()
 		self.buttonsPanel:addChild(self.buttons[i])
 	end
 
-	print(">>> gridLayout:getSize()", gridLayout:getSize())
-
 	self.buttonsPanel:setScrollSize(gridLayout:getSize())
 	self.buttonsPanel:setScroll(0, 0)
 end

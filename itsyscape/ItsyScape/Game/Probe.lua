@@ -105,12 +105,7 @@ function Probe:sort(a, b)
 	return a.depth < b.depth
 end
 
-function Probe:raycast(ray, tests)
-	self.ray = ray:keep()
-
-	self.isRay = true
-	self.isCone = false
-
+function Probe:_reset()
 	table.clear(self.actions)
 	self.isDirty = false
 
@@ -118,7 +113,17 @@ function Probe:raycast(ray, tests)
 	self.tests = tests
 
 	self.tile = false
-	self.layer = layer
+	self.layer = false
+end
+
+function Probe:raycast(ray, tests)
+	self.ray = ray:keep()
+
+	self.isRay = true
+	self.isCone = false
+	self.isCircle = false
+
+	self:_reset()
 end
 
 function Probe:conecast(ray, length, radius, tests)
@@ -128,15 +133,20 @@ function Probe:conecast(ray, length, radius, tests)
 
 	self.isRay = false
 	self.isCone = true
+	self.isCircle = false
 
-	table.clear(self.actions)
-	self.isDirty = false
+	self:_reset()
+end
 
-	table.clear(self.probes)
-	self.tests = tests
+function Probe:circlecast(position, radius, tests)
+	self.circlePosition = position
+	self.circleRadius = radius
 
-	self.tile = false
-	self.layer = layer
+	self.isRay = false
+	self.isCone = false
+	self.isCircle = true
+
+	self:_reset()
 end
 
 function Probe:init(ray, tests, radius, layer)
@@ -243,8 +253,14 @@ function Probe:_run(callback)
 	if self.isRay then
 		probe:setRay(self.ray.origin.x, self.ray.origin.y, self.ray.origin.z, self.ray.direction.x, self.ray.direction.y, self.ray.direction.z)
 		probe:unsetCone()
+		probe:unsetCircle()
 	elseif self.isCone then
 		probe:setCone(self.ray.origin.x, self.ray.origin.y, self.ray.origin.z, self.ray.direction.x, self.ray.direction.y, self.ray.direction.z, self.coneLength, self.coneRadius)
+		probe:unsetRay()
+		probe:unsetCircle()
+	elseif self.isCircle then
+		probe:setCircle(self.circlePosition.x, self.circlePosition.y, self.circlePosition.z, self.circleRadius)
+		probe:unsetCone()
 		probe:unsetRay()
 	else
 		return

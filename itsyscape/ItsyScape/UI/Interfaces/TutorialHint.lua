@@ -14,6 +14,7 @@ local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
+local UIView = require "ItsyScape.UI.UIView"
 
 local TutorialHint = Class(Interface)
 TutorialHint.PADDING = 8
@@ -76,10 +77,11 @@ end
 function TutorialHint:getInputState()
 	local mode
 
-	local inputProvider = self:getInputProvider()
-	if inputProvider and inputProvider:getCurrentJoystick() then
+	local uiView = self:getView()
+	local inputScheme = uiView:getCurrentInputScheme()
+	if inputScheme == UIView.INPUT_SCHEME_GAMEPAD then
 		mode = "gamepad"
-	elseif _MOBILE then
+	elseif inputScheme == UIView.INPUT_SCHEME_TOUCH then
 		mode = "mobile"
 	else
 		mode = "standard"
@@ -132,7 +134,9 @@ function TutorialHint:place(widget)
 		self:addChild(self.toolTip)
 	end
 
-	self.toolTip:setKeybind(state.message.keybind)
+	if state.message.keybind then
+		self.toolTip:setKeybind("", state.message.keybind)
+	end
 
 	local icon = self.toolTip:getGamepadIcon()
 	icon:setController(state.message.controller)

@@ -35,7 +35,7 @@ CraftInfoContentTab.ICON_SIZE = 64
 
 CraftInfoContentTab.STAT_BAR_HEIGHT = 32
 
-CraftInfoContentTab.CONSTRAINTS_HEIGHT = EquipmentStatsPanel.DEFAULT_HEIGHT
+CraftInfoContentTab.CONSTRAINTS_HEIGHT = GamepadContentTab.HEIGHT - CraftInfoContentTab.ICON_SIZE - CraftInfoContentTab.PADDING * 3
 
 CraftInfoContentTab.ITEM_BUTTON_STYLE = {
 	pressed = "Resources/Game/UI/Buttons/ItemButton-Default.png",
@@ -67,10 +67,11 @@ function CraftInfoContentTab:new(interface)
 
 	self.layout = GridLayout()
 	self.layout:setSize(self:getSize())
-	self.layout:setPadding(0, self.PADDING)
+	self.layout:setPadding(self.PADDING, self.PADDING)
 	self:addChild(self.layout)
 
 	local titleLabel = GridLayout()
+	titleLabel:setEdgePadding(false, false)
 	titleLabel:setPadding(self.PADDING, self.PADDING)
 	titleLabel:setSize(self.WIDTH, self.ICON_SIZE)
 	self.layout:addChild(titleLabel)

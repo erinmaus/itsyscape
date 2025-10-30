@@ -203,9 +203,23 @@ function PlayerInventory:new(id, index, ui)
 	self.content = InventoryGamepadContentTab(self)
 	self.content.onUseItem:register(self.useItem, self)
 	self:addChild(self.content)
+
+	self.onClose:register(self.close, self)
+end
+
+function PlayerInventory:close()
+	self:cancelUse()
+end
+
+function PlayerInventory:mousePress(...)
+	Interface.mousePress(self, ...)
+
+	self:cancelUse()
 end
 
 function PlayerInventory:useItem(_, button, index)
+	self:cancelUse()
+
 	button:getData("icon"):setIsActive(true)
 	self:getView():getRenderManager():setCursor(button:getData("icon"))
 
@@ -254,7 +268,13 @@ function PlayerInventory:cancelUse()
 
 	if self.facade then
 		self.facade:unsetToolTip()
-		self.facade:getParent():removeChild(self.facade)
+
+		local parent = self.facade:getParent()
+		if parent then
+			parent:removeChild(self.facade)
+		end
+
+		self.facade = nil
 	end
 
 	self:sendPoke("use", nil, { index = false })

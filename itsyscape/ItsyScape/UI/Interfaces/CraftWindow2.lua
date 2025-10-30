@@ -70,7 +70,7 @@ function CraftWindow:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
 	self:setSize(self.WIDTH, self.HEIGHT)
-	self:setData(GamepadSink, GamepadSink())
+	self:setData(GamepadSink, GamepadSink({ isBlockingRibbon = true }))
 
 	self.titlePanel = Panel()
 	self.titlePanel:setSize(self.WIDTH, self.TITLE_HEIGHT)
@@ -99,6 +99,7 @@ function CraftWindow:new(id, index, ui)
 	self.titleLabel = Label()
 	self.titleLabel:setStyle(self.TITLE_LABEL_STYLE, LabelStyle)
 	self.titleLabel:setPosition(self.PADDING, self.PADDING / 2)
+	self.titleLabel:setZDepth(100)
 	self.titlePanel:addChild(self.titleLabel)
 
 	self.contentPanel = Panel()
@@ -111,7 +112,7 @@ function CraftWindow:new(id, index, ui)
 	self.contentLayout = GridLayout()
 	self.contentLayout:setSize(self.CONTENT_LAYOUT_WIDTH, self.CONTENT_HEIGHT)
 	self.contentLayout:setPadding(self.PADDING * 2, 0)
-	self.contentLayout:setEdgePadding(false)
+	self.contentLayout:setEdgePadding(false, false)
 	self.contentLayout:setUniformSize(true, GamepadContentTab.WIDTH, GamepadContentTab.HEIGHT)
 	self.contentLayout:setPosition((self.WIDTH - self.CONTENT_WIDTH) / 2, self.PADDING)
 	self.contentPanel:addChild(self.contentLayout)
@@ -168,7 +169,7 @@ function CraftWindow:new(id, index, ui)
 
 	self.closeKeybindInfo = GamepadToolTip()
 	self.closeKeybindInfo:setHasBackground(false)
-	self.closeKeybindInfo:setKeybind("gamepadOpenRibbon")
+	self.closeKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadOpenRibbon")
 	self.closeKeybindInfo:setText("Close")
 	self.closeKeybindInfo:setPosition(
 		self.WIDTH - 128,
@@ -176,7 +177,7 @@ function CraftWindow:new(id, index, ui)
 
 	self.backKeybindInfo = GamepadToolTip()
 	self.backKeybindInfo:setHasBackground(false)
-	self.backKeybindInfo:setKeybind("gamepadBack")
+	self.backKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadBack")
 	self.backKeybindInfo:setText("Back")
 	self.backKeybindInfo:setPosition(
 		self.WIDTH - 128,
@@ -185,6 +186,10 @@ end
 
 function CraftWindow:close()
 	self:sendPoke("close", nil, {})
+end
+
+function CraftWindow:restoreFocus()
+	self:focusChild(self.currentContentTarget)
 end
 
 function CraftWindow:gamepadRelease(joystick, button)
@@ -201,7 +206,6 @@ end
 function CraftWindow:gamepadAxis(joystick, axis, value)
 	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity")
 	local scrollYAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "scrollYAxis")
-
 
 	local inputProvider = self:getInputProvider()
 	if inputProvider and inputProvider:isCurrentJoystick(joystick) then
@@ -351,41 +355,40 @@ function CraftWindow:updateTitleScene()
 end
 
 function CraftWindow:updateControls()
-	local inputProvider = self:getInputProvider()
-	if inputProvider then
-		if not inputProvider:getCurrentJoystick() then
-			self.contentTabScrollYDirection = 0
+	local inputScheme = self:getView():getCurrentInputScheme()
 
-			if self.closeKeybindInfo:getParent() then
-				self.closeKeybindInfo:getParent():removeChild(self.closeKeybindInfo)
-			end
+	if inputScheme ~= GamepadToolTip.INPUT_SCHEME_GAMEPAD then
+		self.contentTabScrollYDirection = 0
 
-			if self.backKeybindInfo:getParent() then
-				self.backKeybindInfo:getParent():removeChild(self.backKeybindInfo)
-			end
+		if self.closeKeybindInfo:getParent() then
+			self.closeKeybindInfo:getParent():removeChild(self.closeKeybindInfo)
+		end
 
-			if self.currentContentTarget ~= self.craftCategoriesContentTab then
-				if self.backButton:getParent() ~= self.titlePanel then
-					self.titlePanel:addChild(self.backButton)
-				end
-			else
-				if self.backButton:getParent() then
-					self.backButton:getParent():removeChild(self.backButton)
-				end
+		if self.backKeybindInfo:getParent() then
+			self.backKeybindInfo:getParent():removeChild(self.backKeybindInfo)
+		end
+
+		if self.currentContentTarget ~= self.craftCategoriesContentTab then
+			if self.backButton:getParent() ~= self.titlePanel then
+				self.titlePanel:addChild(self.backButton)
 			end
 		else
-			if self.closeKeybindInfo:getParent() ~= self.titlePanel then
-				self.titlePanel:addChild(self.closeKeybindInfo)
+			if self.backButton:getParent() then
+				self.backButton:getParent():removeChild(self.backButton)
 			end
+		end
+	else
+		if self.closeKeybindInfo:getParent() ~= self.titlePanel then
+			self.titlePanel:addChild(self.closeKeybindInfo)
+		end
 
-			if self.currentContentTarget ~= self.craftCategoriesContentTab then
-				if self.backKeybindInfo:getParent() ~= self.titlePanel then
-					self.titlePanel:addChild(self.backKeybindInfo)
-				end
-			else
-				if self.backKeybindInfo:getParent() then
-					self.backKeybindInfo:getParent():removeChild(self.backKeybindInfo)
-				end
+		if self.currentContentTarget ~= self.craftCategoriesContentTab then
+			if self.backKeybindInfo:getParent() ~= self.titlePanel then
+				self.titlePanel:addChild(self.backKeybindInfo)
+			end
+		else
+			if self.backKeybindInfo:getParent() then
+				self.backKeybindInfo:getParent():removeChild(self.backKeybindInfo)
 			end
 		end
 	end

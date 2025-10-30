@@ -57,6 +57,17 @@ function Common.projectPointOnLineSegment(a, b, p)
 	return a + bMinusA * t
 end
 
+function Common.transformPointFromPlaneToAxis(point, normal, d, otherAxis)
+	otherAxis = otherAxis or Vector.UNIT_Z
+
+	local rotation = Quaternion.fromVectors(normal, otherAxis):getNormal()
+
+	local distance = Vector.dot(normal, point) + d
+	local projectedPoint = point - distance * normal
+
+	return rotation:transformVector(projectedPoint)
+end
+
 function Common.side(a, b, c, bias)
 	local result = ((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x))
 
@@ -70,6 +81,22 @@ function Common.side(a, b, c, bias)
 	end
 
 	return sign, result
+end
+
+function Common.makeTransform(position, rotation, scale, offset)
+	position = position or Vector.ZERO
+	rotation = rotation or Quaternion.IDENTITY
+	scale = scale or Vector.ONE
+	offset = offset or Vector.ZERO
+
+	local transform = love.math.newTransform()
+	transform:translate(offset:get())
+	transform:translate(position:get())
+	transform:scale(scale:get())
+	transform:applyQuaternion(rotation:get())
+	transform:translate((-offset):get())
+
+	return transform
 end
 
 return Common

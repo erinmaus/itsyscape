@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Config = require "ItsyScape.Game.Config"
 local Color = require "ItsyScape.Graphics.Color"
 local Drawable = require "ItsyScape.UI.Drawable"
 
@@ -20,12 +21,24 @@ function StatBar:new()
 	self.maximumProgress = 1
 	self.progressColor = Color(1)
 	self.remainderColor = Color(0)
+	self.namedProgressColor = false
+	self.namedRemainderColor = false
 	self.dropShadow = 4
 	self.borderRadius = 4
 end
 
+
 function StatBar:getOverflow()
 	return true
+end
+
+function StatBar:setNamedColors(progress, remainder)
+	self.namedProgressColor = progress or false
+	self.namedRemainderColor = remainder or false
+end
+
+function StatBar:getNamedColors()
+	return self.namedProgressColor, self.namedRemainderColor
 end
 
 function StatBar:setColors(progress, remainder)
@@ -49,17 +62,23 @@ end
 function StatBar:draw(resources, state)
 	Drawable.draw(self, resources, state)
 
+	local progressColor = self.namedProgressColor and Config.get("Config", "COLOR", "color", self.namedProgressColor)
+	progressColor = progressColor and Color.fromHexString(progressColor) or self.progressColor
+
+	local remainderColor = self.namedRemainderColor and Config.get("Config", "COLOR", "color", self.namedRemainderColor)
+	remainderColor = remainderColor and Color.fromHexString(remainderColor) or self.remainderColor
+
 	local w, h = self:getSize()
 
 	love.graphics.setColor(0, 0, 0, 1)
 	itsyrealm.graphics.rectangle("fill", self.dropShadow, self.dropShadow, w, h, self.borderRadius)
 
-	love.graphics.setColor(self.remainderColor:get())
+	love.graphics.setColor(remainderColor:get())
 	itsyrealm.graphics.rectangle("fill", 0, 0, w, h, self.borderRadius)
 
 	local delta = math.clamp(self.currentProgress / self.maximumProgress)
 
-	love.graphics.setColor(self.progressColor:get())
+	love.graphics.setColor(progressColor:get())
 	itsyrealm.graphics.rectangle("fill", 0, 0, math.floor(delta * w), h, math.min(self.borderRadius, w * delta / 2))
 
 	love.graphics.setColor(1, 1, 1, 0.5)

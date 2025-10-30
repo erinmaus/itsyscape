@@ -174,7 +174,7 @@ function love.joystickadded(...)
 	end
 end
 
-function love.joystickeremoved(...)
+function love.joystickremoved(...)
 	if _APP and not _CONF.server then
 		_APP:joystickRemove(...)
 	end

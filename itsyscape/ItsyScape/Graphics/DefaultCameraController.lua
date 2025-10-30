@@ -60,6 +60,8 @@ DefaultCameraController.PAN_OFFSET = Vector(0, 15, 0)
 DefaultCameraController.ROTATE_SPEED = math.pi / 2
 DefaultCameraController.SCROLL_SPEED = 32 / (math.pi / 2)
 
+DefaultCameraController.CENTER_SPEED = 8
+
 function DefaultCameraController:new(...)
 	CameraController.new(self, ...)
 
@@ -113,6 +115,16 @@ function DefaultCameraController:new(...)
 	_CONF.targetCameraMode = self.isTargetting
 
 	self.cursor = love.graphics.newImage("Resources/Game/UI/Cursor_Mobile.png")
+end
+
+function DefaultCameraController:push()
+	self.isCameraDragging = false
+	self.isActionMoving = false
+	self.isActionButtonDown = false
+end
+
+function DefaultCameraController:pop()
+	self:recenter()
 end
 
 function DefaultCameraController:toggleTargetting()
@@ -187,11 +199,24 @@ function DefaultCameraController:getPlayerPosition()
 	return position
 end
 
+function DefaultCameraController:setTarget(node, size)
+	self.targetNode = node
+	self.targetSize = size:keep(self.targetSize)
+end
+
+function DefaultCameraController:unsetTarget()
+	self.targetNode = nil
+	self.targetSize = nil
+end
+
 function DefaultCameraController:getTargetPosition()
 	local delta = self:getApp():getFrameDelta()
 
 	local position, size
-	do
+	if self.targetNode and self.targetSize then
+		position = Vector.ZERO:transform(self.targetNode:getTransform():getGlobalDeltaTransform(delta or 0))
+		size = math.max(self.targetSize.x, self.targetSize.y, self.targetSize.z)
+	else
 		local gameView = self:getGameView()
 		local player = self:getGame():getPlayer()
 		if player and player:isReady() then
@@ -212,6 +237,25 @@ function DefaultCameraController:getTargetPosition()
 	end
 
 	return position or self:getPlayerPosition(), size or 0
+end
+
+function DefaultCameraController:getCenter()
+	local center
+	if self.isFirstPerson > 0 then
+		center = self:_getCurrentFirstPersonPosition()
+	elseif self.isTargetting then
+		local playerPosition = self:getPlayerPosition()
+		local targetPosition = self:getTargetPosition()
+		local difference = playerPosition - targetPosition
+		local normal = difference:getNormal()
+		local distance = difference:getLength()
+
+		center = targetPosition + normal * (distance / 2)
+	else
+		center = self:getPlayerPosition()
+	end
+
+	return center
 end
 
 function DefaultCameraController:mousePress(uiActive, x, y, button)
@@ -645,6 +689,22 @@ function DefaultCameraController:updateFirstPerson(delta)
 	self.firstPersonPositionTime = math.min(self.firstPersonPositionTime + delta, DefaultCameraController.FIRST_PERSON_UPDATE_DURATION_SECONDS)
 end
 
+function DefaultCameraController:recenter()
+	self.currentCenter = nil
+end
+
+function DefaultCameraController:updateCenter(delta)
+	self.currentCenter = (self.currentCenter or self:getCenter()):keep(self.currentCenter)
+
+	local targetCenter = self:getCenter()
+
+	local direction = self.currentCenter:direction(targetCenter)
+	local minDistance = self.currentCenter:distance(targetCenter)
+
+	local distance = math.min(DefaultCameraController.CENTER_SPEED * delta, minDistance)
+	self.currentCenter = self.currentCenter + direction * distance
+end
+
 function DefaultCameraController:update(delta)
 	if _DEBUG then
 		self:debugUpdate(delta)
@@ -672,6 +732,7 @@ function DefaultCameraController:update(delta)
 	self:updateControls(delta)
 	self:updatePanning(delta)
 	self:updateFirstPerson(delta)
+	self:updateCenter(delta)
 
 	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	if (isFocusDown ~= self.isFocusDown and isFocusDown) or _CONF.targetCameraMode ~= self.isTargetting then
@@ -1059,6 +1120,7 @@ function DefaultCameraController:_getCurrentFirstPersonRotation()
 end
 
 function DefaultCameraController:draw()
+	local center = self.currentCenter or self:getCenter()
 	local distance = self.currentDistance
 
 	local verticalOffset
@@ -1084,21 +1146,6 @@ function DefaultCameraController:draw()
 		verticalOffset = DefaultCameraController.CAMERA_VERTICAL_ROTATION_FLIPPED + self.cameraVerticalRotationOffset
 	else
 		verticalOffset = DefaultCameraController.CAMERA_VERTICAL_ROTATION + self.cameraVerticalRotationOffset
-	end
-
-	local center
-	if self.isFirstPerson > 0 then
-		center = self:_getCurrentFirstPersonPosition()
-	elseif self.isTargetting then
-		local playerPosition = self:getPlayerPosition()
-		local targetPosition = self:getTargetPosition()
-		local difference = playerPosition - targetPosition
-		local normal = difference:getNormal()
-		local distance = difference:getLength()
-
-		center = targetPosition + normal * (distance / 2)
-	else
-		center = self:getPlayerPosition()
 	end
 
 	local horizontalOffset = DefaultCameraController.CAMERA_HORIZONTAL_ROTATION + self.cameraHorizontalRotationOffset

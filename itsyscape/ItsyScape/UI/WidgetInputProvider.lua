@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Variables = require "ItsyScape.Game.Variables"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
@@ -26,6 +27,8 @@ function WidgetInputProvider:new(root)
 
 	self.root = root
 	self.root:setData(WidgetInputProvider, self)
+	self.root.onFocusChild:register(self._onFocusChild, self)
+	self.root.onBlurChild:register(self._onBlurChild, self)
 
 	self.focusedWidget = false
 	self.clickedWidgets = {}
@@ -35,7 +38,14 @@ function WidgetInputProvider:new(root)
 	self.currentJoystickIndex = 1
 	self.currentJoystick = false
 
+	self.onFocus = Callback()
+	self.onBlur = Callback()
+
 	self.config = Variables.load("Resources/Game/Variables/Input.json")
+end
+
+function WidgetInputProvider:getCurrentInputScheme()
+	return self.currentInputScheme
 end
 
 local KEYBIND_PATH = Variables.Path("keybinds", "ui", Variables.PathParameter("key"))
@@ -56,12 +66,12 @@ function WidgetInputProvider:isCurrentJoystick(joystick)
 		return false
 	end
 
-	local _, currentID = self.currentJoystick:getID()
+	local currentID = self.currentJoystick:getID()
 	return self.currentJoystick == joystick
 end
 
 function WidgetInputProvider:getGamepadAxis(joystick, axis)
-	local _, id = joystick:getID()
+	local id = joystick:getID()
 	local joystickInfo = self.joysticks[id]
 	if not joystickInfo then
 		return 0
@@ -80,25 +90,53 @@ function WidgetInputProvider:getHoveredWidgets()
 	end
 end
 
-function WidgetInputProvider:setFocusedWidget(widget, reason)
+function WidgetInputProvider:_onFocusChild(_, widget, reason)
+	local currentFocusedWidget = self:getFocusedWidget()
+	if currentFocusedWidget and widget and currentFocusedWidget ~= widget then
+		currentFocusedWidget:blur()
+	end
+
+	self:_focusWidget(widget)
+end
+
+function WidgetInputProvider:_onBlurChild(_, widget, reason)
+	self:_focusWidget(false)
+end
+
+function WidgetInputProvider:_focusWidget(widget)
 	if widget and widget:getRootParent() ~= self.root then
 		return
 	end
 
 	local current = self:getFocusedWidget()
 	if current then
-		current:blur()
+		self:onBlur(current)
 	end
 
 	self.focusedWidget = widget or false
 	if self.focusedWidget then
-		self.focusedWidget:focus(reason or 'force')
+		self:onFocus(widget)
+	end
+
+	return current
+end
+
+function WidgetInputProvider:setFocusedWidget(widget, reason)
+	local previous = self:_focusWidget(widget)
+
+	if previous then
+		previous:blur()
+	end
+
+	if widget then
+		widget:focus(reason)
 	end
 end
 
 function WidgetInputProvider:getFocusedWidget()
 	if self.focusedWidget then
 		if not self.focusedWidget:getIsFocused() or not self.focusedWidget:hasParent(self.root) then
+			self:onBlur(self.focusedWidget)
 			self.focusedWidget = false
 		end
 	end
@@ -304,7 +342,7 @@ function WidgetInputProvider:joystickAdd(joystick)
 	local index = self.currentJoystickIndex
 	self.currentJoystickIndex = self.currentJoystickIndex + 1
 
-	local _, id = joystick:getID()
+	local id = joystick:getID()
 	self.joysticks[id] = {
 		index = index,
 		axis = {},
@@ -323,11 +361,11 @@ function WidgetInputProvider:joystickAdd(joystick)
 end
 
 function WidgetInputProvider:joystickRemove(joystick)
-	local _, id = joystick:getID()
+	local id = joystick:getID()
 	self.joysticks[id] = nil
 
 	if self.currentJoystick then
-		local _, currentID = self.currentJoystick:getID()
+		local currentID = self.currentJoystick:getID()
 		if currentID == id then
 			self.currentJoystick = false
 		end
@@ -362,7 +400,7 @@ function WidgetInputProvider:gamepadPress(...)
 end
 
 function WidgetInputProvider:gamepadAxis(joystick, axis, value)
-	local _, id = joystick:getID()
+	local id = joystick:getID()
 	local joystickInfo = self.joysticks[id]
 	if joystickInfo then
 		joystickInfo.axis[axis] = value
@@ -525,7 +563,7 @@ function WidgetInputProvider:_updateGamepad(delta)
 		return
 	end
 
-	local _, id = self.currentJoystick:getID()
+	local id = self.currentJoystick:getID()
 	local joystickInfo = self.joysticks[id]
 	if not joystickInfo then
 		return

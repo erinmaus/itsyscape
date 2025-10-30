@@ -14,6 +14,7 @@ local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local AlertWindow = require "ItsyScape.Editor.Common.AlertWindow"
+local Config = require "ItsyScape.Game.Config"
 local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
 local Probe = require "ItsyScape.Game.Probe"
 local Variables = require "ItsyScape.Game.Variables"
@@ -233,14 +234,14 @@ function Application:dumpMemoryStats()
 		stats.label)
 	love.filesystem.append("memory.csv", data)
 
-	Log.info(
-		"After %.2f seconds (label = '%s'), min memory = %.2f MB, max memory = %.2f MB, average memory = %.2f MB, median memory = %.2f MB, " ..
-		"min diff = %.2f MB, max diff = %.2f MB, average diff = %.2f MB, median diff = %.2f MB, FPS = %d",
-		currentTime - self.previousMemoryUsage.start,
-		stats.label,
-		stats.min, stats.max, stats.average, stats.median,
-		stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference,
-		love.timer.getFPS())
+	-- Log.info(
+	-- 	"After %.2f seconds (label = '%s'), min memory = %.2f MB, max memory = %.2f MB, average memory = %.2f MB, median memory = %.2f MB, " ..
+	-- 	"min diff = %.2f MB, max diff = %.2f MB, average diff = %.2f MB, median diff = %.2f MB, FPS = %d",
+	-- 	currentTime - self.previousMemoryUsage.start,
+	-- 	stats.label,
+	-- 	stats.min, stats.max, stats.average, stats.median,
+	-- 	stats.minDifference, stats.maxDifference, stats.averageDifference, stats.medianDifference,
+	-- 	love.timer.getFPS())
 
 	self.previousMemoryUsage.time = currentTime
 end
@@ -400,7 +401,6 @@ end
 function Application:getUIView()
 	return self.uiView
 end
-
 
 function Application:getIsPaused()
 	return self.paused
@@ -906,9 +906,12 @@ function Application:quitGame(game)
 end
 
 function Application:mousePress(x, y, button)
+	self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_MOUSE_KEYBOARD)
+
 	local isBlocking, widget = self.uiView:getInputProvider():isBlocking(x, y)
 	if isBlocking then
-		self.uiView:getInputProvider():mousePress(x, y, button)
+		self.uiView:mousePress(x, y, button)
+		self.uiView:setCurrentInputScheme(self:getUIView().INPUT_SCHEME_MOUSE_KEYBOARD)
 
 		if not self.uiView:isPokeMenu(widget) then
 			self.uiView:closePokeMenu()
@@ -924,14 +927,14 @@ end
 
 function Application:mouseRelease(x, y, button)
 	local isBlocking = self.uiView:getInputProvider():isBlocking(x, y)
-	self.uiView:getInputProvider():mouseRelease(x, y, button)
+	self.uiView:mouseRelease(x, y, button)
 
 	return isBlocking
 end
 
 function Application:mouseScroll(x, y)
 	if self.uiView:getInputProvider():isBlocking(itsyrealm.mouse.getPosition()) then
-		self.uiView:getInputProvider():mouseScroll(x, y)
+		self.uiView:mouseScroll(x, y)
 		return true
 	end
 
@@ -939,7 +942,7 @@ function Application:mouseScroll(x, y)
 end
 
 function Application:mouseMove(x, y, dx, dy)
-	self.uiView:getInputProvider():mouseMove(x, y, dx, dy)
+	self.uiView:mouseMove(x, y, dx, dy)
 
 	return false
 end
@@ -949,39 +952,47 @@ function Application:getMousePosition()
 end
 
 function Application:joystickAdd(...)
-	self.uiView:getInputProvider():joystickAdd(...)
+	self.uiView:joystickAdd(...)
 end
 
 function Application:joystickRemove(...)
-	self.uiView:getInputProvider():joystickRemove(...)
+	self.uiView:joystickRemove(...)
 end
 
 function Application:gamepadRelease(...)
-	self.uiView:getInputProvider():gamepadRelease(...)
+	self.uiView:gamepadRelease(...)
 end
 
 function Application:gamepadPress(...)
-	self.uiView:getInputProvider():gamepadPress(...)
+	self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_GAMEPAD)
+	self.uiView:gamepadPress(...)
 end
 
 function Application:gamepadAxis(...)
-	self.uiView:getInputProvider():gamepadAxis(...)
+	local _, _, value = ...
+	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity") or 0.5
+	if math.abs(value) > axisSensitivity then
+		self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_GAMEPAD)
+	end
+
+	self.uiView:gamepadAxis(...)
 end
 
 function Application:touchPress(...)
-	-- Nothing.
+	self:getUIView():setCurrentInputScheme(self:getUIView().INPUT_SCHEME_TOUCH)
+	self:getUIView():touchPress(...)
 end
 
 function Application:touchRelease(...)
-	-- Nothing.
+	self:getUIView():touchRelease(...)
 end
 
 function Application:touchMove(...)
-	-- Nothing.
+	self:getUIView():touchMove(...)
 end
 
 function Application:keyDown(key, ...)
-	self.uiView:getInputProvider():keyDown(key, ...)
+	self.uiView:keyDown(key, ...)
 
 	if key == "f1" then
 		if not (love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')) then
@@ -994,12 +1005,12 @@ function Application:keyDown(key, ...)
 end
 
 function Application:keyUp(...)
-	self.uiView:getInputProvider():keyUp(...)
+	self.uiView:keyUp(...)
 	return false
 end
 
 function Application:type(...)
-	self.uiView:getInputProvider():type(...)
+	self.uiView:type(...)
 	return false
 end
 

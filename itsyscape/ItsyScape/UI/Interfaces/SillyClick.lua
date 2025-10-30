@@ -117,6 +117,10 @@ function SillyClick:new(id, index, ui)
 	self.pendingTime = self.DURATION
 end
 
+function SillyClick:restoreFocus()
+	self:focusChild(self.button)
+end
+
 function SillyClick:close()
 	self:sendPoke("close", nil, {})
 end

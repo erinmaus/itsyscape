@@ -1257,7 +1257,9 @@ Common.EAT_HINT = {
 		end,
 		message = {
 			gamepad = {
-				button = "a",
+				button = { "rightstick" },
+				action = { "left", "up", "right", "down"},
+				speed = Common.HINT_WAIT_SHUFFLE_TIME / 4,
 				label = "Open food ring"
 			},
 			standard = false,
@@ -1356,7 +1358,36 @@ Common.EAT_HINT = {
 				return not isOpen or not isThingiesOpen or state.initialFoodCount == 0 or currentFoodCount < state.initialFoodCount
 			end
 		end	
-	}
+	},
+	{
+		position = {
+			gamepad = "right",
+			standard = "right",
+			mobile = "right"
+		},
+		id = {
+			gamepad = "BaseCombatHUD-QuickHeal",
+			standard = "BaseCombatHUD-QuickHeal",
+			mobile = "BaseCombatHUD-QuickHeal"
+		},
+		message = {
+			gamepad = {
+				button = "dpup",
+				label = "To heal quickly"
+			},
+			standard = {
+				button = "keyboard_h",
+				controller = "KeyboardMouse",
+				label = "To heal quickly"
+			},
+			mobile = {
+				button = "tap",
+				controller = "Touch",
+				label = "To heal quickly"
+			}
+		},
+		open = Common.WAIT_OPEN_FUNCTION()
+	},
 }
 
 function Common.showEatHint(playerPeep, done)

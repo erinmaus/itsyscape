@@ -128,8 +128,10 @@ function FireCannon:update(mashina, state, executor)
 		end
 	end
 
-	local deltaY = yError / 32
-	local deltaX = xError / 32
+	local divisor = math.max(hitTargetDistance * math.sqrt(2), 64)
+
+	local deltaY = yError / divisor
+	local deltaX = xError / divisor
 
 	local targetX, targetY
 

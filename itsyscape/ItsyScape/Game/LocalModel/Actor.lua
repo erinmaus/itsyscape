@@ -143,7 +143,7 @@ function LocalActor:setDirection(direction)
 		if movement then
 			if direction.x < 0 then
 				movement.facing = MovementBehavior.FACING_LEFT
-			elseif direction.y > 0 then
+			elseif direction.x > 0 then
 				movement.facing = MovementBehavior.FACING_RIGHT
 			end
 

@@ -69,6 +69,10 @@ function Interface:poke(actionID, actionIndex, e)
 	return false
 end
 
+function Interface:restoreFocus()
+	-- Nothing.
+end
+
 function Interface:focusChild(widget, reason)
 	local inputProvider = self:getView():getInputProvider()
 	inputProvider:setFocusedWidget(widget, reason or "select")

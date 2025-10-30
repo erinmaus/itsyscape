@@ -43,9 +43,13 @@ function ActorDirectionUpdateCortex:update(delta)
 			end
 
 			local rotation = peep:getBehavior(RotationBehavior)
+			local isDirectionSame = direction == self.directions[actor]
+			local isRotationSame = rotation and rotation.rotation == self.rotations[actor]
+			isRotationSame = isRotationSame or (not rotation and self.rotations[actor])
 
-			if direction ~= self.directions[actor] or (rotation and rotation.rotation ~= self.rotations[actor]) then
+			if not (isDirectionSame and isRotationSame) then
 				actor:setDirection(direction)
+
 				self.directions[actor] = direction
 				self.rotations[actor] = rotation and Quaternion(rotation.rotation:get())
 			end

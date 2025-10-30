@@ -8,14 +8,19 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Color = require "ItsyScape.Graphics.Color"
+local Button = require "ItsyScape.UI.Button"
 local Interface = require "ItsyScape.UI.Interface"
+local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Drawable = require "ItsyScape.UI.Drawable"
+local FocusBoundary = require "ItsyScape.UI.FocusBoundary"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
-local Particles = require "ItsyScape.UI.Particles"
 local CombatTarget = require "ItsyScape.UI.Interfaces.Components.CombatTarget"
+local QuickCombatAction = require "ItsyScape.UI.Interfaces.Components.QuickCombatAction"
 
 local BaseCombatHUD = Class(Interface)
 BaseCombatHUD.PADDING = 8
@@ -105,6 +110,7 @@ function BaseCombatHUD:new(...)
 		powers = {},
 		spells = {},
 		prayers = {},
+		quickHeal = {},
 		food = {},
 		equipment = {},
 		config = {},
@@ -113,6 +119,8 @@ function BaseCombatHUD:new(...)
 		turns = {}
 	}
 
+	self.dirtyState = {}
+
 	self.pendingSprites = {}
 
 	self.wasRefreshed = false
@@ -120,10 +128,174 @@ function BaseCombatHUD:new(...)
 	self:performLayout()
 
 	self.onClose:register(self.flushSprites, self)
+
+	local quickHealFocusBoundary = FocusBoundary()
+	self:addChild(quickHealFocusBoundary)
+
+	self.quickHealAction = QuickCombatAction()
+	self.quickHealAction:setID("BaseCombatHUD-QuickHeal")
+	self.quickHealAction:setControl("quickHeal")
+	self.quickHealAction:setPosition(self.PADDING, self.PADDING)
+	self.quickHealAction.onActivate:register(self.activateQuickHeal, self)
+	quickHealFocusBoundary:addChild(self.quickHealAction)
+end
+
+function BaseCombatHUD:_onQuickHealFoodSelected(_, button, buttonIndex)
+	local quickHeal = self:getState().quickHeal
+
+	if buttonIndex == 1 then
+		self:activateQuickHeal()
+		button:blur()
+	elseif buttonIndex == 2 then
+		local actions = {}
+
+		if quickHeal.food then
+			table.insert(actions, {
+				id = -1,
+				verb = "Eat",
+				type = "Eat",
+				object = quickHeal.food.name,
+				objectID = quickHeal.food.id,
+				objectType = "item",
+				callback = Function(self.activateQuickHeal, self)
+			})
+
+			table.insert(actions, {
+				id = -2,
+				verb = "Clear-quick-heal",
+				type = "Clear-quick-heal",
+				object = quickHeal.food.name,
+				objectID = quickHeal.food.id,
+				objectType = "item",
+				callback = Function(self.setQuickHealFood, self, false)
+			})
+		end
+
+		local buttonX, buttonY = button:getAbsoluteCenter()
+		self:getView():probe(actions, buttonX, buttonY, false, false)
+	end
+end
+
+function BaseCombatHUD:_onQuickHealOtherFoodSelected(foodID, button, buttonIndex)
+	local allFood = self:getState().food
+
+	local food
+	for _, f in ipairs(allFood) do
+		if f.id == foodID then
+			food = f
+			break			
+		end
+	end
+
+	if buttonIndex == 1 then
+		self:setQuickHealFood(foodID)
+		button:blur()
+	elseif buttonIndex == 2 then
+		local actions = {
+			{
+				id = -1,
+				verb = "Assign-quick-heal",
+				type = "Assign-quick-heal",
+				object = food and food.name or ("*" .. foodID),
+				objectID = foodID,
+				objectType = "item",
+				callback = Function(self.setQuickHealFood, self, foodID)
+			}
+		}
+
+		local buttonX, buttonY = button:getAbsoluteCenter()
+		self:getView():probe(actions, buttonX, buttonY, false, false)
+	end
+end
+
+function BaseCombatHUD:_onQuickHealFoodBlur(button)
+	button:blur()
+end
+
+function BaseCombatHUD:updateQuickHeal()
+	local state = self:getState()
+	local food = state.food
+	local quickHeal = state.quickHeal
+
+	self.quickHealAction:getInnerPanel():clearChildren()
+
+	local quickHealFood = {}
+	local quickHealFoodCount = {}
+	local quickHealFoodIDs = {}
+	for _, f in ipairs(food) do
+		if not quickHealFoodIDs[f.id] and not (quickHeal.food and quickHeal.food.id == f.id) then
+			quickHealFoodIDs[f.id] = true
+			table.insert(quickHealFood, f.id)
+		end
+
+		quickHealFoodCount[f.id] = (quickHealFoodCount[f.id] or 0) + f.count
+	end
+
+	if quickHeal.food then
+		table.insert(quickHealFood, 1, quickHeal.food.id)
+	end
+
+	local enabled = false
+	if #quickHealFood == 0 then
+		local id = "Pie"
+
+		table.insert(quickHealFood, id)
+		quickHealFoodCount[id] = 0
+	else
+		enabled = quickHeal.enabled
+	end
+
+	for i, f in ipairs(quickHealFood) do
+		local button = Button()
+
+		if i == 1 then
+			button.onClick:register(self._onQuickHealFoodSelected, self, self.quickHealAction)
+		else
+			button.onClick:register(self._onQuickHealOtherFoodSelected, self, f)
+		end
+
+		button.onMouseRelease:register(self._onQuickHealFoodBlur, self)
+		button.onMousePress:register(self._onQuickHealFoodBlur, self)
+
+		local icon = ItemIcon()
+		icon:setItemID(f)
+		icon:setItemCount(quickHealFoodCount[f] or 1)
+
+		if i == 1 and not enabled then
+			icon:setIsDisabled(true)
+		end
+
+		icon:setPosition(QuickCombatAction.BUTTON_PADDING, QuickCombatAction.BUTTON_PADDING)
+		button:addChild(icon)
+
+		local foodItem
+		for _, otherF in ipairs(food) do
+			if otherF.id == f then
+				foodItem = otherF
+				break
+			end
+		end
+
+		if foodItem then
+			if i == 1 then
+				button:setToolTip(
+					ToolTip.Header(string.format("Eat %s", foodItem.name)),
+					ToolTip.Text(foodItem.description))
+			else
+				button:setToolTip(
+					ToolTip.Header(string.format("Assign %s", foodItem.name)),
+					ToolTip.Text("Assign this food item to the quick heal slot."),
+					ToolTip.Text(foodItem.description))
+			end
+		end
+
+		self.quickHealAction:getInnerPanel():addChild(button)
+	end
 end
 
 function BaseCombatHUD:updateState(key, value)
 	self.currentState[key] = value
+	self.dirtyState[key] = true
 end
 
 function BaseCombatHUD:getState()
@@ -160,6 +332,14 @@ end
 
 function BaseCombatHUD:onSwitchSpell(oldSpell, newSpell)
 	-- Nothing.
+end
+
+function BaseCombatHUD:activateQuickHeal()
+	self:sendPoke("activateQuickHeal", nil, {})
+end
+
+function BaseCombatHUD:setQuickHealFood(id)
+	self:sendPoke("setQuickHealFood", nil, { id = id })
 end
 
 function BaseCombatHUD:activateDefensivePower(index)
@@ -770,6 +950,9 @@ function BaseCombatHUD:hide()
 
 	self:sendPoke("hide", nil, {})
 
+	local uiView = self:getView()
+	uiView:restoreFocus(self)
+
 	return true
 end
 
@@ -867,6 +1050,11 @@ end
 
 function BaseCombatHUD:tick()
 	Interface.tick(self)
+
+	if self.dirtyState.quickHeal then
+		self:updateQuickHeal()
+	end
+	table.clear(self.dirtyState)
 
 	self:updateTurnOrder()
 end

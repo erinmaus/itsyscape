@@ -185,22 +185,26 @@ function GamepadRibbon:new(id, index, ui)
 
 	self.ribbonKeybindInfo = GamepadToolTip()
 	self.ribbonKeybindInfo:setHasBackground(false)
-	self.ribbonKeybindInfo:setKeybind("gamepadOpenRibbon")
+	self.ribbonKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadOpenRibbon")
 	self.ribbonKeybindInfo:setText("Close")
 	self.container:addChild(self.ribbonKeybindInfo)
 
 	self.secondaryKeybindInfo = GamepadToolTip()
 	self.secondaryKeybindInfo:setHasBackground(false)
-	self.secondaryKeybindInfo:setKeybind("gamepadSecondaryAction")
+	self.secondaryKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadSecondaryAction")
 
 	self.tertiaryKeybindInfo = GamepadToolTip()
 	self.tertiaryKeybindInfo:setHasBackground(false)
-	self.tertiaryKeybindInfo:setKeybind("gamepadTertiaryAction")
+	self.tertiaryKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadTertiaryAction")
 
 	self:performLayout()
 	self.isDirty = false
 
 	self.combinedState = {}
+end
+
+function GamepadRibbon:restoreFocus()
+	self:_openOrClose()
 end
 
 function GamepadRibbon:gamepadRelease(joystick, button)
@@ -264,6 +268,7 @@ function GamepadRibbon:_openOrClose()
 		end
 
 		self:removeChild(self.container)
+		self:getView():removeFromFocusStack(self)
 	end
 end
 

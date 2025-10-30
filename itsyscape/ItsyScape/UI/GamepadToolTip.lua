@@ -15,6 +15,7 @@ local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local GamepadIcon = require "ItsyScape.UI.GamepadIcon"
+local UIView = require "ItsyScape.UI.UIView"
 
 local GamepadToolTip = Class(Panel)
 GamepadToolTip.BUTTON_SIZE = 32
@@ -26,6 +27,11 @@ GamepadToolTip.CONTROLLERS = {
 	["DualSense Wireless Controller"] = "PlayStation",
 	["Steam Deck"] = "SteamDeck"
 }
+
+GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD = UIView.INPUT_SCHEME_MOUSE_KEYBOARD
+GamepadToolTip.INPUT_SCHEME_TOUCH          = UIView.INPUT_SCHEME_TOUCH
+GamepadToolTip.INPUT_SCHEME_GYRO           = UIView.INPUT_SCHEME_GYRO
+GamepadToolTip.INPUT_SCHEME_GAMEPAD        = UIView.INPUT_SCHEME_GAMEPAD
 
 function GamepadToolTip:new()
 	Panel.new(self)
@@ -63,10 +69,32 @@ function GamepadToolTip:new()
 
 	self:setIsSelfClickThrough(true)
 	self:setAreChildrenClickThrough(true)
+
+	self.variants = {}
+	self.centerParent = false
+	self.currentInputScheme = false
+
+	self.requireParentFocus = false
+	self.isParentFocused = false
+
+	self.controlName = false
 end
 
 function GamepadToolTip:getOverflow()
 	return true
+end
+
+function GamepadToolTip:setRequireFocus(value)
+	value = not not value
+
+	if self.requireParentFocus ~= value then
+		self.requireParentFocus = value
+		self.currentInputScheme = false
+	end
+end
+
+function GamepadToolTip:getRequireFocus()
+	return self.requireParentFocus
 end
 
 function GamepadToolTip:setRowSize(width, height)
@@ -78,24 +106,60 @@ function GamepadToolTip:getRowSize()
 	return self.maxWidth, self.buttonSize
 end
 
-function GamepadToolTip:setKeybind(keybind)
-	self.keybind = keybind or false
+function GamepadToolTip:_setVariantKeyValue(inputScheme, key, value)
+	local variant = self.variants[inputScheme]
+	if not variant then
+		variant = {}
+		self.variants[inputScheme] = variant
+	end
+
+	variant[key] = value
+	self.currentInputScheme = false
 end
 
-function GamepadToolTip:getKeybind()
-	return self.keybind
+function GamepadToolTip:setMessage(inputScheme, text)
+	self:_setVariantKeyValue(inputScheme, "message", text)
 end
 
-function GamepadToolTip:setButtonID(id)
-	self.gamepadIcon:setButtonID(id)
+function GamepadToolTip:setKeybind(inputScheme, keybind)
+	self:_setVariantKeyValue(inputScheme, "keybind", keybind)
 end
 
-function GamepadToolTip:setButtonIDs(...)
-	self.gamepadIcon:setButtonIDs(...)
+function GamepadToolTip:setControl(control)
+	self.controlName = control or false
 end
 
-function GamepadToolTip:getButtonID()
-	return self.gamepadIcon:getCurrentButtonID()
+function GamepadToolTip:setButtonID(inputScheme, id)
+	self:_setVariantKeyValue(inputScheme, "buttons", { id })
+end
+
+function GamepadToolTip:setButtonIDs(inputScheme, ...)
+	self:_setVariantKeyValue(inputScheme, "buttons", { ... })
+end
+
+function GamepadToolTip:setButtonAction(inputScheme, action)
+	self:_setVariantKeyValue(inputScheme, "actions", { action })
+end
+
+function GamepadToolTip:setButtonActions(inputScheme, ...)
+	self:_setVariantKeyValue(inputScheme, "actions", { ... })
+end
+
+function GamepadToolTip:setSpeed(inputScheme, speed)
+	self:_setVariantKeyValue(inputScheme, "speed", speed)
+end
+
+function GamepadToolTip:setCenter(value)
+	value = not not value
+
+	if self.centerParent ~= value then
+		self.centerParent = value
+		self.currentInputScheme = false
+	end
+end
+
+function GamepadToolTip:getCenter()
+	return self.centerParent
 end
 
 function GamepadToolTip:getGamepadIcon()
@@ -124,8 +188,73 @@ function GamepadToolTip:getHasBackground()
 	return self.hasBackground
 end
 
+function GamepadToolTip:_applyVariant()
+	local uiView = self:getParentData(UIView)
+
+	local inputScheme
+	if not uiView then
+		inputScheme = GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD
+		self.currentInputScheme = false
+	else
+		inputScheme = uiView:getCurrentInputScheme()
+	end
+
+	if inputScheme == GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD then
+		self.gamepadIcon:setController("KeyboardMouse")
+	elseif inputScheme == GamepadToolTip.INPUT_SCHEME_TOUCH then
+		self.gamepadIcon:setController("Touch")
+	else
+		self.gamepadIcon:setController()
+	end
+
+	if self.controlName then
+		local controlManager = uiView:getControlManager()
+		local control = controlManager:get(self.controlName)
+		if control then
+			self.gamepadIcon:setButtonIDs(control:getButtons())
+		end
+	end
+
+	local variant = self.variants[inputScheme] or self.variants[GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD] or next(self.variants)
+	if variant then
+		local showButton = not self.requireParentFocus or (self:getParent() and self:getParent():getIsFocused())
+
+		if showButton then
+			if variant.buttons then
+				self.gamepadIcon:setButtonIDs(unpack(variant.buttons))
+			end
+
+			if variant.keybind then
+				local inputProvider = self:getInputProvider()
+				local buttonID = inputProvider and inputProvider:getKeybind(variant.keybind)
+
+				if buttonID then
+					self.gamepadIcon:setButtonID(buttonID)
+				end
+			end
+
+			if variant.actions then
+				self.gamepadIcon:setButtonActions(unpack(variant.actions))
+			end
+		else
+			self.gamepadIcon:setButtonID("none")
+			self.gamepadIcon:setButtonAction()
+		end
+
+		if variant.message then
+			self:setText(variant.message)
+		end
+
+		if variant.speed then
+			self.gamepadIcon:setSpeed(variant.speed)
+		end
+	end
+end
+
 function GamepadToolTip:performLayout()
 	Panel.performLayout(self)
+
+	self:_applyVariant()
 
 	self.gamepadIcon:setSize(self.buttonSize, self.buttonSize)
 	self.label:setPosition(self.buttonSize + self.PADDING * 2)
@@ -148,9 +277,8 @@ function GamepadToolTip:performLayout()
 	end
 
 	local labelStyle = self.label:getStyle()
-	local buttonID = self:getButtonID()
-
 	local text = self:getText()
+	local buttonID = self.gamepadIcon:getButtonID()
 
 	local width, numLines
 	if self.maxWidth == math.huge then
@@ -187,16 +315,23 @@ function GamepadToolTip:performLayout()
 		self.label:setText(text)
 	end
 
-	if self:getButtonID() == "none" then
+	if self.gamepadIcon:getButtonID() == "none" then
 		self.label:setPosition(self.PADDING * 2, self.PADDING)
 		self:setSize(
 			math.min(width + self.PADDING * 4, self.maxWidth),
-			math.max(height + self.PADDING * 2, self.BUTTON_SIZE + self.PADDING * 2))
+			math.max(height + self.PADDING * 2, self.buttonSize + self.PADDING * 2))
 	else
 		self.label:setPosition(self.buttonSize + self.PADDING * 2, self.PADDING)
 		self:setSize(
 			math.min(width + self.buttonSize + self.PADDING * 4, self.maxWidth),
-			math.max(height + self.PADDING * 2, self.BUTTON_SIZE + self.PADDING * 2))
+			math.max(height + self.PADDING * 2, self.buttonSize + self.PADDING * 2))
+	end
+
+	if self.centerParent and self:getParent() then
+		local selfWidth, selfHeight = self:getSize()
+		local parentWidth, parentHeight = self:getParent():getSize()
+
+		self:setPosition(parentWidth / 2 - selfWidth / 2, parentHeight / 2 - selfHeight / 2)
 	end
 end
 
@@ -208,18 +343,17 @@ end
 function GamepadToolTip:update(delta)
 	Panel.update(self, delta)
 
-	if self.keybind then
-		local inputProvider = self:getInputProvider()
-		local buttonID = inputProvider and inputProvider:getKeybind(self.keybind)
-
-		if buttonID then
-			self:setButtonID(buttonID)
+	if self.requireParentFocus then
+		if self.isParentFocused ~= (self:getParent() and self:getParent():getIsFocused()) then
+			self.currentInputScheme = false
+			self.isParentFocused = self:getParent() and self:getParent():getIsFocused()
 		end
 	end
 
-	if self.previousID ~= self:getButtonID() then
-		self.previousID = self:getButtonID()
+	local uiView = self:getParentData(UIView)
+	if uiView and uiView:getCurrentInputScheme() ~= self.currentInputScheme then
 		self:performLayout()
+		self.currentInputScheme = uiView:getCurrentInputScheme()
 	end
 end
 

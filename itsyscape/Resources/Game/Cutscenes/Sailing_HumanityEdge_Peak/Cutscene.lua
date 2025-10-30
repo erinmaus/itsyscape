@@ -87,8 +87,19 @@ return Sequence {
 			Camera:target(Player),
 		},
 
-		Player:curvePositions({ "Anchor_Cutscene_Peak1", "Anchor_Cutscene_Peak2", "Anchor_Cutscene_Peak3" }, 3),
-		Orlando:curvePositions({ "Anchor_Cutscene_Peak1", "Anchor_Cutscene_Peak2", "Anchor_Cutscene_Peak3" }, 3),
+		Parallel {
+			Player:curvePositions({ "Anchor_Cutscene_Peak1", "Anchor_Cutscene_Peak2", "Anchor_Cutscene_Peak3" }, 3),
+			Player:spin(4, 2.75, Vector.UNIT_Z)
+		},
+
+		Sequence {
+			Orlando:wait(0.1),
+
+			Parallel {
+				Orlando:curvePositions({ "Anchor_Cutscene_Peak1", "Anchor_Cutscene_Peak2", "Anchor_Cutscene_Peak3" }, 2.75),
+				Orlando:spin(5, 2.5, Vector.UNIT_Z)
+			},
+		}
 	},
 
 	Player:playAnimation("Human_Resurrect_1"),

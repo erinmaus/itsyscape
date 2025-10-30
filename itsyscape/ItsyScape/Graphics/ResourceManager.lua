@@ -514,11 +514,11 @@ function ResourceManager:_queue(resourceType, filename, async, callback, ...)
 
 	local success, result = coroutine.resume(pending.callback)
 	if success and result then
-		Log.info("No need to queue resource '%s'; already loaded.", filename)
+		Log.debug("No need to queue resource '%s'; already loaded.", filename)
 		pending.resource = result
 		pending.done = true
 	else
-		Log.info("Queuing resource '%s'...", filename)
+		Log.debug("Queuing resource '%s'...", filename)
 		table.insert(self.pendingResources, pending)
 	end
 

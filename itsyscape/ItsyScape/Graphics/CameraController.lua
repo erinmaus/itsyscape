@@ -34,6 +34,14 @@ function CameraController:getCamera()
 	return self.app:getCamera()
 end
 
+function CameraController:push()
+	-- Nothing.
+end
+
+function CameraController:pop()
+	-- Nothing.
+end
+
 function CameraController:mousePress(uiActive, x, y, button)
 	return CameraController.PROBE_SUPPRESS
 end

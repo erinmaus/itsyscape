@@ -331,8 +331,8 @@ function SpiralLayout:gamepadAxis(joystick, axis, value)
 		return
 	end
 
-	local xAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "xAxis")
-	local yAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "yAxis")
+	local xAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "scrollXAxis")
+	local yAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "scrollYAxis")
 	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity")
 
 	if not (axis == xAxis or axis == yAxis) then
