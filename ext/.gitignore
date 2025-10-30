@@ -1,7 +1,7 @@
 *.so
 *.dll
 *.dylib
-devi/
-B/
-nomicon/
-slick/
+devi
+B
+nomicon
+slick
