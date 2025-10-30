@@ -8,7 +8,7 @@
 
 		transform = {
 			origin = { 32, 0, 32 },
-			translation = { 0, 20, 0 }
+			translation = { 0, 0, 0 }
 		},
 	},
 }
