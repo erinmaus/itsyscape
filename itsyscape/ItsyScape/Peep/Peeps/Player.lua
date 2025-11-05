@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Curve = require "ItsyScape.Game.Curve"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Palette = require "ItsyScape.Game.Palette"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
@@ -40,8 +41,7 @@ local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Player = Class(Peep)
-
-Player.Palette = Utility.Peep.Human.Palette
+Player.Palette = Palette
 
 function Player:new(resource, ...)
 	Peep.new(self, ...)
