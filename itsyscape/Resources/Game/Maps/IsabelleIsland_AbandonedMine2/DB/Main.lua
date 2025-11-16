@@ -115,3 +115,20 @@ do
 		Resource = M["Anchor_Entrance"]
 	}
 end
+
+M["GlyphboundYendorian"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 114,
+		PositionY = 9,
+		PositionZ = 57,
+		Name = "GlyphboundYendorian",
+		Map = M._MAP,
+		Resource = M["GlyphboundYendorian"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "GlyphboundYendorian",
+		MapObject = M["GlyphboundYendorian"]
+	}
+end

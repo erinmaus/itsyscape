@@ -1546,6 +1546,7 @@ include "Resources/Game/DB/Peeps/BlackTentacle.lua"
 include "Resources/Game/DB/Peeps/Humans.lua"
 include "Resources/Game/DB/Peeps/Disemboweled.lua"
 include "Resources/Game/DB/Peeps/ExperimentX.lua"
+include "Resources/Game/DB/Peeps/GlyphboundYendorian.lua"
 
 -- Characters
 include "Resources/Game/DB/Characters/Teams.lua"

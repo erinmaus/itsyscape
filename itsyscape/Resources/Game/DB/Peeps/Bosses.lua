@@ -109,34 +109,34 @@ do
 	end
 
 	do
-		local Foreman = ItsyScape.Resource.Boss "GhostlyMinerForeman"
+		local GlyphboundYendorian = ItsyScape.Resource.Boss "GlyphBoundYendorian"
 
 		ItsyScape.Meta.ResourceName {
-			Value = "Ghostly miner foreman",
+			Value = "Glyphbound Yendorian",
 			Language = "en-US",
-			Resource = Foreman
+			Resource = GlyphboundYendorian
 		}
 
 		ItsyScape.Meta.ResourceDescription {
-			Value = "Slain when The Empty King took over Isabelle Island, he was raised to protect the mines.",
+			Value = "The result of a twisted experiment to understand the nature of the soul. The glyphbound Yendorian remains on the Realm in perpetuity, unable to move on or fade away.",
 			Language = "en-US",
-			Resource = Foreman
+			Resource = GlyphboundYendorian
 		}
 
 		ItsyScape.Meta.Boss {
-			Boss = Foreman,
-			Target = ItsyScape.Resource.Peep "GhostlyMinerForeman",
+			Boss = GlyphboundYendorian,
+			Target = ItsyScape.Resource.Peep "GlyphBoundYendorian",
 			Category = "IsabelleIsland"
 		}
 
 		ItsyScape.Meta.BossDropTable {
-			Boss = Foreman,
-			DropTable = ItsyScape.Resource.DropTable "GhostlyMinerForeman_TenseTin"
+			Boss = GlyphboundYendorian,
+			DropTable = ItsyScape.Resource.DropTable "GlyphBoundYendorian_TenseTin"
 		}
 
 		ItsyScape.Meta.BossDropTable {
-			Boss = Foreman,
-			DropTable = ItsyScape.Resource.DropTable "GhostlyMinerForeman_CrawlingCopper"
+			Boss = GlyphboundYendorian,
+			DropTable = ItsyScape.Resource.DropTable "GlyphBoundYendorian_CrawlingCopper"
 		}
 	end
 
