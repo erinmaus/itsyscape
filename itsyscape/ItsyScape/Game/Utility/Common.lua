@@ -845,17 +845,23 @@ function Common.xpForResource(a)
 end
 
 function Common.styleBonusForItem(tier, weight)
+	tier = math.max(tier or 1, 1)
 	weight = weight or 1
+
 	return math.floor(CurveConfig.StyleBonus:evaluate(tier) * weight)
 end
 
 function Common.styleBonusForWeapon(tier, weight)
+	tier = math.max(tier or 1, 1)
 	weight = weight or 1
+
 	return math.floor(Common.styleBonusForItem(tier + 10) / 3, weight)
 end
 
 function Common.strengthBonusForWeapon(tier, weight)
+	tier = math.max(tier or 1, 1)
 	weight = weight or 1
+
 	return math.floor(CurveConfig.StrengthBonus:evaluate(tier) * weight)
 end
 

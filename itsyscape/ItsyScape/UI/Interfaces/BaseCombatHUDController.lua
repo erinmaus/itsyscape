@@ -586,7 +586,7 @@ function BaseCombatHUDController:pullStateForPeep(peep)
 			},
 
 			weapon = {
-				id = item and Utility.Item.getInstanceName(item) or weapon:getWeaponType(),
+				id = item and Utility.Item.getInstanceName(item) or weapon:getDebugInfo().filename,
 			},
 
 			bonuses = Utility.Peep.getEquipmentBonuses(peep),

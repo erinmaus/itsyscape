@@ -514,6 +514,12 @@ function Probe:_actor(actor, point, distance)
 		end
 	end
 
+	local min, max = actor:getBounds()
+	local size = max - min
+	if size.x < 0.01 or size.y < 0.01 or size.z < 0.01 then
+		return
+	end
+
 	for i = 1, #actions do
 		local action = self:addAction(
 			actions[i].id,
@@ -551,6 +557,12 @@ function Probe:_prop(prop, point, distance)
 	local actions = prop:getActions("world")
 
 	if self.isCone and distance > self.coneLength then
+		return
+	end
+
+	local min, max = prop:getBounds()
+	local size = max - min
+	if size.x < 0.01 or size.y < 0.01 or size.z < 0.01 then
 		return
 	end
 

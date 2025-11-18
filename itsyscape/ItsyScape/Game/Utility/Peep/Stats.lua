@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Curve = require "ItsyScape.Game.Curve"
 local PlayerStatsStateProvider = require "ItsyScape.Game.PlayerStatsStateProvider"
 local Utility = require "ItsyScape.Game.Utility"
 local PeepStats = require "ItsyScape.Game.Stats"
@@ -14,6 +15,68 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Stats = {}
+
+function Stats.setSkillLevel(peep, name, level)
+	local stats = peep:getBehavior(StatsBehavior)
+	stats = stats and stats.stats
+
+	if not stats then
+		return
+	end
+
+	local skill = stats:getSkill(name)
+	if skill then
+		skill:setXP(Curve.XP_CURVE:compute(level), false)
+	end
+end
+
+function Stats.getBaseSkillLevel(peep, name)
+	local stats = peep:getBehavior(StatsBehavior)
+	stats = stats and stats.stats
+
+	if not stats then
+		return 1
+	end
+
+	local skill = stats:getSkill(name)
+	if not skill then
+		return 1
+	end
+
+	return skill:getBaseLevel()
+end
+
+function Stats.getWorkingSkillLevel(peep, name)
+	local stats = peep:getBehavior(StatsBehavior)
+	stats = stats and stats.stats
+
+	if not stats then
+		return 1
+	end
+
+	local skill = stats:getSkill(name)
+	if not skill then
+		return 1
+	end
+
+	return skill:getBaseLevel() + skill:getLevelBoost()
+end
+
+function Stats.getMaxBaseSkillLevel(peep, name, ...)
+	if name then
+		return math.max(Stats.getBaseSkillLevel(peep, name), Stats.getMaxBaseSkillLevel(peep, ...))
+	end
+
+	return 1
+end
+
+function Stats.getMaxWorkingSkillLevel(peep, name, ...)
+	if name then
+		return math.max(Stats.getWorkingSkillLevel(peep, name), Stats.getMaxWorkingSkillLevel(peep, ...))
+	end
+
+	return 1
+end
 
 function Stats.onAssign(max, self, director)
 	local stats = self:getBehavior(StatsBehavior)

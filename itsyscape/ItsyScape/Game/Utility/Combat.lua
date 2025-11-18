@@ -20,6 +20,7 @@ local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -119,8 +120,6 @@ function Combat.strafe(peep, target, distance, rotations, onStrafe)
 end
 
 function Combat.deflectPendingPower(power, activator, target)
-	
-
 	if target and target:hasBehavior(PendingPowerBehavior) then
 		local pendingPower = target:getBehavior(PendingPowerBehavior)
 		if pendingPower.power then
@@ -288,6 +287,68 @@ end
 function Combat.calcBoost(level, minLevel, maxLevel, minBoost, maxBoost)
 	local delta = math.min((math.max(level, minLevel) - minLevel) / (maxLevel - minLevel), 1)
 	return minBoost + (maxBoost - minBoost) * delta
+end
+
+Combat.SHARED_COMBAT_SKILLS = {
+	"Constitution",
+	"Defense",
+	"Faith"
+}
+
+Combat.MELEE_COMBAT_SKILLS = {
+	"Attack",
+	"Strength",
+}
+
+Combat.MAGIC_COMBAT_SKILLS = {
+	"Magic",
+	"Wisdom",
+}
+
+Combat.ARCHERY_COMBAT_SKILLS = {
+	"Archery",
+	"Dexterity",
+}
+
+Combat.ALL_COMBAT_SKILLS = {
+	"Constitution",
+	"Attack",
+	"Strength",
+	"Magic",
+	"Wisdom",
+	"Archery",
+	"Dexterity",
+	"Defense",
+	"Faith"
+}
+
+function Combat.setMaximumHealth(peep, hitpoints)
+	local status = peep:getBehavior(CombatStatusBehavior)
+	if not status then
+		return
+	end
+
+	local difference = hitpoints - status.maximumHitpoints
+	status.maximumHitpoints = hitpoints
+	status.currentHitpoints = status.currentHitpoints + difference
+end
+
+function Combat.setEquipmentStatBonus(peep, stat, value)
+	local hasStat = false
+	for _, s in ipairs(Equipment.STATS) do
+		if s == stat then
+			hasStat = true
+			break
+		end
+	end
+
+	if not hasStat then
+		Log.error("Equipment stat bonus '%s' not found; cannot set on peep '%s'.", stat, peep and peep:getName() or "???")
+		return
+	end
+
+	local _, equipment = peep:addBehavior(EquipmentBonusesBehavior)
+	equipment.bonuses[stat] = value
 end
 
 return Combat

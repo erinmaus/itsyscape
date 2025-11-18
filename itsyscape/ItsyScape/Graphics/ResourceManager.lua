@@ -507,6 +507,10 @@ function ResourceManager:_queue(resourceType, filename, async, callback, ...)
 		error("expected Resource-derived type")
 	end
 
+	if type(filename) ~= "string" then
+		error("expected 'filename' to be string")
+	end
+
 	local load = Function(self._load, self, resourceType, filename, ...)
 
 	local pending = { callback = load:coroutine(), filename = filename }

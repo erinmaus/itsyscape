@@ -116,19 +116,19 @@ do
 	}
 end
 
-M["GlyphboundYendorian"] = ItsyScape.Resource.MapObject.Unique()
+M["StoneGlyphboundYendorian"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 114,
 		PositionY = 9,
-		PositionZ = 57,
-		Name = "GlyphboundYendorian",
+		PositionZ = 59,
+		Name = "StoneGlyphboundYendorian",
 		Map = M._MAP,
-		Resource = M["GlyphboundYendorian"]
+		Resource = M["StoneGlyphboundYendorian"]
 	}
 
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "GlyphboundYendorian",
-		MapObject = M["GlyphboundYendorian"]
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "StoneGlyphboundYendorian",
+		MapObject = M["StoneGlyphboundYendorian"]
 	}
 end

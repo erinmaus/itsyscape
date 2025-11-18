@@ -106,6 +106,7 @@ Game "ItsyScape"
 	}
 
 	ActionType "None"
+	ActionType "Interact"
 
 	ActionType "Bank"
 	ActionType "Collect"
@@ -1457,6 +1458,7 @@ include "Resources/Game/DB/Items/Isabellium.lua"
 include "Resources/Game/DB/Items/TreeSecondaries.lua"
 include "Resources/Game/DB/Items/EquipmentPlaceholders.lua"
 include "Resources/Game/DB/Items/Fossils.lua"
+include "Resources/Game/DB/Items/Ectoplasm.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
