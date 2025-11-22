@@ -17,9 +17,13 @@ ActionCommand.Button = require "ItsyScape.Game.ActionCommands.Button"
 ActionCommand.Component = require "ItsyScape.Game.ActionCommands.Component"
 ActionCommand.Icon = require "ItsyScape.Game.ActionCommands.Icon"
 ActionCommand.Rectangle = require "ItsyScape.Game.ActionCommands.Rectangle"
+ActionCommand.Glyph = require "ItsyScape.Game.ActionCommands.Glyph"
+ActionCommand.Peep = require "ItsyScape.Game.ActionCommands.Peep"
 
-function ActionCommand:new(action)
+function ActionCommand:new(action, peep, target)
 	self.action = action
+	self.peep = peep
+	self.target = target
 	self.root = self.Component()
 
 	self.onHit = Callback()
@@ -27,6 +31,18 @@ end
 
 function ActionCommand:getAction()
 	return self.action
+end
+
+function ActionCommand:getPeep()
+	return self.peep
+end
+
+function ActionCommand:getTarget()
+	return self.target
+end
+
+function ActionCommand:onDamage(damage)
+	-- Nothing.
 end
 
 function ActionCommand:getResource()
@@ -72,7 +88,7 @@ function ActionCommand:addChild(child)
 end
 
 function ActionCommand:removeChild(child)
-	self.root:addChild(child)
+	self.root:removeChild(child)
 end
 
 local function _serialize(c)
@@ -103,6 +119,14 @@ function ActionCommand:onButtonDown(controller, button)
 end
 
 function ActionCommand:onButtonUp(controller, button)
+	-- Nothing.
+end
+
+function ActionCommand:onKeyDown(controller, key)
+	-- Nothing.
+end
+
+function ActionCommand:onKeyUp(controller, key)
 	-- Nothing.
 end
 

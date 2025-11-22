@@ -16,10 +16,10 @@ local ActionCommandController = Class(Controller)
 function ActionCommandController:new(peep, director, prop, action, attack)
 	Controller.new(self, peep, director)
 
-	local Fish1 = require "Resources.Game.ActionCommands.Fish1"
+	local DefaceGlyph1 = require "Resources.Game.ActionCommands.DefaceGlyph1"
 	self.prop = prop
 	self.attack = attack
-	self.actionCommand = Fish1(action)
+	self.actionCommand = DefaceGlyph1(action, peep, prop)
 	self.actionCommand.onHit:register(self.hit, self)
 
 	self:update(0)
@@ -27,7 +27,8 @@ end
 
 function ActionCommandController:hit(_, spread)
 	if self.attack then
-		self.attack(self:getPeep(), spread)
+		local damage = self.attack(self:getPeep(), spread)
+		self.actionCommand:onDamage(damage)
 	end
 end
 
@@ -36,6 +37,8 @@ function ActionCommandController:poke(actionID, actionIndex, e)
 		self:axis(e)
 	elseif actionID == "button" then
 		self:button(e)
+	elseif actionID == "key" then
+		self:key(e)
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	else
@@ -56,6 +59,14 @@ function ActionCommandController:button(e)
 		self.actionCommand:onButtonDown(e.controller, e.value)
 	elseif e.type == "up" then
 		self.actionCommand:onButtonUp(e.controller, e.value)
+	end
+end
+
+function ActionCommandController:key(e)
+	if e.type == "down" then
+		self.actionCommand:onKeyDown(e.controller, e.value)
+	elseif e.type == "up" then
+		self.actionCommand:onKeyUp(e.controller, e.value)
 	end
 end
 

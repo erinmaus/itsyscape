@@ -351,4 +351,10 @@ function Combat.setEquipmentStatBonus(peep, stat, value)
 	equipment.bonuses[stat] = value
 end
 
+-- function Combat.setTieredEquipmentStatBonuses(peep, bonuses)
+-- 	for bonus, value in pairs(bonuses) do
+-- 		local tier = 
+-- 	end
+-- end
+
 return Combat

@@ -8,14 +8,21 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Config = require "ItsyScape.Game.Config"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Drawable = require "ItsyScape.UI.Drawable"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
+local Glyph = require "ItsyScape.UI.Glyph"
 local Icon = require "ItsyScape.UI.Icon"
 local Interface = require "ItsyScape.UI.Interface"
+local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local Widget = require "ItsyScape.UI.Widget"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 
 local ActionCommand = Class(Interface)
 ActionCommand.DROP_SHADOW = 4
@@ -143,6 +150,8 @@ function ActionCommand:new(...)
 	self.root.onMouseMove:register(self.mouseMoveOverRoot, self)
 	self.root.onMousePress:register(self.mousePressOverRoot, self)
 	self.root.onMouseRelease:register(self.mouseReleaseOverRoot, self)
+
+	self.sceneSnippets = {}
 end
 
 function ActionCommand:getOverflow()
@@ -182,6 +191,48 @@ function ActionCommand:_build(parent, t, o, delta)
 			math.lerp(o.height, t.height, delta))
 	elseif t.type == "rectangle" then
 		widget = ActionCommand.Rectangle(t, o, delta)
+	elseif t.type == "glyph" then
+		widget = Glyph()
+		widget:updateTime(o.time)
+		widget:updateTime(t.time)
+		widget:setGlyph(t.glyph)
+		widget:setAlpha(math.lerp(o.alpha, t.alpha, delta))
+		widget:setGlyphColor(Color(unpack(o.glyphColor)):lerp(Color(unpack(t.glyphColor)), delta))
+		widget:setGlowColor(Color(unpack(o.glowColor)):lerp(Color(unpack(t.glowColor)), delta))
+		widget:setOutlineColor(Color(unpack(o.outlineColor)):lerp(Color(unpack(t.outlineColor)), delta))
+		widget:setSize(
+			math.lerp(o.width, t.width, delta),
+			math.lerp(o.height, t.height, delta))
+	elseif t.type == "peep" then
+		widget = self.sceneSnippets[t.id] or SceneSnippet()
+
+		local camera = ThirdPersonCamera()
+		widget:setCamera(camera)
+
+		local gameView = self:getView():getGameView()
+
+		local object
+		if t.peepType == "actor" then
+			object = gameView:getActorByID(t.peepID)
+		elseif t.peepType == "prop" then
+			object = gameView:getPropByID(t.peepID)
+		end
+
+		local parentNode = SceneNode()
+		local ambientLight = AmbientLightSceneNode()
+		ambientLight:setAmbience(1)
+		ambientLight:setParent(parentNode)
+
+		widget:setParentNode(parentNode)
+		widget:setRoot(parentNode)
+
+		Theme.setSceneSnippet(widget, camera, gameView, object, Vector(unpack(t.offset)))
+
+		self.sceneSnippets[t.id] = widget
+
+		widget:setSize(
+			math.lerp(o.width, t.width, delta),
+			math.lerp(o.height, t.height, delta))
 	end
 
 	local p = ActionCommand.Wrapper()
@@ -202,7 +253,7 @@ function ActionCommand:_build(parent, t, o, delta)
 
 	for i, child in ipairs(t.children) do
 		local otherChild = o.children[i]
-		if child.id == otherChild.id then
+		if otherChild and child.id == otherChild.id then
 			self:_build(p, child, otherChild, delta)
 		else
 			self:_build(p, child, child, delta)
@@ -300,6 +351,26 @@ function ActionCommand:gamepadAxis(joystick, axis, value)
 		self:sendPoke("axis", nil, { controller = "gamepad", axis = "x", value = value })
 	elseif axis == "lefty" then
 		self:sendPoke("axis", nil, { controller = "gamepad", axis = "y", value = value })
+	end
+end
+
+function ActionCommand:gamepadDirection(directionX, directionY)
+	Interface.gamepadDirection(self, directionX, directionY)
+
+	if directionX < 0 then
+		self:sendPoke("key", nil, { controller = "gamepad", type = "down", value = "left" })
+		self:sendPoke("key", nil, { controller = "gamepad", type = "up", value = "left" })
+	elseif directionX > 0 then
+		self:sendPoke("key", nil, { controller = "gamepad", type = "down", value = "right" })
+		self:sendPoke("key", nil, { controller = "gamepad", type = "up", value = "right" })
+	end
+
+	if directionY < 0 then
+		self:sendPoke("key", nil, { controller = "gamepad", type = "down", value = "up" })
+		self:sendPoke("key", nil, { controller = "gamepad", type = "up", value = "up" })
+	elseif directionY > 0 then
+		self:sendPoke("key", nil, { controller = "gamepad", type = "down", value = "down" })
+		self:sendPoke("key", nil, { controller = "gamepad", type = "up", value = "down" })
 	end
 end
 

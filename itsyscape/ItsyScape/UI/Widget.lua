@@ -79,7 +79,7 @@ function Widget:getInputProvider()
 
 	local root = self:getRootParent()
 	if not root then
-		return
+		return nil
 	end
 
 
@@ -94,7 +94,7 @@ end
 function Widget:getResourceManager()
 	local root = self:getRootParent()
 	if not root then
-		return
+		return nil
 	end
 
 	local resources = root:getData(WidgetResourceManager)
@@ -103,6 +103,23 @@ function Widget:getResourceManager()
 	end
 
 	return resources
+end
+
+function Widget:getUIView()
+	-- Cyclic dependency #2. RIP.
+	local UIView = require "ItsyScape.UI.UIView"
+
+	local root = self:getRootParent()
+	if not root then
+		return nil
+	end
+
+	local uiView = root:getData(UIView)
+	if not Class.isCompatibleType(uiView, UIView) then
+		return nil
+	end
+
+	return uiView
 end
 
 function Widget:getID()

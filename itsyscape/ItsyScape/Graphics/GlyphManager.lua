@@ -18,8 +18,9 @@ local GlyphManager = Class()
 
 function GlyphManager:new(t, gameView)
 	self.t = t or OldOneGlyph.DEFAULT_CONFIG
-	self.projectionRadiusScale = 0.5
-	self.maxDepth = 2
+	self.projectionRadiusScale = 1
+	self.minDepth = 1
+	self.maxDepth = 3
 	self.rotationSpeed = math.pi / 32
 
 	self.radius = math.max(self:getDimensions())
@@ -82,6 +83,7 @@ function GlyphManager:tokenize(message)
 	local tokens = table.concat(sentences, "")
 	local instances = {}
 
+	local maxDepth = math.clamp(#sentences, self.minDepth, self.maxDepth)
 	for glyph, theta, parent in tokens:gmatch("(.)(.)(.)") do
 		local glyphIndex = glyph:byte() + 1
 
@@ -91,7 +93,7 @@ function GlyphManager:tokenize(message)
 		if #instances > 0 then
 			for i = 1, #instances + 1 do
 				parentIndex = (parent:byte() + i - 1) % #instances + 1
-				if instances[parentIndex]:getDepth() <= self.maxDepth then
+				if instances[parentIndex]:getDepth() <= maxDepth then
 					break
 				end
 			end
@@ -155,7 +157,7 @@ function GlyphManager:measure(root, projections, w, h, size, offset)
 	local maxSize = math.max(w, h)
 	local baseScale = maxSize / size
 	local extraScale = size / (root:getRadius() * baseScale)
-	local lineWidth = 1 / 2 + offset
+	local lineWidth = math.min((maxSize / size / 2) + offset, 1 + offset)
 
 	self.transform:setTransformation(w / 2, h / 2, 0, baseScale * extraScale, -baseScale * extraScale)
 
@@ -193,7 +195,7 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 	self.transform:setTransformation(x + w / 2, y + h / 2, 0, baseScale * extraScale, -baseScale * extraScale)
 	love.graphics.applyTransform(self.transform)
 
-	local lineWidth = 1 / 2 + offset
+	local lineWidth = math.min((maxSize / size / 2) + offset, 1 + offset)
 	love.graphics.setLineWidth(lineWidth)
 
 	local minX, minY = math.huge, math.huge
@@ -218,7 +220,7 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 	self.shaderCache:bindShader(
 		self.shakyShader,
 		"scape_Time", self.gameView:getRenderer():getTime(),
-		"scape_Scale", 5,
+		"scape_Scale", lineWidth + 1,
 		"scape_Interval", 1 / 8)
 
 	_stencilProjections = projections

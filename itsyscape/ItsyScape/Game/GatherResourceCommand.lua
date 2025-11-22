@@ -195,7 +195,11 @@ function GatherResourceCommand:attack(peep, spread)
 			skill = self.skill,
 			prop = self.prop
 		})
+
+		return damage
 	end
+
+	return 0
 end
 
 return GatherResourceCommand

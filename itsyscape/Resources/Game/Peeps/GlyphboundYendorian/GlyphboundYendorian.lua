@@ -78,7 +78,7 @@ function GlyphboundYendorian:onSummon(playerPeep)
 		playerPeep,
 		unpack(Utility.Combat.ALL_COMBAT_SKILLS))
 
-	local level = (math.floor(maxSkillLevel / 10) + 1) * 10
+	local level = math.clamp((math.floor(maxSkillLevel / 10) + 1) * 10, 10, 80)
 	self:setCombatSkillLevels(level)
 	self:setEquipmentStatBonuses(level)
 end

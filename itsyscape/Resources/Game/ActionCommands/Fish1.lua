@@ -17,8 +17,8 @@ Fish.HIT_INTERVAL = 0.25
 Fish.OFFSET = 16
 Fish.VELOCITY = 2
 
-function Fish:new(action)
-	ActionCommand.new(self, action)
+function Fish:new(...)
+	ActionCommand.new(self, ...)
 
 	self:getRoot():setSize(256, 48)
 
