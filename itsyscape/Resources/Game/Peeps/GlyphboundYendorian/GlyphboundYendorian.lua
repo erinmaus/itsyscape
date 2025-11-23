@@ -10,6 +10,8 @@
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Probe = require "ItsyScape.Peep.Probe"
+local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local GhostYendorian = require "Resources.Game.Peeps.Yendorian.GhostYendorian"
 
 local GlyphboundYendorian = Class(GhostYendorian)
@@ -73,6 +75,26 @@ function GlyphboundYendorian:setEquipmentStatBonuses(level)
 		Utility.strengthBonusForWeapon(level + 5))
 end
 
+function GlyphboundYendorian:chargeNearbyGlyphstones(level)
+	local mineableResource = self:getDirector():getGameDB():getResource("GlyphstoneRock_Weak", "Prop")
+	if not mineableResource then
+		Log.error("Could not get 'GlyphstoneRock_Weak' resource!")
+		return
+	end
+
+	local rocks = self:getDirector():probe(
+		self:getLayerName(),
+		Probe.resource("Prop", "GlyphstoneRock"))
+
+	for _, rock in ipairs(rocks) do
+		local _, propHealth = rock:addBehavior(PropResourceHealthBehavior)
+		propHealth.maxProgress = math.ceil(level * 2.5)
+
+		Utility.Peep.setResource(rock, mineableResource)
+		rock:poke("spawn")
+	end
+end
+
 function GlyphboundYendorian:onSummon(playerPeep)
 	local maxSkillLevel = Utility.Peep.Stats.getMaxWorkingSkillLevel(
 		playerPeep,
@@ -81,6 +103,7 @@ function GlyphboundYendorian:onSummon(playerPeep)
 	local level = math.clamp((math.floor(maxSkillLevel / 10) + 1) * 10, 10, 80)
 	self:setCombatSkillLevels(level)
 	self:setEquipmentStatBonuses(level)
+	self:chargeNearbyGlyphstones(level)
 end
 
 return GlyphboundYendorian

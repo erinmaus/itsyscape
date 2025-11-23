@@ -156,30 +156,6 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	return canReachTarget, isTooFar, isTooClose
 end
 
-function CombatCortex:_getRelativeTile(selfPeep, targetPeep)
-	local selfMap = Utility.Peep.getMap(selfPeep)
-	local selfWorldTransform = Utility.Peep.getParentTransform(selfPeep)
-
-	local selfPosition = Utility.Peep.getPosition(selfPeep)
-	local targetAbsolutePosition = Utility.Peep.getAbsolutePosition(targetPeep)
-	local targetPosition = Vector(selfWorldTransform:inverseTransformPoint(targetAbsolutePosition:get()))
-
-	local _, s, t = selfMap:getTileAt(targetPosition.x, targetPosition.z)
-	local _, u, v = selfMap:getTileAt(selfPosition.x, selfPosition.z)
-
-	return s, t, u, v
-end
-
-function CombatCortex:_canPeepSeeTarget(selfPeep, targetPeep)
-	local selfMap = Utility.Peep.getMap(selfPeep)
-	local targetI, targetJ, selfI, selfJ = self:_getRelativeTile(selfPeep, targetPeep)
-
-	local isSameTile = targetI == selfI and targetJ == selfJ
-	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)
-
-	return isSameTile or isLineOfSightClear
-end
-
 function CombatCortex:_getPeepWeapon(peep)
 	local equippedWeapon = Utility.Peep.getEquippedWeapon(peep, true)
 	if not equippedWeapon or not Class.isCompatibleType(equippedWeapon, Weapon) then
@@ -203,7 +179,7 @@ function CombatCortex:_isPeepWithinRange(selfPeep, targetPeep)
 		return false, isTooFar, isTooClose
 	end
 
-	if not self:_canPeepSeeTarget(selfPeep, targetPeep) then
+	if not Utility.Combat.canSeeTarget(selfPeep, targetPeep) then
 		return false, isTooFar, isTooClose
 	end
 
@@ -721,7 +697,7 @@ function CombatCortex:movePeep(peep, i, j, k)
 		return
 	end
 
-	local currentI, currentJ = self:_getRelativeTile(peep, target)
+	local currentI, currentJ = Utility.Peep.getRelativeTile(peep, target)
 	local currentK = Utility.Peep.getLayer(peep)
 	local previousI, previousJ, previousK = charge.i, charge.j, charge.k
 
@@ -761,7 +737,7 @@ function CombatCortex:strafePeep(peep)
 		return
 	end
 
-	local targetI, targetJ, selfI, selfJ = self:_getRelativeTile(peep, target)
+	local targetI, targetJ, selfI, selfJ = Utility.Peep.getRelativeTile(peep, target)
 
 	local bestSelfStrafeDistance = math.huge
 	local bestTargetStrafeDistance = 0

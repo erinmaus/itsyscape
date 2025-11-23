@@ -274,4 +274,12 @@ function Probe.passage(passageName)
 	return Function(_passage, passageName)
 end
 
+local _lineOfSight = function(source, shoot, peep)
+	return Utility.Combat.canSeeTarget(source, peep, shoot)
+end
+
+function Probe.lineOfSight(source, shoot)
+	return Function(_lineOfSight, source, shoot)
+end
+
 return Probe

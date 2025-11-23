@@ -35,8 +35,8 @@ function DefaceGlyph:new(...)
 
 	self.targetScene = ActionCommand.Peep()
 	self.targetScene:setPeep(self:getTarget())
-	self.targetScene:setSize(self.SIZE * 2, self.SIZE * 2)
-	self.targetScene:setPosition(-self.SIZE / 2, -self.SIZE / 2)
+	self.targetScene:setSize(self.SIZE * 3, self.SIZE * 3)
+	self.targetScene:setPosition(-self.SIZE, -self.SIZE)
 	self.targetScene:setOffset(Vector(0, 0.5, 0))
 	self.glyphContainer:addChild(self.targetScene)
 

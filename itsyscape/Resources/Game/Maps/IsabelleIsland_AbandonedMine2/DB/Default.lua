@@ -1010,6 +1010,78 @@ do
 	}
 end
 
+M["GlyphstoneRock1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 100.000000,
+		PositionY = 9.000000,
+		PositionZ = 51.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "GlyphstoneRock1",
+		Map = M._MAP,
+		Resource = M["GlyphstoneRock1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "GlyphstoneRock",
+		MapObject = M["GlyphstoneRock1"]
+	}
+end
+
+M["GlyphstoneRock2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 125.000000,
+		PositionY = 9.000000,
+		PositionZ = 63.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "GlyphstoneRock2",
+		Map = M._MAP,
+		Resource = M["GlyphstoneRock2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "GlyphstoneRock",
+		MapObject = M["GlyphstoneRock2"]
+	}
+end
+
+M["GlyphstoneRock3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 127.000000,
+		PositionY = 9.000000,
+		PositionZ = 51.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "GlyphstoneRock3",
+		Map = M._MAP,
+		Resource = M["GlyphstoneRock3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "GlyphstoneRock",
+		MapObject = M["GlyphstoneRock3"]
+	}
+end
+
 M["Lamp_IsabelleTower1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

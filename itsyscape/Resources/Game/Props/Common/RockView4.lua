@@ -213,6 +213,11 @@ function RockView:load()
 		end)
 
 	resources:queueEvent(function()
+		local rockMaterial = self:getRockMaterial()
+		if not rockMaterial then
+			return
+		end
+
 		local _, rockGroup = self:getRockModelFilename()
 
 		local node = DecorationSceneNode()
@@ -228,16 +233,17 @@ function RockView:load()
 		material:send(material.UNIFORM_FLOAT, "scape_TriplanarOffset", 0)
 		material:send(material.UNIFORM_FLOAT, "scape_TriplanarExponent", 0)
 		material:send(material.UNIFORM_FLOAT, "scape_SpecularWeight", 1)
-
-		local rockMaterial = self:getRockMaterial()
-		if rockMaterial then
-			rockMaterial:apply(node, self:getResources())
-		end
+		rockMaterial:apply(node, self:getResources())
 
 		self.rockNode = node
 	end)
 
 	resources:queueEvent(function()
+		local oreMaterial = self:getOreMaterial()
+		if not oreMaterial then
+			return
+		end
+
 		local _, oreGroup = self:getOreModelFilename()
 
 		local node = DecorationSceneNode()
@@ -248,11 +254,7 @@ function RockView:load()
 		material:setTextures(self.oreTexture)
 		material:setShader(self.oreShader)
 		material:setOutlineThreshold(0.5)
-
-		local oreMaterial = self:getOreMaterial()
-		if oreMaterial then
-			oreMaterial:apply(node, self:getResources())
-		end
+		oreMaterial:apply(node, self:getResources())
 
 		self.oreNode = node
 	end)

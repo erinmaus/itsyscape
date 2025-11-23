@@ -250,7 +250,7 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 			end
 
 			local di, dj = i - pi, j - pj
-			if not self:canMove(pi, pj, di, dj, shoot, isDebug) then
+			if not self:canMove(pi, pj, di, dj, shoot, nil, isDebug) then
 				if isDebug then
 					Log.info("Cannot move to (%d, %d) from (%d, %d)!", i, j, pi, pj)
 				end

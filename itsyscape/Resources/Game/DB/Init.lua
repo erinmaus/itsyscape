@@ -501,6 +501,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "OldOneDescription" {
+		Value = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "ActionDifficulty" {
 		Value = Meta.TYPE_INTEGER,
 		Action = Meta.TYPE_ACTION
@@ -1642,6 +1647,7 @@ include "Resources/Game/DB/Props/FurnitureSets.lua"
 include "Resources/Game/DB/Props/CraftedItem.lua"
 include "Resources/Game/DB/Props/Bars.lua"
 include "Resources/Game/DB/Props/SlackTub.lua"
+include "Resources/Game/DB/Props/Glyphstone.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"

@@ -1503,6 +1503,22 @@ function Peep.getTileAnchor(peep, offsetI, offsetJ)
 	return i, j, Peep.getLayer(peep)
 end
 
+function Peep.getRelativeTile(selfPeep, targetPeep)
+	local selfMap = Utility.Peep.getMap(selfPeep)
+	local selfWorldTransform = Utility.Peep.getParentTransform(selfPeep)
+
+	local selfPosition = Utility.Peep.getPosition(selfPeep)
+	local targetAbsolutePosition = Utility.Peep.getAbsolutePosition(targetPeep)
+	local targetPosition = Vector(selfWorldTransform:inverseTransformPoint(targetAbsolutePosition:get()))
+
+	local _, s, t = selfMap:getTileAt(targetPosition.x, targetPosition.z)
+	local _, u, v = selfMap:getTileAt(selfPosition.x, selfPosition.z)
+
+	-- s, t is target tile relative to self map
+	-- u, v is self tile on map
+	return s, t, u, v
+end
+
 function Peep.getTile(peep)
 	if not peep:hasBehavior(PositionBehavior) then
 		return 0, 0

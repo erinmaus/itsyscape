@@ -351,6 +351,20 @@ function Combat.setEquipmentStatBonus(peep, stat, value)
 	equipment.bonuses[stat] = value
 end
 
+function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
+	if shoot == nil then
+		shoot = true
+	end
+
+	local selfMap = Utility.Peep.getMap(selfPeep)
+	local targetI, targetJ, selfI, selfJ = Utility.Peep.getRelativeTile(selfPeep, targetPeep)
+
+	local isSameTile = targetI == selfI and targetJ == selfJ
+	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, shoot, true)
+
+	return isSameTile or lineOfSightPassable
+end
+
 -- function Combat.setTieredEquipmentStatBonuses(peep, bonuses)
 -- 	for bonus, value in pairs(bonuses) do
 -- 		local tier = 

@@ -65,7 +65,7 @@ function DecorationMaterial:apply(sceneNode, resourceManager)
 			end)
 	end
 
-	if self.texture then
+	if type(self.texture) == "string" then
 		local TextureType
 		if self.texture:match("%.lua$") then
 			TextureType = LayerTextureResource
