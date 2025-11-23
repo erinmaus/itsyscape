@@ -142,9 +142,7 @@ function Glyph:draw(resources, state)
 	local currentTime = self.currentTime or 0
 	local time = math.lerp(previousTime, currentTime, _APP:getFrameDelta())
 
-	local planeNormal = glyphManager:getStandardPlane(time)
-	local planeD = -(math.sin(time / math.pi / 8) * 0.5 - 0.5)
-
+	local planeNormal, planeD = glyphManager:getStandardPlane(time)
 	local projections = glyphManager:asyncProjectAll(self, glyph, planeNormal, planeD)
 
 	itsyrealm.graphics.pushCallback(
