@@ -75,6 +75,10 @@ function GlyphboundYendorian:setEquipmentStatBonuses(level)
 		Utility.strengthBonusForWeapon(level + 5))
 end
 
+function GlyphboundYendorian:_onDefaceGlyphstone()
+
+end
+
 function GlyphboundYendorian:chargeNearbyGlyphstones(level)
 	local mineableResource = self:getDirector():getGameDB():getResource("GlyphstoneRock_Weak", "Prop")
 	if not mineableResource then
@@ -91,7 +95,18 @@ function GlyphboundYendorian:chargeNearbyGlyphstones(level)
 		propHealth.maxProgress = math.ceil(level * 2.5)
 
 		Utility.Peep.setResource(rock, mineableResource)
-		rock:poke("spawn")
+		rock:poke("spawned")
+
+		local oldOneDescription = Utility.Peep.getOldOneDescription(rock)
+
+		local position = Utility.Peep.getPosition(rock)
+		local projectedGlyph = Utility.spawnPropAtPosition(
+			rock,
+			"ProjectedGlyph",
+			position.x, position.y, position.z)
+		Utility.Peep.setOldOneDescription(projectedGlyph:getPeep(), oldOneDescription)
+
+		rock:listen("depleted", self._onDefaceGlyphstone, self, projectedGlyph)
 	end
 end
 

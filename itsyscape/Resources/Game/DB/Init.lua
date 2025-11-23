@@ -1648,6 +1648,7 @@ include "Resources/Game/DB/Props/CraftedItem.lua"
 include "Resources/Game/DB/Props/Bars.lua"
 include "Resources/Game/DB/Props/SlackTub.lua"
 include "Resources/Game/DB/Props/Glyphstone.lua"
+include "Resources/Game/DB/Props/ProjectedGlyph.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"

@@ -224,7 +224,7 @@ function Flare:load()
 
 		self.light = PointLightSceneNode()
 		self.light:getTransform():setLocalTranslation(Vector(0, 0.5, 0.5))
-		self.light:setParent(root)
+		self.light:setParent(self:getGameView():getScene())
 
 		self.time = 0
 		self.spawned = true
@@ -232,6 +232,8 @@ function Flare:load()
 end
 
 function Flare:remove()
+	PropView.remove(self)
+
 	if self.flare then
 		self.flare:setParent(false)
 	end
@@ -280,6 +282,10 @@ function Flare:update(delta)
 		if self.smoke then
 			self.smoke:initEmittersFromDef(self:_getSmokeParticleDefinition().emitters)
 			self.smoke:updateLocalPosition(position)
+		end
+
+		if self.light then
+			self.light:getTransform():setLocalTranslation(position)
 		end
 	end
 end

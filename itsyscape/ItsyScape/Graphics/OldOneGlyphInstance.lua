@@ -29,6 +29,41 @@ function OldOneGlyphInstance:new(glyph, glyphManager)
 	self.children = {}
 end
 
+function OldOneGlyphInstance:serialize()
+	local result = {
+		glyph = self.glyphManager:index(self.glyph),
+		rotation = self.rotation,
+		theta = self.theta,
+		phi = self.phi,
+		children = {}
+	}
+
+	for _, child in ipairs(self.children) do
+		table.insert(result.children, child:serialize())
+	end
+
+	return result
+end
+
+function OldOneGlyphInstance.deserialize(t, glyphManager)
+	local glyph = glyphManager and glyphManager:get(t.glyph)
+	if not glyph then
+		return nil
+	end
+
+	local instance = OldOneGlyphInstance(glyph, glyphManager)
+	instance:setRotation(t.rotation)
+	instance:setTheta(t.theta)
+	instance:setPhi(t.phi)
+
+	for _, child in ipairs(t.children) do
+		local childInstance = OldOneGlyphInstance.deserialize(child, glyphManager)
+		childInstance:setParent(instance)
+	end
+
+	return instance
+end
+
 function OldOneGlyphInstance:getGlyph()
 	return self.glyph
 end
@@ -121,7 +156,7 @@ function OldOneGlyphInstance:getTransform()
 end
 
 function OldOneGlyphInstance:getRadius()
-	local radius = self.glyphManager:getRadius()
+	radius = self.glyphManager:getRadius()
 
 	local maxChildRadius = 0
 	for _, child in self:iterate() do
@@ -162,6 +197,10 @@ function OldOneGlyphInstance:update(delta)
 end
 
 function OldOneGlyphInstance:project(normal, d, axis)
+	if _DEBUG then
+		assert(self.projection, "cannot project glyph without projection")
+	end
+
 	return self.glyph:project(self.projection, normal, d, self:getTransform(), axis)
 end
 

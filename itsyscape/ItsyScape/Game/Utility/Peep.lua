@@ -44,6 +44,7 @@ local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehav
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local OldOneDescriptionBehavior = require "ItsyScape.Peep.Behaviors.OldOneDescriptionBehavior"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -476,6 +477,32 @@ function Peep.getParentTransform(peep)
 	end
 
 	return Peep.getMapTransform(mapScript)
+end
+
+function Peep.getOldOneDescription(peep)
+	local glyph
+	do
+		local gameDB = peep:getDirector():getGameDB()
+		local mapObject = Utility.Peep.getMapObject(peep)
+		if mapObject then
+			local description = gameDB:getRecord("OldOneDescription", { Resource = mapObject })
+			glyph = description and description:get("Value")
+		end
+
+		local oldOneDescription = peep:getBehavior(OldOneDescriptionBehavior)
+		glyph = (oldOneDescription and oldOneDescription.description) or glyph
+	end
+
+	return glyph or 0
+end
+
+function Peep.setOldOneDescription(peep, value)
+	if not value or value == 0 then
+		peep:removeBehavior(OldOneDescriptionBehavior)
+	else
+		local _, oldOneDescription = peep:addBehavior(OldOneDescriptionBehavior)
+		oldOneDescription.description = value
+	end
 end
 
 function Peep.getLayer(peep)

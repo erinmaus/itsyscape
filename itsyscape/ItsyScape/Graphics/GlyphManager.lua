@@ -7,9 +7,13 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local GlyphManagerCommon = require "ItsyScape.Graphics.GlyphManagerCommon"
+local GlyphManagerProxy = require "ItsyScape.Graphics.GlyphManagerProxy"
 local OldOneGlyph = require "ItsyScape.Graphics.OldOneGlyph"
 local OldOneGlyphInstance = require "ItsyScape.Graphics.OldOneGlyphInstance"
 local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
@@ -27,11 +31,53 @@ function GlyphManager:new(t, gameView)
 	self.transform = love.math.newTransform()
 
 	self.glyphs = {}
+	self.indices = {}
 
 	self.gameView = gameView
 	self.shaderCache = PostProcessPass(gameView:getRenderer(), 0)
 	self.shaderCache:load(gameView:getResourceManager())
 	self.shakyShader = self.shaderCache:loadPostProcessShader("ShakyVertex")
+
+	self.channels = setmetatable({}, { __mode == "k" })
+end
+
+function GlyphManager:_newChannel(p)
+	local thread = love.thread.newThread("ItsyScape/Graphics/Threads/GlyphManager.lua")
+	local inputChannel, outputChannel = love.thread.newChannel(), love.thread.newChannel()
+	thread:start(inputChannel, outputChannel)
+
+	local proxy = newproxy(true)
+	getmetatable(proxy).__gc = function()
+		inputChannel:push({ type = "quit" })
+	end
+
+	local channel = {
+		proxy = proxy,
+		thread = thread,
+		input = inputChannel,
+		output = outputChannel,
+		buffer = GlyphManagerCommon.newBuffer()
+	}
+
+	self.channels[p] = channel
+	return channel
+end
+
+function GlyphManager:_getChannel(p)
+	local channel = self.channels[p]
+	if not channel then
+		channel = self:_newChannel(p)
+	end
+
+	return channel
+end
+
+function GlyphManager:getConfig()
+	return self.t
+end
+
+function GlyphManager:getDepth()
+	return self.minDepth, self.maxDepth
 end
 
 function GlyphManager:getRadius()
@@ -52,6 +98,10 @@ function GlyphManager:getDimensions()
 		self.t.maxDepth or OldOneGlyph.DEFAULT_CONFIG.maxDepth
 end
 
+function GlyphManager:iterate()
+	return pairs(self.glyphs)
+end
+
 function GlyphManager:get(character)
 	assert(type(character) == "number", "expected 'code point' as number - did you pass in a string?")
 
@@ -64,9 +114,14 @@ function GlyphManager:get(character)
 		end
 
 		self.glyphs[character] = glyph
+		self.indices[glyph] = character
 	end
 
 	return glyph
+end
+
+function GlyphManager:index(glyph)
+	return self.indices[glyph] or -1
 end
 
 function GlyphManager:tokenize(message)
@@ -129,6 +184,53 @@ end
 
 function GlyphManager:projectAll(root, normal, d, axis)
 	return self:_projectAll(root, normal, d, axis, {})
+end
+
+function GlyphManager:_assignAll(root, projections, i)
+	i = i or 0
+	i = i + 1
+
+	assert(projections[i][1] == false)
+	projections[i][1] = root
+
+	for _, child in root:iterate() do
+		i = self:_assignAll(child, projections, i)
+	end
+
+	return i
+end
+
+function GlyphManager:asyncProjectAll(p, root, normal, d, axis)
+	local channel = self:_getChannel(p)
+
+	local event = channel.output:pop()
+	if event and type(event) == "table" then
+		if event.type == "result" then
+			local current = channel.buffer:set(event.value):decode()
+			channel.current = current
+
+			self:_assignAll(root, channel.current)
+		end
+	end
+
+	if event or not channel.current then
+		local event = {
+			type = "project",
+			planeNormal = { normal:get() },
+			planeD = d,
+			axis = axis and { axis:get() },
+			glyphManager = channel.buffer:reset():encode(GlyphManagerProxy(self)):tostring(),
+			root = channel.buffer:reset():encode(root:serialize()):tostring(),
+		}
+
+		channel.input:push(event)
+	end
+
+	if not channel.current then
+		channel.current = self:projectAll(root, normal, d, axis)
+	end
+
+	return channel.current
 end
 
 local _stencilProjections, _stencilGlyphManager

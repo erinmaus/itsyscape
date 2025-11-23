@@ -145,13 +145,13 @@ function Glyph:draw(resources, state)
 	local planeNormal = glyphManager:getStandardPlane(time)
 	local planeD = -(math.sin(time / math.pi / 8) * 0.5 - 0.5)
 
-	local projections = glyphManager:projectAll(glyph, planeNormal, planeD)
+	local projections = glyphManager:asyncProjectAll(self, glyph, planeNormal, planeD)
 
 	itsyrealm.graphics.pushCallback(
 		self._drawRite, self,
 		glyph, projections,
 		"add",
-		math.abs(math.sin(time / 8 * math.pi)) * 0.5 + 0.5,
+		math.abs(math.sin(time / 8 * math.pi)) * 0.5 + 0.6,
 		self.glowColor,
 		0.5)
 

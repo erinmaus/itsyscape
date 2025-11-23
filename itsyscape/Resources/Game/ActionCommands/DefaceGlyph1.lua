@@ -41,7 +41,7 @@ function DefaceGlyph:new(...)
 	self.glyphContainer:addChild(self.targetScene)
 
 	self.glyph = ActionCommand.Glyph()
-	self.glyph:setGlyph("bla bla bla")
+	self.glyph:setGlyph(Utility.Peep.getOldOneDescription(self:getTarget()))
 	self.glyph:setSize(self.SIZE, self.SIZE)
 	self.glyphContainer:addChild(self.glyph)
 

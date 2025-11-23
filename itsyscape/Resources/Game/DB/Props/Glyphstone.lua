@@ -69,23 +69,32 @@ ItsyScape.Meta.PropAnchor {
 	Resource = WeakRock
 }
 
-WeakRock {
-	ItsyScape.Action.Mine() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Mining",
-			Count = ItsyScape.Utility.xpForLevel(1)
-		},
+local MineAction = ItsyScape.Action.Mine() {
+	Requirement {
+		Resource = ItsyScape.Resource.Skill "Mining",
+		Count = ItsyScape.Utility.xpForLevel(1)
+	},
 
-		Output {
-			Resource = ItsyScape.Resource.Skill "Mining",
-			Count = ItsyScape.Utility.xpForLevel(10)
-		},
+	Output {
+		Resource = ItsyScape.Resource.Skill "Mining",
+		Count = ItsyScape.Utility.xpForLevel(10)
+	},
 
-		Output {
-			Resource = WeakOre,
-			Count = 1
-		}
+	Output {
+		Resource = WeakOre,
+		Count = 1
 	}
+}
+
+ItsyScape.Meta.ActionVerb {
+	Value = "Deface",
+	XProgressive = "Defacing",
+	Language = "en-US",
+	Action = MineAction
+}
+
+WeakRock {
+	MineAction
 }
 
 ItsyScape.Meta.ResourceName {

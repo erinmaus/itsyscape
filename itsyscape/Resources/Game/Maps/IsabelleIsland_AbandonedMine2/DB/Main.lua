@@ -132,3 +132,69 @@ do
 		MapObject = M["StoneGlyphboundYendorian"]
 	}
 end
+
+M["GlyphstoneRock1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 101,
+		PositionY = 9,
+		PositionZ = 51,
+		Name = "GlyphstoneRock1",
+		Map = M._MAP,
+		Resource = M["GlyphstoneRock1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "GlyphstoneRock",
+		MapObject = M["GlyphstoneRock1"]
+	}
+
+	ItsyScape.Meta.OldOneDescription {
+		Value = "Close your eyes; let the sun set and the shadows grow long.",
+		Resource = M["GlyphstoneRock1"]
+	}
+end
+
+M["GlyphstoneRock2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 125,
+		PositionY = 9,
+		PositionZ = 63,
+		Name = "GlyphstoneRock2",
+		Map = M._MAP,
+		Resource = M["GlyphstoneRock2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "GlyphstoneRock",
+		MapObject = M["GlyphstoneRock2"]
+	}
+
+	ItsyScape.Meta.OldOneDescription {
+		Value = "Hear the world grow quieter and feel warmth chill your skin.",
+		Resource = M["GlyphstoneRock2"]
+	}
+end
+
+M["GlyphstoneRock3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 127,
+		PositionY = 9,
+		PositionZ = 51,
+		Name = "GlyphstoneRock3",
+		Map = M._MAP,
+		Resource = M["GlyphstoneRock3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "GlyphstoneRock",
+		MapObject = M["GlyphstoneRock3"]
+	}
+
+	ItsyScape.Meta.OldOneDescription {
+		Value = "Silence the mind and in this foolish peace you will know mortal ignorance.",
+		Resource = M["GlyphstoneRock3"]
+	}
+end

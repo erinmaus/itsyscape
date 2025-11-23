@@ -70,6 +70,14 @@ function ResourceManager.View:_done(index, resource)
 	self.pending[index].resource = resource
 end
 
+function ResourceManager.View:load(...)
+	return self.resourceManager:load(...)
+end
+
+function ResourceManager.View:loadCacheRef(...)
+	return self.resourceManager:loadCacheRef(...)
+end
+
 function ResourceManager.View:queue(resourceType, filename, callback, ...)
 	self.pendingIndex = self.pendingIndex + 1
 	local index = self.pendingIndex

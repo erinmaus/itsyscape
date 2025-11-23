@@ -299,6 +299,10 @@ function Log.write(message, writeOnly)
 		io.stderr:write(message)
 	end
 
+	if _LOG_PRINT_ONLY then
+		return
+	end
+
 	local logDirectoryInfo = love.filesystem.getInfo("Logs")
 	if not logDirectoryInfo then
 		love.filesystem.createDirectory("Logs")
