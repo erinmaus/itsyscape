@@ -1237,14 +1237,14 @@ function Application:_draw()
 		local mu = Tween.powerEaseInOut(
 			self.clickActionTime / Application.CLICK_DURATION,
 			3)
-		local oldColor = { love.graphics.getColor() }
+		love.graphics.push("all")
 		love.graphics.setBlendMode("add")
 		love.graphics.setColor(color:get())
 		love.graphics.circle(
 			'fill',
 			self.clickX, self.clickY,
 			mu * Application.CLICK_RADIUS)
-		love.graphics.setColor(unpack(oldColor))
+		love.graphics.pop()
 	end
 
 	self.previousFrameDelta = self:getFrameDelta()

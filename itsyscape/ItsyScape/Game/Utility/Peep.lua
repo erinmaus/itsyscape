@@ -50,6 +50,7 @@ local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
+local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local ShieldBehavior = require "ItsyScape.Peep.Behaviors.ShieldBehavior"
@@ -2125,6 +2126,23 @@ function Peep.setMashinaState(peep, state)
 	if mashina then
 		mashina.currentState = state or false
 		return not not mashina.states[state] or state == false
+	end
+
+	return false
+end
+
+function Peep.isDepleted(peep)
+	local health = peep:getBehavior(PropResourceHealthBehavior)
+	if not health then
+		return true
+	end
+
+	if health.maxProgress <= 0 then
+		return true
+	end
+
+	if health.currentProgress >= health.maxProgress then
+		return true
 	end
 
 	return false

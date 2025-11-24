@@ -175,7 +175,7 @@ function ProjectedGlyph:update()
 
 	local glyphManager = self:getGameView():getGlyphManager()
 	local planeNormal, planeD = glyphManager:getStandardPlane(time)
-	local projections = glyphManager:asyncProjectAll(self, self.glyphInstance, planeNormal, planeD)
+	local projections = glyphManager:asyncProjectAll(self, self.glyphInstance, planeNormal, planeD, time)
 
 	love.graphics.push("all")
 	love.graphics.setCanvas({ self.canvas, depthstencil = true })

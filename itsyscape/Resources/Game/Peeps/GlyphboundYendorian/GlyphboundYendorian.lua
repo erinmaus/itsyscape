@@ -81,7 +81,38 @@ function GlyphboundYendorian:_onDefaceGlyphstone(glyph)
 	glyph:poke("fade")
 end
 
-function GlyphboundYendorian:chargeNearbyGlyphstones(level)
+function GlyphboundYendorian:_onWeakenIncantation(glyph, rocks)
+	local completeDescription = {}
+
+	for _, rock in ipairs(rocks) do
+		if not Utility.Peep.isDepleted(rock) then
+			table.insert(completeDescription, Utility.Peep.getOldOneDescription(rock))
+		end
+	end
+
+	if #completeDescription == 0 then
+		glyph:poke("fade")
+	else
+		Utility.Peep.setOldOneDescription(glyph, table.concat(completeDescription, " "))
+	end
+end
+
+local function _sortByMapObjectID(a, b)
+	local mapObjectA = Utility.Peep.getMapObject(a)
+	local mapObjectB = Utility.Peep.getMapObject(b)
+
+	if mapObjectA and mapObjectB then
+		return mapObjectA.id.value < mapObjectB.id.value
+	elseif mapObjectA then
+		return true
+	elseif mapObjectB then
+		return false
+	end
+
+	return true
+end
+
+function GlyphboundYendorian:chargeNearbyGlyphstones(stoneGlyphboundYendorian, level)
 	local mineableResource = self:getDirector():getGameDB():getResource("GlyphstoneRock_Weak", "Prop")
 	if not mineableResource then
 		Log.error("Could not get 'GlyphstoneRock_Weak' resource!")
@@ -91,6 +122,9 @@ function GlyphboundYendorian:chargeNearbyGlyphstones(level)
 	local rocks = self:getDirector():probe(
 		self:getLayerName(),
 		Probe.resource("Prop", "GlyphstoneRock"))
+	table.sort(rocks, _sortByMapObjectID)
+
+	local completeDescription = {}
 
 	for _, rock in ipairs(rocks) do
 		local _, propHealth = rock:addBehavior(PropResourceHealthBehavior)
@@ -100,6 +134,7 @@ function GlyphboundYendorian:chargeNearbyGlyphstones(level)
 		rock:poke("spawned")
 
 		local oldOneDescription = Utility.Peep.getOldOneDescription(rock)
+		table.insert(completeDescription, oldOneDescription)
 
 		local position = Utility.Peep.getPosition(rock)
 		local projectedGlyph = Utility.spawnPropAtPosition(
@@ -110,21 +145,24 @@ function GlyphboundYendorian:chargeNearbyGlyphstones(level)
 
 		rock:listen("depleted", self._onDefaceGlyphstone, self, projectedGlyph:getPeep())
 	end
+
+	local incantation = self:displayIncantation(stoneGlyphboundYendorian, table.concat(completeDescription, " "))
+	for _, rock in ipairs(rocks) do
+		rock:listen("depleted", self._onWeakenIncantation, self, incantation:getPeep(), rocks)
+	end
 end
 
-function GlyphboundYendorian:displayIncantation(stoneGlyphboundYendorian)
+function GlyphboundYendorian:displayIncantation(stoneGlyphboundYendorian, oldOneDescription)
 	local position = Utility.Peep.getPosition(stoneGlyphboundYendorian)
 	local projectedGlyph = Utility.spawnPropAtPosition(
 		stoneGlyphboundYendorian,
 		"ProjectedGlyph",
 		position.x, position.y, position.z)
 
-	local oldOneDescription = Utility.Peep.getOldOneDescription(stoneGlyphboundYendorian)
 	Utility.Peep.setOldOneDescription(projectedGlyph:getPeep(), oldOneDescription)
-
 	Utility.Peep.setSize(projectedGlyph:getPeep(), Vector(12, 0, 12))
 
-	self:listen("unbind", self._onDefaceGlyphstone, self, projectedGlyph:getPeep())
+	return projectedGlyph
 end
 
 function GlyphboundYendorian:onSummon(stoneGlyphboundYendorian, playerPeep)
@@ -135,8 +173,7 @@ function GlyphboundYendorian:onSummon(stoneGlyphboundYendorian, playerPeep)
 	local level = math.clamp((math.floor(maxSkillLevel / 10) + 1) * 10, 10, 80)
 	self:setCombatSkillLevels(level)
 	self:setEquipmentStatBonuses(level)
-	self:chargeNearbyGlyphstones(level)
-	self:displayIncantation(stoneGlyphboundYendorian)
+	self:chargeNearbyGlyphstones(stoneGlyphboundYendorian, level)
 end
 
 return GlyphboundYendorian

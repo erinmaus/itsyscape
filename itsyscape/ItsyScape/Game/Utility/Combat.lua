@@ -360,9 +360,9 @@ function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
 	local targetI, targetJ, selfI, selfJ = Utility.Peep.getRelativeTile(selfPeep, targetPeep)
 
 	local isSameTile = targetI == selfI and targetJ == selfJ
-	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, shoot, true)
+	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, shoot)
 
-	return isSameTile or lineOfSightPassable
+	return isSameTile or isLineOfSightClear
 end
 
 -- function Combat.setTieredEquipmentStatBonuses(peep, bonuses)

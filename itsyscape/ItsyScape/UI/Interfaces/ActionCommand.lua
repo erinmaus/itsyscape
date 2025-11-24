@@ -152,6 +152,7 @@ function ActionCommand:new(...)
 	self.root.onMouseRelease:register(self.mouseReleaseOverRoot, self)
 
 	self.sceneSnippets = {}
+	self.glyphs = {}
 end
 
 function ActionCommand:getOverflow()
@@ -192,8 +193,7 @@ function ActionCommand:_build(parent, t, o, delta)
 	elseif t.type == "rectangle" then
 		widget = ActionCommand.Rectangle(t, o, delta)
 	elseif t.type == "glyph" then
-		widget = Glyph()
-		widget:updateTime(o.time)
+		widget = self.glyphs[t.id] or Glyph()
 		widget:updateTime(t.time)
 		widget:setGlyph(t.glyph)
 		widget:setAlpha(math.lerp(o.alpha, t.alpha, delta))

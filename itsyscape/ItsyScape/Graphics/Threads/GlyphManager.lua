@@ -43,6 +43,9 @@ while true do
 			local glyphManager = buffer:set(event.glyphManager):decode()
 			local serializedRoot = buffer:set(event.root):decode()
 			local rootGlyph = OldOneGlyphInstance.deserialize(serializedRoot, glyphManager)
+			if event.time then
+				rootGlyph:update(event.time)
+			end
 
 			local planeNormal = Vector(unpack(event.planeNormal))
 			local planeD = event.planeD

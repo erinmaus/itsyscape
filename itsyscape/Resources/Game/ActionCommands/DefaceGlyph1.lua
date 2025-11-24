@@ -24,6 +24,9 @@ DefaceGlyph.GRID_PADDING = 4
 DefaceGlyph.MINI_PROGRESS_BAR_HEIGHT = 8
 DefaceGlyph.HIT_INTERVAL = 0.25
 
+DefaceGlyph.MIN_DEFACE_ICONS = 1
+DefaceGlyph.MAX_DEFACE_ICONS = 1
+
 function DefaceGlyph:new(...)
 	ActionCommand.new(self, ...)
 
@@ -118,9 +121,11 @@ function DefaceGlyph:_initGrid()
 				(i - 1) * self.GRID_CELL_SIZE + self.GRID_PADDING,
 				(j - 1) * self.GRID_CELL_SIZE + (self.GRID_CELL_SIZE - self.MINI_PROGRESS_BAR_HEIGHT - self.GRID_PADDING))
 
+			local rng = love.math.newRandomGenerator(i, j)
+			local iconIndex = rng:random(1, 3)
+
 			local icon = ActionCommand.Icon()
-			--icon:setIcon("Resources/Game/ActionCommands/DefaceGlyph1/Damage.png")
-			icon:setIcon("Resources/Game/Items/Null/Icon.png")
+			icon:setIcon(string.format("Resources/Game/ActionCommands/DefaceGlyph/Deface%d.png", iconIndex))
 			icon:setSize(self.GRID_CELL_SIZE, self.GRID_CELL_SIZE)
 			icon:setPosition(
 				(i - 1) * self.GRID_CELL_SIZE,

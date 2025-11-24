@@ -182,7 +182,11 @@ function GlyphManager:_projectAll(root, normal, d, axis, r)
 	return r
 end
 
-function GlyphManager:projectAll(root, normal, d, axis)
+function GlyphManager:projectAll(root, normal, d, time, axis)
+	if time then
+		root:update(time)
+	end
+
 	return self:_projectAll(root, normal, d, axis, {})
 end
 
@@ -200,7 +204,7 @@ function GlyphManager:_assignAll(root, projections, i)
 	return i
 end
 
-function GlyphManager:asyncProjectAll(p, root, normal, d, axis)
+function GlyphManager:asyncProjectAll(p, root, normal, d, time, axis)
 	local channel = self:_getChannel(p)
 
 	local event = channel.output:pop()
@@ -213,6 +217,10 @@ function GlyphManager:asyncProjectAll(p, root, normal, d, axis)
 		end
 	end
 
+	if channel.glyph ~= root then
+		channel.current = nil
+	end
+
 	if event or not channel.current then
 		local event = {
 			type = "project",
@@ -221,13 +229,14 @@ function GlyphManager:asyncProjectAll(p, root, normal, d, axis)
 			axis = axis and { axis:get() },
 			glyphManager = channel.buffer:reset():encode(GlyphManagerProxy(self)):tostring(),
 			root = channel.buffer:reset():encode(root:serialize()):tostring(),
+			time = time
 		}
 
 		channel.input:push(event)
 	end
 
 	if not channel.current then
-		channel.current = self:projectAll(root, normal, d, axis)
+		channel.current = self:projectAll(root, normal, d, time, axis)
 	end
 
 	return channel.current
@@ -244,7 +253,7 @@ local function _stencil()
 end
 
 function GlyphManager:getStandardPlane(time)
-	local planeD = -(math.sin(time / math.pi / 8) * 2 - 1)
+	local planeD = -(math.sin(time / math.pi / 8) * 1 - 0.5)
 	local planeAxis = Vector(
 		math.cos(time / math.pi / 8),
 		1,

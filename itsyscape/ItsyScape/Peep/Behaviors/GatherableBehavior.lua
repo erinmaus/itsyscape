@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 local Behavior = require "ItsyScape.Peep.Behavior"
 
-local GatherableBehavior = Behavior("PropResourceHealth")
+local GatherableBehavior = Behavior("Gatherable")
 function GatherableBehavior:new()
 	Behavior.Type.new(self)
 

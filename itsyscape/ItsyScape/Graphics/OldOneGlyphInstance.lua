@@ -25,6 +25,7 @@ function OldOneGlyphInstance:new(glyph, glyphManager)
 	self.rotation = Quaternion.IDENTITY
 	self.theta = 0
 	self.phi = 0
+	self.currentPhi = 0
 	self.parent = false
 	self.children = {}
 end
@@ -90,6 +91,7 @@ end
 
 function OldOneGlyphInstance:setPhi(value)
 	self.phi = value
+	self.currentPhi = value
 end
 
 function OldOneGlyphInstance:layout()
@@ -106,9 +108,9 @@ function OldOneGlyphInstance:getPosition()
 	local radius = self.parent and self.parent:getRadius() or 0
 
 	return Vector(
-		radius * math.cos(self.phi) * math.cos(self.theta),
-		radius * math.cos(self.phi) * math.sin(self.theta),
-		radius * math.sin(self.phi))
+		radius * math.cos(self.currentPhi) * math.cos(self.theta),
+		radius * math.cos(self.currentPhi) * math.sin(self.theta),
+		radius * math.sin(self.currentPhi))
 end
 
 function OldOneGlyphInstance:getParent()
@@ -186,13 +188,13 @@ function OldOneGlyphInstance:getProjection()
 	return self.projection
 end
 
-function OldOneGlyphInstance:update(delta)
+function OldOneGlyphInstance:update(time)
 	if self.parent then
-		self.phi = self.phi + delta * self.glyphManager:getRotationSpeed() * math.sqrt(self:getDepth())
+		self.currentPhi = self.phi + time * self.glyphManager:getRotationSpeed() * math.sqrt(self:getDepth())
 	end
 
 	for _, child in self:iterate() do
-		child:update(delta)
+		child:update(time)
 	end
 end
 

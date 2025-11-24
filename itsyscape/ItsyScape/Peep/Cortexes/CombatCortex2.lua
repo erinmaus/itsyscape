@@ -149,7 +149,6 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local worldWeaponRange = self.TILE_TO_WORLD * (weaponRange + 1)
 
 	local distance = Utility.Peep.getAbsoluteDistance(selfPeep, targetPeep)
-
 	local canReachTarget = distance <= worldWeaponRange
 	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange)
 	local isTooClose = distance <= 0
@@ -804,6 +803,7 @@ function CombatCortex:tickPeep(delta, peep)
 		peep:removeBehavior(CombatTargetBehavior)
 		return
 	elseif not isWithinRange then
+		print("peep", peep:getName(), "not within range of", target:getName())
 		peep:addBehavior(CombatChargeBehavior)
 		self:movePeep(peep)
 		return
