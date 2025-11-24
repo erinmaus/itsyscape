@@ -16,7 +16,9 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 local OldOneDescriptionBehavior = require "ItsyScape.Peep.Behaviors.OldOneDescriptionBehavior"
 
-local ProjectedGlyph = Class(Prop) 
+local ProjectedGlyph = Class(Prop)
+
+ProjectedGlyph.DEFAULT_FADE_COOLDOWN = 1
 
 function ProjectedGlyph:new(...)
 	Prop.new(self, ...)
@@ -26,6 +28,29 @@ function ProjectedGlyph:new(...)
 
 	local static = self:getBehavior(StaticBehavior)
 	static.type = StaticBehavior.PASSABLE
+
+	self:addPoke("fade")
+	self:addPoke("faded")
+end
+
+function ProjectedGlyph:ready(...)
+	Prop.ready(self, ...)
+
+	self.currentFadeCooldown = self.DEFAULT_FADE_COOLDOWN
+	self.fadeCooldownDuration = self.DEFAULT_FADE_COOLDOWN
+	self.isFadingOut = false
+end
+
+function ProjectedGlyph:onFade(duration)
+	duration = duration or self.DEFAULT_FADE_COOLDOWN
+
+	self.currentFadeCooldown = duration
+	self.fadeCooldownDuration = duration
+	self.isFadingOut = true
+end
+
+function ProjectedGlyph:onFaded()
+	Utility.Peep.poof(self)
 end
 
 function ProjectedGlyph:spawnOrPoofTile(tile, i, j, mode)
@@ -64,15 +89,32 @@ function ProjectedGlyph:getPropState()
 		currentTime = currentTime or 0
 	end
 
+	local alpha = math.clamp((self.currentFadeCooldown or 0) / (self.fadeCooldownDuration or 1))
+	if not self.isFadingOut then
+		alpha = 1 - alpha
+	end
+
 	return {
 		glyph = glyph,
 		time = currentTime,
+		alpha = alpha,
 		width = width,
 		height = height,
 		glyphColor = { Color.fromHexString("463779"):get() },
 		glowColor = { Color.fromHexString("f26722"):get() },
 		outlineColor = { Color.fromHexString("000000"):get() },
 	}
+end
+
+function ProjectedGlyph:update(director, game)
+	Prop.update(self, director, game)
+
+	local delta = game:getDelta()
+	self.currentFadeCooldown = math.max(self.currentFadeCooldown - delta, 0)
+
+	if self.isFadingOut and self.currentFadeCooldown <= 0 then
+		self:pushPoke("faded")
+	end
 end
 
 return ProjectedGlyph

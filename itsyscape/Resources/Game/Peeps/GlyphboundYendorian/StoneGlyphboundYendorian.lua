@@ -49,7 +49,7 @@ function StoneGlyphboundYendorian:explode(playerPeep)
 	local peep = actor:getPeep()
 	peep:listen("die", poofOrDie)
 	peep:listen("poof", poofOrDie)
-	peep:pushPoke("summon", playerPeep)
+	peep:pushPoke("summon", self, playerPeep)
 
 	self.exploded = true
 end

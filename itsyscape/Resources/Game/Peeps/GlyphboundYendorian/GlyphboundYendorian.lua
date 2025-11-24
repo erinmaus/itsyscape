@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Probe = require "ItsyScape.Peep.Probe"
@@ -20,6 +21,7 @@ function GlyphboundYendorian:new(...)
 	GhostYendorian.new(self, ...)
 
 	self:addPoke("summon")
+	self:addPoke("unbind")
 end
 
 function GlyphboundYendorian:ready(director, game)
@@ -75,8 +77,8 @@ function GlyphboundYendorian:setEquipmentStatBonuses(level)
 		Utility.strengthBonusForWeapon(level + 5))
 end
 
-function GlyphboundYendorian:_onDefaceGlyphstone()
-
+function GlyphboundYendorian:_onDefaceGlyphstone(glyph)
+	glyph:poke("fade")
 end
 
 function GlyphboundYendorian:chargeNearbyGlyphstones(level)
@@ -106,11 +108,26 @@ function GlyphboundYendorian:chargeNearbyGlyphstones(level)
 			position.x, position.y, position.z)
 		Utility.Peep.setOldOneDescription(projectedGlyph:getPeep(), oldOneDescription)
 
-		rock:listen("depleted", self._onDefaceGlyphstone, self, projectedGlyph)
+		rock:listen("depleted", self._onDefaceGlyphstone, self, projectedGlyph:getPeep())
 	end
 end
 
-function GlyphboundYendorian:onSummon(playerPeep)
+function GlyphboundYendorian:displayIncantation(stoneGlyphboundYendorian)
+	local position = Utility.Peep.getPosition(stoneGlyphboundYendorian)
+	local projectedGlyph = Utility.spawnPropAtPosition(
+		stoneGlyphboundYendorian,
+		"ProjectedGlyph",
+		position.x, position.y, position.z)
+
+	local oldOneDescription = Utility.Peep.getOldOneDescription(stoneGlyphboundYendorian)
+	Utility.Peep.setOldOneDescription(projectedGlyph:getPeep(), oldOneDescription)
+
+	Utility.Peep.setSize(projectedGlyph:getPeep(), Vector(12, 0, 12))
+
+	self:listen("unbind", self._onDefaceGlyphstone, self, projectedGlyph:getPeep())
+end
+
+function GlyphboundYendorian:onSummon(stoneGlyphboundYendorian, playerPeep)
 	local maxSkillLevel = Utility.Peep.Stats.getMaxWorkingSkillLevel(
 		playerPeep,
 		unpack(Utility.Combat.ALL_COMBAT_SKILLS))
@@ -119,6 +136,7 @@ function GlyphboundYendorian:onSummon(playerPeep)
 	self:setCombatSkillLevels(level)
 	self:setEquipmentStatBonuses(level)
 	self:chargeNearbyGlyphstones(level)
+	self:displayIncantation(stoneGlyphboundYendorian)
 end
 
 return GlyphboundYendorian

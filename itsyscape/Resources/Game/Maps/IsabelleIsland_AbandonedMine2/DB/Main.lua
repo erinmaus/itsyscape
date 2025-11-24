@@ -131,6 +131,13 @@ do
 		Prop = ItsyScape.Resource.Prop "StoneGlyphboundYendorian",
 		MapObject = M["StoneGlyphboundYendorian"]
 	}
+
+	ItsyScape.Meta.OldOneDescription {
+		Value = "Close your eyes; let the sun set and the shadows grow long." ..
+		        "Hear the world grow quieter and feel warmth chill your skin." ..
+		        "Silence the mind and in this foolish peace you will know mortal ignorance.",
+		Resource = M["StoneGlyphboundYendorian"]
+	}
 end
 
 M["GlyphstoneRock1"] = ItsyScape.Resource.MapObject.Unique()
