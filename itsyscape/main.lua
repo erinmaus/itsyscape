@@ -647,3 +647,5 @@ function love.threaderror(thread, e)
 
 	error(e, 0)
 end
+
+collectgarbage("stop")

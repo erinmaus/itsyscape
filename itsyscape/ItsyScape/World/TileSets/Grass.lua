@@ -23,6 +23,7 @@ Grass.GLOBAL_OFFSET = Vector(174 / 257)
 Grass.SATURATION = 4
 
 Grass.DIRT_NOISE = Noise {
+	offset = Vector(1 / 7, 0, 1 / 7),
 	scale = 12,
 	octaves = 2,
 	attenuation = 0.5

@@ -45,6 +45,9 @@ function ViziersRockGround:new()
 			Color.fromHexString("7d786a"),
 		},
 
+		MIN_OFFSET = -1.5,
+		MAX_OFFSET = 1.5,
+
 		FEATURES = {
 			"mushroom1",
 			"mushroom2",
@@ -57,7 +60,7 @@ function ViziersRockGround:new()
 	self:registerTile("mud", GrassBlock:Bind(self) {
 		DIRT_THRESHOLD = 0.2,
 
-		SATURATION = 1,
+		SATURATION = 2,
 
 		COLORS = {
 			Color.fromHexString("917d6f"),
@@ -65,8 +68,8 @@ function ViziersRockGround:new()
 			Color.fromHexString("7d786a"),
 		},
 
-		MIN_OFFSET = -0.5,
-		MAX_OFFSET = 0.5,
+		MIN_OFFSET = -1.5,
+		MAX_OFFSET = 1.5,
 
 		FEATURES = {
 			"mushroom1",

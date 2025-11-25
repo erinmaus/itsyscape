@@ -187,6 +187,7 @@ local gcStops = 0
 function collectgarbage(opt, arg)
 	if opt == "stop" then
 		if gcStops == 0 then
+			Log.info("Disabling garbage collector...")
 			_collectgarbage("stop")
 		end
 
@@ -196,6 +197,7 @@ function collectgarbage(opt, arg)
 		gcStops = math.max(gcStops - 1, 0)
 
 		if gcStops == 0 then
+			Log.info("Enabling garbage collector...")
 			return _collectgarbage("restart")
 		end
 	else

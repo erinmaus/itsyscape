@@ -29,6 +29,7 @@ local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 local OutlinePostProcessPass = require "ItsyScape.Graphics.OutlinePostProcessPass"
 local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
+local PropView = require "ItsyScape.Graphics.PropView"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Spline = require "ItsyScape.Graphics.Spline"
 local SplineSceneNode = require "ItsyScape.Graphics.SplineSceneNode"
@@ -2482,9 +2483,18 @@ function GameView:updateActors(delta)
 end
 
 function GameView:updateProps(delta)
+	local t = {}
+	local totalTime = 0
 	for _, prop in pairs(self.props) do
+		local d = prop.update ~= PropView.update and prop:getDebugInfo().shortName or PropView._DEBUG.shortName
+		local b = love.timer.getTime()
 		self.propViewDebugStats:measure(prop, delta)
+		local a = love.timer.getTime()
+		totalTime = (a - b) * 1000
+		t[d] = (t[d] or 0) + (a - b) * 1000
 	end
+	if totalTime > 5 then
+	print(">>> D", Log.dump(t)) end
 end
 
 function GameView:updateProjectiles(delta)
@@ -2638,7 +2648,7 @@ end
 function GameView:update(delta)
 	_APP:measure("gameView:updateResourceManager()", GameView.updateResourceManager, self)
 	_APP:measure("gameView:updateActors()", GameView.updateActors, self, delta)
-	_APP:measure("gameView:updateProps()", GameView.updateProps, self, delta)
+	if not love.keyboard.isDown("3") then _APP:measure("gameView:updateProps()", GameView.updateProps, self, delta) end
 	_APP:measure("gameView:updateProjectiles()", GameView.updateProjectiles, self, delta)
 	_APP:measure("gameView:updateWeather()", GameView.updateWeather, self, delta)
 	_APP:measure("gameView:updateSprites()", GameView.updateSprites, self, delta)
