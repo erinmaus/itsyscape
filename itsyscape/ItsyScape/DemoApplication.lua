@@ -376,6 +376,8 @@ end
 
 function DemoApplication:clearResourceManagerCache()
 	self:getGameView():getResourceManager():clear()
+	collectgarbage()
+	collectgarbage()
 end
 
 function DemoApplication:playItemSoundEffect(player, item)
