@@ -825,8 +825,10 @@ end
 
 function GameView:updateGroundDecorations(m)
 	if self:_getIsMapEditor() then
-		Log.info("Map editor: not updating ground decorations.")
-		return
+		if not _APP:getGroundDecorationsEnabled() then
+			Log.info("Map editor: not updating ground decorations.")
+			return
+		end
 	end
 	
 	if m.meta and m.meta.disableGroundDecorations then
@@ -851,11 +853,19 @@ function GameView:updateGroundDecorations(m)
 
 	local function updateDecorationMaterial(d, group)
 		for _, sceneNode in ipairs(d.sceneNodes) do
+			if m.polygonMask then
+				sceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_MapSize", m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize())
+				sceneNode:getMaterial():send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", m.polygonMask)
+			else
+				sceneNode:getMaterial():send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", self.whiteTexture:getResource())
+			end
+
 			sceneNode:getMaterial():setOutlineThreshold(0.5)
 			sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
 			sceneNode:getMaterial():setIsShadowCaster(false)
 
 			local group = d.decoration:getUniform("_x_Group")
+			local shaderFilename = "Resources/Shaders/GroundDecoration"
 
 			if group == Block.GROUP_SHINY then
 				sceneNode:getMaterial():setIsReflectiveOrRefractive(true)
@@ -879,10 +889,14 @@ function GameView:updateGroundDecorations(m)
 					d.alphaSceneNode:getMaterial():setTextures(newTexture)
 				end
 
-				local shader = self.resourceManager:load(ShaderResource, "Resources/Shaders/BendyDecoration")
-				sceneNode:getMaterial():setShader(shader)
+				shaderFilename = "Resources/Shaders/BendyDecoration"
 				self:_updateWind(m.layer, sceneNode)
 			end
+
+			local shader = self.resourceManager:load(
+				ShaderResource,
+				shaderFilename)
+			sceneNode:getMaterial():setShader(shader)
 
 			if group == Block.GROUP_BENDY then
 				table.insert(m.dynamicGroundDecorations, d)
@@ -1295,6 +1309,7 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 		end
 
 		self.resourceManager:queueEvent(self.updateGroundDecorations, self, m)
+		self:_updatePolygonMask(m)
 	end
 end
 
@@ -1314,26 +1329,28 @@ function GameView:updateMapSky(layer, properties)
 end
 
 function GameView:_setPolygonMask(m, texture)
-	texture:setFilter("linear", "linear")
+	self.resourceManager:queueEvent(function()
+		texture:setFilter("linear", "linear")
 
-	for _, part in ipairs(m.parts) do
-		local material = part.node:getMaterial()
-		material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", texture)
-	end
-
-	for _, d in ipairs(m.staticGroundDecorations) do
-		for _, node in ipairs(d.sceneNodes) do
-			local material = node:getMaterial()
+		for _, part in ipairs(m.parts) do
+			local material = part.node:getMaterial()
 			material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", texture)
 		end
-	end
 
-	for _, d in ipairs(m.dynamicGroundDecorations) do
-		for _, node in ipairs(d.sceneNodes) do
-			local material = node:getMaterial()
-			material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", texture)
+		for _, d in ipairs(m.staticGroundDecorations) do
+			for _, node in ipairs(d.sceneNodes) do
+				local material = node:getMaterial()
+				material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", texture)
+			end
 		end
-	end
+
+		for _, d in ipairs(m.dynamicGroundDecorations) do
+			for _, node in ipairs(d.sceneNodes) do
+				local material = node:getMaterial()
+				material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", texture)
+			end
+		end
+	end)
 end
 
 function GameView:_updatePolygonMask(m)
@@ -1397,10 +1414,7 @@ function GameView:updateMeta(layer, meta)
 	end
 
 	m.meta = meta
-
-	if m.meta.polygonMask then
-		self:_updatePolygonMask(m)
-	end
+	self:_updatePolygonMask(m)
 end
 
 function GameView:moveMap(layer, position, rotation, scale, offset, disabled, parentLayer)
@@ -2013,10 +2027,10 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 
 		if d.isGroundDecoration then
 			local groundDecorations
-			if d.decoration:getUniform("_x_Group") == Block.GROUP_STATIC then
-				groundDecorations = m.staticGroundDecorations
-			else
+			if d.decoration:getUniform("_x_Group") == Block.GROUP_BENDY then
 				groundDecorations = m.dynamicGroundDecorations
+			else
+				groundDecorations = m.staticGroundDecorations
 			end
 
 			for i = #groundDecorations, 1, -1 do

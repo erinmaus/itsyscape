@@ -163,6 +163,11 @@ function MapEditorApplication:updatePolygonMask(layer)
 	end
 
 	self:getGame():getStage():updateMapMeta(layer, meta)
+	self:getGame():getStage():updateMap(layer, self:getGame():getStage():getMap(layer))
+end
+
+function MapEditorApplication:getGroundDecorationsEnabled()
+	return self.isEditingPolygon
 end
 
 function MapEditorApplication:tryBeginEditPolygon(layer, point)
@@ -193,7 +198,7 @@ function MapEditorApplication:tryBeginEditPolygon(layer, point)
 
 			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
 			if mapNode then
-				local transform = mapNode:getTransform():getGlobalTransform()
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 				a = a:transform(transform)
 				b = b:transform(transform)
 			end
@@ -408,14 +413,14 @@ function MapEditorApplication:curveToSceneNode(target)
 	if Class.isCompatibleType(target, MapCurve.Position) then
 		local translation = target:getValue()
 		if mapSceneNode then
-			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+			translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(translation:get()))
 		end
 
 		sceneNode:getTransform():setLocalTranslation(translation)
 	elseif Class.isCompatibleType(target, MapCurve.Normal) then
 		local translation = self.curve:getPositions():get(target:getIndex() or 1):getValue()
 		if mapSceneNode then
-			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+			translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(translation:get()))
 		end
 		sceneNode:getTransform():setLocalTranslation(translation)
 
@@ -426,7 +431,7 @@ function MapEditorApplication:curveToSceneNode(target)
 		local t = ((target:getIndex() or 1) - 1) / (self.curve:getRotations():length() - 1)
 		local translation = self.curve:evaluatePosition(t) + self.curve:evaluateNormal(t) * 4
 		if mapSceneNode then
-			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+			translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(translation:get()))
 		end
 		sceneNode:getTransform():setLocalTranslation(translation)
 
@@ -434,7 +439,7 @@ function MapEditorApplication:curveToSceneNode(target)
 	elseif Class.isCompatibleType(target, MapCurve.Scale) then
 		local translation = self.curve:getPositions():get(target:getIndex() or 1):getValue()
 		if mapSceneNode then
-			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+			translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(translation:get()))
 		end
 		sceneNode:getTransform():setLocalTranslation(translation)
 
@@ -739,7 +744,7 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 		zoom = self:getCamera():getDistance(),
 		eye = self:getCamera():getEye(),
 		camera = self:getCamera(),
-		transform = mapSceneNode:getTransform():getGlobalTransform()
+		transform = mapSceneNode:getTransform():getGlobalDeltaTransform(0)
 	}
 end
 
@@ -1034,7 +1039,7 @@ function MapEditorApplication:mousePress(x, y, button)
 				for i = 1, positionCurve:length() do
 					local curvePoint = positionCurve:get(i):getValue()
 					if mapSceneNode then
-						curvePoint = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(curvePoint:get()))
+						curvePoint = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(curvePoint:get()))
 					end
 
 					local screenPoint = self:getCamera():project(curvePoint)
@@ -1062,7 +1067,7 @@ function MapEditorApplication:mousePress(x, y, button)
 					local t = (i - 1) / (rotationCurve:length() - 1)
 					local curvePoint = positionCurve:evaluate(t) + Vector(0, 4, 0)
 					if mapSceneNode then
-						curvePoint = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(curvePoint:get()))
+						curvePoint = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(curvePoint:get()))
 					end
 
 					local screenPoint = self:getCamera():project(curvePoint)
@@ -1394,7 +1399,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			elseif Class.isCompatibleType(target, MapCurve.Value) and target:getIndex() then
 				local mapSceneNode = self:getGameView():getMapSceneNode(self.curveLayer)
 				if mapSceneNode then
-					translation = Vector(mapSceneNode:getTransform():getGlobalTransform():inverseTransformPoint(translation:get()))
+					translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):inverseTransformPoint(translation:get()))
 				end
 
 				if Class.isCompatibleType(target, MapCurve.Position) then
@@ -2533,7 +2538,7 @@ function MapEditorApplication:drawFlags()
 	local w, h = love.window.getMode()
 
 	local map = self:getGame():getStage():getMap(self.currentLayer)
-	local transform = self:getGameView():getMapSceneNode(self.currentLayer):getTransform():getGlobalTransform()
+	local transform = self:getGameView():getMapSceneNode(self.currentLayer):getTransform():getGlobalDeltaTransform(0)
 	for j = 1, map:getHeight() do
 		for i = 1, map:getWidth() do
 			local x = (i - 1) * map:getCellSize()
@@ -2569,7 +2574,7 @@ function MapEditorApplication:drawCurve()
 		for index, worldPoint in ipairs(worldPoints) do
 			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
 			if mapNode then
-				local transform = mapNode:getTransform():getGlobalTransform()
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 				worldPoints[index] = Vector(transform:transformPoint(worldPoint:get()))
 			end
 		end
@@ -2588,7 +2593,7 @@ function MapEditorApplication:drawCurve()
 		for index, normalPoint in ipairs(normalPoints) do
 			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
 			if mapNode then
-				local transform = mapNode:getTransform():getGlobalTransform()
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 				normalPoints[index] = Vector(transform:transformPoint(normalPoint:get()))
 			end
 		end
@@ -2674,7 +2679,7 @@ function MapEditorApplication:drawCurve()
 
 		local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
 		if mapNode then
-			local transform = mapNode:getTransform():getGlobalTransform()
+			local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 			curvePoint = Vector(transform:transformPoint(curvePoint:get()))
 		end
 
@@ -2689,7 +2694,7 @@ function MapEditorApplication:drawCurve()
 
 		local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
 		if mapNode then
-			local transform = mapNode:getTransform():getGlobalTransform()
+			local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 			curvePoint = Vector(transform:transformPoint(curvePoint:get()))
 		end
 
@@ -2728,9 +2733,9 @@ function MapEditorApplication:drawPolygonMask()
 			local b = Vector(polygon[j][1], 0, polygon[j][2])
 			b.y = map:getInterpolatedHeight(b.x, b.z)
 
-			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+			local mapNode = self:getGameView():getMapSceneNode(self.currentLayer)
 			if mapNode then
-				local transform = mapNode:getTransform():getGlobalTransform()
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 				a = a:transform(transform)
 				b = b:transform(transform)
 			end
@@ -2748,9 +2753,9 @@ function MapEditorApplication:drawPolygonMask()
 			local a = Vector(point[1], 0, point[2])
 			a.y = map:getInterpolatedHeight(a.x, a.z)
 
-			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+			local mapNode = self:getGameView():getMapSceneNode(self.currentLayer)
 			if mapNode then
-				local transform = mapNode:getTransform():getGlobalTransform()
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 				a = a:transform(transform)
 			end
 			a = self:getCamera():project(a)
