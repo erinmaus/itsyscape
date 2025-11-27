@@ -693,7 +693,32 @@ function DefaultCameraController:recenter()
 	self.currentCenter = nil
 end
 
+function DefaultCameraController:tryRecenter()
+	local player = self:getGame():getPlayer()
+	if not player then
+		return center
+	end
+
+	local actor = player:getActor()
+	if not actor then
+		return center
+	end
+
+	local _, _, layer = actor:getTile()
+	if layer ~= self.currentPlayerLayer then
+		self.currentPlayerLayer = layer
+		self:recenter()
+		return true
+	end
+
+	return false
+end
+
 function DefaultCameraController:updateCenter(delta)
+	if self:tryRecenter() then
+		return
+	end
+
 	self.currentCenter = (self.currentCenter or self:getCenter()):keep(self.currentCenter)
 
 	local targetCenter = self:getCenter()

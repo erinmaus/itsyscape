@@ -1,12 +1,47 @@
 {
 	{
+		polygonMask =
+		{
+			{
+				{
+					1.803240,
+					8.063670,
+				},
+				{
+					9.493924,
+					0.011099,
+				},
+				{
+					60,
+					0,
+				},
+				{
+					60,
+					16,
+				},
+				{
+					9.604150,
+					15.956011,
+				},
+			},
+		},
+		wallHack =
+		{
+			top = 5,
+			right = 3.500000,
+			bottom = 0.500000,
+			enabled = true,
+			left = 3.500000,
+			near = 6,
+		},
 		transform =
 		{
-			origin =
+			rotation =
 			{
-				30,
 				0,
-				8,
+				0,
+				0,
+				1,
 			},
 			translation =
 			{
@@ -14,12 +49,11 @@
 				0,
 				-8,
 			},
-			rotation =
+			origin =
 			{
+				30,
 				0,
-				0,
-				0,
-				1,
+				8,
 			},
 			scale =
 			{
@@ -28,25 +62,26 @@
 				1,
 			},
 		},
-		wallHack =
-		{
-			near = 6,
-			right = 3.500000,
-			bottom = 0.500000,
-			enabled = true,
-			top = 5,
-			left = 3.500000,
-		},
 		tileSetID = "YendorianJungle",
 	},
 	{
+		wallHack =
+		{
+			top = 5,
+			right = 3.500000,
+			bottom = 0.500000,
+			enabled = true,
+			left = 3.500000,
+			near = 6,
+		},
 		transform =
 		{
-			origin =
+			rotation =
 			{
-				10,
 				0,
-				8,
+				0,
+				0,
+				1,
 			},
 			translation =
 			{
@@ -54,12 +89,11 @@
 				4,
 				0,
 			},
-			rotation =
+			origin =
 			{
+				10,
 				0,
-				0,
-				0,
-				1,
+				8,
 			},
 			scale =
 			{
@@ -68,25 +102,26 @@
 				1,
 			},
 		},
-		wallHack =
-		{
-			near = 6,
-			right = 3.500000,
-			bottom = 0.500000,
-			enabled = true,
-			top = 5,
-			left = 3.500000,
-		},
 		tileSetID = "YendorianJungle",
 	},
 	{
+		wallHack =
+		{
+			top = 5,
+			right = 3.500000,
+			bottom = 0.500000,
+			enabled = true,
+			left = 3.500000,
+			near = 6,
+		},
 		transform =
 		{
-			origin =
+			rotation =
 			{
-				30,
 				0,
-				8,
+				0,
+				0,
+				1,
 			},
 			translation =
 			{
@@ -94,12 +129,11 @@
 				-4.500000,
 				0,
 			},
-			rotation =
+			origin =
 			{
+				30,
 				0,
-				0,
-				0,
-				1,
+				8,
 			},
 			scale =
 			{
@@ -107,15 +141,6 @@
 				1,
 				1,
 			},
-		},
-		wallHack =
-		{
-			near = 6,
-			right = 3.500000,
-			bottom = 0.500000,
-			enabled = true,
-			top = 5,
-			left = 3.500000,
 		},
 		tileSetID = "YendorianJungle",
 	},

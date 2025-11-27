@@ -1,5 +1,6 @@
 uniform Image scape_DiffuseTexture;
 uniform ArrayImage scape_MaskTexture;
+uniform Image scape_PolygonMaskTexture;
 
 #include "Resources/Shaders/WallHack.common.glsl"
 

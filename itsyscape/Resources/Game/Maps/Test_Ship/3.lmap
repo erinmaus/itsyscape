@@ -8,6 +8,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -19,6 +20,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -30,6 +32,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -41,6 +44,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -52,6 +56,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -63,6 +68,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -74,6 +80,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -85,6 +92,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -96,6 +104,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -107,6 +116,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -118,6 +128,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -129,6 +140,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -140,6 +152,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -151,6 +164,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -162,6 +176,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -173,6 +188,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -184,6 +200,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -195,6 +212,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -206,6 +224,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -217,6 +236,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -228,6 +248,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -239,6 +260,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -250,6 +272,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -261,6 +284,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -272,6 +296,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -283,6 +308,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -294,50 +320,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -349,6 +332,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -360,6 +344,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -371,6 +356,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -382,270 +368,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -657,6 +380,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -668,6 +392,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -679,6 +404,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -690,6 +416,295 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -701,6 +716,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -712,270 +728,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -987,6 +740,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -998,6 +752,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1009,6 +764,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1020,6 +776,295 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1031,6 +1076,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1042,270 +1088,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1317,6 +1100,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1328,6 +1112,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1339,6 +1124,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1350,6 +1136,295 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1361,6 +1436,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1372,270 +1448,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1647,6 +1460,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1658,6 +1472,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1669,6 +1484,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1680,6 +1496,295 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1691,6 +1796,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1702,270 +1808,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1977,6 +1820,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1988,6 +1832,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -1999,6 +1844,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2010,6 +1856,295 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2021,6 +2156,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2032,270 +2168,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2307,6 +2180,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2318,6 +2192,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2329,6 +2204,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2340,6 +2216,295 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2351,6 +2516,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2362,248 +2528,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2615,6 +2540,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2626,6 +2552,7 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},
@@ -2637,6 +2564,319 @@
 			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 4, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 6, decals = {  },
+			tileSetID = "YendorianJungle",
 			data =
 			{
 			},

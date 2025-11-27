@@ -170,7 +170,7 @@ function MapEditorApplication:getGroundDecorationsEnabled()
 	return self.isEditingPolygon
 end
 
-function MapEditorApplication:tryBeginEditPolygon(layer, point)
+function MapEditorApplication:tryBeginEditPolygon(layer, point, worldPoint)
 	self.isEditingPolygon = false
 
 	local bestDistance = math.huge
@@ -196,17 +196,20 @@ function MapEditorApplication:tryBeginEditPolygon(layer, point)
 			local b = Vector(polygon[j][1], 0, polygon[j][2])
 			b.y = map:getInterpolatedHeight(b.x, b.z)
 
-			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+			local mapNode = self:getGameView():getMapSceneNode(layer)
 			if mapNode then
 				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 				a = a:transform(transform)
 				b = b:transform(transform)
 			end
 
+			a = self:getCamera():project(a) * Vector(1, 1, 0)
+			b = self:getCamera():project(b) * Vector(1, 1, 0)
+
 			local abDistance = a:distance(b)
 			local distanceFromPoint = a:distance(point)
 
-			if distanceFromPoint < 8 and distanceFromPoint < bestDistance then
+			if distanceFromPoint < 16 and distanceFromPoint < bestDistance then
 				self.isEditingPolygon = true
 				self.currentPolygonIndex = polygonIndex
 				self.currentPointIndex = i
@@ -216,7 +219,7 @@ function MapEditorApplication:tryBeginEditPolygon(layer, point)
 				bestPointIndex = nil
 				bestPoint = nil
 
-				bestDistance = distanceFromPoint
+				bestDistance = 0
 			else
 				local ray = Ray(a, a:direction(b))
 				local distance = ray:distance(point)
@@ -230,7 +233,7 @@ function MapEditorApplication:tryBeginEditPolygon(layer, point)
 					self.currentPolygonLayer = layer
 
 					bestPolygonIndex = polygonIndex
-					bestPoint = pointOnRay
+					bestPoint = worldPoint
 					bestPointIndex = j
 				end
 			end
@@ -1090,7 +1093,7 @@ function MapEditorApplication:mousePress(x, y, button)
 					local result = results and results[1]
 					local point = result and result[Map.RAY_TEST_RESULT_POSITION]
 
-					if not (point and self:tryBeginEditPolygon(layer, point)) then
+					if not (point and self:tryBeginEditPolygon(layer, Vector(x, y, 0), point)) then
 						if not self.isGizmoGrabbed then
 							local mapScriptPeep = self.mapScriptPeeps[layer]
 							if mapScriptPeep then
@@ -2138,6 +2141,7 @@ function MapEditorApplication:save(filename)
 						origin = { (origin or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
 					},
 					wallHack = self.meta and self.meta[layers[i]] and self.meta[layers[i]].wallHack or nil,
+					polygonMask = self.meta and self.meta[layers[i]] and self.meta[layers[i]].polygonMask,
 					curve = self.mapScriptCurves[layers[i]]
 				}
 			end
