@@ -235,13 +235,20 @@ function Probe:addAction(id, verb, type, objectID, objectType, object, descripti
 	return pendingAction
 end
 
+function Probe:getResults()
+	return self.results or {}
+end
+
 function Probe:_all(callback, results)
+	self.results = results
+
 	self:getTile(results)
 	self:run(callback)
 end
 
 -- Probes all actions that can be performed.
 function Probe:all(callback)
+	self.results = {}
 	self.gameView:testMap(nil, self.ray, Function(self._all, self, callback))
 end
 

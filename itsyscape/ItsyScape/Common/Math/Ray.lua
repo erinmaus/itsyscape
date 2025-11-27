@@ -39,6 +39,16 @@ function BaseRay:project(distance)
 	return self.origin + self.direction * distance
 end
 
+function BaseRay:distance(point)
+	local v = point - self.origin
+	local dot = v:dot(self.direction)
+	if dot <= 0 then
+		return 0
+	end
+
+	return math.abs(dot)
+end
+
 function BaseRay:closest(point)
 	self:compatible(point)
 

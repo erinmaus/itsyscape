@@ -73,10 +73,12 @@ function ProjectedGlyph:generate()
 	if canvasWidth > self.MAX_TEXTURE_SIZE or canvasHeight > self.MAX_TEXTURE_SIZE then
 		if canvasWidth > canvasHeight then
 			local ratio = self.MAX_TEXTURE_SIZE / canvasWidth
+			canvasWidth = self.MAX_TEXTURE_SIZE
 			canvasHeight = math.floor(canvasHeight * ratio)
 		else
 			local ratio = self.MAX_TEXTURE_SIZE / canvasHeight
 			canvasWidth = math.floor(canvasWidth * ratio)
+			canvasHeight = self.MAX_TEXTURE_SIZE
 		end
 	end
 

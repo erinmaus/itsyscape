@@ -217,7 +217,7 @@ function NewMapInterface:createMap()
 				self.application.mapScriptPeeps[layer] = peep
 			end
 
-			self.onSubmit(self)
+			self.onSubmit(self, layer)
 			self:close()
 		end
 	end

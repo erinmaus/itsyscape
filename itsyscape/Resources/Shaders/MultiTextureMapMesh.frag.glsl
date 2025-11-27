@@ -3,11 +3,13 @@
 uniform ArrayImage scape_DiffuseTexture;
 uniform ArrayImage scape_MaskTexture;
 uniform ArrayImage scape_SpecularTexture;
+uniform Image scape_PolygonMaskTexture;
 
 #include "Resources/Shaders/WallHack.common.glsl"
 
 varying highp vec4 frag_TileBounds;
 varying highp vec4 frag_TextureLayer;
+varying highp vec2 frag_RelativeTexture;
 
 void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out float specular)
 {
@@ -16,6 +18,7 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 
 	float mask = Texel(scape_MaskTexture, vec3(maskCoordinate, frag_TextureLayer.y)).a;
 	float alpha = getWallHackAlpha(frag_Position);
+	float polygonMaskAlpha = Texel(scape_PolygonMaskTexture, frag_RelativeTexture).r;
 
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
 
@@ -28,7 +31,7 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	newTextureCoordinate.t = mod(local.t, (frag_TileBounds.w - frag_TileBounds.z)) + frag_TileBounds.z;
 	newTextureCoordinate.p = frag_TextureLayer.x;
 
-	color = Texel(scape_DiffuseTexture, newTextureCoordinate) * color * vec4(1.0, 1.0, 1.0, mask * alpha);
+	color = Texel(scape_DiffuseTexture, newTextureCoordinate) * color * vec4(1.0, 1.0, 1.0, mask * alpha * polygonMaskAlpha);
 	specular = Texel(scape_SpecularTexture, newTextureCoordinate).r * mask;
 }
 

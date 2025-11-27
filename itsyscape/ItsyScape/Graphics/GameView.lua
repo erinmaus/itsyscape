@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local ripple = require "ripple"
+local slick = require "slick"
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local MathCommon = require "ItsyScape.Common.Math.Common"
@@ -60,6 +61,9 @@ GameView.MAP_MESH_DIVISIONS = 128
 GameView.FADE_DURATION = 2
 GameView.ACTOR_CANVAS_CELL_SIZE = 32
 GameView.WALL_HACK_EXPAND_DURATION = 0.5
+
+GameView.POLYGON_MASK_CELL_SIZE = 32
+GameView.POLYGON_MASK_MAX_SIZE  = 1024
 
 GameView.PropViewDebugStats = Class(DebugStats)
 function GameView.PropViewDebugStats:process(node, delta)
@@ -255,6 +259,11 @@ function GameView:attach(game)
 	end
 	stage.onMapSkyUpdated:register(self._onMapSkyUpdated)
 
+	self._onMapMetaUpdated = function(_, layer, meta)
+		self:updateMeta(layer, meta)
+	end
+	stage.onMapMetaUpdated:register(self._onMapMetaUpdated)
+
 	self._onActorSpawned = function(_, actorID, actor)
 		Log.info("Spawning actor '%s' (%s).", actorID, actor and actor:getPeepID())
 		self:addActor(actorID, actor)
@@ -428,6 +437,7 @@ function GameView:release()
 	stage.onMapModified:unregister(self._onMapModified)
 	stage.onMapMoved:unregister(self._onMapMoved)
 	stage.onMapSkyUpdated:unregister(self._onMapSkyUpdated)
+	stage.onMapMetaUpdated:unregister(self._onMapMetaUpdated)
 	stage.onActorSpawned:unregister(self.onActorSpawned)
 	stage.onActorKilled:unregister(self._onActorKilled)
 	stage.onPropPlaced:unregister(self._onPropPlaced)
@@ -861,6 +871,8 @@ function GameView:updateGroundDecorations(m)
 					m.decorationTextures[d.texture:getID()] = newTexture
 				end
 
+				-- TODO: this looks wrong - might want to fix if so
+				-- specifically d.sceneNodes[] vs d.alphaSceneNode - why plural, then singular?
 				d.texture = newTexture
 				sceneNode:getMaterial():setTextures(newTexture)
 				if d.alphaSceneNode then
@@ -1277,6 +1289,11 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 
 		m.weatherMap:addMap(m.map)
 
+		for _, part in ipairs(m.parts) do
+			local material = part.node:getMaterial()
+			material:send(material.UNIFORM_FLOAT, "scape_MapSize", m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize())
+		end
+
 		self.resourceManager:queueEvent(self.updateGroundDecorations, self, m)
 	end
 end
@@ -1293,6 +1310,96 @@ function GameView:updateMapSky(layer, properties)
 	else
 		m.previousSkyProperties = m.currentSkyProperties or properties
 		m.currentSkyProperties = properties
+	end
+end
+
+function GameView:_setPolygonMask(m, texture)
+	texture:setFilter("linear", "linear")
+
+	for _, part in ipairs(m.parts) do
+		local material = part.node:getMaterial()
+		material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", texture)
+	end
+
+	for _, d in ipairs(m.staticGroundDecorations) do
+		for _, node in ipairs(d.sceneNodes) do
+			local material = node:getMaterial()
+			material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", texture)
+		end
+	end
+
+	for _, d in ipairs(m.dynamicGroundDecorations) do
+		for _, node in ipairs(d.sceneNodes) do
+			local material = node:getMaterial()
+			material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", texture)
+		end
+	end
+end
+
+function GameView:_updatePolygonMask(m)
+	if not m.meta.polygonMask then
+		self:_setPolygonMask(m, self.whiteTexture:getResource())
+		return
+	end
+
+	local w, h = m.map:getWidth(), m.map:getHeight()
+
+	local canvasWidth = w * self.POLYGON_MASK_CELL_SIZE
+	local canvasHeight = h * self.POLYGON_MASK_CELL_SIZE
+
+	if canvasWidth > self.POLYGON_MASK_MAX_SIZE or canvasHeight > self.POLYGON_MASK_MAX_SIZE then
+		if canvasWidth > canvasHeight then
+			local ratio = self.POLYGON_MASK_MAX_SIZE / canvasWidth
+			canvasWidth = self.POLYGON_MASK_MAX_SIZE
+			canvasHeight = math.floor(canvasHeight * ratio)
+		else
+			local ratio = self.POLYGON_MASK_MAX_SIZE / canvasHeight
+			canvasWidth = math.floor(canvasWidth * ratio)
+			canvasHeight = self.POLYGON_MASK_MAX_SIZE
+		end
+	end
+
+	local canvas = love.graphics.newCanvas(canvasWidth, canvasHeight)
+	m.polygonMask = canvas
+
+	local contours = {}
+	for _, polygon in ipairs(m.meta.polygonMask) do
+		local contour = {}
+		for _, point in ipairs(polygon) do
+			table.insert(contour, point[1])
+			table.insert(contour, point[2])
+		end
+
+		table.insert(contours, contour)
+	end
+
+	local triangles = slick.triangulate(contours)
+
+	love.graphics.push("all")
+	love.graphics.setCanvas(canvas)
+	love.graphics.clear(0, 0, 0, 0)
+	love.graphics.setColor(1, 0, 0, 1)
+	love.graphics.ortho(w * m.map:getCellSize(), h * m.map:getCellSize())
+
+	for _, triangle in ipairs(triangles) do
+		love.graphics.polygon("fill", triangle)
+	end
+
+	love.graphics.pop()
+
+	self:_setPolygonMask(m, canvas)
+end
+
+function GameView:updateMeta(layer, meta)
+	local m = self.mapMeshes[layer]
+	if not m then
+		return
+	end
+
+	m.meta = meta
+
+	if m.meta.polygonMask then
+		self:_updatePolygonMask(m)
 	end
 end
 
@@ -2483,18 +2590,9 @@ function GameView:updateActors(delta)
 end
 
 function GameView:updateProps(delta)
-	local t = {}
-	local totalTime = 0
 	for _, prop in pairs(self.props) do
-		local d = prop.update ~= PropView.update and prop:getDebugInfo().shortName or PropView._DEBUG.shortName
-		local b = love.timer.getTime()
 		self.propViewDebugStats:measure(prop, delta)
-		local a = love.timer.getTime()
-		totalTime = (a - b) * 1000
-		t[d] = (t[d] or 0) + (a - b) * 1000
 	end
-	if totalTime > 5 then
-	print(">>> D", Log.dump(t)) end
 end
 
 function GameView:updateProjectiles(delta)
@@ -2648,7 +2746,7 @@ end
 function GameView:update(delta)
 	_APP:measure("gameView:updateResourceManager()", GameView.updateResourceManager, self)
 	_APP:measure("gameView:updateActors()", GameView.updateActors, self, delta)
-	if not love.keyboard.isDown("3") then _APP:measure("gameView:updateProps()", GameView.updateProps, self, delta) end
+	_APP:measure("gameView:updateProps()", GameView.updateProps, self, delta)
 	_APP:measure("gameView:updateProjectiles()", GameView.updateProjectiles, self, delta)
 	_APP:measure("gameView:updateWeather()", GameView.updateWeather, self, delta)
 	_APP:measure("gameView:updateSprites()", GameView.updateSprites, self, delta)

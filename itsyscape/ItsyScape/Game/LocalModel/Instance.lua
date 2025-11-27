@@ -56,6 +56,10 @@ function Instance.Map:getMaskID()
 	return self.maskID
 end
 
+function Instance.Map:setMeta(value)
+	self.meta = value
+end
+
 function Instance.Map:getMeta()
 	return self.meta
 end
@@ -401,6 +405,28 @@ function Instance:new(id, filename, stage)
 		end
 	end
 	stage.onMapSkyUpdated:register(self._onMapSkyUpdated)
+
+	self._onMapMetaUpdated = function(_, layer, meta)
+		if self:hasLayer(layer, true) then
+			Log.engine(
+				"Meta updated for map in instance %s (%d) on layer %d.",
+				self:getFilename(),
+				self:getID(),
+				layer)
+
+			local map = self.maps[layer]
+			if map then
+				map:setMeta(meta)
+			end
+		else
+			Log.engine(
+				"Did not update meta for map in instance %s (%d) on layer %d; layer is not in instance.",
+				self:getFilename(),
+				self:getID(),
+				layer)
+		end
+	end
+	stage.onMapMetaUpdated:register(self._onMapMetaUpdated)
 
 	self._onMapLinked = function(_, layer, otherLayer)
 		if self:hasLayer(layer, true) and self:hasLayer(otherLayer, true) then
@@ -830,6 +856,7 @@ function Instance:unload()
 	self.stage.onMapModified:unregister(self._onMapModified)
 	self.stage.onMapMoved:unregister(self._onMapMoved)
 	self.stage.onMapSkyUpdated:unregister(self._onMapSkyUpdated)
+	self.stage.onMapMetaUpdated:unregister(self._onMapMetaUpdated)
 	self.stage.onMapLinked:unregister(self._onMapLinked)
 	self.stage.onMapUnlinked:unregister(self._onMapUnlinked)
 	self.stage.onActorSpawned:unregister(self._onActorSpawned)

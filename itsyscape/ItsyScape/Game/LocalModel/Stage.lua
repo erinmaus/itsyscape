@@ -758,6 +758,10 @@ function LocalStage:updateMap(layer, map, i, j, w, h)
 	end
 end
 
+function LocalStage:updateMapMeta(layer, meta)
+	self:onMapMetaUpdated(layer, meta)
+end
+
 function LocalStage:updateSky(instance, properties)
 	if not RPCState.deepEquals(self.skies[instance], properties) then
 		self.skies[instance] = properties

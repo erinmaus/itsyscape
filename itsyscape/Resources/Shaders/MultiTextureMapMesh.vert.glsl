@@ -5,6 +5,7 @@ attribute vec4 VertexTextureLayer;
 
 varying highp vec4 frag_TileBounds;
 varying highp vec4 frag_TextureLayer;
+varying highp vec2 frag_RelativeTexture;
 
 void performTransform(
 	mat4 modelViewProjectionMatrix,
@@ -22,4 +23,5 @@ void performTransform(
 	frag_Normal = warpedNormal;
 	frag_TileBounds = VertexTileBounds;
 	frag_TextureLayer = VertexTextureLayer;
+	frag_RelativeTexture = position.xz / scape_MapSize;
 }

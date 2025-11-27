@@ -156,6 +156,93 @@ function MapEditorApplication:endEditCurve()
 	self.isEditingCurve = false
 end
 
+function MapEditorApplication:updatePolygonMask(layer)
+	local meta = self.meta and self.meta[layer]
+	if not meta then
+		return
+	end
+
+	self:getGame():getStage():updateMapMeta(layer, meta)
+end
+
+function MapEditorApplication:tryBeginEditPolygon(layer, point)
+	self.isEditingPolygon = false
+
+	local bestDistance = math.huge
+	local bestPoint, bestPointIndex, bestPolygonIndex = nil, nil
+
+	local map = self:getGame():getStage():getMap(layer)
+	if not map then
+		return false
+	end
+
+	local meta = self.meta and self.meta[layer]
+	if not (meta and meta.polygonMask) then
+		return false
+	end
+
+	for polygonIndex, polygon in ipairs(meta.polygonMask) do
+		for i in ipairs(polygon) do
+			local j = math.wrapIndex(i, 1, #polygon)
+
+			local a = Vector(polygon[i][1], 0, polygon[i][2])
+			a.y = map:getInterpolatedHeight(a.x, a.z)
+
+			local b = Vector(polygon[j][1], 0, polygon[j][2])
+			b.y = map:getInterpolatedHeight(b.x, b.z)
+
+			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+			if mapNode then
+				local transform = mapNode:getTransform():getGlobalTransform()
+				a = a:transform(transform)
+				b = b:transform(transform)
+			end
+
+			local abDistance = a:distance(b)
+			local distanceFromPoint = a:distance(point)
+
+			if distanceFromPoint < 8 and distanceFromPoint < bestDistance then
+				self.isEditingPolygon = true
+				self.currentPolygonIndex = polygonIndex
+				self.currentPointIndex = i
+				self.currentPolygonLayer = layer
+
+				bestPolygonIndex = nil
+				bestPointIndex = nil
+				bestPoint = nil
+
+				bestDistance = distanceFromPoint
+			else
+				local ray = Ray(a, a:direction(b))
+				local distance = ray:distance(point)
+				local isForward, pointOnRay = ray:closest(point)
+
+				local pointOnRayDistanceFromPoint = pointOnRay:distance(point)
+				if isForward and distance < abDistance and pointOnRayDistanceFromPoint < 8 and pointOnRayDistanceFromPoint < bestDistance then
+					self.isEditingPolygon = true
+					self.currentPolygonIndex = polygonIndex
+					self.currentPointIndex = j
+					self.currentPolygonLayer = layer
+
+					bestPolygonIndex = polygonIndex
+					bestPoint = pointOnRay
+					bestPointIndex = j
+				end
+			end
+		end
+	end
+
+	if bestPolygonIndex and bestPointIndex and bestPoint then
+		table.insert(meta.polygonMask[bestPolygonIndex], bestPointIndex, { bestPoint.x, bestPoint.z })
+	end
+
+	return self.isEditingPolygon
+end
+
+function MapEditorApplication:endEditPolygon()
+	self.isEditingPolygon = false
+end
+
 function MapEditorApplication:createCurveValueGizmo(Type, index)
 	if Type == MapCurve.Position then
 		self:createTranslationGizmo(self.curve:getPositions():get(index))
@@ -297,8 +384,10 @@ function MapEditorApplication:initialize()
 
 	local newMapInterface = NewMapInterface(self)
 	self:getUIView():getRoot():addChild(newMapInterface)
-	newMapInterface.onSubmit:register(function()
+	newMapInterface.onSubmit:register(function(_, layer)
 		self:setTool(MapEditorApplication.TOOL_PAINT)
+		self.meta = self.meta or {}
+		self.meta[layer] = self.meta[layer] or {}
 	end)
 end
 
@@ -989,16 +1078,24 @@ function MapEditorApplication:mousePress(x, y, button)
 					self:createRotationGizmo(rotationCurve:get(clickedCurveIndex))
 				end
 			elseif self.currentTool == MapEditorApplication.TOOL_CURVE then
-				if not self.isGizmoGrabbed then
-					self:probe(x, y, false, function(probe)
-						local _, _, layer = probe:getTile()
+				self:probe(x, y, false, function(probe)
+					local _, _, layer = probe:getTile()
 
-						local mapScriptPeep = self.mapScriptPeeps[layer]
-						if mapScriptPeep then
-							self:createBoundsGizmo(mapScriptPeep)
+					local results = probe:getResults()
+					local result = results and results[1]
+					local point = result and result[Map.RAY_TEST_RESULT_POSITION]
+
+					if not (point and self:tryBeginEditPolygon(layer, point)) then
+						if not self.isGizmoGrabbed then
+							local mapScriptPeep = self.mapScriptPeeps[layer]
+							if mapScriptPeep then
+								self:createBoundsGizmo(mapScriptPeep)
+							end
 						end
-					end)
-				end
+					else
+						self:updatePolygonMask(layer)
+					end
+				end)
 			end
 		elseif button == 2 then
 			if self.currentTool == MapEditorApplication.TOOL_CURVE then
@@ -1033,6 +1130,27 @@ function MapEditorApplication:mousePress(x, y, button)
 						},
 						{
 							id = 3,
+							verb = "Create-Polygon",
+							object = string.format("Layer %d", layer),
+							callback = function()
+								local map = self:getGame():getStage():getMap(layer)
+
+								local meta = self.meta and self.meta[layer]
+								if not meta then
+									return
+								end
+
+								meta.polygonMask = meta.polygonMask or {}
+								table.insert(meta.polygonMask, {
+									{ 0, 0 },
+									{ map:getWidth() * map:getCellSize(), 0 },
+									{ map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize() },
+									{ 0, map:getHeight() * map:getCellSize() },
+								})
+							end
+						},
+						{
+							id = 4,
 							verb = "Load",
 							object = "Other Map",
 							callback = function()
@@ -1195,6 +1313,26 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					self:paint()
 				end
 			end)
+		elseif self.currentTool == MapEditorApplication.TOOL_CURVE then
+			if self.isEditingPolygon then
+				self:probe(x, y, false, function(probe)
+					for _, result in ipairs(probe:getResults()) do
+						if result.layer == self.currentPolygonLayer then
+							local meta = self.meta and self.meta[self.currentPolygonLayer]
+							if meta and meta.polygonMask then
+								local polygon = meta.polygonMask[self.currentPolygonIndex]
+								if polygon then
+									polygon[self.currentPointIndex] = { result[Map.RAY_TEST_RESULT_POSITION].x, result[Map.RAY_TEST_RESULT_POSITION].z }
+
+									self:updatePolygonMask(self.currentPolygonLayer)
+								end
+							end
+
+							break
+						end
+					end
+				end)
+			end
 		elseif self.currentToolNode then
 			self.currentToolNode:setParent(nil)
 			self.currentToolNode = false
@@ -1353,6 +1491,7 @@ function MapEditorApplication:mouseRelease(x, y, button)
 	end
 
 	self.isGizmoGrabbed = false
+	self.isEditingPolygon = false
 end
 
 function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
@@ -2561,6 +2700,68 @@ function MapEditorApplication:drawCurve()
 	love.graphics.pop()
 end
 
+function MapEditorApplication:drawPolygonMask()
+	local layer = self.currentLayer
+	local meta = self.meta and self.meta[layer]
+
+	if not (meta and meta.polygonMask) then
+		return
+	end
+
+	local map = self:getGame():getStage():getMap(self.currentLayer)
+	if not map then
+		return
+	end
+
+	love.graphics.push("all")
+	love.graphics.setLineWidth(4)
+	love.graphics.setLineJoin("none")
+
+	love.graphics.setColor(0, 0, 1, 0.5)
+	for _, polygon in ipairs(meta.polygonMask) do
+		for i in ipairs(polygon) do
+			local j = math.wrapIndex(i, 1, #polygon)
+
+			local a = Vector(polygon[i][1], 0, polygon[i][2])
+			a.y = map:getInterpolatedHeight(a.x, a.z)
+
+			local b = Vector(polygon[j][1], 0, polygon[j][2])
+			b.y = map:getInterpolatedHeight(b.x, b.z)
+
+			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+			if mapNode then
+				local transform = mapNode:getTransform():getGlobalTransform()
+				a = a:transform(transform)
+				b = b:transform(transform)
+			end
+
+			a = self:getCamera():project(a)
+			b = self:getCamera():project(b)
+
+			love.graphics.line(a.x, a.y, b.x, b.y)
+		end
+	end
+
+	love.graphics.setColor(1, 1, 1, 1)
+	for _, polygon in ipairs(meta.polygonMask) do
+		for _, point in ipairs(polygon) do
+			local a = Vector(point[1], 0, point[2])
+			a.y = map:getInterpolatedHeight(a.x, a.z)
+
+			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
+			if mapNode then
+				local transform = mapNode:getTransform():getGlobalTransform()
+				a = a:transform(transform)
+			end
+			a = self:getCamera():project(a)
+
+			love.graphics.circle("fill", a.x, a.y, 8)
+		end
+	end
+
+	love.graphics.pop()
+end
+
 function MapEditorApplication:getBrushMotion()
 	local mouseX, mouseY = love.mouse.getPosition()
 	local motionEvent = self:makeMotionEvent(mouseX, mouseY, 1, self.currentLayer)
@@ -2650,6 +2851,10 @@ function MapEditorApplication:draw(...)
 
 	if self.isEditingCurve then
 		self:drawCurve()
+	end
+
+	if self.currentTool == MapEditorApplication.TOOL_CURVE then
+		self:drawPolygonMask()
 	end
 
 	if self.gizmo then
