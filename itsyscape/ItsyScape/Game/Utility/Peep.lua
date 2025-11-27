@@ -528,6 +528,12 @@ function Peep.setLayer(peep, layer)
 	if position then
 		position.layer = layer
 	end
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if actor then
+		actor:onTeleport(position.position, position.layer)
+	end
 end
 
 function Peep.setLocalLayer(peep, localLayer, mapScript)

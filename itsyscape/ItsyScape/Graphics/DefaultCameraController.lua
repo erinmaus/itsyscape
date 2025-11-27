@@ -212,6 +212,7 @@ end
 function DefaultCameraController:getTargetPosition()
 	local delta = self:getApp():getFrameDelta()
 
+
 	local position, size
 	if self.targetNode and self.targetSize then
 		position = Vector.ZERO:transform(self.targetNode:getTransform():getGlobalDeltaTransform(delta or 0))

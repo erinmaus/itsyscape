@@ -610,6 +610,8 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		{ format = "rgba8" })
 	fogCanvas:setFilter("linear", "linear")
 
+	node._layer = layer
+
 	local m = {
 		tileSet = tileSet,
 		largeTileSet = largeTileSet,

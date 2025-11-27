@@ -2603,8 +2603,6 @@ function DemoApplication:update(delta)
 
 	self:updateNearbyShimmer(delta)
 
-	self.cameraController:update(delta)
-
 	if self.titleScreen then
 		self.titleScreen:update(delta)
 
@@ -2639,6 +2637,8 @@ function DemoApplication:update(delta)
 			end
 		end
 	end
+
+	self.cameraController:update(delta)
 
 	self:updatePatchNotes()
 end
