@@ -137,6 +137,43 @@ function MapEditorApplication:new()
 	self:getGameView():getResourceManager():setFrameDuration(1)
 end
 
+function MapEditorApplication:makeCurveCircle(layer)
+	local map = self:getGame():getStage():getMap(layer)
+
+	local center = Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)
+	local transform = self:getGameView():getMapSceneNode(layer):getTransform():getGlobalDeltaTransform(0)
+	center = center:transform(transform)
+
+	local radius = (map:getHeight() * map:getCellSize()) / (2 * math.pi)
+
+	local config = {
+		linear = true,
+		min = { 0, 0, 0 },
+		max = { map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize() },
+		axis = { 0, 0, 1 },
+		positions = {},
+		normals = { { 0, 1, 0 }, { 0, 1, 0 } },
+		scales = { { 1, 1, 1 }, { 1, 1, 1 } },
+		rotations = {
+			{ Quaternion.IDENTITY:get() },
+			{ Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi / 2):get() },
+			{ Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi):get() },
+			{ Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi + math.pi / 2):get() },
+			{ Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi * 2):get() }
+		}
+	}
+
+	local positionCount = math.max(map:getHeight() * 2, 4)
+	for i = 1, positionCount do
+		local angle = (i - 1) / (positionCount - 1) * math.pi * 2
+		local position = center + Vector(math.cos(angle) * radius, 0, math.sin(angle) * radius)
+
+		table.insert(config.positions, { position:get() })
+	end
+
+	self:beginEditCurve(map, config, layer)
+end
+
 function MapEditorApplication:beginEditCurve(map, curve, layer)
 	if curve then
 		map = map == nil and self:getGame():getStage():getMap(layer or 1) or map
@@ -1167,6 +1204,14 @@ function MapEditorApplication:mousePress(x, y, button)
 									{ map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize() },
 									{ 0, map:getHeight() * map:getCellSize() },
 								})
+							end
+						},
+						{
+							id = 4,
+							verb = "Curve-Circle",
+							object = string.format("Layer %d", layer),
+							callback = function()
+								self:makeCurveCircle(layer)
 							end
 						},
 						{

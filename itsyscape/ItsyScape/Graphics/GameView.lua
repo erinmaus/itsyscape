@@ -1156,7 +1156,7 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 		local stopI = partialI and partialW and math.min(partialI + partialW - 1, map:getWidth()) or map:getWidth()
 		stopI = math.min((self.MAP_MESH_DIVISIONS - ((stopI - 1) % self.MAP_MESH_DIVISIONS + 1)) + stopI, map:getWidth())
 		local stopJ = partialJ and partialH and math.min(partialJ + partialH - 1, map:getHeight()) or map:getHeight()
-		stopJ = math.min((self.MAP_MESH_DIVISIONS - ((stopJ - 1) % self.MAP_MESH_DIVISIONS + 1)) + stopJ, map:getWidth())
+		stopJ = math.min((self.MAP_MESH_DIVISIONS - ((stopJ - 1) % self.MAP_MESH_DIVISIONS + 1)) + stopJ, map:getHeight())
 
 		for i = startI, stopI, self.MAP_MESH_DIVISIONS do
 			for j = startJ, stopJ, self.MAP_MESH_DIVISIONS do
