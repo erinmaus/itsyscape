@@ -534,6 +534,18 @@ function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID, masks)
 	self.tileSet, self.tileSetTexture = TileSet.loadFromFile(tileSetFilename, true)
 
 	self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture, masks)
+
+	if not self.meta then
+		self.meta = {}
+	end
+
+	local meta = self.meta[layer]
+	if not meta then
+		meta = {}
+		self.meta[layer] = meta
+	end
+
+	meta.tileSetID = tileSetID
 end
 
 function MapEditorApplication:recursiveSetFlag(map, i, j, flag, elevation, e)

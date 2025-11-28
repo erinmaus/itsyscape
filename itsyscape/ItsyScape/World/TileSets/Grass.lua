@@ -57,7 +57,6 @@ Grass.ROTATION_NOISE = Noise {
 Grass.DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d.png"
 Grass.SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d@Specular.png"
 Grass.OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d@Outline.png"
-Grass.DIRT_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Dirt%d.png"
 
 Grass.NUM_SAMPLES = 3
 Grass.SAMPLE_NOISE = Noise {
@@ -76,13 +75,6 @@ Grass.COLORS = {
 	Color.fromHexString("4f7252"),
 	Color.fromHexString("49784d"),
 	Color.fromHexString("3e6d3a"),
-}
-
-Grass.NUM_DIRT_SAMPLES = 3
-Color.DIRT_COLORS = {
-	Color.fromHexString("524842"),
-	Color.fromHexString("5c4b40"),
-	Color.fromHexString("54423b"),
 }
 
 Grass.COLOR_NOISE = Noise {
