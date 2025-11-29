@@ -112,8 +112,9 @@ end
 function Ribbon:performLayout()
 	Interface.performLayout(self)
 
-	self:setSize(self.layout:getSize())
-	self.panel:setSize(self.layout:getSize())
+	local layoutWidth, layoutHeight = self.layout:getSize()
+	self:setSize(layoutWidth, layoutHeight + self.PADDING)
+	self.panel:setSize(self:getSize())
 
 	local panelWidth, panelHeight = self:getSize()
 	local screenWidth, screenHeight = itsyrealm.graphics.getScaledMode()
