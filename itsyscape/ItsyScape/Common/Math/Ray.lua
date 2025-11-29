@@ -151,6 +151,18 @@ function BaseRay:hitTriangle(v1, v2, v3)
 	return false
 end
 
+function BaseRay:inverseTransform(transform)
+	local MathCommon = require "ItsyScape.Common.Math.Common"
+
+	local _, rotation = MathCommon.decomposeTransform(transform)
+	rotation = rotation:inverse()
+
+	local p = self.origin:inverseTransform(transform)
+	local d = rotation:transformVector(self.direction):getNormal()
+
+	return Ray(p, d)
+end
+
 -- Checks if the ray intersects the AABB (min, max).
 --
 -- Returns true and the point (Vector) of collision, false otherwise.

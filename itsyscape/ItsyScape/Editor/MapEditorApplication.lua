@@ -379,6 +379,12 @@ function MapEditorApplication:setTool(tool)
 		self.currentPalette:close()
 	end
 
+	for layer, meta in pairs(self.meta) do
+		if meta.curve then
+			self:getGameView():bendMap(layer, meta.curve)
+		end
+	end
+
 	if tool == MapEditorApplication.TOOL_TERRAIN then
 		self.currentTool = MapEditorApplication.TOOL_TERRAIN
 		self.terrainToolPanel:open()
@@ -393,6 +399,10 @@ function MapEditorApplication:setTool(tool)
 		self.currentTool = MapEditorApplication.TOOL_DECORATE
 		self.decorationList:open()
 		self.decorationPalette:open()
+
+		for layer in pairs(self.meta) do
+			self:getGameView():bendMap(layer)
+		end
 	elseif tool == MapEditorApplication.TOOL_PROP then
 		self.currentTool = MapEditorApplication.TOOL_PROP
 		self.propPalette:open()
@@ -437,7 +447,12 @@ function MapEditorApplication:initialize()
 end
 
 function MapEditorApplication:decorationFeatureToSceneNode(feature)
+	local _, decoration = self.decorationList:getCurrentDecoration()
+	local parentSceneNode = self:getGameView():getMapSceneNode(self:getGameView():getDecorationLayer(decoration))
+
 	local sceneNode = SceneNode()
+	sceneNode:setParent(parentSceneNode)
+
 	local transform = sceneNode:getTransform()
 	transform:setLocalTranslation(feature:getPosition())
 	transform:setLocalScale(feature:getScale())
@@ -849,6 +864,10 @@ function MapEditorApplication:mousePress(x, y, button)
 						self.gizmoGrabY = y
 					end
 				end
+
+				if Class.isCompatibleType(target, Decoration.Feature) then
+					sceneNode:setParent()
+				end
 			end
 
 			if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
@@ -893,7 +912,10 @@ function MapEditorApplication:mousePress(x, y, button)
 							tileSetFilename)
 
 						do
-							local hits = decoration:testRay(self:shoot(x, y), staticMesh:getResource())
+							local transform = self:getGameView():getMapSceneNode(self:getGameView():getDecorationLayer(decoration)):getTransform():getGlobalDeltaTransform(0)
+							local ray = self:shoot(x, y):inverseTransform(transform)
+
+							local hits = decoration:testRay(ray, staticMesh:getResource())
 							table.sort(hits, function(a, b)
 								local i = self:getCamera():project(a[Decoration.RAY_TEST_RESULT_POSITION])
 								local j = self:getCamera():project(b[Decoration.RAY_TEST_RESULT_POSITION])
@@ -1506,6 +1528,8 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				if group and decoration then
 					self:getGameView():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 				end
+
+				sceneNode:setParent()
 			elseif Class.isCompatibleType(target, MapCurve.Value) and target:getIndex() then
 				local mapSceneNode = self:getGameView():getMapSceneNode(self.curveLayer)
 				if mapSceneNode then
@@ -2994,9 +3018,22 @@ function MapEditorApplication:draw(...)
 				self.gizmo:draw(self:getCamera(), sceneNode)
 			end
 		elseif Class.isCompatibleType(target, Decoration.Feature) then
+			local _, decoration = self.decorationList:getCurrentDecoration()
+			local tileSetFilename = string.format(
+				"Resources/Game/TileSets/%s/Layout.lstatic",
+				decoration:getTileSetID())
+			local staticMesh = self:getGameView():getResourceManager():load(
+				StaticMeshResource,
+				tileSetFilename)
+
 			local sceneNode = self:decorationFeatureToSceneNode(target)
-			self.gizmo:update(sceneNode, Vector.ONE)
+			local min, max = staticMesh:getResource():computeBounds(target:getID())
+			local size = (max - min):max(Vector.ONE)
+
+			self.gizmo:update(sceneNode, size)
 			self.gizmo:draw(self:getCamera(), sceneNode)
+
+			sceneNode:setParent()
 		elseif Class.isCompatibleType(target, MapCurve.Value) then
 			local sceneNode = self:curveToSceneNode(target)
 

@@ -99,7 +99,8 @@ function Gizmo.Operation:_getTransformedLines(lines, camera, sceneNode)
 	local l = {}
 	do
 		for _, point in ipairs(lines) do
-			local x, y = camera:project(point + center):get()
+			local p = point:transform(world)
+			local x, y = camera:project(p):get()
 
 			table.insert(l, x)
 			table.insert(l, y)

@@ -95,7 +95,7 @@ function Decoration.Feature:serialize()
 	}
 end
 
-function Decoration.Feature:map(func, staticMesh, index)
+function Decoration.Feature:map(func, staticMesh, index, ray)
 	local transform = love.math.newTransform()
 
 	local position = self:getPosition()
@@ -115,6 +115,13 @@ function Decoration.Feature:map(func, staticMesh, index)
 		scale.z)
 
 	local group = self:getID()
+
+	if ray then
+		local min, max = staticMesh:computeBounds(group)
+		if not ray:hitBounds(min, max, transform) then
+			return
+		end
+	end
 
 	-- Assumes indices 1-3 are vertex positions and 4-6 are normal. Bad.
 	if staticMesh:hasGroup(group) then
@@ -308,11 +315,11 @@ Decoration.RAY_TEST_RESULT_FEATURE = 1
 Decoration.RAY_TEST_RESULT_POSITION = 2
 Decoration.RAY_TEST_RESULT_INDEX = 3
 
-function Decoration:map(func, staticMesh)
+function Decoration:map(func, staticMesh, ray)
 	local result = {}
 
 	for feature, index in self:iterate() do
-		feature:map(func, staticMesh, index)
+		feature:map(func, staticMesh, index, ray)
 	end
 end
 
@@ -328,7 +335,7 @@ function Decoration:testRay(ray, staticMesh)
 				index
 			})
 		end
-	end, staticMesh)
+	end, staticMesh, ray)
 
 	return result
 end
