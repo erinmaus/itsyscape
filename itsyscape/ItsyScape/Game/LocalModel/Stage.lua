@@ -1250,6 +1250,8 @@ function LocalStage:loadMapResource(instance, filename, args)
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath .. "/Decorations")) do
 		local decorationName = item:match("(.*)%.ldeco$")
 		local splineName = item:match("(.*)%.lspline$")
+		local localLayer = item:match(".*@(%d+)%.[^%.@]*$")
+		local layer = instance:getGlobalLayerFromLocalLayer(group, tonumber(localLayer) or 1)
 		local filename = directoryPath .. "/Decorations/" .. item
 		local key = filename
 
@@ -1261,7 +1263,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 		end
 
 		if decoration then
-			self:decorate(key, decoration, baseLayer)
+			self:decorate(key, decoration, layer)
 		end
 	end
 

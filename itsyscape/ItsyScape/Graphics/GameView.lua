@@ -642,13 +642,13 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		water = {}
 	}
 
-	if meta and meta.curve then
-		self:bendMap(m.layer, meta.curve)
-	end
-
 	m.weatherMap:addMap(m.map)
 
 	self.mapMeshes[layer] = m
+
+	if meta and meta.curve then
+		self:bendMap(m.layer, meta.curve)
+	end
 end
 
 function GameView:removeMap(layer)
@@ -1417,6 +1417,10 @@ function GameView:updateMeta(layer, meta)
 
 	m.meta = meta
 	self:_updatePolygonMask(m)
+
+	if meta and meta.curve then
+		self:bendMap(m.layer, meta.curve)
+	end
 end
 
 function GameView:moveMap(layer, position, rotation, scale, offset, disabled, parentLayer)
@@ -1705,6 +1709,7 @@ function GameView:bendMap(layer, ...)
 	end
 
 	m.curves = curves
+	Log.info(">>> has curves %d", m.layer)
 
 	if #curves >= 1 then
 		m.curveTexture = love.graphics.newArrayImage(textures)

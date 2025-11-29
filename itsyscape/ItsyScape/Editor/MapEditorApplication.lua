@@ -1157,24 +1157,35 @@ function MapEditorApplication:mousePress(x, y, button)
 		elseif button == 2 then
 			if self.currentTool == MapEditorApplication.TOOL_CURVE then
 				self:probe(x, y, false, function(probe)
-					local _, _, layer = probe:getTile()
+					local actions = {}
 
-					if not layer then
-						return
-					end
+					table.insert(actions, {
+						id = #actions + 1,
+						verb = "New",
+						object = "Map",
+						callback = function()
+							local newMapInterface = NewMapInterface(self, false)
+							self:getUIView():getRoot():addChild(newMapInterface)
+						end
+					})
 
-					local actions = {
-						{
-							id = 1,
-							verb = "New",
-							object = "Map",
+					for _, result in ipairs(probe:getResults()) do
+						local layer = result.layer
+
+						table.insert(actions, {
+							id = #actions + 1,
+							verb = "Select",
+							object = string.format("Layer %d", layer),
 							callback = function()
-								local newMapInterface = NewMapInterface(self, false)
-								self:getUIView():getRoot():addChild(newMapInterface)
+								local mapScriptPeep = self.mapScriptPeeps[layer]
+								if mapScriptPeep then
+									self:createBoundsGizmo(mapScriptPeep)
+								end
 							end
-						},
-						{
-							id = 2,
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
 							verb = "Delete",
 							object = string.format("Layer %d", layer),
 							callback = function()
@@ -1184,10 +1195,11 @@ function MapEditorApplication:mousePress(x, y, button)
 								end)
 								confirm:open("Are you sure you want to delete this layer?")
 							end
-						},
-						{
-							id = 3,
-							verb = "Create-Polygon",
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
+							verb = "Create-Square-Polygon",
 							object = string.format("Layer %d", layer),
 							callback = function()
 								local map = self:getGame():getStage():getMap(layer)
@@ -1204,35 +1216,73 @@ function MapEditorApplication:mousePress(x, y, button)
 									{ map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize() },
 									{ 0, map:getHeight() * map:getCellSize() },
 								})
+
+								self:updatePolygonMask(layer)
 							end
-						},
-						{
-							id = 4,
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
+							verb = "Create-Circle-Polygon",
+							object = string.format("Layer %d", layer),
+							callback = function()
+								local map = self:getGame():getStage():getMap(layer)
+
+								local meta = self.meta and self.meta[layer]
+								if not meta then
+									return
+								end
+
+								local radius = math.min(map:getWidth(), map:getHeight()) * map:getCellSize() / 2
+								local center = Vector(
+									map:getWidth() * map:getCellSize() / 2,
+									0,
+									map:getHeight() * map:getCellSize() / 2)
+
+
+								meta.polygonMask = meta.polygonMask or {}
+								local polygon = {}
+								local steps = math.max(radius * 2, 4)
+								for i = 1, steps do
+									local angle = (i - 1) / steps * math.pi * 2
+									local position = center + Vector(math.cos(angle) * radius, 0, math.sin(angle) * radius)
+
+									table.insert(polygon, { position.x, position.z })
+								end
+
+								table.insert(meta.polygonMask, polygon)
+								self:updatePolygonMask(layer)
+							end
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
 							verb = "Curve-Circle",
 							object = string.format("Layer %d", layer),
 							callback = function()
 								self:makeCurveCircle(layer)
 							end
-						},
-						{
-							id = 4,
-							verb = "Load",
-							object = "Other Map",
-							callback = function()
-								local prompt = PromptWindow(self)
-								prompt.onSubmit:register(function(_, filename)
-									if not self:isResourceNameValid(filename) then
-										local alert = AlertWindow(self)
-										alert:open(string.format("Map name '%s' invalid.", filename))
-									else
-										local layer = self:getGame():getStage():newLayer(self:getGame():getStage():getInstanceByLayer(1))
-										self:load(filename, true, layer)
-									end
-								end)
-								prompt:open("What is the additional map name?", "Load")
-							end
-						}
-					}
+						})
+					end
+
+					table.insert(actions, {
+						id = #actions + 1,
+						verb = "Load",
+						object = "Other Map",
+						callback = function()
+							local prompt = PromptWindow(self)
+							prompt.onSubmit:register(function(_, filename)
+								if not self:isResourceNameValid(filename) then
+									local alert = AlertWindow(self)
+									alert:open(string.format("Map name '%s' invalid.", filename))
+								else
+									local layer = self:getGame():getStage():newLayer(self:getGame():getStage():getInstanceByLayer(1))
+									self:load(filename, true, layer)
+								end
+							end)
+							prompt:open("What is the additional map name?", "Load")
+						end
+					})
 
 					self:getUIView():probe(actions)
 				end)
@@ -1480,12 +1530,19 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					self:updateCurve()
 				end
 			elseif Class.isCompatibleType(target, MapPeep) then
-				local offset = target:getBehavior(MapOffsetBehavior)
-				if offset then
-					offset.position = translation
-					offset.rotation = rotation
-					offset.scale = scale
-				end
+				local _, offset = target:addBehavior(MapOffsetBehavior)
+				offset.offset = translation
+				offset.rotation = rotation
+				offset.scale = scale
+
+				self:getGame():getStage():onMapMoved(
+					target:getLayer(),
+					offset.offset,
+					offset.rotation,
+					offset.scale,
+					offset.origin,
+					false,
+					offset.parentLayer or false)
 			end
 		end
 	end

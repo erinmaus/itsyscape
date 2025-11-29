@@ -18,6 +18,8 @@ local GrassBlock = Class(Block)
 
 GrassBlock.GROUP = Block.GROUP_BENDY
 
+GrassBlock.SHOW_IN_BUILDING = false
+
 GrassBlock.SATURATION = 6
 
 GrassBlock.DIRT_NOISE = Noise {
@@ -117,6 +119,10 @@ end
 
 function GrassBlock:emit(drawType, tileSet, map, i, j, tileSetTile, mapTile)
 	if #mapTile.decals > 0 then
+		return
+	end
+
+	if mapTile:hasFlag("building") and not self.SHOW_IN_BUILDING then
 		return
 	end
 

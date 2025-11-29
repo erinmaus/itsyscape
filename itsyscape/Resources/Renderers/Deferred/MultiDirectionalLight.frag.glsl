@@ -39,7 +39,7 @@ vec4 effect(
 	{
 		float lightDotSurface = max(dot(scape_LightDirection[i], normal), 0.0);
 
-		float exponent = pow(abs(dot(normal, cameraToTarget)), 3.0);
+		float exponent = pow(1.0 - abs(dot(normal, cameraToTarget)), 3.0);
 		float specularCoefficient = (pow(5.0, exponent * pow(specular, 2.5)) - 1.0) / 4.0;
 
 		result += lightDotSurface * scape_LightColor[i] + vec3(specularCoefficient) * vec3(pow(length(scape_LightColor[i]), 1.5));
