@@ -14,29 +14,51 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Map = require "ItsyScape.World.Map"
 local MapCurve = require "ItsyScape.World.MapCurve"
+local NMap = require "nbunny.optimaus.map"
+local NMapCurve = require "nbunny.optimaus.mapcurve"
+local NTransformedMap = require "nbunny.optimaus.transformedmap"
 
 local MAPS = {}
 local TRANSFORMS = {}
 local CURVES = {}
 local PARENTS = {}
 
+local NBUNNY_MAPS = {}
+local TRANSFORMED_MAPS = {}
+
 local m
 repeat
 	m = love.thread.getChannel("ItsyScape.Map::input"):demand()
 	if m.type == "load" then
-		MAPS[m.key] = Map.loadFromTable(buffer.decode(m.data))
+		local map = Map.loadFromTable(buffer.decode(m.data))
+
+		MAPS[m.key] = map
+
+		local nbunnyMap = NMap(map:getWidth(), map:getHeight(), map:getCellSize())
+		nbunnyMap:update(map)
+
+		NBUNNY_MAPS[m.key] = nbunnyMap
+		TRANSFORMED_MAPS[m.key] = nil
 	elseif m.type == "unload" then
 		MAPS[m.key] = nil
 		TRANSFORMS[m.key] = nil
 		PARENTS[m.key] = nil
 		CURVES[m.key] = nil
+		NBUNNY_MAPS[m.key] = nil
+		TRANSFORMED_MAPS[m.key] = nil
 	elseif m.type == "transform" then
 		TRANSFORMS[m.key] = m.transform
 		PARENTS[m.key] = m.parentKey or nil
 	elseif m.type == "bend" then
 		local map = MAPS[m.key]
 		if map then
-			CURVES[m.key] = { MapCurve(map, m.config) }
+			if m.config then
+				CURVES[m.key] = { MapCurve(map, m.config) }
+			else
+				CURVES[m.key] = nil
+			end
+
+			TRANSFORMED_MAPS[m.key] = nil
 		end
 	elseif m.type == "probe" then
 		local maps
@@ -75,33 +97,28 @@ repeat
 					end
 				end
 
-				local ray
-				do
-					ray = Ray(Vector(unpack(m.origin)), Vector(unpack(m.direction)))
-					local origin1 = Vector(transform:inverseTransformPoint(ray.origin:get()))
-					local origin2 = Vector(transform:inverseTransformPoint((ray.origin + ray.direction):get()))
-					local direction = origin2 - origin1
-					ray = Ray(origin1, direction)
+				local origin = Vector(unpack(m.origin))
+				local direction = Vector(unpack(m.direction))
+				local ray = Ray(origin, direction):inverseTransform(transform)
+
+				local transformedMap = TRANSFORMED_MAPS[key]
+				if not transformedMap then
+					local curve = CURVES[key] and NMapCurve(CURVES[key][1]:toConfig())
+					transformedMap = NTransformedMap(NBUNNY_MAPS[key], curve)
+
+					TRANSFORMED_MAPS[key] = transformedMap
 				end
 
-				local tiles
-				if CURVES[key] then
-					tiles = map:testRayWithCurves(ray, CURVES[key])
-				else
-					tiles = map:testRay(ray)
-				end
+				local tiles = transformedMap:castRay(
+					ray.origin.x, ray.origin.y, ray.origin.z,
+					ray.direction.x, ray.direction.y, ray.direction.z)
 
-				for i = 1, #tiles do
-					local tile = tiles[i]
-					local tileI = tile[Map.RAY_TEST_RESULT_I]
-					local tileJ = tile[Map.RAY_TEST_RESULT_J]
-					local position = tile[Map.RAY_TEST_RESULT_POSITION]
-
+				for _, tile in ipairs(tiles) do
 					table.insert(result, {
-						i = tileI,
-						j = tileJ,
+						i = tile.i,
+						j = tile.j,
 						layer = key,
-						position = { position.x, position.y, position.z }
+						position = { tile.x, tile.y, tile.z }
 					})
 				end
 			end

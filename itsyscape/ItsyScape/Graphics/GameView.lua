@@ -1709,7 +1709,6 @@ function GameView:bendMap(layer, ...)
 	end
 
 	m.curves = curves
-	Log.info(">>> has curves %d", m.layer)
 
 	if #curves >= 1 then
 		m.curveTexture = love.graphics.newArrayImage(textures)
@@ -1735,7 +1734,7 @@ function GameView:bendMap(layer, ...)
 	end
 
 	love.thread.getChannel('ItsyScape.Map::input'):push({
-		type = 'bend',
+		type = "bend",
 		key = layer,
 		config = curves[1] and curves[1]:toConfig()
 	})	
