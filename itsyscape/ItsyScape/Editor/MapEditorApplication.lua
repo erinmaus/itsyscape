@@ -127,6 +127,7 @@ function MapEditorApplication:new()
 	self.mapScriptPeeps = {}
 	self.mapScriptLayers = {}
 	self.mapScriptCurves = {}
+	self.previousMaps = {}
 
 	self.propNames = {}
 
@@ -1323,9 +1324,24 @@ end
 function MapEditorApplication:mouseMove(x, y, dx, dy)
 	if not EditorApplication.mouseMove(self, x, y, dx, dy) then
 		if self.motion then
+			local mapBeforeChanges = Map.loadFromTable(self:getGame():getStage():getMap(self.motionLayer):serialize())
+
 			local r = self.motion:onMouseMoved(self:makeMotionEvent(x, y))
 
 			if r then
+				local previousMaps = self.previousMaps[self.motionLayer]
+				if not previousMaps then
+					previousMaps = { previous = {}, next = {} }
+					self.previousMaps[self.motionLayer] = previousMaps
+				end
+
+				table.insert(previousMaps.previous, mapBeforeChanges)
+				while #previousMaps.previous > 100 do
+					table.remove(previousMaps.previous, 1)
+				end
+
+				table.clear(previousMaps.next)
+
 				local i, j, w, h = self.motion:getRegion()
 				self:getGame():getStage():updateMap(self.motionLayer, nil, i, j, w, h)
 			end
@@ -1699,6 +1715,26 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 								tile:setFlag('building')
 							end
 						end
+					end
+				elseif key == "u" then
+					local layer = self.motionLayer or self.currentLayer
+					local previousMaps = self.previousMaps[layer]
+					if previousMaps then
+						local mapBeforeUndo = Map.loadFromTable(self:getGame():getStage():getMap(layer):serialize())
+						table.insert(previousMaps.next, mapBeforeUndo)
+
+						local previousMap = table.remove(previousMaps.previous, #previousMaps.previous)
+						self:getGame():getStage():updateMap(layer, previousMap)
+					end
+				elseif key == "r" then
+					local layer = self.motionLayer or self.currentLayer
+					local previousMaps = self.previousMaps[layer]
+					if previousMaps and #previousMaps.next >= 1 then
+						local mapBeforeRedo = Map.loadFromTable(self:getGame():getStage():getMap(layer):serialize())
+						table.insert(previousMaps.previous, mapBeforeRedo)
+
+						local nextMap = table.remove(previousMaps.next, #previousMaps.next)
+						self:getGame():getStage():updateMap(layer, nextMap)
 					end
 				end
 			end

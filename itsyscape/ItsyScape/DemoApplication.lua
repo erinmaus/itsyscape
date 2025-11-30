@@ -284,6 +284,7 @@ function DemoApplication:new()
 	self:initTitleScreen()
 
 	--Pool():makeCurrent()
+	collectgarbage("stop")
 end
 
 function DemoApplication:changeCamera(_, cameraType)
