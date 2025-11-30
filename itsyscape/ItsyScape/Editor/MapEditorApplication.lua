@@ -462,6 +462,33 @@ function MapEditorApplication:decorationFeatureToSceneNode(feature)
 	return sceneNode
 end
 
+function MapEditorApplication:decorationToSceneNode(decoration)
+	local center = Vector.ZERO
+	local features = self:getLastDecorationFeature()
+	if Class.isCompatibleType(features, Decoration.Feature) then
+		center = features:getPosition()
+	else
+		for _, feature in ipairs(features) do
+			center = center + feature:getPosition()
+		end
+
+		center = center / #features
+	end
+
+	local _, decoration = self.decorationList:getCurrentDecoration()
+	local parentSceneNode = self:getGameView():getMapSceneNode(self:getGameView():getDecorationLayer(decoration))
+
+	local sceneNode = SceneNode()
+	sceneNode:setParent(parentSceneNode)
+
+	local transform = sceneNode:getTransform()
+	transform:setLocalTranslation(center)
+	transform:setLocalScale(Vector.ONE)
+	transform:setLocalRotation(Quaternion.IDENTITY)
+
+	return sceneNode
+end
+
 function MapEditorApplication:curveToSceneNode(target)
 	local mapSceneNode = self:getGameView():getMapSceneNode(self.curveLayer)
 	local sceneNode = SceneNode()
@@ -852,6 +879,8 @@ function MapEditorApplication:mousePress(x, y, button)
 					end
 				elseif Class.isCompatibleType(target, Decoration.Feature) then
 					sceneNode = self:decorationFeatureToSceneNode(target)
+				elseif Class.isCompatibleType(target, Decoration) then
+					sceneNode = self:decorationToSceneNode(target)
 				elseif Class.isCompatibleType(target, MapCurve.Value) then
 					sceneNode = self:curveToSceneNode(target)
 				elseif Class.isCompatibleType(target, MapPeep) then
@@ -866,7 +895,9 @@ function MapEditorApplication:mousePress(x, y, button)
 					end
 				end
 
-				if Class.isCompatibleType(target, Decoration.Feature) then
+				if Class.isCompatibleType(target, Decoration.Feature) or
+				   Class.isCompatibleType(target, Decoration)
+				then
 					sceneNode:setParent()
 				end
 			end
@@ -900,11 +931,11 @@ function MapEditorApplication:mousePress(x, y, button)
 			elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 				self:paint()
 				self.isDragging = true
-			elseif self.currentTool == MapEditorApplication.TOOL_DECORATE and not (self.gizmo and self.gizmo:getIsActive()) then
+			elseif self.currentTool == MapEditorApplication.TOOL_DECORATE and not (self.gizmo and self.gizmo:getIsActive()) and not self.isDecorationCursorActive then
 				local group, decoration = self.decorationList:getCurrentDecoration()
 				if group and decoration then
 					local hit
-					if not (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
+					if not (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
 						local tileSetFilename = string.format(
 							"Resources/Game/TileSets/%s/Layout.lstatic",
 							decoration:getTileSetID())
@@ -1504,6 +1535,8 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			end
 		elseif Class.isCompatibleType(target, Decoration.Feature) then
 			sceneNode = self:decorationFeatureToSceneNode(target)
+		elseif Class.isCompatibleType(target, Decoration) then
+			sceneNode = self:decorationToSceneNode(target)
 		elseif Class.isCompatibleType(target, MapCurve.Value) then
 			sceneNode = self:curveToSceneNode(target)
 		elseif Class.isCompatibleType(target, MapPeep) then
@@ -1512,6 +1545,11 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 
 		if sceneNode then
 			local needsUpdate = false
+			local transform = sceneNode:getTransform()
+
+			local previousTranslation = Vector(transform:getLocalTranslation():get())
+			local previousRotation = Quaternion(transform:getLocalRotation():get())
+			local previousScale = Vector(transform:getLocalScale():get())
 
 			if not self.isGizmoGrabbed then
 				self.gizmo:hover(x, y, self:getCamera(), sceneNode)
@@ -1543,6 +1581,25 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				local group, decoration = self.decorationList:getCurrentDecoration()
 				if group and decoration then
 					self:getGameView():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
+				end
+
+				sceneNode:setParent()
+			elseif Class.isCompatibleType(target, Decoration) then
+				local features = self:getLastDecorationFeature()
+				if Class.isCompatibleType(features, Decoration.Feature) then
+					features = { features }
+				end
+
+				local translation = translation - previousTranslation
+				for _, feature in ipairs(features) do
+					feature:setPosition(feature:getPosition() + translation)
+					feature:setRotation(feature:getRotation() * rotation)
+					feature:setScale(feature:getScale() + (scale - Vector.ONE))
+				end
+
+				local group = self.decorationList:getCurrentDecoration()
+				if group and target then
+					self:getGameView():decorate(group, target, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 				end
 
 				sceneNode:setParent()
@@ -1648,6 +1705,49 @@ function MapEditorApplication:mouseRelease(x, y, button)
 			self.previousPaintJ = nil
 			self.currentPaintI = nil
 			self.currentPaintJ = nil
+
+			if self.isDecorationCursorActive then
+				local x1, y1 = math.min(self.decorationCursorSelectX, x), math.min(self.decorationCursorSelectY, y)
+				local x2, y2 = math.max(self.decorationCursorSelectX, x), math.max(self.decorationCursorSelectY, y)
+
+				local group, decoration = self.decorationList:getCurrentDecoration()
+				if group and decoration then
+					local tileSetFilename = string.format(
+						"Resources/Game/TileSets/%s/Layout.lstatic",
+						decoration:getTileSetID())
+					local staticMesh = self:getGameView():getResourceManager():load(
+						StaticMeshResource,
+						tileSetFilename)
+
+					local transform = self:getGameView():getMapSceneNode(self:getGameView():getDecorationLayer(decoration)):getTransform():getGlobalDeltaTransform(0)
+
+					local featuresByIndex = {}
+					decoration:map(function(v1, v2, v3, _, feature, index)
+						if featuresByIndex[index] then
+							return
+						end
+
+						local center = (v1 + v2 + v3) / Vector(3)
+						local sx, sy = self:getCamera():project(center):get()
+						if sx >= x1 and sx <= x2 and sy >= y1 and sy <= y2 then
+							featuresByIndex[index] = true
+						end
+					end, staticMesh:getResource())
+
+					local features = {}
+					for index in pairs(featuresByIndex) do
+						table.insert(features, index)
+					end
+
+					table.sort(features)
+
+					self.currentFeatureIndex = features
+
+					self:createBoundsGizmo(decoration)
+				end
+
+				self.isDecorationCursorActive = false
+			end
 		end
 		self.isDragging = false
 	end
@@ -1840,6 +1940,13 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							self.currentFeatureIndex = decoration:getNumFeatures()
 						end
 					end
+				elseif key == "b" then
+					if self.isDecorationCursorActive then
+						self.isDecorationCursorActive = false
+					else
+						self.decorationCursorSelectX, self.decorationCursorSelectY = love.mouse.getPosition()
+						self.isDecorationCursorActive = true
+					end
 				end
 
 				if self:getLastDecorationFeature() then
@@ -1888,17 +1995,22 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							end
 						end
 					elseif type(feature) == "table" and #feature > 0 then
+						local group, decoration = self.decorationList:getCurrentDecoration()
 						if key == "r" then
+							self:createRotationGizmo(decoration)
+						elseif key == "g" then
+							self:createTranslationGizmo(decoration)
+						elseif key == "s" then
+							self:createScaleGizmo(decoration)
+						elseif key == "r" then
 							for _, f in ipairs(feature) do
 								f:setRotation((f:getRotation() * Quaternion.Y_90):getNormal())
 							end
 
-							local group, decoration = self.decorationList:getCurrentDecoration()
 							if group and decoration then
 								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 							end
 						elseif key == "d" then
-							local group, decoration = self.decorationList:getCurrentDecoration()
 							if group and decoration then
 								local result = {}
 
@@ -1933,7 +2045,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							local t = r:transformVector(v)
 
 							local n
-							if math.abs(v.y) > 0 then
+							if math.abs(v.y) > 0 and key == "y" then
 								n = Vector(0, v.y, 0)
 							elseif math.abs(t.x) > math.abs(t.z) then
 								n = Vector(math.sign(t.x), 0, 0)
@@ -1947,7 +2059,6 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 								f:setPosition(f:getPosition() + n)
 							end
 
-							local group, decoration = self.decorationList:getCurrentDecoration()
 							if group and decoration then
 								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 							end
@@ -1996,17 +2107,22 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						end
 					elseif key == "delete" or key == "backspace" then
 						if self.gizmo then
-							local feature = self.gizmo:getTarget()
-							self:unsetGizmo()
-
-							local group, decoration = self.decorationList:getCurrentDecoration()
-							if decoration then
-								decoration:remove(feature)
+							local features = self:getLastDecorationFeature()
+							if Class.isCompatibleType(features, Decoration.Feature) then
+								features = { features }
 							end
 
-							self.currentFeatureIndex = nil
+							local group, decoration = self.decorationList:getCurrentDecoration()
+							if group and decoration then
+								for _, feature in ipairs(features) do
+									decoration:remove(feature)
+								end
 
-							self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
+								self.currentFeatureIndex = nil
+								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
+							end
+
+							self:unsetGizmo()
 						end
 					end
 				end
@@ -3065,6 +3181,26 @@ function MapEditorApplication:draw(...)
 			local sceneNode = self:decorationFeatureToSceneNode(target)
 			local min, max = staticMesh:getResource():computeBounds(target:getID())
 			local size = (max - min):max(Vector.ONE)
+
+			self.gizmo:update(sceneNode, size)
+			self.gizmo:draw(self:getCamera(), sceneNode)
+
+			sceneNode:setParent()
+		elseif Class.isCompatibleType(target, Decoration) then
+			local features = self:getLastDecorationFeature()
+			if Class.isCompatibleType(features, Decoration.Feature) then
+				features = { features }
+			end
+
+			local min, max = Vector(math.huge), Vector(-math.huge)
+			for _, feature in ipairs(features) do
+				min = min:min(feature:getPosition())
+				max = max:max(feature:getPosition())
+			end
+
+			size = (max - min):max(Vector.ONE)
+
+			local sceneNode = self:decorationToSceneNode(target)
 
 			self.gizmo:update(sceneNode, size)
 			self.gizmo:draw(self:getCamera(), sceneNode)
