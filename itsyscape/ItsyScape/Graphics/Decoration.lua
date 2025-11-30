@@ -118,6 +118,9 @@ function Decoration.Feature:map(func, staticMesh, index, ray)
 
 	if ray then
 		local min, max = staticMesh:computeBounds(group)
+		min = min:min(Vector(-0.001))
+		max = max:max(Vector(0.001))
+
 		if not ray:hitBounds(min, max, transform) then
 			return
 		end

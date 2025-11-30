@@ -37,8 +37,8 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 		specularSample.a += currentSample.a;
 	}
 
-	specular = specularSample.r * specularSample.a + 0.2;
-	color = resultSample * color * vec4(mix(vec3(specularSample), vec3(1.0), 1.0 - specularSample.a), 1.0);
+	specular = specularSample.r * (specularSample.a + 0.2);
+	color = resultSample * color;
 	color.a *= alpha;
 }
 
