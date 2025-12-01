@@ -16,8 +16,12 @@ local Greeble = require "Resources.Game.Props.Common.Greeble"
 
 local FlameGreeble = Class(Greeble)
 
+FlameGreeble.ATTACH_TO_ROOT = false
+
 FlameGreeble.FLAME_SCALE = Vector(1):keep()
 FlameGreeble.FLAME_OFFSET = Vector(0):keep()
+
+FlameGreeble.PARTICLE_SCALE = 1
 
 FlameGreeble.INNER_FLAME_SPEED = 0.45
 FlameGreeble.OUTER_FLAME_SPEED = 0.5
@@ -68,7 +72,7 @@ function FlameGreeble:_getInnerParticleDefinition()
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.125 },
+				radius = { 0, 0.125 * self.PARTICLE_SCALE },
 				position = { 0, 0.1, 0 },
 				yRange = { 0, 0 },
 				lifetime = { 1.25, 0.15 }
@@ -84,7 +88,7 @@ function FlameGreeble:_getInnerParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.25 }
+				scale = { 0.25 * self.PARTICLE_SCALE }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -126,7 +130,7 @@ function FlameGreeble:_getOuterParticleDefinition()
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.25 },
+				radius = { 0, 0.25 * self.PARTICLE_SCALE },
 				position = { 0, 0, 0 },
 				yRange = { 0, 0 },
 				lifetime = { 1.5, 0.4 }
@@ -142,7 +146,7 @@ function FlameGreeble:_getOuterParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.25 }
+				scale = { 0.25 * self.PARTICLE_SCALE }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -197,7 +201,13 @@ function FlameGreeble:load()
 	Greeble.load(self)
 
 	local resources = self:getResources()
-	local root = self:getRoot()
+
+	local root
+	if self.ATTACH_TO_ROOT then
+		root = self:getGameView():getScene()
+	else
+		root = self:getRoot()
+	end
 
 	resources:queueEvent(function()
 		self.outerFlames = ParticleSceneNode()
@@ -212,6 +222,18 @@ function FlameGreeble:load()
 		self.innerFlames:getTransform():setLocalScale(self.FLAME_SCALE)
 		self.innerFlames:getTransform():setLocalTranslation(self.FLAME_OFFSET)
 	end)
+end
+
+function FlameGreeble:remove()
+	Greeble.remove(self)
+
+	if self.outerFlames then
+		self.outerFlames:setParent()
+	end
+
+	if self.innerFlames then
+		self.innerFlames:setParent()
+	end
 end
 
 function FlameGreeble:regreebilize(t, ...)
@@ -240,6 +262,24 @@ function FlameGreeble:_updateParticles()
 
 	if self.innerFlames then
 		self.innerFlames:initEmittersFromDef(self:_getInnerParticleDefinition().emitters)
+	end
+end
+
+function FlameGreeble:updateLocalPosition(position)
+	if not self.outerFlames then
+		self:getResources():queueEvent(function()
+			self.outerFlames:updateLocalPosition(position)
+		end)
+	else
+		self.outerFlames:updateLocalPosition(position)
+	end
+
+	if not self.innerFlames then
+		self:getResources():queueEvent(function()
+			self.innerFlames:updateLocalPosition(position)
+		end)
+	else
+		self.innerFlames:updateLocalPosition(position)
 	end
 end
 

@@ -1,0 +1,4 @@
+{
+	shader = "Resources/Shaders/SpecularBumpSkinnedModel",
+	texture = "Resources/Game/Props/IsabelleIslandTowerLargeDoor/Interior.png"
+}

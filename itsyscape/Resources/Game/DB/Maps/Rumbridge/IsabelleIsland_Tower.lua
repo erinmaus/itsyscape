@@ -1047,3 +1047,29 @@ do
 		Resource = ItsyScape.Resource.Prop "Brazier_Isabelle"
 	}
 end
+
+do
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicDoor",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 12,
+		SizeY = 12,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle Tower entrance door",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Who knew doors could be an intimidating display of wealth and power?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
+	}
+end

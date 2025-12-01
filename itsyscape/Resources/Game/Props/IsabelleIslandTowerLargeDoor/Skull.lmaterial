@@ -1,0 +1,4 @@
+{
+	shader = "Resources/Shaders/SkinnedModel",
+	texture = "Resources/Game/Props/IsabelleIslandTowerLargeDoor/Skull.png"
+}

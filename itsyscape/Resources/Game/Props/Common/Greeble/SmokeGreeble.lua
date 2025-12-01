@@ -16,8 +16,12 @@ local Greeble = require "Resources.Game.Props.Common.Greeble"
 
 local SmokeGreeble = Class(Greeble)
 
+SmokeGreeble.ATTACH_TO_ROOT = false
+
 SmokeGreeble.SMOKE_SCALE  = Vector(1):keep()
 SmokeGreeble.SMOKE_OFFSET = Vector(0):keep()
+
+SmokeGreeble.PARTICLE_SCALE = 1
 
 SmokeGreeble.SMOKE_SPEED = 0.2
 
@@ -61,7 +65,7 @@ function SmokeGreeble:_getSmokeParticleDefinition()
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.125 },
+				radius = { 0, 0.125 * self.PARTICLE_SCALE },
 				position = { 0, 2, 0 },
 				yRange = { 0, 0 },
 				lifetime = { 0.5, 3 },
@@ -78,7 +82,7 @@ function SmokeGreeble:_getSmokeParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.4, 0.5 }
+				scale = { 0.4 * self.PARTICLE_SCALE, 0.5 * self.PARTICLE_SCALE }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -128,7 +132,13 @@ function SmokeGreeble:load()
 	Greeble.load(self)
 
 	local resources = self:getResources()
-	local root = self:getRoot()
+
+	local root
+	if self.ATTACH_TO_ROOT then
+		root = self:getGameView():getScene()
+	else
+		root = self:getRoot()
+	end
 
 	resources:queueEvent(function()
 		self.smoke = ParticleSceneNode()
@@ -153,9 +163,27 @@ function SmokeGreeble:regreebilize(t, ...)
 	end
 end
 
+function SmokeGreeble:remove()
+	Greeble.remove(self)
+
+	if self.smoke then
+		self.smoke:setParent()
+	end
+end
+
 function SmokeGreeble:_updateParticles()
 	if self.smoke then
 		self.smoke:initEmittersFromDef(self:_getSmokeParticleDefinition().emitters)
+	end
+end
+
+function SmokeGreeble:updateLocalPosition(position)
+	if not self.smoke then
+		self:getResources():queueEvent(function()
+			self.smoke:updateLocalPosition(position)
+		end)
+	else
+		self.smoke:updateLocalPosition(position)
 	end
 end
 

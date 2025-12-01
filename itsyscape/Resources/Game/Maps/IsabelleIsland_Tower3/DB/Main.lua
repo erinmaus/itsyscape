@@ -115,3 +115,25 @@ do
 		Resource = M["Anchor_Spawn"]
 	}
 end
+
+M["IsabelleIslandTowerLargeDoor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 12,
+		PositionZ = 81,
+		Name = "IsabelleIslandTowerLargeDoor",
+		Map = M._MAP,
+		Resource = M["IsabelleIslandTowerLargeDoor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor",
+		MapObject = M["IsabelleIslandTowerLargeDoor"]
+	}
+
+	M["IsabelleIslandTowerLargeDoor"] {
+		ItsyScape.Action.Open(),
+		ItsyScape.Action.Close()
+	}
+end

@@ -1,18 +1,83 @@
 {
 	{
-		tileSetID = "YendorianJungle2",
 		maskID =
 		{
 			default = true,
 		},
 		autoMask = true,
+		tileSetID = "YendorianJungle2",
 	},
 	{
-		tileSetID = "Draft",
+		transform =
+		{
+			translation =
+			{
+				54.750000,
+				-2.500000,
+				-22,
+			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+		},
 		curve =
 		{
-			unit = 2,
+			min =
+			{
+				0,
+				0,
+				0,
+			},
+			max =
+			{
+				8,
+				0,
+				160,
+			},
 			height = 80,
+			unit = 2,
+			normals =
+			{
+				{
+					0,
+					1,
+					0,
+				},
+				{
+					0,
+					1,
+					0,
+				},
+			},
+			scales =
+			{
+				{
+					1,
+					1,
+					1,
+				},
+				{
+					1,
+					1,
+					1,
+				},
+			},
 			rotations =
 			{
 				{
@@ -46,19 +111,7 @@
 					-1,
 				},
 			},
-			min =
-			{
-				0,
-				0,
-				0,
-			},
-			linear = true,
-			axis =
-			{
-				0,
-				0,
-				1,
-			},
+			width = 4,
 			positions =
 			{
 				{
@@ -862,42 +915,25 @@
 					80,
 				},
 			},
-			normals =
+			axis =
 			{
-				{
-					0,
-					1,
-					0,
-				},
-				{
-					0,
-					1,
-					0,
-				},
-			},
-			scales =
-			{
-				{
-					1,
-					1,
-					1,
-				},
-				{
-					1,
-					1,
-					1,
-				},
-			},
-			max =
-			{
-				8,
 				0,
-				160,
+				0,
+				1,
 			},
-			width = 4,
+			linear = true,
 		},
+		tileSetID = "Draft",
+	},
+	{
 		transform =
 		{
+			translation =
+			{
+				36,
+				12.250000,
+				36,
+			},
 			scale =
 			{
 				1,
@@ -917,15 +953,7 @@
 				0,
 				1,
 			},
-			translation =
-			{
-				54.750000,
-				-2.500000,
-				-22,
-			},
 		},
-	},
-	{
 		polygonMask =
 		{
 			{
@@ -1023,7 +1051,7 @@
 				},
 				{
 					0,
-					23.000000,
+					23,
 				},
 				{
 					0.214223,
@@ -1116,33 +1144,5 @@
 			},
 		},
 		tileSetID = "YendorianJungle2",
-		transform =
-		{
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
-			origin =
-			{
-				0,
-				0,
-				0,
-			},
-			rotation =
-			{
-				0,
-				0,
-				0,
-				1,
-			},
-			translation =
-			{
-				36,
-				12.250000,
-				36,
-			},
-		},
 	},
 }
