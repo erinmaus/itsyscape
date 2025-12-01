@@ -2046,6 +2046,8 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 			end
 		end
 
+		d.root:setParent(nil)
+
 		for _, n in ipairs(d.sceneNodes) do
 			n:setParent(nil)
 		end
@@ -2086,7 +2088,8 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 	end
 
 	if decoration and isValid then
-		local d = { sceneNodes = {}, alphaSceneNodes = {} }
+		local d = { root = SceneNode(), sceneNodes = {}, alphaSceneNodes = {} }
+		d.root:setParent(map)
 
 		local SceneNodeType
 		if isSpline then
@@ -2155,7 +2158,7 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 					sceneNode:getMaterial():setTextures(texture)
 				end
 
-				sceneNode:setParent(map)
+				sceneNode:setParent(d.root)
 				table.insert(d.sceneNodes, sceneNode)
 
 				local alphaSceneNode
@@ -2187,7 +2190,7 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 					alphaSceneNode:getMaterial():setOutlineThreshold(-1.0)
 					alphaSceneNode:getMaterial():setShader(shader)
 					alphaSceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 1.0)
-					alphaSceneNode:setParent(map)
+					alphaSceneNode:setParent(d.root)
 
 					m.wallHackDecorations[alphaSceneNode] = true
 					m.wallHackDecorations[sceneNode] = true

@@ -464,7 +464,7 @@ end
 
 function MapEditorApplication:decorationToSceneNode(decoration)
 	local center = Vector.ZERO
-	local features = self:getLastDecorationFeature()
+	local features = self:getLastDecorationFeature() or {}
 	if Class.isCompatibleType(features, Decoration.Feature) then
 		center = features:getPosition()
 	else
@@ -1598,8 +1598,8 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				end
 
 				local group = self.decorationList:getCurrentDecoration()
-				if group and target then
-					self:getGameView():decorate(group, target, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
+				if group and target and self:getGameView():getDecorationLayer(target) then
+					self:getGameView():decorate(group, target, self:getGameView():getDecorationLayer(target), self:getGameView():getDecorationMaterials(decoration))
 				end
 
 				sceneNode:setParent()
@@ -1728,7 +1728,7 @@ function MapEditorApplication:mouseRelease(x, y, button)
 						end
 
 						local center = (v1 + v2 + v3) / Vector(3)
-						local sx, sy = self:getCamera():project(center):get()
+						local sx, sy = self:getCamera():project(center:transform(transform)):get()
 						if sx >= x1 and sx <= x2 and sy >= y1 and sy <= y2 then
 							featuresByIndex[index] = true
 						end
@@ -3171,23 +3171,27 @@ function MapEditorApplication:draw(...)
 			end
 		elseif Class.isCompatibleType(target, Decoration.Feature) then
 			local _, decoration = self.decorationList:getCurrentDecoration()
-			local tileSetFilename = string.format(
-				"Resources/Game/TileSets/%s/Layout.lstatic",
-				decoration:getTileSetID())
-			local staticMesh = self:getGameView():getResourceManager():load(
-				StaticMeshResource,
-				tileSetFilename)
+			if not decoration then
+				self:unsetGizmo()
+			else
+				local tileSetFilename = string.format(
+					"Resources/Game/TileSets/%s/Layout.lstatic",
+					decoration:getTileSetID())
+				local staticMesh = self:getGameView():getResourceManager():load(
+					StaticMeshResource,
+					tileSetFilename)
 
-			local sceneNode = self:decorationFeatureToSceneNode(target)
-			local min, max = staticMesh:getResource():computeBounds(target:getID())
-			local size = (max - min):max(Vector.ONE)
+				local sceneNode = self:decorationFeatureToSceneNode(target)
+				local min, max = staticMesh:getResource():computeBounds(target:getID())
+				local size = (max - min):max(Vector.ONE)
 
-			self.gizmo:update(sceneNode, size)
-			self.gizmo:draw(self:getCamera(), sceneNode)
+				self.gizmo:update(sceneNode, size)
+				self.gizmo:draw(self:getCamera(), sceneNode)
 
-			sceneNode:setParent()
+				sceneNode:setParent()
+			end
 		elseif Class.isCompatibleType(target, Decoration) then
-			local features = self:getLastDecorationFeature()
+			local features = self:getLastDecorationFeature() or {}
 			if Class.isCompatibleType(features, Decoration.Feature) then
 				features = { features }
 			end
@@ -3218,6 +3222,20 @@ function MapEditorApplication:draw(...)
 			self.gizmo:update(sceneNode, max - min)
 			self.gizmo:draw(self:getCamera(), sceneNode)
 		end
+	end
+
+	if self.isDecorationCursorActive then
+		local x, y = love.mouse.getPosition()
+		local x1, y1 = math.min(self.decorationCursorSelectX, x), math.min(self.decorationCursorSelectY, y)
+		local x2, y2 = math.max(self.decorationCursorSelectX, x), math.max(self.decorationCursorSelectY, y)
+
+		love.graphics.push("all")
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setLineWidth(2)
+
+		love.graphics.rectangle("line", x1, y1, x2 - x1, y2 - y1)
+
+		love.graphics.pop()
 	end
 
 	do
