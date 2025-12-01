@@ -25,8 +25,8 @@ local Door = Class(PropView)
 Door.ANIMATION_OPEN  = 1
 Door.ANIMATION_CLOSE = 2
 
-Door.LEFT_DOOR_OFFSET  = Vector(-3, 1.5, 2)
-Door.RIGHT_DOOR_OFFSET  = Vector(3, 1.5, 2)
+Door.LEFT_DOOR_OFFSET  = Vector(3, 7, 2)
+Door.RIGHT_DOOR_OFFSET  = Vector(-3, 7, 2)
 
 function Door:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -59,11 +59,11 @@ function Door:getLocalPosition(boneName, offset)
 	local transform = self.transforms:getTransform(boneIndex)
 
 	local combinedTransform = love.math.newTransform()
-	combinedTransform:translate(offset:get())
+	--combinedTransform:translate(offset:get())
 	combinedTransform:applyQuaternion((-Quaternion.X_90):get())
 	combinedTransform:apply(transform)
 
-	return Vector.ZERO:transform(combinedTransform)
+	return (Quaternion.X_90:transformVector(offset)):transform(combinedTransform)
 end
 
 function Door:getWorldPosition(boneName, offset)
@@ -226,10 +226,9 @@ function Door:update(delta)
 
 		local skeleton = self.skeleton:getResource()
 		skeleton:applyTransforms(self.transforms)
+		skeleton:applyBindPose(self.transforms)
 
 		self:updatePositions()
-
-		skeleton:applyBindPose(self.transforms)
 	end
 end
 
