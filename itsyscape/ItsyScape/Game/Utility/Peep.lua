@@ -536,7 +536,7 @@ function Peep.setLayer(peep, layer)
 	end
 end
 
-function Peep.setLocalLayer(peep, localLayer, mapScript)
+function Peep.getLocalLayer(peep, localLayer, mapScript)
 	mapScript = mapScript or Peep.getMapScript(peep)
 	if not mapScript then
 		return
@@ -549,6 +549,25 @@ function Peep.setLocalLayer(peep, localLayer, mapScript)
 	end
 
 	local mapGroup = instance:getMapGroup(mapScriptLayer)
+	if not mapGroup then
+		return
+	end
+
+	return instance:getLocalLayerFromGlobalLayer(mapGroup, Utility.Peep.getLayer(peep))
+end
+
+function Peep.setLocalLayer(peep, localLayer, mapScript)
+	mapScript = mapScript or Peep.getMapScript(peep)
+	if not mapScript then
+		return
+	end
+
+	local instance = Utility.Peep.getInstance(peep)
+	if not instance then
+		return
+	end
+
+	local mapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
 	if not mapGroup then
 		return
 	end

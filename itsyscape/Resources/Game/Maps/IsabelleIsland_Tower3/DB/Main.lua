@@ -107,12 +107,25 @@ end
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 95,
+		PositionX = 50,
 		PositionY = 0,
-		PositionZ = 95,
+		PositionZ = 50,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
+	}
+end
+
+M["Anchor_Floor2Spawn"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15,
+		PositionY = 0,
+		PositionZ = 15,
+		Layer = 4,
+		Name = "Anchor_Floor2Spawn",
+		Map = M._MAP,
+		Resource = M["Anchor_Floor2Spawn"]
 	}
 end
 

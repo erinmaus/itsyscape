@@ -610,8 +610,6 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		{ format = "rgba8" })
 	fogCanvas:setFilter("linear", "linear")
 
-	node._layer = layer
-
 	local m = {
 		tileSet = tileSet,
 		largeTileSet = largeTileSet,
@@ -1454,6 +1452,8 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled, pa
 		if parentNode ~= node:getParent() and not self.skyboxes[node] then
 			node:setParent(parentNode)
 		end
+
+		m.parentLayer = parentLayer or false
 	end
 
 	local m = self.mapMeshes[layer]
@@ -1536,7 +1536,7 @@ function GameView:_updateMapNodeWallHack(m, delta)
 	local wallHackParameters = m.wallHackParameters
 	local time = math.min((wallHackParameters and wallHackParameters.time or 0) + delta, self.WALL_HACK_EXPAND_DURATION)
 
-	if not wallHackParameters or m.wallHackDirty or
+	if not wallHackParameters or m.wallHackDirty or self.forceDirtyWallHack or
 	   wallHackParameters.left ~= wallHackLeft or wallHackParameters.right ~= wallHackRight or
 	   wallHackParameters.top ~= wallHackTop or wallHackParameters.bottom ~= wallHackBottom or
 	   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up or
@@ -1819,6 +1819,11 @@ function GameView:getMap(layer)
 	if m then
 		return m.map
 	end
+end
+
+function GameView:getParentLayer(layer)
+	local m = self.mapMeshes[layer]
+	return m and m.parentLayer
 end
 
 function GameView:getMapBumpCanvas(layer)
@@ -2784,6 +2789,18 @@ function GameView:updateMapQueries(delta)
 end
 
 function GameView:updateMaps(delta)
+	local layer
+	do
+		local playerActor = self:getGame():getPlayer() and self:getGame():getPlayer():getActor()
+		if playerActor then
+			local _, _, k = playerActor:getTile()
+			layer = k
+		end
+	end
+
+	self.forceDirtyWallHack = layer ~= self.currentPlayerLayer
+	self.currentPlayerLayer = layer
+
 	for _, m in pairs(self.mapMeshes) do
 		self:_updateMapNodeWallHack(m, delta)
 		self:_updateMapWater(m, delta)

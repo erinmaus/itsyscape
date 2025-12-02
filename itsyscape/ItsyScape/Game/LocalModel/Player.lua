@@ -100,6 +100,7 @@ function LocalPlayer:saveLocation()
 		local position = Utility.Peep.getPosition(self.actor:getPeep())
 		locationStorage:set({
 			name = self.instance:getFilename(),
+			layer = Utility.Peep.getLocalLayer(self.actor:getPeep()),
 			x = position.x,
 			y = position.y,
 			z = position.z
@@ -192,6 +193,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 								location:get("x"),
 								location:get("y"),
 								location:get("z")))
+						Utility.Peep.setLocalLayer(actor:getPeep(), location:get("layer") or 1)
 
 						local statusStorage = root:getSection("Status")
 						local status = actor:getPeep():getBehavior(CombatStatusBehavior)

@@ -168,6 +168,7 @@ function Common.save(player, saveLocation, talk, ...)
 						location:set({
 							name = map.name,
 							instance = isInstanced,
+							layer = Utility.Peep.getLocalLayer(player),
 							x = position.position.x,
 							y = position.position.y,
 							z = position.position.z
@@ -176,6 +177,7 @@ function Common.save(player, saveLocation, talk, ...)
 						spawn:set({
 							name = map.name,
 							instance = isInstanced,
+							layer = Utility.Peep.getLocalLayer(player),
 							x = position.position.x,
 							y = position.position.y,
 							z = position.position.z

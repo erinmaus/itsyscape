@@ -974,6 +974,21 @@ function Instance:getGlobalLayerFromLocalLayer(group, index)
 	return g[index]
 end
 
+function Instance:getLocalLayerFromGlobalLayer(group, layer)
+	local g = self.mapGroups[group]
+	if not g then
+		return 1
+	end
+
+	for localLayer, globalLayer in pairs(g) do
+		if globalLayer == layer then
+			return localLayer
+		end
+	end
+
+	return 1
+end
+
 function Instance:addLayer(layer, group, player)
 	if not self.layersByID[layer] then
 		Log.engine("Adding layer %d to instance %s (%d).", layer, self:getFilename(), self:getID())

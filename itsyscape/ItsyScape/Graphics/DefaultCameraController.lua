@@ -976,6 +976,10 @@ function DefaultCameraController:_clampCenter(center)
 	end
 
 	local _, _, layer = actor:getTile()
+	while self:getGameView():getParentLayer(layer) do
+		layer = self:getGameView():getParentLayer(layer)
+	end
+
 	local map = self:getGameView():getMap(layer)
 	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
 
