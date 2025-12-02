@@ -156,17 +156,24 @@ function MapEditorApplication:makeCurveCircle(layer)
 		normals = { { 0, 1, 0 }, { 0, 1, 0 } },
 		scales = { { 1, 1, 1 }, { 1, 1, 1 } },
 		rotations = {
-			{ Quaternion.IDENTITY:get() },
-			{ Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi / 2):get() },
-			{ Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi):get() },
-			{ Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi + math.pi / 2):get() },
-			{ Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi * 2):get() }
+			-- These commented out orientations are for without the (math.pi + math.pi / 2) offset
+			-- applied in the position loop.
+			-- { Quaternion.IDENTITY:get() },
+			-- { Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi / 2):get() },
+			-- { Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi):get() },
+			-- { Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi + math.pi / 2):get() },
+			-- { Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi * 2):get() }
+			{ Quaternion.fromEulerXYZ(0, math.rad(90), 0):get() },
+			{ Quaternion.fromEulerXYZ(0, math.rad(-45), 0):get() },
+			{ Quaternion.fromEulerXYZ(0, math.rad(-45), 0):get() },
+			{ Quaternion.fromEulerXYZ(math.rad(180), math.rad(0), math.rad(180)):get() },
+			{ Quaternion.fromEulerXYZ(0, math.rad(90), 0):get() },
 		}
 	}
 
 	local positionCount = math.max(map:getHeight() * 2, 4)
 	for i = 1, positionCount do
-		local angle = (i - 1) / (positionCount - 1) * math.pi * 2
+		local angle = (i - 1) / (positionCount - 1) * math.pi * 2 + math.pi + math.pi / 2
 		local position = center + Vector(math.cos(angle) * radius, 0, math.sin(angle) * radius)
 
 		table.insert(config.positions, { position:get() })
@@ -1617,7 +1624,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					self.curve:getNormals():set(target:getIndex(), MapCurve.Normal(rotation:transformVector(Vector.UNIT_Y):getNormal():get()))
 					self.gizmo:setTarget(self.curve:getNormals():get(target:getIndex()))
 				elseif Class.isCompatibleType(target, MapCurve.Rotation) then
-					self.curve:getRotations():set(target:getIndex(), MapCurve.Rotation(rotation:get()))
+					self.curve:getRotations():set(target:getIndex(), MapCurve.Rotation(rotation:getNormal():get()))
 					self.gizmo:setTarget(self.curve:getRotations():get(target:getIndex()))
 				elseif Class.isCompatibleType(target, MapCurve.Scale) then
 					self.curve:getScales():set(target:getIndex(), MapCurve.Scale(scale:get()))
