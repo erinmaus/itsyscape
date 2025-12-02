@@ -469,6 +469,12 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 	auto shadow_map = shadow_pass->get_shadow_map();
 	shader_cache.update_uniform(shader, "scape_ShadowMap", static_cast<love::graphics::Texture*>(shadow_map));
 
+	auto shadow_colors_map = shadow_pass->get_shadow_colors_map();
+	shader_cache.update_uniform(shader, "scape_ShadowColorsMap", static_cast<love::graphics::Texture*>(shadow_colors_map));
+
+	auto shadow_colors = shadow_pass->get_shadow_colors();
+	shader_cache.update_uniform(shader, "scape_ShadowColorTexture", static_cast<love::graphics::Texture*>(shadow_colors));
+
 	auto texel_size = glm::vec2(1.0f / shadow_map->getWidth(), 1.0f / shadow_map->getHeight());
 	shader_cache.update_uniform(shader, "scape_TexelSize", glm::value_ptr(texel_size), sizeof(glm::vec2));
 
@@ -493,7 +499,7 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 	int num_cascades = shadow_pass->get_num_cascades();
 	shader_cache.update_uniform(shader, "scape_NumCascades", &num_cascades, sizeof(int));
 	
-	auto shadow_alpha = std::max(1.0f - std::min(ambient_light, 1.0f), 0.3f);
+	auto shadow_alpha = std::max(1.0f - std::min(ambient_light, 1.0f), 0.5f);
 	shader_cache.update_uniform(shader, "scape_ShadowAlpha", &shadow_alpha, sizeof(float));
 
 	float near = get_renderer()->get_camera().get_near();

@@ -453,6 +453,21 @@ void nbunny::SceneNodeMaterial::set_global_wall_hack_window(const glm::vec4& val
 	global_wall_hack_window = value;
 }
 
+void nbunny::SceneNodeMaterial::set_glass_thickness(float value)
+{
+	glass_thickness = value;
+}
+
+float nbunny::SceneNodeMaterial::get_glass_thickness() const
+{
+	return glass_thickness;
+}
+
+bool nbunny::SceneNodeMaterial::get_is_glass() const
+{
+	return glass_thickness >= 0.0f;
+}
+
 const glm::vec4& nbunny::SceneNodeMaterial::get_outline_color() const
 {
 	return outline_color;
@@ -1879,6 +1894,22 @@ static int nbunny_scene_node_material_get_is_shadow_caster(lua_State* L)
     return 1;
 }
 
+static int nbunny_scene_node_material_set_glass_thickness(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_glass_thickness(nbunny::lua::get<lua_Number>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_glass_thickness(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_glass_thickness());
+
+    return 1;
+}
+
 static int nbunny_scene_node_material_set_outline_threshold(lua_State* L)
 {
     auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
@@ -2037,6 +2068,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		{ "getIsCullDisabled", &nbunny_scene_node_material_get_is_cull_disabled },
 		{ "setIsShadowCaster", &nbunny_scene_node_material_set_is_shadow_caster },
 		{ "getIsShadowCaster", &nbunny_scene_node_material_get_is_shadow_caster },
+		{ "setGlassThickness", &nbunny_scene_node_material_set_glass_thickness },
+		{ "getGlassThickness", &nbunny_scene_node_material_get_glass_thickness },
 		{ "setOutlineThreshold", &nbunny_scene_node_material_set_outline_threshold },
 		{ "getOutlineThreshold", &nbunny_scene_node_material_get_outline_threshold },
 		{ "setIsReflectiveOrRefractive", &nbunny_scene_node_material_set_is_reflective_or_refractive },

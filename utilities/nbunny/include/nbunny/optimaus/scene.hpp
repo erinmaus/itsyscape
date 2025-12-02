@@ -129,6 +129,8 @@ namespace nbunny
 		bool is_global_wall_hack_enabled = false;
 		glm::vec4 global_wall_hack_window = glm::vec4(0.0);
 
+		float glass_thickness = -1.0f;
+
 		bool get_current_global_wall_hack_window(glm::vec4& window) const;
 
 	public:
@@ -206,6 +208,10 @@ namespace nbunny
 
 		const glm::vec4& get_global_wall_hack_window() const;
 		void set_global_wall_hack_window(const glm::vec4& value);
+
+		void set_glass_thickness(float value);
+		float get_glass_thickness() const;
+		bool get_is_glass() const;
 
 		void set_shader(const std::shared_ptr<ResourceInstance>& value);
 		const std::shared_ptr<ResourceInstance>& get_shader() const;

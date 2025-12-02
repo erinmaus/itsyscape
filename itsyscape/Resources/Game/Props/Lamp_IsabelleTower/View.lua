@@ -115,7 +115,7 @@ function Lamp:load()
 			self.lamp:getMaterial():setIsFullLit(false)
 			self.lamp:getMaterial():setIsTranslucent(true)
 			self.lamp:getMaterial():setIsZWriteDisabled(true)
-			self.lamp:getMaterial():setZBias(0.015)
+			self.lamp:getMaterial():setZBias(0.5)
 			self.lamp:getMaterial():setOutlineThreshold(0.5)
 			self.lamp:setParent(root)
 

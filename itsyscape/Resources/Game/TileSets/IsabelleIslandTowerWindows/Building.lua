@@ -7,7 +7,8 @@
 				properties = {
 					isTranslucent = true,
 					isFullLit = true,
-					outlineThreshold = 0.5
+					outlineThreshold = 0.5,
+					glassThickness = 1
 				}
 			}
 		},
@@ -16,7 +17,8 @@
 			material = {
 				shader = "Resources/Shaders/MultiTextureWallDecoration",
 				properties = {
-					outlineThreshold = 0.5
+					outlineThreshold = 0.5,
+					isShadowCaster = false
 				}
 			}
 		}

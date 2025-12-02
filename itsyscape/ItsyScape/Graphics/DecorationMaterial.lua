@@ -31,6 +31,7 @@ function DecorationMaterial:new(d)
 		reflectionDistance = 2,
 		roughness = 0,
 		isShaderCaster = false,
+		glassThickness = -1
 	}
 	self.set = {}
 
@@ -256,6 +257,13 @@ function DecorationMaterial:loadFromTable(t)
 	else
 		self.properties.isShadowCaster = true
 	end
+
+	if properties.glassThickness ~= nil then
+		self.set.glassThickness = true
+		self.properties.glassThickness = properties.glassThickness
+	else
+		self.properties.glassThickness = true
+	end
 end
 
 function DecorationMaterial:getUniformValue(name)
@@ -329,7 +337,8 @@ function DecorationMaterial:serialize()
 				reflectionPower = _get(self.set.reflectionPower, self.properties.reflectionPower),
 				reflectionDistance = _get(self.set.reflectionDistance, self.properties.reflectionDistance),
 				roughness = _get(self.set.roughness, self.properties.roughness),
-				isShadowCaster = _get(self.set.isShadowCaster, self.properties.isShadowCaster)
+				isShadowCaster = _get(self.set.isShadowCaster, self.properties.isShadowCaster),
+				glassThickness = _get(self.set.glassThickness, self.properties.glassThickness)
 			}
 		}
 

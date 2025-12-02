@@ -31,21 +31,21 @@
 		{
 			name = "wood-trim-1",
 			material = {
-				shader = "Resources/Shaders/Decoration",
+				shader = "Resources/Shaders/WallDecoration",
 				texture = "Resources/Game/TileSets/IsabelleIslandTowerWoodWalls/Interior1.png",
 			}
 		},
 		{
 			name = "wood-trim-2",
 			material = {
-				shader = "Resources/Shaders/Decoration",
+				shader = "Resources/Shaders/WallDecoration",
 				texture = "Resources/Game/TileSets/IsabelleIslandTowerWoodWalls/Interior2.png",
 			}
 		},
 		{
 			name = "wallpaper",
 			material = {
-				shader = "Resources/Shaders/Decoration",
+				shader = "Resources/Shaders/WallDecoration",
 				texture = "Resources/Game/TileSets/IsabelleIslandTowerWoodWalls/Wallpaper.png",
 			}
 		}

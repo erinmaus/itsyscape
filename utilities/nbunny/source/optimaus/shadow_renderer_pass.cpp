@@ -23,17 +23,14 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 	SceneNode::sort_by_material(visible_scene_nodes);
 
 	shadow_casting_scene_nodes.clear();
+	glass_scene_nodes.clear();
 	directional_lights.clear();
+
 	for (auto& visible_scene_node: visible_scene_nodes)
 	{
 		auto& material = visible_scene_node->get_material();
 
-		if (material.get_is_translucent())
-		{
-			continue;
-		}
-
-		if (material.get_color().a < 1.0f)
+		if (material.get_is_translucent() && material.get_color().a < 1.0f && !material.get_is_glass())
 		{
 			continue;
 		}
@@ -70,7 +67,11 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 				directional_lights.push_back(light_node);
 			}
 		}
-		else 
+		else if (material.get_is_glass())
+		{
+			glass_scene_nodes.push_back(visible_scene_node);
+		}
+		else
 		{
 			shadow_casting_scene_nodes.push_back(visible_scene_node);
 		}
@@ -152,6 +153,108 @@ love::graphics::Shader* nbunny::ShadowRendererPass::get_node_shader(lua_State* L
     return RendererPass::get_node_shader(L, node);
 }
 
+void nbunny::ShadowRendererPass::prepare_passes()
+{
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	for (int i = 0; i < num_cascades; ++i)
+	{
+		love::graphics::Graphics::RenderTargets render_targets;
+
+		render_targets.depthStencil = love::graphics::Graphics::RenderTarget(shadow_colors_map, i);
+		render_targets.colors.push_back(love::graphics::Graphics::RenderTarget(shadow_colors, i));
+
+		graphics->setCanvas(render_targets);
+
+		graphics->clear(
+			love::Colorf(0.0f, 0.0f, 0.0f, 1.0f),
+			0,
+			1.0f);
+	}
+
+	for (int i = 0; i < num_cascades; ++i)
+	{
+		love::graphics::Graphics::RenderTargets render_targets;
+
+		render_targets.depthStencil = love::graphics::Graphics::RenderTarget(shadow_map, i);
+
+		graphics->setCanvas(render_targets);
+
+		graphics->clear(
+			love::graphics::OptionalColorf(),
+			0,
+			1.0f);
+	}
+}
+
+void nbunny::ShadowRendererPass::draw_pass(lua_State* L, float delta, const std::vector<SceneNode*>& nodes, love::graphics::Canvas* depth, love::graphics::Canvas* color, bool sort)
+{
+	auto renderer = get_renderer();
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	for (int i = 0; i < num_cascades; ++i)
+	{
+		glm::mat4 projection_matrix, view_matrix;
+
+		love::graphics::Graphics::RenderTargets render_targets;
+
+		if (depth)
+		{
+			render_targets.depthStencil = love::graphics::Graphics::RenderTarget(depth, i);
+		}
+
+		if (color)
+		{
+			render_targets.colors.push_back(love::graphics::Graphics::RenderTarget(color, i));
+		}
+
+		graphics->setCanvas(render_targets);
+
+		get_light_projection_view_matrix(i, delta, projection_matrix, view_matrix);
+
+		auto projection_transform = love::Matrix4(glm::value_ptr(projection_matrix));
+		graphics->setProjection(projection_transform);
+	
+		love::math::Transform view_transform(love::Matrix4(glm::value_ptr(view_matrix)));
+		graphics->replaceTransform(&view_transform);
+
+		Camera shadow_camera;
+		shadow_camera.update(view_matrix, projection_matrix);
+
+		if (sort)
+		{
+			SceneNode::sort_by_position(glass_scene_nodes, shadow_camera, delta);
+		}
+
+		for (auto& scene_node: nodes)
+		{
+			auto& material = scene_node->get_material();
+
+			if (!shadow_camera.inside(*scene_node, delta))
+			{
+				continue;
+			}
+
+			auto shader = get_node_shader(L, *scene_node);
+			if (!shader)
+			{
+				continue;
+			}
+			renderer->set_current_shader(shader);
+
+			if (material.get_is_glass())
+			{
+				auto color = material.get_color();
+				color.w *= material.get_glass_thickness();
+
+				graphics->setColor(love::Colorf(color.x, color.y, color.z, color.w));
+			}
+
+			renderer->draw_node(L, *scene_node, delta);
+		}
+	}
+}
+
 void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 {
 	auto renderer = get_renderer();
@@ -176,54 +279,17 @@ void nbunny::ShadowRendererPass::draw_nodes(lua_State* L, float delta)
 	enabled_mask.b = true;
 	enabled_mask.a = true;
 
+	prepare_passes();
+
 	graphics->setColorMask(disabled_mask);
 	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
 	graphics->setMeshCullMode(love::graphics::CULL_BACK);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
 
-	for (int i = 0; i < num_cascades; ++i)
-	{
-		glm::mat4 projection_matrix, view_matrix;
-
-		love::graphics::Graphics::RenderTargets render_targets;
-
-		render_targets.depthStencil = love::graphics::Graphics::RenderTarget(shadow_map, i);
-		graphics->setCanvas(render_targets);
-
-		get_light_projection_view_matrix(i, delta, projection_matrix, view_matrix);
-
-		auto projection_transform = love::Matrix4(glm::value_ptr(projection_matrix));
-		graphics->setProjection(projection_transform);
-	
-		love::math::Transform view_transform(love::Matrix4(glm::value_ptr(view_matrix)));
-		graphics->replaceTransform(&view_transform);
-
-		graphics->clear(
-			love::graphics::OptionalColorf(),
-			0,
-			1.0f);
-
-		Camera shadow_camera;
-		shadow_camera.update(view_matrix, projection_matrix);
-
-		for (auto& scene_node: shadow_casting_scene_nodes)
-		{
-			if (!shadow_camera.inside(*scene_node, delta))
-			{
-				continue;
-			}
-
-			auto shader = get_node_shader(L, *scene_node);
-			if (!shader)
-			{
-				continue;
-			}
-			renderer->set_current_shader(shader);
-
-			renderer->draw_node(L, *scene_node, delta);
-		}
-	}
+	draw_pass(L, delta, shadow_casting_scene_nodes, shadow_map, nullptr, false);
 
 	graphics->setColorMask(enabled_mask);
+	draw_pass(L, delta, glass_scene_nodes, shadow_colors_map, shadow_colors, true);
 }
 
 nbunny::ShadowRendererPass::ShadowRendererPass(int num_cascades) :
@@ -243,6 +309,16 @@ nbunny::ShadowRendererPass::~ShadowRendererPass()
 love::graphics::Canvas* nbunny::ShadowRendererPass::get_shadow_map()
 {
 	return shadow_map;
+}
+
+love::graphics::Canvas* nbunny::ShadowRendererPass::get_shadow_colors_map()
+{
+	return shadow_colors_map;
+}
+
+love::graphics::Canvas* nbunny::ShadowRendererPass::get_shadow_colors()
+{
+	return shadow_colors;
 }
 
 int nbunny::ShadowRendererPass::get_num_cascades() const
@@ -283,16 +359,28 @@ void nbunny::ShadowRendererPass::resize(int width, int height)
 
 	love::graphics::Graphics* instance = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
-	love::graphics::Canvas::Settings settings;
-	settings.width = this->width;
-	settings.height = this->height;
-	settings.layers = num_cascades;
-	settings.dpiScale = instance->getScreenDPIScale();
-	settings.format = love::PIXELFORMAT_DEPTH16;
-	settings.type = love::graphics::TEXTURE_2D_ARRAY;
-	settings.readable = true;
+	love::graphics::Canvas::Settings shadow_map_settings;
+	shadow_map_settings.width = this->width;
+	shadow_map_settings.height = this->height;
+	shadow_map_settings.layers = num_cascades;
+	shadow_map_settings.dpiScale = instance->getScreenDPIScale();
+	shadow_map_settings.format = love::PIXELFORMAT_DEPTH16;
+	shadow_map_settings.type = love::graphics::TEXTURE_2D_ARRAY;
+	shadow_map_settings.readable = true;
 
-	shadow_map = instance->newCanvas(settings);
+	shadow_map = instance->newCanvas(shadow_map_settings);
+	shadow_colors_map = instance->newCanvas(shadow_map_settings);
+
+	love::graphics::Canvas::Settings shadow_colors_settings;
+	shadow_colors_settings.width = this->width;
+	shadow_colors_settings.height = this->height;
+	shadow_colors_settings.layers = num_cascades;
+	shadow_colors_settings.dpiScale = instance->getScreenDPIScale();
+	shadow_colors_settings.format = love::PIXELFORMAT_RGBA8;
+	shadow_colors_settings.type = love::graphics::TEXTURE_2D_ARRAY;
+	shadow_colors_settings.readable = true;
+
+	shadow_colors = instance->newCanvas(shadow_colors_settings);
 }
 
 void nbunny::ShadowRendererPass::attach(Renderer& renderer)

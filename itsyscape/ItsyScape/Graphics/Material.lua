@@ -109,6 +109,18 @@ function Material:setIsShadowCaster(value)
 	self._handle:setIsShadowCaster(value == nil and true or not not value)
 end
 
+function Material:getGlassThickness()
+	return self._handle:getGlassThickness()
+end
+
+function Material:unsetGlassThickness()
+	self._handle:setGlassThickness(-1)
+end
+
+function Material:setGlassThickness(value)
+	self._handle:setGlassThickness(value)
+end
+
 function Material:getIsRendered()
 	return self._handle:getIsRendered()
 end

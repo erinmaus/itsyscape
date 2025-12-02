@@ -20,6 +20,15 @@ vec4 getWallHackPlane(vec3 normal, vec3 point)
 	return vec4(normal, d);
 }
 
+#ifdef SCAPE_SHADOW_PASS
+
+float getWallHackAlpha(vec3 position)
+{
+	return 1.0;
+}
+
+#else
+
 float getWallHackAlpha(vec3 position)
 {
 #ifdef SCAPE_WALL_HACK_DO_NOT_CLAMP_TO_XZ
@@ -67,3 +76,5 @@ float getWallHackAlpha(vec3 position)
 
 	return alpha;
 }
+
+#endif

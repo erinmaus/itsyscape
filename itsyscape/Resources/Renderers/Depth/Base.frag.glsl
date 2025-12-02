@@ -18,8 +18,6 @@ precision highp float;
 
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 250.0 / 255.0
 
-#define SCAPE_SHADOW_PASS
-
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
 varying vec2 frag_Texture;
