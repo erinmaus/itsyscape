@@ -164,6 +164,8 @@ vec4 effect(
 	vec4 diffuse = performEffect(color, frag_Texture);
 #endif
 
+	diffuse.a *= getGlobalWallHackAlpha(frag_Position, 1.0);
+
 	float alpha = diffuse.a * color.a;
 	if (alpha < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{

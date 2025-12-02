@@ -254,6 +254,22 @@ function Material:setShimmerColor(value)
 	self._handle:setShimmerColor((value or Color(0)):get())
 end
 
+function Material:getIsGlobalWallHackEnabled()
+	return self._handle:getIsGlobalWallHackEnabled()
+end
+
+function Material:setIsGlobalWallHackEnabled(value)
+	self._handle:setIsGlobalWallHackEnabled(value)
+end
+
+function Material:getGlobalWallHackWindow()
+	return self._handle:getGlobalWallHackWindow()
+end
+
+function Material:setGlobalWallHackWindow(left, right, top, bottom)
+	self._handle:setGlobalWallHackWindow(left, right, top, bottom)
+end
+
 -- Gets the number of textures.
 function Material:getNumTextures()
 	return #self.textures

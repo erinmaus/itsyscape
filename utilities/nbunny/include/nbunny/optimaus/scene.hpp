@@ -126,6 +126,11 @@ namespace nbunny
 		bool is_shimmer_enabled = false;
 		glm::vec4 shimmer_color = glm::vec4(1.0f);
 
+		bool is_global_wall_hack_enabled = false;
+		glm::vec4 global_wall_hack_window = glm::vec4(0.0);
+
+		bool get_current_global_wall_hack_window(glm::vec4& window) const;
+
 	public:
 		SceneNodeMaterial(SceneNode& scene_node);
 		~SceneNodeMaterial() = default;
@@ -195,6 +200,12 @@ namespace nbunny
 
 		const glm::vec4& get_outline_color() const;
 		void set_outline_color(const glm::vec4& value);
+
+		void set_is_global_wall_hack_enabled(bool value);
+		bool get_is_global_wall_hack_enabled() const;
+
+		const glm::vec4& get_global_wall_hack_window() const;
+		void set_global_wall_hack_window(const glm::vec4& value);
 
 		void set_shader(const std::shared_ptr<ResourceInstance>& value);
 		const std::shared_ptr<ResourceInstance>& get_shader() const;

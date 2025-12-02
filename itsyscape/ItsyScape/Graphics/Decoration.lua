@@ -184,7 +184,6 @@ function Decoration:loadFromTable(t)
 		local color = Color(unpack(feature.color or { 1, 1, 1, 1 }))
 		local texture = feature.texture or 1
 		local material = feature.material or false
-		print(">>> texture", texture)
 		self:add(feature.id, position, rotation, scale, color, texture, material)
 	end
 

@@ -182,6 +182,23 @@ nbunny::SceneNodeMaterial::SceneNodeMaterial(SceneNode& scene_node) :
 	// Nothing.
 }
 
+bool nbunny::SceneNodeMaterial::get_current_global_wall_hack_window(glm::vec4& result) const
+{
+	auto current_node = &get_scene_node();
+	while (current_node)
+	{
+		if (current_node->get_material().get_is_global_wall_hack_enabled())
+		{
+			result = current_node->get_material().get_global_wall_hack_window();
+			return true;
+		}
+
+		current_node = current_node->get_parent();
+	}
+
+	return false;
+}
+
 nbunny::SceneNode& nbunny::SceneNodeMaterial::get_scene_node()
 {
 	return scene_node;
@@ -416,6 +433,26 @@ void nbunny::SceneNodeMaterial::set_color(const glm::vec4& value)
 	color = value;
 }
 
+bool nbunny::SceneNodeMaterial::get_is_global_wall_hack_enabled() const
+{
+	return is_global_wall_hack_enabled;
+}
+
+void nbunny::SceneNodeMaterial::set_is_global_wall_hack_enabled(bool value)
+{
+	is_global_wall_hack_enabled = value;
+}
+
+const glm::vec4& nbunny::SceneNodeMaterial::get_global_wall_hack_window() const
+{
+	return global_wall_hack_window;
+}
+
+void nbunny::SceneNodeMaterial::set_global_wall_hack_window(const glm::vec4& value)
+{
+	global_wall_hack_window = value;
+}
+
 const glm::vec4& nbunny::SceneNodeMaterial::get_outline_color() const
 {
 	return outline_color;
@@ -504,6 +541,11 @@ void nbunny::SceneNodeMaterial::apply_uniforms(ShaderCache& cache, love::graphic
 	{
 		cache.update_uniform(shader, i.first, i.second);
 	}
+
+	glm::vec4 window = glm::vec4(0.0);
+	get_current_global_wall_hack_window(window);
+
+	cache.update_uniform(shader, "scape_GlobalWallHackWindow", glm::value_ptr(window), sizeof(glm::vec4));
 }
 
 bool nbunny::SceneNodeMaterial::operator <(const SceneNodeMaterial& other) const
@@ -1525,6 +1567,44 @@ static int nbunny_scene_node_material_get_color(lua_State* L)
 	return 4;
 }
 
+static int nbunny_scene_node_material_set_is_global_wall_hack_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_global_wall_hack_enabled(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_global_wall_hack_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_global_wall_hack_enabled());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_global_wall_hack_window(lua_State* L)
+{
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+	float left = (float)luaL_checknumber(L, 2);
+	float right = (float)luaL_checknumber(L, 3);
+	float top = (float)luaL_checknumber(L, 4);
+	float bottom = (float)luaL_checknumber(L, 5);
+	material->set_global_wall_hack_window(glm::vec4(left, right, top, bottom));
+	return 0;
+}
+
+static int nbunny_scene_node_material_get_global_wall_hack_window(lua_State* L)
+{
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+	const auto& global_wall_hack_window = material->get_global_wall_hack_window();
+	lua_pushnumber(L, global_wall_hack_window.x); // left
+	lua_pushnumber(L, global_wall_hack_window.y); // right
+	lua_pushnumber(L, global_wall_hack_window.z); // top
+	lua_pushnumber(L, global_wall_hack_window.w); // bottom
+	return 4;
+}
+
 static int nbunny_scene_node_material_set_shimmer_color(lua_State* L)
 {
 	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
@@ -1987,6 +2067,10 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		{ "setFloatUniform", &nbunny_scene_node_material_send_float },
 		{ "setTextureUniform", &nbunny_scene_node_material_send_texture },
 		{ "unsetUniform", &nbunny_scene_node_material_unset_uniform },
+		{ "setIsGlobalWallHackEnabled", &nbunny_scene_node_material_set_is_global_wall_hack_enabled },
+		{ "getIsGlobalWallHackEnabled", &nbunny_scene_node_material_get_is_global_wall_hack_enabled },
+		{ "setGlobalWallHackWindow", &nbunny_scene_node_material_set_global_wall_hack_window },
+		{ "getGlobalWallHackWindow", &nbunny_scene_node_material_get_global_wall_hack_window },
 		{ "__lt", nbunny_scene_node_material_lt },
 		{ nullptr, nullptr }
 	};

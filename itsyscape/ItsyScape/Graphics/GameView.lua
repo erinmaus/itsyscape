@@ -1516,6 +1516,19 @@ function GameView:_updateMapNodeWallHack(m, delta)
 		end
 	end
 
+	local isGlobalWallHack = false
+	if wallHackEnabled then
+		local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
+		if playerActor then
+			local _, _, layer = playerActor:getTile()
+			isGlobalWallHack = m.layer ~= layer
+
+			if m.meta and type(m.meta.wallHack) == "table" then
+				wallHackEnabled = not not m.meta.wallHack.global
+			end
+		end
+	end
+
 	local globalTransform = m.node:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 	local _, rotation = MathCommon.decomposeTransform(globalTransform)
 	local up = rotation:transformVector(Vector.UNIT_Y):getNormal()
@@ -1566,22 +1579,29 @@ function GameView:_updateMapNodeWallHack(m, delta)
 		m.wallHackParameters = wallHackParameters
 		m.wallHackDirty = false
 
-		if isMapWallhackEnabled then
-			for _, part in ipairs(m.parts) do
-				local material = part.node:getMaterial()
-				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
-				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
-				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
-			end
+		if isGlobalWallHack then
+			m.node:getMaterial():setIsGlobalWallHackEnabled(wallHackEnabled and isMapWallhackEnabled)
+			m.node:getMaterial():setGlobalWallHackWindow(currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
 		else
-			for _, part in ipairs(m.parts) do
-				local material = part.node:getMaterial()
-				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
-				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
-				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+			m.node:getMaterial():setIsGlobalWallHackEnabled(false)
+
+			if isMapWallhackEnabled then
+				for _, part in ipairs(m.parts) do
+					local material = part.node:getMaterial()
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
+				end
+			else
+				for _, part in ipairs(m.parts) do
+					local material = part.node:getMaterial()
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+				end
 			end
 		end
-		
+
 		for decoration in pairs(m.wallHackDecorations) do
 			local material = decoration:getMaterial()
 			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
@@ -2242,6 +2262,10 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 
 			if callback then
 				callback(d)
+			end
+
+			if decoration:getIsWall() then
+				m.wallHackDirty = true
 			end
 		end)
 

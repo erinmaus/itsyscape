@@ -1,6 +1,6 @@
 {
 	tileSetID = "IsabelleIslandTowerWindows",
-	isWall = false,
+	isWall = true,
 	{
 		id = "glass",
 		position = { 1.750000, 17.500000, 40.250000 },

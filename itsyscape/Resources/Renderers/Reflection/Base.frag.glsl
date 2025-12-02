@@ -42,6 +42,8 @@ void effect()
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
 #endif
 
+	diffuse.a *= getGlobalWallHackAlpha(frag_Position, 1.0);
+
 	if (diffuse.a < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{
 		discard;
