@@ -14,9 +14,10 @@ local Building = Class()
 
 Building.DecorationGroupFeature = Class()
 
-function Building.DecorationGroupFeature:new(id, material)
+function Building.DecorationGroupFeature:new(id, material, texture)
 	self.id = id
 	self.material = material
+	self.texture = texture
 end
 
 function Building.DecorationGroupFeature:getID()
@@ -27,10 +28,15 @@ function Building.DecorationGroupFeature:getMaterial()
 	return self.material
 end
 
+function Building.DecorationGroupFeature:getTexture()
+	return self.texture
+end
+
 function Building.DecorationGroupFeature:serialize()
 	return {
 		id = self.id,
-		material = self.material
+		material = self.material,
+		texture = self.texture
 	}
 end
 
@@ -145,7 +151,7 @@ function Building:loadFromTable(d)
 	for _, decoration in ipairs(d.decorations) do
 		local g = Building.DecorationGroup(decoration.name)
 		for i, feature in ipairs(decoration.features) do
-			local f = Building.DecorationGroupFeature(feature.id, feature.material)
+			local f = Building.DecorationGroupFeature(feature.id, feature.material, feature.texture)
 			g:addFeature(f)
 		end
 

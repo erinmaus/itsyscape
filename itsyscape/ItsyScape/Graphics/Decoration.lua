@@ -90,7 +90,7 @@ function Decoration.Feature:serialize()
 		rotation = { self:getHandle():getRotation() },
 		scale = { self:getHandle():getScale() },
 		color = { self:getHandle():getColor() },
-		texture = self:getHandle():getTexture(),
+		texture = self:getHandle():getTexture() + 1,
 		material = self.material
 	}
 end
@@ -184,6 +184,7 @@ function Decoration:loadFromTable(t)
 		local color = Color(unpack(feature.color or { 1, 1, 1, 1 }))
 		local texture = feature.texture or 1
 		local material = feature.material or false
+		print(">>> texture", texture)
 		self:add(feature.id, position, rotation, scale, color, texture, material)
 	end
 

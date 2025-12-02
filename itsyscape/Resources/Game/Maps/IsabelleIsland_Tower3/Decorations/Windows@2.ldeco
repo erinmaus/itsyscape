@@ -1,0 +1,22 @@
+{
+	tileSetID = "IsabelleIslandTowerWindows",
+	isWall = false,
+	{
+		id = "glass",
+		position = { 1.750000, 17.500000, 40.250000 },
+		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
+		scale = { 1.312500, 1.312500, 1.312500 },
+		color = { 1.000000, 1.000000, 1.000000, 1.000000 },
+		texture = 1,
+		material = "glass",
+	},
+	{
+		id = "metal",
+		position = { 1.750000, 17.500000, 40.250000 },
+		rotation = { 0.000000, 0.707107, 0.000000, 0.707107 },
+		scale = { 1.312500, 1.312500, 1.312500 },
+		color = { 1.000000, 1.000000, 1.000000, 1.000000 },
+		texture = 2,
+		material = "metal",
+	},
+}

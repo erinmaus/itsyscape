@@ -1009,7 +1009,7 @@ function MapEditorApplication:mousePress(x, y, button)
 											rotation,
 											scale,
 											self.currentDecorationColor,
-											self.decorationPalette:getCurrentTexture(),
+											groupFeature:getTexture() or self.decorationPalette:getCurrentTexture(),
 											groupFeature:getMaterial())
 										table.insert(features, decoration:getNumFeatures())
 									end
@@ -1240,6 +1240,19 @@ function MapEditorApplication:mousePress(x, y, button)
 
 						table.insert(actions, {
 							id = #actions + 1,
+							verb = self.lockedMapLayer == layer and "Unlock" or "Lock",
+							object = string.format("Layer %d", layer),
+							callback = function()
+								if self.lockedMapLayer == layer then
+									self.lockedMapLayer = false
+								else
+									self.lockedMapLayer = layer
+								end
+							end
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
 							verb = "Delete",
 							object = string.format("Layer %d", layer),
 							callback = function()
@@ -1381,19 +1394,30 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		do
 			self:probe(x, y, false, function(probe)
 				local motion, layer
+				local i, j
 				if self.motion then
 					motion = self.motion
 					layer = self.motionLayer
-				elseif probe:getTile() then
-					local _, _, k = probe:getTile()
-					layer = k
 
-					motion = MapMotion(self:getGame():getStage():getMap(layer))
-					motion:onMousePressed(self:makeMotionEvent(x, y, 1, layer))
+					local _
+					_, i, j = motion:getTile()
+				elseif probe:getTile() then
+					if self.lockedMapLayer then
+						for _, result in ipairs(probe:getResults()) do
+							if result.layer == self.lockedMapLayer then
+								i, j = result[Map.RAY_TEST_RESULT_I], result[Map.RAY_TEST_RESULT_J]
+								layer = result.layer
+								break
+							end
+						end
+					end
+
+					if not (i and j and layer) then
+						i, j, layer = probe:getTile()
+					end
 				end
 
-				if motion and layer then
-					local _, i, j = motion:getTile()
+				if i and j and layer then
 					self.previousI = self.currentI
 					self.previousJ = self.currentJ
 					self.previousLayer = self.currentLayer
@@ -1405,52 +1429,34 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		end
 
 		if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
-			self:probe(x, y, false, function(probe)
-				if not probe:getTile() then
-					return
-				end
+			local i, j = self.currentI, self.currentJ
+			if not self.currentToolNode then
+				self:makeCurrentToolNode()
+			end
 
-				local motion, layer
-				if self.motion then
-					motion = self.motion
-					layer = self.motionLayer
-				else
-					local _, _, k = probe:getTile()
-					layer = k
+			local size = math.max(self.terrainToolPanel.toolSize - 1, 0)
+			self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.currentLayer))
+			self.currentToolNode:fromMap(
+				self:getGame():getStage():getMap(self.currentLayer),
+				motion,
+				i - size,
+				i + size,
+				j - size,
+				j + size)
 
-					motion = MapMotion(self:getGame():getStage():getMap(layer))
-					motion:onMousePressed(self:makeMotionEvent(x, y, nil, layer))
-				end
+			local isShiftDown = love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')
 
-				local _, i, j = motion:getTile()
-				if not self.currentToolNode then
-					self:makeCurrentToolNode()
-				end
-
-				local size = math.max(self.terrainToolPanel.toolSize - 1, 0)
-				self.currentToolNode:setParent(self:getGameView():getMapSceneNode(layer))
-				self.currentToolNode:fromMap(
-					self:getGame():getStage():getMap(layer),
-					motion,
-					i - size,
-					i + size,
-					j - size,
-					j + size)
-
-				local isShiftDown = love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')
-
-				if love.keyboard.isDown('i') and isShiftDown then
-					local map = self:getGame():getStage():getMap(layer)
-					local tile = map:getTile(self.currentI, self.currentJ)
-					tile:setFlag('impassable')
-				elseif love.keyboard.isDown('b') and isShiftDown then
-					local map = self:getGame():getStage():getMap(layer)
-					local tile = map:getTile(self.currentI, self.currentJ)
-					tile:setFlag('building')
-				end
-			end)
+			if love.keyboard.isDown('i') and isShiftDown then
+				local map = self:getGame():getStage():getMap(layer)
+				local tile = map:getTile(self.currentI, self.currentJ)
+				tile:setFlag('impassable')
+			elseif love.keyboard.isDown('b') and isShiftDown then
+				local map = self:getGame():getStage():getMap(layer)
+				local tile = map:getTile(self.currentI, self.currentJ)
+				tile:setFlag('building')
+			end
 		elseif self.currentTool == MapEditorApplication.TOOL_BRUSH then
-			local layer = self.motionLayer or 1
+			local layer = self.motionLayer or self.currentLayer
 			local motion = MapMotion(self:getGame():getStage():getMap(layer))
 			motion:onMousePressed(self:makeMotionEvent(x, y, 1))
 
@@ -1469,34 +1475,29 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				j - size,
 				j + size)
 		elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
-			self:probe(x, y, false, function(probe)
-				if not self.currentToolNode then
-					self:makeCurrentToolNode()
-				end
+			local i, j = self.currentI, self.currentJ
+			local size = math.max(self.landscapeToolPanel:getToolSize(), 0)
 
-				if not probe:getTile() then
-					return
-				end
+			if not self.currentToolNode then
+				self:makeCurrentToolNode()
+			end
 
-				local i, j = probe:getTile()
-				local size = math.max(self.landscapeToolPanel:getToolSize(), 0)
-				self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.currentLayer))
-				self.currentToolNode:fromMap(
-					self:getGame():getStage():getMap(self.currentLayer),
-					false,
-					i - size,
-					i + size,
-					j - size,
-					j + size)
+			self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.currentLayer))
+			self.currentToolNode:fromMap(
+				self:getGame():getStage():getMap(self.currentLayer),
+				false,
+				i - size,
+				i + size,
+				j - size,
+				j + size)
 
-				if self.isDragging then
-					self.previousPaintI = self.currentPaintI or i
-					self.previousPaintJ = self.currentPaintJ or j
-					self.currentPaintI = i
-					self.currentPaintJ = j
-					self:paint()
-				end
-			end)
+			if self.isDragging then
+				self.previousPaintI = self.currentPaintI or i
+				self.previousPaintJ = self.currentPaintJ or j
+				self.currentPaintI = i
+				self.currentPaintJ = j
+				self:paint()
+			end
 		elseif self.currentTool == MapEditorApplication.TOOL_CURVE then
 			if self.isEditingPolygon then
 				self:probe(x, y, false, function(probe)

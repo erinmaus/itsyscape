@@ -25,8 +25,8 @@ local Door = Class(PropView)
 Door.ANIMATION_OPEN  = 1
 Door.ANIMATION_CLOSE = 2
 
-Door.LEFT_DOOR_OFFSET  = Vector(3, 7, 2)
-Door.RIGHT_DOOR_OFFSET  = Vector(-3, 7, 2)
+Door.LEFT_DOOR_OFFSET  = Vector(3, 4.5, 2)
+Door.RIGHT_DOOR_OFFSET  = Vector(-3, 4.5, 2)
 
 function Door:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -35,12 +35,12 @@ function Door:new(prop, gameView)
 	self.spawned = false
 	self.time = false
 
-	self.leftSmokeGreeble = self:addGreeble(SmokeGreeble, { ATTACH_TO_ROOT = true, PARTICLE_SCALE = 1.5, SMOKE_OFFSET = Vector(0, 0.5, 0) })
-	self.leftFireGreeble = self:addGreeble(FlameGreeble, { ATTACH_TO_ROOT = true, PARTICLE_SCALE = 1.5 })
+	self.leftSmokeGreeble = self:addGreeble(SmokeGreeble, { ATTACH_TO_ROOT = true, PARTICLE_SCALE = 2, SMOKE_OFFSET = Vector(0, 0.5, 0) })
+	self.leftFireGreeble = self:addGreeble(FlameGreeble, { ATTACH_TO_ROOT = true, PARTICLE_SCALE = 2 })
 	self.leftFlickerGreeble = self:addGreeble(FlickerGreeble)
 
-	self.rightSmokeGreeble = self:addGreeble(SmokeGreeble, { ATTACH_TO_ROOT = true, PARTICLE_SCALE = 1.5, SMOKE_OFFSET = Vector(0, 0.5, 0) })
-	self.rightFireGreeble = self:addGreeble(FlameGreeble, { ATTACH_TO_ROOT = true, PARTICLE_SCALE = 1.5 })
+	self.rightSmokeGreeble = self:addGreeble(SmokeGreeble, { ATTACH_TO_ROOT = true, PARTICLE_SCALE = 2, SMOKE_OFFSET = Vector(0, 0.5, 0) })
+	self.rightFireGreeble = self:addGreeble(FlameGreeble, { ATTACH_TO_ROOT = true, PARTICLE_SCALE = 2 })
 	self.rightFlickerGreeble = self:addGreeble(FlickerGreeble)
 end
 

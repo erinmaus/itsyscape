@@ -82,10 +82,10 @@ vec3 scapeApplyLight(
 		}
 	}
 
-	vec3 ambientLight = light.ambientCoefficient * color * light.color;
-	vec3 pointLight = attenuation * attenuation * light.color * color;
 	float diffuseCoefficient = max(0.0, dot(normal, direction)) * light.position.w;
-	vec3 diffuseLight = diffuseCoefficient * color * light.color;
+	vec3 ambientLight = light.ambientCoefficient * light.color;
+	vec3 pointLight = attenuation * attenuation * light.color;
+	vec3 diffuseLight = diffuseCoefficient * light.color;
 
 	vec3 specularLight = vec3(0.0);
 	if (light.position.w == 1.0)
@@ -180,6 +180,8 @@ vec4 effect(
 			diffuse.rgb,
 			specular);
 	}
+
+	result *= diffuse.rgb;
 
 	for (int i = 0; i < scape_NumFogs; ++i)
 	{
