@@ -14,8 +14,9 @@
 #include "modules/graphics/Graphics.h"
 #include "modules/math/Transform.h"
 #include "nbunny/lua_runtime.hpp"
-#include "nbunny/optimaus/shadow_renderer_pass.hpp"
+#include "nbunny/optimaus/math.hpp"
 #include "nbunny/optimaus/particle.hpp"
+#include "nbunny/optimaus/shadow_renderer_pass.hpp"
 
 void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
@@ -339,10 +340,9 @@ void nbunny::ShadowRendererPass::draw(lua_State* L, SceneNode& node, float delta
 
 void nbunny::ShadowRendererPass::resize(int width, int height)
 {
-	width /= 2;
-	height /= 2;
-	width = std::max(width, height);
-	height = std::max(width, height);
+	auto size = math::next_power_of_two(std::max(std::max(width, height), 1));
+	width = size;
+	height = size;
 
 	if (this->width == width && this->height == height)
 	{

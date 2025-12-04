@@ -19,6 +19,7 @@ namespace nbunny
 {
 	namespace math
 	{
+		std::uint32_t next_power_of_two(std::uint32_t value);
 		void look_at(glm::quat& result, const glm::vec3& source, const glm::vec3& target, const glm::vec3& up);
 	}
 }
