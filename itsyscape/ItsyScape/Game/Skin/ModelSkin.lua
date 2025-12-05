@@ -40,6 +40,7 @@ function ModelSkin:new()
 	self.bumpHeight = 1
 	self.isReflective = false
 	self.reflectionPower = 0.5
+	self.reflectionDistance = 0.5
 	self.hasTransform = false
 end
 
@@ -246,6 +247,10 @@ function ModelSkin:loadFromFile(filename)
 	if result.reflectionPower then
 		self.reflectionPower = result.reflectionPower
 	end
+
+	if result.reflectionDistance then
+		self.reflectionDistance = result.reflectionDistance
+	end
 end
 
 -- Gets the model CacheRef.
@@ -330,6 +335,10 @@ end
 
 function ModelSkin:getReflectionPower()
 	return self.reflectionPower
+end
+
+function ModelSkin:getReflectionDistance()
+	return self.reflectionDistance
 end
 
 function ModelSkin:getHasTransform()

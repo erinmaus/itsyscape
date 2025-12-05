@@ -150,3 +150,20 @@ do
 		ItsyScape.Action.Close()
 	}
 end
+
+M["GildedDragon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 12,
+		PositionZ = 59,
+		Name = "GildedDragon",
+		Map = M._MAP,
+		Resource = M["GildedDragon"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "GildedDragon",
+		MapObject = M["GildedDragon"]
+	}
+end

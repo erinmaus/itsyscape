@@ -24,7 +24,7 @@ vec4 getWallHackPlane(vec3 normal, vec3 point)
 
 float getWallHackAlpha(vec3 position)
 {
-	return 1.0;
+	return scape_WallHackAlpha;
 }
 
 #else

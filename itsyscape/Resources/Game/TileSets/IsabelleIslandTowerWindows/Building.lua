@@ -29,7 +29,7 @@
 			name = "fierbloom",
 			features = {
 				{ id = "glass", material = "glass", texture = 1 },
-				{ id = "metal", material = "metal", texture = 1 }
+				{ id = "metal", material = "metal", texture = 2 }
 			}
 		}
 	}
