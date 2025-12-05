@@ -103,6 +103,7 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
     graphics->setMeshCullMode(love::graphics::CULL_BACK);
 	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
 
+	graphics->setColorMask(disabled_mask);
 	for (auto& scene_node: translucent_scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
@@ -113,10 +114,19 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 		renderer->set_current_shader(shader);
 		renderer->get_shader_cache().update_uniform(shader, "scape_AlphaMask", &ALPHA_MASK_DISABLED, sizeof(float));
 
-		graphics->setColorMask(disabled_mask);
 		renderer->draw_node(L, *scene_node, delta);
+	}
 
-		graphics->setColorMask(enabled_mask);
+	graphics->setColorMask(enabled_mask);
+	for (auto& scene_node: translucent_scene_nodes)
+	{
+		auto shader = get_node_shader(L, *scene_node);
+		if (!shader)
+		{
+			continue;
+		}
+		renderer->set_current_shader(shader);
+		renderer->get_shader_cache().update_uniform(shader, "scape_AlphaMask", &ALPHA_MASK_ENABLED, sizeof(float));
 
 		auto color = scene_node->get_material().get_color();
 		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
@@ -124,6 +134,7 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 		renderer->draw_node(L, *scene_node, delta);
 	}	
 
+	graphics->setColorMask(disabled_mask);
 	for (auto& scene_node: particle_scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
@@ -134,7 +145,6 @@ void nbunny::AlphaMaskRendererPass::draw_nodes(lua_State* L, float delta)
 		renderer->set_current_shader(shader);
 		renderer->get_shader_cache().update_uniform(shader, "scape_AlphaMask", &ALPHA_MASK_DISABLED, sizeof(float));
 
-		graphics->setColorMask(disabled_mask);
 		renderer->draw_node(L, *scene_node, delta);
 	}
 
