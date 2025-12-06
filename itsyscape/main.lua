@@ -565,7 +565,7 @@ function love.run()
 			end
 		end
 
-		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 0) / 1000) end
+		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 1) / 1000) end
 
 		if _DEBUG then
 			NLuaRuntime.stopMeasurements()
