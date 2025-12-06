@@ -15,9 +15,9 @@
 				properties = {
 					outlineThreshold = 0.5,
 					isReflectiveOrRefractive = true,
-					reflectionPower = 1,
-					reflectionDistance = 2,
-					roughness = 1
+					reflectionPower = 0.5,
+					reflectionDistance = 1,
+					roughness = 0
 				}
 			}
 		},

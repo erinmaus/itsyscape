@@ -2243,6 +2243,7 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 					material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
 					material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
 					material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
+					material:send(Material.UNIFORM_FLOAT, "scape_WallHackAlpha", 0)
 				end
 
 				local material = baseMaterials and baseMaterials[materialName]

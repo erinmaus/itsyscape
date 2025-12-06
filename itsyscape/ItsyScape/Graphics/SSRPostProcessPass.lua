@@ -26,10 +26,10 @@ function SSRPostProcessPass:load(resources)
 	self.textureCoordinatesBuffer = NGBuffer("rgba16f")
 	self.colorBuffer = NGBuffer("rgba8", "rgba8", "rgba8")
 
-	self.minSecondPassSteps = 20
-	self.maxSecondPassSteps = 60
-	self.maxFirstPassSteps = 90
-	self.resolution = 0.5
+	self.minSecondPassSteps = 40
+	self.maxSecondPassSteps = 120
+	self.maxFirstPassSteps = 180
+	self.resolution = 1
 	self.maxDistanceViewSpace = 14
 end
 
