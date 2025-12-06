@@ -8,8 +8,9 @@
 				uniforms = {
 					scape_NumLayers = { "integer", 1 },
 					scape_TriplanarScale = { "float", -0.75 },
-					scape_TriplanarTexture = { "texture", "Resources/Game/TileSets/MuseumTile1/Marble.lua" },
-					scape_TriplanarSpecularTexture = { "texture", "Resources/Game/TileSets/MuseumTile1/SpecularMarble.lua" },
+					scape_TriplanarOffset = { "float", 0 },
+					scape_TriplanarExponent = { "float", 0 },
+					scape_SpecularTexture = { "texture", "Resources/Game/TileSets/MuseumTile1/SpecularMarble.lua" },
 				},
 
 				properties = {
@@ -29,8 +30,9 @@
 				uniforms = {
 					scape_NumLayers = { "integer", 1 },
 					scape_TriplanarScale = { "float", 0.5 },
-					scape_TriplanarTexture = { "texture", "Resources/Game/TileSets/MuseumTile1/Marble.lua" },
-					scape_TriplanarSpecularTexture = { "texture", "Resources/Game/TileSets/MuseumTile1/Marble.lua" },
+					scape_TriplanarOffset = { "float", 0 },
+					scape_TriplanarExponent = { "float", 0 },
+					scape_SpecularTexture = { "texture", "Resources/Game/TileSets/MuseumTile1/Marble.lua" },
 				},
 
 				properties = {
