@@ -2704,6 +2704,11 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 		local layer = item:match(".*@(%d+)%.[^%.@]*$")
 		if decoration then
 			local d = Decoration(path .. "Decorations/" .. item)
+			local c = d:clean()
+			if c > 0 then
+				Log.info("Removed %d duplicate features in decoration '%s'.", c, item)
+			end
+
 			self:getGame():getStage():decorate(decoration, d, tonumber(layer) or 1)
 		elseif spline then
 			local s = Spline(path .. "Decorations/" .. item)

@@ -235,6 +235,33 @@ function Decoration:remove(feature)
 	return self:getHandle():removeFeature(feature:getHandle())
 end
 
+function Decoration:clean(E)
+	E = E or 0.0001
+
+	local c = 0
+	for i = #self.features, 1, -1 do
+		local sourceFeature = self.features[i]
+		for j = i - 1, 1, -1 do
+			local otherFeature = self.features[j]
+
+			if sourceFeature:getID() == otherFeature:getID() and
+			   sourceFeature:getPosition():distance(otherFeature:getPosition()) <= E and
+			   sourceFeature:getRotation():distance(otherFeature:getRotation()) <= E and
+			   sourceFeature:getScale():distance(otherFeature:getScale()) <= E and
+			   sourceFeature:getColor():toHexString() == otherFeature:getColor():toHexString() and
+			   sourceFeature:getTexture() == otherFeature:getTexture() and
+			   sourceFeature:getMaterial() == otherFeature:getMaterial()
+			then
+				self:getHandle():removeFeature(otherFeature:getHandle())
+				table.remove(self.features, j)
+				c = c + 1
+			end
+		end
+	end
+
+	return c
+end
+
 function Decoration:toString()
 	local r = StringBuilder()
 
