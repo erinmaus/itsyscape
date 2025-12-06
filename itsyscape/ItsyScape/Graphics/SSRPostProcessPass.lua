@@ -29,7 +29,7 @@ function SSRPostProcessPass:load(resources)
 	self.minSecondPassSteps = 40
 	self.maxSecondPassSteps = 120
 	self.maxFirstPassSteps = 180
-	self.resolution = 1
+	self.resolution = 0.5
 	self.maxDistanceViewSpace = 14
 end
 
