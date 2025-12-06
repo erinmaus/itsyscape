@@ -71,7 +71,7 @@ bool nbunny::ray_hit_triangle(const glm::vec3& origin, const glm::vec3& directio
     auto q = glm::cross(s, e1);
     auto v = f * glm::dot(direction, q);
 
-    if (v < 0.0f || v > 1.0f)
+    if (v < 0.0f || u + v > 1.0f)
     {
         return false;
     }
