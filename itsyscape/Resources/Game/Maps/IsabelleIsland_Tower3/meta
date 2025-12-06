@@ -923,6 +923,10 @@
 				},
 			},
 		},
+		input =
+		{
+			disabled = true
+		},
 		transform =
 		{
 			translation =
@@ -957,6 +961,10 @@
 		wallHack =
 		{
 			enabled = false,
+		},
+		input =
+		{
+			disabled = true
 		},
 		polygonMask =
 		{
@@ -1858,6 +1866,10 @@
 					0,
 				},
 			},
+		},
+		input =
+		{
+			disabled = true
 		},
 		transform =
 		{

@@ -1115,7 +1115,9 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 			m.islandProcessor = MapMeshIslandProcessor(m.map, m.tileSet)
 		end
 
-		if not (m.meta and m.meta.skybox) then
+		local isInputDisabled = m.meta and m.meta.input and m.meta.input.disabled == true
+		local isSkybox = m.meta and m.meta.skybox
+		if self:_getIsMapEditor() or not (isInputDisabled or isSkybox) then
 			local before = love.timer.getTime()
 			love.thread.getChannel('ItsyScape.Map::input'):push({
 				type = 'load',

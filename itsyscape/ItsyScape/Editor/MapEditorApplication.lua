@@ -2357,6 +2357,30 @@ function MapEditorApplication:_getPhysicalLayer(layer)
 	return nil
 end
 
+function MapEditorApplication:buildMeta(meta, map, mapScriptPeep, curve)
+	local offset = mapScriptPeep:getBehavior(MapOffsetBehavior)
+	local translation = offset and offset.offset
+	local rotation = offset and offset.rotation
+	local scale = offset and offset.scale
+	local origin = offset and offset.origin
+
+	return {
+		tileSetID = meta and meta.tileSetID or "GrassyPlain",
+		maskID = meta and meta.maskID,
+		input = meta and meta.input,
+		autoMask = meta and meta.autoMask,
+		transform = offset and {
+			translation = { translation:get() },
+			rotation = { rotation:get() },
+			scale = { scale:get() },
+			origin = { (origin or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
+		},
+		wallHack = meta and meta.wallHack,
+		polygonMask = meta and meta.polygonMask,
+		curve = curve or (meta and meta.curve)
+	}
+end
+
 function MapEditorApplication:save(filename)
 	if self:makeOutputDirectory("Maps", filename) then
 		if not self:makeOutputSubdirectory("Maps", filename, "Decorations") then
@@ -2422,26 +2446,12 @@ function MapEditorApplication:save(filename)
 
 				local map = self:getGame():getStage():getMap(layers[i])
 				local mapScriptPeep = self.mapScriptPeeps[layers[i]]
-				local offset = mapScriptPeep:getBehavior(MapOffsetBehavior)
-				local translation = offset and offset.offset
-				local rotation = offset and offset.rotation
-				local scale = offset and offset.scale
-				local origin = offset and offset.origin
 
-				meta[layers[i]] = {
-					tileSetID = tileSetID,
-					maskID = self.meta and self.meta[layers[i]] and self.meta and self.meta[layers[i]].maskID,
-					autoMask = self.meta and self.meta[layers[i]] and self.meta[layers[i]].autoMask,
-					transform = offset and {
-						translation = { translation:get() },
-						rotation = { rotation:get() },
-						scale = { scale:get() },
-						origin = { (origin or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
-					},
-					wallHack = self.meta and self.meta[layers[i]] and self.meta[layers[i]].wallHack or nil,
-					polygonMask = self.meta and self.meta[layers[i]] and self.meta[layers[i]].polygonMask,
-					curve = self.mapScriptCurves[layers[i]]
-				}
+				meta[layers[i]] = self:buildMeta(
+					self.meta and self.meta[layers[i]],
+					map,
+					mapScriptPeep,
+					self.mapScriptCurves[layers[i]])
 			end
 
 			local filename = self:getOutputFilename("Maps", filename, "meta")
