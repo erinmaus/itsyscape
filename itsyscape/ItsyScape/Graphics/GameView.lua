@@ -2257,14 +2257,12 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 				end
 			end
 
-			if m.curves then
-				for _, sceneNode in ipairs(d.sceneNodes) do
-					self:_updateMapNode(m, sceneNode)
-				end
+			for _, sceneNode in ipairs(d.sceneNodes) do
+				self:_updateMapNode(m, sceneNode)
+			end
 
-				for _, alphaSceneNode in ipairs(d.alphaSceneNodes) do
-					self:_updateMapNode(m, alphaSceneNode)
-				end
+			for _, alphaSceneNode in ipairs(d.alphaSceneNodes) do
+				self:_updateMapNode(m, alphaSceneNode)
 			end
 
 			if callback then

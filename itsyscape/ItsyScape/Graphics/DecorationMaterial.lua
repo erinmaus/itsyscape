@@ -46,7 +46,7 @@ function DecorationMaterial:new(d)
 	end
 end
 
-function DecorationMaterial:apply(sceneNode, resourceManager)
+function DecorationMaterial:apply(sceneNode, resourceManager, d)
 	local material = sceneNode:getMaterial()
 
 	local textures = {}

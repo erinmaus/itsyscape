@@ -152,7 +152,8 @@ function GrassBlock:emit(drawType, tileSet, map, i, j, tileSetTile, mapTile)
 				local feature = self.FEATURES[self._features:index(g.feature, #self.FEATURES)]
 
 				local realMapTile = map:getTileAt(absoluteX, absoluteZ)
-				if mapTile.flat == realMapTile.flat then
+				local isBuilding = realMapTile:hasFlag("building")
+				if mapTile.flat == realMapTile.flat and not (isBuiding and self.SHOW_IN_BUILDING == false) then
 					self:addFeature(
 						feature,
 						Vector(absoluteX, absoluteY - 0.125, absoluteZ),
