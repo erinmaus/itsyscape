@@ -175,7 +175,11 @@ nbunny::DepthRendererPass::DepthRendererPass(GBuffer& g_buffer) :
 
 void nbunny::DepthRendererPass::draw(lua_State* L, SceneNode& node, float delta)
 {
-	walk_all_nodes(node, delta);
+	if (get_renderer()->get_is_mobile_renderer_enabled())
+	{
+		walk_all_nodes(node, delta);
+	}
+
 	draw_pass(L, delta);
 }
 

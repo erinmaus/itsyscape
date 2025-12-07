@@ -68,6 +68,8 @@ namespace nbunny
 		int current_renderer_pass_id = 0;
 		bool is_clip_enabled = false;
 
+		bool is_mobile_renderer = false;
+
 		SceneNode* root_node = nullptr;
 
 		Camera get_skybox_camera(SceneNode& skybox_scene_node);
@@ -107,6 +109,9 @@ namespace nbunny
 
 		virtual void draw(lua_State* L, SceneNode& node, float delta, int width, int height);
 		virtual void draw_node(lua_State* L, SceneNode& node, float delta);
+
+		void set_is_mobile_renderer_enabled(bool value);
+		bool get_is_mobile_renderer_enabled() const;
 	};
 
 	class RendererPass

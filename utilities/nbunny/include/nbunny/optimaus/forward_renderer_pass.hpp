@@ -33,7 +33,10 @@ namespace nbunny
 		GBuffer& depth_buffer;
 		LBuffer& c_buffer;
 
-		std::vector<SceneNode*> drawable_scene_nodes;
+		std::vector<SceneNode*> translucent_scene_nodes;
+		std::vector<SceneNode*> opaque_scene_nodes;
+		std::vector<SceneNode*> stencil_masked_drawable_scene_nodes;
+		std::vector<SceneNode*> stencil_write_drawable_scene_nodes;
 		std::vector<LightSceneNode*> global_light_scene_nodes;
 		std::vector<LightSceneNode*> local_light_scene_nodes;
 		std::vector<FogSceneNode*> fog_scene_nodes;
@@ -46,7 +49,9 @@ namespace nbunny
 		void walk_visible_lights();
 		void prepare_fog(float delta);
 
-		void draw_nodes(lua_State* L, float delta);
+		void draw_nodes(lua_State* L, float delta, const std::vector<SceneNode*>& scene_nodes);
+		void draw_pass(lua_State* L, float delta);
+		void copy_depth_buffer(lua_State* L, float delta);
 		void get_nearby_lights(SceneNode& node, float delta);
 
 		void send_light_property(

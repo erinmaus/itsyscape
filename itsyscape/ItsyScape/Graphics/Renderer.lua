@@ -51,6 +51,7 @@ function Renderer:new(conf)
 	conf = conf or {}
 
 	self._renderer = NRenderer(self)
+	self._renderer:setIsMobileRendererEnabled(true)
 	self._time = love.timer.getTime()
 
 	local shadowsEnabled = not conf or (conf.shadows == nil or conf.shadows == true or (type(conf.shadows) == "number" and conf.shadows >= 1))

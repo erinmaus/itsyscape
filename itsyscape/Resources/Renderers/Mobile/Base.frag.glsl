@@ -23,7 +23,7 @@ precision highp float;
 
 #define SCAPE_MAX_LIGHTS 16
 #define SCAPE_MAX_FOG    4
-#define SCAPE_ALPHA_DISCARD_THRESHOLD 1.0 / 128.0
+#define SCAPE_ALPHA_DISCARD_THRESHOLD 16.0 / 255.0
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;

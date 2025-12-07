@@ -15,29 +15,25 @@
 
 void nbunny::ForwardRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
+	bool draw_everything = get_renderer()->get_is_mobile_renderer_enabled();
+
 	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_position();
 
-	drawable_scene_nodes.clear();
+	translucent_scene_nodes.clear();
 	for (auto visible_scene_node: visible_scene_nodes)
 	{
 		auto& material = visible_scene_node->get_material();
 		if (!(material.get_is_translucent() || material.get_is_full_lit()))
 		{
+			if (draw_everything)
+			{
+				opaque_scene_nodes.push_back(visible_scene_node);
+			}
+
 			continue;
 		}
 
-		// if (material.should_stencil_mask())
-		// {
-		// 	stencil_masked_drawable_scene_nodes.push_back(visible_scene_node);
-		// }
-		// else if (material.should_stencil_write())
-		// {
-		// 	stencil_write_drawable_scene_nodes.push_back(visible_scene_node);
-		// }
-		// else
-		// {
-			drawable_scene_nodes.push_back(visible_scene_node);
-		// }
+		translucent_scene_nodes.push_back(visible_scene_node);
 	}
 }
 
@@ -230,27 +226,14 @@ void nbunny::ForwardRendererPass::send_fog(
 	send_light_property(shader, "scape_Fog", index, "position", glm::value_ptr(light.position), sizeof(glm::vec3));
 }
 
-void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
+void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta, const std::vector<SceneNode*>& scene_nodes)
 {
 	auto renderer = get_renderer();
 	auto& shader_cache = get_renderer()->get_shader_cache();
 
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
 
-	const auto& camera = renderer->get_camera();
-	love::math::Transform view(love::Matrix4(glm::value_ptr(camera.get_view())));
-	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
-
-    c_buffer.use();
-
-	graphics->replaceTransform(&view);
-	graphics->setProjection(projection);
-
-	graphics->setMeshCullMode(love::graphics::CULL_BACK);
-	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
-
-	for (auto& scene_node: drawable_scene_nodes)
+	for (auto& scene_node: scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
 		if (!shader)
@@ -304,8 +287,63 @@ void nbunny::ForwardRendererPass::draw_nodes(lua_State* L, float delta)
 			graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
 		}
 	}
+}
+
+void nbunny::ForwardRendererPass::draw_pass(lua_State* L, float delta)
+{
+	auto renderer = get_renderer();
+	auto& shader_cache = get_renderer()->get_shader_cache();
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	const auto& camera = renderer->get_camera();
+	love::math::Transform view(love::Matrix4(glm::value_ptr(camera.get_view())));
+	love::Matrix4 projection(glm::value_ptr(camera.get_projection()));
+
+    c_buffer.use();
+
+	graphics->replaceTransform(&view);
+	graphics->setProjection(projection);
+
+	graphics->setMeshCullMode(love::graphics::CULL_BACK);
+	graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
+	graphics->setBlendMode(love::graphics::Graphics::BLEND_ALPHA, love::graphics::Graphics::BLENDALPHA_MULTIPLY);
+
+	auto is_mobile_renderer = renderer->get_is_mobile_renderer_enabled();
+	if (is_mobile_renderer)
+	{
+		draw_nodes(L, delta, opaque_scene_nodes);
+
+		copy_depth_buffer();
+	}
+
+	draw_nodes(L, delta, translucent_scene_nodes);
 
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
+}
+
+void nbunny::ForwardRendererPass::copy_depth_buffer(lua_State* L, float delta)
+{
+	graphics->push(love::graphics::Graphics::STACK_ALL);
+
+	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+
+	depth_buffer.use();
+
+	graphics->setDepthMode(love::graphics::COMPARE_ALWAYS, true);
+	graphics->origin();
+	graphics->setOrtho(g_buffer.get_width(), g_buffer.get_height(), !graphics->isCanvasActive());
+
+	graphics->clear(love::graphics::OptionalColorf(), false, 1.0f);
+
+	auto shader = get_builtin_shader(L, BUILTIN_SHADER_DEPTH_COPY, SHADER_COPY_DEPTH);
+	get_renderer()->set_current_shader(shader);
+
+	graphics->draw(c_buffer.get_canvas(0), love::Matrix4());
+
+	graphics->flushStreamDraws();
+
+	graphics->pop();
 }
 
 nbunny::ForwardRendererPass::ForwardRendererPass(GBuffer& depth_buffer, LBuffer& c_buffer) :
@@ -325,7 +363,7 @@ void nbunny::ForwardRendererPass::draw(lua_State* L, SceneNode& node, float delt
 	walk_visible_lights();
 	prepare_fog(delta);
 
-	draw_nodes(L, delta);
+	draw_pass(L, delta);
 }
 
 void nbunny::ForwardRendererPass::resize(int width, int height)

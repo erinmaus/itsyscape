@@ -133,7 +133,6 @@ function OutlinePostProcessPass:setOutlineFadeDepth(value)
 end
 
 function OutlinePostProcessPass:getOutlineFadeDepth()
-functicomposeDilatelinePostProcessPass:getOutlineFadeDepth()
 	return self.outlineFadeDepth
 end
 

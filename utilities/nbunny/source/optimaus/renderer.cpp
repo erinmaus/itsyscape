@@ -376,6 +376,16 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	graphics->pop();
 }
 
+void nbunny::Renderer::set_is_mobile_renderer_enabled(bool value)
+{
+	is_mobile_renderer = value;
+}
+
+bool nbunny::Renderer::get_is_mobile_renderer_enabled() const
+{
+	return is_mobile_renderer;
+}
+
 nbunny::RendererPass::RendererPass(int renderer_pass_id) :
 	renderer_pass_id(renderer_pass_id)
 {
@@ -525,6 +535,22 @@ static int nbunny_renderer_get_is_child_renderer(lua_State* L)
 	return 1;
 }
 
+static int nbunny_renderer_set_is_mobile_renderer_enabled(lua_State* L)
+{
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
+	bool value = lua_toboolean(L, 2);
+	renderer->set_is_mobile_renderer_enabled(value);
+	return 0;
+}
+
+static int nbunny_renderer_get_is_mobile_renderer_enabled(lua_State* L)
+{
+	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
+	lua_pushboolean(L, renderer->get_is_child_renderer());
+
+	return 1;
+}
+
 static int nbunny_renderer_add_renderer_pass(lua_State* L)
 {
 	auto renderer = nbunny::lua::get<nbunny::Renderer*>(L, 1);
@@ -600,6 +626,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_renderer(lua_State* L)
 		{ "getClearColor", &nbunny_renderer_get_clear_color },
 		{ "setIsChildRenderer", &nbunny_renderer_set_is_child_renderer },
 		{ "getIsChildRenderer", &nbunny_renderer_get_is_child_renderer },
+		{ "setIsMobileRendererEnabled", &nbunny_renderer_set_is_mobile_renderer_enabled },
+		{ "getIsMobileRendererEnabled", &nbunny_renderer_get_is_mobile_renderer_enabled },
 		{ "setCamera", &nbunny_renderer_set_camera },
 		{ "getCamera", &nbunny_renderer_get_camera },
 		{ "getCurrentShader", &nbunny_renderer_get_current_shader },

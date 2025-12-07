@@ -48,6 +48,11 @@ nbunny::DeferredRendererPass::DeferredRendererPass(const std::shared_ptr<ShadowR
 
 void nbunny::DeferredRendererPass::walk_all_nodes(SceneNode& node, float delta)
 {
+	if (get_renderer()->get_is_mobile_renderer_enabled())
+	{
+		return;
+	}
+
 	const auto& visible_scene_nodes = get_renderer()->get_visible_scene_nodes_by_material();
 
 	drawable_scene_nodes.clear();
