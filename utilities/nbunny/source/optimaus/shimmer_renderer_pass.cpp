@@ -21,6 +21,8 @@ void nbunny::ShimmerRendererPass::walk_all_nodes(SceneNode& node, float delta)
 
 	shimmer_scene_nodes.clear();
 	visited_shimmer_scene_nodes.clear();
+	current_shimmer_scene_nodes.clear();
+
 	for (auto& visible_scene_node: visible_scene_nodes)
 	{
 		bool is_shimmer_enabled = false;

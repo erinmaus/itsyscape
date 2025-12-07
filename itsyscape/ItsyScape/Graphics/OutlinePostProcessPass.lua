@@ -347,7 +347,7 @@ function OutlinePostProcessPass:_updateNoise(width, height)
 	self.noiseHeight = noiseHeight
 end
 
-function OutlinePostProcessPass:_finish(width, height)
+function OutlinePostProcessPass:_finish(dilateBuffer, width, height)
 	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
 	love.graphics.setBlendMode("alpha", "premultiplied")
 
@@ -367,28 +367,40 @@ function OutlinePostProcessPass:_finish(width, height)
 
 	self:bindShader(
 		self.composeDilateShader,
-		"scape_DilateTexture", self.dilateBuffer:getCanvas(1))
+		"scape_DilateTexture", dilateBuffer)
 
 	love.graphics.draw(shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX))
 end
 
 function OutlinePostProcessPass:_dilate(width, height)
-	love.graphics.setCanvas(self.dilateBuffer:getCanvas(1))
-	love.graphics.clear(0, 0, 0, 0)
+	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
+	local highlightTexture = shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX)
+
+	local numSteps = self.shimmerRadius - 1
+	local previousBuffer, currentBuffer = self.dilateBuffer:getCanvas(1), self.dilateBuffer:getCanvas(2)
 
 	love.graphics.setBlendMode("alpha")
 	love.graphics.setDepthMode("always", false)
 	love.graphics.setColorMask(true, true, true, true)
 
-	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
-	local highlightTexture = shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX)
-
 	self:bindShader(
 		self.dilateShader,
-		"scape_TexelSize", { 1 / highlightTexture:getWidth(), 1 / highlightTexture:getHeight() },
-		"scape_KernelRadius", self.shimmerRadius)
+		"scape_TexelSize", { 1 / highlightTexture:getWidth(), 1 / highlightTexture:getHeight() })
 
+	love.graphics.setCanvas(previousBuffer)
+	love.graphics.clear(0, 0, 0, 0)
 	love.graphics.draw(highlightTexture)
+	
+	while numSteps > 0 do
+		love.graphics.setCanvas(currentBuffer)
+		love.graphics.clear(0, 0, 0, 0)
+		love.graphics.draw(previousBuffer)
+
+		previousBuffer, currentBuffer = currentBuffer, previousBuffer
+		numSteps = numSteps - 1
+	end
+
+	return previousBuffer
 end
 
 function OutlinePostProcessPass:draw(width, height)
@@ -409,8 +421,9 @@ function OutlinePostProcessPass:draw(width, height)
 	self:_generateOutlines(width, height)
 	self:_composeOutline(width, height)
 	self:_updateNoise(width, height)
-	self:_dilate(width, height)
-	self:_finish(width, height)
+
+	local currentDilateBuffer = self:_dilate(width, height)
+	self:_finish(currentDilateBuffer, width, height)
 end
 
 return OutlinePostProcessPass
