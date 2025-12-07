@@ -16,10 +16,10 @@ local ActionCommandController = Class(Controller)
 function ActionCommandController:new(peep, director, prop, action, attack)
 	Controller.new(self, peep, director)
 
-	local DefaceGlyph1 = require "Resources.Game.ActionCommands.DefaceGlyph1"
+	local Fish1 = require "Resources.Game.ActionCommands.Fish1"
 	self.prop = prop
 	self.attack = attack
-	self.actionCommand = DefaceGlyph1(action, peep, prop)
+	self.actionCommand = Fish1(action, peep, prop)
 	self.actionCommand.onHit:register(self.hit, self)
 
 	self:update(0)
