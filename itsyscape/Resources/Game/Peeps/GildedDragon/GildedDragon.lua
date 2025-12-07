@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
@@ -17,6 +18,8 @@ local GildedDragon = Class(Creep)
 
 function GildedDragon:ready(director, game)
 	Creep.ready(self, director, game)
+
+	Utility.Peep.setSize(self, Vector(16, 12, 16))
 
 	Utility.Peep.Creep.setBody(self, "Dragon")
 

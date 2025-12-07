@@ -178,7 +178,7 @@ function Theme.addItemIconChild(parent)
 	return icon
 end
 
-function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset)
+function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset, zoom)
 	local view = gameView:getView(object)
 
 	local node, min, max
@@ -192,14 +192,20 @@ function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset)
 		return false
 	end
 
-	local offset = offset or Vector.UNIT_Y
+	offset = offset or Vector.UNIT_Y
+	zoom = zoom or 2
+
 	local distance = math.max(max.x - min.x, max.y - min.y, max.z - min.z)
 
 	sceneSnippet:setChildNode(node)
 	camera:copy(gameView:getCamera())
 	camera:setPosition(Vector.ZERO:transform(node:getTransform():getGlobalTransform(_APP:getFrameDelta())) + (offset * distance / 2))
 	camera:setRotation(-node:getTransform():getLocalRotation())
-	camera:setDistance(distance * 2 + 2)
+	camera:setDistance(distance * zoom + 2)
+
+	local width, height = sceneSnippet:getSize()
+	camera:setWidth(width)
+	camera:setHeight(height)
 
 	return true
 end

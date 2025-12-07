@@ -167,3 +167,36 @@ do
 		MapObject = M["GildedDragon"]
 	}
 end
+
+M["Plinth_GildedDragon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 59,
+		PositionY = 12,
+		PositionZ = 69,
+		Name = "Plinth_GildedDragon",
+		Map = M._MAP,
+		Resource = M["Plinth_GildedDragon"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Plinth_Isabelle",
+		MapObject = M["Plinth_GildedDragon"]
+	}
+
+	local Read = ItsyScape.Action.Read_Plinth()
+
+	ItsyScape.Meta.PlinthExhibit {
+		ExhibitResource = M["GildedDragon"],
+		ExhibitName = "Gilded royal dragon",
+		ExhibitDescription = "One of the last known royal dragons, slain by Isabelle. Isabelle personally smelted gold with the bones to gild them.",
+		Zoom = 3,
+		OffsetY = 0.5,
+		Language = "en-US",
+		Action = Read
+	}
+
+	M["Plinth_GildedDragon"] {
+		Read
+	}
+end

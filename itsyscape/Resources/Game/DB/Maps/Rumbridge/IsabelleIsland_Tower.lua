@@ -1073,3 +1073,31 @@ do
 		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
 	}
 end
+
+do
+	local Plinth = ItsyScape.Resource.Prop "Plinth_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = ItsyScape.Resource.Prop "Plinth_Isabelle"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 1.5,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "Plinth_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Plinth",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Plinth_Isabelle"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fancy plinth to describe a museum exhibit.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "Plinth_Isabelle"
+	}
+end

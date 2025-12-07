@@ -319,6 +319,22 @@ Game "ItsyScape"
 		Team = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "Read_Plinth"
+
+	Meta "PlinthExhibit" {
+		ExhibitResource = Meta.TYPE_RESOURCE,
+		ExhibitName = Meta.TYPE_TEXT,
+		ExhibitDescription = Meta.TYPE_TEXT,
+
+		Zoom = Meta.TYPE_REAL,
+		OffsetX = Meta.TYPE_REAL,
+		OffsetY = Meta.TYPE_REAL,
+		OffsetZ = Meta.TYPE_REAL,
+		
+		Language = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
+	}
+
 	ActionType "Talk"
 	ActionType "Yell"
 	ActionType "Pet"
