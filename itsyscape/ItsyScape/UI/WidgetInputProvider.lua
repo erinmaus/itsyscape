@@ -475,15 +475,6 @@ function WidgetInputProvider:keyDown(key, ...)
 			captured = false
 		end
 	end
-
-	if not captured then
-		if key == 'tab' then
-			self:focusNext(self.focusedWidget, 'key')
-		elseif key == 'escape' and self.focusedWidget then
-			self.focusedWidget:blur()
-			self.focusedWidget = false
-		end
-	end
 end
 
 function WidgetInputProvider:keyUp(...)

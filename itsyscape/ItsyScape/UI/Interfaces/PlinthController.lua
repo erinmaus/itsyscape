@@ -56,7 +56,7 @@ function PlinthController:new(peep, director, action, prop)
 		zoom = zoom,
 		offset = { offsetX or 0, offsetY or 0, offsetZ or 0 },
 		name = (exhibit and exhibit:get("ExhibitName")) or (target and target:getName()) or "Unknown exhibit",
-		exhibit = (exhibit and exhibit:get("ExhibitDescription")) or (target and target:getDescription()) or "There's nothing known about this exhibit.",
+		description = (exhibit and exhibit:get("ExhibitDescription")) or (target and target:getDescription()) or "There's nothing known about this exhibit.",
 	}
 end
 
