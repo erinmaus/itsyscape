@@ -110,7 +110,7 @@ function Plinth:new(id, index, ui)
 	self.descriptionLabel:setStyle(self.DESCRIPTION_LABEL, LabelStyle)
 	self.descriptionContainer:addChild(self.descriptionLabel)
 
-	self:setZDepth(-1000)
+	self:setZDepth(-500)
 	self:performLayout()
 end
 
