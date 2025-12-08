@@ -200,3 +200,56 @@ do
 		Read
 	}
 end
+
+M["GiantSquid"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 74,
+		PositionY = 12.5,
+		PositionZ = 54,
+		ScaleX = 0.750000,
+		ScaleY = 0.750000,
+		ScaleZ = 0.750000,
+		Name = "GiantSquid",
+		Map = M._MAP,
+		Resource = M["GiantSquid"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "GiantSquidTentacleExhibit",
+		MapObject = M["GiantSquid"]
+	}
+end
+
+M["Plinth_GiantSquid"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 74,
+		PositionY = 12,
+		PositionZ = 59,
+		Name = "Plinth_GiantSquid",
+		Map = M._MAP,
+		Resource = M["Plinth_GiantSquid"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Plinth_Isabelle",
+		MapObject = M["Plinth_GiantSquid"]
+	}
+
+	local Read = ItsyScape.Action.Read_Plinth()
+
+	ItsyScape.Meta.PlinthExhibit {
+		ExhibitResource = M["GiantSquid"],
+		ExhibitName = "Giant squid tentacle",
+		ExhibitDescription = "The remaining piece of a giant squid slain near Humanity's Edge by Isabelle and her crew. First of its kind ever recovered. Remainder of squid sold to anonymous noble-folks and cooked by Chef Allons.",
+		Zoom = 2,
+		OffsetY = 0.25,
+		Language = "en-US",
+		Action = Read
+	}
+
+	M["Plinth_GiantSquid"] {
+		Read
+	}
+end

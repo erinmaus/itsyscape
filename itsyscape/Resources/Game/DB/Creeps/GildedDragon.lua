@@ -18,13 +18,13 @@ ItsyScape.Meta.PeepID {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Gilded dragon fossil",
+	Value = "Gilded royal dragon",
 	Language = "en-US",
 	Resource = GildedDragon
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A dragon, slain by Isabelle, and gilded in thin gold leaf. Is that a waste of gold or a waste of dragon bones?",
+	Value = "A royal dragon, slain by Isabelle, and gilded in thin gold leaf. Is that a waste of gold or a waste of dragon bones?",
 	Language = "en-US",
 	Resource = GildedDragon
 }

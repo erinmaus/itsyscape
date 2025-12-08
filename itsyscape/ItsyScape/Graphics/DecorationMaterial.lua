@@ -24,6 +24,7 @@ function DecorationMaterial:new(d)
 		color = Color(1),
 		alpha = 1,
 		isTranslucent = false,
+		isFullLit = false,
 		outlineColor = Color(0),
 		outlineThreshold = 0.5,
 		isReflectiveOrRefractive = false,
@@ -218,6 +219,13 @@ function DecorationMaterial:loadFromTable(t)
 		self.properties.isTranslucent = nil
 	end
 
+	if properties.isFullLit ~= nil then
+		self.set.isFullLit = true
+		self.properties.isFullLit = properties.isFullLit
+	else
+		self.properties.isFullLit = true
+	end
+
 	if properties.isReflectiveOrRefractive ~= nil then
 		self.set.isReflectiveOrRefractive = true
 		self.properties.isReflectiveOrRefractive = not not properties.isReflectiveOrRefractive
@@ -333,6 +341,7 @@ function DecorationMaterial:serialize()
 				outlineColor = _get(self.set.outlineColor, self.properties.outlineColor:toHexString()),
 				outlineThreshold = _get(self.set.outlineThreshold, self.properties.outlineThreshold),
 				isTranslucent = _get(self.set.isTranslucent, self.properties.isTranslucent),
+				isFullLit = _get(self.set.isFullLit, self.properties.isFullLit),
 				isReflectiveOrRefractive = _get(self.set.isReflectiveOrRefractive, self.properties.isReflectiveOrRefractive),
 				reflectionPower = _get(self.set.reflectionPower, self.properties.reflectionPower),
 				reflectionDistance = _get(self.set.reflectionDistance, self.properties.reflectionDistance),

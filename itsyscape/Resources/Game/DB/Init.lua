@@ -319,8 +319,6 @@ Game "ItsyScape"
 		Team = Meta.TYPE_RESOURCE
 	}
 
-	ActionType "Read_Plinth"
-
 	Meta "PlinthExhibit" {
 		ExhibitResource = Meta.TYPE_RESOURCE,
 		ExhibitName = Meta.TYPE_TEXT,
@@ -566,6 +564,15 @@ Game "ItsyScape"
 		Language = "en-US",
 		Type = "Dresser_Search"
 	}
+
+	ActionType "Read_Plinth"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Read",
+			XProgressive = "Reading",
+			Language = "en-US",
+			Type = "Read_Plinth"
+
+		}
 
 	ActionType "Loot"
 	ActionType "Reward"

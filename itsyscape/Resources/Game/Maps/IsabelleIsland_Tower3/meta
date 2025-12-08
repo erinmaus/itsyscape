@@ -1,60 +1,23 @@
 {
 	{
-		transform =
-		{
-			translation =
-			{
-				0,
-				0,
-				0,
-			},
-			origin =
-			{
-				0,
-				0,
-				0,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
-			rotation =
-			{
-				0,
-				0,
-				0,
-				1,
-			},
-		},
 		tileSetID = "YendorianJungle2",
 		maskID =
 		{
 			default = true,
 		},
-		autoMask = true,
-	},
-	{
 		transform =
 		{
-			translation =
+			scale =
 			{
-				54.750000,
-				-2.500000,
-				-22,
+				1,
+				1,
+				1,
 			},
 			origin =
 			{
 				0,
 				0,
 				0,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
 			},
 			rotation =
 			{
@@ -63,59 +26,19 @@
 				0,
 				1,
 			},
+			translation =
+			{
+				0,
+				0,
+				0,
+			},
 		},
+		autoMask = true,
+	},
+	{
 		tileSetID = "Draft",
 		curve =
 		{
-			height = 80,
-			unit = 2,
-			max =
-			{
-				8,
-				0,
-				160,
-			},
-			rotations =
-			{
-				{
-					0,
-					0,
-					0,
-					1,
-				},
-				{
-					0,
-					-0.707107,
-					0,
-					0.707107,
-				},
-				{
-					0,
-					-1,
-					0,
-					0,
-				},
-				{
-					0,
-					-0.707107,
-					0,
-					-0.707107,
-				},
-				{
-					0,
-					0,
-					0,
-					-1,
-				},
-			},
-			width = 4,
-			linear = true,
-			axis =
-			{
-				0,
-				0,
-				1,
-			},
 			positions =
 			{
 				{
@@ -932,6 +855,46 @@
 					0,
 				},
 			},
+			height = 80,
+			rotations =
+			{
+				{
+					0,
+					0,
+					0,
+					1,
+				},
+				{
+					0,
+					-0.707107,
+					0,
+					0.707107,
+				},
+				{
+					0,
+					-1,
+					0,
+					0,
+				},
+				{
+					0,
+					-0.707107,
+					0,
+					-0.707107,
+				},
+				{
+					0,
+					0,
+					0,
+					-1,
+				},
+			},
+			min =
+			{
+				0,
+				0,
+				0,
+			},
 			scales =
 			{
 				{
@@ -945,38 +908,39 @@
 					1,
 				},
 			},
-			min =
+			width = 4,
+			unit = 2,
+			max =
+			{
+				8,
+				0,
+				160,
+			},
+			linear = true,
+			axis =
 			{
 				0,
 				0,
-				0,
+				1,
 			},
 		},
 		input =
 		{
 			disabled = true,
 		},
-	},
-	{
 		transform =
 		{
-			translation =
+			scale =
 			{
-				36,
-				12.250000,
-				36,
+				1,
+				1,
+				1,
 			},
 			origin =
 			{
 				0,
 				0,
 				0,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
 			},
 			rotation =
 			{
@@ -985,8 +949,48 @@
 				0,
 				1,
 			},
+			translation =
+			{
+				54.750000,
+				-2.500000,
+				-22,
+			},
 		},
+	},
+	{
 		tileSetID = "YendorianJungle2",
+		input =
+		{
+			disabled = true,
+		},
+		transform =
+		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+			translation =
+			{
+				36,
+				12.250000,
+				36,
+			},
+		},
 		polygonMask =
 		{
 			{
@@ -1180,31 +1184,22 @@
 		{
 			enabled = false,
 		},
-		input =
-		{
-			disabled = true,
-		},
 	},
 	{
+		tileSetID = "YendorianJungle2",
 		transform =
 		{
-			translation =
+			scale =
 			{
-				45,
-				30,
-				45,
+				1,
+				1,
+				1,
 			},
 			origin =
 			{
 				15,
 				0,
 				15,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
 			},
 			rotation =
 			{
@@ -1213,8 +1208,13 @@
 				0,
 				1,
 			},
+			translation =
+			{
+				45,
+				30,
+				45,
+			},
 		},
-		tileSetID = "YendorianJungle2",
 		polygonMask =
 		{
 			{
@@ -1335,91 +1335,14 @@
 		wallHack =
 		{
 			map = true,
-			enabled = true,
 			global = true,
+			enabled = true,
 		},
 	},
 	{
-		transform =
-		{
-			translation =
-			{
-				58.350009,
-				15,
-				15.250000,
-			},
-			origin =
-			{
-				0,
-				0,
-				0,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
-			rotation =
-			{
-				0,
-				0,
-				0,
-				1,
-			},
-		},
 		tileSetID = "Draft",
 		curve =
 		{
-			height = 44,
-			unit = 2,
-			width = 1,
-			max =
-			{
-				2,
-				0,
-				88,
-			},
-			rotations =
-			{
-				{
-					0,
-					0.707107,
-					0,
-					0.707107,
-				},
-				{
-					0,
-					-0.382683,
-					0,
-					0.923880,
-				},
-				{
-					0,
-					-0.382683,
-					0,
-					0.923880,
-				},
-				{
-					0,
-					1,
-					0,
-					0,
-				},
-				{
-					0,
-					0.707107,
-					0,
-					0.707107,
-				},
-			},
-			linear = true,
-			axis =
-			{
-				0,
-				0,
-				1,
-			},
 			positions =
 			{
 				{
@@ -1876,6 +1799,46 @@
 					0,
 				},
 			},
+			height = 44,
+			rotations =
+			{
+				{
+					0,
+					0.707107,
+					0,
+					0.707107,
+				},
+				{
+					0,
+					-0.382683,
+					0,
+					0.923880,
+				},
+				{
+					0,
+					-0.382683,
+					0,
+					0.923880,
+				},
+				{
+					0,
+					1,
+					0,
+					0,
+				},
+				{
+					0,
+					0.707107,
+					0,
+					0.707107,
+				},
+			},
+			min =
+			{
+				0,
+				0,
+				0,
+			},
 			scales =
 			{
 				{
@@ -1889,16 +1852,53 @@
 					1,
 				},
 			},
-			min =
+			width = 1,
+			unit = 2,
+			max =
+			{
+				2,
+				0,
+				88,
+			},
+			linear = true,
+			axis =
 			{
 				0,
 				0,
-				0,
+				1,
 			},
 		},
 		input =
 		{
 			disabled = true,
+		},
+		transform =
+		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+			translation =
+			{
+				58.350009,
+				15,
+				15.250000,
+			},
 		},
 	},
 }

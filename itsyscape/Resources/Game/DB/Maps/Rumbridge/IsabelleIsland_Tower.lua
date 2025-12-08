@@ -1079,25 +1079,53 @@ do
 
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.FurnitureProp",
-		Resource = ItsyScape.Resource.Prop "Plinth_Isabelle"
+		Resource = Plinth
 	}
 
 	ItsyScape.Meta.MapObjectSize {
 		SizeX = 3.5,
 		SizeY = 1.5,
 		SizeZ = 1.5,
-		MapObject = ItsyScape.Resource.Prop "Plinth_Isabelle"
+		MapObject = Plinth
 	}
 
 	ItsyScape.Meta.ResourceName {
 		Value = "Plinth",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.Prop "Plinth_Isabelle"
+		Resource = Plinth
 	}
 
 	ItsyScape.Meta.ResourceDescription {
 		Value = "A fancy plinth to describe a museum exhibit.",
 		Language = "en-US",
-		Resource = ItsyScape.Resource.Prop "Plinth_Isabelle"
+		Resource = Plinth
+	}
+end
+
+do
+	local Exhibit = ItsyScape.Resource.Prop "GiantSquidTentacleExhibit"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Exhibit
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 7.5,
+		SizeZ = 3.5,
+		MapObject = Exhibit
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Giant squid tentacle",
+		Language = "en-US",
+		Resource = Exhibit
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A tank containing a giant squid tentacle.",
+		Language = "en-US",
+		Resource = Exhibit
 	}
 end

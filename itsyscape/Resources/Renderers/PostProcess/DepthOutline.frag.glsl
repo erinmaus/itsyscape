@@ -26,7 +26,7 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	float depthEdge = getDepthEdge(image, textureCoordinate, scape_TexelSize, step(0.0, outlineThreshold));
 	float normalEdge = getNormalEdge(scape_NormalTexture, textureCoordinate, scape_TexelSize);
 
-    float normalDotView = abs(dot(normalize(scape_Forward), normalSample));//, 0.0);
+    float normalDotView = abs(dot(normalize(scape_Forward), normalSample));
 	float depthEdgeStepComponent1 = abs(outlineThreshold) * normalDotView;
 	float depthEdgeStepComponent2 = 0.0;
 	if (outlineThreshold >= 0.0)
