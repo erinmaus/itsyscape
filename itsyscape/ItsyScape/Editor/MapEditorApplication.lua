@@ -612,6 +612,9 @@ end
 function MapEditorApplication:onSelectDecorationGroup(_, _, decoration)
 	self.currentDecorationTileSet = decoration:getTileSetID()
 	self.decorationPalette:loadDecorations()
+
+	self:unsetGizmo()
+	self.currentFeatureIndex = false
 end
 
 function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID, masks)

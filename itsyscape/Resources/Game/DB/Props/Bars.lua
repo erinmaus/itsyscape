@@ -26,3 +26,22 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "BronzeBars"
 }
+
+ItsyScape.Resource.Prop "IsabelliumBars"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.FurnitureProp",
+	Resource = ItsyScape.Resource.Prop "IsabelliumBars"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Isabellium bars",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "IsabelliumBars"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A secret, special alloy developed by Isabelle as an improvement on failed Azatite alloys. Isabellium scales in strength with the person using it. In theory, it has no upper limit.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Prop "IsabelliumBars"
+}

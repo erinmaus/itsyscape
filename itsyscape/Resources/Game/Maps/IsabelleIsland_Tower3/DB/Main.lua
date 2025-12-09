@@ -172,8 +172,11 @@ M["Plinth_GildedDragon"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 59,
-		PositionY = 12,
+		PositionY = 12.5,
 		PositionZ = 69,
+		ScaleX = 0.500000,
+		ScaleY = 0.500000,
+		ScaleZ = 0.500000,
 		Name = "Plinth_GildedDragon",
 		Map = M._MAP,
 		Resource = M["Plinth_GildedDragon"]
@@ -189,7 +192,7 @@ do
 	ItsyScape.Meta.PlinthExhibit {
 		ExhibitResource = M["GildedDragon"],
 		ExhibitName = "Gilded royal dragon",
-		ExhibitDescription = "One of the last known royal dragons, slain by Isabelle. Isabelle personally smelted gold with the bones to gild them.",
+		ExhibitDescription = "One of the last known royal dragons, slain by Isabelle. Isabelle personally smelted gold with the bones to gild them. Supposedly, burying these bones would give over 13,000,000 Faith experience.",
 		Zoom = 3,
 		OffsetY = 0.5,
 		Language = "en-US",
@@ -204,7 +207,7 @@ end
 M["GiantSquid"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 74,
+		PositionX = 72.5,
 		PositionY = 12.5,
 		PositionZ = 54,
 		ScaleX = 0.750000,
@@ -224,9 +227,12 @@ end
 M["Plinth_GiantSquid"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 74,
-		PositionY = 12,
+		PositionX = 72.5,
+		PositionY = 12.5,
 		PositionZ = 59,
+		ScaleX = 0.500000,
+		ScaleY = 0.500000,
+		ScaleZ = 0.500000,
 		Name = "Plinth_GiantSquid",
 		Map = M._MAP,
 		Resource = M["Plinth_GiantSquid"]
@@ -250,6 +256,66 @@ do
 	}
 
 	M["Plinth_GiantSquid"] {
+		Read
+	}
+end
+
+M["IsabelliumBars"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 72.5,
+		PositionY = 12.5,
+		PositionZ = 65.5,
+		RotationX = 0.000000,
+		RotationY = -0.382683,
+		RotationZ = 0.000000,
+		RotationW = 0.923880,
+		ScaleX = 1.5,
+		ScaleY = 1.5,
+		ScaleZ = 1.5,
+		Name = "IsabelliumBars",
+		Map = M._MAP,
+		Resource = M["IsabelliumBars"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IsabelliumBars",
+		MapObject = M["IsabelliumBars"]
+	}
+end
+
+M["Plinth_IsabelliumBars"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 72.5,
+		PositionY = 12.5,
+		PositionZ = 71,
+		ScaleX = 0.500000,
+		ScaleY = 0.500000,
+		ScaleZ = 0.500000,
+		Name = "Plinth_IsabelliumBars",
+		Map = M._MAP,
+		Resource = M["Plinth_IsabelliumBars"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Plinth_Isabelle",
+		MapObject = M["Plinth_IsabelliumBars"]
+	}
+
+	local Read = ItsyScape.Action.Read_Plinth()
+
+	ItsyScape.Meta.PlinthExhibit {
+		ExhibitResource = M["IsabelliumBars"],
+		ExhibitName = "Isabellium alloy",
+		ExhibitDescription = "Isabellium is a secret, special alloy derived from the failures of impure azatite alloys. The alloy inherently scales with the user's strength with no known upper limit. Isabellium is priceless, as the process to smelt it is only known to the Fierbloom family, and only them and their closest allies possess weapons and armor made from it.",
+		Zoom = 2,
+		OffsetY = 0,
+		Language = "en-US",
+		Action = Read
+	}
+
+	M["Plinth_IsabelliumBars"] {
 		Read
 	}
 end
