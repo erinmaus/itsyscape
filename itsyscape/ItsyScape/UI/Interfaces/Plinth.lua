@@ -11,6 +11,9 @@ local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Config = require "ItsyScape.Game.Config"
+local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
+local Color = require "ItsyScape.Graphics.Color"
+local DirectionalLightSceneNode = require "ItsyScape.Graphics.DirectionalLightSceneNode"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Button = require "ItsyScape.UI.Button"
@@ -74,7 +77,19 @@ function Plinth:new(id, index, ui)
 	self:addChild(self.panel)
 
 	self.sceneSnippet = SceneSnippet()
-	self.sceneSnippet:setParentNode(SceneNode())
+
+	local parentNode = SceneNode()
+
+	local ambientLight = AmbientLightSceneNode()
+	ambientLight:setAmbience(0.25)
+	ambientLight:setParent(parentNode)
+
+	local directionalLight = DirectionalLightSceneNode()
+	directionalLight:setColor(Color(0.5, 0.5, 0.5, 1))
+	directionalLight:setDirection(Vector(1, 2, 1))
+	directionalLight:setParent(parentNode)
+
+	self.sceneSnippet:setParentNode(parentNode)
 	self.sceneSnippet:setRoot(self.sceneSnippet:getParentNode())
 	self.sceneSnippet:setDPIScale(1)
 	self.sceneSnippet:setIsSelfClickThrough(true)

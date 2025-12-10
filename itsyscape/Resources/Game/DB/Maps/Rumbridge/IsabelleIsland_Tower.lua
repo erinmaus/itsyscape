@@ -1129,3 +1129,31 @@ do
 		Resource = Exhibit
 	}
 end
+
+do
+	local Exhibit = ItsyScape.Resource.Prop "AmuletOfYendor"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Exhibit
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 1,
+		SizeZ = 1.5,
+		MapObject = Exhibit
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Amulet of Yendor",
+		Language = "en-US",
+		Resource = Exhibit
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A replica of a mythical amulet once believed to grant godhood to those who possess it.",
+		Language = "en-US",
+		Resource = Exhibit
+	}
+end

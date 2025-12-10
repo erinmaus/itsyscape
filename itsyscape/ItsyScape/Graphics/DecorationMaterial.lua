@@ -75,6 +75,7 @@ function DecorationMaterial:apply(sceneNode, resourceManager, d)
 			TextureType = TextureResource
 		end
 
+
 		resourceManager:queue(
 			TextureType,
 			self.texture,
