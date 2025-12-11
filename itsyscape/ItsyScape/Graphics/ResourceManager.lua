@@ -48,6 +48,11 @@ function ResourceManager.View:_poll()
 		local pending = self.pending[currentIndex]
 
 		if pending.ready then
+			currentIndex = currentIndex + 1
+			if currentIndex > #self.pending then
+				self.isDone = true
+			end
+
 			if not self.cancelled[pending] then
 				if pending.resource then
 					pending.callback(pending.resource)
@@ -55,8 +60,6 @@ function ResourceManager.View:_poll()
 					pending.callback()
 				end
 			end
-
-			currentIndex = currentIndex + 1
 		end
 
 		coroutine.yield()
