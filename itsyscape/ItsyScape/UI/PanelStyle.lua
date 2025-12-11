@@ -20,6 +20,15 @@ function PanelStyle:new(t, resources)
 		self.image = false
 	end
 
+	if t.tile then
+		self.tile = resources:load(love.graphics.newImage, t.tile)
+		self.tile:setWrap("repeat")
+
+		self.quad = love.graphics.newQuad(0, 0, self.tile:getWidth(), self.tile:getHeight(), self.tile:getWidth(), self.tile:getHeight())
+	else
+		self.tile = false
+	end
+
 	if t.color then
 		self.color = t.color
 	else
@@ -35,6 +44,11 @@ end
 
 function PanelStyle:draw(widget)
 	if self.image then
+		if self.tile then
+			self.quad:setViewport(0, 0, widget:getSize())
+			itsyrealm.graphics.uncachedDraw(self.tile, self.quad)
+		end
+
 		self.image:draw(0, 0, widget:getSize())
 	elseif self.color then
 		local w, h = widget:getSize()

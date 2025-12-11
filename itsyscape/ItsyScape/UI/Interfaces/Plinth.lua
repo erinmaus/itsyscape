@@ -34,29 +34,29 @@ Plinth.RADIANS_PER_SECOND = math.pi
 
 Plinth.EXHIBIT_BACKGROUND_PANEL = {
 	radius = 0,
-	color = { 0, 0, 0, 0.4 }
-}
-
-Plinth.TEXT_BACKGROUND_PANEL = {
-	radius = Theme.DEFAULT_OUTER_PADDING,
 	color = { 0, 0, 0, 0.5 }
 }
 
+Plinth.TEXT_BACKGROUND_PANEL = {
+	image = "Resources/Game/UI/Panels/PlinthBorder.png",
+	tile = "Resources/Game/UI/Panels/PlinthTile.png"
+}
+
 Plinth.TITLE_LABEL = {
-	color = { 1, 1, 1, 1 },
+	color = { 0, 0, 0, 1 },
 	font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-	fontSize = 48,
-	spaceLines = true,
-	textShadow = true
+	fontSize = 32,
+	spaceLines = true
 }
 
 Plinth.DESCRIPTION_LABEL = {
-	color = { 1, 1, 1, 1 },
+	color = { 0, 0, 0, 1 },
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 32,
-	spaceLines = true,
-	textShadow = true
+	fontSize = 24,
+	spaceLines = true
 }
+
+Plinth.PLINTH_PADDING = 48
 
 Plinth.TITLE_HEIGHT = 48
 
@@ -143,17 +143,21 @@ function Plinth:performLayout()
 	self.textContainer:setPosition(w / 2 - w / 4 - Theme.DEFAULT_OUTER_PADDING, h / 2 - self.TITLE_HEIGHT - Theme.DEFAULT_OUTER_PADDING)
 	self.textContainer:setSize(
 		w / 2 + Theme.DEFAULT_OUTER_PADDING * 2,
-		h / 2 + self.TITLE_HEIGHT - Theme.DEFAULT_BUTTON_SIZE - Theme.DEFAULT_OUTER_PADDING)
+		h / 2 + self.TITLE_HEIGHT - Theme.DEFAULT_BUTTON_SIZE - self.PLINTH_PADDING)
 
-	self.titleContainer:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
-	self.titleContainer:setSize(w / 2, self.TITLE_HEIGHT)
+	self.titleContainer:setPosition(self.PLINTH_PADDING, self.PLINTH_PADDING)
+	self.titleContainer:setSize(w / 2 - self.PLINTH_PADDING * 2, self.TITLE_HEIGHT)
 
-	self.descriptionContainer:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING + self.TITLE_HEIGHT)
-	self.descriptionContainer:setSize(w / 2, h / 2 - Theme.DEFAULT_BUTTON_SIZE - Theme.DEFAULT_OUTER_PADDING)
+	self.descriptionContainer:setPosition(
+		self.PLINTH_PADDING,
+		self.PLINTH_PADDING + self.TITLE_HEIGHT)
+	self.descriptionContainer:setSize(
+		w / 2 - self.PLINTH_PADDING * 2,
+		h / 2 - Theme.DEFAULT_BUTTON_SIZE - self.PLINTH_PADDING * 2)
 
 	self.panel:setSize(w, h)
 
-	self.sceneSnippet:setSize(w, h)
+	self.sceneSnippet:setSize(w, h / 2 + h / 4)
 	self.sceneSnippet:setPosition(0, 0)
 
 	local buttonWidth, buttonHeight = self.closeButton:getSize()
