@@ -321,10 +321,17 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 		local glyph, projection = unpack(p)
 
 		if glyph == root then
-			local scale = glyph:getRadius() / self.radius
-			projection:polygonize(1 / scale * 2)
+			local scale
+			if glyph:getIsLeaf() then
+				scale = 1 / 8
+			else
+				scale = glyph:getRadius() / self.radius
+				scale = 1 / scale * 2
+			end
+
+			projection:polygonize(scale)
 		else
-			projection:polygonize()
+			projection:polygonize(0.5)
 		end
 	end
 

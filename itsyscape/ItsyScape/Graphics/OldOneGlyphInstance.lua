@@ -184,6 +184,10 @@ function OldOneGlyphInstance:getDepth()
 	return n
 end
 
+function OldOneGlyphInstance:getIsLeaf()
+	return #self.children == 0
+end
+
 function OldOneGlyphInstance:getProjection()
 	return self.projection
 end

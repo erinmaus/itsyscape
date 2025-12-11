@@ -271,9 +271,7 @@ Text.TIME_FORMAT = {
 	end
 }
 
-Text.Dialog = {}
-
-local function _listToFlags(dialog, list)
+local function _listToFlags(list)
 	if type(list) ~= "table" then
 		return {}
 	end
@@ -287,13 +285,197 @@ local function _listToFlags(dialog, list)
 	return flags
 end
 
+Text.Book = {}
+
+function Text.Book.ir_has_started_quest(peep, questName)
+	return Utility.Quest.didStart(questName, peep)
+end
+
+function Text.Book.ir_is_next_quest_step(peep, questName, keyItemID)
+	return Utility.Quest.isNextStep(questName, keyItemID, peep)
+end
+
+function Text.Book.ir_get_pronoun(peep, pronounType, upperCase)
+	local index = Text.NAMED_PRONOUN[pronounType]
+	local default = Text.DEFAULT_PRONOUNS["en-US"]["x"][index] or ""
+
+	return Text.getPronoun(peep, index, "en-US", upperCase)
+end
+
+function Text.Book.ir_is_pronoun_plural(peep)
+	local gender = peep:getBehavior(GenderBehavior)
+	if gender then
+		return gender.pronounsPlural
+	end
+
+	return true
+end
+
+function Text.Book.ir_get_pronoun_lowercase(peep, pronounType)
+	return Text.Book.ir_get_pronoun(peep, pronounType, false)
+end
+
+function Text.Book.ir_get_pronoun_uppercase(peep, pronounType)
+	return Text.Book.ir_get_pronoun(peep, pronounType, true)
+end
+
+function Text.Book.ir_get_english_be(peep, tense, upperCase)
+	return Text.getEnglishBe(peep, tense, upperCase)
+end
+
+function Text.Book.ir_get_english_be_lowercase(peep, tense)
+	return Text.Book.ir_get_english_be(peep, tense, false)
+end
+
+function Text.Book.ir_get_english_be_uppercase(peep, tense)
+	return Text.Book.ir_get_english_be(peep, tense, true)
+end
+
+function Text.Book.ir_get_relative_date_from_start(peep, dayOffset, monthOffset, yearOffset, format)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	local startTime = Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
+	return Text.Book.ir_get_relative_date_from_time(peep, dayOffset, monthOffset, yearOffset, format, startTime)
+end
+
+function Text.Book.ir_get_relative_date_from_now(peep, dayOffset, monthOffset, yearOffset, format)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	local currentTime = Utility.Time.getAndUpdateTime(rootStorage)
+	return Text.Book.ir_get_relative_date_from_time(peep, dayOffset, monthOffset, yearOffset, format, currentTime)
+end
+
+function Text.Book.ir_get_relative_date_from_birthday(peep, dayOffset, monthOffset, yearOffset, format)
+	local currentTime = Utility.Time.BIRTHDAY_TIME
+	return Text.Book.ir_get_relative_date_from_time(peep, dayOffset, monthOffset, yearOffset, format, currentTime)
+end
+
+function Text.Book.ir_get_relative_date_from_time(peep, dayOffset, monthOffset, yearOffset, format, currentTime)
+	local yearMonthDay = Utility.Time.offsetIngameTime(currentTime or Utility.Time.BIRTHDAY_TIME, dayOffset, monthOffset, yearOffset)
+	local newTime = Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+
+	return Text.Book.ir_format_date(peep, format, newTime)
+end
+
+function Text.Book.ir_format_date(peep, format, currentTime)
+	local format = format or "%monthName %day, %yearOptionalShortAge"
+	local yearMonthDay = Utility.Time.getIngameYearMonthDay(currentTime or Utility.Time.BIRTHDAY_TIME)
+
+	return format:gsub("%%(%w+)", function(key)
+		local func = Text.TIME_FORMAT[key]
+		if not func then
+			error(string.format("time format specifier '%s' not valid", key))
+		end
+
+		return func(yearMonthDay)
+	end)
+end
+
+function Text.Book.ir_get_start_time(peep)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	return Utility.Time.getAndUpdateAdventureStartTime(rootStorage)
+end
+
+function Text.Book.ir_get_current_time(peep)
+	local rootStorage = peep:getDirector():getPlayerStorage(peep):getRoot()
+	return Utility.Time.getAndUpdateTime(rootStorage)
+end
+
+function Text.Book.ir_get_birthday_time(peep)
+	return Utility.Time.BIRTHDAY_TIME
+end
+
+function Text.Book.ir_get_date_component(peep, currentTime, component)
+	return Utility.Time.getIngameYearMonthDay(currentTime)[component]
+end
+
+function Text.Book.ir_to_current_time(peep, year, month, day)
+	return Utility.Time.toCurrentTime(year, month, day)
+end
+
+function Text.Book.ir_offset_current_time(peep, currentTime, dayOffset, monthOffset, yearOffset)
+	local yearMonthDay = Utility.Time.offsetIngameTime(currentTime, dayOffset, monthOffset, yearOffset)
+	return Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, yearMonthDay.day)
+end
+
+function Text.Book.ir_get_num_days_in_month(peep, month)
+	return Utility.Time.DAYS_IN_INGAME_MONTH[month]
+end
+
+function Text.Book.ir_get_month_name(peep, month)
+	return Utility.Time.MONTHS[month]
+end
+
+function Text.Book.ir_get_day_name(peep, day)
+	return Utility.Time.DAYS[day]
+end
+
+function Text.Book.ir_common_calendar_get_day(peep, day, currentTime)
+	return Text.Book.ir_calendar_get_day(peep, day, currentTime)
+end
+
+function Text.Book.ir_calendar_get_day(peep, day, currentTime, insideFormat, outsideFormat)
+	insideFormat = insideFormat or "%day"
+	outsideFormat = outsideFormat or "--"
+	currentTime = currentTime or Utility.Time.BIRTHDAY_TIME
+
+	local yearMonthDay = Utility.Time.getIngameYearMonthDay(currentTime)
+	local firstDayOfMonthTime = Utility.Time.toCurrentTime(yearMonthDay.year, yearMonthDay.month, 1)
+	local firstDayYearMonthDay = Utility.Time.getIngameYearMonthDay(firstDayOfMonthTime)
+	local dayOfWeekOffset = 1 - (firstDayYearMonthDay.dayOfWeek + 1)
+	local relativeDay = dayOfWeekOffset + day
+
+	local calendarYearMonthDay = Utility.Time.offsetIngameTime(firstDayOfMonthTime, relativeDay)
+	local calendarTime = Utility.Time.toCurrentTime(calendarYearMonthDay.year, calendarYearMonthDay.month, calendarYearMonthDay.day)
+
+	if calendarYearMonthDay.month ~= yearMonthDay.month then
+		return Text.Book.ir_format_date(peep, outsideFormat, calendarTime)
+	else
+		return Text.Book.ir_format_date(peep, insideFormat, calendarTime)
+	end
+end
+
+function Text.Book.ir_yell(peep, message)
+	return message:upper()
+end
+
+function Text.Book.ir_get_infinite()
+	return math.huge
+end
+
+function Text.Book.ir_get_external_dialog_variable(peep, characterName, variableName)
+	local result = Text.getDialogVariable(peep, characterName, variableName)
+	if result == nil then
+		return ""
+	end
+
+	return result
+end
+
+function Text.Book.ir_state_has(peep, resourceType, resource, count, flags)
+	return peep:getState():has(resourceType, resource, count, _listToFlags(flags))
+end
+
+function Text.Book.ir_state_count(peep, resourceType, resource, flags)
+	return peep:getState():count(resourceType, resource, _listToFlags(flags))
+end
+
+function Text.Book.ir_state_count(dialog, characterName, resourceType, resource, flags)
+	local peep = dialog:getSpeaker(characterName)
+	if not peep then
+		return false
+	end
+
+	return peep:getState():count(resourceType, resource, _listToFlags(flags))
+end
+
+Text.Dialog = {}
+
 function Text.Dialog.ir_state_has(dialog, characterName, resourceType, resource, count, flags)
 	local peep = dialog:getSpeaker(characterName)
 	if not peep then
 		return false
 	end
 
-	return peep:getState():has(resourceType, resource, count, _listToFlags(dialog, flags))
+	return peep:getState():has(resourceType, resource, count, _listToFlags(flags))
 end
 
 function Text.Dialog.ir_state_count(dialog, characterName, resourceType, resource, flags)
@@ -302,7 +484,7 @@ function Text.Dialog.ir_state_count(dialog, characterName, resourceType, resourc
 		return false
 	end
 
-	return peep:getState():count(resourceType, resource, _listToFlags(dialog, flags))
+	return peep:getState():count(resourceType, resource, _listToFlags(flags))
 end
 
 function Text.Dialog.ir_state_give(dialog, characterName, resourceType, resource, count, flags)
@@ -311,7 +493,7 @@ function Text.Dialog.ir_state_give(dialog, characterName, resourceType, resource
 		return false
 	end
 
-	return peep:getState():give(resourceType, resource, count, _listToFlags(dialog, flags))
+	return peep:getState():give(resourceType, resource, count, _listToFlags(flags))
 end
 
 function Text.Dialog.ir_state_take(dialog, characterName, resourceType, resource, count, flags)
@@ -320,7 +502,7 @@ function Text.Dialog.ir_state_take(dialog, characterName, resourceType, resource
 		return false
 	end
 
-	return peep:getState():take(resourceType, resource, count, _listToFlags(dialog, flags))
+	return peep:getState():take(resourceType, resource, count, _listToFlags(flags))
 end
 
 function Text.Dialog.ir_has_started_quest(dialog, characterName, questName)
@@ -656,12 +838,19 @@ function Text.Dialog.ir_get_stance(dialog, characterName)
 	return stance.stance
 end
 
-
 function Text.bind(dialog, common, language)
 	common = common or Text.Dialog
 
 	for k, v in pairs(common) do
 		dialog:bindExternalFunction(k, v, dialog)
+	end
+end
+
+function Text.bindBook(story, peep, common, language)
+	common = common or Text.Book
+
+	for k, v in pairs(common) do
+		story:bindExternalFunction(k, v, true, peep)
 	end
 end
 

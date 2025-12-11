@@ -13,7 +13,7 @@
 				"model": "Spine.lmesh",
 				"texture": "Spine.png",
 				"canvas": true
-			},
+			}
 		],
 
 		"knot": "spine_title"
@@ -37,9 +37,7 @@
 				"model": "../Common/Back.lmesh",
 				"texture": "Back.png"
 			}
-		],
-
-		"commands": [],
+		]
 	},
 
 	"page": {
@@ -54,7 +52,7 @@
 
 	"pages": [
 		{
-			"id": 0,
+			"id": 0
 		},
 		{
 			"id": 1,

@@ -8,7 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local json = require "json"
-local narrator = require "narrator.narrator"
+local Nomicon = require "nomicon"
 local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
@@ -20,42 +20,37 @@ function ReadBookController:new(peep, director, resource)
 
 	self.resource = resource
 
-	local filename = string.format("Resources/Game/Books/%s/Book.json", resource.name)
+	local filename = string.format("Resources/Game/Books/%s/TableOfContents.json", resource.name)
 	self.bookConfig = json.decode(love.filesystem.read(filename))
 
+	local text = love.filesystem.read(string.format("Resources/Game/Books/%s/Book.json", resource.name)) or "{}"
+	self.story = Nomicon.Story(json.decode(text), self:getVariables())
 
-	local text = love.filesystem.read(string.format("Resources/Game/Books/%s/en_US.ink", resource.name)) or ""
-	local book = narrator.parse_content(text)
-	self.text = narrator.init_story(book)
+	Utility.Text.bindBook(self.story, peep, nil, "en-US")
 
-	local methods = {}
 	do
-		local commonMethods = Utility.Text.bind(peep)
-		for name, commonMethod in pairs(commonMethods) do
-			methods[name] = commonMethod
-			self.text:bind(name, commonMethod)
-		end
-
-		local chunkFilenames = {
-			"Resources/Game/Books/Common/Common.lua",
-			"Resources/Game/Books/Common/en_US.lua",
-			string.format("Resources/Game/Books/Common/%s/Common.lua", resource.name),
-			string.format("Resources/Game/Books/Common/%s/en_US.lua", resource.name)
-		}
-
-		for _, chunkFilename in ipairs(chunkFilenames) do
-			local chunk = love.filesystem.load(chunkFilename)
-			if chunk then
-				local bind = chunk()
-				local specificMethods = bind(peep, methods)
-
-				for name, specificMethod in pairs(specificMethods) do
-					methods[name] = specificMethod
-					self.text:bind(name, specificMethod)
-				end
-			end
+		local commonPath = string.format("Resources.Game.Books.%s.Common", resource.name)
+		local s, r = pcall(require, commonPath)
+		if s then
+			Utility.Text.bindBook(self.story, peep, r, "en-US")
+		else
+			if love.filesystem.getInfo(string.format("Resources/Game/Books/%s/Common.lua", characterName)) or
+			   love.filesystem.getInfo(string.format("Resources/Game/Books/%s/Common/init.lua", characterName))
+		   	then
+		   		Log.warn("Couldn't load common dialog '%s' for '%s': %s", commonPath, characterName, r)
+		   	end
 		end
 	end
+end
+
+function ReadBookController:getDefaultVariables()
+	return {
+		player_name = string.format("%%person(%s)", self:getPeep():getName())
+	}
+end
+
+function ReadBookController:getVariables()
+	return self:getDefaultVariables()
 end
 
 function ReadBookController:_parseTextTree(parent, pageIndex, commands, currentStyle, currentText)
@@ -120,6 +115,34 @@ function ReadBookController:_parseTextTree(parent, pageIndex, commands, currentS
 				command.value = table.concat(child.children, "\n")
 				command.command = "text"
 				table.insert(commands, command)
+			elseif child.tag == "glyph" then
+				local command = {}
+
+				for key, value in pairs(currentStyle) do
+					command[key] = value
+				end
+
+				for attributeName, attribute in pairs(child.attributes) do
+					command[attributeName] = attribute.value
+				end
+
+				command.value = tonumber(command.value or "0") or 0
+				command.command = "glyph"
+				table.insert(commands, command)
+			elseif child.tag == "glyphs" then
+				local command = {}
+
+				for key, value in pairs(currentStyle) do
+					command[key] = value
+				end
+
+				for attributeName, attribute in pairs(child.attributes) do
+					command[attributeName] = attribute.value
+				end
+
+				command.value = table.concat(child.children, "\n")
+				command.command = "glyphs"
+				table.insert(commands, command)
 			elseif child.tag == "image" then
 				local command = {}
 
@@ -142,9 +165,9 @@ function ReadBookController:_parseTextTree(parent, pageIndex, commands, currentS
 
 	if not parent.parent and #currentText >= 1 then
 		local command = {
-			x = pageIndex and (pageIndex % 2 == 1 and 20 or 5),
+			x = pageIndex and (pageIndex % 2 == 1 and 25 or 5),
 			y = pageIndex and 5,
-			width = pageIndex and (pageIndex % 2 == 1 and 80 or 75)
+			width = 75
 		}
 
 		for key, value in pairs(currentStyle) do
@@ -173,26 +196,24 @@ function ReadBookController:_pullPart(partConfig, pageIndex)
 
 	local knot = partConfig.knot
 	if knot then
-		self.text:jump_to(knot)
-		if self.text:can_continue() then
-			local paragraphs = self.text:continue()
+		self.story:choose(knot)
 
-			local text = {}
-			for _, paragraph in ipairs(paragraphs) do
-				table.insert(text, paragraph.text)
-			end
-			text = table.concat(text, "\n")
-
-			local tree = Utility.Text.parse(text)
-			result.commands = self:_parseTextTree(tree, pageIndex)
+		local paragraphs = {}
+		while self.story:canContinue() do
+			local paragraph = self.story:continue()
+			table.insert(paragraphs, paragraph)
 		end
+
+		local pageText = table.concat(paragraphs, "\n")
+		local tree = Utility.Text.parse(pageText)
+		result.commands = self:_parseTextTree(tree, pageIndex)
 	end
 
 	return result
 end
 
-function ReadBookController:pull()
-	local state = {
+function ReadBookController:buildState()
+	self.bookState = {
 		resource = self.resource.name,
 		book = {
 			book = self:_pullPart(self.bookConfig.book),
@@ -204,10 +225,32 @@ function ReadBookController:pull()
 	}
 
 	for i, page in ipairs(self.bookConfig.pages) do
-		table.insert(state.book.pages, self:_pullPart(page, i))
+		table.insert(self.bookState.book.pages, self:_pullPart(page, i))
 	end
+end
 
-	return state
+function ReadBookController:updateTime()
+	local playerStorage = self:getDirector():getPlayerStorage(self:getPeep())
+	local rootStorage = playerStorage:getRoot()
+
+	self.currentTime = Utility.Time.getAndUpdateTime(rootStorage)
+end
+
+function ReadBookController:pull()
+	self:updateTime()
+
+	return {
+		time = self.currentTime
+	}
+end
+
+function ReadBookController:update(...)
+	Controller.update(self, ...)
+
+	if not self.bookState then
+		self:buildState()
+		self:send("prepareBook", self.bookState)
+	end
 end
 
 return ReadBookController
