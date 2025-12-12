@@ -1157,3 +1157,59 @@ do
 		Resource = Exhibit
 	}
 end
+
+do
+	local Table = ItsyScape.Resource.Prop "Table_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Table
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2.5,
+		SizeY = 2,
+		SizeZ = 2.5,
+		MapObject = Table
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Table",
+		Language = "en-US",
+		Resource = Table
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's probably one expensive table.",
+		Language = "en-US",
+		Resource = Table
+	}
+end
+
+do
+	local LongTable = ItsyScape.Resource.Prop "LongTable_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = LongTable
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2.5,
+		SizeY = 2,
+		SizeZ = 7,
+		MapObject = LongTable
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Long table",
+		Language = "en-US",
+		Resource = LongTable
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fancy table for important meetings.",
+		Language = "en-US",
+		Resource = LongTable
+	}
+end
