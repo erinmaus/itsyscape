@@ -1213,3 +1213,31 @@ do
 		Resource = LongTable
 	}
 end
+
+do
+	local Bookshelf = ItsyScape.Resource.Prop "Shelf_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Bookshelf
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 4,
+		SizeZ = 0.5,
+		MapObject = Bookshelf
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bookshelf",
+		Language = "en-US",
+		Resource = Bookshelf
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Full of books on all kinds of subjects.",
+		Language = "en-US",
+		Resource = Bookshelf
+	}
+end

@@ -111,12 +111,20 @@ function Building:getMaterials()
 	return materials
 end
 
+function Building:getNumMaterials()
+	return #self.materials
+end
+
 function Building:getMaterialByIndex(index)
 	return self.materials[index]
 end
 
 function Building:getMaterialByName(name)
 	return self.materialsByName[name]
+end
+
+function Building:getNumDecorationGroups()
+	return #self.decorationGroups
 end
 
 function Building:getDecorationGroupByIndex(index)

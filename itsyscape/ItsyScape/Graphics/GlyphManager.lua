@@ -38,7 +38,7 @@ function GlyphManager:new(t, gameView)
 	self.shaderCache:load(gameView:getResourceManager())
 	self.shakyShader = self.shaderCache:loadPostProcessShader("ShakyVertex")
 
-	self.channels = setmetatable({}, { __mode == "k" })
+	self.channels = setmetatable({}, { __mode = "k" })
 end
 
 function GlyphManager:_newChannel(p)

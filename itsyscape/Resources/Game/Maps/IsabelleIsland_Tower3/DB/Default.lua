@@ -102,6 +102,106 @@ do
 	}
 end
 
+M["ComfyChair_Isabelle4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21.000000,
+		PositionY = 0.000000,
+		PositionZ = 11.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ComfyChair_Isabelle4",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["ComfyChair_Isabelle4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ComfyChair_Isabelle",
+		MapObject = M["ComfyChair_Isabelle4"]
+	}
+end
+
+M["ComfyChair_Isabelle5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 18.750000,
+		PositionY = 0.000000,
+		PositionZ = 13.250000,
+		RotationX = 0.000000,
+		RotationY = 0.382683,
+		RotationZ = 0.000000,
+		RotationW = 0.923880,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ComfyChair_Isabelle5",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["ComfyChair_Isabelle5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ComfyChair_Isabelle",
+		MapObject = M["ComfyChair_Isabelle5"]
+	}
+end
+
+M["ComfyChair_Isabelle6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 24.000000,
+		PositionY = 0.000000,
+		PositionZ = 17.250000,
+		RotationX = 0.000000,
+		RotationY = -0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ComfyChair_Isabelle6",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["ComfyChair_Isabelle6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ComfyChair_Isabelle",
+		MapObject = M["ComfyChair_Isabelle6"]
+	}
+end
+
+M["ComfyChair_Isabelle7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21.000000,
+		PositionY = 0.000000,
+		PositionZ = 19.000000,
+		RotationX = 0.000000,
+		RotationY = 0.923880,
+		RotationZ = 0.000000,
+		RotationW = 0.382683,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ComfyChair_Isabelle7",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["ComfyChair_Isabelle7"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ComfyChair_Isabelle",
+		MapObject = M["ComfyChair_Isabelle7"]
+	}
+end
+
 M["Desk_Isabelle_DragonBone1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -855,6 +955,106 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Lamp_IsabelleTower",
 		MapObject = M["Lamp_IsabelleTower9"]
+	}
+end
+
+M["LongTable_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 21.000000,
+		PositionY = 0.000000,
+		PositionZ = 15.250000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "LongTable_Isabelle1",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["LongTable_Isabelle1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "LongTable_Isabelle",
+		MapObject = M["LongTable_Isabelle1"]
+	}
+end
+
+M["Shelf_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 17.287117,
+		PositionY = 0.250000,
+		PositionZ = 1.501525,
+		RotationX = 0.000000,
+		RotationY = -0.121518,
+		RotationZ = 0.000000,
+		RotationW = 0.992589,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Shelf_Isabelle1",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["Shelf_Isabelle1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Shelf_Isabelle",
+		MapObject = M["Shelf_Isabelle1"]
+	}
+end
+
+M["Shelf_Isabelle2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 20.281250,
+		PositionY = 0.250000,
+		PositionZ = 2.687500,
+		RotationX = 0.000000,
+		RotationY = -0.243176,
+		RotationZ = 0.000000,
+		RotationW = 0.969982,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Shelf_Isabelle2",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["Shelf_Isabelle2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Shelf_Isabelle",
+		MapObject = M["Shelf_Isabelle2"]
+	}
+end
+
+M["Shelf_Isabelle8"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27.187500,
+		PositionY = 0.250000,
+		PositionZ = 13.093750,
+		RotationX = 0.000000,
+		RotationY = -0.678974,
+		RotationZ = 0.000000,
+		RotationW = 0.734162,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Shelf_Isabelle8",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["Shelf_Isabelle8"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Shelf_Isabelle",
+		MapObject = M["Shelf_Isabelle8"]
 	}
 end
 
