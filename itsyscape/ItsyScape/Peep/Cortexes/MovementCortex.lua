@@ -10,6 +10,7 @@
 local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
@@ -387,6 +388,8 @@ function MovementCortex:update(delta)
 			velocity = self:accumulate(peep, self.accumulateVelocity, velocity)
 
 			local newPosition = position.position + velocity
+			local positionBeforeGravity = newPosition
+
 			if not movement.noClip then
 				newPosition = newPosition + gravity * delta
 			end
@@ -404,12 +407,26 @@ function MovementCortex:update(delta)
 			end
 
 			local isOnGround = movement.isOnGround
-			local groundTile = map:getTileAt(position.position.x, position.position.z)
-			local groundStep = groundTile and groundTile:getData("x-tileset-step") or 0
+			local groupHits = Utility.Map.castRay(peep, Ray(positionBeforeGravity + Vector(0, movement.maxStepHeight, 0), Vector(0, -1, 0)))
+
+			local groundStep
+			for i = 1, #groupHits do
+				local groupHit = groupHits[i]
+				local previousGroupHit = i > 1 and groupHits[i - 1]
+
+				if previousGroupHit and groupHit.position.y > previousGroupHit.position.y then
+					break
+				end
+
+				local s = groupHit.tile:getData("x-tileset-step")
+				if s then
+					groundStep = math.max(groundStep or -math.huge, s)
+				end
+			end
 
 			local y = map:getInterpolatedHeight(
 				position.position.x,
-				position.position.z) + movement.float + groundStep
+				position.position.z) + movement.float + (groundStep or 0)
 			if not movement.noClip then
 				if position.position.y < y then
 					if movement.bounce > 0 then

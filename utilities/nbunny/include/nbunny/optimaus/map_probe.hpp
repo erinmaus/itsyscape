@@ -245,21 +245,32 @@ namespace nbunny
 		int i, j;
 	};
 
+	struct MapContourTriangle
+	{
+		std::array<glm::vec3, 3> pretransformed_vertices;
+		std::array<glm::vec3, 3> transformed_vertices;
+	};
+
 	class TransformedMap
 	{
 	private:
 		std::vector<MapTriangle> triangles;
 		std::unordered_set<int> visited_triangles;
 		std::unordered_map<glm::vec3, std::vector<int>> cells;
+		glm::vec3 map_min, map_max;
+
+		std::unordered_map<glm::ivec2, std::vector<int>> contour_tiles;
+		std::vector<MapContourTriangle> contour_triangles;
 
 		glm::vec3 cell_size = glm::vec3(4.0f);
 
 		void add(MapTriangle& triangle);
-		void build(const Map& map, const MapCurve* map_curve = nullptr);
+		void build_map(const Map& map, const MapCurve* map_curve = nullptr);
+		void build_contour(const Map& map, const std::vector<MapContourTriangle>& contour);
 
 	public:
-		TransformedMap(const Map& map);
-		TransformedMap(const Map& map, const MapCurve& map_curve);
+		TransformedMap(const Map& map, const std::vector<MapContourTriangle>& contour);
+		TransformedMap(const Map& map, const std::vector<MapContourTriangle>& contour, const MapCurve& map_curve);
 
 		void cast_ray(const glm::vec3& origin, const glm::vec3& direction, std::vector<MapHit>& hits);
 	};

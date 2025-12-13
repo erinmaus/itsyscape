@@ -53,6 +53,7 @@ namespace nbunny
 
     bool ray_hit_bounds(const glm::vec3& origin, const glm::vec3& direction, const glm::vec3& min, const glm::vec3& max, glm::vec3& point);
     bool ray_hit_triangle(const glm::vec3& origin, const glm::vec3& direction, const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, glm::vec3& point);
+    bool is_point_in_bounds(const glm::vec3& point, const glm::vec3& min, const glm::vec3& max);
     bool cone_hit_bounds(const glm::vec3& cone_position, const glm::vec3& cone_direction, float cone_length, float cone_radius, const glm::vec3& min, const glm::vec3& max, glm::vec3& point);
     bool is_point_in_cone(const glm::vec3& cone_position, const glm::vec3& cone_direction, float cone_length, float cone_radius, const glm::vec3& point, float& distance);
     glm::vec3 project_point_on_line_segment(const glm::vec3& a, const glm::vec3& b, const glm::vec3& point);

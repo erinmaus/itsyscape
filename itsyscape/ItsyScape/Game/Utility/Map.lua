@@ -11,10 +11,68 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local Map = require "ItsyScape.World.Map"
 
-local Map = {}
+local UMap = {}
 
-function Map.getWind(game, layer)
+local _sortRayCastRay
+local function _sortRayCast(a, b)
+	return a.position:distance(_sortRayCastRay.origin) < b.position:distance(_sortRayCastRay.origin)
+end
+
+function UMap.castRay(peep, ray, filter)
+	local mapScript = Utility.Peep.getMapScript(peep)
+	if not mapScript then
+		return {}
+	end
+
+	local transform = Utility.Peep.getMapTransform(mapScript)
+	ray = ray:transform(transform)
+
+	local stage = peep:getDirector():getGameInstance():getStage()
+
+	local mapScriptLayer = Utility.Peep.getLayer(mapScript)
+	local instance = stage:getInstanceByLayer(mapScriptLayer)
+	if not instance then
+		return {}
+	end
+
+	local mapGroup = instance:getMapGroup(mapScriptLayer)
+	if not mapGroup then
+		return {}
+	end
+
+	local results = {}
+	for localLayer, layer in instance:iterateMapGroup(mapGroup) do
+		local currentMapScript = instance:getMapScriptByLayer(layer)
+		local currentTransform = currentMapScript and Utility.Peep.getMapTransform(currentMapScript)
+
+		local instanceMap = instance:getMap(layer)
+		local meta = instanceMap and instanceMap:getMeta()
+
+		if not filter or filter(layer, instance, meta) then
+			local hits = stage:castAbsoluteMapRay(layer, ray)
+
+			for _, hit in ipairs(hits) do
+				table.insert(results, {
+					tile = hit[Map.RAY_TEST_RESULT_TILE],
+					position = hit[Map.RAY_TEST_RESULT_POSITION]:transform(currentTransform),
+					i = hit[Map.RAY_TEST_RESULT_I],
+					j = hit[Map.RAY_TEST_RESULT_J],
+					layer = layer,
+					localLayer = localLayer
+				})
+			end
+		end
+	end
+
+	_sortRayCastRay = ray
+	table.sort(results, _sortRayCast)
+
+	return results
+end
+
+function UMap.getWind(game, layer)
 	local instance = game:getStage():getInstanceByLayer(layer)
 	local mapInfo = instance and instance:getMap(layer)
 	local meta = mapInfo and mapInfo:getMeta()
@@ -24,7 +82,7 @@ function Map.getWind(game, layer)
 	       meta and meta.windPattern and Vector(unpack(meta.windPattern)) or Vector(5, 10, 15)
 end
 
-function Map.transformWorldPositionByWind(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition, normal)
+function UMap.transformWorldPositionByWind(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition, normal)
 	local windRotation = Quaternion.lookAt(Vector.ZERO, windDirection, Vector.UNIT_Y)
 	local windDelta = time * windSpeed + worldPosition:getLength() * windSpeed
 	local windMu = (math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z) + 1.0) / 2.0;
@@ -37,7 +95,7 @@ function Map.transformWorldPositionByWind(time, windSpeed, windDirection, windPa
 	return transformedRelativePosition + anchorPosition, normal, currentWindRotation
 end
 
-function Map.transformWorldPositionByWave(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition)
+function UMap.transformWorldPositionByWave(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition)
 	local windDelta = time * windSpeed
 	local windDeltaCoordinate = windDirection * Vector(windDelta) + worldPosition
 	local windMu = (math.sin((windDeltaCoordinate.x + windDeltaCoordinate.z) / windPattern.x) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.z) / windPattern.y) * math.sin((windDeltaCoordinate.x + windDeltaCoordinate.z) / windPattern.z) + 1.0) / 2.0
@@ -46,10 +104,10 @@ function Map.transformWorldPositionByWave(time, windSpeed, windDirection, windPa
 	return worldPosition + Vector(0, distance * windMu, 0)
 end
 
-function Map.calculateWaveNormal(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition, scale)
+function UMap.calculateWaveNormal(time, windSpeed, windDirection, windPattern, anchorPosition, worldPosition, scale)
 	scale = scale or Vector.ONE
 
-	local normalWorldPositionLeft = Map.transformWorldPositionByWave(
+	local normalWorldPositionLeft = UMap.transformWorldPositionByWave(
 		time,
 		windSpeed,
 		windDirection,
@@ -57,7 +115,7 @@ function Map.calculateWaveNormal(time, windSpeed, windDirection, windPattern, an
 		anchorPosition - Vector(scale.x, 0, 0),
 		worldPosition - Vector(scale.x, 0, 0))
 
-	local normalWorldPositionRight = Map.transformWorldPositionByWave(
+	local normalWorldPositionRight = UMap.transformWorldPositionByWave(
 		time,
 		windSpeed,
 		windDirection,
@@ -65,7 +123,7 @@ function Map.calculateWaveNormal(time, windSpeed, windDirection, windPattern, an
 		anchorPosition + Vector(scale.x, 0, 0),
 		worldPosition + Vector(scale.x, 0, 0))
 
-	local normalWorldPositionTop = Map.transformWorldPositionByWave(
+	local normalWorldPositionTop = UMap.transformWorldPositionByWave(
 		time,
 		windSpeed,
 		windDirection,
@@ -73,7 +131,7 @@ function Map.calculateWaveNormal(time, windSpeed, windDirection, windPattern, an
 		anchorPosition - Vector(0, 0, 1),
 		worldPosition - Vector(0, 0, scale.z))
 
-	local normalWorldPositionBottom = Map.transformWorldPositionByWave(
+	local normalWorldPositionBottom = UMap.transformWorldPositionByWave(
 		time,
 		windSpeed,
 		windDirection,
@@ -88,7 +146,7 @@ function Map.calculateWaveNormal(time, windSpeed, windDirection, windPattern, an
 	return normal:getNormal()
 end
 
-function Map.getTileRotation(map, i, j)
+function UMap.getTileRotation(map, i, j)
 	local tile = map:getTile(i, j)
 	local crease = tile:getCrease()
 
@@ -117,7 +175,7 @@ function Map.getTileRotation(map, i, j)
 	end
 end
 
-function Map.playCutscene(map, resource, cameraName, player, entities)
+function UMap.playCutscene(map, resource, cameraName, player, entities)
 	player = player or Utility.Peep.getPlayer(map)
 	local director = map:getDirector()
 
@@ -135,13 +193,13 @@ function Map.playCutscene(map, resource, cameraName, player, entities)
 		entities)
 end
 
-function Map.getTilePosition(director, i, j, layer)
+function UMap.getTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
 	local center = stage:getMap(layer) and stage:getMap(layer):getTileCenter(i, j)
 	return center or Vector.ZERO
 end
 
-function Map.getAbsoluteTilePosition(director, i, j, layer)
+function UMap.getAbsoluteTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
 	local instance = stage:getInstanceByLayer(layer)
 	local mapScript = instance and instance:getMapScriptByLayer(layer)
@@ -158,7 +216,7 @@ function Map.getAbsoluteTilePosition(director, i, j, layer)
 	end
 end
 
-function Map.getMapObject(game, map, name)
+function UMap.getMapObject(game, map, name)
 	local gameDB = game:getGameDB()
 
 	if type(map) == 'string' then
@@ -180,7 +238,7 @@ function Map.getMapObject(game, map, name)
 	return nil
 end
 
-function Map.hasAnchor(game, map, anchor)
+function UMap.hasAnchor(game, map, anchor)
 	local gameDB = game:getGameDB()
 
 	if type(map) == 'string' then
@@ -195,7 +253,7 @@ function Map.hasAnchor(game, map, anchor)
 	return mapObject ~= nil
 end
 
-function Map.getAnchorPosition(game, map, anchor)
+function UMap.getAnchorPosition(game, map, anchor)
 	local gameDB = game:getGameDB()
 
 	if type(map) == 'string' then
@@ -216,7 +274,7 @@ function Map.getAnchorPosition(game, map, anchor)
 	return 0, 0, 0, 1
 end
 
-function Map.getAnchorRotation(game, map, anchor)
+function UMap.getAnchorRotation(game, map, anchor)
 	local gameDB = game:getGameDB()
 
 	if type(map) == 'string' then
@@ -240,7 +298,7 @@ function Map.getAnchorRotation(game, map, anchor)
 	return 0, 0, 0, 1
 end
 
-function Map.getAnchorScale(game, map, anchor)
+function UMap.getAnchorScale(game, map, anchor)
 	local gameDB = game:getGameDB()
 
 	if type(map) == 'string' then
@@ -264,7 +322,7 @@ function Map.getAnchorScale(game, map, anchor)
 	return 1, 1, 1
 end
 
-function Map.getAnchorDirection(game, map, anchor)
+function UMap.getAnchorDirection(game, map, anchor)
 	local gameDB = game:getGameDB()
 
 	if type(map) == 'string' then
@@ -283,7 +341,7 @@ function Map.getAnchorDirection(game, map, anchor)
 	return 0
 end
 
-function Map.spawnMap(peep, map, position, args)
+function UMap.spawnMap(peep, map, position, args)
 	local stage = peep:getDirector():getGameInstance():getStage()
 	local instance = stage:getPeepInstance(peep)
 	local mapLayer, mapScript = stage:loadMapResource(instance, map, args)
@@ -294,7 +352,7 @@ function Map.spawnMap(peep, map, position, args)
 	return mapLayer, mapScript
 end
 
-function Map.spawnShip(peep, shipName, layer, i, j, elevation, args)
+function UMap.spawnShip(peep, shipName, layer, i, j, elevation, args)
 	local WATER_ELEVATION = 1.75
 
 	local stage = peep:getDirector():getGameInstance():getStage()
@@ -357,7 +415,7 @@ end
 
 -- Gets a random tile within the line of sight of (i, j) no more than 'distance' tiles away (Euclidean)
 -- Returns nil, nil if nothing was found
-function Map.getRandomTile(map, i, j, distance, checkLineOfSight, rng, flags, ...)
+function UMap.getRandomTile(map, i, j, distance, checkLineOfSight, rng, flags, ...)
 	if checkLineOfSight == nil then
 		checkLineOfSight = true
 	end
@@ -398,9 +456,9 @@ end
 -- Gets a random position within the line of sight of position no more than 'distance' units away (Euclidean)
 -- Returns nil if nothing was found
 -- May round 'distance' to the nearest tile size
-function Map.getRandomPosition(map, position, distance, checkLineOfSight, rng, ...)
+function UMap.getRandomPosition(map, position, distance, checkLineOfSight, rng, ...)
 	local _, tileI, tileJ = map:getTileAt(position.x, position.z)
-	local i, j = Map.getRandomTile(map, tileI, tileJ, math.max(distance / map:getCellSize(), math.sqrt(2)), checkLineOfSight, rng, ...)
+	local i, j = UMapgetRandomTile(map, tileI, tileJ, math.max(distance / map:getCellSize(), math.sqrt(2)), checkLineOfSight, rng, ...)
 
 	if i and j then
 		return map:getTileCenter(i, j)
@@ -409,4 +467,4 @@ function Map.getRandomPosition(map, position, distance, checkLineOfSight, rng, .
 	return nil
 end
 
-return Map
+return UMap

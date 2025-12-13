@@ -419,10 +419,10 @@ function Peep.getDecomposedMapTransform(peep)
 			position = position + mapOffset.offset
 			rotation = rotation * mapOffset.rotation
 			scale = scale * mapOffset.scale
-		end
 
-		if mapOffset.parentLayer then
-			parent = Peep.getInstance(peep):getMapScriptByLayer(mapOffset.parentLayer)
+			if mapOffset.parentLayer and peep:getIsReady() then
+				parent = Peep.getInstance(peep):getMapScriptByLayer(mapOffset.parentLayer)
+			end
 		end
 	end
 

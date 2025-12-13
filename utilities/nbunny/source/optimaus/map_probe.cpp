@@ -106,8 +106,6 @@ glm::vec3 nbunny::MapCurve::evaluate_scale(float t) const
 	return scale_curve.compute(linear, t);
 }
 
-#include <iostream>
-
 bool nbunny::MapCurve::transform(glm::vec3& position, glm::quat& rotation) const
 {
 	glm::vec3 planar_position(position.x, 0.0f, position.z);
@@ -388,8 +386,11 @@ void nbunny::TransformedMap::add(MapTriangle& triangle)
 	triangles.emplace_back(std::move(triangle));
 }
 
-void nbunny::TransformedMap::build(const Map& map, const MapCurve* map_curve)
+void nbunny::TransformedMap::build_map(const Map& map, const MapCurve* map_curve)
 {
+	map_min = glm::vec3(std::numeric_limits<float>::infinity());
+	map_max = glm::vec3(-std::numeric_limits<float>::infinity());
+
 	for (int i = 0; i < map.get_width(); ++i)
 	{
 		for (int j = 0; j < map.get_height(); ++j)
@@ -414,6 +415,16 @@ void nbunny::TransformedMap::build(const Map& map, const MapCurve* map_curve)
 				map_curve->transform(bottom_left, rotation);
 				map_curve->transform(bottom_right, rotation);
 			}
+
+			map_min = glm::min(map_min, top_right);
+			map_min = glm::min(map_min, top_left);
+			map_min = glm::min(map_min, bottom_left);
+			map_min = glm::min(map_min, bottom_right);
+
+			map_max = glm::max(map_max, top_right);
+			map_max = glm::max(map_max, top_left);
+			map_max = glm::max(map_max, bottom_left);
+			map_max = glm::max(map_max, bottom_right);
 
 			MapTriangle triangle_a;
 			triangle_a.i = i;
@@ -448,31 +459,83 @@ void nbunny::TransformedMap::build(const Map& map, const MapCurve* map_curve)
 			add(triangle_b);
 		}
 	}
+
+	// We need to ensure some buffer when the entire map is flat.
+	// Otherwise the ray will never pass the bounds check in `cast_ray`.
+	// An infinitely thin (min, max) pair will fail a ray cast.
+	map_min.y -= 0.1f;
+	map_max.y += 0.1f;
 }
 
-nbunny::TransformedMap::TransformedMap(const Map& map)
+void nbunny::TransformedMap::build_contour(const Map& map, const std::vector<MapContourTriangle>& contour)
 {
-	build(map);
+	contour_triangles = contour;
+
+	for (auto index = 0; index < contour_triangles.size(); ++index)
+	{
+		auto& triangle = contour_triangles.at(index);
+
+		auto min = glm::min(triangle.pretransformed_vertices.at(0), triangle.pretransformed_vertices.at(1));
+		min = glm::min(triangle.pretransformed_vertices.at(2), min);
+
+		auto max = glm::max(triangle.pretransformed_vertices.at(0), triangle.pretransformed_vertices.at(1));
+		max = glm::max(triangle.pretransformed_vertices.at(2), max);
+
+		auto min_i = (int)glm::floor(min.x / map.get_cell_size());
+		auto min_j = (int)glm::floor(min.z / map.get_cell_size());
+		auto max_i = (int)glm::ceil(max.x / map.get_cell_size());
+		auto max_j = (int)glm::ceil(max.z / map.get_cell_size());
+
+		for (auto i = min_i; i <= max_i; ++i)
+		{
+			for (auto j = min_j; j <= max_j; ++j)
+			{
+				auto tile = glm::ivec2(i, j);
+
+				auto iter = contour_tiles.find(tile);
+				if (iter == contour_tiles.end())
+				{
+					std::vector<int> e = { index };
+					contour_tiles.emplace(std::make_pair(tile, e));
+				}
+				else
+				{
+					iter->second.push_back(index);
+				}
+			}
+		}
+	}
 }
 
-nbunny::TransformedMap::TransformedMap(const Map& map, const MapCurve& map_curve)
+nbunny::TransformedMap::TransformedMap(const Map& map, const std::vector<MapContourTriangle>& contour)
 {
-	build(map, &map_curve);
+	build_map(map);
+	build_contour(map, contour);
 }
 
-#include <iostream>
+nbunny::TransformedMap::TransformedMap(const Map& map, const std::vector<MapContourTriangle>& contour, const MapCurve& map_curve)
+{
+	build_map(map, &map_curve);
+	build_contour(map, contour);
+}
 
 void nbunny::TransformedMap::cast_ray(const glm::vec3& origin, const glm::vec3& direction, std::vector<MapHit>& hits)
 {
+	glm::vec3 p;
+	if (!(ray_hit_bounds(origin, direction, map_min, map_max, p) || is_point_in_bounds(origin, map_min, map_max)))
+	{
+		return;
+	}
+
 	visited_triangles.clear();
+	std::vector<MapHit> working_hits;
 
 	for (auto& cell: cells)
 	{
 		auto min = cell.first;
 		auto max = min + cell_size;
 
-		glm::vec3 p;
-		if (!ray_hit_bounds(origin, direction, min, max, p))
+		if (!(ray_hit_bounds(origin, direction, min, max, p) || is_point_in_bounds(origin, min, max)))
 		{
 			continue;
 		}
@@ -493,11 +556,43 @@ void nbunny::TransformedMap::cast_ray(const glm::vec3& origin, const glm::vec3& 
 				hit.j = triangle.j;
 				hit.position = p;
 
-				hits.emplace_back(std::move(hit));
+				working_hits.emplace_back(std::move(hit));
 			}
 
 			visited_triangles.emplace(index);
 		}
+	}
+
+	if (!contour_triangles.empty())
+	{
+		for (auto& working_hit: working_hits)
+		{
+			auto tile = glm::ivec2(working_hit.i, working_hit.j);
+
+			auto iter = contour_tiles.find(tile);
+			if (iter == contour_tiles.end())
+			{
+				continue;
+			}
+
+			for (auto index: iter->second)
+			{
+				auto& triangle = contour_triangles.at(index);
+
+				if (ray_hit_triangle(origin, direction, triangle.transformed_vertices.at(0), triangle.transformed_vertices.at(1), triangle.transformed_vertices.at(2), p))
+				{
+					hits.push_back(working_hit);
+					break;
+				}
+				else
+				{
+				}
+			}
+		}
+	}
+	else
+	{
+		hits = std::move(working_hits);
 	}
 }
 
@@ -505,14 +600,56 @@ int nbunny_transformed_map_constructor(lua_State* L)
 {
 	auto map = nbunny::lua::get<nbunny::Map*>(L, 2);
 
+	std::vector<nbunny::MapContourTriangle> contour;
+	if (!lua_isnoneornil(L, 4))
+	{
+		auto triangles = nbunny::lua::get_or<nbunny::lua::TemporaryReference>(L, 4, nbunny::lua::TemporaryReference());
+		for (auto i = 1; i <= triangles.size(); ++i)
+		{
+			auto triangle = triangles.get(i, nbunny::lua::TemporaryReference());
+
+			nbunny::MapContourTriangle contour_triangle;
+
+			auto k = 0;
+			for (auto j = 1; j <= triangle.size(); j += 3)
+			{
+				auto vertex = glm::vec3(
+					triangle.get(j, 0.0f),
+					triangle.get(j + 1, 0.0f),
+					triangle.get(j + 2, 0.0f));
+
+				contour_triangle.pretransformed_vertices.at(k) = vertex;
+				contour_triangle.transformed_vertices.at(k) = vertex;
+
+				++k;
+			}
+
+			contour.emplace_back(std::move(contour_triangle));
+		}
+	}
+
+	nbunny::MapCurve* map_curve = nullptr;
 	if (!lua_isnoneornil(L, 3))
 	{
-		auto map_curve = nbunny::lua::get<nbunny::MapCurve*>(L, 3);
-		nbunny::lua::push(L, std::make_shared<nbunny::TransformedMap>(*map, *map_curve));
+		map_curve = nbunny::lua::get<nbunny::MapCurve*>(L, 3);
+
+		for (auto& triangle: contour)
+		{
+			glm::quat rotation;
+
+			map_curve->transform(triangle.transformed_vertices.at(0), rotation);
+			map_curve->transform(triangle.transformed_vertices.at(1), rotation);
+			map_curve->transform(triangle.transformed_vertices.at(2), rotation);
+		}
+	}
+
+	if (map_curve)
+	{
+		nbunny::lua::push(L, std::make_shared<nbunny::TransformedMap>(*map, contour, *map_curve));
 	}
 	else
 	{
-		nbunny::lua::push(L, std::make_shared<nbunny::TransformedMap>(*map));
+		nbunny::lua::push(L, std::make_shared<nbunny::TransformedMap>(*map, contour));
 	}
 
 	return 1;

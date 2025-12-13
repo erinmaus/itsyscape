@@ -86,6 +86,12 @@ bool nbunny::ray_hit_triangle(const glm::vec3& origin, const glm::vec3& directio
     return false;
 }
 
+bool nbunny::is_point_in_bounds(const glm::vec3& point, const glm::vec3& min, const glm::vec3& max)
+{
+    return point.x >= min.x && point.y >= min.y && point.z >= min.z &&
+           point.x <= max.x && point.y <= max.y && point.z <= max.z;
+}
+
 
 glm::vec3 nbunny::project_point_on_line_segment(const glm::vec3& a, const glm::vec3& b, const glm::vec3& p)
 {

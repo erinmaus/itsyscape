@@ -74,7 +74,7 @@ function MovementBehavior:new()
 	self.isOnGround = false
 	self.isStopping = false
 	self.stoppingForce = 2
-	self.maxStepHeight = 1
+	self.maxStepHeight = 0.25
 	self.clampToZero = true
 	self.float = 0
 	self.noClip = false

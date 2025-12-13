@@ -7,7 +7,9 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
@@ -39,6 +41,9 @@ local TileSet = require "ItsyScape.World.TileSet"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local Spline = require "ItsyScape.Graphics.Spline"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
+local NMap = require "nbunny.optimaus.map"
+local NMapCurve = require "nbunny.optimaus.mapcurve"
+local NTransformedMap = require "nbunny.optimaus.transformedmap"
 
 local LocalStage = Class(Stage)
 
@@ -80,6 +85,8 @@ function LocalStage:new(game)
 	if self:_preloadMapObjects() then
 		self._preloadMapObjects = nil
 	end
+
+	self.maps = {}
 
 	self.skies = setmetatable({}, { __mode = "k" })
 end
@@ -706,6 +713,7 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID, meta)
 	if map then
 		self.game:getDirector():setMap(layer, map)
 		self.onLoadMap(self, filename, layer, tileSetID, maskID, meta)
+		self:newTransformedMap(layer, meta)
 
 		self:updateMap(layer, filename)
 	end
@@ -729,6 +737,60 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID, meta)
 	end
 end
 
+function LocalStage:newTransformedMap(layer, meta)
+	local map = self.game:getDirector():getMap(layer)
+	if not map then
+		return
+	end
+
+	local pretransformedMap = NMap(map:getWidth(), map:getHeight(), map:getCellSize())
+	pretransformedMap:update(map)
+
+	local triangles
+	do
+		local polygonMask = meta and meta.polygonMask
+		if polygonMask then
+			local contours = {}
+			for _, polygon in ipairs(polygonMask) do
+				local contour = {}
+				for _, point in ipairs(polygon) do
+					table.insert(contour, point[1])
+					table.insert(contour, point[2])
+				end
+
+				table.insert(contours, contour)
+			end
+
+			triangles = slick.triangulate(contours)
+			for i, triangle in ipairs(triangles) do
+				local newTriangle = {}
+				for j = 1, #triangle, 2 do
+					local x, z = triangle[j], triangle[j + 1]
+					local y = map:getInterpolatedHeight(x, z)
+
+					table.insert(newTriangle, x)
+					table.insert(newTriangle, y)
+					table.insert(newTriangle, z)
+				end
+				triangles[i] = newTriangle
+			end
+		end
+	end
+
+	local curve = meta and meta.curve and NMapCurve(meta.curve)
+	local transformedMap = NTransformedMap(pretransformedMap, curve, triangles)
+
+	self.maps[layer] = {
+		width = map:getWidth(),
+		height = map:getHeight(),
+		cellSize = map:getCellSize(),
+		triangles = triangles,
+		pretransformedMap = pretransformedMap,
+		curve = curve,
+		transformedMap = transformedMap
+	}
+end
+
 function LocalStage:newMap(width, height, tileSetID, maskID, layer, meta)
 	local map = Map(width, height, Stage.CELL_SIZE)
 
@@ -741,13 +803,15 @@ function LocalStage:newMap(width, height, tileSetID, maskID, layer, meta)
 	self.game:getDirector():setMap(layer, map)
 	self.onLoadMap(self, map, layer, tileSetID, maskID, meta)
 
+	self:newTransformedMap(layer, meta)
 	self:updateMap(layer, map)
 
 	return map
 end
 
 function LocalStage:updateMap(layer, map, i, j, w, h)
-	map = map or self.game:getDirector():getMap(layer)
+	local realMap = self.game:getDirector():getMap(layer)
+	map = map or realMap
 
 	if map then
 		if type(map) ~= "string" then
@@ -756,9 +820,25 @@ function LocalStage:updateMap(layer, map, i, j, w, h)
 
 		self.onMapModified(self, map, layer, i, j, w, h)
 	end
+
+	local m = self.maps[layer]
+	if m and realMap then
+		if not (m.width == realMap:getWidth() and m.height == realMap:getHeight() and m.cellSize == realMap:getCellSize()) then
+			m.pretransformedMap = NMap(realMap:getWidth(), realMap:getHeight(), realMap:getCellSize())
+		end
+		m.pretransformedMap:update(realMap)
+
+		m.transformedMap = NTransformedMap(m.pretransformedMap, m.curve, m.triangles)
+	end
 end
 
 function LocalStage:updateMapMeta(layer, meta)
+	local m = self.maps[layer]
+	if m then
+		m.curve = meta and meta.curve and NMapCurve(meta.curve)
+		m.transformedMap = NTransformedMap(m.pretransformedMap, m.curve)
+	end
+
 	self:onMapMetaUpdated(layer, meta)
 end
 
@@ -775,6 +855,7 @@ end
 function LocalStage:unloadMap(layer)
 	local map = self.game:getDirector():getMap(layer)
 	if map then
+		self.maps[layer] = nil
 		self.onUnloadMap(self, layer)
 		self.game:getDirector():setMap(layer, nil)
 	end
@@ -1723,6 +1804,40 @@ function LocalStage:quit()
 	end
 end
 
+function LocalStage:castAbsoluteMapRay(layer, ray)
+	local transform = self.mapTransformsByLayer[layer]
+	transform = transform and transform.transform
+
+	if not transform then
+		return {}
+	end
+
+	local transformedRay = ray:inverseTransform(transform)
+
+	local m = self.maps[layer]
+	if not m then
+		return {}
+	end
+
+	local tiles = m.transformedMap:castRay(
+		transformedRay.origin.x, transformedRay.origin.y, transformedRay.origin.z,
+		transformedRay.direction.x, transformedRay.direction.y, transformedRay.direction.z)
+
+	local map = self.game:getDirector():getMap(layer)
+
+	local result = {}
+	for _, tile in ipairs(tiles) do
+		table.insert(result, {
+			[Map.RAY_TEST_RESULT_TILE] = map:getTile(tile.i, tile.j),
+			[Map.RAY_TEST_RESULT_POSITION] = Vector(tile.x, tile.y, tile.z),
+			[Map.RAY_TEST_RESULT_I] = tile.i,
+			[Map.RAY_TEST_RESULT_J] = tile.j
+		})
+	end
+
+	return result
+end
+
 function LocalStage:updateMapPositions()
 	for i = 1, #self.instances do
 		local instance = self.instances[i]
@@ -1792,7 +1907,8 @@ function LocalStage:updateMapPositions()
 					scale = scale,
 					origin = origin,
 					disabled = disabled,
-					parentLayer = parentLayer
+					parentLayer = parentLayer,
+					transform = Utility.Peep.getMapTransform(mapScript)
 				}
 
 				if didMove then
