@@ -958,6 +958,56 @@ do
 	}
 end
 
+M["LifeSupportProcessor1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15.218750,
+		PositionY = 0.000000,
+		PositionZ = 11.937500,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "LifeSupportProcessor1",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["LifeSupportProcessor1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "LifeSupportProcessor",
+		MapObject = M["LifeSupportProcessor1"]
+	}
+end
+
+M["LifeSupportTank1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13.000000,
+		PositionY = 0.000000,
+		PositionZ = 11.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "LifeSupportTank1",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["LifeSupportTank1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "LifeSupportTank",
+		MapObject = M["LifeSupportTank1"]
+	}
+end
+
 M["LongTable_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

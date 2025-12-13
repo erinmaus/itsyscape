@@ -1,4 +1,5 @@
 #include "Resources/Shaders/Edge.common.glsl"
+#include "Resources/Shaders/Math.common.glsl"
 
 uniform vec2 scape_TexelSize;
 uniform float scape_DepthStep;

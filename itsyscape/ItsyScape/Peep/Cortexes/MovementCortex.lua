@@ -404,9 +404,12 @@ function MovementCortex:update(delta)
 			end
 
 			local isOnGround = movement.isOnGround
+			local groundTile = map:getTileAt(position.position.x, position.position.z)
+			local groundStep = groundTile and groundTile:getData("x-tileset-step") or 0
+
 			local y = map:getInterpolatedHeight(
 				position.position.x,
-				position.position.z) + movement.float
+				position.position.z) + movement.float + groundStep
 			if not movement.noClip then
 				if position.position.y < y then
 					if movement.bounce > 0 then

@@ -18,6 +18,24 @@ local StringBuilder = require "ItsyScape.Common.StringBuilder"
 
 local DecorationMaterial = Class()
 
+DecorationMaterial.PROPERTIES = {
+	"color",
+	"alpha",
+	"isTranslucent",
+	"isFullLit",
+	"outlineColor",
+	"outlineThreshold",
+	"isReflectiveOrRefractive",
+	"reflectionPower",
+	"reflectionDistance",
+	"roughness",
+	"isShaderCaster",
+	"glassThickness",
+	"glassThickness",
+	"zBias",
+	"isZWriteDisabled"
+}
+
 function DecorationMaterial:new(d)
 	self.uniforms = {}
 	self.properties = {
@@ -32,7 +50,9 @@ function DecorationMaterial:new(d)
 		reflectionDistance = 2,
 		roughness = 0,
 		isShaderCaster = false,
-		glassThickness = -1
+		glassThickness = -1,
+		zBias = 0,
+		isZWriteDisabled = false
 	}
 	self.set = {}
 
@@ -112,7 +132,8 @@ function DecorationMaterial:apply(sceneNode, resourceManager, d)
 			end
 		end
 
-		for name, property in pairs(self.properties) do
+		for _, name in ipairs(self.PROPERTIES) do
+			local property = self.properties[name]
 			if self.set[name] then
 				local func = "set" .. name:sub(1, 1):upper() .. name:sub(2)
 				material[func](material, property)
@@ -273,6 +294,20 @@ function DecorationMaterial:loadFromTable(t)
 	else
 		self.properties.glassThickness = true
 	end
+
+	if properties.zBias ~= nil then
+		self.set.zBias = true
+		self.properties.zBias = properties.zBias
+	else
+		self.properties.zBias = true
+	end
+
+	if properties.isZWriteDisabled ~= nil then
+		self.set.isZWriteDisabled = true
+		self.properties.isZWriteDisabled = not not properties.isZWriteDisabled
+	else
+		self.properties.isZWriteDisabled = true
+	end
 end
 
 function DecorationMaterial:getUniformValue(name)
@@ -348,7 +383,9 @@ function DecorationMaterial:serialize()
 				reflectionDistance = _get(self.set.reflectionDistance, self.properties.reflectionDistance),
 				roughness = _get(self.set.roughness, self.properties.roughness),
 				isShadowCaster = _get(self.set.isShadowCaster, self.properties.isShadowCaster),
-				glassThickness = _get(self.set.glassThickness, self.properties.glassThickness)
+				glassThickness = _get(self.set.glassThickness, self.properties.glassThickness),
+				zBias = _get(self.set.zBias, self.properties.zBias),
+				isZWriteDisabled = _get(self.set.isZWriteDisabled, self.properties.zBias),
 			}
 		}
 

@@ -36,7 +36,8 @@
 		y = 256,
 		width = 128,
 		height = 128,
-		name = "stone"
+		name = "stone",
+		step = 0.2
 	},
 
 	{
@@ -44,7 +45,8 @@
 		y = 384,
 		width = 128,
 		height = 128,
-		name = "wood"
+		name = "wood",
+		step = 0.1
 	},
 
 	{
