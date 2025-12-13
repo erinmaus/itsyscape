@@ -37,7 +37,7 @@
 		width = 128,
 		height = 128,
 		name = "stone",
-		step = 0.2
+		step = 0.21
 	},
 
 	{
@@ -46,7 +46,7 @@
 		width = 128,
 		height = 128,
 		name = "wood",
-		step = 0.1
+		step = 0.11
 	},
 
 	{

@@ -420,7 +420,8 @@ function MovementCortex:update(delta)
 
 				local s = groupHit.tile:getData("x-tileset-step")
 				if s then
-					groundStep = math.max(groundStep or -math.huge, s)
+					local o = math.max(groupHit.position.y - positionBeforeGravity.y, 0)
+					groundStep = math.max(groundStep or -math.huge, s + o)
 				end
 			end
 
