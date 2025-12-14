@@ -375,3 +375,97 @@ do
 		Read
 	}
 end
+
+M["DrakkensonComputer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13.25,
+		PositionY = 0,
+		PositionZ = 13.5,
+		RotationX = 0.000000,
+		RotationY = 0.381784,
+		RotationZ = 0.000000,
+		RotationW = -0.924251,
+		Name = "DrakkensonComputer",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["DrakkensonComputer"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "DrakkensonComputer",
+		MapObject = M["DrakkensonComputer"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mysterious static",
+		Language = "en-US",
+		Resource = M["DrakkensonComputer"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Is this some kind of scrying technology? What does that... static... mean?",
+		Language = "en-US",
+		Resource = M["DrakkensonComputer"]
+	}
+end
+
+M["LifeSupportProcessor"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 15.25,
+		PositionY = 0,
+		PositionZ = 12,
+		Name = "LifeSupportProcessor",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["LifeSupportProcessor"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "LifeSupportProcessor",
+		MapObject = M["LifeSupportProcessor"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mysterious pump",
+		Language = "en-US",
+		Resource = M["LifeSupportProcessor"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An automatic pump... The sound is familiar.",
+		Language = "en-US",
+		Resource = M["LifeSupportProcessor"]
+	}
+end
+
+M["LifeSupportTank"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13,
+		PositionY = 0,
+		PositionZ = 11,
+		Name = "LifeSupportTank",
+		Map = M._MAP,
+		Layer = 4,
+		Resource = M["LifeSupportTank"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "LifeSupportTank",
+		MapObject = M["LifeSupportTank"]
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Mysterious tank",
+		Language = "en-US",
+		Resource = M["LifeSupportTank"]
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A tank of some weird, translucent goo. The sight of it makes you feel comfortable, almost like you're at home.",
+		Language = "en-US",
+		Resource = M["LifeSupportTank"]
+	}
+end

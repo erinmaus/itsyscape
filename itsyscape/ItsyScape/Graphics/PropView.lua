@@ -25,15 +25,15 @@ function PropView:new(prop, gameView)
 	self.greeble = {}
 end
 
-function PropView:updateGreebles(greebles, t)
+function PropView:updateGreebles(greebles, t, parentRoot)
 	for _, greeble in ipairs(greebles or self.greeble) do
-		greeble:regreebilize(t)
+		greeble:regreebilize(t, parentRoot)
 	end
 end
 
-function PropView:addGreeble(GreebleType, t, transform, ...)
+function PropView:addGreeble(GreebleType, t, transform, parentRoot, ...)
 	local greeble = GreebleType(self.prop, self.gameView)
-	greeble:greebilize(self, t, ...)
+	greeble:greebilize(self, t, parentRoot, ...)
 	greeble:attach()
 
 	if self.didLoad then

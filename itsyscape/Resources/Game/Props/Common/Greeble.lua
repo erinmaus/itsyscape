@@ -30,13 +30,15 @@ function Greeble:_updateProperties(t)
 	end
 end
 
-function Greeble:greebilize(parent, t, ...)
+function Greeble:greebilize(parent, t, root, ...)
 	self.parentPropView = parent
+	self.parentRoot = root
 
 	self:_updateProperties(t)
 end
 
-function Greeble:regreebilize(t, ...)
+function Greeble:regreebilize(t, root, ...)
+	self.parentRoot = root
 	self:_updateProperties(t)
 end
 
@@ -45,7 +47,7 @@ function Greeble:updateTransform()
 	-- We don't want to do any of the stuff the base method does
 	-- (apply transforms from prop, attach to map scene node).
 	if self.parentPropView then
-		self:getRoot():setParent(self.parentPropView:getRoot())
+		self:getRoot():setParent(self.parentRoot or self.parentPropView:getRoot())
 	end
 
 	if self:getIsStatic() then

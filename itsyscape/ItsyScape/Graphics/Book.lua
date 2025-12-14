@@ -771,16 +771,6 @@ function Book.Part:draw(commands)
 		self:_draw(left, right, top, bottom, RendererPass.PASS_OUTLINE, commands)
 	end
 
-	if love.keyboard.isDown("space") then
-		love.graphics.setCanvas()
-
-		if model.outlineCanvas then
-			model.outlineCanvas:newImageData():encode("png", string.format("%s_outline.png", self.type))
-		end
-
-		model.canvas:newImageData():encode("png", string.format("%s_diffuse.png", self.type))
-	end
-
 	love.graphics.pop()
 end
 
