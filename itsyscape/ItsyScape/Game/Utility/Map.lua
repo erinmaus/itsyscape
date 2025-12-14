@@ -175,7 +175,7 @@ function UMap.getTileRotation(map, i, j)
 	end
 end
 
-function UMap.playCutscene(map, resource, cameraName, player, entities)
+function UMap.playCutscene(map, resource, cameraName, player, entities, ...)
 	player = player or Utility.Peep.getPlayer(map)
 	local director = map:getDirector()
 
@@ -190,7 +190,8 @@ function UMap.playCutscene(map, resource, cameraName, player, entities)
 		cameraName,
 		player,
 		map,
-		entities)
+		entities,
+		{ n = select("#", ...), ... })
 end
 
 function UMap.getTilePosition(director, i, j, layer)

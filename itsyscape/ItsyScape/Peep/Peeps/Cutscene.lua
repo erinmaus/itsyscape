@@ -14,7 +14,7 @@ local Peep = require "ItsyScape.Peep.Peep"
 
 local CutscenePeep = Class(Peep)
 
-function CutscenePeep:new(resource, cameraName, player, map, entities, ...)
+function CutscenePeep:new(resource, cameraName, player, map, entities, args, ...)
 	Peep.new(self, ...)
 
 	if not resource then
@@ -44,6 +44,7 @@ function CutscenePeep:new(resource, cameraName, player, map, entities, ...)
 
 	self.map = map
 	self.entities = entities or {}
+	self.args = args or { n = 0 }
 
 	self:addPoke('done')
 end
@@ -60,7 +61,8 @@ function CutscenePeep:onReady()
 			self:getDirector(),
 			self:getLayerName(),
 			self.map,
-			self.entities)
+			self.entities,
+			self.args)
 
 		if self.cameraName then
 			local playerModel = Utility.Peep.getPlayerModel(self.player)

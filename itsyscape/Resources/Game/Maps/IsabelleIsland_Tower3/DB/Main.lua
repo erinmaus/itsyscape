@@ -469,3 +469,28 @@ do
 		Resource = M["LifeSupportTank"]
 	}
 end
+
+M["Staircase_ToIsabellesBedroom"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 38,
+		PositionY = 12,
+		PositionZ = 59,
+		RotationX = -0.000000,
+		RotationY = -0.707107,
+		RotationZ = -0.000000,
+		RotationW = 0.707107,
+		Name = "Staircase_ToIsabellesBedroom",
+		Map = M._MAP,
+		Resource = M["Staircase_ToIsabellesBedroom"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IsabelleIslandTowerSpiralStaircase",
+		MapObject = M["Staircase_ToIsabellesBedroom"]
+	}
+
+	M["Staircase_ToIsabellesBedroom"] {
+		ItsyScape.Action.Travel()
+	}
+end

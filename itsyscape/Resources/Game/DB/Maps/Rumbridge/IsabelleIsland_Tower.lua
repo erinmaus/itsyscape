@@ -1241,3 +1241,24 @@ do
 		Resource = Bookshelf
 	}
 end
+
+do
+	local Staircase = ItsyScape.Resource.Prop "IsabelleIslandTowerSpiralStaircase"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = Staircase
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Runic stairs",
+		Language = "en-US",
+		Resource = Staircase
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Stairs made from rune stones.",
+		Language = "en-US",
+		Resource = Staircase
+	}
+end

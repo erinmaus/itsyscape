@@ -1,11 +1,5 @@
 {
 	{
-		tileSetID = "YendorianJungle2",
-		autoMask = true,
-		maskID =
-		{
-			default = true,
-		},
 		transform =
 		{
 			rotation =
@@ -34,19 +28,23 @@
 				1,
 			},
 		},
+		maskID =
+		{
+			default = true,
+		},
+		tileSetID = "YendorianJungle2",
+		autoMask = true,
 	},
 	{
-		tileSetID = "Draft",
 		curve =
 		{
-			unit = 2,
-			width = 4,
-			min =
+			max =
 			{
+				8,
 				0,
-				0,
-				0,
+				160,
 			},
+			unit = 2,
 			linear = true,
 			axis =
 			{
@@ -916,12 +914,13 @@
 					-1,
 				},
 			},
+			width = 4,
 			height = 80,
-			max =
+			min =
 			{
-				8,
 				0,
-				160,
+				0,
+				0,
 			},
 		},
 		transform =
@@ -937,7 +936,7 @@
 			{
 				54.750000,
 				-2.500000,
-				-21.75,
+				-21.750000,
 			},
 			origin =
 			{
@@ -952,13 +951,13 @@
 				1,
 			},
 		},
+		tileSetID = "Draft",
 		input =
 		{
 			disabled = true,
 		},
 	},
 	{
-		tileSetID = "YendorianJungle2",
 		polygonMask =
 		{
 			{
@@ -1148,10 +1147,6 @@
 				},
 			},
 		},
-		wallHack =
-		{
-			enabled = false,
-		},
 		transform =
 		{
 			rotation =
@@ -1180,13 +1175,17 @@
 				1,
 			},
 		},
+		tileSetID = "YendorianJungle2",
+		wallHack =
+		{
+			enabled = false,
+		},
 		input =
 		{
 			disabled = true,
 		},
 	},
 	{
-		tileSetID = "YendorianJungle2",
 		polygonMask =
 		{
 			{
@@ -1304,12 +1303,6 @@
 				},
 			},
 		},
-		wallHack =
-		{
-			enabled = true,
-			map = true,
-			global = true,
-		},
 		transform =
 		{
 			rotation =
@@ -1338,19 +1331,24 @@
 				1,
 			},
 		},
+		tileSetID = "YendorianJungle2",
+		wallHack =
+		{
+			global = true,
+			map = true,
+			enabled = true,
+		},
 	},
 	{
-		tileSetID = "Draft",
 		curve =
 		{
-			unit = 2,
-			width = 1,
-			min =
+			max =
 			{
+				2,
 				0,
-				0,
-				0,
+				88,
 			},
+			unit = 2,
 			linear = true,
 			axis =
 			{
@@ -1854,12 +1852,13 @@
 					0.707107,
 				},
 			},
+			width = 1,
 			height = 44,
-			max =
+			min =
 			{
-				2,
 				0,
-				88,
+				0,
+				0,
 			},
 		},
 		transform =
@@ -1873,9 +1872,9 @@
 			},
 			translation =
 			{
-				58.350009,
-				15.589006,
-				15.250000,
+				58,
+				15.500000,
+				15,
 			},
 			origin =
 			{
@@ -1890,6 +1889,7 @@
 				1,
 			},
 		},
+		tileSetID = "Draft",
 		input =
 		{
 			disabled = true,

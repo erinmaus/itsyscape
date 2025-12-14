@@ -18,12 +18,13 @@ local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 
 local Cutscene = Class()
 
-function Cutscene:new(resource, player, director, layerName, map, entities)
+function Cutscene:new(resource, player, director, layerName, map, entities, args)
 	self.director = director
 	self.game = director:getGameInstance()
 	self.gameDB = director:getGameDB()
 	self.layerName = layerName
 	self.resource = resource
+	self.args = args and { n = args.n, unpack(args, 1, args.n) } or { n = 0 }
 
 	self.entities = {
 		Player = CutsceneEntity(player),
@@ -244,7 +245,7 @@ function Cutscene:loadCutscene()
 
 	local data = (love.filesystem.read(filename) or "")
 	local chunk = assert(loadstring(data))
-	local s, r = pcall(setfenv(chunk, sandbox))
+	local s, r = pcall(setfenv(chunk, sandbox), unpack(self.args, 1, self.args.n))
 	if not s then
 		Log.warn("Couldn't compile cutscene '%s': %s", self.resource.name, r)
 		r = Cutscene.empty
