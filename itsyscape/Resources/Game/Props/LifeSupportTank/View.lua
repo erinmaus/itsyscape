@@ -10,9 +10,10 @@
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Color = require "ItsyScape.Graphics.Color"
 local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView2"
-local StaticGreeble = require "Resources.Game.Props.Common.Greeble.StaticGreeble"
+local FlickerGreeble = require "Resources.Game.Props.Common.Greeble.FlickerGreeble"
 
 local Tank = Class(SimpleStaticView)
 
@@ -87,6 +88,22 @@ Tank.DESCRIPTION = {
 			}
 		}))
 	},
+}
+
+Tank.GREEBLE = {
+	{
+		type = FlickerGreeble,
+		config = {
+			MIN_ATTENUATION = 4,
+			MAX_ATTENUATION = 6,
+
+			OFFSET = Vector(0, 2, 0),
+
+			COLORS = {
+				Color(0, 1, 1, 1)
+			}
+		}
+	}
 }
 
 return Tank

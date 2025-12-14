@@ -26,7 +26,7 @@ function UMap.castRay(peep, ray, filter)
 		return {}
 	end
 
-	local transform = Utility.Peep.getMapTransform(mapScript)
+	local transform = Utility.Peep.getParentTransform(peep)
 	ray = ray:transform(transform)
 
 	local stage = peep:getDirector():getGameInstance():getStage()

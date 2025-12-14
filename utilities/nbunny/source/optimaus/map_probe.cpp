@@ -584,9 +584,6 @@ void nbunny::TransformedMap::cast_ray(const glm::vec3& origin, const glm::vec3& 
 					hits.push_back(working_hit);
 					break;
 				}
-				else
-				{
-				}
 			}
 		}
 	}

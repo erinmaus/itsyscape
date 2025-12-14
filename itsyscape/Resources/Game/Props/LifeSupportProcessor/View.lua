@@ -10,9 +10,10 @@
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Color = require "ItsyScape.Graphics.Color"
 local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local SimpleStaticView = require "Resources.Game.Props.Common.SimpleStaticView2"
-local StaticGreeble = require "Resources.Game.Props.Common.Greeble.StaticGreeble"
+local FlickerGreeble = require "Resources.Game.Props.Common.Greeble.FlickerGreeble"
 
 local Processor = Class(SimpleStaticView)
 
@@ -58,6 +59,22 @@ Processor.DESCRIPTION = {
 				scape_TriplanarExponent = { "float", 0 },
 				scape_TriplanarOffset = { "float", 0 },
 				scape_SpecularWeight = { "float", 1 }
+			}
+		}
+	}
+}
+
+Processor.GREEBLE = {
+	{
+		type = FlickerGreeble,
+		config = {
+			MIN_ATTENUATION = 0.5,
+			MAX_ATTENUATION = 1,
+
+			OFFSET = Vector(0, 0.75, 0),
+
+			COLORS = {
+				Color(0, 1, 0, 1)
 			}
 		}
 	}

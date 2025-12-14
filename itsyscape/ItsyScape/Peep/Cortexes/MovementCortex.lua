@@ -413,15 +413,13 @@ function MovementCortex:update(delta)
 			for i = 1, #groupHits do
 				local groupHit = groupHits[i]
 				local previousGroupHit = i > 1 and groupHits[i - 1]
-
 				if previousGroupHit and groupHit.position.y > previousGroupHit.position.y then
 					break
 				end
 
 				local s = groupHit.tile:getData("x-tileset-step")
 				if s then
-					local o = math.max(groupHit.position.y - positionBeforeGravity.y, 0)
-					groundStep = math.max(groundStep or -math.huge, s + o)
+					groundStep = math.max(groundStep or -math.huge, s)
 				end
 			end
 
