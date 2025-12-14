@@ -30,8 +30,7 @@ glm::vec3 nbunny::PositionCurve::evaluate(const glm::vec3& a, const glm::vec3& b
 
 float nbunny::RotationCurve::distance(const glm::quat& a, const glm::quat& b) const
 {
-	auto q = glm::conjugate(a) * b;
-	return 2.0f * glm::atan(glm::length(glm::vec3(q.x, q.y, q.z)), q.w);
+	return 1.0f;
 }
 
 glm::quat nbunny::RotationCurve::value() const 

@@ -162,7 +162,7 @@ function MapCurve.Rotation:new(...)
 end
 
 function MapCurve.Rotation:distance(nextValue)
-	return self:getValue():distance(nextValue:getValue())
+	return 1
 end
 
 function MapCurve.Rotation:evaluate(currentValue, nextValue, t)
