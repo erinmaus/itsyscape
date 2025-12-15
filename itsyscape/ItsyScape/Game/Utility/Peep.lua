@@ -528,12 +528,6 @@ function Peep.setLayer(peep, layer)
 	if position then
 		position.layer = layer
 	end
-
-	local actor = peep:getBehavior(ActorReferenceBehavior)
-	actor = actor and actor.actor
-	if actor then
-		actor:onTeleport(position.position, position.layer)
-	end
 end
 
 function Peep.getLocalLayer(peep, localLayer, mapScript)
@@ -596,19 +590,45 @@ function Peep.setPosition(peep, position, lerp)
 	else
 		Log.error("Peep '%s' doesn't have a position; can't set new position.", peep:getName())
 	end
-
-	if not lerp then
-		local actor = peep:getBehavior(ActorReferenceBehavior)
-		actor = actor and actor.actor
-		if actor then
-			actor:onTeleport(position, p.layer)
-		end
-	end
 end
 
 function Peep.makeInstanced(peep, playerPeep)
 	local _, instance = peep:addBehavior(InstancedBehavior)
 	instance.playerID = Peep.getPlayerModel(playerPeep):getID()
+end
+
+function Peep.teleport(peep, position, layer)
+	if position then
+		Utility.Peep.setPosition(peep, position)
+	end
+
+	if layer then
+		Utility.Peep.setLayer(peep, layer)
+	end
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if actor then
+		actor:teleport()
+	end
+end
+
+function Peep.localTeleport(peep, position, localLayer)
+	if position then
+		Utility.Peep.setPosition(peep, position)
+	end
+
+	if localLayer then
+		Utility.Peep.setLocalLayer(peep, localLayer)
+	end
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if actor then
+		actor:teleport()
+	end
 end
 
 function Peep.teleportCompanion(peep, targetPeep)
@@ -620,16 +640,16 @@ function Peep.teleportCompanion(peep, targetPeep)
 	local offset = Vector(offsetX, 0, offsetZ)
 
 	if map:canMove(i, j, 1, 0) then
-		Peep.setPosition(peep, map:getTileCenter(i + 1, j) + offset)
+		Peep.teleport(peep, map:getTileCenter(i + 1, j) + offset)
 		return true
 	elseif map:canMove(i, j, -1, 0) then
-		Peep.setPosition(peep, map:getTileCenter(i - 1, j) + offset)
+		Peep.teleport(peep, map:getTileCenter(i - 1, j) + offset)
 		return true
 	elseif map:canMove(i, j, 0, -1) then
-		Peep.setPosition(peep, map:getTileCenter(i, j - 1) + offset)
+		Peep.teleport(peep, map:getTileCenter(i, j - 1) + offset)
 		return true
 	elseif map:canMove(i, j, 0, 1) then
-		Peep.setPosition(peep, map:getTileCenter(i, j + 1) + offset)
+		Peep.teleport(peep, map:getTileCenter(i, j + 1) + offset)
 		return true
 	end
 
@@ -1496,6 +1516,28 @@ function Peep.getMakeOffset(peep)
 	end
 
 	return offsetY or 0
+end
+
+function Peep.getRelativeTileAnchor(propPeep, playerPeep)
+	local gameDB = propPeep:getDirector():getGameDB()
+
+	local mapObject = Peep.getMapObject(propPeep)
+	local propAnchors = gameDB:getRecords("MapObjectAnchor", {
+		MapObject = mapObject
+	})
+
+	if #propAnchors == 0 then
+		return Peep.getTileAnchor(propPeep)
+	end
+
+	local playerLocalLayer = Peep.getLocalLayer(playerPeep)
+	for _, propAnchor in ipairs(propAnchors) do
+		if propAnchor:get("Layer") == playerLocalLayer then
+			return propAnchor:get("PositionI"), propAnchor:get("PositionJ"), Utility.Peep.getLayer(playerPeep)
+		end
+	end
+
+	return Peep.getTileAnchor(propPeep)
 end
 
 function Peep.getTileAnchor(peep, offsetI, offsetJ)

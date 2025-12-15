@@ -15,18 +15,12 @@ local Decoration = require "ItsyScape.Graphics.Decoration"
 local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local PropView = require "ItsyScape.Graphics.PropView"
+local Material = require "ItsyScape.Graphics.Material"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local FlickerGreeble = require "Resources.Game.Props.Common.Greeble.FlickerGreeble"
+local StaircaseCommon = require "Resources.Game.Peeps.IsabelleIsland.StaircaseCommon"
 
 local Staircase = Class(PropView)
-Staircase.START_ANGLE = math.pi / 2
-Staircase.END_ANGLE   = 0
-
-Staircase.HEIGHT = 18
-Staircase.RADIUS = 9
-Staircase.STEPS  = Staircase.HEIGHT * 1.5
-
-Staircase.CELL_SIZE = 2
 
 Staircase.RUNE_MATERIAL = DecorationMaterial({
 	shader = "Resources/Shaders/FloatingSpecularTriplanar",
@@ -40,10 +34,7 @@ Staircase.RUNE_MATERIAL = DecorationMaterial({
 		scape_NumPatterns = { "integer", 4 },
 		scape_Pattern = {
 			"float",
-			0.3, math.pi / 3, 0.1,
-			0.2, math.pi / 4, 0.15,
-			0.4, math.pi / 7, 0.05,
-			0.5, math.pi / 5, 0.1,
+			unpack(StaircaseCommon.PATTERN)
 		},
 	},
 
@@ -65,22 +56,15 @@ function Staircase:load()
 
 	local decoration = Decoration()
 
-	local radius = self.RADIUS * self.CELL_SIZE
-
-	for i = 2, self.STEPS do
-		local delta = (i - 1) / (self.STEPS - 1)
-		local angle = math.lerp(self.START_ANGLE, self.END_ANGLE, delta)
-
-		local x = math.cos(angle) * radius
-		local y = math.lerp(0, self.HEIGHT, delta)
-		local z = math.sin(angle) * radius - radius
+	for i = 2, StaircaseCommon.STEPS do
+		local position = StaircaseCommon.position(i)
 
 		local rng = love.math.newRandomGenerator(i)
 		local spin = math.lerp(0, math.pi * 2, rng:random())
 
 		decoration:add(
 			"rune",
-			Vector(x, y, z),
+			position,
 			Quaternion.fromAxisAngle(Vector.UNIT_Y, spin))
 
 		self:addGreeble(FlickerGreeble, {
@@ -109,6 +93,14 @@ function Staircase:load()
 
 			self.RUNE_MATERIAL:apply(self.decorationNode, self:getResources())
 		end)
+end
+
+function Staircase:update(delta)
+	PropView.update(self, delta)
+
+	if self.decorationNode then
+		self.decorationNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_Time", love.timer.getTime())
+	end
 end
 
 return Staircase

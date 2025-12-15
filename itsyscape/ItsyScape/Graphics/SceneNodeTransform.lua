@@ -146,22 +146,22 @@ function SceneNodeTransform:setPreviousTransform(translation, rotation, scale, o
 	self.previousScale = scale or s
 	self.previousOffset = offset or o
 
-	if self.previousTranslation then
+	if translation then
 		self.previousTranslation:keep()
 		self._handle:setPreviousTranslation(self.previousTranslation.x, self.previousTranslation.y, self.previousTranslation.z)
 	end
 
-	if self.previousRotation then
+	if rotation then
 		self.previousRotation:keep()
 		self._handle:setPreviousRotation(self.previousRotation.x, self.previousRotation.y, self.previousRotation.z, self.previousRotation.w)
 	end
 
-	if self.previousScale then
+	if scale then
 		self.previousScale:keep()
 		self._handle:setPreviousScale(self.previousScale.x, self.previousScale.y, self.previousScale.z)
 	end
 
-	if self.previousOffset then
+	if offset then
 		self.previousOffset:keep()
 		self._handle:setPreviousOffset(self.previousOffset.x, self.previousOffset.y, self.previousOffset.z)
 	end

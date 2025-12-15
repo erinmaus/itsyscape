@@ -79,7 +79,7 @@ function ShadowMite:update(director, game)
 		local targetPosition = Utility.Peep.getPosition(target)
 		distance = (selfPosition - targetPosition):getLength()
 
-		Utility.Peep.setPosition(self, selfPosition:lerp(targetPosition, game:getDelta()), true)
+		Utility.Peep.setPosition(self, selfPosition:lerp(targetPosition, game:getDelta()))
 	end
 
 	if distance < ShadowMite.DESPAWN_DISTANCE then

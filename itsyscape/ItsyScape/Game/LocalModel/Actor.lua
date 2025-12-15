@@ -173,13 +173,14 @@ function LocalActor:getDirection()
 	end
 end
 
-function LocalActor:teleport(position)
-	if position and self.peep then
+function LocalActor:teleport(position, layer)
+	if self.peep then
 		local positionBehavior = self.peep:getBehavior(PositionBehavior)
 		if positionBehavior then
-			positionBehavior.position = position
+			positionBehavior.position = position or positionBehavior.position
+			positionBehavior.layer = layer or positionBehavior.layer
 
-			self.onTeleport(self, position)
+			self.onTeleport(self, positionBehavior.position, positionBehavior.layer)
 		end
 	end
 end

@@ -1146,7 +1146,7 @@ function LocalStage:movePeep(peep, path, anchor, e)
 	end
 
 	if Class.isType(anchor, Vector) then
-		Utility.Peep.setPosition(peep, anchor)
+		Utility.Peep.teleport(peep, anchor)
 	else
 		local gameDB = self.game:getGameDB()
 		local map = gameDB:getResource(filename, "Map")
@@ -1157,17 +1157,15 @@ function LocalStage:movePeep(peep, path, anchor, e)
 			})
 
 			if mapObject then
-				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
-				Utility.Peep.setPosition(peep, Vector(x, y, z))
-
 				local direction = mapObject:get("Direction")
 				Utility.Peep.setFacing(peep, direction)
 				
+				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
 				local localLayer = math.max(mapObject:get("Layer"), 1)
 				local mapGroup = instance:getMapGroup(instance:getBaseLayer())
 				local globalLayer = instance:getGlobalLayerFromLocalLayer(localLayer)
 
-				Utility.Peep.setLayer(peep, globalLayer)
+				Utility.Peep.teleport(peep, Vector(x, y, z), globalLayer)
 			end
 		end
 	end

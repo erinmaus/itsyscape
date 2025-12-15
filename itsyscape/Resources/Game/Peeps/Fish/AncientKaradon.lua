@@ -200,7 +200,7 @@ function AncientKaradon:update(...)
 		local mu = Tween.sineEaseOut(math.min(self.currentDiveTime / AncientKaradon.DIVE_DURATION_SECONDS, 1))
 		local currentPosition = startPosition:lerp(endPosition, mu)
 
-		Utility.Peep.setPosition(self, currentPosition, true)
+		Utility.Peep.setPosition(self, currentPosition)
 
 		if self.currentDiveTime > AncientKaradon.DIVE_DURATION_SECONDS then
 			if self.currentAnimationState == AncientKaradon.STATE_DIVE then

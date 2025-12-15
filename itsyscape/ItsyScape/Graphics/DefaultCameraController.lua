@@ -212,7 +212,6 @@ end
 function DefaultCameraController:getTargetPosition()
 	local delta = self:getApp():getFrameDelta()
 
-
 	local position, size
 	if self.targetNode and self.targetSize then
 		position = Vector.ZERO:transform(self.targetNode:getTransform():getGlobalDeltaTransform(delta or 0))
@@ -705,12 +704,12 @@ function DefaultCameraController:tryRecenter()
 		return center
 	end
 
-	local _, _, layer = actor:getTile()
-	if layer ~= self.currentPlayerLayer then
-		self.currentPlayerLayer = layer
-		self:recenter()
-		return true
-	end
+	-- local _, _, layer = actor:getTile()
+	-- if layer ~= self.currentPlayerLayer then
+	-- 	self.currentPlayerLayer = layer
+	-- 	self:recenter()
+	-- 	return true
+	-- end
 
 	return false
 end
@@ -720,10 +719,10 @@ function DefaultCameraController:updateCenter(delta)
 		return
 	end
 
+	local had = not not self.currentCenter
 	self.currentCenter = (self.currentCenter or self:getCenter()):keep(self.currentCenter)
 
 	local targetCenter = self:getCenter()
-
 	local direction = self.currentCenter:direction(targetCenter)
 	local minDistance = self.currentCenter:distance(targetCenter)
 

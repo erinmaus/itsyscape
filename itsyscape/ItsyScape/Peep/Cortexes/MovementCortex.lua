@@ -390,7 +390,7 @@ function MovementCortex:update(delta)
 			local newPosition = position.position + velocity
 			local positionBeforeGravity = newPosition
 
-			if not movement.noClip then
+			if not movement.noClip and Utility.Peep.isEnabled(peep) then
 				newPosition = newPosition + gravity * delta
 			end
 
@@ -426,7 +426,7 @@ function MovementCortex:update(delta)
 			local y = map:getInterpolatedHeight(
 				position.position.x,
 				position.position.z) + movement.float + (groundStep or 0)
-			if not movement.noClip then
+			if not movement.noClip  then
 				if position.position.y < y then
 					if movement.bounce > 0 then
 						movement.acceleration.y = -movement.acceleration.y * movement.bounce
@@ -456,13 +456,15 @@ function MovementCortex:update(delta)
 				peep:poke("fall")
 			end
 
-			if movement.isOnGround then
-				position.position.y = y
-				movement.acceleration.y = 0
-				movement.velocity.y = 0
-			else
-				if not movement.noClip then
-					position.position.y = math.max(position.position.y, y)
+			if Utility.Peep.isEnabled(peep) then
+				if movement.isOnGround then
+					position.position.y = y
+					movement.acceleration.y = 0
+					movement.velocity.y = 0
+				else
+					if not movement.noClip then
+						position.position.y = math.max(position.position.y, y)
+					end
 				end
 			end
 

@@ -208,7 +208,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 							Analytics:startGame(actor:getPeep())
 						else
 							local x, y, z = Utility.Map.getAnchorPosition(self.game, location:get("name"), "Anchor_Spawn")
-							Utility.Peep.setPosition(actor:getPeep(), Vector(x, y, z))
+							Utility.Peep.teleport(actor:getPeep(), Vector(x, y, z))
 						end
 					end
 				end

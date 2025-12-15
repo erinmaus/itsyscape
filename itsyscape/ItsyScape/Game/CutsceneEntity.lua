@@ -268,10 +268,7 @@ function CutsceneEntity:teleport(anchor)
 			anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 		end
 
-		Utility.Peep.setPosition(self.peep, anchorPosition)
-		if layer then
-			Utility.Peep.setLayer(self.peep, layer)
-		end
+		Utility.Peep.teleport(self.peep, anchorPosition, layer)
 	end
 end
 
@@ -317,6 +314,8 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 			anchorPosition = anchor + Utility.Peep.getPosition(self.peep)
 		elseif Class.isCompatibleType(anchor, CutsceneEntity) then
 			anchorPosition = Utility.Peep.getPosition(anchor:getPeep())
+		elseif Class.isCallable(anchor) then
+			anchorPosition = anchor()
 		else
 			anchorPosition = Vector(Utility.Map.getAnchorPosition(self.game, mapResource, anchor))
 		end
@@ -339,19 +338,22 @@ function CutsceneEntity:lerpPosition(anchor, duration, tween)
 		local currentTime
 		if duration then
 			repeat
+				local nextPosition = Class.isCallable(anchor) and anchor() or anchorPosition
+
 				currentTime = (currentTime or 0) + self.game:getDelta()
 
 				local delta = currentTime / duration
-				local newPosition = peepPosition:lerp(anchorPosition, tween(delta))
-				Utility.Peep.setPosition(self.peep, newPosition, true)
+				local newPosition = peepPosition:lerp(nextPosition, tween(delta))
+				Utility.Peep.setPosition(self.peep, newPosition)
 
 				coroutine.yield()
 			until currentTime > duration
 		else
 			local distance
 			repeat
-				local newPosition = Utility.Peep.getPosition(self.peep):lerp(anchorPosition, self.game:getDelta())
-				Utility.Peep.setPosition(self.peep, newPosition, true)
+				local nextPosition = Class.isCallable(anchor) and anchor() or anchorPosition
+				local newPosition = Utility.Peep.getPosition(self.peep):lerp(nextPosition, self.game:getDelta())
+				Utility.Peep.setPosition(self.peep, newPosition)
 				distance = (anchorPosition - newPosition):getLength()
 				coroutine.yield()
 			until distance <= E
@@ -411,7 +413,12 @@ function CutsceneEntity:curvePositions(anchors, duration, tween)
 			local y = curves[2]:evaluate(delta)
 			local z = curves[3]:evaluate(delta)
 
-			Utility.Peep.setPosition(self.peep, Vector(x, y, z), lerp)
+			if lerp then
+				Utility.Peep.setPosition(self.peep, Vector(x, y, z))
+			else
+				Utility.Peep.teleport(self.peep, Vector(x, y, z))
+			end
+
 			lerp = true
 
 			coroutine.yield()

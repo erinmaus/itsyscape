@@ -107,9 +107,9 @@ end
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 50,
-		PositionY = 0,
-		PositionZ = 50,
+		PositionX = 59,
+		PositionY = 12,
+		PositionZ = 79,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
@@ -490,7 +490,37 @@ do
 		MapObject = M["Staircase_ToIsabellesBedroom"]
 	}
 
+	local ClimbAction = ItsyScape.Action.Climb()
+
+	ItsyScape.Meta.ClimbDestination {
+		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_ClimbUpStairs",
+		FromLayer = 1,
+		ToLayer = 4,
+		Action = ClimbAction
+	}
+
+	ItsyScape.Meta.ClimbDestination {
+		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_ClimbDownStairs",
+		FromLayer = 4,
+		ToLayer = 1,
+		Action = ClimbAction
+	}
+
 	M["Staircase_ToIsabellesBedroom"] {
-		ItsyScape.Action.Travel()
+		ClimbAction
+	}
+
+	ItsyScape.Meta.MapObjectAnchor {
+		Layer = 1,
+		PositionI = 19,
+		PositionJ = 29,
+		MapObject = M["Staircase_ToIsabellesBedroom"]
+	}
+
+	ItsyScape.Meta.MapObjectAnchor {
+		Layer = 4,
+		PositionI = 1,
+		PositionJ = 14,
+		MapObject = M["Staircase_ToIsabellesBedroom"]
 	}
 end

@@ -195,6 +195,13 @@ Game "ItsyScape"
 		MapObject = Meta.TYPE_RESOURCE
 	}
 
+	Meta "MapObjectAnchor" {
+		PositionI = Meta.TYPE_INTEGER,
+		PositionJ = Meta.TYPE_INTEGER,
+		Layer = Meta.TYPE_INTEGER,
+		MapObject = Meta.TYPE_RESOURCE
+	}
+
 	Meta "PropMapObject" {
 		Prop = Meta.TYPE_RESOURCE,
 		MapObject = Meta.TYPE_RESOURCE,
@@ -270,6 +277,15 @@ Game "ItsyScape"
 		Action = Meta.TYPE_ACTION,
 		Raid = Meta.TYPE_RESOURCE,
 		Map = Meta.TYPE_RESOURCE
+	}
+
+	ActionType "Climb"
+
+	Meta "ClimbDestination" {
+		Cutscene = Meta.TYPE_RESOURCE,
+		FromLayer = Meta.TYPE_INTEGER,
+		ToLayer = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
 	}
 
 	Meta "GatherableProp" {

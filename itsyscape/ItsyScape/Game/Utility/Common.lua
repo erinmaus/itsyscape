@@ -211,8 +211,7 @@ function Common.moveToAnchor(peep, map, anchor)
 
 	local game = peep:getDirector():getGameInstance()
 	local x, y, z, localLayer = Utility.Map.getAnchorPosition(game, map, anchor)
-	Utility.Peep.setPosition(peep, Vector(x, y, z))
-	Utility.Peep.setLocalLayer(peep, localLayer)
+	Utility.Peep.localTeleport(peep, Vector(x, y, z), localLayer)
 
 	return peep
 end

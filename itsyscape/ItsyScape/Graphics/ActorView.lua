@@ -1255,12 +1255,22 @@ function ActorView:move(position, layer, instant)
 	self.position = position
 	self.layer = layer
 
+	local parent = self.game:getMapSceneNode(layer)
+	if previousPosition and previousLayer ~= layer then
+		local previousParent = self.game:getMapSceneNode(previousLayer)
+		local previousTransform = previousParent and previousParent:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+		local currentTransform = parent and parent:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+
+		local absolutePosition = previousPosition:transform(previousTransform)
+		local localPosition = absolutePosition:inverseTransform(currentTransform)
+		self.sceneNode:getTransform():setPreviousTransform(localPosition)
+	end
+
 	if instant then
 		local currentPosition = self:_getPosition(position, layer)
 		self.sceneNode:getTransform():setPreviousTransform(currentPosition)
 	end
 
-	local parent = self.game:getMapSceneNode(layer)
 	if parent ~= self.sceneNode:getParent() then
 		self.sceneNode:setParent(parent)
 	end

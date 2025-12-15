@@ -44,8 +44,7 @@ function DebugTeleportController:teleport(e)
 			Utility.Peep.getResource(mapScript),
 			e.anchor)
 		local anchorPosition = Vector(x, y, z)
-		Utility.Peep.setPosition(peep, anchorPosition)
-		Utility.Peep.setLocalLayer(peep, localLayer)
+		Utility.Peep.localTeleport(peep, anchorPosition, localLayer)
 	else
 		local gameDB = self:getDirector():getGameDB()
 		local stage = self:getGame():getStage()
