@@ -495,13 +495,13 @@ do
 	ItsyScape.Meta.ClimbDestination {
 		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_ClimbUpStairs",
 		FromLayer = 1,
-		ToLayer = 4,
+		ToLayer = 6,
 		Action = ClimbAction
 	}
 
 	ItsyScape.Meta.ClimbDestination {
 		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_ClimbDownStairs",
-		FromLayer = 4,
+		FromLayer = 6,
 		ToLayer = 1,
 		Action = ClimbAction
 	}
@@ -518,9 +518,9 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectAnchor {
-		Layer = 4,
+		Layer = 6,
 		PositionI = 1,
-		PositionJ = 14,
+		PositionJ = 3,
 		MapObject = M["Staircase_ToIsabellesBedroom"]
 	}
 end

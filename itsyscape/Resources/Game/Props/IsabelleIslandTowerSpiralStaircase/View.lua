@@ -56,7 +56,7 @@ function Staircase:load()
 
 	local decoration = Decoration()
 
-	for i = 2, StaircaseCommon.STEPS do
+	for i = 2, StaircaseCommon.STEPS - 1 do
 		local position = StaircaseCommon.position(i)
 
 		local rng = love.math.newRandomGenerator(i)

@@ -6,7 +6,7 @@ local staircasePeep = ...
 local Staircase = CutsceneEntity(staircasePeep)
 
 local sequence = {}
-for i = StaircaseCommon.STEPS, 1, -1 do
+for i = StaircaseCommon.STEPS + 1, 1, -1 do
 	local firstPosition = StaircaseCommon.position(i)
 	local secondPosition = StaircaseCommon.position(i - 1)
 	local time = secondPosition:distance(firstPosition) / 12
