@@ -1050,6 +1050,32 @@ end
 
 do
 	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.CutsceneDoor",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerSmallDoor"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6,
+		SizeY = 4,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "IsabelleIslandTowerSmallDoor"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite door",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerSmallDoor"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "One door of many in this tower worth the yearly salary of a common family of folks.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerSmallDoor"
+	}
+end
+
+do
+	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.BasicDoor",
 		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
 	}

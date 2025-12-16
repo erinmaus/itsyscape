@@ -1,0 +1,11 @@
+{
+	shader = "Resources/Shaders/ModelSpecularMultiTriplanar",
+	texture = "Resources/Game/Props/IsabelleIslandTowerLargeDoor/Trim.lua",
+	uniforms = {
+		scape_NumLayers = { "integer", 1 },
+		scape_TriplanarScale = { "float", -0.75 },
+		scape_TriplanarOffset = { "float", 0.25 },
+		scape_TriplanarExponent = { "float", 0.3 },
+		scape_SpecularTexture = { "texture", "Resources/Game/Props/IsabelleIslandTowerLargeDoor/SpecularTrim.lua", }
+	}
+}

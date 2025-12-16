@@ -200,6 +200,19 @@ function UMap.getTilePosition(director, i, j, layer)
 	return center or Vector.ZERO
 end
 
+function UMap.absolutePositionToRelativePosition(director, layer, position)
+	local stage = director:getGameInstance():getStage()
+	local instance = stage:getInstanceByLayer(layer)
+	local mapScript = instance and instance:getMapScriptByLayer(layer)
+
+	if not mapScript then
+		return Vector.ZERO
+	end
+
+	local transform = Utility.Peep.getMapTransform(mapScript)
+	return position:inverseTransform(transform)
+end
+
 function UMap.getAbsoluteTilePosition(director, i, j, layer)
 	local stage = director:getGameInstance():getStage()
 	local instance = stage:getInstanceByLayer(layer)
@@ -207,13 +220,13 @@ function UMap.getAbsoluteTilePosition(director, i, j, layer)
 
 	local map = stage:getMap(layer)
 	local center = (map and map:getTileCenter(i, j)) or Vector.ZERO
-	center = center + (Vector(map and map:getCellSize() or 0) * Vector(i - math.floor(i), j - math.floor(j)))
+	center = center + (Vector(map and map:getCellSize() or 0) * Vector(i - math.floor(i), 0, j - math.floor(j)))
 
 	if not mapScript then
 		return center
 	else
 		local transform = Utility.Peep.getMapTransform(mapScript)
-		return Vector(transform:transformPoint(center.x, center.y, center.z))
+		return center:transform(transform)
 	end
 end
 
@@ -466,6 +479,21 @@ function UMap.getRandomPosition(map, position, distance, checkLineOfSight, rng, 
 	end
 
 	return nil
+end
+
+function UMap.getGlobalLayerFromLocalLayer(mapScript, localLayer)
+	local mapScriptLayer = Utility.Peep.getLayer(mapScript)
+	local instance = mapScript:getDirector():getGameInstance():getStage():getInstanceByLayer(mapScriptLayer)
+	if not instance then
+		return
+	end
+
+	local mapGroup = instance:getMapGroup(mapScriptLayer)
+	if not mapGroup then
+		return 1
+	end
+
+	return instance:getGlobalLayerFromLocalLayer(mapGroup, localLayer)
 end
 
 return UMap

@@ -1540,6 +1540,28 @@ function Peep.getRelativeTileAnchor(propPeep, playerPeep)
 	return Peep.getTileAnchor(propPeep)
 end
 
+function Peep.getOtherTileAnchor(propPeep, playerPeep)
+	local gameDB = propPeep:getDirector():getGameDB()
+
+	local mapObject = Peep.getMapObject(propPeep)
+	local propAnchors = gameDB:getRecords("MapObjectAnchor", {
+		MapObject = mapObject
+	})
+
+	if #propAnchors == 0 then
+		return Peep.getTileAnchor(propPeep)
+	end
+
+	local playerLocalLayer = Peep.getLocalLayer(playerPeep)
+	for _, propAnchor in ipairs(propAnchors) do
+		if propAnchor:get("Layer") ~= playerLocalLayer then
+			return propAnchor:get("PositionI"), propAnchor:get("PositionJ"), Utility.	Map.getGlobalLayerFromLocalLayer(Peep.getMapScript(playerPeep), propAnchor:get("Layer"))
+		end
+	end
+
+	return Peep.getTileAnchor(propPeep)
+end
+
 function Peep.getTileAnchor(peep, offsetI, offsetJ)
 	local rotation = Peep.getRotation(peep)
 	local size = Peep.getSize(peep)

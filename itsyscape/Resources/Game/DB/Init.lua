@@ -196,8 +196,8 @@ Game "ItsyScape"
 	}
 
 	Meta "MapObjectAnchor" {
-		PositionI = Meta.TYPE_INTEGER,
-		PositionJ = Meta.TYPE_INTEGER,
+		PositionI = Meta.TYPE_REAL,
+		PositionJ = Meta.TYPE_REAL,
 		Layer = Meta.TYPE_INTEGER,
 		MapObject = Meta.TYPE_RESOURCE
 	}

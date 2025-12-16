@@ -27,6 +27,8 @@ function Cutscene:new(resource, player, director, layerName, map, entities, args
 	self.args = args and { n = args.n, unpack(args, 1, args.n) } or { n = 0 }
 
 	self.entities = {
+		_DIRECTOR = director,
+		_GAME = director:getGameInstance(),
 		Player = CutsceneEntity(player),
 		Map = CutsceneMap(Class.isCompatibleType(map, MapScript) and map or Utility.Peep.getMapScript(player)),
 		Camera = CutsceneCamera(self.game, Utility.Peep.getPlayerModel(player))
