@@ -1296,11 +1296,16 @@ function LocalStage:loadMapResource(instance, filename, args)
 			tileSetID = meta[localLayer].tileSetID
 		end
 
-		local layerMeta = meta[localLayer] or {}
-
 		local globalLayer = self:newLayer(instance)
 		baseLayer = baseLayer or globalLayer
 		instance:addLayer(globalLayer, group, args.isInstancedToPlayer and args.player)
+
+		local layerMeta = meta[localLayer] or {}
+		layerMeta.layer = {
+			group = group,
+			globalLayer = globalLayer,
+			localLayer = localLayer
+		}
 
 		self:loadMapFromFile(directoryPath .. "/" .. filename, globalLayer, layerMeta.tileSetID, layerMeta.maskID, layerMeta)
 		self:spawnGround(layerName, globalLayer)

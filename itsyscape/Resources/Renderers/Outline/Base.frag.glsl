@@ -33,7 +33,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate);
 void effect()
 {
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
-	diffuse.a *= getGlobalWallHackAlpha(frag_Position, 1.0);
+	diffuse.a *= getGlobalWallHackAlpha(frag_Position, 0.0);
 
 	if (diffuse.a < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{

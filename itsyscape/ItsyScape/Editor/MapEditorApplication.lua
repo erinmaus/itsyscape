@@ -2369,6 +2369,7 @@ function MapEditorApplication:buildMeta(meta, map, mapScriptPeep, curve)
 
 	return {
 		tileSetID = meta and meta.tileSetID or "GrassyPlain",
+		links = meta and meta.links and { unpack(meta.links) } or nil,
 		maskID = meta and meta.maskID,
 		input = meta and meta.input,
 		autoMask = meta and meta.autoMask,

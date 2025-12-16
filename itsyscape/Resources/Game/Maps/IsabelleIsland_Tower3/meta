@@ -1186,6 +1186,7 @@
 		},
 	},
 	{
+		links = { 6 },
 		polygonMask =
 		{
 			{
@@ -1900,6 +1901,8 @@
 		},
 	},
 	{
+		links = { 4 },
+
 		tileSetID = "YendorianJungle2",
 		transform =
 		{

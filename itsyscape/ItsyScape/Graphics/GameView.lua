@@ -624,7 +624,9 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		tileSetID = tileSetID or "GrassyPlain",
 		filename = filename,
 		resource = mapResourceName,
-		localLayer = localLayer or 1,
+		localLayer = (meta and meta.layer and meta.layer.localGroup) or localLayer or 1,
+		group = (meta and meta.layer and meta.layer.group) or 1,
+		links = meta and meta.links or {},
 		map = map,
 		node = node,
 		parts = {},
@@ -1530,9 +1532,24 @@ function GameView:_updateMapNodeWallHack(m, delta)
 		local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
 		if playerActor then
 			local _, _, layer = playerActor:getTile()
-			isGlobalWallHack = m.layer ~= layer
 
-			if m.meta and type(m.meta.wallHack) == "table" then
+			local hasLink = false
+			do
+				local otherM = self.mapMeshes[layer]
+				if otherM then
+					for i = 1, #m.links do
+						local link = m.links[i]
+						if otherM.localLayer == link and otherM.group == m.group then
+							hasLink = true
+							break
+						end
+					end
+				end
+			end
+
+			isGlobalWallHack = not hasLink and m.layer ~= layer
+
+			if isGlobalWallHack and m.meta and type(m.meta.wallHack) == "table" then
 				wallHackEnabled = not not m.meta.wallHack.global
 			end
 		end
