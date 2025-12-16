@@ -1997,7 +1997,7 @@ function GameView:getProp(prop)
 end
 
 function GameView:getPropByID(id)
-	if id < 0 and self.propProbeProxyIDs[id] then
+	if id and id < 0 and self.propProbeProxyIDs[id] then
 		id = self.propProbeProxyIDs[id] or id
 	end
 
