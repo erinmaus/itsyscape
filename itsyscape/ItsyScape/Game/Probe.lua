@@ -590,7 +590,7 @@ function Probe:_prop(prop, point, distance)
 	for i = 1, #actions do
 		local filter = Probe.PROP_FILTERS[actions[i].type:lower()]
 
-		local isHidden = propLayer ~= playerLayer
+		local isHidden = false
 		if filter then
 			isHidden = isHidden or filter(prop)
 		end

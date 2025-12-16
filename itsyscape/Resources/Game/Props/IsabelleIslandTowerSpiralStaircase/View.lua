@@ -16,6 +16,7 @@ local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
 local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local PropView = require "ItsyScape.Graphics.PropView"
 local Material = require "ItsyScape.Graphics.Material"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local FlickerGreeble = require "Resources.Game.Props.Common.Greeble.FlickerGreeble"
 local StaircaseCommon = require "Resources.Game.Peeps.IsabelleIsland.StaircaseCommon"
@@ -86,6 +87,20 @@ function Staircase:load()
 		"Resources/Game/Props/IsabelleIslandTowerSpiralStaircase/Model.lstatic",
 		function(mesh)
 			self.mesh = mesh
+
+			for i = 1, decoration:getNumFeatures() do
+				local feature = decoration:getFeatureByIndex(i)
+				local min, max = self.mesh:getResource():computeBounds(feature:getID())
+
+				local probe = SceneNode()
+				probe:setParent(root)
+				probe:getTransform():setLocalTranslation(feature:getPosition())
+				probe:setBounds(
+					feature:getPosition() + min,
+					feature:getPosition() + max)
+
+				self:getGameView():addOrUpdatePropProbe(self:getProp(), probe)
+			end
 
 			self.decorationNode = DecorationSceneNode()
 			self.decorationNode:fromDecoration(decoration, mesh:getResource())

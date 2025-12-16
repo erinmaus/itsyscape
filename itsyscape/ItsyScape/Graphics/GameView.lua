@@ -80,6 +80,11 @@ function GameView:new(game, camera)
 	self.generalDebugStats = DebugStats.GlobalDebugStats()
 	self.probe = NProbe(8)
 
+	self.propProbeProxyIDs = {}
+	self.currentPropProbeProxyID = -1
+
+	self.propProbeSceneNodes = {}
+
 	self.scene = SceneNode()
 	self.mapMeshes = {}
 	self.skyboxes = {}
@@ -375,6 +380,8 @@ function GameView:reset()
 	for _, prop in pairs(self.props) do
 		Log.info("Removing prop '%s' (%s).", prop:getProp():getName(), prop:getProp():getPeepID())
 		prop:remove()
+
+		self:removePropProbes(prop:getProp())
 	end
 	table.clear(self.props)
 
@@ -1903,6 +1910,46 @@ function GameView:hasActor(actor)
 	return self.actors[actor:getID()] ~= nil
 end
 
+function GameView:addOrUpdatePropProbe(prop, sceneNode)
+	local probes = self.propProbeSceneNodes[prop]
+	if not probes then
+		probes = {}
+		self.propProbeSceneNodes[prop] = probes
+	end
+
+	local id = probes[sceneNode]
+	if not id then
+		id = self.currentPropProbeProxyID
+		self.propProbeProxyIDs[id] = prop:getID()
+		self.currentPropProbeProxyID = self.currentPropProbeProxyID - 1
+
+		probes[sceneNode] = id
+	end
+
+	local min, max = sceneNode:getBounds()
+	self.probe:addOrUpdate(
+		"ItsyScape.Game.Model.Prop",
+		id,
+		sceneNode:getHandle(),
+		min.x, min.y, min.z, max.x, max.y, max.z,
+		prop:getName())
+end
+
+function GameView:removePropProbe(prop, sceneNode)
+	local probes = self.propProbeSceneNodes[prop]
+	if not probes then
+		return
+	end
+
+	local id = probes[sceneNode]
+	if not id then
+		return
+	end
+
+	self.probe:remove("ItsyScape.Game.Model.Prop", id)
+	probes[sceneNode] = nil
+end
+
 function GameView:addProp(propID, prop)
 	if not prop or self:getProp(prop) then
 		return
@@ -1933,8 +1980,23 @@ function GameView:getProp(prop)
 end
 
 function GameView:getPropByID(id)
+	if id < 0 and self.propProbeProxyIDs[id] then
+		id = self.propProbeProxyIDs[id] or id
+	end
+
 	local propView = self.props[id]
 	return propView and propView:getProp()
+end
+
+function GameView:removePropProbes(prop)
+	local probes = self.propProbeSceneNodes[prop]
+	if probes then
+		for _, proxyID in pairs(probes) do
+			self.probe:remove("ItsyScape.Game.Model.Prop", proxyID)
+		end
+
+		self.propProbeSceneNodes[prop] = nil
+	end
 end
 
 function GameView:removeProp(prop)
@@ -1943,6 +2005,7 @@ function GameView:removeProp(prop)
 	end
 
 	self.probe:remove("ItsyScape.Game.Model.Prop", prop:getID())
+	self:removePropProbes(prop)
 
 	if prop and self.props[prop:getID()] then
 		self.props[prop:getID()]:remove()
