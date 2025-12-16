@@ -275,24 +275,27 @@ function Probe:_run(callback)
 
 	local tests = self.tests or Probe.TESTS
 
-	local hits = probe:probe(_APP:getFrameDelta())
+	local camera = self.gameView:getCamera()
+	local hits = probe:probe(_APP:getPreviousFrameDelta())
 	for i = 1, hits do
 		local interface, id, x, y, z, distance = probe:getHit(i - 1)
+		local point = camera:project(Vector(x, y, z))
+		point.z = camera:toLinearDepth(point.z)
 
 		if interface == "ItsyScape.Game.Model.Actor" and tests.actors then
 			local actor = self.gameView:getActorByID(id)
 			if actor then
-				self:_actor(actor, Vector(x, y, z), distance)
+				self:_actor(actor, point, distance)
 			end
 		elseif interface == "ItsyScape.Game.Model.Prop" and tests.props then
 			local prop = self.gameView:getPropByID(id)
 			if prop then
-				self:_prop(prop, Vector(x, y, z), distance)
+				self:_prop(prop, point, distance)
 			end
 		elseif interface == "X.Item" and tests.loot then
 			local item = self.game:getStage():getItem(id)
 			if item then
-				self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, Vector(x, y, z), distance)
+				self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, point, distance)
 			end
 		end
 	end
@@ -319,19 +322,23 @@ function Probe:getTile(tiles)
 			local i = a[Map.RAY_TEST_RESULT_POSITION]
 			local j = b[Map.RAY_TEST_RESULT_POSITION]
 
-			local camera = self.gameView:getCamera()
-			local s = camera:project(Vector(i.x, i.y, i.z))
-			local t = camera:project(Vector(j.x, j.y, j.z))
+			local mapA = self.gameView:getMapSceneNode(a.layer)
+			local mapTransformA = mapA and mapA:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+			local mapB = self.gameView:getMapSceneNode(b.layer)
+			local mapTransformB = mapB and mapB:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 
-			return s.z > t.z
+			local s = Vector(i.x, i.y, i.z):transform(mapTransformA)
+			local t = Vector(j.x, j.y, j.z):transform(mapTransformB)
+
+			local camera = self.gameView:getCamera()
+			return camera:compare(s, t)
 		end
 		table.sort(tiles, sortFunc)
 
 		if self.layer then
 			for i = 1, #tiles do
-				if tiles[i].layer == layer then
+				if tiles[i].layer == self.layer then
 					self.tile = tiles[i]
-					self.layer = layer
 					break
 				end
 			end
@@ -367,7 +374,12 @@ function Probe:walk()
 	end
 
 	local i, j, k, position = self:getTile()
-	if i and j and k then
+	if i and j and k and position then
+		position = Vector(position.x, position.y, position.z)
+		local m = self.gameView:getMapSceneNode(k)
+		local transform = m and m:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+		position = position:transform(transform)
+
 		self:addAction(
 			-1,
 			"Walk",
@@ -376,7 +388,7 @@ function Probe:walk()
 			"client",
 			"here", -- lol
 			"Walk to this location.",
-			position.z,
+			self.gameView:getCamera():depth(position),
 			self._walk, self, i, j, k)
 
 		self.probes["walk"] = 1
@@ -434,7 +446,7 @@ function Probe:_loot(item, i, j, k, position, distance)
 		"item",
 		object,
 		description,
-		-position.z,
+		position.z,
 		self._take, self, i, j, k, item)
 
 	self:addAction(
@@ -445,7 +457,7 @@ function Probe:_loot(item, i, j, k, position, distance)
 		"item",
 		object,
 		description,
-		-position.z + (1 / 100),
+		position.z + (1 / 100),
 		self.onExamine, object, description, Probe.Item(item))
 
 	self.probes.loot = (self.probes.loot or 0) + 1
@@ -536,7 +548,7 @@ function Probe:_actor(actor, point, distance)
 			"actor",
 			actor:getName(),
 			actor:getDescription(),
-			-point.z + ((i / #actions) / 100),
+			point.z - (1 - (i / #actions) / 100),
 			self._poke, self, actions[i].id, actor, "world")
 
 
@@ -553,7 +565,7 @@ function Probe:_actor(actor, point, distance)
 		"actor",
 		actor:getName(),
 		actor:getDescription(),
-		-point.z + (((#actions + 1) / #actions) / 100),
+		point.z - ((1 - ((#actions + 1) / #actions)) / 100),
 		self.onExamine, actor:getName(), actor:getDescription(), actor)
 
 	self.probes.actor = (self.probes.actor or 0) + 1
@@ -603,7 +615,7 @@ function Probe:_prop(prop, point, distance)
 			"prop",
 			prop:getName(),
 			prop:getDescription(),
-			-point.z + ((i / #actions) / 100),
+			point.z - (1 - (i / #actions) / 100),
 			self._poke, self, actions[i].id, prop, "world")
 		action.suppress = isHidden
 
@@ -617,7 +629,7 @@ function Probe:_prop(prop, point, distance)
 		"prop",
 		prop:getName(),
 		prop:getDescription(),
-		-point.z + (((#actions + 1) / #actions) / 100),
+		point.z - ((1 - ((#actions + 1) / #actions)) / 100),
 		self.onExamine, prop:getName(), prop:getDescription(), prop)
 
 	self.probes.prop = (self.probes.prop or 0) + 1

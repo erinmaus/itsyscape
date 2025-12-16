@@ -118,6 +118,21 @@ function ThirdPersonCamera:project(point)
 	return Vector(x, y, z)
 end
 
+function ThirdPersonCamera:compare(a, b)
+	local za = self:project(a).z
+	local zb = self:project(b).z
+
+	return za < zb
+end
+
+function ThirdPersonCamera:depth(point)
+	return self:toLinearDepth(self:project(point).z)
+end
+
+function ThirdPersonCamera:toLinearDepth(z)
+	return 2.0 * self.near * self.far / (self.far + self.near - z * (self.far - self.near))
+end
+
 function ThirdPersonCamera:unproject(point)
 	local projection, view = self:getTransforms()
 	local projectionView = projection * view
