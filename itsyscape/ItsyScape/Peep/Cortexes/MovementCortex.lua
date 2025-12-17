@@ -21,6 +21,7 @@ local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBeh
 local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local Tile = require "ItsyScape.World.Tile"
+local NavigationMeshBuilder = require "ItsyScape.World.NavigationMeshBuilder"
 
 local MovementCortex = Class(Cortex)
 
@@ -62,6 +63,7 @@ end
 function MovementCortex:detach()
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage.onLoadMap:unregister(self._onLoadMap)
+	stage.onMapMetaUpdated:unregister(self._onMapMetaUpdated)
 	stage.onMapModified:unregister(self._onMapModified)
 	stage.onUnloadMap:unregister(self._onUnloadMap)
 
@@ -84,10 +86,16 @@ function MovementCortex:listen()
 	self.worlds = {}
 	self.peepsByLayer = {}
 	self.props = {}
-	self._onLoadMap = function(_, _, layer)
-		self:addWorld(layer)
+	self._onLoadMap = function(_, _, layer, _, _, meta)
+		self:addWorld(layer, meta)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
+
+	self._onMapMetaUpdated = function(_, layer, meta)
+		self:updatePolygonMask(layer, meta)
+		self:updateWorld(layer)
+	end
+	stage.onMapMetaUpdated:register(self._onMapMetaUpdated)
 
 	self._onMapModified = function(_, _, layer)
 		self:updateWorld(layer)
@@ -102,7 +110,48 @@ function MovementCortex:listen()
 	self._filter = Callback.bind(self.filter, self)
 end
 
-function MovementCortex:addWorld(layer)
+function MovementCortex:updatePolygonMask(layer, meta)
+	local w = self.worlds[layer]
+
+	if not (meta and meta.polygonMask) then
+		if w.polygonMask then
+			w.world:remove(w.polygonMask)
+			w.polygonMask = nil
+		end
+
+		return
+	end
+
+	local chainShapes = {}
+	local polygonMask = {}
+	for _, polygon in ipairs(meta.polygonMask) do
+		local p = {}
+		local otherPolygon = {}
+
+		for _, point in ipairs(polygon) do
+			table.insert(otherPolygon, { unpack(point) })
+			table.insert(p, point[1])
+			table.insert(p, point[2])
+		end
+
+		table.insert(polygonMask, otherPolygon)
+		table.insert(chainShapes, slick.newChainShape(p))
+	end
+
+	local maskTile = w.polygonMaskTile
+	if not maskTile then
+		maskTile = Tile()
+		maskTile:setFlag("impassable")
+
+		w.polygonMaskTile = maskTile
+		w.polygonMask = polygonMask
+		w.world:add(maskTile, 0, 0, slick.newShapeGroup(unpack(chainShapes)))
+	else
+		w.world:update(maskTile, 0, 0, slick.newShapeGroup(unpack(chainShapes)))
+	end
+end
+
+function MovementCortex:addWorld(layer, meta)
 	local map = self:getDirector():getMap(layer)
 	local world = slick.newWorld(
 		map:getWidth() * map:getCellSize(),
@@ -118,8 +167,13 @@ function MovementCortex:addWorld(layer)
 		tiles = {},
 		peeps = {},
 		props = {},
-		layer = layer
+		layer = layer,
+		meta = meta
 	}
+
+	if meta and meta.polygonMask then
+		self:updatePolygonMask(layer, meta)
+	end
 end
 
 function MovementCortex:addPeepToWorld(layer, peep)
@@ -211,8 +265,90 @@ function MovementCortex:removePropFromWorld(layer, prop)
 	end
 end
 
+local function merge(...)
+	local t = {}
+
+	for i = 1, select("#", ...) do
+		local o = select(i, ...)
+		if type(o) == "table" then
+			for k, v in pairs(o) do
+				t[k] = v
+			end
+		end
+	end
+
+	return t
+end
+
+function MovementCortex:_makeNavigationMesh(layer)
+	local map = self:getDirector():getMap(layer)
+
+	local w = self.worlds[layer]
+	if not w then
+		return
+	end
+
+	-- local meshBuilder = slick.navigation.meshBuilder.new()
+
+	-- local BACKGROUND = slick.newEnum("background")
+	-- local WALL = slick.newEnum("wall")
+
+	-- meshBuilder:addLayer(BACKGROUND)
+	-- meshBuilder:addLayer(WALL, "union")
+	-- local IMPASSABLE = true
+
+	-- local cellSize = 32
+	-- local mapWidth = map:getWidth() * cellSize
+	-- local mapHeight = map:getHeight() * cellSize
+
+	-- meshBuilder:addShape(
+	-- 	BACKGROUND,
+	-- 	slick.newRectangleShape(0, 0, mapWidth, mapHeight))
+
+	-- for i = 1, map:getWidth() do
+	-- 	for j = 1, map:getHeight() do
+	-- 		local tile = map:getTile(i, j)
+	-- 		local tileCenter = map:getTileCenter(i, j) * cellSize
+	-- 		local min = tileCenter - Vector(cellSize / 2)
+
+	-- 		if tile:getIsPassable() then
+	-- 			for k = 1, #MovementCortex.OFFSETS do
+	-- 				local offsetI, offsetJ = unpack(MovementCortex.OFFSETS[k])
+
+	-- 				if not map:canMove(i, j, offsetI, offsetJ, false, _isPassable) and map:getTile(i + offsetI, j + offsetJ):getIsPassable() then
+	-- 					local t = Tile()
+	-- 					t:setFlag("impassable")
+
+	-- 					if offsetI < 0 then
+	-- 						meshBuilder:addShape(WALL, slick.newLineSegmentShape(min.x, min.z, min.x, min.z + cellSize), { [t] = true })
+	-- 					elseif offsetI > 0 then
+	-- 						meshBuilder:addShape(WALL, slick.newLineSegmentShape(min.x + cellSize, min.z, min.x, min.z + cellSize), { [t] = true })
+	-- 					end
+
+	-- 					if offsetJ < 0 then
+	-- 						meshBuilder:addShape(WALL, slick.newLineSegmentShape(min.x, min.z, min.x + cellSize, min.z), { [t] = true })
+	-- 					elseif offsetJ > 0 then
+	-- 						meshBuilder:addShape(WALL, slick.newLineSegmentShape(min.x + cellSize, min.z, min.x + cellSize, min.z + cellSize), { [t] = true })
+	-- 					end
+
+	-- 					table.insert(w.tiles, t)
+	-- 				end
+	-- 			end
+	-- 		else
+	-- 			meshBuilder:addShape(WALL, slick.newRectangleShape(min.x, min.z, cellSize, cellSize), { [tile] = true })
+	-- 		end
+	-- 	end
+	-- end
+
+	local builder = NavigationMeshBuilder(map, w.polygonMask or {})
+    w.meshBuilder = builder
+    w.mesh = builder:getNavigationMesh()
+end
+
 function MovementCortex:updateWorld(layer)
 	local map = self:getDirector():getMap(layer)
+
+	self:_makeNavigationMesh(layer)
 
 	local w = self.worlds[layer]
 	if not w then
@@ -223,6 +359,27 @@ function MovementCortex:updateWorld(layer)
 		if w.world:has(w.tiles[i]) then
 			w.world:remove(w.tiles[i])
 		end
+	end
+
+	local mapWidth = map:getWidth() * map:getCellSize()
+	local mapHeight = map:getHeight() * map:getCellSize()
+
+	local borderShape = slick.newPolylineShape({
+		{ 0, 0, mapWidth, 0 },
+		{ mapWidth, 0, mapWidth, mapHeight },
+		{ mapWidth, mapHeight, 0, mapHeight },
+		{ 0, mapHeight, 0, 0 }
+	})
+
+	local border = w.border
+	if not border then
+		border = Tile()
+		border:setFlag("impassable")
+
+		w.world:add(border, 0, 0, borderShape)
+		w.border = border
+	else
+		w.world:update(border, 0, 0, borderShape)
 	end
 
 	table.clear(w.tiles)
