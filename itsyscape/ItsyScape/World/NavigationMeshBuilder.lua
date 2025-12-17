@@ -12,13 +12,15 @@ local Class = require "ItsyScape.Common.Class"
 local Function = require "ItsyScape.Common.Function"
 local Tile = require "ItsyScape.World.Tile"
 
+local triangulator = slick.geometry.triangulation.delaunay.new()
+
 local NavigationMeshBuilder = Class()
 
 NavigationMeshBuilder.OFFSETS = {
-	{ -1,  0 },
-	{  1,  0 },
-	{  0, -1 },
-	{  0,  1 }
+	{ -1,  0, 2, 1, 2, 2 },
+	{  1,  0, 1, 1, 1, 2 },
+	{  0, -1, 1, 2, 2, 2 },
+	{  0,  1, 1, 1, 2, 1 }
 }
 
 NavigationMeshBuilder.Userdata = Class()
@@ -57,9 +59,11 @@ function NavigationMeshBuilder:new(map, polygons)
 	self.map = map
 	self.polygons = polygons
 
+	self.vertices = {}
 	self.vertexUserdata = {}
 	self.vertexMap = {}
 	self.edgeUserdata = {}
+
 	self.points = {}
 	self.edges = {}
 
@@ -72,7 +76,7 @@ function NavigationMeshBuilder:new(map, polygons)
 	self.triangulateOptions = {
 		interior = true,
 		exterior = true,
-		refine = true,
+		refine = false,
 		polygonization = false
 	}
 
@@ -85,14 +89,14 @@ function NavigationMeshBuilder:_addEdgeUserdata(i, j, userdata)
 		e1 = {}
 		self.edgeUserdata[i] = e1
 	end
-	e1[j] = userdata
+	e1[j] = NavigationMeshBuilder.Userdata.merge(userdata, e1[j])
 
 	local e2 = self.edgeUserdata[j]
 	if not e2 then
 		e2 = {}
 		self.edgeUserdata[j] = e2
 	end
-	e2[i] = userdata
+	e2[i] = NavigationMeshBuilder.Userdata.merge(userdata, e2[j])
 end
 
 function NavigationMeshBuilder:_removeEdgeUserdata(i, j)
@@ -143,57 +147,117 @@ local function _isPassable(map, i, j, s, t)
 	return not map:getTile(s, t):hasStaticFlag("impassable")
 end
 
+function NavigationMeshBuilder:_getVertexIndex(i, j, s, t)
+	local height = self.map:getHeight() + 1
+	local index = ((i - 1) + (s - 1)) * height + ((j - 1) + (t - 1)) + 1
+	return index
+end
+
+function NavigationMeshBuilder:_getEdgeIndices(i, j, s, t)
+	local index = self:_getVertexIndex(i, j, s, t)
+	return (index - 1) * 2 + 1, (index - 1) * 2 + 2
+end
+
+function NavigationMeshBuilder:_getPointIndices(i, j, s, t)
+	local index = self:_getVertexIndex(i, j, s, t)
+	return (index - 1) * 2 + 1, (index - 1) * 2 + 2
+end
+
+function NavigationMeshBuilder:_addVertexUserdata(i, j, s, t, userdata)
+	local index = self:_getVertexIndex(i, j, s, t)
+
+	self.vertexUserdata[index] = NavigationMeshBuilder.Userdata.merge(self.vertexUserdata[index], userdata)
+end
+
+function NavigationMeshBuilder:_addVertex(i, j, s, t)
+	local cellSize = self.map:getCellSize()
+
+	local x = (i - 1) * cellSize + (s - 1) * cellSize
+	local y = (j - 1) * cellSize + (t - 1) * cellSize
+
+	local xIndex, yIndex = self:_getPointIndices(i, j, s, t)
+	self.points[xIndex] = x
+	self.points[yIndex] = y
+end
+
+function NavigationMeshBuilder:_resize()
+	local numPoints = (self.map:getWidth() + 1) * (self.map:getHeight() + 1)
+
+	for i = 1, numPoints do
+		self.points[i] = 0
+	end
+end
+
 function NavigationMeshBuilder:_buildMap()
 	local scale = self.map:getCellSize()
 
-	for j = 1, self.map:getHeight() do
-		for i = 1, self.map:getWidth() do
+	local border = Tile()
+	border:setFlag("border")
+	border:setFlag("impassable")
+
+	local borderUserdata = NavigationMeshBuilder.Userdata(border)
+
+	for i = 1, self.map:getWidth() do
+		for j = 1, self.map:getHeight() do
 			local tile = self.map:getTile(i, j)
 			local userdata = NavigationMeshBuilder.Userdata(tile)
 
-			local left = (i - 1) * scale
-			local right = i * scale
-			local top = (j - 1) * scale
-			local bottom = j * scale
+			self:_addVertexUserdata(i, j, 1, 1, userdata)
+			self:_addVertex(i, j, 1, 1)
+			self:_addVertexUserdata(i, j, 1, 2, userdata)
+			self:_addVertex(i, j, 1, 2)
+			self:_addVertexUserdata(i, j, 2, 1, userdata)
+			self:_addVertex(i, j, 2, 1)
+			self:_addVertexUserdata(i, j, 2, 2, userdata)
+			self:_addVertex(i, j, 2, 2)
 
-			local e = math.floor(#self.points / 2) + 1
+			self:_addEdgeUserdata(
+				self:_getVertexIndex(i, j, 1, 1),
+				self:_getVertexIndex(i, j, 1, 2),
+				userdata)
 
-			table.insert(self.points, left)
-			table.insert(self.points, top)
+			self:_addEdgeUserdata(
+				self:_getVertexIndex(i, j, 1, 2),
+				self:_getVertexIndex(i, j, 2, 2),
+				userdata)
 
-			table.insert(self.points, right)
-			table.insert(self.points, top)
+			self:_addEdgeUserdata(
+				self:_getVertexIndex(i, j, 2, 2),
+				self:_getVertexIndex(i, j, 2, 1),
+				userdata)
 
-			table.insert(self.points, right)
-			table.insert(self.points, bottom)
+			self:_addEdgeUserdata(
+				self:_getVertexIndex(i, j, 2, 1),
+				self:_getVertexIndex(i, j, 1, 1),
+				userdata)
 
-			table.insert(self.points, left)
-			table.insert(self.points, bottom)
+			if i == 1 then
+				self:_addEdgeUserdata(
+					self:_getVertexIndex(i, j, 1, 1),
+					self:_getVertexIndex(i, j, 1, 2),
+					borderUserdata)
+			elseif i == self.map:getWidth() then
+				self:_addEdgeUserdata(
+					self:_getVertexIndex(i, j, 2, 1),
+					self:_getVertexIndex(i, j, 2, 2),
+					borderUserdata)
+			end
 
-			table.insert(self.edges, e)
-			table.insert(self.edges, e + 1)
-			self:_addEdgeUserdata(e, e + 1, userdata)
-
-			table.insert(self.edges, e + 1)
-			table.insert(self.edges, e + 2)
-			self:_addEdgeUserdata(e + 1, e + 2, userdata)
-
-			table.insert(self.edges, e + 2)
-			table.insert(self.edges, e + 3)
-			self:_addEdgeUserdata(e + 2, e + 3, userdata)
-
-			table.insert(self.edges, e + 3)
-			table.insert(self.edges, e)
-			self:_addEdgeUserdata(e + 3, e, userdata)
-
-			table.insert(self.vertexUserdata, userdata)
-			table.insert(self.vertexUserdata, userdata)
-			table.insert(self.vertexUserdata, userdata)
-			table.insert(self.vertexUserdata, userdata)
+			if j == 1 then
+				self:_addEdgeUserdata(
+					self:_getVertexIndex(i, j, 1, 1),
+					self:_getVertexIndex(i, j, 2, 1),
+					borderUserdata)
+			elseif j == self.map:getHeight() then
+				self:_addEdgeUserdata(
+					self:_getVertexIndex(i, j, 1, 2),
+					self:_getVertexIndex(i, j, 2, 2),
+					borderUserdata)
+			end
 
 			if tile:getIsPassable() then
 				for k = 1, #NavigationMeshBuilder.OFFSETS do
-					local offsetI, offsetJ = unpack(NavigationMeshBuilder.OFFSETS[k])
+					local offsetI, offsetJ, s1, t1, s2, t2 = unpack(NavigationMeshBuilder.OFFSETS[k])
 
 					if not self.map:canMove(i, j, offsetI, offsetJ, false, _isPassable) and self.map:getTile(i + offsetI, j + offsetJ):getIsPassable() then
 						local tile = Tile()
@@ -201,65 +265,24 @@ function NavigationMeshBuilder:_buildMap()
 						tile:setFlag("impassable")
 
 						local userdata = NavigationMeshBuilder.Userdata(tile)
-						local e = math.floor(#self.points / 2) + 1
 
-						if offsetI < 0 then
-							table.insert(self.points, left)
-							table.insert(self.points, top)
-							table.insert(self.vertexUserdata, userdata)
-
-							table.insert(self.points, left)
-							table.insert(self.points, bottom)
-							table.insert(self.vertexUserdata, userdata)
-
-							table.insert(self.edges, e)
-							table.insert(self.edges, e + 1)
-
-							self:_addEdgeUserdata(e, e + 1, userdata)
-						elseif offsetI > 0 then
-							table.insert(self.points, right)
-							table.insert(self.points, top)
-							table.insert(self.vertexUserdata, userdata)
-
-							table.insert(self.points, right)
-							table.insert(self.points, bottom)
-							table.insert(self.vertexUserdata, userdata)
-
-							table.insert(self.edges, e)
-							table.insert(self.edges, e + 1)
-
-							self:_addEdgeUserdata(e, e + 1, userdata)
-						end
-
-						if offsetJ < 0 then
-							table.insert(self.points, left)
-							table.insert(self.points, top)
-							table.insert(self.vertexUserdata, userdata)
-
-							table.insert(self.points, right)
-							table.insert(self.points, top)
-							table.insert(self.vertexUserdata, userdata)
-
-							table.insert(self.edges, e)
-							table.insert(self.edges, e + 1)
-
-							self:_addEdgeUserdata(e, e + 1, userdata)
-						elseif offsetJ > 0 then
-							table.insert(self.points, left)
-							table.insert(self.points, bottom)
-							table.insert(self.vertexUserdata, userdata)
-
-							table.insert(self.points, right)
-							table.insert(self.points, bottom)
-							table.insert(self.vertexUserdata, userdata)
-
-							table.insert(self.edges, e)
-							table.insert(self.edges, e + 1)
-
-							self:_addEdgeUserdata(e, e + 1, userdata)
-						end
+						self:_addEdgeUserdata(
+							self:_getVertexIndex(i + offsetI, j + offsetJ, s1, t1),
+							self:_getVertexIndex(i + offsetI, j + offsetJ, s2, t2),
+							userdata)
 					end
 				end
+			end
+		end
+	end
+end
+
+function NavigationMeshBuilder:_buildMapEdges()
+	for i, e in pairs(self.edgeUserdata) do
+		for j in pairs(e) do
+			if i > j then
+				table.insert(self.edges, i)
+				table.insert(self.edges, j)
 			end
 		end
 	end
@@ -345,13 +368,18 @@ function NavigationMeshBuilder:_map(map)
 end
 
 function NavigationMeshBuilder:_triangulate()
-	local triangulator = slick.geometry.triangulation.delaunay.new()
+	if #self.polygons > 0 then
+		self.points, self.edges, self.vertexUserdata = triangulator:clean(self.points, self.edges, self.vertexUserdata, self.cleanOptions)
+	end
 
-	self.points, self.edges, self.vertexUserdata = triangulator:clean(self.points, self.edges, self.vertexUserdata, self.cleanOptions)
 	self.triangles = triangulator:triangulate(self.points, self.edges, self.triangulateOptions)
 end
 
 function NavigationMeshBuilder:_remapEdgeUserdata()
+	if not next(self.vertexMap) then
+		return
+	end
+
 	local oldEdgeUserdata = self.edgeUserdata
 	self.edgeUserdata = {}
 
@@ -372,7 +400,9 @@ function NavigationMeshBuilder:_buildNavigationMeshBuilder()
 end
 
 function NavigationMeshBuilder:_build()
+	self:_resize()
 	self:_buildMap()
+	self:_buildMapEdges()
 	self:_buildPolygons()
 	self:_triangulate()
 	self:_remapEdgeUserdata()

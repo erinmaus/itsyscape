@@ -3294,7 +3294,7 @@ function MapEditorApplication:draw(...)
 		if love.keyboard.isDown("space") and love.keyboard.isDown(tostring(layer)) then
 			local director = self:getGame():getDirector()
 			local cortex = director:getCortex(require "ItsyScape.Peep.Cortexes.MovementCortex")
-			local w = cortex.worlds and cortex.worlds[1]
+			local w = cortex.worlds and cortex.worlds[layer]
 			local mesh = w and w.mesh
 
 			if mesh then
