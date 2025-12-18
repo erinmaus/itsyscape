@@ -963,6 +963,10 @@ function Instance:iterateMapGroup(mapGroup)
 	return ipairs(self.mapGroups[mapGroup])
 end
 
+function Instance:iterateMapGroups()
+	return ipairs(self.mapGroups)
+end
+
 function Instance:getGlobalLayerFromLocalLayer(group, index)
 	index = index or 1
 

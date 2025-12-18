@@ -151,6 +151,11 @@ function MovementCortex:updatePolygonMask(layer, meta)
 	end
 end
 
+function MovementCortex:getNavigationMesh(layer)
+	local w = self.worlds[layer]
+	return w and w.mesh, w and w.meshBuilder
+end
+
 function MovementCortex:addWorld(layer, meta)
 	local map = self:getDirector():getMap(layer)
 	local world = slick.newWorld(
@@ -287,58 +292,6 @@ function MovementCortex:_makeNavigationMesh(layer)
 	if not w then
 		return
 	end
-
-	-- local meshBuilder = slick.navigation.meshBuilder.new()
-
-	-- local BACKGROUND = slick.newEnum("background")
-	-- local WALL = slick.newEnum("wall")
-
-	-- meshBuilder:addLayer(BACKGROUND)
-	-- meshBuilder:addLayer(WALL, "union")
-	-- local IMPASSABLE = true
-
-	-- local cellSize = 32
-	-- local mapWidth = map:getWidth() * cellSize
-	-- local mapHeight = map:getHeight() * cellSize
-
-	-- meshBuilder:addShape(
-	-- 	BACKGROUND,
-	-- 	slick.newRectangleShape(0, 0, mapWidth, mapHeight))
-
-	-- for i = 1, map:getWidth() do
-	-- 	for j = 1, map:getHeight() do
-	-- 		local tile = map:getTile(i, j)
-	-- 		local tileCenter = map:getTileCenter(i, j) * cellSize
-	-- 		local min = tileCenter - Vector(cellSize / 2)
-
-	-- 		if tile:getIsPassable() then
-	-- 			for k = 1, #MovementCortex.OFFSETS do
-	-- 				local offsetI, offsetJ = unpack(MovementCortex.OFFSETS[k])
-
-	-- 				if not map:canMove(i, j, offsetI, offsetJ, false, _isPassable) and map:getTile(i + offsetI, j + offsetJ):getIsPassable() then
-	-- 					local t = Tile()
-	-- 					t:setFlag("impassable")
-
-	-- 					if offsetI < 0 then
-	-- 						meshBuilder:addShape(WALL, slick.newLineSegmentShape(min.x, min.z, min.x, min.z + cellSize), { [t] = true })
-	-- 					elseif offsetI > 0 then
-	-- 						meshBuilder:addShape(WALL, slick.newLineSegmentShape(min.x + cellSize, min.z, min.x, min.z + cellSize), { [t] = true })
-	-- 					end
-
-	-- 					if offsetJ < 0 then
-	-- 						meshBuilder:addShape(WALL, slick.newLineSegmentShape(min.x, min.z, min.x + cellSize, min.z), { [t] = true })
-	-- 					elseif offsetJ > 0 then
-	-- 						meshBuilder:addShape(WALL, slick.newLineSegmentShape(min.x + cellSize, min.z, min.x + cellSize, min.z + cellSize), { [t] = true })
-	-- 					end
-
-	-- 					table.insert(w.tiles, t)
-	-- 				end
-	-- 			end
-	-- 		else
-	-- 			meshBuilder:addShape(WALL, slick.newRectangleShape(min.x, min.z, cellSize, cellSize), { [tile] = true })
-	-- 		end
-	-- 	end
-	-- end
 
 	local builder = NavigationMeshBuilder(map, w.polygonMask or {})
     w.meshBuilder = builder

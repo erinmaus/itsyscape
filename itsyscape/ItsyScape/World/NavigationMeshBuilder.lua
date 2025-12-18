@@ -76,7 +76,7 @@ function NavigationMeshBuilder:new(map, polygons)
 	self.triangulateOptions = {
 		interior = true,
 		exterior = true,
-		refine = false,
+		refine = true,
 		polygonization = false
 	}
 
@@ -236,7 +236,9 @@ function NavigationMeshBuilder:_buildMap()
 					self:_getVertexIndex(i, j, 1, 1),
 					self:_getVertexIndex(i, j, 1, 2),
 					borderUserdata)
-			elseif i == self.map:getWidth() then
+			end
+
+			if i == self.map:getWidth() then
 				self:_addEdgeUserdata(
 					self:_getVertexIndex(i, j, 2, 1),
 					self:_getVertexIndex(i, j, 2, 2),
@@ -248,7 +250,9 @@ function NavigationMeshBuilder:_buildMap()
 					self:_getVertexIndex(i, j, 1, 1),
 					self:_getVertexIndex(i, j, 2, 1),
 					borderUserdata)
-			elseif j == self.map:getHeight() then
+			end
+
+			if j == self.map:getHeight() then
 				self:_addEdgeUserdata(
 					self:_getVertexIndex(i, j, 1, 2),
 					self:_getVertexIndex(i, j, 2, 2),

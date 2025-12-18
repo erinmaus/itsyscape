@@ -3289,55 +3289,6 @@ function MapEditorApplication:draw(...)
 			love.graphics.printf(m, 0, 0, w, "center")
 		end
 	end
-
-	for layer in pairs(self.mapScriptLayers) do
-		if love.keyboard.isDown("space") and love.keyboard.isDown(tostring(layer)) then
-			local director = self:getGame():getDirector()
-			local cortex = director:getCortex(require "ItsyScape.Peep.Cortexes.MovementCortex")
-			local w = cortex.worlds and cortex.worlds[layer]
-			local mesh = w and w.mesh
-
-			if mesh then
-				love.graphics.push("all")
-				love.graphics.scale(4, 4, 1)
-				love.graphics.setFont(font)
-
-				for _, triangle in ipairs(mesh.triangles) do
-					local i, j, k = unpack(triangle.triangle)
-						
-					for i = 1, #triangle.triangle do
-						local j = (i % #triangle.triangle) + 1
-						
-						local a = triangle.triangle[i]
-						local b = triangle.triangle[j]
-
-						local isWall = false
-						local userdata = w.meshBuilder:getEdgeUserdata(a.index, b.index)
-						if userdata then
-							for tile in userdata:iterate() do
-								if not tile:getIsPassable() then
-									isWall = true
-									break
-								end
-							end
-						end
-
-						if isWall then
-							love.graphics.setLineWidth(0)
-							love.graphics.setColor(1, 0, 0, 0.5)
-						else
-							love.graphics.setLineWidth(0)
-							love.graphics.setColor(1, 1, 1, 0.5)
-						end
-
-						--love.graphics.print(string.format("%d", a.index), a.point.x, a.point.y, 0, 1 / 8 / 8 / 2, 1 / 8 / 8 / 2)
-						love.graphics.line(a.point.x, a.point.y, b.point.x, b.point.y)
-					end
-				end
-				love.graphics.pop()
-			end
-		end
-	end
 end
 
 return MapEditorApplication

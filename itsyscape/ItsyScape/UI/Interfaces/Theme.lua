@@ -76,12 +76,13 @@ local function onCloseButtonClicked(button, buttonIndex)
 end
 
 function Theme.newCloseButton(parent)
-	local width = parent:getSize()
+	local width, height = parent:getSize()
+	local buttonSize = math.min(height - Theme.DEFAULT_OUTER_PADDING * 2, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
 
 	local button = CloseButton()
-	button:setSize(Theme.DEFAULT_BUTTON_SIZE_WITH_PADDING, Theme.DEFAULT_BUTTON_SIZE_WITH_PADDING)
+	button:setSize(buttonSize, buttonSize)
 	button:setPosition(
-		width - Theme.DEFAULT_OUTER_PADDING - Theme.DEFAULT_BUTTON_SIZE_WITH_PADDING,
+		width - Theme.DEFAULT_OUTER_PADDING - buttonSize,
 		Theme.DEFAULT_OUTER_PADDING)
 	button.onClick:register(onCloseButtonClicked)
 
@@ -103,13 +104,19 @@ Theme.WINDOW_CONTENT_PANEL_STYLE = {
 	image = "Resources/Game/UI/Panels/WindowContent.png"
 }
 
-function Theme.newContentPanel(parent, contentWidth, contentHeight)
+function Theme.newContentPanel(parent, contentWidth, contentHeight, titlePanel)
 	contentWidth = contentWidth or Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
 	contentHeight = contentHeight or Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_HEIGHT, 1)
 
+	local titleHeight = Theme.TITLE_HEIGHT
+	if titlePanel then
+		local w, h = titlePanel:getSize()
+		titleHeight = h
+	end
+
 	local panel = Panel()
-	panel:setSize(contentWidth, Theme.TITLE_HEIGHT)
-	panel:setPosition(0, Theme.TITLE_HEIGHT)
+	panel:setSize(contentWidth, contentHeight)
+	panel:setPosition(0, titleHeight)
 	panel:setStyle(Theme.WINDOW_CONTENT_PANEL_STYLE, PanelStyle)
 
 	if parent then
@@ -142,6 +149,14 @@ Theme.CONTENT_LABEL_STYLE = {
 	fontSize = 16,
 	color = { 1, 1, 1, 1 },
 	textShadow = true
+}
+
+Theme.BUTTON_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 24,
+	color = { 1, 1, 1, 1 },
+	textShadow = true,
+	spaceLines = true
 }
 
 Theme.PROGRESS_BAR_LABEL_STYLE = {

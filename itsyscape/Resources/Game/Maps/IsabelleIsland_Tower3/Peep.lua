@@ -27,4 +27,11 @@ function Tower:onLoad(...)
 	sky.moonColor = Color.fromHexString("afdde9")
 end
 
+function Tower:onPlayerEnter(player)
+	local playerPeep = player and player:getActor() and player:getActor():getPeep()
+	if playerPeep then
+		Utility.UI.openInterface(playerPeep, "DebugNavigation", true)
+	end
+end
+
 return Tower
