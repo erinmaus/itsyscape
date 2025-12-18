@@ -52,6 +52,10 @@ function MovementCortex:new()
 
 	self:require(MovementBehavior)
 	self:require(PositionBehavior)
+
+	self.props = {}
+	self.pendingCollisionMaskUpdates = setmetatable({}, { __mode = "k" })
+	self.dirtyMeshLayers = {}
 end
 
 function MovementCortex:attach(director)
@@ -134,6 +138,8 @@ function MovementCortex:updatePolygonMask(layer, meta)
 			table.insert(p, point[2])
 		end
 
+		table.insert(otherPolygon, { unpack(polygon[1]) })
+
 		table.insert(polygonMask, otherPolygon)
 		table.insert(chainShapes, slick.newChainShape(p))
 	end
@@ -172,6 +178,7 @@ function MovementCortex:addWorld(layer, meta)
 		tiles = {},
 		peeps = {},
 		props = {},
+		polygons = {},
 		layer = layer,
 		meta = meta
 	}
@@ -194,8 +201,55 @@ function MovementCortex:addPeepToWorld(layer, peep)
 	end
 end
 
+function MovementCortex:updatePropCollisionMask(prop, e)
+	self.pendingCollisionMaskUpdates[prop] = { layer = Utility.Peep.getLayer(prop), mode = e.mode, tile = e.tile }
+end
+
+function MovementCortex:preparePropCollisionMaskUpdate(layer, prop, collisionMaskUpdate)
+	if collisionMaskUpdate.layer ~= layer then
+		return
+	end
+
+	local w = self.worlds[layer]
+	if not w then
+		return
+	end
+
+	local static = prop:getBehavior(StaticBehavior)
+	if not (static.static and static.type ~= StaticBehavior.PASSABLE) then
+		if w.polygons[prop] then
+			w.polygons[prop] = nil
+			self.dirtyMeshLayers[layer] = true
+		end
+
+		return
+	end
+
+	local entity = w.world:get(prop)
+	local shapeGroup = entity.shapes
+
+	local polygons = {}
+	for _, shape in ipairs(shapeGroup.shapes) do
+		local polygon = {}
+		for _, vertex in ipairs(shape.vertices) do
+			table.insert(polygon, { vertex.x, vertex.y })
+		end
+
+		if #shape.vertices >= 3 then
+			table.insert(polygon, { shape.vertices[1].x, shape.vertices[1].y })
+		end
+		table.insert(polygons, polygon)
+	end
+
+	w.polygons[prop] = NavigationMeshBuilder.Polygons(collisionMaskUpdate.tile, polygons)
+	self.dirtyMeshLayers[layer] = true
+end
+
 function MovementCortex:addPropToWorld(layer, prop)
 	self:removePropFromWorld(self.peepsByLayer[prop], prop)
+
+	self.props[prop] = true
+	prop:listen("collisionMaskUpdate", self.updatePropCollisionMask, self)
 
 	local w = self.worlds[layer]
 	if w then
@@ -233,6 +287,12 @@ function MovementCortex:updateProp(prop)
 			prop,
 			slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
 			slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+
+		local collisionMaskUpdate = self.pendingCollisionMaskUpdates[prop]
+		if collisionMaskUpdate then
+			self.pendingCollisionMaskUpdates[prop] = nil
+			self:preparePropCollisionMaskUpdate(layer, prop, collisionMaskUpdate)
+		end
 	end
 end
 
@@ -265,6 +325,8 @@ function MovementCortex:removePropFromWorld(layer, prop)
 	w.props[prop] = nil
 	self.props[prop] = true
 
+	prop:silence("collisionMaskUpdate", self.updatePropCollisionMask)
+
 	if w.world:has(prop) then
 		w.world:remove(prop)
 	end
@@ -285,7 +347,7 @@ local function merge(...)
 	return t
 end
 
-function MovementCortex:_makeNavigationMesh(layer)
+function MovementCortex:updateNavigationMesh(layer)
 	local map = self:getDirector():getMap(layer)
 
 	local w = self.worlds[layer]
@@ -293,7 +355,20 @@ function MovementCortex:_makeNavigationMesh(layer)
 		return
 	end
 
-	local builder = NavigationMeshBuilder(map, w.polygonMask or {})
+	local polygons = {}
+	if w.polygonMask then
+		local tile = Tile()
+		tile:setFlag("impassable")
+		tile:setFlag("polygon")
+
+		table.insert(polygons, NavigationMeshBuilder.Polygons(tile, w.polygonMask))
+	end
+
+	for _, polygon in pairs(w.polygons) do
+		table.insert(polygons, polygon)
+	end
+
+	local builder = NavigationMeshBuilder(map, polygons)
     w.meshBuilder = builder
     w.mesh = builder:getNavigationMesh()
 end
@@ -301,7 +376,7 @@ end
 function MovementCortex:updateWorld(layer)
 	local map = self:getDirector():getMap(layer)
 
-	self:_makeNavigationMesh(layer)
+	self:updateNavigationMesh(layer)
 
 	local w = self.worlds[layer]
 	if not w then
@@ -442,6 +517,11 @@ function MovementCortex:update(delta)
 	for prop in pairs(self.props) do
 		self:updateProp(prop)
 	end
+
+	for layer in pairs(self.dirtyMeshLayers) do
+		self:updateNavigationMesh(layer)
+	end
+	table.clear(self.dirtyMeshLayers)
 
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)

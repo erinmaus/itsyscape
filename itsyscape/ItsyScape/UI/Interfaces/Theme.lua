@@ -40,6 +40,26 @@ Theme.CONTENT_HEIGHT = GamepadContentTab.HEIGHT
 
 Theme.TITLE_HEIGHT = 128
 
+Theme.DEFAULT_INACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/Button-Default.png",
+	pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/Button-Hover.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	textShadow = true,
+	padding = 4
+}
+
+Theme.DEFAULT_ACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/ButtonActive-Default.png",
+	pressed = "Resources/Game/UI/Buttons/ButtonActive-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/ButtonActive-Hover.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	textShadow = true,
+	padding = 4
+}
+
 Theme.WINDOW_TITLE_PANEL_STYLE = {
 	image = "Resources/Game/UI/Panels/WindowTitle.png"
 }

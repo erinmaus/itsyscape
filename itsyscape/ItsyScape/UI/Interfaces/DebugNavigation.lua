@@ -37,22 +37,40 @@ function DebugNavigation.Map:new()
 	self.points = {}
 	self.edges = {}
 	self.triangles = {}
-	self.isPanning = false
+	self.path = {}
 
 	self.panX, self.panY = 0, 0
+	self.isPanning = false
 	self.zoom = 16
+
+	self.pathStartX, self.pathStartY = 0, 0
+	self.pathEndX, self.pathEndY = 0, 0
+	self.path = {}
+	self.isPathing = false
 end
 
 function DebugNavigation.Map:getIsFocusable()
 	return true
 end
 
-function DebugNavigation.Map:setLayer(layer)
+function DebugNavigation.Map:setLayer(layerInfo, layer)
+	self.layerInfo = layerInfo
 	self.points = layer.points
 	self.edges = layer.edges
 	self.triangles = layer.triangles
 	self.panX, self.panY = 0, 0
+	self.isPanning = false
+
+	self.pathStartX, self.pathStartY = 0, 0
+	self.pathEndX, self.pathEndY = 0, 0
+	self.path = {}
+	self.isPathing = false
+
 	self.zoom = 16
+end
+
+function DebugNavigation.Map:setPath(path)
+	self.path = path
 end
 
 function DebugNavigation.Map:mousePress(x, y, button, ...)
@@ -64,6 +82,13 @@ function DebugNavigation.Map:mousePress(x, y, button, ...)
 		self.clickY = y
 
 		self:focus()
+	elseif button == 2 then
+		self.isPathing = true
+
+		local absoluteX, absoluteY = self:getAbsolutePosition()
+		local relativeX, relativeY = x - absoluteX, y - absoluteY
+
+		self.pathStartX, self.pathStartY = relativeX, relativeY
 	end
 end
 
@@ -75,11 +100,36 @@ function DebugNavigation.Map:mouseMove(x, y, ...)
 		self.clickX = x
 		self.clickY = y
 	end
+
+	if self.isPathing then
+		local absoluteX, absoluteY = self:getAbsolutePosition()
+		local relativeX, relativeY = x - absoluteX, y - absoluteY
+
+		self.pathEndX, self.pathEndY = relativeX - self.panX, relativeY - self.panY
+
+		local parent = self:getParentOfType(Interface)
+		if parent then
+			parent:sendPoke("path", nil, {
+				startX = self.pathStartX / self.zoom,
+				startY = self.pathStartY / self.zoom,
+				endX = self.pathEndX / self.zoom,
+				endY = self.pathEndY / self.zoom,
+				group = self.layerInfo.group,
+				localLayer = self.layerInfo.localLayer
+			})
+		end
+	end
 end
 
-function DebugNavigation.Map:mouseRelease()
-	if self.isPanning then
+function DebugNavigation.Map:mouseRelease(x, y, button)
+	Drawable.mouseRelease(self, x, y, button)
+
+	if button == 1 and self.isPanning then
 		self.isPanning = false
+	end
+
+	if button == 2 and self.isPathing then
+		self.isPathing = false
 	end
 end
 
@@ -103,7 +153,7 @@ function DebugNavigation.Map:_draw()
 	love.graphics.translate(self.panX, self.panY)
 	love.graphics.setColor(1, 1, 1, 1)
 
-	love.graphics.setColor(1, 1, 1, 0.25)
+	love.graphics.setColor(1, 1, 1, 0.1)
 	for _, triangle in ipairs(self.triangles) do
 		local i, j, k = unpack(triangle.indices)
 
@@ -111,11 +161,14 @@ function DebugNavigation.Map:_draw()
 		local x2, y2 = unpack(self.points, (j - 1) * 2 + 1, (j - 1) * 2 + 2)
 		local x3, y3 = unpack(self.points, (k - 1) * 2 + 1, (k - 1) * 2 + 2)
 
-		love.graphics.polygon("line",
+		love.graphics.polygon("fill",
 			x1 * self.zoom, y1 * self.zoom,
 			x2 * self.zoom, y2 * self.zoom,
 			x3 * self.zoom, y3 * self.zoom)
 	end
+
+	love.graphics.setLineStyle("rough")
+	love.graphics.setLineJoin("none")
 
 	for _, triangle in ipairs(self.triangles) do
 		for index, i in ipairs(triangle.indices) do
@@ -142,7 +195,7 @@ function DebugNavigation.Map:_draw()
 				love.graphics.setColor(1, 0, 0, 1)
 			else
 				love.graphics.setLineWidth(1)
-				love.graphics.setColor(1, 1, 1, 1)
+				love.graphics.setColor(1, 1, 1, 0.25)
 			end
 
 			local x1, y1 = unpack(self.points, (i - 1) * 2 + 1, (i - 1) * 2 + 2)
@@ -150,6 +203,26 @@ function DebugNavigation.Map:_draw()
 
 			love.graphics.line(x1 * self.zoom, y1 * self.zoom, x2 * self.zoom, y2 * self.zoom)
 		end
+	end
+
+	local numPathPoints = math.floor(#self.path / 2)
+	local path = {}
+	for index = 1, numPathPoints do
+		local i = (index - 1) * 2 + 1 
+		local j = i + 1
+
+		local x = self.path[i] * self.zoom
+		local y = self.path[j] * self.zoom
+
+		table.insert(path, x)
+		table.insert(path, y)
+	end
+
+	love.graphics.setColor(1, 1, 0, 1)
+	love.graphics.setLineWidth(2)
+
+	if numPathPoints >= 2 then
+		love.graphics.line(path)
 	end
 
 	love.graphics.pop()
@@ -177,7 +250,7 @@ function DebugNavigation:new(id, index, ui)
 	local titleLabel = Label()
 	titleLabel:setStyle(Theme.WINDOW_TITLE_LABEL_STYLE, LabelStyle)
 	titleLabel:setText("Navigation Debugger")
-	titleLabel:setPosition(CloseButton.DEFAULT_OUTER_PADDING)
+	titleLabel:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
 	titlePanel:addChild(titleLabel)
 
 	local contentPanel = Theme.newContentPanel(
@@ -254,14 +327,27 @@ function DebugNavigation:populateLayers(layers)
 	self.layerGrid:getInnerPanel():setScrollSize(scrollableWidth, scrollableHeight)
 end
 
-function DebugNavigation:selectLayer(layer, _, button)
-	if button == 1 then
-		self:sendPoke("select", nil, { group = layer.group, localLayer = layer.localLayer })
+function DebugNavigation:selectLayer(layer, button, index)
+	if index ~= 1 then
+		return
 	end
+
+	if self.activeButton then
+		self.activeButton:setStyle(Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
+	end
+
+	self.activeButton = button
+	button:setStyle(Theme.DEFAULT_ACTIVE_BUTTON_STYLE, ButtonStyle)
+
+	self:sendPoke("select", nil, { group = layer.group, localLayer = layer.localLayer })
 end
 
-function DebugNavigation:showLayer(layer)
-	self.map:setLayer(layer)
+function DebugNavigation:showPath(path)
+	self.map:setPath(path)
+end
+
+function DebugNavigation:showLayer(layerInfo, layer)
+	self.map:setLayer(layerInfo, layer)
 	self:focusChild(self.map)
 end
 

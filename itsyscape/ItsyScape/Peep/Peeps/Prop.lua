@@ -18,6 +18,7 @@ local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
+local Tile = require "ItsyScape.World.Tile"
 
 local Prop = Class(Peep)
 
@@ -36,70 +37,29 @@ function Prop:new(resource, ...)
 
 	Utility.Peep.setResource(self, resource)
 
-	self:addPoke('spawnedByAction')
-	self:addPoke('spawnedByPeep')
+	self:addPoke("spawnedByAction")
+	self:addPoke("spawnedByPeep")
+	self:addPoke("collisionMaskUpdate")
 end
 
 function Prop:spawnOrPoofTile(tile, i, j, mode)
-	if mode == 'spawn' then
-		tile:pushFlag('impassable')
-	elseif mode == 'poof' then
-		tile:popFlag('impassable')
+	if mode == "spawn" then
+		tile:pushFlag("impassable")
+	elseif mode == "poof" then
+		tile:popFlag("impassable")
 	end
 end
 
 function Prop:spawnOrPoof(mode)
-	local game = self:getDirector():getGameInstance()
-	local position = self:getBehavior(PositionBehavior)
-	local size = self:getBehavior(SizeBehavior)
-	if position then
-		local map = self:getDirector():getMap(position.layer or 1)
-		if map then
-			local transform = Utility.Peep.getTransform(self)
-			local p = position.position
-			local halfSize
-			do
-				local min, max = Vector.transformBounds(Vector.ZERO, size.size, transform)
-				halfSize = (max - min) / 2
-			end
+	local static = self:getBehavior(StaticBehavior)
+	static.mode = mode
 
-			local rotation = Utility.Peep.getRotation(self)
-			local polygon = {
-				rotation:transformVector(Vector(-size.size.x / 2, 0, -size.size.z / 2)) + p,
-				rotation:transformVector(Vector(size.size.x / 2, 0, -size.size.z / 2)) + p,
-				rotation:transformVector(Vector(size.size.x / 2, 0, size.size.z / 2)) + p,
-				rotation:transformVector(Vector(-size.size.x / 2, 0, size.size.z / 2)) + p
-			}
+	local tile = static and static.tile or Tile()
+	local i, j = Utility.Peep.getTile(self)
+	tile:addLink(self)
 
-			local centerI, centerJ = Utility.Peep.getTile(self)
-			self:spawnOrPoofTile(map:getTile(centerI, centerJ), centerI, centerJ, mode)
-
-			for x = p.x - halfSize.x, p.x + halfSize.x, map:getCellSize() do
-				for z = p.z - halfSize.z, p.z + halfSize.z, map:getCellSize() do
-					local p = Vector(x, 0, z)
-					local tile, i, j = map:getTileAt(x, z)
-					local center = map:getTileCenter(i, j)
-
-					local inside = true
-					local side
-					for u = 1, #polygon do
-						local v = (u % #polygon) + 1
-
-						local s = MathCommon.side(polygon[u], polygon[v], center)
-						side = side or s
-						if side ~= s then
-							inside = false
-							break
-						end
-					end
-
-					if inside then
-						self:spawnOrPoofTile(tile, i, j, mode)
-					end
-				end
-			end
-		end
-	end
+	self:spawnOrPoofTile(tile, i, j, mode)
+	self:pushPoke("collisionMaskUpdate", { mode = mode, tile = tile })
 end
 
 function Prop:onFinalize(director, game)
@@ -135,11 +95,11 @@ function Prop:onFinalize(director, game)
 	end
 
 	Utility.Peep.setNameMagically(self)
-	self:spawnOrPoof('spawn')
+	self:spawnOrPoof("spawn")
 end
 
 function Prop:onReaper()
-	self:spawnOrPoof('poof')
+	self:spawnOrPoof("poof")
 end
 
 function Prop:getPropState()

@@ -55,6 +55,20 @@ function NavigationMeshBuilder.Userdata.merge(...)
 	return result
 end
 
+NavigationMeshBuilder.Polygons = Class()
+function NavigationMeshBuilder.Polygons:new(tile, polygons)
+	self.tile = tile
+	self.polygons = polygons
+end
+
+function NavigationMeshBuilder.Polygons:getTile()
+	return self.tile
+end
+
+function NavigationMeshBuilder.Polygons:iterate()
+	return ipairs(self.polygons)
+end
+
 function NavigationMeshBuilder:new(map, polygons)
 	self.map = map
 	self.polygons = polygons
@@ -96,7 +110,7 @@ function NavigationMeshBuilder:_addEdgeUserdata(i, j, userdata)
 		e2 = {}
 		self.edgeUserdata[j] = e2
 	end
-	e2[i] = NavigationMeshBuilder.Userdata.merge(userdata, e2[j])
+	e2[i] = NavigationMeshBuilder.Userdata.merge(userdata, e2[i])
 end
 
 function NavigationMeshBuilder:_removeEdgeUserdata(i, j)
@@ -293,31 +307,31 @@ function NavigationMeshBuilder:_buildMapEdges()
 end
 
 function NavigationMeshBuilder:_buildPolygons()
-	for _, polygon in ipairs(self.polygons) do
-		local tile = Tile()
-		tile:setFlag("polygon")
-		tile:setFlag("impassable")
+	for _, polygons in ipairs(self.polygons) do
+		local tile = polygons:getTile()
 
-		for i = 1, #polygon do
-			local j = math.wrapIndex(i, 1, #polygon)
+		for _, polygon in polygons:iterate() do
+			for i = 1, #polygon - 1 do
+				local j = i + 1
 
-			local x1, y1 = unpack(polygon[i])
-			local x2, y2 = unpack(polygon[j])
+				local x1, y1 = unpack(polygon[i])
+				local x2, y2 = unpack(polygon[j])
 
-			local e = math.floor(#self.points / 2) + 1
+				local e = math.floor(#self.points / 2) + 1
 
-			table.insert(self.points, x1)
-			table.insert(self.points, y1)
+				table.insert(self.points, x1)
+				table.insert(self.points, y1)
 
-			table.insert(self.points, x2)
-			table.insert(self.points, y2)
+				table.insert(self.points, x2)
+				table.insert(self.points, y2)
 
-			table.insert(self.edges, e)
-			table.insert(self.edges, e + 1)
+				table.insert(self.edges, e)
+				table.insert(self.edges, e + 1)
 
-			local userdata = NavigationMeshBuilder.Userdata(tile)
-			table.insert(self.vertexUserdata, userdata)
-			self:_addEdgeUserdata(e, e + 1, userdata)
+				local userdata = NavigationMeshBuilder.Userdata(tile)
+				table.insert(self.vertexUserdata, userdata)
+				self:_addEdgeUserdata(e, e + 1, userdata)
+			end
 		end
 	end
 end

@@ -11,11 +11,16 @@ local Class = require "ItsyScape.Common.Class"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SkyBehavior = require "ItsyScape.Peep.Behaviors.SkyBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local Stars = Class(Prop)
 
 function Stars:new(...)
 	Prop.new(self, ...)
+
+	local static = self:getBehavior(StaticBehavior)
+	static.static = false
+	static.type = StaticBehavior.PASSABLE
 end
 
 function Stars:spawnOrPoofTile()

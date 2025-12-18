@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local BasicLight = Class(Prop)
 
@@ -20,6 +21,10 @@ function BasicLight:new(...)
 
 	self.color = Color(0, 0, 0)
 	self.global = true
+
+	local static = self:getBehavior(StaticBehavior)
+	static.static = false
+	static.type = StaticBehavior.PASSABLE
 end
 
 function BasicLight:getColor()

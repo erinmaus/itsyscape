@@ -151,9 +151,19 @@ function Tile:hasFlag(f)
 end
 
 function Tile:iterateFlags()
+	local flags = {}
+
+	for flag in pairs(self.flags) do
+		flags[flag] = true
+	end
+
+	for flag in pairs(self.runtimeFlags) do
+		flags[flag] = true
+	end
+
 	local c = nil
 	return function()
-		c = next(self.flags, c)
+		c = next(flags, c)
 		return c
 	end
 end

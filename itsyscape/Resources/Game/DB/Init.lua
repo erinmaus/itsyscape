@@ -1749,6 +1749,7 @@ include "Resources/Game/DB/Art/Rage/Rage.lua"
 do
 	ActionType "Debug_Ascend"
 	ActionType "Debug_Teleport"
+	ActionType "Debug_Navigate"
 	ActionType "Debug_Save"
 	ActionType "Debug_AntilogikaTeleport"
 	ActionType "Debug_AntilogikaWarp"
@@ -1763,6 +1764,7 @@ do
 
 	local ascendAction = ItsyScape.Action.Debug_Ascend()
 	local teleportAction = ItsyScape.Action.Debug_Teleport()
+	local navigateAction = ItsyScape.Action.Debug_Navigate()
 	local saveAction = ItsyScape.Action.Debug_Save()
 	local antilogikaTeleportAction = ItsyScape.Action.Debug_AntilogikaTeleport()
 	local antilogikaWarpAction = ItsyScape.Action.Debug_AntilogikaWarp()
@@ -1780,6 +1782,13 @@ do
 		Language = "en-US",
 		XProgressive = "Teleporting-through-dimensions",
 		Action = teleportAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Navigate",
+		Language = "en-US",
+		XProgressive = "Navigating",
+		Action = navigateAction
 	}
 
 	ItsyScape.Meta.ActionVerb {
@@ -1815,6 +1824,7 @@ do
 		ItsyScape.Action.Dequip(),
 		ascendAction,
 		teleportAction,
+		navigateAction,
 		antilogikaTeleportAction,
 		antilogikaWarpAction,
 		antilogikaNoiseAction,
