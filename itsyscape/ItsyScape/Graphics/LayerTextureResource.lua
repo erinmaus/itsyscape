@@ -161,7 +161,6 @@ function LayerTextureResource:loadFromFile(filename, resourceManager)
 				local boundTextureFilename = filename:gsub(
 					"(.*)(%..+)$",
 					string.format("%%1@%s%%2", f))
-				print(">>> ????", boundTextureFilename)
 				assert(love.filesystem.getInfo(boundTextureFilename) and boundTextureFilename ~= f)
 				table.insert(perPassT, boundTextureFilename)
 			end

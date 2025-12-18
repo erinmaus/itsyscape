@@ -57,6 +57,7 @@ local ShieldBehavior = require "ItsyScape.Peep.Behaviors.ShieldBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
 local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
@@ -65,6 +66,7 @@ local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 local Map = require "ItsyScape.World.Map"
 local SmartPathFinder = require "ItsyScape.World.SmartPathFinder"
+local SmartNavMeshPathFinder = require "ItsyScape.World.SmartNavMeshPathFinder"
 
 local Peep = {}
 
@@ -92,6 +94,7 @@ function Peep.disable(peep)
 	local disabled = peep:getBehavior(DisabledBehavior)
 	if not disabled then
 		peep:removeBehavior(TargetTileBehavior)
+		peep:removeBehavior(TargetPositionBehavior)
 		peep:addBehavior(DisabledBehavior)
 		return true
 	end
@@ -1402,7 +1405,7 @@ function Peep.walk(peep, i, j, k, distance, t, ...)
 		-- is walking. So pre-emptively signal the peep is walking, so a walking animation isn't
 		-- interrupted.
 		if r:getNumNodes() > 1 then
-			peep:addBehavior(TargetTileBehavior)
+			peep:addBehavior(TargetPositionBehavior)
 		end
 
 		return success
@@ -1751,11 +1754,10 @@ function Peep.getWalk(peep, i, j, k, distance, t, ...)
 	end
 
 	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
-	local pathFinder = SmartPathFinder(map, peep, t)
+	local pathFinder = SmartNavMeshPathFinder(peep, t)
 	local path = pathFinder:find(
-		{ i = playerI, j = playerJ },
-		{ i = i, j = j },
-		distance, ...)
+		position,
+		map:getTileCenter(i, j))
 	if path then
 		local n = path:getNodeAtIndex(-1)
 		if n then
@@ -1874,8 +1876,9 @@ function Peep.face3D(self)
 	else
 		local rotation = self:getBehavior(RotationBehavior)
 		local targetTile = self:getBehavior(TargetTileBehavior)
+		local targetPosition = self:getBehavior(TargetPositionBehavior)
 		local movement = self:getBehavior(MovementBehavior)
-		local isWalking = targetTile and targetTile.pathNode
+		local isWalking = (targetTile and targetTile.pathNode) or (targetPosition and targetPosition.pathNode)
 		local isMoving = movement and (movement.velocity * Vector.PLANE_XZ):getLength() > 0
 		if rotation and (isWalking or isMoving) then
 			local position = self:getBehavior(PositionBehavior)
@@ -1884,9 +1887,15 @@ function Peep.face3D(self)
 			local xzSelfPosition = Peep.getPosition(self) * Vector.PLANE_XZ
 			local xzTargetPosition, direction
 			if isWalking and map then
-				local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
-				xzTargetPosition = tilePosition * Vector.PLANE_XZ
-				direction = (xzSelfPosition - xzTargetPosition):getNormal()
+				if targetTile and targetTile.pathNode then
+					local tilePosition = map:getTileCenter(targetTile.pathNode.i, targetTile.pathNode.j)
+					xzTargetPosition = tilePosition * Vector.PLANE_XZ
+					direction = xzSelfPosition:direction(xzTargetPosition)
+				else
+					local position = targetPosition.pathNode.position
+					xzTargetPosition = position * Vector.PLANE_XZ
+					direction = xzSelfPosition:direction(xzTargetPosition)
+				end
 			elseif isMoving then
 				local velocity = movement.velocity * Vector.PLANE_XZ
 				xzTargetPosition = xzSelfPosition + (velocity)

@@ -9,8 +9,11 @@
 --------------------------------------------------------------------------------
 local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
+local Peep = require "ItsyScape.Peep.Peep"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local Tile = require "ItsyScape.World.Tile"
 
@@ -145,6 +148,26 @@ function DebugNavigationController:path(e)
 
 	local pathfinder = slick.navigation.path.new({
 		neighbor = function(_, _, e)
+			local a = Vector(e.a.point.x, e.a.point.y)
+			local b = Vector(e.b.point.x, e.b.point.y)
+			local x, y = a:lerp(b, 0.5):get()
+
+			local world = movement:getWorld(globalLayer)
+			if world and world:has(self:getPeep()) then
+				local collisions = world:test(self:getPeep(), x, y)
+				for _, collision in ipairs(collisions) do
+					local isImpassableTile = Class.isCompatibleType(collision.other, Tile)
+					                         and not collision.other:getIsPassable()
+					local isImpassablePeep = Class.isCompatibleType(collision.other, Peep) and
+					                         collision.other:hasBehavior(StaticBehavior) and
+					                         collision.other:getBehavior(StaticBehavior).type == StaticBehavior.IMPASSABLE
+
+					if isImpassablePeep or isImpassableTile then
+						return false
+					end
+				end
+			end
+
 			local userdata = meshBuilder:getEdgeUserdata(e.a.index, e.b.index)
 			if not userdata then
 				return true

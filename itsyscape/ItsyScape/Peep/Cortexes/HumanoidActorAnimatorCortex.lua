@@ -20,7 +20,9 @@ local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
+local PositionPathNode = require "ItsyScape.World.PositionPathNode"
 
 local HumanoidActorAnimatorCortex = Class(Cortex)
 HumanoidActorAnimatorCortex.WALK_PRIORITY = 1
@@ -339,6 +341,8 @@ function HumanoidActorAnimatorCortex:isWalking(peep)
 
     local targetTile = peep:getBehavior(TargetTileBehavior)
     local isMoving = targetTile and (Class.isCompatibleType(targetTile.pathNode, TilePathNode) or not targetTile.pathNode)
+    local targetPosition = peep:getBehavior(TargetPositionBehavior)
+    isMoving = isMoving or (targetPosition and (Class.isCompatibleType(targetPosition.pathNode, PositionPathNode) or not targetPosition.pathNode))
 
     return (velocity:getLength() > 0.1 or isMoving) and canMove
 end

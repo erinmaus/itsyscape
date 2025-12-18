@@ -39,9 +39,7 @@ MovementCortex.OFFSETS = {
 	{  0,  1 }
 }
 
--- Until we have pathfinding that takes into account a peep's size,
--- we need to clamp them to roughly a tile (with some wiggle room to make imperfect movement easier)
-MovementCortex.PEEP_RADIUS = 0.5
+MovementCortex.PEEP_RADIUS = 0.75
 
 local function _isPassable(map, i, j, s, t)
 	return not map:getTile(s, t):hasStaticFlag("impassable")
@@ -162,6 +160,11 @@ function MovementCortex:getNavigationMesh(layer)
 	return w and w.mesh, w and w.meshBuilder
 end
 
+function MovementCortex:getWorld(layer)
+	local w = self.worlds[layer]
+	return w and w.world
+end
+
 function MovementCortex:addWorld(layer, meta)
 	local map = self:getDirector():getMap(layer)
 	local world = slick.newWorld(
@@ -260,7 +263,7 @@ function MovementCortex:addPropToWorld(layer, prop)
 		local position = Utility.Peep.getPosition(prop)
 		local _, rotation, _ = Utility.Peep.getRotation(prop):getEulerXYZ()
 		local scale = Utility.Peep.getScale(prop)
-		local size = Utility.Peep.getSize(prop)
+		local size = Utility.Peep.getSize(prop) + Vector(1, 0, 1)
 		local offset = -size / 2
 		w.world:add(
 			prop,

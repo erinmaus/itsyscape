@@ -47,6 +47,7 @@ function DebugNavigation.Map:new()
 	self.pathEndX, self.pathEndY = 0, 0
 	self.path = {}
 	self.isPathing = false
+	self.pathMoved = false
 end
 
 function DebugNavigation.Map:getIsFocusable()
@@ -106,18 +107,7 @@ function DebugNavigation.Map:mouseMove(x, y, ...)
 		local relativeX, relativeY = x - absoluteX, y - absoluteY
 
 		self.pathEndX, self.pathEndY = relativeX - self.panX, relativeY - self.panY
-
-		local parent = self:getParentOfType(Interface)
-		if parent then
-			parent:sendPoke("path", nil, {
-				startX = self.pathStartX / self.zoom,
-				startY = self.pathStartY / self.zoom,
-				endX = self.pathEndX / self.zoom,
-				endY = self.pathEndY / self.zoom,
-				group = self.layerInfo.group,
-				localLayer = self.layerInfo.localLayer
-			})
-		end
+		self.pathMoved = true
 	end
 end
 
@@ -130,6 +120,7 @@ function DebugNavigation.Map:mouseRelease(x, y, button)
 
 	if button == 2 and self.isPathing then
 		self.isPathing = false
+		self.pathMoved = false
 	end
 end
 
@@ -137,6 +128,26 @@ function DebugNavigation.Map:mouseScroll(x, y)
 	Drawable.mouseScroll(self, x, y)
 
 	self.zoom = math.clamp(self.zoom + y, 4, 32)
+end
+
+function DebugNavigation.Map:update(...)
+	Widget.update(self, ...)
+
+	if self.isPathing and self.pathMoved then
+		local parent = self:getParentOfType(Interface)
+		if parent then
+			parent:sendPoke("path", nil, {
+				startX = self.pathStartX / self.zoom,
+				startY = self.pathStartY / self.zoom,
+				endX = self.pathEndX / self.zoom,
+				endY = self.pathEndY / self.zoom,
+				group = self.layerInfo.group,
+				localLayer = self.layerInfo.localLayer
+			})
+		end
+
+		self.pathMoved = false
+	end
 end
 
 function DebugNavigation.Map:_draw()
