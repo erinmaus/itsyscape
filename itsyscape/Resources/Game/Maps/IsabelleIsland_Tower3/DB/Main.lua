@@ -509,15 +509,15 @@ do
 
 	ItsyScape.Meta.MapObjectAnchor {
 		Layer = 4,
-		PositionI = 6.5,
-		PositionJ = 13,
+		PositionX = 14,
+		PositionZ = 26,
 		MapObject = M["Door_ToIsabellesBedroom"]
 	}
 
 	ItsyScape.Meta.MapObjectAnchor {
 		Layer = 6,
-		PositionI = 2,
-		PositionJ = 2,
+		PositionX = 3,
+		PositionZ = 3,
 		MapObject = M["Door_ToIsabellesBedroom"]
 	}
 end
@@ -564,15 +564,15 @@ do
 
 	ItsyScape.Meta.MapObjectAnchor {
 		Layer = 1,
-		PositionI = 19,
-		PositionJ = 29,
+		PositionX = 39,
+		PositionZ = 61,
 		MapObject = M["Staircase_ToIsabellesBedroom"]
 	}
 
 	ItsyScape.Meta.MapObjectAnchor {
 		Layer = 6,
-		PositionI = 1,
-		PositionJ = 3,
+		PositionX = 1,
+		PositionZ = 4,
 		MapObject = M["Staircase_ToIsabellesBedroom"]
 	}
 end

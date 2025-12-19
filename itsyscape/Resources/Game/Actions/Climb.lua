@@ -27,8 +27,8 @@ function Climb:perform(state, player, target)
 	   self:canPerform(state, Climb.FLAGS) and
 	   self:canTransfer(state, Climb.FLAGS)
 	then
-		local i, j, k = Utility.Peep.getRelativeTileAnchor(target, player)
-		local walk, n = Utility.Peep.queueWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
+		local position, layer = Utility.Peep.getRelativeTileAnchor(target, player)
+		local walk, n = Utility.Peep.queueWalk(player, position, layer, 0)
 		walk:register(function(s)
 			if not s then
 				self:failWithMessage(player, "ActionFail_Walk")

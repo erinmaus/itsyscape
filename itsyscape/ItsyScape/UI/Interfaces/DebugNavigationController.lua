@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
@@ -141,6 +142,7 @@ function DebugNavigationController:path(e)
 	end
 
 	local movement = self:getDirector():getCortex(MovementCortex)
+	local world = movement:getWorld(globalLayer)
 	local mesh, meshBuilder = movement:getNavigationMesh(globalLayer)
 	if not (mesh and meshBuilder) then
 		return
@@ -183,20 +185,41 @@ function DebugNavigationController:path(e)
 		end
 	})
 
-	local before = love.timer.getTime()
-	local _, path = pathfinder:nearest(mesh, e.startX, e.startY, e.endX, e.endY)
-	local after = love.timer.getTime()
-	if not path then
-		return
-	end
-
-	Log.info("Generated from from (%.2f, %.2f) to (%.2f, %.2f) in %0.2f ms.", e.startX, e.startY, e.endX, e.endY, (after - before) * 1000)
-
 	local result = {}
-	for _, vertex in ipairs(path) do
-		table.insert(result, vertex.point.x)
-		table.insert(result, vertex.point.y)
+	local before = love.timer.getTime()
+	do
+		local _, path = pathfinder:nearest(mesh, e.startX, e.startY, e.endX, e.endY)
+		if not path then
+			return
+		end
+
+		local filter = Function(MovementCortex.filter, movement)
+		local index = 1
+		while index <= #path do
+			local current = path[index].point
+			table.insert(result, current.x)
+			table.insert(result, current.y)
+
+			local didJump = false
+			if world and world:has(self:getPeep()) then
+				for nextIndex = #path, index + 1, -1 do
+					local next = path[nextIndex].point
+					local collisions = world:project(self:getPeep(), current.x, current.y, next.x, next.y, filter)
+					if #collisions == 0 then
+						index = nextIndex
+						didJump = true
+						break
+					end
+				end
+			end
+
+			if not didJump then
+				index = index + 1
+			end
+		end
 	end
+	local after = love.timer.getTime()
+	Log.info("Generated from from (%.2f, %.2f) to (%.2f, %.2f) in %0.2f ms.", e.startX, e.startY, e.endX, e.endY, (after - before) * 1000)
 
 	self:send("showPath", result)
 end

@@ -4,13 +4,13 @@ local Utility = require "ItsyScape.Game.Utility"
 local doorPeep = ...
 local Door = CutsceneEntity(doorPeep)
 
-local i, j, layer = Utility.Peep.getOtherTileAnchor(doorPeep, Player:getPeep())
+local position, layer = Utility.Peep.getOtherTileAnchor(doorPeep, Player:getPeep())
 local playerLayer = Utility.Peep.getLayer(Player:getPeep())
 
-local tileAbsolutePosition = Utility.Map.getAbsoluteTilePosition(_DIRECTOR, i, j, layer)
+local tileAbsolutePosition = Utility.Map.getAbsolutePosition(_DIRECTOR, position, layer)
 local playerAbsolutePosition = Utility.Peep.getAbsolutePosition(Player:getPeep())
 
-local time = playerAbsolutePosition:distance(tileAbsolutePosition) / 12
+local time = playerAbsolutePosition:distance(tileAbsolutePosition) / 6
 local relativePosition = Utility.Map.absolutePositionToRelativePosition(_DIRECTOR, playerLayer, tileAbsolutePosition)
 
 return Sequence {

@@ -8,16 +8,23 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Callback = require "ItsyScape.Common.Callback"
+local MathCommon = require "ItsyScape.Common.Math.Common"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local Peep = require "ItsyScape.Peep.Peep"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
+local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
+local Tile = require "ItsyScape.World.Tile"
 
 local MoveToPosition = Class(Cortex)
-MoveToPosition.DISTANCE_THRESHOLD = 0
+MoveToPosition.DISTANCE_PADDING = -0.25
 
 function MoveToPosition:new()
 	Cortex.new(self)
@@ -28,24 +35,35 @@ function MoveToPosition:new()
 
 	self.speed = {}
 	self.previousTileCenter = {}
+
+	self._filter = Callback.bind(self.filter, self)
+end
+
+function MoveToPosition:filter(item, other)
+	if Class.isCompatibleType(other, Tile) then
+		if other:hasStaticFlag("impassable") then
+			return "slide"
+		end
+	elseif Class.isCompatibleType(other, Peep) then
+		local static = other:getBehavior(StaticBehavior)
+		if static and static.type == StaticBehavior.IMPASSABLE then
+			return "slide"
+		end
+	end
+
+	return false
 end
 
 function MoveToPosition:addPeep(peep)
 	Cortex.addPeep(self, peep)
 
 	self.speed[peep] = self.speed[peep] or peep:getBehavior(MovementBehavior).maxSpeed / 2
-
-	local map = Utility.Peep.getMap(peep)
-	if map then
-		self.previousTileCenter[peep] = self.previousTileCenter[peep] or map:getTileCenter(Utility.Peep.getTile(peep))
-	end
 end
 
 function MoveToPosition:removePeep(peep)
 	Cortex.removePeep(self, peep)
 
 	self.speed[peep] = nil
-	self.previousTileCenter[peep] = nil
 end
 
 function MoveToPosition:accumulateVelocity(peep, value)
@@ -70,14 +88,20 @@ function MoveToPosition:update(delta)
 			peep:removeBehavior(TargetPositionBehavior)
 		elseif targetPositionBehavior and movement and position and targetPositionBehavior.pathNode then
 			local speed = math.min(self.speed[peep] + movement.maxSpeed * delta, movement.maxSpeed)
-			local map = game:getDirector():getMap(peep:getBehavior(PositionBehavior).layer or 1)
+			local layer = Utility.Peep.getLayer(peep)
+			local map = game:getDirector():getMap(layer)
+			local world = game:getDirector():getCortex(MovementCortex):getWorld(layer)
 			if map then
 				local currentDelta = delta
 				while currentDelta > 0 do
 					local currentPosition = position.position
+					local previousPosition = targetPositionBehavior.previousPathNode and targetPositionBehavior.previousPathNode.position
+					previousPosition = previousPosition or currentPosition
+
 					local targetPosition = targetPositionBehavior.pathNode.position
 					targetPosition = targetPosition + Vector(0, map:getInterpolatedHeight(targetPosition.x, targetPosition.z), 0)
 					targetPosition = targetPosition + Vector.UNIT_Y * movement.float
+
 					local direction = currentPosition:direction(targetPosition)
 					local offset = direction * speed
 
@@ -97,7 +121,7 @@ function MoveToPosition:update(delta)
 
 					local didOvershoot = false
 					local distance = ((targetPosition - currentPosition) * Vector.PLANE_XZ):getLength()
-					if distance < velocitySliceLength and distance > MoveToPosition.DISTANCE_THRESHOLD then
+					if distance < velocitySliceLength and distance > MovementCortex.PEEP_RADIUS + self.DISTANCE_PADDING then
 						currentDelta = currentDelta - (delta * (distance / velocitySliceLength))
 						velocitySlice = direction * distance
 						didOvershoot = true
@@ -106,14 +130,19 @@ function MoveToPosition:update(delta)
 						didOvershoot = false
 					end
 
-					position.position = position.position + velocitySlice
+					local goal = position.position + velocitySlice
+					if world and world:has(peep) then
+						goal.x, goal.z = world:move(peep, goal.x, goal.z, self._filter)
+						distance = ((targetPosition - goal) * Vector.PLANE_XZ):getLength()
+					end
 
-					if (didOvershoot or distance == 0) and not targetPositionBehavior.pathNode:getIsPending() then
-						peep:removeBehavior(TargetPositionBehavior)
+					position.position = goal
 
+					if (didOvershoot or distance < MovementCortex.PEEP_RADIUS + self.DISTANCE_PADDING) and not targetPositionBehavior.pathNode:getIsPending() then
 						if targetPositionBehavior.nextPathNode then
 							targetPositionBehavior.nextPathNode:activate(peep)
 						else
+							peep:removeBehavior(TargetPositionBehavior)
 							movement.isStopping = true
 						end
 					end

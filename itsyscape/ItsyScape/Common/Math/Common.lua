@@ -69,7 +69,9 @@ function Common.transformPointFromPlaneToAxis(point, normal, d, otherAxis)
 end
 
 function Common.side(a, b, c, bias)
-	local result = ((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x))
+    local left = (a.z - c.z) * (b.x - c.x)
+    local right = (a.x - c.x) * (b.z - c.z)
+    local result = left - right
 
 	local sign
 	if result > 0 + (bias or 0) then

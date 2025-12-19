@@ -21,7 +21,7 @@ Snuff.FLAGS = {
 	['item-equipment'] = true
 }
 
-function Snuff:perform(state, peep, prop)
+function Snuff:perform(state, player, prop)
 	local gameDB = self:getGame():getGameDB()
 	if self:canPerform(state) then
 		if not prop:isCompatibleType(require "Resources.Game.Peeps.Props.BasicTorch") then
@@ -32,30 +32,30 @@ function Snuff:perform(state, peep, prop)
 			return true
 		end
 
-		local transfer = CallbackCommand(self.transfer, self, peep:getState(), peep, { ['item-inventory'] = true })
+		local transfer = CallbackCommand(self.transfer, self, player:getState(), player, { ['item-inventory'] = true })
 		local wait = WaitCommand(Snuff.DURATION, false)
 
 		local walk
 		do
-			local i, j, k = Utility.Peep.getTileAnchor(prop)
-			walk = Utility.Peep.getWalk(peep, i, j + 1, k, 1, { asCloseAsPossible = true }) or
-			       Utility.Peep.getWalk(peep, i, j, k, 1, { asCloseAsPossible = true })
+			local position, layer = Utility.Peep.getAnchor(prop)
+			walk = Utility.Peep.getWalk(player, i, j + 1, k, 1, { asCloseAsPossible = true }) or
+			       Utility.Peep.getWalk(player, position, layer, 1, { asCloseAsPossible = true })
 		end
 
 		if walk then
 			local snuff = CallbackCommand(function()
-				if self:transfer(state, peep, flags) then
+				if self:transfer(state, player, flags) then
 					prop:poke('snuff')
 				end
 			end)
 			local wait = WaitCommand(1)
-			local perform = CallbackCommand(Action.perform, self, state, peep, { prop = prop })
+			local perform = CallbackCommand(Action.perform, self, state, player, { prop = prop })
 			local command = CompositeCommand(true, walk, transfer, snuff, perform, wait)
 
-			local queue = peep:getCommandQueue()
+			local queue = player:getCommandQueue()
 			return queue:interrupt(command)
 		else
-			return self:failWithMessage(peep, "ActionFail_Walk")
+			return self:failWithMessage(player, "ActionFail_Walk")
 		end
 	end
 

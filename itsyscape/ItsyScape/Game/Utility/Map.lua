@@ -230,6 +230,19 @@ function UMap.getAbsoluteTilePosition(director, i, j, layer)
 	end
 end
 
+function UMap.getAbsolutePosition(director, position, layer)
+	local stage = director:getGameInstance():getStage()
+	local instance = stage:getInstanceByLayer(layer)
+	local mapScript = instance and instance:getMapScriptByLayer(layer)
+
+	if not mapScript then
+		return position
+	end
+
+	local transform = Utility.Peep.getMapTransform(mapScript)
+	return position:transform(transform)
+end
+
 function UMap.getMapObject(game, map, name)
 	local gameDB = game:getGameDB()
 

@@ -87,7 +87,7 @@ function DebugNavigation.Map:mousePress(x, y, button, ...)
 		self.isPathing = true
 
 		local absoluteX, absoluteY = self:getAbsolutePosition()
-		local relativeX, relativeY = x - absoluteX, y - absoluteY
+		local relativeX, relativeY = x - absoluteX - self.panX, y - absoluteY - self.panY
 
 		self.pathStartX, self.pathStartY = relativeX, relativeY
 	end

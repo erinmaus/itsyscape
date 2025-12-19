@@ -179,7 +179,7 @@ function Make:gather(state, player, prop, toolType, skill)
 
 			local progress = prop:getBehavior(PropResourceHealthBehavior)
 			if progress and progress.currentProgress < progress.maxProgress then
-				local i, j, k = Utility.Peep.getTileAnchor(prop)
+				local position, layer = Utility.Peep.getAnchor(prop)
 				local walk, n = Utility.Peep.queueWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
 
 				walk:register(function(s)

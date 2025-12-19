@@ -39,7 +39,7 @@ MovementCortex.OFFSETS = {
 	{  0,  1 }
 }
 
-MovementCortex.PEEP_RADIUS = 0.75
+MovementCortex.PEEP_RADIUS = 0.5
 
 local function _isPassable(map, i, j, s, t)
 	return not map:getTile(s, t):hasStaticFlag("impassable")
@@ -163,6 +163,10 @@ end
 function MovementCortex:getWorld(layer)
 	local w = self.worlds[layer]
 	return w and w.world
+end
+
+function MovementCortex:getProxy(peep)
+
 end
 
 function MovementCortex:addWorld(layer, meta)

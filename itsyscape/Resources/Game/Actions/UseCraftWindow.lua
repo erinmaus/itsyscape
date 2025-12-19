@@ -23,8 +23,8 @@ local UseCraftWindow = Class(Action)
 UseCraftWindow.SCOPES = { ['hidden'] = true }
 
 function UseCraftWindow:perform(state, player, prop, action, count)
-	local i, j, k = Utility.Peep.getTileAnchor(prop)
-	local walk = Utility.Peep.getWalk(player, i, j, k, 1.5)
+	local position, layer = Utility.Peep.getAnchor(prop)
+	local walk = Utility.Peep.getWalk(player, position, layer, 1.5)
 
 	if walk then
 		local craft = CallbackCommand(UseCraftWindow.delegatedPerform, self, state, player, prop, action, count)

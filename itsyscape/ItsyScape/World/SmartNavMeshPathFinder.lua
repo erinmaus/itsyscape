@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
@@ -19,6 +20,8 @@ local PositionPathNode = require "ItsyScape.World.PositionPathNode"
 local Tile = require "ItsyScape.World.Tile"
 
 local SmartNavMeshPathFinder = Class()
+SmartNavMeshPathFinder.ACTOR_RADIUS = 1
+
 function SmartNavMeshPathFinder:new(peep, t)
 	t = t or {}
 
@@ -29,10 +32,14 @@ function SmartNavMeshPathFinder:new(peep, t)
 	self.layer = Utility.Peep.getLayer(peep)
 	self.map = peep:getDirector():getMap(self.layer)
 	self.peep = peep
+	self.proxy = {}
 
 	local movement = peep:getDirector():getCortex(MovementCortex)
 	local mesh, meshBuilder = movement:getNavigationMesh(self.layer)
 	self.mesh = mesh
+
+	self.world = movement:getWorld(self.layer)
+	self._filter = Function(MovementCortex.filter, movement)
 
 	self.pathfinder = slick.navigation.path.new({
 		neighbor = function(_, _, e)
@@ -40,23 +47,16 @@ function SmartNavMeshPathFinder:new(peep, t)
 			local b = Vector(e.b.point.x, e.b.point.y)
 			local x, y = a:lerp(b, 0.5):get()
 
-			local world = movement:getWorld(self.layer)
-			if world and world:has(self.peep) then
-				local collisions = world:test(self.peep, x, y)
+			if self.world and self.world:has(self.proxy) then
+				local collisions = self.world:test(self.proxy, x, y, self._filter)
 				for _, collision in ipairs(collisions) do
-					local isImpassableTile = Class.isCompatibleType(collision.other, Tile)
-					                         and not collision.other:getIsPassable()
-					local isImpassablePeep = Class.isCompatibleType(collision.other, Peep) and
-					                         collision.other:hasBehavior(StaticBehavior) and
-					                         collision.other:getBehavior(StaticBehavior).type == StaticBehavior.IMPASSABLE
-
 					if Class.isCompatibleType(collision.other, Peep) then
 						if isImpassablePeep then print("colliding with peep", collision.other:getName()) end
 					end
+				end
 
-					if isImpassablePeep or isImpassableTile then
-						return false
-					end
+				if #collisions > 0 then
+					return false
 				end
 			end
 
@@ -89,11 +89,43 @@ function SmartNavMeshPathFinder:find(start, goal)
 		return nil
 	end
 
+	if self.world then
+		self.world:add(self.proxy, slick.newTransform(), slick.newCircleShape(0, 0, self.ACTOR_RADIUS))
+	end
+
 	local _, path = self.pathfinder:nearest(self.mesh, start.x, start.z, goal.x, goal.z)
 
+	if self.world then
+		self.world:remove(self.proxy)
+	end
+
+	if not path then
+		return nil
+	end
+
 	local result = Path()
-	for _, vertex in ipairs(path) do
-		result:makeNode(PositionPathNode, self.map, self.layer, Vector(vertex.point.x, 0, vertex.point.y))
+
+	local index = 1
+	while index <= #path do
+		local current = path[index].point
+		result:makeNode(PositionPathNode, self.map, self.layer, Vector(current.x, 0, current.y))
+
+		local didJump = false
+		if self.world and self.world:has(self.peep) then
+			for nextIndex = #path, index + 1, -1 do
+				local next = path[nextIndex].point
+				local collisions = self.world:project(self.peep, current.x, current.y, next.x, next.y, filter)
+				if #collisions == 0 then
+					index = nextIndex
+					didJump = true
+					break
+				end
+			end
+		end
+
+		if not didJump then
+			index = index + 1
+		end
 	end
 
 	return result

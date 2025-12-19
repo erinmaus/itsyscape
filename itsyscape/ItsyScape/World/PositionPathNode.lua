@@ -23,8 +23,10 @@ end
 function PositionPathNode:activate(peep)
 	PathNode.activate(self, peep)
 
+	local previousPathNode
 	if peep:hasBehavior(TargetPositionBehavior) then
 		local target = peep:getBehavior(TargetPositionBehavior)
+		previousPathNode = target.pathNode
 
 		if target.pathNode then
 			target.pathNode:interrupt(peep)
@@ -32,6 +34,7 @@ function PositionPathNode:activate(peep)
 	end
 
 	local _, c = peep:addBehavior(TargetPositionBehavior)
+	c.previousPathNode = previousPathNode or false
 	c.pathNode = self
 	c.nextPathNode = self:getNextNode()
 end

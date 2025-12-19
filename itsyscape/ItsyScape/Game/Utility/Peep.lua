@@ -1394,8 +1394,8 @@ end
 -- Makes the peep walk to the tile (i, j, k).
 --
 -- Returns true on success, false on failure.
-function Peep.walk(peep, i, j, k, distance, t, ...)
-	local command, r = Peep.getWalk(peep, i, j, k, distance, t, ...)
+function Peep.walk(peep, ...)
+	local command, r = Peep.getWalk(peep, ...)
 	if command then
 		local queue = peep:getCommandQueue()
 		local success = queue:interrupt(command)
@@ -1447,9 +1447,39 @@ function Peep.updateWalks(time)
 	end
 end
 
-function Peep.queueWalk(peep, i, j, k, distance, t, ...)
+function _getWalkArgs(a, b, c, d, e, ...)
+	local position, i, j, layer, distance, t, args
+	if Class.isCompatibleType(a, Vector) then
+		position = a
+		layer = b
+		distance = c
+		t = d
+		args = { n = select("#", e, ...), e, ... }
+	elseif type(a) == "number" and type(b) == "number" then
+		i = a
+		j = b
+		layer = c
+		distance = d
+		t = e
+		args = { n = select("#", ...), ... }
+	end
+
+	return {
+		position = position,
+		i = i,
+		j = j,
+		layer = layer,
+		distance = disabled,
+		t = t,
+		args = args
+	}
+end
+
+function Peep.queueWalk(peep, ...)
+	local args = _getWalkArgs(...)
 	local callback = Callback(false)
 
+	local t = args.t
 	t = t or { asCloseAsPossible = true }
 	local y = {}
 	do
@@ -1460,24 +1490,21 @@ function Peep.queueWalk(peep, i, j, k, distance, t, ...)
 		y.yield = true
 	end
 
-	if t.isPosition then
-		local map = peep:getDirector():getGameInstance():getStage():getMap(k or Peep.getLayer(peep))
-		local _, s, t = map:getTileAt(i, j)
-
-		i = s
-		j = t
-	end
-
 	Peep.WALK_QUEUE.n = Peep.WALK_QUEUE.n + 1
 	local walkCoroutine = coroutine.wrap(Peep.walk)
 	local pending = {
 		n = Peep.WALK_QUEUE.n,
 		callback = callback,
 		update = walkCoroutine,
-		peep = peep
+		peep = peep,
+		traceback = _DEBUG and debug.traceback() or false
 	}
 
-	pending.s = walkCoroutine(peep, i, j, k, distance, y, ...)
+	if args.i and args.j then
+		pending.s = walkCoroutine(peep, args.i, args.j, args.layer, args.distance, y, unpack(args.args, 1, args.args.n))
+	else
+		pending.s = walkCoroutine(peep, args.position, args.layer, args.distance, y, unpack(args.args, 1, args.args.n))
+	end
 
 	table.insert(Peep.WALK_QUEUE.pending, pending)
 	return callback, pending.n
@@ -1536,7 +1563,7 @@ function Peep.getRelativeTileAnchor(propPeep, playerPeep)
 	local playerLocalLayer = Peep.getLocalLayer(playerPeep)
 	for _, propAnchor in ipairs(propAnchors) do
 		if propAnchor:get("Layer") == playerLocalLayer then
-			return propAnchor:get("PositionI"), propAnchor:get("PositionJ"), Utility.Peep.getLayer(playerPeep)
+			return Vector(propAnchor:get("PositionX"), 0, propAnchor:get("PositionZ")), Utility.Peep.getLayer(playerPeep)
 		end
 	end
 
@@ -1558,7 +1585,7 @@ function Peep.getOtherTileAnchor(propPeep, playerPeep)
 	local playerLocalLayer = Peep.getLocalLayer(playerPeep)
 	for _, propAnchor in ipairs(propAnchors) do
 		if propAnchor:get("Layer") ~= playerLocalLayer then
-			return propAnchor:get("PositionI"), propAnchor:get("PositionJ"), Utility.	Map.getGlobalLayerFromLocalLayer(Peep.getMapScript(playerPeep), propAnchor:get("Layer"))
+			return Vector(propAnchor:get("PositionX"), 0, propAnchor:get("PositionZ")), Utility.Map.getGlobalLayerFromLocalLayer(Peep.getMapScript(playerPeep), propAnchor:get("Layer"))
 		end
 	end
 
@@ -1568,6 +1595,7 @@ end
 function Peep.getTileAnchor(peep, offsetI, offsetJ)
 	local rotation = Peep.getRotation(peep)
 	local size = Peep.getSize(peep)
+	local halfSize = size / 2
 
 	if not (offsetI and offsetJ) then
 		local mapObject = Peep.getMapObject(peep)
@@ -1600,27 +1628,21 @@ function Peep.getTileAnchor(peep, offsetI, offsetJ)
 	end
 
 	if peep:hasBehavior(ActorReferenceBehavior) then
-		local i, j, k = Peep.getTile(peep)
-		i = i + (offsetI or 0)
-		j = j + (offsetJ or 0)
-
-		return i, j, k
+		offsetI = offsetI or 0
+		offsetJ = offsetJ or 0
+	else
+		offsetI = offsetI or 0
+		offsetJ = offsetJ or 1
 	end
 
-	if not (offsetI and offsetJ) then
-		local map = Peep.getMap(peep)
+	local relativeOffset = Vector(
+		offsetI * (halfSize.x + 1),
+		0,
+		offsetJ * (halfSize.z + 1))
+	local rotatedOffset = rotation:transformVector(relativeOffset)
+	local position = Peep.getPosition(peep) + rotatedOffset
 
-		offsetI = 0
-		offsetJ = math.max(math.floor(size.z / map:getCellSize()), 1)
-	end
-
-	local i, j = Peep.getTile(peep)
-	local v = rotation:transformVector(Vector(offsetI, 0, offsetJ))
-
-	i = i + math.floor(v.x)
-	j = j + math.floor(v.z)
-
-	return i, j, Peep.getLayer(peep)
+	return position, Peep.getLayer(peep)
 end
 
 function Peep.getRelativeTile(selfPeep, targetPeep)
@@ -1711,7 +1733,12 @@ function Peep.getTileRotation(peep)
 	return Utility.Map.getTileRotation(map, i, j)
 end
 
-function Peep.getWalk(peep, i, j, k, distance, t, ...)
+function Peep.getWalk(peep, ...)
+	-- Backwards compatibility.
+	-- Marshal between getWalk with position and with tile.
+	local args = _getWalkArgs(...)
+
+	local t = args.t
 	t = t or { asCloseAsPossible = true }
 
 	do
@@ -1728,42 +1755,53 @@ function Peep.getWalk(peep, i, j, k, distance, t, ...)
 		end
 	end
 
-	local distance = distance or 0
+	local distance = args.distance or 0
 
 	if not peep:hasBehavior(PositionBehavior) or
 	   not peep:hasBehavior(MovementBehavior)
 	then
 		Log.info("Peep '%s' can't walk because they don't have a position or movement behavior.", peep:getName())
-		return nil, "missing walking behaviors"
+		return false, "missing walking behaviors"
 	end
 
 	local position = peep:getBehavior(PositionBehavior)
-	if position.layer ~= k then
+	if position.layer ~= args.layer then
 		Log.info(
 			"Peep '%s' is on a different map (on layer %d, can't move to layer %d).",
-			peep:getName(), position.layer, k)
-		return nil, "different map"
+			peep:getName(), position.layer, args.layer)
+		return false, "different map"
 	else
 		position = position.position
 	end
 
-	local map = peep:getDirector():getMap(k)
+	local map = peep:getDirector():getMap(args.layer)
 	if not map then
 		Log.info("Peep '%s' doesn't have a map.", peep:getName())
 		return false, "no map"
 	end
 
-	local _, playerI, playerJ = map:getTileAt(position.x, position.z)
+	local targetPosition
+	if args.position then
+		targetPosition = args.position
+	elseif args.i and args.j then
+		targetPosition = map:getTileCenter(args.i, args.j)
+	end
+
 	local pathFinder = SmartNavMeshPathFinder(peep, t)
 	local path = pathFinder:find(
 		position,
-		map:getTileCenter(i, j))
+		targetPosition)
+
 	if path then
 		local n = path:getNodeAtIndex(-1)
 		if n then
-			local d = math.abs(n.i - i) + math.abs(n.j - j)
+			local d = (n.position * Vector.PLANE_XZ):distance(targetPosition * Vector.PLANE_XZ)
 			if d > distance then
-				return nil, "distance to goal exceeds maximum distance to goal"
+				Log.info("Peep '%s' can't reach destination; distance to goal (%f) exceeds maximum distance to goal (%f); target position was (%f, ..., %f) and result was (%f, ..., %f).",
+					peep:getName(), d, distance,
+					targetPosition.x, targetPosition.z,
+					n.position.x, n.position.z)
+				return false, "distance to goal exceeds maximum distance to goal"
 			end
 		end
 
@@ -1774,6 +1812,7 @@ function Peep.getWalk(peep, i, j, k, distance, t, ...)
 		end
 	end
 
+	Log.info("Peep '%s' can't reach target position.", peep:getName())
 	return false, "path not found"
 end
 

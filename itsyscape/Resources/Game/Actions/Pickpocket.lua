@@ -26,8 +26,8 @@ function Pickpocket:perform(state, player, target)
 	}
 
 	if target and self:canPerform(state, FLAGS) then
-		local i, j, k = Utility.Peep.getTileAnchor(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 1, { asCloseAsPossible = false })
+		local position, layer = Utility.Peep.getAnchor(target)
+		local walk = Utility.Peep.getWalk(player, position, layer, 1, { asCloseAsPossible = false })
 
 		if walk then
 			local transfer = CallbackCommand(self.transfer, self, state, player)

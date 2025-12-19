@@ -38,7 +38,7 @@ function Interact:perform(state, player, target)
 	end
 
 	if target and self:canPerform(state) and self:canTransfer(state) then
-		local i, j, k = Utility.Peep.getTileAnchor(target)
+		local position, layer = Utility.Peep.getAnchor(target)
 		local walk, n = Utility.Peep.queueWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
 
 		walk:register(function(s)

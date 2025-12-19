@@ -22,6 +22,7 @@ local TargetPositionBehavior = Behavior("TargetPosition")
 function TargetPositionBehavior:new(node, nextNode)
 	Behavior.Type.new(self)
 	self.pathNode = node or false
+	self.previousPathNode = false
 	self.nextPathNode = nextNode or false
 	self.distance = 0.1
 end
