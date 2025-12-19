@@ -20,7 +20,7 @@ local PositionPathNode = require "ItsyScape.World.PositionPathNode"
 local Tile = require "ItsyScape.World.Tile"
 
 local SmartNavMeshPathFinder = Class()
-SmartNavMeshPathFinder.ACTOR_RADIUS = 1
+SmartNavMeshPathFinder.ACTOR_RADIUS = 0.75
 
 function SmartNavMeshPathFinder:new(peep, t)
 	t = t or {}
