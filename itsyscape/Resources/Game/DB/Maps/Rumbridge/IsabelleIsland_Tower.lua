@@ -1221,9 +1221,9 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectSize {
-		SizeX = 2.5,
+		SizeX = 4,
 		SizeY = 2,
-		SizeZ = 7,
+		SizeZ = 8,
 		MapObject = LongTable
 	}
 
