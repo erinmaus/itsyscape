@@ -10,17 +10,20 @@
 local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
 local Function = require "ItsyScape.Common.Function"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
-local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 local Path = require "ItsyScape.World.Path"
 local PositionPathNode = require "ItsyScape.World.PositionPathNode"
 local Tile = require "ItsyScape.World.Tile"
 
 local SmartNavMeshPathFinder = Class()
-SmartNavMeshPathFinder.ACTOR_RADIUS = 0.75
+
+SmartNavMeshPathFinder.DEFAULT_PEEP_MARGIN = 0.25
 
 function SmartNavMeshPathFinder:new(peep, t)
 	t = t or {}
@@ -89,33 +92,32 @@ function SmartNavMeshPathFinder:find(start, goal)
 		return nil
 	end
 
+	local dynamic = self.peep:getBehavior(DynamicBehavior)
+	local radius = dynamic and dynamic.radius or MovementCortex.DEFAULT_PEEP_RADIUS
+	local margin = dynamic and dynamic.margin or self.DEFAULT_PEEP_MARGIN
+
 	if self.world then
-		self.world:add(self.proxy, slick.newTransform(), slick.newCircleShape(0, 0, self.ACTOR_RADIUS))
+		self.world:add(self.proxy, slick.newTransform(), slick.newCircleShape(0, 0, radius + margin))
 	end
 
 	local _, path = self.pathfinder:nearest(self.mesh, start.x, start.z, goal.x, goal.z)
 
-	if self.world then
-		self.world:remove(self.proxy)
-	end
-
-	if not path then
-		return nil
-	end
-
-	local result = Path()
+	local positions = {}
 
 	local index = 1
-	while index <= #path do
-		local current = path[index].point
-		result:makeNode(PositionPathNode, self.map, self.layer, Vector(current.x, 0, current.y))
+	while path and index <= #path do
+		local current = Vector(path[index].point.x, 0, path[index].point.y)
+		if current ~= positions[#positions] then
+			table.insert(positions, current)
+		end
 
 		local didJump = false
-		if self.world and self.world:has(self.peep) then
+		if self.world and self.world:has(self.proxy) then
 			for nextIndex = #path, index + 1, -1 do
 				local next = path[nextIndex].point
-				local collisions = self.world:project(self.peep, current.x, current.y, next.x, next.y, filter)
+				local collisions = self.world:project(self.proxy, current.x, current.y, next.x, next.y, self.filter)
 				if #collisions == 0 then
+					print("did jump", "from", index, "to", nextIndex)
 					index = nextIndex
 					didJump = true
 					break
@@ -128,7 +130,40 @@ function SmartNavMeshPathFinder:find(start, goal)
 		end
 	end
 
-	return result
+	local resultPath = Path()
+	for i = 1, #positions do
+		local k = (i - 1) * 2 + 1
+		local current = positions[i]
+		local next = positions[i + 1]
+		local previous = positions[i - 1]
+
+		local materialized = false
+		if self.world and self.world:has(self.proxy) then
+			local collisions = self.world:project(self.proxy, (previous or current).x, (previous or current).z, current.x, current.z, self.filter)
+			local collision = collisions[1]
+			if collision then
+				local a = next and current or previous
+				local b = next or current
+				local c = Vector(collision.otherShape.center.x, 0, collision.otherShape.center.y)
+				local side = MathCommon.side(a, b, c)
+				local forward = a:direction(b)
+				local left = Vector(forward.z, 0, -forward.x)
+				local bump = current + left * -side * (radius + margin)
+				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump)
+				materialized = true
+			end
+		end
+
+		if not materialized or i == #positions then
+			resultPath:makeNode(PositionPathNode, self.map, self.layer, current)
+		end
+	end
+
+	if self.world then
+		self.world:remove(self.proxy)
+	end
+
+	return path and resultPath or nil
 end
 
 return SmartNavMeshPathFinder

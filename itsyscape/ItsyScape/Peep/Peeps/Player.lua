@@ -27,6 +27,7 @@ local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local LootDropperBehavior = require "ItsyScape.Peep.Behaviors.LootDropperBehavior"
@@ -51,6 +52,7 @@ function Player:new(resource, ...)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
 	self:addBehavior(LootDropperBehavior)
+	self:addBehavior(DynamicBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1.5, 2, 1.5)

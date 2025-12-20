@@ -22,11 +22,11 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CreepBehavior = require "ItsyScape.Peep.Behaviors.CreepBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local LootDropperBehavior = require "ItsyScape.Peep.Behaviors.LootDropperBehavior"
 local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
 local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
-local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
@@ -46,6 +46,7 @@ function Creep:new(resource, ...)
 	self:addBehavior(MovementBehavior)
 	self:addBehavior(SizeBehavior)
 	self:addBehavior(PositionBehavior)
+	self:addBehavior(DynamicBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 1, 1)

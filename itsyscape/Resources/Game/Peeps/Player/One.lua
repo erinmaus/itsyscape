@@ -34,6 +34,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CharacterBehavior = require "ItsyScape.Peep.Behaviors.CharacterBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
@@ -70,6 +71,8 @@ function One:new(...)
 	self:addBehavior(CombatStatusBehavior)
 	self:addBehavior(TeamBehavior)
 	self:addBehavior(TeamsBehavior)
+	local _, d = self:addBehavior(DynamicBehavior)
+	--local _, scale = self:addBehavior(require "ItsyScape.Peep.Behaviors.ScaleBehavior")
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 2, 1)

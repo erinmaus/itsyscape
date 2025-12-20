@@ -121,7 +121,9 @@ function MoveToPosition:update(delta)
 
 					local didOvershoot = false
 					local distance = ((targetPosition - currentPosition) * Vector.PLANE_XZ):getLength()
-					if distance < velocitySliceLength and distance > MovementCortex.PEEP_RADIUS + self.DISTANCE_PADDING then
+
+					local radius = peep:hasBehavior(DynamicBehavior) and peep:getBehavior(DynamicBehavior).radius or MovementCortex.DEFAULT_PEEP_RADIUS
+					if distance < velocitySliceLength and distance > radius + self.DISTANCE_PADDING then
 						currentDelta = currentDelta - (delta * (distance / velocitySliceLength))
 						velocitySlice = direction * distance
 						didOvershoot = true
@@ -138,7 +140,7 @@ function MoveToPosition:update(delta)
 
 					position.position = goal
 
-					if (didOvershoot or distance < MovementCortex.PEEP_RADIUS + self.DISTANCE_PADDING) and not targetPositionBehavior.pathNode:getIsPending() then
+					if (didOvershoot or distance < radius + self.DISTANCE_PADDING) and not targetPositionBehavior.pathNode:getIsPending() then
 						if targetPositionBehavior.nextPathNode then
 							targetPositionBehavior.nextPathNode:activate(peep)
 						else

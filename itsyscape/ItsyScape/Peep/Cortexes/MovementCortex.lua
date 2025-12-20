@@ -15,6 +15,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local Peep = require "ItsyScape.Peep.Peep"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
@@ -39,7 +40,7 @@ MovementCortex.OFFSETS = {
 	{  0,  1 }
 }
 
-MovementCortex.PEEP_RADIUS = 0.5
+MovementCortex.DEFAULT_PEEP_RADIUS = 0.5
 
 local function _isPassable(map, i, j, s, t)
 	return not map:getTile(s, t):hasStaticFlag("impassable")
@@ -204,7 +205,8 @@ function MovementCortex:addPeepToWorld(layer, peep)
 		self.peepsByLayer[peep] = Utility.Peep.getLayer(peep)
 
 		local position = Utility.Peep.getPosition(peep)
-		w.world:add(peep, position.x, position.z, slick.newCircleShape(0, 0, MovementCortex.PEEP_RADIUS))
+		local radius = peep:hasBehavior(DynamicBehavior) and peep:getBehavior(DynamicBehavior).radius or MovementCortex.DEFAULT_PEEP_RADIUS
+		w.world:add(peep, position.x, position.z, slick.newCircleShape(0, 0, radius))
 	end
 end
 
@@ -469,6 +471,11 @@ function MovementCortex:filter(item, other)
 	elseif Class.isCompatibleType(other, Peep) then
 		local static = other:getBehavior(StaticBehavior)
 		if static and static.type == StaticBehavior.IMPASSABLE then
+			return "slide"
+		end
+
+		local dynamic = other:getBehavior(DynamicBehavior)
+		if dynamic and dynamic.type == StaticBehavior.IMPASSABLE then
 			return "slide"
 		end
 	end
