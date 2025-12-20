@@ -11,6 +11,7 @@ local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
 local Function = require "ItsyScape.Common.Function"
 local MathCommon = require "ItsyScape.Common.Math.Common"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
@@ -112,10 +113,10 @@ function SmartNavMeshPathFinder:find(start, goal)
 		end
 
 		local didJump = false
-		if self.world and self.world:has(self.proxy) then
+		if self.world and self.world:has(self.peep) then
 			for nextIndex = #path, index + 1, -1 do
 				local next = path[nextIndex].point
-				local collisions = self.world:project(self.proxy, current.x, current.y, next.x, next.y, self.filter)
+				local collisions = self.world:project(self.peep, current.x, current.z, next.x, next.y, self._filter)
 				if #collisions == 0 then
 					print("did jump", "from", index, "to", nextIndex)
 					index = nextIndex
@@ -131,31 +132,37 @@ function SmartNavMeshPathFinder:find(start, goal)
 	end
 
 	local resultPath = Path()
+	local previous
 	for i = 1, #positions do
 		local k = (i - 1) * 2 + 1
 		local current = positions[i]
 		local next = positions[i + 1]
-		local previous = positions[i - 1]
 
 		local materialized = false
 		if self.world and self.world:has(self.proxy) then
-			local collisions = self.world:project(self.proxy, (previous or current).x, (previous or current).z, current.x, current.z, self.filter)
+			local collisions = self.world:project(self.proxy, (previous or current).x, (previous or current).z, current.x, current.z, self._filter)
 			local collision = collisions[1]
 			if collision then
-				local a = next and current or previous
-				local b = next or current
+				local a = previous or current
+				local b = previous and current or next
+				local forward = a:direction(b)
+
 				local c = Vector(collision.otherShape.center.x, 0, collision.otherShape.center.y)
 				local side = MathCommon.side(a, b, c)
 				local forward = a:direction(b)
 				local left = Vector(forward.z, 0, -forward.x)
-				local bump = current + left * -side * (radius + margin)
-				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump)
+				local bump1 = Vector(collision.touch.x, 0, collision.touch.y) + left * -side * (radius + margin)
+				local bump2 = current + left * -side * (radius + margin)
+				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump1)
+				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump2)
 				materialized = true
+				previous = bump2
 			end
 		end
 
 		if not materialized or i == #positions then
 			resultPath:makeNode(PositionPathNode, self.map, self.layer, current)
+			previous = current
 		end
 	end
 

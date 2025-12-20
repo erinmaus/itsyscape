@@ -17,6 +17,7 @@ local Controller = require "ItsyScape.UI.Controller"
 local Peep = require "ItsyScape.Peep.Peep"
 local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
+local SmartNavMeshPathFinder = require "ItsyScape.World.SmartNavMeshPathFinder"
 local Tile = require "ItsyScape.World.Tile"
 
 local DebugNavigationController = Class(Controller)
@@ -143,8 +144,7 @@ function DebugNavigationController:path(e)
 	end
 
 	local before = love.timer.getTime()
-	local T = require "ItsyScape.World.SmartNavMeshPathFinder"
-	local pathFinder = T(self:getPeep())
+	local pathFinder = SmartNavMeshPathFinder(self:getPeep())
 	local path = pathFinder:find(Vector(e.startX, 0, e.startY), Vector(e.endX, 0, e.endY))
 
 	if not path then
@@ -157,124 +157,6 @@ function DebugNavigationController:path(e)
 		table.insert(result, p.position.x)
 		table.insert(result, p.position.z)
 	end
-
-	-- local movement = self:getDirector():getCortex(MovementCortex)
-	-- local world = movement:getWorld(globalLayer)
-	-- local mesh, meshBuilder = movement:getNavigationMesh(globalLayer)
-	-- if not (mesh and meshBuilder) then
-	-- 	return
-	-- end
-
-	-- local filter = Function(MovementCortex.filter, movement)
-	-- local proxy = {}
-	-- if world then
-	-- 	local radius = self:getPeep():hasBehavior(DynamicBehavior) and self:getPeep():getBehavior(DynamicBehavior).radius or MovementCortex.DEFAULT_PEEP_RADIUS
-	-- 	local margin = self:getPeep():hasBehavior(DynamicBehavior) and self:getPeep():getBehavior(DynamicBehavior).margin or 0.25
-
-	-- 	world:add(proxy, slick.newTransform(), slick.newCircleShape(0, 0, radius + margin))
-	-- end
-
-	-- local pathfinder = slick.navigation.path.new({
-	-- 	neighbor = function(_, _, e)
-	-- 		local a = Vector(e.a.point.x, e.a.point.y)
-	-- 		local b = Vector(e.b.point.x, e.b.point.y)
-	-- 		local x, y = a:lerp(b, 0.5):get()
-
-	-- 		local world = movement:getWorld(globalLayer)
-	-- 		if world and world:has(proxy) then
-	-- 			local collisions = world:test(proxy, x, y)
-	-- 			for _, collision in ipairs(collisions) do
-	-- 				local isImpassableTile = Class.isCompatibleType(collision.other, Tile)
-	-- 				                         and not collision.other:getIsPassable()
-	-- 				local isImpassablePeep = Class.isCompatibleType(collision.other, Peep) and
-	-- 				                         collision.other:hasBehavior(StaticBehavior) and
-	-- 				                         collision.other:getBehavior(StaticBehavior).type == StaticBehavior.IMPASSABLE
-
-	-- 				if isImpassablePeep or isImpassableTile then
-	-- 					return false
-	-- 				end
-	-- 			end
-	-- 		end
-
-	-- 		local userdata = meshBuilder:getEdgeUserdata(e.a.index, e.b.index)
-	-- 		if not userdata then
-	-- 			return true
-	-- 		end
-
-	-- 		for tile in userdata:iterate() do
-	-- 			if not tile:getIsPassable() then
-	-- 				return false
-	-- 			end
-	-- 		end
-
-	-- 		return true
-	-- 	end
-	-- })
-
-	-- local result = {}
-	-- local before = love.timer.getTime()
-	-- do
-	-- 	local _, path = pathfinder:nearest(mesh, e.startX, e.startY, e.endX, e.endY)
-	-- 	if not path then
-	-- 		return
-	-- 	end
-
-	-- 	local index = 1
-	-- 	while index <= #path do
-	-- 		local current = path[index].point
-	-- 		if not (current.x == result[#result - 1] and current.y == result[#result]) then
-	-- 			table.insert(result, current.x)
-	-- 			table.insert(result, current.y)
-	-- 		end
-
-	-- 		local didJump = false
-	-- 		if world and world:has(proxy) then
-	-- 			for nextIndex = #path, index + 1, -1 do
-	-- 				local next = path[nextIndex].point
-	-- 				local collisions = world:project(proxy, current.x, current.y, next.x, next.y, filter)
-	-- 				if #collisions == 0 then
-	-- 					index = nextIndex
-	-- 					didJump = true
-	-- 					break
-	-- 				end
-	-- 			end
-	-- 		end
-
-	-- 		if not didJump then
-	-- 			index = index + 1
-	-- 		end
-	-- 	end
-	-- end
-
-	-- local numPoints = math.floor(#result / 2)
-	-- for i = 1, numPoints do
-	-- 	local k = (i - 1) * 2 + 1
-	-- 	local x, y = result[k], result[k + 1]
-	-- 	local nextX, nextY = result[k + 2], result[k + 3]
-	-- 	local previousX, previousY = result[k - 2], result[k - 1]
-
-	-- 	if world and world:has(proxy) then
-	-- 		local collisions = world:project(proxy, previousX or x, previousY or y, x, y, filter)
-	-- 		local collision = collisions[1]
-	-- 		if collision then
-	-- 			local x1, y1 = nextX and x or previousX, nextY and y or previousY
-	-- 			local x2, y2 = nextX or x, nextY or y
-
-	-- 			local a = Vector(x1, 0, y1)
-	-- 			local b = Vector(x2, 0, y2)
-	-- 			local c = Vector(collision.otherShape.center.x, 0, collision.otherShape.center.y)
-	-- 			local side = MathCommon.side(a, b, c)
-	-- 			local forward = a:direction(b)
-	-- 			local left = Vector(forward.z, 0, -forward.x)
-	-- 			local bump = Vector(x, 0, y) + left * -side * MovementCortex.PEEP_RADIUS
-	-- 			result[k], result[k + 1] = bump.x, bump.z
-	-- 		end
-	-- 	end
-	-- end
-
-	-- if world then
-	-- 	world:remove(proxy)
-	-- end
 
 	local after = love.timer.getTime()
 	Log.info("Generated from from (%.2f, %.2f) to (%.2f, %.2f) in %0.2f ms.", e.startX, e.startY, e.endX, e.endY, (after - before) * 1000)
