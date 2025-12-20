@@ -29,7 +29,7 @@ function Teleport:perform(state, player, target)
 	   self:canPerform(state, Teleport.FLAGS) and
 	   self:canTransfer(state, Teleport.FLAGS)
 	then
-		local position, layer = Utility.Peep.getAnchor(target)
+		local position, layer = Utility.Peep.getTileAnchor(target, player)
 		local walk = Utility.Peep.getWalk(player, position, layer, 2, { asCloseAsPossible = true })
 
 		if walk then

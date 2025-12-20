@@ -1557,7 +1557,7 @@ function Peep.getRelativeTileAnchor(propPeep, playerPeep)
 	})
 
 	if #propAnchors == 0 then
-		return Peep.getTileAnchor(propPeep)
+		return Peep.getTileAnchor(propPeep, playerPeep)
 	end
 
 	local playerLocalLayer = Peep.getLocalLayer(playerPeep)
@@ -1567,7 +1567,7 @@ function Peep.getRelativeTileAnchor(propPeep, playerPeep)
 		end
 	end
 
-	return Peep.getTileAnchor(propPeep)
+	return Peep.getTileAnchor(propPeep, playerPeep)
 end
 
 function Peep.getOtherTileAnchor(propPeep, playerPeep)
@@ -1579,7 +1579,7 @@ function Peep.getOtherTileAnchor(propPeep, playerPeep)
 	})
 
 	if #propAnchors == 0 then
-		return Peep.getTileAnchor(propPeep)
+		return Peep.getTileAnchor(propPeep, playerPeep)
 	end
 
 	local playerLocalLayer = Peep.getLocalLayer(playerPeep)
@@ -1589,19 +1589,20 @@ function Peep.getOtherTileAnchor(propPeep, playerPeep)
 		end
 	end
 
-	return Peep.getTileAnchor(propPeep)
+	return Peep.getTileAnchor(propPeep, playerPeep)
 end
 
-function Peep.getTileAnchor(peep, offsetI, offsetJ)
-	local rotation = Peep.getRotation(peep)
-	local size = Peep.getSize(peep)
-	local halfSize = size / 2
+function Peep.getTileAnchor(targetPeep, playerPeep, offsetI, offsetJ)
+	local targetRotation = Peep.getRotation(targetPeep)
+	local targetPosition = Peep.getPosition(targetPeep)
+	local targetSize = Peep.getSize(targetPeep)
+	local targetHalfSize = targetSize / 2
 
 	if not (offsetI and offsetJ) then
-		local mapObject = Peep.getMapObject(peep)
-		local resource = Peep.getResource(peep)
+		local mapObject = Peep.getMapObject(targetPeep)
+		local resource = Peep.getResource(targetPeep)
 		if mapObject then
-			local gameDB = peep:getDirector():getGameDB()
+			local gameDB = targetPeep:getDirector():getGameDB()
 
 			local record = gameDB:getRecord("PropAnchor", {
 				Resource = mapObject
@@ -1614,7 +1615,7 @@ function Peep.getTileAnchor(peep, offsetI, offsetJ)
 		end
 
 		if not (offsetI and offsetJ) and resource then
-			local gameDB = peep:getDirector():getGameDB()
+			local gameDB = targetPeep:getDirector():getGameDB()
 
 			local record = gameDB:getRecord("PropAnchor", {
 				Resource = resource
@@ -1627,7 +1628,40 @@ function Peep.getTileAnchor(peep, offsetI, offsetJ)
 		end
 	end
 
-	if peep:hasBehavior(ActorReferenceBehavior) then
+	if playerPeep and (not (offsetI and offsetJ) or (offsetI == 0 and offsetJ == 0)) then
+		local segments = {
+			targetRotation:transformVector(Vector(-targetHalfSize.x, 0, -targetHalfSize.y)) + targetPosition,
+			targetRotation:transformVector(Vector(targetHalfSize.x, 0, -targetHalfSize.y)) + targetPosition,
+			targetRotation:transformVector(Vector(targetHalfSize.x, 0, targetHalfSize.y)) + targetPosition,
+			targetRotation:transformVector(Vector(-targetHalfSize.x, 0, targetHalfSize.y)) + targetPosition
+		}
+
+		local offsets = {
+			{ 0, -1 },
+			{ 1, 0 },
+			{ 0, 1 },
+			{ -1, 0 },
+		}
+
+		local playerPosition = Utility.Peep.getPosition(playerPeep)
+
+		local bestDistance = math.huge
+		for i = 1, #segments do
+			local j = math.wrapIndex(i, 1, #segments)
+
+			local a = segments[i]
+			local b = segments[j]
+			local c = a:lerp(b, 0.5)
+
+			local distance = playerPosition:distance(c)
+			if distance < bestDistance then
+				bestDistance = distance
+				offsetI, offsetJ = unpack(offsets[i])
+			end
+		end
+	end
+
+	if targetPeep:hasBehavior(ActorReferenceBehavior) then
 		offsetI = offsetI or 0
 		offsetJ = offsetJ or 0
 	else
@@ -1636,13 +1670,13 @@ function Peep.getTileAnchor(peep, offsetI, offsetJ)
 	end
 
 	local relativeOffset = Vector(
-		offsetI * (halfSize.x + 1),
+		offsetI * (targetHalfSize.x + 0.5),
 		0,
-		offsetJ * (halfSize.z + 1))
-	local rotatedOffset = rotation:transformVector(relativeOffset)
-	local position = Peep.getPosition(peep) + rotatedOffset
+		offsetJ * (targetHalfSize.z + 0.5))
+	local rotatedOffset = targetRotation:transformVector(relativeOffset)
+	local position = Peep.getPosition(targetPeep) + rotatedOffset
 
-	return position, Peep.getLayer(peep)
+	return position, Peep.getLayer(targetPeep)
 end
 
 function Peep.getRelativeTile(selfPeep, targetPeep)

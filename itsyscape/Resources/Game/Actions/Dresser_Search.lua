@@ -22,7 +22,7 @@ Dresser_Search.DURATION = 1.0
 
 function Dresser_Search:perform(state, player, target)
 	if target and self:canPerform(state, FLAGS) and not target.isOpen then
-		local position, layer = Utility.Peep.getTileAnchor(target)
+		local position, layer = Utility.Peep.getTileAnchor(target, player, 0, 1)
 		local walk = Utility.Peep.getWalk(player, position, layer, 3.5, { asCloseAsPossible = true })
 
 		if walk then

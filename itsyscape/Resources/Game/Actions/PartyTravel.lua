@@ -29,7 +29,7 @@ function PartyTravel:perform(state, player, target)
 	   self:canPerform(state, PartyTravel.FLAGS) and
 	   self:canTransfer(state, PartyTravel.FLAGS)
 	then
-		local position, layer = Utility.Peep.getAnchor(target)
+		local position, layer = Utility.Peep.getTileAnchor(target, player)
 		local walk = Utility.Peep.getWalk(player, position, layer, 1.5, { asCloseAsPossible = true })
 
 		if walk then

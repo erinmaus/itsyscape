@@ -41,7 +41,7 @@ function LightProp:perform(state, peep, prop)
 
 		local walk
 		do
-			local position, layer = Utility.Peep.getAnchor(prop)
+			local position, layer = Utility.Peep.getTileAnchor(prop, player)
 			walk = Utility.Peep.getWalk(peep, i, j + 1, k, 1, { asCloseAsPossible = true }) or
 			       Utility.Peep.getWalk(peep, i, j, k, 1, { asCloseAsPossible = true })
 		end

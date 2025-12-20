@@ -28,7 +28,7 @@ function Teleport:perform(state, player, target)
 		return false
 	end
 
-	local position, layer = Utility.Peep.getAnchor(target)
+	local position, layer = Utility.Peep.getTileAnchor(target, player)
 	local walk = Utility.Peep.getWalk(player, position, layer, 1.5, { asCloseAsPossible = false })
 	if walk then
 		self:transfer(state, player)

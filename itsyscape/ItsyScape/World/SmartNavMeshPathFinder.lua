@@ -15,6 +15,7 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
+local DoorBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
@@ -45,6 +46,7 @@ function SmartNavMeshPathFinder:new(peep, t)
 	self.world = movement:getWorld(self.layer)
 	self._filter = Function(MovementCortex.filter, movement)
 
+	self.ignored = {}
 	self.pathfinder = slick.navigation.path.new({
 		neighbor = function(_, _, e)
 			local a = Vector(e.a.point.x, e.a.point.y)
@@ -54,13 +56,9 @@ function SmartNavMeshPathFinder:new(peep, t)
 			if self.world and self.world:has(self.proxy) then
 				local collisions = self.world:test(self.proxy, x, y, self._filter)
 				for _, collision in ipairs(collisions) do
-					if Class.isCompatibleType(collision.other, Peep) then
-						if isImpassablePeep then print("colliding with peep", collision.other:getName()) end
+					if not self.ignored[collision.other] then
+						return false
 					end
-				end
-
-				if #collisions > 0 then
-					return false
 				end
 			end
 
@@ -70,8 +68,15 @@ function SmartNavMeshPathFinder:new(peep, t)
 			end
 
 			for tile in userdata:iterate() do
-				if not tile:getIsPassable() then
+				if tile:hasFlag("impassable") then
 					return false
+				elseif tile:hasFlag("door") then
+					for _, link in tile:iterateLinks() do
+						local door = link:getBehavior(DoorBehavior)
+						if not (door and door.isOpen) then
+							return false
+						end
+					end
 				end
 			end
 
@@ -99,6 +104,17 @@ function SmartNavMeshPathFinder:find(start, goal)
 
 	if self.world then
 		self.world:add(self.proxy, slick.newTransform(), slick.newCircleShape(0, 0, radius + margin))
+
+		table.clear(self.ignored)
+		local startCollisions = self.world:test(self.proxy, start.x, start.z, self._filter)
+		for _, collision in ipairs(startCollisions) do
+			self.ignored[collision.other] = true
+		end
+
+		local goalCollisions = self.world:test(self.proxy, goal.x, goal.z, self._filter)
+		for _, collision in ipairs(goalCollisions) do
+			self.ignored[collision.other] = true
+		end
 	end
 
 	local _, path = self.pathfinder:nearest(self.mesh, start.x, start.z, goal.x, goal.z)
@@ -118,7 +134,6 @@ function SmartNavMeshPathFinder:find(start, goal)
 				local next = path[nextIndex].point
 				local collisions = self.world:project(self.peep, current.x, current.z, next.x, next.y, self._filter)
 				if #collisions == 0 then
-					print("did jump", "from", index, "to", nextIndex)
 					index = nextIndex
 					didJump = true
 					break

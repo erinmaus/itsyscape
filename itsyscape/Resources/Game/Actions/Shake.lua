@@ -24,7 +24,7 @@ Shake.DURATION = 1.0
 
 function Shake:perform(state, player, target)
 	if target and self:canPerform(state) then
-		local position, layer = Utility.Peep.getAnchor(target)
+		local position, layer = Utility.Peep.getTileAnchor(target, player)
 		local asCloseAsPossible
 		do
 			local map = Utility.Peep.getMap(target)

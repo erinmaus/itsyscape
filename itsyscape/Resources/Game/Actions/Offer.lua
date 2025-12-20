@@ -33,7 +33,7 @@ function Offer:perform(state, player, target)
 	end
 
 	if target and self:canPerform(state) and self:canTransfer(state) then
-		local position, layer = Utility.Peep.getAnchor(target)
+		local position, layer = Utility.Peep.getTileAnchor(target, player)
 		local walk = Utility.Peep.getWalk(player, position, layer, 2.5, { asCloseAsPossible = true })
 
 		if walk then

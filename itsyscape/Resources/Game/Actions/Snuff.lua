@@ -37,7 +37,7 @@ function Snuff:perform(state, player, prop)
 
 		local walk
 		do
-			local position, layer = Utility.Peep.getAnchor(prop)
+			local position, layer = Utility.Peep.getTileAnchor(prop, player)
 			walk = Utility.Peep.getWalk(player, i, j + 1, k, 1, { asCloseAsPossible = true }) or
 			       Utility.Peep.getWalk(player, position, layer, 1, { asCloseAsPossible = true })
 		end

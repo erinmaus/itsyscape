@@ -43,7 +43,7 @@ function Open:perform(state, player, prop, channel)
 			end
 		end
 
-		local position, layer = Utility.Peep.getTileAnchor(prop, 0, 0)
+		local position, layer = Utility.Peep.getTileAnchor(prop, player, 0, 0)
 		local otherPosition, otherLayer = Utility.Peep.getTileAnchor(player)
 		local distance = position:distance(otherPosition)
 		local walk

@@ -5,9 +5,9 @@ M._MAP = ItsyScape.Resource.Map "IsabelleIsland_Tower3"
 M["Armoire_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 2.255940,
+		PositionX = 1.787190,
 		PositionY = 0.000000,
-		PositionZ = 11.704775,
+		PositionZ = 11.548525,
 		RotationX = 0.000000,
 		RotationY = 0.631893,
 		RotationZ = 0.000000,
@@ -30,9 +30,9 @@ end
 M["Bed_FourPoster_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 4.046914,
+		PositionX = 3.734414,
 		PositionY = 0.000000,
-		PositionZ = 18.302114,
+		PositionZ = 18.333364,
 		RotationX = 0.000000,
 		RotationY = 0.827845,
 		RotationZ = 0.000000,
@@ -55,9 +55,9 @@ end
 M["Chest_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 7.085443,
+		PositionX = 6.585443,
 		PositionY = 0.250000,
-		PositionZ = 17.155772,
+		PositionZ = 17.530772,
 		RotationX = 0.000000,
 		RotationY = 0.824771,
 		RotationZ = 0.000000,
@@ -180,7 +180,7 @@ end
 M["ComfyChair_Isabelle7"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 21.000000,
+		PositionX = 20.500000,
 		PositionY = 0.000000,
 		PositionZ = 19.000000,
 		RotationX = 0.000000,

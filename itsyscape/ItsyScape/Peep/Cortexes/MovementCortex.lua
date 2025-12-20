@@ -15,6 +15,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local Peep = require "ItsyScape.Peep.Peep"
+local DoorBehavior = require "ItsyScape.Peep.Behaviors.DoorBehavior"
 local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -467,10 +468,22 @@ function MovementCortex:filter(item, other)
 	if Class.isCompatibleType(other, Tile) then
 		if other:hasStaticFlag("impassable") then
 			return "slide"
+		elseif other:hasFlag("door") then
+			for link in other:iterateLinks() do
+				local door = link:getBehavior(DoorBehavior)
+				if not (door and door.isOpen) then
+					return "slide"
+				end
+			end
 		end
 	elseif Class.isCompatibleType(other, Peep) then
 		local static = other:getBehavior(StaticBehavior)
 		if static and static.type == StaticBehavior.IMPASSABLE then
+			return "slide"
+		end
+
+		local door = other:getBehavior(DoorBehavior)
+		if door and not door.isOpen then
 			return "slide"
 		end
 

@@ -54,7 +54,7 @@ function Common.projectPointOnLineSegment(a, b, p)
 	local bMinusA = b - a
 	local t = math.clamp(pMinusA:dot(bMinusA) / distanceSquared)
 
-	return a + bMinusA * t
+	return a + bMinusA * t, t
 end
 
 function Common.transformPointFromPlaneToAxis(point, normal, d, otherAxis)
