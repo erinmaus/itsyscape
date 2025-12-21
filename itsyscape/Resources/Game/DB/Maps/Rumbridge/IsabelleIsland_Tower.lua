@@ -1288,3 +1288,31 @@ do
 		Resource = Staircase
 	}
 end
+
+do
+	local Rug = ItsyScape.Resource.Prop "Rug_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BlockingProp",
+		Resource = Rug
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 4,
+		SizeY = 0.5,
+		SizeZ = 8,
+		MapObject = Rug
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Fancy rug",
+		Language = "en-US",
+		Resource = Rug
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A long, gilded rug. Wouldn't want to spill coffee on that!",
+		Language = "en-US",
+		Resource = Rug
+	}
+end
