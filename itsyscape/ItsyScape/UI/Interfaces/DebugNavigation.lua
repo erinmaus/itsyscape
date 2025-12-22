@@ -43,6 +43,7 @@ function DebugNavigation.Map:new()
 	self.isPanning = false
 	self.zoom = 16
 
+	self.currentX, self.currentY = false, false
 	self.pathStartX, self.pathStartY = 0, 0
 	self.pathEndX, self.pathEndY = 0, 0
 	self.path = {}
@@ -102,13 +103,15 @@ function DebugNavigation.Map:mouseMove(x, y, ...)
 		self.clickY = y
 	end
 
-	if self.isPathing then
-		local absoluteX, absoluteY = self:getAbsolutePosition()
-		local relativeX, relativeY = x - absoluteX, y - absoluteY
+	local absoluteX, absoluteY = self:getAbsolutePosition()
+	local relativeX, relativeY = x - absoluteX, y - absoluteY
+	self.currentX, self.currentY = relativeX - self.panX, relativeY - self.panY
 
-		self.pathEndX, self.pathEndY = relativeX - self.panX, relativeY - self.panY
+	if self.isPathing then
+		self.pathEndX, self.pathEndY = self.currentX, self.currentY
 		self.pathMoved = true
 	end
+
 end
 
 function DebugNavigation.Map:mouseRelease(x, y, button)
@@ -122,6 +125,10 @@ function DebugNavigation.Map:mouseRelease(x, y, button)
 		self.isPathing = false
 		self.pathMoved = false
 	end
+end
+
+function DebugNavigation.Map:mouseLeave(x, y)
+	self.currentX, self.currentY = false, false
 end
 
 function DebugNavigation.Map:mouseScroll(x, y)
@@ -160,6 +167,14 @@ function DebugNavigation.Map:_draw()
 
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.rectangle("fill", 0, 0, w, h)
+
+	if self.currentX and self.currentY then
+		local s = self.currentX / self.zoom
+		local t = self.currentY / self.zoom
+
+		love.graphics.setColor(0, 1, 1, 1)
+		love.graphics.print(string.format("xz: %0.2f, %0.2f", s, t))
+	end
 
 	love.graphics.translate(self.panX, self.panY)
 	love.graphics.setColor(1, 1, 1, 1)
@@ -235,6 +250,10 @@ function DebugNavigation.Map:_draw()
 	if numPathPoints >= 2 then
 		love.graphics.line(path)
 	end
+
+	love.graphics.setColor(1, 0, 0, 1)
+	love.graphics.setPointSize(8)
+	love.graphics.points(path)
 
 	love.graphics.pop()
 end

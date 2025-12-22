@@ -156,20 +156,27 @@ function SmartNavMeshPathFinder:find(start, goal)
 		local materialized = false
 		if self.world and self.world:has(self.proxy) then
 			local collisions = self.world:project(self.proxy, (previous or current).x, (previous or current).z, current.x, current.z, self._filter)
-			local collision = collisions[1]
+			local collision = collisions[#collisions]
 			if collision then
-				local a = previous or current
-				local b = previous and current or next
-				local forward = a:direction(b)
+				local a1 = previous or current
+				local b1 = previous and current or next
+				local forward1 = a1:direction(b1)
 
 				local c = Vector(collision.otherShape.center.x, 0, collision.otherShape.center.y)
-				local side = MathCommon.side(a, b, c)
-				local forward = a:direction(b)
-				local left = Vector(forward.z, 0, -forward.x)
-				local bump1 = Vector(collision.touch.x, 0, collision.touch.y) + left * -side * (radius + margin)
-				local bump2 = current + left * -side * (radius + margin)
+				local side1 = MathCommon.side(a1, b1, c)
+				local left1 = Vector(forward1.z, 0, -forward1.x)
+				local bump1 = Vector(collision.touch.x, 0, collision.touch.y) + left1 * -side1 * (radius + margin)
+
+				local a2 = c
+				local b2 = current
+				local forward2 = a2:direction(b2)
+				local side2 = MathCommon.side(a2, b2, c)
+				local left2 = Vector(forward2.z, 0, -forward2.x)
+				local bump2 = current + forward2 * (radius + margin)
+
 				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump1)
 				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump2)
+
 				materialized = true
 				previous = bump2
 			end
