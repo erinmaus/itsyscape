@@ -71,7 +71,7 @@ function SmartNavMeshPathFinder:new(peep, t)
 				if tile:hasFlag("impassable") then
 					return false
 				elseif tile:hasFlag("door") then
-					for _, link in tile:iterateLinks() do
+					for link in tile:iterateLinks() do
 						local door = link:getBehavior(DoorBehavior)
 						if not (door and door.isOpen) then
 							return false
