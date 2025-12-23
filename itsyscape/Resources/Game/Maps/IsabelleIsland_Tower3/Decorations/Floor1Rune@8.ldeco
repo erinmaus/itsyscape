@@ -1,0 +1,13 @@
+{
+	tileSetID = "FloatingRune1",
+	isWall = false,
+	{
+		id = "rune",
+		position = { 3.500000, 0.000000, 3.000000 },
+		rotation = { 0.000000, 0.000000, 0.000000, 1.000000 },
+		scale = { 4.250000, 4.250000, 4.250000 },
+		color = { 1.000000, 1.000000, 1.000000, 1.000000 },
+		texture = 1,
+		material = "marble",
+	},
+}

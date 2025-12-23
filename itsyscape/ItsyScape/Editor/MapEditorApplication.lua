@@ -1276,6 +1276,15 @@ function MapEditorApplication:mousePress(x, y, button)
 
 						table.insert(actions, {
 							id = #actions + 1,
+							verb = "Duplicate",
+							object = string.format("Layer %d", layer),
+							callback = function()
+								self:duplicateLayer(layer)
+							end
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
 							verb = "Create-Square-Polygon",
 							object = string.format("Layer %d", layer),
 							callback = function()
@@ -2361,7 +2370,7 @@ function MapEditorApplication:_getPhysicalLayer(layer)
 end
 
 function MapEditorApplication:buildMeta(meta, map, mapScriptPeep, curve)
-	local offset = mapScriptPeep:getBehavior(MapOffsetBehavior)
+	local offset = mapScriptPeep and mapScriptPeep:getBehavior(MapOffsetBehavior)
 	local translation = offset and offset.offset
 	local rotation = offset and offset.rotation
 	local scale = offset and offset.scale
@@ -2792,6 +2801,78 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 	end
 
 	return true
+end
+
+function MapEditorApplication:_newLayer()
+	local layers = {}
+	for i = 1, #self.mapScriptLayers do
+		table.insert(layers, self.mapScriptLayers[i])
+	end
+	table.sort(layers)
+
+	for i = 1, #layers - 1 do
+		local nextLayer = layers[i + 1]
+		local currentLayer = layers[i]
+		if nextLayer > currentLayer + 1 then
+			layer = currentLayer + 1
+			break
+		end 
+	end
+
+	layer = (layers[#layers] or 0) + 1
+
+	return layer
+end
+
+function MapEditorApplication:duplicateLayer(layer)
+	local newLayer = self:_newLayer()
+
+	local stage = self:getGame():getStage()
+
+	local newMap = Map.loadFromTable(self:getGame():getDirector():getMap(layer):serialize())
+	local newMeta = self:buildMeta(self.meta and self.meta[layer], newMap, self.mapScriptPeeps[layer], self.mapScriptCurves[layer])
+	self:getGame():getDirector():setMap(newLayer, newMap)
+
+	local instance = self:getGame():getStage():getPeepInstance()
+	instance:removeLayer(newLayer)
+	instance:addLayer(newLayer, self.mapGroup)
+
+	stage:onLoadMap(newMap, newLayer, newMeta.tileSetID, newMeta.maskID, newMeta)
+	stage:updateMap(newLayer, newMap)
+
+	if newMeta.curve then
+		self.mapScriptCurves[newLayer] = newMeta.curve
+		self:getGameView():bendMap(newLayer, layerMeta.curve)
+	end
+
+	local newMapPeep = self:getGame():getDirector():addPeep("::orphan", MapPeep, resource)
+	newMapPeep:poke("load", self.filename, {}, newLayer)
+
+	local oldMapPeep = self.mapScriptPeeps[layer]
+	local oldOffset = oldMapPeep and oldMapPeep:getBehavior(MapOffsetBehavior)
+	if oldOffset then
+		local _, newOffset = newMapPeep:addBehavior(MapOffsetBehavior)
+
+		newOffset.offset = oldOffset.offset
+		newOffset.rotation = oldOffset.rotation
+		newOffset.scale = oldOffset.scale
+		newOffset.origin = oldOffset.origin
+		newOffset.parentLayer = oldOffset.parentLayer or false
+
+		stage:onMapMoved(newLayer, newOffset.offset, newOffset.rotation, newOffset.scale, newOffset.origin, false, newOffset.parentLayer)
+	end
+
+	local decorations = self:getGameView():getDecorations()
+	for group, decoration in pairs(decorations) do
+		local decorationLayer = self:getGameView():getDecorationLayer(decoration)
+		if decorationLayer == layer then
+			local d = Decoration(decoration:serialize())
+			self:getGame():getStage():decorate(group, d, newLayer)
+		end
+	end
+
+	table.insert(self.mapScriptLayers, newLayer)
+	self:createBoundsGizmo(newMapPeep)
 end
 
 function MapEditorApplication:unloadLayer(layer)

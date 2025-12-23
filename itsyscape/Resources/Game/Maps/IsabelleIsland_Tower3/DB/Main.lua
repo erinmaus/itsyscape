@@ -470,6 +470,61 @@ do
 	}
 end
 
+M["Door_ToLibrary"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27.5,
+		PositionZ = 12,
+		RotationX = 0,
+		RotationY = 0.728632,
+		RotationZ = 0,
+		RotationW = 0.684905,
+		Name = "Door_ToLibrary",
+		Map = M._MAP,
+		Layer = 7,
+		Resource = M["Door_ToLibrary"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IsabelleIslandTowerSmallDoor",
+		MapObject = M["Door_ToLibrary"]
+	}
+
+	local ClimbAction = ItsyScape.Action.Climb()
+
+	ItsyScape.Meta.ClimbDestination {
+		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_SmallDoor",
+		FromLayer = 8,
+		ToLayer = 7,
+		Action = ClimbAction
+	}
+
+	ItsyScape.Meta.ClimbDestination {
+		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_SmallDoor",
+		FromLayer = 7,
+		ToLayer = 8,
+		Action = ClimbAction
+	}
+
+	M["Door_ToLibrary"] {
+		ClimbAction
+	}
+
+	ItsyScape.Meta.MapObjectAnchor {
+		Layer = 7,
+		PositionX = 25,
+		PositionZ = 12,
+		MapObject = M["Door_ToLibrary"]
+	}
+
+	ItsyScape.Meta.MapObjectAnchor {
+		Layer = 8,
+		PositionX = 2,
+		PositionZ = 3,
+		MapObject = M["Door_ToLibrary"]
+	}
+end
+
 M["Door_ToIsabellesBedroom"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -574,5 +629,64 @@ do
 		PositionX = 1,
 		PositionZ = 4,
 		MapObject = M["Staircase_ToIsabellesBedroom"]
+	}
+end
+
+M["Staircase_ToLibrary"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3.500000,
+		PositionY = 0.000000,
+		PositionZ = 4.500000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Staircase_ToLibrary",
+		Map = M._MAP,
+		Layer = 6,
+		Resource = M["Staircase_ToLibrary"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IsabelleIslandTowerSpiralStaircase",
+		MapObject = M["Staircase_ToLibrary"]
+	}
+
+	local ClimbAction = ItsyScape.Action.Climb()
+
+	ItsyScape.Meta.ClimbDestination {
+		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_ClimbUpStairs",
+		FromLayer = 6,
+		ToLayer = 8,
+		Action = ClimbAction
+	}
+
+	ItsyScape.Meta.ClimbDestination {
+		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_ClimbDownStairs",
+		FromLayer = 8,
+		ToLayer = 6,
+		Action = ClimbAction
+	}
+
+	M["Staircase_ToLibrary"] {
+		ClimbAction
+	}
+
+	ItsyScape.Meta.MapObjectAnchor {
+		Layer = 8,
+		PositionX = 5,
+		PositionZ = 5,
+		MapObject = M["Staircase_ToLibrary"]
+	}
+
+	ItsyScape.Meta.MapObjectAnchor {
+		Layer = 6,
+		PositionX = 5,
+		PositionZ = 5,
+		MapObject = M["Staircase_ToLibrary"]
 	}
 end
