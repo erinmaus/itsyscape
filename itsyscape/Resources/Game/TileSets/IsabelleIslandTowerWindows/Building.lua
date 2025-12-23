@@ -17,8 +17,7 @@
 			material = {
 				shader = "Resources/Shaders/MultiTextureWallDecoration",
 				properties = {
-					outlineThreshold = 0.5,
-					isShadowCaster = false
+					outlineThreshold = 0.5
 				}
 			}
 		}
@@ -30,6 +29,13 @@
 			features = {
 				{ id = "glass", material = "glass", texture = 1 },
 				{ id = "metal", material = "metal", texture = 2 }
+			}
+		},
+		{
+			name = "dragon",
+			features = {
+				{ id = "glass", material = "glass", texture = 3 },
+				{ id = "metal", material = "metal", texture = 4 }
 			}
 		}
 	}

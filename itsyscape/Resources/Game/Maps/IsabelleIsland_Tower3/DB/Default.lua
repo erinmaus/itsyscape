@@ -1008,6 +1008,30 @@ do
 	}
 end
 
+M["Rug_Isabelle3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 58.750000,
+		PositionY = 12.250000,
+		PositionZ = 74.750000,
+		RotationX = 0.000000,
+		RotationY = -0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		ScaleX = 1.500000,
+		ScaleY = 1.500000,
+		ScaleZ = 1.500000,
+		Name = "Rug_Isabelle3",
+		Map = M._MAP,
+		Resource = M["Rug_Isabelle3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Rug_Isabelle",
+		MapObject = M["Rug_Isabelle3"]
+	}
+end
+
 M["Shelf_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

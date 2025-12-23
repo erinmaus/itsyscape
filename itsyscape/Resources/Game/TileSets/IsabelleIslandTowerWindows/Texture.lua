@@ -2,5 +2,7 @@
 	type = "array",
 
 	"Fierbloom.png",
-	"FierbloomWindow.png"
+	"FierbloomWindow.png",
+	"Dragon.png",
+	"DragonWindow.png"
 }

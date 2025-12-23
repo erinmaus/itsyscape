@@ -1108,6 +1108,12 @@ do
 		Resource = Plinth
 	}
 
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 1,
+		Resource = Plinth
+	}
+
 	ItsyScape.Meta.MapObjectSize {
 		SizeX = 3.5,
 		SizeY = 1.5,
