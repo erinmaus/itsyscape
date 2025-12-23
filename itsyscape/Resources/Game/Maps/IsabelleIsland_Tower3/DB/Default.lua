@@ -1532,7 +1532,7 @@ M["Orrery1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 13.000000,
-		PositionY = 0,
+		PositionY = 0.200000,
 		PositionZ = 14.500000,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
@@ -1607,7 +1607,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 13.500000,
 		PositionY = 0.250000,
-		PositionZ = 15.000000,
+		PositionZ = 21.000000,
 		RotationX = 0.000000,
 		RotationY = -0.707107,
 		RotationZ = 0.000000,

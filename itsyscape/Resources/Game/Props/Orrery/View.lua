@@ -98,8 +98,7 @@ function Orrery:new(...)
 			},
 
 			properties = {
-				color = "ffa100",
-				isReflectiveOrRefractive = true
+				color = "ffa100"
 			}
 		})
 	})
@@ -122,8 +121,7 @@ function Orrery:new(...)
 			},
 
 			properties = {
-				color = "ffa100",
-				isReflectiveOrRefractive = true
+				color = "ffa100"
 			}
 		})
 	})
@@ -190,6 +188,59 @@ function Orrery:new(...)
 		COLORS = {
 			Color.fromHexString("5fd3bc")
 		}
+	})
+
+	self.grainBaseGreeble = self:addGreeble(StaticGreeble, {
+		MESH = "Resources/Game/Props/Orrery/Model.lstatic",
+		GROUP = "base.grain",
+		MATERIAL = DecorationMaterial({
+			shader = "Resources/Shaders/SpecularTriplanar",
+			texture = "Resources/Game/Props/Orrery/Grain.png",
+
+			uniforms = {
+				scape_TriplanarScale = { "float", -0.5 },
+				scape_TriplanarOffset = { "float", 0 },
+				scape_TriplanarExponent = { "float", 0 },
+				scape_SpecularWeight = { "float", 0 },
+			}
+		})
+	})
+
+	self.metalBaseGreeble = self:addGreeble(StaticGreeble, {
+		MESH = "Resources/Game/Props/Orrery/Model.lstatic",
+		GROUP = "base.metal",
+		MATERIAL = DecorationMaterial({
+			shader = "Resources/Shaders/SpecularTriplanar",
+			texture = "Resources/Game/Props/Orrery/Metal.png",
+
+			uniforms = {
+				scape_TriplanarScale = { "float", -0.5 },
+				scape_TriplanarOffset = { "float", 0 },
+				scape_TriplanarExponent = { "float", 0 },
+				scape_SpecularWeight = { "float", 0 },
+			},
+
+			properties = {
+				color = "ffa100",
+			}
+		})
+	})
+
+	self.solidBaseGreeble = self:addGreeble(StaticGreeble, {
+		MESH = "Resources/Game/Props/Orrery/Model.lstatic",
+		GROUP = "base.solid",
+		MATERIAL = DecorationMaterial({
+			shader = "Resources/Shaders/Solid",
+			texture = false,
+
+			uniforms = {
+				scape_SpecularWeight = { "float", 0.5 },
+			},
+
+			properties = {
+				color = "30231c"
+			}
+		})
 	})
 end
 
