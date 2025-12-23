@@ -30,11 +30,21 @@ function TimedSkyProp:spawnOrPoofTile()
 end
 
 function TimedSkyProp:getPropState()
-	local mapScript = Utility.Peep.getMapScript(self)
+	local mapScript
+
+	local instance = Utility.Peep.getInstance(self)
+	for _, layer in instance:iterateLayers() do
+		local m = instance:getMapScriptByLayer(layer)
+		if m and m:hasBehavior(SkyBehavior) then
+			mapScript = m
+			break
+		end
+	end
+
 	local sky = mapScript and mapScript:getBehavior(SkyBehavior)
 
 	return {
-		offset = sky and sky.currentOffsetSeconds or 0
+		offset = sky and sky.currentSeconds or 0
 	}
 end
 

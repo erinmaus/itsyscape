@@ -30,6 +30,7 @@ function SkyBehavior:new()
 	self.startOffsetSeconds = 0
 	self.stopOffsetSeconds = 0
 	self.offsetTimeDelta = 0
+	self.currentSeconds = 0
 
 	self.moonNormal = Vector()
 	self.moonDistance = 35

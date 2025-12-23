@@ -1352,3 +1352,31 @@ do
 		Resource = Rug
 	}
 end
+
+do
+	local Orrery = ItsyScape.Resource.Prop "Orrery"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.TimedSkyProp",
+		Resource = Orrery
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 7.5,
+		SizeZ = 3.5,
+		MapObject = Orrery
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Anachronistic orrery",
+		Language = "en-US",
+		Resource = Orrery
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An orrery from antiquity, when humans thought the universe was geocentric. Since then, it has been repaired and updated with a more modern rendition after the cataclysmic event that began the Age of Humanity.",
+		Language = "en-US",
+		Resource = Orrery
+	}
+end

@@ -333,7 +333,7 @@ do
 		PositionX = 5.000000,
 		PositionY = 0.000000,
 		PositionZ = 15.500000,
-		RotationX = -0.000000,
+		RotationX = 0.000000,
 		RotationY = -1.000000,
 		RotationZ = 0.000000,
 		RotationW = 0.000000,
@@ -1525,6 +1525,31 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "LongTable_Isabelle",
 		MapObject = M["LongTable_Isabelle1"]
+	}
+end
+
+M["Orrery1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 13.000000,
+		PositionY = 0,
+		PositionZ = 14.500000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Orrery1",
+		Map = M._MAP,
+		Layer = 7,
+		Resource = M["Orrery1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Orrery",
+		MapObject = M["Orrery1"]
 	}
 end
 

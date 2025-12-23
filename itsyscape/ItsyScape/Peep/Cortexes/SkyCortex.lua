@@ -219,6 +219,7 @@ function SkyCortex:update(delta)
 
 			local instance = Utility.Peep.getInstance(peep)
 			local seconds = self:updateSeconds(delta, sky, instance)
+			sky.currentSeconds = seconds
 
 			local baseLayer = instance:getBaseLayer()
 
