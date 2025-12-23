@@ -1,21 +1,7 @@
 {
 	{
-		tileSetID = "YendorianJungle2",
 		transform =
 		{
-			origin =
-			{
-				0,
-				0,
-				0,
-			},
-			rotation =
-			{
-				0,
-				0,
-				0,
-				1,
-			},
 			translation =
 			{
 				0,
@@ -28,17 +14,6 @@
 				1,
 				1,
 			},
-		},
-		autoMask = true,
-		maskID =
-		{
-			default = true,
-		},
-	},
-	{
-		tileSetID = "Draft",
-		transform =
-		{
 			origin =
 			{
 				0,
@@ -52,6 +27,21 @@
 				0,
 				1,
 			},
+		},
+		autoMask = true,
+		maskID =
+		{
+			default = true,
+		},
+		tileSetID = "YendorianJungle2",
+	},
+	{
+		input =
+		{
+			disabled = true,
+		},
+		transform =
+		{
 			translation =
 			{
 				54.750000,
@@ -64,21 +54,23 @@
 				1,
 				1,
 			},
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
 		},
-		input =
-		{
-			disabled = true,
-		},
+		tileSetID = "Draft",
 		curve =
 		{
-			max =
-			{
-				8,
-				0,
-				160,
-			},
-			width = 4,
-			height = 80,
 			linear = true,
 			axis =
 			{
@@ -948,16 +940,57 @@
 					-1,
 				},
 			},
-			unit = 2,
 			min =
 			{
 				0,
 				0,
 				0,
 			},
+			max =
+			{
+				8,
+				0,
+				160,
+			},
+			height = 80,
+			unit = 2,
+			width = 4,
 		},
 	},
 	{
+		input =
+		{
+			disabled = true,
+		},
+		transform =
+		{
+			translation =
+			{
+				36,
+				12.050000,
+				36,
+			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+		},
+		tileSetID = "YendorianJungle2",
 		polygonMask =
 		{
 			{
@@ -1147,14 +1180,31 @@
 				},
 			},
 		},
-		tileSetID = "YendorianJungle2",
+		wallHack =
+		{
+			enabled = false,
+		},
+	},
+	{
 		transform =
 		{
+			translation =
+			{
+				45,
+				30,
+				45,
+			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 			origin =
 			{
+				15,
 				0,
-				0,
-				0,
+				15,
 			},
 			rotation =
 			{
@@ -1163,29 +1213,12 @@
 				0,
 				1,
 			},
-			translation =
-			{
-				36,
-				12.050000,
-				36,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 		},
-		input =
+		tileSetID = "YendorianJungle2",
+		links =
 		{
-			disabled = true,
+			6,
 		},
-		wallHack =
-		{
-			enabled = false,
-		},
-	},
-	{
 		polygonMask =
 		{
 			{
@@ -1307,27 +1340,25 @@
 				},
 			},
 		},
-		tileSetID = "YendorianJungle2",
+		wallHack =
+		{
+			enabled = true,
+			map = true,
+			global = true,
+		},
+	},
+	{
+		input =
+		{
+			disabled = true,
+		},
 		transform =
 		{
-			origin =
-			{
-				15,
-				0,
-				15,
-			},
-			rotation =
-			{
-				0,
-				0,
-				0,
-				1,
-			},
 			translation =
 			{
-				45,
-				30,
-				45,
+				58,
+				15.500000,
+				15,
 			},
 			scale =
 			{
@@ -1335,22 +1366,6 @@
 				1,
 				1,
 			},
-		},
-		links =
-		{
-			6,
-		},
-		wallHack =
-		{
-			enabled = true,
-			global = true,
-			map = true,
-		},
-	},
-	{
-		tileSetID = "Draft",
-		transform =
-		{
 			origin =
 			{
 				1,
@@ -1364,33 +1379,10 @@
 				0,
 				0.999498,
 			},
-			translation =
-			{
-				58,
-				15.500000,
-				15,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 		},
-		input =
-		{
-			disabled = true,
-		},
+		tileSetID = "Draft",
 		curve =
 		{
-			max =
-			{
-				2,
-				0,
-				88,
-			},
-			width = 1,
-			height = 44,
 			linear = true,
 			axis =
 			{
@@ -1894,19 +1886,38 @@
 					0.707107,
 				},
 			},
-			unit = 2,
 			min =
 			{
 				0,
 				0,
 				0,
 			},
+			max =
+			{
+				2,
+				0,
+				88,
+			},
+			height = 44,
+			unit = 2,
+			width = 1,
 		},
 	},
 	{
-		tileSetID = "YendorianJungle2",
 		transform =
 		{
+			translation =
+			{
+				55.750000,
+				30,
+				73,
+			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 			origin =
 			{
 				9,
@@ -1920,11 +1931,28 @@
 				0,
 				1,
 			},
+		},
+		tileSetID = "YendorianJungle2",
+		links =
+		{
+			4,
+			8,
+		},
+		wallHack =
+		{
+			enabled = true,
+			map = true,
+			global = true,
+		},
+	},
+	{
+		transform =
+		{
 			translation =
 			{
-				55.750000,
-				30,
-				73,
+				45,
+				48,
+				45,
 			},
 			scale =
 			{
@@ -1932,20 +1960,25 @@
 				1,
 				1,
 			},
+			origin =
+			{
+				15,
+				0,
+				15,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
 		},
+		tileSetID = "YendorianJungle2",
 		links =
 		{
-			4,
-			8
+			8,
 		},
-		wallHack =
-		{
-			enabled = true,
-			global = true,
-			map = true,
-		},
-	},
-	{
 		polygonMask =
 		{
 			{
@@ -2067,27 +2100,21 @@
 				},
 			},
 		},
-		tileSetID = "YendorianJungle2",
+		wallHack =
+		{
+			enabled = true,
+			map = true,
+			global = true,
+		},
+	},
+	{
 		transform =
 		{
-			origin =
-			{
-				15,
-				0,
-				15,
-			},
-			rotation =
-			{
-				0,
-				0,
-				0,
-				1,
-			},
 			translation =
 			{
-				45,
-				48,
-				45,
+				72.750000,
+				48.250000,
+				54.025274,
 			},
 			scale =
 			{
@@ -2095,22 +2122,6 @@
 				1,
 				1,
 			},
-		},
-		links =
-		{
-			8,
-		},
-		wallHack =
-		{
-			enabled = true,
-			global = true,
-			map = true,
-		},
-	},
-	{
-		tileSetID = "YendorianJungle2",
-		transform =
-		{
 			origin =
 			{
 				9,
@@ -2124,29 +2135,18 @@
 				0,
 				0.999880,
 			},
-			translation =
-			{
-				72.750000,
-				48.250000,
-				54.025274,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 		},
+		tileSetID = "YendorianJungle2",
 		links =
 		{
 			7,
-			4
+			4,
 		},
 		wallHack =
 		{
 			enabled = true,
-			global = true,
 			map = true,
+			global = true,
 		},
 	},
 }

@@ -783,6 +783,36 @@ do
 end
 
 do
+	local Desk = ItsyScape.Resource.Prop "Desk_Isabelle" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Desk
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 4,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = Desk
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite desk",
+		Language = "en-US",
+		Resource = Desk
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Better not be reading or writing anything inappropriate on a desk that fine!",
+		Language = "en-US",
+		Resource = Desk
+	}
+end
+
+do
 	ItsyScape.Resource.Prop "Armoire_Isabelle" {
 		ItsyScape.Action.Dresser_Search()
 	}
@@ -860,13 +890,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Isabelle's desk chair",
+		Value = "Exquisite comfy chair",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Of course Isabelle could afford such a comfy chair.",
+		Value = "Sitting on that is like floating on a cloud, with the added benefit of awesome lumbar support!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
 	}
@@ -926,7 +956,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Lights the way.",
+		Value = "An oil-powered lamp. Wouldn't want the job to go through and top all of these lamps up!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
 	}
@@ -1206,7 +1236,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Table",
+		Value = "Exquisite table",
 		Language = "en-US",
 		Resource = Table
 	}
@@ -1234,7 +1264,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Long table",
+		Value = "Exquisite long table",
 		Language = "en-US",
 		Resource = LongTable
 	}
@@ -1262,7 +1292,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Bookshelf",
+		Value = "Exquisite bookshelf",
 		Language = "en-US",
 		Resource = Bookshelf
 	}
@@ -1311,13 +1341,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Fancy rug",
+		Value = "Exquisite gilded rug",
 		Language = "en-US",
 		Resource = Rug
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "A long, gilded rug. Wouldn't want to spill coffee on that!",
+		Value = "Of course it's gilded and made from the finest fabrics money can buy - wouldn't want to spill coffee on that!",
 		Language = "en-US",
 		Resource = Rug
 	}
