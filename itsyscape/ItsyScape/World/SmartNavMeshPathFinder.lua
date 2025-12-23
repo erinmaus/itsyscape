@@ -159,7 +159,7 @@ function SmartNavMeshPathFinder:find(start, goal)
 			local collision = collisions[#collisions]
 			if collision then
 				local a1 = previous or current
-				local b1 = previous and current or next
+				local b1 = previous and current or next or current
 				local forward1 = a1:direction(b1)
 
 				local c = Vector(collision.otherShape.center.x, 0, collision.otherShape.center.y)
