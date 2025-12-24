@@ -1553,15 +1553,144 @@ do
 	}
 end
 
+M["ParadoxGate2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23.000000,
+		PositionY = 0.000000,
+		PositionZ = 42.250000,
+		RotationX = 0.000000,
+		RotationY = 0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ParadoxGate2",
+		Map = M._MAP,
+		Layer = 9,
+		Resource = M["ParadoxGate2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ParadoxGate",
+		MapObject = M["ParadoxGate2"]
+	}
+end
+
+M["ParadoxGate3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 9.312500,
+		PositionY = 0.000000,
+		PositionZ = 38.125000,
+		RotationX = 0.000000,
+		RotationY = 0.465910,
+		RotationZ = 0.000000,
+		RotationW = 0.884832,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ParadoxGate3",
+		Map = M._MAP,
+		Layer = 9,
+		Resource = M["ParadoxGate3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ParadoxGate",
+		MapObject = M["ParadoxGate3"]
+	}
+end
+
+M["ParadoxGate4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35.812500,
+		PositionY = 0.000000,
+		PositionZ = 38.343750,
+		RotationX = 0.000000,
+		RotationY = -0.852103,
+		RotationZ = 0.000000,
+		RotationW = -0.523374,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ParadoxGate4",
+		Map = M._MAP,
+		Layer = 9,
+		Resource = M["ParadoxGate4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ParadoxGate",
+		MapObject = M["ParadoxGate4"]
+	}
+end
+
+M["ParadoxGate5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 3.093750,
+		PositionY = 0.000000,
+		PositionZ = 29.718750,
+		RotationX = 0.000000,
+		RotationY = 0.227209,
+		RotationZ = 0.000000,
+		RotationW = 0.973846,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ParadoxGate5",
+		Map = M._MAP,
+		Layer = 9,
+		Resource = M["ParadoxGate5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ParadoxGate",
+		MapObject = M["ParadoxGate5"]
+	}
+end
+
+M["ParadoxGate6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41.625000,
+		PositionY = 0.000000,
+		PositionZ = 30.718750,
+		RotationX = 0.000000,
+		RotationY = 0.949833,
+		RotationZ = 0.000000,
+		RotationW = 0.312757,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "ParadoxGate6",
+		Map = M._MAP,
+		Layer = 9,
+		Resource = M["ParadoxGate6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ParadoxGate",
+		MapObject = M["ParadoxGate6"]
+	}
+end
+
 M["Portal"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23,
-		PositionY = 9,
-		PositionZ = 21,
-		ScaleX = 1.5,
-		ScaleY = 1.5,
-		ScaleZ = 1.5,
+		PositionX = 23.000000,
+		PositionY = 9.000000,
+		PositionZ = 21.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 0.000000,
+		ScaleX = 1.500000,
+		ScaleY = 1.500000,
+		ScaleZ = 1.500000,
 		Name = "Portal",
 		Map = M._MAP,
 		Layer = 9,

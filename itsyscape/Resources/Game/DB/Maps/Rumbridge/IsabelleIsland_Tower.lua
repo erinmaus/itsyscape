@@ -1380,3 +1380,31 @@ do
 		Resource = Orrery
 	}
 end
+
+do
+	local ParadoxGate = ItsyScape.Resource.Prop "ParadoxGate"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ParadoxGate.ParadoxGate",
+		Resource = ParadoxGate
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 7,
+		SizeZ = 2,
+		MapObject = ParadoxGate
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Paradox gate",
+		Language = "en-US",
+		Resource = ParadoxGate
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Powers portals.",
+		Language = "en-US",
+		Resource = ParadoxGate
+	}
+end

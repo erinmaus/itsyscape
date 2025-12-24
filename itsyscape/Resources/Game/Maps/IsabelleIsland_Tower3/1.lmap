@@ -30269,8 +30269,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30283,8 +30283,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30297,8 +30297,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30311,8 +30311,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30338,8 +30338,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30352,8 +30352,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30366,8 +30366,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30380,8 +30380,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30394,8 +30394,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30408,8 +30408,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30422,8 +30422,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30449,8 +30449,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -30463,8 +30463,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -30477,8 +30477,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -30491,8 +30491,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -31477,8 +31477,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -31517,8 +31517,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -31544,8 +31544,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -31623,8 +31623,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -31650,8 +31650,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -31664,8 +31664,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -32676,8 +32676,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -32716,8 +32716,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -32743,8 +32743,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -32822,8 +32822,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -32849,8 +32849,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -32863,8 +32863,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -32877,8 +32877,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -32891,8 +32891,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -33875,8 +33875,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -33889,8 +33889,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -33903,8 +33903,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -33917,8 +33917,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -33944,8 +33944,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -34023,8 +34023,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -34050,8 +34050,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -34064,8 +34064,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -34078,8 +34078,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -34092,8 +34092,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -35141,8 +35141,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -35220,8 +35220,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -36334,8 +36334,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -36413,8 +36413,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -37462,8 +37462,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -37476,8 +37476,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -37490,8 +37490,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -37504,8 +37504,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -37531,8 +37531,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -37610,8 +37610,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -37637,8 +37637,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -37651,8 +37651,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -37665,8 +37665,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -37679,8 +37679,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -38663,8 +38663,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -38703,8 +38703,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -38730,8 +38730,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -38809,8 +38809,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -38836,8 +38836,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -38850,8 +38850,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -38864,8 +38864,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -38878,8 +38878,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -39862,8 +39862,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -39902,8 +39902,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -39929,8 +39929,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -39943,8 +39943,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -39957,8 +39957,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -39971,8 +39971,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -39985,8 +39985,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -39999,8 +39999,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -40013,8 +40013,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -40040,8 +40040,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -40054,8 +40054,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -40068,8 +40068,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -40082,8 +40082,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -41065,8 +41065,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -41079,8 +41079,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -41093,8 +41093,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -41107,8 +41107,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -41238,8 +41238,8 @@
 			},
 			flags =
 			{
+				["building"] = true,
 				["impassable"] = true,
-				["building"] = true,
 			},
 		},
 		{
@@ -41252,8 +41252,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -41266,8 +41266,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{
@@ -41280,8 +41280,8 @@
 			},
 			flags =
 			{
-				["impassable"] = true,
 				["building"] = true,
+				["impassable"] = true,
 			},
 		},
 		{

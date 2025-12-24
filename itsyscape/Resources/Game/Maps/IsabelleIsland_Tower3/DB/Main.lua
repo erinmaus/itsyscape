@@ -739,33 +739,3 @@ do
 		MapObject = M["Staircase_ToRoof"]
 	}
 end
-
-M["ProjectedGlyph"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 23,
-		PositionY = 0,
-		PositionZ = 21,
-		Name = "ProjectedGlyph",
-		Map = M._MAP,
-		Layer = 9,
-		Resource = M["ProjectedGlyph"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "ProjectedGlyph",
-		MapObject = M["ProjectedGlyph"]
-	}
-
-	ItsyScape.Meta.OldOneDescription {
-		Value = "Sharpen the blade, infinitely thin, to slice through the skin and muscle and bone of reality. Let the blood let. Cleanse the humors of the Realm.",
-		Resource = M["ProjectedGlyph"]
-	}
-
-	ItsyScape.Meta.MapObjectSize {
-		SizeX = 24,
-		SizeY = 0,
-		SizeZ = 24,
-		MapObject = M["ProjectedGlyph"]
-	}
-end

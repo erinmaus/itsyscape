@@ -19,6 +19,7 @@
 #include "nbunny/optimaus/resource.hpp"
 #include "nbunny/optimaus/scene.hpp"
 #include "nbunny/optimaus/static_mesh.hpp"
+#include "nbunny/optimaus/map_probe.hpp"
 
 namespace nbunny
 {
@@ -100,6 +101,9 @@ namespace nbunny
 			DecorationSceneNode& from,
 			DecorationSceneNode& to,
 			float delta);
+
+		void update_bounds();
+		void update_bounds(const MapCurve& map_curve);
 
 		void draw(Renderer& renderer, float delta) override;
 	};

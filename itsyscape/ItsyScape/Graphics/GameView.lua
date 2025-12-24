@@ -53,8 +53,9 @@ local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 local WeatherMap = require "ItsyScape.World.WeatherMap"
 local Block = require "ItsyScape.World.GroundDecorations.Block"
 local SkyboxSceneNode = require "ItsyScape.Graphics.SkyboxSceneNode"
-local NShaderCache = require "nbunny.optimaus.shadercache"
+local NMapCurve = require "nbunny.optimaus.mapcurve"
 local NProbe = require "nbunny.optimaus.probe"
+local NShaderCache = require "nbunny.optimaus.shadercache"
 
 local GameView = Class()
 GameView.MAP_MESH_DIVISIONS = 128
@@ -1664,20 +1665,22 @@ function GameView:_updateMapNode(m, node)
 	local min, max = Vector(0), Vector(m.map:getWidth() * m.map:getCellSize(), 0, m.map:getHeight() * m.map:getCellSize())
 	local halfSize = (max - min) / 2
 
-	local newMin, newMax = min, max
-	for _, curve in ipairs(m.curves or {}) do
-		local positions = curve:getPositions()
+	if Class.isCompatibleType(m, MapMeshSceneNode) then
+		local newMin, newMax = min, max
+		for _, curve in ipairs(m.curves or {}) do
+			local positions = curve:getPositions()
 
-		for i = 1, positions:length() do
-			local position = positions:get(i):getValue()
-			newMin = newMin:min(position - halfSize)
-			newMin = newMin:min(position + halfSize)
-			newMax = newMax:max(position - halfSize)
-			newMax = newMax:max(position + halfSize)
+			for i = 1, positions:length() do
+				local position = positions:get(i):getValue()
+				newMin = newMin:min(position - halfSize)
+				newMin = newMin:min(position + halfSize)
+				newMax = newMax:max(position - halfSize)
+				newMax = newMax:max(position + halfSize)
+			end
 		end
-	end
 
-	node:setBounds(newMin, newMax)
+		node:setBounds(newMin, newMax)
+	end
 
 	local material = node:getMaterial()
 	if m.curves and #m.curves > 0 then
@@ -1744,10 +1747,13 @@ function GameView:bendMap(layer, ...)
 
 	local curveInfos = { ... }
 	local curves = {}
+	local nativeCurve = curveInfos[1] and NMapCurve(curveInfos[1])
 	for _, curveInfo in ipairs(curveInfos) do
 		local curve = MapCurve(m.map, curveInfo)
 		table.insert(curves, curve)
 	end
+
+	m.nativeCurve = nativeCurve
 
 	local textures = {}
 	for i = 1, #curves do
@@ -1771,10 +1777,12 @@ function GameView:bendMap(layer, ...)
 		if decorationInfo.layer == layer then
 			for _, sceneNode in ipairs(decorationInfo.sceneNodes) do
 				self:_updateMapNode(m, sceneNode)
+				sceneNode:getHandle():updateBounds(nativeCurve)
 			end
 			
 			for _, sceneNode in ipairs(decorationInfo.alphaSceneNodes) do
 				self:_updateMapNode(m, sceneNode)
+				sceneNode:getHandle():updateBounds(nativeCurve)
 			end
 		end
 	end
@@ -2262,6 +2270,7 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 					sceneNode:getMaterial():setTextures(texture)
 				else
 					sceneNode:fromDecoration(subDecoration, staticMesh:getResource())
+					sceneNode:getHandle():updateBounds(m.nativeCurve)
 					sceneNode:getMaterial():setTextures(texture)
 				end
 
@@ -2290,6 +2299,7 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 					else
 						alphaSceneNode = DecorationSceneNode()
 						alphaSceneNode:fromDecoration(subDecoration, staticMesh:getResource())
+						alphaSceneNode:getHandle():updateBounds(m.nativeCurve)
 					end
 
 					alphaSceneNode:getMaterial():setTextures(texture)
