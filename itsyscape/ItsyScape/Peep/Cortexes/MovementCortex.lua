@@ -358,6 +358,10 @@ local function merge(...)
 end
 
 function MovementCortex:updateNavigationMesh(layer)
+	if _APP and Class.isCompatibleType(_APP, require "ItsyScape.Editor.EditorApplication") then
+		return
+	end
+
 	local map = self:getDirector():getMap(layer)
 
 	local w = self.worlds[layer]

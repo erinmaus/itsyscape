@@ -37,7 +37,8 @@
 		width = 128,
 		height = 128,
 		name = "stone",
-		step = 0.21
+		step = 0.21,
+		mask = false
 	},
 
 	{
@@ -46,7 +47,8 @@
 		width = 128,
 		height = 128,
 		name = "wood",
-		step = 0.11
+		step = 0.11,
+		mask = false
 	},
 
 	{
@@ -62,7 +64,8 @@
 		y = 640,
 		width = 128,
 		height = 128,
-		name = "invisible"
+		name = "invisible",
+		mask = false
 	},
 
 	{
@@ -70,6 +73,7 @@
 		y = 640,
 		width = 128,
 		height = 128,
-		name = "black"
+		name = "black",
+		mask = false
 	}
 }

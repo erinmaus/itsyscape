@@ -324,7 +324,7 @@ static bool get_attrib(
 
 void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, StaticMeshInstance& static_mesh)
 {
-	std::vector<Vertex> buffer;
+	buffer.clear();
 
 	glm::vec3 max(-INFINITY);
 	glm::vec3 min(INFINITY);
@@ -549,17 +549,11 @@ void nbunny::DecorationSceneNode::update_bounds()
 	glm::vec3 max(-INFINITY);
 	glm::vec3 min(INFINITY);
 
-	auto vertices = (const Vertex*)mesh->mapVertexData();
-	std::size_t num_vertices = mesh->getVertexCount();
-
-	for (std::size_t i = 0; i < num_vertices; ++i)
+	for (auto& vertex: buffer)
 	{
-		auto& vertex = vertices[i];
 		min = glm::min(min, vertex.position);
 		max = glm::max(max, vertex.position);
 	}
-
-	mesh->unmapVertexData(0, 0);
 
 	set_min(min);
 	set_max(max);
@@ -575,22 +569,15 @@ void nbunny::DecorationSceneNode::update_bounds(const MapCurve& map_curve)
 	glm::vec3 max(-INFINITY);
 	glm::vec3 min(INFINITY);
 
-	auto vertices = (const Vertex*)mesh->mapVertexData();
-	std::size_t num_vertices = mesh->getVertexCount();
-
 	glm::quat q;
-	for (std::size_t i = 0; i < num_vertices; ++i)
+	for (auto& vertex: buffer)
 	{
-		auto& vertex = vertices[i];
 		auto position = vertex.position;
-
 		map_curve.transform(position, q);
 
 		min = glm::min(min, position);
 		max = glm::max(max, position);
 	}
-
-	mesh->unmapVertexData(0, 0);
 
 	set_min(min);
 	set_max(max);

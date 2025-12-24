@@ -71,6 +71,8 @@ namespace nbunny
 			glm::vec4 color;
 		};
 
+		std::vector<Vertex> buffer;
+
 		enum
 		{
 			MIN_POSITION_COMPONENTS = 3,
