@@ -22,7 +22,7 @@ local PortalView = Class(PropView)
 
 PortalView.EMISSION_STRATEGY_ENABLED = {
 	type = "RandomDelayEmissionStrategy",
-	count = { 10, 11 },
+	count = { 20, 25 },
 	delay = { 1 / 30 },
 	duration = { math.huge }
 }
@@ -35,23 +35,24 @@ PortalView.EMISSION_STRATEGY_DISABLED = {}
 PortalView.PARTICLE_SYSTEM_PORTAL = {
 	texture = "Resources/Game/Props/Portal_Chasm/Particle.png",
 	columns = 4,
+	numParticles = 200,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
 			radius = { 0, 0 },
-			speed = { 1.5, 1.6 },
+			speed = { 0.7, 0.8 },
 			zRange = { 0, 0 }
 		},
 		{
 			type = "RandomColorEmitter",
 			colors = {
-				{ 1.0, 1.0, 1.0, 0.0 },
+				{ 0.0, 0.0, 0.0, 0.0 },
 			}
 		},
 		{
 			type = "RandomLifetimeEmitter",
-			age = { 1, 1 }
+			age = { 2, 2 }
 		},
 		{
 			type = "RandomScaleEmitter",
@@ -83,12 +84,13 @@ PortalView.PARTICLE_SYSTEM_PORTAL = {
 PortalView.PARTICLE_SYSTEM_ENERGY = {
 	texture = "Resources/Game/Props/Portal_Chasm/Particle.png",
 	columns = 4,
+	numParticles = 300,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 1.5, 1.6 },
-			speed = { 2.5, 2.75 },
+			radius = { 1, 1.2 },
+			speed = { 1, 1.1 },
 			zRange = { 0, 0 }
 		},
 		{
@@ -99,7 +101,7 @@ PortalView.PARTICLE_SYSTEM_ENERGY = {
 		},
 		{
 			type = "RandomLifetimeEmitter",
-			age = { 1, 1 }
+			age = { 2, 2 }
 		},
 		{
 			type = "RandomScaleEmitter",
@@ -199,7 +201,7 @@ function PortalView:update(delta)
 	local parentCamera = parentRenderer:getCamera()
 	local selfCamera = self.camera
 
-	local colorDelta = math.abs(math.sin(love.timer.getTime() * math.pi))
+	local colorDelta = math.abs(math.sin(love.timer.getTime() / math.pi))
 	local color = PortalView.COLOR_FROM:lerp(PortalView.COLOR_TO, colorDelta)
 
 	if self.energy then

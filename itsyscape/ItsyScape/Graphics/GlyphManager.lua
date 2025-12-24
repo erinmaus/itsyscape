@@ -218,6 +218,7 @@ function GlyphManager:asyncProjectAll(p, root, normal, d, time, axis)
 	end
 
 	if channel.glyph ~= root then
+		channel.glyph = root
 		channel.current = nil
 	end
 

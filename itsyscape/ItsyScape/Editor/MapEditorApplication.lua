@@ -2831,6 +2831,10 @@ function MapEditorApplication:duplicateLayer(layer)
 
 	local newMap = Map.loadFromTable(self:getGame():getDirector():getMap(layer):serialize())
 	local newMeta = self:buildMeta(self.meta and self.meta[layer], newMap, self.mapScriptPeeps[layer], self.mapScriptCurves[layer])
+	if self.meta then
+		self.meta[newLayer] = newMeta
+	end
+
 	self:getGame():getDirector():setMap(newLayer, newMap)
 
 	local instance = self:getGame():getStage():getPeepInstance()
@@ -2907,6 +2911,8 @@ function MapEditorApplication:unloadLayer(layer)
 			break
 		end
 	end
+
+	self:unsetGizmo()
 end
 
 function MapEditorApplication:unload()

@@ -635,16 +635,9 @@ end
 M["Staircase_ToLibrary"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 3.500000,
-		PositionY = 0.000000,
-		PositionZ = 4.500000,
-		RotationX = 0.000000,
-		RotationY = 0.000000,
-		RotationZ = 0.000000,
-		RotationW = 1.000000,
-		ScaleX = 1.000000,
-		ScaleY = 1.000000,
-		ScaleZ = 1.000000,
+		PositionX = 3.5,
+		PositionY = 0,
+		PositionZ = 4.5,
 		Name = "Staircase_ToLibrary",
 		Map = M._MAP,
 		Layer = 6,
@@ -688,5 +681,91 @@ do
 		PositionX = 5,
 		PositionZ = 5,
 		MapObject = M["Staircase_ToLibrary"]
+	}
+end
+
+M["Staircase_ToRoof"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 5,
+		PositionY = 0,
+		PositionZ = 2.5,
+		RotationX = 0,
+		RotationY = 0.707107,
+		RotationZ = 0,
+		RotationW = 0.707107,
+		Name = "Staircase_ToRoof",
+		Map = M._MAP,
+		Layer = 8,
+		Resource = M["Staircase_ToRoof"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "IsabelleIslandTowerSpiralStaircase",
+		MapObject = M["Staircase_ToRoof"]
+	}
+
+	local ClimbAction = ItsyScape.Action.Climb()
+
+	ItsyScape.Meta.ClimbDestination {
+		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_ClimbUpStairs",
+		FromLayer = 8,
+		ToLayer = 9,
+		Action = ClimbAction
+	}
+
+	ItsyScape.Meta.ClimbDestination {
+		Cutscene = ItsyScape.Resource.Cutscene "IsabelleIsland_Tower_ClimbDownStairs",
+		FromLayer = 9,
+		ToLayer = 8,
+		Action = ClimbAction
+	}
+
+	M["Staircase_ToRoof"] {
+		ClimbAction
+	}
+
+	ItsyScape.Meta.MapObjectAnchor {
+		Layer = 8,
+		PositionX = 5,
+		PositionZ = 2.5,
+		MapObject = M["Staircase_ToRoof"]
+	}
+
+	ItsyScape.Meta.MapObjectAnchor {
+		Layer = 9,
+		PositionX = 21,
+		PositionZ = 3,
+		MapObject = M["Staircase_ToRoof"]
+	}
+end
+
+M["ProjectedGlyph"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 0,
+		PositionZ = 21,
+		Name = "ProjectedGlyph",
+		Map = M._MAP,
+		Layer = 9,
+		Resource = M["ProjectedGlyph"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ProjectedGlyph",
+		MapObject = M["ProjectedGlyph"]
+	}
+
+	ItsyScape.Meta.OldOneDescription {
+		Value = "Sharpen the blade, infinitely thin, to slice through the skin and muscle and bone of reality. Let the blood let. Cleanse the humors of the Realm.",
+		Resource = M["ProjectedGlyph"]
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 24,
+		SizeY = 0,
+		SizeZ = 24,
+		MapObject = M["ProjectedGlyph"]
 	}
 end

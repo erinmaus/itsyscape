@@ -1553,6 +1553,27 @@ do
 	}
 end
 
+M["Portal"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 23,
+		PositionY = 9,
+		PositionZ = 21,
+		ScaleX = 1.5,
+		ScaleY = 1.5,
+		ScaleZ = 1.5,
+		Name = "Portal",
+		Map = M._MAP,
+		Layer = 9,
+		Resource = M["Portal"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Portal_Chasm",
+		MapObject = M["Portal"]
+	}
+end
+
 M["Rug_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

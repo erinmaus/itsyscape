@@ -39,10 +39,7 @@ function YendorianJungleGround:new()
 			"plank.large.2",
 			"plank.large.2",
 			"plank.large.2",
-			"plank.large.2",
-			"plank.large.3",
-			"plank.large.3",
-			"plank.large.3"
+			"plank.large.2"
 		},
 
 		COLORS = {
@@ -117,7 +114,7 @@ function YendorianJungleGround:new()
 		},
 
 		COLORS = {
-			Color.fromHexString("bfa797")
+			Color.fromHexString("b5b3c4")
 		}
 	})
 end

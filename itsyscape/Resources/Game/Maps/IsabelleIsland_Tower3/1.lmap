@@ -30269,8 +30269,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -30283,8 +30283,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -30297,8 +30297,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -30311,200 +30311,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -30531,6 +30338,7 @@
 			},
 			flags =
 			{
+				["impassable"] = true,
 				["building"] = true,
 			},
 		},
@@ -30544,662 +30352,8 @@
 			},
 			flags =
 			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 7, topRight = 7, bottomLeft = 7, bottomRight = 7,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 7, topRight = 7, bottomLeft = 7, bottomRight = 7,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 7, topRight = 7, bottomLeft = 7, bottomRight = 7,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -31213,6 +30367,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -31226,6 +30381,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -31239,6 +30395,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -31252,6 +30409,7 @@
 			flags =
 			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -31265,179 +30423,6 @@
 			flags =
 			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -31464,33 +30449,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -31504,33 +30463,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -31544,20 +30477,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -31571,126 +30491,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
-				["building"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -31974,6 +30775,1205 @@
 			},
 		},
 		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 5, topRight = 5, bottomLeft = 5, bottomRight = 5,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["impassable"] = true,
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 13, topRight = 13, bottomLeft = 13, bottomRight = 13,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 9, topRight = 9, bottomLeft = 9, bottomRight = 9,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 7, topRight = 7, bottomLeft = 7, bottomRight = 7,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 7, topRight = 7, bottomLeft = 7, bottomRight = 7,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 7, topRight = 7, bottomLeft = 7, bottomRight = 7,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
 			topLeft = 7, topRight = 7, bottomLeft = 7, bottomRight = 7,
 			red = 1.000000, green = 1.000000, blue = 1.000000,
 			edge = 2, flat = 1, decals = {  },
@@ -32676,20 +32676,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -32717,19 +32704,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -32744,19 +32731,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -32823,19 +32810,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -32850,7 +32837,20 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -32863,8 +32863,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -32877,8 +32877,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -32891,8 +32891,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -33875,8 +33875,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -33889,8 +33889,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -33903,8 +33903,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -33917,20 +33917,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -33945,19 +33932,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -34024,19 +34011,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -34051,7 +34038,20 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -34064,8 +34064,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -34078,8 +34078,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -34092,8 +34092,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -35141,20 +35141,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -35221,7 +35208,20 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -36334,20 +36334,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -36414,7 +36401,20 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -37462,8 +37462,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -37476,8 +37476,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -37490,8 +37490,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -37504,20 +37504,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -37532,19 +37519,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -37611,19 +37598,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -37638,7 +37625,20 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -37651,8 +37651,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -37665,8 +37665,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -37679,8 +37679,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -38663,20 +38663,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -38704,19 +38691,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -38731,19 +38718,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -38810,19 +38797,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -38837,7 +38824,20 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -38850,8 +38850,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -38864,8 +38864,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -38878,8 +38878,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -39862,20 +39862,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -39903,19 +39890,19 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -39930,7 +39917,20 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -39943,8 +39943,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -39957,8 +39957,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -39971,8 +39971,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -39985,8 +39985,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -39999,8 +39999,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -40013,20 +40013,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -40041,7 +40028,20 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -40054,8 +40054,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -40068,8 +40068,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -40082,8 +40082,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -41065,8 +41065,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -41079,8 +41079,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -41093,8 +41093,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -41107,20 +41107,7 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
-			},
-		},
-		{
-			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
-			red = 1.000000, green = 1.000000, blue = 1.000000,
-			edge = 2, flat = 1, decals = {  },
-			tileSetID = "YendorianJungle2",
-			data =
-			{
-			},
-			flags =
-			{
 				["building"] = true,
 			},
 		},
@@ -41239,7 +41226,20 @@
 			flags =
 			{
 				["building"] = true,
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 2, flat = 1, decals = {  },
+			tileSetID = "YendorianJungle2",
+			data =
+			{
+			},
+			flags =
+			{
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -41252,8 +41252,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -41266,8 +41266,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{
@@ -41280,8 +41280,8 @@
 			},
 			flags =
 			{
-				["building"] = true,
 				["impassable"] = true,
+				["building"] = true,
 			},
 		},
 		{

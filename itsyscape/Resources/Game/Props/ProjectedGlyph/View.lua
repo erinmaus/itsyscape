@@ -65,7 +65,7 @@ function ProjectedGlyph:generate()
 	local mapMesh = MapMeshSceneNode()
 	mapMesh:fromMap(map, self.tileSet, x, y, w, h, MapMeshMask(), MapMeshIslandProcessor(map, self.tileSet))
 	mapMesh:setParent(gameView:getMapSceneNode(self.currentLayer))
-	mapMesh:getTransform():setLocalTranslation(Vector(0, 0.01, 0))
+	mapMesh:getTransform():setLocalTranslation(Vector(0, 0.25, 0))
 
 	local canvasWidth = w * self.RESOLUTION
 	local canvasHeight = h * self.RESOLUTION
