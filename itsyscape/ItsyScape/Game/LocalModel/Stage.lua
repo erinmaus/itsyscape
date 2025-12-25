@@ -1271,7 +1271,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 
 	local layers = {}
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do
-		local localLayer = item:match(".*(-?%d)%.lmap$")
+		local localLayer = item:match("^(%d+)%.lmap$")
 		if localLayer then
 			localLayer = tonumber(localLayer)
 

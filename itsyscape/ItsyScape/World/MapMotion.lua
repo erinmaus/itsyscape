@@ -28,9 +28,10 @@ function MapMotion:getReferenceY(e)
 	if tile and i and j and map then
 		local min = Vector(map:getCellSize() * (i - 1), -10000, map:getCellSize() * (j - 1))
 		local max = Vector(map:getCellSize() * i, 10000, map:getCellSize() * j)
-		min, max = Vector.transformBounds(min, max, e.transform)
+		--min, max = Vector.transformBounds(min, max, e.transform)
 
 		local hit, point = e.ray:hitBounds(min, max)
+		print(">>> hit", hit, "point", Log.dump(point))
 		if hit and point then
 			return point.y
 		else
@@ -63,11 +64,11 @@ function MapMotion:onMousePressed(e)
 	local function compareZ(a, b)
 		local distance1, distance2
 		if e.camera then
-			distance1 = e.camera:project(a[Map.RAY_TEST_RESULT_POSITION]).z
-			distance2 = e.camera:project(b[Map.RAY_TEST_RESULT_POSITION]).z
+			distance1 = e.camera:project(a[Map.RAY_TEST_RESULT_POSITION]:transform(e.transform)).z
+			distance2 = e.camera:project(b[Map.RAY_TEST_RESULT_POSITION]:transform(e.transform)).z
 		else
-			distance1 = Vector.getLength(a[Map.RAY_TEST_RESULT_POSITION] - e.eye)
-			distance2 = Vector.getLength(b[Map.RAY_TEST_RESULT_POSITION] - e.eye)
+			distance1 = Vector.getLength(a[Map.RAY_TEST_RESULT_POSITION]:transform(e.transform) - e.eye)
+			distance2 = Vector.getLength(b[Map.RAY_TEST_RESULT_POSITION]:transform(e.transform) - e.eye)
 		end
 
 		return distance1 < distance2

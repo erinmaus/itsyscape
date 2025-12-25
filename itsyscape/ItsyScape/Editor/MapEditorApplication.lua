@@ -2635,12 +2635,24 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 		meta = setfenv(chunk, {})() or {}
 	end
 
-	local parentLayer
+	local mapFilenames = {}
 	for _, item in ipairs(love.filesystem.getDirectoryItems(path)) do
-		local layer = item:match(".*(-?%d)%.lmap$")
+		local layer = tonumber(item:match("^(%d+)%.lmap$"))
+		if layer then
+			table.insert(mapFilenames, { layer = layer, filename = item })
+		end
+	end
+
+	table.sort(mapFilenames, function(a, b)
+		return a.layer < b.layer
+	end)
+
+	local parentLayer
+	for _, item in ipairs(mapFilenames) do
+		layer = item.layer
 		if layer then
 			layer = tonumber(layer)
-			local map = Map.loadFromFile(path .. item)
+			local map = Map.loadFromFile(path .. item.filename)
 
 			local tileSetID
 			if meta[layer] then
