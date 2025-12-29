@@ -125,6 +125,7 @@ function SmartNavMeshPathFinder:find(start, goal)
 	while path and index <= #path do
 		local current = Vector(path[index].point.x, 0, path[index].point.y)
 		if current ~= positions[#positions] then
+			print(">>> add", current:get())
 			table.insert(positions, current)
 		end
 
@@ -133,7 +134,17 @@ function SmartNavMeshPathFinder:find(start, goal)
 			for nextIndex = #path, index + 1, -1 do
 				local next = path[nextIndex].point
 				local collisions = self.world:project(self.peep, current.x, current.z, next.x, next.y, self._filter)
+
+				local numCollisions = 0
+				for _, collision in ipairs(collisions) do
+					if not self.ignored[collision.other] then
+						numCollisions = numCollisions + 1
+						break
+					end
+				end
+
 				if #collisions == 0 then
+					print(">>> did jump", "from", index, "to", nextIndex)
 					index = nextIndex
 					didJump = true
 					break
@@ -149,14 +160,22 @@ function SmartNavMeshPathFinder:find(start, goal)
 	local resultPath = Path()
 	local previous
 	for i = 1, #positions do
-		local k = (i - 1) * 2 + 1
 		local current = positions[i]
 		local next = positions[i + 1]
 
 		local materialized = false
 		if self.world and self.world:has(self.proxy) then
 			local collisions = self.world:project(self.proxy, (previous or current).x, (previous or current).z, current.x, current.z, self._filter)
-			local collision = collisions[#collisions]
+
+			local collision
+			for j = #collisions, 1, -1 do
+				local c = collisions[j]
+				if not self.ignored[c.other] then
+					collision = c
+					break
+				end
+			end
+
 			if collision then
 				local a1 = previous or current
 				local b1 = previous and current or next or current
