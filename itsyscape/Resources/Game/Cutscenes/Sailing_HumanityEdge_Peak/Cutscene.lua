@@ -68,9 +68,9 @@ return Sequence {
 
 	Player:wait(1),
 
-	Pirate1:fireProjectile(Player, "CannonSplosion"),
+	Pirate1:fireProjectile(Player, "CannonSplosionHit"),
 	Pirate1:wait(0.1),
-	Pirate1:fireProjectile(Player, "CannonSplosion"),
+	Pirate1:fireProjectile(Player, "CannonSplosionHit"),
 	Pirate1:wait(0.1),
 
 	Player:playAnimation("Human_Die_1"),

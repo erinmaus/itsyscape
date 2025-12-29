@@ -117,7 +117,7 @@ function BasicCannonball:_tryHit(currentIndex, nextIndex)
 	end
 
 	if shouldFireProjectile then
-		stage:fireProjectile("CannonSplosion", self, Utility.Peep.getAbsolutePosition(self), Utility.Peep.getLayer(self))
+		stage:fireProjectile("CannonSplosionHit", self, Utility.Peep.getAbsolutePosition(self), Utility.Peep.getLayer(self))
 	end
 end
 
@@ -159,7 +159,7 @@ function BasicCannonball:update(director, game)
 			local y = map:getInterpolatedHeight(relativePosition.x, relativePosition.z)
 			if relativePosition.y <= y then
 				local stage = game:getStage()
-				stage:fireProjectile("CannonSplosion", Vector.ZERO, Utility.Peep.getAbsolutePosition(self) + Vector(0, 2, 0), Utility.Peep.getLayer(self))
+				stage:fireProjectile("CannonSplosionHit", Vector.ZERO, Utility.Peep.getAbsolutePosition(self) + Vector(0, 2, 0), Utility.Peep.getLayer(self))
 				Utility.Peep.poof(self)
 				return
 			end
