@@ -9,11 +9,9 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
-local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local FishBehavior = require "ItsyScape.Peep.Behaviors.FishBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
@@ -48,35 +46,76 @@ function Cthulhu:onReceiveAttack()
 end
 
 function Cthulhu:ready(director, game)
-	local actor = self:getBehavior(ActorReferenceBehavior)
-	if actor and actor.actor then
-		actor = actor.actor
-	end
+	Utility.Peep.Creep.setBody(self, "Cthulhu")
 
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Cthulhu.lskel")
-	actor:setBody(body)
+	Utility.Peep.Creep.applySkin(
+		self,
+		"head",
+		Equipment.SKIN_PRIORITY_BASE,
+		"Cthulhu/Head.lua")
 
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Cthulhu/Cthulhu.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, Equipment.SKIN_PRIORITY_BASE, body)
+	Utility.Peep.Creep.applySkin(
+		self,
+		"beak",
+		Equipment.SKIN_PRIORITY_BASE,
+		"Cthulhu/Beak.lua")
 
-	local idleAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Cthulhu_Idle/Script.lua")
-	self:addResource("animation-idle", idleAnimation)
+	Utility.Peep.Creep.applySkin(
+		self,
+		"eyes",
+		Equipment.SKIN_PRIORITY_BASE,
+		"Cthulhu/Eyes.lua")
 
-	local swimAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Cthulhu_Swim/Script.lua")
-	self:addResource("animation-walk", swimAnimation)
+	Utility.Peep.Creep.applySkin(
+		self,
+		"tentacles",
+		Equipment.SKIN_PRIORITY_BASE,
+		"Cthulhu/Tentacles.lua")
 
-	local attackAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Cthulhu_Attack/Script.lua")
-	self:addResource("animation-attack", attackAnimation)
+	Utility.Peep.Creep.applySkin(
+		self,
+		"body",
+		Equipment.SKIN_PRIORITY_BASE,
+		"Cthulhu/Body.lua")
+
+	Utility.Peep.Creep.applySkin(
+		self,
+		"wings",
+		Equipment.SKIN_PRIORITY_BASE,
+		"Cthulhu/Wings.lua")
+
+	Utility.Peep.Creep.applySkin(
+		self,
+		"hands",
+		Equipment.SKIN_PRIORITY_BASE,
+		"Cthulhu/Hands.lua")
+
+	Utility.Peep.Creep.applySkin(
+		self,
+		"nails",
+		Equipment.SKIN_PRIORITY_BASE,
+		"Cthulhu/Nails.lua")
+
+	Utility.Peep.Creep.applySkin(
+		self,
+		"feet",
+		Equipment.SKIN_PRIORITY_BASE,
+		"Cthulhu/Feet.lua")
+
+	Utility.Peep.Creep.addAnimation(
+		self,
+		"animation-idle",
+		"Cthulhu_Idle")
+
+	Utility.Peep.Creep.addAnimation(
+		self,
+		"animation-attack",
+		"Cthulhu_Attack")
+
+	Utility.Peep.Creep.addAnimation(
+		self,
+		"animation-walk",
+		"Cthulhu_Swim")
 
 	Creep.ready(self, director, game)
 end

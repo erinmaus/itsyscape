@@ -13,6 +13,7 @@ local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Skin = require "ItsyScape.Game.Skin.Skin"
 local Color = require "ItsyScape.Graphics.Color"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local Light = require "ItsyScape.Graphics.Light"
 
 local ModelSkin = Class(Skin)
@@ -41,6 +42,7 @@ function ModelSkin:new()
 	self.isReflective = false
 	self.reflectionPower = 0.5
 	self.reflectionDistance = 0.5
+	self.material = false
 	self.hasTransform = false
 end
 
@@ -251,6 +253,10 @@ function ModelSkin:loadFromFile(filename)
 	if result.reflectionDistance then
 		self.reflectionDistance = result.reflectionDistance
 	end
+
+	if result.material then
+		self.material = DecorationMaterial(result.material)
+	end
 end
 
 -- Gets the model CacheRef.
@@ -339,6 +345,10 @@ end
 
 function ModelSkin:getReflectionDistance()
 	return self.reflectionDistance
+end
+
+function ModelSkin:getMaterial()
+	return self.material
 end
 
 function ModelSkin:getHasTransform()

@@ -1,0 +1,5 @@
+{
+	type = "array",
+
+	"SkinTexture.png"
+}

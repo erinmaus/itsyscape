@@ -1,6 +1,18 @@
 #include "Resources/Shaders/Depth.common.glsl"
 #include "Resources/Shaders/GBuffer.common.glsl"
 
+#define SOBEL_LENGTH 2
+
+const mat3 SOBEL[2] = mat3[](
+	mat3(1, 0, -1, 2, 0, -2, 1, 0, -1),
+    mat3(1, 2, 1, 0, 0, 0, -1, -2, -1)
+);
+
+float sobel(float convulation[SOBEL_LENGTH])
+{
+	return sqrt(convulation[0] + convulation[1]);
+}
+
 #ifdef EDGE_USE_SOBEL
 
 #define G_LENGTH 2
@@ -94,7 +106,7 @@ float getGreyEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize, float
 float getNormalEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize)
 {
 	mat3 I;
-	float convulation[G_LENGTH];
+	float convulation[SOBEL_LENGTH];
 
 	vec3 center = decodeGBufferNormal(Texel(image, textureCoordinate).xy);
 
@@ -104,17 +116,18 @@ float getNormalEdge(sampler2D image, vec2 textureCoordinate, vec2 texelSize)
 		{
 			vec2 currentSample = Texel(image, textureCoordinate + vec2(float(x - 1), float(y - 1)) * texelSize).xy;
 			vec3 currentNormal = decodeGBufferNormal(currentSample);
-			float centerDotCurrentSample = dot(center, currentNormal);
+			vec3 scaledNormal = (currentNormal + vec3(1.0)) / vec3(2.0);
+			float value = (scaledNormal.x + scaledNormal.y + scaledNormal.z) / 3.0;
 
-			I[x][y] = centerDotCurrentSample;
+			I[x][y] = value;
 		}
 	}
 	
-	for (int i = 0; i < G_LENGTH; i++)
+	for (int i = 0; i < SOBEL_LENGTH; i++)
 	{
-		float dotProduct = dot(G[i][0], I[0]) + dot(G[i][1], I[1]) + dot(G[i][2], I[2]);
+		float dotProduct = dot(SOBEL[i][0], I[0]) + dot(SOBEL[i][1], I[1]) + dot(SOBEL[i][2], I[2]);
 		convulation[i] = dotProduct * dotProduct; 
 	}
 
-	return edgeCombineConvulations(convulation);
+	return sobel(convulation);
 }

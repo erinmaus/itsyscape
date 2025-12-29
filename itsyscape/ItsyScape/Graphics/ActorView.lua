@@ -1029,6 +1029,10 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 					slot.model:getMaterial():setReflectionDistance(slot.instance:getReflectionDistance())
 				end
 
+				if slot.instance:getMaterial() then
+					slot.instance:getMaterial():apply(slot.model, resourceManager, slot.texture)
+				end
+
 				local transform = slot.model:getTransform()
 				transform:setLocalTranslation(slot.instance:getPosition())
 				transform:setLocalScale(slot.instance:getScale())
@@ -1355,9 +1359,10 @@ function ActorView:draw()
 				local isForward = material:getIsFullLit() or material:getIsTranslucent()
 				local isTextureCompatible = material:getNumTextures() ~= 1 or (material:getNumTextures() == 1 and material:getTexture(1):isCompatibleType(TextureResource))
 				local isReflective = material:getIsReflectiveOrRefractive()
+				local hasOverrideMaterial = not not slot.instance:getMaterial()
 				local isImmediate = self:getIsImmediate()
 
-				if hasTransform or isForward or isMultiTexture or isImmediate or isReflective then
+				if hasTransform or isForward or isMultiTexture or isImmediate or isReflective or hasOverrideMaterial then
 					modelSceneNode:setParent(slot.sceneNode)
 				else
 					local texture = material:getTexture(1)

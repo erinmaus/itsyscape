@@ -67,7 +67,7 @@ function DecorationMaterial:new(d)
 	end
 end
 
-function DecorationMaterial:apply(sceneNode, resourceManager, d)
+function DecorationMaterial:apply(sceneNode, resourceManager, textureOverride)
 	local material = sceneNode:getMaterial()
 
 	local textures = {}
@@ -87,7 +87,10 @@ function DecorationMaterial:apply(sceneNode, resourceManager, d)
 			end)
 	end
 
-	if type(self.texture) == "string" then
+	local mainTexture
+	if textureOverride then
+		mainTexture = textureOverride
+	elseif type(self.texture) == "string" then
 		local TextureType
 		if self.texture:match("%.lua$") then
 			TextureType = LayerTextureResource
@@ -100,12 +103,14 @@ function DecorationMaterial:apply(sceneNode, resourceManager, d)
 			TextureType,
 			self.texture,
 			function(texture)
-				table.insert(textures, 1, texture)
+				mainTexture = texture
 			end)
 	end
 
 	resourceManager:queueEvent(function()
-		if #textures >= 1 then
+		if mainTexture then
+			material:setTextures(mainTexture, unpack(textures))
+		elseif #textures >= 1 then
 			material:setTextures(unpack(textures))
 		end
 	end)
@@ -168,11 +173,7 @@ function DecorationMaterial:loadFromTable(t)
 				local outUniformValue
 				if uniformType == "texture" then
 					table.insert(self.textures, inUniformValue[2])
-					if self.texture then
-						outUniformValue = { #self.textures + 1 }
-					else
-						outUniformValue = { #self.textures }
-					end
+					outUniformValue = { #self.textures }
 				elseif uniformType == "color" then
 					local c = Color.fromHexString(inUniformValue[2], inUniformValue[3])
 
