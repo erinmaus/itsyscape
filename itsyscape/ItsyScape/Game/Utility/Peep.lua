@@ -1366,13 +1366,17 @@ function Peep.isAttackable(peep)
 end
 
 function Peep.playAnimation(peep, animationSlot, animationPriority, animationName, animationForced, animationTime)
+	if not (animationName and animationSlot and animationPriority) then
+		return false
+	end
+
 	local actor = peep:getBehavior(ActorReferenceBehavior)
 	actor = actor and actor.actor
 	if not actor then
 		return false
 	end
 
-	local filename = string.format("%s", animationName)
+	local filename = string.format("Resources/Game/Animations/%s/Script.lua", animationName)
 	if not love.filesystem.getInfo(filename) then
 		if love.filesystem.getInfo(animationName) then
 			filename = animationName

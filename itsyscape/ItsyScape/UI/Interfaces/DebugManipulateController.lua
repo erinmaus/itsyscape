@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 
@@ -20,6 +21,7 @@ function DebugManipulateController:new(peep, director)
 	self.peepToID = {}
 	self.idToPeep = {}
 
+	self:recordPeep(self:getPeep(), -1)
 	self:populate()
 end
 
@@ -76,6 +78,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:spawnActor(e)
 	elseif actionID == "spawnProp" then
 		self:spawnProp(e)
+	elseif actionID == "playAnimation" then
+		self:playAnimation(e)
 	elseif actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
 	elseif actionID == "startRecording" then
@@ -270,6 +274,34 @@ function DebugManipulateController:spawnProp(e)
 			type = "spawnProp",
 			id = e.id,
 			position = { x, y, z },
+		})
+	end
+end
+
+function DebugManipulateController:playAnimation(e)
+	local actor = self:getGame():getStage():getActorByID(e.actorID)
+	if not actor then
+		return
+	end
+
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+	local actorInstance = Utility.Peep.getInstance(actor:getPeep())
+
+	if selfInstance ~= actorInstance then
+		return
+	end
+
+	local success = Utility.Peep.playAnimation(actor:getPeep(), e.slot, e.priority, e.animation, true)
+	if not success then
+		return
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(actor:getPeep()), actor:getPeep(), {
+			type = "playAnimation",
+			slot = e.slot,
+			priority = e.priority,
+			animation = e.animation
 		})
 	end
 end

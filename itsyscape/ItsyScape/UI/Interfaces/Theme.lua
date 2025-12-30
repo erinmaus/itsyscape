@@ -126,7 +126,9 @@ local function onCloseButtonClicked(button, buttonIndex)
 	end
 end
 
-function Theme.newCloseButton(parent)
+function Theme.newCloseButton(parent, includeDefaultAction)
+	includeDefaultAction = includeDefaultAction == nil and true or includeDefaultAction
+
 	local width, height = parent:getSize()
 	local buttonSize = math.min(height - Theme.DEFAULT_OUTER_PADDING * 2, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
 
@@ -135,7 +137,9 @@ function Theme.newCloseButton(parent)
 	button:setPosition(
 		width - Theme.DEFAULT_OUTER_PADDING - buttonSize,
 		Theme.DEFAULT_OUTER_PADDING)
-	button.onClick:register(onCloseButtonClicked)
+	if includeDefaultAction then
+		button.onClick:register(onCloseButtonClicked)
+	end
 
 	parent:addChild(button)
 
@@ -277,6 +281,12 @@ function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset, z
 	return true
 end
 
+function Theme.calculateTileSizeWithPadding(padding, size, n)
+	n = n or 1
+
+	return math.floor((size - padding * (n + 1)) / n)
+end
+
 function Theme.calculateTiledSizeWithPadding(padding, size, n)
 	n = n or 1
 
@@ -333,8 +343,9 @@ function Theme.layoutScrollablePanelWithGridLayout(panel, elementWidth, elementH
 	innerPanel:performLayout()
 
 	local scrollableWidth, scrollableHeight = innerPanel:getSize()
+	local hasScrollbars = scrollableHeight > panelHeight
 
-	if scrollableHeight > panelHeight then
+	if hasScrollbars then
 		innerPanel:setUniformSize(
 			true,
 			elementWidth - ScrollablePanel.DEFAULT_SCROLL_SIZE,
@@ -360,6 +371,8 @@ function Theme.layoutScrollablePanelWithGridLayout(panel, elementWidth, elementH
 
 		panel:setScroll(scrollX, scrollY)
 	end
+
+	return hasScrollbars
 end
 
 Theme.DEFAULT_TEXT_INPUT_HEIGHT = 48

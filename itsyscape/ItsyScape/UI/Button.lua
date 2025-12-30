@@ -56,8 +56,8 @@ function Button:mouseRelease(x, y, button, ...)
 end
 
 function Button:keyUp(key, ...)
-	if key == "enter" or key == "space" then
-		self:onClick("keyboard")
+	if key == "return" or key == "space" then
+		self:onClick(1)
 	end
 
 	Widget.keyUp(self, key, ...)

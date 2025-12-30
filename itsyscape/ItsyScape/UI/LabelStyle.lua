@@ -61,10 +61,17 @@ function LabelStyle:draw(widget, state)
 		end
 
 		local width, height = widget:getSize()
-		if width == 0 and height == 0 then
+		if width == 0 or height == 0 then
 			local p = widget:getParent()
 			if p then
-				width, height = p:getSize()
+				local parentWidth, parentHeight = p:getSize()
+				if width == 0 then
+					width = parentWidth
+				end
+
+				if height == 0 then
+					height = parentHeight
+				end
 			end
 		end
 

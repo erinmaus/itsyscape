@@ -1338,14 +1338,18 @@ function UIView:_onFocus(_, widget)
 	end
 
 	self.hasPendingInterfaceFocus = false
+
+	if self.previousFocusedWidget ~= widget then
+		self.previousFocusedWidget = nil
+	end
 end
 
 function UIView:enableInputScheme(inputScheme)
-	self.currentInputSchemes[inputScheme]= true
+	self.currentInputSchemes[inputScheme] = true
 end
 
 function UIView:disableInputScheme(inputScheme)
-	self.currentInputSchemes[inputScheme]= nil
+	self.currentInputSchemes[inputScheme] = nil
 end
 
 function UIView:hasInputScheme(inputScheme)

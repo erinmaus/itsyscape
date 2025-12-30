@@ -223,16 +223,14 @@ function Chat:update(delta)
 		self.received = state.received
 	end
 
+
 	local isKeybindDown = self.keybind:isDown()
 	if not self.isKeybindDown and isKeybindDown then
 		if self.textInput:getIsFocused() then
 			self:send()
-		elseif not self.hadFocusedWidget then
-			self:getView():getInputProvider():setFocusedWidget(self.textInput)
 		end
 	end
 
-	self.hadFocusedWidget = self:getView():getInputProvider():getFocusedWidget()
 	self.isKeybindDown = isKeybindDown
 
 	if _MOBILE then

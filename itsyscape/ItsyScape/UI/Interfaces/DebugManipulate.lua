@@ -29,6 +29,7 @@ local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local SearchPrompt = require "ItsyScape.UI.Interfaces.Components.SearchPrompt"
+local PropertiesPrompt = require "ItsyScape.UI.Interfaces.Components.PropertiesPrompt"
 local Widget = require "ItsyScape.UI.Widget"
 
 local DebugManipulate = Class(Interface)
@@ -77,6 +78,10 @@ function DebugManipulate.Action:removePopup()
 		self.interface:removePopup(self.popup)
 		self.popup = nil
 	end
+end
+
+function DebugManipulate.Action:close()
+	self.interface:cancelAction()
 end
 
 function DebugManipulate.Action:start()
@@ -150,6 +155,7 @@ function DebugManipulate.SpawnPropAction:start()
 	searchPrompt:setText("Find Prop")
 	searchPrompt:setSuggestionsGenerator(self:searchAllResourcesOfType("Prop"))
 	searchPrompt.onSubmit:register(self._spawn, self)
+	searchPrompt.onCancel:register(self.close, self)
 
 	self:addPopup(searchPrompt)
 end
@@ -182,6 +188,7 @@ function DebugManipulate.SpawnActorAction:start()
 	searchPrompt:setText("Find Actor")
 	searchPrompt:setSuggestionsGenerator(self:searchAllResourcesOfType("Peep"))
 	searchPrompt.onSubmit:register(self._spawn, self)
+	searchPrompt.onCancel:register(self.close, self)
 
 	self:addPopup(searchPrompt)
 end
@@ -196,6 +203,43 @@ function DebugManipulate.SpawnActorAction:_spawn(_, value, suggestion)
 			id = id,
 			layer = layer,
 			position = { self:getObject():getPosition():get() }
+		})
+
+	self:getInterface():stopAction()
+end
+
+DebugManipulate.PlayAnimationAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.PlayAnimationAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.PlayAnimationAction:start()
+	DebugManipulate.Action.start(self)
+
+	local propertiesPrompt = PropertiesPrompt()
+	propertiesPrompt.onSubmit:register(self._playAnimation, self)
+	propertiesPrompt.onCancel:register(self.close, self)
+	propertiesPrompt:setText("Play Animation")
+	propertiesPrompt:setProperties({
+		PropertiesPrompt.Property("Animation", "string", ""),
+		PropertiesPrompt.Property("Slot", "string", "x-debug"),
+		PropertiesPrompt.Property("Priority", "integer", 1000)
+	})
+
+	self:addPopup(propertiesPrompt)
+end
+
+function DebugManipulate.PlayAnimationAction:_playAnimation(_, _, form)
+	local id = self:getObject():getID()
+
+	self:getInterface():sendPoke(
+		"playAnimation",
+		nil, {
+			actorID = id,
+			animation = form.Animation,
+			slot = form.Slot,
+			priority = form.Priority
 		})
 
 	self:getInterface():stopAction()
@@ -421,14 +465,23 @@ function DebugManipulate:addPopup(widget)
 
 	self:addChild(self.popupPanel)
 	widget:performLayout()
+	self:focusChild(widget)
 end
 
 function DebugManipulate:removePopup(widget)
 	for i, popup in ipairs(self.popupInterfaces) do
 		if popup.root == widget then
 			if i == #self.popupInterfaces then
-				self:removeChild(self.popupPanel)
 				self.popupPanel:removeChild(popup.root)
+
+				local previousPopup = self.popupInterfaces[i - 1]
+				if previousPopup then
+					self.popupPanel:addChild(previousPopup.root)
+					previousPopup.root:performLayout()
+					self:focusChild(previousPopup.root)
+				else
+					self:removeChild(self.popupPanel)
+				end
 			end
 
 			table.remove(self.popupInterfaces, i)
@@ -615,12 +668,12 @@ end
 function DebugManipulate:buildActorActions(object, hit, actions)
 	table.insert(actions, {
 		id = #actions + 1,
-		verb = "Nop",
+		verb = "Play-Animation",
 		objectID = object:getID(),
 		objectType = "actor",
 		object = object:getName(),
 		callback = function()
-			print("buildActorActions")
+			self:beginAction(DebugManipulate.PlayAnimationAction, object, hit)
 		end
 	})
 end

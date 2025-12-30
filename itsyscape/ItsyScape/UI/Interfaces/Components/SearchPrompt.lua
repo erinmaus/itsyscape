@@ -56,6 +56,7 @@ function SearchPrompt:new()
 	Widget.new(self)
 
 	self.onSubmit = Callback()
+	self.onCancel = Callback()
 	self:setSize(self.DEFAULT_WIDTH, self.DEFAULT_HEIGHT)
 
 	self:setData(GamepadSink, GamepadSink())
@@ -66,6 +67,9 @@ function SearchPrompt:new()
 		self.DEFAULT_WIDTH,
 		self.DEFAULT_HEIGHT - Theme.MINI_TITLE_HEIGHT,
 		self.titlePanel)
+
+	self.closeButton = Theme.newCloseButton(self.titlePanel, false)
+	self.closeButton.onClick:register(self._tryClose, self)
 
 	self.contentPanel.onGamepadDirection:register(self._wrapSearchPrompt, self)
 
@@ -84,8 +88,8 @@ function SearchPrompt:new()
 	self.contentPanel:addChild(self.submitButton)
 
  	self.suggestionsGrid = ScrollablePanel(GamepadGridLayout)
-	self.suggestionsGrid:getInnerPanel():setPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
-	self.suggestionsGrid:getInnerPanel().onWrapFocus(self._wrapSuggestionsGrid, self)
+	self.suggestionsGrid:getInnerPanel():setPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+	self.suggestionsGrid:getInnerPanel().onWrapFocus:register(self._wrapSuggestionsGrid, self)
 
 	self.noSuggestionsLabel = Label()
 	self.noSuggestionsLabel:setText("No suggestions.\nTry typing more.")
@@ -104,6 +108,15 @@ end
 
 function SearchPrompt:getText()
 	return self.titleLabel:getText()
+end
+
+function SearchPrompt:getIsFocusable()
+	return true
+end
+
+function SearchPrompt:focus(...)
+	Widget.focus(self, ...)
+	self.searchInput:focus()
 end
 
 function SearchPrompt:_onSearchPromptValueChanged(_, value)
@@ -149,6 +162,12 @@ end
 
 function SearchPrompt:_selectSuggestion(suggestion)
 	self:onSubmit(suggestion:getValue(), suggestion)
+end
+
+function SearchPrompt:_tryClose(_, index)
+	if index == 1 then
+		self:onCancel(self.searchInput:getText(), nil)
+	end
 end
 
 function SearchPrompt:_wrapSuggestionsGrid(_, widget, directionX, directionY)
@@ -198,21 +217,21 @@ function SearchPrompt:performLayout()
 	local _, contentHeight = self.contentPanel:getSize()
 
 	self.searchInput:setSize(
-		Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_INNER_PADDING, selfWidth, self.SUBMIT_BUTTON_WIDTH),
+		Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, selfWidth, self.SUBMIT_BUTTON_WIDTH),
 		Theme.DEFAULT_BUTTON_SIZE)
-	self.searchInput:setPosition(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
+	self.searchInput:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
 
 	local searchInputWidth = self.searchInput:getSize()
 
-	self.submitButton:setPosition(Theme.calculateSizeWithPadding(Theme.DEFAULT_INNER_PADDING, searchInputWidth), Theme.DEFAULT_INNER_PADDING)
+	self.submitButton:setPosition(Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, searchInputWidth), Theme.DEFAULT_OUTER_PADDING)
 	self.submitButton:setSize(self.SUBMIT_BUTTON_WIDTH, Theme.DEFAULT_BUTTON_SIZE)
 
 	self.suggestionsGrid:setPosition(
-		Theme.DEFAULT_INNER_PADDING,
-		Theme.DEFAULT_INNER_PADDING + Theme.calculateSizeWithPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_BUTTON_SIZE))
+		Theme.DEFAULT_OUTER_PADDING,
+		Theme.DEFAULT_OUTER_PADDING + Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_BUTTON_SIZE))
 	self.suggestionsGrid:setSize(
-		Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_INNER_PADDING, selfWidth),
-		Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_INNER_PADDING, contentHeight, Theme.DEFAULT_BUTTON_SIZE))
+		Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, selfWidth),
+		Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, contentHeight, Theme.DEFAULT_BUTTON_SIZE))
 
 	self.noSuggestionsWidget:setPosition(self.suggestionsGrid:getPosition())
 	self.noSuggestionsWidget:setSize(self.suggestionsGrid:getSize())
