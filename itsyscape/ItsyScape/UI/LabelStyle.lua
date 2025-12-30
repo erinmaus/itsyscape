@@ -122,13 +122,14 @@ function LabelStyle:draw(widget, state)
 				for _, code in utf8.codes(transformedSequence) do
 					local c = utf8.char(code)
 					if c:match("\n") then
-						table.insert(newLines, #transformedText)
+						table.insert(newLines, #transformedText + 2)
 					end
 
 					table.insert(transformedText, prespacedText[i])
 					table.insert(transformedText, utf8.char(code))
 				end
 			end
+
 
 			local wrappedWidth, wrappedText = font:getWrap(transformedText, maxWidth)
 			local currentIndex = 0
@@ -172,20 +173,27 @@ function LabelStyle:draw(widget, state)
 					spaceLength = (maxWidth - lineLength) / (#words - 1)
 				end
 
-				for _, w in ipairs(words) do
+				for k, w in ipairs(words) do
 					local word = {}
 					for i in utf8.codes(w) do
-						for i = #newLines, 1, -1 do
-							if (currentIndex + i) * 2 > newLines[i] then
-								table.remove(newLines, i)
+						local absoluteIndex = (currentIndex + i) * 2
+
+						for j = #newLines, 1, -1 do
+							if absoluteIndex >= newLines[j] then
+								table.remove(newLines, j)
 								currentIndex = currentIndex + 1
 							end
 						end
 
-						table.insert(word, transformedText[(currentIndex + i) * 2 - 1])
-						table.insert(word, transformedText[(currentIndex + i) * 2])
+						local newAbsoluteIndex = (currentIndex + i) * 2
+						table.insert(word, transformedText[newAbsoluteIndex - 1])
+						table.insert(word, transformedText[newAbsoluteIndex])
 					end
-					currentIndex = currentIndex + utf8.len(w) + 1
+
+					currentIndex = currentIndex + utf8.len(w)
+					if k < #words then
+						currentIndex = currentIndex + 1
+					end
 
 					if self.textShadow then
 						love.graphics.setColor(0, 0, 0, self.color.a)

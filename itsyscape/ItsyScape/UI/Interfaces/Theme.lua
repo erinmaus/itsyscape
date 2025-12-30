@@ -20,6 +20,7 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 
 local Theme = {}
@@ -39,6 +40,7 @@ Theme.CONTENT_WIDTH  = GamepadContentTab.WIDTH
 Theme.CONTENT_HEIGHT = GamepadContentTab.HEIGHT
 
 Theme.TITLE_HEIGHT = 128
+Theme.MINI_TITLE_HEIGHT = 48 + Theme.DEFAULT_OUTER_PADDING * 2
 
 Theme.DEFAULT_INACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Game/UI/Buttons/Button-Default.png",
@@ -54,6 +56,16 @@ Theme.DEFAULT_ACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Game/UI/Buttons/ButtonActive-Default.png",
 	pressed = "Resources/Game/UI/Buttons/ButtonActive-Pressed.png",
 	hover = "Resources/Game/UI/Buttons/ButtonActive-Hover.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	textShadow = true,
+	padding = 4
+}
+
+Theme.DEFAULT_ALTERNATE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/AlternateButtonActive-Default.png",
+	pressed = "Resources/Game/UI/Buttons/AlternateButtonActive-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/AlternateButtonActive-Hover.png",
 	color = { 1, 1, 1, 1 },
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 	textShadow = true,
@@ -83,6 +95,25 @@ function Theme.newTitlePanel(parent, windowWidth)
 	end
 
 	return panel
+end
+
+function Theme.newMiniTitlePanelWithLabel(parent, windowWidth)
+	windowWidth = windowWidth or Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
+
+	local panel = Panel()
+	panel:setSize(windowWidth, Theme.MINI_TITLE_HEIGHT)
+	panel:setStyle(Theme.WINDOW_TITLE_PANEL_STYLE, PanelStyle)
+
+	local label = Label()
+	label:setStyle(Theme.WINDOW_TITLE_LABEL_STYLE, LabelStyle)
+	label:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+	panel:addChild(label)
+
+	if parent then
+		parent:addChild(panel)
+	end
+
+	return panel, label
 end
 
 local function onCloseButtonClicked(button, buttonIndex)
@@ -175,6 +206,7 @@ Theme.BUTTON_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
 	fontSize = 24,
 	color = { 1, 1, 1, 1 },
+	align = "center",
 	textShadow = true,
 	spaceLines = true
 }
@@ -279,5 +311,57 @@ function Theme.calculateRemainingSizeWithPadding(padding, outerSize, ...)
 	local innerSize = Theme.calculateSizeWithPadding(padding, ...)
 	return math.floor(math.max(outerSize - innerSize - padding * 2, 0))
 end
+
+Theme.DEFAULT_TEXT_INPUT_STYLE = {
+	inactive = "Resources/Game/UI/TextInputs/Default-Inactive.png",
+	active = "Resources/Game/UI/TextInputs/Default-Active.png",
+	hover = "Resources/Game/UI/TextInputs/Default-Hover.png",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 32,
+	color = { 0.2, 0.2, 0.2, 0.2 },
+	padding = 0,
+	textShadow = true
+}
+
+function Theme.layoutScrollablePanelWithGridLayout(panel, elementWidth, elementHeight)
+	local panelWidth, panelHeight = panel:getSize()
+	local innerPanel = panel:getInnerPanel()
+
+	innerPanel:setUniformSize(true, elementWidth, elementHeight)
+	innerPanel:setSize(panelWidth, 0)
+	innerPanel:setWrapContents(true)
+	innerPanel:performLayout()
+
+	local scrollableWidth, scrollableHeight = innerPanel:getSize()
+
+	if scrollableHeight > panelHeight then
+		innerPanel:setUniformSize(
+			true,
+			elementWidth - ScrollablePanel.DEFAULT_SCROLL_SIZE,
+			elementHeight)
+		innerPanel:setSize(panelWidth, 0)
+		innerPanel:performLayout()
+
+		scrollableWidth, scrollableHeight = innerPanel:getSize()
+	end
+
+	panel:setScrollSize(scrollableWidth, scrollableHeight)
+
+	do
+		local scrollX, scrollY = panel:getScroll()
+
+		if scrollY > scrollableHeight - panelHeight then
+			scrollY = 0
+		end
+
+		if scrollX > scrollableWidth - panelWidth then
+			scrollX = 0
+		end
+
+		panel:setScroll(scrollX, scrollY)
+	end
+end
+
+Theme.DEFAULT_TEXT_INPUT_HEIGHT = 48
 
 return Theme

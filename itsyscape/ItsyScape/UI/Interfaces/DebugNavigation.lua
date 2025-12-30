@@ -343,14 +343,14 @@ function DebugNavigation:populateLayers(layers)
 	end
 
 	self.layerGrid:getInnerPanel():setPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
-	self.layerGrid:getInnerPanel():setUniformSize(true, gridWidth - Theme.DEFAULT_INNER_PADDING * 2, Theme.DEFAULT_BUTTON_SIZE)
+	self.layerGrid:getInnerPanel():setUniformSize(true, gridWidth - Theme.DEFAULT_INNER_PADDING * 2, Theme.DEFAULT_BUTTON_SIZE + Theme.DEFAULT_INNER_PADDING * 2)
 	self.layerGrid:getInnerPanel():performLayout()
 
 	local scrollableWidth, scrollableHeight = self.layerGrid:getInnerPanel():getSize()
 	if scrollableHeight > gridHeight then
 		self.layerGrid:getInnerPanel():setUniformSize(
 			gridWidth - ScrollablePanel.DEFAULT_SCROLL_SIZE - Theme.DEFAULT_INNER_PADDING * 2,
-			Theme.DEFAULT_BUTTON_SIZE)
+			Theme.DEFAULT_BUTTON_SIZE + Theme.DEFAULT_INNER_PADDING * 2)
 		scrollableWidth, scrollableHeight = self.layerGrid:getInnerPanel():getSize()
 	end
 

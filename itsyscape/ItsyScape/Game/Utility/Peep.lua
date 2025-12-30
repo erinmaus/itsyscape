@@ -533,7 +533,7 @@ function Peep.setLayer(peep, layer)
 	end
 end
 
-function Peep.getLocalLayer(peep, localLayer, mapScript)
+function Peep.getLocalLayer(peep, mapScript)
 	mapScript = mapScript or Peep.getMapScript(peep)
 	if not mapScript then
 		return

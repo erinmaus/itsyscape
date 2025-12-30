@@ -1750,6 +1750,7 @@ do
 	ActionType "Debug_Ascend"
 	ActionType "Debug_Teleport"
 	ActionType "Debug_Navigate"
+	ActionType "Debug_Manipulate"
 	ActionType "Debug_Save"
 	ActionType "Debug_AntilogikaTeleport"
 	ActionType "Debug_AntilogikaWarp"
@@ -1765,6 +1766,7 @@ do
 	local ascendAction = ItsyScape.Action.Debug_Ascend()
 	local teleportAction = ItsyScape.Action.Debug_Teleport()
 	local navigateAction = ItsyScape.Action.Debug_Navigate()
+	local manipulateAction = ItsyScape.Action.Debug_Manipulate()
 	local saveAction = ItsyScape.Action.Debug_Save()
 	local antilogikaTeleportAction = ItsyScape.Action.Debug_AntilogikaTeleport()
 	local antilogikaWarpAction = ItsyScape.Action.Debug_AntilogikaWarp()
@@ -1789,6 +1791,13 @@ do
 		Language = "en-US",
 		XProgressive = "Navigating",
 		Action = navigateAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Warp-Reality",
+		Language = "en-US",
+		XProgressive = "Warping-Reality",
+		Action = manipulateAction
 	}
 
 	ItsyScape.Meta.ActionVerb {
@@ -1825,6 +1834,7 @@ do
 		ascendAction,
 		teleportAction,
 		navigateAction,
+		manipulateAction,
 		antilogikaTeleportAction,
 		antilogikaWarpAction,
 		antilogikaNoiseAction,

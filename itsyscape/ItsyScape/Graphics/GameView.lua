@@ -625,7 +625,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		tileSetID = tileSetID or "GrassyPlain",
 		filename = filename,
 		resource = mapResourceName,
-		localLayer = (meta and meta.layer and meta.layer.localGroup) or localLayer or 1,
+		localLayer = (meta and meta.layer and meta.layer.localLayer) or localLayer or 1,
 		group = (meta and meta.layer and meta.layer.group) or 1,
 		links = meta and meta.links or {},
 		map = map,
@@ -1819,6 +1819,20 @@ function GameView:getMapSceneNode(layer)
 	local m = self.mapMeshes[layer]
 	if m then
 		return m.node
+	end
+end
+
+function GameView:getMapLocalLayer(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.localLayer
+	end
+end
+
+function GameView:getMapResourceID(layer)
+	local m = self.mapMeshes[layer]
+	if m then
+		return m.resource
 	end
 end
 

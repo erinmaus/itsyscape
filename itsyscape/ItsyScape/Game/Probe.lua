@@ -15,8 +15,47 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.World.Map"
+local MapCurve = require "ItsyScape.World.MapCurve"
 
 local Probe = Class()
+
+Probe.Tile = Class()
+
+function Probe.Tile:new(i, j, layer, tile, position)
+	self.i = i
+	self.j = j
+	self.layer = layer
+	self.tile = tile
+	self.position = position
+end
+
+function Probe.Tile:getTile()
+	return self.i, self.j, self.layer, self.tile
+end
+
+function Probe.Tile:getPosition()
+	return self.position
+end
+
+Probe.Hit = Class()
+
+function Probe.Hit:new(object, position, depth)
+	self.object = object
+	self.position = position
+	self.depth = depth
+end
+
+function Probe.Hit:getObject()
+	return self.object
+end
+
+function Probe.Hit:getPosition()
+	return self.position
+end
+
+function Probe.Hit:getDepth()
+	return self.depth
+end
 
 Probe.Item = Class()
 
@@ -90,6 +129,7 @@ function Probe:new(game, gameView, gameDB)
 	self.actions = {}
 
 	self.probes = {}
+	self._hits = {}
 
 	self.tile = false
 	self.layer = false
@@ -106,6 +146,8 @@ function Probe:sort(a, b)
 end
 
 function Probe:_reset()
+	table.clear(self._hits)
+
 	table.clear(self.actions)
 	self.isDirty = false
 
@@ -239,6 +281,10 @@ function Probe:getResults()
 	return self.results or {}
 end
 
+function Probe:hits()
+	return ipairs(self._hits)
+end
+
 function Probe:_all(callback, results)
 	self.results = results
 
@@ -286,19 +332,26 @@ function Probe:_run(callback)
 			local actor = self.gameView:getActorByID(id)
 			if actor then
 				self:_actor(actor, point, distance)
+				table.insert(self._hits, Probe.Hit(actor, Vector(x, y, z), point.z))
 			end
 		elseif interface == "ItsyScape.Game.Model.Prop" and tests.props then
 			local prop = self.gameView:getPropByID(id)
 			if prop then
 				self:_prop(prop, point, distance)
+				table.insert(self._hits, Probe.Hit(prop, Vector(x, y, z), point.z))
 			end
 		elseif interface == "X.Item" and tests.loot then
 			local item = self.game:getStage():getItem(id)
 			if item then
 				self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, point, distance)
+				table.insert(self._hits, Probe.Hit(Probe.Item(item), Vector(x, y, z), point.z))
 			end
 		end
 	end
+
+	table.sort(self._hits, function(a, b)
+		return a:getDepth() < b:getDepth()
+	end)
 
 	if tests.walk then
 		self:walk()
@@ -330,10 +383,32 @@ function Probe:getTile(tiles)
 			local s = Vector(i.x, i.y, i.z):transform(mapTransformA)
 			local t = Vector(j.x, j.y, j.z):transform(mapTransformB)
 
+			local curvesA = self.gameView:getMapCurves(a.layer)
+			local curvesB = self.gameView:getMapCurves(b.layer)
+			s = MapCurve.transformAll(s, curvesA)
+			t = MapCurve.transformAll(t, curvesB)
+
 			local camera = self.gameView:getCamera()
 			return camera:compare(s, t)
 		end
 		table.sort(tiles, sortFunc)
+
+		for _, tile in ipairs(tiles) do
+			local i = tile[Map.RAY_TEST_RESULT_I]
+			local j = tile[Map.RAY_TEST_RESULT_J]
+			local layer = tile.layer
+			local position = tile[Map.RAY_TEST_RESULT_POSITION]
+			local t = tile[Map.RAY_TEST_RESULT_TILE]
+
+			local map = self.gameView:getMapSceneNode(layer)
+			local curves = self.gameView:getMapCurves(layer)
+			local mapTransform = map and map:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+			local transformedPosition = Vector(position.x, position.y, position.z):transform(mapTransform)
+			transformedPosition = MapCurve.transformAll(transformedPosition, curves)
+			local depth = self.gameView:getCamera():depth(transformedPosition)
+
+			table.insert(self._hits, Probe.Hit(Probe.Tile(i, j, layer, t, position), transformedPosition, depth))
+		end
 
 		if self.layer then
 			for i = 1, #tiles do

@@ -125,7 +125,6 @@ function SmartNavMeshPathFinder:find(start, goal)
 	while path and index <= #path do
 		local current = Vector(path[index].point.x, 0, path[index].point.y)
 		if current ~= positions[#positions] then
-			print(">>> add", current:get())
 			table.insert(positions, current)
 		end
 
@@ -144,7 +143,6 @@ function SmartNavMeshPathFinder:find(start, goal)
 				end
 
 				if #collisions == 0 then
-					print(">>> did jump", "from", index, "to", nextIndex)
 					index = nextIndex
 					didJump = true
 					break

@@ -22,11 +22,16 @@ function Interface:new(id, index, view)
 	self.index = index
 	self.view = view
 	self.onClose = Callback()
+	self.onClose:register(self.detach, self)
 
 	self:setID(id)
 end
 
 function Interface:attach()
+	-- Nothing.
+end
+
+function Interface:detach()
 	-- Nothing.
 end
 
