@@ -518,9 +518,11 @@ function DebugManipulateController:shiftAction(e)
 	presetStorage:clear()
 
 	local index = e.index
-	local nextIndex = e.index - 1 + e.direction
+	local nextIndex = e.nextIndex
 	local action = table.remove(preset, index)
-	table.insert(preset, nextIndex, action)
+	table.insert(preset, math.clamp(nextIndex, 1, #preset + 1), action)
+
+	presetStorage:set(preset)
 
 	if self.isRecording then
 		self:updateClientRecords()

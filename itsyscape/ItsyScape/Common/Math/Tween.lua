@@ -33,11 +33,11 @@ function Tween.sineEaseOut(t)
 end
 
 function Tween.sineEaseInOut(t)
-	return -(math.cos(t * math.pi) - 1) / 2
+	return math.sin(t * math.pi)
 end
 
 function Tween.powerEaseIn(t, power)
-	return t ^ power
+	return t ^ (power or 2)
 end
 
 function Tween.powerEaseOut(t, power)
@@ -48,7 +48,7 @@ function Tween.powerEaseOut(t, power)
 		sign = 1
 	end
 
-	return sign * ((t - 1) ^ power + sign)
+	return sign * ((t - 1) ^ (power or 2) + sign)
 end
 
 function Tween.powerEaseInOut(t, power)
@@ -65,7 +65,7 @@ function Tween.powerEaseInOut(t, power)
 		sign = 1
 	end
 
-	return sign / 2 * ((t - 2) ^ power + sign * 2)
+	return sign / 2 * ((t - 2) ^ (power or 2) + sign * 2)
 end
 
 local function out(func)

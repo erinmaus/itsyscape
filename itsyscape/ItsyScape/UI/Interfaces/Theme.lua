@@ -83,6 +83,48 @@ Theme.WINDOW_TITLE_LABEL_STYLE = {
 	textShadow = true
 }
 
+function Theme.override(a, b, e)
+	e = e or {}
+	assert(not (e[a] or e[b]), "cyclic table")
+	assert(not (getmetatable(a) or getmetatable(b)), "only simple types allowed")
+
+	if a then
+		e[a] = true
+	end
+
+	if b then
+		e[b] = true
+	end
+
+	local result = {}
+
+	if a then
+		for k, v in pairs(a) do
+			if type(v) == "table" then
+				result[k] = Theme.override(v, nil, e)
+			else
+				result[k] = v
+			end
+		end
+	end
+
+	if b then
+		for k, v in pairs(b) do
+			if type(v) == "table" then
+				if type(a[k]) == "table" then
+					result[k] = Theme.override(a[k], v, e)
+				else
+					result[k] = Theme.override(v, nil, e)
+				end
+			else
+				result[k] = v
+			end
+		end
+	end
+
+	return result
+end
+
 function Theme.newTitlePanel(parent, windowWidth)
 	windowWidth = windowWidth or Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
 

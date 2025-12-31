@@ -59,6 +59,10 @@ function DebugManipulate.Action:getGameView()
 	return self.interface:getView():getGameView()
 end
 
+function DebugManipulate.Action:getGame()
+	return self.interface:getView():getGameView():getGame()
+end
+
 function DebugManipulate.Action:getGameDB()
 	return self.interface:getView():getGameView():getGame():getGameDB()
 end
@@ -87,6 +91,10 @@ end
 
 function DebugManipulate.Action:close()
 	self.interface:cancelAction()
+end
+
+function DebugManipulate.Action:update(delta)
+	-- Nothing.
 end
 
 function DebugManipulate.Action:start()
@@ -302,7 +310,39 @@ function DebugManipulate.TransformAction:start()
 end
 
 function DebugManipulate.TransformAction:done()
+	DebugManipulate.Action.done(self)
 	self:getInterface():removeFacade(self.gizmoFacade)
+end
+
+DebugManipulate.PreviewOrientateAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.PreviewOrientateAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+
+	self.currentDuration = 2
+	self.currentElapsed = 0
+end
+
+function DebugManipulate.PreviewOrientateAction:start()
+	DebugManipulate.Action.start(self)
+
+	local player = self:getGame():getPlayer()
+	player:onPushCamera("DebugManipulate")
+	player:onPokeCamera("orientateToActor", self:getObject():getID(), 0, self.currentDuration, "sineEaseInOut")
+end
+
+function DebugManipulate.PreviewOrientateAction:update(delta)
+	DebugManipulate.Action.update(self, delta)
+
+	self.currentElapsed = math.min(self.currentElapsed + delta, self.currentDuration)
+	if self.currentElapsed >= self.currentDuration then
+		self:getInterface():stopAction()
+	end
+end
+
+function DebugManipulate.PreviewOrientateAction:done()
+	local player = self:getGame():getPlayer()
+	player:onPopCamera()
 end
 
 DebugManipulate.WIDTH  = 800
@@ -975,17 +1015,79 @@ function DebugManipulate:showPreset(presetInfo, preset)
 		row:addChild(nameLabel)
 
 		local delayLabel = Label()
-		delayLabel:setStyle(Theme.BUTTON_LABEL_STYLE, LabelStyle)
-		if action.delay then
-			delayLabel:setText(string.format("%d ms", action.delay * 1000))
+		delayLabel:setStyle(Theme.override(Theme.BUTTON_LABEL_STYLE, { fontSize = 16 }), LabelStyle)
+		if action.timing and action.timing.mode ~= "off" then
+			delayLabel:setText(string.format("@ %d ms / dur. %d ms (%s)", action.timing.delay * 1000, action.timing.duration * 1000, action.timing.mode == "sync" and "S" or "P"))
 		else
-			delayLabel:setText("--")
+			delayLabel:setText("@ -- ms / dur. -- ms (X)")
 		end
 		row:addChild(delayLabel)
 	end
 
 	local gridWidth, gridHeight = self.presetGrid:getSize()
 	Theme.layoutScrollablePanelWithGridLayout(self.presetGrid, gridWidth - Theme.DEFAULT_INNER_PADDING * 2, Theme.DEFAULT_BUTTON_SIZE)
+end
+
+function DebugManipulate:setTiming(presetInfo, preset, actionIndex)
+	local action = preset[actionIndex]
+
+	local properties = {
+		PropertiesPrompt.Property("duration", "Delay (ms)", "number", (action.timing and action.timing.delay or 0) * 1000),
+		PropertiesPrompt.Property("delay", "Duration (ms)", "number", (action.timing and action.timing.duration or 0) * 1000),
+		PropertiesPrompt.Property("mode", "Mode (sync/parallel/off)", "string", action.timing and action.timing.mode or "sync"),
+		PropertiesPrompt.Property("tween", "Tween", "string", action.timing and action.timing.tween or "sineEaseInOut")
+	}
+
+	local propertiesPrompt = PropertiesPrompt()
+	propertiesPrompt.onSubmit:register(self._onEditPresetActionTiming, self, presetInfo, preset, actionIndex)
+	propertiesPrompt.onCancel:register(self._onCancelEditPresetActionTiming, self, presetInfo, preset, actionIndex)
+	propertiesPrompt:setText(camelCaseToTitleCase(action.type))
+	propertiesPrompt:setProperties(properties)
+
+	self:addPopup(propertiesPrompt)
+end
+
+local VALID_MODES = {
+	sync = true,
+	parallel = true,
+	off = true,
+}
+
+function DebugManipulate:_onEditPresetActionTiming(presetInfo, preset, actionIndex, popup, properties, form)
+	local action = preset[actionIndex]
+
+	local delay = form["Delay (ms)"] / 1000
+	local duration = form["Duration (ms)"] / 1000
+	local mode = form["Mode (sync/parallel/off)"]
+	local tween = form["Tween"]
+
+	if not VALID_MODES[mode] then
+		mode = "off"
+	end
+
+	self:sendPoke("editAction", nil, {
+		resource = presetInfo.resource,
+		id = presetInfo.id,
+		index = actionIndex,
+		action = {
+			target = action.target,
+			map = action.map,
+			event = action.event,
+			type = action.type,
+			timing = {
+				delay = delay,
+				duration = duration,
+				mode = mode,
+				tween = tween
+			}
+		}
+	})
+
+	self:removePopup(popup)
+end
+
+function DebugManipulate:_onCancelEditPresetActionTiming(presetInfo, preset, actionIndex, popup)
+	self:removePopup(popup)
 end
 
 function DebugManipulate:editPresetAction(presetInfo, preset, actionIndex)
@@ -1015,6 +1117,7 @@ function DebugManipulate:editPresetAction(presetInfo, preset, actionIndex)
 	local propertiesPrompt = PropertiesPrompt()
 	propertiesPrompt.onSubmit:register(self._onEditPresetAction, self, presetInfo, preset, actionIndex)
 	propertiesPrompt.onCancel:register(self._onCancelEditPresetAction, self, presetInfo, preset, actionIndex)
+	propertiesPrompt:setText(camelCaseToTitleCase(action.type))
 	propertiesPrompt:setProperties(properties)
 
 	self:addPopup(propertiesPrompt)
@@ -1045,7 +1148,6 @@ function DebugManipulate:_onEditPresetAction(presetInfo, preset, actionIndex, po
 		action = {
 			target = target,
 			map = map,
-			event = event,
 			type = preset[actionIndex].type,
 			event = event
 		}
@@ -1056,6 +1158,15 @@ end
 
 function DebugManipulate:_onCancelEditPresetAction(presetInfo, preset, actionIndex, popup)
 	self:removePopup(popup)
+end
+
+function DebugManipulate:shiftPresetAction(presetInfo, preset, actionIndex, nextActionIndex)
+	self:sendPoke("shiftAction", nil, {
+		resource = presetInfo.resource,
+		id = presetInfo.id,
+		index = actionIndex,
+		nextIndex = nextActionIndex
+	})
 end
 
 function DebugManipulate:deletePresetAction(presetInfo, preset, actionIndex)
@@ -1122,6 +1233,30 @@ function DebugManipulate:_onClickAction(presetInfo, preset, actionIndex, button,
 			},
 			{
 				id = 2,
+				verb = "Edit-Timing",
+				object = name,
+				callback = function()
+					self:setTiming(presetInfo, preset, actionIndex)
+				end
+			},
+			{
+				id = 3,
+				verb = "Shift Up",
+				object = name,
+				callback = function()
+					self:shiftPresetAction(presetInfo, preset, actionIndex, math.max(actionIndex - 1, 1))
+				end
+			},
+			{
+				id = 4,
+				verb = "Shift Down",
+				object = name,
+				callback = function()
+					self:shiftPresetAction(presetInfo, preset, actionIndex, math.min(actionIndex + 1, #preset))
+				end
+			},
+			{
+				id = 5,
 				verb = "Delete",
 				object = name,
 				callback = function()
@@ -1165,6 +1300,17 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 		object = object:getName(),
 		callback = function()
 			self:beginAction(DebugManipulate.TransformAction, object, hit)
+		end
+	})
+
+	table.insert(actions, {
+		id = #actions + 1,
+		verb = "Preview-Orientate-Camera",
+		objectID = object:getID(),
+		objectType = "actor",
+		object = object:getName(),
+		callback = function()
+			self:beginAction(DebugManipulate.PreviewOrientateAction, object, hit)
 		end
 	})
 end
@@ -1242,6 +1388,14 @@ function DebugManipulate:record(preset, _, index)
 
 	self:hide()
 	self:sendPoke("startRecording", nil, { resource = preset.resource, id = preset.id })
+end
+
+function DebugManipulate:update(delta)
+	Interface.update(self, delta)
+
+	if self.currentAction then
+		self.currentAction:update(delta)
+	end
 end
 
 return DebugManipulate
