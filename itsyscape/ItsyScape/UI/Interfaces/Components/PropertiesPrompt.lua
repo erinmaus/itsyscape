@@ -32,14 +32,19 @@ PropertiesPrompt.DEFAULT_WIDTH  = 640
 
 PropertiesPrompt.Property = Class()
 
-function PropertiesPrompt.Property:new(field, propertyType, value)
+function PropertiesPrompt.Property:new(id, field, propertyType, value)
+	self.id = id
 	self.field = field
 	self.type = propertyType
 	self.value = value
 end
 
 function PropertiesPrompt.Property:clone()
-	return PropertiesPrompt.Property(self.field, self.type, self.value)
+	return PropertiesPrompt.Property(self.id, self.field, self.type, self.value)
+end
+
+function PropertiesPrompt.Property:getID()
+	return self.id
 end
 
 function PropertiesPrompt.Property:getField()

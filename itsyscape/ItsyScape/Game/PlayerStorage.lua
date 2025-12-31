@@ -58,6 +58,12 @@ function PlayerStorage.Section:hasSection(key)
 	return self.sections[key] ~= nil
 end
 
+function PlayerStorage.Section:clear()
+	table.clear(self.values)
+	table.clear(self.sections)
+	table.clear(self.array)
+end
+
 function PlayerStorage.Section:unset(key)
 	self:removeSection(key)
 

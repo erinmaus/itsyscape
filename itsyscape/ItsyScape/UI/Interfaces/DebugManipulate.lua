@@ -20,6 +20,7 @@ local CloseButton = require "ItsyScape.UI.CloseButton"
 local Drawable = require "ItsyScape.UI.Drawable"
 local FocusBoundary = require "ItsyScape.UI.FocusBoundary"
 local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
+local GridLayout = require "ItsyScape.UI.GridLayout"
 local Interface = require "ItsyScape.UI.Interface"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Label = require "ItsyScape.UI.Label"
@@ -222,9 +223,9 @@ function DebugManipulate.PlayAnimationAction:start()
 	propertiesPrompt.onCancel:register(self.close, self)
 	propertiesPrompt:setText("Play Animation")
 	propertiesPrompt:setProperties({
-		PropertiesPrompt.Property("Animation", "string", ""),
-		PropertiesPrompt.Property("Slot", "string", "x-debug"),
-		PropertiesPrompt.Property("Priority", "integer", 1000)
+		PropertiesPrompt.Property("animation", "Animation", "string", ""),
+		PropertiesPrompt.Property("priority", "Priority", "number", 1000),
+		PropertiesPrompt.Property("slot", "Slot", "string", "x-debug")
 	})
 
 	self:addPopup(propertiesPrompt)
@@ -238,6 +239,43 @@ function DebugManipulate.PlayAnimationAction:_playAnimation(_, _, form)
 		nil, {
 			actorID = id,
 			animation = form.Animation,
+			slot = form.Slot,
+			priority = form.Priority
+		})
+
+	self:getInterface():stopAction()
+end
+
+DebugManipulate.ChangeSkinAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.ChangeSkinAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.ChangeSkinAction:start()
+	DebugManipulate.Action.start(self)
+
+	local propertiesPrompt = PropertiesPrompt()
+	propertiesPrompt.onSubmit:register(self._changeSkin, self)
+	propertiesPrompt.onCancel:register(self.close, self)
+	propertiesPrompt:setText("Change Skin")
+	propertiesPrompt:setProperties({
+		PropertiesPrompt.Property("filename", "Filename", "string", ""),
+		PropertiesPrompt.Property("priority", "Priority", "integer", 1000),
+		PropertiesPrompt.Property("slot", "Slot", "string", "x-debug"),
+	})
+
+	self:addPopup(propertiesPrompt)
+end
+
+function DebugManipulate.ChangeSkinAction:_changeSkin(_, _, form)
+	local id = self:getObject():getID()
+
+	self:getInterface():sendPoke(
+		"changeSkin",
+		nil, {
+			actorID = id,
+			filename = form.Filename,
 			slot = form.Slot,
 			priority = form.Priority
 		})
@@ -644,8 +682,17 @@ function DebugManipulate:selectPreset(preset, button, index)
 	self:sendPoke("select", nil, { resource = preset.resource, id = preset.id })
 end
 
+local function camelCaseToTitleCase(t)
+	t = t or "???"
+	t = t:gsub("[A-Z]", " %1")
+	t = t:gsub("^[a-z]", function(s) return s:upper() end)
+
+	return t
+end
+
 function DebugManipulate:showPreset(presetInfo, preset)
 	self.presetGrid:clearChildren()
+	self.presetGrid:getInnerPanel():setEdgePadding(true, false)
 
 	do
 		local recordButton = Button()
@@ -661,8 +708,145 @@ function DebugManipulate:showPreset(presetInfo, preset)
 		self.presetGrid:addChild(recordButton)
 	end
 
+	local rowWidth = self.presetGrid:getInnerPanel():getSize()
+	for i, action in ipairs(preset) do
+		local name = camelCaseToTitleCase(action.type)
+
+		local button = Button()
+		button:setStyle(Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
+		button.onClick:register(self._onClickAction, self, presetInfo, preset, i)
+
+		self.presetGrid:addChild(button)
+
+		local row = GridLayout()
+		row:setSize(rowWidth, Theme.DEFAULT_BUTTON_SIZE)
+		row:setPadding(0, 0)
+		row:setUniformSize(true, Theme.calculateTileSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, rowWidth, 2), Theme.DEFAULT_BUTTON_SIZE)
+		button:addChild(row)
+
+		local nameLabel = Label()
+		nameLabel:setStyle(Theme.BUTTON_LABEL_STYLE, LabelStyle)
+		nameLabel:setText(name)
+		row:addChild(nameLabel)
+
+		local delayLabel = Label()
+		delayLabel:setStyle(Theme.BUTTON_LABEL_STYLE, LabelStyle)
+		if action.delay then
+			delayLabel:setText(string.format("%d ms", action.delay * 1000))
+		else
+			delayLabel:setText("--")
+		end
+		row:addChild(delayLabel)
+	end
+
 	local gridWidth, gridHeight = self.presetGrid:getSize()
 	Theme.layoutScrollablePanelWithGridLayout(self.presetGrid, gridWidth - Theme.DEFAULT_INNER_PADDING * 2, Theme.DEFAULT_BUTTON_SIZE)
+end
+
+function DebugManipulate:editPresetAction(presetInfo, preset, actionIndex)
+	local action = preset[actionIndex]
+	local target = action.target
+	local map = action.map
+
+	local properties = {
+		PropertiesPrompt.Property("x-mapResource", "Map Resource", "string", map.resource),
+		PropertiesPrompt.Property("x-localLayer", "Local Layer", "string", map.localLayer),
+		PropertiesPrompt.Property("x-target", target.peepID and "Peep ID" or "Map Object Name", type(target.peepID or target.mapObjectName), target.peepID or target.mapObjectName)
+	}
+
+	local otherProperties = {}
+	for k, v in pairs(action.event) do
+		table.insert(otherProperties, PropertiesPrompt.Property(k, camelCaseToTitleCase(k), type(v), v))
+	end
+
+	table.sort(otherProperties, function(a, b)
+		return a:getField() < b:getField()
+	end)
+
+	for _, otherProperty in ipairs(otherProperties) do
+		table.insert(properties, otherProperty)
+	end
+
+	local propertiesPrompt = PropertiesPrompt()
+	propertiesPrompt.onSubmit:register(self._onEditPresetAction, self, presetInfo, preset, actionIndex)
+	propertiesPrompt.onCancel:register(self._onCancelEditPresetAction, self, presetInfo, preset, actionIndex)
+	propertiesPrompt:setProperties(properties)
+
+	self:addPopup(propertiesPrompt)
+end
+
+function DebugManipulate:_onEditPresetAction(presetInfo, preset, actionIndex, popup, properties, form)
+	local target = {
+		peepID = form["Peep ID"],
+		mapObjectName = form["Map Object Name"]
+	}
+
+	local map = {
+		resource = form["Map Resource"],
+		localLayer = form["Local Layer"]
+	}
+
+	local event = {}
+	for _, property in ipairs(properties) do
+		if not property:getID():match("^x-") then
+			event[property:getID()] = property:getValue()
+		end
+	end
+
+	self:sendPoke("editAction", nil, {
+		resource = presetInfo.resource,
+		id = presetInfo.id,
+		index = actionIndex,
+		action = {
+			target = target,
+			map = map,
+			event = event,
+			type = preset[actionIndex].type,
+			event = event
+		}
+	})
+
+	self:removePopup(popup)
+end
+
+function DebugManipulate:_onCancelEditPresetAction(presetInfo, preset, actionIndex, popup)
+	self:removePopup(popup)
+end
+
+function DebugManipulate:deletePresetAction(presetInfo, preset, actionIndex)
+	self:sendPoke("deleteAction", nil, {
+		resource = presetInfo.resource,
+		id = presetInfo.id,
+		index = actionIndex
+	})
+end
+
+function DebugManipulate:_onClickAction(presetInfo, preset, actionIndex, button, index)
+	if index == 1 then
+		self:editPresetAction(presetInfo, preset, actionIndex)
+	elseif index == 2 then
+		local name = camelCaseToTitleCase(preset[actionIndex].type)
+		local actions = {
+			{
+				id = 1,
+				verb = "Edit",
+				object = name,
+				callback = function()
+					self:editPresetAction(presetInfo, preset, actionIndex)
+				end
+			},
+			{
+				id = 2,
+				verb = "Delete",
+				object = name,
+				callback = function()
+					self:deletePresetAction(presetInfo, preset, actionIndex)
+				end
+			}
+		}
+
+		self:getUIView():probe(actions, button:getAbsoluteCenter())
+	end
 end
 
 function DebugManipulate:buildActorActions(object, hit, actions)
@@ -674,6 +858,17 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 		object = object:getName(),
 		callback = function()
 			self:beginAction(DebugManipulate.PlayAnimationAction, object, hit)
+		end
+	})
+
+	table.insert(actions, {
+		id = #actions + 1,
+		verb = "Change-Skin",
+		objectID = object:getID(),
+		objectType = "actor",
+		object = object:getName(),
+		callback = function()
+			self:beginAction(DebugManipulate.ChangeSkinAction, object, hit)
 		end
 	})
 end
