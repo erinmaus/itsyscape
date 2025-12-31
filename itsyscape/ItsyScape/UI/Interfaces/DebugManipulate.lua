@@ -9,11 +9,15 @@
 --------------------------------------------------------------------------------
 local utf8 = require "utf8"
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
+local Gizmo = require "ItsyScape.Editor.Map.Gizmo"
 local Probe = require "ItsyScape.Game.Probe"
 local Utility = require "ItsyScape.Game.Utility"
 local Actor = require "ItsyScape.Game.Model.Actor"
 local Prop = require "ItsyScape.Game.Model.Prop"
 local Color = require "ItsyScape.Graphics.Color"
+local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local CloseButton = require "ItsyScape.UI.CloseButton"
@@ -283,6 +287,24 @@ function DebugManipulate.ChangeSkinAction:_changeSkin(_, _, form)
 	self:getInterface():stopAction()
 end
 
+DebugManipulate.TransformAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.TransformAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.TransformAction:start()
+	DebugManipulate.Action.start(self)
+
+	local root = self:getUIView():getRoot()
+	self.gizmoFacade = DebugManipulate.GizmoFacade(self:getInterface(), self:getObject())
+	self:getInterface():addFacade(self.gizmoFacade)
+end
+
+function DebugManipulate.TransformAction:done()
+	self:getInterface():removeFacade(self.gizmoFacade)
+end
+
 DebugManipulate.WIDTH  = 800
 DebugManipulate.HEIGHT = 600
 DebugManipulate.TITLE_HEIGHT = 48
@@ -293,10 +315,178 @@ function DebugManipulate.Root:getOverflow()
 	return true
 end
 
-DebugManipulate.GizmoFacade = Class(Widget)
+DebugManipulate.GizmoFacade = Class(Drawable)
 function DebugManipulate.GizmoFacade:new(interface, object)
+	Drawable.new(self)
+
 	self.interface = interface
 	self.object = object
+
+	self.gizmo = Gizmo(object, Gizmo.BoundingBoxOperation())
+	self.gizmo:setHoverDistance(-math.huge)
+	self.gizmoOperation = Gizmo.OPERATION_BOUNDS
+	self.isGizmoGrabbed = false
+end
+
+function DebugManipulate.GizmoFacade:performLayout()
+	Drawable.performLayout(self)
+
+	local w, h = itsyrealm.graphics.getScaledMode()
+	self:setSize(w, h)
+	self:setPosition(0, 0)
+	self:setZDepth(-1000)
+end
+
+function DebugManipulate.GizmoFacade:getIsFocusable()
+	return true
+end
+
+function DebugManipulate.GizmoFacade:getProxySceneNode()
+	local gameView = self.interface:getView():getGameView()
+	local view = gameView:getView(self.object)
+
+	local baseSceneNode
+	if Class.isCompatibleType(self.object, Actor) then
+		baseSceneNode = view:getSceneNode()
+	elseif Class.isCompatibleType(self.object, Prop) then
+		baseSceneNode = view:getRoot()
+	end
+
+	if not baseSceneNode then
+		return SceneNode()
+	end
+
+	local result = SceneNode()
+	result:setParent(baseSceneNode:getParent())
+
+	local baseTransform = baseSceneNode:getTransform()
+	local resultTransform = result:getTransform()
+
+	local t, r, s = baseTransform:getPreviousTransform()
+	resultTransform:setPreviousTransform(t, r, s)
+	resultTransform:setLocalTranslation(baseTransform:getLocalTranslation())
+	resultTransform:setLocalRotation(baseTransform:getLocalRotation())
+	resultTransform:setLocalScale(baseTransform:getLocalScale())
+
+	return result
+end
+
+function DebugManipulate.GizmoFacade:keyUp(key, ...)
+	Drawable.keyUp(self, key, ...)
+
+	if key == "g" then
+		self.gizmo = Gizmo(self.object,
+			Gizmo.TranslationAxisOperation(Vector.UNIT_X),
+			Gizmo.TranslationAxisOperation(Vector.UNIT_Y),
+			Gizmo.TranslationAxisOperation(Vector.UNIT_Z))
+		self.gizmoOperation = Gizmo.OPERATION_TRANSLATION
+		self.isGizmoGrabbed = false
+	elseif key == "r" then
+		self.gizmo = Gizmo(
+			target,
+			Gizmo.RotationAxisOperation(Vector.UNIT_X),
+			Gizmo.RotationAxisOperation(Vector.UNIT_Y),
+			Gizmo.RotationAxisOperation(Vector.UNIT_Z))
+		self.gizmoOperation = Gizmo.OPERATION_ROTATION
+		self.isGizmoGrabbed = false
+	elseif key == "s" then
+		self.gizmo = Gizmo(
+			target,
+			Gizmo.ScaleAxisOperation(Vector.UNIT_X),
+			Gizmo.ScaleAxisOperation(Vector.UNIT_Y),
+			Gizmo.ScaleAxisOperation(Vector.UNIT_Z),
+			Gizmo.ScaleAxisOperation(Vector.ONE))
+		self.gizmoOperation = Gizmo.OPERATION_SCALE
+		self.isGizmoGrabbed = false
+	elseif key == "return" then
+		self.interface:stopAction()
+	elseif key == "escape" then
+		self.interface:cancelAction()
+	end
+end
+
+function DebugManipulate.GizmoFacade:mousePress(x, y, button)
+	Drawable.mousePress(self, x, y, button)
+
+	if button ~= 1 then
+		return
+	end
+
+	local gameView = self.interface:getView():getGameView()
+	local sceneNode = self:getProxySceneNode()
+
+	local x, y = love.mouse.getPosition()
+	self.isGizmoGrabbed = self.gizmo:hover(x, y, gameView:getCamera(), sceneNode)
+	if self.isGizmoGrabbed then
+		self.gizmoGrabX = x
+		self.gizmoGrabY = y
+	end
+
+	sceneNode:setParent()
+end
+
+function DebugManipulate.GizmoFacade:mouseRelease(x, y, button)
+	Drawable.mouseRelease(self, x, y, button)
+
+	if button == 1 then
+		self.isGizmoGrabbed = false
+	end
+end
+
+function DebugManipulate.GizmoFacade:mouseMove(rx, ry, dx, dy, ...)
+	Drawable.mouseMove(self, rx, ry, dx, dy, ...)
+
+	local gameView = self.interface:getView():getGameView()
+	local sceneNode = self:getProxySceneNode()
+
+	local x, y = love.mouse.getPosition()
+	if self.isGizmoGrabbed then
+		local isSnapped = love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")
+		local isUpdated = false
+
+		if isSnapped then
+			if self.gizmo:move(x, y, self.gizmoGrabX, self.gizmoGrabY, gameView:getCamera(), sceneNode, true) then
+				isUpdated = true
+				self.gizmoGrabX = x
+				self.gizmoGrabY = y
+			end
+		else
+			isUpdated = self.gizmo:move(x, y, x + dx, y + dy, gameView:getCamera(), sceneNode, false)
+		end
+
+		if isUpdated then
+			if self.gizmoOperation == Gizmo.OPERATION_TRANSLATION then
+				self.interface:translateObject(self.object, sceneNode:getTransform():getLocalTranslation())
+			elseif self.gizmoOperation == Gizmo.OPERATION_ROTATION then
+				self.interface:rotateObject(self.object, sceneNode:getTransform():getLocalRotation())
+			elseif self.gizmoOperation == Gizmo.OPERATION_SCALE then
+				self.interface:scaleObject(self.object, sceneNode:getTransform():getLocalScale())
+			end
+		end
+	else
+		self.gizmo:hover(x, y, gameView:getCamera(), sceneNode)
+	end
+
+	sceneNode:setParent()
+end
+
+function DebugManipulate.GizmoFacade:_draw()
+	local gameView = self.interface:getView():getGameView()
+
+	local sceneNode = self:getProxySceneNode()
+	local min, max = self.object:getBounds()
+	local size = ((max - min):max(Vector.ONE) / sceneNode:getTransform():getLocalScale())
+
+	self.gizmo:update(sceneNode, size)
+	self.gizmo:draw(gameView:getCamera(), sceneNode)
+
+	sceneNode:setParent()
+end
+
+function DebugManipulate.GizmoFacade:draw(...)
+	Drawable.draw(self, ...)
+
+	itsyrealm.graphics.pushCallback(self._draw, self)
 end
 
 DebugManipulate.InteractFacade = Class(Widget)
@@ -415,6 +605,8 @@ function DebugManipulate:new(id, index, ui)
 		radius = 0
 	}, PanelStyle)
 
+	self.facades = {}
+
 	local state = self:getState()
 	if state and state.presets then
 		self:populatePresets(state.presets)
@@ -434,8 +626,14 @@ function DebugManipulate:performLayout()
 	local windowWidth, windowHeight = self.windowRoot:getSize()
 	self.windowRoot:setPosition((width - windowWidth) / 2, (height - windowHeight) / 2)
 
-	if self.facade then
-		self.facade:performLayout()
+	local facade = self.facades[#self.facades]
+	if facade then
+		facade:performLayout()
+	end
+
+	local popup = self.popupInterfaces[#self.popupInterfaces]
+	if popup then
+		popup:performLayout()
 	end
 
 	self.popupPanel:setSize(width, height)
@@ -447,16 +645,14 @@ end
 
 function DebugManipulate:detach()
 	local root = self:getView():getRoot()
-	root:addChild(self)
-
 	if self.revealButton and self.revealButton:getParent() == root then
 		root:removeChild(self.revealButton)
 		self.revealButton = nil
 	end
 
-	if self.facade and self.facade:getParent() == root then
-		root:removeChild(self.facade)
-		self.facade = nil
+	local facade = self.facades[#self.facades]
+	if facade and facade:getParent() == root then
+		root:removeChild(facade)
 	end
 end
 
@@ -481,6 +677,8 @@ end
 function DebugManipulate:restoreFocus()
 	if #self.popupInterfaces >= 1 and self.popupInterfaces[#self.popupInterfaces].widget then
 		self:focusChild(self.popupInterfaces[#self.popupInterfaces].widget)
+	elseif #self.facades >= 1 then
+		self:focusChild(self.facades[#self.facades])
 	elseif self.selectedPresetResource and self.selectedPresetID then
 		self:focusChild(self.presetGrid:getInnerPanel())
 	else
@@ -523,6 +721,53 @@ function DebugManipulate:removePopup(widget)
 			end
 
 			table.remove(self.popupInterfaces, i)
+			break
+		end
+	end
+end
+
+function DebugManipulate:addFacade(facade)
+	self:removeFacade(facade)
+
+	local currentFacade = self.facades[#self.facades]
+	if currentFacade then
+		local parent = currentFacade:getParent()
+		if parent then
+			parent:removeChild(currentFacade)
+		end
+	end
+
+	table.insert(self.facades, facade)
+
+	self:getView():getRoot():addChild(facade)
+	facade:performLayout()
+
+	if #self.popupInterfaces == 0 then
+		self:focusChild(facade)
+	end
+end
+
+function DebugManipulate:removeFacade(facade)
+	for i, otherFacade in ipairs(self.facades) do
+		if otherFacade == facade then
+			if i == #self.facades then
+				local parent = facade:getParent()
+				if parent then
+					parent:removeChild(facade)
+				end
+
+				local previousFacade = self.facades[i - 1]
+				if previousFacade then
+					self:getView():getRoot():addChild(previousFacade)
+					previousFacade:performLayout()
+
+					if #self.popupInterfaces == 0 then
+						self:focusChild(previousFacade)
+					end
+				end
+			end
+
+			table.remove(self.facades, i)
 			break
 		end
 	end
@@ -821,6 +1066,46 @@ function DebugManipulate:deletePresetAction(presetInfo, preset, actionIndex)
 	})
 end
 
+function DebugManipulate:translateObject(object, translation)
+	local propID = Class.isCompatibleType(object, Prop) and object:getID()
+	local actorID = Class.isCompatibleType(object, Actor) and object:getID()
+
+	self:sendPoke("transform", nil, {
+		propID = propID,
+		actorID = actorID,
+		translationX = translation.x,
+		translationY = translation.y,
+		translationZ = translation.z,
+	})
+end
+
+function DebugManipulate:rotateObject(object, rotation)
+	local propID = Class.isCompatibleType(object, Prop) and object:getID()
+	local actorID = Class.isCompatibleType(object, Actor) and object:getID()
+
+	local x, y, z = rotation:getEulerXYZ()
+	self:sendPoke("transform", nil, {
+		propID = propID,
+		actorID = actorID,
+		rotationX = math.deg(x),
+		rotationY = math.deg(y),
+		rotationZ = math.deg(z),
+	})
+end
+
+function DebugManipulate:scaleObject(object, scale)
+	local propID = Class.isCompatibleType(object, Prop) and object:getID()
+	local actorID = Class.isCompatibleType(object, Actor) and object:getID()
+
+	self:sendPoke("transform", nil, {
+		propID = propID,
+		actorID = actorID,
+		scaleX = scale.x,
+		scaleY = scale.y,
+		scaleZ = scale.z,
+	})
+end
+
 function DebugManipulate:_onClickAction(presetInfo, preset, actionIndex, button, index)
 	if index == 1 then
 		self:editPresetAction(presetInfo, preset, actionIndex)
@@ -871,17 +1156,28 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 			self:beginAction(DebugManipulate.ChangeSkinAction, object, hit)
 		end
 	})
+
+	table.insert(actions, {
+		id = #actions + 1,
+		verb = "Transform",
+		objectID = object:getID(),
+		objectType = "actor",
+		object = object:getName(),
+		callback = function()
+			self:beginAction(DebugManipulate.TransformAction, object, hit)
+		end
+	})
 end
 
 function DebugManipulate:buildPropActions(object, hit, actions)
 	table.insert(actions, {
 		id = #actions + 1,
-		verb  = "Nop",
+		verb = "Transform",
 		objectID = object:getID(),
-		objectType = "prop",
+		objectType = "actor",
 		object = object:getName(),
 		callback = function()
-			print("buildPropActions")
+			self:beginAction(DebugManipulate.TransformAction, object, hit)
 		end
 	})
 end
@@ -942,10 +1238,7 @@ function DebugManipulate:record(preset, _, index)
 		return
 	end
 
-	self.facade = DebugManipulate.InteractFacade(self)
-
-	local root = self:getView():getRoot()
-	root:addChild(self.facade)
+	self:addFacade(DebugManipulate.InteractFacade(self))
 
 	self:hide()
 	self:sendPoke("startRecording", nil, { resource = preset.resource, id = preset.id })

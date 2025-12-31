@@ -8,9 +8,14 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local Controller = require "ItsyScape.UI.Controller"
 
 local DebugManipulateController = Class(Controller)
@@ -96,8 +101,12 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:playAnimation(e)
 	elseif actionID == "changeSkin" then
 		self:changeSkin(e)
+	elseif actionID == "transform" then
+		self:transform(e)
 	elseif actionID == "editAction" then
 		self:editAction(e)
+	elseif actionID == "shiftAction" then
+		self:shiftAction(e)
 	elseif actionID == "deleteAction" then
 		self:deleteAction(e)
 	elseif actionID == "close" then
@@ -138,6 +147,10 @@ function DebugManipulateController:stopRecording()
 end
 
 function DebugManipulateController:newPreset(e)
+	if self.isRecording then
+		self:stopRecording()
+	end
+
 	local mapStorage = self:getMapStorage(e.resource)
 
 	local id
@@ -160,6 +173,10 @@ function DebugManipulateController:newPreset(e)
 end
 
 function DebugManipulateController:deletePreset(e)
+	if self.isRecording then
+		self:stopRecording()
+	end
+
 	local mapStorage = e.resource and self:getMapStorage(e.resource)
 	if not mapStorage then
 		return
@@ -174,6 +191,10 @@ function DebugManipulateController:deletePreset(e)
 end
 
 function DebugManipulateController:selectPreset(e)
+	if self.isRecording then
+		self:stopRecording()
+	end
+
 	local mapStorage = self:getMapStorage(e.resource or self.layers[1])
 
 	local presetStorage, index = self:getPresetStorage(e.resource, e.id)
@@ -208,7 +229,7 @@ function DebugManipulateController:getRecordedPeep(id)
 	return self.idToPeep[id]
 end
 
-function DebugManipulateController:record(layer, targetPeep, actionType, e)
+function DebugManipulateController:makeRecord(layer, targetPeep, actionType, e)
 	local mapInfo
 	do
 		local instance = Utility.Peep.getInstance(self:getPeep())
@@ -257,10 +278,18 @@ function DebugManipulateController:record(layer, targetPeep, actionType, e)
 			event = e
 		}
 
-		table.insert(self.recordingQueue, q)
-		Log.info("Recorded '%s'.", Log.dump(q))
+		return q
 	end
 
+	return nil
+end
+
+function DebugManipulateController:commitRecord(action)
+	table.insert(self.recordingQueue, action)
+	Log.info("Recorded '%s'.", Log.dump(action))
+end
+
+function DebugManipulateController:updateClientRecords()
 	local result, index
 	do
 		local p, i = self:getPresetStorage(self.recordingMapResource, self.recordingID)
@@ -280,6 +309,38 @@ function DebugManipulateController:record(layer, targetPeep, actionType, e)
 		index = index,
 		id = self.recordingID
 	}, result)
+end
+
+function DebugManipulateController:record(layer, targetPeep, actionType, e)
+	local action = self:makeRecord(layer, targetPeep, actionType, e)
+	if not action then
+		return
+	end
+
+	self:commitRecord(action)
+	self:updateClientRecords()
+end
+
+function DebugManipulateController:mergeOrRecord(layer, targetPeep, actionType, e)
+	local action = self:makeRecord(layer, targetPeep, actionType, e)
+	if not action then
+		return
+	end
+
+	local previousAction = self.recordingQueue[#self.recordingQueue]
+	if previousAction and previousAction.type == action.type and
+	   previousAction.map.resource == action.map.resource and
+	   previousAction.map.localLayer == action.map.localLayer and
+	   (previousAction.target.mapObjectName == action.target.mapObjectName or previousAction.target.peepID == action.target.peepID)
+	then
+		for k, v in pairs(action.event) do
+			previousAction.event[k] = v
+		end
+	else
+		self:commitRecord(action)
+	end
+
+	self:updateClientRecords()
 end
 
 function DebugManipulateController:spawnActor(e)
@@ -379,6 +440,55 @@ function DebugManipulateController:changeSkin(e)
 	end
 end
 
+function DebugManipulateController:transform(e)
+	local actor = self:getGame():getStage():getActorByID(e.actorID)
+	local prop = self:getGame():getStage():getPropByID(e.propID)
+	if not (actor or prop) then
+		return
+	end
+
+	local peep = (actor and actor:getPeep()) or (prop and prop:getPeep())
+
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+	local actorInstance = Utility.Peep.getInstance(peep)
+
+	if selfInstance ~= actorInstance then
+		return
+	end
+
+	local event = {}
+	if type(e.translationX) == "number" and type(e.translationY) == "number" and type(e.translationZ) == "number" then
+		peep:addBehavior(PositionBehavior)
+		Utility.Peep.setPosition(peep, Vector(e.translationX, e.translationY, e.translationZ))
+
+		event.translationX = e.translationX
+		event.translationY = e.translationY
+		event.translationZ = e.translationZ
+	end
+
+	if type(e.rotationX) == "number" and type(e.rotationY) == "number" and type(e.rotationZ) == "number" then
+		peep:addBehavior(RotationBehavior)
+		Utility.Peep.setRotation(peep, Quaternion.fromEulerXYZ(math.rad(e.rotationX), math.rad(e.rotationY), math.rad(e.rotationZ)):getNormal())
+
+		event.rotationX = e.rotationX
+		event.rotationY = e.rotationY
+		event.rotationZ = e.rotationZ
+	end
+
+	if type(e.scaleX) == "number" and type(e.scaleY) == "number" and type(e.scaleZ) == "number" then
+		peep:addBehavior(ScaleBehavior)
+		Utility.Peep.setScale(peep, Vector(e.scaleX, e.scaleY, e.scaleZ))
+
+		event.scaleX = e.scaleX
+		event.scaleY = e.scaleY
+		event.scaleZ = e.scaleZ
+	end
+
+	if self.isRecording then
+		self:mergeOrRecord(Utility.Peep.getLayer(peep), peep, "transform", event)
+	end
+end
+
 function DebugManipulateController:editAction(e)
 	local presetStorage = self:getPresetStorage(e.resource, e.id)
 	if not presetStorage then
@@ -388,10 +498,38 @@ function DebugManipulateController:editAction(e)
 	presetStorage:getSection(e.index):clear()
 	presetStorage:set(e.index, e.action)
 
-	self:selectPreset({
-		resource = e.resource,
-		id = e.id
-	})
+	if self.isRecording then
+		self:updateClientRecords()
+	else
+		self:selectPreset({
+			resource = e.resource,
+			id = e.id
+		})
+	end
+end
+
+function DebugManipulateController:shiftAction(e)
+	local presetStorage = self:getPresetStorage(e.resource, e.id)
+	if not presetStorage then
+		return
+	end
+
+	local preset = presetStorage:get()
+	presetStorage:clear()
+
+	local index = e.index
+	local nextIndex = e.index - 1 + e.direction
+	local action = table.remove(preset, index)
+	table.insert(preset, nextIndex, action)
+
+	if self.isRecording then
+		self:updateClientRecords()
+	else
+		self:selectPreset({
+			resource = e.resource,
+			id = e.id
+		})
+	end
 end
 
 function DebugManipulateController:deleteAction(e)
@@ -402,10 +540,14 @@ function DebugManipulateController:deleteAction(e)
 
 	presetStorage:removeSection(e.index)
 
-	self:selectPreset({
-		resource = e.resource,
-		id = e.id
-	})
+	if self.isRecording then
+		self:updateClientRecords()
+	else
+		self:selectPreset({
+			resource = e.resource,
+			id = e.id
+		})
+	end
 end
 
 function DebugManipulateController:pull()
