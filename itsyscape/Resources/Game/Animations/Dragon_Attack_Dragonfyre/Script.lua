@@ -5,9 +5,8 @@ Animation "Dragon Attack (Dragonfyre)" {
 
 	Channel {
 		Particles {
-			duration = 1.5,
-			attach = "head",
-			scale = { 0.5, 0.5, 0.5 },
+			duration = 2.5,
+			attach = "head.bottom",
 			direction = { 0, 0, -1 },
 
 			system = {
@@ -18,9 +17,9 @@ Animation "Dragon Attack (Dragonfyre)" {
 				emitters = {
 					{
 						type = "RadialEmitter",
-						radius = { 0, 1.5 },
+						radius = { 0, 0.5 },
 						lifetime = { 0.5, 0.1 },
-						position = { 0, -2, 6 },
+						position = { 0, 0, 0 },
 					},
 					{
 						type = "DirectionalEmitter",

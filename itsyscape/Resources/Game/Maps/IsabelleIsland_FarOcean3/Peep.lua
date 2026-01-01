@@ -134,7 +134,9 @@ function Ocean:onBoom(ship)
 
 	if ship == self.exquisitor then
 		local player = Utility.Peep.getPlayerModel(self)
-		player:pokeCamera("shake", 0.5)
+		if player then
+			player:pokeCamera("shake", 0.5)
+		end
 	end
 end
 

@@ -151,23 +151,6 @@ do
 	}
 end
 
-M["Cthulhu"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 59,
-		PositionY = 12,
-		PositionZ = 89,
-		Name = "Cthulhu",
-		Map = M._MAP,
-		Resource = M["Cthulhu"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "Cthulhu",
-		MapObject = M["Cthulhu"]
-	}
-end
-
 M["GildedDragon"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
