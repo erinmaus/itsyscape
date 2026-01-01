@@ -37,6 +37,17 @@ local SearchPrompt = require "ItsyScape.UI.Interfaces.Components.SearchPrompt"
 local PropertiesPrompt = require "ItsyScape.UI.Interfaces.Components.PropertiesPrompt"
 local Widget = require "ItsyScape.UI.Widget"
 
+local function camelCaseToTitleCase(t)
+	t = t or "???"
+	t = t:gsub("[A-Z]", " %1")
+	t = t:gsub("[^A-Za-z0-9 ]", "-")
+	t = t:gsub("-+", " - ")
+	t = t:gsub("%s+", " ")
+	t = t:gsub("^[a-z]", function(s) return s:upper() end)
+
+	return t
+end
+
 local DebugManipulate = Class(Interface)
 
 DebugManipulate.Action = Class()
@@ -416,6 +427,110 @@ function DebugManipulate.PreviewOrientateAction:done()
 	end
 end
 
+DebugManipulate.FireProjectileAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.FireProjectileAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.FireProjectileAction:start()
+	DebugManipulate.Action.start(self)
+
+	local root = self:getUIView():getRoot()
+	self.interactFacade = DebugManipulate.InteractFacade(self:getInterface())
+	self.interactFacade:setActionGenerator(function(interface, probe, actions)
+		for _, hit in probe:hits() do
+			local object = hit:getObject()
+
+			if Class.isCompatibleType(object, Actor) then
+				interface:buildActorAction(actions, object, {
+					verb = "Fire-Projectile-At",
+					callback = function()
+						interface:pokeAction("fireProjectileAt", object)
+					end
+				})
+			elseif Class.isCompatibleType(object, Prop) then
+				interface:buildPropAction(actions, object, {
+					verb = "Fire-Projectile-At",
+					callback = function()
+						interface:pokeAction("fireProjectileAt", object)
+					end
+				})
+			end
+		end
+
+		table.insert(actions, {
+			id = #actions + 1,
+			verb = "Cancel",
+			objectID = -1,
+			objectType = "action",
+			object = "Fire projectile action",
+			callback = function()
+				self:close()
+			end
+		})
+	end)
+
+	self:getInterface():addFacade(self.interactFacade)
+end
+
+function DebugManipulate.FireProjectileAction:searchAllProjectiles()
+	local projectiles = {}
+
+	local pathName = "Resources/Game/Projectiles"
+	for _, item in ipairs(love.filesystem.getDirectoryItems(pathName)) do
+		local filename = string.format("%s/%s/Projectile.lua", pathName, item)
+		if love.filesystem.getInfo(filename) then
+			table.insert(projectiles, item)
+		end
+	end
+
+	return function(value)
+		if utf8.len(value) == 0 then
+			return {}
+		end
+
+		local pattern = value:gsub("%W", "%%%1.*"):gsub("%w", function(s)
+			return string.format("[%s%s].*", s:upper(), s:lower())
+		end)
+
+		local suggestions = {}
+		for _, projectile in ipairs(projectiles) do
+			if projectile:match(pattern) or projectile:match(value) then
+				table.insert(suggestions, SearchPrompt.Suggestion(projectile, projectile, camelCaseToTitleCase(projectile)))
+			end
+		end
+
+		return suggestions
+	end
+end
+
+function DebugManipulate.FireProjectileAction:fireProjectileAt(otherObject)
+	self:getInterface():removeFacade(self.interactFacade)
+	self.interactFacade = nil
+
+	local searchPrompt = SearchPrompt()
+	searchPrompt:setText("Find Projectile")
+	searchPrompt:setSuggestionsGenerator(self:searchAllProjectiles())
+	searchPrompt.onSubmit:register(self._fireProjectile, self, otherObject)
+	searchPrompt.onCancel:register(self.close, self)
+
+	self:addPopup(searchPrompt)
+end
+
+function DebugManipulate.FireProjectileAction:_fireProjectile(otherObject, _, value)
+	self:getInterface():fireProjectileAt(self:getObject(), otherObject, value)
+	self:getInterface():stopAction()
+end
+
+function DebugManipulate.FireProjectileAction:done()
+	DebugManipulate.Action.done(self)
+
+	if self.interactFacade then
+		self:getInterface():removeFacade(self.interactFacade)
+	end
+end
+
 DebugManipulate.WIDTH  = 800
 DebugManipulate.HEIGHT = 600
 DebugManipulate.TITLE_HEIGHT = 48
@@ -628,6 +743,28 @@ function DebugManipulate.InteractFacade:getIsFocusable()
 	return true
 end
 
+function DebugManipulate.InteractFacade:setActionGenerator(value)
+	self.actionGenerator = value
+end
+
+function DebugManipulate.InteractFacade:getActionGenerator()
+	return self.actionGenerator
+end
+
+function DebugManipulate.InteractFacade._generateDefaultActions(interface, probe, actions)
+	for _, hit in probe:hits() do
+		local object = hit:getObject()
+
+		if Class.isCompatibleType(object, Actor) then
+			interface:buildActorActions(object, hit, actions)
+		elseif Class.isCompatibleType(object, Prop) then
+			interface:buildPropActions(object, hit, actions)
+		elseif Class.isCompatibleType(object, Probe.Tile) then
+			interface:buildTileActions(object, hit, actions)
+		end
+	end
+end
+
 function DebugManipulate.InteractFacade:mousePress(_x, _y, button)
 	Widget.mousePress(self, _x, _y, button)
 
@@ -641,17 +778,8 @@ function DebugManipulate.InteractFacade:mousePress(_x, _y, button)
 	_APP:probe(x, y, false, function(probe)
 		local actions = {}
 
-		for _, hit in probe:hits() do
-			local object = hit:getObject()
-
-			if Class.isCompatibleType(object, Actor) then
-				self.interface:buildActorActions(object, hit, actions)
-			elseif Class.isCompatibleType(object, Prop) then
-				self.interface:buildPropActions(object, hit, actions)
-			elseif Class.isCompatibleType(object, Probe.Tile) then
-				self.interface:buildTileActions(object, hit, actions)
-			end
-		end
+		local func = self.actionGenerator or self._generateDefaultActions
+		func(self.interface, probe, actions)
 
 		local ui = self:getUIView()
 		if ui and #actions >= 1 then
@@ -1055,14 +1183,6 @@ function DebugManipulate:selectPreset(preset, button, index)
 	self:sendPoke("select", nil, { resource = preset.resource, id = preset.id })
 end
 
-local function camelCaseToTitleCase(t)
-	t = t or "???"
-	t = t:gsub("[A-Z]", " %1")
-	t = t:gsub("^[a-z]", function(s) return s:upper() end)
-
-	return t
-end
-
 function DebugManipulate:showPreset(presetInfo, preset)
 	self.presetGrid:clearChildren()
 	self.presetGrid:getInnerPanel():setEdgePadding(true, false)
@@ -1305,6 +1425,27 @@ function DebugManipulate:scaleObject(object, scale)
 	})
 end
 
+function DebugManipulate:fireProjectileAt(sourceObject, destinationObject, projectile)
+	local sourcePropID = Class.isCompatibleType(sourceObject, Prop) and sourceObject:getID()
+	local sourceActorID = Class.isCompatibleType(sourceObject, Actor) and sourceObject:getID()
+	local destinationPropID = Class.isCompatibleType(destinationObject, Prop) and destinationObject:getID()
+	local destinationActorID = Class.isCompatibleType(destinationObject, Actor) and destinationObject:getID()
+
+	self:sendPoke("fireProjectile", nil, {
+		sourcePropID = sourcePropID,
+		sourceActorID = sourceActorID,
+		destinationPropID = destinationPropID,
+		destinationActorID = destinationActorID,
+		projectile = projectile
+	})
+end
+
+function DebugManipulate:orientateCamera(object)
+	self:sendPoke("orientateCamera", nil, {
+		actorID = object:getID()
+	})
+end
+
 function DebugManipulate:_onClickAction(presetInfo, preset, actionIndex, button, index)
 	if index == 1 then
 		self:editPresetAction(presetInfo, preset, actionIndex)
@@ -1357,62 +1498,101 @@ function DebugManipulate:_onClickAction(presetInfo, preset, actionIndex, button,
 	end
 end
 
-function DebugManipulate:buildActorActions(object, hit, actions)
+function DebugManipulate:buildActorAction(actions, object, t)
+	t = t or {}
+
 	table.insert(actions, {
 		id = #actions + 1,
-		verb = "Play-Animation",
+		verb = t.verb or "*Interact",
 		objectID = object:getID(),
 		objectType = "actor",
 		object = object:getName(),
+		callback = t.callback or function() end
+	})
+end
+
+function DebugManipulate:buildActorActions(object, hit, actions)
+	self:buildActorAction(actions, object, {
+		verb = "Play-Animation",
 		callback = function()
 			self:beginAction(DebugManipulate.PlayAnimationAction, object, hit)
 		end
 	})
 
-	table.insert(actions, {
-		id = #actions + 1,
+	self:buildActorAction(actions, object, {
 		verb = "Change-Skin",
-		objectID = object:getID(),
-		objectType = "actor",
-		object = object:getName(),
 		callback = function()
 			self:beginAction(DebugManipulate.ChangeSkinAction, object, hit)
 		end
 	})
 
-	table.insert(actions, {
-		id = #actions + 1,
+	self:buildActorAction(actions, object, {
 		verb = "Transform",
-		objectID = object:getID(),
-		objectType = "actor",
-		object = object:getName(),
 		callback = function()
 			self:beginAction(DebugManipulate.TransformAction, object, hit)
 		end
 	})
 
-	table.insert(actions, {
-		id = #actions + 1,
+	self:buildActorAction(actions, object, {
 		verb = "Preview-Orientate-Camera",
-		objectID = object:getID(),
-		objectType = "actor",
-		object = object:getName(),
 		callback = function()
 			self:beginAction(DebugManipulate.PreviewOrientateAction, object, hit)
 		end
 	})
+
+	self:buildActorAction(actions, object, {
+		verb = "Orientate-Camera",
+		callback = function()
+			self:orientateCamera(object)
+		end
+	})
+
+	self:buildActorAction(actions, object, {
+		verb = "Fire-Projectile",
+		callback = function()
+			self:beginAction(DebugManipulate.FireProjectileAction, object, hit)
+		end
+	})
+end
+
+function DebugManipulate:buildPropAction(actions, object, t)
+	t = t or {}
+
+	table.insert(actions, {
+		id = #actions + 1,
+		verb = t.verb or "*Interact",
+		objectID = object:getID(),
+		objectType = "prop",
+		object = object:getName(),
+		callback = t.callback or function() end
+	})
 end
 
 function DebugManipulate:buildPropActions(object, hit, actions)
-	table.insert(actions, {
-		id = #actions + 1,
+	self:buildPropAction(actions, object, {
 		verb = "Transform",
-		objectID = object:getID(),
-		objectType = "actor",
-		object = object:getName(),
 		callback = function()
 			self:beginAction(DebugManipulate.TransformAction, object, hit)
 		end
+	})
+end
+
+function DebugManipulate:buildTileAction(actions, object, t)
+	t = t or {}
+
+	local _, _, layer = object:getTile()
+
+	local gameView = self:getView():getGameView()
+	local resource = gameView:getMapResourceID(layer)
+	local localLayer = gameView:getMapLocalLayer(layer)
+
+	table.insert(actions, {
+		id = #actions,
+		verb = t.verb or "*Interact",
+		objectID = layer,
+		objectType = "map",
+		object = string.format("%s@%s", resource or "???", localLayer or string.format("*%d", layer)),
+		callback = t.callback or function() end
 	})
 end
 
@@ -1423,23 +1603,15 @@ function DebugManipulate:buildTileActions(object, hit, actions)
 	local resource = gameView:getMapResourceID(layer)
 	local localLayer = gameView:getMapLocalLayer(layer)
 
-	table.insert(actions, {
-		id = #actions + 1,
+	self:buildTileAction(actions, object, {
 		verb = "Spawn-Actor",
-		objectID = layer,
-		objectType = "map",
-		object = string.format("%s@%s", resource or "???", localLayer or string.format("*%d", layer)),
 		callback = function()
 			self:beginAction(DebugManipulate.SpawnActorAction, object, hit)
 		end
 	})
 
-	table.insert(actions, {
-		id = #actions + 1,
+	self:buildTileAction(actions, object, {
 		verb = "Spawn-Prop",
-		objectID = layer,
-		objectType = "map",
-		object = string.format("%s@%s", resource or "???", localLayer or string.format("*%d", layer)),
 		callback = function()
 			self:beginAction(DebugManipulate.SpawnPropAction, object, hit)
 		end

@@ -123,6 +123,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:transform(e)
 	elseif actionID == "orientateCamera" then
 		self:orientateCamera(e)
+	elseif actionID == "fireProjectile" then
+		self:fireProjectile(e)
 	elseif actionID == "editAction" then
 		self:editAction(e)
 	elseif actionID == "shiftAction" then
@@ -255,7 +257,7 @@ function DebugManipulateController:getRecordedPeep(id)
 	return self.idToPeep[id]
 end
 
-function DebugManipulateController:makeRecord(layer, targetPeep, actionType, e)
+function DebugManipulateController:getMapInfo(layer)
 	local mapInfo
 	do
 		local instance = Utility.Peep.getInstance(self:getPeep())
@@ -273,6 +275,10 @@ function DebugManipulateController:makeRecord(layer, targetPeep, actionType, e)
 		end
 	end
 
+	return mapInfo
+end
+
+function DebugManipulateController:getTargetInfo(targetPeep)
 	local targetInfo
 	do
 		local mapObject = Utility.Peep.getMapObject(targetPeep)
@@ -290,11 +296,18 @@ function DebugManipulateController:makeRecord(layer, targetPeep, actionType, e)
 			local peepID = self:getRecordedPeepID(targetPeep)
 			if peepID then
 				targetInfo = {
-					peepID = self:getRecordedPeepID(targetPeep)
+					peepID = peepID
 				}
 			end
 		end
 	end
+
+	return targetInfo
+end
+
+function DebugManipulateController:makeRecord(layer, targetPeep, actionType, e)
+	local mapInfo = self:getMapInfo(layer)
+	local targetInfo = self:getTargetInfo(targetPeep)
 
 	if targetInfo and mapInfo then
 		local q = {
@@ -536,6 +549,52 @@ function DebugManipulateController:orientateCamera(e)
 	if self.isRecording then
 		self:record(Utility.Peep.getLayer(peep), peep, "orientateCamera", {})
 	end
+end
+
+function DebugManipulateController:fireProjectile(e)
+	local sourceActor = e.sourceActorID and self:getGame():getStage():getActorByID(e.sourceActorID)
+	local sourceProp = e.sourcePropID and self:getGame():getStage():getPropByID(e.sourcePropID)
+	local destinationActor = e.destinationActorID and self:getGame():getStage():getActorByID(e.destinationActorID)
+	local destinationProp = e.destinationPropID and self:getGame():getStage():getPropByID(e.destinationPropID)
+
+	local source = sourceActor or sourceProp
+	local destination = destinationActor or destinationProp
+
+	local sourcePeep = source and source:getPeep()
+	local destinationPeep = destination and destination:getPeep()
+	if not (sourcePeep and destinationPeep) then
+		return
+	end
+
+	local sourceInstance = Utility.Peep.getInstance(sourcePeep)
+	local destinationInstance = Utility.Peep.getInstance(destinationPeep)
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+
+	if sourceInstance ~= selfInstance or destinationInstance ~= selfInstance then
+		return
+	end
+
+	local destinationTargetInfo = self:getTargetInfo(destinationPeep)
+	if not destinationTargetInfo then
+		return
+	end
+
+	local destinationMapInfo = self:getMapInfo(Utility.Peep.getLayer(sourcePeep))
+	if not destinationMapInfo then
+		return
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(sourcePeep), sourcePeep, "fireProjectile", {
+			targetMapObjectName = destinationTargetInfo.mapObjectName,
+			targetPeepID = destinationTargetInfo.peepID,
+			targetMapResource = destinationMapInfo.resource,
+			targetMapLocalLayer = destinationMapInfo.localLayer,
+			projectile = e.projectile or "AirStrike"
+		})
+	end
+
+	self:getGame():getStage():fireProjectile(e.projectile or "AirStrike", sourcePeep, destinationPeep)
 end
 
 function DebugManipulateController:editAction(e)
