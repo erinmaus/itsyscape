@@ -21,7 +21,7 @@ precision highp float;
 
 #include "Resources/Shaders/RendererPass.common.glsl"
 
-#define SCAPE_MAX_LIGHTS 16
+#define SCAPE_MAX_LIGHTS 32
 #define SCAPE_MAX_FOG    4
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 1.0 / 128.0
 

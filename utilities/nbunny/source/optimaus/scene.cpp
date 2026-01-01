@@ -1154,6 +1154,11 @@ const glm::vec3& nbunny::Camera::get_target_position() const
 	return target_position;
 }
 
+const glm::vec3& nbunny::Camera::get_forward() const
+{
+	return forward;
+}
+
 const glm::quat& nbunny::Camera::get_rotation() const
 {
 	return rotation;
@@ -1170,6 +1175,11 @@ void nbunny::Camera::move(const glm::vec3& eye_position, const glm::vec3& target
 {
 	this->eye_position = eye_position;
 	this->target_position = target_position;
+}
+
+void nbunny::Camera::direction(const glm::vec3& forward)
+{
+	this->forward = forward;
 }
 
 void nbunny::Camera::set_bounding_sphere_position(const glm::vec3& value)
@@ -2455,6 +2465,18 @@ static int nbunny_camera_move_target(lua_State* L)
 	return 0;
 }
 
+static int nbunny_camera_direction(lua_State* L)
+{
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+
+	camera->direction(glm::vec3(x, y, z));
+
+	return 0;
+}
+
 static int nbunny_camera_move_eye(lua_State* L)
 {
 	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
@@ -2605,6 +2627,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 		{ "getProjection", &nbunny_camera_get_projection },
 		{ "update", &nbunny_camera_update },
 		{ "moveTarget", &nbunny_camera_move_target },
+		{ "direction", &nbunny_camera_direction },
 		{ "updateBoundingSphere", &nbunny_camera_update_bounding_sphere },
 		{ "setClipPlane", &nbunny_camera_set_clip_plane },
 		{ "unsetClipPlane", &nbunny_camera_unset_clip_plane },

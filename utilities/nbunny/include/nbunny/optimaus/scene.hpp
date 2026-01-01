@@ -340,6 +340,8 @@ namespace nbunny
 		glm::vec3 eye_position = glm::vec3(0.0f);
 		glm::vec3 target_position = glm::vec3(0.0f);
 
+		glm::vec3 forward = glm::vec3(0.0f);
+
 		glm::vec3 bounding_sphere_position = glm::vec3(0.0f);
 		float bounding_sphere_radius = std::numeric_limits<float>::infinity();
 
@@ -392,6 +394,8 @@ namespace nbunny
 		const glm::vec3& get_eye_position() const;
 		const glm::vec3& get_target_position() const;
 
+		const glm::vec3& get_forward() const;
+
 		const glm::quat& get_rotation() const;
 
 		void update(
@@ -401,6 +405,8 @@ namespace nbunny
 		void move(
 			const glm::vec3& eye_position,
 			const glm::vec3& target_position);
+
+		void direction(const glm::vec3& forward);
 		
 		void set_bounding_sphere_position(const glm::vec3& value);
 		const glm::vec3& get_bounding_sphere_position() const;

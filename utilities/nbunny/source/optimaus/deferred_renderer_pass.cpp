@@ -241,11 +241,8 @@ void nbunny::DeferredRendererPass::draw_directional_lights(lua_State* L, float d
 	shader_cache.update_uniform(shader, "scape_NormalTexture", g_buffer.get_canvas(NORMAL_INDEX));
 	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
 
-	auto camera_target = get_renderer()->get_camera().get_target_position();
-	shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec3));
-
-	auto camera_eye = get_renderer()->get_camera().get_eye_position();
-	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
+	auto camera_forward = get_renderer()->get_camera().get_forward();
+	shader_cache.update_uniform(shader, "scape_CameraForward", glm::value_ptr(camera_forward), sizeof(glm::vec3));
 
 	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
 	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
@@ -290,18 +287,17 @@ void nbunny::DeferredRendererPass::draw_point_lights(lua_State* L, float delta)
 	auto shader = get_builtin_shader(L, BUILTIN_SHADER_MULTI_POINT_LIGHT, SHADER_MULTI_POINT_LIGHT);
 	get_renderer()->set_current_shader(shader);
 
-	std::array<glm::vec3, MAX_NUM_LIGHTS> light_colors;
-	std::array<glm::vec3, MAX_NUM_LIGHTS> light_positions;
-	std::array<float, MAX_NUM_LIGHTS> light_attenuations;
+	std::vector<glm::vec3> light_colors;
+	std::vector<glm::vec3> light_positions;
+	std::vector<float> light_attenuations;
 
-	int index = 0;
+	light_colors.resize(point_light_scene_nodes.size());
+	light_positions.resize(point_light_scene_nodes.size());
+	light_attenuations.resize(point_light_scene_nodes.size());
+
+	auto index = 0;
 	for (auto& point_light: point_light_scene_nodes)
 	{
-		if (index >= MAX_NUM_LIGHTS)
-		{
-			break;
-		}
-
 		Light light;
 		point_light->to_light(light, delta);
 
@@ -311,30 +307,32 @@ void nbunny::DeferredRendererPass::draw_point_lights(lua_State* L, float delta)
 
 		++index;
 	}
-	
-	shader_cache.update_uniform(shader, "scape_LightPosition", glm::value_ptr(light_positions[0]), sizeof(glm::vec3) * index);
-	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light_colors[0]), sizeof(glm::vec3) * index);
-	shader_cache.update_uniform(shader, "scape_LightAttenuation", &light_attenuations[0], sizeof(float) * index);
-	shader_cache.update_uniform(shader, "scape_NumLights", &index, sizeof(int));
 
-	auto camera_target = get_renderer()->get_camera().get_target_position();
-	shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec3));
+	for (auto i = 0; i < light_colors.size(); i += MAX_NUM_LIGHTS)
+	{
+		auto size = std::min(light_colors.size() - i, (std::size_t)MAX_NUM_LIGHTS);
 
-	auto camera_eye = get_renderer()->get_camera().get_eye_position();
-	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
+		shader_cache.update_uniform(shader, "scape_LightPosition", glm::value_ptr(light_positions[i]), sizeof(glm::vec3) * size);
+		shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light_colors[i]), sizeof(glm::vec3) * size);
+		shader_cache.update_uniform(shader, "scape_LightAttenuation", &light_attenuations[i], sizeof(float) * size);
+		shader_cache.update_uniform(shader, "scape_NumLights", &size, sizeof(int));
 
-	shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
-	shader_cache.update_uniform(shader, "scape_NormalTexture", g_buffer.get_canvas(NORMAL_INDEX));
-	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
+		auto camera_forward = get_renderer()->get_camera().get_forward();
+		shader_cache.update_uniform(shader, "scape_CameraForward", glm::value_ptr(camera_forward), sizeof(glm::vec3));
 
-	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
-	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
+		shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
+		shader_cache.update_uniform(shader, "scape_NormalTexture", g_buffer.get_canvas(NORMAL_INDEX));
+		shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
 
-	auto inverse_view_matrix = glm::inverse(get_renderer()->get_camera().get_view());
-	shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
+		auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
+		shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
 
-	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
-	graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+		auto inverse_view_matrix = glm::inverse(get_renderer()->get_camera().get_view());
+		shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
+
+		auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
+		graphics->draw(g_buffer.get_canvas(COLOR_INDEX), love::Matrix4());
+	}
 }
 
 void nbunny::DeferredRendererPass::draw_fog(lua_State* L, FogSceneNode& node, float delta)

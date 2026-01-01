@@ -19,8 +19,7 @@ uniform vec3 scape_LightDirection[SCAPE_MAX_NUM_LIGHTS];
 uniform vec3 scape_LightColor[SCAPE_MAX_NUM_LIGHTS];
 uniform int scape_NumLights;
 
-uniform vec3 scape_CameraEye;
-uniform vec3 scape_CameraTarget;
+uniform vec3 scape_CameraForward;
 
 vec4 effect(
 	vec4 color,
@@ -30,7 +29,7 @@ vec4 effect(
 {
 	vec3 normal = decodeGBufferNormal(Texel(scape_NormalTexture, textureCoordinate).xy);
 	vec4 specularSample = Texel(scape_SpecularOutlineTexture, textureCoordinate);
-	vec3 cameraToTarget = normalize(scape_CameraEye - scape_CameraTarget);
+	vec3 cameraToTarget = -scape_CameraForward;
 	float specular = specularSample.r;
 	float alpha = specularSample.a;
 
@@ -39,10 +38,10 @@ vec4 effect(
 	{
 		float lightDotSurface = max(dot(scape_LightDirection[i], normal), 0.0);
 
-		float exponent = pow(1.0 - abs(dot(normal, cameraToTarget)), 3.0);
+		float exponent = pow(abs(dot(normal, cameraToTarget)), 3.0);
 		float specularCoefficient = (pow(5.0, exponent * pow(specular, 2.5)) - 1.0) / 4.0;
 
-		result += lightDotSurface * scape_LightColor[i] + vec3(specularCoefficient) * vec3(pow(length(scape_LightColor[i]), 1.5));
+		result += lightDotSurface * scape_LightColor[i] + vec3(max(specularCoefficient, 0.0)) * vec3(pow(length(scape_LightColor[i]), 1.5));
 	}
 
 	return vec4(result, alpha);

@@ -242,6 +242,8 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	root_node = nullptr;
 }
 
+#include <iostream>
+
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 {
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
@@ -295,11 +297,20 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 			}
 		}
 
+		auto camera_forward = camera->get_forward();
+		shader_cache.update_uniform(shader, "scape_CameraForward", glm::value_ptr(camera_forward), sizeof(glm::vec3));
+
 		auto camera_target = camera->get_target_position();
-		shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec4));
+		shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec3));
 
 		auto camera_eye = camera->get_eye_position();
-		shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec4));
+
+		auto f = glm::normalize(camera_eye - camera_target);
+		if (camera_eye == camera_target)
+		{
+			camera_eye -= camera_forward;
+		}
+		shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
 
 		auto camera_near = camera->get_near();
 		shader_cache.update_uniform(shader, "scape_CameraNear", &camera_near, sizeof(float));

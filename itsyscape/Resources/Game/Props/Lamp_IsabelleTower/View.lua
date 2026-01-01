@@ -96,6 +96,7 @@ function Lamp:load()
 
 	self.light = PointLightSceneNode()
 	self.light:setParent(root)
+	self.light:getTransform():setLocalTranslation(Vector(0, 0.5, 1))
 
 	self.lamp = DecorationSceneNode()
 	self.base = DecorationSceneNode()

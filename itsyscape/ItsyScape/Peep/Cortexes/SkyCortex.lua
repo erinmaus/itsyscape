@@ -390,8 +390,8 @@ function SkyCortex:update(delta)
 				if not skyAmbientLight then
 					Utility.spawnPropAtPosition(peep, "AmbientLight_Default", 0, 0, 0)
 				else
-					skyAmbientLight:setColor(sky.currentSkyAmbientColor)
-					skyAmbientLight:setAmbience(sky.currentSkyAmbientColor.a)
+					skyAmbientLight:setColor(sky.currentAmbientColor)
+					skyAmbientLight:setAmbience(sky.currentAmbientColor.a)
 				end
 			end
 

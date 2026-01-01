@@ -190,6 +190,7 @@ function Renderer:draw(scene, delta, width, height, postProcessPasses)
 	self._renderer:getCamera():setFar(self.camera:getFar())
 	self._renderer:getCamera():moveEye(eye:get())
 	self._renderer:getCamera():moveTarget(target:get())
+	self._renderer:getCamera():direction(self.camera:getForward():get())
 	self._renderer:getCamera():rotate(rotation:get())
 	self._renderer:getCamera():updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
 
