@@ -281,8 +281,8 @@ function ThirdPersonCamera:getUp()
 end
 
 function ThirdPersonCamera:getForward()
-	local rotation = self:getCombinedRotation()
-	return rotation:transformVector(Vector.UNIT_Z):getNormal()
+	local rotation = -(self:getCombinedRotation())
+	return rotation:transformVector(-Vector.UNIT_Z):getNormal()
 end
 
 function ThirdPersonCamera:getStrafeForward()
@@ -315,7 +315,8 @@ function ThirdPersonCamera:setPosition(value)
 end
 
 function ThirdPersonCamera:getEye()
-	return -self.distance * self:getForward() + self.position
+	local forward = self:getForward()
+	return forward * self.distance + self.position
 end
 
 function ThirdPersonCamera:apply()

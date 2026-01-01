@@ -22,6 +22,8 @@ DebugManipulateCameraController.SCROLL_SPEED_MULTIPLIER = 5
 DebugManipulateCameraController.ROTATE_SPEED_MULTIPLIER = math.pi / 1024
 DebugManipulateCameraController.PAN_SPEED_MULTIPLIER    = 1 / 16
 
+DebugManipulateCameraController.CONSTANT_ROTATION = Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi)
+
 function DebugManipulateCameraController:new(...)
 	CameraController.new(self, ...)
 
@@ -55,8 +57,9 @@ end
 function DebugManipulateCameraController:onCopyTransforms()
 	self.translationOffset = self:getCamera():getEye():keep()
 
-	local z = self:getCamera():getCombinedRotation():transformVector(Vector.UNIT_Z)
-	self.rotationOffset = Quaternion.fromVectors(z, Vector.UNIT_Z)
+	local z = self:getCamera():getForward()
+	--self.rotationOffset = Quaternion.fromVectors(z, -Vector.UNIT_Z)
+	self.rotationOffset = self:getCamera():getCombinedRotation()
 end
 
 function DebugManipulateCameraController:onReset()
@@ -89,6 +92,7 @@ function DebugManipulateCameraController:orientateToActor(nextActor, delay, dura
 	elseif currentActor then
 		local nextActorView = self:getGameView():getView(currentActor)
 		local translation, rotation = MathCommon.decomposeTransform(transform)
+		rotation = rotation * self.CONSTANT_ROTATION
 
 		self.currentTranslation = translation:keep()
 		self.currentRotation = rotation:keep()
@@ -96,6 +100,7 @@ function DebugManipulateCameraController:orientateToActor(nextActor, delay, dura
 		local nextActorView = self:getGameView():getView(nextActor)
 		local transform = nextActorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 		local translation, rotation = MathCommon.decomposeTransform(transform)
+		rotation = rotation * self.CONSTANT_ROTATION
 
 		self.previousTranslation = translation:keep()
 		self.currentTranslation = translation:keep()
@@ -230,9 +235,7 @@ function DebugManipulateCameraController:draw()
 	local rotation = self.previousRotation:slerp(self.currentRotation, mu)
 	local translation = self.previousTranslation:lerp(self.currentTranslation, mu)
 
-	local constantRotation = Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi)
-
-	camera:setRotation((rotation * constantRotation * self.rotationOffset):getNormal())
+	camera:setRotation((rotation * self.rotationOffset):getNormal())
 	camera:setPosition(translation + self.translationOffset)
 end
 
