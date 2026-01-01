@@ -70,7 +70,8 @@ end
 
 function BaseVector:project(other)
 	self:compatible(other)
-	return self:dot(other) / other:dot(other) * other
+	local d = self:dot(other)
+	return d / other:dot(other) * other, d
 end
 
 -- Returns a vector with the minimum components of both vectors.

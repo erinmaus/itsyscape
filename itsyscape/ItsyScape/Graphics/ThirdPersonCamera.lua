@@ -226,9 +226,8 @@ end
 function ThirdPersonCamera:getCombinedRotation()
 	local y = Quaternion.fromAxisAngle(self.up, self.verticalRotation + math.pi / 2):getNormal()
 	local x = Quaternion.fromAxisAngle(Vector.UNIT_X, -self.horizontalRotation + math.pi):getNormal()
-	local lookAt = (x * y):getNormal()
 
-	return (lookAt * self.rotation):getNormal()
+	return (x * self.rotation * y):getNormal()
 end
 
 function ThirdPersonCamera:setRotation(value)

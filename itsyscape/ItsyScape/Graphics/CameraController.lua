@@ -22,6 +22,10 @@ function CameraController:getApp()
 	return self.app
 end
 
+function CameraController:getUIView()
+	return self.app:getUIView()
+end
+
 function CameraController:getGame()
 	return self.app:getGame()
 end

@@ -321,6 +321,45 @@ function DebugManipulate.PreviewOrientateAction:new(...)
 
 	self.currentDuration = 2
 	self.currentElapsed = 0
+
+	self.interactionLock = 0
+	self.isInteractive = false
+end
+
+function DebugManipulate.PreviewOrientateAction:startCameraInteraction()
+	self.interactionLock = self.interactionLock + 1
+	self.isInteractive = self.interactionLock > 0
+
+	if self.isInteractive then
+		self.currentElapsed = 0
+	end
+end
+
+function DebugManipulate.PreviewOrientateAction:stopCameraInteraction()
+	self.interactionLock = self.interactionLock - 1
+	self.isInteractive = self.interactionLock > 0
+end
+
+function DebugManipulate.PreviewOrientateAction:updateCameraTranslation(translation)
+	local view = self:getGameView():getView(self:getObject())
+	local sceneNode = view and view:getSceneNode()
+
+	if not sceneNode then
+		return
+	end
+
+	self.targetTranslation = sceneNode:getTransform():getLocalTranslation() + translation
+end
+
+function DebugManipulate.PreviewOrientateAction:updateCameraRotation(rotation)
+	local view = self:getGameView():getView(self:getObject())
+	local sceneNode = view and view:getSceneNode()
+
+	if not sceneNode then
+		return
+	end
+
+	self.targetRotation = -rotation * sceneNode:getTransform():getLocalRotation()
 end
 
 function DebugManipulate.PreviewOrientateAction:start()
@@ -328,21 +367,32 @@ function DebugManipulate.PreviewOrientateAction:start()
 
 	local player = self:getGame():getPlayer()
 	player:onPushCamera("DebugManipulate")
+	player:onPokeCamera("enableInteraction")
 	player:onPokeCamera("orientateToActor", self:getObject():getID(), 0, self.currentDuration, "sineEaseInOut")
 end
 
 function DebugManipulate.PreviewOrientateAction:update(delta)
 	DebugManipulate.Action.update(self, delta)
 
-	self.currentElapsed = math.min(self.currentElapsed + delta, self.currentDuration)
-	if self.currentElapsed >= self.currentDuration then
-		self:getInterface():stopAction()
+	if not self.isInteractive then
+		self.currentElapsed = math.min(self.currentElapsed + delta, self.currentDuration)
+		if self.currentElapsed >= self.currentDuration then
+			self:getInterface():stopAction()
+		end
 	end
 end
 
 function DebugManipulate.PreviewOrientateAction:done()
 	local player = self:getGame():getPlayer()
 	player:onPopCamera()
+
+	if self.targetTranslation then
+		self:getInterface():translateObject(self:getObject(), self.targetTranslation)
+	end
+
+	if self.targetRotation then
+		self:getInterface():rotateObject(self:getObject(), self.targetRotation)
+	end
 end
 
 DebugManipulate.WIDTH  = 800
@@ -510,6 +560,12 @@ function DebugManipulate.GizmoFacade:mouseMove(rx, ry, dx, dy, ...)
 	sceneNode:setParent()
 end
 
+function DebugManipulate.GizmoFacade:mouseScroll(...)
+	Widget.mouseScroll(self, ...)
+
+	_APP.cameraController:mouseScroll(false, ...)
+end
+
 function DebugManipulate.GizmoFacade:_draw()
 	local gameView = self.interface:getView():getGameView()
 
@@ -577,7 +633,7 @@ function DebugManipulate.InteractFacade:mousePress(_x, _y, button)
 		end
 
 		local ui = self:getUIView()
-		if ui then
+		if ui and #actions >= 1 then
 			ui:probe(actions, x, y)
 		end
 	end)
@@ -593,6 +649,12 @@ function DebugManipulate.InteractFacade:mouseRelease(...)
 	Widget.mouseRelease(self, ...)
 
 	_APP.cameraController:mouseRelease(false, ...)
+end
+
+function DebugManipulate.InteractFacade:mouseScroll(...)
+	Widget.mouseScroll(self, ...)
+
+	_APP.cameraController:mouseScroll(false, ...)
 end
 
 function DebugManipulate:new(id, index, ui)
@@ -681,6 +743,9 @@ end
 
 function DebugManipulate:attach()
 	self:focusChild(self.presetListGrid:getInnerPanel())
+
+	self:getView():getGame():getPlayer():onPushCamera("DebugManipulate")
+	self:getView():getGame():getPlayer():onPokeCamera("copyTransforms")
 end
 
 function DebugManipulate:detach()
@@ -694,6 +759,8 @@ function DebugManipulate:detach()
 	if facade and facade:getParent() == root then
 		root:removeChild(facade)
 	end
+
+	self:getView():getGame():getPlayer():onPopCamera()
 end
 
 function DebugManipulate:_wrapPresetGridsFocus(grid, widget, directionX, directionY)
@@ -1363,6 +1430,12 @@ function DebugManipulate:beginAction(ActionType, object, hit)
 
 	self.currentAction = ActionType(self, object, hit)
 	self.currentAction:start()
+end
+
+function DebugManipulate:pokeAction(event, ...)
+	if self.currentAction and self.currentAction[event] then
+		self.currentAction[event](self.currentAction, ...)
+	end
 end
 
 function DebugManipulate:cancelAction()

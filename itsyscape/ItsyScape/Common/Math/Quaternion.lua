@@ -219,6 +219,20 @@ function BaseQuaternion:getEulerXYZ()
 	return x, y, z
 end
 
+function BaseQuaternion:decomposeAxis(axis)
+	self:compatible(direction)
+
+	local rotationAxis = Vector(self.x, self.y, self.z)
+	local projection, d = rotationAxis:project(axis)
+
+	local sign = math.sign(d)
+
+	local twist = Quaternion(sign * projection.x, sign * projection.y, sign * projection.z, sign * self.w):getNormal()
+	local swing = self * -twist
+
+	return swing, twist
+end
+
 -- Adds two quaternions.
 function Metatable.__add(a, b)
 	a:compatible(b)
