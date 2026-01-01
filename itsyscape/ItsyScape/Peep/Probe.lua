@@ -282,4 +282,12 @@ function Probe.lineOfSight(source, shoot)
 	return Function(_lineOfSight, source, shoot)
 end
 
+local _behavior = function(behavior, peep)
+	return peep:hasBehavior(behavior)
+end
+
+function Probe.behavior(behavior)
+	return Function(_behavior, behavior)
+end
+
 return Probe

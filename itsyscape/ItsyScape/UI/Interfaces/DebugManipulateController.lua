@@ -13,6 +13,8 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
+local ManipulatedBehavior = require "ItsyScape.Peep.Behaviors.ManipulatedBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
@@ -27,8 +29,24 @@ function DebugManipulateController:new(peep, director)
 	self.peepToID = {}
 	self.idToPeep = {}
 
+	self.isReplaying = false
+
 	self:recordPeep(self:getPeep(), -1)
+	self:pullExistingPeeps()
 	self:populate()
+end
+
+function DebugManipulateController:pullExistingPeeps()
+	local peeps = self:getDirector():probe(
+		self:getPeep():getLayerName(),
+		Probe.behavior(ManipulatedBehavior))
+
+	for _, peep in ipairs(peeps) do
+		local b = peep:getBehavior(ManipulatedBehavior)
+		if b.debugID and b.owner == self:getPeep() then
+			self:recordPeep(peep, b.debugID)
+		end
+	end
 end
 
 function DebugManipulateController:populate()
@@ -103,6 +121,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:changeSkin(e)
 	elseif actionID == "transform" then
 		self:transform(e)
+	elseif actionID == "orientateCamera" then
+		self:orientateCamera(e)
 	elseif actionID == "editAction" then
 		self:editAction(e)
 	elseif actionID == "shiftAction" then
@@ -219,6 +239,12 @@ function DebugManipulateController:recordPeep(target, peepID)
 
 	self.idToPeep[nextPeepID] = target
 	self.peepToID[target] = nextPeepID
+
+	if target ~= self:getPeep() then
+		local _, m = target:addBehavior(ManipulatedBehavior)
+		m.debugID = nextPeepID
+		m.owner = self:getPeep()
+	end
 end
 
 function DebugManipulateController:getRecordedPeepID(target)
@@ -486,6 +512,25 @@ function DebugManipulateController:transform(e)
 
 	if self.isRecording then
 		self:mergeOrRecord(Utility.Peep.getLayer(peep), peep, "transform", event)
+	end
+end
+
+function DebugManipulateController:orientateCamera(e)
+	local actor = self:getGame():getStage():getActorByID(e.actorID)
+	local peep = actor and actor:getPeep()
+	if not peep then
+		return
+	end
+
+	local peepInstance = Utility.Peep.getInstance(peep)
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+
+	if peepInstance ~= selfInstance then
+		return
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(peep), peep, "orientateCamera", {})
 	end
 end
 
