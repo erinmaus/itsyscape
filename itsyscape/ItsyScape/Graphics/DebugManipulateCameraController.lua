@@ -17,10 +17,10 @@ local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 
 local DebugManipulateCameraController = Class(CameraController)
 DebugManipulateCameraController.CAMERA_VERTICAL_ROTATION = math.pi / 2
-DebugManipulateCameraController.SCROLL_SPEED_MULTIPLIER = 5
+DebugManipulateCameraController.SCROLL_SPEED_MULTIPLIER = 10
 
-DebugManipulateCameraController.ROTATE_SPEED_MULTIPLIER = math.pi / 1024
-DebugManipulateCameraController.PAN_SPEED_MULTIPLIER    = 1 / 16
+DebugManipulateCameraController.ROTATE_SPEED            = math.pi / 4
+DebugManipulateCameraController.PAN_SPEED_MULTIPLIER    = 1 / 64
 
 DebugManipulateCameraController.CONSTANT_ROTATION = Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi)
 
@@ -155,10 +155,16 @@ function DebugManipulateCameraController:mouseScroll(uiActive, x, y)
 
 	if love.system.getOS() ~= "OS X" then
 		y = y * self.SCROLL_SPEED_MULTIPLIER
+	else
+		y = y / self.SCROLL_SPEED_MULTIPLIER
 	end
 
-	local offset = self:getCamera():getForward() * y
+	local offset = self:getCamera():getUp() * y
 	self.translationOffset = (self.translationOffset + offset):keep()
+
+	self:pokeInterface("startCameraInteraction")
+	self:pokeInterface("updateCameraTranslation", self.translationOffset)
+	self:pokeInterface("stopCameraInteraction")
 end
 
 function DebugManipulateCameraController:mouseMove(uiActive, x, y, dx, dy)
@@ -169,8 +175,8 @@ function DebugManipulateCameraController:mouseMove(uiActive, x, y, dx, dy)
 	end
 
 	if self.isRotating then
-		local rotateXSpeedModifier = math.pi / love.graphics.getWidth()
-		local rotateYSpeedModifier = math.pi / love.graphics.getHeight()
+		local rotateXSpeedModifier = self.ROTATE_SPEED / love.graphics.getWidth()
+		local rotateYSpeedModifier = self.ROTATE_SPEED / love.graphics.getHeight()
 
 		local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -dy * rotateXSpeedModifier)
 		local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, dx * rotateYSpeedModifier)

@@ -319,6 +319,13 @@ DebugManipulate.PreviewOrientateAction = Class(DebugManipulate.Action)
 function DebugManipulate.PreviewOrientateAction:new(...)
 	DebugManipulate.Action.new(self, ...)
 
+	local view = self:getGameView():getView(self:getObject())
+	local sceneNode = view and view:getSceneNode()
+	if sceneNode then
+		self.previousTranslation = sceneNode:getTransform():getLocalTranslation()
+		self.previousRotation = sceneNode:getTransform():getLocalRotation()
+	end
+
 	self.currentDuration = 2
 	self.currentElapsed = 0
 
@@ -348,7 +355,8 @@ function DebugManipulate.PreviewOrientateAction:updateCameraTranslation(translat
 		return
 	end
 
-	self.targetTranslation = sceneNode:getTransform():getLocalTranslation() + translation
+	self.targetTranslation = (self.previousTranslation or Vector.ZERO) + translation
+	sceneNode:getTransform():setLocalTranslation(self.targetTranslation)
 end
 
 function DebugManipulate.PreviewOrientateAction:updateCameraRotation(rotation)
@@ -359,7 +367,8 @@ function DebugManipulate.PreviewOrientateAction:updateCameraRotation(rotation)
 		return
 	end
 
-	self.targetRotation = -rotation * sceneNode:getTransform():getLocalRotation()
+	self.targetRotation = -rotation * (self.previousRotation or Quaternion.IDENTITY)
+	sceneNode:getTransform():setLocalRotation(self.targetRotation)
 end
 
 function DebugManipulate.PreviewOrientateAction:start()
@@ -392,6 +401,18 @@ function DebugManipulate.PreviewOrientateAction:done()
 
 	if self.targetRotation then
 		self:getInterface():rotateObject(self:getObject(), self.targetRotation)
+	end
+
+	local view = self:getGameView():getView(self:getObject())
+	local sceneNode = view and view:getSceneNode()
+	if sceneNode then
+		if self.previousRotation then
+			sceneNode:getTransform():setLocalRotation(self.previousRotation)
+		end
+
+		if self.previousTranslation then
+			sceneNode:getTransform():setLocalTranslation(self.previousTranslation)
+		end
 	end
 end
 
@@ -612,7 +633,7 @@ function DebugManipulate.InteractFacade:mousePress(_x, _y, button)
 
 	_APP.cameraController:mousePress(false, _x, _y, button)
 
-	if not (button == 1 or button == 2) then
+	if button ~= 2 then
 		return
 	end
 
