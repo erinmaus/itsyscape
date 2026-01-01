@@ -386,11 +386,12 @@ function Theme.layoutScrollablePanelWithGridLayout(panel, elementWidth, elementH
 
 	local scrollableWidth, scrollableHeight = innerPanel:getSize()
 	local hasScrollbars = scrollableHeight > panelHeight
+	local paddingX = innerPanel:getPadding()
 
 	if hasScrollbars then
 		innerPanel:setUniformSize(
 			true,
-			elementWidth - ScrollablePanel.DEFAULT_SCROLL_SIZE,
+			Theme.calculateRemainingSizeWithPadding(paddingX / 2, elementWidth, ScrollablePanel.DEFAULT_SCROLL_SIZE),
 			elementHeight)
 		innerPanel:setSize(panelWidth, 0)
 		innerPanel:performLayout()

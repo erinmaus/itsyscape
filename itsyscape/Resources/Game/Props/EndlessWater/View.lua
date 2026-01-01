@@ -90,7 +90,7 @@ function EndlessWater:load()
 
 	local waterMaterial
 	resources:queueEvent(function()
-		waterMaterial = DecorationMaterial(Resource.readLua("Resources/Game/Water/LightFoamyWater1/Material.lua")):replace(self.EXTENDED_MATERIAL)
+		waterMaterial = DecorationMaterial(Resource.readLua("Resources/Game/Water/DarkFoamyWater1/Material.lua")):replace(self.EXTENDED_MATERIAL)
 	end)
 
 	self.waters = {}

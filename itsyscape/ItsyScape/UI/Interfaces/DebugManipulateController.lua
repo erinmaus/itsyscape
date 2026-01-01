@@ -379,6 +379,10 @@ function DebugManipulateController:spawnActor(e)
 	local x, y, z = unpack(e.position)
 	local actor = Utility.spawnActorAtPosition(mapScript, e.id, x, y, z)
 
+	if e.id == "CameraDolly" then
+		actor:getPeep():pushPoke("visible")
+	end
+
 	if self.isRecording then
 		self:recordPeep(actor:getPeep())
 		self:record(e.layer, actor:getPeep(), "spawnActor", {

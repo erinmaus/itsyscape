@@ -17,6 +17,10 @@ function Creep.addAnimation(peep, name, animation)
 	Utility.Peep.Human.addAnimation(peep, name, animation)
 end
 
+function Creep.removeSkin(...)
+	Utility.Peep.Human.removeSkin(...)
+end
+
 function Creep.applySkin(...)
 	Utility.Peep.Human.applySkin(...)
 end

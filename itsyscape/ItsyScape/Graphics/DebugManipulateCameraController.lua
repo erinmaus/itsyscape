@@ -136,10 +136,10 @@ function DebugManipulateCameraController:mousePress(uiActive, x, y, button)
 	end
 
 	if button == 1 then
-		self:pokeInterface("stopCameraInteraction")
+		self:pokeInterface("startCameraInteraction")
 		self.isRotating = true
 	elseif button == 3 then
-		self:pokeInterface("stopCameraInteraction")
+		self:pokeInterface("startCameraInteraction")
 		self.isPanning = true
 	end
 

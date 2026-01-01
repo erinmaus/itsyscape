@@ -98,6 +98,23 @@ function Human:addAnimation(name, animation)
 	self:addResource(name, animation)
 end
 
+function Human:removeSkin(slot, priority, relativeFilename)
+	local actor = self:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
+	if not actor then
+		return false
+	end
+
+	local filename = string.format("Resources/Game/Skins/%s", relativeFilename)
+	if not love.filesystem.getInfo(filename) then
+		error(string.format("Could not find skin '%s'!", filename))
+	end
+
+	local skin = CacheRef("ItsyScape.Game.Skin.ModelSkin", filename)
+	actor:unsetSkin(slot, priority, skin)
+end
+
 function Human:applySkin(slot, priority, relativeFilename, colorConfig)
 	colorConfig = colorConfig or {}
 
