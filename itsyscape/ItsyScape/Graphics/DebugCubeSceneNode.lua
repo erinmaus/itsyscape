@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
+local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 
 local DebugCubeSceneNode = Class(SceneNode)
 
@@ -19,6 +20,10 @@ DebugCubeSceneNode.MESH_FORMAT = {
 	{ "VertexColor", 'float', 4 }
 }
 
+DebugCubeSceneNode.DEFAULT_SHADER = ShaderResource()
+do
+	DebugCubeSceneNode.DEFAULT_SHADER:loadFromFile("Resources/Shaders/StaticModel")
+end
 
 DebugCubeSceneNode.MESH_DATA = {
 	-- Front.
@@ -83,6 +88,8 @@ function DebugCubeSceneNode:new()
 	self.mesh:setAttributeEnabled("VertexPosition", true)
 	self.mesh:setAttributeEnabled("VertexNormal", true)
 	self.mesh:setAttributeEnabled("VertexColor", true)
+
+	self:getMaterial():setShader(self.DEFAULT_SHADER)
 end
 
 function DebugCubeSceneNode:draw(renderer, delta)
